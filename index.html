@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pokémon PSA10 ROI Board</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="backdrop backdrop-a"></div>
+  <div class="backdrop backdrop-b"></div>
+  <main class="shell">
+    <section class="hero card">
+      <div class="eyebrow">TORECA SOUBA / Pokémon / PSA10</div>
+      <h1>利率40%以上のポケモンカードだけを、画像付きで一目比較</h1>
+      <p class="lede">
+        美品価格とPSA10相場から、鑑定費を差し引いた利益率で判定します。
+        取引数・鑑定費・利益率の条件は画面上でそのまま調整できます。
+      </p>
+
+      <div class="controls">
+        <label class="control control-wide">
+          <span>検索</span>
+          <input id="qInput" type="text" placeholder="カード名・型番で検索" />
+        </label>
+        <label class="control">
+          <span>鑑定費</span>
+          <input id="feeInput" type="number" min="0" step="100" value="13000" />
+        </label>
+        <label class="control">
+          <span>直近30日 下限</span>
+          <input id="txInput" type="number" min="0" step="1" value="30" />
+        </label>
+        <label class="control">
+          <span>利益率 下限</span>
+          <input id="roiInput" type="number" min="0" step="1" value="40" />
+        </label>
+        <label class="control">
+          <span>PSA10 上限</span>
+          <input id="psaMaxInput" type="number" min="0" step="1000" value="200000" />
+        </label>
+        <label class="control">
+          <span>並び順</span>
+          <select id="sortInput">
+            <option value="roi-desc">利益率が高い順</option>
+            <option value="profit-desc">利益額が高い順</option>
+            <option value="tx-desc">取引数が多い順</option>
+            <option value="price-asc">美品価格が安い順</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <span class="k">ポケモン総数</span>
+          <strong id="totalStat">0</strong>
+        </div>
+        <div class="stat">
+          <span class="k">条件一致</span>
+          <strong id="countStat">0</strong>
+        </div>
+        <div class="stat">
+          <span class="k">最高利益率</span>
+          <strong id="topRoiStat">-</strong>
+        </div>
+        <div class="stat">
+          <span class="k">最高利益額</span>
+          <strong id="topProfitStat">-</strong>
+        </div>
+        <div class="stat">
+          <span class="k">判定式</span>
+          <strong>(PSA10 - 美品 - 鑑定費) / 美品</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="toolbar card">
+      <div>
+        <h2>候補一覧</h2>
+        <p>カード画像は各カードページの公開画像を表示。`data/pokemon-cards.json` が全件データです。</p>
+      </div>
+      <div class="toolbar-actions">
+        <button id="copyLinkBtn" type="button">この条件をURLに反映</button>
+        <a id="sourceLink" href="https://toreca-souba.com/" target="_blank" rel="noreferrer">出典を開く</a>
+      </div>
+    </section>
+
+    <section id="grid" class="grid"></section>
+
+    <section class="card footer">
+      <div>
+        <h3>GitHub Pages向けの作り</h3>
+        <p>
+          このフォルダをそのまま GitHub Pages に置ける静的サイトとして作っています。
+          画面側で条件を変えられるので、毎回コードを触らなくても確認しやすいです。
+        </p>
+      </div>
+      <div class="footer-links">
+        <a href="./data/cards.json" target="_blank" rel="noreferrer">data/cards.json</a>
+        <a href="./README.md" target="_blank" rel="noreferrer">README</a>
+      </div>
+    </section>
+  </main>
+
+  <script src="./app.js"></script>
+</body>
+</html>
