@@ -1,4 +1,4 @@
-# Pokémon PSA10 ROI Board
+# トレカ利益率計算サイト
 
 GitHub Pages でそのまま公開しやすい静的サイトです。
 

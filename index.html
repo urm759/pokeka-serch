@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pokémon PSA10 ROI Board</title>
+  <title>トレカ利益率計算サイト</title>
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
@@ -11,7 +11,7 @@
   <div class="backdrop backdrop-b"></div>
   <main class="shell">
     <section class="hero card">
-      <div class="eyebrow">TORECA SOUBA / Pokémon / PSA10</div>
+      <div class="eyebrow">トレカ利益率計算サイト / Pokémon / PSA10</div>
       <h1>利率40%以上のポケモンカードだけを、画像付きで一目比較</h1>
       <p class="lede">
         美品価格とPSA10相場から、鑑定費を差し引いた利益率で判定します。
@@ -65,10 +65,28 @@
             <option value="tx-asc">取引数が少ない順</option>
             <option value="tx7-desc">直近7日が多い順</option>
             <option value="tx7-asc">直近7日が少ない順</option>
+            <option value="psaTx-desc">PSA10取引数が多い順</option>
+            <option value="psaTx-asc">PSA10取引数が少ない順</option>
+            <option value="psaTx7-desc">PSA10直近7日が多い順</option>
+            <option value="psaTx7-asc">PSA10直近7日が少ない順</option>
+            <option value="chg30-desc">30日変動率が高い順</option>
+            <option value="chg30-asc">30日変動率が低い順</option>
+            <option value="chg7-desc">7日変動率が高い順</option>
+            <option value="chg7-asc">7日変動率が低い順</option>
             <option value="psa-desc">PSA10が高い順</option>
             <option value="psa-asc">PSA10が安い順</option>
+            <option value="psaMin-desc">PSA10下限が高い順</option>
+            <option value="psaMin-asc">PSA10下限が低い順</option>
             <option value="price-asc">美品価格が安い順</option>
             <option value="price-desc">美品価格が高い順</option>
+            <option value="listings-desc">掲載件数が多い順</option>
+            <option value="listings-asc">掲載件数が少ない順</option>
+            <option value="days-desc">掲載日数が長い順</option>
+            <option value="days-asc">掲載日数が短い順</option>
+            <option value="updated-desc">更新日が新しい順</option>
+            <option value="updated-asc">更新日が古い順</option>
+            <option value="tvel-desc">サイト年利が高い順</option>
+            <option value="tvel-asc">サイト年利が低い順</option>
           </select>
         </label>
       </div>
@@ -92,7 +110,7 @@
         </div>
         <div class="stat">
           <span class="k">判定式</span>
-          <strong>(PSA10 - 美品 - 鑑定費) / 美品</strong>
+          <strong>利益額 / (美品 + 鑑定費) × 100</strong>
         </div>
       </div>
     </section>
@@ -113,7 +131,7 @@
 
     <section class="card footer">
       <div>
-        <h3>GitHub Pages向けの作り</h3>
+        <h3>トレカ利益率計算サイトの作り</h3>
         <p>
           このフォルダをそのまま GitHub Pages に置ける静的サイトとして作っています。
           画面側で条件を変えられるので、毎回コードを触らなくても確認しやすいです。

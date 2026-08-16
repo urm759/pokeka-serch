@@ -50,14 +50,32 @@ const sorters = {
   "roi-asc": (a, b) => a.roi - b.roi,
   "profit-desc": (a, b) => b.profit - a.profit,
   "profit-asc": (a, b) => a.profit - b.profit,
-  "tx-desc": (a, b) => b.tx30d - a.tx30d,
-  "tx-asc": (a, b) => a.tx30d - b.tx30d,
-  "tx7-desc": (a, b) => b.tx7d - a.tx7d,
-  "tx7-asc": (a, b) => a.tx7d - b.tx7d,
+  "tx-desc": (a, b) => b.saleTx30d - a.saleTx30d,
+  "tx-asc": (a, b) => a.saleTx30d - b.saleTx30d,
+  "tx7-desc": (a, b) => b.saleTx7d - a.saleTx7d,
+  "tx7-asc": (a, b) => a.saleTx7d - b.saleTx7d,
+  "psaTx-desc": (a, b) => b.psaTx30d - a.psaTx30d,
+  "psaTx-asc": (a, b) => a.psaTx30d - b.psaTx30d,
+  "psaTx7-desc": (a, b) => b.psaTx7d - a.psaTx7d,
+  "psaTx7-asc": (a, b) => a.psaTx7d - b.psaTx7d,
+  "chg30-desc": (a, b) => (b.chg30 ?? -Infinity) - (a.chg30 ?? -Infinity),
+  "chg30-asc": (a, b) => (a.chg30 ?? Infinity) - (b.chg30 ?? Infinity),
+  "chg7-desc": (a, b) => (b.chg7 ?? -Infinity) - (a.chg7 ?? -Infinity),
+  "chg7-asc": (a, b) => (a.chg7 ?? Infinity) - (b.chg7 ?? Infinity),
   "psa-desc": (a, b) => b.psa10 - a.psa10,
   "psa-asc": (a, b) => a.psa10 - b.psa10,
+  "psaMin-desc": (a, b) => (b.snkPsa10Min ?? -Infinity) - (a.snkPsa10Min ?? -Infinity),
+  "psaMin-asc": (a, b) => (a.snkPsa10Min ?? Infinity) - (b.snkPsa10Min ?? Infinity),
   "price-asc": (a, b) => a.price - b.price,
   "price-desc": (a, b) => b.price - a.price,
+  "listings-desc": (a, b) => (b.snkListings ?? -Infinity) - (a.snkListings ?? -Infinity),
+  "listings-asc": (a, b) => (a.snkListings ?? Infinity) - (b.snkListings ?? Infinity),
+  "days-desc": (a, b) => (b.days ?? -Infinity) - (a.days ?? -Infinity),
+  "days-asc": (a, b) => (a.days ?? Infinity) - (b.days ?? Infinity),
+  "updated-desc": (a, b) => String(b.tLastAt || "").localeCompare(String(a.tLastAt || "")),
+  "updated-asc": (a, b) => String(a.tLastAt || "").localeCompare(String(b.tLastAt || "")),
+  "tvel-desc": (a, b) => (b.tvel ?? -Infinity) - (a.tvel ?? -Infinity),
+  "tvel-asc": (a, b) => (a.tvel ?? Infinity) - (b.tvel ?? Infinity),
 };
 
 function normalize(v) {
@@ -72,15 +90,17 @@ function normalize(v) {
 function calc(card) {
   const price = Number(card.price);
   const psa10 = Number(card.snkPsa10Price);
-  const tx30d = Number(card.tv30 || card.p10tv30 || 0);
-  const tx7d = Number(card.tv7 || card.p10tv7 || 0);
+  const saleTx30d = Number(card.tv30 || 0);
+  const saleTx7d = Number(card.tv7 || 0);
+  const psaTx30d = Number(card.p10tv30 || 0);
+  const psaTx7d = Number(card.p10tv7 || 0);
   if (!(price > 0) || !(psa10 > 0)) {
-    return { ...card, price, psa10, profit: NaN, roi: NaN, tx30d, tx7d };
+    return { ...card, price, psa10, profit: NaN, roi: NaN, saleTx30d, saleTx7d, psaTx30d, psaTx7d };
   }
   const profit = psa10 - price - state.fee;
   const roiBase = price + state.fee;
   const roi = roiBase > 0 ? (profit / roiBase) * 100 : NaN;
-  return { ...card, price, psa10, profit, roi, tx30d, tx7d };
+  return { ...card, price, psa10, profit, roi, saleTx30d, saleTx7d, psaTx30d, psaTx7d };
 }
 
 function parseOptionalNumber(value) {
@@ -151,15 +171,19 @@ function render() {
   const enriched = state.cards
     .map(calc)
     .filter((card) => {
-      if (card.tx30d < state.minTx) return false;
-      if (card.tx7d < state.minTx7) return false;
+      const decision = decisionLabel(card);
+      const haystack = normalize(`${card.name} ${card.model} ${card.rarity} ${card.id} ${decision}`);
+      if (normalizedQuery && haystack.includes(normalizedQuery) && ["出す価値あり", "様子見", "出さない"].some((tag) => normalize(tag).includes(normalizedQuery))) {
+        return true;
+      }
+      if (card.saleTx30d < state.minTx) return false;
+      if (card.saleTx7d < state.minTx7) return false;
       if (!Number.isFinite(card.roi) || card.roi < state.minRoi) return false;
       if (card.psa10 < state.minPsa10) return false;
       if (card.psa10 > state.maxPsa10) return false;
       if (state.minPrice != null && card.price < state.minPrice) return false;
       if (state.maxPrice != null && card.price > state.maxPrice) return false;
       if (!normalizedQuery) return true;
-      const haystack = normalize(`${card.name} ${card.model} ${card.rarity} ${card.id}`);
       return haystack.includes(normalizedQuery);
     })
     .sort(sorters[state.sort]);
@@ -176,6 +200,7 @@ function render() {
     const roiClass = card.roi >= 120 ? "good" : card.roi >= 80 ? "sky" : "warn";
     const width = Math.max(8, Math.min(100, card.roi));
     const name = card.name.replace(/\s+/g, " ");
+    const decision = decisionLabel(card);
     return `
       <article class="row card">
         <div class="thumb" data-rank="#${card.rank || ""}">
@@ -192,8 +217,11 @@ function render() {
           </div>
 
           <div class="badges">
-            <span class="badge sky">直近30日 ${fmt.format(card.tx30d)}件</span>
-            <span class="badge sky">直近7日 ${fmt.format(card.tx7d)}件</span>
+            <span class="badge sky">美品 直近30日 ${fmt.format(card.saleTx30d)}件</span>
+            <span class="badge sky">美品 直近7日 ${fmt.format(card.saleTx7d)}件</span>
+            <span class="badge sky">PSA10 直近30日 ${fmt.format(card.psaTx30d)}件</span>
+            <span class="badge sky">PSA10 直近7日 ${fmt.format(card.psaTx7d)}件</span>
+            <span class="badge warn">仕入れ判定 ${decision}</span>
             <span class="badge">カテゴリ ポケモン</span>
             <span class="badge ${roiClass}">利益率 ${Number.isFinite(card.roi) ? Math.round(card.roi) : 0}%</span>
           </div>
@@ -217,6 +245,13 @@ function render() {
       </article>
     `;
   }).join("");
+}
+
+function decisionLabel(card) {
+  if (!Number.isFinite(card.roi)) return "様子見";
+  if (card.roi >= 40) return "出す価値あり";
+  if (card.roi >= 0) return "様子見";
+  return "出さない";
 }
 
 function syncFromUI() {

@@ -23,7 +23,7 @@ body{
   min-height:100vh;
 }
 a{color:var(--accent);text-decoration:none}
-.shell{max-width:1320px;margin:0 auto;padding:28px;position:relative;z-index:1}
+.shell{max-width:1480px;margin:0 auto;padding:28px;position:relative;z-index:1}
 .backdrop{
   position:fixed;inset:auto;pointer-events:none;filter:blur(0);
   border-radius:999px;opacity:.36;z-index:0;
@@ -52,7 +52,7 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
 .controls{
   margin-top:22px;
   display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
   gap:12px;
 }
 .control-wide{
@@ -68,7 +68,7 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
 .control span{display:block;color:var(--muted);font-size:12px;margin-bottom:8px}
 .control input,.control select{
   width:100%;border:none;outline:none;background:transparent;
-  color:var(--text);font:700 18px/1.2 inherit;padding:0;
+  color:var(--text);font:700 clamp(15px,1.3vw,18px)/1.2 inherit;padding:0;
 }
 .control select{appearance:none}
 .range-pair{
@@ -89,7 +89,7 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
 .stats{
   margin-top:16px;
   display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
   gap:12px;
 }
 .stat{
@@ -107,10 +107,17 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
   align-items:center;
   justify-content:space-between;
   gap:16px;
+  flex-wrap:wrap;
 }
 .toolbar h2{margin:0 0 4px;font-size:18px}
 .toolbar p{margin:0;color:var(--muted)}
-.toolbar-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.toolbar-actions{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+  margin-left:auto;
+}
 .toolbar-meta{
   display:inline-flex;
   align-items:center;
@@ -145,12 +152,12 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
 }
 .row{
   display:grid;
-  grid-template-columns:300px 1fr;
+  grid-template-columns:minmax(260px,300px) 1fr;
   overflow:hidden;
   position:relative;
 }
 .thumb{
-  min-height:380px;
+  min-height:clamp(280px,28vw,380px);
   padding:6px;
   background:
     radial-gradient(circle at 34% 28%, rgba(255,255,255,.12), transparent 22%),
@@ -196,11 +203,11 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
   transform:scale(1.02);
   filter:drop-shadow(0 24px 32px rgba(0,0,0,.38));
 }
-.content{padding:18px 18px 16px}
+.content{padding:clamp(16px,1.4vw,20px) clamp(16px,1.4vw,20px) clamp(14px,1.2vw,18px)}
 .headline{
   display:flex;justify-content:space-between;gap:16px;align-items:flex-start;
 }
-.headline h3{margin:0 0 8px;font-size:24px;line-height:1.2}
+.headline h3{margin:0 0 8px;font-size:clamp(20px,1.7vw,24px);line-height:1.2}
 .headline p{margin:0;color:var(--muted)}
 .link-badge{
   white-space:nowrap;
@@ -226,7 +233,7 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
 .metrics{
   margin-top:14px;
   display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
   gap:10px;
 }
 .metric{
@@ -263,16 +270,23 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
   background:rgba(255,255,255,.03);
 }
 @media (max-width: 1080px){
-  .controls,.stats,.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
   .row{grid-template-columns:1fr}
   .thumb{min-height:300px}
   .control-wide{grid-column:auto}
+  .toolbar-actions{margin-left:0}
 }
 @media (max-width: 720px){
   .shell{padding:16px}
   h1{font-size:28px}
-  .controls,.stats,.metrics{grid-template-columns:1fr}
-  .toolbar,.footer{flex-direction:column;align-items:flex-start}
+  .hero{padding:20px}
+  .toolbar,.footer{flex-direction:column;align-items:flex-start;padding:16px}
+  .toolbar-actions{width:100%}
+  .toolbar-actions button,.toolbar-actions a,.toolbar-meta{width:100%;justify-content:center}
   .headline{flex-direction:column}
   .range-pair{grid-template-columns:1fr}
+  .thumb{min-height:240px}
+  .content{padding:14px}
+  .headline h3{font-size:20px}
+  .metric strong{font-size:16px}
+  .stat strong{font-size:20px}
 }
