@@ -116,6 +116,55 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
     radial-gradient(circle at top right, rgba(125,211,252,.12), transparent 28%),
     linear-gradient(180deg, rgba(10,17,35,.98), rgba(11,18,36,.94));
 }
+.guide-accordion{
+  padding:0;
+  overflow:hidden;
+}
+.guide-accordion[open] .guide-summary{
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.guide-summary{
+  cursor:pointer;
+  list-style:none;
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  align-items:center;
+  padding:22px 20px;
+  user-select:none;
+}
+.guide-summary::-webkit-details-marker{display:none}
+.guide-summary h2{
+  margin:6px 0 8px;
+  font-size:24px;
+  line-height:1.15;
+}
+.guide-summary p{
+  margin:0;
+  color:var(--muted);
+  max-width:82ch;
+}
+.guide-summary-meta{
+  min-width:180px;
+  text-align:right;
+  padding:14px 16px;
+  border-radius:18px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.12);
+}
+.guide-summary-meta span{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  margin-bottom:6px;
+}
+.guide-summary-meta strong{
+  display:block;
+  font-size:16px;
+}
+.guide-body{
+  padding:0 20px 18px;
+}
 .guide-head{
   display:flex;
   justify-content:space-between;
@@ -317,12 +366,12 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
 }
 .row{
   display:grid;
-  grid-template-columns:minmax(300px,360px) 1fr;
+  grid-template-columns:minmax(380px,460px) 1fr;
   overflow:hidden;
   position:relative;
 }
 .thumb{
-  min-height:clamp(320px,32vw,440px);
+  min-height:clamp(380px,34vw,560px);
   padding:6px;
   background:
     radial-gradient(circle at 34% 28%, rgba(255,255,255,.12), transparent 22%),
@@ -436,17 +485,20 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
 }
 @media (max-width: 1080px){
   .row{grid-template-columns:1fr}
-  .thumb{min-height:340px}
+  .thumb{min-height:380px}
   .control-wide{grid-column:auto}
   .toolbar-actions{margin-left:0}
   .guide-panels{grid-template-columns:1fr}
+  .guide-summary{align-items:flex-start;flex-direction:column}
+  .guide-summary-meta{text-align:left;min-width:0;width:100%}
 }
 @media (max-width: 720px){
   .shell{padding:16px}
   h1{font-size:28px}
   .hero{padding:20px}
-  .guide{padding:18px 16px 16px}
-  .guide-head h2{font-size:22px}
+  .guide-summary{padding:18px 16px}
+  .guide-summary h2{font-size:22px}
+  .guide-body{padding:0 16px 16px}
   .toolbar,.footer{flex-direction:column;align-items:flex-start;padding:16px}
   .toolbar-actions{width:100%}
   .toolbar-actions button,.toolbar-actions a,.toolbar-meta{width:100%;justify-content:center}
@@ -456,7 +508,7 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
   .guide-table th,.guide-table td{padding:7px 8px;font-size:12px}
   .headline{flex-direction:column}
   .range-pair{grid-template-columns:1fr}
-  .thumb{min-height:280px}
+  .thumb{min-height:320px}
   .content{padding:14px}
   .headline h3{font-size:20px}
   .metric strong{font-size:16px}

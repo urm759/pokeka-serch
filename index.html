@@ -136,47 +136,59 @@
       </div>
     </section>
 
-    <section class="card guide" aria-labelledby="buyGuideTitle">
-      <div class="guide-head">
+    <details class="card guide guide-accordion" aria-labelledby="buyGuideTitle">
+      <summary class="guide-summary">
         <div>
           <div class="eyebrow">店舗査定用 / 仕入れ早見表</div>
           <h2 id="buyGuideTitle">PSA10率ごとのおすすめ仕入れ価格</h2>
-          <p>
-            店舗で状態確認したときに、PSA10が取れる確率を切り替えながら仕入れ目安を確認できます。
-            青が理想、緑がおすすめ、赤が上限のラインです。
-          </p>
+          <p>ここを開くと、70%基準と50%基準の仕入れ目安を切り替えて見られます。</p>
         </div>
-        <div class="guide-switch" role="tablist" aria-label="PSA10率の切り替え">
-          <button id="guide70Btn" class="guide-pill active" type="button" data-guide-mode="70">10率70%基準</button>
-          <button id="guide50Btn" class="guide-pill" type="button" data-guide-mode="50">10率50%基準</button>
+        <div class="guide-summary-meta">
+          <span>折りたたみ可</span>
+          <strong>仕入れ値一覧</strong>
+        </div>
+      </summary>
+
+      <div class="guide-body">
+        <div class="guide-head">
+          <div>
+            <p>
+              店舗で状態確認したときに、PSA10が取れる確率を切り替えながら仕入れ目安を確認できます。
+              青が理想、緑がおすすめ、赤が上限のラインです。
+            </p>
+          </div>
+          <div class="guide-switch" role="tablist" aria-label="PSA10率の切り替え">
+            <button id="guide70Btn" class="guide-pill active" type="button" data-guide-mode="70">10率70%基準</button>
+            <button id="guide50Btn" class="guide-pill" type="button" data-guide-mode="50">10率50%基準</button>
+          </div>
+        </div>
+
+        <div class="guide-keys" aria-label="仕入れ早見表の条件">
+          <div class="guide-key">
+            <span>PSA10率</span>
+            <strong id="guideHitRateStat">70%</strong>
+          </div>
+          <div class="guide-key">
+            <span>PSA9換金率</span>
+            <strong id="guidePsa9RateStat">75%</strong>
+          </div>
+          <div class="guide-key">
+            <span>鑑定費</span>
+            <strong id="guideFeeStat">¥13,000</strong>
+          </div>
+          <div class="guide-key">
+            <span>基準ライン</span>
+            <strong>理想 / おすすめ / 上限</strong>
+          </div>
+        </div>
+
+        <div id="guidePanels" class="guide-panels"></div>
+
+        <div class="guide-foot">
+          ※ 価格は 1,000円単位で丸めています。鑑定費は上の入力欄と連動します。必要なら PSA9換金率や判定ラインもあとで調整できます。
         </div>
       </div>
-
-      <div class="guide-keys" aria-label="仕入れ早見表の条件">
-        <div class="guide-key">
-          <span>PSA10率</span>
-          <strong id="guideHitRateStat">70%</strong>
-        </div>
-        <div class="guide-key">
-          <span>PSA9換金率</span>
-          <strong id="guidePsa9RateStat">75%</strong>
-        </div>
-        <div class="guide-key">
-          <span>鑑定費</span>
-          <strong id="guideFeeStat">¥13,000</strong>
-        </div>
-        <div class="guide-key">
-          <span>基準ライン</span>
-          <strong>理想 / おすすめ / 上限</strong>
-        </div>
-      </div>
-
-      <div id="guidePanels" class="guide-panels"></div>
-
-      <div class="guide-foot">
-        ※ 価格は 1,000円単位で丸めています。鑑定費は上の入力欄と連動します。必要なら PSA9換金率や判定ラインもあとで調整できます。
-      </div>
-    </section>
+    </details>
 
     <section class="toolbar card">
       <div>
