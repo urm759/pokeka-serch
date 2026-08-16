@@ -10,7 +10,7 @@ GitHub Pages でそのまま公開しやすい静的サイトです。
 - `data/pokemon-cards.json` に `toreca-souba.com` のポケモンカード全件を集約
 - 画面上で `鑑定費`、`直近30日下限`、`直近7日下限`、`利益率下限`、`PSA10上下限`、`美品価格帯`、`検索` を変更可能
 - URL パラメータ `?fee=13000&tx=30&tx7=0&roi=40&psaMin=0&psaMax=200000&priceMin=&priceMax=&sort=roi-desc&q=` にも対応
-- 利率は `利益 ÷ (美品価格 + 鑑定費) × 100`
+- 利率は `利益額 ÷ (美品価格 + 鑑定費) × 100`
 
 ## 変更しやすい箇所
 

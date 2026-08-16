@@ -211,7 +211,7 @@ function render() {
               <div class="v">${Number.isFinite(card.roi) ? Math.round(card.roi) : 0}%</div>
             </div>
             <div class="bar"><span style="width:${width}%"></span></div>
-            <div class="note">計算式: (PSA10相場 - 美品価格 - 鑑定費) ÷ (美品価格 + 鑑定費)</div>
+            <div class="note">計算式: (PSA10相場 - 美品価格 - 鑑定費) ÷ (美品価格 + 鑑定費) × 100</div>
           </div>
         </div>
       </article>
