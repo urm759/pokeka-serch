@@ -32,8 +32,23 @@
           <input id="txInput" type="number" min="0" step="1" value="30" />
         </label>
         <label class="control">
+          <span>直近7日 下限</span>
+          <input id="tx7Input" type="number" min="0" step="1" value="0" />
+        </label>
+        <label class="control">
           <span>利益率 下限</span>
           <input id="roiInput" type="number" min="0" step="1" value="40" />
+        </label>
+        <label class="control">
+          <span>美品 価格帯</span>
+          <div class="range-pair">
+            <input id="priceMinInput" type="number" min="0" step="100" placeholder="下限" />
+            <input id="priceMaxInput" type="number" min="0" step="100" placeholder="上限" />
+          </div>
+        </label>
+        <label class="control">
+          <span>PSA10 下限</span>
+          <input id="psaMinInput" type="number" min="0" step="1000" value="0" />
         </label>
         <label class="control">
           <span>PSA10 上限</span>
@@ -43,9 +58,17 @@
           <span>並び順</span>
           <select id="sortInput">
             <option value="roi-desc">利益率が高い順</option>
+            <option value="roi-asc">利益率が低い順</option>
             <option value="profit-desc">利益額が高い順</option>
+            <option value="profit-asc">利益額が低い順</option>
             <option value="tx-desc">取引数が多い順</option>
+            <option value="tx-asc">取引数が少ない順</option>
+            <option value="tx7-desc">直近7日が多い順</option>
+            <option value="tx7-asc">直近7日が少ない順</option>
+            <option value="psa-desc">PSA10が高い順</option>
+            <option value="psa-asc">PSA10が安い順</option>
             <option value="price-asc">美品価格が安い順</option>
+            <option value="price-desc">美品価格が高い順</option>
           </select>
         </label>
       </div>
@@ -80,6 +103,7 @@
         <p>カード画像は各カードページの公開画像を表示。`data/pokemon-cards.json` が全件データです。</p>
       </div>
       <div class="toolbar-actions">
+        <div class="toolbar-meta">データ取得日 <strong id="updatedAt">-</strong></div>
         <button id="copyLinkBtn" type="button">この条件をURLに反映</button>
         <a id="sourceLink" href="https://toreca-souba.com/" target="_blank" rel="noreferrer">出典を開く</a>
       </div>
@@ -96,12 +120,14 @@
         </p>
       </div>
       <div class="footer-links">
-        <a href="./data/cards.json" target="_blank" rel="noreferrer">data/cards.json</a>
+        <a href="./data/pokemon-cards.json" target="_blank" rel="noreferrer">data/pokemon-cards.json</a>
         <a href="./README.md" target="_blank" rel="noreferrer">README</a>
       </div>
     </section>
   </main>
 
+  <script src="./data/pokemon-cards-meta.js"></script>
+  <script src="./data/pokemon-cards.js"></script>
   <script src="./app.js"></script>
 </body>
 </html>
