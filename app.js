@@ -3,6 +3,7 @@ const fmt = new Intl.NumberFormat("ja-JP");
 const state = {
   cards: [],
   fee: 13000,
+  guideMode: "70",
   minSaleTx: 30,
   maxSaleTx: null,
   minSaleTx7: 0,
@@ -21,6 +22,20 @@ const state = {
 };
 
 const meta = window.POKEMON_CARDS_META || {};
+const guideModes = {
+  "70": { label: "10率70%基準", hitRate: 0.7 },
+  "50": { label: "10率50%基準", hitRate: 0.5 },
+};
+const guideRanges = [
+  { label: "40,000〜70,000", start: 40000, end: 70000 },
+  { label: "71,000〜100,000", start: 71000, end: 100000 },
+  { label: "101,000〜150,000", start: 101000, end: 150000 },
+];
+const guideLines = [
+  { key: "ideal", label: "理想仕入れ", roi: 20, caption: "高利益ライン", className: "ideal" },
+  { key: "recommended", label: "おすすめ仕入れ", roi: 10, caption: "標準ライン", className: "recommended" },
+  { key: "upper", label: "上限仕入れ", roi: 0, caption: "これ以上は買わない", className: "upper" },
+];
 
 const els = {
   qInput: document.getElementById("qInput"),
@@ -46,6 +61,11 @@ const els = {
   topProfitStat: document.getElementById("topProfitStat"),
   updatedAt: document.getElementById("updatedAt"),
   copyLinkBtn: document.getElementById("copyLinkBtn"),
+  guidePanels: document.getElementById("guidePanels"),
+  guideHitRateStat: document.getElementById("guideHitRateStat"),
+  guidePsa9RateStat: document.getElementById("guidePsa9RateStat"),
+  guideFeeStat: document.getElementById("guideFeeStat"),
+  guideButtons: [...document.querySelectorAll("[data-guide-mode]")],
 };
 
 function showStatus(message, kind = "info") {
@@ -99,6 +119,84 @@ function normalize(v) {
     .trim();
 }
 
+function roundToStep(value, step = 1000) {
+  if (!Number.isFinite(value)) return null;
+  return Math.max(0, Math.round(value / step) * step);
+}
+
+function calcGuideBuyPrice(psa10, hitRate, fee, targetRoi, psa9Rate = 0.75) {
+  const roi = targetRoi / 100;
+  const numerator = hitRate * psa10 - fee * (1 + roi);
+  const denominator = roi + 1 - (1 - hitRate) * psa9Rate;
+  if (!(denominator > 0)) return null;
+  return roundToStep(numerator / denominator);
+}
+
+function guideConfig() {
+  return guideModes[state.guideMode] || guideModes["70"];
+}
+
+function setGuideMode(mode) {
+  if (!guideModes[mode]) return;
+  state.guideMode = mode;
+  syncGuideButtons();
+  renderGuide();
+  updateUrl();
+}
+
+function syncGuideButtons() {
+  els.guideButtons.forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.guideMode === state.guideMode);
+  });
+}
+
+function renderGuide() {
+  const cfg = guideConfig();
+  syncGuideButtons();
+  const fee = Number(state.fee || 0);
+  const hitRateLabel = `${Math.round(cfg.hitRate * 100)}%`;
+  if (els.guideHitRateStat) els.guideHitRateStat.textContent = hitRateLabel;
+  if (els.guidePsa9RateStat) els.guidePsa9RateStat.textContent = "75%";
+  if (els.guideFeeStat) els.guideFeeStat.textContent = `¥${fmt.format(fee)}`;
+  if (!els.guidePanels) return;
+
+  const panels = guideRanges.map((range) => {
+    const rows = [];
+    for (let price = range.start; price <= range.end; price += 1000) {
+      const cells = guideLines
+        .map((line) => {
+          const value = calcGuideBuyPrice(price, cfg.hitRate, fee, line.roi);
+          const display = value == null ? "—" : `¥${fmt.format(value)}`;
+          return `<td class="guide-cell ${line.className}">${display}</td>`;
+        })
+        .join("");
+      rows.push(`<tr><th scope="row">¥${fmt.format(price)}</th>${cells}</tr>`);
+    }
+    return `
+      <section class="guide-block card">
+        <div class="guide-block-head">
+          <h3>${range.label}</h3>
+          <p>${cfg.label} / 鑑定費 ¥${fmt.format(fee)} / PSA9換金率 75%</p>
+        </div>
+        <div class="guide-table-wrap">
+          <table class="guide-table">
+            <thead>
+              <tr>
+                <th>PSA10売値</th>
+                ${guideLines
+                  .map((line) => `<th class="guide-head-${line.className}">${line.label}<span>${line.caption}</span></th>`)
+                  .join("")}
+              </tr>
+            </thead>
+            <tbody>${rows.join("")}</tbody>
+          </table>
+        </div>
+      </section>
+    `;
+  });
+  els.guidePanels.innerHTML = panels.join("");
+}
+
 function calc(card) {
   const price = Number(card.price);
   const psa10 = Number(card.snkPsa10Price);
@@ -124,6 +222,7 @@ function parseOptionalNumber(value) {
 
 function readUrl() {
   const url = new URL(window.location.href);
+  const guide = url.searchParams.get("guide");
   const fee = parseOptionalNumber(url.searchParams.get("fee"));
   const saleTx = parseOptionalNumber(url.searchParams.get("tx"));
   const saleTxMax = parseOptionalNumber(url.searchParams.get("txMax"));
@@ -140,6 +239,10 @@ function readUrl() {
   const priceMax = parseOptionalNumber(url.searchParams.get("priceMax"));
   const sort = url.searchParams.get("sort");
   const q = url.searchParams.get("q");
+  if (guide && guideModes[guide]) {
+    state.guideMode = guide;
+  }
+  syncGuideButtons();
   if (fee != null && fee >= 0) els.feeInput.value = String(fee);
   if (saleTx != null && saleTx >= 0) els.saleTxMinInput.value = String(saleTx);
   if (saleTxMax != null && saleTxMax >= 0) els.saleTxMaxInput.value = String(saleTxMax);
@@ -165,6 +268,7 @@ function updateUrl() {
 
 function buildShareUrl() {
   const url = new URL(window.location.href);
+  url.searchParams.set("guide", state.guideMode);
   url.searchParams.set("fee", String(state.fee));
   url.searchParams.set("tx", String(state.minSaleTx));
   if (state.maxSaleTx == null) url.searchParams.delete("txMax"); else url.searchParams.set("txMax", String(state.maxSaleTx));
@@ -228,6 +332,7 @@ function render() {
   if (els.updatedAt) {
     els.updatedAt.textContent = meta.updatedAt ? String(meta.updatedAt) : "未設定";
   }
+  renderGuide();
 
   els.grid.innerHTML = enriched.map((card) => {
     const roiClass = card.roi >= 120 ? "good" : card.roi >= 80 ? "sky" : "warn";
@@ -344,4 +449,8 @@ els.copyLinkBtn.addEventListener("click", async () => {
 init().catch((err) => {
   console.error(err);
   showStatus("予期しないエラーが発生しました。ブラウザの開発者ツールでコンソールを確認してください。", "error");
+});
+
+els.guideButtons.forEach((btn) => {
+  btn.addEventListener("click", () => setGuideMode(btn.dataset.guideMode));
 });

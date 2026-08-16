@@ -109,6 +109,162 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
 }
 .stat .k{display:block;color:var(--muted);font-size:12px;margin-bottom:8px}
 .stat strong{font-size:24px;line-height:1.1}
+.guide{
+  margin-bottom:16px;
+  padding:22px 20px 18px;
+  background:
+    radial-gradient(circle at top right, rgba(125,211,252,.12), transparent 28%),
+    linear-gradient(180deg, rgba(10,17,35,.98), rgba(11,18,36,.94));
+}
+.guide-head{
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  align-items:flex-start;
+  flex-wrap:wrap;
+}
+.guide-head h2{
+  margin:6px 0 8px;
+  font-size:24px;
+  line-height:1.15;
+}
+.guide-head p{
+  margin:0;
+  color:var(--muted);
+  max-width:82ch;
+}
+.guide-switch{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.guide-pill{
+  cursor:pointer;
+  border-radius:999px;
+  padding:10px 14px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.05);
+  color:var(--text);
+  font-weight:800;
+}
+.guide-pill.active{
+  background:linear-gradient(90deg, rgba(125,211,252,.96), rgba(56,217,150,.96));
+  color:#04131f;
+  border-color:transparent;
+}
+.guide-keys{
+  margin-top:16px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+  gap:10px;
+}
+.guide-key{
+  padding:14px 15px;
+  border-radius:18px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.03);
+}
+.guide-key span{
+  display:block;
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:6px;
+}
+.guide-key strong{
+  font-size:22px;
+  line-height:1.1;
+}
+.guide-panels{
+  margin-top:16px;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+}
+.guide-block{
+  padding:14px;
+  border-radius:22px;
+  background:rgba(255,255,255,.025);
+  border:1px solid rgba(255,255,255,.09);
+  box-shadow:none;
+}
+.guide-block-head{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  align-items:baseline;
+  margin-bottom:10px;
+}
+.guide-block-head h3{
+  margin:0;
+  font-size:16px;
+}
+.guide-block-head p{
+  margin:0;
+  color:var(--muted);
+  font-size:12px;
+  text-align:right;
+}
+.guide-table-wrap{
+  overflow:auto;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.09);
+  background:rgba(5,10,20,.45);
+}
+.guide-table{
+  width:100%;
+  border-collapse:collapse;
+  font-variant-numeric:tabular-nums;
+}
+.guide-table th,
+.guide-table td{
+  padding:8px 10px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  border-right:1px solid rgba(255,255,255,.06);
+  text-align:right;
+  white-space:nowrap;
+}
+.guide-table thead th{
+  position:sticky;
+  top:0;
+  z-index:1;
+  background:#091225;
+  color:var(--text);
+  font-size:12px;
+  text-align:center;
+}
+.guide-table thead th span{
+  display:block;
+  margin-top:2px;
+  font-size:10px;
+  color:rgba(255,255,255,.72);
+  font-weight:700;
+}
+.guide-table tbody th{
+  text-align:left;
+  color:var(--text);
+  background:rgba(255,255,255,.03);
+  font-weight:800;
+}
+.guide-head-ideal{background:linear-gradient(180deg, rgba(53,101,255,.98), rgba(31,67,186,.98)) !important}
+.guide-head-recommended{background:linear-gradient(180deg, rgba(31,151,65,.98), rgba(20,110,46,.98)) !important}
+.guide-head-upper{background:linear-gradient(180deg, rgba(223,43,28,.98), rgba(164,24,18,.98)) !important}
+.guide-cell{
+  font-weight:900;
+}
+.guide-cell.ideal{
+  color:#7fb0ff;
+}
+.guide-cell.recommended{
+  color:#8ccf8f;
+}
+.guide-cell.upper{
+  color:#ff8484;
+}
+.guide-foot{
+  margin-top:12px;
+  color:var(--muted);
+  font-size:12px;
+}
 .toolbar{
   margin-bottom:16px;
   padding:18px 20px;
@@ -283,14 +439,21 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
   .thumb{min-height:340px}
   .control-wide{grid-column:auto}
   .toolbar-actions{margin-left:0}
+  .guide-panels{grid-template-columns:1fr}
 }
 @media (max-width: 720px){
   .shell{padding:16px}
   h1{font-size:28px}
   .hero{padding:20px}
+  .guide{padding:18px 16px 16px}
+  .guide-head h2{font-size:22px}
   .toolbar,.footer{flex-direction:column;align-items:flex-start;padding:16px}
   .toolbar-actions{width:100%}
   .toolbar-actions button,.toolbar-actions a,.toolbar-meta{width:100%;justify-content:center}
+  .guide-block{padding:12px}
+  .guide-block-head{flex-direction:column;align-items:flex-start}
+  .guide-block-head p{text-align:left}
+  .guide-table th,.guide-table td{padding:7px 8px;font-size:12px}
   .headline{flex-direction:column}
   .range-pair{grid-template-columns:1fr}
   .thumb{min-height:280px}
