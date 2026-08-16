@@ -256,12 +256,18 @@ function renderTrend(card) {
   const priceTrend = trendSparkline(history, (row) => Number(row.price));
   const psaTrend = trendSparkline(history, (row) => Number(row.psa10Price));
   const rateTrend = trendSparkline(history, (row) => {
-    const psaTx30 = Number(row.psaTx30);
-    const saleTx30 = Number(row.saleTx30);
-    return Number.isFinite(psaTx30) && Number.isFinite(saleTx30) && saleTx30 > 0 ? (psaTx30 / saleTx30) * 100 : NaN;
+    const psa10Count = Number(row.officialPsa10Count ?? row.psa10Count);
+    const psaTotal = Number(row.officialPsaTotal ?? row.psaTotal);
+    return Number.isFinite(psa10Count) && Number.isFinite(psaTotal) && psaTotal > 0 ? (psa10Count / psaTotal) * 100 : NaN;
   });
   const deltaPrice = prev ? latest.price - prev.price : null;
   const deltaPsa = prev ? latest.psa10Price - prev.psa10Price : null;
+  const psa10Rate =
+    Number.isFinite(Number(latest.officialPsa10Count ?? latest.psa10Count)) &&
+    Number.isFinite(Number(latest.officialPsaTotal ?? latest.psaTotal)) &&
+    Number(latest.officialPsaTotal ?? latest.psaTotal) > 0
+      ? (Number(latest.officialPsa10Count ?? latest.psa10Count) / Number(latest.officialPsaTotal ?? latest.psaTotal)) * 100
+      : NaN;
   return `
     <div class="trend-grid">
       <div class="trend-card">
@@ -277,9 +283,14 @@ function renderTrend(card) {
         ${psaTrend}
       </div>
       <div class="trend-card">
-        <div class="trend-label">推定10率</div>
-        <strong>${Number.isFinite(latest.psaTx30) && Number.isFinite(latest.saleTx30) && latest.saleTx30 > 0 ? `${Math.round((latest.psaTx30 / latest.saleTx30) * 100)}%` : "-"}</strong>
-        <span>${Number.isFinite(latest.psaTx30) && Number.isFinite(latest.saleTx30) ? `PSA10 ${fmt.format(latest.psaTx30)} / 美品 ${fmt.format(latest.saleTx30)}` : "履歴待ち"}</span>
+        <div class="trend-label">PSA10率</div>
+        <strong>${Number.isFinite(psa10Rate) ? `${Math.round(psa10Rate)}%` : "-"}</strong>
+        <span>${
+          Number.isFinite(Number(latest.officialPsa10Count ?? latest.psa10Count)) &&
+          Number.isFinite(Number(latest.officialPsaTotal ?? latest.psaTotal))
+            ? `PSA10 ${fmt.format(Number(latest.officialPsa10Count ?? latest.psa10Count))} / TOTAL ${fmt.format(Number(latest.officialPsaTotal ?? latest.psaTotal))}`
+            : "TOTAL未取得"
+        }</span>
         ${rateTrend}
       </div>
     </div>
