@@ -474,6 +474,69 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
 }
 .bar > span{display:block;height:100%;background:linear-gradient(90deg, var(--accent3), var(--accent2));border-radius:999px}
 .note{margin-top:8px;color:var(--muted);font-size:12px}
+.trend-detail{
+  margin-top:14px;
+  border-top:1px solid rgba(255,255,255,.08);
+  padding-top:12px;
+}
+.trend-detail summary{
+  cursor:pointer;
+  color:var(--accent);
+  font-weight:800;
+  list-style:none;
+}
+.trend-detail summary::-webkit-details-marker{display:none}
+.trend-grid{
+  margin-top:10px;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+}
+.trend-card{
+  padding:12px 12px 10px;
+  border-radius:16px;
+  background:rgba(8,16,29,.55);
+  border:1px solid rgba(255,255,255,.09);
+}
+.trend-label{
+  font-size:11px;
+  color:var(--muted);
+  margin-bottom:6px;
+  letter-spacing:.06em;
+}
+.trend-card strong{
+  display:block;
+  font-size:18px;
+  margin-bottom:4px;
+}
+.trend-card span{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  margin-bottom:8px;
+}
+.trend-spark{
+  width:100%;
+  height:56px;
+  overflow:visible;
+}
+.trend-spark polyline{
+  fill:none;
+  stroke:var(--accent);
+  stroke-width:2.5;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.trend-note{
+  margin-top:8px;
+  color:var(--muted);
+  font-size:12px;
+}
+.trend-empty{
+  margin-top:10px;
+  color:var(--muted);
+  font-size:12px;
+}
 .footer{margin-top:16px;padding:18px 20px;display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
 .footer h3{margin:0 0 4px}
 .footer p{margin:0;color:var(--muted);max-width:74ch}
@@ -489,6 +552,7 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
   .control-wide{grid-column:auto}
   .toolbar-actions{margin-left:0}
   .guide-panels{grid-template-columns:1fr}
+  .trend-grid{grid-template-columns:1fr}
   .guide-summary{align-items:flex-start;flex-direction:column}
   .guide-summary-meta{text-align:left;min-width:0;width:100%}
 }
@@ -513,4 +577,5 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
   .headline h3{font-size:20px}
   .metric strong{font-size:16px}
   .stat strong{font-size:20px}
+  .trend-grid{grid-template-columns:1fr}
 }

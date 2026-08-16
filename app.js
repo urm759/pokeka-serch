@@ -4,6 +4,7 @@ const state = {
   cards: [],
   fee: 13000,
   guideMode: "70",
+  history: window.POKEMON_CARDS_HISTORY || { dates: [], cards: {} },
   minSaleTx: 30,
   maxSaleTx: null,
   minSaleTx7: 0,
@@ -213,6 +214,79 @@ function calc(card) {
   return { ...card, price, psa10, profit, roi, saleTx30d, saleTx7d, psaTx30d, psaTx7d };
 }
 
+function getHistory(cardId) {
+  const history = state.history && typeof state.history === "object" ? state.history : {};
+  const cards = history.cards && typeof history.cards === "object" ? history.cards : {};
+  const rows = Array.isArray(cards[cardId]) ? cards[cardId] : [];
+  return rows.slice().sort((a, b) => String(a.date || "").localeCompare(String(b.date || "")));
+}
+
+function trendSparkline(points, values) {
+  if (!points.length) return "";
+  const width = 180;
+  const height = 56;
+  const pad = 4;
+  const data = points.map((p) => values(p)).filter((v) => Number.isFinite(v));
+  if (!data.length) return "";
+  const min = Math.min(...data);
+  const max = Math.max(...data);
+  const span = max - min || 1;
+  const coords = points
+    .map((p, i) => {
+      const value = values(p);
+      if (!Number.isFinite(value)) return null;
+      const x = pad + (i * (width - pad * 2)) / Math.max(1, points.length - 1);
+      const y = pad + (1 - (value - min) / span) * (height - pad * 2);
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    })
+    .filter(Boolean);
+  if (!coords.length) return "";
+  return `
+    <svg viewBox="0 0 ${width} ${height}" class="trend-spark" aria-hidden="true">
+      <polyline points="${coords.join(" ")}" />
+    </svg>
+  `;
+}
+
+function renderTrend(card) {
+  const history = getHistory(card.id);
+  if (!history.length) return `<div class="trend-empty">推移データはまだありません。</div>`;
+  const latest = history[history.length - 1];
+  const prev = history.length > 1 ? history[history.length - 2] : null;
+  const priceTrend = trendSparkline(history, (row) => Number(row.price));
+  const psaTrend = trendSparkline(history, (row) => Number(row.psa10Price));
+  const rateTrend = trendSparkline(history, (row) => {
+    const psaTx30 = Number(row.psaTx30);
+    const saleTx30 = Number(row.saleTx30);
+    return Number.isFinite(psaTx30) && Number.isFinite(saleTx30) && saleTx30 > 0 ? (psaTx30 / saleTx30) * 100 : NaN;
+  });
+  const deltaPrice = prev ? latest.price - prev.price : null;
+  const deltaPsa = prev ? latest.psa10Price - prev.psa10Price : null;
+  return `
+    <div class="trend-grid">
+      <div class="trend-card">
+        <div class="trend-label">美品</div>
+        <strong>¥${fmt.format(Math.round(latest.price || 0))}</strong>
+        <span>${deltaPrice == null ? "最新のみ" : deltaPrice >= 0 ? `+¥${fmt.format(Math.round(deltaPrice))}` : `-¥${fmt.format(Math.abs(Math.round(deltaPrice)))}`}</span>
+        ${priceTrend}
+      </div>
+      <div class="trend-card">
+        <div class="trend-label">PSA10</div>
+        <strong>¥${fmt.format(Math.round(latest.psa10Price || 0))}</strong>
+        <span>${deltaPsa == null ? "最新のみ" : deltaPsa >= 0 ? `+¥${fmt.format(Math.round(deltaPsa))}` : `-¥${fmt.format(Math.abs(Math.round(deltaPsa)))}`}</span>
+        ${psaTrend}
+      </div>
+      <div class="trend-card">
+        <div class="trend-label">推定10率</div>
+        <strong>${Number.isFinite(latest.psaTx30) && Number.isFinite(latest.saleTx30) && latest.saleTx30 > 0 ? `${Math.round((latest.psaTx30 / latest.saleTx30) * 100)}%` : "-"}</strong>
+        <span>${Number.isFinite(latest.psaTx30) && Number.isFinite(latest.saleTx30) ? `PSA10 ${fmt.format(latest.psaTx30)} / 美品 ${fmt.format(latest.saleTx30)}` : "履歴待ち"}</span>
+        ${rateTrend}
+      </div>
+    </div>
+    <div class="trend-note">履歴は日次スナップショットです。今後の更新でカードごとの推移が自動で伸びます。</div>
+  `;
+}
+
 function parseOptionalNumber(value) {
   const trimmed = String(value ?? "").trim();
   if (!trimmed) return null;
@@ -306,7 +380,7 @@ function render() {
     .map(calc)
     .filter((card) => {
       const decision = decisionLabel(card);
-      const haystack = normalize(`${card.name} ${card.model} ${card.rarity} ${card.id} ${decision}`);
+      const haystack = normalize(`${card.name} ${card.model} ${card.rarity} ${card.id} ${card.psaQuery || ""} ${decision}`);
       if (card.saleTx30d < state.minSaleTx) return false;
       if (state.maxSaleTx != null && card.saleTx30d > state.maxSaleTx) return false;
       if (card.saleTx7d < state.minSaleTx7) return false;
@@ -339,6 +413,8 @@ function render() {
     const width = Math.max(8, Math.min(100, card.roi));
     const name = card.name.replace(/\s+/g, " ");
     const decision = decisionLabel(card);
+    const psaQuery = card.psaQuery || "";
+    const psaUrl = psaQuery ? `https://www.psacard.com/pop#0%7C${encodeURIComponent(psaQuery)}` : "https://www.psacard.com/pop";
     return `
       <article class="row card">
         <div class="thumb" data-rank="#${card.rank || ""}">
@@ -360,6 +436,8 @@ function render() {
             <span class="badge sky">PSA10 直近30日 ${fmt.format(card.psaTx30d)}件</span>
             <span class="badge sky">PSA10 直近7日 ${fmt.format(card.psaTx7d)}件</span>
             <span class="badge warn">仕入れ判定 ${decision}</span>
+            <span class="badge">PSA検索語 ${psaQuery || "未設定"}</span>
+            <a class="link-badge" href="${psaUrl}" target="_blank" rel="noreferrer">PSAで開く</a>
             <span class="badge">カテゴリ ポケモン</span>
             <span class="badge ${roiClass}">利益率 ${Number.isFinite(card.roi) ? Math.round(card.roi) : 0}%</span>
           </div>
@@ -379,6 +457,11 @@ function render() {
             <div class="bar"><span style="width:${width}%"></span></div>
             <div class="note">計算式: (PSA10相場 - 美品価格 - 鑑定費) ÷ (美品価格 + 鑑定費) × 100</div>
           </div>
+
+          <details class="trend-detail">
+            <summary>推移を見る</summary>
+            ${renderTrend(card)}
+          </details>
         </div>
       </article>
     `;
