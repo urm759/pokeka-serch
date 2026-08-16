@@ -41,6 +41,18 @@ a{color:var(--accent);text-decoration:none}
   border-radius:28px;
 }
 .hero{padding:28px;position:relative;overflow:hidden;margin-bottom:18px}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.brand-mark{
+  width:56px;
+  height:56px;
+  flex:0 0 auto;
+  border-radius:18px;
+  box-shadow:0 14px 28px rgba(0,0,0,.25);
+}
 .hero::before,.hero::after{
   content:"";position:absolute;border-radius:999px;pointer-events:none;opacity:.55;
 }
@@ -70,7 +82,16 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
   width:100%;border:none;outline:none;background:transparent;
   color:var(--text);font:700 clamp(15px,1.3vw,18px)/1.2 inherit;padding:0;
 }
-.control select{appearance:none}
+.control select{
+  appearance:none;
+  background:rgba(8,16,29,.45);
+  border-radius:14px;
+  padding:10px 12px;
+}
+.control select option{
+  background:#0b1224;
+  color:var(--text);
+}
 .range-pair{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -279,6 +300,8 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
   .shell{padding:16px}
   h1{font-size:28px}
   .hero{padding:20px}
+  .brand{gap:12px}
+  .brand-mark{width:46px;height:46px;border-radius:14px}
   .toolbar,.footer{flex-direction:column;align-items:flex-start;padding:16px}
   .toolbar-actions{width:100%}
   .toolbar-actions button,.toolbar-actions a,.toolbar-meta{width:100%;justify-content:center}

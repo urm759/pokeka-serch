@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>トレカ利益率計算サイト</title>
+  <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
@@ -11,8 +12,13 @@
   <div class="backdrop backdrop-b"></div>
   <main class="shell">
     <section class="hero card">
-      <div class="eyebrow">トレカ利益率計算サイト / Pokémon / PSA10</div>
-      <h1>利率40%以上のポケモンカードだけを、画像付きで一目比較</h1>
+      <div class="brand">
+        <img class="brand-mark" src="./assets/site-mark.svg" alt="" aria-hidden="true" />
+        <div>
+          <div class="eyebrow">トレカ利益率計算サイト / Pokémon / PSA10</div>
+          <h1>トレカ利益率計算サイト</h1>
+        </div>
+      </div>
       <p class="lede">
         美品価格とPSA10相場から、鑑定費を差し引いた利益率で判定します。
         取引数・鑑定費・利益率の条件は画面上でそのまま調整できます。
@@ -28,12 +34,20 @@
           <input id="feeInput" type="number" min="0" step="100" value="13000" />
         </label>
         <label class="control">
-          <span>直近30日 下限</span>
-          <input id="txInput" type="number" min="0" step="1" value="30" />
+          <span>美品件数 直近30日 下限</span>
+          <input id="saleTxInput" type="number" min="0" step="1" value="30" />
         </label>
         <label class="control">
-          <span>直近7日 下限</span>
-          <input id="tx7Input" type="number" min="0" step="1" value="0" />
+          <span>美品件数 直近7日 下限</span>
+          <input id="saleTx7Input" type="number" min="0" step="1" value="0" />
+        </label>
+        <label class="control">
+          <span>PSA10件数 直近30日 下限</span>
+          <input id="psaTxInput" type="number" min="0" step="1" value="0" />
+        </label>
+        <label class="control">
+          <span>PSA10件数 直近7日 下限</span>
+          <input id="psaTx7Input" type="number" min="0" step="1" value="0" />
         </label>
         <label class="control">
           <span>利益率 下限</span>

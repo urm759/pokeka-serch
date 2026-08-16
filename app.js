@@ -3,8 +3,10 @@ const fmt = new Intl.NumberFormat("ja-JP");
 const state = {
   cards: [],
   fee: 13000,
-  minTx: 30,
-  minTx7: 0,
+  minSaleTx: 30,
+  minSaleTx7: 0,
+  minPsaTx: 0,
+  minPsaTx7: 0,
   minRoi: 40,
   minPsa10: 0,
   maxPsa10: 200000,
@@ -19,8 +21,10 @@ const meta = window.POKEMON_CARDS_META || {};
 const els = {
   qInput: document.getElementById("qInput"),
   feeInput: document.getElementById("feeInput"),
-  txInput: document.getElementById("txInput"),
-  tx7Input: document.getElementById("tx7Input"),
+  saleTxInput: document.getElementById("saleTxInput"),
+  saleTx7Input: document.getElementById("saleTx7Input"),
+  psaTxInput: document.getElementById("psaTxInput"),
+  psaTx7Input: document.getElementById("psaTx7Input"),
   roiInput: document.getElementById("roiInput"),
   psaMinInput: document.getElementById("psaMinInput"),
   psaMaxInput: document.getElementById("psaMaxInput"),
@@ -113,8 +117,10 @@ function parseOptionalNumber(value) {
 function readUrl() {
   const url = new URL(window.location.href);
   const fee = parseOptionalNumber(url.searchParams.get("fee"));
-  const tx = parseOptionalNumber(url.searchParams.get("tx"));
-  const tx7 = parseOptionalNumber(url.searchParams.get("tx7"));
+  const saleTx = parseOptionalNumber(url.searchParams.get("tx"));
+  const saleTx7 = parseOptionalNumber(url.searchParams.get("tx7"));
+  const psaTx = parseOptionalNumber(url.searchParams.get("psaTx"));
+  const psaTx7 = parseOptionalNumber(url.searchParams.get("psaTx7"));
   const roi = parseOptionalNumber(url.searchParams.get("roi"));
   const psaMin = parseOptionalNumber(url.searchParams.get("psaMin"));
   const psaMax = parseOptionalNumber(url.searchParams.get("psaMax"));
@@ -123,8 +129,10 @@ function readUrl() {
   const sort = url.searchParams.get("sort");
   const q = url.searchParams.get("q");
   if (fee != null && fee >= 0) els.feeInput.value = String(fee);
-  if (tx != null && tx >= 0) els.txInput.value = String(tx);
-  if (tx7 != null && tx7 >= 0) els.tx7Input.value = String(tx7);
+  if (saleTx != null && saleTx >= 0) els.saleTxInput.value = String(saleTx);
+  if (saleTx7 != null && saleTx7 >= 0) els.saleTx7Input.value = String(saleTx7);
+  if (psaTx != null && psaTx >= 0) els.psaTxInput.value = String(psaTx);
+  if (psaTx7 != null && psaTx7 >= 0) els.psaTx7Input.value = String(psaTx7);
   if (roi != null && roi >= 0) els.roiInput.value = String(roi);
   if (psaMin != null && psaMin >= 0) els.psaMinInput.value = String(psaMin);
   if (psaMax != null && psaMax >= 0) els.psaMaxInput.value = String(psaMax);
@@ -142,8 +150,10 @@ function updateUrl() {
 function buildShareUrl() {
   const url = new URL(window.location.href);
   url.searchParams.set("fee", String(state.fee));
-  url.searchParams.set("tx", String(state.minTx));
-  url.searchParams.set("tx7", String(state.minTx7));
+  url.searchParams.set("tx", String(state.minSaleTx));
+  url.searchParams.set("tx7", String(state.minSaleTx7));
+  url.searchParams.set("psaTx", String(state.minPsaTx));
+  url.searchParams.set("psaTx7", String(state.minPsaTx7));
   url.searchParams.set("roi", String(state.minRoi));
   url.searchParams.set("psaMin", String(state.minPsa10));
   url.searchParams.set("psaMax", String(state.maxPsa10));
@@ -173,11 +183,10 @@ function render() {
     .filter((card) => {
       const decision = decisionLabel(card);
       const haystack = normalize(`${card.name} ${card.model} ${card.rarity} ${card.id} ${decision}`);
-      if (normalizedQuery && haystack.includes(normalizedQuery) && ["出す価値あり", "様子見", "出さない"].some((tag) => normalize(tag).includes(normalizedQuery))) {
-        return true;
-      }
-      if (card.saleTx30d < state.minTx) return false;
-      if (card.saleTx7d < state.minTx7) return false;
+      if (card.saleTx30d < state.minSaleTx) return false;
+      if (card.saleTx7d < state.minSaleTx7) return false;
+      if (card.psaTx30d < state.minPsaTx) return false;
+      if (card.psaTx7d < state.minPsaTx7) return false;
       if (!Number.isFinite(card.roi) || card.roi < state.minRoi) return false;
       if (card.psa10 < state.minPsa10) return false;
       if (card.psa10 > state.maxPsa10) return false;
@@ -256,8 +265,10 @@ function decisionLabel(card) {
 
 function syncFromUI() {
   state.fee = Number(els.feeInput.value || 0);
-  state.minTx = Number(els.txInput.value || 0);
-  state.minTx7 = Number(els.tx7Input.value || 0);
+  state.minSaleTx = Number(els.saleTxInput.value || 0);
+  state.minSaleTx7 = Number(els.saleTx7Input.value || 0);
+  state.minPsaTx = Number(els.psaTxInput.value || 0);
+  state.minPsaTx7 = Number(els.psaTx7Input.value || 0);
   state.minRoi = Number(els.roiInput.value || 0);
   state.minPsa10 = Number(els.psaMinInput.value || 0);
   state.maxPsa10 = Number(els.psaMaxInput.value || 0);
@@ -291,7 +302,7 @@ async function init() {
   }
 }
 
-[els.qInput, els.feeInput, els.txInput, els.tx7Input, els.roiInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.sortInput].forEach((el) =>
+[els.qInput, els.feeInput, els.saleTxInput, els.saleTx7Input, els.psaTxInput, els.psaTx7Input, els.roiInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.sortInput].forEach((el) =>
   el.addEventListener("input", syncFromUI)
 );
 
