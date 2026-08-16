@@ -4,9 +4,13 @@ const state = {
   cards: [],
   fee: 13000,
   minSaleTx: 30,
+  maxSaleTx: null,
   minSaleTx7: 0,
+  maxSaleTx7: null,
   minPsaTx: 0,
+  maxPsaTx: null,
   minPsaTx7: 0,
+  maxPsaTx7: null,
   minRoi: 40,
   minPsa10: 0,
   maxPsa10: 200000,
@@ -21,10 +25,14 @@ const meta = window.POKEMON_CARDS_META || {};
 const els = {
   qInput: document.getElementById("qInput"),
   feeInput: document.getElementById("feeInput"),
-  saleTxInput: document.getElementById("saleTxInput"),
-  saleTx7Input: document.getElementById("saleTx7Input"),
-  psaTxInput: document.getElementById("psaTxInput"),
-  psaTx7Input: document.getElementById("psaTx7Input"),
+  saleTxMinInput: document.getElementById("saleTxMinInput"),
+  saleTxMaxInput: document.getElementById("saleTxMaxInput"),
+  saleTx7MinInput: document.getElementById("saleTx7MinInput"),
+  saleTx7MaxInput: document.getElementById("saleTx7MaxInput"),
+  psaTxMinInput: document.getElementById("psaTxMinInput"),
+  psaTxMaxInput: document.getElementById("psaTxMaxInput"),
+  psaTx7MinInput: document.getElementById("psaTx7MinInput"),
+  psaTx7MaxInput: document.getElementById("psaTx7MaxInput"),
   roiInput: document.getElementById("roiInput"),
   psaMinInput: document.getElementById("psaMinInput"),
   psaMaxInput: document.getElementById("psaMaxInput"),
@@ -118,9 +126,13 @@ function readUrl() {
   const url = new URL(window.location.href);
   const fee = parseOptionalNumber(url.searchParams.get("fee"));
   const saleTx = parseOptionalNumber(url.searchParams.get("tx"));
+  const saleTxMax = parseOptionalNumber(url.searchParams.get("txMax"));
   const saleTx7 = parseOptionalNumber(url.searchParams.get("tx7"));
+  const saleTx7Max = parseOptionalNumber(url.searchParams.get("tx7Max"));
   const psaTx = parseOptionalNumber(url.searchParams.get("psaTx"));
+  const psaTxMax = parseOptionalNumber(url.searchParams.get("psaTxMax"));
   const psaTx7 = parseOptionalNumber(url.searchParams.get("psaTx7"));
+  const psaTx7Max = parseOptionalNumber(url.searchParams.get("psaTx7Max"));
   const roi = parseOptionalNumber(url.searchParams.get("roi"));
   const psaMin = parseOptionalNumber(url.searchParams.get("psaMin"));
   const psaMax = parseOptionalNumber(url.searchParams.get("psaMax"));
@@ -129,10 +141,14 @@ function readUrl() {
   const sort = url.searchParams.get("sort");
   const q = url.searchParams.get("q");
   if (fee != null && fee >= 0) els.feeInput.value = String(fee);
-  if (saleTx != null && saleTx >= 0) els.saleTxInput.value = String(saleTx);
-  if (saleTx7 != null && saleTx7 >= 0) els.saleTx7Input.value = String(saleTx7);
-  if (psaTx != null && psaTx >= 0) els.psaTxInput.value = String(psaTx);
-  if (psaTx7 != null && psaTx7 >= 0) els.psaTx7Input.value = String(psaTx7);
+  if (saleTx != null && saleTx >= 0) els.saleTxMinInput.value = String(saleTx);
+  if (saleTxMax != null && saleTxMax >= 0) els.saleTxMaxInput.value = String(saleTxMax);
+  if (saleTx7 != null && saleTx7 >= 0) els.saleTx7MinInput.value = String(saleTx7);
+  if (saleTx7Max != null && saleTx7Max >= 0) els.saleTx7MaxInput.value = String(saleTx7Max);
+  if (psaTx != null && psaTx >= 0) els.psaTxMinInput.value = String(psaTx);
+  if (psaTxMax != null && psaTxMax >= 0) els.psaTxMaxInput.value = String(psaTxMax);
+  if (psaTx7 != null && psaTx7 >= 0) els.psaTx7MinInput.value = String(psaTx7);
+  if (psaTx7Max != null && psaTx7Max >= 0) els.psaTx7MaxInput.value = String(psaTx7Max);
   if (roi != null && roi >= 0) els.roiInput.value = String(roi);
   if (psaMin != null && psaMin >= 0) els.psaMinInput.value = String(psaMin);
   if (psaMax != null && psaMax >= 0) els.psaMaxInput.value = String(psaMax);
@@ -151,9 +167,13 @@ function buildShareUrl() {
   const url = new URL(window.location.href);
   url.searchParams.set("fee", String(state.fee));
   url.searchParams.set("tx", String(state.minSaleTx));
+  if (state.maxSaleTx == null) url.searchParams.delete("txMax"); else url.searchParams.set("txMax", String(state.maxSaleTx));
   url.searchParams.set("tx7", String(state.minSaleTx7));
+  if (state.maxSaleTx7 == null) url.searchParams.delete("tx7Max"); else url.searchParams.set("tx7Max", String(state.maxSaleTx7));
   url.searchParams.set("psaTx", String(state.minPsaTx));
+  if (state.maxPsaTx == null) url.searchParams.delete("psaTxMax"); else url.searchParams.set("psaTxMax", String(state.maxPsaTx));
   url.searchParams.set("psaTx7", String(state.minPsaTx7));
+  if (state.maxPsaTx7 == null) url.searchParams.delete("psaTx7Max"); else url.searchParams.set("psaTx7Max", String(state.maxPsaTx7));
   url.searchParams.set("roi", String(state.minRoi));
   url.searchParams.set("psaMin", String(state.minPsa10));
   url.searchParams.set("psaMax", String(state.maxPsa10));
@@ -184,9 +204,13 @@ function render() {
       const decision = decisionLabel(card);
       const haystack = normalize(`${card.name} ${card.model} ${card.rarity} ${card.id} ${decision}`);
       if (card.saleTx30d < state.minSaleTx) return false;
+      if (state.maxSaleTx != null && card.saleTx30d > state.maxSaleTx) return false;
       if (card.saleTx7d < state.minSaleTx7) return false;
+      if (state.maxSaleTx7 != null && card.saleTx7d > state.maxSaleTx7) return false;
       if (card.psaTx30d < state.minPsaTx) return false;
+      if (state.maxPsaTx != null && card.psaTx30d > state.maxPsaTx) return false;
       if (card.psaTx7d < state.minPsaTx7) return false;
+      if (state.maxPsaTx7 != null && card.psaTx7d > state.maxPsaTx7) return false;
       if (!Number.isFinite(card.roi) || card.roi < state.minRoi) return false;
       if (card.psa10 < state.minPsa10) return false;
       if (card.psa10 > state.maxPsa10) return false;
@@ -265,10 +289,14 @@ function decisionLabel(card) {
 
 function syncFromUI() {
   state.fee = Number(els.feeInput.value || 0);
-  state.minSaleTx = Number(els.saleTxInput.value || 0);
-  state.minSaleTx7 = Number(els.saleTx7Input.value || 0);
-  state.minPsaTx = Number(els.psaTxInput.value || 0);
-  state.minPsaTx7 = Number(els.psaTx7Input.value || 0);
+  state.minSaleTx = Number(els.saleTxMinInput.value || 0);
+  state.maxSaleTx = parseOptionalNumber(els.saleTxMaxInput.value);
+  state.minSaleTx7 = Number(els.saleTx7MinInput.value || 0);
+  state.maxSaleTx7 = parseOptionalNumber(els.saleTx7MaxInput.value);
+  state.minPsaTx = Number(els.psaTxMinInput.value || 0);
+  state.maxPsaTx = parseOptionalNumber(els.psaTxMaxInput.value);
+  state.minPsaTx7 = Number(els.psaTx7MinInput.value || 0);
+  state.maxPsaTx7 = parseOptionalNumber(els.psaTx7MaxInput.value);
   state.minRoi = Number(els.roiInput.value || 0);
   state.minPsa10 = Number(els.psaMinInput.value || 0);
   state.maxPsa10 = Number(els.psaMaxInput.value || 0);
@@ -302,7 +330,7 @@ async function init() {
   }
 }
 
-[els.qInput, els.feeInput, els.saleTxInput, els.saleTx7Input, els.psaTxInput, els.psaTx7Input, els.roiInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.sortInput].forEach((el) =>
+[els.qInput, els.feeInput, els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.roiInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.sortInput].forEach((el) =>
   el.addEventListener("input", syncFromUI)
 );
 
