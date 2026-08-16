@@ -161,12 +161,12 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
 }
 .row{
   display:grid;
-  grid-template-columns:minmax(260px,300px) 1fr;
+  grid-template-columns:minmax(300px,360px) 1fr;
   overflow:hidden;
   position:relative;
 }
 .thumb{
-  min-height:clamp(280px,28vw,380px);
+  min-height:clamp(320px,32vw,440px);
   padding:6px;
   background:
     radial-gradient(circle at 34% 28%, rgba(255,255,255,.12), transparent 22%),
@@ -280,7 +280,7 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
 }
 @media (max-width: 1080px){
   .row{grid-template-columns:1fr}
-  .thumb{min-height:300px}
+  .thumb{min-height:340px}
   .control-wide{grid-column:auto}
   .toolbar-actions{margin-left:0}
 }
@@ -293,7 +293,7 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
   .toolbar-actions button,.toolbar-actions a,.toolbar-meta{width:100%;justify-content:center}
   .headline{flex-direction:column}
   .range-pair{grid-template-columns:1fr}
-  .thumb{min-height:240px}
+  .thumb{min-height:280px}
   .content{padding:14px}
   .headline h3{font-size:20px}
   .metric strong{font-size:16px}
