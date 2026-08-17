@@ -22,7 +22,7 @@ const state = {
   q: "",
 };
 
-const meta = window.POKEMON_CARDS_META || {};
+let meta = window.POKEMON_CARDS_META || {};
 const guideModes = {
   "70": { label: "10率70%基準", hitRate: 0.7 },
   "50": { label: "10率50%基準", hitRate: 0.5 },
@@ -305,6 +305,16 @@ function parseOptionalNumber(value) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+async function fetchJsonMaybe(url) {
+  try {
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
 function readUrl() {
   const url = new URL(window.location.href);
   const guide = url.searchParams.get("guide");
@@ -510,6 +520,14 @@ function syncFromUI() {
 async function init() {
   readUrl();
   try {
+    if (!window.POKEMON_CARDS_META) {
+      const loadedMeta = await fetchJsonMaybe("./data/pokemon-cards-meta.json");
+      if (loadedMeta) meta = loadedMeta;
+    }
+    if (!window.POKEMON_CARDS_HISTORY) {
+      const loadedHistory = await fetchJsonMaybe("./data/pokemon-cards-history.json");
+      if (loadedHistory) state.history = loadedHistory;
+    }
     if (Array.isArray(window.POKEMON_CARDS)) {
       state.cards = window.POKEMON_CARDS;
     } else {
@@ -523,7 +541,7 @@ async function init() {
   } catch (err) {
     console.error(err);
     showStatus(
-      "カード一覧の読み込みに失敗しました。\n\nこの最小版は `data/pokemon-cards.js` と `data/pokemon-cards-meta.js` を読み込んでいます。`index.html` をファイル直開きすると、ブラウザの制限で読み込みが止まることがあります。\n\nおすすめ:\n1. GitHub Pages 上で開く\n2. ローカルなら簡易サーバー経由で開く\n   例: `python -m http.server 8000` のように同じフォルダを配信してから `http://localhost:8000/` を開く\n\nもし GitHub Pages に置いたのに出ない場合は、更新後の URL とコンソールエラーを見ます。",
+      "カード一覧の読み込みに失敗しました。\n\nこのサイトは `data/pokemon-cards.json` と `data/pokemon-cards-meta.js` を読み込んでいます。`index.html` をファイル直開きすると、ブラウザの制限で JSON の読み込みが止まることがあります。\n\nおすすめ:\n1. GitHub Pages 上で開く\n2. ローカルなら簡易サーバー経由で開く\n   例: `python -m http.server 8000` のように同じフォルダを配信してから `http://localhost:8000/` を開く\n\nもし GitHub Pages に置いたのに出ない場合は、更新後の URL とコンソールエラーを見ます。",
       "error"
     );
   }
