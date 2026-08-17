@@ -5,6 +5,11 @@ const state = {
   snkrUrlCache: Object.create(null),
   cardById: Object.create(null),
   snkrObserver: null,
+  hiddenDecisions: {
+    valuable: false,
+    watch: false,
+    avoid: false,
+  },
   fee: 13000,
   guideMode: "70",
   minSaleTx: 30,
@@ -69,6 +74,7 @@ const els = {
   guidePsa9RateStat: document.getElementById("guidePsa9RateStat"),
   guideFeeStat: document.getElementById("guideFeeStat"),
   guideButtons: [...document.querySelectorAll("[data-guide-mode]")],
+  decisionButtons: [...document.querySelectorAll("[data-hide-decision]")],
 };
 
 function showStatus(message, kind = "info") {
@@ -221,6 +227,33 @@ function hydrateSnkrLink(card, url) {
   link.textContent = /snkrdunk\.com\/(apparels|trading-cards|products)\/\d+/i.test(url) ? "スニダン商品" : "スニダンで探す";
 }
 
+function decisionFilterKey(card) {
+  const decision = decisionLabel(card);
+  if (decision === "出す価値あり") return "valuable";
+  if (decision === "様子見") return "watch";
+  return "avoid";
+}
+
+function syncDecisionButtons() {
+  els.decisionButtons.forEach((btn) => {
+    const key = btn.dataset.hideDecision;
+    const hidden = !!state.hiddenDecisions[key];
+    btn.classList.toggle("active", hidden);
+    const baseLabel =
+      key === "valuable" ? "出す価値あり" : key === "watch" ? "様子見" : "出さない";
+    btn.textContent = hidden ? `${baseLabel}を表示` : `${baseLabel}を非表示`;
+    btn.setAttribute("aria-pressed", hidden ? "true" : "false");
+  });
+}
+
+function setDecisionHidden(key, hidden) {
+  if (!(key in state.hiddenDecisions)) return;
+  state.hiddenDecisions[key] = hidden;
+  syncDecisionButtons();
+  render();
+  updateUrl();
+}
+
 function ensureSnkrObserver() {
   if (state.snkrObserver) return state.snkrObserver;
   state.snkrObserver = new IntersectionObserver(
@@ -356,10 +389,16 @@ function readUrl() {
   const priceMax = parseOptionalNumber(url.searchParams.get("priceMax"));
   const sort = url.searchParams.get("sort");
   const q = url.searchParams.get("q");
+  const hide = String(url.searchParams.get("hide") || "");
+  const hidden = new Set(hide.split(",").map((v) => v.trim()).filter(Boolean));
   if (guide && guideModes[guide]) {
     state.guideMode = guide;
   }
   syncGuideButtons();
+  state.hiddenDecisions.valuable = hidden.has("valuable");
+  state.hiddenDecisions.watch = hidden.has("watch");
+  state.hiddenDecisions.avoid = hidden.has("avoid");
+  syncDecisionButtons();
   if (fee != null && fee >= 0) els.feeInput.value = String(fee);
   if (saleTx != null && saleTx >= 0) els.saleTxMinInput.value = String(saleTx);
   if (saleTxMax != null && saleTxMax >= 0) els.saleTxMaxInput.value = String(saleTxMax);
@@ -414,6 +453,14 @@ function buildShareUrl() {
   } else {
     url.searchParams.delete("q");
   }
+  const hidden = Object.entries(state.hiddenDecisions)
+    .filter(([, value]) => value)
+    .map(([key]) => key);
+  if (hidden.length) {
+    url.searchParams.set("hide", hidden.join(","));
+  } else {
+    url.searchParams.delete("hide");
+  }
   return url;
 }
 
@@ -424,6 +471,7 @@ function render() {
     .map(calc)
     .filter((card) => {
       const decision = decisionLabel(card);
+      const decisionKey = decisionFilterKey(card);
       const haystack = normalize(`${card.name} ${card.model} ${card.rarity} ${card.id} ${card.psaQuery || ""} ${decision}`);
       const compactHaystack = compactSearch(`${card.name} ${card.model} ${card.rarity} ${card.id} ${card.psaQuery || ""} ${decision}`);
       if (card.saleTx30d < state.minSaleTx) return false;
@@ -439,6 +487,7 @@ function render() {
       if (card.psa10 > state.maxPsa10) return false;
       if (state.minPrice != null && card.price < state.minPrice) return false;
       if (state.maxPrice != null && card.price > state.maxPrice) return false;
+      if (state.hiddenDecisions[decisionKey]) return false;
       if (!normalizedQuery) return true;
       return haystack.includes(normalizedQuery) || compactHaystack.includes(compactQuery);
     })
@@ -462,8 +511,6 @@ function render() {
     const decision = decisionLabel(card);
     const psaQuery = card.psaQuery || "";
     const snkUrl = card.snkUrl || state.snkrUrlCache[card.id] || buildSnkrUrl(card);
-    const decisionTag =
-      decision === "出す価値あり" ? "✓ 価値あり" : decision === "様子見" ? "△ 様子見" : "× 出さない";
     return `
       <article class="row card" data-card-id="${card.id}">
         <div class="thumb">
@@ -484,7 +531,7 @@ function render() {
             <span class="badge sky">美品 直近7日 ${fmt.format(card.saleTx7d)}件</span>
             <span class="badge sky">PSA10 直近30日 ${fmt.format(card.psaTx30d)}件</span>
             <span class="badge sky">PSA10 直近7日 ${fmt.format(card.psaTx7d)}件</span>
-            <span class="badge warn">仕入れ判定 ${decisionTag}</span>
+            <span class="badge warn">仕入れ判定 ${decision}</span>
             <span class="badge">PSA検索語 ${psaQuery || "未設定"}</span>
             <a class="link-badge" href="${snkUrl}" data-snk-link target="_blank" rel="noreferrer">スニダンで探す</a>
             <span class="badge">カテゴリ ポケモン</span>
@@ -588,4 +635,11 @@ init().catch((err) => {
 
 els.guideButtons.forEach((btn) => {
   btn.addEventListener("click", () => setGuideMode(btn.dataset.guideMode));
+});
+
+els.decisionButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const key = btn.dataset.hideDecision;
+    setDecisionHidden(key, !state.hiddenDecisions[key]);
+  });
 });

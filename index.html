@@ -75,6 +75,14 @@
           <span>PSA10 上限</span>
           <input id="psaMaxInput" type="number" min="0" step="1000" value="200000" />
         </label>
+        <div class="control control-wide decision-control">
+          <span>仕入れ判定を非表示</span>
+          <div class="decision-toggle">
+            <button id="hideValuableBtn" class="decision-pill" type="button" data-hide-decision="valuable">出す価値ありを非表示</button>
+            <button id="hideWatchBtn" class="decision-pill" type="button" data-hide-decision="watch">様子見を非表示</button>
+            <button id="hideAvoidBtn" class="decision-pill" type="button" data-hide-decision="avoid">出さないを非表示</button>
+          </div>
+        </div>
         <label class="control">
           <span>並び順</span>
           <select id="sortInput">
