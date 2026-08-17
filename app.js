@@ -259,19 +259,8 @@ function renderTrend(card) {
   const prev = history.length > 1 ? history[history.length - 2] : null;
   const priceTrend = trendSparkline(history, (row) => Number(row.price));
   const psaTrend = trendSparkline(history, (row) => Number(row.psa10Price));
-  const rateTrend = trendSparkline(history, (row) => {
-    const psa10Count = Number(row.officialPsa10Count ?? row.psa10Count);
-    const psaTotal = Number(row.officialPsaTotal ?? row.psaTotal);
-    return Number.isFinite(psa10Count) && Number.isFinite(psaTotal) && psaTotal > 0 ? (psa10Count / psaTotal) * 100 : NaN;
-  });
   const deltaPrice = prev ? latest.price - prev.price : null;
   const deltaPsa = prev ? latest.psa10Price - prev.psa10Price : null;
-  const psa10Rate =
-    Number.isFinite(Number(latest.officialPsa10Count ?? latest.psa10Count)) &&
-    Number.isFinite(Number(latest.officialPsaTotal ?? latest.psaTotal)) &&
-    Number(latest.officialPsaTotal ?? latest.psaTotal) > 0
-      ? (Number(latest.officialPsa10Count ?? latest.psa10Count) / Number(latest.officialPsaTotal ?? latest.psaTotal)) * 100
-      : NaN;
   return `
     <div class="trend-grid">
       <div class="trend-card">
@@ -285,17 +274,6 @@ function renderTrend(card) {
         <strong>¥${fmt.format(Math.round(latest.psa10Price || 0))}</strong>
         <span>${deltaPsa == null ? "最新のみ" : deltaPsa >= 0 ? `+¥${fmt.format(Math.round(deltaPsa))}` : `-¥${fmt.format(Math.abs(Math.round(deltaPsa)))}`}</span>
         ${psaTrend}
-      </div>
-      <div class="trend-card">
-        <div class="trend-label">PSA10率</div>
-        <strong>${Number.isFinite(psa10Rate) ? `${Math.round(psa10Rate)}%` : "-"}</strong>
-        <span>${
-          Number.isFinite(Number(latest.officialPsa10Count ?? latest.psa10Count)) &&
-          Number.isFinite(Number(latest.officialPsaTotal ?? latest.psaTotal))
-            ? `PSA10 ${fmt.format(Number(latest.officialPsa10Count ?? latest.psa10Count))} / TOTAL ${fmt.format(Number(latest.officialPsaTotal ?? latest.psaTotal))}`
-            : "TOTAL未取得"
-        }</span>
-        ${rateTrend}
       </div>
     </div>
     <div class="trend-note">履歴は日次スナップショットです。今後の更新でカードごとの推移が自動で伸びます。</div>
@@ -547,7 +525,7 @@ async function init() {
   } catch (err) {
     console.error(err);
     showStatus(
-      "カード一覧の読み込みに失敗しました。\n\nこのサイトは `data/pokemon-cards.json` と `data/pokemon-cards-meta.js` を読み込んでいます。`index.html` をファイル直開きすると、ブラウザの制限で JSON の読み込みが止まることがあります。\n\nおすすめ:\n1. GitHub Pages 上で開く\n2. ローカルなら簡易サーバー経由で開く\n   例: `python -m http.server 8000` のように同じフォルダを配信してから `http://localhost:8000/` を開く\n\nもし GitHub Pages に置いたのに出ない場合は、更新後の URL とコンソールエラーを見ます。",
+      "カード一覧の読み込みに失敗しました。\n\nこのサイトは `data/pokemon-cards.json` と `data/pokemon-cards-meta.json` を読み込んでいます。`index.html` をファイル直開きすると、ブラウザの制限で JSON の読み込みが止まることがあります。\n\nおすすめ:\n1. GitHub Pages 上で開く\n2. ローカルなら簡易サーバー経由で開く\n   例: `python -m http.server 8000` のように同じフォルダを配信してから `http://localhost:8000/` を開く\n\nもし GitHub Pages に置いたのに出ない場合は、更新後の URL とコンソールエラーを見ます。",
       "error"
     );
   }
