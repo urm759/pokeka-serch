@@ -120,6 +120,10 @@ function normalize(v) {
     .trim();
 }
 
+function compactSearch(v) {
+  return normalize(v).replace(/[^0-9a-z\u3040-\u30ff\u3400-\u9fff]+/gi, "");
+}
+
 function roundToStep(value, step = 1000) {
   if (!Number.isFinite(value)) return null;
   return Math.max(0, Math.round(value / step) * step);
@@ -397,11 +401,13 @@ function buildShareUrl() {
 
 function render() {
   const normalizedQuery = normalize(state.q);
+  const compactQuery = compactSearch(state.q);
   const enriched = state.cards
     .map(calc)
     .filter((card) => {
       const decision = decisionLabel(card);
       const haystack = normalize(`${card.name} ${card.model} ${card.rarity} ${card.id} ${card.psaQuery || ""} ${decision}`);
+      const compactHaystack = compactSearch(`${card.name} ${card.model} ${card.rarity} ${card.id} ${card.psaQuery || ""} ${decision}`);
       if (card.saleTx30d < state.minSaleTx) return false;
       if (state.maxSaleTx != null && card.saleTx30d > state.maxSaleTx) return false;
       if (card.saleTx7d < state.minSaleTx7) return false;
@@ -416,7 +422,7 @@ function render() {
       if (state.minPrice != null && card.price < state.minPrice) return false;
       if (state.maxPrice != null && card.price > state.maxPrice) return false;
       if (!normalizedQuery) return true;
-      return haystack.includes(normalizedQuery);
+      return haystack.includes(normalizedQuery) || compactHaystack.includes(compactQuery);
     })
     .sort(sorters[state.sort]);
 
