@@ -2,6 +2,9 @@ const fmt = new Intl.NumberFormat("ja-JP");
 
 const state = {
   cards: [],
+  snkrUrlCache: Object.create(null),
+  cardById: Object.create(null),
+  snkrObserver: null,
   fee: 13000,
   guideMode: "70",
   minSaleTx: 30,
@@ -142,6 +145,76 @@ function buildSnkrUrl(card) {
     .trim();
   if (!query) return "https://snkrdunk.com/search/";
   return `https://snkrdunk.com/search?brandId=pokemon&categoryId=25&isUnderRetail=false&keywords=${encodeURIComponent(query)}`;
+}
+
+function buildSnkrSearchUrl(card) {
+  const query = String(card.name || card.psaQuery || "")
+    .split("[")[0]
+    .replace(/\(.+?\)/g, "")
+    .trim();
+  if (!query) return "https://snkrdunk.com/search/";
+  return `https://snkrdunk.com/search?brandId=pokemon&categoryId=25&isUnderRetail=false&keywords=${encodeURIComponent(query)}`;
+}
+
+function extractSnkrProductUrl(html) {
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  const candidates = [...doc.querySelectorAll("a[href]")]
+    .map((a) => ({
+      href: a.getAttribute("href") || "",
+      text: (a.textContent || "").replace(/\s+/g, " ").trim(),
+    }))
+    .map((item) => {
+      if (/^https?:\/\//i.test(item.href)) return item.href;
+      if (item.href.startsWith("//")) return `https:${item.href}`;
+      if (item.href.startsWith("/")) return `https://snkrdunk.com${item.href}`;
+      return "";
+    })
+    .filter((href) => /snkrdunk\.com\/(apparels|trading-cards|products)\/\d+/i.test(href))
+    .map((href) => href.replace(/\/used\/\d+.*$/i, ""));
+  return candidates[0] || "";
+}
+
+async function resolveSnkrUrl(card) {
+  const key = String(card.id || "").trim();
+  if (!key) return buildSnkrUrl(card);
+  if (state.snkrUrlCache[key]) return state.snkrUrlCache[key];
+  const searchUrl = buildSnkrSearchUrl(card);
+  try {
+    const res = await fetch(searchUrl, { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const html = await res.text();
+    state.snkrUrlCache[key] = extractSnkrProductUrl(html) || searchUrl;
+  } catch {
+    state.snkrUrlCache[key] = searchUrl;
+  }
+  return state.snkrUrlCache[key];
+}
+
+function hydrateSnkrLink(card, url) {
+  const article = document.querySelector(`[data-card-id="${card.id}"]`);
+  if (!article) return;
+  const link = article.querySelector("[data-snk-link]");
+  if (!link) return;
+  link.href = url;
+  link.textContent = /snkrdunk\.com\/(apparels|trading-cards|products)\/\d+/i.test(url) ? "スニダン商品" : "スニダンで探す";
+}
+
+function ensureSnkrObserver() {
+  if (state.snkrObserver) return state.snkrObserver;
+  state.snkrObserver = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const id = entry.target?.dataset?.cardId || "";
+        const card = state.cardById[id];
+        if (!card) continue;
+        entry.target && state.snkrObserver.unobserve(entry.target);
+        resolveSnkrUrl(card).then((url) => hydrateSnkrLink(card, url));
+      }
+    },
+    { rootMargin: "250px 0px" }
+  );
+  return state.snkrObserver;
 }
 
 function guideConfig() {
@@ -358,17 +431,19 @@ function render() {
   }
   renderGuide();
 
+  state.cardById = Object.create(null);
   els.grid.innerHTML = enriched.map((card) => {
+    state.cardById[card.id] = card;
     const roiClass = card.roi >= 120 ? "good" : card.roi >= 80 ? "sky" : "warn";
     const width = Math.max(8, Math.min(100, card.roi));
     const name = card.name.replace(/\s+/g, " ");
     const decision = decisionLabel(card);
     const psaQuery = card.psaQuery || "";
-    const snkUrl = buildSnkrUrl(card);
+    const snkUrl = state.snkrUrlCache[card.id] || buildSnkrUrl(card);
     const decisionTag =
       decision === "出す価値あり" ? "✓ 価値あり" : decision === "様子見" ? "△ 様子見" : "× 出さない";
     return `
-      <article class="row card">
+      <article class="row card" data-card-id="${card.id}">
         <div class="thumb">
           <img src="${card.img}" alt="${name}" loading="lazy" />
           <div class="series">${card.rarity ? card.rarity : card.model}</div>
@@ -389,7 +464,7 @@ function render() {
             <span class="badge sky">PSA10 直近7日 ${fmt.format(card.psaTx7d)}件</span>
             <span class="badge warn">仕入れ判定 ${decisionTag}</span>
             <span class="badge">PSA検索語 ${psaQuery || "未設定"}</span>
-            <a class="link-badge" href="${snkUrl}" target="_blank" rel="noreferrer">スニダンで探す</a>
+            <a class="link-badge" href="${snkUrl}" data-snk-link target="_blank" rel="noreferrer">スニダンで探す</a>
             <span class="badge">カテゴリ ポケモン</span>
             <span class="badge ${roiClass}">利益率 ${Number.isFinite(card.roi) ? Math.round(card.roi) : 0}%</span>
           </div>
@@ -414,6 +489,9 @@ function render() {
       </article>
     `;
   }).join("");
+
+  const observer = ensureSnkrObserver();
+  [...els.grid.querySelectorAll("[data-card-id]")].forEach((el) => observer.observe(el));
 }
 
 function decisionLabel(card) {
