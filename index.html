@@ -193,7 +193,7 @@
     <section class="toolbar card">
       <div>
         <h2>候補一覧</h2>
-        <p>カード画像は各カードページの公開画像を表示。`data/pokemon-cards.json` が全件データです。</p>
+        <p>カード画像は各カードページの公開画像を表示。データ本体は `data/pokemon-cards.js` です。</p>
       </div>
       <div class="toolbar-actions">
         <div class="toolbar-meta">データ取得日 <strong id="updatedAt">-</strong></div>
@@ -208,21 +208,18 @@
       <div>
         <h3>トレカ利益率計算サイトの作り</h3>
         <p>
-          このフォルダをそのまま GitHub Pages に置ける静的サイトとして作っています。
+          この最小版は手動アップロード向けです。
           画面側で条件を変えられるので、毎回コードを触らなくても確認しやすいです。
         </p>
       </div>
       <div class="footer-links">
-        <a href="./data/pokemon-cards.json" target="_blank" rel="noreferrer">data/pokemon-cards.json</a>
+        <a href="./data/pokemon-cards.js" target="_blank" rel="noreferrer">data/pokemon-cards.js</a>
         <a href="./README.md" target="_blank" rel="noreferrer">README</a>
       </div>
     </section>
   </main>
 
   <script src="./data/pokemon-cards-meta.js"></script>
-  <script src="./data/pokemon-cards-history.js"></script>
-  <script src="./data/psa-set-urls.js"></script>
-  <script src="./data/psa-official-populations.js"></script>
   <script src="./data/pokemon-cards.js"></script>
   <script src="./app.js"></script>
 </body>
