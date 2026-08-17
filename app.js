@@ -147,6 +147,10 @@ function buildSnkrUrl(card) {
   return `https://snkrdunk.com/search?brandId=pokemon&categoryId=25&isUnderRetail=false&keywords=${encodeURIComponent(query)}`;
 }
 
+function buildTorecaCardUrl(card) {
+  return card.pageUrl || `https://toreca-souba.com/cards/${card.id}`;
+}
+
 function buildSnkrSearchUrl(card) {
   const query = String(card.name || card.psaQuery || "")
     .split("[")[0]
@@ -157,29 +161,47 @@ function buildSnkrSearchUrl(card) {
 }
 
 function extractSnkrProductUrl(html) {
-  const doc = new DOMParser().parseFromString(html, "text/html");
-  const candidates = [...doc.querySelectorAll("a[href]")]
-    .map((a) => ({
-      href: a.getAttribute("href") || "",
-      text: (a.textContent || "").replace(/\s+/g, " ").trim(),
-    }))
-    .map((item) => {
-      if (/^https?:\/\//i.test(item.href)) return item.href;
-      if (item.href.startsWith("//")) return `https:${item.href}`;
-      if (item.href.startsWith("/")) return `https://snkrdunk.com${item.href}`;
-      return "";
-    })
-    .filter((href) => /snkrdunk\.com\/(apparels|trading-cards|products)\/\d+/i.test(href))
-    .map((href) => href.replace(/\/used\/\d+.*$/i, ""));
-  return candidates[0] || "";
+  const candidates = [];
+  const regexes = [
+    /snkrdunk\.com\/(?:apparels|trading-cards|products)\/\d+(?:\/used\/\d+)?/gi,
+    /https?:\/\/snkrdunk\.com\/(?:apparels|trading-cards|products)\/\d+(?:\/used\/\d+)?/gi,
+    /href=["']([^"']*\/(?:apparels|trading-cards|products)\/\d+(?:\/used\/\d+)?)["']/gi,
+  ];
+  for (const regex of regexes) {
+    for (const match of String(html || "").matchAll(regex)) {
+      const raw = match[1] || match[0] || "";
+      if (!raw) continue;
+      const normalized = raw.startsWith("http")
+        ? raw
+        : raw.startsWith("snkrdunk.com/")
+          ? `https://${raw}`
+          : `https://snkrdunk.com${raw.startsWith("/") ? raw : `/${raw}`}`;
+      candidates.push(normalized.replace(/\/used\/\d+.*$/i, ""));
+    }
+  }
+  return [...new Set(candidates)].find(Boolean) || "";
 }
 
 async function resolveSnkrUrl(card) {
   const key = String(card.id || "").trim();
   if (!key) return buildSnkrUrl(card);
   if (state.snkrUrlCache[key]) return state.snkrUrlCache[key];
+  if (card.snkUrl) {
+    state.snkrUrlCache[key] = card.snkUrl;
+    return card.snkUrl;
+  }
+  const pageUrl = buildTorecaCardUrl(card);
   const searchUrl = buildSnkrSearchUrl(card);
   try {
+    const pageRes = await fetch(pageUrl, { cache: "no-store" });
+    if (pageRes.ok) {
+      const pageHtml = await pageRes.text();
+      const directUrl = extractSnkrProductUrl(pageHtml);
+      if (directUrl) {
+        state.snkrUrlCache[key] = directUrl;
+        return directUrl;
+      }
+    }
     const res = await fetch(searchUrl, { cache: "no-store" });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const html = await res.text();
@@ -439,7 +461,7 @@ function render() {
     const name = card.name.replace(/\s+/g, " ");
     const decision = decisionLabel(card);
     const psaQuery = card.psaQuery || "";
-    const snkUrl = state.snkrUrlCache[card.id] || buildSnkrUrl(card);
+    const snkUrl = card.snkUrl || state.snkrUrlCache[card.id] || buildSnkrUrl(card);
     const decisionTag =
       decision === "出す価値あり" ? "✓ 価値あり" : decision === "様子見" ? "△ 様子見" : "× 出さない";
     return `
