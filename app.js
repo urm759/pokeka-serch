@@ -136,6 +136,14 @@ function calcGuideBuyPrice(psa10, hitRate, fee, targetRoi, psa9Rate = 0.75) {
   return roundToStep(numerator / denominator);
 }
 
+function buildSnkrUrl(card) {
+  const query = String(card.name || card.psaQuery || "")
+    .split("[")[0]
+    .trim();
+  if (!query) return "https://snkrdunk.com/search/";
+  return `https://snkrdunk.com/search?brandId=pokemon&categoryId=25&isUnderRetail=false&keywords=${encodeURIComponent(query)}`;
+}
+
 function guideConfig() {
   return guideModes[state.guideMode] || guideModes["70"];
 }
@@ -186,7 +194,7 @@ function renderGuide() {
           <table class="guide-table">
             <thead>
               <tr>
-                <th>PSA10売値</th>
+                <th class="guide-sticky">PSA10売値</th>
                 ${guideLines
                   .map((line) => `<th class="guide-head-${line.className}">${line.label}<span>${line.caption}</span></th>`)
                   .join("")}
@@ -356,10 +364,12 @@ function render() {
     const name = card.name.replace(/\s+/g, " ");
     const decision = decisionLabel(card);
     const psaQuery = card.psaQuery || "";
-    const psaUrl = psaQuery ? `https://www.psacard.com/pop#0%7C${encodeURIComponent(psaQuery)}` : "https://www.psacard.com/pop";
+    const snkUrl = buildSnkrUrl(card);
+    const decisionTag =
+      decision === "出す価値あり" ? "✓ 価値あり" : decision === "様子見" ? "△ 様子見" : "× 出さない";
     return `
       <article class="row card">
-        <div class="thumb" data-rank="#${card.rank || ""}">
+        <div class="thumb">
           <img src="${card.img}" alt="${name}" loading="lazy" />
           <div class="series">${card.rarity ? card.rarity : card.model}</div>
         </div>
@@ -377,9 +387,9 @@ function render() {
             <span class="badge sky">美品 直近7日 ${fmt.format(card.saleTx7d)}件</span>
             <span class="badge sky">PSA10 直近30日 ${fmt.format(card.psaTx30d)}件</span>
             <span class="badge sky">PSA10 直近7日 ${fmt.format(card.psaTx7d)}件</span>
-            <span class="badge warn">仕入れ判定 ${decision}</span>
+            <span class="badge warn">仕入れ判定 ${decisionTag}</span>
             <span class="badge">PSA検索語 ${psaQuery || "未設定"}</span>
-            <a class="link-badge" href="${psaUrl}" target="_blank" rel="noreferrer">PSAで開く</a>
+            <a class="link-badge" href="${snkUrl}" target="_blank" rel="noreferrer">スニダンで探す</a>
             <span class="badge">カテゴリ ポケモン</span>
             <span class="badge ${roiClass}">利益率 ${Number.isFinite(card.roi) ? Math.round(card.roi) : 0}%</span>
           </div>

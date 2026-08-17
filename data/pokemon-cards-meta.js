@@ -1,1 +1,1 @@
-window.POKEMON_CARDS_META = {"sourceUrl":"https://toreca-souba.com/cards","chunkUrl":"https://toreca-souba.com/_next/static/chunks/280.0361dbae10154c22.js","updatedAt":"2026-08-17","generatedAt":"2026-08-17T02:15:19.447Z","totalCards":11891};
+window.POKEMON_CARDS_META = {"sourceUrl":"https://toreca-souba.com/cards","chunkUrl":"https://toreca-souba.com/_next/static/chunks/280.0361dbae10154c22.js","updatedAt":"2026-08-17","generatedAt":"2026-08-17T05:19:16.264Z","totalCards":11891};
