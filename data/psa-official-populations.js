@@ -1,1 +1,24369 @@
-window.PSA_OFFICIAL_POPULATIONS = {"generatedAt":"","sourceManifest":"","totalSets":0,"collectedSets":0,"totalRows":0,"byQuery":{},"rows":[],"sets":[]};
+window.PSA_OFFICIAL_POPULATIONS = {
+  "generatedAt": "2026-08-16T22:23:47.716Z",
+  "sourceManifest": "C:/Users/polar/Documents/Codex/2026-08-16/https-toreca-souba-com-https-toreca/work/psa_set_urls.json",
+  "totalSets": 19,
+  "collectedSets": 19,
+  "totalRows": 649,
+  "byQuery": {
+    "Pokemon Japanese M1L-MEGA BRAVE 003": {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "003",
+      "cardName": "Mega Venusaur EX",
+      "psa10Count": 724,
+      "psaTotal": 857,
+      "psa10Rate": 84.48074679113185,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 003"
+    },
+    "Pokemon Japanese M1L-MEGA BRAVE 064": {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "064",
+      "cardName": "Bulbasaur",
+      "psa10Count": 15546,
+      "psaTotal": 18718,
+      "psa10Rate": 83.05374505823272,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 064"
+    },
+    "Pokemon Japanese M1L-MEGA BRAVE 065": {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "065",
+      "cardName": "Ivysaur",
+      "psa10Count": 15095,
+      "psaTotal": 17629,
+      "psa10Rate": 85.62595722956492,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 065"
+    },
+    "Pokemon Japanese M1L-MEGA BRAVE 066": {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "066",
+      "cardName": "Exeggutor",
+      "psa10Count": 7993,
+      "psaTotal": 9090,
+      "psa10Rate": 87.93179317931794,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 066"
+    },
+    "Pokemon Japanese M1L-MEGA BRAVE 067": {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "067",
+      "cardName": "Vulpix",
+      "psa10Count": 7716,
+      "psaTotal": 8697,
+      "psa10Rate": 88.72024836150396,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 067"
+    },
+    "Pokemon Japanese M1L-MEGA BRAVE 068": {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "068",
+      "cardName": "Riolu",
+      "psa10Count": 8664,
+      "psaTotal": 9857,
+      "psa10Rate": 87.8969260424064,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 068"
+    },
+    "Pokemon Japanese M1L-MEGA BRAVE 069": {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "069",
+      "cardName": "Marshadow",
+      "psa10Count": 12448,
+      "psaTotal": 14818,
+      "psa10Rate": 84.00593872317452,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 069"
+    },
+    "Pokemon Japanese M1L-MEGA BRAVE 070": {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "070",
+      "cardName": "Garganacl",
+      "psa10Count": 8718,
+      "psaTotal": 9796,
+      "psa10Rate": 88.99550837076357,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 070"
+    },
+    "Pokemon Japanese M1L-MEGA BRAVE 071": {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "071",
+      "cardName": "Spiritomb",
+      "psa10Count": 7956,
+      "psaTotal": 9165,
+      "psa10Rate": 86.80851063829788,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 071"
+    },
+    "Pokemon Japanese M1L-MEGA BRAVE 072": {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "072",
+      "cardName": "Shroodle",
+      "psa10Count": 8404,
+      "psaTotal": 9520,
+      "psa10Rate": 88.27731092436974,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 072"
+    },
+    "Pokemon Japanese M1L-MEGA BRAVE 073": {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "073",
+      "cardName": "Steelix",
+      "psa10Count": 8711,
+      "psaTotal": 10076,
+      "psa10Rate": 86.45295752282652,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 073"
+    },
+    "Pokemon Japanese M1L-MEGA BRAVE 074": {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "074",
+      "cardName": "Spearow",
+      "psa10Count": 7643,
+      "psaTotal": 8657,
+      "psa10Rate": 88.28693542797737,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 074"
+    },
+    "Pokemon Japanese M1L-MEGA BRAVE 075": {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "075",
+      "cardName": "Gumshoos",
+      "psa10Count": 8227,
+      "psaTotal": 9208,
+      "psa10Rate": 89.3462206776716,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 075"
+    },
+    "Pokemon Japanese M1L-MEGA BRAVE 076": {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "076",
+      "cardName": "Mega Venusaur EX",
+      "psa10Count": 3483,
+      "psaTotal": 3955,
+      "psa10Rate": 88.06573957016435,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 076"
+    },
+    "Pokemon Japanese M1L-MEGA BRAVE 077": {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "077",
+      "cardName": "Mega Camerupt EX",
+      "psa10Count": 852,
+      "psaTotal": 955,
+      "psa10Rate": 89.21465968586388,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 077"
+    },
+    "Pokemon Japanese M1L-MEGA BRAVE 078": {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "078",
+      "cardName": "Mega Lucario EX",
+      "psa10Count": 3597,
+      "psaTotal": 4251,
+      "psa10Rate": 84.61538461538461,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 078"
+    },
+    "Pokemon Japanese M1L-MEGA BRAVE 079": {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "079",
+      "cardName": "Mega Absol EX",
+      "psa10Count": 1155,
+      "psaTotal": 1419,
+      "psa10Rate": 81.3953488372093,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 079"
+    },
+    "Pokemon Japanese M1L-MEGA BRAVE 080": {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "080",
+      "cardName": "Mega Mawile EX",
+      "psa10Count": 810,
+      "psaTotal": 906,
+      "psa10Rate": 89.40397350993378,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 080"
+    },
+    "Pokemon Japanese M1L-MEGA BRAVE 086": {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "086",
+      "cardName": "Lillie's Determination",
+      "psa10Count": 12527,
+      "psaTotal": 21578,
+      "psa10Rate": 58.0544999536565,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 086"
+    },
+    "Pokemon Japanese M1L-MEGA BRAVE 087": {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "087",
+      "cardName": "Mega Venusaur EX",
+      "psa10Count": 12432,
+      "psaTotal": 14041,
+      "psa10Rate": 88.54070222918595,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 087"
+    },
+    "Pokemon Japanese M1L-MEGA BRAVE 088": {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "088",
+      "cardName": "Mega Lucario EX",
+      "psa10Count": 17550,
+      "psaTotal": 19439,
+      "psa10Rate": 90.28242193528475,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 088"
+    },
+    "Pokemon Japanese M1L-MEGA BRAVE 089": {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "089",
+      "cardName": "Mega Absol EX",
+      "psa10Count": 4932,
+      "psaTotal": 5576,
+      "psa10Rate": 88.45050215208035,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 089"
+    },
+    "Pokemon Japanese M1L-MEGA BRAVE 090": {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "090",
+      "cardName": "LT. Surge's Deal",
+      "psa10Count": 554,
+      "psaTotal": 891,
+      "psa10Rate": 62.177328843995504,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 090"
+    },
+    "Pokemon Japanese M1L-MEGA BRAVE 091": {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "091",
+      "cardName": "Lillie's Determination",
+      "psa10Count": 20487,
+      "psaTotal": 40696,
+      "psa10Rate": 50.341556909770006,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 091"
+    },
+    "Pokemon Japanese M1L-MEGA BRAVE 092": {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "092",
+      "cardName": "Mega Lucario EX",
+      "psa10Count": 3622,
+      "psaTotal": 6842,
+      "psa10Rate": 52.937737503653906,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 092"
+    },
+    "Pokemon Japanese M1S-MEGA SYMPHONIA 049": {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "049",
+      "cardName": "Mega Latias EX",
+      "psa10Count": 588,
+      "psaTotal": 699,
+      "psa10Rate": 84.12017167381974,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 049"
+    },
+    "Pokemon Japanese M1S-MEGA SYMPHONIA 064": {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "064",
+      "cardName": "Shuckle",
+      "psa10Count": 4741,
+      "psaTotal": 5564,
+      "psa10Rate": 85.20848310567936,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 064"
+    },
+    "Pokemon Japanese M1S-MEGA SYMPHONIA 065": {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "065",
+      "cardName": "Ninjask",
+      "psa10Count": 7049,
+      "psaTotal": 8012,
+      "psa10Rate": 87.98052920619071,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 065"
+    },
+    "Pokemon Japanese M1S-MEGA SYMPHONIA 066": {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "066",
+      "cardName": "Litleo",
+      "psa10Count": 6218,
+      "psaTotal": 7079,
+      "psa10Rate": 87.83726515044498,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 066"
+    },
+    "Pokemon Japanese M1S-MEGA SYMPHONIA 067": {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "067",
+      "cardName": "Snover",
+      "psa10Count": 4274,
+      "psaTotal": 5445,
+      "psa10Rate": 78.49403122130396,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 067"
+    },
+    "Pokemon Japanese M1S-MEGA SYMPHONIA 068": {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "068",
+      "cardName": "Clawitzer",
+      "psa10Count": 6416,
+      "psaTotal": 7145,
+      "psa10Rate": 89.79706088173548,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 068"
+    },
+    "Pokemon Japanese M1S-MEGA SYMPHONIA 069": {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "069",
+      "cardName": "Inteleon",
+      "psa10Count": 7421,
+      "psaTotal": 8210,
+      "psa10Rate": 90.38976857490864,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 069"
+    },
+    "Pokemon Japanese M1S-MEGA SYMPHONIA 070": {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "070",
+      "cardName": "Helioptile",
+      "psa10Count": 6527,
+      "psaTotal": 7329,
+      "psa10Rate": 89.05717014599536,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 070"
+    },
+    "Pokemon Japanese M1S-MEGA SYMPHONIA 071": {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "071",
+      "cardName": "Alakazam",
+      "psa10Count": 7813,
+      "psaTotal": 8953,
+      "psa10Rate": 87.26683793141964,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 071"
+    },
+    "Pokemon Japanese M1S-MEGA SYMPHONIA 072": {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "072",
+      "cardName": "Shedinja",
+      "psa10Count": 7316,
+      "psaTotal": 8049,
+      "psa10Rate": 90.89327866815754,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 072"
+    },
+    "Pokemon Japanese M1S-MEGA SYMPHONIA 073": {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "073",
+      "cardName": "Houndstone",
+      "psa10Count": 7201,
+      "psaTotal": 7899,
+      "psa10Rate": 91.1634384099253,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 073"
+    },
+    "Pokemon Japanese M1S-MEGA SYMPHONIA 074": {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "074",
+      "cardName": "Delibird",
+      "psa10Count": 5660,
+      "psaTotal": 6620,
+      "psa10Rate": 85.49848942598187,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 074"
+    },
+    "Pokemon Japanese M1S-MEGA SYMPHONIA 075": {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "075",
+      "cardName": "Stufful",
+      "psa10Count": 6372,
+      "psaTotal": 7026,
+      "psa10Rate": 90.69171648163963,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 075"
+    },
+    "Pokemon Japanese M1S-MEGA SYMPHONIA 076": {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "076",
+      "cardName": "Mega Abomasnow EX",
+      "psa10Count": 798,
+      "psaTotal": 867,
+      "psa10Rate": 92.04152249134948,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 076"
+    },
+    "Pokemon Japanese M1S-MEGA SYMPHONIA 077": {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "077",
+      "cardName": "Mega Manectric EX",
+      "psa10Count": 987,
+      "psaTotal": 1088,
+      "psa10Rate": 90.71691176470588,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 077"
+    },
+    "Pokemon Japanese M1S-MEGA SYMPHONIA 078": {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "078",
+      "cardName": "Mega Gardevoir EX",
+      "psa10Count": 2701,
+      "psaTotal": 3058,
+      "psa10Rate": 88.32570307390452,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 078"
+    },
+    "Pokemon Japanese M1S-MEGA SYMPHONIA 079": {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "079",
+      "cardName": "Mega Latias EX",
+      "psa10Count": 2517,
+      "psaTotal": 2832,
+      "psa10Rate": 88.87711864406779,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 079"
+    },
+    "Pokemon Japanese M1S-MEGA SYMPHONIA 080": {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "080",
+      "cardName": "Mega Kangaskhan EX",
+      "psa10Count": 1305,
+      "psaTotal": 1474,
+      "psa10Rate": 88.53459972862959,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 080"
+    },
+    "Pokemon Japanese M1S-MEGA SYMPHONIA 084": {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "084",
+      "cardName": "Acerola's Mischief",
+      "psa10Count": 5405,
+      "psaTotal": 9390,
+      "psa10Rate": 57.56123535676251,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 084"
+    },
+    "Pokemon Japanese M1S-MEGA SYMPHONIA 087": {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "087",
+      "cardName": "Mega Gardevoir EX",
+      "psa10Count": 20806,
+      "psaTotal": 23565,
+      "psa10Rate": 88.29195841290048,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 087"
+    },
+    "Pokemon Japanese M1S-MEGA SYMPHONIA 088": {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "088",
+      "cardName": "Mega Latias EX",
+      "psa10Count": 12424,
+      "psaTotal": 14035,
+      "psa10Rate": 88.52155325970787,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 088"
+    },
+    "Pokemon Japanese M1S-MEGA SYMPHONIA 089": {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "089",
+      "cardName": "Mega Kangaskhan EX",
+      "psa10Count": 6580,
+      "psaTotal": 7522,
+      "psa10Rate": 87.47673491092795,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 089"
+    },
+    "Pokemon Japanese M1S-MEGA SYMPHONIA 090": {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "090",
+      "cardName": "Acerola's Mischief",
+      "psa10Count": 8862,
+      "psaTotal": 16153,
+      "psa10Rate": 54.8628737695784,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 090"
+    },
+    "Pokemon Japanese M1S-MEGA SYMPHONIA 091": {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "091",
+      "cardName": "Wally's Compassion",
+      "psa10Count": 636,
+      "psaTotal": 1227,
+      "psa10Rate": 51.83374083129584,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 091"
+    },
+    "Pokemon Japanese M1S-MEGA SYMPHONIA 092": {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "092",
+      "cardName": "Mega Gardevoir EX",
+      "psa10Count": 2490,
+      "psaTotal": 5445,
+      "psa10Rate": 45.73002754820937,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 092"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 044": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "044",
+      "cardName": "Pikachu EX",
+      "psa10Count": 3856,
+      "psaTotal": 4515,
+      "psa10Rate": 85.40420819490588,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 044"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 063": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "063",
+      "cardName": "Team Rocket's Mewtwo EX",
+      "psa10Count": 1000,
+      "psaTotal": 1197,
+      "psa10Rate": 83.5421888053467,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 063"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 079": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "079",
+      "cardName": "Team Rocket's Mimikyu",
+      "psa10Count": 504,
+      "psaTotal": 921,
+      "psa10Rate": 54.72312703583062,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 079"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 126": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "126",
+      "cardName": "Mega Dragonite EX",
+      "psa10Count": 2022,
+      "psaTotal": 2338,
+      "psa10Rate": 86.4841745081266,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 126"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 127": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "127",
+      "cardName": "Rayquaza",
+      "psa10Count": 1206,
+      "psaTotal": 1613,
+      "psa10Rate": 74.76751394916305,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 127"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 194": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "194",
+      "cardName": "Beautifly",
+      "psa10Count": 7187,
+      "psaTotal": 8807,
+      "psa10Rate": 81.60554104689452,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 194"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 195": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "195",
+      "cardName": "Dustox",
+      "psa10Count": 8089,
+      "psaTotal": 9589,
+      "psa10Rate": 84.35707581603921,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 195"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 196": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "196",
+      "cardName": "Budew",
+      "psa10Count": 3128,
+      "psaTotal": 4295,
+      "psa10Rate": 72.82887077997671,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 196"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 197": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "197",
+      "cardName": "Ethan's Magcargo",
+      "psa10Count": 5371,
+      "psaTotal": 7600,
+      "psa10Rate": 70.67105263157895,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 197"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 198": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "198",
+      "cardName": "Numel",
+      "psa10Count": 6566,
+      "psaTotal": 8059,
+      "psa10Rate": 81.47412830375977,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 198"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 199": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "199",
+      "cardName": "Psyduck",
+      "psa10Count": 20904,
+      "psaTotal": 30408,
+      "psa10Rate": 68.74506708760852,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 199"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 200": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "200",
+      "cardName": "Snorunt",
+      "psa10Count": 3194,
+      "psaTotal": 4704,
+      "psa10Rate": 67.89965986394559,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 200"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 201": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "201",
+      "cardName": "Heliolisk",
+      "psa10Count": 5424,
+      "psaTotal": 7197,
+      "psa10Rate": 75.36473530637767,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 201"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 202": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "202",
+      "cardName": "Misdreavus",
+      "psa10Count": 6378,
+      "psaTotal": 7772,
+      "psa10Rate": 82.06381883685023,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 202"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 203": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "203",
+      "cardName": "Togekiss",
+      "psa10Count": 2112,
+      "psaTotal": 4273,
+      "psa10Rate": 49.42663234261643,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 203"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 204": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "204",
+      "cardName": "Hop's Trevenant",
+      "psa10Count": 7778,
+      "psaTotal": 9296,
+      "psa10Rate": 83.67039586919105,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 204"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 205": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "205",
+      "cardName": "Team Rocket's Mimikyu",
+      "psa10Count": 16399,
+      "psaTotal": 19301,
+      "psa10Rate": 84.96450961090099,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 205"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 206": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "206",
+      "cardName": "Team Rocket's Dugtrio",
+      "psa10Count": 7382,
+      "psaTotal": 9272,
+      "psa10Rate": 79.6160483175151,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 206"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 207": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "207",
+      "cardName": "Medicham",
+      "psa10Count": 5125,
+      "psaTotal": 6628,
+      "psa10Rate": 77.32347616173809,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 207"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 208": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "208",
+      "cardName": "Cynthia's Spiritomb",
+      "psa10Count": 8652,
+      "psaTotal": 10260,
+      "psa10Rate": 84.32748538011697,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 208"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 209": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "209",
+      "cardName": "Galarian Obstagoon",
+      "psa10Count": 8080,
+      "psaTotal": 9318,
+      "psa10Rate": 86.7138871002361,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 209"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 210": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "210",
+      "cardName": "N's Zekrom",
+      "psa10Count": 18589,
+      "psaTotal": 21942,
+      "psa10Rate": 84.71880411995261,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 210"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 211": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "211",
+      "cardName": "Dreepy",
+      "psa10Count": 3186,
+      "psaTotal": 4498,
+      "psa10Rate": 70.83148065807026,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 211"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 212": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "212",
+      "cardName": "Drakloak",
+      "psa10Count": 3882,
+      "psaTotal": 4951,
+      "psa10Rate": 78.40840234296101,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 212"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 213": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "213",
+      "cardName": "Fan Rotom",
+      "psa10Count": 4637,
+      "psaTotal": 6142,
+      "psa10Rate": 75.49658091826767,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 213"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 219": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "219",
+      "cardName": "Canari",
+      "psa10Count": 2138,
+      "psaTotal": 3896,
+      "psa10Rate": 54.87679671457906,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 219"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 223": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "223",
+      "cardName": "Mega Charizard X EX",
+      "psa10Count": 1578,
+      "psaTotal": 1673,
+      "psa10Rate": 94.32157800358637,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 223"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 224": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "224",
+      "cardName": "Mega Froslass EX",
+      "psa10Count": 637,
+      "psaTotal": 661,
+      "psa10Rate": 96.36913767019666,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 224"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 225": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "225",
+      "cardName": "Mega Eelektross EX",
+      "psa10Count": 592,
+      "psaTotal": 615,
+      "psa10Rate": 96.26016260162602,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 225"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 226": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "226",
+      "cardName": "Mega Gardevoir EX",
+      "psa10Count": 689,
+      "psaTotal": 728,
+      "psa10Rate": 94.64285714285714,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 226"
+    },
+    "Pokemon Japanese M2A-MEGA DREAM EX 227": {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "227",
+      "cardName": "Mega Diancie EX",
+      "psa10Count": 618,
+      "psaTotal": 640,
+      "psa10Rate": 96.5625,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 227"
+    },
+    "Pokemon Japanese 004": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Mega Heracross EXShop with Affiliates",
+      "cardNo": "004",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 004",
+      "psaTotal": 16200
+    },
+    "Pokemon Japanese 011": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "CharmanderShop with Affiliates",
+      "cardNo": "011",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 011",
+      "psaTotal": 1700
+    },
+    "Pokemon Japanese 012": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "CharmeleonShop with Affiliates",
+      "cardNo": "012",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 012",
+      "psaTotal": 1400
+    },
+    "Pokemon Japanese 013": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Mega Charizard X EXShop with Affiliates",
+      "cardNo": "013",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 013",
+      "psaTotal": 1687310
+    },
+    "Pokemon Japanese 014": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "MoltresShop with Affiliates",
+      "cardNo": "014",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 014",
+      "psaTotal": 900
+    },
+    "Pokemon Japanese 017": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "ReshiramShop with Affiliates",
+      "cardNo": "017",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 017",
+      "psaTotal": 3900
+    },
+    "Pokemon Japanese 018": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Oricorio EXShop with Affiliates",
+      "cardNo": "018",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 018",
+      "psaTotal": 7400
+    },
+    "Pokemon Japanese 026": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "SuicuneShop with Affiliates",
+      "cardNo": "026",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 026",
+      "psaTotal": 1500
+    },
+    "Pokemon Japanese 027": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "PiplupShop with Affiliates",
+      "cardNo": "027",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 027",
+      "psaTotal": 1500
+    },
+    "Pokemon Japanese 029": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Rotom EXShop with Affiliates",
+      "cardNo": "029",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 029",
+      "psaTotal": 5000
+    },
+    "Pokemon Japanese 036": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Mismagius EXShop with Affiliates",
+      "cardNo": "036",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 036",
+      "psaTotal": 4700
+    },
+    "Pokemon Japanese 039": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "ZacianShop with Affiliates",
+      "cardNo": "039",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 039",
+      "psaTotal": 800
+    },
+    "Pokemon Japanese 051": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Mega Sharpedo EXShop with Affiliates",
+      "cardNo": "051",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 051",
+      "psaTotal": 22600
+    },
+    "Pokemon Japanese 057": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "ToxtricityShop with Affiliates",
+      "cardNo": "057",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 057",
+      "psaTotal": 800
+    },
+    "Pokemon Japanese 058": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Empoleon EXShop with Affiliates",
+      "cardNo": "058",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 058",
+      "psaTotal": 7300
+    },
+    "Pokemon Japanese 062": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "DuraludonShop with Affiliates",
+      "cardNo": "062",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 062",
+      "psaTotal": 4700
+    },
+    "Pokemon Japanese 072": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Mega Lopunny EXShop with Affiliates",
+      "cardNo": "072",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 072",
+      "psaTotal": 21500
+    },
+    "Pokemon Japanese 077": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "DawnShop with Affiliates",
+      "cardNo": "077",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 077",
+      "psaTotal": 500
+    },
+    "Pokemon Japanese 081": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "LudicoloArt RareShop with Affiliates",
+      "cardNo": "081",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 081",
+      "psaTotal": 1250700
+    },
+    "Pokemon Japanese 082": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "NymbleArt RareShop with Affiliates",
+      "cardNo": "082",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 082",
+      "psaTotal": 1247210
+    },
+    "Pokemon Japanese 083": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "CharcadetArt RareShop with Affiliates",
+      "cardNo": "083",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 083",
+      "psaTotal": 880800
+    },
+    "Pokemon Japanese 084": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "DewgongArt RareShop with Affiliates",
+      "cardNo": "084",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 084",
+      "psaTotal": 889300
+    },
+    "Pokemon Japanese 085": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "PiplupArt RareShop with Affiliates",
+      "cardNo": "085",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 085",
+      "psaTotal": 1723030
+    },
+    "Pokemon Japanese 086": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "YamperArt RareShop with Affiliates",
+      "cardNo": "086",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 086",
+      "psaTotal": 953720
+    },
+    "Pokemon Japanese 087": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "ZacianArt RareShop with Affiliates",
+      "cardNo": "087",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 087",
+      "psaTotal": 1059800
+    },
+    "Pokemon Japanese 088": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "FlygonArt RareShop with Affiliates",
+      "cardNo": "088",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 088",
+      "psaTotal": 1035710
+    },
+    "Pokemon Japanese 089": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "ToxtricityArt RareShop with Affiliates",
+      "cardNo": "089",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 089",
+      "psaTotal": 1003110
+    },
+    "Pokemon Japanese 090": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "TogedemaruArt RareShop with Affiliates",
+      "cardNo": "090",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 090",
+      "psaTotal": 997311
+    },
+    "Pokemon Japanese 091": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "WigglytuffArt RareShop with Affiliates",
+      "cardNo": "091",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 091",
+      "psaTotal": 1218110
+    },
+    "Pokemon Japanese 092": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "AmbipomArt RareShop with Affiliates",
+      "cardNo": "092",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 092",
+      "psaTotal": 1421210
+    },
+    "Pokemon Japanese 093": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Mega Heracross EXSuper RareShop with Affiliates",
+      "cardNo": "093",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 093",
+      "psaTotal": 107700
+    },
+    "Pokemon Japanese 094": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Mega Charizard X EXSuper RareShop with Affiliates",
+      "cardNo": "094",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 094",
+      "psaTotal": 2280500
+    },
+    "Pokemon Japanese 095": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Oricorio EXSuper RareShop with Affiliates",
+      "cardNo": "095",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 095",
+      "psaTotal": 87700
+    },
+    "Pokemon Japanese 096": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Rotom EXSuper RareShop with Affiliates",
+      "cardNo": "096",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 096",
+      "psaTotal": 67400
+    },
+    "Pokemon Japanese 097": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Mismagius EXSuper RareShop with Affiliates",
+      "cardNo": "097",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 097",
+      "psaTotal": 55000
+    },
+    "Pokemon Japanese 098": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Mega Sharpedo EXSuper RareShop with Affiliates",
+      "cardNo": "098",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 098",
+      "psaTotal": 91000
+    },
+    "Pokemon Japanese 099": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Empoleon EXSuper RareShop with Affiliates",
+      "cardNo": "099",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 099",
+      "psaTotal": 53200
+    },
+    "Pokemon Japanese 100": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Mega Lopunny EXSuper RareShop with Affiliates",
+      "cardNo": "100",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 100",
+      "psaTotal": 120300
+    },
+    "Pokemon Japanese 101": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Heat BurnerSuper RareShop with Affiliates",
+      "cardNo": "101",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 101",
+      "psaTotal": 11500
+    },
+    "Pokemon Japanese 102": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "SwitchSuper RareShop with Affiliates",
+      "cardNo": "102",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 102",
+      "psaTotal": 10300
+    },
+    "Pokemon Japanese 103": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Sacred CharmSuper RareShop with Affiliates",
+      "cardNo": "103",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 103",
+      "psaTotal": 9300
+    },
+    "Pokemon Japanese 104": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Punk HelmetSuper RareShop with Affiliates",
+      "cardNo": "104",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 104",
+      "psaTotal": 11100
+    },
+    "Pokemon Japanese 105": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Grimsley's One MoveSuper RareShop with Affiliates",
+      "cardNo": "105",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 105",
+      "psaTotal": 27500
+    },
+    "Pokemon Japanese 106": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "DawnSuper RareShop with Affiliates",
+      "cardNo": "106",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 106",
+      "psaTotal": 405600
+    },
+    "Pokemon Japanese 107": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "FirebreatherSuper RareShop with Affiliates",
+      "cardNo": "107",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 107",
+      "psaTotal": 19200
+    },
+    "Pokemon Japanese 108": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Battle ColosseumSuper RareShop with Affiliates",
+      "cardNo": "108",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 108",
+      "psaTotal": 10500
+    },
+    "Pokemon Japanese 109": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Ignition EnergySuper RareShop with Affiliates",
+      "cardNo": "109",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 109",
+      "psaTotal": 18300
+    },
+    "Pokemon Japanese 110": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Mega Charizard X EXSpecial Art RareShop with Affiliates",
+      "cardNo": "110",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 110",
+      "psaTotal": 5714920
+    },
+    "Pokemon Japanese 111": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Oricorio EXSpecial Art RareShop with Affiliates",
+      "cardNo": "111",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 111",
+      "psaTotal": 2162900
+    },
+    "Pokemon Japanese 112": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Rotom EXSpecial Art RareShop with Affiliates",
+      "cardNo": "112",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 112",
+      "psaTotal": 290500
+    },
+    "Pokemon Japanese 113": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Mega Sharpedo EXSpecial Art RareShop with Affiliates",
+      "cardNo": "113",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 113",
+      "psaTotal": 420300
+    },
+    "Pokemon Japanese 114": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Mega Lopunny EXSpecial Art RareShop with Affiliates",
+      "cardNo": "114",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 114",
+      "psaTotal": 323600
+    },
+    "Pokemon Japanese 115": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "DawnSpecial Art RareShop with Affiliates",
+      "cardNo": "115",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 115",
+      "psaTotal": 1311500
+    },
+    "Pokemon Japanese 116": {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Mega Charizard X EXMega Ultra RareShop with Affiliates",
+      "cardNo": "116",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 116",
+      "psaTotal": 1189910
+    },
+    "Pokemon Japanese MA-PREMIUM TRAINER BOX MEGA 002": {
+      "sourceSet": "2025 Pokemon Japanese MA-Premium Trainer Box Mega",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-ma-premium-trainer-box-mega/314066",
+      "fetchedAt": "2026-08-16T22:37:08.782Z",
+      "cardName": "Mew EXShop with Affiliates",
+      "cardNo": "002",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese MA-PREMIUM TRAINER BOX MEGA 002",
+      "psaTotal": 1100
+    },
+    "Pokemon Japanese MA-PREMIUM TRAINER BOX MEGA 041": {
+      "sourceSet": "2025 Pokemon Japanese MA-Premium Trainer Box Mega",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-ma-premium-trainer-box-mega/314066",
+      "fetchedAt": "2026-08-16T22:37:08.782Z",
+      "cardName": "Lillie's DeterminationShop with Affiliates",
+      "cardNo": "041",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese MA-PREMIUM TRAINER BOX MEGA 041",
+      "psaTotal": 500
+    },
+    "Pokemon Japanese MBD-MEGA STARTER SET MEGA DIANCIE EX 005": {
+      "sourceSet": "2025 Pokemon Japanese Mbd-Mega Starter Set Mega Diancie Ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mbd-mega-starter-set-diancie-ex/316159",
+      "fetchedAt": "2026-08-16T22:37:42.933Z",
+      "cardName": "Mega Diancie EXShop with Affiliates",
+      "cardNo": "005",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese MBD-MEGA STARTER SET MEGA DIANCIE EX 005",
+      "psaTotal": 17600
+    },
+    "Pokemon Japanese MBD-MEGA STARTER SET MEGA DIANCIE EX 006": {
+      "sourceSet": "2025 Pokemon Japanese Mbd-Mega Starter Set Mega Diancie Ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mbd-mega-starter-set-diancie-ex/316159",
+      "fetchedAt": "2026-08-16T22:37:42.933Z",
+      "cardName": "MimikyuShop with Affiliates",
+      "cardNo": "006",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese MBD-MEGA STARTER SET MEGA DIANCIE EX 006",
+      "psaTotal": 10100
+    },
+    "Pokemon Japanese MBD-MEGA STARTER SET MEGA DIANCIE EX 020": {
+      "sourceSet": "2025 Pokemon Japanese Mbd-Mega Starter Set Mega Diancie Ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mbd-mega-starter-set-diancie-ex/316159",
+      "fetchedAt": "2026-08-16T22:37:42.933Z",
+      "cardName": "Lillie's DeterminationShop with Affiliates",
+      "cardNo": "020",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese MBD-MEGA STARTER SET MEGA DIANCIE EX 020",
+      "psaTotal": 600
+    },
+    "Pokemon Japanese MBD-MEGA STARTER SET MEGA DIANCIE EX 022": {
+      "sourceSet": "2025 Pokemon Japanese Mbd-Mega Starter Set Mega Diancie Ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mbd-mega-starter-set-diancie-ex/316159",
+      "fetchedAt": "2026-08-16T22:37:42.933Z",
+      "cardName": "MeloettaShop with Affiliates",
+      "cardNo": "022",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese MBD-MEGA STARTER SET MEGA DIANCIE EX 022",
+      "psaTotal": 385900
+    },
+    "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 001": {
+      "sourceSet": "2025 Pokemon Japanese Mbg-Mega Starter Set Mega Gengar Ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mbg-mega-starter-set-gengar-ex/316158",
+      "fetchedAt": "2026-08-16T22:38:30.277Z",
+      "cardName": "GastlyShop with Affiliates",
+      "cardNo": "001",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 001",
+      "psaTotal": 1200
+    },
+    "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 002": {
+      "sourceSet": "2025 Pokemon Japanese Mbg-Mega Starter Set Mega Gengar Ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mbg-mega-starter-set-gengar-ex/316158",
+      "fetchedAt": "2026-08-16T22:38:30.277Z",
+      "cardName": "HaunterShop with Affiliates",
+      "cardNo": "002",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 002",
+      "psaTotal": 800
+    },
+    "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 003": {
+      "sourceSet": "2025 Pokemon Japanese Mbg-Mega Starter Set Mega Gengar Ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mbg-mega-starter-set-gengar-ex/316158",
+      "fetchedAt": "2026-08-16T22:38:30.277Z",
+      "cardName": "Mega Gengar EXShop with Affiliates",
+      "cardNo": "003",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 003",
+      "psaTotal": 2732400
+    },
+    "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 021": {
+      "sourceSet": "2025 Pokemon Japanese Mbg-Mega Starter Set Mega Gengar Ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mbg-mega-starter-set-gengar-ex/316158",
+      "fetchedAt": "2026-08-16T22:38:30.277Z",
+      "cardName": "Lillie's DeterminationShop with Affiliates",
+      "cardNo": "021",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 021",
+      "psaTotal": 3000
+    },
+    "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 022": {
+      "sourceSet": "2025 Pokemon Japanese Mbg-Mega Starter Set Mega Gengar Ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mbg-mega-starter-set-gengar-ex/316158",
+      "fetchedAt": "2026-08-16T22:38:30.277Z",
+      "cardName": "HaunterShop with Affiliates",
+      "cardNo": "022",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 022",
+      "psaTotal": 2147700
+    },
+    "Pokemon Japanese MP1-START DECK 100 BATTLE COLLECTION COROCIAO VERSION 001": {
+      "sourceSet": "2025 Pokemon Japanese MP1-Start Deck 100 Battle Collection Corociao Version",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mp1-start-deck-100-battle-collection-corociao-version/297732",
+      "fetchedAt": "2026-08-16T23:04:59.869Z",
+      "cardName": "Mew EXShop with Affiliates",
+      "cardNo": "001",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese MP1-START DECK 100 BATTLE COLLECTION COROCIAO VERSION 001",
+      "psaTotal": 3300
+    },
+    "Pokemon Japanese SV0D-EX STARTER SET STEVEN'S BELDUM & METAGROSS 019": {
+      "sourceSet": "2025 Pokemon Japanese Sv0d-EX Starter Set Steven's Beldum & Metagross Ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv0d-ex-starter-set-stevens-beldum-metagross/296040",
+      "fetchedAt": "2026-08-16T23:07:43.473Z",
+      "cardNo": "019",
+      "cardName": "Steven's Beldum",
+      "psa10Count": 2291,
+      "psaTotal": 2653,
+      "psa10Rate": 86.35356049566454,
+      "psaQuery": "Pokemon Japanese SV0D-EX STARTER SET STEVEN'S BELDUM & METAGROSS 019"
+    },
+    "Pokemon Japanese SV0M-EX STARTER SET MARNIE'S MORPEKO & GRIMMSNARL EX 007": {
+      "sourceSet": "2025 Pokemon Japanese Sv0m-EX Starter Set Marnie's Morpeko & Grimmsnarl Ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv0m-ex-starter-set-marnies-morpeko-grimmsnarl/296041",
+      "fetchedAt": "2026-08-17T01:29:50.540Z",
+      "cardName": "Marnie's Grimmsnarl EXShop with Affiliates",
+      "cardNo": "007",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV0M-EX STARTER SET MARNIE'S MORPEKO & GRIMMSNARL EX 007",
+      "psaTotal": 2900
+    },
+    "Pokemon Japanese SV0M-EX STARTER SET MARNIE'S MORPEKO & GRIMMSNARL EX 008": {
+      "sourceSet": "2025 Pokemon Japanese Sv0m-EX Starter Set Marnie's Morpeko & Grimmsnarl Ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv0m-ex-starter-set-marnies-morpeko-grimmsnarl/296041",
+      "fetchedAt": "2026-08-17T01:29:50.540Z",
+      "cardName": "Marnie's MorpekoShop with Affiliates",
+      "cardNo": "008",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV0M-EX STARTER SET MARNIE'S MORPEKO & GRIMMSNARL EX 008",
+      "psaTotal": 500
+    },
+    "Pokemon Japanese SV0M-EX STARTER SET MARNIE'S MORPEKO & GRIMMSNARL EX 020": {
+      "sourceSet": "2025 Pokemon Japanese Sv0m-EX Starter Set Marnie's Morpeko & Grimmsnarl Ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv0m-ex-starter-set-marnies-morpeko-grimmsnarl/296041",
+      "fetchedAt": "2026-08-17T01:29:50.540Z",
+      "cardName": "Marnie's MorpekoShop with Affiliates",
+      "cardNo": "020",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV0M-EX STARTER SET MARNIE'S MORPEKO & GRIMMSNARL EX 020",
+      "psaTotal": 1645611
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 001": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "SnivyReverse HoloShop with Affiliates",
+      "cardNo": "001",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 001",
+      "psaTotal": 500
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 002": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ServineMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "002",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 002",
+      "psaTotal": 10600
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 003": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Serperior EXShop with Affiliates",
+      "cardNo": "003",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 003",
+      "psaTotal": 3000
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 004": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "PansageMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "004",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 004",
+      "psaTotal": 6500
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 005": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "SimisageMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "005",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 005",
+      "psaTotal": 12600
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 006": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "PetililMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "006",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 006",
+      "psaTotal": 9300
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 007": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "LilligantMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "007",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 007",
+      "psaTotal": 6700
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 008": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "MaractusMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "008",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 008",
+      "psaTotal": 7200
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 009": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "KarrablastMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "009",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 009",
+      "psaTotal": 7100
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 010": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "FoongusMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "010",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 010",
+      "psaTotal": 6000
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 011": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "AmoongussMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "011",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 011",
+      "psaTotal": 3800
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 012": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "VictiniReverse HoloShop with Affiliates",
+      "cardNo": "012",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 012",
+      "psaTotal": 4100
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 013": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "DarumakaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "013",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 013",
+      "psaTotal": 7000
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 014": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "DarmanitanMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "014",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 014",
+      "psaTotal": 6000
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 015": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "LitwickMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "015",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 015",
+      "psaTotal": 8400
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 016": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "LampentMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "016",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 016",
+      "psaTotal": 5900
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 017": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ChandelureMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "017",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 017",
+      "psaTotal": 6000
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 018": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "LarvestaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "018",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 018",
+      "psaTotal": 5700
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 019": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "VolcaronaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "019",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 019",
+      "psaTotal": 7200
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 020": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "PanpourMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "020",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 020",
+      "psaTotal": 10400
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 021": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "SimipourMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "021",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 021",
+      "psaTotal": 11000
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 022": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "TympoleMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "022",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 022",
+      "psaTotal": 7600
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 023": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "PalpitoadMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "023",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 023",
+      "psaTotal": 4800
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 024": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "SeismitoadMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "024",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 024",
+      "psaTotal": 9200
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 025": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "TirtougaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "025",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 025",
+      "psaTotal": 5100
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 026": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "CarracostaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "026",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 026",
+      "psaTotal": 6900
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 027": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "AlomomolaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "027",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 027",
+      "psaTotal": 8900
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 028": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "CubchooMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "028",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 028",
+      "psaTotal": 8500
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 029": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "BearticMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "029",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 029",
+      "psaTotal": 8400
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 030": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "CryogonalMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "030",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 030",
+      "psaTotal": 5400
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 031": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Kyurem EXShop with Affiliates",
+      "cardNo": "031",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 031",
+      "psaTotal": 4900
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 032": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "EmolgaReverse HoloShop with Affiliates",
+      "cardNo": "032",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 032",
+      "psaTotal": 500
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 033": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "TynamoMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "033",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 033",
+      "psaTotal": 4000
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 034": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "EelektrikMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "034",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 034",
+      "psaTotal": 4100
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 035": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "EelektrossMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "035",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 035",
+      "psaTotal": 5300
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 036": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ThundurusMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "036",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 036",
+      "psaTotal": 8000
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 037": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Zekrom EXShop with Affiliates",
+      "cardNo": "037",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 037",
+      "psaTotal": 10900
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 038": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "MunnaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "038",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 038",
+      "psaTotal": 6900
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 039": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "MusharnaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "039",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 039",
+      "psaTotal": 9900
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 040": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "SolosisMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "040",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 040",
+      "psaTotal": 10800
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 041": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "DuosionMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "041",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 041",
+      "psaTotal": 5500
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 042": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ReuniclusMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "042",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 042",
+      "psaTotal": 7200
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 043": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ElgyemMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "043",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 043",
+      "psaTotal": 6800
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 044": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "BeheeyemMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "044",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 044",
+      "psaTotal": 12800
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 045": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "GolettMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "045",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 045",
+      "psaTotal": 6900
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 046": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "GolurkMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "046",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 046",
+      "psaTotal": 5700
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 047": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Meloetta EXShop with Affiliates",
+      "cardNo": "047",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 047",
+      "psaTotal": 2300
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 048": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "DrilburMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "048",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 048",
+      "psaTotal": 5500
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 049": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Excadrill EXShop with Affiliates",
+      "cardNo": "049",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 049",
+      "psaTotal": 1800
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 050": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "TimburrMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "050",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 050",
+      "psaTotal": 9500
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 051": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "GurdurrMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "051",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 051",
+      "psaTotal": 9600
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 052": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ConkeldurrMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "052",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 052",
+      "psaTotal": 6700
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 053": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ThrohMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "053",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 053",
+      "psaTotal": 6800
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 054": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "DwebbleMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "054",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 054",
+      "psaTotal": 7400
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 055": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "CrustleMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "055",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 055",
+      "psaTotal": 3700
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 056": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "LandorusMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "056",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 056",
+      "psaTotal": 11300
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 057": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "VenipedeMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "057",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 057",
+      "psaTotal": 9000
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 058": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "WhirlipedeMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "058",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 058",
+      "psaTotal": 4700
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 059": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ScolipedeMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "059",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 059",
+      "psaTotal": 4800
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 060": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "SandileMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "060",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 060",
+      "psaTotal": 6500
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 061": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "KrokorokMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "061",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 061",
+      "psaTotal": 8000
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 062": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "KrookodileMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "062",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 062",
+      "psaTotal": 6300
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 063": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "VullabyMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "063",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 063",
+      "psaTotal": 7800
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 064": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "MandibuzzMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "064",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 064",
+      "psaTotal": 5400
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 065": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "EscavalierMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "065",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 065",
+      "psaTotal": 4600
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 066": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "PawniardMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "066",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 066",
+      "psaTotal": 6900
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 067": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "BisharpMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "067",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 067",
+      "psaTotal": 9200
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 068": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "CobalionReverse HoloShop with Affiliates",
+      "cardNo": "068",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 068",
+      "psaTotal": 500
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 069": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Genesect EXShop with Affiliates",
+      "cardNo": "069",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 069",
+      "psaTotal": 3800
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 070": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "AxewMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "070",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 070",
+      "psaTotal": 7800
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 071": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "FraxureMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "071",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 071",
+      "psaTotal": 10600
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 072": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "HaxorusMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "072",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 072",
+      "psaTotal": 7200
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 073": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "PidoveMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "073",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 073",
+      "psaTotal": 8700
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 074": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "TranquillMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "074",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 074",
+      "psaTotal": 9800
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 075": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "UnfezantMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "075",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 075",
+      "psaTotal": 7000
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 076": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "AudinoMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "076",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 076",
+      "psaTotal": 4600
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 077": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "MinccinoMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "077",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 077",
+      "psaTotal": 10700
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 078": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "CinccinoMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "078",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 078",
+      "psaTotal": 9500
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 083": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "N's PlotReverse HoloShop with Affiliates",
+      "cardNo": "083",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 083",
+      "psaTotal": 1000
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 087": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "SnivyArt RareShop with Affiliates",
+      "cardNo": "087",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 087",
+      "psaTotal": 140900
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 088": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ServineArt RareShop with Affiliates",
+      "cardNo": "088",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 088",
+      "psaTotal": 78500
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 089": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "PansageArt RareShop with Affiliates",
+      "cardNo": "089",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 089",
+      "psaTotal": 56000
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 090": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "SimisageArt RareShop with Affiliates",
+      "cardNo": "090",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 090",
+      "psaTotal": 62500
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 091": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "PetililArt RareShop with Affiliates",
+      "cardNo": "091",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 091",
+      "psaTotal": 32300
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 092": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "LilligantArt RareShop with Affiliates",
+      "cardNo": "092",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 092",
+      "psaTotal": 39500
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 093": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "MaractusArt RareShop with Affiliates",
+      "cardNo": "093",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 093",
+      "psaTotal": 44800
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 094": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "KarrablastArt RareShop with Affiliates",
+      "cardNo": "094",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 094",
+      "psaTotal": 71300
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 095": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "FoongusArt RareShop with Affiliates",
+      "cardNo": "095",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 095",
+      "psaTotal": 46700
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 096": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "AmoongussArt RareShop with Affiliates",
+      "cardNo": "096",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 096",
+      "psaTotal": 45200
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 097": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "VictiniArt RareShop with Affiliates",
+      "cardNo": "097",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 097",
+      "psaTotal": 449000
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 098": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "DarumakaArt RareShop with Affiliates",
+      "cardNo": "098",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 098",
+      "psaTotal": 46400
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 099": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "DarmanitanArt RareShop with Affiliates",
+      "cardNo": "099",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 099",
+      "psaTotal": 62800
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 100": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "LitwickArt RareShop with Affiliates",
+      "cardNo": "100",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 100",
+      "psaTotal": 46200
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 101": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "LampentArt RareShop with Affiliates",
+      "cardNo": "101",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 101",
+      "psaTotal": 52500
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 102": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ChandelureArt RareShop with Affiliates",
+      "cardNo": "102",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 102",
+      "psaTotal": 81000
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 103": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "LarvestaArt RareShop with Affiliates",
+      "cardNo": "103",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 103",
+      "psaTotal": 50300
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 104": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "VolcaronaArt RareShop with Affiliates",
+      "cardNo": "104",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 104",
+      "psaTotal": 88600
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 105": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "PanpourArt RareShop with Affiliates",
+      "cardNo": "105",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 105",
+      "psaTotal": 56800
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 106": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "SimipourArt RareShop with Affiliates",
+      "cardNo": "106",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 106",
+      "psaTotal": 46000
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 107": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "TympoleArt RareShop with Affiliates",
+      "cardNo": "107",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 107",
+      "psaTotal": 54100
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 108": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "PalpitoadArt RareShop with Affiliates",
+      "cardNo": "108",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 108",
+      "psaTotal": 50300
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 109": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "SeismitoadArt RareShop with Affiliates",
+      "cardNo": "109",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 109",
+      "psaTotal": 1100200
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 110": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "TirtougaArt RareShop with Affiliates",
+      "cardNo": "110",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 110",
+      "psaTotal": 43500
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 111": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "CarracostaArt RareShop with Affiliates",
+      "cardNo": "111",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 111",
+      "psaTotal": 37500
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 112": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "AlomomolaArt RareShop with Affiliates",
+      "cardNo": "112",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 112",
+      "psaTotal": 50600
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 113": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "CubchooArt RareShop with Affiliates",
+      "cardNo": "113",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 113",
+      "psaTotal": 40910
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 114": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "BearticArt RareShop with Affiliates",
+      "cardNo": "114",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 114",
+      "psaTotal": 48800
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 115": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "CryogonalArt RareShop with Affiliates",
+      "cardNo": "115",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 115",
+      "psaTotal": 43500
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 116": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "EmolgaArt RareShop with Affiliates",
+      "cardNo": "116",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 116",
+      "psaTotal": 60800
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 117": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "TynamoArt RareShop with Affiliates",
+      "cardNo": "117",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 117",
+      "psaTotal": 34310
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 118": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "EelektrikArt RareShop with Affiliates",
+      "cardNo": "118",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 118",
+      "psaTotal": 44500
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 119": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "EelektrossArt RareShop with Affiliates",
+      "cardNo": "119",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 119",
+      "psaTotal": 53200
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 120": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ThundurusArt RareShop with Affiliates",
+      "cardNo": "120",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 120",
+      "psaTotal": 115300
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 121": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "MunnaArt RareShop with Affiliates",
+      "cardNo": "121",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 121",
+      "psaTotal": 44800
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 122": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "MusharnaArt RareShop with Affiliates",
+      "cardNo": "122",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 122",
+      "psaTotal": 46600
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 123": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "SolosisArt RareShop with Affiliates",
+      "cardNo": "123",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 123",
+      "psaTotal": 172200
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 124": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "DuosionArt RareShop with Affiliates",
+      "cardNo": "124",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 124",
+      "psaTotal": 40800
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 125": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ReuniclusArt RareShop with Affiliates",
+      "cardNo": "125",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 125",
+      "psaTotal": 27100
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 126": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ElgyemArt RareShop with Affiliates",
+      "cardNo": "126",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 126",
+      "psaTotal": 54800
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 127": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "BeheeyemArt RareShop with Affiliates",
+      "cardNo": "127",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 127",
+      "psaTotal": 62900
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 128": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "GolettArt RareShop with Affiliates",
+      "cardNo": "128",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 128",
+      "psaTotal": 47700
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 129": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "GolurkArt RareShop with Affiliates",
+      "cardNo": "129",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 129",
+      "psaTotal": 33900
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 130": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "DrilburArt RareShop with Affiliates",
+      "cardNo": "130",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 130",
+      "psaTotal": 82910
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 131": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "TimburrArt RareShop with Affiliates",
+      "cardNo": "131",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 131",
+      "psaTotal": 68300
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 132": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "GurdurrArt RareShop with Affiliates",
+      "cardNo": "132",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 132",
+      "psaTotal": 59100
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 133": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ConkeldurrArt RareShop with Affiliates",
+      "cardNo": "133",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 133",
+      "psaTotal": 59700
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 134": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ThrohArt RareShop with Affiliates",
+      "cardNo": "134",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 134",
+      "psaTotal": 52400
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 135": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "DwebbleArt RareShop with Affiliates",
+      "cardNo": "135",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 135",
+      "psaTotal": 41400
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 136": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "CrustleArt RareShop with Affiliates",
+      "cardNo": "136",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 136",
+      "psaTotal": 52400
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 137": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "LandorusArt RareShop with Affiliates",
+      "cardNo": "137",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 137",
+      "psaTotal": 109500
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 138": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "VenipedeArt RareShop with Affiliates",
+      "cardNo": "138",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 138",
+      "psaTotal": 47600
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 139": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "WhirlipedeArt RareShop with Affiliates",
+      "cardNo": "139",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 139",
+      "psaTotal": 49900
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 140": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ScolipedeArt RareShop with Affiliates",
+      "cardNo": "140",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 140",
+      "psaTotal": 52300
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 141": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "SandileArt RareShop with Affiliates",
+      "cardNo": "141",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 141",
+      "psaTotal": 43700
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 142": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "KrokorokArt RareShop with Affiliates",
+      "cardNo": "142",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 142",
+      "psaTotal": 42900
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 143": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "KrookodileArt RareShop with Affiliates",
+      "cardNo": "143",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 143",
+      "psaTotal": 56900
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 144": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "VullabyArt RareShop with Affiliates",
+      "cardNo": "144",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 144",
+      "psaTotal": 49300
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 145": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "MandibuzzArt RareShop with Affiliates",
+      "cardNo": "145",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 145",
+      "psaTotal": 54500
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 146": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "EscavalierArt RareShop with Affiliates",
+      "cardNo": "146",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 146",
+      "psaTotal": 66200
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 147": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "PawniardArt RareShop with Affiliates",
+      "cardNo": "147",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 147",
+      "psaTotal": 52600
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 148": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "BisharpArt RareShop with Affiliates",
+      "cardNo": "148",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 148",
+      "psaTotal": 59400
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 149": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "CobalionArt RareShop with Affiliates",
+      "cardNo": "149",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 149",
+      "psaTotal": 62300
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 150": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "AxewArt RareShop with Affiliates",
+      "cardNo": "150",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 150",
+      "psaTotal": 51000
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 151": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "FraxureArt RareShop with Affiliates",
+      "cardNo": "151",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 151",
+      "psaTotal": 47400
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 152": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "HaxorusArt RareShop with Affiliates",
+      "cardNo": "152",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 152",
+      "psaTotal": 97600
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 153": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "PidoveArt RareShop with Affiliates",
+      "cardNo": "153",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 153",
+      "psaTotal": 46000
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 154": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "TranquillArt RareShop with Affiliates",
+      "cardNo": "154",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 154",
+      "psaTotal": 58000
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 155": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "UnfezantArt RareShop with Affiliates",
+      "cardNo": "155",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 155",
+      "psaTotal": 46400
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 156": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "AudinoArt RareShop with Affiliates",
+      "cardNo": "156",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 156",
+      "psaTotal": 38300
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 157": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "MinccinoArt RareShop with Affiliates",
+      "cardNo": "157",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 157",
+      "psaTotal": 56600
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 158": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "CinccinoArt RareShop with Affiliates",
+      "cardNo": "158",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 158",
+      "psaTotal": 45500
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 159": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Serperior EXSuper RareShop with Affiliates",
+      "cardNo": "159",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 159",
+      "psaTotal": 61400
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 160": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Kyurem EXSuper RareShop with Affiliates",
+      "cardNo": "160",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 160",
+      "psaTotal": 63500
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 161": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Zekrom EXSuper RareShop with Affiliates",
+      "cardNo": "161",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 161",
+      "psaTotal": 214901
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 162": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Meloetta EXSuper RareShop with Affiliates",
+      "cardNo": "162",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 162",
+      "psaTotal": 65000
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 163": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Excadrill EXSuper RareShop with Affiliates",
+      "cardNo": "163",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 163",
+      "psaTotal": 55400
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 164": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Genesect EXSuper RareShop with Affiliates",
+      "cardNo": "164",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 164",
+      "psaTotal": 62500
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 165": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "N's PlotSuper RareShop with Affiliates",
+      "cardNo": "165",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 165",
+      "psaTotal": 134200
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 166": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "FennelSuper RareShop with Affiliates",
+      "cardNo": "166",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 166",
+      "psaTotal": 39400
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 167": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Serperior EXSpecial Art RareShop with Affiliates",
+      "cardNo": "167",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 167",
+      "psaTotal": 214300
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 168": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Kyurem EXSpecial Art RareShop with Affiliates",
+      "cardNo": "168",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 168",
+      "psaTotal": 375000
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 169": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Zekrom EXSpecial Art RareShop with Affiliates",
+      "cardNo": "169",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 169",
+      "psaTotal": 1412310
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 170": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Meloetta EXSpecial Art RareShop with Affiliates",
+      "cardNo": "170",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 170",
+      "psaTotal": 251010
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 171": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Excadrill EXSpecial Art RareShop with Affiliates",
+      "cardNo": "171",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 171",
+      "psaTotal": 64600
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 172": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Genesect EXSpecial Art RareShop with Affiliates",
+      "cardNo": "172",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 172",
+      "psaTotal": 147600
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 173": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "N's PlotSpecial Art RareShop with Affiliates",
+      "cardNo": "173",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 173",
+      "psaTotal": 681400
+    },
+    "Pokemon Japanese SV11B-BLACK BOLT 174": {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Zekrom EXBW RareShop with Affiliates",
+      "cardNo": "174",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 174",
+      "psaTotal": 1643711
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 003": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Yanmega EXShop with Affiliates",
+      "cardNo": "003",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 003",
+      "psaTotal": 3000
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 011": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "HydrappleShop with Affiliates",
+      "cardNo": "011",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 011",
+      "psaTotal": 600
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 015": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Ethan's CyndaquilShop with Affiliates",
+      "cardNo": "015",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 015",
+      "psaTotal": 900
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 016": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Ethan's QuilavaShop with Affiliates",
+      "cardNo": "016",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 016",
+      "psaTotal": 500
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 017": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Ethan's TyphlosionShop with Affiliates",
+      "cardNo": "017",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 017",
+      "psaTotal": 4600
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 019": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Ethan's MagcargoShop with Affiliates",
+      "cardNo": "019",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 019",
+      "psaTotal": 700
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 020": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Ethan's HO-Oh EXShop with Affiliates",
+      "cardNo": "020",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 020",
+      "psaTotal": 13300
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 022": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Misty's PsyduckShop with Affiliates",
+      "cardNo": "022",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 022",
+      "psaTotal": 4700
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 025": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Misty's MagikarpShop with Affiliates",
+      "cardNo": "025",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 025",
+      "psaTotal": 4400
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 026": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Misty's GyaradosShop with Affiliates",
+      "cardNo": "026",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 026",
+      "psaTotal": 10900
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 027": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Misty's LaprasShop with Affiliates",
+      "cardNo": "027",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 027",
+      "psaTotal": 2500
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 032": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Dondozo EXShop with Affiliates",
+      "cardNo": "032",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 032",
+      "psaTotal": 3400
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 035": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Electivire EXShop with Affiliates",
+      "cardNo": "035",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 035",
+      "psaTotal": 4100
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 036": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Ethan's PichuShop with Affiliates",
+      "cardNo": "036",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 036",
+      "psaTotal": 1802
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 044": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Cynthia's Garchomp EXShop with Affiliates",
+      "cardNo": "044",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 044",
+      "psaTotal": 10300
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 052": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Arven's Mabosstiff EXShop with Affiliates",
+      "cardNo": "052",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 052",
+      "psaTotal": 3600
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 057": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Arven's SandwichShop with Affiliates",
+      "cardNo": "057",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 057",
+      "psaTotal": 600
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 064": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "YanmaArt RareShop with Affiliates",
+      "cardNo": "064",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 064",
+      "psaTotal": 187100
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 065": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Cynthia's RoseradeArt RareShop with Affiliates",
+      "cardNo": "065",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 065",
+      "psaTotal": 602500
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 066": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "ShayminArt RareShop with Affiliates",
+      "cardNo": "066",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 066",
+      "psaTotal": 180200
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 067": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "CrustleArt RareShop with Affiliates",
+      "cardNo": "067",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 067",
+      "psaTotal": 150200
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 068": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "HydrappleArt RareShop with Affiliates",
+      "cardNo": "068",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 068",
+      "psaTotal": 173200
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 069": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "RapidashArt RareShop with Affiliates",
+      "cardNo": "069",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 069",
+      "psaTotal": 237600
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 070": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Ethan's TyphlosionArt RareShop with Affiliates",
+      "cardNo": "070",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 070",
+      "psaTotal": 1027900
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 071": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Misty's PsyduckArt RareShop with Affiliates",
+      "cardNo": "071",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 071",
+      "psaTotal": 1891400
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 072": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Misty's LaprasArt RareShop with Affiliates",
+      "cardNo": "072",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 072",
+      "psaTotal": 897100
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 073": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "ElectrikeArt RareShop with Affiliates",
+      "cardNo": "073",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 073",
+      "psaTotal": 162300
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 074": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "RotomArt RareShop with Affiliates",
+      "cardNo": "074",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 074",
+      "psaTotal": 186300
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 075": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Arven's GreedentArt RareShop with Affiliates",
+      "cardNo": "075",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 075",
+      "psaTotal": 194300
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 076": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Yanmega EXSuper RareShop with Affiliates",
+      "cardNo": "076",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 076",
+      "psaTotal": 24000
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 077": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Ethan's HO-Oh EXSuper RareShop with Affiliates",
+      "cardNo": "077",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 077",
+      "psaTotal": 114400
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 078": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Dondozo EXSuper RareShop with Affiliates",
+      "cardNo": "078",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 078",
+      "psaTotal": 25300
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 079": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Electivire EXSuper RareShop with Affiliates",
+      "cardNo": "079",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 079",
+      "psaTotal": 25000
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 080": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Cynthia's Garchomp EXSuper RareShop with Affiliates",
+      "cardNo": "080",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 080",
+      "psaTotal": 142800
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 081": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Arven's Mabosstiff EXSuper RareShop with Affiliates",
+      "cardNo": "081",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 081",
+      "psaTotal": 37000
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 082": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Emcee's HypeSuper RareShop with Affiliates",
+      "cardNo": "082",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 082",
+      "psaTotal": 92700
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 083": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "JudgeSuper RareShop with Affiliates",
+      "cardNo": "083",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 083",
+      "psaTotal": 6500
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 084": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Ethan's AdventureSuper RareShop with Affiliates",
+      "cardNo": "084",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 084",
+      "psaTotal": 43500
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 085": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Yanmega EXSpecial Art RareShop with Affiliates",
+      "cardNo": "085",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 085",
+      "psaTotal": 49400
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 086": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Ethan's HO-Oh EXSpecial Art RareShop with Affiliates",
+      "cardNo": "086",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 086",
+      "psaTotal": 879200
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 087": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Cynthia's Garchomp EXSpecial Art RareShop with Affiliates",
+      "cardNo": "087",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 087",
+      "psaTotal": 968001
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 088": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Arven's Mabosstiff EXSpecial Art RareShop with Affiliates",
+      "cardNo": "088",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 088",
+      "psaTotal": 65300
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 089": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Ethan's AdventureSpecial Art RareShop with Affiliates",
+      "cardNo": "089",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 089",
+      "psaTotal": 335200
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 090": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Ethan's HO-Oh EXUltra RareShop with Affiliates",
+      "cardNo": "090",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 090",
+      "psaTotal": 152300
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 091": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Cynthia's Garchomp EXUltra RareShop with Affiliates",
+      "cardNo": "091",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 091",
+      "psaTotal": 166300
+    },
+    "Pokemon Japanese SV9A-HEAT WAVE ARENA 092": {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "LevinciaUltra RareShop with Affiliates",
+      "cardNo": "092",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 092",
+      "psaTotal": 7300
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 012": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "MeowscaradaShop with Affiliates",
+      "cardNo": "012",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 012",
+      "psaTotal": 500
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 017": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Volcanion EXShop with Affiliates",
+      "cardNo": "017",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 017",
+      "psaTotal": 2100
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 023": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "LudicoloShop with Affiliates",
+      "cardNo": "023",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 023",
+      "psaTotal": 800
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 025": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "WailordShop with Affiliates",
+      "cardNo": "025",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 025",
+      "psaTotal": 600
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 030": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Iono's Bellibolt EXShop with Affiliates",
+      "cardNo": "030",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 030",
+      "psaTotal": 10400
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 031": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Iono's WattrelShop with Affiliates",
+      "cardNo": "031",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 031",
+      "psaTotal": 500
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 032": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Iono's KilowattrelShop with Affiliates",
+      "cardNo": "032",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 032",
+      "psaTotal": 1900
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 033": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Lillie's Clefairy EXShop with Affiliates",
+      "cardNo": "033",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 033",
+      "psaTotal": 18000
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 041": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Lillie's CutieflyShop with Affiliates",
+      "cardNo": "041",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 041",
+      "psaTotal": 500
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 042": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Lillie's RibombeeShop with Affiliates",
+      "cardNo": "042",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 042",
+      "psaTotal": 500
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 046": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Mamoswine EXShop with Affiliates",
+      "cardNo": "046",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 046",
+      "psaTotal": 2200
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 052": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "LycanrocShop with Affiliates",
+      "cardNo": "052",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 052",
+      "psaTotal": 500
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 058": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "TyranitarShop with Affiliates",
+      "cardNo": "058",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 058",
+      "psaTotal": 2100
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 060": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "N's ZoruaShop with Affiliates",
+      "cardNo": "060",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 060",
+      "psaTotal": 700
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 061": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "N's Zoroark EXShop with Affiliates",
+      "cardNo": "061",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 061",
+      "psaTotal": 14300
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 067": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "MagearnaShop with Affiliates",
+      "cardNo": "067",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 067",
+      "psaTotal": 700
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 069": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Hop's Zacian EXShop with Affiliates",
+      "cardNo": "069",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 069",
+      "psaTotal": 8800
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 072": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Salamence EXShop with Affiliates",
+      "cardNo": "072",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 072",
+      "psaTotal": 5700
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 074": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "N's ReshiramShop with Affiliates",
+      "cardNo": "074",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 074",
+      "psaTotal": 4100
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 075": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Hop's SnorlaxShop with Affiliates",
+      "cardNo": "075",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 075",
+      "psaTotal": 17600
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 077": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "FurretShop with Affiliates",
+      "cardNo": "077",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 077",
+      "psaTotal": 800
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 079": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Dudunsparce EXShop with Affiliates",
+      "cardNo": "079",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 079",
+      "psaTotal": 1700
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 086": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Hop's DubwoolShop with Affiliates",
+      "cardNo": "086",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 086",
+      "psaTotal": 600
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 101": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "MaractusArt RareShop with Affiliates",
+      "cardNo": "101",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 101",
+      "psaTotal": 492000
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 102": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "ArticunoArt RareShop with Affiliates",
+      "cardNo": "102",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 102",
+      "psaTotal": 2005501
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 103": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "WailordArt RareShop with Affiliates",
+      "cardNo": "103",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 103",
+      "psaTotal": 1376500
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 104": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Iono's KilowattrelArt RareShop with Affiliates",
+      "cardNo": "104",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 104",
+      "psaTotal": 1496300
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 105": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Lillie's RibombeeArt RareShop with Affiliates",
+      "cardNo": "105",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 105",
+      "psaTotal": 3046100
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 106": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "SwinubArt RareShop with Affiliates",
+      "cardNo": "106",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 106",
+      "psaTotal": 580700
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 107": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "LycanrocArt RareShop with Affiliates",
+      "cardNo": "107",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 107",
+      "psaTotal": 556700
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 108": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "N's ZoruaArt RareShop with Affiliates",
+      "cardNo": "108",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 108",
+      "psaTotal": 814200
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 109": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "N's ReshiramArt RareShop with Affiliates",
+      "cardNo": "109",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 109",
+      "psaTotal": 2886700
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 110": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "FurretArt RareShop with Affiliates",
+      "cardNo": "110",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 110",
+      "psaTotal": 586901
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 111": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "NoibatArt RareShop with Affiliates",
+      "cardNo": "111",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 111",
+      "psaTotal": 591510
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 112": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Hop's WoolooArt RareShop with Affiliates",
+      "cardNo": "112",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 112",
+      "psaTotal": 525600
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 113": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Volcanion EXSuper RareShop with Affiliates",
+      "cardNo": "113",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 113",
+      "psaTotal": 46500
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 114": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Iono's Bellibolt EXSuper RareShop with Affiliates",
+      "cardNo": "114",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 114",
+      "psaTotal": 360600
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 115": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Lillie's Clefairy EXSuper RareShop with Affiliates",
+      "cardNo": "115",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 115",
+      "psaTotal": 677800
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 116": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Mamoswine EXSuper RareShop with Affiliates",
+      "cardNo": "116",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 116",
+      "psaTotal": 40300
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 117": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "N's Zoroark EXSuper RareShop with Affiliates",
+      "cardNo": "117",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 117",
+      "psaTotal": 179300
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 118": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Hop's Zacian EXSuper RareShop with Affiliates",
+      "cardNo": "118",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 118",
+      "psaTotal": 102700
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 119": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Salamence EXSuper RareShop with Affiliates",
+      "cardNo": "119",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 119",
+      "psaTotal": 68300
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 120": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Dudunsparce EXSuper RareShop with Affiliates",
+      "cardNo": "120",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 120",
+      "psaTotal": 45200
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 121": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Iris's Fighting SpiritSuper RareShop with Affiliates",
+      "cardNo": "121",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 121",
+      "psaTotal": 468300
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 122": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "RuffianSuper RareShop with Affiliates",
+      "cardNo": "122",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 122",
+      "psaTotal": 16600
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 123": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Brock's ScoutingSuper RareShop with Affiliates",
+      "cardNo": "123",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 123",
+      "psaTotal": 31600
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 124": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Volcanion EXSpecial Art RareShop with Affiliates",
+      "cardNo": "124",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 124",
+      "psaTotal": 236700
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 125": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Iono's Bellibolt EXSpecial Art RareShop with Affiliates",
+      "cardNo": "125",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 125",
+      "psaTotal": 1488300
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 126": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Lillie's Clefairy EXSpecial Art RareShop with Affiliates",
+      "cardNo": "126",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 126",
+      "psaTotal": 2393300
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 127": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "N's Zoroark EXSpecial Art RareShop with Affiliates",
+      "cardNo": "127",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 127",
+      "psaTotal": 780500
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 128": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Hop's Zacian EXSpecial Art RareShop with Affiliates",
+      "cardNo": "128",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 128",
+      "psaTotal": 382500
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 129": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Salamence EXSpecial Art RareShop with Affiliates",
+      "cardNo": "129",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 129",
+      "psaTotal": 693200
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 130": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Iono's Bellibolt EXUltra RareShop with Affiliates",
+      "cardNo": "130",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 130",
+      "psaTotal": 494500
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 131": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "N's Zoroark EXUltra Rare-Incorrect TextureShop with Affiliates",
+      "cardNo": "131",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 131",
+      "psaTotal": 95100
+    },
+    "Pokemon Japanese SV9-BATTLE PARTNERS 132": {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Spike EnergyUltra RareShop with Affiliates",
+      "cardNo": "132",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 132",
+      "psaTotal": 7600
+    },
+    "Pokemon Japanese SVN-BATTLE PARTNERS DECK BUILD BOX 001": {
+      "sourceSet": "2025 Pokemon Japanese Svn-Battle Partners Deck Build Box",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-svn-battle-partners-deck-build-box/297732",
+      "fetchedAt": "2026-08-17T01:39:03.186Z",
+      "cardName": "Mew EXShop with Affiliates",
+      "cardNo": "001",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SVN-BATTLE PARTNERS DECK BUILD BOX 001",
+      "psaTotal": 3300
+    },
+    "Pokemon Japanese SV-P PROMO 199": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Lillie's ComfeyCollection File Set LillieShop with Affiliates",
+      "cardNo": "199",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 199",
+      "psaTotal": 43200
+    },
+    "Pokemon Japanese SV-P PROMO 200": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "N's ZoruaCollection File Set NShop with Affiliates",
+      "cardNo": "200",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 200",
+      "psaTotal": 24800
+    },
+    "Pokemon Japanese SV-P PROMO 219": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "IridaExtra Battle DayShop with Affiliates",
+      "cardNo": "219",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 219",
+      "psaTotal": 8800
+    },
+    "Pokemon Japanese SV-P PROMO 221": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "GarbodorExtra Battle Day Promo PackShop with Affiliates",
+      "cardNo": "221",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 221",
+      "psaTotal": 600
+    },
+    "Pokemon Japanese SV-P PROMO 232": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Iono's WattrelBattle Partners Box Purchase CampaignShop with Affiliates",
+      "cardNo": "232",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 232",
+      "psaTotal": 7196520
+    },
+    "Pokemon Japanese SV-P PROMO 233": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Hop's Pincurchin EXGym Promo Pack 9Shop with Affiliates",
+      "cardNo": "233",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 233",
+      "psaTotal": 1000
+    },
+    "Pokemon Japanese SV-P PROMO 234": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "DrifloonGym Promo Pack 9Shop with Affiliates",
+      "cardNo": "234",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 234",
+      "psaTotal": 15100
+    },
+    "Pokemon Japanese SV-P PROMO 235": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "DrifblimGym Promo Pack 9Shop with Affiliates",
+      "cardNo": "235",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 235",
+      "psaTotal": 16500
+    },
+    "Pokemon Japanese SV-P PROMO 236": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "TatsugiriGym Promo Pack 9Shop with Affiliates",
+      "cardNo": "236",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 236",
+      "psaTotal": 2300
+    },
+    "Pokemon Japanese SV-P PROMO 241": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "FeraligatrIllustration Contest 2024Shop with Affiliates",
+      "cardNo": "241",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 241",
+      "psaTotal": 261110
+    },
+    "Pokemon Japanese SV-P PROMO 242": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "PikachuIllustration Contest 2024Shop with Affiliates",
+      "cardNo": "242",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 242",
+      "psaTotal": 3849300
+    },
+    "Pokemon Japanese SV-P PROMO 243": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Toxtricity EXIllustration Contest 2024Shop with Affiliates",
+      "cardNo": "243",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 243",
+      "psaTotal": 129300
+    },
+    "Pokemon Japanese SV-P PROMO 254": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Ethan's HO-Oh EXHeat Wave Arena Sealed Battle-WinnerShop with Affiliates",
+      "cardNo": "254",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 254",
+      "psaTotal": 3800
+    },
+    "Pokemon Japanese SV-P PROMO 255": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Cynthia's Garchomp EXHeat Wave Arena Sealed Battle-WinnerShop with Affiliates",
+      "cardNo": "255",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 255",
+      "psaTotal": 2800
+    },
+    "Pokemon Japanese SV-P PROMO 256": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Arven's Mabosstiff EXHeat Wave Arena Sealed Battle-WinnerShop with Affiliates",
+      "cardNo": "256",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 256",
+      "psaTotal": 1100
+    },
+    "Pokemon Japanese SV-P PROMO 257": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Iono's TadbulbCorocoro Ichiban!-April 2025Shop with Affiliates",
+      "cardNo": "257",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 257",
+      "psaTotal": 2300
+    },
+    "Pokemon Japanese SV-P PROMO 259": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Team Rocket's MeowthCorocoro Ichiban! July-August 2025Shop with Affiliates",
+      "cardNo": "259",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 259",
+      "psaTotal": 328400
+    },
+    "Pokemon Japanese SV-P PROMO 260": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Tohoku's PikachuSpecial Box Pokemon Center TohokuShop with Affiliates",
+      "cardNo": "260",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 260",
+      "psaTotal": 4125320
+    },
+    "Pokemon Japanese SV-P PROMO 261": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Hiroshima's PikachuSpecial Box Pokemon Center HiroshimaShop with Affiliates",
+      "cardNo": "261",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 261",
+      "psaTotal": 3368200
+    },
+    "Pokemon Japanese SV-P PROMO 262": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "PsyduckGym Promo Pack 10Shop with Affiliates",
+      "cardNo": "262",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 262",
+      "psaTotal": 415910
+    },
+    "Pokemon Japanese SV-P PROMO 263": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "GolduckGym Promo Pack 10Shop with Affiliates",
+      "cardNo": "263",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 263",
+      "psaTotal": 55410
+    },
+    "Pokemon Japanese SV-P PROMO 264": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Flutter ManeGym Promo Pack 10Shop with Affiliates",
+      "cardNo": "264",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 264",
+      "psaTotal": 900
+    },
+    "Pokemon Japanese SV-P PROMO 265": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Team Rocket's Kangaskhan EXGym Promo Pack 10Shop with Affiliates",
+      "cardNo": "265",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 265",
+      "psaTotal": 11600
+    },
+    "Pokemon Japanese SV-P PROMO 270": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Team Rocket's GiovanniBoss Coffee X Pokemon Card Game CollaborationShop with Affiliates",
+      "cardNo": "270",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 270",
+      "psaTotal": 905710
+    },
+    "Pokemon Japanese SV-P PROMO 271": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "VictiniBlack Bolt/White Flare Card File SetShop with Affiliates",
+      "cardNo": "271",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 271",
+      "psaTotal": 529001
+    },
+    "Pokemon Japanese SV-P PROMO 279": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "CherenVictini Bwr Competition Promo Card PackShop with Affiliates",
+      "cardNo": "279",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 279",
+      "psaTotal": 34900
+    },
+    "Pokemon Japanese SV-P PROMO 288": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "VictiniVictini Bwr Event PrizeShop with Affiliates",
+      "cardNo": "288",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 288",
+      "psaTotal": 489600
+    },
+    "Pokemon Japanese SV-P PROMO 289": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Fukuoka's PikachuSpecial Box Pokemon Center FukuokaShop with Affiliates",
+      "cardNo": "289",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 289",
+      "psaTotal": 3928610
+    },
+    "Pokemon Japanese SV-P PROMO 290": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "RoxanneExtra Battle DayShop with Affiliates",
+      "cardNo": "290",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 290",
+      "psaTotal": 7900
+    },
+    "Pokemon Japanese SV-P PROMO 291": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "PikachuGym Event CampaignShop with Affiliates",
+      "cardNo": "291",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 291",
+      "psaTotal": 2105310
+    },
+    "Pokemon Japanese SV-P PROMO SV-P": {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Paradise ResortWorld Championships 2025Shop with Affiliates",
+      "cardNo": "SV-P",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO SV-P",
+      "psaTotal": 72100
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 001": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SewaddleMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "001",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 001",
+      "psaTotal": 10700
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 002": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SwadloonMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "002",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 002",
+      "psaTotal": 5200
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 003": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "LeavannyMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "003",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 003",
+      "psaTotal": 5500
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 004": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "CottoneeMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "004",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 004",
+      "psaTotal": 10800
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 005": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Whimsicott EXShop with Affiliates",
+      "cardNo": "005",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 005",
+      "psaTotal": 1300
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 006": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "DeerlingMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "006",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 006",
+      "psaTotal": 6800
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 007": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SawsbuckMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "007",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 007",
+      "psaTotal": 8800
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 008": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ShelmetMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "008",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 008",
+      "psaTotal": 7600
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 009": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "AccelgorMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "009",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 009",
+      "psaTotal": 6900
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 010": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "VirizionMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "010",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 010",
+      "psaTotal": 7700
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 011": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "TepigReverse HoloShop with Affiliates",
+      "cardNo": "011",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 011",
+      "psaTotal": 500
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 012": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "PigniteMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "012",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 012",
+      "psaTotal": 9400
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 013": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "EmboarMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "013",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 013",
+      "psaTotal": 12400
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 014": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "PansearMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "014",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 014",
+      "psaTotal": 6300
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 015": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SimisearMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "015",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 015",
+      "psaTotal": 3200
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 016": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "HeatmorMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "016",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 016",
+      "psaTotal": 8900
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 017": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Reshiram EXShop with Affiliates",
+      "cardNo": "017",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 017",
+      "psaTotal": 9300
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 018": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "OshawottReverse HoloShop with Affiliates",
+      "cardNo": "018",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 018",
+      "psaTotal": 1100
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 019": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "DewottMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "019",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 019",
+      "psaTotal": 5300
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 020": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SamurottMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "020",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 020",
+      "psaTotal": 7800
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 021": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "BasculinMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "021",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 021",
+      "psaTotal": 7600
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 022": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "DucklettMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "022",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 022",
+      "psaTotal": 4200
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 023": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SwannaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "023",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 023",
+      "psaTotal": 7000
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 024": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "VanilliteMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "024",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 024",
+      "psaTotal": 3200
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 025": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "VanillishMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "025",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 025",
+      "psaTotal": 6100
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 026": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "VanilluxeMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "026",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 026",
+      "psaTotal": 3900
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 027": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Keldeo EXShop with Affiliates",
+      "cardNo": "027",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 027",
+      "psaTotal": 1900
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 028": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "BlitzleMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "028",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 028",
+      "psaTotal": 6900
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 029": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ZebstrikaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "029",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 029",
+      "psaTotal": 6500
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 030": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "JoltikMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "030",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 030",
+      "psaTotal": 6100
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 031": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "GalvantulaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "031",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 031",
+      "psaTotal": 11000
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 032": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "StunfiskMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "032",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 032",
+      "psaTotal": 8600
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 033": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "WoobatMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "033",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 033",
+      "psaTotal": 6700
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 034": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SwoobatMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "034",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 034",
+      "psaTotal": 5200
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 035": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SigilyphMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "035",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 035",
+      "psaTotal": 6700
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 036": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "YamaskMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "036",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 036",
+      "psaTotal": 7000
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 037": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "CofagrigusMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "037",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 037",
+      "psaTotal": 4700
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 038": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "GothitaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "038",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 038",
+      "psaTotal": 6800
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 039": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "GothoritaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "039",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 039",
+      "psaTotal": 6400
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 040": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "GothitelleMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "040",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 040",
+      "psaTotal": 6100
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 041": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "FrillishMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "041",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 041",
+      "psaTotal": 2200
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 042": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Jellicent EXShop with Affiliates",
+      "cardNo": "042",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 042",
+      "psaTotal": 2100
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 043": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "RoggenrolaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "043",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 043",
+      "psaTotal": 6000
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 044": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "BoldoreMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "044",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 044",
+      "psaTotal": 7500
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 045": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "GigalithMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "045",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 045",
+      "psaTotal": 8100
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 046": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SawkMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "046",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 046",
+      "psaTotal": 11400
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 047": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ArchenMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "047",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 047",
+      "psaTotal": 6800
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 048": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ArcheopsMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "048",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 048",
+      "psaTotal": 6100
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 049": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "MienfooMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "049",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 049",
+      "psaTotal": 8800
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 050": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "MienshaoMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "050",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 050",
+      "psaTotal": 19200
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 051": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "TerrakionMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "051",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 051",
+      "psaTotal": 10900
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 052": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "PurrloinMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "052",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 052",
+      "psaTotal": 12900
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 053": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "LiepardMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "053",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 053",
+      "psaTotal": 7700
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 054": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ScraggyMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "054",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 054",
+      "psaTotal": 5500
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 055": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ScraftyMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "055",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 055",
+      "psaTotal": 4700
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 056": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "TrubbishMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "056",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 056",
+      "psaTotal": 7000
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 057": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "GarbodorMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "057",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 057",
+      "psaTotal": 5500
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 058": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ZoruaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "058",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 058",
+      "psaTotal": 12400
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 059": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ZoroarkMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "059",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 059",
+      "psaTotal": 12800
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 060": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "DeinoMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "060",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 060",
+      "psaTotal": 6900
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 061": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ZweilousMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "061",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 061",
+      "psaTotal": 5100
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 062": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Hydreigon EXShop with Affiliates",
+      "cardNo": "062",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 062",
+      "psaTotal": 2400
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 063": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "FerroseedMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "063",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 063",
+      "psaTotal": 6400
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 064": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "FerrothornMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "064",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 064",
+      "psaTotal": 7200
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 065": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "KlinkMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "065",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 065",
+      "psaTotal": 7600
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 066": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "KlangMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "066",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 066",
+      "psaTotal": 8500
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 067": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "KlinklangMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "067",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 067",
+      "psaTotal": 9100
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 068": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "DurantMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "068",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 068",
+      "psaTotal": 6600
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 069": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "DruddigonMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "069",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 069",
+      "psaTotal": 4900
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 070": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "PatratMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "070",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 070",
+      "psaTotal": 5000
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 071": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "WatchogMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "071",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 071",
+      "psaTotal": 4600
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 072": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "LillipupMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "072",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 072",
+      "psaTotal": 6500
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 073": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "HerdierMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "073",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 073",
+      "psaTotal": 6700
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 074": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "StoutlandMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "074",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 074",
+      "psaTotal": 10300
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 075": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Bouffalant EXShop with Affiliates",
+      "cardNo": "075",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 075",
+      "psaTotal": 1700
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 076": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "RuffletMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "076",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 076",
+      "psaTotal": 5900
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 077": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "BraviaryMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "077",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 077",
+      "psaTotal": 7300
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 078": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "TornadusMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "078",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 078",
+      "psaTotal": 14300
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 085": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "HildaReverse HoloShop with Affiliates",
+      "cardNo": "085",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 085",
+      "psaTotal": 2200
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 087": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SewaddleArt RareShop with Affiliates",
+      "cardNo": "087",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 087",
+      "psaTotal": 54000
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 088": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SwadloonArt RareShop with Affiliates",
+      "cardNo": "088",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 088",
+      "psaTotal": 49200
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 089": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "LeavannyArt RareShop with Affiliates",
+      "cardNo": "089",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 089",
+      "psaTotal": 38600
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 090": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "CottoneeArt RareShop with Affiliates",
+      "cardNo": "090",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 090",
+      "psaTotal": 65900
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 091": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "DeerlingArt RareShop with Affiliates",
+      "cardNo": "091",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 091",
+      "psaTotal": 42100
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 092": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SawsbuckArt RareShop with Affiliates",
+      "cardNo": "092",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 092",
+      "psaTotal": 46200
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 093": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ShelmetArt RareShop with Affiliates",
+      "cardNo": "093",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 093",
+      "psaTotal": 52400
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 094": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "AccelgorArt RareShop with Affiliates",
+      "cardNo": "094",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 094",
+      "psaTotal": 52800
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 095": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "VirizionArt RareShop with Affiliates",
+      "cardNo": "095",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 095",
+      "psaTotal": 51700
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 096": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "TepigArt RareShop with Affiliates",
+      "cardNo": "096",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 096",
+      "psaTotal": 104500
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 097": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "PigniteArt RareShop with Affiliates",
+      "cardNo": "097",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 097",
+      "psaTotal": 59800
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 098": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "EmboarArt RareShop with Affiliates",
+      "cardNo": "098",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 098",
+      "psaTotal": 84200
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 099": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "PansearArt RareShop with Affiliates",
+      "cardNo": "099",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 099",
+      "psaTotal": 67800
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 100": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SimisearArt RareShop with Affiliates",
+      "cardNo": "100",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 100",
+      "psaTotal": 35700
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 101": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "HeatmorArt RareShop with Affiliates",
+      "cardNo": "101",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 101",
+      "psaTotal": 43200
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 102": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "OshawottArt RareShop with Affiliates",
+      "cardNo": "102",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 102",
+      "psaTotal": 226600
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 103": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "DewottArt RareShop with Affiliates",
+      "cardNo": "103",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 103",
+      "psaTotal": 62500
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 104": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SamurottArt RareShop with Affiliates",
+      "cardNo": "104",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 104",
+      "psaTotal": 93200
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 105": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "BasculinArt RareShop with Affiliates",
+      "cardNo": "105",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 105",
+      "psaTotal": 65000
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 106": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "DucklettArt RareShop with Affiliates",
+      "cardNo": "106",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 106",
+      "psaTotal": 47500
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 107": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SwannaArt RareShop with Affiliates",
+      "cardNo": "107",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 107",
+      "psaTotal": 40810
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 108": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "VanilliteArt RareShop with Affiliates",
+      "cardNo": "108",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 108",
+      "psaTotal": 36200
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 109": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "VanillishArt RareShop with Affiliates",
+      "cardNo": "109",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 109",
+      "psaTotal": 42800
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 110": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "VanilluxeArt RareShop with Affiliates",
+      "cardNo": "110",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 110",
+      "psaTotal": 45900
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 111": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "BlitzleArt RareShop with Affiliates",
+      "cardNo": "111",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 111",
+      "psaTotal": 57200
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 112": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ZebstrikaArt RareShop with Affiliates",
+      "cardNo": "112",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 112",
+      "psaTotal": 79500
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 113": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "JoltikArt RareShop with Affiliates",
+      "cardNo": "113",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 113",
+      "psaTotal": 38800
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 114": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "GalvantulaArt RareShop with Affiliates",
+      "cardNo": "114",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 114",
+      "psaTotal": 49700
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 115": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "StunfiskArt RareShop with Affiliates",
+      "cardNo": "115",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 115",
+      "psaTotal": 43500
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 116": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "WoobatArt RareShop with Affiliates",
+      "cardNo": "116",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 116",
+      "psaTotal": 58000
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 117": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SwoobatArt RareShop with Affiliates",
+      "cardNo": "117",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 117",
+      "psaTotal": 52100
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 118": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SigilyphArt RareShop with Affiliates",
+      "cardNo": "118",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 118",
+      "psaTotal": 59400
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 119": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "YamaskArt RareShop with Affiliates",
+      "cardNo": "119",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 119",
+      "psaTotal": 54400
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 120": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "CofagrigusArt RareShop with Affiliates",
+      "cardNo": "120",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 120",
+      "psaTotal": 54800
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 121": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "GothitaArt RareShop with Affiliates",
+      "cardNo": "121",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 121",
+      "psaTotal": 49000
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 122": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "GothoritaArt RareShop with Affiliates",
+      "cardNo": "122",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 122",
+      "psaTotal": 55900
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 123": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "GothitelleArt RareShop with Affiliates",
+      "cardNo": "123",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 123",
+      "psaTotal": 56900
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 124": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "FrillishArt RareShop with Affiliates",
+      "cardNo": "124",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 124",
+      "psaTotal": 25700
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 125": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "RoggenrolaArt RareShop with Affiliates",
+      "cardNo": "125",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 125",
+      "psaTotal": 50600
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 126": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "BoldoreArt RareShop with Affiliates",
+      "cardNo": "126",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 126",
+      "psaTotal": 49800
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 127": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "GigalithArt RareShop with Affiliates",
+      "cardNo": "127",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 127",
+      "psaTotal": 69800
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 128": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SawkArt RareShop with Affiliates",
+      "cardNo": "128",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 128",
+      "psaTotal": 63300
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 129": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ArchenArt RareShop with Affiliates",
+      "cardNo": "129",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 129",
+      "psaTotal": 47500
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 130": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ArcheopsArt RareShop with Affiliates",
+      "cardNo": "130",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 130",
+      "psaTotal": 62400
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 131": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "MienfooArt RareShop with Affiliates",
+      "cardNo": "131",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 131",
+      "psaTotal": 40900
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 132": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "MienshaoArt RareShop with Affiliates",
+      "cardNo": "132",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 132",
+      "psaTotal": 45700
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 133": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "TerrakionArt RareShop with Affiliates",
+      "cardNo": "133",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 133",
+      "psaTotal": 83200
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 134": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "PurrloinArt RareShop with Affiliates",
+      "cardNo": "134",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 134",
+      "psaTotal": 55900
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 135": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "LiepardArt RareShop with Affiliates",
+      "cardNo": "135",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 135",
+      "psaTotal": 48600
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 136": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ScraggyArt RareShop with Affiliates",
+      "cardNo": "136",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 136",
+      "psaTotal": 63500
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 137": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ScraftyArt RareShop with Affiliates",
+      "cardNo": "137",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 137",
+      "psaTotal": 58400
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 138": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "TrubbishArt RareShop with Affiliates",
+      "cardNo": "138",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 138",
+      "psaTotal": 38800
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 139": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "GarbodorArt RareShop with Affiliates",
+      "cardNo": "139",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 139",
+      "psaTotal": 55800
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 140": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ZoruaArt RareShop with Affiliates",
+      "cardNo": "140",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 140",
+      "psaTotal": 109100
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 141": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ZoroarkArt RareShop with Affiliates",
+      "cardNo": "141",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 141",
+      "psaTotal": 128010
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 142": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "DeinoArt RareShop with Affiliates",
+      "cardNo": "142",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 142",
+      "psaTotal": 48300
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 143": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ZweilousArt RareShop with Affiliates",
+      "cardNo": "143",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 143",
+      "psaTotal": 51100
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 144": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "FerroseedArt RareShop with Affiliates",
+      "cardNo": "144",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 144",
+      "psaTotal": 54700
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 145": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "FerrothornArt RareShop with Affiliates",
+      "cardNo": "145",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 145",
+      "psaTotal": 45200
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 146": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "KlinkArt RareShop with Affiliates",
+      "cardNo": "146",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 146",
+      "psaTotal": 56100
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 147": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "KlangArt RareShop with Affiliates",
+      "cardNo": "147",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 147",
+      "psaTotal": 57200
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 148": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "KlinklangArt RareShop with Affiliates",
+      "cardNo": "148",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 148",
+      "psaTotal": 76400
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 149": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "DurantArt RareShop with Affiliates",
+      "cardNo": "149",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 149",
+      "psaTotal": 62100
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 150": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "DruddigonArt RareShop with Affiliates",
+      "cardNo": "150",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 150",
+      "psaTotal": 68700
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 151": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "PatratArt RareShop with Affiliates",
+      "cardNo": "151",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 151",
+      "psaTotal": 56400
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 152": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "WatchogArt RareShop with Affiliates",
+      "cardNo": "152",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 152",
+      "psaTotal": 48300
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 153": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "LillipupArt RareShop with Affiliates",
+      "cardNo": "153",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 153",
+      "psaTotal": 39510
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 154": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "HerdierArt RareShop with Affiliates",
+      "cardNo": "154",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 154",
+      "psaTotal": 45100
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 155": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "StoutlandArt RareShop with Affiliates",
+      "cardNo": "155",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 155",
+      "psaTotal": 54500
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 156": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "RuffletArt RareShop with Affiliates",
+      "cardNo": "156",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 156",
+      "psaTotal": 41500
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 157": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "BraviaryArt RareShop with Affiliates",
+      "cardNo": "157",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 157",
+      "psaTotal": 51600
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 158": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "TornadusArt RareShop with Affiliates",
+      "cardNo": "158",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 158",
+      "psaTotal": 77500
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 159": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Whimsicott EXSuper RareShop with Affiliates",
+      "cardNo": "159",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 159",
+      "psaTotal": 47300
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 160": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Reshiram EXSuper RareShop with Affiliates",
+      "cardNo": "160",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 160",
+      "psaTotal": 122100
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 161": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Keldeo EXSuper RareShop with Affiliates",
+      "cardNo": "161",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 161",
+      "psaTotal": 60500
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 162": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Jellicent EXSuper RareShop with Affiliates",
+      "cardNo": "162",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 162",
+      "psaTotal": 38000
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 163": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Hydreigon EXSuper RareShop with Affiliates",
+      "cardNo": "163",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 163",
+      "psaTotal": 67100
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 164": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Bouffalant EXSuper RareShop with Affiliates",
+      "cardNo": "164",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 164",
+      "psaTotal": 49100
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 165": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "HarlequinSuper RareShop with Affiliates",
+      "cardNo": "165",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 165",
+      "psaTotal": 21600
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 166": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "HildaSuper RareShop with Affiliates",
+      "cardNo": "166",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 166",
+      "psaTotal": 253400
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 167": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Whimsicott EXSpecial Art RareShop with Affiliates",
+      "cardNo": "167",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 167",
+      "psaTotal": 106900
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 168": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Reshiram EXSpecial Art RareShop with Affiliates",
+      "cardNo": "168",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 168",
+      "psaTotal": 1370000
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 169": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Keldeo EXSpecial Art RareShop with Affiliates",
+      "cardNo": "169",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 169",
+      "psaTotal": 235100
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 170": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Jellicent EXSpecial Art RareShop with Affiliates",
+      "cardNo": "170",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 170",
+      "psaTotal": 87700
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 171": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Hydreigon EXSpecial Art RareShop with Affiliates",
+      "cardNo": "171",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 171",
+      "psaTotal": 391200
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 172": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Bouffalant EXSpecial Art RareShop with Affiliates",
+      "cardNo": "172",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 172",
+      "psaTotal": 54600
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 173": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "HildaSpecial Art RareShop with Affiliates",
+      "cardNo": "173",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 173",
+      "psaTotal": 734601
+    },
+    "Pokemon Japanese SV11W-WHITE FLARE 174": {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Reshiram EXBW RareShop with Affiliates",
+      "cardNo": "174",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 174",
+      "psaTotal": 1592701
+    },
+    "Pokemon Japanese M-P PROMO 020": {
+      "sourceSet": "2025 Pokemon Japanese M-P Promo",
+      "sourceUrl": "https://www.psacard.com/spec/psa/14234253",
+      "fetchedAt": "2026-08-17T01:44:04.824Z",
+      "cardNo": "020",
+      "cardName": "Pikachu",
+      "psa10Count": 285454,
+      "psaTotal": 326067,
+      "psa10Rate": 87.54266131889082,
+      "psaQuery": "Pokemon Japanese M-P PROMO 020"
+    },
+    "Pokemon Japanese SV10-GLORY OF TEAM ROCKET 109": {
+      "sourceSet": "2025 Pokemon Japanese SV10-Glory of Team Rocket",
+      "sourceUrl": "https://www.psacard.com/auctionprices/tcg-cards/2025-pokemon-japanese-sv10-glory-team-rocket/team-rockets-meowth/13312876",
+      "fetchedAt": "2026-08-17T01:44:04.824Z",
+      "cardNo": "109",
+      "cardName": "Team Rocket's Meowth",
+      "psa10Count": 17483,
+      "psaTotal": 19724,
+      "psa10Rate": 88.63688204047934,
+      "psaQuery": "Pokemon Japanese SV10-GLORY OF TEAM ROCKET 109"
+    }
+  },
+  "rows": [
+    {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "003",
+      "cardName": "Mega Venusaur EX",
+      "psa10Count": 724,
+      "psaTotal": 857,
+      "psa10Rate": 84.48074679113185,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 003"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "064",
+      "cardName": "Bulbasaur",
+      "psa10Count": 15546,
+      "psaTotal": 18718,
+      "psa10Rate": 83.05374505823272,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 064"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "065",
+      "cardName": "Ivysaur",
+      "psa10Count": 15095,
+      "psaTotal": 17629,
+      "psa10Rate": 85.62595722956492,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 065"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "066",
+      "cardName": "Exeggutor",
+      "psa10Count": 7993,
+      "psaTotal": 9090,
+      "psa10Rate": 87.93179317931794,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 066"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "067",
+      "cardName": "Vulpix",
+      "psa10Count": 7716,
+      "psaTotal": 8697,
+      "psa10Rate": 88.72024836150396,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 067"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "068",
+      "cardName": "Riolu",
+      "psa10Count": 8664,
+      "psaTotal": 9857,
+      "psa10Rate": 87.8969260424064,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 068"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "069",
+      "cardName": "Marshadow",
+      "psa10Count": 12448,
+      "psaTotal": 14818,
+      "psa10Rate": 84.00593872317452,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 069"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "070",
+      "cardName": "Garganacl",
+      "psa10Count": 8718,
+      "psaTotal": 9796,
+      "psa10Rate": 88.99550837076357,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 070"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "071",
+      "cardName": "Spiritomb",
+      "psa10Count": 7956,
+      "psaTotal": 9165,
+      "psa10Rate": 86.80851063829788,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 071"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "072",
+      "cardName": "Shroodle",
+      "psa10Count": 8404,
+      "psaTotal": 9520,
+      "psa10Rate": 88.27731092436974,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 072"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "073",
+      "cardName": "Steelix",
+      "psa10Count": 8711,
+      "psaTotal": 10076,
+      "psa10Rate": 86.45295752282652,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 073"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "074",
+      "cardName": "Spearow",
+      "psa10Count": 7643,
+      "psaTotal": 8657,
+      "psa10Rate": 88.28693542797737,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 074"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "075",
+      "cardName": "Gumshoos",
+      "psa10Count": 8227,
+      "psaTotal": 9208,
+      "psa10Rate": 89.3462206776716,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 075"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "076",
+      "cardName": "Mega Venusaur EX",
+      "psa10Count": 3483,
+      "psaTotal": 3955,
+      "psa10Rate": 88.06573957016435,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 076"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "077",
+      "cardName": "Mega Camerupt EX",
+      "psa10Count": 852,
+      "psaTotal": 955,
+      "psa10Rate": 89.21465968586388,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 077"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "078",
+      "cardName": "Mega Lucario EX",
+      "psa10Count": 3597,
+      "psaTotal": 4251,
+      "psa10Rate": 84.61538461538461,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 078"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "079",
+      "cardName": "Mega Absol EX",
+      "psa10Count": 1155,
+      "psaTotal": 1419,
+      "psa10Rate": 81.3953488372093,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 079"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "080",
+      "cardName": "Mega Mawile EX",
+      "psa10Count": 810,
+      "psaTotal": 906,
+      "psa10Rate": 89.40397350993378,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 080"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "086",
+      "cardName": "Lillie's Determination",
+      "psa10Count": 12527,
+      "psaTotal": 21578,
+      "psa10Rate": 58.0544999536565,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 086"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "087",
+      "cardName": "Mega Venusaur EX",
+      "psa10Count": 12432,
+      "psaTotal": 14041,
+      "psa10Rate": 88.54070222918595,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 087"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "088",
+      "cardName": "Mega Lucario EX",
+      "psa10Count": 17550,
+      "psaTotal": 19439,
+      "psa10Rate": 90.28242193528475,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 088"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "089",
+      "cardName": "Mega Absol EX",
+      "psa10Count": 4932,
+      "psaTotal": 5576,
+      "psa10Rate": 88.45050215208035,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 089"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "090",
+      "cardName": "LT. Surge's Deal",
+      "psa10Count": 554,
+      "psaTotal": 891,
+      "psa10Rate": 62.177328843995504,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 090"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "091",
+      "cardName": "Lillie's Determination",
+      "psa10Count": 20487,
+      "psaTotal": 40696,
+      "psa10Rate": 50.341556909770006,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 091"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1l-Mega Brave",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "cardNo": "092",
+      "cardName": "Mega Lucario EX",
+      "psa10Count": 3622,
+      "psaTotal": 6842,
+      "psa10Rate": 52.937737503653906,
+      "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 092"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "049",
+      "cardName": "Mega Latias EX",
+      "psa10Count": 588,
+      "psaTotal": 699,
+      "psa10Rate": 84.12017167381974,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 049"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "064",
+      "cardName": "Shuckle",
+      "psa10Count": 4741,
+      "psaTotal": 5564,
+      "psa10Rate": 85.20848310567936,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 064"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "065",
+      "cardName": "Ninjask",
+      "psa10Count": 7049,
+      "psaTotal": 8012,
+      "psa10Rate": 87.98052920619071,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 065"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "066",
+      "cardName": "Litleo",
+      "psa10Count": 6218,
+      "psaTotal": 7079,
+      "psa10Rate": 87.83726515044498,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 066"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "067",
+      "cardName": "Snover",
+      "psa10Count": 4274,
+      "psaTotal": 5445,
+      "psa10Rate": 78.49403122130396,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 067"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "068",
+      "cardName": "Clawitzer",
+      "psa10Count": 6416,
+      "psaTotal": 7145,
+      "psa10Rate": 89.79706088173548,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 068"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "069",
+      "cardName": "Inteleon",
+      "psa10Count": 7421,
+      "psaTotal": 8210,
+      "psa10Rate": 90.38976857490864,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 069"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "070",
+      "cardName": "Helioptile",
+      "psa10Count": 6527,
+      "psaTotal": 7329,
+      "psa10Rate": 89.05717014599536,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 070"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "071",
+      "cardName": "Alakazam",
+      "psa10Count": 7813,
+      "psaTotal": 8953,
+      "psa10Rate": 87.26683793141964,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 071"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "072",
+      "cardName": "Shedinja",
+      "psa10Count": 7316,
+      "psaTotal": 8049,
+      "psa10Rate": 90.89327866815754,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 072"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "073",
+      "cardName": "Houndstone",
+      "psa10Count": 7201,
+      "psaTotal": 7899,
+      "psa10Rate": 91.1634384099253,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 073"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "074",
+      "cardName": "Delibird",
+      "psa10Count": 5660,
+      "psaTotal": 6620,
+      "psa10Rate": 85.49848942598187,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 074"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "075",
+      "cardName": "Stufful",
+      "psa10Count": 6372,
+      "psaTotal": 7026,
+      "psa10Rate": 90.69171648163963,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 075"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "076",
+      "cardName": "Mega Abomasnow EX",
+      "psa10Count": 798,
+      "psaTotal": 867,
+      "psa10Rate": 92.04152249134948,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 076"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "077",
+      "cardName": "Mega Manectric EX",
+      "psa10Count": 987,
+      "psaTotal": 1088,
+      "psa10Rate": 90.71691176470588,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 077"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "078",
+      "cardName": "Mega Gardevoir EX",
+      "psa10Count": 2701,
+      "psaTotal": 3058,
+      "psa10Rate": 88.32570307390452,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 078"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "079",
+      "cardName": "Mega Latias EX",
+      "psa10Count": 2517,
+      "psaTotal": 2832,
+      "psa10Rate": 88.87711864406779,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 079"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "080",
+      "cardName": "Mega Kangaskhan EX",
+      "psa10Count": 1305,
+      "psaTotal": 1474,
+      "psa10Rate": 88.53459972862959,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 080"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "084",
+      "cardName": "Acerola's Mischief",
+      "psa10Count": 5405,
+      "psaTotal": 9390,
+      "psa10Rate": 57.56123535676251,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 084"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "087",
+      "cardName": "Mega Gardevoir EX",
+      "psa10Count": 20806,
+      "psaTotal": 23565,
+      "psa10Rate": 88.29195841290048,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 087"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "088",
+      "cardName": "Mega Latias EX",
+      "psa10Count": 12424,
+      "psaTotal": 14035,
+      "psa10Rate": 88.52155325970787,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 088"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "089",
+      "cardName": "Mega Kangaskhan EX",
+      "psa10Count": 6580,
+      "psaTotal": 7522,
+      "psa10Rate": 87.47673491092795,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 089"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "090",
+      "cardName": "Acerola's Mischief",
+      "psa10Count": 8862,
+      "psaTotal": 16153,
+      "psa10Rate": 54.8628737695784,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 090"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "091",
+      "cardName": "Wally's Compassion",
+      "psa10Count": 636,
+      "psaTotal": 1227,
+      "psa10Rate": 51.83374083129584,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 091"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "cardNo": "092",
+      "cardName": "Mega Gardevoir EX",
+      "psa10Count": 2490,
+      "psaTotal": 5445,
+      "psa10Rate": 45.73002754820937,
+      "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 092"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "044",
+      "cardName": "Pikachu EX",
+      "psa10Count": 3856,
+      "psaTotal": 4515,
+      "psa10Rate": 85.40420819490588,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 044"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "063",
+      "cardName": "Team Rocket's Mewtwo EX",
+      "psa10Count": 1000,
+      "psaTotal": 1197,
+      "psa10Rate": 83.5421888053467,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 063"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "079",
+      "cardName": "Team Rocket's Mimikyu",
+      "psa10Count": 504,
+      "psaTotal": 921,
+      "psa10Rate": 54.72312703583062,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 079"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "126",
+      "cardName": "Mega Dragonite EX",
+      "psa10Count": 2022,
+      "psaTotal": 2338,
+      "psa10Rate": 86.4841745081266,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 126"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "127",
+      "cardName": "Rayquaza",
+      "psa10Count": 620,
+      "psaTotal": 881,
+      "psa10Rate": 70.37457434733257,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 127"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "127",
+      "cardName": "Rayquaza",
+      "psa10Count": 1206,
+      "psaTotal": 1613,
+      "psa10Rate": 74.76751394916305,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 127"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "194",
+      "cardName": "Beautifly",
+      "psa10Count": 7187,
+      "psaTotal": 8807,
+      "psa10Rate": 81.60554104689452,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 194"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "195",
+      "cardName": "Dustox",
+      "psa10Count": 8089,
+      "psaTotal": 9589,
+      "psa10Rate": 84.35707581603921,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 195"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "196",
+      "cardName": "Budew",
+      "psa10Count": 3128,
+      "psaTotal": 4295,
+      "psa10Rate": 72.82887077997671,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 196"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "197",
+      "cardName": "Ethan's Magcargo",
+      "psa10Count": 5371,
+      "psaTotal": 7600,
+      "psa10Rate": 70.67105263157895,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 197"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "198",
+      "cardName": "Numel",
+      "psa10Count": 6566,
+      "psaTotal": 8059,
+      "psa10Rate": 81.47412830375977,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 198"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "199",
+      "cardName": "Psyduck",
+      "psa10Count": 20904,
+      "psaTotal": 30408,
+      "psa10Rate": 68.74506708760852,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 199"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "200",
+      "cardName": "Snorunt",
+      "psa10Count": 3194,
+      "psaTotal": 4704,
+      "psa10Rate": 67.89965986394559,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 200"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "201",
+      "cardName": "Heliolisk",
+      "psa10Count": 5424,
+      "psaTotal": 7197,
+      "psa10Rate": 75.36473530637767,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 201"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "202",
+      "cardName": "Misdreavus",
+      "psa10Count": 6378,
+      "psaTotal": 7772,
+      "psa10Rate": 82.06381883685023,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 202"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "203",
+      "cardName": "Togekiss",
+      "psa10Count": 2112,
+      "psaTotal": 4273,
+      "psa10Rate": 49.42663234261643,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 203"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "204",
+      "cardName": "Hop's Trevenant",
+      "psa10Count": 7778,
+      "psaTotal": 9296,
+      "psa10Rate": 83.67039586919105,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 204"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "205",
+      "cardName": "Team Rocket's Mimikyu",
+      "psa10Count": 16399,
+      "psaTotal": 19301,
+      "psa10Rate": 84.96450961090099,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 205"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "206",
+      "cardName": "Team Rocket's Dugtrio",
+      "psa10Count": 7382,
+      "psaTotal": 9272,
+      "psa10Rate": 79.6160483175151,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 206"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "207",
+      "cardName": "Medicham",
+      "psa10Count": 5125,
+      "psaTotal": 6628,
+      "psa10Rate": 77.32347616173809,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 207"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "208",
+      "cardName": "Cynthia's Spiritomb",
+      "psa10Count": 8652,
+      "psaTotal": 10260,
+      "psa10Rate": 84.32748538011697,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 208"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "209",
+      "cardName": "Galarian Obstagoon",
+      "psa10Count": 8080,
+      "psaTotal": 9318,
+      "psa10Rate": 86.7138871002361,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 209"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "210",
+      "cardName": "N's Zekrom",
+      "psa10Count": 18589,
+      "psaTotal": 21942,
+      "psa10Rate": 84.71880411995261,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 210"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "211",
+      "cardName": "Dreepy",
+      "psa10Count": 3186,
+      "psaTotal": 4498,
+      "psa10Rate": 70.83148065807026,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 211"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "212",
+      "cardName": "Drakloak",
+      "psa10Count": 3882,
+      "psaTotal": 4951,
+      "psa10Rate": 78.40840234296101,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 212"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "213",
+      "cardName": "Fan Rotom",
+      "psa10Count": 4637,
+      "psaTotal": 6142,
+      "psa10Rate": 75.49658091826767,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 213"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "219",
+      "cardName": "Canari",
+      "psa10Count": 2138,
+      "psaTotal": 3896,
+      "psa10Rate": 54.87679671457906,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 219"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "223",
+      "cardName": "Mega Charizard X EX",
+      "psa10Count": 57636,
+      "psaTotal": 63288,
+      "psa10Rate": 91.06939704209329,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 223"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "223",
+      "cardName": "Mega Charizard X EX",
+      "psa10Count": 1578,
+      "psaTotal": 1673,
+      "psa10Rate": 94.32157800358637,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 223"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "224",
+      "cardName": "Mega Froslass EX",
+      "psa10Count": 10560,
+      "psaTotal": 11475,
+      "psa10Rate": 92.02614379084967,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 224"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "224",
+      "cardName": "Mega Froslass EX",
+      "psa10Count": 637,
+      "psaTotal": 661,
+      "psa10Rate": 96.36913767019666,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 224"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "225",
+      "cardName": "Mega Eelektross EX",
+      "psa10Count": 10975,
+      "psaTotal": 11982,
+      "psa10Rate": 91.59572692371891,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 225"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "225",
+      "cardName": "Mega Eelektross EX",
+      "psa10Count": 592,
+      "psaTotal": 615,
+      "psa10Rate": 96.26016260162602,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 225"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "226",
+      "cardName": "Mega Gardevoir EX",
+      "psa10Count": 13467,
+      "psaTotal": 14587,
+      "psa10Rate": 92.32193048604923,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 226"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "226",
+      "cardName": "Mega Gardevoir EX",
+      "psa10Count": 689,
+      "psaTotal": 728,
+      "psa10Rate": 94.64285714285714,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 226"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "227",
+      "cardName": "Mega Diancie EX",
+      "psa10Count": 10201,
+      "psaTotal": 11047,
+      "psa10Rate": 92.34181225672128,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 227"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "cardNo": "227",
+      "cardName": "Mega Diancie EX",
+      "psa10Count": 618,
+      "psaTotal": 640,
+      "psa10Rate": 96.5625,
+      "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 227"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Mega Heracross EXShop with Affiliates",
+      "cardNo": "004",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 004",
+      "psaTotal": 16200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "CharmanderShop with Affiliates",
+      "cardNo": "011",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 011",
+      "psaTotal": 1700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "CharmeleonShop with Affiliates",
+      "cardNo": "012",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 012",
+      "psaTotal": 1400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Mega Charizard X EXShop with Affiliates",
+      "cardNo": "013",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 013",
+      "psaTotal": 1687310
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "MoltresShop with Affiliates",
+      "cardNo": "014",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 014",
+      "psaTotal": 900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "ReshiramShop with Affiliates",
+      "cardNo": "017",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 017",
+      "psaTotal": 3900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Oricorio EXShop with Affiliates",
+      "cardNo": "018",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 018",
+      "psaTotal": 7400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "SuicuneShop with Affiliates",
+      "cardNo": "026",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 026",
+      "psaTotal": 1500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "PiplupShop with Affiliates",
+      "cardNo": "027",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 027",
+      "psaTotal": 1500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Rotom EXShop with Affiliates",
+      "cardNo": "029",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 029",
+      "psaTotal": 5000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Mismagius EXShop with Affiliates",
+      "cardNo": "036",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 036",
+      "psaTotal": 4700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "ZacianShop with Affiliates",
+      "cardNo": "039",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 039",
+      "psaTotal": 800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Mega Sharpedo EXShop with Affiliates",
+      "cardNo": "051",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 051",
+      "psaTotal": 22600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "ToxtricityShop with Affiliates",
+      "cardNo": "057",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 057",
+      "psaTotal": 800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Empoleon EXShop with Affiliates",
+      "cardNo": "058",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 058",
+      "psaTotal": 7300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "DuraludonShop with Affiliates",
+      "cardNo": "062",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 062",
+      "psaTotal": 4700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Mega Lopunny EXShop with Affiliates",
+      "cardNo": "072",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 072",
+      "psaTotal": 21500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "DawnShop with Affiliates",
+      "cardNo": "077",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 077",
+      "psaTotal": 500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "LudicoloArt RareShop with Affiliates",
+      "cardNo": "081",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 081",
+      "psaTotal": 1250700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "NymbleArt RareShop with Affiliates",
+      "cardNo": "082",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 082",
+      "psaTotal": 1247210
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "CharcadetArt RareShop with Affiliates",
+      "cardNo": "083",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 083",
+      "psaTotal": 880800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "DewgongArt RareShop with Affiliates",
+      "cardNo": "084",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 084",
+      "psaTotal": 889300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "PiplupArt RareShop with Affiliates",
+      "cardNo": "085",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 085",
+      "psaTotal": 1723030
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "YamperArt RareShop with Affiliates",
+      "cardNo": "086",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 086",
+      "psaTotal": 953720
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "ZacianArt RareShop with Affiliates",
+      "cardNo": "087",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 087",
+      "psaTotal": 1059800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "FlygonArt RareShop with Affiliates",
+      "cardNo": "088",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 088",
+      "psaTotal": 1035710
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "ToxtricityArt RareShop with Affiliates",
+      "cardNo": "089",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 089",
+      "psaTotal": 1003110
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "TogedemaruArt RareShop with Affiliates",
+      "cardNo": "090",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 090",
+      "psaTotal": 997311
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "WigglytuffArt RareShop with Affiliates",
+      "cardNo": "091",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 091",
+      "psaTotal": 1218110
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "AmbipomArt RareShop with Affiliates",
+      "cardNo": "092",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 092",
+      "psaTotal": 1421210
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Mega Heracross EXSuper RareShop with Affiliates",
+      "cardNo": "093",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 093",
+      "psaTotal": 107700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Mega Charizard X EXSuper RareShop with Affiliates",
+      "cardNo": "094",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 094",
+      "psaTotal": 2280500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Oricorio EXSuper RareShop with Affiliates",
+      "cardNo": "095",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 095",
+      "psaTotal": 87700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Rotom EXSuper RareShop with Affiliates",
+      "cardNo": "096",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 096",
+      "psaTotal": 67400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Mismagius EXSuper RareShop with Affiliates",
+      "cardNo": "097",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 097",
+      "psaTotal": 55000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Mega Sharpedo EXSuper RareShop with Affiliates",
+      "cardNo": "098",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 098",
+      "psaTotal": 91000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Empoleon EXSuper RareShop with Affiliates",
+      "cardNo": "099",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 099",
+      "psaTotal": 53200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Mega Lopunny EXSuper RareShop with Affiliates",
+      "cardNo": "100",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 100",
+      "psaTotal": 120300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Heat BurnerSuper RareShop with Affiliates",
+      "cardNo": "101",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 101",
+      "psaTotal": 11500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "SwitchSuper RareShop with Affiliates",
+      "cardNo": "102",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 102",
+      "psaTotal": 10300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Sacred CharmSuper RareShop with Affiliates",
+      "cardNo": "103",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 103",
+      "psaTotal": 9300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Punk HelmetSuper RareShop with Affiliates",
+      "cardNo": "104",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 104",
+      "psaTotal": 11100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Grimsley's One MoveSuper RareShop with Affiliates",
+      "cardNo": "105",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 105",
+      "psaTotal": 27500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "DawnSuper RareShop with Affiliates",
+      "cardNo": "106",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 106",
+      "psaTotal": 405600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "FirebreatherSuper RareShop with Affiliates",
+      "cardNo": "107",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 107",
+      "psaTotal": 19200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Battle ColosseumSuper RareShop with Affiliates",
+      "cardNo": "108",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 108",
+      "psaTotal": 10500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Ignition EnergySuper RareShop with Affiliates",
+      "cardNo": "109",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 109",
+      "psaTotal": 18300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Mega Charizard X EXSpecial Art RareShop with Affiliates",
+      "cardNo": "110",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 110",
+      "psaTotal": 5714920
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Oricorio EXSpecial Art RareShop with Affiliates",
+      "cardNo": "111",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 111",
+      "psaTotal": 2162900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Rotom EXSpecial Art RareShop with Affiliates",
+      "cardNo": "112",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 112",
+      "psaTotal": 290500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Mega Sharpedo EXSpecial Art RareShop with Affiliates",
+      "cardNo": "113",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 113",
+      "psaTotal": 420300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Mega Lopunny EXSpecial Art RareShop with Affiliates",
+      "cardNo": "114",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 114",
+      "psaTotal": 323600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "DawnSpecial Art RareShop with Affiliates",
+      "cardNo": "115",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 115",
+      "psaTotal": 1311500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M2-Inferno X",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "cardName": "Mega Charizard X EXMega Ultra RareShop with Affiliates",
+      "cardNo": "116",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese 116",
+      "psaTotal": 1189910
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese MA-Premium Trainer Box Mega",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-ma-premium-trainer-box-mega/314066",
+      "fetchedAt": "2026-08-16T22:37:08.782Z",
+      "cardName": "Mew EXShop with Affiliates",
+      "cardNo": "002",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese MA-PREMIUM TRAINER BOX MEGA 002",
+      "psaTotal": 1100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese MA-Premium Trainer Box Mega",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-ma-premium-trainer-box-mega/314066",
+      "fetchedAt": "2026-08-16T22:37:08.782Z",
+      "cardName": "Lillie's DeterminationShop with Affiliates",
+      "cardNo": "041",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese MA-PREMIUM TRAINER BOX MEGA 041",
+      "psaTotal": 500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Mbd-Mega Starter Set Mega Diancie Ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mbd-mega-starter-set-diancie-ex/316159",
+      "fetchedAt": "2026-08-16T22:37:42.933Z",
+      "cardName": "Mega Diancie EXShop with Affiliates",
+      "cardNo": "005",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese MBD-MEGA STARTER SET MEGA DIANCIE EX 005",
+      "psaTotal": 17600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Mbd-Mega Starter Set Mega Diancie Ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mbd-mega-starter-set-diancie-ex/316159",
+      "fetchedAt": "2026-08-16T22:37:42.933Z",
+      "cardName": "MimikyuShop with Affiliates",
+      "cardNo": "006",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese MBD-MEGA STARTER SET MEGA DIANCIE EX 006",
+      "psaTotal": 10100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Mbd-Mega Starter Set Mega Diancie Ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mbd-mega-starter-set-diancie-ex/316159",
+      "fetchedAt": "2026-08-16T22:37:42.933Z",
+      "cardName": "Lillie's DeterminationShop with Affiliates",
+      "cardNo": "020",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese MBD-MEGA STARTER SET MEGA DIANCIE EX 020",
+      "psaTotal": 600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Mbd-Mega Starter Set Mega Diancie Ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mbd-mega-starter-set-diancie-ex/316159",
+      "fetchedAt": "2026-08-16T22:37:42.933Z",
+      "cardName": "MeloettaShop with Affiliates",
+      "cardNo": "022",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese MBD-MEGA STARTER SET MEGA DIANCIE EX 022",
+      "psaTotal": 385900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Mbg-Mega Starter Set Mega Gengar Ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mbg-mega-starter-set-gengar-ex/316158",
+      "fetchedAt": "2026-08-16T22:38:30.277Z",
+      "cardName": "GastlyShop with Affiliates",
+      "cardNo": "001",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 001",
+      "psaTotal": 1200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Mbg-Mega Starter Set Mega Gengar Ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mbg-mega-starter-set-gengar-ex/316158",
+      "fetchedAt": "2026-08-16T22:38:30.277Z",
+      "cardName": "HaunterShop with Affiliates",
+      "cardNo": "002",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 002",
+      "psaTotal": 800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Mbg-Mega Starter Set Mega Gengar Ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mbg-mega-starter-set-gengar-ex/316158",
+      "fetchedAt": "2026-08-16T22:38:30.277Z",
+      "cardName": "Mega Gengar EXShop with Affiliates",
+      "cardNo": "003",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 003",
+      "psaTotal": 2732400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Mbg-Mega Starter Set Mega Gengar Ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mbg-mega-starter-set-gengar-ex/316158",
+      "fetchedAt": "2026-08-16T22:38:30.277Z",
+      "cardName": "Lillie's DeterminationShop with Affiliates",
+      "cardNo": "021",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 021",
+      "psaTotal": 3000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Mbg-Mega Starter Set Mega Gengar Ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mbg-mega-starter-set-gengar-ex/316158",
+      "fetchedAt": "2026-08-16T22:38:30.277Z",
+      "cardName": "HaunterShop with Affiliates",
+      "cardNo": "022",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 022",
+      "psaTotal": 2147700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese MP1-Start Deck 100 Battle Collection Corociao Version",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mp1-start-deck-100-battle-collection-corociao-version/297732",
+      "fetchedAt": "2026-08-16T23:04:59.869Z",
+      "cardName": "Mew EXShop with Affiliates",
+      "cardNo": "001",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese MP1-START DECK 100 BATTLE COLLECTION COROCIAO VERSION 001",
+      "psaTotal": 3300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv0d-EX Starter Set Steven's Beldum & Metagross Ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv0d-ex-starter-set-stevens-beldum-metagross/296040",
+      "fetchedAt": "2026-08-16T23:07:43.473Z",
+      "cardNo": "019",
+      "cardName": "Steven's Beldum",
+      "psa10Count": 2291,
+      "psaTotal": 2653,
+      "psa10Rate": 86.35356049566454,
+      "psaQuery": "Pokemon Japanese SV0D-EX STARTER SET STEVEN'S BELDUM & METAGROSS 019"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv0m-EX Starter Set Marnie's Morpeko & Grimmsnarl Ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv0m-ex-starter-set-marnies-morpeko-grimmsnarl/296041",
+      "fetchedAt": "2026-08-17T01:29:50.540Z",
+      "cardName": "Marnie's Grimmsnarl EXShop with Affiliates",
+      "cardNo": "007",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV0M-EX STARTER SET MARNIE'S MORPEKO & GRIMMSNARL EX 007",
+      "psaTotal": 2900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv0m-EX Starter Set Marnie's Morpeko & Grimmsnarl Ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv0m-ex-starter-set-marnies-morpeko-grimmsnarl/296041",
+      "fetchedAt": "2026-08-17T01:29:50.540Z",
+      "cardName": "Marnie's MorpekoShop with Affiliates",
+      "cardNo": "008",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV0M-EX STARTER SET MARNIE'S MORPEKO & GRIMMSNARL EX 008",
+      "psaTotal": 500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv0m-EX Starter Set Marnie's Morpeko & Grimmsnarl Ex",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv0m-ex-starter-set-marnies-morpeko-grimmsnarl/296041",
+      "fetchedAt": "2026-08-17T01:29:50.540Z",
+      "cardName": "Marnie's MorpekoShop with Affiliates",
+      "cardNo": "020",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV0M-EX STARTER SET MARNIE'S MORPEKO & GRIMMSNARL EX 020",
+      "psaTotal": 1645611
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "SnivyMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "001",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 001",
+      "psaTotal": 13800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "SnivyReverse HoloShop with Affiliates",
+      "cardNo": "001",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 001",
+      "psaTotal": 500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ServineMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "002",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 002",
+      "psaTotal": 10600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Serperior EXShop with Affiliates",
+      "cardNo": "003",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 003",
+      "psaTotal": 3000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "PansageMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "004",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 004",
+      "psaTotal": 6500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "SimisageMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "005",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 005",
+      "psaTotal": 12600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "PetililMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "006",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 006",
+      "psaTotal": 9300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "LilligantMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "007",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 007",
+      "psaTotal": 6700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "MaractusMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "008",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 008",
+      "psaTotal": 7200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "KarrablastMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "009",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 009",
+      "psaTotal": 7100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "FoongusMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "010",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 010",
+      "psaTotal": 6000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "AmoongussMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "011",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 011",
+      "psaTotal": 3800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "VictiniShop with Affiliates",
+      "cardNo": "012",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 012",
+      "psaTotal": 4800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "VictiniMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "012",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 012",
+      "psaTotal": 96500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "VictiniReverse HoloShop with Affiliates",
+      "cardNo": "012",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 012",
+      "psaTotal": 4100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "DarumakaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "013",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 013",
+      "psaTotal": 7000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "DarmanitanMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "014",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 014",
+      "psaTotal": 6000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "LitwickMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "015",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 015",
+      "psaTotal": 8400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "LampentMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "016",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 016",
+      "psaTotal": 5900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ChandelureShop with Affiliates",
+      "cardNo": "017",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 017",
+      "psaTotal": 700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ChandelureMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "017",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 017",
+      "psaTotal": 6000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "LarvestaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "018",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 018",
+      "psaTotal": 5700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "VolcaronaShop with Affiliates",
+      "cardNo": "019",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 019",
+      "psaTotal": 600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "VolcaronaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "019",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 019",
+      "psaTotal": 7200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "PanpourMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "020",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 020",
+      "psaTotal": 10400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "SimipourMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "021",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 021",
+      "psaTotal": 11000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "TympoleMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "022",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 022",
+      "psaTotal": 7600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "PalpitoadMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "023",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 023",
+      "psaTotal": 4800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "SeismitoadMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "024",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 024",
+      "psaTotal": 9200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "TirtougaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "025",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 025",
+      "psaTotal": 5100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "CarracostaShop with Affiliates",
+      "cardNo": "026",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 026",
+      "psaTotal": 700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "CarracostaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "026",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 026",
+      "psaTotal": 6900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "AlomomolaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "027",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 027",
+      "psaTotal": 8900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "CubchooMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "028",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 028",
+      "psaTotal": 8500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "BearticShop with Affiliates",
+      "cardNo": "029",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 029",
+      "psaTotal": 500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "BearticMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "029",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 029",
+      "psaTotal": 8400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "CryogonalMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "030",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 030",
+      "psaTotal": 5400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Kyurem EXShop with Affiliates",
+      "cardNo": "031",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 031",
+      "psaTotal": 4900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "EmolgaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "032",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 032",
+      "psaTotal": 10700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "EmolgaReverse HoloShop with Affiliates",
+      "cardNo": "032",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 032",
+      "psaTotal": 500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "TynamoMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "033",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 033",
+      "psaTotal": 4000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "EelektrikMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "034",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 034",
+      "psaTotal": 4100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "EelektrossMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "035",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 035",
+      "psaTotal": 5300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ThundurusShop with Affiliates",
+      "cardNo": "036",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 036",
+      "psaTotal": 1100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ThundurusMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "036",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 036",
+      "psaTotal": 8000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Zekrom EXShop with Affiliates",
+      "cardNo": "037",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 037",
+      "psaTotal": 10900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "MunnaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "038",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 038",
+      "psaTotal": 6900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "MusharnaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "039",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 039",
+      "psaTotal": 9900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "SolosisMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "040",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 040",
+      "psaTotal": 10800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "DuosionMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "041",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 041",
+      "psaTotal": 5500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ReuniclusMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "042",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 042",
+      "psaTotal": 7200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ElgyemMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "043",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 043",
+      "psaTotal": 6800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "BeheeyemMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "044",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 044",
+      "psaTotal": 12800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "GolettMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "045",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 045",
+      "psaTotal": 6900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "GolurkMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "046",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 046",
+      "psaTotal": 5700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Meloetta EXShop with Affiliates",
+      "cardNo": "047",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 047",
+      "psaTotal": 2300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "DrilburMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "048",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 048",
+      "psaTotal": 5500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Excadrill EXShop with Affiliates",
+      "cardNo": "049",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 049",
+      "psaTotal": 1800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "TimburrMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "050",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 050",
+      "psaTotal": 9500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "GurdurrMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "051",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 051",
+      "psaTotal": 9600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ConkeldurrMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "052",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 052",
+      "psaTotal": 6700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ThrohMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "053",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 053",
+      "psaTotal": 6800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "DwebbleMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "054",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 054",
+      "psaTotal": 7400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "CrustleMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "055",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 055",
+      "psaTotal": 3700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "LandorusShop with Affiliates",
+      "cardNo": "056",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 056",
+      "psaTotal": 1000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "LandorusMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "056",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 056",
+      "psaTotal": 11300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "VenipedeMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "057",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 057",
+      "psaTotal": 9000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "WhirlipedeMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "058",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 058",
+      "psaTotal": 4700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ScolipedeMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "059",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 059",
+      "psaTotal": 4800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "SandileMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "060",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 060",
+      "psaTotal": 6500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "KrokorokMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "061",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 061",
+      "psaTotal": 8000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "KrookodileMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "062",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 062",
+      "psaTotal": 6300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "VullabyMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "063",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 063",
+      "psaTotal": 7800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "MandibuzzMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "064",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 064",
+      "psaTotal": 5400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "EscavalierMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "065",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 065",
+      "psaTotal": 4600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "PawniardMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "066",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 066",
+      "psaTotal": 6900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "BisharpMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "067",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 067",
+      "psaTotal": 9200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "CobalionShop with Affiliates",
+      "cardNo": "068",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 068",
+      "psaTotal": 500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "CobalionMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "068",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 068",
+      "psaTotal": 6600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "CobalionReverse HoloShop with Affiliates",
+      "cardNo": "068",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 068",
+      "psaTotal": 500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Genesect EXShop with Affiliates",
+      "cardNo": "069",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 069",
+      "psaTotal": 3800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "AxewMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "070",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 070",
+      "psaTotal": 7800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "FraxureMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "071",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 071",
+      "psaTotal": 10600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "HaxorusShop with Affiliates",
+      "cardNo": "072",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 072",
+      "psaTotal": 600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "HaxorusMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "072",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 072",
+      "psaTotal": 7200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "PidoveMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "073",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 073",
+      "psaTotal": 8700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "TranquillMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "074",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 074",
+      "psaTotal": 9800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "UnfezantMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "075",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 075",
+      "psaTotal": 7000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "AudinoMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "076",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 076",
+      "psaTotal": 4600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "MinccinoMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "077",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 077",
+      "psaTotal": 10700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "CinccinoMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "078",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 078",
+      "psaTotal": 9500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "N's PlotReverse HoloShop with Affiliates",
+      "cardNo": "083",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 083",
+      "psaTotal": 1000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "SnivyArt RareShop with Affiliates",
+      "cardNo": "087",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 087",
+      "psaTotal": 140900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ServineArt RareShop with Affiliates",
+      "cardNo": "088",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 088",
+      "psaTotal": 78500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "PansageArt RareShop with Affiliates",
+      "cardNo": "089",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 089",
+      "psaTotal": 56000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "SimisageArt RareShop with Affiliates",
+      "cardNo": "090",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 090",
+      "psaTotal": 62500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "PetililArt RareShop with Affiliates",
+      "cardNo": "091",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 091",
+      "psaTotal": 32300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "LilligantArt RareShop with Affiliates",
+      "cardNo": "092",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 092",
+      "psaTotal": 39500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "MaractusArt RareShop with Affiliates",
+      "cardNo": "093",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 093",
+      "psaTotal": 44800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "KarrablastArt RareShop with Affiliates",
+      "cardNo": "094",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 094",
+      "psaTotal": 71300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "FoongusArt RareShop with Affiliates",
+      "cardNo": "095",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 095",
+      "psaTotal": 46700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "AmoongussArt RareShop with Affiliates",
+      "cardNo": "096",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 096",
+      "psaTotal": 45200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "VictiniArt RareShop with Affiliates",
+      "cardNo": "097",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 097",
+      "psaTotal": 449000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "DarumakaArt RareShop with Affiliates",
+      "cardNo": "098",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 098",
+      "psaTotal": 46400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "DarmanitanArt RareShop with Affiliates",
+      "cardNo": "099",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 099",
+      "psaTotal": 62800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "LitwickArt RareShop with Affiliates",
+      "cardNo": "100",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 100",
+      "psaTotal": 46200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "LampentArt RareShop with Affiliates",
+      "cardNo": "101",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 101",
+      "psaTotal": 52500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ChandelureArt RareShop with Affiliates",
+      "cardNo": "102",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 102",
+      "psaTotal": 81000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "LarvestaArt RareShop with Affiliates",
+      "cardNo": "103",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 103",
+      "psaTotal": 50300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "VolcaronaArt RareShop with Affiliates",
+      "cardNo": "104",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 104",
+      "psaTotal": 88600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "PanpourArt RareShop with Affiliates",
+      "cardNo": "105",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 105",
+      "psaTotal": 56800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "SimipourArt RareShop with Affiliates",
+      "cardNo": "106",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 106",
+      "psaTotal": 46000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "TympoleArt RareShop with Affiliates",
+      "cardNo": "107",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 107",
+      "psaTotal": 54100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "PalpitoadArt RareShop with Affiliates",
+      "cardNo": "108",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 108",
+      "psaTotal": 50300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "SeismitoadArt RareShop with Affiliates",
+      "cardNo": "109",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 109",
+      "psaTotal": 1100200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "TirtougaArt RareShop with Affiliates",
+      "cardNo": "110",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 110",
+      "psaTotal": 43500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "CarracostaArt RareShop with Affiliates",
+      "cardNo": "111",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 111",
+      "psaTotal": 37500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "AlomomolaArt RareShop with Affiliates",
+      "cardNo": "112",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 112",
+      "psaTotal": 50600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "CubchooArt RareShop with Affiliates",
+      "cardNo": "113",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 113",
+      "psaTotal": 40910
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "BearticArt RareShop with Affiliates",
+      "cardNo": "114",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 114",
+      "psaTotal": 48800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "CryogonalArt RareShop with Affiliates",
+      "cardNo": "115",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 115",
+      "psaTotal": 43500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "EmolgaArt RareShop with Affiliates",
+      "cardNo": "116",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 116",
+      "psaTotal": 60800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "TynamoArt RareShop with Affiliates",
+      "cardNo": "117",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 117",
+      "psaTotal": 34310
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "EelektrikArt RareShop with Affiliates",
+      "cardNo": "118",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 118",
+      "psaTotal": 44500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "EelektrossArt RareShop with Affiliates",
+      "cardNo": "119",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 119",
+      "psaTotal": 53200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ThundurusArt RareShop with Affiliates",
+      "cardNo": "120",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 120",
+      "psaTotal": 115300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "MunnaArt RareShop with Affiliates",
+      "cardNo": "121",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 121",
+      "psaTotal": 44800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "MusharnaArt RareShop with Affiliates",
+      "cardNo": "122",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 122",
+      "psaTotal": 46600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "SolosisArt RareShop with Affiliates",
+      "cardNo": "123",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 123",
+      "psaTotal": 172200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "DuosionArt RareShop with Affiliates",
+      "cardNo": "124",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 124",
+      "psaTotal": 40800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ReuniclusArt RareShop with Affiliates",
+      "cardNo": "125",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 125",
+      "psaTotal": 27100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ElgyemArt RareShop with Affiliates",
+      "cardNo": "126",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 126",
+      "psaTotal": 54800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "BeheeyemArt RareShop with Affiliates",
+      "cardNo": "127",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 127",
+      "psaTotal": 62900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "GolettArt RareShop with Affiliates",
+      "cardNo": "128",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 128",
+      "psaTotal": 47700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "GolurkArt RareShop with Affiliates",
+      "cardNo": "129",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 129",
+      "psaTotal": 33900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "DrilburArt RareShop with Affiliates",
+      "cardNo": "130",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 130",
+      "psaTotal": 82910
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "TimburrArt RareShop with Affiliates",
+      "cardNo": "131",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 131",
+      "psaTotal": 68300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "GurdurrArt RareShop with Affiliates",
+      "cardNo": "132",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 132",
+      "psaTotal": 59100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ConkeldurrArt RareShop with Affiliates",
+      "cardNo": "133",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 133",
+      "psaTotal": 59700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ThrohArt RareShop with Affiliates",
+      "cardNo": "134",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 134",
+      "psaTotal": 52400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "DwebbleArt RareShop with Affiliates",
+      "cardNo": "135",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 135",
+      "psaTotal": 41400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "CrustleArt RareShop with Affiliates",
+      "cardNo": "136",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 136",
+      "psaTotal": 52400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "LandorusArt RareShop with Affiliates",
+      "cardNo": "137",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 137",
+      "psaTotal": 109500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "VenipedeArt RareShop with Affiliates",
+      "cardNo": "138",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 138",
+      "psaTotal": 47600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "WhirlipedeArt RareShop with Affiliates",
+      "cardNo": "139",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 139",
+      "psaTotal": 49900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "ScolipedeArt RareShop with Affiliates",
+      "cardNo": "140",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 140",
+      "psaTotal": 52300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "SandileArt RareShop with Affiliates",
+      "cardNo": "141",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 141",
+      "psaTotal": 43700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "KrokorokArt RareShop with Affiliates",
+      "cardNo": "142",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 142",
+      "psaTotal": 42900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "KrookodileArt RareShop with Affiliates",
+      "cardNo": "143",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 143",
+      "psaTotal": 56900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "VullabyArt RareShop with Affiliates",
+      "cardNo": "144",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 144",
+      "psaTotal": 49300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "MandibuzzArt RareShop with Affiliates",
+      "cardNo": "145",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 145",
+      "psaTotal": 54500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "EscavalierArt RareShop with Affiliates",
+      "cardNo": "146",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 146",
+      "psaTotal": 66200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "PawniardArt RareShop with Affiliates",
+      "cardNo": "147",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 147",
+      "psaTotal": 52600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "BisharpArt RareShop with Affiliates",
+      "cardNo": "148",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 148",
+      "psaTotal": 59400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "CobalionArt RareShop with Affiliates",
+      "cardNo": "149",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 149",
+      "psaTotal": 62300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "AxewArt RareShop with Affiliates",
+      "cardNo": "150",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 150",
+      "psaTotal": 51000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "FraxureArt RareShop with Affiliates",
+      "cardNo": "151",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 151",
+      "psaTotal": 47400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "HaxorusArt RareShop with Affiliates",
+      "cardNo": "152",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 152",
+      "psaTotal": 97600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "PidoveArt RareShop with Affiliates",
+      "cardNo": "153",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 153",
+      "psaTotal": 46000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "TranquillArt RareShop with Affiliates",
+      "cardNo": "154",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 154",
+      "psaTotal": 58000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "UnfezantArt RareShop with Affiliates",
+      "cardNo": "155",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 155",
+      "psaTotal": 46400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "AudinoArt RareShop with Affiliates",
+      "cardNo": "156",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 156",
+      "psaTotal": 38300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "MinccinoArt RareShop with Affiliates",
+      "cardNo": "157",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 157",
+      "psaTotal": 56600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "CinccinoArt RareShop with Affiliates",
+      "cardNo": "158",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 158",
+      "psaTotal": 45500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Serperior EXSuper RareShop with Affiliates",
+      "cardNo": "159",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 159",
+      "psaTotal": 61400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Kyurem EXSuper RareShop with Affiliates",
+      "cardNo": "160",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 160",
+      "psaTotal": 63500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Zekrom EXSuper RareShop with Affiliates",
+      "cardNo": "161",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 161",
+      "psaTotal": 214901
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Meloetta EXSuper RareShop with Affiliates",
+      "cardNo": "162",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 162",
+      "psaTotal": 65000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Excadrill EXSuper RareShop with Affiliates",
+      "cardNo": "163",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 163",
+      "psaTotal": 55400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Genesect EXSuper RareShop with Affiliates",
+      "cardNo": "164",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 164",
+      "psaTotal": 62500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "N's PlotSuper RareShop with Affiliates",
+      "cardNo": "165",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 165",
+      "psaTotal": 134200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "FennelSuper RareShop with Affiliates",
+      "cardNo": "166",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 166",
+      "psaTotal": 39400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Serperior EXSpecial Art RareShop with Affiliates",
+      "cardNo": "167",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 167",
+      "psaTotal": 214300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Kyurem EXSpecial Art RareShop with Affiliates",
+      "cardNo": "168",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 168",
+      "psaTotal": 375000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Zekrom EXSpecial Art RareShop with Affiliates",
+      "cardNo": "169",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 169",
+      "psaTotal": 1412310
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Meloetta EXSpecial Art RareShop with Affiliates",
+      "cardNo": "170",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 170",
+      "psaTotal": 251010
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Excadrill EXSpecial Art RareShop with Affiliates",
+      "cardNo": "171",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 171",
+      "psaTotal": 64600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Genesect EXSpecial Art RareShop with Affiliates",
+      "cardNo": "172",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 172",
+      "psaTotal": 147600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "N's PlotSpecial Art RareShop with Affiliates",
+      "cardNo": "173",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 173",
+      "psaTotal": 681400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "cardName": "Zekrom EXBW RareShop with Affiliates",
+      "cardNo": "174",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 174",
+      "psaTotal": 1643711
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Yanmega EXShop with Affiliates",
+      "cardNo": "003",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 003",
+      "psaTotal": 3000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "HydrappleShop with Affiliates",
+      "cardNo": "011",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 011",
+      "psaTotal": 600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Ethan's CyndaquilShop with Affiliates",
+      "cardNo": "015",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 015",
+      "psaTotal": 900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Ethan's QuilavaShop with Affiliates",
+      "cardNo": "016",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 016",
+      "psaTotal": 500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Ethan's TyphlosionShop with Affiliates",
+      "cardNo": "017",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 017",
+      "psaTotal": 4600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Ethan's MagcargoShop with Affiliates",
+      "cardNo": "019",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 019",
+      "psaTotal": 700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Ethan's HO-Oh EXShop with Affiliates",
+      "cardNo": "020",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 020",
+      "psaTotal": 13300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Misty's PsyduckShop with Affiliates",
+      "cardNo": "022",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 022",
+      "psaTotal": 4700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Misty's MagikarpShop with Affiliates",
+      "cardNo": "025",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 025",
+      "psaTotal": 4400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Misty's GyaradosShop with Affiliates",
+      "cardNo": "026",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 026",
+      "psaTotal": 10900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Misty's LaprasShop with Affiliates",
+      "cardNo": "027",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 027",
+      "psaTotal": 2500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Dondozo EXShop with Affiliates",
+      "cardNo": "032",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 032",
+      "psaTotal": 3400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Electivire EXShop with Affiliates",
+      "cardNo": "035",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 035",
+      "psaTotal": 4100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Ethan's PichuShop with Affiliates",
+      "cardNo": "036",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 036",
+      "psaTotal": 1802
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Cynthia's Garchomp EXShop with Affiliates",
+      "cardNo": "044",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 044",
+      "psaTotal": 10300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Arven's Mabosstiff EXShop with Affiliates",
+      "cardNo": "052",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 052",
+      "psaTotal": 3600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Arven's SandwichShop with Affiliates",
+      "cardNo": "057",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 057",
+      "psaTotal": 600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "YanmaArt RareShop with Affiliates",
+      "cardNo": "064",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 064",
+      "psaTotal": 187100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Cynthia's RoseradeArt RareShop with Affiliates",
+      "cardNo": "065",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 065",
+      "psaTotal": 602500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "ShayminArt RareShop with Affiliates",
+      "cardNo": "066",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 066",
+      "psaTotal": 180200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "CrustleArt RareShop with Affiliates",
+      "cardNo": "067",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 067",
+      "psaTotal": 150200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "HydrappleArt RareShop with Affiliates",
+      "cardNo": "068",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 068",
+      "psaTotal": 173200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "RapidashArt RareShop with Affiliates",
+      "cardNo": "069",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 069",
+      "psaTotal": 237600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Ethan's TyphlosionArt RareShop with Affiliates",
+      "cardNo": "070",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 070",
+      "psaTotal": 1027900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Misty's PsyduckArt RareShop with Affiliates",
+      "cardNo": "071",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 071",
+      "psaTotal": 1891400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Misty's LaprasArt RareShop with Affiliates",
+      "cardNo": "072",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 072",
+      "psaTotal": 897100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "ElectrikeArt RareShop with Affiliates",
+      "cardNo": "073",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 073",
+      "psaTotal": 162300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "RotomArt RareShop with Affiliates",
+      "cardNo": "074",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 074",
+      "psaTotal": 186300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Arven's GreedentArt RareShop with Affiliates",
+      "cardNo": "075",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 075",
+      "psaTotal": 194300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Yanmega EXSuper RareShop with Affiliates",
+      "cardNo": "076",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 076",
+      "psaTotal": 24000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Ethan's HO-Oh EXSuper RareShop with Affiliates",
+      "cardNo": "077",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 077",
+      "psaTotal": 114400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Dondozo EXSuper RareShop with Affiliates",
+      "cardNo": "078",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 078",
+      "psaTotal": 25300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Electivire EXSuper RareShop with Affiliates",
+      "cardNo": "079",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 079",
+      "psaTotal": 25000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Cynthia's Garchomp EXSuper RareShop with Affiliates",
+      "cardNo": "080",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 080",
+      "psaTotal": 142800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Arven's Mabosstiff EXSuper RareShop with Affiliates",
+      "cardNo": "081",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 081",
+      "psaTotal": 37000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Emcee's HypeSuper RareShop with Affiliates",
+      "cardNo": "082",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 082",
+      "psaTotal": 92700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "JudgeSuper RareShop with Affiliates",
+      "cardNo": "083",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 083",
+      "psaTotal": 6500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Ethan's AdventureSuper RareShop with Affiliates",
+      "cardNo": "084",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 084",
+      "psaTotal": 43500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Yanmega EXSpecial Art RareShop with Affiliates",
+      "cardNo": "085",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 085",
+      "psaTotal": 49400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Ethan's HO-Oh EXSpecial Art RareShop with Affiliates",
+      "cardNo": "086",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 086",
+      "psaTotal": 879200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Cynthia's Garchomp EXSpecial Art RareShop with Affiliates",
+      "cardNo": "087",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 087",
+      "psaTotal": 968001
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Arven's Mabosstiff EXSpecial Art RareShop with Affiliates",
+      "cardNo": "088",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 088",
+      "psaTotal": 65300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Ethan's AdventureSpecial Art RareShop with Affiliates",
+      "cardNo": "089",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 089",
+      "psaTotal": 335200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Ethan's HO-Oh EXUltra RareShop with Affiliates",
+      "cardNo": "090",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 090",
+      "psaTotal": 152300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "Cynthia's Garchomp EXUltra RareShop with Affiliates",
+      "cardNo": "091",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 091",
+      "psaTotal": 166300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "cardName": "LevinciaUltra RareShop with Affiliates",
+      "cardNo": "092",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 092",
+      "psaTotal": 7300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "MeowscaradaShop with Affiliates",
+      "cardNo": "012",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 012",
+      "psaTotal": 500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Volcanion EXShop with Affiliates",
+      "cardNo": "017",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 017",
+      "psaTotal": 2100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "LudicoloShop with Affiliates",
+      "cardNo": "023",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 023",
+      "psaTotal": 800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "WailordShop with Affiliates",
+      "cardNo": "025",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 025",
+      "psaTotal": 600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Iono's Bellibolt EXShop with Affiliates",
+      "cardNo": "030",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 030",
+      "psaTotal": 10400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Iono's WattrelShop with Affiliates",
+      "cardNo": "031",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 031",
+      "psaTotal": 500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Iono's KilowattrelShop with Affiliates",
+      "cardNo": "032",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 032",
+      "psaTotal": 1900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Lillie's Clefairy EXShop with Affiliates",
+      "cardNo": "033",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 033",
+      "psaTotal": 18000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Lillie's CutieflyShop with Affiliates",
+      "cardNo": "041",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 041",
+      "psaTotal": 500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Lillie's RibombeeShop with Affiliates",
+      "cardNo": "042",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 042",
+      "psaTotal": 500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Mamoswine EXShop with Affiliates",
+      "cardNo": "046",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 046",
+      "psaTotal": 2200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "LycanrocShop with Affiliates",
+      "cardNo": "052",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 052",
+      "psaTotal": 500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "TyranitarShop with Affiliates",
+      "cardNo": "058",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 058",
+      "psaTotal": 2100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "N's ZoruaShop with Affiliates",
+      "cardNo": "060",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 060",
+      "psaTotal": 700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "N's Zoroark EXShop with Affiliates",
+      "cardNo": "061",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 061",
+      "psaTotal": 14300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "MagearnaShop with Affiliates",
+      "cardNo": "067",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 067",
+      "psaTotal": 700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Hop's Zacian EXShop with Affiliates",
+      "cardNo": "069",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 069",
+      "psaTotal": 8800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Salamence EXShop with Affiliates",
+      "cardNo": "072",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 072",
+      "psaTotal": 5700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "N's ReshiramShop with Affiliates",
+      "cardNo": "074",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 074",
+      "psaTotal": 4100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Hop's SnorlaxShop with Affiliates",
+      "cardNo": "075",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 075",
+      "psaTotal": 17600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "FurretShop with Affiliates",
+      "cardNo": "077",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 077",
+      "psaTotal": 800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Dudunsparce EXShop with Affiliates",
+      "cardNo": "079",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 079",
+      "psaTotal": 1700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Hop's DubwoolShop with Affiliates",
+      "cardNo": "086",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 086",
+      "psaTotal": 600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "MaractusArt RareShop with Affiliates",
+      "cardNo": "101",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 101",
+      "psaTotal": 492000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "ArticunoArt RareShop with Affiliates",
+      "cardNo": "102",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 102",
+      "psaTotal": 2005501
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "WailordArt RareShop with Affiliates",
+      "cardNo": "103",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 103",
+      "psaTotal": 1376500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Iono's KilowattrelArt RareShop with Affiliates",
+      "cardNo": "104",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 104",
+      "psaTotal": 1496300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Lillie's RibombeeArt RareShop with Affiliates",
+      "cardNo": "105",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 105",
+      "psaTotal": 3046100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "SwinubArt RareShop with Affiliates",
+      "cardNo": "106",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 106",
+      "psaTotal": 580700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "LycanrocArt RareShop with Affiliates",
+      "cardNo": "107",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 107",
+      "psaTotal": 556700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "N's ZoruaArt RareShop with Affiliates",
+      "cardNo": "108",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 108",
+      "psaTotal": 814200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "N's ReshiramArt RareShop with Affiliates",
+      "cardNo": "109",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 109",
+      "psaTotal": 2886700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "FurretArt RareShop with Affiliates",
+      "cardNo": "110",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 110",
+      "psaTotal": 586901
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "NoibatArt RareShop with Affiliates",
+      "cardNo": "111",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 111",
+      "psaTotal": 591510
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Hop's WoolooArt RareShop with Affiliates",
+      "cardNo": "112",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 112",
+      "psaTotal": 525600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Volcanion EXSuper RareShop with Affiliates",
+      "cardNo": "113",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 113",
+      "psaTotal": 46500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Iono's Bellibolt EXSuper RareShop with Affiliates",
+      "cardNo": "114",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 114",
+      "psaTotal": 360600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Lillie's Clefairy EXSuper RareShop with Affiliates",
+      "cardNo": "115",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 115",
+      "psaTotal": 677800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Mamoswine EXSuper RareShop with Affiliates",
+      "cardNo": "116",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 116",
+      "psaTotal": 40300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "N's Zoroark EXSuper RareShop with Affiliates",
+      "cardNo": "117",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 117",
+      "psaTotal": 179300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Hop's Zacian EXSuper RareShop with Affiliates",
+      "cardNo": "118",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 118",
+      "psaTotal": 102700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Salamence EXSuper RareShop with Affiliates",
+      "cardNo": "119",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 119",
+      "psaTotal": 68300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Dudunsparce EXSuper RareShop with Affiliates",
+      "cardNo": "120",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 120",
+      "psaTotal": 45200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Iris's Fighting SpiritSuper RareShop with Affiliates",
+      "cardNo": "121",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 121",
+      "psaTotal": 468300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "RuffianSuper RareShop with Affiliates",
+      "cardNo": "122",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 122",
+      "psaTotal": 16600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Brock's ScoutingSuper RareShop with Affiliates",
+      "cardNo": "123",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 123",
+      "psaTotal": 31600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Volcanion EXSpecial Art RareShop with Affiliates",
+      "cardNo": "124",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 124",
+      "psaTotal": 236700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Iono's Bellibolt EXSpecial Art RareShop with Affiliates",
+      "cardNo": "125",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 125",
+      "psaTotal": 1488300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Lillie's Clefairy EXSpecial Art RareShop with Affiliates",
+      "cardNo": "126",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 126",
+      "psaTotal": 2393300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "N's Zoroark EXSpecial Art RareShop with Affiliates",
+      "cardNo": "127",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 127",
+      "psaTotal": 780500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Hop's Zacian EXSpecial Art RareShop with Affiliates",
+      "cardNo": "128",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 128",
+      "psaTotal": 382500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Salamence EXSpecial Art RareShop with Affiliates",
+      "cardNo": "129",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 129",
+      "psaTotal": 693200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Iono's Bellibolt EXUltra RareShop with Affiliates",
+      "cardNo": "130",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 130",
+      "psaTotal": 494500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "N's Zoroark EXUltra RareShop with Affiliates",
+      "cardNo": "131",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 131",
+      "psaTotal": 359700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "N's Zoroark EXUltra Rare-Incorrect TextureShop with Affiliates",
+      "cardNo": "131",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 131",
+      "psaTotal": 95100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV9-Battle Partners",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "cardName": "Spike EnergyUltra RareShop with Affiliates",
+      "cardNo": "132",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 132",
+      "psaTotal": 7600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Svn-Battle Partners Deck Build Box",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-svn-battle-partners-deck-build-box/297732",
+      "fetchedAt": "2026-08-17T01:39:03.186Z",
+      "cardName": "Mew EXShop with Affiliates",
+      "cardNo": "001",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SVN-BATTLE PARTNERS DECK BUILD BOX 001",
+      "psaTotal": 3300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Lillie's ComfeyCollection File Set LillieShop with Affiliates",
+      "cardNo": "199",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 199",
+      "psaTotal": 43200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "N's ZoruaCollection File Set NShop with Affiliates",
+      "cardNo": "200",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 200",
+      "psaTotal": 24800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "IridaExtra Battle DayShop with Affiliates",
+      "cardNo": "219",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 219",
+      "psaTotal": 8800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "GarbodorExtra Battle Day Promo PackShop with Affiliates",
+      "cardNo": "221",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 221",
+      "psaTotal": 600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Iono's WattrelBattle Partners Box Purchase CampaignShop with Affiliates",
+      "cardNo": "232",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 232",
+      "psaTotal": 7196520
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Hop's Pincurchin EXGym Promo Pack 9Shop with Affiliates",
+      "cardNo": "233",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 233",
+      "psaTotal": 1000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "DrifloonGym Promo Pack 9Shop with Affiliates",
+      "cardNo": "234",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 234",
+      "psaTotal": 15100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "DrifblimGym Promo Pack 9Shop with Affiliates",
+      "cardNo": "235",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 235",
+      "psaTotal": 16500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "TatsugiriGym Promo Pack 9Shop with Affiliates",
+      "cardNo": "236",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 236",
+      "psaTotal": 2300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "FeraligatrIllustration Contest 2024Shop with Affiliates",
+      "cardNo": "241",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 241",
+      "psaTotal": 261110
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "PikachuIllustration Contest 2024Shop with Affiliates",
+      "cardNo": "242",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 242",
+      "psaTotal": 3849300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Toxtricity EXIllustration Contest 2024Shop with Affiliates",
+      "cardNo": "243",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 243",
+      "psaTotal": 129300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Ethan's HO-Oh EXHeat Wave Arena Sealed Battle-WinnerShop with Affiliates",
+      "cardNo": "254",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 254",
+      "psaTotal": 3800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Cynthia's Garchomp EXHeat Wave Arena Sealed Battle-WinnerShop with Affiliates",
+      "cardNo": "255",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 255",
+      "psaTotal": 2800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Arven's Mabosstiff EXHeat Wave Arena Sealed Battle-WinnerShop with Affiliates",
+      "cardNo": "256",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 256",
+      "psaTotal": 1100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Iono's TadbulbCorocoro Ichiban!-April 2025Shop with Affiliates",
+      "cardNo": "257",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 257",
+      "psaTotal": 2300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Team Rocket's MeowthCorocoro Ichiban! July-August 2025Shop with Affiliates",
+      "cardNo": "259",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 259",
+      "psaTotal": 328400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Tohoku's PikachuSpecial Box Pokemon Center TohokuShop with Affiliates",
+      "cardNo": "260",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 260",
+      "psaTotal": 4125320
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Hiroshima's PikachuSpecial Box Pokemon Center HiroshimaShop with Affiliates",
+      "cardNo": "261",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 261",
+      "psaTotal": 3368200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "PsyduckGym Promo Pack 10Shop with Affiliates",
+      "cardNo": "262",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 262",
+      "psaTotal": 415910
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "GolduckGym Promo Pack 10Shop with Affiliates",
+      "cardNo": "263",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 263",
+      "psaTotal": 55410
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Flutter ManeGym Promo Pack 10Shop with Affiliates",
+      "cardNo": "264",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 264",
+      "psaTotal": 900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Team Rocket's Kangaskhan EXGym Promo Pack 10Shop with Affiliates",
+      "cardNo": "265",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 265",
+      "psaTotal": 11600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Team Rocket's GiovanniBoss Coffee X Pokemon Card Game CollaborationShop with Affiliates",
+      "cardNo": "270",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 270",
+      "psaTotal": 905710
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "VictiniBlack Bolt/White Flare Card File SetShop with Affiliates",
+      "cardNo": "271",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 271",
+      "psaTotal": 529001
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "CherenVictini Bwr Competition Promo Card PackShop with Affiliates",
+      "cardNo": "279",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 279",
+      "psaTotal": 34900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "VictiniVictini Bwr Event PrizeShop with Affiliates",
+      "cardNo": "288",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 288",
+      "psaTotal": 489600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Fukuoka's PikachuSpecial Box Pokemon Center FukuokaShop with Affiliates",
+      "cardNo": "289",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 289",
+      "psaTotal": 3928610
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "RoxanneExtra Battle DayShop with Affiliates",
+      "cardNo": "290",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 290",
+      "psaTotal": 7900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "PikachuGym Event CampaignShop with Affiliates",
+      "cardNo": "291",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO 291",
+      "psaTotal": 2105310
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Pikachu EXJr East Stamp Rally 2025 Promo-Jumbo",
+      "cardNo": "SV-P",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO SV-P",
+      "psaTotal": 76700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV-P Promo",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "cardName": "Paradise ResortWorld Championships 2025Shop with Affiliates",
+      "cardNo": "SV-P",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV-P PROMO SV-P",
+      "psaTotal": 72100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SewaddleMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "001",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 001",
+      "psaTotal": 10700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SwadloonMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "002",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 002",
+      "psaTotal": 5200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "LeavannyMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "003",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 003",
+      "psaTotal": 5500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "CottoneeMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "004",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 004",
+      "psaTotal": 10800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Whimsicott EXShop with Affiliates",
+      "cardNo": "005",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 005",
+      "psaTotal": 1300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "DeerlingMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "006",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 006",
+      "psaTotal": 6800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SawsbuckMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "007",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 007",
+      "psaTotal": 8800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ShelmetMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "008",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 008",
+      "psaTotal": 7600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "AccelgorMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "009",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 009",
+      "psaTotal": 6900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "VirizionMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "010",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 010",
+      "psaTotal": 7700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "TepigMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "011",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 011",
+      "psaTotal": 15600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "TepigReverse HoloShop with Affiliates",
+      "cardNo": "011",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 011",
+      "psaTotal": 500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "PigniteMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "012",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 012",
+      "psaTotal": 9400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "EmboarMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "013",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 013",
+      "psaTotal": 12400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "PansearMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "014",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 014",
+      "psaTotal": 6300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SimisearMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "015",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 015",
+      "psaTotal": 3200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "HeatmorMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "016",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 016",
+      "psaTotal": 8900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Reshiram EXShop with Affiliates",
+      "cardNo": "017",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 017",
+      "psaTotal": 9300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "OshawottMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "018",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 018",
+      "psaTotal": 17500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "OshawottReverse HoloShop with Affiliates",
+      "cardNo": "018",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 018",
+      "psaTotal": 1100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "DewottMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "019",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 019",
+      "psaTotal": 5300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SamurottShop with Affiliates",
+      "cardNo": "020",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 020",
+      "psaTotal": 600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SamurottMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "020",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 020",
+      "psaTotal": 7800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "BasculinMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "021",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 021",
+      "psaTotal": 7600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "DucklettMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "022",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 022",
+      "psaTotal": 4200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SwannaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "023",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 023",
+      "psaTotal": 7000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "VanilliteMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "024",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 024",
+      "psaTotal": 3200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "VanillishMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "025",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 025",
+      "psaTotal": 6100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "VanilluxeMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "026",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 026",
+      "psaTotal": 3900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Keldeo EXShop with Affiliates",
+      "cardNo": "027",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 027",
+      "psaTotal": 1900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "BlitzleMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "028",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 028",
+      "psaTotal": 6900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ZebstrikaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "029",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 029",
+      "psaTotal": 6500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "JoltikMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "030",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 030",
+      "psaTotal": 6100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "GalvantulaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "031",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 031",
+      "psaTotal": 11000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "StunfiskMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "032",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 032",
+      "psaTotal": 8600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "WoobatMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "033",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 033",
+      "psaTotal": 6700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SwoobatMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "034",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 034",
+      "psaTotal": 5200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SigilyphMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "035",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 035",
+      "psaTotal": 6700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "YamaskMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "036",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 036",
+      "psaTotal": 7000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "CofagrigusShop with Affiliates",
+      "cardNo": "037",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 037",
+      "psaTotal": 500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "CofagrigusMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "037",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 037",
+      "psaTotal": 4700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "GothitaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "038",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 038",
+      "psaTotal": 6800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "GothoritaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "039",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 039",
+      "psaTotal": 6400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "GothitelleShop with Affiliates",
+      "cardNo": "040",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 040",
+      "psaTotal": 500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "GothitelleMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "040",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 040",
+      "psaTotal": 6100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "FrillishMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "041",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 041",
+      "psaTotal": 2200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Jellicent EXShop with Affiliates",
+      "cardNo": "042",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 042",
+      "psaTotal": 2100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "RoggenrolaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "043",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 043",
+      "psaTotal": 6000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "BoldoreMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "044",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 044",
+      "psaTotal": 7500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "GigalithMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "045",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 045",
+      "psaTotal": 8100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SawkMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "046",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 046",
+      "psaTotal": 11400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ArchenMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "047",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 047",
+      "psaTotal": 6800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ArcheopsShop with Affiliates",
+      "cardNo": "048",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 048",
+      "psaTotal": 800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ArcheopsMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "048",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 048",
+      "psaTotal": 6100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "MienfooMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "049",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 049",
+      "psaTotal": 8800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "MienshaoMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "050",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 050",
+      "psaTotal": 19200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "TerrakionMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "051",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 051",
+      "psaTotal": 10900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "PurrloinMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "052",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 052",
+      "psaTotal": 12900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "LiepardMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "053",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 053",
+      "psaTotal": 7700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ScraggyMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "054",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 054",
+      "psaTotal": 5500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ScraftyMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "055",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 055",
+      "psaTotal": 4700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "TrubbishMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "056",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 056",
+      "psaTotal": 7000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "GarbodorMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "057",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 057",
+      "psaTotal": 5500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ZoruaMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "058",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 058",
+      "psaTotal": 12400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ZoroarkShop with Affiliates",
+      "cardNo": "059",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 059",
+      "psaTotal": 900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ZoroarkMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "059",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 059",
+      "psaTotal": 12800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "DeinoMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "060",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 060",
+      "psaTotal": 6900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ZweilousMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "061",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 061",
+      "psaTotal": 5100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Hydreigon EXShop with Affiliates",
+      "cardNo": "062",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 062",
+      "psaTotal": 2400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "FerroseedMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "063",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 063",
+      "psaTotal": 6400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "FerrothornMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "064",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 064",
+      "psaTotal": 7200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "KlinkMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "065",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 065",
+      "psaTotal": 7600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "KlangMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "066",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 066",
+      "psaTotal": 8500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "KlinklangMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "067",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 067",
+      "psaTotal": 9100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "DurantMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "068",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 068",
+      "psaTotal": 6600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "DruddigonMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "069",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 069",
+      "psaTotal": 4900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "PatratMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "070",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 070",
+      "psaTotal": 5000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "WatchogMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "071",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 071",
+      "psaTotal": 4600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "LillipupMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "072",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 072",
+      "psaTotal": 6500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "HerdierMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "073",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 073",
+      "psaTotal": 6700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "StoutlandMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "074",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 074",
+      "psaTotal": 10300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Bouffalant EXShop with Affiliates",
+      "cardNo": "075",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 075",
+      "psaTotal": 1700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "RuffletMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "076",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 076",
+      "psaTotal": 5900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "BraviaryMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "077",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 077",
+      "psaTotal": 7300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "TornadusShop with Affiliates",
+      "cardNo": "078",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 078",
+      "psaTotal": 500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "TornadusMaster Ball Reverse HoloShop with Affiliates",
+      "cardNo": "078",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 078",
+      "psaTotal": 14300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "HildaReverse HoloShop with Affiliates",
+      "cardNo": "085",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 085",
+      "psaTotal": 2200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SewaddleArt RareShop with Affiliates",
+      "cardNo": "087",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 087",
+      "psaTotal": 54000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SwadloonArt RareShop with Affiliates",
+      "cardNo": "088",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 088",
+      "psaTotal": 49200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "LeavannyArt RareShop with Affiliates",
+      "cardNo": "089",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 089",
+      "psaTotal": 38600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "CottoneeArt RareShop with Affiliates",
+      "cardNo": "090",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 090",
+      "psaTotal": 65900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "DeerlingArt RareShop with Affiliates",
+      "cardNo": "091",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 091",
+      "psaTotal": 42100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SawsbuckArt RareShop with Affiliates",
+      "cardNo": "092",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 092",
+      "psaTotal": 46200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ShelmetArt RareShop with Affiliates",
+      "cardNo": "093",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 093",
+      "psaTotal": 52400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "AccelgorArt RareShop with Affiliates",
+      "cardNo": "094",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 094",
+      "psaTotal": 52800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "VirizionArt RareShop with Affiliates",
+      "cardNo": "095",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 095",
+      "psaTotal": 51700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "TepigArt RareShop with Affiliates",
+      "cardNo": "096",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 096",
+      "psaTotal": 104500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "PigniteArt RareShop with Affiliates",
+      "cardNo": "097",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 097",
+      "psaTotal": 59800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "EmboarArt RareShop with Affiliates",
+      "cardNo": "098",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 098",
+      "psaTotal": 84200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "PansearArt RareShop with Affiliates",
+      "cardNo": "099",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 099",
+      "psaTotal": 67800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SimisearArt RareShop with Affiliates",
+      "cardNo": "100",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 100",
+      "psaTotal": 35700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "HeatmorArt RareShop with Affiliates",
+      "cardNo": "101",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 101",
+      "psaTotal": 43200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "OshawottArt RareShop with Affiliates",
+      "cardNo": "102",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 102",
+      "psaTotal": 226600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "DewottArt RareShop with Affiliates",
+      "cardNo": "103",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 103",
+      "psaTotal": 62500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SamurottArt RareShop with Affiliates",
+      "cardNo": "104",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 104",
+      "psaTotal": 93200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "BasculinArt RareShop with Affiliates",
+      "cardNo": "105",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 105",
+      "psaTotal": 65000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "DucklettArt RareShop with Affiliates",
+      "cardNo": "106",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 106",
+      "psaTotal": 47500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SwannaArt RareShop with Affiliates",
+      "cardNo": "107",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 107",
+      "psaTotal": 40810
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "VanilliteArt RareShop with Affiliates",
+      "cardNo": "108",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 108",
+      "psaTotal": 36200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "VanillishArt RareShop with Affiliates",
+      "cardNo": "109",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 109",
+      "psaTotal": 42800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "VanilluxeArt RareShop with Affiliates",
+      "cardNo": "110",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 110",
+      "psaTotal": 45900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "BlitzleArt RareShop with Affiliates",
+      "cardNo": "111",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 111",
+      "psaTotal": 57200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ZebstrikaArt RareShop with Affiliates",
+      "cardNo": "112",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 112",
+      "psaTotal": 79500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "JoltikArt RareShop with Affiliates",
+      "cardNo": "113",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 113",
+      "psaTotal": 38800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "GalvantulaArt RareShop with Affiliates",
+      "cardNo": "114",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 114",
+      "psaTotal": 49700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "StunfiskArt RareShop with Affiliates",
+      "cardNo": "115",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 115",
+      "psaTotal": 43500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "WoobatArt RareShop with Affiliates",
+      "cardNo": "116",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 116",
+      "psaTotal": 58000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SwoobatArt RareShop with Affiliates",
+      "cardNo": "117",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 117",
+      "psaTotal": 52100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SigilyphArt RareShop with Affiliates",
+      "cardNo": "118",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 118",
+      "psaTotal": 59400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "YamaskArt RareShop with Affiliates",
+      "cardNo": "119",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 119",
+      "psaTotal": 54400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "CofagrigusArt RareShop with Affiliates",
+      "cardNo": "120",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 120",
+      "psaTotal": 54800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "GothitaArt RareShop with Affiliates",
+      "cardNo": "121",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 121",
+      "psaTotal": 49000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "GothoritaArt RareShop with Affiliates",
+      "cardNo": "122",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 122",
+      "psaTotal": 55900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "GothitelleArt RareShop with Affiliates",
+      "cardNo": "123",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 123",
+      "psaTotal": 56900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "FrillishArt RareShop with Affiliates",
+      "cardNo": "124",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 124",
+      "psaTotal": 25700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "RoggenrolaArt RareShop with Affiliates",
+      "cardNo": "125",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 125",
+      "psaTotal": 50600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "BoldoreArt RareShop with Affiliates",
+      "cardNo": "126",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 126",
+      "psaTotal": 49800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "GigalithArt RareShop with Affiliates",
+      "cardNo": "127",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 127",
+      "psaTotal": 69800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "SawkArt RareShop with Affiliates",
+      "cardNo": "128",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 128",
+      "psaTotal": 63300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ArchenArt RareShop with Affiliates",
+      "cardNo": "129",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 129",
+      "psaTotal": 47500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ArcheopsArt RareShop with Affiliates",
+      "cardNo": "130",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 130",
+      "psaTotal": 62400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "MienfooArt RareShop with Affiliates",
+      "cardNo": "131",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 131",
+      "psaTotal": 40900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "MienshaoArt RareShop with Affiliates",
+      "cardNo": "132",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 132",
+      "psaTotal": 45700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "TerrakionArt RareShop with Affiliates",
+      "cardNo": "133",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 133",
+      "psaTotal": 83200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "PurrloinArt RareShop with Affiliates",
+      "cardNo": "134",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 134",
+      "psaTotal": 55900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "LiepardArt RareShop with Affiliates",
+      "cardNo": "135",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 135",
+      "psaTotal": 48600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ScraggyArt RareShop with Affiliates",
+      "cardNo": "136",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 136",
+      "psaTotal": 63500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ScraftyArt RareShop with Affiliates",
+      "cardNo": "137",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 137",
+      "psaTotal": 58400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "TrubbishArt RareShop with Affiliates",
+      "cardNo": "138",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 138",
+      "psaTotal": 38800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "GarbodorArt RareShop with Affiliates",
+      "cardNo": "139",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 139",
+      "psaTotal": 55800
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ZoruaArt RareShop with Affiliates",
+      "cardNo": "140",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 140",
+      "psaTotal": 109100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ZoroarkArt RareShop with Affiliates",
+      "cardNo": "141",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 141",
+      "psaTotal": 128010
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "DeinoArt RareShop with Affiliates",
+      "cardNo": "142",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 142",
+      "psaTotal": 48300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "ZweilousArt RareShop with Affiliates",
+      "cardNo": "143",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 143",
+      "psaTotal": 51100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "FerroseedArt RareShop with Affiliates",
+      "cardNo": "144",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 144",
+      "psaTotal": 54700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "FerrothornArt RareShop with Affiliates",
+      "cardNo": "145",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 145",
+      "psaTotal": 45200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "KlinkArt RareShop with Affiliates",
+      "cardNo": "146",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 146",
+      "psaTotal": 56100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "KlangArt RareShop with Affiliates",
+      "cardNo": "147",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 147",
+      "psaTotal": 57200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "KlinklangArt RareShop with Affiliates",
+      "cardNo": "148",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 148",
+      "psaTotal": 76400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "DurantArt RareShop with Affiliates",
+      "cardNo": "149",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 149",
+      "psaTotal": 62100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "DruddigonArt RareShop with Affiliates",
+      "cardNo": "150",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 150",
+      "psaTotal": 68700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "PatratArt RareShop with Affiliates",
+      "cardNo": "151",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 151",
+      "psaTotal": 56400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "WatchogArt RareShop with Affiliates",
+      "cardNo": "152",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 152",
+      "psaTotal": 48300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "LillipupArt RareShop with Affiliates",
+      "cardNo": "153",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 153",
+      "psaTotal": 39510
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "HerdierArt RareShop with Affiliates",
+      "cardNo": "154",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 154",
+      "psaTotal": 45100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "StoutlandArt RareShop with Affiliates",
+      "cardNo": "155",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 155",
+      "psaTotal": 54500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "RuffletArt RareShop with Affiliates",
+      "cardNo": "156",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 156",
+      "psaTotal": 41500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "BraviaryArt RareShop with Affiliates",
+      "cardNo": "157",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 157",
+      "psaTotal": 51600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "TornadusArt RareShop with Affiliates",
+      "cardNo": "158",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 158",
+      "psaTotal": 77500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Whimsicott EXSuper RareShop with Affiliates",
+      "cardNo": "159",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 159",
+      "psaTotal": 47300
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Reshiram EXSuper RareShop with Affiliates",
+      "cardNo": "160",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 160",
+      "psaTotal": 122100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Keldeo EXSuper RareShop with Affiliates",
+      "cardNo": "161",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 161",
+      "psaTotal": 60500
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Jellicent EXSuper RareShop with Affiliates",
+      "cardNo": "162",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 162",
+      "psaTotal": 38000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Hydreigon EXSuper RareShop with Affiliates",
+      "cardNo": "163",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 163",
+      "psaTotal": 67100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Bouffalant EXSuper RareShop with Affiliates",
+      "cardNo": "164",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 164",
+      "psaTotal": 49100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "HarlequinSuper RareShop with Affiliates",
+      "cardNo": "165",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 165",
+      "psaTotal": 21600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "HildaSuper RareShop with Affiliates",
+      "cardNo": "166",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 166",
+      "psaTotal": 253400
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Whimsicott EXSpecial Art RareShop with Affiliates",
+      "cardNo": "167",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 167",
+      "psaTotal": 106900
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Reshiram EXSpecial Art RareShop with Affiliates",
+      "cardNo": "168",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 168",
+      "psaTotal": 1370000
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Keldeo EXSpecial Art RareShop with Affiliates",
+      "cardNo": "169",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 169",
+      "psaTotal": 235100
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Jellicent EXSpecial Art RareShop with Affiliates",
+      "cardNo": "170",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 170",
+      "psaTotal": 87700
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Hydreigon EXSpecial Art RareShop with Affiliates",
+      "cardNo": "171",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 171",
+      "psaTotal": 391200
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Bouffalant EXSpecial Art RareShop with Affiliates",
+      "cardNo": "172",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 172",
+      "psaTotal": 54600
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "HildaSpecial Art RareShop with Affiliates",
+      "cardNo": "173",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 173",
+      "psaTotal": 734601
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese Sv11w-White Flare",
+      "sourceUrl": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "cardName": "Reshiram EXBW RareShop with Affiliates",
+      "cardNo": "174",
+      "psa10Count": 0,
+      "psa10Rate": 0,
+      "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 174",
+      "psaTotal": 1592701
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese M-P Promo",
+      "sourceUrl": "https://www.psacard.com/spec/psa/14234253",
+      "fetchedAt": "2026-08-17T01:44:04.824Z",
+      "cardNo": "020",
+      "cardName": "Pikachu",
+      "psa10Count": 285454,
+      "psaTotal": 326067,
+      "psa10Rate": 87.54266131889082,
+      "psaQuery": "Pokemon Japanese M-P PROMO 020"
+    },
+    {
+      "sourceSet": "2025 Pokemon Japanese SV10-Glory of Team Rocket",
+      "sourceUrl": "https://www.psacard.com/auctionprices/tcg-cards/2025-pokemon-japanese-sv10-glory-team-rocket/team-rockets-meowth/13312876",
+      "fetchedAt": "2026-08-17T01:44:04.824Z",
+      "cardNo": "109",
+      "cardName": "Team Rocket's Meowth",
+      "psa10Count": 17483,
+      "psaTotal": 19724,
+      "psa10Rate": 88.63688204047934,
+      "psaQuery": "Pokemon Japanese SV10-GLORY OF TEAM ROCKET 109"
+    }
+  ],
+  "sets": [
+    {
+      "name": "2025 Pokemon Japanese M1l-Mega Brave",
+      "kind": "pop",
+      "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+      "title": "2025 Pokemon Japanese M1l-Mega Brave TCG Cards | PSA Population",
+      "fetchedAt": "2026-08-16T22:20:32.317Z",
+      "setCode": "M1L-MEGA BRAVE",
+      "rows": [
+        {
+          "cardNo": "003",
+          "cardName": "Mega Venusaur EX",
+          "psa10Count": 724,
+          "psaTotal": 857,
+          "psa10Rate": 84.48074679113185,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 003"
+        },
+        {
+          "cardNo": "064",
+          "cardName": "Bulbasaur",
+          "psa10Count": 15546,
+          "psaTotal": 18718,
+          "psa10Rate": 83.05374505823272,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 064"
+        },
+        {
+          "cardNo": "065",
+          "cardName": "Ivysaur",
+          "psa10Count": 15095,
+          "psaTotal": 17629,
+          "psa10Rate": 85.62595722956492,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 065"
+        },
+        {
+          "cardNo": "066",
+          "cardName": "Exeggutor",
+          "psa10Count": 7993,
+          "psaTotal": 9090,
+          "psa10Rate": 87.93179317931794,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 066"
+        },
+        {
+          "cardNo": "067",
+          "cardName": "Vulpix",
+          "psa10Count": 7716,
+          "psaTotal": 8697,
+          "psa10Rate": 88.72024836150396,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 067"
+        },
+        {
+          "cardNo": "068",
+          "cardName": "Riolu",
+          "psa10Count": 8664,
+          "psaTotal": 9857,
+          "psa10Rate": 87.8969260424064,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 068"
+        },
+        {
+          "cardNo": "069",
+          "cardName": "Marshadow",
+          "psa10Count": 12448,
+          "psaTotal": 14818,
+          "psa10Rate": 84.00593872317452,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 069"
+        },
+        {
+          "cardNo": "070",
+          "cardName": "Garganacl",
+          "psa10Count": 8718,
+          "psaTotal": 9796,
+          "psa10Rate": 88.99550837076357,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 070"
+        },
+        {
+          "cardNo": "071",
+          "cardName": "Spiritomb",
+          "psa10Count": 7956,
+          "psaTotal": 9165,
+          "psa10Rate": 86.80851063829788,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 071"
+        },
+        {
+          "cardNo": "072",
+          "cardName": "Shroodle",
+          "psa10Count": 8404,
+          "psaTotal": 9520,
+          "psa10Rate": 88.27731092436974,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 072"
+        },
+        {
+          "cardNo": "073",
+          "cardName": "Steelix",
+          "psa10Count": 8711,
+          "psaTotal": 10076,
+          "psa10Rate": 86.45295752282652,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 073"
+        },
+        {
+          "cardNo": "074",
+          "cardName": "Spearow",
+          "psa10Count": 7643,
+          "psaTotal": 8657,
+          "psa10Rate": 88.28693542797737,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 074"
+        },
+        {
+          "cardNo": "075",
+          "cardName": "Gumshoos",
+          "psa10Count": 8227,
+          "psaTotal": 9208,
+          "psa10Rate": 89.3462206776716,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 075"
+        },
+        {
+          "cardNo": "076",
+          "cardName": "Mega Venusaur EX",
+          "psa10Count": 3483,
+          "psaTotal": 3955,
+          "psa10Rate": 88.06573957016435,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 076"
+        },
+        {
+          "cardNo": "077",
+          "cardName": "Mega Camerupt EX",
+          "psa10Count": 852,
+          "psaTotal": 955,
+          "psa10Rate": 89.21465968586388,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 077"
+        },
+        {
+          "cardNo": "078",
+          "cardName": "Mega Lucario EX",
+          "psa10Count": 3597,
+          "psaTotal": 4251,
+          "psa10Rate": 84.61538461538461,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 078"
+        },
+        {
+          "cardNo": "079",
+          "cardName": "Mega Absol EX",
+          "psa10Count": 1155,
+          "psaTotal": 1419,
+          "psa10Rate": 81.3953488372093,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 079"
+        },
+        {
+          "cardNo": "080",
+          "cardName": "Mega Mawile EX",
+          "psa10Count": 810,
+          "psaTotal": 906,
+          "psa10Rate": 89.40397350993378,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 080"
+        },
+        {
+          "cardNo": "086",
+          "cardName": "Lillie's Determination",
+          "psa10Count": 12527,
+          "psaTotal": 21578,
+          "psa10Rate": 58.0544999536565,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 086"
+        },
+        {
+          "cardNo": "087",
+          "cardName": "Mega Venusaur EX",
+          "psa10Count": 12432,
+          "psaTotal": 14041,
+          "psa10Rate": 88.54070222918595,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 087"
+        },
+        {
+          "cardNo": "088",
+          "cardName": "Mega Lucario EX",
+          "psa10Count": 17550,
+          "psaTotal": 19439,
+          "psa10Rate": 90.28242193528475,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 088"
+        },
+        {
+          "cardNo": "089",
+          "cardName": "Mega Absol EX",
+          "psa10Count": 4932,
+          "psaTotal": 5576,
+          "psa10Rate": 88.45050215208035,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 089"
+        },
+        {
+          "cardNo": "090",
+          "cardName": "LT. Surge's Deal",
+          "psa10Count": 554,
+          "psaTotal": 891,
+          "psa10Rate": 62.177328843995504,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 090"
+        },
+        {
+          "cardNo": "091",
+          "cardName": "Lillie's Determination",
+          "psa10Count": 20487,
+          "psaTotal": 40696,
+          "psa10Rate": 50.341556909770006,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 091"
+        },
+        {
+          "cardNo": "092",
+          "cardName": "Mega Lucario EX",
+          "psa10Count": 3622,
+          "psaTotal": 6842,
+          "psa10Rate": 52.937737503653906,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 092"
+        }
+      ],
+      "byQuery": {
+        "Pokemon Japanese M1L-MEGA BRAVE 003": {
+          "cardNo": "003",
+          "cardName": "Mega Venusaur EX",
+          "psa10Count": 724,
+          "psaTotal": 857,
+          "psa10Rate": 84.48074679113185,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 003"
+        },
+        "Pokemon Japanese M1L-MEGA BRAVE 064": {
+          "cardNo": "064",
+          "cardName": "Bulbasaur",
+          "psa10Count": 15546,
+          "psaTotal": 18718,
+          "psa10Rate": 83.05374505823272,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 064"
+        },
+        "Pokemon Japanese M1L-MEGA BRAVE 065": {
+          "cardNo": "065",
+          "cardName": "Ivysaur",
+          "psa10Count": 15095,
+          "psaTotal": 17629,
+          "psa10Rate": 85.62595722956492,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 065"
+        },
+        "Pokemon Japanese M1L-MEGA BRAVE 066": {
+          "cardNo": "066",
+          "cardName": "Exeggutor",
+          "psa10Count": 7993,
+          "psaTotal": 9090,
+          "psa10Rate": 87.93179317931794,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 066"
+        },
+        "Pokemon Japanese M1L-MEGA BRAVE 067": {
+          "cardNo": "067",
+          "cardName": "Vulpix",
+          "psa10Count": 7716,
+          "psaTotal": 8697,
+          "psa10Rate": 88.72024836150396,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 067"
+        },
+        "Pokemon Japanese M1L-MEGA BRAVE 068": {
+          "cardNo": "068",
+          "cardName": "Riolu",
+          "psa10Count": 8664,
+          "psaTotal": 9857,
+          "psa10Rate": 87.8969260424064,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 068"
+        },
+        "Pokemon Japanese M1L-MEGA BRAVE 069": {
+          "cardNo": "069",
+          "cardName": "Marshadow",
+          "psa10Count": 12448,
+          "psaTotal": 14818,
+          "psa10Rate": 84.00593872317452,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 069"
+        },
+        "Pokemon Japanese M1L-MEGA BRAVE 070": {
+          "cardNo": "070",
+          "cardName": "Garganacl",
+          "psa10Count": 8718,
+          "psaTotal": 9796,
+          "psa10Rate": 88.99550837076357,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 070"
+        },
+        "Pokemon Japanese M1L-MEGA BRAVE 071": {
+          "cardNo": "071",
+          "cardName": "Spiritomb",
+          "psa10Count": 7956,
+          "psaTotal": 9165,
+          "psa10Rate": 86.80851063829788,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 071"
+        },
+        "Pokemon Japanese M1L-MEGA BRAVE 072": {
+          "cardNo": "072",
+          "cardName": "Shroodle",
+          "psa10Count": 8404,
+          "psaTotal": 9520,
+          "psa10Rate": 88.27731092436974,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 072"
+        },
+        "Pokemon Japanese M1L-MEGA BRAVE 073": {
+          "cardNo": "073",
+          "cardName": "Steelix",
+          "psa10Count": 8711,
+          "psaTotal": 10076,
+          "psa10Rate": 86.45295752282652,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 073"
+        },
+        "Pokemon Japanese M1L-MEGA BRAVE 074": {
+          "cardNo": "074",
+          "cardName": "Spearow",
+          "psa10Count": 7643,
+          "psaTotal": 8657,
+          "psa10Rate": 88.28693542797737,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 074"
+        },
+        "Pokemon Japanese M1L-MEGA BRAVE 075": {
+          "cardNo": "075",
+          "cardName": "Gumshoos",
+          "psa10Count": 8227,
+          "psaTotal": 9208,
+          "psa10Rate": 89.3462206776716,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 075"
+        },
+        "Pokemon Japanese M1L-MEGA BRAVE 076": {
+          "cardNo": "076",
+          "cardName": "Mega Venusaur EX",
+          "psa10Count": 3483,
+          "psaTotal": 3955,
+          "psa10Rate": 88.06573957016435,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 076"
+        },
+        "Pokemon Japanese M1L-MEGA BRAVE 077": {
+          "cardNo": "077",
+          "cardName": "Mega Camerupt EX",
+          "psa10Count": 852,
+          "psaTotal": 955,
+          "psa10Rate": 89.21465968586388,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 077"
+        },
+        "Pokemon Japanese M1L-MEGA BRAVE 078": {
+          "cardNo": "078",
+          "cardName": "Mega Lucario EX",
+          "psa10Count": 3597,
+          "psaTotal": 4251,
+          "psa10Rate": 84.61538461538461,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 078"
+        },
+        "Pokemon Japanese M1L-MEGA BRAVE 079": {
+          "cardNo": "079",
+          "cardName": "Mega Absol EX",
+          "psa10Count": 1155,
+          "psaTotal": 1419,
+          "psa10Rate": 81.3953488372093,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 079"
+        },
+        "Pokemon Japanese M1L-MEGA BRAVE 080": {
+          "cardNo": "080",
+          "cardName": "Mega Mawile EX",
+          "psa10Count": 810,
+          "psaTotal": 906,
+          "psa10Rate": 89.40397350993378,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 080"
+        },
+        "Pokemon Japanese M1L-MEGA BRAVE 086": {
+          "cardNo": "086",
+          "cardName": "Lillie's Determination",
+          "psa10Count": 12527,
+          "psaTotal": 21578,
+          "psa10Rate": 58.0544999536565,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 086"
+        },
+        "Pokemon Japanese M1L-MEGA BRAVE 087": {
+          "cardNo": "087",
+          "cardName": "Mega Venusaur EX",
+          "psa10Count": 12432,
+          "psaTotal": 14041,
+          "psa10Rate": 88.54070222918595,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 087"
+        },
+        "Pokemon Japanese M1L-MEGA BRAVE 088": {
+          "cardNo": "088",
+          "cardName": "Mega Lucario EX",
+          "psa10Count": 17550,
+          "psaTotal": 19439,
+          "psa10Rate": 90.28242193528475,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 088"
+        },
+        "Pokemon Japanese M1L-MEGA BRAVE 089": {
+          "cardNo": "089",
+          "cardName": "Mega Absol EX",
+          "psa10Count": 4932,
+          "psaTotal": 5576,
+          "psa10Rate": 88.45050215208035,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 089"
+        },
+        "Pokemon Japanese M1L-MEGA BRAVE 090": {
+          "cardNo": "090",
+          "cardName": "LT. Surge's Deal",
+          "psa10Count": 554,
+          "psaTotal": 891,
+          "psa10Rate": 62.177328843995504,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 090"
+        },
+        "Pokemon Japanese M1L-MEGA BRAVE 091": {
+          "cardNo": "091",
+          "cardName": "Lillie's Determination",
+          "psa10Count": 20487,
+          "psaTotal": 40696,
+          "psa10Rate": 50.341556909770006,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 091"
+        },
+        "Pokemon Japanese M1L-MEGA BRAVE 092": {
+          "cardNo": "092",
+          "cardName": "Mega Lucario EX",
+          "psa10Count": 3622,
+          "psaTotal": 6842,
+          "psa10Rate": 52.937737503653906,
+          "psaQuery": "Pokemon Japanese M1L-MEGA BRAVE 092"
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "2025 Pokemon Japanese M1s-Mega Symphonia",
+      "kind": "pop",
+      "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
+      "title": "2025 Pokemon Japanese M1s-Mega Symphonia TCG Cards | PSA Population",
+      "fetchedAt": "2026-08-16T22:20:36.404Z",
+      "setCode": "M1S-MEGA SYMPHONIA",
+      "rows": [
+        {
+          "cardNo": "049",
+          "cardName": "Mega Latias EX",
+          "psa10Count": 588,
+          "psaTotal": 699,
+          "psa10Rate": 84.12017167381974,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 049"
+        },
+        {
+          "cardNo": "064",
+          "cardName": "Shuckle",
+          "psa10Count": 4741,
+          "psaTotal": 5564,
+          "psa10Rate": 85.20848310567936,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 064"
+        },
+        {
+          "cardNo": "065",
+          "cardName": "Ninjask",
+          "psa10Count": 7049,
+          "psaTotal": 8012,
+          "psa10Rate": 87.98052920619071,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 065"
+        },
+        {
+          "cardNo": "066",
+          "cardName": "Litleo",
+          "psa10Count": 6218,
+          "psaTotal": 7079,
+          "psa10Rate": 87.83726515044498,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 066"
+        },
+        {
+          "cardNo": "067",
+          "cardName": "Snover",
+          "psa10Count": 4274,
+          "psaTotal": 5445,
+          "psa10Rate": 78.49403122130396,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 067"
+        },
+        {
+          "cardNo": "068",
+          "cardName": "Clawitzer",
+          "psa10Count": 6416,
+          "psaTotal": 7145,
+          "psa10Rate": 89.79706088173548,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 068"
+        },
+        {
+          "cardNo": "069",
+          "cardName": "Inteleon",
+          "psa10Count": 7421,
+          "psaTotal": 8210,
+          "psa10Rate": 90.38976857490864,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 069"
+        },
+        {
+          "cardNo": "070",
+          "cardName": "Helioptile",
+          "psa10Count": 6527,
+          "psaTotal": 7329,
+          "psa10Rate": 89.05717014599536,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 070"
+        },
+        {
+          "cardNo": "071",
+          "cardName": "Alakazam",
+          "psa10Count": 7813,
+          "psaTotal": 8953,
+          "psa10Rate": 87.26683793141964,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 071"
+        },
+        {
+          "cardNo": "072",
+          "cardName": "Shedinja",
+          "psa10Count": 7316,
+          "psaTotal": 8049,
+          "psa10Rate": 90.89327866815754,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 072"
+        },
+        {
+          "cardNo": "073",
+          "cardName": "Houndstone",
+          "psa10Count": 7201,
+          "psaTotal": 7899,
+          "psa10Rate": 91.1634384099253,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 073"
+        },
+        {
+          "cardNo": "074",
+          "cardName": "Delibird",
+          "psa10Count": 5660,
+          "psaTotal": 6620,
+          "psa10Rate": 85.49848942598187,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 074"
+        },
+        {
+          "cardNo": "075",
+          "cardName": "Stufful",
+          "psa10Count": 6372,
+          "psaTotal": 7026,
+          "psa10Rate": 90.69171648163963,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 075"
+        },
+        {
+          "cardNo": "076",
+          "cardName": "Mega Abomasnow EX",
+          "psa10Count": 798,
+          "psaTotal": 867,
+          "psa10Rate": 92.04152249134948,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 076"
+        },
+        {
+          "cardNo": "077",
+          "cardName": "Mega Manectric EX",
+          "psa10Count": 987,
+          "psaTotal": 1088,
+          "psa10Rate": 90.71691176470588,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 077"
+        },
+        {
+          "cardNo": "078",
+          "cardName": "Mega Gardevoir EX",
+          "psa10Count": 2701,
+          "psaTotal": 3058,
+          "psa10Rate": 88.32570307390452,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 078"
+        },
+        {
+          "cardNo": "079",
+          "cardName": "Mega Latias EX",
+          "psa10Count": 2517,
+          "psaTotal": 2832,
+          "psa10Rate": 88.87711864406779,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 079"
+        },
+        {
+          "cardNo": "080",
+          "cardName": "Mega Kangaskhan EX",
+          "psa10Count": 1305,
+          "psaTotal": 1474,
+          "psa10Rate": 88.53459972862959,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 080"
+        },
+        {
+          "cardNo": "084",
+          "cardName": "Acerola's Mischief",
+          "psa10Count": 5405,
+          "psaTotal": 9390,
+          "psa10Rate": 57.56123535676251,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 084"
+        },
+        {
+          "cardNo": "087",
+          "cardName": "Mega Gardevoir EX",
+          "psa10Count": 20806,
+          "psaTotal": 23565,
+          "psa10Rate": 88.29195841290048,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 087"
+        },
+        {
+          "cardNo": "088",
+          "cardName": "Mega Latias EX",
+          "psa10Count": 12424,
+          "psaTotal": 14035,
+          "psa10Rate": 88.52155325970787,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 088"
+        },
+        {
+          "cardNo": "089",
+          "cardName": "Mega Kangaskhan EX",
+          "psa10Count": 6580,
+          "psaTotal": 7522,
+          "psa10Rate": 87.47673491092795,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 089"
+        },
+        {
+          "cardNo": "090",
+          "cardName": "Acerola's Mischief",
+          "psa10Count": 8862,
+          "psaTotal": 16153,
+          "psa10Rate": 54.8628737695784,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 090"
+        },
+        {
+          "cardNo": "091",
+          "cardName": "Wally's Compassion",
+          "psa10Count": 636,
+          "psaTotal": 1227,
+          "psa10Rate": 51.83374083129584,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 091"
+        },
+        {
+          "cardNo": "092",
+          "cardName": "Mega Gardevoir EX",
+          "psa10Count": 2490,
+          "psaTotal": 5445,
+          "psa10Rate": 45.73002754820937,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 092"
+        }
+      ],
+      "byQuery": {
+        "Pokemon Japanese M1S-MEGA SYMPHONIA 049": {
+          "cardNo": "049",
+          "cardName": "Mega Latias EX",
+          "psa10Count": 588,
+          "psaTotal": 699,
+          "psa10Rate": 84.12017167381974,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 049"
+        },
+        "Pokemon Japanese M1S-MEGA SYMPHONIA 064": {
+          "cardNo": "064",
+          "cardName": "Shuckle",
+          "psa10Count": 4741,
+          "psaTotal": 5564,
+          "psa10Rate": 85.20848310567936,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 064"
+        },
+        "Pokemon Japanese M1S-MEGA SYMPHONIA 065": {
+          "cardNo": "065",
+          "cardName": "Ninjask",
+          "psa10Count": 7049,
+          "psaTotal": 8012,
+          "psa10Rate": 87.98052920619071,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 065"
+        },
+        "Pokemon Japanese M1S-MEGA SYMPHONIA 066": {
+          "cardNo": "066",
+          "cardName": "Litleo",
+          "psa10Count": 6218,
+          "psaTotal": 7079,
+          "psa10Rate": 87.83726515044498,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 066"
+        },
+        "Pokemon Japanese M1S-MEGA SYMPHONIA 067": {
+          "cardNo": "067",
+          "cardName": "Snover",
+          "psa10Count": 4274,
+          "psaTotal": 5445,
+          "psa10Rate": 78.49403122130396,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 067"
+        },
+        "Pokemon Japanese M1S-MEGA SYMPHONIA 068": {
+          "cardNo": "068",
+          "cardName": "Clawitzer",
+          "psa10Count": 6416,
+          "psaTotal": 7145,
+          "psa10Rate": 89.79706088173548,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 068"
+        },
+        "Pokemon Japanese M1S-MEGA SYMPHONIA 069": {
+          "cardNo": "069",
+          "cardName": "Inteleon",
+          "psa10Count": 7421,
+          "psaTotal": 8210,
+          "psa10Rate": 90.38976857490864,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 069"
+        },
+        "Pokemon Japanese M1S-MEGA SYMPHONIA 070": {
+          "cardNo": "070",
+          "cardName": "Helioptile",
+          "psa10Count": 6527,
+          "psaTotal": 7329,
+          "psa10Rate": 89.05717014599536,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 070"
+        },
+        "Pokemon Japanese M1S-MEGA SYMPHONIA 071": {
+          "cardNo": "071",
+          "cardName": "Alakazam",
+          "psa10Count": 7813,
+          "psaTotal": 8953,
+          "psa10Rate": 87.26683793141964,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 071"
+        },
+        "Pokemon Japanese M1S-MEGA SYMPHONIA 072": {
+          "cardNo": "072",
+          "cardName": "Shedinja",
+          "psa10Count": 7316,
+          "psaTotal": 8049,
+          "psa10Rate": 90.89327866815754,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 072"
+        },
+        "Pokemon Japanese M1S-MEGA SYMPHONIA 073": {
+          "cardNo": "073",
+          "cardName": "Houndstone",
+          "psa10Count": 7201,
+          "psaTotal": 7899,
+          "psa10Rate": 91.1634384099253,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 073"
+        },
+        "Pokemon Japanese M1S-MEGA SYMPHONIA 074": {
+          "cardNo": "074",
+          "cardName": "Delibird",
+          "psa10Count": 5660,
+          "psaTotal": 6620,
+          "psa10Rate": 85.49848942598187,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 074"
+        },
+        "Pokemon Japanese M1S-MEGA SYMPHONIA 075": {
+          "cardNo": "075",
+          "cardName": "Stufful",
+          "psa10Count": 6372,
+          "psaTotal": 7026,
+          "psa10Rate": 90.69171648163963,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 075"
+        },
+        "Pokemon Japanese M1S-MEGA SYMPHONIA 076": {
+          "cardNo": "076",
+          "cardName": "Mega Abomasnow EX",
+          "psa10Count": 798,
+          "psaTotal": 867,
+          "psa10Rate": 92.04152249134948,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 076"
+        },
+        "Pokemon Japanese M1S-MEGA SYMPHONIA 077": {
+          "cardNo": "077",
+          "cardName": "Mega Manectric EX",
+          "psa10Count": 987,
+          "psaTotal": 1088,
+          "psa10Rate": 90.71691176470588,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 077"
+        },
+        "Pokemon Japanese M1S-MEGA SYMPHONIA 078": {
+          "cardNo": "078",
+          "cardName": "Mega Gardevoir EX",
+          "psa10Count": 2701,
+          "psaTotal": 3058,
+          "psa10Rate": 88.32570307390452,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 078"
+        },
+        "Pokemon Japanese M1S-MEGA SYMPHONIA 079": {
+          "cardNo": "079",
+          "cardName": "Mega Latias EX",
+          "psa10Count": 2517,
+          "psaTotal": 2832,
+          "psa10Rate": 88.87711864406779,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 079"
+        },
+        "Pokemon Japanese M1S-MEGA SYMPHONIA 080": {
+          "cardNo": "080",
+          "cardName": "Mega Kangaskhan EX",
+          "psa10Count": 1305,
+          "psaTotal": 1474,
+          "psa10Rate": 88.53459972862959,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 080"
+        },
+        "Pokemon Japanese M1S-MEGA SYMPHONIA 084": {
+          "cardNo": "084",
+          "cardName": "Acerola's Mischief",
+          "psa10Count": 5405,
+          "psaTotal": 9390,
+          "psa10Rate": 57.56123535676251,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 084"
+        },
+        "Pokemon Japanese M1S-MEGA SYMPHONIA 087": {
+          "cardNo": "087",
+          "cardName": "Mega Gardevoir EX",
+          "psa10Count": 20806,
+          "psaTotal": 23565,
+          "psa10Rate": 88.29195841290048,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 087"
+        },
+        "Pokemon Japanese M1S-MEGA SYMPHONIA 088": {
+          "cardNo": "088",
+          "cardName": "Mega Latias EX",
+          "psa10Count": 12424,
+          "psaTotal": 14035,
+          "psa10Rate": 88.52155325970787,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 088"
+        },
+        "Pokemon Japanese M1S-MEGA SYMPHONIA 089": {
+          "cardNo": "089",
+          "cardName": "Mega Kangaskhan EX",
+          "psa10Count": 6580,
+          "psaTotal": 7522,
+          "psa10Rate": 87.47673491092795,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 089"
+        },
+        "Pokemon Japanese M1S-MEGA SYMPHONIA 090": {
+          "cardNo": "090",
+          "cardName": "Acerola's Mischief",
+          "psa10Count": 8862,
+          "psaTotal": 16153,
+          "psa10Rate": 54.8628737695784,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 090"
+        },
+        "Pokemon Japanese M1S-MEGA SYMPHONIA 091": {
+          "cardNo": "091",
+          "cardName": "Wally's Compassion",
+          "psa10Count": 636,
+          "psaTotal": 1227,
+          "psa10Rate": 51.83374083129584,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 091"
+        },
+        "Pokemon Japanese M1S-MEGA SYMPHONIA 092": {
+          "cardNo": "092",
+          "cardName": "Mega Gardevoir EX",
+          "psa10Count": 2490,
+          "psaTotal": 5445,
+          "psa10Rate": 45.73002754820937,
+          "psaQuery": "Pokemon Japanese M1S-MEGA SYMPHONIA 092"
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "2025 Pokemon Japanese M2a-Mega Dream ex",
+      "kind": "pop",
+      "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+      "title": "2025 Pokemon Japanese M2a-Mega Dream EX TCG Cards | PSA Population",
+      "fetchedAt": "2026-08-16T22:23:47.688Z",
+      "setCode": "M2A-MEGA DREAM EX",
+      "rows": [
+        {
+          "cardNo": "044",
+          "cardName": "Pikachu EX",
+          "psa10Count": 3856,
+          "psaTotal": 4515,
+          "psa10Rate": 85.40420819490588,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 044"
+        },
+        {
+          "cardNo": "063",
+          "cardName": "Team Rocket's Mewtwo EX",
+          "psa10Count": 1000,
+          "psaTotal": 1197,
+          "psa10Rate": 83.5421888053467,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 063"
+        },
+        {
+          "cardNo": "079",
+          "cardName": "Team Rocket's Mimikyu",
+          "psa10Count": 504,
+          "psaTotal": 921,
+          "psa10Rate": 54.72312703583062,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 079"
+        },
+        {
+          "cardNo": "126",
+          "cardName": "Mega Dragonite EX",
+          "psa10Count": 2022,
+          "psaTotal": 2338,
+          "psa10Rate": 86.4841745081266,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 126"
+        },
+        {
+          "cardNo": "127",
+          "cardName": "Rayquaza",
+          "psa10Count": 620,
+          "psaTotal": 881,
+          "psa10Rate": 70.37457434733257,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 127"
+        },
+        {
+          "cardNo": "127",
+          "cardName": "Rayquaza",
+          "psa10Count": 1206,
+          "psaTotal": 1613,
+          "psa10Rate": 74.76751394916305,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 127"
+        },
+        {
+          "cardNo": "194",
+          "cardName": "Beautifly",
+          "psa10Count": 7187,
+          "psaTotal": 8807,
+          "psa10Rate": 81.60554104689452,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 194"
+        },
+        {
+          "cardNo": "195",
+          "cardName": "Dustox",
+          "psa10Count": 8089,
+          "psaTotal": 9589,
+          "psa10Rate": 84.35707581603921,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 195"
+        },
+        {
+          "cardNo": "196",
+          "cardName": "Budew",
+          "psa10Count": 3128,
+          "psaTotal": 4295,
+          "psa10Rate": 72.82887077997671,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 196"
+        },
+        {
+          "cardNo": "197",
+          "cardName": "Ethan's Magcargo",
+          "psa10Count": 5371,
+          "psaTotal": 7600,
+          "psa10Rate": 70.67105263157895,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 197"
+        },
+        {
+          "cardNo": "198",
+          "cardName": "Numel",
+          "psa10Count": 6566,
+          "psaTotal": 8059,
+          "psa10Rate": 81.47412830375977,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 198"
+        },
+        {
+          "cardNo": "199",
+          "cardName": "Psyduck",
+          "psa10Count": 20904,
+          "psaTotal": 30408,
+          "psa10Rate": 68.74506708760852,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 199"
+        },
+        {
+          "cardNo": "200",
+          "cardName": "Snorunt",
+          "psa10Count": 3194,
+          "psaTotal": 4704,
+          "psa10Rate": 67.89965986394559,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 200"
+        },
+        {
+          "cardNo": "201",
+          "cardName": "Heliolisk",
+          "psa10Count": 5424,
+          "psaTotal": 7197,
+          "psa10Rate": 75.36473530637767,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 201"
+        },
+        {
+          "cardNo": "202",
+          "cardName": "Misdreavus",
+          "psa10Count": 6378,
+          "psaTotal": 7772,
+          "psa10Rate": 82.06381883685023,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 202"
+        },
+        {
+          "cardNo": "203",
+          "cardName": "Togekiss",
+          "psa10Count": 2112,
+          "psaTotal": 4273,
+          "psa10Rate": 49.42663234261643,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 203"
+        },
+        {
+          "cardNo": "204",
+          "cardName": "Hop's Trevenant",
+          "psa10Count": 7778,
+          "psaTotal": 9296,
+          "psa10Rate": 83.67039586919105,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 204"
+        },
+        {
+          "cardNo": "205",
+          "cardName": "Team Rocket's Mimikyu",
+          "psa10Count": 16399,
+          "psaTotal": 19301,
+          "psa10Rate": 84.96450961090099,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 205"
+        },
+        {
+          "cardNo": "206",
+          "cardName": "Team Rocket's Dugtrio",
+          "psa10Count": 7382,
+          "psaTotal": 9272,
+          "psa10Rate": 79.6160483175151,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 206"
+        },
+        {
+          "cardNo": "207",
+          "cardName": "Medicham",
+          "psa10Count": 5125,
+          "psaTotal": 6628,
+          "psa10Rate": 77.32347616173809,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 207"
+        },
+        {
+          "cardNo": "208",
+          "cardName": "Cynthia's Spiritomb",
+          "psa10Count": 8652,
+          "psaTotal": 10260,
+          "psa10Rate": 84.32748538011697,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 208"
+        },
+        {
+          "cardNo": "209",
+          "cardName": "Galarian Obstagoon",
+          "psa10Count": 8080,
+          "psaTotal": 9318,
+          "psa10Rate": 86.7138871002361,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 209"
+        },
+        {
+          "cardNo": "210",
+          "cardName": "N's Zekrom",
+          "psa10Count": 18589,
+          "psaTotal": 21942,
+          "psa10Rate": 84.71880411995261,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 210"
+        },
+        {
+          "cardNo": "211",
+          "cardName": "Dreepy",
+          "psa10Count": 3186,
+          "psaTotal": 4498,
+          "psa10Rate": 70.83148065807026,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 211"
+        },
+        {
+          "cardNo": "212",
+          "cardName": "Drakloak",
+          "psa10Count": 3882,
+          "psaTotal": 4951,
+          "psa10Rate": 78.40840234296101,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 212"
+        },
+        {
+          "cardNo": "213",
+          "cardName": "Fan Rotom",
+          "psa10Count": 4637,
+          "psaTotal": 6142,
+          "psa10Rate": 75.49658091826767,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 213"
+        },
+        {
+          "cardNo": "219",
+          "cardName": "Canari",
+          "psa10Count": 2138,
+          "psaTotal": 3896,
+          "psa10Rate": 54.87679671457906,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 219"
+        },
+        {
+          "cardNo": "223",
+          "cardName": "Mega Charizard X EX",
+          "psa10Count": 57636,
+          "psaTotal": 63288,
+          "psa10Rate": 91.06939704209329,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 223"
+        },
+        {
+          "cardNo": "223",
+          "cardName": "Mega Charizard X EX",
+          "psa10Count": 1578,
+          "psaTotal": 1673,
+          "psa10Rate": 94.32157800358637,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 223"
+        },
+        {
+          "cardNo": "224",
+          "cardName": "Mega Froslass EX",
+          "psa10Count": 10560,
+          "psaTotal": 11475,
+          "psa10Rate": 92.02614379084967,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 224"
+        },
+        {
+          "cardNo": "224",
+          "cardName": "Mega Froslass EX",
+          "psa10Count": 637,
+          "psaTotal": 661,
+          "psa10Rate": 96.36913767019666,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 224"
+        },
+        {
+          "cardNo": "225",
+          "cardName": "Mega Eelektross EX",
+          "psa10Count": 10975,
+          "psaTotal": 11982,
+          "psa10Rate": 91.59572692371891,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 225"
+        },
+        {
+          "cardNo": "225",
+          "cardName": "Mega Eelektross EX",
+          "psa10Count": 592,
+          "psaTotal": 615,
+          "psa10Rate": 96.26016260162602,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 225"
+        },
+        {
+          "cardNo": "226",
+          "cardName": "Mega Gardevoir EX",
+          "psa10Count": 13467,
+          "psaTotal": 14587,
+          "psa10Rate": 92.32193048604923,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 226"
+        },
+        {
+          "cardNo": "226",
+          "cardName": "Mega Gardevoir EX",
+          "psa10Count": 689,
+          "psaTotal": 728,
+          "psa10Rate": 94.64285714285714,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 226"
+        },
+        {
+          "cardNo": "227",
+          "cardName": "Mega Diancie EX",
+          "psa10Count": 10201,
+          "psaTotal": 11047,
+          "psa10Rate": 92.34181225672128,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 227"
+        },
+        {
+          "cardNo": "227",
+          "cardName": "Mega Diancie EX",
+          "psa10Count": 618,
+          "psaTotal": 640,
+          "psa10Rate": 96.5625,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 227"
+        }
+      ],
+      "byQuery": {
+        "Pokemon Japanese M2A-MEGA DREAM EX 044": {
+          "cardNo": "044",
+          "cardName": "Pikachu EX",
+          "psa10Count": 3856,
+          "psaTotal": 4515,
+          "psa10Rate": 85.40420819490588,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 044"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 063": {
+          "cardNo": "063",
+          "cardName": "Team Rocket's Mewtwo EX",
+          "psa10Count": 1000,
+          "psaTotal": 1197,
+          "psa10Rate": 83.5421888053467,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 063"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 079": {
+          "cardNo": "079",
+          "cardName": "Team Rocket's Mimikyu",
+          "psa10Count": 504,
+          "psaTotal": 921,
+          "psa10Rate": 54.72312703583062,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 079"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 126": {
+          "cardNo": "126",
+          "cardName": "Mega Dragonite EX",
+          "psa10Count": 2022,
+          "psaTotal": 2338,
+          "psa10Rate": 86.4841745081266,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 126"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 127": {
+          "cardNo": "127",
+          "cardName": "Rayquaza",
+          "psa10Count": 1206,
+          "psaTotal": 1613,
+          "psa10Rate": 74.76751394916305,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 127"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 194": {
+          "cardNo": "194",
+          "cardName": "Beautifly",
+          "psa10Count": 7187,
+          "psaTotal": 8807,
+          "psa10Rate": 81.60554104689452,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 194"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 195": {
+          "cardNo": "195",
+          "cardName": "Dustox",
+          "psa10Count": 8089,
+          "psaTotal": 9589,
+          "psa10Rate": 84.35707581603921,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 195"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 196": {
+          "cardNo": "196",
+          "cardName": "Budew",
+          "psa10Count": 3128,
+          "psaTotal": 4295,
+          "psa10Rate": 72.82887077997671,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 196"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 197": {
+          "cardNo": "197",
+          "cardName": "Ethan's Magcargo",
+          "psa10Count": 5371,
+          "psaTotal": 7600,
+          "psa10Rate": 70.67105263157895,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 197"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 198": {
+          "cardNo": "198",
+          "cardName": "Numel",
+          "psa10Count": 6566,
+          "psaTotal": 8059,
+          "psa10Rate": 81.47412830375977,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 198"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 199": {
+          "cardNo": "199",
+          "cardName": "Psyduck",
+          "psa10Count": 20904,
+          "psaTotal": 30408,
+          "psa10Rate": 68.74506708760852,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 199"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 200": {
+          "cardNo": "200",
+          "cardName": "Snorunt",
+          "psa10Count": 3194,
+          "psaTotal": 4704,
+          "psa10Rate": 67.89965986394559,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 200"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 201": {
+          "cardNo": "201",
+          "cardName": "Heliolisk",
+          "psa10Count": 5424,
+          "psaTotal": 7197,
+          "psa10Rate": 75.36473530637767,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 201"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 202": {
+          "cardNo": "202",
+          "cardName": "Misdreavus",
+          "psa10Count": 6378,
+          "psaTotal": 7772,
+          "psa10Rate": 82.06381883685023,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 202"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 203": {
+          "cardNo": "203",
+          "cardName": "Togekiss",
+          "psa10Count": 2112,
+          "psaTotal": 4273,
+          "psa10Rate": 49.42663234261643,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 203"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 204": {
+          "cardNo": "204",
+          "cardName": "Hop's Trevenant",
+          "psa10Count": 7778,
+          "psaTotal": 9296,
+          "psa10Rate": 83.67039586919105,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 204"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 205": {
+          "cardNo": "205",
+          "cardName": "Team Rocket's Mimikyu",
+          "psa10Count": 16399,
+          "psaTotal": 19301,
+          "psa10Rate": 84.96450961090099,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 205"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 206": {
+          "cardNo": "206",
+          "cardName": "Team Rocket's Dugtrio",
+          "psa10Count": 7382,
+          "psaTotal": 9272,
+          "psa10Rate": 79.6160483175151,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 206"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 207": {
+          "cardNo": "207",
+          "cardName": "Medicham",
+          "psa10Count": 5125,
+          "psaTotal": 6628,
+          "psa10Rate": 77.32347616173809,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 207"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 208": {
+          "cardNo": "208",
+          "cardName": "Cynthia's Spiritomb",
+          "psa10Count": 8652,
+          "psaTotal": 10260,
+          "psa10Rate": 84.32748538011697,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 208"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 209": {
+          "cardNo": "209",
+          "cardName": "Galarian Obstagoon",
+          "psa10Count": 8080,
+          "psaTotal": 9318,
+          "psa10Rate": 86.7138871002361,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 209"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 210": {
+          "cardNo": "210",
+          "cardName": "N's Zekrom",
+          "psa10Count": 18589,
+          "psaTotal": 21942,
+          "psa10Rate": 84.71880411995261,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 210"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 211": {
+          "cardNo": "211",
+          "cardName": "Dreepy",
+          "psa10Count": 3186,
+          "psaTotal": 4498,
+          "psa10Rate": 70.83148065807026,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 211"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 212": {
+          "cardNo": "212",
+          "cardName": "Drakloak",
+          "psa10Count": 3882,
+          "psaTotal": 4951,
+          "psa10Rate": 78.40840234296101,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 212"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 213": {
+          "cardNo": "213",
+          "cardName": "Fan Rotom",
+          "psa10Count": 4637,
+          "psaTotal": 6142,
+          "psa10Rate": 75.49658091826767,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 213"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 219": {
+          "cardNo": "219",
+          "cardName": "Canari",
+          "psa10Count": 2138,
+          "psaTotal": 3896,
+          "psa10Rate": 54.87679671457906,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 219"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 223": {
+          "cardNo": "223",
+          "cardName": "Mega Charizard X EX",
+          "psa10Count": 1578,
+          "psaTotal": 1673,
+          "psa10Rate": 94.32157800358637,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 223"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 224": {
+          "cardNo": "224",
+          "cardName": "Mega Froslass EX",
+          "psa10Count": 637,
+          "psaTotal": 661,
+          "psa10Rate": 96.36913767019666,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 224"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 225": {
+          "cardNo": "225",
+          "cardName": "Mega Eelektross EX",
+          "psa10Count": 592,
+          "psaTotal": 615,
+          "psa10Rate": 96.26016260162602,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 225"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 226": {
+          "cardNo": "226",
+          "cardName": "Mega Gardevoir EX",
+          "psa10Count": 689,
+          "psaTotal": 728,
+          "psa10Rate": 94.64285714285714,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 226"
+        },
+        "Pokemon Japanese M2A-MEGA DREAM EX 227": {
+          "cardNo": "227",
+          "cardName": "Mega Diancie EX",
+          "psa10Count": 618,
+          "psaTotal": 640,
+          "psa10Rate": 96.5625,
+          "psaQuery": "Pokemon Japanese M2A-MEGA DREAM EX 227"
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "2025 Pokemon Japanese M2-Inferno X",
+      "kind": "pop",
+      "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+      "title": "2025 Pokemon Japanese M2-Inferno X TCG Cards | PSA Population",
+      "fetchedAt": "2026-08-16T22:33:52.796Z",
+      "setCode": "JAPANESE M2-INFERNO X",
+      "rows": [
+        {
+          "cardName": "Mega Heracross EXShop with Affiliates",
+          "cardNo": "004",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 004",
+          "psaTotal": 16200
+        },
+        {
+          "cardName": "CharmanderShop with Affiliates",
+          "cardNo": "011",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 011",
+          "psaTotal": 1700
+        },
+        {
+          "cardName": "CharmeleonShop with Affiliates",
+          "cardNo": "012",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 012",
+          "psaTotal": 1400
+        },
+        {
+          "cardName": "Mega Charizard X EXShop with Affiliates",
+          "cardNo": "013",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 013",
+          "psaTotal": 1687310
+        },
+        {
+          "cardName": "MoltresShop with Affiliates",
+          "cardNo": "014",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 014",
+          "psaTotal": 900
+        },
+        {
+          "cardName": "ReshiramShop with Affiliates",
+          "cardNo": "017",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 017",
+          "psaTotal": 3900
+        },
+        {
+          "cardName": "Oricorio EXShop with Affiliates",
+          "cardNo": "018",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 018",
+          "psaTotal": 7400
+        },
+        {
+          "cardName": "SuicuneShop with Affiliates",
+          "cardNo": "026",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 026",
+          "psaTotal": 1500
+        },
+        {
+          "cardName": "PiplupShop with Affiliates",
+          "cardNo": "027",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 027",
+          "psaTotal": 1500
+        },
+        {
+          "cardName": "Rotom EXShop with Affiliates",
+          "cardNo": "029",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 029",
+          "psaTotal": 5000
+        },
+        {
+          "cardName": "Mismagius EXShop with Affiliates",
+          "cardNo": "036",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 036",
+          "psaTotal": 4700
+        },
+        {
+          "cardName": "ZacianShop with Affiliates",
+          "cardNo": "039",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 039",
+          "psaTotal": 800
+        },
+        {
+          "cardName": "Mega Sharpedo EXShop with Affiliates",
+          "cardNo": "051",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 051",
+          "psaTotal": 22600
+        },
+        {
+          "cardName": "ToxtricityShop with Affiliates",
+          "cardNo": "057",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 057",
+          "psaTotal": 800
+        },
+        {
+          "cardName": "Empoleon EXShop with Affiliates",
+          "cardNo": "058",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 058",
+          "psaTotal": 7300
+        },
+        {
+          "cardName": "DuraludonShop with Affiliates",
+          "cardNo": "062",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 062",
+          "psaTotal": 4700
+        },
+        {
+          "cardName": "Mega Lopunny EXShop with Affiliates",
+          "cardNo": "072",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 072",
+          "psaTotal": 21500
+        },
+        {
+          "cardName": "DawnShop with Affiliates",
+          "cardNo": "077",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 077",
+          "psaTotal": 500
+        },
+        {
+          "cardName": "LudicoloArt RareShop with Affiliates",
+          "cardNo": "081",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 081",
+          "psaTotal": 1250700
+        },
+        {
+          "cardName": "NymbleArt RareShop with Affiliates",
+          "cardNo": "082",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 082",
+          "psaTotal": 1247210
+        },
+        {
+          "cardName": "CharcadetArt RareShop with Affiliates",
+          "cardNo": "083",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 083",
+          "psaTotal": 880800
+        },
+        {
+          "cardName": "DewgongArt RareShop with Affiliates",
+          "cardNo": "084",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 084",
+          "psaTotal": 889300
+        },
+        {
+          "cardName": "PiplupArt RareShop with Affiliates",
+          "cardNo": "085",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 085",
+          "psaTotal": 1723030
+        },
+        {
+          "cardName": "YamperArt RareShop with Affiliates",
+          "cardNo": "086",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 086",
+          "psaTotal": 953720
+        },
+        {
+          "cardName": "ZacianArt RareShop with Affiliates",
+          "cardNo": "087",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 087",
+          "psaTotal": 1059800
+        },
+        {
+          "cardName": "FlygonArt RareShop with Affiliates",
+          "cardNo": "088",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 088",
+          "psaTotal": 1035710
+        },
+        {
+          "cardName": "ToxtricityArt RareShop with Affiliates",
+          "cardNo": "089",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 089",
+          "psaTotal": 1003110
+        },
+        {
+          "cardName": "TogedemaruArt RareShop with Affiliates",
+          "cardNo": "090",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 090",
+          "psaTotal": 997311
+        },
+        {
+          "cardName": "WigglytuffArt RareShop with Affiliates",
+          "cardNo": "091",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 091",
+          "psaTotal": 1218110
+        },
+        {
+          "cardName": "AmbipomArt RareShop with Affiliates",
+          "cardNo": "092",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 092",
+          "psaTotal": 1421210
+        },
+        {
+          "cardName": "Mega Heracross EXSuper RareShop with Affiliates",
+          "cardNo": "093",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 093",
+          "psaTotal": 107700
+        },
+        {
+          "cardName": "Mega Charizard X EXSuper RareShop with Affiliates",
+          "cardNo": "094",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 094",
+          "psaTotal": 2280500
+        },
+        {
+          "cardName": "Oricorio EXSuper RareShop with Affiliates",
+          "cardNo": "095",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 095",
+          "psaTotal": 87700
+        },
+        {
+          "cardName": "Rotom EXSuper RareShop with Affiliates",
+          "cardNo": "096",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 096",
+          "psaTotal": 67400
+        },
+        {
+          "cardName": "Mismagius EXSuper RareShop with Affiliates",
+          "cardNo": "097",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 097",
+          "psaTotal": 55000
+        },
+        {
+          "cardName": "Mega Sharpedo EXSuper RareShop with Affiliates",
+          "cardNo": "098",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 098",
+          "psaTotal": 91000
+        },
+        {
+          "cardName": "Empoleon EXSuper RareShop with Affiliates",
+          "cardNo": "099",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 099",
+          "psaTotal": 53200
+        },
+        {
+          "cardName": "Mega Lopunny EXSuper RareShop with Affiliates",
+          "cardNo": "100",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 100",
+          "psaTotal": 120300
+        },
+        {
+          "cardName": "Heat BurnerSuper RareShop with Affiliates",
+          "cardNo": "101",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 101",
+          "psaTotal": 11500
+        },
+        {
+          "cardName": "SwitchSuper RareShop with Affiliates",
+          "cardNo": "102",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 102",
+          "psaTotal": 10300
+        },
+        {
+          "cardName": "Sacred CharmSuper RareShop with Affiliates",
+          "cardNo": "103",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 103",
+          "psaTotal": 9300
+        },
+        {
+          "cardName": "Punk HelmetSuper RareShop with Affiliates",
+          "cardNo": "104",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 104",
+          "psaTotal": 11100
+        },
+        {
+          "cardName": "Grimsley's One MoveSuper RareShop with Affiliates",
+          "cardNo": "105",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 105",
+          "psaTotal": 27500
+        },
+        {
+          "cardName": "DawnSuper RareShop with Affiliates",
+          "cardNo": "106",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 106",
+          "psaTotal": 405600
+        },
+        {
+          "cardName": "FirebreatherSuper RareShop with Affiliates",
+          "cardNo": "107",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 107",
+          "psaTotal": 19200
+        },
+        {
+          "cardName": "Battle ColosseumSuper RareShop with Affiliates",
+          "cardNo": "108",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 108",
+          "psaTotal": 10500
+        },
+        {
+          "cardName": "Ignition EnergySuper RareShop with Affiliates",
+          "cardNo": "109",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 109",
+          "psaTotal": 18300
+        },
+        {
+          "cardName": "Mega Charizard X EXSpecial Art RareShop with Affiliates",
+          "cardNo": "110",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 110",
+          "psaTotal": 5714920
+        },
+        {
+          "cardName": "Oricorio EXSpecial Art RareShop with Affiliates",
+          "cardNo": "111",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 111",
+          "psaTotal": 2162900
+        },
+        {
+          "cardName": "Rotom EXSpecial Art RareShop with Affiliates",
+          "cardNo": "112",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 112",
+          "psaTotal": 290500
+        },
+        {
+          "cardName": "Mega Sharpedo EXSpecial Art RareShop with Affiliates",
+          "cardNo": "113",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 113",
+          "psaTotal": 420300
+        },
+        {
+          "cardName": "Mega Lopunny EXSpecial Art RareShop with Affiliates",
+          "cardNo": "114",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 114",
+          "psaTotal": 323600
+        },
+        {
+          "cardName": "DawnSpecial Art RareShop with Affiliates",
+          "cardNo": "115",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 115",
+          "psaTotal": 1311500
+        },
+        {
+          "cardName": "Mega Charizard X EXMega Ultra RareShop with Affiliates",
+          "cardNo": "116",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 116",
+          "psaTotal": 1189910
+        }
+      ],
+      "byQuery": {
+        "Pokemon Japanese 004": {
+          "cardName": "Mega Heracross EXShop with Affiliates",
+          "cardNo": "004",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 004",
+          "psaTotal": 16200
+        },
+        "Pokemon Japanese 011": {
+          "cardName": "CharmanderShop with Affiliates",
+          "cardNo": "011",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 011",
+          "psaTotal": 1700
+        },
+        "Pokemon Japanese 012": {
+          "cardName": "CharmeleonShop with Affiliates",
+          "cardNo": "012",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 012",
+          "psaTotal": 1400
+        },
+        "Pokemon Japanese 013": {
+          "cardName": "Mega Charizard X EXShop with Affiliates",
+          "cardNo": "013",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 013",
+          "psaTotal": 1687310
+        },
+        "Pokemon Japanese 014": {
+          "cardName": "MoltresShop with Affiliates",
+          "cardNo": "014",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 014",
+          "psaTotal": 900
+        },
+        "Pokemon Japanese 017": {
+          "cardName": "ReshiramShop with Affiliates",
+          "cardNo": "017",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 017",
+          "psaTotal": 3900
+        },
+        "Pokemon Japanese 018": {
+          "cardName": "Oricorio EXShop with Affiliates",
+          "cardNo": "018",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 018",
+          "psaTotal": 7400
+        },
+        "Pokemon Japanese 026": {
+          "cardName": "SuicuneShop with Affiliates",
+          "cardNo": "026",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 026",
+          "psaTotal": 1500
+        },
+        "Pokemon Japanese 027": {
+          "cardName": "PiplupShop with Affiliates",
+          "cardNo": "027",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 027",
+          "psaTotal": 1500
+        },
+        "Pokemon Japanese 029": {
+          "cardName": "Rotom EXShop with Affiliates",
+          "cardNo": "029",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 029",
+          "psaTotal": 5000
+        },
+        "Pokemon Japanese 036": {
+          "cardName": "Mismagius EXShop with Affiliates",
+          "cardNo": "036",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 036",
+          "psaTotal": 4700
+        },
+        "Pokemon Japanese 039": {
+          "cardName": "ZacianShop with Affiliates",
+          "cardNo": "039",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 039",
+          "psaTotal": 800
+        },
+        "Pokemon Japanese 051": {
+          "cardName": "Mega Sharpedo EXShop with Affiliates",
+          "cardNo": "051",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 051",
+          "psaTotal": 22600
+        },
+        "Pokemon Japanese 057": {
+          "cardName": "ToxtricityShop with Affiliates",
+          "cardNo": "057",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 057",
+          "psaTotal": 800
+        },
+        "Pokemon Japanese 058": {
+          "cardName": "Empoleon EXShop with Affiliates",
+          "cardNo": "058",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 058",
+          "psaTotal": 7300
+        },
+        "Pokemon Japanese 062": {
+          "cardName": "DuraludonShop with Affiliates",
+          "cardNo": "062",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 062",
+          "psaTotal": 4700
+        },
+        "Pokemon Japanese 072": {
+          "cardName": "Mega Lopunny EXShop with Affiliates",
+          "cardNo": "072",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 072",
+          "psaTotal": 21500
+        },
+        "Pokemon Japanese 077": {
+          "cardName": "DawnShop with Affiliates",
+          "cardNo": "077",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 077",
+          "psaTotal": 500
+        },
+        "Pokemon Japanese 081": {
+          "cardName": "LudicoloArt RareShop with Affiliates",
+          "cardNo": "081",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 081",
+          "psaTotal": 1250700
+        },
+        "Pokemon Japanese 082": {
+          "cardName": "NymbleArt RareShop with Affiliates",
+          "cardNo": "082",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 082",
+          "psaTotal": 1247210
+        },
+        "Pokemon Japanese 083": {
+          "cardName": "CharcadetArt RareShop with Affiliates",
+          "cardNo": "083",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 083",
+          "psaTotal": 880800
+        },
+        "Pokemon Japanese 084": {
+          "cardName": "DewgongArt RareShop with Affiliates",
+          "cardNo": "084",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 084",
+          "psaTotal": 889300
+        },
+        "Pokemon Japanese 085": {
+          "cardName": "PiplupArt RareShop with Affiliates",
+          "cardNo": "085",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 085",
+          "psaTotal": 1723030
+        },
+        "Pokemon Japanese 086": {
+          "cardName": "YamperArt RareShop with Affiliates",
+          "cardNo": "086",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 086",
+          "psaTotal": 953720
+        },
+        "Pokemon Japanese 087": {
+          "cardName": "ZacianArt RareShop with Affiliates",
+          "cardNo": "087",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 087",
+          "psaTotal": 1059800
+        },
+        "Pokemon Japanese 088": {
+          "cardName": "FlygonArt RareShop with Affiliates",
+          "cardNo": "088",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 088",
+          "psaTotal": 1035710
+        },
+        "Pokemon Japanese 089": {
+          "cardName": "ToxtricityArt RareShop with Affiliates",
+          "cardNo": "089",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 089",
+          "psaTotal": 1003110
+        },
+        "Pokemon Japanese 090": {
+          "cardName": "TogedemaruArt RareShop with Affiliates",
+          "cardNo": "090",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 090",
+          "psaTotal": 997311
+        },
+        "Pokemon Japanese 091": {
+          "cardName": "WigglytuffArt RareShop with Affiliates",
+          "cardNo": "091",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 091",
+          "psaTotal": 1218110
+        },
+        "Pokemon Japanese 092": {
+          "cardName": "AmbipomArt RareShop with Affiliates",
+          "cardNo": "092",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 092",
+          "psaTotal": 1421210
+        },
+        "Pokemon Japanese 093": {
+          "cardName": "Mega Heracross EXSuper RareShop with Affiliates",
+          "cardNo": "093",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 093",
+          "psaTotal": 107700
+        },
+        "Pokemon Japanese 094": {
+          "cardName": "Mega Charizard X EXSuper RareShop with Affiliates",
+          "cardNo": "094",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 094",
+          "psaTotal": 2280500
+        },
+        "Pokemon Japanese 095": {
+          "cardName": "Oricorio EXSuper RareShop with Affiliates",
+          "cardNo": "095",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 095",
+          "psaTotal": 87700
+        },
+        "Pokemon Japanese 096": {
+          "cardName": "Rotom EXSuper RareShop with Affiliates",
+          "cardNo": "096",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 096",
+          "psaTotal": 67400
+        },
+        "Pokemon Japanese 097": {
+          "cardName": "Mismagius EXSuper RareShop with Affiliates",
+          "cardNo": "097",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 097",
+          "psaTotal": 55000
+        },
+        "Pokemon Japanese 098": {
+          "cardName": "Mega Sharpedo EXSuper RareShop with Affiliates",
+          "cardNo": "098",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 098",
+          "psaTotal": 91000
+        },
+        "Pokemon Japanese 099": {
+          "cardName": "Empoleon EXSuper RareShop with Affiliates",
+          "cardNo": "099",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 099",
+          "psaTotal": 53200
+        },
+        "Pokemon Japanese 100": {
+          "cardName": "Mega Lopunny EXSuper RareShop with Affiliates",
+          "cardNo": "100",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 100",
+          "psaTotal": 120300
+        },
+        "Pokemon Japanese 101": {
+          "cardName": "Heat BurnerSuper RareShop with Affiliates",
+          "cardNo": "101",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 101",
+          "psaTotal": 11500
+        },
+        "Pokemon Japanese 102": {
+          "cardName": "SwitchSuper RareShop with Affiliates",
+          "cardNo": "102",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 102",
+          "psaTotal": 10300
+        },
+        "Pokemon Japanese 103": {
+          "cardName": "Sacred CharmSuper RareShop with Affiliates",
+          "cardNo": "103",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 103",
+          "psaTotal": 9300
+        },
+        "Pokemon Japanese 104": {
+          "cardName": "Punk HelmetSuper RareShop with Affiliates",
+          "cardNo": "104",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 104",
+          "psaTotal": 11100
+        },
+        "Pokemon Japanese 105": {
+          "cardName": "Grimsley's One MoveSuper RareShop with Affiliates",
+          "cardNo": "105",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 105",
+          "psaTotal": 27500
+        },
+        "Pokemon Japanese 106": {
+          "cardName": "DawnSuper RareShop with Affiliates",
+          "cardNo": "106",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 106",
+          "psaTotal": 405600
+        },
+        "Pokemon Japanese 107": {
+          "cardName": "FirebreatherSuper RareShop with Affiliates",
+          "cardNo": "107",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 107",
+          "psaTotal": 19200
+        },
+        "Pokemon Japanese 108": {
+          "cardName": "Battle ColosseumSuper RareShop with Affiliates",
+          "cardNo": "108",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 108",
+          "psaTotal": 10500
+        },
+        "Pokemon Japanese 109": {
+          "cardName": "Ignition EnergySuper RareShop with Affiliates",
+          "cardNo": "109",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 109",
+          "psaTotal": 18300
+        },
+        "Pokemon Japanese 110": {
+          "cardName": "Mega Charizard X EXSpecial Art RareShop with Affiliates",
+          "cardNo": "110",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 110",
+          "psaTotal": 5714920
+        },
+        "Pokemon Japanese 111": {
+          "cardName": "Oricorio EXSpecial Art RareShop with Affiliates",
+          "cardNo": "111",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 111",
+          "psaTotal": 2162900
+        },
+        "Pokemon Japanese 112": {
+          "cardName": "Rotom EXSpecial Art RareShop with Affiliates",
+          "cardNo": "112",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 112",
+          "psaTotal": 290500
+        },
+        "Pokemon Japanese 113": {
+          "cardName": "Mega Sharpedo EXSpecial Art RareShop with Affiliates",
+          "cardNo": "113",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 113",
+          "psaTotal": 420300
+        },
+        "Pokemon Japanese 114": {
+          "cardName": "Mega Lopunny EXSpecial Art RareShop with Affiliates",
+          "cardNo": "114",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 114",
+          "psaTotal": 323600
+        },
+        "Pokemon Japanese 115": {
+          "cardName": "DawnSpecial Art RareShop with Affiliates",
+          "cardNo": "115",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 115",
+          "psaTotal": 1311500
+        },
+        "Pokemon Japanese 116": {
+          "cardName": "Mega Charizard X EXMega Ultra RareShop with Affiliates",
+          "cardNo": "116",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese 116",
+          "psaTotal": 1189910
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "2025 Pokemon Japanese MA-Premium Trainer Box Mega",
+      "kind": "pop",
+      "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-ma-premium-trainer-box-mega/314066",
+      "title": "2025 Pokemon Japanese MA-Premium Trainer Box Mega TCG Cards | PSA Population",
+      "fetchedAt": "2026-08-16T22:37:08.782Z",
+      "setCode": "MA-PREMIUM TRAINER BOX MEGA",
+      "rows": [
+        {
+          "cardName": "Mew EXShop with Affiliates",
+          "cardNo": "002",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese MA-PREMIUM TRAINER BOX MEGA 002",
+          "psaTotal": 1100
+        },
+        {
+          "cardName": "Lillie's DeterminationShop with Affiliates",
+          "cardNo": "041",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese MA-PREMIUM TRAINER BOX MEGA 041",
+          "psaTotal": 500
+        }
+      ],
+      "byQuery": {
+        "Pokemon Japanese MA-PREMIUM TRAINER BOX MEGA 002": {
+          "cardName": "Mew EXShop with Affiliates",
+          "cardNo": "002",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese MA-PREMIUM TRAINER BOX MEGA 002",
+          "psaTotal": 1100
+        },
+        "Pokemon Japanese MA-PREMIUM TRAINER BOX MEGA 041": {
+          "cardName": "Lillie's DeterminationShop with Affiliates",
+          "cardNo": "041",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese MA-PREMIUM TRAINER BOX MEGA 041",
+          "psaTotal": 500
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "2025 Pokemon Japanese Mbd-Mega Starter Set Mega Diancie Ex",
+      "kind": "pop",
+      "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mbd-mega-starter-set-diancie-ex/316159",
+      "title": "2025 Pokemon Japanese Mbd-Mega Starter Set Mega Diancie EX TCG Cards | PSA Population",
+      "fetchedAt": "2026-08-16T22:37:42.933Z",
+      "setCode": "MBD-MEGA STARTER SET MEGA DIANCIE EX",
+      "rows": [
+        {
+          "cardName": "Mega Diancie EXShop with Affiliates",
+          "cardNo": "005",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese MBD-MEGA STARTER SET MEGA DIANCIE EX 005",
+          "psaTotal": 17600
+        },
+        {
+          "cardName": "MimikyuShop with Affiliates",
+          "cardNo": "006",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese MBD-MEGA STARTER SET MEGA DIANCIE EX 006",
+          "psaTotal": 10100
+        },
+        {
+          "cardName": "Lillie's DeterminationShop with Affiliates",
+          "cardNo": "020",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese MBD-MEGA STARTER SET MEGA DIANCIE EX 020",
+          "psaTotal": 600
+        },
+        {
+          "cardName": "MeloettaShop with Affiliates",
+          "cardNo": "022",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese MBD-MEGA STARTER SET MEGA DIANCIE EX 022",
+          "psaTotal": 385900
+        }
+      ],
+      "byQuery": {
+        "Pokemon Japanese MBD-MEGA STARTER SET MEGA DIANCIE EX 005": {
+          "cardName": "Mega Diancie EXShop with Affiliates",
+          "cardNo": "005",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese MBD-MEGA STARTER SET MEGA DIANCIE EX 005",
+          "psaTotal": 17600
+        },
+        "Pokemon Japanese MBD-MEGA STARTER SET MEGA DIANCIE EX 006": {
+          "cardName": "MimikyuShop with Affiliates",
+          "cardNo": "006",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese MBD-MEGA STARTER SET MEGA DIANCIE EX 006",
+          "psaTotal": 10100
+        },
+        "Pokemon Japanese MBD-MEGA STARTER SET MEGA DIANCIE EX 020": {
+          "cardName": "Lillie's DeterminationShop with Affiliates",
+          "cardNo": "020",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese MBD-MEGA STARTER SET MEGA DIANCIE EX 020",
+          "psaTotal": 600
+        },
+        "Pokemon Japanese MBD-MEGA STARTER SET MEGA DIANCIE EX 022": {
+          "cardName": "MeloettaShop with Affiliates",
+          "cardNo": "022",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese MBD-MEGA STARTER SET MEGA DIANCIE EX 022",
+          "psaTotal": 385900
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "2025 Pokemon Japanese Mbg-Mega Starter Set Mega Gengar Ex",
+      "kind": "pop",
+      "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mbg-mega-starter-set-gengar-ex/316158",
+      "title": "2025 Pokemon Japanese Mbg-Mega Starter Set Mega Gengar EX TCG Cards | PSA Population",
+      "fetchedAt": "2026-08-16T22:38:30.277Z",
+      "setCode": "MBG-MEGA STARTER SET MEGA GENGAR EX",
+      "rows": [
+        {
+          "cardName": "GastlyShop with Affiliates",
+          "cardNo": "001",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 001",
+          "psaTotal": 1200
+        },
+        {
+          "cardName": "HaunterShop with Affiliates",
+          "cardNo": "002",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 002",
+          "psaTotal": 800
+        },
+        {
+          "cardName": "Mega Gengar EXShop with Affiliates",
+          "cardNo": "003",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 003",
+          "psaTotal": 2732400
+        },
+        {
+          "cardName": "Lillie's DeterminationShop with Affiliates",
+          "cardNo": "021",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 021",
+          "psaTotal": 3000
+        },
+        {
+          "cardName": "HaunterShop with Affiliates",
+          "cardNo": "022",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 022",
+          "psaTotal": 2147700
+        }
+      ],
+      "byQuery": {
+        "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 001": {
+          "cardName": "GastlyShop with Affiliates",
+          "cardNo": "001",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 001",
+          "psaTotal": 1200
+        },
+        "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 002": {
+          "cardName": "HaunterShop with Affiliates",
+          "cardNo": "002",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 002",
+          "psaTotal": 800
+        },
+        "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 003": {
+          "cardName": "Mega Gengar EXShop with Affiliates",
+          "cardNo": "003",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 003",
+          "psaTotal": 2732400
+        },
+        "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 021": {
+          "cardName": "Lillie's DeterminationShop with Affiliates",
+          "cardNo": "021",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 021",
+          "psaTotal": 3000
+        },
+        "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 022": {
+          "cardName": "HaunterShop with Affiliates",
+          "cardNo": "022",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese MBG-MEGA STARTER SET MEGA GENGAR EX 022",
+          "psaTotal": 2147700
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "2025 Pokemon Japanese MP1-Start Deck 100 Battle Collection Corociao Version",
+      "kind": "pop",
+      "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mp1-start-deck-100-battle-collection-corociao-version/297732",
+      "title": "2025 Pokemon Japanese Svn-Battle Partners Deck Build Box TCG Cards | PSA Population",
+      "fetchedAt": "2026-08-16T23:04:59.869Z",
+      "setCode": "MP1-START DECK 100 BATTLE COLLECTION COROCIAO VERSION",
+      "rows": [
+        {
+          "cardName": "Mew EXShop with Affiliates",
+          "cardNo": "001",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese MP1-START DECK 100 BATTLE COLLECTION COROCIAO VERSION 001",
+          "psaTotal": 3300
+        }
+      ],
+      "byQuery": {
+        "Pokemon Japanese MP1-START DECK 100 BATTLE COLLECTION COROCIAO VERSION 001": {
+          "cardName": "Mew EXShop with Affiliates",
+          "cardNo": "001",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese MP1-START DECK 100 BATTLE COLLECTION COROCIAO VERSION 001",
+          "psaTotal": 3300
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "2025 Pokemon Japanese Sv0d-EX Starter Set Steven's Beldum & Metagross Ex",
+      "kind": "pop",
+      "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv0d-ex-starter-set-stevens-beldum-metagross/296040",
+      "title": "2025 Pokemon Japanese Sv0d-EX Starter Set Steven's Beldum & Metagross EX TCG Cards | PSA Population",
+      "fetchedAt": "2026-08-16T23:05:34.980Z",
+      "setCode": "SV0D-EX STARTER SET STEVEN'S BELDUM & METAGROSS EX",
+      "rows": [],
+      "byQuery": {},
+      "error": null
+    },
+    {
+      "name": "2025 Pokemon Japanese Sv0d-EX Starter Set Steven's Beldum & Metagross Ex",
+      "kind": "pop",
+      "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv0d-ex-starter-set-stevens-beldum-metagross/296040",
+      "title": "2025 Pokemon Japanese Sv0d-EX Starter Set Steven's Beldum & Metagross EX TCG Cards | PSA Population",
+      "fetchedAt": "2026-08-16T23:07:43.473Z",
+      "setCode": "SV0D-EX STARTER SET STEVEN'S BELDUM & METAGROSS",
+      "rows": [
+        {
+          "cardNo": "019",
+          "cardName": "Steven's Beldum",
+          "psa10Count": 2291,
+          "psaTotal": 2653,
+          "psa10Rate": 86.35356049566454,
+          "psaQuery": "Pokemon Japanese SV0D-EX STARTER SET STEVEN'S BELDUM & METAGROSS 019"
+        }
+      ],
+      "byQuery": {
+        "Pokemon Japanese SV0D-EX STARTER SET STEVEN'S BELDUM & METAGROSS 019": {
+          "cardNo": "019",
+          "cardName": "Steven's Beldum",
+          "psa10Count": 2291,
+          "psaTotal": 2653,
+          "psa10Rate": 86.35356049566454,
+          "psaQuery": "Pokemon Japanese SV0D-EX STARTER SET STEVEN'S BELDUM & METAGROSS 019"
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "2025 Pokemon Japanese Sv0m-EX Starter Set Marnie's Morpeko & Grimmsnarl Ex",
+      "kind": "pop",
+      "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv0m-ex-starter-set-marnies-morpeko-grimmsnarl/296041",
+      "title": "2025 Pokemon Japanese Sv0m-EX Starter Set Marnie's Morpeko & Grimmsnarl EX TCG Cards | PSA Population",
+      "fetchedAt": "2026-08-17T01:29:50.540Z",
+      "setCode": "SV0M-EX STARTER SET MARNIE'S MORPEKO & GRIMMSNARL EX",
+      "rows": [
+        {
+          "cardName": "Marnie's Grimmsnarl EXShop with Affiliates",
+          "cardNo": "007",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV0M-EX STARTER SET MARNIE'S MORPEKO & GRIMMSNARL EX 007",
+          "psaTotal": 2900
+        },
+        {
+          "cardName": "Marnie's MorpekoShop with Affiliates",
+          "cardNo": "008",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV0M-EX STARTER SET MARNIE'S MORPEKO & GRIMMSNARL EX 008",
+          "psaTotal": 500
+        },
+        {
+          "cardName": "Marnie's MorpekoShop with Affiliates",
+          "cardNo": "020",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV0M-EX STARTER SET MARNIE'S MORPEKO & GRIMMSNARL EX 020",
+          "psaTotal": 1645611
+        }
+      ],
+      "byQuery": {
+        "Pokemon Japanese SV0M-EX STARTER SET MARNIE'S MORPEKO & GRIMMSNARL EX 007": {
+          "cardName": "Marnie's Grimmsnarl EXShop with Affiliates",
+          "cardNo": "007",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV0M-EX STARTER SET MARNIE'S MORPEKO & GRIMMSNARL EX 007",
+          "psaTotal": 2900
+        },
+        "Pokemon Japanese SV0M-EX STARTER SET MARNIE'S MORPEKO & GRIMMSNARL EX 008": {
+          "cardName": "Marnie's MorpekoShop with Affiliates",
+          "cardNo": "008",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV0M-EX STARTER SET MARNIE'S MORPEKO & GRIMMSNARL EX 008",
+          "psaTotal": 500
+        },
+        "Pokemon Japanese SV0M-EX STARTER SET MARNIE'S MORPEKO & GRIMMSNARL EX 020": {
+          "cardName": "Marnie's MorpekoShop with Affiliates",
+          "cardNo": "020",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV0M-EX STARTER SET MARNIE'S MORPEKO & GRIMMSNARL EX 020",
+          "psaTotal": 1645611
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "2025 Pokemon Japanese Sv11b-Black Bolt",
+      "kind": "pop",
+      "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
+      "title": "2025 Pokemon Japanese Sv11b-Black Bolt TCG Cards | PSA Population",
+      "fetchedAt": "2026-08-17T01:30:24.082Z",
+      "setCode": "SV11B-BLACK BOLT",
+      "rows": [
+        {
+          "cardName": "SnivyMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "001",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 001",
+          "psaTotal": 13800
+        },
+        {
+          "cardName": "SnivyReverse HoloShop with Affiliates",
+          "cardNo": "001",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 001",
+          "psaTotal": 500
+        },
+        {
+          "cardName": "ServineMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "002",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 002",
+          "psaTotal": 10600
+        },
+        {
+          "cardName": "Serperior EXShop with Affiliates",
+          "cardNo": "003",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 003",
+          "psaTotal": 3000
+        },
+        {
+          "cardName": "PansageMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "004",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 004",
+          "psaTotal": 6500
+        },
+        {
+          "cardName": "SimisageMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "005",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 005",
+          "psaTotal": 12600
+        },
+        {
+          "cardName": "PetililMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "006",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 006",
+          "psaTotal": 9300
+        },
+        {
+          "cardName": "LilligantMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "007",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 007",
+          "psaTotal": 6700
+        },
+        {
+          "cardName": "MaractusMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "008",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 008",
+          "psaTotal": 7200
+        },
+        {
+          "cardName": "KarrablastMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "009",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 009",
+          "psaTotal": 7100
+        },
+        {
+          "cardName": "FoongusMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "010",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 010",
+          "psaTotal": 6000
+        },
+        {
+          "cardName": "AmoongussMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "011",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 011",
+          "psaTotal": 3800
+        },
+        {
+          "cardName": "VictiniShop with Affiliates",
+          "cardNo": "012",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 012",
+          "psaTotal": 4800
+        },
+        {
+          "cardName": "VictiniMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "012",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 012",
+          "psaTotal": 96500
+        },
+        {
+          "cardName": "VictiniReverse HoloShop with Affiliates",
+          "cardNo": "012",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 012",
+          "psaTotal": 4100
+        },
+        {
+          "cardName": "DarumakaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "013",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 013",
+          "psaTotal": 7000
+        },
+        {
+          "cardName": "DarmanitanMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "014",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 014",
+          "psaTotal": 6000
+        },
+        {
+          "cardName": "LitwickMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "015",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 015",
+          "psaTotal": 8400
+        },
+        {
+          "cardName": "LampentMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "016",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 016",
+          "psaTotal": 5900
+        },
+        {
+          "cardName": "ChandelureShop with Affiliates",
+          "cardNo": "017",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 017",
+          "psaTotal": 700
+        },
+        {
+          "cardName": "ChandelureMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "017",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 017",
+          "psaTotal": 6000
+        },
+        {
+          "cardName": "LarvestaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "018",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 018",
+          "psaTotal": 5700
+        },
+        {
+          "cardName": "VolcaronaShop with Affiliates",
+          "cardNo": "019",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 019",
+          "psaTotal": 600
+        },
+        {
+          "cardName": "VolcaronaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "019",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 019",
+          "psaTotal": 7200
+        },
+        {
+          "cardName": "PanpourMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "020",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 020",
+          "psaTotal": 10400
+        },
+        {
+          "cardName": "SimipourMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "021",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 021",
+          "psaTotal": 11000
+        },
+        {
+          "cardName": "TympoleMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "022",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 022",
+          "psaTotal": 7600
+        },
+        {
+          "cardName": "PalpitoadMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "023",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 023",
+          "psaTotal": 4800
+        },
+        {
+          "cardName": "SeismitoadMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "024",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 024",
+          "psaTotal": 9200
+        },
+        {
+          "cardName": "TirtougaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "025",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 025",
+          "psaTotal": 5100
+        },
+        {
+          "cardName": "CarracostaShop with Affiliates",
+          "cardNo": "026",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 026",
+          "psaTotal": 700
+        },
+        {
+          "cardName": "CarracostaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "026",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 026",
+          "psaTotal": 6900
+        },
+        {
+          "cardName": "AlomomolaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "027",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 027",
+          "psaTotal": 8900
+        },
+        {
+          "cardName": "CubchooMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "028",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 028",
+          "psaTotal": 8500
+        },
+        {
+          "cardName": "BearticShop with Affiliates",
+          "cardNo": "029",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 029",
+          "psaTotal": 500
+        },
+        {
+          "cardName": "BearticMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "029",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 029",
+          "psaTotal": 8400
+        },
+        {
+          "cardName": "CryogonalMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "030",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 030",
+          "psaTotal": 5400
+        },
+        {
+          "cardName": "Kyurem EXShop with Affiliates",
+          "cardNo": "031",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 031",
+          "psaTotal": 4900
+        },
+        {
+          "cardName": "EmolgaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "032",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 032",
+          "psaTotal": 10700
+        },
+        {
+          "cardName": "EmolgaReverse HoloShop with Affiliates",
+          "cardNo": "032",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 032",
+          "psaTotal": 500
+        },
+        {
+          "cardName": "TynamoMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "033",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 033",
+          "psaTotal": 4000
+        },
+        {
+          "cardName": "EelektrikMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "034",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 034",
+          "psaTotal": 4100
+        },
+        {
+          "cardName": "EelektrossMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "035",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 035",
+          "psaTotal": 5300
+        },
+        {
+          "cardName": "ThundurusShop with Affiliates",
+          "cardNo": "036",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 036",
+          "psaTotal": 1100
+        },
+        {
+          "cardName": "ThundurusMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "036",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 036",
+          "psaTotal": 8000
+        },
+        {
+          "cardName": "Zekrom EXShop with Affiliates",
+          "cardNo": "037",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 037",
+          "psaTotal": 10900
+        },
+        {
+          "cardName": "MunnaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "038",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 038",
+          "psaTotal": 6900
+        },
+        {
+          "cardName": "MusharnaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "039",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 039",
+          "psaTotal": 9900
+        },
+        {
+          "cardName": "SolosisMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "040",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 040",
+          "psaTotal": 10800
+        },
+        {
+          "cardName": "DuosionMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "041",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 041",
+          "psaTotal": 5500
+        },
+        {
+          "cardName": "ReuniclusMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "042",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 042",
+          "psaTotal": 7200
+        },
+        {
+          "cardName": "ElgyemMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "043",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 043",
+          "psaTotal": 6800
+        },
+        {
+          "cardName": "BeheeyemMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "044",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 044",
+          "psaTotal": 12800
+        },
+        {
+          "cardName": "GolettMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "045",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 045",
+          "psaTotal": 6900
+        },
+        {
+          "cardName": "GolurkMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "046",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 046",
+          "psaTotal": 5700
+        },
+        {
+          "cardName": "Meloetta EXShop with Affiliates",
+          "cardNo": "047",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 047",
+          "psaTotal": 2300
+        },
+        {
+          "cardName": "DrilburMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "048",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 048",
+          "psaTotal": 5500
+        },
+        {
+          "cardName": "Excadrill EXShop with Affiliates",
+          "cardNo": "049",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 049",
+          "psaTotal": 1800
+        },
+        {
+          "cardName": "TimburrMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "050",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 050",
+          "psaTotal": 9500
+        },
+        {
+          "cardName": "GurdurrMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "051",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 051",
+          "psaTotal": 9600
+        },
+        {
+          "cardName": "ConkeldurrMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "052",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 052",
+          "psaTotal": 6700
+        },
+        {
+          "cardName": "ThrohMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "053",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 053",
+          "psaTotal": 6800
+        },
+        {
+          "cardName": "DwebbleMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "054",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 054",
+          "psaTotal": 7400
+        },
+        {
+          "cardName": "CrustleMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "055",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 055",
+          "psaTotal": 3700
+        },
+        {
+          "cardName": "LandorusShop with Affiliates",
+          "cardNo": "056",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 056",
+          "psaTotal": 1000
+        },
+        {
+          "cardName": "LandorusMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "056",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 056",
+          "psaTotal": 11300
+        },
+        {
+          "cardName": "VenipedeMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "057",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 057",
+          "psaTotal": 9000
+        },
+        {
+          "cardName": "WhirlipedeMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "058",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 058",
+          "psaTotal": 4700
+        },
+        {
+          "cardName": "ScolipedeMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "059",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 059",
+          "psaTotal": 4800
+        },
+        {
+          "cardName": "SandileMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "060",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 060",
+          "psaTotal": 6500
+        },
+        {
+          "cardName": "KrokorokMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "061",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 061",
+          "psaTotal": 8000
+        },
+        {
+          "cardName": "KrookodileMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "062",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 062",
+          "psaTotal": 6300
+        },
+        {
+          "cardName": "VullabyMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "063",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 063",
+          "psaTotal": 7800
+        },
+        {
+          "cardName": "MandibuzzMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "064",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 064",
+          "psaTotal": 5400
+        },
+        {
+          "cardName": "EscavalierMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "065",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 065",
+          "psaTotal": 4600
+        },
+        {
+          "cardName": "PawniardMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "066",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 066",
+          "psaTotal": 6900
+        },
+        {
+          "cardName": "BisharpMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "067",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 067",
+          "psaTotal": 9200
+        },
+        {
+          "cardName": "CobalionShop with Affiliates",
+          "cardNo": "068",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 068",
+          "psaTotal": 500
+        },
+        {
+          "cardName": "CobalionMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "068",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 068",
+          "psaTotal": 6600
+        },
+        {
+          "cardName": "CobalionReverse HoloShop with Affiliates",
+          "cardNo": "068",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 068",
+          "psaTotal": 500
+        },
+        {
+          "cardName": "Genesect EXShop with Affiliates",
+          "cardNo": "069",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 069",
+          "psaTotal": 3800
+        },
+        {
+          "cardName": "AxewMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "070",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 070",
+          "psaTotal": 7800
+        },
+        {
+          "cardName": "FraxureMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "071",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 071",
+          "psaTotal": 10600
+        },
+        {
+          "cardName": "HaxorusShop with Affiliates",
+          "cardNo": "072",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 072",
+          "psaTotal": 600
+        },
+        {
+          "cardName": "HaxorusMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "072",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 072",
+          "psaTotal": 7200
+        },
+        {
+          "cardName": "PidoveMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "073",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 073",
+          "psaTotal": 8700
+        },
+        {
+          "cardName": "TranquillMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "074",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 074",
+          "psaTotal": 9800
+        },
+        {
+          "cardName": "UnfezantMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "075",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 075",
+          "psaTotal": 7000
+        },
+        {
+          "cardName": "AudinoMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "076",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 076",
+          "psaTotal": 4600
+        },
+        {
+          "cardName": "MinccinoMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "077",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 077",
+          "psaTotal": 10700
+        },
+        {
+          "cardName": "CinccinoMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "078",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 078",
+          "psaTotal": 9500
+        },
+        {
+          "cardName": "N's PlotReverse HoloShop with Affiliates",
+          "cardNo": "083",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 083",
+          "psaTotal": 1000
+        },
+        {
+          "cardName": "SnivyArt RareShop with Affiliates",
+          "cardNo": "087",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 087",
+          "psaTotal": 140900
+        },
+        {
+          "cardName": "ServineArt RareShop with Affiliates",
+          "cardNo": "088",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 088",
+          "psaTotal": 78500
+        },
+        {
+          "cardName": "PansageArt RareShop with Affiliates",
+          "cardNo": "089",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 089",
+          "psaTotal": 56000
+        },
+        {
+          "cardName": "SimisageArt RareShop with Affiliates",
+          "cardNo": "090",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 090",
+          "psaTotal": 62500
+        },
+        {
+          "cardName": "PetililArt RareShop with Affiliates",
+          "cardNo": "091",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 091",
+          "psaTotal": 32300
+        },
+        {
+          "cardName": "LilligantArt RareShop with Affiliates",
+          "cardNo": "092",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 092",
+          "psaTotal": 39500
+        },
+        {
+          "cardName": "MaractusArt RareShop with Affiliates",
+          "cardNo": "093",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 093",
+          "psaTotal": 44800
+        },
+        {
+          "cardName": "KarrablastArt RareShop with Affiliates",
+          "cardNo": "094",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 094",
+          "psaTotal": 71300
+        },
+        {
+          "cardName": "FoongusArt RareShop with Affiliates",
+          "cardNo": "095",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 095",
+          "psaTotal": 46700
+        },
+        {
+          "cardName": "AmoongussArt RareShop with Affiliates",
+          "cardNo": "096",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 096",
+          "psaTotal": 45200
+        },
+        {
+          "cardName": "VictiniArt RareShop with Affiliates",
+          "cardNo": "097",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 097",
+          "psaTotal": 449000
+        },
+        {
+          "cardName": "DarumakaArt RareShop with Affiliates",
+          "cardNo": "098",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 098",
+          "psaTotal": 46400
+        },
+        {
+          "cardName": "DarmanitanArt RareShop with Affiliates",
+          "cardNo": "099",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 099",
+          "psaTotal": 62800
+        },
+        {
+          "cardName": "LitwickArt RareShop with Affiliates",
+          "cardNo": "100",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 100",
+          "psaTotal": 46200
+        },
+        {
+          "cardName": "LampentArt RareShop with Affiliates",
+          "cardNo": "101",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 101",
+          "psaTotal": 52500
+        },
+        {
+          "cardName": "ChandelureArt RareShop with Affiliates",
+          "cardNo": "102",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 102",
+          "psaTotal": 81000
+        },
+        {
+          "cardName": "LarvestaArt RareShop with Affiliates",
+          "cardNo": "103",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 103",
+          "psaTotal": 50300
+        },
+        {
+          "cardName": "VolcaronaArt RareShop with Affiliates",
+          "cardNo": "104",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 104",
+          "psaTotal": 88600
+        },
+        {
+          "cardName": "PanpourArt RareShop with Affiliates",
+          "cardNo": "105",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 105",
+          "psaTotal": 56800
+        },
+        {
+          "cardName": "SimipourArt RareShop with Affiliates",
+          "cardNo": "106",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 106",
+          "psaTotal": 46000
+        },
+        {
+          "cardName": "TympoleArt RareShop with Affiliates",
+          "cardNo": "107",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 107",
+          "psaTotal": 54100
+        },
+        {
+          "cardName": "PalpitoadArt RareShop with Affiliates",
+          "cardNo": "108",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 108",
+          "psaTotal": 50300
+        },
+        {
+          "cardName": "SeismitoadArt RareShop with Affiliates",
+          "cardNo": "109",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 109",
+          "psaTotal": 1100200
+        },
+        {
+          "cardName": "TirtougaArt RareShop with Affiliates",
+          "cardNo": "110",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 110",
+          "psaTotal": 43500
+        },
+        {
+          "cardName": "CarracostaArt RareShop with Affiliates",
+          "cardNo": "111",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 111",
+          "psaTotal": 37500
+        },
+        {
+          "cardName": "AlomomolaArt RareShop with Affiliates",
+          "cardNo": "112",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 112",
+          "psaTotal": 50600
+        },
+        {
+          "cardName": "CubchooArt RareShop with Affiliates",
+          "cardNo": "113",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 113",
+          "psaTotal": 40910
+        },
+        {
+          "cardName": "BearticArt RareShop with Affiliates",
+          "cardNo": "114",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 114",
+          "psaTotal": 48800
+        },
+        {
+          "cardName": "CryogonalArt RareShop with Affiliates",
+          "cardNo": "115",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 115",
+          "psaTotal": 43500
+        },
+        {
+          "cardName": "EmolgaArt RareShop with Affiliates",
+          "cardNo": "116",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 116",
+          "psaTotal": 60800
+        },
+        {
+          "cardName": "TynamoArt RareShop with Affiliates",
+          "cardNo": "117",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 117",
+          "psaTotal": 34310
+        },
+        {
+          "cardName": "EelektrikArt RareShop with Affiliates",
+          "cardNo": "118",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 118",
+          "psaTotal": 44500
+        },
+        {
+          "cardName": "EelektrossArt RareShop with Affiliates",
+          "cardNo": "119",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 119",
+          "psaTotal": 53200
+        },
+        {
+          "cardName": "ThundurusArt RareShop with Affiliates",
+          "cardNo": "120",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 120",
+          "psaTotal": 115300
+        },
+        {
+          "cardName": "MunnaArt RareShop with Affiliates",
+          "cardNo": "121",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 121",
+          "psaTotal": 44800
+        },
+        {
+          "cardName": "MusharnaArt RareShop with Affiliates",
+          "cardNo": "122",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 122",
+          "psaTotal": 46600
+        },
+        {
+          "cardName": "SolosisArt RareShop with Affiliates",
+          "cardNo": "123",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 123",
+          "psaTotal": 172200
+        },
+        {
+          "cardName": "DuosionArt RareShop with Affiliates",
+          "cardNo": "124",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 124",
+          "psaTotal": 40800
+        },
+        {
+          "cardName": "ReuniclusArt RareShop with Affiliates",
+          "cardNo": "125",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 125",
+          "psaTotal": 27100
+        },
+        {
+          "cardName": "ElgyemArt RareShop with Affiliates",
+          "cardNo": "126",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 126",
+          "psaTotal": 54800
+        },
+        {
+          "cardName": "BeheeyemArt RareShop with Affiliates",
+          "cardNo": "127",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 127",
+          "psaTotal": 62900
+        },
+        {
+          "cardName": "GolettArt RareShop with Affiliates",
+          "cardNo": "128",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 128",
+          "psaTotal": 47700
+        },
+        {
+          "cardName": "GolurkArt RareShop with Affiliates",
+          "cardNo": "129",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 129",
+          "psaTotal": 33900
+        },
+        {
+          "cardName": "DrilburArt RareShop with Affiliates",
+          "cardNo": "130",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 130",
+          "psaTotal": 82910
+        },
+        {
+          "cardName": "TimburrArt RareShop with Affiliates",
+          "cardNo": "131",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 131",
+          "psaTotal": 68300
+        },
+        {
+          "cardName": "GurdurrArt RareShop with Affiliates",
+          "cardNo": "132",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 132",
+          "psaTotal": 59100
+        },
+        {
+          "cardName": "ConkeldurrArt RareShop with Affiliates",
+          "cardNo": "133",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 133",
+          "psaTotal": 59700
+        },
+        {
+          "cardName": "ThrohArt RareShop with Affiliates",
+          "cardNo": "134",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 134",
+          "psaTotal": 52400
+        },
+        {
+          "cardName": "DwebbleArt RareShop with Affiliates",
+          "cardNo": "135",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 135",
+          "psaTotal": 41400
+        },
+        {
+          "cardName": "CrustleArt RareShop with Affiliates",
+          "cardNo": "136",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 136",
+          "psaTotal": 52400
+        },
+        {
+          "cardName": "LandorusArt RareShop with Affiliates",
+          "cardNo": "137",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 137",
+          "psaTotal": 109500
+        },
+        {
+          "cardName": "VenipedeArt RareShop with Affiliates",
+          "cardNo": "138",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 138",
+          "psaTotal": 47600
+        },
+        {
+          "cardName": "WhirlipedeArt RareShop with Affiliates",
+          "cardNo": "139",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 139",
+          "psaTotal": 49900
+        },
+        {
+          "cardName": "ScolipedeArt RareShop with Affiliates",
+          "cardNo": "140",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 140",
+          "psaTotal": 52300
+        },
+        {
+          "cardName": "SandileArt RareShop with Affiliates",
+          "cardNo": "141",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 141",
+          "psaTotal": 43700
+        },
+        {
+          "cardName": "KrokorokArt RareShop with Affiliates",
+          "cardNo": "142",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 142",
+          "psaTotal": 42900
+        },
+        {
+          "cardName": "KrookodileArt RareShop with Affiliates",
+          "cardNo": "143",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 143",
+          "psaTotal": 56900
+        },
+        {
+          "cardName": "VullabyArt RareShop with Affiliates",
+          "cardNo": "144",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 144",
+          "psaTotal": 49300
+        },
+        {
+          "cardName": "MandibuzzArt RareShop with Affiliates",
+          "cardNo": "145",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 145",
+          "psaTotal": 54500
+        },
+        {
+          "cardName": "EscavalierArt RareShop with Affiliates",
+          "cardNo": "146",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 146",
+          "psaTotal": 66200
+        },
+        {
+          "cardName": "PawniardArt RareShop with Affiliates",
+          "cardNo": "147",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 147",
+          "psaTotal": 52600
+        },
+        {
+          "cardName": "BisharpArt RareShop with Affiliates",
+          "cardNo": "148",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 148",
+          "psaTotal": 59400
+        },
+        {
+          "cardName": "CobalionArt RareShop with Affiliates",
+          "cardNo": "149",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 149",
+          "psaTotal": 62300
+        },
+        {
+          "cardName": "AxewArt RareShop with Affiliates",
+          "cardNo": "150",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 150",
+          "psaTotal": 51000
+        },
+        {
+          "cardName": "FraxureArt RareShop with Affiliates",
+          "cardNo": "151",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 151",
+          "psaTotal": 47400
+        },
+        {
+          "cardName": "HaxorusArt RareShop with Affiliates",
+          "cardNo": "152",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 152",
+          "psaTotal": 97600
+        },
+        {
+          "cardName": "PidoveArt RareShop with Affiliates",
+          "cardNo": "153",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 153",
+          "psaTotal": 46000
+        },
+        {
+          "cardName": "TranquillArt RareShop with Affiliates",
+          "cardNo": "154",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 154",
+          "psaTotal": 58000
+        },
+        {
+          "cardName": "UnfezantArt RareShop with Affiliates",
+          "cardNo": "155",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 155",
+          "psaTotal": 46400
+        },
+        {
+          "cardName": "AudinoArt RareShop with Affiliates",
+          "cardNo": "156",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 156",
+          "psaTotal": 38300
+        },
+        {
+          "cardName": "MinccinoArt RareShop with Affiliates",
+          "cardNo": "157",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 157",
+          "psaTotal": 56600
+        },
+        {
+          "cardName": "CinccinoArt RareShop with Affiliates",
+          "cardNo": "158",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 158",
+          "psaTotal": 45500
+        },
+        {
+          "cardName": "Serperior EXSuper RareShop with Affiliates",
+          "cardNo": "159",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 159",
+          "psaTotal": 61400
+        },
+        {
+          "cardName": "Kyurem EXSuper RareShop with Affiliates",
+          "cardNo": "160",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 160",
+          "psaTotal": 63500
+        },
+        {
+          "cardName": "Zekrom EXSuper RareShop with Affiliates",
+          "cardNo": "161",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 161",
+          "psaTotal": 214901
+        },
+        {
+          "cardName": "Meloetta EXSuper RareShop with Affiliates",
+          "cardNo": "162",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 162",
+          "psaTotal": 65000
+        },
+        {
+          "cardName": "Excadrill EXSuper RareShop with Affiliates",
+          "cardNo": "163",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 163",
+          "psaTotal": 55400
+        },
+        {
+          "cardName": "Genesect EXSuper RareShop with Affiliates",
+          "cardNo": "164",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 164",
+          "psaTotal": 62500
+        },
+        {
+          "cardName": "N's PlotSuper RareShop with Affiliates",
+          "cardNo": "165",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 165",
+          "psaTotal": 134200
+        },
+        {
+          "cardName": "FennelSuper RareShop with Affiliates",
+          "cardNo": "166",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 166",
+          "psaTotal": 39400
+        },
+        {
+          "cardName": "Serperior EXSpecial Art RareShop with Affiliates",
+          "cardNo": "167",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 167",
+          "psaTotal": 214300
+        },
+        {
+          "cardName": "Kyurem EXSpecial Art RareShop with Affiliates",
+          "cardNo": "168",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 168",
+          "psaTotal": 375000
+        },
+        {
+          "cardName": "Zekrom EXSpecial Art RareShop with Affiliates",
+          "cardNo": "169",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 169",
+          "psaTotal": 1412310
+        },
+        {
+          "cardName": "Meloetta EXSpecial Art RareShop with Affiliates",
+          "cardNo": "170",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 170",
+          "psaTotal": 251010
+        },
+        {
+          "cardName": "Excadrill EXSpecial Art RareShop with Affiliates",
+          "cardNo": "171",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 171",
+          "psaTotal": 64600
+        },
+        {
+          "cardName": "Genesect EXSpecial Art RareShop with Affiliates",
+          "cardNo": "172",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 172",
+          "psaTotal": 147600
+        },
+        {
+          "cardName": "N's PlotSpecial Art RareShop with Affiliates",
+          "cardNo": "173",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 173",
+          "psaTotal": 681400
+        },
+        {
+          "cardName": "Zekrom EXBW RareShop with Affiliates",
+          "cardNo": "174",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 174",
+          "psaTotal": 1643711
+        }
+      ],
+      "byQuery": {
+        "Pokemon Japanese SV11B-BLACK BOLT 001": {
+          "cardName": "SnivyReverse HoloShop with Affiliates",
+          "cardNo": "001",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 001",
+          "psaTotal": 500
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 002": {
+          "cardName": "ServineMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "002",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 002",
+          "psaTotal": 10600
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 003": {
+          "cardName": "Serperior EXShop with Affiliates",
+          "cardNo": "003",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 003",
+          "psaTotal": 3000
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 004": {
+          "cardName": "PansageMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "004",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 004",
+          "psaTotal": 6500
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 005": {
+          "cardName": "SimisageMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "005",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 005",
+          "psaTotal": 12600
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 006": {
+          "cardName": "PetililMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "006",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 006",
+          "psaTotal": 9300
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 007": {
+          "cardName": "LilligantMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "007",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 007",
+          "psaTotal": 6700
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 008": {
+          "cardName": "MaractusMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "008",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 008",
+          "psaTotal": 7200
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 009": {
+          "cardName": "KarrablastMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "009",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 009",
+          "psaTotal": 7100
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 010": {
+          "cardName": "FoongusMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "010",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 010",
+          "psaTotal": 6000
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 011": {
+          "cardName": "AmoongussMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "011",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 011",
+          "psaTotal": 3800
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 012": {
+          "cardName": "VictiniReverse HoloShop with Affiliates",
+          "cardNo": "012",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 012",
+          "psaTotal": 4100
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 013": {
+          "cardName": "DarumakaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "013",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 013",
+          "psaTotal": 7000
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 014": {
+          "cardName": "DarmanitanMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "014",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 014",
+          "psaTotal": 6000
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 015": {
+          "cardName": "LitwickMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "015",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 015",
+          "psaTotal": 8400
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 016": {
+          "cardName": "LampentMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "016",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 016",
+          "psaTotal": 5900
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 017": {
+          "cardName": "ChandelureMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "017",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 017",
+          "psaTotal": 6000
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 018": {
+          "cardName": "LarvestaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "018",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 018",
+          "psaTotal": 5700
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 019": {
+          "cardName": "VolcaronaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "019",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 019",
+          "psaTotal": 7200
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 020": {
+          "cardName": "PanpourMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "020",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 020",
+          "psaTotal": 10400
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 021": {
+          "cardName": "SimipourMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "021",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 021",
+          "psaTotal": 11000
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 022": {
+          "cardName": "TympoleMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "022",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 022",
+          "psaTotal": 7600
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 023": {
+          "cardName": "PalpitoadMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "023",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 023",
+          "psaTotal": 4800
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 024": {
+          "cardName": "SeismitoadMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "024",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 024",
+          "psaTotal": 9200
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 025": {
+          "cardName": "TirtougaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "025",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 025",
+          "psaTotal": 5100
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 026": {
+          "cardName": "CarracostaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "026",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 026",
+          "psaTotal": 6900
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 027": {
+          "cardName": "AlomomolaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "027",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 027",
+          "psaTotal": 8900
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 028": {
+          "cardName": "CubchooMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "028",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 028",
+          "psaTotal": 8500
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 029": {
+          "cardName": "BearticMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "029",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 029",
+          "psaTotal": 8400
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 030": {
+          "cardName": "CryogonalMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "030",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 030",
+          "psaTotal": 5400
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 031": {
+          "cardName": "Kyurem EXShop with Affiliates",
+          "cardNo": "031",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 031",
+          "psaTotal": 4900
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 032": {
+          "cardName": "EmolgaReverse HoloShop with Affiliates",
+          "cardNo": "032",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 032",
+          "psaTotal": 500
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 033": {
+          "cardName": "TynamoMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "033",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 033",
+          "psaTotal": 4000
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 034": {
+          "cardName": "EelektrikMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "034",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 034",
+          "psaTotal": 4100
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 035": {
+          "cardName": "EelektrossMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "035",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 035",
+          "psaTotal": 5300
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 036": {
+          "cardName": "ThundurusMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "036",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 036",
+          "psaTotal": 8000
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 037": {
+          "cardName": "Zekrom EXShop with Affiliates",
+          "cardNo": "037",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 037",
+          "psaTotal": 10900
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 038": {
+          "cardName": "MunnaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "038",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 038",
+          "psaTotal": 6900
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 039": {
+          "cardName": "MusharnaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "039",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 039",
+          "psaTotal": 9900
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 040": {
+          "cardName": "SolosisMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "040",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 040",
+          "psaTotal": 10800
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 041": {
+          "cardName": "DuosionMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "041",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 041",
+          "psaTotal": 5500
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 042": {
+          "cardName": "ReuniclusMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "042",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 042",
+          "psaTotal": 7200
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 043": {
+          "cardName": "ElgyemMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "043",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 043",
+          "psaTotal": 6800
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 044": {
+          "cardName": "BeheeyemMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "044",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 044",
+          "psaTotal": 12800
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 045": {
+          "cardName": "GolettMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "045",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 045",
+          "psaTotal": 6900
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 046": {
+          "cardName": "GolurkMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "046",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 046",
+          "psaTotal": 5700
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 047": {
+          "cardName": "Meloetta EXShop with Affiliates",
+          "cardNo": "047",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 047",
+          "psaTotal": 2300
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 048": {
+          "cardName": "DrilburMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "048",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 048",
+          "psaTotal": 5500
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 049": {
+          "cardName": "Excadrill EXShop with Affiliates",
+          "cardNo": "049",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 049",
+          "psaTotal": 1800
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 050": {
+          "cardName": "TimburrMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "050",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 050",
+          "psaTotal": 9500
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 051": {
+          "cardName": "GurdurrMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "051",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 051",
+          "psaTotal": 9600
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 052": {
+          "cardName": "ConkeldurrMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "052",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 052",
+          "psaTotal": 6700
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 053": {
+          "cardName": "ThrohMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "053",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 053",
+          "psaTotal": 6800
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 054": {
+          "cardName": "DwebbleMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "054",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 054",
+          "psaTotal": 7400
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 055": {
+          "cardName": "CrustleMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "055",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 055",
+          "psaTotal": 3700
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 056": {
+          "cardName": "LandorusMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "056",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 056",
+          "psaTotal": 11300
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 057": {
+          "cardName": "VenipedeMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "057",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 057",
+          "psaTotal": 9000
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 058": {
+          "cardName": "WhirlipedeMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "058",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 058",
+          "psaTotal": 4700
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 059": {
+          "cardName": "ScolipedeMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "059",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 059",
+          "psaTotal": 4800
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 060": {
+          "cardName": "SandileMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "060",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 060",
+          "psaTotal": 6500
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 061": {
+          "cardName": "KrokorokMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "061",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 061",
+          "psaTotal": 8000
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 062": {
+          "cardName": "KrookodileMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "062",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 062",
+          "psaTotal": 6300
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 063": {
+          "cardName": "VullabyMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "063",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 063",
+          "psaTotal": 7800
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 064": {
+          "cardName": "MandibuzzMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "064",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 064",
+          "psaTotal": 5400
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 065": {
+          "cardName": "EscavalierMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "065",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 065",
+          "psaTotal": 4600
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 066": {
+          "cardName": "PawniardMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "066",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 066",
+          "psaTotal": 6900
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 067": {
+          "cardName": "BisharpMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "067",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 067",
+          "psaTotal": 9200
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 068": {
+          "cardName": "CobalionReverse HoloShop with Affiliates",
+          "cardNo": "068",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 068",
+          "psaTotal": 500
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 069": {
+          "cardName": "Genesect EXShop with Affiliates",
+          "cardNo": "069",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 069",
+          "psaTotal": 3800
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 070": {
+          "cardName": "AxewMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "070",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 070",
+          "psaTotal": 7800
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 071": {
+          "cardName": "FraxureMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "071",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 071",
+          "psaTotal": 10600
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 072": {
+          "cardName": "HaxorusMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "072",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 072",
+          "psaTotal": 7200
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 073": {
+          "cardName": "PidoveMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "073",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 073",
+          "psaTotal": 8700
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 074": {
+          "cardName": "TranquillMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "074",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 074",
+          "psaTotal": 9800
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 075": {
+          "cardName": "UnfezantMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "075",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 075",
+          "psaTotal": 7000
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 076": {
+          "cardName": "AudinoMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "076",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 076",
+          "psaTotal": 4600
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 077": {
+          "cardName": "MinccinoMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "077",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 077",
+          "psaTotal": 10700
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 078": {
+          "cardName": "CinccinoMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "078",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 078",
+          "psaTotal": 9500
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 083": {
+          "cardName": "N's PlotReverse HoloShop with Affiliates",
+          "cardNo": "083",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 083",
+          "psaTotal": 1000
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 087": {
+          "cardName": "SnivyArt RareShop with Affiliates",
+          "cardNo": "087",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 087",
+          "psaTotal": 140900
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 088": {
+          "cardName": "ServineArt RareShop with Affiliates",
+          "cardNo": "088",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 088",
+          "psaTotal": 78500
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 089": {
+          "cardName": "PansageArt RareShop with Affiliates",
+          "cardNo": "089",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 089",
+          "psaTotal": 56000
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 090": {
+          "cardName": "SimisageArt RareShop with Affiliates",
+          "cardNo": "090",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 090",
+          "psaTotal": 62500
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 091": {
+          "cardName": "PetililArt RareShop with Affiliates",
+          "cardNo": "091",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 091",
+          "psaTotal": 32300
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 092": {
+          "cardName": "LilligantArt RareShop with Affiliates",
+          "cardNo": "092",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 092",
+          "psaTotal": 39500
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 093": {
+          "cardName": "MaractusArt RareShop with Affiliates",
+          "cardNo": "093",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 093",
+          "psaTotal": 44800
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 094": {
+          "cardName": "KarrablastArt RareShop with Affiliates",
+          "cardNo": "094",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 094",
+          "psaTotal": 71300
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 095": {
+          "cardName": "FoongusArt RareShop with Affiliates",
+          "cardNo": "095",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 095",
+          "psaTotal": 46700
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 096": {
+          "cardName": "AmoongussArt RareShop with Affiliates",
+          "cardNo": "096",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 096",
+          "psaTotal": 45200
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 097": {
+          "cardName": "VictiniArt RareShop with Affiliates",
+          "cardNo": "097",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 097",
+          "psaTotal": 449000
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 098": {
+          "cardName": "DarumakaArt RareShop with Affiliates",
+          "cardNo": "098",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 098",
+          "psaTotal": 46400
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 099": {
+          "cardName": "DarmanitanArt RareShop with Affiliates",
+          "cardNo": "099",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 099",
+          "psaTotal": 62800
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 100": {
+          "cardName": "LitwickArt RareShop with Affiliates",
+          "cardNo": "100",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 100",
+          "psaTotal": 46200
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 101": {
+          "cardName": "LampentArt RareShop with Affiliates",
+          "cardNo": "101",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 101",
+          "psaTotal": 52500
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 102": {
+          "cardName": "ChandelureArt RareShop with Affiliates",
+          "cardNo": "102",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 102",
+          "psaTotal": 81000
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 103": {
+          "cardName": "LarvestaArt RareShop with Affiliates",
+          "cardNo": "103",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 103",
+          "psaTotal": 50300
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 104": {
+          "cardName": "VolcaronaArt RareShop with Affiliates",
+          "cardNo": "104",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 104",
+          "psaTotal": 88600
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 105": {
+          "cardName": "PanpourArt RareShop with Affiliates",
+          "cardNo": "105",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 105",
+          "psaTotal": 56800
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 106": {
+          "cardName": "SimipourArt RareShop with Affiliates",
+          "cardNo": "106",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 106",
+          "psaTotal": 46000
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 107": {
+          "cardName": "TympoleArt RareShop with Affiliates",
+          "cardNo": "107",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 107",
+          "psaTotal": 54100
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 108": {
+          "cardName": "PalpitoadArt RareShop with Affiliates",
+          "cardNo": "108",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 108",
+          "psaTotal": 50300
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 109": {
+          "cardName": "SeismitoadArt RareShop with Affiliates",
+          "cardNo": "109",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 109",
+          "psaTotal": 1100200
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 110": {
+          "cardName": "TirtougaArt RareShop with Affiliates",
+          "cardNo": "110",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 110",
+          "psaTotal": 43500
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 111": {
+          "cardName": "CarracostaArt RareShop with Affiliates",
+          "cardNo": "111",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 111",
+          "psaTotal": 37500
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 112": {
+          "cardName": "AlomomolaArt RareShop with Affiliates",
+          "cardNo": "112",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 112",
+          "psaTotal": 50600
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 113": {
+          "cardName": "CubchooArt RareShop with Affiliates",
+          "cardNo": "113",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 113",
+          "psaTotal": 40910
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 114": {
+          "cardName": "BearticArt RareShop with Affiliates",
+          "cardNo": "114",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 114",
+          "psaTotal": 48800
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 115": {
+          "cardName": "CryogonalArt RareShop with Affiliates",
+          "cardNo": "115",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 115",
+          "psaTotal": 43500
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 116": {
+          "cardName": "EmolgaArt RareShop with Affiliates",
+          "cardNo": "116",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 116",
+          "psaTotal": 60800
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 117": {
+          "cardName": "TynamoArt RareShop with Affiliates",
+          "cardNo": "117",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 117",
+          "psaTotal": 34310
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 118": {
+          "cardName": "EelektrikArt RareShop with Affiliates",
+          "cardNo": "118",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 118",
+          "psaTotal": 44500
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 119": {
+          "cardName": "EelektrossArt RareShop with Affiliates",
+          "cardNo": "119",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 119",
+          "psaTotal": 53200
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 120": {
+          "cardName": "ThundurusArt RareShop with Affiliates",
+          "cardNo": "120",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 120",
+          "psaTotal": 115300
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 121": {
+          "cardName": "MunnaArt RareShop with Affiliates",
+          "cardNo": "121",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 121",
+          "psaTotal": 44800
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 122": {
+          "cardName": "MusharnaArt RareShop with Affiliates",
+          "cardNo": "122",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 122",
+          "psaTotal": 46600
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 123": {
+          "cardName": "SolosisArt RareShop with Affiliates",
+          "cardNo": "123",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 123",
+          "psaTotal": 172200
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 124": {
+          "cardName": "DuosionArt RareShop with Affiliates",
+          "cardNo": "124",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 124",
+          "psaTotal": 40800
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 125": {
+          "cardName": "ReuniclusArt RareShop with Affiliates",
+          "cardNo": "125",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 125",
+          "psaTotal": 27100
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 126": {
+          "cardName": "ElgyemArt RareShop with Affiliates",
+          "cardNo": "126",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 126",
+          "psaTotal": 54800
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 127": {
+          "cardName": "BeheeyemArt RareShop with Affiliates",
+          "cardNo": "127",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 127",
+          "psaTotal": 62900
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 128": {
+          "cardName": "GolettArt RareShop with Affiliates",
+          "cardNo": "128",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 128",
+          "psaTotal": 47700
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 129": {
+          "cardName": "GolurkArt RareShop with Affiliates",
+          "cardNo": "129",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 129",
+          "psaTotal": 33900
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 130": {
+          "cardName": "DrilburArt RareShop with Affiliates",
+          "cardNo": "130",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 130",
+          "psaTotal": 82910
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 131": {
+          "cardName": "TimburrArt RareShop with Affiliates",
+          "cardNo": "131",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 131",
+          "psaTotal": 68300
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 132": {
+          "cardName": "GurdurrArt RareShop with Affiliates",
+          "cardNo": "132",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 132",
+          "psaTotal": 59100
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 133": {
+          "cardName": "ConkeldurrArt RareShop with Affiliates",
+          "cardNo": "133",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 133",
+          "psaTotal": 59700
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 134": {
+          "cardName": "ThrohArt RareShop with Affiliates",
+          "cardNo": "134",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 134",
+          "psaTotal": 52400
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 135": {
+          "cardName": "DwebbleArt RareShop with Affiliates",
+          "cardNo": "135",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 135",
+          "psaTotal": 41400
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 136": {
+          "cardName": "CrustleArt RareShop with Affiliates",
+          "cardNo": "136",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 136",
+          "psaTotal": 52400
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 137": {
+          "cardName": "LandorusArt RareShop with Affiliates",
+          "cardNo": "137",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 137",
+          "psaTotal": 109500
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 138": {
+          "cardName": "VenipedeArt RareShop with Affiliates",
+          "cardNo": "138",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 138",
+          "psaTotal": 47600
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 139": {
+          "cardName": "WhirlipedeArt RareShop with Affiliates",
+          "cardNo": "139",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 139",
+          "psaTotal": 49900
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 140": {
+          "cardName": "ScolipedeArt RareShop with Affiliates",
+          "cardNo": "140",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 140",
+          "psaTotal": 52300
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 141": {
+          "cardName": "SandileArt RareShop with Affiliates",
+          "cardNo": "141",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 141",
+          "psaTotal": 43700
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 142": {
+          "cardName": "KrokorokArt RareShop with Affiliates",
+          "cardNo": "142",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 142",
+          "psaTotal": 42900
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 143": {
+          "cardName": "KrookodileArt RareShop with Affiliates",
+          "cardNo": "143",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 143",
+          "psaTotal": 56900
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 144": {
+          "cardName": "VullabyArt RareShop with Affiliates",
+          "cardNo": "144",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 144",
+          "psaTotal": 49300
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 145": {
+          "cardName": "MandibuzzArt RareShop with Affiliates",
+          "cardNo": "145",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 145",
+          "psaTotal": 54500
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 146": {
+          "cardName": "EscavalierArt RareShop with Affiliates",
+          "cardNo": "146",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 146",
+          "psaTotal": 66200
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 147": {
+          "cardName": "PawniardArt RareShop with Affiliates",
+          "cardNo": "147",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 147",
+          "psaTotal": 52600
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 148": {
+          "cardName": "BisharpArt RareShop with Affiliates",
+          "cardNo": "148",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 148",
+          "psaTotal": 59400
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 149": {
+          "cardName": "CobalionArt RareShop with Affiliates",
+          "cardNo": "149",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 149",
+          "psaTotal": 62300
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 150": {
+          "cardName": "AxewArt RareShop with Affiliates",
+          "cardNo": "150",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 150",
+          "psaTotal": 51000
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 151": {
+          "cardName": "FraxureArt RareShop with Affiliates",
+          "cardNo": "151",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 151",
+          "psaTotal": 47400
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 152": {
+          "cardName": "HaxorusArt RareShop with Affiliates",
+          "cardNo": "152",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 152",
+          "psaTotal": 97600
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 153": {
+          "cardName": "PidoveArt RareShop with Affiliates",
+          "cardNo": "153",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 153",
+          "psaTotal": 46000
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 154": {
+          "cardName": "TranquillArt RareShop with Affiliates",
+          "cardNo": "154",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 154",
+          "psaTotal": 58000
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 155": {
+          "cardName": "UnfezantArt RareShop with Affiliates",
+          "cardNo": "155",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 155",
+          "psaTotal": 46400
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 156": {
+          "cardName": "AudinoArt RareShop with Affiliates",
+          "cardNo": "156",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 156",
+          "psaTotal": 38300
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 157": {
+          "cardName": "MinccinoArt RareShop with Affiliates",
+          "cardNo": "157",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 157",
+          "psaTotal": 56600
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 158": {
+          "cardName": "CinccinoArt RareShop with Affiliates",
+          "cardNo": "158",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 158",
+          "psaTotal": 45500
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 159": {
+          "cardName": "Serperior EXSuper RareShop with Affiliates",
+          "cardNo": "159",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 159",
+          "psaTotal": 61400
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 160": {
+          "cardName": "Kyurem EXSuper RareShop with Affiliates",
+          "cardNo": "160",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 160",
+          "psaTotal": 63500
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 161": {
+          "cardName": "Zekrom EXSuper RareShop with Affiliates",
+          "cardNo": "161",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 161",
+          "psaTotal": 214901
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 162": {
+          "cardName": "Meloetta EXSuper RareShop with Affiliates",
+          "cardNo": "162",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 162",
+          "psaTotal": 65000
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 163": {
+          "cardName": "Excadrill EXSuper RareShop with Affiliates",
+          "cardNo": "163",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 163",
+          "psaTotal": 55400
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 164": {
+          "cardName": "Genesect EXSuper RareShop with Affiliates",
+          "cardNo": "164",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 164",
+          "psaTotal": 62500
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 165": {
+          "cardName": "N's PlotSuper RareShop with Affiliates",
+          "cardNo": "165",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 165",
+          "psaTotal": 134200
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 166": {
+          "cardName": "FennelSuper RareShop with Affiliates",
+          "cardNo": "166",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 166",
+          "psaTotal": 39400
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 167": {
+          "cardName": "Serperior EXSpecial Art RareShop with Affiliates",
+          "cardNo": "167",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 167",
+          "psaTotal": 214300
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 168": {
+          "cardName": "Kyurem EXSpecial Art RareShop with Affiliates",
+          "cardNo": "168",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 168",
+          "psaTotal": 375000
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 169": {
+          "cardName": "Zekrom EXSpecial Art RareShop with Affiliates",
+          "cardNo": "169",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 169",
+          "psaTotal": 1412310
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 170": {
+          "cardName": "Meloetta EXSpecial Art RareShop with Affiliates",
+          "cardNo": "170",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 170",
+          "psaTotal": 251010
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 171": {
+          "cardName": "Excadrill EXSpecial Art RareShop with Affiliates",
+          "cardNo": "171",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 171",
+          "psaTotal": 64600
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 172": {
+          "cardName": "Genesect EXSpecial Art RareShop with Affiliates",
+          "cardNo": "172",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 172",
+          "psaTotal": 147600
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 173": {
+          "cardName": "N's PlotSpecial Art RareShop with Affiliates",
+          "cardNo": "173",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 173",
+          "psaTotal": 681400
+        },
+        "Pokemon Japanese SV11B-BLACK BOLT 174": {
+          "cardName": "Zekrom EXBW RareShop with Affiliates",
+          "cardNo": "174",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11B-BLACK BOLT 174",
+          "psaTotal": 1643711
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "2025 Pokemon Japanese Sv9a-Heat Wave Arena",
+      "kind": "pop",
+      "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+      "title": "2025 Pokemon Japanese Sv9a-Heat Wave Arena TCG Cards | PSA Population",
+      "fetchedAt": "2026-08-17T01:38:55.890Z",
+      "setCode": "SV9A-HEAT WAVE ARENA",
+      "rows": [
+        {
+          "cardName": "Yanmega EXShop with Affiliates",
+          "cardNo": "003",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 003",
+          "psaTotal": 3000
+        },
+        {
+          "cardName": "HydrappleShop with Affiliates",
+          "cardNo": "011",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 011",
+          "psaTotal": 600
+        },
+        {
+          "cardName": "Ethan's CyndaquilShop with Affiliates",
+          "cardNo": "015",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 015",
+          "psaTotal": 900
+        },
+        {
+          "cardName": "Ethan's QuilavaShop with Affiliates",
+          "cardNo": "016",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 016",
+          "psaTotal": 500
+        },
+        {
+          "cardName": "Ethan's TyphlosionShop with Affiliates",
+          "cardNo": "017",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 017",
+          "psaTotal": 4600
+        },
+        {
+          "cardName": "Ethan's MagcargoShop with Affiliates",
+          "cardNo": "019",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 019",
+          "psaTotal": 700
+        },
+        {
+          "cardName": "Ethan's HO-Oh EXShop with Affiliates",
+          "cardNo": "020",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 020",
+          "psaTotal": 13300
+        },
+        {
+          "cardName": "Misty's PsyduckShop with Affiliates",
+          "cardNo": "022",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 022",
+          "psaTotal": 4700
+        },
+        {
+          "cardName": "Misty's MagikarpShop with Affiliates",
+          "cardNo": "025",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 025",
+          "psaTotal": 4400
+        },
+        {
+          "cardName": "Misty's GyaradosShop with Affiliates",
+          "cardNo": "026",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 026",
+          "psaTotal": 10900
+        },
+        {
+          "cardName": "Misty's LaprasShop with Affiliates",
+          "cardNo": "027",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 027",
+          "psaTotal": 2500
+        },
+        {
+          "cardName": "Dondozo EXShop with Affiliates",
+          "cardNo": "032",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 032",
+          "psaTotal": 3400
+        },
+        {
+          "cardName": "Electivire EXShop with Affiliates",
+          "cardNo": "035",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 035",
+          "psaTotal": 4100
+        },
+        {
+          "cardName": "Ethan's PichuShop with Affiliates",
+          "cardNo": "036",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 036",
+          "psaTotal": 1802
+        },
+        {
+          "cardName": "Cynthia's Garchomp EXShop with Affiliates",
+          "cardNo": "044",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 044",
+          "psaTotal": 10300
+        },
+        {
+          "cardName": "Arven's Mabosstiff EXShop with Affiliates",
+          "cardNo": "052",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 052",
+          "psaTotal": 3600
+        },
+        {
+          "cardName": "Arven's SandwichShop with Affiliates",
+          "cardNo": "057",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 057",
+          "psaTotal": 600
+        },
+        {
+          "cardName": "YanmaArt RareShop with Affiliates",
+          "cardNo": "064",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 064",
+          "psaTotal": 187100
+        },
+        {
+          "cardName": "Cynthia's RoseradeArt RareShop with Affiliates",
+          "cardNo": "065",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 065",
+          "psaTotal": 602500
+        },
+        {
+          "cardName": "ShayminArt RareShop with Affiliates",
+          "cardNo": "066",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 066",
+          "psaTotal": 180200
+        },
+        {
+          "cardName": "CrustleArt RareShop with Affiliates",
+          "cardNo": "067",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 067",
+          "psaTotal": 150200
+        },
+        {
+          "cardName": "HydrappleArt RareShop with Affiliates",
+          "cardNo": "068",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 068",
+          "psaTotal": 173200
+        },
+        {
+          "cardName": "RapidashArt RareShop with Affiliates",
+          "cardNo": "069",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 069",
+          "psaTotal": 237600
+        },
+        {
+          "cardName": "Ethan's TyphlosionArt RareShop with Affiliates",
+          "cardNo": "070",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 070",
+          "psaTotal": 1027900
+        },
+        {
+          "cardName": "Misty's PsyduckArt RareShop with Affiliates",
+          "cardNo": "071",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 071",
+          "psaTotal": 1891400
+        },
+        {
+          "cardName": "Misty's LaprasArt RareShop with Affiliates",
+          "cardNo": "072",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 072",
+          "psaTotal": 897100
+        },
+        {
+          "cardName": "ElectrikeArt RareShop with Affiliates",
+          "cardNo": "073",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 073",
+          "psaTotal": 162300
+        },
+        {
+          "cardName": "RotomArt RareShop with Affiliates",
+          "cardNo": "074",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 074",
+          "psaTotal": 186300
+        },
+        {
+          "cardName": "Arven's GreedentArt RareShop with Affiliates",
+          "cardNo": "075",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 075",
+          "psaTotal": 194300
+        },
+        {
+          "cardName": "Yanmega EXSuper RareShop with Affiliates",
+          "cardNo": "076",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 076",
+          "psaTotal": 24000
+        },
+        {
+          "cardName": "Ethan's HO-Oh EXSuper RareShop with Affiliates",
+          "cardNo": "077",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 077",
+          "psaTotal": 114400
+        },
+        {
+          "cardName": "Dondozo EXSuper RareShop with Affiliates",
+          "cardNo": "078",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 078",
+          "psaTotal": 25300
+        },
+        {
+          "cardName": "Electivire EXSuper RareShop with Affiliates",
+          "cardNo": "079",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 079",
+          "psaTotal": 25000
+        },
+        {
+          "cardName": "Cynthia's Garchomp EXSuper RareShop with Affiliates",
+          "cardNo": "080",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 080",
+          "psaTotal": 142800
+        },
+        {
+          "cardName": "Arven's Mabosstiff EXSuper RareShop with Affiliates",
+          "cardNo": "081",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 081",
+          "psaTotal": 37000
+        },
+        {
+          "cardName": "Emcee's HypeSuper RareShop with Affiliates",
+          "cardNo": "082",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 082",
+          "psaTotal": 92700
+        },
+        {
+          "cardName": "JudgeSuper RareShop with Affiliates",
+          "cardNo": "083",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 083",
+          "psaTotal": 6500
+        },
+        {
+          "cardName": "Ethan's AdventureSuper RareShop with Affiliates",
+          "cardNo": "084",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 084",
+          "psaTotal": 43500
+        },
+        {
+          "cardName": "Yanmega EXSpecial Art RareShop with Affiliates",
+          "cardNo": "085",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 085",
+          "psaTotal": 49400
+        },
+        {
+          "cardName": "Ethan's HO-Oh EXSpecial Art RareShop with Affiliates",
+          "cardNo": "086",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 086",
+          "psaTotal": 879200
+        },
+        {
+          "cardName": "Cynthia's Garchomp EXSpecial Art RareShop with Affiliates",
+          "cardNo": "087",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 087",
+          "psaTotal": 968001
+        },
+        {
+          "cardName": "Arven's Mabosstiff EXSpecial Art RareShop with Affiliates",
+          "cardNo": "088",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 088",
+          "psaTotal": 65300
+        },
+        {
+          "cardName": "Ethan's AdventureSpecial Art RareShop with Affiliates",
+          "cardNo": "089",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 089",
+          "psaTotal": 335200
+        },
+        {
+          "cardName": "Ethan's HO-Oh EXUltra RareShop with Affiliates",
+          "cardNo": "090",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 090",
+          "psaTotal": 152300
+        },
+        {
+          "cardName": "Cynthia's Garchomp EXUltra RareShop with Affiliates",
+          "cardNo": "091",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 091",
+          "psaTotal": 166300
+        },
+        {
+          "cardName": "LevinciaUltra RareShop with Affiliates",
+          "cardNo": "092",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 092",
+          "psaTotal": 7300
+        }
+      ],
+      "byQuery": {
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 003": {
+          "cardName": "Yanmega EXShop with Affiliates",
+          "cardNo": "003",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 003",
+          "psaTotal": 3000
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 011": {
+          "cardName": "HydrappleShop with Affiliates",
+          "cardNo": "011",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 011",
+          "psaTotal": 600
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 015": {
+          "cardName": "Ethan's CyndaquilShop with Affiliates",
+          "cardNo": "015",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 015",
+          "psaTotal": 900
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 016": {
+          "cardName": "Ethan's QuilavaShop with Affiliates",
+          "cardNo": "016",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 016",
+          "psaTotal": 500
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 017": {
+          "cardName": "Ethan's TyphlosionShop with Affiliates",
+          "cardNo": "017",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 017",
+          "psaTotal": 4600
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 019": {
+          "cardName": "Ethan's MagcargoShop with Affiliates",
+          "cardNo": "019",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 019",
+          "psaTotal": 700
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 020": {
+          "cardName": "Ethan's HO-Oh EXShop with Affiliates",
+          "cardNo": "020",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 020",
+          "psaTotal": 13300
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 022": {
+          "cardName": "Misty's PsyduckShop with Affiliates",
+          "cardNo": "022",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 022",
+          "psaTotal": 4700
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 025": {
+          "cardName": "Misty's MagikarpShop with Affiliates",
+          "cardNo": "025",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 025",
+          "psaTotal": 4400
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 026": {
+          "cardName": "Misty's GyaradosShop with Affiliates",
+          "cardNo": "026",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 026",
+          "psaTotal": 10900
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 027": {
+          "cardName": "Misty's LaprasShop with Affiliates",
+          "cardNo": "027",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 027",
+          "psaTotal": 2500
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 032": {
+          "cardName": "Dondozo EXShop with Affiliates",
+          "cardNo": "032",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 032",
+          "psaTotal": 3400
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 035": {
+          "cardName": "Electivire EXShop with Affiliates",
+          "cardNo": "035",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 035",
+          "psaTotal": 4100
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 036": {
+          "cardName": "Ethan's PichuShop with Affiliates",
+          "cardNo": "036",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 036",
+          "psaTotal": 1802
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 044": {
+          "cardName": "Cynthia's Garchomp EXShop with Affiliates",
+          "cardNo": "044",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 044",
+          "psaTotal": 10300
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 052": {
+          "cardName": "Arven's Mabosstiff EXShop with Affiliates",
+          "cardNo": "052",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 052",
+          "psaTotal": 3600
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 057": {
+          "cardName": "Arven's SandwichShop with Affiliates",
+          "cardNo": "057",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 057",
+          "psaTotal": 600
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 064": {
+          "cardName": "YanmaArt RareShop with Affiliates",
+          "cardNo": "064",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 064",
+          "psaTotal": 187100
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 065": {
+          "cardName": "Cynthia's RoseradeArt RareShop with Affiliates",
+          "cardNo": "065",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 065",
+          "psaTotal": 602500
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 066": {
+          "cardName": "ShayminArt RareShop with Affiliates",
+          "cardNo": "066",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 066",
+          "psaTotal": 180200
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 067": {
+          "cardName": "CrustleArt RareShop with Affiliates",
+          "cardNo": "067",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 067",
+          "psaTotal": 150200
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 068": {
+          "cardName": "HydrappleArt RareShop with Affiliates",
+          "cardNo": "068",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 068",
+          "psaTotal": 173200
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 069": {
+          "cardName": "RapidashArt RareShop with Affiliates",
+          "cardNo": "069",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 069",
+          "psaTotal": 237600
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 070": {
+          "cardName": "Ethan's TyphlosionArt RareShop with Affiliates",
+          "cardNo": "070",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 070",
+          "psaTotal": 1027900
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 071": {
+          "cardName": "Misty's PsyduckArt RareShop with Affiliates",
+          "cardNo": "071",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 071",
+          "psaTotal": 1891400
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 072": {
+          "cardName": "Misty's LaprasArt RareShop with Affiliates",
+          "cardNo": "072",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 072",
+          "psaTotal": 897100
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 073": {
+          "cardName": "ElectrikeArt RareShop with Affiliates",
+          "cardNo": "073",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 073",
+          "psaTotal": 162300
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 074": {
+          "cardName": "RotomArt RareShop with Affiliates",
+          "cardNo": "074",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 074",
+          "psaTotal": 186300
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 075": {
+          "cardName": "Arven's GreedentArt RareShop with Affiliates",
+          "cardNo": "075",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 075",
+          "psaTotal": 194300
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 076": {
+          "cardName": "Yanmega EXSuper RareShop with Affiliates",
+          "cardNo": "076",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 076",
+          "psaTotal": 24000
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 077": {
+          "cardName": "Ethan's HO-Oh EXSuper RareShop with Affiliates",
+          "cardNo": "077",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 077",
+          "psaTotal": 114400
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 078": {
+          "cardName": "Dondozo EXSuper RareShop with Affiliates",
+          "cardNo": "078",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 078",
+          "psaTotal": 25300
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 079": {
+          "cardName": "Electivire EXSuper RareShop with Affiliates",
+          "cardNo": "079",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 079",
+          "psaTotal": 25000
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 080": {
+          "cardName": "Cynthia's Garchomp EXSuper RareShop with Affiliates",
+          "cardNo": "080",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 080",
+          "psaTotal": 142800
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 081": {
+          "cardName": "Arven's Mabosstiff EXSuper RareShop with Affiliates",
+          "cardNo": "081",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 081",
+          "psaTotal": 37000
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 082": {
+          "cardName": "Emcee's HypeSuper RareShop with Affiliates",
+          "cardNo": "082",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 082",
+          "psaTotal": 92700
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 083": {
+          "cardName": "JudgeSuper RareShop with Affiliates",
+          "cardNo": "083",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 083",
+          "psaTotal": 6500
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 084": {
+          "cardName": "Ethan's AdventureSuper RareShop with Affiliates",
+          "cardNo": "084",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 084",
+          "psaTotal": 43500
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 085": {
+          "cardName": "Yanmega EXSpecial Art RareShop with Affiliates",
+          "cardNo": "085",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 085",
+          "psaTotal": 49400
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 086": {
+          "cardName": "Ethan's HO-Oh EXSpecial Art RareShop with Affiliates",
+          "cardNo": "086",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 086",
+          "psaTotal": 879200
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 087": {
+          "cardName": "Cynthia's Garchomp EXSpecial Art RareShop with Affiliates",
+          "cardNo": "087",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 087",
+          "psaTotal": 968001
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 088": {
+          "cardName": "Arven's Mabosstiff EXSpecial Art RareShop with Affiliates",
+          "cardNo": "088",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 088",
+          "psaTotal": 65300
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 089": {
+          "cardName": "Ethan's AdventureSpecial Art RareShop with Affiliates",
+          "cardNo": "089",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 089",
+          "psaTotal": 335200
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 090": {
+          "cardName": "Ethan's HO-Oh EXUltra RareShop with Affiliates",
+          "cardNo": "090",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 090",
+          "psaTotal": 152300
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 091": {
+          "cardName": "Cynthia's Garchomp EXUltra RareShop with Affiliates",
+          "cardNo": "091",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 091",
+          "psaTotal": 166300
+        },
+        "Pokemon Japanese SV9A-HEAT WAVE ARENA 092": {
+          "cardName": "LevinciaUltra RareShop with Affiliates",
+          "cardNo": "092",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9A-HEAT WAVE ARENA 092",
+          "psaTotal": 7300
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "2025 Pokemon Japanese SV9-Battle Partners",
+      "kind": "pop",
+      "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
+      "title": "2025 Pokemon Japanese SV9-Battle Partners TCG Cards | PSA Population",
+      "fetchedAt": "2026-08-17T01:38:59.270Z",
+      "setCode": "SV9-BATTLE PARTNERS",
+      "rows": [
+        {
+          "cardName": "MeowscaradaShop with Affiliates",
+          "cardNo": "012",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 012",
+          "psaTotal": 500
+        },
+        {
+          "cardName": "Volcanion EXShop with Affiliates",
+          "cardNo": "017",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 017",
+          "psaTotal": 2100
+        },
+        {
+          "cardName": "LudicoloShop with Affiliates",
+          "cardNo": "023",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 023",
+          "psaTotal": 800
+        },
+        {
+          "cardName": "WailordShop with Affiliates",
+          "cardNo": "025",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 025",
+          "psaTotal": 600
+        },
+        {
+          "cardName": "Iono's Bellibolt EXShop with Affiliates",
+          "cardNo": "030",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 030",
+          "psaTotal": 10400
+        },
+        {
+          "cardName": "Iono's WattrelShop with Affiliates",
+          "cardNo": "031",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 031",
+          "psaTotal": 500
+        },
+        {
+          "cardName": "Iono's KilowattrelShop with Affiliates",
+          "cardNo": "032",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 032",
+          "psaTotal": 1900
+        },
+        {
+          "cardName": "Lillie's Clefairy EXShop with Affiliates",
+          "cardNo": "033",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 033",
+          "psaTotal": 18000
+        },
+        {
+          "cardName": "Lillie's CutieflyShop with Affiliates",
+          "cardNo": "041",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 041",
+          "psaTotal": 500
+        },
+        {
+          "cardName": "Lillie's RibombeeShop with Affiliates",
+          "cardNo": "042",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 042",
+          "psaTotal": 500
+        },
+        {
+          "cardName": "Mamoswine EXShop with Affiliates",
+          "cardNo": "046",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 046",
+          "psaTotal": 2200
+        },
+        {
+          "cardName": "LycanrocShop with Affiliates",
+          "cardNo": "052",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 052",
+          "psaTotal": 500
+        },
+        {
+          "cardName": "TyranitarShop with Affiliates",
+          "cardNo": "058",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 058",
+          "psaTotal": 2100
+        },
+        {
+          "cardName": "N's ZoruaShop with Affiliates",
+          "cardNo": "060",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 060",
+          "psaTotal": 700
+        },
+        {
+          "cardName": "N's Zoroark EXShop with Affiliates",
+          "cardNo": "061",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 061",
+          "psaTotal": 14300
+        },
+        {
+          "cardName": "MagearnaShop with Affiliates",
+          "cardNo": "067",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 067",
+          "psaTotal": 700
+        },
+        {
+          "cardName": "Hop's Zacian EXShop with Affiliates",
+          "cardNo": "069",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 069",
+          "psaTotal": 8800
+        },
+        {
+          "cardName": "Salamence EXShop with Affiliates",
+          "cardNo": "072",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 072",
+          "psaTotal": 5700
+        },
+        {
+          "cardName": "N's ReshiramShop with Affiliates",
+          "cardNo": "074",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 074",
+          "psaTotal": 4100
+        },
+        {
+          "cardName": "Hop's SnorlaxShop with Affiliates",
+          "cardNo": "075",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 075",
+          "psaTotal": 17600
+        },
+        {
+          "cardName": "FurretShop with Affiliates",
+          "cardNo": "077",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 077",
+          "psaTotal": 800
+        },
+        {
+          "cardName": "Dudunsparce EXShop with Affiliates",
+          "cardNo": "079",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 079",
+          "psaTotal": 1700
+        },
+        {
+          "cardName": "Hop's DubwoolShop with Affiliates",
+          "cardNo": "086",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 086",
+          "psaTotal": 600
+        },
+        {
+          "cardName": "MaractusArt RareShop with Affiliates",
+          "cardNo": "101",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 101",
+          "psaTotal": 492000
+        },
+        {
+          "cardName": "ArticunoArt RareShop with Affiliates",
+          "cardNo": "102",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 102",
+          "psaTotal": 2005501
+        },
+        {
+          "cardName": "WailordArt RareShop with Affiliates",
+          "cardNo": "103",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 103",
+          "psaTotal": 1376500
+        },
+        {
+          "cardName": "Iono's KilowattrelArt RareShop with Affiliates",
+          "cardNo": "104",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 104",
+          "psaTotal": 1496300
+        },
+        {
+          "cardName": "Lillie's RibombeeArt RareShop with Affiliates",
+          "cardNo": "105",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 105",
+          "psaTotal": 3046100
+        },
+        {
+          "cardName": "SwinubArt RareShop with Affiliates",
+          "cardNo": "106",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 106",
+          "psaTotal": 580700
+        },
+        {
+          "cardName": "LycanrocArt RareShop with Affiliates",
+          "cardNo": "107",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 107",
+          "psaTotal": 556700
+        },
+        {
+          "cardName": "N's ZoruaArt RareShop with Affiliates",
+          "cardNo": "108",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 108",
+          "psaTotal": 814200
+        },
+        {
+          "cardName": "N's ReshiramArt RareShop with Affiliates",
+          "cardNo": "109",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 109",
+          "psaTotal": 2886700
+        },
+        {
+          "cardName": "FurretArt RareShop with Affiliates",
+          "cardNo": "110",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 110",
+          "psaTotal": 586901
+        },
+        {
+          "cardName": "NoibatArt RareShop with Affiliates",
+          "cardNo": "111",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 111",
+          "psaTotal": 591510
+        },
+        {
+          "cardName": "Hop's WoolooArt RareShop with Affiliates",
+          "cardNo": "112",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 112",
+          "psaTotal": 525600
+        },
+        {
+          "cardName": "Volcanion EXSuper RareShop with Affiliates",
+          "cardNo": "113",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 113",
+          "psaTotal": 46500
+        },
+        {
+          "cardName": "Iono's Bellibolt EXSuper RareShop with Affiliates",
+          "cardNo": "114",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 114",
+          "psaTotal": 360600
+        },
+        {
+          "cardName": "Lillie's Clefairy EXSuper RareShop with Affiliates",
+          "cardNo": "115",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 115",
+          "psaTotal": 677800
+        },
+        {
+          "cardName": "Mamoswine EXSuper RareShop with Affiliates",
+          "cardNo": "116",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 116",
+          "psaTotal": 40300
+        },
+        {
+          "cardName": "N's Zoroark EXSuper RareShop with Affiliates",
+          "cardNo": "117",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 117",
+          "psaTotal": 179300
+        },
+        {
+          "cardName": "Hop's Zacian EXSuper RareShop with Affiliates",
+          "cardNo": "118",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 118",
+          "psaTotal": 102700
+        },
+        {
+          "cardName": "Salamence EXSuper RareShop with Affiliates",
+          "cardNo": "119",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 119",
+          "psaTotal": 68300
+        },
+        {
+          "cardName": "Dudunsparce EXSuper RareShop with Affiliates",
+          "cardNo": "120",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 120",
+          "psaTotal": 45200
+        },
+        {
+          "cardName": "Iris's Fighting SpiritSuper RareShop with Affiliates",
+          "cardNo": "121",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 121",
+          "psaTotal": 468300
+        },
+        {
+          "cardName": "RuffianSuper RareShop with Affiliates",
+          "cardNo": "122",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 122",
+          "psaTotal": 16600
+        },
+        {
+          "cardName": "Brock's ScoutingSuper RareShop with Affiliates",
+          "cardNo": "123",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 123",
+          "psaTotal": 31600
+        },
+        {
+          "cardName": "Volcanion EXSpecial Art RareShop with Affiliates",
+          "cardNo": "124",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 124",
+          "psaTotal": 236700
+        },
+        {
+          "cardName": "Iono's Bellibolt EXSpecial Art RareShop with Affiliates",
+          "cardNo": "125",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 125",
+          "psaTotal": 1488300
+        },
+        {
+          "cardName": "Lillie's Clefairy EXSpecial Art RareShop with Affiliates",
+          "cardNo": "126",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 126",
+          "psaTotal": 2393300
+        },
+        {
+          "cardName": "N's Zoroark EXSpecial Art RareShop with Affiliates",
+          "cardNo": "127",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 127",
+          "psaTotal": 780500
+        },
+        {
+          "cardName": "Hop's Zacian EXSpecial Art RareShop with Affiliates",
+          "cardNo": "128",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 128",
+          "psaTotal": 382500
+        },
+        {
+          "cardName": "Salamence EXSpecial Art RareShop with Affiliates",
+          "cardNo": "129",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 129",
+          "psaTotal": 693200
+        },
+        {
+          "cardName": "Iono's Bellibolt EXUltra RareShop with Affiliates",
+          "cardNo": "130",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 130",
+          "psaTotal": 494500
+        },
+        {
+          "cardName": "N's Zoroark EXUltra RareShop with Affiliates",
+          "cardNo": "131",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 131",
+          "psaTotal": 359700
+        },
+        {
+          "cardName": "N's Zoroark EXUltra Rare-Incorrect TextureShop with Affiliates",
+          "cardNo": "131",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 131",
+          "psaTotal": 95100
+        },
+        {
+          "cardName": "Spike EnergyUltra RareShop with Affiliates",
+          "cardNo": "132",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 132",
+          "psaTotal": 7600
+        }
+      ],
+      "byQuery": {
+        "Pokemon Japanese SV9-BATTLE PARTNERS 012": {
+          "cardName": "MeowscaradaShop with Affiliates",
+          "cardNo": "012",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 012",
+          "psaTotal": 500
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 017": {
+          "cardName": "Volcanion EXShop with Affiliates",
+          "cardNo": "017",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 017",
+          "psaTotal": 2100
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 023": {
+          "cardName": "LudicoloShop with Affiliates",
+          "cardNo": "023",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 023",
+          "psaTotal": 800
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 025": {
+          "cardName": "WailordShop with Affiliates",
+          "cardNo": "025",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 025",
+          "psaTotal": 600
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 030": {
+          "cardName": "Iono's Bellibolt EXShop with Affiliates",
+          "cardNo": "030",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 030",
+          "psaTotal": 10400
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 031": {
+          "cardName": "Iono's WattrelShop with Affiliates",
+          "cardNo": "031",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 031",
+          "psaTotal": 500
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 032": {
+          "cardName": "Iono's KilowattrelShop with Affiliates",
+          "cardNo": "032",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 032",
+          "psaTotal": 1900
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 033": {
+          "cardName": "Lillie's Clefairy EXShop with Affiliates",
+          "cardNo": "033",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 033",
+          "psaTotal": 18000
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 041": {
+          "cardName": "Lillie's CutieflyShop with Affiliates",
+          "cardNo": "041",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 041",
+          "psaTotal": 500
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 042": {
+          "cardName": "Lillie's RibombeeShop with Affiliates",
+          "cardNo": "042",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 042",
+          "psaTotal": 500
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 046": {
+          "cardName": "Mamoswine EXShop with Affiliates",
+          "cardNo": "046",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 046",
+          "psaTotal": 2200
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 052": {
+          "cardName": "LycanrocShop with Affiliates",
+          "cardNo": "052",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 052",
+          "psaTotal": 500
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 058": {
+          "cardName": "TyranitarShop with Affiliates",
+          "cardNo": "058",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 058",
+          "psaTotal": 2100
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 060": {
+          "cardName": "N's ZoruaShop with Affiliates",
+          "cardNo": "060",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 060",
+          "psaTotal": 700
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 061": {
+          "cardName": "N's Zoroark EXShop with Affiliates",
+          "cardNo": "061",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 061",
+          "psaTotal": 14300
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 067": {
+          "cardName": "MagearnaShop with Affiliates",
+          "cardNo": "067",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 067",
+          "psaTotal": 700
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 069": {
+          "cardName": "Hop's Zacian EXShop with Affiliates",
+          "cardNo": "069",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 069",
+          "psaTotal": 8800
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 072": {
+          "cardName": "Salamence EXShop with Affiliates",
+          "cardNo": "072",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 072",
+          "psaTotal": 5700
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 074": {
+          "cardName": "N's ReshiramShop with Affiliates",
+          "cardNo": "074",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 074",
+          "psaTotal": 4100
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 075": {
+          "cardName": "Hop's SnorlaxShop with Affiliates",
+          "cardNo": "075",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 075",
+          "psaTotal": 17600
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 077": {
+          "cardName": "FurretShop with Affiliates",
+          "cardNo": "077",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 077",
+          "psaTotal": 800
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 079": {
+          "cardName": "Dudunsparce EXShop with Affiliates",
+          "cardNo": "079",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 079",
+          "psaTotal": 1700
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 086": {
+          "cardName": "Hop's DubwoolShop with Affiliates",
+          "cardNo": "086",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 086",
+          "psaTotal": 600
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 101": {
+          "cardName": "MaractusArt RareShop with Affiliates",
+          "cardNo": "101",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 101",
+          "psaTotal": 492000
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 102": {
+          "cardName": "ArticunoArt RareShop with Affiliates",
+          "cardNo": "102",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 102",
+          "psaTotal": 2005501
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 103": {
+          "cardName": "WailordArt RareShop with Affiliates",
+          "cardNo": "103",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 103",
+          "psaTotal": 1376500
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 104": {
+          "cardName": "Iono's KilowattrelArt RareShop with Affiliates",
+          "cardNo": "104",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 104",
+          "psaTotal": 1496300
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 105": {
+          "cardName": "Lillie's RibombeeArt RareShop with Affiliates",
+          "cardNo": "105",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 105",
+          "psaTotal": 3046100
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 106": {
+          "cardName": "SwinubArt RareShop with Affiliates",
+          "cardNo": "106",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 106",
+          "psaTotal": 580700
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 107": {
+          "cardName": "LycanrocArt RareShop with Affiliates",
+          "cardNo": "107",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 107",
+          "psaTotal": 556700
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 108": {
+          "cardName": "N's ZoruaArt RareShop with Affiliates",
+          "cardNo": "108",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 108",
+          "psaTotal": 814200
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 109": {
+          "cardName": "N's ReshiramArt RareShop with Affiliates",
+          "cardNo": "109",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 109",
+          "psaTotal": 2886700
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 110": {
+          "cardName": "FurretArt RareShop with Affiliates",
+          "cardNo": "110",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 110",
+          "psaTotal": 586901
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 111": {
+          "cardName": "NoibatArt RareShop with Affiliates",
+          "cardNo": "111",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 111",
+          "psaTotal": 591510
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 112": {
+          "cardName": "Hop's WoolooArt RareShop with Affiliates",
+          "cardNo": "112",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 112",
+          "psaTotal": 525600
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 113": {
+          "cardName": "Volcanion EXSuper RareShop with Affiliates",
+          "cardNo": "113",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 113",
+          "psaTotal": 46500
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 114": {
+          "cardName": "Iono's Bellibolt EXSuper RareShop with Affiliates",
+          "cardNo": "114",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 114",
+          "psaTotal": 360600
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 115": {
+          "cardName": "Lillie's Clefairy EXSuper RareShop with Affiliates",
+          "cardNo": "115",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 115",
+          "psaTotal": 677800
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 116": {
+          "cardName": "Mamoswine EXSuper RareShop with Affiliates",
+          "cardNo": "116",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 116",
+          "psaTotal": 40300
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 117": {
+          "cardName": "N's Zoroark EXSuper RareShop with Affiliates",
+          "cardNo": "117",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 117",
+          "psaTotal": 179300
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 118": {
+          "cardName": "Hop's Zacian EXSuper RareShop with Affiliates",
+          "cardNo": "118",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 118",
+          "psaTotal": 102700
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 119": {
+          "cardName": "Salamence EXSuper RareShop with Affiliates",
+          "cardNo": "119",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 119",
+          "psaTotal": 68300
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 120": {
+          "cardName": "Dudunsparce EXSuper RareShop with Affiliates",
+          "cardNo": "120",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 120",
+          "psaTotal": 45200
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 121": {
+          "cardName": "Iris's Fighting SpiritSuper RareShop with Affiliates",
+          "cardNo": "121",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 121",
+          "psaTotal": 468300
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 122": {
+          "cardName": "RuffianSuper RareShop with Affiliates",
+          "cardNo": "122",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 122",
+          "psaTotal": 16600
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 123": {
+          "cardName": "Brock's ScoutingSuper RareShop with Affiliates",
+          "cardNo": "123",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 123",
+          "psaTotal": 31600
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 124": {
+          "cardName": "Volcanion EXSpecial Art RareShop with Affiliates",
+          "cardNo": "124",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 124",
+          "psaTotal": 236700
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 125": {
+          "cardName": "Iono's Bellibolt EXSpecial Art RareShop with Affiliates",
+          "cardNo": "125",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 125",
+          "psaTotal": 1488300
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 126": {
+          "cardName": "Lillie's Clefairy EXSpecial Art RareShop with Affiliates",
+          "cardNo": "126",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 126",
+          "psaTotal": 2393300
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 127": {
+          "cardName": "N's Zoroark EXSpecial Art RareShop with Affiliates",
+          "cardNo": "127",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 127",
+          "psaTotal": 780500
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 128": {
+          "cardName": "Hop's Zacian EXSpecial Art RareShop with Affiliates",
+          "cardNo": "128",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 128",
+          "psaTotal": 382500
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 129": {
+          "cardName": "Salamence EXSpecial Art RareShop with Affiliates",
+          "cardNo": "129",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 129",
+          "psaTotal": 693200
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 130": {
+          "cardName": "Iono's Bellibolt EXUltra RareShop with Affiliates",
+          "cardNo": "130",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 130",
+          "psaTotal": 494500
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 131": {
+          "cardName": "N's Zoroark EXUltra Rare-Incorrect TextureShop with Affiliates",
+          "cardNo": "131",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 131",
+          "psaTotal": 95100
+        },
+        "Pokemon Japanese SV9-BATTLE PARTNERS 132": {
+          "cardName": "Spike EnergyUltra RareShop with Affiliates",
+          "cardNo": "132",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV9-BATTLE PARTNERS 132",
+          "psaTotal": 7600
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "2025 Pokemon Japanese Svn-Battle Partners Deck Build Box",
+      "kind": "pop",
+      "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-svn-battle-partners-deck-build-box/297732",
+      "title": "2025 Pokemon Japanese Svn-Battle Partners Deck Build Box TCG Cards | PSA Population",
+      "fetchedAt": "2026-08-17T01:39:03.186Z",
+      "setCode": "SVN-BATTLE PARTNERS DECK BUILD BOX",
+      "rows": [
+        {
+          "cardName": "Mew EXShop with Affiliates",
+          "cardNo": "001",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SVN-BATTLE PARTNERS DECK BUILD BOX 001",
+          "psaTotal": 3300
+        }
+      ],
+      "byQuery": {
+        "Pokemon Japanese SVN-BATTLE PARTNERS DECK BUILD BOX 001": {
+          "cardName": "Mew EXShop with Affiliates",
+          "cardNo": "001",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SVN-BATTLE PARTNERS DECK BUILD BOX 001",
+          "psaTotal": 3300
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "2025 Pokemon Japanese SV-P Promo",
+      "kind": "pop",
+      "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv-p-promo/292983",
+      "title": "2025 Pokemon Japanese SV-P Promo TCG Cards | PSA Population",
+      "fetchedAt": "2026-08-17T01:39:06.848Z",
+      "setCode": "SV-P PROMO",
+      "rows": [
+        {
+          "cardName": "Lillie's ComfeyCollection File Set LillieShop with Affiliates",
+          "cardNo": "199",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 199",
+          "psaTotal": 43200
+        },
+        {
+          "cardName": "N's ZoruaCollection File Set NShop with Affiliates",
+          "cardNo": "200",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 200",
+          "psaTotal": 24800
+        },
+        {
+          "cardName": "IridaExtra Battle DayShop with Affiliates",
+          "cardNo": "219",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 219",
+          "psaTotal": 8800
+        },
+        {
+          "cardName": "GarbodorExtra Battle Day Promo PackShop with Affiliates",
+          "cardNo": "221",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 221",
+          "psaTotal": 600
+        },
+        {
+          "cardName": "Iono's WattrelBattle Partners Box Purchase CampaignShop with Affiliates",
+          "cardNo": "232",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 232",
+          "psaTotal": 7196520
+        },
+        {
+          "cardName": "Hop's Pincurchin EXGym Promo Pack 9Shop with Affiliates",
+          "cardNo": "233",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 233",
+          "psaTotal": 1000
+        },
+        {
+          "cardName": "DrifloonGym Promo Pack 9Shop with Affiliates",
+          "cardNo": "234",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 234",
+          "psaTotal": 15100
+        },
+        {
+          "cardName": "DrifblimGym Promo Pack 9Shop with Affiliates",
+          "cardNo": "235",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 235",
+          "psaTotal": 16500
+        },
+        {
+          "cardName": "TatsugiriGym Promo Pack 9Shop with Affiliates",
+          "cardNo": "236",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 236",
+          "psaTotal": 2300
+        },
+        {
+          "cardName": "FeraligatrIllustration Contest 2024Shop with Affiliates",
+          "cardNo": "241",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 241",
+          "psaTotal": 261110
+        },
+        {
+          "cardName": "PikachuIllustration Contest 2024Shop with Affiliates",
+          "cardNo": "242",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 242",
+          "psaTotal": 3849300
+        },
+        {
+          "cardName": "Toxtricity EXIllustration Contest 2024Shop with Affiliates",
+          "cardNo": "243",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 243",
+          "psaTotal": 129300
+        },
+        {
+          "cardName": "Ethan's HO-Oh EXHeat Wave Arena Sealed Battle-WinnerShop with Affiliates",
+          "cardNo": "254",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 254",
+          "psaTotal": 3800
+        },
+        {
+          "cardName": "Cynthia's Garchomp EXHeat Wave Arena Sealed Battle-WinnerShop with Affiliates",
+          "cardNo": "255",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 255",
+          "psaTotal": 2800
+        },
+        {
+          "cardName": "Arven's Mabosstiff EXHeat Wave Arena Sealed Battle-WinnerShop with Affiliates",
+          "cardNo": "256",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 256",
+          "psaTotal": 1100
+        },
+        {
+          "cardName": "Iono's TadbulbCorocoro Ichiban!-April 2025Shop with Affiliates",
+          "cardNo": "257",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 257",
+          "psaTotal": 2300
+        },
+        {
+          "cardName": "Team Rocket's MeowthCorocoro Ichiban! July-August 2025Shop with Affiliates",
+          "cardNo": "259",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 259",
+          "psaTotal": 328400
+        },
+        {
+          "cardName": "Tohoku's PikachuSpecial Box Pokemon Center TohokuShop with Affiliates",
+          "cardNo": "260",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 260",
+          "psaTotal": 4125320
+        },
+        {
+          "cardName": "Hiroshima's PikachuSpecial Box Pokemon Center HiroshimaShop with Affiliates",
+          "cardNo": "261",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 261",
+          "psaTotal": 3368200
+        },
+        {
+          "cardName": "PsyduckGym Promo Pack 10Shop with Affiliates",
+          "cardNo": "262",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 262",
+          "psaTotal": 415910
+        },
+        {
+          "cardName": "GolduckGym Promo Pack 10Shop with Affiliates",
+          "cardNo": "263",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 263",
+          "psaTotal": 55410
+        },
+        {
+          "cardName": "Flutter ManeGym Promo Pack 10Shop with Affiliates",
+          "cardNo": "264",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 264",
+          "psaTotal": 900
+        },
+        {
+          "cardName": "Team Rocket's Kangaskhan EXGym Promo Pack 10Shop with Affiliates",
+          "cardNo": "265",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 265",
+          "psaTotal": 11600
+        },
+        {
+          "cardName": "Team Rocket's GiovanniBoss Coffee X Pokemon Card Game CollaborationShop with Affiliates",
+          "cardNo": "270",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 270",
+          "psaTotal": 905710
+        },
+        {
+          "cardName": "VictiniBlack Bolt/White Flare Card File SetShop with Affiliates",
+          "cardNo": "271",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 271",
+          "psaTotal": 529001
+        },
+        {
+          "cardName": "CherenVictini Bwr Competition Promo Card PackShop with Affiliates",
+          "cardNo": "279",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 279",
+          "psaTotal": 34900
+        },
+        {
+          "cardName": "VictiniVictini Bwr Event PrizeShop with Affiliates",
+          "cardNo": "288",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 288",
+          "psaTotal": 489600
+        },
+        {
+          "cardName": "Fukuoka's PikachuSpecial Box Pokemon Center FukuokaShop with Affiliates",
+          "cardNo": "289",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 289",
+          "psaTotal": 3928610
+        },
+        {
+          "cardName": "RoxanneExtra Battle DayShop with Affiliates",
+          "cardNo": "290",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 290",
+          "psaTotal": 7900
+        },
+        {
+          "cardName": "PikachuGym Event CampaignShop with Affiliates",
+          "cardNo": "291",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 291",
+          "psaTotal": 2105310
+        },
+        {
+          "cardName": "Pikachu EXJr East Stamp Rally 2025 Promo-Jumbo",
+          "cardNo": "SV-P",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO SV-P",
+          "psaTotal": 76700
+        },
+        {
+          "cardName": "Paradise ResortWorld Championships 2025Shop with Affiliates",
+          "cardNo": "SV-P",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO SV-P",
+          "psaTotal": 72100
+        }
+      ],
+      "byQuery": {
+        "Pokemon Japanese SV-P PROMO 199": {
+          "cardName": "Lillie's ComfeyCollection File Set LillieShop with Affiliates",
+          "cardNo": "199",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 199",
+          "psaTotal": 43200
+        },
+        "Pokemon Japanese SV-P PROMO 200": {
+          "cardName": "N's ZoruaCollection File Set NShop with Affiliates",
+          "cardNo": "200",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 200",
+          "psaTotal": 24800
+        },
+        "Pokemon Japanese SV-P PROMO 219": {
+          "cardName": "IridaExtra Battle DayShop with Affiliates",
+          "cardNo": "219",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 219",
+          "psaTotal": 8800
+        },
+        "Pokemon Japanese SV-P PROMO 221": {
+          "cardName": "GarbodorExtra Battle Day Promo PackShop with Affiliates",
+          "cardNo": "221",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 221",
+          "psaTotal": 600
+        },
+        "Pokemon Japanese SV-P PROMO 232": {
+          "cardName": "Iono's WattrelBattle Partners Box Purchase CampaignShop with Affiliates",
+          "cardNo": "232",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 232",
+          "psaTotal": 7196520
+        },
+        "Pokemon Japanese SV-P PROMO 233": {
+          "cardName": "Hop's Pincurchin EXGym Promo Pack 9Shop with Affiliates",
+          "cardNo": "233",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 233",
+          "psaTotal": 1000
+        },
+        "Pokemon Japanese SV-P PROMO 234": {
+          "cardName": "DrifloonGym Promo Pack 9Shop with Affiliates",
+          "cardNo": "234",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 234",
+          "psaTotal": 15100
+        },
+        "Pokemon Japanese SV-P PROMO 235": {
+          "cardName": "DrifblimGym Promo Pack 9Shop with Affiliates",
+          "cardNo": "235",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 235",
+          "psaTotal": 16500
+        },
+        "Pokemon Japanese SV-P PROMO 236": {
+          "cardName": "TatsugiriGym Promo Pack 9Shop with Affiliates",
+          "cardNo": "236",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 236",
+          "psaTotal": 2300
+        },
+        "Pokemon Japanese SV-P PROMO 241": {
+          "cardName": "FeraligatrIllustration Contest 2024Shop with Affiliates",
+          "cardNo": "241",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 241",
+          "psaTotal": 261110
+        },
+        "Pokemon Japanese SV-P PROMO 242": {
+          "cardName": "PikachuIllustration Contest 2024Shop with Affiliates",
+          "cardNo": "242",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 242",
+          "psaTotal": 3849300
+        },
+        "Pokemon Japanese SV-P PROMO 243": {
+          "cardName": "Toxtricity EXIllustration Contest 2024Shop with Affiliates",
+          "cardNo": "243",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 243",
+          "psaTotal": 129300
+        },
+        "Pokemon Japanese SV-P PROMO 254": {
+          "cardName": "Ethan's HO-Oh EXHeat Wave Arena Sealed Battle-WinnerShop with Affiliates",
+          "cardNo": "254",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 254",
+          "psaTotal": 3800
+        },
+        "Pokemon Japanese SV-P PROMO 255": {
+          "cardName": "Cynthia's Garchomp EXHeat Wave Arena Sealed Battle-WinnerShop with Affiliates",
+          "cardNo": "255",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 255",
+          "psaTotal": 2800
+        },
+        "Pokemon Japanese SV-P PROMO 256": {
+          "cardName": "Arven's Mabosstiff EXHeat Wave Arena Sealed Battle-WinnerShop with Affiliates",
+          "cardNo": "256",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 256",
+          "psaTotal": 1100
+        },
+        "Pokemon Japanese SV-P PROMO 257": {
+          "cardName": "Iono's TadbulbCorocoro Ichiban!-April 2025Shop with Affiliates",
+          "cardNo": "257",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 257",
+          "psaTotal": 2300
+        },
+        "Pokemon Japanese SV-P PROMO 259": {
+          "cardName": "Team Rocket's MeowthCorocoro Ichiban! July-August 2025Shop with Affiliates",
+          "cardNo": "259",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 259",
+          "psaTotal": 328400
+        },
+        "Pokemon Japanese SV-P PROMO 260": {
+          "cardName": "Tohoku's PikachuSpecial Box Pokemon Center TohokuShop with Affiliates",
+          "cardNo": "260",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 260",
+          "psaTotal": 4125320
+        },
+        "Pokemon Japanese SV-P PROMO 261": {
+          "cardName": "Hiroshima's PikachuSpecial Box Pokemon Center HiroshimaShop with Affiliates",
+          "cardNo": "261",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 261",
+          "psaTotal": 3368200
+        },
+        "Pokemon Japanese SV-P PROMO 262": {
+          "cardName": "PsyduckGym Promo Pack 10Shop with Affiliates",
+          "cardNo": "262",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 262",
+          "psaTotal": 415910
+        },
+        "Pokemon Japanese SV-P PROMO 263": {
+          "cardName": "GolduckGym Promo Pack 10Shop with Affiliates",
+          "cardNo": "263",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 263",
+          "psaTotal": 55410
+        },
+        "Pokemon Japanese SV-P PROMO 264": {
+          "cardName": "Flutter ManeGym Promo Pack 10Shop with Affiliates",
+          "cardNo": "264",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 264",
+          "psaTotal": 900
+        },
+        "Pokemon Japanese SV-P PROMO 265": {
+          "cardName": "Team Rocket's Kangaskhan EXGym Promo Pack 10Shop with Affiliates",
+          "cardNo": "265",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 265",
+          "psaTotal": 11600
+        },
+        "Pokemon Japanese SV-P PROMO 270": {
+          "cardName": "Team Rocket's GiovanniBoss Coffee X Pokemon Card Game CollaborationShop with Affiliates",
+          "cardNo": "270",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 270",
+          "psaTotal": 905710
+        },
+        "Pokemon Japanese SV-P PROMO 271": {
+          "cardName": "VictiniBlack Bolt/White Flare Card File SetShop with Affiliates",
+          "cardNo": "271",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 271",
+          "psaTotal": 529001
+        },
+        "Pokemon Japanese SV-P PROMO 279": {
+          "cardName": "CherenVictini Bwr Competition Promo Card PackShop with Affiliates",
+          "cardNo": "279",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 279",
+          "psaTotal": 34900
+        },
+        "Pokemon Japanese SV-P PROMO 288": {
+          "cardName": "VictiniVictini Bwr Event PrizeShop with Affiliates",
+          "cardNo": "288",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 288",
+          "psaTotal": 489600
+        },
+        "Pokemon Japanese SV-P PROMO 289": {
+          "cardName": "Fukuoka's PikachuSpecial Box Pokemon Center FukuokaShop with Affiliates",
+          "cardNo": "289",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 289",
+          "psaTotal": 3928610
+        },
+        "Pokemon Japanese SV-P PROMO 290": {
+          "cardName": "RoxanneExtra Battle DayShop with Affiliates",
+          "cardNo": "290",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 290",
+          "psaTotal": 7900
+        },
+        "Pokemon Japanese SV-P PROMO 291": {
+          "cardName": "PikachuGym Event CampaignShop with Affiliates",
+          "cardNo": "291",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO 291",
+          "psaTotal": 2105310
+        },
+        "Pokemon Japanese SV-P PROMO SV-P": {
+          "cardName": "Paradise ResortWorld Championships 2025Shop with Affiliates",
+          "cardNo": "SV-P",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV-P PROMO SV-P",
+          "psaTotal": 72100
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "2025 Pokemon Japanese Sv11w-White Flare",
+      "kind": "pop",
+      "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+      "title": "2025 Pokemon Japanese Sv11w-White Flare TCG Cards | PSA Population",
+      "fetchedAt": "2026-08-17T01:42:12.329Z",
+      "setCode": "SV11W-WHITE FLARE",
+      "rows": [
+        {
+          "cardName": "SewaddleMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "001",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 001",
+          "psaTotal": 10700
+        },
+        {
+          "cardName": "SwadloonMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "002",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 002",
+          "psaTotal": 5200
+        },
+        {
+          "cardName": "LeavannyMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "003",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 003",
+          "psaTotal": 5500
+        },
+        {
+          "cardName": "CottoneeMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "004",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 004",
+          "psaTotal": 10800
+        },
+        {
+          "cardName": "Whimsicott EXShop with Affiliates",
+          "cardNo": "005",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 005",
+          "psaTotal": 1300
+        },
+        {
+          "cardName": "DeerlingMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "006",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 006",
+          "psaTotal": 6800
+        },
+        {
+          "cardName": "SawsbuckMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "007",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 007",
+          "psaTotal": 8800
+        },
+        {
+          "cardName": "ShelmetMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "008",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 008",
+          "psaTotal": 7600
+        },
+        {
+          "cardName": "AccelgorMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "009",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 009",
+          "psaTotal": 6900
+        },
+        {
+          "cardName": "VirizionMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "010",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 010",
+          "psaTotal": 7700
+        },
+        {
+          "cardName": "TepigMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "011",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 011",
+          "psaTotal": 15600
+        },
+        {
+          "cardName": "TepigReverse HoloShop with Affiliates",
+          "cardNo": "011",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 011",
+          "psaTotal": 500
+        },
+        {
+          "cardName": "PigniteMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "012",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 012",
+          "psaTotal": 9400
+        },
+        {
+          "cardName": "EmboarMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "013",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 013",
+          "psaTotal": 12400
+        },
+        {
+          "cardName": "PansearMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "014",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 014",
+          "psaTotal": 6300
+        },
+        {
+          "cardName": "SimisearMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "015",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 015",
+          "psaTotal": 3200
+        },
+        {
+          "cardName": "HeatmorMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "016",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 016",
+          "psaTotal": 8900
+        },
+        {
+          "cardName": "Reshiram EXShop with Affiliates",
+          "cardNo": "017",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 017",
+          "psaTotal": 9300
+        },
+        {
+          "cardName": "OshawottMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "018",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 018",
+          "psaTotal": 17500
+        },
+        {
+          "cardName": "OshawottReverse HoloShop with Affiliates",
+          "cardNo": "018",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 018",
+          "psaTotal": 1100
+        },
+        {
+          "cardName": "DewottMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "019",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 019",
+          "psaTotal": 5300
+        },
+        {
+          "cardName": "SamurottShop with Affiliates",
+          "cardNo": "020",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 020",
+          "psaTotal": 600
+        },
+        {
+          "cardName": "SamurottMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "020",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 020",
+          "psaTotal": 7800
+        },
+        {
+          "cardName": "BasculinMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "021",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 021",
+          "psaTotal": 7600
+        },
+        {
+          "cardName": "DucklettMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "022",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 022",
+          "psaTotal": 4200
+        },
+        {
+          "cardName": "SwannaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "023",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 023",
+          "psaTotal": 7000
+        },
+        {
+          "cardName": "VanilliteMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "024",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 024",
+          "psaTotal": 3200
+        },
+        {
+          "cardName": "VanillishMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "025",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 025",
+          "psaTotal": 6100
+        },
+        {
+          "cardName": "VanilluxeMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "026",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 026",
+          "psaTotal": 3900
+        },
+        {
+          "cardName": "Keldeo EXShop with Affiliates",
+          "cardNo": "027",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 027",
+          "psaTotal": 1900
+        },
+        {
+          "cardName": "BlitzleMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "028",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 028",
+          "psaTotal": 6900
+        },
+        {
+          "cardName": "ZebstrikaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "029",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 029",
+          "psaTotal": 6500
+        },
+        {
+          "cardName": "JoltikMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "030",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 030",
+          "psaTotal": 6100
+        },
+        {
+          "cardName": "GalvantulaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "031",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 031",
+          "psaTotal": 11000
+        },
+        {
+          "cardName": "StunfiskMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "032",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 032",
+          "psaTotal": 8600
+        },
+        {
+          "cardName": "WoobatMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "033",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 033",
+          "psaTotal": 6700
+        },
+        {
+          "cardName": "SwoobatMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "034",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 034",
+          "psaTotal": 5200
+        },
+        {
+          "cardName": "SigilyphMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "035",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 035",
+          "psaTotal": 6700
+        },
+        {
+          "cardName": "YamaskMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "036",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 036",
+          "psaTotal": 7000
+        },
+        {
+          "cardName": "CofagrigusShop with Affiliates",
+          "cardNo": "037",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 037",
+          "psaTotal": 500
+        },
+        {
+          "cardName": "CofagrigusMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "037",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 037",
+          "psaTotal": 4700
+        },
+        {
+          "cardName": "GothitaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "038",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 038",
+          "psaTotal": 6800
+        },
+        {
+          "cardName": "GothoritaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "039",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 039",
+          "psaTotal": 6400
+        },
+        {
+          "cardName": "GothitelleShop with Affiliates",
+          "cardNo": "040",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 040",
+          "psaTotal": 500
+        },
+        {
+          "cardName": "GothitelleMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "040",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 040",
+          "psaTotal": 6100
+        },
+        {
+          "cardName": "FrillishMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "041",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 041",
+          "psaTotal": 2200
+        },
+        {
+          "cardName": "Jellicent EXShop with Affiliates",
+          "cardNo": "042",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 042",
+          "psaTotal": 2100
+        },
+        {
+          "cardName": "RoggenrolaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "043",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 043",
+          "psaTotal": 6000
+        },
+        {
+          "cardName": "BoldoreMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "044",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 044",
+          "psaTotal": 7500
+        },
+        {
+          "cardName": "GigalithMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "045",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 045",
+          "psaTotal": 8100
+        },
+        {
+          "cardName": "SawkMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "046",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 046",
+          "psaTotal": 11400
+        },
+        {
+          "cardName": "ArchenMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "047",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 047",
+          "psaTotal": 6800
+        },
+        {
+          "cardName": "ArcheopsShop with Affiliates",
+          "cardNo": "048",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 048",
+          "psaTotal": 800
+        },
+        {
+          "cardName": "ArcheopsMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "048",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 048",
+          "psaTotal": 6100
+        },
+        {
+          "cardName": "MienfooMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "049",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 049",
+          "psaTotal": 8800
+        },
+        {
+          "cardName": "MienshaoMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "050",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 050",
+          "psaTotal": 19200
+        },
+        {
+          "cardName": "TerrakionMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "051",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 051",
+          "psaTotal": 10900
+        },
+        {
+          "cardName": "PurrloinMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "052",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 052",
+          "psaTotal": 12900
+        },
+        {
+          "cardName": "LiepardMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "053",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 053",
+          "psaTotal": 7700
+        },
+        {
+          "cardName": "ScraggyMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "054",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 054",
+          "psaTotal": 5500
+        },
+        {
+          "cardName": "ScraftyMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "055",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 055",
+          "psaTotal": 4700
+        },
+        {
+          "cardName": "TrubbishMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "056",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 056",
+          "psaTotal": 7000
+        },
+        {
+          "cardName": "GarbodorMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "057",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 057",
+          "psaTotal": 5500
+        },
+        {
+          "cardName": "ZoruaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "058",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 058",
+          "psaTotal": 12400
+        },
+        {
+          "cardName": "ZoroarkShop with Affiliates",
+          "cardNo": "059",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 059",
+          "psaTotal": 900
+        },
+        {
+          "cardName": "ZoroarkMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "059",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 059",
+          "psaTotal": 12800
+        },
+        {
+          "cardName": "DeinoMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "060",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 060",
+          "psaTotal": 6900
+        },
+        {
+          "cardName": "ZweilousMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "061",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 061",
+          "psaTotal": 5100
+        },
+        {
+          "cardName": "Hydreigon EXShop with Affiliates",
+          "cardNo": "062",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 062",
+          "psaTotal": 2400
+        },
+        {
+          "cardName": "FerroseedMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "063",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 063",
+          "psaTotal": 6400
+        },
+        {
+          "cardName": "FerrothornMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "064",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 064",
+          "psaTotal": 7200
+        },
+        {
+          "cardName": "KlinkMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "065",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 065",
+          "psaTotal": 7600
+        },
+        {
+          "cardName": "KlangMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "066",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 066",
+          "psaTotal": 8500
+        },
+        {
+          "cardName": "KlinklangMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "067",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 067",
+          "psaTotal": 9100
+        },
+        {
+          "cardName": "DurantMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "068",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 068",
+          "psaTotal": 6600
+        },
+        {
+          "cardName": "DruddigonMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "069",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 069",
+          "psaTotal": 4900
+        },
+        {
+          "cardName": "PatratMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "070",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 070",
+          "psaTotal": 5000
+        },
+        {
+          "cardName": "WatchogMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "071",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 071",
+          "psaTotal": 4600
+        },
+        {
+          "cardName": "LillipupMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "072",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 072",
+          "psaTotal": 6500
+        },
+        {
+          "cardName": "HerdierMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "073",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 073",
+          "psaTotal": 6700
+        },
+        {
+          "cardName": "StoutlandMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "074",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 074",
+          "psaTotal": 10300
+        },
+        {
+          "cardName": "Bouffalant EXShop with Affiliates",
+          "cardNo": "075",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 075",
+          "psaTotal": 1700
+        },
+        {
+          "cardName": "RuffletMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "076",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 076",
+          "psaTotal": 5900
+        },
+        {
+          "cardName": "BraviaryMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "077",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 077",
+          "psaTotal": 7300
+        },
+        {
+          "cardName": "TornadusShop with Affiliates",
+          "cardNo": "078",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 078",
+          "psaTotal": 500
+        },
+        {
+          "cardName": "TornadusMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "078",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 078",
+          "psaTotal": 14300
+        },
+        {
+          "cardName": "HildaReverse HoloShop with Affiliates",
+          "cardNo": "085",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 085",
+          "psaTotal": 2200
+        },
+        {
+          "cardName": "SewaddleArt RareShop with Affiliates",
+          "cardNo": "087",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 087",
+          "psaTotal": 54000
+        },
+        {
+          "cardName": "SwadloonArt RareShop with Affiliates",
+          "cardNo": "088",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 088",
+          "psaTotal": 49200
+        },
+        {
+          "cardName": "LeavannyArt RareShop with Affiliates",
+          "cardNo": "089",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 089",
+          "psaTotal": 38600
+        },
+        {
+          "cardName": "CottoneeArt RareShop with Affiliates",
+          "cardNo": "090",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 090",
+          "psaTotal": 65900
+        },
+        {
+          "cardName": "DeerlingArt RareShop with Affiliates",
+          "cardNo": "091",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 091",
+          "psaTotal": 42100
+        },
+        {
+          "cardName": "SawsbuckArt RareShop with Affiliates",
+          "cardNo": "092",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 092",
+          "psaTotal": 46200
+        },
+        {
+          "cardName": "ShelmetArt RareShop with Affiliates",
+          "cardNo": "093",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 093",
+          "psaTotal": 52400
+        },
+        {
+          "cardName": "AccelgorArt RareShop with Affiliates",
+          "cardNo": "094",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 094",
+          "psaTotal": 52800
+        },
+        {
+          "cardName": "VirizionArt RareShop with Affiliates",
+          "cardNo": "095",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 095",
+          "psaTotal": 51700
+        },
+        {
+          "cardName": "TepigArt RareShop with Affiliates",
+          "cardNo": "096",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 096",
+          "psaTotal": 104500
+        },
+        {
+          "cardName": "PigniteArt RareShop with Affiliates",
+          "cardNo": "097",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 097",
+          "psaTotal": 59800
+        },
+        {
+          "cardName": "EmboarArt RareShop with Affiliates",
+          "cardNo": "098",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 098",
+          "psaTotal": 84200
+        },
+        {
+          "cardName": "PansearArt RareShop with Affiliates",
+          "cardNo": "099",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 099",
+          "psaTotal": 67800
+        },
+        {
+          "cardName": "SimisearArt RareShop with Affiliates",
+          "cardNo": "100",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 100",
+          "psaTotal": 35700
+        },
+        {
+          "cardName": "HeatmorArt RareShop with Affiliates",
+          "cardNo": "101",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 101",
+          "psaTotal": 43200
+        },
+        {
+          "cardName": "OshawottArt RareShop with Affiliates",
+          "cardNo": "102",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 102",
+          "psaTotal": 226600
+        },
+        {
+          "cardName": "DewottArt RareShop with Affiliates",
+          "cardNo": "103",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 103",
+          "psaTotal": 62500
+        },
+        {
+          "cardName": "SamurottArt RareShop with Affiliates",
+          "cardNo": "104",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 104",
+          "psaTotal": 93200
+        },
+        {
+          "cardName": "BasculinArt RareShop with Affiliates",
+          "cardNo": "105",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 105",
+          "psaTotal": 65000
+        },
+        {
+          "cardName": "DucklettArt RareShop with Affiliates",
+          "cardNo": "106",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 106",
+          "psaTotal": 47500
+        },
+        {
+          "cardName": "SwannaArt RareShop with Affiliates",
+          "cardNo": "107",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 107",
+          "psaTotal": 40810
+        },
+        {
+          "cardName": "VanilliteArt RareShop with Affiliates",
+          "cardNo": "108",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 108",
+          "psaTotal": 36200
+        },
+        {
+          "cardName": "VanillishArt RareShop with Affiliates",
+          "cardNo": "109",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 109",
+          "psaTotal": 42800
+        },
+        {
+          "cardName": "VanilluxeArt RareShop with Affiliates",
+          "cardNo": "110",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 110",
+          "psaTotal": 45900
+        },
+        {
+          "cardName": "BlitzleArt RareShop with Affiliates",
+          "cardNo": "111",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 111",
+          "psaTotal": 57200
+        },
+        {
+          "cardName": "ZebstrikaArt RareShop with Affiliates",
+          "cardNo": "112",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 112",
+          "psaTotal": 79500
+        },
+        {
+          "cardName": "JoltikArt RareShop with Affiliates",
+          "cardNo": "113",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 113",
+          "psaTotal": 38800
+        },
+        {
+          "cardName": "GalvantulaArt RareShop with Affiliates",
+          "cardNo": "114",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 114",
+          "psaTotal": 49700
+        },
+        {
+          "cardName": "StunfiskArt RareShop with Affiliates",
+          "cardNo": "115",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 115",
+          "psaTotal": 43500
+        },
+        {
+          "cardName": "WoobatArt RareShop with Affiliates",
+          "cardNo": "116",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 116",
+          "psaTotal": 58000
+        },
+        {
+          "cardName": "SwoobatArt RareShop with Affiliates",
+          "cardNo": "117",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 117",
+          "psaTotal": 52100
+        },
+        {
+          "cardName": "SigilyphArt RareShop with Affiliates",
+          "cardNo": "118",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 118",
+          "psaTotal": 59400
+        },
+        {
+          "cardName": "YamaskArt RareShop with Affiliates",
+          "cardNo": "119",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 119",
+          "psaTotal": 54400
+        },
+        {
+          "cardName": "CofagrigusArt RareShop with Affiliates",
+          "cardNo": "120",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 120",
+          "psaTotal": 54800
+        },
+        {
+          "cardName": "GothitaArt RareShop with Affiliates",
+          "cardNo": "121",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 121",
+          "psaTotal": 49000
+        },
+        {
+          "cardName": "GothoritaArt RareShop with Affiliates",
+          "cardNo": "122",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 122",
+          "psaTotal": 55900
+        },
+        {
+          "cardName": "GothitelleArt RareShop with Affiliates",
+          "cardNo": "123",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 123",
+          "psaTotal": 56900
+        },
+        {
+          "cardName": "FrillishArt RareShop with Affiliates",
+          "cardNo": "124",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 124",
+          "psaTotal": 25700
+        },
+        {
+          "cardName": "RoggenrolaArt RareShop with Affiliates",
+          "cardNo": "125",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 125",
+          "psaTotal": 50600
+        },
+        {
+          "cardName": "BoldoreArt RareShop with Affiliates",
+          "cardNo": "126",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 126",
+          "psaTotal": 49800
+        },
+        {
+          "cardName": "GigalithArt RareShop with Affiliates",
+          "cardNo": "127",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 127",
+          "psaTotal": 69800
+        },
+        {
+          "cardName": "SawkArt RareShop with Affiliates",
+          "cardNo": "128",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 128",
+          "psaTotal": 63300
+        },
+        {
+          "cardName": "ArchenArt RareShop with Affiliates",
+          "cardNo": "129",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 129",
+          "psaTotal": 47500
+        },
+        {
+          "cardName": "ArcheopsArt RareShop with Affiliates",
+          "cardNo": "130",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 130",
+          "psaTotal": 62400
+        },
+        {
+          "cardName": "MienfooArt RareShop with Affiliates",
+          "cardNo": "131",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 131",
+          "psaTotal": 40900
+        },
+        {
+          "cardName": "MienshaoArt RareShop with Affiliates",
+          "cardNo": "132",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 132",
+          "psaTotal": 45700
+        },
+        {
+          "cardName": "TerrakionArt RareShop with Affiliates",
+          "cardNo": "133",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 133",
+          "psaTotal": 83200
+        },
+        {
+          "cardName": "PurrloinArt RareShop with Affiliates",
+          "cardNo": "134",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 134",
+          "psaTotal": 55900
+        },
+        {
+          "cardName": "LiepardArt RareShop with Affiliates",
+          "cardNo": "135",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 135",
+          "psaTotal": 48600
+        },
+        {
+          "cardName": "ScraggyArt RareShop with Affiliates",
+          "cardNo": "136",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 136",
+          "psaTotal": 63500
+        },
+        {
+          "cardName": "ScraftyArt RareShop with Affiliates",
+          "cardNo": "137",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 137",
+          "psaTotal": 58400
+        },
+        {
+          "cardName": "TrubbishArt RareShop with Affiliates",
+          "cardNo": "138",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 138",
+          "psaTotal": 38800
+        },
+        {
+          "cardName": "GarbodorArt RareShop with Affiliates",
+          "cardNo": "139",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 139",
+          "psaTotal": 55800
+        },
+        {
+          "cardName": "ZoruaArt RareShop with Affiliates",
+          "cardNo": "140",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 140",
+          "psaTotal": 109100
+        },
+        {
+          "cardName": "ZoroarkArt RareShop with Affiliates",
+          "cardNo": "141",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 141",
+          "psaTotal": 128010
+        },
+        {
+          "cardName": "DeinoArt RareShop with Affiliates",
+          "cardNo": "142",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 142",
+          "psaTotal": 48300
+        },
+        {
+          "cardName": "ZweilousArt RareShop with Affiliates",
+          "cardNo": "143",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 143",
+          "psaTotal": 51100
+        },
+        {
+          "cardName": "FerroseedArt RareShop with Affiliates",
+          "cardNo": "144",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 144",
+          "psaTotal": 54700
+        },
+        {
+          "cardName": "FerrothornArt RareShop with Affiliates",
+          "cardNo": "145",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 145",
+          "psaTotal": 45200
+        },
+        {
+          "cardName": "KlinkArt RareShop with Affiliates",
+          "cardNo": "146",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 146",
+          "psaTotal": 56100
+        },
+        {
+          "cardName": "KlangArt RareShop with Affiliates",
+          "cardNo": "147",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 147",
+          "psaTotal": 57200
+        },
+        {
+          "cardName": "KlinklangArt RareShop with Affiliates",
+          "cardNo": "148",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 148",
+          "psaTotal": 76400
+        },
+        {
+          "cardName": "DurantArt RareShop with Affiliates",
+          "cardNo": "149",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 149",
+          "psaTotal": 62100
+        },
+        {
+          "cardName": "DruddigonArt RareShop with Affiliates",
+          "cardNo": "150",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 150",
+          "psaTotal": 68700
+        },
+        {
+          "cardName": "PatratArt RareShop with Affiliates",
+          "cardNo": "151",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 151",
+          "psaTotal": 56400
+        },
+        {
+          "cardName": "WatchogArt RareShop with Affiliates",
+          "cardNo": "152",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 152",
+          "psaTotal": 48300
+        },
+        {
+          "cardName": "LillipupArt RareShop with Affiliates",
+          "cardNo": "153",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 153",
+          "psaTotal": 39510
+        },
+        {
+          "cardName": "HerdierArt RareShop with Affiliates",
+          "cardNo": "154",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 154",
+          "psaTotal": 45100
+        },
+        {
+          "cardName": "StoutlandArt RareShop with Affiliates",
+          "cardNo": "155",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 155",
+          "psaTotal": 54500
+        },
+        {
+          "cardName": "RuffletArt RareShop with Affiliates",
+          "cardNo": "156",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 156",
+          "psaTotal": 41500
+        },
+        {
+          "cardName": "BraviaryArt RareShop with Affiliates",
+          "cardNo": "157",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 157",
+          "psaTotal": 51600
+        },
+        {
+          "cardName": "TornadusArt RareShop with Affiliates",
+          "cardNo": "158",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 158",
+          "psaTotal": 77500
+        },
+        {
+          "cardName": "Whimsicott EXSuper RareShop with Affiliates",
+          "cardNo": "159",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 159",
+          "psaTotal": 47300
+        },
+        {
+          "cardName": "Reshiram EXSuper RareShop with Affiliates",
+          "cardNo": "160",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 160",
+          "psaTotal": 122100
+        },
+        {
+          "cardName": "Keldeo EXSuper RareShop with Affiliates",
+          "cardNo": "161",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 161",
+          "psaTotal": 60500
+        },
+        {
+          "cardName": "Jellicent EXSuper RareShop with Affiliates",
+          "cardNo": "162",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 162",
+          "psaTotal": 38000
+        },
+        {
+          "cardName": "Hydreigon EXSuper RareShop with Affiliates",
+          "cardNo": "163",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 163",
+          "psaTotal": 67100
+        },
+        {
+          "cardName": "Bouffalant EXSuper RareShop with Affiliates",
+          "cardNo": "164",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 164",
+          "psaTotal": 49100
+        },
+        {
+          "cardName": "HarlequinSuper RareShop with Affiliates",
+          "cardNo": "165",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 165",
+          "psaTotal": 21600
+        },
+        {
+          "cardName": "HildaSuper RareShop with Affiliates",
+          "cardNo": "166",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 166",
+          "psaTotal": 253400
+        },
+        {
+          "cardName": "Whimsicott EXSpecial Art RareShop with Affiliates",
+          "cardNo": "167",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 167",
+          "psaTotal": 106900
+        },
+        {
+          "cardName": "Reshiram EXSpecial Art RareShop with Affiliates",
+          "cardNo": "168",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 168",
+          "psaTotal": 1370000
+        },
+        {
+          "cardName": "Keldeo EXSpecial Art RareShop with Affiliates",
+          "cardNo": "169",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 169",
+          "psaTotal": 235100
+        },
+        {
+          "cardName": "Jellicent EXSpecial Art RareShop with Affiliates",
+          "cardNo": "170",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 170",
+          "psaTotal": 87700
+        },
+        {
+          "cardName": "Hydreigon EXSpecial Art RareShop with Affiliates",
+          "cardNo": "171",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 171",
+          "psaTotal": 391200
+        },
+        {
+          "cardName": "Bouffalant EXSpecial Art RareShop with Affiliates",
+          "cardNo": "172",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 172",
+          "psaTotal": 54600
+        },
+        {
+          "cardName": "HildaSpecial Art RareShop with Affiliates",
+          "cardNo": "173",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 173",
+          "psaTotal": 734601
+        },
+        {
+          "cardName": "Reshiram EXBW RareShop with Affiliates",
+          "cardNo": "174",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 174",
+          "psaTotal": 1592701
+        }
+      ],
+      "byQuery": {
+        "Pokemon Japanese SV11W-WHITE FLARE 001": {
+          "cardName": "SewaddleMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "001",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 001",
+          "psaTotal": 10700
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 002": {
+          "cardName": "SwadloonMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "002",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 002",
+          "psaTotal": 5200
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 003": {
+          "cardName": "LeavannyMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "003",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 003",
+          "psaTotal": 5500
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 004": {
+          "cardName": "CottoneeMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "004",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 004",
+          "psaTotal": 10800
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 005": {
+          "cardName": "Whimsicott EXShop with Affiliates",
+          "cardNo": "005",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 005",
+          "psaTotal": 1300
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 006": {
+          "cardName": "DeerlingMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "006",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 006",
+          "psaTotal": 6800
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 007": {
+          "cardName": "SawsbuckMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "007",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 007",
+          "psaTotal": 8800
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 008": {
+          "cardName": "ShelmetMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "008",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 008",
+          "psaTotal": 7600
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 009": {
+          "cardName": "AccelgorMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "009",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 009",
+          "psaTotal": 6900
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 010": {
+          "cardName": "VirizionMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "010",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 010",
+          "psaTotal": 7700
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 011": {
+          "cardName": "TepigReverse HoloShop with Affiliates",
+          "cardNo": "011",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 011",
+          "psaTotal": 500
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 012": {
+          "cardName": "PigniteMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "012",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 012",
+          "psaTotal": 9400
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 013": {
+          "cardName": "EmboarMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "013",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 013",
+          "psaTotal": 12400
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 014": {
+          "cardName": "PansearMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "014",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 014",
+          "psaTotal": 6300
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 015": {
+          "cardName": "SimisearMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "015",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 015",
+          "psaTotal": 3200
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 016": {
+          "cardName": "HeatmorMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "016",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 016",
+          "psaTotal": 8900
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 017": {
+          "cardName": "Reshiram EXShop with Affiliates",
+          "cardNo": "017",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 017",
+          "psaTotal": 9300
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 018": {
+          "cardName": "OshawottReverse HoloShop with Affiliates",
+          "cardNo": "018",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 018",
+          "psaTotal": 1100
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 019": {
+          "cardName": "DewottMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "019",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 019",
+          "psaTotal": 5300
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 020": {
+          "cardName": "SamurottMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "020",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 020",
+          "psaTotal": 7800
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 021": {
+          "cardName": "BasculinMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "021",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 021",
+          "psaTotal": 7600
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 022": {
+          "cardName": "DucklettMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "022",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 022",
+          "psaTotal": 4200
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 023": {
+          "cardName": "SwannaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "023",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 023",
+          "psaTotal": 7000
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 024": {
+          "cardName": "VanilliteMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "024",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 024",
+          "psaTotal": 3200
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 025": {
+          "cardName": "VanillishMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "025",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 025",
+          "psaTotal": 6100
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 026": {
+          "cardName": "VanilluxeMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "026",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 026",
+          "psaTotal": 3900
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 027": {
+          "cardName": "Keldeo EXShop with Affiliates",
+          "cardNo": "027",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 027",
+          "psaTotal": 1900
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 028": {
+          "cardName": "BlitzleMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "028",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 028",
+          "psaTotal": 6900
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 029": {
+          "cardName": "ZebstrikaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "029",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 029",
+          "psaTotal": 6500
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 030": {
+          "cardName": "JoltikMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "030",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 030",
+          "psaTotal": 6100
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 031": {
+          "cardName": "GalvantulaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "031",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 031",
+          "psaTotal": 11000
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 032": {
+          "cardName": "StunfiskMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "032",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 032",
+          "psaTotal": 8600
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 033": {
+          "cardName": "WoobatMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "033",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 033",
+          "psaTotal": 6700
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 034": {
+          "cardName": "SwoobatMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "034",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 034",
+          "psaTotal": 5200
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 035": {
+          "cardName": "SigilyphMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "035",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 035",
+          "psaTotal": 6700
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 036": {
+          "cardName": "YamaskMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "036",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 036",
+          "psaTotal": 7000
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 037": {
+          "cardName": "CofagrigusMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "037",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 037",
+          "psaTotal": 4700
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 038": {
+          "cardName": "GothitaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "038",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 038",
+          "psaTotal": 6800
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 039": {
+          "cardName": "GothoritaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "039",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 039",
+          "psaTotal": 6400
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 040": {
+          "cardName": "GothitelleMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "040",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 040",
+          "psaTotal": 6100
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 041": {
+          "cardName": "FrillishMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "041",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 041",
+          "psaTotal": 2200
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 042": {
+          "cardName": "Jellicent EXShop with Affiliates",
+          "cardNo": "042",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 042",
+          "psaTotal": 2100
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 043": {
+          "cardName": "RoggenrolaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "043",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 043",
+          "psaTotal": 6000
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 044": {
+          "cardName": "BoldoreMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "044",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 044",
+          "psaTotal": 7500
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 045": {
+          "cardName": "GigalithMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "045",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 045",
+          "psaTotal": 8100
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 046": {
+          "cardName": "SawkMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "046",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 046",
+          "psaTotal": 11400
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 047": {
+          "cardName": "ArchenMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "047",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 047",
+          "psaTotal": 6800
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 048": {
+          "cardName": "ArcheopsMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "048",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 048",
+          "psaTotal": 6100
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 049": {
+          "cardName": "MienfooMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "049",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 049",
+          "psaTotal": 8800
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 050": {
+          "cardName": "MienshaoMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "050",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 050",
+          "psaTotal": 19200
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 051": {
+          "cardName": "TerrakionMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "051",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 051",
+          "psaTotal": 10900
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 052": {
+          "cardName": "PurrloinMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "052",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 052",
+          "psaTotal": 12900
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 053": {
+          "cardName": "LiepardMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "053",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 053",
+          "psaTotal": 7700
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 054": {
+          "cardName": "ScraggyMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "054",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 054",
+          "psaTotal": 5500
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 055": {
+          "cardName": "ScraftyMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "055",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 055",
+          "psaTotal": 4700
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 056": {
+          "cardName": "TrubbishMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "056",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 056",
+          "psaTotal": 7000
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 057": {
+          "cardName": "GarbodorMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "057",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 057",
+          "psaTotal": 5500
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 058": {
+          "cardName": "ZoruaMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "058",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 058",
+          "psaTotal": 12400
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 059": {
+          "cardName": "ZoroarkMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "059",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 059",
+          "psaTotal": 12800
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 060": {
+          "cardName": "DeinoMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "060",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 060",
+          "psaTotal": 6900
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 061": {
+          "cardName": "ZweilousMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "061",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 061",
+          "psaTotal": 5100
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 062": {
+          "cardName": "Hydreigon EXShop with Affiliates",
+          "cardNo": "062",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 062",
+          "psaTotal": 2400
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 063": {
+          "cardName": "FerroseedMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "063",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 063",
+          "psaTotal": 6400
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 064": {
+          "cardName": "FerrothornMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "064",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 064",
+          "psaTotal": 7200
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 065": {
+          "cardName": "KlinkMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "065",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 065",
+          "psaTotal": 7600
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 066": {
+          "cardName": "KlangMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "066",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 066",
+          "psaTotal": 8500
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 067": {
+          "cardName": "KlinklangMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "067",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 067",
+          "psaTotal": 9100
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 068": {
+          "cardName": "DurantMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "068",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 068",
+          "psaTotal": 6600
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 069": {
+          "cardName": "DruddigonMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "069",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 069",
+          "psaTotal": 4900
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 070": {
+          "cardName": "PatratMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "070",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 070",
+          "psaTotal": 5000
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 071": {
+          "cardName": "WatchogMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "071",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 071",
+          "psaTotal": 4600
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 072": {
+          "cardName": "LillipupMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "072",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 072",
+          "psaTotal": 6500
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 073": {
+          "cardName": "HerdierMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "073",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 073",
+          "psaTotal": 6700
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 074": {
+          "cardName": "StoutlandMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "074",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 074",
+          "psaTotal": 10300
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 075": {
+          "cardName": "Bouffalant EXShop with Affiliates",
+          "cardNo": "075",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 075",
+          "psaTotal": 1700
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 076": {
+          "cardName": "RuffletMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "076",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 076",
+          "psaTotal": 5900
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 077": {
+          "cardName": "BraviaryMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "077",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 077",
+          "psaTotal": 7300
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 078": {
+          "cardName": "TornadusMaster Ball Reverse HoloShop with Affiliates",
+          "cardNo": "078",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 078",
+          "psaTotal": 14300
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 085": {
+          "cardName": "HildaReverse HoloShop with Affiliates",
+          "cardNo": "085",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 085",
+          "psaTotal": 2200
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 087": {
+          "cardName": "SewaddleArt RareShop with Affiliates",
+          "cardNo": "087",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 087",
+          "psaTotal": 54000
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 088": {
+          "cardName": "SwadloonArt RareShop with Affiliates",
+          "cardNo": "088",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 088",
+          "psaTotal": 49200
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 089": {
+          "cardName": "LeavannyArt RareShop with Affiliates",
+          "cardNo": "089",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 089",
+          "psaTotal": 38600
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 090": {
+          "cardName": "CottoneeArt RareShop with Affiliates",
+          "cardNo": "090",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 090",
+          "psaTotal": 65900
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 091": {
+          "cardName": "DeerlingArt RareShop with Affiliates",
+          "cardNo": "091",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 091",
+          "psaTotal": 42100
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 092": {
+          "cardName": "SawsbuckArt RareShop with Affiliates",
+          "cardNo": "092",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 092",
+          "psaTotal": 46200
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 093": {
+          "cardName": "ShelmetArt RareShop with Affiliates",
+          "cardNo": "093",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 093",
+          "psaTotal": 52400
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 094": {
+          "cardName": "AccelgorArt RareShop with Affiliates",
+          "cardNo": "094",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 094",
+          "psaTotal": 52800
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 095": {
+          "cardName": "VirizionArt RareShop with Affiliates",
+          "cardNo": "095",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 095",
+          "psaTotal": 51700
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 096": {
+          "cardName": "TepigArt RareShop with Affiliates",
+          "cardNo": "096",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 096",
+          "psaTotal": 104500
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 097": {
+          "cardName": "PigniteArt RareShop with Affiliates",
+          "cardNo": "097",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 097",
+          "psaTotal": 59800
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 098": {
+          "cardName": "EmboarArt RareShop with Affiliates",
+          "cardNo": "098",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 098",
+          "psaTotal": 84200
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 099": {
+          "cardName": "PansearArt RareShop with Affiliates",
+          "cardNo": "099",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 099",
+          "psaTotal": 67800
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 100": {
+          "cardName": "SimisearArt RareShop with Affiliates",
+          "cardNo": "100",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 100",
+          "psaTotal": 35700
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 101": {
+          "cardName": "HeatmorArt RareShop with Affiliates",
+          "cardNo": "101",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 101",
+          "psaTotal": 43200
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 102": {
+          "cardName": "OshawottArt RareShop with Affiliates",
+          "cardNo": "102",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 102",
+          "psaTotal": 226600
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 103": {
+          "cardName": "DewottArt RareShop with Affiliates",
+          "cardNo": "103",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 103",
+          "psaTotal": 62500
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 104": {
+          "cardName": "SamurottArt RareShop with Affiliates",
+          "cardNo": "104",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 104",
+          "psaTotal": 93200
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 105": {
+          "cardName": "BasculinArt RareShop with Affiliates",
+          "cardNo": "105",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 105",
+          "psaTotal": 65000
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 106": {
+          "cardName": "DucklettArt RareShop with Affiliates",
+          "cardNo": "106",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 106",
+          "psaTotal": 47500
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 107": {
+          "cardName": "SwannaArt RareShop with Affiliates",
+          "cardNo": "107",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 107",
+          "psaTotal": 40810
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 108": {
+          "cardName": "VanilliteArt RareShop with Affiliates",
+          "cardNo": "108",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 108",
+          "psaTotal": 36200
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 109": {
+          "cardName": "VanillishArt RareShop with Affiliates",
+          "cardNo": "109",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 109",
+          "psaTotal": 42800
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 110": {
+          "cardName": "VanilluxeArt RareShop with Affiliates",
+          "cardNo": "110",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 110",
+          "psaTotal": 45900
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 111": {
+          "cardName": "BlitzleArt RareShop with Affiliates",
+          "cardNo": "111",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 111",
+          "psaTotal": 57200
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 112": {
+          "cardName": "ZebstrikaArt RareShop with Affiliates",
+          "cardNo": "112",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 112",
+          "psaTotal": 79500
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 113": {
+          "cardName": "JoltikArt RareShop with Affiliates",
+          "cardNo": "113",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 113",
+          "psaTotal": 38800
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 114": {
+          "cardName": "GalvantulaArt RareShop with Affiliates",
+          "cardNo": "114",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 114",
+          "psaTotal": 49700
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 115": {
+          "cardName": "StunfiskArt RareShop with Affiliates",
+          "cardNo": "115",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 115",
+          "psaTotal": 43500
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 116": {
+          "cardName": "WoobatArt RareShop with Affiliates",
+          "cardNo": "116",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 116",
+          "psaTotal": 58000
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 117": {
+          "cardName": "SwoobatArt RareShop with Affiliates",
+          "cardNo": "117",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 117",
+          "psaTotal": 52100
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 118": {
+          "cardName": "SigilyphArt RareShop with Affiliates",
+          "cardNo": "118",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 118",
+          "psaTotal": 59400
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 119": {
+          "cardName": "YamaskArt RareShop with Affiliates",
+          "cardNo": "119",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 119",
+          "psaTotal": 54400
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 120": {
+          "cardName": "CofagrigusArt RareShop with Affiliates",
+          "cardNo": "120",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 120",
+          "psaTotal": 54800
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 121": {
+          "cardName": "GothitaArt RareShop with Affiliates",
+          "cardNo": "121",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 121",
+          "psaTotal": 49000
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 122": {
+          "cardName": "GothoritaArt RareShop with Affiliates",
+          "cardNo": "122",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 122",
+          "psaTotal": 55900
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 123": {
+          "cardName": "GothitelleArt RareShop with Affiliates",
+          "cardNo": "123",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 123",
+          "psaTotal": 56900
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 124": {
+          "cardName": "FrillishArt RareShop with Affiliates",
+          "cardNo": "124",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 124",
+          "psaTotal": 25700
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 125": {
+          "cardName": "RoggenrolaArt RareShop with Affiliates",
+          "cardNo": "125",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 125",
+          "psaTotal": 50600
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 126": {
+          "cardName": "BoldoreArt RareShop with Affiliates",
+          "cardNo": "126",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 126",
+          "psaTotal": 49800
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 127": {
+          "cardName": "GigalithArt RareShop with Affiliates",
+          "cardNo": "127",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 127",
+          "psaTotal": 69800
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 128": {
+          "cardName": "SawkArt RareShop with Affiliates",
+          "cardNo": "128",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 128",
+          "psaTotal": 63300
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 129": {
+          "cardName": "ArchenArt RareShop with Affiliates",
+          "cardNo": "129",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 129",
+          "psaTotal": 47500
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 130": {
+          "cardName": "ArcheopsArt RareShop with Affiliates",
+          "cardNo": "130",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 130",
+          "psaTotal": 62400
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 131": {
+          "cardName": "MienfooArt RareShop with Affiliates",
+          "cardNo": "131",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 131",
+          "psaTotal": 40900
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 132": {
+          "cardName": "MienshaoArt RareShop with Affiliates",
+          "cardNo": "132",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 132",
+          "psaTotal": 45700
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 133": {
+          "cardName": "TerrakionArt RareShop with Affiliates",
+          "cardNo": "133",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 133",
+          "psaTotal": 83200
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 134": {
+          "cardName": "PurrloinArt RareShop with Affiliates",
+          "cardNo": "134",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 134",
+          "psaTotal": 55900
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 135": {
+          "cardName": "LiepardArt RareShop with Affiliates",
+          "cardNo": "135",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 135",
+          "psaTotal": 48600
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 136": {
+          "cardName": "ScraggyArt RareShop with Affiliates",
+          "cardNo": "136",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 136",
+          "psaTotal": 63500
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 137": {
+          "cardName": "ScraftyArt RareShop with Affiliates",
+          "cardNo": "137",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 137",
+          "psaTotal": 58400
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 138": {
+          "cardName": "TrubbishArt RareShop with Affiliates",
+          "cardNo": "138",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 138",
+          "psaTotal": 38800
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 139": {
+          "cardName": "GarbodorArt RareShop with Affiliates",
+          "cardNo": "139",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 139",
+          "psaTotal": 55800
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 140": {
+          "cardName": "ZoruaArt RareShop with Affiliates",
+          "cardNo": "140",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 140",
+          "psaTotal": 109100
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 141": {
+          "cardName": "ZoroarkArt RareShop with Affiliates",
+          "cardNo": "141",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 141",
+          "psaTotal": 128010
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 142": {
+          "cardName": "DeinoArt RareShop with Affiliates",
+          "cardNo": "142",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 142",
+          "psaTotal": 48300
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 143": {
+          "cardName": "ZweilousArt RareShop with Affiliates",
+          "cardNo": "143",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 143",
+          "psaTotal": 51100
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 144": {
+          "cardName": "FerroseedArt RareShop with Affiliates",
+          "cardNo": "144",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 144",
+          "psaTotal": 54700
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 145": {
+          "cardName": "FerrothornArt RareShop with Affiliates",
+          "cardNo": "145",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 145",
+          "psaTotal": 45200
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 146": {
+          "cardName": "KlinkArt RareShop with Affiliates",
+          "cardNo": "146",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 146",
+          "psaTotal": 56100
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 147": {
+          "cardName": "KlangArt RareShop with Affiliates",
+          "cardNo": "147",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 147",
+          "psaTotal": 57200
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 148": {
+          "cardName": "KlinklangArt RareShop with Affiliates",
+          "cardNo": "148",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 148",
+          "psaTotal": 76400
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 149": {
+          "cardName": "DurantArt RareShop with Affiliates",
+          "cardNo": "149",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 149",
+          "psaTotal": 62100
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 150": {
+          "cardName": "DruddigonArt RareShop with Affiliates",
+          "cardNo": "150",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 150",
+          "psaTotal": 68700
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 151": {
+          "cardName": "PatratArt RareShop with Affiliates",
+          "cardNo": "151",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 151",
+          "psaTotal": 56400
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 152": {
+          "cardName": "WatchogArt RareShop with Affiliates",
+          "cardNo": "152",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 152",
+          "psaTotal": 48300
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 153": {
+          "cardName": "LillipupArt RareShop with Affiliates",
+          "cardNo": "153",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 153",
+          "psaTotal": 39510
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 154": {
+          "cardName": "HerdierArt RareShop with Affiliates",
+          "cardNo": "154",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 154",
+          "psaTotal": 45100
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 155": {
+          "cardName": "StoutlandArt RareShop with Affiliates",
+          "cardNo": "155",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 155",
+          "psaTotal": 54500
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 156": {
+          "cardName": "RuffletArt RareShop with Affiliates",
+          "cardNo": "156",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 156",
+          "psaTotal": 41500
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 157": {
+          "cardName": "BraviaryArt RareShop with Affiliates",
+          "cardNo": "157",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 157",
+          "psaTotal": 51600
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 158": {
+          "cardName": "TornadusArt RareShop with Affiliates",
+          "cardNo": "158",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 158",
+          "psaTotal": 77500
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 159": {
+          "cardName": "Whimsicott EXSuper RareShop with Affiliates",
+          "cardNo": "159",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 159",
+          "psaTotal": 47300
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 160": {
+          "cardName": "Reshiram EXSuper RareShop with Affiliates",
+          "cardNo": "160",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 160",
+          "psaTotal": 122100
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 161": {
+          "cardName": "Keldeo EXSuper RareShop with Affiliates",
+          "cardNo": "161",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 161",
+          "psaTotal": 60500
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 162": {
+          "cardName": "Jellicent EXSuper RareShop with Affiliates",
+          "cardNo": "162",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 162",
+          "psaTotal": 38000
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 163": {
+          "cardName": "Hydreigon EXSuper RareShop with Affiliates",
+          "cardNo": "163",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 163",
+          "psaTotal": 67100
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 164": {
+          "cardName": "Bouffalant EXSuper RareShop with Affiliates",
+          "cardNo": "164",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 164",
+          "psaTotal": 49100
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 165": {
+          "cardName": "HarlequinSuper RareShop with Affiliates",
+          "cardNo": "165",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 165",
+          "psaTotal": 21600
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 166": {
+          "cardName": "HildaSuper RareShop with Affiliates",
+          "cardNo": "166",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 166",
+          "psaTotal": 253400
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 167": {
+          "cardName": "Whimsicott EXSpecial Art RareShop with Affiliates",
+          "cardNo": "167",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 167",
+          "psaTotal": 106900
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 168": {
+          "cardName": "Reshiram EXSpecial Art RareShop with Affiliates",
+          "cardNo": "168",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 168",
+          "psaTotal": 1370000
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 169": {
+          "cardName": "Keldeo EXSpecial Art RareShop with Affiliates",
+          "cardNo": "169",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 169",
+          "psaTotal": 235100
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 170": {
+          "cardName": "Jellicent EXSpecial Art RareShop with Affiliates",
+          "cardNo": "170",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 170",
+          "psaTotal": 87700
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 171": {
+          "cardName": "Hydreigon EXSpecial Art RareShop with Affiliates",
+          "cardNo": "171",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 171",
+          "psaTotal": 391200
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 172": {
+          "cardName": "Bouffalant EXSpecial Art RareShop with Affiliates",
+          "cardNo": "172",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 172",
+          "psaTotal": 54600
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 173": {
+          "cardName": "HildaSpecial Art RareShop with Affiliates",
+          "cardNo": "173",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 173",
+          "psaTotal": 734601
+        },
+        "Pokemon Japanese SV11W-WHITE FLARE 174": {
+          "cardName": "Reshiram EXBW RareShop with Affiliates",
+          "cardNo": "174",
+          "psa10Count": 0,
+          "psa10Rate": 0,
+          "psaQuery": "Pokemon Japanese SV11W-WHITE FLARE 174",
+          "psaTotal": 1592701
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "2025 Pokemon Japanese M-P Promo",
+      "kind": "spec",
+      "url": "https://www.psacard.com/spec/psa/14234253",
+      "title": "Spec Details",
+      "fetchedAt": "2026-08-17T01:44:04.824Z",
+      "setCode": "M-P PROMO",
+      "rows": [
+        {
+          "cardNo": "020",
+          "cardName": "Pikachu",
+          "psa10Count": 285454,
+          "psaTotal": 326067,
+          "psa10Rate": 87.54266131889082,
+          "psaQuery": "Pokemon Japanese M-P PROMO 020"
+        }
+      ],
+      "byQuery": {
+        "Pokemon Japanese M-P PROMO 020": {
+          "cardNo": "020",
+          "cardName": "Pikachu",
+          "psa10Count": 285454,
+          "psaTotal": 326067,
+          "psa10Rate": 87.54266131889082,
+          "psaQuery": "Pokemon Japanese M-P PROMO 020"
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "2025 Pokemon Japanese SV10-Glory of Team Rocket",
+      "kind": "card",
+      "url": "https://www.psacard.com/auctionprices/tcg-cards/2025-pokemon-japanese-sv10-glory-team-rocket/team-rockets-meowth/13312876",
+      "title": "Spec Details",
+      "fetchedAt": "2026-08-17T01:44:04.824Z",
+      "setCode": "SV10-GLORY OF TEAM ROCKET",
+      "rows": [
+        {
+          "cardNo": "109",
+          "cardName": "Team Rocket's Meowth",
+          "psa10Count": 17483,
+          "psaTotal": 19724,
+          "psa10Rate": 88.63688204047934,
+          "psaQuery": "Pokemon Japanese SV10-GLORY OF TEAM ROCKET 109"
+        }
+      ],
+      "byQuery": {
+        "Pokemon Japanese SV10-GLORY OF TEAM ROCKET 109": {
+          "cardNo": "109",
+          "cardName": "Team Rocket's Meowth",
+          "psa10Count": 17483,
+          "psaTotal": 19724,
+          "psa10Rate": 88.63688204047934,
+          "psaQuery": "Pokemon Japanese SV10-GLORY OF TEAM ROCKET 109"
+        }
+      },
+      "error": null
+    }
+  ]
+};
