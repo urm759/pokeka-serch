@@ -135,6 +135,46 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
   color:#04131f;
   border-color:transparent;
 }
+.decision-compare{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin-top:10px;
+}
+.decision-box{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  padding:14px 16px;
+  border-radius:18px;
+  border:1px solid var(--line);
+  background:rgba(8,16,29,.42);
+  min-width:0;
+}
+.decision-box.site{
+  background:linear-gradient(180deg, rgba(125,211,252,.15), rgba(8,16,29,.34));
+}
+.decision-box.calc{
+  background:linear-gradient(180deg, rgba(245,158,11,.15), rgba(8,16,29,.34));
+}
+.decision-label{
+  color:var(--muted);
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.04em;
+}
+.decision-value{
+  font-size:20px;
+  line-height:1.1;
+  font-weight:900;
+}
+.decision-sub{
+  color:var(--muted);
+  font-size:12px;
+}
+.compare-line{
+  margin-top:10px;
+}
 .stats{
   margin-top:16px;
   display:grid;
@@ -578,4 +618,5 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
   .headline h3{font-size:20px}
   .metric strong{font-size:16px}
   .stat strong{font-size:20px}
+  .decision-compare{grid-template-columns:1fr}
 }

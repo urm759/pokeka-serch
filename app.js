@@ -553,6 +553,34 @@ function render() {
         : siteDecision === decision
           ? "good"
           : "warn";
+    const decisionCompare = [
+      state.showSiteDecision
+        ? `
+          <div class="decision-box site">
+            <span class="decision-label">サイト判定</span>
+            <strong class="decision-value">${siteDecision}</strong>
+            <span class="decision-sub">サイト側の掲載ラベルをそのまま反映</span>
+          </div>
+        `
+        : "",
+      state.showCalcDecision
+        ? `
+          <div class="decision-box calc">
+            <span class="decision-label">計算判定</span>
+            <strong class="decision-value">${decision}</strong>
+            <span class="decision-sub">美品・PSA10・鑑定費から算出</span>
+          </div>
+        `
+        : "",
+    ]
+      .filter(Boolean)
+      .join("");
+    const compareLabel =
+      siteDecision === decision
+        ? "一致"
+        : siteDecision === "未取得" || decision === "未取得"
+          ? "未取得"
+          : "不一致";
     return `
       <article class="row card" data-card-id="${card.id}">
         <div class="thumb">
@@ -573,13 +601,18 @@ function render() {
             <span class="badge sky">美品 直近7日 ${fmt.format(card.saleTx7d)}件</span>
             <span class="badge sky">PSA10 直近30日 ${fmt.format(card.psaTx30d)}件</span>
             <span class="badge sky">PSA10 直近7日 ${fmt.format(card.psaTx7d)}件</span>
-            ${state.showSiteDecision ? `<span class="badge">サイト判定 ${siteDecision}</span>` : ""}
-            ${state.showCalcDecision ? `<span class="badge warn">計算判定 ${decision}</span>` : ""}
-            <span class="badge ${compareClass}">判定比較 ${siteDecision === decision ? "一致" : siteDecision === "未取得" || decision === "未取得" ? "未取得" : "不一致"}</span>
             <span class="badge">PSA検索語 ${psaQuery || "未設定"}</span>
             <a class="link-badge" href="${snkUrl}" data-snk-link target="_blank" rel="noreferrer">スニダンで探す</a>
             <span class="badge">カテゴリ ポケモン</span>
             <span class="badge ${roiClass}">利益率 ${Number.isFinite(card.roi) ? Math.round(card.roi) : 0}%</span>
+          </div>
+
+          <div class="decision-compare">
+            ${decisionCompare}
+          </div>
+
+          <div class="compare-line">
+            <span class="badge ${compareClass}">判定比較 ${compareLabel}</span>
           </div>
 
           <div class="metrics">
