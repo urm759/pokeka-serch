@@ -148,16 +148,16 @@ function calcGuideBuyPrice(psa10, hitRate, fee, targetRoi, psa9Rate = 0.75) {
   return roundToStep(numerator / denominator);
 }
 
+function buildTorecaCardUrl(card) {
+  return card.pageUrl || `https://toreca-souba.com/cards/${card.id}`;
+}
+
 function buildSnkrUrl(card) {
   const query = String(card.name || card.psaQuery || "")
     .split("[")[0]
     .trim();
   if (!query) return "https://snkrdunk.com/search/";
   return `https://snkrdunk.com/search?brandId=pokemon&categoryId=25&isUnderRetail=false&keywords=${encodeURIComponent(query)}`;
-}
-
-function buildTorecaCardUrl(card) {
-  return card.pageUrl || `https://toreca-souba.com/cards/${card.id}`;
 }
 
 function buildSnkrSearchUrl(card) {
