@@ -10,6 +10,8 @@ const state = {
     watch: false,
     avoid: false,
   },
+  showSiteDecision: true,
+  showCalcDecision: true,
   fee: 13000,
   guideMode: "70",
   minSaleTx: 30,
@@ -75,6 +77,7 @@ const els = {
   guideFeeStat: document.getElementById("guideFeeStat"),
   guideButtons: [...document.querySelectorAll("[data-guide-mode]")],
   decisionButtons: [...document.querySelectorAll("[data-hide-decision]")],
+  displayButtons: [...document.querySelectorAll("[data-toggle-display]")],
 };
 
 function showStatus(message, kind = "info") {
@@ -229,6 +232,7 @@ function hydrateSnkrLink(card, url) {
 
 function decisionFilterKey(card) {
   const decision = decisionLabel(card);
+  if (decision === "未取得") return "missing";
   if (decision === "出す価値あり") return "valuable";
   if (decision === "様子見") return "watch";
   return "avoid";
@@ -250,6 +254,30 @@ function setDecisionHidden(key, hidden) {
   if (!(key in state.hiddenDecisions)) return;
   state.hiddenDecisions[key] = hidden;
   syncDecisionButtons();
+  render();
+  updateUrl();
+}
+
+function syncDisplayButtons() {
+  els.displayButtons.forEach((btn) => {
+    const key = btn.dataset.toggleDisplay;
+    const visible = key === "site" ? state.showSiteDecision : state.showCalcDecision;
+    btn.classList.toggle("active", !visible);
+    const label = key === "site" ? "サイト判定" : "計算判定";
+    btn.textContent = visible ? `${label}を非表示` : `${label}を表示`;
+    btn.setAttribute("aria-pressed", visible ? "false" : "true");
+  });
+}
+
+function setDisplayVisible(key, visible) {
+  if (key === "site") {
+    state.showSiteDecision = visible;
+  } else if (key === "calc") {
+    state.showCalcDecision = visible;
+  } else {
+    return;
+  }
+  syncDisplayButtons();
   render();
   updateUrl();
 }
@@ -390,6 +418,8 @@ function readUrl() {
   const sort = url.searchParams.get("sort");
   const q = url.searchParams.get("q");
   const hide = String(url.searchParams.get("hide") || "");
+  const showSite = url.searchParams.get("showSite");
+  const showCalc = url.searchParams.get("showCalc");
   const hidden = new Set(hide.split(",").map((v) => v.trim()).filter(Boolean));
   if (guide && guideModes[guide]) {
     state.guideMode = guide;
@@ -399,6 +429,9 @@ function readUrl() {
   state.hiddenDecisions.watch = hidden.has("watch");
   state.hiddenDecisions.avoid = hidden.has("avoid");
   syncDecisionButtons();
+  state.showSiteDecision = showSite == null ? true : showSite !== "0";
+  state.showCalcDecision = showCalc == null ? true : showCalc !== "0";
+  syncDisplayButtons();
   if (fee != null && fee >= 0) els.feeInput.value = String(fee);
   if (saleTx != null && saleTx >= 0) els.saleTxMinInput.value = String(saleTx);
   if (saleTxMax != null && saleTxMax >= 0) els.saleTxMaxInput.value = String(saleTxMax);
@@ -453,6 +486,8 @@ function buildShareUrl() {
   } else {
     url.searchParams.delete("q");
   }
+  url.searchParams.set("showSite", state.showSiteDecision ? "1" : "0");
+  url.searchParams.set("showCalc", state.showCalcDecision ? "1" : "0");
   const hidden = Object.entries(state.hiddenDecisions)
     .filter(([, value]) => value)
     .map(([key]) => key);
@@ -472,8 +507,8 @@ function render() {
     .filter((card) => {
       const decision = decisionLabel(card);
       const decisionKey = decisionFilterKey(card);
-      const haystack = normalize(`${card.name} ${card.model} ${card.rarity} ${card.id} ${card.psaQuery || ""} ${decision}`);
-      const compactHaystack = compactSearch(`${card.name} ${card.model} ${card.rarity} ${card.id} ${card.psaQuery || ""} ${decision}`);
+      const haystack = normalize(`${card.name} ${card.model} ${card.rarity} ${card.id} ${card.psaQuery || ""} ${decision} ${card.siteDecision || ""}`);
+      const compactHaystack = compactSearch(`${card.name} ${card.model} ${card.rarity} ${card.id} ${card.psaQuery || ""} ${decision} ${card.siteDecision || ""}`);
       if (card.saleTx30d < state.minSaleTx) return false;
       if (state.maxSaleTx != null && card.saleTx30d > state.maxSaleTx) return false;
       if (card.saleTx7d < state.minSaleTx7) return false;
@@ -509,8 +544,15 @@ function render() {
     const width = Math.max(8, Math.min(100, card.roi));
     const name = card.name.replace(/\s+/g, " ");
     const decision = decisionLabel(card);
+    const siteDecision = card.siteDecision || "未取得";
     const psaQuery = card.psaQuery || "";
     const snkUrl = card.snkUrl || state.snkrUrlCache[card.id] || buildSnkrUrl(card);
+    const compareClass =
+      siteDecision === "未取得" || decision === "未取得"
+        ? "mute"
+        : siteDecision === decision
+          ? "good"
+          : "warn";
     return `
       <article class="row card" data-card-id="${card.id}">
         <div class="thumb">
@@ -531,7 +573,9 @@ function render() {
             <span class="badge sky">美品 直近7日 ${fmt.format(card.saleTx7d)}件</span>
             <span class="badge sky">PSA10 直近30日 ${fmt.format(card.psaTx30d)}件</span>
             <span class="badge sky">PSA10 直近7日 ${fmt.format(card.psaTx7d)}件</span>
-            <span class="badge warn">仕入れ判定 ${decision}</span>
+            ${state.showSiteDecision ? `<span class="badge">サイト判定 ${siteDecision}</span>` : ""}
+            ${state.showCalcDecision ? `<span class="badge warn">計算判定 ${decision}</span>` : ""}
+            <span class="badge ${compareClass}">判定比較 ${siteDecision === decision ? "一致" : siteDecision === "未取得" || decision === "未取得" ? "未取得" : "不一致"}</span>
             <span class="badge">PSA検索語 ${psaQuery || "未設定"}</span>
             <a class="link-badge" href="${snkUrl}" data-snk-link target="_blank" rel="noreferrer">スニダンで探す</a>
             <span class="badge">カテゴリ ポケモン</span>
@@ -564,7 +608,8 @@ function render() {
 }
 
 function decisionLabel(card) {
-  if (!Number.isFinite(card.roi)) return "様子見";
+  if (!(Number(card.price) > 0) || !(Number(card.psa10) > 0)) return "未取得";
+  if (!Number.isFinite(card.roi)) return "未取得";
   if (card.roi >= 40) return "出す価値あり";
   if (card.roi >= 0) return "様子見";
   return "出さない";
@@ -641,5 +686,13 @@ els.decisionButtons.forEach((btn) => {
   btn.addEventListener("click", () => {
     const key = btn.dataset.hideDecision;
     setDecisionHidden(key, !state.hiddenDecisions[key]);
+  });
+});
+
+els.displayButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const key = btn.dataset.toggleDisplay;
+    const visible = key === "site" ? state.showSiteDecision : state.showCalcDecision;
+    setDisplayVisible(key, !visible);
   });
 });

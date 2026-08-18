@@ -101,6 +101,12 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
   gap:10px;
   flex-wrap:wrap;
 }
+.display-control{display:flex;flex-direction:column;gap:10px}
+.display-toggle{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
 .decision-pill{
   cursor:pointer;
   border-radius:999px;
@@ -113,6 +119,20 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
 .decision-pill.active{
   background:linear-gradient(90deg, rgba(245,158,11,.96), rgba(244,114,182,.96));
   color:#211100;
+  border-color:transparent;
+}
+.display-pill{
+  cursor:pointer;
+  border-radius:999px;
+  padding:10px 14px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(8,16,29,.42);
+  color:var(--text);
+  font-weight:800;
+}
+.display-pill.active{
+  background:linear-gradient(90deg, rgba(125,211,252,.96), rgba(56,217,150,.96));
+  color:#04131f;
   border-color:transparent;
 }
 .stats{
@@ -308,6 +328,8 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
   left:0;
   z-index:3;
   background:#091225;
+  background-clip:padding-box;
+  box-shadow:8px 0 0 #091225;
 }
 .guide-table thead th span{
   display:block;
@@ -319,11 +341,14 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
 .guide-table tbody th{
   text-align:left;
   color:var(--text);
-  background:rgba(255,255,255,.03);
+  background:#091225;
+  background-clip:padding-box;
   font-weight:800;
   position:sticky;
   left:0;
   z-index:2;
+  min-width:108px;
+  box-shadow:8px 0 0 #091225;
 }
 .guide-head-ideal{background:linear-gradient(180deg, rgba(53,101,255,.98), rgba(31,67,186,.98)) !important}
 .guide-head-recommended{background:linear-gradient(180deg, rgba(31,151,65,.98), rgba(20,110,46,.98)) !important}
@@ -469,6 +494,7 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
 .badge.good{background:rgba(56,217,150,.94);color:#0a2517;border:none}
 .badge.sky{background:rgba(125,211,252,.94);color:#072235;border:none}
 .badge.warn{background:rgba(245,158,11,.94);color:#251500;border:none}
+.badge.mute{background:rgba(148,163,184,.34);color:var(--text);border-color:rgba(255,255,255,.12)}
 .metrics{
   margin-top:14px;
   display:grid;
