@@ -3,144 +3,234 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>X買取表監視プロトタイプ</title>
-  <meta name="description" content="Xの買取表を店舗別に集計し、掲載回数・価格・重複排除を確認するための軽量プロトタイプ。" />
+  <title>トレカ利益率計算サイト</title>
+  <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-  <div class="glow glow-a"></div>
-  <div class="glow glow-b"></div>
+  <div class="backdrop backdrop-a"></div>
+  <div class="backdrop backdrop-b"></div>
   <main class="shell">
-    <header class="hero panel">
-      <div class="eyebrow">X buyback monitor / prototype</div>
-      <div class="hero-grid">
-        <div>
-          <h1>X買取表監視プロトタイプ</h1>
-          <p class="lede">
-            まずは <strong>1店舗</strong> から。投稿ごとの画像と本文を拾い、カード名・価格・掲載回数を集計する前提の軽量設計です。
-            元画像は保存しすぎず、メタデータ中心で回すので、後から店舗を増やしても重くなりにくい構成にしています。
-          </p>
+    <section class="hero card">
+      <div class="eyebrow">トレカ利益率計算サイト / Pokémon / PSA10</div>
+      <h1>トレカ利益率計算サイト</h1>
+      <p class="lede">
+        美品価格とPSA10相場から、鑑定費を差し引いた利益率で判定します。
+        取引数・鑑定費・利益率の条件は画面上でそのまま調整できます。
+      </p>
+
+      <div class="controls">
+        <label class="control control-wide">
+          <span>検索</span>
+          <input id="qInput" type="text" placeholder="カード名・型番で検索" />
+        </label>
+        <label class="control">
+          <span>鑑定費</span>
+          <input id="feeInput" type="number" min="0" step="100" value="13000" />
+        </label>
+        <label class="control">
+          <span>美品件数 直近30日</span>
+          <div class="range-pair">
+            <input id="saleTxMinInput" type="number" min="0" step="1" value="30" placeholder="下限" />
+            <input id="saleTxMaxInput" type="number" min="0" step="1" placeholder="上限" />
+          </div>
+        </label>
+        <label class="control">
+          <span>美品件数 直近7日</span>
+          <div class="range-pair">
+            <input id="saleTx7MinInput" type="number" min="0" step="1" value="0" placeholder="下限" />
+            <input id="saleTx7MaxInput" type="number" min="0" step="1" placeholder="上限" />
+          </div>
+        </label>
+        <label class="control">
+          <span>PSA10件数 直近30日</span>
+          <div class="range-pair">
+            <input id="psaTxMinInput" type="number" min="0" step="1" value="0" placeholder="下限" />
+            <input id="psaTxMaxInput" type="number" min="0" step="1" placeholder="上限" />
+          </div>
+        </label>
+        <label class="control">
+          <span>PSA10件数 直近7日</span>
+          <div class="range-pair">
+            <input id="psaTx7MinInput" type="number" min="0" step="1" value="0" placeholder="下限" />
+            <input id="psaTx7MaxInput" type="number" min="0" step="1" placeholder="上限" />
+          </div>
+        </label>
+        <label class="control">
+          <span>利益率 下限</span>
+          <input id="roiInput" type="number" min="0" step="1" value="40" />
+        </label>
+        <label class="control">
+          <span>美品 価格帯</span>
+          <div class="range-pair">
+            <input id="priceMinInput" type="number" min="0" step="100" placeholder="下限" />
+            <input id="priceMaxInput" type="number" min="0" step="100" placeholder="上限" />
+          </div>
+        </label>
+        <label class="control">
+          <span>PSA10 下限</span>
+          <input id="psaMinInput" type="number" min="0" step="1000" value="0" />
+        </label>
+        <label class="control">
+          <span>PSA10 上限</span>
+          <input id="psaMaxInput" type="number" min="0" step="1000" value="200000" />
+        </label>
+        <div class="control control-wide decision-control">
+          <span>仕入れ判定を非表示</span>
+          <div class="decision-toggle">
+            <button id="hideValuableBtn" class="decision-pill" type="button" data-hide-decision="valuable">出す価値ありを非表示</button>
+            <button id="hideWatchBtn" class="decision-pill" type="button" data-hide-decision="watch">様子見を非表示</button>
+            <button id="hideAvoidBtn" class="decision-pill" type="button" data-hide-decision="avoid">出さないを非表示</button>
+          </div>
         </div>
-        <div class="hero-card">
-          <span>対象アカウント</span>
-          <strong>@Mist_nagoyaosu</strong>
-          <p>まずはこの1店舗で精度確認。Xの元投稿へ直接飛べる導線を前提にしています。</p>
+        <div class="control control-wide display-control">
+          <span>判定ラベルの表示</span>
+          <div class="display-toggle">
+            <button id="siteDecisionBtn" class="display-pill" type="button" data-toggle-display="site">サイト判定を非表示</button>
+            <button id="calcDecisionBtn" class="display-pill" type="button" data-toggle-display="calc">計算判定を非表示</button>
+          </div>
         </div>
+        <label class="control">
+          <span>並び順</span>
+          <select id="sortInput">
+            <option value="roi-desc">利益率が高い順</option>
+            <option value="roi-asc">利益率が低い順</option>
+            <option value="profit-desc">利益額が高い順</option>
+            <option value="profit-asc">利益額が低い順</option>
+            <option value="tx-desc">取引数が多い順</option>
+            <option value="tx-asc">取引数が少ない順</option>
+            <option value="tx7-desc">直近7日が多い順</option>
+            <option value="tx7-asc">直近7日が少ない順</option>
+            <option value="psaTx-desc">PSA10取引数が多い順</option>
+            <option value="psaTx-asc">PSA10取引数が少ない順</option>
+            <option value="psaTx7-desc">PSA10直近7日が多い順</option>
+            <option value="psaTx7-asc">PSA10直近7日が少ない順</option>
+            <option value="chg30-desc">30日変動率が高い順</option>
+            <option value="chg30-asc">30日変動率が低い順</option>
+            <option value="chg7-desc">7日変動率が高い順</option>
+            <option value="chg7-asc">7日変動率が低い順</option>
+            <option value="psa-desc">PSA10が高い順</option>
+            <option value="psa-asc">PSA10が安い順</option>
+            <option value="psaMin-desc">PSA10下限が高い順</option>
+            <option value="psaMin-asc">PSA10下限が低い順</option>
+            <option value="price-asc">美品価格が安い順</option>
+            <option value="price-desc">美品価格が高い順</option>
+            <option value="listings-desc">掲載件数が多い順</option>
+            <option value="listings-asc">掲載件数が少ない順</option>
+            <option value="days-desc">掲載日数が長い順</option>
+            <option value="days-asc">掲載日数が短い順</option>
+            <option value="updated-desc">更新日が新しい順</option>
+            <option value="updated-asc">更新日が古い順</option>
+            <option value="tvel-desc">サイト年利が高い順</option>
+            <option value="tvel-asc">サイト年利が低い順</option>
+          </select>
+        </label>
       </div>
 
       <div class="stats">
-        <article class="stat">
-          <span>監視店舗</span>
-          <strong id="shopCount">0</strong>
-        </article>
-        <article class="stat">
-          <span>ユニークカード</span>
-          <strong id="cardCount">0</strong>
-        </article>
-        <article class="stat">
-          <span>30日掲載回数</span>
-          <strong id="count30">0</strong>
-        </article>
-        <article class="stat">
-          <span>7日掲載回数</span>
-          <strong id="count7">0</strong>
-        </article>
-        <article class="stat">
-          <span>重複除外率</span>
-          <strong id="dedupeRate">0%</strong>
-        </article>
-      </div>
-    </header>
-
-    <section class="panel controls">
-      <label class="field field-wide">
-        <span>検索</span>
-        <input id="query" type="search" placeholder="カード名 / 店舗名 / 型番 / ポストID" />
-      </label>
-      <label class="field">
-        <span>店舗</span>
-        <select id="shopFilter"></select>
-      </label>
-      <label class="field">
-        <span>7日掲載 下限</span>
-        <input id="min7" type="number" min="0" step="1" value="0" />
-      </label>
-      <label class="field">
-        <span>30日掲載 下限</span>
-        <input id="min30" type="number" min="0" step="1" value="1" />
-      </label>
-      <label class="field">
-        <span>並び順</span>
-        <select id="sort">
-          <option value="count30-desc">30日掲載回数が多い順</option>
-          <option value="count7-desc">7日掲載回数が多い順</option>
-          <option value="avgPrice-desc">平均価格が高い順</option>
-          <option value="avgPrice-asc">平均価格が低い順</option>
-          <option value="lastSeen-desc">最新投稿日が新しい順</option>
-          <option value="lastSeen-asc">最新投稿日が古い順</option>
-        </select>
-      </label>
-      <label class="field">
-        <span>価格帯</span>
-        <div class="range">
-          <input id="priceMin" type="number" min="0" step="100" placeholder="下限" />
-          <input id="priceMax" type="number" min="0" step="100" placeholder="上限" />
+        <div class="stat">
+          <span class="k">ポケモン総数</span>
+          <strong id="totalStat">0</strong>
         </div>
-      </label>
+        <div class="stat">
+          <span class="k">条件一致</span>
+          <strong id="countStat">0</strong>
+        </div>
+        <div class="stat">
+          <span class="k">最高利益率</span>
+          <strong id="topRoiStat">-</strong>
+        </div>
+        <div class="stat">
+          <span class="k">最高利益額</span>
+          <strong id="topProfitStat">-</strong>
+        </div>
+        <div class="stat">
+          <span class="k">判定式</span>
+          <strong>利益額 / (美品 + 鑑定費) × 100</strong>
+        </div>
+      </div>
     </section>
 
-    <section class="panel split">
-      <article class="focus">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow">現場の見え方</p>
-            <h2>掲載回数が多いカードを先に見る</h2>
-          </div>
-          <p class="small">
-            7日・30日の回数で「今よく出しているカード」を拾い、価格と合わせて仕入れ判断の優先度をつけます。
-          </p>
+    <details class="card guide guide-accordion" aria-labelledby="buyGuideTitle">
+      <summary class="guide-summary">
+        <div>
+          <div class="eyebrow">店舗査定用 / 仕入れ早見表</div>
+          <h2 id="buyGuideTitle">PSA10率ごとのおすすめ仕入れ価格</h2>
+          <p>ここを開くと、70%基準と50%基準の仕入れ目安を切り替えて見られます。</p>
         </div>
-        <div id="cards" class="cards"></div>
-      </article>
+        <div class="guide-summary-meta">
+          <span>折りたたみ可</span>
+          <strong>仕入れ値一覧</strong>
+        </div>
+      </summary>
 
-      <aside class="sidebar">
-        <section class="mini panel-in">
-          <p class="eyebrow">保存方針</p>
-          <ul>
-            <li>投稿IDとカード名、価格、時刻を主データにする</li>
-            <li>画像はサムネイルか短期キャッシュに限定する</li>
-            <li>同日・同内容・同価格は重複排除する</li>
-            <li>店舗が増えたら shop 単位で分岐する</li>
-          </ul>
-        </section>
-
-        <section class="mini panel-in">
-          <p class="eyebrow">比較の考え方</p>
-          <p class="small">
-            みんなのトレカ相場はフリマ相場なので、店舗相場との直接比較には使いません。
-            比較は、他店舗の買取表が集まり始めてから、その店舗群の平均や高安で出します。
-          </p>
-        </section>
-
-        <section class="mini panel-in">
-          <p class="eyebrow">収集パイプライン</p>
-          <ol>
-            <li>X投稿を取得</li>
-            <li>買取表っぽい投稿だけ残す</li>
-            <li>画像OCRと本文を突き合わせる</li>
-            <li>店舗別 / 合計で集計</li>
-          </ol>
-        </section>
-
-        <section class="mini panel-in">
-          <p class="eyebrow">アップロード影響</p>
-          <div class="capacity">
-            <div><span>今の方針</span><strong>軽量</strong></div>
-            <div><span>危ない方針</span><strong>画像を全部保存</strong></div>
-            <div><span>分岐基準</span><strong>店舗数・画像量</strong></div>
+      <div class="guide-body">
+        <div class="guide-head">
+          <div>
+            <p>
+              店舗で状態確認したときに、PSA10が取れる確率を切り替えながら仕入れ目安を確認できます。
+              青が理想、緑がおすすめ、赤が上限のラインです。
+            </p>
           </div>
-        </section>
-      </aside>
+          <div class="guide-switch" role="tablist" aria-label="PSA10率の切り替え">
+            <button id="guide70Btn" class="guide-pill active" type="button" data-guide-mode="70">10率70%基準</button>
+            <button id="guide50Btn" class="guide-pill" type="button" data-guide-mode="50">10率50%基準</button>
+          </div>
+        </div>
+
+        <div class="guide-keys" aria-label="仕入れ早見表の条件">
+          <div class="guide-key">
+            <span>PSA10率</span>
+            <strong id="guideHitRateStat">70%</strong>
+          </div>
+          <div class="guide-key">
+            <span>PSA9換金率</span>
+            <strong id="guidePsa9RateStat">75%</strong>
+          </div>
+          <div class="guide-key">
+            <span>鑑定費</span>
+            <strong id="guideFeeStat">¥13,000</strong>
+          </div>
+          <div class="guide-key">
+            <span>基準ライン</span>
+            <strong>理想 / おすすめ / 上限</strong>
+          </div>
+        </div>
+
+        <div id="guidePanels" class="guide-panels"></div>
+
+        <div class="guide-foot">
+          ※ 価格は 1,000円単位で丸めています。鑑定費は上の入力欄と連動します。必要なら PSA9換金率や判定ラインもあとで調整できます。
+        </div>
+      </div>
+    </details>
+
+    <section class="toolbar card">
+      <div>
+        <h2>候補一覧</h2>
+        <p>カード画像は各カードページの公開画像を表示。`data/pokemon-cards.json` が全件データです。</p>
+      </div>
+      <div class="toolbar-actions">
+        <div class="toolbar-meta">データ取得日 <strong id="updatedAt">-</strong></div>
+        <button id="copyLinkBtn" type="button">この条件をURLに反映</button>
+        <a id="sourceLink" href="https://toreca-souba.com/" target="_blank" rel="noreferrer">出典を開く</a>
+      </div>
+    </section>
+
+    <section id="grid" class="grid"></section>
+
+    <section class="card footer">
+      <div>
+        <h3>トレカ利益率計算サイトの作り</h3>
+        <p>
+          このフォルダをそのまま GitHub Pages に置ける静的サイトとして作っています。
+          画面側で条件を変えられるので、毎回コードを触らなくても確認しやすいです。
+        </p>
+      </div>
+      <div class="footer-links">
+        <a href="./data/pokemon-cards.json" target="_blank" rel="noreferrer">data/pokemon-cards.json</a>
+        <a href="./README.md" target="_blank" rel="noreferrer">README</a>
+      </div>
     </section>
   </main>
 
