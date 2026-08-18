@@ -545,14 +545,7 @@ function render() {
     const name = card.name.replace(/\s+/g, " ");
     const decision = decisionLabel(card);
     const siteDecision = card.siteDecision || "未取得";
-    const psaQuery = card.psaQuery || "";
     const snkUrl = card.snkUrl || state.snkrUrlCache[card.id] || buildSnkrUrl(card);
-    const compareClass =
-      siteDecision === "未取得" || decision === "未取得"
-        ? "mute"
-        : siteDecision === decision
-          ? "good"
-          : "warn";
     const decisionCompare = [
       state.showSiteDecision
         ? `
@@ -575,12 +568,6 @@ function render() {
     ]
       .filter(Boolean)
       .join("");
-    const compareLabel =
-      siteDecision === decision
-        ? "一致"
-        : siteDecision === "未取得" || decision === "未取得"
-          ? "未取得"
-          : "不一致";
     return `
       <article class="row card" data-card-id="${card.id}">
         <div class="thumb">
@@ -601,7 +588,6 @@ function render() {
             <span class="badge sky">美品 直近7日 ${fmt.format(card.saleTx7d)}件</span>
             <span class="badge sky">PSA10 直近30日 ${fmt.format(card.psaTx30d)}件</span>
             <span class="badge sky">PSA10 直近7日 ${fmt.format(card.psaTx7d)}件</span>
-            <span class="badge">PSA検索語 ${psaQuery || "未設定"}</span>
             <a class="link-badge" href="${snkUrl}" data-snk-link target="_blank" rel="noreferrer">スニダンで探す</a>
             <span class="badge">カテゴリ ポケモン</span>
             <span class="badge ${roiClass}">利益率 ${Number.isFinite(card.roi) ? Math.round(card.roi) : 0}%</span>
@@ -609,10 +595,6 @@ function render() {
 
           <div class="decision-compare">
             ${decisionCompare}
-          </div>
-
-          <div class="compare-line">
-            <span class="badge ${compareClass}">判定比較 ${compareLabel}</span>
           </div>
 
           <div class="metrics">
