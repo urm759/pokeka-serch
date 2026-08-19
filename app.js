@@ -546,6 +546,15 @@ function render() {
     const decision = decisionLabel(card);
     const siteDecision = card.siteDecision || "未取得";
     const snkUrl = card.snkUrl || state.snkrUrlCache[card.id] || buildSnkrUrl(card);
+    const detailChips = [
+      `<span class="badge sky">美品 直近30日 ${fmt.format(card.saleTx30d)}件</span>`,
+      `<span class="badge sky">美品 直近7日 ${fmt.format(card.saleTx7d)}件</span>`,
+      `<span class="badge sky">PSA10 直近30日 ${fmt.format(card.psaTx30d)}件</span>`,
+      `<span class="badge sky">PSA10 直近7日 ${fmt.format(card.psaTx7d)}件</span>`,
+      `<a class="link-badge" href="${snkUrl}" data-snk-link target="_blank" rel="noreferrer">スニダンで探す</a>`,
+      `<span class="badge">カテゴリ ポケモン</span>`,
+      `<span class="badge ${roiClass}">利益率 ${Number.isFinite(card.roi) ? Math.round(card.roi) : 0}%</span>`,
+    ].join("");
     const decisionCompare = [
       state.showSiteDecision
         ? `
@@ -584,13 +593,7 @@ function render() {
           </div>
 
           <div class="badges">
-            <span class="badge sky">美品 直近30日 ${fmt.format(card.saleTx30d)}件</span>
-            <span class="badge sky">美品 直近7日 ${fmt.format(card.saleTx7d)}件</span>
-            <span class="badge sky">PSA10 直近30日 ${fmt.format(card.psaTx30d)}件</span>
-            <span class="badge sky">PSA10 直近7日 ${fmt.format(card.psaTx7d)}件</span>
-            <a class="link-badge" href="${snkUrl}" data-snk-link target="_blank" rel="noreferrer">スニダンで探す</a>
-            <span class="badge">カテゴリ ポケモン</span>
-            <span class="badge ${roiClass}">利益率 ${Number.isFinite(card.roi) ? Math.round(card.roi) : 0}%</span>
+            ${detailChips}
           </div>
 
           <div class="decision-compare">
@@ -626,7 +629,7 @@ function decisionLabel(card) {
   if (!(Number(card.price) > 0) || !(Number(card.psa10) > 0)) return "未取得";
   if (!Number.isFinite(card.roi)) return "未取得";
   if (card.roi >= 40) return "出す価値あり";
-  if (card.roi >= 0) return "様子見";
+  if (card.roi >= 10) return "様子見";
   return "出さない";
 }
 

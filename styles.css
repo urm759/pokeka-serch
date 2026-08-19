@@ -137,7 +137,7 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
 }
 .decision-compare{
   display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
   gap:10px;
   margin-top:10px;
 }
@@ -145,11 +145,12 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
   display:flex;
   flex-direction:column;
   gap:6px;
-  padding:14px 16px;
-  border-radius:18px;
+  padding:16px 18px;
+  border-radius:20px;
   border:1px solid var(--line);
   background:rgba(8,16,29,.42);
   min-width:0;
+  min-height:118px;
 }
 .decision-box.site{
   background:linear-gradient(180deg, rgba(125,211,252,.15), rgba(8,16,29,.34));
@@ -462,12 +463,12 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
 }
 .row{
   display:grid;
-  grid-template-columns:minmax(380px,460px) 1fr;
+  grid-template-columns:minmax(420px,44%) 1fr;
   overflow:hidden;
   position:relative;
 }
 .thumb{
-  min-height:clamp(380px,34vw,560px);
+  min-height:clamp(460px,44vw,650px);
   padding:6px;
   background:
     radial-gradient(circle at 34% 28%, rgba(255,255,255,.12), transparent 22%),
@@ -486,8 +487,9 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
   backdrop-filter:blur(6px);
 }
 .thumb img{
-  width:100%;
-  height:100%;
+  width:min(84%, 420px);
+  height:auto;
+  max-height:84%;
   object-fit:contain;
   display:block;
   background:transparent;
@@ -573,7 +575,7 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
 }
 @media (max-width: 1080px){
   .row{grid-template-columns:1fr}
-  .thumb{min-height:380px}
+  .thumb{min-height:420px}
   .control-wide{grid-column:auto}
   .toolbar-actions{margin-left:0}
   .guide-panels{grid-template-columns:1fr}
@@ -610,7 +612,8 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
   .guide-table tbody th{min-width:78px}
   .headline{flex-direction:column}
   .range-pair{grid-template-columns:1fr}
-  .thumb{min-height:320px}
+  .thumb{min-height:360px}
+  .thumb img{width:min(86%, 330px)}
   .content{padding:14px}
   .headline h3{font-size:20px}
   .metric strong{font-size:16px}
