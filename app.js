@@ -195,13 +195,19 @@ const cardrushRules = [
   { test: (key) => key.includes("ホウオウ") && key.includes("lp048lp"), url: "https://cardrush.shop/products/detail/6" },
 ];
 
-function buildCardrushUrl(card) {
-  if (getCardrushConditionLabel(card) !== "美品") return "";
+function resolveCardrushLink(card) {
+  const condition = getCardrushConditionLabel(card);
   const key = compactSearch(`${card.name} ${card.model} ${card.variant} ${card.rarity} ${card.psaQuery || ""}`);
   for (const rule of cardrushRules) {
-    if (rule.test(key, card)) return rule.url;
+    if (rule.test(key, card)) {
+      return { url: rule.url, direct: true, condition };
+    }
   }
-  return "";
+  return {
+    url: "https://cardrush.shop/products/list?category_id=7",
+    direct: false,
+    condition,
+  };
 }
 
 function extractSnkrProductUrl(html) {
@@ -581,14 +587,20 @@ function render() {
     const decision = decisionLabel(card);
     const siteDecision = card.siteDecision || "未取得";
     const snkUrl = card.snkUrl || state.snkrUrlCache[card.id] || buildSnkrUrl(card);
-    const cardrushUrl = card.cardrushUrl || state.cardrushUrlCache[card.id] || buildCardrushUrl(card);
+    const cachedCardrushLink = state.cardrushUrlCache[card.id];
+    const cardrushLink = card.cardrushUrl
+      ? { url: card.cardrushUrl, direct: true, condition: getCardrushConditionLabel(card) }
+      : cachedCardrushLink || resolveCardrushLink(card);
+    state.cardrushUrlCache[card.id] = cardrushLink;
     const detailChips = [
       `<span class="badge sky">美品 直近30日 ${fmt.format(card.saleTx30d)}件</span>`,
       `<span class="badge sky">美品 直近7日 ${fmt.format(card.saleTx7d)}件</span>`,
       `<span class="badge sky">PSA10 直近30日 ${fmt.format(card.psaTx30d)}件</span>`,
       `<span class="badge sky">PSA10 直近7日 ${fmt.format(card.psaTx7d)}件</span>`,
       `<a class="link-badge" href="${snkUrl}" data-snk-link target="_blank" rel="noreferrer">スニダンで探す</a>`,
-      cardrushUrl ? `<a class="link-badge" href="${cardrushUrl}" target="_blank" rel="noreferrer">カードラッシュ商品</a>` : "",
+      cardrushLink.direct
+        ? `<a class="link-badge" href="${cardrushLink.url}" target="_blank" rel="noreferrer">カードラッシュ商品</a>`
+        : `<span class="badge mute">カードラッシュ取扱い無</span>`,
       `<span class="badge">カテゴリ ポケモン</span>`,
       `<span class="badge ${roiClass}">利益率 ${Number.isFinite(card.roi) ? Math.round(card.roi) : 0}%</span>`,
     ].join("");
