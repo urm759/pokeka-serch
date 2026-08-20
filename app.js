@@ -178,15 +178,16 @@ function getCardrushConditionLabel(card) {
 function resolveCardrushLink(card) {
   const condition = getCardrushConditionLabel(card);
   return {
-    url: "https://cardrush.shop/products/list?category_id=8",
+    url: "https://www.cardrush-pokemon.jp/product-list",
     direct: false,
     condition,
   };
 }
 
 function buildCardrushSearchUrl(card) {
-  const query = [card.name, card.model, card.variant, card.rarity].filter(Boolean).join(" ");
-  return `https://cardrush.shop/products/list?category_id=8&name=${encodeURIComponent(query)}`;
+  const query = card.cardrushQueryName
+    || [card.name, card.model, card.variant, card.rarity].filter(Boolean).join(" ");
+  return `https://www.cardrush-pokemon.jp/product-list?keyword=${encodeURIComponent(query)}`;
 }
 
 function extractSnkrProductUrl(html) {
