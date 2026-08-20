@@ -3,6 +3,7 @@ const fmt = new Intl.NumberFormat("ja-JP");
 const state = {
   cards: [],
   snkrUrlCache: Object.create(null),
+  cardrushUrlCache: Object.create(null),
   cardById: Object.create(null),
   snkrObserver: null,
   hiddenDecisions: {
@@ -167,6 +168,40 @@ function buildSnkrSearchUrl(card) {
     .trim();
   if (!query) return "https://snkrdunk.com/search/";
   return `https://snkrdunk.com/search?brandId=pokemon&categoryId=25&isUnderRetail=false&keywords=${encodeURIComponent(query)}`;
+}
+
+function getCardrushConditionLabel(card) {
+  const raw = String(card.condition ?? card.state ?? card.grade ?? "").trim();
+  return raw || "美品";
+}
+
+const cardrushRules = [
+  { test: (key) => key.includes("サンダースex") && key.includes("xybest032171"), url: "https://cardrush.shop/products/detail/18" },
+  { test: (key) => key.includes("ピジョットex") && key.includes("sv3136108"), url: "https://cardrush.shop/products/detail/13" },
+  { test: (key) => key.includes("ヒトカゲ") && key.includes("マスターボールミラー") && key.includes("sv2a004165"), url: "https://cardrush.shop/products/detail/14" },
+  { test: (key) => key.includes("ひかるセレビィ") && key.includes("sm3004072"), url: "https://cardrush.shop/products/detail/19" },
+  { test: (key) => key.includes("フレア団のしたっぱ") && key.includes("xyp"), url: "https://cardrush.shop/products/detail/20" },
+  { test: (key) => key.includes("バトルサーチャー") && key.includes("115171"), url: "https://cardrush.shop/products/detail/21" },
+  { test: (key) => key.includes("カプテテフ") && key.includes("smp152"), url: "https://cardrush.shop/products/detail/22" },
+  { test: (key) => key.includes("ハイパーボール") && key.includes("s9126100"), url: "https://cardrush.shop/products/detail/16" },
+  { test: (key) => key.includes("ポケモンいれかえ") && key.includes("079070"), url: "https://cardrush.shop/products/detail/17" },
+  { test: (key) => key.includes("ヒビキの冒険") && key.includes("sv9a089063"), url: "https://cardrush.shop/products/detail/15" },
+  { test: (key) => key.includes("リザードンgx") && key.includes("sm8b209150"), url: "https://cardrush.shop/products/detail/3" },
+  { test: (key) => key.includes("ひかるギャラドス") && key.includes("neo3no130"), url: "https://cardrush.shop/products/detail/4" },
+  { test: (key) => key.includes("リザードンgx") && key.includes("sm3h058051"), url: "https://cardrush.shop/products/detail/5" },
+  { test: (key) => key.includes("ひかるギャラドス") && key.includes("旧裏"), url: "https://cardrush.shop/products/detail/9" },
+  { test: (key) => key.includes("イーブイ") && key.includes("ファンクラブ") && key.includes("neopno133"), url: "https://cardrush.shop/products/detail/12" },
+  { test: (key) => key.includes("ホウオウ") && key.includes("lp065lp"), url: "https://cardrush.shop/products/detail/11" },
+  { test: (key) => key.includes("ホウオウ") && key.includes("lp048lp"), url: "https://cardrush.shop/products/detail/6" },
+];
+
+function buildCardrushUrl(card) {
+  if (getCardrushConditionLabel(card) !== "美品") return "";
+  const key = compactSearch(`${card.name} ${card.model} ${card.variant} ${card.rarity} ${card.psaQuery || ""}`);
+  for (const rule of cardrushRules) {
+    if (rule.test(key, card)) return rule.url;
+  }
+  return "";
 }
 
 function extractSnkrProductUrl(html) {
@@ -546,12 +581,14 @@ function render() {
     const decision = decisionLabel(card);
     const siteDecision = card.siteDecision || "未取得";
     const snkUrl = card.snkUrl || state.snkrUrlCache[card.id] || buildSnkrUrl(card);
+    const cardrushUrl = card.cardrushUrl || state.cardrushUrlCache[card.id] || buildCardrushUrl(card);
     const detailChips = [
       `<span class="badge sky">美品 直近30日 ${fmt.format(card.saleTx30d)}件</span>`,
       `<span class="badge sky">美品 直近7日 ${fmt.format(card.saleTx7d)}件</span>`,
       `<span class="badge sky">PSA10 直近30日 ${fmt.format(card.psaTx30d)}件</span>`,
       `<span class="badge sky">PSA10 直近7日 ${fmt.format(card.psaTx7d)}件</span>`,
       `<a class="link-badge" href="${snkUrl}" data-snk-link target="_blank" rel="noreferrer">スニダンで探す</a>`,
+      cardrushUrl ? `<a class="link-badge" href="${cardrushUrl}" target="_blank" rel="noreferrer">カードラッシュ商品</a>` : "",
       `<span class="badge">カテゴリ ポケモン</span>`,
       `<span class="badge ${roiClass}">利益率 ${Number.isFinite(card.roi) ? Math.round(card.roi) : 0}%</span>`,
     ].join("");
