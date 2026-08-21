@@ -2,6 +2,7 @@ const fmt = new Intl.NumberFormat("ja-JP");
 
 const state = {
   cards: [],
+  cardrushStock: Object.create(null),
   snkrUrlCache: Object.create(null),
   cardById: Object.create(null),
   snkrObserver: null,
@@ -560,6 +561,7 @@ function render() {
     const width = Math.max(8, Math.min(100, card.roi));
     const name = card.name.replace(/\s+/g, " ");
     const decision = decisionLabel(card);
+    const stock = state.cardrushStock[card.id] || null;
     const snkUrl = card.snkUrl || state.snkrUrlCache[card.id] || buildSnkrUrl(card);
     const snkrDirect = /snkrdunk\.com\/(apparels|trading-cards|products)\/\d+/i.test(snkUrl);
     const detailChips = [
@@ -576,6 +578,24 @@ function render() {
         ? `<a class="market-link cardrush" href="${card.cardrushUrl}" target="_blank" rel="noreferrer"><span>ショップ・状態A</span><strong>カードラッシュ直リンク</strong></a>`
         : `<span class="market-link unavailable"><span>ショップ</span><strong>カードラッシュ直リンク未取得</strong></span>`,
     ].join("");
+    const demandClass = stock?.demand === "買う人が多い" ? "high" : stock?.demand === "普通" ? "normal" : stock?.demand === "少ない" ? "low" : "pending";
+    const avgStock = (value) => Number.isFinite(value) ? `${Number(value).toFixed(2)}枚/日` : "蓄積中";
+    const stockPanel = card.cardrushUrl
+      ? `
+          <div class="stock-panel ${demandClass}">
+            <div class="stock-title">
+              <div><span>カードラッシュ在庫</span><strong>${Number.isFinite(stock?.stock) ? `${fmt.format(stock.stock)}枚` : "確認中"}</strong></div>
+              <b>${stock?.demand || "蓄積中"}</b>
+            </div>
+            <div class="stock-averages">
+              <div><span>7日平均減少</span><strong>${avgStock(stock?.avg7)}</strong></div>
+              <div><span>30日平均減少</span><strong>${avgStock(stock?.avg30)}</strong></div>
+              <div><span>90日平均減少</span><strong>${avgStock(stock?.avg90)}</strong></div>
+            </div>
+            <p>在庫が前日より減った枚数だけを集計し、補充による増加は除外しています。</p>
+          </div>
+        `
+      : "";
     const decisionCompare = state.showCalcDecision
       ? `
           <div class="decision-box calc">
@@ -607,6 +627,8 @@ function render() {
             <div class="market-links-title">商品ページ</div>
             <div class="market-links-grid">${marketLinks}</div>
           </div>
+
+          ${stockPanel}
 
           <div class="decision-compare">
             ${decisionCompare}
@@ -683,6 +705,8 @@ async function init() {
       }
       state.cards = await res.json();
     }
+    const stockData = await fetchJsonMaybe("./data/cardrush-stock-summary.json");
+    state.cardrushStock = stockData?.cards || Object.create(null);
     syncFromUI();
   } catch (err) {
     console.error(err);

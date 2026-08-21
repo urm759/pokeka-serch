@@ -7,7 +7,8 @@
 - アップロードするのは、この `github-site` フォルダの中身だけです
 - `index.html` が GitHub リポジトリのルートに見える配置にします
 - 親フォルダ側の `work`、`.github`、`outputs` を別々にアップロードする必要はありません
-- `.github/workflows/update-pokemon-site.yml` も含まれるため、毎日08:00（日本時間）の自動更新と手動更新を利用できます
+- `.github/workflows/update-pokemon-site.yml` で毎日08:00（日本時間）の相場更新を行います
+- `.github/workflows/update-cardrush-stock.yml` で毎日00:00（日本時間）のカードラッシュ在庫更新を行います
 
 ## 仕組み
 
@@ -36,9 +37,14 @@
 - `work/update_pokemon_site.js` を実行すると、toreca-souba の公開データからポケモンカード一覧とメタ情報を再生成します
 - `work/update_snkr_links.js` が未取得の全カードを確認し、スニダン個別商品URLを100枚ごとに保存します
 - `work/update_cardrush_links.js` が2015年以降のカードラッシュ状態A商品を増分取得し、目標カバー率90%まで進捗を保存します
+- カードラッシュは状態Aまたは状態表記なしだけを直リンクに採用し、状態A-・B・C・Dは除外します
+- `work/update_cardrush_stock.js` が在庫を日次保存し、7日・30日・90日の平均減少数と需要判定を生成します
+- 在庫履歴は直近91日だけ保持するため、毎日蓄積しても容量が増え続けません
+- 商品URLを2日続けて確認できない場合は無効候補として再検索キューへ入れます
 - マスターボールミラー、モンスターボールミラー、通常ミラーなどは、商品名の特殊仕様が一致する場合だけ紐付けます
 - GitHub Pages用には、画面で使う最小項目だけを圧縮したJSONを書き出します
-- `.github/workflows/update-pokemon-site.yml` で定期実行と手動実行を両方できるようにしています
+- 2つのワークフローは定期実行と手動実行の両方に対応しています
+- GitHub Actions上で実行するため、更新時に自分のパソコンを起動しておく必要はありません
 - GitHub Pages では、ワークフローが更新した `data/*` をそのまま配信します
 
 ## GitHub Pages に置く方法
@@ -46,7 +52,7 @@
 1. この `github-site` フォルダを開く
 2. 中にあるファイルとフォルダをすべて GitHub リポジトリのルートへアップロードする
 3. GitHub Pages の公開元を `Deploy from a branch`、ブランチを `main`、フォルダを `/(root)` に設定する
-4. Actions の `Refresh Pokemon Site Data` を有効にする
+4. Actions の `Refresh Pokemon Site Data` と `Refresh Cardrush Stock` を有効にする
 
 ## 現在の抽出条件
 
@@ -58,4 +64,6 @@
 ## 現在の直リンク状況
 
 - スニダン: 11,930 / 11,930枚（100%）
-- カードラッシュ（2015年以降・状態A）: 4,762 / 7,820枚（60.9%）
+- カードラッシュ（2015年以降・状態Aまたは状態表記なし）: 6,875 / 7,820枚（87.9%）
+- カードラッシュ全体: 7,100 / 11,930枚
+- 鑑定済み商品と状態A-・B・C・Dへのリンクは含みません

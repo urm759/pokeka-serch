@@ -2,6 +2,8 @@ const fs = require("fs");
 const path = require("path");
 const { isModernCard, isModernSetCode, coverage } = require("./cardrush_modern_rules");
 
+let invalidCardrushUrls = new Set();
+
 function resolveSiteRoot() {
   const standaloneRoot = path.join(__dirname, "..");
   if (fs.existsSync(path.join(standaloneRoot, "index.html"))) {
@@ -41,6 +43,23 @@ function safeReadJson(filePath, fallback) {
   } catch {
     return fallback;
   }
+}
+
+function jstDate() {
+  return new Intl.DateTimeFormat("sv-SE", {
+    timeZone: "Asia/Tokyo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+}
+
+function extractStock(value) {
+  const text = String(value || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+  const match = text.match(/在庫数\s*([0-9,]+)\s*枚/);
+  if (match) return Number(match[1].replace(/,/g, ""));
+  if (/SOLD\s*OUT|(?:^|\s)×(?:\s|$)/i.test(text)) return 0;
+  return null;
 }
 
 function normalizeLooseText(value) {
@@ -104,12 +123,21 @@ function extractCardrushComponents(card) {
   const source = String(card?.name || card || "").replace(/\s+/g, " ").trim();
   const base = normalizeDisplayBase(source);
   const rarityPattern = "MUR|BWR|MA|SSR|CSR|CHR|SAR|UR|HR|SR|RRR|RR|AR|PR|P|H|C|U|R";
+  const promoSetFirst = source.match(/\[\s*([A-Za-z0-9]+-P)\s+(\d{1,4})\s*\]/i);
+  const promoNumberFirst = source.match(/\[\s*PROMO\s*(\d{1,4})\s+([A-Za-z0-9]+-P)\s*\]/i);
+  const promoProduct = source.match(/\{\s*(\d{1,4})\/([A-Za-z0-9]+-P)\s*\}/i);
   const setCode =
+    promoSetFirst?.[1] ||
+    promoNumberFirst?.[2] ||
+    promoProduct?.[2] ||
     (source.match(/\[\s*([A-Za-z0-9-]+)\s+\d{1,4}(?:\/\d{1,4})?\s*\]/) || [])[1] ||
     (source.match(/\[([A-Za-z0-9-]+)\]/) || [])[1] ||
     "";
   const cardNo =
-    (source.match(/\{(\d{1,4}\/\d{1,4})\}/) || [])[1] ||
+    (promoProduct ? `${promoProduct[1]}/${promoProduct[2].toUpperCase()}` : "") ||
+    (promoSetFirst ? `${promoSetFirst[2]}/${promoSetFirst[1].toUpperCase()}` : "") ||
+    (promoNumberFirst ? `${promoNumberFirst[1]}/${promoNumberFirst[2].toUpperCase()}` : "") ||
+    (source.match(/\{(\d{1,4}\/(?:\d{1,4}|[A-Za-z0-9]+-P))\}/i) || [])[1] ||
     (source.match(/\[\s*[A-Za-z0-9-]+\s+(\d{1,4}\/\d{1,4})\s*\]/) || [])[1] ||
     (source.match(/\[(\d{1,4}\/\d{1,4})\]/) || [])[1] ||
     (String(card?.model || "").match(/(\d{1,4}\/\d{1,4})/) || [])[1] ||
@@ -156,7 +184,7 @@ function extractSearchSeed(card) {
 
 function normalizeStateLabel(rawTitle) {
   const text = String(rawTitle || "").trim();
-  const m = text.match(/^〔状態([AB])(-)?〕/);
+  const m = text.match(/^〔状態([A-D])(-)?〕/i);
   if (m) return `${m[1]}${m[2] || ""}`;
   return "A";
 }
@@ -165,7 +193,7 @@ function stripStatePrefix(rawTitle) {
   return String(rawTitle || "").replace(/^〔状態[^〕]+〕/, "").trim();
 }
 
-function buildCatalogEntry(title, detailUrl, state, model) {
+function buildCatalogEntry(title, detailUrl, state, model, stock = null) {
   const full = `${stripStatePrefix(title)}${model ? ` [${model}]` : ""}`.replace(/\s+/g, " ").trim();
   const sig = extractCardrushComponents({ name: full });
   const matchKeys = [
@@ -181,6 +209,8 @@ function buildCatalogEntry(title, detailUrl, state, model) {
     name: full,
     detailUrl,
     state: state || "A",
+    stock: Number.isFinite(stock) ? stock : null,
+    observedAt: jstDate(),
     matchKeys: [...new Set(matchKeys)],
   };
 }
@@ -196,7 +226,7 @@ function extractCardrushItems(html) {
   while ((match = regex.exec(html))) {
     const [, id, detailUrl, alt, model] = match;
     const state = normalizeStateLabel(alt);
-    const entry = buildCatalogEntry(alt, detailUrl, state, model);
+    const entry = buildCatalogEntry(alt, detailUrl, state, model, extractStock(match[0]));
     entry.id = id;
     items.push(entry);
   }
@@ -214,7 +244,7 @@ function extractCardrushMarkdownItems(markdown) {
     if (!alt || !detailUrl || !id) continue;
     const model = (line.match(/\}\[(?:\*\*)?([A-Za-z0-9-]+)(?:\*\*)?\]/) || [])[1] || "";
     const state = /^〔状態[^〕]+〕/.test(visibleText) ? normalizeStateLabel(visibleText) : "A";
-    const entry = buildCatalogEntry(alt, detailUrl, state, model);
+    const entry = buildCatalogEntry(alt, detailUrl, state, model, extractStock(line));
     entry.id = id;
     items.push(entry);
   }
@@ -230,6 +260,11 @@ function extractTotalPages(html) {
 
 function isMatchableState(state) {
   return String(state || "A").toUpperCase() === "A";
+}
+
+function isMatchableEntry(entry) {
+  if (!isMatchableState(entry?.state)) return false;
+  return !/(?:PSA|ARS|CGC|BGS|ACE)\s*10|鑑定済/i.test(String(entry?.name || ""));
 }
 
 async function crawlCardrushSeed(keyword, maxPages = Number.POSITIVE_INFINITY) {
@@ -308,27 +343,34 @@ async function crawlCardrushCatalog(
 ) {
   const catalog = mergeCatalogs(initialCatalog);
   const seenUrls = new Set(catalog.map((entry) => entry.detailUrl));
+  const catalogIndexByUrl = new Map(catalog.map((entry, index) => [entry.detailUrl, index]));
   const progress = safeReadJson(progressPath, { completedSeeds: [] });
-  const completedSeeds = new Set(progress.completedSeeds || []);
+  const refreshAll = process.env.CARDRUSH_REFRESH_ALL === "1";
+  const skipSeeds = process.env.CARDRUSH_SKIP_SEEDS === "1";
+  const completedSeeds = new Set(refreshAll ? [] : progress.completedSeeds || []);
   const runLimit = Number(process.env.CARDRUSH_SEED_BATCH || 12);
   const allPendingSeeds = seedList.filter((seed) => !completedSeeds.has(seed));
-  const pendingSeeds = runLimit > 0 ? allPendingSeeds.slice(0, runLimit) : allPendingSeeds;
+  const pendingSeeds = skipSeeds ? [] : runLimit > 0 ? allPendingSeeds.slice(0, runLimit) : allPendingSeeds;
 
   for (let i = 0; i < pendingSeeds.length; i += concurrency) {
     const batch = pendingSeeds.slice(i, i + concurrency).map((seed) => String(seed || "").trim()).filter(Boolean);
     const results = await Promise.all(batch.map((seed) => crawlCardrushSeed(seed, maxPages)));
     for (const result of results) {
       for (const item of result.items) {
-        if (!isMatchableState(item.state)) continue;
-        if (seenUrls.has(item.detailUrl)) continue;
+        if (seenUrls.has(item.detailUrl)) {
+          const existingIndex = catalogIndexByUrl.get(item.detailUrl);
+          if (Number.isInteger(existingIndex)) catalog[existingIndex] = item;
+          continue;
+        }
         seenUrls.add(item.detailUrl);
+        catalogIndexByUrl.set(item.detailUrl, catalog.length);
         catalog.push(item);
       }
     }
     results.forEach((result, index) => {
       if (result.complete) completedSeeds.add(batch[index]);
     });
-    if (checkpointPath) fs.writeFileSync(checkpointPath, JSON.stringify(catalog, null, 2), "utf8");
+    if (checkpointPath) fs.writeFileSync(checkpointPath, JSON.stringify(catalog), "utf8");
     if (progressPath) {
       fs.writeFileSync(progressPath, JSON.stringify({ completedSeeds: [...completedSeeds] }, null, 2), "utf8");
     }
@@ -374,7 +416,8 @@ function resolveCardrushMatch(card, catalog, catalogIndex = null) {
     : catalog || [];
 
   for (const entry of candidates) {
-    if (!isMatchableState(entry.state)) continue;
+    if (!isMatchableEntry(entry)) continue;
+    if (invalidCardrushUrls.has(entry.detailUrl)) continue;
     const entryName = normalizeLooseText(entry.name);
     const entrySig = extractCardrushComponents(entry);
     const entryBase = normalizeLooseText(entrySig.base);
@@ -410,14 +453,18 @@ function buildSeedList(cards) {
   const setCounts = new Map();
   for (const card of cards || []) {
     const sig = extractCardrushComponents(card);
-    if (sig.setCode && isModernSetCode(sig.setCode)) {
+    if (sig.setCode && (isModernSetCode(sig.setCode) || isPromoCard(card))) {
       const key = String(sig.setCode).trim().toUpperCase();
       setCounts.set(key, (setCounts.get(key) || 0) + 1);
     }
   }
   const configuredLimit = Number(process.env.CARDRUSH_TOP_SETS || 0);
   const sorted = [...setCounts.entries()]
-    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .sort((a, b) => {
+      const aPromo = /-P$/i.test(a[0]) ? 1 : 0;
+      const bPromo = /-P$/i.test(b[0]) ? 1 : 0;
+      return bPromo - aPromo || b[1] - a[1] || a[0].localeCompare(b[0]);
+    })
     .map(([setCode]) => setCode)
     .filter(Boolean);
   return configuredLimit > 0 ? sorted.slice(0, configuredLimit) : sorted;
@@ -436,14 +483,23 @@ function mergeCatalogs(...catalogs) {
 
 function buildTargetQuery(card) {
   const sig = extractCardrushComponents(card);
+  if (/\/[^0-9]/.test(sig.cardNo)) return sig.cardNo;
   return sig.cardNo && sig.setCode ? `${sig.cardNo} ${sig.setCode}` : "";
 }
 
-async function crawlUnmatchedCards(cards, catalog, concurrency = 1, checkpointPath = "", progressPath = "") {
+function isPromoCard(card) {
+  const source = String(card?.name || "");
+  const sig = extractCardrushComponents(card);
+  return /プロモ|PROMO/i.test(source) || /-P$/i.test(sig.setCode) || /\bP\b/.test(source);
+}
+
+async function crawlUnmatchedCards(cards, catalog, concurrency = 1, checkpointPath = "", progressPath = "", recheckIds = new Set()) {
   const progress = safeReadJson(progressPath, { attemptedQueries: [] });
   const attemptedQueries = new Set(progress.attemptedQueries || []);
   const catalogIndex = buildCatalogIndex(catalog);
-  const unmatched = cards.filter((card) => isModernCard(card) && !resolveCardrushMatch(card, catalog, catalogIndex));
+  const unmatched = cards.filter(
+    (card) => (isModernCard(card) || isPromoCard(card)) && !resolveCardrushMatch(card, catalog, catalogIndex)
+  );
   console.log(`cardrush targeted searches: ${unmatched.length}`);
   const found = [];
   const seenQueries = new Set();
@@ -452,10 +508,12 @@ async function crawlUnmatchedCards(cards, catalog, concurrency = 1, checkpointPa
   for (const card of unmatched) {
     const query = buildTargetQuery(card);
     const key = normalizeLooseText(query);
-    if (!key || seenQueries.has(key) || attemptedQueries.has(key)) continue;
+    const force = recheckIds.has(card.id);
+    if (!key || seenQueries.has(key) || (attemptedQueries.has(key) && !force)) continue;
     seenQueries.add(key);
-    queries.push({ query, key });
+    queries.push({ query, key, promo: isPromoCard(card), force });
   }
+  queries.sort((a, b) => Number(b.force) - Number(a.force) || Number(b.promo) - Number(a.promo));
   const targetLimit = Number(process.env.CARDRUSH_TARGET_BATCH || 40);
   const selectedQueries = targetLimit > 0 ? queries.slice(0, targetLimit) : queries;
 
@@ -463,11 +521,13 @@ async function crawlUnmatchedCards(cards, catalog, concurrency = 1, checkpointPa
     const batch = selectedQueries.slice(i, i + concurrency);
     const results = await Promise.all(batch.map(({ query }) => crawlCardrushSeed(query, 1)));
     for (const result of results) {
-      found.push(...result.items.filter((item) => isMatchableState(item.state)));
+      found.push(...result.items.filter(isMatchableEntry));
     }
     batch.forEach(({ key }) => attemptedQueries.add(key));
-    const merged = mergeCatalogs(catalog, found);
-    if (checkpointPath) fs.writeFileSync(checkpointPath, JSON.stringify(merged, null, 2), "utf8");
+    // Targeted result pages can have abbreviated names. Keep the richer set-list
+    // entry when the same product URL is already present.
+    const merged = mergeCatalogs(found, catalog);
+    if (checkpointPath) fs.writeFileSync(checkpointPath, JSON.stringify(merged), "utf8");
     if (progressPath) {
       fs.writeFileSync(progressPath, JSON.stringify({ attemptedQueries: [...attemptedQueries] }, null, 2), "utf8");
     }
@@ -475,7 +535,7 @@ async function crawlUnmatchedCards(cards, catalog, concurrency = 1, checkpointPa
       console.log(`targeted progress: ${Math.min(i + concurrency, selectedQueries.length)}/${selectedQueries.length}, found=${found.length}`);
     }
   }
-  return mergeCatalogs(catalog, found);
+  return mergeCatalogs(found, catalog);
 }
 
 function injectKnownOverrides(catalog) {
@@ -503,9 +563,13 @@ async function main() {
   const catalogPath = path.join(__dirname, "cardrush_catalog.json");
   const progressPath = path.join(__dirname, "cardrush_crawl_progress.json");
   const targetProgressPath = path.join(__dirname, "cardrush_target_progress.json");
+  const invalidPath = path.join(__dirname, "cardrush_invalid_urls.json");
+  const recheckPath = path.join(__dirname, "cardrush_recheck_ids.json");
 
   const cards = safeReadJson(dataPath, []);
   if (!Array.isArray(cards)) throw new Error("pokemon-cards.json is not an array");
+  invalidCardrushUrls = new Set(safeReadJson(invalidPath, []));
+  const recheckIds = new Set(safeReadJson(recheckPath, []));
 
   const seedList = buildSeedList(cards);
   console.log(`cardrush seeds: ${seedList.length}`);
@@ -523,17 +587,34 @@ async function main() {
       catalogPath,
       progressPath
     );
-    crawledCatalog = await crawlUnmatchedCards(cards, crawledCatalog, concurrency, catalogPath, targetProgressPath);
+    crawledCatalog = await crawlUnmatchedCards(
+      cards,
+      crawledCatalog,
+      concurrency,
+      catalogPath,
+      targetProgressPath,
+      recheckIds
+    );
   }
   crawledCatalog = injectKnownOverrides(crawledCatalog);
   console.log(`cardrush crawled: ${crawledCatalog.length}`);
   const catalogIndex = buildCatalogIndex(crawledCatalog);
+  const catalogByUrl = new Map(crawledCatalog.map((entry) => [entry.detailUrl, entry]));
 
   const updated = cards.map((card) => {
     const match = resolveCardrushMatch(card, crawledCatalog, catalogIndex);
+    const existingEntry = catalogByUrl.get(card.cardrushUrl);
+    const preservedUrl =
+      existingEntry &&
+      isMatchableEntry(existingEntry) &&
+      !invalidCardrushUrls.has(card.cardrushUrl)
+        ? card.cardrushUrl
+        : "";
     const next = { ...card };
     if (match) {
       next.cardrushUrl = match.detailUrl;
+    } else if (preservedUrl) {
+      next.cardrushUrl = preservedUrl;
     } else {
       delete next.cardrushUrl;
     }
@@ -545,13 +626,15 @@ async function main() {
   });
 
   fs.writeFileSync(dataPath, JSON.stringify(updated), "utf8");
-  fs.writeFileSync(catalogPath, JSON.stringify(crawledCatalog, null, 2), "utf8");
+  fs.writeFileSync(catalogPath, JSON.stringify(crawledCatalog), "utf8");
 
   const matched = updated.filter((card) => card.cardrushUrl).length;
   const modernCoverage = coverage(updated);
   const siteMeta = safeReadJson(metaPath, {});
   siteMeta.cardrushCoverage = modernCoverage;
   fs.writeFileSync(metaPath, JSON.stringify(siteMeta, null, 2), "utf8");
+  const remainingRechecks = [...recheckIds].filter((id) => !updated.find((card) => card.id === id && card.cardrushUrl));
+  fs.writeFileSync(recheckPath, JSON.stringify(remainingRechecks), "utf8");
   console.log(`cardrush matched: ${matched}/${updated.length}`);
   console.log(`modern coverage: ${JSON.stringify(modernCoverage)}`);
 }
