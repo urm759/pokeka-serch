@@ -1,0 +1,50 @@
+name: Refresh Pokemon Site Data
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 08:00 JST every day (GitHub Actions cron uses UTC).
+    - cron: "0 23 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Update site data
+        env:
+          SNKR_BATCH: "0"
+        run: node work/update_pokemon_site.js
+
+      - name: Resolve all Snkrdunk direct links
+        env:
+          SNKR_BATCH: "0"
+          SNKR_CONCURRENCY: "20"
+          SNKR_CHECKPOINT: "100"
+          SNKR_RECHECK_DAYS: "30"
+        run: node work/update_snkr_links.js
+
+      - name: Expand Cardrush direct links
+        run: node work/update_cardrush_links.js
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/pokemon-cards.json data/pokemon-cards-meta.json work/snkr_link_progress.json work/cardrush_catalog.json work/cardrush_invalid_urls.json work/cardrush_recheck_ids.json work/cardrush_crawl_progress.json work/cardrush_target_progress.json
+          if git diff --cached --quiet; then
+            echo "No data changes."
+            exit 0
+          fi
+          git commit -m "Refresh Pokemon card data"
+          git push
