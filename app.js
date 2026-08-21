@@ -3,7 +3,6 @@ const fmt = new Intl.NumberFormat("ja-JP");
 const state = {
   cards: [],
   snkrUrlCache: Object.create(null),
-  cardrushUrlCache: Object.create(null),
   cardById: Object.create(null),
   snkrObserver: null,
   hiddenDecisions: {
@@ -30,6 +29,7 @@ const state = {
   maxPrice: null,
   sort: "roi-desc",
   q: "",
+  visibleLimit: 60,
 };
 
 let meta = window.POKEMON_CARDS_META || {};
@@ -79,6 +79,8 @@ const els = {
   guideButtons: [...document.querySelectorAll("[data-guide-mode]")],
   decisionButtons: [...document.querySelectorAll("[data-hide-decision]")],
   displayButtons: [...document.querySelectorAll("[data-toggle-display]")],
+  loadMoreBtn: document.getElementById("loadMoreBtn"),
+  resultProgress: document.getElementById("resultProgress"),
 };
 
 function showStatus(message, kind = "info") {
@@ -150,7 +152,7 @@ function calcGuideBuyPrice(psa10, hitRate, fee, targetRoi, psa9Rate = 0.75) {
 }
 
 function buildTorecaCardUrl(card) {
-  return card.pageUrl || `https://toreca-souba.com/cards/${card.id}`;
+  return `https://toreca-souba.com/cards/${card.id}`;
 }
 
 function buildSnkrUrl(card) {
@@ -168,78 +170,6 @@ function buildSnkrSearchUrl(card) {
     .trim();
   if (!query) return "https://snkrdunk.com/search/";
   return `https://snkrdunk.com/search?brandId=pokemon&categoryId=25&isUnderRetail=false&keywords=${encodeURIComponent(query)}`;
-}
-
-function getCardrushConditionLabel(card) {
-  const raw = String(card.condition ?? card.state ?? card.grade ?? "").trim();
-  return raw || "美品";
-}
-
-function resolveCardrushLink(card) {
-  const condition = getCardrushConditionLabel(card);
-  return {
-    url: "",
-    direct: false,
-    condition,
-  };
-}
-
-function buildCardrushSearchUrl(card) {
-  const query = card.cardrushQueryName
-    || [card.name, card.model, card.variant, card.rarity].filter(Boolean).join(" ");
-  return `https://www.cardrush-pokemon.jp/product-list?keyword=${encodeURIComponent(query)}`;
-}
-
-function extractCardrushProductUrl(markdown) {
-  const candidates = [];
-  for (const line of String(markdown || "").split(/\r?\n/)) {
-    const alt = (line.match(/!\[Image \d+: ([^\]]+)\]/) || [])[1] || "";
-    const url = (line.match(/\]\((https:\/\/www\.cardrush-pokemon\.jp\/product\/\d+)\)\s*$/) || [])[1] || "";
-    if (!url) continue;
-    const stateRank = /^〔状態A-〕/.test(alt) ? 1 : /^〔状態B/.test(alt) ? 0 : 2;
-    candidates.push({ url, stateRank });
-  }
-  candidates.sort((a, b) => b.stateRank - a.stateRank);
-  return candidates[0]?.url || "";
-}
-
-async function openResolvedCardrushProduct(card, button) {
-  const popup = window.open("about:blank", "_blank");
-  if (popup) popup.document.title = "カードラッシュ商品を確認中";
-  button.disabled = true;
-  button.textContent = "商品を確認中...";
-  try {
-    const source = String(card.name || "");
-    const setCode = (source.match(/\[\s*([A-Za-z0-9-]+)\s+\d{1,4}(?:\/\d{1,4})?\s*\]/) || [])[1] || "";
-    const cardNo = (source.match(/(\d{1,4}\/\d{1,4})/) || [])[1] || "";
-    const baseName = source.split("[")[0].replace(/\s+(?:SAR|CSR|SSR|UR|HR|SR|AR|RRR|RR|R|C|U).*$/i, "").trim();
-    const queries = [
-      card.cardrushQueryName || source,
-      [cardNo, setCode].filter(Boolean).join(" "),
-      cardNo,
-      [baseName, cardNo].filter(Boolean).join(" "),
-    ].filter((query, index, list) => query && list.indexOf(query) === index);
-    let productUrl = "";
-    for (const query of queries) {
-      const proxyUrl = `https://r.jina.ai/http://www.cardrush-pokemon.jp/product-list?keyword=${encodeURIComponent(query)}`;
-      const response = await fetch(proxyUrl, { cache: "no-store" });
-      if (!response.ok) continue;
-      productUrl = extractCardrushProductUrl(await response.text());
-      if (productUrl) break;
-    }
-    if (!productUrl) throw new Error("product not found");
-    state.cardrushUrlCache[card.id] = { url: productUrl, direct: true, condition: "A" };
-    button.textContent = "カードラッシュ商品";
-    if (popup) popup.location.replace(productUrl);
-    else window.location.href = productUrl;
-  } catch (error) {
-    if (popup) popup.close();
-    button.textContent = "カードラッシュ取扱い確認できず";
-    button.title = "商品ページが見つからないか、一時的に取得できませんでした";
-    console.warn("Cardrush product resolution failed", error);
-  } finally {
-    button.disabled = false;
-  }
 }
 
 function extractSnkrProductUrl(html) {
@@ -300,7 +230,7 @@ function hydrateSnkrLink(card, url) {
   const link = article.querySelector("[data-snk-link]");
   if (!link) return;
   link.href = url;
-  link.textContent = /snkrdunk\.com\/(apparels|trading-cards|products)\/\d+/i.test(url) ? "スニダン商品" : "スニダンで探す";
+  link.textContent = /snkrdunk\.com\/(apparels|trading-cards|products)\/\d+/i.test(url) ? "スニダン直リンク" : "スニダン検索";
 }
 
 function decisionFilterKey(card) {
@@ -580,8 +510,8 @@ function render() {
     .filter((card) => {
       const decision = decisionLabel(card);
       const decisionKey = decisionFilterKey(card);
-      const haystack = normalize(`${card.name} ${card.model} ${card.rarity} ${card.id} ${card.psaQuery || ""} ${decision} ${card.siteDecision || ""}`);
-      const compactHaystack = compactSearch(`${card.name} ${card.model} ${card.rarity} ${card.id} ${card.psaQuery || ""} ${decision} ${card.siteDecision || ""}`);
+      const haystack = normalize(`${card.name} ${card.model} ${card.id} ${decision} ${card.siteDecision || ""}`);
+      const compactHaystack = compactSearch(`${card.name} ${card.model} ${card.id} ${decision} ${card.siteDecision || ""}`);
       if (card.saleTx30d < state.minSaleTx) return false;
       if (state.maxSaleTx != null && card.saleTx30d > state.maxSaleTx) return false;
       if (card.saleTx7d < state.minSaleTx7) return false;
@@ -609,9 +539,16 @@ function render() {
     els.updatedAt.textContent = meta.updatedAt ? String(meta.updatedAt) : "未設定";
   }
   renderGuide();
+  const visibleCards = enriched.slice(0, state.visibleLimit);
+  if (els.resultProgress) {
+    els.resultProgress.textContent = `${fmt.format(enriched.length)}枚中 ${fmt.format(visibleCards.length)}枚を表示`;
+  }
+  if (els.loadMoreBtn) {
+    els.loadMoreBtn.hidden = visibleCards.length >= enriched.length;
+  }
 
   state.cardById = Object.create(null);
-  els.grid.innerHTML = enriched.map((card) => {
+  els.grid.innerHTML = visibleCards.map((card) => {
     state.cardById[card.id] = card;
     const roiClass = card.roi >= 120 ? "good" : card.roi >= 80 ? "sky" : "warn";
     const width = Math.max(8, Math.min(100, card.roi));
@@ -619,23 +556,20 @@ function render() {
     const decision = decisionLabel(card);
     const siteDecision = card.siteDecision || "未取得";
     const snkUrl = card.snkUrl || state.snkrUrlCache[card.id] || buildSnkrUrl(card);
-    const cachedCardrushLink = state.cardrushUrlCache[card.id];
-    const cardrushSearchUrl = card.cardrushSearchUrl || buildCardrushSearchUrl(card);
-    const cardrushLink = card.cardrushUrl
-      ? { url: card.cardrushUrl, direct: true, condition: getCardrushConditionLabel(card) }
-      : cachedCardrushLink || resolveCardrushLink(card);
-    state.cardrushUrlCache[card.id] = cardrushLink;
+    const snkrDirect = /snkrdunk\.com\/(apparels|trading-cards|products)\/\d+/i.test(snkUrl);
     const detailChips = [
       `<span class="badge sky">美品 直近30日 ${fmt.format(card.saleTx30d)}件</span>`,
       `<span class="badge sky">美品 直近7日 ${fmt.format(card.saleTx7d)}件</span>`,
       `<span class="badge sky">PSA10 直近30日 ${fmt.format(card.psaTx30d)}件</span>`,
       `<span class="badge sky">PSA10 直近7日 ${fmt.format(card.psaTx7d)}件</span>`,
-      `<a class="link-badge" href="${snkUrl}" data-snk-link target="_blank" rel="noreferrer">スニダンで探す</a>`,
-      cardrushLink.direct
-        ? `<a class="link-badge" href="${cardrushLink.url}" target="_blank" rel="noreferrer">カードラッシュ商品</a>`
-        : `<button class="link-badge" type="button" data-cardrush-resolve="${card.id}">カードラッシュ商品を開く</button>`,
-      `<span class="badge">カテゴリ ポケモン</span>`,
       `<span class="badge ${roiClass}">利益率 ${Number.isFinite(card.roi) ? Math.round(card.roi) : 0}%</span>`,
+    ].join("");
+    const marketLinks = [
+      `<a class="market-link toreca" href="${buildTorecaCardUrl(card)}" target="_blank" rel="noreferrer"><span>相場元</span><strong>みんトレ直リンク</strong></a>`,
+      `<a class="market-link snkr" href="${snkUrl}" data-snk-link target="_blank" rel="noreferrer"><span>フリマ</span><strong>${snkrDirect ? "スニダン直リンク" : "スニダン検索"}</strong></a>`,
+      card.cardrushUrl
+        ? `<a class="market-link cardrush" href="${card.cardrushUrl}" target="_blank" rel="noreferrer"><span>ショップ・状態A</span><strong>カードラッシュ直リンク</strong></a>`
+        : `<span class="market-link unavailable"><span>ショップ</span><strong>カードラッシュ直リンク未取得</strong></span>`,
     ].join("");
     const decisionCompare = [
       state.showSiteDecision
@@ -671,11 +605,15 @@ function render() {
               <h3>${name}</h3>
               <p>PSA10相場と美品価格の差から、鑑定費 ${fmt.format(state.fee)} 円を差し引いて判定しています。</p>
             </div>
-            <a class="link-badge" href="https://toreca-souba.com/cards/${card.id}" target="_blank" rel="noreferrer">元ページを開く</a>
           </div>
 
           <div class="badges">
             ${detailChips}
+          </div>
+
+          <div class="market-links" aria-label="外部サイトへの直リンク">
+            <div class="market-links-title">商品ページ</div>
+            <div class="market-links-grid">${marketLinks}</div>
           </div>
 
           <div class="decision-compare">
@@ -716,6 +654,7 @@ function decisionLabel(card) {
 }
 
 function syncFromUI() {
+  state.visibleLimit = 60;
   state.fee = Number(els.feeInput.value || 0);
   state.minSaleTx = Number(els.saleTxMinInput.value || 0);
   state.maxSaleTx = parseOptionalNumber(els.saleTxMaxInput.value);
@@ -773,11 +712,9 @@ els.copyLinkBtn.addEventListener("click", async () => {
   setTimeout(() => (els.copyLinkBtn.textContent = "この条件をURLに反映"), 1400);
 });
 
-els.grid.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-cardrush-resolve]");
-  if (!button) return;
-  const card = state.cardById[button.dataset.cardrushResolve];
-  if (card) openResolvedCardrushProduct(card, button);
+els.loadMoreBtn.addEventListener("click", () => {
+  state.visibleLimit += 60;
+  render();
 });
 
 init().catch((err) => {

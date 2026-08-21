@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>トレカ利益率計算サイト</title>
+  <title>トレカ利益商品検索サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="./styles.css" />
 </head>
@@ -12,14 +12,14 @@
   <div class="backdrop backdrop-b"></div>
   <main class="shell">
     <section class="hero card">
-      <div class="eyebrow">トレカ利益率計算サイト / Pokémon / PSA10</div>
-      <h1>トレカ利益率計算サイト</h1>
+      <div class="eyebrow">Pokémon cards / profit finder</div>
+      <h1>トレカ利益商品検索サイト</h1>
       <p class="lede">
         美品価格とPSA10相場から、鑑定費を差し引いた利益率で判定します。
         取引数・鑑定費・利益率の条件は画面上でそのまま調整できます。
       </p>
 
-      <div class="controls">
+      <div class="controls controls-primary">
         <label class="control control-wide">
           <span>検索</span>
           <input id="qInput" type="text" placeholder="カード名・型番で検索" />
@@ -28,6 +28,53 @@
           <span>鑑定費</span>
           <input id="feeInput" type="number" min="0" step="100" value="13000" />
         </label>
+        <label class="control">
+          <span>利益率 下限</span>
+          <input id="roiInput" type="number" min="0" step="1" value="40" />
+        </label>
+        <label class="control">
+          <span>並び順</span>
+          <select id="sortInput">
+            <option value="roi-desc">利益率が高い順</option>
+            <option value="roi-asc">利益率が低い順</option>
+            <option value="profit-desc">利益額が高い順</option>
+            <option value="profit-asc">利益額が低い順</option>
+            <option value="tx-desc">美品30日件数が多い順</option>
+            <option value="tx-asc">美品30日件数が少ない順</option>
+            <option value="tx7-desc">美品7日件数が多い順</option>
+            <option value="tx7-asc">美品7日件数が少ない順</option>
+            <option value="psaTx-desc">PSA10 30日件数が多い順</option>
+            <option value="psaTx-asc">PSA10 30日件数が少ない順</option>
+            <option value="psaTx7-desc">PSA10 7日件数が多い順</option>
+            <option value="psaTx7-asc">PSA10 7日件数が少ない順</option>
+            <option value="chg30-desc">30日変動率が高い順</option>
+            <option value="chg30-asc">30日変動率が低い順</option>
+            <option value="chg7-desc">7日変動率が高い順</option>
+            <option value="chg7-asc">7日変動率が低い順</option>
+            <option value="psa-desc">PSA10が高い順</option>
+            <option value="psa-asc">PSA10が安い順</option>
+            <option value="psaMin-desc">PSA10下限が高い順</option>
+            <option value="psaMin-asc">PSA10下限が低い順</option>
+            <option value="price-asc">美品価格が安い順</option>
+            <option value="price-desc">美品価格が高い順</option>
+            <option value="listings-desc">掲載件数が多い順</option>
+            <option value="listings-asc">掲載件数が少ない順</option>
+            <option value="days-desc">掲載日数が長い順</option>
+            <option value="days-asc">掲載日数が短い順</option>
+            <option value="updated-desc">更新日が新しい順</option>
+            <option value="updated-asc">更新日が古い順</option>
+            <option value="tvel-desc">サイト年利が高い順</option>
+            <option value="tvel-asc">サイト年利が低い順</option>
+          </select>
+        </label>
+      </div>
+
+      <details class="advanced-filters">
+        <summary>
+          <span>詳細な検索条件</span>
+          <small>取引件数・価格帯・判定表示を調整</small>
+        </summary>
+        <div class="controls controls-advanced">
         <label class="control">
           <span>美品件数 直近30日</span>
           <div class="range-pair">
@@ -55,10 +102,6 @@
             <input id="psaTx7MinInput" type="number" min="0" step="1" value="0" placeholder="下限" />
             <input id="psaTx7MaxInput" type="number" min="0" step="1" placeholder="上限" />
           </div>
-        </label>
-        <label class="control">
-          <span>利益率 下限</span>
-          <input id="roiInput" type="number" min="0" step="1" value="40" />
         </label>
         <label class="control">
           <span>美品 価格帯</span>
@@ -90,42 +133,8 @@
             <button id="calcDecisionBtn" class="display-pill" type="button" data-toggle-display="calc">計算判定を非表示</button>
           </div>
         </div>
-        <label class="control">
-          <span>並び順</span>
-          <select id="sortInput">
-            <option value="roi-desc">利益率が高い順</option>
-            <option value="roi-asc">利益率が低い順</option>
-            <option value="profit-desc">利益額が高い順</option>
-            <option value="profit-asc">利益額が低い順</option>
-            <option value="tx-desc">取引数が多い順</option>
-            <option value="tx-asc">取引数が少ない順</option>
-            <option value="tx7-desc">直近7日が多い順</option>
-            <option value="tx7-asc">直近7日が少ない順</option>
-            <option value="psaTx-desc">PSA10取引数が多い順</option>
-            <option value="psaTx-asc">PSA10取引数が少ない順</option>
-            <option value="psaTx7-desc">PSA10直近7日が多い順</option>
-            <option value="psaTx7-asc">PSA10直近7日が少ない順</option>
-            <option value="chg30-desc">30日変動率が高い順</option>
-            <option value="chg30-asc">30日変動率が低い順</option>
-            <option value="chg7-desc">7日変動率が高い順</option>
-            <option value="chg7-asc">7日変動率が低い順</option>
-            <option value="psa-desc">PSA10が高い順</option>
-            <option value="psa-asc">PSA10が安い順</option>
-            <option value="psaMin-desc">PSA10下限が高い順</option>
-            <option value="psaMin-asc">PSA10下限が低い順</option>
-            <option value="price-asc">美品価格が安い順</option>
-            <option value="price-desc">美品価格が高い順</option>
-            <option value="listings-desc">掲載件数が多い順</option>
-            <option value="listings-asc">掲載件数が少ない順</option>
-            <option value="days-desc">掲載日数が長い順</option>
-            <option value="days-asc">掲載日数が短い順</option>
-            <option value="updated-desc">更新日が新しい順</option>
-            <option value="updated-asc">更新日が古い順</option>
-            <option value="tvel-desc">サイト年利が高い順</option>
-            <option value="tvel-asc">サイト年利が低い順</option>
-          </select>
-        </label>
-      </div>
+        </div>
+      </details>
 
       <div class="stats">
         <div class="stat">
@@ -208,20 +217,24 @@
     <section class="toolbar card">
       <div>
         <h2>候補一覧</h2>
-        <p>カード画像は各カードページの公開画像を表示。`data/pokemon-cards.json` が全件データです。</p>
+        <p>価格・取引件数・利益率を比較し、外部の商品ページへ直接移動できます。</p>
       </div>
       <div class="toolbar-actions">
         <div class="toolbar-meta">データ取得日 <strong id="updatedAt">-</strong></div>
         <button id="copyLinkBtn" type="button">この条件をURLに反映</button>
-        <a id="sourceLink" href="https://toreca-souba.com/" target="_blank" rel="noreferrer">出典を開く</a>
+        <a id="sourceLink" href="https://toreca-souba.com/" target="_blank" rel="noreferrer">みんトレを見る</a>
       </div>
     </section>
 
     <section id="grid" class="grid"></section>
+    <div class="load-more-wrap">
+      <p id="resultProgress"></p>
+      <button id="loadMoreBtn" type="button">さらに60枚表示</button>
+    </div>
 
     <section class="card footer">
       <div>
-        <h3>トレカ利益率計算サイトの作り</h3>
+        <h3>トレカ利益商品検索サイトについて</h3>
         <p>
           このフォルダをそのまま GitHub Pages に置ける静的サイトとして作っています。
           画面側で条件を変えられるので、毎回コードを触らなくても確認しやすいです。
