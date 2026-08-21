@@ -521,6 +521,8 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
   color:var(--text);
   font-size:12px;
 }
+button.link-badge{font:inherit;cursor:pointer}
+button.link-badge:disabled{cursor:wait;opacity:.72}
 .badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 .badge{
   border-radius:999px;

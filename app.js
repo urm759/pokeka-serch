@@ -178,7 +178,7 @@ function getCardrushConditionLabel(card) {
 function resolveCardrushLink(card) {
   const condition = getCardrushConditionLabel(card);
   return {
-    url: "https://www.cardrush-pokemon.jp/product-list",
+    url: "",
     direct: false,
     condition,
   };
@@ -188,6 +188,58 @@ function buildCardrushSearchUrl(card) {
   const query = card.cardrushQueryName
     || [card.name, card.model, card.variant, card.rarity].filter(Boolean).join(" ");
   return `https://www.cardrush-pokemon.jp/product-list?keyword=${encodeURIComponent(query)}`;
+}
+
+function extractCardrushProductUrl(markdown) {
+  const candidates = [];
+  for (const line of String(markdown || "").split(/\r?\n/)) {
+    const alt = (line.match(/!\[Image \d+: ([^\]]+)\]/) || [])[1] || "";
+    const url = (line.match(/\]\((https:\/\/www\.cardrush-pokemon\.jp\/product\/\d+)\)\s*$/) || [])[1] || "";
+    if (!url) continue;
+    const stateRank = /^〔状態A-〕/.test(alt) ? 1 : /^〔状態B/.test(alt) ? 0 : 2;
+    candidates.push({ url, stateRank });
+  }
+  candidates.sort((a, b) => b.stateRank - a.stateRank);
+  return candidates[0]?.url || "";
+}
+
+async function openResolvedCardrushProduct(card, button) {
+  const popup = window.open("about:blank", "_blank");
+  if (popup) popup.document.title = "カードラッシュ商品を確認中";
+  button.disabled = true;
+  button.textContent = "商品を確認中...";
+  try {
+    const source = String(card.name || "");
+    const setCode = (source.match(/\[\s*([A-Za-z0-9-]+)\s+\d{1,4}(?:\/\d{1,4})?\s*\]/) || [])[1] || "";
+    const cardNo = (source.match(/(\d{1,4}\/\d{1,4})/) || [])[1] || "";
+    const baseName = source.split("[")[0].replace(/\s+(?:SAR|CSR|SSR|UR|HR|SR|AR|RRR|RR|R|C|U).*$/i, "").trim();
+    const queries = [
+      card.cardrushQueryName || source,
+      [cardNo, setCode].filter(Boolean).join(" "),
+      cardNo,
+      [baseName, cardNo].filter(Boolean).join(" "),
+    ].filter((query, index, list) => query && list.indexOf(query) === index);
+    let productUrl = "";
+    for (const query of queries) {
+      const proxyUrl = `https://r.jina.ai/http://www.cardrush-pokemon.jp/product-list?keyword=${encodeURIComponent(query)}`;
+      const response = await fetch(proxyUrl, { cache: "no-store" });
+      if (!response.ok) continue;
+      productUrl = extractCardrushProductUrl(await response.text());
+      if (productUrl) break;
+    }
+    if (!productUrl) throw new Error("product not found");
+    state.cardrushUrlCache[card.id] = { url: productUrl, direct: true, condition: "A" };
+    button.textContent = "カードラッシュ商品";
+    if (popup) popup.location.replace(productUrl);
+    else window.location.href = productUrl;
+  } catch (error) {
+    if (popup) popup.close();
+    button.textContent = "カードラッシュ取扱い確認できず";
+    button.title = "商品ページが見つからないか、一時的に取得できませんでした";
+    console.warn("Cardrush product resolution failed", error);
+  } finally {
+    button.disabled = false;
+  }
 }
 
 function extractSnkrProductUrl(html) {
@@ -581,7 +633,7 @@ function render() {
       `<a class="link-badge" href="${snkUrl}" data-snk-link target="_blank" rel="noreferrer">スニダンで探す</a>`,
       cardrushLink.direct
         ? `<a class="link-badge" href="${cardrushLink.url}" target="_blank" rel="noreferrer">カードラッシュ商品</a>`
-        : `<a class="link-badge" href="${cardrushSearchUrl}" target="_blank" rel="noreferrer">カードラッシュ検索</a>`,
+        : `<button class="link-badge" type="button" data-cardrush-resolve="${card.id}">カードラッシュ商品を開く</button>`,
       `<span class="badge">カテゴリ ポケモン</span>`,
       `<span class="badge ${roiClass}">利益率 ${Number.isFinite(card.roi) ? Math.round(card.roi) : 0}%</span>`,
     ].join("");
@@ -719,6 +771,13 @@ els.copyLinkBtn.addEventListener("click", async () => {
   await navigator.clipboard.writeText(url.toString());
   els.copyLinkBtn.textContent = "条件URLをコピーしました";
   setTimeout(() => (els.copyLinkBtn.textContent = "この条件をURLに反映"), 1400);
+});
+
+els.grid.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-cardrush-resolve]");
+  if (!button) return;
+  const card = state.cardById[button.dataset.cardrushResolve];
+  if (card) openResolvedCardrushProduct(card, button);
 });
 
 init().catch((err) => {
