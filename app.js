@@ -10,7 +10,6 @@ const state = {
     watch: false,
     avoid: false,
   },
-  showSiteDecision: true,
   showCalcDecision: true,
   fee: 13000,
   guideMode: "70",
@@ -71,6 +70,7 @@ const els = {
   topRoiStat: document.getElementById("topRoiStat"),
   topProfitStat: document.getElementById("topProfitStat"),
   updatedAt: document.getElementById("updatedAt"),
+  cardrushCoverage: document.getElementById("cardrushCoverage"),
   copyLinkBtn: document.getElementById("copyLinkBtn"),
   guidePanels: document.getElementById("guidePanels"),
   guideHitRateStat: document.getElementById("guideHitRateStat"),
@@ -263,19 +263,16 @@ function setDecisionHidden(key, hidden) {
 
 function syncDisplayButtons() {
   els.displayButtons.forEach((btn) => {
-    const key = btn.dataset.toggleDisplay;
-    const visible = key === "site" ? state.showSiteDecision : state.showCalcDecision;
+    const visible = state.showCalcDecision;
     btn.classList.toggle("active", !visible);
-    const label = key === "site" ? "サイト判定" : "計算判定";
+    const label = "計算判定";
     btn.textContent = visible ? `${label}を非表示` : `${label}を表示`;
     btn.setAttribute("aria-pressed", visible ? "false" : "true");
   });
 }
 
 function setDisplayVisible(key, visible) {
-  if (key === "site") {
-    state.showSiteDecision = visible;
-  } else if (key === "calc") {
+  if (key === "calc") {
     state.showCalcDecision = visible;
   } else {
     return;
@@ -421,7 +418,6 @@ function readUrl() {
   const sort = url.searchParams.get("sort");
   const q = url.searchParams.get("q");
   const hide = String(url.searchParams.get("hide") || "");
-  const showSite = url.searchParams.get("showSite");
   const showCalc = url.searchParams.get("showCalc");
   const hidden = new Set(hide.split(",").map((v) => v.trim()).filter(Boolean));
   if (guide && guideModes[guide]) {
@@ -432,7 +428,6 @@ function readUrl() {
   state.hiddenDecisions.watch = hidden.has("watch");
   state.hiddenDecisions.avoid = hidden.has("avoid");
   syncDecisionButtons();
-  state.showSiteDecision = showSite == null ? true : showSite !== "0";
   state.showCalcDecision = showCalc == null ? true : showCalc !== "0";
   syncDisplayButtons();
   if (fee != null && fee >= 0) els.feeInput.value = String(fee);
@@ -489,7 +484,7 @@ function buildShareUrl() {
   } else {
     url.searchParams.delete("q");
   }
-  url.searchParams.set("showSite", state.showSiteDecision ? "1" : "0");
+  url.searchParams.delete("showSite");
   url.searchParams.set("showCalc", state.showCalcDecision ? "1" : "0");
   const hidden = Object.entries(state.hiddenDecisions)
     .filter(([, value]) => value)
@@ -510,8 +505,8 @@ function render() {
     .filter((card) => {
       const decision = decisionLabel(card);
       const decisionKey = decisionFilterKey(card);
-      const haystack = normalize(`${card.name} ${card.model} ${card.id} ${decision} ${card.siteDecision || ""}`);
-      const compactHaystack = compactSearch(`${card.name} ${card.model} ${card.id} ${decision} ${card.siteDecision || ""}`);
+      const haystack = normalize(`${card.name} ${card.model} ${card.id} ${decision}`);
+      const compactHaystack = compactSearch(`${card.name} ${card.model} ${card.id} ${decision}`);
       if (card.saleTx30d < state.minSaleTx) return false;
       if (state.maxSaleTx != null && card.saleTx30d > state.maxSaleTx) return false;
       if (card.saleTx7d < state.minSaleTx7) return false;
@@ -538,6 +533,12 @@ function render() {
   if (els.updatedAt) {
     els.updatedAt.textContent = meta.updatedAt ? String(meta.updatedAt) : "未設定";
   }
+  if (els.cardrushCoverage) {
+    const cr = meta.cardrushCoverage;
+    els.cardrushCoverage.textContent = cr?.total
+      ? `${fmt.format(cr.linked)} / ${fmt.format(cr.total)}（${Number(cr.rate || 0).toFixed(1)}%）`
+      : "集計中";
+  }
   renderGuide();
   const visibleCards = enriched.slice(0, state.visibleLimit);
   if (els.resultProgress) {
@@ -554,7 +555,6 @@ function render() {
     const width = Math.max(8, Math.min(100, card.roi));
     const name = card.name.replace(/\s+/g, " ");
     const decision = decisionLabel(card);
-    const siteDecision = card.siteDecision || "未取得";
     const snkUrl = card.snkUrl || state.snkrUrlCache[card.id] || buildSnkrUrl(card);
     const snkrDirect = /snkrdunk\.com\/(apparels|trading-cards|products)\/\d+/i.test(snkUrl);
     const detailChips = [
@@ -571,28 +571,15 @@ function render() {
         ? `<a class="market-link cardrush" href="${card.cardrushUrl}" target="_blank" rel="noreferrer"><span>ショップ・状態A</span><strong>カードラッシュ直リンク</strong></a>`
         : `<span class="market-link unavailable"><span>ショップ</span><strong>カードラッシュ直リンク未取得</strong></span>`,
     ].join("");
-    const decisionCompare = [
-      state.showSiteDecision
-        ? `
-          <div class="decision-box site">
-            <span class="decision-label">サイト判定</span>
-            <strong class="decision-value">${siteDecision}</strong>
-            <span class="decision-sub">サイト側の掲載ラベルをそのまま反映</span>
-          </div>
-        `
-        : "",
-      state.showCalcDecision
-        ? `
+    const decisionCompare = state.showCalcDecision
+      ? `
           <div class="decision-box calc">
             <span class="decision-label">計算判定</span>
             <strong class="decision-value">${decision}</strong>
             <span class="decision-sub">美品・PSA10・鑑定費から算出</span>
           </div>
         `
-        : "",
-    ]
-      .filter(Boolean)
-      .join("");
+      : "";
     return `
       <article class="row card" data-card-id="${card.id}">
         <div class="thumb">
@@ -736,7 +723,7 @@ els.decisionButtons.forEach((btn) => {
 els.displayButtons.forEach((btn) => {
   btn.addEventListener("click", () => {
     const key = btn.dataset.toggleDisplay;
-    const visible = key === "site" ? state.showSiteDecision : state.showCalcDecision;
+    const visible = state.showCalcDecision;
     setDisplayVisible(key, !visible);
   });
 });

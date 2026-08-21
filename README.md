@@ -1,6 +1,13 @@
 # トレカ利益商品検索サイト
 
-GitHub Pages でそのまま公開しやすい静的サイトです。
+この `github-site` フォルダだけで、GitHub Pages の表示とデータ自動更新が動きます。
+
+## GitHub にアップロードするもの
+
+- アップロードするのは、この `github-site` フォルダの中身だけです
+- `index.html` が GitHub リポジトリのルートに見える配置にします
+- 親フォルダ側の `work`、`.github`、`outputs` を別々にアップロードする必要はありません
+- `.github/workflows/update-pokemon-site.yml` も含まれるため、毎日08:00（日本時間）の自動更新と手動更新を利用できます
 
 ## 仕組み
 
@@ -27,15 +34,17 @@ GitHub Pages でそのまま公開しやすい静的サイトです。
 ## 自動更新
 
 - `work/update_pokemon_site.js` を実行すると、toreca-souba の公開データからポケモンカード一覧とメタ情報を再生成します
+- `work/update_cardrush_links.js` が2015年以降のカードラッシュ状態A商品を増分取得し、目標カバー率90%まで進捗を保存します
 - GitHub Pages用には、画面で使う最小項目だけを圧縮したJSONを書き出します
 - `.github/workflows/update-pokemon-site.yml` で定期実行と手動実行を両方できるようにしています
-- GitHub Pages では、ワークフローが更新した `outputs/github-site/data/*` をそのまま配信できます
+- GitHub Pages では、ワークフローが更新した `data/*` をそのまま配信します
 
 ## GitHub Pages に置く方法
 
-1. この `github-site` フォルダの中身を GitHub リポジトリに入れる
-2. GitHub Pages の公開元をリポジトリ root または `docs/` に設定する
-3. `index.html` をルートに置けばそのまま表示される
+1. この `github-site` フォルダを開く
+2. 中にあるファイルとフォルダをすべて GitHub リポジトリのルートへアップロードする
+3. GitHub Pages の公開元を `Deploy from a branch`、ブランチを `main`、フォルダを `/(root)` に設定する
+4. Actions の `Refresh Pokemon Site Data` を有効にする
 
 ## 現在の抽出条件
 
