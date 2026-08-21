@@ -11,15 +11,36 @@ function resolveSiteRoot() {
 }
 
 async function fetchText(url) {
-  const res = await fetch(url, {
-    headers: {
-      "user-agent": "Mozilla/5.0",
-    },
-  });
-  if (!res.ok) {
-    throw new Error(`Failed to fetch ${url}: HTTP ${res.status}`);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 25000);
+  try {
+    const res = await fetch(url, {
+      headers: {
+        "user-agent": "Mozilla/5.0",
+      },
+      signal: controller.signal,
+    });
+    if (!res.ok) {
+      throw new Error(`Failed to fetch ${url}: HTTP ${res.status}`);
+    }
+    return await res.text();
+  } finally {
+    clearTimeout(timer);
   }
-  return await res.text();
+}
+
+async function mapLimit(items, limit, mapper) {
+  const results = new Array(items.length);
+  let cursor = 0;
+  async function worker() {
+    while (cursor < items.length) {
+      const index = cursor;
+      cursor += 1;
+      results[index] = await mapper(items[index], index);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.max(1, limit) }, () => worker()));
+  return results;
 }
 
 function pickScriptUrls(html) {
@@ -86,6 +107,20 @@ function extractSnkrProductUrl(html) {
   return [...new Set(candidates)].find(Boolean) || "";
 }
 
+function isSnkrProductUrl(value) {
+  return /^https?:\/\/(?:www\.)?snkrdunk\.com\/(?:apparels|trading-cards|products)\/\d+/i.test(String(value || ""));
+}
+
+function buildSnkrSearchUrl(card) {
+  const query = String(card?.name || card?.psaQuery || "")
+    .split("[")[0]
+    .replace(/\(.+?\)/g, "")
+    .trim();
+  return query
+    ? `https://snkrdunk.com/search?brandId=pokemon&categoryId=25&isUnderRetail=false&keywords=${encodeURIComponent(query)}`
+    : "https://snkrdunk.com/search/";
+}
+
 async function resolveSnkrUrlFromPage(pageUrl, fallbackCard) {
   const result = { snkrUrl: "" };
   try {
@@ -98,12 +133,7 @@ async function resolveSnkrUrlFromPage(pageUrl, fallbackCard) {
   } catch {
     // Fall back below.
   }
-  const query = String(fallbackCard?.name || fallbackCard?.psaQuery || "")
-    .split("[")[0]
-    .replace(/\(.+?\)/g, "")
-    .trim();
-  if (!query) return result;
-  result.snkrUrl = `https://snkrdunk.com/search?brandId=pokemon&categoryId=25&isUnderRetail=false&keywords=${encodeURIComponent(query)}`;
+  result.snkrUrl = buildSnkrSearchUrl(fallbackCard);
   return result;
 }
 
@@ -165,6 +195,19 @@ function normalizeLooseText(value) {
     .replace(/[^\p{L}\p{N}]+/gu, "");
 }
 
+function extractFinishKind(value) {
+  const text = String(value || "");
+  if (/マスターボールミラー|マスボ(?:ミラー)?/i.test(text)) return "master-ball-mirror";
+  if (/モンスターボールミラー|モンボ(?:ミラー)?/i.test(text)) return "monster-ball-mirror";
+  if (/SAR\s*仕様/i.test(text)) return "sar-style";
+  if (/ミラー/i.test(text)) return "mirror";
+  if (/旧裏/i.test(text)) return "old-back";
+  if (/英語版/i.test(text)) return "english";
+  if (/アンリミ/i.test(text)) return "unlimited";
+  if (/(?:^|[^A-Z0-9])1ED(?:[^A-Z0-9]|$)/i.test(text)) return "first-edition";
+  return "";
+}
+
 function resolveCardrushMatch(card, catalog) {
   const haystack = normalizeLooseText(
     [
@@ -177,8 +220,11 @@ function resolveCardrushMatch(card, catalog) {
       .filter(Boolean)
       .join(" ")
   );
+  const cardFinish = extractFinishKind(card.name);
   for (const entry of catalog || []) {
     if (String(entry.state || "A").toUpperCase() !== "A") continue;
+    const entryFinish = extractFinishKind(entry.name);
+    if ((cardFinish || entryFinish) && cardFinish !== entryFinish) continue;
     const keys = Array.isArray(entry.matchKeys) ? entry.matchKeys : [];
     if (keys.length && keys.every((key) => haystack.includes(normalizeLooseText(key)))) {
       return entry;
@@ -249,6 +295,10 @@ async function main() {
   const cardrushCatalog = readCardrushCatalog();
   const officialPsaByQuery = readOfficialPsaPopulation();
   const officialPsaAliases = buildOfficialPsaAliases(officialPsaByQuery);
+  const base = path.join(resolveSiteRoot(), "data");
+  const jsonPath = path.join(base, "pokemon-cards.json");
+  const previousCards = safeReadJson(jsonPath, []);
+  const previousById = new Map((Array.isArray(previousCards) ? previousCards : []).map((card) => [card.id, card]));
 
   let moduleMap = null;
   const sandbox = {
@@ -269,10 +319,20 @@ async function main() {
   const mod = { exports: {} };
   moduleMap[93280](mod);
   const all = mod.exports;
-  const pokemonRows = await Promise.all(
-    all
-      .filter((c) => c.title === "ポケモン")
-      .map(async (c) => {
+  const pokemonSource = all.filter((c) => c.title === "ポケモン");
+  const snkrBatch = Math.max(0, Number(process.env.SNKR_BATCH || 500));
+  const snkrPending = new Set(
+    pokemonSource
+      .filter((card) => !isSnkrProductUrl(previousById.get(card.id)?.snkUrl))
+      .slice(0, snkrBatch || 0)
+      .map((card) => card.id)
+  );
+  const snkrConcurrency = Math.max(1, Number(process.env.SNKR_CONCURRENCY || 8));
+  console.log(`snkr direct lookup: ${snkrPending.size} card(s)`);
+  const pokemonRows = await mapLimit(
+    pokemonSource,
+    snkrConcurrency,
+    async (c) => {
         const psaQuery = buildPsaQuery(c.name);
         const officialRow =
           psaQueryCandidates(psaQuery).map((key) => officialPsaByQuery[key] || officialPsaAliases[key]).find(Boolean) || null;
@@ -287,7 +347,10 @@ async function main() {
           officialTotal >= MIN_OFFICIAL_PSA_TOTAL &&
           officialRate >= MIN_OFFICIAL_PSA_RATE;
         const pageUrl = buildTorecaCardUrl(c.id);
-        const pageMeta = await resolveSnkrUrlFromPage(pageUrl, c);
+        const previousSnkrUrl = previousById.get(c.id)?.snkUrl || "";
+        const pageMeta = snkrPending.has(c.id)
+          ? await resolveSnkrUrlFromPage(pageUrl, c)
+          : { snkrUrl: previousSnkrUrl || buildSnkrSearchUrl(c) };
         return {
           id: c.id,
           title: c.title,
@@ -325,7 +388,7 @@ async function main() {
           cardrushState: cardrushMatch?.state || null,
           cardrushName: cardrushMatch?.name || null,
         };
-      })
+    }
   );
   const pokemon = pokemonRows.sort((a, b) => (b.tv30 || 0) - (a.tv30 || 0) || (b.price || 0) - (a.price || 0));
   const sitePokemon = pokemon.map((card) => ({
@@ -350,10 +413,8 @@ async function main() {
     cardrushUrl: card.cardrushState === "A" ? card.cardrushUrl : null,
   }));
 
-  const base = path.join(resolveSiteRoot(), "data");
   fs.mkdirSync(base, { recursive: true });
 
-  const jsonPath = path.join(base, "pokemon-cards.json");
   const metaJsonPath = path.join(base, "pokemon-cards-meta.json");
 
   const updatedAt = jstDate();

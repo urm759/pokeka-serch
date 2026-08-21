@@ -175,8 +175,8 @@ function buildSnkrSearchUrl(card) {
 function extractSnkrProductUrl(html) {
   const candidates = [];
   const regexes = [
-    /snkrdunk\.com\/(?:apparels|trading-cards|products)\/\d+(?:\/used\/\d+)?/gi,
-    /https?:\/\/snkrdunk\.com\/(?:apparels|trading-cards|products)\/\d+(?:\/used\/\d+)?/gi,
+    /(?:www\.)?snkrdunk\.com\/(?:apparels|trading-cards|products)\/\d+(?:\/used\/\d+)?/gi,
+    /https?:\/\/(?:www\.)?snkrdunk\.com\/(?:apparels|trading-cards|products)\/\d+(?:\/used\/\d+)?/gi,
     /href=["']([^"']*\/(?:apparels|trading-cards|products)\/\d+(?:\/used\/\d+)?)["']/gi,
   ];
   for (const regex of regexes) {
@@ -198,7 +198,7 @@ async function resolveSnkrUrl(card) {
   const key = String(card.id || "").trim();
   if (!key) return buildSnkrUrl(card);
   if (state.snkrUrlCache[key]) return state.snkrUrlCache[key];
-  if (card.snkUrl) {
+  if (/snkrdunk\.com\/(apparels|trading-cards|products)\/\d+/i.test(card.snkUrl || "")) {
     state.snkrUrlCache[key] = card.snkUrl;
     return card.snkUrl;
   }
@@ -230,7 +230,12 @@ function hydrateSnkrLink(card, url) {
   const link = article.querySelector("[data-snk-link]");
   if (!link) return;
   link.href = url;
-  link.textContent = /snkrdunk\.com\/(apparels|trading-cards|products)\/\d+/i.test(url) ? "スニダン直リンク" : "スニダン検索";
+  const label = link.querySelector("strong");
+  if (label) {
+    label.textContent = /snkrdunk\.com\/(apparels|trading-cards|products)\/\d+/i.test(url)
+      ? "スニダン直リンク"
+      : "スニダン検索";
+  }
 }
 
 function decisionFilterKey(card) {

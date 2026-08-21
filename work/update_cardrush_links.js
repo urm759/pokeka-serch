@@ -51,6 +51,32 @@ function normalizeLooseText(value) {
     .replace(/[^\p{L}\p{N}]+/gu, "");
 }
 
+function extractFinishKind(value) {
+  const text = String(value || "");
+  if (/マスターボールミラー|マスボ(?:ミラー)?/i.test(text)) return "master-ball-mirror";
+  if (/モンスターボールミラー|モンボ(?:ミラー)?/i.test(text)) return "monster-ball-mirror";
+  if (/SAR\s*仕様/i.test(text)) return "sar-style";
+  if (/ミラー/i.test(text)) return "mirror";
+  if (/旧裏/i.test(text)) return "old-back";
+  if (/英語版/i.test(text)) return "english";
+  if (/アンリミ/i.test(text)) return "unlimited";
+  if (/(?:^|[^A-Z0-9])1ED(?:[^A-Z0-9]|$)/i.test(text)) return "first-edition";
+  return "";
+}
+
+function finishLabel(kind) {
+  return {
+    "master-ball-mirror": "マスターボールミラー",
+    "monster-ball-mirror": "モンスターボールミラー",
+    "sar-style": "SAR仕様",
+    mirror: "ミラー",
+    "old-back": "旧裏",
+    english: "英語版",
+    unlimited: "アンリミ",
+    "first-edition": "1ED",
+  }[kind] || "";
+}
+
 function normalizeDisplayBase(value) {
   let text = String(value || "")
     .replace(/\s+/g, " ")
@@ -58,7 +84,12 @@ function normalizeDisplayBase(value) {
     .replace(/\s*[【\[].*$/, "")
     .trim();
 
-  const rarityPattern = "(?:SSR|CSR|SAR|UR|HR|SR|RRR|RR|AR|PR|P|H|C|U)";
+  text = text
+    .replace(/\s*\((?:マスターボールミラー|モンスターボールミラー|[^)]*ミラー|SAR\s*仕様|旧裏|英語版|アンリミ|1ED)\)\s*$/i, "")
+    .replace(/\s*(?:マスターボールミラー|モンスターボールミラー|マスボ(?:ミラー)?|モンボ(?:ミラー)?|SAR\s*仕様|ミラー|旧裏|英語版|アンリミ|1ED)\s*$/i, "")
+    .trim();
+
+  const rarityPattern = "(?:MUR|BWR|MA|SSR|CSR|CHR|SAR|UR|HR|SR|RRR|RR|AR|PR|P|H|C|U|R)";
   text = text.replace(
     new RegExp(
       `\\s*(?:(?:${rarityPattern})(?:\\s*[:：]\\s*[^\\s\\[]+)?|[:：]\\s*(?:SA|プロモ|ミラー|英語版|旧裏|仕様)|(?:仕様|プロモ|ミラー|英語版|旧裏))\\s*$`,
@@ -72,7 +103,7 @@ function normalizeDisplayBase(value) {
 function extractCardrushComponents(card) {
   const source = String(card?.name || card || "").replace(/\s+/g, " ").trim();
   const base = normalizeDisplayBase(source);
-  const rarityPattern = "SSR|CSR|SAR|UR|HR|SR|RRR|RR|AR|PR|P|H|C|U";
+  const rarityPattern = "MUR|BWR|MA|SSR|CSR|CHR|SAR|UR|HR|SR|RRR|RR|AR|PR|P|H|C|U|R";
   const setCode =
     (source.match(/\[\s*([A-Za-z0-9-]+)\s+\d{1,4}(?:\/\d{1,4})?\s*\]/) || [])[1] ||
     (source.match(/\[([A-Za-z0-9-]+)\]/) || [])[1] ||
@@ -97,13 +128,15 @@ function extractCardrushComponents(card) {
     cardNo,
     rarity: String(rarity || "").toUpperCase(),
     setCode: String(setCode || "").trim(),
+    finish: extractFinishKind(source),
   };
 }
 
 function buildCardrushDisplayName(card) {
   const sig = extractCardrushComponents(card);
   const base = sig.base || normalizeDisplayBase(card?.name || "");
-  return `${base}${sig.rarity ? `【${sig.rarity}】` : ""}${sig.cardNo ? `{${sig.cardNo}}` : ""}${sig.setCode ? ` [${sig.setCode}]` : ""}`
+  const finish = finishLabel(sig.finish);
+  return `${base}${finish ? `(${finish})` : ""}${sig.rarity ? `【${sig.rarity}】` : ""}${sig.cardNo ? `{${sig.cardNo}}` : ""}${sig.setCode ? ` [${sig.setCode}]` : ""}`
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -333,6 +366,7 @@ function resolveCardrushMatch(card, catalog, catalogIndex = null) {
   const cardCardNo = normalizeLooseText(cardSig.cardNo);
   const cardSet = normalizeLooseText(cardSig.setCode);
   const cardRarity = normalizeLooseText(cardSig.rarity);
+  const cardFinish = cardSig.finish;
   let best = null;
   const exactKey = cardCardNo && cardSet ? `${cardCardNo}|${cardSet}` : "";
   const candidates = catalogIndex
@@ -347,8 +381,11 @@ function resolveCardrushMatch(card, catalog, catalogIndex = null) {
     const entryCardNo = normalizeLooseText(entrySig.cardNo);
     const entrySet = normalizeLooseText(entrySig.setCode);
     const entryRarity = normalizeLooseText(entrySig.rarity);
+    const entryFinish = entrySig.finish;
     const entryState = String(entry.state || "A").toUpperCase();
     const stateRank = entryState === "A" ? 2 : entryState === "A-" ? 1 : 0;
+
+    if ((cardFinish || entryFinish) && cardFinish !== entryFinish) continue;
 
     let score = 0;
     if (cardName && entryName && (cardName === entryName || cardName.includes(entryName) || entryName.includes(cardName))) score += 10;

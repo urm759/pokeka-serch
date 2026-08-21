@@ -504,7 +504,7 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
 }
 .thumb{
   min-height:clamp(440px,38vw,560px);
-  padding:12px;
+  padding:3px;
   background:
     radial-gradient(circle at 34% 28%, rgba(255,255,255,.12), transparent 22%),
     linear-gradient(160deg, rgba(125,211,252,.16), rgba(244,114,182,.12) 55%, rgba(56,217,150,.16));
@@ -522,9 +522,9 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
   backdrop-filter:blur(6px);
 }
 .thumb img{
-  width:min(90%, 390px);
+  width:min(98%, 520px);
   height:auto;
-  max-height:84%;
+  max-height:97%;
   object-fit:contain;
   display:block;
   background:transparent;
@@ -690,8 +690,8 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
   .headline{flex-direction:column}
   .range-pair{grid-template-columns:1fr}
   .row{border-radius:22px}
-  .thumb{min-height:410px;padding:8px}
-  .thumb img{width:min(94%, 350px);max-height:92%}
+  .thumb{min-height:430px;padding:2px}
+  .thumb img{width:min(100%, 430px);max-height:99%}
   .content{padding:14px 12px 15px}
   .headline h3{font-size:19px;line-height:1.28}
   .headline p{font-size:12px}
