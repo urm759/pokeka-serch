@@ -48,6 +48,7 @@ a{color:var(--accent);text-decoration:none}
 .hero::after{width:300px;height:300px;left:-120px;bottom:-150px;background:rgba(125,211,252,.09)}
 .eyebrow{color:var(--accent);text-transform:uppercase;letter-spacing:.14em;font-size:11px;font-weight:700}
 h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
+.site-owner{margin:-2px 0 10px;color:var(--accent3);font-size:12px;font-weight:900;letter-spacing:.08em}
 .lede{margin:0;max-width:82ch;color:var(--muted);font-size:15px}
 .controls{
   margin-top:22px;
@@ -118,81 +119,6 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
   background:rgba(8,16,29,.32);
   color:var(--text);
   font:700 15px/1.2 inherit;
-}
-.decision-control{display:flex;flex-direction:column;gap:10px}
-.decision-toggle{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-.display-control{display:flex;flex-direction:column;gap:10px}
-.display-toggle{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-.decision-pill{
-  cursor:pointer;
-  border-radius:999px;
-  padding:10px 14px;
-  border:1px solid rgba(255,255,255,.14);
-  background:rgba(8,16,29,.42);
-  color:var(--text);
-  font-weight:800;
-}
-.decision-pill.active{
-  background:linear-gradient(90deg, rgba(245,158,11,.96), rgba(244,114,182,.96));
-  color:#211100;
-  border-color:transparent;
-}
-.display-pill{
-  cursor:pointer;
-  border-radius:999px;
-  padding:10px 14px;
-  border:1px solid rgba(255,255,255,.14);
-  background:rgba(8,16,29,.42);
-  color:var(--text);
-  font-weight:800;
-}
-.display-pill.active{
-  background:linear-gradient(90deg, rgba(125,211,252,.96), rgba(56,217,150,.96));
-  color:#04131f;
-  border-color:transparent;
-}
-.decision-compare{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
-  gap:10px;
-  margin-top:10px;
-}
-.decision-box{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-  padding:16px 18px;
-  border-radius:20px;
-  border:1px solid var(--line);
-  background:rgba(8,16,29,.42);
-  min-width:0;
-  min-height:118px;
-}
-.decision-box.calc{
-  background:linear-gradient(180deg, rgba(245,158,11,.15), rgba(8,16,29,.34));
-}
-.decision-label{
-  color:var(--muted);
-  font-size:12px;
-  font-weight:700;
-  letter-spacing:.04em;
-}
-.decision-value{
-  font-size:20px;
-  line-height:1.1;
-  font-weight:900;
-}
-.decision-sub{
-  color:var(--muted);
-  font-size:12px;
 }
 .stats{
   margin-top:16px;
@@ -512,6 +438,8 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
   display:flex;
   align-items:center;
   justify-content:center;
+  color:inherit;
+  text-decoration:none;
 }
 .thumb .series{
   position:absolute;left:14px;bottom:14px;
@@ -627,6 +555,7 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
   grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
   gap:10px;
 }
+.market-summary{grid-template-columns:minmax(240px,1.5fr) repeat(3,minmax(120px,1fr))}
 .metric{
   padding:12px 12px 11px;
   border-radius:16px;
@@ -635,6 +564,17 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 }
 .metric span{display:block;color:var(--muted);font-size:11px;margin-bottom:4px}
 .metric strong{font-size:18px}
+.metric small{display:block;margin-top:5px;color:var(--muted);font-size:9px;line-height:1.4}
+.metric-primary{background:linear-gradient(135deg,rgba(125,211,252,.13),rgba(56,217,150,.08));border-color:rgba(125,211,252,.28)}
+.metric-primary strong{font-size:23px}
+.activity-panel{margin-top:12px;padding:12px;border:1px solid rgba(125,211,252,.2);border-radius:16px;background:rgba(5,10,20,.4)}
+.activity-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:8px}
+.activity-head strong{font-size:13px}
+.activity-head span{color:var(--muted);font-size:9px}
+.activity-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.activity-grid>div{padding:10px;border-radius:12px;background:#0b1224}
+.activity-grid span,.activity-grid small{display:block;color:var(--muted);font-size:9px}
+.activity-grid strong{display:block;margin:3px 0;font-size:13px}
 .profit{
   margin-top:12px;
   padding:12px;
@@ -696,21 +636,18 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
   .guide-block{padding:12px}
   .guide-block-head{flex-direction:column;align-items:flex-start}
   .guide-block-head p{text-align:left}
-  .guide-table-wrap{
-    overflow-x:auto;
-    margin-inline:-4px;
-    padding-inline:4px;
-  }
-  .guide-table{min-width:420px}
-  .guide-table th,.guide-table td{padding:5px 6px;font-size:10px}
+  .guide-table-wrap{overflow:visible;margin:0;padding:0}
+  .guide-table{min-width:0;width:100%;table-layout:fixed}
+  .guide-table th,.guide-table td{padding:5px 2px;font-size:9px}
   .guide-table thead th span{display:none}
-  .guide-table thead th{font-size:11px}
-  .guide-table tbody th{min-width:78px}
+  .guide-table thead th{font-size:9px;letter-spacing:-.03em}
+  .guide-table .guide-sticky,.guide-table tbody th{position:static;min-width:0;box-shadow:none}
   .headline{flex-direction:column}
   .range-pair{grid-template-columns:1fr}
   .row{border-radius:22px}
-  .thumb{min-height:430px;padding:2px}
-  .thumb img{width:min(100%, 430px);max-height:99%}
+  .thumb{min-height:390px;padding:2px}
+  .thumb img{width:min(100%, 430px);max-height:99%;transform:scale(1.22)}
+  .thumb:hover img{transform:scale(1.22)}
   .content{padding:14px 12px 15px}
   .headline h3{font-size:19px;line-height:1.28}
   .headline p{font-size:12px}
@@ -724,7 +661,8 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
   .stock-averages{grid-template-columns:1fr}
   .stock-averages div{display:flex;align-items:center;justify-content:space-between;gap:8px}
   .stock-averages span{margin:0}
-  .metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  .metrics,.market-summary{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  .metric-primary{grid-column:1 / -1}
   .metric{padding:10px}
   .metric strong{font-size:16px}
   .profit{padding:11px}
@@ -732,6 +670,6 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
   .stat strong{font-size:20px}
   .stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
   .stat{padding:12px}
-  .decision-compare{grid-template-columns:1fr}
-  .decision-box{min-height:0;padding:13px}
+  .activity-head{align-items:flex-start;flex-direction:column;gap:2px}
+  .activity-grid{grid-template-columns:1fr}
 }

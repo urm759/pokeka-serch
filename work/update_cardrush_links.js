@@ -62,6 +62,13 @@ function extractStock(value) {
   return null;
 }
 
+function extractPrice(value) {
+  const text = String(value || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+  const matches = [...text.matchAll(/([0-9][0-9,]*)\s*円(?:\(税込\))?/g)];
+  if (!matches.length) return null;
+  return Number(matches[matches.length - 1][1].replace(/,/g, ""));
+}
+
 function normalizeLooseText(value) {
   return String(value || "")
     .toLowerCase()
@@ -193,7 +200,7 @@ function stripStatePrefix(rawTitle) {
   return String(rawTitle || "").replace(/^〔状態[^〕]+〕/, "").trim();
 }
 
-function buildCatalogEntry(title, detailUrl, state, model, stock = null) {
+function buildCatalogEntry(title, detailUrl, state, model, stock = null, price = null) {
   const full = `${stripStatePrefix(title)}${model ? ` [${model}]` : ""}`.replace(/\s+/g, " ").trim();
   const sig = extractCardrushComponents({ name: full });
   const matchKeys = [
@@ -210,6 +217,7 @@ function buildCatalogEntry(title, detailUrl, state, model, stock = null) {
     detailUrl,
     state: state || "A",
     stock: Number.isFinite(stock) ? stock : null,
+    price: Number.isFinite(price) ? price : null,
     observedAt: jstDate(),
     matchKeys: [...new Set(matchKeys)],
   };
@@ -226,7 +234,7 @@ function extractCardrushItems(html) {
   while ((match = regex.exec(html))) {
     const [, id, detailUrl, alt, model] = match;
     const state = normalizeStateLabel(alt);
-    const entry = buildCatalogEntry(alt, detailUrl, state, model, extractStock(match[0]));
+    const entry = buildCatalogEntry(alt, detailUrl, state, model, extractStock(match[0]), extractPrice(match[0]));
     entry.id = id;
     items.push(entry);
   }
@@ -244,7 +252,7 @@ function extractCardrushMarkdownItems(markdown) {
     if (!alt || !detailUrl || !id) continue;
     const model = (line.match(/\}\[(?:\*\*)?([A-Za-z0-9-]+)(?:\*\*)?\]/) || [])[1] || "";
     const state = /^〔状態[^〕]+〕/.test(visibleText) ? normalizeStateLabel(visibleText) : "A";
-    const entry = buildCatalogEntry(alt, detailUrl, state, model, extractStock(line));
+    const entry = buildCatalogEntry(alt, detailUrl, state, model, extractStock(line), extractPrice(line));
     entry.id = id;
     items.push(entry);
   }

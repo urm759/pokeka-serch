@@ -120,6 +120,20 @@ function averageDailyDecrease(values, days) {
   return pairs ? Math.round((decreases / pairs) * 100) / 100 : null;
 }
 
+function totalDecrease(values, days) {
+  const recent = values.slice(-Math.min(values.length, days + 1));
+  let decreases = 0;
+  let pairs = 0;
+  for (let index = 1; index < recent.length; index += 1) {
+    const previous = recent[index - 1];
+    const current = recent[index];
+    if (!Number.isFinite(previous) || !Number.isFinite(current)) continue;
+    decreases += Math.max(0, previous - current);
+    pairs += 1;
+  }
+  return pairs ? Math.round(decreases * 100) / 100 : null;
+}
+
 function demandLabel(avg30, samples) {
   if (samples < 3 || !Number.isFinite(avg30)) return "蓄積中";
   if (avg30 >= 1) return "買う人が多い";
@@ -129,20 +143,26 @@ function demandLabel(avg30, samples) {
 
 function writeOutputs({ cards, catalog, history, invalidUrls, recheckIds, paths }) {
   const currentDateIndex = history.dates.length - 1;
+  const catalogByUrl = new Map(catalog.map((entry) => [entry.detailUrl, entry]));
   const summaryCards = {};
   for (const card of cards) {
-    const values = history.stocks[card.id];
-    if (!Array.isArray(values)) continue;
+    const values = Array.isArray(history.stocks[card.id]) ? history.stocks[card.id] : [];
+    const catalogEntry = catalogByUrl.get(card.cardrushUrl);
+    const cardrushPrice = Number(catalogEntry?.price);
+    if (!values.length && !(cardrushPrice > 0)) continue;
     const samples = values.filter(Number.isFinite).length;
     const avg7 = averageDailyDecrease(values, 7);
     const avg30 = averageDailyDecrease(values, 30);
     const avg90 = averageDailyDecrease(values, 90);
     const stock = values[currentDateIndex];
     summaryCards[card.id] = {
-      stock: Number.isFinite(stock) ? stock : null,
+      stock: Number.isFinite(stock) ? stock : Number.isFinite(catalogEntry?.stock) ? catalogEntry.stock : null,
+      cardrushPrice: cardrushPrice > 0 ? cardrushPrice : null,
       avg7,
       avg30,
       avg90,
+      drop7: totalDecrease(values, 7),
+      drop30: totalDecrease(values, 30),
       demand: demandLabel(avg30, samples),
       samples,
     };

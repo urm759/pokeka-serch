@@ -6,12 +6,6 @@ const state = {
   snkrUrlCache: Object.create(null),
   cardById: Object.create(null),
   snkrObserver: null,
-  hiddenDecisions: {
-    valuable: false,
-    watch: false,
-    avoid: false,
-  },
-  showCalcDecision: true,
   fee: 13000,
   guideMode: "70",
   minSaleTx: 30,
@@ -78,8 +72,6 @@ const els = {
   guidePsa9RateStat: document.getElementById("guidePsa9RateStat"),
   guideFeeStat: document.getElementById("guideFeeStat"),
   guideButtons: [...document.querySelectorAll("[data-guide-mode]")],
-  decisionButtons: [...document.querySelectorAll("[data-hide-decision]")],
-  displayButtons: [...document.querySelectorAll("[data-toggle-display]")],
   loadMoreBtn: document.getElementById("loadMoreBtn"),
   resultProgress: document.getElementById("resultProgress"),
 };
@@ -102,6 +94,10 @@ const sorters = {
   "tx-asc": (a, b) => a.saleTx30d - b.saleTx30d,
   "tx7-desc": (a, b) => b.saleTx7d - a.saleTx7d,
   "tx7-asc": (a, b) => a.saleTx7d - b.saleTx7d,
+  "combined30-desc": (a, b) => b.combined30 - a.combined30,
+  "combined7-desc": (a, b) => b.combined7 - a.combined7,
+  "cardrushDrop30-desc": (a, b) => (b.cardrushDrop30 ?? -Infinity) - (a.cardrushDrop30 ?? -Infinity),
+  "cardrushDrop7-desc": (a, b) => (b.cardrushDrop7 ?? -Infinity) - (a.cardrushDrop7 ?? -Infinity),
   "psaTx-desc": (a, b) => b.psaTx30d - a.psaTx30d,
   "psaTx-asc": (a, b) => a.psaTx30d - b.psaTx30d,
   "psaTx7-desc": (a, b) => b.psaTx7d - a.psaTx7d,
@@ -239,55 +235,6 @@ function hydrateSnkrLink(card, url) {
   }
 }
 
-function decisionFilterKey(card) {
-  const decision = decisionLabel(card);
-  if (decision === "未取得") return "missing";
-  if (decision === "出す価値あり") return "valuable";
-  if (decision === "様子見") return "watch";
-  return "avoid";
-}
-
-function syncDecisionButtons() {
-  els.decisionButtons.forEach((btn) => {
-    const key = btn.dataset.hideDecision;
-    const hidden = !!state.hiddenDecisions[key];
-    btn.classList.toggle("active", hidden);
-    const baseLabel =
-      key === "valuable" ? "出す価値あり" : key === "watch" ? "様子見" : "出さない";
-    btn.textContent = hidden ? `${baseLabel}を表示` : `${baseLabel}を非表示`;
-    btn.setAttribute("aria-pressed", hidden ? "true" : "false");
-  });
-}
-
-function setDecisionHidden(key, hidden) {
-  if (!(key in state.hiddenDecisions)) return;
-  state.hiddenDecisions[key] = hidden;
-  syncDecisionButtons();
-  render();
-  updateUrl();
-}
-
-function syncDisplayButtons() {
-  els.displayButtons.forEach((btn) => {
-    const visible = state.showCalcDecision;
-    btn.classList.toggle("active", !visible);
-    const label = "計算判定";
-    btn.textContent = visible ? `${label}を非表示` : `${label}を表示`;
-    btn.setAttribute("aria-pressed", visible ? "false" : "true");
-  });
-}
-
-function setDisplayVisible(key, visible) {
-  if (key === "calc") {
-    state.showCalcDecision = visible;
-  } else {
-    return;
-  }
-  syncDisplayButtons();
-  render();
-  updateUrl();
-}
-
 function ensureSnkrObserver() {
   if (state.snkrObserver) return state.snkrObserver;
   state.snkrObserver = new IntersectionObserver(
@@ -372,19 +319,30 @@ function renderGuide() {
 }
 
 function calc(card) {
-  const price = Number(card.price);
+  const torecaPrice = Number(card.price);
+  const stock = state.cardrushStock[card.id] || null;
+  const rawCardrushPrice = Number(stock?.cardrushPrice);
+  const cardrushPrice = rawCardrushPrice > 0 ? rawCardrushPrice : NaN;
+  const sourcePrices = [torecaPrice, cardrushPrice].filter((value) => Number.isFinite(value) && value > 0);
+  const price = sourcePrices.length
+    ? Math.round(sourcePrices.reduce((sum, value) => sum + value, 0) / sourcePrices.length)
+    : NaN;
   const psa10 = Number(card.snkPsa10Price);
   const saleTx30d = Number(card.tv30 || 0);
   const saleTx7d = Number(card.tv7 || 0);
+  const cardrushDrop30 = Number.isFinite(stock?.drop30) ? Number(stock.drop30) : null;
+  const cardrushDrop7 = Number.isFinite(stock?.drop7) ? Number(stock.drop7) : null;
+  const combined30 = saleTx30d + (cardrushDrop30 || 0);
+  const combined7 = saleTx7d + (cardrushDrop7 || 0);
   const psaTx30d = Number(card.p10tv30 || 0);
   const psaTx7d = Number(card.p10tv7 || 0);
   if (!(price > 0) || !(psa10 > 0)) {
-    return { ...card, price, psa10, profit: NaN, roi: NaN, saleTx30d, saleTx7d, psaTx30d, psaTx7d };
+    return { ...card, price, torecaPrice, cardrushPrice, psa10, profit: NaN, roi: NaN, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, combined30, combined7 };
   }
   const profit = psa10 - price - state.fee;
   const roiBase = price + state.fee;
   const roi = roiBase > 0 ? (profit / roiBase) * 100 : NaN;
-  return { ...card, price, psa10, profit, roi, saleTx30d, saleTx7d, psaTx30d, psaTx7d };
+  return { ...card, price, torecaPrice, cardrushPrice, psa10, profit, roi, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, combined30, combined7 };
 }
 
 function parseOptionalNumber(value) {
@@ -423,19 +381,10 @@ function readUrl() {
   const priceMax = parseOptionalNumber(url.searchParams.get("priceMax"));
   const sort = url.searchParams.get("sort");
   const q = url.searchParams.get("q");
-  const hide = String(url.searchParams.get("hide") || "");
-  const showCalc = url.searchParams.get("showCalc");
-  const hidden = new Set(hide.split(",").map((v) => v.trim()).filter(Boolean));
   if (guide && guideModes[guide]) {
     state.guideMode = guide;
   }
   syncGuideButtons();
-  state.hiddenDecisions.valuable = hidden.has("valuable");
-  state.hiddenDecisions.watch = hidden.has("watch");
-  state.hiddenDecisions.avoid = hidden.has("avoid");
-  syncDecisionButtons();
-  state.showCalcDecision = showCalc == null ? true : showCalc !== "0";
-  syncDisplayButtons();
   if (fee != null && fee >= 0) els.feeInput.value = String(fee);
   if (saleTx != null && saleTx >= 0) els.saleTxMinInput.value = String(saleTx);
   if (saleTxMax != null && saleTxMax >= 0) els.saleTxMaxInput.value = String(saleTxMax);
@@ -491,15 +440,8 @@ function buildShareUrl() {
     url.searchParams.delete("q");
   }
   url.searchParams.delete("showSite");
-  url.searchParams.set("showCalc", state.showCalcDecision ? "1" : "0");
-  const hidden = Object.entries(state.hiddenDecisions)
-    .filter(([, value]) => value)
-    .map(([key]) => key);
-  if (hidden.length) {
-    url.searchParams.set("hide", hidden.join(","));
-  } else {
-    url.searchParams.delete("hide");
-  }
+  url.searchParams.delete("showCalc");
+  url.searchParams.delete("hide");
   return url;
 }
 
@@ -509,10 +451,8 @@ function render() {
   const enriched = state.cards
     .map(calc)
     .filter((card) => {
-      const decision = decisionLabel(card);
-      const decisionKey = decisionFilterKey(card);
-      const haystack = normalize(`${card.name} ${card.model} ${card.id} ${decision}`);
-      const compactHaystack = compactSearch(`${card.name} ${card.model} ${card.id} ${decision}`);
+      const haystack = normalize(`${card.name} ${card.model} ${card.id}`);
+      const compactHaystack = compactSearch(`${card.name} ${card.model} ${card.id}`);
       if (card.saleTx30d < state.minSaleTx) return false;
       if (state.maxSaleTx != null && card.saleTx30d > state.maxSaleTx) return false;
       if (card.saleTx7d < state.minSaleTx7) return false;
@@ -526,7 +466,6 @@ function render() {
       if (card.psa10 > state.maxPsa10) return false;
       if (state.minPrice != null && card.price < state.minPrice) return false;
       if (state.maxPrice != null && card.price > state.maxPrice) return false;
-      if (state.hiddenDecisions[decisionKey]) return false;
       if (!normalizedQuery) return true;
       return haystack.includes(normalizedQuery) || compactHaystack.includes(compactQuery);
     })
@@ -560,13 +499,10 @@ function render() {
     const roiClass = card.roi >= 120 ? "good" : card.roi >= 80 ? "sky" : "warn";
     const width = Math.max(8, Math.min(100, card.roi));
     const name = card.name.replace(/\s+/g, " ");
-    const decision = decisionLabel(card);
     const stock = state.cardrushStock[card.id] || null;
     const snkUrl = card.snkUrl || state.snkrUrlCache[card.id] || buildSnkrUrl(card);
     const snkrDirect = /snkrdunk\.com\/(apparels|trading-cards|products)\/\d+/i.test(snkUrl);
     const detailChips = [
-      `<span class="badge sky">美品 直近30日 ${fmt.format(card.saleTx30d)}件</span>`,
-      `<span class="badge sky">美品 直近7日 ${fmt.format(card.saleTx7d)}件</span>`,
       `<span class="badge sky">PSA10 直近30日 ${fmt.format(card.psaTx30d)}件</span>`,
       `<span class="badge sky">PSA10 直近7日 ${fmt.format(card.psaTx7d)}件</span>`,
       `<span class="badge ${roiClass}">利益率 ${Number.isFinite(card.roi) ? Math.round(card.roi) : 0}%</span>`,
@@ -579,43 +515,45 @@ function render() {
         : `<span class="market-link unavailable"><span>ショップ</span><strong>カードラッシュ直リンク未取得</strong></span>`,
     ].join("");
     const demandClass = stock?.demand === "買う人が多い" ? "high" : stock?.demand === "普通" ? "normal" : stock?.demand === "少ない" ? "low" : "pending";
-    const avgStock = (value) => Number.isFinite(value) ? `${Number(value).toFixed(2)}枚/日` : "蓄積中";
+    const demandBadge = stock?.demand && stock.demand !== "蓄積中" ? `<b>${stock.demand}</b>` : "";
+    const avgStock = (value) => Number.isFinite(value) ? `${Number(value).toFixed(2)}枚/日` : "-";
+    const dropStock = (value) => Number.isFinite(value) ? `${fmt.format(Number(value))}枚` : "-";
+    const combinedMovement = (tx, drop) => Number.isFinite(drop) ? `${fmt.format(tx + Number(drop))}件相当` : "-";
     const stockPanel = card.cardrushUrl
       ? `
           <div class="stock-panel ${demandClass}">
             <div class="stock-title">
-              <div><span>カードラッシュ在庫</span><strong>${Number.isFinite(stock?.stock) ? `${fmt.format(stock.stock)}枚` : "確認中"}</strong></div>
-              <b>${stock?.demand || "蓄積中"}</b>
+              <div><span>カードラッシュ状態A 在庫</span><strong>${Number.isFinite(stock?.stock) ? `${fmt.format(stock.stock)}枚` : "-"}</strong></div>
+              ${demandBadge}
             </div>
             <div class="stock-averages">
               <div><span>7日平均減少</span><strong>${avgStock(stock?.avg7)}</strong></div>
               <div><span>30日平均減少</span><strong>${avgStock(stock?.avg30)}</strong></div>
               <div><span>90日平均減少</span><strong>${avgStock(stock?.avg90)}</strong></div>
             </div>
-            <p>在庫が前日より減った枚数だけを集計し、補充による増加は除外しています。</p>
           </div>
         `
       : "";
-    const decisionCompare = state.showCalcDecision
-      ? `
-          <div class="decision-box calc">
-            <span class="decision-label">計算判定</span>
-            <strong class="decision-value">${decision}</strong>
-            <span class="decision-sub">美品・PSA10・鑑定費から算出</span>
-          </div>
-        `
-      : "";
+    const activityPanel = `
+      <div class="activity-panel">
+        <div class="activity-head"><strong>美品の動き</strong><span>取引件数 / 確認できた在庫減</span></div>
+        <div class="activity-grid">
+          <div><span>直近7日</span><strong>みんトレ ${fmt.format(card.saleTx7d)}件</strong><small>カードラッシュ ${dropStock(stock?.drop7)} / 参考合計 ${combinedMovement(card.saleTx7d, stock?.drop7)}</small></div>
+          <div><span>直近30日</span><strong>みんトレ ${fmt.format(card.saleTx30d)}件</strong><small>カードラッシュ ${dropStock(stock?.drop30)} / 参考合計 ${combinedMovement(card.saleTx30d, stock?.drop30)}</small></div>
+        </div>
+      </div>
+    `;
+    const cardrushPriceText = Number.isFinite(card.cardrushPrice) ? `¥${fmt.format(card.cardrushPrice)}` : "未取得";
     return `
       <article class="row card" data-card-id="${card.id}">
-        <div class="thumb">
+        <a class="thumb" href="${buildTorecaCardUrl(card)}" target="_blank" rel="noreferrer" aria-label="みんトレで${name}を開く">
           <img src="${card.img}" alt="${name}" loading="lazy" />
           <div class="series">${card.rarity ? card.rarity : card.model}</div>
-        </div>
+        </a>
         <div class="content">
           <div class="headline">
             <div>
               <h3>${name}</h3>
-              <p>PSA10相場と美品価格の差から、鑑定費 ${fmt.format(state.fee)} 円を差し引いて判定しています。</p>
             </div>
           </div>
 
@@ -623,22 +561,19 @@ function render() {
             ${detailChips}
           </div>
 
-          <div class="market-links" aria-label="外部サイトへの直リンク">
-            <div class="market-links-title">商品ページ</div>
-            <div class="market-links-grid">${marketLinks}</div>
+          <div class="metrics market-summary">
+            <div class="metric metric-primary"><span>平均美品価格</span><strong>¥${fmt.format(card.price)}</strong><small>みんトレ状態A ¥${fmt.format(card.torecaPrice)} / カードラッシュ状態A ${cardrushPriceText}</small></div>
+            <div class="metric"><span>PSA10相場</span><strong>¥${fmt.format(card.psa10)}</strong><small>みんトレPSA10</small></div>
+            <div class="metric"><span>PSA鑑定費</span><strong>¥${fmt.format(state.fee)}</strong></div>
+            <div class="metric"><span>利益額</span><strong>¥${fmt.format(Math.round(card.profit))}</strong></div>
           </div>
 
           ${stockPanel}
+          ${activityPanel}
 
-          <div class="decision-compare">
-            ${decisionCompare}
-          </div>
-
-          <div class="metrics">
-            <div class="metric"><span>美品</span><strong>¥${fmt.format(card.price)}</strong></div>
-            <div class="metric"><span>PSA10</span><strong>¥${fmt.format(card.psa10)}</strong></div>
-            <div class="metric"><span>鑑定費</span><strong>¥${fmt.format(state.fee)}</strong></div>
-            <div class="metric"><span>利益額</span><strong>¥${fmt.format(Math.round(card.profit))}</strong></div>
+          <div class="market-links" aria-label="外部サイトへの直リンク">
+            <div class="market-links-title">商品ページ</div>
+            <div class="market-links-grid">${marketLinks}</div>
           </div>
 
           <div class="profit">
@@ -647,7 +582,6 @@ function render() {
               <div class="v">${Number.isFinite(card.roi) ? Math.round(card.roi) : 0}%</div>
             </div>
             <div class="bar"><span style="width:${width}%"></span></div>
-            <div class="note">計算式: (PSA10相場 - 美品価格 - 鑑定費) ÷ (美品価格 + 鑑定費) × 100</div>
           </div>
 
         </div>
@@ -657,14 +591,6 @@ function render() {
 
   const observer = ensureSnkrObserver();
   [...els.grid.querySelectorAll("[data-card-id]")].forEach((el) => observer.observe(el));
-}
-
-function decisionLabel(card) {
-  if (!(Number(card.price) > 0) || !(Number(card.psa10) > 0)) return "未取得";
-  if (!Number.isFinite(card.roi)) return "未取得";
-  if (card.roi >= 40) return "出す価値あり";
-  if (card.roi >= 10) return "様子見";
-  return "出さない";
 }
 
 function syncFromUI() {
@@ -740,19 +666,4 @@ init().catch((err) => {
 
 els.guideButtons.forEach((btn) => {
   btn.addEventListener("click", () => setGuideMode(btn.dataset.guideMode));
-});
-
-els.decisionButtons.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    const key = btn.dataset.hideDecision;
-    setDecisionHidden(key, !state.hiddenDecisions[key]);
-  });
-});
-
-els.displayButtons.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    const key = btn.dataset.toggleDisplay;
-    const visible = state.showCalcDecision;
-    setDisplayVisible(key, !visible);
-  });
 });

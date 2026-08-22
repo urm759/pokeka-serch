@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>トレカ利益商品検索サイト</title>
+  <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="./styles.css" />
 </head>
@@ -12,11 +12,11 @@
   <div class="backdrop backdrop-b"></div>
   <main class="shell">
     <section class="hero card">
-      <div class="eyebrow">Pokémon cards / profit finder</div>
-      <h1>トレカ利益商品検索サイト</h1>
+      <div class="eyebrow">Pokémon cards / buying guide</div>
+      <h1>ポケカ仕入れ判断サイト</h1>
+      <div class="site-owner">因幡のウサギ小屋専用サイト</div>
       <p class="lede">
-        美品価格とPSA10相場から、鑑定費を差し引いた利益率で判定します。
-        取引数・鑑定費・利益率の条件は画面上でそのまま調整できます。
+        平均美品価格とPSA10相場を比較して、仕入れ候補をすばやく確認できます。
       </p>
 
       <div class="controls controls-primary">
@@ -25,7 +25,7 @@
           <input id="qInput" type="text" placeholder="カード名・型番で検索" />
         </label>
         <label class="control">
-          <span>鑑定費</span>
+          <span>PSA鑑定費</span>
           <input id="feeInput" type="number" min="0" step="100" value="13000" />
         </label>
         <label class="control">
@@ -39,10 +39,14 @@
             <option value="roi-asc">利益率が低い順</option>
             <option value="profit-desc">利益額が高い順</option>
             <option value="profit-asc">利益額が低い順</option>
-            <option value="tx-desc">美品30日件数が多い順</option>
-            <option value="tx-asc">美品30日件数が少ない順</option>
-            <option value="tx7-desc">美品7日件数が多い順</option>
-            <option value="tx7-asc">美品7日件数が少ない順</option>
+            <option value="combined30-desc">総合30日の動きが多い順</option>
+            <option value="combined7-desc">総合7日の動きが多い順</option>
+            <option value="tx-desc">みんトレ美品30日件数が多い順</option>
+            <option value="tx-asc">みんトレ美品30日件数が少ない順</option>
+            <option value="tx7-desc">みんトレ美品7日件数が多い順</option>
+            <option value="tx7-asc">みんトレ美品7日件数が少ない順</option>
+            <option value="cardrushDrop30-desc">カードラッシュ30日在庫減が多い順</option>
+            <option value="cardrushDrop7-desc">カードラッシュ7日在庫減が多い順</option>
             <option value="psaTx-desc">PSA10 30日件数が多い順</option>
             <option value="psaTx-asc">PSA10 30日件数が少ない順</option>
             <option value="psaTx7-desc">PSA10 7日件数が多い順</option>
@@ -55,8 +59,8 @@
             <option value="psa-asc">PSA10が安い順</option>
             <option value="psaMin-desc">PSA10下限が高い順</option>
             <option value="psaMin-asc">PSA10下限が低い順</option>
-            <option value="price-asc">美品価格が安い順</option>
-            <option value="price-desc">美品価格が高い順</option>
+            <option value="price-asc">平均美品価格が安い順</option>
+            <option value="price-desc">平均美品価格が高い順</option>
             <option value="listings-desc">掲載件数が多い順</option>
             <option value="listings-asc">掲載件数が少ない順</option>
             <option value="days-desc">掲載日数が長い順</option>
@@ -72,18 +76,18 @@
       <details class="advanced-filters">
         <summary>
           <span>詳細な検索条件</span>
-          <small>取引件数・価格帯・判定表示を調整</small>
+          <small>取引件数・価格帯を調整</small>
         </summary>
         <div class="controls controls-advanced">
         <label class="control">
-          <span>美品件数 直近30日</span>
+          <span>みんトレ美品件数 直近30日</span>
           <div class="range-pair">
             <input id="saleTxMinInput" type="number" min="0" step="1" value="30" placeholder="下限" />
             <input id="saleTxMaxInput" type="number" min="0" step="1" placeholder="上限" />
           </div>
         </label>
         <label class="control">
-          <span>美品件数 直近7日</span>
+          <span>みんトレ美品件数 直近7日</span>
           <div class="range-pair">
             <input id="saleTx7MinInput" type="number" min="0" step="1" value="0" placeholder="下限" />
             <input id="saleTx7MaxInput" type="number" min="0" step="1" placeholder="上限" />
@@ -104,7 +108,7 @@
           </div>
         </label>
         <label class="control">
-          <span>美品 価格帯</span>
+          <span>平均美品価格帯</span>
           <div class="range-pair">
             <input id="priceMinInput" type="number" min="0" step="100" placeholder="下限" />
             <input id="priceMaxInput" type="number" min="0" step="100" placeholder="上限" />
@@ -118,20 +122,6 @@
           <span>PSA10 上限</span>
           <input id="psaMaxInput" type="number" min="0" step="1000" value="200000" />
         </label>
-        <div class="control control-wide decision-control">
-          <span>仕入れ判定を非表示</span>
-          <div class="decision-toggle">
-            <button id="hideValuableBtn" class="decision-pill" type="button" data-hide-decision="valuable">出す価値ありを非表示</button>
-            <button id="hideWatchBtn" class="decision-pill" type="button" data-hide-decision="watch">様子見を非表示</button>
-            <button id="hideAvoidBtn" class="decision-pill" type="button" data-hide-decision="avoid">出さないを非表示</button>
-          </div>
-        </div>
-        <div class="control control-wide display-control">
-          <span>計算判定の表示</span>
-          <div class="display-toggle">
-            <button id="calcDecisionBtn" class="display-pill" type="button" data-toggle-display="calc">計算判定を非表示</button>
-          </div>
-        </div>
         </div>
       </details>
 
@@ -151,10 +141,6 @@
         <div class="stat">
           <span class="k">最高利益額</span>
           <strong id="topProfitStat">-</strong>
-        </div>
-        <div class="stat">
-          <span class="k">判定式</span>
-          <strong>利益額 / (美品 + 鑑定費) × 100</strong>
         </div>
       </div>
     </section>
@@ -196,7 +182,7 @@
             <strong id="guidePsa9RateStat">75%</strong>
           </div>
           <div class="guide-key">
-            <span>鑑定費</span>
+            <span>PSA鑑定費</span>
             <strong id="guideFeeStat">¥13,000</strong>
           </div>
           <div class="guide-key">
@@ -208,7 +194,7 @@
         <div id="guidePanels" class="guide-panels"></div>
 
         <div class="guide-foot">
-          ※ 価格は 1,000円単位で丸めています。鑑定費は上の入力欄と連動します。必要なら PSA9換金率や判定ラインもあとで調整できます。
+          ※ 価格は1,000円単位。PSA鑑定費は上の入力欄と連動します。
         </div>
       </div>
     </details>
@@ -234,10 +220,9 @@
 
     <section class="card footer">
       <div>
-        <h3>トレカ利益商品検索サイトについて</h3>
+        <h3>ポケカ仕入れ判断サイト</h3>
         <p>
-          このフォルダをそのまま GitHub Pages に置ける静的サイトとして作っています。
-          画面側で条件を変えられるので、毎回コードを触らなくても確認しやすいです。
+          因幡のウサギ小屋専用の仕入れ確認ページです。
         </p>
       </div>
       <div class="footer-links">
