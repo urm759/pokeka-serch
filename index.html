@@ -39,6 +39,10 @@
             <option value="roi-asc">利益率が低い順</option>
             <option value="profit-desc">利益額が高い順</option>
             <option value="profit-asc">利益額が低い順</option>
+            <option value="psaRecommend-desc">PSA提出おすすめ優先</option>
+            <option value="expectedProfit-desc">期待利益が高い順</option>
+            <option value="annualEfficiency-desc">年換算資金効率が高い順</option>
+            <option value="capitalShare-asc">資金占有率が低い順</option>
             <option value="combined30-desc">総合30日の動きが多い順</option>
             <option value="combined7-desc">総合7日の動きが多い順</option>
             <option value="tx-desc">みんトレ美品30日件数が多い順</option>
@@ -122,6 +126,59 @@
           <span>PSA10 上限</span>
           <input id="psaMaxInput" type="number" min="0" step="1000" value="200000" />
         </label>
+        </div>
+      </details>
+
+      <details class="advanced-filters psa-decision-settings">
+        <summary>
+          <span>PSA提出判断の設定</span>
+          <small>入力後のURLをブックマークできます</small>
+        </summary>
+        <div class="controls controls-advanced">
+          <label class="control">
+            <span>PSA仕入れ用総資金</span>
+            <input id="psaCapitalInput" type="number" min="0" step="10000" value="500000" />
+          </label>
+          <label class="control">
+            <span>資金ロック日数</span>
+            <input id="lockDaysInput" type="number" min="1" step="1" value="180" />
+          </label>
+          <label class="control">
+            <span>最低期待利益</span>
+            <input id="minExpectedProfitInput" type="number" step="1000" value="10000" />
+          </label>
+          <label class="control">
+            <span>最低期待利益率</span>
+            <input id="minExpectedRoiInput" type="number" min="0" step="1" value="30" />
+          </label>
+          <label class="control">
+            <span>最低年換算資金効率</span>
+            <input id="minAnnualEfficiencyInput" type="number" min="0" step="1" value="40" />
+          </label>
+          <label class="control">
+            <span>1枚の最大資金占有率</span>
+            <input id="maxCapitalShareInput" type="number" min="0" max="100" step="1" value="10" />
+          </label>
+          <label class="control">
+            <span>同時提出予定枚数</span>
+            <input id="submissionCountInput" type="number" min="1" step="1" value="10" />
+          </label>
+          <label class="control">
+            <span>返却時の鑑定費予備資金</span>
+            <input id="gradingReserveInput" type="number" min="0" step="1000" value="130000" />
+          </label>
+          <label class="control">
+            <span>売却手数料率</span>
+            <input id="saleFeeRateInput" type="number" min="0" max="100" step="0.1" value="0" />
+          </label>
+          <label class="control">
+            <span>送料など販売経費</span>
+            <input id="saleExtraCostInput" type="number" min="0" step="100" value="0" />
+          </label>
+        </div>
+        <div class="psa-settings-note">
+          10率は仕入れ値一覧の70%／50%と連動。PSA9以下は仕入れ値の75%回収として計算します。鑑定費は利益から差し引きますが、資金ロック額には含めません。
+          <strong id="gradingReserveStatus"></strong>
         </div>
       </details>
 

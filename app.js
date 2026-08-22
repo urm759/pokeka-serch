@@ -25,6 +25,16 @@ const state = {
   q: "",
   visibleLimit: 60,
   favorites: new Set(),
+  psaCapital: 500000,
+  lockDays: 180,
+  minExpectedProfit: 10000,
+  minExpectedRoi: 30,
+  minAnnualEfficiency: 40,
+  maxCapitalShare: 10,
+  submissionCount: 10,
+  gradingReserve: 130000,
+  saleFeeRate: 0,
+  saleExtraCost: 0,
 };
 
 const FAVORITES_STORAGE_KEY = "pokeka-buy-favorites-v1";
@@ -87,6 +97,17 @@ const els = {
   exportFavoritesBtn: document.getElementById("exportFavoritesBtn"),
   importFavoritesInput: document.getElementById("importFavoritesInput"),
   clearFavoritesBtn: document.getElementById("clearFavoritesBtn"),
+  psaCapitalInput: document.getElementById("psaCapitalInput"),
+  lockDaysInput: document.getElementById("lockDaysInput"),
+  minExpectedProfitInput: document.getElementById("minExpectedProfitInput"),
+  minExpectedRoiInput: document.getElementById("minExpectedRoiInput"),
+  minAnnualEfficiencyInput: document.getElementById("minAnnualEfficiencyInput"),
+  maxCapitalShareInput: document.getElementById("maxCapitalShareInput"),
+  submissionCountInput: document.getElementById("submissionCountInput"),
+  gradingReserveInput: document.getElementById("gradingReserveInput"),
+  saleFeeRateInput: document.getElementById("saleFeeRateInput"),
+  saleExtraCostInput: document.getElementById("saleExtraCostInput"),
+  gradingReserveStatus: document.getElementById("gradingReserveStatus"),
 };
 
 function showStatus(message, kind = "info") {
@@ -103,6 +124,10 @@ const sorters = {
   "roi-asc": (a, b) => a.roi - b.roi,
   "profit-desc": (a, b) => b.profit - a.profit,
   "profit-asc": (a, b) => a.profit - b.profit,
+  "psaRecommend-desc": (a, b) => Number(b.psaDecision?.recommended) - Number(a.psaDecision?.recommended) || (b.psaDecision?.annualEfficiency ?? -Infinity) - (a.psaDecision?.annualEfficiency ?? -Infinity),
+  "expectedProfit-desc": (a, b) => (b.psaDecision?.expectedProfit ?? -Infinity) - (a.psaDecision?.expectedProfit ?? -Infinity),
+  "annualEfficiency-desc": (a, b) => (b.psaDecision?.annualEfficiency ?? -Infinity) - (a.psaDecision?.annualEfficiency ?? -Infinity),
+  "capitalShare-asc": (a, b) => (a.psaDecision?.capitalShare ?? Infinity) - (b.psaDecision?.capitalShare ?? Infinity),
   "tx-desc": (a, b) => b.saleTx30d - a.saleTx30d,
   "tx-asc": (a, b) => a.saleTx30d - b.saleTx30d,
   "tx7-desc": (a, b) => b.saleTx7d - a.saleTx7d,
@@ -220,12 +245,14 @@ function renderFavorites() {
   els.favoritesList.innerHTML = cards.map((rawCard) => {
     const card = calc(rawCard);
     const guide = favoriteGuide(card);
+    const decision = card.psaDecision;
     const name = escapeHtml(String(card.name || "").replace(/\s+/g, " "));
     return `
       <article class="favorite-row" data-favorite-id="${escapeHtml(card.id)}">
         <img src="${escapeHtml(card.img)}" alt="" loading="lazy" />
         <div class="favorite-main">
           <h3>${name}</h3>
+          <div class="favorite-decision ${decision?.recommended ? "recommended" : "not-recommended"}">${decision?.recommended ? "PSA提出おすすめ" : "PSA提出おすすめしない"}</div>
           <div class="favorite-prices">
             <div><span>PSA10</span><strong>¥${fmt.format(card.psa10)}</strong></div>
             <div class="recommended"><span>おすすめ以下</span><strong>¥${fmt.format(guide.recommended)}</strong></div>
@@ -259,7 +286,9 @@ function favoritesMemo() {
   const rows = favoriteCards().map((rawCard) => {
     const card = calc(rawCard);
     const guide = favoriteGuide(card);
-    return `${String(card.name || "").replace(/\s+/g, " ")}\nおすすめ ¥${fmt.format(guide.recommended)}以下（理想 ¥${fmt.format(guide.ideal)} / 上限 ¥${fmt.format(guide.upper)} / PSA10 ¥${fmt.format(card.psa10)}）`;
+    const decision = card.psaDecision;
+    const decisionText = decision?.recommended ? "PSA提出おすすめ" : `PSA提出おすすめしない：${decision?.reasons.join(" / ") || "計算不可"}`;
+    return `${String(card.name || "").replace(/\s+/g, " ")}\nおすすめ ¥${fmt.format(guide.recommended)}以下（理想 ¥${fmt.format(guide.ideal)} / 上限 ¥${fmt.format(guide.upper)} / PSA10 ¥${fmt.format(card.psa10)}）\n${decisionText} / 期待利益 ¥${fmt.format(Math.round(decision?.expectedProfit || 0))} / 年換算効率 ${Math.round(decision?.annualEfficiency || 0)}%`;
   });
   return [header, ...rows].join("\n\n");
 }
@@ -290,11 +319,12 @@ async function copyText(text) {
 
 function exportFavoritesCsv() {
   const cfg = guideConfig();
-  const rows = [["id", "カード名", "型番", "PSA10価格", "基準", "理想仕入れ", "おすすめ仕入れ", "上限仕入れ", "みんトレURL", "カードラッシュURL"]];
+  const rows = [["id", "カード名", "型番", "PSA10価格", "基準", "理想仕入れ", "おすすめ仕入れ", "上限仕入れ", "PSA提出判断", "期待利益", "期待利益率", "年換算資金効率", "資金占有率", "判断理由", "みんトレURL", "カードラッシュURL"]];
   favoriteCards().forEach((rawCard) => {
     const card = calc(rawCard);
     const guide = favoriteGuide(card);
-    rows.push([card.id, card.name, card.model || "", card.psa10, cfg.label, guide.ideal, guide.recommended, guide.upper, buildTorecaCardUrl(card), card.cardrushUrl || ""]);
+    const decision = card.psaDecision;
+    rows.push([card.id, card.name, card.model || "", card.psa10, cfg.label, guide.ideal, guide.recommended, guide.upper, decision?.recommended ? "おすすめ" : "おすすめしない", Math.round(decision?.expectedProfit || 0), Math.round(decision?.expectedRoi || 0), Math.round(decision?.annualEfficiency || 0), Number(decision?.capitalShare || 0).toFixed(1), decision?.reasons.join(" / ") || "", buildTorecaCardUrl(card), card.cardrushUrl || ""]);
   });
   const csv = `\uFEFF${rows.map((row) => row.map(csvCell).join(",")).join("\r\n")}`;
   const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
@@ -432,9 +462,7 @@ function guideConfig() {
 function setGuideMode(mode) {
   if (!guideModes[mode]) return;
   state.guideMode = mode;
-  syncGuideButtons();
-  renderGuide();
-  renderFavorites();
+  render();
   updateUrl();
 }
 
@@ -510,12 +538,29 @@ function calc(card) {
   const psaTx30d = Number(card.p10tv30 || 0);
   const psaTx7d = Number(card.p10tv7 || 0);
   if (!(price > 0) || !(psa10 > 0)) {
-    return { ...card, price, torecaPrice, cardrushPrice, psa10, profit: NaN, roi: NaN, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, combined30, combined7 };
+    return { ...card, price, torecaPrice, cardrushPrice, psa10, profit: NaN, roi: NaN, psaDecision: null, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, combined30, combined7 };
   }
   const profit = psa10 - price - state.fee;
   const roiBase = price + state.fee;
   const roi = roiBase > 0 ? (profit / roiBase) * 100 : NaN;
-  return { ...card, price, torecaPrice, cardrushPrice, psa10, profit, roi, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, combined30, combined7 };
+  const hitRate = guideConfig().hitRate;
+  const saleMultiplier = Math.max(0, 1 - state.saleFeeRate / 100);
+  const psa10Net = psa10 * saleMultiplier - state.saleExtraCost;
+  const lowerGradeNet = price * 0.75 * saleMultiplier - state.saleExtraCost;
+  const expectedSale = hitRate * psa10Net + (1 - hitRate) * lowerGradeNet;
+  const expectedProfit = expectedSale - price - state.fee;
+  const expectedRoi = price > 0 ? expectedProfit / price * 100 : NaN;
+  const annualEfficiency = price > 0 && state.lockDays > 0 ? expectedRoi * 365 / state.lockDays : NaN;
+  const capitalShare = state.psaCapital > 0 ? price / state.psaCapital * 100 : Infinity;
+  const requiredReserve = state.fee * state.submissionCount;
+  const reasons = [];
+  if (expectedProfit < state.minExpectedProfit) reasons.push(`期待利益が¥${fmt.format(state.minExpectedProfit)}未満`);
+  if (expectedRoi < state.minExpectedRoi) reasons.push(`期待利益率が${fmt.format(state.minExpectedRoi)}%未満`);
+  if (annualEfficiency < state.minAnnualEfficiency) reasons.push(`年換算効率が${fmt.format(state.minAnnualEfficiency)}%未満`);
+  if (capitalShare > state.maxCapitalShare) reasons.push(`資金占有率が${fmt.format(state.maxCapitalShare)}%超`);
+  if (state.gradingReserve < requiredReserve) reasons.push("返却時の鑑定費予備資金が不足");
+  const psaDecision = { recommended: reasons.length === 0, reasons, expectedSale, expectedProfit, expectedRoi, annualEfficiency, capitalShare, requiredReserve };
+  return { ...card, price, torecaPrice, cardrushPrice, psa10, profit, roi, psaDecision, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, combined30, combined7 };
 }
 
 function parseOptionalNumber(value) {
@@ -552,6 +597,16 @@ function readUrl() {
   const psaMax = parseOptionalNumber(url.searchParams.get("psaMax"));
   const priceMin = parseOptionalNumber(url.searchParams.get("priceMin"));
   const priceMax = parseOptionalNumber(url.searchParams.get("priceMax"));
+  const psaCapital = parseOptionalNumber(url.searchParams.get("cap"));
+  const lockDays = parseOptionalNumber(url.searchParams.get("lock"));
+  const minExpectedProfit = parseOptionalNumber(url.searchParams.get("expProfit"));
+  const minExpectedRoi = parseOptionalNumber(url.searchParams.get("expRoi"));
+  const minAnnualEfficiency = parseOptionalNumber(url.searchParams.get("annual"));
+  const maxCapitalShare = parseOptionalNumber(url.searchParams.get("maxShare"));
+  const submissionCount = parseOptionalNumber(url.searchParams.get("batch"));
+  const gradingReserve = parseOptionalNumber(url.searchParams.get("reserve"));
+  const saleFeeRate = parseOptionalNumber(url.searchParams.get("sellFee"));
+  const saleExtraCost = parseOptionalNumber(url.searchParams.get("extraCost"));
   const sort = url.searchParams.get("sort");
   const q = url.searchParams.get("q");
   if (guide && guideModes[guide]) {
@@ -572,6 +627,16 @@ function readUrl() {
   if (psaMax != null && psaMax >= 0) els.psaMaxInput.value = String(psaMax);
   if (priceMin != null) els.priceMinInput.value = String(priceMin);
   if (priceMax != null) els.priceMaxInput.value = String(priceMax);
+  if (psaCapital != null && psaCapital >= 0) els.psaCapitalInput.value = String(psaCapital);
+  if (lockDays != null && lockDays > 0) els.lockDaysInput.value = String(lockDays);
+  if (minExpectedProfit != null) els.minExpectedProfitInput.value = String(minExpectedProfit);
+  if (minExpectedRoi != null && minExpectedRoi >= 0) els.minExpectedRoiInput.value = String(minExpectedRoi);
+  if (minAnnualEfficiency != null && minAnnualEfficiency >= 0) els.minAnnualEfficiencyInput.value = String(minAnnualEfficiency);
+  if (maxCapitalShare != null && maxCapitalShare >= 0) els.maxCapitalShareInput.value = String(maxCapitalShare);
+  if (submissionCount != null && submissionCount > 0) els.submissionCountInput.value = String(submissionCount);
+  if (gradingReserve != null && gradingReserve >= 0) els.gradingReserveInput.value = String(gradingReserve);
+  if (saleFeeRate != null && saleFeeRate >= 0) els.saleFeeRateInput.value = String(saleFeeRate);
+  if (saleExtraCost != null && saleExtraCost >= 0) els.saleExtraCostInput.value = String(saleExtraCost);
   if (sort && sorters[sort]) els.sortInput.value = sort;
   if (q) els.qInput.value = q;
 }
@@ -597,6 +662,16 @@ function buildShareUrl() {
   url.searchParams.set("psaMin", String(state.minPsa10));
   url.searchParams.set("psaMax", String(state.maxPsa10));
   url.searchParams.set("sort", state.sort);
+  url.searchParams.set("cap", String(state.psaCapital));
+  url.searchParams.set("lock", String(state.lockDays));
+  url.searchParams.set("expProfit", String(state.minExpectedProfit));
+  url.searchParams.set("expRoi", String(state.minExpectedRoi));
+  url.searchParams.set("annual", String(state.minAnnualEfficiency));
+  url.searchParams.set("maxShare", String(state.maxCapitalShare));
+  url.searchParams.set("batch", String(state.submissionCount));
+  url.searchParams.set("reserve", String(state.gradingReserve));
+  url.searchParams.set("sellFee", String(state.saleFeeRate));
+  url.searchParams.set("extraCost", String(state.saleExtraCost));
   if (state.minPrice == null) {
     url.searchParams.delete("priceMin");
   } else {
@@ -718,6 +793,22 @@ function render() {
     `;
     const cardrushPriceText = Number.isFinite(card.cardrushPrice) ? `¥${fmt.format(card.cardrushPrice)}` : "未取得";
     const favoriteActive = state.favorites.has(String(card.id));
+    const psaDecision = card.psaDecision;
+    const decisionClass = psaDecision?.recommended ? "recommended" : "not-recommended";
+    const decisionTitle = psaDecision?.recommended ? "PSA提出おすすめ" : "PSA提出おすすめしない";
+    const decisionReasons = psaDecision?.recommended ? "設定した利益・資金効率の基準をすべて満たしています" : (psaDecision?.reasons || []).join(" / ");
+    const psaDecisionPanel = psaDecision ? `
+      <div class="psa-decision ${decisionClass}">
+        <div class="psa-decision-head"><strong>${decisionTitle}</strong><span>${guideConfig().label}・ロック${fmt.format(state.lockDays)}日</span></div>
+        <div class="psa-decision-metrics">
+          <div><span>期待利益</span><strong>¥${fmt.format(Math.round(psaDecision.expectedProfit))}</strong></div>
+          <div><span>期待利益率</span><strong>${Math.round(psaDecision.expectedRoi)}%</strong></div>
+          <div><span>年換算効率</span><strong>${Math.round(psaDecision.annualEfficiency)}%</strong></div>
+          <div><span>資金占有率</span><strong>${Number.isFinite(psaDecision.capitalShare) ? psaDecision.capitalShare.toFixed(1) : "-"}%</strong></div>
+        </div>
+        <p>${escapeHtml(decisionReasons)}</p>
+      </div>
+    ` : "";
     return `
       <article class="row card" data-card-id="${card.id}">
         <a class="thumb" href="${buildTorecaCardUrl(card)}" target="_blank" rel="noreferrer" aria-label="みんトレで${name}を開く">
@@ -745,6 +836,7 @@ function render() {
 
           ${stockPanel}
           ${activityPanel}
+          ${psaDecisionPanel}
 
           <div class="market-links" aria-label="外部サイトへの直リンク">
             <div class="market-links-title">商品ページ</div>
@@ -787,6 +879,22 @@ function syncFromUI() {
   state.maxPrice = parseOptionalNumber(els.priceMaxInput.value);
   state.sort = els.sortInput.value;
   state.q = els.qInput.value.trim();
+  state.psaCapital = Number(els.psaCapitalInput.value || 0);
+  state.lockDays = Math.max(1, Number(els.lockDaysInput.value || 1));
+  state.minExpectedProfit = Number(els.minExpectedProfitInput.value || 0);
+  state.minExpectedRoi = Number(els.minExpectedRoiInput.value || 0);
+  state.minAnnualEfficiency = Number(els.minAnnualEfficiencyInput.value || 0);
+  state.maxCapitalShare = Number(els.maxCapitalShareInput.value || 0);
+  state.submissionCount = Math.max(1, Number(els.submissionCountInput.value || 1));
+  state.gradingReserve = Number(els.gradingReserveInput.value || 0);
+  state.saleFeeRate = Number(els.saleFeeRateInput.value || 0);
+  state.saleExtraCost = Number(els.saleExtraCostInput.value || 0);
+  if (els.gradingReserveStatus) {
+    const required = state.fee * state.submissionCount;
+    const enough = state.gradingReserve >= required;
+    els.gradingReserveStatus.className = enough ? "enough" : "short";
+    els.gradingReserveStatus.textContent = `返却時必要額 ¥${fmt.format(required)} / ${enough ? "予備資金内" : `あと¥${fmt.format(required - state.gradingReserve)}不足`}`;
+  }
   render();
   updateUrl();
 }
@@ -820,7 +928,7 @@ async function init() {
   }
 }
 
-[els.qInput, els.feeInput, els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.roiInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.sortInput].forEach((el) =>
+[els.qInput, els.feeInput, els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.roiInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.sortInput, els.psaCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput].forEach((el) =>
   el.addEventListener("input", syncFromUI)
 );
 
