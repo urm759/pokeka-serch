@@ -7,8 +7,8 @@
 - アップロードするのは、この `github-site` フォルダの中身だけです
 - `index.html` が GitHub リポジトリのルートに見える配置にします
 - 親フォルダ側の `work`、`.github`、`outputs` を別々にアップロードする必要はありません
-- `.github/workflows/update-pokemon-site.yml` で毎日08:00（日本時間）の相場更新を行います
-- `.github/workflows/update-cardrush-stock.yml` で毎日00:00（日本時間）のカードラッシュ在庫更新を行います
+- `.github/workflows/refresh-all-site-data.yml` で毎日00:00と06:30（日本時間）に全データを一括更新します
+- 個別の相場更新とカードラッシュ更新は、Actions画面から手動実行できます
 
 ## 仕組み
 
@@ -35,6 +35,17 @@
 - 並び順を変えたい: `並び順` セレクト
 
 ## 自動更新
+
+`Refresh All Site Data` が毎日2回、日本時間の午前0時と午前6時30分に開始します。
+みんなのトレカ相場の新カード・価格・取引件数を取得したあと、スニダン直リンク、カードラッシュの商品・状態A価格・在庫を順番に更新します。
+午前6時30分開始分は、通常は午前10時までの完了を見込んだ設定です。ただしGitHub Actions側の混雑や取得元サイトの応答状況によって遅れることがあります。
+
+`Refresh Pokemon Site Data` と `Refresh Cardrush Stock` は個別確認用の手動実行として残しています。通常の定期更新は `Refresh All Site Data` だけで完結します。
+
+## お気に入り仕入れ候補
+
+各カードの「仕入れ候補に追加」からお気に入り登録できます。登録内容はブラウザごとの保存ですが、CSV保存とCSV読込で別のスマホ・PCへ移せます。
+メモ用コピーでは、カード名、PSA10価格、理想・おすすめ・上限仕入れ値をスマホで確認しやすい形式にまとめます。
 
 - `work/update_pokemon_site.js` を実行すると、toreca-souba の公開データからポケモンカード一覧とメタ情報を再生成します
 - `work/update_snkr_links.js` が未取得の全カードを確認し、スニダン個別商品URLを100枚ごとに保存します

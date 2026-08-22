@@ -2,9 +2,6 @@ name: Refresh Pokemon Site Data
 
 on:
   workflow_dispatch:
-  schedule:
-    # 08:00 JST every day (GitHub Actions cron uses UTC).
-    - cron: "0 23 * * *"
 
 permissions:
   contents: write

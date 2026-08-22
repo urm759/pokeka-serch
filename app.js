@@ -24,7 +24,10 @@ const state = {
   sort: "roi-desc",
   q: "",
   visibleLimit: 60,
+  favorites: new Set(),
 };
+
+const FAVORITES_STORAGE_KEY = "pokeka-buy-favorites-v1";
 
 let meta = window.POKEMON_CARDS_META || {};
 const guideModes = {
@@ -74,6 +77,16 @@ const els = {
   guideButtons: [...document.querySelectorAll("[data-guide-mode]")],
   loadMoreBtn: document.getElementById("loadMoreBtn"),
   resultProgress: document.getElementById("resultProgress"),
+  favoritesPanel: document.getElementById("favoritesPanel"),
+  favoritesList: document.getElementById("favoritesList"),
+  favoritesHint: document.getElementById("favoritesHint"),
+  favoriteCount: document.getElementById("favoriteCount"),
+  favoriteCountToolbar: document.getElementById("favoriteCountToolbar"),
+  openFavoritesBtn: document.getElementById("openFavoritesBtn"),
+  copyFavoritesBtn: document.getElementById("copyFavoritesBtn"),
+  exportFavoritesBtn: document.getElementById("exportFavoritesBtn"),
+  importFavoritesInput: document.getElementById("importFavoritesInput"),
+  clearFavoritesBtn: document.getElementById("clearFavoritesBtn"),
 };
 
 function showStatus(message, kind = "info") {
@@ -146,6 +159,165 @@ function calcGuideBuyPrice(psa10, hitRate, fee, targetRoi, psa9Rate = 0.75) {
   const denominator = roi + 1 - (1 - hitRate) * psa9Rate;
   if (!(denominator > 0)) return null;
   return roundToStep(numerator / denominator);
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function loadFavorites() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY) || "[]");
+    state.favorites = new Set(Array.isArray(saved) ? saved.map(String) : []);
+  } catch {
+    state.favorites = new Set();
+  }
+}
+
+function saveFavorites() {
+  localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([...state.favorites]));
+}
+
+function favoriteGuide(card) {
+  const cfg = guideConfig();
+  const psa10 = Number(card.snkPsa10Price || card.psa10 || 0);
+  const fee = Number(state.fee || 0);
+  return {
+    ideal: calcGuideBuyPrice(psa10, cfg.hitRate, fee, 20),
+    recommended: calcGuideBuyPrice(psa10, cfg.hitRate, fee, 10),
+    upper: calcGuideBuyPrice(psa10, cfg.hitRate, fee, 0),
+  };
+}
+
+function favoriteCards() {
+  const byId = new Map(state.cards.map((card) => [String(card.id), card]));
+  return [...state.favorites].map((id) => byId.get(id)).filter(Boolean);
+}
+
+function renderFavorites() {
+  if (!els.favoritesList) return;
+  const cards = favoriteCards();
+  const cfg = guideConfig();
+  if (els.favoriteCount) els.favoriteCount.textContent = fmt.format(cards.length);
+  if (els.favoriteCountToolbar) els.favoriteCountToolbar.textContent = fmt.format(cards.length);
+  if (els.favoritesHint) {
+    els.favoritesHint.textContent = cards.length
+      ? `${cfg.label} / PSA鑑定費 ¥${fmt.format(state.fee)}で計算中`
+      : "各カードの「仕入れ候補に追加」から登録してください。";
+  }
+  els.copyFavoritesBtn.disabled = cards.length === 0;
+  els.exportFavoritesBtn.disabled = cards.length === 0;
+  els.clearFavoritesBtn.disabled = cards.length === 0;
+  if (!cards.length) {
+    els.favoritesList.innerHTML = '<div class="favorites-empty">まだ仕入れ候補はありません。</div>';
+    return;
+  }
+  els.favoritesList.innerHTML = cards.map((rawCard) => {
+    const card = calc(rawCard);
+    const guide = favoriteGuide(card);
+    const name = escapeHtml(String(card.name || "").replace(/\s+/g, " "));
+    return `
+      <article class="favorite-row" data-favorite-id="${escapeHtml(card.id)}">
+        <img src="${escapeHtml(card.img)}" alt="" loading="lazy" />
+        <div class="favorite-main">
+          <h3>${name}</h3>
+          <div class="favorite-prices">
+            <div><span>PSA10</span><strong>¥${fmt.format(card.psa10)}</strong></div>
+            <div class="recommended"><span>おすすめ以下</span><strong>¥${fmt.format(guide.recommended)}</strong></div>
+            <div><span>理想</span><strong>¥${fmt.format(guide.ideal)}</strong></div>
+            <div><span>上限</span><strong>¥${fmt.format(guide.upper)}</strong></div>
+          </div>
+        </div>
+        <button class="remove-favorite" type="button" data-remove-favorite="${escapeHtml(card.id)}">解除</button>
+      </article>
+    `;
+  }).join("");
+}
+
+function toggleFavorite(id) {
+  const key = String(id);
+  if (state.favorites.has(key)) state.favorites.delete(key);
+  else state.favorites.add(key);
+  saveFavorites();
+  renderFavorites();
+  document.querySelectorAll(`[data-toggle-favorite="${CSS.escape(key)}"]`).forEach((button) => {
+    const active = state.favorites.has(key);
+    button.classList.toggle("active", active);
+    button.textContent = active ? "★ 仕入れ候補に登録済み" : "☆ 仕入れ候補に追加";
+    button.setAttribute("aria-pressed", String(active));
+  });
+}
+
+function favoritesMemo() {
+  const cfg = guideConfig();
+  const header = `仕入れ候補（${cfg.label}・PSA鑑定費 ¥${fmt.format(state.fee)}）`;
+  const rows = favoriteCards().map((rawCard) => {
+    const card = calc(rawCard);
+    const guide = favoriteGuide(card);
+    return `${String(card.name || "").replace(/\s+/g, " ")}\nおすすめ ¥${fmt.format(guide.recommended)}以下（理想 ¥${fmt.format(guide.ideal)} / 上限 ¥${fmt.format(guide.upper)} / PSA10 ¥${fmt.format(card.psa10)}）`;
+  });
+  return [header, ...rows].join("\n\n");
+}
+
+function csvCell(value) {
+  return `"${String(value ?? "").replace(/"/g, '""')}"`;
+}
+
+async function copyText(text) {
+  if (navigator.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return;
+    } catch {
+      // Some mobile browsers only allow the legacy copy path.
+    }
+  }
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  textarea.remove();
+}
+
+function exportFavoritesCsv() {
+  const cfg = guideConfig();
+  const rows = [["id", "カード名", "型番", "PSA10価格", "基準", "理想仕入れ", "おすすめ仕入れ", "上限仕入れ", "みんトレURL", "カードラッシュURL"]];
+  favoriteCards().forEach((rawCard) => {
+    const card = calc(rawCard);
+    const guide = favoriteGuide(card);
+    rows.push([card.id, card.name, card.model || "", card.psa10, cfg.label, guide.ideal, guide.recommended, guide.upper, buildTorecaCardUrl(card), card.cardrushUrl || ""]);
+  });
+  const csv = `\uFEFF${rows.map((row) => row.map(csvCell).join(",")).join("\r\n")}`;
+  const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `pokeka-buy-list-${new Date().toISOString().slice(0, 10)}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function parseCsvLine(line) {
+  const cells = [];
+  let value = "";
+  let quoted = false;
+  for (let i = 0; i < line.length; i += 1) {
+    const char = line[i];
+    if (char === '"' && quoted && line[i + 1] === '"') { value += '"'; i += 1; }
+    else if (char === '"') quoted = !quoted;
+    else if (char === "," && !quoted) { cells.push(value); value = ""; }
+    else value += char;
+  }
+  cells.push(value);
+  return cells;
 }
 
 function buildTorecaCardUrl(card) {
@@ -262,6 +434,7 @@ function setGuideMode(mode) {
   state.guideMode = mode;
   syncGuideButtons();
   renderGuide();
+  renderFavorites();
   updateUrl();
 }
 
@@ -544,6 +717,7 @@ function render() {
       </div>
     `;
     const cardrushPriceText = Number.isFinite(card.cardrushPrice) ? `¥${fmt.format(card.cardrushPrice)}` : "未取得";
+    const favoriteActive = state.favorites.has(String(card.id));
     return `
       <article class="row card" data-card-id="${card.id}">
         <a class="thumb" href="${buildTorecaCardUrl(card)}" target="_blank" rel="noreferrer" aria-label="みんトレで${name}を開く">
@@ -555,6 +729,7 @@ function render() {
             <div>
               <h3>${name}</h3>
             </div>
+            <button class="favorite-toggle ${favoriteActive ? "active" : ""}" type="button" data-toggle-favorite="${card.id}" aria-pressed="${favoriteActive}">${favoriteActive ? "★ 仕入れ候補に登録済み" : "☆ 仕入れ候補に追加"}</button>
           </div>
 
           <div class="badges">
@@ -591,6 +766,7 @@ function render() {
 
   const observer = ensureSnkrObserver();
   [...els.grid.querySelectorAll("[data-card-id]")].forEach((el) => observer.observe(el));
+  renderFavorites();
 }
 
 function syncFromUI() {
@@ -617,6 +793,7 @@ function syncFromUI() {
 
 async function init() {
   readUrl();
+  loadFavorites();
   try {
     if (!window.POKEMON_CARDS_META) {
       const loadedMeta = await fetchJsonMaybe("./data/pokemon-cards-meta.json");
@@ -649,13 +826,57 @@ async function init() {
 
 els.copyLinkBtn.addEventListener("click", async () => {
   const url = buildShareUrl();
-  await navigator.clipboard.writeText(url.toString());
+  await copyText(url.toString());
   els.copyLinkBtn.textContent = "条件URLをコピーしました";
   setTimeout(() => (els.copyLinkBtn.textContent = "この条件をURLに反映"), 1400);
 });
 
 els.loadMoreBtn.addEventListener("click", () => {
   state.visibleLimit += 60;
+  render();
+});
+
+els.grid.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-toggle-favorite]");
+  if (button) toggleFavorite(button.dataset.toggleFavorite);
+});
+
+els.favoritesList.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-remove-favorite]");
+  if (button) toggleFavorite(button.dataset.removeFavorite);
+});
+
+els.openFavoritesBtn.addEventListener("click", () => {
+  els.favoritesPanel.open = true;
+  els.favoritesPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+els.copyFavoritesBtn.addEventListener("click", async () => {
+  await copyText(favoritesMemo());
+  els.copyFavoritesBtn.textContent = "コピーしました";
+  setTimeout(() => (els.copyFavoritesBtn.textContent = "メモ用にコピー"), 1400);
+});
+
+els.exportFavoritesBtn.addEventListener("click", exportFavoritesCsv);
+
+els.importFavoritesInput.addEventListener("change", async () => {
+  const file = els.importFavoritesInput.files?.[0];
+  if (!file) return;
+  const lines = (await file.text()).replace(/^\uFEFF/, "").split(/\r?\n/).filter(Boolean);
+  const rows = lines.map(parseCsvLine);
+  const idIndex = Math.max(0, rows[0]?.findIndex((cell) => cell.trim().toLowerCase() === "id"));
+  const validIds = new Set(state.cards.map((card) => String(card.id)));
+  const imported = rows.slice(1).map((row) => String(row[idIndex] || "")).filter((id) => validIds.has(id));
+  state.favorites = new Set(imported);
+  saveFavorites();
+  render();
+  els.favoritesPanel.open = true;
+  els.importFavoritesInput.value = "";
+});
+
+els.clearFavoritesBtn.addEventListener("click", () => {
+  state.favorites.clear();
+  saveFavorites();
   render();
 });
 

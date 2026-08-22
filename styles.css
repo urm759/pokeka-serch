@@ -367,6 +367,34 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
   gap:16px;
   flex-wrap:wrap;
 }
+.favorites-panel{margin-bottom:16px;overflow:hidden;scroll-margin-top:12px}
+.favorites-summary{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:18px 20px;cursor:pointer;list-style:none}
+.favorites-summary::-webkit-details-marker{display:none}
+.favorites-summary h2{margin:3px 0 5px;font-size:22px}
+.favorites-summary p{margin:0;color:var(--muted)}
+.favorites-summary>strong{padding:9px 13px;border-radius:999px;background:rgba(245,158,11,.16);color:#fbbf24;white-space:nowrap}
+.favorites-body{padding:0 20px 20px;border-top:1px solid var(--line)}
+.favorites-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:14px 0}
+.favorites-actions p{margin:0 auto 0 0;color:var(--muted);font-size:12px;font-weight:700}
+.favorites-actions button,.import-favorites-btn{border:1px solid var(--line);border-radius:999px;padding:9px 13px;background:rgba(255,255,255,.05);color:var(--text);font:inherit;font-size:12px;font-weight:800;cursor:pointer}
+.favorites-actions button:disabled{opacity:.4;cursor:not-allowed}
+.favorites-actions button:not(.danger){background:linear-gradient(90deg,rgba(125,211,252,.95),rgba(56,217,150,.95));color:#04131f;border:0}
+.favorites-actions .danger{color:#fca5a5}
+.import-favorites-btn input{display:none}
+.favorites-list{display:grid;gap:9px}
+.favorites-empty{padding:26px;text-align:center;border:1px dashed var(--line);border-radius:16px;color:var(--muted)}
+.favorite-row{display:grid;grid-template-columns:62px minmax(0,1fr) auto;align-items:center;gap:12px;padding:10px;border:1px solid var(--line);border-radius:17px;background:#0b1224}
+.favorite-row img{width:62px;height:86px;object-fit:contain;border-radius:8px}
+.favorite-main{min-width:0}
+.favorite-main h3{margin:0 0 8px;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.favorite-prices{display:grid;grid-template-columns:repeat(4,minmax(90px,1fr));gap:6px}
+.favorite-prices div{padding:8px 9px;border-radius:11px;background:rgba(255,255,255,.04)}
+.favorite-prices .recommended{background:rgba(56,217,150,.13);border:1px solid rgba(56,217,150,.28)}
+.favorite-prices span{display:block;color:var(--muted);font-size:9px}
+.favorite-prices strong{display:block;margin-top:2px;font-size:14px}
+.remove-favorite{border:1px solid rgba(252,165,165,.25);border-radius:999px;padding:8px 10px;background:transparent;color:#fca5a5;cursor:pointer}
+.favorite-toggle{white-space:nowrap;border:1px solid rgba(245,158,11,.35);border-radius:999px;padding:9px 12px;background:rgba(245,158,11,.08);color:#fbbf24;font:inherit;font-size:12px;font-weight:900;cursor:pointer}
+.favorite-toggle.active{background:#f59e0b;color:#261500;border-color:#f59e0b}
 .toolbar h2{margin:0 0 4px;font-size:18px}
 .toolbar p{margin:0;color:var(--muted)}
 .toolbar-actions{
@@ -633,6 +661,19 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
   .toolbar,.footer{flex-direction:column;align-items:flex-start;padding:16px}
   .toolbar-actions{width:100%}
   .toolbar-actions button,.toolbar-actions a,.toolbar-meta{width:100%;justify-content:center}
+  .favorites-summary{align-items:flex-start;flex-direction:column;padding:16px}
+  .favorites-summary>strong{width:100%;text-align:center}
+  .favorites-body{padding:0 10px 12px}
+  .favorites-actions p{width:100%;margin:0 0 2px}
+  .favorites-actions button,.import-favorites-btn{flex:1 1 calc(50% - 5px);text-align:center}
+  .favorite-row{grid-template-columns:48px minmax(0,1fr);gap:9px;padding:9px}
+  .favorite-row img{width:48px;height:67px}
+  .favorite-main h3{white-space:normal;font-size:13px;line-height:1.35}
+  .favorite-prices{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+  .favorite-prices div{padding:7px}
+  .favorite-prices strong{font-size:15px}
+  .remove-favorite{grid-column:1 / -1;width:100%}
+  .favorite-toggle{width:100%;font-size:13px}
   .guide-block{padding:12px}
   .guide-block-head{flex-direction:column;align-items:flex-start}
   .guide-block-head p{text-align:left}

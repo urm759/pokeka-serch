@@ -1,19 +1,23 @@
-name: Refresh Cardrush Stock
+name: Refresh All Site Data
 
 on:
   workflow_dispatch:
+  schedule:
+    # 00:00 and 06:30 JST every day (GitHub Actions cron uses UTC).
+    - cron: "0 15 * * *"
+    - cron: "30 21 * * *"
 
 permissions:
   contents: write
 
 concurrency:
-  group: cardrush-stock-refresh
+  group: all-site-data-refresh
   cancel-in-progress: false
 
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 300
+    timeout-minutes: 360
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,7 +27,20 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Refresh all Cardrush listings
+      - name: Update Pokemon cards and prices
+        env:
+          SNKR_BATCH: "0"
+        run: node work/update_pokemon_site.js
+
+      - name: Resolve all Snkrdunk direct links
+        env:
+          SNKR_BATCH: "0"
+          SNKR_CONCURRENCY: "20"
+          SNKR_CHECKPOINT: "100"
+          SNKR_RECHECK_DAYS: "30"
+        run: node work/update_snkr_links.js
+
+      - name: Refresh all Cardrush listings and prices
         env:
           CARDRUSH_REFRESH_ALL: "1"
           CARDRUSH_SEED_BATCH: "0"
@@ -31,26 +48,26 @@ jobs:
           CARDRUSH_CONCURRENCY: "2"
         run: node work/update_cardrush_links.js
 
-      - name: Record stock and audit states
+      - name: Record Cardrush stock and audit states
         env:
           CARDRUSH_REQUIRE_FRESH: "1"
         run: node work/update_cardrush_stock.js
 
-      - name: Re-resolve changed URLs
+      - name: Re-resolve changed Cardrush URLs
         env:
           CARDRUSH_SKIP_SEEDS: "1"
           CARDRUSH_TARGET_BATCH: "120"
           CARDRUSH_CONCURRENCY: "2"
         run: node work/update_cardrush_links.js
 
-      - name: Commit changes
+      - name: Commit all changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/pokemon-cards.json data/pokemon-cards-meta.json data/cardrush-stock-summary.json work/cardrush_catalog.json work/cardrush_stock_history.json work/cardrush_stock_misses.json work/cardrush_invalid_urls.json work/cardrush_recheck_ids.json work/cardrush_crawl_progress.json work/cardrush_target_progress.json
+          git add data work
           if git diff --cached --quiet; then
-            echo "No stock changes."
+            echo "No data changes."
             exit 0
           fi
-          git commit -m "Refresh Cardrush stock"
+          git commit -m "Refresh all Pokemon site data"
           git push

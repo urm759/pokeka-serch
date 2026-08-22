@@ -199,6 +199,27 @@
       </div>
     </details>
 
+    <details id="favoritesPanel" class="card favorites-panel">
+      <summary class="favorites-summary">
+        <div>
+          <div class="eyebrow">店舗で見る仕入れメモ</div>
+          <h2>お気に入り仕入れ候補 <span id="favoriteCount">0</span>枚</h2>
+          <p>登録したカードと「いくら以下なら仕入れるか」をまとめて確認できます。</p>
+        </div>
+        <strong>一覧を開く</strong>
+      </summary>
+      <div class="favorites-body">
+        <div class="favorites-actions">
+          <p id="favoritesHint">各カードの「仕入れ候補に追加」から登録してください。</p>
+          <button id="copyFavoritesBtn" type="button">メモ用にコピー</button>
+          <button id="exportFavoritesBtn" type="button">CSV保存</button>
+          <label class="import-favorites-btn">CSV読込<input id="importFavoritesInput" type="file" accept=".csv,text/csv" /></label>
+          <button id="clearFavoritesBtn" class="danger" type="button">すべて解除</button>
+        </div>
+        <div id="favoritesList" class="favorites-list"></div>
+      </div>
+    </details>
+
     <section class="toolbar card">
       <div>
         <h2>候補一覧</h2>
@@ -207,6 +228,7 @@
       <div class="toolbar-actions">
         <div class="toolbar-meta">データ取得日 <strong id="updatedAt">-</strong></div>
         <div class="toolbar-meta coverage-meta">カードラッシュ <strong id="cardrushCoverage">-</strong></div>
+        <button id="openFavoritesBtn" type="button">仕入れ候補 <strong id="favoriteCountToolbar">0</strong>枚</button>
         <button id="copyLinkBtn" type="button">この条件をURLに反映</button>
         <a id="sourceLink" href="https://toreca-souba.com/" target="_blank" rel="noreferrer">みんトレを見る</a>
       </div>
