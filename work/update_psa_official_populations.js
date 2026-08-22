@@ -104,52 +104,15 @@ function parseSinglePopulation(bodyText, titleText, setCode) {
 function inferTableMetrics(headers, cells) {
   const headerNorms = headers.map(normalizeText);
   const cellText = cells.map((cell) => String(cell || "").replace(/\s+/g, " ").trim());
-  const numericIndexes = [];
-  for (let i = 0; i < cellText.length; i += 1) {
-    if (parseNumber(cellText[i]) != null) numericIndexes.push(i);
-  }
-
   const headerFor = (patterns) => headerNorms.findIndex((h) => patterns.some((p) => p.test(h)));
-  const psa10HeaderIndex = headerFor([/\bPSA\s*10\b/, /\bGEM\s*MINT\s*10\b/, /(^|[^0-9])10([^0-9]|$)/]);
-  const totalHeaderIndex = headerFor([/\bTOTAL\b/, /\bPOPULATION\b/, /\bALL\s*GRADES\b/]);
-
-  let cardNo = null;
-  let cardName = null;
-  let psa10Count = null;
-  let psaTotal = null;
-
-  const firstCell = cellText[0] || null;
-  const secondCell = cellText[1] || null;
-  const firstLooksNumeric = parseNumber(firstCell) != null && !/[A-Za-z\u3040-\u30FF\u4E00-\u9FFF]/.test(firstCell || "");
-  if (firstLooksNumeric) {
-    cardNo = firstCell;
-    if (secondCell && parseNumber(secondCell) == null) cardName = secondCell;
-  } else {
-    cardName = firstCell;
-    if (secondCell && parseNumber(secondCell) != null) {
-      cardNo = secondCell;
-    }
-  }
-
-  if (psa10HeaderIndex >= 0) {
-    psa10Count = parseNumber(cellText[psa10HeaderIndex]);
-  }
-  if (totalHeaderIndex >= 0) {
-    psaTotal = parseNumber(cellText[totalHeaderIndex]);
-  }
-
-  const numericCandidates = numericIndexes.filter((index) => !(firstLooksNumeric && index === 0));
-  if (psa10Count == null && numericCandidates.length > 0) {
-    psa10Count = parseNumber(cellText[numericCandidates[0]]);
-  }
-  if (psaTotal == null && numericCandidates.length > 1) {
-    psaTotal = parseNumber(cellText[numericCandidates[numericCandidates.length - 1]]);
-  }
-  if (psaTotal == null && psa10Count != null) {
-    psaTotal = psa10Count;
-  }
-
-  cardName = cleanCardName(cardName);
+  const cardNoIndex = headerFor([/^CARD\s*NO\.?$/]);
+  const cardNameIndex = headerFor([/^NAME$/]);
+  const psa10HeaderIndex = headerFor([/^10$/, /^PSA\s*10$/, /^GEM\s*MINT\s*10$/]);
+  const totalHeaderIndex = headerFor([/^TOTAL$/, /^POPULATION$/, /^ALL\s*GRADES$/]);
+  const cardNo = cardNoIndex >= 0 ? cellText[cardNoIndex] : null;
+  const cardName = cleanCardName(cardNameIndex >= 0 ? cellText[cardNameIndex] : null);
+  const psa10Count = psa10HeaderIndex >= 0 ? parseNumber(cellText[psa10HeaderIndex]) : null;
+  const psaTotal = totalHeaderIndex >= 0 ? parseNumber(cellText[totalHeaderIndex]) : null;
   const rate = Number.isFinite(psa10Count) && Number.isFinite(psaTotal) && psaTotal > 0 ? (psa10Count / psaTotal) * 100 : null;
   return { cardNo, cardName, psa10Count, psaTotal, psa10Rate: rate };
 }
@@ -162,7 +125,7 @@ async function getTableSnapshot(page) {
       className: table.className || "",
       headers: [...table.querySelectorAll("thead th")].map((th) => th.textContent || ""),
       rows: [...table.querySelectorAll("tbody tr")].map((tr) =>
-        [...tr.querySelectorAll("td")].map((td) => (td.textContent || "").replace(/\s+/g, " ").trim())
+        [...tr.querySelectorAll(":scope > td")].map((td) => (td.textContent || "").replace(/\s+/g, " ").trim())
       ),
     }))
   );
@@ -204,13 +167,16 @@ async function collectSet(context, entry) {
 
   try {
     await page.goto(entry.url, { waitUntil: "domcontentloaded", timeout: 60000 });
-    await page.waitForTimeout(4000);
+    await page.waitForTimeout(8000);
 
     if (page.url().includes("signin")) {
       throw new Error("PSA sign-in page opened instead of the set page. Use a Chrome profile that is already logged in to PSA.");
     }
 
     const bodyText = await page.locator("body").innerText({ timeout: 15000 });
+    if (/私はロボットではありません|VERIFY YOU ARE HUMAN|CLOUDFLARE/i.test(`${await page.title()}\n${bodyText}`)) {
+      throw new Error("PSA Cloudflare verification blocked the automated browser.");
+    }
     const headingMatch =
       bodyText.match(/headingID\s*[:=]\s*["']?(\d+)/i) ||
       bodyText.match(/headingID=(\d+)/i) ||
@@ -220,7 +186,16 @@ async function collectSet(context, entry) {
     result.headingID = headingMatch ? Number(headingMatch[1]) : null;
     result.categoryID = categoryMatch ? Number(categoryMatch[1]) : null;
 
-    const rows = [];
+    const pageLength = page.locator('select[name="tablePSA_length"]');
+    if (await pageLength.count().catch(() => 0)) {
+      const options = await pageLength.locator("option").allTextContents({ timeout: 5000 }).catch(() => []);
+      if (options.some((value) => value.trim() === "500")) {
+        await pageLength.selectOption("500", { timeout: 10000 });
+        await page.waitForTimeout(1200);
+      }
+    }
+
+    let rows = [];
     let lastHeaders = [];
     const seen = new Set();
     for (let pageIndex = 0; pageIndex < MAX_PAGES; pageIndex += 1) {
@@ -349,12 +324,12 @@ async function main() {
     sourceUrl: set.url,
     fetchedAt: set.fetchedAt,
   })));
+  if (freshRows.length < 100) {
+    throw new Error("No reliable fresh PSA population data was collected. Existing data was preserved.");
+  }
   const failedUrls = new Set(collected.filter((set) => set.error || !set.rows.length).map((set) => set.url).filter(Boolean));
   const preservedRows = (previousPayload.rows || []).filter((row) => failedUrls.has(row.sourceUrl));
   const rows = [...freshRows, ...preservedRows];
-  if (rows.length < 100) {
-    throw new Error("PSA login or Cloudflare verification is required. Existing population data was preserved.");
-  }
 
   const payload = {
     generatedAt: new Date().toISOString(),

@@ -1,1 +1,1 @@
-window.PSA_OFFICIAL_POPULATIONS = {"note":"Current card data is loaded from psa-population-summary.json."};
+window.PSA_OFFICIAL_POPULATIONS = {"generatedAt":"2026-08-22T23:37:48.678Z","totalRows":3581};
