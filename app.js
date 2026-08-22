@@ -3,6 +3,8 @@ const fmt = new Intl.NumberFormat("ja-JP");
 const state = {
   cards: [],
   cardrushStock: Object.create(null),
+  psaPopulation: Object.create(null),
+  psaHistoryCache: Object.create(null),
   snkrUrlCache: Object.create(null),
   cardById: Object.create(null),
   snkrObserver: null,
@@ -117,6 +119,52 @@ function showStatus(message, kind = "info") {
       <p style="margin:0;color:var(--muted);white-space:pre-wrap">${message}</p>
     </div>
   `;
+}
+
+function psaChangeBadge(change, days) {
+  if (!change) return `<span class="psa-change pending"><b>${days}日</b> 蓄積中</span>`;
+  const className = change.s === "急増化" ? "surge" : change.s === "増加" ? "increase" : change.s === "少ない" ? "small" : "flat";
+  const delta = Number(change.d10 || 0);
+  return `<span class="psa-change ${className}"><b>${days}日 ${escapeHtml(change.s)}</b> ${delta >= 0 ? "+" : ""}${fmt.format(delta)}枚</span>`;
+}
+
+async function renderPsaHistory(details) {
+  if (details.dataset.loaded === "1") return;
+  const id = details.dataset.psaHistory;
+  const shard = details.dataset.psaShard;
+  const target = details.querySelector("[data-psa-chart]");
+  if (!id || !shard || !target) return;
+  target.textContent = "履歴を読み込み中…";
+  try {
+    if (!state.psaHistoryCache[shard]) {
+      const data = await fetchJsonMaybe(`./data/psa-history/${shard}.json`);
+      state.psaHistoryCache[shard] = data?.cards || {};
+    }
+    const rows = state.psaHistoryCache[shard]?.[id] || [];
+    if (rows.length < 2) {
+      target.innerHTML = '<p class="psa-chart-empty">推移を蓄積中です。2回目の取得後から線グラフを表示します。</p>';
+      details.dataset.loaded = "1";
+      return;
+    }
+    const width = 360, height = 120, pad = 10;
+    const maxValue = Math.max(...rows.flatMap((row) => [Number(row[1] || 0), Number(row[2] || 0)]), 1);
+    const points = (index) => rows.map((row, i) => {
+      const x = pad + (rows.length === 1 ? 0 : i / (rows.length - 1)) * (width - pad * 2);
+      const y = height - pad - Number(row[index] || 0) / maxValue * (height - pad * 2);
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(" ");
+    const first = rows[0], last = rows[rows.length - 1];
+    target.innerHTML = `
+      <svg class="psa-chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="PSA10枚数とTOTAL枚数の推移">
+        <polyline class="psa-line-total" points="${points(2)}"></polyline>
+        <polyline class="psa-line-ten" points="${points(1)}"></polyline>
+      </svg>
+      <div class="psa-chart-legend"><span class="ten">PSA10</span><span class="total">TOTAL</span><small>${first[0]} → ${last[0]} / ${rows.length}記録</small></div>
+    `;
+    details.dataset.loaded = "1";
+  } catch {
+    target.textContent = "履歴を読み込めませんでした。";
+  }
 }
 
 const sorters = {
@@ -809,6 +857,25 @@ function render() {
         <p>${escapeHtml(decisionReasons)}</p>
       </div>
     ` : "";
+    const official = state.psaPopulation[card.id] || null;
+    const officialPsaPanel = official ? `
+      <details class="psa-official" data-psa-history="${escapeHtml(card.id)}" data-psa-shard="${escapeHtml(official.sh)}">
+        <summary>
+          <div><span>PSA公式Population</span><strong>PSA10取得率 ${Number(official.rate || 0).toFixed(1)}%</strong></div>
+          <b>推移を見る</b>
+        </summary>
+        <div class="psa-official-body">
+          <div class="psa-official-metrics">
+            <div><span>PSA10枚数</span><strong>${fmt.format(official.ten)}枚</strong></div>
+            <div><span>TOTAL枚数</span><strong>${fmt.format(official.total)}枚</strong></div>
+            <div><span>10取得率</span><strong>${Number(official.rate || 0).toFixed(1)}%</strong></div>
+          </div>
+          <div class="psa-changes">${psaChangeBadge(official.w7, 7)}${psaChangeBadge(official.w30, 30)}${psaChangeBadge(official.w90, 90)}</div>
+          <div class="psa-chart" data-psa-chart></div>
+          ${official.u ? `<a class="psa-source-link" href="${escapeHtml(official.u)}" target="_blank" rel="noreferrer">PSA公式セットページ</a>` : ""}
+        </div>
+      </details>
+    ` : "";
     return `
       <article class="row card" data-card-id="${card.id}">
         <a class="thumb" href="${buildTorecaCardUrl(card)}" target="_blank" rel="noreferrer" aria-label="みんトレで${name}を開く">
@@ -837,6 +904,7 @@ function render() {
           ${stockPanel}
           ${activityPanel}
           ${psaDecisionPanel}
+          ${officialPsaPanel}
 
           <div class="market-links" aria-label="外部サイトへの直リンク">
             <div class="market-links-title">商品ページ</div>
@@ -858,6 +926,9 @@ function render() {
 
   const observer = ensureSnkrObserver();
   [...els.grid.querySelectorAll("[data-card-id]")].forEach((el) => observer.observe(el));
+  [...els.grid.querySelectorAll("[data-psa-history]")].forEach((details) => {
+    details.addEventListener("toggle", () => { if (details.open) renderPsaHistory(details); }, { once: true });
+  });
   renderFavorites();
 }
 
@@ -918,6 +989,8 @@ async function init() {
     }
     const stockData = await fetchJsonMaybe("./data/cardrush-stock-summary.json");
     state.cardrushStock = stockData?.cards || Object.create(null);
+    const psaData = await fetchJsonMaybe("./data/psa-population-summary.json");
+    state.psaPopulation = psaData?.cards || Object.create(null);
     syncFromUI();
   } catch (err) {
     console.error(err);

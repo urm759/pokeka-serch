@@ -40,6 +40,15 @@ jobs:
           SNKR_RECHECK_DAYS: "30"
         run: node work/update_snkr_links.js
 
+      - name: Cache Snkrdunk English names for PSA matching
+        env:
+          PSA_ENGLISH_BATCH: "120"
+          PSA_ENGLISH_CONCURRENCY: "6"
+        run: node work/update_snkr_english_names.js
+
+      - name: Rebuild verified PSA history links
+        run: node work/build_psa_history.js
+
       - name: Refresh all Cardrush listings and prices
         env:
           CARDRUSH_REFRESH_ALL: "1"

@@ -54,6 +54,14 @@
 
 期待利益は選択中のPSA10率（70%または50%）と、PSA9以下を仕入れ値の75%で回収する前提から計算します。PSA鑑定費は期待利益から差し引きますが、資金ロック額には含めません。
 
+## PSA公式Population履歴
+
+厳格照合できたカードだけ、PSA公式のPSA10枚数、TOTAL枚数、PSA10取得率を表示します。7日・30日・90日のPSA10増加を「急増化・増加・少ない・横ばい」で評価します。
+履歴は32分割したJSONへ数値だけを保存し、カードの「推移を見る」を開いた時だけ該当ファイルを読み込み、SVGグラフをブラウザで描画します。
+
+PSA公式ページはログインが必要なため、Windowsのログイン済み専用Chromeから午前0時、午前6時30分、Windowsログオン時に取得を試します。同日に1回成功した後は重複実行しません。
+最初に `node work/open_psa_login.js` でPSA専用Chromeへログインし、`powershell -ExecutionPolicy Bypass -File work/install_psa_tasks.ps1` で定期タスクを登録します。
+
 - `work/update_pokemon_site.js` を実行すると、toreca-souba の公開データからポケモンカード一覧とメタ情報を再生成します
 - `work/update_snkr_links.js` が未取得の全カードを確認し、スニダン個別商品URLを100枚ごとに保存します
 - `work/update_cardrush_links.js` が2015年以降のカードラッシュ状態A商品を増分取得し、目標カバー率90%まで進捗を保存します
