@@ -104,15 +104,16 @@ function parseSinglePopulation(bodyText, titleText, setCode) {
 function inferTableMetrics(headers, cells) {
   const headerNorms = headers.map(normalizeText);
   const cellText = cells.map((cell) => String(cell || "").replace(/\s+/g, " ").trim());
+  const hasLeadingControl = cellText.length >= 4 && !cellText[0] && Boolean(cellText[1]);
   const headerFor = (patterns) => headerNorms.findIndex((h) => patterns.some((p) => p.test(h)));
   const cardNoIndex = headerFor([/^CARD\s*NO\.?$/]);
   const cardNameIndex = headerFor([/^NAME$/]);
   const psa10HeaderIndex = headerFor([/^10$/, /^PSA\s*10$/, /^GEM\s*MINT\s*10$/]);
   const totalHeaderIndex = headerFor([/^TOTAL$/, /^POPULATION$/, /^ALL\s*GRADES$/]);
-  const cardNo = cardNoIndex >= 0 ? cellText[cardNoIndex] : null;
-  const cardName = cleanCardName(cardNameIndex >= 0 ? cellText[cardNameIndex] : null);
-  const psa10Count = psa10HeaderIndex >= 0 ? parseNumber(cellText[psa10HeaderIndex]) : null;
-  const psaTotal = totalHeaderIndex >= 0 ? parseNumber(cellText[totalHeaderIndex]) : null;
+  const cardNo = hasLeadingControl ? cellText[1] : (cardNoIndex >= 0 ? cellText[cardNoIndex] : null);
+  const cardName = cleanCardName(hasLeadingControl ? cellText[2] : (cardNameIndex >= 0 ? cellText[cardNameIndex] : null));
+  const psa10Count = hasLeadingControl ? parseNumber(cellText.at(-2)) : (psa10HeaderIndex >= 0 ? parseNumber(cellText[psa10HeaderIndex]) : null);
+  const psaTotal = hasLeadingControl ? parseNumber(cellText.at(-1)) : (totalHeaderIndex >= 0 ? parseNumber(cellText[totalHeaderIndex]) : null);
   const rate = Number.isFinite(psa10Count) && Number.isFinite(psaTotal) && psaTotal > 0 ? (psa10Count / psaTotal) * 100 : null;
   return { cardNo, cardName, psa10Count, psaTotal, psa10Rate: rate };
 }
@@ -125,13 +126,19 @@ async function getTableSnapshot(page) {
       className: table.className || "",
       headers: [...table.querySelectorAll("thead th")].map((th) => th.textContent || ""),
       rows: [...table.querySelectorAll("tbody tr")].map((tr) =>
-        [...tr.querySelectorAll(":scope > td")].map((td) => (td.textContent || "").replace(/\s+/g, " ").trim())
+        [...tr.querySelectorAll(":scope > td")].map((td) => {
+          const parts = [...td.children].map((child) => (child.textContent || "").replace(/\s+/g, " ").trim()).filter(Boolean);
+          return (parts.length ? parts.join(" | ") : (td.textContent || "")).replace(/\s+/g, " ").trim();
+        })
       ),
     }))
   );
   const roleRows = await page.evaluate(() =>
     [...document.querySelectorAll('[role="row"]')].map((row) =>
-      [...row.querySelectorAll("td")].map((td) => (td.textContent || "").replace(/\s+/g, " ").trim())
+      [...row.querySelectorAll("td")].map((td) => {
+        const parts = [...td.children].map((child) => (child.textContent || "").replace(/\s+/g, " ").trim()).filter(Boolean);
+        return (parts.length ? parts.join(" | ") : (td.textContent || "")).replace(/\s+/g, " ").trim();
+      })
     )
   );
   const roleHeaders = await page.evaluate(() =>

@@ -18,18 +18,18 @@ function cardIdentity(card) {
   const match = String(card.name || "").match(/\[([^\]]+)\]/);
   if (!match) return null;
   const parts = match[1].trim().split(/\s+/);
-  if (parts.length < 2) return null;
-  return { set: shortSet(parts[0]), no: normalizeNo(parts[1].split("/")[0]) };
+  return { set: shortSet(parts[0]), no: parts.length >= 2 ? normalizeNo(parts[1].split("/")[0]) : "" };
 }
 function cleanName(value) {
   return String(value || "").toLowerCase()
     .replace(/&#x27;|&#39;|&apos;/g, "'").replace(/&amp;/g, "&")
     .replace(/shop with affiliates/gi, " ")
     .replace(/\[[^\]]+\]|\([^)]*\)/g, " ")
-    .replace(/monster ball mirror\s*\/?\s*special monster ball/g, " poke ball reverse holo ")
+    .replace(/monster ball mirror(?:\s*\/?\s*special monster ball)?/g, " reverse holo ")
     .replace(/energy mark mirror/g, " reverse holo ")
     .replace(/team rocket mark mirror/g, " team rocket reverse holo ")
     .replace(/master ball mirror/g, " master ball reverse holo ")
+    .replace(/chinese (?:text )?printing error/g, " incorrect texture ")
     .replace(/\bsar\b/g, " special art rare ").replace(/\bmur\b/g, " mega ultra rare ")
     .replace(/\bsr\b/g, " secret rare ").replace(/\bar\b/g, " art rare ")
     .replace(/\bex\b/g, " ex ").replace(/[^a-z0-9]+/g, " ").trim();
@@ -39,6 +39,35 @@ function similarity(a, b) {
   const aa = tokens(a), bb = tokens(b); if (!aa.size || !bb.size) return 0;
   let common = 0; for (const token of aa) if (bb.has(token)) common += 1;
   return common / Math.max(aa.size, bb.size);
+}
+function baseSimilarity(a, b) {
+  const ignored = new Set(["old", "back", "holo", "no", "rarity", "symbol", "first", "1st", "edition", "trainer", "normal", "style"]);
+  const aa = new Set([...tokens(a)].filter((x) => !ignored.has(x)));
+  const bb = new Set([...tokens(b)].filter((x) => !ignored.has(x)));
+  if (!aa.size || !bb.size) return 0;
+  let common = 0; for (const token of aa) if (bb.has(token)) common += 1;
+  return common / Math.max(aa.size, bb.size);
+}
+function variantOf(value) {
+  const name = String(value || "").toLowerCase().replace(/&#x27;|&#39;|&apos;/g, "'");
+  if (/master ball (mirror|reverse holo)/.test(name)) return "master-ball";
+  if (/monster ball mirror|poke ball reverse holo/.test(name)) return "reverse-holo";
+  if (/team rocket mark mirror|team rocket reverse holo/.test(name)) return "team-rocket-reverse";
+  if (/energy mark mirror/.test(name)) return "reverse-holo";
+  if (/chinese (text )?printing error|incorrect texture/.test(name)) return "incorrect-texture";
+  if (/missing texture/.test(name)) return "missing-texture";
+  if (/normal (style|version|specification)/.test(name)) return "normal";
+  if (/\bmirror\b|\breverse holo\b/.test(name)) return "reverse-holo";
+  return "base";
+}
+function candidateVariant(row) {
+  const name = String(row?.name || "").toLowerCase();
+  if (/master ball reverse holo/.test(name)) return "master-ball";
+  if (/team rocket reverse holo/.test(name)) return "team-rocket-reverse";
+  if (/incorrect texture/.test(name)) return "incorrect-texture";
+  if (/missing texture/.test(name)) return "missing-texture";
+  if (/reverse holo/.test(name)) return "reverse-holo";
+  return "base";
 }
 function suspicious(value) { return /missing texture|error|no rarity|misprint|stamp|mirror|reverse|1st edition|unlimited/i.test(String(value || "")); }
 function shardFor(id) { let hash = 2166136261; for (const ch of String(id)) { hash ^= ch.charCodeAt(0); hash = Math.imul(hash, 16777619); } return (hash >>> 0) % SHARDS; }
@@ -72,19 +101,39 @@ function main() {
   const cards = readJson(CARDS_PATH, []), population = readJson(POP_PATH, {}), english = readJson(ENGLISH_PATH, { cards: {} }).cards || {};
   const sourceRows = compactRows(population);
   const groups = new Map();
-  for (const row of sourceRows) { const key = `${row.set}|${row.no}`; if (!groups.has(key)) groups.set(key, []); groups.get(key).push(row); }
+  const setGroups = new Map();
+  for (const row of sourceRows) {
+    const key = `${row.set}|${row.no}`; if (!groups.has(key)) groups.set(key, []); groups.get(key).push(row);
+    if (!setGroups.has(row.set)) setGroups.set(row.set, []); setGroups.get(row.set).push(row);
+  }
   fs.mkdirSync(HISTORY_DIR, { recursive: true });
   const shards = Array.from({ length: SHARDS }, (_, i) => readJson(path.join(HISTORY_DIR, `${String(i).padStart(2,"0")}.json`), { v: 1, cards: {} }));
   const today = dayKey(), cutoff = dayKey(new Date(Date.now()-RETENTION_DAYS*86400000));
   const summary = { v: 1, updatedAt: population.generatedAt || new Date().toISOString(), date: today, matched: 0, cards: {} };
   for (const card of cards) {
     const identity = cardIdentity(card); if (!identity) continue;
-    const candidates = groups.get(`${identity.set}|${identity.no}`) || []; if (!candidates.length) continue;
+    let candidates = identity.no ? (groups.get(`${identity.set}|${identity.no}`) || []) : (setGroups.get(identity.set) || []); if (!candidates.length) continue;
     const englishName = english[card.id]?.englishName || "";
     let selected = null, method = "";
+    if (!identity.no && identity.set === "PMCG1" && englishName) {
+      const noRarity = /\[PMCG1-1\]/i.test(String(card.name || ""));
+      candidates = candidates.filter((row) => noRarity === /no rarity symbol/i.test(row.name));
+      const ranked = candidates.map((row) => ({ row, score: baseSimilarity(englishName, row.name) })).sort((a,b)=>b.score-a.score);
+      if (ranked[0]?.score >= .75 && (!ranked[1] || ranked[0].score-ranked[1].score >= .2)) {
+        selected = ranked[0].row; method = "set-name-edition";
+      }
+    }
     if (englishName) {
       const ranked = candidates.map((row) => ({ row, score: similarity(englishName, row.name) })).sort((a,b)=>b.score-a.score);
       if (ranked[0]?.score >= .5 && (!ranked[1] || ranked[0].score-ranked[1].score >= .12)) { selected = ranked[0].row; method = "set-number-english"; }
+      if (!selected) {
+        const wantedVariant = variantOf(englishName);
+        const variantCandidates = candidates.filter((row) => candidateVariant(row) === wantedVariant)
+          .map((row) => ({ row, score: similarity(englishName, row.name) })).sort((a,b)=>b.score-a.score);
+        if (variantCandidates.length === 1 && variantCandidates[0].score >= .35) {
+          selected = variantCandidates[0].row; method = "set-number-variant";
+        }
+      }
     }
     if (!selected && candidates.length === 1 && !suspicious(candidates[0].name)) { selected = candidates[0]; method = "set-number-unique"; }
     if (!selected) continue;
