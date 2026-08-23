@@ -234,6 +234,7 @@ async function collectSet(context, entry) {
 
       const dataTableNext = page.locator("#tablePSA_next");
       if (!(await dataTableNext.count().catch(() => 0))) break;
+      if (!(await dataTableNext.isVisible().catch(() => false))) break;
       const nextClass = await dataTableNext.getAttribute("class").catch(() => "disabled");
       if (/disabled/i.test(nextClass || "")) break;
       await dataTableNext.click({ timeout: 30000 });

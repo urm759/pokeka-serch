@@ -22,6 +22,7 @@ function cardIdentity(card) {
 }
 function cleanName(value) {
   return String(value || "").toLowerCase()
+    .replace(/([a-z])(\d)/g, "$1 $2")
     .replace(/&#x27;|&#39;|&apos;/g, "'").replace(/&amp;/g, "&")
     .replace(/shop with affiliates/gi, " ")
     .replace(/\[[^\]]+\]|\([^)]*\)/g, " ")
@@ -30,6 +31,7 @@ function cleanName(value) {
     .replace(/team rocket mark mirror/g, " team rocket reverse holo ")
     .replace(/master ball mirror/g, " master ball reverse holo ")
     .replace(/chinese (?:text )?printing error/g, " incorrect texture ")
+    .replace(/\b1ed\b/g, " 1st edition ")
     .replace(/\bsar\b/g, " special art rare ").replace(/\bmur\b/g, " mega ultra rare ")
     .replace(/\bsr\b/g, " secret rare ").replace(/\bar\b/g, " art rare ")
     .replace(/\bex\b/g, " ex ").replace(/[^a-z0-9]+/g, " ").trim();
