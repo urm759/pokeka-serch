@@ -241,6 +241,10 @@ async function fetchXCapture(shop) {
     imageUrl: post.images?.[0] || "",
     itemUrl: post.url || shop.url,
     observedDate: post.date || "",
+    verifiedCardId: item.verifiedCardId || "",
+    matchConfidence: Number(item.matchConfidence || 0),
+    priceConfidence: Number(item.priceConfidence || 0),
+    bbox: item.bbox || null,
     active: Number(item.price || 0) > 0,
   }))).filter((item) => item.name && item.price > 0 && /^\d{4}-\d{2}-\d{2}$/.test(item.observedDate));
   return { pages: posts.length, items: [...new Map(items.map((item) => [item.shopItemId, item])).values()] };
@@ -317,9 +321,12 @@ async function main() {
       const unmatched = [];
       for (const item of fetched.items) {
         const result = matchCard(item);
+        const verifiedCard = item.verifiedCardId ? cards.find((card) => card.id === item.verifiedCardId) : null;
         const manualCardId = imageMatches[`${shop.id}:${item.shopItemId}`];
         const imageCard = manualCardId ? cards.find((card) => card.id === manualCardId) : null;
-        if (result) matched.push({ ...item, cardId: result.card.id, score: result.score, matchMethod: "text" });
+        if (verifiedCard) matched.push({ ...item, cardId: verifiedCard.id, score: 100, matchMethod: "image-reviewed" });
+        else if (shop.id === "laurier-akiba") unmatched.push({ ...item, candidateCardId: result?.card?.id || "", candidateScore: result?.score || 0 });
+        else if (result) matched.push({ ...item, cardId: result.card.id, score: result.score, matchMethod: "text" });
         else if (imageCard) matched.push({ ...item, cardId: imageCard.id, score: 100, matchMethod: "image-reviewed" });
         else unmatched.push(item);
       }
