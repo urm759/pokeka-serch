@@ -109,6 +109,9 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
   background:#0b1224;
   color:var(--text);
 }
+.control-help{display:block;margin-top:8px;color:var(--muted);font-size:10px;line-height:1.45;font-weight:600}
+.psa-plan-control{background:linear-gradient(135deg,rgba(125,211,252,.11),rgba(56,217,150,.06));border-color:rgba(125,211,252,.25)}
+.psa-plan-control select{padding:7px 10px}
 .range-pair{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -574,6 +577,7 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .stock-title{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .stock-title div span{display:block;color:var(--muted);font-size:10px;margin-bottom:2px}
 .stock-title div strong{font-size:20px}
+.stock-title div small{display:block;max-width:520px;margin-top:4px;color:var(--muted);font-size:9px;line-height:1.35}
 .stock-title b{padding:7px 10px;border-radius:999px;font-size:11px;background:rgba(148,163,184,.2)}
 .stock-panel.high .stock-title b{background:rgba(56,217,150,.9);color:#082317}
 .stock-panel.normal .stock-title b{background:rgba(125,211,252,.9);color:#062238}
@@ -627,6 +631,12 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .psa-official summary span{display:block;color:var(--muted);font-size:9px}
 .psa-official summary strong{display:block;margin-top:2px;font-size:14px}
 .psa-official summary>b{padding:6px 9px;border-radius:999px;background:rgba(125,211,252,.12);color:var(--accent);font-size:10px}
+.psa-summary-actions{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:wrap}
+.psa-summary-actions>b{padding:6px 9px;border-radius:999px;background:rgba(125,211,252,.12);color:var(--accent);font-size:10px;white-space:nowrap}
+.psa-summary-actions .psa-growth{background:rgba(148,163,184,.12);color:var(--text)}
+.psa-summary-actions .psa-growth.surge{background:rgba(244,63,94,.18);color:#fecdd3}
+.psa-summary-actions .psa-growth.increase{background:rgba(56,217,150,.16);color:#bbf7d0}
+.psa-summary-actions .psa-growth.small{background:rgba(245,158,11,.16);color:#fde68a}
 .psa-official-body{padding:0 12px 12px;border-top:1px solid var(--line)}
 .psa-official-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding-top:10px}
 .psa-official-metrics div{padding:9px;border-radius:12px;background:#0b1224}
@@ -657,6 +667,11 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .profit-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
 .profit-head .k{color:var(--muted);font-size:11px}
 .profit-head .v{font-size:20px;font-weight:900}
+.profit-assessment{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;padding:8px 10px;border-radius:11px;font-size:10px;font-weight:800;background:rgba(148,163,184,.12);color:#cbd5e1}
+.profit-assessment span{font-size:12px}
+.profit-assessment.high{background:rgba(56,217,150,.14);color:#bbf7d0}
+.profit-assessment.average{background:rgba(125,211,252,.12);color:#bae6fd}
+.profit-assessment.low{background:rgba(245,158,11,.14);color:#fde68a}
 .bar{
   margin-top:8px;
   height:12px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;
@@ -762,5 +777,7 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
   .psa-official-metrics{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
   .psa-official-metrics div{padding:8px 5px}
   .psa-official-metrics strong{font-size:13px}
+  .psa-official summary{align-items:flex-start;flex-direction:column}
+  .psa-summary-actions{justify-content:flex-start;width:100%}
   .psa-chart-legend small{display:none}
 }

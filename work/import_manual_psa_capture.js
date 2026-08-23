@@ -17,7 +17,7 @@ function readJson(filePath, fallback) {
 
 function shortSet(value) {
   const raw = String(value || "").trim().toUpperCase();
-  if (/^S8A-[PG]$/.test(raw)) return raw;
+  if (/^(?:S8A-[PG]|(?:XY|SM|S|SV|M)-P)$/.test(raw)) return raw;
   return raw.split(/[-\s]/)[0];
 }
 

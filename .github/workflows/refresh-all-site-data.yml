@@ -27,6 +27,9 @@ jobs:
         with:
           node-version: "20"
 
+      - name: Update PSA Japan plans and turnaround times
+        run: node work/update_psa_japan_services.js
+
       - name: Update Pokemon cards and prices
         env:
           SNKR_BATCH: "0"

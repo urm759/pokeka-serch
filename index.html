@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20260823-pop1" />
+  <link rel="stylesheet" href="./styles.css?v=20260823-psajp1" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -24,9 +24,14 @@
           <span>検索</span>
           <input id="qInput" type="text" placeholder="カード名・型番で検索" />
         </label>
-        <label class="control">
-          <span>PSA鑑定費</span>
-          <input id="feeInput" type="number" min="0" step="100" value="13000" />
+        <label class="control psa-plan-control">
+          <span>PSA Japan 鑑定プラン</span>
+          <select id="psaPlanInput">
+            <option value="regular">レギュラー</option>
+            <option value="express">エクスプレス</option>
+          </select>
+          <input id="feeInput" type="hidden" value="12980" />
+          <small id="psaPlanSummary" class="control-help">公式料金 ¥11,980＋各種手数料 ¥1,000＝¥12,980</small>
         </label>
         <label class="control">
           <span>利益率 下限</span>
@@ -138,46 +143,56 @@
           <label class="control">
             <span>PSA仕入れ用総資金</span>
             <input id="psaCapitalInput" type="number" min="0" step="10000" value="500000" />
+            <small class="control-help">PSA提出用に使える仕入れ資金の合計。例：50万円なら500000。</small>
           </label>
           <label class="control">
             <span>資金ロック日数</span>
-            <input id="lockDaysInput" type="number" min="1" step="1" value="180" />
+            <input id="lockDaysInput" type="number" min="1" step="1" value="84" />
+            <small class="control-help">仕入れてからPSAが返却され、売却できるまでの日数。選択プランの公式予定納期から自動入力します。</small>
           </label>
           <label class="control">
             <span>最低期待利益</span>
             <input id="minExpectedProfitInput" type="number" step="1000" value="10000" />
+            <small class="control-help">1枚で最低いくら利益が欲しいか。1万円なら10000。</small>
           </label>
           <label class="control">
             <span>最低期待利益率</span>
             <input id="minExpectedRoiInput" type="number" min="0" step="1" value="30" />
+            <small class="control-help">仕入れ額に対して最低何％の期待利益が欲しいか。迷ったら30％。</small>
           </label>
           <label class="control">
             <span>最低年換算資金効率</span>
             <input id="minAnnualEfficiencyInput" type="number" min="0" step="1" value="40" />
+            <small class="control-help">資金ロック期間を1年換算した効率。迷ったら40％。短納期ほど高くなります。</small>
           </label>
           <label class="control">
             <span>1枚の最大資金占有率</span>
             <input id="maxCapitalShareInput" type="number" min="0" max="100" step="1" value="10" />
+            <small class="control-help">総資金のうち1枚に使ってよい上限。50万円で10％なら1枚5万円まで。</small>
           </label>
           <label class="control">
             <span>同時提出予定枚数</span>
             <input id="submissionCountInput" type="number" min="1" step="1" value="10" />
+            <small class="control-help">今回まとめてPSAへ出す予定枚数。返却時に必要な鑑定費の計算に使います。</small>
           </label>
           <label class="control">
             <span>返却時の鑑定費予備資金</span>
-            <input id="gradingReserveInput" type="number" min="0" step="1000" value="130000" />
+            <input id="gradingReserveInput" type="number" min="0" step="1000" value="129800" />
+            <small class="control-help">PSAへの支払い用に残してある現金。鑑定費総額以上を入力します。</small>
           </label>
           <label class="control">
             <span>売却手数料率</span>
             <input id="saleFeeRateInput" type="number" min="0" max="100" step="0.1" value="0" />
+            <small class="control-help">売るサービスの販売手数料。10％なら10。考慮しない場合は0。</small>
           </label>
           <label class="control">
             <span>送料など販売経費</span>
             <input id="saleExtraCostInput" type="number" min="0" step="100" value="0" />
+            <small class="control-help">1枚を売るときの送料・梱包費など。考慮しない場合は0。</small>
           </label>
         </div>
         <div class="psa-settings-note">
-          10率は仕入れ値一覧の70%／50%と連動。PSA9以下は仕入れ値の75%回収として計算します。鑑定費は利益から差し引きますが、資金ロック額には含めません。
+          迷った場合は初期値のままで使えます。10率は仕入れ値一覧の70%／50%と連動し、PSA9以下は仕入れ値の75%回収として計算します。鑑定費は利益から差し引きますが、資金ロック額には含めません。
           <strong id="gradingReserveStatus"></strong>
         </div>
       </details>

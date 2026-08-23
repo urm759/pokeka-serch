@@ -5,10 +5,13 @@ const state = {
   cardrushStock: Object.create(null),
   psaPopulation: Object.create(null),
   psaHistoryCache: Object.create(null),
+  psaServices: null,
   snkrUrlCache: Object.create(null),
   cardById: Object.create(null),
   snkrObserver: null,
-  fee: 13000,
+  fee: 12980,
+  psaPlan: "regular",
+  psaHandlingFee: 1000,
   guideMode: "70",
   minSaleTx: 30,
   maxSaleTx: null,
@@ -60,6 +63,8 @@ const guideLines = [
 const els = {
   qInput: document.getElementById("qInput"),
   feeInput: document.getElementById("feeInput"),
+  psaPlanInput: document.getElementById("psaPlanInput"),
+  psaPlanSummary: document.getElementById("psaPlanSummary"),
   saleTxMinInput: document.getElementById("saleTxMinInput"),
   saleTxMaxInput: document.getElementById("saleTxMaxInput"),
   saleTx7MinInput: document.getElementById("saleTx7MinInput"),
@@ -126,6 +131,51 @@ function psaChangeBadge(change, days) {
   const className = change.s === "急増化" ? "surge" : change.s === "増加" ? "increase" : change.s === "少ない" ? "small" : "flat";
   const delta = Number(change.d10 || 0);
   return `<span class="psa-change ${className}"><b>${days}日 ${escapeHtml(change.s)}</b> ${delta >= 0 ? "+" : ""}${fmt.format(delta)}枚</span>`;
+}
+
+function psaGrowthSummary(official) {
+  const entry = [[7, official?.w7], [30, official?.w30], [90, official?.w90]].find(([, change]) => change);
+  if (!entry) return { label: "推移蓄積中", className: "pending" };
+  const [days, change] = entry;
+  const className = change.s === "急増化" ? "surge" : change.s === "増加" ? "increase" : change.s === "少ない" ? "small" : "flat";
+  return { label: `${days}日 ${change.s}`, className };
+}
+
+function availablePsaPlans() {
+  const plans = state.psaServices?.plans;
+  return Array.isArray(plans) && plans.length ? plans.filter((plan) => plan.available !== false) : [
+    { id: "regular", name: "レギュラー", price: 11980, businessDays: 60, calendarDays: 84, declaredValueMax: 250000, available: true },
+    { id: "express", name: "エクスプレス", price: 22980, businessDays: 25, calendarDays: 35, declaredValueMax: 400000, available: true },
+  ];
+}
+
+function selectedPsaPlan() {
+  const plans = availablePsaPlans();
+  return plans.find((plan) => plan.id === state.psaPlan) || plans[0];
+}
+
+function applyPsaPlan({ updateLockDays = false } = {}) {
+  const plan = selectedPsaPlan();
+  state.psaPlan = plan.id;
+  state.psaHandlingFee = Number(state.psaServices?.handlingFee ?? 1000);
+  state.fee = Number(plan.price || 0) + state.psaHandlingFee;
+  els.psaPlanInput.value = plan.id;
+  els.feeInput.value = String(state.fee);
+  if (updateLockDays && Number(plan.calendarDays) > 0) {
+    els.lockDaysInput.value = String(plan.calendarDays);
+  }
+  if (els.psaPlanSummary) {
+    const delivery = plan.businessDays ? `${fmt.format(plan.businessDays)}営業日（約${fmt.format(plan.calendarDays)}日）` : "納期未取得";
+    const checkedAt = state.psaServices?.updatedAt ? ` / 料金確認 ${state.psaServices.updatedAt}` : "";
+    els.psaPlanSummary.textContent = `公式 ¥${fmt.format(plan.price)}＋手数料 ¥${fmt.format(state.psaHandlingFee)}＝¥${fmt.format(state.fee)} / ${delivery} / 申告価格 ¥${fmt.format(plan.declaredValueMax)}以下${checkedAt}`;
+  }
+}
+
+function populatePsaPlans({ updateLockDays = false } = {}) {
+  const plans = availablePsaPlans();
+  els.psaPlanInput.innerHTML = plans.map((plan) => `<option value="${escapeHtml(plan.id)}">${escapeHtml(plan.name)}</option>`).join("");
+  if (!plans.some((plan) => plan.id === state.psaPlan)) state.psaPlan = plans[0].id;
+  applyPsaPlan({ updateLockDays });
 }
 
 async function renderPsaHistory(details) {
@@ -632,6 +682,7 @@ function readUrl() {
   const url = new URL(window.location.href);
   const guide = url.searchParams.get("guide");
   const fee = parseOptionalNumber(url.searchParams.get("fee"));
+  const psaPlan = url.searchParams.get("psaPlan");
   const saleTx = parseOptionalNumber(url.searchParams.get("tx"));
   const saleTxMax = parseOptionalNumber(url.searchParams.get("txMax"));
   const saleTx7 = parseOptionalNumber(url.searchParams.get("tx7"));
@@ -659,6 +710,10 @@ function readUrl() {
   const q = url.searchParams.get("q");
   if (guide && guideModes[guide]) {
     state.guideMode = guide;
+  }
+  if (psaPlan) {
+    state.psaPlan = psaPlan;
+    els.psaPlanInput.value = psaPlan;
   }
   syncGuideButtons();
   if (fee != null && fee >= 0) els.feeInput.value = String(fee);
@@ -698,6 +753,7 @@ function buildShareUrl() {
   const url = new URL(window.location.href);
   url.searchParams.set("guide", state.guideMode);
   url.searchParams.set("fee", String(state.fee));
+  url.searchParams.set("psaPlan", state.psaPlan);
   url.searchParams.set("tx", String(state.minSaleTx));
   if (state.maxSaleTx == null) url.searchParams.delete("txMax"); else url.searchParams.set("txMax", String(state.maxSaleTx));
   url.searchParams.set("tx7", String(state.minSaleTx7));
@@ -744,8 +800,10 @@ function buildShareUrl() {
 function render() {
   const normalizedQuery = normalize(state.q);
   const compactQuery = compactSearch(state.q);
-  const enriched = state.cards
-    .map(calc)
+  const calculated = state.cards.map(calc);
+  const roiValues = calculated.map((card) => card.roi).filter(Number.isFinite);
+  const averageRoi = roiValues.length ? roiValues.reduce((sum, value) => sum + value, 0) / roiValues.length : 0;
+  const enriched = calculated
     .filter((card) => {
       const haystack = normalize(`${card.name} ${card.model} ${card.id}`);
       const compactHaystack = compactSearch(`${card.name} ${card.model} ${card.id}`);
@@ -793,7 +851,9 @@ function render() {
   els.grid.innerHTML = visibleCards.map((card) => {
     state.cardById[card.id] = card;
     const roiClass = card.roi >= 120 ? "good" : card.roi >= 80 ? "sky" : "warn";
-    const width = Math.max(8, Math.min(100, card.roi));
+    const roiDifference = card.roi - averageRoi;
+    const roiAssessment = roiDifference >= 30 ? "全体平均よりかなり高い" : roiDifference >= 5 ? "全体平均より高い" : roiDifference <= -30 ? "全体平均よりかなり低い" : roiDifference <= -5 ? "全体平均より低い" : "全体平均に近い";
+    const roiAssessmentClass = roiDifference >= 5 ? "high" : roiDifference <= -5 ? "low" : "average";
     const name = card.name.replace(/\s+/g, " ");
     const stock = state.cardrushStock[card.id] || null;
     const snkUrl = card.snkUrl || state.snkrUrlCache[card.id] || buildSnkrUrl(card);
@@ -811,7 +871,7 @@ function render() {
         : `<span class="market-link unavailable"><span>ショップ</span><strong>カードラッシュ直リンク未取得</strong></span>`,
     ].join("");
     const demandClass = stock?.demand === "買う人が多い" ? "high" : stock?.demand === "普通" ? "normal" : stock?.demand === "少ない" ? "low" : "pending";
-    const demandBadge = stock?.demand && stock.demand !== "蓄積中" ? `<b>${stock.demand}</b>` : "";
+    const demandBadge = stock?.demand && stock.demand !== "蓄積中" ? `<b>在庫減少ペース：${stock.demand}</b>` : "";
     const avgStock = (value) => Number.isFinite(value) ? `${Number(value).toFixed(2)}枚/日` : "-";
     const dropStock = (value) => Number.isFinite(value) ? `${fmt.format(Number(value))}枚` : "-";
     const combinedMovement = (tx, drop) => Number.isFinite(drop) ? `${fmt.format(tx + Number(drop))}件相当` : "-";
@@ -819,7 +879,7 @@ function render() {
       ? `
           <div class="stock-panel ${demandClass}">
             <div class="stock-title">
-              <div><span>カードラッシュ状態A 在庫</span><strong>${Number.isFinite(stock?.stock) ? `${fmt.format(stock.stock)}枚` : "-"}</strong></div>
+              <div><span>カードラッシュ状態A 在庫</span><strong>${Number.isFinite(stock?.stock) ? `${fmt.format(stock.stock)}枚` : "-"}</strong><small>「少ない」は在庫の枚数ではなく、1日あたりの在庫減少ペースです。</small></div>
               ${demandBadge}
             </div>
             <div class="stock-averages">
@@ -858,11 +918,12 @@ function render() {
       </div>
     ` : "";
     const official = state.psaPopulation[card.id] || null;
+    const psaGrowth = official ? psaGrowthSummary(official) : null;
     const officialPsaPanel = official ? `
       <details class="psa-official" data-psa-history="${escapeHtml(card.id)}" data-psa-shard="${escapeHtml(official.sh)}">
         <summary>
           <div><span>PSA公式Population</span><strong>PSA10取得率 ${Number(official.rate || 0).toFixed(1)}%</strong></div>
-          <b>推移を見る</b>
+          <div class="psa-summary-actions"><b class="psa-growth ${psaGrowth.className}">PSA10増加 ${escapeHtml(psaGrowth.label)}</b><b>数値を見る</b></div>
         </summary>
         <div class="psa-official-body">
           <div class="psa-official-metrics">
@@ -916,7 +977,7 @@ function render() {
               <div class="k">利益率</div>
               <div class="v">${Number.isFinite(card.roi) ? Math.round(card.roi) : 0}%</div>
             </div>
-            <div class="bar"><span style="width:${width}%"></span></div>
+            <div class="profit-assessment ${roiAssessmentClass}">${roiAssessment} <span>${roiDifference >= 0 ? "+" : ""}${Math.round(roiDifference)}pt</span></div>
           </div>
 
         </div>
@@ -934,7 +995,8 @@ function render() {
 
 function syncFromUI() {
   state.visibleLimit = 60;
-  state.fee = Number(els.feeInput.value || 0);
+  state.psaPlan = els.psaPlanInput.value || state.psaPlan;
+  applyPsaPlan();
   state.minSaleTx = Number(els.saleTxMinInput.value || 0);
   state.maxSaleTx = parseOptionalNumber(els.saleTxMaxInput.value);
   state.minSaleTx7 = Number(els.saleTx7MinInput.value || 0);
@@ -974,6 +1036,8 @@ async function init() {
   readUrl();
   loadFavorites();
   try {
+    state.psaServices = await fetchJsonMaybe("./data/psa-japan-services.json");
+    populatePsaPlans({ updateLockDays: !new URL(window.location.href).searchParams.has("lock") });
     if (!window.POKEMON_CARDS_META) {
       const loadedMeta = await fetchJsonMaybe("./data/pokemon-cards-meta.json");
       if (loadedMeta) meta = loadedMeta;
@@ -1001,9 +1065,15 @@ async function init() {
   }
 }
 
-[els.qInput, els.feeInput, els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.roiInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.sortInput, els.psaCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput].forEach((el) =>
+[els.qInput, els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.roiInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.sortInput, els.psaCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput].forEach((el) =>
   el.addEventListener("input", syncFromUI)
 );
+
+els.psaPlanInput.addEventListener("change", () => {
+  state.psaPlan = els.psaPlanInput.value;
+  applyPsaPlan({ updateLockDays: true });
+  syncFromUI();
+});
 
 els.copyLinkBtn.addEventListener("click", async () => {
   const url = buildShareUrl();

@@ -15,13 +15,20 @@ function dayKey(date = new Date()) { return new Intl.DateTimeFormat("sv-SE", { t
 function normalizeNo(value) { const raw = String(value || "").replace(/^#/, "").trim().toUpperCase(); return raw.replace(/^0+(?=\d)/, ""); }
 function shortSet(value) {
   const raw = String(value || "").trim().toUpperCase();
-  if (/^S8A-[PG]$/.test(raw)) return raw;
+  if (/^(?:S8A-[PG]|(?:XY|SM|S|SV|M)-P)$/.test(raw)) return raw;
   return raw.split(/[-\s]/)[0];
 }
 function cardIdentity(card) {
   const match = String(card.name || "").match(/\[([^\]]+)\]/);
   if (!match) return null;
-  const parts = match[1].trim().split(/\s+/);
+  const inside = match[1].trim().toUpperCase();
+  const promoSet = inside.match(/(?:^|[\s/])((?:XY|SM|S|SV|M)-P)(?:$|[\s/])/i)?.[1];
+  if (promoSet) {
+    const withoutSet = inside.replace(new RegExp(promoSet.replace("-", "\\-"), "i"), " ");
+    const promoNo = withoutSet.match(/(?:PROMO)?\s*0*(\d+)/i)?.[1] || "";
+    return { set: shortSet(promoSet), no: normalizeNo(promoNo) };
+  }
+  const parts = inside.split(/\s+/);
   return { set: shortSet(parts[0]), no: parts.length >= 2 ? normalizeNo(parts[1].split("/")[0]) : "" };
 }
 function cleanName(value) {
