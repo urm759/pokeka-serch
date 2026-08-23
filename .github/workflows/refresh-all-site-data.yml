@@ -65,6 +65,9 @@ jobs:
           CARDRUSH_REQUIRE_FRESH: "1"
         run: node work/update_cardrush_stock.js
 
+      - name: Record shop PSA10 buyback listings
+        run: node work/update_shop_buybacks.js
+
       - name: Re-resolve changed Cardrush URLs
         env:
           CARDRUSH_SKIP_SEEDS: "1"

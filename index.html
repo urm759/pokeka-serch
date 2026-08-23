@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20260823-peer1" />
+  <link rel="stylesheet" href="./styles.css?v=20260823-buyback1" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -56,6 +56,10 @@
             <option value="tx7-asc">みんトレ美品7日件数が少ない順</option>
             <option value="cardrushDrop30-desc">カードラッシュ30日在庫減が多い順</option>
             <option value="cardrushDrop7-desc">カードラッシュ7日在庫減が多い順</option>
+            <option value="buyback90-desc">買取表90日掲載が多い順</option>
+            <option value="buyback30-desc">買取表30日掲載が多い順</option>
+            <option value="buyback7-desc">買取表7日掲載が多い順</option>
+            <option value="buybackPrice-desc">店舗PSA10買取価格が高い順</option>
             <option value="psaTx-desc">PSA10 30日件数が多い順</option>
             <option value="psaTx-asc">PSA10 30日件数が少ない順</option>
             <option value="psaTx7-desc">PSA10 7日件数が多い順</option>
@@ -130,6 +134,18 @@
         <label class="control">
           <span>PSA10 上限</span>
           <input id="psaMaxInput" type="number" min="0" step="1000" value="200000" />
+        </label>
+        <label class="control">
+          <span>買取表掲載日数 直近7日</span>
+          <input id="buyback7MinInput" type="number" min="0" max="7" step="1" value="0" />
+        </label>
+        <label class="control">
+          <span>買取表掲載日数 直近30日</span>
+          <input id="buyback30MinInput" type="number" min="0" max="30" step="1" value="0" />
+        </label>
+        <label class="control">
+          <span>買取表掲載日数 直近90日</span>
+          <input id="buyback90MinInput" type="number" min="0" max="90" step="1" value="0" />
         </label>
         </div>
       </details>
@@ -326,6 +342,6 @@
     </section>
   </main>
 
-  <script src="./app.js?v=20260823-peer1"></script>
+  <script src="./app.js?v=20260823-buyback1"></script>
 </body>
 </html>

@@ -590,6 +590,19 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .stock-averages span{display:block;color:var(--muted);font-size:9px;margin-bottom:3px}
 .stock-averages strong{font-size:12px}
 .stock-panel p{margin:8px 0 0;color:var(--muted);font-size:9px}
+.buyback-panel{margin-top:12px;padding:13px;border:1px solid rgba(251,191,36,.28);border-radius:17px;background:linear-gradient(135deg,rgba(251,191,36,.1),rgba(125,211,252,.04))}
+.buyback-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.buyback-head span{display:block;color:var(--muted);font-size:9px}
+.buyback-head strong{display:block;margin-top:2px;color:#fde68a;font-size:15px}
+.buyback-head>small{color:var(--muted);font-size:9px}
+.buyback-shops{display:grid;gap:6px;margin-top:10px}
+.buyback-shop-row{display:grid;grid-template-columns:minmax(150px,1.5fr) repeat(4,minmax(65px,.7fr));gap:6px;align-items:center;padding:9px;border-radius:12px;background:rgba(5,10,20,.48)}
+.buyback-shop-row a{color:#fde68a;text-decoration:none}
+.buyback-shop-row small,.buyback-shop-row span{display:block;color:var(--muted);font-size:8px}
+.buyback-shop-row b{display:block;margin-top:2px;font-size:11px}
+.buyback-total{display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-top:8px;color:var(--muted);font-size:9px}
+.buyback-total span{margin-right:auto;color:var(--text);font-weight:900}
+.buyback-total b{color:var(--text)}
 .metrics{
   margin-top:14px;
   display:grid;
@@ -783,5 +796,11 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
   .psa-official-metrics strong{font-size:13px}
   .psa-official summary{align-items:flex-start;flex-direction:column}
   .psa-summary-actions{justify-content:flex-start;width:100%}
+  .buyback-head{align-items:flex-start;flex-direction:column}
+  .buyback-shop-row{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .buyback-shop-row>div:first-child{grid-column:1/-1}
+  .buyback-shop-row>div:last-child{grid-column:1/-1;padding-top:5px;border-top:1px solid rgba(255,255,255,.08)}
+  .buyback-total{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+  .buyback-total span{grid-column:1/-1}
   .psa-chart-legend small{display:none}
 }
