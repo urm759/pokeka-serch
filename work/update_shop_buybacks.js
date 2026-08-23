@@ -23,9 +23,15 @@ const SHOPS = [
   },
   {
     id: "shinsoku",
-    name: "神速",
+    name: "シンソク",
     url: "https://shinsoku-tcg.com/yuso-kaitori?title=%E3%83%9D%E3%82%B1%E3%83%A2%E3%83%B3",
     fetchItems: fetchShinsoku,
+  },
+  {
+    id: "laurier-akiba",
+    name: "ローリエ本舗AKIHABARA (X)",
+    url: "https://x.com/laurier_akiba",
+    fetchItems: fetchXCapture,
   },
 ];
 const HISTORY_DAYS = 91;
@@ -225,6 +231,21 @@ async function fetchShinsoku(shop) {
   return { pages: page, items: [...new Map(items.map((item) => [item.shopItemId, item])).values()] };
 }
 
+async function fetchXCapture(shop) {
+  const capture = readJson(path.join(__dirname, "x_buyback_capture.json"), { posts: [] });
+  const posts = (capture.posts || []).filter((post) => post.shopId === shop.id);
+  const items = posts.flatMap((post) => (post.items || []).map((item, index) => ({
+    shopItemId: `${post.postId}:${index}`,
+    name: item.name || "",
+    price: Number(item.price || 0),
+    imageUrl: post.images?.[0] || "",
+    itemUrl: post.url || shop.url,
+    observedDate: post.date || "",
+    active: Number(item.price || 0) > 0,
+  }))).filter((item) => item.name && item.price > 0 && /^\d{4}-\d{2}-\d{2}$/.test(item.observedDate));
+  return { pages: posts.length, items: [...new Map(items.map((item) => [item.shopItemId, item])).values()] };
+}
+
 function buildMatcher(cards) {
   const prepared = cards.filter((card) => Number(card.snkPsa10Price) > 0 && !/未開封/.test(card.name || "")).map((card) => ({
     card,
@@ -311,20 +332,20 @@ async function main() {
   if (!results.length) throw new Error("全店舗の取得に失敗しました");
 
   const today = jstDate();
-  let dateIndex = history.dates.indexOf(today);
-  if (dateIndex < 0) {
-    history.dates.push(today);
-    dateIndex = history.dates.length - 1;
-    for (const shop of Object.values(history.shops || {})) {
-      for (const values of Object.values(shop)) values.push(null);
+  const previousDates = [...history.dates];
+  const observedDates = results.flatMap((result) => result.items.map((item) => item.observedDate || today));
+  const targetDates = [...new Set([...previousDates, today, ...observedDates])]
+    .filter((date) => /^\d{4}-\d{2}-\d{2}$/.test(date))
+    .sort()
+    .slice(-HISTORY_DAYS);
+  if (targetDates.join("|") !== previousDates.join("|")) {
+    for (const entries of Object.values(history.shops || {})) {
+      for (const [cardId, values] of Object.entries(entries)) {
+        const previous = new Map(previousDates.map((date, index) => [date, values[index] ?? null]));
+        entries[cardId] = targetDates.map((date) => previous.get(date) ?? null);
+      }
     }
-  }
-  while (history.dates.length > HISTORY_DAYS) {
-    history.dates.shift();
-    dateIndex -= 1;
-    for (const shop of Object.values(history.shops || {})) {
-      for (const values of Object.values(shop)) values.shift();
-    }
+    history.dates = targetDates;
   }
   const currentLinksByShop = {};
   for (const result of results) {
@@ -334,14 +355,26 @@ async function main() {
     const shopHistory = history.shops[shopId];
     for (const values of Object.values(shopHistory)) {
       while (values.length < history.dates.length) values.push(null);
-      values[dateIndex] = null;
+    }
+    const refreshedDates = [...new Set(result.items.map((item) => item.observedDate || today))];
+    for (const values of Object.values(shopHistory)) {
+      for (const date of refreshedDates) {
+        const index = history.dates.indexOf(date);
+        if (index >= 0) values[index] = null;
+      }
     }
     for (const item of result.matched.filter((entry) => entry.active)) {
       if (!shopHistory[item.cardId]) shopHistory[item.cardId] = Array(history.dates.length).fill(null);
-      const previous = Number(shopHistory[item.cardId][dateIndex] || 0);
+      const itemDate = item.observedDate || today;
+      const itemDateIndex = history.dates.indexOf(itemDate);
+      if (itemDateIndex < 0) continue;
+      const previous = Number(shopHistory[item.cardId][itemDateIndex] || 0);
       if (item.price >= previous) {
-        shopHistory[item.cardId][dateIndex] = item.price;
-        if (item.itemUrl) currentLinksByShop[shopId].set(item.cardId, item.itemUrl);
+        shopHistory[item.cardId][itemDateIndex] = item.price;
+        const previousLink = currentLinksByShop[shopId].get(item.cardId);
+        if (item.itemUrl && (!previousLink || itemDate > previousLink.date || (itemDate === previousLink.date && item.price >= previousLink.price))) {
+          currentLinksByShop[shopId].set(item.cardId, { url: item.itemUrl, date: itemDate, price: item.price });
+        }
       }
     }
   }
@@ -359,10 +392,12 @@ async function main() {
       const c30 = countRecent(values, 30);
       const c90 = countRecent(values, 90);
       if (!c7 && !c30 && !c90) continue;
-      const currentPrice = Number(values[values.length - 1]) > 0 ? Number(values[values.length - 1]) : null;
+      const latestPriceIndex = values.findLastIndex((value) => Number(value) > 0);
+      const currentPrice = latestPriceIndex >= 0 ? Number(values[latestPriceIndex]) : null;
       shops[shopId] = {
         c7, c30, c90, price: currentPrice,
-        url: currentLinksByShop[shopId]?.get(card.id) || "",
+        priceDate: latestPriceIndex >= 0 ? history.dates[latestPriceIndex] : null,
+        url: currentLinksByShop[shopId]?.get(card.id)?.url || "",
         avg7: averageRecent(values, 7),
         avg30: averageRecent(values, 30),
         avg90: averageRecent(values, 90),
