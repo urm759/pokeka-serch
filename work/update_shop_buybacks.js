@@ -238,7 +238,7 @@ async function fetchXCapture(shop) {
     shopItemId: `${post.postId}:${index}`,
     name: item.name || "",
     price: Number(item.price || 0),
-    imageUrl: post.images?.[0] || "",
+    imageUrl: item.imageUrl || post.images?.[Number(item.imageIndex || 0)] || post.images?.[0] || "",
     itemUrl: post.url || shop.url,
     observedDate: post.date || "",
     verifiedCardId: item.verifiedCardId || "",
