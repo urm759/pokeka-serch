@@ -13,7 +13,11 @@ const RETENTION_DAYS = Math.max(90, Number(process.env.PSA_HISTORY_DAYS || 400))
 function readJson(filePath, fallback) { try { return JSON.parse(fs.readFileSync(filePath, "utf8")); } catch { return fallback; } }
 function dayKey(date = new Date()) { return new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit" }).format(date).replace(/-/g, ""); }
 function normalizeNo(value) { const raw = String(value || "").replace(/^#/, "").trim().toUpperCase(); return raw.replace(/^0+(?=\d)/, ""); }
-function shortSet(value) { return String(value || "").trim().toUpperCase().split(/[-\s]/)[0]; }
+function shortSet(value) {
+  const raw = String(value || "").trim().toUpperCase();
+  if (/^S8A-[PG]$/.test(raw)) return raw;
+  return raw.split(/[-\s]/)[0];
+}
 function cardIdentity(card) {
   const match = String(card.name || "").match(/\[([^\]]+)\]/);
   if (!match) return null;
@@ -52,23 +56,35 @@ function baseSimilarity(a, b) {
 }
 function variantOf(value) {
   const name = String(value || "").toLowerCase().replace(/&#x27;|&#39;|&apos;/g, "'");
+  if (/メタモンマーク|with ditto mark/.test(name)) return "ditto";
+  if (/マスターボール/.test(name)) return "master-ball";
+  if (/ロケット団(?:の)?マーク.*ミラー/.test(name)) return "team-rocket-reverse";
+  if (/モンスターボール|オシャボ|monster ball mirror|special monster ball/.test(name)) return "poke-ball";
+  if (/エネルギーマーク|energy mark mirror/.test(name)) return "energy-mark";
+  if (/中国語.*エラー|中国語.*誤植/.test(name)) return "incorrect-texture";
+  if (/テクスチャ(?:抜け|なし)|加工(?:抜け|なし)/.test(name)) return "missing-texture";
   if (/master ball (mirror|reverse holo)/.test(name)) return "master-ball";
-  if (/monster ball mirror|poke ball reverse holo/.test(name)) return "reverse-holo";
+  if (/monster ball mirror|special monster ball|poke ball reverse holo/.test(name)) return "poke-ball";
   if (/team rocket mark mirror|team rocket reverse holo/.test(name)) return "team-rocket-reverse";
-  if (/energy mark mirror/.test(name)) return "reverse-holo";
+  if (/energy mark mirror/.test(name)) return "energy-mark";
   if (/chinese (text )?printing error|incorrect texture/.test(name)) return "incorrect-texture";
   if (/missing texture/.test(name)) return "missing-texture";
-  if (/normal (style|version|specification)/.test(name)) return "normal";
+  if (/normal (style|version|specification)/.test(name)) return "base";
+  if (/ミラー/.test(name)) return "reverse-holo";
   if (/\bmirror\b|\breverse holo\b/.test(name)) return "reverse-holo";
   return "base";
 }
 function candidateVariant(row) {
   const name = String(row?.name || "").toLowerCase();
+  if (/ditto/.test(name)) return "ditto";
   if (/master ball reverse holo/.test(name)) return "master-ball";
   if (/team rocket reverse holo/.test(name)) return "team-rocket-reverse";
+  if (/poke ball reverse holo/.test(name)) return "poke-ball";
+  if (row?.set === "M2A" && /reverse holo/.test(name)) return "energy-mark";
+  if (/^SV(?:2A|8A)$/.test(row?.set || "") && /reverse holo/.test(name)) return "poke-ball";
   if (/incorrect texture/.test(name)) return "incorrect-texture";
   if (/missing texture/.test(name)) return "missing-texture";
-  if (/reverse holo/.test(name)) return "reverse-holo";
+  if (/reverse holo|reverse foil/.test(name)) return "reverse-holo";
   return "base";
 }
 function suspicious(value) { return /missing texture|error|no rarity|misprint|stamp|mirror|reverse|1st edition|unlimited/i.test(String(value || "")); }
@@ -92,11 +108,18 @@ function windowChange(history, days, today) {
 
 function compactRows(payload) {
   const source = Array.isArray(payload?.rows) ? payload.rows : Object.values(payload?.byQuery || {});
-  return source.map((row) => ({
+  const rows = source.map((row) => ({
     set: shortSet(row.setCode || String(row.sourceSet || row.setName || "").replace(/^\d{4}\s+Pokemon Japanese\s+/i, "")),
     no: normalizeNo(row.cardNo), name: String(row.cardName || "").replace(/Shop with Affiliates/gi, "").trim(),
     ten: Number(row.psa10Count), total: Number(row.psaTotal), url: row.sourceUrl || "", fetchedAt: row.fetchedAt || payload.generatedAt || "",
   })).filter((row) => row.set && row.no && Number.isFinite(row.ten) && Number.isFinite(row.total) && row.total >= row.ten && row.ten >= 0);
+  const deduped = new Map();
+  for (const row of rows) {
+    const key = `${row.set}|${row.no}|${cleanName(row.name)}`;
+    const previous = deduped.get(key);
+    if (!previous || String(row.fetchedAt) >= String(previous.fetchedAt)) deduped.set(key, row);
+  }
+  return [...deduped.values()];
 }
 
 function main() {
@@ -117,6 +140,21 @@ function main() {
     let candidates = identity.no ? (groups.get(`${identity.set}|${identity.no}`) || []) : (setGroups.get(identity.set) || []); if (!candidates.length) continue;
     const englishName = english[card.id]?.englishName || "";
     let selected = null, method = "";
+    const fullName = `${englishName} ${card.name || ""}`;
+    if (/メタモンマーク|with ditto mark/i.test(fullName)) {
+      const ditto = candidates.filter((row) => /ditto$/i.test(cleanName(row.name).replace(/\s+/g, "")) && !/reverse/i.test(row.name));
+      if (ditto.length === 1) { selected = ditto[0]; method = "set-number-edition"; }
+    }
+    if (!selected && candidates.some((row) => /corrected/i.test(row.name))) {
+      const wantsError = /エラー版|\berror\b/i.test(fullName) && !/修正版|corrected/i.test(fullName);
+      const edition = candidates.filter((row) => wantsError ? !/corrected/i.test(row.name) : /corrected/i.test(row.name));
+      if (edition.length === 1) { selected = edition[0]; method = "set-number-edition"; }
+    }
+    if (!selected && candidates.some((row) => /missing (?:gloss|texture)/i.test(row.name))) {
+      const wantsMissing = /抜け|なし|missing (?:gloss|texture)/i.test(fullName);
+      const edition = candidates.filter((row) => wantsMissing ? /missing (?:gloss|texture)/i.test(row.name) : !/missing (?:gloss|texture)/i.test(row.name));
+      if (edition.length === 1) { selected = edition[0]; method = "set-number-edition"; }
+    }
     if (!identity.no && identity.set === "PMCG1" && englishName) {
       const noRarity = /\[PMCG1-1\]/i.test(String(card.name || ""));
       candidates = candidates.filter((row) => noRarity === /no rarity symbol/i.test(row.name));
@@ -125,17 +163,22 @@ function main() {
         selected = ranked[0].row; method = "set-name-edition";
       }
     }
-    if (englishName) {
-      const ranked = candidates.map((row) => ({ row, score: similarity(englishName, row.name) })).sort((a,b)=>b.score-a.score);
+    if (!selected && englishName) {
+      const wantedVariant = variantOf(`${englishName} ${card.name || ""}`);
+      const exactVariant = candidates.filter((row) => candidateVariant(row) === wantedVariant);
+      const rankedPool = exactVariant.length ? exactVariant : candidates;
+      const ranked = rankedPool.map((row) => ({ row, score: similarity(englishName, row.name) })).sort((a,b)=>b.score-a.score);
       if (ranked[0]?.score >= .5 && (!ranked[1] || ranked[0].score-ranked[1].score >= .12)) { selected = ranked[0].row; method = "set-number-english"; }
       if (!selected) {
-        const wantedVariant = variantOf(englishName);
-        const variantCandidates = candidates.filter((row) => candidateVariant(row) === wantedVariant)
+        const variantCandidates = exactVariant
           .map((row) => ({ row, score: similarity(englishName, row.name) })).sort((a,b)=>b.score-a.score);
-        if (variantCandidates.length === 1 && variantCandidates[0].score >= .35) {
+        if (variantCandidates.length === 1) {
           selected = variantCandidates[0].row; method = "set-number-variant";
         }
       }
+    }
+    if (!selected && candidates.length === 1 && candidateVariant(candidates[0]) === variantOf(card.name || "")) {
+      selected = candidates[0]; method = "set-number-variant";
     }
     if (!selected && candidates.length === 1 && !suspicious(candidates[0].name)) { selected = candidates[0]; method = "set-number-unique"; }
     if (!selected) continue;

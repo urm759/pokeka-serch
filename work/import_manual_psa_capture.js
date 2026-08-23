@@ -16,7 +16,9 @@ function readJson(filePath, fallback) {
 }
 
 function shortSet(value) {
-  return String(value || "").trim().toUpperCase().split(/[-\s]/)[0];
+  const raw = String(value || "").trim().toUpperCase();
+  if (/^S8A-[PG]$/.test(raw)) return raw;
+  return raw.split(/[-\s]/)[0];
 }
 
 function setFromName(value) {
@@ -29,7 +31,14 @@ function setFromTitle(value) {
 }
 
 function main() {
-  const capture = readJson(CAPTURE_PATH, { sets: [] });
+  const captureFiles = fs.readdirSync(__dirname)
+    .filter((name) => /^manual_psa_capture.*\.json$/i.test(name))
+    .map((name) => path.join(__dirname, name));
+  const captures = captureFiles.map((filePath) => readJson(filePath, { sets: [] }));
+  const capture = {
+    generatedAt: captures.map((item) => item.generatedAt).filter(Boolean).sort().at(-1) || new Date().toISOString(),
+    sets: captures.flatMap((item) => item.sets || []),
+  };
   const manifest = readJson(MANIFEST_PATH, []);
   const manifestByName = new Map(manifest.map((entry) => [entry.name, entry]));
   const previous = readJson(OUTPUT_PATH, { rows: [] });

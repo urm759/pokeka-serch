@@ -278,7 +278,12 @@ async function collectSet(context, entry) {
 }
 
 async function main() {
-  const manifest = readJson(MANIFEST_PATH, []);
+  const fullManifest = readJson(MANIFEST_PATH, []);
+  const filterPattern = String(process.env.PSA_SET_FILTER || "").trim();
+  const filterRegex = filterPattern ? new RegExp(filterPattern, "i") : null;
+  const manifest = filterRegex
+    ? fullManifest.filter((entry) => filterRegex.test(`${entry.setCode || ""} ${entry.name || ""}`))
+    : fullManifest;
   const previousPayload = readJson(OUTPUT_JSON, { rows: [] });
   if (!Array.isArray(manifest) || manifest.length === 0) {
     throw new Error(`No PSA set manifest found at ${MANIFEST_PATH}`);
@@ -332,17 +337,17 @@ async function main() {
     sourceUrl: set.url,
     fetchedAt: set.fetchedAt,
   })));
-  if (freshRows.length < 100) {
+  if (freshRows.length < (filterRegex ? 1 : 100)) {
     throw new Error("No reliable fresh PSA population data was collected. Existing data was preserved.");
   }
-  const failedUrls = new Set(collected.filter((set) => set.error || !set.rows.length).map((set) => set.url).filter(Boolean));
-  const preservedRows = (previousPayload.rows || []).filter((row) => failedUrls.has(row.sourceUrl));
+  const successfulUrls = new Set(collected.filter((set) => !set.error && set.rows.length).map((set) => set.url).filter(Boolean));
+  const preservedRows = (previousPayload.rows || []).filter((row) => !successfulUrls.has(row.sourceUrl));
   const rows = [...freshRows, ...preservedRows];
 
   const payload = {
     generatedAt: new Date().toISOString(),
     sourceManifest: MANIFEST_PATH,
-    totalSets: manifest.length,
+    totalSets: fullManifest.length,
     collectedSets: collected.length,
     totalRows: rows.length,
     rows,
