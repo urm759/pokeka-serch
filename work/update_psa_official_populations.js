@@ -158,7 +158,7 @@ async function collectSet(context, entry) {
     kind: entry.kind,
     url: entry.url,
     fetchedAt: new Date().toISOString(),
-    setCode: extractSetCode(entry.name),
+    setCode: String(entry.setCode || extractSetCode(entry.name)).toUpperCase(),
     headingID: null,
     categoryID: null,
     rows: [],
@@ -225,11 +225,11 @@ async function collectSet(context, entry) {
         rows.push(row);
       }
 
-      const nextButton = page.getByRole("button", { name: "Next", exact: true });
-      if (!(await nextButton.count().catch(() => 0))) break;
-      const disabled = await nextButton.first().isEnabled().then((enabled) => !enabled).catch(() => true);
-      if (disabled) break;
-      await nextButton.first().click({ timeoutMs: 30000 }).catch(() => null);
+      const dataTableNext = page.locator("#tablePSA_next");
+      if (!(await dataTableNext.count().catch(() => 0))) break;
+      const nextClass = await dataTableNext.getAttribute("class").catch(() => "disabled");
+      if (/disabled/i.test(nextClass || "")) break;
+      await dataTableNext.click({ timeout: 30000 });
       await page.waitForTimeout(2000);
     }
 

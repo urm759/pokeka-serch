@@ -23,8 +23,13 @@ function cardIdentity(card) {
 }
 function cleanName(value) {
   return String(value || "").toLowerCase()
+    .replace(/&#x27;|&#39;|&apos;/g, "'").replace(/&amp;/g, "&")
     .replace(/shop with affiliates/gi, " ")
     .replace(/\[[^\]]+\]|\([^)]*\)/g, " ")
+    .replace(/monster ball mirror\s*\/?\s*special monster ball/g, " poke ball reverse holo ")
+    .replace(/energy mark mirror/g, " reverse holo ")
+    .replace(/team rocket mark mirror/g, " team rocket reverse holo ")
+    .replace(/master ball mirror/g, " master ball reverse holo ")
     .replace(/\bsar\b/g, " special art rare ").replace(/\bmur\b/g, " mega ultra rare ")
     .replace(/\bsr\b/g, " secret rare ").replace(/\bar\b/g, " art rare ")
     .replace(/\bex\b/g, " ex ").replace(/[^a-z0-9]+/g, " ").trim();
@@ -80,7 +85,8 @@ function main() {
     if (englishName) {
       const ranked = candidates.map((row) => ({ row, score: similarity(englishName, row.name) })).sort((a,b)=>b.score-a.score);
       if (ranked[0]?.score >= .5 && (!ranked[1] || ranked[0].score-ranked[1].score >= .12)) { selected = ranked[0].row; method = "set-number-english"; }
-    } else if (candidates.length === 1 && !suspicious(candidates[0].name)) { selected = candidates[0]; method = "set-number-unique"; }
+    }
+    if (!selected && candidates.length === 1 && !suspicious(candidates[0].name)) { selected = candidates[0]; method = "set-number-unique"; }
     if (!selected) continue;
     const shard = shardFor(card.id), store = shards[shard]; store.cards ||= {};
     let history = Array.isArray(store.cards[card.id]) ? store.cards[card.id].filter((row)=>row[0]>=cutoff) : [];

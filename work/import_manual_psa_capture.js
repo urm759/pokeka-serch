@@ -3,6 +3,7 @@ const path = require("path");
 
 const ROOT = path.join(__dirname, "..");
 const CAPTURE_PATH = path.join(__dirname, "manual_psa_capture.json");
+const MANIFEST_PATH = path.join(__dirname, "psa_set_urls.json");
 const OUTPUT_PATH = path.join(ROOT, "data", "psa-official-populations.json");
 const OUTPUT_JS_PATH = path.join(ROOT, "data", "psa-official-populations.js");
 
@@ -29,15 +30,20 @@ function setFromTitle(value) {
 
 function main() {
   const capture = readJson(CAPTURE_PATH, { sets: [] });
+  const manifest = readJson(MANIFEST_PATH, []);
+  const manifestByName = new Map(manifest.map((entry) => [entry.name, entry]));
   const previous = readJson(OUTPUT_PATH, { rows: [] });
   const successfulUrls = new Set();
   const freshRows = [];
   const rejected = [];
 
   for (const set of capture.sets || []) {
-    const expectedSet = setFromName(set.name);
+    const manifestEntry = manifestByName.get(set.name) || {};
+    const nameSet = setFromName(set.name);
+    const expectedSet = shortSet(manifestEntry.setCode || nameSet);
     const actualSet = setFromTitle(set.title);
-    if (!set.url || !Array.isArray(set.rows) || set.rows.length === 0 || expectedSet !== actualSet) {
+    const redirectedToDifferentCode = nameSet === expectedSet && expectedSet !== actualSet;
+    if (!set.url || !Array.isArray(set.rows) || set.rows.length === 0 || redirectedToDifferentCode) {
       rejected.push({ name: set.name, expectedSet, actualSet, rows: set.rows?.length || 0 });
       continue;
     }
