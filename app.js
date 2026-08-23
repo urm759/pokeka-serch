@@ -43,6 +43,7 @@ const state = {
   visibleLimit: 60,
   favorites: new Set(),
   psaCapital: 500000,
+  lockedCapital: 0,
   lockDays: 91,
   minExpectedProfit: 10000,
   minExpectedRoi: 30,
@@ -126,6 +127,7 @@ const els = {
   importFavoritesInput: document.getElementById("importFavoritesInput"),
   clearFavoritesBtn: document.getElementById("clearFavoritesBtn"),
   psaCapitalInput: document.getElementById("psaCapitalInput"),
+  lockedCapitalInput: document.getElementById("lockedCapitalInput"),
   lockDaysInput: document.getElementById("lockDaysInput"),
   minExpectedProfitInput: document.getElementById("minExpectedProfitInput"),
   minExpectedRoiInput: document.getElementById("minExpectedRoiInput"),
@@ -136,6 +138,7 @@ const els = {
   saleFeeRateInput: document.getElementById("saleFeeRateInput"),
   saleExtraCostInput: document.getElementById("saleExtraCostInput"),
   gradingReserveStatus: document.getElementById("gradingReserveStatus"),
+  capitalAvailabilityStatus: document.getElementById("capitalAvailabilityStatus"),
   shopReferenceLinks: document.getElementById("shopReferenceLinks"),
 };
 
@@ -702,14 +705,16 @@ function calc(card) {
   const expectedRoi = price > 0 ? expectedProfit / price * 100 : NaN;
   const annualEfficiency = price > 0 && state.lockDays > 0 ? expectedRoi * 365 / state.lockDays : NaN;
   const capitalShare = state.psaCapital > 0 ? price / state.psaCapital * 100 : Infinity;
+  const availableCapital = Math.max(state.psaCapital - state.lockedCapital, 0);
   const requiredReserve = state.fee * state.submissionCount;
   const reasons = [];
   if (expectedProfit < state.minExpectedProfit) reasons.push(`期待利益が¥${fmt.format(state.minExpectedProfit)}未満`);
   if (expectedRoi < state.minExpectedRoi) reasons.push(`期待利益率が${fmt.format(state.minExpectedRoi)}%未満`);
   if (annualEfficiency < state.minAnnualEfficiency) reasons.push(`年換算効率が${fmt.format(state.minAnnualEfficiency)}%未満`);
   if (capitalShare > state.maxCapitalShare) reasons.push(`資金占有率が${fmt.format(state.maxCapitalShare)}%超`);
+  if (price > availableCapital) reasons.push(`現在使える仕入れ資金¥${fmt.format(availableCapital)}を超過`);
   if (state.gradingReserve < requiredReserve) reasons.push("返却時の鑑定費予備資金が不足");
-  const psaDecision = { recommended: reasons.length === 0, reasons, expectedSale, expectedProfit, expectedRoi, annualEfficiency, capitalShare, requiredReserve };
+  const psaDecision = { recommended: reasons.length === 0, reasons, expectedSale, expectedProfit, expectedRoi, annualEfficiency, capitalShare, availableCapital, requiredReserve };
   return { ...card, price, torecaPrice, cardrushPrice, psa10, profit, roi, psaDecision, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackAvg30, buybackShops };
 }
 
@@ -758,6 +763,7 @@ function readUrl() {
   const priceMin = parseOptionalNumber(url.searchParams.get("priceMin"));
   const priceMax = parseOptionalNumber(url.searchParams.get("priceMax"));
   const psaCapital = parseOptionalNumber(url.searchParams.get("cap"));
+  const lockedCapital = parseOptionalNumber(url.searchParams.get("locked"));
   const lockDays = parseOptionalNumber(url.searchParams.get("lock"));
   const minExpectedProfit = parseOptionalNumber(url.searchParams.get("expProfit"));
   const minExpectedRoi = parseOptionalNumber(url.searchParams.get("expRoi"));
@@ -801,6 +807,7 @@ function readUrl() {
   if (priceMin != null) els.priceMinInput.value = String(priceMin);
   if (priceMax != null) els.priceMaxInput.value = String(priceMax);
   if (psaCapital != null && psaCapital >= 0) els.psaCapitalInput.value = String(psaCapital);
+  if (lockedCapital != null && lockedCapital >= 0) els.lockedCapitalInput.value = String(lockedCapital);
   if (lockDays != null && lockDays > 0) els.lockDaysInput.value = String(lockDays);
   if (minExpectedProfit != null) els.minExpectedProfitInput.value = String(minExpectedProfit);
   if (minExpectedRoi != null && minExpectedRoi >= 0) els.minExpectedRoiInput.value = String(minExpectedRoi);
@@ -846,6 +853,7 @@ function buildShareUrl() {
   url.searchParams.set("psaMax", String(state.maxPsa10));
   url.searchParams.set("sort", state.sort);
   url.searchParams.set("cap", String(state.psaCapital));
+  url.searchParams.set("locked", String(state.lockedCapital));
   url.searchParams.set("lock", String(state.lockDays));
   url.searchParams.set("expProfit", String(state.minExpectedProfit));
   url.searchParams.set("expRoi", String(state.minExpectedRoi));
@@ -989,7 +997,9 @@ function render() {
           </div>
         `
       : "";
-    const buybackShopRows = Object.entries(card.buyback?.shops || {}).map(([shopId, shop]) => {
+    const buybackShopRows = Object.entries(card.buyback?.shops || {})
+      .sort(([, a], [, b]) => Number(b.price || 0) - Number(a.price || 0) || Number(b.avg30 || 0) - Number(a.avg30 || 0))
+      .map(([shopId, shop], index) => {
       const shopMeta = state.buybackShops[shopId] || { name: shopId, url: "" };
       const comparisonClass = shop.comparison === "他店より高い" ? "high" : shop.comparison === "他店より安い" ? "low" : shop.comparison === "他店平均くらい" ? "average" : "pending";
       const comparisonText = shop.diffPct == null ? shop.comparison : `${shop.comparison}（${shop.diffPct >= 0 ? "+" : ""}${fmt.format(shop.diffPct)}%）`;
@@ -998,15 +1008,21 @@ function render() {
       const shopName = shopUrl
         ? `<a href="${escapeHtml(shopUrl)}" target="_blank" rel="noreferrer">${escapeHtml(shopMeta.name)} ${shop.url ? "商品・検索" : "買取表"}</a>`
         : escapeHtml(shopMeta.name);
-      return `<div class="buyback-shop-row"><div><strong>${shopName}</strong></div><div><span>7日</span><b>${fmt.format(shop.c7)}回</b></div><div><span>30日</span><b>${fmt.format(shop.c30)}回</b></div><div><span>90日</span><b>${fmt.format(shop.c90)}回</b></div><div><span>最新${priceDateLabel} / 30日平均</span><b>${shop.price ? `¥${fmt.format(shop.price)}` : "-"} / ${shop.avg30 ? `¥${fmt.format(shop.avg30)}` : "-"}</b><small class="buyback-comparison ${comparisonClass}">${escapeHtml(comparisonText || "比較店舗蓄積中")}</small></div></div>`;
-    }).join("");
+      const leadLabel = index === 0 ? `<em class="buyback-lead-label">${shop.price ? "最高買取" : "掲載店舗"}</em>` : "";
+      return `<div class="buyback-shop-row ${index === 0 ? "buyback-shop-primary" : ""}"><div>${leadLabel}<strong>${shopName}</strong></div><div><span>7日</span><b>${fmt.format(shop.c7)}回</b></div><div><span>30日</span><b>${fmt.format(shop.c30)}回</b></div><div><span>90日</span><b>${fmt.format(shop.c90)}回</b></div><div><span>最新${priceDateLabel} / 30日平均</span><b>${shop.price ? `¥${fmt.format(shop.price)}` : "-"} / ${shop.avg30 ? `¥${fmt.format(shop.avg30)}` : "-"}</b><small class="buyback-comparison ${comparisonClass}">${escapeHtml(comparisonText || "比較店舗蓄積中")}</small></div></div>`;
+    });
+    const buybackPrimaryShop = buybackShopRows[0] || "";
+    const buybackOtherShops = buybackShopRows.length > 1
+      ? `<details class="buyback-other-shops"><summary>その他 ${fmt.format(buybackShopRows.length - 1)}店舗の買取価格を見る</summary><div class="buyback-shops">${buybackShopRows.slice(1).join("")}</div></details>`
+      : "";
     const buybackPanel = card.buyback ? `
       <div class="buyback-panel">
         <div class="buyback-head">
           <div><span>ショップPSA10買取表</span><strong>${escapeHtml(card.buyback.demand || "蓄積中")}</strong></div>
           <small>${fmt.format(state.buybackDates.length)}日分を蓄積 / 店舗別と合計</small>
         </div>
-        <div class="buyback-shops">${buybackShopRows}</div>
+        <div class="buyback-shops buyback-primary-shop">${buybackPrimaryShop}</div>
+        ${buybackOtherShops}
         <div class="buyback-total"><span>全店舗合計</span><b>7日 ${fmt.format(card.buyback7)}回 / ${fmt.format(card.buyback.shop7 || 0)}店</b><b>30日 ${fmt.format(card.buyback30)}回 / ${fmt.format(card.buyback.shop30 || 0)}店</b><b>90日 ${fmt.format(card.buyback90)}回 / ${fmt.format(card.buyback.shop90 || 0)}店</b></div>
         <div class="buyback-price-averages"><span>全店舗平均買取</span><b>7日 ${card.buyback.avg7 ? `¥${fmt.format(card.buyback.avg7)}` : "-"}</b><b>30日 ${card.buyback.avg30 ? `¥${fmt.format(card.buyback.avg30)}` : "-"}</b><b>90日 ${card.buyback.avg90 ? `¥${fmt.format(card.buyback.avg90)}` : "-"}</b></div>
       </div>
@@ -1144,6 +1160,7 @@ function syncFromUI() {
   state.sort = els.sortInput.value;
   state.q = els.qInput.value.trim();
   state.psaCapital = Number(els.psaCapitalInput.value || 0);
+  state.lockedCapital = Number(els.lockedCapitalInput.value || 0);
   state.lockDays = Math.max(1, Number(els.lockDaysInput.value || 1));
   state.minExpectedProfit = Number(els.minExpectedProfitInput.value || 0);
   state.minExpectedRoi = Number(els.minExpectedRoiInput.value || 0);
@@ -1153,6 +1170,11 @@ function syncFromUI() {
   state.gradingReserve = Number(els.gradingReserveInput.value || 0);
   state.saleFeeRate = Number(els.saleFeeRateInput.value || 0);
   state.saleExtraCost = Number(els.saleExtraCostInput.value || 0);
+  if (els.capitalAvailabilityStatus) {
+    const available = Math.max(state.psaCapital - state.lockedCapital, 0);
+    els.capitalAvailabilityStatus.className = available > 0 ? "enough" : "short";
+    els.capitalAvailabilityStatus.textContent = `現在使える仕入れ資金 ¥${fmt.format(available)}（運用予算 ¥${fmt.format(state.psaCapital)} − 仕入れ・鑑定中 ¥${fmt.format(state.lockedCapital)}）`;
+  }
   if (els.gradingReserveStatus) {
     const required = state.fee * state.submissionCount;
     const enough = state.gradingReserve >= required;
@@ -1204,7 +1226,7 @@ async function init() {
   }
 }
 
-[els.qInput, els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.buyback7MinInput, els.buyback7MaxInput, els.buyback30MinInput, els.buyback30MaxInput, els.buyback90MinInput, els.buyback90MaxInput, els.buybackShopsMinInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.roiInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.sortInput, els.psaCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput].forEach((el) =>
+[els.qInput, els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.buyback7MinInput, els.buyback7MaxInput, els.buyback30MinInput, els.buyback30MaxInput, els.buyback90MinInput, els.buyback90MaxInput, els.buybackShopsMinInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.roiInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.sortInput, els.psaCapitalInput, els.lockedCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput].forEach((el) =>
   el.addEventListener("input", syncFromUI)
 );
 

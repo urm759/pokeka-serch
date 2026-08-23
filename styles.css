@@ -602,6 +602,13 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .buyback-shop-row a{color:#fde68a;text-decoration:none}
 .buyback-shop-row small,.buyback-shop-row span{display:block;color:var(--muted);font-size:8px}
 .buyback-shop-row b{display:block;margin-top:2px;font-size:11px}
+.buyback-shop-primary{border:1px solid rgba(251,191,36,.5);background:linear-gradient(135deg,rgba(251,191,36,.18),rgba(5,10,20,.58));box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.buyback-shop-primary>div:last-child b{color:#fde68a;font-size:14px}
+.buyback-lead-label{display:inline-block;margin-bottom:4px;padding:3px 7px;border-radius:999px;background:#fbbf24;color:#241600;font-size:8px;font-style:normal;font-weight:900}
+.buyback-other-shops{margin-top:7px;border-top:1px solid rgba(255,255,255,.08)}
+.buyback-other-shops>summary{padding:9px 3px 2px;color:#bae6fd;font-size:10px;font-weight:900;cursor:pointer;list-style-position:inside}
+.buyback-other-shops[open]>summary{color:#fde68a}
+.buyback-other-shops .buyback-shops{margin-top:7px}
 .buyback-comparison{margin-top:3px!important;font-weight:900}
 .buyback-comparison.high{color:#86efac!important}.buyback-comparison.average{color:#bae6fd!important}.buyback-comparison.low{color:#fca5a5!important}
 .buyback-total{display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-top:8px;color:var(--muted);font-size:9px}

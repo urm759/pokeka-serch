@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20260823-buyback2" />
+  <link rel="stylesheet" href="./styles.css?v=20260823-capital1" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -181,9 +181,14 @@
         </summary>
         <div class="controls controls-advanced">
           <label class="control">
-            <span>PSA仕入れ用総資金</span>
+            <span>PSA運用予算</span>
             <input id="psaCapitalInput" type="number" min="0" step="10000" value="500000" />
-            <small class="control-help">PSA提出用に使える仕入れ資金の合計。例：50万円なら500000。</small>
+            <small class="control-help">PSA仕入れ全体に使ってよい上限。すでに持っているカードの仕入れ額も含めた総枠です。</small>
+          </label>
+          <label class="control">
+            <span>仕入れ・鑑定中の仕入れ額</span>
+            <input id="lockedCapitalInput" type="number" min="0" step="10000" value="0" />
+            <small class="control-help">すでに買ったカードとPSA提出中カードの仕入れ額合計。鑑定費は含めません。売却・返却時に更新します。</small>
           </label>
           <label class="control">
             <span>資金ロック日数</span>
@@ -233,6 +238,7 @@
         </div>
         <div class="psa-settings-note">
           迷った場合は初期値のままで使えます。10率は仕入れ値一覧の70%／50%と連動し、PSA9以下は仕入れ値の75%回収として計算します。鑑定費は利益から差し引きますが、資金ロック額には含めません。
+          <strong id="capitalAvailabilityStatus"></strong>
           <strong id="gradingReserveStatus"></strong>
         </div>
       </details>
@@ -368,6 +374,6 @@
     </section>
   </main>
 
-  <script src="./app.js?v=20260823-buyback4"></script>
+  <script src="./app.js?v=20260823-capital1"></script>
 </body>
 </html>
