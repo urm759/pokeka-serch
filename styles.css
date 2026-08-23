@@ -579,9 +579,12 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .stock-title div strong{font-size:20px}
 .stock-title div small{display:block;max-width:520px;margin-top:4px;color:var(--muted);font-size:9px;line-height:1.35}
 .stock-title b{padding:7px 10px;border-radius:999px;font-size:11px;background:rgba(148,163,184,.2)}
-.stock-panel.high .stock-title b{background:rgba(56,217,150,.9);color:#082317}
-.stock-panel.normal .stock-title b{background:rgba(125,211,252,.9);color:#062238}
-.stock-panel.low .stock-title b{background:rgba(245,158,11,.9);color:#2b1900}
+.stock-panel.risk-high{border-color:rgba(244,63,94,.35);background:linear-gradient(135deg,rgba(244,63,94,.12),rgba(245,158,11,.05))}
+.stock-panel.risk-medium{border-color:rgba(245,158,11,.3);background:linear-gradient(135deg,rgba(245,158,11,.1),rgba(125,211,252,.04))}
+.stock-panel.risk-low{border-color:rgba(56,217,150,.3);background:linear-gradient(135deg,rgba(56,217,150,.09),rgba(125,211,252,.05))}
+.stock-panel.risk-high .stock-title b{background:rgba(244,63,94,.9);color:#fff1f2}
+.stock-panel.risk-medium .stock-title b{background:rgba(245,158,11,.9);color:#2b1900}
+.stock-panel.risk-low .stock-title b{background:rgba(56,217,150,.9);color:#082317}
 .stock-averages{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:10px}
 .stock-averages div{padding:9px;border-radius:12px;background:rgba(5,10,20,.45)}
 .stock-averages span{display:block;color:var(--muted);font-size:9px;margin-bottom:3px}
@@ -669,6 +672,7 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .profit-head .v{font-size:20px;font-weight:900}
 .profit-assessment{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;padding:8px 10px;border-radius:11px;font-size:10px;font-weight:800;background:rgba(148,163,184,.12);color:#cbd5e1}
 .profit-assessment span{font-size:12px}
+.profit-assessment small{display:block;margin-left:auto;color:currentColor;opacity:.72;font-size:8px;font-weight:700}
 .profit-assessment.high{background:rgba(56,217,150,.14);color:#bbf7d0}
 .profit-assessment.average{background:rgba(125,211,252,.12);color:#bae6fd}
 .profit-assessment.low{background:rgba(245,158,11,.14);color:#fde68a}

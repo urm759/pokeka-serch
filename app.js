@@ -31,7 +31,7 @@ const state = {
   visibleLimit: 60,
   favorites: new Set(),
   psaCapital: 500000,
-  lockDays: 180,
+  lockDays: 91,
   minExpectedProfit: 10000,
   minExpectedRoi: 30,
   minAnnualEfficiency: 40,
@@ -154,6 +154,20 @@ function selectedPsaPlan() {
   return plans.find((plan) => plan.id === state.psaPlan) || plans[0];
 }
 
+function psaPriceBand(price) {
+  const value = Math.max(0, Number(price || 0));
+  const width = value < 30000 ? 5000 : value < 100000 ? 10000 : value < 300000 ? 25000 : 50000;
+  const min = Math.floor(value / width) * width;
+  return { key: `${width}:${min}`, min, max: min + width, width };
+}
+
+function median(values) {
+  const sorted = values.filter(Number.isFinite).sort((a, b) => a - b);
+  if (!sorted.length) return 0;
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
+}
+
 function applyPsaPlan({ updateLockDays = false } = {}) {
   const plan = selectedPsaPlan();
   state.psaPlan = plan.id;
@@ -162,12 +176,13 @@ function applyPsaPlan({ updateLockDays = false } = {}) {
   els.psaPlanInput.value = plan.id;
   els.feeInput.value = String(state.fee);
   if (updateLockDays && Number(plan.calendarDays) > 0) {
-    els.lockDaysInput.value = String(plan.calendarDays);
+    els.lockDaysInput.value = String(Number(plan.calendarDays) + 7);
   }
   if (els.psaPlanSummary) {
     const delivery = plan.businessDays ? `${fmt.format(plan.businessDays)}営業日（約${fmt.format(plan.calendarDays)}日）` : "納期未取得";
+    const lockEstimate = Number(plan.calendarDays) > 0 ? ` / 資金ロック目安 ${fmt.format(Number(plan.calendarDays) + 7)}日` : "";
     const checkedAt = state.psaServices?.updatedAt ? ` / 料金確認 ${state.psaServices.updatedAt}` : "";
-    els.psaPlanSummary.textContent = `公式 ¥${fmt.format(plan.price)}＋手数料 ¥${fmt.format(state.psaHandlingFee)}＝¥${fmt.format(state.fee)} / ${delivery} / 申告価格 ¥${fmt.format(plan.declaredValueMax)}以下${checkedAt}`;
+    els.psaPlanSummary.textContent = `公式 ¥${fmt.format(plan.price)}＋手数料 ¥${fmt.format(state.psaHandlingFee)}＝¥${fmt.format(state.fee)} / ${delivery}${lockEstimate} / 申告価格 ¥${fmt.format(plan.declaredValueMax)}以下${checkedAt}`;
   }
 }
 
@@ -801,8 +816,16 @@ function render() {
   const normalizedQuery = normalize(state.q);
   const compactQuery = compactSearch(state.q);
   const calculated = state.cards.map(calc);
-  const roiValues = calculated.map((card) => card.roi).filter(Number.isFinite);
-  const averageRoi = roiValues.length ? roiValues.reduce((sum, value) => sum + value, 0) / roiValues.length : 0;
+  const roiByPsaPriceBand = new Map();
+  calculated.forEach((card) => {
+    if (!Number.isFinite(card.roi)) return;
+    const key = psaPriceBand(card.psa10).key;
+    if (!roiByPsaPriceBand.has(key)) roiByPsaPriceBand.set(key, []);
+    roiByPsaPriceBand.get(key).push(card.roi);
+  });
+  const medianRoiByPsaPriceBand = new Map(
+    [...roiByPsaPriceBand].map(([key, values]) => [key, median(values)])
+  );
   const enriched = calculated
     .filter((card) => {
       const haystack = normalize(`${card.name} ${card.model} ${card.id}`);
@@ -851,9 +874,12 @@ function render() {
   els.grid.innerHTML = visibleCards.map((card) => {
     state.cardById[card.id] = card;
     const roiClass = card.roi >= 120 ? "good" : card.roi >= 80 ? "sky" : "warn";
-    const roiDifference = card.roi - averageRoi;
-    const roiAssessment = roiDifference >= 30 ? "全体平均よりかなり高い" : roiDifference >= 5 ? "全体平均より高い" : roiDifference <= -30 ? "全体平均よりかなり低い" : roiDifference <= -5 ? "全体平均より低い" : "全体平均に近い";
+    const priceBand = psaPriceBand(card.psa10);
+    const peerMedianRoi = medianRoiByPsaPriceBand.get(priceBand.key) ?? card.roi;
+    const roiDifference = card.roi - peerMedianRoi;
+    const roiAssessment = roiDifference >= 30 ? "同価格帯よりかなり高い" : roiDifference >= 5 ? "同価格帯より高い" : roiDifference <= -30 ? "同価格帯よりかなり低い" : roiDifference <= -5 ? "同価格帯より低い" : "同価格帯の中央値に近い";
     const roiAssessmentClass = roiDifference >= 5 ? "high" : roiDifference <= -5 ? "low" : "average";
+    const roiBandLabel = `PSA10 ¥${fmt.format(priceBand.min)}～¥${fmt.format(priceBand.max - 1)}`;
     const name = card.name.replace(/\s+/g, " ");
     const stock = state.cardrushStock[card.id] || null;
     const snkUrl = card.snkUrl || state.snkrUrlCache[card.id] || buildSnkrUrl(card);
@@ -870,7 +896,7 @@ function render() {
         ? `<a class="market-link cardrush" href="${card.cardrushUrl}" target="_blank" rel="noreferrer"><span>ショップ・状態A</span><strong>カードラッシュ直リンク</strong></a>`
         : `<span class="market-link unavailable"><span>ショップ</span><strong>カードラッシュ直リンク未取得</strong></span>`,
     ].join("");
-    const demandClass = stock?.demand === "買う人が多い" ? "high" : stock?.demand === "普通" ? "normal" : stock?.demand === "少ない" ? "low" : "pending";
+    const demandClass = stock?.demand === "買う人が多い" ? "risk-high" : stock?.demand === "普通" ? "risk-medium" : stock?.demand === "少ない" ? "risk-low" : "pending";
     const demandBadge = stock?.demand && stock.demand !== "蓄積中" ? `<b>在庫減少ペース：${stock.demand}</b>` : "";
     const avgStock = (value) => Number.isFinite(value) ? `${Number(value).toFixed(2)}枚/日` : "-";
     const dropStock = (value) => Number.isFinite(value) ? `${fmt.format(Number(value))}枚` : "-";
@@ -879,7 +905,7 @@ function render() {
       ? `
           <div class="stock-panel ${demandClass}">
             <div class="stock-title">
-              <div><span>カードラッシュ状態A 在庫</span><strong>${Number.isFinite(stock?.stock) ? `${fmt.format(stock.stock)}枚` : "-"}</strong><small>「少ない」は在庫の枚数ではなく、1日あたりの在庫減少ペースです。</small></div>
+              <div><span>カードラッシュ状態A 在庫</span><strong>${Number.isFinite(stock?.stock) ? `${fmt.format(stock.stock)}枚` : "-"}</strong><small>在庫減少ペースです。速いほどPSA供給増による相場下落リスクを高く見て、赤く表示します。</small></div>
               ${demandBadge}
             </div>
             <div class="stock-averages">
@@ -977,7 +1003,7 @@ function render() {
               <div class="k">利益率</div>
               <div class="v">${Number.isFinite(card.roi) ? Math.round(card.roi) : 0}%</div>
             </div>
-            <div class="profit-assessment ${roiAssessmentClass}">${roiAssessment} <span>${roiDifference >= 0 ? "+" : ""}${Math.round(roiDifference)}pt</span></div>
+            <div class="profit-assessment ${roiAssessmentClass}" title="${roiBandLabel}の利益率中央値 ${Math.round(peerMedianRoi)}% と比較">${roiAssessment} <span>${roiDifference >= 0 ? "+" : ""}${Math.round(roiDifference)}pt</span><small>${roiBandLabel}・中央値 ${Math.round(peerMedianRoi)}%</small></div>
           </div>
 
         </div>
