@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20260823-buyback1" />
+  <link rel="stylesheet" href="./styles.css?v=20260823-buyback2" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -60,6 +60,10 @@
             <option value="buyback30-desc">買取表30日掲載が多い順</option>
             <option value="buyback7-desc">買取表7日掲載が多い順</option>
             <option value="buybackPrice-desc">店舗PSA10買取価格が高い順</option>
+            <option value="buybackPrice-asc">店舗PSA10買取価格が低い順</option>
+            <option value="buybackAvg30-desc">30日平均買取価格が高い順</option>
+            <option value="buybackAvg30-asc">30日平均買取価格が低い順</option>
+            <option value="buybackShops-desc">掲載ショップ数が多い順</option>
             <option value="psaTx-desc">PSA10 30日件数が多い順</option>
             <option value="psaTx-asc">PSA10 30日件数が少ない順</option>
             <option value="psaTx7-desc">PSA10 7日件数が多い順</option>
@@ -137,15 +141,35 @@
         </label>
         <label class="control">
           <span>買取表掲載日数 直近7日</span>
-          <input id="buyback7MinInput" type="number" min="0" max="7" step="1" value="0" />
+          <div class="range-pair">
+            <input id="buyback7MinInput" type="number" min="0" max="7" step="1" value="0" placeholder="下限" />
+            <input id="buyback7MaxInput" type="number" min="0" max="7" step="1" placeholder="上限" />
+          </div>
         </label>
         <label class="control">
           <span>買取表掲載日数 直近30日</span>
-          <input id="buyback30MinInput" type="number" min="0" max="30" step="1" value="0" />
+          <div class="range-pair">
+            <input id="buyback30MinInput" type="number" min="0" max="30" step="1" value="0" placeholder="下限" />
+            <input id="buyback30MaxInput" type="number" min="0" max="30" step="1" placeholder="上限" />
+          </div>
         </label>
         <label class="control">
           <span>買取表掲載日数 直近90日</span>
-          <input id="buyback90MinInput" type="number" min="0" max="90" step="1" value="0" />
+          <div class="range-pair">
+            <input id="buyback90MinInput" type="number" min="0" max="90" step="1" value="0" placeholder="下限" />
+            <input id="buyback90MaxInput" type="number" min="0" max="90" step="1" placeholder="上限" />
+          </div>
+        </label>
+        <label class="control">
+          <span>買取表掲載ショップ数 下限</span>
+          <input id="buybackShopsMinInput" type="number" min="0" step="1" value="0" />
+        </label>
+        <label class="control">
+          <span>現在のPSA10買取価格帯</span>
+          <div class="range-pair">
+            <input id="buybackPriceMinInput" type="number" min="0" step="1000" placeholder="下限" />
+            <input id="buybackPriceMaxInput" type="number" min="0" step="1000" placeholder="上限" />
+          </div>
         </label>
         </div>
       </details>
@@ -315,11 +339,13 @@
       </div>
       <div class="toolbar-actions">
         <div class="toolbar-meta">データ取得日 <strong id="updatedAt">-</strong></div>
+        <div class="toolbar-meta">一斉更新 <strong>毎日 0:00 / 6:30</strong></div>
         <div class="toolbar-meta coverage-meta">カードラッシュ <strong id="cardrushCoverage">-</strong></div>
         <button id="openFavoritesBtn" type="button">仕入れ候補 <strong id="favoriteCountToolbar">0</strong>枚</button>
         <button id="copyLinkBtn" type="button">この条件をURLに反映</button>
         <a id="sourceLink" href="https://toreca-souba.com/" target="_blank" rel="noreferrer">みんトレを見る</a>
       </div>
+      <div id="shopReferenceLinks" class="shop-reference-links" aria-label="参照ショップ"></div>
     </section>
 
     <section id="grid" class="grid"></section>
@@ -342,6 +368,6 @@
     </section>
   </main>
 
-  <script src="./app.js?v=20260823-buyback1"></script>
+  <script src="./app.js?v=20260823-buyback2"></script>
 </body>
 </html>

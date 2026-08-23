@@ -78,8 +78,9 @@ function parseItems(html) {
     const name = decodeHtml(body.match(/<p\s+class="name"[^>]*>([\s\S]*?)<\/p>/i)?.[1]);
     const tag = decodeHtml(body.match(/<p\s+class="tag"[^>]*>([\s\S]*?)<\/p>/i)?.[1]);
     const price = Number(decodeHtml(body.match(/<p\s+class="price"[^>]*>([\s\S]*?)<\/p>/i)?.[1]).replace(/[^0-9]/g, ""));
+    const imageUrl = body.match(/<img[^>]+src="([^"]+)"/i)?.[1] || "";
     if (!id || !name || tag !== "PSA10") continue;
-    items.push({ shopItemId: id, name, price, max, active: max > 0 && price > 0 });
+    items.push({ shopItemId: id, name, price, max, imageUrl, active: max > 0 && price > 0 });
   }
   return items;
 }
@@ -143,9 +144,14 @@ function countRecent(values, days) {
   return values.slice(-days).filter((value) => Number(value) > 0).length;
 }
 
-function demandLabel(count30, observedDays) {
+function averageRecent(values, days) {
+  const prices = values.slice(-days).filter((value) => Number(value) > 0).map(Number);
+  return prices.length ? Math.round(prices.reduce((sum, value) => sum + value, 0) / prices.length) : null;
+}
+
+function demandLabel(count30, observedDays, shopCount) {
   if (observedDays < 7) return "蓄積中";
-  const rate = count30 / Math.min(30, observedDays);
+  const rate = count30 / (Math.min(30, observedDays) * Math.max(1, shopCount));
   if (rate >= 0.7) return "買取掲載が多い";
   if (rate >= 0.3) return "買取掲載は普通";
   return "買取掲載が少ない";
@@ -156,6 +162,7 @@ async function main() {
   const historyPath = path.join(__dirname, "shop_buyback_history.json");
   const catalogPath = path.join(__dirname, "shop_buyback_catalog.json");
   const unmatchedPath = path.join(__dirname, "shop_buyback_unmatched.json");
+  const imageMatches = readJson(path.join(__dirname, "shop_buyback_image_matches.json"), {});
   const history = readJson(historyPath, { dates: [], shops: {} });
   const firstPage = await fetchPage(1);
   const pageNumbers = [...firstPage.matchAll(/[?&]page=(\d+)/g)].map((match) => Number(match[1]));
@@ -169,7 +176,11 @@ async function main() {
   const unmatched = [];
   for (const item of items) {
     const result = matchCard(item);
-    if (result) matched.push({ ...item, cardId: result.card.id, score: result.score });
+    const imageCard = imageMatches[`${SHOP_ID}:${item.shopItemId}`]
+      ? cards.find((card) => card.id === imageMatches[`${SHOP_ID}:${item.shopItemId}`])
+      : null;
+    if (result) matched.push({ ...item, cardId: result.card.id, score: result.score, matchMethod: "text" });
+    else if (imageCard) matched.push({ ...item, cardId: imageCard.id, score: 100, matchMethod: "image-reviewed" });
     else unmatched.push(item);
   }
 
@@ -214,18 +225,49 @@ async function main() {
       const c90 = countRecent(values, 90);
       if (!c7 && !c30 && !c90) continue;
       const currentPrice = Number(values[values.length - 1]) > 0 ? Number(values[values.length - 1]) : null;
-      shops[shopId] = { c7, c30, c90, price: currentPrice };
+      shops[shopId] = {
+        c7, c30, c90, price: currentPrice,
+        avg7: averageRecent(values, 7),
+        avg30: averageRecent(values, 30),
+        avg90: averageRecent(values, 90),
+      };
       total7 += c7;
       total30 += c30;
       total90 += c90;
     }
     if (!Object.keys(shops).length) continue;
+    const shopEntries = Object.entries(shops);
+    for (const [shopId, shop] of shopEntries) {
+      const peers = shopEntries.filter(([peerId, peer]) => peerId !== shopId && Number(peer.avg30) > 0).map(([, peer]) => Number(peer.avg30));
+      if (!peers.length || !(shop.avg30 > 0)) {
+        shop.comparison = "比較店舗蓄積中";
+        shop.peerAvg30 = null;
+        shop.diffPct = null;
+        continue;
+      }
+      const peerAvg30 = Math.round(peers.reduce((sum, value) => sum + value, 0) / peers.length);
+      const diffPct = Math.round((shop.avg30 / peerAvg30 - 1) * 100);
+      shop.peerAvg30 = peerAvg30;
+      shop.diffPct = diffPct;
+      shop.comparison = diffPct >= 10 ? "他店より高い" : diffPct <= -10 ? "他店より安い" : "他店平均くらい";
+    }
+    const averageAcrossShops = (key) => {
+      const values = shopEntries.map(([, shop]) => shop[key]).filter((value) => Number(value) > 0);
+      return values.length ? Math.round(values.reduce((sum, value) => sum + value, 0) / values.length) : null;
+    };
     summaryCards[card.id] = {
       shops,
       total7,
       total30,
       total90,
-      demand: demandLabel(total30, observedDays),
+      shop7: shopEntries.filter(([, shop]) => shop.c7 > 0).length,
+      shop30: shopEntries.filter(([, shop]) => shop.c30 > 0).length,
+      shop90: shopEntries.filter(([, shop]) => shop.c90 > 0).length,
+      currentShops: shopEntries.filter(([, shop]) => Number(shop.price) > 0).length,
+      avg7: averageAcrossShops("avg7"),
+      avg30: averageAcrossShops("avg30"),
+      avg90: averageAcrossShops("avg90"),
+      demand: demandLabel(total30, observedDays, shopEntries.length),
     };
   }
 
