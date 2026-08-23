@@ -2,9 +2,32 @@ const fs = require("fs");
 const path = require("path");
 
 const ROOT = path.join(__dirname, "..");
-const SHOP_ID = "torecabank";
-const SHOP_NAME = "トレカバンク";
-const SOURCE_URL = "https://store.torecabank.com/mail_buy_list?keyword=&category=1&types%5B%5D=1&min_price=0&max_price=&sort=price_asc";
+const SHOPS = [
+  {
+    id: "torecabank",
+    name: "トレカバンク",
+    url: "https://store.torecabank.com/mail_buy_list?keyword=&category=1&types%5B%5D=1&min_price=0&max_price=&sort=price_asc",
+    fetchItems: fetchTorecaBank,
+  },
+  {
+    id: "toreca-lounge",
+    name: "トレカラウンジ",
+    url: "https://kaitori.toreca-lounge.com/pokemon",
+    fetchItems: fetchTorecaLounge,
+  },
+  {
+    id: "bluerocket",
+    name: "ブルーロケット",
+    url: "https://bluerocket-tcg.com/products?q%5Bproduct_sub_category_id_eq%5D=13&q%5Bproduct_sub_category_product_category_id_eq%5D=2",
+    fetchItems: fetchBlueRocket,
+  },
+  {
+    id: "shinsoku",
+    name: "神速",
+    url: "https://shinsoku-tcg.com/yuso-kaitori?title=%E3%83%9D%E3%82%B1%E3%83%A2%E3%83%B3",
+    fetchItems: fetchShinsoku,
+  },
+];
 const HISTORY_DAYS = 91;
 const SUMMARY_PATH = path.join(ROOT, "data", "shop-buyback-summary.json");
 
@@ -63,11 +86,11 @@ function variant(value) {
   if (/マスターボール/.test(text)) return "master";
   if (/モンスターボール/.test(text)) return "monster";
   if (/ミラー|ホイル加工/.test(text)) return "mirror";
-  if (/SA|スペシャルアート/i.test(text)) return "sa";
+  if (/(?:^|[^A-Z])SA(?:[^A-Z]|$)|スペシャルアート/i.test(text)) return "sa";
   return "base";
 }
 
-function parseItems(html) {
+function parseTorecaBankItems(html) {
   const items = [];
   const itemPattern = /<li\s+class="item\s*([^"]*)"([^>]*)>([\s\S]*?)<\/li>/gi;
   for (const match of String(html || "").matchAll(itemPattern)) {
@@ -85,14 +108,12 @@ function parseItems(html) {
   return items;
 }
 
-async function fetchPage(page) {
-  const url = new URL(SOURCE_URL);
-  url.searchParams.set("page", String(page));
+async function fetchText(url, label) {
   let lastError;
   for (let attempt = 1; attempt <= 3; attempt += 1) {
     try {
       const response = await fetch(url, { headers: { "user-agent": "Mozilla/5.0" } });
-      if (!response.ok) throw new Error(`${SHOP_NAME} page ${page}: HTTP ${response.status}`);
+      if (!response.ok) throw new Error(`${label}: HTTP ${response.status}`);
       return response.text();
     } catch (error) {
       lastError = error;
@@ -100,6 +121,108 @@ async function fetchPage(page) {
     }
   }
   throw lastError;
+}
+
+async function fetchJson(url, label) {
+  const text = await fetchText(url, label);
+  try { return JSON.parse(text); } catch { throw new Error(`${label}: JSONの解析に失敗しました`); }
+}
+
+async function fetchTorecaBank(shop) {
+  const fetchPage = (page) => {
+    const url = new URL(shop.url);
+    url.searchParams.set("page", String(page));
+    return fetchText(url, `${shop.name} page ${page}`);
+  };
+  const firstPage = await fetchPage(1);
+  const pageNumbers = [...firstPage.matchAll(/[?&]page=(\d+)/g)].map((match) => Number(match[1]));
+  const maxPage = Math.max(1, ...pageNumbers);
+  const pages = [firstPage];
+  for (let page = 2; page <= maxPage; page += 1) pages.push(await fetchPage(page));
+  const parsed = pages.flatMap(parseTorecaBankItems);
+  return { pages: maxPage, items: [...new Map(parsed.map((item) => [item.shopItemId, item])).values()] };
+}
+
+async function fetchTorecaLounge(shop) {
+  const html = await fetchText(shop.url, shop.name);
+  const objects = html.match(/\{\\"productFormat\\":\\"PSA\\"[^{}]*?\}/g) || [];
+  const items = objects.map((source) => {
+    try { return JSON.parse(source.replace(/\\"/g, '"')); } catch { return null; }
+  }).filter((raw) => raw?.brand === "POKEMON" && raw.grade === "PSA10").map((raw) => {
+    const price = Number(raw.buyPrice || 0);
+    return {
+      shopItemId: String(raw.productId || ""),
+      name: `${raw.productName || ""} ${raw.rarity || ""} [${raw.seriesCode || ""} ${raw.modelNumber || ""}]`.trim(),
+      price,
+      imageUrl: raw.imageUrl || "",
+      itemUrl: "",
+      active: price > 0,
+    };
+  }).filter((item) => item.shopItemId && item.name);
+  return { pages: 1, items: [...new Map(items.map((item) => [item.shopItemId, item])).values()] };
+}
+
+function parseBlueRocketItems(html, shop) {
+  const items = [];
+  const pattern = /data-product-id="(\d+)"[\s\S]{0,1200}?data-product-name="([^"]+)"[\s\S]{0,600}?data-product-price="(\d+)"/gi;
+  for (const match of String(html || "").matchAll(pattern)) {
+    const name = decodeHtml(match[2]);
+    if (!/^PSA\s*10\b/i.test(name)) continue;
+    items.push({
+      shopItemId: match[1],
+      name: name.replace(/^PSA\s*10\s*/i, ""),
+      price: Number(match[3]),
+      imageUrl: "",
+      itemUrl: `https://bluerocket-tcg.com/products/${match[1]}`,
+      active: Number(match[3]) > 0,
+    });
+  }
+  return items;
+}
+
+async function fetchBlueRocket(shop) {
+  const fetchPage = (page) => {
+    const url = new URL(shop.url);
+    url.searchParams.set("page", String(page));
+    return fetchText(url, `${shop.name} page ${page}`);
+  };
+  const firstPage = await fetchPage(1);
+  const pageNumbers = [...firstPage.matchAll(/[?&](?:amp;)?page=(\d+)/g)].map((match) => Number(match[1]));
+  const maxPage = Math.max(1, ...pageNumbers);
+  const pages = [firstPage];
+  for (let page = 2; page <= maxPage; page += 1) pages.push(await fetchPage(page));
+  const parsed = pages.flatMap((html) => parseBlueRocketItems(html, shop));
+  return { pages: maxPage, items: [...new Map(parsed.map((item) => [item.shopItemId, item])).values()] };
+}
+
+async function fetchShinsoku(shop) {
+  const items = [];
+  let page = 0;
+  let hasMore = true;
+  while (hasMore && page < 200) {
+    const params = new URLSearchParams({
+      postal_only: "true", sort: "price_desc", type: "PSA", brand: "ポケモン",
+      page: String(page), limit: "100",
+    });
+    const response = await fetchJson(`https://shinsoku-tcg.com/api/items?${params}`, `${shop.name} page ${page}`);
+    const data = response?.data || response || {};
+    for (const raw of data.items || []) {
+      const isPsa10 = (raw.tags || []).some((tag) => String(tag.slug || tag.label).toLowerCase().replace(/\s/g, "") === "psa10");
+      if (raw.brand !== "ポケモン" || raw.type !== "PSA" || !isPsa10) continue;
+      const price = Number(raw.postal_purchase_price_s || 0);
+      items.push({
+        shopItemId: String(raw.item_id || raw.id || ""),
+        name: `${raw.name_processed || raw.name || ""} ${raw.rarity || ""} ${raw.modelno || ""}`.trim(),
+        price,
+        imageUrl: raw.image_url_public || "",
+        itemUrl: `${shop.url}&s=${encodeURIComponent(raw.name_processed || raw.name || "")}`,
+        active: raw.is_postal_buy_target !== false && price > 0,
+      });
+    }
+    hasMore = Boolean(data.has_more);
+    page += 1;
+  }
+  return { pages: page, items: [...new Map(items.map((item) => [item.shopItemId, item])).values()] };
 }
 
 function buildMatcher(cards) {
@@ -164,25 +287,28 @@ async function main() {
   const unmatchedPath = path.join(__dirname, "shop_buyback_unmatched.json");
   const imageMatches = readJson(path.join(__dirname, "shop_buyback_image_matches.json"), {});
   const history = readJson(historyPath, { dates: [], shops: {} });
-  const firstPage = await fetchPage(1);
-  const pageNumbers = [...firstPage.matchAll(/[?&]page=(\d+)/g)].map((match) => Number(match[1]));
-  const maxPage = Math.max(1, ...pageNumbers);
-  const pages = [firstPage];
-  for (let page = 2; page <= maxPage; page += 1) pages.push(await fetchPage(page));
-  const parsedItems = pages.flatMap(parseItems);
-  const items = [...new Map(parsedItems.map((item) => [item.shopItemId, item])).values()];
   const matchCard = buildMatcher(cards);
-  const matched = [];
-  const unmatched = [];
-  for (const item of items) {
-    const result = matchCard(item);
-    const imageCard = imageMatches[`${SHOP_ID}:${item.shopItemId}`]
-      ? cards.find((card) => card.id === imageMatches[`${SHOP_ID}:${item.shopItemId}`])
-      : null;
-    if (result) matched.push({ ...item, cardId: result.card.id, score: result.score, matchMethod: "text" });
-    else if (imageCard) matched.push({ ...item, cardId: imageCard.id, score: 100, matchMethod: "image-reviewed" });
-    else unmatched.push(item);
+  const results = [];
+  for (const shop of SHOPS) {
+    try {
+      const fetched = await shop.fetchItems(shop);
+      const matched = [];
+      const unmatched = [];
+      for (const item of fetched.items) {
+        const result = matchCard(item);
+        const manualCardId = imageMatches[`${shop.id}:${item.shopItemId}`];
+        const imageCard = manualCardId ? cards.find((card) => card.id === manualCardId) : null;
+        if (result) matched.push({ ...item, cardId: result.card.id, score: result.score, matchMethod: "text" });
+        else if (imageCard) matched.push({ ...item, cardId: imageCard.id, score: 100, matchMethod: "image-reviewed" });
+        else unmatched.push(item);
+      }
+      results.push({ shop, pages: fetched.pages, items: fetched.items, matched, unmatched });
+      console.log(`${shop.name}: pages=${fetched.pages}, items=${fetched.items.length}, matched=${matched.length}, activeMatched=${matched.filter((item) => item.active).length}, unmatched=${unmatched.length}`);
+    } catch (error) {
+      console.warn(`${shop.name}: existing data was preserved: ${error.message || error}`);
+    }
   }
+  if (!results.length) throw new Error("全店舗の取得に失敗しました");
 
   const today = jstDate();
   let dateIndex = history.dates.indexOf(today);
@@ -200,15 +326,24 @@ async function main() {
       for (const values of Object.values(shop)) values.shift();
     }
   }
-  if (!history.shops[SHOP_ID]) history.shops[SHOP_ID] = {};
-  const shopHistory = history.shops[SHOP_ID];
-  for (const values of Object.values(shopHistory)) {
-    while (values.length < history.dates.length) values.push(null);
-    values[dateIndex] = null;
-  }
-  for (const item of matched.filter((entry) => entry.active)) {
-    if (!shopHistory[item.cardId]) shopHistory[item.cardId] = Array(history.dates.length).fill(null);
-    shopHistory[item.cardId][dateIndex] = item.price;
+  const currentLinksByShop = {};
+  for (const result of results) {
+    const shopId = result.shop.id;
+    currentLinksByShop[shopId] = new Map();
+    if (!history.shops[shopId]) history.shops[shopId] = {};
+    const shopHistory = history.shops[shopId];
+    for (const values of Object.values(shopHistory)) {
+      while (values.length < history.dates.length) values.push(null);
+      values[dateIndex] = null;
+    }
+    for (const item of result.matched.filter((entry) => entry.active)) {
+      if (!shopHistory[item.cardId]) shopHistory[item.cardId] = Array(history.dates.length).fill(null);
+      const previous = Number(shopHistory[item.cardId][dateIndex] || 0);
+      if (item.price >= previous) {
+        shopHistory[item.cardId][dateIndex] = item.price;
+        if (item.itemUrl) currentLinksByShop[shopId].set(item.cardId, item.itemUrl);
+      }
+    }
   }
 
   const summaryCards = {};
@@ -227,6 +362,7 @@ async function main() {
       const currentPrice = Number(values[values.length - 1]) > 0 ? Number(values[values.length - 1]) : null;
       shops[shopId] = {
         c7, c30, c90, price: currentPrice,
+        url: currentLinksByShop[shopId]?.get(card.id) || "",
         avg7: averageRecent(values, 7),
         avg30: averageRecent(values, 30),
         avg90: averageRecent(values, 90),
@@ -271,14 +407,26 @@ async function main() {
     };
   }
 
-  const shopMeta = {
-    [SHOP_ID]: { name: SHOP_NAME, url: SOURCE_URL, observedDays, matched: matched.length, activeMatched: matched.filter((item) => item.active).length },
-  };
+  const previousSummary = readJson(SUMMARY_PATH, { shops: {} });
+  const shopMeta = {};
+  for (const shop of SHOPS) {
+    const result = results.find((entry) => entry.shop.id === shop.id);
+    const previous = previousSummary.shops?.[shop.id] || {};
+    shopMeta[shop.id] = {
+      name: shop.name,
+      url: shop.url,
+      observedDays,
+      matched: result ? result.matched.length : Number(previous.matched || 0),
+      activeMatched: result ? result.matched.filter((item) => item.active).length : Number(previous.activeMatched || 0),
+      refreshed: Boolean(result),
+    };
+  }
+  const catalog = Object.fromEntries(results.map((result) => [result.shop.id, result.matched]));
+  const unmatched = Object.fromEntries(results.map((result) => [result.shop.id, result.unmatched]));
   fs.writeFileSync(historyPath, JSON.stringify(history), "utf8");
-  fs.writeFileSync(catalogPath, JSON.stringify({ updatedAt: today, shop: SHOP_ID, items: matched }), "utf8");
-  fs.writeFileSync(unmatchedPath, JSON.stringify({ updatedAt: today, shop: SHOP_ID, items: unmatched }), "utf8");
+  fs.writeFileSync(catalogPath, JSON.stringify({ updatedAt: today, shops: catalog }), "utf8");
+  fs.writeFileSync(unmatchedPath, JSON.stringify({ updatedAt: today, shops: unmatched }), "utf8");
   fs.writeFileSync(SUMMARY_PATH, JSON.stringify({ updatedAt: today, dates: history.dates, shops: shopMeta, cards: summaryCards }), "utf8");
-  console.log(`${SHOP_NAME}: pages=${maxPage}, items=${items.length}, matched=${matched.length}, activeMatched=${matched.filter((item) => item.active).length}, unmatched=${unmatched.length}`);
 }
 
 main().catch((error) => {

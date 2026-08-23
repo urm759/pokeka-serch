@@ -991,14 +991,13 @@ function render() {
       : "";
     const buybackShopRows = Object.entries(card.buyback?.shops || {}).map(([shopId, shop]) => {
       const shopMeta = state.buybackShops[shopId] || { name: shopId, url: "" };
-      const ratio = card.psa10 > 0 && shop.price > 0 ? Math.round(shop.price / card.psa10 * 100) : null;
-      const priceComparison = ratio == null ? "" : `<small>みんトレPSA10相場の${fmt.format(ratio)}%</small>`;
       const comparisonClass = shop.comparison === "他店より高い" ? "high" : shop.comparison === "他店より安い" ? "low" : shop.comparison === "他店平均くらい" ? "average" : "pending";
       const comparisonText = shop.diffPct == null ? shop.comparison : `${shop.comparison}（${shop.diffPct >= 0 ? "+" : ""}${fmt.format(shop.diffPct)}%）`;
-      const shopName = shopMeta.url
-        ? `<a href="${escapeHtml(shopMeta.url)}" target="_blank" rel="noreferrer">${escapeHtml(shopMeta.name)} 買取表</a>`
+      const shopUrl = shop.url || shopMeta.url;
+      const shopName = shopUrl
+        ? `<a href="${escapeHtml(shopUrl)}" target="_blank" rel="noreferrer">${escapeHtml(shopMeta.name)} ${shop.url ? "商品・検索" : "買取表"}</a>`
         : escapeHtml(shopMeta.name);
-      return `<div class="buyback-shop-row"><div><strong>${shopName}</strong>${priceComparison}</div><div><span>7日</span><b>${fmt.format(shop.c7)}回</b></div><div><span>30日</span><b>${fmt.format(shop.c30)}回</b></div><div><span>90日</span><b>${fmt.format(shop.c90)}回</b></div><div><span>現在 / 30日平均</span><b>${shop.price ? `¥${fmt.format(shop.price)}` : "-"} / ${shop.avg30 ? `¥${fmt.format(shop.avg30)}` : "-"}</b><small class="buyback-comparison ${comparisonClass}">${escapeHtml(comparisonText || "比較店舗蓄積中")}</small></div></div>`;
+      return `<div class="buyback-shop-row"><div><strong>${shopName}</strong></div><div><span>7日</span><b>${fmt.format(shop.c7)}回</b></div><div><span>30日</span><b>${fmt.format(shop.c30)}回</b></div><div><span>90日</span><b>${fmt.format(shop.c90)}回</b></div><div><span>現在 / 30日平均</span><b>${shop.price ? `¥${fmt.format(shop.price)}` : "-"} / ${shop.avg30 ? `¥${fmt.format(shop.avg30)}` : "-"}</b><small class="buyback-comparison ${comparisonClass}">${escapeHtml(comparisonText || "比較店舗蓄積中")}</small></div></div>`;
     }).join("");
     const buybackPanel = card.buyback ? `
       <div class="buyback-panel">
