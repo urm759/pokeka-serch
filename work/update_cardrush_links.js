@@ -4,6 +4,13 @@ const { isModernCard, isModernSetCode, coverage } = require("./cardrush_modern_r
 
 let invalidCardrushUrls = new Set();
 
+const KNOWN_CARD_OVERRIDES = new Map([
+  ["pk-731", "https://www.cardrush-pokemon.jp/product/731"],
+  ["pk-38030", "https://www.cardrush-pokemon.jp/product/38029"],
+  ["pk-3123", "https://www.cardrush-pokemon.jp/product/3123"],
+  ["pk-1180", "https://www.cardrush-pokemon.jp/product/1180"],
+]);
+
 function resolveSiteRoot() {
   const standaloneRoot = path.join(__dirname, "..");
   if (fs.existsSync(path.join(standaloneRoot, "index.html"))) {
@@ -559,6 +566,10 @@ function injectKnownOverrides(catalog) {
       state: "A",
       matchKeys: ["ブラッキーVMAX", "245184", "S8b", "CSR"],
     },
+    { name: "シロナ【SR】{070/066} [SM5M]", detailUrl: KNOWN_CARD_OVERRIDES.get("pk-731"), state: "A", matchKeys: ["シロナ", "070066", "SM5M", "SR"] },
+    { name: "ピカチュウ【P】{323/S-P} [S-P]", detailUrl: KNOWN_CARD_OVERRIDES.get("pk-38030"), state: "A", matchKeys: ["ピカチュウ", "323SP", "SP", "P"] },
+    { name: "ブルーの探索【SR】{061/054} [SM9b]", detailUrl: KNOWN_CARD_OVERRIDES.get("pk-3123"), state: "A", matchKeys: ["ブルーの探索", "061054", "SM9b", "SR"] },
+    { name: "ひかるレックウザ【H】{057/072} [SM3+]", detailUrl: KNOWN_CARD_OVERRIDES.get("pk-1180"), state: "A", matchKeys: ["ひかるレックウザ", "057072", "SM3+", "H"] },
   ];
   const existing = new Set((catalog || []).map((entry) => String(entry.detailUrl || "")));
   for (const entry of overrides) {
@@ -615,6 +626,7 @@ async function main() {
   const catalogByUrl = new Map(crawledCatalog.map((entry) => [entry.detailUrl, entry]));
 
   const updated = cards.map((card) => {
+    const knownUrl = KNOWN_CARD_OVERRIDES.get(String(card.id));
     const match = resolveCardrushMatch(card, crawledCatalog, catalogIndex);
     const existingEntry = catalogByUrl.get(card.cardrushUrl);
     const preservedUrl =
@@ -624,7 +636,9 @@ async function main() {
         ? card.cardrushUrl
         : "";
     const next = { ...card };
-    if (match) {
+    if (knownUrl) {
+      next.cardrushUrl = knownUrl;
+    } else if (match) {
       next.cardrushUrl = match.detailUrl;
     } else if (preservedUrl) {
       next.cardrushUrl = preservedUrl;

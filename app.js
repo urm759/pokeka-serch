@@ -38,6 +38,11 @@ const state = {
   maxPsa10: 200000,
   minPrice: null,
   maxPrice: null,
+  minPsaRate: null,
+  overallFilter: "all",
+  stockDemand: "all",
+  fundingOnly: false,
+  officialOnly: false,
   sort: "roi-desc",
   q: "",
   visibleLimit: 60,
@@ -95,6 +100,12 @@ const els = {
   buybackShopsMinInput: document.getElementById("buybackShopsMinInput"),
   buybackPriceMinInput: document.getElementById("buybackPriceMinInput"),
   buybackPriceMaxInput: document.getElementById("buybackPriceMaxInput"),
+  psaRateMinInput: document.getElementById("psaRateMinInput"),
+  overallFilterInput: document.getElementById("overallFilterInput"),
+  stockDemandInput: document.getElementById("stockDemandInput"),
+  fundingOnlyInput: document.getElementById("fundingOnlyInput"),
+  officialOnlyInput: document.getElementById("officialOnlyInput"),
+  resetFiltersBtn: document.getElementById("resetFiltersBtn"),
   roiInput: document.getElementById("roiInput"),
   psaMinInput: document.getElementById("psaMinInput"),
   psaMaxInput: document.getElementById("psaMaxInput"),
@@ -263,6 +274,7 @@ const sorters = {
   "profit-desc": (a, b) => b.profit - a.profit,
   "profit-asc": (a, b) => a.profit - b.profit,
   "psaRecommend-desc": (a, b) => Number(b.psaDecision?.recommended) - Number(a.psaDecision?.recommended) || (b.psaDecision?.annualEfficiency ?? -Infinity) - (a.psaDecision?.annualEfficiency ?? -Infinity),
+  "overall-desc": (a, b) => (b.overallAssessment?.score ?? -Infinity) - (a.overallAssessment?.score ?? -Infinity) || b.roi - a.roi,
   "expectedProfit-desc": (a, b) => (b.psaDecision?.expectedProfit ?? -Infinity) - (a.psaDecision?.expectedProfit ?? -Infinity),
   "annualEfficiency-desc": (a, b) => (b.psaDecision?.annualEfficiency ?? -Infinity) - (a.psaDecision?.annualEfficiency ?? -Infinity),
   "capitalShare-asc": (a, b) => (a.psaDecision?.capitalShare ?? Infinity) - (b.psaDecision?.capitalShare ?? Infinity),
@@ -665,6 +677,88 @@ function renderGuide() {
   els.guidePanels.innerHTML = panels.join("");
 }
 
+function attachBundlePopulations(population) {
+  const parts = [
+    ["x-516413", "左上"],
+    ["x-516414", "右上"],
+    ["x-516415", "左下"],
+    ["x-516416", "右下"],
+  ]
+    .map(([id, label]) => ({ id, label, ...(population[id] || {}) }))
+    .filter((part) => Number.isFinite(part.rate));
+  if (parts.length !== 4) return;
+  const allTenRate = parts.reduce((probability, part) => probability * (part.rate / 100), 1) * 100;
+  population["x-141447"] = {
+    n: "Pikachu V-Union 4 Card Set",
+    rate: allTenRate,
+    u: parts[0].u,
+    m: "four-card-independent-estimate",
+    bundle: true,
+    parts,
+    w7: null,
+    w30: null,
+    w90: null,
+  };
+}
+
+function buildOverallAssessment(card, official, stock, psaDecision) {
+  let score = 50;
+  const strengths = [];
+  const cautions = [];
+  if (card.roi >= 80) { score += 15; strengths.push("利益率が高い"); }
+  else if (card.roi >= 40) { score += 10; strengths.push("利益率40%以上"); }
+  else if (card.roi < 0) { score -= 20; cautions.push("利益率がマイナス"); }
+
+  if (card.psaTx30d >= 30) { score += 12; strengths.push("PSA10の30日取引が多い"); }
+  else if (card.psaTx30d >= 10) { score += 6; strengths.push("PSA10の取引が確認できる"); }
+  else if (card.psaTx30d < 3) { score -= 10; cautions.push("PSA10の売れ行きが弱い"); }
+
+  if (card.saleTx30d >= 30 && card.psaTx30d < 5) { score -= 8; cautions.push("美品は動くがPSA10取引が少ない"); }
+  else if (card.saleTx30d > 0 && card.psaTx30d / card.saleTx30d >= 0.5) { score += 5; strengths.push("美品取引に対してPSA10需要が強い"); }
+
+  if (Number.isFinite(card.chg30)) {
+    if (card.chg30 <= -15) { score -= 6; cautions.push("30日価格が大きく下落"); }
+    else if (card.chg30 > 30) { score -= 3; cautions.push("30日価格が急騰し高値追いに注意"); }
+    else if (card.chg30 >= -5 && card.chg30 <= 10) { score += 2; strengths.push("30日価格が比較的安定"); }
+  }
+
+  if (card.buybackShops >= 3) { score += 8; strengths.push("買取店舗が複数あり換金先が多い"); }
+  else if (card.buybackShops >= 1) { score += 3; strengths.push("店舗買取が確認できる"); }
+  else { score -= 4; cautions.push("店舗買取データが少ない"); }
+
+  if (stock?.demand === "買う人が多い") { score -= 12; cautions.push("状態A在庫の減少が速くPSA供給増リスク"); }
+  else if (stock?.demand === "普通") { score -= 4; cautions.push("状態A在庫が一定ペースで減少"); }
+  else if (stock?.demand === "少ない") { score += 4; strengths.push("状態A在庫の減少が緩やか"); }
+
+  const growth = official?.w30?.s;
+  if (growth === "急増化") { score -= 10; cautions.push("PSA10枚数が30日で急増"); }
+  else if (growth === "増加") { score -= 5; cautions.push("PSA10枚数が30日で増加"); }
+  else if (growth === "横ばい") { score += 4; strengths.push("PSA10枚数が30日で横ばい"); }
+
+  if (Number.isFinite(official?.rate)) {
+    if (official.rate < 40) { score -= 10; cautions.push("PSA10取得率が40%未満"); }
+    else if (official.rate < 60) { score -= 5; cautions.push("PSA10取得率が低め"); }
+    else if (official.rate >= 80) { score += 3; strengths.push("PSA10取得率が80%以上"); }
+
+    const hitRate = official.rate / 100;
+    const saleMultiplier = Math.max(0, 1 - state.saleFeeRate / 100);
+    const officialExpectedSale = hitRate * (card.psa10 * saleMultiplier - state.saleExtraCost)
+      + (1 - hitRate) * (card.price * 0.75 * saleMultiplier - state.saleExtraCost);
+    const officialExpectedProfit = officialExpectedSale - card.price - state.fee;
+    if (officialExpectedProfit >= 20000) { score += 8; strengths.push("公式10率でも期待利益2万円以上"); }
+    else if (officialExpectedProfit >= 10000) { score += 4; strengths.push("公式10率でも期待利益1万円以上"); }
+    else if (officialExpectedProfit < 0) { score -= 15; cautions.push("公式10率での期待利益がマイナス"); }
+  } else {
+    cautions.push("PSA公式取得率は未取得");
+  }
+
+  if (psaDecision?.recommended) score += 5;
+  score = Math.max(0, Math.min(100, Math.round(score)));
+  const grade = score >= 75 ? "A" : score >= 60 ? "B" : score >= 45 ? "C" : "D";
+  const label = { A: "積極候補", B: "候補", C: "慎重", D: "見送り" }[grade];
+  return { score, grade, label, strengths: strengths.slice(0, 3), cautions: cautions.slice(0, 3) };
+}
+
 function calc(card) {
   const torecaPrice = Number(card.price);
   const stock = state.cardrushStock[card.id] || null;
@@ -685,13 +779,17 @@ function calc(card) {
   const buyback7 = Number(buyback?.total7 || 0);
   const buyback30 = Number(buyback?.total30 || 0);
   const buyback90 = Number(buyback?.total90 || 0);
-  const buybackPrice = Math.max(0, ...Object.values(buyback?.shops || {}).map((shop) => Number(shop.price || 0)));
+  const buybackShopValues = Object.values(buyback?.shops || {});
+  const latestBuybackDate = buybackShopValues.reduce((latest, shop) => String(shop.priceDate || "") > latest ? String(shop.priceDate) : latest, "");
+  const latestBuybackShops = latestBuybackDate ? buybackShopValues.filter((shop) => String(shop.priceDate || "") === latestBuybackDate) : buybackShopValues;
+  const buybackPrice = Math.max(0, ...latestBuybackShops.map((shop) => Number(shop.price || 0)));
   const buybackAvg30 = Number(buyback?.avg30 || 0);
   const buybackShops = Number(buyback?.shop30 || 0);
   const psaTx30d = Number(card.p10tv30 || 0);
   const psaTx7d = Number(card.p10tv7 || 0);
+  const official = state.psaPopulation[card.id] || null;
   if (!(price > 0) || !(psa10 > 0)) {
-    return { ...card, price, torecaPrice, cardrushPrice, psa10, profit: NaN, roi: NaN, psaDecision: null, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackAvg30, buybackShops };
+    return { ...card, price, torecaPrice, cardrushPrice, psa10, profit: NaN, roi: NaN, psaDecision: null, overallAssessment: null, official, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackAvg30, buybackShops };
   }
   const profit = psa10 - price - state.fee;
   const roiBase = price + state.fee;
@@ -715,7 +813,9 @@ function calc(card) {
   if (price > availableCapital) reasons.push(`現在使える仕入れ資金¥${fmt.format(availableCapital)}を超過`);
   if (state.gradingReserve < requiredReserve) reasons.push("返却時の鑑定費予備資金が不足");
   const psaDecision = { recommended: reasons.length === 0, reasons, expectedSale, expectedProfit, expectedRoi, annualEfficiency, capitalShare, availableCapital, requiredReserve };
-  return { ...card, price, torecaPrice, cardrushPrice, psa10, profit, roi, psaDecision, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackAvg30, buybackShops };
+  const calculated = { ...card, price, torecaPrice, cardrushPrice, psa10, profit, roi, psaDecision, official, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackAvg30, buybackShops };
+  calculated.overallAssessment = buildOverallAssessment(calculated, official, stock, psaDecision);
+  return calculated;
 }
 
 function parseOptionalNumber(value) {
@@ -762,6 +862,11 @@ function readUrl() {
   const psaMax = parseOptionalNumber(url.searchParams.get("psaMax"));
   const priceMin = parseOptionalNumber(url.searchParams.get("priceMin"));
   const priceMax = parseOptionalNumber(url.searchParams.get("priceMax"));
+  const psaRateMin = parseOptionalNumber(url.searchParams.get("psaRate"));
+  const overallFilter = url.searchParams.get("overall");
+  const stockDemand = url.searchParams.get("stockDemand");
+  const fundingOnly = url.searchParams.get("fundingOnly") === "1";
+  const officialOnly = url.searchParams.get("officialOnly") === "1";
   const psaCapital = parseOptionalNumber(url.searchParams.get("cap"));
   const lockedCapital = parseOptionalNumber(url.searchParams.get("locked"));
   const lockDays = parseOptionalNumber(url.searchParams.get("lock"));
@@ -806,6 +911,11 @@ function readUrl() {
   if (psaMax != null && psaMax >= 0) els.psaMaxInput.value = String(psaMax);
   if (priceMin != null) els.priceMinInput.value = String(priceMin);
   if (priceMax != null) els.priceMaxInput.value = String(priceMax);
+  if (psaRateMin != null && psaRateMin >= 0) els.psaRateMinInput.value = String(psaRateMin);
+  if (["all", "ab", "a"].includes(overallFilter)) els.overallFilterInput.value = overallFilter;
+  if (["all", "steady", "low", "normal", "high", "known"].includes(stockDemand)) els.stockDemandInput.value = stockDemand;
+  els.fundingOnlyInput.checked = fundingOnly;
+  els.officialOnlyInput.checked = officialOnly;
   if (psaCapital != null && psaCapital >= 0) els.psaCapitalInput.value = String(psaCapital);
   if (lockedCapital != null && lockedCapital >= 0) els.lockedCapitalInput.value = String(lockedCapital);
   if (lockDays != null && lockDays > 0) els.lockDaysInput.value = String(lockDays);
@@ -850,7 +960,12 @@ function buildShareUrl() {
   if (state.maxBuybackPrice == null) url.searchParams.delete("bbPriceMax"); else url.searchParams.set("bbPriceMax", String(state.maxBuybackPrice));
   url.searchParams.set("roi", String(state.minRoi));
   url.searchParams.set("psaMin", String(state.minPsa10));
-  url.searchParams.set("psaMax", String(state.maxPsa10));
+  if (state.maxPsa10 == null) url.searchParams.delete("psaMax"); else url.searchParams.set("psaMax", String(state.maxPsa10));
+  if (state.minPsaRate == null) url.searchParams.delete("psaRate"); else url.searchParams.set("psaRate", String(state.minPsaRate));
+  if (state.overallFilter === "all") url.searchParams.delete("overall"); else url.searchParams.set("overall", state.overallFilter);
+  if (state.stockDemand === "all") url.searchParams.delete("stockDemand"); else url.searchParams.set("stockDemand", state.stockDemand);
+  if (state.fundingOnly) url.searchParams.set("fundingOnly", "1"); else url.searchParams.delete("fundingOnly");
+  if (state.officialOnly) url.searchParams.set("officialOnly", "1"); else url.searchParams.delete("officialOnly");
   url.searchParams.set("sort", state.sort);
   url.searchParams.set("cap", String(state.psaCapital));
   url.searchParams.set("locked", String(state.lockedCapital));
@@ -921,9 +1036,20 @@ function render() {
       if (state.maxBuybackPrice != null && card.buybackPrice > state.maxBuybackPrice) return false;
       if (!Number.isFinite(card.roi) || card.roi < state.minRoi) return false;
       if (card.psa10 < state.minPsa10) return false;
-      if (card.psa10 > state.maxPsa10) return false;
+      if (state.maxPsa10 != null && card.psa10 > state.maxPsa10) return false;
       if (state.minPrice != null && card.price < state.minPrice) return false;
       if (state.maxPrice != null && card.price > state.maxPrice) return false;
+      if (state.minPsaRate != null && (!Number.isFinite(card.official?.rate) || card.official.rate < state.minPsaRate)) return false;
+      if (state.officialOnly && !Number.isFinite(card.official?.rate)) return false;
+      if (state.fundingOnly && !card.psaDecision?.recommended) return false;
+      if (state.overallFilter === "a" && card.overallAssessment?.grade !== "A") return false;
+      if (state.overallFilter === "ab" && !["A", "B"].includes(card.overallAssessment?.grade)) return false;
+      const demand = state.cardrushStock[card.id]?.demand || "蓄積中";
+      if (state.stockDemand === "steady" && !["少ない", "普通"].includes(demand)) return false;
+      if (state.stockDemand === "low" && demand !== "少ない") return false;
+      if (state.stockDemand === "normal" && demand !== "普通") return false;
+      if (state.stockDemand === "high" && demand !== "買う人が多い") return false;
+      if (state.stockDemand === "known" && demand === "蓄積中") return false;
       if (!normalizedQuery) return true;
       return haystack.includes(normalizedQuery) || compactHaystack.includes(compactQuery);
     })
@@ -998,7 +1124,7 @@ function render() {
         `
       : "";
     const buybackShopRows = Object.entries(card.buyback?.shops || {})
-      .sort(([, a], [, b]) => Number(b.price || 0) - Number(a.price || 0) || Number(b.avg30 || 0) - Number(a.avg30 || 0))
+      .sort(([, a], [, b]) => String(b.priceDate || "").localeCompare(String(a.priceDate || "")) || Number(b.price || 0) - Number(a.price || 0) || Number(b.avg30 || 0) - Number(a.avg30 || 0))
       .map(([shopId, shop], index) => {
       const shopMeta = state.buybackShops[shopId] || { name: shopId, url: "" };
       const comparisonClass = shop.comparison === "他店より高い" ? "high" : shop.comparison === "他店より安い" ? "low" : shop.comparison === "他店平均くらい" ? "average" : "pending";
@@ -1008,7 +1134,7 @@ function render() {
       const shopName = shopUrl
         ? `<a href="${escapeHtml(shopUrl)}" target="_blank" rel="noreferrer">${escapeHtml(shopMeta.name)} ${shop.url ? "商品・検索" : "買取表"}</a>`
         : escapeHtml(shopMeta.name);
-      const leadLabel = index === 0 ? `<em class="buyback-lead-label">${shop.price ? "最高買取" : "掲載店舗"}</em>` : "";
+      const leadLabel = index === 0 ? `<em class="buyback-lead-label">${shop.price ? "最新日優先" : "掲載店舗"}</em>` : "";
       return `<div class="buyback-shop-row ${index === 0 ? "buyback-shop-primary" : ""}"><div>${leadLabel}<strong>${shopName}</strong></div><div><span>7日</span><b>${fmt.format(shop.c7)}回</b></div><div><span>30日</span><b>${fmt.format(shop.c30)}回</b></div><div><span>90日</span><b>${fmt.format(shop.c90)}回</b></div><div><span>最新${priceDateLabel} / 30日平均</span><b>${shop.price ? `¥${fmt.format(shop.price)}` : "-"} / ${shop.avg30 ? `¥${fmt.format(shop.avg30)}` : "-"}</b><small class="buyback-comparison ${comparisonClass}">${escapeHtml(comparisonText || "比較店舗蓄積中")}</small></div></div>`;
     });
     const buybackPrimaryShop = buybackShopRows[0] || "";
@@ -1040,11 +1166,11 @@ function render() {
     const favoriteActive = state.favorites.has(String(card.id));
     const psaDecision = card.psaDecision;
     const decisionClass = psaDecision?.recommended ? "recommended" : "not-recommended";
-    const decisionTitle = psaDecision?.recommended ? "PSA提出おすすめ" : "PSA提出おすすめしない";
+    const decisionTitle = psaDecision?.recommended ? "資金面：提出候補" : "資金面：見送り";
     const decisionReasons = psaDecision?.recommended ? "設定した利益・資金効率の基準をすべて満たしています" : (psaDecision?.reasons || []).join(" / ");
     const psaDecisionPanel = psaDecision ? `
       <div class="psa-decision ${decisionClass}">
-        <div class="psa-decision-head"><strong>${decisionTitle}</strong><span>${guideConfig().label}・ロック${fmt.format(state.lockDays)}日</span></div>
+        <div class="psa-decision-head"><strong>${decisionTitle}</strong><span>設定資金・${guideConfig().label}・ロック${fmt.format(state.lockDays)}日</span></div>
         <div class="psa-decision-metrics">
           <div><span>期待利益</span><strong>¥${fmt.format(Math.round(psaDecision.expectedProfit))}</strong></div>
           <div><span>期待利益率</span><strong>${Math.round(psaDecision.expectedRoi)}%</strong></div>
@@ -1054,9 +1180,26 @@ function render() {
         <p>${escapeHtml(decisionReasons)}</p>
       </div>
     ` : "";
-    const official = state.psaPopulation[card.id] || null;
+    const overall = card.overallAssessment;
+    const overallReasons = overall
+      ? [...overall.strengths.map((reason) => `○ ${reason}`), ...overall.cautions.map((reason) => `△ ${reason}`)].join(" / ")
+      : "";
+    const overallPanel = overall ? `
+      <div class="overall-assessment grade-${overall.grade.toLowerCase()}">
+        <div><span>総合評価</span><strong>${overall.grade}・${overall.label}</strong><b>${overall.score}点</b></div>
+        <p>${escapeHtml(overallReasons || "判定材料を蓄積中")}</p>
+        <small>利益・PSA10売れ行き・状態A在庫減・PSA増加・店舗買取を総合。絶版状況と出品者集中は未反映です。</small>
+      </div>
+    ` : "";
+    const official = card.official;
     const psaGrowth = official ? psaGrowthSummary(official) : null;
-    const officialPsaPanel = official ? `
+    const officialPsaPanel = official?.bundle ? `
+      <div class="psa-official psa-bundle">
+        <div class="psa-bundle-head"><span>PSA公式・4枚セット換算</span><strong>4枚すべてPSA10 推定 ${Number(official.rate).toFixed(1)}%</strong></div>
+        <div class="psa-bundle-parts">${official.parts.map((part) => `<span>${escapeHtml(part.label)}：${Number(part.rate).toFixed(1)}%</span>`).join("")}</div>
+        <small>各パーツの公式10取得率を掛け合わせた独立近似です。美品価格・PSA10価格は4枚セット合計のまま計算します。</small>
+      </div>
+    ` : official ? `
       <details class="psa-official" data-psa-history="${escapeHtml(card.id)}" data-psa-shard="${escapeHtml(official.sh)}">
         <summary>
           <div><span>PSA公式Population</span><strong>PSA10取得率 ${Number(official.rate || 0).toFixed(1)}%</strong></div>
@@ -1102,6 +1245,7 @@ function render() {
           ${stockPanel}
           ${buybackPanel}
           ${activityPanel}
+          ${overallPanel}
           ${psaDecisionPanel}
           ${officialPsaPanel}
 
@@ -1154,9 +1298,14 @@ function syncFromUI() {
   state.maxBuybackPrice = parseOptionalNumber(els.buybackPriceMaxInput.value);
   state.minRoi = Number(els.roiInput.value || 0);
   state.minPsa10 = Number(els.psaMinInput.value || 0);
-  state.maxPsa10 = Number(els.psaMaxInput.value || 0);
+  state.maxPsa10 = parseOptionalNumber(els.psaMaxInput.value);
   state.minPrice = parseOptionalNumber(els.priceMinInput.value);
   state.maxPrice = parseOptionalNumber(els.priceMaxInput.value);
+  state.minPsaRate = parseOptionalNumber(els.psaRateMinInput.value);
+  state.overallFilter = els.overallFilterInput.value || "all";
+  state.stockDemand = els.stockDemandInput.value || "all";
+  state.fundingOnly = els.fundingOnlyInput.checked;
+  state.officialOnly = els.officialOnlyInput.checked;
   state.sort = els.sortInput.value;
   state.q = els.qInput.value.trim();
   state.psaCapital = Number(els.psaCapitalInput.value || 0);
@@ -1216,6 +1365,7 @@ async function init() {
     }
     const psaData = await fetchJsonMaybe("./data/psa-population-summary.json");
     state.psaPopulation = psaData?.cards || Object.create(null);
+    attachBundlePopulations(state.psaPopulation);
     syncFromUI();
   } catch (err) {
     console.error(err);
@@ -1226,9 +1376,24 @@ async function init() {
   }
 }
 
-[els.qInput, els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.buyback7MinInput, els.buyback7MaxInput, els.buyback30MinInput, els.buyback30MaxInput, els.buyback90MinInput, els.buyback90MaxInput, els.buybackShopsMinInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.roiInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.sortInput, els.psaCapitalInput, els.lockedCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput].forEach((el) =>
+[els.qInput, els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.buyback7MinInput, els.buyback7MaxInput, els.buyback30MinInput, els.buyback30MaxInput, els.buyback90MinInput, els.buyback90MaxInput, els.buybackShopsMinInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.roiInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.psaRateMinInput, els.overallFilterInput, els.stockDemandInput, els.fundingOnlyInput, els.officialOnlyInput, els.sortInput, els.psaCapitalInput, els.lockedCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput].forEach((el) =>
   el.addEventListener("input", syncFromUI)
 );
+
+els.resetFiltersBtn.addEventListener("click", () => {
+  els.qInput.value = "";
+  els.saleTxMinInput.value = "30";
+  [els.saleTxMaxInput, els.saleTx7MaxInput, els.psaTxMaxInput, els.psaTx7MaxInput, els.buyback7MaxInput, els.buyback30MaxInput, els.buyback90MaxInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.priceMinInput, els.priceMaxInput, els.psaRateMinInput].forEach((el) => { el.value = ""; });
+  [els.saleTx7MinInput, els.psaTxMinInput, els.psaTx7MinInput, els.buyback7MinInput, els.buyback30MinInput, els.buyback90MinInput, els.buybackShopsMinInput, els.psaMinInput].forEach((el) => { el.value = "0"; });
+  els.roiInput.value = "40";
+  els.psaMaxInput.value = "200000";
+  els.overallFilterInput.value = "all";
+  els.stockDemandInput.value = "all";
+  els.fundingOnlyInput.checked = false;
+  els.officialOnlyInput.checked = false;
+  els.sortInput.value = "roi-desc";
+  syncFromUI();
+});
 
 els.psaPlanInput.addEventListener("change", () => {
   state.psaPlan = els.psaPlanInput.value;
