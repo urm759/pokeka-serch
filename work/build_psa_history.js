@@ -5,6 +5,7 @@ const ROOT = path.join(__dirname, "..");
 const CARDS_PATH = path.join(ROOT, "data", "pokemon-cards.json");
 const POP_PATH = path.join(ROOT, "data", "psa-official-populations.json");
 const ENGLISH_PATH = path.join(__dirname, "snkr_english_names.json");
+const PRIORITY_ROWS_PATH = path.join(__dirname, "priority_psa_rows.json");
 const SUMMARY_PATH = path.join(ROOT, "data", "psa-population-summary.json");
 const HISTORY_DIR = path.join(ROOT, "data", "psa-history");
 const SHARDS = 32;
@@ -131,7 +132,8 @@ function compactRows(payload) {
 
 function main() {
   const cards = readJson(CARDS_PATH, []), population = readJson(POP_PATH, {}), english = readJson(ENGLISH_PATH, { cards: {} }).cards || {};
-  const sourceRows = compactRows(population);
+  const priorityRows = readJson(PRIORITY_ROWS_PATH, { rows: [] }).rows || [];
+  const sourceRows = compactRows({ ...population, rows: [...(population.rows || []), ...priorityRows] });
   const groups = new Map();
   const setGroups = new Map();
   for (const row of sourceRows) {

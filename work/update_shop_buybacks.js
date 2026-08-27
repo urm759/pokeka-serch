@@ -28,6 +28,12 @@ const SHOPS = [
     fetchItems: fetchShinsoku,
   },
   {
+    id: "torecaclub",
+    name: "トレカクラブ",
+    url: "https://torecaclub.com/",
+    fetchItems: fetchTorecaClub,
+  },
+  {
     id: "laurier-akiba",
     name: "ローリエ本舗AKIHABARA (X)",
     url: "https://x.com/laurier_akiba",
@@ -229,6 +235,33 @@ async function fetchShinsoku(shop) {
     page += 1;
   }
   return { pages: page, items: [...new Map(items.map((item) => [item.shopItemId, item])).values()] };
+}
+
+async function fetchTorecaClub(shop) {
+  const html = await fetchText(shop.url, shop.name);
+  // Next.js embeds today's leading PSA10 buy prices in the initial page payload.
+  const payload = String(html).replace(/\\\"/g, '"').replace(/\\\\\//g, "/");
+  const pattern = /"card_id":"([^"]+)"[\s\S]*?"card_code":"([^"]*)"[\s\S]*?"product_id":"([^"]*)"[\s\S]*?"card_name":"([^"]*)"[\s\S]*?"image_url":"([^"]*)"[\s\S]*?"price":(\d+)/g;
+  const items = [];
+  for (const match of payload.matchAll(pattern)) {
+    const [cardId, cardCode, productId, cardName, imageUrl, rawPrice] = match.slice(1);
+    const suffix = cardId.replace(/^ca\d+_/, "");
+    const productParts = productId.split("/");
+    const isPromo = productParts.length === 3 && /^[A-Z]{1,3}$/i.test(productParts[1]) && productParts[2].toUpperCase() === "P";
+    const normalizedCode = isPromo ? `${productParts[0]}/${productParts[1]}-${productParts[2]}` : cardCode;
+    const set = isPromo ? `${productParts[1]}-${productParts[2]}` : productParts.length >= 3 ? productParts[2] : "";
+    const price = Number(rawPrice || 0);
+    if (/wildcard/i.test(cardId) || /保証対象/.test(cardName)) continue;
+    items.push({
+      shopItemId: cardId,
+      name: `${cardName} ${normalizedCode}${set ? ` [${set}]` : ""}`.trim(),
+      price,
+      imageUrl,
+      itemUrl: `https://torecaclub.com/pokemon/cards/psa10/${encodeURIComponent(suffix)}/`,
+      active: price > 0,
+    });
+  }
+  return { pages: 1, items: [...new Map(items.map((item) => [item.shopItemId, item])).values()] };
 }
 
 async function fetchXCapture(shop) {

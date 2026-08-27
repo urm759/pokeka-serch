@@ -51,12 +51,15 @@ function parseProductPage(html, productUrl) {
   const stockMatch = text.match(/在庫数\s*([0-9,]+)\s*枚/);
   const soldOut = /再入荷を知らせる|SOLD\s*OUT/i.test(text);
   const stock = stockMatch ? Number(stockMatch[1].replace(/,/g, "")) : soldOut ? 0 : null;
+  const priceMatch = text.match(/販売価格\s*[:：]?\s*([0-9,]+)\s*円/);
+  const price = priceMatch ? Number(priceMatch[1].replace(/,/g, "")) : null;
   const normalizedProductUrl = String(productUrl || "").match(/https?:\/\/www\.cardrush-pokemon\.jp\/product\/\d+/i)?.[0] || "";
   return {
     valid: !!title && !!normalizedProductUrl && (/販売価格/.test(text) || stock !== null),
     title,
     state,
     stock: Number.isFinite(stock) ? stock : null,
+    price: Number.isFinite(price) ? price : null,
     productUrl: normalizedProductUrl,
   };
 }
@@ -235,7 +238,9 @@ async function main() {
     for (const values of Object.values(history.stocks)) values.shift();
     dateIndex -= 1;
   }
-  linked = linked.filter((card) => !Number.isFinite(history.stocks[card.id]?.[dateIndex]));
+  if (process.env.CARDRUSH_STOCK_FORCE !== "1") {
+    linked = linked.filter((card) => !Number.isFinite(history.stocks[card.id]?.[dateIndex]));
+  }
 
   const catalogByUrl = new Map(catalog.map((entry) => [entry.detailUrl, entry]));
   const cardById = new Map(cards.map((card) => [card.id, card]));
@@ -251,7 +256,13 @@ async function main() {
     for (const card of linked) {
       const entry = catalogByUrl.get(card.cardrushUrl);
       const fresh = entry?.observedAt === today;
-      if (!entry || (requireFreshCatalog && !fresh)) {
+      if (entry && requireFreshCatalog && !fresh) {
+        // A known direct link can be older than today's catalog crawl. Keep it and
+        // retry later instead of treating the valid product URL as broken.
+        recheckIds.add(card.id);
+        continue;
+      }
+      if (!entry) {
         const key = card.cardrushUrl;
         if (!missedThisRun.has(key)) {
           misses[key] = (Number(misses[key]) || 0) + 1;
@@ -326,7 +337,12 @@ async function main() {
         card.cardrushUrl = page.productUrl;
       }
       const catalogEntry = catalogByUrl.get(card.cardrushUrl);
-      if (catalogEntry) catalogEntry.state = page.state;
+      if (catalogEntry) {
+        catalogEntry.state = page.state;
+        catalogEntry.stock = page.stock;
+        catalogEntry.price = page.price;
+        catalogEntry.observedAt = today;
+      }
       if (page.state !== "A") {
         invalidUrls.add(card.cardrushUrl);
         recheckIds.add(card.id);

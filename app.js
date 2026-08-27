@@ -9,6 +9,7 @@ const state = {
   psaPopulation: Object.create(null),
   psaHistoryCache: Object.create(null),
   psaServices: null,
+  evaluationModel: null,
   updateStatus: null,
   snkrUrlCache: Object.create(null),
   cardById: Object.create(null),
@@ -205,6 +206,29 @@ function psaPriceBand(price) {
   return { key: `${width}:${min}`, min, max: min + width, width };
 }
 
+function evaluationPriceBand(price) {
+  const value = Number(price || 0);
+  if (value < 30000) return "under30k";
+  if (value < 50000) return "30k-50k";
+  if (value < 100000) return "50k-100k";
+  if (value < 200000) return "100k-200k";
+  return "over200k";
+}
+
+function learnedPercentileScore(value, distribution) {
+  const number = Number(value || 0);
+  if (!distribution || distribution.count < 8) return 50;
+  const q25 = Number(distribution.q25 || 0);
+  const q50 = Number(distribution.q50 || q25);
+  const q75 = Number(distribution.q75 || q50);
+  const q90 = Number(distribution.q90 || q75);
+  if (number <= q25) return q25 > 0 ? Math.max(0, Math.round(number / q25 * 25)) : (number > 0 ? 25 : 0);
+  if (number <= q50) return 25 + Math.round((number - q25) / Math.max(1, q50 - q25) * 25);
+  if (number <= q75) return 50 + Math.round((number - q50) / Math.max(1, q75 - q50) * 25);
+  if (number <= q90) return 75 + Math.round((number - q75) / Math.max(1, q90 - q75) * 15);
+  return 100;
+}
+
 function median(values) {
   const sorted = values.filter(Number.isFinite).sort((a, b) => a - b);
   if (!sorted.length) return 0;
@@ -285,6 +309,7 @@ const sorters = {
   "profit-asc": (a, b) => a.profit - b.profit,
   "psaRecommend-desc": (a, b) => Number(b.psaDecision?.recommended) - Number(a.psaDecision?.recommended) || (b.psaDecision?.annualEfficiency ?? -Infinity) - (a.psaDecision?.annualEfficiency ?? -Infinity),
   "overall-desc": (a, b) => (b.overallAssessment?.score ?? -Infinity) - (a.overallAssessment?.score ?? -Infinity) || b.roi - a.roi,
+  "exit-desc": (a, b) => (b.overallAssessment?.exitLiquidity ?? -Infinity) - (a.overallAssessment?.exitLiquidity ?? -Infinity) || b.psaTx30d - a.psaTx30d,
   "expectedProfit-desc": (a, b) => (b.psaDecision?.expectedProfit ?? -Infinity) - (a.psaDecision?.expectedProfit ?? -Infinity),
   "annualEfficiency-desc": (a, b) => (b.psaDecision?.annualEfficiency ?? -Infinity) - (a.psaDecision?.annualEfficiency ?? -Infinity),
   "capitalShare-asc": (a, b) => (a.psaDecision?.capitalShare ?? Infinity) - (b.psaDecision?.capitalShare ?? Infinity),
@@ -714,68 +739,43 @@ function attachBundlePopulations(population) {
 }
 
 function buildOverallAssessment(card, official, stock, psaDecision) {
-  let score = 50;
   const strengths = [];
   const cautions = [];
-  if (card.roi >= 80) { score += 15; strengths.push("利益率が高い"); }
-  else if (card.roi >= 40) { score += 10; strengths.push("利益率40%以上"); }
-  else if (card.roi < 0) { score -= 20; cautions.push("利益率がマイナス"); }
-
-  if (card.psaTx30d >= 30) { score += 10; strengths.push("PSA10の30日取引が多い"); }
-  else if (card.psaTx30d >= 10) { score += 5; strengths.push("PSA10の取引が確認できる"); }
-  else if (card.psaTx30d < 3) { score -= 10; cautions.push("PSA10の売れ行きが弱い"); }
-  if (Number.isFinite(card.psaTxPeerMedian) && card.psaTxPeerMedian >= 3) {
-    const activityRatio = card.psaTx30d / card.psaTxPeerMedian;
-    if (activityRatio >= 1.5) { score += 5; strengths.push("同じPSA10価格帯より売買が活発"); }
-    else if (activityRatio <= 0.4) { score -= 6; cautions.push("同じPSA10価格帯より売買が少ない"); }
-  }
-
-  if (card.saleTx30d >= 30 && card.psaTx30d < 5) { score -= 8; cautions.push("美品は動くがPSA10取引が少ない"); }
-  else if (card.saleTx30d > 0 && card.psaTx30d / card.saleTx30d >= 0.5) { score += 5; strengths.push("美品取引に対してPSA10需要が強い"); }
-
-  if (Number.isFinite(card.chg30)) {
-    if (card.chg30 <= -15) { score -= 6; cautions.push("30日価格が大きく下落"); }
-    else if (card.chg30 > 30) { score -= 3; cautions.push("30日価格が急騰し高値追いに注意"); }
-    else if (card.chg30 >= -5 && card.chg30 <= 10) { score += 2; strengths.push("30日価格が比較的安定"); }
-  }
-
-  if (card.buybackShops >= 3) { score += 8; strengths.push("買取店舗が複数あり換金先が多い"); }
-  else if (card.buybackShops >= 1) { score += 3; strengths.push("店舗買取が確認できる"); }
-  else { score -= 4; cautions.push("店舗買取データが少ない"); }
-
-  if (stock?.demand === "買う人が多い") { score -= 12; cautions.push("状態A在庫の減少が速くPSA供給増リスク"); }
-  else if (stock?.demand === "普通") { score -= 4; cautions.push("状態A在庫が一定ペースで減少"); }
-  else if (stock?.demand === "少ない") { score += 4; strengths.push("状態A在庫の減少が緩やか"); }
-
+  const learned = state.evaluationModel?.bands?.[evaluationPriceBand(card.psa10)] || state.evaluationModel?.global || null;
+  const psa30Score = learnedPercentileScore(card.psaTx30d, learned?.psaTx30);
+  const psa7Score = learnedPercentileScore(card.psaTx7d, learned?.psaTx7);
+  const shopScore = learnedPercentileScore(card.buybackShops, learned?.buybackShops);
+  const listingScore = learnedPercentileScore(card.buyback30, learned?.buyback30);
+  const stabilityScore = !Number.isFinite(card.chg30) ? 45 : card.chg30 < -20 ? 10 : card.chg30 > 35 ? 30 : card.chg30 >= -5 && card.chg30 <= 12 ? 90 : 60;
+  const exitLiquidity = Math.round(psa30Score * 0.4 + psa7Score * 0.15 + shopScore * 0.2 + listingScore * 0.15 + stabilityScore * 0.1);
+  const economics = Math.round(learnedPercentileScore(card.roi, learned?.roi) * 0.7 + (psaDecision?.expectedProfit >= 20000 ? 100 : psaDecision?.expectedProfit >= 10000 ? 75 : psaDecision?.expectedProfit >= 0 ? 50 : 5) * 0.3);
+  let marketStability = stabilityScore;
+  let supplyRisk = 65;
+  if (stock?.demand === "買う人が多い") { supplyRisk -= 30; cautions.push("状態A在庫の減少が速くPSA供給増リスク"); }
+  else if (stock?.demand === "普通") supplyRisk -= 10;
+  else if (stock?.demand === "少ない") supplyRisk += 15;
   const officialFresh = sourceAgeDays(official?.f) <= 2;
   const growth = officialFresh ? official?.w30?.s : null;
   if (!officialFresh && official) cautions.push("PSA公式枚数が更新待ち");
-  else if (growth === "急増化") { score -= 10; cautions.push("PSA10枚数が30日で急増"); }
-  else if (growth === "増加") { score -= 5; cautions.push("PSA10枚数が30日で増加"); }
-  else if (growth === "横ばい") { score += 4; strengths.push("PSA10枚数が30日で横ばい"); }
-
-  if (Number.isFinite(official?.rate)) {
-    if (official.rate < 40) { score -= 10; cautions.push("PSA10取得率が40%未満"); }
-    else if (official.rate < 60) { score -= 5; cautions.push("PSA10取得率が低め"); }
-    else if (official.rate >= 80) { score += 3; strengths.push("PSA10取得率が80%以上"); }
-
-    const hitRate = official.rate / 100;
-    const saleMultiplier = Math.max(0, 1 - state.saleFeeRate / 100);
-    const officialExpectedSale = hitRate * (card.psa10 * saleMultiplier - state.saleExtraCost)
-      + (1 - hitRate) * (card.price * 0.75 * saleMultiplier - state.saleExtraCost);
-    const officialExpectedProfit = officialExpectedSale - card.price - state.fee;
-    if (officialExpectedProfit >= 20000) { score += 8; strengths.push("公式10率でも期待利益2万円以上"); }
-    else if (officialExpectedProfit >= 10000) { score += 4; strengths.push("公式10率でも期待利益1万円以上"); }
-    else if (officialExpectedProfit < 0) { score -= 15; cautions.push("公式10率での期待利益がマイナス"); }
-  } else {
-    cautions.push("PSA公式取得率は未取得");
-  }
-
-  if (psaDecision?.recommended) score += 5;
-  score = Math.max(0, Math.min(100, Math.round(score)));
-  const grade = score >= 75 ? "A" : score >= 60 ? "B" : score >= 45 ? "C" : "D";
+  else if (growth === "急増化") { supplyRisk -= 25; cautions.push("PSA10枚数が30日で急増"); }
+  else if (growth === "増加") supplyRisk -= 12;
+  else if (growth === "横ばい") supplyRisk += 10;
+  if (Number.isFinite(official?.rate) && official.rate < 40) supplyRisk -= 15;
+  supplyRisk = Math.max(0, Math.min(100, supplyRisk));
+  if (exitLiquidity >= 75) strengths.push("同価格帯よりPSA10を売りやすい");
+  else if (exitLiquidity < 35) cautions.push("PSA10の出口・換金先が弱い");
+  if (card.buybackShops >= 2) strengths.push("複数店舗の買取出口がある");
+  if (economics >= 75) strengths.push("同価格帯より利益条件が良い");
+  if (card.saleTx30d >= 30 && card.psaTx30d < 5) cautions.push("美品は動くがPSA10取引が少ない");
+  const weights = state.evaluationModel?.weights || { exitLiquidity: 45, economics: 25, stability: 15, supplyRisk: 15 };
+  let score = Math.round((exitLiquidity * weights.exitLiquidity + economics * weights.economics + marketStability * weights.stability + supplyRisk * weights.supplyRisk) / 100);
+  const completeEvidence = Number.isFinite(official?.rate) && Boolean(card.cardrushUrl);
+  if (!Number.isFinite(official?.rate)) cautions.push("PSA公式データ未紐づけ");
+  if (!card.cardrushUrl) cautions.push("カードラッシュ状態A未紐づけ");
+  score = Math.max(0, Math.min(100, score));
+  const grade = score >= 75 && completeEvidence ? "A" : score >= 60 ? "B" : score >= 45 ? "C" : "D";
   const label = { A: "積極候補", B: "候補", C: "慎重", D: "見送り" }[grade];
-  return { score, grade, label, strengths: strengths.slice(0, 3), cautions: cautions.slice(0, 3) };
+  return { score, grade, label, exitLiquidity, economics, marketStability, supplyRisk, completeEvidence, strengths: strengths.slice(0, 3), cautions: cautions.slice(0, 3) };
 }
 
 function calc(card) {
@@ -1231,8 +1231,9 @@ function render() {
     const overallPanel = overall ? `
       <div class="overall-assessment grade-${overall.grade.toLowerCase()}">
         <div><span>総合評価</span><strong>${overall.grade}・${overall.label}</strong><b>${overall.score}点</b></div>
+        <div class="overall-components"><span><b>${overall.exitLiquidity}</b>売りやすさ</span><span><b>${overall.economics}</b>利益条件</span><span><b>${overall.marketStability}</b>価格安定</span><span><b>${overall.supplyRisk}</b>供給リスク耐性</span></div>
         <p>${escapeHtml(overallReasons || "判定材料を蓄積中")}</p>
-        <small>利益・PSA10売れ行き・状態A在庫減・PSA増加・店舗買取を総合。絶版状況と出品者集中は未反映です。</small>
+        <small>売りやすさ45%を最重視。同じPSA10価格帯の分布をデータ更新ごとに再学習${state.evaluationModel?.generatedAt ? `（${escapeHtml(state.evaluationModel.generatedDateJst || String(state.evaluationModel.generatedAt).slice(0, 10))}・${fmt.format(state.evaluationModel.sampleSize || 0)}枚）` : ""}。公式PSA・状態A直リンクが揃わないカードはA評価にしません。</small>
       </div>
     ` : "";
     const official = card.official;
@@ -1280,8 +1281,7 @@ function render() {
           <div class="metrics market-summary">
             <div class="metric metric-primary"><span>平均美品価格</span><strong>¥${fmt.format(card.price)}</strong><small>みんトレ状態A ¥${fmt.format(card.torecaPrice)} / カードラッシュ状態A ${cardrushPriceText}</small></div>
             <div class="metric"><span>PSA10相場</span><strong>¥${fmt.format(card.psa10)}</strong><small>みんトレPSA10</small></div>
-            <div class="metric"><span>PSA鑑定費</span><strong>¥${fmt.format(state.fee)}</strong></div>
-            <div class="metric"><span>手取り利益</span><strong>¥${fmt.format(Math.round(card.profit))}</strong><small>売却手数料 ${Number(state.saleFeeRate).toFixed(1)}%・追加費用 ¥${fmt.format(state.saleExtraCost)}を反映</small></div>
+            <div class="metric"><span>手取り利益</span><strong>¥${fmt.format(Math.round(card.profit))}</strong><small>共通設定のPSA鑑定費・売却手数料 ${Number(state.saleFeeRate).toFixed(1)}%・追加費用を反映</small></div>
             <div class="metric metric-roi"><span>手取り利益率</span><strong>${Number.isFinite(card.roi) ? Math.round(card.roi) : 0}%</strong><small>利益 ÷（平均美品＋PSA鑑定費）</small></div>
           </div>
 
@@ -1377,6 +1377,7 @@ async function init() {
   try {
     state.updateStatus = await fetchJsonMaybe("./data/update-status.json");
     state.psaServices = await fetchJsonMaybe("./data/psa-japan-services.json");
+    state.evaluationModel = await fetchJsonMaybe("./data/evaluation-model.json");
     populatePsaPlans({ updateLockDays: !new URL(window.location.href).searchParams.has("lock") });
     if (!window.POKEMON_CARDS_META) {
       const loadedMeta = await fetchJsonMaybe("./data/pokemon-cards-meta.json");

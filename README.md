@@ -7,7 +7,7 @@
 - アップロードするのは、この `github-site` フォルダの中身だけです
 - `index.html` が GitHub リポジトリのルートに見える配置にします
 - 親フォルダ側の `work`、`.github`、`outputs` を別々にアップロードする必要はありません
-- `.github/workflows/refresh-all-site-data.yml` で毎日00:00と06:30（日本時間）に全データを一括更新します
+- `.github/workflows/refresh-all-site-data.yml` で毎日04:30と17:00（日本時間）に全データを一括更新します
 - 個別の相場更新とカードラッシュ更新は、Actions画面から手動実行できます
 
 ## 仕組み
@@ -36,11 +36,19 @@
 
 ## 自動更新
 
-`Refresh All Site Data` が毎日2回、日本時間の午前0時と午前6時30分に開始します。
+`Refresh All Site Data` が毎日2回、日本時間の午前4時30分と午後5時に開始します。
 みんなのトレカ相場の新カード・価格・取引件数を取得したあと、スニダン直リンク、カードラッシュの商品・状態A価格・在庫を順番に更新します。
-午前6時30分開始分は、通常は午前10時までの完了を見込んだ設定です。ただしGitHub Actions側の混雑や取得元サイトの応答状況によって遅れることがあります。
+午前4時30分開始分は、通常は午前6時までの完了を見込んだ設定です。ただしGitHub Actions側の混雑や取得元サイトの応答状況によって遅れることがあります。
+
+更新の最後に `work/build_evaluation_model.js` が同じPSA10価格帯の取引・買取掲載・利益率の分布を再集計します。総合評価は売りやすさ45%、利益条件25%、価格安定15%、供給リスク耐性15%で毎回再調整されます。
 
 `Refresh Pokemon Site Data` と `Refresh Cardrush Stock` は個別確認用の手動実行として残しています。通常の定期更新は `Refresh All Site Data` だけで完結します。
+
+### 手動で今すぐ一斉更新する
+
+スマホまたはPCで GitHub のリポジトリを開き、`Actions` → `Refresh All Site Data` → `Run workflow` → 緑色の `Run workflow` の順に押します。処理と公開はGitHub側で行うため、自分のPCを起動したままにする必要はありません。
+
+みんトレ、カードラッシュ、Web買取表、トレカクラブ、PSA Japan料金、評価モデルはこの操作で更新できます。PSA公式PopulationはCloudflareのログイン確認があるため、ログイン済みChromeを使った手動補完が必要です。Xの画像買取表も新着検出までは自動ですが、誤照合防止の最終確認だけ手動です。
 
 ## お気に入り仕入れ候補
 
@@ -59,7 +67,7 @@
 厳格照合できたカードだけ、PSA公式のPSA10枚数、TOTAL枚数、PSA10取得率を表示します。7日・30日・90日のPSA10増加を「急増化・増加・少ない・横ばい」で評価します。
 履歴は32分割したJSONへ数値だけを保存し、カードの「推移を見る」を開いた時だけ該当ファイルを読み込み、SVGグラフをブラウザで描画します。
 
-PSA公式ページはログインが必要なため、Windowsのログイン済み専用Chromeから午前0時、午前6時30分、Windowsログオン時に取得を試します。同日に1回成功した後は重複実行しません。
+PSA公式ページはログインが必要なため、Windowsのログイン済み専用Chromeから午前4時30分、午後5時、Windowsログオン時に取得を試します。同日に1回成功した後は重複実行しません。
 最初に `node work/open_psa_login.js` でPSA専用Chromeへログインし、`powershell -ExecutionPolicy Bypass -File work/install_psa_tasks.ps1` で定期タスクを登録します。
 
 - `work/update_pokemon_site.js` を実行すると、toreca-souba の公開データからポケモンカード一覧とメタ情報を再生成します

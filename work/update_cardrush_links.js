@@ -9,6 +9,9 @@ const KNOWN_CARD_OVERRIDES = new Map([
   ["pk-38030", "https://www.cardrush-pokemon.jp/product/38029"],
   ["pk-3123", "https://www.cardrush-pokemon.jp/product/3123"],
   ["pk-1180", "https://www.cardrush-pokemon.jp/product/1180"],
+  ["pk-7040", "https://www.cardrush-pokemon.jp/product/7040"],
+  ["pk-1168", "https://www.cardrush-pokemon.jp/product/1168"],
+  ["x-141447", "https://www.cardrush-pokemon.jp/product/22370"],
 ]);
 
 function resolveSiteRoot() {
@@ -570,6 +573,9 @@ function injectKnownOverrides(catalog) {
     { name: "ピカチュウ【P】{323/S-P} [S-P]", detailUrl: KNOWN_CARD_OVERRIDES.get("pk-38030"), state: "A", matchKeys: ["ピカチュウ", "323SP", "SP", "P"] },
     { name: "ブルーの探索【SR】{061/054} [SM9b]", detailUrl: KNOWN_CARD_OVERRIDES.get("pk-3123"), state: "A", matchKeys: ["ブルーの探索", "061054", "SM9b", "SR"] },
     { name: "ひかるレックウザ【H】{057/072} [SM3+]", detailUrl: KNOWN_CARD_OVERRIDES.get("pk-1180"), state: "A", matchKeys: ["ひかるレックウザ", "057072", "SM3+", "H"] },
+    { name: "マリィ【SR】{068/060} [S1H]", detailUrl: KNOWN_CARD_OVERRIDES.get("pk-7040"), state: "A", matchKeys: ["マリィ", "068060", "S1H", "SR"] },
+    { name: "ピカチュウEX【RR】{008/027} [CP2]", detailUrl: KNOWN_CARD_OVERRIDES.get("pk-1168"), state: "A", matchKeys: ["ピカチュウEX", "008027", "CP2", "RR"] },
+    { name: "ピカチュウV-UNION(25th/4枚セット)【RRR】{025/028~028/028} [S8a]", detailUrl: KNOWN_CARD_OVERRIDES.get("x-141447"), state: "A", matchKeys: ["ピカチュウVUNION", "025028", "S8a", "RRR"] },
   ];
   const existing = new Set((catalog || []).map((entry) => String(entry.detailUrl || "")));
   for (const entry of overrides) {

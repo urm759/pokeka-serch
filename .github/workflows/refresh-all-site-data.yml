@@ -65,6 +65,13 @@ jobs:
           CARDRUSH_REQUIRE_FRESH: "1"
         run: node work/update_cardrush_stock.js
 
+      - name: Verify priority Cardrush direct links from product pages
+        shell: bash
+        run: |
+          for id in pk-731 pk-38030 pk-3123 pk-1180 pk-7040 pk-1168 x-141447; do
+            CARDRUSH_STOCK_SOURCE=product CARDRUSH_STOCK_ONLY_ID="$id" CARDRUSH_STOCK_FORCE=1 node work/update_cardrush_stock.js
+          done
+
       - name: Detect new X buyback image posts
         run: node work/update_x_buyback_posts.js
 
@@ -77,6 +84,9 @@ jobs:
           CARDRUSH_TARGET_BATCH: "120"
           CARDRUSH_CONCURRENCY: "2"
         run: node work/update_cardrush_links.js
+
+      - name: Relearn sourcing evaluation from current market data
+        run: node work/build_evaluation_model.js
 
       - name: Finalize source freshness and completed date
         run: node work/finalize_update_status.js
