@@ -9,6 +9,7 @@ const state = {
   psaPopulation: Object.create(null),
   psaHistoryCache: Object.create(null),
   psaServices: null,
+  updateStatus: null,
   snkrUrlCache: Object.create(null),
   cardById: Object.create(null),
   snkrObserver: null,
@@ -118,6 +119,7 @@ const els = {
   topRoiStat: document.getElementById("topRoiStat"),
   topProfitStat: document.getElementById("topProfitStat"),
   updatedAt: document.getElementById("updatedAt"),
+  dataFreshness: document.getElementById("dataFreshness"),
   cardrushCoverage: document.getElementById("cardrushCoverage"),
   copyLinkBtn: document.getElementById("copyLinkBtn"),
   guidePanels: document.getElementById("guidePanels"),
@@ -177,6 +179,12 @@ function psaGrowthSummary(official) {
   return { label: `${days}日 ${change.s}`, className };
 }
 
+function sourceAgeDays(value) {
+  const date = String(value || "").slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return Infinity;
+  return Math.max(0, Math.floor((Date.now() - new Date(`${date}T00:00:00+09:00`).getTime()) / 86400000));
+}
+
 function availablePsaPlans() {
   const plans = state.psaServices?.plans;
   return Array.isArray(plans) && plans.length ? plans.filter((plan) => plan.available !== false) : [
@@ -217,8 +225,10 @@ function applyPsaPlan({ updateLockDays = false } = {}) {
   if (els.psaPlanSummary) {
     const delivery = plan.businessDays ? `${fmt.format(plan.businessDays)}営業日（約${fmt.format(plan.calendarDays)}日）` : "納期未取得";
     const lockEstimate = Number(plan.calendarDays) > 0 ? ` / 資金ロック目安 ${fmt.format(Number(plan.calendarDays) + 7)}日` : "";
-    const checkedAt = state.psaServices?.updatedAt ? ` / 料金確認 ${state.psaServices.updatedAt}` : "";
-    els.psaPlanSummary.textContent = `公式 ¥${fmt.format(plan.price)}＋手数料 ¥${fmt.format(state.psaHandlingFee)}＝¥${fmt.format(state.fee)} / ${delivery}${lockEstimate} / 申告価格 ¥${fmt.format(plan.declaredValueMax)}以下${checkedAt}`;
+    const checkedAt = state.psaServices?.checkedAt || state.psaServices?.updatedAt;
+    const checkStatus = state.psaServices?.checkStatus === "failed" ? "（確認失敗・前回値）" : "";
+    const checkedText = checkedAt ? ` / 料金確認 ${checkedAt}${checkStatus}` : "";
+    els.psaPlanSummary.textContent = `公式 ¥${fmt.format(plan.price)}＋手数料 ¥${fmt.format(state.psaHandlingFee)}＝¥${fmt.format(state.fee)} / ${delivery}${lockEstimate} / 申告価格 ¥${fmt.format(plan.declaredValueMax)}以下${checkedText}`;
   }
 }
 
@@ -338,8 +348,9 @@ function roundToStep(value, step = 1000) {
 
 function calcGuideBuyPrice(psa10, hitRate, fee, targetRoi, psa9Rate = 0.75) {
   const roi = targetRoi / 100;
-  const numerator = hitRate * psa10 - fee * (1 + roi);
-  const denominator = roi + 1 - (1 - hitRate) * psa9Rate;
+  const saleMultiplier = Math.max(0, 1 - state.saleFeeRate / 100);
+  const numerator = hitRate * psa10 * saleMultiplier - state.saleExtraCost - fee * (1 + roi);
+  const denominator = roi + 1 - (1 - hitRate) * psa9Rate * saleMultiplier;
   if (!(denominator > 0)) return null;
   return roundToStep(numerator / denominator);
 }
@@ -390,7 +401,7 @@ function renderFavorites() {
   if (els.favoriteCountToolbar) els.favoriteCountToolbar.textContent = fmt.format(cards.length);
   if (els.favoritesHint) {
     els.favoritesHint.textContent = cards.length
-      ? `${cfg.label} / PSA鑑定費 ¥${fmt.format(state.fee)}で計算中`
+      ? `${cfg.label} / PSA鑑定費 ¥${fmt.format(state.fee)} / 売却手数料 ${Number(state.saleFeeRate).toFixed(1)}%で計算中`
       : "各カードの「仕入れ候補に追加」から登録してください。";
   }
   els.copyFavoritesBtn.disabled = cards.length === 0;
@@ -656,7 +667,7 @@ function renderGuide() {
       <section class="guide-block card">
         <div class="guide-block-head">
           <h3>${range.label}</h3>
-          <p>${cfg.label} / 鑑定費 ¥${fmt.format(fee)} / PSA9換金率 75%</p>
+          <p>${cfg.label} / 鑑定費 ¥${fmt.format(fee)} / PSA9換金率 75% / 売却手数料 ${Number(state.saleFeeRate).toFixed(1)}%</p>
         </div>
         <div class="guide-table-wrap">
           <table class="guide-table">
@@ -695,6 +706,7 @@ function attachBundlePopulations(population) {
     m: "four-card-independent-estimate",
     bundle: true,
     parts,
+    f: parts.map((part) => part.f || "").sort().at(0) || "",
     w7: null,
     w30: null,
     w90: null,
@@ -709,9 +721,14 @@ function buildOverallAssessment(card, official, stock, psaDecision) {
   else if (card.roi >= 40) { score += 10; strengths.push("利益率40%以上"); }
   else if (card.roi < 0) { score -= 20; cautions.push("利益率がマイナス"); }
 
-  if (card.psaTx30d >= 30) { score += 12; strengths.push("PSA10の30日取引が多い"); }
-  else if (card.psaTx30d >= 10) { score += 6; strengths.push("PSA10の取引が確認できる"); }
+  if (card.psaTx30d >= 30) { score += 10; strengths.push("PSA10の30日取引が多い"); }
+  else if (card.psaTx30d >= 10) { score += 5; strengths.push("PSA10の取引が確認できる"); }
   else if (card.psaTx30d < 3) { score -= 10; cautions.push("PSA10の売れ行きが弱い"); }
+  if (Number.isFinite(card.psaTxPeerMedian) && card.psaTxPeerMedian >= 3) {
+    const activityRatio = card.psaTx30d / card.psaTxPeerMedian;
+    if (activityRatio >= 1.5) { score += 5; strengths.push("同じPSA10価格帯より売買が活発"); }
+    else if (activityRatio <= 0.4) { score -= 6; cautions.push("同じPSA10価格帯より売買が少ない"); }
+  }
 
   if (card.saleTx30d >= 30 && card.psaTx30d < 5) { score -= 8; cautions.push("美品は動くがPSA10取引が少ない"); }
   else if (card.saleTx30d > 0 && card.psaTx30d / card.saleTx30d >= 0.5) { score += 5; strengths.push("美品取引に対してPSA10需要が強い"); }
@@ -730,8 +747,10 @@ function buildOverallAssessment(card, official, stock, psaDecision) {
   else if (stock?.demand === "普通") { score -= 4; cautions.push("状態A在庫が一定ペースで減少"); }
   else if (stock?.demand === "少ない") { score += 4; strengths.push("状態A在庫の減少が緩やか"); }
 
-  const growth = official?.w30?.s;
-  if (growth === "急増化") { score -= 10; cautions.push("PSA10枚数が30日で急増"); }
+  const officialFresh = sourceAgeDays(official?.f) <= 2;
+  const growth = officialFresh ? official?.w30?.s : null;
+  if (!officialFresh && official) cautions.push("PSA公式枚数が更新待ち");
+  else if (growth === "急増化") { score -= 10; cautions.push("PSA10枚数が30日で急増"); }
   else if (growth === "増加") { score -= 5; cautions.push("PSA10枚数が30日で増加"); }
   else if (growth === "横ばい") { score += 4; strengths.push("PSA10枚数が30日で横ばい"); }
 
@@ -791,12 +810,12 @@ function calc(card) {
   if (!(price > 0) || !(psa10 > 0)) {
     return { ...card, price, torecaPrice, cardrushPrice, psa10, profit: NaN, roi: NaN, psaDecision: null, overallAssessment: null, official, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackAvg30, buybackShops };
   }
-  const profit = psa10 - price - state.fee;
+  const saleMultiplier = Math.max(0, 1 - state.saleFeeRate / 100);
+  const psa10Net = psa10 * saleMultiplier - state.saleExtraCost;
+  const profit = psa10Net - price - state.fee;
   const roiBase = price + state.fee;
   const roi = roiBase > 0 ? (profit / roiBase) * 100 : NaN;
   const hitRate = guideConfig().hitRate;
-  const saleMultiplier = Math.max(0, 1 - state.saleFeeRate / 100);
-  const psa10Net = psa10 * saleMultiplier - state.saleExtraCost;
   const lowerGradeNet = price * 0.75 * saleMultiplier - state.saleExtraCost;
   const expectedSale = hitRate * psa10Net + (1 - hitRate) * lowerGradeNet;
   const expectedProfit = expectedSale - price - state.fee;
@@ -1004,15 +1023,34 @@ function render() {
   const compactQuery = compactSearch(state.q);
   const calculated = state.cards.map(calc);
   const roiByPsaPriceBand = new Map();
+  const psaTxByPriceBand = new Map();
   calculated.forEach((card) => {
-    if (!Number.isFinite(card.roi)) return;
     const key = psaPriceBand(card.psa10).key;
+    if (Number.isFinite(card.psaTx30d) && card.psaTx30d > 0) {
+      if (!psaTxByPriceBand.has(key)) psaTxByPriceBand.set(key, []);
+      psaTxByPriceBand.get(key).push(card.psaTx30d);
+    }
+    const crediblePeer = Number.isFinite(card.roi)
+      && card.psaTx30d >= 5
+      && card.saleTx30d >= 3
+      && card.price > 0
+      && card.psa10 > card.price
+      && card.roi >= -50
+      && card.roi <= 300;
+    if (!crediblePeer) return;
     if (!roiByPsaPriceBand.has(key)) roiByPsaPriceBand.set(key, []);
     roiByPsaPriceBand.get(key).push(card.roi);
   });
   const medianRoiByPsaPriceBand = new Map(
     [...roiByPsaPriceBand].map(([key, values]) => [key, median(values)])
   );
+  const psaTxMedianByPriceBand = new Map(
+    [...psaTxByPriceBand].map(([key, values]) => [key, median(values)])
+  );
+  calculated.forEach((card) => {
+    card.psaTxPeerMedian = psaTxMedianByPriceBand.get(psaPriceBand(card.psa10).key) ?? null;
+    card.overallAssessment = buildOverallAssessment(card, card.official, state.cardrushStock[card.id] || null, card.psaDecision);
+  });
   const enriched = calculated
     .filter((card) => {
       const haystack = normalize(`${card.name} ${card.model} ${card.id}`);
@@ -1060,7 +1098,14 @@ function render() {
   els.topRoiStat.textContent = enriched.length ? `${Math.round(enriched[0].roi)}%` : "-";
   els.topProfitStat.textContent = enriched.length ? `¥${fmt.format(Math.round(enriched[0].profit))}` : "-";
   if (els.updatedAt) {
-    els.updatedAt.textContent = meta.updatedAt ? String(meta.updatedAt) : "未設定";
+    els.updatedAt.textContent = state.updateStatus?.completeDate || "全データ同日更新 未完了";
+  }
+  if (els.dataFreshness && state.updateStatus?.sources) {
+    els.dataFreshness.innerHTML = Object.values(state.updateStatus.sources).map((source) => {
+      const className = source.fresh ? "fresh" : "stale";
+      const pending = Number(source.pendingCount || 0) > 0 ? ` / 画像照合待ち ${fmt.format(source.pendingCount)}件` : "";
+      return `<span class="${className}">${escapeHtml(source.label)} ${escapeHtml(source.date || "未取得")}${pending}</span>`;
+    }).join("");
   }
   if (els.cardrushCoverage) {
     const cr = meta.cardrushCoverage;
@@ -1080,22 +1125,19 @@ function render() {
   state.cardById = Object.create(null);
   els.grid.innerHTML = visibleCards.map((card) => {
     state.cardById[card.id] = card;
-    const roiClass = card.roi >= 120 ? "good" : card.roi >= 80 ? "sky" : "warn";
     const priceBand = psaPriceBand(card.psa10);
-    const peerMedianRoi = medianRoiByPsaPriceBand.get(priceBand.key) ?? card.roi;
-    const roiDifference = card.roi - peerMedianRoi;
-    const roiAssessment = roiDifference >= 30 ? "同価格帯よりかなり高い" : roiDifference >= 5 ? "同価格帯より高い" : roiDifference <= -30 ? "同価格帯よりかなり低い" : roiDifference <= -5 ? "同価格帯より低い" : "同価格帯の中央値に近い";
+    const peerValues = roiByPsaPriceBand.get(priceBand.key) || [];
+    const peerMedianRoi = medianRoiByPsaPriceBand.get(priceBand.key);
+    const hasReliablePeers = Number.isFinite(peerMedianRoi) && peerValues.length >= 8;
+    const comparisonMedian = hasReliablePeers ? peerMedianRoi : card.roi;
+    const roiDifference = card.roi - comparisonMedian;
+    const roiAssessment = !hasReliablePeers ? "比較できる取引データが不足" : roiDifference >= 30 ? "同価格帯よりかなり高い" : roiDifference >= 5 ? "同価格帯より高い" : roiDifference <= -30 ? "同価格帯よりかなり低い" : roiDifference <= -5 ? "同価格帯より低い" : "同価格帯の中央値に近い";
     const roiAssessmentClass = roiDifference >= 5 ? "high" : roiDifference <= -5 ? "low" : "average";
-    const roiBandLabel = `PSA10 ¥${fmt.format(priceBand.min)}～¥${fmt.format(priceBand.max - 1)}`;
+    const roiBandLabel = `PSA10 ¥${fmt.format(priceBand.min)}～¥${fmt.format(priceBand.max - 1)}・取引条件を満たす${fmt.format(peerValues.length)}枚`;
     const name = card.name.replace(/\s+/g, " ");
     const stock = state.cardrushStock[card.id] || null;
     const snkUrl = card.snkUrl || state.snkrUrlCache[card.id] || buildSnkrUrl(card);
     const snkrDirect = /snkrdunk\.com\/(apparels|trading-cards|products)\/\d+/i.test(snkUrl);
-    const detailChips = [
-      `<span class="badge sky">PSA10 直近30日 ${fmt.format(card.psaTx30d)}件</span>`,
-      `<span class="badge sky">PSA10 直近7日 ${fmt.format(card.psaTx7d)}件</span>`,
-      `<span class="badge ${roiClass}">利益率 ${Number.isFinite(card.roi) ? Math.round(card.roi) : 0}%</span>`,
-    ].join("");
     const marketLinks = [
       `<a class="market-link toreca" href="${buildTorecaCardUrl(card)}" target="_blank" rel="noreferrer"><span>相場元</span><strong>みんトレ直リンク</strong></a>`,
       `<a class="market-link snkr" href="${snkUrl}" data-snk-link target="_blank" rel="noreferrer"><span>フリマ</span><strong>${snkrDirect ? "スニダン直リンク" : "スニダン検索"}</strong></a>`,
@@ -1155,10 +1197,12 @@ function render() {
     ` : "";
     const activityPanel = `
       <div class="activity-panel">
-        <div class="activity-head"><strong>美品の動き</strong><span>取引件数 / 確認できた在庫減</span></div>
+        <div class="activity-head"><strong>売れ行き</strong><span>みんトレ取引件数 / カードラッシュ在庫減</span></div>
         <div class="activity-grid">
-          <div><span>直近7日</span><strong>みんトレ ${fmt.format(card.saleTx7d)}件</strong><small>カードラッシュ ${dropStock(stock?.drop7)} / 参考合計 ${combinedMovement(card.saleTx7d, stock?.drop7)}</small></div>
-          <div><span>直近30日</span><strong>みんトレ ${fmt.format(card.saleTx30d)}件</strong><small>カードラッシュ ${dropStock(stock?.drop30)} / 参考合計 ${combinedMovement(card.saleTx30d, stock?.drop30)}</small></div>
+          <div><span>PSA10・直近7日</span><strong>${fmt.format(card.psaTx7d)}件</strong><small>みんトレPSA10</small></div>
+          <div class="activity-emphasis"><span>PSA10・直近30日</span><strong>${fmt.format(card.psaTx30d)}件</strong><small>同価格帯中央値 ${Number.isFinite(card.psaTxPeerMedian) ? `${fmt.format(Math.round(card.psaTxPeerMedian))}件` : "-"}</small></div>
+          <div><span>美品・直近7日</span><strong>みんトレ ${fmt.format(card.saleTx7d)}件</strong><small>カードラッシュ ${dropStock(stock?.drop7)} / 参考合計 ${combinedMovement(card.saleTx7d, stock?.drop7)}</small></div>
+          <div><span>美品・直近30日</span><strong>みんトレ ${fmt.format(card.saleTx30d)}件</strong><small>カードラッシュ ${dropStock(stock?.drop30)} / 参考合計 ${combinedMovement(card.saleTx30d, stock?.drop30)}</small></div>
         </div>
       </div>
     `;
@@ -1193,17 +1237,19 @@ function render() {
     ` : "";
     const official = card.official;
     const psaGrowth = official ? psaGrowthSummary(official) : null;
+    const officialFetchedDate = String(official?.f || "").slice(0, 10) || "未取得";
+    const officialStale = sourceAgeDays(official?.f) > 2;
     const officialPsaPanel = official?.bundle ? `
       <div class="psa-official psa-bundle">
-        <div class="psa-bundle-head"><span>PSA公式・4枚セット換算</span><strong>4枚すべてPSA10 推定 ${Number(official.rate).toFixed(1)}%</strong></div>
+        <div class="psa-bundle-head"><span>PSA公式・4枚セット換算 / 取得 ${escapeHtml(officialFetchedDate)}</span><strong>4枚すべてPSA10 推定 ${Number(official.rate).toFixed(1)}%</strong></div>
         <div class="psa-bundle-parts">${official.parts.map((part) => `<span>${escapeHtml(part.label)}：${Number(part.rate).toFixed(1)}%</span>`).join("")}</div>
         <small>各パーツの公式10取得率を掛け合わせた独立近似です。美品価格・PSA10価格は4枚セット合計のまま計算します。</small>
       </div>
     ` : official ? `
       <details class="psa-official" data-psa-history="${escapeHtml(card.id)}" data-psa-shard="${escapeHtml(official.sh)}">
         <summary>
-          <div><span>PSA公式Population</span><strong>PSA10取得率 ${Number(official.rate || 0).toFixed(1)}%</strong></div>
-          <div class="psa-summary-actions"><b class="psa-growth ${psaGrowth.className}">PSA10増加 ${escapeHtml(psaGrowth.label)}</b><b>数値を見る</b></div>
+          <div><span>PSA公式Population / 取得 ${escapeHtml(officialFetchedDate)}</span><strong>PSA10取得率 ${Number(official.rate || 0).toFixed(1)}%</strong></div>
+          <div class="psa-summary-actions"><b class="psa-growth ${officialStale ? "pending" : psaGrowth.className}">${officialStale ? "枚数更新待ち" : `PSA10増加 ${escapeHtml(psaGrowth.label)}`}</b><b>数値を見る</b></div>
         </summary>
         <div class="psa-official-body">
           <div class="psa-official-metrics">
@@ -1231,16 +1277,15 @@ function render() {
             <button class="favorite-toggle ${favoriteActive ? "active" : ""}" type="button" data-toggle-favorite="${card.id}" aria-pressed="${favoriteActive}">${favoriteActive ? "★ 仕入れ候補に登録済み" : "☆ 仕入れ候補に追加"}</button>
           </div>
 
-          <div class="badges">
-            ${detailChips}
-          </div>
-
           <div class="metrics market-summary">
             <div class="metric metric-primary"><span>平均美品価格</span><strong>¥${fmt.format(card.price)}</strong><small>みんトレ状態A ¥${fmt.format(card.torecaPrice)} / カードラッシュ状態A ${cardrushPriceText}</small></div>
             <div class="metric"><span>PSA10相場</span><strong>¥${fmt.format(card.psa10)}</strong><small>みんトレPSA10</small></div>
             <div class="metric"><span>PSA鑑定費</span><strong>¥${fmt.format(state.fee)}</strong></div>
-            <div class="metric"><span>利益額</span><strong>¥${fmt.format(Math.round(card.profit))}</strong></div>
+            <div class="metric"><span>手取り利益</span><strong>¥${fmt.format(Math.round(card.profit))}</strong><small>売却手数料 ${Number(state.saleFeeRate).toFixed(1)}%・追加費用 ¥${fmt.format(state.saleExtraCost)}を反映</small></div>
+            <div class="metric metric-roi"><span>手取り利益率</span><strong>${Number.isFinite(card.roi) ? Math.round(card.roi) : 0}%</strong><small>利益 ÷（平均美品＋PSA鑑定費）</small></div>
           </div>
+
+          <div class="profit-assessment ${roiAssessmentClass}" title="${roiBandLabel}${hasReliablePeers ? `の利益率中央値 ${Math.round(peerMedianRoi)}%` : ""}">${roiAssessment} <span>${hasReliablePeers ? `${roiDifference >= 0 ? "+" : ""}${Math.round(roiDifference)}pt` : "-"}</span><small>${roiBandLabel}${hasReliablePeers ? `・中央値 ${Math.round(peerMedianRoi)}%` : ""}</small></div>
 
           ${stockPanel}
           ${buybackPanel}
@@ -1252,14 +1297,6 @@ function render() {
           <div class="market-links" aria-label="外部サイトへの直リンク">
             <div class="market-links-title">商品ページ</div>
             <div class="market-links-grid">${marketLinks}</div>
-          </div>
-
-          <div class="profit">
-            <div class="profit-head">
-              <div class="k">利益率</div>
-              <div class="v">${Number.isFinite(card.roi) ? Math.round(card.roi) : 0}%</div>
-            </div>
-            <div class="profit-assessment ${roiAssessmentClass}" title="${roiBandLabel}の利益率中央値 ${Math.round(peerMedianRoi)}% と比較">${roiAssessment} <span>${roiDifference >= 0 ? "+" : ""}${Math.round(roiDifference)}pt</span><small>${roiBandLabel}・中央値 ${Math.round(peerMedianRoi)}%</small></div>
           </div>
 
         </div>
@@ -1338,6 +1375,7 @@ async function init() {
   readUrl();
   loadFavorites();
   try {
+    state.updateStatus = await fetchJsonMaybe("./data/update-status.json");
     state.psaServices = await fetchJsonMaybe("./data/psa-japan-services.json");
     populatePsaPlans({ updateLockDays: !new URL(window.location.href).searchParams.has("lock") });
     if (!window.POKEMON_CARDS_META) {

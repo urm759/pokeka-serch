@@ -3,9 +3,9 @@ name: Refresh All Site Data
 on:
   workflow_dispatch:
   schedule:
-    # 00:00 and 06:30 JST every day (GitHub Actions cron uses UTC).
-    - cron: "0 15 * * *"
-    - cron: "30 21 * * *"
+    # 04:30 JST (finish target: 06:00) and 17:00 JST every day.
+    - cron: "30 19 * * *"
+    - cron: "0 8 * * *"
 
 permissions:
   contents: write
@@ -65,6 +65,9 @@ jobs:
           CARDRUSH_REQUIRE_FRESH: "1"
         run: node work/update_cardrush_stock.js
 
+      - name: Detect new X buyback image posts
+        run: node work/update_x_buyback_posts.js
+
       - name: Record shop PSA10 buyback listings
         run: node work/update_shop_buybacks.js
 
@@ -74,6 +77,9 @@ jobs:
           CARDRUSH_TARGET_BATCH: "120"
           CARDRUSH_CONCURRENCY: "2"
         run: node work/update_cardrush_links.js
+
+      - name: Finalize source freshness and completed date
+        run: node work/finalize_update_status.js
 
       - name: Commit all changes
         run: |

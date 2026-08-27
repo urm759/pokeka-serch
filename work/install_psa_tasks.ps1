@@ -6,10 +6,14 @@ $Settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -MultipleInstances 
 $Principal = New-ScheduledTaskPrincipal -UserId "$env:USERDOMAIN\$env:USERNAME" -LogonType Interactive -RunLevel Limited
 
 $Tasks = @(
-  @{ Name='Pokeka PSA Update 0000'; Trigger=(New-ScheduledTaskTrigger -Daily -At '00:00') },
-  @{ Name='Pokeka PSA Update 0630'; Trigger=(New-ScheduledTaskTrigger -Daily -At '06:30') },
+  @{ Name='Pokeka PSA Update 0430'; Trigger=(New-ScheduledTaskTrigger -Daily -At '04:30') },
+  @{ Name='Pokeka PSA Update 1700'; Trigger=(New-ScheduledTaskTrigger -Daily -At '17:00') },
   @{ Name='Pokeka PSA Update Logon'; Trigger=(New-ScheduledTaskTrigger -AtLogOn -User "$env:USERDOMAIN\$env:USERNAME") }
 )
+
+@('Pokeka PSA Update 0000', 'Pokeka PSA Update 0630') | ForEach-Object {
+  Unregister-ScheduledTask -TaskName $_ -Confirm:$false -ErrorAction SilentlyContinue
+}
 
 foreach ($Task in $Tasks) {
   Register-ScheduledTask -TaskName $Task.Name -Action $Action -Trigger $Task.Trigger -Settings $Settings -Principal $Principal -Description 'PSA公式Populationを取得し、ポケカ仕入れ判断サイトへ反映します。' -Force | Out-Null

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20260827-evaluation1" />
+  <link rel="stylesheet" href="./styles.css?v=20260827-refresh2" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -374,12 +374,13 @@
       </div>
       <div class="toolbar-actions">
         <div class="toolbar-meta">データ取得日 <strong id="updatedAt">-</strong></div>
-        <div class="toolbar-meta">一斉更新 <strong>毎日 0:00 / 6:30</strong></div>
+        <div class="toolbar-meta">一斉更新 <strong>毎日 4:30 / 17:00 開始</strong></div>
         <div class="toolbar-meta coverage-meta">カードラッシュ <strong id="cardrushCoverage">-</strong></div>
         <button id="openFavoritesBtn" type="button">仕入れ候補 <strong id="favoriteCountToolbar">0</strong>枚</button>
         <button id="copyLinkBtn" type="button">この条件をURLに反映</button>
         <a id="sourceLink" href="https://toreca-souba.com/" target="_blank" rel="noreferrer">みんトレを見る</a>
       </div>
+      <div id="dataFreshness" class="data-freshness" aria-label="データ源ごとの最終取得日"></div>
       <div id="shopReferenceLinks" class="shop-reference-links" aria-label="参照ショップ"></div>
     </section>
 
@@ -403,6 +404,6 @@
     </section>
   </main>
 
-  <script src="./app.js?v=20260827-evaluation1"></script>
+  <script src="./app.js?v=20260827-refresh2"></script>
 </body>
 </html>

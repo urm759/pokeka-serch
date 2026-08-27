@@ -11,6 +11,10 @@ function number(value) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+function jstDate() {
+  return new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Tokyo" }).format(new Date());
+}
+
 function planFromText(text, id, name) {
   const start = text.indexOf(name);
   if (start < 0) return null;
@@ -24,7 +28,12 @@ function planFromText(text, id, name) {
 }
 
 async function main() {
-  const response = await fetch(SOURCE_URL, { headers: { "user-agent": "Mozilla/5.0 PSA-Japan-plan-monitor" } });
+  let response = await fetch(SOURCE_URL, { headers: { "user-agent": "Mozilla/5.0 PSA-Japan-plan-monitor" } });
+  let fetchMethod = "official-direct";
+  if (!response.ok) {
+    response = await fetch(`https://r.jina.ai/http://www.psacard.com/ja-JP/services/trad`, { headers: { "user-agent": "Mozilla/5.0 PSA-Japan-plan-monitor" } });
+    fetchMethod = "official-text-fallback";
+  }
   if (!response.ok) throw new Error(`PSA Japan returned HTTP ${response.status}`);
   const html = await response.text();
   const text = html
@@ -42,7 +51,10 @@ async function main() {
   const suspendedPlans = ["バリュー・バルク", "バリュー", "バリュー・プラス", "バリュー・マックス"]
     .filter((name) => text.includes(name) && text.includes("受付停止中"));
   const payload = {
-    updatedAt: new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Tokyo" }).format(new Date()),
+    updatedAt: jstDate(),
+    checkedAt: jstDate(),
+    checkStatus: "success",
+    fetchMethod,
     sourceUrl: SOURCE_URL,
     handlingFee: HANDLING_FEE,
     plans,
@@ -54,6 +66,13 @@ async function main() {
 
 main().catch((error) => {
   if (fs.existsSync(OUTPUT_PATH)) {
+    const previous = JSON.parse(fs.readFileSync(OUTPUT_PATH, "utf8"));
+    fs.writeFileSync(OUTPUT_PATH, JSON.stringify({
+      ...previous,
+      checkedAt: jstDate(),
+      checkStatus: "failed",
+      checkError: String(error.message || error).slice(0, 240),
+    }), "utf8");
     console.warn(`PSA Japan plan refresh skipped; existing data was preserved: ${error.message || error}`);
     return;
   }

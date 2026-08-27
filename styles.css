@@ -431,6 +431,10 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
   white-space:nowrap;
 }
 .toolbar-meta strong{font-weight:900}
+.data-freshness{display:flex;gap:6px;flex-wrap:wrap;width:100%;margin-top:8px}
+.data-freshness span{padding:5px 8px;border-radius:999px;font-size:9px;font-weight:800;background:rgba(148,163,184,.12);color:var(--muted)}
+.data-freshness .fresh{background:rgba(56,217,150,.14);color:#bbf7d0}
+.data-freshness .stale{background:rgba(245,158,11,.14);color:#fde68a}
 .coverage-meta{background:rgba(56,217,150,.08);border-color:rgba(56,217,150,.25)}
 .shop-reference-links{display:flex;align-items:center;justify-content:flex-end;gap:8px;width:100%;color:var(--muted);font-size:10px}
 .shop-reference-links a{padding:7px 10px;border:1px solid rgba(251,191,36,.28);border-radius:999px;background:rgba(251,191,36,.08);color:#fde68a;text-decoration:none;font-weight:800}
@@ -627,7 +631,7 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
   grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
   gap:10px;
 }
-.market-summary{grid-template-columns:minmax(240px,1.5fr) repeat(3,minmax(120px,1fr))}
+.market-summary{grid-template-columns:minmax(220px,1.5fr) repeat(4,minmax(115px,1fr))}
 .metric{
   padding:12px 12px 11px;
   border-radius:16px;
@@ -643,8 +647,10 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .activity-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:8px}
 .activity-head strong{font-size:13px}
 .activity-head span{color:var(--muted);font-size:9px}
-.activity-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.activity-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .activity-grid>div{padding:10px;border-radius:12px;background:#0b1224}
+.activity-grid .activity-emphasis{border:1px solid rgba(125,211,252,.4);background:linear-gradient(135deg,rgba(125,211,252,.14),rgba(11,18,36,.9))}
+.activity-grid .activity-emphasis strong{color:#7dd3fc;font-size:17px}
 .activity-grid span,.activity-grid small{display:block;color:var(--muted);font-size:9px}
 .activity-grid strong{display:block;margin:3px 0;font-size:13px}
 .psa-decision{margin-top:12px;padding:13px;border-radius:17px;border:1px solid rgba(255,255,255,.12);background:rgba(5,10,20,.45)}

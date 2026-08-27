@@ -134,10 +134,32 @@ function totalDecrease(values, days) {
   return pairs ? Math.round(decreases * 100) / 100 : null;
 }
 
-function demandLabel(avg30, samples) {
-  if (samples < 3 || !Number.isFinite(avg30)) return "蓄積中";
-  if (avg30 >= 1) return "買う人が多い";
-  if (avg30 >= 0.2) return "普通";
+function quantile(values, ratio) {
+  if (!values.length) return null;
+  const sorted = [...values].sort((a, b) => a - b);
+  return sorted[Math.floor((sorted.length - 1) * ratio)];
+}
+
+function learnDemandThresholds(history) {
+  const rates = Object.values(history.stocks || {}).map((values) => {
+    const samples = values.filter(Number.isFinite).length;
+    if (samples < 7) return null;
+    return averageDailyDecrease(values, 30);
+  }).filter((value) => Number.isFinite(value) && value > 0);
+  return {
+    minimumSamples: 7,
+    normalDaily: Math.max(0.2, Number(quantile(rates, 0.5) || 0)),
+    highDaily: Math.max(0.75, Number(quantile(rates, 0.85) || 0)),
+    normalTotal: 2,
+    highTotal: 4,
+    cohortSize: rates.length,
+  };
+}
+
+function demandLabel(avg30, drop30, samples, model) {
+  if (samples < model.minimumSamples || !Number.isFinite(avg30) || !Number.isFinite(drop30)) return "蓄積中";
+  if (avg30 >= model.highDaily && drop30 >= model.highTotal) return "買う人が多い";
+  if (avg30 >= model.normalDaily && drop30 >= model.normalTotal) return "普通";
   return "少ない";
 }
 
@@ -145,6 +167,7 @@ function writeOutputs({ cards, catalog, history, invalidUrls, recheckIds, paths 
   const currentDateIndex = history.dates.length - 1;
   const catalogByUrl = new Map(catalog.map((entry) => [entry.detailUrl, entry]));
   const summaryCards = {};
+  const demandModel = learnDemandThresholds(history);
   for (const card of cards) {
     const values = Array.isArray(history.stocks[card.id]) ? history.stocks[card.id] : [];
     const catalogEntry = catalogByUrl.get(card.cardrushUrl);
@@ -154,6 +177,7 @@ function writeOutputs({ cards, catalog, history, invalidUrls, recheckIds, paths 
     const avg7 = averageDailyDecrease(values, 7);
     const avg30 = averageDailyDecrease(values, 30);
     const avg90 = averageDailyDecrease(values, 90);
+    const drop30 = totalDecrease(values, 30);
     const stock = values[currentDateIndex];
     summaryCards[card.id] = {
       stock: Number.isFinite(stock) ? stock : Number.isFinite(catalogEntry?.stock) ? catalogEntry.stock : null,
@@ -162,15 +186,15 @@ function writeOutputs({ cards, catalog, history, invalidUrls, recheckIds, paths 
       avg30,
       avg90,
       drop7: totalDecrease(values, 7),
-      drop30: totalDecrease(values, 30),
-      demand: demandLabel(avg30, samples),
+      drop30,
+      demand: demandLabel(avg30, drop30, samples, demandModel),
       samples,
     };
   }
   fs.writeFileSync(paths.data, JSON.stringify(cards), "utf8");
   fs.writeFileSync(paths.catalog, JSON.stringify(catalog), "utf8");
   fs.writeFileSync(paths.history, JSON.stringify(history), "utf8");
-  fs.writeFileSync(paths.summary, JSON.stringify({ updatedAt: jstDate(), cards: summaryCards }), "utf8");
+  fs.writeFileSync(paths.summary, JSON.stringify({ updatedAt: jstDate(), demandModel, cards: summaryCards }), "utf8");
   fs.writeFileSync(paths.invalid, JSON.stringify([...invalidUrls]), "utf8");
   fs.writeFileSync(paths.recheck, JSON.stringify([...recheckIds]), "utf8");
 }

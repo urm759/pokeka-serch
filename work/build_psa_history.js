@@ -191,11 +191,14 @@ function main() {
     if (!selected) continue;
     const shard = shardFor(card.id), store = shards[shard]; store.cards ||= {};
     let history = Array.isArray(store.cards[card.id]) ? store.cards[card.id].filter((row)=>row[0]>=cutoff) : [];
-    const point = [today, selected.ten, selected.total];
-    if (history.at(-1)?.[0] === today) history[history.length-1] = point;
+    const sourceDay = String(selected.fetchedAt || population.generatedAt || "").slice(0,10).replace(/-/g, "") || today;
+    const point = [sourceDay, selected.ten, selected.total];
+    const sameDayIndex = history.findIndex((row) => row[0] === sourceDay);
+    if (sameDayIndex >= 0) history[sameDayIndex] = point;
     else if (!history.length || history.at(-1)[1] !== point[1] || history.at(-1)[2] !== point[2]) history.push(point);
+    history.sort((a, b) => a[0].localeCompare(b[0]));
     store.cards[card.id] = history;
-    summary.cards[card.id] = { n: selected.name, e: englishName, ten: selected.ten, total: selected.total, rate: selected.total ? selected.ten/selected.total*100 : null, u: selected.url, m: method, sh: String(shard).padStart(2,"0"), w7: windowChange(history,7,today), w30: windowChange(history,30,today), w90: windowChange(history,90,today) };
+    summary.cards[card.id] = { n: selected.name, e: englishName, ten: selected.ten, total: selected.total, rate: selected.total ? selected.ten/selected.total*100 : null, u: selected.url, m: method, f: selected.fetchedAt || "", sh: String(shard).padStart(2,"0"), w7: windowChange(history,7,sourceDay), w30: windowChange(history,30,sourceDay), w90: windowChange(history,90,sourceDay) };
     summary.matched += 1;
   }
   for (let i=0;i<SHARDS;i+=1) fs.writeFileSync(path.join(HISTORY_DIR, `${String(i).padStart(2,"0")}.json`), JSON.stringify(shards[i]), "utf8");

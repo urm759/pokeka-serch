@@ -1,0 +1,63 @@
+const fs = require("fs");
+const path = require("path");
+
+const ROOT = path.join(__dirname, "..");
+const OUTPUT = path.join(ROOT, "data", "update-status.json");
+
+function read(relativePath, fallback = {}) {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(ROOT, relativePath), "utf8"));
+  } catch {
+    return fallback;
+  }
+}
+
+function jstDate(value = new Date()) {
+  return new Intl.DateTimeFormat("sv-SE", {
+    timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit",
+  }).format(new Date(value));
+}
+
+function validDate(value) {
+  if (!value) return null;
+  const match = String(value).match(/^\d{4}-\d{2}-\d{2}/);
+  return match ? match[0] : null;
+}
+
+const today = jstDate();
+const previous = read("data/update-status.json", {});
+const meta = read("data/pokemon-cards-meta.json");
+const stock = read("data/cardrush-stock-summary.json");
+const buyback = read("data/shop-buyback-summary.json");
+const psa = read("data/psa-official-populations.json");
+const services = read("data/psa-japan-services.json");
+const xCapture = read("work/x_buyback_capture.json", { posts: [] });
+const xPending = read("work/x_buyback_pending.json", { posts: [] });
+const psaRowDates = (psa.rows || []).map((row) => validDate(row.fetchedAt)).filter(Boolean);
+const psaDateCounts = {};
+for (const date of psaRowDates) psaDateCounts[date] = (psaDateCounts[date] || 0) + 1;
+const dominantPsaDate = Object.entries(psaDateCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
+const latestXDate = (xCapture.posts || []).map((post) => validDate(post.date)).filter(Boolean).sort().at(-1) || null;
+const latestXDetectedDate = (xPending.posts || []).map((post) => validDate(post.date)).filter(Boolean).sort().at(-1) || null;
+
+const sources = {
+  toreca: { label: "みんトレ", date: validDate(meta.updatedAt || meta.generatedAt), automatic: true },
+  cardrush: { label: "カードラッシュ", date: validDate(stock.updatedAt), automatic: true },
+  shopBuyback: { label: "Web買取表", date: validDate(buyback.updatedAt), automatic: true },
+  psaOfficial: { label: "PSA公式枚数", date: dominantPsaDate, automatic: false, note: "ログイン済みPCで取得", coverageRows: psaDateCounts[dominantPsaDate] || 0 },
+  psaJapan: { label: "PSA Japan料金", date: validDate(services.checkedAt || services.updatedAt), automatic: true, status: services.checkStatus || "unknown" },
+  xBuyback: { label: "X買取表・照合済み", date: latestXDate, automatic: false, note: "画像照合後に反映", pendingCount: Number(xPending.pendingCount || 0), detectedDate: latestXDetectedDate, checkedAt: xPending.checkedAt || null },
+};
+
+for (const source of Object.values(sources)) {
+  source.fresh = source.date === today && source.status !== "failed";
+}
+const complete = Object.values(sources).every((source) => source.fresh);
+const payload = {
+  checkedAt: new Date().toISOString(),
+  complete,
+  completeDate: complete ? today : previous.completeDate || null,
+  sources,
+};
+fs.writeFileSync(OUTPUT, JSON.stringify(payload), "utf8");
+console.log(JSON.stringify({ complete, completeDate: payload.completeDate, sources }));

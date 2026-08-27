@@ -14,9 +14,11 @@ if ($LASTEXITCODE -ne 0) { throw 'PSA official population update failed.' }
 if ($LASTEXITCODE -ne 0) { throw 'Snkr English name update failed.' }
 & $Node (Join-Path $PSScriptRoot 'build_psa_history.js')
 if ($LASTEXITCODE -ne 0) { throw 'PSA history build failed.' }
+& $Node (Join-Path $PSScriptRoot 'finalize_update_status.js')
+if ($LASTEXITCODE -ne 0) { throw 'Update status finalization failed.' }
 
 @{ lastSuccessDate=$Today; lastSuccessAt=(Get-Date).ToString('o') } | ConvertTo-Json | Set-Content -Path $StatePath -Encoding utf8
-git -C $Repo add data/psa-official-populations.json data/psa-population-summary.json data/psa-history work/snkr_english_names.json work/psa_update_state.json
+git -C $Repo add data/psa-official-populations.json data/psa-population-summary.json data/psa-history data/update-status.json work/snkr_english_names.json work/psa_update_state.json
 if (-not (git -C $Repo diff --cached --quiet)) {
   git -C $Repo commit -m "Refresh PSA official population $Today"
   git -C $Repo pull --rebase origin main
