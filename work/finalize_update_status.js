@@ -28,6 +28,7 @@ const today = jstDate();
 const previous = read("data/update-status.json", {});
 const meta = read("data/pokemon-cards-meta.json");
 const stock = read("data/cardrush-stock-summary.json");
+const hareruya2 = read("data/hareruya2-stock-summary.json");
 const buyback = read("data/shop-buyback-summary.json");
 const psa = read("data/psa-official-populations.json");
 const services = read("data/psa-japan-services.json");
@@ -43,6 +44,7 @@ const latestXDetectedDate = (xPending.posts || []).map((post) => validDate(post.
 const sources = {
   toreca: { label: "みんトレ", date: validDate(meta.updatedAt || meta.generatedAt), automatic: true },
   cardrush: { label: "カードラッシュ", date: validDate(stock.updatedAt), automatic: true },
+  hareruya2: { label: "晴れる屋2", date: validDate(hareruya2.updatedAt), automatic: true },
   shopBuyback: { label: "Web買取表", date: validDate(buyback.updatedAt), automatic: true },
   psaOfficial: { label: "PSA公式枚数", date: dominantPsaDate, automatic: false, note: "ログイン済みPCで取得", coverageRows: psaDateCounts[dominantPsaDate] || 0 },
   psaJapan: { label: "PSA Japan料金", date: validDate(services.checkedAt || services.updatedAt), automatic: true, status: services.checkStatus || "unknown" },

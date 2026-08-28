@@ -577,6 +577,7 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .market-link.toreca{border-color:rgba(125,211,252,.28)}
 .market-link.snkr{border-color:rgba(244,114,182,.28)}
 .market-link.cardrush{border-color:rgba(56,217,150,.32)}
+.market-link.hareruy2{border-color:rgba(251,191,36,.38)}
 .market-link.unavailable{opacity:.56}
 .stock-panel{
   margin-top:12px;
@@ -590,6 +591,9 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .stock-title div strong{font-size:20px}
 .stock-title div small{display:block;max-width:520px;margin-top:4px;color:var(--muted);font-size:9px;line-height:1.35}
 .stock-title b{padding:7px 10px;border-radius:999px;font-size:11px;background:rgba(148,163,184,.2)}
+.stock-shop-sources{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+.stock-shop-sources span{padding:6px 9px;border-radius:999px;background:rgba(5,10,20,.4);color:var(--muted);font-size:10px}
+.stock-shop-sources b{margin-left:4px;color:var(--text);font-size:11px}
 .stock-panel.risk-high{border-color:rgba(244,63,94,.35);background:linear-gradient(135deg,rgba(244,63,94,.12),rgba(245,158,11,.05))}
 .stock-panel.risk-medium{border-color:rgba(245,158,11,.3);background:linear-gradient(135deg,rgba(245,158,11,.1),rgba(125,211,252,.04))}
 .stock-panel.risk-low{border-color:rgba(56,217,150,.3);background:linear-gradient(135deg,rgba(56,217,150,.09),rgba(125,211,252,.05))}
@@ -852,6 +856,8 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
   .market-link{padding:10px 11px}
   .market-link strong{font-size:13px}
   .stock-title{align-items:flex-start}
+  .stock-shop-sources{display:grid;grid-template-columns:1fr}
+  .stock-shop-sources span{display:flex;align-items:center;justify-content:space-between}
   .stock-averages{grid-template-columns:1fr}
   .stock-averages div{display:flex;align-items:center;justify-content:space-between;gap:8px}
   .stock-averages span{margin:0}

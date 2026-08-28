@@ -65,6 +65,13 @@ jobs:
           CARDRUSH_REQUIRE_FRESH: "1"
         run: node work/update_cardrush_stock.js
 
+      - name: Link Hareruya2 state-A listings and record stock
+        env:
+          HARERUYA2_COLLECTION_BATCH: "0"
+          HARERUYA2_COLLECTION_CONCURRENCY: "5"
+          HARERUYA2_STOCK_CONCURRENCY: "10"
+        run: node work/update_hareruya2_stock.js
+
       - name: Verify priority Cardrush direct links from product pages
         shell: bash
         run: |

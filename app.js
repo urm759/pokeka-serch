@@ -3,6 +3,7 @@ const fmt = new Intl.NumberFormat("ja-JP");
 const state = {
   cards: [],
   cardrushStock: Object.create(null),
+  hareruya2Stock: Object.create(null),
   shopBuybacks: Object.create(null),
   buybackShops: Object.create(null),
   buybackDates: [],
@@ -335,8 +336,8 @@ const sorters = {
   "tx7-asc": (a, b) => a.saleTx7d - b.saleTx7d,
   "combined30-desc": (a, b) => b.combined30 - a.combined30,
   "combined7-desc": (a, b) => b.combined7 - a.combined7,
-  "cardrushDrop30-desc": (a, b) => (b.cardrushDrop30 ?? -Infinity) - (a.cardrushDrop30 ?? -Infinity),
-  "cardrushDrop7-desc": (a, b) => (b.cardrushDrop7 ?? -Infinity) - (a.cardrushDrop7 ?? -Infinity),
+  "cardrushDrop30-desc": (a, b) => (b.shopDrop30 ?? -Infinity) - (a.shopDrop30 ?? -Infinity),
+  "cardrushDrop7-desc": (a, b) => (b.shopDrop7 ?? -Infinity) - (a.shopDrop7 ?? -Infinity),
   "buyback90-desc": (a, b) => b.buyback90 - a.buyback90,
   "buyback30-desc": (a, b) => b.buyback30 - a.buyback30,
   "buyback7-desc": (a, b) => b.buyback7 - a.buyback7,
@@ -530,13 +531,13 @@ async function copyText(text) {
 
 function exportFavoritesCsv() {
   const cfg = guideConfig();
-  const rows = [["id", "カード名", "型番", "現在PSA10価格", "予測PSA10価格", "予測下落余地%", "将来価格評価", "基準", "理想仕入れ", "おすすめ仕入れ", "上限仕入れ", "PSA提出判断", "期待利益", "期待利益率", "年換算資金効率", "資金占有率", "判断理由", "みんトレURL", "カードラッシュURL"]];
+  const rows = [["id", "カード名", "型番", "現在PSA10価格", "予測PSA10価格", "予測下落余地%", "将来価格評価", "基準", "理想仕入れ", "おすすめ仕入れ", "上限仕入れ", "PSA提出判断", "期待利益", "期待利益率", "年換算資金効率", "資金占有率", "判断理由", "みんトレURL", "カードラッシュURL", "晴れる屋2URL"]];
   favoriteCards().forEach((rawCard) => {
     const card = calc(rawCard);
     const guide = favoriteGuide(card);
     const decision = card.psaDecision;
     const forecast = card.futurePriceForecast;
-    rows.push([card.id, card.name, card.model || "", card.psa10, forecast?.predictedPrice || card.psa10, forecast ? forecast.downsidePct.toFixed(1) : "", forecast?.score ?? "", cfg.label, guide.ideal, guide.recommended, guide.upper, decision?.recommended ? "おすすめ" : "おすすめしない", Math.round(decision?.expectedProfit || 0), Math.round(decision?.expectedRoi || 0), Math.round(decision?.annualEfficiency || 0), Number(decision?.capitalShare || 0).toFixed(1), decision?.reasons.join(" / ") || "", buildTorecaCardUrl(card), card.cardrushUrl || ""]);
+    rows.push([card.id, card.name, card.model || "", card.psa10, forecast?.predictedPrice || card.psa10, forecast ? forecast.downsidePct.toFixed(1) : "", forecast?.score ?? "", cfg.label, guide.ideal, guide.recommended, guide.upper, decision?.recommended ? "おすすめ" : "おすすめしない", Math.round(decision?.expectedProfit || 0), Math.round(decision?.expectedRoi || 0), Math.round(decision?.annualEfficiency || 0), Number(decision?.capitalShare || 0).toFixed(1), decision?.reasons.join(" / ") || "", buildTorecaCardUrl(card), card.cardrushUrl || "", card.hareruya2Url || ""]);
   });
   const csv = `\uFEFF${rows.map((row) => row.map(csvCell).join(",")).join("\r\n")}`;
   const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
@@ -818,7 +819,7 @@ function buildFuturePriceForecast(card, official, stock) {
   const rawStabilityScore = rawTrend30 == null ? 45 : rawTrend30 < -20 ? 12 : rawTrend30 < -8 ? 38 : rawTrend30 > 30 ? 38 : rawTrend30 >= -5 && rawTrend30 <= 10 ? 92 : 65;
   const score = Math.round(downsideScore * 0.45 + rawStabilityScore * 0.2 + turnoverScore * 0.2 + convertibilityScore * 0.15);
 
-  const evidenceCount = Number(card.saleTx30d >= 10) + Number(card.psaTx30d >= 5) + Number(card.buybackShops > 0) + Number(officialFresh && Number.isFinite(official?.rate)) + Number(Boolean(card.cardrushUrl));
+  const evidenceCount = Number(card.saleTx30d >= 10) + Number(card.psaTx30d >= 5) + Number(card.buybackShops > 0) + Number(officialFresh && Number.isFinite(official?.rate)) + Number(Boolean(card.cardrushUrl || card.hareruya2Url));
   const confidence = evidenceCount >= 4 ? "高" : evidenceCount >= 2 ? "中" : "低";
   const phase = downsidePct >= 30 ? "下落余地大" : downsidePct >= 18 ? "調整警戒" : downsidePct <= 7 && gapRatio <= 1.7 ? "底値圏候補" : downsidePct <= 10 ? "横ばい・安定候補" : "小幅調整候補";
   const reasons = [];
@@ -890,31 +891,62 @@ function buildOverallAssessment(card, official, stock, psaDecision) {
   if (forecast?.gapRatio >= 1.35 && forecast?.gapRatio <= 1.7 && forecast.rawTrend30 >= -5) strengths.push("状態Aとの価格差が収束圏");
   const futurePrice = forecast?.score ?? 35;
   let score = Math.round(exitLiquidity * 0.3 + economics * 0.2 + marketStability * 0.2 + supplyRisk * 0.1 + futurePrice * 0.2);
-  const completeEvidence = Number.isFinite(official?.rate) && Boolean(card.cardrushUrl);
+  const completeEvidence = Number.isFinite(official?.rate) && Boolean(card.cardrushUrl || card.hareruya2Url);
   if (!Number.isFinite(official?.rate)) cautions.push("PSA公式データ未紐づけ");
-  if (!card.cardrushUrl) cautions.push("カードラッシュ状態A未紐づけ");
+  if (!card.cardrushUrl && !card.hareruya2Url) cautions.push("ショップ状態A未紐づけ");
   score = Math.max(0, Math.min(100, score));
   const grade = score >= 75 && completeEvidence ? "A" : score >= 60 ? "B" : score >= 45 ? "C" : "D";
   const label = { A: "積極候補", B: "候補", C: "慎重", D: "見送り" }[grade];
   return { score, grade, label, exitLiquidity, economics, marketStability, supplyRisk: Math.round(supplyRisk), futurePrice, completeEvidence, strengths: strengths.slice(0, 3), cautions: cautions.slice(0, 3) };
 }
 
+function combineShopStock(...sources) {
+  const available = sources.filter(Boolean);
+  if (!available.length) return null;
+  const sum = (key) => {
+    const values = available.map((source) => Number(source[key])).filter(Number.isFinite);
+    return values.length ? values.reduce((total, value) => total + value, 0) : null;
+  };
+  const demandRank = { "蓄積中": 0, "少ない": 1, "普通": 2, "買う人が多い": 3 };
+  const demand = available
+    .map((source) => source.demand || "蓄積中")
+    .sort((left, right) => (demandRank[right] ?? 0) - (demandRank[left] ?? 0))[0] || "蓄積中";
+  return {
+    stock: sum("stock"),
+    avg7: sum("avg7"),
+    avg30: sum("avg30"),
+    avg90: sum("avg90"),
+    drop7: sum("drop7"),
+    drop30: sum("drop30"),
+    samples: Math.max(0, ...available.map((source) => Number(source.samples) || 0)),
+    demand,
+  };
+}
+
 function calc(card) {
   const torecaPrice = Number(card.price);
-  const stock = state.cardrushStock[card.id] || null;
-  const rawCardrushPrice = Number(stock?.cardrushPrice);
+  const cardrushStock = state.cardrushStock[card.id] || null;
+  const hareruya2Stock = state.hareruya2Stock[card.id] || null;
+  const stock = combineShopStock(cardrushStock, hareruya2Stock);
+  const rawCardrushPrice = Number(cardrushStock?.cardrushPrice);
   const cardrushPrice = rawCardrushPrice > 0 ? rawCardrushPrice : NaN;
-  const sourcePrices = [torecaPrice, cardrushPrice].filter((value) => Number.isFinite(value) && value > 0);
+  const rawHareruya2Price = Number(hareruya2Stock?.hareruya2Price);
+  const hareruya2Price = rawHareruya2Price > 0 ? rawHareruya2Price : NaN;
+  const sourcePrices = [torecaPrice, cardrushPrice, hareruya2Price].filter((value) => Number.isFinite(value) && value > 0);
   const price = sourcePrices.length
     ? Math.round(sourcePrices.reduce((sum, value) => sum + value, 0) / sourcePrices.length)
     : NaN;
   const psa10 = Number(card.snkPsa10Price);
   const saleTx30d = Number(card.tv30 || 0);
   const saleTx7d = Number(card.tv7 || 0);
-  const cardrushDrop30 = Number.isFinite(stock?.drop30) ? Number(stock.drop30) : null;
-  const cardrushDrop7 = Number.isFinite(stock?.drop7) ? Number(stock.drop7) : null;
-  const combined30 = saleTx30d + (cardrushDrop30 || 0);
-  const combined7 = saleTx7d + (cardrushDrop7 || 0);
+  const cardrushDrop30 = Number.isFinite(cardrushStock?.drop30) ? Number(cardrushStock.drop30) : null;
+  const cardrushDrop7 = Number.isFinite(cardrushStock?.drop7) ? Number(cardrushStock.drop7) : null;
+  const hareruya2Drop30 = Number.isFinite(hareruya2Stock?.drop30) ? Number(hareruya2Stock.drop30) : null;
+  const hareruya2Drop7 = Number.isFinite(hareruya2Stock?.drop7) ? Number(hareruya2Stock.drop7) : null;
+  const shopDrop30 = Number.isFinite(stock?.drop30) ? Number(stock.drop30) : null;
+  const shopDrop7 = Number.isFinite(stock?.drop7) ? Number(stock.drop7) : null;
+  const combined30 = saleTx30d + (shopDrop30 || 0);
+  const combined7 = saleTx7d + (shopDrop7 || 0);
   const buyback = state.shopBuybacks[card.id] || null;
   const buyback7 = Number(buyback?.total7 || 0);
   const buyback30 = Number(buyback?.total30 || 0);
@@ -929,14 +961,14 @@ function calc(card) {
   const psaTx7d = Number(card.p10tv7 || 0);
   const official = state.psaPopulation[card.id] || null;
   if (!(price > 0) || !(psa10 > 0)) {
-    return { ...card, price, torecaPrice, cardrushPrice, psa10, psa10Net: NaN, profit: NaN, roi: NaN, futurePriceForecast: null, psaDecision: null, overallAssessment: null, official, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackAvg30, buybackShops };
+    return { ...card, price, torecaPrice, cardrushPrice, hareruya2Price, cardrushStock, hareruya2Stock, psa10, psa10Net: NaN, profit: NaN, roi: NaN, futurePriceForecast: null, psaDecision: null, overallAssessment: null, official, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, hareruya2Drop30, hareruya2Drop7, shopDrop30, shopDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackAvg30, buybackShops };
   }
   const saleMultiplier = Math.max(0, 1 - state.saleFeeRate / 100);
   const psa10Net = psa10 * saleMultiplier - state.saleExtraCost;
   const profit = psa10Net - price - state.fee;
   const roiBase = price + state.fee;
   const roi = roiBase > 0 ? (profit / roiBase) * 100 : NaN;
-  const forecastBase = { ...card, price, torecaPrice, cardrushPrice, psa10, psa10Net, profit, roi, official, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackAvg30, buybackShops };
+  const forecastBase = { ...card, price, torecaPrice, cardrushPrice, hareruya2Price, cardrushStock, hareruya2Stock, psa10, psa10Net, profit, roi, official, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, hareruya2Drop30, hareruya2Drop7, shopDrop30, shopDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackAvg30, buybackShops };
   const futurePriceForecast = buildFuturePriceForecast(forecastBase, official, stock);
   const hitRate = guideConfig().hitRate;
   const lowerGradeNet = price * 0.75 * saleMultiplier - state.saleExtraCost;
@@ -1191,7 +1223,7 @@ function render() {
   );
   calculated.forEach((card) => {
     card.psaTxPeerMedian = psaTxMedianByPriceBand.get(psaPriceBand(card.psa10).key) ?? null;
-    card.overallAssessment = buildOverallAssessment(card, card.official, state.cardrushStock[card.id] || null, card.psaDecision);
+    card.overallAssessment = buildOverallAssessment(card, card.official, combineShopStock(state.cardrushStock[card.id], state.hareruya2Stock[card.id]), card.psaDecision);
   });
   const enriched = calculated
     .filter((card) => {
@@ -1231,7 +1263,7 @@ function render() {
       if (state.fundingOnly && !card.psaDecision?.recommended) return false;
       if (state.overallFilter === "a" && card.overallAssessment?.grade !== "A") return false;
       if (state.overallFilter === "ab" && !["A", "B"].includes(card.overallAssessment?.grade)) return false;
-      const demand = state.cardrushStock[card.id]?.demand || "蓄積中";
+      const demand = combineShopStock(state.cardrushStock[card.id], state.hareruya2Stock[card.id])?.demand || "蓄積中";
       if (state.stockDemand === "steady" && !["少ない", "普通"].includes(demand)) return false;
       if (state.stockDemand === "low" && demand !== "少ない") return false;
       if (state.stockDemand === "normal" && demand !== "普通") return false;
@@ -1258,9 +1290,10 @@ function render() {
   }
   if (els.cardrushCoverage) {
     const cr = meta.cardrushCoverage;
-    els.cardrushCoverage.textContent = cr?.total
-      ? `${fmt.format(cr.linked)} / ${fmt.format(cr.total)}（${Number(cr.rate || 0).toFixed(1)}%）`
-      : "集計中";
+    const h2 = meta.hareruya2Coverage;
+    const cardrushText = cr?.total ? `カードラッシュ ${fmt.format(cr.linked)} / ${fmt.format(cr.total)}` : "カードラッシュ 集計中";
+    const hareruya2Text = h2?.total ? `晴れる屋2 ${fmt.format(h2.matched)} / ${fmt.format(h2.total)}` : "晴れる屋2 取得準備中";
+    els.cardrushCoverage.textContent = `${cardrushText} / ${hareruya2Text}`;
   }
   renderGuide();
   const visibleCards = enriched.slice(0, state.visibleLimit);
@@ -1284,7 +1317,9 @@ function render() {
     const roiAssessmentClass = roiDifference >= 5 ? "high" : roiDifference <= -5 ? "low" : "average";
     const roiBandLabel = `PSA10 ¥${fmt.format(priceBand.min)}～¥${fmt.format(priceBand.max - 1)}・取引条件を満たす${fmt.format(peerValues.length)}枚`;
     const name = card.name.replace(/\s+/g, " ");
-    const stock = state.cardrushStock[card.id] || null;
+    const cardrushStock = state.cardrushStock[card.id] || null;
+    const hareruya2Stock = state.hareruya2Stock[card.id] || null;
+    const stock = combineShopStock(cardrushStock, hareruya2Stock);
     const snkUrl = card.snkUrl || state.snkrUrlCache[card.id] || buildSnkrUrl(card);
     const snkrDirect = /snkrdunk\.com\/(apparels|trading-cards|products)\/\d+/i.test(snkUrl);
     const marketLinks = [
@@ -1293,19 +1328,27 @@ function render() {
       card.cardrushUrl
         ? `<a class="market-link cardrush" href="${card.cardrushUrl}" target="_blank" rel="noreferrer"><span>ショップ・状態A</span><strong>カードラッシュ直リンク</strong></a>`
         : `<span class="market-link unavailable"><span>ショップ</span><strong>カードラッシュ直リンク未取得</strong></span>`,
+      card.hareruya2Url
+        ? `<a class="market-link hareruya2" href="${card.hareruya2Url}" target="_blank" rel="noreferrer"><span>ショップ・状態A</span><strong>晴れる屋2直リンク</strong></a>`
+        : "",
     ].join("");
     const demandClass = stock?.demand === "買う人が多い" ? "risk-high" : stock?.demand === "普通" ? "risk-medium" : stock?.demand === "少ない" ? "risk-low" : "pending";
     const demandBadge = stock?.demand && stock.demand !== "蓄積中" ? `<b>在庫減少ペース：${stock.demand}</b>` : "";
     const avgStock = (value) => Number.isFinite(value) ? `${Number(value).toFixed(2)}枚/日` : "-";
     const dropStock = (value) => Number.isFinite(value) ? `${fmt.format(Number(value))}枚` : "-";
     const combinedMovement = (tx, drop) => Number.isFinite(drop) ? `${fmt.format(tx + Number(drop))}件相当` : "-";
-    const stockPanel = card.cardrushUrl
+    const shopStockRows = [
+      card.cardrushUrl ? `<span>カードラッシュ <b>${Number.isFinite(cardrushStock?.stock) ? `${fmt.format(cardrushStock.stock)}枚` : "-"}</b></span>` : "",
+      card.hareruya2Url ? `<span>晴れる屋2 <b>${Number.isFinite(hareruya2Stock?.stock) ? `${fmt.format(hareruya2Stock.stock)}枚` : "-"}</b></span>` : "",
+    ].filter(Boolean).join("");
+    const stockPanel = (card.cardrushUrl || card.hareruya2Url)
       ? `
           <div class="stock-panel ${demandClass}">
             <div class="stock-title">
-              <div><span>カードラッシュ状態A 在庫</span><strong>${Number.isFinite(stock?.stock) ? `${fmt.format(stock.stock)}枚` : "-"}</strong><small>在庫減少ペースです。速いほどPSA供給増による相場下落リスクを高く見て、赤く表示します。</small></div>
+              <div><span>ショップ状態A 合算在庫</span><strong>${Number.isFinite(stock?.stock) ? `${fmt.format(stock.stock)}枚` : "-"}</strong><small>在庫減少が速いほどPSA供給増による相場下落リスクを高く見て、赤く表示します。</small></div>
               ${demandBadge}
             </div>
+            <div class="stock-shop-sources">${shopStockRows}</div>
             <div class="stock-averages">
               <div><span>7日平均減少</span><strong>${avgStock(stock?.avg7)}</strong></div>
               <div><span>30日平均減少</span><strong>${avgStock(stock?.avg30)}</strong></div>
@@ -1349,16 +1392,20 @@ function render() {
     ` : "";
     const activityPanel = `
       <div class="activity-panel">
-        <div class="activity-head"><strong>売れ行き</strong><span>みんトレ取引件数 / カードラッシュ在庫減</span></div>
+        <div class="activity-head"><strong>売れ行き</strong><span>みんトレ取引件数 / ショップ状態A在庫減</span></div>
         <div class="activity-grid">
           <div><span>PSA10・直近7日</span><strong>${fmt.format(card.psaTx7d)}件</strong><small>みんトレPSA10</small></div>
           <div class="activity-emphasis"><span>PSA10・直近30日</span><strong>${fmt.format(card.psaTx30d)}件</strong><small>同価格帯中央値 ${Number.isFinite(card.psaTxPeerMedian) ? `${fmt.format(Math.round(card.psaTxPeerMedian))}件` : "-"}</small></div>
-          <div><span>美品・直近7日</span><strong>みんトレ ${fmt.format(card.saleTx7d)}件</strong><small>カードラッシュ ${dropStock(stock?.drop7)} / 参考合計 ${combinedMovement(card.saleTx7d, stock?.drop7)}</small></div>
-          <div><span>美品・直近30日</span><strong>みんトレ ${fmt.format(card.saleTx30d)}件</strong><small>カードラッシュ ${dropStock(stock?.drop30)} / 参考合計 ${combinedMovement(card.saleTx30d, stock?.drop30)}</small></div>
+          <div><span>美品・直近7日</span><strong>みんトレ ${fmt.format(card.saleTx7d)}件</strong><small>カードラッシュ ${dropStock(card.cardrushDrop7)} / 晴れる屋2 ${dropStock(card.hareruya2Drop7)} / 合計 ${combinedMovement(card.saleTx7d, card.shopDrop7)}</small></div>
+          <div><span>美品・直近30日</span><strong>みんトレ ${fmt.format(card.saleTx30d)}件</strong><small>カードラッシュ ${dropStock(card.cardrushDrop30)} / 晴れる屋2 ${dropStock(card.hareruya2Drop30)} / 合計 ${combinedMovement(card.saleTx30d, card.shopDrop30)}</small></div>
         </div>
       </div>
     `;
     const cardrushPriceText = Number.isFinite(card.cardrushPrice) ? `¥${fmt.format(card.cardrushPrice)}` : "未取得";
+    const hareruya2PriceText = Number.isFinite(card.hareruya2Price) ? `¥${fmt.format(card.hareruya2Price)}` : "未取得";
+    const priceSources = [`みんトレ状態A ¥${fmt.format(card.torecaPrice)}`, `カードラッシュ状態A ${cardrushPriceText}`, `晴れる屋2状態A ${hareruya2PriceText}`]
+      .filter((_, index) => index === 0 || (index === 1 ? Number.isFinite(card.cardrushPrice) : Number.isFinite(card.hareruya2Price)))
+      .join(" / ");
     const favoriteActive = state.favorites.has(String(card.id));
     const psaDecision = card.psaDecision;
     const decisionClass = psaDecision?.recommended ? "recommended" : "not-recommended";
@@ -1450,7 +1497,7 @@ function render() {
           </div>
 
           <div class="metrics market-summary">
-            <div class="metric metric-primary"><span>平均美品価格</span><strong>¥${fmt.format(card.price)}</strong><small>みんトレ状態A ¥${fmt.format(card.torecaPrice)} / カードラッシュ状態A ${cardrushPriceText}</small></div>
+            <div class="metric metric-primary"><span>平均美品価格</span><strong>¥${fmt.format(card.price)}</strong><small>${priceSources}</small></div>
             <div class="metric"><span>PSA10市場価格</span><strong>¥${fmt.format(card.psa10)}</strong><small>みんトレ市場価格 / 手数料・追加費用差引後の受取見込 ¥${fmt.format(Math.round(card.psa10Net))}</small></div>
             <div class="metric"><span>手取り利益</span><strong>¥${fmt.format(Math.round(card.profit))}</strong><small>共通設定のPSA鑑定費・売却手数料 ${Number(state.saleFeeRate).toFixed(1)}%・追加費用を反映</small></div>
             <div class="metric metric-roi"><span>手取り利益率</span><strong>${Number.isFinite(card.roi) ? Math.round(card.roi) : 0}%</strong><small>利益 ÷（平均美品＋PSA鑑定費）</small></div>
@@ -1572,6 +1619,8 @@ async function init() {
     }
     const stockData = await fetchJsonMaybe("./data/cardrush-stock-summary.json");
     state.cardrushStock = stockData?.cards || Object.create(null);
+    const hareruya2Data = await fetchJsonMaybe("./data/hareruya2-stock-summary.json");
+    state.hareruya2Stock = hareruya2Data?.cards || Object.create(null);
     const buybackData = await fetchJsonMaybe("./data/shop-buyback-summary.json");
     state.shopBuybacks = buybackData?.cards || Object.create(null);
     state.buybackShops = buybackData?.shops || Object.create(null);

@@ -36,6 +36,13 @@ jobs:
           CARDRUSH_REQUIRE_FRESH: "1"
         run: node work/update_cardrush_stock.js
 
+      - name: Link Hareruya2 state-A listings and record stock
+        env:
+          HARERUYA2_COLLECTION_BATCH: "0"
+          HARERUYA2_COLLECTION_CONCURRENCY: "5"
+          HARERUYA2_STOCK_CONCURRENCY: "10"
+        run: node work/update_hareruya2_stock.js
+
       - name: Re-resolve changed URLs
         env:
           CARDRUSH_SKIP_SEEDS: "1"
@@ -47,7 +54,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/pokemon-cards.json data/pokemon-cards-meta.json data/cardrush-stock-summary.json work/cardrush_catalog.json work/cardrush_stock_history.json work/cardrush_stock_misses.json work/cardrush_invalid_urls.json work/cardrush_recheck_ids.json work/cardrush_crawl_progress.json work/cardrush_target_progress.json
+          git add data/pokemon-cards.json data/pokemon-cards-meta.json data/cardrush-stock-summary.json data/hareruya2-stock-summary.json work/cardrush_catalog.json work/cardrush_stock_history.json work/cardrush_stock_misses.json work/cardrush_invalid_urls.json work/cardrush_recheck_ids.json work/cardrush_crawl_progress.json work/cardrush_target_progress.json work/hareruya2_catalog.json work/hareruya2_stock_history.json work/hareruya2_collection_progress.json
           if git diff --cached --quiet; then
             echo "No stock changes."
             exit 0
