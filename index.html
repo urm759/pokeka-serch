@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20260828-refresh3" />
+  <link rel="stylesheet" href="./styles.css?v=20260829-forecast1" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -40,13 +40,17 @@
         <label class="control">
           <span>並び順</span>
           <select id="sortInput">
+            <option value="overall-desc">総合評価が高い順</option>
             <option value="roi-desc">利益率が高い順</option>
             <option value="roi-asc">利益率が低い順</option>
             <option value="profit-desc">利益額が高い順</option>
             <option value="profit-asc">利益額が低い順</option>
             <option value="psaRecommend-desc">資金面の提出候補を優先</option>
-            <option value="overall-desc">総合評価が高い順</option>
             <option value="exit-desc">売りやすい順</option>
+            <option value="futureScore-desc">将来価格評価が高い順</option>
+            <option value="downside-asc">予測下落余地が小さい順</option>
+            <option value="forecastPrice-desc">予測PSA10価格が高い順</option>
+            <option value="forecastPrice-asc">予測PSA10価格が低い順</option>
             <option value="expectedProfit-desc">期待利益が高い順</option>
             <option value="annualEfficiency-desc">年換算資金効率が高い順</option>
             <option value="capitalShare-asc">資金占有率が低い順</option>
@@ -200,6 +204,14 @@
         <label class="control">
           <span>供給リスク耐性 下限点</span>
           <input id="minSupplyRiskInput" type="number" min="0" max="100" step="1" value="0" placeholder="0〜100・空欄は0" />
+        </label>
+        <label class="control">
+          <span>将来価格評価 下限点</span>
+          <input id="minFuturePriceScoreInput" type="number" min="0" max="100" step="1" value="0" placeholder="0〜100・空欄は0" />
+        </label>
+        <label class="control">
+          <span>予測下落余地 上限%</span>
+          <input id="maxForecastDownsideInput" type="number" min="0" max="100" step="1" placeholder="例: 15・空欄は条件なし" />
         </label>
         <label class="control">
           <span>在庫減少ペースで絞る</span>
@@ -422,6 +434,6 @@
     </section>
   </main>
 
-  <script src="./app.js?v=20260828-refresh3"></script>
+  <script src="./app.js?v=20260829-forecast1"></script>
 </body>
 </html>

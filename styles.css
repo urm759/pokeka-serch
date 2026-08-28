@@ -672,6 +672,24 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .psa-decision-metrics span{display:block;color:var(--muted);font-size:9px}
 .psa-decision-metrics strong{display:block;margin-top:2px;font-size:14px}
 .psa-decision p{margin:8px 0 0;color:var(--muted);font-size:10px}
+.future-price-forecast{margin-top:12px;padding:13px;border:1px solid rgba(125,211,252,.34);border-radius:17px;background:linear-gradient(135deg,rgba(125,211,252,.11),rgba(5,10,20,.5))}
+.future-price-forecast.risk-low{border-color:rgba(56,217,150,.42);background:linear-gradient(135deg,rgba(56,217,150,.12),rgba(5,10,20,.5))}
+.future-price-forecast.risk-medium{border-color:rgba(245,158,11,.42);background:linear-gradient(135deg,rgba(245,158,11,.1),rgba(5,10,20,.5))}
+.future-price-forecast.risk-high{border-color:rgba(244,63,94,.46);background:linear-gradient(135deg,rgba(244,63,94,.12),rgba(5,10,20,.5))}
+.future-forecast-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.future-forecast-head>div span,.future-forecast-head>div small{display:block;color:var(--muted);font-size:9px}
+.future-forecast-head>div strong{display:block;margin:2px 0;font-size:16px}
+.future-price-forecast.risk-low .future-forecast-head strong{color:#86efac}
+.future-price-forecast.risk-medium .future-forecast-head strong{color:#fde68a}
+.future-price-forecast.risk-high .future-forecast-head strong{color:#fda4af}
+.future-forecast-head>b{padding:5px 9px;border-radius:999px;background:rgba(255,255,255,.1);font-size:15px;white-space:nowrap}
+.future-forecast-head>b small{margin-left:2px;color:var(--muted);font-size:8px}
+.future-forecast-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:9px}
+.future-forecast-metrics div{padding:9px;border-radius:12px;background:rgba(5,10,20,.5)}
+.future-forecast-metrics span{display:block;color:var(--muted);font-size:9px}
+.future-forecast-metrics strong{display:block;margin-top:2px;font-size:14px}
+.future-price-forecast p{margin:8px 0 3px;color:#e5edf9;font-size:10px;line-height:1.55}
+.future-price-forecast>small{display:block;color:var(--muted);font-size:9px;line-height:1.5}
 .overall-assessment{margin-top:12px;padding:13px;border:1px solid rgba(255,255,255,.14);border-radius:17px;background:rgba(5,10,20,.5)}
 .overall-assessment>div{display:flex;align-items:baseline;gap:8px}
 .overall-assessment span{color:var(--muted);font-size:10px}
@@ -679,7 +697,7 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .overall-assessment b{margin-left:auto;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.1);font-size:11px}
 .overall-assessment p{margin:8px 0 4px;font-size:10px;line-height:1.65;color:#e5edf9}
 .overall-assessment small{display:block;color:var(--muted);font-size:9px;line-height:1.55}
-.overall-components{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:9px}
+.overall-components{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:9px}
 .overall-components span{padding:7px;border-radius:10px;background:rgba(5,10,20,.52);text-align:center;font-size:8px}
 .overall-components span b{display:block;margin:0 0 2px;padding:0;background:none;font-size:15px;color:var(--text)}
 .overall-assessment .score-value small,.overall-components span b small{display:inline;margin-left:2px;color:var(--muted);font-size:8px;font-weight:700;line-height:1}
@@ -848,6 +866,8 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
   .stat{padding:12px}
   .activity-head{align-items:flex-start;flex-direction:column;gap:2px}
   .activity-grid{grid-template-columns:1fr}
+  .future-forecast-head{align-items:flex-start}
+  .future-forecast-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
   .overall-components{grid-template-columns:repeat(2,minmax(0,1fr))}
   .psa-decision-head{align-items:flex-start;flex-direction:column;gap:2px}
   .psa-decision-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}

@@ -46,10 +46,12 @@ const state = {
   minEconomics: 0,
   minMarketStability: 0,
   minSupplyRisk: 0,
+  minFuturePriceScore: 0,
+  maxForecastDownside: null,
   stockDemand: "all",
   fundingOnly: false,
   officialOnly: false,
-  sort: "roi-desc",
+  sort: "overall-desc",
   q: "",
   visibleLimit: 60,
   favorites: new Set(),
@@ -112,6 +114,8 @@ const els = {
   minEconomicsInput: document.getElementById("minEconomicsInput"),
   minMarketStabilityInput: document.getElementById("minMarketStabilityInput"),
   minSupplyRiskInput: document.getElementById("minSupplyRiskInput"),
+  minFuturePriceScoreInput: document.getElementById("minFuturePriceScoreInput"),
+  maxForecastDownsideInput: document.getElementById("maxForecastDownsideInput"),
   stockDemandInput: document.getElementById("stockDemandInput"),
   fundingOnlyInput: document.getElementById("fundingOnlyInput"),
   officialOnlyInput: document.getElementById("officialOnlyInput"),
@@ -318,6 +322,10 @@ const sorters = {
   "psaRecommend-desc": (a, b) => Number(b.psaDecision?.recommended) - Number(a.psaDecision?.recommended) || (b.psaDecision?.annualEfficiency ?? -Infinity) - (a.psaDecision?.annualEfficiency ?? -Infinity),
   "overall-desc": (a, b) => (b.overallAssessment?.score ?? -Infinity) - (a.overallAssessment?.score ?? -Infinity) || b.roi - a.roi,
   "exit-desc": (a, b) => (b.overallAssessment?.exitLiquidity ?? -Infinity) - (a.overallAssessment?.exitLiquidity ?? -Infinity) || b.psaTx30d - a.psaTx30d,
+  "futureScore-desc": (a, b) => (b.futurePriceForecast?.score ?? -Infinity) - (a.futurePriceForecast?.score ?? -Infinity) || b.roi - a.roi,
+  "downside-asc": (a, b) => (a.futurePriceForecast?.downsidePct ?? Infinity) - (b.futurePriceForecast?.downsidePct ?? Infinity),
+  "forecastPrice-desc": (a, b) => (b.futurePriceForecast?.predictedPrice ?? -Infinity) - (a.futurePriceForecast?.predictedPrice ?? -Infinity),
+  "forecastPrice-asc": (a, b) => (a.futurePriceForecast?.predictedPrice ?? Infinity) - (b.futurePriceForecast?.predictedPrice ?? Infinity),
   "expectedProfit-desc": (a, b) => (b.psaDecision?.expectedProfit ?? -Infinity) - (a.psaDecision?.expectedProfit ?? -Infinity),
   "annualEfficiency-desc": (a, b) => (b.psaDecision?.annualEfficiency ?? -Infinity) - (a.psaDecision?.annualEfficiency ?? -Infinity),
   "capitalShare-asc": (a, b) => (a.psaDecision?.capitalShare ?? Infinity) - (b.psaDecision?.capitalShare ?? Infinity),
@@ -412,7 +420,7 @@ function saveFavorites() {
 
 function favoriteGuide(card) {
   const cfg = guideConfig();
-  const psa10 = Number(card.snkPsa10Price || card.psa10 || 0);
+  const psa10 = Number(card.futurePriceForecast?.predictedPrice || card.snkPsa10Price || card.psa10 || 0);
   const fee = Number(state.fee || 0);
   return {
     ideal: calcGuideBuyPrice(psa10, cfg.hitRate, fee, 20),
@@ -434,7 +442,7 @@ function renderFavorites() {
   if (els.favoriteCountToolbar) els.favoriteCountToolbar.textContent = fmt.format(cards.length);
   if (els.favoritesHint) {
     els.favoritesHint.textContent = cards.length
-      ? `${cfg.label} / PSA鑑定費 ¥${fmt.format(state.fee)} / 売却手数料 ${Number(state.saleFeeRate).toFixed(1)}%で計算中`
+      ? `${cfg.label} / 予測PSA10価格 / PSA鑑定費 ¥${fmt.format(state.fee)} / 売却手数料 ${Number(state.saleFeeRate).toFixed(1)}%で計算中`
       : "各カードの「仕入れ候補に追加」から登録してください。";
   }
   els.copyFavoritesBtn.disabled = cards.length === 0;
@@ -456,7 +464,7 @@ function renderFavorites() {
           <h3>${name}</h3>
           <div class="favorite-decision ${decision?.recommended ? "recommended" : "not-recommended"}">${decision?.recommended ? "PSA提出おすすめ" : "PSA提出おすすめしない"}</div>
           <div class="favorite-prices">
-            <div><span>PSA10</span><strong>¥${fmt.format(card.psa10)}</strong></div>
+            <div><span>現在 / 予測PSA10</span><strong>¥${fmt.format(card.psa10)} / ¥${fmt.format(card.futurePriceForecast?.predictedPrice || card.psa10)}</strong></div>
             <div class="recommended"><span>おすすめ以下</span><strong>¥${fmt.format(guide.recommended)}</strong></div>
             <div><span>理想</span><strong>¥${fmt.format(guide.ideal)}</strong></div>
             <div><span>上限</span><strong>¥${fmt.format(guide.upper)}</strong></div>
@@ -490,7 +498,8 @@ function favoritesMemo() {
     const guide = favoriteGuide(card);
     const decision = card.psaDecision;
     const decisionText = decision?.recommended ? "PSA提出おすすめ" : `PSA提出おすすめしない：${decision?.reasons.join(" / ") || "計算不可"}`;
-    return `${String(card.name || "").replace(/\s+/g, " ")}\nおすすめ ¥${fmt.format(guide.recommended)}以下（理想 ¥${fmt.format(guide.ideal)} / 上限 ¥${fmt.format(guide.upper)} / PSA10 ¥${fmt.format(card.psa10)}）\n${decisionText} / 期待利益 ¥${fmt.format(Math.round(decision?.expectedProfit || 0))} / 年換算効率 ${Math.round(decision?.annualEfficiency || 0)}%`;
+    const forecast = card.futurePriceForecast;
+    return `${String(card.name || "").replace(/\s+/g, " ")}\nおすすめ ¥${fmt.format(guide.recommended)}以下（理想 ¥${fmt.format(guide.ideal)} / 上限 ¥${fmt.format(guide.upper)} / 現在PSA10 ¥${fmt.format(card.psa10)} / 予測PSA10 ¥${fmt.format(forecast?.predictedPrice || card.psa10)} / 下落余地 ${forecast ? `${forecast.downsidePct.toFixed(1)}%` : "-"}）\n${decisionText} / 期待利益 ¥${fmt.format(Math.round(decision?.expectedProfit || 0))} / 年換算効率 ${Math.round(decision?.annualEfficiency || 0)}%`;
   });
   return [header, ...rows].join("\n\n");
 }
@@ -521,12 +530,13 @@ async function copyText(text) {
 
 function exportFavoritesCsv() {
   const cfg = guideConfig();
-  const rows = [["id", "カード名", "型番", "PSA10価格", "基準", "理想仕入れ", "おすすめ仕入れ", "上限仕入れ", "PSA提出判断", "期待利益", "期待利益率", "年換算資金効率", "資金占有率", "判断理由", "みんトレURL", "カードラッシュURL"]];
+  const rows = [["id", "カード名", "型番", "現在PSA10価格", "予測PSA10価格", "予測下落余地%", "将来価格評価", "基準", "理想仕入れ", "おすすめ仕入れ", "上限仕入れ", "PSA提出判断", "期待利益", "期待利益率", "年換算資金効率", "資金占有率", "判断理由", "みんトレURL", "カードラッシュURL"]];
   favoriteCards().forEach((rawCard) => {
     const card = calc(rawCard);
     const guide = favoriteGuide(card);
     const decision = card.psaDecision;
-    rows.push([card.id, card.name, card.model || "", card.psa10, cfg.label, guide.ideal, guide.recommended, guide.upper, decision?.recommended ? "おすすめ" : "おすすめしない", Math.round(decision?.expectedProfit || 0), Math.round(decision?.expectedRoi || 0), Math.round(decision?.annualEfficiency || 0), Number(decision?.capitalShare || 0).toFixed(1), decision?.reasons.join(" / ") || "", buildTorecaCardUrl(card), card.cardrushUrl || ""]);
+    const forecast = card.futurePriceForecast;
+    rows.push([card.id, card.name, card.model || "", card.psa10, forecast?.predictedPrice || card.psa10, forecast ? forecast.downsidePct.toFixed(1) : "", forecast?.score ?? "", cfg.label, guide.ideal, guide.recommended, guide.upper, decision?.recommended ? "おすすめ" : "おすすめしない", Math.round(decision?.expectedProfit || 0), Math.round(decision?.expectedRoi || 0), Math.round(decision?.annualEfficiency || 0), Number(decision?.capitalShare || 0).toFixed(1), decision?.reasons.join(" / ") || "", buildTorecaCardUrl(card), card.cardrushUrl || ""]);
   });
   const csv = `\uFEFF${rows.map((row) => row.map(csvCell).join(",")).join("\r\n")}`;
   const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
@@ -746,6 +756,102 @@ function attachBundlePopulations(population) {
   };
 }
 
+function clamp(value, min = 0, max = 100) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function buildFuturePriceForecast(card, official, stock) {
+  const currentPrice = Number(card.psa10);
+  const rawPrice = Number(card.price);
+  if (!(currentPrice > 0) || !(rawPrice > 0)) return null;
+
+  const rawTrend30 = card.chg30 == null || card.chg30 === "" || !Number.isFinite(Number(card.chg30)) ? null : Number(card.chg30);
+  const rawTrend7 = card.chg7 == null || card.chg7 === "" || !Number.isFinite(Number(card.chg7)) ? null : Number(card.chg7);
+  const gapRatio = currentPrice / rawPrice;
+  const rawActivityScore = clamp(Number(card.saleTx30d || 0) / 40 * 100);
+  const psaActivityScore = clamp(Number(card.psaTx30d || 0) / 20 * 100);
+  const turnoverScore = Math.round(rawActivityScore * 0.45 + psaActivityScore * 0.55);
+  const buybackRatio = card.buybackPrice > 0 ? card.buybackPrice / currentPrice : 0;
+  const buybackPriceScore = buybackRatio >= 0.85 ? 100 : buybackRatio >= 0.75 ? 85 : buybackRatio >= 0.6 ? 65 : buybackRatio > 0 ? 35 : 15;
+  const shopCoverageScore = clamp(Number(card.buybackShops || 0) / 3 * 100);
+  const convertibilityScore = Math.round(buybackPriceScore * 0.65 + shopCoverageScore * 0.35);
+
+  // The raw-card anchor follows the A-condition market instead of treating 1.5x as a fixed floor.
+  const projectedRawChange = rawTrend30 == null ? 0 : clamp(rawTrend30, -35, 25) * 0.35;
+  const projectedRawPrice = rawPrice * (1 + projectedRawChange / 100);
+  let convergenceMultiple = 1.5;
+  if (rawTrend30 != null) {
+    if (rawTrend30 <= -20) convergenceMultiple -= 0.16;
+    else if (rawTrend30 <= -8) convergenceMultiple -= 0.09;
+    else if (rawTrend30 >= 15) convergenceMultiple += 0.12;
+    else if (rawTrend30 >= 5) convergenceMultiple += 0.06;
+  }
+  if (card.psaTx30d >= 20) convergenceMultiple += 0.1;
+  else if (card.psaTx30d >= 5) convergenceMultiple += 0.05;
+  else if (card.psaTx30d < 2) convergenceMultiple -= 0.08;
+  if (buybackRatio >= 0.8) convergenceMultiple += 0.1;
+  else if (buybackRatio >= 0.65) convergenceMultiple += 0.05;
+  else if (card.buybackShops === 0) convergenceMultiple -= 0.05;
+  if (card.buybackShops >= 2) convergenceMultiple += 0.04;
+  if (Number.isFinite(official?.rate)) {
+    if (official.rate < 35) convergenceMultiple += 0.18;
+    else if (official.rate < 55) convergenceMultiple += 0.1;
+    else if (official.rate > 90) convergenceMultiple -= 0.05;
+  }
+  if (stock?.demand === "買う人が多い") convergenceMultiple -= 0.08;
+  else if (stock?.demand === "少ない") convergenceMultiple += 0.04;
+  const officialFresh = sourceAgeDays(official?.f) <= 2;
+  const growth = officialFresh ? official?.w30?.s : null;
+  if (growth === "急増化") convergenceMultiple -= 0.12;
+  else if (growth === "増加") convergenceMultiple -= 0.06;
+  else if (growth === "横ばい" || growth === "少ない") convergenceMultiple += 0.04;
+  convergenceMultiple = clamp(convergenceMultiple, 1.22, 1.9);
+
+  let predictedPrice = projectedRawPrice * convergenceMultiple;
+  if (card.buybackPrice > 0) predictedPrice = predictedPrice * 0.82 + card.buybackPrice * 0.18;
+  if (card.saleTx30d < 5) predictedPrice = predictedPrice * 0.4 + currentPrice * 0.6;
+  else if (card.saleTx30d < 15) predictedPrice = predictedPrice * 0.7 + currentPrice * 0.3;
+  predictedPrice = roundToStep(clamp(predictedPrice, rawPrice, currentPrice * 1.15), 1000);
+  const signedChangePct = (predictedPrice - currentPrice) / currentPrice * 100;
+  const downsidePct = Math.max(0, -signedChangePct);
+  const downsideScore = downsidePct <= 5 ? 100 : downsidePct <= 10 ? 88 : downsidePct <= 20 ? 68 : downsidePct <= 30 ? 43 : downsidePct <= 40 ? 23 : 8;
+  const rawStabilityScore = rawTrend30 == null ? 45 : rawTrend30 < -20 ? 12 : rawTrend30 < -8 ? 38 : rawTrend30 > 30 ? 38 : rawTrend30 >= -5 && rawTrend30 <= 10 ? 92 : 65;
+  const score = Math.round(downsideScore * 0.45 + rawStabilityScore * 0.2 + turnoverScore * 0.2 + convertibilityScore * 0.15);
+
+  const evidenceCount = Number(card.saleTx30d >= 10) + Number(card.psaTx30d >= 5) + Number(card.buybackShops > 0) + Number(officialFresh && Number.isFinite(official?.rate)) + Number(Boolean(card.cardrushUrl));
+  const confidence = evidenceCount >= 4 ? "高" : evidenceCount >= 2 ? "中" : "低";
+  const phase = downsidePct >= 30 ? "下落余地大" : downsidePct >= 18 ? "調整警戒" : downsidePct <= 7 && gapRatio <= 1.7 ? "底値圏候補" : downsidePct <= 10 ? "横ばい・安定候補" : "小幅調整候補";
+  const reasons = [];
+  if (gapRatio >= 2) reasons.push(`PSA10が平均美品の${gapRatio.toFixed(2)}倍`);
+  else if (gapRatio >= 1.35 && gapRatio <= 1.7) reasons.push(`平均美品との倍率が収束圏（${gapRatio.toFixed(2)}倍）`);
+  if (rawTrend30 != null && rawTrend30 <= -8) reasons.push(`状態Aが30日で${rawTrend30.toFixed(1)}%下落`);
+  else if (rawTrend30 != null && rawTrend30 >= 5) reasons.push(`状態Aが30日で${rawTrend30.toFixed(1)}%上昇`);
+  if (card.psaTx30d >= 20) reasons.push("PSA10の売買が活発");
+  else if (card.psaTx30d < 5) reasons.push("PSA10の売買が少ない");
+  if (buybackRatio >= 0.75 && card.buybackShops > 0) reasons.push("店舗買取が市場価格を強く支える");
+  if (Number.isFinite(official?.rate) && official.rate < 55) reasons.push(`PSA10取得率${official.rate.toFixed(1)}%で10の希少性あり`);
+  if (growth === "急増化" || growth === "増加") reasons.push(`PSA10供給が${growth}`);
+
+  return {
+    predictedPrice,
+    downsidePct,
+    signedChangePct,
+    gapRatio,
+    convergenceMultiple,
+    projectedRawPrice: roundToStep(projectedRawPrice, 100),
+    score,
+    downsideScore,
+    turnoverScore,
+    convertibilityScore,
+    rawStabilityScore,
+    confidence,
+    phase,
+    reasons: reasons.slice(0, 4),
+    rawTrend30,
+    rawTrend7,
+  };
+}
+
 function buildOverallAssessment(card, official, stock, psaDecision) {
   const strengths = [];
   const cautions = [];
@@ -755,9 +861,12 @@ function buildOverallAssessment(card, official, stock, psaDecision) {
   const shopScore = learnedPercentileScore(card.buybackShops, learned?.buybackShops);
   const listingScore = learnedPercentileScore(card.buyback30, learned?.buyback30);
   const stabilityScore = !Number.isFinite(card.chg30) ? 45 : card.chg30 < -20 ? 10 : card.chg30 > 35 ? 30 : card.chg30 >= -5 && card.chg30 <= 12 ? 90 : 60;
-  const exitLiquidity = Math.round(psa30Score * 0.4 + psa7Score * 0.15 + shopScore * 0.2 + listingScore * 0.15 + stabilityScore * 0.1);
-  const economics = Math.round(learnedPercentileScore(card.roi, learned?.roi) * 0.7 + (psaDecision?.expectedProfit >= 20000 ? 100 : psaDecision?.expectedProfit >= 10000 ? 75 : psaDecision?.expectedProfit >= 0 ? 50 : 5) * 0.3);
-  let marketStability = stabilityScore;
+  const forecast = card.futurePriceForecast;
+  const baseExitLiquidity = psa30Score * 0.4 + psa7Score * 0.15 + shopScore * 0.2 + listingScore * 0.15 + stabilityScore * 0.1;
+  const exitLiquidity = Math.round(baseExitLiquidity * 0.75 + (forecast?.turnoverScore ?? 45) * 0.15 + (forecast?.convertibilityScore ?? 35) * 0.1);
+  const forecastRoiScore = learnedPercentileScore(psaDecision?.expectedRoi, learned?.roi);
+  const economics = Math.round(forecastRoiScore * 0.7 + (psaDecision?.expectedProfit >= 20000 ? 100 : psaDecision?.expectedProfit >= 10000 ? 75 : psaDecision?.expectedProfit >= 0 ? 50 : 5) * 0.3);
+  let marketStability = Math.round(stabilityScore * 0.45 + (forecast?.rawStabilityScore ?? 45) * 0.2 + (forecast?.downsideScore ?? 40) * 0.35);
   let supplyRisk = 65;
   if (stock?.demand === "買う人が多い") { supplyRisk -= 30; cautions.push("状態A在庫の減少が速くPSA供給増リスク"); }
   else if (stock?.demand === "普通") supplyRisk -= 10;
@@ -769,21 +878,25 @@ function buildOverallAssessment(card, official, stock, psaDecision) {
   else if (growth === "増加") supplyRisk -= 12;
   else if (growth === "横ばい") supplyRisk += 10;
   if (Number.isFinite(official?.rate) && official.rate < 40) supplyRisk -= 15;
+  supplyRisk = supplyRisk * 0.75 + (forecast?.downsideScore ?? 40) * 0.25;
   supplyRisk = Math.max(0, Math.min(100, supplyRisk));
   if (exitLiquidity >= 75) strengths.push("同価格帯よりPSA10を売りやすい");
   else if (exitLiquidity < 35) cautions.push("PSA10の出口・換金先が弱い");
   if (card.buybackShops >= 2) strengths.push("複数店舗の買取出口がある");
   if (economics >= 75) strengths.push("同価格帯より利益条件が良い");
   if (card.saleTx30d >= 30 && card.psaTx30d < 5) cautions.push("美品は動くがPSA10取引が少ない");
-  const weights = state.evaluationModel?.weights || { exitLiquidity: 45, economics: 25, stability: 15, supplyRisk: 15 };
-  let score = Math.round((exitLiquidity * weights.exitLiquidity + economics * weights.economics + marketStability * weights.stability + supplyRisk * weights.supplyRisk) / 100);
+  if (forecast?.downsidePct <= 10) strengths.push("PSA10予測の下落余地が小さい");
+  else if (forecast?.downsidePct >= 25) cautions.push(`PSA10予測に約${Math.round(forecast.downsidePct)}%の下落余地`);
+  if (forecast?.gapRatio >= 1.35 && forecast?.gapRatio <= 1.7 && forecast.rawTrend30 >= -5) strengths.push("状態Aとの価格差が収束圏");
+  const futurePrice = forecast?.score ?? 35;
+  let score = Math.round(exitLiquidity * 0.3 + economics * 0.2 + marketStability * 0.2 + supplyRisk * 0.1 + futurePrice * 0.2);
   const completeEvidence = Number.isFinite(official?.rate) && Boolean(card.cardrushUrl);
   if (!Number.isFinite(official?.rate)) cautions.push("PSA公式データ未紐づけ");
   if (!card.cardrushUrl) cautions.push("カードラッシュ状態A未紐づけ");
   score = Math.max(0, Math.min(100, score));
   const grade = score >= 75 && completeEvidence ? "A" : score >= 60 ? "B" : score >= 45 ? "C" : "D";
   const label = { A: "積極候補", B: "候補", C: "慎重", D: "見送り" }[grade];
-  return { score, grade, label, exitLiquidity, economics, marketStability, supplyRisk, completeEvidence, strengths: strengths.slice(0, 3), cautions: cautions.slice(0, 3) };
+  return { score, grade, label, exitLiquidity, economics, marketStability, supplyRisk: Math.round(supplyRisk), futurePrice, completeEvidence, strengths: strengths.slice(0, 3), cautions: cautions.slice(0, 3) };
 }
 
 function calc(card) {
@@ -816,16 +929,19 @@ function calc(card) {
   const psaTx7d = Number(card.p10tv7 || 0);
   const official = state.psaPopulation[card.id] || null;
   if (!(price > 0) || !(psa10 > 0)) {
-    return { ...card, price, torecaPrice, cardrushPrice, psa10, psa10Net: NaN, profit: NaN, roi: NaN, psaDecision: null, overallAssessment: null, official, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackAvg30, buybackShops };
+    return { ...card, price, torecaPrice, cardrushPrice, psa10, psa10Net: NaN, profit: NaN, roi: NaN, futurePriceForecast: null, psaDecision: null, overallAssessment: null, official, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackAvg30, buybackShops };
   }
   const saleMultiplier = Math.max(0, 1 - state.saleFeeRate / 100);
   const psa10Net = psa10 * saleMultiplier - state.saleExtraCost;
   const profit = psa10Net - price - state.fee;
   const roiBase = price + state.fee;
   const roi = roiBase > 0 ? (profit / roiBase) * 100 : NaN;
+  const forecastBase = { ...card, price, torecaPrice, cardrushPrice, psa10, psa10Net, profit, roi, official, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackAvg30, buybackShops };
+  const futurePriceForecast = buildFuturePriceForecast(forecastBase, official, stock);
   const hitRate = guideConfig().hitRate;
   const lowerGradeNet = price * 0.75 * saleMultiplier - state.saleExtraCost;
-  const expectedSale = hitRate * psa10Net + (1 - hitRate) * lowerGradeNet;
+  const forecastPsa10Net = (futurePriceForecast?.predictedPrice || psa10) * saleMultiplier - state.saleExtraCost;
+  const expectedSale = hitRate * forecastPsa10Net + (1 - hitRate) * lowerGradeNet;
   const expectedProfit = expectedSale - price - state.fee;
   const expectedRoi = price > 0 ? expectedProfit / price * 100 : NaN;
   const annualEfficiency = price > 0 && state.lockDays > 0 ? expectedRoi * 365 / state.lockDays : NaN;
@@ -839,8 +955,8 @@ function calc(card) {
   if (capitalShare > state.maxCapitalShare) reasons.push(`資金占有率が${fmt.format(state.maxCapitalShare)}%超`);
   if (price > availableCapital) reasons.push(`現在使える仕入れ資金¥${fmt.format(availableCapital)}を超過`);
   if (state.gradingReserve < requiredReserve) reasons.push("返却時の鑑定費予備資金が不足");
-  const psaDecision = { recommended: reasons.length === 0, reasons, expectedSale, expectedProfit, expectedRoi, annualEfficiency, capitalShare, availableCapital, requiredReserve };
-  const calculated = { ...card, price, torecaPrice, cardrushPrice, psa10, psa10Net, profit, roi, psaDecision, official, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackAvg30, buybackShops };
+  const psaDecision = { recommended: reasons.length === 0, reasons, expectedSale, expectedProfit, expectedRoi, annualEfficiency, capitalShare, availableCapital, requiredReserve, forecastPsa10Net };
+  const calculated = { ...forecastBase, futurePriceForecast, psaDecision };
   calculated.overallAssessment = buildOverallAssessment(calculated, official, stock, psaDecision);
   return calculated;
 }
@@ -895,6 +1011,8 @@ function readUrl() {
   const minEconomics = parseOptionalNumber(url.searchParams.get("economics"));
   const minMarketStability = parseOptionalNumber(url.searchParams.get("stability"));
   const minSupplyRisk = parseOptionalNumber(url.searchParams.get("supply"));
+  const minFuturePriceScore = parseOptionalNumber(url.searchParams.get("futureScore"));
+  const maxForecastDownside = parseOptionalNumber(url.searchParams.get("downsideMax"));
   const stockDemand = url.searchParams.get("stockDemand");
   const fundingOnly = url.searchParams.get("fundingOnly") === "1";
   const officialOnly = url.searchParams.get("officialOnly") === "1";
@@ -948,6 +1066,8 @@ function readUrl() {
   if (minEconomics != null && minEconomics >= 0) els.minEconomicsInput.value = String(minEconomics);
   if (minMarketStability != null && minMarketStability >= 0) els.minMarketStabilityInput.value = String(minMarketStability);
   if (minSupplyRisk != null && minSupplyRisk >= 0) els.minSupplyRiskInput.value = String(minSupplyRisk);
+  if (minFuturePriceScore != null && minFuturePriceScore >= 0) els.minFuturePriceScoreInput.value = String(minFuturePriceScore);
+  if (maxForecastDownside != null && maxForecastDownside >= 0) els.maxForecastDownsideInput.value = String(maxForecastDownside);
   if (["all", "steady", "low", "normal", "high", "known"].includes(stockDemand)) els.stockDemandInput.value = stockDemand;
   els.fundingOnlyInput.checked = fundingOnly;
   els.officialOnlyInput.checked = officialOnly;
@@ -1002,6 +1122,8 @@ function buildShareUrl() {
   if (state.minEconomics > 0) url.searchParams.set("economics", String(state.minEconomics)); else url.searchParams.delete("economics");
   if (state.minMarketStability > 0) url.searchParams.set("stability", String(state.minMarketStability)); else url.searchParams.delete("stability");
   if (state.minSupplyRisk > 0) url.searchParams.set("supply", String(state.minSupplyRisk)); else url.searchParams.delete("supply");
+  if (state.minFuturePriceScore > 0) url.searchParams.set("futureScore", String(state.minFuturePriceScore)); else url.searchParams.delete("futureScore");
+  if (state.maxForecastDownside == null) url.searchParams.delete("downsideMax"); else url.searchParams.set("downsideMax", String(state.maxForecastDownside));
   if (state.stockDemand === "all") url.searchParams.delete("stockDemand"); else url.searchParams.set("stockDemand", state.stockDemand);
   if (state.fundingOnly) url.searchParams.set("fundingOnly", "1"); else url.searchParams.delete("fundingOnly");
   if (state.officialOnly) url.searchParams.set("officialOnly", "1"); else url.searchParams.delete("officialOnly");
@@ -1103,7 +1225,9 @@ function render() {
       if (card.overallAssessment && card.overallAssessment.economics < state.minEconomics) return false;
       if (card.overallAssessment && card.overallAssessment.marketStability < state.minMarketStability) return false;
       if (card.overallAssessment && card.overallAssessment.supplyRisk < state.minSupplyRisk) return false;
-      if (!card.overallAssessment && (state.minExitLiquidity || state.minEconomics || state.minMarketStability || state.minSupplyRisk)) return false;
+      if (card.overallAssessment && card.overallAssessment.futurePrice < state.minFuturePriceScore) return false;
+      if (state.maxForecastDownside != null && (!card.futurePriceForecast || card.futurePriceForecast.downsidePct > state.maxForecastDownside)) return false;
+      if (!card.overallAssessment && (state.minExitLiquidity || state.minEconomics || state.minMarketStability || state.minSupplyRisk || state.minFuturePriceScore)) return false;
       if (state.fundingOnly && !card.psaDecision?.recommended) return false;
       if (state.overallFilter === "a" && card.overallAssessment?.grade !== "A") return false;
       if (state.overallFilter === "ab" && !["A", "B"].includes(card.overallAssessment?.grade)) return false;
@@ -1242,7 +1366,7 @@ function render() {
     const decisionReasons = psaDecision?.recommended ? "設定した利益・資金効率の基準をすべて満たしています" : (psaDecision?.reasons || []).join(" / ");
     const psaDecisionPanel = psaDecision ? `
       <div class="psa-decision ${decisionClass}">
-        <div class="psa-decision-head"><strong>${decisionTitle}</strong><span>設定資金・${guideConfig().label}・ロック${fmt.format(state.lockDays)}日</span></div>
+        <div class="psa-decision-head"><strong>${decisionTitle}</strong><span>予測PSA10価格・${guideConfig().label}・ロック${fmt.format(state.lockDays)}日で計算</span></div>
         <div class="psa-decision-metrics">
           <div><span>期待利益</span><strong>¥${fmt.format(Math.round(psaDecision.expectedProfit))}</strong></div>
           <div><span>期待利益率</span><strong>${Math.round(psaDecision.expectedRoi)}%</strong></div>
@@ -1252,6 +1376,25 @@ function render() {
         <p>${escapeHtml(decisionReasons)}</p>
       </div>
     ` : "";
+    const forecast = card.futurePriceForecast;
+    const forecastRiskClass = !forecast ? "pending" : forecast.downsidePct >= 25 ? "risk-high" : forecast.downsidePct >= 12 ? "risk-medium" : "risk-low";
+    const forecastReasons = forecast?.reasons?.join(" / ") || "判定材料を蓄積中";
+    const forecastPanel = forecast ? `
+      <div class="future-price-forecast ${forecastRiskClass}">
+        <div class="future-forecast-head">
+          <div><span>PSA10 将来価格予測</span><strong>${escapeHtml(forecast.phase)}</strong><small>予測確度 ${escapeHtml(forecast.confidence)}</small></div>
+          <b>${forecast.score}<small>/100</small></b>
+        </div>
+        <div class="future-forecast-metrics">
+          <div><span>現在価格</span><strong>¥${fmt.format(card.psa10)}</strong></div>
+          <div><span>予測中心価格</span><strong>¥${fmt.format(forecast.predictedPrice)}</strong></div>
+          <div><span>予測下落余地</span><strong>${forecast.downsidePct > 0 ? `-${forecast.downsidePct.toFixed(1)}%` : "ほぼなし"}</strong></div>
+          <div><span>PSA10 ÷ 平均美品</span><strong>${forecast.gapRatio.toFixed(2)}倍</strong></div>
+        </div>
+        <p>${escapeHtml(forecastReasons)}</p>
+        <small>平均美品の収束基準を、状態A価格変化・売買件数・PSA10取引・店舗買取・PSA供給増加で補正した参考予測です。</small>
+      </div>
+    ` : "";
     const overall = card.overallAssessment;
     const overallReasons = overall
       ? [...overall.strengths.map((reason) => `○ ${reason}`), ...overall.cautions.map((reason) => `△ ${reason}`)].join(" / ")
@@ -1259,9 +1402,9 @@ function render() {
     const overallPanel = overall ? `
       <div class="overall-assessment grade-${overall.grade.toLowerCase()}">
         <div><span>総合評価</span><strong>${overall.grade}・${overall.label}</strong><b class="score-value">${overall.score}<small>/100</small></b></div>
-        <div class="overall-components"><span><b>${overall.exitLiquidity}<small>/100</small></b>売りやすさ</span><span><b>${overall.economics}<small>/100</small></b>利益条件</span><span><b>${overall.marketStability}<small>/100</small></b>価格安定</span><span><b>${overall.supplyRisk}<small>/100</small></b>供給リスク耐性</span></div>
+        <div class="overall-components"><span><b>${overall.exitLiquidity}<small>/100</small></b>売りやすさ</span><span><b>${overall.economics}<small>/100</small></b>利益条件</span><span><b>${overall.marketStability}<small>/100</small></b>価格安定</span><span><b>${overall.supplyRisk}<small>/100</small></b>供給リスク耐性</span><span><b>${overall.futurePrice}<small>/100</small></b>将来価格</span></div>
         <p>${escapeHtml(overallReasons || "判定材料を蓄積中")}</p>
-        <small>売りやすさ45%を最重視。同じPSA10価格帯の分布をデータ更新ごとに再学習${state.evaluationModel?.generatedAt ? `（${escapeHtml(state.evaluationModel.generatedDateJst || String(state.evaluationModel.generatedAt).slice(0, 10))}・${fmt.format(state.evaluationModel.sampleSize || 0)}枚）` : ""}。公式PSA・状態A直リンクが揃わないカードはA評価にしません。</small>
+        <small>売りやすさ30%・利益条件20%・価格安定20%・供給リスク耐性10%・将来価格20%。同じPSA10価格帯の分布を更新ごとに再学習${state.evaluationModel?.generatedAt ? `（${escapeHtml(state.evaluationModel.generatedDateJst || String(state.evaluationModel.generatedAt).slice(0, 10))}・${fmt.format(state.evaluationModel.sampleSize || 0)}枚）` : ""}。公式PSA・状態A直リンクが揃わないカードはA評価にしません。</small>
       </div>
     ` : "";
     const official = card.official;
@@ -1318,6 +1461,7 @@ function render() {
           ${stockPanel}
           ${buybackPanel}
           ${activityPanel}
+          ${forecastPanel}
           ${overallPanel}
           ${psaDecisionPanel}
           ${officialPsaPanel}
@@ -1372,6 +1516,8 @@ function syncFromUI() {
   state.minEconomics = Number(els.minEconomicsInput.value || 0);
   state.minMarketStability = Number(els.minMarketStabilityInput.value || 0);
   state.minSupplyRisk = Number(els.minSupplyRiskInput.value || 0);
+  state.minFuturePriceScore = Number(els.minFuturePriceScoreInput.value || 0);
+  state.maxForecastDownside = parseOptionalNumber(els.maxForecastDownsideInput.value);
   state.stockDemand = els.stockDemandInput.value || "all";
   state.fundingOnly = els.fundingOnlyInput.checked;
   state.officialOnly = els.officialOnlyInput.checked;
@@ -1447,23 +1593,23 @@ async function init() {
   }
 }
 
-[els.qInput, els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.buyback7MinInput, els.buyback7MaxInput, els.buyback30MinInput, els.buyback30MaxInput, els.buyback90MinInput, els.buyback90MaxInput, els.buybackShopsMinInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.roiInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.psaRateMinInput, els.overallFilterInput, els.minExitLiquidityInput, els.minEconomicsInput, els.minMarketStabilityInput, els.minSupplyRiskInput, els.stockDemandInput, els.fundingOnlyInput, els.officialOnlyInput, els.sortInput, els.psaCapitalInput, els.lockedCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput].forEach((el) =>
+[els.qInput, els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.buyback7MinInput, els.buyback7MaxInput, els.buyback30MinInput, els.buyback30MaxInput, els.buyback90MinInput, els.buyback90MaxInput, els.buybackShopsMinInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.roiInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.psaRateMinInput, els.overallFilterInput, els.minExitLiquidityInput, els.minEconomicsInput, els.minMarketStabilityInput, els.minSupplyRiskInput, els.minFuturePriceScoreInput, els.maxForecastDownsideInput, els.stockDemandInput, els.fundingOnlyInput, els.officialOnlyInput, els.sortInput, els.psaCapitalInput, els.lockedCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput].forEach((el) =>
   el.addEventListener("input", syncFromUI)
 );
 
 els.resetFiltersBtn.addEventListener("click", () => {
   els.qInput.value = "";
   els.saleTxMinInput.value = "30";
-  [els.saleTxMaxInput, els.saleTx7MaxInput, els.psaTxMaxInput, els.psaTx7MaxInput, els.buyback7MaxInput, els.buyback30MaxInput, els.buyback90MaxInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.priceMinInput, els.priceMaxInput, els.psaRateMinInput].forEach((el) => { el.value = ""; });
+  [els.saleTxMaxInput, els.saleTx7MaxInput, els.psaTxMaxInput, els.psaTx7MaxInput, els.buyback7MaxInput, els.buyback30MaxInput, els.buyback90MaxInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.priceMinInput, els.priceMaxInput, els.psaRateMinInput, els.maxForecastDownsideInput].forEach((el) => { el.value = ""; });
   [els.saleTx7MinInput, els.psaTxMinInput, els.psaTx7MinInput, els.buyback7MinInput, els.buyback30MinInput, els.buyback90MinInput, els.buybackShopsMinInput, els.psaMinInput].forEach((el) => { el.value = "0"; });
   els.roiInput.value = "40";
   els.psaMaxInput.value = "200000";
   els.overallFilterInput.value = "all";
-  [els.minExitLiquidityInput, els.minEconomicsInput, els.minMarketStabilityInput, els.minSupplyRiskInput].forEach((el) => { el.value = "0"; });
+  [els.minExitLiquidityInput, els.minEconomicsInput, els.minMarketStabilityInput, els.minSupplyRiskInput, els.minFuturePriceScoreInput].forEach((el) => { el.value = "0"; });
   els.stockDemandInput.value = "all";
   els.fundingOnlyInput.checked = false;
   els.officialOnlyInput.checked = false;
-  els.sortInput.value = "roi-desc";
+  els.sortInput.value = "overall-desc";
   syncFromUI();
 });
 
