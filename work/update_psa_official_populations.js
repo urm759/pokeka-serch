@@ -125,7 +125,14 @@ async function getTableSnapshot(page) {
       id: table.id || "",
       className: table.className || "",
       headers: [...table.querySelectorAll("thead th")].map((th) => th.textContent || ""),
-      rows: [...table.querySelectorAll("tbody tr")].map((tr) =>
+      // DataTables keeps earlier pages in the DOM. Only capture the displayed
+      // rows so the pagination loop can also reach secret rares on later pages.
+      rows: [...table.querySelectorAll("tbody tr")]
+        .filter((tr) => {
+          const style = window.getComputedStyle(tr);
+          return style.display !== "none" && style.visibility !== "hidden";
+        })
+        .map((tr) =>
         [...tr.querySelectorAll(":scope > td")].map((td) => {
           const parts = [...td.children].map((child) => (child.textContent || "").replace(/\s+/g, " ").trim()).filter(Boolean);
           return (parts.length ? parts.join(" | ") : (td.textContent || "")).replace(/\s+/g, " ").trim();
