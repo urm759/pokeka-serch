@@ -1098,7 +1098,7 @@ function render() {
   els.topRoiStat.textContent = enriched.length ? `${Math.round(enriched[0].roi)}%` : "-";
   els.topProfitStat.textContent = enriched.length ? `¥${fmt.format(Math.round(enriched[0].profit))}` : "-";
   if (els.updatedAt) {
-    els.updatedAt.textContent = state.updateStatus?.completeDate || "全データ同日更新 未完了";
+    els.updatedAt.textContent = state.updateStatus?.completeDate || "自動更新 未完了";
   }
   if (els.dataFreshness && state.updateStatus?.sources) {
     els.dataFreshness.innerHTML = Object.values(state.updateStatus.sources).map((source) => {

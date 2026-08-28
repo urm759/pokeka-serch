@@ -52,11 +52,18 @@ const sources = {
 for (const source of Object.values(sources)) {
   source.fresh = source.date === today && source.status !== "failed";
 }
-const complete = Object.values(sources).every((source) => source.fresh);
+// Login-dependent PSA/X data remains visible with its own date. A completed
+// daily refresh means every source that GitHub Actions can update is current.
+const automaticSources = Object.values(sources).filter((source) => source.automatic);
+const complete = automaticSources.length > 0 && automaticSources.every((source) => source.fresh);
+const manualPending = Object.entries(sources)
+  .filter(([, source]) => !source.automatic && !source.fresh)
+  .map(([key]) => key);
 const payload = {
   checkedAt: new Date().toISOString(),
   complete,
   completeDate: complete ? today : previous.completeDate || null,
+  manualPending,
   sources,
 };
 fs.writeFileSync(OUTPUT, JSON.stringify(payload), "utf8");
