@@ -30,7 +30,8 @@ function cardIdentity(card) {
     return { set: shortSet(promoSet), no: normalizeNo(promoNo) };
   }
   const parts = inside.split(/\s+/);
-  return { set: shortSet(parts[0]), no: parts.length >= 2 ? normalizeNo(parts[1].split("/")[0]) : "" };
+  const numberToken = parts.slice(1).find((part) => /^\d/.test(part)) || parts[1] || "";
+  return { set: shortSet(parts[0]), no: normalizeNo(numberToken.split("/")[0]) };
 }
 function cleanName(value) {
   return String(value || "").toLowerCase()

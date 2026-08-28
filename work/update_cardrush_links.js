@@ -11,6 +11,7 @@ const KNOWN_CARD_OVERRIDES = new Map([
   ["pk-1180", "https://www.cardrush-pokemon.jp/product/1180"],
   ["pk-7040", "https://www.cardrush-pokemon.jp/product/7040"],
   ["pk-1168", "https://www.cardrush-pokemon.jp/product/1168"],
+  ["pk-1130", "https://www.cardrush-pokemon.jp/product/1130"],
   ["x-141447", "https://www.cardrush-pokemon.jp/product/22370"],
 ]);
 

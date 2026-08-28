@@ -331,11 +331,11 @@ function averageRecent(values, days) {
 }
 
 function demandLabel(count30, observedDays, shopCount) {
-  if (observedDays < 7) return "蓄積中";
+  if (observedDays < 7) return "買取掲載数：蓄積中";
   const rate = count30 / (Math.min(30, observedDays) * Math.max(1, shopCount));
-  if (rate >= 0.7) return "買取掲載が多い";
-  if (rate >= 0.3) return "買取掲載は普通";
-  return "買取掲載が少ない";
+  if (rate >= 0.7) return "買取掲載数：多い";
+  if (rate >= 0.3) return "買取掲載数：普通";
+  return "買取掲載数：少ない";
 }
 
 async function main() {

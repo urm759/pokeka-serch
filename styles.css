@@ -605,7 +605,14 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .buyback-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
 .buyback-head span{display:block;color:var(--muted);font-size:9px}
 .buyback-head strong{display:block;margin-top:2px;color:#fde68a;font-size:15px}
+.buyback-head div small{display:block;margin-top:3px;color:var(--muted);font-size:9px}
 .buyback-head>small{color:var(--muted);font-size:9px}
+.buyback-panel.demand-high{border-color:rgba(56,217,150,.45);background:linear-gradient(135deg,rgba(56,217,150,.14),rgba(125,211,252,.04))}
+.buyback-panel.demand-high .buyback-head strong{color:#86efac}
+.buyback-panel.demand-normal{border-color:rgba(125,211,252,.38);background:linear-gradient(135deg,rgba(125,211,252,.12),rgba(5,10,20,.5))}
+.buyback-panel.demand-normal .buyback-head strong{color:#bae6fd}
+.buyback-panel.demand-low{border-color:rgba(245,158,11,.3);background:linear-gradient(135deg,rgba(245,158,11,.09),rgba(5,10,20,.5))}
+.buyback-panel.demand-low .buyback-head strong{color:#fde68a}
 .buyback-shops{display:grid;gap:6px;margin-top:10px}
 .buyback-shop-row{display:grid;grid-template-columns:minmax(150px,1.5fr) repeat(4,minmax(65px,.7fr));gap:6px;align-items:center;padding:9px;border-radius:12px;background:rgba(5,10,20,.48)}
 .buyback-shop-row a{color:#fde68a;text-decoration:none}
@@ -675,6 +682,7 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .overall-components{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:9px}
 .overall-components span{padding:7px;border-radius:10px;background:rgba(5,10,20,.52);text-align:center;font-size:8px}
 .overall-components span b{display:block;margin:0 0 2px;padding:0;background:none;font-size:15px;color:var(--text)}
+.overall-assessment .score-value small,.overall-components span b small{display:inline;margin-left:2px;color:var(--muted);font-size:8px;font-weight:700;line-height:1}
 .overall-assessment.grade-a{border-color:rgba(56,217,150,.45);background:linear-gradient(135deg,rgba(56,217,150,.14),rgba(5,10,20,.5))}
 .overall-assessment.grade-a strong{color:#86efac}
 .overall-assessment.grade-b{border-color:rgba(125,211,252,.4);background:linear-gradient(135deg,rgba(125,211,252,.12),rgba(5,10,20,.5))}

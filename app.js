@@ -808,7 +808,7 @@ function calc(card) {
   const psaTx7d = Number(card.p10tv7 || 0);
   const official = state.psaPopulation[card.id] || null;
   if (!(price > 0) || !(psa10 > 0)) {
-    return { ...card, price, torecaPrice, cardrushPrice, psa10, profit: NaN, roi: NaN, psaDecision: null, overallAssessment: null, official, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackAvg30, buybackShops };
+    return { ...card, price, torecaPrice, cardrushPrice, psa10, psa10Net: NaN, profit: NaN, roi: NaN, psaDecision: null, overallAssessment: null, official, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackAvg30, buybackShops };
   }
   const saleMultiplier = Math.max(0, 1 - state.saleFeeRate / 100);
   const psa10Net = psa10 * saleMultiplier - state.saleExtraCost;
@@ -832,7 +832,7 @@ function calc(card) {
   if (price > availableCapital) reasons.push(`現在使える仕入れ資金¥${fmt.format(availableCapital)}を超過`);
   if (state.gradingReserve < requiredReserve) reasons.push("返却時の鑑定費予備資金が不足");
   const psaDecision = { recommended: reasons.length === 0, reasons, expectedSale, expectedProfit, expectedRoi, annualEfficiency, capitalShare, availableCapital, requiredReserve };
-  const calculated = { ...card, price, torecaPrice, cardrushPrice, psa10, profit, roi, psaDecision, official, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackAvg30, buybackShops };
+  const calculated = { ...card, price, torecaPrice, cardrushPrice, psa10, psa10Net, profit, roi, psaDecision, official, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackAvg30, buybackShops };
   calculated.overallAssessment = buildOverallAssessment(calculated, official, stock, psaDecision);
   return calculated;
 }
@@ -1183,11 +1183,14 @@ function render() {
     const buybackOtherShops = buybackShopRows.length > 1
       ? `<details class="buyback-other-shops"><summary>その他 ${fmt.format(buybackShopRows.length - 1)}店舗の買取価格を見る</summary><div class="buyback-shops">${buybackShopRows.slice(1).join("")}</div></details>`
       : "";
+    const buybackDemand = String(card.buyback?.demand || "");
+    const buybackDemandClass = buybackDemand.includes("多い") ? "demand-high" : buybackDemand.includes("普通") ? "demand-normal" : buybackDemand.includes("少ない") ? "demand-low" : "demand-pending";
+    const buybackDemandLabel = buybackDemand.includes("多い") ? "買取掲載数：多い" : buybackDemand.includes("普通") ? "買取掲載数：普通" : buybackDemand.includes("少ない") ? "買取掲載数：少ない" : "買取掲載数：蓄積中";
     const buybackPanel = card.buyback ? `
-      <div class="buyback-panel">
+      <div class="buyback-panel ${buybackDemandClass}">
         <div class="buyback-head">
-          <div><span>ショップPSA10買取表</span><strong>${escapeHtml(card.buyback.demand || "蓄積中")}</strong></div>
-          <small>${fmt.format(state.buybackDates.length)}日分を蓄積 / 店舗別と合計</small>
+          <div><span>ショップPSA10買取表</span><strong>${escapeHtml(buybackDemandLabel)}</strong><small>掲載店舗が多いほど売却先を選びやすい評価</small></div>
+          <small>${fmt.format(state.buybackDates.length)}日分を蓄積 / 店舗提示額は売却手数料を引かず表示</small>
         </div>
         <div class="buyback-shops buyback-primary-shop">${buybackPrimaryShop}</div>
         ${buybackOtherShops}
@@ -1230,8 +1233,8 @@ function render() {
       : "";
     const overallPanel = overall ? `
       <div class="overall-assessment grade-${overall.grade.toLowerCase()}">
-        <div><span>総合評価</span><strong>${overall.grade}・${overall.label}</strong><b>${overall.score}点</b></div>
-        <div class="overall-components"><span><b>${overall.exitLiquidity}</b>売りやすさ</span><span><b>${overall.economics}</b>利益条件</span><span><b>${overall.marketStability}</b>価格安定</span><span><b>${overall.supplyRisk}</b>供給リスク耐性</span></div>
+        <div><span>総合評価</span><strong>${overall.grade}・${overall.label}</strong><b class="score-value">${overall.score}<small>/100</small></b></div>
+        <div class="overall-components"><span><b>${overall.exitLiquidity}<small>/100</small></b>売りやすさ</span><span><b>${overall.economics}<small>/100</small></b>利益条件</span><span><b>${overall.marketStability}<small>/100</small></b>価格安定</span><span><b>${overall.supplyRisk}<small>/100</small></b>供給リスク耐性</span></div>
         <p>${escapeHtml(overallReasons || "判定材料を蓄積中")}</p>
         <small>売りやすさ45%を最重視。同じPSA10価格帯の分布をデータ更新ごとに再学習${state.evaluationModel?.generatedAt ? `（${escapeHtml(state.evaluationModel.generatedDateJst || String(state.evaluationModel.generatedAt).slice(0, 10))}・${fmt.format(state.evaluationModel.sampleSize || 0)}枚）` : ""}。公式PSA・状態A直リンクが揃わないカードはA評価にしません。</small>
       </div>
@@ -1280,7 +1283,7 @@ function render() {
 
           <div class="metrics market-summary">
             <div class="metric metric-primary"><span>平均美品価格</span><strong>¥${fmt.format(card.price)}</strong><small>みんトレ状態A ¥${fmt.format(card.torecaPrice)} / カードラッシュ状態A ${cardrushPriceText}</small></div>
-            <div class="metric"><span>PSA10相場</span><strong>¥${fmt.format(card.psa10)}</strong><small>みんトレPSA10</small></div>
+            <div class="metric"><span>PSA10市場価格</span><strong>¥${fmt.format(card.psa10)}</strong><small>みんトレ市場価格 / 手数料・追加費用差引後の受取見込 ¥${fmt.format(Math.round(card.psa10Net))}</small></div>
             <div class="metric"><span>手取り利益</span><strong>¥${fmt.format(Math.round(card.profit))}</strong><small>共通設定のPSA鑑定費・売却手数料 ${Number(state.saleFeeRate).toFixed(1)}%・追加費用を反映</small></div>
             <div class="metric metric-roi"><span>手取り利益率</span><strong>${Number.isFinite(card.roi) ? Math.round(card.roi) : 0}%</strong><small>利益 ÷（平均美品＋PSA鑑定費）</small></div>
           </div>
