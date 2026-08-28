@@ -42,6 +42,10 @@ const state = {
   maxPrice: null,
   minPsaRate: null,
   overallFilter: "all",
+  minExitLiquidity: 0,
+  minEconomics: 0,
+  minMarketStability: 0,
+  minSupplyRisk: 0,
   stockDemand: "all",
   fundingOnly: false,
   officialOnly: false,
@@ -104,6 +108,10 @@ const els = {
   buybackPriceMaxInput: document.getElementById("buybackPriceMaxInput"),
   psaRateMinInput: document.getElementById("psaRateMinInput"),
   overallFilterInput: document.getElementById("overallFilterInput"),
+  minExitLiquidityInput: document.getElementById("minExitLiquidityInput"),
+  minEconomicsInput: document.getElementById("minEconomicsInput"),
+  minMarketStabilityInput: document.getElementById("minMarketStabilityInput"),
+  minSupplyRiskInput: document.getElementById("minSupplyRiskInput"),
   stockDemandInput: document.getElementById("stockDemandInput"),
   fundingOnlyInput: document.getElementById("fundingOnlyInput"),
   officialOnlyInput: document.getElementById("officialOnlyInput"),
@@ -883,6 +891,10 @@ function readUrl() {
   const priceMax = parseOptionalNumber(url.searchParams.get("priceMax"));
   const psaRateMin = parseOptionalNumber(url.searchParams.get("psaRate"));
   const overallFilter = url.searchParams.get("overall");
+  const minExitLiquidity = parseOptionalNumber(url.searchParams.get("exit"));
+  const minEconomics = parseOptionalNumber(url.searchParams.get("economics"));
+  const minMarketStability = parseOptionalNumber(url.searchParams.get("stability"));
+  const minSupplyRisk = parseOptionalNumber(url.searchParams.get("supply"));
   const stockDemand = url.searchParams.get("stockDemand");
   const fundingOnly = url.searchParams.get("fundingOnly") === "1";
   const officialOnly = url.searchParams.get("officialOnly") === "1";
@@ -932,6 +944,10 @@ function readUrl() {
   if (priceMax != null) els.priceMaxInput.value = String(priceMax);
   if (psaRateMin != null && psaRateMin >= 0) els.psaRateMinInput.value = String(psaRateMin);
   if (["all", "ab", "a"].includes(overallFilter)) els.overallFilterInput.value = overallFilter;
+  if (minExitLiquidity != null && minExitLiquidity >= 0) els.minExitLiquidityInput.value = String(minExitLiquidity);
+  if (minEconomics != null && minEconomics >= 0) els.minEconomicsInput.value = String(minEconomics);
+  if (minMarketStability != null && minMarketStability >= 0) els.minMarketStabilityInput.value = String(minMarketStability);
+  if (minSupplyRisk != null && minSupplyRisk >= 0) els.minSupplyRiskInput.value = String(minSupplyRisk);
   if (["all", "steady", "low", "normal", "high", "known"].includes(stockDemand)) els.stockDemandInput.value = stockDemand;
   els.fundingOnlyInput.checked = fundingOnly;
   els.officialOnlyInput.checked = officialOnly;
@@ -982,6 +998,10 @@ function buildShareUrl() {
   if (state.maxPsa10 == null) url.searchParams.delete("psaMax"); else url.searchParams.set("psaMax", String(state.maxPsa10));
   if (state.minPsaRate == null) url.searchParams.delete("psaRate"); else url.searchParams.set("psaRate", String(state.minPsaRate));
   if (state.overallFilter === "all") url.searchParams.delete("overall"); else url.searchParams.set("overall", state.overallFilter);
+  if (state.minExitLiquidity > 0) url.searchParams.set("exit", String(state.minExitLiquidity)); else url.searchParams.delete("exit");
+  if (state.minEconomics > 0) url.searchParams.set("economics", String(state.minEconomics)); else url.searchParams.delete("economics");
+  if (state.minMarketStability > 0) url.searchParams.set("stability", String(state.minMarketStability)); else url.searchParams.delete("stability");
+  if (state.minSupplyRisk > 0) url.searchParams.set("supply", String(state.minSupplyRisk)); else url.searchParams.delete("supply");
   if (state.stockDemand === "all") url.searchParams.delete("stockDemand"); else url.searchParams.set("stockDemand", state.stockDemand);
   if (state.fundingOnly) url.searchParams.set("fundingOnly", "1"); else url.searchParams.delete("fundingOnly");
   if (state.officialOnly) url.searchParams.set("officialOnly", "1"); else url.searchParams.delete("officialOnly");
@@ -1079,6 +1099,11 @@ function render() {
       if (state.maxPrice != null && card.price > state.maxPrice) return false;
       if (state.minPsaRate != null && (!Number.isFinite(card.official?.rate) || card.official.rate < state.minPsaRate)) return false;
       if (state.officialOnly && !Number.isFinite(card.official?.rate)) return false;
+      if (card.overallAssessment && card.overallAssessment.exitLiquidity < state.minExitLiquidity) return false;
+      if (card.overallAssessment && card.overallAssessment.economics < state.minEconomics) return false;
+      if (card.overallAssessment && card.overallAssessment.marketStability < state.minMarketStability) return false;
+      if (card.overallAssessment && card.overallAssessment.supplyRisk < state.minSupplyRisk) return false;
+      if (!card.overallAssessment && (state.minExitLiquidity || state.minEconomics || state.minMarketStability || state.minSupplyRisk)) return false;
       if (state.fundingOnly && !card.psaDecision?.recommended) return false;
       if (state.overallFilter === "a" && card.overallAssessment?.grade !== "A") return false;
       if (state.overallFilter === "ab" && !["A", "B"].includes(card.overallAssessment?.grade)) return false;
@@ -1343,6 +1368,10 @@ function syncFromUI() {
   state.maxPrice = parseOptionalNumber(els.priceMaxInput.value);
   state.minPsaRate = parseOptionalNumber(els.psaRateMinInput.value);
   state.overallFilter = els.overallFilterInput.value || "all";
+  state.minExitLiquidity = Number(els.minExitLiquidityInput.value || 0);
+  state.minEconomics = Number(els.minEconomicsInput.value || 0);
+  state.minMarketStability = Number(els.minMarketStabilityInput.value || 0);
+  state.minSupplyRisk = Number(els.minSupplyRiskInput.value || 0);
   state.stockDemand = els.stockDemandInput.value || "all";
   state.fundingOnly = els.fundingOnlyInput.checked;
   state.officialOnly = els.officialOnlyInput.checked;
@@ -1418,7 +1447,7 @@ async function init() {
   }
 }
 
-[els.qInput, els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.buyback7MinInput, els.buyback7MaxInput, els.buyback30MinInput, els.buyback30MaxInput, els.buyback90MinInput, els.buyback90MaxInput, els.buybackShopsMinInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.roiInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.psaRateMinInput, els.overallFilterInput, els.stockDemandInput, els.fundingOnlyInput, els.officialOnlyInput, els.sortInput, els.psaCapitalInput, els.lockedCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput].forEach((el) =>
+[els.qInput, els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.buyback7MinInput, els.buyback7MaxInput, els.buyback30MinInput, els.buyback30MaxInput, els.buyback90MinInput, els.buyback90MaxInput, els.buybackShopsMinInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.roiInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.psaRateMinInput, els.overallFilterInput, els.minExitLiquidityInput, els.minEconomicsInput, els.minMarketStabilityInput, els.minSupplyRiskInput, els.stockDemandInput, els.fundingOnlyInput, els.officialOnlyInput, els.sortInput, els.psaCapitalInput, els.lockedCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput].forEach((el) =>
   el.addEventListener("input", syncFromUI)
 );
 
@@ -1430,6 +1459,7 @@ els.resetFiltersBtn.addEventListener("click", () => {
   els.roiInput.value = "40";
   els.psaMaxInput.value = "200000";
   els.overallFilterInput.value = "all";
+  [els.minExitLiquidityInput, els.minEconomicsInput, els.minMarketStabilityInput, els.minSupplyRiskInput].forEach((el) => { el.value = "0"; });
   els.stockDemandInput.value = "all";
   els.fundingOnlyInput.checked = false;
   els.officialOnlyInput.checked = false;

@@ -186,6 +186,22 @@
           </select>
         </label>
         <label class="control">
+          <span>売りやすさ 下限点</span>
+          <input id="minExitLiquidityInput" type="number" min="0" max="100" step="1" value="0" placeholder="0〜100・空欄は0" />
+        </label>
+        <label class="control">
+          <span>利益条件 下限点</span>
+          <input id="minEconomicsInput" type="number" min="0" max="100" step="1" value="0" placeholder="0〜100・空欄は0" />
+        </label>
+        <label class="control">
+          <span>価格安定 下限点</span>
+          <input id="minMarketStabilityInput" type="number" min="0" max="100" step="1" value="0" placeholder="0〜100・空欄は0" />
+        </label>
+        <label class="control">
+          <span>供給リスク耐性 下限点</span>
+          <input id="minSupplyRiskInput" type="number" min="0" max="100" step="1" value="0" placeholder="0〜100・空欄は0" />
+        </label>
+        <label class="control">
           <span>在庫減少ペースで絞る</span>
           <select id="stockDemandInput">
             <option value="all">すべて表示</option>
