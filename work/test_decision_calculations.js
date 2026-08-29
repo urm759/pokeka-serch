@@ -92,11 +92,13 @@ const lossEconomics = model.expectedEconomics({
 });
 const stop = model.purchaseDecision({ ...commonDecisionInput, economics: lossEconomics });
 assert.ok(lossEconomics.expectedProfit < 0);
-assert.equal(stop.verdict, "見送り");
+assert.equal(stop.verdict, "価格次第");
+const noViablePrice = model.purchaseDecision({ ...commonDecisionInput, maxBuyPrice: 0, economics: lossEconomics });
+assert.equal(noViablePrice.verdict, "見送り");
 
 console.log(JSON.stringify({
   capital: { available: capital.availableCapital, perCardForTen: capital.perCardBatchCap, maxBuyAfterBatchLimit: capitalLimitedMax },
   economics: { expectedSale: economics.expectedSale, expectedProfit: economics.expectedProfit, expectedRoi: Number(economics.expectedRoi.toFixed(1)) },
   outlier: { median: prices.value, excluded: prices.outliers[0] },
-  decisions: { profitable: go.verdict, negativeProfit: stop.verdict },
+  decisions: { profitable: go.verdict, negativeAtCurrentPrice: stop.verdict, noViablePrice: noViablePrice.verdict },
 }, null, 2));

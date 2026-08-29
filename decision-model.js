@@ -116,7 +116,7 @@
     const purchasePrice = Number(economics.purchasePrice || 0);
     const plannedBatchSpend = purchasePrice * capital.submissionCount;
     const shareCap = capital.totalCapital * Number(input.maxCapitalShare || 100) / 100;
-    if (economics.expectedProfit < 0) reasons.push("期待利益がマイナス");
+    if (economics.expectedProfit < 0) reasons.push("現在価格では期待利益がマイナス");
     else if (economics.expectedProfit < Number(input.minExpectedProfit || 0)) reasons.push("最低期待利益を未達");
     if (economics.expectedRoi < Number(input.minExpectedRoi || 0)) reasons.push("最低期待利益率を未達");
     if (economics.annualEfficiency < Number(input.minAnnualEfficiency || 0)) reasons.push("最低年換算効率を未達");
@@ -126,13 +126,14 @@
     if (input.hasAnomaly) reasons.push("異常値の確認が必要");
 
     let verdict = "見送り";
-    if (economics.expectedProfit >= 0 && Number(input.maxBuyPrice || 0) > 0) {
+    if (Number(input.maxBuyPrice || 0) > 0) {
       const fullyEligible = purchasePrice <= Number(input.maxBuyPrice)
+        && economics.expectedProfit >= 0
         && reasons.length === 0
         && Number(input.qualityScore || 0) >= 60;
       verdict = fullyEligible ? "GO" : "価格次第";
     }
-    if (economics.expectedProfit < 0 || !capital.reserveSufficient || capital.availableCapital <= 0) verdict = "見送り";
+    if (!capital.reserveSufficient || capital.availableCapital <= 0) verdict = "見送り";
     return { verdict, reasons, plannedBatchSpend, availableCapital: capital.availableCapital };
   }
 
