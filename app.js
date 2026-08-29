@@ -64,6 +64,7 @@ const state = {
   forecastMaturity: "all",
   maxForecastMonthlyIncrease: null,
   stockDemand: "all",
+  hideSkipped: false,
   fundingOnly: false,
   officialOnly: false,
   sort: "overall-desc",
@@ -144,6 +145,7 @@ const els = {
   forecastMaturityInput: document.getElementById("forecastMaturityInput"),
   maxForecastMonthlyIncreaseInput: document.getElementById("maxForecastMonthlyIncreaseInput"),
   stockDemandInput: document.getElementById("stockDemandInput"),
+  hideSkippedInput: document.getElementById("hideSkippedInput"),
   fundingOnlyInput: document.getElementById("fundingOnlyInput"),
   officialOnlyInput: document.getElementById("officialOnlyInput"),
   resetFiltersBtn: document.getElementById("resetFiltersBtn"),
@@ -1277,6 +1279,7 @@ function readUrl() {
   const forecastMaturity = url.searchParams.get("forecastMaturity");
   const maxForecastMonthlyIncrease = parseOptionalNumber(url.searchParams.get("psaGrowthMax"));
   const stockDemand = url.searchParams.get("stockDemand");
+  const hideSkipped = url.searchParams.get("hideSkipped") === "1";
   const fundingOnly = url.searchParams.get("fundingOnly") === "1";
   const officialOnly = url.searchParams.get("officialOnly") === "1";
   const psaCapital = parseOptionalNumber(url.searchParams.get("cap"));
@@ -1344,6 +1347,7 @@ function readUrl() {
   if (["all", "mature", "established", "recent", "known"].includes(forecastMaturity)) els.forecastMaturityInput.value = forecastMaturity;
   if (maxForecastMonthlyIncrease != null && maxForecastMonthlyIncrease >= 0) els.maxForecastMonthlyIncreaseInput.value = String(maxForecastMonthlyIncrease);
   if (["all", "steady", "low", "normal", "high", "known"].includes(stockDemand)) els.stockDemandInput.value = stockDemand;
+  els.hideSkippedInput.checked = hideSkipped;
   els.fundingOnlyInput.checked = fundingOnly;
   els.officialOnlyInput.checked = officialOnly;
   if (psaCapital != null && psaCapital >= 0) els.psaCapitalInput.value = String(psaCapital);
@@ -1412,6 +1416,7 @@ function buildShareUrl() {
   if (state.forecastMaturity === "all") url.searchParams.delete("forecastMaturity"); else url.searchParams.set("forecastMaturity", state.forecastMaturity);
   if (state.maxForecastMonthlyIncrease == null) url.searchParams.delete("psaGrowthMax"); else url.searchParams.set("psaGrowthMax", String(state.maxForecastMonthlyIncrease));
   if (state.stockDemand === "all") url.searchParams.delete("stockDemand"); else url.searchParams.set("stockDemand", state.stockDemand);
+  if (state.hideSkipped) url.searchParams.set("hideSkipped", "1"); else url.searchParams.delete("hideSkipped");
   if (state.fundingOnly) url.searchParams.set("fundingOnly", "1"); else url.searchParams.delete("fundingOnly");
   if (state.officialOnly) url.searchParams.set("officialOnly", "1"); else url.searchParams.delete("officialOnly");
   url.searchParams.set("sort", state.sort);
@@ -1543,6 +1548,7 @@ function render() {
       if (state.forecastMaturity === "known" && maturityKey === "unknown") return false;
       if (state.maxForecastMonthlyIncrease != null && (!Number.isFinite(card.futurePriceForecast?.monthlyPsa10Increase) || card.futurePriceForecast.monthlyPsa10Increase > state.maxForecastMonthlyIncrease)) return false;
       if (!card.overallAssessment && (state.minExitLiquidity || state.minEconomics || state.minMarketStability || state.minSupplyRisk || state.minFuturePriceScore)) return false;
+      if (state.hideSkipped && card.purchaseDecision?.verdict === "見送り") return false;
       if (state.fundingOnly && !card.psaDecision?.recommended) return false;
       if (state.overallFilter === "a" && card.overallAssessment?.grade !== "A") return false;
       if (state.overallFilter === "ab" && !["A", "B"].includes(card.overallAssessment?.grade)) return false;
@@ -1922,6 +1928,7 @@ function syncFromUI() {
   state.forecastMaturity = els.forecastMaturityInput.value || "all";
   state.maxForecastMonthlyIncrease = parseOptionalNumber(els.maxForecastMonthlyIncreaseInput.value);
   state.stockDemand = els.stockDemandInput.value || "all";
+  state.hideSkipped = els.hideSkippedInput.checked;
   state.fundingOnly = els.fundingOnlyInput.checked;
   state.officialOnly = els.officialOnlyInput.checked;
   state.sort = els.sortInput.value;
@@ -1998,7 +2005,7 @@ async function init() {
   }
 }
 
-[els.qInput, els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.buyback7MinInput, els.buyback7MaxInput, els.buyback30MinInput, els.buyback30MaxInput, els.buyback90MinInput, els.buyback90MaxInput, els.buybackShopsMinInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.roiInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.psaRateMinInput, els.overallFilterInput, els.minExitLiquidityInput, els.minEconomicsInput, els.minMarketStabilityInput, els.minSupplyRiskInput, els.minFuturePriceScoreInput, els.maxFuturePriceScoreInput, els.minForecastPriceInput, els.maxForecastPriceInput, els.minForecastDownsideInput, els.maxForecastDownsideInput, els.minForecastGapInput, els.maxForecastGapInput, els.forecastPhaseInput, els.forecastConfidenceInput, els.forecastSupplyPressureInput, els.minForecastAgeInput, els.forecastMaturityInput, els.maxForecastMonthlyIncreaseInput, els.stockDemandInput, els.fundingOnlyInput, els.officialOnlyInput, els.sortInput, els.psaCapitalInput, els.lockedCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput].forEach((el) =>
+[els.qInput, els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.buyback7MinInput, els.buyback7MaxInput, els.buyback30MinInput, els.buyback30MaxInput, els.buyback90MinInput, els.buyback90MaxInput, els.buybackShopsMinInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.roiInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.psaRateMinInput, els.overallFilterInput, els.minExitLiquidityInput, els.minEconomicsInput, els.minMarketStabilityInput, els.minSupplyRiskInput, els.minFuturePriceScoreInput, els.maxFuturePriceScoreInput, els.minForecastPriceInput, els.maxForecastPriceInput, els.minForecastDownsideInput, els.maxForecastDownsideInput, els.minForecastGapInput, els.maxForecastGapInput, els.forecastPhaseInput, els.forecastConfidenceInput, els.forecastSupplyPressureInput, els.minForecastAgeInput, els.forecastMaturityInput, els.maxForecastMonthlyIncreaseInput, els.stockDemandInput, els.hideSkippedInput, els.fundingOnlyInput, els.officialOnlyInput, els.sortInput, els.psaCapitalInput, els.lockedCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput].forEach((el) =>
   el.addEventListener("input", syncFromUI)
 );
 
@@ -2016,6 +2023,7 @@ els.resetFiltersBtn.addEventListener("click", () => {
   els.forecastSupplyPressureInput.value = "all";
   els.forecastMaturityInput.value = "all";
   els.stockDemandInput.value = "all";
+  els.hideSkippedInput.checked = false;
   els.fundingOnlyInput.checked = false;
   els.officialOnlyInput.checked = false;
   els.sortInput.value = "overall-desc";
@@ -2034,6 +2042,7 @@ document.querySelectorAll("[data-preset]").forEach((button) => {
     els.minSupplyRiskInput.value = preset === "low-risk" ? "60" : "0";
     els.maxForecastDownsideInput.value = preset === "low-risk" ? "10" : "";
     els.buybackShopsMinInput.value = preset === "turnover" ? "1" : "0";
+    els.hideSkippedInput.checked = preset === "now" || preset === "low-risk";
     els.fundingOnlyInput.checked = preset === "now";
     els.officialOnlyInput.checked = preset === "low-risk";
     els.sortInput.value = preset === "turnover" ? "exit-desc" : preset === "low-risk" ? "downside-asc" : "expectedProfit-desc";
