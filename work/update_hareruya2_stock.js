@@ -38,6 +38,18 @@ function normalize(value) {
     .trim();
 }
 
+function packMatchKey(value) {
+  return normalize(value)
+    .replace(/(?:強化)?拡張パック/g, "")
+    .replace(/ハイクラスパック/g, "")
+    .replace(/(?:スターター|スタート)セット/g, "")
+    .replace(/デッキビルドbox/g, "")
+    .replace(/ポケモンカードゲーム/g, "")
+    .replace(/プレミアムトレーナーボックス/g, "")
+    .replace(/(?:ex|gx)$/, "")
+    .trim();
+}
+
 function compactName(value) {
   return normalize(value)
     .replace(/(?:sar|hr|sr|ur|csr|chr|ar|rrr|rr|ssr|s|r|u|c|p|pr|h)$/i, "")
@@ -142,17 +154,31 @@ function sleep(milliseconds) {
 
 async function fetchJson(url) {
   for (let attempt = 0; attempt < 5; attempt += 1) {
-    const response = await fetch(url, { headers: { "user-agent": "Mozilla/5.0" } });
-    if (response.ok) return response.json();
-    if ((response.status === 429 || response.status >= 500) && attempt < 4) {
-      const retryAfter = Number(response.headers.get("retry-after"));
-      const retryDelay = Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter * 1000 : 0;
-      await sleep(Math.max(retryDelay, 1500 * (attempt + 1)));
-      continue;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 15000);
+    try {
+      const response = await fetch(url, { headers: { "user-agent": "Mozilla/5.0" }, signal: controller.signal });
+      if (response.ok) return await response.json();
+      if ((response.status === 429 || response.status >= 500) && attempt < 4) {
+        const retryAfter = Number(response.headers.get("retry-after"));
+        const retryDelay = Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter * 1000 : 0;
+        await sleep(Math.max(retryDelay, 1500 * (attempt + 1)));
+        continue;
+      }
+      throw new Error(`HTTP ${response.status}`);
+    } finally {
+      clearTimeout(timer);
     }
-    throw new Error(`HTTP ${response.status}`);
   }
   throw new Error("HTTP retry exhausted");
+}
+
+function searchEraPriority(card) {
+  const setCode = extractCardSignature(card).setCode.toUpperCase();
+  if (/^(?:SV|S\d|S-P|SM|SM-P)/.test(setCode)) return 4;
+  if (/^(?:XY|XY-P|BW|BW-P)/.test(setCode)) return 3;
+  if (/^(?:DP|DP-P|PCG)/.test(setCode)) return 2;
+  return 1;
 }
 
 async function fetchText(url) {
@@ -164,7 +190,7 @@ async function fetchText(url) {
         headers: { "user-agent": "Mozilla/5.0", "x-return-format": "markdown" },
         signal: controller.signal,
       });
-      if (response.ok) return response.text();
+      if (response.ok) return await response.text();
       if ((response.status === 429 || response.status >= 500) && attempt < 3) {
         await sleep(1500 * (attempt + 1));
         continue;
@@ -204,14 +230,22 @@ async function fetchAllCollections() {
 
 function findCollectionForPack(pack, collections) {
   if (!pack) return null;
+  const packKey = packMatchKey(pack);
   const exact = collections.find((collection) => normalize(collection.title) === pack);
   if (exact) return exact;
+  const normalizedExact = packKey && collections.find((collection) => packMatchKey(collection.title) === packKey);
+  if (normalizedExact) return normalizedExact;
   const candidates = collections
     .filter((collection) => {
       const title = normalize(collection.title);
-      return title.length >= 6 && (title.includes(pack) || pack.includes(title));
+      const titleKey = packMatchKey(collection.title);
+      return title.length >= 6 && (
+        title.includes(pack) ||
+        pack.includes(title) ||
+        (packKey.length >= 4 && titleKey.length >= 4 && (titleKey.includes(packKey) || packKey.includes(titleKey)))
+      );
     })
-    .sort((left, right) => Math.abs(normalize(left.title).length - pack.length) - Math.abs(normalize(right.title).length - pack.length));
+    .sort((left, right) => Math.abs(packMatchKey(left.title).length - packKey.length) - Math.abs(packMatchKey(right.title).length - packKey.length));
   return candidates[0] || null;
 }
 
@@ -224,6 +258,25 @@ async function fetchCollectionProducts(handle) {
     if (rows.length < 250) break;
   }
   return products;
+}
+
+async function fetchSearchProducts(card) {
+  const signature = extractCardSignature(card);
+  if (!signature.setCode || !signature.cardNo) return [];
+  const query = `${signature.cardNo} ${signature.setCode}`;
+  const markdown = await fetchText(`${READER_ORIGIN}/search?q=${encodeURIComponent(query)}&type=product`);
+  const handles = [...new Set(
+    [...String(markdown || "").matchAll(/\/products\/([^?#/\s)]+)/g)]
+      .map((match) => decodeURIComponent(match[1]))
+      .filter(Boolean)
+  )].slice(0, 8);
+  return mapLimit(handles, 3, async (handle) => {
+    try {
+      return await fetchJson(`${SHOP_ORIGIN}/products/${encodeURIComponent(handle)}.js`);
+    } catch {
+      return null;
+    }
+  }).then((rows) => rows.filter(Boolean));
 }
 
 function chooseProduct(products) {
@@ -349,21 +402,26 @@ async function main() {
   const history = safeReadJson(paths.history, { dates: [], stocks: {} });
   const progress = safeReadJson(paths.progress, { completedHandles: [], attemptedCards: {} });
   if (!progress.attemptedCards || typeof progress.attemptedCards !== "object") progress.attemptedCards = {};
+  if (!progress.searchAttemptedCards || typeof progress.searchAttemptedCards !== "object") progress.searchAttemptedCards = {};
   const catalogById = new Map(catalog.map((entry) => [entry.cardId, entry]));
 
   let collections = [];
   let collectionWarning = "";
-  try {
-    collections = await fetchAllCollections();
-  } catch (error) {
-    collectionWarning = error.message;
-    console.warn(`hareruya2 collection discovery deferred: ${collectionWarning}`);
+  const skipCollectionDiscovery = process.env.HARERUYA2_SKIP_COLLECTION_DISCOVERY === "1";
+  if (!skipCollectionDiscovery) {
+    try {
+      collections = await fetchAllCollections();
+    } catch (error) {
+      collectionWarning = error.message;
+      console.warn(`hareruya2 collection discovery deferred: ${collectionWarning}`);
+    }
   }
   const pendingGroups = new Map();
+  const forceRecheck = process.env.HARERUYA2_RECHECK_ALL === "1";
   for (const card of cards.filter((row) => !catalogById.has(row.id))) {
     const signature = extractCardSignature(card);
     const signatureKey = [signature.setCode, signature.cardNo, signature.base, signature.finish].join("|");
-    if (!isAttemptDue(progress.attemptedCards[card.id], signatureKey)) continue;
+    if (!forceRecheck && !isAttemptDue(progress.attemptedCards[card.id], signatureKey)) continue;
     const collection = findCollectionForPack(signature.pack, collections);
     if (!collection?.handle) continue;
     if (!pendingGroups.has(collection.handle)) pendingGroups.set(collection.handle, { collection, cards: [] });
@@ -406,6 +464,60 @@ async function main() {
       linked += 1;
     }
   }
+
+  // Some older packs use a different collection name. Fall back to an exact
+  // card-number search, while retaining attempts so daily refreshes stay small.
+  const forceSearch = process.env.HARERUYA2_SEARCH_RECHECK_ALL === "1";
+  const requestedSearchBatch = Number(process.env.HARERUYA2_SEARCH_BATCH || 40);
+  const searchCandidates = cards
+    .filter((card) => !catalogById.has(card.id))
+    .filter((card) => {
+      const signature = extractCardSignature(card);
+      const signatureKey = [signature.setCode, signature.cardNo, signature.base, signature.finish].join("|");
+      return signature.setCode && signature.cardNo && (forceSearch || isAttemptDue(progress.searchAttemptedCards[card.id], signatureKey));
+    })
+    .sort((left, right) => {
+      const eraDiff = searchEraPriority(right) - searchEraPriority(left);
+      if (eraDiff) return eraDiff;
+      return Number(right.snkPsa10Price || right.price || 0) - Number(left.snkPsa10Price || left.price || 0);
+    });
+  let searchTargets = searchCandidates;
+  if (requestedSearchBatch > 0 && searchTargets.length > requestedSearchBatch) {
+    const cursor = Math.max(0, Number(progress.searchCursor || 0)) % searchTargets.length;
+    searchTargets = [...searchTargets.slice(cursor), ...searchTargets.slice(0, cursor)].slice(0, requestedSearchBatch);
+    progress.searchCursor = (cursor + searchTargets.length) % searchCandidates.length;
+  }
+  const searchResults = await mapLimit(searchTargets, Math.max(1, Number(process.env.HARERUYA2_SEARCH_CONCURRENCY || 3)), async (card) => {
+    const signature = extractCardSignature(card);
+    const signatureKey = [signature.setCode, signature.cardNo, signature.base, signature.finish].join("|");
+    try {
+      const products = await fetchSearchProducts(card);
+      const matches = products.filter((product) => stateFromTitle(product.title) === "A" && productMatchesCard(card, product));
+      const match = chooseProduct(matches);
+      progress.searchAttemptedCards[card.id] = { signature: signatureKey, checkedAt: new Date().toISOString(), found: Boolean(match) };
+      return { card, match };
+    } catch (error) {
+      return { card, error: error.message };
+    }
+  });
+  let searchLinked = 0;
+  for (const result of searchResults) {
+    if (!result.match) continue;
+    const match = result.match;
+    catalogById.set(result.card.id, {
+      cardId: result.card.id,
+      name: match.title,
+      detailUrl: productUrl(match),
+      handle: match.handle,
+      state: "A",
+      price: productPrice(match),
+      stock: null,
+      available: isAvailable(match),
+      observedAt: jstDate(),
+    });
+    linked += 1;
+    searchLinked += 1;
+  }
   catalog = [...catalogById.values()];
   const latestCatalogById = new Map(catalog.map((entry) => [entry.cardId, entry]));
   const nextCards = cards.map((card) => {
@@ -417,7 +529,13 @@ async function main() {
   // Save newly confirmed links before the slower stock pass. A network timeout
   // must not make the next run repeat the same matching work.
   progress.completedHandles = [...completed];
-  progress.lastRun = { checkedCards: collectionResults.reduce((sum, result) => sum + result.group.cards.length, 0), linked, updatedAt: jstDate() };
+  progress.lastRun = {
+    checkedCards: collectionResults.reduce((sum, result) => sum + result.group.cards.length, 0),
+    searchChecked: searchTargets.length,
+    linked,
+    searchLinked,
+    updatedAt: jstDate(),
+  };
   fs.writeFileSync(paths.cards, JSON.stringify(nextCards), "utf8");
   fs.writeFileSync(paths.catalog, JSON.stringify(catalog), "utf8");
   fs.writeFileSync(paths.progress, JSON.stringify(progress), "utf8");
@@ -484,7 +602,7 @@ async function main() {
   fs.writeFileSync(paths.history, JSON.stringify(history), "utf8");
   fs.writeFileSync(paths.progress, JSON.stringify(progress), "utf8");
   writeSummary(nextCards, catalog, history, paths);
-  console.log(`hareruya2 collections=${groups.length}/${unprocessed.length} linked=${linked} coverage=${coverage}/${nextCards.length} stock=${checked}/${stockTargets.length} rejected=${rejected}${collectionWarning ? ` collectionWarning=${collectionWarning}` : ""}`);
+  console.log(`hareruya2 collections=${groups.length}/${unprocessed.length} linked=${linked} search=${searchLinked}/${searchTargets.length} coverage=${coverage}/${nextCards.length} stock=${checked}/${stockTargets.length} rejected=${rejected}${collectionWarning ? ` collectionWarning=${collectionWarning}` : ""}`);
 }
 
 main().catch((error) => {
