@@ -290,6 +290,21 @@
             </select>
           </label>
           <label class="control">
+            <span>発売からの経過年数 下限</span>
+            <input id="minForecastAgeInput" type="number" min="0" step="1" placeholder="例: 3・空欄は条件なし" />
+            <small class="control-help">PSA公式セット年からの概算です。</small>
+          </label>
+          <label class="control">
+            <span>供給成熟度</span>
+            <select id="forecastMaturityInput">
+              <option value="all">すべて表示</option>
+              <option value="mature">供給成熟（3年以上）のみ</option>
+              <option value="established">発売後1年以上のみ</option>
+              <option value="recent">新しいカードのみ</option>
+              <option value="known">発売年未取得を除く</option>
+            </select>
+          </label>
+          <label class="control">
             <span>PSA10 30日換算増加 上限枚数</span>
             <input id="maxForecastMonthlyIncreaseInput" type="number" min="0" step="10" placeholder="空欄は条件なし" />
             <small class="control-help">取得できた期間のPSA10増加数を30日分へ換算した参考値です。</small>
@@ -499,6 +514,6 @@
     </section>
   </main>
 
-  <script src="./app.js?v=20260829-forecast-supply-2"></script>
+  <script src="./app.js?v=20260829-release-maturity-1"></script>
 </body>
 </html>
