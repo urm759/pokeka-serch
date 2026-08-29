@@ -37,7 +37,7 @@ jobs:
 
       - name: Resolve all Snkrdunk direct links
         env:
-          SNKR_BATCH: "0"
+          SNKR_BATCH: "250"
           SNKR_CONCURRENCY: "20"
           SNKR_CHECKPOINT: "100"
           SNKR_RECHECK_DAYS: "30"
@@ -52,11 +52,10 @@ jobs:
       - name: Rebuild verified PSA history links
         run: node work/build_psa_history.js
 
-      - name: Refresh all Cardrush listings and prices
+      - name: Resolve only new or unresolved Cardrush listings
         env:
-          CARDRUSH_REFRESH_ALL: "1"
-          CARDRUSH_SEED_BATCH: "0"
-          CARDRUSH_TARGET_BATCH: "200"
+          CARDRUSH_SEED_BATCH: "8"
+          CARDRUSH_TARGET_BATCH: "80"
           CARDRUSH_CONCURRENCY: "2"
         run: node work/update_cardrush_links.js
 
@@ -67,8 +66,9 @@ jobs:
 
       - name: Link Hareruya2 state-A listings and record stock
         env:
-          HARERUYA2_COLLECTION_BATCH: "0"
+          HARERUYA2_COLLECTION_BATCH: "12"
           HARERUYA2_COLLECTION_CONCURRENCY: "5"
+          HARERUYA2_STOCK_BATCH: "800"
           HARERUYA2_STOCK_CONCURRENCY: "10"
         run: node work/update_hareruya2_stock.js
 
@@ -85,15 +85,11 @@ jobs:
       - name: Record shop PSA10 buyback listings
         run: node work/update_shop_buybacks.js
 
-      - name: Re-resolve changed Cardrush URLs
-        env:
-          CARDRUSH_SKIP_SEEDS: "1"
-          CARDRUSH_TARGET_BATCH: "120"
-          CARDRUSH_CONCURRENCY: "2"
-        run: node work/update_cardrush_links.js
-
       - name: Relearn sourcing evaluation from current market data
         run: node work/build_evaluation_model.js
+
+      - name: Record link coverage and unresolved counts
+        run: node work/audit_link_coverage.js
 
       - name: Finalize source freshness and completed date
         run: node work/finalize_update_status.js

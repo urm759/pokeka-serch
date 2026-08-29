@@ -21,6 +21,13 @@ function jstDate() {
   }).format(new Date());
 }
 
+function isAttemptDue(attempt, signature, now = Date.now()) {
+  if (!attempt || attempt.signature !== signature) return true;
+  const checkedAt = Date.parse(attempt.checkedAt || "");
+  if (!Number.isFinite(checkedAt)) return true;
+  return now - checkedAt >= 30 * 86400000;
+}
+
 function normalize(value) {
   return String(value || "")
     .toLowerCase()
@@ -340,7 +347,8 @@ async function main() {
   const meta = safeReadJson(paths.meta, {});
   let catalog = safeReadJson(paths.catalog, []);
   const history = safeReadJson(paths.history, { dates: [], stocks: {} });
-  const progress = safeReadJson(paths.progress, { completedHandles: [] });
+  const progress = safeReadJson(paths.progress, { completedHandles: [], attemptedCards: {} });
+  if (!progress.attemptedCards || typeof progress.attemptedCards !== "object") progress.attemptedCards = {};
   const catalogById = new Map(catalog.map((entry) => [entry.cardId, entry]));
 
   let collections = [];
@@ -354,14 +362,16 @@ async function main() {
   const pendingGroups = new Map();
   for (const card of cards.filter((row) => !catalogById.has(row.id))) {
     const signature = extractCardSignature(card);
+    const signatureKey = [signature.setCode, signature.cardNo, signature.base, signature.finish].join("|");
+    if (!isAttemptDue(progress.attemptedCards[card.id], signatureKey)) continue;
     const collection = findCollectionForPack(signature.pack, collections);
     if (!collection?.handle) continue;
     if (!pendingGroups.has(collection.handle)) pendingGroups.set(collection.handle, { collection, cards: [] });
-    pendingGroups.get(collection.handle).cards.push(card);
+    pendingGroups.get(collection.handle).cards.push({ card, signatureKey });
   }
   const completed = new Set(progress.completedHandles || []);
   const onlyCollection = String(process.env.HARERUYA2_COLLECTION_HANDLE || "").trim();
-  const unprocessed = [...pendingGroups.values()].filter((group) => !completed.has(group.collection.handle) && (!onlyCollection || group.collection.handle === onlyCollection));
+  const unprocessed = [...pendingGroups.values()].filter((group) => !onlyCollection || group.collection.handle === onlyCollection);
   const requestedBatch = Number(process.env.HARERUYA2_COLLECTION_BATCH || 0);
   const groups = requestedBatch > 0 ? unprocessed.slice(0, requestedBatch) : unprocessed;
   const collectionResults = await mapLimit(groups, Math.max(1, Number(process.env.HARERUYA2_COLLECTION_CONCURRENCY || 5)), async (group) => {
@@ -375,9 +385,11 @@ async function main() {
   for (const result of collectionResults) {
     if (result.error) continue;
     completed.add(result.group.collection.handle);
-    for (const card of result.group.cards) {
+    for (const target of result.group.cards) {
+      const { card, signatureKey } = target;
       const matches = result.products.filter((product) => stateFromTitle(product.title) === "A" && productMatchesCard(card, product));
       const match = chooseProduct(matches);
+      progress.attemptedCards[card.id] = { signature: signatureKey, checkedAt: new Date().toISOString(), found: Boolean(match) };
       if (!match) continue;
       const entry = {
         cardId: card.id,
@@ -402,6 +414,14 @@ async function main() {
     return { ...card, hareruya2Url: entry.detailUrl };
   });
 
+  // Save newly confirmed links before the slower stock pass. A network timeout
+  // must not make the next run repeat the same matching work.
+  progress.completedHandles = [...completed];
+  progress.lastRun = { checkedCards: collectionResults.reduce((sum, result) => sum + result.group.cards.length, 0), linked, updatedAt: jstDate() };
+  fs.writeFileSync(paths.cards, JSON.stringify(nextCards), "utf8");
+  fs.writeFileSync(paths.catalog, JSON.stringify(catalog), "utf8");
+  fs.writeFileSync(paths.progress, JSON.stringify(progress), "utf8");
+
   const today = jstDate();
   let dateIndex = history.dates.indexOf(today);
   if (dateIndex < 0) {
@@ -415,9 +435,13 @@ async function main() {
     dateIndex -= 1;
   }
   const force = process.env.HARERUYA2_STOCK_FORCE === "1";
-  const stockBatch = Number(process.env.HARERUYA2_STOCK_BATCH || 0);
+  const stockBatch = Number(process.env.HARERUYA2_STOCK_BATCH || 800);
   let stockTargets = nextCards.filter((card) => card.hareruya2Url && (force || !Number.isFinite(history.stocks[card.id]?.[dateIndex])));
-  if (stockBatch > 0) stockTargets = stockTargets.slice(0, stockBatch);
+  if (stockBatch > 0 && stockTargets.length > stockBatch) {
+    const cursor = Math.max(0, Number(progress.stockCursor || 0)) % stockTargets.length;
+    stockTargets = [...stockTargets.slice(cursor), ...stockTargets.slice(0, cursor)].slice(0, stockBatch);
+    progress.stockCursor = (cursor + stockTargets.length) % Math.max(1, nextCards.filter((card) => card.hareruya2Url).length);
+  }
   const stockResults = await mapLimit(stockTargets, Math.max(1, Number(process.env.HARERUYA2_STOCK_CONCURRENCY || 10)), async (card) => {
     try {
       const handle = String(card.hareruya2Url || "");
@@ -453,6 +477,7 @@ async function main() {
   const coverage = nextCards.filter((card) => card.hareruya2Url).length;
   meta.hareruya2Coverage = { matched: coverage, total: nextCards.length, updatedAt: today };
   progress.completedHandles = [...completed];
+  progress.lastRun = { checkedCards: collectionResults.reduce((sum, result) => sum + result.group.cards.length, 0), linked, stockChecked: checked, updatedAt: today };
   fs.writeFileSync(paths.cards, JSON.stringify(nextCards), "utf8");
   fs.writeFileSync(paths.meta, JSON.stringify(meta), "utf8");
   fs.writeFileSync(paths.catalog, JSON.stringify(catalog), "utf8");

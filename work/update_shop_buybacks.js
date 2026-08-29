@@ -343,7 +343,9 @@ async function main() {
   const historyPath = path.join(__dirname, "shop_buyback_history.json");
   const catalogPath = path.join(__dirname, "shop_buyback_catalog.json");
   const unmatchedPath = path.join(__dirname, "shop_buyback_unmatched.json");
+  const itemMatchesPath = path.join(__dirname, "shop_buyback_item_matches.json");
   const imageMatches = readJson(path.join(__dirname, "shop_buyback_image_matches.json"), {});
+  const itemMatches = readJson(itemMatchesPath, {});
   const history = readJson(historyPath, { dates: [], shops: {} });
   const matchCard = buildMatcher(cards);
   const results = [];
@@ -353,14 +355,25 @@ async function main() {
       const matched = [];
       const unmatched = [];
       for (const item of fetched.items) {
-        const result = matchCard(item);
+        const sourceKey = `${shop.id}:${item.shopItemId}`;
         const verifiedCard = item.verifiedCardId ? cards.find((card) => card.id === item.verifiedCardId) : null;
-        const manualCardId = imageMatches[`${shop.id}:${item.shopItemId}`];
+        const manualCardId = imageMatches[sourceKey];
         const imageCard = manualCardId ? cards.find((card) => card.id === manualCardId) : null;
-        if (verifiedCard) matched.push({ ...item, cardId: verifiedCard.id, score: 100, matchMethod: "image-reviewed" });
+        const cachedCardId = itemMatches[sourceKey];
+        const cachedCard = cachedCardId ? cards.find((card) => card.id === cachedCardId) : null;
+        const result = verifiedCard || imageCard || cachedCard ? null : matchCard(item);
+        if (verifiedCard) {
+          itemMatches[sourceKey] = verifiedCard.id;
+          matched.push({ ...item, cardId: verifiedCard.id, score: 100, matchMethod: "image-reviewed" });
+        } else if (imageCard) {
+          itemMatches[sourceKey] = imageCard.id;
+          matched.push({ ...item, cardId: imageCard.id, score: 100, matchMethod: "image-reviewed" });
+        } else if (cachedCard) matched.push({ ...item, cardId: cachedCard.id, score: 100, matchMethod: "confirmed-cache" });
         else if (shop.id === "laurier-akiba") unmatched.push({ ...item, candidateCardId: result?.card?.id || "", candidateScore: result?.score || 0 });
-        else if (result) matched.push({ ...item, cardId: result.card.id, score: result.score, matchMethod: "text" });
-        else if (imageCard) matched.push({ ...item, cardId: imageCard.id, score: 100, matchMethod: "image-reviewed" });
+        else if (result) {
+          if (result.score >= 90) itemMatches[sourceKey] = result.card.id;
+          matched.push({ ...item, cardId: result.card.id, score: result.score, matchMethod: "text" });
+        }
         else unmatched.push(item);
       }
       results.push({ shop, pages: fetched.pages, items: fetched.items, matched, unmatched });
@@ -501,6 +514,7 @@ async function main() {
   fs.writeFileSync(historyPath, JSON.stringify(history), "utf8");
   fs.writeFileSync(catalogPath, JSON.stringify({ updatedAt: today, shops: catalog }), "utf8");
   fs.writeFileSync(unmatchedPath, JSON.stringify({ updatedAt: today, shops: unmatched }), "utf8");
+  fs.writeFileSync(itemMatchesPath, JSON.stringify(itemMatches), "utf8");
   fs.writeFileSync(SUMMARY_PATH, JSON.stringify({ updatedAt: today, dates: history.dates, shops: shopMeta, cards: summaryCards }), "utf8");
 }
 

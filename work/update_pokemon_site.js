@@ -320,6 +320,10 @@ async function main() {
   moduleMap[93280](mod);
   const all = mod.exports;
   const pokemonSource = all.filter((c) => c.title === "ポケモン");
+  const sourceIds = new Set(pokemonSource.map((card) => card.id));
+  const addedCards = pokemonSource.filter((card) => !previousById.has(card.id));
+  const removedIds = [...previousById.keys()].filter((id) => !sourceIds.has(id));
+  const isPromo = (card) => /プロモ|PROMO|(?:^|\s)[A-Z0-9-]+-P(?:\s|\]|$)/i.test(`${card.name || ""} ${card.model || ""}`);
   const snkrBatch = Math.max(0, Number(process.env.SNKR_BATCH || 500));
   const snkrPending = new Set(
     pokemonSource
@@ -336,7 +340,8 @@ async function main() {
         const psaQuery = buildPsaQuery(c.name);
         const officialRow =
           psaQueryCandidates(psaQuery).map((key) => officialPsaByQuery[key] || officialPsaAliases[key]).find(Boolean) || null;
-        const cardrushMatch = resolveCardrushMatch(c, cardrushCatalog);
+        const previous = previousById.get(c.id) || {};
+        const cardrushMatch = previous.cardrushUrl ? null : resolveCardrushMatch(c, cardrushCatalog);
         const officialRate = num(officialRow?.psa10Rate);
         const officialTotal = num(officialRow?.psaTotal);
         const officialCount = num(officialRow?.psa10Count);
@@ -347,7 +352,7 @@ async function main() {
           officialTotal >= MIN_OFFICIAL_PSA_TOTAL &&
           officialRate >= MIN_OFFICIAL_PSA_RATE;
         const pageUrl = buildTorecaCardUrl(c.id);
-        const previousSnkrUrl = previousById.get(c.id)?.snkUrl || "";
+        const previousSnkrUrl = previous.snkUrl || "";
         const pageMeta = snkrPending.has(c.id)
           ? await resolveSnkrUrlFromPage(pageUrl, c)
           : { snkrUrl: previousSnkrUrl || buildSnkrSearchUrl(c) };
@@ -384,9 +389,10 @@ async function main() {
           tLastAt: c.tLastAt || "",
           rawBacked: c.rawBacked ? 1 : 0,
           snkListings: num(c.snkListings),
-          cardrushUrl: cardrushMatch?.detailUrl || null,
+          cardrushUrl: previous.cardrushUrl || cardrushMatch?.detailUrl || null,
           cardrushState: cardrushMatch?.state || null,
           cardrushName: cardrushMatch?.name || null,
+          hareruya2Url: previous.hareruya2Url || null,
         };
     }
   );
@@ -410,7 +416,8 @@ async function main() {
     days: card.days,
     tLastAt: card.tLastAt,
     snkListings: card.snkListings,
-    cardrushUrl: card.cardrushState === "A" ? card.cardrushUrl : null,
+    cardrushUrl: card.cardrushUrl || null,
+    hareruya2Url: card.hareruya2Url || null,
   }));
 
   fs.mkdirSync(base, { recursive: true });
@@ -419,6 +426,17 @@ async function main() {
 
   const updatedAt = jstDate();
   fs.writeFileSync(jsonPath, JSON.stringify(sitePokemon), "utf8");
+  fs.writeFileSync(
+    path.join(__dirname, "toreca_source_diff.json"),
+    JSON.stringify({
+      updatedAt,
+      sourceTotal: sitePokemon.length,
+      added: addedCards.map((card) => ({ id: card.id, name: card.name, promo: isPromo(card) })),
+      removedIds,
+      addedPromoCount: addedCards.filter(isPromo).length,
+    }),
+    "utf8"
+  );
   fs.writeFileSync(
     metaJsonPath,
     JSON.stringify(

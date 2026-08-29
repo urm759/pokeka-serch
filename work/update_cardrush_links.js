@@ -291,6 +291,14 @@ function isMatchableEntry(entry) {
   return !/(?:PSA|ARS|CGC|BGS|ACE)\s*10|鑑定済/i.test(String(entry?.name || ""));
 }
 
+function isConfirmedExistingLink(card, catalogByUrl) {
+  const url = String(card?.cardrushUrl || "");
+  if (!url || invalidCardrushUrls.has(url)) return false;
+  if (KNOWN_CARD_OVERRIDES.get(String(card.id)) === url) return true;
+  const entry = catalogByUrl.get(url);
+  return Boolean(entry && isMatchableEntry(entry));
+}
+
 async function crawlCardrushSeed(keyword, maxPages = Number.POSITIVE_INFINITY) {
   const directUrl = `http://www.cardrush-pokemon.jp/product-list?keyword=${encodeURIComponent(keyword)}`;
   const firstUrl = `https://r.jina.ai/${directUrl}`;
@@ -521,8 +529,12 @@ async function crawlUnmatchedCards(cards, catalog, concurrency = 1, checkpointPa
   const progress = safeReadJson(progressPath, { attemptedQueries: [] });
   const attemptedQueries = new Set(progress.attemptedQueries || []);
   const catalogIndex = buildCatalogIndex(catalog);
+  const catalogByUrl = new Map(catalog.map((entry) => [entry.detailUrl, entry]));
   const unmatched = cards.filter(
-    (card) => (isModernCard(card) || isPromoCard(card)) && !resolveCardrushMatch(card, catalog, catalogIndex)
+    (card) =>
+      (isModernCard(card) || isPromoCard(card)) &&
+      (recheckIds.has(card.id) || !isConfirmedExistingLink(card, catalogByUrl)) &&
+      !resolveCardrushMatch(card, catalog, catalogIndex)
   );
   console.log(`cardrush targeted searches: ${unmatched.length}`);
   const found = [];
@@ -631,24 +643,27 @@ async function main() {
   console.log(`cardrush crawled: ${crawledCatalog.length}`);
   const catalogIndex = buildCatalogIndex(crawledCatalog);
   const catalogByUrl = new Map(crawledCatalog.map((entry) => [entry.detailUrl, entry]));
+  const beforeMatched = cards.filter((card) => isConfirmedExistingLink(card, catalogByUrl)).length;
+  let reused = 0;
+  let newlyResolved = 0;
 
   const updated = cards.map((card) => {
     const knownUrl = KNOWN_CARD_OVERRIDES.get(String(card.id));
-    const match = resolveCardrushMatch(card, crawledCatalog, catalogIndex);
-    const existingEntry = catalogByUrl.get(card.cardrushUrl);
-    const preservedUrl =
-      existingEntry &&
-      isMatchableEntry(existingEntry) &&
-      !invalidCardrushUrls.has(card.cardrushUrl)
-        ? card.cardrushUrl
-        : "";
+    const preservedUrl = isConfirmedExistingLink(card, catalogByUrl) ? card.cardrushUrl : "";
+    const shouldRecheck = recheckIds.has(card.id);
+    const match = preservedUrl && !shouldRecheck ? null : resolveCardrushMatch(card, crawledCatalog, catalogIndex);
     const next = { ...card };
     if (knownUrl) {
       next.cardrushUrl = knownUrl;
+      if (card.cardrushUrl === knownUrl) reused += 1;
+      else newlyResolved += 1;
+    } else if (preservedUrl && !shouldRecheck) {
+      next.cardrushUrl = preservedUrl;
+      reused += 1;
     } else if (match) {
       next.cardrushUrl = match.detailUrl;
-    } else if (preservedUrl) {
-      next.cardrushUrl = preservedUrl;
+      if (card.cardrushUrl === match.detailUrl) reused += 1;
+      else newlyResolved += 1;
     } else {
       delete next.cardrushUrl;
     }
@@ -669,6 +684,11 @@ async function main() {
   fs.writeFileSync(metaPath, JSON.stringify(siteMeta, null, 2), "utf8");
   const remainingRechecks = [...recheckIds].filter((id) => !updated.find((card) => card.id === id && card.cardrushUrl));
   fs.writeFileSync(recheckPath, JSON.stringify(remainingRechecks), "utf8");
+  fs.writeFileSync(
+    path.join(__dirname, "cardrush_link_metrics.json"),
+    JSON.stringify({ updatedAt: jstDate(), beforeMatched, matched, newlyResolved, reused, unresolved: updated.length - matched }, null, 2),
+    "utf8"
+  );
   console.log(`cardrush matched: ${matched}/${updated.length}`);
   console.log(`modern coverage: ${JSON.stringify(modernCoverage)}`);
 }

@@ -13,7 +13,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageOps
 
 
-SIGNATURE_SIZE = (48, 48)
+SIGNATURE_SIZE = (32, 32)
 
 
 def fetch_image(url: str) -> Image.Image:
@@ -24,7 +24,28 @@ def fetch_image(url: str) -> Image.Image:
 
 
 def card_view(image: Image.Image) -> Image.Image:
-    fitted = ImageOps.fit(image.convert("RGB"), (240, 336), method=Image.Resampling.LANCZOS)
+    source = image.convert("RGB")
+    ratio = source.width / max(source.height, 1)
+    if ratio > 0.9 or ratio < 0.55:
+        # MinTra/Snkr images are commonly a landscape canvas with the actual
+        # card centered over a blurred background.
+        top = round(source.height * 0.055)
+        bottom = round(source.height * 0.9)
+        card_height = bottom - top
+        card_width = round(card_height * 0.714)
+        center_x = source.width // 2
+        source = source.crop((center_x - card_width // 2, top, center_x + card_width // 2, bottom))
+    pixels = np.asarray(source)
+    # MinTra images often place a small card on a white canvas. Trim that canvas
+    # before comparing it with the card crop taken from a buyback sheet.
+    foreground = np.any(pixels < 242, axis=2)
+    ys, xs = np.where(foreground)
+    if len(xs) and len(ys):
+        x1, x2 = int(xs.min()), int(xs.max()) + 1
+        y1, y2 = int(ys.min()), int(ys.max()) + 1
+        if (x2 - x1) * (y2 - y1) >= source.width * source.height * 0.12:
+            source = source.crop((x1, y1, x2, y2))
+    fitted = ImageOps.fit(source, (240, 336), method=Image.Resampling.LANCZOS)
     # The PSA badge and price sheet border sit outside this stable artwork area.
     return fitted.crop((24, 34, 211, 262))
 
@@ -32,13 +53,12 @@ def card_view(image: Image.Image) -> Image.Image:
 def signature(image: Image.Image) -> np.ndarray:
     view = card_view(image)
     rgb = np.asarray(view.resize(SIGNATURE_SIZE, Image.Resampling.LANCZOS), dtype=np.float32) / 255.0
-    gray_image = view.convert("L").filter(ImageFilter.GaussianBlur(0.7))
-    gray = np.asarray(gray_image.resize(SIGNATURE_SIZE, Image.Resampling.LANCZOS), dtype=np.float32) / 255.0
-    gray = (gray - gray.mean()) / max(float(gray.std()), 0.05)
-    gx = np.diff(gray, axis=1, append=gray[:, -1:])
-    gy = np.diff(gray, axis=0, append=gray[-1:, :])
-    color = np.asarray(Image.fromarray((rgb * 255).astype(np.uint8)).resize((12, 12), Image.Resampling.BILINEAR), dtype=np.float32) / 255.0
-    return np.concatenate((gray.ravel(), gx.ravel(), gy.ravel(), color.ravel())).astype(np.float16)
+    # Standardized RGB preserves artwork identity while tolerating brightness
+    # differences between the shop sheet and source image.
+    for channel in range(3):
+        values = rgb[:, :, channel]
+        rgb[:, :, channel] = (values - values.mean()) / max(float(values.std()), 0.08)
+    return rgb.ravel().astype(np.float16)
 
 
 def fetch_signature(card: dict) -> tuple[str, np.ndarray] | None:

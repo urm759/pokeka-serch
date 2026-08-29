@@ -1,0 +1,49 @@
+name: Deep Resolve Unmatched Cards
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: deep-card-link-resolution
+  cancel-in-progress: false
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Resolve unresolved Snkrdunk links
+        env:
+          SNKR_BATCH: "0"
+          SNKR_RECHECK_DAYS: "30"
+        run: node work/update_snkr_links.js
+      - name: Resolve unresolved Cardrush links
+        env:
+          CARDRUSH_SEED_BATCH: "40"
+          CARDRUSH_TARGET_BATCH: "400"
+          CARDRUSH_CONCURRENCY: "2"
+        run: node work/update_cardrush_links.js
+      - name: Resolve unresolved Hareruya2 links
+        env:
+          HARERUYA2_COLLECTION_BATCH: "60"
+          HARERUYA2_STOCK_BATCH: "1"
+        run: node work/update_hareruya2_stock.js
+      - name: Rebuild evaluations
+        run: node work/build_evaluation_model.js
+      - name: Record link coverage
+        run: node work/audit_link_coverage.js
+      - name: Commit resolved mappings
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data work
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Resolve unmatched card links"
+          git push

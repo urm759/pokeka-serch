@@ -45,20 +45,25 @@ async function fetchAccount(account) {
       text: tweet.full_text || tweet.text || "",
       images: media.filter((item) => item.type === "photo").map((item) => `${item.media_url_https}?format=jpg&name=orig`),
     };
-  }).filter((post) => post.images.length && /PSA\s*10|PSA10|買取/i.test(post.text));
+  }).filter((post) => post.images.length && (/PSA\s*10|PSA10|買取/i.test(post.text) || /^[②③④⑤]/.test(post.text)));
 }
 
 async function main() {
   const reviewed = read(CAPTURE_PATH, { posts: [] });
-  const reviewedIds = new Set((reviewed.posts || []).map((post) => `${post.shopId}:${post.postId}`));
+  const reviewedIds = new Set((reviewed.posts || []).filter((post) => post.reviewComplete !== false).map((post) => `${post.shopId}:${post.postId}`));
+  const partialPosts = (reviewed.posts || []).filter((post) => post.reviewComplete === false);
+  const partialIds = new Set(partialPosts.map((post) => `${post.shopId}:${post.postId}`));
+  const latestReviewedDate = (reviewed.posts || []).map((post) => post.date || "").sort().at(-1) || "0000-00-00";
   const prior = read(OUTPUT_PATH, { posts: [] });
   const all = [];
   const errors = [];
   for (const account of ACCOUNTS) {
     try { all.push(...await fetchAccount(account)); } catch (error) { errors.push(String(error.message || error)); }
   }
-  const posts = [...new Map([...(prior.posts || []), ...all].map((post) => [`${post.shopId}:${post.postId}`, post])).values()]
+  const posts = [...new Map([...partialPosts, ...(prior.posts || []), ...all].map((post) => [`${post.shopId}:${post.postId}`, post])).values()]
     .filter((post) => !reviewedIds.has(`${post.shopId}:${post.postId}`))
+    .filter((post) => partialIds.has(`${post.shopId}:${post.postId}`) || post.date >= latestReviewedDate)
+    .filter((post) => partialIds.has(`${post.shopId}:${post.postId}`) || /買取表|強化買取|PSA\s*10.*買取|^[②③④⑤]/i.test(post.text || ""))
     .sort((a, b) => b.date.localeCompare(a.date) || b.postId.localeCompare(a.postId));
   const payload = { checkedAt: new Date().toISOString(), accounts: ACCOUNTS, pendingCount: posts.length, posts, errors };
   fs.writeFileSync(OUTPUT_PATH, JSON.stringify(payload), "utf8");
