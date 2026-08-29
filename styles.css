@@ -40,7 +40,7 @@ a{color:var(--accent);text-decoration:none}
   box-shadow:var(--shadow);
   border-radius:28px;
 }
-.hero{padding:28px;position:relative;overflow:hidden;margin-bottom:18px}
+.hero{padding:20px 22px;position:relative;overflow:hidden;margin-bottom:14px}
 .hero::before,.hero::after{
   content:"";position:absolute;border-radius:999px;pointer-events:none;opacity:.55;
 }
@@ -57,6 +57,10 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
   gap:12px;
 }
 .controls-primary{grid-template-columns:minmax(220px,1fr) repeat(3,minmax(190px,.55fr))}
+.quick-presets{position:relative;z-index:1;display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+.quick-presets>span{color:var(--muted);font-size:10px;font-weight:800}
+.quick-presets button{padding:8px 12px;border:1px solid rgba(125,211,252,.26);border-radius:999px;background:rgba(5,10,20,.48);color:var(--text);font-size:10px;font-weight:900;cursor:pointer}
+.quick-presets button:hover,.quick-presets button.active{border-color:rgba(56,217,150,.6);background:rgba(56,217,150,.16);color:#bbf7d0}
 .advanced-filters{
   margin-top:14px;
   border:1px solid var(--line);
@@ -654,6 +658,27 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .metric small{display:block;margin-top:5px;color:var(--muted);font-size:9px;line-height:1.4}
 .metric-primary{background:linear-gradient(135deg,rgba(125,211,252,.13),rgba(56,217,150,.08));border-color:rgba(125,211,252,.28)}
 .metric-primary strong{font-size:23px}
+.purchase-summary{display:grid;grid-template-columns:1.25fr repeat(3,minmax(120px,1fr));gap:8px;margin-top:12px;padding:10px;border:1px solid rgba(125,211,252,.3);border-radius:18px;background:rgba(5,10,20,.56)}
+.purchase-summary>div{padding:10px;border-radius:13px;background:#0b1224}
+.purchase-summary span,.purchase-summary small{display:block;color:var(--muted);font-size:9px;line-height:1.45}
+.purchase-summary strong{display:block;margin-top:3px;font-size:19px}
+.purchase-summary .purchase-verdict strong{font-size:25px;color:#fde68a}
+.purchase-summary.recommended{border-color:rgba(56,217,150,.52)}
+.purchase-summary.recommended .purchase-verdict strong,.purchase-summary .positive{color:#86efac}
+.purchase-summary.not-recommended{border-color:rgba(244,63,94,.48)}
+.purchase-summary.not-recommended .purchase-verdict strong,.purchase-summary .negative{color:#fda4af}
+.purchase-summary.conditional{border-color:rgba(251,191,36,.5)}
+.purchase-verdict small{margin-top:4px}
+.pricing-warning{display:flex;align-items:flex-start;gap:9px;margin-top:9px;padding:10px 12px;border:1px solid rgba(244,63,94,.42);border-radius:14px;background:rgba(244,63,94,.1);font-size:10px;line-height:1.5}
+.pricing-warning strong{flex:none;color:#fda4af}
+.pricing-warning span{color:#fecdd3}
+.card-details{margin-top:10px;border:1px solid rgba(255,255,255,.12);border-radius:17px;background:rgba(5,10,20,.3);overflow:hidden}
+.card-details>summary{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;cursor:pointer;list-style:none;font-size:11px;font-weight:900}
+.card-details>summary::-webkit-details-marker{display:none}
+.card-details>summary::after{content:"＋";color:var(--accent);font-size:18px}
+.card-details[open]>summary::after{content:"−"}
+.card-details>summary small{margin-left:auto;color:var(--muted);font-size:9px;font-weight:600}
+.card-details-body{padding:0 11px 12px}
 .buy-limit-panel{margin-top:14px;padding:14px;border:1px solid rgba(56,217,150,.38);border-radius:19px;background:linear-gradient(135deg,rgba(56,217,150,.12),rgba(125,211,252,.07) 55%,rgba(5,10,20,.58));box-shadow:0 12px 30px rgba(0,0,0,.16)}
 .buy-limit-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
 .buy-limit-head span,.buy-limit-head small{display:block;color:var(--muted);font-size:9px}
@@ -718,7 +743,7 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .overall-assessment b{margin-left:auto;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.1);font-size:11px}
 .overall-assessment p{margin:8px 0 4px;font-size:10px;line-height:1.65;color:#e5edf9}
 .overall-assessment small{display:block;color:var(--muted);font-size:9px;line-height:1.55}
-.overall-components{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:9px}
+.overall-components{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:9px}
 .overall-components span{padding:7px;border-radius:10px;background:rgba(5,10,20,.52);text-align:center;font-size:8px}
 .overall-components span b{display:block;margin:0 0 2px;padding:0;background:none;font-size:15px;color:var(--text)}
 .overall-assessment .score-value small,.overall-components span b small{display:inline;margin-left:2px;color:var(--muted);font-size:8px;font-weight:700;line-height:1}
@@ -813,6 +838,8 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
   .shell{padding:10px}
   h1{font-size:27px;line-height:1.08}
   .hero{padding:17px;border-radius:22px}
+  .eyebrow,.lede{display:none}
+  .site-owner{margin-bottom:5px}
   .lede{font-size:13px}
   .controls-primary{grid-template-columns:1fr;gap:9px;margin-top:17px}
   .control-wide{grid-column:auto}
@@ -882,6 +909,14 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
   .metric-primary{grid-column:1 / -1}
   .metric{padding:10px}
   .metric strong{font-size:16px}
+  .purchase-summary{grid-template-columns:repeat(2,minmax(0,1fr));padding:7px;gap:6px}
+  .purchase-summary>div{padding:9px 8px}
+  .purchase-summary .purchase-verdict{grid-column:1/-1}
+  .purchase-summary .purchase-verdict strong{font-size:23px}
+  .purchase-summary>div:nth-child(4){grid-column:1/-1}
+  .card-details>summary small{display:none}
+  .card-details-body{padding:0 7px 9px}
+  .pricing-warning{flex-direction:column;gap:3px}
   .buy-limit-panel{padding:11px}
   .buy-limit-head{align-items:flex-start;flex-direction:column;gap:3px}
   .buy-limit-head small{text-align:left}

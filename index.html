@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20260829-buy-limit-1" />
+  <link rel="stylesheet" href="./styles.css?v=20260829-decision-2" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -40,14 +40,14 @@
         <label class="control">
           <span>並び順</span>
           <select id="sortInput">
-            <option value="overall-desc">総合評価が高い順</option>
+            <option value="overall-desc">銘柄品質が高い順</option>
             <option value="buyLimitClean-desc">美品の仕入れ上限が高い順</option>
             <option value="buyLimitScratch-desc">傷ありの仕入れ上限が高い順</option>
             <option value="roi-desc">利益率が高い順</option>
             <option value="roi-asc">利益率が低い順</option>
             <option value="profit-desc">利益額が高い順</option>
             <option value="profit-asc">利益額が低い順</option>
-            <option value="psaRecommend-desc">資金面の提出候補を優先</option>
+            <option value="psaRecommend-desc">今回の仕入れGOを優先</option>
             <option value="exit-desc">売りやすい順</option>
             <option value="futureScore-desc">将来価格評価が高い順</option>
             <option value="downside-asc">予測下落余地が小さい順</option>
@@ -96,6 +96,13 @@
             <option value="tvel-asc">サイト年利が低い順</option>
           </select>
         </label>
+      </div>
+
+      <div class="quick-presets" aria-label="かんたん絞り込み">
+        <span>かんたん絞り込み</span>
+        <button type="button" data-preset="now">今すぐ仕入れ</button>
+        <button type="button" data-preset="low-risk">低リスク</button>
+        <button type="button" data-preset="turnover">高回転</button>
       </div>
 
       <details class="advanced-filters">
@@ -184,11 +191,11 @@
           <input id="psaRateMinInput" type="number" min="0" max="100" step="0.1" placeholder="空欄は条件なし" />
         </label>
         <label class="control">
-          <span>総合評価で絞る</span>
+          <span>銘柄品質で絞る</span>
           <select id="overallFilterInput">
             <option value="all">すべて表示</option>
-            <option value="ab">A・Bのみ（積極候補・候補）</option>
-            <option value="a">Aのみ（積極候補）</option>
+            <option value="ab">A・Bのみ（高品質・良好）</option>
+            <option value="a">Aのみ（高品質）</option>
           </select>
         </label>
         <label class="control">
@@ -219,7 +226,7 @@
           </select>
         </label>
         <div class="filter-switches">
-          <label><input id="fundingOnlyInput" type="checkbox" /> 資金面で提出候補のみ</label>
+          <label><input id="fundingOnlyInput" type="checkbox" /> 今回の仕入れGOのみ</label>
           <label><input id="officialOnlyInput" type="checkbox" /> PSA公式取得済みのみ</label>
         </div>
         <button id="resetFiltersBtn" class="filter-reset" type="button">検索条件を初期値に戻す</button>
@@ -233,7 +240,7 @@
         </summary>
         <div class="controls controls-advanced">
           <label class="control">
-            <span>予測中心価格</span>
+            <span>91日後の推計・中央価格</span>
             <div class="range-pair">
               <input id="minForecastPriceInput" type="number" min="0" step="1000" placeholder="下限" />
               <input id="maxForecastPriceInput" type="number" min="0" step="1000" placeholder="上限" />
@@ -271,7 +278,7 @@
             </select>
           </label>
           <label class="control">
-            <span>予測確度</span>
+            <span>データ充足度</span>
             <select id="forecastConfidenceInput">
               <option value="all">すべて表示</option>
               <option value="high">高のみ</option>
@@ -321,12 +328,12 @@
         </summary>
         <div class="controls controls-advanced">
           <label class="control">
-            <span>PSA運用予算</span>
+            <span>PSA運用の総資金</span>
             <input id="psaCapitalInput" type="number" min="0" step="10000" value="500000" />
             <small class="control-help">PSA仕入れ全体に使ってよい上限。すでに持っているカードの仕入れ額も含めた総枠です。</small>
           </label>
           <label class="control">
-            <span>仕入れ・鑑定中の仕入れ額</span>
+            <span>ロック中資金</span>
             <input id="lockedCapitalInput" type="number" min="0" step="10000" value="0" />
             <small class="control-help">すでに買ったカードとPSA提出中カードの仕入れ額合計。鑑定費は含めません。売却・返却時に更新します。</small>
           </label>
@@ -377,7 +384,7 @@
           </label>
         </div>
         <div class="psa-settings-note">
-          迷った場合は初期値のままで使えます。10率は仕入れ値一覧の70%／50%と連動し、PSA9以下は仕入れ値の75%回収として計算します。鑑定費は利益から差し引きますが、資金ロック額には含めません。
+          迷った場合は初期値のままで使えます。PSA10率は公式値を優先し、未取得時だけ70%／50%設定を使います。PSA9は実価格を優先し、未取得時は平均美品の75%で計算します。使用可能資金は「総資金－ロック中資金－鑑定費予備資金」です。
           <strong id="capitalAvailabilityStatus"></strong>
           <strong id="gradingReserveStatus"></strong>
         </div>
@@ -516,6 +523,7 @@
     </section>
   </main>
 
-  <script src="./app.js?v=20260829-buy-limit-1"></script>
+  <script src="./decision-model.js?v=20260829-decision-2"></script>
+  <script src="./app.js?v=20260829-decision-2"></script>
 </body>
 </html>
