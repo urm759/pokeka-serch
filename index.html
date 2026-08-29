@@ -206,14 +206,6 @@
           <input id="minSupplyRiskInput" type="number" min="0" max="100" step="1" value="0" placeholder="0〜100・空欄は0" />
         </label>
         <label class="control">
-          <span>将来価格評価 下限点</span>
-          <input id="minFuturePriceScoreInput" type="number" min="0" max="100" step="1" value="0" placeholder="0〜100・空欄は0" />
-        </label>
-        <label class="control">
-          <span>予測下落余地 上限%</span>
-          <input id="maxForecastDownsideInput" type="number" min="0" max="100" step="1" placeholder="例: 15・空欄は条件なし" />
-        </label>
-        <label class="control">
           <span>在庫減少ペースで絞る</span>
           <select id="stockDemandInput">
             <option value="all">すべて表示</option>
@@ -229,6 +221,79 @@
           <label><input id="officialOnlyInput" type="checkbox" /> PSA公式取得済みのみ</label>
         </div>
         <button id="resetFiltersBtn" class="filter-reset" type="button">検索条件を初期値に戻す</button>
+        </div>
+      </details>
+
+      <details class="advanced-filters forecast-filter-settings">
+        <summary>
+          <span>PSA10将来価格予測で絞る</span>
+          <small>予測価格・下落余地・供給量を個別に指定</small>
+        </summary>
+        <div class="controls controls-advanced">
+          <label class="control">
+            <span>予測中心価格</span>
+            <div class="range-pair">
+              <input id="minForecastPriceInput" type="number" min="0" step="1000" placeholder="下限" />
+              <input id="maxForecastPriceInput" type="number" min="0" step="1000" placeholder="上限" />
+            </div>
+          </label>
+          <label class="control">
+            <span>予測下落余地 %</span>
+            <div class="range-pair">
+              <input id="minForecastDownsideInput" type="number" min="0" max="100" step="1" placeholder="下限" />
+              <input id="maxForecastDownsideInput" type="number" min="0" max="100" step="1" placeholder="上限" />
+            </div>
+          </label>
+          <label class="control">
+            <span>PSA10 ÷ 平均美品 倍率</span>
+            <div class="range-pair">
+              <input id="minForecastGapInput" type="number" min="0" step="0.1" placeholder="下限" />
+              <input id="maxForecastGapInput" type="number" min="0" step="0.1" placeholder="上限" />
+            </div>
+          </label>
+          <label class="control">
+            <span>将来価格評価 点数</span>
+            <div class="range-pair">
+              <input id="minFuturePriceScoreInput" type="number" min="0" max="100" step="1" placeholder="下限" />
+              <input id="maxFuturePriceScoreInput" type="number" min="0" max="100" step="1" placeholder="上限" />
+            </div>
+          </label>
+          <label class="control">
+            <span>予測局面</span>
+            <select id="forecastPhaseInput">
+              <option value="all">すべて表示</option>
+              <option value="stable">底値圏・横ばい候補</option>
+              <option value="small">小幅調整候補</option>
+              <option value="caution">調整警戒</option>
+              <option value="large">下落余地大</option>
+            </select>
+          </label>
+          <label class="control">
+            <span>予測確度</span>
+            <select id="forecastConfidenceInput">
+              <option value="all">すべて表示</option>
+              <option value="high">高のみ</option>
+              <option value="medium-up">中・高のみ</option>
+              <option value="medium">中のみ</option>
+              <option value="low">低のみ</option>
+            </select>
+          </label>
+          <label class="control">
+            <span>PSA10供給圧力</span>
+            <select id="forecastSupplyPressureInput">
+              <option value="all">すべて表示</option>
+              <option value="low">低いのみ</option>
+              <option value="low-normal">低い・普通のみ</option>
+              <option value="normal">普通のみ</option>
+              <option value="high">高いのみ</option>
+              <option value="known">未判定を除く</option>
+            </select>
+          </label>
+          <label class="control">
+            <span>PSA10 30日換算増加 上限枚数</span>
+            <input id="maxForecastMonthlyIncreaseInput" type="number" min="0" step="10" placeholder="空欄は条件なし" />
+            <small class="control-help">取得できた期間のPSA10増加数を30日分へ換算した参考値です。</small>
+          </label>
         </div>
       </details>
 
@@ -434,6 +499,6 @@
     </section>
   </main>
 
-  <script src="./app.js?v=20260829-hareruya2-1"></script>
+  <script src="./app.js?v=20260829-forecast-supply-2"></script>
 </body>
 </html>

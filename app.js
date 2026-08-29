@@ -48,7 +48,17 @@ const state = {
   minMarketStability: 0,
   minSupplyRisk: 0,
   minFuturePriceScore: 0,
+  maxFuturePriceScore: null,
+  minForecastPrice: null,
+  maxForecastPrice: null,
+  minForecastDownside: null,
   maxForecastDownside: null,
+  minForecastGap: null,
+  maxForecastGap: null,
+  forecastPhase: "all",
+  forecastConfidence: "all",
+  forecastSupplyPressure: "all",
+  maxForecastMonthlyIncrease: null,
   stockDemand: "all",
   fundingOnly: false,
   officialOnly: false,
@@ -116,7 +126,17 @@ const els = {
   minMarketStabilityInput: document.getElementById("minMarketStabilityInput"),
   minSupplyRiskInput: document.getElementById("minSupplyRiskInput"),
   minFuturePriceScoreInput: document.getElementById("minFuturePriceScoreInput"),
+  maxFuturePriceScoreInput: document.getElementById("maxFuturePriceScoreInput"),
+  minForecastPriceInput: document.getElementById("minForecastPriceInput"),
+  maxForecastPriceInput: document.getElementById("maxForecastPriceInput"),
+  minForecastDownsideInput: document.getElementById("minForecastDownsideInput"),
   maxForecastDownsideInput: document.getElementById("maxForecastDownsideInput"),
+  minForecastGapInput: document.getElementById("minForecastGapInput"),
+  maxForecastGapInput: document.getElementById("maxForecastGapInput"),
+  forecastPhaseInput: document.getElementById("forecastPhaseInput"),
+  forecastConfidenceInput: document.getElementById("forecastConfidenceInput"),
+  forecastSupplyPressureInput: document.getElementById("forecastSupplyPressureInput"),
+  maxForecastMonthlyIncreaseInput: document.getElementById("maxForecastMonthlyIncreaseInput"),
   stockDemandInput: document.getElementById("stockDemandInput"),
   fundingOnlyInput: document.getElementById("fundingOnlyInput"),
   officialOnlyInput: document.getElementById("officialOnlyInput"),
@@ -182,7 +202,8 @@ function psaChangeBadge(change, days) {
   if (!change) return `<span class="psa-change pending"><b>${days}日</b> 蓄積中</span>`;
   const className = change.s === "急増化" ? "surge" : change.s === "増加" ? "increase" : change.s === "少ない" ? "small" : "flat";
   const delta = Number(change.d10 || 0);
-  return `<span class="psa-change ${className}"><b>${days}日 ${escapeHtml(change.s)}</b> ${delta >= 0 ? "+" : ""}${fmt.format(delta)}枚</span>`;
+  const observed = change.partial && Number(change.days) > 0 ? `（観測${fmt.format(change.days)}日）` : "";
+  return `<span class="psa-change ${className}"><b>${days}日 ${escapeHtml(change.s)}</b> ${delta >= 0 ? "+" : ""}${fmt.format(delta)}枚${observed}</span>`;
 }
 
 function psaGrowthSummary(official) {
@@ -190,7 +211,7 @@ function psaGrowthSummary(official) {
   if (!entry) return { label: "推移蓄積中", className: "pending" };
   const [days, change] = entry;
   const className = change.s === "急増化" ? "surge" : change.s === "増加" ? "increase" : change.s === "少ない" ? "small" : "flat";
-  return { label: `${days}日 ${change.s}`, className };
+  return { label: `${days}日 ${change.s}${change.partial && Number(change.days) > 0 ? `（観測${change.days}日）` : ""}`, className };
 }
 
 function sourceAgeDays(value) {
@@ -794,6 +815,7 @@ function buildFuturePriceForecast(card, official, stock) {
   else if (buybackRatio >= 0.65) convergenceMultiple += 0.05;
   else if (card.buybackShops === 0) convergenceMultiple -= 0.05;
   if (card.buybackShops >= 2) convergenceMultiple += 0.04;
+  const psa10Rate = Number.isFinite(official?.rate) ? Number(official.rate) : null;
   if (Number.isFinite(official?.rate)) {
     if (official.rate < 35) convergenceMultiple += 0.18;
     else if (official.rate < 55) convergenceMultiple += 0.1;
@@ -802,13 +824,36 @@ function buildFuturePriceForecast(card, official, stock) {
   if (stock?.demand === "買う人が多い") convergenceMultiple -= 0.08;
   else if (stock?.demand === "少ない") convergenceMultiple += 0.04;
   const officialFresh = sourceAgeDays(official?.f) <= 2;
-  const growth = officialFresh ? official?.w30?.s : null;
-  if (growth === "急増化") convergenceMultiple -= 0.12;
-  else if (growth === "増加") convergenceMultiple -= 0.06;
-  else if (growth === "横ばい" || growth === "少ない") convergenceMultiple += 0.04;
+  const growthEntry = officialFresh
+    ? [[30, official?.w30], [7, official?.w7], [90, official?.w90]].find(([, value]) => value)
+    : null;
+  const growthWindow = growthEntry?.[1] || null;
+  const growthDays = Math.max(1, Number(growthWindow?.days || growthEntry?.[0] || 0));
+  const monthlyPsa10Increase = growthWindow ? Math.max(0, Number(growthWindow.d10 || 0)) / growthDays * 30 : null;
+  const monthlyGrowthRate = Number.isFinite(monthlyPsa10Increase) && Number(official?.ten) > 0
+    ? monthlyPsa10Increase / Number(official.ten) * 100
+    : null;
+  const supplyDemandRatio = Number.isFinite(monthlyPsa10Increase)
+    ? monthlyPsa10Increase / Math.max(1, Number(card.psaTx30d || 0))
+    : null;
+  const supplyPressure = !Number.isFinite(monthlyPsa10Increase)
+    ? "未判定"
+    : monthlyGrowthRate >= 8 || (monthlyPsa10Increase >= 100 && supplyDemandRatio >= 2)
+      ? "高い"
+      : monthlyGrowthRate >= 3 || supplyDemandRatio >= 1
+        ? "普通"
+        : "低い";
+  if (supplyPressure === "高い") convergenceMultiple -= 0.14;
+  else if (supplyPressure === "普通") convergenceMultiple -= 0.05;
+  else if (supplyPressure === "低い") convergenceMultiple += 0.07;
   convergenceMultiple = clamp(convergenceMultiple, 1.22, 1.9);
 
   let predictedPrice = projectedRawPrice * convergenceMultiple;
+  let scarcityRetention = psa10Rate == null ? 0 : psa10Rate < 35 ? 0.28 : psa10Rate < 55 ? 0.18 : psa10Rate < 70 ? 0.08 : 0;
+  if (supplyPressure === "低い") scarcityRetention += 0.12;
+  else if (supplyPressure === "高い") scarcityRetention -= 0.08;
+  scarcityRetention = clamp(scarcityRetention, 0, 0.42);
+  predictedPrice = predictedPrice * (1 - scarcityRetention) + currentPrice * scarcityRetention;
   if (card.buybackPrice > 0) predictedPrice = predictedPrice * 0.82 + card.buybackPrice * 0.18;
   if (card.saleTx30d < 5) predictedPrice = predictedPrice * 0.4 + currentPrice * 0.6;
   else if (card.saleTx30d < 15) predictedPrice = predictedPrice * 0.7 + currentPrice * 0.3;
@@ -817,10 +862,12 @@ function buildFuturePriceForecast(card, official, stock) {
   const downsidePct = Math.max(0, -signedChangePct);
   const downsideScore = downsidePct <= 5 ? 100 : downsidePct <= 10 ? 88 : downsidePct <= 20 ? 68 : downsidePct <= 30 ? 43 : downsidePct <= 40 ? 23 : 8;
   const rawStabilityScore = rawTrend30 == null ? 45 : rawTrend30 < -20 ? 12 : rawTrend30 < -8 ? 38 : rawTrend30 > 30 ? 38 : rawTrend30 >= -5 && rawTrend30 <= 10 ? 92 : 65;
-  const score = Math.round(downsideScore * 0.45 + rawStabilityScore * 0.2 + turnoverScore * 0.2 + convertibilityScore * 0.15);
+  const scarcityScore = psa10Rate == null ? 45 : psa10Rate < 35 ? 95 : psa10Rate < 55 ? 80 : psa10Rate < 75 ? 62 : psa10Rate < 90 ? 45 : 25;
+  const supplySafetyScore = supplyPressure === "低い" ? 92 : supplyPressure === "普通" ? 58 : supplyPressure === "高い" ? 18 : 45;
+  const score = Math.round(downsideScore * 0.35 + rawStabilityScore * 0.15 + turnoverScore * 0.15 + convertibilityScore * 0.15 + scarcityScore * 0.1 + supplySafetyScore * 0.1);
 
-  const evidenceCount = Number(card.saleTx30d >= 10) + Number(card.psaTx30d >= 5) + Number(card.buybackShops > 0) + Number(officialFresh && Number.isFinite(official?.rate)) + Number(Boolean(card.cardrushUrl || card.hareruya2Url));
-  const confidence = evidenceCount >= 4 ? "高" : evidenceCount >= 2 ? "中" : "低";
+  const evidenceCount = Number(card.saleTx30d >= 10) + Number(card.psaTx30d >= 5) + Number(card.buybackShops > 0) + Number(officialFresh && Number.isFinite(official?.rate)) + Number(Boolean(growthWindow)) + Number(Boolean(card.cardrushUrl || card.hareruya2Url));
+  const confidence = evidenceCount >= 5 ? "高" : evidenceCount >= 3 ? "中" : "低";
   const phase = downsidePct >= 30 ? "下落余地大" : downsidePct >= 18 ? "調整警戒" : downsidePct <= 7 && gapRatio <= 1.7 ? "底値圏候補" : downsidePct <= 10 ? "横ばい・安定候補" : "小幅調整候補";
   const reasons = [];
   if (gapRatio >= 2) reasons.push(`PSA10が平均美品の${gapRatio.toFixed(2)}倍`);
@@ -830,8 +877,8 @@ function buildFuturePriceForecast(card, official, stock) {
   if (card.psaTx30d >= 20) reasons.push("PSA10の売買が活発");
   else if (card.psaTx30d < 5) reasons.push("PSA10の売買が少ない");
   if (buybackRatio >= 0.75 && card.buybackShops > 0) reasons.push("店舗買取が市場価格を強く支える");
-  if (Number.isFinite(official?.rate) && official.rate < 55) reasons.push(`PSA10取得率${official.rate.toFixed(1)}%で10の希少性あり`);
-  if (growth === "急増化" || growth === "増加") reasons.push(`PSA10供給が${growth}`);
+  if (psa10Rate != null && psa10Rate < 55) reasons.push(`PSA10取得率${psa10Rate.toFixed(1)}%で10の供給が限定的`);
+  if (Number.isFinite(monthlyPsa10Increase)) reasons.push(`PSA10は30日換算+${fmt.format(Math.round(monthlyPsa10Increase))}枚・供給圧力${supplyPressure}`);
 
   return {
     predictedPrice,
@@ -845,6 +892,15 @@ function buildFuturePriceForecast(card, official, stock) {
     turnoverScore,
     convertibilityScore,
     rawStabilityScore,
+    scarcityScore,
+    supplySafetyScore,
+    psa10Rate,
+    monthlyPsa10Increase,
+    monthlyGrowthRate,
+    supplyDemandRatio,
+    supplyPressure,
+    growthDays: growthWindow ? growthDays : null,
+    growthPartial: Boolean(growthWindow?.partial),
     confidence,
     phase,
     reasons: reasons.slice(0, 4),
@@ -873,12 +929,11 @@ function buildOverallAssessment(card, official, stock, psaDecision) {
   else if (stock?.demand === "普通") supplyRisk -= 10;
   else if (stock?.demand === "少ない") supplyRisk += 15;
   const officialFresh = sourceAgeDays(official?.f) <= 2;
-  const growth = officialFresh ? official?.w30?.s : null;
   if (!officialFresh && official) cautions.push("PSA公式枚数が更新待ち");
-  else if (growth === "急増化") { supplyRisk -= 25; cautions.push("PSA10枚数が30日で急増"); }
-  else if (growth === "増加") supplyRisk -= 12;
-  else if (growth === "横ばい") supplyRisk += 10;
-  if (Number.isFinite(official?.rate) && official.rate < 40) supplyRisk -= 15;
+  else if (forecast?.supplyPressure === "高い") { supplyRisk -= 25; cautions.push("PSA10の供給増が売買量に対して多い"); }
+  else if (forecast?.supplyPressure === "普通") supplyRisk -= 8;
+  else if (forecast?.supplyPressure === "低い") { supplyRisk += 12; strengths.push("PSA10の供給増が少ない"); }
+  if (Number.isFinite(official?.rate) && official.rate < 40) supplyRisk += 15;
   supplyRisk = supplyRisk * 0.75 + (forecast?.downsideScore ?? 40) * 0.25;
   supplyRisk = Math.max(0, Math.min(100, supplyRisk));
   if (exitLiquidity >= 75) strengths.push("同価格帯よりPSA10を売りやすい");
@@ -895,9 +950,17 @@ function buildOverallAssessment(card, official, stock, psaDecision) {
   if (!Number.isFinite(official?.rate)) cautions.push("PSA公式データ未紐づけ");
   if (!card.cardrushUrl && !card.hareruya2Url) cautions.push("ショップ状態A未紐づけ");
   score = Math.max(0, Math.min(100, score));
-  const grade = score >= 75 && completeEvidence ? "A" : score >= 60 ? "B" : score >= 45 ? "C" : "D";
+  const aEligible = completeEvidence
+    && score >= 78
+    && economics >= 40
+    && exitLiquidity >= 55
+    && marketStability >= 55
+    && supplyRisk >= 50
+    && futurePrice >= 60
+    && forecast?.confidence !== "低";
+  const grade = aEligible ? "A" : score >= 62 ? "B" : score >= 47 ? "C" : "D";
   const label = { A: "積極候補", B: "候補", C: "慎重", D: "見送り" }[grade];
-  return { score, grade, label, exitLiquidity, economics, marketStability, supplyRisk: Math.round(supplyRisk), futurePrice, completeEvidence, strengths: strengths.slice(0, 3), cautions: cautions.slice(0, 3) };
+  return { score, grade, label, exitLiquidity, economics, marketStability, supplyRisk: Math.round(supplyRisk), futurePrice, completeEvidence, aEligible, strengths: strengths.slice(0, 3), cautions: cautions.slice(0, 3) };
 }
 
 function combineShopStock(...sources) {
@@ -1044,7 +1107,17 @@ function readUrl() {
   const minMarketStability = parseOptionalNumber(url.searchParams.get("stability"));
   const minSupplyRisk = parseOptionalNumber(url.searchParams.get("supply"));
   const minFuturePriceScore = parseOptionalNumber(url.searchParams.get("futureScore"));
+  const maxFuturePriceScore = parseOptionalNumber(url.searchParams.get("futureScoreMax"));
+  const minForecastPrice = parseOptionalNumber(url.searchParams.get("forecastMin"));
+  const maxForecastPrice = parseOptionalNumber(url.searchParams.get("forecastMax"));
+  const minForecastDownside = parseOptionalNumber(url.searchParams.get("downsideMin"));
   const maxForecastDownside = parseOptionalNumber(url.searchParams.get("downsideMax"));
+  const minForecastGap = parseOptionalNumber(url.searchParams.get("gapMin"));
+  const maxForecastGap = parseOptionalNumber(url.searchParams.get("gapMax"));
+  const forecastPhase = url.searchParams.get("forecastPhase");
+  const forecastConfidence = url.searchParams.get("forecastConfidence");
+  const forecastSupplyPressure = url.searchParams.get("forecastSupply");
+  const maxForecastMonthlyIncrease = parseOptionalNumber(url.searchParams.get("psaGrowthMax"));
   const stockDemand = url.searchParams.get("stockDemand");
   const fundingOnly = url.searchParams.get("fundingOnly") === "1";
   const officialOnly = url.searchParams.get("officialOnly") === "1";
@@ -1099,7 +1172,17 @@ function readUrl() {
   if (minMarketStability != null && minMarketStability >= 0) els.minMarketStabilityInput.value = String(minMarketStability);
   if (minSupplyRisk != null && minSupplyRisk >= 0) els.minSupplyRiskInput.value = String(minSupplyRisk);
   if (minFuturePriceScore != null && minFuturePriceScore >= 0) els.minFuturePriceScoreInput.value = String(minFuturePriceScore);
+  if (maxFuturePriceScore != null && maxFuturePriceScore >= 0) els.maxFuturePriceScoreInput.value = String(maxFuturePriceScore);
+  if (minForecastPrice != null && minForecastPrice >= 0) els.minForecastPriceInput.value = String(minForecastPrice);
+  if (maxForecastPrice != null && maxForecastPrice >= 0) els.maxForecastPriceInput.value = String(maxForecastPrice);
+  if (minForecastDownside != null && minForecastDownside >= 0) els.minForecastDownsideInput.value = String(minForecastDownside);
   if (maxForecastDownside != null && maxForecastDownside >= 0) els.maxForecastDownsideInput.value = String(maxForecastDownside);
+  if (minForecastGap != null && minForecastGap >= 0) els.minForecastGapInput.value = String(minForecastGap);
+  if (maxForecastGap != null && maxForecastGap >= 0) els.maxForecastGapInput.value = String(maxForecastGap);
+  if (["all", "stable", "small", "caution", "large"].includes(forecastPhase)) els.forecastPhaseInput.value = forecastPhase;
+  if (["all", "high", "medium-up", "medium", "low"].includes(forecastConfidence)) els.forecastConfidenceInput.value = forecastConfidence;
+  if (["all", "low", "low-normal", "normal", "high", "known"].includes(forecastSupplyPressure)) els.forecastSupplyPressureInput.value = forecastSupplyPressure;
+  if (maxForecastMonthlyIncrease != null && maxForecastMonthlyIncrease >= 0) els.maxForecastMonthlyIncreaseInput.value = String(maxForecastMonthlyIncrease);
   if (["all", "steady", "low", "normal", "high", "known"].includes(stockDemand)) els.stockDemandInput.value = stockDemand;
   els.fundingOnlyInput.checked = fundingOnly;
   els.officialOnlyInput.checked = officialOnly;
@@ -1155,7 +1238,17 @@ function buildShareUrl() {
   if (state.minMarketStability > 0) url.searchParams.set("stability", String(state.minMarketStability)); else url.searchParams.delete("stability");
   if (state.minSupplyRisk > 0) url.searchParams.set("supply", String(state.minSupplyRisk)); else url.searchParams.delete("supply");
   if (state.minFuturePriceScore > 0) url.searchParams.set("futureScore", String(state.minFuturePriceScore)); else url.searchParams.delete("futureScore");
+  if (state.maxFuturePriceScore == null) url.searchParams.delete("futureScoreMax"); else url.searchParams.set("futureScoreMax", String(state.maxFuturePriceScore));
+  if (state.minForecastPrice == null) url.searchParams.delete("forecastMin"); else url.searchParams.set("forecastMin", String(state.minForecastPrice));
+  if (state.maxForecastPrice == null) url.searchParams.delete("forecastMax"); else url.searchParams.set("forecastMax", String(state.maxForecastPrice));
+  if (state.minForecastDownside == null) url.searchParams.delete("downsideMin"); else url.searchParams.set("downsideMin", String(state.minForecastDownside));
   if (state.maxForecastDownside == null) url.searchParams.delete("downsideMax"); else url.searchParams.set("downsideMax", String(state.maxForecastDownside));
+  if (state.minForecastGap == null) url.searchParams.delete("gapMin"); else url.searchParams.set("gapMin", String(state.minForecastGap));
+  if (state.maxForecastGap == null) url.searchParams.delete("gapMax"); else url.searchParams.set("gapMax", String(state.maxForecastGap));
+  if (state.forecastPhase === "all") url.searchParams.delete("forecastPhase"); else url.searchParams.set("forecastPhase", state.forecastPhase);
+  if (state.forecastConfidence === "all") url.searchParams.delete("forecastConfidence"); else url.searchParams.set("forecastConfidence", state.forecastConfidence);
+  if (state.forecastSupplyPressure === "all") url.searchParams.delete("forecastSupply"); else url.searchParams.set("forecastSupply", state.forecastSupplyPressure);
+  if (state.maxForecastMonthlyIncrease == null) url.searchParams.delete("psaGrowthMax"); else url.searchParams.set("psaGrowthMax", String(state.maxForecastMonthlyIncrease));
   if (state.stockDemand === "all") url.searchParams.delete("stockDemand"); else url.searchParams.set("stockDemand", state.stockDemand);
   if (state.fundingOnly) url.searchParams.set("fundingOnly", "1"); else url.searchParams.delete("fundingOnly");
   if (state.officialOnly) url.searchParams.set("officialOnly", "1"); else url.searchParams.delete("officialOnly");
@@ -1258,7 +1351,27 @@ function render() {
       if (card.overallAssessment && card.overallAssessment.marketStability < state.minMarketStability) return false;
       if (card.overallAssessment && card.overallAssessment.supplyRisk < state.minSupplyRisk) return false;
       if (card.overallAssessment && card.overallAssessment.futurePrice < state.minFuturePriceScore) return false;
+      if (state.maxFuturePriceScore != null && (!card.futurePriceForecast || card.futurePriceForecast.score > state.maxFuturePriceScore)) return false;
+      if (state.minForecastPrice != null && (!card.futurePriceForecast || card.futurePriceForecast.predictedPrice < state.minForecastPrice)) return false;
+      if (state.maxForecastPrice != null && (!card.futurePriceForecast || card.futurePriceForecast.predictedPrice > state.maxForecastPrice)) return false;
+      if (state.minForecastDownside != null && (!card.futurePriceForecast || card.futurePriceForecast.downsidePct < state.minForecastDownside)) return false;
       if (state.maxForecastDownside != null && (!card.futurePriceForecast || card.futurePriceForecast.downsidePct > state.maxForecastDownside)) return false;
+      if (state.minForecastGap != null && (!card.futurePriceForecast || card.futurePriceForecast.gapRatio < state.minForecastGap)) return false;
+      if (state.maxForecastGap != null && (!card.futurePriceForecast || card.futurePriceForecast.gapRatio > state.maxForecastGap)) return false;
+      const forecastPhaseKey = !card.futurePriceForecast ? "" : card.futurePriceForecast.phase === "下落余地大" ? "large" : card.futurePriceForecast.phase === "調整警戒" ? "caution" : card.futurePriceForecast.phase === "小幅調整候補" ? "small" : "stable";
+      if (state.forecastPhase !== "all" && forecastPhaseKey !== state.forecastPhase) return false;
+      const forecastConfidence = card.futurePriceForecast?.confidence || "";
+      if (state.forecastConfidence === "high" && forecastConfidence !== "高") return false;
+      if (state.forecastConfidence === "medium-up" && !["中", "高"].includes(forecastConfidence)) return false;
+      if (state.forecastConfidence === "medium" && forecastConfidence !== "中") return false;
+      if (state.forecastConfidence === "low" && forecastConfidence !== "低") return false;
+      const forecastSupply = card.futurePriceForecast?.supplyPressure || "未判定";
+      if (state.forecastSupplyPressure === "low" && forecastSupply !== "低い") return false;
+      if (state.forecastSupplyPressure === "low-normal" && !["低い", "普通"].includes(forecastSupply)) return false;
+      if (state.forecastSupplyPressure === "normal" && forecastSupply !== "普通") return false;
+      if (state.forecastSupplyPressure === "high" && forecastSupply !== "高い") return false;
+      if (state.forecastSupplyPressure === "known" && forecastSupply === "未判定") return false;
+      if (state.maxForecastMonthlyIncrease != null && (!Number.isFinite(card.futurePriceForecast?.monthlyPsa10Increase) || card.futurePriceForecast.monthlyPsa10Increase > state.maxForecastMonthlyIncrease)) return false;
       if (!card.overallAssessment && (state.minExitLiquidity || state.minEconomics || state.minMarketStability || state.minSupplyRisk || state.minFuturePriceScore)) return false;
       if (state.fundingOnly && !card.psaDecision?.recommended) return false;
       if (state.overallFilter === "a" && card.overallAssessment?.grade !== "A") return false;
@@ -1437,9 +1550,11 @@ function render() {
           <div><span>予測中心価格</span><strong>¥${fmt.format(forecast.predictedPrice)}</strong></div>
           <div><span>予測下落余地</span><strong>${forecast.downsidePct > 0 ? `-${forecast.downsidePct.toFixed(1)}%` : "ほぼなし"}</strong></div>
           <div><span>PSA10 ÷ 平均美品</span><strong>${forecast.gapRatio.toFixed(2)}倍</strong></div>
+          <div><span>PSA10 30日換算増加</span><strong>${Number.isFinite(forecast.monthlyPsa10Increase) ? `+${fmt.format(Math.round(forecast.monthlyPsa10Increase))}枚` : "未判定"}</strong></div>
+          <div><span>PSA10供給圧力</span><strong>${escapeHtml(forecast.supplyPressure)}</strong></div>
         </div>
         <p>${escapeHtml(forecastReasons)}</p>
-        <small>平均美品の収束基準を、状態A価格変化・売買件数・PSA10取引・店舗買取・PSA供給増加で補正した参考予測です。</small>
+        <small>平均美品との価格差だけで決めず、PSA10取得率・30日換算の増加枚数・既存枚数比・PSA10取引数に対する供給量も反映します。</small>
       </div>
     ` : "";
     const overall = card.overallAssessment;
@@ -1451,7 +1566,7 @@ function render() {
         <div><span>総合評価</span><strong>${overall.grade}・${overall.label}</strong><b class="score-value">${overall.score}<small>/100</small></b></div>
         <div class="overall-components"><span><b>${overall.exitLiquidity}<small>/100</small></b>売りやすさ</span><span><b>${overall.economics}<small>/100</small></b>利益条件</span><span><b>${overall.marketStability}<small>/100</small></b>価格安定</span><span><b>${overall.supplyRisk}<small>/100</small></b>供給リスク耐性</span><span><b>${overall.futurePrice}<small>/100</small></b>将来価格</span></div>
         <p>${escapeHtml(overallReasons || "判定材料を蓄積中")}</p>
-        <small>売りやすさ30%・利益条件20%・価格安定20%・供給リスク耐性10%・将来価格20%。同じPSA10価格帯の分布を更新ごとに再学習${state.evaluationModel?.generatedAt ? `（${escapeHtml(state.evaluationModel.generatedDateJst || String(state.evaluationModel.generatedAt).slice(0, 10))}・${fmt.format(state.evaluationModel.sampleSize || 0)}枚）` : ""}。公式PSA・状態A直リンクが揃わないカードはA評価にしません。</small>
+        <small>売りやすさ30%・利益条件20%・価格安定20%・供給リスク耐性10%・将来価格20%。Aは総合78点以上に加え、利益条件40・売りやすさ55・価格安定55・供給耐性50・将来価格60以上が必要です。</small>
       </div>
     ` : "";
     const official = card.official;
@@ -1468,7 +1583,7 @@ function render() {
       <details class="psa-official" data-psa-history="${escapeHtml(card.id)}" data-psa-shard="${escapeHtml(official.sh)}">
         <summary>
           <div><span>PSA公式Population / 取得 ${escapeHtml(officialFetchedDate)}</span><strong>PSA10取得率 ${Number(official.rate || 0).toFixed(1)}%</strong></div>
-          <div class="psa-summary-actions"><b class="psa-growth ${officialStale ? "pending" : psaGrowth.className}">${officialStale ? "枚数更新待ち" : `PSA10増加 ${escapeHtml(psaGrowth.label)}`}</b><b>数値を見る</b></div>
+          <div class="psa-summary-actions"><b class="psa-growth ${officialStale ? "pending" : psaGrowth.className}">${officialStale ? `最終取得 ${escapeHtml(officialFetchedDate)}・再取得待ち` : `PSA10増加 ${escapeHtml(psaGrowth.label)}`}</b><b>数値を見る</b></div>
         </summary>
         <div class="psa-official-body">
           <div class="psa-official-metrics">
@@ -1564,7 +1679,17 @@ function syncFromUI() {
   state.minMarketStability = Number(els.minMarketStabilityInput.value || 0);
   state.minSupplyRisk = Number(els.minSupplyRiskInput.value || 0);
   state.minFuturePriceScore = Number(els.minFuturePriceScoreInput.value || 0);
+  state.maxFuturePriceScore = parseOptionalNumber(els.maxFuturePriceScoreInput.value);
+  state.minForecastPrice = parseOptionalNumber(els.minForecastPriceInput.value);
+  state.maxForecastPrice = parseOptionalNumber(els.maxForecastPriceInput.value);
+  state.minForecastDownside = parseOptionalNumber(els.minForecastDownsideInput.value);
   state.maxForecastDownside = parseOptionalNumber(els.maxForecastDownsideInput.value);
+  state.minForecastGap = parseOptionalNumber(els.minForecastGapInput.value);
+  state.maxForecastGap = parseOptionalNumber(els.maxForecastGapInput.value);
+  state.forecastPhase = els.forecastPhaseInput.value || "all";
+  state.forecastConfidence = els.forecastConfidenceInput.value || "all";
+  state.forecastSupplyPressure = els.forecastSupplyPressureInput.value || "all";
+  state.maxForecastMonthlyIncrease = parseOptionalNumber(els.maxForecastMonthlyIncreaseInput.value);
   state.stockDemand = els.stockDemandInput.value || "all";
   state.fundingOnly = els.fundingOnlyInput.checked;
   state.officialOnly = els.officialOnlyInput.checked;
@@ -1642,19 +1767,22 @@ async function init() {
   }
 }
 
-[els.qInput, els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.buyback7MinInput, els.buyback7MaxInput, els.buyback30MinInput, els.buyback30MaxInput, els.buyback90MinInput, els.buyback90MaxInput, els.buybackShopsMinInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.roiInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.psaRateMinInput, els.overallFilterInput, els.minExitLiquidityInput, els.minEconomicsInput, els.minMarketStabilityInput, els.minSupplyRiskInput, els.minFuturePriceScoreInput, els.maxForecastDownsideInput, els.stockDemandInput, els.fundingOnlyInput, els.officialOnlyInput, els.sortInput, els.psaCapitalInput, els.lockedCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput].forEach((el) =>
+[els.qInput, els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.buyback7MinInput, els.buyback7MaxInput, els.buyback30MinInput, els.buyback30MaxInput, els.buyback90MinInput, els.buyback90MaxInput, els.buybackShopsMinInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.roiInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.psaRateMinInput, els.overallFilterInput, els.minExitLiquidityInput, els.minEconomicsInput, els.minMarketStabilityInput, els.minSupplyRiskInput, els.minFuturePriceScoreInput, els.maxFuturePriceScoreInput, els.minForecastPriceInput, els.maxForecastPriceInput, els.minForecastDownsideInput, els.maxForecastDownsideInput, els.minForecastGapInput, els.maxForecastGapInput, els.forecastPhaseInput, els.forecastConfidenceInput, els.forecastSupplyPressureInput, els.maxForecastMonthlyIncreaseInput, els.stockDemandInput, els.fundingOnlyInput, els.officialOnlyInput, els.sortInput, els.psaCapitalInput, els.lockedCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput].forEach((el) =>
   el.addEventListener("input", syncFromUI)
 );
 
 els.resetFiltersBtn.addEventListener("click", () => {
   els.qInput.value = "";
   els.saleTxMinInput.value = "30";
-  [els.saleTxMaxInput, els.saleTx7MaxInput, els.psaTxMaxInput, els.psaTx7MaxInput, els.buyback7MaxInput, els.buyback30MaxInput, els.buyback90MaxInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.priceMinInput, els.priceMaxInput, els.psaRateMinInput, els.maxForecastDownsideInput].forEach((el) => { el.value = ""; });
+  [els.saleTxMaxInput, els.saleTx7MaxInput, els.psaTxMaxInput, els.psaTx7MaxInput, els.buyback7MaxInput, els.buyback30MaxInput, els.buyback90MaxInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.priceMinInput, els.priceMaxInput, els.psaRateMinInput, els.maxFuturePriceScoreInput, els.minForecastPriceInput, els.maxForecastPriceInput, els.minForecastDownsideInput, els.maxForecastDownsideInput, els.minForecastGapInput, els.maxForecastGapInput, els.maxForecastMonthlyIncreaseInput].forEach((el) => { el.value = ""; });
   [els.saleTx7MinInput, els.psaTxMinInput, els.psaTx7MinInput, els.buyback7MinInput, els.buyback30MinInput, els.buyback90MinInput, els.buybackShopsMinInput, els.psaMinInput].forEach((el) => { el.value = "0"; });
   els.roiInput.value = "40";
   els.psaMaxInput.value = "200000";
   els.overallFilterInput.value = "all";
   [els.minExitLiquidityInput, els.minEconomicsInput, els.minMarketStabilityInput, els.minSupplyRiskInput, els.minFuturePriceScoreInput].forEach((el) => { el.value = "0"; });
+  els.forecastPhaseInput.value = "all";
+  els.forecastConfidenceInput.value = "all";
+  els.forecastSupplyPressureInput.value = "all";
   els.stockDemandInput.value = "all";
   els.fundingOnlyInput.checked = false;
   els.officialOnlyInput.checked = false;

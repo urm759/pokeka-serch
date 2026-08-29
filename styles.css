@@ -688,7 +688,7 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .future-price-forecast.risk-high .future-forecast-head strong{color:#fda4af}
 .future-forecast-head>b{padding:5px 9px;border-radius:999px;background:rgba(255,255,255,.1);font-size:15px;white-space:nowrap}
 .future-forecast-head>b small{margin-left:2px;color:var(--muted);font-size:8px}
-.future-forecast-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:9px}
+.future-forecast-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(115px,1fr));gap:7px;margin-top:9px}
 .future-forecast-metrics div{padding:9px;border-radius:12px;background:rgba(5,10,20,.5)}
 .future-forecast-metrics span{display:block;color:var(--muted);font-size:9px}
 .future-forecast-metrics strong{display:block;margin-top:2px;font-size:14px}

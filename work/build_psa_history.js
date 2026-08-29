@@ -103,16 +103,18 @@ function windowChange(history, days, today) {
   if (history.length < 2) return null;
   const cutoff = new Date(Date.UTC(+today.slice(0,4), +today.slice(4,6)-1, +today.slice(6,8))); cutoff.setUTCDate(cutoff.getUTCDate()-days);
   const cutoffKey = cutoff.toISOString().slice(0,10).replace(/-/g, "");
-  const base = [...history].reverse().find((row) => row[0] <= cutoffKey);
-  const latest = history[history.length-1]; if (!base) return null;
+  const fullWindowBase = [...history].reverse().find((row) => row[0] <= cutoffKey);
+  const base = fullWindowBase || history[0];
+  const latest = history[history.length-1];
   const actualDays = daysBetween(base[0], latest[0]);
+  if (actualDays < 2) return null;
   const delta10 = latest[1]-base[1], deltaTotal = latest[2]-base[2];
   const rate = base[1] > 0 ? delta10/base[1] : 0, daily = delta10/actualDays;
   let status = "横ばい";
   if (delta10 > 0 && (daily >= 10 || rate >= .1)) status = "急増化";
   else if (delta10 > 0 && (daily >= 1 || rate >= .02)) status = "増加";
   else if (delta10 > 0) status = "少ない";
-  return { d10: delta10, dt: deltaTotal, s: status };
+  return { d10: delta10, dt: deltaTotal, s: status, days: actualDays, partial: !fullWindowBase };
 }
 
 function compactRows(payload) {
