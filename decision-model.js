@@ -92,11 +92,21 @@
     const requiredRoi = Math.max(0, Number(input.minExpectedRoi || 0), annualRequiredRoi) / 100;
     const roiCap = (zeroPurchase.expectedSale - Number(input.fee || 0) * (1 + requiredRoi)) / (1 + requiredRoi);
     const profitCap = zeroPurchase.expectedSale - Number(input.fee || 0) - Number(input.minExpectedProfit || 0);
-    const capital = input.capital || capitalPlan(input);
-    const shareCap = Math.max(0, Number(input.totalCapital || capital.totalCapital) * Number(input.maxCapitalShare || 100) / 100);
-    const rawMax = Math.min(roiCap, profitCap, capital.perCardBatchCap, shareCap);
+    // This is the economic limit. Capital is evaluated separately so a shared
+    // batch budget never makes every card display the same purchase ceiling.
+    const rawMax = Math.min(roiCap, profitCap);
     const step = Math.max(1, Number(input.step || 500));
     return Math.max(0, Math.floor(rawMax / step) * step);
+  }
+
+  function capitalLimits(input) {
+    const capital = input.capital || capitalPlan(input);
+    const shareCap = Math.max(0, capital.totalCapital * Number(input.maxCapitalShare || 100) / 100);
+    return {
+      perCardBatchCap: capital.perCardBatchCap,
+      shareCap,
+      practicalCap: Math.min(capital.perCardBatchCap, shareCap),
+    };
   }
 
   function purchaseDecision(input) {
@@ -105,11 +115,13 @@
     const capital = input.capital;
     const purchasePrice = Number(economics.purchasePrice || 0);
     const plannedBatchSpend = purchasePrice * capital.submissionCount;
+    const shareCap = capital.totalCapital * Number(input.maxCapitalShare || 100) / 100;
     if (economics.expectedProfit < 0) reasons.push("期待利益がマイナス");
     else if (economics.expectedProfit < Number(input.minExpectedProfit || 0)) reasons.push("最低期待利益を未達");
     if (economics.expectedRoi < Number(input.minExpectedRoi || 0)) reasons.push("最低期待利益率を未達");
     if (economics.annualEfficiency < Number(input.minAnnualEfficiency || 0)) reasons.push("最低年換算効率を未達");
     if (plannedBatchSpend > capital.availableCapital) reasons.push("同時提出分の仕入れ総額が使用可能資金を超過");
+    if (purchasePrice > shareCap) reasons.push("1枚の資金占有率上限を超過");
     if (!capital.reserveSufficient) reasons.push("鑑定費予備資金が不足");
     if (input.hasAnomaly) reasons.push("異常値の確認が必要");
 
@@ -124,5 +136,5 @@
     return { verdict, reasons, plannedBatchSpend, availableCapital: capital.availableCapital };
   }
 
-  return { aggregatePrices, capitalPlan, expectedEconomics, gradeAssumptions, maxBuyPrice, median, purchaseDecision };
+  return { aggregatePrices, capitalLimits, capitalPlan, expectedEconomics, gradeAssumptions, maxBuyPrice, median, purchaseDecision };
 });

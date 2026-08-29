@@ -1052,9 +1052,9 @@ function buildScenarioInput(card, condition) {
   };
 }
 
-function buildBuyLimitScenario(card, condition, capital) {
+function buildBuyLimitScenario(card, condition) {
   const input = buildScenarioInput(card, condition);
-  const maxPrice = decisionModel.maxBuyPrice({ ...input, capital, step: 500 });
+  const maxPrice = decisionModel.maxBuyPrice({ ...input, step: 500 });
   const atLimit = decisionModel.expectedEconomics({ ...input, purchasePrice: maxPrice });
 
   return {
@@ -1073,14 +1073,16 @@ function buildBuyLimitScenario(card, condition, capital) {
 function buildBuyLimits(card) {
   if (!card.futurePriceForecast) return null;
   const capital = decisionModel.capitalPlan({ totalCapital: state.psaCapital, lockedCapital: state.lockedCapital, gradingReserve: state.gradingReserve, submissionCount: state.submissionCount, fee: state.fee });
-  const clean = buildBuyLimitScenario(card, "clean", capital);
-  const scratch = buildBuyLimitScenario(card, "scratch", capital);
+  const capitalLimits = decisionModel.capitalLimits({ capital, maxCapitalShare: state.maxCapitalShare });
+  const clean = buildBuyLimitScenario(card, "clean");
+  const scratch = buildBuyLimitScenario(card, "scratch");
   if (!clean || !scratch) return null;
   scratch.maxPrice = Math.min(scratch.maxPrice, clean.maxPrice);
   return {
     clean,
     scratch,
     capital,
+    capitalLimits,
     rateSource: clean.assumptions.hitRateSource,
     forecastPrice: card.futurePriceForecast.predictedPrice,
   };
@@ -1102,6 +1104,7 @@ function finalizeCardDecision(card) {
     minExpectedProfit: state.minExpectedProfit,
     minExpectedRoi: state.minExpectedRoi,
     minAnnualEfficiency: state.minAnnualEfficiency,
+    maxCapitalShare: state.maxCapitalShare,
   }) : null;
   if (card.overallAssessment) {
     card.overallAssessment.economics = economics
@@ -1721,7 +1724,7 @@ function render() {
         </div>
         <div class="buy-limit-foot">
           <span>下落・回転の安全余裕 美品 ${buyLimits.clean.riskBufferPct.toFixed(1)}% / 傷あり ${buyLimits.scratch.riskBufferPct.toFixed(1)}%</span>
-          <span>${escapeHtml(buyLimits.clean.lowerGradeSource)}・PSA鑑定費・売却手数料・最低利益条件を反映</span>
+          <span>資金枠：同時${fmt.format(buyLimits.capital.submissionCount)}枚なら1枚 ¥${fmt.format(Math.floor(buyLimits.capitalLimits.practicalCap))}まで / ${escapeHtml(buyLimits.clean.lowerGradeSource)}・PSA鑑定費・売却手数料を反映</span>
         </div>
       </section>
     ` : "";

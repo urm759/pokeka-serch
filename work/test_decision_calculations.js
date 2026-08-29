@@ -55,7 +55,8 @@ const capitalLimitedMax = model.maxBuyPrice({
   capital,
   step: 500,
 });
-assert.equal(capitalLimitedMax, 27000);
+assert.ok(capitalLimitedMax > capital.perCardBatchCap);
+assert.equal(model.capitalLimits({ capital, maxCapitalShare: 100 }).practicalCap, 27000);
 
 const prices = model.aggregatePrices([
   { source: "みんトレ", value: 30000, allowAnchor: true },
