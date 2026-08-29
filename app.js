@@ -358,6 +358,8 @@ const sorters = {
   "profit-asc": (a, b) => a.profit - b.profit,
   "psaRecommend-desc": (a, b) => Number(b.psaDecision?.recommended) - Number(a.psaDecision?.recommended) || (b.psaDecision?.annualEfficiency ?? -Infinity) - (a.psaDecision?.annualEfficiency ?? -Infinity),
   "overall-desc": (a, b) => (b.overallAssessment?.score ?? -Infinity) - (a.overallAssessment?.score ?? -Infinity) || b.roi - a.roi,
+  "buyLimitClean-desc": (a, b) => (b.buyLimits?.clean?.maxPrice ?? -Infinity) - (a.buyLimits?.clean?.maxPrice ?? -Infinity),
+  "buyLimitScratch-desc": (a, b) => (b.buyLimits?.scratch?.maxPrice ?? -Infinity) - (a.buyLimits?.scratch?.maxPrice ?? -Infinity),
   "exit-desc": (a, b) => (b.overallAssessment?.exitLiquidity ?? -Infinity) - (a.overallAssessment?.exitLiquidity ?? -Infinity) || b.psaTx30d - a.psaTx30d,
   "futureScore-desc": (a, b) => (b.futurePriceForecast?.score ?? -Infinity) - (a.futurePriceForecast?.score ?? -Infinity) || b.roi - a.roi,
   "downside-asc": (a, b) => (a.futurePriceForecast?.downsidePct ?? Infinity) - (b.futurePriceForecast?.downsidePct ?? Infinity),
@@ -424,6 +426,11 @@ function roundToStep(value, step = 1000) {
   return Math.max(0, Math.round(value / step) * step);
 }
 
+function floorToStep(value, step = 500) {
+  if (!Number.isFinite(value)) return null;
+  return Math.max(0, Math.floor(value / step) * step);
+}
+
 function calcGuideBuyPrice(psa10, hitRate, fee, targetRoi, psa9Rate = 0.75) {
   const roi = targetRoi / 100;
   const saleMultiplier = Math.max(0, 1 - state.saleFeeRate / 100);
@@ -466,6 +473,10 @@ function favoriteGuide(card) {
   };
 }
 
+function buyLimitText(limit) {
+  return limit?.maxPrice > 0 ? `¥${fmt.format(limit.maxPrice)}以下` : "仕入れ見送り";
+}
+
 function favoriteCards() {
   const byId = new Map(state.cards.map((card) => [String(card.id), card]));
   return [...state.favorites].map((id) => byId.get(id)).filter(Boolean);
@@ -474,12 +485,11 @@ function favoriteCards() {
 function renderFavorites() {
   if (!els.favoritesList) return;
   const cards = favoriteCards();
-  const cfg = guideConfig();
   if (els.favoriteCount) els.favoriteCount.textContent = fmt.format(cards.length);
   if (els.favoriteCountToolbar) els.favoriteCountToolbar.textContent = fmt.format(cards.length);
   if (els.favoritesHint) {
     els.favoritesHint.textContent = cards.length
-      ? `${cfg.label} / 予測PSA10価格 / PSA鑑定費 ¥${fmt.format(state.fee)} / 売却手数料 ${Number(state.saleFeeRate).toFixed(1)}%で計算中`
+      ? `状態別仕入れ上限 / 予測PSA10価格 / PSA鑑定費 ¥${fmt.format(state.fee)} / 売却手数料 ${Number(state.saleFeeRate).toFixed(1)}%で計算中`
       : "各カードの「仕入れ候補に追加」から登録してください。";
   }
   els.copyFavoritesBtn.disabled = cards.length === 0;
@@ -491,7 +501,7 @@ function renderFavorites() {
   }
   els.favoritesList.innerHTML = cards.map((rawCard) => {
     const card = calc(rawCard);
-    const guide = favoriteGuide(card);
+    const limits = card.buyLimits;
     const decision = card.psaDecision;
     const name = escapeHtml(String(card.name || "").replace(/\s+/g, " "));
     return `
@@ -502,9 +512,9 @@ function renderFavorites() {
           <div class="favorite-decision ${decision?.recommended ? "recommended" : "not-recommended"}">${decision?.recommended ? "PSA提出おすすめ" : "PSA提出おすすめしない"}</div>
           <div class="favorite-prices">
             <div><span>現在 / 予測PSA10</span><strong>¥${fmt.format(card.psa10)} / ¥${fmt.format(card.futurePriceForecast?.predictedPrice || card.psa10)}</strong></div>
-            <div class="recommended"><span>おすすめ以下</span><strong>¥${fmt.format(guide.recommended)}</strong></div>
-            <div><span>理想</span><strong>¥${fmt.format(guide.ideal)}</strong></div>
-            <div><span>上限</span><strong>¥${fmt.format(guide.upper)}</strong></div>
+            <div class="recommended"><span>美品なら</span><strong>${buyLimitText(limits?.clean)}</strong></div>
+            <div class="scratch"><span>多少の傷ありなら</span><strong>${buyLimitText(limits?.scratch)}</strong></div>
+            <div><span>PSA10想定 美品 / 傷あり</span><strong>${limits ? `${limits.clean.hitRate.toFixed(1)}% / ${limits.scratch.hitRate.toFixed(1)}%` : "未判定"}</strong></div>
           </div>
         </div>
         <button class="remove-favorite" type="button" data-remove-favorite="${escapeHtml(card.id)}">解除</button>
@@ -528,15 +538,14 @@ function toggleFavorite(id) {
 }
 
 function favoritesMemo() {
-  const cfg = guideConfig();
-  const header = `仕入れ候補（${cfg.label}・PSA鑑定費 ¥${fmt.format(state.fee)}）`;
+  const header = `仕入れ候補（状態別上限・PSA鑑定費 ¥${fmt.format(state.fee)}）`;
   const rows = favoriteCards().map((rawCard) => {
     const card = calc(rawCard);
-    const guide = favoriteGuide(card);
+    const limits = card.buyLimits;
     const decision = card.psaDecision;
     const decisionText = decision?.recommended ? "PSA提出おすすめ" : `PSA提出おすすめしない：${decision?.reasons.join(" / ") || "計算不可"}`;
     const forecast = card.futurePriceForecast;
-    return `${String(card.name || "").replace(/\s+/g, " ")}\nおすすめ ¥${fmt.format(guide.recommended)}以下（理想 ¥${fmt.format(guide.ideal)} / 上限 ¥${fmt.format(guide.upper)} / 現在PSA10 ¥${fmt.format(card.psa10)} / 予測PSA10 ¥${fmt.format(forecast?.predictedPrice || card.psa10)} / 下落余地 ${forecast ? `${forecast.downsidePct.toFixed(1)}%` : "-"}）\n${decisionText} / 期待利益 ¥${fmt.format(Math.round(decision?.expectedProfit || 0))} / 年換算効率 ${Math.round(decision?.annualEfficiency || 0)}%`;
+    return `${String(card.name || "").replace(/\s+/g, " ")}\n美品 ${buyLimitText(limits?.clean)} / 多少の傷あり ${buyLimitText(limits?.scratch)}（PSA10想定 ${limits ? `${limits.clean.hitRate.toFixed(1)}% / ${limits.scratch.hitRate.toFixed(1)}%` : "未判定"}・現在PSA10 ¥${fmt.format(card.psa10)}・予測PSA10 ¥${fmt.format(forecast?.predictedPrice || card.psa10)}・下落余地 ${forecast ? `${forecast.downsidePct.toFixed(1)}%` : "-"}）\n${decisionText} / 期待利益 ¥${fmt.format(Math.round(decision?.expectedProfit || 0))} / 年換算効率 ${Math.round(decision?.annualEfficiency || 0)}%`;
   });
   return [header, ...rows].join("\n\n");
 }
@@ -567,13 +576,14 @@ async function copyText(text) {
 
 function exportFavoritesCsv() {
   const cfg = guideConfig();
-  const rows = [["id", "カード名", "型番", "現在PSA10価格", "予測PSA10価格", "予測下落余地%", "将来価格評価", "基準", "理想仕入れ", "おすすめ仕入れ", "上限仕入れ", "PSA提出判断", "期待利益", "期待利益率", "年換算資金効率", "資金占有率", "判断理由", "みんトレURL", "カードラッシュURL", "晴れる屋2URL"]];
+  const rows = [["id", "カード名", "型番", "現在PSA10価格", "予測PSA10価格", "予測下落余地%", "将来価格評価", "美品仕入れ上限", "傷あり仕入れ上限", "美品PSA10想定率%", "傷ありPSA10想定率%", "取得率基準", "基準", "理想仕入れ", "おすすめ仕入れ", "上限仕入れ", "PSA提出判断", "期待利益", "期待利益率", "年換算資金効率", "資金占有率", "判断理由", "みんトレURL", "カードラッシュURL", "晴れる屋2URL"]];
   favoriteCards().forEach((rawCard) => {
     const card = calc(rawCard);
     const guide = favoriteGuide(card);
+    const limits = card.buyLimits;
     const decision = card.psaDecision;
     const forecast = card.futurePriceForecast;
-    rows.push([card.id, card.name, card.model || "", card.psa10, forecast?.predictedPrice || card.psa10, forecast ? forecast.downsidePct.toFixed(1) : "", forecast?.score ?? "", cfg.label, guide.ideal, guide.recommended, guide.upper, decision?.recommended ? "おすすめ" : "おすすめしない", Math.round(decision?.expectedProfit || 0), Math.round(decision?.expectedRoi || 0), Math.round(decision?.annualEfficiency || 0), Number(decision?.capitalShare || 0).toFixed(1), decision?.reasons.join(" / ") || "", buildTorecaCardUrl(card), card.cardrushUrl || "", card.hareruya2Url || ""]);
+    rows.push([card.id, card.name, card.model || "", card.psa10, forecast?.predictedPrice || card.psa10, forecast ? forecast.downsidePct.toFixed(1) : "", forecast?.score ?? "", limits?.clean?.maxPrice ?? "", limits?.scratch?.maxPrice ?? "", limits?.clean?.hitRate?.toFixed(1) ?? "", limits?.scratch?.hitRate?.toFixed(1) ?? "", limits?.rateSource || "", cfg.label, guide.ideal, guide.recommended, guide.upper, decision?.recommended ? "おすすめ" : "おすすめしない", Math.round(decision?.expectedProfit || 0), Math.round(decision?.expectedRoi || 0), Math.round(decision?.annualEfficiency || 0), Number(decision?.capitalShare || 0).toFixed(1), decision?.reasons.join(" / ") || "", buildTorecaCardUrl(card), card.cardrushUrl || "", card.hareruya2Url || ""]);
   });
   const csv = `\uFEFF${rows.map((row) => row.map(csvCell).join(",")).join("\r\n")}`;
   const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
@@ -998,6 +1008,72 @@ function buildOverallAssessment(card, official, stock, psaDecision) {
   return { score, grade, label, exitLiquidity, economics, marketStability, supplyRisk: Math.round(supplyRisk), futurePrice, completeEvidence, aEligible, strengths: strengths.slice(0, 3), cautions: cautions.slice(0, 3) };
 }
 
+function buildBuyLimitScenario(card, condition, cleanHitRate) {
+  const forecast = card.futurePriceForecast;
+  const overall = card.overallAssessment;
+  if (!forecast || !(forecast.predictedPrice > 0)) return null;
+
+  const isScratch = condition === "scratch";
+  const hitRate = clamp(cleanHitRate * (isScratch ? 0.55 : 1), 0.01, 0.98);
+  const actualPsa9 = Number(card.snkPsa9Price);
+  const fallbackLowerGrade = Number(card.price) * 0.75;
+  const lowerGradeBase = actualPsa9 > 0
+    ? Math.min(actualPsa9, forecast.predictedPrice * 0.95)
+    : fallbackLowerGrade;
+  const lowerGradePrice = lowerGradeBase * (isScratch ? 0.8 : 1);
+  const saleMultiplier = Math.max(0, 1 - state.saleFeeRate / 100);
+  const psa10Net = forecast.predictedPrice * saleMultiplier - state.saleExtraCost;
+  const lowerGradeNet = lowerGradePrice * saleMultiplier - state.saleExtraCost;
+
+  // The forecast already reflects expected downside. This extra margin covers
+  // uncertainty, slow turnover and condition risk at the moment of purchase.
+  const riskBufferPct = clamp(
+    Number(forecast.downsidePct || 0) * 0.12
+      + Math.max(0, 55 - Number(forecast.turnoverScore ?? 45)) * 0.06
+      + Math.max(0, 55 - Number(overall?.exitLiquidity ?? 45)) * 0.05
+      + Math.max(0, 55 - Number(overall?.marketStability ?? 45)) * 0.04
+      + (forecast.confidence === "低" ? 4 : forecast.confidence === "中" ? 1.5 : 0)
+      + (isScratch ? 2 : 0),
+    0,
+    15
+  );
+  const expectedSaleBeforeRisk = hitRate * psa10Net + (1 - hitRate) * lowerGradeNet;
+  const expectedSale = expectedSaleBeforeRisk * (1 - riskBufferPct / 100);
+  const availableBeforePurchase = expectedSale - state.fee;
+  const annualRequiredRoi = state.lockDays > 0 ? state.minAnnualEfficiency * state.lockDays / 365 : 0;
+  const requiredRoi = Math.max(0, state.minExpectedRoi, annualRequiredRoi) / 100;
+  const roiCap = availableBeforePurchase / (1 + requiredRoi);
+  const profitCap = availableBeforePurchase - state.minExpectedProfit;
+  const maxPrice = floorToStep(Math.min(roiCap, profitCap), 500);
+
+  return {
+    maxPrice,
+    hitRate: hitRate * 100,
+    lowerGradePrice: floorToStep(lowerGradePrice, 500),
+    lowerGradeSource: actualPsa9 > 0 ? "PSA9市場価格" : "平均美品の75%推定",
+    expectedSale: floorToStep(expectedSale, 500),
+    riskBufferPct,
+    requiredRoi: requiredRoi * 100,
+  };
+}
+
+function buildBuyLimits(card) {
+  if (!card.futurePriceForecast) return null;
+  const officialRate = Number(card.official?.rate);
+  const hasOfficialRate = Number.isFinite(officialRate) && officialRate >= 0;
+  const cleanHitRate = clamp(hasOfficialRate ? officialRate / 100 : guideConfig().hitRate, 0.01, 0.98);
+  const clean = buildBuyLimitScenario(card, "clean", cleanHitRate);
+  const scratch = buildBuyLimitScenario(card, "scratch", cleanHitRate);
+  if (!clean || !scratch) return null;
+  scratch.maxPrice = Math.min(scratch.maxPrice, clean.maxPrice);
+  return {
+    clean,
+    scratch,
+    rateSource: hasOfficialRate ? "PSA公式取得率" : `${guideConfig().label}（公式未取得）`,
+    forecastPrice: card.futurePriceForecast.predictedPrice,
+  };
+}
+
 function combineShopStock(...sources) {
   const available = sources.filter(Boolean);
   if (!available.length) return null;
@@ -1088,6 +1164,7 @@ function calc(card) {
   const psaDecision = { recommended: reasons.length === 0, reasons, expectedSale, expectedProfit, expectedRoi, annualEfficiency, capitalShare, availableCapital, requiredReserve, forecastPsa10Net };
   const calculated = { ...forecastBase, futurePriceForecast, psaDecision };
   calculated.overallAssessment = buildOverallAssessment(calculated, official, stock, psaDecision);
+  calculated.buyLimits = buildBuyLimits(calculated);
   return calculated;
 }
 
@@ -1358,6 +1435,7 @@ function render() {
   calculated.forEach((card) => {
     card.psaTxPeerMedian = psaTxMedianByPriceBand.get(psaPriceBand(card.psa10).key) ?? null;
     card.overallAssessment = buildOverallAssessment(card, card.official, combineShopStock(state.cardrushStock[card.id], state.hareruya2Stock[card.id]), card.psaDecision);
+    card.buyLimits = buildBuyLimits(card);
   });
   const enriched = calculated
     .filter((card) => {
@@ -1567,6 +1645,38 @@ function render() {
     const priceSources = [`みんトレ状態A ¥${fmt.format(card.torecaPrice)}`, `カードラッシュ状態A ${cardrushPriceText}`, `晴れる屋2状態A ${hareruya2PriceText}`]
       .filter((_, index) => index === 0 || (index === 1 ? Number.isFinite(card.cardrushPrice) : Number.isFinite(card.hareruya2Price)))
       .join(" / ");
+    const buyLimits = card.buyLimits;
+    const cleanMarketStatus = buyLimits?.clean?.maxPrice > 0
+      ? card.price <= buyLimits.clean.maxPrice
+        ? "平均美品価格は仕入れ圏内"
+        : `平均美品より¥${fmt.format(Math.max(0, card.price - buyLimits.clean.maxPrice))}安ければ候補`
+      : "設定条件では見送り";
+    const buyLimitPanel = buyLimits ? `
+      <section class="buy-limit-panel" aria-label="状態別の仕入れ上限価格">
+        <div class="buy-limit-head">
+          <div><span>店舗で見る仕入れ上限</span><strong>この状態なら、ここまで</strong></div>
+          <small>${escapeHtml(buyLimits.rateSource)}・予測PSA10 ¥${fmt.format(buyLimits.forecastPrice)}</small>
+        </div>
+        <div class="buy-limit-grid">
+          <div class="buy-limit-card clean ${buyLimits.clean.maxPrice > 0 ? "available" : "blocked"}">
+            <span>美品なら</span>
+            <strong>${buyLimitText(buyLimits.clean)}</strong>
+            <b>PSA10想定 ${buyLimits.clean.hitRate.toFixed(1)}%</b>
+            <small>${escapeHtml(cleanMarketStatus)} / 9以下 ¥${fmt.format(buyLimits.clean.lowerGradePrice)}想定</small>
+          </div>
+          <div class="buy-limit-card scratch ${buyLimits.scratch.maxPrice > 0 ? "available" : "blocked"}">
+            <span>多少の傷ありなら</span>
+            <strong>${buyLimitText(buyLimits.scratch)}</strong>
+            <b>PSA10想定 ${buyLimits.scratch.hitRate.toFixed(1)}%</b>
+            <small>美品の10率を45%減 / 9以下 ¥${fmt.format(buyLimits.scratch.lowerGradePrice)}想定</small>
+          </div>
+        </div>
+        <div class="buy-limit-foot">
+          <span>下落・回転の安全余裕 美品 ${buyLimits.clean.riskBufferPct.toFixed(1)}% / 傷あり ${buyLimits.scratch.riskBufferPct.toFixed(1)}%</span>
+          <span>${escapeHtml(buyLimits.clean.lowerGradeSource)}・PSA鑑定費・売却手数料・最低利益条件を反映</span>
+        </div>
+      </section>
+    ` : "";
     const favoriteActive = state.favorites.has(String(card.id));
     const psaDecision = card.psaDecision;
     const decisionClass = psaDecision?.recommended ? "recommended" : "not-recommended";
@@ -1660,6 +1770,8 @@ function render() {
             </div>
             <button class="favorite-toggle ${favoriteActive ? "active" : ""}" type="button" data-toggle-favorite="${card.id}" aria-pressed="${favoriteActive}">${favoriteActive ? "★ 仕入れ候補に登録済み" : "☆ 仕入れ候補に追加"}</button>
           </div>
+
+          ${buyLimitPanel}
 
           <div class="metrics market-summary">
             <div class="metric metric-primary"><span>平均美品価格</span><strong>¥${fmt.format(card.price)}</strong><small>${priceSources}</small></div>

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20260829-forecast1" />
+  <link rel="stylesheet" href="./styles.css?v=20260829-buy-limit-1" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -41,6 +41,8 @@
           <span>並び順</span>
           <select id="sortInput">
             <option value="overall-desc">総合評価が高い順</option>
+            <option value="buyLimitClean-desc">美品の仕入れ上限が高い順</option>
+            <option value="buyLimitScratch-desc">傷ありの仕入れ上限が高い順</option>
             <option value="roi-desc">利益率が高い順</option>
             <option value="roi-asc">利益率が低い順</option>
             <option value="profit-desc">利益額が高い順</option>
@@ -514,6 +516,6 @@
     </section>
   </main>
 
-  <script src="./app.js?v=20260829-release-maturity-1"></script>
+  <script src="./app.js?v=20260829-buy-limit-1"></script>
 </body>
 </html>

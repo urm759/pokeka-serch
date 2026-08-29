@@ -654,6 +654,23 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .metric small{display:block;margin-top:5px;color:var(--muted);font-size:9px;line-height:1.4}
 .metric-primary{background:linear-gradient(135deg,rgba(125,211,252,.13),rgba(56,217,150,.08));border-color:rgba(125,211,252,.28)}
 .metric-primary strong{font-size:23px}
+.buy-limit-panel{margin-top:14px;padding:14px;border:1px solid rgba(56,217,150,.38);border-radius:19px;background:linear-gradient(135deg,rgba(56,217,150,.12),rgba(125,211,252,.07) 55%,rgba(5,10,20,.58));box-shadow:0 12px 30px rgba(0,0,0,.16)}
+.buy-limit-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.buy-limit-head span,.buy-limit-head small{display:block;color:var(--muted);font-size:9px}
+.buy-limit-head strong{display:block;margin-top:2px;font-size:16px}
+.buy-limit-head small{text-align:right;line-height:1.5}
+.buy-limit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:10px}
+.buy-limit-card{position:relative;overflow:hidden;padding:13px;border:1px solid rgba(255,255,255,.12);border-radius:15px;background:rgba(5,10,20,.62)}
+.buy-limit-card::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:#38d996}
+.buy-limit-card.scratch::before{background:#fbbf24}
+.buy-limit-card span,.buy-limit-card small{display:block;color:var(--muted);font-size:9px;line-height:1.5}
+.buy-limit-card strong{display:block;margin:3px 0 4px;color:#86efac;font-size:clamp(23px,3vw,32px);line-height:1.08;letter-spacing:-.025em}
+.buy-limit-card.scratch strong{color:#fde68a}
+.buy-limit-card.blocked strong{color:#fca5a5;font-size:20px}
+.buy-limit-card b{display:inline-block;margin-bottom:6px;padding:4px 7px;border-radius:999px;background:rgba(56,217,150,.14);color:#bbf7d0;font-size:9px}
+.buy-limit-card.scratch b{background:rgba(251,191,36,.14);color:#fde68a}
+.buy-limit-foot{display:flex;justify-content:space-between;gap:10px;margin-top:8px;color:var(--muted);font-size:8px;line-height:1.55}
+.favorite-prices .scratch{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.24)}
 .activity-panel{margin-top:12px;padding:12px;border:1px solid rgba(125,211,252,.2);border-radius:16px;background:rgba(5,10,20,.4)}
 .activity-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:8px}
 .activity-head strong{font-size:13px}
@@ -865,6 +882,14 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
   .metric-primary{grid-column:1 / -1}
   .metric{padding:10px}
   .metric strong{font-size:16px}
+  .buy-limit-panel{padding:11px}
+  .buy-limit-head{align-items:flex-start;flex-direction:column;gap:3px}
+  .buy-limit-head small{text-align:left}
+  .buy-limit-grid{gap:6px}
+  .buy-limit-card{padding:11px 8px 10px}
+  .buy-limit-card strong{font-size:21px}
+  .buy-limit-card.blocked strong{font-size:16px}
+  .buy-limit-foot{flex-direction:column;gap:2px}
   .profit{padding:11px}
   .note{font-size:10px}
   .stat strong{font-size:20px}
