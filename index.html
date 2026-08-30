@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20260829-decision-2" />
+  <link rel="stylesheet" href="./styles.css?v=20260831-store-tools" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -103,6 +103,9 @@
         <button type="button" data-preset="now">今すぐ仕入れ</button>
         <button type="button" data-preset="low-risk">低リスク</button>
         <button type="button" data-preset="turnover">高回転</button>
+        <span class="preset-divider" aria-hidden="true"></span>
+        <button id="exportSearchBtn" class="preset-file-action" type="button">条件をCSV保存</button>
+        <label class="preset-file-action">条件CSV読込<input id="importSearchInput" type="file" accept=".csv,text/csv" /></label>
       </div>
 
       <details class="advanced-filters">
@@ -482,6 +485,10 @@
           <label class="import-favorites-btn">CSV読込<input id="importFavoritesInput" type="file" accept=".csv,text/csv" /></label>
           <button id="clearFavoritesBtn" class="danger" type="button">すべて解除</button>
         </div>
+        <label class="favorite-search">
+          <span>お気に入りを検索</span>
+          <input id="favoriteSearchInput" type="search" placeholder="カード名・型番で絞り込み" autocomplete="off" />
+        </label>
         <div id="favoritesList" class="favorites-list"></div>
       </div>
     </details>
@@ -525,6 +532,6 @@
   </main>
 
   <script src="./decision-model.js?v=20260829-decision-5"></script>
-  <script src="./app.js?v=20260829-decision-5"></script>
+  <script src="./app.js?v=20260831-store-tools"></script>
 </body>
 </html>

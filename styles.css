@@ -61,6 +61,10 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
 .quick-presets>span{color:var(--muted);font-size:10px;font-weight:800}
 .quick-presets button{padding:8px 12px;border:1px solid rgba(125,211,252,.26);border-radius:999px;background:rgba(5,10,20,.48);color:var(--text);font-size:10px;font-weight:900;cursor:pointer}
 .quick-presets button:hover,.quick-presets button.active{border-color:rgba(56,217,150,.6);background:rgba(56,217,150,.16);color:#bbf7d0}
+.preset-divider{width:1px;height:22px;background:var(--line);margin:0 2px}
+.preset-file-action{display:inline-flex;align-items:center;justify-content:center;padding:8px 12px;border:1px solid rgba(251,191,36,.34);border-radius:999px;background:rgba(251,191,36,.08);color:#fde68a;font-size:10px;font-weight:900;cursor:pointer}
+.preset-file-action input{display:none}
+.preset-file-action:hover{background:rgba(251,191,36,.16)}
 .advanced-filters{
   margin-top:14px;
   border:1px solid var(--line);
@@ -397,6 +401,10 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
 .favorites-actions button:not(.danger){background:linear-gradient(90deg,rgba(125,211,252,.95),rgba(56,217,150,.95));color:#04131f;border:0}
 .favorites-actions .danger{color:#fca5a5}
 .import-favorites-btn input{display:none}
+.favorite-search{display:flex;align-items:center;gap:10px;margin:0 0 12px;padding:9px 12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.035)}
+.favorite-search span{flex:0 0 auto;color:var(--muted);font-size:11px;font-weight:800}
+.favorite-search input{min-width:0;flex:1;border:0;background:transparent;color:var(--text);font:inherit;font-size:13px;outline:none}
+.favorite-search input::placeholder{color:#71809b}
 .favorites-list{display:grid;gap:9px}
 .favorites-empty{padding:26px;text-align:center;border:1px dashed var(--line);border-radius:16px;color:var(--muted)}
 .favorite-row{display:grid;grid-template-columns:62px minmax(0,1fr) auto;align-items:center;gap:12px;padding:10px;border:1px solid var(--line);border-radius:17px;background:#0b1224}
@@ -410,7 +418,8 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
 .favorite-prices .recommended{background:rgba(56,217,150,.13);border:1px solid rgba(56,217,150,.28)}
 .favorite-prices span{display:block;color:var(--muted);font-size:9px}
 .favorite-prices strong{display:block;margin-top:2px;font-size:14px}
-.remove-favorite{border:1px solid rgba(252,165,165,.25);border-radius:999px;padding:8px 10px;background:transparent;color:#fca5a5;cursor:pointer}
+.remove-favorite{align-self:start;justify-self:end;width:26px;height:26px;border:1px solid rgba(252,165,165,.24);border-radius:50%;padding:0;background:transparent;color:#fca5a5;font-size:15px;line-height:1;cursor:pointer;opacity:.72}
+.remove-favorite:hover{opacity:1;background:rgba(252,165,165,.12)}
 .favorite-toggle{white-space:nowrap;border:1px solid rgba(245,158,11,.35);border-radius:999px;padding:9px 12px;background:rgba(245,158,11,.08);color:#fbbf24;font:inherit;font-size:12px;font-weight:900;cursor:pointer}
 .favorite-toggle.active{background:#f59e0b;color:#261500;border-color:#f59e0b}
 .toolbar h2{margin:0 0 4px;font-size:18px}
@@ -849,6 +858,8 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
   .advanced-filters summary small{display:none}
   .controls-advanced{grid-template-columns:1fr;padding:0 10px 10px;gap:8px}
   .filter-switches{display:grid;grid-template-columns:1fr}
+  .preset-divider{display:none}
+  .preset-file-action{flex:1 1 calc(50% - 5px)}
   .guide-summary{padding:18px 16px}
   .guide-summary h2{font-size:22px}
   .guide-body{padding:0 16px 16px}
@@ -873,7 +884,7 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
   .favorite-prices{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
   .favorite-prices div{padding:7px}
   .favorite-prices strong{font-size:15px}
-  .remove-favorite{grid-column:1 / -1;width:100%}
+  .remove-favorite{grid-column:2;width:24px;height:24px;margin-top:-2px}
   .favorite-toggle{width:100%;font-size:13px}
   .guide-block{padding:12px}
   .guide-block-head{flex-direction:column;align-items:flex-start}

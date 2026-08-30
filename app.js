@@ -71,6 +71,7 @@ const state = {
   q: "",
   visibleLimit: 60,
   favorites: new Set(),
+  favoriteQuery: "",
   psaCapital: 500000,
   lockedCapital: 0,
   lockDays: 91,
@@ -164,6 +165,8 @@ const els = {
   dataFreshness: document.getElementById("dataFreshness"),
   cardrushCoverage: document.getElementById("cardrushCoverage"),
   copyLinkBtn: document.getElementById("copyLinkBtn"),
+  exportSearchBtn: document.getElementById("exportSearchBtn"),
+  importSearchInput: document.getElementById("importSearchInput"),
   guidePanels: document.getElementById("guidePanels"),
   guideHitRateStat: document.getElementById("guideHitRateStat"),
   guidePsa9RateStat: document.getElementById("guidePsa9RateStat"),
@@ -180,6 +183,7 @@ const els = {
   copyFavoritesBtn: document.getElementById("copyFavoritesBtn"),
   exportFavoritesBtn: document.getElementById("exportFavoritesBtn"),
   importFavoritesInput: document.getElementById("importFavoritesInput"),
+  favoriteSearchInput: document.getElementById("favoriteSearchInput"),
   clearFavoritesBtn: document.getElementById("clearFavoritesBtn"),
   psaCapitalInput: document.getElementById("psaCapitalInput"),
   lockedCapitalInput: document.getElementById("lockedCapitalInput"),
@@ -483,19 +487,27 @@ function favoriteCards() {
 
 function renderFavorites() {
   if (!els.favoritesList) return;
-  const cards = favoriteCards();
-  if (els.favoriteCount) els.favoriteCount.textContent = fmt.format(cards.length);
-  if (els.favoriteCountToolbar) els.favoriteCountToolbar.textContent = fmt.format(cards.length);
+  const allCards = favoriteCards();
+  const favoriteQuery = compactSearch(state.favoriteQuery);
+  const cards = favoriteQuery
+    ? allCards.filter((card) => compactSearch(`${card.name} ${card.model} ${card.id}`).includes(favoriteQuery))
+    : allCards;
+  if (els.favoriteCount) els.favoriteCount.textContent = fmt.format(allCards.length);
+  if (els.favoriteCountToolbar) els.favoriteCountToolbar.textContent = fmt.format(allCards.length);
   if (els.favoritesHint) {
-    els.favoritesHint.textContent = cards.length
-      ? `状態別仕入れ上限 / 予測PSA10価格 / PSA鑑定費 ¥${fmt.format(state.fee)} / 売却手数料 ${Number(state.saleFeeRate).toFixed(1)}%で計算中`
+    els.favoritesHint.textContent = allCards.length
+      ? `${fmt.format(allCards.length)}枚登録中${favoriteQuery ? ` / ${fmt.format(cards.length)}枚表示` : ""}。表示価格は現在の設定で再計算します。`
       : "各カードの「仕入れ候補に追加」から登録してください。";
   }
-  els.copyFavoritesBtn.disabled = cards.length === 0;
-  els.exportFavoritesBtn.disabled = cards.length === 0;
-  els.clearFavoritesBtn.disabled = cards.length === 0;
-  if (!cards.length) {
+  els.copyFavoritesBtn.disabled = allCards.length === 0;
+  els.exportFavoritesBtn.disabled = allCards.length === 0;
+  els.clearFavoritesBtn.disabled = allCards.length === 0;
+  if (!allCards.length) {
     els.favoritesList.innerHTML = '<div class="favorites-empty">まだ仕入れ候補はありません。</div>';
+    return;
+  }
+  if (!cards.length) {
+    els.favoritesList.innerHTML = '<div class="favorites-empty">この検索条件に一致するお気に入りはありません。</div>';
     return;
   }
   els.favoritesList.innerHTML = cards.map((rawCard) => {
@@ -514,19 +526,21 @@ function renderFavorites() {
             <div><span>現在 / 予測PSA10</span><strong>¥${fmt.format(card.psa10)} / ¥${fmt.format(card.futurePriceForecast?.predictedPrice || card.psa10)}</strong></div>
             <div class="recommended"><span>美品なら</span><strong>${buyLimitText(limits?.clean)}</strong></div>
             <div class="scratch"><span>多少の傷ありなら</span><strong>${buyLimitText(limits?.scratch)}</strong></div>
-            <div><span>PSA10想定 美品 / 傷あり</span><strong>${limits ? `${limits.clean.hitRate.toFixed(1)}% / ${limits.scratch.hitRate.toFixed(1)}%` : "未判定"}</strong></div>
+            <div><span>PSA10時 利益率</span><strong>${Number.isFinite(card.roi) ? `${Math.round(card.roi)}%` : "未判定"}</strong></div>
           </div>
         </div>
-        <button class="remove-favorite" type="button" data-remove-favorite="${escapeHtml(card.id)}">解除</button>
+        <button class="remove-favorite" type="button" data-remove-favorite="${escapeHtml(card.id)}" title="お気に入りを解除" aria-label="${name}をお気に入りから解除">×</button>
       </article>
     `;
   }).join("");
 }
 
-function toggleFavorite(id) {
+function toggleFavorite(id, { confirmRemoval = false } = {}) {
   const key = String(id);
-  if (state.favorites.has(key)) state.favorites.delete(key);
-  else state.favorites.add(key);
+  if (state.favorites.has(key)) {
+    if (confirmRemoval && !window.confirm("このカードをお気に入りから解除しますか？")) return;
+    state.favorites.delete(key);
+  } else state.favorites.add(key);
   saveFavorites();
   renderFavorites();
   document.querySelectorAll(`[data-toggle-favorite="${CSS.escape(key)}"]`).forEach((button) => {
@@ -538,16 +552,14 @@ function toggleFavorite(id) {
 }
 
 function favoritesMemo() {
-  const header = `仕入れ候補（状態別上限・PSA鑑定費 ¥${fmt.format(state.fee)}）`;
+  const header = `仕入れ候補 / PSA鑑定費 ¥${fmt.format(state.fee)}`;
   const rows = favoriteCards().map((rawCard) => {
     const card = calc(rawCard);
     const limits = card.buyLimits;
-    const decision = card.psaDecision;
-    const decisionText = `今回の仕入れ判断：${card.purchaseDecision?.verdict || "未判定"}${decision?.reasons.length ? `（${decision.reasons.join(" / ")}）` : ""}`;
-    const forecast = card.futurePriceForecast;
-    return `${String(card.name || "").replace(/\s+/g, " ")}\n美品 ${buyLimitText(limits?.clean)} / 多少の傷あり ${buyLimitText(limits?.scratch)}（PSA10想定 ${limits ? `${limits.clean.hitRate.toFixed(1)}% / ${limits.scratch.hitRate.toFixed(1)}%` : "未判定"}・現在PSA10 ¥${fmt.format(card.psa10)}・予測PSA10 ¥${fmt.format(forecast?.predictedPrice || card.psa10)}・下落余地 ${forecast ? `${forecast.downsidePct.toFixed(1)}%` : "-"}）\n${decisionText} / 期待利益 ¥${fmt.format(Math.round(decision?.expectedProfit || 0))} / 年換算効率 ${Math.round(decision?.annualEfficiency || 0)}%`;
+    const roi = Number.isFinite(card.roi) ? `${Math.round(card.roi)}%` : "-";
+    return `${String(card.name || "").replace(/\s+/g, " ")} / 美品 ${buyLimitText(limits?.clean)} / 傷あり ${buyLimitText(limits?.scratch)} / PSA10 ¥${fmt.format(card.psa10)} / 利益率 ${roi}`;
   });
-  return [header, ...rows].join("\n\n");
+  return [header, ...rows].join("\n");
 }
 
 function csvCell(value) {
@@ -592,6 +604,28 @@ function exportFavoritesCsv() {
   link.download = `pokeka-buy-list-${new Date().toISOString().slice(0, 10)}.csv`;
   link.click();
   URL.revokeObjectURL(url);
+}
+
+function exportSearchCsv() {
+  const rows = [["項目", "値"], ["検索URL", buildShareUrl().toString()]];
+  const csv = `\uFEFF${rows.map((row) => row.map(csvCell).join(",")).join("\r\n")}`;
+  const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `pokeka-search-conditions-${new Date().toISOString().slice(0, 10)}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+async function importSearchCsv(file) {
+  const lines = (await file.text()).replace(/^\uFEFF/, "").split(/\r?\n/).filter(Boolean);
+  const rows = lines.map(parseCsvLine);
+  const row = rows.slice(1).find((cells) => String(cells[0] || "").trim() === "検索URL");
+  const savedUrl = String(row?.[1] || "").trim();
+  if (!savedUrl) throw new Error("検索URLが見つかりません。サイトから保存した条件CSVを選んでください。");
+  const target = new URL(savedUrl, window.location.href);
+  if (target.origin !== window.location.origin) throw new Error("別のサイトの条件CSVは読み込めません。");
+  window.location.assign(target.toString());
 }
 
 function parseCsvLine(line) {
@@ -1565,8 +1599,10 @@ function render() {
 
   els.totalStat.textContent = fmt.format(state.cards.length);
   els.countStat.textContent = fmt.format(enriched.length);
-  els.topRoiStat.textContent = enriched.length ? `${Math.round(enriched[0].roi)}%` : "-";
-  els.topProfitStat.textContent = enriched.length ? `¥${fmt.format(Math.round(enriched[0].profit))}` : "-";
+  const topRoi = enriched.reduce((highest, card) => Number.isFinite(card.roi) ? Math.max(highest, card.roi) : highest, -Infinity);
+  const topProfit = enriched.reduce((highest, card) => Number.isFinite(card.profit) ? Math.max(highest, card.profit) : highest, -Infinity);
+  els.topRoiStat.textContent = Number.isFinite(topRoi) ? `${Math.round(topRoi)}%` : "-";
+  els.topProfitStat.textContent = Number.isFinite(topProfit) ? `¥${fmt.format(Math.round(topProfit))}` : "-";
   if (els.updatedAt) {
     els.updatedAt.textContent = state.updateStatus?.completeDate || "自動更新 未完了";
   }
@@ -2033,7 +2069,6 @@ els.resetFiltersBtn.addEventListener("click", () => {
 document.querySelectorAll("[data-preset]").forEach((button) => {
   button.addEventListener("click", () => {
     const preset = button.dataset.preset;
-    els.roiInput.value = "0";
     els.saleTxMinInput.value = preset === "turnover" ? "20" : "0";
     els.psaTxMinInput.value = preset === "turnover" ? "15" : "0";
     els.overallFilterInput.value = preset === "now" || preset === "low-risk" ? "ab" : "all";
@@ -2071,12 +2106,15 @@ els.loadMoreBtn.addEventListener("click", () => {
 
 els.grid.addEventListener("click", (event) => {
   const button = event.target.closest("[data-toggle-favorite]");
-  if (button) toggleFavorite(button.dataset.toggleFavorite);
+  if (button) {
+    const id = button.dataset.toggleFavorite;
+    toggleFavorite(id, { confirmRemoval: state.favorites.has(String(id)) });
+  }
 });
 
 els.favoritesList.addEventListener("click", (event) => {
   const button = event.target.closest("[data-remove-favorite]");
-  if (button) toggleFavorite(button.dataset.removeFavorite);
+  if (button) toggleFavorite(button.dataset.removeFavorite, { confirmRemoval: true });
 });
 
 els.openFavoritesBtn.addEventListener("click", () => {
@@ -2091,6 +2129,24 @@ els.copyFavoritesBtn.addEventListener("click", async () => {
 });
 
 els.exportFavoritesBtn.addEventListener("click", exportFavoritesCsv);
+
+els.exportSearchBtn.addEventListener("click", exportSearchCsv);
+
+els.importSearchInput.addEventListener("change", async () => {
+  const file = els.importSearchInput.files?.[0];
+  if (!file) return;
+  try {
+    await importSearchCsv(file);
+  } catch (err) {
+    window.alert(err?.message || "検索条件CSVを読み込めませんでした。");
+    els.importSearchInput.value = "";
+  }
+});
+
+els.favoriteSearchInput.addEventListener("input", () => {
+  state.favoriteQuery = els.favoriteSearchInput.value || "";
+  renderFavorites();
+});
 
 els.importFavoritesInput.addEventListener("change", async () => {
   const file = els.importFavoritesInput.files?.[0];
