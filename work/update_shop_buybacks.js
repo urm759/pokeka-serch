@@ -33,6 +33,26 @@ const SHOPS = [
     url: "https://torecaclub.com/",
     fetchItems: fetchTorecaClub,
   },
+  {
+    id: "toreca-birth-mail",
+    name: "トレカバース（郵送）",
+    url: "https://birth-kaitori.vercel.app/",
+    priceKey: "mailPrice",
+    fetchItems: fetchTorecaBirth,
+  },
+  {
+    id: "toreca-birth-store",
+    name: "トレカバース（店頭）",
+    url: "https://birth-kaitori.vercel.app/",
+    priceKey: "storePrice",
+    fetchItems: fetchTorecaBirth,
+  },
+  {
+    id: "kaitori-homura-mail",
+    name: "買取ホムラ（郵送）",
+    url: "https://kaitori-homura.com/products?q%5Bproduct_sub_category_id_eq%5D=182&q%5Bproduct_sub_category_product_category_id_eq%5D=21&sort=price_desc",
+    fetchItems: fetchKaitoriHomura,
+  },
 ];
 const HISTORY_DAYS = 91;
 const SUMMARY_PATH = path.join(ROOT, "data", "shop-buyback-summary.json");
@@ -256,6 +276,74 @@ async function fetchTorecaClub(shop) {
     });
   }
   return { pages: 1, items: [...new Map(items.map((item) => [item.shopItemId, item])).values()] };
+}
+
+function parseTorecaBirthItems(html, shop) {
+  // The site embeds its published buyback list in the Next.js response. Each
+  // source entry carries both mail and in-store offers for the same card.
+  const pattern = /\{\\"title\\":\\"pokemon\\"[^{}]*?\\"mailPrice\\":\d+[^{}]*?\}/g;
+  const items = [];
+  for (const match of String(html || "").matchAll(pattern)) {
+    let raw;
+    try {
+      raw = JSON.parse(match[0].replace(/\\"/g, '"'));
+    } catch {
+      continue;
+    }
+    if (!Array.isArray(raw.features) || !raw.features.includes("PSA10")) continue;
+    const price = Number(raw[shop.priceKey] || 0);
+    const id = String(raw.id || raw.uid || "");
+    if (!id || !raw.name) continue;
+    items.push({
+      shopItemId: id,
+      name: String(raw.name),
+      price,
+      imageUrl: raw.imageUrl || "",
+      itemUrl: shop.url,
+      active: price > 0,
+    });
+  }
+  return [...new Map(items.map((item) => [item.shopItemId, item])).values()];
+}
+
+async function fetchTorecaBirth(shop) {
+  const html = await fetchText(shop.url, shop.name);
+  return { pages: 1, items: parseTorecaBirthItems(html, shop) };
+}
+
+function parseKaitoriHomuraItems(html) {
+  const items = [];
+  const pattern = /data-product-id="(\d+)"[\s\S]{0,1400}?data-product-name="([^"]+)"[\s\S]{0,1400}?data-product-price="(\d+)"/gi;
+  for (const match of String(html || "").matchAll(pattern)) {
+    const name = decodeHtml(match[2]);
+    if (!/^PSA\s*10\b/i.test(name)) continue;
+    const shopItemId = String(match[1]);
+    const price = Number(match[3]);
+    items.push({
+      shopItemId,
+      name: name.replace(/^PSA\s*10\s*/i, ""),
+      price,
+      imageUrl: "",
+      itemUrl: `https://kaitori-homura.com/products/${shopItemId}`,
+      active: price > 0,
+    });
+  }
+  return items;
+}
+
+async function fetchKaitoriHomura(shop) {
+  const fetchPage = (page) => {
+    const url = new URL(shop.url);
+    url.searchParams.set("page", String(page));
+    return fetchText(url, `${shop.name} page ${page}`);
+  };
+  const firstPage = await fetchPage(1);
+  const pageNumbers = [...firstPage.matchAll(/[?&](?:amp;)?page=(\d+)/g)].map((match) => Number(match[1]));
+  const maxPage = Math.max(1, ...pageNumbers);
+  const pages = [firstPage];
+  for (let page = 2; page <= maxPage; page += 1) pages.push(await fetchPage(page));
+  const parsed = pages.flatMap(parseKaitoriHomuraItems);
+  return { pages: maxPage, items: [...new Map(parsed.map((item) => [item.shopItemId, item])).values()] };
 }
 
 function buildMatcher(cards) {
