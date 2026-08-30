@@ -5,7 +5,6 @@ const ROOT = path.join(__dirname, "..");
 const CARDS_PATH = path.join(ROOT, "data", "pokemon-cards.json");
 const UNMATCHED_PATH = path.join(__dirname, "shop_buyback_unmatched.json");
 const MATCHES_PATH = path.join(__dirname, "shop_buyback_item_matches.json");
-const EXCLUDED_SHOPS = new Set(["laurier-akiba"]);
 
 // Reviewed listings whose store-specific notation is too abbreviated for a generic matcher.
 // Keep this list small: every entry has a matching card name, set/number, and edition checked.
@@ -130,7 +129,6 @@ for (const card of cards) {
 let resolved = 0;
 const report = {};
 for (const [shopId, items] of Object.entries(unmatched.shops || {})) {
-  if (EXCLUDED_SHOPS.has(shopId)) continue;
   let added = 0;
   let ambiguous = 0;
   for (const item of items || []) {

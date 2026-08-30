@@ -33,12 +33,6 @@ const SHOPS = [
     url: "https://torecaclub.com/",
     fetchItems: fetchTorecaClub,
   },
-  {
-    id: "laurier-akiba",
-    name: "ローリエ本舗AKIHABARA (X)",
-    url: "https://x.com/laurier_akiba",
-    fetchItems: fetchXCapture,
-  },
 ];
 const HISTORY_DAYS = 91;
 const SUMMARY_PATH = path.join(ROOT, "data", "shop-buyback-summary.json");
@@ -264,25 +258,6 @@ async function fetchTorecaClub(shop) {
   return { pages: 1, items: [...new Map(items.map((item) => [item.shopItemId, item])).values()] };
 }
 
-async function fetchXCapture(shop) {
-  const capture = readJson(path.join(__dirname, "x_buyback_capture.json"), { posts: [] });
-  const posts = (capture.posts || []).filter((post) => post.shopId === shop.id);
-  const items = posts.flatMap((post) => (post.items || []).map((item, index) => ({
-    shopItemId: `${post.postId}:${index}`,
-    name: item.name || "",
-    price: Number(item.price || 0),
-    imageUrl: item.imageUrl || post.images?.[Number(item.imageIndex || 0)] || post.images?.[0] || "",
-    itemUrl: post.url || shop.url,
-    observedDate: post.date || "",
-    verifiedCardId: item.verifiedCardId || "",
-    matchConfidence: Number(item.matchConfidence || 0),
-    priceConfidence: Number(item.priceConfidence || 0),
-    bbox: item.bbox || null,
-    active: Number(item.price || 0) > 0,
-  }))).filter((item) => item.name && item.price > 0 && /^\d{4}-\d{2}-\d{2}$/.test(item.observedDate));
-  return { pages: posts.length, items: [...new Map(items.map((item) => [item.shopItemId, item])).values()] };
-}
-
 function buildMatcher(cards) {
   const prepared = cards.filter((card) => Number(card.snkPsa10Price) > 0 && !/未開封/.test(card.name || "")).map((card) => ({
     card,
@@ -344,7 +319,8 @@ async function main() {
   const catalogPath = path.join(__dirname, "shop_buyback_catalog.json");
   const unmatchedPath = path.join(__dirname, "shop_buyback_unmatched.json");
   const itemMatchesPath = path.join(__dirname, "shop_buyback_item_matches.json");
-  const imageMatches = readJson(path.join(__dirname, "shop_buyback_image_matches.json"), {});
+  const imageMatchesPath = path.join(__dirname, "shop_buyback_image_matches.json");
+  const imageMatches = readJson(imageMatchesPath, {});
   const itemMatches = readJson(itemMatchesPath, {});
   const history = readJson(historyPath, { dates: [], shops: {} });
   const matchCard = buildMatcher(cards);
@@ -369,7 +345,6 @@ async function main() {
           itemMatches[sourceKey] = imageCard.id;
           matched.push({ ...item, cardId: imageCard.id, score: 100, matchMethod: "image-reviewed" });
         } else if (cachedCard) matched.push({ ...item, cardId: cachedCard.id, score: 100, matchMethod: "confirmed-cache" });
-        else if (shop.id === "laurier-akiba") unmatched.push({ ...item, candidateCardId: result?.card?.id || "", candidateScore: result?.score || 0 });
         else if (result) {
           if (result.score >= 90) itemMatches[sourceKey] = result.card.id;
           matched.push({ ...item, cardId: result.card.id, score: result.score, matchMethod: "text" });
@@ -515,6 +490,7 @@ async function main() {
   fs.writeFileSync(catalogPath, JSON.stringify({ updatedAt: today, shops: catalog }), "utf8");
   fs.writeFileSync(unmatchedPath, JSON.stringify({ updatedAt: today, shops: unmatched }), "utf8");
   fs.writeFileSync(itemMatchesPath, JSON.stringify(itemMatches), "utf8");
+  fs.writeFileSync(imageMatchesPath, JSON.stringify(imageMatches), "utf8");
   fs.writeFileSync(SUMMARY_PATH, JSON.stringify({ updatedAt: today, dates: history.dates, shops: shopMeta, cards: summaryCards }), "utf8");
 }
 

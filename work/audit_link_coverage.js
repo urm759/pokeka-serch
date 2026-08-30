@@ -20,8 +20,6 @@ const cards = read("data/pokemon-cards.json", []);
 const psa = read("data/psa-population-summary.json", { matched: 0 });
 const shopCatalog = read("work/shop_buyback_catalog.json", { shops: {} });
 const shopUnmatched = read("work/shop_buyback_unmatched.json", { shops: {} });
-const xCapture = read("work/x_buyback_capture.json", { posts: [] });
-const xPending = read("work/x_buyback_pending.json", { posts: [] });
 const itemMatches = read("work/shop_buyback_item_matches.json", {});
 const sourceDiff = read("work/toreca_source_diff.json", { added: [], addedPromoCount: 0 });
 const total = cards.length;
@@ -33,7 +31,6 @@ for (const shopId of new Set([...Object.keys(shopCatalog.shops || {}), ...Object
     unmatched: Array.isArray(shopUnmatched.shops?.[shopId]) ? shopUnmatched.shops[shopId].length : 0,
   };
 }
-const partialPosts = (xCapture.posts || []).filter((post) => post.reviewComplete === false);
 const current = {
   total,
   sites: {
@@ -43,13 +40,6 @@ const current = {
     psaOfficial: { matched: Number(psa.matched || 0) },
   },
   shops,
-  x: {
-    capturedPosts: (xCapture.posts || []).length,
-    capturedRows: (xCapture.posts || []).reduce((sum, post) => sum + (post.items || []).length, 0),
-    partialPosts: partialPosts.length,
-    unresolvedCells: partialPosts.reduce((sum, post) => sum + Number(post.unresolvedCells || 0), 0),
-    pendingPosts: Number(xPending.pendingCount || 0),
-  },
   confirmedItemMappings: countProperties(itemMatches),
   torecaAdded: (sourceDiff.added || []).length,
   torecaAddedPromos: Number(sourceDiff.addedPromoCount || 0),

@@ -79,9 +79,6 @@ jobs:
             CARDRUSH_STOCK_SOURCE=product CARDRUSH_STOCK_ONLY_ID="$id" CARDRUSH_STOCK_FORCE=1 node work/update_cardrush_stock.js
           done
 
-      - name: Detect new X buyback image posts
-        run: node work/update_x_buyback_posts.js
-
       - name: Record shop PSA10 buyback listings
         run: node work/update_shop_buybacks.js
 

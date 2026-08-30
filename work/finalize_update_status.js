@@ -32,16 +32,10 @@ const hareruya2 = read("data/hareruya2-stock-summary.json");
 const buyback = read("data/shop-buyback-summary.json");
 const psa = read("data/psa-official-populations.json");
 const services = read("data/psa-japan-services.json");
-const xCapture = read("work/x_buyback_capture.json", { posts: [] });
-const xPending = read("work/x_buyback_pending.json", { posts: [] });
 const psaRowDates = (psa.rows || []).map((row) => validDate(row.fetchedAt)).filter(Boolean);
 const psaDateCounts = {};
 for (const date of psaRowDates) psaDateCounts[date] = (psaDateCounts[date] || 0) + 1;
 const dominantPsaDate = Object.entries(psaDateCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
-const latestXDate = (xCapture.posts || []).map((post) => validDate(post.date)).filter(Boolean).sort().at(-1) || null;
-const partialXPosts = (xCapture.posts || []).filter((post) => post.reviewComplete === false);
-const unresolvedXCells = partialXPosts.reduce((sum, post) => sum + Number(post.unresolvedCells || 0), 0);
-const latestXDetectedDate = [...(xPending.posts || []), ...partialXPosts].map((post) => validDate(post.date)).filter(Boolean).sort().at(-1) || null;
 
 const sources = {
   toreca: { label: "みんトレ", date: validDate(meta.updatedAt || meta.generatedAt), automatic: true },
@@ -50,13 +44,12 @@ const sources = {
   shopBuyback: { label: "Web買取表", date: validDate(buyback.updatedAt), automatic: true },
   psaOfficial: { label: "PSA公式枚数", date: dominantPsaDate, automatic: false, note: "ログイン済みPCで取得", coverageRows: psaDateCounts[dominantPsaDate] || 0 },
   psaJapan: { label: "PSA Japan料金", date: validDate(services.checkedAt || services.updatedAt), automatic: true, status: services.checkStatus || "unknown" },
-  xBuyback: { label: "X買取表・照合済み", date: latestXDate, automatic: false, note: "画像照合後に反映", pendingCount: Number(xPending.pendingCount || 0), partialPosts: partialXPosts.length, unresolvedCells: unresolvedXCells, detectedDate: latestXDetectedDate, checkedAt: xPending.checkedAt || null },
 };
 
 for (const source of Object.values(sources)) {
   source.fresh = source.date === today && source.status !== "failed";
 }
-// Login-dependent PSA/X data remains visible with its own date. A completed
+// Login-dependent PSA data remains visible with its own date. A completed
 // daily refresh means every source that GitHub Actions can update is current.
 const automaticSources = Object.values(sources).filter((source) => source.automatic);
 const complete = automaticSources.length > 0 && automaticSources.every((source) => source.fresh);
