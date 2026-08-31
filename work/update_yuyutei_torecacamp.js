@@ -51,9 +51,11 @@ function due(attempt, signature) {
 }
 function sleep(ms) { return new Promise((resolve) => setTimeout(resolve, ms)); }
 async function fetchText(url) {
-  for (let attempt = 0; attempt < 4; attempt += 1) {
+  const retries = Math.max(1, Number(process.env.SHOP_FETCH_RETRIES || 4));
+  const timeoutMs = Math.max(3000, Number(process.env.SHOP_FETCH_TIMEOUT_MS || 30000));
+  for (let attempt = 0; attempt < retries; attempt += 1) {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 30000);
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
     try {
       const response = await fetch(url, { headers: { "user-agent": "Mozilla/5.0" }, signal: controller.signal });
       if (response.ok) return await response.text();
