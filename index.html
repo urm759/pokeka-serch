@@ -233,9 +233,19 @@
             <option value="known">蓄積中を除く</option>
           </select>
         </label>
+        <label class="control">
+          <span>データ分類で絞る</span>
+          <select id="dataQualityFilterInput">
+            <option value="all">すべて表示</option>
+            <option value="manual">手動確認のみ</option>
+            <option value="shortage">データ不足のみ</option>
+            <option value="outlier">外れ値除外済みのみ</option>
+            <option value="clean">注意表示なしのみ</option>
+          </select>
+        </label>
         <div class="filter-switches">
           <label><input id="hideSkippedInput" type="checkbox" /> 見送りを除外</label>
-          <label><input id="hideReviewInput" type="checkbox" /> 要確認を除外</label>
+          <label><input id="hideReviewInput" type="checkbox" /> 手動確認を除外</label>
           <label><input id="fundingOnlyInput" type="checkbox" /> 今回の仕入れGOのみ</label>
           <label><input id="officialOnlyInput" type="checkbox" /> PSA公式取得済みのみ</label>
         </div>
@@ -426,8 +436,16 @@
           <strong id="conditionalCountStat">0</strong>
         </div>
         <div class="stat">
-          <span class="k">要確認</span>
+          <span class="k">手動確認</span>
           <strong id="reviewCountStat">0</strong>
+        </div>
+        <div class="stat stat-shortage">
+          <span class="k">データ不足</span>
+          <strong id="dataShortageCountStat">0</strong>
+        </div>
+        <div class="stat stat-outlier">
+          <span class="k">外れ値除外済み</span>
+          <strong id="outlierExcludedCountStat">0</strong>
         </div>
       </div>
     </section>
@@ -550,7 +568,7 @@
     </section>
   </main>
 
-  <script src="./decision-model.js?v=20260831-filter-7"></script>
-  <script src="./app.js?v=20260831-filter-7"></script>
+  <script src="./decision-model.js?v=20260901-data-quality-8"></script>
+  <script src="./app.js?v=20260901-data-quality-8"></script>
 </body>
 </html>

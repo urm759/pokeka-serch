@@ -67,6 +67,7 @@ const state = {
   forecastMaturity: "all",
   maxForecastMonthlyIncrease: null,
   stockDemand: "all",
+  dataQualityFilter: "all",
   hideSkipped: false,
   hideReview: false,
   fundingOnly: false,
@@ -153,6 +154,7 @@ const els = {
   forecastMaturityInput: document.getElementById("forecastMaturityInput"),
   maxForecastMonthlyIncreaseInput: document.getElementById("maxForecastMonthlyIncreaseInput"),
   stockDemandInput: document.getElementById("stockDemandInput"),
+  dataQualityFilterInput: document.getElementById("dataQualityFilterInput"),
   hideSkippedInput: document.getElementById("hideSkippedInput"),
   hideReviewInput: document.getElementById("hideReviewInput"),
   fundingOnlyInput: document.getElementById("fundingOnlyInput"),
@@ -173,6 +175,8 @@ const els = {
   goCountStat: document.getElementById("goCountStat"),
   conditionalCountStat: document.getElementById("conditionalCountStat"),
   reviewCountStat: document.getElementById("reviewCountStat"),
+  dataShortageCountStat: document.getElementById("dataShortageCountStat"),
+  outlierExcludedCountStat: document.getElementById("outlierExcludedCountStat"),
   updatedAt: document.getElementById("updatedAt"),
   dataFreshness: document.getElementById("dataFreshness"),
   cardrushCoverage: document.getElementById("cardrushCoverage"),
@@ -1097,6 +1101,54 @@ function buildOverallAssessment(card, official, stock) {
   return { score, grade, label, exitLiquidity, economics: 0, marketStability, supplyRisk: Math.round(supplyRisk), futurePrice, completeEvidence, aEligible, strengths: strengths.slice(0, 3), cautions: cautions.slice(0, 3) };
 }
 
+function hasCardMismatchSignal(card) {
+  return [card, card.cardrushStock, card.hareruya2Stock, card.yuyuteiStock, card.torecacampStock, card.buyback]
+    .filter(Boolean)
+    .some((source) => source.cardMismatchSuspected === true
+      || source.matchStatus === "mismatch"
+      || source.linkStatus === "suspected-mismatch"
+      || source.matchConfidence === "low");
+}
+
+function classifyDecisionData(card) {
+  const priceAggregation = card.priceAggregation || {};
+  const buybackAggregation = card.buybackAggregation || {};
+  const trustedPriceCount = Number(priceAggregation.included?.length || 0);
+  const manualReviewReasons = [];
+  if (priceAggregation.conflicted) manualReviewReasons.push("状態A価格が複数グループに分かれて対立");
+  if (buybackAggregation.conflicted) manualReviewReasons.push("PSA10買取価格が複数グループに分かれて対立");
+  if (hasCardMismatchSignal(card)) manualReviewReasons.push("カード違い・型番違いの疑い");
+  if (trustedPriceCount === 0 || !(Number(priceAggregation.value) > 0)) manualReviewReasons.push("信頼できる状態A価格が0件");
+  if (!(Number(card.psa10) > 0)) manualReviewReasons.push("信頼できるPSA10価格が0件");
+
+  const dataShortageReasons = [];
+  if (!Number.isFinite(card.official?.rate)) dataShortageReasons.push("PSA公式未取得");
+  if (trustedPriceCount === 1) dataShortageReasons.push("状態A価格が1件のみ");
+  if (!card.futurePriceForecast) dataShortageReasons.push("将来価格予測未取得");
+
+  const outlierExcludedReasons = [];
+  if (!priceAggregation.conflicted && trustedPriceCount >= 2 && priceAggregation.outliers?.length) {
+    outlierExcludedReasons.push(...priceAggregation.outliers.map((entry) => `${entry.source} ¥${fmt.format(entry.value)}`));
+  }
+  if (!buybackAggregation.conflicted && Number(buybackAggregation.included?.length || 0) >= 2 && buybackAggregation.outliers?.length) {
+    outlierExcludedReasons.push(...buybackAggregation.outliers.map((entry) => `${entry.source} ¥${fmt.format(entry.value)}`));
+  }
+
+  const severeShortage = !card.futurePriceForecast || (trustedPriceCount <= 1 && !Number.isFinite(card.official?.rate));
+  const shortageRiskPct = dataShortageReasons.length ? (severeShortage ? 5 : 3) : 0;
+  return {
+    manualReview: manualReviewReasons.length > 0,
+    manualReviewReasons,
+    dataShortage: dataShortageReasons.length > 0,
+    dataShortageReasons,
+    outlierExcluded: outlierExcludedReasons.length > 0,
+    outlierExcludedReasons,
+    shortageRiskPct,
+    confidence: dataShortageReasons.length ? (shortageRiskPct >= 5 ? "低" : "中") : "高",
+    trustedPriceCount,
+  };
+}
+
 function buildRiskBuffer(card, condition) {
   const forecast = card.futurePriceForecast;
   const overall = card.overallAssessment;
@@ -1106,7 +1158,9 @@ function buildRiskBuffer(card, condition) {
       + Math.max(0, 55 - Number(forecast.turnoverScore ?? 45)) * 0.06
       + Math.max(0, 55 - Number(overall?.exitLiquidity ?? 45)) * 0.05
       + Math.max(0, 55 - Number(overall?.marketStability ?? 45)) * 0.04
-      + (forecast.dataCompleteness === "低" ? 4 : forecast.dataCompleteness === "中" ? 1.5 : 0)
+      + (card.dataQuality?.dataShortage
+        ? Number(card.dataQuality.shortageRiskPct || 0)
+        : forecast.dataCompleteness === "低" ? 4 : forecast.dataCompleteness === "中" ? 1.5 : 0)
       + (isScratch ? 2 : 0),
     0,
     15
@@ -1187,18 +1241,12 @@ function buildBuyLimits(card) {
 }
 
 function finalizeCardDecision(card) {
+  card.dataQuality = classifyDecisionData(card);
   card.buyLimits = buildBuyLimits(card);
   const cleanInput = card.buyLimits?.clean?.modelInput;
   const economics = cleanInput ? decisionModel.expectedEconomics({ ...cleanInput, purchasePrice: card.price }) : null;
   const capital = card.buyLimits?.capital;
   const capitalShare = state.psaCapital > 0 ? card.price / state.psaCapital * 100 : Infinity;
-  const hasAnomaly = card.priceAggregation?.outliers?.length > 0
-    || card.buybackAggregation?.outliers?.length > 0
-    || card.priceAggregation?.conflicted
-    || card.buybackAggregation?.conflicted;
-  const hasDataShortage = !card.overallAssessment?.completeEvidence
-    || Number(card.priceAggregation?.included?.length || 0) < 2
-    || !card.futurePriceForecast;
   const riskReasons = [];
   if (Number(card.overallAssessment?.exitLiquidity || 0) < 30) riskReasons.push("売却しやすさ30点未満");
   if (Number(card.overallAssessment?.marketStability || 0) < 30) riskReasons.push("価格安定性30点未満");
@@ -1209,8 +1257,9 @@ function finalizeCardDecision(card) {
     capital,
     economicMaxPrice: card.buyLimits.clean.economicMaxPrice,
     qualityScore: card.overallAssessment?.score,
-    hasAnomaly,
-    hasDataShortage,
+    requiresManualReview: card.dataQuality.manualReview,
+    manualReviewReasons: card.dataQuality.manualReviewReasons,
+    dataShortageReasons: card.dataQuality.dataShortageReasons,
     riskEligible: riskReasons.length === 0,
     riskReasons,
     minExpectedProfit: state.minExpectedProfit,
@@ -1237,7 +1286,7 @@ function finalizeCardDecision(card) {
     forecastPsa10Net: economics.psa10Net,
   } : null;
   card.purchaseDecision = finalDecision;
-  card.hasPricingAnomaly = hasAnomaly;
+  card.hasPricingAnomaly = card.dataQuality.manualReview;
   return card;
 }
 
@@ -1401,6 +1450,7 @@ function readUrl() {
   const forecastMaturity = url.searchParams.get("forecastMaturity");
   const maxForecastMonthlyIncrease = parseOptionalNumber(url.searchParams.get("psaGrowthMax"));
   const stockDemand = url.searchParams.get("stockDemand");
+  const dataQualityFilter = url.searchParams.get("dataQuality");
   const hideSkipped = url.searchParams.get("hideSkipped") === "1";
   const hideReview = url.searchParams.get("hideReview") === "1";
   const fundingOnly = url.searchParams.get("fundingOnly") === "1";
@@ -1471,6 +1521,7 @@ function readUrl() {
   if (["all", "mature", "established", "recent", "known"].includes(forecastMaturity)) els.forecastMaturityInput.value = forecastMaturity;
   if (maxForecastMonthlyIncrease != null && maxForecastMonthlyIncrease >= 0) els.maxForecastMonthlyIncreaseInput.value = String(maxForecastMonthlyIncrease);
   if (["all", "steady", "low", "normal", "high", "known"].includes(stockDemand)) els.stockDemandInput.value = stockDemand;
+  if (["all", "manual", "shortage", "outlier", "clean"].includes(dataQualityFilter)) els.dataQualityFilterInput.value = dataQualityFilter;
   els.hideSkippedInput.checked = hideSkipped;
   els.hideReviewInput.checked = hideReview;
   els.fundingOnlyInput.checked = fundingOnly;
@@ -1541,6 +1592,7 @@ function buildShareUrl() {
   if (state.forecastMaturity === "all") url.searchParams.delete("forecastMaturity"); else url.searchParams.set("forecastMaturity", state.forecastMaturity);
   if (state.maxForecastMonthlyIncrease == null) url.searchParams.delete("psaGrowthMax"); else url.searchParams.set("psaGrowthMax", String(state.maxForecastMonthlyIncrease));
   if (state.stockDemand === "all") url.searchParams.delete("stockDemand"); else url.searchParams.set("stockDemand", state.stockDemand);
+  if (state.dataQualityFilter === "all") url.searchParams.delete("dataQuality"); else url.searchParams.set("dataQuality", state.dataQualityFilter);
   if (state.hideSkipped) url.searchParams.set("hideSkipped", "1"); else url.searchParams.delete("hideSkipped");
   if (state.hideReview) url.searchParams.set("hideReview", "1"); else url.searchParams.delete("hideReview");
   if (state.fundingOnly) url.searchParams.set("fundingOnly", "1"); else url.searchParams.delete("fundingOnly");
@@ -1680,6 +1732,10 @@ function render() {
       if (!card.overallAssessment && (state.minExitLiquidity || state.minEconomics || state.minMarketStability || state.minSupplyRisk || state.minFuturePriceScore)) return false;
       if (state.hideSkipped && card.purchaseDecision?.verdict === "見送り") return false;
       if (state.hideReview && card.purchaseDecision?.verdict === "要確認") return false;
+      if (state.dataQualityFilter === "manual" && !card.dataQuality?.manualReview) return false;
+      if (state.dataQualityFilter === "shortage" && !card.dataQuality?.dataShortage) return false;
+      if (state.dataQualityFilter === "outlier" && !card.dataQuality?.outlierExcluded) return false;
+      if (state.dataQualityFilter === "clean" && (card.dataQuality?.manualReview || card.dataQuality?.dataShortage || card.dataQuality?.outlierExcluded)) return false;
       if (state.fundingOnly && !card.psaDecision?.recommended) return false;
       if (state.overallFilter === "a" && card.overallAssessment?.grade !== "A") return false;
       if (state.overallFilter === "ab" && !["A", "B"].includes(card.overallAssessment?.grade)) return false;
@@ -1703,6 +1759,8 @@ function render() {
   if (els.goCountStat) els.goCountStat.textContent = fmt.format(enriched.filter((card) => card.purchaseDecision?.verdict === "GO").length);
   if (els.conditionalCountStat) els.conditionalCountStat.textContent = fmt.format(enriched.filter((card) => card.purchaseDecision?.verdict === "価格次第").length);
   if (els.reviewCountStat) els.reviewCountStat.textContent = fmt.format(enriched.filter((card) => card.purchaseDecision?.verdict === "要確認").length);
+  if (els.dataShortageCountStat) els.dataShortageCountStat.textContent = fmt.format(enriched.filter((card) => card.dataQuality?.dataShortage).length);
+  if (els.outlierExcludedCountStat) els.outlierExcludedCountStat.textContent = fmt.format(enriched.filter((card) => card.dataQuality?.outlierExcluded).length);
   if (els.updatedAt) {
     els.updatedAt.textContent = state.updateStatus?.completeDate || "自動更新 未完了";
   }
@@ -1843,15 +1901,13 @@ function render() {
     const priceSources = [`みんトレ状態A ¥${fmt.format(card.torecaPrice)}`, `カードラッシュ状態A ${cardrushPriceText}`, `晴れる屋2状態A ${hareruya2PriceText}`, `遊々亭状態A ${yuyuteiPriceText}`, `トレカキャンプ状態A ${torecacampPriceText}`]
       .filter((_, index) => index === 0 || [card.cardrushPrice, card.hareruya2Price, card.yuyuteiPrice, card.torecacampPrice][index - 1] > 0)
       .join(" / ");
-    const anomalyItems = [
-      ...(card.priceAggregation?.outliers || []).map((entry) => `${entry.source} ¥${fmt.format(entry.value)}（美品中央値から除外）`),
-      ...(card.buybackAggregation?.outliers || []).map((entry) => `${entry.source} ¥${fmt.format(entry.value)}（買取予測から除外）`),
-      ...(card.priceAggregation?.conflicted ? ["状態A価格が2店舗で大きく食い違うため要確認"] : []),
-      ...(card.buybackAggregation?.conflicted ? ["PSA10買取価格が2店舗で大きく食い違うため要確認"] : []),
-    ];
-    const anomalyPanel = anomalyItems.length
-      ? `<div class="pricing-warning"><strong>異常値・要確認</strong><span>${escapeHtml(anomalyItems.join(" / "))}</span></div>`
-      : "";
+    const dataQuality = card.dataQuality || {};
+    const dataQualityPanels = [
+      dataQuality.manualReview ? `<div class="data-quality-notice manual"><strong>要確認（手動確認）</strong><span>${escapeHtml(dataQuality.manualReviewReasons.join(" / "))}</span></div>` : "",
+      dataQuality.dataShortage ? `<div class="data-quality-notice shortage"><strong>データ不足</strong><span>${escapeHtml(dataQuality.dataShortageReasons.join(" / "))} / 判定信頼度 ${escapeHtml(dataQuality.confidence)} / 追加リスク +${fmt.format(dataQuality.shortageRiskPct)}%を計算済み</span></div>` : "",
+      dataQuality.outlierExcluded ? `<div class="data-quality-notice outlier"><strong>外れ値除外済み</strong><span>${escapeHtml(dataQuality.outlierExcludedReasons.join(" / "))} / 複数の一致価格を採用して判定継続</span></div>` : "",
+    ].filter(Boolean).join("");
+    const dataQualityPanel = dataQualityPanels ? `<div class="data-quality-notices">${dataQualityPanels}</div>` : "";
     const buyLimits = card.buyLimits;
     const cleanMarketStatus = buyLimits?.clean?.maxPrice > 0
       ? card.price <= buyLimits.clean.maxPrice
@@ -1999,7 +2055,7 @@ function render() {
 
           ${purchaseSummaryPanel}
           ${buyLimitPanel}
-          ${anomalyPanel}
+          ${dataQualityPanel}
 
           <details class="card-details">
             <summary><span>詳細データを見る</span><small>相場・売れ行き・予測・銘柄品質・公式PSA</small></summary>
@@ -2089,6 +2145,7 @@ function syncFromUI() {
   state.forecastMaturity = els.forecastMaturityInput.value || "all";
   state.maxForecastMonthlyIncrease = parseOptionalNumber(els.maxForecastMonthlyIncreaseInput.value);
   state.stockDemand = els.stockDemandInput.value || "all";
+  state.dataQualityFilter = els.dataQualityFilterInput.value || "all";
   state.hideSkipped = els.hideSkippedInput.checked;
   state.hideReview = els.hideReviewInput.checked;
   state.fundingOnly = els.fundingOnlyInput.checked;
@@ -2171,7 +2228,7 @@ async function init() {
   }
 }
 
-[els.qInput, els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.buyback7MinInput, els.buyback7MaxInput, els.buyback30MinInput, els.buyback30MaxInput, els.buyback90MinInput, els.buyback90MaxInput, els.buybackShopsMinInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.roiInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.purchaseLimitRatioMinInput, els.psaRateMinInput, els.overallFilterInput, els.minExitLiquidityInput, els.minEconomicsInput, els.minMarketStabilityInput, els.minSupplyRiskInput, els.minFuturePriceScoreInput, els.maxFuturePriceScoreInput, els.minForecastPriceInput, els.maxForecastPriceInput, els.minForecastDownsideInput, els.maxForecastDownsideInput, els.minForecastGapInput, els.maxForecastGapInput, els.forecastPhaseInput, els.forecastConfidenceInput, els.forecastSupplyPressureInput, els.minForecastAgeInput, els.forecastMaturityInput, els.maxForecastMonthlyIncreaseInput, els.stockDemandInput, els.hideSkippedInput, els.hideReviewInput, els.fundingOnlyInput, els.officialOnlyInput, els.sortInput, els.psaCapitalInput, els.lockedCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput].forEach((el) =>
+[els.qInput, els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.buyback7MinInput, els.buyback7MaxInput, els.buyback30MinInput, els.buyback30MaxInput, els.buyback90MinInput, els.buyback90MaxInput, els.buybackShopsMinInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.roiInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.purchaseLimitRatioMinInput, els.psaRateMinInput, els.overallFilterInput, els.minExitLiquidityInput, els.minEconomicsInput, els.minMarketStabilityInput, els.minSupplyRiskInput, els.minFuturePriceScoreInput, els.maxFuturePriceScoreInput, els.minForecastPriceInput, els.maxForecastPriceInput, els.minForecastDownsideInput, els.maxForecastDownsideInput, els.minForecastGapInput, els.maxForecastGapInput, els.forecastPhaseInput, els.forecastConfidenceInput, els.forecastSupplyPressureInput, els.minForecastAgeInput, els.forecastMaturityInput, els.maxForecastMonthlyIncreaseInput, els.stockDemandInput, els.dataQualityFilterInput, els.hideSkippedInput, els.hideReviewInput, els.fundingOnlyInput, els.officialOnlyInput, els.sortInput, els.psaCapitalInput, els.lockedCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput].forEach((el) =>
   el.addEventListener("input", syncFromUI)
 );
 
@@ -2189,6 +2246,7 @@ els.resetFiltersBtn.addEventListener("click", () => {
   els.forecastSupplyPressureInput.value = "all";
   els.forecastMaturityInput.value = "all";
   els.stockDemandInput.value = "all";
+  els.dataQualityFilterInput.value = "all";
   els.hideSkippedInput.checked = false;
   els.hideReviewInput.checked = false;
   els.fundingOnlyInput.checked = false;

@@ -155,6 +155,8 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
 }
 .stat .k{display:block;color:var(--muted);font-size:12px;margin-bottom:8px}
 .stat strong{font-size:24px;line-height:1.1}
+.stat-shortage strong{color:#fbbf24}
+.stat-outlier strong{color:#cbd5e1}
 .guide{
   margin-bottom:16px;
   padding:22px 20px 18px;
@@ -693,12 +695,21 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .purchase-summary.conditional{border-color:rgba(251,191,36,.5)}
 .purchase-summary.funding-short{border-color:rgba(251,146,60,.58)}
 .purchase-summary.funding-short .purchase-verdict strong{color:#fdba74}
-.purchase-summary.needs-review{border-color:rgba(125,211,252,.55)}
-.purchase-summary.needs-review .purchase-verdict strong{color:#bae6fd}
+.purchase-summary.needs-review{border-color:rgba(244,63,94,.6);background:rgba(244,63,94,.06)}
+.purchase-summary.needs-review .purchase-verdict strong{color:#fda4af}
 .purchase-verdict small{margin-top:4px}
-.pricing-warning{display:flex;align-items:flex-start;gap:9px;margin-top:9px;padding:10px 12px;border:1px solid rgba(244,63,94,.42);border-radius:14px;background:rgba(244,63,94,.1);font-size:10px;line-height:1.5}
-.pricing-warning strong{flex:none;color:#fda4af}
-.pricing-warning span{color:#fecdd3}
+.data-quality-notices{display:grid;gap:7px;margin-top:9px}
+.data-quality-notice{display:flex;align-items:flex-start;gap:9px;padding:10px 12px;border-radius:14px;font-size:10px;line-height:1.5}
+.data-quality-notice strong{flex:none}
+.data-quality-notice.manual{border:1px solid rgba(244,63,94,.52);background:rgba(244,63,94,.11)}
+.data-quality-notice.manual strong{color:#fda4af}
+.data-quality-notice.manual span{color:#fecdd3}
+.data-quality-notice.shortage{border:1px solid rgba(245,158,11,.48);background:rgba(245,158,11,.1)}
+.data-quality-notice.shortage strong{color:#fbbf24}
+.data-quality-notice.shortage span{color:#fde68a}
+.data-quality-notice.outlier{border:1px solid rgba(148,163,184,.4);background:rgba(148,163,184,.1)}
+.data-quality-notice.outlier strong{color:#cbd5e1}
+.data-quality-notice.outlier span{color:#dbe4f0}
 .card-details{margin-top:10px;border:1px solid rgba(255,255,255,.12);border-radius:17px;background:rgba(5,10,20,.3);overflow:hidden}
 .card-details>summary{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;cursor:pointer;list-style:none;font-size:11px;font-weight:900}
 .card-details>summary::-webkit-details-marker{display:none}
@@ -953,7 +964,7 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
   .purchase-summary>div:nth-child(4){grid-column:1/-1}
   .card-details>summary small{display:none}
   .card-details-body{padding:0 7px 9px}
-  .pricing-warning{flex-direction:column;gap:3px}
+  .data-quality-notice{flex-direction:column;gap:3px}
   .buy-limit-panel{padding:11px}
   .buy-limit-head{align-items:flex-start;flex-direction:column;gap:3px}
   .buy-limit-head small{text-align:left}

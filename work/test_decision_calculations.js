@@ -98,8 +98,9 @@ const commonDecisionInput = {
   capital: generousCapital,
   economicMaxPrice: 40000,
   qualityScore: 75,
-  hasAnomaly: false,
-  hasDataShortage: false,
+  requiresManualReview: false,
+  manualReviewReasons: [],
+  dataShortageReasons: [],
   riskEligible: true,
   minExpectedProfit: 10000,
   minExpectedRoi: 30,
@@ -131,9 +132,13 @@ assert.equal(stop.verdict, "価格次第");
 const noViablePrice = model.purchaseDecision({ ...commonDecisionInput, economicMaxPrice: 0, economics: lossEconomics });
 assert.equal(noViablePrice.verdict, "見送り");
 
-const anomaly = model.purchaseDecision({ ...commonDecisionInput, economics, hasAnomaly: true });
-assert.equal(anomaly.verdict, "要確認");
-assert.ok(anomaly.reasons.includes("異常値の確認が必要"));
+const manualReview = model.purchaseDecision({ ...commonDecisionInput, economics, requiresManualReview: true, manualReviewReasons: ["状態A価格が対立"] });
+assert.equal(manualReview.verdict, "要確認");
+assert.ok(manualReview.reasons.includes("状態A価格が対立"));
+
+const dataShortage = model.purchaseDecision({ ...commonDecisionInput, economics, dataShortageReasons: ["PSA公式未取得"] });
+assert.equal(dataShortage.verdict, "GO");
+assert.ok(dataShortage.reasons.includes("データ不足（PSA公式未取得）"));
 
 const shortCapital = model.capitalPlan({ totalCapital: 50000, lockedCapital: 10000, gradingReserve: 13000, submissionCount: 10, fee: 13000 });
 const capitalShortage = model.purchaseDecision({ ...commonDecisionInput, capital: shortCapital, economics });
@@ -149,5 +154,5 @@ console.log(JSON.stringify({
   capital: { available: capital.availableCapital, perCardForTen: capital.perCardBatchCap, singleCardSpend: go.singleCardSpend, selectedThreeCopies: repeatedCardPortfolio.totalPurchase },
   economics: { expectedSale: economics.expectedSale, expectedProfit: economics.expectedProfit, expectedRoi: Number(economics.expectedRoi.toFixed(1)) },
   outlier: { median: prices.value, excluded: prices.outliers[0], majorityMedian: majorityPrices.value },
-  decisions: { profitable: go.verdict, negativeAtCurrentPrice: stop.verdict, anomaly: anomaly.verdict, capitalShortage: capitalShortage.verdict, lowQuality: lowQuality.verdict, noViablePrice: noViablePrice.verdict },
+  decisions: { profitable: go.verdict, negativeAtCurrentPrice: stop.verdict, manualReview: manualReview.verdict, dataShortage: dataShortage.verdict, capitalShortage: capitalShortage.verdict, lowQuality: lowQuality.verdict, noViablePrice: noViablePrice.verdict },
 }, null, 2));

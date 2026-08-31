@@ -208,11 +208,14 @@
     reasons.push(...riskReasons);
     if (purchasePrice > caps.capitalMaxPrice) reasons.push("1枚の価格が現在の資金上限を超過");
     if (!capital.singleCardReserveSufficient) reasons.push("1枚分の鑑定費予備資金が不足");
-    if (input.hasAnomaly) reasons.push("異常値の確認が必要");
-    if (input.hasDataShortage) reasons.push("判断データが不足");
+    const requiresManualReview = Boolean(input.requiresManualReview);
+    const manualReviewReasons = Array.isArray(input.manualReviewReasons) ? input.manualReviewReasons.filter(Boolean) : [];
+    const dataShortageReasons = Array.isArray(input.dataShortageReasons) ? input.dataShortageReasons.filter(Boolean) : [];
+    if (requiresManualReview) reasons.push(...(manualReviewReasons.length ? manualReviewReasons : ["手動確認が必要"]));
+    if (dataShortageReasons.length) reasons.push(`データ不足（${dataShortageReasons.join("・")}）`);
 
     let verdict;
-    if (input.hasAnomaly || input.hasDataShortage) verdict = "要確認";
+    if (requiresManualReview) verdict = "要確認";
     else if (!qualityEligible || !riskEligible || caps.economicMaxPrice <= 0) verdict = "見送り";
     else if (economicEligible && purchasePrice > caps.capitalMaxPrice) verdict = "資金不足";
     else if (economicEligible && purchasePrice <= caps.finalMaxPrice) verdict = "GO";
