@@ -36,6 +36,8 @@ const current = {
   sites: {
     cardrush: { matched: cards.filter((card) => card.cardrushUrl).length },
     hareruya2: { matched: cards.filter((card) => card.hareruya2Url).length },
+    yuyutei: { matched: cards.filter((card) => card.yuyuteiUrl).length },
+    torecacamp: { matched: cards.filter((card) => card.torecacampUrl).length },
     snkrdunk: { matched: directSnkr },
     psaOfficial: { matched: Number(psa.matched || 0) },
   },

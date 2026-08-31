@@ -35,6 +35,12 @@ jobs:
           HARERUYA2_COLLECTION_BATCH: "60"
           HARERUYA2_STOCK_BATCH: "1"
         run: node work/update_hareruya2_stock.js
+      - name: Resolve unresolved Yu-Yu-Tei and Toreca Camp links
+        env:
+          YUYUTEI_SEARCH_BATCH: "400"
+          YUYUTEI_CONCURRENCY: "3"
+          TORECACAMP_PAGES_PER_RUN: "40"
+        run: node work/update_yuyutei_torecacamp.js
       - name: Rebuild evaluations
         run: node work/build_evaluation_model.js
       - name: Record link coverage

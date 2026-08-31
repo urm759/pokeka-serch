@@ -72,6 +72,13 @@ jobs:
           HARERUYA2_STOCK_CONCURRENCY: "10"
         run: node work/update_hareruya2_stock.js
 
+      - name: Link Yu-Yu-Tei and Toreca Camp state-A listings
+        env:
+          YUYUTEI_SEARCH_BATCH: "100"
+          YUYUTEI_CONCURRENCY: "3"
+          TORECACAMP_PAGES_PER_RUN: "6"
+        run: node work/update_yuyutei_torecacamp.js
+
       - name: Verify priority Cardrush direct links from product pages
         shell: bash
         run: |

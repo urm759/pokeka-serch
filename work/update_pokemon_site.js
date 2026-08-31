@@ -393,6 +393,8 @@ async function main() {
           cardrushState: cardrushMatch?.state || null,
           cardrushName: cardrushMatch?.name || null,
           hareruya2Url: previous.hareruya2Url || null,
+          yuyuteiUrl: previous.yuyuteiUrl || null,
+          torecacampUrl: previous.torecacampUrl || null,
         };
     }
   );
@@ -418,6 +420,8 @@ async function main() {
     snkListings: card.snkListings,
     cardrushUrl: card.cardrushUrl || null,
     hareruya2Url: card.hareruya2Url || null,
+    yuyuteiUrl: card.yuyuteiUrl || null,
+    torecacampUrl: card.torecacampUrl || null,
   }));
 
   fs.mkdirSync(base, { recursive: true });
