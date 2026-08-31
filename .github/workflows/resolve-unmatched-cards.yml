@@ -2,6 +2,9 @@ name: Deep Resolve Unmatched Cards
 
 on:
   workflow_dispatch:
+  schedule:
+    # 09:00 JST: a separate deep pass for only unresolved links.
+    - cron: "0 0 * * *"
 
 permissions:
   contents: write
@@ -27,17 +30,17 @@ jobs:
       - name: Resolve unresolved Cardrush links
         env:
           CARDRUSH_SEED_BATCH: "40"
-          CARDRUSH_TARGET_BATCH: "400"
+          CARDRUSH_TARGET_BATCH: "600"
           CARDRUSH_CONCURRENCY: "2"
         run: node work/update_cardrush_links.js
       - name: Resolve unresolved Hareruya2 links
         env:
-          HARERUYA2_COLLECTION_BATCH: "60"
+          HARERUYA2_COLLECTION_BATCH: "120"
           HARERUYA2_STOCK_BATCH: "1"
         run: node work/update_hareruya2_stock.js
       - name: Resolve unresolved Yu-Yu-Tei and Toreca Camp links
         env:
-          YUYUTEI_SEARCH_BATCH: "400"
+          YUYUTEI_SEARCH_BATCH: "800"
           YUYUTEI_CONCURRENCY: "3"
           TORECACAMP_PAGES_PER_RUN: "40"
         run: node work/update_yuyutei_torecacamp.js
