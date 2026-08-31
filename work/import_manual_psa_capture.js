@@ -31,10 +31,19 @@ function setFromTitle(value) {
 }
 
 function main() {
+  const encodedCaptureIndex = process.argv.indexOf("--capture-base64");
+  const encodedCapture = encodedCaptureIndex >= 0 ? process.argv[encodedCaptureIndex + 1] : "";
   const captureFiles = fs.readdirSync(__dirname)
     .filter((name) => /^manual_psa_capture.*\.json$/i.test(name))
     .map((name) => path.join(__dirname, name));
   const captures = captureFiles.map((filePath) => readJson(filePath, { sets: [] }));
+  if (encodedCapture) {
+    try {
+      captures.push(JSON.parse(Buffer.from(encodedCapture, "base64").toString("utf8")));
+    } catch {
+      throw new Error("Invalid --capture-base64 payload");
+    }
+  }
   const capture = {
     generatedAt: captures.map((item) => item.generatedAt).filter(Boolean).sort().at(-1) || new Date().toISOString(),
     sets: captures.flatMap((item) => item.sets || []),
@@ -84,7 +93,7 @@ function main() {
   const payload = {
     v: 2,
     generatedAt,
-    totalSets: successfulUrls.size,
+    totalSets: new Set(rows.map((row) => row.sourceUrl).filter(Boolean)).size,
     totalRows: rows.length,
     rows,
   };
@@ -95,7 +104,7 @@ function main() {
     `window.PSA_OFFICIAL_POPULATIONS = ${JSON.stringify({ generatedAt, totalRows: rows.length })};`,
     "utf8"
   );
-  console.log(JSON.stringify({ successfulSets: successfulUrls.size, freshRows: freshRows.length, totalRows: rows.length, rejected }));
+  console.log(JSON.stringify({ successfulSets: successfulUrls.size, totalSets: payload.totalSets, freshRows: freshRows.length, totalRows: rows.length, rejected }));
 }
 
 main();
