@@ -488,8 +488,14 @@ async function main() {
       if (item.price >= previous) {
         shopHistory[item.cardId][itemDateIndex] = item.price;
         const previousLink = currentLinksByShop[shopId].get(item.cardId);
-        if (item.itemUrl && (!previousLink || itemDate > previousLink.date || (itemDate === previousLink.date && item.price >= previousLink.price))) {
-          currentLinksByShop[shopId].set(item.cardId, { url: item.itemUrl, date: itemDate, price: item.price });
+        if (!previousLink || itemDate > previousLink.date || (itemDate === previousLink.date && item.price >= previousLink.price)) {
+          currentLinksByShop[shopId].set(item.cardId, {
+            url: item.itemUrl || "",
+            date: itemDate,
+            price: item.price,
+            matchMethod: item.matchMethod || "unknown",
+            matchScore: Number(item.score || 0),
+          });
         }
       }
     }
@@ -510,10 +516,14 @@ async function main() {
       if (!c7 && !c30 && !c90) continue;
       const latestPriceIndex = values.findLastIndex((value) => Number(value) > 0);
       const currentPrice = latestPriceIndex >= 0 ? Number(values[latestPriceIndex]) : null;
+      const currentMatch = currentLinksByShop[shopId]?.get(card.id) || null;
       shops[shopId] = {
         c7, c30, c90, price: currentPrice,
         priceDate: latestPriceIndex >= 0 ? history.dates[latestPriceIndex] : null,
-        url: currentLinksByShop[shopId]?.get(card.id)?.url || "",
+        url: currentMatch?.url || "",
+        matchMethod: currentMatch?.matchMethod || null,
+        matchScore: currentMatch?.matchScore || null,
+        matchConfidence: currentMatch && currentMatch.matchScore < 90 ? "low" : currentMatch ? "high" : null,
         avg7: averageRecent(values, 7),
         avg30: averageRecent(values, 30),
         avg90: averageRecent(values, 90),

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20260831-store-tools" />
+  <link rel="stylesheet" href="./styles.css?v=20260901-market-analysis" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -50,6 +50,9 @@
             <option value="psaRecommend-desc">今回の仕入れGOを優先</option>
             <option value="exit-desc">売りやすい順</option>
             <option value="futureScore-desc">将来価格評価が高い順</option>
+            <option value="floorScore-desc">下値安定点が高い順</option>
+            <option value="storeDemand-desc">店舗需要が強い順</option>
+            <option value="buybackRatio-desc">店舗買取率が高い順</option>
             <option value="downside-asc">予測下落余地が小さい順</option>
             <option value="forecastPrice-desc">予測PSA10価格が高い順</option>
             <option value="forecastPrice-asc">予測PSA10価格が低い順</option>
@@ -215,7 +218,7 @@
           <input id="minEconomicsInput" type="number" min="0" max="100" step="1" value="0" placeholder="0〜100・空欄は0" />
         </label>
         <label class="control">
-          <span>価格安定 下限点</span>
+          <span>銘柄品質内・従来価格安定 下限点</span>
           <input id="minMarketStabilityInput" type="number" min="0" max="100" step="1" value="0" placeholder="0〜100・空欄は0" />
         </label>
         <label class="control">
@@ -250,6 +253,61 @@
           <label><input id="officialOnlyInput" type="checkbox" /> PSA公式取得済みのみ</label>
         </div>
         <button id="resetFiltersBtn" class="filter-reset" type="button">検索条件を初期値に戻す</button>
+        </div>
+      </details>
+
+      <details class="advanced-filters market-analysis-filter-settings">
+        <summary>
+          <span>下値安定・店舗需要で絞る</span>
+          <small>既存の仕入れ判断とは独立した市場指標</small>
+        </summary>
+        <div class="controls controls-advanced">
+          <label class="control">
+            <span>下値状態</span>
+            <select id="floorStateInput">
+              <option value="all">すべて表示</option>
+              <option value="stable">安定のみ</option>
+              <option value="forming">形成中のみ</option>
+              <option value="unformed">未形成のみ</option>
+              <option value="broken">下値割れのみ</option>
+              <option value="collecting">蓄積中のみ</option>
+            </select>
+          </label>
+          <label class="control">
+            <span>価格方向</span>
+            <select id="priceDirectionInput">
+              <option value="all">すべて表示</option>
+              <option value="up">上昇のみ</option>
+              <option value="flat">横ばいのみ</option>
+              <option value="down">下降のみ</option>
+            </select>
+          </label>
+          <label class="control">
+            <span>需給状態</span>
+            <select id="supplyStateInput">
+              <option value="all">すべて表示</option>
+              <option value="buy">買い優勢のみ</option>
+              <option value="balanced">均衡のみ</option>
+              <option value="sell">売り優勢のみ</option>
+              <option value="collecting">蓄積中のみ</option>
+            </select>
+          </label>
+          <label class="control">
+            <span>下値安定 下限点</span>
+            <input id="minFloorScoreInput" type="number" min="0" max="100" step="1" placeholder="空欄は条件なし" />
+            <small class="control-help">履歴不足の「蓄積中」は点数条件を入れると除外されます。</small>
+          </label>
+          <label class="control">
+            <span>店舗需要</span>
+            <select id="storeDemandInput">
+              <option value="all">すべて表示</option>
+              <option value="strong">強いのみ</option>
+              <option value="normal-up">強い・普通のみ</option>
+              <option value="normal">普通のみ</option>
+              <option value="weak">弱いのみ</option>
+              <option value="collecting">蓄積中のみ</option>
+            </select>
+          </label>
         </div>
       </details>
 
@@ -530,6 +588,14 @@
       </div>
     </details>
 
+    <details id="shopRateSummaryPanel" class="card shop-rate-summary-panel">
+      <summary>
+        <div><div class="eyebrow">PSA10 buyback benchmark</div><h2>買取店ごとの標準買取率</h2><p>カードごとの買取率中央値を主指標にし、古い価格と外れ値を分離します。</p></div>
+        <strong>店舗集計を見る</strong>
+      </summary>
+      <div id="shopRateSummary" class="shop-rate-summary-body"></div>
+    </details>
+
     <section class="toolbar card">
       <div>
         <h2>候補一覧</h2>
@@ -569,6 +635,7 @@
   </main>
 
   <script src="./decision-model.js?v=20260901-data-quality-8"></script>
-  <script src="./app.js?v=20260901-data-quality-8"></script>
+  <script src="./market-analysis.js?v=20260901-market-analysis"></script>
+  <script src="./app.js?v=20260901-market-analysis"></script>
 </body>
 </html>

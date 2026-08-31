@@ -32,6 +32,7 @@ const hareruya2 = read("data/hareruya2-stock-summary.json");
 const yuyutei = read("data/yuyutei-stock-summary.json");
 const torecacamp = read("data/torecacamp-stock-summary.json");
 const buyback = read("data/shop-buyback-summary.json");
+const marketAnalysis = read("data/market-stability-summary.json");
 const psa = read("data/psa-official-populations.json");
 const services = read("data/psa-japan-services.json");
 const psaRowDates = (psa.rows || []).map((row) => validDate(row.fetchedAt)).filter(Boolean);
@@ -46,6 +47,7 @@ const sources = {
   yuyutei: { label: "遊々亭", date: validDate(yuyutei.updatedAt), automatic: true },
   torecacamp: { label: "トレカキャンプ", date: validDate(torecacamp.updatedAt), automatic: true },
   shopBuyback: { label: "Web買取表", date: validDate(buyback.updatedAt), automatic: true },
+  marketAnalysis: { label: "下値安定・買取率分析", date: validDate(marketAnalysis.updatedAt), automatic: true },
   psaOfficial: { label: "PSA公式枚数", date: dominantPsaDate, automatic: true, note: "PC起動時にPSA専用Chromeで自動取得", coverageRows: psaDateCounts[dominantPsaDate] || 0 },
   psaJapan: { label: "PSA Japan料金", date: validDate(services.checkedAt || services.updatedAt), automatic: true, status: services.checkStatus || "unknown" },
 };
