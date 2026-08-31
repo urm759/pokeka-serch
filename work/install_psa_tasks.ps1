@@ -16,6 +16,6 @@ $Tasks = @(
 }
 
 foreach ($Task in $Tasks) {
-  Register-ScheduledTask -TaskName $Task.Name -Action $Action -Trigger $Task.Trigger -Settings $Settings -Principal $Principal -Description 'PSA公式Populationを取得し、ポケカ仕入れ判断サイトへ反映します。' -Force | Out-Null
+  Register-ScheduledTask -TaskName $Task.Name -Action $Action -Trigger $Task.Trigger -Settings $Settings -Principal $Principal -Description 'Refresh PSA population data for the Pokemon sourcing site.' -Force | Out-Null
   Write-Output "Registered: $($Task.Name)"
 }
