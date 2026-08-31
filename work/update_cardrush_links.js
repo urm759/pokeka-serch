@@ -143,6 +143,7 @@ function extractCardrushComponents(card) {
   const rarityPattern = "MUR|BWR|MA|SSR|CSR|CHR|SAR|UR|HR|SR|RRR|RR|AR|PR|P|H|C|U|R";
   const promoSetFirst = source.match(/\[\s*([A-Za-z0-9]+-P)\s+(\d{1,4})\s*\]/i);
   const promoNumberFirst = source.match(/\[\s*PROMO\s*(\d{1,4})\s+([A-Za-z0-9]+-P)\s*\]/i);
+  const promoNumberFirstPlain = source.match(/\[\s*(\d{1,4})\s+([A-Za-z0-9]+-P)\s*\]/i);
   const promoProduct = source.match(/\{\s*(\d{1,4})\/([A-Za-z0-9]+-P)\s*\}/i);
   const promoCardNo = (number, promoSet) =>
     String(promoSet || "").toUpperCase() === "S8A-P"
@@ -151,6 +152,7 @@ function extractCardrushComponents(card) {
   const setCode =
     promoSetFirst?.[1] ||
     promoNumberFirst?.[2] ||
+    promoNumberFirstPlain?.[2] ||
     promoProduct?.[2] ||
     (source.match(/\[\s*([A-Za-z0-9-]+)\s+\d{1,4}(?:\/\d{1,4})?\s*\]/) || [])[1] ||
     (source.match(/\[([A-Za-z0-9-]+)\]/) || [])[1] ||
@@ -159,6 +161,7 @@ function extractCardrushComponents(card) {
     (promoProduct ? `${promoProduct[1]}/${promoProduct[2].toUpperCase()}` : "") ||
     (promoSetFirst ? promoCardNo(promoSetFirst[2], promoSetFirst[1]) : "") ||
     (promoNumberFirst ? promoCardNo(promoNumberFirst[1], promoNumberFirst[2]) : "") ||
+    (promoNumberFirstPlain ? promoCardNo(promoNumberFirstPlain[1], promoNumberFirstPlain[2]) : "") ||
     (source.match(/\{(\d{1,4}\/(?:\d{1,4}|[A-Za-z0-9]+-P))\}/i) || [])[1] ||
     (source.match(/\[\s*[A-Za-z0-9-]+\s+(\d{1,4}\/\d{1,4})\s*\]/) || [])[1] ||
     (source.match(/\[(\d{1,4}\/\d{1,4})\]/) || [])[1] ||

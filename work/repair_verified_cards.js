@@ -19,9 +19,25 @@ function write(file, value, pretty = false) {
 
 const verifiedCardrush = {
   "pk-731": { url: "https://www.cardrush-pokemon.jp/product/731", name: "シロナ【SR】{070/066} [SM5M]", stock: 11, price: 92800 },
-  "pk-38030": { url: "https://www.cardrush-pokemon.jp/product/38029", name: "ピカチュウ【P】{323/S-P} [S-P]", stock: 0, price: 67800 },
+  "pk-38029": { url: "https://www.cardrush-pokemon.jp/product/38029", name: "ピカチュウ【P】{323/S-P} [S-P]", stock: 0, price: 67800 },
   "pk-3123": { url: "https://www.cardrush-pokemon.jp/product/3123", name: "ブルーの探索【SR】{061/054} [SM9b]", stock: 11, price: 27800 },
   "pk-1180": { url: "https://www.cardrush-pokemon.jp/product/1180", name: "ひかるレックウザ【H】{057/072} [SM3+]", stock: 18, price: 94800 },
+};
+
+const verifiedShopLinks = {
+  "pk-38029": {
+    hareruya2Url: "https://www.hareruya2.com/products/9017672958272",
+    hareruya2Name: "【未開封プロモ】 ピカチュウ(PROMO){雷}〈323/S-P〉[S-P]",
+    hareruya2Price: 75000,
+    yuyuteiUrl: "https://yuyu-tei.jp/sell/poc/card/spromo-400/10023",
+    yuyuteiName: "PROMO ピカチュウ 323/S-P",
+    yuyuteiPrice: 69800,
+    yuyuteiStock: 0,
+    torecacampUrl: "https://torecacamp-pokemon.com/products/rc_itgqj4n2remw_kyxs",
+    torecacampName: "ピカチュウ PROMO 323/S-P 【KK】",
+    torecacampPrice: 69800,
+    torecacampAvailable: false,
+  },
 };
 
 const cardsPath = path.join(ROOT, "data", "pokemon-cards.json");
@@ -29,6 +45,12 @@ const cards = read(cardsPath, []);
 for (const card of cards) {
   const verified = verifiedCardrush[card.id];
   if (verified) card.cardrushUrl = verified.url;
+  const shopLinks = verifiedShopLinks[card.id];
+  if (shopLinks) Object.assign(card, {
+    hareruya2Url: shopLinks.hareruya2Url,
+    yuyuteiUrl: shopLinks.yuyuteiUrl,
+    torecacampUrl: shopLinks.torecacampUrl,
+  });
 }
 write(cardsPath, cards);
 
@@ -49,6 +71,20 @@ for (const [id, verified] of Object.entries(verifiedCardrush)) {
   if (index >= 0) catalog[index] = next; else catalog.push(next);
 }
 write(catalogPath, catalog);
+
+function upsertCatalog(relativePath, entry) {
+  const filePath = path.join(ROOT, relativePath);
+  const rows = read(filePath, []);
+  const index = rows.findIndex((row) => row.cardId === entry.cardId || row.detailUrl === entry.detailUrl);
+  if (index >= 0) rows[index] = { ...rows[index], ...entry }; else rows.push(entry);
+  write(filePath, rows);
+}
+
+for (const [id, shop] of Object.entries(verifiedShopLinks)) {
+  upsertCatalog("work/hareruya2_catalog.json", { cardId: id, name: shop.hareruya2Name, detailUrl: shop.hareruya2Url, handle: shop.hareruya2Url.split("/").pop(), state: "A", price: shop.hareruya2Price, stock: null, available: true, observedAt: TODAY });
+  upsertCatalog("work/yuyutei_catalog.json", { cardId: id, name: shop.yuyuteiName, detailUrl: shop.yuyuteiUrl, state: "A", price: shop.yuyuteiPrice, stock: shop.yuyuteiStock, observedAt: TODAY });
+  upsertCatalog("work/torecacamp_catalog.json", { cardId: id, title: shop.torecacampName, detailUrl: shop.torecacampUrl, price: shop.torecacampPrice, available: shop.torecacampAvailable, observedAt: TODAY });
+}
 
 const stockHistoryPath = path.join(__dirname, "cardrush_stock_history.json");
 const stockHistory = read(stockHistoryPath, { dates: [], stocks: {} });
@@ -82,6 +118,29 @@ for (const [id, verified] of Object.entries(verifiedCardrush)) {
   };
 }
 write(stockSummaryPath, stockSummary);
+
+const hareruya2SummaryPath = path.join(ROOT, "data", "hareruya2-stock-summary.json");
+const hareruya2Summary = read(hareruya2SummaryPath, { cards: {} });
+hareruya2Summary.updatedAt = TODAY;
+hareruya2Summary.cards ||= {};
+hareruya2Summary.cards["pk-38029"] = { stock: null, hareruya2Price: 75000, avg7: null, avg30: null, avg90: null, drop7: null, drop30: null, demand: "蓄積中", samples: 0 };
+write(hareruya2SummaryPath, hareruya2Summary);
+
+const yuyuteiSummaryPath = path.join(ROOT, "data", "yuyutei-stock-summary.json");
+const yuyuteiSummary = read(yuyuteiSummaryPath, { cards: {} });
+yuyuteiSummary.updatedAt = TODAY;
+yuyuteiSummary.stockType = "point";
+yuyuteiSummary.cards ||= {};
+yuyuteiSummary.cards["pk-38029"] = { stock: 0, yuyuteiPrice: 69800, samples: 1 };
+write(yuyuteiSummaryPath, yuyuteiSummary);
+
+const torecacampSummaryPath = path.join(ROOT, "data", "torecacamp-stock-summary.json");
+const torecacampSummary = read(torecacampSummaryPath, { cards: {} });
+torecacampSummary.updatedAt = TODAY;
+torecacampSummary.stockType = "availability";
+torecacampSummary.cards ||= {};
+torecacampSummary.cards["pk-38029"] = { torecacampPrice: 69800, available: false, availabilityLabel: "在庫なし" };
+write(torecacampSummaryPath, torecacampSummary);
 
 const populationPath = path.join(ROOT, "data", "psa-official-populations.json");
 const population = read(populationPath, { rows: [] });
