@@ -62,6 +62,9 @@ const displayedCaps = model.purchaseCaps({ capital, economicMaxPrice: capitalLim
 assert.equal(displayedCaps.economicMaxPrice, capitalLimitedMax);
 assert.equal(displayedCaps.capitalMaxPrice, 270000);
 assert.equal(displayedCaps.finalMaxPrice, capitalLimitedMax);
+assert.equal(model.purchaseLimitMarketRatio(7000, 10000), 70);
+assert.equal(model.purchaseLimitMarketRatio(0, 10000), 0);
+assert.equal(model.purchaseLimitMarketRatio(7000, 0), null);
 
 const prices = model.aggregatePrices([
   { source: "みんトレ", value: 30000 },

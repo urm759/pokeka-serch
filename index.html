@@ -150,6 +150,11 @@
           </div>
         </label>
         <label class="control">
+          <span>現実的な仕入れ上限 相場比下限</span>
+          <input id="purchaseLimitRatioMinInput" type="number" min="0" max="100" step="1" placeholder="例: 70（空欄は条件なし）" />
+          <small>70なら、仕入れ上限が平均美品価格の70%未満のカードを除外</small>
+        </label>
+        <label class="control">
           <span>PSA10 下限</span>
           <input id="psaMinInput" type="number" min="0" step="1000" value="0" />
         </label>
@@ -229,7 +234,8 @@
           </select>
         </label>
         <div class="filter-switches">
-          <label><input id="hideSkippedInput" type="checkbox" /> 見送りを除外（GO・価格次第のみ）</label>
+          <label><input id="hideSkippedInput" type="checkbox" /> 見送りを除外</label>
+          <label><input id="hideReviewInput" type="checkbox" /> 要確認を除外</label>
           <label><input id="fundingOnlyInput" type="checkbox" /> 今回の仕入れGOのみ</label>
           <label><input id="officialOnlyInput" type="checkbox" /> PSA公式取得済みのみ</label>
         </div>
@@ -544,7 +550,7 @@
     </section>
   </main>
 
-  <script src="./decision-model.js?v=20260831-decision-6"></script>
-  <script src="./app.js?v=20260831-decision-6"></script>
+  <script src="./decision-model.js?v=20260831-filter-7"></script>
+  <script src="./app.js?v=20260831-filter-7"></script>
 </body>
 </html>

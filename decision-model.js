@@ -175,6 +175,13 @@
     };
   }
 
+  function purchaseLimitMarketRatio(finalMaxPrice, marketPrice) {
+    const limit = Number(finalMaxPrice);
+    const market = Number(marketPrice);
+    if (!Number.isFinite(limit) || !Number.isFinite(market) || market <= 0) return null;
+    return Math.max(0, limit / market * 100);
+  }
+
   function purchaseDecision(input) {
     const reasons = [];
     const economics = input.economics;
@@ -222,5 +229,5 @@
     };
   }
 
-  return { aggregatePrices, capitalLimits, capitalPlan, expectedEconomics, gradeAssumptions, maxBuyPrice, median, portfolioPlan, purchaseCaps, purchaseDecision };
+  return { aggregatePrices, capitalLimits, capitalPlan, expectedEconomics, gradeAssumptions, maxBuyPrice, median, portfolioPlan, purchaseCaps, purchaseDecision, purchaseLimitMarketRatio };
 });

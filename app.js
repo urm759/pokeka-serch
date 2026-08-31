@@ -45,6 +45,7 @@ const state = {
   maxPsa10: 200000,
   minPrice: null,
   maxPrice: null,
+  minPurchaseLimitRatio: null,
   minPsaRate: null,
   overallFilter: "all",
   minExitLiquidity: 0,
@@ -67,6 +68,7 @@ const state = {
   maxForecastMonthlyIncrease: null,
   stockDemand: "all",
   hideSkipped: false,
+  hideReview: false,
   fundingOnly: false,
   officialOnly: false,
   sort: "overall-desc",
@@ -152,6 +154,7 @@ const els = {
   maxForecastMonthlyIncreaseInput: document.getElementById("maxForecastMonthlyIncreaseInput"),
   stockDemandInput: document.getElementById("stockDemandInput"),
   hideSkippedInput: document.getElementById("hideSkippedInput"),
+  hideReviewInput: document.getElementById("hideReviewInput"),
   fundingOnlyInput: document.getElementById("fundingOnlyInput"),
   officialOnlyInput: document.getElementById("officialOnlyInput"),
   resetFiltersBtn: document.getElementById("resetFiltersBtn"),
@@ -160,6 +163,7 @@ const els = {
   psaMaxInput: document.getElementById("psaMaxInput"),
   priceMinInput: document.getElementById("priceMinInput"),
   priceMaxInput: document.getElementById("priceMaxInput"),
+  purchaseLimitRatioMinInput: document.getElementById("purchaseLimitRatioMinInput"),
   sortInput: document.getElementById("sortInput"),
   grid: document.getElementById("grid"),
   totalStat: document.getElementById("totalStat"),
@@ -1375,6 +1379,7 @@ function readUrl() {
   const psaMax = parseOptionalNumber(url.searchParams.get("psaMax"));
   const priceMin = parseOptionalNumber(url.searchParams.get("priceMin"));
   const priceMax = parseOptionalNumber(url.searchParams.get("priceMax"));
+  const minPurchaseLimitRatio = parseOptionalNumber(url.searchParams.get("buyLimitRatio"));
   const psaRateMin = parseOptionalNumber(url.searchParams.get("psaRate"));
   const overallFilter = url.searchParams.get("overall");
   const minExitLiquidity = parseOptionalNumber(url.searchParams.get("exit"));
@@ -1397,6 +1402,7 @@ function readUrl() {
   const maxForecastMonthlyIncrease = parseOptionalNumber(url.searchParams.get("psaGrowthMax"));
   const stockDemand = url.searchParams.get("stockDemand");
   const hideSkipped = url.searchParams.get("hideSkipped") === "1";
+  const hideReview = url.searchParams.get("hideReview") === "1";
   const fundingOnly = url.searchParams.get("fundingOnly") === "1";
   const officialOnly = url.searchParams.get("officialOnly") === "1";
   const psaCapital = parseOptionalNumber(url.searchParams.get("cap"));
@@ -1443,6 +1449,7 @@ function readUrl() {
   if (psaMax != null && psaMax >= 0) els.psaMaxInput.value = String(psaMax);
   if (priceMin != null) els.priceMinInput.value = String(priceMin);
   if (priceMax != null) els.priceMaxInput.value = String(priceMax);
+  if (minPurchaseLimitRatio != null && minPurchaseLimitRatio >= 0) els.purchaseLimitRatioMinInput.value = String(minPurchaseLimitRatio);
   if (psaRateMin != null && psaRateMin >= 0) els.psaRateMinInput.value = String(psaRateMin);
   if (["all", "ab", "a"].includes(overallFilter)) els.overallFilterInput.value = overallFilter;
   if (minExitLiquidity != null && minExitLiquidity >= 0) els.minExitLiquidityInput.value = String(minExitLiquidity);
@@ -1465,6 +1472,7 @@ function readUrl() {
   if (maxForecastMonthlyIncrease != null && maxForecastMonthlyIncrease >= 0) els.maxForecastMonthlyIncreaseInput.value = String(maxForecastMonthlyIncrease);
   if (["all", "steady", "low", "normal", "high", "known"].includes(stockDemand)) els.stockDemandInput.value = stockDemand;
   els.hideSkippedInput.checked = hideSkipped;
+  els.hideReviewInput.checked = hideReview;
   els.fundingOnlyInput.checked = fundingOnly;
   els.officialOnlyInput.checked = officialOnly;
   if (psaCapital != null && psaCapital >= 0) els.psaCapitalInput.value = String(psaCapital);
@@ -1534,6 +1542,7 @@ function buildShareUrl() {
   if (state.maxForecastMonthlyIncrease == null) url.searchParams.delete("psaGrowthMax"); else url.searchParams.set("psaGrowthMax", String(state.maxForecastMonthlyIncrease));
   if (state.stockDemand === "all") url.searchParams.delete("stockDemand"); else url.searchParams.set("stockDemand", state.stockDemand);
   if (state.hideSkipped) url.searchParams.set("hideSkipped", "1"); else url.searchParams.delete("hideSkipped");
+  if (state.hideReview) url.searchParams.set("hideReview", "1"); else url.searchParams.delete("hideReview");
   if (state.fundingOnly) url.searchParams.set("fundingOnly", "1"); else url.searchParams.delete("fundingOnly");
   if (state.officialOnly) url.searchParams.set("officialOnly", "1"); else url.searchParams.delete("officialOnly");
   url.searchParams.set("sort", state.sort);
@@ -1558,6 +1567,8 @@ function buildShareUrl() {
   } else {
     url.searchParams.set("priceMax", String(state.maxPrice));
   }
+  if (state.minPurchaseLimitRatio == null) url.searchParams.delete("buyLimitRatio");
+  else url.searchParams.set("buyLimitRatio", String(state.minPurchaseLimitRatio));
   if (state.q) {
     url.searchParams.set("q", state.q);
   } else {
@@ -1629,6 +1640,8 @@ function render() {
       if (state.maxPsa10 != null && card.psa10 > state.maxPsa10) return false;
       if (state.minPrice != null && card.price < state.minPrice) return false;
       if (state.maxPrice != null && card.price > state.maxPrice) return false;
+      const purchaseLimitRatio = decisionModel.purchaseLimitMarketRatio(card.buyLimits?.clean?.maxPrice, card.price);
+      if (state.minPurchaseLimitRatio != null && (!Number.isFinite(purchaseLimitRatio) || purchaseLimitRatio < state.minPurchaseLimitRatio)) return false;
       if (state.minPsaRate != null && (!Number.isFinite(card.official?.rate) || card.official.rate < state.minPsaRate)) return false;
       if (state.officialOnly && !Number.isFinite(card.official?.rate)) return false;
       if (card.overallAssessment && card.overallAssessment.exitLiquidity < state.minExitLiquidity) return false;
@@ -1666,6 +1679,7 @@ function render() {
       if (state.maxForecastMonthlyIncrease != null && (!Number.isFinite(card.futurePriceForecast?.monthlyPsa10Increase) || card.futurePriceForecast.monthlyPsa10Increase > state.maxForecastMonthlyIncrease)) return false;
       if (!card.overallAssessment && (state.minExitLiquidity || state.minEconomics || state.minMarketStability || state.minSupplyRisk || state.minFuturePriceScore)) return false;
       if (state.hideSkipped && card.purchaseDecision?.verdict === "見送り") return false;
+      if (state.hideReview && card.purchaseDecision?.verdict === "要確認") return false;
       if (state.fundingOnly && !card.psaDecision?.recommended) return false;
       if (state.overallFilter === "a" && card.overallAssessment?.grade !== "A") return false;
       if (state.overallFilter === "ab" && !["A", "B"].includes(card.overallAssessment?.grade)) return false;
@@ -2053,6 +2067,7 @@ function syncFromUI() {
   state.maxPsa10 = parseOptionalNumber(els.psaMaxInput.value);
   state.minPrice = parseOptionalNumber(els.priceMinInput.value);
   state.maxPrice = parseOptionalNumber(els.priceMaxInput.value);
+  state.minPurchaseLimitRatio = parseOptionalNumber(els.purchaseLimitRatioMinInput.value);
   state.minPsaRate = parseOptionalNumber(els.psaRateMinInput.value);
   state.overallFilter = els.overallFilterInput.value || "all";
   state.minExitLiquidity = Number(els.minExitLiquidityInput.value || 0);
@@ -2075,6 +2090,7 @@ function syncFromUI() {
   state.maxForecastMonthlyIncrease = parseOptionalNumber(els.maxForecastMonthlyIncreaseInput.value);
   state.stockDemand = els.stockDemandInput.value || "all";
   state.hideSkipped = els.hideSkippedInput.checked;
+  state.hideReview = els.hideReviewInput.checked;
   state.fundingOnly = els.fundingOnlyInput.checked;
   state.officialOnly = els.officialOnlyInput.checked;
   state.sort = els.sortInput.value;
@@ -2155,14 +2171,14 @@ async function init() {
   }
 }
 
-[els.qInput, els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.buyback7MinInput, els.buyback7MaxInput, els.buyback30MinInput, els.buyback30MaxInput, els.buyback90MinInput, els.buyback90MaxInput, els.buybackShopsMinInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.roiInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.psaRateMinInput, els.overallFilterInput, els.minExitLiquidityInput, els.minEconomicsInput, els.minMarketStabilityInput, els.minSupplyRiskInput, els.minFuturePriceScoreInput, els.maxFuturePriceScoreInput, els.minForecastPriceInput, els.maxForecastPriceInput, els.minForecastDownsideInput, els.maxForecastDownsideInput, els.minForecastGapInput, els.maxForecastGapInput, els.forecastPhaseInput, els.forecastConfidenceInput, els.forecastSupplyPressureInput, els.minForecastAgeInput, els.forecastMaturityInput, els.maxForecastMonthlyIncreaseInput, els.stockDemandInput, els.hideSkippedInput, els.fundingOnlyInput, els.officialOnlyInput, els.sortInput, els.psaCapitalInput, els.lockedCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput].forEach((el) =>
+[els.qInput, els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.buyback7MinInput, els.buyback7MaxInput, els.buyback30MinInput, els.buyback30MaxInput, els.buyback90MinInput, els.buyback90MaxInput, els.buybackShopsMinInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.roiInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.purchaseLimitRatioMinInput, els.psaRateMinInput, els.overallFilterInput, els.minExitLiquidityInput, els.minEconomicsInput, els.minMarketStabilityInput, els.minSupplyRiskInput, els.minFuturePriceScoreInput, els.maxFuturePriceScoreInput, els.minForecastPriceInput, els.maxForecastPriceInput, els.minForecastDownsideInput, els.maxForecastDownsideInput, els.minForecastGapInput, els.maxForecastGapInput, els.forecastPhaseInput, els.forecastConfidenceInput, els.forecastSupplyPressureInput, els.minForecastAgeInput, els.forecastMaturityInput, els.maxForecastMonthlyIncreaseInput, els.stockDemandInput, els.hideSkippedInput, els.hideReviewInput, els.fundingOnlyInput, els.officialOnlyInput, els.sortInput, els.psaCapitalInput, els.lockedCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput].forEach((el) =>
   el.addEventListener("input", syncFromUI)
 );
 
 els.resetFiltersBtn.addEventListener("click", () => {
   els.qInput.value = "";
   els.saleTxMinInput.value = "30";
-  [els.saleTxMaxInput, els.saleTx7MaxInput, els.psaTxMaxInput, els.psaTx7MaxInput, els.buyback7MaxInput, els.buyback30MaxInput, els.buyback90MaxInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.priceMinInput, els.priceMaxInput, els.psaRateMinInput, els.maxFuturePriceScoreInput, els.minForecastPriceInput, els.maxForecastPriceInput, els.minForecastDownsideInput, els.maxForecastDownsideInput, els.minForecastGapInput, els.maxForecastGapInput, els.minForecastAgeInput, els.maxForecastMonthlyIncreaseInput].forEach((el) => { el.value = ""; });
+  [els.saleTxMaxInput, els.saleTx7MaxInput, els.psaTxMaxInput, els.psaTx7MaxInput, els.buyback7MaxInput, els.buyback30MaxInput, els.buyback90MaxInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.priceMinInput, els.priceMaxInput, els.purchaseLimitRatioMinInput, els.psaRateMinInput, els.maxFuturePriceScoreInput, els.minForecastPriceInput, els.maxForecastPriceInput, els.minForecastDownsideInput, els.maxForecastDownsideInput, els.minForecastGapInput, els.maxForecastGapInput, els.minForecastAgeInput, els.maxForecastMonthlyIncreaseInput].forEach((el) => { el.value = ""; });
   [els.saleTx7MinInput, els.psaTxMinInput, els.psaTx7MinInput, els.buyback7MinInput, els.buyback30MinInput, els.buyback90MinInput, els.buybackShopsMinInput, els.psaMinInput].forEach((el) => { el.value = "0"; });
   els.roiInput.value = "40";
   els.psaMaxInput.value = "200000";
@@ -2174,6 +2190,7 @@ els.resetFiltersBtn.addEventListener("click", () => {
   els.forecastMaturityInput.value = "all";
   els.stockDemandInput.value = "all";
   els.hideSkippedInput.checked = false;
+  els.hideReviewInput.checked = false;
   els.fundingOnlyInput.checked = false;
   els.officialOnlyInput.checked = false;
   els.sortInput.value = "overall-desc";
