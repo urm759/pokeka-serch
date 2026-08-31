@@ -404,12 +404,24 @@
           <strong id="countStat">0</strong>
         </div>
         <div class="stat">
-          <span class="k">最高利益率</span>
+          <span class="k">PSA10時 最大利益率</span>
           <strong id="topRoiStat">-</strong>
         </div>
         <div class="stat">
-          <span class="k">最高利益額</span>
+          <span class="k">最大期待利益</span>
           <strong id="topProfitStat">-</strong>
+        </div>
+        <div class="stat">
+          <span class="k">GO</span>
+          <strong id="goCountStat">0</strong>
+        </div>
+        <div class="stat">
+          <span class="k">価格次第</span>
+          <strong id="conditionalCountStat">0</strong>
+        </div>
+        <div class="stat">
+          <span class="k">要確認</span>
+          <strong id="reviewCountStat">0</strong>
         </div>
       </div>
     </section>
@@ -485,6 +497,7 @@
           <label class="import-favorites-btn">CSV読込<input id="importFavoritesInput" type="file" accept=".csv,text/csv" /></label>
           <button id="clearFavoritesBtn" class="danger" type="button">すべて解除</button>
         </div>
+        <div id="favoritesPortfolioSummary" class="favorites-portfolio-summary"></div>
         <label class="favorite-search">
           <span>お気に入りを検索</span>
           <input id="favoriteSearchInput" type="search" placeholder="カード名・型番で絞り込み" autocomplete="off" />
@@ -531,7 +544,7 @@
     </section>
   </main>
 
-  <script src="./decision-model.js?v=20260829-decision-5"></script>
-  <script src="./app.js?v=20260831-store-tools"></script>
+  <script src="./decision-model.js?v=20260831-decision-6"></script>
+  <script src="./app.js?v=20260831-decision-6"></script>
 </body>
 </html>
