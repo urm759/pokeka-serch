@@ -48,7 +48,7 @@
 
 スマホまたはPCで GitHub のリポジトリを開き、`Actions` → `Refresh All Site Data` → `Run workflow` → 緑色の `Run workflow` の順に押します。処理と公開はGitHub側で行うため、自分のPCを起動したままにする必要はありません。
 
-みんトレ、カードラッシュ、Web買取表、トレカクラブ、PSA Japan料金、評価モデルはこの操作で更新できます。PSA公式PopulationはCloudflareのログイン確認があるため、ログイン済みChromeを使った手動補完が必要です。Xの画像買取表も新着検出までは自動ですが、誤照合防止の最終確認だけ手動です。
+みんトレ、カードラッシュ、Web買取表、トレカクラブ、PSA Japan料金、評価モデルはこの操作で更新できます。PSA公式PopulationはPC側のログイン済みPSA専用Chromeから自動取得します。認証期限が切れた時だけ、専用Chromeで再ログインが必要です。
 
 ## お気に入り仕入れ候補
 
@@ -85,8 +85,8 @@ PSA10の将来価格は期間を91日後と明示し、弱気・中央・強気�
 厳格照合できたカードだけ、PSA公式のPSA10枚数、TOTAL枚数、PSA10取得率を表示します。7日・30日・90日のPSA10増加を「急増化・増加・少ない・横ばい」で評価します。
 履歴は32分割したJSONへ数値だけを保存し、カードの「推移を見る」を開いた時だけ該当ファイルを読み込み、SVGグラフをブラウザで描画します。
 
-PSA公式ページはログインが必要なため、Windowsのログイン済み専用Chromeから午前4時30分、午後5時、Windowsログオン時に取得を試します。同日に1回成功した後は重複実行しません。
-最初に `node work/open_psa_login.js` でPSA専用Chromeへログインし、`powershell -ExecutionPolicy Bypass -File work/install_psa_tasks.ps1` で定期タスクを登録します。
+PSA公式ページはログインが必要なため、Windowsのログイン済みPSA専用Chromeから午前4時30分、午後5時、Windowsログオン時に取得を試します。朝と夕方を別の更新枠として記録し、同じ更新枠での重複実行は省きます。PC停止中に逃した更新は、次のWindowsログオン時に補完します。
+最初に `powershell -ExecutionPolicy Bypass -File work/start_psa_regular_chrome.ps1 -Show` でPSA専用Chromeを開いてログインし、`powershell -ExecutionPolicy Bypass -File work/install_psa_tasks.ps1` で定期タスクを登録します。
 
 - `work/update_pokemon_site.js` を実行すると、toreca-souba の公開データからポケモンカード一覧とメタ情報を再生成します
 - `work/update_snkr_links.js` が未取得の全カードを確認し、スニダン個別商品URLを100枚ごとに保存します

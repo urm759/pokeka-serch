@@ -42,15 +42,15 @@ const sources = {
   cardrush: { label: "カードラッシュ", date: validDate(stock.updatedAt), automatic: true },
   hareruya2: { label: "晴れる屋2", date: validDate(hareruya2.updatedAt), automatic: true },
   shopBuyback: { label: "Web買取表", date: validDate(buyback.updatedAt), automatic: true },
-  psaOfficial: { label: "PSA公式枚数", date: dominantPsaDate, automatic: false, note: "ログイン済みPCで取得", coverageRows: psaDateCounts[dominantPsaDate] || 0 },
+  psaOfficial: { label: "PSA公式枚数", date: dominantPsaDate, automatic: true, note: "PC起動時にPSA専用Chromeで自動取得", coverageRows: psaDateCounts[dominantPsaDate] || 0 },
   psaJapan: { label: "PSA Japan料金", date: validDate(services.checkedAt || services.updatedAt), automatic: true, status: services.checkStatus || "unknown" },
 };
 
 for (const source of Object.values(sources)) {
   source.fresh = source.date === today && source.status !== "failed";
 }
-// Login-dependent PSA data remains visible with its own date. A completed
-// daily refresh means every source that GitHub Actions can update is current.
+// A completed refresh requires both cloud sources and the login-dependent
+// PSA task on the user's PC to be current.
 const automaticSources = Object.values(sources).filter((source) => source.automatic);
 const complete = automaticSources.length > 0 && automaticSources.every((source) => source.fresh);
 const manualPending = Object.entries(sources)

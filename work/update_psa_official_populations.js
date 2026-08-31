@@ -18,6 +18,7 @@ const OUTPUT_JSON = path.join(OUTPUT_DIR, "psa-official-populations.json");
 const OUTPUT_JS = path.join(OUTPUT_DIR, "psa-official-populations.js");
 const MIN_TOTAL_POPULATION = Number(process.env.PSA_MIN_TOTAL_POPULATION || 0);
 const MAX_PAGES = Number(process.env.PSA_MAX_PAGES || 200);
+const CDP_ENDPOINT = String(process.env.PSA_CDP_ENDPOINT || "").trim();
 const CHROME_EXECUTABLE =
   process.env.CHROME_EXECUTABLE_PATH || "C:/Program Files/Google/Chrome/Application/chrome.exe";
 
@@ -244,7 +245,10 @@ async function collectSet(context, entry) {
       if (!(await dataTableNext.isVisible().catch(() => false))) break;
       const nextClass = await dataTableNext.getAttribute("class").catch(() => "disabled");
       if (/disabled/i.test(nextClass || "")) break;
-      await dataTableNext.click({ timeout: 30000 });
+      await page.locator("#spinner-wrap").waitFor({ state: "hidden", timeout: 10000 }).catch(() => {});
+      // The PSA loading overlay can briefly cover the pagination control even
+      // after the table is ready. A DOM click avoids losing the whole set.
+      await dataTableNext.evaluate((element) => element.click());
       await page.waitForTimeout(2000);
     }
 
@@ -296,16 +300,25 @@ async function main() {
     throw new Error(`No PSA set manifest found at ${MANIFEST_PATH}`);
   }
 
-  const launchOptions = { headless: HEADLESS };
-  if (fs.existsSync(CHROME_EXECUTABLE)) {
-    launchOptions.executablePath = CHROME_EXECUTABLE;
+  let browser = null;
+  let context = null;
+  let ownsContext = false;
+  if (CDP_ENDPOINT) {
+    browser = await chromium.connectOverCDP(CDP_ENDPOINT, { timeout: 30000 });
+    context = browser.contexts()[0] || null;
+    if (!context) throw new Error(`No Chrome context found at ${CDP_ENDPOINT}`);
+    console.log(`connected to regular Chrome at ${CDP_ENDPOINT}`);
+  } else {
+    const launchOptions = { headless: HEADLESS };
+    if (fs.existsSync(CHROME_EXECUTABLE)) {
+      launchOptions.executablePath = CHROME_EXECUTABLE;
+    }
+    context = await chromium.launchPersistentContext(USER_DATA_DIR, {
+      ...launchOptions,
+      viewport: { width: 1400, height: 1200 },
+    });
+    ownsContext = true;
   }
-  const context = await chromium.launchPersistentContext(USER_DATA_DIR, {
-    ...launchOptions,
-    viewport: { width: 1400, height: 1200 },
-    userAgent:
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
-  });
 
   const collected = [];
   try {
@@ -330,7 +343,7 @@ async function main() {
       console.log(`${record.name}: ${record.rows.length} rows${record.error ? ` (warning: ${record.error})` : ""}`);
     }
   } finally {
-    await context.close().catch(() => {});
+    if (ownsContext) await context.close().catch(() => {});
   }
 
   const freshRows = collected.flatMap((set) => set.rows.map((row) => ({
@@ -376,7 +389,9 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
