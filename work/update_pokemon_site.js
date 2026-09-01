@@ -341,7 +341,12 @@ async function main() {
         const officialRow =
           psaQueryCandidates(psaQuery).map((key) => officialPsaByQuery[key] || officialPsaAliases[key]).find(Boolean) || null;
         const previous = previousById.get(c.id) || {};
-        const cardrushMatch = previous.cardrushUrl ? null : resolveCardrushMatch(c, cardrushCatalog);
+        // Cardrush matching scans its public catalog. Preserve existing links and
+        // skip cards without a PSA10 market price, which cannot affect this site's
+        // profit decisions and made a source refresh needlessly expensive.
+        const cardrushMatch = previous.cardrushUrl || !Number(c.snkPsa10Price)
+          ? null
+          : resolveCardrushMatch(c, cardrushCatalog);
         const officialRate = num(officialRow?.psa10Rate);
         const officialTotal = num(officialRow?.psaTotal);
         const officialCount = num(officialRow?.psa10Count);

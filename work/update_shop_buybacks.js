@@ -41,13 +41,6 @@ const SHOPS = [
     fetchItems: fetchTorecaBirth,
   },
   {
-    id: "toreca-birth-store",
-    name: "トレカバース（店頭）",
-    url: "https://birth-kaitori.vercel.app/",
-    priceKey: "storePrice",
-    fetchItems: fetchTorecaBirth,
-  },
-  {
     id: "kaitori-homura-mail",
     name: "買取ホムラ（郵送）",
     url: "https://kaitori-homura.com/products?q%5Bproduct_sub_category_id_eq%5D=182&q%5Bproduct_sub_category_product_category_id_eq%5D=21&sort=price_desc",
@@ -252,30 +245,44 @@ async function fetchShinsoku(shop) {
 }
 
 async function fetchTorecaClub(shop) {
-  const html = await fetchText(shop.url, shop.name);
-  // Next.js embeds today's leading PSA10 buy prices in the initial page payload.
-  const payload = String(html).replace(/\\\"/g, '"').replace(/\\\\\//g, "/");
-  const pattern = /"card_id":"([^"]+)"[\s\S]*?"card_code":"([^"]*)"[\s\S]*?"product_id":"([^"]*)"[\s\S]*?"card_name":"([^"]*)"[\s\S]*?"image_url":"([^"]*)"[\s\S]*?"price":(\d+)/g;
+  // The page HTML includes only its first 20 cards. The public API is paginated,
+  // so follow its cursor to avoid undercounting this shop's active buyback list.
   const items = [];
-  for (const match of payload.matchAll(pattern)) {
-    const [cardId, cardCode, productId, cardName, imageUrl, rawPrice] = match.slice(1);
-    const suffix = cardId.replace(/^ca\d+_/, "");
-    const productParts = productId.split("/");
-    const isPromo = productParts.length === 3 && /^[A-Z]{1,3}$/i.test(productParts[1]) && productParts[2].toUpperCase() === "P";
-    const normalizedCode = isPromo ? `${productParts[0]}/${productParts[1]}-${productParts[2]}` : cardCode;
-    const set = isPromo ? `${productParts[1]}-${productParts[2]}` : productParts.length >= 3 ? productParts[2] : "";
-    const price = Number(rawPrice || 0);
-    if (/wildcard/i.test(cardId) || /保証対象/.test(cardName)) continue;
-    items.push({
-      shopItemId: cardId,
-      name: `${cardName} ${normalizedCode}${set ? ` [${set}]` : ""}`.trim(),
-      price,
-      imageUrl,
-      itemUrl: `https://torecaclub.com/pokemon/cards/psa10/${encodeURIComponent(suffix)}/`,
-      active: price > 0,
-    });
-  }
-  return { pages: 1, items: [...new Map(items.map((item) => [item.shopItemId, item])).values()] };
+  let cursor = "";
+  let pages = 0;
+  do {
+    const params = new URLSearchParams({ sort: "price_desc", limit: "50" });
+    if (cursor) params.set("cursor", cursor);
+    const response = await fetchJson(`https://torecaclub.com/api/cards/search?${params}`, `${shop.name} page ${pages + 1}`);
+    const data = response?.data || {};
+    for (const raw of data.cards || []) {
+      const cardId = String(raw.card_id || "");
+      const cardCode = String(raw.card_code || "");
+      const productId = String(raw.product_id || "");
+      const cardName = String(raw.card_name || "");
+      const imageUrl = String(raw.image_url || "");
+      const rawPrice = raw.price;
+      if (!cardId || !cardName) continue;
+      const suffix = cardId.replace(/^ca\d+_/, "");
+      const productParts = productId.split("/");
+      const isPromo = productParts.length === 3 && /^[A-Z]{1,3}$/i.test(productParts[1]) && productParts[2].toUpperCase() === "P";
+      const normalizedCode = isPromo ? `${productParts[0]}/${productParts[1]}-${productParts[2]}` : cardCode;
+      const set = isPromo ? `${productParts[1]}-${productParts[2]}` : productParts.length >= 3 ? productParts[2] : "";
+      const price = Number(rawPrice || 0);
+      if (/wildcard/i.test(cardId) || /保証対象/.test(cardName)) continue;
+      items.push({
+        shopItemId: cardId,
+        name: `${cardName} ${normalizedCode}${set ? ` [${set}]` : ""}`.trim(),
+        price,
+        imageUrl,
+        itemUrl: `https://torecaclub.com/pokemon/cards/psa10/${encodeURIComponent(suffix)}/`,
+        active: price > 0,
+      });
+    }
+    pages += 1;
+    cursor = data.pagination?.hasMore ? String(data.pagination.nextCursor || "") : "";
+  } while (cursor && pages < 500);
+  return { pages, items: [...new Map(items.map((item) => [item.shopItemId, item])).values()] };
 }
 
 function parseTorecaBirthItems(html, shop) {
@@ -411,6 +418,16 @@ async function main() {
   const imageMatches = readJson(imageMatchesPath, {});
   const itemMatches = readJson(itemMatchesPath, {});
   const history = readJson(historyPath, { dates: [], shops: {} });
+  const activeShopIds = new Set(SHOPS.map((shop) => shop.id));
+  // A removed shop must not continue to affect historical averages or demand.
+  for (const shopId of Object.keys(history.shops || {})) {
+    if (!activeShopIds.has(shopId)) delete history.shops[shopId];
+  }
+  for (const cache of [imageMatches, itemMatches]) {
+    for (const sourceKey of Object.keys(cache)) {
+      if (sourceKey.startsWith("toreca-birth-store:")) delete cache[sourceKey];
+    }
+  }
   const matchCard = buildMatcher(cards);
   const results = [];
   for (const shop of SHOPS) {
