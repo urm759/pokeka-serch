@@ -147,11 +147,32 @@
     const capital = input.capital || capitalPlan(input);
     const limits = capitalLimits({ capital, maxCapitalShare: input.maxCapitalShare });
     const economicMaxPrice = Math.max(0, Number(input.economicMaxPrice || 0));
+    const requestedStressMaxPrice = Number(input.stressMaxPrice);
+    const stressMaxPrice = Number.isFinite(requestedStressMaxPrice)
+      ? Math.max(0, requestedStressMaxPrice)
+      : economicMaxPrice;
+    const effectiveEconomicMaxPrice = Math.min(economicMaxPrice, stressMaxPrice);
     const capitalMaxPrice = capital.singleCardReserveSufficient ? limits.practicalCap : 0;
+    const finalMaxPrice = Math.min(effectiveEconomicMaxPrice, capitalMaxPrice);
+    const preStressFinalMaxPrice = Math.min(economicMaxPrice, capitalMaxPrice);
+    const supplyRiskReflected = preStressFinalMaxPrice <= stressMaxPrice;
+    const limitingFactor = finalMaxPrice <= 0
+      ? "none"
+      : capitalMaxPrice < effectiveEconomicMaxPrice
+        ? "capital"
+        : stressMaxPrice < economicMaxPrice
+          ? "supply-stress"
+          : "normal-economics";
     return {
       economicMaxPrice,
+      normalMaxPrice: economicMaxPrice,
+      stressMaxPrice,
+      effectiveEconomicMaxPrice,
       capitalMaxPrice,
-      finalMaxPrice: Math.min(economicMaxPrice, capitalMaxPrice),
+      finalMaxPrice,
+      preStressFinalMaxPrice,
+      limitingFactor,
+      supplyRiskReflected,
       ...limits,
     };
   }
@@ -205,6 +226,7 @@
     const caps = purchaseCaps({
       capital,
       economicMaxPrice: input.economicMaxPrice ?? input.maxBuyPrice,
+      stressMaxPrice: input.stressMaxPrice,
       maxCapitalShare: input.maxCapitalShare,
     });
     const qualityScore = Number(input.qualityScore || 0);
@@ -214,7 +236,7 @@
     const profitEligible = economics.expectedProfit >= Number(input.minExpectedProfit || 0)
       && economics.expectedRoi >= Number(input.minExpectedRoi || 0)
       && economics.annualEfficiency >= Number(input.minAnnualEfficiency || 0);
-    const economicEligible = profitEligible && purchasePrice <= caps.economicMaxPrice;
+    const economicEligible = profitEligible && purchasePrice <= caps.effectiveEconomicMaxPrice;
     if (economics.expectedProfit < 0) reasons.push("現在価格では期待利益がマイナス");
     else if (economics.expectedProfit < Number(input.minExpectedProfit || 0)) reasons.push("最低期待利益を未達");
     if (economics.expectedRoi < Number(input.minExpectedRoi || 0)) reasons.push("最低期待利益率を未達");
@@ -231,13 +253,15 @@
 
     let verdict;
     if (requiresManualReview) verdict = "要確認";
-    else if (!qualityEligible || !riskEligible || caps.economicMaxPrice <= 0) verdict = "見送り";
+    else if (!qualityEligible || !riskEligible || caps.effectiveEconomicMaxPrice <= 0) verdict = "見送り";
     else if (economicEligible && purchasePrice > caps.capitalMaxPrice) verdict = "資金不足";
     else if (economicEligible && purchasePrice <= caps.finalMaxPrice) verdict = "GO";
     else if (caps.finalMaxPrice > 0) verdict = "価格次第";
     else verdict = profitEligible ? "資金不足" : "見送り";
 
     if (verdict === "価格次第") reasons.push(`¥${Math.floor(caps.finalMaxPrice).toLocaleString("ja-JP")}以下なら再判定`);
+    if (caps.limitingFactor === "supply-stress") reasons.push("供給ストレス上限を仕入れ値へ反映");
+    else if (caps.supplyRiskReflected && Number.isFinite(Number(input.stressMaxPrice))) reasons.push("供給リスクは既存の安全余裕へ反映済み（二重控除なし）");
     return {
       verdict,
       reasons: [...new Set(reasons)],

@@ -1228,7 +1228,7 @@ function buildRiskBuffer(card, condition) {
   );
 }
 
-function buildScenarioInput(card, condition) {
+function buildScenarioInput(card, condition, forecastPrice = Number(card.futurePriceForecast?.predictedPrice || card.psa10 || 0)) {
   const assumptions = decisionModel.gradeAssumptions({
     condition,
     officialRate: card.official?.rate,
@@ -1236,11 +1236,11 @@ function buildScenarioInput(card, condition) {
     fallbackLabel: `${guideConfig().label}（公式未取得）`,
     psa9Price: card.snkPsa9Price,
     fallbackLowerGradePrice: card.price * 0.75,
-    forecastPrice: card.futurePriceForecast.predictedPrice,
+    forecastPrice,
   });
   return {
     assumptions,
-    forecastPrice: card.futurePriceForecast.predictedPrice,
+    forecastPrice,
     fee: state.fee,
     saleFeeRate: state.saleFeeRate,
     saleExtraCost: state.saleExtraCost,
@@ -1254,14 +1254,80 @@ function buildScenarioInput(card, condition) {
   };
 }
 
+function buildSupplyPipeline(card) {
+  if (!card.futurePriceForecast) {
+    return marketModel.evaluateSupplyPipeline({
+      psaIncrease7: null,
+      psaIncrease30: null,
+      psaTx7: card.psaTx7d,
+      psaTx30: card.psaTx30d,
+      rawTx7: card.saleTx7d,
+      rawTx30: card.saleTx30d,
+    });
+  }
+  const normalInput = buildScenarioInput(card, "clean");
+  const economics = decisionModel.expectedEconomics({ ...normalInput, purchasePrice: card.price });
+  const official = sourceAgeDays(card.official?.f) <= 2 ? card.official : null;
+  const demandLabel = card.buybackAnalysis?.absoluteStrongEligible ? "強い" : card.buybackAnalysis?.label;
+  const shopStockValues = [card.cardrushStock, card.hareruya2Stock, card.yuyuteiStock]
+    .map((entry) => Number(entry?.stock))
+    .filter(Number.isFinite);
+  return marketModel.evaluateSupplyPipeline({
+    psaIncrease7: official?.w7?.d10,
+    psaIncrease30: official?.w30?.d10,
+    psaDays7: official?.w7?.days,
+    psaDays30: official?.w30?.days,
+    psaPartial7: official?.w7?.partial,
+    psaPartial30: official?.w30?.partial,
+    psaTx7: card.psaTx7d,
+    psaTx30: card.psaTx30d,
+    rawTx7: card.saleTx7d,
+    rawTx30: card.saleTx30d,
+    psa10Rate: card.official?.rate,
+    releaseAgeMonths: Number.isFinite(card.futurePriceForecast?.releaseAgeYears) ? card.futurePriceForecast.releaseAgeYears * 12 : null,
+    expectedProfit: economics.expectedProfit,
+    shopStock: shopStockValues.length ? shopStockValues.reduce((sum, value) => sum + value, 0) : null,
+    psaListings: card.snkListings,
+    stockDrop30: card.shopDrop30,
+    listingTrendPct: card.marketStability?.listingTrendPct,
+    storeDemandLabel: demandLabel,
+    buybackRatio: card.buybackAnalysis?.ratioMedian,
+    buybackTrendPct: card.buybackAnalysis?.priceTrendPct,
+  });
+}
+
+function buildSupplyStress(card) {
+  return marketModel.supplyStressPrice({
+    centralPrice: card.futurePriceForecast?.centralPrice,
+    bearishPrice: card.futurePriceForecast?.bearishPrice,
+    pipeline: card.supplyPipeline,
+    buybackRows: card.buybackAnalysis?.rows,
+    supportConfirmed: card.marketStability?.supportConfirmed,
+    supportLow: card.marketStability?.supportClose?.low ?? card.marketStability?.supportLow,
+    listingTrendPct: card.marketStability?.listingTrendPct,
+    marketRelativeStrength: card.marketStability?.marketRelativeStrength,
+    step: 500,
+  });
+}
+
 function buildBuyLimitScenario(card, condition) {
   const input = buildScenarioInput(card, condition);
   const economicMaxPrice = decisionModel.maxBuyPrice({ ...input, step: 500 });
+  const stressForecastPrice = Number(card.supplyStress?.price) > 0 ? Number(card.supplyStress.price) : input.forecastPrice;
+  const stressInput = buildScenarioInput(card, condition, stressForecastPrice);
+  // The same risk buffer is reused rather than added again. The supply shock is
+  // represented by the lower exit price, preventing a duplicate percentage cut.
+  const stressMaxPrice = decisionModel.maxBuyPrice({ ...stressInput, step: 500 });
   const atLimit = decisionModel.expectedEconomics({ ...input, purchasePrice: economicMaxPrice });
+  const atStressLimit = decisionModel.expectedEconomics({ ...stressInput, purchasePrice: stressMaxPrice });
 
   return {
     maxPrice: economicMaxPrice,
     economicMaxPrice,
+    normalMaxPrice: economicMaxPrice,
+    stressMaxPrice,
+    stressForecastPrice,
+    stressExpectedSale: floorToStep(atStressLimit.expectedSale, 500),
     hitRate: input.assumptions.hitRate * 100,
     lowerGradePrice: floorToStep(input.assumptions.lowerGradePrice, 500),
     lowerGradeSource: input.assumptions.lowerGradeSource,
@@ -1270,6 +1336,7 @@ function buildBuyLimitScenario(card, condition) {
     requiredRoi: Math.max(state.minExpectedRoi, state.minAnnualEfficiency * state.lockDays / 365),
     assumptions: input.assumptions,
     modelInput: input,
+    stressModelInput: stressInput,
   };
 }
 
@@ -1281,14 +1348,23 @@ function buildBuyLimits(card) {
   const scratch = buildBuyLimitScenario(card, "scratch");
   if (!clean || !scratch) return null;
   scratch.economicMaxPrice = Math.min(scratch.economicMaxPrice, clean.economicMaxPrice);
+  scratch.normalMaxPrice = scratch.economicMaxPrice;
+  scratch.stressMaxPrice = Math.min(scratch.stressMaxPrice, clean.stressMaxPrice);
   [clean, scratch].forEach((scenario) => {
     const caps = decisionModel.purchaseCaps({
       capital,
       economicMaxPrice: scenario.economicMaxPrice,
+      stressMaxPrice: scenario.stressMaxPrice,
       maxCapitalShare: state.maxCapitalShare,
     });
+    scenario.normalMaxPrice = floorToStep(caps.normalMaxPrice, 500);
+    scenario.stressMaxPrice = floorToStep(caps.stressMaxPrice, 500);
+    scenario.effectiveEconomicMaxPrice = floorToStep(caps.effectiveEconomicMaxPrice, 500);
     scenario.capitalMaxPrice = floorToStep(caps.capitalMaxPrice, 500);
     scenario.finalMaxPrice = floorToStep(caps.finalMaxPrice, 500);
+    scenario.limitingFactor = caps.limitingFactor;
+    scenario.supplyRiskReflected = caps.supplyRiskReflected;
+    scenario.provisional = Boolean(card.supplyStress?.provisional);
     scenario.maxPrice = scenario.finalMaxPrice;
   });
   return {
@@ -1298,11 +1374,14 @@ function buildBuyLimits(card) {
     capitalLimits,
     rateSource: clean.assumptions.hitRateSource,
     forecastPrice: card.futurePriceForecast.predictedPrice,
+    stressPrice: card.supplyStress?.price || null,
   };
 }
 
 function finalizeCardDecision(card) {
   card.dataQuality = classifyDecisionData(card);
+  card.supplyPipeline = buildSupplyPipeline(card);
+  card.supplyStress = buildSupplyStress(card);
   card.buyLimits = buildBuyLimits(card);
   const cleanInput = card.buyLimits?.clean?.modelInput;
   const economics = cleanInput ? decisionModel.expectedEconomics({ ...cleanInput, purchasePrice: card.price }) : null;
@@ -1317,6 +1396,7 @@ function finalizeCardDecision(card) {
     economics,
     capital,
     economicMaxPrice: card.buyLimits.clean.economicMaxPrice,
+    stressMaxPrice: card.buyLimits.clean.stressMaxPrice,
     qualityScore: card.overallAssessment?.score,
     requiresManualReview: card.dataQuality.manualReview,
     manualReviewReasons: card.dataQuality.manualReviewReasons,
@@ -1342,8 +1422,10 @@ function finalizeCardDecision(card) {
     requiredReserve: capital.requiredReserve,
     singleCardSpend: finalDecision?.singleCardSpend,
     economicMaxPrice: finalDecision?.economicMaxPrice,
+    stressMaxPrice: finalDecision?.stressMaxPrice,
     capitalMaxPrice: finalDecision?.capitalMaxPrice,
     finalMaxPrice: finalDecision?.finalMaxPrice,
+    limitingFactor: finalDecision?.limitingFactor,
     forecastPsa10Net: economics.psa10Net,
   } : null;
   card.purchaseDecision = finalDecision;
@@ -1879,6 +1961,12 @@ function render() {
   const compactQuery = compactSearch(state.q);
   const calculated = state.cards.map(calc);
   marketModel.applyStoreDemandRelativeRanking(calculated, { strongShare: 0.3 });
+  // Store-demand labels are relative ranks and only become final after every
+  // card is calculated. Refresh the display classification without changing
+  // the already-computed stress price or applying another risk deduction.
+  calculated.forEach((card) => {
+    if (card.futurePriceForecast) card.supplyPipeline = buildSupplyPipeline(card);
+  });
   const roiByPsaPriceBand = new Map();
   const psaTxByPriceBand = new Map();
   calculated.forEach((card) => {
@@ -2194,6 +2282,21 @@ function render() {
     ].filter(Boolean).join("");
     const dataQualityPanel = dataQualityPanels ? `<div class="data-quality-notices">${dataQualityPanels}</div>` : "";
     const buyLimits = card.buyLimits;
+    const supply = card.supplyPipeline || {};
+    const supplyClass = supply.strongDeclineWarning ? "severe" : supply.pressureKey || "collecting";
+    const supplyBadges = [
+      supply.status === "蓄積中" ? "蓄積中" : "供給リスク反映済み",
+      supply.classification === "高需要・供給過多" ? "高需要・供給過多" : "",
+      supply.strongDeclineWarning ? "強い下落警戒" : "",
+      buyLimits?.clean?.provisional ? "暫定上限" : "",
+    ].filter(Boolean);
+    const supplyBadgesHtml = supplyBadges.map((label) => `<b class="supply-badge ${supplyClass}">${escapeHtml(label)}</b>`).join("");
+    const limitReasonLabel = (scenario) => ({
+      "supply-stress": "供給ストレス上限を採用",
+      capital: "現在の資金上限を採用",
+      "normal-economics": scenario?.supplyRiskReflected ? "通常上限が十分安全・二重控除なし" : "通常の採算上限を採用",
+      none: "設定条件では仕入れ見送り",
+    }[scenario?.limitingFactor] || "判定中");
     const cleanMarketStatus = buyLimits?.clean?.maxPrice > 0
       ? card.price <= buyLimits.clean.maxPrice
         ? "平均美品価格は仕入れ圏内"
@@ -2203,27 +2306,25 @@ function render() {
       <section class="buy-limit-panel" aria-label="状態別の仕入れ上限価格">
         <div class="buy-limit-head">
           <div><span>店舗で見る仕入れ上限</span><strong>この状態なら、ここまで</strong></div>
-          <small>${escapeHtml(buyLimits.rateSource)}・予測PSA10 ¥${fmt.format(buyLimits.forecastPrice)}</small>
+          <small>${escapeHtml(buyLimits.rateSource)}・PSA鑑定費・売却手数料を反映</small>
         </div>
         <div class="buy-limit-grid">
           <div class="buy-limit-card clean ${buyLimits.clean.maxPrice > 0 ? "available" : "blocked"}">
-            <span>美品・実際に使える最終上限</span>
+            <span>${buyLimits.clean.provisional ? "暫定上限" : "実際に使える最終上限"}・美品</span>
             <strong>${buyLimitText(buyLimits.clean)}</strong>
             <b>PSA10想定 ${buyLimits.clean.hitRate.toFixed(1)}%</b>
-            <div class="buy-limit-breakdown"><span>採算上の上限</span><em>¥${fmt.format(buyLimits.clean.economicMaxPrice)}</em><span>現在の資金で買える上限</span><em>¥${fmt.format(buyLimits.clean.capitalMaxPrice)}</em></div>
-            <small>${escapeHtml(cleanMarketStatus)} / 9以下 ¥${fmt.format(buyLimits.clean.lowerGradePrice)}想定</small>
+            <small>${escapeHtml(cleanMarketStatus)} / ${escapeHtml(limitReasonLabel(buyLimits.clean))}</small>
           </div>
           <div class="buy-limit-card scratch ${buyLimits.scratch.maxPrice > 0 ? "available" : "blocked"}">
-            <span>多少の傷あり・実際に使える最終上限</span>
+            <span>${buyLimits.scratch.provisional ? "暫定上限" : "実際に使える最終上限"}・多少の傷あり</span>
             <strong>${buyLimitText(buyLimits.scratch)}</strong>
             <b>PSA10想定 ${buyLimits.scratch.hitRate.toFixed(1)}%</b>
-            <div class="buy-limit-breakdown"><span>採算上の上限</span><em>¥${fmt.format(buyLimits.scratch.economicMaxPrice)}</em><span>現在の資金で買える上限</span><em>¥${fmt.format(buyLimits.scratch.capitalMaxPrice)}</em></div>
-            <small>美品の10率を45%減 / 9以下 ¥${fmt.format(buyLimits.scratch.lowerGradePrice)}想定</small>
+            <small>美品の10率を45%減 / ${escapeHtml(limitReasonLabel(buyLimits.scratch))}</small>
           </div>
         </div>
+        <div class="supply-badges">${supplyBadgesHtml}</div>
         <div class="buy-limit-foot">
-          <span>下落・回転の安全余裕 美品 ${buyLimits.clean.riskBufferPct.toFixed(1)}% / 傷あり ${buyLimits.scratch.riskBufferPct.toFixed(1)}%</span>
-          <span>個別カードは1枚で判定 / 複数枚の合計はお気に入り一覧で確認 / ${escapeHtml(buyLimits.clean.lowerGradeSource)}・PSA鑑定費・売却手数料を反映</span>
+          <span>個別カードは1枚で判定。通常・供給ストレス・資金のうち最も安全な上限を表示しています。</span>
         </div>
       </section>
     ` : "";
@@ -2260,7 +2361,7 @@ function render() {
     ` : "";
     const purchaseSummaryPanel = psaDecision && purchaseDecision ? `
       <section class="purchase-summary ${decisionClass}">
-        <div class="purchase-final-limit"><span>実際に使える最終上限・美品</span><strong>${buyLimitText(card.buyLimits?.clean)}</strong><small>採算上 ¥${fmt.format(card.buyLimits?.clean?.economicMaxPrice || 0)} / 資金上 ¥${fmt.format(card.buyLimits?.clean?.capitalMaxPrice || 0)}</small></div>
+        <div class="purchase-final-limit"><span>${card.buyLimits?.clean?.provisional ? "暫定上限" : "実際に使える最終上限"}・美品</span><strong>${buyLimitText(card.buyLimits?.clean)}</strong><small>${escapeHtml(limitReasonLabel(card.buyLimits?.clean))}</small><div class="supply-badges">${supplyBadgesHtml}</div></div>
         <div class="purchase-verdict"><span>今回の仕入れ判断</span><strong>${escapeHtml(displayVerdict)}</strong><small>${escapeHtml(decisionReasons)}</small></div>
         <div><span>現在価格での期待利益</span><strong class="${psaDecision.expectedProfit < 0 ? "negative" : "positive"}">¥${fmt.format(Math.round(psaDecision.expectedProfit))}</strong></div>
         <div><span>91日後・中央推計</span><strong>¥${fmt.format(card.futurePriceForecast?.centralPrice || 0)}</strong></div>
@@ -2327,12 +2428,42 @@ function render() {
         <small>${escapeHtml(historyWindowText)}。異なるサイトの取引数と在庫数は直接加算せず、在庫消化日数は店舗ごとの中央値だけを表示します。</small>
       </div>
     `;
+    const pressureRatioText = Number.isFinite(supply.pressureRatio) ? `${Number(supply.pressureRatio).toFixed(2)}倍` : "蓄積中";
+    const absorptionRateText = Number.isFinite(supply.absorptionRate) ? Number(supply.absorptionRate).toFixed(3) : "蓄積中";
+    const stressPriceText = Number(card.supplyStress?.price) > 0 ? `¥${fmt.format(card.supplyStress.price)}` : "蓄積中";
+    const supplyEvidence = [...(supply.evidence || []), ...(supply.cautions || [])].join(" / ") || "PSA公式推移と取引履歴を蓄積中";
+    const riskReflectionText = card.buyLimits?.clean?.supplyRiskReflected
+      ? "既存の安全余裕へ反映済み（二重控除なし）"
+      : "供給ストレス上限を仕入れ値へ反映済み";
+    const supplyPipelinePanel = `
+      <div class="supply-pipeline-panel ${supplyClass}">
+        <div class="supply-pipeline-head"><div><span>供給パイプライン評価</span><strong>${escapeHtml(supply.classification || "蓄積中")}</strong></div><b>${escapeHtml(supply.pressureLabel || "蓄積中")}</b></div>
+        <div class="supply-pipeline-grid">
+          <div><span>供給圧力比</span><strong>${pressureRatioText}</strong><small>PSA10増加数 ÷ PSA10取引数</small></div>
+          <div><span>供給吸収率</span><strong>${absorptionRateText}</strong><small>PSA10取引数 ÷ PSA10増加数</small></div>
+          <div><span>採用期間</span><strong>${supply.sourceWindowDays ? `${fmt.format(supply.sourceWindowDays)}日${supply.status === "暫定" ? "・暫定" : ""}` : "蓄積中"}</strong></div>
+          <div><span>将来供給の予備軍</span><strong>${supply.reservePipeline ? "多い" : supply.status === "蓄積中" ? "蓄積中" : "通常"}</strong></div>
+          <div><span>弱気予測価格</span><strong>¥${fmt.format(card.futurePriceForecast?.bearishPrice || 0)}</strong></div>
+          <div><span>供給ストレス価格</span><strong>${stressPriceText}</strong><small>下落補正 ${Number.isFinite(card.supplyStress?.haircutPct) ? `${card.supplyStress.haircutPct}%` : "蓄積中"}</small></div>
+        </div>
+        <div class="supply-limit-breakdown">
+          <div><span>通常の採算上限</span><strong>¥${fmt.format(card.buyLimits?.clean?.normalMaxPrice || 0)}</strong></div>
+          <div><span>供給ストレス上限</span><strong>¥${fmt.format(card.buyLimits?.clean?.stressMaxPrice || 0)}</strong></div>
+          <div><span>資金上限</span><strong>¥${fmt.format(card.buyLimits?.clean?.capitalMaxPrice || 0)}</strong></div>
+          <div class="final"><span>実際に使える最終上限</span><strong>¥${fmt.format(card.buyLimits?.clean?.finalMaxPrice || 0)}</strong></div>
+        </div>
+        <p><b>最終上限の決定理由：</b>${escapeHtml(limitReasonLabel(card.buyLimits?.clean))}</p>
+        <p><b>供給リスク反映状況：</b>${escapeHtml(riskReflectionText)}</p>
+        <small>${escapeHtml(supplyEvidence)}。供給履歴不足や増加数・取引数0は0倍にせず、暫定上限として扱います。</small>
+      </div>
+    `;
     const marketSignalsPanel = `
       <section class="market-signal-strip" aria-label="独立した仕入れ評価指標">
         <div class="${floorClass}"><span>下値安定</span><strong>${escapeHtml(floor?.state || "蓄積中")}</strong><small>${floorScoreText}</small></div>
         <div class="demand-${storeDemandKey(card.buybackAnalysis?.label)}"><span>店舗需要</span><strong>${escapeHtml(card.buybackAnalysis?.label || "蓄積中")}</strong><small>${buybackDemandScoreText}</small></div>
         <div><span>将来価格</span><strong>${fmt.format(forecast?.score || 0)}/100</strong><small>${escapeHtml(forecast?.phase || "蓄積中")}</small></div>
         <div><span>売りやすさ</span><strong>${fmt.format(card.overallAssessment?.exitLiquidity || 0)}/100</strong><small>PSA10取引・出口</small></div>
+        <div class="supply-${supplyClass}"><span>供給パイプライン</span><strong>${escapeHtml(supply.classification || "蓄積中")}</strong><small>${pressureRatioText}</small></div>
         <div><span>期待利益</span><strong class="${Number(psaDecision?.expectedProfit || 0) >= 0 ? "positive" : "negative"}">¥${fmt.format(Math.round(psaDecision?.expectedProfit || 0))}</strong><small>既存計算を維持</small></div>
       </section>
     `;
@@ -2396,7 +2527,7 @@ function render() {
           ${marketSignalsPanel}
 
           <details class="card-details">
-            <summary><span>詳細データを見る</span><small>下値安定・買取率・相場・予測・公式PSA</small></summary>
+            <summary><span>詳細データを見る</span><small>供給上限・下値安定・買取率・相場・公式PSA</small></summary>
             <div class="card-details-body">
               <div class="metrics market-summary">
                 <div class="metric metric-primary"><span>平均美品価格（中央値）</span><strong>¥${fmt.format(card.price)}</strong><small>${priceSources}</small></div>
@@ -2410,6 +2541,7 @@ function render() {
               ${psaDecisionPanel}
               ${floorPanel}
               ${forecastPanel}
+              ${supplyPipelinePanel}
               ${overallPanel}
               ${activityPanel}
               ${stockPanel}

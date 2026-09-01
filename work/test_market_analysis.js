@@ -178,7 +178,88 @@ const missingReliability = model.sourceReliability({ scheduledDays: 0, successfu
 assert.strictEqual(missingReliability.successRate, null);
 assert.strictEqual(missingReliability.score, null);
 
-for (const result of [stable, sparse, brokenSupport, buyback, stale, mismatch, demand, singleCampaign, shopSummary, zeroValues, quarantined, reliability, missingReliability]) {
+const absorbedPipeline = model.evaluateSupplyPipeline({
+  psaIncrease30: 10, psaTx30: 20, psaDays30: 30, psaPartial30: false,
+  psaIncrease7: 3, psaTx7: 7, psaDays7: 7, psaPartial7: false,
+  rawTx30: 35, psa10Rate: 65, releaseAgeMonths: 30, expectedProfit: 12000,
+});
+assert.strictEqual(absorbedPipeline.status, "判定可");
+assert.strictEqual(absorbedPipeline.pressureRatio, 0.5);
+assert.strictEqual(absorbedPipeline.absorptionRate, 2);
+assert.strictEqual(absorbedPipeline.classification, "高需要・供給吸収");
+
+const busyOversupply = model.evaluateSupplyPipeline({
+  psaIncrease30: 100, psaTx30: 20, psaDays30: 30, psaPartial30: false,
+  rawTx30: 60, psa10Rate: 88, releaseAgeMonths: 8, expectedProfit: 20000,
+  storeDemandLabel: "強い",
+});
+assert.strictEqual(busyOversupply.pressureRatio, 5);
+assert.strictEqual(busyOversupply.classification, "高需要・供給過多");
+assert.strictEqual(busyOversupply.reservePipeline, true);
+
+const lowDemandOversupply = model.evaluateSupplyPipeline({
+  psaIncrease30: 40, psaTx30: 2, psaDays30: 30, psaPartial30: false,
+  rawTx30: 3, psa10Rate: 80, releaseAgeMonths: 24, expectedProfit: 5000,
+});
+assert.strictEqual(lowDemandOversupply.pressureRatio, 20);
+assert.strictEqual(lowDemandOversupply.classification, "低需要・供給過多");
+assert.strictEqual(lowDemandOversupply.strongDeclineWarning, true);
+
+const newReleaseCollecting = model.evaluateSupplyPipeline({
+  psaIncrease7: 20, psaTx7: 10, psaDays7: 3, psaPartial7: true,
+  rawTx30: 80, psa10Rate: 90, releaseAgeMonths: 2, expectedProfit: 25000,
+});
+assert.strictEqual(newReleaseCollecting.status, "蓄積中");
+assert.strictEqual(newReleaseCollecting.pressureRatio, null);
+assert.strictEqual(newReleaseCollecting.classification, "蓄積中");
+
+const zeroPipeline = model.evaluateSupplyPipeline({
+  psaIncrease30: 0, psaTx30: 0, psaDays30: 30, psaPartial30: false,
+});
+assert.strictEqual(zeroPipeline.status, "蓄積中");
+assert.strictEqual(zeroPipeline.pressureRatio, null);
+assert.strictEqual(zeroPipeline.absorptionRate, null);
+
+const stress = model.supplyStressPrice({
+  centralPrice: 100000,
+  bearishPrice: 85000,
+  pipeline: busyOversupply,
+  buybackRows: [
+    { shopId: "a", valid: true, stale: false, outlier: false, buybackPrice: 78000 },
+    { shopId: "b", valid: true, stale: false, outlier: false, buybackPrice: 80000 },
+    { shopId: "old", valid: true, stale: true, outlier: false, buybackPrice: 30000 },
+    { shopId: "odd", valid: true, stale: false, outlier: true, buybackPrice: 200000 },
+  ],
+  supportConfirmed: true,
+  supportLow: 76000,
+  marketRelativeStrength: -4,
+});
+assert(stress.price > 0 && stress.price < 85000);
+assert.strictEqual(stress.trustedBuybackCount, 2);
+assert.strictEqual(stress.trustedBuybackMedian, 79000);
+
+const staleOnlyStress = model.supplyStressPrice({
+  centralPrice: 90000,
+  bearishPrice: 80000,
+  pipeline: absorbedPipeline,
+  buybackRows: [{ shopId: "old", valid: true, stale: true, buybackPrice: 10000 }],
+});
+assert.strictEqual(staleOnlyStress.trustedBuybackCount, 0);
+assert.strictEqual(staleOnlyStress.price, 80000);
+
+const singleOddStress = model.supplyStressPrice({
+  centralPrice: 90000,
+  bearishPrice: 80000,
+  pipeline: absorbedPipeline,
+  buybackRows: [{ shopId: "only", valid: true, stale: false, buybackPrice: 4500000 }],
+});
+assert.strictEqual(singleOddStress.trustedBuybackCount, 0);
+assert.strictEqual(singleOddStress.price, 80000);
+
+const invalidStress = model.supplyStressPrice({ centralPrice: NaN, bearishPrice: -1, pipeline: zeroPipeline });
+assert.strictEqual(invalidStress.price, null);
+
+for (const result of [stable, sparse, brokenSupport, buyback, stale, mismatch, demand, singleCampaign, shopSummary, zeroValues, quarantined, reliability, missingReliability, absorbedPipeline, busyOversupply, lowDemandOversupply, newReleaseCollecting, zeroPipeline, stress, staleOnlyStress, singleOddStress, invalidStress]) {
   assert.strictEqual(containsUnsafeNumber(result), false);
 }
 

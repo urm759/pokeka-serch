@@ -10,6 +10,16 @@
     30: Object.freeze({ minSamples: 8, minSpanDays: 21 }),
     90: Object.freeze({ minSamples: 16, minSpanDays: 60 }),
   });
+  const SUPPLY_STRESS_CALIBRATION = Object.freeze({
+    absorbed: 0,
+    normal: 0.03,
+    caution: 0.08,
+    excess: 0.15,
+    severe: 0.25,
+    reservePipeline: 0.03,
+    risingListings: 0.03,
+    relativeWeaknessMax: 0.05,
+  });
 
   function finite(value) {
     if (value == null || value === "") return null;
@@ -517,6 +527,194 @@
     return cards;
   }
 
+  function supplyWindow(input = {}) {
+    const targetDays = Number(input.targetDays) === 30 ? 30 : 7;
+    const minSpanDays = targetDays === 30 ? 21 : 5;
+    const increase = finite(input.increase);
+    const transactions = finite(input.transactions);
+    const days = finite(input.days);
+    const enoughHistory = input.partial !== true && days != null && days >= minSpanDays;
+    const ready = enoughHistory && increase != null && increase > 0 && transactions != null && transactions > 0;
+    const pressureRatio = ready ? safeDivide(increase, transactions) : null;
+    const absorptionRate = ready ? safeDivide(transactions, increase) : null;
+    return {
+      targetDays,
+      minSpanDays,
+      days,
+      increase: increase != null && increase >= 0 ? increase : null,
+      transactions: transactions != null && transactions >= 0 ? transactions : null,
+      ready,
+      status: ready ? "判定可" : "蓄積中",
+      pressureRatio: round(pressureRatio),
+      absorptionRate: round(absorptionRate),
+      reason: ready
+        ? ""
+        : !enoughHistory
+          ? `${targetDays}日分の履歴を蓄積中`
+          : increase === 0 || transactions === 0
+            ? "PSA10増加数または取引数が0のため比率未算出"
+            : "PSA10増加数または取引数が未取得",
+    };
+  }
+
+  function supplyPressureBand(ratio) {
+    const value = finite(ratio);
+    if (value == null) return { key: "collecting", label: "蓄積中", baseRisk: 0 };
+    if (value < 1) return { key: "absorbed", label: "需要が供給を吸収", baseRisk: 15 };
+    if (value < 2) return { key: "normal", label: "普通", baseRisk: 35 };
+    if (value < 5) return { key: "caution", label: "供給警戒", baseRisk: 58 };
+    if (value <= 10) return { key: "excess", label: "供給過多", baseRisk: 78 };
+    return { key: "severe", label: "強い下落警戒", baseRisk: 96 };
+  }
+
+  function evaluateSupplyPipeline(input = {}) {
+    const window7 = supplyWindow({
+      targetDays: 7,
+      increase: input.psaIncrease7,
+      transactions: input.psaTx7,
+      days: input.psaDays7,
+      partial: input.psaPartial7,
+    });
+    const window30 = supplyWindow({
+      targetDays: 30,
+      increase: input.psaIncrease30,
+      transactions: input.psaTx30,
+      days: input.psaDays30,
+      partial: input.psaPartial30,
+    });
+    const selected = window30.ready ? window30 : window7.ready ? window7 : null;
+    const pressure = supplyPressureBand(selected?.pressureRatio);
+    const releaseAgeMonths = finite(input.releaseAgeMonths);
+    const psa10Rate = finite(input.psa10Rate);
+    const rawTx7 = Math.max(0, finite(input.rawTx7) || 0);
+    const rawTx30 = Math.max(0, finite(input.rawTx30) || 0);
+    const expectedProfit = finite(input.expectedProfit);
+    const shopStock = finite(input.shopStock);
+    const psaListings = finite(input.psaListings);
+    const recent = releaseAgeMonths != null && releaseAgeMonths <= 18;
+    const reserveSignals = [
+      recent,
+      rawTx30 >= 30,
+      psa10Rate != null && psa10Rate >= 75,
+      expectedProfit != null && expectedProfit > 0,
+      shopStock != null && shopStock >= 10,
+    ];
+    const reserveSignalCount = reserveSignals.filter(Boolean).length;
+    const reservePipeline = reserveSignalCount >= 3 && recent;
+    const psaLiquidity = selected?.targetDays === 30
+      ? Math.max(0, finite(input.psaTx30) || 0)
+      : Math.max(0, finite(input.psaTx7) || 0) * 4.3;
+    const storeDemandStrong = input.storeDemandLabel === "強い";
+    const highDemand = storeDemandStrong || psaLiquidity >= 15;
+    let classification = "蓄積中";
+    if (selected) {
+      if (highDemand && selected.pressureRatio < 2) classification = "高需要・供給吸収";
+      else if (highDemand && selected.pressureRatio >= 2) classification = "高需要・供給過多";
+      else if (!highDemand && selected.pressureRatio >= 1) classification = "低需要・供給過多";
+      else classification = "低需要・低流動";
+    }
+
+    let riskScore = selected ? pressure.baseRisk : null;
+    if (riskScore != null) {
+      if (reservePipeline) riskScore += 8;
+      if (recent && rawTx7 >= 12 && rawTx30 >= 30) riskScore += 4;
+      if (recent && shopStock != null && shopStock >= 20 && expectedProfit > 0) riskScore += 4;
+      if (psaListings != null && psaListings >= Math.max(10, psaLiquidity * 2)) riskScore += 4;
+      if (finite(input.listingTrendPct) > 10) riskScore += 6;
+      if (finite(input.stockDrop30) > 5 && rawTx30 >= 30) riskScore += 4;
+      if (finite(input.buybackTrendPct) < -5) riskScore += 5;
+      if (finite(input.buybackRatio) >= 0.85 && finite(input.buybackTrendPct) >= 0) riskScore -= 5;
+      riskScore = Math.round(clamp(riskScore));
+    }
+
+    const evidence = [];
+    const cautions = [];
+    if (selected) evidence.push(`${selected.targetDays}日 供給圧力比${selected.pressureRatio.toFixed(2)}倍`);
+    else cautions.push(window30.reason || window7.reason || "供給履歴を蓄積中");
+    if (reservePipeline) cautions.push("新弾・高取得率・美品売買・鑑定利益から将来供給の予備軍が多い");
+    if (recent && shopStock != null && shopStock >= 20 && expectedProfit > 0) cautions.push("ショップ状態A在庫が多く鑑定向け供給になり得る");
+    if (psaListings != null && psaListings >= Math.max(10, psaLiquidity * 2)) cautions.push("PSA10出品数が取引量に対して多い");
+    if (finite(input.listingTrendPct) > 10) cautions.push("PSA10出品数が増加");
+    if (finite(input.buybackRatio) >= 0.85 && finite(input.buybackTrendPct) >= 0) evidence.push("店舗買取が相場を支えている");
+    if (selected?.pressureRatio < 1) evidence.push("PSA10取引数が供給増を上回る");
+
+    return {
+      status: window30.ready ? "判定可" : window7.ready ? "暫定" : "蓄積中",
+      sourceWindowDays: selected?.targetDays || null,
+      pressureRatio: selected?.pressureRatio ?? null,
+      absorptionRate: selected?.absorptionRate ?? null,
+      pressureKey: pressure.key,
+      pressureLabel: pressure.label,
+      strongDeclineWarning: pressure.key === "severe",
+      classification,
+      riskScore,
+      reservePipeline,
+      reserveSignalCount,
+      releaseAgeMonths,
+      psa10Rate,
+      expectedProfit,
+      shopStock,
+      psaListings,
+      window7,
+      window30,
+      evidence: evidence.slice(0, 4),
+      cautions: cautions.slice(0, 4),
+    };
+  }
+
+  function supplyStressPrice(input = {}) {
+    const centralPrice = positive(input.centralPrice);
+    const bearishPrice = positive(input.bearishPrice) ?? centralPrice;
+    if (bearishPrice == null) {
+      return { price: null, provisional: true, reason: "弱気予測価格を取得できない", trustedBuybackCount: 0 };
+    }
+    const pipeline = input.pipeline || {};
+    const calibration = { ...SUPPLY_STRESS_CALIBRATION, ...(input.calibration || {}) };
+    const trustedRows = (input.buybackRows || []).filter((row) => row?.valid && !row.stale && !row.outlier && !row.quarantined);
+    const distinctStores = new Set(trustedRows.map((row) => row.shopId).filter(Boolean)).size;
+    const trustedPrices = trustedRows.map((row) => positive(row.buybackPrice)).filter((value) => value != null);
+    const buybackSpread = trustedPrices.length >= 2 ? Math.max(...trustedPrices) / Math.min(...trustedPrices) : null;
+    const buybackUsable = distinctStores >= 2 && trustedPrices.length >= 2 && buybackSpread <= 1.35;
+    const buybackMedian = buybackUsable ? median(trustedPrices) : null;
+    const supportLow = input.supportConfirmed ? positive(input.supportLow) : null;
+    const ratio = finite(pipeline.pressureRatio);
+    const key = pipeline.pressureKey || "collecting";
+    let haircut = ratio == null ? 0 : Number(calibration[key] || 0);
+    if (pipeline.reservePipeline) haircut += Number(calibration.reservePipeline || 0);
+    if (finite(input.listingTrendPct) > 10) haircut += Number(calibration.risingListings || 0);
+    const relativeWeakness = Math.max(0, -(finite(input.marketRelativeStrength) || 0));
+    haircut += Math.min(Number(calibration.relativeWeaknessMax || 0), relativeWeakness / 100);
+    haircut = clamp(haircut, 0, 0.4);
+
+    let anchor = bearishPrice;
+    const reasons = ["既存の弱気予測を基準"];
+    if (buybackMedian != null && buybackMedian < anchor) {
+      anchor = anchor * 0.7 + buybackMedian * 0.3;
+      reasons.push(`信頼できる${distinctStores}店舗の買取中央値を反映`);
+    }
+    if (supportLow != null && supportLow < anchor) {
+      anchor = anchor * 0.8 + supportLow * 0.2;
+      reasons.push("確認済み支持価格帯を反映");
+    }
+    if (ratio != null) reasons.push(`供給圧力${pipeline.pressureLabel || "判定済み"}の下落シナリオ`);
+    else reasons.push("供給履歴不足のため追加下落率は未適用");
+    const rawPrice = anchor * (1 - haircut);
+    const step = Math.max(1, finite(input.step) || 500);
+    const price = Math.max(0, Math.floor(Math.min(bearishPrice, rawPrice) / step) * step);
+    return {
+      price: Number.isFinite(price) ? price : null,
+      provisional: pipeline.status !== "判定可",
+      haircutPct: round(haircut * 100, 1),
+      bearishPrice,
+      anchorPrice: Math.round(anchor),
+      trustedBuybackMedian: buybackMedian == null ? null : Math.round(buybackMedian),
+      trustedBuybackCount: buybackUsable ? distinctStores : 0,
+      supportLow,
+      reasons,
+      calibrationKey: key,
+    };
+  }
+
   function summarizeShopRates(rows, options = {}) {
     const marked = markRatioOutliers(rows || []);
     const allValid = marked.filter((row) => row.valid && !row.stale);
@@ -566,6 +764,9 @@
     round,
     safeDivide,
     sourceReliability,
+    supplyStressPrice,
+    evaluateSupplyPipeline,
+    SUPPLY_STRESS_CALIBRATION,
     summarizeShopRates,
   };
 });
