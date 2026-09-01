@@ -65,7 +65,25 @@ const brokenSupport = model.evaluatePriceFloor({
   storeAgreement: 85,
 });
 assert.strictEqual(brokenSupport.state, "下値割れ");
-assert(brokenSupport.supportHigh < 52000);
+assert.strictEqual(brokenSupport.supportConfirmed, true);
+assert(brokenSupport.supportLow > 54000);
+assert.strictEqual(brokenSupport.supportClose.contacts >= 3, true);
+
+assert.strictEqual(sparse.supportConfirmed, false);
+
+const shortThreeTouches = model.evaluatePriceFloor({
+  history: [
+    ["2026-01-01", 50000, 90000, 20, 8, 2, 400, 100, 50000, 89000],
+    ["2026-01-02", 50000, 90500, 20, 8, 2, 400, 100, 50000, 89500],
+    ["2026-01-03", 50000, 90000, 20, 8, 2, 400, 100, 50000, 89000],
+    ["2026-01-04", 50000, 92000, 20, 8, 2, 400, 100, 50000, 90000],
+  ],
+  psaTx30: 20,
+  rawTx30: 40,
+});
+assert.strictEqual(shortThreeTouches.state, "蓄積中");
+assert.strictEqual(shortThreeTouches.supportConfirmed, false, "必要期間不足中は3日接触でも暫定観測帯にする");
+assert(Number.isFinite(sparse.supportLow));
 
 const buyback = model.buybackMetrics({
   marketPrice: 84000,
@@ -143,7 +161,22 @@ assert.strictEqual(shopSummary.reference, true);
 const zeroValues = model.buybackMetrics({ marketPrice: 0, buybackPrice: 0, saleFeeRate: 100 });
 assert.strictEqual(zeroValues.valid, false);
 
-for (const result of [stable, sparse, brokenSupport, buyback, stale, mismatch, demand, singleCampaign, shopSummary, zeroValues]) {
+const quarantined = model.buybackMetrics({ marketPrice: 50000, buybackPrice: 4500000, dataQuarantined: true });
+assert.strictEqual(quarantined.valid, false);
+assert.strictEqual(quarantined.reason, "データ異常（自動隔離）");
+assert.strictEqual(model.extremePriceState(50000, 4500000).severe, true);
+
+const reliability = model.sourceReliability({ scheduledDays: 14, successfulDays: 12, priceObservations: 100, outliers: 4, matchedItems: 80, mismatchSuspicions: 2 });
+assert.strictEqual(reliability.successRate, 0.857);
+assert.strictEqual(reliability.outlierRate, 0.04);
+assert.strictEqual(reliability.mismatchRate, 0.025);
+assert(Number.isFinite(reliability.score));
+
+const missingReliability = model.sourceReliability({ scheduledDays: 0, successfulDays: 0, priceObservations: 0, outliers: 0 });
+assert.strictEqual(missingReliability.successRate, null);
+assert.strictEqual(missingReliability.score, null);
+
+for (const result of [stable, sparse, brokenSupport, buyback, stale, mismatch, demand, singleCampaign, shopSummary, zeroValues, quarantined, reliability, missingReliability]) {
   assert.strictEqual(containsUnsafeNumber(result), false);
 }
 

@@ -1,6 +1,7 @@
 const fmt = new Intl.NumberFormat("ja-JP");
 const decisionModel = window.PurchaseDecisionModel;
 const marketModel = window.MarketAnalysisModel;
+const backtestModel = window.BacktestModel;
 const FORECAST_HORIZON_DAYS = 91;
 
 const state = {
@@ -16,6 +17,7 @@ const state = {
   marketStability: Object.create(null),
   marketStabilityMeta: null,
   marketBacktest: null,
+  actualResults: Object.create(null),
   psaPopulation: Object.create(null),
   psaHistoryCache: Object.create(null),
   psaServices: null,
@@ -73,6 +75,7 @@ const state = {
   maxForecastMonthlyIncrease: null,
   stockDemand: "all",
   dataQualityFilter: "all",
+  goConfidenceFilter: "all",
   floorState: "all",
   priceDirection: "all",
   supplyState: "all",
@@ -103,6 +106,7 @@ const state = {
 
 const FAVORITES_STORAGE_KEY = "pokeka-buy-favorites-v1";
 const FAVORITE_QUANTITIES_STORAGE_KEY = "pokeka-buy-favorite-quantities-v1";
+const ACTUAL_RESULTS_STORAGE_KEY = "pokeka-backtest-actual-results-v1";
 let favoriteQuantityRenderTimer = null;
 
 let meta = window.POKEMON_CARDS_META || {};
@@ -165,6 +169,7 @@ const els = {
   maxForecastMonthlyIncreaseInput: document.getElementById("maxForecastMonthlyIncreaseInput"),
   stockDemandInput: document.getElementById("stockDemandInput"),
   dataQualityFilterInput: document.getElementById("dataQualityFilterInput"),
+  goConfidenceFilterInput: document.getElementById("goConfidenceFilterInput"),
   floorStateInput: document.getElementById("floorStateInput"),
   priceDirectionInput: document.getElementById("priceDirectionInput"),
   supplyStateInput: document.getElementById("supplyStateInput"),
@@ -233,6 +238,14 @@ const els = {
   shopReferenceLinks: document.getElementById("shopReferenceLinks"),
   shopRateSummary: document.getElementById("shopRateSummary"),
   marketBacktestSummary: document.getElementById("marketBacktestSummary"),
+  actualResultForm: document.getElementById("actualResultForm"),
+  actualCardIdInput: document.getElementById("actualCardIdInput"),
+  actualBaseDateInput: document.getElementById("actualBaseDateInput"),
+  actualGradeInput: document.getElementById("actualGradeInput"),
+  actualSalePriceInput: document.getElementById("actualSalePriceInput"),
+  actualGradingFeeInput: document.getElementById("actualGradingFeeInput"),
+  actualSaleFeeInput: document.getElementById("actualSaleFeeInput"),
+  actualResultStatus: document.getElementById("actualResultStatus"),
 };
 
 function showStatus(message, kind = "info") {
@@ -512,6 +525,19 @@ function saveFavorites() {
   localStorage.setItem(FAVORITE_QUANTITIES_STORAGE_KEY, JSON.stringify(state.favoriteQuantities));
 }
 
+function loadActualResults() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(ACTUAL_RESULTS_STORAGE_KEY) || "{}");
+    state.actualResults = saved && typeof saved === "object" ? saved : Object.create(null);
+  } catch {
+    state.actualResults = Object.create(null);
+  }
+}
+
+function saveActualResults() {
+  localStorage.setItem(ACTUAL_RESULTS_STORAGE_KEY, JSON.stringify(state.actualResults));
+}
+
 function favoriteQuantity(id) {
   return Math.max(1, Math.floor(Number(state.favoriteQuantities[String(id)] || 1)));
 }
@@ -582,7 +608,8 @@ function renderFavorites() {
   }
   els.favoritesList.innerHTML = cards.map((card) => {
     const limits = card.buyLimits;
-    const verdict = card.purchaseDecision?.verdict || "未判定";
+    const verdict = card.goConfidence || card.purchaseDecision?.verdict || "未判定";
+    const verdictRecommended = verdict === "GO・確認済み" || verdict === "暫定GO";
     const quantity = favoriteQuantity(card.id);
     const name = escapeHtml(String(card.name || "").replace(/\s+/g, " "));
     return `
@@ -590,7 +617,7 @@ function renderFavorites() {
         <img src="${escapeHtml(card.img)}" alt="" loading="lazy" />
         <div class="favorite-main">
           <h3>${name}</h3>
-          <div class="favorite-decision ${verdict === "GO" ? "recommended" : "not-recommended"}">今回の仕入れ判断：${escapeHtml(verdict)}</div>
+          <div class="favorite-decision ${verdictRecommended ? "recommended" : "not-recommended"}">今回の仕入れ判断：${escapeHtml(verdict)}</div>
           <label class="favorite-quantity"><span>購入枚数</span><input type="number" min="1" step="1" value="${quantity}" data-favorite-quantity="${escapeHtml(card.id)}" /><b>現在価格合計 ¥${fmt.format(Math.round(card.price * quantity))}</b></label>
           <div class="favorite-prices">
             <div><span>現在 / 予測PSA10</span><strong>¥${fmt.format(card.psa10)} / ¥${fmt.format(card.futurePriceForecast?.predictedPrice || card.psa10)}</strong></div>
@@ -670,7 +697,7 @@ function exportFavoritesCsv() {
     const limits = card.buyLimits;
     const decision = card.psaDecision;
     const forecast = card.futurePriceForecast;
-    rows.push([card.id, card.name, card.model || "", favoriteQuantity(card.id), card.psa10, forecast?.centralPrice || card.psa10, forecast ? forecast.downsidePct.toFixed(1) : "", forecast?.score ?? "", limits?.clean?.maxPrice ?? "", limits?.clean?.economicMaxPrice ?? "", limits?.clean?.capitalMaxPrice ?? "", limits?.scratch?.maxPrice ?? "", limits?.clean?.hitRate?.toFixed(1) ?? "", limits?.scratch?.hitRate?.toFixed(1) ?? "", limits?.rateSource || "", cfg.label, guide.ideal, guide.recommended, guide.upper, card.purchaseDecision?.verdict || "未判定", Math.round(decision?.expectedProfit || 0), Math.round(decision?.expectedRoi || 0), Math.round(decision?.annualEfficiency || 0), Number(decision?.capitalShare || 0).toFixed(1), decision?.reasons.join(" / ") || "", buildTorecaCardUrl(card), card.cardrushUrl || "", card.hareruya2Url || "", card.yuyuteiUrl || "", card.torecacampUrl || ""]);
+    rows.push([card.id, card.name, card.model || "", favoriteQuantity(card.id), card.psa10, forecast?.centralPrice || card.psa10, forecast ? forecast.downsidePct.toFixed(1) : "", forecast?.score ?? "", limits?.clean?.maxPrice ?? "", limits?.clean?.economicMaxPrice ?? "", limits?.clean?.capitalMaxPrice ?? "", limits?.scratch?.maxPrice ?? "", limits?.clean?.hitRate?.toFixed(1) ?? "", limits?.scratch?.hitRate?.toFixed(1) ?? "", limits?.rateSource || "", cfg.label, guide.ideal, guide.recommended, guide.upper, card.goConfidence || card.purchaseDecision?.verdict || "未判定", Math.round(decision?.expectedProfit || 0), Math.round(decision?.expectedRoi || 0), Math.round(decision?.annualEfficiency || 0), Number(decision?.capitalShare || 0).toFixed(1), decision?.reasons.join(" / ") || "", buildTorecaCardUrl(card), card.cardrushUrl || "", card.hareruya2Url || "", card.yuyuteiUrl || "", card.torecacampUrl || ""]);
   });
   const csv = `\uFEFF${rows.map((row) => row.map(csvCell).join(",")).join("\r\n")}`;
   const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
@@ -1150,6 +1177,9 @@ function classifyDecisionData(card) {
   if (!buybackAggregation.conflicted && Number(buybackAggregation.included?.length || 0) >= 2 && buybackAggregation.outliers?.length) {
     outlierExcludedReasons.push(...buybackAggregation.outliers.map((entry) => `${entry.source} ¥${fmt.format(entry.value)}`));
   }
+  const dataAnomalyReasons = Object.values(card.buyback?.shops || {})
+    .filter((shop) => shop?.quarantined)
+    .map((shop) => shop.quarantineReason || "店舗価格を自動隔離");
 
   const severeShortage = !card.futurePriceForecast || (trustedPriceCount <= 1 && !Number.isFinite(card.official?.rate));
   const shortageRiskPct = dataShortageReasons.length ? (severeShortage ? 5 : 3) : 0;
@@ -1163,7 +1193,23 @@ function classifyDecisionData(card) {
     shortageRiskPct,
     confidence: dataShortageReasons.length ? (shortageRiskPct >= 5 ? "低" : "中") : "高",
     trustedPriceCount,
+    dataAnomaly: dataAnomalyReasons.length > 0,
+    dataAnomalyReasons: [...new Set(dataAnomalyReasons)],
   };
+}
+
+function applyGoConfidence(card) {
+  card.goConfidence = backtestModel.goConfidence({
+    verdict: card.purchaseDecision?.verdict,
+    direction: card.marketStability?.direction,
+    floorState: card.marketStability?.state,
+    floorScore: card.marketStability?.score,
+    demandLabel: card.buybackAnalysis?.label,
+    demandScore: card.buybackAnalysis?.score,
+    dataShortage: card.dataQuality?.dataShortage,
+    manualReview: card.dataQuality?.manualReview,
+  });
+  return card;
 }
 
 function buildRiskBuffer(card, condition) {
@@ -1344,6 +1390,7 @@ function buildBuybackAnalysis(card, shops, marketPrice) {
       priceDate: shop.priceDate,
       asOfDate: state.buybackUpdatedAt,
       cardMatched: buybackCardMatched(card, shop),
+      dataQuarantined: shop.quarantined,
     });
     return {
       ...shop,
@@ -1414,13 +1461,14 @@ function calc(card) {
     sourceName: state.buybackShops[shopId]?.name || shopId,
   }));
   const buybackAnalysis = buildBuybackAnalysis(card, buybackShopValues, psa10);
+  const trustedBuybackShopValues = buybackShopValues.filter((shop) => !shop.quarantined && buybackCardMatched(card, shop));
   const marketStability = state.marketStability[card.id] || {
     score: null, state: "蓄積中", direction: "蓄積中", supplyState: "蓄積中",
     supportLow: null, supportHigh: null, inventoryDays: null, historyDays: 0, samples: 0,
     evidence: [], cautions: ["価格・出品・在庫履歴を蓄積中"],
   };
-  const latestBuybackDate = buybackShopValues.reduce((latest, shop) => String(shop.priceDate || "") > latest ? String(shop.priceDate) : latest, "");
-  const latestBuybackShops = latestBuybackDate ? buybackShopValues.filter((shop) => String(shop.priceDate || "") === latestBuybackDate) : buybackShopValues;
+  const latestBuybackDate = trustedBuybackShopValues.reduce((latest, shop) => String(shop.priceDate || "") > latest ? String(shop.priceDate) : latest, "");
+  const latestBuybackShops = latestBuybackDate ? trustedBuybackShopValues.filter((shop) => String(shop.priceDate || "") === latestBuybackDate) : trustedBuybackShopValues;
   const buybackAggregation = decisionModel.aggregatePrices(latestBuybackShops.map((shop, index) => ({
     source: shop.sourceName || shop.name || shop.shopName || `買取店舗${index + 1}`,
     value: Number(shop.price || 0),
@@ -1514,6 +1562,7 @@ function readUrl() {
   const maxForecastMonthlyIncrease = parseOptionalNumber(url.searchParams.get("psaGrowthMax"));
   const stockDemand = url.searchParams.get("stockDemand");
   const dataQualityFilter = url.searchParams.get("dataQuality");
+  const goConfidenceFilter = url.searchParams.get("goTrust");
   const floorState = url.searchParams.get("floorState");
   const priceDirection = url.searchParams.get("priceDirection");
   const supplyState = url.searchParams.get("supplyState");
@@ -1590,6 +1639,7 @@ function readUrl() {
   if (maxForecastMonthlyIncrease != null && maxForecastMonthlyIncrease >= 0) els.maxForecastMonthlyIncreaseInput.value = String(maxForecastMonthlyIncrease);
   if (["all", "steady", "low", "normal", "high", "known"].includes(stockDemand)) els.stockDemandInput.value = stockDemand;
   if (["all", "manual", "shortage", "outlier", "clean"].includes(dataQualityFilter)) els.dataQualityFilterInput.value = dataQualityFilter;
+  if (["all", "verified", "provisional", "high-risk"].includes(goConfidenceFilter)) els.goConfidenceFilterInput.value = goConfidenceFilter;
   if (["all", "stable", "forming", "unformed", "broken", "collecting"].includes(floorState)) els.floorStateInput.value = floorState;
   if (["all", "up", "flat", "down"].includes(priceDirection)) els.priceDirectionInput.value = priceDirection;
   if (["all", "buy", "balanced", "sell", "collecting"].includes(supplyState)) els.supplyStateInput.value = supplyState;
@@ -1666,6 +1716,7 @@ function buildShareUrl() {
   if (state.maxForecastMonthlyIncrease == null) url.searchParams.delete("psaGrowthMax"); else url.searchParams.set("psaGrowthMax", String(state.maxForecastMonthlyIncrease));
   if (state.stockDemand === "all") url.searchParams.delete("stockDemand"); else url.searchParams.set("stockDemand", state.stockDemand);
   if (state.dataQualityFilter === "all") url.searchParams.delete("dataQuality"); else url.searchParams.set("dataQuality", state.dataQualityFilter);
+  if (state.goConfidenceFilter === "all") url.searchParams.delete("goTrust"); else url.searchParams.set("goTrust", state.goConfidenceFilter);
   if (state.floorState === "all") url.searchParams.delete("floorState"); else url.searchParams.set("floorState", state.floorState);
   if (state.priceDirection === "all") url.searchParams.delete("priceDirection"); else url.searchParams.set("priceDirection", state.priceDirection);
   if (state.supplyState === "all") url.searchParams.delete("supplyState"); else url.searchParams.set("supplyState", state.supplyState);
@@ -1737,10 +1788,15 @@ function renderShopRateSummary(cards) {
   els.shopRateSummary.innerHTML = `
     <div class="shop-rate-table-wrap">
       <table class="shop-rate-table">
-        <thead><tr><th>買取店</th><th>標準買取率<br><small>中央値</small></th><th>平均</th><th>外れ値除外後</th><th>25～75%</th><th>対象数</th><th>3万円未満</th><th>3万～10万円</th><th>10万円以上</th><th>最終更新</th></tr></thead>
+        <thead><tr><th>買取店</th><th>データ信頼度</th><th>取得成功率</th><th>外れ値率</th><th>誤紐付け疑い率</th><th>隔離</th><th>標準買取率<br><small>中央値</small></th><th>平均</th><th>外れ値除外後</th><th>25～75%</th><th>対象数</th><th>3万円未満</th><th>3万～10万円</th><th>10万円以上</th><th>最終更新</th></tr></thead>
         <tbody>${summaries.map(({ shop, stats }) => `
           <tr>
             <th>${shop.url ? `<a href="${escapeHtml(shop.url)}" target="_blank" rel="noreferrer">${escapeHtml(shop.name)}</a>` : escapeHtml(shop.name)}${stats.reference ? "<b>参考値</b>" : ""}</th>
+            <td><strong>${Number.isFinite(shop.reliability?.score) ? `${fmt.format(shop.reliability.score)}/100` : "蓄積中"}</strong></td>
+            <td>${shop.reliability?.successRate == null ? "蓄積中" : `${(shop.reliability.successRate * 100).toFixed(1)}%`}</td>
+            <td>${shop.reliability?.outlierRate == null ? "蓄積中" : `${(shop.reliability.outlierRate * 100).toFixed(1)}%`}</td>
+            <td>${shop.reliability?.mismatchRate == null ? "蓄積中" : `${(shop.reliability.mismatchRate * 100).toFixed(1)}%`}</td>
+            <td>${fmt.format(shop.quarantinedPairs || 0)}件</td>
             <td><strong>${ratioLabel(stats.median)}</strong></td>
             <td>${ratioLabel(stats.average)}</td>
             <td>${ratioLabel(stats.trimmedAverage)}</td>
@@ -1765,19 +1821,30 @@ function renderMarketBacktest() {
     return;
   }
   const rate = (top, bottom) => bottom > 0 ? `${(top / bottom * 100).toFixed(1)}%` : "蓄積中";
-  const summaryCard = (label, stats) => `
+  const money = (value) => Number.isFinite(value) ? `¥${fmt.format(Math.round(value))}` : "蓄積中";
+  const summaryCard = (label, stats, profitLabel) => `
     <div class="backtest-summary-card">
       <span>${label}</span><strong>${fmt.format(stats.evaluated || 0)}件検証</strong>
-      <small>GO後利益プラス ${rate(stats.goProfitable, stats.goEvaluated)} / 支持帯割れ ${rate(stats.supportBreaks, stats.supportEvaluated)} / 買取率維持 ${rate(stats.buybackMaintained, stats.buybackEvaluated)}</small>
-      <b>GO後利益中央値 ${Number.isFinite(stats.goProfitMedian) ? `¥${fmt.format(stats.goProfitMedian)}` : "蓄積中"}</b>
+      <small>予測誤差中央値 ${Number.isFinite(stats.predictionErrorMedian) ? `${stats.predictionErrorMedian.toFixed(1)}%` : "蓄積中"} / 現在価格維持モデル ${Number.isFinite(stats.baselineErrorMedian) ? `${stats.baselineErrorMedian.toFixed(1)}%` : "蓄積中"}</small>
+      <small>方向一致 ${rate(stats.directionMatches, stats.directionEvaluated)} / レンジ内 ${rate(stats.rangeHits, stats.rangeEvaluated)} / 支持帯割れ ${rate(stats.supportBreaks, stats.supportEvaluated)}</small>
+      <small>買取率維持 ${rate(stats.buybackMaintained, stats.buybackEvaluated)} / GO利益プラス ${rate(stats.goProfitable, stats.goEvaluated)}</small>
+      <b>${profitLabel}中央値 ${money(stats.reevaluatedProfitMedian)}</b>
     </div>`;
+  const groupTable = (title, groups) => `<details class="backtest-group"><summary>${title}</summary><div class="backtest-table-wrap"><table class="backtest-table compact"><thead><tr><th>区分</th><th>件数</th><th>予測誤差</th><th>方向一致</th><th>レンジ内</th><th>GO利益+</th></tr></thead><tbody>${Object.entries(groups || {}).map(([label, stats]) => `<tr><th>${escapeHtml(label)}</th><td>${fmt.format(stats.evaluated || 0)}</td><td>${Number.isFinite(stats.predictionErrorMedian) ? `${stats.predictionErrorMedian.toFixed(1)}%` : "蓄積中"}</td><td>${rate(stats.directionMatches, stats.directionEvaluated)}</td><td>${rate(stats.rangeHits, stats.rangeEvaluated)}</td><td>${rate(stats.goProfitable, stats.goEvaluated)}</td></tr>`).join("")}</tbody></table></div></details>`;
   const rows = (data.outcomes || []).slice(0, 40);
   els.marketBacktestSummary.innerHTML = `
     <div class="backtest-overview">
-      ${summaryCard("7日後", data.days7 || {})}${summaryCard("30日後", data.days30 || {})}
-      <div class="backtest-summary-card"><span>日次記録</span><strong>${fmt.format(data.cards || 0)}枚 / ${fmt.format(data.snapshots || 0)}記録</strong><small>同じ日の複数更新は最新1件に統合</small><b>${escapeHtml(data.updatedAt || "蓄積中")}</b></div>
+      ${summaryCard("7日後", data.days7 || {}, "再評価期待利益")}${summaryCard("30日後", data.days30 || {}, "再評価期待利益")}${summaryCard("資金ロック後", data.exit || {}, "想定出口利益")}
+      <div class="backtest-summary-card"><span>変更不可の日次記録</span><strong>${fmt.format(data.cards || 0)}枚 / ${fmt.format(data.snapshots || 0)}記録</strong><small>同日2回目以降も最初の判定値を保持 / 最大${fmt.format(data.retentionDays || 0)}日</small><b>${escapeHtml(data.updatedAt || "蓄積中")}</b></div>
     </div>
-    ${rows.length ? `<div class="backtest-table-wrap"><table class="backtest-table"><thead><tr><th>カード</th><th>期間</th><th>判定日→検証日</th><th>価格変化</th><th>支持帯</th><th>買取率</th><th>GO後利益</th></tr></thead><tbody>${rows.map((row) => `<tr><th>${escapeHtml(row.cardName)}</th><td>${fmt.format(row.horizonDays)}日</td><td>${escapeHtml(row.baseDate)} → ${escapeHtml(row.resultDate)}</td><td>${Number.isFinite(row.priceChangePct) ? `${row.priceChangePct >= 0 ? "+" : ""}${row.priceChangePct.toFixed(1)}%` : "-"}</td><td>${row.supportBroken == null ? "蓄積中" : row.supportBroken ? "下値割れ" : "維持"}</td><td>${row.buybackMaintained == null ? "蓄積中" : row.buybackMaintained ? "維持" : "低下"}</td><td>${row.verdict !== "GO" ? "非GO" : Number.isFinite(row.goProfit) ? `¥${fmt.format(row.goProfit)}` : "蓄積中"}</td></tr>`).join("")}</tbody></table></div>` : "<p>7日後の検証日を迎えるまで蓄積中です。</p>"}
+    <div class="backtest-groups">${groupTable("価格帯別", data.days30?.byPriceBand)}${groupTable("店舗需要点別", data.days30?.byDemandBand)}${groupTable("下値安定点別", data.days30?.byFloorBand)}</div>
+    ${rows.length ? `<div class="backtest-table-wrap"><table class="backtest-table"><thead><tr><th>カード</th><th>期間</th><th>判定日→検証日</th><th>予測→実価格</th><th>支持帯</th><th>買取率</th><th>検証利益</th><th>実現利益</th><th>判定時点</th></tr></thead><tbody>${rows.map((row) => {
+      const actual = state.actualResults[`${row.cardId}:${row.baseDate}`];
+      const realized = actual ? backtestModel.actualProfit(actual, row.snapshot) : null;
+      const profitLabel = row.horizonType === "exit" ? "想定出口" : "再評価期待";
+      const snapshot = backtestModel.decodeSnapshot(row.snapshot);
+      return `<tr><th>${escapeHtml(row.cardName)}</th><td>${fmt.format(row.horizonDays)}日</td><td>${escapeHtml(row.baseDate)} → ${escapeHtml(row.resultDate)}</td><td>${money(row.forecastCentral)} → ${money(row.resultPsaPrice)}<small>誤差 ${Number.isFinite(row.predictionErrorPct) ? `${row.predictionErrorPct.toFixed(1)}%` : "蓄積中"}</small></td><td>${row.supportBroken == null ? "蓄積中" : row.supportBroken ? "下値割れ" : "維持"}</td><td>${row.buybackMaintained == null ? "蓄積中" : row.buybackMaintained ? "維持" : "低下"}</td><td>${profitLabel} ${money(row.reevaluatedExpectedProfit)}</td><td>${realized ? `${escapeHtml(realized.grade)} ${money(realized.realizedProfit)}` : "未入力"}</td><td><details class="snapshot-details"><summary>固定値</summary><small>市場 ${money(snapshot.marketPrice)} / 仕入 ${money(snapshot.purchasePrice)} / PSA10率 ${Number.isFinite(snapshot.psaRate) ? `${(snapshot.psaRate * 100).toFixed(1)}%` : "未取得"}<br>鑑定 ${money(snapshot.gradingFee)} / 手数料 ${Number.isFinite(snapshot.saleFeeRate) ? `${snapshot.saleFeeRate}%` : "未取得"}<br>弱気・中央・強気 ${money(snapshot.forecastBearish)} / ${money(snapshot.forecastCentral)} / ${money(snapshot.forecastBullish)}<br>下値 ${snapshot.floorScore ?? "蓄積中"} / 需要 ${snapshot.demandScore ?? "蓄積中"} / 将来 ${snapshot.futureScore ?? "蓄積中"} / 売りやすさ ${snapshot.exitScore ?? "蓄積中"} / 品質 ${snapshot.qualityScore ?? "蓄積中"}</small></details></td></tr>`;
+    }).join("")}</tbody></table></div>` : "<p>7日後の検証日を迎えるまで蓄積中です。</p>"}
     <p class="shop-rate-note">${escapeHtml(data.method || "標準条件で日次判定を検証")}。この検証は既存の仕入れ計算を変更せず、成績確認用として分離しています。</p>
   `;
 }
@@ -1816,6 +1883,7 @@ function render() {
     card.psaTxPeerMedian = psaTxMedianByPriceBand.get(psaPriceBand(card.psa10).key) ?? null;
     card.overallAssessment = buildOverallAssessment(card, card.official, combineShopStock(state.cardrushStock[card.id], state.hareruya2Stock[card.id], state.yuyuteiStock[card.id]));
     finalizeCardDecision(card);
+    applyGoConfidence(card);
   });
   renderShopRateSummary(calculated);
   renderMarketBacktest();
@@ -1888,7 +1956,10 @@ function render() {
       if (state.dataQualityFilter === "manual" && !card.dataQuality?.manualReview) return false;
       if (state.dataQualityFilter === "shortage" && !card.dataQuality?.dataShortage) return false;
       if (state.dataQualityFilter === "outlier" && !card.dataQuality?.outlierExcluded) return false;
-      if (state.dataQualityFilter === "clean" && (card.dataQuality?.manualReview || card.dataQuality?.dataShortage || card.dataQuality?.outlierExcluded)) return false;
+      if (state.dataQualityFilter === "clean" && (card.dataQuality?.manualReview || card.dataQuality?.dataShortage || card.dataQuality?.outlierExcluded || card.dataQuality?.dataAnomaly)) return false;
+      if (state.goConfidenceFilter === "verified" && card.goConfidence !== "GO・確認済み") return false;
+      if (state.goConfidenceFilter === "provisional" && card.goConfidence !== "暫定GO") return false;
+      if (state.goConfidenceFilter === "high-risk" && card.goConfidence !== "GO・高リスク") return false;
       if (state.floorState !== "all" && floorStateKey(card.marketStability?.state) !== state.floorState) return false;
       if (state.priceDirection !== "all" && directionKey(card.marketStability?.direction) !== state.priceDirection) return false;
       if (state.supplyState !== "all" && supplyStateKey(card.marketStability?.supplyState) !== state.supplyState) return false;
@@ -2094,6 +2165,7 @@ function render() {
       dataQuality.manualReview ? `<div class="data-quality-notice manual"><strong>要確認（手動確認）</strong><span>${escapeHtml(dataQuality.manualReviewReasons.join(" / "))}</span></div>` : "",
       dataQuality.dataShortage ? `<div class="data-quality-notice shortage"><strong>データ不足</strong><span>${escapeHtml(dataQuality.dataShortageReasons.join(" / "))} / 判定信頼度 ${escapeHtml(dataQuality.confidence)} / 追加リスク +${fmt.format(dataQuality.shortageRiskPct)}%を計算済み</span></div>` : "",
       dataQuality.outlierExcluded ? `<div class="data-quality-notice outlier"><strong>外れ値除外済み</strong><span>${escapeHtml(dataQuality.outlierExcludedReasons.join(" / "))} / 複数の一致価格を採用して判定継続</span></div>` : "",
+      dataQuality.dataAnomaly ? `<div class="data-quality-notice manual"><strong>データ異常</strong><span>${escapeHtml(dataQuality.dataAnomalyReasons.join(" / "))} / 隔離済みの価格は計算に使用していません</span></div>` : "",
     ].filter(Boolean).join("");
     const dataQualityPanel = dataQualityPanels ? `<div class="data-quality-notices">${dataQualityPanels}</div>` : "";
     const buyLimits = card.buyLimits;
@@ -2133,8 +2205,13 @@ function render() {
     const favoriteActive = state.favorites.has(String(card.id));
     const psaDecision = card.psaDecision;
     const purchaseDecision = card.purchaseDecision;
-    const decisionClass = purchaseDecision?.verdict === "GO"
+    const displayVerdict = card.goConfidence || purchaseDecision?.verdict || "未判定";
+    const decisionClass = displayVerdict === "GO・確認済み"
       ? "recommended"
+      : displayVerdict === "暫定GO"
+        ? "provisional-go"
+        : displayVerdict === "GO・高リスク"
+          ? "high-risk-go"
       : purchaseDecision?.verdict === "見送り"
         ? "not-recommended"
         : purchaseDecision?.verdict === "資金不足"
@@ -2142,7 +2219,7 @@ function render() {
           : purchaseDecision?.verdict === "要確認"
             ? "needs-review"
             : "conditional";
-    const decisionTitle = `今回の仕入れ判断：${purchaseDecision?.verdict || "未判定"}`;
+    const decisionTitle = `今回の仕入れ判断：${displayVerdict}`;
     const decisionReasons = purchaseDecision?.reasons?.length ? purchaseDecision.reasons.join(" / ") : "利益・資金・銘柄品質の基準を満たしています";
     const psaDecisionPanel = psaDecision ? `
       <div class="psa-decision ${decisionClass}">
@@ -2159,7 +2236,7 @@ function render() {
     const purchaseSummaryPanel = psaDecision && purchaseDecision ? `
       <section class="purchase-summary ${decisionClass}">
         <div class="purchase-final-limit"><span>実際に使える最終上限・美品</span><strong>${buyLimitText(card.buyLimits?.clean)}</strong><small>採算上 ¥${fmt.format(card.buyLimits?.clean?.economicMaxPrice || 0)} / 資金上 ¥${fmt.format(card.buyLimits?.clean?.capitalMaxPrice || 0)}</small></div>
-        <div class="purchase-verdict"><span>今回の仕入れ判断</span><strong>${escapeHtml(purchaseDecision.verdict)}</strong><small>${escapeHtml(decisionReasons)}</small></div>
+        <div class="purchase-verdict"><span>今回の仕入れ判断</span><strong>${escapeHtml(displayVerdict)}</strong><small>${escapeHtml(decisionReasons)}</small></div>
         <div><span>現在価格での期待利益</span><strong class="${psaDecision.expectedProfit < 0 ? "negative" : "positive"}">¥${fmt.format(Math.round(psaDecision.expectedProfit))}</strong></div>
         <div><span>91日後・中央推計</span><strong>¥${fmt.format(card.futurePriceForecast?.centralPrice || 0)}</strong></div>
       </section>
@@ -2190,9 +2267,13 @@ function render() {
     const floor = card.marketStability;
     const floorClass = floor?.state === "安定" ? "stable" : floor?.state === "形成中" ? "forming" : floor?.state === "下値割れ" ? "broken" : floor?.state === "未形成" ? "unformed" : "collecting";
     const floorScoreText = Number.isFinite(floor?.score) ? `${fmt.format(floor.score)}/100` : "蓄積中";
-    const supportText = Number.isFinite(floor?.supportLow) && Number.isFinite(floor?.supportHigh)
-      ? `¥${fmt.format(floor.supportLow)}～¥${fmt.format(floor.supportHigh)}`
+    const supportText = Number.isFinite(floor?.supportClose?.low) && Number.isFinite(floor?.supportClose?.high)
+      ? `¥${fmt.format(floor.supportClose.low)}～¥${fmt.format(floor.supportClose.high)}`
       : "蓄積中";
+    const instantSupportText = Number.isFinite(floor?.supportInstant?.low) && Number.isFinite(floor?.supportInstant?.high)
+      ? `¥${fmt.format(floor.supportInstant.low)}～¥${fmt.format(floor.supportInstant.high)}`
+      : "蓄積中";
+    const supportLabel = floor?.supportConfirmed ? "確定支持帯・日次終値" : "暫定観測帯・日次終値";
     const inventoryText = Number.isFinite(floor?.inventoryDays) ? `${Number(floor.inventoryDays).toFixed(1)}日` : "算出不可";
     const inventorySourcesText = (floor?.inventorySources || []).map((source) => `${source.source} ${Number(source.days).toFixed(1)}日`).join(" / ");
     const floorEvidence = floor?.evidence?.join(" / ") || "価格・取引・出品履歴を蓄積中";
@@ -2210,7 +2291,8 @@ function render() {
           <div><span>価格方向</span><strong>${escapeHtml(floor?.direction || "蓄積中")}</strong></div>
           <div><span>下値状態</span><strong>${escapeHtml(floor?.state || "蓄積中")}</strong></div>
           <div><span>需給状態</span><strong>${escapeHtml(floor?.supplyState || "蓄積中")}</strong></div>
-          <div><span>支持価格帯</span><strong>${supportText}</strong></div>
+          <div><span>${supportLabel}</span><strong>${supportText}</strong><small>${floor?.supportConfirmed ? `異なる${fmt.format(floor.supportClose?.contacts || 0)}日で接触確認` : "3日接触と維持・反発を確認中"}</small></div>
+          <div><span>${floor?.supportInstant?.confirmed ? "確定支持帯・瞬間安値" : "暫定観測帯・瞬間安値"}</span><strong>${instantSupportText}</strong></div>
           <div><span>在庫消化日数</span><strong>${inventoryText}</strong><small>${escapeHtml(inventorySourcesText || "同一店舗内の在庫と減少数が揃った場合だけ算出")}</small></div>
           <div><span>PSA10供給増</span><strong>7日 ${Number.isFinite(floor?.psaIncrease7) ? `+${fmt.format(floor.psaIncrease7)}枚` : "蓄積中"} / 30日 ${Number.isFinite(floor?.psaIncrease30) ? `+${fmt.format(floor.psaIncrease30)}枚` : "蓄積中"}</strong></div>
           <div><span>市場指数比の強さ</span><strong>${Number.isFinite(floor?.marketRelativeStrength) ? `${floor.marketRelativeStrength >= 0 ? "+" : ""}${Number(floor.marketRelativeStrength).toFixed(1)}pt` : "蓄積中"}</strong></div>
@@ -2378,6 +2460,7 @@ function syncFromUI() {
   state.maxForecastMonthlyIncrease = parseOptionalNumber(els.maxForecastMonthlyIncreaseInput.value);
   state.stockDemand = els.stockDemandInput.value || "all";
   state.dataQualityFilter = els.dataQualityFilterInput.value || "all";
+  state.goConfidenceFilter = els.goConfidenceFilterInput.value || "all";
   state.floorState = els.floorStateInput.value || "all";
   state.priceDirection = els.priceDirectionInput.value || "all";
   state.supplyState = els.supplyStateInput.value || "all";
@@ -2418,6 +2501,7 @@ function syncFromUI() {
 async function init() {
   readUrl();
   loadFavorites();
+  loadActualResults();
   try {
     state.updateStatus = await fetchJsonMaybe("./data/update-status.json");
     state.psaServices = await fetchJsonMaybe("./data/psa-japan-services.json");
@@ -2470,7 +2554,7 @@ async function init() {
   }
 }
 
-[els.qInput, els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.buyback7MinInput, els.buyback7MaxInput, els.buyback30MinInput, els.buyback30MaxInput, els.buyback90MinInput, els.buyback90MaxInput, els.buybackShopsMinInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.roiInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.purchaseLimitRatioMinInput, els.psaRateMinInput, els.overallFilterInput, els.minExitLiquidityInput, els.minEconomicsInput, els.minMarketStabilityInput, els.minSupplyRiskInput, els.minFuturePriceScoreInput, els.maxFuturePriceScoreInput, els.minForecastPriceInput, els.maxForecastPriceInput, els.minForecastDownsideInput, els.maxForecastDownsideInput, els.minForecastGapInput, els.maxForecastGapInput, els.forecastPhaseInput, els.forecastConfidenceInput, els.forecastSupplyPressureInput, els.minForecastAgeInput, els.forecastMaturityInput, els.maxForecastMonthlyIncreaseInput, els.stockDemandInput, els.dataQualityFilterInput, els.floorStateInput, els.priceDirectionInput, els.supplyStateInput, els.minFloorScoreInput, els.storeDemandInput, els.hideSkippedInput, els.hideReviewInput, els.fundingOnlyInput, els.officialOnlyInput, els.sortInput, els.psaCapitalInput, els.lockedCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput].forEach((el) =>
+[els.qInput, els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.buyback7MinInput, els.buyback7MaxInput, els.buyback30MinInput, els.buyback30MaxInput, els.buyback90MinInput, els.buyback90MaxInput, els.buybackShopsMinInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.roiInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.purchaseLimitRatioMinInput, els.psaRateMinInput, els.overallFilterInput, els.minExitLiquidityInput, els.minEconomicsInput, els.minMarketStabilityInput, els.minSupplyRiskInput, els.minFuturePriceScoreInput, els.maxFuturePriceScoreInput, els.minForecastPriceInput, els.maxForecastPriceInput, els.minForecastDownsideInput, els.maxForecastDownsideInput, els.minForecastGapInput, els.maxForecastGapInput, els.forecastPhaseInput, els.forecastConfidenceInput, els.forecastSupplyPressureInput, els.minForecastAgeInput, els.forecastMaturityInput, els.maxForecastMonthlyIncreaseInput, els.stockDemandInput, els.dataQualityFilterInput, els.goConfidenceFilterInput, els.floorStateInput, els.priceDirectionInput, els.supplyStateInput, els.minFloorScoreInput, els.storeDemandInput, els.hideSkippedInput, els.hideReviewInput, els.fundingOnlyInput, els.officialOnlyInput, els.sortInput, els.psaCapitalInput, els.lockedCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput].forEach((el) =>
   el.addEventListener("input", syncFromUI)
 );
 
@@ -2489,6 +2573,7 @@ els.resetFiltersBtn.addEventListener("click", () => {
   els.forecastMaturityInput.value = "all";
   els.stockDemandInput.value = "all";
   els.dataQualityFilterInput.value = "all";
+  els.goConfidenceFilterInput.value = "all";
   els.floorStateInput.value = "all";
   els.priceDirectionInput.value = "all";
   els.supplyStateInput.value = "all";
@@ -2551,6 +2636,36 @@ els.grid.addEventListener("click", (event) => {
 els.favoritesList.addEventListener("click", (event) => {
   const button = event.target.closest("[data-remove-favorite]");
   if (button) toggleFavorite(button.dataset.removeFavorite, { confirmRemoval: true });
+});
+
+els.actualResultForm?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const cardId = els.actualCardIdInput.value.trim();
+  const baseDate = els.actualBaseDateInput.value;
+  const key = `${cardId}:${baseDate}`;
+  const matchingOutcome = state.marketBacktest?.outcomes?.find((row) => String(row.cardId) === cardId && row.baseDate === baseDate);
+  const latestSnapshot = state.marketBacktest?.latestSnapshots?.[cardId];
+  const snapshot = matchingOutcome?.snapshot
+    || (backtestModel.decodeSnapshot(latestSnapshot).date === baseDate ? latestSnapshot : null);
+  if (!snapshot) {
+    els.actualResultStatus.textContent = "該当する判定時点スナップショットが見つかりません。カードIDと判定日を確認してください。";
+    return;
+  }
+  state.actualResults[key] = {
+    grade: els.actualGradeInput.value,
+    salePrice: Number(els.actualSalePriceInput.value),
+    gradingFee: parseOptionalNumber(els.actualGradingFeeInput.value),
+    saleFeeRate: parseOptionalNumber(els.actualSaleFeeInput.value),
+    recordedAt: new Date().toISOString(),
+  };
+  const result = backtestModel.actualProfit(state.actualResults[key], snapshot);
+  if (!result) {
+    els.actualResultStatus.textContent = "実現利益を計算できません。鑑定結果と実売価格を確認してください。";
+    return;
+  }
+  saveActualResults();
+  els.actualResultStatus.textContent = `${cardId} ${baseDate}：${result.grade}・実現利益 ¥${fmt.format(result.realizedProfit)} を保存しました。`;
+  renderMarketBacktest();
 });
 
 function updateFavoriteQuantity(event, immediate = false) {

@@ -33,16 +33,22 @@ function finite(value) {
   return Number.isFinite(number) ? number : null;
 }
 
-function compactRow(date, card) {
+function compactRow(date, card, sameDayPrevious = null) {
+  const rawPrice = positive(card.price);
+  const psaPrice = positive(card.snkPsa10Price ?? card.psa10Price);
+  const rawInstantLow = Math.min(...[rawPrice, positive(sameDayPrevious?.[8]), positive(sameDayPrevious?.[1])].filter(Boolean));
+  const psaInstantLow = Math.min(...[psaPrice, positive(sameDayPrevious?.[9]), positive(sameDayPrevious?.[2])].filter(Boolean));
   return [
     date,
-    positive(card.price),
-    positive(card.snkPsa10Price ?? card.psa10Price),
+    rawPrice,
+    psaPrice,
     finite(card.snkListings),
     finite(card.tv7 ?? card.saleTx7),
     finite(card.tv30 ?? card.saleTx30),
     finite(card.p10tv7 ?? card.psaTx7),
     finite(card.p10tv30 ?? card.psaTx30),
+    Number.isFinite(rawInstantLow) ? rawInstantLow : null,
+    Number.isFinite(psaInstantLow) ? psaInstantLow : null,
   ];
 }
 
@@ -69,11 +75,12 @@ function appendCurrent(history, cards, date) {
   for (const card of cards) {
     if (!card?.id || !(positive(card.price) && positive(card.snkPsa10Price))) continue;
     const previous = Array.isArray(history.cards[card.id]) ? history.cards[card.id] : [];
+    const sameDayPrevious = previous.find((row) => String(row?.[0] || "").slice(0, 10) === date) || null;
     const rows = previous.filter((row) => {
       const timestamp = Date.parse(`${String(row?.[0] || "").slice(0, 10)}T00:00:00Z`);
       return Number.isFinite(timestamp) && timestamp >= cutoff && String(row[0]).slice(0, 10) !== date;
     });
-    rows.push(compactRow(date, card));
+    rows.push(compactRow(date, card, sameDayPrevious));
     history.cards[card.id] = rows.sort((a, b) => String(a[0]).localeCompare(String(b[0])));
   }
   history.dates = [...new Set(Object.values(history.cards).flatMap((rows) => rows.map((row) => row[0])))].sort();
@@ -171,6 +178,9 @@ function main() {
       supportLow: evaluated.supportLow,
       supportHigh: evaluated.supportHigh,
       supportBroken: evaluated.supportBroken,
+      supportConfirmed: evaluated.supportConfirmed,
+      supportClose: evaluated.supportClose,
+      supportInstant: evaluated.supportInstant,
       inventoryDays: evaluated.inventoryDays,
       inventorySources: evaluated.inventorySources.filter((source) => source.days != null),
       historyDays: evaluated.historyDays,

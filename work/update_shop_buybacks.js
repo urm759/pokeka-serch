@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const decisionModel = require("../decision-model.js");
+const marketModel = require("../market-analysis.js");
 
 const ROOT = path.join(__dirname, "..");
 const SHOPS = [
@@ -425,6 +426,40 @@ function demandLabel(count30, observedDays, shopCount) {
   return "買取掲載数：少ない";
 }
 
+function buildPriceTrust(history, cards) {
+  const cardById = new Map(cards.map((card) => [String(card.id), card]));
+  const quarantine = {};
+  const stats = {};
+  for (const [shopId, entries] of Object.entries(history.shops || {})) {
+    const shopStats = { priceObservations: 0, outliers: 0, quarantinedPairs: 0 };
+    for (const [cardId, values] of Object.entries(entries || {})) {
+      const marketPrice = Number(cardById.get(String(cardId))?.snkPsa10Price || 0);
+      if (!(marketPrice > 0)) continue;
+      const extremeDates = [];
+      let severe = false;
+      for (let index = 0; index < values.length; index += 1) {
+        const observedPrice = Number(values[index] || 0);
+        if (!(observedPrice > 0)) continue;
+        shopStats.priceObservations += 1;
+        const state = marketModel.extremePriceState(marketPrice, observedPrice);
+        if (state.ratio < 0.4 || state.ratio > 1.35) shopStats.outliers += 1;
+        if (state.extreme) extremeDates.push(history.dates[index]);
+        if (state.severe) severe = true;
+      }
+      if (severe || new Set(extremeDates).size >= 2) {
+        const key = `${shopId}:${cardId}`;
+        quarantine[key] = {
+          shopId, cardId, dates: [...new Set(extremeDates)].filter(Boolean),
+          reason: severe ? "市場価格から重大な乖離" : "市場価格からの極端な乖離が複数日継続",
+        };
+        shopStats.quarantinedPairs += 1;
+      }
+    }
+    stats[shopId] = shopStats;
+  }
+  return { quarantine, stats };
+}
+
 async function main() {
   const cards = readJson(path.join(ROOT, "data", "pokemon-cards.json"), []);
   const historyPath = path.join(__dirname, "shop_buyback_history.json");
@@ -432,6 +467,7 @@ async function main() {
   const unmatchedPath = path.join(__dirname, "shop_buyback_unmatched.json");
   const itemMatchesPath = path.join(__dirname, "shop_buyback_item_matches.json");
   const imageMatchesPath = path.join(__dirname, "shop_buyback_image_matches.json");
+  const quarantinePath = path.join(__dirname, "shop_buyback_quarantine.json");
   const imageMatches = readJson(imageMatchesPath, {});
   const itemMatches = readJson(itemMatchesPath, {});
   const history = readJson(historyPath, { dates: [], shops: {}, observedByShop: {} });
@@ -548,6 +584,9 @@ async function main() {
     }
   }
 
+  const priceTrust = buildPriceTrust(history, cards);
+  const quarantine = priceTrust.quarantine;
+
   const summaryCards = {};
   const observedDays = history.dates.length;
   const latestHistoryDate = history.dates.at(-1) || today;
@@ -565,6 +604,7 @@ async function main() {
       const latestPriceIndex = values.findLastIndex((value) => Number(value) > 0);
       const currentPrice = latestPriceIndex >= 0 ? Number(values[latestPriceIndex]) : null;
       const currentMatch = currentLinksByShop[shopId]?.get(card.id) || null;
+      const quarantined = quarantine[`${shopId}:${card.id}`] || null;
       shops[shopId] = {
         c7, c30, c90, price: currentPrice,
         priceDate: latestPriceIndex >= 0 ? history.dates[latestPriceIndex] : null,
@@ -572,6 +612,8 @@ async function main() {
         matchMethod: currentMatch?.matchMethod || null,
         matchScore: currentMatch?.matchScore || null,
         matchConfidence: currentMatch ? decisionModel.matchConfidenceLabel(currentMatch.matchScore) : null,
+        quarantined: Boolean(quarantined),
+        quarantineReason: quarantined?.reason || null,
         observed7: observedRecent(history.observedByShop[shopId], latestHistoryDate, 7),
         observed30: observedRecent(history.observedByShop[shopId], latestHistoryDate, 30),
         observed90: observedRecent(history.observedByShop[shopId], latestHistoryDate, 90),
@@ -624,6 +666,19 @@ async function main() {
   for (const shop of SHOPS) {
     const result = results.find((entry) => entry.shop.id === shop.id);
     const previous = previousSummary.shops?.[shop.id] || {};
+    const trustStats = priceTrust.stats[shop.id] || { priceObservations: 0, outliers: 0, quarantinedPairs: 0 };
+    const matchedItems = result ? result.matched.length : Number(previous.matched || 0);
+    const mismatchSuspicions = result
+      ? result.matched.filter((item) => decisionModel.matchConfidenceLabel(item.score) === "low").length
+      : Number(previous.mismatchSuspicions || 0);
+    const reliability = marketModel.sourceReliability({
+      scheduledDays: history.dates.length,
+      successfulDays: (history.observedByShop[shop.id] || []).length,
+      priceObservations: trustStats.priceObservations,
+      outliers: trustStats.outliers,
+      matchedItems,
+      mismatchSuspicions,
+    });
     shopMeta[shop.id] = {
       name: shop.name,
       url: shop.url,
@@ -634,6 +689,11 @@ async function main() {
       observed7: observedRecent(history.observedByShop[shop.id], latestHistoryDate, 7),
       observed30: observedRecent(history.observedByShop[shop.id], latestHistoryDate, 30),
       observed90: observedRecent(history.observedByShop[shop.id], latestHistoryDate, 90),
+      priceObservations: trustStats.priceObservations,
+      outliers: trustStats.outliers,
+      mismatchSuspicions,
+      quarantinedPairs: trustStats.quarantinedPairs,
+      reliability,
     };
   }
   const catalog = Object.fromEntries(results.map((result) => [result.shop.id, result.matched]));
@@ -643,6 +703,7 @@ async function main() {
   fs.writeFileSync(unmatchedPath, JSON.stringify({ updatedAt: today, shops: unmatched }), "utf8");
   fs.writeFileSync(itemMatchesPath, JSON.stringify(itemMatches), "utf8");
   fs.writeFileSync(imageMatchesPath, JSON.stringify(imageMatches), "utf8");
+  fs.writeFileSync(quarantinePath, JSON.stringify({ updatedAt: today, pairs: quarantine }), "utf8");
   fs.writeFileSync(SUMMARY_PATH, JSON.stringify({ updatedAt: today, dates: history.dates, shops: shopMeta, cards: summaryCards }), "utf8");
 }
 

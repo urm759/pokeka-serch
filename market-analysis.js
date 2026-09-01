@@ -89,6 +89,7 @@
         ? {
             date: raw[0], rawPrice: raw[1], psaPrice: raw[2], listings: raw[3],
             rawTx7: raw[4], rawTx30: raw[5], psaTx7: raw[6], psaTx30: raw[7],
+            rawInstantLow: raw[8], psaInstantLow: raw[9],
           }
         : raw || {};
       const timestamp = dateValue(row.date);
@@ -103,6 +104,8 @@
         rawTx30: finite(row.rawTx30),
         psaTx7: finite(row.psaTx7),
         psaTx30: finite(row.psaTx30),
+        rawInstantLow: positive(row.rawInstantLow) ?? positive(row.rawPrice),
+        psaInstantLow: positive(row.psaInstantLow) ?? positive(row.psaPrice),
       });
     }
     return [...byDate.values()].sort((a, b) => a.timestamp - b.timestamp);
@@ -145,23 +148,62 @@
     };
   }
 
-  function supportBand(rows) {
-    const prices = rows.map((row) => positive(row.psaPrice)).filter((value) => value != null);
-    if (prices.length < 4) return { low: null, high: null, broken: false };
-    const previous = prices.slice(0, -1);
-    const anchor = quantile(previous, 0.25);
-    if (!(anchor > 0)) return { low: null, high: null, broken: false };
-    let low = anchor * 0.975;
-    let high = anchor * 1.025;
-    const latest = prices.at(-1);
-    const broken = latest < low * 0.98;
-    if (broken) {
-      const lowerCluster = prices.filter((price) => price <= latest * 1.05);
-      const nextAnchor = median(lowerCluster) || latest;
-      low = nextAnchor * 0.975;
-      high = nextAnchor * 1.025;
+  function observedBand(rows, key) {
+    const prices = rows.map((row) => positive(row[key])).filter((value) => value != null);
+    if (!prices.length) return { low: null, high: null };
+    const anchor = quantile(prices, 0.25) || median(prices);
+    return { low: Math.round(anchor * 0.975 / 100) * 100, high: Math.round(anchor * 1.025 / 100) * 100 };
+  }
+
+  function confirmedSupportBand(rows, priceKey, breakKey = priceKey) {
+    const valid = rows.filter((row) => positive(row[priceKey]) != null);
+    const provisional = observedBand(valid, priceKey);
+    if (valid.length < 4) return { ...provisional, confirmed: false, broken: false, contacts: valid.length, lastContactDate: null };
+    const lowerHalf = valid.filter((row) => row[priceKey] <= quantile(valid.map((row) => row[priceKey]), 0.55));
+    const candidates = [];
+    for (const seed of lowerHalf) {
+      const anchor = seed[priceKey];
+      const contacts = valid.filter((row) => Math.abs(row[priceKey] / anchor - 1) <= 0.025);
+      if (contacts.length < 3) continue;
+      const center = median(contacts.map((row) => row[priceKey]));
+      const low = center * 0.975;
+      const high = center * 1.025;
+      const lastContact = contacts.at(-1);
+      const lastIndex = valid.indexOf(lastContact);
+      const after = valid.slice(lastIndex + 1);
+      const latestBreakPrice = positive(valid.at(-1)[breakKey]) ?? valid.at(-1)[priceKey];
+      const broken = latestBreakPrice < low * 0.98;
+      const rebounded = after.some((row) => row[priceKey] >= high * 1.02);
+      const maintained = !broken && (valid.at(-1)[priceKey] >= low || after.filter((row) => row[priceKey] >= low).length >= 2);
+      if (!broken && !rebounded && !maintained) continue;
+      candidates.push({
+        low: Math.round(low / 100) * 100,
+        high: Math.round(high / 100) * 100,
+        confirmed: true,
+        broken,
+        contacts: new Set(contacts.map((row) => row.date)).size,
+        lastContactDate: lastContact.date,
+        rebounded,
+        maintained,
+      });
     }
-    return { low: Math.round(low / 100) * 100, high: Math.round(high / 100) * 100, broken };
+    if (!candidates.length) return { ...provisional, confirmed: false, broken: false, contacts: 0, lastContactDate: null };
+    return candidates.sort((left, right) => Number(right.broken) - Number(left.broken)
+      || right.contacts - left.contacts
+      || String(right.lastContactDate).localeCompare(String(left.lastContactDate)))[0];
+  }
+
+  function supportBands(rows) {
+    const close = confirmedSupportBand(rows, "psaPrice", "psaPrice");
+    const instant = confirmedSupportBand(rows, "psaInstantLow", "psaInstantLow");
+    return {
+      close,
+      instant,
+      confirmed: close.confirmed,
+      broken: close.confirmed && close.broken,
+      low: close.low,
+      high: close.high,
+    };
   }
 
   function inventoryDaysBySource(sources) {
@@ -194,7 +236,7 @@
     const stats90 = priceWindowStats(rows, "psaPrice", 90);
     const raw30 = priceWindowStats(rows, "rawPrice", 30);
     const direction = directionFromChanges(raw30, stats30, input.fallbackRawChange30);
-    const support = supportBand(rows);
+    const supportCandidate = supportBands(rows);
     const inventorySources = inventoryDaysBySource(input.inventorySources);
     const inventoryDays = median(inventorySources.map((source) => source.days));
     const psaTx30 = Math.max(0, finite(input.psaTx30) || 0);
@@ -210,6 +252,13 @@
     const marketRelativeStrength = finite(input.marketRelativeStrength);
     const storeAgreement = clamp(finite(input.storeAgreement) ?? 50);
     const enoughHistory = stats14.ready;
+    const support = enoughHistory ? supportCandidate : {
+      ...supportCandidate,
+      confirmed: false,
+      broken: false,
+      close: supportCandidate.close ? { ...supportCandidate.close, confirmed: false, broken: false } : null,
+      instant: supportCandidate.instant ? { ...supportCandidate.instant, confirmed: false, broken: false } : null,
+    };
     const enoughTransactions = psaTx30 >= 3 || rawTx30 >= 10;
     const evidence = [];
     const cautions = [];
@@ -232,7 +281,8 @@
     if (storeAgreement >= 80) evidence.push("店舗間価格が一致");
     else if (storeAgreement <= 35) cautions.push("店舗間価格のばらつきが大きい");
     if (input.reprintActive) cautions.push("再販中");
-    if (support.broken) cautions.push("過去の支持価格帯を割れたため下値候補を再計算");
+    if (support.broken) cautions.push("確定支持帯を終値で明確に下抜け");
+    else if (!support.confirmed) cautions.push(enoughHistory ? "支持帯は3日接触の確認前・暫定観測帯" : "履歴不足のため暫定観測帯");
     if (![stats14, stats30, stats90].every((stats) => stats.ready)) cautions.push("14・30・90日履歴を各期間の基準で蓄積中");
 
     let score = 50;
@@ -250,6 +300,7 @@
     score += (storeAgreement - 50) * 0.16;
     if (marketRelativeStrength != null) score += clamp(marketRelativeStrength, -15, 15) * 0.6;
     if (support.broken) score -= 18;
+    else if (!support.confirmed) score = Math.min(score, 75);
     score = Math.round(clamp(score));
     if (historyDays < 30) score = Math.min(score, 75);
     else if (historyDays < 90) score = Math.min(score, 90);
@@ -258,7 +309,7 @@
     let floorState = "蓄積中";
     if (enoughHistory) {
       if (support.broken) floorState = "下値割れ";
-      else if (score >= 82 && historyDays >= 30 && enoughTransactions && stats14.newLowCount === 0) floorState = "安定";
+      else if (support.confirmed && score >= 82 && historyDays >= 30 && enoughTransactions && stats14.newLowCount === 0) floorState = "安定";
       else if (score >= 58) floorState = "形成中";
       else floorState = "未形成";
     }
@@ -278,6 +329,9 @@
       supportLow: support.low,
       supportHigh: support.high,
       supportBroken: support.broken,
+      supportConfirmed: support.confirmed,
+      supportClose: support.close,
+      supportInstant: support.instant,
       inventoryDays: round(inventoryDays, 1),
       inventorySources,
       historyDays,
@@ -303,6 +357,7 @@
     const cardMatched = input.cardMatched !== false;
     const updatedAgeDays = ageDays(input.priceDate, input.asOfDate);
     const stale = updatedAgeDays != null && updatedAgeDays > Number(input.staleAfterDays ?? 7);
+    if (input.dataQuarantined) return { valid: false, reason: "データ異常（自動隔離）", stale, updatedAgeDays, quarantined: true };
     if (!cardMatched) return { valid: false, reason: "カード取り違え疑い", stale, updatedAgeDays };
     if (marketPrice == null || buybackPrice == null) return { valid: false, reason: "価格未取得", stale, updatedAgeDays };
     const feeRate = clamp(finite(input.saleFeeRate) || 0, 0, 100) / 100;
@@ -335,6 +390,31 @@
     const low = Math.max(q1 - iqr * 1.5, center * 0.65);
     const high = Math.min(q3 + iqr * 1.5, center * 1.35);
     return (rows || []).map((row) => ({ ...row, outlier: Boolean(row?.valid && !row.stale && (row.marketRatio < low || row.marketRatio > high)) }));
+  }
+
+  function extremePriceState(marketPrice, observedPrice, options = {}) {
+    const ratio = safeDivide(observedPrice, marketPrice);
+    if (ratio == null) return { ratio: null, extreme: false, severe: false };
+    const extreme = ratio < Number(options.extremeLow ?? 0.12) || ratio > Number(options.extremeHigh ?? 2.5);
+    const severe = ratio < Number(options.severeLow ?? 0.03) || ratio > Number(options.severeHigh ?? 8);
+    return { ratio: round(ratio), extreme, severe };
+  }
+
+  function sourceReliability(input = {}) {
+    const scheduledDays = Math.max(0, finite(input.scheduledDays) || 0);
+    const successfulDays = Math.max(0, finite(input.successfulDays) || 0);
+    const priceObservations = Math.max(0, finite(input.priceObservations) || 0);
+    const outliers = Math.max(0, finite(input.outliers) || 0);
+    const matchedItems = Math.max(0, finite(input.matchedItems) || 0);
+    const mismatchSuspicions = Math.max(0, finite(input.mismatchSuspicions) || 0);
+    const successRate = safeDivide(successfulDays, scheduledDays);
+    const outlierRate = safeDivide(outliers, priceObservations);
+    const mismatchRate = safeDivide(mismatchSuspicions, matchedItems);
+    const completeness = [successRate, outlierRate, mismatchRate].filter((value) => value != null).length;
+    const score = completeness < 2 ? null : round(clamp(
+      (successRate ?? 0.5) * 55 + (1 - (outlierRate ?? 0)) * 25 + (1 - (mismatchRate ?? 0)) * 20
+    ), 1);
+    return { successRate: round(successRate), outlierRate: round(outlierRate), mismatchRate: round(mismatchRate), score };
   }
 
   function demandObservationCap(days) {
@@ -474,6 +554,7 @@
     HISTORY_REQUIREMENTS,
     evaluatePriceFloor,
     evaluateStoreDemand,
+    extremePriceState,
     inventoryDaysBySource,
     markRatioOutliers,
     mean,
@@ -482,6 +563,7 @@
     quantile,
     round,
     safeDivide,
+    sourceReliability,
     summarizeShopRates,
   };
 });
