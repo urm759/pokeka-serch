@@ -5,6 +5,11 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function createMarketAnalysis() {
   const DAY_MS = 86400000;
   const clamp = (value, min = 0, max = 100) => Math.max(min, Math.min(max, value));
+  const HISTORY_REQUIREMENTS = Object.freeze({
+    14: Object.freeze({ minSamples: 4, minSpanDays: 10 }),
+    30: Object.freeze({ minSamples: 8, minSpanDays: 21 }),
+    90: Object.freeze({ minSamples: 16, minSpanDays: 60 }),
+  });
 
   function finite(value) {
     if (value == null || value === "") return null;
@@ -109,10 +114,11 @@
     return rows.filter((row) => latest - row.timestamp <= days * DAY_MS);
   }
 
-  function priceWindowStats(rows, key, days) {
+  function priceWindowStats(rows, key, days, requirements = HISTORY_REQUIREMENTS) {
     const selected = windowRows(rows, days).filter((row) => positive(row[key]) != null);
     const prices = selected.map((row) => row[key]);
-    if (!prices.length) return { days, samples: 0, spanDays: 0, changePct: null, widthPct: null, newLowCount: null };
+    const requirement = requirements[days] || { minSamples: 2, minSpanDays: Math.max(1, days - 1) };
+    if (!prices.length) return { days, samples: 0, spanDays: 0, changePct: null, widthPct: null, newLowCount: null, ready: false, requirement };
     const spanDays = Math.round((selected.at(-1).timestamp - selected[0].timestamp) / DAY_MS);
     let floor = prices[0];
     let newLowCount = 0;
@@ -134,6 +140,8 @@
       min: Math.min(...prices),
       max: Math.max(...prices),
       median: center,
+      ready: prices.length >= requirement.minSamples && spanDays >= requirement.minSpanDays,
+      requirement,
     };
   }
 
@@ -174,9 +182,8 @@
     const fallback = finite(fallbackRawChange);
     const value = changes.length ? median(changes) : fallback;
     if (value == null) return "蓄積中";
-    if (value > 3) return "上昇";
-    if (value < -3) return "下降";
-    return "横ばい";
+    const label = value > 3 ? "上昇" : value < -3 ? "下降" : "横ばい";
+    return psaStats.ready ? label : `暫定${label}`;
   }
 
   function evaluatePriceFloor(input = {}) {
@@ -202,7 +209,7 @@
     const releaseAgeDays = finite(input.releaseAgeDays);
     const marketRelativeStrength = finite(input.marketRelativeStrength);
     const storeAgreement = clamp(finite(input.storeAgreement) ?? 50);
-    const enoughHistory = rows.length >= 4 && historyDays >= 14 && stats14.samples >= 2;
+    const enoughHistory = stats14.ready;
     const enoughTransactions = psaTx30 >= 3 || rawTx30 >= 10;
     const evidence = [];
     const cautions = [];
@@ -226,7 +233,7 @@
     else if (storeAgreement <= 35) cautions.push("店舗間価格のばらつきが大きい");
     if (input.reprintActive) cautions.push("再販中");
     if (support.broken) cautions.push("過去の支持価格帯を割れたため下値候補を再計算");
-    if (!enoughHistory) cautions.push("14日以上の価格履歴を蓄積中");
+    if (![stats14, stats30, stats90].every((stats) => stats.ready)) cautions.push("14・30・90日履歴を各期間の基準で蓄積中");
 
     let score = 50;
     if (stats14.newLowCount === 0 && stats14.samples >= 2) score += 15;
@@ -286,6 +293,7 @@
       marketRelativeStrength: round(marketRelativeStrength, 1),
       evidence: evidence.slice(0, 4),
       cautions: cautions.slice(0, 4),
+      historyRequirements: HISTORY_REQUIREMENTS,
     };
   }
 
@@ -329,28 +337,43 @@
     return (rows || []).map((row) => ({ ...row, outlier: Boolean(row?.valid && !row.stale && (row.marketRatio < low || row.marketRatio > high)) }));
   }
 
+  function demandObservationCap(days) {
+    if (days <= 3) return 59;
+    if (days <= 7) return 69;
+    if (days <= 13) return 84;
+    return 100;
+  }
+
+  function componentScore(value, bands) {
+    for (const [minimum, score] of bands) if (value >= minimum) return score;
+    return 0;
+  }
+
   function evaluateStoreDemand(input = {}) {
     const rows = markRatioOutliers(input.rows || []);
     const trusted = rows.filter((row) => row.valid && !row.stale && !row.outlier);
     const ratios = trusted.map((row) => row.marketRatio);
     const ratioMedian = median(ratios);
     const activeStores = new Set(trusted.map((row) => row.shopId).filter(Boolean)).size;
-    const continuity7 = mean(trusted.map((row) => finite(row.c7) || 0));
-    const continuity30 = mean(trusted.map((row) => finite(row.c30) || 0));
+    const continuity7 = mean(trusted.map((row) => safeDivide(row.c7, row.observed7)).filter((value) => value != null));
+    const continuity30 = mean(trusted.map((row) => safeDivide(row.c30, row.observed30)).filter((value) => value != null));
     const priceTrendPct = median(trusted.map((row) => pctChange(row.avg30, row.buybackPrice)).filter((value) => value != null));
     const spread = ratioMedian != null && ratios.length > 1 ? (Math.max(...ratios) - Math.min(...ratios)) / ratioMedian : null;
-    let score = 35;
-    if (ratioMedian != null) score += ratioMedian >= 0.9 ? 30 : ratioMedian >= 0.78 ? 22 : ratioMedian >= 0.65 ? 10 : -10;
-    score += activeStores >= 4 ? 20 : activeStores >= 2 ? 12 : activeStores === 1 ? 0 : -20;
-    score += continuity30 >= 8 ? 10 : continuity30 >= 3 ? 6 : continuity30 >= 1 ? 2 : -5;
-    if (priceTrendPct != null) score += priceTrendPct >= 5 ? 8 : priceTrendPct <= -8 ? -10 : 2;
-    if (spread != null) score += spread <= 0.12 ? 7 : spread > 0.3 ? -8 : 0;
-    score = Math.round(clamp(score));
+    const observationDays = Math.max(0, ...trusted.map((row) => finite(row.observed30) || 0));
+    const liquidity = Math.max(0, finite(input.psaTx30) || 0);
+    const components = {
+      buybackRatio: ratioMedian == null ? 0 : componentScore(ratioMedian, [[0.95, 30], [0.9, 27], [0.82, 22], [0.72, 15], [0.6, 7]]),
+      storeCount: componentScore(activeStores, [[5, 20], [4, 18], [3, 15], [2, 10], [1, 4]]),
+      continuity: continuity30 == null ? 0 : componentScore(continuity30, [[0.8, 20], [0.6, 16], [0.4, 12], [0.2, 7], [0.01, 3]]),
+      priceTrend: priceTrendPct == null ? 5 : componentScore(priceTrendPct, [[5, 15], [0, 12], [-5, 9], [-10, 5], [-Infinity, 1]]),
+      liquidity: componentScore(liquidity, [[30, 15], [15, 12], [7, 9], [3, 5], [1, 2]]),
+    };
+    const rawScore = Object.values(components).reduce((sum, value) => sum + value, 0);
+    const confidenceCap = demandObservationCap(observationDays);
+    const score = Math.round(Math.min(clamp(rawScore), confidenceCap));
     let label = "蓄積中";
     if (trusted.length) {
-      if (activeStores >= 2 && score >= 72) label = "強い";
-      else if (score < 45) label = "弱い";
-      else label = "普通";
+      label = score < 45 ? "弱い" : "普通";
     }
     const best = trusted.slice().sort((a, b) => b.buybackPrice - a.buybackPrice)[0] || null;
     return {
@@ -359,14 +382,57 @@
       ratioMedian: round(ratioMedian),
       activeStores,
       continuity7: round(continuity7, 1),
-      continuity30: round(continuity30, 1),
+      continuity30: round(continuity30, 3),
+      continuityRate7: round(continuity7, 3),
+      continuityRate30: round(continuity30, 3),
       priceTrendPct: round(priceTrendPct, 1),
       agreement: spread == null ? null : round(Math.max(0, 1 - spread), 3),
       best,
       rows,
       trustedCount: trusted.length,
       excludedCount: rows.filter((row) => row.stale || row.outlier || !row.valid).length,
+      observationDays,
+      confidenceCap,
+      rawScore,
+      components,
+      absoluteStrongEligible: trusted.length >= 2 && activeStores >= 2 && ratioMedian >= 0.72 && continuity30 >= 0.2 && score >= 70,
+      relativePercentile: null,
     };
+  }
+
+  function demandPriceBand(price) {
+    const value = positive(price);
+    if (value == null) return "unknown";
+    if (value < 30000) return "under30k";
+    if (value < 100000) return "30k-100k";
+    return "over100k";
+  }
+
+  function applyStoreDemandRelativeRanking(cards, options = {}) {
+    const strongShare = clamp(finite(options.strongShare) ?? 0.3, 0.25, 0.35);
+    const eligible = (cards || []).filter((card) => card?.buybackAnalysis?.trustedCount > 0);
+    const globalPool = eligible.slice().sort((a, b) => b.buybackAnalysis.score - a.buybackAnalysis.score);
+    const groups = new Map();
+    for (const card of eligible) {
+      const key = demandPriceBand(card.psa10 ?? card.marketPrice);
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(card);
+    }
+    for (const group of groups.values()) {
+      const pool = group.length >= 10 ? group : globalPool;
+      const ranked = pool.slice().sort((a, b) => b.buybackAnalysis.score - a.buybackAnalysis.score);
+      const rankById = new Map(ranked.map((card, index) => [String(card.id), index]));
+      const strongCount = Math.max(1, Math.round(ranked.length * strongShare));
+      for (const card of group) {
+        const analysis = card.buybackAnalysis;
+        const rank = rankById.get(String(card.id));
+        analysis.relativePercentile = rank == null || ranked.length < 2 ? null : round(1 - rank / (ranked.length - 1), 3);
+        if (analysis.score < 45) analysis.label = "弱い";
+        else if (analysis.absoluteStrongEligible && rank != null && rank < strongCount) analysis.label = "強い";
+        else analysis.label = "普通";
+      }
+    }
+    return cards;
   }
 
   function summarizeShopRates(rows, options = {}) {
@@ -404,12 +470,15 @@
   return {
     ageDays,
     buybackMetrics,
+    applyStoreDemandRelativeRanking,
+    HISTORY_REQUIREMENTS,
     evaluatePriceFloor,
     evaluateStoreDemand,
     inventoryDaysBySource,
     markRatioOutliers,
     mean,
     median,
+    normalizeHistory,
     quantile,
     round,
     safeDivide,

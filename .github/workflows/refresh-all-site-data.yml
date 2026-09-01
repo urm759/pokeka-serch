@@ -92,6 +92,9 @@ jobs:
       - name: Record 91-day market history and rebuild market analysis
         run: node work/build_market_analysis.js
 
+      - name: Record daily decisions and rebuild backtest
+        run: node work/build_market_backtest.js
+
       - name: Relearn sourcing evaluation from current market data
         run: node work/build_evaluation_model.js
 

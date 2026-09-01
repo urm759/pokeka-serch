@@ -28,6 +28,7 @@ function positive(value) {
 }
 
 function finite(value) {
+  if (value == null || value === "") return null;
   const number = Number(value);
   return Number.isFinite(number) ? number : null;
 }
@@ -108,15 +109,17 @@ function releaseAgeDays(official, asOfDate) {
 }
 
 function monthlyPsaIncrease(official) {
-  const window = official?.w30 || official?.w90 || official?.w7;
+  const window = [official?.w30, official?.w90, official?.w7].find((entry) => entry && !entry.partial);
+  if (!window) return null;
   const days = Number(window?.days || (official?.w30 ? 30 : official?.w90 ? 90 : official?.w7 ? 7 : 0));
   const increase = Number(window?.d10);
   return Number.isFinite(increase) && days > 0 ? Math.max(0, increase) / days * 30 : null;
 }
 
 function psaWindowIncrease(official, key) {
-  const value = Number(official?.[key]?.d10);
-  return Number.isFinite(value) ? Math.max(0, value) : null;
+  const window = official?.[key];
+  if (!window || window.partial || finite(window.d10) == null) return null;
+  return Math.max(0, finite(window.d10));
 }
 
 function main() {
@@ -179,6 +182,9 @@ function main() {
       marketRelativeStrength: evaluated.marketRelativeStrength,
       evidence: evaluated.evidence,
       cautions: evaluated.cautions,
+      // [samples, spanDays, ready] for 14/30/90 days. Compact because this repeats for every card.
+      windowStatus: [evaluated.stats14, evaluated.stats30, evaluated.stats90]
+        .map((stats) => [stats.samples, stats.spanDays, stats.ready ? 1 : 0]),
     };
   }
 
@@ -190,6 +196,7 @@ function main() {
       : 0,
     recordedDates: history.dates.length,
     marketPsaChange30: marketModel.round(marketChange30, 1),
+    historyRequirements: marketModel.HISTORY_REQUIREMENTS,
     cards: summaries,
   }), "utf8");
   console.log(JSON.stringify({ updatedAt, historyDates: history.dates.length, cards: Object.keys(summaries).length }));

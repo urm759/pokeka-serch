@@ -392,13 +392,29 @@ function buildMatcher(cards) {
   };
 }
 
-function countRecent(values, days) {
-  return values.slice(-days).filter((value) => Number(value) > 0).length;
+function recentIndexes(dates, days) {
+  if (!dates.length) return [];
+  const latest = Date.parse(`${dates.at(-1)}T00:00:00Z`);
+  return dates.map((date, index) => ({ index, timestamp: Date.parse(`${date}T00:00:00Z`) }))
+    .filter((entry) => Number.isFinite(entry.timestamp) && latest - entry.timestamp < days * 86400000)
+    .map((entry) => entry.index);
 }
 
-function averageRecent(values, days) {
-  const prices = values.slice(-days).filter((value) => Number(value) > 0).map(Number);
+function countRecent(values, dates, days) {
+  return recentIndexes(dates, days).filter((index) => Number(values[index]) > 0).length;
+}
+
+function averageRecent(values, dates, days) {
+  const prices = recentIndexes(dates, days).map((index) => values[index]).filter((value) => Number(value) > 0).map(Number);
   return prices.length ? Math.round(prices.reduce((sum, value) => sum + value, 0) / prices.length) : null;
+}
+
+function observedRecent(observedDates, latestDate, days) {
+  const latest = Date.parse(`${latestDate}T00:00:00Z`);
+  return (observedDates || []).filter((date) => {
+    const timestamp = Date.parse(`${date}T00:00:00Z`);
+    return Number.isFinite(timestamp) && latest - timestamp < days * 86400000;
+  }).length;
 }
 
 function demandLabel(count30, observedDays, shopCount) {
@@ -418,11 +434,20 @@ async function main() {
   const imageMatchesPath = path.join(__dirname, "shop_buyback_image_matches.json");
   const imageMatches = readJson(imageMatchesPath, {});
   const itemMatches = readJson(itemMatchesPath, {});
-  const history = readJson(historyPath, { dates: [], shops: {} });
+  const history = readJson(historyPath, { dates: [], shops: {}, observedByShop: {} });
+  if (!history.observedByShop || typeof history.observedByShop !== "object") history.observedByShop = {};
+  // Older history predates per-shop success tracking. Seed once from the known daily runs,
+  // then future refreshes maintain exact successful observation dates per shop.
+  for (const shopId of Object.keys(history.shops || {})) {
+    if (!Array.isArray(history.observedByShop[shopId])) history.observedByShop[shopId] = [...(history.dates || [])];
+  }
   const activeShopIds = new Set(SHOPS.map((shop) => shop.id));
   // A removed shop must not continue to affect historical averages or demand.
   for (const shopId of Object.keys(history.shops || {})) {
     if (!activeShopIds.has(shopId)) delete history.shops[shopId];
+  }
+  for (const shopId of Object.keys(history.observedByShop || {})) {
+    if (!activeShopIds.has(shopId)) delete history.observedByShop[shopId];
   }
   for (const cache of [imageMatches, itemMatches]) {
     for (const sourceKey of Object.keys(cache)) {
@@ -491,6 +516,10 @@ async function main() {
       while (values.length < history.dates.length) values.push(null);
     }
     const refreshedDates = [...new Set(result.items.map((item) => item.observedDate || today))];
+    if (!refreshedDates.length) refreshedDates.push(today);
+    history.observedByShop[shopId] = [...new Set([...(history.observedByShop[shopId] || []), ...refreshedDates])]
+      .filter((date) => targetDates.includes(date))
+      .sort();
     for (const values of Object.values(shopHistory)) {
       for (const date of refreshedDates) {
         const index = history.dates.indexOf(date);
@@ -521,6 +550,7 @@ async function main() {
 
   const summaryCards = {};
   const observedDays = history.dates.length;
+  const latestHistoryDate = history.dates.at(-1) || today;
   for (const card of cards) {
     const shops = {};
     let total7 = 0;
@@ -528,9 +558,9 @@ async function main() {
     let total90 = 0;
     for (const [shopId, entries] of Object.entries(history.shops)) {
       const values = entries[card.id] || [];
-      const c7 = countRecent(values, 7);
-      const c30 = countRecent(values, 30);
-      const c90 = countRecent(values, 90);
+      const c7 = countRecent(values, history.dates, 7);
+      const c30 = countRecent(values, history.dates, 30);
+      const c90 = countRecent(values, history.dates, 90);
       if (!c7 && !c30 && !c90) continue;
       const latestPriceIndex = values.findLastIndex((value) => Number(value) > 0);
       const currentPrice = latestPriceIndex >= 0 ? Number(values[latestPriceIndex]) : null;
@@ -542,9 +572,12 @@ async function main() {
         matchMethod: currentMatch?.matchMethod || null,
         matchScore: currentMatch?.matchScore || null,
         matchConfidence: currentMatch ? decisionModel.matchConfidenceLabel(currentMatch.matchScore) : null,
-        avg7: averageRecent(values, 7),
-        avg30: averageRecent(values, 30),
-        avg90: averageRecent(values, 90),
+        observed7: observedRecent(history.observedByShop[shopId], latestHistoryDate, 7),
+        observed30: observedRecent(history.observedByShop[shopId], latestHistoryDate, 30),
+        observed90: observedRecent(history.observedByShop[shopId], latestHistoryDate, 90),
+        avg7: averageRecent(values, history.dates, 7),
+        avg30: averageRecent(values, history.dates, 30),
+        avg90: averageRecent(values, history.dates, 90),
       };
       total7 += c7;
       total30 += c30;
@@ -598,6 +631,9 @@ async function main() {
       matched: result ? result.matched.length : Number(previous.matched || 0),
       activeMatched: result ? result.matched.filter((item) => item.active).length : Number(previous.activeMatched || 0),
       refreshed: Boolean(result),
+      observed7: observedRecent(history.observedByShop[shop.id], latestHistoryDate, 7),
+      observed30: observedRecent(history.observedByShop[shop.id], latestHistoryDate, 30),
+      observed90: observedRecent(history.observedByShop[shop.id], latestHistoryDate, 90),
     };
   }
   const catalog = Object.fromEntries(results.map((result) => [result.shop.id, result.matched]));

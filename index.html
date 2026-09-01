@@ -596,6 +596,14 @@
       <div id="shopRateSummary" class="shop-rate-summary-body"></div>
     </details>
 
+    <details id="marketBacktestPanel" class="card shop-rate-summary-panel backtest-panel">
+      <summary>
+        <div><div class="eyebrow">Daily decision backtest</div><h2>仕入れ判断のバックテスト</h2><p>日次判定を保存し、7日後・30日後の価格・支持帯・買取率・GO後利益を検証します。</p></div>
+        <strong>検証結果を見る</strong>
+      </summary>
+      <div id="marketBacktestSummary" class="shop-rate-summary-body"></div>
+    </details>
+
     <section class="toolbar card">
       <div>
         <h2>候補一覧</h2>
@@ -635,7 +643,7 @@
   </main>
 
   <script src="./decision-model.js?v=20260901-match-confidence"></script>
-  <script src="./market-analysis.js?v=20260901-market-analysis"></script>
-  <script src="./app.js?v=20260901-match-confidence"></script>
+  <script src="./market-analysis.js?v=20260901-demand-confidence"></script>
+  <script src="./app.js?v=20260901-demand-confidence"></script>
 </body>
 </html>

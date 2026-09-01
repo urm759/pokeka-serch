@@ -37,11 +37,14 @@ jobs:
       - name: Record 91-day market history and rebuild market analysis
         run: node work/build_market_analysis.js
 
+      - name: Record daily decisions and rebuild backtest
+        run: node work/build_market_backtest.js
+
       - name: Commit changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/pokemon-cards.json data/pokemon-cards-meta.json data/market-stability-summary.json work/market_stability_history.json work/snkr_link_progress.json work/cardrush_catalog.json work/cardrush_invalid_urls.json work/cardrush_recheck_ids.json work/cardrush_crawl_progress.json work/cardrush_target_progress.json
+          git add data/pokemon-cards.json data/pokemon-cards-meta.json data/market-stability-summary.json data/market-backtest-summary.json work/market_stability_history.json work/market_backtest_history.json work/snkr_link_progress.json work/cardrush_catalog.json work/cardrush_invalid_urls.json work/cardrush_recheck_ids.json work/cardrush_crawl_progress.json work/cardrush_target_progress.json
           if git diff --cached --quiet; then
             echo "No data changes."
             exit 0

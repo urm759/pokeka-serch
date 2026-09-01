@@ -15,6 +15,7 @@ const state = {
   buybackUpdatedAt: null,
   marketStability: Object.create(null),
   marketStabilityMeta: null,
+  marketBacktest: null,
   psaPopulation: Object.create(null),
   psaHistoryCache: Object.create(null),
   psaServices: null,
@@ -231,6 +232,7 @@ const els = {
   capitalAvailabilityStatus: document.getElementById("capitalAvailabilityStatus"),
   shopReferenceLinks: document.getElementById("shopReferenceLinks"),
   shopRateSummary: document.getElementById("shopRateSummary"),
+  marketBacktestSummary: document.getElementById("marketBacktestSummary"),
 };
 
 function showStatus(message, kind = "info") {
@@ -1349,7 +1351,7 @@ function buildBuybackAnalysis(card, shops, marketPrice) {
       shopName: shop.sourceName || state.buybackShops[shop.shopId]?.name || shop.shopId,
     };
   });
-  return marketModel.evaluateStoreDemand({ rows });
+  return marketModel.evaluateStoreDemand({ rows, psaTx30: card.p10tv30 });
 }
 
 function floorStateKey(value) {
@@ -1357,7 +1359,7 @@ function floorStateKey(value) {
 }
 
 function directionKey(value) {
-  return { "上昇": "up", "横ばい": "flat", "下降": "down" }[value] || "collecting";
+  return { "上昇": "up", "暫定上昇": "up", "横ばい": "flat", "暫定横ばい": "flat", "下降": "down", "暫定下降": "down" }[value] || "collecting";
 }
 
 function supplyStateKey(value) {
@@ -1755,10 +1757,36 @@ function renderShopRateSummary(cards) {
   `;
 }
 
+function renderMarketBacktest() {
+  if (!els.marketBacktestSummary) return;
+  const data = state.marketBacktest;
+  if (!data) {
+    els.marketBacktestSummary.innerHTML = "<p>日次判定の記録を開始すると、7日後・30日後の検証結果がここに表示されます。</p>";
+    return;
+  }
+  const rate = (top, bottom) => bottom > 0 ? `${(top / bottom * 100).toFixed(1)}%` : "蓄積中";
+  const summaryCard = (label, stats) => `
+    <div class="backtest-summary-card">
+      <span>${label}</span><strong>${fmt.format(stats.evaluated || 0)}件検証</strong>
+      <small>GO後利益プラス ${rate(stats.goProfitable, stats.goEvaluated)} / 支持帯割れ ${rate(stats.supportBreaks, stats.supportEvaluated)} / 買取率維持 ${rate(stats.buybackMaintained, stats.buybackEvaluated)}</small>
+      <b>GO後利益中央値 ${Number.isFinite(stats.goProfitMedian) ? `¥${fmt.format(stats.goProfitMedian)}` : "蓄積中"}</b>
+    </div>`;
+  const rows = (data.outcomes || []).slice(0, 40);
+  els.marketBacktestSummary.innerHTML = `
+    <div class="backtest-overview">
+      ${summaryCard("7日後", data.days7 || {})}${summaryCard("30日後", data.days30 || {})}
+      <div class="backtest-summary-card"><span>日次記録</span><strong>${fmt.format(data.cards || 0)}枚 / ${fmt.format(data.snapshots || 0)}記録</strong><small>同じ日の複数更新は最新1件に統合</small><b>${escapeHtml(data.updatedAt || "蓄積中")}</b></div>
+    </div>
+    ${rows.length ? `<div class="backtest-table-wrap"><table class="backtest-table"><thead><tr><th>カード</th><th>期間</th><th>判定日→検証日</th><th>価格変化</th><th>支持帯</th><th>買取率</th><th>GO後利益</th></tr></thead><tbody>${rows.map((row) => `<tr><th>${escapeHtml(row.cardName)}</th><td>${fmt.format(row.horizonDays)}日</td><td>${escapeHtml(row.baseDate)} → ${escapeHtml(row.resultDate)}</td><td>${Number.isFinite(row.priceChangePct) ? `${row.priceChangePct >= 0 ? "+" : ""}${row.priceChangePct.toFixed(1)}%` : "-"}</td><td>${row.supportBroken == null ? "蓄積中" : row.supportBroken ? "下値割れ" : "維持"}</td><td>${row.buybackMaintained == null ? "蓄積中" : row.buybackMaintained ? "維持" : "低下"}</td><td>${row.verdict !== "GO" ? "非GO" : Number.isFinite(row.goProfit) ? `¥${fmt.format(row.goProfit)}` : "蓄積中"}</td></tr>`).join("")}</tbody></table></div>` : "<p>7日後の検証日を迎えるまで蓄積中です。</p>"}
+    <p class="shop-rate-note">${escapeHtml(data.method || "標準条件で日次判定を検証")}。この検証は既存の仕入れ計算を変更せず、成績確認用として分離しています。</p>
+  `;
+}
+
 function render() {
   const normalizedQuery = normalize(state.q);
   const compactQuery = compactSearch(state.q);
   const calculated = state.cards.map(calc);
+  marketModel.applyStoreDemandRelativeRanking(calculated, { strongShare: 0.3 });
   const roiByPsaPriceBand = new Map();
   const psaTxByPriceBand = new Map();
   calculated.forEach((card) => {
@@ -1790,6 +1818,7 @@ function render() {
     finalizeCardDecision(card);
   });
   renderShopRateSummary(calculated);
+  renderMarketBacktest();
   const enriched = calculated
     .filter((card) => {
       const haystack = normalize(`${card.name} ${card.model} ${card.id}`);
@@ -2016,11 +2045,25 @@ function render() {
     const buybackDemandScoreText = buybackDemand === "蓄積中" ? "蓄積中" : `${fmt.format(card.buybackAnalysis?.score || 0)}/100`;
     const buybackBest = card.buybackAnalysis?.best;
     const buybackBestText = buybackBest ? `${escapeHtml(buybackBest.shopName)} ¥${fmt.format(buybackBest.buybackPrice)}` : "有効な最新価格を蓄積中";
+    const demandComponents = card.buybackAnalysis?.components || {};
+    const continuityRateText = Number.isFinite(card.buybackAnalysis?.continuityRate30)
+      ? `${(card.buybackAnalysis.continuityRate30 * 100).toFixed(1)}%`
+      : "蓄積中";
+    const relativeRankText = Number.isFinite(card.buybackAnalysis?.relativePercentile)
+      ? `同価格帯 上位${Math.max(1, Math.round((1 - card.buybackAnalysis.relativePercentile) * 100))}%`
+      : "相対順位 蓄積中";
     const buybackPanel = card.buyback ? `
       <div class="buyback-panel ${buybackDemandClass}">
         <div class="buyback-head">
           <div><span>PSA10買取率・店舗需要</span><strong>店舗需要：${escapeHtml(buybackDemand)} ${buybackDemandScoreText}</strong><small>最も有利な売却先：${buybackBestText}</small></div>
-          <small>相場比中央値 ${ratioLabel(card.buybackAnalysis?.ratioMedian)} / 有効 ${fmt.format(card.buybackAnalysis?.trustedCount || 0)}店 / 除外 ${fmt.format(card.buybackAnalysis?.excludedCount || 0)}店</small>
+          <small>相場比中央値 ${ratioLabel(card.buybackAnalysis?.ratioMedian)} / 掲載継続率 ${continuityRateText} / ${relativeRankText}<br>観測 ${fmt.format(card.buybackAnalysis?.observationDays || 0)}日・信頼度上限 ${fmt.format(card.buybackAnalysis?.confidenceCap || 0)}点</small>
+        </div>
+        <div class="demand-components">
+          <span>買取率 <b>${fmt.format(demandComponents.buybackRatio || 0)}<small>/30</small></b></span>
+          <span>店舗数 <b>${fmt.format(demandComponents.storeCount || 0)}<small>/20</small></b></span>
+          <span>掲載継続率 <b>${fmt.format(demandComponents.continuity || 0)}<small>/20</small></b></span>
+          <span>買取価格推移 <b>${fmt.format(demandComponents.priceTrend || 0)}<small>/15</small></b></span>
+          <span>売買流動性 <b>${fmt.format(demandComponents.liquidity || 0)}<small>/15</small></b></span>
         </div>
         <div class="buyback-shops buyback-primary-shop">${buybackPrimaryShop}</div>
         ${buybackOtherShops}
@@ -2154,6 +2197,12 @@ function render() {
     const inventorySourcesText = (floor?.inventorySources || []).map((source) => `${source.source} ${Number(source.days).toFixed(1)}日`).join(" / ");
     const floorEvidence = floor?.evidence?.join(" / ") || "価格・取引・出品履歴を蓄積中";
     const floorCautions = floor?.cautions?.join(" / ") || "なし";
+    const historyWindowText = [14, 30, 90].map((days) => {
+      const values = floor?.windowStatus?.[[14, 30, 90].indexOf(days)];
+      const requirement = state.marketStabilityMeta?.historyRequirements?.[days];
+      if (!values || !requirement) return `${days}日 蓄積中`;
+      return `${days}日 ${values[2] ? "判定可" : `蓄積中 ${values[0]}/${requirement.minSamples}件`}`;
+    }).join(" / ");
     const floorPanel = `
       <div class="price-floor-panel ${floorClass}">
         <div class="price-floor-head"><div><span>相場の下値安定</span><strong>${escapeHtml(floor?.state || "蓄積中")} <small>${floorScoreText}</small></strong></div><b>履歴 ${fmt.format(floor?.historyDays || 0)}日 / ${fmt.format(floor?.samples || 0)}記録</b></div>
@@ -2163,12 +2212,12 @@ function render() {
           <div><span>需給状態</span><strong>${escapeHtml(floor?.supplyState || "蓄積中")}</strong></div>
           <div><span>支持価格帯</span><strong>${supportText}</strong></div>
           <div><span>在庫消化日数</span><strong>${inventoryText}</strong><small>${escapeHtml(inventorySourcesText || "同一店舗内の在庫と減少数が揃った場合だけ算出")}</small></div>
-          <div><span>PSA10供給増</span><strong>7日 ${Number.isFinite(floor?.psaIncrease7) ? `+${fmt.format(floor.psaIncrease7)}枚` : "-"} / 30日 ${Number.isFinite(floor?.psaIncrease30) ? `+${fmt.format(floor.psaIncrease30)}枚` : "-"}</strong></div>
+          <div><span>PSA10供給増</span><strong>7日 ${Number.isFinite(floor?.psaIncrease7) ? `+${fmt.format(floor.psaIncrease7)}枚` : "蓄積中"} / 30日 ${Number.isFinite(floor?.psaIncrease30) ? `+${fmt.format(floor.psaIncrease30)}枚` : "蓄積中"}</strong></div>
           <div><span>市場指数比の強さ</span><strong>${Number.isFinite(floor?.marketRelativeStrength) ? `${floor.marketRelativeStrength >= 0 ? "+" : ""}${Number(floor.marketRelativeStrength).toFixed(1)}pt` : "蓄積中"}</strong></div>
         </div>
         <p><b>根拠：</b>${escapeHtml(floorEvidence)}</p>
         <p class="floor-caution"><b>注意：</b>${escapeHtml(floorCautions)}</p>
-        <small>異なるサイトの取引数と在庫数は直接加算していません。在庫消化日数は店舗ごとに計算し、その中央値だけを表示します。</small>
+        <small>${escapeHtml(historyWindowText)}。異なるサイトの取引数と在庫数は直接加算せず、在庫消化日数は店舗ごとの中央値だけを表示します。</small>
       </div>
     `;
     const marketSignalsPanel = `
@@ -2403,6 +2452,7 @@ async function init() {
     const marketStabilityData = await fetchJsonMaybe("./data/market-stability-summary.json");
     state.marketStability = marketStabilityData?.cards || Object.create(null);
     state.marketStabilityMeta = marketStabilityData || null;
+    state.marketBacktest = await fetchJsonMaybe("./data/market-backtest-summary.json");
     if (els.shopReferenceLinks) {
       const links = Object.values(state.buybackShops).map((shop) => `<a href="${escapeHtml(shop.url)}" target="_blank" rel="noreferrer">${escapeHtml(shop.name)} 買取表</a>`).join("");
       els.shopReferenceLinks.innerHTML = links ? `<span>参照ショップ</span>${links}` : "";

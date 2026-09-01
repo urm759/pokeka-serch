@@ -47,6 +47,14 @@ const sparse = model.evaluatePriceFloor({
 assert.strictEqual(sparse.state, "蓄積中");
 assert.strictEqual(sparse.score, null);
 assert.strictEqual(sparse.inventoryDays, null);
+assert.strictEqual(sparse.direction, "暫定横ばい");
+
+const deduped = model.normalizeHistory([
+  { date: "2026-08-01", psaPrice: 50000 },
+  { date: "2026-08-01", psaPrice: 51000 },
+]);
+assert.strictEqual(deduped.length, 1);
+assert.strictEqual(deduped[0].psaPrice, 51000);
 
 const brokenSupport = model.evaluatePriceFloor({
   history: history([56000, 55800, 56200, 55900, 56100, 55700, 56000, 48000]),
@@ -88,18 +96,41 @@ assert.strictEqual(mismatch.valid, false);
 assert.strictEqual(mismatch.reason, "カード取り違え疑い");
 
 const demand = model.evaluateStoreDemand({ rows: [
-  { shopId: "a", ...model.buybackMetrics({ marketPrice: 100000, buybackPrice: 99000, priceDate: "2026-08-31", asOfDate: "2026-09-01" }), c7: 6, c30: 20, avg30: 97000 },
-  { shopId: "b", ...model.buybackMetrics({ marketPrice: 100000, buybackPrice: 98000, priceDate: "2026-08-31", asOfDate: "2026-09-01" }), c7: 5, c30: 18, avg30: 97000 },
-  { shopId: "campaign", ...model.buybackMetrics({ marketPrice: 100000, buybackPrice: 180000, priceDate: "2026-08-31", asOfDate: "2026-09-01" }), c7: 1, c30: 1, avg30: 180000 },
-  { shopId: "old", ...stale, c7: 7, c30: 30, avg30: 90000 },
-] });
-assert.strictEqual(demand.label, "強い");
+  { shopId: "a", ...model.buybackMetrics({ marketPrice: 100000, buybackPrice: 99000, priceDate: "2026-08-31", asOfDate: "2026-09-01" }), c7: 6, c30: 12, observed7: 7, observed30: 14, avg30: 97000 },
+  { shopId: "b", ...model.buybackMetrics({ marketPrice: 100000, buybackPrice: 98000, priceDate: "2026-08-31", asOfDate: "2026-09-01" }), c7: 5, c30: 11, observed7: 7, observed30: 14, avg30: 97000 },
+  { shopId: "campaign", ...model.buybackMetrics({ marketPrice: 100000, buybackPrice: 180000, priceDate: "2026-08-31", asOfDate: "2026-09-01" }), c7: 1, c30: 1, observed7: 7, observed30: 14, avg30: 180000 },
+  { shopId: "old", ...stale, c7: 7, c30: 14, observed7: 7, observed30: 14, avg30: 90000 },
+], psaTx30: 20 });
+assert.strictEqual(demand.label, "普通");
 assert.strictEqual(demand.trustedCount, 2);
 assert(demand.rows.find((row) => row.shopId === "campaign").outlier);
 assert.strictEqual(demand.best.shopId, "a");
+assert.deepStrictEqual(Object.keys(demand.components), ["buybackRatio", "storeCount", "continuity", "priceTrend", "liquidity"]);
+assert.strictEqual(demand.confidenceCap, 100);
+
+const lowObservation = model.evaluateStoreDemand({ rows: [
+  { shopId: "a", ...model.buybackMetrics({ marketPrice: 50000, buybackPrice: 49000, priceDate: "2026-08-31", asOfDate: "2026-09-01" }), c7: 3, c30: 3, observed7: 3, observed30: 3, avg30: 48000 },
+], psaTx30: 50 });
+assert(lowObservation.score <= 59);
+assert.strictEqual(lowObservation.confidenceCap, 59);
+for (const [days, cap] of [[7, 69], [13, 84], [14, 100]]) {
+  const capped = model.evaluateStoreDemand({ rows: [
+    { shopId: "a", ...model.buybackMetrics({ marketPrice: 50000, buybackPrice: 49000, priceDate: "2026-08-31", asOfDate: "2026-09-01" }), c7: days, c30: days, observed7: Math.min(7, days), observed30: days, avg30: 48000 },
+  ], psaTx30: 50 });
+  assert.strictEqual(capped.confidenceCap, cap);
+  assert(capped.score <= cap);
+}
+
+const rankedCards = [{ id: "top", psa10: 100000, buybackAnalysis: demand }];
+for (let index = 0; index < 9; index += 1) {
+  rankedCards.push({ id: `peer-${index}`, psa10: 100000, buybackAnalysis: { ...demand, score: 50 + index, absoluteStrongEligible: false } });
+}
+model.applyStoreDemandRelativeRanking(rankedCards);
+assert.strictEqual(demand.label, "強い");
+assert(rankedCards.filter((card) => card.buybackAnalysis.label === "強い").length <= 3);
 
 const singleCampaign = model.evaluateStoreDemand({ rows: [
-  { shopId: "only", ...model.buybackMetrics({ marketPrice: 100000, buybackPrice: 150000, priceDate: "2026-08-31", asOfDate: "2026-09-01" }), c7: 1, c30: 1, avg30: 150000 },
+  { shopId: "only", ...model.buybackMetrics({ marketPrice: 100000, buybackPrice: 150000, priceDate: "2026-08-31", asOfDate: "2026-09-01" }), c7: 1, c30: 1, observed7: 7, observed30: 14, avg30: 150000 },
 ] });
 assert.notStrictEqual(singleCampaign.label, "強い");
 
