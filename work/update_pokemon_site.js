@@ -432,6 +432,7 @@ async function main() {
   fs.mkdirSync(base, { recursive: true });
 
   const metaJsonPath = path.join(base, "pokemon-cards-meta.json");
+  const previousMeta = safeReadJson(metaJsonPath, {});
 
   const updatedAt = jstDate();
   fs.writeFileSync(jsonPath, JSON.stringify(sitePokemon), "utf8");
@@ -450,6 +451,7 @@ async function main() {
     metaJsonPath,
     JSON.stringify(
       {
+        ...previousMeta,
         sourceUrl,
         chunkUrl,
         updatedAt,
