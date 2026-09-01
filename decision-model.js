@@ -182,6 +182,21 @@
     return Math.max(0, limit / market * 100);
   }
 
+  function matchConfidenceLabel(score) {
+    const value = Number(score);
+    return Number.isFinite(value) && value >= 85 ? "high" : "low";
+  }
+
+  function isSuspectedCardMismatch(source) {
+    if (!source) return false;
+    if (source.cardMismatchSuspected === true
+      || source.matchStatus === "mismatch"
+      || source.linkStatus === "suspected-mismatch") return true;
+    if (source.matchConfidence !== "low") return false;
+    const score = Number(source.matchScore);
+    return !Number.isFinite(score) || score < 85;
+  }
+
   function purchaseDecision(input) {
     const reasons = [];
     const economics = input.economics;
@@ -232,5 +247,5 @@
     };
   }
 
-  return { aggregatePrices, capitalLimits, capitalPlan, expectedEconomics, gradeAssumptions, maxBuyPrice, median, portfolioPlan, purchaseCaps, purchaseDecision, purchaseLimitMarketRatio };
+  return { aggregatePrices, capitalLimits, capitalPlan, expectedEconomics, gradeAssumptions, isSuspectedCardMismatch, matchConfidenceLabel, maxBuyPrice, median, portfolioPlan, purchaseCaps, purchaseDecision, purchaseLimitMarketRatio };
 });

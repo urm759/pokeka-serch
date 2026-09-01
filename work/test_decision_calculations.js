@@ -65,6 +65,11 @@ assert.equal(displayedCaps.finalMaxPrice, capitalLimitedMax);
 assert.equal(model.purchaseLimitMarketRatio(7000, 10000), 70);
 assert.equal(model.purchaseLimitMarketRatio(0, 10000), 0);
 assert.equal(model.purchaseLimitMarketRatio(7000, 0), null);
+assert.equal(model.matchConfidenceLabel(85), "high");
+assert.equal(model.matchConfidenceLabel(84), "low");
+assert.equal(model.isSuspectedCardMismatch({ matchConfidence: "low", matchScore: 85 }), false);
+assert.equal(model.isSuspectedCardMismatch({ matchConfidence: "low", matchScore: 84 }), true);
+assert.equal(model.isSuspectedCardMismatch({ matchStatus: "mismatch", matchScore: 100 }), true);
 
 const prices = model.aggregatePrices([
   { source: "みんトレ", value: 30000 },

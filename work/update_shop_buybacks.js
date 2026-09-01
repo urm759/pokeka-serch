@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const decisionModel = require("../decision-model.js");
 
 const ROOT = path.join(__dirname, "..");
 const SHOPS = [
@@ -540,7 +541,7 @@ async function main() {
         url: currentMatch?.url || "",
         matchMethod: currentMatch?.matchMethod || null,
         matchScore: currentMatch?.matchScore || null,
-        matchConfidence: currentMatch && currentMatch.matchScore < 90 ? "low" : currentMatch ? "high" : null,
+        matchConfidence: currentMatch ? decisionModel.matchConfidenceLabel(currentMatch.matchScore) : null,
         avg7: averageRecent(values, 7),
         avg30: averageRecent(values, 30),
         avg90: averageRecent(values, 90),

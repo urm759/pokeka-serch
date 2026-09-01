@@ -1122,10 +1122,7 @@ function buildOverallAssessment(card, official, stock) {
 function hasCardMismatchSignal(card) {
   return [card, card.cardrushStock, card.hareruya2Stock, card.yuyuteiStock, card.torecacampStock, card.buyback, ...Object.values(card.buyback?.shops || {})]
     .filter(Boolean)
-    .some((source) => source.cardMismatchSuspected === true
-      || source.matchStatus === "mismatch"
-      || source.linkStatus === "suspected-mismatch"
-      || source.matchConfidence === "low");
+    .some((source) => decisionModel.isSuspectedCardMismatch(source));
 }
 
 function classifyDecisionData(card) {
@@ -1332,10 +1329,7 @@ function combineShopStock(...sources) {
 }
 
 function buybackCardMatched(card, shop) {
-  return ![card, shop].some((source) => source?.cardMismatchSuspected === true
-    || source?.matchStatus === "mismatch"
-    || source?.linkStatus === "suspected-mismatch"
-    || source?.matchConfidence === "low");
+  return ![card, shop].some((source) => decisionModel.isSuspectedCardMismatch(source));
 }
 
 function buildBuybackAnalysis(card, shops, marketPrice) {
