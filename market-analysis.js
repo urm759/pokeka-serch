@@ -410,9 +410,9 @@
     const successRate = safeDivide(successfulDays, scheduledDays);
     const outlierRate = safeDivide(outliers, priceObservations);
     const mismatchRate = safeDivide(mismatchSuspicions, matchedItems);
-    const completeness = [successRate, outlierRate, mismatchRate].filter((value) => value != null).length;
+    const completeness = [successRate, mismatchRate].filter((value) => value != null).length;
     const score = completeness < 2 ? null : round(clamp(
-      (successRate ?? 0.5) * 55 + (1 - (outlierRate ?? 0)) * 25 + (1 - (mismatchRate ?? 0)) * 20
+      (successRate ?? 0.5) * 70 + (1 - (mismatchRate ?? 0)) * 30
     ), 1);
     return { successRate: round(successRate), outlierRate: round(outlierRate), mismatchRate: round(mismatchRate), score };
   }
@@ -431,7 +431,8 @@
 
   function evaluateStoreDemand(input = {}) {
     const rows = markRatioOutliers(input.rows || []);
-    const trusted = rows.filter((row) => row.valid && !row.stale && !row.outlier);
+    const currentValid = rows.filter((row) => row.valid && !row.stale);
+    const trusted = currentValid.filter((row) => !row.outlier);
     const ratios = trusted.map((row) => row.marketRatio);
     const ratioMedian = median(ratios);
     const activeStores = new Set(trusted.map((row) => row.shopId).filter(Boolean)).size;
@@ -455,7 +456,7 @@
     if (trusted.length) {
       label = score < 45 ? "弱い" : "普通";
     }
-    const best = trusted.slice().sort((a, b) => b.buybackPrice - a.buybackPrice)[0] || null;
+    const best = currentValid.slice().sort((a, b) => b.buybackPrice - a.buybackPrice)[0] || null;
     return {
       label,
       score,
@@ -470,7 +471,8 @@
       best,
       rows,
       trustedCount: trusted.length,
-      excludedCount: rows.filter((row) => row.stale || row.outlier || !row.valid).length,
+      excludedCount: rows.filter((row) => row.stale || !row.valid).length,
+      relativePriceExcludedCount: currentValid.filter((row) => row.outlier).length,
       observationDays,
       confidenceCap,
       rawScore,

@@ -3,6 +3,13 @@ $ErrorActionPreference = 'Stop'
 $Repo = Split-Path -Parent $PSScriptRoot
 $Node = 'C:\Users\polar\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe'
 $Git = 'C:\Program Files\Git\cmd\git.exe'
+$LogDir = Join-Path $PSScriptRoot 'logs'
+$null = New-Item -ItemType Directory -Path $LogDir -Force
+$LogPath = Join-Path $LogDir ("psa-update-{0}.log" -f (Get-Date).ToString('yyyyMMdd-HHmmss'))
+$TranscriptStarted = $false
+try {
+  Start-Transcript -Path $LogPath -Append | Out-Null
+  $TranscriptStarted = $true
 $Today = (Get-Date).ToString('yyyy-MM-dd')
 $Slot = if ((Get-Date).Hour -lt 12) { 'morning' } else { 'evening' }
 $SuccessSlot = "$Today-$Slot"
@@ -35,4 +42,13 @@ if ($LASTEXITCODE -ne 0) {
   if ($LASTEXITCODE -ne 0) { throw 'Git pull failed after the PSA update.' }
   & $Git -C $Repo push origin HEAD:main
   if ($LASTEXITCODE -ne 0) { throw 'Git push failed after the PSA update.' }
+}
+  Write-Output "PSA scheduled update completed: $SuccessSlot"
+} catch {
+  $FailurePath = Join-Path $LogDir 'psa-update-last-failure.json'
+  @{ failedAt=(Get-Date).ToString('o'); message=$_.Exception.Message; log=$LogPath } | ConvertTo-Json | Set-Content -Path $FailurePath -Encoding utf8
+  Write-Error "PSA scheduled update failed. Log: $LogPath`n$($_.Exception.Message)"
+  exit 1
+} finally {
+  if ($TranscriptStarted) { Stop-Transcript | Out-Null }
 }

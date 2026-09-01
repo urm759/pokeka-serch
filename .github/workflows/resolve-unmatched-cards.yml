@@ -16,7 +16,7 @@ concurrency:
 jobs:
   resolve:
     runs-on: ubuntu-latest
-    timeout-minutes: 360
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -39,10 +39,14 @@ jobs:
           HARERUYA2_STOCK_BATCH: "1"
         run: node work/update_hareruya2_stock.js
       - name: Resolve unresolved Yu-Yu-Tei and Toreca Camp links
+        timeout-minutes: 45
+        continue-on-error: true
         env:
-          YUYUTEI_SEARCH_BATCH: "800"
-          YUYUTEI_CONCURRENCY: "3"
-          TORECACAMP_PAGES_PER_RUN: "40"
+          YUYUTEI_SEARCH_BATCH: "20"
+          YUYUTEI_CONCURRENCY: "4"
+          TORECACAMP_PAGES_PER_RUN: "10"
+          SHOP_FETCH_RETRIES: "1"
+          SHOP_FETCH_TIMEOUT_MS: "12000"
         run: node work/update_yuyutei_torecacamp.js
       - name: Rebuild evaluations
         run: node work/build_evaluation_model.js

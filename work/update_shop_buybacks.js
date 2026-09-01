@@ -426,7 +426,7 @@ function demandLabel(count30, observedDays, shopCount) {
   return "買取掲載数：少ない";
 }
 
-function buildPriceTrust(history, cards) {
+function buildPriceTrust(history, cards, results) {
   const cardById = new Map(cards.map((card) => [String(card.id), card]));
   const quarantine = {};
   const stats = {};
@@ -435,27 +435,32 @@ function buildPriceTrust(history, cards) {
     for (const [cardId, values] of Object.entries(entries || {})) {
       const marketPrice = Number(cardById.get(String(cardId))?.snkPsa10Price || 0);
       if (!(marketPrice > 0)) continue;
-      const extremeDates = [];
-      let severe = false;
       for (let index = 0; index < values.length; index += 1) {
         const observedPrice = Number(values[index] || 0);
         if (!(observedPrice > 0)) continue;
         shopStats.priceObservations += 1;
         const state = marketModel.extremePriceState(marketPrice, observedPrice);
         if (state.ratio < 0.4 || state.ratio > 1.35) shopStats.outliers += 1;
-        if (state.extreme) extremeDates.push(history.dates[index]);
-        if (state.severe) severe = true;
-      }
-      if (severe || new Set(extremeDates).size >= 2) {
-        const key = `${shopId}:${cardId}`;
-        quarantine[key] = {
-          shopId, cardId, dates: [...new Set(extremeDates)].filter(Boolean),
-          reason: severe ? "市場価格から重大な乖離" : "市場価格からの極端な乖離が複数日継続",
-        };
-        shopStats.quarantinedPairs += 1;
       }
     }
     stats[shopId] = shopStats;
+  }
+  for (const result of results || []) {
+    const shopId = result.shop.id;
+    if (!stats[shopId]) stats[shopId] = { priceObservations: 0, outliers: 0, quarantinedPairs: 0 };
+    const pairs = new Set();
+    for (const item of result.matched || []) {
+      if (decisionModel.matchConfidenceLabel(item.score) !== "low" && item.cardMismatchSuspected !== true) continue;
+      const key = `${shopId}:${item.cardId}`;
+      quarantine[key] = {
+        shopId,
+        cardId: item.cardId,
+        shopItemId: item.shopItemId,
+        reason: "カード番号・セット・レアリティの紐付けを要確認",
+      };
+      pairs.add(key);
+    }
+    stats[shopId].quarantinedPairs = pairs.size;
   }
   return { quarantine, stats };
 }
@@ -504,13 +509,23 @@ async function main() {
         const imageCard = manualCardId ? cards.find((card) => card.id === manualCardId) : null;
         const cachedCardId = itemMatches[sourceKey];
         const cachedCard = cachedCardId ? cards.find((card) => card.id === cachedCardId) : null;
-        const result = verifiedCard || imageCard || cachedCard ? null : matchCard(item);
+        const freshMatch = verifiedCard || imageCard ? null : matchCard(item);
+        const cacheConflict = cachedCard && freshMatch && freshMatch.card.id !== cachedCard.id;
+        const result = verifiedCard || imageCard || (cachedCard && !cacheConflict) ? null : freshMatch;
         if (verifiedCard) {
           itemMatches[sourceKey] = verifiedCard.id;
           matched.push({ ...item, cardId: verifiedCard.id, score: 100, matchMethod: "image-reviewed" });
         } else if (imageCard) {
           itemMatches[sourceKey] = imageCard.id;
           matched.push({ ...item, cardId: imageCard.id, score: 100, matchMethod: "image-reviewed" });
+        } else if (cacheConflict) {
+          delete itemMatches[sourceKey];
+          if (freshMatch.score >= 90) {
+            itemMatches[sourceKey] = freshMatch.card.id;
+            matched.push({ ...item, cardId: freshMatch.card.id, score: freshMatch.score, matchMethod: "text-cache-corrected" });
+          } else {
+            unmatched.push({ ...item, previousCardId: cachedCard.id, candidateCardId: freshMatch.card.id, mismatchReason: "保存済み紐付けと最新照合が不一致" });
+          }
         } else if (cachedCard) matched.push({ ...item, cardId: cachedCard.id, score: 100, matchMethod: "confirmed-cache" });
         else if (result) {
           if (result.score >= 90) itemMatches[sourceKey] = result.card.id;
@@ -584,7 +599,7 @@ async function main() {
     }
   }
 
-  const priceTrust = buildPriceTrust(history, cards);
+  const priceTrust = buildPriceTrust(history, cards, results);
   const quarantine = priceTrust.quarantine;
 
   const summaryCards = {};

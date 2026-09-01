@@ -44,10 +44,14 @@ jobs:
         run: node work/update_hareruya2_stock.js
 
       - name: Link Yu-Yu-Tei and Toreca Camp state-A listings
+        timeout-minutes: 10
+        continue-on-error: true
         env:
-          YUYUTEI_SEARCH_BATCH: "100"
-          YUYUTEI_CONCURRENCY: "3"
+          YUYUTEI_SEARCH_BATCH: "5"
+          YUYUTEI_CONCURRENCY: "2"
           TORECACAMP_PAGES_PER_RUN: "6"
+          SHOP_FETCH_RETRIES: "1"
+          SHOP_FETCH_TIMEOUT_MS: "12000"
         run: node work/update_yuyutei_torecacamp.js
 
       - name: Re-resolve changed URLs

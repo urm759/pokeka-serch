@@ -122,7 +122,9 @@ const demand = model.evaluateStoreDemand({ rows: [
 assert.strictEqual(demand.label, "普通");
 assert.strictEqual(demand.trustedCount, 2);
 assert(demand.rows.find((row) => row.shopId === "campaign").outlier);
-assert.strictEqual(demand.best.shopId, "a");
+assert.strictEqual(demand.best.shopId, "campaign", "相場より高い買取も有効な最有利売却先として残す");
+assert.strictEqual(demand.excludedCount, 1, "統計上の単独高値は異常データ件数へ含めない");
+assert.strictEqual(demand.relativePriceExcludedCount, 1);
 assert.deepStrictEqual(Object.keys(demand.components), ["buybackRatio", "storeCount", "continuity", "priceTrend", "liquidity"]);
 assert.strictEqual(demand.confidenceCap, 100);
 

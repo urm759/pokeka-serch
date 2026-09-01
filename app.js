@@ -1174,12 +1174,9 @@ function classifyDecisionData(card) {
   if (!priceAggregation.conflicted && trustedPriceCount >= 2 && priceAggregation.outliers?.length) {
     outlierExcludedReasons.push(...priceAggregation.outliers.map((entry) => `${entry.source} ¥${fmt.format(entry.value)}`));
   }
-  if (!buybackAggregation.conflicted && Number(buybackAggregation.included?.length || 0) >= 2 && buybackAggregation.outliers?.length) {
-    outlierExcludedReasons.push(...buybackAggregation.outliers.map((entry) => `${entry.source} ¥${fmt.format(entry.value)}`));
-  }
   const dataAnomalyReasons = Object.values(card.buyback?.shops || {})
     .filter((shop) => shop?.quarantined)
-    .map((shop) => shop.quarantineReason || "店舗価格を自動隔離");
+    .map((shop) => shop.quarantineReason || "店舗カード紐付けを自動隔離");
 
   const severeShortage = !card.futurePriceForecast || (trustedPriceCount <= 1 && !Number.isFinite(card.official?.rate));
   const shortageRiskPct = dataShortageReasons.length ? (severeShortage ? 5 : 3) : 0;
@@ -1474,7 +1471,7 @@ function calc(card) {
     value: Number(shop.price || 0),
   })), { minRatio: 0.55, maxRatio: 1.55, clusterRatio: 1.25 });
   const buybackPrice = buybackAggregation.value > 0 ? Math.round(buybackAggregation.value) : 0;
-  const buybackBestPrice = buybackAggregation.included.length ? Math.max(...buybackAggregation.included.map((entry) => entry.value)) : 0;
+  const buybackBestPrice = latestBuybackShops.length ? Math.max(...latestBuybackShops.map((shop) => Number(shop.price) || 0)) : 0;
   const buybackAvg30 = Number(buyback?.avg30 || 0);
   const buybackShops = Number(buyback?.shop30 || 0);
   const psaTx30d = Number(card.p10tv30 || 0);
@@ -1788,7 +1785,7 @@ function renderShopRateSummary(cards) {
   els.shopRateSummary.innerHTML = `
     <div class="shop-rate-table-wrap">
       <table class="shop-rate-table">
-        <thead><tr><th>買取店</th><th>データ信頼度</th><th>取得成功率</th><th>外れ値率</th><th>誤紐付け疑い率</th><th>隔離</th><th>標準買取率<br><small>中央値</small></th><th>平均</th><th>外れ値除外後</th><th>25～75%</th><th>対象数</th><th>3万円未満</th><th>3万～10万円</th><th>10万円以上</th><th>最終更新</th></tr></thead>
+        <thead><tr><th>買取店</th><th>データ信頼度</th><th>取得成功率</th><th>相場乖離率<br><small>価格は有効</small></th><th>誤紐付け疑い率</th><th>紐付け隔離</th><th>標準買取率<br><small>中央値</small></th><th>平均</th><th>相場分布外除外後</th><th>25～75%</th><th>対象数</th><th>3万円未満</th><th>3万～10万円</th><th>10万円以上</th><th>最終更新</th></tr></thead>
         <tbody>${summaries.map(({ shop, stats }) => `
           <tr>
             <th>${shop.url ? `<a href="${escapeHtml(shop.url)}" target="_blank" rel="noreferrer">${escapeHtml(shop.name)}</a>` : escapeHtml(shop.name)}${stats.reference ? "<b>参考値</b>" : ""}</th>
@@ -1801,7 +1798,7 @@ function renderShopRateSummary(cards) {
             <td>${ratioLabel(stats.average)}</td>
             <td>${ratioLabel(stats.trimmedAverage)}</td>
             <td>${ratioLabel(stats.q25)}～${ratioLabel(stats.q75)}</td>
-            <td>${fmt.format(stats.trustedCount)}件<small>外れ${fmt.format(stats.outlierCount)} / 古い${fmt.format(stats.staleCount)}</small></td>
+            <td>${fmt.format(stats.trustedCount)}件<small>相場分布外${fmt.format(stats.outlierCount)} / 古い${fmt.format(stats.staleCount)}</small></td>
             <td>${tier(stats.tiers.under30k)}</td>
             <td>${tier(stats.tiers.from30kTo100k)}</td>
             <td>${tier(stats.tiers.over100k)}</td>
@@ -1809,7 +1806,7 @@ function renderShopRateSummary(cards) {
           </tr>`).join("")}</tbody>
       </table>
     </div>
-    <p class="shop-rate-note">主指標はカードごとの相場比買取率の中央値です。高額カードの金額加重平均は使わず、古い価格と外れ値を除外して比較します。</p>
+    <p class="shop-rate-note">相場から高い買取価格も有効な売却候補として表示します。標準買取率だけは単独高値・安値に引っ張られない中央値を使い、自動隔離はカード番号・セット・レアリティの誤紐付け疑いに限定します。</p>
   `;
 }
 
@@ -2094,7 +2091,7 @@ function render() {
         ? `<a href="${escapeHtml(shopUrl)}" target="_blank" rel="noreferrer">${escapeHtml(shopMeta.name)} ${shop.url ? "商品・検索" : "買取表"}</a>`
         : escapeHtml(shopMeta.name);
       const leadLabel = index === 0 ? '<em class="buyback-lead-label">最新日優先</em>' : "";
-      const warning = !shop.valid ? shop.reason : shop.stale ? "価格更新が古い" : shop.outlier ? "外れ値・需要集計から除外" : "";
+      const warning = !shop.valid ? shop.reason : shop.stale ? "価格更新が古い" : shop.outlier ? "単独高値・安値（価格は有効／標準需要率のみ分離）" : "";
       const differencePct = Number.isFinite(shop.marketDifference) ? shop.marketDifference * 100 : null;
       const differenceText = differencePct == null ? "-" : `${differencePct >= 0 ? "+" : ""}${differencePct.toFixed(1)}%`;
       const rowClass = !shop.valid ? "invalid" : shop.stale ? "stale" : shop.outlier ? "outlier" : "trusted";
@@ -2165,7 +2162,7 @@ function render() {
       dataQuality.manualReview ? `<div class="data-quality-notice manual"><strong>要確認（手動確認）</strong><span>${escapeHtml(dataQuality.manualReviewReasons.join(" / "))}</span></div>` : "",
       dataQuality.dataShortage ? `<div class="data-quality-notice shortage"><strong>データ不足</strong><span>${escapeHtml(dataQuality.dataShortageReasons.join(" / "))} / 判定信頼度 ${escapeHtml(dataQuality.confidence)} / 追加リスク +${fmt.format(dataQuality.shortageRiskPct)}%を計算済み</span></div>` : "",
       dataQuality.outlierExcluded ? `<div class="data-quality-notice outlier"><strong>外れ値除外済み</strong><span>${escapeHtml(dataQuality.outlierExcludedReasons.join(" / "))} / 複数の一致価格を採用して判定継続</span></div>` : "",
-      dataQuality.dataAnomaly ? `<div class="data-quality-notice manual"><strong>データ異常</strong><span>${escapeHtml(dataQuality.dataAnomalyReasons.join(" / "))} / 隔離済みの価格は計算に使用していません</span></div>` : "",
+      dataQuality.dataAnomaly ? `<div class="data-quality-notice manual"><strong>カード紐付け要確認</strong><span>${escapeHtml(dataQuality.dataAnomalyReasons.join(" / "))} / 誤紐付け疑いの店舗データだけを計算から隔離しています</span></div>` : "",
     ].filter(Boolean).join("");
     const dataQualityPanel = dataQualityPanels ? `<div class="data-quality-notices">${dataQualityPanels}</div>` : "";
     const buyLimits = card.buyLimits;
