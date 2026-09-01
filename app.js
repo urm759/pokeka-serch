@@ -107,6 +107,7 @@ const state = {
 const FAVORITES_STORAGE_KEY = "pokeka-buy-favorites-v1";
 const FAVORITE_QUANTITIES_STORAGE_KEY = "pokeka-buy-favorite-quantities-v1";
 const ACTUAL_RESULTS_STORAGE_KEY = "pokeka-backtest-actual-results-v1";
+const QUICK_FILTER_STORAGE_KEY = "pokeka-quick-filter-preferences-v1";
 let favoriteQuantityRenderTimer = null;
 
 let meta = window.POKEMON_CARDS_META || {};
@@ -1499,6 +1500,33 @@ function parseOptionalNumber(value) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+function restoreQuickFilters() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(QUICK_FILTER_STORAGE_KEY) || "{}");
+    const url = new URL(window.location.href);
+    // A shared or bookmarked URL always wins over this device's last-used values.
+    if (!url.searchParams.has("roi") && Number.isFinite(Number(saved.minRoi))) {
+      els.roiInput.value = String(saved.minRoi);
+    }
+    if (!url.searchParams.has("buyLimitRatio") && saved.minPurchaseLimitRatio != null && Number.isFinite(Number(saved.minPurchaseLimitRatio))) {
+      els.purchaseLimitRatioMinInput.value = String(saved.minPurchaseLimitRatio);
+    }
+  } catch {
+    // Private browsing or disabled local storage should not stop the page.
+  }
+}
+
+function saveQuickFilters() {
+  try {
+    localStorage.setItem(QUICK_FILTER_STORAGE_KEY, JSON.stringify({
+      minRoi: state.minRoi,
+      minPurchaseLimitRatio: state.minPurchaseLimitRatio,
+    }));
+  } catch {
+    // The current in-memory filter remains usable even if browser storage fails.
+  }
+}
+
 async function fetchJsonMaybe(url) {
   try {
     const res = await fetch(url, { cache: "no-store" });
@@ -2493,9 +2521,11 @@ function syncFromUI() {
   }
   render();
   updateUrl();
+  saveQuickFilters();
 }
 
 async function init() {
+  restoreQuickFilters();
   readUrl();
   loadFavorites();
   loadActualResults();

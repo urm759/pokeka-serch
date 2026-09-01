@@ -16,6 +16,7 @@ const SITE_ROOT = fs.existsSync(path.join(STANDALONE_ROOT, "index.html"))
 const OUTPUT_DIR = path.join(SITE_ROOT, "data");
 const OUTPUT_JSON = path.join(OUTPUT_DIR, "psa-official-populations.json");
 const OUTPUT_JS = path.join(OUTPUT_DIR, "psa-official-populations.js");
+const PRIORITY_QUEUE_PATH = process.env.PSA_PRIORITY_QUEUE_PATH || path.join(__dirname, "psa_priority_queue.json");
 const MIN_TOTAL_POPULATION = Number(process.env.PSA_MIN_TOTAL_POPULATION || 0);
 const MAX_PAGES = Number(process.env.PSA_MAX_PAGES || 200);
 const CDP_ENDPOINT = String(process.env.PSA_CDP_ENDPOINT || "").trim();
@@ -24,6 +25,7 @@ const CHROME_EXECUTABLE =
 
 const HEADLESS = String(process.env.PSA_HEADLESS || "1") !== "0";
 const USER_DATA_DIR = process.env.PSA_USER_DATA_DIR || path.join(process.env.LOCALAPPDATA || __dirname, "PokekaPSAChromeProfile");
+let priorityCards = new Set();
 
 function readJson(filePath, fallback) {
   try {
@@ -277,7 +279,12 @@ async function collectSet(context, entry) {
       throw new Error(`Unable to find a populated table for ${entry.url}`);
     }
 
-    result.rows = rows.filter((row) => row.cardNo && row.cardNo.toUpperCase() !== "TOTAL" && Number(row.psaTotal || 0) >= MIN_TOTAL_POPULATION);
+    result.rows = rows.filter((row) => {
+      if (!row.cardNo || row.cardNo.toUpperCase() === "TOTAL") return false;
+      const key = `${String(result.setCode || "").toUpperCase()}|${String(row.cardNo).replace(/^0+(?=\d)/, "")}`;
+      // High-priority legacy cards remain available even below the normal 500-pop cutoff.
+      return Number(row.psaTotal || 0) >= MIN_TOTAL_POPULATION || priorityCards.has(key);
+    });
     result.headers = lastHeaders;
   } catch (error) {
     result.error = error instanceof Error ? error.message : String(error);
@@ -290,11 +297,21 @@ async function collectSet(context, entry) {
 
 async function main() {
   const fullManifest = readJson(MANIFEST_PATH, []);
+  const priorityQueue = readJson(PRIORITY_QUEUE_PATH, { rows: [], orderedSets: [] });
+  priorityCards = new Set((priorityQueue.rows || []).map((row) => `${String(row.setCode || "").toUpperCase()}|${String(row.cardNo || "").replace(/^0+(?=\d)/, "")}`));
+  const priorityOrder = new Map((priorityQueue.orderedSets || []).map((entry, index) => [String(entry.setCode || "").toUpperCase(), index]));
   const filterPattern = String(process.env.PSA_SET_FILTER || "").trim();
   const filterRegex = filterPattern ? new RegExp(filterPattern, "i") : null;
-  const manifest = filterRegex
+  const selectedManifest = filterRegex
     ? fullManifest.filter((entry) => filterRegex.test(`${entry.setCode || ""} ${entry.name || ""}`))
     : fullManifest;
+  // Current buyback candidates are processed first, so an interrupted run still
+  // refreshes the cards most relevant to sourcing today.
+  const manifest = [...selectedManifest].sort((a, b) => {
+    const aOrder = priorityOrder.get(String(a.setCode || "").toUpperCase());
+    const bOrder = priorityOrder.get(String(b.setCode || "").toUpperCase());
+    return (aOrder ?? Number.MAX_SAFE_INTEGER) - (bOrder ?? Number.MAX_SAFE_INTEGER);
+  });
   const previousPayload = readJson(OUTPUT_JSON, { rows: [] });
   if (!Array.isArray(manifest) || manifest.length === 0) {
     throw new Error(`No PSA set manifest found at ${MANIFEST_PATH}`);
