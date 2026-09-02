@@ -132,7 +132,7 @@ assert.notEqual(go.singleCardSpend, 30000 * 10);
 const stressPriceDecision = model.purchaseDecision({ ...commonDecisionInput, economics, economicMaxPrice: 40000, stressMaxPrice: 28000 });
 assert.equal(stressPriceDecision.verdict, "価格次第");
 assert.equal(stressPriceDecision.finalMaxPrice, 28000);
-assert(stressPriceDecision.reasons.includes("弱気予測でも赤字にならない上限を反映"));
+assert(stressPriceDecision.reasons.includes("供給ストレス時でも赤字にならない上限を反映"));
 
 const lillieAssumptions = {
   hitRate: 0.779,
@@ -159,12 +159,19 @@ const lillieResilience = model.resilienceMetrics({
   targetProfit: 9000,
 });
 assert.ok(lillieNormal >= 60000 && lillieNormal <= 61500, `通常上限 ${lillieNormal}`);
-assert.ok(lillieStressNoLoss >= 40500 && lillieStressNoLoss <= 41500, `弱気赤字回避 ${lillieStressNoLoss}`);
+assert.ok(lillieStressNoLoss >= 40500 && lillieStressNoLoss <= 41500, `供給ストレス時赤字回避 ${lillieStressNoLoss}`);
 assert.ok(lillieUltra >= 31500 && lillieUltra <= 32500, `超低リスク ${lillieUltra}`);
 assert.ok(lillieResilience.psa9NonLossMaxPrice >= 29000 && lillieResilience.psa9NonLossMaxPrice <= 30000);
 assert.ok(lillieResilience.expectedBreakEvenPrice > 0);
 assert.ok(lillieResilience.breakEvenRoom.amount > 0);
 assert.ok(lillieResilience.bearishExpectedProfit < 0);
+
+const lillieCurrentAtFinal = model.expectedEconomics({ ...lillieBase, forecastPrice: 109900, purchasePrice: lillieStressNoLoss });
+const lillieStressAtFinal = model.expectedEconomics({ ...lillieBase, forecastPrice: 62500, purchasePrice: lillieStressNoLoss });
+const lillieStressAtUltra = model.expectedEconomics({ ...lillieBase, forecastPrice: 62500, purchasePrice: lillieUltra });
+assert.ok(lillieCurrentAtFinal.expectedProfit > lillieStressAtFinal.expectedProfit);
+assert.ok(lillieStressAtFinal.expectedProfit >= 0 && lillieStressAtFinal.expectedProfit < 500, `最終上限・供給ストレス ${lillieStressAtFinal.expectedProfit}`);
+assert.ok(lillieStressAtUltra.expectedProfit >= 9000 && lillieStressAtUltra.expectedProfit < 9500, `超低リスク・供給ストレス ${lillieStressAtUltra.expectedProfit}`);
 
 const lillieCaps = model.purchaseCaps({
   capital: generousCapital,

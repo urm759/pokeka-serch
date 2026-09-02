@@ -383,9 +383,9 @@
     else verdict = profitEligible ? "資金不足" : "見送り";
 
     if (verdict === "価格次第") reasons.push(`¥${Math.floor(caps.finalMaxPrice).toLocaleString("ja-JP")}以下なら再判定`);
-    if (caps.limitingFactor === "stress-break-even") reasons.push("弱気予測でも赤字にならない上限を反映");
-    else if (caps.limitingFactor === "ultra-low-risk") reasons.push("低リスク設定：弱気予測でも目標利益を確保する上限を反映");
-    else if (caps.supplyRiskReflected && Number.isFinite(Number(input.stressBreakEvenMaxPrice ?? input.stressMaxPrice))) reasons.push("弱気予測は価格側に反映済み（二重控除なし）");
+    if (caps.limitingFactor === "stress-break-even") reasons.push("供給ストレス時でも赤字にならない上限を反映");
+    else if (caps.limitingFactor === "ultra-low-risk") reasons.push("低リスク設定：供給ストレス時でも目標利益を確保する上限を反映");
+    else if (caps.supplyRiskReflected && Number.isFinite(Number(input.stressBreakEvenMaxPrice ?? input.stressMaxPrice))) reasons.push("供給ストレスは価格側に反映済み（二重控除なし）");
     return {
       verdict,
       reasons: [...new Set(reasons)],

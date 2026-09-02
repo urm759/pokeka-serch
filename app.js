@@ -93,6 +93,7 @@ const state = {
   favoriteCosts: Object.create(null),
   favoriteQuery: "",
   purchaseMode: "normal",
+  lowRiskAvailability: "all",
   psaCapital: 500000,
   lockedCapital: 0,
   lockDays: 91,
@@ -183,6 +184,8 @@ const els = {
   hideReviewInput: document.getElementById("hideReviewInput"),
   fundingOnlyInput: document.getElementById("fundingOnlyInput"),
   officialOnlyInput: document.getElementById("officialOnlyInput"),
+  lowRiskAvailabilityInput: document.getElementById("lowRiskAvailabilityInput"),
+  lowRiskAvailabilityControl: document.getElementById("lowRiskAvailabilityControl"),
   resetFiltersBtn: document.getElementById("resetFiltersBtn"),
   roiInput: document.getElementById("roiInput"),
   psaMinInput: document.getElementById("psaMinInput"),
@@ -743,7 +746,7 @@ async function copyText(text) {
 
 function exportFavoritesCsv() {
   const cfg = guideConfig();
-  const rows = [["id", "カード名", "型番", "数量", "仕入れ単価", "現在PSA10価格", "91日後中央推計", "予測下落余地%", "将来価格評価", "最終仕入れ上限", "通常上限", "ストレス時赤字回避上限", "超低リスク上限", "PSA9赤字回避上限", "現在の資金で買える上限", "傷あり仕入れ上限", "期待値損益分岐PSA10価格", "弱気予測時期待利益", "美品PSA10想定率%", "傷ありPSA10想定率%", "取得率基準", "基準", "理想仕入れ", "おすすめ仕入れ", "上限仕入れ", "今回の仕入れ判断", "期待利益", "期待利益率", "年換算資金効率", "資金占有率", "判断理由", "みんトレURL", "カードラッシュURL", "晴れる屋2URL", "遊々亭URL", "トレカキャンプURL"]];
+  const rows = [["id", "カード名", "型番", "数量", "仕入れ単価", "現在PSA10価格", "91日後中央推計", "予測下落余地%", "将来価格評価", "最終仕入れ上限", "通常上限", "供給ストレス時赤字回避上限", "超低リスク上限", "PSA9赤字回避上限", "現在の資金で買える上限", "傷あり仕入れ上限", "期待値損益分岐PSA10価格", "供給ストレス時期待利益", "美品PSA10想定率%", "傷ありPSA10想定率%", "取得率基準", "基準", "理想仕入れ", "おすすめ仕入れ", "上限仕入れ", "今回の仕入れ判断", "期待利益", "期待利益率", "年換算資金効率", "資金占有率", "判断理由", "みんトレURL", "カードラッシュURL", "晴れる屋2URL", "遊々亭URL", "トレカキャンプURL"]];
   favoriteCards().forEach((rawCard) => {
     const card = calc(rawCard);
     const guide = favoriteGuide(card);
@@ -1418,6 +1421,17 @@ function buildBuyLimits(card) {
     scenario.lowRiskMode = caps.lowRiskMode;
     scenario.provisional = Boolean(card.supplyStress?.provisional);
     scenario.maxPrice = scenario.finalMaxPrice;
+    scenario.normalBearishPrice = Number(card.futurePriceForecast?.bearishPrice || 0);
+    scenario.supplyStressPrice = Number(card.supplyStress?.price || scenario.stressForecastPrice || 0);
+    scenario.currentMarketAtFinal = scenario.finalMaxPrice > 0
+      ? decisionModel.expectedEconomics({ ...scenario.modelInput, forecastPrice: card.psa10, purchasePrice: scenario.finalMaxPrice, riskBufferPct: 0 })
+      : null;
+    scenario.supplyStressAtFinal = scenario.finalMaxPrice > 0
+      ? decisionModel.expectedEconomics({ ...scenario.stressModelInput, purchasePrice: scenario.finalMaxPrice, riskBufferPct: 0 })
+      : null;
+    scenario.supplyStressAtUltra = scenario.ultraLowRiskMaxPrice > 0
+      ? decisionModel.expectedEconomics({ ...scenario.stressModelInput, purchasePrice: scenario.ultraLowRiskMaxPrice, riskBufferPct: 0 })
+      : null;
   });
   return {
     clean,
@@ -1677,6 +1691,12 @@ async function fetchJsonMaybe(url) {
   }
 }
 
+function syncLowRiskAvailabilityControl() {
+  const active = state.purchaseMode === "low-risk";
+  if (els.lowRiskAvailabilityControl) els.lowRiskAvailabilityControl.hidden = !active;
+  if (els.lowRiskAvailabilityInput) els.lowRiskAvailabilityInput.value = active ? state.lowRiskAvailability : "all";
+}
+
 function readUrl() {
   const url = new URL(window.location.href);
   const guide = url.searchParams.get("guide");
@@ -1749,6 +1769,7 @@ function readUrl() {
   const saleFeeRate = parseOptionalNumber(url.searchParams.get("sellFee"));
   const saleExtraCost = parseOptionalNumber(url.searchParams.get("extraCost"));
   const riskMode = url.searchParams.get("riskMode");
+  const lowRiskAvailability = url.searchParams.get("lowRiskBuy");
   const sort = url.searchParams.get("sort");
   const q = url.searchParams.get("q");
   if (guide && guideModes[guide]) {
@@ -1827,6 +1848,8 @@ function readUrl() {
   if (saleFeeRate != null && saleFeeRate >= 0) els.saleFeeRateInput.value = String(saleFeeRate);
   if (saleExtraCost != null && saleExtraCost >= 0) els.saleExtraCostInput.value = String(saleExtraCost);
   state.purchaseMode = riskMode === "low" ? "low-risk" : "normal";
+  state.lowRiskAvailability = ["all", "go", "price"].includes(lowRiskAvailability) ? lowRiskAvailability : "all";
+  syncLowRiskAvailabilityControl();
   document.querySelectorAll("[data-preset]").forEach((button) => {
     button.classList.toggle("active", state.purchaseMode === "low-risk" && button.dataset.preset === "low-risk");
   });
@@ -1910,6 +1933,8 @@ function buildShareUrl() {
   url.searchParams.set("extraCost", String(state.saleExtraCost));
   if (state.purchaseMode === "low-risk") url.searchParams.set("riskMode", "low");
   else url.searchParams.delete("riskMode");
+  if (state.purchaseMode === "low-risk" && state.lowRiskAvailability !== "all") url.searchParams.set("lowRiskBuy", state.lowRiskAvailability);
+  else url.searchParams.delete("lowRiskBuy");
   if (state.minPrice == null) {
     url.searchParams.delete("priceMin");
   } else {
@@ -2149,6 +2174,8 @@ function render() {
       if (state.storeDemand === "weak" && demandKey !== "weak") return false;
       if (state.storeDemand === "collecting" && demandKey !== "collecting") return false;
       if (state.fundingOnly && !card.psaDecision?.recommended) return false;
+      if (state.purchaseMode === "low-risk" && state.lowRiskAvailability === "go" && card.purchaseDecision?.verdict !== "GO") return false;
+      if (state.purchaseMode === "low-risk" && state.lowRiskAvailability === "price" && card.purchaseDecision?.verdict !== "価格次第") return false;
       if (state.overallFilter === "a" && card.overallAssessment?.grade !== "A") return false;
       if (state.overallFilter === "ab" && !["A", "B"].includes(card.overallAssessment?.grade)) return false;
       const demand = combineShopStock(state.cardrushStock[card.id], state.hareruya2Stock[card.id], state.yuyuteiStock[card.id])?.demand || "蓄積中";
@@ -2358,10 +2385,10 @@ function render() {
     ].filter(Boolean);
     const supplyBadgesHtml = supplyBadges.map((label) => `<b class="supply-badge ${supplyClass}">${escapeHtml(label)}</b>`).join("");
     const limitReasonLabel = (scenario) => ({
-      "stress-break-even": "弱気でも赤字を避ける上限を採用",
-      "ultra-low-risk": "低リスク設定：弱気でも目標利益を残す上限を採用",
+      "stress-break-even": "供給ストレス時でも赤字を避ける上限を採用",
+      "ultra-low-risk": "低リスク設定：供給ストレス時でも目標利益を残す上限を採用",
       capital: "現在の資金上限を採用",
-      "normal-economics": scenario?.supplyRiskReflected ? "通常上限が弱気赤字回避上限以下・二重控除なし" : "通常上限を採用",
+      "normal-economics": scenario?.supplyRiskReflected ? "通常上限が供給ストレス時赤字回避上限以下・二重控除なし" : "通常上限を採用",
       none: "設定条件では仕入れ見送り",
     }[scenario?.limitingFactor] || "判定中");
     const resilience = buyLimits?.clean?.resilience;
@@ -2372,6 +2399,19 @@ function render() {
         ? `¥${fmt.format(amount)} / ${room.rate.toFixed(1)}%`
         : `超過 ¥${fmt.format(Math.abs(amount))} / ${Math.abs(room.rate).toFixed(1)}%`;
     };
+    const signedMoney = (value) => {
+      const amount = Number(value);
+      if (!Number.isFinite(amount)) return { className: "", text: "算出不可" };
+      return {
+        className: amount >= 0 ? "positive" : "negative",
+        text: `${amount < 0 ? "-" : ""}¥${fmt.format(Math.abs(Math.round(amount)))}`,
+      };
+    };
+    const stressProfitAtCurrent = signedMoney(resilience?.bearishExpectedProfit);
+    const psa9ProfitAtCurrent = signedMoney(resilience?.psa9Profit);
+    const currentProfitAtFinal = signedMoney(card.buyLimits?.clean?.currentMarketAtFinal?.expectedProfit);
+    const stressProfitAtFinal = signedMoney(card.buyLimits?.clean?.supplyStressAtFinal?.expectedProfit);
+    const stressProfitAtUltra = signedMoney(card.buyLimits?.clean?.supplyStressAtUltra?.expectedProfit);
     const cleanMarketStatus = buyLimits?.clean?.maxPrice > 0
       ? card.price <= buyLimits.clean.maxPrice
         ? "平均美品価格は仕入れ圏内"
@@ -2399,7 +2439,7 @@ function render() {
         </div>
         <div class="supply-badges">${supplyBadgesHtml}</div>
         <div class="buy-limit-foot">
-          <span>個別カードは1枚で判定。${state.purchaseMode === "low-risk" ? "低リスク設定では、弱気でも目標利益を残す超低リスク上限を使用します。" : "通常上限・弱気赤字回避上限・資金上限の最小値を表示します。"}</span>
+          <span>個別カードは1枚で判定。${state.purchaseMode === "low-risk" ? "低リスク設定では、供給ストレス時でも目標利益を残す超低リスク上限を使用します。" : "通常上限・供給ストレス時赤字回避上限・資金上限の最小値を表示します。"}</span>
         </div>
       </section>
     ` : "";
@@ -2438,11 +2478,13 @@ function render() {
       <section class="purchase-summary ${decisionClass}">
         <div class="purchase-final-limit"><span>${card.buyLimits?.clean?.provisional ? "暫定上限" : "実際に使える最終上限"}・美品</span><strong>${buyLimitText(card.buyLimits?.clean)}</strong><small>${escapeHtml(limitReasonLabel(card.buyLimits?.clean))}</small><div class="supply-badges">${supplyBadgesHtml}</div></div>
         <div class="purchase-verdict"><span>今回の仕入れ判断</span><strong>${escapeHtml(displayVerdict)}</strong><small>${escapeHtml(decisionReasons)}</small></div>
+        <div class="purchase-basis-note"><span>以下の損益耐性</span><strong>現在の平均美品価格 ¥${fmt.format(card.price)}で仕入れた場合</strong></div>
         <div><span>現在のPSA10相場</span><strong>¥${fmt.format(card.psa10 || 0)}</strong></div>
+        <div><span>通常の弱気予測価格</span><strong>¥${fmt.format(card.futurePriceForecast?.bearishPrice || 0)}</strong><small>供給過多の追加反映前</small></div>
         <div><span>期待値損益分岐価格</span><strong>¥${fmt.format(Math.round(resilience?.expectedBreakEvenPrice || 0))}</strong></div>
         <div><span>赤字になるまでの下落余力</span><strong class="${Number(resilience?.breakEvenRoom?.amount) >= 0 ? "positive" : "negative"}">${roomText(resilience?.breakEvenRoom)}</strong></div>
         <div><span>目標利益を割るまでの下落余力</span><strong class="${Number(resilience?.targetProfitRoom?.amount) >= 0 ? "positive" : "negative"}">${roomText(resilience?.targetProfitRoom)}</strong></div>
-        <div><span>弱気予測時の期待利益</span><strong class="${Number(resilience?.bearishExpectedProfit) >= 0 ? "positive" : "negative"}">${Number(resilience?.bearishExpectedProfit) < 0 ? "-" : ""}¥${fmt.format(Math.abs(Math.round(resilience?.bearishExpectedProfit || 0)))}</strong><small>弱気PSA10 ¥${fmt.format(Math.round(resilience?.bearishPsa10Price || 0))}</small></div>
+        <div><span>供給ストレス時の期待利益</span><strong class="${stressProfitAtCurrent.className}">${stressProfitAtCurrent.text}</strong><small>供給ストレス価格 ¥${fmt.format(Math.round(resilience?.bearishPsa10Price || 0))}</small></div>
       </section>
     ` : "";
     const forecast = card.futurePriceForecast;
@@ -2511,8 +2553,8 @@ function render() {
     const stressPriceText = Number(card.supplyStress?.price) > 0 ? `¥${fmt.format(card.supplyStress.price)}` : "蓄積中";
     const supplyEvidence = [...(supply.evidence || []), ...(supply.cautions || [])].join(" / ") || "PSA公式推移と取引履歴を蓄積中";
     const riskReflectionText = card.buyLimits?.clean?.supplyRiskReflected
-      ? "弱気予測は価格側へ反映済み。通常上限がさらに低いため追加控除なし"
-      : "供給リスクを弱気予測価格へ一度だけ反映済み";
+      ? "供給ストレスは価格側へ反映済み。通常上限がさらに低いため追加控除なし"
+      : "供給リスクを供給ストレス価格へ一度だけ反映済み";
     const supplyPipelinePanel = `
       <div class="supply-pipeline-panel ${supplyClass}">
         <div class="supply-pipeline-head"><div><span>供給パイプライン評価</span><strong>${escapeHtml(supply.classification || "蓄積中")}</strong></div><b>${escapeHtml(supply.pressureLabel || "蓄積中")}</b></div>
@@ -2521,22 +2563,28 @@ function render() {
           <div><span>供給吸収率</span><strong>${absorptionRateText}</strong><small>PSA10取引数 ÷ PSA10増加数</small></div>
           <div><span>採用期間</span><strong>${supply.sourceWindowDays ? `${fmt.format(supply.sourceWindowDays)}日${supply.status === "暫定" ? "・暫定" : ""}` : "蓄積中"}</strong></div>
           <div><span>将来供給の予備軍</span><strong>${supply.reservePipeline ? "多い" : supply.status === "蓄積中" ? "蓄積中" : "通常"}</strong></div>
-          <div><span>弱気予測価格</span><strong>¥${fmt.format(card.futurePriceForecast?.bearishPrice || 0)}</strong></div>
+          <div><span>通常の弱気予測価格</span><strong>¥${fmt.format(card.futurePriceForecast?.bearishPrice || 0)}</strong><small>供給過多の追加反映前</small></div>
           <div><span>供給ストレス価格</span><strong>${stressPriceText}</strong><small>下落補正 ${Number.isFinite(card.supplyStress?.haircutPct) ? `${card.supplyStress.haircutPct}%` : "蓄積中"}</small></div>
         </div>
         <div class="supply-limit-breakdown">
           <div><span>通常上限</span><strong>¥${fmt.format(card.buyLimits?.clean?.normalMaxPrice || 0)}</strong><small>中央予測で目標利益を確保</small></div>
-          <div><span>ストレス時赤字回避上限</span><strong>¥${fmt.format(card.buyLimits?.clean?.stressBreakEvenMaxPrice || 0)}</strong><small>弱気予測でも期待利益0円以上</small></div>
-          <div><span>超低リスク上限</span><strong>¥${fmt.format(card.buyLimits?.clean?.ultraLowRiskMaxPrice || 0)}</strong><small>弱気予測でも目標利益を確保</small></div>
+          <div><span>供給ストレス時赤字回避上限</span><strong>¥${fmt.format(card.buyLimits?.clean?.stressBreakEvenMaxPrice || 0)}</strong><small>供給ストレス価格でも期待利益0円以上</small></div>
+          <div><span>超低リスク上限</span><strong>¥${fmt.format(card.buyLimits?.clean?.ultraLowRiskMaxPrice || 0)}</strong><small>供給ストレス価格でも目標利益を確保</small></div>
           <div><span>PSA9でも赤字にならない上限</span><strong>¥${fmt.format(floorToStep(resilience?.psa9NonLossMaxPrice, 500) || 0)}</strong><small>PSA9想定売価のみで損益0円</small></div>
           <div><span>資金上限</span><strong>¥${fmt.format(card.buyLimits?.clean?.capitalMaxPrice || 0)}</strong></div>
           <div class="final"><span>実際に使える最終上限</span><strong>¥${fmt.format(card.buyLimits?.clean?.finalMaxPrice || 0)}</strong></div>
         </div>
+        <div class="calculation-basis-note"><span>現在価格を前提にした損益</span><strong>現在の平均美品価格 ¥${fmt.format(card.price)}で仕入れた場合</strong></div>
         <div class="break-even-detail">
           <div><span>PSA10になった場合の損益分岐</span><strong>¥${fmt.format(Math.round(resilience?.psa10BreakEvenPrice || 0))}</strong></div>
           <div><span>期待値損益分岐PSA10価格</span><strong>¥${fmt.format(Math.round(resilience?.expectedBreakEvenPrice || 0))}</strong></div>
           <div><span>目標利益維持PSA10価格</span><strong>¥${fmt.format(Math.round(resilience?.targetProfitBreakEvenPrice || 0))}</strong></div>
-          <div><span>PSA9だった場合の損益</span><strong class="${Number(resilience?.psa9Profit) >= 0 ? "positive" : "negative"}">${Number(resilience?.psa9Profit) < 0 ? "-" : ""}¥${fmt.format(Math.abs(Math.round(resilience?.psa9Profit || 0)))}</strong></div>
+          <div><span>PSA9だった場合の損益</span><strong class="${psa9ProfitAtCurrent.className}">${psa9ProfitAtCurrent.text}</strong></div>
+        </div>
+        <div class="limit-profit-examples">
+          <div><span>最終上限 ¥${fmt.format(card.buyLimits?.clean?.finalMaxPrice || 0)}で購入・現在相場</span><strong class="${currentProfitAtFinal.className}">${currentProfitAtFinal.text}</strong><small>現在PSA10相場での期待利益</small></div>
+          <div><span>最終上限 ¥${fmt.format(card.buyLimits?.clean?.finalMaxPrice || 0)}で購入・供給ストレス</span><strong class="${stressProfitAtFinal.className}">${stressProfitAtFinal.text}</strong><small>表示上限以下なら赤字を避けられる根拠</small></div>
+          <div><span>超低リスク上限 ¥${fmt.format(card.buyLimits?.clean?.ultraLowRiskMaxPrice || 0)}で購入・供給ストレス</span><strong class="${stressProfitAtUltra.className}">${stressProfitAtUltra.text}</strong><small>設定した目標利益を維持</small></div>
         </div>
         <p><b>最終上限の決定理由：</b>${escapeHtml(limitReasonLabel(card.buyLimits?.clean))}</p>
         <p><b>供給リスク反映状況：</b>${escapeHtml(riskReflectionText)}</p>
@@ -2713,6 +2761,9 @@ function syncFromUI() {
   state.hideReview = els.hideReviewInput.checked;
   state.fundingOnly = els.fundingOnlyInput.checked;
   state.officialOnly = els.officialOnlyInput.checked;
+  state.lowRiskAvailability = ["all", "go", "price"].includes(els.lowRiskAvailabilityInput?.value)
+    ? els.lowRiskAvailabilityInput.value
+    : "all";
   state.sort = els.sortInput.value;
   state.q = els.qInput.value.trim();
   state.psaCapital = Number(els.psaCapitalInput.value || 0);
@@ -2830,6 +2881,8 @@ els.resetFiltersBtn.addEventListener("click", () => {
   els.officialOnlyInput.checked = false;
   els.sortInput.value = "overall-desc";
   state.purchaseMode = "normal";
+  state.lowRiskAvailability = "all";
+  syncLowRiskAvailabilityControl();
   document.querySelectorAll("[data-preset]").forEach((item) => item.classList.remove("active"));
   syncFromUI();
 });
@@ -2838,6 +2891,8 @@ document.querySelectorAll("[data-preset]").forEach((button) => {
   button.addEventListener("click", () => {
     const preset = button.dataset.preset;
     state.purchaseMode = preset === "low-risk" ? "low-risk" : "normal";
+    state.lowRiskAvailability = "all";
+    syncLowRiskAvailabilityControl();
     els.saleTxMinInput.value = preset === "turnover" ? "20" : "0";
     els.psaTxMinInput.value = preset === "turnover" ? "15" : "0";
     els.overallFilterInput.value = preset === "now" || preset === "low-risk" ? "ab" : "all";
@@ -2854,6 +2909,8 @@ document.querySelectorAll("[data-preset]").forEach((button) => {
     syncFromUI();
   });
 });
+
+els.lowRiskAvailabilityInput?.addEventListener("change", syncFromUI);
 
 els.psaPlanInput.addEventListener("change", () => {
   state.psaPlan = els.psaPlanInput.value;

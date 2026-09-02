@@ -66,6 +66,7 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
 .preset-file-action{display:inline-flex;align-items:center;justify-content:center;padding:8px 12px;border:1px solid rgba(251,191,36,.34);border-radius:999px;background:rgba(251,191,36,.08);color:#fde68a;font-size:10px;font-weight:900;cursor:pointer}
 .preset-file-action input{display:none}
 .preset-file-action:hover{background:rgba(251,191,36,.16)}
+.low-risk-availability{display:inline-flex;align-items:center;gap:6px;padding:4px 5px 4px 9px;border:1px solid rgba(56,217,150,.36);border-radius:999px;background:rgba(56,217,150,.08);color:#bbf7d0;font-size:9px;font-weight:900}.low-risk-availability[hidden]{display:none}.low-risk-availability select{max-width:185px;border:0;border-radius:999px;padding:5px 8px;background:#0b1821;color:#e6fff3;font:inherit;font-size:9px;font-weight:900;outline:none}
 .advanced-filters{
   margin-top:14px;
   border:1px solid var(--line);
@@ -746,6 +747,7 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .purchase-summary strong{display:block;margin-top:3px;font-size:19px}
 .purchase-summary .purchase-final-limit{background:linear-gradient(135deg,rgba(56,217,150,.2),rgba(125,211,252,.11));border:1px solid rgba(56,217,150,.42)}
 .purchase-summary .purchase-final-limit,.purchase-summary .purchase-verdict{grid-column:span 2}
+.purchase-summary .purchase-basis-note{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 10px;border:1px solid rgba(125,211,252,.2);background:rgba(125,211,252,.055)}.purchase-summary .purchase-basis-note strong{margin:0;color:#bae6fd;font-size:12px;text-align:right}
 .purchase-summary .purchase-final-limit strong{color:#86efac;font-size:clamp(26px,3vw,34px);line-height:1.05}
 .purchase-summary .purchase-verdict strong{font-size:25px;color:#fde68a}
 .purchase-summary.recommended{border-color:rgba(56,217,150,.52)}
@@ -817,6 +819,8 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .supply-limit-breakdown .final{border-color:rgba(56,217,150,.4);background:rgba(56,217,150,.11)}
 .supply-limit-breakdown .final strong{color:#86efac}
 .break-even-detail{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:7px}.break-even-detail>div{padding:8px 9px;border-radius:10px;background:rgba(125,211,252,.055)}.break-even-detail span{display:block;color:var(--muted);font-size:8px;line-height:1.4}.break-even-detail strong{display:block;margin-top:2px;font-size:12px}.break-even-detail .positive{color:#86efac}.break-even-detail .negative{color:#fda4af}
+.calculation-basis-note{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;padding:8px 10px;border:1px solid rgba(125,211,252,.18);border-radius:10px;background:rgba(125,211,252,.05)}.calculation-basis-note span{color:var(--muted);font-size:8px}.calculation-basis-note strong{color:#bae6fd;font-size:11px;text-align:right}
+.limit-profit-examples{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:8px}.limit-profit-examples>div{padding:10px;border:1px solid rgba(56,217,150,.18);border-radius:11px;background:rgba(56,217,150,.055)}.limit-profit-examples span,.limit-profit-examples small{display:block;color:var(--muted);font-size:8px;line-height:1.45}.limit-profit-examples strong{display:block;margin:3px 0;font-size:15px}.limit-profit-examples .positive{color:#86efac}.limit-profit-examples .negative{color:#fda4af}
 .supply-pipeline-panel p{margin:8px 0 0;color:var(--text);font-size:9px;line-height:1.55}
 .supply-pipeline-panel>small{display:block;margin-top:7px;color:var(--muted);font-size:8px;line-height:1.55}
 .favorite-prices .scratch{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.24)}
@@ -975,6 +979,7 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
   .filter-switches{display:grid;grid-template-columns:1fr}
   .preset-divider{display:none}
   .preset-file-action{flex:1 1 calc(50% - 5px)}
+  .low-risk-availability{order:2;flex:1 1 100%;justify-content:space-between;border-radius:12px;padding:7px 8px}.low-risk-availability select{max-width:none;flex:1}
   .guide-summary{padding:18px 16px}
   .guide-summary h2{font-size:22px}
   .guide-body{padding:0 16px 16px}
@@ -1046,6 +1051,7 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
   .purchase-summary>div{padding:9px 8px}
   .purchase-summary .purchase-final-limit{grid-column:1/-1}
   .purchase-summary .purchase-verdict{grid-column:1/-1}
+  .purchase-summary .purchase-basis-note{align-items:flex-start;flex-direction:column;gap:2px}.purchase-summary .purchase-basis-note strong{text-align:left}
   .purchase-summary .purchase-verdict strong{font-size:23px}
   .card-details>summary small{display:none}
   .card-details-body{padding:0 7px 9px}
@@ -1074,6 +1080,7 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
   .supply-limit-breakdown{grid-template-columns:repeat(2,minmax(0,1fr))}
   .supply-limit-breakdown .final{grid-column:1/-1}
   .break-even-detail{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .calculation-basis-note{align-items:flex-start;flex-direction:column;gap:2px}.calculation-basis-note strong{text-align:left}.limit-profit-examples{grid-template-columns:1fr}
   .price-floor-head{align-items:flex-start;flex-direction:column}
   .price-floor-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
   .price-floor-grid>div:nth-child(5){grid-column:1/-1}
