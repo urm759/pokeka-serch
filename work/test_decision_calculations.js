@@ -66,7 +66,7 @@ const stressLimitedCaps = model.purchaseCaps({ capital, economicMaxPrice: 50000,
 assert.equal(stressLimitedCaps.normalMaxPrice, 50000);
 assert.equal(stressLimitedCaps.stressMaxPrice, 38000);
 assert.equal(stressLimitedCaps.finalMaxPrice, 38000);
-assert.equal(stressLimitedCaps.limitingFactor, "supply-stress");
+assert.equal(stressLimitedCaps.limitingFactor, "stress-break-even");
 assert.equal(stressLimitedCaps.supplyRiskReflected, false);
 const alreadySafeCaps = model.purchaseCaps({ capital, economicMaxPrice: 35000, stressMaxPrice: 38000, maxCapitalShare: 100 });
 assert.equal(alreadySafeCaps.finalMaxPrice, 35000);
@@ -132,7 +132,71 @@ assert.notEqual(go.singleCardSpend, 30000 * 10);
 const stressPriceDecision = model.purchaseDecision({ ...commonDecisionInput, economics, economicMaxPrice: 40000, stressMaxPrice: 28000 });
 assert.equal(stressPriceDecision.verdict, "価格次第");
 assert.equal(stressPriceDecision.finalMaxPrice, 28000);
-assert(stressPriceDecision.reasons.includes("供給ストレス上限を仕入れ値へ反映"));
+assert(stressPriceDecision.reasons.includes("弱気予測でも赤字にならない上限を反映"));
+
+const lillieAssumptions = {
+  hitRate: 0.779,
+  lowerGradePrice: 46000,
+};
+const lillieBase = {
+  assumptions: lillieAssumptions,
+  fee: 12980,
+  saleFeeRate: 8,
+  saleExtraCost: 0,
+  riskBufferPct: 0,
+  lockDays: 91,
+  step: 500,
+};
+const lillieNormal = model.targetProfitMaxBuyPrice({ ...lillieBase, forecastPrice: 102700 }, 9000);
+const lillieStressNoLoss = model.targetProfitMaxBuyPrice({ ...lillieBase, forecastPrice: 62500 }, 0);
+const lillieUltra = model.targetProfitMaxBuyPrice({ ...lillieBase, forecastPrice: 62500 }, 9000);
+const lillieResilience = model.resilienceMetrics({
+  ...lillieBase,
+  forecastPrice: 102700,
+  purchasePrice: 61400,
+  currentPsa10Price: 109900,
+  bearishPsa10Price: 62500,
+  targetProfit: 9000,
+});
+assert.ok(lillieNormal >= 60000 && lillieNormal <= 61500, `通常上限 ${lillieNormal}`);
+assert.ok(lillieStressNoLoss >= 40500 && lillieStressNoLoss <= 41500, `弱気赤字回避 ${lillieStressNoLoss}`);
+assert.ok(lillieUltra >= 31500 && lillieUltra <= 32500, `超低リスク ${lillieUltra}`);
+assert.ok(lillieResilience.psa9NonLossMaxPrice >= 29000 && lillieResilience.psa9NonLossMaxPrice <= 30000);
+assert.ok(lillieResilience.expectedBreakEvenPrice > 0);
+assert.ok(lillieResilience.breakEvenRoom.amount > 0);
+assert.ok(lillieResilience.bearishExpectedProfit < 0);
+
+const lillieCaps = model.purchaseCaps({
+  capital: generousCapital,
+  economicMaxPrice: lillieNormal,
+  stressBreakEvenMaxPrice: lillieStressNoLoss,
+  ultraLowRiskMaxPrice: lillieUltra,
+  maxCapitalShare: 100,
+});
+assert.equal(lillieCaps.finalMaxPrice, lillieStressNoLoss);
+const lillieLowRiskCaps = model.purchaseCaps({
+  capital: generousCapital,
+  economicMaxPrice: lillieNormal,
+  stressBreakEvenMaxPrice: lillieStressNoLoss,
+  ultraLowRiskMaxPrice: lillieUltra,
+  lowRiskMode: true,
+  maxCapitalShare: 100,
+});
+assert.equal(lillieLowRiskCaps.finalMaxPrice, lillieUltra);
+assert.equal(lillieLowRiskCaps.limitingFactor, "ultra-low-risk");
+
+const portfolioStress = model.portfolioStress([{
+  ...lillieBase,
+  purchasePrice: 41000,
+  currentPsa10Price: 109900,
+  quantity: 2,
+}], [10, 20, 30, 40, 50]);
+assert.equal(portfolioStress.length, 5);
+assert.ok(portfolioStress.every((row) => Number.isFinite(row.expectedProfit) && Number.isFinite(row.requiredReserve)));
+assert.ok(portfolioStress[0].expectedProfit > portfolioStress[4].expectedProfit);
+assert.ok(portfolioStress[4].requiredReserve >= portfolioStress[0].requiredReserve);
+const invalidStress = model.portfolioStress([{ purchasePrice: NaN, currentPsa10Price: Infinity, assumptions: lillieAssumptions }]);
+assert.ok(invalidStress.every((row) => Number.isFinite(row.expectedProfit) && Number.isFinite(row.lossTotal)));
 
 const oneCardPortfolio = model.portfolioPlan([{ price: 30000, quantity: 1 }], generousCapital);
 const repeatedCardPortfolio = model.portfolioPlan([{ price: 30000, quantity: 3 }], generousCapital);
@@ -177,5 +241,6 @@ console.log(JSON.stringify({
   capital: { available: capital.availableCapital, perCardForTen: capital.perCardBatchCap, singleCardSpend: go.singleCardSpend, selectedThreeCopies: repeatedCardPortfolio.totalPurchase },
   economics: { expectedSale: economics.expectedSale, expectedProfit: economics.expectedProfit, expectedRoi: Number(economics.expectedRoi.toFixed(1)) },
   outlier: { median: prices.value, excluded: prices.outliers[0], majorityMedian: majorityPrices.value },
+  lillie: { normal: lillieNormal, stressNoLoss: lillieStressNoLoss, ultraLowRisk: lillieUltra, psa9NoLoss: Math.floor(lillieResilience.psa9NonLossMaxPrice / 500) * 500, bearishExpectedProfitAtCurrentRaw: Math.round(lillieResilience.bearishExpectedProfit) },
   decisions: { profitable: go.verdict, negativeAtCurrentPrice: stop.verdict, manualReview: manualReview.verdict, dataShortage: dataShortage.verdict, capitalShortage: capitalShortage.verdict, lowQuality: lowQuality.verdict, noViablePrice: noViablePrice.verdict },
 }, null, 2));

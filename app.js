@@ -90,7 +90,9 @@ const state = {
   visibleLimit: 60,
   favorites: new Set(),
   favoriteQuantities: Object.create(null),
+  favoriteCosts: Object.create(null),
   favoriteQuery: "",
+  purchaseMode: "normal",
   psaCapital: 500000,
   lockedCapital: 0,
   lockDays: 91,
@@ -106,6 +108,7 @@ const state = {
 
 const FAVORITES_STORAGE_KEY = "pokeka-buy-favorites-v1";
 const FAVORITE_QUANTITIES_STORAGE_KEY = "pokeka-buy-favorite-quantities-v1";
+const FAVORITE_COSTS_STORAGE_KEY = "pokeka-buy-favorite-costs-v1";
 const ACTUAL_RESULTS_STORAGE_KEY = "pokeka-backtest-actual-results-v1";
 const QUICK_FILTER_STORAGE_KEY = "pokeka-quick-filter-preferences-v1";
 let favoriteQuantityRenderTimer = null;
@@ -215,6 +218,7 @@ const els = {
   favoritesList: document.getElementById("favoritesList"),
   favoritesHint: document.getElementById("favoritesHint"),
   favoritesPortfolioSummary: document.getElementById("favoritesPortfolioSummary"),
+  favoritesStressSummary: document.getElementById("favoritesStressSummary"),
   favoriteCount: document.getElementById("favoriteCount"),
   favoriteCountToolbar: document.getElementById("favoriteCountToolbar"),
   openFavoritesBtn: document.getElementById("openFavoritesBtn"),
@@ -516,14 +520,23 @@ function loadFavorites() {
   } catch {
     state.favoriteQuantities = Object.create(null);
   }
+  try {
+    const savedCosts = JSON.parse(localStorage.getItem(FAVORITE_COSTS_STORAGE_KEY) || "{}");
+    state.favoriteCosts = savedCosts && typeof savedCosts === "object" ? savedCosts : Object.create(null);
+  } catch {
+    state.favoriteCosts = Object.create(null);
+  }
   state.favorites.forEach((id) => {
     state.favoriteQuantities[id] = Math.max(1, Math.floor(Number(state.favoriteQuantities[id] || 1)));
+    const savedCost = Number(state.favoriteCosts[id]);
+    if (!(savedCost >= 0 && Number.isFinite(savedCost))) delete state.favoriteCosts[id];
   });
 }
 
 function saveFavorites() {
   localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([...state.favorites]));
   localStorage.setItem(FAVORITE_QUANTITIES_STORAGE_KEY, JSON.stringify(state.favoriteQuantities));
+  localStorage.setItem(FAVORITE_COSTS_STORAGE_KEY, JSON.stringify(state.favoriteCosts));
 }
 
 function loadActualResults() {
@@ -541,6 +554,11 @@ function saveActualResults() {
 
 function favoriteQuantity(id) {
   return Math.max(1, Math.floor(Number(state.favoriteQuantities[String(id)] || 1)));
+}
+
+function favoritePurchasePrice(card) {
+  const saved = Number(state.favoriteCosts[String(card.id)]);
+  return Number.isFinite(saved) && saved >= 0 ? saved : Math.max(0, Number(card.price || 0));
 }
 
 function favoriteGuide(card) {
@@ -575,9 +593,16 @@ function renderFavorites() {
     fee: state.fee,
   });
   const portfolio = decisionModel.portfolioPlan(evaluatedCards.map((card) => ({
-    price: card.price,
+    price: favoritePurchasePrice(card),
     quantity: favoriteQuantity(card.id),
   })), capital);
+  const stressRows = decisionModel.portfolioStress(evaluatedCards.map((card) => ({
+    ...(card.buyLimits?.clean?.modelInput || {}),
+    assumptions: card.buyLimits?.clean?.assumptions,
+    purchasePrice: favoritePurchasePrice(card),
+    currentPsa10Price: card.psa10,
+    quantity: favoriteQuantity(card.id),
+  })));
   const favoriteQuery = compactSearch(state.favoriteQuery);
   const cards = favoriteQuery
     ? evaluatedCards.filter((card) => compactSearch(`${card.name} ${card.model} ${card.id}`).includes(favoriteQuery))
@@ -596,6 +621,27 @@ function renderFavorites() {
       ? `<div><span>選択中の合計仕入れ額</span><strong>¥${fmt.format(Math.round(portfolio.totalPurchase))}</strong></div><div><span>使用可能資金</span><strong>¥${fmt.format(Math.round(portfolio.availableCapital))}</strong></div><div><span>${portfolio.affordable ? "残り資金" : "不足額"}</span><strong>${portfolio.affordable ? "" : "-"}¥${fmt.format(Math.round(balance))}</strong></div>`
       : "";
   }
+  if (els.favoritesStressSummary) {
+    const holdings = evaluatedCards.map((card) => favoritePurchasePrice(card) * favoriteQuantity(card.id));
+    const largestHolding = holdings.length ? Math.max(...holdings) : 0;
+    const concentration = portfolio.totalPurchase > 0 ? largestHolding / portfolio.totalPurchase * 100 : 0;
+    const concentrationWarning = evaluatedCards.length < 2
+      ? "1銘柄のみです。市場全体の暴落に備えて銘柄分散も検討してください"
+      : concentration > state.maxCapitalShare
+        ? `最大1銘柄 ${concentration.toFixed(1)}%で設定上限${fmt.format(state.maxCapitalShare)}%を超えています`
+        : `最大1銘柄 ${concentration.toFixed(1)}% / ${fmt.format(evaluatedCards.length)}銘柄に分散`;
+    els.favoritesStressSummary.innerHTML = allCards.length ? `
+      <div class="favorites-stress-head"><div><span>保有・仕入れ候補の暴落耐性</span><strong>PSA10相場が一律下落した場合</strong></div><small>${escapeHtml(concentrationWarning)}。予備資金と仕入れ時期の分散も併用してください。</small></div>
+      <div class="favorites-stress-grid">${stressRows.map((row) => `
+        <div class="${row.expectedProfit < 0 ? "loss" : "gain"}">
+          <span>-${fmt.format(row.declineRate)}%</span>
+          <strong>期待利益 ${row.expectedProfit < 0 ? "-" : ""}¥${fmt.format(Math.abs(Math.round(row.expectedProfit)))}</strong>
+          <small>赤字 ${fmt.format(row.lossCardCount)}種類 / ${fmt.format(row.lossUnitCount)}枚</small>
+          <small>赤字総額 ¥${fmt.format(Math.round(row.lossTotal))}</small>
+          <b>必要予備資金 ¥${fmt.format(Math.round(row.requiredReserve))}</b>
+        </div>`).join("")}</div>
+    ` : "";
+  }
   els.copyFavoritesBtn.disabled = allCards.length === 0;
   els.exportFavoritesBtn.disabled = allCards.length === 0;
   els.clearFavoritesBtn.disabled = allCards.length === 0;
@@ -612,6 +658,7 @@ function renderFavorites() {
     const verdict = card.goConfidence || card.purchaseDecision?.verdict || "未判定";
     const verdictRecommended = verdict === "GO・確認済み" || verdict === "暫定GO";
     const quantity = favoriteQuantity(card.id);
+    const purchasePrice = favoritePurchasePrice(card);
     const name = escapeHtml(String(card.name || "").replace(/\s+/g, " "));
     return `
       <article class="favorite-row" data-favorite-id="${escapeHtml(card.id)}">
@@ -619,7 +666,11 @@ function renderFavorites() {
         <div class="favorite-main">
           <h3>${name}</h3>
           <div class="favorite-decision ${verdictRecommended ? "recommended" : "not-recommended"}">今回の仕入れ判断：${escapeHtml(verdict)}</div>
-          <label class="favorite-quantity"><span>購入枚数</span><input type="number" min="1" step="1" value="${quantity}" data-favorite-quantity="${escapeHtml(card.id)}" /><b>現在価格合計 ¥${fmt.format(Math.round(card.price * quantity))}</b></label>
+          <div class="favorite-position-inputs">
+            <label class="favorite-quantity"><span>購入枚数</span><input type="number" min="1" step="1" value="${quantity}" data-favorite-quantity="${escapeHtml(card.id)}" /></label>
+            <label class="favorite-cost"><span>仕入れ単価</span><input type="number" min="0" step="500" value="${Math.round(purchasePrice)}" data-favorite-cost="${escapeHtml(card.id)}" /></label>
+            <b>仕入れ総額 ¥${fmt.format(Math.round(purchasePrice * quantity))}</b>
+          </div>
           <div class="favorite-prices">
             <div><span>現在 / 予測PSA10</span><strong>¥${fmt.format(card.psa10)} / ¥${fmt.format(card.futurePriceForecast?.predictedPrice || card.psa10)}</strong></div>
             <div class="recommended"><span>美品なら</span><strong>${buyLimitText(limits?.clean)}</strong></div>
@@ -639,6 +690,7 @@ function toggleFavorite(id, { confirmRemoval = false } = {}) {
     if (confirmRemoval && !window.confirm("このカードをお気に入りから解除しますか？")) return;
     state.favorites.delete(key);
     delete state.favoriteQuantities[key];
+    delete state.favoriteCosts[key];
   } else {
     state.favorites.add(key);
     state.favoriteQuantities[key] = 1;
@@ -660,7 +712,7 @@ function favoritesMemo() {
     const limits = card.buyLimits;
     const roi = Number.isFinite(card.roi) ? `${Math.round(card.roi)}%` : "-";
     const quantity = favoriteQuantity(card.id);
-    return `${String(card.name || "").replace(/\s+/g, " ")} ×${quantity} / 最終上限 ${buyLimitText(limits?.clean)} / 傷あり ${buyLimitText(limits?.scratch)} / PSA10 ¥${fmt.format(card.psa10)} / 利益率 ${roi}`;
+    return `${String(card.name || "").replace(/\s+/g, " ")} ×${quantity} / 仕入れ単価 ¥${fmt.format(favoritePurchasePrice(card))} / 上限 ${buyLimitText(limits?.clean)} / 傷あり ${buyLimitText(limits?.scratch)} / PSA10 ¥${fmt.format(card.psa10)} / 利益率 ${roi}`;
   });
   return [header, ...rows].join("\n");
 }
@@ -691,14 +743,14 @@ async function copyText(text) {
 
 function exportFavoritesCsv() {
   const cfg = guideConfig();
-  const rows = [["id", "カード名", "型番", "数量", "現在PSA10価格", "91日後中央推計", "予測下落余地%", "将来価格評価", "最終仕入れ上限", "採算上の仕入れ上限", "現在の資金で買える上限", "傷あり仕入れ上限", "美品PSA10想定率%", "傷ありPSA10想定率%", "取得率基準", "基準", "理想仕入れ", "おすすめ仕入れ", "上限仕入れ", "今回の仕入れ判断", "期待利益", "期待利益率", "年換算資金効率", "資金占有率", "判断理由", "みんトレURL", "カードラッシュURL", "晴れる屋2URL", "遊々亭URL", "トレカキャンプURL"]];
+  const rows = [["id", "カード名", "型番", "数量", "仕入れ単価", "現在PSA10価格", "91日後中央推計", "予測下落余地%", "将来価格評価", "最終仕入れ上限", "通常上限", "ストレス時赤字回避上限", "超低リスク上限", "PSA9赤字回避上限", "現在の資金で買える上限", "傷あり仕入れ上限", "期待値損益分岐PSA10価格", "弱気予測時期待利益", "美品PSA10想定率%", "傷ありPSA10想定率%", "取得率基準", "基準", "理想仕入れ", "おすすめ仕入れ", "上限仕入れ", "今回の仕入れ判断", "期待利益", "期待利益率", "年換算資金効率", "資金占有率", "判断理由", "みんトレURL", "カードラッシュURL", "晴れる屋2URL", "遊々亭URL", "トレカキャンプURL"]];
   favoriteCards().forEach((rawCard) => {
     const card = calc(rawCard);
     const guide = favoriteGuide(card);
     const limits = card.buyLimits;
     const decision = card.psaDecision;
     const forecast = card.futurePriceForecast;
-    rows.push([card.id, card.name, card.model || "", favoriteQuantity(card.id), card.psa10, forecast?.centralPrice || card.psa10, forecast ? forecast.downsidePct.toFixed(1) : "", forecast?.score ?? "", limits?.clean?.maxPrice ?? "", limits?.clean?.economicMaxPrice ?? "", limits?.clean?.capitalMaxPrice ?? "", limits?.scratch?.maxPrice ?? "", limits?.clean?.hitRate?.toFixed(1) ?? "", limits?.scratch?.hitRate?.toFixed(1) ?? "", limits?.rateSource || "", cfg.label, guide.ideal, guide.recommended, guide.upper, card.goConfidence || card.purchaseDecision?.verdict || "未判定", Math.round(decision?.expectedProfit || 0), Math.round(decision?.expectedRoi || 0), Math.round(decision?.annualEfficiency || 0), Number(decision?.capitalShare || 0).toFixed(1), decision?.reasons.join(" / ") || "", buildTorecaCardUrl(card), card.cardrushUrl || "", card.hareruya2Url || "", card.yuyuteiUrl || "", card.torecacampUrl || ""]);
+    rows.push([card.id, card.name, card.model || "", favoriteQuantity(card.id), favoritePurchasePrice(card), card.psa10, forecast?.centralPrice || card.psa10, forecast ? forecast.downsidePct.toFixed(1) : "", forecast?.score ?? "", limits?.clean?.maxPrice ?? "", limits?.clean?.economicMaxPrice ?? "", limits?.clean?.stressBreakEvenMaxPrice ?? "", limits?.clean?.ultraLowRiskMaxPrice ?? "", Math.floor(limits?.clean?.resilience?.psa9NonLossMaxPrice || 0), limits?.clean?.capitalMaxPrice ?? "", limits?.scratch?.maxPrice ?? "", Math.round(limits?.clean?.resilience?.expectedBreakEvenPrice || 0), Math.round(limits?.clean?.resilience?.bearishExpectedProfit || 0), limits?.clean?.hitRate?.toFixed(1) ?? "", limits?.scratch?.hitRate?.toFixed(1) ?? "", limits?.rateSource || "", cfg.label, guide.ideal, guide.recommended, guide.upper, card.goConfidence || card.purchaseDecision?.verdict || "未判定", Math.round(decision?.expectedProfit || 0), Math.round(decision?.expectedRoi || 0), Math.round(decision?.annualEfficiency || 0), Number(decision?.capitalShare || 0).toFixed(1), decision?.reasons.join(" / ") || "", buildTorecaCardUrl(card), card.cardrushUrl || "", card.hareruya2Url || "", card.yuyuteiUrl || "", card.torecacampUrl || ""]);
   });
   const csv = `\uFEFF${rows.map((row) => row.map(csvCell).join(",")).join("\r\n")}`;
   const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
@@ -1210,24 +1262,6 @@ function applyGoConfidence(card) {
   return card;
 }
 
-function buildRiskBuffer(card, condition) {
-  const forecast = card.futurePriceForecast;
-  const overall = card.overallAssessment;
-  const isScratch = condition === "scratch";
-  return clamp(
-    Number(forecast.downsidePct || 0) * 0.12
-      + Math.max(0, 55 - Number(forecast.turnoverScore ?? 45)) * 0.06
-      + Math.max(0, 55 - Number(overall?.exitLiquidity ?? 45)) * 0.05
-      + Math.max(0, 55 - Number(overall?.marketStability ?? 45)) * 0.04
-      + (card.dataQuality?.dataShortage
-        ? Number(card.dataQuality.shortageRiskPct || 0)
-        : forecast.dataCompleteness === "低" ? 4 : forecast.dataCompleteness === "中" ? 1.5 : 0)
-      + (isScratch ? 2 : 0),
-    0,
-    15
-  );
-}
-
 function buildScenarioInput(card, condition, forecastPrice = Number(card.futurePriceForecast?.predictedPrice || card.psa10 || 0)) {
   const assumptions = decisionModel.gradeAssumptions({
     condition,
@@ -1244,7 +1278,9 @@ function buildScenarioInput(card, condition, forecastPrice = Number(card.futureP
     fee: state.fee,
     saleFeeRate: state.saleFeeRate,
     saleExtraCost: state.saleExtraCost,
-    riskBufferPct: buildRiskBuffer(card, condition),
+    // Supply and downside risk are already expressed by the forecast price.
+    // Keeping this at zero avoids discounting the same risk twice.
+    riskBufferPct: 0,
     lockDays: state.lockDays,
     minExpectedProfit: state.minExpectedProfit,
     minExpectedRoi: state.minExpectedRoi,
@@ -1312,31 +1348,40 @@ function buildSupplyStress(card) {
 
 function buildBuyLimitScenario(card, condition) {
   const input = buildScenarioInput(card, condition);
-  const economicMaxPrice = decisionModel.maxBuyPrice({ ...input, step: 500 });
+  const economicMaxPrice = decisionModel.targetProfitMaxBuyPrice(input, state.minExpectedProfit);
   const stressForecastPrice = Number(card.supplyStress?.price) > 0 ? Number(card.supplyStress.price) : input.forecastPrice;
   const stressInput = buildScenarioInput(card, condition, stressForecastPrice);
-  // The same risk buffer is reused rather than added again. The supply shock is
-  // represented by the lower exit price, preventing a duplicate percentage cut.
-  const stressMaxPrice = decisionModel.maxBuyPrice({ ...stressInput, step: 500 });
+  const stressBreakEvenMaxPrice = decisionModel.targetProfitMaxBuyPrice(stressInput, 0);
+  const ultraLowRiskMaxPrice = decisionModel.targetProfitMaxBuyPrice(stressInput, state.minExpectedProfit);
   const atLimit = decisionModel.expectedEconomics({ ...input, purchasePrice: economicMaxPrice });
-  const atStressLimit = decisionModel.expectedEconomics({ ...stressInput, purchasePrice: stressMaxPrice });
+  const atStressLimit = decisionModel.expectedEconomics({ ...stressInput, purchasePrice: stressBreakEvenMaxPrice });
+  const resilience = decisionModel.resilienceMetrics({
+    ...input,
+    purchasePrice: card.price,
+    currentPsa10Price: card.psa10,
+    bearishPsa10Price: stressForecastPrice,
+    targetProfit: state.minExpectedProfit,
+  });
 
   return {
     maxPrice: economicMaxPrice,
     economicMaxPrice,
     normalMaxPrice: economicMaxPrice,
-    stressMaxPrice,
+    stressMaxPrice: stressBreakEvenMaxPrice,
+    stressBreakEvenMaxPrice,
+    ultraLowRiskMaxPrice,
     stressForecastPrice,
     stressExpectedSale: floorToStep(atStressLimit.expectedSale, 500),
     hitRate: input.assumptions.hitRate * 100,
     lowerGradePrice: floorToStep(input.assumptions.lowerGradePrice, 500),
     lowerGradeSource: input.assumptions.lowerGradeSource,
     expectedSale: floorToStep(atLimit.expectedSale, 500),
-    riskBufferPct: input.riskBufferPct,
+    riskBufferPct: 0,
     requiredRoi: Math.max(state.minExpectedRoi, state.minAnnualEfficiency * state.lockDays / 365),
     assumptions: input.assumptions,
     modelInput: input,
     stressModelInput: stressInput,
+    resilience,
   };
 }
 
@@ -1349,21 +1394,28 @@ function buildBuyLimits(card) {
   if (!clean || !scratch) return null;
   scratch.economicMaxPrice = Math.min(scratch.economicMaxPrice, clean.economicMaxPrice);
   scratch.normalMaxPrice = scratch.economicMaxPrice;
-  scratch.stressMaxPrice = Math.min(scratch.stressMaxPrice, clean.stressMaxPrice);
+  scratch.stressBreakEvenMaxPrice = Math.min(scratch.stressBreakEvenMaxPrice, clean.stressBreakEvenMaxPrice);
+  scratch.stressMaxPrice = scratch.stressBreakEvenMaxPrice;
+  scratch.ultraLowRiskMaxPrice = Math.min(scratch.ultraLowRiskMaxPrice, clean.ultraLowRiskMaxPrice);
   [clean, scratch].forEach((scenario) => {
     const caps = decisionModel.purchaseCaps({
       capital,
       economicMaxPrice: scenario.economicMaxPrice,
-      stressMaxPrice: scenario.stressMaxPrice,
+      stressBreakEvenMaxPrice: scenario.stressBreakEvenMaxPrice,
+      ultraLowRiskMaxPrice: scenario.ultraLowRiskMaxPrice,
+      lowRiskMode: state.purchaseMode === "low-risk",
       maxCapitalShare: state.maxCapitalShare,
     });
     scenario.normalMaxPrice = floorToStep(caps.normalMaxPrice, 500);
-    scenario.stressMaxPrice = floorToStep(caps.stressMaxPrice, 500);
+    scenario.stressMaxPrice = floorToStep(caps.stressBreakEvenMaxPrice, 500);
+    scenario.stressBreakEvenMaxPrice = scenario.stressMaxPrice;
+    scenario.ultraLowRiskMaxPrice = floorToStep(caps.ultraLowRiskMaxPrice, 500);
     scenario.effectiveEconomicMaxPrice = floorToStep(caps.effectiveEconomicMaxPrice, 500);
     scenario.capitalMaxPrice = floorToStep(caps.capitalMaxPrice, 500);
     scenario.finalMaxPrice = floorToStep(caps.finalMaxPrice, 500);
     scenario.limitingFactor = caps.limitingFactor;
     scenario.supplyRiskReflected = caps.supplyRiskReflected;
+    scenario.lowRiskMode = caps.lowRiskMode;
     scenario.provisional = Boolean(card.supplyStress?.provisional);
     scenario.maxPrice = scenario.finalMaxPrice;
   });
@@ -1396,7 +1448,9 @@ function finalizeCardDecision(card) {
     economics,
     capital,
     economicMaxPrice: card.buyLimits.clean.economicMaxPrice,
-    stressMaxPrice: card.buyLimits.clean.stressMaxPrice,
+    stressBreakEvenMaxPrice: card.buyLimits.clean.stressBreakEvenMaxPrice,
+    ultraLowRiskMaxPrice: card.buyLimits.clean.ultraLowRiskMaxPrice,
+    lowRiskMode: state.purchaseMode === "low-risk",
     qualityScore: card.overallAssessment?.score,
     requiresManualReview: card.dataQuality.manualReview,
     manualReviewReasons: card.dataQuality.manualReviewReasons,
@@ -1407,6 +1461,7 @@ function finalizeCardDecision(card) {
     minExpectedRoi: state.minExpectedRoi,
     minAnnualEfficiency: state.minAnnualEfficiency,
     maxCapitalShare: state.maxCapitalShare,
+    targetProfitOnly: true,
   }) : null;
   if (card.overallAssessment) {
     card.overallAssessment.economics = economics
@@ -1422,7 +1477,10 @@ function finalizeCardDecision(card) {
     requiredReserve: capital.requiredReserve,
     singleCardSpend: finalDecision?.singleCardSpend,
     economicMaxPrice: finalDecision?.economicMaxPrice,
-    stressMaxPrice: finalDecision?.stressMaxPrice,
+    stressMaxPrice: finalDecision?.stressBreakEvenMaxPrice,
+    stressBreakEvenMaxPrice: finalDecision?.stressBreakEvenMaxPrice,
+    ultraLowRiskMaxPrice: finalDecision?.ultraLowRiskMaxPrice,
+    resilience: card.buyLimits?.clean?.resilience,
     capitalMaxPrice: finalDecision?.capitalMaxPrice,
     finalMaxPrice: finalDecision?.finalMaxPrice,
     limitingFactor: finalDecision?.limitingFactor,
@@ -1690,6 +1748,7 @@ function readUrl() {
   const gradingReserve = parseOptionalNumber(url.searchParams.get("reserve"));
   const saleFeeRate = parseOptionalNumber(url.searchParams.get("sellFee"));
   const saleExtraCost = parseOptionalNumber(url.searchParams.get("extraCost"));
+  const riskMode = url.searchParams.get("riskMode");
   const sort = url.searchParams.get("sort");
   const q = url.searchParams.get("q");
   if (guide && guideModes[guide]) {
@@ -1767,6 +1826,10 @@ function readUrl() {
   if (gradingReserve != null && gradingReserve >= 0) els.gradingReserveInput.value = String(gradingReserve);
   if (saleFeeRate != null && saleFeeRate >= 0) els.saleFeeRateInput.value = String(saleFeeRate);
   if (saleExtraCost != null && saleExtraCost >= 0) els.saleExtraCostInput.value = String(saleExtraCost);
+  state.purchaseMode = riskMode === "low" ? "low-risk" : "normal";
+  document.querySelectorAll("[data-preset]").forEach((button) => {
+    button.classList.toggle("active", state.purchaseMode === "low-risk" && button.dataset.preset === "low-risk");
+  });
   if (sort && sorters[sort]) els.sortInput.value = sort;
   if (q) els.qInput.value = q;
 }
@@ -1845,6 +1908,8 @@ function buildShareUrl() {
   url.searchParams.set("reserve", String(state.gradingReserve));
   url.searchParams.set("sellFee", String(state.saleFeeRate));
   url.searchParams.set("extraCost", String(state.saleExtraCost));
+  if (state.purchaseMode === "low-risk") url.searchParams.set("riskMode", "low");
+  else url.searchParams.delete("riskMode");
   if (state.minPrice == null) {
     url.searchParams.delete("priceMin");
   } else {
@@ -2276,7 +2341,7 @@ function render() {
     const dataQuality = card.dataQuality || {};
     const dataQualityPanels = [
       dataQuality.manualReview ? `<div class="data-quality-notice manual"><strong>要確認（手動確認）</strong><span>${escapeHtml(dataQuality.manualReviewReasons.join(" / "))}</span></div>` : "",
-      dataQuality.dataShortage ? `<div class="data-quality-notice shortage"><strong>データ不足</strong><span>${escapeHtml(dataQuality.dataShortageReasons.join(" / "))} / 判定信頼度 ${escapeHtml(dataQuality.confidence)} / 追加リスク +${fmt.format(dataQuality.shortageRiskPct)}%を計算済み</span></div>` : "",
+      dataQuality.dataShortage ? `<div class="data-quality-notice shortage"><strong>データ不足</strong><span>${escapeHtml(dataQuality.dataShortageReasons.join(" / "))} / 判定信頼度 ${escapeHtml(dataQuality.confidence)} / 不足リスクは弱気予測へ反映</span></div>` : "",
       dataQuality.outlierExcluded ? `<div class="data-quality-notice outlier"><strong>外れ値除外済み</strong><span>${escapeHtml(dataQuality.outlierExcludedReasons.join(" / "))} / 複数の一致価格を採用して判定継続</span></div>` : "",
       dataQuality.dataAnomaly ? `<div class="data-quality-notice manual"><strong>カード紐付け要確認</strong><span>${escapeHtml(dataQuality.dataAnomalyReasons.join(" / "))} / 誤紐付け疑いの店舗データだけを計算から隔離しています</span></div>` : "",
     ].filter(Boolean).join("");
@@ -2288,15 +2353,25 @@ function render() {
       supply.status === "蓄積中" ? "蓄積中" : "供給リスク反映済み",
       supply.classification === "高需要・供給過多" ? "高需要・供給過多" : "",
       supply.strongDeclineWarning ? "強い下落警戒" : "",
+      state.purchaseMode === "low-risk" ? "超低リスク上限" : "",
       buyLimits?.clean?.provisional ? "暫定上限" : "",
     ].filter(Boolean);
     const supplyBadgesHtml = supplyBadges.map((label) => `<b class="supply-badge ${supplyClass}">${escapeHtml(label)}</b>`).join("");
     const limitReasonLabel = (scenario) => ({
-      "supply-stress": "供給ストレス上限を採用",
+      "stress-break-even": "弱気でも赤字を避ける上限を採用",
+      "ultra-low-risk": "低リスク設定：弱気でも目標利益を残す上限を採用",
       capital: "現在の資金上限を採用",
-      "normal-economics": scenario?.supplyRiskReflected ? "通常上限が十分安全・二重控除なし" : "通常の採算上限を採用",
+      "normal-economics": scenario?.supplyRiskReflected ? "通常上限が弱気赤字回避上限以下・二重控除なし" : "通常上限を採用",
       none: "設定条件では仕入れ見送り",
     }[scenario?.limitingFactor] || "判定中");
+    const resilience = buyLimits?.clean?.resilience;
+    const roomText = (room) => {
+      if (!Number.isFinite(room?.amount) || !Number.isFinite(room?.rate)) return "算出不可";
+      const amount = Math.round(room.amount);
+      return amount >= 0
+        ? `¥${fmt.format(amount)} / ${room.rate.toFixed(1)}%`
+        : `超過 ¥${fmt.format(Math.abs(amount))} / ${Math.abs(room.rate).toFixed(1)}%`;
+    };
     const cleanMarketStatus = buyLimits?.clean?.maxPrice > 0
       ? card.price <= buyLimits.clean.maxPrice
         ? "平均美品価格は仕入れ圏内"
@@ -2324,7 +2399,7 @@ function render() {
         </div>
         <div class="supply-badges">${supplyBadgesHtml}</div>
         <div class="buy-limit-foot">
-          <span>個別カードは1枚で判定。通常・供給ストレス・資金のうち最も安全な上限を表示しています。</span>
+          <span>個別カードは1枚で判定。${state.purchaseMode === "low-risk" ? "低リスク設定では、弱気でも目標利益を残す超低リスク上限を使用します。" : "通常上限・弱気赤字回避上限・資金上限の最小値を表示します。"}</span>
         </div>
       </section>
     ` : "";
@@ -2363,8 +2438,11 @@ function render() {
       <section class="purchase-summary ${decisionClass}">
         <div class="purchase-final-limit"><span>${card.buyLimits?.clean?.provisional ? "暫定上限" : "実際に使える最終上限"}・美品</span><strong>${buyLimitText(card.buyLimits?.clean)}</strong><small>${escapeHtml(limitReasonLabel(card.buyLimits?.clean))}</small><div class="supply-badges">${supplyBadgesHtml}</div></div>
         <div class="purchase-verdict"><span>今回の仕入れ判断</span><strong>${escapeHtml(displayVerdict)}</strong><small>${escapeHtml(decisionReasons)}</small></div>
-        <div><span>現在価格での期待利益</span><strong class="${psaDecision.expectedProfit < 0 ? "negative" : "positive"}">¥${fmt.format(Math.round(psaDecision.expectedProfit))}</strong></div>
-        <div><span>91日後・中央推計</span><strong>¥${fmt.format(card.futurePriceForecast?.centralPrice || 0)}</strong></div>
+        <div><span>現在のPSA10相場</span><strong>¥${fmt.format(card.psa10 || 0)}</strong></div>
+        <div><span>期待値損益分岐価格</span><strong>¥${fmt.format(Math.round(resilience?.expectedBreakEvenPrice || 0))}</strong></div>
+        <div><span>赤字になるまでの下落余力</span><strong class="${Number(resilience?.breakEvenRoom?.amount) >= 0 ? "positive" : "negative"}">${roomText(resilience?.breakEvenRoom)}</strong></div>
+        <div><span>目標利益を割るまでの下落余力</span><strong class="${Number(resilience?.targetProfitRoom?.amount) >= 0 ? "positive" : "negative"}">${roomText(resilience?.targetProfitRoom)}</strong></div>
+        <div><span>弱気予測時の期待利益</span><strong class="${Number(resilience?.bearishExpectedProfit) >= 0 ? "positive" : "negative"}">${Number(resilience?.bearishExpectedProfit) < 0 ? "-" : ""}¥${fmt.format(Math.abs(Math.round(resilience?.bearishExpectedProfit || 0)))}</strong><small>弱気PSA10 ¥${fmt.format(Math.round(resilience?.bearishPsa10Price || 0))}</small></div>
       </section>
     ` : "";
     const forecast = card.futurePriceForecast;
@@ -2433,8 +2511,8 @@ function render() {
     const stressPriceText = Number(card.supplyStress?.price) > 0 ? `¥${fmt.format(card.supplyStress.price)}` : "蓄積中";
     const supplyEvidence = [...(supply.evidence || []), ...(supply.cautions || [])].join(" / ") || "PSA公式推移と取引履歴を蓄積中";
     const riskReflectionText = card.buyLimits?.clean?.supplyRiskReflected
-      ? "既存の安全余裕へ反映済み（二重控除なし）"
-      : "供給ストレス上限を仕入れ値へ反映済み";
+      ? "弱気予測は価格側へ反映済み。通常上限がさらに低いため追加控除なし"
+      : "供給リスクを弱気予測価格へ一度だけ反映済み";
     const supplyPipelinePanel = `
       <div class="supply-pipeline-panel ${supplyClass}">
         <div class="supply-pipeline-head"><div><span>供給パイプライン評価</span><strong>${escapeHtml(supply.classification || "蓄積中")}</strong></div><b>${escapeHtml(supply.pressureLabel || "蓄積中")}</b></div>
@@ -2447,14 +2525,22 @@ function render() {
           <div><span>供給ストレス価格</span><strong>${stressPriceText}</strong><small>下落補正 ${Number.isFinite(card.supplyStress?.haircutPct) ? `${card.supplyStress.haircutPct}%` : "蓄積中"}</small></div>
         </div>
         <div class="supply-limit-breakdown">
-          <div><span>通常の採算上限</span><strong>¥${fmt.format(card.buyLimits?.clean?.normalMaxPrice || 0)}</strong></div>
-          <div><span>供給ストレス上限</span><strong>¥${fmt.format(card.buyLimits?.clean?.stressMaxPrice || 0)}</strong></div>
+          <div><span>通常上限</span><strong>¥${fmt.format(card.buyLimits?.clean?.normalMaxPrice || 0)}</strong><small>中央予測で目標利益を確保</small></div>
+          <div><span>ストレス時赤字回避上限</span><strong>¥${fmt.format(card.buyLimits?.clean?.stressBreakEvenMaxPrice || 0)}</strong><small>弱気予測でも期待利益0円以上</small></div>
+          <div><span>超低リスク上限</span><strong>¥${fmt.format(card.buyLimits?.clean?.ultraLowRiskMaxPrice || 0)}</strong><small>弱気予測でも目標利益を確保</small></div>
+          <div><span>PSA9でも赤字にならない上限</span><strong>¥${fmt.format(floorToStep(resilience?.psa9NonLossMaxPrice, 500) || 0)}</strong><small>PSA9想定売価のみで損益0円</small></div>
           <div><span>資金上限</span><strong>¥${fmt.format(card.buyLimits?.clean?.capitalMaxPrice || 0)}</strong></div>
           <div class="final"><span>実際に使える最終上限</span><strong>¥${fmt.format(card.buyLimits?.clean?.finalMaxPrice || 0)}</strong></div>
         </div>
+        <div class="break-even-detail">
+          <div><span>PSA10になった場合の損益分岐</span><strong>¥${fmt.format(Math.round(resilience?.psa10BreakEvenPrice || 0))}</strong></div>
+          <div><span>期待値損益分岐PSA10価格</span><strong>¥${fmt.format(Math.round(resilience?.expectedBreakEvenPrice || 0))}</strong></div>
+          <div><span>目標利益維持PSA10価格</span><strong>¥${fmt.format(Math.round(resilience?.targetProfitBreakEvenPrice || 0))}</strong></div>
+          <div><span>PSA9だった場合の損益</span><strong class="${Number(resilience?.psa9Profit) >= 0 ? "positive" : "negative"}">${Number(resilience?.psa9Profit) < 0 ? "-" : ""}¥${fmt.format(Math.abs(Math.round(resilience?.psa9Profit || 0)))}</strong></div>
+        </div>
         <p><b>最終上限の決定理由：</b>${escapeHtml(limitReasonLabel(card.buyLimits?.clean))}</p>
         <p><b>供給リスク反映状況：</b>${escapeHtml(riskReflectionText)}</p>
-        <small>${escapeHtml(supplyEvidence)}。供給履歴不足や増加数・取引数0は0倍にせず、暫定上限として扱います。</small>
+        <small>${escapeHtml(supplyEvidence)}。期待利益＝PSA10率×PSA10手取り＋（1－PSA10率）×PSA9以下手取り－仕入れ値－鑑定料。追加費用と売却手数料も手取りへ反映します。</small>
       </div>
     `;
     const marketSignalsPanel = `
@@ -2743,12 +2829,15 @@ els.resetFiltersBtn.addEventListener("click", () => {
   els.fundingOnlyInput.checked = false;
   els.officialOnlyInput.checked = false;
   els.sortInput.value = "overall-desc";
+  state.purchaseMode = "normal";
+  document.querySelectorAll("[data-preset]").forEach((item) => item.classList.remove("active"));
   syncFromUI();
 });
 
 document.querySelectorAll("[data-preset]").forEach((button) => {
   button.addEventListener("click", () => {
     const preset = button.dataset.preset;
+    state.purchaseMode = preset === "low-risk" ? "low-risk" : "normal";
     els.saleTxMinInput.value = preset === "turnover" ? "20" : "0";
     els.psaTxMinInput.value = preset === "turnover" ? "15" : "0";
     els.overallFilterInput.value = preset === "now" || preset === "low-risk" ? "ab" : "all";
@@ -2838,8 +2927,25 @@ function updateFavoriteQuantity(event, immediate = false) {
   favoriteQuantityRenderTimer = setTimeout(renderFavorites, immediate ? 0 : 250);
 }
 
-els.favoritesList.addEventListener("input", (event) => updateFavoriteQuantity(event));
-els.favoritesList.addEventListener("change", (event) => updateFavoriteQuantity(event, true));
+function updateFavoriteCost(event, immediate = false) {
+  const input = event.target.closest("[data-favorite-cost]");
+  if (!input) return;
+  const id = String(input.dataset.favoriteCost || "");
+  if (!state.favorites.has(id)) return;
+  state.favoriteCosts[id] = Math.max(0, Number(input.value || 0));
+  saveFavorites();
+  clearTimeout(favoriteQuantityRenderTimer);
+  favoriteQuantityRenderTimer = setTimeout(renderFavorites, immediate ? 0 : 250);
+}
+
+els.favoritesList.addEventListener("input", (event) => {
+  updateFavoriteQuantity(event);
+  updateFavoriteCost(event);
+});
+els.favoritesList.addEventListener("change", (event) => {
+  updateFavoriteQuantity(event, true);
+  updateFavoriteCost(event, true);
+});
 
 els.openFavoritesBtn.addEventListener("click", () => {
   els.favoritesPanel.open = true;
@@ -2879,14 +2985,17 @@ els.importFavoritesInput.addEventListener("change", async () => {
   const rows = lines.map(parseCsvLine);
   const idIndex = Math.max(0, rows[0]?.findIndex((cell) => cell.trim().toLowerCase() === "id"));
   const quantityIndex = rows[0]?.findIndex((cell) => cell.trim() === "数量") ?? -1;
+  const costIndex = rows[0]?.findIndex((cell) => cell.trim() === "仕入れ単価") ?? -1;
   const validIds = new Set(state.cards.map((card) => String(card.id)));
   const importedRows = rows.slice(1).filter((row) => validIds.has(String(row[idIndex] || "")));
   const imported = importedRows.map((row) => String(row[idIndex] || ""));
   state.favorites = new Set(imported);
   state.favoriteQuantities = Object.create(null);
+  state.favoriteCosts = Object.create(null);
   importedRows.forEach((row) => {
     const id = String(row[idIndex] || "");
     state.favoriteQuantities[id] = quantityIndex >= 0 ? Math.max(1, Math.floor(Number(row[quantityIndex] || 1))) : 1;
+    if (costIndex >= 0 && Number(row[costIndex]) >= 0) state.favoriteCosts[id] = Number(row[costIndex]);
   });
   saveFavorites();
   render();
@@ -2897,6 +3006,7 @@ els.importFavoritesInput.addEventListener("change", async () => {
 els.clearFavoritesBtn.addEventListener("click", () => {
   state.favorites.clear();
   state.favoriteQuantities = Object.create(null);
+  state.favoriteCosts = Object.create(null);
   saveFavorites();
   render();
 });
