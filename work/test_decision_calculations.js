@@ -112,6 +112,59 @@ const splitPrices = model.aggregatePrices([
 assert.equal(splitPrices.conflicted, true);
 assert.equal(splitPrices.outliers.length, 0);
 
+const auditedPrices = model.aggregatePrices([
+  { source: "最新A", value: 30000, updatedAt: "2026-09-03", conditionAccepted: true },
+  { source: "最新B", value: 32000, updatedAt: "2026-09-02", conditionAccepted: true },
+  { source: "古すぎ", value: 31000, updatedAt: "2026-06-01", conditionAccepted: true },
+  { source: "傷あり", value: 15000, updatedAt: "2026-09-03", conditionAccepted: false },
+], { asOfDate: "2026-09-04", staleAfterDays: 14, excludeAfterDays: 45 });
+assert.equal(auditedPrices.value, 31000);
+assert.equal(auditedPrices.included.length, 2);
+assert.equal(auditedPrices.excluded.length, 2);
+assert.ok(auditedPrices.excluded.some((entry) => entry.excludedReasons.includes("美品・状態A以外")));
+assert.ok(auditedPrices.excluded.some((entry) => entry.excludedReasons.includes("更新95日前")));
+
+const psa9Direct = model.resolvePsa9Price({ directPrice: 42000, directCount: 3, fallbackPrice: 10000 });
+assert.equal(psa9Direct.value, 42000);
+assert.equal(psa9Direct.estimated, false);
+const psa9ThirtyDay = model.resolvePsa9Price({
+  asOfDate: "2026-09-04",
+  trades: [
+    { price: 39000, date: "2026-08-20" },
+    { price: 41000, date: "2026-09-01" },
+    { price: 120000, date: "2026-08-25" },
+  ],
+  fallbackPrice: 15000,
+});
+assert.equal(psa9ThirtyDay.value, 40000);
+assert.equal(psa9ThirtyDay.estimated, false);
+assert.equal(psa9ThirtyDay.periodDays, 30);
+const psa9Cohort = model.resolvePsa9Price({ psa10Price: 100000, cohortRatio: 0.62, cohortCount: 15, fallbackPrice: 30000 });
+assert.equal(psa9Cohort.value, 62000);
+assert.equal(psa9Cohort.source, "年代・価格帯・レアリティ別PSA10比率");
+const psa9Fallback = model.resolvePsa9Price({ psa10Price: 100000, cohortRatio: 0.62, cohortCount: 5, fallbackPrice: 30000 });
+assert.equal(psa9Fallback.value, 30000);
+assert.equal(psa9Fallback.estimated, true);
+
+const initialOperational = model.operationalCap({ theoreticalCap: 63400, history: [] });
+assert.equal(initialOperational.operational, 62500);
+assert.equal(initialOperational.provisional, true);
+const loweredOperational = model.operationalCap({ theoreticalCap: 35000, history: [{ date: "2026-09-03", theoretical: 40000, operational: 40000 }] });
+assert.equal(loweredOperational.operational, 35000);
+assert.equal(loweredOperational.reason, "危険方向のため上限引き下げを即時反映");
+const deadbandOperational = model.operationalCap({ theoreticalCap: 41000, history: [{ date: "2026-09-03", theoretical: 40000, operational: 40000 }] });
+assert.equal(deadbandOperational.operational, 40000);
+const confirmedRaise = model.operationalCap({ theoreticalCap: 47000, history: [
+  { date: "2026-09-01", theoretical: 45000, operational: 40000 },
+  { date: "2026-09-02", theoretical: 46000, operational: 40000 },
+] });
+assert.equal(confirmedRaise.operational, 45000);
+assert.equal(confirmedRaise.reason, "安全な理論上限の継続を確認して値上げ");
+
+const operationalCaps = model.purchaseCaps({ capital, economicMaxPrice: 50000, stressBreakEvenMaxPrice: 48000, operationalMaxPrice: 44000, maxCapitalShare: 100 });
+assert.equal(operationalCaps.finalMaxPrice, 44000);
+assert.equal(operationalCaps.limitingFactor, "operational");
+
 const generousCapital = model.capitalPlan({ totalCapital: 1000000, lockedCapital: 0, gradingReserve: 130000, submissionCount: 10, fee: 13000 });
 const commonDecisionInput = {
   capital: generousCapital,

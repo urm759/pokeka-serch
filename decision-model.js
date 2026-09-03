@@ -12,11 +12,56 @@
     return sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
   }
 
-  function aggregatePrices(entries, options = {}) {
+  function weightedMedian(entries) {
     const valid = entries
-      .map((entry) => ({ ...entry, value: Number(entry.value) }))
-      .filter((entry) => entry.value > 0 && Number.isFinite(entry.value));
-    if (!valid.length) return { value: NaN, included: [], outliers: [] };
+      .map((entry) => ({ value: Number(entry.value), weight: Math.max(0.25, Number(entry.weight || 1)) }))
+      .filter((entry) => Number.isFinite(entry.value) && entry.value > 0);
+    if (!valid.length) return NaN;
+    const weights = valid.map((entry) => entry.weight);
+    if (weights.every((weight) => Math.abs(weight - weights[0]) < 0.001)) return median(valid.map((entry) => entry.value));
+    const expanded = valid.flatMap((entry) => Array.from({ length: Math.max(1, Math.min(20, Math.round(entry.weight * 4))) }, () => entry.value));
+    return median(expanded);
+  }
+
+  function dateOnly(value) {
+    return String(value || "").match(/^\d{4}-\d{2}-\d{2}/)?.[0] || null;
+  }
+
+  function ageDays(date, asOfDate) {
+    const left = dateOnly(date);
+    const right = dateOnly(asOfDate);
+    if (!left || !right) return null;
+    const days = Math.floor((Date.parse(`${right}T00:00:00Z`) - Date.parse(`${left}T00:00:00Z`)) / 86400000);
+    return Number.isFinite(days) ? Math.max(0, days) : null;
+  }
+
+  function aggregatePrices(entries, options = {}) {
+    const asOfDate = dateOnly(options.asOfDate);
+    const staleAfterDays = Math.max(1, Number(options.staleAfterDays ?? 14));
+    const excludeAfterDays = Math.max(staleAfterDays, Number(options.excludeAfterDays ?? 45));
+    const prepared = entries.map((entry) => {
+      const value = Number(entry.value);
+      const age = ageDays(entry.updatedAt, asOfDate);
+      const reasons = [];
+      if (!(value > 0) || !Number.isFinite(value)) reasons.push("価格未取得");
+      if (entry.valid === false) reasons.push(entry.invalidReason || "カード仕様の照合不一致");
+      if (entry.conditionAccepted === false) reasons.push(entry.conditionReason || "美品・状態A以外");
+      if (entry.languageAccepted === false) reasons.push("日本語版以外の疑い");
+      if (entry.gradeAccepted === false) reasons.push("未鑑定品またはPSA10以外");
+      if (age != null && age > excludeAfterDays) reasons.push(`更新${age}日前`);
+      const stale = age != null && age > staleAfterDays;
+      return {
+        ...entry,
+        value,
+        ageDays: age,
+        stale,
+        weight: Math.max(0.25, Number(entry.weight || 1)) * (stale ? 0.5 : 1),
+        excludedReasons: reasons,
+      };
+    });
+    const valid = prepared.filter((entry) => entry.excludedReasons.length === 0);
+    const invalid = prepared.filter((entry) => entry.excludedReasons.length > 0);
+    if (!valid.length) return { value: NaN, included: [], outliers: [], excluded: invalid, confidence: "低", provisional: true, priceDivergence: false, asOfDate };
 
     const overallMedian = median(valid.map((entry) => entry.value));
     const minRatio = Number(options.minRatio ?? 0.55);
@@ -52,14 +97,125 @@
         : medianCandidates;
     if (!included.length) included = valid;
     const outliers = conflicted ? [] : valid.filter((entry) => !included.includes(entry));
+    const includedValues = included.map((entry) => entry.value);
+    const rangeMin = Math.min(...valid.map((entry) => entry.value));
+    const rangeMax = Math.max(...valid.map((entry) => entry.value));
+    const spreadPct = overallMedian > 0 ? (rangeMax - rangeMin) / overallMedian * 100 : null;
+    const priceDivergence = Number.isFinite(spreadPct) && spreadPct > Number(options.divergencePct ?? 35);
+    const staleCount = included.filter((entry) => entry.stale).length;
+    const confidence = conflicted || (priceDivergence && included.length < 3)
+      ? "低"
+      : included.length >= 3 && staleCount === 0 && !priceDivergence
+        ? "高"
+        : included.length >= 2
+          ? "中"
+          : "低";
     return {
-      value: included.length ? median(included.map((entry) => entry.value)) : NaN,
+      value: included.length ? weightedMedian(included) : NaN,
       included,
       outliers,
+      excluded: invalid,
       anchor,
       conflicted,
+      min: includedValues.length ? Math.min(...includedValues) : NaN,
+      max: includedValues.length ? Math.max(...includedValues) : NaN,
+      rangeMin,
+      rangeMax,
+      spreadPct,
+      priceDivergence,
+      provisional: included.length < 2 || confidence === "低",
+      confidence,
+      staleCount,
+      asOfDate,
       strategy: hasMajorityCluster ? "多数価格帯" : "全店舗中央値",
     };
+  }
+
+  function resolvePsa9Price(input = {}) {
+    const directPrice = Number(input.directPrice);
+    if (directPrice > 0 && Number.isFinite(directPrice)) {
+      return { value: directPrice, source: "直近PSA9実成約", periodDays: Number(input.directPeriodDays || 0) || null, count: Math.max(1, Number(input.directCount || 1)), confidence: "高", estimated: false };
+    }
+    const asOf = dateOnly(input.asOfDate);
+    const trades = (Array.isArray(input.trades) ? input.trades : [])
+      .map((trade) => ({ value: Number(trade?.price ?? trade?.value), updatedAt: trade?.date || trade?.updatedAt, weight: 1 }))
+      .filter((trade) => trade.value > 0 && Number.isFinite(trade.value));
+    for (const days of [30, 60, 90]) {
+      const period = trades.filter((trade) => {
+        const age = ageDays(trade.updatedAt, asOf);
+        return age != null && age <= days;
+      });
+      const minimum = days === 30 ? 2 : 3;
+      if (period.length < minimum) continue;
+      const aggregate = aggregatePrices(period, { asOfDate: asOf, staleAfterDays: days, excludeAfterDays: days, minRatio: 0.55, maxRatio: 1.8 });
+      if (aggregate.value > 0 && aggregate.included.length >= minimum) {
+        return { value: aggregate.value, source: `${days}日PSA9成約中央値`, periodDays: days, count: aggregate.included.length, confidence: days === 30 ? "高" : "中", estimated: false, aggregate };
+      }
+    }
+    const cohortRatio = Number(input.cohortRatio);
+    const psa10Price = Number(input.psa10Price);
+    if (cohortRatio > 0 && psa10Price > 0 && Number(input.cohortCount || 0) >= Number(input.minimumCohortCount || 12)) {
+      return { value: psa10Price * cohortRatio, source: "年代・価格帯・レアリティ別PSA10比率", periodDays: null, count: Number(input.cohortCount), confidence: "中", estimated: true };
+    }
+    const fallbackPrice = Number(input.fallbackPrice);
+    return {
+      value: Math.max(0, Number.isFinite(fallbackPrice) ? fallbackPrice : 0),
+      source: String(input.fallbackSource || "平均美品の75%推定"),
+      periodDays: null,
+      count: 0,
+      confidence: "低",
+      estimated: true,
+    };
+  }
+
+  function capRoundingStep(value) {
+    const price = Math.max(0, Number(value || 0));
+    if (price < 10000) return 500;
+    if (price < 30000) return 1000;
+    if (price < 100000) return 2500;
+    return 5000;
+  }
+
+  function operationalCap(input = {}) {
+    const theoretical = Math.max(0, Number(input.theoreticalCap || 0));
+    const step = Math.max(1, Number(input.roundingStep || capRoundingStep(theoretical)));
+    const rounded = Math.floor(theoretical / step) * step;
+    const history = (Array.isArray(input.history) ? input.history : [])
+      .filter((row) => Number(row?.theoretical) >= 0 && Number(row?.operational) >= 0)
+      .sort((left, right) => String(left.date || "").localeCompare(String(right.date || "")));
+    const previous = history.at(-1) || null;
+    const distinctDays = new Set(history.map((row) => dateOnly(row.date)).filter(Boolean)).size;
+    const config = {
+      deadbandPct: Math.max(0, Number(input.config?.deadbandPct ?? 3)),
+      increaseConfirmations: Math.max(2, Math.floor(Number(input.config?.increaseConfirmations ?? 3))),
+      highConfidenceDays: Math.max(3, Math.floor(Number(input.config?.highConfidenceDays ?? 7))),
+    };
+    if (!previous) {
+      return { theoretical, operational: rounded, previous: null, change: null, changePct: null, reason: "上限履歴を蓄積中", confidence: "蓄積中", provisional: true, step };
+    }
+    const previousOperational = Math.max(0, Number(previous.operational));
+    let operational = previousOperational;
+    let reason = "小幅変動のため前回上限を維持";
+    if (rounded < previousOperational) {
+      operational = rounded;
+      reason = "危険方向のため上限引き下げを即時反映";
+    } else if (rounded > previousOperational) {
+      const threshold = previousOperational * (1 + config.deadbandPct / 100);
+      const confirmations = [...history.slice(-(config.increaseConfirmations - 1)), { theoretical: rounded }];
+      const confirmed = confirmations.length >= config.increaseConfirmations && confirmations.every((row) => Number(row.theoretical) >= threshold);
+      if (confirmed) {
+        operational = Math.min(rounded, Math.floor(median(confirmations.map((row) => Number(row.theoretical))) / step) * step);
+        reason = "安全な理論上限の継続を確認して値上げ";
+      } else if (rounded <= threshold) {
+        reason = "デッドバンド内のため前回上限を維持";
+      } else {
+        reason = `値上げ確認中（${config.increaseConfirmations}回継続で反映）`;
+      }
+    }
+    const change = operational - previousOperational;
+    const changePct = previousOperational > 0 ? change / previousOperational * 100 : null;
+    const confidence = distinctDays >= config.highConfidenceDays ? "確定度高" : distinctDays >= 3 ? "確定度中" : "蓄積中";
+    return { theoretical, operational, previous: previousOperational, change, changePct, reason, confidence, provisional: distinctDays < 3, step };
   }
 
   function capitalPlan(settings) {
@@ -97,7 +253,7 @@
       hitRate: clamp(baseRate * conditionFactor, 0.01, 0.98),
       hitRateSource: hasOfficialRate ? "PSA公式取得率" : String(input.fallbackLabel || "設定取得率"),
       lowerGradePrice: Math.max(0, lowerGradeBase * (input.condition === "scratch" ? 0.8 : 1)),
-      lowerGradeSource: actualPsa9 > 0 ? "PSA9市場価格" : "平均美品の75%推定",
+      lowerGradeSource: actualPsa9 > 0 ? String(input.psa9Source || "PSA9市場価格") : String(input.fallbackLowerGradeSource || "平均美品の75%推定"),
     };
   }
 
@@ -216,11 +372,18 @@
       : stressBreakEvenMaxPrice;
     const effectiveEconomicMaxPrice = Math.min(economicMaxPrice, selectedRiskMaxPrice);
     const capitalMaxPrice = capital.singleCardReserveSufficient ? limits.practicalCap : 0;
-    const finalMaxPrice = Math.min(effectiveEconomicMaxPrice, capitalMaxPrice);
+    const theoreticalFinalMaxPrice = Math.min(effectiveEconomicMaxPrice, capitalMaxPrice);
+    const requestedOperationalMaxPrice = Number(input.operationalMaxPrice);
+    const operationalMaxPrice = Number.isFinite(requestedOperationalMaxPrice)
+      ? Math.max(0, requestedOperationalMaxPrice)
+      : theoreticalFinalMaxPrice;
+    const finalMaxPrice = Math.min(theoreticalFinalMaxPrice, operationalMaxPrice);
     const preStressFinalMaxPrice = Math.min(economicMaxPrice, capitalMaxPrice);
     const supplyRiskReflected = preStressFinalMaxPrice <= selectedRiskMaxPrice;
     const limitingFactor = finalMaxPrice <= 0
       ? "none"
+      : operationalMaxPrice < theoreticalFinalMaxPrice
+        ? "operational"
       : capitalMaxPrice < effectiveEconomicMaxPrice
         ? "capital"
         : lowRiskMode && ultraLowRiskMaxPrice <= stressBreakEvenMaxPrice && ultraLowRiskMaxPrice < economicMaxPrice
@@ -238,6 +401,8 @@
       lowRiskMode,
       effectiveEconomicMaxPrice,
       capitalMaxPrice,
+      theoreticalFinalMaxPrice,
+      operationalMaxPrice,
       finalMaxPrice,
       preStressFinalMaxPrice,
       limitingFactor,
@@ -348,6 +513,7 @@
       economicMaxPrice: input.economicMaxPrice ?? input.maxBuyPrice,
       stressBreakEvenMaxPrice: input.stressBreakEvenMaxPrice ?? input.stressMaxPrice,
       ultraLowRiskMaxPrice: input.ultraLowRiskMaxPrice,
+      operationalMaxPrice: input.operationalMaxPrice,
       lowRiskMode: input.lowRiskMode,
       maxCapitalShare: input.maxCapitalShare,
     });
@@ -385,6 +551,7 @@
     if (verdict === "価格次第") reasons.push(`¥${Math.floor(caps.finalMaxPrice).toLocaleString("ja-JP")}以下なら再判定`);
     if (caps.limitingFactor === "stress-break-even") reasons.push("供給ストレス時でも赤字にならない上限を反映");
     else if (caps.limitingFactor === "ultra-low-risk") reasons.push("低リスク設定：供給ストレス時でも目標利益を確保する上限を反映");
+    else if (caps.limitingFactor === "operational") reasons.push("運用上限の平滑値を反映");
     else if (caps.supplyRiskReflected && Number.isFinite(Number(input.stressBreakEvenMaxPrice ?? input.stressMaxPrice))) reasons.push("供給ストレスは価格側に反映済み（二重控除なし）");
     return {
       verdict,
@@ -395,5 +562,5 @@
     };
   }
 
-  return { aggregatePrices, capitalLimits, capitalPlan, expectedEconomics, gradeAssumptions, isSuspectedCardMismatch, matchConfidenceLabel, maxBuyPrice, median, portfolioPlan, portfolioStress, purchaseCaps, purchaseDecision, purchaseLimitMarketRatio, resilienceMetrics, targetProfitMaxBuyPrice };
+  return { aggregatePrices, capRoundingStep, capitalLimits, capitalPlan, expectedEconomics, gradeAssumptions, isSuspectedCardMismatch, matchConfidenceLabel, maxBuyPrice, median, operationalCap, portfolioPlan, portfolioStress, purchaseCaps, purchaseDecision, purchaseLimitMarketRatio, resilienceMetrics, resolvePsa9Price, targetProfitMaxBuyPrice, weightedMedian };
 });

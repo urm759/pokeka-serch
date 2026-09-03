@@ -23,6 +23,8 @@ const state = {
   psaServices: null,
   evaluationModel: null,
   updateStatus: null,
+  sourceUpdates: Object.create(null),
+  operationalLimitHistory: Object.create(null),
   snkrUrlCache: Object.create(null),
   cardById: Object.create(null),
   snkrObserver: null,
@@ -48,6 +50,8 @@ const state = {
   minBuybackPrice: null,
   maxBuybackPrice: null,
   minRoi: 40,
+  minExpectedRoiFilter: 0,
+  minExpectedProfitFilter: 0,
   minPsa10: 0,
   maxPsa10: 200000,
   minPrice: null,
@@ -112,6 +116,8 @@ const FAVORITE_QUANTITIES_STORAGE_KEY = "pokeka-buy-favorite-quantities-v1";
 const FAVORITE_COSTS_STORAGE_KEY = "pokeka-buy-favorite-costs-v1";
 const ACTUAL_RESULTS_STORAGE_KEY = "pokeka-backtest-actual-results-v1";
 const QUICK_FILTER_STORAGE_KEY = "pokeka-quick-filter-preferences-v1";
+const OPERATIONAL_LIMIT_STORAGE_KEY = "pokeka-operational-limit-history-v1";
+const OPERATIONAL_LIMIT_MAX_CARDS = 1200;
 let favoriteQuantityRenderTimer = null;
 
 let meta = window.POKEMON_CARDS_META || {};
@@ -188,6 +194,8 @@ const els = {
   lowRiskAvailabilityControl: document.getElementById("lowRiskAvailabilityControl"),
   resetFiltersBtn: document.getElementById("resetFiltersBtn"),
   roiInput: document.getElementById("roiInput"),
+  expectedRoiFilterInput: document.getElementById("expectedRoiFilterInput"),
+  expectedProfitFilterInput: document.getElementById("expectedProfitFilterInput"),
   psaMinInput: document.getElementById("psaMinInput"),
   psaMaxInput: document.getElementById("psaMaxInput"),
   priceMinInput: document.getElementById("priceMinInput"),
@@ -1216,6 +1224,7 @@ function classifyDecisionData(card) {
   const trustedPriceCount = Number(priceAggregation.included?.length || 0);
   const manualReviewReasons = [];
   if (priceAggregation.conflicted) manualReviewReasons.push("状態A価格が複数グループに分かれて対立");
+  if (priceAggregation.priceDivergence && (priceAggregation.conflicted || !priceAggregation.outliers?.length)) manualReviewReasons.push(`状態A価格の乖離 ${Math.round(priceAggregation.spreadPct || 0)}%`);
   if (buybackAggregation.conflicted) manualReviewReasons.push("PSA10買取価格が複数グループに分かれて対立");
   if (hasCardMismatchSignal(card)) manualReviewReasons.push("カード違い・型番違いの疑い");
   if (trustedPriceCount === 0 || !(Number(priceAggregation.value) > 0)) manualReviewReasons.push("信頼できる状態A価格が0件");
@@ -1225,6 +1234,7 @@ function classifyDecisionData(card) {
   if (!Number.isFinite(card.official?.rate)) dataShortageReasons.push("PSA公式未取得");
   if (trustedPriceCount === 1) dataShortageReasons.push("状態A価格が1件のみ");
   if (!card.futurePriceForecast) dataShortageReasons.push("将来価格予測未取得");
+  if (card.psa10Audit?.confidence === "低") dataShortageReasons.push("PSA10相場の信頼度が低い");
 
   const outlierExcludedReasons = [];
   if (!priceAggregation.conflicted && trustedPriceCount >= 2 && priceAggregation.outliers?.length) {
@@ -1266,13 +1276,17 @@ function applyGoConfidence(card) {
 }
 
 function buildScenarioInput(card, condition, forecastPrice = Number(card.futurePriceForecast?.predictedPrice || card.psa10 || 0)) {
+  const psa9Audit = card.psa9Audit || buildPsa9Audit(card, card.price, card.psa10);
+  const hasActualPsa9 = psa9Audit?.estimated === false && Number(psa9Audit?.value) > 0;
   const assumptions = decisionModel.gradeAssumptions({
     condition,
     officialRate: card.official?.rate,
     fallbackRate: guideConfig().hitRate,
     fallbackLabel: `${guideConfig().label}（公式未取得）`,
-    psa9Price: card.snkPsa9Price,
-    fallbackLowerGradePrice: card.price * 0.75,
+    psa9Price: hasActualPsa9 ? psa9Audit.value : null,
+    psa9Source: psa9Audit?.source,
+    fallbackLowerGradePrice: Number(psa9Audit?.value) > 0 ? psa9Audit.value : card.price * 0.75,
+    fallbackLowerGradeSource: psa9Audit?.source,
     forecastPrice,
   });
   return {
@@ -1415,11 +1429,19 @@ function buildBuyLimits(card) {
     scenario.ultraLowRiskMaxPrice = floorToStep(caps.ultraLowRiskMaxPrice, 500);
     scenario.effectiveEconomicMaxPrice = floorToStep(caps.effectiveEconomicMaxPrice, 500);
     scenario.capitalMaxPrice = floorToStep(caps.capitalMaxPrice, 500);
-    scenario.finalMaxPrice = floorToStep(caps.finalMaxPrice, 500);
-    scenario.limitingFactor = caps.limitingFactor;
+    scenario.theoreticalFinalMaxPrice = floorToStep(caps.finalMaxPrice, decisionModel.capRoundingStep(caps.finalMaxPrice));
+    scenario.operationalSignals = limitSignals(card, scenario);
+    const conditionKey = scenario === clean ? "clean" : "scratch";
+    const history = operationalHistory(card.id, conditionKey);
+    scenario.operationalLimit = decisionModel.operationalCap({ theoreticalCap: scenario.theoreticalFinalMaxPrice, history });
+    scenario.finalMaxPrice = scenario.operationalLimit.operational;
+    scenario.operationalMaxPrice = scenario.finalMaxPrice;
+    scenario.previousOperationalMaxPrice = scenario.operationalLimit.previous;
+    scenario.limitChangeDrivers = limitChangeDrivers(history.at(-1), scenario.operationalSignals);
+    scenario.limitingFactor = scenario.finalMaxPrice < scenario.theoreticalFinalMaxPrice ? "operational" : caps.limitingFactor;
     scenario.supplyRiskReflected = caps.supplyRiskReflected;
     scenario.lowRiskMode = caps.lowRiskMode;
-    scenario.provisional = Boolean(card.supplyStress?.provisional);
+    scenario.provisional = Boolean(card.supplyStress?.provisional || scenario.operationalLimit.provisional);
     scenario.maxPrice = scenario.finalMaxPrice;
     scenario.normalBearishPrice = Number(card.futurePriceForecast?.bearishPrice || 0);
     scenario.supplyStressPrice = Number(card.supplyStress?.price || scenario.stressForecastPrice || 0);
@@ -1464,6 +1486,7 @@ function finalizeCardDecision(card) {
     economicMaxPrice: card.buyLimits.clean.economicMaxPrice,
     stressBreakEvenMaxPrice: card.buyLimits.clean.stressBreakEvenMaxPrice,
     ultraLowRiskMaxPrice: card.buyLimits.clean.ultraLowRiskMaxPrice,
+    operationalMaxPrice: card.buyLimits.clean.operationalMaxPrice,
     lowRiskMode: state.purchaseMode === "low-risk",
     qualityScore: card.overallAssessment?.score,
     requiresManualReview: card.dataQuality.manualReview,
@@ -1569,6 +1592,47 @@ function storeDemandKey(value) {
   return { "強い": "strong", "普通": "normal", "弱い": "weak", "蓄積中": "collecting" }[value] || "collecting";
 }
 
+function buildPsa9Audit(card, cleanPrice, psa10Price) {
+  const trades = Array.isArray(card.snkPsa9Trades) ? card.snkPsa9Trades : [];
+  return decisionModel.resolvePsa9Price({
+    directPrice: card.snkPsa9Price,
+    directCount: card.snkPsa9Count,
+    directPeriodDays: card.snkPsa9PeriodDays,
+    trades,
+    asOfDate: meta.updatedAt || meta.generatedAt,
+    psa10Price,
+    cohortRatio: card.psa9CohortRatio,
+    cohortCount: card.psa9CohortCount,
+    fallbackPrice: cleanPrice * 0.75,
+    fallbackSource: "平均美品価格の75%推定（実成約未取得）",
+  });
+}
+
+function buildPsa10Audit(card, psa10Price) {
+  const trades30 = Math.max(0, Number(card.p10tv30 || 0));
+  const trades7 = Math.max(0, Number(card.p10tv7 || 0));
+  const lastTradeAt = String(card.tLastAt || "").slice(0, 10) || null;
+  const age = sourceAgeDays(lastTradeAt);
+  const confidence = trades30 >= 5 && age <= 14 ? "高" : trades30 >= 2 && age <= 30 ? "中" : "低";
+  const warnings = [];
+  if (/V-UNION|VUNION/i.test(String(card.name || ""))) warnings.push("複数枚セット商品のため構成確認が必要");
+  if (!(Number(card.snkPsa10Min) > 0)) warnings.push("現在の掲載下限未取得");
+  if (age > 30) warnings.push("最終取引が30日超前");
+  return {
+    adoptedPrice: psa10Price,
+    priceRange: null,
+    includedCount: trades30,
+    trades7,
+    listingFloor: Number(card.snkPsa10Min) > 0 ? Number(card.snkPsa10Min) : null,
+    lastTradeAt,
+    source: "みんトレ（スニダンPSA10集約値）",
+    aggregation: "個別成約明細未取得のため、取得元集約値を採用",
+    confidence,
+    warnings,
+    limitations: "個別成約明細と成約価格範囲がないため、他鑑定会社・海外版・取消取引の再監査は取得元集約に依存",
+  };
+}
+
 function calc(card) {
   const torecaPrice = Number(card.price);
   const cardrushStock = state.cardrushStock[card.id] || null;
@@ -1585,12 +1649,12 @@ function calc(card) {
   const rawTorecacampPrice = Number(torecacampStock?.torecacampPrice);
   const torecacampPrice = rawTorecacampPrice > 0 ? rawTorecacampPrice : NaN;
   const priceAggregation = decisionModel.aggregatePrices([
-    { source: "みんトレ状態A", value: torecaPrice },
-    { source: "カードラッシュ状態A", value: cardrushPrice },
-    { source: "晴れる屋2状態A", value: hareruya2Price },
-    { source: "遊々亭状態A", value: yuyuteiPrice },
-    { source: "トレカキャンプ状態A", value: torecacampPrice },
-  ], { minRatio: 0.55, maxRatio: 1.8, clusterRatio: 1.35 });
+    { source: "みんトレ状態A", value: torecaPrice, kind: "成約相場", condition: "状態A", conditionAccepted: true, updatedAt: state.sourceUpdates.toreca || meta.updatedAt, url: buildTorecaCardUrl(card) },
+    { source: "カードラッシュ状態A", value: cardrushPrice, kind: "販売価格", condition: "状態A", conditionAccepted: cardrushStock?.conditionAccepted !== false, conditionReason: cardrushStock?.conditionReason, updatedAt: state.sourceUpdates.cardrush, url: card.cardrushUrl, valid: !decisionModel.isSuspectedCardMismatch(cardrushStock) },
+    { source: "晴れる屋2状態A", value: hareruya2Price, kind: "販売価格", condition: "状態Aまたは状態表記なし", conditionAccepted: hareruya2Stock?.conditionAccepted !== false, conditionReason: hareruya2Stock?.conditionReason, updatedAt: state.sourceUpdates.hareruya2, url: card.hareruya2Url, valid: !decisionModel.isSuspectedCardMismatch(hareruya2Stock) },
+    { source: "遊々亭状態A", value: yuyuteiPrice, kind: "販売価格", condition: "美品扱い", conditionAccepted: yuyuteiStock?.conditionAccepted !== false, updatedAt: state.sourceUpdates.yuyutei, url: card.yuyuteiUrl, valid: !decisionModel.isSuspectedCardMismatch(yuyuteiStock) },
+    { source: "トレカキャンプ状態A", value: torecacampPrice, kind: "販売価格", condition: "美品扱い", conditionAccepted: torecacampStock?.conditionAccepted !== false, updatedAt: state.sourceUpdates.torecacamp, url: card.torecacampUrl, valid: !decisionModel.isSuspectedCardMismatch(torecacampStock) },
+  ], { asOfDate: meta.updatedAt || meta.generatedAt, staleAfterDays: 14, excludeAfterDays: 45, minRatio: 0.55, maxRatio: 1.8, clusterRatio: 1.35, divergencePct: 35 });
   const price = priceAggregation.value > 0 ? Math.round(priceAggregation.value) : NaN;
   const psa10 = Number(card.snkPsa10Price);
   const saleTx30d = Number(card.tv30 || 0);
@@ -1631,16 +1695,22 @@ function calc(card) {
   const buybackShops = Number(buyback?.shop30 || 0);
   const psaTx30d = Number(card.p10tv30 || 0);
   const psaTx7d = Number(card.p10tv7 || 0);
+  const purchasableStorePrices = priceAggregation.included.filter((entry) => entry.kind === "販売価格");
+  const currentStoreOffer = purchasableStorePrices.length
+    ? purchasableStorePrices.reduce((lowest, entry) => entry.value < lowest.value ? entry : lowest)
+    : null;
+  const psa9Audit = buildPsa9Audit(card, price, psa10);
+  const psa10Audit = buildPsa10Audit(card, psa10);
   const official = state.psaPopulation[card.id] || null;
   if (!(price > 0) || !(psa10 > 0)) {
-    return { ...card, price, torecaPrice, cardrushPrice, hareruya2Price, yuyuteiPrice, torecacampPrice, priceAggregation, cardrushStock, hareruya2Stock, yuyuteiStock, torecacampStock, psa10, psa10Net: NaN, profit: NaN, roi: NaN, futurePriceForecast: null, psaDecision: null, purchaseDecision: null, overallAssessment: null, official, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, hareruya2Drop30, hareruya2Drop7, shopDrop30, shopDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackBestPrice, buybackAggregation, buybackAvg30, buybackShops, buybackAnalysis, marketStability };
+    return { ...card, price, torecaPrice, cardrushPrice, hareruya2Price, yuyuteiPrice, torecacampPrice, priceAggregation, currentStoreOffer, psa9Audit, psa10Audit, cardrushStock, hareruya2Stock, yuyuteiStock, torecacampStock, psa10, psa10Net: NaN, profit: NaN, roi: NaN, futurePriceForecast: null, psaDecision: null, purchaseDecision: null, overallAssessment: null, official, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, hareruya2Drop30, hareruya2Drop7, shopDrop30, shopDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackBestPrice, buybackAggregation, buybackAvg30, buybackShops, buybackAnalysis, marketStability };
   }
   const saleMultiplier = Math.max(0, 1 - state.saleFeeRate / 100);
   const psa10Net = psa10 * saleMultiplier - state.saleExtraCost;
   const profit = psa10Net - price - state.fee;
   const roiBase = price + state.fee;
   const roi = roiBase > 0 ? (profit / roiBase) * 100 : NaN;
-  const forecastBase = { ...card, price, torecaPrice, cardrushPrice, hareruya2Price, yuyuteiPrice, torecacampPrice, priceAggregation, cardrushStock, hareruya2Stock, yuyuteiStock, torecacampStock, psa10, psa10Net, profit, roi, official, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, hareruya2Drop30, hareruya2Drop7, shopDrop30, shopDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackBestPrice, buybackAggregation, buybackAvg30, buybackShops, buybackAnalysis, marketStability };
+  const forecastBase = { ...card, price, torecaPrice, cardrushPrice, hareruya2Price, yuyuteiPrice, torecacampPrice, priceAggregation, currentStoreOffer, psa9Audit, psa10Audit, cardrushStock, hareruya2Stock, yuyuteiStock, torecacampStock, psa10, psa10Net, profit, roi, official, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, hareruya2Drop30, hareruya2Drop7, shopDrop30, shopDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackBestPrice, buybackAggregation, buybackAvg30, buybackShops, buybackAnalysis, marketStability };
   const futurePriceForecast = buildFuturePriceForecast(forecastBase, official, stock);
   const calculated = { ...forecastBase, futurePriceForecast };
   calculated.overallAssessment = buildOverallAssessment(calculated, official, stock);
@@ -1678,6 +1748,76 @@ function saveQuickFilters() {
     }));
   } catch {
     // The current in-memory filter remains usable even if browser storage fails.
+  }
+}
+
+function loadOperationalLimitHistory() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(OPERATIONAL_LIMIT_STORAGE_KEY) || "{}");
+    state.operationalLimitHistory = saved && typeof saved === "object" ? saved : Object.create(null);
+  } catch {
+    state.operationalLimitHistory = Object.create(null);
+  }
+}
+
+function operationalHistory(cardId, condition) {
+  const rows = state.operationalLimitHistory[String(cardId)]?.[condition];
+  return Array.isArray(rows) ? rows : [];
+}
+
+function limitSignals(card, scenario) {
+  return {
+    marketPrice: Math.round(Number(card.price || 0)),
+    fee: Math.round(Number(state.fee || 0)),
+    saleFeeRate: Number(state.saleFeeRate || 0),
+    targetProfit: Math.round(Number(state.minExpectedProfit || 0)),
+    hitRate: Number(scenario.hitRate || 0),
+    forecastPrice: Math.round(Number(scenario.modelInput?.forecastPrice || 0)),
+    stressPrice: Math.round(Number(scenario.stressForecastPrice || 0)),
+    capitalMax: Math.round(Number(scenario.capitalMaxPrice || 0)),
+  };
+}
+
+function limitChangeDrivers(previous, current) {
+  if (!previous?.signals) return ["履歴蓄積中"];
+  const labels = {
+    marketPrice: "相場変化", fee: "鑑定料", saleFeeRate: "手数料", targetProfit: "目標利益",
+    hitRate: "PSA10率", forecastPrice: "弱気・中央予測", stressPrice: "供給ストレス", capitalMax: "資金上限",
+  };
+  return Object.keys(labels)
+    .filter((key) => Math.abs(Number(previous.signals[key] || 0) - Number(current[key] || 0)) > (key === "saleFeeRate" || key === "hitRate" ? 0.05 : 1))
+    .map((key) => labels[key]);
+}
+
+function recordOperationalLimitHistory(cards) {
+  const date = String(meta.updatedAt || meta.generatedAt || new Date().toISOString()).slice(0, 10);
+  const priority = [...cards].sort((left, right) => {
+    const leftFavorite = state.favorites.has(String(left.id)) ? 1 : 0;
+    const rightFavorite = state.favorites.has(String(right.id)) ? 1 : 0;
+    if (leftFavorite !== rightFavorite) return rightFavorite - leftFavorite;
+    return (Number(right.psaTx30d || 0) + Number(right.saleTx30d || 0)) - (Number(left.psaTx30d || 0) + Number(left.saleTx30d || 0));
+  }).slice(0, OPERATIONAL_LIMIT_MAX_CARDS);
+  for (const card of priority) {
+    if (!card.buyLimits) continue;
+    const key = String(card.id);
+    if (!state.operationalLimitHistory[key]) state.operationalLimitHistory[key] = {};
+    for (const condition of ["clean", "scratch"]) {
+      const scenario = card.buyLimits[condition];
+      if (!scenario || !(scenario.theoreticalFinalMaxPrice >= 0)) continue;
+      const rows = operationalHistory(key, condition).filter((row) => String(row.date) !== date).slice(-7);
+      rows.push({
+        date,
+        theoretical: scenario.theoreticalFinalMaxPrice,
+        operational: scenario.finalMaxPrice,
+        signals: scenario.operationalSignals,
+      });
+      state.operationalLimitHistory[key][condition] = rows;
+    }
+  }
+  try {
+    localStorage.setItem(OPERATIONAL_LIMIT_STORAGE_KEY, JSON.stringify(state.operationalLimitHistory));
+  } catch {
+    // The calculated limit remains usable when storage is unavailable or full.
   }
 }
 
@@ -1720,6 +1860,8 @@ function readUrl() {
   const buybackPriceMin = parseOptionalNumber(url.searchParams.get("bbPriceMin"));
   const buybackPriceMax = parseOptionalNumber(url.searchParams.get("bbPriceMax"));
   const roi = parseOptionalNumber(url.searchParams.get("roi"));
+  const expectedRoiFilter = parseOptionalNumber(url.searchParams.get("filterExpRoi"));
+  const expectedProfitFilter = parseOptionalNumber(url.searchParams.get("filterExpProfit"));
   const psaMin = parseOptionalNumber(url.searchParams.get("psaMin"));
   const psaMax = parseOptionalNumber(url.searchParams.get("psaMax"));
   const priceMin = parseOptionalNumber(url.searchParams.get("priceMin"));
@@ -1769,6 +1911,7 @@ function readUrl() {
   const saleFeeRate = parseOptionalNumber(url.searchParams.get("sellFee"));
   const saleExtraCost = parseOptionalNumber(url.searchParams.get("extraCost"));
   const riskMode = url.searchParams.get("riskMode");
+  const presetMode = url.searchParams.get("preset");
   const lowRiskAvailability = url.searchParams.get("lowRiskBuy");
   const sort = url.searchParams.get("sort");
   const q = url.searchParams.get("q");
@@ -1799,6 +1942,8 @@ function readUrl() {
   if (buybackPriceMin != null && buybackPriceMin >= 0) els.buybackPriceMinInput.value = String(buybackPriceMin);
   if (buybackPriceMax != null && buybackPriceMax >= 0) els.buybackPriceMaxInput.value = String(buybackPriceMax);
   if (roi != null && roi >= 0) els.roiInput.value = String(roi);
+  if (expectedRoiFilter != null) els.expectedRoiFilterInput.value = String(expectedRoiFilter);
+  if (expectedProfitFilter != null) els.expectedProfitFilterInput.value = String(expectedProfitFilter);
   if (psaMin != null && psaMin >= 0) els.psaMinInput.value = String(psaMin);
   if (psaMax != null && psaMax >= 0) els.psaMaxInput.value = String(psaMax);
   if (priceMin != null) els.priceMinInput.value = String(priceMin);
@@ -1847,11 +1992,11 @@ function readUrl() {
   if (gradingReserve != null && gradingReserve >= 0) els.gradingReserveInput.value = String(gradingReserve);
   if (saleFeeRate != null && saleFeeRate >= 0) els.saleFeeRateInput.value = String(saleFeeRate);
   if (saleExtraCost != null && saleExtraCost >= 0) els.saleExtraCostInput.value = String(saleExtraCost);
-  state.purchaseMode = riskMode === "low" ? "low-risk" : "normal";
+  state.purchaseMode = riskMode === "low" ? "low-risk" : ["combined", "bargain", "turnover", "now"].includes(presetMode) ? presetMode : "normal";
   state.lowRiskAvailability = ["all", "go", "price"].includes(lowRiskAvailability) ? lowRiskAvailability : "all";
   syncLowRiskAvailabilityControl();
   document.querySelectorAll("[data-preset]").forEach((button) => {
-    button.classList.toggle("active", state.purchaseMode === "low-risk" && button.dataset.preset === "low-risk");
+    button.classList.toggle("active", button.dataset.preset === state.purchaseMode || (state.purchaseMode === "low-risk" && button.dataset.preset === "low-risk"));
   });
   if (sort && sorters[sort]) els.sortInput.value = sort;
   if (q) els.qInput.value = q;
@@ -1885,6 +2030,8 @@ function buildShareUrl() {
   if (state.minBuybackPrice == null) url.searchParams.delete("bbPriceMin"); else url.searchParams.set("bbPriceMin", String(state.minBuybackPrice));
   if (state.maxBuybackPrice == null) url.searchParams.delete("bbPriceMax"); else url.searchParams.set("bbPriceMax", String(state.maxBuybackPrice));
   url.searchParams.set("roi", String(state.minRoi));
+  if (state.minExpectedRoiFilter !== 0) url.searchParams.set("filterExpRoi", String(state.minExpectedRoiFilter)); else url.searchParams.delete("filterExpRoi");
+  if (state.minExpectedProfitFilter !== 0) url.searchParams.set("filterExpProfit", String(state.minExpectedProfitFilter)); else url.searchParams.delete("filterExpProfit");
   url.searchParams.set("psaMin", String(state.minPsa10));
   if (state.maxPsa10 == null) url.searchParams.delete("psaMax"); else url.searchParams.set("psaMax", String(state.maxPsa10));
   if (state.minPsaRate == null) url.searchParams.delete("psaRate"); else url.searchParams.set("psaRate", String(state.minPsaRate));
@@ -1933,6 +2080,8 @@ function buildShareUrl() {
   url.searchParams.set("extraCost", String(state.saleExtraCost));
   if (state.purchaseMode === "low-risk") url.searchParams.set("riskMode", "low");
   else url.searchParams.delete("riskMode");
+  if (["combined", "bargain", "turnover", "now"].includes(state.purchaseMode)) url.searchParams.set("preset", state.purchaseMode);
+  else url.searchParams.delete("preset");
   if (state.purchaseMode === "low-risk" && state.lowRiskAvailability !== "all") url.searchParams.set("lowRiskBuy", state.lowRiskAvailability);
   else url.searchParams.delete("lowRiskBuy");
   if (state.minPrice == null) {
@@ -1960,6 +2109,66 @@ function buildShareUrl() {
 
 function ratioLabel(value) {
   return value != null && value !== "" && Number.isFinite(Number(value)) ? Number(value).toFixed(3) : "-";
+}
+
+function presetQualifications(card) {
+  const finalLimit = Number(card.buyLimits?.clean?.finalMaxPrice || 0);
+  const ultraLimit = Number(card.buyLimits?.clean?.ultraLowRiskMaxPrice || 0);
+  const gapToLimit = finalLimit > 0 ? Math.max(0, Number(card.price || 0) - finalLimit) / finalLimit * 100 : Infinity;
+  const domesticExit = Number(card.psaTx30d || 0) > 0 || Number(card.buybackShops || 0) > 0;
+  const combinedEligible = domesticExit
+    && finalLimit > 0
+    && card.priceAggregation?.confidence !== "低"
+    && !card.dataQuality?.dataAnomaly;
+  const trusted = !card.dataQuality?.manualReview && !card.dataQuality?.dataAnomaly && card.priceAggregation?.confidence !== "低";
+  const now = card.purchaseDecision?.verdict === "GO" && Number(card.price) <= finalLimit;
+  const lowRisk = finalLimit > 0
+    && ["A", "B"].includes(card.overallAssessment?.grade)
+    && Number(card.overallAssessment?.exitLiquidity || 0) >= 55
+    && Number(card.overallAssessment?.marketStability || 0) >= 65
+    && Number(card.overallAssessment?.supplyRisk || 0) >= 60
+    && Number(card.futurePriceForecast?.downsidePct ?? Infinity) <= 10
+    && ultraLimit > 0;
+  const turnover = finalLimit > 0
+    && Number(card.overallAssessment?.exitLiquidity || 0) >= 70
+    && Number(card.psaTx30d || 0) >= 15
+    && domesticExit;
+  const priceBandMaxTrades = Number(card.psa10 || 0) >= 100000 ? 8 : Number(card.psa10 || 0) >= 30000 ? 12 : 20;
+  const minimumTrades = Number(card.psa10 || 0) >= 100000 ? 1 : 3;
+  const highGrossThreshold = Math.max(10000, Number(card.price || 0) * 0.25);
+  const bargain = trusted
+    && domesticExit
+    && Number(card.futurePriceForecast?.gapRatio || 0) >= 1.8
+    && Number(card.psaDecision?.expectedProfit || -Infinity) >= highGrossThreshold
+    && Number(card.psaTx30d || 0) >= minimumTrades
+    && Number(card.psaTx30d || 0) <= priceBandMaxTrades
+    && (Number(card.buybackShops || 0) > 0 || Number(card.buybackAnalysis?.ratioMedian || 0) >= 0.7)
+    && !card.dataQuality?.dataShortage
+    && !card.dataQuality?.outlierExcluded;
+  const combined = combinedEligible && (now || lowRisk || turnover);
+  const tags = [
+    now ? "今すぐ" : "",
+    lowRisk ? "低リスク" : "",
+    turnover ? "高回転" : "",
+    !now && finalLimit > 0 ? "価格待ち" : "",
+  ].filter(Boolean);
+  return { now, lowRisk, turnover, bargain, combined, domesticExit, trusted, gapToLimit, tags };
+}
+
+function combinedPresetSort(left, right) {
+  const rank = (card) => {
+    const flags = presetQualifications(card);
+    if (card.dataQuality?.manualReview || card.dataQuality?.dataShortage) return 5;
+    if (flags.now) return 0;
+    if (flags.lowRisk && flags.gapToLimit <= 10) return 1;
+    if (flags.turnover && flags.gapToLimit <= 10) return 2;
+    if (flags.lowRisk || flags.turnover) return 3;
+    return 4;
+  };
+  const rankDiff = rank(left) - rank(right);
+  if (rankDiff) return rankDiff;
+  return presetQualifications(left).gapToLimit - presetQualifications(right).gapToLimit
+    || Number(right.psaDecision?.expectedProfit || 0) - Number(left.psaDecision?.expectedProfit || 0);
 }
 
 function renderShopRateSummary(cards) {
@@ -2112,6 +2321,8 @@ function render() {
       if (state.minBuybackPrice != null && card.buybackPrice < state.minBuybackPrice) return false;
       if (state.maxBuybackPrice != null && card.buybackPrice > state.maxBuybackPrice) return false;
       if (!Number.isFinite(card.roi) || card.roi < state.minRoi) return false;
+      if (!Number.isFinite(card.psaDecision?.expectedRoi) || card.psaDecision.expectedRoi < state.minExpectedRoiFilter) return false;
+      if (!Number.isFinite(card.psaDecision?.expectedProfit) || card.psaDecision.expectedProfit < state.minExpectedProfitFilter) return false;
       if (card.psa10 < state.minPsa10) return false;
       if (state.maxPsa10 != null && card.psa10 > state.maxPsa10) return false;
       if (state.minPrice != null && card.price < state.minPrice) return false;
@@ -2174,6 +2385,12 @@ function render() {
       if (state.storeDemand === "weak" && demandKey !== "weak") return false;
       if (state.storeDemand === "collecting" && demandKey !== "collecting") return false;
       if (state.fundingOnly && !card.psaDecision?.recommended) return false;
+      const presetFlags = presetQualifications(card);
+      if (state.purchaseMode === "combined" && !presetFlags.combined) return false;
+      if (state.purchaseMode === "bargain" && !presetFlags.bargain) return false;
+      if (state.purchaseMode === "now" && !presetFlags.now) return false;
+      if (state.purchaseMode === "low-risk" && !presetFlags.lowRisk) return false;
+      if (state.purchaseMode === "turnover" && !presetFlags.turnover) return false;
       if (state.purchaseMode === "low-risk" && state.lowRiskAvailability === "go" && card.purchaseDecision?.verdict !== "GO") return false;
       if (state.purchaseMode === "low-risk" && state.lowRiskAvailability === "price" && card.purchaseDecision?.verdict !== "価格次第") return false;
       if (state.overallFilter === "a" && card.overallAssessment?.grade !== "A") return false;
@@ -2187,7 +2404,9 @@ function render() {
       if (!normalizedQuery) return true;
       return haystack.includes(normalizedQuery) || compactHaystack.includes(compactQuery);
     })
-    .sort(sorters[state.sort]);
+    .sort(state.purchaseMode === "combined" ? combinedPresetSort : sorters[state.sort]);
+
+  recordOperationalLimitHistory(enriched);
 
   els.totalStat.textContent = fmt.format(state.cards.length);
   els.countStat.textContent = fmt.format(enriched.length);
@@ -2239,6 +2458,10 @@ function render() {
     const roiAssessmentClass = roiDifference >= 5 ? "high" : roiDifference <= -5 ? "low" : "average";
     const roiBandLabel = `PSA10 ¥${fmt.format(priceBand.min)}～¥${fmt.format(priceBand.max - 1)}・取引条件を満たす${fmt.format(peerValues.length)}枚`;
     const name = card.name.replace(/\s+/g, " ");
+    const presetFlags = presetQualifications(card);
+    const presetTagsHtml = presetFlags.tags.length
+      ? `<div class="preset-tags">${presetFlags.tags.map((tag) => `<b class="${tag === "今すぐ" ? "now" : tag === "低リスク" ? "low-risk" : tag === "高回転" ? "turnover" : "waiting"}">${tag}</b>`).join("")}</div>`
+      : "";
     const cardrushStock = state.cardrushStock[card.id] || null;
     const hareruya2Stock = state.hareruya2Stock[card.id] || null;
     const yuyuteiStock = state.yuyuteiStock[card.id] || null;
@@ -2365,6 +2588,31 @@ function render() {
     const priceSources = [`みんトレ状態A ¥${fmt.format(card.torecaPrice)}`, `カードラッシュ状態A ${cardrushPriceText}`, `晴れる屋2状態A ${hareruya2PriceText}`, `遊々亭状態A ${yuyuteiPriceText}`, `トレカキャンプ状態A ${torecacampPriceText}`]
       .filter((_, index) => index === 0 || [card.cardrushPrice, card.hareruya2Price, card.yuyuteiPrice, card.torecacampPrice][index - 1] > 0)
       .join(" / ");
+    const priceAuditRows = [
+      ...(card.priceAggregation?.included || []).map((entry) => ({ ...entry, auditStatus: entry.stale ? "採用・古め" : "採用", auditReason: entry.stale ? "重みを半減" : card.priceAggregation.strategy })),
+      ...(card.priceAggregation?.outliers || []).map((entry) => ({ ...entry, auditStatus: "除外", auditReason: "多数価格帯から外れる" })),
+      ...(card.priceAggregation?.excluded || []).map((entry) => ({ ...entry, auditStatus: "除外", auditReason: entry.excludedReasons?.join(" / ") || "利用条件外" })),
+    ];
+    const priceAuditPanel = `
+      <div class="price-audit-panel">
+        <div class="price-audit-head"><div><span>美品価格の採用監査</span><strong>外れ値除外中央値 ¥${fmt.format(card.price)}</strong></div><b class="confidence-${card.priceAggregation?.confidence === "高" ? "high" : card.priceAggregation?.confidence === "中" ? "medium" : "low"}">信頼度 ${escapeHtml(card.priceAggregation?.confidence || "低")}</b></div>
+        <div class="price-audit-summary">
+          <span>採用 ${fmt.format(card.priceAggregation?.included?.length || 0)}件</span>
+          <span>採用範囲 ${Number.isFinite(card.priceAggregation?.min) ? `¥${fmt.format(card.priceAggregation.min)}～¥${fmt.format(card.priceAggregation.max)}` : "-"}</span>
+          <span>${card.priceAggregation?.conflicted ? `価格対立 ${Math.round(card.priceAggregation.spreadPct || 0)}%・要確認` : card.priceAggregation?.priceDivergence && card.priceAggregation?.outliers?.length ? `価格乖離 ${Math.round(card.priceAggregation.spreadPct || 0)}%・外れ値除外済み` : card.priceAggregation?.priceDivergence ? `価格乖離 ${Math.round(card.priceAggregation.spreadPct || 0)}%・要確認` : "価格乖離は許容範囲"}</span>
+          <span>現在購入できる店舗価格 ${card.currentStoreOffer ? `${escapeHtml(card.currentStoreOffer.source)} ¥${fmt.format(card.currentStoreOffer.value)}` : "未取得"}</span>
+        </div>
+        <div class="price-audit-rows">${priceAuditRows.map((entry) => `<div class="${entry.auditStatus.startsWith("採用") ? "included" : "excluded"}"><span>${escapeHtml(entry.source || "不明")}</span><strong>${Number(entry.value) > 0 ? `¥${fmt.format(entry.value)}` : "未取得"}</strong><small>${escapeHtml(entry.kind || "価格種別未記録")} / ${escapeHtml(entry.condition || "状態未記録")} / 更新 ${escapeHtml(String(entry.updatedAt || "未取得").slice(0, 10))}<br>${escapeHtml(entry.auditStatus)}：${escapeHtml(entry.auditReason)}</small></div>`).join("")}</div>
+        <small>みんトレは成約相場、各ショップは販売価格として分離して記録します。販売価格を成約件数として扱いません。</small>
+      </div>`;
+    const psa10Audit = card.psa10Audit || {};
+    const psa9Audit = card.psa9Audit || {};
+    const gradingPriceAuditPanel = `
+      <div class="grading-price-audit">
+        <div><span>PSA10採用相場</span><strong>¥${fmt.format(psa10Audit.adoptedPrice || 0)}</strong><small>${escapeHtml(psa10Audit.source || "未取得")} / 30日取引 ${fmt.format(psa10Audit.includedCount || 0)}件 / 最終取引 ${escapeHtml(psa10Audit.lastTradeAt || "未取得")} / 信頼度 ${escapeHtml(psa10Audit.confidence || "低")}</small></div>
+        <div><span>PSA10成約価格範囲 / 掲載下限</span><strong>${psa10Audit.priceRange ? escapeHtml(psa10Audit.priceRange) : "範囲未取得"} / ${Number.isFinite(psa10Audit.listingFloor) ? `¥${fmt.format(psa10Audit.listingFloor)}` : "掲載下限未取得"}</strong><small>${escapeHtml([psa10Audit.aggregation, ...(psa10Audit.warnings || []), psa10Audit.limitations].filter(Boolean).join(" / "))}</small></div>
+        <div><span>PSA9以下の採用価格</span><strong>¥${fmt.format(Math.round(psa9Audit.value || 0))}</strong><small>${escapeHtml(psa9Audit.source || "未取得")} / 採用 ${fmt.format(psa9Audit.count || 0)}件 / 信頼度 ${escapeHtml(psa9Audit.confidence || "低")}${psa9Audit.estimated ? " / 推定値" : " / 実成約"}</small></div>
+      </div>`;
     const dataQuality = card.dataQuality || {};
     const dataQualityPanels = [
       dataQuality.manualReview ? `<div class="data-quality-notice manual"><strong>要確認（手動確認）</strong><span>${escapeHtml(dataQuality.manualReviewReasons.join(" / "))}</span></div>` : "",
@@ -2387,6 +2635,7 @@ function render() {
     const limitReasonLabel = (scenario) => ({
       "stress-break-even": "供給ストレス時でも赤字を避ける上限を採用",
       "ultra-low-risk": "低リスク設定：供給ストレス時でも目標利益を残す上限を採用",
+      operational: "理論上限の急変を抑えた運用上限を採用",
       capital: "現在の資金上限を採用",
       "normal-economics": scenario?.supplyRiskReflected ? "通常上限が供給ストレス時赤字回避上限以下・二重控除なし" : "通常上限を採用",
       none: "設定条件では仕入れ見送り",
@@ -2412,6 +2661,10 @@ function render() {
     const currentProfitAtFinal = signedMoney(card.buyLimits?.clean?.currentMarketAtFinal?.expectedProfit);
     const stressProfitAtFinal = signedMoney(card.buyLimits?.clean?.supplyStressAtFinal?.expectedProfit);
     const stressProfitAtUltra = signedMoney(card.buyLimits?.clean?.supplyStressAtUltra?.expectedProfit);
+    const currentExpectedProfit = signedMoney(card.psaDecision?.expectedProfit);
+    const finalExpectedRoi = Number(card.buyLimits?.clean?.currentMarketAtFinal?.expectedRoi);
+    const limitGap = Number(card.price) - Number(card.buyLimits?.clean?.finalMaxPrice || 0);
+    const currentWithinLimit = Number(card.buyLimits?.clean?.finalMaxPrice || 0) > 0 && limitGap <= 0;
     const cleanMarketStatus = buyLimits?.clean?.maxPrice > 0
       ? card.price <= buyLimits.clean.maxPrice
         ? "平均美品価格は仕入れ圏内"
@@ -2425,13 +2678,13 @@ function render() {
         </div>
         <div class="buy-limit-grid">
           <div class="buy-limit-card clean ${buyLimits.clean.maxPrice > 0 ? "available" : "blocked"}">
-            <span>${buyLimits.clean.provisional ? "暫定上限" : "実際に使える最終上限"}・美品</span>
+            <span>${buyLimits.clean.provisional ? "暫定運用上限" : "実際に使える運用上限"}・美品</span>
             <strong>${buyLimitText(buyLimits.clean)}</strong>
             <b>PSA10想定 ${buyLimits.clean.hitRate.toFixed(1)}%</b>
             <small>${escapeHtml(cleanMarketStatus)} / ${escapeHtml(limitReasonLabel(buyLimits.clean))}</small>
           </div>
           <div class="buy-limit-card scratch ${buyLimits.scratch.maxPrice > 0 ? "available" : "blocked"}">
-            <span>${buyLimits.scratch.provisional ? "暫定上限" : "実際に使える最終上限"}・多少の傷あり</span>
+            <span>${buyLimits.scratch.provisional ? "暫定運用上限" : "実際に使える運用上限"}・多少の傷あり</span>
             <strong>${buyLimitText(buyLimits.scratch)}</strong>
             <b>PSA10想定 ${buyLimits.scratch.hitRate.toFixed(1)}%</b>
             <small>美品の10率を45%減 / ${escapeHtml(limitReasonLabel(buyLimits.scratch))}</small>
@@ -2476,15 +2729,21 @@ function render() {
     ` : "";
     const purchaseSummaryPanel = psaDecision && purchaseDecision ? `
       <section class="purchase-summary ${decisionClass}">
-        <div class="purchase-final-limit"><span>${card.buyLimits?.clean?.provisional ? "暫定上限" : "実際に使える最終上限"}・美品</span><strong>${buyLimitText(card.buyLimits?.clean)}</strong><small>${escapeHtml(limitReasonLabel(card.buyLimits?.clean))}</small><div class="supply-badges">${supplyBadgesHtml}</div></div>
+        <div class="purchase-final-limit"><span>${card.buyLimits?.clean?.provisional ? "暫定運用上限" : "実際に使える最終上限"}・美品</span><strong>${buyLimitText(card.buyLimits?.clean)}</strong><small>${escapeHtml(limitReasonLabel(card.buyLimits?.clean))}</small><div class="supply-badges">${supplyBadgesHtml}</div></div>
         <div class="purchase-verdict"><span>今回の仕入れ判断</span><strong>${escapeHtml(displayVerdict)}</strong><small>${escapeHtml(decisionReasons)}</small></div>
-        <div class="purchase-basis-note"><span>以下の損益耐性</span><strong>現在の平均美品価格 ¥${fmt.format(card.price)}で仕入れた場合</strong></div>
-        <div><span>現在のPSA10相場</span><strong>¥${fmt.format(card.psa10 || 0)}</strong></div>
+        <div class="purchase-basis-note"><span>現在価格での損益</span><strong>平均美品価格 ¥${fmt.format(card.price)}で仕入れた場合</strong></div>
+        <div><span>現在の基準購入価格</span><strong>¥${fmt.format(card.price)}</strong><small>外れ値除外中央値</small></div>
+        <div><span>運用上限との差額</span><strong class="${currentWithinLimit ? "positive" : "negative"}">${currentWithinLimit ? "上限より" : "上限超過"} ¥${fmt.format(Math.abs(Math.round(limitGap)))}</strong></div>
+        <div><span>現在価格での期待利益</span><strong class="${currentExpectedProfit.className}">${currentExpectedProfit.text}</strong><small>PSA10率・PSA9以下を反映</small></div>
+        <div><span>現在価格は上限以下か</span><strong class="${currentWithinLimit ? "positive" : "negative"}">${currentWithinLimit ? "仕入れ可能" : "仕入れ不可"}</strong><small>${currentWithinLimit ? "現在価格で条件達成" : "上限価格なら利益が出るが、現在価格では仕入れ不可"}</small></div>
+        <div class="purchase-basis-note"><span>表示上限で買えた場合</span><strong>運用上限 ¥${fmt.format(card.buyLimits?.clean?.finalMaxPrice || 0)}で再計算</strong></div>
+        <div><span>上限購入・現在相場の期待利益</span><strong class="${currentProfitAtFinal.className}">${currentProfitAtFinal.text}</strong></div>
+        <div><span>上限購入・最低期待利益</span><strong class="${stressProfitAtFinal.className}">${stressProfitAtFinal.text}</strong><small>供給ストレス価格で再計算</small></div>
+        <div><span>上限購入・期待利益率</span><strong class="${finalExpectedRoi >= 0 ? "positive" : "negative"}">${Number.isFinite(finalExpectedRoi) ? `${finalExpectedRoi.toFixed(1)}%` : "算出不可"}</strong></div>
+        <div><span>現在購入できる店舗価格</span><strong>${card.currentStoreOffer ? `¥${fmt.format(card.currentStoreOffer.value)}` : "未取得"}</strong><small>${escapeHtml(card.currentStoreOffer?.source || "ショップ価格なし")}</small></div>
+        <div><span>供給ストレス時の期待利益</span><strong class="${stressProfitAtCurrent.className}">${stressProfitAtCurrent.text}</strong><small>現在価格で購入 / ストレス価格 ¥${fmt.format(Math.round(resilience?.bearishPsa10Price || 0))}</small></div>
+        <div><span>PSA9時の損益</span><strong class="${psa9ProfitAtCurrent.className}">${psa9ProfitAtCurrent.text}</strong><small>現在価格で購入 / ${escapeHtml(psa9Audit.source || "推定")}</small></div>
         <div><span>通常の弱気予測価格</span><strong>¥${fmt.format(card.futurePriceForecast?.bearishPrice || 0)}</strong><small>供給過多の追加反映前</small></div>
-        <div><span>期待値損益分岐価格</span><strong>¥${fmt.format(Math.round(resilience?.expectedBreakEvenPrice || 0))}</strong></div>
-        <div><span>赤字になるまでの下落余力</span><strong class="${Number(resilience?.breakEvenRoom?.amount) >= 0 ? "positive" : "negative"}">${roomText(resilience?.breakEvenRoom)}</strong></div>
-        <div><span>目標利益を割るまでの下落余力</span><strong class="${Number(resilience?.targetProfitRoom?.amount) >= 0 ? "positive" : "negative"}">${roomText(resilience?.targetProfitRoom)}</strong></div>
-        <div><span>供給ストレス時の期待利益</span><strong class="${stressProfitAtCurrent.className}">${stressProfitAtCurrent.text}</strong><small>供給ストレス価格 ¥${fmt.format(Math.round(resilience?.bearishPsa10Price || 0))}</small></div>
       </section>
     ` : "";
     const forecast = card.futurePriceForecast;
@@ -2572,7 +2831,14 @@ function render() {
           <div><span>超低リスク上限</span><strong>¥${fmt.format(card.buyLimits?.clean?.ultraLowRiskMaxPrice || 0)}</strong><small>供給ストレス価格でも目標利益を確保</small></div>
           <div><span>PSA9でも赤字にならない上限</span><strong>¥${fmt.format(floorToStep(resilience?.psa9NonLossMaxPrice, 500) || 0)}</strong><small>PSA9想定売価のみで損益0円</small></div>
           <div><span>資金上限</span><strong>¥${fmt.format(card.buyLimits?.clean?.capitalMaxPrice || 0)}</strong></div>
-          <div class="final"><span>実際に使える最終上限</span><strong>¥${fmt.format(card.buyLimits?.clean?.finalMaxPrice || 0)}</strong></div>
+          <div><span>理論上の最終上限</span><strong>¥${fmt.format(card.buyLimits?.clean?.theoreticalFinalMaxPrice || 0)}</strong><small>当日の全条件から算出</small></div>
+          <div class="final"><span>実際に使える運用上限</span><strong>¥${fmt.format(card.buyLimits?.clean?.finalMaxPrice || 0)}</strong><small>急落は即反映・上昇は確認後</small></div>
+        </div>
+        <div class="operational-limit-note">
+          <div><span>前回の運用上限</span><strong>${Number.isFinite(card.buyLimits?.clean?.previousOperationalMaxPrice) ? `¥${fmt.format(card.buyLimits.clean.previousOperationalMaxPrice)}` : "履歴なし"}</strong></div>
+          <div><span>更新判定</span><strong>${escapeHtml(card.buyLimits?.clean?.operationalLimit?.change || "初回算出")}</strong></div>
+          <div><span>上限信頼度</span><strong>${escapeHtml(card.buyLimits?.clean?.operationalLimit?.confidence || "低")}</strong></div>
+          <p>${escapeHtml((card.buyLimits?.clean?.limitChangeDrivers || []).join(" / ") || "初回のため、次回以降の同日重複を除いた履歴から安定性を確認します")}</p>
         </div>
         <div class="calculation-basis-note"><span>現在価格を前提にした損益</span><strong>現在の平均美品価格 ¥${fmt.format(card.price)}で仕入れた場合</strong></div>
         <div class="break-even-detail">
@@ -2654,6 +2920,7 @@ function render() {
             </div>
             <button class="favorite-toggle ${favoriteActive ? "active" : ""}" type="button" data-toggle-favorite="${card.id}" aria-pressed="${favoriteActive}">${favoriteActive ? "★ お気に入り登録済み" : psaDecision?.expectedProfit < 0 ? "☆ お気に入りに追加" : "☆ 仕入れ候補に追加"}</button>
           </div>
+          ${presetTagsHtml}
 
           ${purchaseSummaryPanel}
           ${buyLimitPanel}
@@ -2669,6 +2936,9 @@ function render() {
                 <div class="metric"><span>PSA10時の手取り利益</span><strong>¥${fmt.format(Math.round(card.profit))}</strong><small>PSA10になった場合。期待利益とは別です。</small></div>
                 <div class="metric metric-roi"><span>PSA10時の手取り利益率</span><strong>${Number.isFinite(card.roi) ? Math.round(card.roi) : 0}%</strong><small>利益 ÷（平均美品＋PSA鑑定費）</small></div>
               </div>
+
+              ${priceAuditPanel}
+              ${gradingPriceAuditPanel}
 
               <div class="profit-assessment ${roiAssessmentClass}" title="${roiBandLabel}${hasReliablePeers ? `の利益率中央値 ${Math.round(peerMedianRoi)}%` : ""}">${roiAssessment} <span>${hasReliablePeers ? `${roiDifference >= 0 ? "+" : ""}${Math.round(roiDifference)}pt` : "-"}</span><small>${roiBandLabel}${hasReliablePeers ? `・中央値 ${Math.round(peerMedianRoi)}%` : ""}</small></div>
 
@@ -2724,6 +2994,8 @@ function syncFromUI() {
   state.minBuybackPrice = parseOptionalNumber(els.buybackPriceMinInput.value);
   state.maxBuybackPrice = parseOptionalNumber(els.buybackPriceMaxInput.value);
   state.minRoi = Number(els.roiInput.value || 0);
+  state.minExpectedRoiFilter = Number(els.expectedRoiFilterInput.value || 0);
+  state.minExpectedProfitFilter = Number(els.expectedProfitFilterInput.value || 0);
   state.minPsa10 = Number(els.psaMinInput.value || 0);
   state.maxPsa10 = parseOptionalNumber(els.psaMaxInput.value);
   state.minPrice = parseOptionalNumber(els.priceMinInput.value);
@@ -2798,6 +3070,7 @@ async function init() {
   readUrl();
   loadFavorites();
   loadActualResults();
+  loadOperationalLimitHistory();
   try {
     state.updateStatus = await fetchJsonMaybe("./data/update-status.json");
     state.psaServices = await fetchJsonMaybe("./data/psa-japan-services.json");
@@ -2818,12 +3091,17 @@ async function init() {
     }
     const stockData = await fetchJsonMaybe("./data/cardrush-stock-summary.json");
     state.cardrushStock = stockData?.cards || Object.create(null);
+    state.sourceUpdates.cardrush = stockData?.updatedAt || null;
     const hareruya2Data = await fetchJsonMaybe("./data/hareruya2-stock-summary.json");
     state.hareruya2Stock = hareruya2Data?.cards || Object.create(null);
+    state.sourceUpdates.hareruya2 = hareruya2Data?.updatedAt || null;
     const yuyuteiData = await fetchJsonMaybe("./data/yuyutei-stock-summary.json");
     state.yuyuteiStock = yuyuteiData?.cards || Object.create(null);
+    state.sourceUpdates.yuyutei = yuyuteiData?.updatedAt || null;
     const torecacampData = await fetchJsonMaybe("./data/torecacamp-stock-summary.json");
     state.torecacampStock = torecacampData?.cards || Object.create(null);
+    state.sourceUpdates.torecacamp = torecacampData?.updatedAt || null;
+    state.sourceUpdates.toreca = meta.updatedAt || meta.generatedAt || null;
     const buybackData = await fetchJsonMaybe("./data/shop-buyback-summary.json");
     state.shopBuybacks = buybackData?.cards || Object.create(null);
     state.buybackShops = buybackData?.shops || Object.create(null);
@@ -2850,7 +3128,7 @@ async function init() {
   }
 }
 
-[els.qInput, els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.buyback7MinInput, els.buyback7MaxInput, els.buyback30MinInput, els.buyback30MaxInput, els.buyback90MinInput, els.buyback90MaxInput, els.buybackShopsMinInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.roiInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.purchaseLimitRatioMinInput, els.psaRateMinInput, els.overallFilterInput, els.minExitLiquidityInput, els.minEconomicsInput, els.minMarketStabilityInput, els.minSupplyRiskInput, els.minFuturePriceScoreInput, els.maxFuturePriceScoreInput, els.minForecastPriceInput, els.maxForecastPriceInput, els.minForecastDownsideInput, els.maxForecastDownsideInput, els.minForecastGapInput, els.maxForecastGapInput, els.forecastPhaseInput, els.forecastConfidenceInput, els.forecastSupplyPressureInput, els.minForecastAgeInput, els.forecastMaturityInput, els.maxForecastMonthlyIncreaseInput, els.stockDemandInput, els.dataQualityFilterInput, els.goConfidenceFilterInput, els.floorStateInput, els.priceDirectionInput, els.supplyStateInput, els.minFloorScoreInput, els.storeDemandInput, els.hideSkippedInput, els.hideReviewInput, els.fundingOnlyInput, els.officialOnlyInput, els.sortInput, els.psaCapitalInput, els.lockedCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput].forEach((el) =>
+[els.qInput, els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.buyback7MinInput, els.buyback7MaxInput, els.buyback30MinInput, els.buyback30MaxInput, els.buyback90MinInput, els.buyback90MaxInput, els.buybackShopsMinInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.roiInput, els.expectedRoiFilterInput, els.expectedProfitFilterInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.purchaseLimitRatioMinInput, els.psaRateMinInput, els.overallFilterInput, els.minExitLiquidityInput, els.minEconomicsInput, els.minMarketStabilityInput, els.minSupplyRiskInput, els.minFuturePriceScoreInput, els.maxFuturePriceScoreInput, els.minForecastPriceInput, els.maxForecastPriceInput, els.minForecastDownsideInput, els.maxForecastDownsideInput, els.minForecastGapInput, els.maxForecastGapInput, els.forecastPhaseInput, els.forecastConfidenceInput, els.forecastSupplyPressureInput, els.minForecastAgeInput, els.forecastMaturityInput, els.maxForecastMonthlyIncreaseInput, els.stockDemandInput, els.dataQualityFilterInput, els.goConfidenceFilterInput, els.floorStateInput, els.priceDirectionInput, els.supplyStateInput, els.minFloorScoreInput, els.storeDemandInput, els.hideSkippedInput, els.hideReviewInput, els.fundingOnlyInput, els.officialOnlyInput, els.sortInput, els.psaCapitalInput, els.lockedCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput].forEach((el) =>
   el.addEventListener("input", syncFromUI)
 );
 
@@ -2860,6 +3138,8 @@ els.resetFiltersBtn.addEventListener("click", () => {
   [els.saleTxMaxInput, els.saleTx7MaxInput, els.psaTxMaxInput, els.psaTx7MaxInput, els.buyback7MaxInput, els.buyback30MaxInput, els.buyback90MaxInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.priceMinInput, els.priceMaxInput, els.purchaseLimitRatioMinInput, els.psaRateMinInput, els.maxFuturePriceScoreInput, els.minForecastPriceInput, els.maxForecastPriceInput, els.minForecastDownsideInput, els.maxForecastDownsideInput, els.minForecastGapInput, els.maxForecastGapInput, els.minForecastAgeInput, els.maxForecastMonthlyIncreaseInput].forEach((el) => { el.value = ""; });
   [els.saleTx7MinInput, els.psaTxMinInput, els.psaTx7MinInput, els.buyback7MinInput, els.buyback30MinInput, els.buyback90MinInput, els.buybackShopsMinInput, els.psaMinInput].forEach((el) => { el.value = "0"; });
   els.roiInput.value = "40";
+  els.expectedRoiFilterInput.value = "0";
+  els.expectedProfitFilterInput.value = "0";
   els.psaMaxInput.value = "200000";
   els.overallFilterInput.value = "all";
   [els.minExitLiquidityInput, els.minEconomicsInput, els.minMarketStabilityInput, els.minSupplyRiskInput, els.minFuturePriceScoreInput].forEach((el) => { el.value = "0"; });
@@ -2890,7 +3170,7 @@ els.resetFiltersBtn.addEventListener("click", () => {
 document.querySelectorAll("[data-preset]").forEach((button) => {
   button.addEventListener("click", () => {
     const preset = button.dataset.preset;
-    state.purchaseMode = preset === "low-risk" ? "low-risk" : "normal";
+    state.purchaseMode = preset === "low-risk" ? "low-risk" : preset;
     state.lowRiskAvailability = "all";
     syncLowRiskAvailabilityControl();
     els.saleTxMinInput.value = preset === "turnover" ? "20" : "0";
@@ -2904,7 +3184,7 @@ document.querySelectorAll("[data-preset]").forEach((button) => {
     els.hideSkippedInput.checked = preset === "now" || preset === "low-risk";
     els.fundingOnlyInput.checked = preset === "now";
     els.officialOnlyInput.checked = preset === "low-risk";
-    els.sortInput.value = preset === "turnover" ? "exit-desc" : preset === "low-risk" ? "downside-asc" : "expectedProfit-desc";
+    els.sortInput.value = preset === "turnover" ? "exit-desc" : preset === "low-risk" ? "downside-asc" : preset === "bargain" ? "expectedProfit-desc" : "expectedProfit-desc";
     document.querySelectorAll("[data-preset]").forEach((item) => item.classList.toggle("active", item === button));
     syncFromUI();
   });

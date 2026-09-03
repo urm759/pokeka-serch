@@ -34,8 +34,16 @@
           <small id="psaPlanSummary" class="control-help">公式料金 ¥11,980＋各種手数料 ¥1,000＝¥12,980</small>
         </label>
         <label class="control">
-          <span>利益率 下限</span>
+          <span>PSA10時利益率 下限</span>
           <input id="roiInput" type="number" min="0" step="1" value="40" />
+        </label>
+        <label class="control">
+          <span>期待利益率 下限</span>
+          <input id="expectedRoiFilterInput" type="number" step="1" value="0" />
+        </label>
+        <label class="control">
+          <span>期待利益額 下限</span>
+          <input id="expectedProfitFilterInput" type="number" step="1000" value="0" />
         </label>
         <label class="control">
           <span>並び順</span>
@@ -103,8 +111,9 @@
 
       <div class="quick-presets" aria-label="かんたん絞り込み">
         <span>かんたん絞り込み</span>
-        <button type="button" data-preset="now">今すぐ仕入れ</button>
-        <button type="button" data-preset="low-risk">低リスク候補</button>
+        <button type="button" data-preset="combined"><strong>おまかせ総合</strong><small>候補を重複なしでまとめる</small></button>
+        <button type="button" data-preset="now"><strong>今すぐ仕入れ</strong><small>現在価格が上限以下</small></button>
+        <button type="button" data-preset="low-risk"><strong>低リスク候補</strong><small>価格待ちを含む</small></button>
         <label id="lowRiskAvailabilityControl" class="low-risk-availability" hidden>
           <span>候補内</span>
           <select id="lowRiskAvailabilityInput">
@@ -113,7 +122,8 @@
             <option value="price">上限以下なら仕入れ可能</option>
           </select>
         </label>
-        <button type="button" data-preset="turnover">高回転</button>
+        <button type="button" data-preset="turnover"><strong>高回転候補</strong><small>価格待ちを含む</small></button>
+        <button type="button" data-preset="bargain"><strong>薄商い・高粗利</strong><small>少数成約でも出口あり</small></button>
         <span class="preset-divider" aria-hidden="true"></span>
         <button id="exportSearchBtn" class="preset-file-action" type="button">条件をCSV保存</button>
         <label class="preset-file-action">条件CSV読込<input id="importSearchInput" type="file" accept=".csv,text/csv" /></label>
@@ -673,9 +683,9 @@
     </section>
   </main>
 
-  <script src="./decision-model.js?v=20260902-break-even-label-v2"></script>
+  <script src="./decision-model.js?v=20260904-audit-v1"></script>
   <script src="./backtest-model.js?v=20260901-backtest-v2"></script>
   <script src="./market-analysis.js?v=20260902-supply-pipeline-v1"></script>
-  <script src="./app.js?v=20260902-break-even-label-v2"></script>
+  <script src="./app.js?v=20260904-audit-v1"></script>
 </body>
 </html>
