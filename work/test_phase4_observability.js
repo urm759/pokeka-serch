@@ -12,6 +12,8 @@ const finalizer = fs.readFileSync(path.join(root, "work", "finalize_update_statu
 const tracker = fs.readFileSync(path.join(root, "work", "run_tracked_update.js"), "utf8");
 const psaRunner = fs.readFileSync(path.join(root, "work", "run_psa_scheduled_update.ps1"), "utf8");
 const psaAcquirer = fs.readFileSync(path.join(root, "work", "acquire_psa_data.ps1"), "utf8");
+const app = fs.readFileSync(path.join(root, "app.js"), "utf8");
+const index = fs.readFileSync(path.join(root, "index.html"), "utf8");
 
 const stores = coverage.current.storeCoverage.stores;
 const linkageSources = coverage.current.storeCoverage.linkageSources;
@@ -36,6 +38,9 @@ for (const source of Object.values(updateStatus.sources)) {
     assert.ok(Object.hasOwn(source, field), `${source.label}: missing ${field}`);
   }
 }
+for (const field of ["majorComplete", "majorDataCompleteDate", "allDataCompleteDate"]) {
+  assert.ok(Object.hasOwn(updateStatus, field), `update status: missing ${field}`);
+}
 
 assert.strictEqual(nextScheduledAt(new Date("2026-09-03T18:00:00Z")), "2026-09-04T04:30:00+09:00");
 assert.strictEqual(nextScheduledAt(new Date("2026-09-04T01:00:00Z")), "2026-09-04T17:00:00+09:00");
@@ -50,6 +55,11 @@ assert.match(updater, /sourceOnly === "all" \|\| sourceOnly === "yuyutei"/);
 assert.match(updater, /sourceOnly === "all" \|\| sourceOnly === "torecacamp"/);
 assert.match(finalizer, /return jstDate\(parsed\)/);
 assert.match(finalizer, /timeout_or_forced_exit/);
+assert.match(finalizer, /majorSourceIds/);
+assert.match(index, /主要データ完了日/);
+assert.match(index, /全データ完了日/);
+assert.match(app, /部分成功/);
+assert.match(app, /前回比/);
 assert.match(tracker, /TRACKED_TIMEOUT_MS/);
 assert.match(tracker, /timedOut/);
 assert.match(psaRunner, /Git sync warning; continuing acquisition/);

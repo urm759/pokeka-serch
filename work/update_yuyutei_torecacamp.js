@@ -1,14 +1,21 @@
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 
 const ROOT = path.join(__dirname, "..");
 const YUYUTEI = "https://yuyu-tei.jp";
 const TORECA_CAMP = "https://torecacamp-pokemon.com";
+const USER_AGENT = "PokecaBuyingGuide/1.0 (+read-only; low-rate)";
+const FETCH_METRICS_PATH = path.join(__dirname, "source-fetch-metrics.json");
 
 function read(file, fallback) {
   try { return JSON.parse(fs.readFileSync(file, "utf8")); } catch { return fallback; }
 }
-function write(file, value) { fs.writeFileSync(file, JSON.stringify(value), "utf8"); }
+function write(file, value) {
+  const temporary = `${file}.tmp`;
+  fs.writeFileSync(temporary, JSON.stringify(value), "utf8");
+  fs.renameSync(temporary, file);
+}
 function jstDate() { return new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date()); }
 function normalize(value) {
   return String(value || "").toLowerCase()
@@ -26,7 +33,8 @@ function cardSignature(card) {
   const cardNo = String(promo?.[1] || standard?.[2] || "").replace(/\s/g, "");
   const base = normalize(name.split("[")[0]
     .replace(/\b(?:MUR|BWR|MA|SSR|CSR|CHR|SAR|UR|HR|SR|RRR|RR|AR|PR|P|H|C|U|R)\b(?:\s*[:：]\s*SA)?/gi, " ")
-    .replace(/[:：]\s*(?:SA|プロモ|ミラー|英語版|旧裏|仕様)/gi, " "));
+    .replace(/[:：]\s*(?:SA|プロモ|ミラー|英語版|旧裏|仕様)/gi, " ")
+    .replace(/(?:SAR)?仕様|スペシャルアート/gi, " "));
   return { setCode, cardNo, base };
 }
 function normalizeSetCode(value) {
@@ -50,22 +58,69 @@ function due(attempt, signature) {
   return !Number.isFinite(then) || Date.now() - then >= 30 * 86400000;
 }
 function sleep(ms) { return new Promise((resolve) => setTimeout(resolve, ms)); }
-async function fetchText(url) {
-  const retries = Math.max(1, Number(process.env.SHOP_FETCH_RETRIES || 4));
-  const timeoutMs = Math.max(3000, Number(process.env.SHOP_FETCH_TIMEOUT_MS || 30000));
-  for (let attempt = 0; attempt < retries; attempt += 1) {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs);
+let lastRequestAt = 0;
+async function fetchText(url, options = {}) {
+  const retryLimit = Math.max(0, Number(options.retries ?? process.env.SHOP_FETCH_RETRIES ?? 2));
+  const timeoutMs = Math.max(2000, Number(options.timeoutMs ?? process.env.SHOP_FETCH_TIMEOUT_MS ?? 10000));
+  const intervalMs = Math.max(0, Number(options.intervalMs ?? process.env.SHOP_ACCESS_INTERVAL_MS ?? 1100));
+  let lastMetric = null;
+  for (let attempt = 0; attempt <= retryLimit; attempt += 1) {
+    const waitMs = Math.max(0, intervalMs - (Date.now() - lastRequestAt));
+    if (waitMs) await sleep(waitMs);
+    const startedAt = Date.now();
+    lastRequestAt = startedAt;
     try {
-      const response = await fetch(url, { headers: { "user-agent": "Mozilla/5.0" }, signal: controller.signal });
-      if (response.ok) return await response.text();
-      if (response.status === 429 || response.status >= 500) { await sleep(1200 * (attempt + 1)); continue; }
-      throw new Error(`HTTP ${response.status}`);
-    } finally { clearTimeout(timer); }
+      const response = await fetch(url, {
+        headers: { "user-agent": USER_AGENT },
+        signal: AbortSignal.timeout(timeoutMs),
+      });
+      const text = await response.text();
+      lastMetric = {
+        url, httpStatus: response.status, fetchMs: Date.now() - startedAt,
+        bytes: text.length, retryCount: attempt, timedOut: false,
+      };
+      if (response.ok) return { text, metric: lastMetric };
+      if ((response.status === 429 || response.status >= 500) && attempt < retryLimit) {
+        await sleep(1000 * (2 ** attempt));
+        continue;
+      }
+      const error = new Error(`HTTP ${response.status}`);
+      error.metric = lastMetric;
+      throw error;
+    } catch (error) {
+      if (error.metric) throw error;
+      lastMetric = {
+        url, httpStatus: null, fetchMs: Date.now() - startedAt,
+        bytes: 0, retryCount: attempt, timedOut: error.name === "TimeoutError",
+        error: error.message,
+      };
+      // Network errors and local timeouts are not retried automatically. This
+      // avoids repeatedly hammering a source that is unavailable.
+      error.metric = lastMetric;
+      throw error;
+    }
   }
-  throw new Error("retry exhausted");
+  const error = new Error("retry exhausted");
+  error.metric = lastMetric;
+  throw error;
 }
-async function fetchJson(url) { return JSON.parse(await fetchText(url)); }
+async function fetchJson(url, options) {
+  const result = await fetchText(url, options);
+  return { value: JSON.parse(result.text), metric: result.metric };
+}
+function cacheKey(url) { return crypto.createHash("sha1").update(url).digest("hex"); }
+function recordFetchMetric(sourceId, metric) {
+  const state = read(FETCH_METRICS_PATH, { version: 1, updatedAt: null, sources: {} });
+  state.sources ||= {};
+  const source = state.sources[sourceId] || { pages: [], lastSuccessfulPage: null, lastFailure: null };
+  source.pages = [...(source.pages || []), metric].slice(-200);
+  if (metric.status === "success") source.lastSuccessfulPage = metric.pageKey ?? metric.page ?? null;
+  if (metric.status === "failed") source.lastFailure = metric;
+  source.updatedAt = new Date().toISOString();
+  state.sources[sourceId] = source;
+  state.updatedAt = source.updatedAt;
+  write(FETCH_METRICS_PATH, state);
+}
 async function mapLimit(items, limit, mapper) {
   const results = new Array(items.length); let cursor = 0;
   async function worker() { while (cursor < items.length) { const index = cursor; cursor += 1; results[index] = await mapper(items[index]); } }
@@ -152,46 +207,130 @@ async function updateYuyutei(cards, paths) {
   let catalog = read(paths.catalog, []);
   const history = read(paths.history, { dates: [], stocks: {} });
   const progress = read(paths.progress, { attemptedCards: {} });
+  const pageCache = read(paths.cache, { version: 1, entries: {} });
   if (!progress.attemptedCards || typeof progress.attemptedCards !== "object") progress.attemptedCards = {};
+  if (!pageCache.entries || typeof pageCache.entries !== "object") pageCache.entries = {};
   const byId = new Map(catalog.map((entry) => [entry.cardId, entry]));
   const onlyIds = new Set(String(process.env.YUYUTEI_ONLY_ID || "").split(",").map((value) => value.trim()).filter(Boolean));
-  const targets = cards.filter((card) => (onlyIds.size ? onlyIds.has(card.id) : !byId.has(card.id) && due(progress.attemptedCards[card.id], JSON.stringify(cardSignature(card)))))
+  const selectedTargets = cards.filter((card) => (onlyIds.size ? onlyIds.has(card.id) : !byId.has(card.id) && due(progress.attemptedCards[card.id], JSON.stringify(cardSignature(card)))))
     .sort((a, b) => Number(b.tv30 || 0) - Number(a.tv30 || 0) || Number(b.price || 0) - Number(a.price || 0))
     .slice(0, Math.max(1, Number(process.env.YUYUTEI_SEARCH_BATCH || 100)));
-  let linked = 0;
-  let failed = 0;
-  await mapLimit(targets, Math.max(1, Number(process.env.YUYUTEI_CONCURRENCY || 3)), async (card) => {
-    const signature = cardSignature(card); const signatureKey = JSON.stringify(signature);
-    try {
-      const query = `${signature.base} ${signature.cardNo}`;
-      const searchUrl = `${YUYUTEI}/sell/poc/s/search?search_word=${encodeURIComponent(query)}&rare=&type=&kizu=0`;
-      // Jina's URL parser needs the shop query separators encoded so it
-      // forwards every filter, including the condition-A kizu=0 filter.
-      const html = await fetchText(`https://r.jina.ai/http://${searchUrl.replace(/&/g, "%26")}`);
-      const candidates = parseYuyuteiResults(html);
-      const match = findYuyuteiCard(card, html) || candidates.find((row) => titleMatches(card, row.title, row.cardNo, row.setCode));
-      if (process.env.YUYUTEI_DEBUG === "1") console.log(JSON.stringify({ card: card.id, signature, length: html.length, hasExpectedNumber: html.includes(signature.cardNo), matched: Boolean(match), candidates: candidates.slice(0, 3) }));
-      progress.attemptedCards[card.id] = { signature: signatureKey, checkedAt: new Date().toISOString(), found: Boolean(match) };
-      if (!match) return;
-      byId.set(card.id, { cardId: card.id, ...match, observedAt: jstDate() }); linked += 1;
-    } catch (error) { failed += 1; console.warn(`yuyutei search failed ${card.id}: ${error.message}`); }
+  // Group the selected work by set so every checkpoint has a stable resume key.
+  const targets = selectedTargets.sort((a, b) => {
+    const left = cardSignature(a); const right = cardSignature(b);
+    return left.setCode.localeCompare(right.setCode) || left.cardNo.localeCompare(right.cardNo);
   });
+  let linked = 0;
+  let matched = 0;
+  let updated = 0;
+  let failed = 0;
+  let fetchedPages = 0;
+  let cachedPages = 0;
+  let parsedProducts = 0;
+  for (const card of targets) {
+    const signature = cardSignature(card); const signatureKey = JSON.stringify(signature);
+    const pageKey = `${signature.setCode || "unknown"}/${signature.cardNo || card.id}`;
+    const query = `${signature.base} ${signature.cardNo}`;
+    const searchUrl = `${YUYUTEI}/sell/poc/s/search?${new URLSearchParams({ search_word: query, rare: "", type: "", kizu: "0" })}`;
+    const key = cacheKey(searchUrl);
+    const metric = {
+      source: "yuyutei", pageKey, setCode: signature.setCode, cardId: card.id,
+      url: searchUrl, startedAt: new Date().toISOString(), status: "running",
+      httpStatus: null, retryCount: 0, fetchMs: 0, parseMs: 0, matchMs: 0, saveMs: 0,
+      stage: "fetch",
+    };
+    try {
+      const cached = pageCache.entries[key];
+      const cacheAge = Date.now() - Date.parse(cached?.fetchedAt || "");
+      let candidates;
+      if (cached && Number.isFinite(cacheAge) && cacheAge < 7 * 86400000 && process.env.YUYUTEI_FORCE !== "1") {
+        candidates = cached.candidates || [];
+        cachedPages += 1;
+        metric.fromCache = true;
+        metric.httpStatus = cached.httpStatus;
+      } else {
+        const response = await fetchText(searchUrl, { intervalMs: 1100 });
+        fetchedPages += 1;
+        Object.assign(metric, response.metric);
+        metric.stage = "parse";
+        const parseStartedAt = Date.now();
+        candidates = parseYuyuteiResults(response.text);
+        metric.parseMs = Date.now() - parseStartedAt;
+        pageCache.entries[key] = {
+          url: searchUrl, fetchedAt: new Date().toISOString(), httpStatus: response.metric.httpStatus,
+          candidates: candidates.slice(0, 100),
+        };
+      }
+      parsedProducts += candidates.length;
+      metric.stage = "match";
+      const matchStartedAt = Date.now();
+      const matches = candidates.filter((row) => titleMatches(card, row.title, row.cardNo, row.setCode));
+      const match = matches.length === 1 ? matches[0] : null;
+      metric.matchMs = Date.now() - matchStartedAt;
+      metric.candidateCount = candidates.length;
+      metric.matchCount = matches.length;
+      metric.stage = "save";
+      progress.attemptedCards[card.id] = { signature: signatureKey, checkedAt: new Date().toISOString(), found: Boolean(match) };
+      if (match) {
+        matched += 1;
+        const previousEntry = byId.get(card.id);
+        if (!previousEntry || previousEntry.detailUrl !== match.detailUrl) linked += 1;
+        else if (previousEntry.price !== match.price || previousEntry.stock !== match.stock) updated += 1;
+        byId.set(card.id, { cardId: card.id, ...match, observedAt: jstDate() });
+      }
+      progress.lastSuccessfulPage = pageKey;
+      progress.lastFailure = null;
+      catalog = [...byId.values()];
+      const saveStartedAt = Date.now();
+      write(paths.catalog, catalog);
+      write(paths.progress, progress);
+      write(paths.cache, pageCache);
+      metric.saveMs = Date.now() - saveStartedAt;
+      metric.status = "success";
+      metric.stage = "complete";
+    } catch (error) {
+      failed += 1;
+      Object.assign(metric, error.metric || {});
+      metric.status = "failed";
+      metric.stage = metric.stage || "fetch";
+      metric.error = error.message;
+      progress.lastFailure = { pageKey, cardId: card.id, url: searchUrl, stage: metric.stage, error: error.message, at: new Date().toISOString() };
+      write(paths.progress, progress);
+      console.warn(`yuyutei search failed ${card.id}: ${error.message}`);
+    }
+    metric.endedAt = new Date().toISOString();
+    recordFetchMetric("yuyutei", metric);
+  }
   catalog = [...byId.values()];
   const index = appendDate(history, jstDate());
   const stocks = catalog.filter((entry) => Number.isFinite(entry.stock));
   for (const entry of stocks) setStock(history, entry.cardId, index, entry.stock);
   const summary = historySummary(cards, catalog, history, "yuyuteiPrice");
-  write(paths.catalog, catalog); write(paths.history, history); write(paths.progress, progress);
+  write(paths.catalog, catalog); write(paths.history, history); write(paths.progress, progress); write(paths.cache, pageCache);
   write(paths.summary, { updatedAt: jstDate(), stockType: "point", cards: summary });
-  return { linked, attempted: targets.length, failed, coverage: catalog.length };
+  return {
+    linked, matched, updated, attempted: targets.length, fetchedPages, cachedPages, parsedProducts, failed,
+    coverage: catalog.length, lastSuccessfulPage: progress.lastSuccessfulPage || null,
+  };
 }
 
 function campA(variant) { return /(?:^|【\s*)状態A(?:\s*】|$)/.test(String(variant?.title || variant?.option1 || "")); }
 function campSignature(product) {
   const title = String(product?.title || "");
-  const number = (title.match(/(\d{1,4}(?:\s*[-/]\s*\d{1,4})?)\s*\/\s*\d{1,4}/) || [])[1] || "";
-  const setCodes = (product?.tags || []).map((tag) => String(tag || "").replace(/^#/, "")).filter((tag) => /^[A-Za-z0-9-]+$/i.test(tag)).map(normalizeSetCode);
-  return { title, cardNo: number.replace(/\s/g, ""), setCodes };
+  const standard = title.match(/(\d{1,4}(?:\s*-\s*\d{1,4})?\s*\/\s*\d{1,4})/);
+  const promo = title.match(/(\d{1,4})\s*\/\s*([A-Za-z0-9]+(?:-[A-Za-z0-9]+)*-P)\b/i);
+  const titleSet = title.match(/(?:^|\s)([A-Za-z]{1,5}\d{0,3}[A-Za-z]?(?:-[A-Za-z0-9]+)?)\s+\d{1,4}(?:\s*-\s*\d{1,4})?\s*\/\s*\d{1,4}/i);
+  const tagCodes = (product?.tags || []).map((tag) => {
+    const clean = String(tag || "").replace(/^#/, "").trim();
+    const prefix = clean.split("_")[0];
+    return /^[A-Za-z0-9+-]+$/i.test(prefix) ? normalizeSetCode(prefix) : "";
+  }).filter(Boolean);
+  const setCodes = [...new Set([
+    ...tagCodes,
+    titleSet?.[1] ? normalizeSetCode(titleSet[1]) : "",
+    promo?.[2] ? normalizeSetCode(promo[2]) : "",
+  ].filter(Boolean))];
+  return { title, cardNo: String(standard?.[1] || promo?.[1] || "").replace(/\s/g, ""), setCodes };
 }
 function campMatchesCard(card, product) {
   const signature = cardSignature(card); const productSig = campSignature(product);
@@ -203,44 +342,138 @@ function campMatchesCard(card, product) {
 }
 async function updateTorecaCamp(cards, paths) {
   const reset = process.env.TORECACAMP_RESET === "1";
-  const catalog = reset ? [] : read(paths.catalog, []); const progress = reset ? { page: 1, exhausted: false } : read(paths.progress, { page: 1, exhausted: false });
+  let catalog = reset ? [] : read(paths.catalog, []);
+  const progress = reset ? { page: 1, exhausted: false } : read(paths.progress, { page: 1, exhausted: false });
+  const pageCache = reset ? { version: 1, entries: {} } : read(paths.cache, { version: 1, entries: {} });
+  pageCache.entries ||= {};
   const byId = new Map(catalog.map((entry) => [entry.cardId, entry]));
   const byNumber = new Map();
   for (const card of cards) { const signature = cardSignature(card); if (signature.cardNo) { if (!byNumber.has(signature.cardNo)) byNumber.set(signature.cardNo, []); byNumber.get(signature.cardNo).push(card); } }
   const pageCount = Math.max(1, Number(process.env.TORECACAMP_PAGES_PER_RUN || 6));
-  let page = Math.max(1, Number(progress.page || 1)); let fetched = 0; let linked = 0; let failed = 0;
+  const forcedStart = Number(process.env.TORECACAMP_START_PAGE || 0);
+  let page = forcedStart > 0 ? forcedStart : Math.max(1, Number(progress.page || 1));
+  let cycleCompleted = false;
+  let fetched = 0; let parsed = 0; let stateA = 0; let linked = 0; let failed = 0; let cacheHits = 0; let pagesSucceeded = 0;
+  const excluded = { noStateA: 0, noCardNumber: 0, noLocalCandidate: 0, identityMismatch: 0, ambiguous: 0 };
   for (let count = 0; count < pageCount && !progress.exhausted; count += 1, page += 1) {
+    const url = `${TORECA_CAMP}/collections/all/products.json?limit=250&page=${page}`;
+    const metric = {
+      source: "torecacamp", page, pageKey: `page-${page}`, url,
+      startedAt: new Date().toISOString(), status: "running", stage: "fetch",
+      httpStatus: null, retryCount: 0, fetchMs: 0, parseMs: 0, matchMs: 0, saveMs: 0,
+    };
     let products = [];
-    try { products = (await fetchJson(`${TORECA_CAMP}/products.json?limit=250&page=${page}`)).products || []; } catch (error) { failed += 1; console.warn(`torecacamp page ${page} failed: ${error.message}`); break; }
-    fetched += products.length;
-    if (products.length < 250) progress.exhausted = true;
-    for (const product of products) {
-      const variant = (product.variants || []).find(campA); if (!variant) continue;
-      const sig = campSignature(product); const candidates = byNumber.get(sig.cardNo) || [];
-      const card = candidates.find((row) => campMatchesCard(row, product));
-      if (!card) continue;
-      const entry = { cardId: card.id, title: product.title, detailUrl: `${TORECA_CAMP}/products/${encodeURIComponent(product.handle)}`, price: Number(variant.price) || null, available: variant.available === true, observedAt: jstDate() };
-      if (!byId.has(card.id) || byId.get(card.id).detailUrl !== entry.detailUrl) linked += 1;
-      byId.set(card.id, entry);
+    try {
+      const cached = pageCache.entries[page];
+      const cacheAge = Date.now() - Date.parse(cached?.fetchedAt || "");
+      if (cached && Number.isFinite(cacheAge) && cacheAge < 86400000 && process.env.TORECACAMP_FORCE !== "1") {
+        products = cached.products || [];
+        cacheHits += 1;
+        metric.fromCache = true;
+        metric.httpStatus = cached.httpStatus;
+      } else {
+        const response = await fetchJson(url, { intervalMs: 1100 });
+        Object.assign(metric, response.metric);
+        metric.stage = "parse";
+        const parseStartedAt = Date.now();
+        products = response.value.products || [];
+        metric.parseMs = Date.now() - parseStartedAt;
+        pageCache.entries[page] = {
+          fetchedAt: new Date().toISOString(), httpStatus: response.metric.httpStatus,
+          products: products.map((product) => ({
+            title: product.title, handle: product.handle, tags: product.tags,
+            variants: (product.variants || []).filter(campA).map((variant) => ({
+              title: variant.title, option1: variant.option1, price: variant.price, available: variant.available,
+            })),
+          })),
+        };
+      }
+    } catch (error) {
+      failed += 1;
+      Object.assign(metric, error.metric || {});
+      metric.status = "failed";
+      metric.error = error.message;
+      progress.lastFailure = { page, url, stage: metric.stage, error: error.message, at: new Date().toISOString() };
+      write(paths.progress, progress);
+      metric.endedAt = new Date().toISOString();
+      recordFetchMetric("torecacamp", metric);
+      console.warn(`torecacamp page ${page} failed: ${error.message}`);
+      break;
     }
+    fetched += products.length;
+    parsed += products.length;
+    metric.productCount = products.length;
+    metric.stage = "match";
+    const matchStartedAt = Date.now();
+    const pageMatches = new Map();
+    for (const product of products) {
+      const variant = (product.variants || []).find(campA);
+      if (!variant) { excluded.noStateA += 1; continue; }
+      stateA += 1;
+      const sig = campSignature(product);
+      if (!sig.cardNo) { excluded.noCardNumber += 1; continue; }
+      const candidates = byNumber.get(sig.cardNo) || [];
+      if (!candidates.length) { excluded.noLocalCandidate += 1; continue; }
+      const matches = candidates.filter((row) => campMatchesCard(row, product));
+      if (matches.length !== 1) { excluded[matches.length > 1 ? "ambiguous" : "identityMismatch"] += 1; continue; }
+      const card = matches[0];
+      const entry = { cardId: card.id, title: product.title, detailUrl: `${TORECA_CAMP}/products/${encodeURIComponent(product.handle)}`, price: Number(variant.price) || null, available: variant.available === true, observedAt: jstDate() };
+      if (!pageMatches.has(card.id)) pageMatches.set(card.id, []);
+      pageMatches.get(card.id).push(entry);
+    }
+    for (const [cardId, matches] of pageMatches) {
+      if (matches.length !== 1) { excluded.ambiguous += matches.length; continue; }
+      const entry = matches[0];
+      if (!byId.has(cardId) || byId.get(cardId).detailUrl !== entry.detailUrl) linked += 1;
+      byId.set(cardId, entry);
+    }
+    metric.matchMs = Date.now() - matchStartedAt;
+    metric.matchCount = [...pageMatches.values()].filter((matches) => matches.length === 1).length;
+    metric.stage = "save";
+    pagesSucceeded += 1;
+    progress.lastSuccessfulPage = page;
+    progress.lastFailure = null;
+    progress.page = page + 1;
+    if (products.length < 250) {
+      progress.exhausted = true;
+      progress.cycleCompletedAt = new Date().toISOString();
+      cycleCompleted = true;
+    }
+    catalog = [...byId.values()];
+    const saveStartedAt = Date.now();
+    write(paths.catalog, catalog);
+    write(paths.progress, progress);
+    write(paths.cache, pageCache);
+    metric.saveMs = Date.now() - saveStartedAt;
+    metric.status = "success";
+    metric.stage = "complete";
+    metric.endedAt = new Date().toISOString();
+    recordFetchMetric("torecacamp", metric);
   }
-  progress.page = progress.exhausted ? 1 : page;
-  if (progress.exhausted) progress.exhausted = false;
+  if (progress.exhausted && failed === 0) {
+    progress.page = 1;
+    progress.exhausted = false;
+  }
   const nextCatalog = [...byId.values()];
   const summary = {};
   for (const entry of nextCatalog) summary[entry.cardId] = { torecacampPrice: Number(entry.price) || null, available: entry.available, availabilityLabel: entry.available ? "在庫あり" : "在庫なし" };
-  write(paths.catalog, nextCatalog); write(paths.progress, progress); write(paths.summary, { updatedAt: jstDate(), stockType: "availability", cards: summary });
-  return { linked, fetched, failed, coverage: nextCatalog.length };
+  write(paths.catalog, nextCatalog); write(paths.progress, progress); write(paths.cache, pageCache);
+  if (pagesSucceeded > 0) write(paths.summary, { updatedAt: jstDate(), stockType: "availability", cards: summary });
+  return {
+    pagesSucceeded, fetched, parsed, stateA, linked, failed, cacheHits, excluded,
+    coverage: nextCatalog.length, lastSuccessfulPage: progress.lastSuccessfulPage || null,
+    completionStatus: cycleCompleted ? "success" : "partial",
+  };
 }
 
 async function main() {
   const cards = read(path.join(ROOT, "data", "pokemon-cards.json"), []);
   const sourceOnly = String(process.env.SHOP_SOURCE_ONLY || "all").toLowerCase();
   const yuyutei = sourceOnly === "all" || sourceOnly === "yuyutei" ? await updateYuyutei(cards, {
-    catalog: path.join(__dirname, "yuyutei_catalog.json"), history: path.join(__dirname, "yuyutei_stock_history.json"), progress: path.join(__dirname, "yuyutei_progress.json"), summary: path.join(ROOT, "data", "yuyutei-stock-summary.json"),
+    catalog: path.join(__dirname, "yuyutei_catalog.json"), history: path.join(__dirname, "yuyutei_stock_history.json"), progress: path.join(__dirname, "yuyutei_progress.json"), cache: path.join(__dirname, "yuyutei_page_cache.json"), summary: path.join(ROOT, "data", "yuyutei-stock-summary.json"),
   }) : null;
   const torecacamp = sourceOnly === "all" || sourceOnly === "torecacamp" ? await updateTorecaCamp(cards, {
-    catalog: path.join(__dirname, "torecacamp_catalog.json"), progress: path.join(__dirname, "torecacamp_progress.json"), summary: path.join(ROOT, "data", "torecacamp-stock-summary.json"),
+    catalog: path.join(__dirname, "torecacamp_catalog.json"), progress: path.join(__dirname, "torecacamp_progress.json"), cache: path.join(__dirname, "torecacamp_page_cache.json"), summary: path.join(ROOT, "data", "torecacamp-stock-summary.json"),
   }) : null;
   const latestCards = read(path.join(ROOT, "data", "pokemon-cards.json"), []);
   const yuyuteiById = new Map(read(path.join(__dirname, "yuyutei_catalog.json"), []).map((entry) => [entry.cardId, entry]));
@@ -250,4 +483,9 @@ async function main() {
   write(path.join(ROOT, "data", "pokemon-cards.json"), updatedCards);
   console.log(JSON.stringify({ sourceOnly, yuyutei, torecacamp }));
 }
-main().catch((error) => { console.error(error); process.exitCode = 1; });
+if (require.main === module) main().catch((error) => { console.error(error); process.exitCode = 1; });
+
+module.exports = {
+  campA, campMatchesCard, campSignature, cardSignature, normalizeSetCode,
+  numberMatches, parseYuyuteiResults, titleMatches,
+};

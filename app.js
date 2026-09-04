@@ -223,7 +223,8 @@ const els = {
   dataShortageCountStat: document.getElementById("dataShortageCountStat"),
   outlierExcludedCountStat: document.getElementById("outlierExcludedCountStat"),
   operationalConcentrationStat: document.getElementById("operationalConcentrationStat"),
-  updatedAt: document.getElementById("updatedAt"),
+  majorDataUpdatedAt: document.getElementById("majorDataUpdatedAt"),
+  allDataUpdatedAt: document.getElementById("allDataUpdatedAt"),
   dataFreshness: document.getElementById("dataFreshness"),
   freshnessSummary: document.getElementById("freshnessSummary"),
   cardrushCoverage: document.getElementById("cardrushCoverage"),
@@ -563,16 +564,21 @@ function renderSourceObservability() {
     const failed = sourceList.filter((source) => source.status === "failed").length;
     const partial = sourceList.filter((source) => source.status === "partial").length;
     const stale = sourceList.filter((source) => !source.fresh && !["failed", "partial"].includes(source.status)).length;
-    els.freshnessSummary.textContent = failed ? `失敗 ${fmt.format(failed)}件` : partial ? `一部失敗 ${fmt.format(partial)}件` : stale ? `未完了 ${fmt.format(stale)}件` : "全取得元 更新済み";
+    els.freshnessSummary.textContent = failed ? `失敗 ${fmt.format(failed)}件` : partial ? `部分取得 ${fmt.format(partial)}件` : stale ? `未完了 ${fmt.format(stale)}件` : "全取得元 更新済み";
   }
   if (els.dataFreshness) {
     const sourceCards = Object.entries(sources).map(([sourceId, source]) => {
       const className = source.status === "failed" ? "failed" : source.status === "partial" ? "partial" : source.fresh ? "fresh" : "stale";
-      const statusLabel = source.status === "failed" ? "失敗" : source.status === "partial" ? "一部失敗" : source.fresh ? "成功・最新" : source.status === "success" ? "成功・日付が古い" : "未記録";
+      const statusLabel = source.status === "failed" ? "失敗" : source.status === "partial" ? Number(source.fetchFailureCount || 0) > 0 ? "一部失敗" : "部分成功" : source.fresh ? "成功・最新" : source.status === "success" ? "成功・日付が古い" : "未記録";
       const count = Number.isFinite(source.acquiredCount) ? fmt.format(source.acquiredCount) : "未記録";
       const failures = Number.isFinite(source.fetchFailureCount) ? fmt.format(source.fetchFailureCount) : "未記録";
       const updated = Number.isFinite(source.updatedCount) ? fmt.format(source.updatedCount) : "未記録";
       const history = (state.updateHistory?.sources?.[sourceId] || []).slice(-5).reverse();
+      const previousAcquired = Number(history[1]?.acquiredCount);
+      const acquiredDelta = Number.isFinite(previousAcquired) && Number.isFinite(source.acquiredCount)
+        ? Number(source.acquiredCount) - previousAcquired
+        : null;
+      const previousComparison = Number.isFinite(acquiredDelta) ? `${acquiredDelta >= 0 ? "+" : ""}${fmt.format(acquiredDelta)}件` : "比較不可";
       const historyHtml = history.length ? `<details class="source-run-history"><summary>直近${fmt.format(history.length)}回の処理履歴</summary>${history.map((run) => `<div><b>${escapeHtml(formatJstTimestamp(run.startedAt || run.lastAttemptAt))}</b><span>${escapeHtml(run.sourceState || run.status || "未記録")}</span><small>終了 ${escapeHtml(formatJstTimestamp(run.endedAt))} / 取得 ${Number.isFinite(run.acquiredCount) ? fmt.format(run.acquiredCount) : "-"} / 更新 ${Number.isFinite(run.updatedCount) ? fmt.format(run.updatedCount) : "-"}${run.lastError ? ` / ${escapeHtml(run.lastError)}` : ""}</small></div>`).join("")}</details>` : "";
       return `<article class="source-status-card ${className}">
         <div class="source-status-head"><strong>${escapeHtml(source.label)}</strong><b>${statusLabel}</b></div>
@@ -582,6 +588,7 @@ function renderSourceObservability() {
           <div><dt>最終成功</dt><dd>${escapeHtml(formatJstTimestamp(source.lastSuccessAt))}</dd></div>
           <div><dt>所要時間</dt><dd>${escapeHtml(formatDuration(source.durationMs))}</dd></div>
           <div><dt>取得件数</dt><dd>${count}</dd></div>
+          <div><dt>前回比</dt><dd>${previousComparison}</dd></div>
           <div><dt>更新件数</dt><dd>${updated}</dd></div>
           <div><dt>取得失敗数</dt><dd>${failures}</dd></div>
           <div><dt>次回予定</dt><dd>${escapeHtml(formatJstTimestamp(source.nextScheduledAt))}</dd></div>
@@ -2662,8 +2669,11 @@ function render() {
         : "全カードの同額集中を監査";
     }
   }
-  if (els.updatedAt) {
-    els.updatedAt.textContent = state.updateStatus?.completeDate || "自動更新 未完了";
+  if (els.majorDataUpdatedAt) {
+    els.majorDataUpdatedAt.textContent = state.updateStatus?.majorDataCompleteDate || "自動更新 未完了";
+  }
+  if (els.allDataUpdatedAt) {
+    els.allDataUpdatedAt.textContent = state.updateStatus?.allDataCompleteDate || state.updateStatus?.completeDate || "全取得元 未完了";
   }
   renderSourceObservability();
   renderGuide();

@@ -38,10 +38,11 @@ if (result.stderr) process.stderr.write(result.stderr);
 const endedAt = new Date();
 const output = `${result.stdout || ""}\n${result.stderr || ""}`;
 const timedOut = result.error?.code === "ETIMEDOUT";
-const fetchFailureCount = [...output.matchAll(/\b(?:failed|failure|error)(?:Count)?\s*(?:[:=]\s*)?(\d+)?/gi)]
-  .reduce((total, match) => total + (match[1] === "0" ? 0 : Number(match[1] || 1)), 0)
+const completionStatus = (output.match(/"completionStatus"\s*:\s*"(success|partial)"/i) || [])[1]?.toLowerCase() || null;
+const fetchFailureCount = [...output.matchAll(/\b(?:failed|failure|error)(?:Count)?["']?\s*[:=]\s*(\d+)/gi)]
+  .reduce((total, match) => total + Number(match[1] || 0), 0)
   + (result.status !== 0 || timedOut ? 1 : 0);
-const status = result.status !== 0 || timedOut ? "failed" : fetchFailureCount > 0 ? "partial" : "success";
+const status = result.status !== 0 || timedOut ? "failed" : fetchFailureCount > 0 || completionStatus === "partial" ? "partial" : "success";
 const acquiredCount = countCurrentRecords(sourceId);
 const afterFingerprint = artifactFingerprint(sourceId);
 const dataChanged = afterFingerprint != null && beforeFingerprint !== afterFingerprint;
@@ -51,7 +52,7 @@ const updatedCount = updatedMatch ? Number(updatedMatch[1]) : Number.isFinite(co
 const sourceState = status === "failed"
   ? "取得処理失敗"
   : status === "partial"
-    ? "一部取得失敗"
+    ? fetchFailureCount > 0 ? "一部取得失敗" : "部分取得・チェックポイントから継続"
     : dataChanged
       ? "取得成功・データ更新あり"
       : "取得成功・データ元更新なし";
@@ -68,12 +69,17 @@ const record = {
   fetchFailureCount,
   timedOut,
   terminationReason: timedOut ? "timeout" : result.signal ? `signal:${result.signal}` : null,
+  completionStatus,
   lastError: status === "failed"
     ? String(timedOut ? `取得処理が${Math.round(timeoutMs / 1000)}秒でタイムアウトしました` : result.error?.message || result.stderr || `exit ${result.status}`).slice(0, 500)
     : null,
 };
-if (status === "success") record.lastSuccessAt = endedAt.toISOString();
+// A clean partial batch is a successful checkpoint even though the complete
+// source crawl is still in progress. Keep that distinct from a failed batch.
+if (status === "success" || (status === "partial" && fetchFailureCount === 0 && acquiredCount > 1)) {
+  record.lastSuccessAt = endedAt.toISOString();
+}
 updateRun(sourceId, record);
 appendRunHistory(sourceId, record);
 console.log(JSON.stringify({ sourceId, ...record }));
-if (status !== "success") process.exit(result.status || 1);
+if (status === "failed" || (status === "partial" && fetchFailureCount > 0)) process.exit(result.status || 1);

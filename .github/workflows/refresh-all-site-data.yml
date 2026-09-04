@@ -62,9 +62,10 @@ jobs:
         env:
           SHOP_SOURCE_ONLY: "yuyutei"
           YUYUTEI_SEARCH_BATCH: "5"
-          YUYUTEI_CONCURRENCY: "2"
-          SHOP_FETCH_RETRIES: "1"
-          SHOP_FETCH_TIMEOUT_MS: "12000"
+          YUYUTEI_CONCURRENCY: "1"
+          SHOP_FETCH_RETRIES: "2"
+          SHOP_FETCH_TIMEOUT_MS: "10000"
+          SHOP_ACCESS_INTERVAL_MS: "1100"
           # Leave enough time for the tracker to persist a timeout result before
           # GitHub terminates the whole step at 10 minutes.
           TRACKED_TIMEOUT_MS: "540000"
@@ -77,8 +78,9 @@ jobs:
         env:
           SHOP_SOURCE_ONLY: "torecacamp"
           TORECACAMP_PAGES_PER_RUN: "6"
-          SHOP_FETCH_RETRIES: "1"
-          SHOP_FETCH_TIMEOUT_MS: "12000"
+          SHOP_FETCH_RETRIES: "2"
+          SHOP_FETCH_TIMEOUT_MS: "10000"
+          SHOP_ACCESS_INTERVAL_MS: "1100"
         run: node work/run_tracked_update.js torecacamp work/update_yuyutei_torecacamp.js
 
       - name: Resolve all Snkrdunk direct links

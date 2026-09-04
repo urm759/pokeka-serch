@@ -153,13 +153,22 @@ for (const [sourceId, source] of Object.entries(sources)) {
 // PSA task on the user's PC to be current.
 const automaticSources = Object.values(sources).filter((source) => source.automatic);
 const complete = automaticSources.length > 0 && automaticSources.every((source) => source.fresh);
+// These sources directly drive the visible sourcing decision. Yu-Yu-Tei and
+// Toreca Camp are supplemental shop exits, so a partial crawl must not make
+// otherwise-current core data appear several days old.
+const majorSourceIds = ["toreca", "cardrush", "hareruya2", "shopBuyback", "marketAnalysis", "psaOfficial", "psaJapan"];
+const majorComplete = majorSourceIds.every((sourceId) => sources[sourceId]?.fresh);
 const manualPending = Object.entries(sources)
   .filter(([, source]) => !source.automatic && !source.fresh)
   .map(([key]) => key);
 const payload = {
   checkedAt: new Date().toISOString(),
   complete,
-  completeDate: complete ? today : previous.completeDate || null,
+  majorComplete,
+  majorDataCompleteDate: majorComplete ? today : previous.majorDataCompleteDate || previous.completeDate || null,
+  allDataCompleteDate: complete ? today : previous.allDataCompleteDate || previous.completeDate || null,
+  // Keep the old field while deployed clients and bookmarked cached pages age out.
+  completeDate: complete ? today : previous.allDataCompleteDate || previous.completeDate || null,
   manualPending,
   sources,
 };
