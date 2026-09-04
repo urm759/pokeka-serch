@@ -65,6 +65,9 @@ jobs:
           YUYUTEI_CONCURRENCY: "2"
           SHOP_FETCH_RETRIES: "1"
           SHOP_FETCH_TIMEOUT_MS: "12000"
+          # Leave enough time for the tracker to persist a timeout result before
+          # GitHub terminates the whole step at 10 minutes.
+          TRACKED_TIMEOUT_MS: "540000"
         run: node work/run_tracked_update.js yuyutei work/update_yuyutei_torecacamp.js
 
       - name: Link Toreca Camp state-A listings

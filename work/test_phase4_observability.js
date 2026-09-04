@@ -9,6 +9,7 @@ const updateStatus = JSON.parse(fs.readFileSync(path.join(root, "data", "update-
 const workflow = fs.readFileSync(path.join(root, ".github", "workflows", "refresh-all-site-data.yml"), "utf8");
 const updater = fs.readFileSync(path.join(root, "work", "update_yuyutei_torecacamp.js"), "utf8");
 const finalizer = fs.readFileSync(path.join(root, "work", "finalize_update_status.js"), "utf8");
+const tracker = fs.readFileSync(path.join(root, "work", "run_tracked_update.js"), "utf8");
 const psaRunner = fs.readFileSync(path.join(root, "work", "run_psa_scheduled_update.ps1"), "utf8");
 const psaAcquirer = fs.readFileSync(path.join(root, "work", "acquire_psa_data.ps1"), "utf8");
 
@@ -41,12 +42,16 @@ assert.strictEqual(nextScheduledAt(new Date("2026-09-04T01:00:00Z")), "2026-09-0
 assert.match(workflow, /inputs:\s+[\s\S]*source:/);
 assert.match(workflow, /SHOP_SOURCE_ONLY: "yuyutei"/);
 assert.match(workflow, /SHOP_SOURCE_ONLY: "torecacamp"/);
+assert.match(workflow, /TRACKED_TIMEOUT_MS: "540000"/);
 assert.match(workflow, /continue-on-error: true/);
 assert.match(workflow, /build_linkage_review\.js/);
 assert.match(workflow, /build_snkr_listing_history\.js/);
 assert.match(updater, /sourceOnly === "all" \|\| sourceOnly === "yuyutei"/);
 assert.match(updater, /sourceOnly === "all" \|\| sourceOnly === "torecacamp"/);
 assert.match(finalizer, /return jstDate\(parsed\)/);
+assert.match(finalizer, /timeout_or_forced_exit/);
+assert.match(tracker, /TRACKED_TIMEOUT_MS/);
+assert.match(tracker, /timedOut/);
 assert.match(psaRunner, /Git sync warning; continuing acquisition/);
 assert.match(psaRunner, /acquire_psa_data\.ps1/);
 assert.match(psaRunner, /publish_psa_update\.ps1/);

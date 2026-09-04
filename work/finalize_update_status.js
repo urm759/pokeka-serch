@@ -45,6 +45,55 @@ const pokedata = read("data/pokedata-summary.json");
 const runs = read("work/source-update-runs.json", { sources: {} });
 const runHistory = read("work/source-update-history.json", { version: 1, sources: {} });
 const psaTask = read("work/psa_update_state.json", {});
+
+// A workflow-level timeout can terminate the tracker before it writes its final
+// state. Finalization runs after every source step, so any remaining "running"
+// entry is an interrupted run rather than an active one.
+let recoveredInterruptedRun = false;
+for (const [sourceId, run] of Object.entries(runs.sources || {})) {
+  if (run?.terminationReason === "timeout_or_forced_exit" && run.lastAttemptAt && run.startedAt !== run.lastAttemptAt) {
+    const endedAt = new Date(run.endedAt || Date.now());
+    const startedAt = new Date(run.lastAttemptAt);
+    run.startedAt = run.lastAttemptAt;
+    run.durationMs = Math.max(0, endedAt - startedAt);
+    const latestHistory = (runHistory.sources?.[sourceId] || []).findLast((entry) => entry.terminationReason === "timeout_or_forced_exit");
+    if (latestHistory) {
+      latestHistory.startedAt = run.startedAt;
+      latestHistory.durationMs = run.durationMs;
+    }
+    recoveredInterruptedRun = true;
+  }
+  if (run?.status !== "running") continue;
+  const endedAt = new Date();
+  const startedAt = new Date(run.lastAttemptAt || run.startedAt || endedAt);
+  const recovered = {
+    ...run,
+    startedAt: startedAt.toISOString(),
+    endedAt: endedAt.toISOString(),
+    durationMs: Math.max(0, endedAt - startedAt),
+    status: "failed",
+    sourceState: "取得処理が異常終了",
+    fetchFailureCount: Math.max(1, Number(run.fetchFailureCount || 0)),
+    timedOut: true,
+    terminationReason: "timeout_or_forced_exit",
+    lastError: "終了記録がないため、タイムアウトまたは強制終了として記録しました",
+  };
+  runs.sources[sourceId] = recovered;
+  runHistory.sources ||= {};
+  const history = Array.isArray(runHistory.sources[sourceId]) ? runHistory.sources[sourceId] : [];
+  if (!history.some((entry) => entry.startedAt === recovered.startedAt)) {
+    history.push({ sourceId, ...recovered });
+    runHistory.sources[sourceId] = history.slice(-60);
+  }
+  recoveredInterruptedRun = true;
+}
+if (recoveredInterruptedRun) {
+  const updatedAt = new Date().toISOString();
+  runs.updatedAt = updatedAt;
+  runHistory.updatedAt = updatedAt;
+  fs.writeFileSync(path.join(ROOT, "work", "source-update-runs.json"), JSON.stringify(runs), "utf8");
+  fs.writeFileSync(path.join(ROOT, "work", "source-update-history.json"), JSON.stringify(runHistory), "utf8");
+}
 const psaRowDates = (psa.rows || []).map((row) => validDate(row.fetchedAt)).filter(Boolean);
 const psaDateCounts = {};
 for (const date of psaRowDates) psaDateCounts[date] = (psaDateCounts[date] || 0) + 1;
@@ -84,9 +133,9 @@ for (const [sourceId, source] of Object.entries(sources)) {
   source.lastAttemptAt = run.lastAttemptAt || null;
   source.startedAt = run.startedAt || source.lastAttemptAt;
   source.endedAt = run.endedAt || null;
-  source.lastSuccessAt = run.lastSuccessAt || (source.date ? `${source.date}T00:00:00+09:00` : null);
   source.durationMs = Number.isFinite(run.durationMs) ? run.durationMs : null;
   source.status = run.status || source.status || (source.date ? "success" : "unknown");
+  source.lastSuccessAt = run.lastSuccessAt || (source.status === "success" && source.date ? `${source.date}T00:00:00+09:00` : null);
   const fallbackCount = source.coverageRows || countCurrentRecords(sourceId, ROOT);
   source.acquiredCount = Number.isFinite(run.acquiredCount) ? run.acquiredCount : (Number.isFinite(fallbackCount) ? fallbackCount : null);
   source.fetchFailureCount = Number.isFinite(run.fetchFailureCount) ? run.fetchFailureCount : null;

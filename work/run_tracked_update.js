@@ -12,22 +12,36 @@ if (!sourceId || !script) {
 const startedAt = new Date();
 const beforeCount = countCurrentRecords(sourceId);
 const beforeFingerprint = artifactFingerprint(sourceId);
-updateRun(sourceId, { lastAttemptAt: startedAt.toISOString(), status: "running" });
+const configuredTimeoutMs = Number(process.env.TRACKED_TIMEOUT_MS || 0);
+const timeoutMs = Number.isFinite(configuredTimeoutMs) && configuredTimeoutMs > 0 ? configuredTimeoutMs : undefined;
+updateRun(sourceId, {
+  lastAttemptAt: startedAt.toISOString(),
+  startedAt: startedAt.toISOString(),
+  endedAt: null,
+  durationMs: null,
+  status: "running",
+  timedOut: false,
+  terminationReason: null,
+  lastError: null,
+});
 const result = spawnSync(process.execPath, [path.resolve(ROOT, script), ...process.argv.slice(4)], {
   cwd: ROOT,
   env: process.env,
   encoding: "utf8",
   maxBuffer: 64 * 1024 * 1024,
+  timeout: timeoutMs,
+  killSignal: "SIGTERM",
 });
 if (result.stdout) process.stdout.write(result.stdout);
 if (result.stderr) process.stderr.write(result.stderr);
 
 const endedAt = new Date();
 const output = `${result.stdout || ""}\n${result.stderr || ""}`;
+const timedOut = result.error?.code === "ETIMEDOUT";
 const fetchFailureCount = [...output.matchAll(/\b(?:failed|failure|error)(?:Count)?\s*(?:[:=]\s*)?(\d+)?/gi)]
   .reduce((total, match) => total + (match[1] === "0" ? 0 : Number(match[1] || 1)), 0)
-  + (result.status !== 0 ? 1 : 0);
-const status = result.status !== 0 ? "failed" : fetchFailureCount > 0 ? "partial" : "success";
+  + (result.status !== 0 || timedOut ? 1 : 0);
+const status = result.status !== 0 || timedOut ? "failed" : fetchFailureCount > 0 ? "partial" : "success";
 const acquiredCount = countCurrentRecords(sourceId);
 const afterFingerprint = artifactFingerprint(sourceId);
 const dataChanged = afterFingerprint != null && beforeFingerprint !== afterFingerprint;
@@ -52,7 +66,11 @@ const record = {
   dataChanged,
   sourceState,
   fetchFailureCount,
-  lastError: status === "failed" ? String(result.error?.message || result.stderr || `exit ${result.status}`).slice(0, 500) : null,
+  timedOut,
+  terminationReason: timedOut ? "timeout" : result.signal ? `signal:${result.signal}` : null,
+  lastError: status === "failed"
+    ? String(timedOut ? `取得処理が${Math.round(timeoutMs / 1000)}秒でタイムアウトしました` : result.error?.message || result.stderr || `exit ${result.status}`).slice(0, 500)
+    : null,
 };
 if (status === "success") record.lastSuccessAt = endedAt.toISOString();
 updateRun(sourceId, record);
