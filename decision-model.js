@@ -189,9 +189,29 @@
       deadbandPct: Math.max(0, Number(input.config?.deadbandPct ?? 3)),
       increaseConfirmations: Math.max(2, Math.floor(Number(input.config?.increaseConfirmations ?? 3))),
       highConfidenceDays: Math.max(3, Math.floor(Number(input.config?.highConfidenceDays ?? 7))),
+      initialSafetyFactor: clamp(Number(input.config?.initialSafetyFactor ?? 1), 0.5, 1),
     };
     if (!previous) {
-      return { theoretical, operational: rounded, previous: null, change: null, changePct: null, reason: "上限履歴を蓄積中", confidence: "蓄積中", provisional: true, step };
+      const operational = Math.floor((rounded * config.initialSafetyFactor) / step) * step;
+      const safetyText = config.initialSafetyFactor < 1
+        ? `初回安全係数 ${(config.initialSafetyFactor * 100).toFixed(0)}%を適用`
+        : "初回は理論最終上限を価格帯単位で切り下げ";
+      return {
+        theoretical,
+        roundedTheoretical: rounded,
+        operational,
+        previous: null,
+        previousDate: null,
+        initial: true,
+        initialSafetyFactor: config.initialSafetyFactor,
+        smoothing: "平滑化なし",
+        change: null,
+        changePct: null,
+        reason: safetyText,
+        confidence: "蓄積中",
+        provisional: true,
+        step,
+      };
     }
     const previousOperational = Math.max(0, Number(previous.operational));
     let operational = previousOperational;
@@ -215,7 +235,22 @@
     const change = operational - previousOperational;
     const changePct = previousOperational > 0 ? change / previousOperational * 100 : null;
     const confidence = distinctDays >= config.highConfidenceDays ? "確定度高" : distinctDays >= 3 ? "確定度中" : "蓄積中";
-    return { theoretical, operational, previous: previousOperational, change, changePct, reason, confidence, provisional: distinctDays < 3, step };
+    return {
+      theoretical,
+      roundedTheoretical: rounded,
+      operational,
+      previous: previousOperational,
+      previousDate: dateOnly(previous.date),
+      initial: false,
+      initialSafetyFactor: null,
+      smoothing: reason.includes("値上げ") ? `${config.increaseConfirmations}回確認後の中央値` : reason.includes("維持") || reason.includes("確認中") ? `デッドバンド ${config.deadbandPct}%` : "危険方向は平滑化せず即時反映",
+      change,
+      changePct,
+      reason,
+      confidence,
+      provisional: distinctDays < 3,
+      step,
+    };
   }
 
   function capitalPlan(settings) {
@@ -272,6 +307,83 @@
     const expectedRoi = investment > 0 ? expectedProfit / investment * 100 : NaN;
     const annualEfficiency = investment > 0 && Number(input.lockDays) > 0 ? expectedRoi * 365 / Number(input.lockDays) : NaN;
     return { purchasePrice, psa10Net, lowerGradeNet, expectedSaleBeforeRisk, expectedSale, expectedProfit, expectedRoi, annualEfficiency };
+  }
+
+  function economicsScenarioMatrix(input = {}) {
+    const purchasePrices = {
+      currentPurchase: Number(input.currentPurchasePrice),
+      operationalLimit: Number(input.operationalLimitPrice),
+    };
+    const salePrices = {
+      currentMarket: Number(input.currentPsa10Price),
+      centralForecast: Number(input.centralForecastPrice),
+      supplyStress: Number(input.supplyStressPrice),
+    };
+    const calculate = (purchasePrice, forecastPrice) => {
+      if (!(purchasePrice > 0) || !(forecastPrice > 0) || !input.assumptions) return null;
+      return expectedEconomics({ ...input, purchasePrice, forecastPrice, riskBufferPct: 0 });
+    };
+    return Object.fromEntries(Object.entries(purchasePrices).map(([purchaseKey, purchasePrice]) => [
+      purchaseKey,
+      Object.fromEntries(Object.entries(salePrices).map(([saleKey, salePrice]) => [saleKey, calculate(purchasePrice, salePrice)])),
+    ]));
+  }
+
+  function purchaseAvailability(input = {}) {
+    const marketPrice = Number(input.marketPrice);
+    const finalLimit = Number(input.finalLimit);
+    const offer = input.offer && typeof input.offer === "object" ? input.offer : null;
+    const marketWithinLimit = marketPrice > 0 && finalLimit > 0 && marketPrice <= finalLimit;
+    const offerPrice = Number(offer?.value);
+    const offerFresh = offer?.fresh === true;
+    const offerInStock = offer?.available === true;
+    const priceReviewRequired = input.priceReviewRequired === true;
+    const decisionBlocked = ["見送り", "要確認", "資金不足"].includes(String(input.verdict || ""));
+    const verifiedNow = finalLimit > 0
+      && offerPrice > 0
+      && offerPrice <= finalLimit
+      && offerFresh
+      && offerInStock
+      && !priceReviewRequired
+      && !decisionBlocked;
+    let label = "上限価格待ち";
+    let reason = finalLimit > 0 ? `購入可能価格が上限¥${Math.floor(finalLimit).toLocaleString("ja-JP")}を超過または未取得` : "有効な仕入れ上限なし";
+    if (priceReviewRequired) {
+      label = "価格要確認";
+      reason = "価格乖離または紐付けを手動確認するまで購入不可";
+    } else if (verifiedNow) {
+      label = "購入先確認済み／今すぐ仕入れ";
+      reason = `${offer.source || "販売店"}の在庫あり価格¥${Math.floor(offerPrice).toLocaleString("ja-JP")}を確認`;
+    } else if (marketWithinLimit) {
+      label = "相場基準では仕入れ圏";
+      reason = "基準相場は上限以下だが、新しい在庫あり購入先は未確認";
+    }
+    return {
+      marketWithinLimit,
+      verifiedNow,
+      label,
+      reason,
+      offerPrice: offerPrice > 0 ? offerPrice : null,
+      offerFresh,
+      offerInStock,
+    };
+  }
+
+  function bargainDecisionEligible(input = {}) {
+    return String(input.verdict || "") === "価格次第" || String(input.goConfidence || "") === "暫定GO";
+  }
+
+  function operationalCapConcentration(values) {
+    const frequencies = new Map();
+    for (const value of Array.isArray(values) ? values : []) {
+      const price = Number(value);
+      if (!(price > 0) || !Number.isFinite(price)) continue;
+      frequencies.set(price, (frequencies.get(price) || 0) + 1);
+    }
+    const ranked = [...frequencies.entries()].sort((left, right) => right[1] - left[1] || left[0] - right[0]);
+    const [price = null, count = 0] = ranked[0] || [];
+    const total = [...frequencies.values()].reduce((sum, value) => sum + value, 0);
+    return { price, count, total, sharePct: total > 0 ? count / total * 100 : null };
   }
 
   function maxBuyPrice(input) {
@@ -562,5 +674,5 @@
     };
   }
 
-  return { aggregatePrices, capRoundingStep, capitalLimits, capitalPlan, expectedEconomics, gradeAssumptions, isSuspectedCardMismatch, matchConfidenceLabel, maxBuyPrice, median, operationalCap, portfolioPlan, portfolioStress, purchaseCaps, purchaseDecision, purchaseLimitMarketRatio, resilienceMetrics, resolvePsa9Price, targetProfitMaxBuyPrice, weightedMedian };
+  return { aggregatePrices, bargainDecisionEligible, capRoundingStep, capitalLimits, capitalPlan, economicsScenarioMatrix, expectedEconomics, gradeAssumptions, isSuspectedCardMismatch, matchConfidenceLabel, maxBuyPrice, median, operationalCap, operationalCapConcentration, portfolioPlan, portfolioStress, purchaseAvailability, purchaseCaps, purchaseDecision, purchaseLimitMarketRatio, resilienceMetrics, resolvePsa9Price, targetProfitMaxBuyPrice, weightedMedian };
 });

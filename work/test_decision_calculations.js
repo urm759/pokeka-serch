@@ -149,9 +149,17 @@ assert.equal(psa9Fallback.estimated, true);
 const initialOperational = model.operationalCap({ theoreticalCap: 63400, history: [] });
 assert.equal(initialOperational.operational, 62500);
 assert.equal(initialOperational.provisional, true);
+assert.equal(initialOperational.initial, true);
+assert.equal(initialOperational.previous, null);
+assert.equal(initialOperational.previousDate, null);
+assert.equal(initialOperational.initialSafetyFactor, 1);
+assert.equal(initialOperational.smoothing, "平滑化なし");
+assert.notEqual(initialOperational.operational, 50000, "初回上限へ固定5万円を混入しない");
 const loweredOperational = model.operationalCap({ theoreticalCap: 35000, history: [{ date: "2026-09-03", theoretical: 40000, operational: 40000 }] });
 assert.equal(loweredOperational.operational, 35000);
 assert.equal(loweredOperational.reason, "危険方向のため上限引き下げを即時反映");
+assert.equal(loweredOperational.initial, false);
+assert.equal(loweredOperational.previousDate, "2026-09-03");
 const deadbandOperational = model.operationalCap({ theoreticalCap: 41000, history: [{ date: "2026-09-03", theoretical: 40000, operational: 40000 }] });
 assert.equal(deadbandOperational.operational, 40000);
 const confirmedRaise = model.operationalCap({ theoreticalCap: 47000, history: [
@@ -218,6 +226,65 @@ assert.ok(lillieResilience.psa9NonLossMaxPrice >= 29000 && lillieResilience.psa9
 assert.ok(lillieResilience.expectedBreakEvenPrice > 0);
 assert.ok(lillieResilience.breakEvenRoom.amount > 0);
 assert.ok(lillieResilience.bearishExpectedProfit < 0);
+
+const lillieScenarioMatrix = model.economicsScenarioMatrix({
+  ...lillieBase,
+  currentPurchasePrice: 61400,
+  operationalLimitPrice: 41000,
+  currentPsa10Price: 109900,
+  centralForecastPrice: 102700,
+  supplyStressPrice: 62500,
+});
+for (const saleKey of ["currentMarket", "centralForecast", "supplyStress"]) {
+  const atCurrent = lillieScenarioMatrix.currentPurchase[saleKey];
+  const atLimit = lillieScenarioMatrix.operationalLimit[saleKey];
+  const expectedAtLimit = atCurrent.expectedProfit - (41000 - 61400);
+  assert.ok(Math.abs(atLimit.expectedProfit - expectedAtLimit) < 0.000001, `${saleKey}の仕入値差分が一致`);
+}
+assert.ok(lillieScenarioMatrix.currentPurchase.currentMarket.expectedProfit > lillieScenarioMatrix.currentPurchase.centralForecast.expectedProfit);
+assert.ok(lillieScenarioMatrix.currentPurchase.centralForecast.expectedProfit > lillieScenarioMatrix.currentPurchase.supplyStress.expectedProfit);
+
+const verifiedAvailability = model.purchaseAvailability({
+  marketPrice: 45000,
+  finalLimit: 50000,
+  offer: { source: "店舗A", value: 48000, fresh: true, available: true },
+  verdict: "GO",
+});
+assert.equal(verifiedAvailability.marketWithinLimit, true);
+assert.equal(verifiedAvailability.verifiedNow, true);
+assert.equal(verifiedAvailability.label, "購入先確認済み／今すぐ仕入れ");
+const marketOnlyAvailability = model.purchaseAvailability({ marketPrice: 45000, finalLimit: 50000, verdict: "GO" });
+assert.equal(marketOnlyAvailability.verifiedNow, false);
+assert.equal(marketOnlyAvailability.label, "相場基準では仕入れ圏");
+const staleAvailability = model.purchaseAvailability({
+  marketPrice: 45000,
+  finalLimit: 50000,
+  offer: { source: "店舗A", value: 48000, fresh: false, available: true },
+  verdict: "GO",
+});
+assert.equal(staleAvailability.verifiedNow, false);
+const unavailableOffer = model.purchaseAvailability({
+  marketPrice: 45000,
+  finalLimit: 50000,
+  offer: { source: "店舗A", value: 48000, fresh: true, available: false },
+  verdict: "GO",
+});
+assert.equal(unavailableOffer.verifiedNow, false);
+const reviewAvailability = model.purchaseAvailability({
+  marketPrice: 45000,
+  finalLimit: 50000,
+  offer: { source: "店舗A", value: 48000, fresh: true, available: true },
+  verdict: "要確認",
+  priceReviewRequired: true,
+});
+assert.equal(reviewAvailability.verifiedNow, false);
+assert.equal(reviewAvailability.label, "価格要確認");
+assert.equal(model.bargainDecisionEligible({ verdict: "見送り", goConfidence: "GO・高リスク" }), false);
+assert.equal(model.bargainDecisionEligible({ verdict: "価格次第" }), true);
+assert.equal(model.bargainDecisionEligible({ verdict: "GO", goConfidence: "暫定GO" }), true);
+
+const concentration = model.operationalCapConcentration([50000, 50000, 62500, 41000, 50000, 0, null]);
+assert.deepEqual(concentration, { price: 50000, count: 3, total: 5, sharePct: 60 });
 
 const lillieCurrentAtFinal = model.expectedEconomics({ ...lillieBase, forecastPrice: 109900, purchasePrice: lillieStressNoLoss });
 const lillieStressAtFinal = model.expectedEconomics({ ...lillieBase, forecastPrice: 62500, purchasePrice: lillieStressNoLoss });
@@ -302,5 +369,9 @@ console.log(JSON.stringify({
   economics: { expectedSale: economics.expectedSale, expectedProfit: economics.expectedProfit, expectedRoi: Number(economics.expectedRoi.toFixed(1)) },
   outlier: { median: prices.value, excluded: prices.outliers[0], majorityMedian: majorityPrices.value },
   lillie: { normal: lillieNormal, stressNoLoss: lillieStressNoLoss, ultraLowRisk: lillieUltra, psa9NoLoss: Math.floor(lillieResilience.psa9NonLossMaxPrice / 500) * 500, bearishExpectedProfitAtCurrentRaw: Math.round(lillieResilience.bearishExpectedProfit) },
+  scenarios: Object.fromEntries(Object.entries(lillieScenarioMatrix).map(([purchaseKey, scenarios]) => [purchaseKey, Object.fromEntries(Object.entries(scenarios).map(([saleKey, result]) => [saleKey, { expectedProfit: Math.round(result.expectedProfit), expectedRoi: Number(result.expectedRoi.toFixed(1)) }]))])),
+  availability: { verified: verifiedAvailability.label, marketOnly: marketOnlyAvailability.label, review: reviewAvailability.label },
+  representativeReasons: { verifiedOffer: verifiedAvailability.reason, marketOnly: marketOnlyAvailability.reason, initialLimit: initialOperational.reason, priceConditional: stressPriceDecision.reasons },
+  operationalAudit: { initial: initialOperational, concentration },
   decisions: { profitable: go.verdict, negativeAtCurrentPrice: stop.verdict, manualReview: manualReview.verdict, dataShortage: dataShortage.verdict, capitalShortage: capitalShortage.verdict, lowQuality: lowQuality.verdict, noViablePrice: noViablePrice.verdict },
 }, null, 2));
