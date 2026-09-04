@@ -1,5 +1,6 @@
 param([switch]$Force)
 $ErrorActionPreference = 'Stop'
+$StartedAt = Get-Date
 $Repo = Split-Path -Parent $PSScriptRoot
 $Node = 'C:\Users\polar\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe'
 $Git = 'C:\Program Files\Git\cmd\git.exe'
@@ -31,10 +32,10 @@ if ($LASTEXITCODE -ne 0) { throw 'PSA official population update failed.' }
 if ($LASTEXITCODE -ne 0) { throw 'Snkr English name update failed.' }
 & $Node (Join-Path $PSScriptRoot 'build_psa_history.js')
 if ($LASTEXITCODE -ne 0) { throw 'PSA history build failed.' }
+$CompletedAt = Get-Date
+@{ lastSuccessDate=$Today; lastSuccessSlot=$SuccessSlot; lastSuccessAt=$CompletedAt.ToString('o'); lastAttemptAt=$StartedAt.ToString('o'); durationMs=[math]::Round(($CompletedAt - $StartedAt).TotalMilliseconds); status='success'; fetchFailureCount=0; lastError=$null } | ConvertTo-Json | Set-Content -Path $StatePath -Encoding utf8
 & $Node (Join-Path $PSScriptRoot 'finalize_update_status.js')
 if ($LASTEXITCODE -ne 0) { throw 'Update status finalization failed.' }
-
-@{ lastSuccessDate=$Today; lastSuccessSlot=$SuccessSlot; lastSuccessAt=(Get-Date).ToString('o') } | ConvertTo-Json | Set-Content -Path $StatePath -Encoding utf8
 & $Git -C $Repo add data/psa-official-populations.json data/psa-official-populations.js data/psa-population-summary.json data/psa-history data/update-status.json work/snkr_english_names.json work/psa_update_state.json work/psa_priority_queue.json
 & $Git -C $Repo diff --cached --quiet
 if ($LASTEXITCODE -ne 0) {
@@ -49,6 +50,8 @@ if ($LASTEXITCODE -ne 0) {
 } catch {
   $FailurePath = Join-Path $LogDir 'psa-update-last-failure.json'
   @{ failedAt=(Get-Date).ToString('o'); message=$_.Exception.Message; log=$LogPath } | ConvertTo-Json | Set-Content -Path $FailurePath -Encoding utf8
+  $PreviousState = if (Test-Path $StatePath) { Get-Content $StatePath -Raw | ConvertFrom-Json } else { [pscustomobject]@{} }
+  @{ lastSuccessDate=$PreviousState.lastSuccessDate; lastSuccessSlot=$PreviousState.lastSuccessSlot; lastSuccessAt=$PreviousState.lastSuccessAt; lastAttemptAt=$StartedAt.ToString('o'); durationMs=[math]::Round(((Get-Date) - $StartedAt).TotalMilliseconds); status='failed'; fetchFailureCount=1; lastError=$_.Exception.Message } | ConvertTo-Json | Set-Content -Path $StatePath -Encoding utf8
   Write-Error "PSA scheduled update failed. Log: $LogPath`n$($_.Exception.Message)"
   exit 1
 } finally {

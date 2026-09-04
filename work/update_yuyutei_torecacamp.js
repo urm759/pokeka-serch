@@ -159,6 +159,7 @@ async function updateYuyutei(cards, paths) {
     .sort((a, b) => Number(b.tv30 || 0) - Number(a.tv30 || 0) || Number(b.price || 0) - Number(a.price || 0))
     .slice(0, Math.max(1, Number(process.env.YUYUTEI_SEARCH_BATCH || 100)));
   let linked = 0;
+  let failed = 0;
   await mapLimit(targets, Math.max(1, Number(process.env.YUYUTEI_CONCURRENCY || 3)), async (card) => {
     const signature = cardSignature(card); const signatureKey = JSON.stringify(signature);
     try {
@@ -173,7 +174,7 @@ async function updateYuyutei(cards, paths) {
       progress.attemptedCards[card.id] = { signature: signatureKey, checkedAt: new Date().toISOString(), found: Boolean(match) };
       if (!match) return;
       byId.set(card.id, { cardId: card.id, ...match, observedAt: jstDate() }); linked += 1;
-    } catch (error) { console.warn(`yuyutei search failed ${card.id}: ${error.message}`); }
+    } catch (error) { failed += 1; console.warn(`yuyutei search failed ${card.id}: ${error.message}`); }
   });
   catalog = [...byId.values()];
   const index = appendDate(history, jstDate());
@@ -182,7 +183,7 @@ async function updateYuyutei(cards, paths) {
   const summary = historySummary(cards, catalog, history, "yuyuteiPrice");
   write(paths.catalog, catalog); write(paths.history, history); write(paths.progress, progress);
   write(paths.summary, { updatedAt: jstDate(), stockType: "point", cards: summary });
-  return { linked, coverage: catalog.length };
+  return { linked, attempted: targets.length, failed, coverage: catalog.length };
 }
 
 function campA(variant) { return /(?:^|【\s*)状態A(?:\s*】|$)/.test(String(variant?.title || variant?.option1 || "")); }
@@ -207,10 +208,10 @@ async function updateTorecaCamp(cards, paths) {
   const byNumber = new Map();
   for (const card of cards) { const signature = cardSignature(card); if (signature.cardNo) { if (!byNumber.has(signature.cardNo)) byNumber.set(signature.cardNo, []); byNumber.get(signature.cardNo).push(card); } }
   const pageCount = Math.max(1, Number(process.env.TORECACAMP_PAGES_PER_RUN || 6));
-  let page = Math.max(1, Number(progress.page || 1)); let fetched = 0; let linked = 0;
+  let page = Math.max(1, Number(progress.page || 1)); let fetched = 0; let linked = 0; let failed = 0;
   for (let count = 0; count < pageCount && !progress.exhausted; count += 1, page += 1) {
     let products = [];
-    try { products = (await fetchJson(`${TORECA_CAMP}/products.json?limit=250&page=${page}`)).products || []; } catch (error) { console.warn(`torecacamp page ${page} failed: ${error.message}`); break; }
+    try { products = (await fetchJson(`${TORECA_CAMP}/products.json?limit=250&page=${page}`)).products || []; } catch (error) { failed += 1; console.warn(`torecacamp page ${page} failed: ${error.message}`); break; }
     fetched += products.length;
     if (products.length < 250) progress.exhausted = true;
     for (const product of products) {
@@ -229,23 +230,24 @@ async function updateTorecaCamp(cards, paths) {
   const summary = {};
   for (const entry of nextCatalog) summary[entry.cardId] = { torecacampPrice: Number(entry.price) || null, available: entry.available, availabilityLabel: entry.available ? "在庫あり" : "在庫なし" };
   write(paths.catalog, nextCatalog); write(paths.progress, progress); write(paths.summary, { updatedAt: jstDate(), stockType: "availability", cards: summary });
-  return { linked, fetched, coverage: nextCatalog.length };
+  return { linked, fetched, failed, coverage: nextCatalog.length };
 }
 
 async function main() {
   const cards = read(path.join(ROOT, "data", "pokemon-cards.json"), []);
-  const yuyutei = await updateYuyutei(cards, {
+  const sourceOnly = String(process.env.SHOP_SOURCE_ONLY || "all").toLowerCase();
+  const yuyutei = sourceOnly === "all" || sourceOnly === "yuyutei" ? await updateYuyutei(cards, {
     catalog: path.join(__dirname, "yuyutei_catalog.json"), history: path.join(__dirname, "yuyutei_stock_history.json"), progress: path.join(__dirname, "yuyutei_progress.json"), summary: path.join(ROOT, "data", "yuyutei-stock-summary.json"),
-  });
-  const torecacamp = await updateTorecaCamp(cards, {
+  }) : null;
+  const torecacamp = sourceOnly === "all" || sourceOnly === "torecacamp" ? await updateTorecaCamp(cards, {
     catalog: path.join(__dirname, "torecacamp_catalog.json"), progress: path.join(__dirname, "torecacamp_progress.json"), summary: path.join(ROOT, "data", "torecacamp-stock-summary.json"),
-  });
+  }) : null;
   const latestCards = read(path.join(ROOT, "data", "pokemon-cards.json"), []);
   const yuyuteiById = new Map(read(path.join(__dirname, "yuyutei_catalog.json"), []).map((entry) => [entry.cardId, entry]));
   const campById = new Map(read(path.join(__dirname, "torecacamp_catalog.json"), []).map((entry) => [entry.cardId, entry]));
   const resetCamp = process.env.TORECACAMP_RESET === "1";
   const updatedCards = latestCards.map((card) => ({ ...card, yuyuteiUrl: yuyuteiById.get(card.id)?.detailUrl || card.yuyuteiUrl || null, torecacampUrl: campById.get(card.id)?.detailUrl || (resetCamp ? null : card.torecacampUrl) || null }));
   write(path.join(ROOT, "data", "pokemon-cards.json"), updatedCards);
-  console.log(JSON.stringify({ yuyutei, torecacamp }));
+  console.log(JSON.stringify({ sourceOnly, yuyutei, torecacamp }));
 }
 main().catch((error) => { console.error(error); process.exitCode = 1; });

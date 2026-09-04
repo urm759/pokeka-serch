@@ -23,6 +23,7 @@ const state = {
   psaServices: null,
   evaluationModel: null,
   updateStatus: null,
+  linkCoverage: null,
   sourceUpdates: Object.create(null),
   operationalLimitHistory: Object.create(null),
   snkrUrlCache: Object.create(null),
@@ -215,7 +216,9 @@ const els = {
   operationalConcentrationStat: document.getElementById("operationalConcentrationStat"),
   updatedAt: document.getElementById("updatedAt"),
   dataFreshness: document.getElementById("dataFreshness"),
+  freshnessSummary: document.getElementById("freshnessSummary"),
   cardrushCoverage: document.getElementById("cardrushCoverage"),
+  linkCoverageDetails: document.getElementById("linkCoverageDetails"),
   copyLinkBtn: document.getElementById("copyLinkBtn"),
   exportSearchBtn: document.getElementById("exportSearchBtn"),
   importSearchInput: document.getElementById("importSearchInput"),
@@ -517,6 +520,89 @@ function escapeHtml(value) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+function formatJstTimestamp(value) {
+  if (!value) return "未記録";
+  const parsed = new Date(value);
+  if (!Number.isFinite(parsed.getTime())) return String(value);
+  return parsed.toLocaleString("ja-JP", {
+    timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit",
+  });
+}
+
+function formatDuration(milliseconds) {
+  if (!Number.isFinite(milliseconds)) return "未記録";
+  const seconds = Math.max(0, Math.round(milliseconds / 1000));
+  if (seconds < 60) return `${seconds}秒`;
+  const minutes = Math.floor(seconds / 60);
+  return `${minutes}分${String(seconds % 60).padStart(2, "0")}秒`;
+}
+
+function formatRate(value) {
+  return Number.isFinite(value) ? `${Number(value).toFixed(2)}%` : "算出不可";
+}
+
+function renderSourceObservability() {
+  const sources = state.updateStatus?.sources || {};
+  const sourceList = Object.values(sources);
+  if (els.freshnessSummary) {
+    const failed = sourceList.filter((source) => source.status === "failed").length;
+    const partial = sourceList.filter((source) => source.status === "partial").length;
+    const stale = sourceList.filter((source) => !source.fresh && !["failed", "partial"].includes(source.status)).length;
+    els.freshnessSummary.textContent = failed ? `失敗 ${fmt.format(failed)}件` : partial ? `一部失敗 ${fmt.format(partial)}件` : stale ? `未完了 ${fmt.format(stale)}件` : "全取得元 更新済み";
+  }
+  if (els.dataFreshness) {
+    els.dataFreshness.innerHTML = sourceList.map((source) => {
+      const className = source.status === "failed" ? "failed" : source.status === "partial" ? "partial" : source.fresh ? "fresh" : "stale";
+      const statusLabel = source.status === "failed" ? "失敗" : source.status === "partial" ? "一部失敗" : source.fresh ? "成功・最新" : source.status === "success" ? "成功・日付が古い" : "未記録";
+      const count = Number.isFinite(source.acquiredCount) ? fmt.format(source.acquiredCount) : "未記録";
+      const failures = Number.isFinite(source.fetchFailureCount) ? fmt.format(source.fetchFailureCount) : "未記録";
+      return `<article class="source-status-card ${className}">
+        <div class="source-status-head"><strong>${escapeHtml(source.label)}</strong><b>${statusLabel}</b></div>
+        <dl>
+          <div><dt>最終試行</dt><dd>${escapeHtml(formatJstTimestamp(source.lastAttemptAt))}</dd></div>
+          <div><dt>最終成功</dt><dd>${escapeHtml(formatJstTimestamp(source.lastSuccessAt))}</dd></div>
+          <div><dt>所要時間</dt><dd>${escapeHtml(formatDuration(source.durationMs))}</dd></div>
+          <div><dt>取得件数</dt><dd>${count}</dd></div>
+          <div><dt>取得失敗数</dt><dd>${failures}</dd></div>
+          <div><dt>次回予定</dt><dd>${escapeHtml(formatJstTimestamp(source.nextScheduledAt))}</dd></div>
+        </dl>
+        ${source.lastError ? `<p>直近エラー: ${escapeHtml(source.lastError)}</p>` : ""}
+      </article>`;
+    }).join("");
+  }
+
+  const coverage = state.linkCoverage?.current?.storeCoverage;
+  const stores = coverage?.stores ? Object.values(coverage.stores) : [];
+  if (els.cardrushCoverage) {
+    const problemCount = stores.filter((store) => store.unmatched > 0).length;
+    els.cardrushCoverage.textContent = stores.length ? `${fmt.format(stores.length)}店舗を同じ項目で比較 / 未紐付けあり ${fmt.format(problemCount)}店舗` : "集計中";
+  }
+  if (els.linkCoverageDetails) {
+    els.linkCoverageDetails.innerHTML = stores.length ? stores.map((store) => {
+      const reasons = (store.mainUnmatchedReasons || []).map((item) => `${escapeHtml(item.label)} ${fmt.format(item.count)}件`).join(" / ") || "なし";
+      const failures = Number.isFinite(store.fetchFailureCount) ? fmt.format(store.fetchFailureCount) : "未記録";
+      return `<article class="coverage-card">
+        <div class="coverage-head"><strong>${escapeHtml(store.label)}</strong><b>対象内 ${formatRate(store.targetCoveragePct)}</b></div>
+        <p class="coverage-definition">照合対象: ${escapeHtml(store.targetDefinition)}</p>
+        <dl>
+          <div><dt>取得商品数</dt><dd>${fmt.format(store.fetchedProducts)}</dd></div>
+          <div><dt>取得一意カード数</dt><dd>${fmt.format(store.fetchedUniqueCards)}</dd></div>
+          <div><dt>サイト全カード数</dt><dd>${fmt.format(store.totalCards)}</dd></div>
+          <div><dt>照合対象カード数</dt><dd>${fmt.format(store.targetCards)}</dd></div>
+          <div><dt>対象内 紐付け</dt><dd>${fmt.format(store.matched)}</dd></div>
+          <div><dt>対象内 未紐付け</dt><dd>${fmt.format(store.unmatched)}</dd></div>
+          <div><dt>取得商品内の成功率</dt><dd>${formatRate(store.fetchedProductMatchRatePct)}</dd></div>
+          <div><dt>全${fmt.format(store.totalCards)}枚中のカバー率</dt><dd>${formatRate(store.totalCoveragePct)}</dd></div>
+          <div><dt>最終成功</dt><dd>${escapeHtml(formatJstTimestamp(store.lastSuccessAt))}</dd></div>
+          <div><dt>取得失敗数</dt><dd>${failures}</dd></div>
+        </dl>
+        <p class="coverage-reasons"><b>主な未紐付け理由</b> ${reasons}</p>
+      </article>`;
+    }).join("") : `<p class="empty-note">連携監査データを生成中です。</p>`;
+  }
 }
 
 function loadFavorites() {
@@ -2476,20 +2562,7 @@ function render() {
   if (els.updatedAt) {
     els.updatedAt.textContent = state.updateStatus?.completeDate || "自動更新 未完了";
   }
-  if (els.dataFreshness && state.updateStatus?.sources) {
-    els.dataFreshness.innerHTML = Object.values(state.updateStatus.sources).map((source) => {
-      const className = source.fresh ? "fresh" : "stale";
-      const pending = Number(source.pendingCount || 0) > 0 ? ` / 画像照合待ち ${fmt.format(source.pendingCount)}件` : "";
-      return `<span class="${className}">${escapeHtml(source.label)} ${escapeHtml(source.date || "未取得")}${pending}</span>`;
-    }).join("");
-  }
-  if (els.cardrushCoverage) {
-    const cr = meta.cardrushCoverage;
-    const h2 = meta.hareruya2Coverage;
-    const cardrushText = cr?.total ? `カードラッシュ ${fmt.format(cr.linked)} / ${fmt.format(cr.total)}` : "カードラッシュ 集計中";
-    const hareruya2Text = h2?.total ? `晴れる屋2 ${fmt.format(h2.matched)} / ${fmt.format(h2.total)}` : "晴れる屋2 取得準備中";
-    els.cardrushCoverage.textContent = `${cardrushText} / ${hareruya2Text}`;
-  }
+  renderSourceObservability();
   renderGuide();
   const visibleCards = enriched.slice(0, state.visibleLimit);
   if (els.resultProgress) {
@@ -3139,6 +3212,7 @@ async function init() {
   loadOperationalLimitHistory();
   try {
     state.updateStatus = await fetchJsonMaybe("./data/update-status.json");
+    state.linkCoverage = await fetchJsonMaybe("./data/link-coverage.json");
     state.psaServices = await fetchJsonMaybe("./data/psa-japan-services.json");
     state.evaluationModel = await fetchJsonMaybe("./data/evaluation-model.json");
     populatePsaPlans({ updateLockDays: !new URL(window.location.href).searchParams.has("lock") });

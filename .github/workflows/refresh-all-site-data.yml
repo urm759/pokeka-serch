@@ -2,6 +2,22 @@ name: Refresh All Site Data
 
 on:
   workflow_dispatch:
+    inputs:
+      source:
+        description: "更新対象（失敗した取得元だけ再実行できます）"
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - toreca
+          - cardrush
+          - hareruya2
+          - yuyutei
+          - torecacamp
+          - shopBuyback
+          - marketAnalysis
+          - psaJapan
   schedule:
     # 04:30 JST (finish target: 06:00) and 17:00 JST every day.
     - cron: "30 19 * * *"
@@ -28,14 +44,43 @@ jobs:
           node-version: "20"
 
       - name: Update PSA Japan plans and turnaround times
-        run: node work/update_psa_japan_services.js
+        if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'psaJapan'
+        continue-on-error: true
+        run: node work/run_tracked_update.js psaJapan work/update_psa_japan_services.js
 
       - name: Update Pokemon cards and prices
+        if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'toreca'
+        continue-on-error: true
         env:
           SNKR_BATCH: "0"
-        run: node work/update_pokemon_site.js
+        run: node work/run_tracked_update.js toreca work/update_pokemon_site.js
+
+      - name: Link Yu-Yu-Tei state-A listings
+        if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'yuyutei'
+        timeout-minutes: 10
+        continue-on-error: true
+        env:
+          SHOP_SOURCE_ONLY: "yuyutei"
+          YUYUTEI_SEARCH_BATCH: "5"
+          YUYUTEI_CONCURRENCY: "2"
+          SHOP_FETCH_RETRIES: "1"
+          SHOP_FETCH_TIMEOUT_MS: "12000"
+        run: node work/run_tracked_update.js yuyutei work/update_yuyutei_torecacamp.js
+
+      - name: Link Toreca Camp state-A listings
+        if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'torecacamp'
+        timeout-minutes: 10
+        continue-on-error: true
+        env:
+          SHOP_SOURCE_ONLY: "torecacamp"
+          TORECACAMP_PAGES_PER_RUN: "6"
+          SHOP_FETCH_RETRIES: "1"
+          SHOP_FETCH_TIMEOUT_MS: "12000"
+        run: node work/run_tracked_update.js torecacamp work/update_yuyutei_torecacamp.js
 
       - name: Resolve all Snkrdunk direct links
+        if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'toreca'
+        continue-on-error: true
         env:
           SNKR_BATCH: "250"
           SNKR_CONCURRENCY: "20"
@@ -44,46 +89,47 @@ jobs:
         run: node work/update_snkr_links.js
 
       - name: Cache Snkrdunk English names for PSA matching
+        if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'toreca'
+        continue-on-error: true
         env:
           PSA_ENGLISH_BATCH: "120"
           PSA_ENGLISH_CONCURRENCY: "6"
         run: node work/update_snkr_english_names.js
 
       - name: Rebuild verified PSA history links
+        if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'toreca'
+        continue-on-error: true
         run: node work/build_psa_history.js
 
       - name: Resolve only new or unresolved Cardrush listings
+        if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'cardrush'
+        continue-on-error: true
         env:
           CARDRUSH_SEED_BATCH: "8"
           CARDRUSH_TARGET_BATCH: "80"
           CARDRUSH_CONCURRENCY: "2"
-        run: node work/update_cardrush_links.js
+        run: node work/run_tracked_update.js cardrush work/update_cardrush_links.js
 
       - name: Record Cardrush stock and audit states
+        if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'cardrush'
+        continue-on-error: true
         env:
           CARDRUSH_REQUIRE_FRESH: "1"
-        run: node work/update_cardrush_stock.js
+        run: node work/run_tracked_update.js cardrush work/update_cardrush_stock.js
 
       - name: Link Hareruya2 state-A listings and record stock
+        if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'hareruya2'
+        continue-on-error: true
         env:
           HARERUYA2_COLLECTION_BATCH: "12"
           HARERUYA2_COLLECTION_CONCURRENCY: "5"
           HARERUYA2_STOCK_BATCH: "800"
           HARERUYA2_STOCK_CONCURRENCY: "10"
-        run: node work/update_hareruya2_stock.js
-
-      - name: Link Yu-Yu-Tei and Toreca Camp state-A listings
-        timeout-minutes: 10
-        continue-on-error: true
-        env:
-          YUYUTEI_SEARCH_BATCH: "5"
-          YUYUTEI_CONCURRENCY: "2"
-          TORECACAMP_PAGES_PER_RUN: "6"
-          SHOP_FETCH_RETRIES: "1"
-          SHOP_FETCH_TIMEOUT_MS: "12000"
-        run: node work/update_yuyutei_torecacamp.js
+        run: node work/run_tracked_update.js hareruya2 work/update_hareruya2_stock.js
 
       - name: Verify priority Cardrush direct links from product pages
+        if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'cardrush'
+        continue-on-error: true
         shell: bash
         run: |
           for id in pk-731 pk-38030 pk-3123 pk-1180 pk-7040 pk-1168 x-141447; do
@@ -91,10 +137,14 @@ jobs:
           done
 
       - name: Record shop PSA10 buyback listings
-        run: node work/update_shop_buybacks.js
+        if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'shopBuyback'
+        continue-on-error: true
+        run: node work/run_tracked_update.js shopBuyback work/update_shop_buybacks.js
 
       - name: Record 91-day market history and rebuild market analysis
-        run: node work/build_market_analysis.js
+        if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'marketAnalysis'
+        continue-on-error: true
+        run: node work/run_tracked_update.js marketAnalysis work/build_market_analysis.js
 
       - name: Record daily decisions and rebuild backtest
         run: node work/build_market_backtest.js

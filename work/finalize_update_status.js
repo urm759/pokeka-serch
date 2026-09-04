@@ -3,10 +3,11 @@ const path = require("path");
 
 const ROOT = path.join(__dirname, "..");
 const OUTPUT = path.join(ROOT, "data", "update-status.json");
+const { countCurrentRecords, nextScheduledAt } = require("./source_observability.js");
 
 function read(relativePath, fallback = {}) {
   try {
-    return JSON.parse(fs.readFileSync(path.join(ROOT, relativePath), "utf8"));
+    return JSON.parse(fs.readFileSync(path.join(ROOT, relativePath), "utf8").replace(/^\uFEFF/, ""));
   } catch {
     return fallback;
   }
@@ -35,6 +36,8 @@ const buyback = read("data/shop-buyback-summary.json");
 const marketAnalysis = read("data/market-stability-summary.json");
 const psa = read("data/psa-official-populations.json");
 const services = read("data/psa-japan-services.json");
+const runs = read("work/source-update-runs.json", { sources: {} });
+const psaTask = read("work/psa_update_state.json", {});
 const psaRowDates = (psa.rows || []).map((row) => validDate(row.fetchedAt)).filter(Boolean);
 const psaDateCounts = {};
 for (const date of psaRowDates) psaDateCounts[date] = (psaDateCounts[date] || 0) + 1;
@@ -52,8 +55,26 @@ const sources = {
   psaJapan: { label: "PSA Japan料金", date: validDate(services.checkedAt || services.updatedAt), automatic: true, status: services.checkStatus || "unknown" },
 };
 
-for (const source of Object.values(sources)) {
-  source.fresh = source.date === today && source.status !== "failed";
+for (const [sourceId, source] of Object.entries(sources)) {
+  const run = sourceId === "psaOfficial" ? {
+    lastAttemptAt: psaTask.lastAttemptAt,
+    lastSuccessAt: psaTask.lastSuccessAt,
+    durationMs: psaTask.durationMs,
+    status: psaTask.status,
+    acquiredCount: source.coverageRows,
+    fetchFailureCount: psaTask.fetchFailureCount,
+    lastError: psaTask.lastError,
+  } : (runs.sources?.[sourceId] || {});
+  source.lastAttemptAt = run.lastAttemptAt || null;
+  source.lastSuccessAt = run.lastSuccessAt || (source.date ? `${source.date}T00:00:00+09:00` : null);
+  source.durationMs = Number.isFinite(run.durationMs) ? run.durationMs : null;
+  source.status = run.status || source.status || (source.date ? "success" : "unknown");
+  const fallbackCount = source.coverageRows || countCurrentRecords(sourceId, ROOT);
+  source.acquiredCount = Number.isFinite(run.acquiredCount) ? run.acquiredCount : (Number.isFinite(fallbackCount) ? fallbackCount : null);
+  source.fetchFailureCount = Number.isFinite(run.fetchFailureCount) ? run.fetchFailureCount : null;
+  source.lastError = run.lastError || null;
+  source.nextScheduledAt = nextScheduledAt();
+  source.fresh = source.date === today && source.status === "success";
 }
 // A completed refresh requires both cloud sources and the login-dependent
 // PSA task on the user's PC to be current.

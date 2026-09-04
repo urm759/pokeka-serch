@@ -661,13 +661,19 @@
       <div class="toolbar-actions">
         <div class="toolbar-meta">データ取得日 <strong id="updatedAt">-</strong></div>
         <div class="toolbar-meta">一斉更新 <strong>毎日 4:30 / 17:00 開始</strong></div>
-        <div class="toolbar-meta coverage-meta">ショップ状態A連携 <strong id="cardrushCoverage">-</strong></div>
         <button id="openFavoritesBtn" type="button">仕入れ候補 <strong id="favoriteCountToolbar">0</strong>枚</button>
         <button id="copyLinkBtn" type="button">この条件をURLに反映</button>
         <a class="refresh-action" href="https://github.com/urm759/pokeka-serch/actions/workflows/refresh-all-site-data.yml" target="_blank" rel="noreferrer">スマホで全データ更新</a>
         <a id="sourceLink" href="https://toreca-souba.com/" target="_blank" rel="noreferrer">みんトレを見る</a>
       </div>
-      <div id="dataFreshness" class="data-freshness" aria-label="データ源ごとの最終取得日"></div>
+      <details class="source-monitor-panel coverage-panel">
+        <summary><span>ショップ状態Aの連携状況</span><strong id="cardrushCoverage">集計中</strong></summary>
+        <div id="linkCoverageDetails" class="coverage-details" aria-label="ショップごとの連携率"></div>
+      </details>
+      <details class="source-monitor-panel freshness-panel">
+        <summary><span>データ更新状況</span><strong id="freshnessSummary">確認中</strong></summary>
+        <div id="dataFreshness" class="data-freshness" aria-label="データ源ごとの更新状況"></div>
+      </details>
       <div id="shopReferenceLinks" class="shop-reference-links" aria-label="参照ショップ"></div>
     </section>
 
@@ -694,6 +700,6 @@
   <script src="./decision-model.js?v=20260904-scenario-v3"></script>
   <script src="./backtest-model.js?v=20260901-backtest-v2"></script>
   <script src="./market-analysis.js?v=20260902-supply-pipeline-v1"></script>
-  <script src="./app.js?v=20260904-scenario-v3"></script>
+  <script src="./app.js?v=20260904-phase4-v1"></script>
 </body>
 </html>

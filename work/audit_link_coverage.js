@@ -22,6 +22,7 @@ const shopCatalog = read("work/shop_buyback_catalog.json", { shops: {} });
 const shopUnmatched = read("work/shop_buyback_unmatched.json", { shops: {} });
 const itemMatches = read("work/shop_buyback_item_matches.json", {});
 const sourceDiff = read("work/toreca_source_diff.json", { added: [], addedPromoCount: 0 });
+const { buildStoreCoverage } = require("./source_observability.js");
 const total = cards.length;
 const directSnkr = cards.filter((card) => /^https?:\/\/(?:www\.)?snkrdunk\.com\/(?:apparels|trading-cards|products)\/\d+/i.test(card.snkUrl || "")).length;
 const shops = {};
@@ -45,6 +46,7 @@ const current = {
   confirmedItemMappings: countProperties(itemMatches),
   torecaAdded: (sourceDiff.added || []).length,
   torecaAddedPromos: Number(sourceDiff.addedPromoCount || 0),
+  storeCoverage: buildStoreCoverage(ROOT),
 };
 for (const site of Object.values(current.sites)) site.unmatched = total - site.matched;
 
