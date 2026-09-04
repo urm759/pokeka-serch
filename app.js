@@ -21,6 +21,7 @@ const state = {
   psaPopulation: Object.create(null),
   psaHistoryCache: Object.create(null),
   snkrListingSummary: Object.create(null),
+  pokedataSummary: Object.create(null),
   psaServices: null,
   evaluationModel: null,
   evaluationGovernance: null,
@@ -586,6 +587,8 @@ function renderSourceObservability() {
           <div><dt>次回予定</dt><dd>${escapeHtml(formatJstTimestamp(source.nextScheduledAt))}</dd></div>
         </dl>
         <p>${escapeHtml(source.sourceState || "処理履歴を次回更新から記録")}</p>
+        ${source.syncStatus ? `<p>Git同期: ${escapeHtml(source.syncStatus)}${source.syncError ? ` / ${escapeHtml(source.syncError)}` : ""}</p>` : ""}
+        ${source.publishStatus ? `<p>公開: ${escapeHtml(source.publishStatus)}${source.publishError ? ` / ${escapeHtml(source.publishError)}` : ""}</p>` : ""}
         ${source.lastError ? `<p>直近エラー: ${escapeHtml(source.lastError)}</p>` : ""}
         ${historyHtml}
       </article>`;
@@ -2844,6 +2847,39 @@ function render() {
         <div><span>PSA10出品最安値</span><strong>${Number.isFinite(psa10Audit.listingFloor) ? `¥${fmt.format(psa10Audit.listingFloor)}` : "未取得"}</strong><small>${escapeHtml([psa10Audit.aggregation, ...(psa10Audit.warnings || []), psa10Audit.limitations].filter(Boolean).join(" / "))}</small></div>
         <div><span>PSA9以下の採用価格</span><strong>¥${fmt.format(Math.round(psa9Audit.value || 0))}</strong><small>${escapeHtml(psa9Audit.source || "未取得")} / 採用 ${fmt.format(psa9Audit.count || 0)}件 / 信頼度 ${escapeHtml(psa9Audit.confidence || "低")}${psa9Audit.estimated ? " / 推定値" : " / 実成約"}</small></div>
       </div>`;
+    const pokedata = state.pokedataSummary?.[card.id] || null;
+    const pokedataMarket = (market, label) => market ? `
+      <div>
+        <span>${escapeHtml(label)}</span>
+        <strong>${Number.isFinite(market.medianJpy) ? `¥${fmt.format(Math.round(market.medianJpy))}` : Number.isFinite(market.apiAverageJpy) ? `¥${fmt.format(Math.round(market.apiAverageJpy))}` : "未取得"}</strong>
+        <small>PokeDATA集計表示 ${Number.isFinite(market.pageDisplayJpy) ? `¥${fmt.format(Math.round(market.pageDisplayJpy))}` : "未取得"}<br>元 ${fmt.format(market.originalCount || 0)}件 / 採用 ${fmt.format(market.adoptedCount || 0)}件 / 除外 ${fmt.format(market.excludedCount || 0)}件<br>加重中央値 ${Number.isFinite(market.weightedMedianJpy) ? `¥${fmt.format(Math.round(market.weightedMedianJpy))}` : "未取得"} / 範囲 ${Number.isFinite(market.minJpy) ? `¥${fmt.format(Math.round(market.minJpy))}～¥${fmt.format(Math.round(market.maxJpy))}` : "未取得"}<br>30日 ${fmt.format(market.periodCounts?.days30 || 0)}件 / 90日 ${fmt.format(market.periodCounts?.days90 || 0)}件 / 最終 ${escapeHtml(market.lastSaleDate || "未取得")} / 信頼度 ${escapeHtml(market.confidence || "参考値")}</small>
+      </div>` : "";
+    const pokedataExcludedReasons = pokedata ? [pokedata.markets?.ebayRaw, pokedata.markets?.ebayPsa10, pokedata.markets?.ebayPsa9]
+      .filter(Boolean)
+      .reduce((totals, market) => {
+        Object.entries(market.excludedReasons || {}).forEach(([reason, count]) => { totals[reason] = (totals[reason] || 0) + Number(count || 0); });
+        return totals;
+      }, {}) : {};
+    const pokedataPanel = pokedata ? `
+      <details class="pokedata-panel">
+        <summary><span>PokeDATA海外相場</span><small>認証済みChrome取得 / 国内仕入れ上限へ未反映</small></summary>
+        <div class="pokedata-body">
+          <div class="pokedata-note"><strong>${escapeHtml(pokedata.pokedata?.setName || "-")} / ${escapeHtml(pokedata.pokedata?.name || "-")} / ${escapeHtml(pokedata.pokedata?.printedNumber || pokedata.pokedata?.number || "-")}</strong><span>eBayとTCGPlayerは別市場として保存。個別成約タイトルで日本版・カード番号・鑑定会社・グレード・複数枚出品を再判定しています。</span></div>
+          <div class="pokedata-markets">
+            ${pokedataMarket(pokedata.markets?.ebayRaw, "eBay 素体・クリーニング後中央値")}
+            ${pokedataMarket(pokedata.markets?.ebayPsa10, "eBay PSA10・クリーニング後中央値")}
+            ${pokedataMarket(pokedata.markets?.ebayPsa9, "eBay PSA9・クリーニング後中央値")}
+            <div><span>TCGPlayer 素体</span><strong>${Number.isFinite(pokedata.markets?.tcgplayerRaw?.pageDisplayJpy) ? `¥${fmt.format(Math.round(pokedata.markets.tcgplayerRaw.pageDisplayJpy))}` : Number.isFinite(pokedata.markets?.tcgplayerRaw?.apiAverageJpy) ? `¥${fmt.format(Math.round(pokedata.markets.tcgplayerRaw.apiAverageJpy))}` : "未取得"}</strong><small>PokeDATA集計表示 / 取引数 ${escapeHtml(pokedata.markets?.tcgplayerRaw?.transactionCountStatus || "未取得")} / eBayとは合算しない</small></div>
+          </div>
+          <div class="pokedata-audit">
+            <span>除外理由：${escapeHtml(Object.entries(pokedataExcludedReasons).map(([reason, count]) => `${reason} ${count}件`).join(" / ") || "除外なし")}</span>
+            <span>PSA POP：10 ${fmt.format(pokedata.population?.psa10 || 0)} / 9 ${fmt.format(pokedata.population?.psa9 || 0)} / 8 ${fmt.format(pokedata.population?.psa8 || 0)}</span>
+            <span>海外PSA10方向：${escapeHtml(pokedata.trend?.overseas || "蓄積中")} / 国内方向：${escapeHtml(pokedata.trend?.domestic || "蓄積中")}</span>
+            <span>為替：1 USD = ¥${Number(pokedata.fx?.rate || 0).toFixed(3)}（${escapeHtml(pokedata.fx?.rateDate || "未取得")} / ${escapeHtml(pokedata.fx?.source || "未取得")}）</span>
+          </div>
+          <small class="pokedata-reference-note">海外相場は先行指標候補として参考表示のみです。十分なバックテストが完了するまで仕入れ上限・GO判定へ直接反映しません。</small>
+        </div>
+      </details>` : "";
     const snkrListing = card.snkrListing || null;
     const snkrListingPanel = `
       <div class="snkr-listing-panel">
@@ -3199,6 +3235,7 @@ function render() {
 
               ${priceAuditPanel}
               ${gradingPriceAuditPanel}
+              ${pokedataPanel}
               ${snkrListingPanel}
 
               <div class="profit-assessment ${roiAssessmentClass}" title="${roiBandLabel}${hasReliablePeers ? `の利益率中央値 ${Math.round(peerMedianRoi)}%` : ""}">${roiAssessment} <span>${hasReliablePeers ? `${roiDifference >= 0 ? "+" : ""}${Math.round(roiDifference)}pt` : "-"}</span><small>${roiBandLabel}${hasReliablePeers ? `・中央値 ${Math.round(peerMedianRoi)}%` : ""}</small></div>
@@ -3380,6 +3417,8 @@ async function init() {
     state.marketBacktest = await fetchJsonMaybe("./data/market-backtest-summary.json");
     const snkrListingData = await fetchJsonMaybe("./data/snkr-listing-summary.json");
     state.snkrListingSummary = snkrListingData?.cards || Object.create(null);
+    const pokedataData = await fetchJsonMaybe("./data/pokedata-summary.json");
+    state.pokedataSummary = pokedataData?.cards || Object.create(null);
     if (els.shopReferenceLinks) {
       const links = Object.values(state.buybackShops).map((shop) => `<a href="${escapeHtml(shop.url)}" target="_blank" rel="noreferrer">${escapeHtml(shop.name)} 買取表</a>`).join("");
       els.shopReferenceLinks.innerHTML = links ? `<span>参照ショップ</span>${links}` : "";

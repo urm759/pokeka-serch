@@ -22,7 +22,11 @@ function jstDate(value = new Date()) {
 
 function validDate(value) {
   if (!value) return null;
-  const match = String(value).match(/^\d{4}-\d{2}-\d{2}/);
+  const text = String(value).trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(text)) return text;
+  const parsed = new Date(text);
+  if (Number.isFinite(parsed.getTime())) return jstDate(parsed);
+  const match = text.match(/^\d{4}-\d{2}-\d{2}/);
   return match ? match[0] : null;
 }
 
@@ -37,6 +41,7 @@ const buyback = read("data/shop-buyback-summary.json");
 const marketAnalysis = read("data/market-stability-summary.json");
 const psa = read("data/psa-official-populations.json");
 const services = read("data/psa-japan-services.json");
+const pokedata = read("data/pokedata-summary.json");
 const runs = read("work/source-update-runs.json", { sources: {} });
 const runHistory = read("work/source-update-history.json", { version: 1, sources: {} });
 const psaTask = read("work/psa_update_state.json", {});
@@ -55,6 +60,7 @@ const sources = {
   marketAnalysis: { label: "下値安定・買取率分析", date: validDate(marketAnalysis.updatedAt), automatic: true },
   psaOfficial: { label: "PSA公式枚数", date: dominantPsaDate, automatic: true, note: "PC起動時にPSA専用Chromeで自動取得", coverageRows: psaDateCounts[dominantPsaDate] || 0 },
   psaJapan: { label: "PSA Japan料金", date: validDate(services.checkedAt || services.updatedAt), automatic: true, status: services.checkStatus || "unknown" },
+  pokedata: { label: "PokeDATA海外相場", date: validDate(pokedata.updatedAt), automatic: false, note: "ログイン済みChromeで個別成約を厳格照合" },
 };
 
 for (const [sourceId, source] of Object.entries(sources)) {
@@ -65,11 +71,15 @@ for (const [sourceId, source] of Object.entries(sources)) {
     endedAt: psaTask.endedAt,
     durationMs: psaTask.durationMs,
     status: psaTask.status,
-    acquiredCount: source.coverageRows,
+    acquiredCount: Number.isFinite(psaTask.acquiredCount) ? psaTask.acquiredCount : source.coverageRows,
     fetchFailureCount: psaTask.fetchFailureCount,
     lastError: psaTask.lastError,
     updatedCount: psaTask.updatedCount,
     sourceState: psaTask.sourceState,
+    syncStatus: psaTask.syncStatus,
+    syncError: psaTask.syncError,
+    publishStatus: psaTask.publishStatus,
+    publishError: psaTask.publishError,
   } : (runs.sources?.[sourceId] || {});
   source.lastAttemptAt = run.lastAttemptAt || null;
   source.startedAt = run.startedAt || source.lastAttemptAt;
@@ -82,6 +92,10 @@ for (const [sourceId, source] of Object.entries(sources)) {
   source.fetchFailureCount = Number.isFinite(run.fetchFailureCount) ? run.fetchFailureCount : null;
   source.updatedCount = Number.isFinite(run.updatedCount) ? run.updatedCount : null;
   source.sourceState = run.sourceState || (source.status === "failed" ? "取得処理失敗" : "過去データ・処理履歴未記録");
+  source.syncStatus = run.syncStatus || null;
+  source.syncError = run.syncError || null;
+  source.publishStatus = run.publishStatus || null;
+  source.publishError = run.publishError || null;
   source.lastError = run.lastError || null;
   source.nextScheduledAt = nextScheduledAt();
   source.fresh = source.date === today && source.status === "success";
@@ -115,6 +129,10 @@ for (const sourceId of Object.keys(sources)) {
       fetchFailureCount: psaTask.fetchFailureCount ?? null,
       sourceState: psaTask.sourceState || null,
       lastError: psaTask.lastError || null,
+      syncStatus: psaTask.syncStatus || null,
+      syncError: psaTask.syncError || null,
+      publishStatus: psaTask.publishStatus || null,
+      publishError: psaTask.publishError || null,
     });
   }
 }

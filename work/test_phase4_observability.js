@@ -8,6 +8,9 @@ const coverage = JSON.parse(fs.readFileSync(path.join(root, "data", "link-covera
 const updateStatus = JSON.parse(fs.readFileSync(path.join(root, "data", "update-status.json"), "utf8"));
 const workflow = fs.readFileSync(path.join(root, ".github", "workflows", "refresh-all-site-data.yml"), "utf8");
 const updater = fs.readFileSync(path.join(root, "work", "update_yuyutei_torecacamp.js"), "utf8");
+const finalizer = fs.readFileSync(path.join(root, "work", "finalize_update_status.js"), "utf8");
+const psaRunner = fs.readFileSync(path.join(root, "work", "run_psa_scheduled_update.ps1"), "utf8");
+const psaAcquirer = fs.readFileSync(path.join(root, "work", "acquire_psa_data.ps1"), "utf8");
 
 const stores = coverage.current.storeCoverage.stores;
 const linkageSources = coverage.current.storeCoverage.linkageSources;
@@ -20,7 +23,7 @@ for (const store of Object.values(stores)) {
   assert.strictEqual(store.targetCoveragePct, percent(store.matched, store.targetCards));
   assert.strictEqual(store.totalCoveragePct, percent(store.matchedAll, store.totalCards));
 }
-assert.deepStrictEqual(Object.keys(linkageSources).sort(), ["cardrush", "hareruya2", "psaOfficial", "torecacamp", "yuyutei"]);
+assert.deepStrictEqual(Object.keys(linkageSources).sort(), ["cardrush", "hareruya2", "pokedata", "psaOfficial", "torecacamp", "yuyutei"]);
 for (const source of Object.values(linkageSources)) {
   for (const field of ["automaticMatched", "manualMatched", "ambiguous", "matched", "unmatched", "targetCoveragePct"]) {
     assert.ok(Object.hasOwn(source, field), `${source.label}: missing linkage field ${field}`);
@@ -43,5 +46,10 @@ assert.match(workflow, /build_linkage_review\.js/);
 assert.match(workflow, /build_snkr_listing_history\.js/);
 assert.match(updater, /sourceOnly === "all" \|\| sourceOnly === "yuyutei"/);
 assert.match(updater, /sourceOnly === "all" \|\| sourceOnly === "torecacamp"/);
+assert.match(finalizer, /return jstDate\(parsed\)/);
+assert.match(psaRunner, /Git sync warning; continuing acquisition/);
+assert.match(psaRunner, /acquire_psa_data\.ps1/);
+assert.match(psaRunner, /publish_psa_update\.ps1/);
+assert.doesNotMatch(psaAcquirer, /git(?:\.exe)?\s+(?:pull|fetch|merge|push)/i);
 
 console.log(JSON.stringify({ stores: Object.keys(stores).length, sources: Object.keys(updateStatus.sources).length, phase4: "ok" }));

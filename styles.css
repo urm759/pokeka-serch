@@ -777,6 +777,7 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .snkr-listing-panel{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:8px}
 .snkr-listing-panel>div{padding:10px;border:1px solid rgba(125,211,252,.2);border-radius:12px;background:rgba(14,116,144,.07)}
 .snkr-listing-panel span,.snkr-listing-panel small{display:block;color:var(--muted);font-size:8px;line-height:1.45}.snkr-listing-panel strong{display:block;margin:3px 0;font-size:15px}
+.pokedata-panel{margin-top:8px;border:1px solid rgba(251,191,36,.24);border-radius:14px;background:rgba(120,53,15,.08);overflow:hidden}.pokedata-panel>summary{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;cursor:pointer}.pokedata-panel>summary span{font-size:11px;font-weight:900;color:#fde68a}.pokedata-panel>summary small{color:var(--muted);font-size:8px;text-align:right}.pokedata-body{padding:0 10px 11px}.pokedata-note{display:grid;gap:3px;padding:9px;border-radius:10px;background:rgba(251,191,36,.07)}.pokedata-note strong{font-size:11px}.pokedata-note span,.pokedata-audit span,.pokedata-reference-note{color:var(--muted);font-size:8px;line-height:1.5}.pokedata-markets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:8px}.pokedata-markets>div{padding:10px;border:1px solid rgba(251,191,36,.16);border-radius:11px;background:rgba(5,10,20,.45)}.pokedata-markets span,.pokedata-markets small{display:block;color:var(--muted);font-size:8px;line-height:1.45}.pokedata-markets strong{display:block;margin:3px 0;font-size:15px}.pokedata-audit{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin-top:8px}.pokedata-audit span{padding:7px 8px;border-radius:9px;background:rgba(255,255,255,.035)}.pokedata-reference-note{display:block;margin-top:8px;padding:8px;border-left:3px solid #fbbf24;background:rgba(251,191,36,.06)}
 .buyback-deduction-note{display:block;margin-top:8px;padding:8px 10px;border-radius:10px;background:rgba(245,158,11,.08);color:#fde68a;font-size:8px;line-height:1.5}
 .filter-explanation{grid-column:1/-1;margin:0;padding:8px 10px;border-radius:10px;background:rgba(125,211,252,.07);color:var(--muted);font-size:9px;line-height:1.5}
 .purchase-summary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:12px;padding:10px;border:1px solid rgba(125,211,252,.3);border-radius:18px;background:rgba(5,10,20,.56)}
@@ -1093,6 +1094,7 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
   .metrics,.market-summary{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
   .price-audit-head{align-items:flex-start;flex-direction:column;gap:5px}.price-audit-rows{grid-template-columns:1fr}.grading-price-audit{grid-template-columns:1fr}
   .snkr-listing-panel{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pokedata-panel>summary{align-items:flex-start;flex-direction:column}.pokedata-panel>summary small{text-align:left}.pokedata-markets,.pokedata-audit{grid-template-columns:1fr}
   .metric-primary{grid-column:1 / -1}
   .metric{padding:10px}
   .metric strong{font-size:16px}

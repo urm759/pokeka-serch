@@ -195,7 +195,30 @@ function buildStoreCoverage(root = ROOT) {
     fetchFailureCount: Number.isFinite(runFor("psaOfficial", runs).fetchFailureCount) ? runFor("psaOfficial", runs).fetchFailureCount : null,
     mainUnmatchedReasons: [reason("PSAセット・英語名・仕様の照合待ち", Math.max(0, psaTargets.length - psaMatchedIds.size))].filter(Boolean),
   };
-  return { totalCards, comparableTargetCards: signatureTargets.length, stores, linkageSources: { ...stores, psaOfficial } };
+  const pokedata = readJson(path.join(root, "data", "pokedata-summary.json"), { coverage: {}, cards: {} });
+  const pokedataCoverage = pokedata.coverage || {};
+  const pokedataSource = {
+    label: "PokeDATA",
+    fetchedProducts: Number(pokedataCoverage.acquired || 0),
+    fetchedUniqueCards: Number(pokedataCoverage.acquired || 0),
+    fetchedMatchedProducts: Number(pokedataCoverage.automaticMatched || 0) + Number(pokedataCoverage.manualMatched || 0),
+    totalCards,
+    targetCards: Number(pokedataCoverage.sourceListed || 0),
+    targetDefinition: "Chromeで実データ取得・確認済みの日本版カード",
+    matched: Number(pokedataCoverage.automaticMatched || 0) + Number(pokedataCoverage.manualMatched || 0),
+    matchedAll: Number(pokedataCoverage.automaticMatched || 0) + Number(pokedataCoverage.manualMatched || 0),
+    automaticMatched: Number(pokedataCoverage.automaticMatched || 0),
+    manualMatched: Number(pokedataCoverage.manualMatched || 0),
+    ambiguous: Number(pokedataCoverage.ambiguous || 0),
+    unmatched: Number(pokedataCoverage.unmatched || 0),
+    fetchedProductMatchRatePct: percent(Number(pokedataCoverage.acquired || 0), Number(pokedataCoverage.sourceListed || 0)),
+    targetCoveragePct: Number.isFinite(pokedataCoverage.linkageRatePct) ? pokedataCoverage.linkageRatePct : null,
+    totalCoveragePct: percent(Number(pokedataCoverage.automaticMatched || 0) + Number(pokedataCoverage.manualMatched || 0), totalCards),
+    lastSuccessAt: pokedata.updatedAt || null,
+    fetchFailureCount: Number.isFinite(runFor("pokedata", runs).fetchFailureCount) ? runFor("pokedata", runs).fetchFailureCount : null,
+    mainUnmatchedReasons: [reason("Chrome取得・厳格照合待ち", Number(pokedataCoverage.unmatched || 0))].filter(Boolean),
+  };
+  return { totalCards, comparableTargetCards: signatureTargets.length, stores, linkageSources: { ...stores, psaOfficial, pokedata: pokedataSource } };
 }
 
 function countCurrentRecords(sourceId, root = ROOT) {
@@ -208,6 +231,7 @@ function countCurrentRecords(sourceId, root = ROOT) {
     shopBuyback: ["data/shop-buyback-summary.json", "cards"],
     marketAnalysis: ["data/market-stability-summary.json", "cards"],
     psaJapan: ["data/psa-japan-services.json", "plans"],
+    pokedata: ["data/pokedata-summary.json", "cards"],
   };
   const config = files[sourceId];
   if (!config) return null;
@@ -227,6 +251,7 @@ function sourceArtifactPaths(sourceId, root = ROOT) {
     shopBuyback: ["data/shop-buyback-summary.json"],
     marketAnalysis: ["data/market-stability-summary.json"],
     psaJapan: ["data/psa-japan-services.json"],
+    pokedata: ["data/pokedata-summary.json", "data/pokedata-sales/pk-63635.json"],
   };
   return (files[sourceId] || []).map((relative) => path.join(root, relative));
 }
