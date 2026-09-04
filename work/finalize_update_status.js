@@ -3,6 +3,7 @@ const path = require("path");
 
 const ROOT = path.join(__dirname, "..");
 const OUTPUT = path.join(ROOT, "data", "update-status.json");
+const HISTORY_OUTPUT = path.join(ROOT, "data", "update-history.json");
 const { countCurrentRecords, nextScheduledAt } = require("./source_observability.js");
 
 function read(relativePath, fallback = {}) {
@@ -37,6 +38,7 @@ const marketAnalysis = read("data/market-stability-summary.json");
 const psa = read("data/psa-official-populations.json");
 const services = read("data/psa-japan-services.json");
 const runs = read("work/source-update-runs.json", { sources: {} });
+const runHistory = read("work/source-update-history.json", { version: 1, sources: {} });
 const psaTask = read("work/psa_update_state.json", {});
 const psaRowDates = (psa.rows || []).map((row) => validDate(row.fetchedAt)).filter(Boolean);
 const psaDateCounts = {};
@@ -59,19 +61,27 @@ for (const [sourceId, source] of Object.entries(sources)) {
   const run = sourceId === "psaOfficial" ? {
     lastAttemptAt: psaTask.lastAttemptAt,
     lastSuccessAt: psaTask.lastSuccessAt,
+    startedAt: psaTask.startedAt || psaTask.lastAttemptAt,
+    endedAt: psaTask.endedAt,
     durationMs: psaTask.durationMs,
     status: psaTask.status,
     acquiredCount: source.coverageRows,
     fetchFailureCount: psaTask.fetchFailureCount,
     lastError: psaTask.lastError,
+    updatedCount: psaTask.updatedCount,
+    sourceState: psaTask.sourceState,
   } : (runs.sources?.[sourceId] || {});
   source.lastAttemptAt = run.lastAttemptAt || null;
+  source.startedAt = run.startedAt || source.lastAttemptAt;
+  source.endedAt = run.endedAt || null;
   source.lastSuccessAt = run.lastSuccessAt || (source.date ? `${source.date}T00:00:00+09:00` : null);
   source.durationMs = Number.isFinite(run.durationMs) ? run.durationMs : null;
   source.status = run.status || source.status || (source.date ? "success" : "unknown");
   const fallbackCount = source.coverageRows || countCurrentRecords(sourceId, ROOT);
   source.acquiredCount = Number.isFinite(run.acquiredCount) ? run.acquiredCount : (Number.isFinite(fallbackCount) ? fallbackCount : null);
   source.fetchFailureCount = Number.isFinite(run.fetchFailureCount) ? run.fetchFailureCount : null;
+  source.updatedCount = Number.isFinite(run.updatedCount) ? run.updatedCount : null;
+  source.sourceState = run.sourceState || (source.status === "failed" ? "取得処理失敗" : "過去データ・処理履歴未記録");
   source.lastError = run.lastError || null;
   source.nextScheduledAt = nextScheduledAt();
   source.fresh = source.date === today && source.status === "success";
@@ -91,4 +101,22 @@ const payload = {
   sources,
 };
 fs.writeFileSync(OUTPUT, JSON.stringify(payload), "utf8");
+const publishedHistory = { version: 1, updatedAt: runHistory.updatedAt || null, sources: {} };
+for (const sourceId of Object.keys(sources)) {
+  publishedHistory.sources[sourceId] = (runHistory.sources?.[sourceId] || []).slice(-30);
+  if (sourceId === "psaOfficial" && psaTask.startedAt && !publishedHistory.sources[sourceId].length) {
+    publishedHistory.sources[sourceId].push({
+      sourceId,
+      startedAt: psaTask.startedAt,
+      endedAt: psaTask.endedAt || null,
+      status: psaTask.status || "unknown",
+      acquiredCount: psaTask.acquiredCount || sources[sourceId].acquiredCount,
+      updatedCount: psaTask.updatedCount ?? null,
+      fetchFailureCount: psaTask.fetchFailureCount ?? null,
+      sourceState: psaTask.sourceState || null,
+      lastError: psaTask.lastError || null,
+    });
+  }
+}
+fs.writeFileSync(HISTORY_OUTPUT, JSON.stringify(publishedHistory), "utf8");
 console.log(JSON.stringify({ complete, completeDate: payload.completeDate, sources }));

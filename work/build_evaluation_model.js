@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 
 const ROOT = path.join(__dirname, "..");
 
@@ -49,6 +50,9 @@ function buildBand(rows) {
 }
 
 function main() {
+  const previousModel = readJson("data/evaluation-model.json", null);
+  const backtest = readJson("data/market-backtest-summary.json", {});
+  const approval = readJson("work/evaluation-model-approval.json", { approvedCandidateHash: null });
   const cards = readJson("data/pokemon-cards.json", []);
   const buybacks = readJson("data/shop-buyback-summary.json", { cards: {} }).cards || {};
   const official = readJson("data/psa-population-summary.json", { cards: {} }).cards || {};
@@ -93,8 +97,8 @@ function main() {
     missingOfficialIds: eligible.filter((row) => !row.hasOfficial).map((row) => row.id),
     missingCardrushIds: eligible.filter((row) => !row.hasCardrush).map((row) => row.id),
   };
-  const output = {
-    version: 1,
+  const candidate = {
+    version: 2,
     generatedAt: new Date().toISOString(),
     generatedDateJst: new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date()),
     method: "price-band-quantile-v1",
@@ -104,8 +108,65 @@ function main() {
     bands,
     topCandidateCoverage: coverage,
   };
+  const candidateHash = crypto.createHash("sha256").update(JSON.stringify({ method: candidate.method, weights: candidate.weights, bands: candidate.bands })).digest("hex").slice(0, 16);
+  const validation = {
+    walkForward30Evaluated: Number(backtest.days30?.evaluated || 0),
+    exitEvaluated: Number(backtest.exit?.evaluated || 0),
+    baselineErrorMedian: backtest.days30?.baselineErrorMedian ?? null,
+    productionErrorMedian: backtest.days30?.predictionErrorMedian ?? null,
+    candidateErrorMedian: null,
+    candidateWalkForwardImplemented: false,
+  };
+  const minimums = { walkForward30: 100, exit: 100, minimumErrorImprovementPct: 5, maximumParameterChangePct: 10 };
+  const validationEligible = validation.walkForward30Evaluated >= minimums.walkForward30
+    && validation.exitEvaluated >= minimums.exit
+    && validation.candidateWalkForwardImplemented
+    && Number.isFinite(validation.candidateErrorMedian);
+  const approved = validationEligible && approval.approvedCandidateHash === candidateHash;
+  const production = approved || !previousModel?.bands ? candidate : previousModel;
+  const learning = {
+    candidateHash,
+    status: approved ? "adopted" : validationEligible ? "awaiting-manual-approval" : "insufficient-validation",
+    appliedToProduction: approved,
+    reason: approved
+      ? "ウォークフォワード検証と手動承認を通過"
+      : validationEligible
+        ? "検証条件を満たしたため手動承認待ち"
+        : "候補モデルのウォークフォワード検証件数または比較指標が不足",
+    minimums,
+    validation,
+    rollbackToVersion: previousModel?.version || null,
+    coefficientChangeCapPct: minimums.maximumParameterChangePct,
+  };
+  const output = { ...production, generatedAt: candidate.generatedAt, generatedDateJst: candidate.generatedDateJst, learning };
+  const previousGovernance = readJson("data/evaluation-governance.json", { history: [] });
+  const governance = {
+    version: 1,
+    updatedAt: candidate.generatedAt,
+    productionVersion: output.version,
+    productionMethod: output.method,
+    candidateHash,
+    candidateMethod: candidate.method,
+    candidateSampleSize: candidate.sampleSize,
+    status: learning.status,
+    appliedToProduction: learning.appliedToProduction,
+    reason: learning.reason,
+    minimums,
+    validation,
+    approvalFile: "work/evaluation-model-approval.json",
+    rollbackAvailable: Boolean(previousModel),
+    history: [...(previousGovernance.history || []).filter((entry) => entry.date !== candidate.generatedDateJst), {
+      date: candidate.generatedDateJst,
+      candidateHash,
+      status: learning.status,
+      applied: learning.appliedToProduction,
+      validation,
+    }].slice(-90),
+  };
+  fs.writeFileSync(path.join(ROOT, "data", "evaluation-model-candidate.json"), JSON.stringify(candidate), "utf8");
   fs.writeFileSync(path.join(ROOT, "data", "evaluation-model.json"), JSON.stringify(output), "utf8");
-  console.log(`evaluation model: samples=${rows.length}, top official=${coverage.officialLinked}/${coverage.targetCount}, cardrush=${coverage.cardrushLinked}/${coverage.targetCount}`);
+  fs.writeFileSync(path.join(ROOT, "data", "evaluation-governance.json"), JSON.stringify(governance), "utf8");
+  console.log(`evaluation model: samples=${rows.length}, status=${learning.status}, applied=${learning.appliedToProduction}, top official=${coverage.officialLinked}/${coverage.targetCount}, cardrush=${coverage.cardrushLinked}/${coverage.targetCount}`);
 }
 
 main();

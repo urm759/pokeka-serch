@@ -1,8 +1,10 @@
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 
 const ROOT = path.join(__dirname, "..");
 const RUNS_PATH = path.join(__dirname, "source-update-runs.json");
+const RUN_HISTORY_PATH = path.join(__dirname, "source-update-history.json");
 
 function readJson(filePath, fallback) {
   try { return JSON.parse(fs.readFileSync(filePath, "utf8").replace(/^\uFEFF/, "")); } catch { return fallback; }
@@ -59,9 +61,16 @@ function attemptedStats(progress) {
   };
 }
 
+function ambiguousProgressCount(progress) {
+  const entries = Array.isArray(progress) ? progress : Object.values(progress || {});
+  return entries.filter((entry) => entry && typeof entry === "object" && (entry.ambiguous === true || (Array.isArray(entry.candidates) && entry.candidates.length > 1))).length;
+}
+
 function buildStoreCoverage(root = ROOT) {
   const cards = readJson(path.join(root, "data", "pokemon-cards.json"), []);
   const runs = readJson(path.join(root, "work", "source-update-runs.json"), { sources: {} });
+  const aliasState = readJson(path.join(root, "work", "manual-card-aliases.json"), { aliases: [], ambiguousCandidates: [] });
+  const linkageReview = readJson(path.join(root, "data", "linkage-review.json"), { sources: {} });
   const totalCards = cards.length;
   const signatureTargets = cards.filter((card) => cardSignature(card));
   const targetIds = new Set(signatureTargets.map((card) => card.id));
@@ -124,6 +133,12 @@ function buildStoreCoverage(root = ROOT) {
       ];
     }
     const run = runFor(definition.id, runs);
+    const manualIds = new Set((aliasState.aliases || [])
+      .filter((entry) => entry.source === definition.id && entry.status !== "disabled" && targetSet.has(entry.cardId))
+      .map((entry) => entry.cardId));
+    const ambiguousAliases = (aliasState.ambiguousCandidates || []).filter((entry) => entry.source === definition.id).length;
+    const manualMatched = [...manualIds].filter((cardId) => cards.find((card) => card.id === cardId)?.[definition.urlField]).length;
+    const ambiguous = Math.max(ambiguousAliases + ambiguousProgressCount(progress), Number(linkageReview.sources?.[definition.id]?.ambiguousCount || 0));
     stores[definition.id] = {
       label: definition.label,
       fetchedProducts: catalog.length,
@@ -133,6 +148,9 @@ function buildStoreCoverage(root = ROOT) {
       targetCards: definition.targets.length,
       targetDefinition: definition.id === "cardrush" ? "2015年以降を中心とする照合対象" : "型番とカード番号を抽出できる全カード",
       matched: matchedTarget,
+      automaticMatched: Math.max(0, matchedTarget - manualMatched),
+      manualMatched,
+      ambiguous,
       matchedAll,
       unmatched,
       fetchedProductMatchRatePct: percent(fetchedMatchedProducts, catalog.length),
@@ -143,7 +161,41 @@ function buildStoreCoverage(root = ROOT) {
       mainUnmatchedReasons: reasons.filter(Boolean),
     };
   }
-  return { totalCards, comparableTargetCards: signatureTargets.length, stores };
+  const psaRows = readJson(path.join(root, "data", "psa-official-populations.json"), { rows: [] }).rows || [];
+  const psaSummary = readJson(path.join(root, "data", "psa-population-summary.json"), { cards: {} });
+  const psaTargets = signatureTargets.filter((card) => Number(card.snkPsa10Price) > 0);
+  const psaTargetIds = new Set(psaTargets.map((card) => card.id));
+  const psaMatchedIds = new Set(Object.keys(psaSummary.cards || {}).filter((id) => psaTargetIds.has(id)));
+  const psaManualIds = new Set((aliasState.aliases || [])
+    .filter((entry) => entry.source === "psaOfficial" && entry.status !== "disabled" && psaTargetIds.has(entry.cardId))
+    .map((entry) => entry.cardId));
+  const psaManualMatched = [...psaManualIds].filter((id) => psaMatchedIds.has(id)).length;
+  const psaMatchedAll = Object.keys(psaSummary.cards || {}).length;
+  const psaOfficial = {
+    label: "PSA公式",
+    fetchedProducts: psaRows.length,
+    fetchedUniqueCards: new Set(psaRows.map((row) => `${String(row.setCode || "").toUpperCase().replace(/\s/g, "")}|${String(row.cardNo || "").trim()}|${String(row.cardName || "").trim()}`).filter(Boolean)).size,
+    fetchedMatchedProducts: psaMatchedIds.size,
+    totalCards,
+    targetCards: psaTargets.length,
+    targetDefinition: "PSA10相場があり、セット・カード番号を抽出できるカード",
+    matched: psaMatchedIds.size,
+    matchedAll: psaMatchedAll,
+    automaticMatched: Math.max(0, psaMatchedIds.size - psaManualMatched),
+    manualMatched: psaManualMatched,
+    ambiguous: Math.max(
+      (aliasState.ambiguousCandidates || []).filter((entry) => entry.source === "psaOfficial").length,
+      Number(linkageReview.sources?.psaOfficial?.ambiguousCount || 0)
+    ),
+    unmatched: Math.max(0, psaTargets.length - psaMatchedIds.size),
+    fetchedProductMatchRatePct: percent(psaMatchedIds.size, psaRows.length),
+    targetCoveragePct: percent(psaMatchedIds.size, psaTargets.length),
+    totalCoveragePct: percent(psaMatchedAll, totalCards),
+    lastSuccessAt: runFor("psaOfficial", runs).lastSuccessAt || maxDate(psaRows.map((row) => row.fetchedAt)),
+    fetchFailureCount: Number.isFinite(runFor("psaOfficial", runs).fetchFailureCount) ? runFor("psaOfficial", runs).fetchFailureCount : null,
+    mainUnmatchedReasons: [reason("PSAセット・英語名・仕様の照合待ち", Math.max(0, psaTargets.length - psaMatchedIds.size))].filter(Boolean),
+  };
+  return { totalCards, comparableTargetCards: signatureTargets.length, stores, linkageSources: { ...stores, psaOfficial } };
 }
 
 function countCurrentRecords(sourceId, root = ROOT) {
@@ -165,11 +217,48 @@ function countCurrentRecords(sourceId, root = ROOT) {
   return Array.isArray(rows) ? rows.length : rows && typeof rows === "object" ? Object.keys(rows).length : 0;
 }
 
+function sourceArtifactPaths(sourceId, root = ROOT) {
+  const files = {
+    toreca: ["data/pokemon-cards.json"],
+    cardrush: ["work/cardrush_catalog.json", "data/cardrush-stock-summary.json"],
+    hareruya2: ["work/hareruya2_catalog.json", "data/hareruya2-stock-summary.json"],
+    yuyutei: ["work/yuyutei_catalog.json", "data/yuyutei-stock-summary.json"],
+    torecacamp: ["work/torecacamp_catalog.json", "data/torecacamp-stock-summary.json"],
+    shopBuyback: ["data/shop-buyback-summary.json"],
+    marketAnalysis: ["data/market-stability-summary.json"],
+    psaJapan: ["data/psa-japan-services.json"],
+  };
+  return (files[sourceId] || []).map((relative) => path.join(root, relative));
+}
+
+function artifactFingerprint(sourceId, root = ROOT) {
+  const hash = crypto.createHash("sha256");
+  let found = false;
+  for (const filePath of sourceArtifactPaths(sourceId, root)) {
+    if (!fs.existsSync(filePath)) continue;
+    found = true;
+    hash.update(fs.readFileSync(filePath));
+  }
+  return found ? hash.digest("hex") : null;
+}
+
 function updateRun(sourceId, patch, root = ROOT) {
   const filePath = path.join(root, "work", "source-update-runs.json");
   const state = readJson(filePath, { updatedAt: null, sources: {} });
   state.sources ||= {};
   state.sources[sourceId] = { ...(state.sources[sourceId] || {}), ...patch };
+  state.updatedAt = new Date().toISOString();
+  writeJson(filePath, state);
+  return state.sources[sourceId];
+}
+
+function appendRunHistory(sourceId, record, root = ROOT) {
+  const filePath = path.join(root, "work", "source-update-history.json");
+  const state = readJson(filePath, { version: 1, updatedAt: null, sources: {} });
+  state.sources ||= {};
+  const history = Array.isArray(state.sources[sourceId]) ? state.sources[sourceId] : [];
+  history.push({ sourceId, ...record });
+  state.sources[sourceId] = history.slice(-60);
   state.updatedAt = new Date().toISOString();
   writeJson(filePath, state);
   return state.sources[sourceId];
@@ -195,6 +284,6 @@ function nextScheduledAt(now = new Date()) {
 }
 
 module.exports = {
-  ROOT, readJson, writeJson, percent, cardSignature, productSignature,
-  buildStoreCoverage, countCurrentRecords, updateRun, nextScheduledAt,
+  ROOT, RUNS_PATH, RUN_HISTORY_PATH, readJson, writeJson, percent, cardSignature, productSignature,
+  appendRunHistory, artifactFingerprint, buildStoreCoverage, countCurrentRecords, sourceArtifactPaths, updateRun, nextScheduledAt,
 };

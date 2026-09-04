@@ -141,6 +141,9 @@ jobs:
         continue-on-error: true
         run: node work/run_tracked_update.js shopBuyback work/update_shop_buybacks.js
 
+      - name: Record Snkrdunk PSA10 listing counts
+        run: node work/build_snkr_listing_history.js
+
       - name: Record 91-day market history and rebuild market analysis
         if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'marketAnalysis'
         continue-on-error: true
@@ -148,6 +151,12 @@ jobs:
 
       - name: Record daily decisions and rebuild backtest
         run: node work/build_market_backtest.js
+
+      - name: Reapply confirmed manual card aliases
+        run: node work/apply_manual_card_aliases.js
+
+      - name: Build ambiguous linkage review queue
+        run: node work/build_linkage_review.js
 
       - name: Relearn sourcing evaluation from current market data
         run: node work/build_evaluation_model.js

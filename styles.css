@@ -488,6 +488,10 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
 .source-status-card dt,.coverage-card dt{font-size:8px;color:var(--muted);font-weight:800}
 .source-status-card dd,.coverage-card dd{margin:2px 0 0;font-size:10px;font-weight:850;overflow-wrap:anywhere}
 .source-status-card p,.coverage-card p{margin:8px 0 0;font-size:9px;color:var(--muted);overflow-wrap:anywhere}
+.source-run-history{margin-top:8px;border-top:1px solid rgba(148,163,184,.16);padding-top:7px}
+.source-run-history summary{cursor:pointer;color:#bae6fd;font-size:9px;font-weight:850}
+.source-run-history>div{display:grid;grid-template-columns:minmax(110px,.8fr) minmax(150px,1fr);gap:3px 8px;margin-top:6px;padding:7px;border-radius:9px;background:rgba(148,163,184,.06)}
+.source-run-history>div b,.source-run-history>div span{font-size:9px}.source-run-history>div small{grid-column:1/-1;color:var(--muted);font-size:8px;overflow-wrap:anywhere}
 .coverage-definition{min-height:24px}
 .coverage-reasons b{color:#f8fafc}
 .coverage-meta{background:rgba(56,217,150,.08);border-color:rgba(56,217,150,.25)}
@@ -770,6 +774,11 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .price-audit-summary{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}.price-audit-summary span{padding:4px 7px;border-radius:999px;background:rgba(125,211,252,.08);color:#bae6fd;font-size:8px}
 .price-audit-rows{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:6px;margin-top:8px}.price-audit-rows>div{padding:9px;border:1px solid rgba(255,255,255,.08);border-radius:11px;background:rgba(11,18,36,.78)}.price-audit-rows>div.excluded{opacity:.7;border-color:rgba(244,63,94,.25)}.price-audit-rows span,.price-audit-rows small,.price-audit-panel>small{display:block;color:var(--muted);font-size:8px;line-height:1.45}.price-audit-rows strong{display:block;margin:2px 0;font-size:13px}.price-audit-panel>small{margin-top:8px}
 .grading-price-audit{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:8px}.grading-price-audit>div{padding:11px;border:1px solid rgba(167,139,250,.2);border-radius:13px;background:rgba(167,139,250,.06)}.grading-price-audit span,.grading-price-audit small{display:block;color:var(--muted);font-size:8px;line-height:1.5}.grading-price-audit strong{display:block;margin:3px 0;font-size:15px}
+.snkr-listing-panel{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:8px}
+.snkr-listing-panel>div{padding:10px;border:1px solid rgba(125,211,252,.2);border-radius:12px;background:rgba(14,116,144,.07)}
+.snkr-listing-panel span,.snkr-listing-panel small{display:block;color:var(--muted);font-size:8px;line-height:1.45}.snkr-listing-panel strong{display:block;margin:3px 0;font-size:15px}
+.buyback-deduction-note{display:block;margin-top:8px;padding:8px 10px;border-radius:10px;background:rgba(245,158,11,.08);color:#fde68a;font-size:8px;line-height:1.5}
+.filter-explanation{grid-column:1/-1;margin:0;padding:8px 10px;border-radius:10px;background:rgba(125,211,252,.07);color:var(--muted);font-size:9px;line-height:1.5}
 .purchase-summary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:12px;padding:10px;border:1px solid rgba(125,211,252,.3);border-radius:18px;background:rgba(5,10,20,.56)}
 .purchase-summary>div{padding:10px;border-radius:13px;background:#0b1224}
 .purchase-summary span,.purchase-summary small{display:block;color:var(--muted);font-size:9px;line-height:1.45}
@@ -1030,6 +1039,7 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
   .source-monitor-panel>summary strong{text-align:left}
   .data-freshness,.coverage-details{grid-template-columns:1fr;padding:0 8px 8px}
   .source-status-card dl,.coverage-card dl{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .source-run-history>div{grid-template-columns:1fr}.source-run-history>div small{grid-column:auto}
   .shop-reference-links{align-items:stretch;flex-direction:column;width:100%}
   .shop-reference-links a{text-align:center}
   .favorites-summary{align-items:flex-start;flex-direction:column;padding:16px}
@@ -1082,6 +1092,7 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
   .stock-averages span{margin:0}
   .metrics,.market-summary{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
   .price-audit-head{align-items:flex-start;flex-direction:column;gap:5px}.price-audit-rows{grid-template-columns:1fr}.grading-price-audit{grid-template-columns:1fr}
+  .snkr-listing-panel{grid-template-columns:repeat(2,minmax(0,1fr))}
   .metric-primary{grid-column:1 / -1}
   .metric{padding:10px}
   .metric strong{font-size:16px}

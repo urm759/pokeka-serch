@@ -191,12 +191,43 @@
       highConfidenceDays: Math.max(3, Math.floor(Number(input.config?.highConfidenceDays ?? 7))),
       initialSafetyFactor: clamp(Number(input.config?.initialSafetyFactor ?? 1), 0.5, 1),
     };
+    const calculationVersion = "operational-cap-v2";
+    const windowMedian = (days, currentOperational) => {
+      const anchor = dateOnly(input.asOfDate) || dateOnly(new Date().toISOString());
+      const values = history
+        .filter((row) => {
+          const age = ageDays(row.date, anchor);
+          return age != null && age < days;
+        })
+        .map((row) => Number(row.operational))
+        .filter(Number.isFinite);
+      if (Number.isFinite(currentOperational)) values.push(currentOperational);
+      return values.length ? median(values) : null;
+    };
+    const withAudit = (result) => {
+      const hasPreviousValue = result.previous != null && Number.isFinite(Number(result.previous));
+      const previousValue = hasPreviousValue ? Number(result.previous) : null;
+      const abruptPct = previousValue > 0
+        ? Math.abs(Number(result.operational) - previousValue) / previousValue * 100
+        : null;
+      return {
+        ...result,
+        todayLimit: rounded,
+        previousLimit: previousValue,
+        median7: windowMedian(7, result.operational),
+        median30: windowMedian(30, result.operational),
+        calculationVersion,
+        abrupt: Number.isFinite(abruptPct) && abruptPct >= 15,
+        abruptPct,
+        changeReason: result.reason,
+      };
+    };
     if (!previous) {
       const operational = Math.floor((rounded * config.initialSafetyFactor) / step) * step;
       const safetyText = config.initialSafetyFactor < 1
         ? `初回安全係数 ${(config.initialSafetyFactor * 100).toFixed(0)}%を適用`
         : "初回は理論最終上限を価格帯単位で切り下げ";
-      return {
+      return withAudit({
         theoretical,
         roundedTheoretical: rounded,
         operational,
@@ -211,7 +242,7 @@
         confidence: "蓄積中",
         provisional: true,
         step,
-      };
+      });
     }
     const previousOperational = Math.max(0, Number(previous.operational));
     let operational = previousOperational;
@@ -235,7 +266,7 @@
     const change = operational - previousOperational;
     const changePct = previousOperational > 0 ? change / previousOperational * 100 : null;
     const confidence = distinctDays >= config.highConfidenceDays ? "確定度高" : distinctDays >= 3 ? "確定度中" : "蓄積中";
-    return {
+    return withAudit({
       theoretical,
       roundedTheoretical: rounded,
       operational,
@@ -250,6 +281,29 @@
       confidence,
       provisional: distinctDays < 3,
       step,
+    });
+  }
+
+  function buybackExitProfit(input = {}) {
+    const buybackPrice = Math.max(0, Number(input.buybackPrice || 0));
+    const purchasePrice = Math.max(0, Number(input.purchasePrice || 0));
+    const gradingFee = Math.max(0, Number(input.gradingFee || 0));
+    const extraCost = Math.max(0, Number(input.extraCost || 0));
+    const fixedRate = clamp(Number(input.deductionRate ?? 3), 0, 5);
+    const observedRate = Number(input.observedDeductionRate);
+    const useObserved = input.mode === "observed" && Number.isFinite(observedRate) && observedRate >= 0 && observedRate <= 5;
+    const deductionRate = useObserved ? observedRate : fixedRate;
+    const deductionAmount = buybackPrice * deductionRate / 100;
+    const beforeDeductionProfit = buybackPrice - purchasePrice - gradingFee - extraCost;
+    const afterDeductionProfit = buybackPrice - deductionAmount - purchasePrice - gradingFee - extraCost;
+    return {
+      buybackPrice,
+      deductionRate,
+      deductionSource: useObserved ? "店舗・カード実績" : "固定設定",
+      deductionAmount,
+      beforeDeductionProfit,
+      afterDeductionProfit,
+      marketplaceFeeApplied: false,
     };
   }
 
@@ -674,5 +728,5 @@
     };
   }
 
-  return { aggregatePrices, bargainDecisionEligible, capRoundingStep, capitalLimits, capitalPlan, economicsScenarioMatrix, expectedEconomics, gradeAssumptions, isSuspectedCardMismatch, matchConfidenceLabel, maxBuyPrice, median, operationalCap, operationalCapConcentration, portfolioPlan, portfolioStress, purchaseAvailability, purchaseCaps, purchaseDecision, purchaseLimitMarketRatio, resilienceMetrics, resolvePsa9Price, targetProfitMaxBuyPrice, weightedMedian };
+  return { aggregatePrices, bargainDecisionEligible, buybackExitProfit, capRoundingStep, capitalLimits, capitalPlan, economicsScenarioMatrix, expectedEconomics, gradeAssumptions, isSuspectedCardMismatch, matchConfidenceLabel, maxBuyPrice, median, operationalCap, operationalCapConcentration, portfolioPlan, portfolioStress, purchaseAvailability, purchaseCaps, purchaseDecision, purchaseLimitMarketRatio, resilienceMetrics, resolvePsa9Price, targetProfitMaxBuyPrice, weightedMedian };
 });

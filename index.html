@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20260904-scenario-v3" />
+  <link rel="stylesheet" href="./styles.css?v=20260904-priority-v1" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -47,6 +47,17 @@
           <small>現在仕入値 × 中央予測</small>
           <input id="expectedProfitFilterInput" type="number" step="1000" value="0" />
         </label>
+        <label class="control safety-profit-control">
+          <span>安全側利益率 下限</span>
+          <small>仕入れ上限 × 供給ストレス予測</small>
+          <input id="stressExpectedRoiFilterInput" type="number" step="1" value="0" />
+        </label>
+        <label class="control safety-profit-control">
+          <span>安全側利益額 下限</span>
+          <small>仕入れ上限 × 供給ストレス予測</small>
+          <input id="stressExpectedProfitFilterInput" type="number" step="1000" value="0" />
+        </label>
+        <p class="filter-explanation">利益率下限0%は、PSA10率・PSA9以下・販売手数料・鑑定費・追加費用を含む期待値が0円以上という意味です。PSA9など全ての結果で赤字にならない保証ではありません。</p>
         <label class="control">
           <span>並び順</span>
           <select id="sortInput">
@@ -67,6 +78,8 @@
             <option value="forecastPrice-desc">予測PSA10価格が高い順</option>
             <option value="forecastPrice-asc">予測PSA10価格が低い順</option>
             <option value="expectedProfit-desc">期待利益が高い順（現在仕入値×中央予測）</option>
+            <option value="stressExpectedProfit-desc">安全側利益が高い順（仕入れ上限×供給ストレス）</option>
+            <option value="stressExpectedRoi-desc">安全側利益率が高い順（仕入れ上限×供給ストレス）</option>
             <option value="annualEfficiency-desc">年換算資金効率が高い順</option>
             <option value="capitalShare-asc">資金占有率が低い順</option>
             <option value="combined30-desc">総合30日の動きが多い順</option>
@@ -489,9 +502,14 @@
             <input id="saleExtraCostInput" type="number" min="0" step="100" value="0" />
             <small class="control-help">1枚を売るときの送料・梱包費など。考慮しない場合は0。</small>
           </label>
+          <label class="control">
+            <span>PSA10買取店の減額リスク</span>
+            <input id="buybackDeductionRateInput" type="number" min="0" max="5" step="0.1" value="3" />
+            <small class="control-help">白かけ・ケース傷などの想定減額率。買取店出口だけに適用し、フリマ手数料とは重複させません。初期値3%。</small>
+          </label>
         </div>
         <div class="psa-settings-note">
-          迷った場合は初期値のままで使えます。PSA10率は公式値を優先し、未取得時だけ70%／50%設定を使います。PSA9は実価格を優先し、未取得時は平均美品の75%で計算します。使用可能資金は「総資金－ロック中資金－鑑定費予備資金」です。
+          迷った場合は初期値のままで使えます。PSA10率は公式値を優先し、未取得時だけ70%／50%設定を使います。PSA9は実価格を優先し、未取得時は平均美品の75%で計算します。使用可能資金は「総資金－ロック中資金－鑑定費予備資金」です。買取店の減額率は買取出口だけに使い、フリマ販売手数料は加算しません。
           <strong id="capitalAvailabilityStatus"></strong>
           <strong id="gradingReserveStatus"></strong>
         </div>
@@ -697,9 +715,9 @@
     </section>
   </main>
 
-  <script src="./decision-model.js?v=20260904-scenario-v3"></script>
+  <script src="./decision-model.js?v=20260904-priority-v1"></script>
   <script src="./backtest-model.js?v=20260901-backtest-v2"></script>
   <script src="./market-analysis.js?v=20260902-supply-pipeline-v1"></script>
-  <script src="./app.js?v=20260904-phase4-v1"></script>
+  <script src="./app.js?v=20260904-priority-v1"></script>
 </body>
 </html>
