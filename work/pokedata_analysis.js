@@ -67,7 +67,7 @@ function classifySale(input, identity) {
   const reasons = [];
   const warnings = [];
 
-  if (!priceJpy) reasons.push("価格欠損");
+  if (!priceJpy) reasons.push(input.priceParseFailed ? "価格形式解析失敗" : "価格欠損");
   if (!titleAvailable) reasons.push("商品名Unavailable");
   if (titleAvailable && /\b(?:korean|korea|kr)\b|한국/i.test(title)) reasons.push("日本版以外");
   if (titleAvailable && /\b(?:english|eng)\b/i.test(title) && !/japanese|jpn|\bjp\b/i.test(title)) reasons.push("日本版以外");
@@ -104,6 +104,10 @@ function classifySale(input, identity) {
     classifiedGrade: marketGrade,
     grader: grader || (displayGrade === "Raw" ? "RAW" : "UNVERIFIED"),
     priceJpy,
+    displayCurrency: input.displayCurrency || null,
+    marketplace: input.marketplace || null,
+    seller: input.seller || null,
+    observedAt: input.observedAt || null,
     status,
     reasons,
     warnings,

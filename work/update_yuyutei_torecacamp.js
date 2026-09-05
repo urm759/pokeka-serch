@@ -17,6 +17,26 @@ function write(file, value) {
   fs.renameSync(temporary, file);
 }
 function jstDate(value = new Date()) { return new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(value)); }
+function updateProgressHealth(progress, currentValue) {
+  const previousValue = Number(progress.progressHealth?.value);
+  const stagnantRuns = Number.isFinite(previousValue) && currentValue <= previousValue
+    ? Number(progress.progressHealth?.stagnantRuns || 0) + 1
+    : 0;
+  progress.progressHealth = {
+    value: currentValue,
+    previousValue: Number.isFinite(previousValue) ? previousValue : null,
+    stagnantRuns,
+    status: stagnantRuns >= 3 ? "stalled" : "progressing",
+    checkedAt: new Date().toISOString(),
+  };
+  return progress.progressHealth;
+}
+function guardCatalogDrop(previousCatalog, nextCatalog) {
+  const previousCount = previousCatalog.length;
+  const proposedCount = nextCatalog.length;
+  const abruptDrop = previousCount >= 20 && proposedCount < Math.floor(previousCount * 0.7);
+  return { abruptDrop, previousCount, proposedCount, catalog: abruptDrop ? previousCatalog : nextCatalog };
+}
 function normalize(value) {
   return String(value || "").toLowerCase()
     .replace(/[０-９]/g, (char) => String.fromCharCode(char.charCodeAt(0) - 0xfee0))
@@ -229,10 +249,12 @@ function yuyuteiPriority(card, buybackCards = {}) {
 
 async function updateYuyutei(cards, paths) {
   let catalog = read(paths.catalog, []);
+  const previousCatalog = [...catalog];
   const history = read(paths.history, { dates: [], stocks: {} });
   const progress = read(paths.progress, { attemptedCards: {} });
   const pageCache = read(paths.cache, { version: 1, entries: {} });
   if (!progress.attemptedCards || typeof progress.attemptedCards !== "object") progress.attemptedCards = {};
+  progress.retryQueue = Array.isArray(progress.retryQueue) ? progress.retryQueue : [];
   if (!pageCache.entries || typeof pageCache.entries !== "object") pageCache.entries = {};
   const byId = new Map(catalog.map((entry) => [entry.cardId, entry]));
   const buybackCards = read(path.join(ROOT, "data", "shop-buyback-summary.json"), { cards: {} }).cards || {};
@@ -308,6 +330,7 @@ async function updateYuyutei(cards, paths) {
       metric.matchCount = matches.length;
       metric.stage = "save";
       progress.attemptedCards[card.id] = { signature: signatureKey, checkedAt: new Date().toISOString(), found: Boolean(match), priorityRank: priority.rank, priorityLabel: priority.label };
+      progress.retryQueue = progress.retryQueue.filter((entry) => entry.cardId !== card.id);
       if (!match) {
         linkageMisses.push({
           cardId: card.id, cardName: card.name, pageKey, url: searchUrl,
@@ -348,6 +371,7 @@ async function updateYuyutei(cards, paths) {
       };
       progress.lastFailure = failure;
       progress.failures = [...(progress.failures || []), failure].slice(-50);
+      progress.retryQueue = [...progress.retryQueue.filter((entry) => entry.cardId !== card.id), failure].slice(-500);
       runFailures.push(failure);
       write(paths.progress, progress);
       console.warn(`yuyutei search failed ${card.id}: ${error.message}`);
@@ -355,7 +379,8 @@ async function updateYuyutei(cards, paths) {
     metric.endedAt = new Date().toISOString();
     recordFetchMetric("yuyutei", metric);
   }
-  catalog = [...byId.values()];
+  const catalogGuard = guardCatalogDrop(previousCatalog, [...byId.values()]);
+  catalog = catalogGuard.catalog;
   const searchableCards = cards.filter((card) => {
     const signature = cardSignature(card);
     return Boolean(signature.setCode && signature.cardNo && signature.base);
@@ -366,6 +391,7 @@ async function updateYuyutei(cards, paths) {
     return due(progress.attemptedCards[card.id], signatureKey);
   }).length;
   const searchedCurrentCount = Math.max(0, searchableCards.length - remainingSearchCount);
+  const progressHealth = updateProgressHealth(progress, searchedCurrentCount);
   const completionStatus = failed > 0 || remainingSearchCount > 0 ? "partial" : "success";
   const priorityRemaining = searchableCards.reduce((counts, card) => {
     if (byId.has(card.id) || !due(progress.attemptedCards[card.id], JSON.stringify(cardSignature(card)))) return counts;
@@ -388,6 +414,14 @@ async function updateYuyutei(cards, paths) {
     }, {}),
     fetchFailureCount: failed, linkageMissCount: linkageMisses.length,
     matchedCount: matched, newLinkCount: linked, updatedCount: updated,
+    noCandidateCount: linkageMisses.filter((entry) => entry.reason === "no_candidate").length,
+    identityMismatchCount: linkageMisses.filter((entry) => entry.reason === "identity_mismatch").length,
+    ambiguousCount: linkageMisses.filter((entry) => entry.reason === "ambiguous").length,
+    retryQueueCount: progress.retryQueue.length,
+    abruptDropDetected: catalogGuard.abruptDrop,
+    previousCatalogCount: catalogGuard.previousCount,
+    proposedCatalogCount: catalogGuard.proposedCount,
+    progressHealth,
     lastSuccessfulPage: progress.lastSuccessfulPage || null,
     lastFailure: runFailures.at(-1) || null,
     linkageMisses: linkageMisses.slice(-20), completionStatus, completedAt: new Date().toISOString(),
@@ -472,6 +506,7 @@ function preferCampEntry(previous, candidate) {
 async function updateTorecaCamp(cards, paths) {
   const reset = process.env.TORECACAMP_RESET === "1";
   let catalog = reset ? [] : read(paths.catalog, []);
+  const previousCatalog = [...catalog];
   const progress = reset ? {} : read(paths.progress, {});
   const sitemapCache = reset ? { version: 1 } : read(paths.sitemapCache, { version: 1 });
   const migratedFromCollectionApi = progress.paginationMode !== "sitemap";
@@ -505,10 +540,13 @@ async function updateTorecaCamp(cards, paths) {
   for (const card of cards) { const signature = cardSignature(card); if (signature.cardNo) { if (!byNumber.has(signature.cardNo)) byNumber.set(signature.cardNo, []); byNumber.get(signature.cardNo).push(card); } }
   const sitemapLimit = Math.max(1, Number(process.env.TORECACAMP_SITEMAPS_PER_RUN || 1));
   const detailLimit = Math.max(1, Number(process.env.TORECACAMP_PRODUCT_DETAIL_BATCH || 100));
+  const runtimeLimitMs = Math.max(30000, Number(process.env.TORECACAMP_RUNTIME_LIMIT_MS || 480000));
+  const stopBy = Date.now() + runtimeLimitMs;
   const forcedSitemap = Math.max(0, Number(process.env.TORECACAMP_RETRY_SITEMAP || 0) - 1);
   let sitemapUrls = [];
   let listedProducts = 0; let detailFetched = 0; let parsed = 0; let stateA = 0;
   let linked = 0; let updated = 0; let failed = 0; let cacheHits = 0; let sitemapsSucceeded = 0;
+  let duplicateUrls = 0; let duplicateProductIds = 0;
   let stoppingReason = null;
   const excluded = { noStateA: 0, gradedProduct: 0, noCardNumber: 0, noLocalCandidate: 0, identityMismatch: 0, ambiguous: 0 };
   try {
@@ -553,10 +591,14 @@ async function updateTorecaCamp(cards, paths) {
       listedProducts += entries.length;
       const startingEntry = progress.currentSitemapIndex === sitemapIndex ? progress.currentEntryIndex : 0;
       for (let entryIndex = startingEntry; entryIndex < entries.length; entryIndex += 1) {
+        if (Date.now() >= stopBy - 5000) {
+          stoppingReason = `安全停止時間 ${Math.round(runtimeLimitMs / 1000)}秒に到達`;
+          break;
+        }
         const sitemapEntry = entries[entryIndex];
         progress.currentSitemapIndex = sitemapIndex;
         progress.currentEntryIndex = entryIndex;
-        if (seenProductUrls.has(sitemapEntry.url)) { progress.currentEntryIndex = entryIndex + 1; continue; }
+        if (seenProductUrls.has(sitemapEntry.url)) { duplicateUrls += 1; progress.currentEntryIndex = entryIndex + 1; continue; }
         parsed += 1;
         const stub = { title: sitemapEntry.title, handle: sitemapEntry.handle, tags: [] };
         const sig = campSignature(stub);
@@ -573,7 +615,7 @@ async function updateTorecaCamp(cards, paths) {
         const productResponse = await fetchJson(`${sitemapEntry.url}.js`, { intervalMs: 1100 });
         detailFetched += 1;
         const product = productResponse.value;
-        if (seenProductIds.has(String(product.id))) { seenProductUrls.add(sitemapEntry.url); progress.currentEntryIndex = entryIndex + 1; continue; }
+        if (seenProductIds.has(String(product.id))) { duplicateProductIds += 1; seenProductUrls.add(sitemapEntry.url); progress.currentEntryIndex = entryIndex + 1; continue; }
         const variant = (product.variants || []).find(campA);
         if (!variant) { excluded.noStateA += 1; seenProductUrls.add(sitemapEntry.url); seenProductIds.add(String(product.id)); progress.currentEntryIndex = entryIndex + 1; continue; }
         stateA += 1;
@@ -632,7 +674,8 @@ async function updateTorecaCamp(cards, paths) {
     recordFetchMetric("torecacamp", metric);
     if (stoppingReason || failed > 0 || process.env.TORECACAMP_RETRY_SITEMAP) break;
   }
-  const nextCatalog = [...byId.values()];
+  const catalogGuard = guardCatalogDrop(previousCatalog, [...byId.values()]);
+  const nextCatalog = catalogGuard.catalog;
   const summary = {};
   for (const entry of nextCatalog) summary[entry.cardId] = { torecacampPrice: Number(entry.price) || null, available: entry.available, availabilityLabel: entry.available ? "在庫あり" : "在庫なし" };
   const processedSitemapCount = progress.processedSitemaps.length;
@@ -641,6 +684,7 @@ async function updateTorecaCamp(cards, paths) {
   const estimatedTotalProducts = knownSitemaps > 0 ? Math.round(knownProducts / knownSitemaps * Number(progress.totalSitemaps || knownSitemaps)) : 0;
   const estimatedRemainingProducts = estimatedTotalProducts > 0 ? Math.max(0, estimatedTotalProducts - seenProductUrls.size) : null;
   const crawlComplete = Boolean(progress.totalSitemaps && processedSitemapCount >= progress.totalSitemaps);
+  const progressHealth = updateProgressHealth(progress, seenProductUrls.size);
   if (crawlComplete) stoppingReason = null;
   progress.lastRun = {
     paginationMode: "sitemap", currentCursor: progress.currentSitemapIndex + 1,
@@ -651,7 +695,12 @@ async function updateTorecaCamp(cards, paths) {
     cumulativeProductCount: seenProductUrls.size, estimatedTotalProducts, estimatedRemainingProducts,
     cumulativeMatchedCount: nextCatalog.length, hasMorePages: !crawlComplete, crawlComplete,
     sitemapsSucceeded, listedProducts, detailFetched, parsed, stateA, newLinkCount: linked,
-    updatedCount: updated, fetchFailureCount: failed,
+    updatedCount: updated, fetchFailureCount: failed, duplicateUrlCount: duplicateUrls,
+    duplicateProductIdCount: duplicateProductIds,
+    abruptDropDetected: catalogGuard.abruptDrop,
+    previousCatalogCount: catalogGuard.previousCount,
+    proposedCatalogCount: catalogGuard.proposedCount,
+    progressHealth,
     lastSuccessfulPage: progress.lastSuccessfulSitemap ? `サイトマップ ${progress.lastSuccessfulSitemap}` : null,
     lastFailure: progress.lastFailure || null,
     failedSitemaps: Object.values(progress.failedSitemaps),
@@ -666,6 +715,7 @@ async function updateTorecaCamp(cards, paths) {
   });
   return {
     sitemapsSucceeded, listedProducts, detailFetched, parsed, stateA, linked, updated, failed, cacheHits, excluded,
+    duplicateUrls, duplicateProductIds, progressHealth,
     coverage: nextCatalog.length, lastSuccessfulPage: progress.lastRun.lastSuccessfulPage,
     currentCursor: progress.currentSitemapIndex + 1, processedSitemapCount,
     totalSitemaps: progress.totalSitemaps || sitemapUrls.length || 44,
@@ -696,6 +746,7 @@ if (require.main === module) main().catch((error) => { console.error(error); pro
 
 module.exports = {
   campA, campMatchesCard, campSignature, cardSignature, normalizeSetCode,
+  guardCatalogDrop, updateProgressHealth,
   parseProductSitemap, parseProductSitemapIndex, preferCampEntry,
   yuyuteiPriority,
   numberMatches, parseYuyuteiResults, titleMatches,

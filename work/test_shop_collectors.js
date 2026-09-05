@@ -5,6 +5,7 @@ const {
   campA, campMatchesCard, campSignature, cardSignature, parseProductSitemap,
   parseProductSitemapIndex, parseYuyuteiResults, preferCampEntry, titleMatches,
   yuyuteiPriority,
+  guardCatalogDrop, updateProgressHealth,
 } = require("./update_yuyutei_torecacamp.js");
 
 const standard = {
@@ -45,6 +46,16 @@ assert.equal(yuyuteiPriority({ id: "candidate", price: 10000, snkPsa10Price: 400
 assert.equal(yuyuteiPriority({ id: "psa", price: 40000, snkPsa10Price: 45000, tv30: 10 }, {}).label, "PSA10相場あり");
 assert.equal(yuyuteiPriority({ id: "buyback", price: 5000 }, { buyback: { shops: { one: { price: 10000 } } } }).label, "買取掲載あり");
 
+const preserved = Array.from({ length: 20 }, (_, index) => ({ cardId: String(index) }));
+assert.strictEqual(guardCatalogDrop(preserved, []).catalog, preserved);
+assert.equal(guardCatalogDrop(preserved, Array.from({ length: 13 })).abruptDrop, true);
+const health = {};
+updateProgressHealth(health, 100);
+updateProgressHealth(health, 100);
+updateProgressHealth(health, 100);
+assert.equal(updateProgressHealth(health, 100).status, "stalled");
+assert.equal(updateProgressHealth(health, 101).status, "progressing");
+
 const updater = fs.readFileSync(path.join(__dirname, "update_yuyutei_torecacamp.js"), "utf8");
 const tracker = fs.readFileSync(path.join(__dirname, "run_tracked_update.js"), "utf8");
 const refreshWorkflow = fs.readFileSync(path.join(__dirname, "..", ".github", "workflows", "refresh-all-site-data.yml"), "utf8");
@@ -71,6 +82,10 @@ assert.match(updater, /priorityRemaining/);
 assert.match(updater, /cumulativeProductCount/);
 assert.match(updater, /crawlComplete/);
 assert.match(updater, /stoppingReason/);
+assert.match(updater, /TORECACAMP_RUNTIME_LIMIT_MS/);
+assert.match(updater, /retryQueue/);
+assert.match(updater, /progressHealth/);
+assert.match(updater, /guardCatalogDrop/);
 assert.match(updater, /linkageMissCount/);
 assert.match(updater, /exceptionName/);
 assert.match(updater, /response\.status === 429 \|\| response\.status >= 500/);

@@ -587,6 +587,8 @@ function renderCollectorDiagnostics(sourceId, diagnostics) {
       <td>${fmt.format(miss.candidateCount || 0)} / ${fmt.format(miss.matchCount || 0)}</td>
       <td><a href="${escapeHtml(miss.url || "#")}" target="_blank" rel="noreferrer">検索URL</a></td>
     </tr>`).join("") : "";
+  const health = diagnostics.progressHealth;
+  const healthHtml = health ? `<span>進捗状態 <b>${health.status === "stalled" ? `停滞（${fmt.format(health.stagnantRuns || 0)}回連続）` : "進行中"}</b></span>` : "";
   const campProgress = sourceId === "torecacamp" ? `
     <div class="collector-progress-grid">
       <span>現在位置 <b>${diagnostics.paginationMode === "sitemap" ? `サイトマップ ${fmt.format(diagnostics.currentSitemapIndex || 1)}・商品 ${fmt.format(diagnostics.currentEntryIndex || 0)}` : `${fmt.format(diagnostics.currentCursor || 0)}ページ`}</b></span>
@@ -597,6 +599,9 @@ function renderCollectorDiagnostics(sourceId, diagnostics) {
       <span>累計紐付け <b>${fmt.format(diagnostics.cumulativeMatchedCount || 0)}件</b></span>
       <span>今回の新規紐付け <b>${fmt.format(diagnostics.newLinkCount || 0)}件</b></span>
       <span>今回の商品詳細取得 <b>${fmt.format(diagnostics.detailFetched || 0)}件</b></span>
+      <span>重複URL除外 <b>${fmt.format(diagnostics.duplicateUrlCount || 0)}件</b></span>
+      <span>重複商品ID除外 <b>${fmt.format(diagnostics.duplicateProductIdCount || 0)}件</b></span>
+      ${healthHtml}
       <span>最後に成功 <b>${escapeHtml(String(diagnostics.lastSuccessfulPage || "未記録"))}</b></span>
       ${diagnostics.currentSitemapUrl ? `<span class="collector-stop-reason">処理URL <b><a href="${escapeHtml(diagnostics.currentSitemapUrl)}" target="_blank" rel="noreferrer">現在のサイトマップ</a></b></span>` : ""}
       ${diagnostics.stoppingReason ? `<span class="collector-stop-reason">停止理由 <b>${escapeHtml(diagnostics.stoppingReason)}</b></span>` : ""}
@@ -611,6 +616,11 @@ function renderCollectorDiagnostics(sourceId, diagnostics) {
       <span>HTTP取得失敗 <b>${fmt.format(diagnostics.fetchFailureCount || 0)}件</b></span>
       <span>一致候補なし <b>${fmt.format(diagnostics.linkageMissCount || 0)}件</b></span>
       <span>今回の紐付け <b>${fmt.format(diagnostics.matchedCount || 0)}件</b></span>
+      <span>一致なし <b>${fmt.format(diagnostics.noCandidateCount || 0)}件</b></span>
+      <span>条件不一致 <b>${fmt.format(diagnostics.identityMismatchCount || 0)}件</b></span>
+      <span>曖昧候補 <b>${fmt.format(diagnostics.ambiguousCount || 0)}件</b></span>
+      <span>再試行キュー <b>${fmt.format(diagnostics.retryQueueCount || 0)}件</b></span>
+      ${healthHtml}
       <span>最後に成功 <b>${escapeHtml(String(diagnostics.lastSuccessfulPage || "未記録"))}</b></span>
       ${diagnostics.priorityRemaining ? `<span class="collector-stop-reason">優先キュー残数 <b>${escapeHtml(Object.entries(diagnostics.priorityRemaining).map(([label, count]) => `${label} ${fmt.format(count)}件`).join(" / "))}</b></span>` : ""}
     </div>` : "";
@@ -3062,6 +3072,12 @@ function render() {
         Object.entries(market.excludedReasons || {}).forEach(([reason, count]) => { totals[reason] = (totals[reason] || 0) + Number(count || 0); });
         return totals;
       }, {}) : {};
+    const pokedataAcquisition = pokedata?.acquisitionAudit || null;
+    const pokedataMissingCauses = pokedataAcquisition
+      ? Object.entries(pokedataAcquisition.missingCauseCounts || {})
+        .filter(([, count]) => count != null)
+        .map(([reason, count]) => `${reason} ${fmt.format(count)}件`).join(" / ")
+      : "取得経路未監査";
     const pokedataPanel = pokedata ? `
       <details class="pokedata-panel">
         <summary><span>PokeDATA海外相場</span><small>${escapeHtml(pokedata.sourceMode || "公開API取得・一部認証済みChrome検証")} / 国内仕入れ上限へ未反映</small></summary>
@@ -3074,6 +3090,10 @@ function render() {
             <div><span>TCGPlayer 素体</span><strong>${Number.isFinite(pokedata.markets?.tcgplayerRaw?.pageDisplayJpy) ? `¥${fmt.format(Math.round(pokedata.markets.tcgplayerRaw.pageDisplayJpy))}` : Number.isFinite(pokedata.markets?.tcgplayerRaw?.apiAverageJpy) ? `¥${fmt.format(Math.round(pokedata.markets.tcgplayerRaw.apiAverageJpy))}` : "未取得"}</strong><small>PokeDATA集計表示 / 取引数 ${escapeHtml(pokedata.markets?.tcgplayerRaw?.transactionCountStatus || "未取得")} / eBayとは合算しない</small></div>
           </div>
           <div class="pokedata-audit">
+            <span>実価格取得：認証画面 ${fmt.format(pokedataAcquisition?.browserPricedRows || 0)}件 / 画面成約総数 ${Number.isFinite(pokedataAcquisition?.pageReportedTransactions) ? fmt.format(pokedataAcquisition.pageReportedTransactions) : "未取得"} / 取得範囲 ${Number.isFinite(pokedataAcquisition?.captureCoveragePct) ? `${pokedataAcquisition.captureCoveragePct.toFixed(1)}%` : "検証待ち"}</span>
+            <span>公開API：価格あり ${fmt.format(pokedataAcquisition?.publicApiPricePresent || 0)}件 / 価格欠損 ${fmt.format(pokedataAcquisition?.publicApiPriceMissing || 0)}件</span>
+            <span>欠損原因：${escapeHtml(pokedataMissingCauses)}</span>
+            <span>取得判定：${escapeHtml(pokedataAcquisition?.conclusion || "未監査")}</span>
             <span>除外理由：${escapeHtml(Object.entries(pokedataExcludedReasons).map(([reason, count]) => `${reason} ${count}件`).join(" / ") || "除外なし")}</span>
             <span>PSA POP：10 ${fmt.format(pokedata.population?.psa10 || 0)} / 9 ${fmt.format(pokedata.population?.psa9 || 0)} / 8 ${fmt.format(pokedata.population?.psa8 || 0)}</span>
             <span>海外PSA10方向：${escapeHtml(pokedata.trend?.overseas || "蓄積中")} / 国内方向：${escapeHtml(pokedata.trend?.domestic || "蓄積中")}</span>

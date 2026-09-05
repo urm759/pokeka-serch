@@ -80,7 +80,7 @@ function compactSummary(summary, manifest) {
   return output;
 }
 
-function writeSetState(root, summary, { setName, setCode, cards, records, sourceCount, updatedAt }) {
+function writeSetState(root, summary, { setName, setCode, cards, records, sourceCount, updatedAt, status, acquisition }) {
   const now = updatedAt || new Date().toISOString();
   const manifest = readManifest(root);
   const slug = setSlug(setCode ? `${setCode}-${setName}` : setName);
@@ -108,6 +108,8 @@ function writeSetState(root, summary, { setName, setCode, cards, records, source
     updatedAt: now,
     file,
     localCardIds,
+    status: status || manifest.sets?.find((entry) => entry.setName === setName)?.status || "partial",
+    acquisition: acquisition || manifest.sets?.find((entry) => entry.setName === setName)?.acquisition || null,
   };
   const sets = (manifest.sets || []).filter((entry) => entry.setName !== setName);
   sets.push(nextEntry);

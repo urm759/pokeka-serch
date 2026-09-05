@@ -80,6 +80,7 @@ jobs:
           SHOP_SOURCE_ONLY: "torecacamp"
           TORECACAMP_SITEMAPS_PER_RUN: "1"
           TORECACAMP_PRODUCT_DETAIL_BATCH: "100"
+          TORECACAMP_RUNTIME_LIMIT_MS: "480000"
           SHOP_FETCH_RETRIES: "2"
           SHOP_FETCH_TIMEOUT_MS: "10000"
           SHOP_ACCESS_INTERVAL_MS: "1100"
@@ -97,6 +98,22 @@ jobs:
           POKEDATA_INTERVAL_MS: "1100"
           POKEDATA_TIMEOUT_MS: "10000"
         run: node work/run_tracked_update.js pokedata work/update_pokedata_batch.js
+
+      - name: Expand priority PokeDATA set
+        if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'pokedata'
+        timeout-minutes: 10
+        continue-on-error: true
+        env:
+          POKEDATA_SET: "Terastal Festival ex"
+          POKEDATA_TARGET: "629"
+          POKEDATA_BATCH: "10"
+          POKEDATA_INTERVAL_MS: "1100"
+          POKEDATA_TIMEOUT_MS: "10000"
+        run: node work/update_pokedata_batch.js
+
+      - name: Reapply authenticated PokeDATA sale captures
+        if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'pokedata'
+        run: node work/run_tracked_update.js pokedata work/import_pokedata_browser_capture.js
 
       - name: Resolve all Snkrdunk direct links
         if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'toreca'

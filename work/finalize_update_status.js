@@ -42,6 +42,7 @@ const marketAnalysis = read("data/market-stability-summary.json");
 const psa = read("data/psa-official-populations.json");
 const services = read("data/psa-japan-services.json");
 const pokedata = read("data/pokedata-summary.json");
+const pokedataManifest = read("data/pokedata/manifest.json", { sets: [] });
 const runs = read("work/source-update-runs.json", { sources: {} });
 const runHistory = read("work/source-update-history.json", { version: 1, sources: {} });
 const psaTask = read("work/psa_update_state.json", {});
@@ -148,11 +149,11 @@ for (const [sourceId, source] of Object.entries(sources)) {
   source.lastError = run.lastError || null;
   source.nextScheduledAt = nextScheduledAt();
   source.fresh = source.date === today && source.status === "success";
-  if (sourceId === "pokedata" && Number(pokedata.coverage?.totalCoveragePct || 0) < 100) {
-    source.acquiredCount = Number(pokedata.coverage?.acquired || 0);
-    source.updatedCount = Number(pokedata.run?.processed || pokedata.coverage?.acquired || 0);
+  if (sourceId === "pokedata" && Number(pokedataManifest.totalCards || pokedata.coverage?.linkedDomesticCards || 0) < 12033) {
+    source.acquiredCount = Number(pokedataManifest.totalLinkageRecords || pokedata.coverage?.acquired || 0);
+    source.updatedCount = Number(pokedataManifest.totalCards || pokedata.coverage?.linkedDomesticCards || 0);
     source.status = "partial";
-    source.sourceState = pokedata.coverage?.statusLabel || `検証中／部分取得（${Number(pokedata.coverage?.acquired || 0)}件）`;
+    source.sourceState = `検証中／部分取得（${Number(pokedataManifest.sets?.length || 0)}セット・照合${source.acquiredCount}件・国内${source.updatedCount}枚）`;
     source.fresh = false;
   }
   if (sourceId === "yuyutei" && Number(yuyutei.crawl?.remainingSearchCount || 0) > 0) {

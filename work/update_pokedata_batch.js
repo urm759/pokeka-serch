@@ -15,6 +15,7 @@ const LINK_MAP = path.join(__dirname, "pokedata-link-map.json");
 const PROGRESS = path.join(__dirname, SET_NAME === "Battle Partners" ? "pokedata-progress.json" : `pokedata-progress-${setSlug(SET_NAME)}.json`);
 const CACHE = path.join(__dirname, "pokedata-page-cache.json");
 const METRICS = path.join(__dirname, "pokedata-fetch-metrics.json");
+const BROWSER_CAPTURES = path.join(__dirname, "pokedata-browser-captures.json");
 
 function read(file, fallback) {
   try { return JSON.parse(fs.readFileSync(file, "utf8").replace(/^\uFEFF/, "")); } catch { return fallback; }
@@ -73,7 +74,9 @@ function minimalTransactions(rows, fxRate) {
     listingUrl: row.ebay_item_id ? `https://www.ebay.com/itm/${row.ebay_item_id}` : null,
     date_sold: isoDate(row.date_sold), title: row.title || null,
     psa_grade: row.psa_grade == null ? "Raw" : String(Math.trunc(Number(row.psa_grade))),
-    sold_price: Number.isFinite(Number(row.sold_price)) ? Math.round(Number(row.sold_price) * fxRate) : null,
+    sold_price: row.sold_price != null && Number.isFinite(Number(row.sold_price)) && Number(row.sold_price) > 0
+      ? Math.round(Number(row.sold_price) * fxRate)
+      : null,
   }));
 }
 function individualSalesStatus(summary) {
@@ -154,6 +157,8 @@ async function main() {
   const linkMap = read(LINK_MAP, { version: 1, aliases: [], ambiguousCandidates: [] });
   const progress = read(PROGRESS, { version: 1, setName: SET_NAME, processedCardIds: [], failures: [] });
   const cache = read(CACHE, { version: 1, entries: {} });
+  const browserCaptures = read(BROWSER_CAPTURES, { cards: [] });
+  const browserCapturedIds = new Set((browserCaptures.cards || []).map((card) => Number(card.id)));
   cache.entries ||= {};
   const domesticByKey = new Map();
   for (const card of cards) {
@@ -236,7 +241,7 @@ async function main() {
       existingRecords.set(Number(sourceCard.id), record);
       if (domestic) {
         const currentDetailed = existing.cards?.[domestic.id];
-        if (!(Number(sourceCard.id) === 73990 && currentDetailed?.markets?.ebayRaw?.adoptedCount >= 64)) {
+        if (!browserCapturedIds.has(Number(sourceCard.id)) && currentDetailed?.acquisitionAudit?.method !== "authenticated-browser-dom") {
           const sales = minimalTransactions(transactionData.transactions, fxRate);
           const analysis = analyzeSales(sales, {
             number: sourceCard.num,
@@ -376,6 +381,8 @@ async function main() {
   writeSetState(ROOT, existing, {
     setName: SET_NAME, setCode, cards: existing.cards, records,
     sourceCount: sourceCards.length, updatedAt: existing.updatedAt,
+    status: existing.coverage.setComplete ? "set-linked-individual-sales-partial" : "partial",
+    acquisition: storedSet.entry?.acquisition || null,
   });
   write(LINK_MAP, linkMap); write(PROGRESS, progress); write(CACHE, cache);
   console.log(JSON.stringify({
