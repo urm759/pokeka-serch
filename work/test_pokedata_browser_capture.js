@@ -10,13 +10,19 @@ const terastal = manifest.sets.find((entry) => entry.setName === "Terastal Festi
 
 assert(battle);
 assert(terastal);
-assert(capture.cards.length >= 11);
-assert.equal(battle.acquisition.browserValidatedCards, 11);
-assert(battle.acquisition.usableRawMedianCards >= 10);
-assert(battle.acquisition.usablePsa10MedianCards >= 10);
-assert.equal(battle.acquisition.actualPriceCoveragePct, 19.3);
-assert.equal(terastal.linkageCount, 100);
-assert.equal(manifest.totalLinkageRecords, 232);
+assert(capture.cards.length >= 104);
+assert.equal(battle.acquisition.browserValidatedCards, battle.count);
+assert(battle.acquisition.usableRawMedianCards >= 50);
+assert(battle.acquisition.usablePsa10MedianCards >= 15);
+assert.equal(battle.acquisition.actualPriceCoveragePct, 100);
+assert.equal(terastal.linkageCount, 629);
+assert.equal(terastal.sourceCount, 629);
+assert.equal(terastal.acquisition.browserValidatedCards, 47);
+assert.equal(manifest.totalLinkageRecords, 761);
+assert.equal(battle.acquisition.sourcePriceMissingRows, 0);
+assert.equal(battle.acquisition.formatParseFailureRows, 0);
+assert(battle.acquisition.classificationCounts["auto-matched"] > 0);
+assert(battle.acquisition.classificationCounts.unverifiable > 0);
 
 for (const captured of capture.cards) {
   assert(captured.rows.length > 0);
@@ -26,6 +32,7 @@ for (const captured of capture.cards) {
   const sales = JSON.parse(fs.readFileSync(salesPath, "utf8"));
   assert.equal(sales.acquisitionAudit.method, "authenticated-browser-dom");
   assert.equal(sales.acquisitionAudit.missingCauseCounts["価格形式解析失敗"], 0);
+  assert(sales.acquisitionAudit.classificationCounts);
   assert(sales.acquisitionAudit.browserPricedRows > 0);
   assert.equal(sales.summaries.raw.originalCount, sales.summaries.raw.adoptedCount + sales.summaries.raw.excludedCount);
   assert.equal(sales.summaries.psa10.originalCount, sales.summaries.psa10.adoptedCount + sales.summaries.psa10.excludedCount);

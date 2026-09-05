@@ -18,8 +18,11 @@ assert.equal(classifySale(sale("tag", "Raw", 20000, `${base} TAG 10`), identity)
 assert(classifySale(sale("tag", "Raw", 20000, `${base} TAG 10`), identity).reasons.includes("PSA以外の鑑定品:TAG"));
 assert(classifySale(sale("kr", "Raw", 20000, `${base} Korean`), identity).reasons.includes("日本版以外"));
 assert(classifySale(sale("lot", "Raw", 20000, `${base} lot of 2`), identity).reasons.includes("複数枚セット"));
+assert.equal(classifySale(sale("sealed", "Raw", 20000, `${base} booster pack sealed`), identity).reviewClass, "out-of-scope");
+assert.equal(classifySale(sale("mismatch", "Raw", 20000, "Pokemon Japanese SV8a Lillie's Clefairy ex 127/100"), identity).reviewClass, "ambiguous");
 assert.equal(classifySale(sale("psa", "Raw", 40000, `${base} PSA 10`), identity).classifiedGrade, "PSA10");
 assert.equal(classifySale(sale("missing", "PSA10", 40000, null), identity).status, "unverified");
+assert.equal(classifySale(sale("missing", "PSA10", 40000, null), identity).reviewClass, "unverifiable");
 
 const sample = [
   sale("raw1", "Raw", 18000, base),
@@ -50,7 +53,9 @@ if (fs.existsSync(generatedPath)) {
   const card = shard.cards["pk-63635"];
   assert(card, "Lillie's Clefairy ex trial data is missing");
   assert.equal(card.referenceOnly, true);
-  assert.equal(card.limitImpact, "仕入れ上限へ未反映");
+    assert.equal(card.limitImpact, "仕入れ上限へ未反映");
+    assert.equal(card.markets.tcgplayerRaw.transactionCount, null);
+    assert.equal(card.markets.tcgplayerRaw.transactionCountStatus, "取得不能");
   assert(card.markets.ebayRaw.originalCount >= 100);
   assert(card.markets.ebayRaw.adoptedCount >= 64);
   assert(card.markets.ebayPsa10.originalCount >= 180);
@@ -66,6 +71,7 @@ if (fs.existsSync(generatedPath)) {
     assert(Number.isFinite(market.medianJpy));
     assert(Number.isFinite(market.minJpy));
     assert(Number.isFinite(market.maxJpy));
+    assert(market.targetPeriod);
   }
 }
 

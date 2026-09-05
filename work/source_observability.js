@@ -218,12 +218,21 @@ function buildStoreCoverage(root = ROOT) {
   const pokedataBaseMissing = pokedataRecords.filter((record) => record.status === "domestic-base-missing").length;
   const pokedataAcquisition = (pokedataManifest.sets || []).reduce((totals, entry) => {
     const acquisition = entry.acquisition || {};
-    totals.browserValidatedCards += Number(acquisition.browserValidatedCards || 0);
-    totals.usableRawMedianCards += Number(acquisition.usableRawMedianCards || 0);
-    totals.usablePsa10MedianCards += Number(acquisition.usablePsa10MedianCards || 0);
-    totals.usablePsa9MedianCards += Number(acquisition.usablePsa9MedianCards || 0);
+    ["browserValidatedCards", "browserPricedCards", "browserCapturedRows", "browserPricedRows", "pageReportedTransactions",
+      "publicApiPricePresent", "publicApiMaskedRows", "titleUnavailableRows", "sourcePriceMissingRows", "formatParseFailureRows",
+      "adoptedRawRows", "adoptedPsa10Rows", "adoptedPsa9Rows", "usableRawMedianCards", "usablePsa10MedianCards",
+      "usablePsa9MedianCards"].forEach((key) => { totals[key] += Number(acquisition[key] || 0); });
+    Object.entries(acquisition.classificationCounts || {}).forEach(([key, count]) => {
+      totals.classificationCounts[key] = (totals.classificationCounts[key] || 0) + Number(count || 0);
+    });
     return totals;
-  }, { browserValidatedCards: 0, usableRawMedianCards: 0, usablePsa10MedianCards: 0, usablePsa9MedianCards: 0 });
+  }, {
+    browserValidatedCards: 0, browserPricedCards: 0, browserCapturedRows: 0, browserPricedRows: 0,
+    pageReportedTransactions: 0, publicApiPricePresent: 0, publicApiMaskedRows: 0, titleUnavailableRows: 0,
+    sourcePriceMissingRows: 0, formatParseFailureRows: 0, adoptedRawRows: 0, adoptedPsa10Rows: 0,
+    adoptedPsa9Rows: 0, usableRawMedianCards: 0, usablePsa10MedianCards: 0, usablePsa9MedianCards: 0,
+    classificationCounts: { "auto-matched": 0, ambiguous: 0, "out-of-scope": 0, unverifiable: 0 },
+  });
   const pokedataSourceTotal = (pokedataManifest.sets || []).reduce((sum, entry) => sum + Number(entry.sourceCount || 0), 0);
   const pokedataHasPartialSet = (pokedataManifest.sets || []).some((entry) => entry.status === "partial");
   const pokedataCoverage = pokedata.coverage || {};
@@ -266,6 +275,9 @@ function buildStoreCoverage(root = ROOT) {
     usableRawMedianCards: pokedataAcquisition.usableRawMedianCards,
     usablePsa10MedianCards: pokedataAcquisition.usablePsa10MedianCards,
     usablePsa9MedianCards: pokedataAcquisition.usablePsa9MedianCards,
+    setCount: pokedataManifest.sets?.length || 0,
+    sets: pokedataManifest.sets || [],
+    ...pokedataAcquisition,
     actualPriceCoveragePct: percent(pokedataAcquisition.browserValidatedCards, pokedataMatchedIds.size),
     mainUnmatchedReasons: [
       reason("国内基礎データなし", pokedataBaseMissing),

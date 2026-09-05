@@ -187,6 +187,10 @@ function main() {
         ebayPsa9: market(detail.markets?.ebayPsa9, analysis.summaries.psa9, local.snkPsa9Price || local.price),
       };
       detail.acquisitionAudit = missingCauseAudit(captureCard, rows, publicRows);
+      detail.acquisitionAudit.classificationCounts = analysis.classified.reduce((counts, row) => {
+        counts[row.reviewClass] = (counts[row.reviewClass] || 0) + 1;
+        return counts;
+      }, { "auto-matched": 0, ambiguous: 0, "out-of-scope": 0, unverifiable: 0 });
       detail.confidence = analysis.summaries.raw.adoptedCount >= 8 || analysis.summaries.psa10.adoptedCount >= 8 ? "中" : "参考値";
       detail.referenceOnly = true;
       detail.limitImpact = "仕入れ上限へ未反映";
@@ -238,6 +242,24 @@ function main() {
     const acquisition = {
       linkedCards: details.length,
       browserValidatedCards: details.filter((detail) => detail.acquisitionAudit?.method === "authenticated-browser-dom").length,
+      browserPricedCards: details.filter((detail) => detail.acquisitionAudit?.browserPricedRows > 0).length,
+      browserCapturedRows: details.reduce((sum, detail) => sum + Number(detail.acquisitionAudit?.browserRowsCaptured || 0), 0),
+      browserPricedRows: details.reduce((sum, detail) => sum + Number(detail.acquisitionAudit?.browserPricedRows || 0), 0),
+      pageReportedTransactions: details.reduce((sum, detail) => sum + Number(detail.acquisitionAudit?.pageReportedTransactions || 0), 0),
+      publicApiPricePresent: details.reduce((sum, detail) => sum + Number(detail.acquisitionAudit?.publicApiPricePresent || 0), 0),
+      publicApiMaskedRows: details.reduce((sum, detail) => sum + Number(detail.acquisitionAudit?.publicApiPriceMissing || 0), 0),
+      titleUnavailableRows: details.reduce((sum, detail) => sum + Number(detail.acquisitionAudit?.missingCauseCounts?.["商品名確認不能"] || 0), 0),
+      sourcePriceMissingRows: details.reduce((sum, detail) => sum + Number(detail.acquisitionAudit?.missingCauseCounts?.["元データ価格欠損"] || 0), 0),
+      formatParseFailureRows: details.reduce((sum, detail) => sum + Number(detail.acquisitionAudit?.missingCauseCounts?.["価格形式解析失敗"] || 0), 0),
+      adoptedRawRows: details.reduce((sum, detail) => sum + Number(detail.markets?.ebayRaw?.adoptedCount || 0), 0),
+      adoptedPsa10Rows: details.reduce((sum, detail) => sum + Number(detail.markets?.ebayPsa10?.adoptedCount || 0), 0),
+      adoptedPsa9Rows: details.reduce((sum, detail) => sum + Number(detail.markets?.ebayPsa9?.adoptedCount || 0), 0),
+      classificationCounts: details.reduce((totals, detail) => {
+        Object.entries(detail.acquisitionAudit?.classificationCounts || {}).forEach(([key, count]) => {
+          totals[key] = (totals[key] || 0) + Number(count || 0);
+        });
+        return totals;
+      }, { "auto-matched": 0, ambiguous: 0, "out-of-scope": 0, unverifiable: 0 }),
       usableRawMedianCards: details.filter((detail) => detail.markets?.ebayRaw?.usableIndividualMedian).length,
       usablePsa10MedianCards: details.filter((detail) => detail.markets?.ebayPsa10?.usableIndividualMedian).length,
       usablePsa9MedianCards: details.filter((detail) => detail.markets?.ebayPsa9?.usableIndividualMedian).length,

@@ -71,13 +71,21 @@ function classifySale(input, identity) {
   if (!titleAvailable) reasons.push("商品名Unavailable");
   if (titleAvailable && /\b(?:korean|korea|kr)\b|한국/i.test(title)) reasons.push("日本版以外");
   if (titleAvailable && /\b(?:english|eng)\b/i.test(title) && !/japanese|jpn|\bjp\b/i.test(title)) reasons.push("日本版以外");
+  if (titleAvailable && /\b(?:booster\s*(?:box|pack)|sealed|unopened|factory\s*sealed)\b/i.test(title)) reasons.push("未開封品");
 
   if (titleAvailable) {
     const cardNumber = String(identity.number || "").replace(/^0+/, "");
     const hasNumber = new RegExp(`(?:#|\\b)0*${cardNumber}(?:\\s*\\/\\s*\\d+)?\\b`, "i").test(title);
     const hasSet = identity.setAliases.some((alias) => title.includes(normalize(alias)));
     const hasName = identity.nameTokens.every((token) => title.includes(normalize(token)));
-    if (!hasNumber || !hasSet || !hasName) reasons.push("カード同一性不一致");
+    const titleSetCodes = title.match(/\b(?:sv|sm|s)\s*\d+[a-z+\-]*\b/gi) || [];
+    const normalizedAliases = identity.setAliases.map(normalize);
+    const hasConflictingSet = titleSetCodes.length > 0
+      && !titleSetCodes.some((code) => normalizedAliases.some((alias) => alias.includes(normalize(code)) || normalize(code).includes(alias)));
+    if (!hasNumber) reasons.push("カード番号不一致");
+    if (hasConflictingSet) reasons.push("セット不一致");
+    if (!hasName) reasons.push("カード名不一致");
+    if (!hasSet && !hasConflictingSet) warnings.push("セット表記省略・ページのセット情報で照合");
   }
 
   if (titleAvailable && /\b(?:lot of|playset|bundle|pair|set of|x\s*[2-9]|[2-9]\s*x|[2-9]\s*cards?)\b/i.test(title)) reasons.push("複数枚セット");
@@ -92,7 +100,14 @@ function classifySale(input, identity) {
   }
 
   if (grader && grader !== "PSA") marketGrade = `${grader}${titleGrade || ""}`;
-  const status = reasons.length ? (reasons.length === 1 && reasons[0] === "商品名Unavailable" ? "unverified" : "excluded") : "candidate";
+  const unavailable = reasons.includes("商品名Unavailable");
+  const outOfScope = reasons.some((reason) => /^(?:日本版以外|複数枚セット|未開封品|PSA以外の鑑定品)/.test(reason));
+  const identityConflict = reasons.some((reason) => /^(?:カード番号不一致|セット不一致|カード名不一致)$/.test(reason));
+  const reviewClass = unavailable ? "unverifiable"
+    : outOfScope ? "out-of-scope"
+      : identityConflict ? "ambiguous"
+        : reasons.length ? "unverifiable" : "auto-matched";
+  const status = reviewClass === "auto-matched" ? "candidate" : reviewClass === "unverifiable" ? "unverified" : "excluded";
   return {
     rowId: String(input.rowId || ""),
     listingId: String(input.ebay_item_id || "").replace(/^eBay:\s*/i, "") || null,
@@ -109,6 +124,7 @@ function classifySale(input, identity) {
     seller: input.seller || null,
     observedAt: input.observedAt || null,
     status,
+    reviewClass,
     reasons,
     warnings,
   };
@@ -149,6 +165,7 @@ function summarizeGrade(allRows, grade, fxRate) {
   const confidence = adopted.length >= 20 ? "高" : adopted.length >= 8 ? "中" : adopted.length >= 3 ? "低" : "参考値";
   const medianJpy = median(prices);
   const latestDate = adopted.map((row) => row.date).filter(Boolean).sort().at(-1) || null;
+  const earliestDate = adopted.map((row) => row.date).filter(Boolean).sort().at(0) || null;
   const latestTimeForPeriod = latestDate ? Date.parse(latestDate) : null;
   const periodRows = (fromDay, toDay) => adopted.filter((row) => {
     if (!latestTimeForPeriod || !row.date) return false;
@@ -172,12 +189,18 @@ function summarizeGrade(allRows, grade, fxRate) {
     unavailableTitleCount: excluded.filter((row) => row.reasons.includes("商品名Unavailable")).length,
     outlierCount: outliers.length,
     excludedReasons: reasonCounts,
+    reviewClassCounts: allRows.reduce((counts, row) => {
+      counts[row.reviewClass] = (counts[row.reviewClass] || 0) + 1;
+      return counts;
+    }, {}),
     medianJpy,
     medianUsd: medianJpy && fxRate ? medianJpy / fxRate : null,
     weightedMedianJpy: weightedMedian(weighted),
     minJpy: prices.length ? Math.min(...prices) : null,
     maxJpy: prices.length ? Math.max(...prices) : null,
     lastSaleDate: latestDate,
+    firstSaleDate: earliestDate,
+    targetPeriod: earliestDate && latestDate ? `${earliestDate}～${latestDate}` : null,
     periodCounts: { days30: recent30.length, days90: periodRows(0, 89).length, all: adopted.length },
     trend: { direction: trendDirection, latest30MedianJpy: recentMedian, previous30MedianJpy: priorMedian, changePct: trendChangePct },
     confidence,

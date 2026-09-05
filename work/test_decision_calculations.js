@@ -40,6 +40,19 @@ assert.equal(economics.expectedSale, 70100);
 assert.equal(economics.expectedProfit, 27100);
 assert.ok(Math.abs(economics.expectedRoi - 63.0232558) < 0.0001);
 
+const economicsWithOverseasReference = model.expectedEconomics({
+  purchasePrice: 30000,
+  forecastPrice: 100000,
+  assumptions,
+  fee: 13000,
+  saleFeeRate: 10,
+  saleExtraCost: 1000,
+  riskBufferPct: 0,
+  lockDays: 91,
+  pokedataReference: { ebayPsa10MedianJpy: 1, referenceOnly: true },
+});
+assert.deepEqual(economicsWithOverseasReference, economics, "海外参考価格を仕入れ計算へ混入させない");
+
 const capitalLimitedMax = model.maxBuyPrice({
   forecastPrice: 100000,
   assumptions,
