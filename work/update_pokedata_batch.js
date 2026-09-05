@@ -5,7 +5,7 @@ const { analyzeSales } = require("./pokedata_analysis.js");
 const ROOT = path.join(__dirname, "..");
 const BASE = "https://www.pokedata.io";
 const SET_NAME = process.env.POKEDATA_SET || "Battle Partners";
-const TARGET_COUNT = Math.max(1, Number(process.env.POKEDATA_TARGET || 100));
+const TARGET_COUNT = Math.max(1, Number(process.env.POKEDATA_TARGET || 132));
 const BATCH_SIZE = Math.max(1, Number(process.env.POKEDATA_BATCH || TARGET_COUNT));
 const INTERVAL_MS = Math.max(500, Number(process.env.POKEDATA_INTERVAL_MS || 1100));
 const TIMEOUT_MS = Math.max(2000, Number(process.env.POKEDATA_TIMEOUT_MS || 10000));
@@ -229,6 +229,7 @@ async function main() {
           existing.cards[domestic.id] = {
             localCardId: domestic.id, localCardName: domestic.name,
             linkStatus: linkage.status, linkageMethod: linkage.method,
+            sourceMode: "公開API取得・一部認証済みChrome検証",
             sourceUrl: record.sourceUrl, pokedata: {
               pokedataCardId: Number(sourceCard.id), setId: sourceCard.set_id,
               setName: sourceCard.set_name, setCode: sourceCard.set_code,
@@ -292,6 +293,12 @@ async function main() {
   }
 
   const records = [...existingRecords.values()].filter((record) => targets.some((card) => Number(card.id) === Number(record.pokedataCardId)));
+  for (const detail of Object.values(existing.cards || {})) {
+    detail.sourceMode ||= "公開API取得・一部認証済みChrome検証";
+    if (detail.markets?.tcgplayerRaw && detail.markets.tcgplayerRaw.transactionCount == null) {
+      detail.markets.tcgplayerRaw.transactionCountStatus = "取得不能";
+    }
+  }
   const automaticMatched = records.filter((record) => record.status === "auto-matched" || record.status === "auto-confirmed").length;
   const manualMatched = records.filter((record) => record.status === "manual-confirmed").length;
   const ambiguous = records.filter((record) => record.status === "ambiguous").length;
@@ -308,7 +315,10 @@ async function main() {
     totalDomesticCards: cards.length,
     totalCoveragePct: cards.length ? Math.round((automaticMatched + manualMatched) / cards.length * 10000) / 100 : null,
     status: "validation-partial",
-    statusLabel: `検証中／部分取得（${acquired}件）`,
+    statusLabel: acquired >= sourceCards.length && failed === 0
+      ? `${SET_NAME}完走（${acquired}件）／全体展開中`
+      : `検証中／部分取得（${acquired}件）`,
+    setComplete: acquired >= sourceCards.length && failed === 0,
     batchStatus: acquired >= targets.length && failed === 0 ? "complete" : "partial",
     batchStatusLabel: acquired >= targets.length && failed === 0 ? `検証対象${targets.length}件の処理完了` : `検証対象${targets.length}件を処理中`,
   };

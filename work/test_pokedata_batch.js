@@ -1,4 +1,6 @@
 const assert = require("assert");
+const fs = require("fs");
+const path = require("path");
 const {
   findDomestic, localIdentity, minimalTransactions,
   normalizeName, normalizeNumber, normalizeSetCode,
@@ -28,5 +30,14 @@ const rows = minimalTransactions([{
 assert.strictEqual(rows[0].sold_price, 15000);
 assert.strictEqual(rows[0].psa_grade, "10");
 assert.strictEqual(rows[0].date_sold, "2026-09-04");
+
+const app = fs.readFileSync(path.join(__dirname, "..", "app.js"), "utf8");
+const updater = fs.readFileSync(path.join(__dirname, "update_pokedata_batch.js"), "utf8");
+assert.match(app, /visiblePokedataRecords = 25/);
+assert.match(app, /さらに25件表示/);
+assert.match(app, /国内比/);
+assert.match(updater, /POKEDATA_TARGET \|\| 132/);
+assert.match(updater, /setComplete/);
+assert.match(updater, /transactionCountStatus = "取得不能"/);
 
 console.log(JSON.stringify({ pokedataBatch: "ok" }));

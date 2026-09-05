@@ -127,10 +127,16 @@ function buildStoreCoverage(root = ROOT) {
     } else if (definition.id === "torecacamp") {
       reasons = [reason("商品一覧巡回・型番照合待ち", unmatched)];
     } else {
-      const notFound = Math.min(unmatched, attempts.notFound);
+      const pending = Number.isFinite(sourceSummary.crawl?.remainingSearchCount)
+        ? Math.min(unmatched, Number(sourceSummary.crawl.remainingSearchCount))
+        : Math.max(0, unmatched - attempts.notFound);
+      const searchable = Number(sourceSummary.crawl?.searchableTargetCount || definition.targets.length);
+      const notFound = Math.max(0, searchable - pending - matchedAll);
+      const insufficientIdentity = Math.max(0, unmatched - pending - notFound);
       reasons = [
         reason("検索済み・一致候補なし", notFound),
-        reason("未検索または再確認待ち", Math.max(0, unmatched - notFound)),
+        reason("未検索または再確認待ち", pending),
+        reason("検索条件不足（型番・名称再確認）", insufficientIdentity),
       ];
     }
     const run = runFor(definition.id, runs);
@@ -238,11 +244,16 @@ function buildStoreCoverage(root = ROOT) {
     .some((field) => !card[field])).length;
   return {
     totalCards, comparableTargetCards: signatureTargets.length, uniqueUnmatchedCards,
+    uniqueUnmatchedDefinition: "サイト全カードのうち、国内4ショップ（カードラッシュ・晴れる屋2・遊々亭・トレカキャンプ）の直リンクが1つでも未取得のカード数。各データ元の未紐付け件数の合計ではありません。",
     stores, linkageSources: { ...stores, psaOfficial }, overseasSources: { pokedata: pokedataSource },
   };
 }
 
 function countCurrentRecords(sourceId, root = ROOT) {
+  if (sourceId === "pokedata") {
+    const summary = readJson(path.join(root, "data", "pokedata-summary.json"), {});
+    return Number(summary?.coverage?.acquired || 0);
+  }
   const files = {
     toreca: ["data/pokemon-cards.json", "array"],
     cardrush: ["work/cardrush_catalog.json", "array"],
@@ -252,7 +263,6 @@ function countCurrentRecords(sourceId, root = ROOT) {
     shopBuyback: ["data/shop-buyback-summary.json", "cards"],
     marketAnalysis: ["data/market-stability-summary.json", "cards"],
     psaJapan: ["data/psa-japan-services.json", "plans"],
-    pokedata: ["data/pokedata-summary.json", "cards"],
   };
   const config = files[sourceId];
   if (!config) return null;

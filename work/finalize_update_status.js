@@ -155,6 +155,16 @@ for (const [sourceId, source] of Object.entries(sources)) {
     source.sourceState = pokedata.coverage?.statusLabel || `検証中／部分取得（${Number(pokedata.coverage?.acquired || 0)}件）`;
     source.fresh = false;
   }
+  if (sourceId === "yuyutei" && Number(yuyutei.crawl?.remainingSearchCount || 0) > 0) {
+    source.status = "partial";
+    source.sourceState = `巡回中／部分成功（検索済み ${Number(yuyutei.crawl?.searchedCurrentCount || 0)}件・残り ${Number(yuyutei.crawl.remainingSearchCount)}件）`;
+    source.fresh = false;
+  }
+  if (sourceId === "torecacamp" && !torecacamp.crawl?.crawlComplete) {
+    source.status = "partial";
+    source.sourceState = `巡回中／部分成功（${Number(torecacamp.crawl?.processedPageCount || 0)}ページ完了・次は${Number(torecacamp.crawl?.currentCursor || 1)}ページ）`;
+    source.fresh = false;
+  }
 }
 // A completed refresh requires both cloud sources and the login-dependent
 // PSA task on the user's PC to be current.

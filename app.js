@@ -583,14 +583,20 @@ function renderCollectorDiagnostics(sourceId, diagnostics) {
   const campProgress = sourceId === "torecacamp" ? `
     <div class="collector-progress-grid">
       <span>現在カーソル <b>${fmt.format(diagnostics.currentCursor || 0)}ページ</b></span>
-      <span>処理済み <b>${fmt.format(diagnostics.processedPageCount || 0)}ページ</b></span>
+      <span>完了ページ <b>${fmt.format(diagnostics.processedPageCount || 0)}ページ</b></span>
       <span>総ページ <b>${diagnostics.totalPages ? `${fmt.format(diagnostics.totalPages)}ページ` : `少なくとも${fmt.format(diagnostics.estimatedMinimumPages || 0)}ページ`}</b></span>
-      <span>推定残件 <b>${diagnostics.totalPages ? fmt.format(Math.max(0, (diagnostics.totalPages - (diagnostics.processedPageCount || 0)) * 250)) : `少なくとも${fmt.format(diagnostics.estimatedRemainingProducts || 0)}`}件</b></span>
+      <span>残りページ <b>${diagnostics.totalPages ? `${fmt.format(Math.max(0, diagnostics.totalPages - (diagnostics.processedPageCount || 0)))}ページ` : diagnostics.estimatedMinimumRemainingPages > 0 ? `少なくとも${fmt.format(diagnostics.estimatedMinimumRemainingPages)}ページ` : diagnostics.hasMorePages ? "未確定（続きあり）" : "0ページ"}</b></span>
+      <span>累計商品数 <b>${fmt.format(diagnostics.cumulativeProductCount || 0)}件</b></span>
+      <span>累計紐付け <b>${fmt.format(diagnostics.cumulativeMatchedCount || 0)}件</b></span>
       <span>今回の新規紐付け <b>${fmt.format(diagnostics.newLinkCount || 0)}件</b></span>
       <span>最後に成功 <b>${escapeHtml(String(diagnostics.lastSuccessfulPage || "未記録"))}</b></span>
+      ${diagnostics.stoppingReason ? `<span class="collector-stop-reason">停止理由 <b>${escapeHtml(diagnostics.stoppingReason)}</b></span>` : ""}
     </div>` : sourceId === "yuyutei" ? `
     <div class="collector-progress-grid">
       <span>今回の検索 <b>${fmt.format(diagnostics.startedTargetCount || 0)}件</b></span>
+      <span>照合対象 <b>${fmt.format(diagnostics.searchableTargetCount || 0)}件</b></span>
+      <span>現行検索済み <b>${fmt.format(diagnostics.searchedCurrentCount || 0)}件</b></span>
+      <span>未検索・再確認待ち <b>${fmt.format(diagnostics.remainingSearchCount || 0)}件</b></span>
       <span>HTTP取得失敗 <b>${fmt.format(diagnostics.fetchFailureCount || 0)}件</b></span>
       <span>一致候補なし <b>${fmt.format(diagnostics.linkageMissCount || 0)}件</b></span>
       <span>今回の紐付け <b>${fmt.format(diagnostics.matchedCount || 0)}件</b></span>
@@ -615,7 +621,7 @@ function renderSourceObservability() {
   if (els.dataFreshness) {
     const sourceCards = Object.entries(sources).map(([sourceId, source]) => {
       const className = source.status === "failed" ? "failed" : source.status === "partial" ? "partial" : source.fresh ? "fresh" : "stale";
-      const statusLabel = source.status === "failed" ? "失敗" : source.status === "partial" ? Number(source.fetchFailureCount || 0) > 0 ? "一部失敗" : "部分成功" : source.fresh ? "成功・最新" : source.status === "success" ? "成功・日付が古い" : "未記録";
+      const statusLabel = source.status === "failed" ? "失敗" : source.status === "partial" ? sourceId === "yuyutei" ? "巡回中／部分成功" : Number(source.fetchFailureCount || 0) > 0 ? "一部失敗" : "部分成功" : source.fresh ? "成功・最新" : source.status === "success" ? "成功・日付が古い" : "未記録";
       const count = Number.isFinite(source.acquiredCount) ? fmt.format(source.acquiredCount) : "未記録";
       const failures = Number.isFinite(source.fetchFailureCount) ? fmt.format(source.fetchFailureCount) : "未記録";
       const updated = Number.isFinite(source.updatedCount) ? fmt.format(source.updatedCount) : "未記録";
@@ -671,10 +677,13 @@ function renderSourceObservability() {
   if (els.cardrushCoverage) {
     const problemCount = stores.filter((store) => store.unmatched > 0).length;
     const uniqueUnmatched = Number(coverage?.uniqueUnmatchedCards || 0);
-    els.cardrushCoverage.textContent = stores.length ? `${fmt.format(stores.length)}データ元 / 未紐付けがあるデータ元：${fmt.format(problemCount)} / 未紐付けカード総数：${fmt.format(uniqueUnmatched)}` : "集計中";
+    els.cardrushCoverage.textContent = stores.length ? `${fmt.format(stores.length)}データ元 / 未紐付けがあるデータ元：${fmt.format(problemCount)} / 国内4店のいずれか未紐付け：${fmt.format(uniqueUnmatched)}枚` : "集計中";
   }
   if (els.linkCoverageDetails) {
-    els.linkCoverageDetails.innerHTML = stores.length ? stores.map((store) => {
+    const coverageDefinition = coverage?.uniqueUnmatchedDefinition
+      ? `<p class="coverage-scope-note"><b>「国内4店のいずれか未紐付け」の定義</b>${escapeHtml(coverage.uniqueUnmatchedDefinition)}</p>`
+      : "";
+    els.linkCoverageDetails.innerHTML = stores.length ? coverageDefinition + stores.map((store) => {
       const reasons = (store.mainUnmatchedReasons || []).map((item) => `${escapeHtml(item.label)} ${fmt.format(item.count)}件`).join(" / ") || "なし";
       const failures = Number.isFinite(store.fetchFailureCount) ? fmt.format(store.fetchFailureCount) : "未記録";
       return `<article class="coverage-card">
@@ -714,7 +723,7 @@ function renderSourceObservability() {
       "auto-confirmed": "自動紐付け保存済み", ambiguous: "要確認",
       "domestic-base-missing": "国内基礎データなし",
     })[status] || status || "未判定";
-    const rows = records.map((record) => {
+    const rowHtml = (record) => {
       const searchText = compactSearch(`${record.localCardId || ""} ${record.localCardName || ""} ${record.pokedataName || ""} ${record.setCode || ""} ${record.cardNumber || ""} ${statusLabel(record.status)}`);
       return `<tr data-pokedata-record data-search="${escapeHtml(searchText)}">
         <td>${escapeHtml(record.localCardId || "-")}</td>
@@ -726,7 +735,7 @@ function renderSourceObservability() {
         <td>${escapeHtml(statusLabel(record.status))}</td>
         <td><a href="${escapeHtml(record.sourceUrl || "#")}" target="_blank" rel="noreferrer">PokeDATA参照</a></td>
       </tr>`;
-    }).join("");
+    };
     els.pokedataCoverageDetails.innerHTML = pokedata ? `
       <div class="overseas-summary-grid">
         <span>PokeDATAセット総数 <b>${fmt.format(pokedata.sourceSetTotal || 0)}</b></span>
@@ -740,15 +749,25 @@ function renderSourceObservability() {
         <span>全${fmt.format(pokedata.totalCards || 0)}枚に対するカバー率 <b>${formatRate(pokedata.totalCoveragePct)}</b></span>
       </div>
       <label class="pokedata-record-search"><span>紐付け結果を検索</span><input id="pokedataRecordSearch" type="search" placeholder="国内名・PokeDATA名・型番・状態"></label>
-      <div class="pokedata-record-table"><table><thead><tr><th>国内ID</th><th>国内カード名</th><th>PokeDATA名</th><th>セット</th><th>番号</th><th>言語</th><th>状態</th><th>参照</th></tr></thead><tbody>${rows}</tbody></table></div>
+      <div class="pokedata-record-table"><table><thead><tr><th>国内ID</th><th>国内カード名</th><th>PokeDATA名</th><th>セット</th><th>番号</th><th>言語</th><th>状態</th><th>参照</th></tr></thead><tbody id="pokedataRecordRows"></tbody></table></div>
+      <div class="pokedata-record-pager"><span id="pokedataRecordCount"></span><button id="pokedataLoadMore" type="button">さらに25件表示</button></div>
       ${renderCollectorDiagnostics("pokedata", pokedata.diagnostics)}` : `<p class="empty-note">PokeDATAの段階検証データを生成中です。</p>`;
     const input = document.getElementById("pokedataRecordSearch");
-    input?.addEventListener("input", () => {
-      const query = compactSearch(input.value);
-      els.pokedataCoverageDetails.querySelectorAll("[data-pokedata-record]").forEach((row) => {
-        row.hidden = Boolean(query) && !String(row.dataset.search || "").includes(query);
-      });
-    });
+    const rowsElement = document.getElementById("pokedataRecordRows");
+    const countElement = document.getElementById("pokedataRecordCount");
+    const loadMore = document.getElementById("pokedataLoadMore");
+    let visiblePokedataRecords = 25;
+    const renderPokedataRecords = () => {
+      const query = compactSearch(input?.value || "");
+      const filtered = query ? records.filter((record) => compactSearch(`${record.localCardId || ""} ${record.localCardName || ""} ${record.pokedataName || ""} ${record.setCode || ""} ${record.cardNumber || ""} ${statusLabel(record.status)}`).includes(query)) : records;
+      const visible = filtered.slice(0, visiblePokedataRecords);
+      if (rowsElement) rowsElement.innerHTML = visible.map(rowHtml).join("");
+      if (countElement) countElement.textContent = `${fmt.format(filtered.length)}件中 ${fmt.format(visible.length)}件を表示`;
+      if (loadMore) loadMore.hidden = visible.length >= filtered.length;
+    };
+    input?.addEventListener("input", () => { visiblePokedataRecords = 25; renderPokedataRecords(); });
+    loadMore?.addEventListener("click", () => { visiblePokedataRecords += 25; renderPokedataRecords(); });
+    renderPokedataRecords();
   }
 }
 
@@ -2962,7 +2981,7 @@ function render() {
       <div>
         <span>${escapeHtml(label)}</span>
         <strong>${Number.isFinite(market.medianJpy) ? `¥${fmt.format(Math.round(market.medianJpy))}` : Number.isFinite(market.apiAverageJpy) ? `¥${fmt.format(Math.round(market.apiAverageJpy))}` : "未取得"}</strong>
-        <small>PokeDATA集計表示 ${Number.isFinite(market.pageDisplayJpy) ? `¥${fmt.format(Math.round(market.pageDisplayJpy))}` : "未取得"}<br>元 ${fmt.format(market.originalCount || 0)}件 / 採用 ${fmt.format(market.adoptedCount || 0)}件 / 除外 ${fmt.format(market.excludedCount || 0)}件<br>加重中央値 ${Number.isFinite(market.weightedMedianJpy) ? `¥${fmt.format(Math.round(market.weightedMedianJpy))}` : "未取得"} / 範囲 ${Number.isFinite(market.minJpy) ? `¥${fmt.format(Math.round(market.minJpy))}～¥${fmt.format(Math.round(market.maxJpy))}` : "未取得"}<br>30日 ${fmt.format(market.periodCounts?.days30 || 0)}件 / 90日 ${fmt.format(market.periodCounts?.days90 || 0)}件 / 最終 ${escapeHtml(market.lastSaleDate || "未取得")} / 信頼度 ${escapeHtml(market.confidence || "参考値")}</small>
+        <small>PokeDATA集計表示 ${Number.isFinite(market.pageDisplayJpy) ? `¥${fmt.format(Math.round(market.pageDisplayJpy))}` : "未取得"}<br>取得ページ内 元 ${fmt.format(market.originalCount || 0)}件 / 採用 ${fmt.format(market.adoptedCount || 0)}件 / 除外 ${fmt.format(market.excludedCount || 0)}件<br>加重中央値 ${Number.isFinite(market.weightedMedianJpy) ? `¥${fmt.format(Math.round(market.weightedMedianJpy))}` : "未取得"} / 範囲 ${Number.isFinite(market.minJpy) ? `¥${fmt.format(Math.round(market.minJpy))}～¥${fmt.format(Math.round(market.maxJpy))}` : "未取得"}<br>30日 ${fmt.format(market.periodCounts?.days30 || 0)}件 / 90日 ${fmt.format(market.periodCounts?.days90 || 0)}件 / 最終 ${escapeHtml(market.lastSaleDate || "未取得")} / 信頼度 ${escapeHtml(market.confidence || "参考値")}<br>国内比 ${Number.isFinite(market.comparisonToDomestic?.ratio) ? `${market.comparisonToDomestic.ratio.toFixed(3)}倍（${market.comparisonToDomestic.differenceJpy >= 0 ? "+" : ""}¥${fmt.format(market.comparisonToDomestic.differenceJpy)}）` : "比較不能"} / ${escapeHtml(market.individualSalesStatus || "実成約未取得")}</small>
       </div>` : "";
     const pokedataExcludedReasons = pokedata ? [pokedata.markets?.ebayRaw, pokedata.markets?.ebayPsa10, pokedata.markets?.ebayPsa9]
       .filter(Boolean)
@@ -2972,7 +2991,7 @@ function render() {
       }, {}) : {};
     const pokedataPanel = pokedata ? `
       <details class="pokedata-panel">
-        <summary><span>PokeDATA海外相場</span><small>認証済みChrome取得 / 国内仕入れ上限へ未反映</small></summary>
+        <summary><span>PokeDATA海外相場</span><small>${escapeHtml(pokedata.sourceMode || "公開API取得・一部認証済みChrome検証")} / 国内仕入れ上限へ未反映</small></summary>
         <div class="pokedata-body">
           <div class="pokedata-note"><strong>${escapeHtml(pokedata.pokedata?.setName || "-")} / ${escapeHtml(pokedata.pokedata?.name || "-")} / ${escapeHtml(pokedata.pokedata?.printedNumber || pokedata.pokedata?.number || "-")}</strong><span>eBayとTCGPlayerは別市場として保存。個別成約タイトルで日本版・カード番号・鑑定会社・グレード・複数枚出品を再判定しています。</span></div>
           <div class="pokedata-markets">

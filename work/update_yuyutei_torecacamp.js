@@ -16,7 +16,7 @@ function write(file, value) {
   fs.writeFileSync(temporary, JSON.stringify(value), "utf8");
   fs.renameSync(temporary, file);
 }
-function jstDate() { return new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date()); }
+function jstDate(value = new Date()) { return new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(value)); }
 function normalize(value) {
   return String(value || "").toLowerCase()
     .replace(/[０-９]/g, (char) => String.fromCharCode(char.charCodeAt(0) - 0xfee0))
@@ -218,7 +218,11 @@ async function updateYuyutei(cards, paths) {
   if (!pageCache.entries || typeof pageCache.entries !== "object") pageCache.entries = {};
   const byId = new Map(catalog.map((entry) => [entry.cardId, entry]));
   const onlyIds = new Set(String(process.env.YUYUTEI_ONLY_ID || "").split(",").map((value) => value.trim()).filter(Boolean));
-  const selectedTargets = cards.filter((card) => (onlyIds.size ? onlyIds.has(card.id) : !byId.has(card.id) && due(progress.attemptedCards[card.id], JSON.stringify(cardSignature(card)))))
+  const selectedTargets = cards.filter((card) => {
+    const signature = cardSignature(card);
+    const searchable = Boolean(signature.setCode && signature.cardNo && signature.base);
+    return searchable && (onlyIds.size ? onlyIds.has(card.id) : !byId.has(card.id) && due(progress.attemptedCards[card.id], JSON.stringify(signature)));
+  })
     .sort((a, b) => Number(b.tv30 || 0) - Number(a.tv30 || 0) || Number(b.price || 0) - Number(a.price || 0))
     .slice(0, Math.max(1, Number(process.env.YUYUTEI_SEARCH_BATCH || 100)));
   // Group the selected work by set so every checkpoint has a stable resume key.
@@ -327,17 +331,29 @@ async function updateYuyutei(cards, paths) {
     recordFetchMetric("yuyutei", metric);
   }
   catalog = [...byId.values()];
+  const searchableCards = cards.filter((card) => {
+    const signature = cardSignature(card);
+    return Boolean(signature.setCode && signature.cardNo && signature.base);
+  });
+  const remainingSearchCount = searchableCards.filter((card) => {
+    if (byId.has(card.id)) return false;
+    const signatureKey = JSON.stringify(cardSignature(card));
+    return due(progress.attemptedCards[card.id], signatureKey);
+  }).length;
+  const searchedCurrentCount = Math.max(0, searchableCards.length - remainingSearchCount);
+  const completionStatus = failed > 0 || remainingSearchCount > 0 ? "partial" : "success";
   const index = appendDate(history, jstDate());
   const stocks = catalog.filter((entry) => Number.isFinite(entry.stock));
   for (const entry of stocks) setStock(history, entry.cardId, index, entry.stock);
   const summary = historySummary(cards, catalog, history, "yuyuteiPrice");
   progress.lastRun = {
     startedTargetCount: targets.length, succeededPages: targets.length - failed,
+    searchableTargetCount: searchableCards.length, searchedCurrentCount, remainingSearchCount,
     fetchFailureCount: failed, linkageMissCount: linkageMisses.length,
     matchedCount: matched, newLinkCount: linked, updatedCount: updated,
     lastSuccessfulPage: progress.lastSuccessfulPage || null,
     lastFailure: runFailures.at(-1) || null,
-    linkageMisses: linkageMisses.slice(-20), completedAt: new Date().toISOString(),
+    linkageMisses: linkageMisses.slice(-20), completionStatus, completedAt: new Date().toISOString(),
   };
   write(paths.catalog, catalog); write(paths.history, history); write(paths.progress, progress); write(paths.cache, pageCache);
   write(paths.summary, {
@@ -349,6 +365,8 @@ async function updateYuyutei(cards, paths) {
     linkageMissCount: linkageMisses.length, coverage: catalog.length,
     lastSuccessfulPage: progress.lastSuccessfulPage || null,
     lastFailure: runFailures.at(-1) || null,
+    searchableTargetCount: searchableCards.length, searchedCurrentCount,
+    remainingSearchCount, completionStatus,
   };
 }
 
@@ -383,6 +401,22 @@ async function updateTorecaCamp(cards, paths) {
   let catalog = reset ? [] : read(paths.catalog, []);
   const progress = reset ? { page: 1, exhausted: false } : read(paths.progress, { page: 1, exhausted: false });
   const pageCache = reset ? { version: 1, entries: {} } : read(paths.cache, { version: 1, entries: {} });
+  const today = jstDate();
+  if (progress.exhausted && progress.cycleCompletedDate && progress.cycleCompletedDate !== today) {
+    progress.previousCycle = {
+      completedAt: progress.cycleCompletedAt || null,
+      completedDate: progress.cycleCompletedDate,
+      totalPages: progress.totalPages || null,
+      processedPageCount: new Set(progress.processedPages || []).size,
+    };
+    progress.page = 1;
+    progress.exhausted = false;
+    progress.processedPages = [];
+    progress.lastSuccessfulPage = null;
+    progress.totalPages = null;
+    progress.cycleDate = today;
+  }
+  progress.cycleDate ||= today;
   pageCache.entries ||= {};
   const byId = new Map(catalog.map((entry) => [entry.cardId, entry]));
   const byNumber = new Map();
@@ -397,8 +431,9 @@ async function updateTorecaCamp(cards, paths) {
   // is a lower bound, not a claim that the source contains exactly 100 pages.
   progress.estimatedMinimumPages = Math.max(Number(progress.estimatedMinimumPages || 0), 100);
   progress.pageSize = 250;
-  let cycleCompleted = false;
+  let cycleCompleted = Boolean(progress.exhausted);
   let fetched = 0; let parsed = 0; let stateA = 0; let linked = 0; let updated = 0; let failed = 0; let cacheHits = 0; let pagesSucceeded = 0;
+  let lastPageProductCount = null;
   const excluded = { noStateA: 0, gradedProduct: 0, noCardNumber: 0, noLocalCandidate: 0, identityMismatch: 0, ambiguous: 0 };
   for (let count = 0; count < pageCount && !progress.exhausted; count += 1, page += 1) {
     const url = `${TORECA_CAMP}/collections/all/products.json?limit=250&page=${page}`;
@@ -411,7 +446,7 @@ async function updateTorecaCamp(cards, paths) {
     try {
       const cached = pageCache.entries[page];
       const cacheAge = Date.now() - Date.parse(cached?.fetchedAt || "");
-      if (cached && Number.isFinite(cacheAge) && cacheAge < 86400000 && process.env.TORECACAMP_FORCE !== "1") {
+      if (cached && Number.isFinite(cacheAge) && jstDate(cached.fetchedAt) === today && process.env.TORECACAMP_FORCE !== "1") {
         products = cached.products || [];
         cacheHits += 1;
         metric.fromCache = true;
@@ -446,6 +481,11 @@ async function updateTorecaCamp(cards, paths) {
         exceptionName: metric.exceptionName, error: error.message, exception: metric.exception,
         at: new Date().toISOString(), lastSuccessfulPage: progress.lastSuccessfulPage || null,
       };
+      if (page > 100 && Number(metric.httpStatus) === 400) {
+        failure.reasonCode = "public_collection_api_25000_limit";
+        failure.error = "公開一覧APIの25,000商品上限（101ページ目がHTTP 400）。サイトマップ経路への切替が必要";
+        progress.stoppingReason = failure.error;
+      }
       progress.lastFailure = failure;
       progress.failures = [...(progress.failures || []), failure].slice(-50);
       write(paths.progress, progress);
@@ -456,6 +496,7 @@ async function updateTorecaCamp(cards, paths) {
     }
     fetched += products.length;
     parsed += products.length;
+    lastPageProductCount = products.length;
     metric.productCount = products.length;
     metric.stage = "match";
     const matchStartedAt = Date.now();
@@ -499,6 +540,7 @@ async function updateTorecaCamp(cards, paths) {
       nextProgress.exhausted = true;
       nextProgress.totalPages = page;
       nextProgress.cycleCompletedAt = new Date().toISOString();
+      nextProgress.cycleCompletedDate = today;
       cycleCompleted = true;
     }
     catalog = [...byId.values()];
@@ -515,29 +557,36 @@ async function updateTorecaCamp(cards, paths) {
     metric.endedAt = new Date().toISOString();
     recordFetchMetric("torecacamp", metric);
   }
-  if (progress.exhausted && failed === 0) {
-    progress.page = 1;
-    progress.exhausted = false;
-  }
   const nextCatalog = [...byId.values()];
   const summary = {};
   for (const entry of nextCatalog) summary[entry.cardId] = { torecacampPrice: Number(entry.price) || null, available: entry.available, availabilityLabel: entry.available ? "在庫あり" : "在庫なし" };
   const processedPageCount = new Set(progress.processedPages || []).size;
   const estimatedMinimumProducts = Number(progress.estimatedMinimumPages || 0) * Number(progress.pageSize || 250);
   const estimatedRemainingProducts = Math.max(0, estimatedMinimumProducts - processedPageCount * Number(progress.pageSize || 250));
+  const estimatedMinimumRemainingPages = Math.max(0, Number(progress.estimatedMinimumPages || 0) - processedPageCount);
+  const cumulativeProductCount = (progress.processedPages || []).reduce((total, processedPage) => {
+    const count = pageCache.entries?.[processedPage]?.products?.length;
+    return total + (Number.isFinite(count) ? count : 0);
+  }, 0);
+  const crawlComplete = Boolean(progress.exhausted && progress.totalPages && processedPageCount >= progress.totalPages);
   progress.lastRun = {
     currentCursor: progress.page || null, processedPageCount,
     processedPages: (progress.processedPages || []).slice(-100),
     totalPages: progress.totalPages || null,
     estimatedMinimumPages: progress.estimatedMinimumPages || null,
-    estimatedMinimumProducts, estimatedRemainingProducts,
+    estimatedMinimumProducts, estimatedRemainingProducts, estimatedMinimumRemainingPages,
+    cumulativeProductCount, cumulativeMatchedCount: nextCatalog.length,
+    lastPageProductCount, hasMorePages: !crawlComplete, crawlComplete,
     pagesSucceeded, fetched, parsed, stateA, newLinkCount: linked,
     updatedCount: updated, fetchFailureCount: failed,
     lastSuccessfulPage: progress.lastSuccessfulPage || null,
-    lastFailure: progress.lastFailure || null, completedAt: new Date().toISOString(),
+    lastFailure: progress.lastFailure || null,
+    stoppingReason: progress.stoppingReason || null,
+    completionStatus: crawlComplete && failed === 0 ? "success" : "partial",
+    completedAt: new Date().toISOString(),
   };
   write(paths.catalog, nextCatalog); write(paths.progress, progress); write(paths.cache, pageCache);
-  if (pagesSucceeded > 0) write(paths.summary, {
+  write(paths.summary, {
     updatedAt: new Date().toISOString(), stockType: "availability", cards: summary,
     crawl: { ...progress.lastRun, recentFailures: (progress.failures || []).slice(-10) },
   });
@@ -547,7 +596,9 @@ async function updateTorecaCamp(cards, paths) {
     currentCursor: progress.page || null, processedPageCount,
     estimatedMinimumPages: progress.estimatedMinimumPages || null,
     estimatedRemainingProducts,
-    completionStatus: cycleCompleted ? "success" : "partial",
+    estimatedMinimumRemainingPages, cumulativeProductCount,
+    cumulativeMatchedCount: nextCatalog.length, crawlComplete,
+    completionStatus: cycleCompleted && crawlComplete && failed === 0 ? "success" : "partial",
   };
 }
 
