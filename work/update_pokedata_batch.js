@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { analyzeSales } = require("./pokedata_analysis.js");
+const { loadSetState, setSlug, writeSetState } = require("./pokedata_storage.js");
 
 const ROOT = path.join(__dirname, "..");
 const BASE = "https://www.pokedata.io";
@@ -11,7 +12,7 @@ const INTERVAL_MS = Math.max(500, Number(process.env.POKEDATA_INTERVAL_MS || 110
 const TIMEOUT_MS = Math.max(2000, Number(process.env.POKEDATA_TIMEOUT_MS || 10000));
 const OUTPUT = path.join(ROOT, "data", "pokedata-summary.json");
 const LINK_MAP = path.join(__dirname, "pokedata-link-map.json");
-const PROGRESS = path.join(__dirname, "pokedata-progress.json");
+const PROGRESS = path.join(__dirname, SET_NAME === "Battle Partners" ? "pokedata-progress.json" : `pokedata-progress-${setSlug(SET_NAME)}.json`);
 const CACHE = path.join(__dirname, "pokedata-page-cache.json");
 const METRICS = path.join(__dirname, "pokedata-fetch-metrics.json");
 
@@ -75,12 +76,25 @@ function minimalTransactions(rows, fxRate) {
     sold_price: Number.isFinite(Number(row.sold_price)) ? Math.round(Number(row.sold_price) * fxRate) : null,
   }));
 }
+function individualSalesStatus(summary) {
+  const missingIdentityCount = Number(summary.excludedReasons?.["商品名Unavailable"] || 0);
+  return summary.originalCount <= 0
+    ? "実成約未取得"
+    : summary.adoptedCount <= 0
+      ? `信頼度不足（価格・商品名を確認できない成約 ${summary.originalCount}件）`
+      : summary.adoptedCount < 3
+        ? `信頼度不足（採用 ${summary.adoptedCount}件）`
+        : missingIdentityCount > summary.adoptedCount
+          ? "公開成約API・商品名不明が多いため参考値"
+          : "公開成約API・取得範囲内をクリーニング済み";
+}
 function marketSummary(aggregateUsd, summary, fxRate, domesticPrice, sourceKind) {
   const aggregateJpy = aggregateUsd > 0 ? Math.round(aggregateUsd * fxRate) : null;
   return {
     pageDisplayJpy: aggregateJpy, apiAverageUsd: aggregateUsd, apiAverageJpy: aggregateJpy,
-    aggregateSource: sourceKind, individualSalesStatus: summary.originalCount > 0
-      ? "公開成約API・先頭ページのみ（部分取得）" : "実成約未取得",
+    aggregateSource: sourceKind, individualSalesStatus: individualSalesStatus(summary),
+    usableIndividualMedian: summary.adoptedCount >= 3,
+    decisionUsage: "海外相場は参考表示のみ・国内仕入れ判断へ未反映",
     ...summary, comparisonToDomestic: compare(summary.medianJpy || aggregateJpy, domesticPrice),
   };
 }
@@ -134,6 +148,9 @@ function findDomestic(sourceCard, domesticByKey, aliases) {
 async function main() {
   const cards = read(path.join(ROOT, "data", "pokemon-cards.json"), []);
   const existing = read(OUTPUT, { version: 2, cards: {}, linkage: { records: [] } });
+  const storedSet = loadSetState(ROOT, SET_NAME, existing);
+  existing.cards = storedSet.cards;
+  existing.linkage = { ...(existing.linkage || {}), records: storedSet.records };
   const linkMap = read(LINK_MAP, { version: 1, aliases: [], ambiguousCandidates: [] });
   const progress = read(PROGRESS, { version: 1, setName: SET_NAME, processedCardIds: [], failures: [] });
   const cache = read(CACHE, { version: 1, entries: {} });
@@ -169,7 +186,12 @@ async function main() {
     cardNumber: String(record.cardNumber || "").padStart(3, "0"),
     normalizedName: normalizeName(record.pokedataName),
   }]));
-  const selected = targets.filter((card) => !processed.has(Number(card.id))).slice(0, BATCH_SIZE);
+  const linkedSourceIds = new Set([...existingRecords.values()].filter((record) => record.localCardId).map((record) => Number(record.pokedataCardId)));
+  const refreshLinked = process.env.POKEDATA_REFRESH_LINKED === "1";
+  const refreshTargets = targets.filter((card) => linkedSourceIds.has(Number(card.id)));
+  const refreshStart = refreshTargets.length ? Math.max(0, Number(progress.refreshCursor || 0)) % refreshTargets.length : 0;
+  const rotatedRefreshTargets = [...refreshTargets.slice(refreshStart), ...refreshTargets.slice(0, refreshStart)];
+  const selected = (refreshLinked ? rotatedRefreshTargets : targets.filter((card) => !processed.has(Number(card.id)))).slice(0, BATCH_SIZE);
   let attempted = 0; let fetched = 0; let cached = 0; let failed = 0;
 
   for (const sourceCard of selected) {
@@ -266,6 +288,9 @@ async function main() {
       progress.processedCardIds = [...processed];
       progress.lastCardId = Number(sourceCard.id);
       progress.lastSuccessfulCard = { id: Number(sourceCard.id), name: sourceCard.name, at: new Date().toISOString() };
+      if (refreshLinked && refreshTargets.length) {
+        progress.refreshCursor = (refreshTargets.findIndex((card) => Number(card.id) === Number(sourceCard.id)) + 1) % refreshTargets.length;
+      }
       progress.lastFailure = null;
       metric.status = "success";
       metric.stage = "complete";
@@ -275,7 +300,11 @@ async function main() {
       // Save the cache and data before advancing the checkpoint.
       existing.linkage = { records: [...existingRecords.values()] };
       write(CACHE, cache);
-      write(OUTPUT, existing);
+      writeSetState(ROOT, existing, {
+        setName: SET_NAME, setCode: sourceCard.set_code,
+        cards: existing.cards, records: [...existingRecords.values()],
+        sourceCount: sourceCards.length, updatedAt: new Date().toISOString(),
+      });
       write(LINK_MAP, linkMap);
       write(PROGRESS, progress);
     } catch (error) {
@@ -295,6 +324,11 @@ async function main() {
   const records = [...existingRecords.values()].filter((record) => targets.some((card) => Number(card.id) === Number(record.pokedataCardId)));
   for (const detail of Object.values(existing.cards || {})) {
     detail.sourceMode ||= "公開API取得・一部認証済みChrome検証";
+    for (const market of [detail.markets?.ebayRaw, detail.markets?.ebayPsa10, detail.markets?.ebayPsa9].filter(Boolean)) {
+      market.individualSalesStatus = individualSalesStatus(market);
+      market.usableIndividualMedian = Number(market.adoptedCount || 0) >= 3;
+      market.decisionUsage = "海外相場は参考表示のみ・国内仕入れ判断へ未反映";
+    }
     if (detail.markets?.tcgplayerRaw && detail.markets.tcgplayerRaw.transactionCount == null) {
       detail.markets.tcgplayerRaw.transactionCountStatus = "取得不能";
     }
@@ -327,13 +361,23 @@ async function main() {
     setName: SET_NAME, currentCursor: acquired, targetCount: targets.length,
     sourceSetTotal: sourceCards.length, remainingInBatch: Math.max(0, targets.length - acquired),
     attempted, fetched, cacheHits: cached, failed,
+    transactionPageMode: "公開APIの先頭ページ（最大50件、追加ページは提供なし）",
+    refreshCursor: refreshLinked ? Number(progress.refreshCursor || 0) : null,
+    detailedDomesticCards: Object.keys(existing.cards || {}).length,
+    usableRawMedianCards: Object.values(existing.cards || {}).filter((detail) => detail.markets?.ebayRaw?.usableIndividualMedian).length,
+    usablePsa10MedianCards: Object.values(existing.cards || {}).filter((detail) => detail.markets?.ebayPsa10?.usableIndividualMedian).length,
     lastSuccessfulCard: progress.lastSuccessfulCard || null,
     lastFailure: progress.lastFailure || null,
   };
   progress.targetCount = targets.length;
   progress.sourceSetTotal = sourceCards.length;
   progress.lastRun = existing.crawl;
-  write(OUTPUT, existing); write(LINK_MAP, linkMap); write(PROGRESS, progress); write(CACHE, cache);
+  const setCode = sourceCards.find((card) => card.set_code)?.set_code || null;
+  writeSetState(ROOT, existing, {
+    setName: SET_NAME, setCode, cards: existing.cards, records,
+    sourceCount: sourceCards.length, updatedAt: existing.updatedAt,
+  });
+  write(LINK_MAP, linkMap); write(PROGRESS, progress); write(CACHE, cache);
   console.log(JSON.stringify({
     setName: SET_NAME, sourceSetTotal: sourceCards.length, targetCount: targets.length,
     acquired, automaticMatched, manualMatched, ambiguous, domesticBaseMissing,
@@ -344,4 +388,4 @@ async function main() {
 
 if (require.main === module) main().catch((error) => { console.error(error); process.exitCode = 1; });
 
-module.exports = { findDomestic, localIdentity, minimalTransactions, normalizeName, normalizeNumber, normalizeSetCode };
+module.exports = { findDomestic, individualSalesStatus, localIdentity, minimalTransactions, normalizeName, normalizeNumber, normalizeSetCode };

@@ -209,6 +209,24 @@ function setStock(history, cardId, index, value) {
   history.stocks[cardId][index] = value;
 }
 
+function yuyuteiPriority(card, buybackCards = {}) {
+  const price = Number(card.price || 0);
+  const psa10 = Number(card.snkPsa10Price || 0);
+  const expectedGross = psa10 > 0 && price > 0 ? psa10 * 0.92 - price - 12980 : -Infinity;
+  const currentCandidate = expectedGross >= 0 && Number(card.tv30 || 0) >= 30;
+  const hasPsa10Market = psa10 > 0;
+  const hasBuyback = Object.values(buybackCards[card.id]?.shops || {})
+    .some((shop) => Number(shop.price || 0) > 0 && !shop.quarantined);
+  const rank = currentCandidate ? 0 : hasPsa10Market ? 1 : hasBuyback ? 2 : price >= 30000 ? 3 : 4;
+  const labels = ["現在の候補カード", "PSA10相場あり", "買取掲載あり", "高価格帯", "残り全件"];
+  return {
+    rank,
+    label: labels[rank],
+    expectedGross: Number.isFinite(expectedGross) ? Math.round(expectedGross) : null,
+    secondaryScore: Number(card.tv30 || 0) * 1000000 + price,
+  };
+}
+
 async function updateYuyutei(cards, paths) {
   let catalog = read(paths.catalog, []);
   const history = read(paths.history, { dates: [], stocks: {} });
@@ -217,19 +235,24 @@ async function updateYuyutei(cards, paths) {
   if (!progress.attemptedCards || typeof progress.attemptedCards !== "object") progress.attemptedCards = {};
   if (!pageCache.entries || typeof pageCache.entries !== "object") pageCache.entries = {};
   const byId = new Map(catalog.map((entry) => [entry.cardId, entry]));
+  const buybackCards = read(path.join(ROOT, "data", "shop-buyback-summary.json"), { cards: {} }).cards || {};
   const onlyIds = new Set(String(process.env.YUYUTEI_ONLY_ID || "").split(",").map((value) => value.trim()).filter(Boolean));
-  const selectedTargets = cards.filter((card) => {
+  const batchLimit = Math.max(1, Number(process.env.YUYUTEI_SEARCH_BATCH || 100));
+  const eligibleTargets = cards.filter((card) => {
     const signature = cardSignature(card);
     const searchable = Boolean(signature.setCode && signature.cardNo && signature.base);
     return searchable && (onlyIds.size ? onlyIds.has(card.id) : !byId.has(card.id) && due(progress.attemptedCards[card.id], JSON.stringify(signature)));
   })
-    .sort((a, b) => Number(b.tv30 || 0) - Number(a.tv30 || 0) || Number(b.price || 0) - Number(a.price || 0))
-    .slice(0, Math.max(1, Number(process.env.YUYUTEI_SEARCH_BATCH || 100)));
-  // Group the selected work by set so every checkpoint has a stable resume key.
-  const targets = selectedTargets.sort((a, b) => {
-    const left = cardSignature(a); const right = cardSignature(b);
-    return left.setCode.localeCompare(right.setCode) || left.cardNo.localeCompare(right.cardNo);
-  });
+    .sort((left, right) => {
+      const a = yuyuteiPriority(left, buybackCards);
+      const b = yuyuteiPriority(right, buybackCards);
+      return a.rank - b.rank || b.secondaryScore - a.secondaryScore || String(left.id).localeCompare(String(right.id));
+    });
+  const targets = eligibleTargets.slice(0, batchLimit);
+  progress.priorityOrder = ["現在の候補カード", "PSA10相場あり", "買取掲載あり", "高価格帯", "残り全件"];
+  progress.batchLimit = batchLimit;
+  progress.resumePosition = Math.max(0, cards.length - eligibleTargets.length);
+  progress.lastBatchTargets = targets.map((card) => ({ cardId: card.id, ...yuyuteiPriority(card, buybackCards) }));
   let linked = 0;
   let matched = 0;
   let updated = 0;
@@ -241,12 +264,14 @@ async function updateYuyutei(cards, paths) {
   const linkageMisses = [];
   for (const card of targets) {
     const signature = cardSignature(card); const signatureKey = JSON.stringify(signature);
+    const priority = yuyuteiPriority(card, buybackCards);
     const pageKey = `${signature.setCode || "unknown"}/${signature.cardNo || card.id}`;
     const query = `${signature.base} ${signature.cardNo}`;
     const searchUrl = `${YUYUTEI}/sell/poc/s/search?${new URLSearchParams({ search_word: query, rare: "", type: "", kizu: "0" })}`;
     const key = cacheKey(searchUrl);
     const metric = {
       source: "yuyutei", pageKey, setCode: signature.setCode, cardId: card.id,
+      priorityRank: priority.rank, priorityLabel: priority.label,
       url: searchUrl, startedAt: new Date().toISOString(), status: "running",
       httpStatus: null, retryCount: 0, fetchMs: 0, parseMs: 0, matchMs: 0, saveMs: 0,
       stage: "fetch",
@@ -282,7 +307,7 @@ async function updateYuyutei(cards, paths) {
       metric.candidateCount = candidates.length;
       metric.matchCount = matches.length;
       metric.stage = "save";
-      progress.attemptedCards[card.id] = { signature: signatureKey, checkedAt: new Date().toISOString(), found: Boolean(match) };
+      progress.attemptedCards[card.id] = { signature: signatureKey, checkedAt: new Date().toISOString(), found: Boolean(match), priorityRank: priority.rank, priorityLabel: priority.label };
       if (!match) {
         linkageMisses.push({
           cardId: card.id, cardName: card.name, pageKey, url: searchUrl,
@@ -342,6 +367,12 @@ async function updateYuyutei(cards, paths) {
   }).length;
   const searchedCurrentCount = Math.max(0, searchableCards.length - remainingSearchCount);
   const completionStatus = failed > 0 || remainingSearchCount > 0 ? "partial" : "success";
+  const priorityRemaining = searchableCards.reduce((counts, card) => {
+    if (byId.has(card.id) || !due(progress.attemptedCards[card.id], JSON.stringify(cardSignature(card)))) return counts;
+    const priority = yuyuteiPriority(card, buybackCards);
+    counts[priority.label] = (counts[priority.label] || 0) + 1;
+    return counts;
+  }, {});
   const index = appendDate(history, jstDate());
   const stocks = catalog.filter((entry) => Number.isFinite(entry.stock));
   for (const entry of stocks) setStock(history, entry.cardId, index, entry.stock);
@@ -349,6 +380,12 @@ async function updateYuyutei(cards, paths) {
   progress.lastRun = {
     startedTargetCount: targets.length, succeededPages: targets.length - failed,
     searchableTargetCount: searchableCards.length, searchedCurrentCount, remainingSearchCount,
+    batchLimit, resumePosition: searchedCurrentCount, priorityOrder: progress.priorityOrder,
+    priorityRemaining, batchPriorityCounts: targets.reduce((counts, card) => {
+      const label = yuyuteiPriority(card, buybackCards).label;
+      counts[label] = (counts[label] || 0) + 1;
+      return counts;
+    }, {}),
     fetchFailureCount: failed, linkageMissCount: linkageMisses.length,
     matchedCount: matched, newLinkCount: linked, updatedCount: updated,
     lastSuccessfulPage: progress.lastSuccessfulPage || null,
@@ -396,78 +433,184 @@ function campMatchesCard(card, product) {
   // tag match avoids linking same-name promotions and reprints by card number.
   return productSig.setCodes.includes(signature.setCode);
 }
+
+function decodeXml(value) {
+  return String(value || "")
+    .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'");
+}
+
+function parseProductSitemapIndex(xml) {
+  return [...String(xml || "").matchAll(/<loc>([^<]*sitemap_products_[^<]+)<\/loc>/g)]
+    .map((match) => decodeXml(match[1]));
+}
+
+function parseProductSitemap(xml) {
+  const rows = [];
+  for (const match of String(xml || "").matchAll(/<url>([\s\S]*?)<\/url>/g)) {
+    const block = match[1];
+    const url = decodeXml((block.match(/<loc>([^<]+)<\/loc>/) || [])[1]);
+    if (!/\/products\//.test(url)) continue;
+    const title = decodeXml((block.match(/<image:title>([\s\S]*?)<\/image:title>/) || [])[1]);
+    const lastModified = decodeXml((block.match(/<lastmod>([^<]+)<\/lastmod>/) || [])[1]);
+    const handle = decodeURIComponent((url.match(/\/products\/([^/?#]+)/) || [])[1] || "");
+    if (handle) rows.push({ url, handle, title, lastModified });
+  }
+  return rows;
+}
+
+function preferCampEntry(previous, candidate) {
+  if (!previous) return candidate;
+  if (previous.detailUrl === candidate.detailUrl) return candidate;
+  if (candidate.available !== previous.available) return candidate.available ? candidate : previous;
+  const previousPrice = Number(previous.price);
+  const candidatePrice = Number(candidate.price);
+  if (candidatePrice > 0 && (!(previousPrice > 0) || candidatePrice < previousPrice)) return candidate;
+  return previous;
+}
+
 async function updateTorecaCamp(cards, paths) {
   const reset = process.env.TORECACAMP_RESET === "1";
   let catalog = reset ? [] : read(paths.catalog, []);
-  const progress = reset ? { page: 1, exhausted: false } : read(paths.progress, { page: 1, exhausted: false });
-  const pageCache = reset ? { version: 1, entries: {} } : read(paths.cache, { version: 1, entries: {} });
-  const today = jstDate();
-  if (progress.exhausted && progress.cycleCompletedDate && progress.cycleCompletedDate !== today) {
-    progress.previousCycle = {
-      completedAt: progress.cycleCompletedAt || null,
-      completedDate: progress.cycleCompletedDate,
-      totalPages: progress.totalPages || null,
-      processedPageCount: new Set(progress.processedPages || []).size,
+  const progress = reset ? {} : read(paths.progress, {});
+  const sitemapCache = reset ? { version: 1 } : read(paths.sitemapCache, { version: 1 });
+  const migratedFromCollectionApi = progress.paginationMode !== "sitemap";
+  if (migratedFromCollectionApi) {
+    progress.legacyCollectionApi = {
+      processedPages: Number(progress.processedPages?.length || 0),
+      products: 25000,
+      matchedCardsPreserved: catalog.length,
+      stoppedAt: progress.lastFailure?.at || null,
     };
-    progress.page = 1;
-    progress.exhausted = false;
-    progress.processedPages = [];
-    progress.lastSuccessfulPage = null;
-    progress.totalPages = null;
-    progress.cycleDate = today;
+    progress.lastFailure = null;
+    progress.stoppingReason = null;
   }
-  progress.cycleDate ||= today;
-  pageCache.entries ||= {};
+  progress.paginationMode = "sitemap";
+  if (progress.lastFailure?.reasonCode === "public_collection_api_25000_limit") progress.lastFailure = null;
+  progress.failures = (progress.failures || []).filter((failure) => {
+    return failure.reasonCode !== "public_collection_api_25000_limit"
+      && !/\/collections\/all\/products\.json/.test(String(failure.url || ""));
+  });
+  progress.processedSitemaps = Array.isArray(progress.processedSitemaps) ? progress.processedSitemaps : [];
+  progress.failedSitemaps = progress.failedSitemaps && typeof progress.failedSitemaps === "object" ? progress.failedSitemaps : {};
+  progress.sitemapProductCounts = progress.sitemapProductCounts && typeof progress.sitemapProductCounts === "object" ? progress.sitemapProductCounts : {};
+  progress.seenProductUrls = Array.isArray(progress.seenProductUrls) ? progress.seenProductUrls : [];
+  progress.seenProductIds = Array.isArray(progress.seenProductIds) ? progress.seenProductIds : [];
+  progress.currentSitemapIndex = Math.max(0, Number(progress.currentSitemapIndex || 0));
+  progress.currentEntryIndex = Math.max(0, Number(progress.currentEntryIndex || 0));
   const byId = new Map(catalog.map((entry) => [entry.cardId, entry]));
+  const seenProductUrls = new Set(progress.seenProductUrls);
+  const seenProductIds = new Set(progress.seenProductIds.map(String));
   const byNumber = new Map();
   for (const card of cards) { const signature = cardSignature(card); if (signature.cardNo) { if (!byNumber.has(signature.cardNo)) byNumber.set(signature.cardNo, []); byNumber.get(signature.cardNo).push(card); } }
-  const pageCount = Math.max(1, Number(process.env.TORECACAMP_PAGES_PER_RUN || 6));
-  const forcedStart = Number(process.env.TORECACAMP_START_PAGE || 0);
-  let page = forcedStart > 0 ? forcedStart : Math.max(1, Number(progress.page || 1));
-  progress.processedPages = Array.isArray(progress.processedPages)
-    ? [...new Set(progress.processedPages.filter(Number.isFinite))]
-    : Object.keys(pageCache.entries).map(Number).filter(Number.isFinite);
-  // Page 100 returned a full 250 rows during the source capability probe. It
-  // is a lower bound, not a claim that the source contains exactly 100 pages.
-  progress.estimatedMinimumPages = Math.max(Number(progress.estimatedMinimumPages || 0), 100);
-  progress.pageSize = 250;
-  let cycleCompleted = Boolean(progress.exhausted);
-  let fetched = 0; let parsed = 0; let stateA = 0; let linked = 0; let updated = 0; let failed = 0; let cacheHits = 0; let pagesSucceeded = 0;
-  let lastPageProductCount = null;
+  const sitemapLimit = Math.max(1, Number(process.env.TORECACAMP_SITEMAPS_PER_RUN || 1));
+  const detailLimit = Math.max(1, Number(process.env.TORECACAMP_PRODUCT_DETAIL_BATCH || 100));
+  const forcedSitemap = Math.max(0, Number(process.env.TORECACAMP_RETRY_SITEMAP || 0) - 1);
+  let sitemapUrls = [];
+  let listedProducts = 0; let detailFetched = 0; let parsed = 0; let stateA = 0;
+  let linked = 0; let updated = 0; let failed = 0; let cacheHits = 0; let sitemapsSucceeded = 0;
+  let stoppingReason = null;
   const excluded = { noStateA: 0, gradedProduct: 0, noCardNumber: 0, noLocalCandidate: 0, identityMismatch: 0, ambiguous: 0 };
-  for (let count = 0; count < pageCount && !progress.exhausted; count += 1, page += 1) {
-    const url = `${TORECA_CAMP}/collections/all/products.json?limit=250&page=${page}`;
-    const metric = {
-      source: "torecacamp", page, pageKey: `page-${page}`, url,
-      startedAt: new Date().toISOString(), status: "running", stage: "fetch",
-      httpStatus: null, retryCount: 0, fetchMs: 0, parseMs: 0, matchMs: 0, saveMs: 0,
-    };
-    let products = [];
+  try {
+    const indexResponse = await fetchText(`${TORECA_CAMP}/sitemap.xml`, { intervalMs: 1100 });
+    sitemapUrls = parseProductSitemapIndex(indexResponse.text);
+    if (!sitemapUrls.length) throw new Error("商品サイトマップが見つかりません");
+    progress.totalSitemaps = sitemapUrls.length;
+    progress.sitemapUrls = sitemapUrls;
+  } catch (error) {
+    failed += 1;
+    progress.lastFailure = { pageKey: "sitemap-index", url: `${TORECA_CAMP}/sitemap.xml`, stage: "fetch-index", httpStatus: error.metric?.httpStatus || null, retryCount: error.metric?.retryCount || 0, error: error.message, at: new Date().toISOString() };
+    progress.failures = [...(progress.failures || []), progress.lastFailure].slice(-50);
+  }
+
+  for (let runIndex = 0; runIndex < sitemapLimit && sitemapUrls.length && detailFetched < detailLimit && failed === 0; runIndex += 1) {
+    let sitemapIndex = forcedSitemap >= 0 && process.env.TORECACAMP_RETRY_SITEMAP
+      ? forcedSitemap
+      : progress.currentSitemapIndex;
+    while (sitemapIndex < sitemapUrls.length && progress.processedSitemaps.includes(sitemapIndex + 1)) sitemapIndex += 1;
+    if (sitemapIndex >= sitemapUrls.length) break;
+    const sitemapUrl = sitemapUrls[sitemapIndex];
+    const pageKey = `sitemap-${sitemapIndex + 1}`;
+    const metric = { source: "torecacamp", pageKey, sitemapNumber: sitemapIndex + 1, url: sitemapUrl, startedAt: new Date().toISOString(), status: "running", stage: "fetch-sitemap", retryCount: 0 };
+    let entries = [];
     try {
-      const cached = pageCache.entries[page];
-      const cacheAge = Date.now() - Date.parse(cached?.fetchedAt || "");
-      if (cached && Number.isFinite(cacheAge) && jstDate(cached.fetchedAt) === today && process.env.TORECACAMP_FORCE !== "1") {
-        products = cached.products || [];
+      const cacheAge = Date.now() - Date.parse(sitemapCache.fetchedAt || "");
+      if (sitemapCache.url === sitemapUrl && Array.isArray(sitemapCache.entries) && Number.isFinite(cacheAge) && cacheAge < 86400000 && process.env.TORECACAMP_FORCE !== "1") {
+        entries = sitemapCache.entries;
         cacheHits += 1;
         metric.fromCache = true;
-        metric.httpStatus = cached.httpStatus;
       } else {
-        const response = await fetchJson(url, { intervalMs: 1100 });
+        const response = await fetchText(sitemapUrl, { intervalMs: 1100 });
         Object.assign(metric, response.metric);
-        metric.stage = "parse";
-        const parseStartedAt = Date.now();
-        products = response.value.products || [];
-        metric.parseMs = Date.now() - parseStartedAt;
-        pageCache.entries[page] = {
-          fetchedAt: new Date().toISOString(), httpStatus: response.metric.httpStatus,
-          products: products.map((product) => ({
-            title: product.title, handle: product.handle, tags: product.tags,
-            variants: (product.variants || []).filter(campA).map((variant) => ({
-              title: variant.title, option1: variant.option1, price: variant.price, available: variant.available,
-            })),
-          })),
-        };
+        metric.stage = "parse-sitemap";
+        entries = parseProductSitemap(response.text);
+        sitemapCache.url = sitemapUrl;
+        sitemapCache.fetchedAt = new Date().toISOString();
+        sitemapCache.entries = entries;
+        write(paths.sitemapCache, sitemapCache);
       }
+      progress.sitemapProductCounts[sitemapIndex + 1] = entries.length;
+      listedProducts += entries.length;
+      const startingEntry = progress.currentSitemapIndex === sitemapIndex ? progress.currentEntryIndex : 0;
+      for (let entryIndex = startingEntry; entryIndex < entries.length; entryIndex += 1) {
+        const sitemapEntry = entries[entryIndex];
+        progress.currentSitemapIndex = sitemapIndex;
+        progress.currentEntryIndex = entryIndex;
+        if (seenProductUrls.has(sitemapEntry.url)) { progress.currentEntryIndex = entryIndex + 1; continue; }
+        parsed += 1;
+        const stub = { title: sitemapEntry.title, handle: sitemapEntry.handle, tags: [] };
+        const sig = campSignature(stub);
+        if (!sig.cardNo) { excluded.noCardNumber += 1; seenProductUrls.add(sitemapEntry.url); progress.currentEntryIndex = entryIndex + 1; continue; }
+        const candidates = byNumber.get(sig.cardNo) || [];
+        if (!candidates.length) { excluded.noLocalCandidate += 1; seenProductUrls.add(sitemapEntry.url); progress.currentEntryIndex = entryIndex + 1; continue; }
+        const matches = candidates.filter((row) => campMatchesCard(row, stub));
+        if (matches.length !== 1) { excluded[matches.length > 1 ? "ambiguous" : "identityMismatch"] += 1; seenProductUrls.add(sitemapEntry.url); progress.currentEntryIndex = entryIndex + 1; continue; }
+        if (detailFetched >= detailLimit) {
+          stoppingReason = `商品詳細の1回上限 ${detailLimit}件に到達`;
+          break;
+        }
+        metric.stage = "fetch-product";
+        const productResponse = await fetchJson(`${sitemapEntry.url}.js`, { intervalMs: 1100 });
+        detailFetched += 1;
+        const product = productResponse.value;
+        if (seenProductIds.has(String(product.id))) { seenProductUrls.add(sitemapEntry.url); progress.currentEntryIndex = entryIndex + 1; continue; }
+        const variant = (product.variants || []).find(campA);
+        if (!variant) { excluded.noStateA += 1; seenProductUrls.add(sitemapEntry.url); seenProductIds.add(String(product.id)); progress.currentEntryIndex = entryIndex + 1; continue; }
+        stateA += 1;
+        const card = matches[0];
+        const entry = {
+          cardId: card.id, productId: String(product.id), title: product.title,
+          detailUrl: sitemapEntry.url, price: Number(variant.price) || null,
+          available: variant.available === true, observedAt: jstDate(),
+          sourceSitemap: sitemapIndex + 1, lastModified: sitemapEntry.lastModified || null,
+        };
+        const previousEntry = byId.get(card.id);
+        const chosen = preferCampEntry(previousEntry, entry);
+        if (!previousEntry && chosen === entry) linked += 1;
+        else if (chosen === entry && (previousEntry.detailUrl !== entry.detailUrl || previousEntry.price !== entry.price || previousEntry.available !== entry.available)) updated += 1;
+        byId.set(card.id, chosen);
+        seenProductUrls.add(sitemapEntry.url);
+        seenProductIds.add(String(product.id));
+        progress.currentEntryIndex = entryIndex + 1;
+        progress.seenProductUrls = [...seenProductUrls];
+        progress.seenProductIds = [...seenProductIds];
+        catalog = [...byId.values()];
+        write(paths.catalog, catalog);
+        write(paths.progress, progress);
+      }
+      if (!stoppingReason && progress.currentEntryIndex >= entries.length) {
+        progress.processedSitemaps = [...new Set([...progress.processedSitemaps, sitemapIndex + 1])].sort((a, b) => a - b);
+        progress.lastSuccessfulSitemap = sitemapIndex + 1;
+        progress.currentSitemapIndex = sitemapIndex + 1;
+        progress.currentEntryIndex = 0;
+        delete progress.failedSitemaps[sitemapIndex + 1];
+        progress.lastFailure = null;
+        sitemapsSucceeded += 1;
+      }
+      metric.status = "success";
+      metric.stage = stoppingReason ? "checkpoint" : "complete";
+      metric.productCount = entries.length;
+      metric.detailFetched = detailFetched;
     } catch (error) {
       failed += 1;
       Object.assign(metric, error.metric || {});
@@ -475,130 +618,60 @@ async function updateTorecaCamp(cards, paths) {
       metric.error = error.message;
       metric.exceptionName = error.name || "Error";
       metric.exception = String(error.stack || error.message || error).slice(0, 1200);
-      const failure = {
-        page, pageKey: `page-${page}`, url, httpStatus: metric.httpStatus,
-        stage: metric.stage, retryCount: metric.retryCount, timedOut: Boolean(metric.timedOut),
-        exceptionName: metric.exceptionName, error: error.message, exception: metric.exception,
-        at: new Date().toISOString(), lastSuccessfulPage: progress.lastSuccessfulPage || null,
-      };
-      if (page > 100 && Number(metric.httpStatus) === 400) {
-        failure.reasonCode = "public_collection_api_25000_limit";
-        failure.error = "公開一覧APIの25,000商品上限（101ページ目がHTTP 400）。サイトマップ経路への切替が必要";
-        progress.stoppingReason = failure.error;
-      }
+      const failure = { sitemapNumber: sitemapIndex + 1, pageKey, url: metric.url, productEntry: progress.currentEntryIndex, httpStatus: metric.httpStatus || null, stage: metric.stage, retryCount: metric.retryCount || 0, timedOut: Boolean(metric.timedOut), exceptionName: metric.exceptionName, error: error.message, exception: metric.exception, at: new Date().toISOString(), lastSuccessfulSitemap: progress.lastSuccessfulSitemap || null };
+      progress.failedSitemaps[sitemapIndex + 1] = failure;
       progress.lastFailure = failure;
       progress.failures = [...(progress.failures || []), failure].slice(-50);
-      write(paths.progress, progress);
-      metric.endedAt = new Date().toISOString();
-      recordFetchMetric("torecacamp", metric);
-      console.warn(`torecacamp page ${page} failed: ${error.message}`);
-      break;
+      stoppingReason = `サイトマップ${sitemapIndex + 1}の${metric.stage}で停止。次回は同じ商品から再開`;
     }
-    fetched += products.length;
-    parsed += products.length;
-    lastPageProductCount = products.length;
-    metric.productCount = products.length;
-    metric.stage = "match";
-    const matchStartedAt = Date.now();
-    const pageMatches = new Map();
-    for (const product of products) {
-      const variant = (product.variants || []).find(campA);
-      if (!variant) { excluded.noStateA += 1; continue; }
-      stateA += 1;
-      if (/\b(?:PSA|BGS|CGC)\s*\d+|鑑定品/i.test(String(product.title || ""))) { excluded.gradedProduct += 1; continue; }
-      const sig = campSignature(product);
-      if (!sig.cardNo) { excluded.noCardNumber += 1; continue; }
-      const candidates = byNumber.get(sig.cardNo) || [];
-      if (!candidates.length) { excluded.noLocalCandidate += 1; continue; }
-      const matches = candidates.filter((row) => campMatchesCard(row, product));
-      if (matches.length !== 1) { excluded[matches.length > 1 ? "ambiguous" : "identityMismatch"] += 1; continue; }
-      const card = matches[0];
-      const entry = { cardId: card.id, title: product.title, detailUrl: `${TORECA_CAMP}/products/${encodeURIComponent(product.handle)}`, price: Number(variant.price) || null, available: variant.available === true, observedAt: jstDate() };
-      if (!pageMatches.has(card.id)) pageMatches.set(card.id, []);
-      pageMatches.get(card.id).push(entry);
-    }
-    for (const [cardId, matches] of pageMatches) {
-      if (matches.length !== 1) { excluded.ambiguous += matches.length; continue; }
-      const entry = matches[0];
-      const previousEntry = byId.get(cardId);
-      if (!previousEntry || previousEntry.detailUrl !== entry.detailUrl) linked += 1;
-      else if (previousEntry.price !== entry.price || previousEntry.available !== entry.available) updated += 1;
-      byId.set(cardId, entry);
-    }
-    metric.matchMs = Date.now() - matchStartedAt;
-    metric.matchCount = [...pageMatches.values()].filter((matches) => matches.length === 1).length;
-    metric.stage = "save";
-    pagesSucceeded += 1;
-    const nextProgress = {
-      ...progress,
-      lastSuccessfulPage: page,
-      page: page + 1,
-      processedPages: [...new Set([...(progress.processedPages || []), page])].sort((a, b) => a - b),
-      lastFailure: null,
-    };
-    if (products.length < 250) {
-      nextProgress.exhausted = true;
-      nextProgress.totalPages = page;
-      nextProgress.cycleCompletedAt = new Date().toISOString();
-      nextProgress.cycleCompletedDate = today;
-      cycleCompleted = true;
-    }
-    catalog = [...byId.values()];
-    const saveStartedAt = Date.now();
-    write(paths.catalog, catalog);
-    write(paths.cache, pageCache);
-    // The checkpoint is written last. A failed catalog/cache save therefore
-    // cannot skip a page on the next run.
-    write(paths.progress, nextProgress);
-    Object.assign(progress, nextProgress);
-    metric.saveMs = Date.now() - saveStartedAt;
-    metric.status = "success";
-    metric.stage = "complete";
+    progress.seenProductUrls = [...seenProductUrls];
+    progress.seenProductIds = [...seenProductIds];
+    write(paths.catalog, [...byId.values()]);
+    write(paths.progress, progress);
     metric.endedAt = new Date().toISOString();
     recordFetchMetric("torecacamp", metric);
+    if (stoppingReason || failed > 0 || process.env.TORECACAMP_RETRY_SITEMAP) break;
   }
   const nextCatalog = [...byId.values()];
   const summary = {};
   for (const entry of nextCatalog) summary[entry.cardId] = { torecacampPrice: Number(entry.price) || null, available: entry.available, availabilityLabel: entry.available ? "在庫あり" : "在庫なし" };
-  const processedPageCount = new Set(progress.processedPages || []).size;
-  const estimatedMinimumProducts = Number(progress.estimatedMinimumPages || 0) * Number(progress.pageSize || 250);
-  const estimatedRemainingProducts = Math.max(0, estimatedMinimumProducts - processedPageCount * Number(progress.pageSize || 250));
-  const estimatedMinimumRemainingPages = Math.max(0, Number(progress.estimatedMinimumPages || 0) - processedPageCount);
-  const cumulativeProductCount = (progress.processedPages || []).reduce((total, processedPage) => {
-    const count = pageCache.entries?.[processedPage]?.products?.length;
-    return total + (Number.isFinite(count) ? count : 0);
-  }, 0);
-  const crawlComplete = Boolean(progress.exhausted && progress.totalPages && processedPageCount >= progress.totalPages);
+  const processedSitemapCount = progress.processedSitemaps.length;
+  const knownProducts = Object.values(progress.sitemapProductCounts).reduce((total, count) => total + Number(count || 0), 0);
+  const knownSitemaps = Object.keys(progress.sitemapProductCounts).length;
+  const estimatedTotalProducts = knownSitemaps > 0 ? Math.round(knownProducts / knownSitemaps * Number(progress.totalSitemaps || knownSitemaps)) : 0;
+  const estimatedRemainingProducts = estimatedTotalProducts > 0 ? Math.max(0, estimatedTotalProducts - seenProductUrls.size) : null;
+  const crawlComplete = Boolean(progress.totalSitemaps && processedSitemapCount >= progress.totalSitemaps);
+  if (crawlComplete) stoppingReason = null;
   progress.lastRun = {
-    currentCursor: progress.page || null, processedPageCount,
-    processedPages: (progress.processedPages || []).slice(-100),
-    totalPages: progress.totalPages || null,
-    estimatedMinimumPages: progress.estimatedMinimumPages || null,
-    estimatedMinimumProducts, estimatedRemainingProducts, estimatedMinimumRemainingPages,
-    cumulativeProductCount, cumulativeMatchedCount: nextCatalog.length,
-    lastPageProductCount, hasMorePages: !crawlComplete, crawlComplete,
-    pagesSucceeded, fetched, parsed, stateA, newLinkCount: linked,
+    paginationMode: "sitemap", currentCursor: progress.currentSitemapIndex + 1,
+    currentSitemapIndex: progress.currentSitemapIndex + 1, currentEntryIndex: progress.currentEntryIndex,
+    currentSitemapUrl: sitemapUrls[progress.currentSitemapIndex] || null,
+    processedSitemapCount, processedSitemaps: progress.processedSitemaps.slice(-44),
+    totalSitemaps: progress.totalSitemaps || sitemapUrls.length || 44,
+    cumulativeProductCount: seenProductUrls.size, estimatedTotalProducts, estimatedRemainingProducts,
+    cumulativeMatchedCount: nextCatalog.length, hasMorePages: !crawlComplete, crawlComplete,
+    sitemapsSucceeded, listedProducts, detailFetched, parsed, stateA, newLinkCount: linked,
     updatedCount: updated, fetchFailureCount: failed,
-    lastSuccessfulPage: progress.lastSuccessfulPage || null,
+    lastSuccessfulPage: progress.lastSuccessfulSitemap ? `サイトマップ ${progress.lastSuccessfulSitemap}` : null,
     lastFailure: progress.lastFailure || null,
-    stoppingReason: progress.stoppingReason || null,
+    failedSitemaps: Object.values(progress.failedSitemaps),
+    stoppingReason,
     completionStatus: crawlComplete && failed === 0 ? "success" : "partial",
     completedAt: new Date().toISOString(),
   };
-  write(paths.catalog, nextCatalog); write(paths.progress, progress); write(paths.cache, pageCache);
+  write(paths.catalog, nextCatalog); write(paths.progress, progress); write(paths.sitemapCache, sitemapCache);
   write(paths.summary, {
     updatedAt: new Date().toISOString(), stockType: "availability", cards: summary,
     crawl: { ...progress.lastRun, recentFailures: (progress.failures || []).slice(-10) },
   });
   return {
-    pagesSucceeded, fetched, parsed, stateA, linked, updated, failed, cacheHits, excluded,
-    coverage: nextCatalog.length, lastSuccessfulPage: progress.lastSuccessfulPage || null,
-    currentCursor: progress.page || null, processedPageCount,
-    estimatedMinimumPages: progress.estimatedMinimumPages || null,
-    estimatedRemainingProducts,
-    estimatedMinimumRemainingPages, cumulativeProductCount,
+    sitemapsSucceeded, listedProducts, detailFetched, parsed, stateA, linked, updated, failed, cacheHits, excluded,
+    coverage: nextCatalog.length, lastSuccessfulPage: progress.lastRun.lastSuccessfulPage,
+    currentCursor: progress.currentSitemapIndex + 1, processedSitemapCount,
+    totalSitemaps: progress.totalSitemaps || sitemapUrls.length || 44,
+    estimatedRemainingProducts, cumulativeProductCount: seenProductUrls.size,
     cumulativeMatchedCount: nextCatalog.length, crawlComplete,
-    completionStatus: cycleCompleted && crawlComplete && failed === 0 ? "success" : "partial",
+    completionStatus: crawlComplete && failed === 0 ? "success" : "partial",
   };
 }
 
@@ -609,7 +682,7 @@ async function main() {
     catalog: path.join(__dirname, "yuyutei_catalog.json"), history: path.join(__dirname, "yuyutei_stock_history.json"), progress: path.join(__dirname, "yuyutei_progress.json"), cache: path.join(__dirname, "yuyutei_page_cache.json"), summary: path.join(ROOT, "data", "yuyutei-stock-summary.json"),
   }) : null;
   const torecacamp = sourceOnly === "all" || sourceOnly === "torecacamp" ? await updateTorecaCamp(cards, {
-    catalog: path.join(__dirname, "torecacamp_catalog.json"), progress: path.join(__dirname, "torecacamp_progress.json"), cache: path.join(__dirname, "torecacamp_page_cache.json"), summary: path.join(ROOT, "data", "torecacamp-stock-summary.json"),
+    catalog: path.join(__dirname, "torecacamp_catalog.json"), progress: path.join(__dirname, "torecacamp_progress.json"), cache: path.join(__dirname, "torecacamp_page_cache.json"), sitemapCache: path.join(__dirname, "torecacamp_sitemap_cache.json"), summary: path.join(ROOT, "data", "torecacamp-stock-summary.json"),
   }) : null;
   const latestCards = read(path.join(ROOT, "data", "pokemon-cards.json"), []);
   const yuyuteiById = new Map(read(path.join(__dirname, "yuyutei_catalog.json"), []).map((entry) => [entry.cardId, entry]));
@@ -623,5 +696,7 @@ if (require.main === module) main().catch((error) => { console.error(error); pro
 
 module.exports = {
   campA, campMatchesCard, campSignature, cardSignature, normalizeSetCode,
+  parseProductSitemap, parseProductSitemapIndex, preferCampEntry,
+  yuyuteiPriority,
   numberMatches, parseYuyuteiResults, titleMatches,
 };

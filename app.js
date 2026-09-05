@@ -22,6 +22,13 @@ const state = {
   psaHistoryCache: Object.create(null),
   snkrListingSummary: Object.create(null),
   pokedataSummary: Object.create(null),
+  pokedataManifest: null,
+  pokedataAuditRecords: [],
+  pokedataAuditSetFile: "",
+  pokedataShardPayloads: Object.create(null),
+  pokedataLoadedFiles: new Set(),
+  pokedataLoadingFiles: new Set(),
+  pokedataFailedFiles: new Set(),
   psaServices: null,
   evaluationModel: null,
   evaluationGovernance: null,
@@ -582,14 +589,16 @@ function renderCollectorDiagnostics(sourceId, diagnostics) {
     </tr>`).join("") : "";
   const campProgress = sourceId === "torecacamp" ? `
     <div class="collector-progress-grid">
-      <span>現在カーソル <b>${fmt.format(diagnostics.currentCursor || 0)}ページ</b></span>
-      <span>完了ページ <b>${fmt.format(diagnostics.processedPageCount || 0)}ページ</b></span>
-      <span>総ページ <b>${diagnostics.totalPages ? `${fmt.format(diagnostics.totalPages)}ページ` : `少なくとも${fmt.format(diagnostics.estimatedMinimumPages || 0)}ページ`}</b></span>
-      <span>残りページ <b>${diagnostics.totalPages ? `${fmt.format(Math.max(0, diagnostics.totalPages - (diagnostics.processedPageCount || 0)))}ページ` : diagnostics.estimatedMinimumRemainingPages > 0 ? `少なくとも${fmt.format(diagnostics.estimatedMinimumRemainingPages)}ページ` : diagnostics.hasMorePages ? "未確定（続きあり）" : "0ページ"}</b></span>
+      <span>現在位置 <b>${diagnostics.paginationMode === "sitemap" ? `サイトマップ ${fmt.format(diagnostics.currentSitemapIndex || 1)}・商品 ${fmt.format(diagnostics.currentEntryIndex || 0)}` : `${fmt.format(diagnostics.currentCursor || 0)}ページ`}</b></span>
+      <span>完了単位 <b>${diagnostics.paginationMode === "sitemap" ? `${fmt.format(diagnostics.processedSitemapCount || 0)} / ${fmt.format(diagnostics.totalSitemaps || 44)}サイトマップ` : `${fmt.format(diagnostics.processedPageCount || 0)}ページ`}</b></span>
+      <span>残りサイトマップ <b>${diagnostics.paginationMode === "sitemap" ? `${fmt.format(Math.max(0, (diagnostics.totalSitemaps || 44) - (diagnostics.processedSitemapCount || 0)))}件` : "旧一覧API"}</b></span>
+      <span>推定残り商品 <b>${Number.isFinite(diagnostics.estimatedRemainingProducts) ? `${fmt.format(diagnostics.estimatedRemainingProducts)}件` : "集計中"}</b></span>
       <span>累計商品数 <b>${fmt.format(diagnostics.cumulativeProductCount || 0)}件</b></span>
       <span>累計紐付け <b>${fmt.format(diagnostics.cumulativeMatchedCount || 0)}件</b></span>
       <span>今回の新規紐付け <b>${fmt.format(diagnostics.newLinkCount || 0)}件</b></span>
+      <span>今回の商品詳細取得 <b>${fmt.format(diagnostics.detailFetched || 0)}件</b></span>
       <span>最後に成功 <b>${escapeHtml(String(diagnostics.lastSuccessfulPage || "未記録"))}</b></span>
+      ${diagnostics.currentSitemapUrl ? `<span class="collector-stop-reason">処理URL <b><a href="${escapeHtml(diagnostics.currentSitemapUrl)}" target="_blank" rel="noreferrer">現在のサイトマップ</a></b></span>` : ""}
       ${diagnostics.stoppingReason ? `<span class="collector-stop-reason">停止理由 <b>${escapeHtml(diagnostics.stoppingReason)}</b></span>` : ""}
     </div>` : sourceId === "yuyutei" ? `
     <div class="collector-progress-grid">
@@ -597,10 +606,13 @@ function renderCollectorDiagnostics(sourceId, diagnostics) {
       <span>照合対象 <b>${fmt.format(diagnostics.searchableTargetCount || 0)}件</b></span>
       <span>現行検索済み <b>${fmt.format(diagnostics.searchedCurrentCount || 0)}件</b></span>
       <span>未検索・再確認待ち <b>${fmt.format(diagnostics.remainingSearchCount || 0)}件</b></span>
+      <span>1回の処理上限 <b>${fmt.format(diagnostics.batchLimit || 0)}件</b></span>
+      <span>再開位置 <b>${fmt.format(diagnostics.resumePosition || diagnostics.searchedCurrentCount || 0)}件処理後</b></span>
       <span>HTTP取得失敗 <b>${fmt.format(diagnostics.fetchFailureCount || 0)}件</b></span>
       <span>一致候補なし <b>${fmt.format(diagnostics.linkageMissCount || 0)}件</b></span>
       <span>今回の紐付け <b>${fmt.format(diagnostics.matchedCount || 0)}件</b></span>
       <span>最後に成功 <b>${escapeHtml(String(diagnostics.lastSuccessfulPage || "未記録"))}</b></span>
+      ${diagnostics.priorityRemaining ? `<span class="collector-stop-reason">優先キュー残数 <b>${escapeHtml(Object.entries(diagnostics.priorityRemaining).map(([label, count]) => `${label} ${fmt.format(count)}件`).join(" / "))}</b></span>` : ""}
     </div>` : "";
   return `<details class="collector-diagnostics"><summary>取得処理の詳細</summary>
     ${campProgress}
@@ -717,7 +729,8 @@ function renderSourceObservability() {
       : "PokeDATA 検証状況を確認中";
   }
   if (els.pokedataCoverageDetails) {
-    const records = pokedata?.records || [];
+    const records = state.pokedataAuditRecords.length ? state.pokedataAuditRecords : pokedata?.records || [];
+    const manifestSets = state.pokedataManifest?.sets || [];
     const statusLabel = (status) => ({
       "manual-confirmed": "手動確認済み", "auto-matched": "自動紐付け",
       "auto-confirmed": "自動紐付け保存済み", ambiguous: "要確認",
@@ -738,7 +751,8 @@ function renderSourceObservability() {
     };
     els.pokedataCoverageDetails.innerHTML = pokedata ? `
       <div class="overseas-summary-grid">
-        <span>PokeDATAセット総数 <b>${fmt.format(pokedata.sourceSetTotal || 0)}</b></span>
+        <span>分割済みセット <b>${fmt.format(manifestSets.length)}セット</b></span>
+        <span>現在セットの掲載カード <b>${fmt.format(pokedata.sourceSetTotal || 0)}件</b></span>
         <span>検証目標 <b>${fmt.format(pokedata.batchTarget || 0)}</b></span>
         <span>取得済み <b>${fmt.format(pokedata.acquired || 0)}</b></span>
         <span>自動紐付け <b>${fmt.format(pokedata.automaticMatched || 0)}</b></span>
@@ -748,11 +762,13 @@ function renderSourceObservability() {
         <span>検証対象内の紐付け率 <b>${formatRate(pokedata.validationMatchRatePct)}</b></span>
         <span>全${fmt.format(pokedata.totalCards || 0)}枚に対するカバー率 <b>${formatRate(pokedata.totalCoveragePct)}</b></span>
       </div>
+      <label class="pokedata-record-search"><span>監査するセット</span><select id="pokedataAuditSet"><option value="">セットを選択</option>${manifestSets.map((entry) => `<option value="${escapeHtml(entry.file)}"${entry.file === state.pokedataAuditSetFile ? " selected" : ""}>${escapeHtml(entry.setName)}（詳細 ${fmt.format(entry.count || 0)}枚 / 照合 ${fmt.format(entry.linkageCount || 0)}件）</option>`).join("")}</select></label>
       <label class="pokedata-record-search"><span>紐付け結果を検索</span><input id="pokedataRecordSearch" type="search" placeholder="国内名・PokeDATA名・型番・状態"></label>
       <div class="pokedata-record-table"><table><thead><tr><th>国内ID</th><th>国内カード名</th><th>PokeDATA名</th><th>セット</th><th>番号</th><th>言語</th><th>状態</th><th>参照</th></tr></thead><tbody id="pokedataRecordRows"></tbody></table></div>
       <div class="pokedata-record-pager"><span id="pokedataRecordCount"></span><button id="pokedataLoadMore" type="button">さらに25件表示</button></div>
       ${renderCollectorDiagnostics("pokedata", pokedata.diagnostics)}` : `<p class="empty-note">PokeDATAの段階検証データを生成中です。</p>`;
     const input = document.getElementById("pokedataRecordSearch");
+    const setSelect = document.getElementById("pokedataAuditSet");
     const rowsElement = document.getElementById("pokedataRecordRows");
     const countElement = document.getElementById("pokedataRecordCount");
     const loadMore = document.getElementById("pokedataLoadMore");
@@ -767,6 +783,16 @@ function renderSourceObservability() {
     };
     input?.addEventListener("input", () => { visiblePokedataRecords = 25; renderPokedataRecords(); });
     loadMore?.addEventListener("click", () => { visiblePokedataRecords += 25; renderPokedataRecords(); });
+    setSelect?.addEventListener("change", async () => {
+      if (!setSelect.value) {
+        state.pokedataAuditSetFile = "";
+        state.pokedataAuditRecords = [];
+        renderSourceObservability();
+        return;
+      }
+      await loadPokedataShard(setSelect.value, { audit: true });
+      renderSourceObservability();
+    });
     renderPokedataRecords();
   }
 }
@@ -2140,6 +2166,48 @@ async function fetchJsonMaybe(url) {
   }
 }
 
+function pokedataShardFilesForCardIds(cardIds) {
+  const wanted = new Set((cardIds || []).map(String));
+  if (!wanted.size) return [];
+  return (state.pokedataManifest?.sets || [])
+    .filter((entry) => (entry.localCardIds || []).some((id) => wanted.has(String(id))))
+    .map((entry) => entry.file)
+    .filter(Boolean);
+}
+
+async function loadPokedataShard(file, { audit = false } = {}) {
+  if (!file) return false;
+  let payload = state.pokedataShardPayloads[file] || null;
+  if (!payload && !state.pokedataLoadingFiles.has(file) && !state.pokedataFailedFiles.has(file)) {
+    state.pokedataLoadingFiles.add(file);
+    try {
+      payload = await fetchJsonMaybe(`./${String(file).replace(/^\.?\//, "")}`);
+      if (!payload) {
+        state.pokedataFailedFiles.add(file);
+        return false;
+      }
+      state.pokedataShardPayloads[file] = payload;
+      state.pokedataLoadedFiles.add(file);
+      Object.assign(state.pokedataSummary, payload.cards || {});
+    } finally {
+      state.pokedataLoadingFiles.delete(file);
+    }
+  }
+  if (audit && payload) {
+    state.pokedataAuditSetFile = file;
+    state.pokedataAuditRecords = payload.linkageRecords || [];
+  }
+  return Boolean(payload);
+}
+
+async function ensurePokedataForCardIds(cardIds) {
+  const pendingFiles = pokedataShardFilesForCardIds(cardIds)
+    .filter((file) => !state.pokedataLoadedFiles.has(file) && !state.pokedataFailedFiles.has(file));
+  if (!pendingFiles.length) return false;
+  const loaded = await Promise.all(pendingFiles.map((file) => loadPokedataShard(file)));
+  return loaded.some(Boolean);
+}
+
 function syncLowRiskAvailabilityControl() {
   const active = state.purchaseMode === "low-risk";
   if (els.lowRiskAvailabilityControl) els.lowRiskAvailabilityControl.hidden = !active;
@@ -2797,6 +2865,11 @@ function render() {
   renderSourceObservability();
   renderGuide();
   const visibleCards = enriched.slice(0, state.visibleLimit);
+  const lazyPokedataIds = new Set([...state.favorites].map(String));
+  if (state.q) visibleCards.forEach((card) => lazyPokedataIds.add(String(card.id)));
+  void ensurePokedataForCardIds([...lazyPokedataIds]).then((loaded) => {
+    if (loaded) render();
+  });
   if (els.resultProgress) {
     els.resultProgress.textContent = `${fmt.format(enriched.length)}枚中 ${fmt.format(visibleCards.length)}枚を表示`;
   }
@@ -3546,8 +3619,11 @@ async function init() {
     state.marketBacktest = await fetchJsonMaybe("./data/market-backtest-summary.json");
     const snkrListingData = await fetchJsonMaybe("./data/snkr-listing-summary.json");
     state.snkrListingSummary = snkrListingData?.cards || Object.create(null);
-    const pokedataData = await fetchJsonMaybe("./data/pokedata-summary.json");
-    state.pokedataSummary = pokedataData?.cards || Object.create(null);
+    state.pokedataManifest = await fetchJsonMaybe("./data/pokedata/manifest.json");
+    if (!state.pokedataManifest) {
+      const legacyPokedataData = await fetchJsonMaybe("./data/pokedata-summary.json");
+      state.pokedataSummary = legacyPokedataData?.cards || Object.create(null);
+    }
     if (els.shopReferenceLinks) {
       const links = Object.values(state.buybackShops).map((shop) => `<a href="${escapeHtml(shop.url)}" target="_blank" rel="noreferrer">${escapeHtml(shop.name)} 買取表</a>`).join("");
       els.shopReferenceLinks.innerHTML = links ? `<span>参照ショップ</span>${links}` : "";

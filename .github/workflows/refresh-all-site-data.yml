@@ -62,7 +62,7 @@ jobs:
         continue-on-error: true
         env:
           SHOP_SOURCE_ONLY: "yuyutei"
-          YUYUTEI_SEARCH_BATCH: "5"
+          YUYUTEI_SEARCH_BATCH: "50"
           YUYUTEI_CONCURRENCY: "1"
           SHOP_FETCH_RETRIES: "2"
           SHOP_FETCH_TIMEOUT_MS: "10000"
@@ -78,7 +78,8 @@ jobs:
         continue-on-error: true
         env:
           SHOP_SOURCE_ONLY: "torecacamp"
-          TORECACAMP_PAGES_PER_RUN: "6"
+          TORECACAMP_SITEMAPS_PER_RUN: "1"
+          TORECACAMP_PRODUCT_DETAIL_BATCH: "100"
           SHOP_FETCH_RETRIES: "2"
           SHOP_FETCH_TIMEOUT_MS: "10000"
           SHOP_ACCESS_INTERVAL_MS: "1100"
@@ -92,6 +93,7 @@ jobs:
           POKEDATA_SET: "Battle Partners"
           POKEDATA_TARGET: "132"
           POKEDATA_BATCH: "10"
+          POKEDATA_REFRESH_LINKED: "1"
           POKEDATA_INTERVAL_MS: "1100"
           POKEDATA_TIMEOUT_MS: "10000"
         run: node work/run_tracked_update.js pokedata work/update_pokedata_batch.js

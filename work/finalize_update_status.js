@@ -162,7 +162,9 @@ for (const [sourceId, source] of Object.entries(sources)) {
   }
   if (sourceId === "torecacamp" && !torecacamp.crawl?.crawlComplete) {
     source.status = "partial";
-    source.sourceState = `巡回中／部分成功（${Number(torecacamp.crawl?.processedPageCount || 0)}ページ完了・次は${Number(torecacamp.crawl?.currentCursor || 1)}ページ）`;
+    source.sourceState = torecacamp.crawl?.paginationMode === "sitemap"
+      ? `巡回中／部分成功（${Number(torecacamp.crawl?.processedSitemapCount || 0)}/${Number(torecacamp.crawl?.totalSitemaps || 44)}サイトマップ完了・次は${Number(torecacamp.crawl?.currentSitemapIndex || 1)}）`
+      : `巡回中／部分成功（${Number(torecacamp.crawl?.processedPageCount || 0)}ページ完了・次は${Number(torecacamp.crawl?.currentCursor || 1)}ページ）`;
     source.fresh = false;
   }
 }

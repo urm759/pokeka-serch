@@ -234,6 +234,7 @@ function buildStoreCoverage(root = ROOT) {
     fetchFailureCount: Number.isFinite(runFor("pokedata", runs).fetchFailureCount) ? runFor("pokedata", runs).fetchFailureCount : null,
     diagnostics: pokedata.crawl || null,
     records: pokedata.linkage?.records || [],
+    recordsStorage: pokedata.linkage?.recordsStorage || null,
     mainUnmatchedReasons: [
       reason("国内基礎データなし", Number(pokedataCoverage.domesticBaseMissing || pokedataCoverage.unmatched || 0)),
       reason("曖昧候補", Number(pokedataCoverage.ambiguous || 0)),
@@ -278,11 +279,11 @@ function sourceArtifactPaths(sourceId, root = ROOT) {
     cardrush: ["work/cardrush_catalog.json", "data/cardrush-stock-summary.json"],
     hareruya2: ["work/hareruya2_catalog.json", "data/hareruya2-stock-summary.json"],
     yuyutei: ["work/yuyutei_catalog.json", "data/yuyutei-stock-summary.json"],
-    torecacamp: ["work/torecacamp_catalog.json", "data/torecacamp-stock-summary.json"],
+    torecacamp: ["work/torecacamp_catalog.json", "work/torecacamp_sitemap_cache.json", "data/torecacamp-stock-summary.json"],
     shopBuyback: ["data/shop-buyback-summary.json"],
     marketAnalysis: ["data/market-stability-summary.json"],
     psaJapan: ["data/psa-japan-services.json"],
-    pokedata: ["data/pokedata-summary.json", "data/pokedata-sales/pk-63635.json"],
+    pokedata: ["data/pokedata-summary.json", "data/pokedata/manifest.json", "data/pokedata-sales/pk-63635.json"],
   };
   return (files[sourceId] || []).map((relative) => path.join(root, relative));
 }

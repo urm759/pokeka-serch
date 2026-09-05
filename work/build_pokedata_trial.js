@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { analyzeSales } = require("./pokedata_analysis.js");
+const { loadSetState, writeSetState } = require("./pokedata_storage.js");
 
 const ROOT = path.join(__dirname, "..");
 const CAPTURE = path.join(__dirname, "pokedata_browser_capture_lillie.json");
@@ -74,10 +75,10 @@ async function main() {
     capturedAt,
     fx: { pair: "USD/JPY", rate: fxRate, source: "Frankfurter / ECB reference rates", sourceUrl: "https://api.frankfurter.app/latest?from=USD&to=JPY", rateDate: fx.date, fetchedAt: new Date().toISOString() },
     markets: {
-      ebayRaw: { pageDisplayJpy: capture.display.rawEbayJpy, apiAverageUsd: sourceAverage(stats, 12), apiAverageJpy: Math.round(rawEbayApiJpy), ...analysis.summaries.raw, comparisonToDomestic: compare(analysis.summaries.raw.medianJpy, domestic.price) },
-      tcgplayerRaw: { pageDisplayJpy: capture.display.rawTcgplayerJpy, apiAverageUsd: sourceAverage(stats, 0), apiAverageJpy: Math.round(rawTcgplayerApiJpy), transactionCount: null, transactionCountStatus: "未取得", comparisonToDomestic: compare(rawTcgplayerApiJpy, domestic.price) },
-      ebayPsa10: { pageDisplayJpy: capture.display.psa10EbayJpy, apiAverageUsd: sourceAverage(stats, 10), apiAverageJpy: Math.round(psa10ApiJpy), ...analysis.summaries.psa10, comparisonToDomestic: compare(analysis.summaries.psa10.medianJpy, domestic.snkPsa10Price) },
-      ebayPsa9: { pageDisplayJpy: capture.display.psa9EbayJpy, apiAverageUsd: sourceAverage(stats, 9), apiAverageJpy: Math.round(psa9ApiJpy), ...analysis.summaries.psa9, comparisonToDomestic: compare(analysis.summaries.psa9.medianJpy, domestic.snkPsa9Price || domestic.price) },
+      ebayRaw: { pageDisplayJpy: capture.display.rawEbayJpy, apiAverageUsd: sourceAverage(stats, 12), apiAverageJpy: Math.round(rawEbayApiJpy), ...analysis.summaries.raw, individualSalesStatus: "認証済み個別成約をクリーニング済み", usableIndividualMedian: true, comparisonToDomestic: compare(analysis.summaries.raw.medianJpy, domestic.price) },
+      tcgplayerRaw: { pageDisplayJpy: capture.display.rawTcgplayerJpy, apiAverageUsd: sourceAverage(stats, 0), apiAverageJpy: Math.round(rawTcgplayerApiJpy), transactionCount: null, transactionCountStatus: "取得不能", comparisonToDomestic: compare(rawTcgplayerApiJpy, domestic.price) },
+      ebayPsa10: { pageDisplayJpy: capture.display.psa10EbayJpy, apiAverageUsd: sourceAverage(stats, 10), apiAverageJpy: Math.round(psa10ApiJpy), ...analysis.summaries.psa10, individualSalesStatus: "認証済み個別成約をクリーニング済み", usableIndividualMedian: true, comparisonToDomestic: compare(analysis.summaries.psa10.medianJpy, domestic.snkPsa10Price) },
+      ebayPsa9: { pageDisplayJpy: capture.display.psa9EbayJpy, apiAverageUsd: sourceAverage(stats, 9), apiAverageJpy: Math.round(psa9ApiJpy), ...analysis.summaries.psa9, individualSalesStatus: "認証済み個別成約をクリーニング済み", usableIndividualMedian: true, comparisonToDomestic: compare(analysis.summaries.psa9.medianJpy, domestic.snkPsa9Price || domestic.price) },
     },
     population: { ...capture.display.population, source: "PokeDATA authenticated card page", capturedAt },
     domestic: { rawJpy: domestic.price || null, psa10Jpy: domestic.snkPsa10Price || null, psa9Jpy: domestic.snkPsa9Price || null },
@@ -97,14 +98,17 @@ async function main() {
     summaries: analysis.summaries,
     rows: analysis.classified,
   }), "utf8");
-  const payload = {
-    version: 1,
-    updatedAt: new Date().toISOString(),
-    source: "PokeDATA authenticated Chrome capture + public card stats API",
-    coverage: { sourceListed: 1, acquired: 1, automaticMatched: 0, manualMatched: 1, ambiguous: 0, unmatched: 0, linkageRatePct: 100 },
-    cards: { [alias.localCardId]: cardSummary },
-  };
-  fs.writeFileSync(OUTPUT, JSON.stringify(payload), "utf8");
+  const payload = readJson(OUTPUT, { version: 2, coverage: {}, linkage: { records: [] } });
+  const stored = loadSetState(ROOT, "Battle Partners", payload);
+  stored.cards[alias.localCardId] = cardSummary;
+  payload.version = 2;
+  payload.updatedAt = new Date().toISOString();
+  payload.source = "PokeDATA authenticated Chrome capture + public card stats API";
+  writeSetState(ROOT, payload, {
+    setName: "Battle Partners", setCode: "SV9", cards: stored.cards,
+    records: stored.records, sourceCount: Number(payload.coverage?.sourceSetTotal || stored.records.length),
+    updatedAt: payload.updatedAt,
+  });
   console.log(JSON.stringify({ localCardId: alias.localCardId, capturedSales: analysis.classified.length, summaries: analysis.summaries, fx: cardSummary.fx, coverage: payload.coverage }));
 }
 

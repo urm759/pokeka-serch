@@ -47,11 +47,13 @@ jobs:
         timeout-minutes: 10
         continue-on-error: true
         env:
-          YUYUTEI_SEARCH_BATCH: "5"
-          YUYUTEI_CONCURRENCY: "2"
-          TORECACAMP_PAGES_PER_RUN: "6"
-          SHOP_FETCH_RETRIES: "1"
-          SHOP_FETCH_TIMEOUT_MS: "12000"
+          YUYUTEI_SEARCH_BATCH: "50"
+          YUYUTEI_CONCURRENCY: "1"
+          TORECACAMP_SITEMAPS_PER_RUN: "1"
+          TORECACAMP_PRODUCT_DETAIL_BATCH: "100"
+          SHOP_FETCH_RETRIES: "2"
+          SHOP_FETCH_TIMEOUT_MS: "10000"
+          SHOP_ACCESS_INTERVAL_MS: "1100"
         run: node work/update_yuyutei_torecacamp.js
 
       - name: Re-resolve changed URLs
@@ -65,7 +67,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/pokemon-cards.json data/pokemon-cards-meta.json data/cardrush-stock-summary.json data/hareruya2-stock-summary.json data/yuyutei-stock-summary.json data/torecacamp-stock-summary.json work/cardrush_catalog.json work/cardrush_stock_history.json work/cardrush_stock_misses.json work/cardrush_invalid_urls.json work/cardrush_recheck_ids.json work/cardrush_crawl_progress.json work/cardrush_target_progress.json work/hareruya2_catalog.json work/hareruya2_stock_history.json work/hareruya2_collection_progress.json work/yuyutei_catalog.json work/yuyutei_stock_history.json work/yuyutei_progress.json work/torecacamp_catalog.json work/torecacamp_progress.json
+          git add data/pokemon-cards.json data/pokemon-cards-meta.json data/cardrush-stock-summary.json data/hareruya2-stock-summary.json data/yuyutei-stock-summary.json data/torecacamp-stock-summary.json work/cardrush_catalog.json work/cardrush_stock_history.json work/cardrush_stock_misses.json work/cardrush_invalid_urls.json work/cardrush_recheck_ids.json work/cardrush_crawl_progress.json work/cardrush_target_progress.json work/hareruya2_catalog.json work/hareruya2_stock_history.json work/hareruya2_collection_progress.json work/yuyutei_catalog.json work/yuyutei_stock_history.json work/yuyutei_progress.json work/torecacamp_catalog.json work/torecacamp_progress.json work/torecacamp_sitemap_cache.json
           if git diff --cached --quiet; then
             echo "No stock changes."
             exit 0

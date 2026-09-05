@@ -2,7 +2,9 @@ const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
 const {
-  campA, campMatchesCard, campSignature, cardSignature, parseYuyuteiResults, titleMatches,
+  campA, campMatchesCard, campSignature, cardSignature, parseProductSitemap,
+  parseProductSitemapIndex, parseYuyuteiResults, preferCampEntry, titleMatches,
+  yuyuteiPriority,
 } = require("./update_yuyutei_torecacamp.js");
 
 const standard = {
@@ -39,25 +41,46 @@ assert.ok(titleMatches(
 assert.deepStrictEqual(cardSignature({ name: "ピカチュウex SAR仕様 [MC 764/742](商品)" }), {
   setCode: "mc", cardNo: "764/742", base: "ピカチュウex",
 });
+assert.equal(yuyuteiPriority({ id: "candidate", price: 10000, snkPsa10Price: 40000, tv30: 30 }, {}).label, "現在の候補カード");
+assert.equal(yuyuteiPriority({ id: "psa", price: 40000, snkPsa10Price: 45000, tv30: 10 }, {}).label, "PSA10相場あり");
+assert.equal(yuyuteiPriority({ id: "buyback", price: 5000 }, { buyback: { shops: { one: { price: 10000 } } } }).label, "買取掲載あり");
 
 const updater = fs.readFileSync(path.join(__dirname, "update_yuyutei_torecacamp.js"), "utf8");
 const tracker = fs.readFileSync(path.join(__dirname, "run_tracked_update.js"), "utf8");
-assert.match(updater, /collections\/all\/products\.json/);
+const refreshWorkflow = fs.readFileSync(path.join(__dirname, "..", ".github", "workflows", "refresh-all-site-data.yml"), "utf8");
+const stockWorkflow = fs.readFileSync(path.join(__dirname, "..", ".github", "workflows", "update-cardrush-stock.yml"), "utf8");
+const sitemapIndex = parseProductSitemapIndex(`<sitemapindex><loc>https://torecacamp-pokemon.com/sitemap_products_1.xml?from=1&amp;to=2</loc></sitemapindex>`);
+assert.deepStrictEqual(sitemapIndex, ["https://torecacamp-pokemon.com/sitemap_products_1.xml?from=1&to=2"]);
+const sitemapRows = parseProductSitemap(`<urlset><url><loc>https://torecacamp-pokemon.com/products/test-card</loc><lastmod>2026-09-05</lastmod><image:image><image:title>AZ SR XY4 093/088</image:title></image:image></url></urlset>`);
+assert.equal(sitemapRows.length, 1);
+assert.equal(sitemapRows[0].handle, "test-card");
+assert.equal(sitemapRows[0].title, "AZ SR XY4 093/088");
+assert.equal(preferCampEntry({ price: 5000, available: false }, { price: 6000, available: true }).price, 6000);
+assert.match(updater, /sitemap\.xml/);
+assert.match(updater, /sitemap_products_/);
+assert.match(updater, /TORECACAMP_PRODUCT_DETAIL_BATCH/);
+assert.match(updater, /seenProductUrls/);
 assert.doesNotMatch(updater, /r\.jina\.ai/);
 assert.match(updater, /lastSuccessfulPage/);
 assert.match(updater, /pageCache/);
-assert.match(updater, /The checkpoint is written last/);
-assert.match(updater, /estimatedMinimumPages/);
+assert.match(updater, /currentEntryIndex = entryIndex \+ 1/);
+assert.doesNotMatch(updater, /collections\/all\/products\.json/);
+assert.match(updater, /estimatedRemainingProducts/);
 assert.match(updater, /remainingSearchCount/);
+assert.match(updater, /priorityRemaining/);
 assert.match(updater, /cumulativeProductCount/);
 assert.match(updater, /crawlComplete/);
-assert.match(updater, /public_collection_api_25000_limit/);
 assert.match(updater, /stoppingReason/);
-assert.doesNotMatch(updater, /progress\.page = 1;\s*progress\.exhausted = false;\s*}/);
 assert.match(updater, /linkageMissCount/);
 assert.match(updater, /exceptionName/);
 assert.match(updater, /response\.status === 429 \|\| response\.status >= 500/);
 assert.match(tracker, /\["'\]\?/);
 assert.doesNotMatch(tracker, /Number\(match\[1\] \|\| 1\)/);
+for (const workflow of [refreshWorkflow, stockWorkflow]) {
+  assert.match(workflow, /TORECACAMP_SITEMAPS_PER_RUN/);
+  assert.match(workflow, /TORECACAMP_PRODUCT_DETAIL_BATCH/);
+  assert.match(workflow, /YUYUTEI_SEARCH_BATCH/);
+}
+assert.doesNotMatch(stockWorkflow, /TORECACAMP_PAGES_PER_RUN/);
 
 console.log(JSON.stringify({ yuyuteiRows: rows.length, campStandard: "XY4|093/088", campPromo: "S-P|323", collectors: "ok" }));

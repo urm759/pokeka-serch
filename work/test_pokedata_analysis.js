@@ -43,7 +43,11 @@ assert(Number.isFinite(analyzed.summaries.raw.medianJpy));
 const generatedPath = path.join(__dirname, "..", "data", "pokedata-summary.json");
 if (fs.existsSync(generatedPath)) {
   const generated = JSON.parse(fs.readFileSync(generatedPath, "utf8"));
-  const card = generated.cards["pk-63635"];
+  const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "data", "pokedata", "manifest.json"), "utf8"));
+  const battlePartners = manifest.sets.find((entry) => entry.setName === "Battle Partners");
+  assert(battlePartners, "Battle Partners shard is missing");
+  const shard = JSON.parse(fs.readFileSync(path.join(__dirname, "..", ...battlePartners.file.split("/")), "utf8"));
+  const card = shard.cards["pk-63635"];
   assert(card, "Lillie's Clefairy ex trial data is missing");
   assert.equal(card.referenceOnly, true);
   assert.equal(card.limitImpact, "仕入れ上限へ未反映");
