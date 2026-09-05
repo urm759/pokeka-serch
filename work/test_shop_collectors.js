@@ -2,7 +2,7 @@ const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
 const {
-  campA, campMatchesCard, campSignature, cardSignature, parseYuyuteiResults,
+  campA, campMatchesCard, campSignature, cardSignature, parseYuyuteiResults, titleMatches,
 } = require("./update_yuyutei_torecacamp.js");
 
 const standard = {
@@ -31,6 +31,10 @@ assert.strictEqual(rows.length, 1);
 assert.strictEqual(rows[0].cardNo, "349/190");
 assert.strictEqual(rows[0].price, 39800);
 assert.strictEqual(rows[0].stock, 2);
+assert.ok(titleMatches(
+  { name: "ヒロシマのピカチュウ P [SV-P 261](スペシャルBOX)" },
+  "ヒロシマのピカチュウ", "261/SV-P", "svpromo-300",
+));
 
 assert.deepStrictEqual(cardSignature({ name: "ピカチュウex SAR仕様 [MC 764/742](商品)" }), {
   setCode: "mc", cardNo: "764/742", base: "ピカチュウex",
@@ -42,6 +46,10 @@ assert.match(updater, /collections\/all\/products\.json/);
 assert.doesNotMatch(updater, /r\.jina\.ai/);
 assert.match(updater, /lastSuccessfulPage/);
 assert.match(updater, /pageCache/);
+assert.match(updater, /The checkpoint is written last/);
+assert.match(updater, /estimatedMinimumPages/);
+assert.match(updater, /linkageMissCount/);
+assert.match(updater, /exceptionName/);
 assert.match(updater, /response\.status === 429 \|\| response\.status >= 500/);
 assert.match(tracker, /\["'\]\?/);
 assert.doesNotMatch(tracker, /Number\(match\[1\] \|\| 1\)/);

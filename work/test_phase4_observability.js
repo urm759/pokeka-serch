@@ -17,6 +17,7 @@ const index = fs.readFileSync(path.join(root, "index.html"), "utf8");
 
 const stores = coverage.current.storeCoverage.stores;
 const linkageSources = coverage.current.storeCoverage.linkageSources;
+const overseasSources = coverage.current.storeCoverage.overseasSources;
 assert.deepStrictEqual(Object.keys(stores).sort(), ["cardrush", "hareruya2", "torecacamp", "yuyutei"]);
 for (const store of Object.values(stores)) {
   for (const field of ["fetchedProducts", "fetchedUniqueCards", "totalCards", "targetCards", "matched", "unmatched", "targetCoveragePct", "totalCoveragePct", "lastSuccessAt", "fetchFailureCount", "mainUnmatchedReasons"]) {
@@ -26,7 +27,9 @@ for (const store of Object.values(stores)) {
   assert.strictEqual(store.targetCoveragePct, percent(store.matched, store.targetCards));
   assert.strictEqual(store.totalCoveragePct, percent(store.matchedAll, store.totalCards));
 }
-assert.deepStrictEqual(Object.keys(linkageSources).sort(), ["cardrush", "hareruya2", "pokedata", "psaOfficial", "torecacamp", "yuyutei"]);
+assert.deepStrictEqual(Object.keys(linkageSources).sort(), ["cardrush", "hareruya2", "psaOfficial", "torecacamp", "yuyutei"]);
+assert.deepStrictEqual(Object.keys(overseasSources).sort(), ["pokedata"]);
+assert.ok(overseasSources.pokedata.totalCoveragePct < overseasSources.pokedata.validationMatchRatePct);
 for (const source of Object.values(linkageSources)) {
   for (const field of ["automaticMatched", "manualMatched", "ambiguous", "matched", "unmatched", "targetCoveragePct"]) {
     assert.ok(Object.hasOwn(source, field), `${source.label}: missing linkage field ${field}`);
@@ -58,8 +61,11 @@ assert.match(finalizer, /timeout_or_forced_exit/);
 assert.match(finalizer, /majorSourceIds/);
 assert.match(index, /主要データ完了日/);
 assert.match(index, /全データ完了日/);
+assert.match(index, /海外相場データ/);
 assert.match(app, /部分成功/);
 assert.match(app, /前回比/);
+assert.match(app, /未紐付けがあるデータ元/);
+assert.match(app, /PokeDATA参照/);
 assert.match(tracker, /TRACKED_TIMEOUT_MS/);
 assert.match(tracker, /timedOut/);
 assert.match(psaRunner, /Git sync warning; continuing acquisition/);

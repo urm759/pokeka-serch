@@ -103,6 +103,7 @@ function buildStoreCoverage(root = ROOT) {
   for (const definition of definitions) {
     const catalog = readJson(path.join(root, "work", definition.catalogFile), []);
     const progress = readJson(path.join(root, "work", definition.progressFile), {});
+    const sourceSummary = readJson(path.join(root, "data", `${definition.id}-stock-summary.json`), {});
     const targetSet = new Set(definition.targets.map((card) => card.id));
     const matchedAll = cards.filter((card) => Boolean(card[definition.urlField])).length;
     const matchedTarget = cards.filter((card) => targetSet.has(card.id) && Boolean(card[definition.urlField])).length;
@@ -158,6 +159,8 @@ function buildStoreCoverage(root = ROOT) {
       totalCoveragePct: percent(matchedAll, totalCards),
       lastSuccessAt: run.lastSuccessAt || latestCatalogDate(catalog),
       fetchFailureCount: Number.isFinite(run.fetchFailureCount) ? run.fetchFailureCount : null,
+      linkageMissCount: definition.id === "yuyutei" ? Number(sourceSummary.crawl?.linkageMissCount || 0) : null,
+      diagnostics: sourceSummary.crawl || progress.lastRun || null,
       mainUnmatchedReasons: reasons.filter(Boolean),
     };
   }
@@ -203,22 +206,40 @@ function buildStoreCoverage(root = ROOT) {
     fetchedUniqueCards: Number(pokedataCoverage.acquired || 0),
     fetchedMatchedProducts: Number(pokedataCoverage.automaticMatched || 0) + Number(pokedataCoverage.manualMatched || 0),
     totalCards,
-    targetCards: Number(pokedataCoverage.sourceListed || 0),
-    targetDefinition: "Chromeで実データ取得・確認済みの日本版カード",
+    targetCards: totalCards,
+    targetDefinition: "国内基礎データの全カード（現在は段階検証中）",
     matched: Number(pokedataCoverage.automaticMatched || 0) + Number(pokedataCoverage.manualMatched || 0),
     matchedAll: Number(pokedataCoverage.automaticMatched || 0) + Number(pokedataCoverage.manualMatched || 0),
     automaticMatched: Number(pokedataCoverage.automaticMatched || 0),
     manualMatched: Number(pokedataCoverage.manualMatched || 0),
     ambiguous: Number(pokedataCoverage.ambiguous || 0),
-    unmatched: Number(pokedataCoverage.unmatched || 0),
+    unmatched: Number(pokedataCoverage.unmatched || pokedataCoverage.domesticBaseMissing || 0),
+    totalUncovered: Math.max(0, totalCards - Number(pokedataCoverage.automaticMatched || 0) - Number(pokedataCoverage.manualMatched || 0)),
+    sourceSetTotal: Number(pokedataCoverage.sourceSetTotal || 0),
+    batchTarget: Number(pokedataCoverage.targetBatch || pokedataCoverage.sourceListed || 0),
+    acquired: Number(pokedataCoverage.acquired || 0),
+    validationMatchRatePct: Number.isFinite(pokedataCoverage.validationMatchRatePct) ? pokedataCoverage.validationMatchRatePct : Number(pokedataCoverage.linkageRatePct || 0),
+    status: pokedataCoverage.status || "validation-partial",
+    statusLabel: pokedataCoverage.statusLabel || `検証中／部分取得（${Number(pokedataCoverage.acquired || 0)}件）`,
     fetchedProductMatchRatePct: percent(Number(pokedataCoverage.acquired || 0), Number(pokedataCoverage.sourceListed || 0)),
-    targetCoveragePct: Number.isFinite(pokedataCoverage.linkageRatePct) ? pokedataCoverage.linkageRatePct : null,
+    targetCoveragePct: Number.isFinite(pokedataCoverage.totalCoveragePct) ? pokedataCoverage.totalCoveragePct : percent(Number(pokedataCoverage.automaticMatched || 0) + Number(pokedataCoverage.manualMatched || 0), totalCards),
     totalCoveragePct: percent(Number(pokedataCoverage.automaticMatched || 0) + Number(pokedataCoverage.manualMatched || 0), totalCards),
     lastSuccessAt: pokedata.updatedAt || null,
     fetchFailureCount: Number.isFinite(runFor("pokedata", runs).fetchFailureCount) ? runFor("pokedata", runs).fetchFailureCount : null,
-    mainUnmatchedReasons: [reason("Chrome取得・厳格照合待ち", Number(pokedataCoverage.unmatched || 0))].filter(Boolean),
+    diagnostics: pokedata.crawl || null,
+    records: pokedata.linkage?.records || [],
+    mainUnmatchedReasons: [
+      reason("国内基礎データなし", Number(pokedataCoverage.domesticBaseMissing || pokedataCoverage.unmatched || 0)),
+      reason("曖昧候補", Number(pokedataCoverage.ambiguous || 0)),
+      reason("全カード展開待ち", Math.max(0, totalCards - Number(pokedataCoverage.automaticMatched || 0) - Number(pokedataCoverage.manualMatched || 0))),
+    ].filter(Boolean),
   };
-  return { totalCards, comparableTargetCards: signatureTargets.length, stores, linkageSources: { ...stores, psaOfficial, pokedata: pokedataSource } };
+  const uniqueUnmatchedCards = cards.filter((card) => ["cardrushUrl", "hareruya2Url", "yuyuteiUrl", "torecacampUrl"]
+    .some((field) => !card[field])).length;
+  return {
+    totalCards, comparableTargetCards: signatureTargets.length, uniqueUnmatchedCards,
+    stores, linkageSources: { ...stores, psaOfficial }, overseasSources: { pokedata: pokedataSource },
+  };
 }
 
 function countCurrentRecords(sourceId, root = ROOT) {

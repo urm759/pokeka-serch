@@ -15,6 +15,7 @@ on:
           - hareruya2
           - yuyutei
           - torecacamp
+          - pokedata
           - shopBuyback
           - marketAnalysis
           - psaJapan
@@ -82,6 +83,18 @@ jobs:
           SHOP_FETCH_TIMEOUT_MS: "10000"
           SHOP_ACCESS_INTERVAL_MS: "1100"
         run: node work/run_tracked_update.js torecacamp work/update_yuyutei_torecacamp.js
+
+      - name: Expand PokeDATA validation batch
+        if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'pokedata'
+        timeout-minutes: 10
+        continue-on-error: true
+        env:
+          POKEDATA_SET: "Battle Partners"
+          POKEDATA_TARGET: "100"
+          POKEDATA_BATCH: "10"
+          POKEDATA_INTERVAL_MS: "1100"
+          POKEDATA_TIMEOUT_MS: "10000"
+        run: node work/run_tracked_update.js pokedata work/update_pokedata_batch.js
 
       - name: Resolve all Snkrdunk direct links
         if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'toreca'

@@ -103,13 +103,13 @@ const sources = {
   toreca: { label: "みんトレ", date: validDate(meta.updatedAt || meta.generatedAt), automatic: true },
   cardrush: { label: "カードラッシュ", date: validDate(stock.updatedAt), automatic: true },
   hareruya2: { label: "晴れる屋2", date: validDate(hareruya2.updatedAt), automatic: true },
-  yuyutei: { label: "遊々亭", date: validDate(yuyutei.updatedAt), automatic: true },
-  torecacamp: { label: "トレカキャンプ", date: validDate(torecacamp.updatedAt), automatic: true },
+  yuyutei: { label: "遊々亭", date: validDate(yuyutei.updatedAt), automatic: true, diagnostics: yuyutei.crawl || null },
+  torecacamp: { label: "トレカキャンプ", date: validDate(torecacamp.updatedAt), automatic: true, diagnostics: torecacamp.crawl || null },
   shopBuyback: { label: "Web買取表", date: validDate(buyback.updatedAt), automatic: true },
   marketAnalysis: { label: "下値安定・買取率分析", date: validDate(marketAnalysis.updatedAt), automatic: true },
   psaOfficial: { label: "PSA公式枚数", date: dominantPsaDate, automatic: true, note: "PC起動時にPSA専用Chromeで自動取得", coverageRows: psaDateCounts[dominantPsaDate] || 0 },
   psaJapan: { label: "PSA Japan料金", date: validDate(services.checkedAt || services.updatedAt), automatic: true, status: services.checkStatus || "unknown" },
-  pokedata: { label: "PokeDATA海外相場", date: validDate(pokedata.updatedAt), automatic: false, note: "ログイン済みChromeで個別成約を厳格照合" },
+  pokedata: { label: "PokeDATA海外相場", date: validDate(pokedata.updatedAt), automatic: false, note: "段階検証中。全カード完了とは別管理", diagnostics: pokedata.crawl || null },
 };
 
 for (const [sourceId, source] of Object.entries(sources)) {
@@ -148,6 +148,13 @@ for (const [sourceId, source] of Object.entries(sources)) {
   source.lastError = run.lastError || null;
   source.nextScheduledAt = nextScheduledAt();
   source.fresh = source.date === today && source.status === "success";
+  if (sourceId === "pokedata" && Number(pokedata.coverage?.totalCoveragePct || 0) < 100) {
+    source.acquiredCount = Number(pokedata.coverage?.acquired || 0);
+    source.updatedCount = Number(pokedata.run?.processed || pokedata.coverage?.acquired || 0);
+    source.status = "partial";
+    source.sourceState = pokedata.coverage?.statusLabel || `検証中／部分取得（${Number(pokedata.coverage?.acquired || 0)}件）`;
+    source.fresh = false;
+  }
 }
 // A completed refresh requires both cloud sources and the login-dependent
 // PSA task on the user's PC to be current.

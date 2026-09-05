@@ -1164,3 +1164,122 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
   .buyback-price-averages span{grid-column:1/-1}
   .psa-chart-legend small{display:none}
 }
+.collector-diagnostics {
+  margin-top: 10px;
+  border-top: 1px solid rgba(148, 163, 184, 0.25);
+  padding-top: 8px;
+}
+
+.collector-diagnostics > summary {
+  cursor: pointer;
+  color: #7dd3fc;
+  font-weight: 800;
+}
+
+.collector-progress-grid,
+.overseas-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 7px;
+  margin: 10px 0;
+}
+
+.collector-progress-grid span,
+.overseas-summary-grid span {
+  padding: 8px 10px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 9px;
+  background: rgba(15, 23, 42, 0.62);
+  font-size: 0.78rem;
+}
+
+.collector-progress-grid b,
+.overseas-summary-grid b {
+  display: block;
+  margin-top: 2px;
+  color: #f8fafc;
+  font-size: 0.95rem;
+}
+
+.collector-failure-table,
+.pokedata-record-table {
+  overflow-x: auto;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 10px;
+}
+
+.collector-failure-table table,
+.pokedata-record-table table {
+  width: 100%;
+  min-width: 780px;
+  border-collapse: collapse;
+  font-size: 0.76rem;
+}
+
+.collector-failure-table th,
+.collector-failure-table td,
+.pokedata-record-table th,
+.pokedata-record-table td {
+  padding: 7px 8px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+  text-align: left;
+  vertical-align: top;
+}
+
+.collector-failure-table th,
+.pokedata-record-table th {
+  position: sticky;
+  top: 0;
+  background: #172033;
+  color: #bae6fd;
+  white-space: nowrap;
+}
+
+.overseas-panel > summary {
+  border-left: 4px solid #38bdf8;
+}
+
+.overseas-coverage-details {
+  padding-top: 10px;
+}
+
+.pokedata-record-search {
+  display: grid;
+  gap: 5px;
+  margin: 10px 0;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.pokedata-record-search input {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid rgba(125, 211, 252, 0.35);
+  border-radius: 9px;
+  padding: 8px 11px;
+  background: #0f172a;
+  color: #f8fafc;
+}
+
+.pokedata-record-table a,
+.collector-failure-table a {
+  color: #7dd3fc;
+  font-weight: 800;
+}
+
+.missing-source {
+  color: #fbbf24;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .collector-progress-grid,
+  .overseas-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .collector-progress-grid span,
+  .overseas-summary-grid span {
+    padding: 7px;
+  }
+}

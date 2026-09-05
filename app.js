@@ -229,6 +229,8 @@ const els = {
   freshnessSummary: document.getElementById("freshnessSummary"),
   cardrushCoverage: document.getElementById("cardrushCoverage"),
   linkCoverageDetails: document.getElementById("linkCoverageDetails"),
+  pokedataCoverage: document.getElementById("pokedataCoverage"),
+  pokedataCoverageDetails: document.getElementById("pokedataCoverageDetails"),
   copyLinkBtn: document.getElementById("copyLinkBtn"),
   exportSearchBtn: document.getElementById("exportSearchBtn"),
   importSearchInput: document.getElementById("importSearchInput"),
@@ -557,6 +559,50 @@ function formatRate(value) {
   return Number.isFinite(value) ? `${Number(value).toFixed(2)}%` : "算出不可";
 }
 
+function renderCollectorDiagnostics(sourceId, diagnostics) {
+  if (!diagnostics) return "";
+  const failures = diagnostics.recentFailures || (diagnostics.lastFailure ? [diagnostics.lastFailure] : []);
+  const failureRows = failures.length ? failures.slice(-5).reverse().map((failure) => `
+    <tr>
+      <td>${escapeHtml(failure.pageKey || failure.page || failure.cardId || "-")}</td>
+      <td>${escapeHtml(String(failure.httpStatus ?? "通信未完了"))}</td>
+      <td>${escapeHtml(failure.stage || "不明")}</td>
+      <td>${fmt.format(Number(failure.retryCount || 0))}</td>
+      <td><a href="${escapeHtml(failure.url || "#")}" target="_blank" rel="noreferrer">失敗URL</a></td>
+      <td>${escapeHtml(failure.error || failure.exceptionName || "不明")}</td>
+    </tr>`).join("") : "";
+  const linkageMisses = diagnostics.linkageMisses || [];
+  const linkageMissRows = linkageMisses.length ? linkageMisses.slice(-10).reverse().map((miss) => `
+    <tr>
+      <td>${escapeHtml(miss.cardId || "-")}</td>
+      <td>${escapeHtml(miss.cardName || "-")}</td>
+      <td>${escapeHtml(miss.reason || "一致候補なし")}</td>
+      <td>${fmt.format(miss.candidateCount || 0)} / ${fmt.format(miss.matchCount || 0)}</td>
+      <td><a href="${escapeHtml(miss.url || "#")}" target="_blank" rel="noreferrer">検索URL</a></td>
+    </tr>`).join("") : "";
+  const campProgress = sourceId === "torecacamp" ? `
+    <div class="collector-progress-grid">
+      <span>現在カーソル <b>${fmt.format(diagnostics.currentCursor || 0)}ページ</b></span>
+      <span>処理済み <b>${fmt.format(diagnostics.processedPageCount || 0)}ページ</b></span>
+      <span>総ページ <b>${diagnostics.totalPages ? `${fmt.format(diagnostics.totalPages)}ページ` : `少なくとも${fmt.format(diagnostics.estimatedMinimumPages || 0)}ページ`}</b></span>
+      <span>推定残件 <b>${diagnostics.totalPages ? fmt.format(Math.max(0, (diagnostics.totalPages - (diagnostics.processedPageCount || 0)) * 250)) : `少なくとも${fmt.format(diagnostics.estimatedRemainingProducts || 0)}`}件</b></span>
+      <span>今回の新規紐付け <b>${fmt.format(diagnostics.newLinkCount || 0)}件</b></span>
+      <span>最後に成功 <b>${escapeHtml(String(diagnostics.lastSuccessfulPage || "未記録"))}</b></span>
+    </div>` : sourceId === "yuyutei" ? `
+    <div class="collector-progress-grid">
+      <span>今回の検索 <b>${fmt.format(diagnostics.startedTargetCount || 0)}件</b></span>
+      <span>HTTP取得失敗 <b>${fmt.format(diagnostics.fetchFailureCount || 0)}件</b></span>
+      <span>一致候補なし <b>${fmt.format(diagnostics.linkageMissCount || 0)}件</b></span>
+      <span>今回の紐付け <b>${fmt.format(diagnostics.matchedCount || 0)}件</b></span>
+      <span>最後に成功 <b>${escapeHtml(String(diagnostics.lastSuccessfulPage || "未記録"))}</b></span>
+    </div>` : "";
+  return `<details class="collector-diagnostics"><summary>取得処理の詳細</summary>
+    ${campProgress}
+    ${failureRows ? `<div class="collector-failure-table"><table><thead><tr><th>ページ・カード</th><th>HTTP</th><th>失敗工程</th><th>再試行</th><th>URL</th><th>例外</th></tr></thead><tbody>${failureRows}</tbody></table></div>` : `<p>直近バッチに通信・解析の失敗はありません。</p>`}
+    ${linkageMissRows ? `<div class="collector-failure-table"><table><thead><tr><th>カードID</th><th>カード名</th><th>未紐付け理由</th><th>候補 / 一致</th><th>URL</th></tr></thead><tbody>${linkageMissRows}</tbody></table></div>` : ""}
+  </details>`;
+}
+
 function renderSourceObservability() {
   const sources = state.updateStatus?.sources || {};
   const sourceList = Object.values(sources);
@@ -579,6 +625,7 @@ function renderSourceObservability() {
         ? Number(source.acquiredCount) - previousAcquired
         : null;
       const previousComparison = Number.isFinite(acquiredDelta) ? `${acquiredDelta >= 0 ? "+" : ""}${fmt.format(acquiredDelta)}件` : "比較不可";
+      const diagnosticsHtml = renderCollectorDiagnostics(sourceId, source.diagnostics);
       const historyHtml = history.length ? `<details class="source-run-history"><summary>直近${fmt.format(history.length)}回の処理履歴</summary>${history.map((run) => `<div><b>${escapeHtml(formatJstTimestamp(run.startedAt || run.lastAttemptAt))}</b><span>${escapeHtml(run.sourceState || run.status || "未記録")}</span><small>終了 ${escapeHtml(formatJstTimestamp(run.endedAt))} / 取得 ${Number.isFinite(run.acquiredCount) ? fmt.format(run.acquiredCount) : "-"} / 更新 ${Number.isFinite(run.updatedCount) ? fmt.format(run.updatedCount) : "-"}${run.lastError ? ` / ${escapeHtml(run.lastError)}` : ""}</small></div>`).join("")}</details>` : "";
       return `<article class="source-status-card ${className}">
         <div class="source-status-head"><strong>${escapeHtml(source.label)}</strong><b>${statusLabel}</b></div>
@@ -597,6 +644,7 @@ function renderSourceObservability() {
         ${source.syncStatus ? `<p>Git同期: ${escapeHtml(source.syncStatus)}${source.syncError ? ` / ${escapeHtml(source.syncError)}` : ""}</p>` : ""}
         ${source.publishStatus ? `<p>公開: ${escapeHtml(source.publishStatus)}${source.publishError ? ` / ${escapeHtml(source.publishError)}` : ""}</p>` : ""}
         ${source.lastError ? `<p>直近エラー: ${escapeHtml(source.lastError)}</p>` : ""}
+        ${diagnosticsHtml}
         ${historyHtml}
       </article>`;
     }).join("");
@@ -622,7 +670,8 @@ function renderSourceObservability() {
     : coverage?.stores ? Object.values(coverage.stores) : [];
   if (els.cardrushCoverage) {
     const problemCount = stores.filter((store) => store.unmatched > 0).length;
-    els.cardrushCoverage.textContent = stores.length ? `${fmt.format(stores.length)}データ元を同じ項目で比較 / 未紐付けあり ${fmt.format(problemCount)}件` : "集計中";
+    const uniqueUnmatched = Number(coverage?.uniqueUnmatchedCards || 0);
+    els.cardrushCoverage.textContent = stores.length ? `${fmt.format(stores.length)}データ元 / 未紐付けがあるデータ元：${fmt.format(problemCount)} / 未紐付けカード総数：${fmt.format(uniqueUnmatched)}` : "集計中";
   }
   if (els.linkCoverageDetails) {
     els.linkCoverageDetails.innerHTML = stores.length ? stores.map((store) => {
@@ -645,10 +694,61 @@ function renderSourceObservability() {
           <div><dt>全${fmt.format(store.totalCards)}枚中のカバー率</dt><dd>${formatRate(store.totalCoveragePct)}</dd></div>
           <div><dt>最終成功</dt><dd>${escapeHtml(formatJstTimestamp(store.lastSuccessAt))}</dd></div>
           <div><dt>取得失敗数</dt><dd>${failures}</dd></div>
+          ${Number.isFinite(store.linkageMissCount) ? `<div><dt>一致候補なし</dt><dd>${fmt.format(store.linkageMissCount)}</dd></div>` : ""}
         </dl>
         <p class="coverage-reasons"><b>主な未紐付け理由</b> ${reasons}</p>
+        ${renderCollectorDiagnostics(store.label === "遊々亭" ? "yuyutei" : store.label === "トレカキャンプ" ? "torecacamp" : "", store.diagnostics)}
       </article>`;
     }).join("") : `<p class="empty-note">連携監査データを生成中です。</p>`;
+  }
+  const pokedata = coverage?.overseasSources?.pokedata || null;
+  if (els.pokedataCoverage) {
+    els.pokedataCoverage.textContent = pokedata
+      ? `${pokedata.statusLabel || `検証中／部分取得（${fmt.format(pokedata.acquired || 0)}件）`} / 全カードカバー率 ${formatRate(pokedata.totalCoveragePct)}`
+      : "PokeDATA 検証状況を確認中";
+  }
+  if (els.pokedataCoverageDetails) {
+    const records = pokedata?.records || [];
+    const statusLabel = (status) => ({
+      "manual-confirmed": "手動確認済み", "auto-matched": "自動紐付け",
+      "auto-confirmed": "自動紐付け保存済み", ambiguous: "要確認",
+      "domestic-base-missing": "国内基礎データなし",
+    })[status] || status || "未判定";
+    const rows = records.map((record) => {
+      const searchText = compactSearch(`${record.localCardId || ""} ${record.localCardName || ""} ${record.pokedataName || ""} ${record.setCode || ""} ${record.cardNumber || ""} ${statusLabel(record.status)}`);
+      return `<tr data-pokedata-record data-search="${escapeHtml(searchText)}">
+        <td>${escapeHtml(record.localCardId || "-")}</td>
+        <td>${record.localDirectUrl ? `<a href="${escapeHtml(record.localDirectUrl)}">${escapeHtml(record.localCardName || record.localCardId)}</a>` : `<b class="missing-source">国内基礎データなし</b>`}</td>
+        <td>${escapeHtml(record.pokedataName || "-")}</td>
+        <td>${escapeHtml(record.setCode || "-")}</td>
+        <td>${escapeHtml(record.cardNumber || "-")}</td>
+        <td>${escapeHtml(record.language || "-")}</td>
+        <td>${escapeHtml(statusLabel(record.status))}</td>
+        <td><a href="${escapeHtml(record.sourceUrl || "#")}" target="_blank" rel="noreferrer">PokeDATA参照</a></td>
+      </tr>`;
+    }).join("");
+    els.pokedataCoverageDetails.innerHTML = pokedata ? `
+      <div class="overseas-summary-grid">
+        <span>PokeDATAセット総数 <b>${fmt.format(pokedata.sourceSetTotal || 0)}</b></span>
+        <span>検証目標 <b>${fmt.format(pokedata.batchTarget || 0)}</b></span>
+        <span>取得済み <b>${fmt.format(pokedata.acquired || 0)}</b></span>
+        <span>自動紐付け <b>${fmt.format(pokedata.automaticMatched || 0)}</b></span>
+        <span>手動紐付け <b>${fmt.format(pokedata.manualMatched || 0)}</b></span>
+        <span>要確認 <b>${fmt.format(pokedata.ambiguous || 0)}</b></span>
+        <span>国内基礎データなし <b>${fmt.format(pokedata.unmatched || 0)}</b></span>
+        <span>検証対象内の紐付け率 <b>${formatRate(pokedata.validationMatchRatePct)}</b></span>
+        <span>全${fmt.format(pokedata.totalCards || 0)}枚に対するカバー率 <b>${formatRate(pokedata.totalCoveragePct)}</b></span>
+      </div>
+      <label class="pokedata-record-search"><span>紐付け結果を検索</span><input id="pokedataRecordSearch" type="search" placeholder="国内名・PokeDATA名・型番・状態"></label>
+      <div class="pokedata-record-table"><table><thead><tr><th>国内ID</th><th>国内カード名</th><th>PokeDATA名</th><th>セット</th><th>番号</th><th>言語</th><th>状態</th><th>参照</th></tr></thead><tbody>${rows}</tbody></table></div>
+      ${renderCollectorDiagnostics("pokedata", pokedata.diagnostics)}` : `<p class="empty-note">PokeDATAの段階検証データを生成中です。</p>`;
+    const input = document.getElementById("pokedataRecordSearch");
+    input?.addEventListener("input", () => {
+      const query = compactSearch(input.value);
+      els.pokedataCoverageDetails.querySelectorAll("[data-pokedata-record]").forEach((row) => {
+        row.hidden = Boolean(query) && !String(row.dataset.search || "").includes(query);
+      });
+    });
   }
 }
 
