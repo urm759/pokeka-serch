@@ -742,7 +742,11 @@
     else if (caps.finalMaxPrice > 0) verdict = "価格次第";
     else verdict = profitEligible ? "資金不足" : "見送り";
 
-    if (verdict === "価格次第") reasons.push(`¥${Math.floor(caps.finalMaxPrice).toLocaleString("ja-JP")}以下なら再判定`);
+    if (verdict === "価格次第") {
+      reasons.push(purchasePrice > caps.finalMaxPrice
+        ? `¥${Math.floor(caps.finalMaxPrice).toLocaleString("ja-JP")}以下なら再判定`
+        : "価格条件は通過・利益条件の再調整が必要");
+    }
     if (caps.limitingFactor === "stress-break-even") reasons.push("供給ストレス時でも赤字にならない上限を反映");
     else if (caps.limitingFactor === "ultra-low-risk") reasons.push("低リスク設定：供給ストレス時でも目標利益を確保する上限を反映");
     else if (caps.limitingFactor === "operational") reasons.push("運用上限の平滑値を反映");

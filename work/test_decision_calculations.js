@@ -208,6 +208,16 @@ assert.equal(stressPriceDecision.verdict, "価格次第");
 assert.equal(stressPriceDecision.finalMaxPrice, 28000);
 assert(stressPriceDecision.reasons.includes("供給ストレス時でも赤字にならない上限を反映"));
 
+const belowLimitButLowRoi = model.purchaseDecision({
+  ...commonDecisionInput,
+  economicMaxPrice: 40000,
+  operationalMaxPrice: 40000,
+  economics: { ...economics, purchasePrice: 36000, expectedProfit: 12000, expectedRoi: 24.7, annualEfficiency: 99 },
+});
+assert.equal(belowLimitButLowRoi.verdict, "価格次第");
+assert(belowLimitButLowRoi.reasons.includes("最低期待利益率を未達"));
+assert(belowLimitButLowRoi.reasons.includes("価格条件は通過・利益条件の再調整が必要"));
+
 const lillieAssumptions = {
   hitRate: 0.779,
   lowerGradePrice: 46000,

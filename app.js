@@ -1859,7 +1859,7 @@ function finalizeCardDecision(card) {
     minExpectedRoi: state.minExpectedRoi,
     minAnnualEfficiency: state.minAnnualEfficiency,
     maxCapitalShare: state.maxCapitalShare,
-    targetProfitOnly: true,
+    targetProfitOnly: false,
   } : null;
   const decide = (economics) => economics && capital && decisionInput
     ? decisionModel.purchaseDecision({ ...decisionInput, economics })
