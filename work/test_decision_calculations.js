@@ -243,6 +243,7 @@ assert.ok(lillieResilience.bearishExpectedProfit < 0);
 const lillieScenarioMatrix = model.economicsScenarioMatrix({
   ...lillieBase,
   currentPurchasePrice: 61400,
+  storeOfferPrice: 50000,
   operationalLimitPrice: 41000,
   currentPsa10Price: 109900,
   centralForecastPrice: 102700,
@@ -254,6 +255,8 @@ for (const saleKey of ["currentMarket", "centralForecast", "supplyStress"]) {
   const expectedAtLimit = atCurrent.expectedProfit - (41000 - 61400);
   assert.ok(Math.abs(atLimit.expectedProfit - expectedAtLimit) < 0.000001, `${saleKey}の仕入値差分が一致`);
 }
+assert.ok(lillieScenarioMatrix.storeOffer.centralForecast.expectedProfit > lillieScenarioMatrix.currentPurchase.centralForecast.expectedProfit);
+assert.ok(lillieScenarioMatrix.storeOffer.centralForecast.expectedProfit < lillieScenarioMatrix.operationalLimit.centralForecast.expectedProfit);
 assert.ok(lillieScenarioMatrix.currentPurchase.currentMarket.expectedProfit > lillieScenarioMatrix.currentPurchase.centralForecast.expectedProfit);
 assert.ok(lillieScenarioMatrix.currentPurchase.centralForecast.expectedProfit > lillieScenarioMatrix.currentPurchase.supplyStress.expectedProfit);
 
@@ -292,6 +295,32 @@ const reviewAvailability = model.purchaseAvailability({
 });
 assert.equal(reviewAvailability.verifiedNow, false);
 assert.equal(reviewAvailability.label, "価格要確認");
+const lillieFullForceStoreEconomics = model.expectedEconomics({
+  purchasePrice: 36000,
+  forecastPrice: 70000,
+  assumptions: { hitRate: 0.6, lowerGradePrice: 38000 },
+  fee: 12980,
+  saleFeeRate: 8,
+  saleExtraCost: 0,
+  riskBufferPct: 0,
+  lockDays: 91,
+});
+const lillieFullForceDecision = model.purchaseDecision({
+  ...commonDecisionInput,
+  economics: lillieFullForceStoreEconomics,
+  operationalMaxPrice: 37500,
+});
+const lillieFullForceAvailability = model.purchaseAvailability({
+  marketPrice: 33500,
+  finalLimit: 37500,
+  offer: { source: "晴れる屋2状態A", value: 36000, fresh: true, available: true },
+  verdict: lillieFullForceDecision.verdict,
+  decisionReasons: lillieFullForceDecision.reasons,
+});
+assert.equal(lillieFullForceDecision.verdict, "価格次第");
+assert.equal(lillieFullForceAvailability.offerWithinLimit, true);
+assert.equal(lillieFullForceAvailability.verifiedNow, false);
+assert.equal(lillieFullForceAvailability.label, "価格は仕入れ圏／利益・判定条件未達");
 assert.equal(model.bargainDecisionEligible({ verdict: "見送り", goConfidence: "GO・高リスク" }), false);
 assert.equal(model.bargainDecisionEligible({ verdict: "価格次第" }), true);
 assert.equal(model.bargainDecisionEligible({ verdict: "GO", goConfidence: "暫定GO" }), true);

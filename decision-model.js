@@ -59,9 +59,28 @@
         excludedReasons: reasons,
       };
     });
+    const initialValid = prepared.filter((entry) => entry.excludedReasons.length === 0);
+    const marketAnchors = initialValid.filter((entry) => entry.kind === "成約相場" || entry.extremePriceAnchor === true);
+    const extremeAnchor = median(marketAnchors.map((entry) => entry.value));
+    // A very low in-stock shop price can be a genuine sourcing opportunity.
+    // Do not quarantine it from price distance alone; identity/condition checks
+    // remain authoritative. A caller may opt into a lower bound explicitly.
+    const extremeMinRatio = Math.max(0, Number(options.extremeMinRatio ?? 0));
+    const extremeMaxRatio = Math.max(2, Number(options.extremeMaxRatio ?? 10));
+    if (extremeAnchor > 0) {
+      initialValid.forEach((entry) => {
+        if (entry.kind !== "販売価格") return;
+        const ratio = entry.value / extremeAnchor;
+        const belowExplicitMinimum = extremeMinRatio > 0 && ratio <= extremeMinRatio;
+        if (!belowExplicitMinimum && ratio < extremeMaxRatio) return;
+        entry.quarantined = true;
+        entry.quarantineReason = `異常値として計算対象外（基準相場の${ratio.toFixed(1)}倍・桁違い／別商品／複数枚セット疑い）`;
+        entry.excludedReasons.push(entry.quarantineReason);
+      });
+    }
     const valid = prepared.filter((entry) => entry.excludedReasons.length === 0);
     const invalid = prepared.filter((entry) => entry.excludedReasons.length > 0);
-    if (!valid.length) return { value: NaN, included: [], outliers: [], excluded: invalid, confidence: "低", provisional: true, priceDivergence: false, asOfDate };
+    if (!valid.length) return { value: NaN, included: [], outliers: [], excluded: invalid, quarantined: invalid.filter((entry) => entry.quarantined), confidence: "低", provisional: true, priceDivergence: false, asOfDate };
 
     const overallMedian = median(valid.map((entry) => entry.value));
     const minRatio = Number(options.minRatio ?? 0.55);
@@ -115,6 +134,7 @@
       included,
       outliers,
       excluded: invalid,
+      quarantined: invalid.filter((entry) => entry.quarantined),
       anchor,
       conflicted,
       min: includedValues.length ? Math.min(...includedValues) : NaN,
@@ -366,6 +386,7 @@
   function economicsScenarioMatrix(input = {}) {
     const purchasePrices = {
       currentPurchase: Number(input.currentPurchasePrice),
+      storeOffer: Number(input.storeOfferPrice),
       operationalLimit: Number(input.operationalLimitPrice),
     };
     const salePrices = {
@@ -392,14 +413,16 @@
     const offerFresh = offer?.fresh === true;
     const offerInStock = offer?.available === true;
     const priceReviewRequired = input.priceReviewRequired === true;
-    const decisionBlocked = ["見送り", "要確認", "資金不足"].includes(String(input.verdict || ""));
+    const verdict = String(input.verdict || "");
+    const decisionPassed = verdict === "GO";
+    const decisionReasons = Array.isArray(input.decisionReasons) ? input.decisionReasons.filter(Boolean) : [];
+    const offerWithinLimit = finalLimit > 0 && offerPrice > 0 && offerPrice <= finalLimit;
     const verifiedNow = finalLimit > 0
-      && offerPrice > 0
-      && offerPrice <= finalLimit
+      && offerWithinLimit
       && offerFresh
       && offerInStock
       && !priceReviewRequired
-      && !decisionBlocked;
+      && decisionPassed;
     let label = "上限価格待ち";
     let reason = finalLimit > 0 ? `購入可能価格が上限¥${Math.floor(finalLimit).toLocaleString("ja-JP")}を超過または未取得` : "有効な仕入れ上限なし";
     if (priceReviewRequired) {
@@ -408,6 +431,9 @@
     } else if (verifiedNow) {
       label = "購入先確認済み／今すぐ仕入れ";
       reason = `${offer.source || "販売店"}の在庫あり価格¥${Math.floor(offerPrice).toLocaleString("ja-JP")}を確認`;
+    } else if (offerWithinLimit && offerFresh && offerInStock && !decisionPassed) {
+      label = "価格は仕入れ圏／利益・判定条件未達";
+      reason = decisionReasons.length ? decisionReasons.join(" / ") : `実店舗価格では最終判断が${verdict || "未判定"}`;
     } else if (marketWithinLimit) {
       label = "相場基準では仕入れ圏";
       reason = "基準相場は上限以下だが、新しい在庫あり購入先は未確認";
@@ -418,6 +444,8 @@
       label,
       reason,
       offerPrice: offerPrice > 0 ? offerPrice : null,
+      offerWithinLimit,
+      decisionPassed,
       offerFresh,
       offerInStock,
     };

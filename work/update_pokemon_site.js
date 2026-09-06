@@ -445,6 +445,26 @@ async function main() {
 
   const updatedAt = jstDate();
   fs.writeFileSync(jsonPath, JSON.stringify(sitePokemon), "utf8");
+  // Keep a compact, reproducible snapshot of the source identities used by the
+  // modern high-rarity coverage audit. This is intentionally separate from the
+  // rendered card data so the audit never proves completeness against itself.
+  fs.writeFileSync(
+    path.join(__dirname, "toreca-source-inventory.json"),
+    JSON.stringify({
+      updatedAt,
+      sourceUrl,
+      total: sitePokemon.length,
+      cards: sitePokemon.map((card) => ({
+        id: card.id,
+        name: card.name,
+        model: card.model || null,
+        rarity: card.rarity || null,
+        variant: card.variant || null,
+        days: Number.isFinite(Number(card.days)) ? Number(card.days) : null,
+      })),
+    }),
+    "utf8"
+  );
   fs.writeFileSync(
     path.join(__dirname, "toreca_source_diff.json"),
     JSON.stringify({

@@ -26,6 +26,8 @@ for (const label of [
   assert.ok(implementation.includes(label), `表示 ${label} を維持`);
 }
 assert.ok(app.includes("card.purchaseAvailability?.verifiedNow === true"), "今すぐ仕入れは購入先確認済みだけを使用");
+assert.ok(app.includes("const decisionInput = cleanLimits ?"), "仕入れ上限を算出できないカードで一覧全体を停止しない");
+assert.ok(app.includes("economics && capital && decisionInput"), "上限欠損時は個別判定だけを安全に保留する");
 assert.ok(app.includes("decisionModel.bargainDecisionEligible"), "薄商い・高粗利へ最終判定ゲートを適用");
 assert.ok(app.includes("主因: ${dominantFactorLabel}"), "同一運用上限の集中理由を監査表示");
 assert.ok(app.includes("economicsScenarioMatrix"), "6シナリオを共通計算で生成");

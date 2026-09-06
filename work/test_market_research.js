@@ -50,6 +50,9 @@ const cards = JSON.parse(fs.readFileSync(path.join(ROOT, "data", "pokemon-cards.
 assert.strictEqual(cards.length, new Set(cards.map((card) => String(card.id))).size, "duplicate domestic card id");
 const audit = JSON.parse(fs.readFileSync(path.join(ROOT, "data", "modern-high-rarity-audit.json"), "utf8"));
 assert.strictEqual(audit.duplicateIds, 0);
+assert.strictEqual(audit.sourceDuplicateIds, 0);
+assert.strictEqual(audit.sourceListedTotal, audit.sourceSnapshotDeclaredTotal);
+assert.strictEqual(audit.matchedTotal + audit.missingAfter, audit.eligibleSourceTotal);
 assert.ok((audit.records || []).every((row) => row.releaseYear >= 2015));
 assert.ok((audit.records || []).every((row) => audit.config.rarityWhitelist.includes(row.rarity)));
-console.log(JSON.stringify({ passed: true, tests: 23 }));
+console.log(JSON.stringify({ passed: true, tests: 26 }));

@@ -99,6 +99,9 @@ const psaRowDates = (psa.rows || []).map((row) => validDate(row.fetchedAt)).filt
 const psaDateCounts = {};
 for (const date of psaRowDates) psaDateCounts[date] = (psaDateCounts[date] || 0) + 1;
 const dominantPsaDate = Object.entries(psaDateCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
+const latestPsaDate = Object.keys(psaDateCounts).sort().at(-1) || null;
+const latestPsaCount = psaDateCounts[latestPsaDate] || 0;
+const psaTotalRows = Array.isArray(psa.rows) ? psa.rows.length : 0;
 
 const sources = {
   toreca: { label: "みんトレ", date: validDate(meta.updatedAt || meta.generatedAt), automatic: true },
@@ -108,7 +111,7 @@ const sources = {
   torecacamp: { label: "トレカキャンプ", date: validDate(torecacamp.updatedAt), automatic: true, diagnostics: torecacamp.crawl || null },
   shopBuyback: { label: "Web買取表", date: validDate(buyback.updatedAt), automatic: true },
   marketAnalysis: { label: "下値安定・買取率分析", date: validDate(marketAnalysis.updatedAt), automatic: true },
-  psaOfficial: { label: "PSA公式枚数", date: dominantPsaDate, automatic: true, note: "PC起動時にPSA専用Chromeで自動取得", coverageRows: psaDateCounts[dominantPsaDate] || 0 },
+  psaOfficial: { label: "PSA公式枚数", date: latestPsaDate, automatic: true, note: "PC起動時にPSA専用Chromeで自動取得", coverageRows: latestPsaCount, dominantDate: dominantPsaDate, totalRows: psaTotalRows },
   psaJapan: { label: "PSA Japan料金", date: validDate(services.checkedAt || services.updatedAt), automatic: true, status: services.checkStatus || "unknown" },
   pokedata: { label: "PokeDATA海外相場", date: validDate(pokedataManifest.updatedAt || pokedata.updatedAt), automatic: false, note: "段階検証中。全カード完了とは別管理", diagnostics: { setCount: Number(pokedataManifest.sets?.length || 0), ...(pokedataManifest.acquisition || {}) } },
 };
@@ -149,6 +152,16 @@ for (const [sourceId, source] of Object.entries(sources)) {
   source.lastError = run.lastError || null;
   source.nextScheduledAt = nextScheduledAt();
   source.fresh = source.date === today && source.status === "success";
+  if (sourceId === "psaOfficial" && latestPsaCount > 0 && latestPsaCount < psaTotalRows) {
+    const latestRowAttempt = (psa.rows || []).map((row) => row.fetchedAt).filter(Boolean).sort().at(-1) || null;
+    source.lastAttemptAt = latestRowAttempt || source.lastAttemptAt;
+    source.lastSuccessAt = latestRowAttempt || source.lastSuccessAt;
+    source.status = "partial";
+    source.sourceState = `一部セット更新（最新日 ${latestPsaDate}：${latestPsaCount}件 / 全${psaTotalRows}件）`;
+    source.acquiredCount = psaTotalRows;
+    source.updatedCount = latestPsaCount;
+    source.fresh = false;
+  }
   if (sourceId === "pokedata" && Number(pokedataManifest.totalCards || pokedata.coverage?.linkedDomesticCards || 0) < 12033) {
     source.acquiredCount = Number(pokedataManifest.totalLinkageRecords || pokedata.coverage?.acquired || 0);
     source.updatedCount = Number(pokedataManifest.totalCards || pokedata.coverage?.linkedDomesticCards || 0);

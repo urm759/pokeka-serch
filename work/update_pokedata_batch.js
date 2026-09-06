@@ -147,15 +147,21 @@ async function fetchJson(url, retries = 2) {
 
 function findDomestic(sourceCard, domesticByKey, aliases) {
   const alias = aliases.find((entry) => Number(entry.pokedataCardId) === Number(sourceCard.id) && entry.status !== "disabled");
-  if (alias) return { status: alias.status === "confirmed" ? "manual-confirmed" : "auto-confirmed", localCardId: alias.localCardId, method: alias.method };
+  if (alias?.status === "confirmed") return { status: "manual-confirmed", localCardId: alias.localCardId, method: alias.method };
   const key = `${normalizeSetCode(sourceCard.set_code)}|${normalizeNumber(sourceCard.num)}`;
   const allCandidates = domesticByKey.get(key) || [];
   const sourceVariant = cardVariant(sourceCard.name);
   const exactVariant = allCandidates.filter((card) => localIdentity(card).variant === sourceVariant);
-  const candidates = exactVariant.length ? exactVariant : allCandidates;
+  if (alias && exactVariant.some((card) => card.id === alias.localCardId)) {
+    return { status: "auto-confirmed", localCardId: alias.localCardId, method: alias.method };
+  }
+  const candidates = exactVariant;
   if (candidates.length === 1) return { status: "auto-matched", localCardId: candidates[0].id, method: "set-code+card-number+language" };
   if (candidates.length > 1) return { status: "ambiguous", candidates: candidates.map((card) => card.id), method: "set-code+card-number" };
-  return { status: "domestic-base-missing", candidates: [], method: "set-code+card-number" };
+  return {
+    status: "domestic-base-missing", candidates: [], method: "set-code+card-number+variant",
+    reason: allCandidates.length ? `variant-mismatch:${sourceVariant}` : "no-set-number-candidate",
+  };
 }
 
 async function main() {
@@ -247,6 +253,7 @@ async function main() {
         localCardId: linkage.localCardId || null, localCardName: domestic?.name || null,
         localDirectUrl: domestic ? `./?q=${encodeURIComponent(domestic.name)}` : null,
         candidates: linkage.candidates || [], checkedAt: new Date().toISOString(),
+        failureReason: linkage.reason || null,
       };
       existingRecords.set(Number(sourceCard.id), record);
       if (domestic) {
@@ -337,6 +344,11 @@ async function main() {
   }
 
   const records = [...existingRecords.values()].filter((record) => targets.some((card) => Number(card.id) === Number(record.pokedataCardId)));
+  const recordBySourceId = new Map(records.map((record) => [Number(record.pokedataCardId), record]));
+  for (const [localCardId, detail] of Object.entries(existing.cards || {})) {
+    const record = recordBySourceId.get(Number(detail?.pokedata?.pokedataCardId));
+    if (!record?.localCardId || record.localCardId !== localCardId) delete existing.cards[localCardId];
+  }
   for (const detail of Object.values(existing.cards || {})) {
     detail.sourceMode ||= "公開API取得・一部認証済みChrome検証";
     for (const market of [detail.markets?.ebayRaw, detail.markets?.ebayPsa10, detail.markets?.ebayPsa9].filter(Boolean)) {

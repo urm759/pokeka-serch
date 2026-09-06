@@ -31,6 +31,20 @@ function expectedVariant(detail) {
   return "standard";
 }
 
+function variantOf(value) {
+  const source = normalized(value);
+  if (/master\s*ball|マスターボール/.test(source)) return "master-ball";
+  if (/poke\s*ball|pokeball|モンスターボール/.test(source)) return "poke-ball";
+  if (/reverse\s*holo|ミラー/.test(source)) return "reverse-holo";
+  return "standard";
+}
+
+function variantLabel(value) {
+  return value === "master-ball" ? "マスターボールミラー"
+    : value === "poke-ball" ? "モンスターボールミラー"
+      : value === "reverse-holo" ? "その他ミラー" : "通常版";
+}
+
 function auditRow(row, detail) {
   const title = normalized(row.title);
   const reasons = [];
@@ -134,10 +148,32 @@ function nextSetPriorities(cards, manifest) {
 
 function main() {
   const manifest = readJson(MANIFEST, { sets: [] });
+  const domesticCards = readJson(path.join(ROOT, "data", "pokemon-cards.json"), []);
+  const domesticById = new Map(domesticCards.map((card) => [card.id, card]));
   const detailById = new Map();
+  const linkageVariantRows = [];
   for (const entry of manifest.sets || []) {
     const shard = readJson(path.join(ROOT, ...entry.file.split("/")), { cards: {} });
     Object.entries(shard.cards || {}).forEach(([localCardId, detail]) => detailById.set(localCardId, detail));
+    if (String(entry.setCode || "").toUpperCase() === "SV2A") {
+      for (const record of shard.linkageRecords || []) {
+        if (!record.localCardId) continue;
+        const local = domesticById.get(record.localCardId);
+        const sourceVariant = variantOf(record.pokedataName);
+        const localVariant = variantOf(local?.name);
+        if (sourceVariant === "standard" && localVariant === "standard") continue;
+        linkageVariantRows.push({
+          pokedataCardId: record.pokedataCardId,
+          pokedataName: record.pokedataName,
+          localCardId: record.localCardId,
+          localCardName: local?.name || null,
+          sourceVariant,
+          localVariant,
+          strata: variantLabel(sourceVariant),
+          mismatch: sourceVariant !== localVariant,
+        });
+      }
+    }
   }
   const candidates = [];
   for (const [localCardId, detail] of detailById) {
@@ -160,8 +196,14 @@ function main() {
   const strata = [...new Set(results.flatMap((row) => row.strata || []))].map((name) => {
     const rows = results.filter((row) => row.strata?.includes(name));
     const errors = rows.filter((row) => row.mismatch).length;
-    return { name, sampleSize: rows.length, mismatchCount: errors, mismatchRatePct: rows.length ? Math.round(errors / rows.length * 10000) / 100 : null };
+    return { name, sampleSize: rows.length, mismatchCount: errors, mismatchRatePct: rows.length ? Math.round(errors / rows.length * 10000) / 100 : null, upper95Pct: rows.length ? Math.round(wilsonUpper95(errors, rows.length) * 10000) / 100 : null };
   });
+  const specialVariantStrata = [...new Set(linkageVariantRows.map((row) => row.strata))].map((name) => {
+    const rows = linkageVariantRows.filter((row) => row.strata === name);
+    const errors = rows.filter((row) => row.mismatch).length;
+    return { name, population: rows.length, audited: rows.length, mismatchCount: errors, mismatchRatePct: rows.length ? Math.round(errors / rows.length * 10000) / 100 : null, upper95Pct: rows.length ? Math.round(wilsonUpper95(errors, rows.length) * 10000) / 100 : null };
+  });
+  const specialVariantMismatchCount = linkageVariantRows.filter((row) => row.mismatch).length;
   const audit = {
     version: 2, updatedAt: new Date().toISOString(), seed: AUDIT_SEED,
     method: `固定シードによる自動一致行の無作為${results.length}行・仕様別の独立ルール再監査`,
@@ -171,16 +213,24 @@ function main() {
     passed: mismatchRatePct != null && mismatchRatePct <= MAX_MISMATCH_RATE_PCT,
     autoAdoptionAllowed: mismatchRatePct != null && mismatchRatePct <= MAX_MISMATCH_RATE_PCT,
     strata,
+    specialVariantAudit: {
+      method: "SV2aの自動紐付け済み特殊ミラーを全件監査（セット・番号・言語に加えて仕様完全一致）",
+      population: linkageVariantRows.length,
+      audited: linkageVariantRows.length,
+      mismatchCount: specialVariantMismatchCount,
+      strata: specialVariantStrata,
+      mismatches: linkageVariantRows.filter((row) => row.mismatch),
+      passed: specialVariantMismatchCount === 0,
+    },
     results,
   };
-  const cards = readJson(path.join(ROOT, "data", "pokemon-cards.json"), []);
-  const priorities = nextSetPriorities(cards, manifest);
+  const priorities = nextSetPriorities(domesticCards, manifest);
   manifest.qualityAudit = { ...audit, results: undefined };
   manifest.nextSetPriorities = priorities;
   writeJson(OUTPUT, audit);
   writeJson(MANIFEST, manifest);
   console.log(JSON.stringify({ qualityAudit: manifest.qualityAudit, nextSetPriorities: priorities }));
-  if (!audit.passed) process.exitCode = 2;
+  if (!audit.passed || !audit.specialVariantAudit.passed) process.exitCode = 2;
 }
 
 if (require.main === module) main();

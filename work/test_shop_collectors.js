@@ -2,11 +2,12 @@ const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
 const {
-  campA, campMatchesCard, campSignature, cardSignature, parseProductSitemap,
+  campA, campMatchesCard, campPriceQuarantine, campSignature, campVariantPrice, cardSignature, migrateCampCatalogPrices, parseProductSitemap,
   parseProductSitemapIndex, parseYuyuteiResults, preferCampEntry, titleMatches,
   yuyuteiPriority,
   guardCatalogDrop, updateProgressHealth,
 } = require("./update_yuyutei_torecacamp.js");
+const { findDomestic } = require("./update_pokedata_batch.js");
 
 const standard = {
   title: "AZ SR XY4 093/088 1ED",
@@ -16,6 +17,7 @@ const standard = {
 assert.deepStrictEqual(campSignature(standard).cardNo, "093/088");
 assert.ok(campSignature(standard).setCodes.includes("xy4"));
 assert.ok(campA(standard.variants[0]));
+assert.equal(campVariantPrice({ price: 4980000 }), 49800);
 assert.ok(!campA({ title: "【状態A-】" }));
 assert.ok(campMatchesCard({ name: "AZ SR [XY4 093/088](拡張パック)" }, standard));
 
@@ -27,6 +29,20 @@ const promo = {
 assert.deepStrictEqual(campSignature(promo).cardNo, "323");
 assert.ok(campSignature(promo).setCodes.includes("s-p"));
 assert.ok(campMatchesCard({ name: "ピカチュウ: プロモ[323 S-P](プロモーションカード)" }, promo));
+const migratedCamp = migrateCampCatalogPrices([{ cardId: "nan", sourceSitemap: 4, price: 4980000, detailUrl: "https://example.test/nan" }], [{ id: "nan", price: 36000 }]);
+assert.equal(migratedCamp.catalog[0].price, 49800);
+assert.equal(migratedCamp.catalog[0].priceUnit, "JPY");
+assert.equal(migratedCamp.audit.correctedCount, 1);
+assert.equal(migrateCampCatalogPrices(migratedCamp.catalog, [{ id: "nan", price: 36000 }]).catalog[0].price, 49800);
+assert.equal(campPriceQuarantine({ price: 36000 }, 4980000).quarantined, true);
+assert.equal(campPriceQuarantine({ price: 36000 }, 49800).quarantined, false);
+assert.equal(campPriceQuarantine({ price: 36000 }, 1980).quarantined, false, "genuine low offers stay usable");
+
+const strictVariantCandidates = new Map([["SV2A|15", [
+  { id: "master", name: "スピアー R: マスターボールミラー[SV2a 015/165]" },
+]]]);
+assert.equal(findDomestic({ id: 1, set_code: "SV2a", num: "015", name: "Beedrill Poke Ball Pattern Holofoil" }, strictVariantCandidates, []).status, "domestic-base-missing");
+assert.equal(findDomestic({ id: 2, set_code: "SV2a", num: "015", name: "Beedrill Master Ball Holo" }, strictVariantCandidates, []).localCardId, "master");
 
 const yuyuteiHtml = `<a href="https://yuyu-tei.jp/sell/poc/card/sv4a/1"><div><img alt="349/190 SAR リザードンex"></div></a><span>349/190</span><a><h4>リザードンex SAR</h4></a><strong>39,800 円</strong><label>在庫 : 2 点</label>`;
 const rows = parseYuyuteiResults(yuyuteiHtml);

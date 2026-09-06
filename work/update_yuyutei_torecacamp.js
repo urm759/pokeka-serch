@@ -442,6 +442,62 @@ async function updateYuyutei(cards, paths) {
 }
 
 function campA(variant) { return /(?:^|【\s*)状態A(?:\s*】|$)/.test(String(variant?.title || variant?.option1 || "")); }
+function campVariantPrice(variant) {
+  const minorUnits = Number(variant?.price);
+  return Number.isFinite(minorUnits) && minorUnits > 0 ? minorUnits / 100 : null;
+}
+function campPriceQuarantine(card, price) {
+  const value = Number(price);
+  const anchor = Number(card?.price);
+  if (!(value > 0) || !(anchor > 0)) return { quarantined: false, ratio: null, reason: null };
+  const ratio = value / anchor;
+  // Low prices are useful purchase candidates when identity and condition
+  // match. Only quarantine implausibly high prices here; identity mismatches,
+  // graded products and multi-item products are rejected by separate checks.
+  const quarantined = ratio >= 10;
+  return {
+    quarantined,
+    ratio,
+    reason: quarantined ? `みんトレ状態A相場の${ratio.toFixed(1)}倍。桁違い・別商品・複数枚セット・誤紐付け疑い` : null,
+  };
+}
+function migrateCampCatalogPrices(catalog, cards) {
+  const byId = new Map(cards.map((card) => [String(card.id), card]));
+  let correctedCount = 0;
+  let preCorrectionExtremeCount = 0;
+  const examples = [];
+  const migrated = catalog.map((row) => {
+    let entry = { ...row };
+    if (entry.sourceSitemap && entry.priceUnit !== "JPY" && Number(entry.price) > 0) {
+      const before = Number(entry.price);
+      const card = byId.get(String(entry.cardId));
+      const beforeRatio = Number(card?.price) > 0 ? before / Number(card.price) : null;
+      if (Number.isFinite(beforeRatio) && beforeRatio >= 10) preCorrectionExtremeCount += 1;
+      entry.price = before / 100;
+      entry.priceUnit = "JPY";
+      entry.priceMigration = "shopify-minor-unit-to-jpy-v1";
+      correctedCount += 1;
+      if (examples.length < 20) examples.push({ cardId: entry.cardId, title: entry.title, before, after: entry.price, url: entry.detailUrl });
+    }
+    const quarantine = campPriceQuarantine(byId.get(String(entry.cardId)), entry.price);
+    entry.priceQuarantined = quarantine.quarantined;
+    entry.quarantineReason = quarantine.reason;
+    entry.marketPriceRatio = Number.isFinite(quarantine.ratio) ? Math.round(quarantine.ratio * 1000) / 1000 : null;
+    return entry;
+  });
+  return {
+    catalog: migrated,
+    audit: {
+      version: 1,
+      updatedAt: new Date().toISOString(),
+      correctedCount,
+      cumulativeCorrectedCount: migrated.filter((entry) => entry.priceMigration === "shopify-minor-unit-to-jpy-v1").length,
+      preCorrectionExtremeCount,
+      quarantinedCount: migrated.filter((entry) => entry.priceQuarantined).length,
+      examples,
+    },
+  };
+}
 function campSignature(product) {
   const title = String(product?.title || "");
   const standard = title.match(/(\d{1,4}(?:\s*-\s*\d{1,4})?\s*\/\s*\d{1,4})/);
@@ -496,6 +552,7 @@ function parseProductSitemap(xml) {
 function preferCampEntry(previous, candidate) {
   if (!previous) return candidate;
   if (previous.detailUrl === candidate.detailUrl) return candidate;
+  if (previous.priceQuarantined !== candidate.priceQuarantined) return candidate.priceQuarantined ? previous : candidate;
   if (candidate.available !== previous.available) return candidate.available ? candidate : previous;
   const previousPrice = Number(previous.price);
   const candidatePrice = Number(candidate.price);
@@ -505,7 +562,10 @@ function preferCampEntry(previous, candidate) {
 
 async function updateTorecaCamp(cards, paths) {
   const reset = process.env.TORECACAMP_RESET === "1";
-  let catalog = reset ? [] : read(paths.catalog, []);
+  const loadedCatalog = reset ? [] : read(paths.catalog, []);
+  const priceMigration = migrateCampCatalogPrices(loadedCatalog, cards);
+  let catalog = priceMigration.catalog;
+  write(path.join(__dirname, "torecacamp_price_migration_audit.json"), priceMigration.audit);
   const previousCatalog = [...catalog];
   const progress = reset ? {} : read(paths.progress, {});
   const sitemapCache = reset ? { version: 1 } : read(paths.sitemapCache, { version: 1 });
@@ -622,10 +682,14 @@ async function updateTorecaCamp(cards, paths) {
         const card = matches[0];
         const entry = {
           cardId: card.id, productId: String(product.id), title: product.title,
-          detailUrl: sitemapEntry.url, price: Number(variant.price) || null,
+          detailUrl: sitemapEntry.url, price: campVariantPrice(variant), priceUnit: "JPY",
           available: variant.available === true, observedAt: jstDate(),
           sourceSitemap: sitemapIndex + 1, lastModified: sitemapEntry.lastModified || null,
         };
+        const quarantine = campPriceQuarantine(card, entry.price);
+        entry.priceQuarantined = quarantine.quarantined;
+        entry.quarantineReason = quarantine.reason;
+        entry.marketPriceRatio = Number.isFinite(quarantine.ratio) ? Math.round(quarantine.ratio * 1000) / 1000 : null;
         const previousEntry = byId.get(card.id);
         const chosen = preferCampEntry(previousEntry, entry);
         if (!previousEntry && chosen === entry) linked += 1;
@@ -677,7 +741,16 @@ async function updateTorecaCamp(cards, paths) {
   const catalogGuard = guardCatalogDrop(previousCatalog, [...byId.values()]);
   const nextCatalog = catalogGuard.catalog;
   const summary = {};
-  for (const entry of nextCatalog) summary[entry.cardId] = { torecacampPrice: Number(entry.price) || null, available: entry.available, availabilityLabel: entry.available ? "在庫あり" : "在庫なし" };
+  for (const entry of nextCatalog) summary[entry.cardId] = {
+    torecacampPrice: Number(entry.price) || null,
+    available: entry.available,
+    availabilityLabel: entry.available ? "在庫あり" : "在庫なし",
+    detailUrl: entry.detailUrl || null,
+    observedAt: entry.observedAt || null,
+    priceQuarantined: entry.priceQuarantined === true,
+    quarantineReason: entry.quarantineReason || null,
+    marketPriceRatio: Number.isFinite(entry.marketPriceRatio) ? entry.marketPriceRatio : null,
+  };
   const processedSitemapCount = progress.processedSitemaps.length;
   const knownProducts = Object.values(progress.sitemapProductCounts).reduce((total, count) => total + Number(count || 0), 0);
   const knownSitemaps = Object.keys(progress.sitemapProductCounts).length;
@@ -694,6 +767,8 @@ async function updateTorecaCamp(cards, paths) {
     totalSitemaps: progress.totalSitemaps || sitemapUrls.length || 44,
     cumulativeProductCount: seenProductUrls.size, estimatedTotalProducts, estimatedRemainingProducts,
     cumulativeMatchedCount: nextCatalog.length, hasMorePages: !crawlComplete, crawlComplete,
+    priceMigration: priceMigration.audit,
+    quarantinedPriceCount: nextCatalog.filter((entry) => entry.priceQuarantined).length,
     sitemapsSucceeded, listedProducts, detailFetched, parsed, stateA, newLinkCount: linked,
     updatedCount: updated, fetchFailureCount: failed, duplicateUrlCount: duplicateUrls,
     duplicateProductIdCount: duplicateProductIds,
@@ -745,7 +820,7 @@ async function main() {
 if (require.main === module) main().catch((error) => { console.error(error); process.exitCode = 1; });
 
 module.exports = {
-  campA, campMatchesCard, campSignature, cardSignature, normalizeSetCode,
+  campA, campMatchesCard, campPriceQuarantine, campSignature, campVariantPrice, cardSignature, migrateCampCatalogPrices, normalizeSetCode,
   guardCatalogDrop, updateProgressHealth,
   parseProductSitemap, parseProductSitemapIndex, preferCampEntry,
   yuyuteiPriority,

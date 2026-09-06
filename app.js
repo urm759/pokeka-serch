@@ -820,9 +820,9 @@ function renderSourceObservability() {
         <span>国内基礎データなし <b>${fmt.format(pokedata.unmatched || 0)}</b></span>
         <span>展開済みセット内の紐付け率 <b>${formatRate(pokedata.validationMatchRatePct)}</b></span>
         <span>全${fmt.format(pokedata.totalCards || 0)}枚に対するカバー率 <b>${formatRate(pokedata.totalCoveragePct)}</b></span>
-        ${state.pokedataManifest?.qualityAudit ? `<span class="collector-stop-reason">自動一致監査 <b>${fmt.format(state.pokedataManifest.qualityAudit.sampleSize || 0)}行 / 誤一致 ${fmt.format(state.pokedataManifest.qualityAudit.mismatchCount || 0)}行（${formatRate(state.pokedataManifest.qualityAudit.mismatchRatePct)}）/ 95%信頼上限 ${formatRate(state.pokedataManifest.qualityAudit.upper95Pct)} / ${escapeHtml(state.pokedataManifest.qualityAudit.precisionStatus || "精度確認中")}</b><small>監査シード ${escapeHtml(state.pokedataManifest.qualityAudit.seed || "未取得")} / 層別 ${escapeHtml((state.pokedataManifest.qualityAudit.strata || []).map((entry) => `${entry.name} ${entry.sampleSize}行・誤一致${entry.mismatchCount}`).join(" / ") || "対象行なし")}</small></span>` : ""}
+        ${state.pokedataManifest?.qualityAudit ? `<span class="collector-stop-reason">自動一致監査 <b>${fmt.format(state.pokedataManifest.qualityAudit.sampleSize || 0)}行 / 誤一致 ${fmt.format(state.pokedataManifest.qualityAudit.mismatchCount || 0)}行（${formatRate(state.pokedataManifest.qualityAudit.mismatchRatePct)}）/ 95%信頼上限 ${formatRate(state.pokedataManifest.qualityAudit.upper95Pct)} / ${escapeHtml(state.pokedataManifest.qualityAudit.precisionStatus || "精度確認中")}</b><small>監査シード ${escapeHtml(state.pokedataManifest.qualityAudit.seed || "未取得")} / 層別 ${escapeHtml((state.pokedataManifest.qualityAudit.strata || []).map((entry) => `${entry.name} ${entry.sampleSize}行・誤一致${entry.mismatchCount}`).join(" / ") || "対象行なし")}</small>${state.pokedataManifest.qualityAudit.specialVariantAudit ? `<small>SV2a特殊ミラー全件監査 ${fmt.format(state.pokedataManifest.qualityAudit.specialVariantAudit.audited || 0)}件 / ${escapeHtml((state.pokedataManifest.qualityAudit.specialVariantAudit.strata || []).map((entry) => `${entry.name} ${entry.audited}件・誤一致${entry.mismatchCount}・95%上限${formatRate(entry.upper95Pct)}`).join(" / ") || "対象なし")}</small>` : ""}</span>` : ""}
         ${state.marketResearch ? `<span class="collector-stop-reason">海外先行性 <b>${fmt.format(state.marketResearch.overseasLead?.savedCardCount || 0)}枚・${fmt.format(state.marketResearch.overseasLead?.savedDateCount || 0)}日 / ${escapeHtml(state.marketResearch.overseasLead?.status || "仮説・蓄積中")}</b></span><span class="collector-stop-reason">季節性 <b>${fmt.format(state.marketResearch.seasonality?.savedDateCount || 0)}日 / ${escapeHtml(state.marketResearch.seasonality?.status || "仮説・蓄積中")}</b><small>市場全体・買取掲載・非掲載を分離。仕入れ上限へ未反映</small></span><span>為替 <b>${Number.isFinite(state.marketResearch.fx?.rate) ? `1 USD = ¥${Number(state.marketResearch.fx.rate).toFixed(3)}` : "未取得"}</b><small>${escapeHtml(state.marketResearch.fx?.source || "取得元未取得")} / ${escapeHtml(state.marketResearch.fx?.rateDate || state.marketResearch.fx?.fetchedAt || "日時未取得")} / ${escapeHtml(state.marketResearch.fx?.latestOrPrevious || state.marketResearch.fx?.status || "未取得")}</small></span>` : ""}
-        ${state.modernHighRarityAudit ? `<span class="collector-stop-reason">2015年以降SR以上監査 <b>更新前不足 ${fmt.format(state.modernHighRarityAudit.missingBefore || 0)}枚 / 今回追加 ${fmt.format(state.modernHighRarityAudit.addedThisRun || 0)}枚 / 更新後不足 ${fmt.format(state.modernHighRarityAudit.missingAfter || 0)}枚</b><small>対象ホワイトリスト ${escapeHtml((state.modernHighRarityAudit.config?.rarityWhitelist || []).join("・"))} / CHR・ARは別集計</small></span>` : ""}
+        ${state.modernHighRarityAudit ? `<span class="collector-stop-reason">2015年以降SR以上監査 <b>${state.modernHighRarityAudit.reproducible ? "全件スナップショット照合済み" : "全件スナップショット待ち"} / 更新後不足 ${fmt.format(state.modernHighRarityAudit.missingAfter || 0)}枚</b><small>みんトレ取得 ${fmt.format(state.modernHighRarityAudit.sourceListedTotal || 0)}件 / 発売年確定 ${fmt.format(state.modernHighRarityAudit.releaseYearKnownTotal || 0)}件 / 発売年不明 ${fmt.format(state.modernHighRarityAudit.releaseYearUnknownTotal || 0)}件 / 対象レア ${fmt.format(state.modernHighRarityAudit.targetRarityTotal || 0)}件 / 2015年以降対象 ${fmt.format(state.modernHighRarityAudit.eligibleSourceTotal || 0)}件 / 一致 ${fmt.format(state.modernHighRarityAudit.matchedTotal || 0)}件 / 除外 ${fmt.format(Object.values(state.modernHighRarityAudit.exclusionCounts || {}).reduce((sum, value) => sum + Number(value || 0), 0))}件 / 重複 ${fmt.format(state.modernHighRarityAudit.sourceDuplicateIds || 0)}件</small><small>対象ホワイトリスト ${escapeHtml((state.modernHighRarityAudit.config?.rarityWhitelist || []).join("・"))} / CHR・AR・日本語版以外は別集計</small></span>` : ""}
         ${state.pokedataManifest?.nextSetPriorities?.length ? `<span class="collector-stop-reason">次セット候補 <b>${escapeHtml(state.pokedataManifest.nextSetPriorities.slice(0, 3).map((entry, index) => `${index + 1}. ${entry.label}：${entry.reason}`).join(" / "))}</b></span>` : ""}
       </div>
       <label class="pokedata-record-search"><span>監査するセット</span><select id="pokedataAuditSet"><option value="">セットを選択</option>${manifestSets.map((entry) => `<option value="${escapeHtml(entry.file)}"${entry.file === state.pokedataAuditSetFile ? " selected" : ""}>${escapeHtml(entry.setName)}（詳細 ${fmt.format(entry.count || 0)}枚 / 照合 ${fmt.format(entry.linkageCount || 0)}件）</option>`).join("")}</select></label>
@@ -1582,6 +1582,8 @@ function classifyDecisionData(card) {
   if (!priceAggregation.conflicted && trustedPriceCount >= 2 && priceAggregation.outliers?.length) {
     outlierExcludedReasons.push(...priceAggregation.outliers.map((entry) => `${entry.source} ¥${fmt.format(entry.value)}`));
   }
+  const priceQuarantineReasons = (priceAggregation.quarantined || []).map((entry) => `${entry.source} ¥${fmt.format(entry.value)}：${entry.quarantineReason || "異常値として計算対象外"}`);
+  outlierExcludedReasons.push(...priceQuarantineReasons);
   const dataAnomalyReasons = Object.values(card.buyback?.shops || {})
     .filter((shop) => shop?.quarantined)
     .map((shop) => shop.quarantineReason || "店舗カード紐付けを自動隔離");
@@ -1595,6 +1597,8 @@ function classifyDecisionData(card) {
     dataShortageReasons,
     outlierExcluded: outlierExcludedReasons.length > 0,
     outlierExcludedReasons,
+    priceQuarantined: priceQuarantineReasons.length > 0,
+    priceQuarantineReasons,
     shortageRiskPct,
     confidence: dataShortageReasons.length ? (shortageRiskPct >= 5 ? "低" : "中") : "高",
     trustedPriceCount,
@@ -1796,6 +1800,7 @@ function buildBuyLimits(card) {
     scenario.economicsScenarios = decisionModel.economicsScenarioMatrix({
       ...scenario.modelInput,
       currentPurchasePrice: card.price,
+      storeOfferPrice: card.currentStoreOffer?.value,
       operationalLimitPrice: scenario.finalMaxPrice,
       currentPsa10Price: card.psa10,
       centralForecastPrice: card.futurePriceForecast?.centralPrice || scenario.modelInput.forecastPrice,
@@ -1825,21 +1830,24 @@ function finalizeCardDecision(card) {
   card.supplyStress = buildSupplyStress(card);
   card.buyLimits = buildBuyLimits(card);
   const cleanInput = card.buyLimits?.clean?.modelInput;
-  const economics = cleanInput ? card.buyLimits.clean.economicsScenarios?.currentPurchase?.centralForecast : null;
+  const scenarioMatrix = card.buyLimits?.clean?.economicsScenarios || {};
+  const marketEconomics = cleanInput ? scenarioMatrix.currentPurchase?.centralForecast : null;
+  const storeEconomics = cleanInput && card.currentStoreOffer ? scenarioMatrix.storeOffer?.centralForecast : null;
+  const operationalEconomics = cleanInput ? scenarioMatrix.operationalLimit?.centralForecast : null;
   const capital = card.buyLimits?.capital;
+  const cleanLimits = card.buyLimits?.clean;
   const capitalShare = state.psaCapital > 0 ? card.price / state.psaCapital * 100 : Infinity;
   const riskReasons = [];
   if (Number(card.overallAssessment?.exitLiquidity || 0) < 30) riskReasons.push("売却しやすさ30点未満");
   if (Number(card.overallAssessment?.marketStability || 0) < 30) riskReasons.push("価格安定性30点未満");
   if (Number(card.overallAssessment?.supplyRisk || 0) < 30) riskReasons.push("供給リスク耐性30点未満");
   if (Number(card.overallAssessment?.futurePrice || 0) < 30) riskReasons.push("将来価格評価30点未満");
-  const finalDecision = economics && capital ? decisionModel.purchaseDecision({
-    economics,
+  const decisionInput = cleanLimits ? {
     capital,
-    economicMaxPrice: card.buyLimits.clean.economicMaxPrice,
-    stressBreakEvenMaxPrice: card.buyLimits.clean.stressBreakEvenMaxPrice,
-    ultraLowRiskMaxPrice: card.buyLimits.clean.ultraLowRiskMaxPrice,
-    operationalMaxPrice: card.buyLimits.clean.operationalMaxPrice,
+    economicMaxPrice: cleanLimits.economicMaxPrice,
+    stressBreakEvenMaxPrice: cleanLimits.stressBreakEvenMaxPrice,
+    ultraLowRiskMaxPrice: cleanLimits.ultraLowRiskMaxPrice,
+    operationalMaxPrice: cleanLimits.operationalMaxPrice,
     lowRiskMode: state.purchaseMode === "low-risk",
     qualityScore: card.overallAssessment?.score,
     requiresManualReview: card.dataQuality.manualReview,
@@ -1852,12 +1860,27 @@ function finalizeCardDecision(card) {
     minAnnualEfficiency: state.minAnnualEfficiency,
     maxCapitalShare: state.maxCapitalShare,
     targetProfitOnly: true,
-  }) : null;
+  } : null;
+  const decide = (economics) => economics && capital && decisionInput
+    ? decisionModel.purchaseDecision({ ...decisionInput, economics })
+    : null;
+  const marketDecision = decide(marketEconomics);
+  const storeDecision = decide(storeEconomics);
+  const operationalDecision = decide(operationalEconomics);
+  const economics = storeEconomics || marketEconomics;
+  const finalDecision = storeDecision || marketDecision;
+  card.decisionScenarios = {
+    market: { economics: marketEconomics, decision: marketDecision, purchasePrice: Number(card.price) || null },
+    store: { economics: storeEconomics, decision: storeDecision, purchasePrice: Number(card.currentStoreOffer?.value) || null, offer: card.currentStoreOffer || null },
+    operational: { economics: operationalEconomics, decision: operationalDecision, purchasePrice: Number(card.buyLimits?.clean?.finalMaxPrice) || null },
+    adopted: storeDecision ? "store" : "market",
+  };
   card.purchaseAvailability = decisionModel.purchaseAvailability({
     marketPrice: card.price,
     finalLimit: card.buyLimits?.clean?.finalMaxPrice,
     offer: card.currentStoreOffer,
     verdict: finalDecision?.verdict,
+    decisionReasons: finalDecision?.reasons,
     priceReviewRequired: Boolean(card.dataQuality?.manualReview || card.dataQuality?.dataAnomaly || card.priceAggregation?.conflicted),
   });
   if (card.overallAssessment) {
@@ -1882,6 +1905,7 @@ function finalizeCardDecision(card) {
     finalMaxPrice: finalDecision?.finalMaxPrice,
     limitingFactor: finalDecision?.limitingFactor,
     forecastPsa10Net: economics.psa10Net,
+    calculationBasis: storeEconomics ? "現在購入できる実店舗価格 × 中央予測" : "現在の基準相場 × 中央予測",
   } : null;
   card.purchaseDecision = finalDecision;
   card.hasPricingAnomaly = card.dataQuality.manualReview;
@@ -2047,7 +2071,7 @@ function calc(card) {
     { source: "カードラッシュ状態A", value: cardrushPrice, kind: "販売価格", condition: "状態A", conditionAccepted: cardrushStock?.conditionAccepted !== false, conditionReason: cardrushStock?.conditionReason, updatedAt: state.sourceUpdates.cardrush, url: card.cardrushUrl, available: Number(cardrushStock?.stock) > 0, availabilityLabel: Number(cardrushStock?.stock) > 0 ? "在庫あり" : "在庫なし・未確認", valid: !decisionModel.isSuspectedCardMismatch(cardrushStock) },
     { source: "晴れる屋2状態A", value: hareruya2Price, kind: "販売価格", condition: "状態Aまたは状態表記なし", conditionAccepted: hareruya2Stock?.conditionAccepted !== false, conditionReason: hareruya2Stock?.conditionReason, updatedAt: state.sourceUpdates.hareruya2, url: card.hareruya2Url, available: Number(hareruya2Stock?.stock) > 0, availabilityLabel: Number(hareruya2Stock?.stock) > 0 ? "在庫あり" : "在庫なし・未確認", valid: !decisionModel.isSuspectedCardMismatch(hareruya2Stock) },
     { source: "遊々亭状態A", value: yuyuteiPrice, kind: "販売価格", condition: "美品扱い", conditionAccepted: yuyuteiStock?.conditionAccepted !== false, updatedAt: state.sourceUpdates.yuyutei, url: card.yuyuteiUrl, available: Number(yuyuteiStock?.stock) > 0, availabilityLabel: Number(yuyuteiStock?.stock) > 0 ? "在庫あり" : "在庫なし・未確認", valid: !decisionModel.isSuspectedCardMismatch(yuyuteiStock) },
-    { source: "トレカキャンプ状態A", value: torecacampPrice, kind: "販売価格", condition: "美品扱い", conditionAccepted: torecacampStock?.conditionAccepted !== false, updatedAt: state.sourceUpdates.torecacamp, url: card.torecacampUrl, available: torecacampStock?.available === true, availabilityLabel: torecacampStock?.available === true ? "在庫あり" : "在庫なし・未確認", valid: !decisionModel.isSuspectedCardMismatch(torecacampStock) },
+    { source: "トレカキャンプ状態A", value: torecacampPrice, kind: "販売価格", condition: "美品扱い", conditionAccepted: torecacampStock?.conditionAccepted !== false, updatedAt: state.sourceUpdates.torecacamp, url: card.torecacampUrl, available: torecacampStock?.available === true, availabilityLabel: torecacampStock?.available === true ? "在庫あり" : "在庫なし・未確認", valid: !decisionModel.isSuspectedCardMismatch(torecacampStock) && torecacampStock?.priceQuarantined !== true, invalidReason: torecacampStock?.quarantineReason || undefined },
   ], { asOfDate: meta.updatedAt || meta.generatedAt, staleAfterDays: 14, excludeAfterDays: 45, minRatio: 0.55, maxRatio: 1.8, clusterRatio: 1.35, divergencePct: 35 });
   const price = priceAggregation.value > 0 ? Math.round(priceAggregation.value) : NaN;
   const psa10SummaryPrice = Number(card.snkPsa10Price);
@@ -3088,7 +3112,7 @@ function render() {
     const priceAuditRows = [
       ...(card.priceAggregation?.included || []).map((entry) => ({ ...entry, auditStatus: entry.stale ? "採用・古め" : "採用", auditReason: entry.stale ? "重みを半減" : card.priceAggregation.strategy })),
       ...(card.priceAggregation?.outliers || []).map((entry) => ({ ...entry, auditStatus: "除外", auditReason: "多数価格帯から外れる" })),
-      ...(card.priceAggregation?.excluded || []).map((entry) => ({ ...entry, auditStatus: "除外", auditReason: entry.excludedReasons?.join(" / ") || "利用条件外" })),
+      ...(card.priceAggregation?.excluded || []).map((entry) => ({ ...entry, auditStatus: entry.quarantined ? "隔離" : "除外", auditReason: entry.excludedReasons?.join(" / ") || "利用条件外" })),
     ];
     const priceAuditPanel = `
       <div class="price-audit-panel">
@@ -3099,7 +3123,7 @@ function render() {
           <span>${card.priceAggregation?.conflicted ? `価格対立 ${Math.round(card.priceAggregation.spreadPct || 0)}%・要確認` : card.priceAggregation?.priceDivergence && card.priceAggregation?.outliers?.length ? `価格乖離 ${Math.round(card.priceAggregation.spreadPct || 0)}%・外れ値除外済み` : card.priceAggregation?.priceDivergence ? `価格乖離 ${Math.round(card.priceAggregation.spreadPct || 0)}%・要確認` : "価格乖離は許容範囲"}</span>
           <span>現在購入できる店舗価格 ${card.currentStoreOffer ? `${escapeHtml(card.currentStoreOffer.source)} ¥${fmt.format(card.currentStoreOffer.value)}` : "未取得"}</span>
         </div>
-        <div class="price-audit-rows">${priceAuditRows.map((entry) => `<div class="${entry.auditStatus.startsWith("採用") ? "included" : "excluded"}"><span>${escapeHtml(entry.source || "不明")}</span><strong>${Number(entry.value) > 0 ? `¥${fmt.format(entry.value)}` : "未取得"}</strong><small>${escapeHtml(entry.kind || "価格種別未記録")} / ${escapeHtml(entry.condition || "状態未記録")} / ${escapeHtml(entry.kind === "販売価格" ? entry.availabilityLabel || "在庫未確認" : "成約相場・購入先ではない")} / 更新 ${escapeHtml(String(entry.updatedAt || "未取得").slice(0, 10))}<br>${escapeHtml(entry.auditStatus)}：${escapeHtml(entry.auditReason)}</small></div>`).join("")}</div>
+        <div class="price-audit-rows">${priceAuditRows.map((entry) => `<div class="${entry.auditStatus.startsWith("採用") ? "included" : "excluded"}"><span>${entry.url ? `<a href="${escapeHtml(entry.url)}" target="_blank" rel="noreferrer">${escapeHtml(entry.source || "不明")}</a>` : escapeHtml(entry.source || "不明")}</span><strong>${Number(entry.value) > 0 ? `¥${fmt.format(entry.value)}` : "未取得"}</strong><small>${escapeHtml(entry.kind || "価格種別未記録")} / ${escapeHtml(entry.condition || "状態未記録")} / ${escapeHtml(entry.kind === "販売価格" ? entry.availabilityLabel || "在庫未確認" : "成約相場・購入先ではない")} / 更新 ${escapeHtml(String(entry.updatedAt || "未取得").slice(0, 10))}<br>${escapeHtml(entry.auditStatus)}：${escapeHtml(entry.auditReason)}</small></div>`).join("")}</div>
         <small>みんトレは成約相場、各ショップは販売価格として分離して記録します。販売価格を成約件数として扱いません。</small>
       </div>`;
     const psa10Audit = card.psa10Audit || {};
@@ -3178,7 +3202,8 @@ function render() {
     const dataQualityPanels = [
       dataQuality.manualReview ? `<div class="data-quality-notice manual"><strong>要確認（手動確認）</strong><span>${escapeHtml(dataQuality.manualReviewReasons.join(" / "))}</span></div>` : "",
       dataQuality.dataShortage ? `<div class="data-quality-notice shortage"><strong>データ不足</strong><span>${escapeHtml(dataQuality.dataShortageReasons.join(" / "))} / 判定信頼度 ${escapeHtml(dataQuality.confidence)} / 不足リスクは弱気予測へ反映</span></div>` : "",
-      dataQuality.outlierExcluded ? `<div class="data-quality-notice outlier"><strong>外れ値除外済み</strong><span>${escapeHtml(dataQuality.outlierExcludedReasons.join(" / "))} / 複数の一致価格を採用して判定継続</span></div>` : "",
+      dataQuality.outlierExcluded && !dataQuality.priceQuarantined ? `<div class="data-quality-notice outlier"><strong>外れ値除外済み</strong><span>${escapeHtml(dataQuality.outlierExcludedReasons.join(" / "))} / 複数の一致価格を採用して判定継続</span></div>` : "",
+      dataQuality.priceQuarantined ? `<div class="data-quality-notice outlier"><strong>異常値として計算対象外</strong><span>${escapeHtml(dataQuality.priceQuarantineReasons.join(" / "))} / 参照URLと理由は価格監査に保持</span></div>` : "",
       dataQuality.dataAnomaly ? `<div class="data-quality-notice manual"><strong>カード紐付け要確認</strong><span>${escapeHtml(dataQuality.dataAnomalyReasons.join(" / "))} / 誤紐付け疑いの店舗データだけを計算から隔離しています</span></div>` : "",
     ].filter(Boolean).join("");
     const dataQualityPanel = dataQualityPanels ? `<div class="data-quality-notices">${dataQualityPanels}</div>` : "";
@@ -3219,6 +3244,7 @@ function render() {
     };
     const scenarioMatrix = card.buyLimits?.clean?.economicsScenarios || {};
     const currentScenarios = scenarioMatrix.currentPurchase || {};
+    const storeScenarios = scenarioMatrix.storeOffer || {};
     const limitScenarios = scenarioMatrix.operationalLimit || {};
     const scenarioResult = (economics) => {
       const profit = signedMoney(economics?.expectedProfit);
@@ -3288,8 +3314,8 @@ function render() {
       <div class="psa-decision ${decisionClass}">
         <div class="psa-decision-head"><strong>資金・期待値の内訳</strong><span>PSA公式取得率優先・PSA9実価格優先・共通計算</span></div>
         <div class="psa-decision-metrics">
-          <div><span>期待利益</span><strong>¥${fmt.format(Math.round(psaDecision.expectedProfit))}</strong><small>現在仕入値 × 中央予測</small></div>
-          <div><span>期待利益率</span><strong>${Math.round(psaDecision.expectedRoi)}%</strong><small>現在仕入値 × 中央予測</small></div>
+          <div><span>期待利益</span><strong>¥${fmt.format(Math.round(psaDecision.expectedProfit))}</strong><small>${escapeHtml(psaDecision.calculationBasis || "現在の基準相場 × 中央予測")}</small></div>
+          <div><span>期待利益率</span><strong>${Math.round(psaDecision.expectedRoi)}%</strong><small>${escapeHtml(psaDecision.calculationBasis || "現在の基準相場 × 中央予測")}</small></div>
           <div><span>安全側期待利益</span><strong class="${stressProfitAtFinal.className}">${stressProfitAtFinal.text}</strong><small>仕入れ上限 × 供給ストレス予測</small></div>
           <div><span>安全側期待利益率</span><strong>${Number.isFinite(stressRoiAtFinal) ? `${stressRoiAtFinal.toFixed(1)}%` : "算出不可"}</strong><small>0%は期待値が0円以上</small></div>
           <div><span>年換算効率</span><strong>${Math.round(psaDecision.annualEfficiency)}%</strong></div>
@@ -3311,6 +3337,10 @@ function render() {
         <div><span>現在PSA10相場 ¥${fmt.format(card.psa10)}</span>${scenarioResult(currentScenarios.currentMarket)}</div>
         <div><span>中央予測 ¥${fmt.format(card.futurePriceForecast?.centralPrice || 0)}</span>${scenarioResult(currentScenarios.centralForecast)}</div>
         <div><span>供給ストレス ¥${fmt.format(card.supplyStress?.price || 0)}</span>${scenarioResult(currentScenarios.supplyStress)}</div>
+        ${card.currentStoreOffer ? `<div class="purchase-basis-note"><span>実店舗価格 ¥${fmt.format(card.currentStoreOffer.value)}で購入</span><strong>${escapeHtml(card.currentStoreOffer.source || "購入可能店舗")}</strong></div>
+        <div><span>現在PSA10相場 ¥${fmt.format(card.psa10)}</span>${scenarioResult(storeScenarios.currentMarket)}</div>
+        <div><span>中央予測 ¥${fmt.format(card.futurePriceForecast?.centralPrice || 0)}</span>${scenarioResult(storeScenarios.centralForecast)}</div>
+        <div><span>供給ストレス ¥${fmt.format(card.supplyStress?.price || 0)}</span>${scenarioResult(storeScenarios.supplyStress)}</div>` : ""}
         <div class="purchase-basis-note"><span>運用上限 ¥${fmt.format(card.buyLimits?.clean?.finalMaxPrice || 0)}で購入</span><strong>同じ売却価格で比較</strong></div>
         <div><span>現在PSA10相場 ¥${fmt.format(card.psa10)}</span>${scenarioResult(limitScenarios.currentMarket)}</div>
         <div><span>中央予測 ¥${fmt.format(card.futurePriceForecast?.centralPrice || 0)}</span>${scenarioResult(limitScenarios.centralForecast)}</div>
