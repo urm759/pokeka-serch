@@ -78,7 +78,7 @@ function classifySale(input, identity) {
     const hasNumber = new RegExp(`(?:#|\\b)0*${cardNumber}(?:\\s*\\/\\s*\\d+)?\\b`, "i").test(title);
     const hasSet = identity.setAliases.some((alias) => title.includes(normalize(alias)));
     const hasName = identity.nameTokens.every((token) => title.includes(normalize(token)));
-    const titleSetCodes = title.match(/\b(?:sv|sm|s)\s*\d+[a-z+\-]*\b/gi) || [];
+    const titleSetCodes = title.match(/\b(?:sv|sm|s)\s*\d+(?:[a-z]|\+)?(?=[\s:/#-])/gi) || [];
     const normalizedAliases = identity.setAliases.map(normalize);
     const hasConflictingSet = titleSetCodes.length > 0
       && !titleSetCodes.some((code) => normalizedAliases.some((alias) => alias.includes(normalize(code)) || normalize(code).includes(alias)));
@@ -86,6 +86,14 @@ function classifySale(input, identity) {
     if (hasConflictingSet) reasons.push("セット不一致");
     if (!hasName) reasons.push("カード名不一致");
     if (!hasSet && !hasConflictingSet) warnings.push("セット表記省略・ページのセット情報で照合");
+
+    const hasMasterBall = /master\s*ball|マスターボール/.test(title);
+    const hasPokeBall = /poke\s*ball|pokeball|モンスターボール/.test(title);
+    const hasReverseHolo = /reverse\s*holo|reverse|ミラー/.test(title);
+    if (identity.variant === "master-ball" && !hasMasterBall) reasons.push("仕様確認不能:マスターボールミラー");
+    if (identity.variant === "poke-ball" && (!hasPokeBall || hasMasterBall)) reasons.push("仕様確認不能:モンスターボールミラー");
+    if (identity.variant === "reverse-holo" && !(hasReverseHolo || hasMasterBall || hasPokeBall)) reasons.push("仕様確認不能:ミラー");
+    if (identity.variant === "standard" && (hasMasterBall || hasPokeBall || hasReverseHolo)) reasons.push("カード仕様不一致:ミラー");
   }
 
   if (titleAvailable && /\b(?:lot of|playset|bundle|pair|set of|x\s*[2-9]|[2-9]\s*x|[2-9]\s*cards?)\b/i.test(title)) reasons.push("複数枚セット");
@@ -102,7 +110,7 @@ function classifySale(input, identity) {
   if (grader && grader !== "PSA") marketGrade = `${grader}${titleGrade || ""}`;
   const unavailable = reasons.includes("商品名Unavailable");
   const outOfScope = reasons.some((reason) => /^(?:日本版以外|複数枚セット|未開封品|PSA以外の鑑定品)/.test(reason));
-  const identityConflict = reasons.some((reason) => /^(?:カード番号不一致|セット不一致|カード名不一致)$/.test(reason));
+  const identityConflict = reasons.some((reason) => /^(?:カード番号不一致|セット不一致|カード名不一致|仕様確認不能|カード仕様不一致)/.test(reason));
   const reviewClass = unavailable ? "unverifiable"
     : outOfScope ? "out-of-scope"
       : identityConflict ? "ambiguous"

@@ -10,14 +10,15 @@ const terastal = manifest.sets.find((entry) => entry.setName === "Terastal Festi
 
 assert(battle);
 assert(terastal);
-assert(capture.cards.length >= 104);
+assert.equal(capture.cards.length, 205);
 assert.equal(battle.acquisition.browserValidatedCards, battle.count);
 assert(battle.acquisition.usableRawMedianCards >= 50);
 assert(battle.acquisition.usablePsa10MedianCards >= 15);
-assert.equal(battle.acquisition.actualPriceCoveragePct, 100);
+assert.equal(battle.acquisition.pricedCardPct, 100);
 assert.equal(terastal.linkageCount, 629);
 assert.equal(terastal.sourceCount, 629);
-assert.equal(terastal.acquisition.browserValidatedCards, 47);
+assert.equal(terastal.acquisition.browserValidatedCards + terastal.acquisition.browserUnavailableCards, terastal.count);
+assert(terastal.acquisition.browserValidatedCards >= 140);
 assert.equal(manifest.totalLinkageRecords, 761);
 assert.equal(battle.acquisition.sourcePriceMissingRows, 0);
 assert.equal(battle.acquisition.formatParseFailureRows, 0);
@@ -25,11 +26,17 @@ assert(battle.acquisition.classificationCounts["auto-matched"] > 0);
 assert(battle.acquisition.classificationCounts.unverifiable > 0);
 
 for (const captured of capture.cards) {
-  assert(captured.rows.length > 0);
-  assert(captured.rows.every((row) => /^¥?[0-9,]+$/.test(String(row.priceText || "").replace(/\s/g, ""))));
   const salesPath = path.join(root, "data", "pokedata-sales", `${captured.localId}.json`);
   assert(fs.existsSync(salesPath), `missing sales audit for ${captured.localId}`);
   const sales = JSON.parse(fs.readFileSync(salesPath, "utf8"));
+  if (captured.pageValid === false) {
+    assert.equal(captured.rows.length, 0);
+    assert.equal(sales.acquisitionAudit.method, "authenticated-browser-unavailable");
+    assert.equal(sales.acquisitionAudit.missingCauseCounts["参照ページ無効"], 1);
+    continue;
+  }
+  assert(captured.rows.length > 0);
+  assert(captured.rows.every((row) => /^¥?[0-9,]+$/.test(String(row.priceText || "").replace(/\s/g, ""))));
   assert.equal(sales.acquisitionAudit.method, "authenticated-browser-dom");
   assert.equal(sales.acquisitionAudit.missingCauseCounts["価格形式解析失敗"], 0);
   assert(sales.acquisitionAudit.classificationCounts);
@@ -39,9 +46,11 @@ for (const captured of capture.cards) {
 }
 
 console.log(JSON.stringify({
-  authenticatedCards: capture.cards.length,
+  inspectedCards: capture.cards.length,
+  authenticatedCards: manifest.acquisition.browserValidatedCards,
+  unavailableCards: manifest.acquisition.browserUnavailableCards,
   battleLinkedCards: battle.count,
-  battleRealPriceCoveragePct: battle.acquisition.actualPriceCoveragePct,
+  battleRealPriceCoveragePct: battle.acquisition.pricedCardPct,
   expandedSet: terastal.setName,
   expandedRecords: terastal.linkageCount,
 }));

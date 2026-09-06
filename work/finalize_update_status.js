@@ -110,7 +110,7 @@ const sources = {
   marketAnalysis: { label: "下値安定・買取率分析", date: validDate(marketAnalysis.updatedAt), automatic: true },
   psaOfficial: { label: "PSA公式枚数", date: dominantPsaDate, automatic: true, note: "PC起動時にPSA専用Chromeで自動取得", coverageRows: psaDateCounts[dominantPsaDate] || 0 },
   psaJapan: { label: "PSA Japan料金", date: validDate(services.checkedAt || services.updatedAt), automatic: true, status: services.checkStatus || "unknown" },
-  pokedata: { label: "PokeDATA海外相場", date: validDate(pokedata.updatedAt), automatic: false, note: "段階検証中。全カード完了とは別管理", diagnostics: pokedata.crawl || null },
+  pokedata: { label: "PokeDATA海外相場", date: validDate(pokedataManifest.updatedAt || pokedata.updatedAt), automatic: false, note: "段階検証中。全カード完了とは別管理", diagnostics: { setCount: Number(pokedataManifest.sets?.length || 0), ...(pokedataManifest.acquisition || {}) } },
 };
 
 for (const [sourceId, source] of Object.entries(sources)) {

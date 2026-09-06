@@ -204,6 +204,9 @@ jobs:
       - name: Finalize source freshness and completed date
         run: node work/finalize_update_status.js
 
+      - name: Verify PokeDATA aggregate consistency
+        run: node work/test_pokedata_consistency.js
+
       - name: Commit all changes
         run: |
           git config user.name "github-actions[bot]"

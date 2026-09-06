@@ -216,23 +216,9 @@ function buildStoreCoverage(root = ROOT) {
   const pokedataManual = pokedataRecords.filter((record) => record.status === "manual-confirmed").length;
   const pokedataAmbiguous = pokedataRecords.filter((record) => record.status === "ambiguous").length;
   const pokedataBaseMissing = pokedataRecords.filter((record) => record.status === "domestic-base-missing").length;
-  const pokedataAcquisition = (pokedataManifest.sets || []).reduce((totals, entry) => {
-    const acquisition = entry.acquisition || {};
-    ["browserValidatedCards", "browserPricedCards", "browserCapturedRows", "browserPricedRows", "pageReportedTransactions",
-      "publicApiPricePresent", "publicApiMaskedRows", "titleUnavailableRows", "sourcePriceMissingRows", "formatParseFailureRows",
-      "adoptedRawRows", "adoptedPsa10Rows", "adoptedPsa9Rows", "usableRawMedianCards", "usablePsa10MedianCards",
-      "usablePsa9MedianCards"].forEach((key) => { totals[key] += Number(acquisition[key] || 0); });
-    Object.entries(acquisition.classificationCounts || {}).forEach(([key, count]) => {
-      totals.classificationCounts[key] = (totals.classificationCounts[key] || 0) + Number(count || 0);
-    });
-    return totals;
-  }, {
-    browserValidatedCards: 0, browserPricedCards: 0, browserCapturedRows: 0, browserPricedRows: 0,
-    pageReportedTransactions: 0, publicApiPricePresent: 0, publicApiMaskedRows: 0, titleUnavailableRows: 0,
-    sourcePriceMissingRows: 0, formatParseFailureRows: 0, adoptedRawRows: 0, adoptedPsa10Rows: 0,
-    adoptedPsa9Rows: 0, usableRawMedianCards: 0, usablePsa10MedianCards: 0, usablePsa9MedianCards: 0,
-    classificationCounts: { "auto-matched": 0, ambiguous: 0, "out-of-scope": 0, unverifiable: 0 },
-  });
+  // The importer writes this once from all set entries. Do not recalculate it
+  // here, otherwise the update panel and overseas panel can drift apart.
+  const pokedataAcquisition = pokedataManifest.acquisition || {};
   const pokedataSourceTotal = (pokedataManifest.sets || []).reduce((sum, entry) => sum + Number(entry.sourceCount || 0), 0);
   const pokedataHasPartialSet = (pokedataManifest.sets || []).some((entry) => entry.status === "partial");
   const pokedataCoverage = pokedata.coverage || {};
@@ -256,18 +242,16 @@ function buildStoreCoverage(root = ROOT) {
     acquired: Number(pokedataManifest.totalLinkageRecords || pokedataRecords.length),
     validationMatchRatePct: percent(pokedataAutomatic + pokedataManual, pokedataRecords.length),
     status: "validation-partial",
-    statusLabel: `${pokedataManifest.sets?.length || 0}セット段階取得（照合${pokedataRecords.length}件・詳細${pokedataMatchedIds.size}枚・実価格${pokedataAcquisition.browserValidatedCards}枚）`,
+    statusLabel: `${pokedataManifest.sets?.length || 0}セット段階取得（照合${pokedataRecords.length}件・詳細${pokedataMatchedIds.size}枚・認証確認${Number(pokedataAcquisition.browserValidatedCards || 0)}枚）`,
     fetchedProductMatchRatePct: percent(pokedataAutomatic + pokedataManual, pokedataRecords.length),
     targetCoveragePct: percent(pokedataMatchedIds.size, totalCards),
     totalCoveragePct: percent(pokedataMatchedIds.size, totalCards),
     lastSuccessAt: pokedataManifest.updatedAt || pokedata.updatedAt || null,
     fetchFailureCount: Number.isFinite(runFor("pokedata", runs).fetchFailureCount) ? runFor("pokedata", runs).fetchFailureCount : null,
     diagnostics: {
-      ...(pokedata.crawl || {}),
       setCount: pokedataManifest.sets?.length || 0,
       setStatus: pokedataHasPartialSet ? "partial" : "linked",
       ...pokedataAcquisition,
-      actualPriceCoveragePct: percent(pokedataAcquisition.browserValidatedCards, pokedataMatchedIds.size),
     },
     records: [],
     recordsStorage: "set-shards",
@@ -278,7 +262,7 @@ function buildStoreCoverage(root = ROOT) {
     setCount: pokedataManifest.sets?.length || 0,
     sets: pokedataManifest.sets || [],
     ...pokedataAcquisition,
-    actualPriceCoveragePct: percent(pokedataAcquisition.browserValidatedCards, pokedataMatchedIds.size),
+    actualPriceCoveragePct: pokedataAcquisition.pricedCardPct ?? null,
     mainUnmatchedReasons: [
       reason("国内基礎データなし", pokedataBaseMissing),
       reason("曖昧候補", pokedataAmbiguous),

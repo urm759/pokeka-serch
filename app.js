@@ -626,11 +626,17 @@ function renderCollectorDiagnostics(sourceId, diagnostics) {
     </div>` : sourceId === "pokedata" ? `
     <div class="collector-progress-grid">
       <span>展開済みセット <b>${fmt.format(diagnostics.setCount || 0)}セット</b></span>
-      <span>認証済みカード <b>${fmt.format(diagnostics.browserValidatedCards || 0)}枚</b></span>
+      <span>認証画面確認済み <b>${fmt.format(diagnostics.browserValidatedCards || 0)}/${fmt.format(diagnostics.linkedCards || 0)}枚・${formatRate(diagnostics.browserValidationPct)}</b></span>
+      <span>価格付き成約1件以上 <b>${fmt.format(diagnostics.browserPricedCards || 0)}/${fmt.format(diagnostics.linkedCards || 0)}枚・${formatRate(diagnostics.pricedCardPct)}</b></span>
+      <span>参照ページ無効 <b>${fmt.format(diagnostics.browserUnavailableCards || 0)}枚</b></span>
       <span>認証画面の取得行 <b>${fmt.format(diagnostics.browserCapturedRows || 0)}件</b></span>
       <span>価格付き行 <b>${fmt.format(diagnostics.browserPricedRows || 0)}件</b></span>
       <span>Raw / PSA10 / PSA9 採用 <b>${fmt.format(diagnostics.adoptedRawRows || 0)} / ${fmt.format(diagnostics.adoptedPsa10Rows || 0)} / ${fmt.format(diagnostics.adoptedPsa9Rows || 0)}件</b></span>
-      <span>有効中央値カード Raw / PSA10 / PSA9 <b>${fmt.format(diagnostics.usableRawMedianCards || 0)} / ${fmt.format(diagnostics.usablePsa10MedianCards || 0)} / ${fmt.format(diagnostics.usablePsa9MedianCards || 0)}枚</b></span>
+      <span>Raw有効中央値 <b>${fmt.format(diagnostics.usableRawMedianCards || 0)}/${fmt.format(diagnostics.linkedCards || 0)}枚・${formatRate(diagnostics.usableRawMedianPct)}</b></span>
+      <span>PSA10有効中央値 <b>${fmt.format(diagnostics.usablePsa10MedianCards || 0)}/${fmt.format(diagnostics.linkedCards || 0)}枚・${formatRate(diagnostics.usablePsa10MedianPct)}</b></span>
+      <span>PSA9有効中央値 <b>${fmt.format(diagnostics.usablePsa9MedianCards || 0)}/${fmt.format(diagnostics.linkedCards || 0)}枚・${formatRate(diagnostics.usablePsa9MedianPct)}</b></span>
+      <span>全グレード十分 <b>${fmt.format(diagnostics.allGradesSufficientCards || 0)}/${fmt.format(diagnostics.linkedCards || 0)}枚・${formatRate(diagnostics.allGradesSufficientPct)}</b></span>
+      <span class="collector-stop-reason">有効中央値の条件 <b>採用${fmt.format(diagnostics.medianPolicy?.minimumAdoptedCount || 3)}件以上 / ${escapeHtml(diagnostics.medianPolicy?.targetPeriod || "全取得期間（直近90日を加重）")}</b></span>
       <span>商品名確認不能 <b>${fmt.format(diagnostics.titleUnavailableRows || 0)}件</b></span>
       <span>公開API価格マスク <b>${fmt.format(diagnostics.publicApiMaskedRows || 0)}件</b></span>
       <span>元データ価格欠損 <b>${fmt.format(diagnostics.sourcePriceMissingRows || 0)}件</b></span>
@@ -754,6 +760,7 @@ function renderSourceObservability() {
   if (els.pokedataCoverageDetails) {
     const records = state.pokedataAuditRecords.length ? state.pokedataAuditRecords : pokedata?.records || [];
     const manifestSets = state.pokedataManifest?.sets || [];
+    const globalAcquisition = state.pokedataManifest?.acquisition || {};
     const selectedSet = manifestSets.find((entry) => entry.file === state.pokedataAuditSetFile) || manifestSets[0] || null;
     const selectedAcquisition = selectedSet?.acquisition || {};
     const statusLabel = (status) => ({
@@ -779,13 +786,25 @@ function renderSourceObservability() {
         <span>分割済みセット <b>${fmt.format(manifestSets.length)}セット</b></span>
         <span>PokeDATA掲載総数（展開済み${fmt.format(manifestSets.length)}セット合計）<b>${fmt.format(pokedata.sourceSetTotal || 0)}件</b></span>
         <span>選択セット進捗 <b>${selectedSet ? `${fmt.format(selectedSet.linkageCount || 0)}/${fmt.format(selectedSet.sourceCount || 0)}件` : "未選択"}</b></span>
-        <span>選択セットの認証済み実価格 <b>${selectedSet ? `${fmt.format(selectedAcquisition.browserValidatedCards || 0)}/${fmt.format(selectedSet.count || 0)}枚・${formatRate(selectedAcquisition.actualPriceCoveragePct)}` : "未選択"}</b></span>
-        <span>全展開済みカードの実価格取得率 <b>${fmt.format(pokedata.browserValidatedCards || 0)}/${fmt.format(pokedata.matched || 0)}枚・${formatRate(pokedata.actualPriceCoveragePct)}</b></span>
+        <span>選択セット・認証画面確認済み <b>${selectedSet ? `${fmt.format(selectedAcquisition.browserValidatedCards || 0)}/${fmt.format(selectedSet.count || 0)}枚・${formatRate(selectedAcquisition.browserValidationPct)}` : "未選択"}</b></span>
+        <span>選択セット・価格付き成約1件以上 <b>${selectedSet ? `${fmt.format(selectedAcquisition.browserPricedCards || 0)}/${fmt.format(selectedSet.count || 0)}枚・${formatRate(selectedAcquisition.pricedCardPct)}` : "未選択"}</b></span>
+        <span>選択セット・Raw有効中央値 <b>${selectedSet ? `${fmt.format(selectedAcquisition.usableRawMedianCards || 0)}/${fmt.format(selectedSet.count || 0)}枚・${formatRate(selectedAcquisition.usableRawMedianPct)}` : "未選択"}</b></span>
+        <span>選択セット・PSA10有効中央値 <b>${selectedSet ? `${fmt.format(selectedAcquisition.usablePsa10MedianCards || 0)}/${fmt.format(selectedSet.count || 0)}枚・${formatRate(selectedAcquisition.usablePsa10MedianPct)}` : "未選択"}</b></span>
+        <span>選択セット・PSA9有効中央値 <b>${selectedSet ? `${fmt.format(selectedAcquisition.usablePsa9MedianCards || 0)}/${fmt.format(selectedSet.count || 0)}枚・${formatRate(selectedAcquisition.usablePsa9MedianPct)}` : "未選択"}</b></span>
+        <span>選択セット・全グレード十分 <b>${selectedSet ? `${fmt.format(selectedAcquisition.allGradesSufficientCards || 0)}/${fmt.format(selectedSet.count || 0)}枚・${formatRate(selectedAcquisition.allGradesSufficientPct)}` : "未選択"}</b></span>
+        <span>全体・認証画面確認済み <b>${fmt.format(globalAcquisition.browserValidatedCards || 0)}/${fmt.format(globalAcquisition.linkedCards || 0)}枚・${formatRate(globalAcquisition.browserValidationPct)}</b></span>
+        <span>全体・価格付き成約1件以上 <b>${fmt.format(globalAcquisition.browserPricedCards || 0)}/${fmt.format(globalAcquisition.linkedCards || 0)}枚・${formatRate(globalAcquisition.pricedCardPct)}</b></span>
+        <span>全体・Raw有効中央値 <b>${fmt.format(globalAcquisition.usableRawMedianCards || 0)}/${fmt.format(globalAcquisition.linkedCards || 0)}枚・${formatRate(globalAcquisition.usableRawMedianPct)}</b></span>
+        <span>全体・PSA10有効中央値 <b>${fmt.format(globalAcquisition.usablePsa10MedianCards || 0)}/${fmt.format(globalAcquisition.linkedCards || 0)}枚・${formatRate(globalAcquisition.usablePsa10MedianPct)}</b></span>
+        <span>全体・PSA9有効中央値 <b>${fmt.format(globalAcquisition.usablePsa9MedianCards || 0)}/${fmt.format(globalAcquisition.linkedCards || 0)}枚・${formatRate(globalAcquisition.usablePsa9MedianPct)}</b></span>
+        <span>参照ページ無効 <b>${fmt.format(globalAcquisition.browserUnavailableCards || 0)}枚</b></span>
         <span>認証画面の価格付き行 <b>${fmt.format(pokedata.browserPricedRows || 0)}件</b></span>
         <span>Raw 採用 <b>${fmt.format(pokedata.adoptedRawRows || 0)}件</b></span>
         <span>PSA10 採用 <b>${fmt.format(pokedata.adoptedPsa10Rows || 0)}件</b></span>
         <span>PSA9 採用 <b>${fmt.format(pokedata.adoptedPsa9Rows || 0)}件</b></span>
         <span>有効中央値 Raw / PSA10 / PSA9 <b>${fmt.format(pokedata.usableRawMedianCards || 0)} / ${fmt.format(pokedata.usablePsa10MedianCards || 0)} / ${fmt.format(pokedata.usablePsa9MedianCards || 0)}枚</b></span>
+        <span>全体・全グレード十分 <b>${fmt.format(globalAcquisition.allGradesSufficientCards || 0)}/${fmt.format(globalAcquisition.linkedCards || 0)}枚・${formatRate(globalAcquisition.allGradesSufficientPct)}</b></span>
+        <span class="collector-stop-reason">有効中央値の条件 <b>採用${fmt.format(globalAcquisition.medianPolicy?.minimumAdoptedCount || 3)}件以上 / ${escapeHtml(globalAcquisition.medianPolicy?.targetPeriod || "全取得期間（直近90日を加重）")}</b></span>
         <span>商品名確認不能 <b>${fmt.format(pokedata.titleUnavailableRows || 0)}件</b></span>
         <span>公開API価格マスク <b>${fmt.format(pokedata.publicApiMaskedRows || 0)}件</b></span>
         <span>元データ価格欠損 / 形式解析失敗 <b>${fmt.format(pokedata.sourcePriceMissingRows || 0)} / ${fmt.format(pokedata.formatParseFailureRows || 0)}件</b></span>
@@ -796,6 +815,8 @@ function renderSourceObservability() {
         <span>国内基礎データなし <b>${fmt.format(pokedata.unmatched || 0)}</b></span>
         <span>展開済みセット内の紐付け率 <b>${formatRate(pokedata.validationMatchRatePct)}</b></span>
         <span>全${fmt.format(pokedata.totalCards || 0)}枚に対するカバー率 <b>${formatRate(pokedata.totalCoveragePct)}</b></span>
+        ${state.pokedataManifest?.qualityAudit ? `<span class="collector-stop-reason">自動一致監査 <b>${fmt.format(state.pokedataManifest.qualityAudit.sampleSize || 0)}行 / 誤一致 ${fmt.format(state.pokedataManifest.qualityAudit.mismatchCount || 0)}行（${formatRate(state.pokedataManifest.qualityAudit.mismatchRatePct)}）</b></span>` : ""}
+        ${state.pokedataManifest?.nextSetPriorities?.length ? `<span class="collector-stop-reason">次セット候補 <b>${escapeHtml(state.pokedataManifest.nextSetPriorities.slice(0, 3).map((entry, index) => `${index + 1}. ${entry.label}：${entry.reason}`).join(" / "))}</b></span>` : ""}
       </div>
       <label class="pokedata-record-search"><span>監査するセット</span><select id="pokedataAuditSet"><option value="">セットを選択</option>${manifestSets.map((entry) => `<option value="${escapeHtml(entry.file)}"${entry.file === state.pokedataAuditSetFile ? " selected" : ""}>${escapeHtml(entry.setName)}（詳細 ${fmt.format(entry.count || 0)}枚 / 照合 ${fmt.format(entry.linkageCount || 0)}件）</option>`).join("")}</select></label>
       <label class="pokedata-record-search"><span>紐付け結果を検索</span><input id="pokedataRecordSearch" type="search" placeholder="国内名・PokeDATA名・型番・状態"></label>

@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { fromSetEntries } = require("./pokedata_aggregate.js");
 
 function readJson(filePath, fallback) {
   try {
@@ -64,6 +65,9 @@ function loadSetState(root, setName, legacySummary = {}) {
 function compactSummary(summary, manifest) {
   const output = { ...summary };
   delete output.cards;
+  // The manifest is the single source of truth for cross-set acquisition totals.
+  delete output.crawl;
+  output.acquisition = manifest.acquisition;
   output.linkage = {
     ...(summary.linkage || {}),
     records: [],
@@ -94,6 +98,7 @@ function writeSetState(root, summary, { setName, setCode, cards, records, source
     sourceCount: Number(sourceCount || records?.length || 0),
     count: localCardIds.length,
     linkageCount: Number(records?.length || 0),
+    acquisition: acquisition || null,
     cards: cards || {},
     linkageRecords: records || [],
   };
@@ -115,10 +120,12 @@ function writeSetState(root, summary, { setName, setCode, cards, records, source
   sets.push(nextEntry);
   sets.sort((left, right) => String(left.setName).localeCompare(String(right.setName), "en"));
   const nextManifest = {
+    ...manifest,
     version: 1,
     updatedAt: now,
     totalCards: sets.reduce((total, entry) => total + Number(entry.count || 0), 0),
     totalLinkageRecords: sets.reduce((total, entry) => total + Number(entry.linkageCount || 0), 0),
+    acquisition: fromSetEntries(sets, now),
     sets,
   };
   writeJson(manifestPath(root), nextManifest);

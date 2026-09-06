@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { analyzeSales } = require("./pokedata_analysis.js");
+const { fromCardDetails } = require("./pokedata_aggregate.js");
 const { loadSetState, writeSetState } = require("./pokedata_storage.js");
 
 const ROOT = path.join(__dirname, "..");
@@ -29,6 +30,14 @@ function normalizeName(value) {
 function nameTokens(name) {
   const ignored = new Set(["pokemon", "card", "japanese", "the", "ex", "v", "vmax", "vstar"]);
   return normalizeName(name).split(/\s+/).filter((token) => token.length >= 2 && !ignored.has(token)).slice(0, 4);
+}
+
+function expectedVariant(detail, localCardName) {
+  const source = `${detail?.pokedata?.name || ""} ${localCardName || ""}`.normalize("NFKC").toLowerCase();
+  if (/master\s*ball|マスターボール/.test(source)) return "master-ball";
+  if (/poke\s*ball|pokeball|モンスターボール/.test(source)) return "poke-ball";
+  if (/reverse\s*holo|ミラー/.test(source)) return "reverse-holo";
+  return "standard";
 }
 
 function priceJpy(value) {
@@ -170,13 +179,14 @@ function main() {
       const freshRows = capturedRows(captureCard);
       const savedRows = priorRows(localCardId);
       const rows = savedRows.length > freshRows.length ? savedRows : freshRows;
+      const local = domestic.get(localCardId) || {};
       const analysis = analyzeSales(rows, {
         number: captureCard.number,
         setAliases: [setName, detail.pokedata?.setCode || "SV9"],
         nameTokens: nameTokens(captureCard.name),
+        variant: expectedVariant(detail, local.name),
       }, Number(detail.fx?.rate || 1));
       const publicRows = cache.entries?.[String(captureCard.id)]?.data?.transactions || [];
-      const local = domestic.get(localCardId) || {};
       detail.localCardName ||= local.name || null;
       detail.sourceMode = "認証済みChrome実成約 + PokeDATA公開集計";
       detail.capturedAt = captureCard.observedAt || capture.updatedAt || new Date().toISOString();
@@ -186,7 +196,26 @@ function main() {
         ebayPsa10: market(detail.markets?.ebayPsa10, analysis.summaries.psa10, local.snkPsa10Price),
         ebayPsa9: market(detail.markets?.ebayPsa9, analysis.summaries.psa9, local.snkPsa9Price || local.price),
       };
-      detail.acquisitionAudit = missingCauseAudit(captureCard, rows, publicRows);
+      detail.acquisitionAudit = captureCard.pageValid === false ? {
+        method: "authenticated-browser-unavailable",
+        pageReportedTransactions: 0,
+        browserRowsCaptured: 0,
+        browserPricedRows: 0,
+        captureCoveragePct: null,
+        publicApiRows: publicRows.length,
+        publicApiPricePresent: publicRows.filter((row) => Number(row.sold_price) > 0).length,
+        publicApiPriceMissing: publicRows.filter((row) => !(Number(row.sold_price) > 0)).length,
+        matchedRows: 0,
+        missingCauseCounts: {
+          "取得方法の問題（未認証APIまたはページ範囲）": 0,
+          "元データ価格欠損": 0,
+          "価格形式解析失敗": 0,
+          "商品名確認不能": 0,
+          "参照ページ無効": 1,
+        },
+        conclusion: captureCard.unavailableReason || "PokeDATA参照ページを確認できない",
+        observedAt: captureCard.observedAt || null,
+      } : missingCauseAudit(captureCard, rows, publicRows);
       detail.acquisitionAudit.classificationCounts = analysis.classified.reduce((counts, row) => {
         counts[row.reviewClass] = (counts[row.reviewClass] || 0) + 1;
         return counts;
@@ -239,36 +268,9 @@ function main() {
     }
 
     const details = Object.values(cards);
-    const acquisition = {
-      linkedCards: details.length,
-      browserValidatedCards: details.filter((detail) => detail.acquisitionAudit?.method === "authenticated-browser-dom").length,
-      browserPricedCards: details.filter((detail) => detail.acquisitionAudit?.browserPricedRows > 0).length,
-      browserCapturedRows: details.reduce((sum, detail) => sum + Number(detail.acquisitionAudit?.browserRowsCaptured || 0), 0),
-      browserPricedRows: details.reduce((sum, detail) => sum + Number(detail.acquisitionAudit?.browserPricedRows || 0), 0),
-      pageReportedTransactions: details.reduce((sum, detail) => sum + Number(detail.acquisitionAudit?.pageReportedTransactions || 0), 0),
-      publicApiPricePresent: details.reduce((sum, detail) => sum + Number(detail.acquisitionAudit?.publicApiPricePresent || 0), 0),
-      publicApiMaskedRows: details.reduce((sum, detail) => sum + Number(detail.acquisitionAudit?.publicApiPriceMissing || 0), 0),
-      titleUnavailableRows: details.reduce((sum, detail) => sum + Number(detail.acquisitionAudit?.missingCauseCounts?.["商品名確認不能"] || 0), 0),
-      sourcePriceMissingRows: details.reduce((sum, detail) => sum + Number(detail.acquisitionAudit?.missingCauseCounts?.["元データ価格欠損"] || 0), 0),
-      formatParseFailureRows: details.reduce((sum, detail) => sum + Number(detail.acquisitionAudit?.missingCauseCounts?.["価格形式解析失敗"] || 0), 0),
-      adoptedRawRows: details.reduce((sum, detail) => sum + Number(detail.markets?.ebayRaw?.adoptedCount || 0), 0),
-      adoptedPsa10Rows: details.reduce((sum, detail) => sum + Number(detail.markets?.ebayPsa10?.adoptedCount || 0), 0),
-      adoptedPsa9Rows: details.reduce((sum, detail) => sum + Number(detail.markets?.ebayPsa9?.adoptedCount || 0), 0),
-      classificationCounts: details.reduce((totals, detail) => {
-        Object.entries(detail.acquisitionAudit?.classificationCounts || {}).forEach(([key, count]) => {
-          totals[key] = (totals[key] || 0) + Number(count || 0);
-        });
-        return totals;
-      }, { "auto-matched": 0, ambiguous: 0, "out-of-scope": 0, unverifiable: 0 }),
-      usableRawMedianCards: details.filter((detail) => detail.markets?.ebayRaw?.usableIndividualMedian).length,
-      usablePsa10MedianCards: details.filter((detail) => detail.markets?.ebayPsa10?.usableIndividualMedian).length,
-      usablePsa9MedianCards: details.filter((detail) => detail.markets?.ebayPsa9?.usableIndividualMedian).length,
-      actualPriceCoveragePct: details.length ? Math.round(details.filter((detail) => detail.acquisitionAudit?.browserPricedRows > 0).length / details.length * 10000) / 100 : null,
-      updatedAt: new Date().toISOString(),
-    };
+    const acquisition = fromCardDetails(details);
     summary.updatedAt = acquisition.updatedAt;
-    summary.coverage = { ...(summary.coverage || {}), browserValidatedCards: acquisition.browserValidatedCards, actualPriceCoveragePct: acquisition.actualPriceCoveragePct };
-    summary.crawl = { ...(summary.crawl || {}), ...acquisition };
+    summary.coverage = { ...(summary.coverage || {}), browserValidatedCards: acquisition.browserValidatedCards, actualPriceCoveragePct: acquisition.pricedCardPct };
     writeSetState(ROOT, summary, {
       setName,
       setCode: stored.entry?.setCode || details.find((detail) => detail.pokedata?.setCode)?.pokedata?.setCode || null,
@@ -279,24 +281,25 @@ function main() {
       status: "set-linked-individual-sales-partial",
       acquisition,
     });
-    const coverage = readJson(LINK_COVERAGE, {});
-    coverage.overseasSources ||= {};
-    coverage.overseasSources.pokedata = {
-      ...(coverage.overseasSources.pokedata || {}),
-      browserValidatedCards: acquisition.browserValidatedCards,
-      usableRawMedianCards: acquisition.usableRawMedianCards,
-      usablePsa10MedianCards: acquisition.usablePsa10MedianCards,
-      usablePsa9MedianCards: acquisition.usablePsa9MedianCards,
-      actualPriceCoveragePct: acquisition.actualPriceCoveragePct,
-      acquisitionUpdatedAt: acquisition.updatedAt,
-      acquisitionStatus: acquisition.browserValidatedCards >= acquisition.linkedCards ? "complete" : "partial",
-    };
-    writeJson(LINK_COVERAGE, coverage);
     report.push({ setName, imported, ...acquisition });
   }
+  const latestManifest = readJson(path.join(ROOT, "data", "pokedata", "manifest.json"), { acquisition: {} });
+  const globalAcquisition = latestManifest.acquisition || {};
+  const coverage = readJson(LINK_COVERAGE, {});
+  coverage.overseasSources ||= {};
+  coverage.overseasSources.pokedata = {
+    ...(coverage.overseasSources.pokedata || {}),
+    ...globalAcquisition,
+    actualPriceCoveragePct: globalAcquisition.pricedCardPct,
+    acquisitionUpdatedAt: globalAcquisition.updatedAt,
+    acquisitionStatus: Number(globalAcquisition.browserValidatedCards || 0) + Number(globalAcquisition.browserUnavailableCards || 0) >= Number(globalAcquisition.linkedCards || 0)
+      ? "capture-complete-with-unavailable"
+      : "partial",
+  };
+  writeJson(LINK_COVERAGE, coverage);
   console.log(JSON.stringify({ status: "success", sets: report }));
 }
 
 if (require.main === module) main();
 
-module.exports = { capturedRows, missingCauseAudit, priceJpy };
+module.exports = { capturedRows, expectedVariant, missingCauseAudit, priceJpy };
