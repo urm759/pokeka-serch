@@ -2,6 +2,7 @@ const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
 const { eventPhase, periodComparison } = require("./build_market_research.js");
+const { analyzeSales } = require("./pokedata_analysis.js");
 const { cardVariant, findDomestic } = require("./update_pokedata_batch.js");
 const { wilsonUpper95 } = require("./audit_pokedata_matches.js");
 
@@ -25,6 +26,13 @@ assert.strictEqual(insufficient.days30.differenceRatePct, null);
 const sufficient = periodComparison({ periods: { days30: { count: 3, medianJpy: 120 }, days90: { count: 3, medianJpy: 120 }, all: { count: 3, medianJpy: 120 } } }, 100, 3);
 assert.strictEqual(sufficient.days30.level, "国内が安い");
 assert.strictEqual(sufficient.days30.differenceRatePct, 20);
+
+const dated = analyzeSales([
+  { id: "recent", title: "Charizard ex Pokemon Japanese SV2A #201 raw", psa_grade: "Raw", sold_price: 100, date_sold: "2026-08-20", observedAt: "2026-09-06T00:00:00Z" },
+  { id: "old", title: "Charizard ex Pokemon Japanese SV2A #201 raw", psa_grade: "Raw", sold_price: 200, date_sold: "2026-04-13", observedAt: "2026-09-06T00:00:00Z" },
+], { setCode: "SV2A", number: "201", setAliases: ["SV2A"], nameTokens: ["charizard"], variant: "standard" }, 1);
+assert.strictEqual(dated.summaries.raw.periods.days30.count, 1, "30-day period must use acquisition date, not latest sale date");
+assert.strictEqual(dated.summaries.raw.periods.days90.count, 1);
 
 assert.strictEqual(eventPhase("2026-06-14", { start: "2026-06-15", end: "2026-07-15" }), "before");
 assert.strictEqual(eventPhase("2026-06-15", { start: "2026-06-15", end: "2026-07-15" }), "during");

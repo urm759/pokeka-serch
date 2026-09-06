@@ -164,9 +164,10 @@ function summarizeGrade(allRows, grade, fxRate) {
     const reasons = outlierIds.has(row.rowId) ? ["外れ値"] : row.reasons.length ? row.reasons : ["表示グレードをタイトルから再分類"];
     for (const reason of reasons) reasonCounts[reason] = (reasonCounts[reason] || 0) + 1;
   }
-  const latestTime = Math.max(...adopted.map((row) => Date.parse(row.date)).filter(Number.isFinite), 0);
+  const observedTimes = allRows.map((row) => Date.parse(row.observedAt)).filter(Number.isFinite);
+  const referenceTime = observedTimes.length ? Math.max(...observedTimes) : Date.now();
   const weighted = adopted.map((row) => {
-    const days = latestTime ? Math.max(0, (latestTime - Date.parse(row.date)) / 86400000) : 999;
+    const days = Math.max(0, (referenceTime - Date.parse(row.date)) / 86400000);
     return { ...row, weight: days <= 30 ? 3 : days <= 90 ? 2 : 1 };
   });
   const prices = adopted.map((row) => row.priceJpy);
@@ -174,10 +175,9 @@ function summarizeGrade(allRows, grade, fxRate) {
   const medianJpy = median(prices);
   const latestDate = adopted.map((row) => row.date).filter(Boolean).sort().at(-1) || null;
   const earliestDate = adopted.map((row) => row.date).filter(Boolean).sort().at(0) || null;
-  const latestTimeForPeriod = latestDate ? Date.parse(latestDate) : null;
   const periodRows = (fromDay, toDay) => adopted.filter((row) => {
-    if (!latestTimeForPeriod || !row.date) return false;
-    const days = (latestTimeForPeriod - Date.parse(row.date)) / 86400000;
+    if (!row.date) return false;
+    const days = (referenceTime - Date.parse(row.date)) / 86400000;
     return days >= fromDay && days <= toDay;
   });
   const recent30 = periodRows(0, 29);
@@ -194,12 +194,13 @@ function summarizeGrade(allRows, grade, fxRate) {
       count: rows.length,
       medianJpy: median(values),
       weightedMedianJpy: weightedMedian(rows.map((row) => {
-        const age = latestTime ? Math.max(0, (latestTime - Date.parse(row.date)) / 86400000) : 999;
+        const age = Math.max(0, (referenceTime - Date.parse(row.date)) / 86400000);
         return { ...row, weight: age <= 30 ? 3 : age <= 90 ? 2 : 1 };
       })),
       minJpy: values.length ? Math.min(...values) : null,
       maxJpy: values.length ? Math.max(...values) : null,
       lastSaleDate: rows.map((row) => row.date).filter(Boolean).sort().at(-1) || null,
+      referenceDate: new Date(referenceTime).toISOString().slice(0, 10),
       sufficient: rows.length >= 3,
       status: rows.length >= 3 ? "比較可" : "参考値・件数不足",
     };
