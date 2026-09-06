@@ -5,8 +5,9 @@ const path = require("path");
 const ROOT = path.join(__dirname, "..");
 const MANIFEST = path.join(ROOT, "data", "pokedata", "manifest.json");
 const OUTPUT = path.join(ROOT, "data", "pokedata-match-audit.json");
-const SAMPLE_SIZE = Math.max(100, Number(process.env.POKEDATA_AUDIT_SAMPLE || 100));
+const SAMPLE_SIZE = Math.max(150, Number(process.env.POKEDATA_AUDIT_SAMPLE || 300));
 const MAX_MISMATCH_RATE_PCT = 2;
+const AUDIT_SEED = process.env.POKEDATA_AUDIT_SEED || "pokedata-audit-v2-20260906";
 
 function readJson(file, fallback) {
   try { return JSON.parse(fs.readFileSync(file, "utf8").replace(/^\uFEFF/, "")); } catch { return fallback; }
@@ -74,6 +75,29 @@ function median(values) {
   return sorted.length % 2 ? sorted[middle] : Math.round((sorted[middle - 1] + sorted[middle]) / 2);
 }
 
+function wilsonUpper95(errors, total) {
+  if (!total) return null;
+  const z = 1.6448536269514722;
+  const p = errors / total;
+  const z2 = z * z;
+  const center = p + z2 / (2 * total);
+  const spread = z * Math.sqrt((p * (1 - p) + z2 / (4 * total)) / total);
+  return (center + spread) / (1 + z2 / total);
+}
+
+function rowStrata(row, detail) {
+  const title = normalized(row.title);
+  const variant = expectedVariant(detail);
+  return [...new Set([
+    variant === "standard" ? "通常版" : variant === "master-ball" ? "マスターボールミラー" : variant === "poke-ball" ? "モンスターボールミラー" : "その他ミラー",
+    /\b(?:bgs|beckett|cgc|tag|ace|sgc)\b/.test(title) ? "PSA以外の鑑定品" : null,
+    /\b(?:lot of|playset|bundle|pair|set of|x\s*[2-9]|[2-9]\s*x|[2-9]\s*cards?)\b/.test(title) ? "複数枚セット" : null,
+    /\b(?:booster\s*(?:box|pack)|sealed|unopened|factory\s*sealed)\b/.test(title) ? "未開封品" : null,
+    /\b(?:english|eng)\b/.test(title) && !/japanese|jpn|\bjp\b/.test(title) ? "英語版と日本語版" : null,
+    String(detail?.pokedata?.setCode || "").toUpperCase().endsWith("-P") ? "プロモ" : null,
+  ].filter(Boolean))];
+}
+
 function nextSetPriorities(cards, manifest) {
   const existing = new Set((manifest.sets || []).map((entry) => String(entry.setCode || "").toUpperCase()));
   const groups = new Map();
@@ -121,23 +145,32 @@ function main() {
     if (!sale) continue;
     for (const row of sale.rows || []) {
       if (row.reviewClass !== "auto-matched") continue;
-      const randomKey = crypto.createHash("sha256").update(`pokedata-audit-v1|${localCardId}|${row.rowId}`).digest("hex");
-      candidates.push({ randomKey, localCardId, detail, row });
+      const randomKey = crypto.createHash("sha256").update(`${AUDIT_SEED}|${localCardId}|${row.rowId}`).digest("hex");
+      candidates.push({ randomKey, localCardId, detail, row, strata: rowStrata(row, detail) });
     }
   }
   const sample = candidates.sort((a, b) => a.randomKey.localeCompare(b.randomKey)).slice(0, Math.min(SAMPLE_SIZE, candidates.length));
-  const results = sample.map(({ localCardId, detail, row }) => {
+  const results = sample.map(({ localCardId, detail, row, strata }) => {
     const reasons = auditRow(row, detail);
-    return { localCardId, localCardName: detail.localCardName, rowId: row.rowId, title: row.title, classifiedGrade: row.classifiedGrade, mismatch: reasons.length > 0, reasons };
+    return { localCardId, localCardName: detail.localCardName, rowId: row.rowId, title: row.title, classifiedGrade: row.classifiedGrade, strata, mismatch: reasons.length > 0, reasons };
   });
   const mismatchCount = results.filter((row) => row.mismatch).length;
   const mismatchRatePct = results.length ? Math.round(mismatchCount / results.length * 10000) / 100 : null;
+  const upper95Pct = results.length ? Math.round(wilsonUpper95(mismatchCount, results.length) * 10000) / 100 : null;
+  const strata = [...new Set(results.flatMap((row) => row.strata || []))].map((name) => {
+    const rows = results.filter((row) => row.strata?.includes(name));
+    const errors = rows.filter((row) => row.mismatch).length;
+    return { name, sampleSize: rows.length, mismatchCount: errors, mismatchRatePct: rows.length ? Math.round(errors / rows.length * 10000) / 100 : null };
+  });
   const audit = {
-    version: 1, updatedAt: new Date().toISOString(),
-    method: "固定シードによる自動一致行の無作為100行・独立ルール再監査",
+    version: 2, updatedAt: new Date().toISOString(), seed: AUDIT_SEED,
+    method: `固定シードによる自動一致行の無作為${results.length}行・仕様別の独立ルール再監査`,
     population: candidates.length, sampleSize: results.length, mismatchCount, mismatchRatePct,
+    upper95Pct, precisionStatus: upper95Pct != null && upper95Pct <= MAX_MISMATCH_RATE_PCT ? "監査基準内" : "精度確認中",
     thresholdPct: MAX_MISMATCH_RATE_PCT,
     passed: mismatchRatePct != null && mismatchRatePct <= MAX_MISMATCH_RATE_PCT,
+    autoAdoptionAllowed: mismatchRatePct != null && mismatchRatePct <= MAX_MISMATCH_RATE_PCT,
+    strata,
     results,
   };
   const cards = readJson(path.join(ROOT, "data", "pokemon-cards.json"), []);
@@ -152,4 +185,4 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { auditRow, expectedVariant, nextSetPriorities };
+module.exports = { auditRow, expectedVariant, nextSetPriorities, rowStrata, wilsonUpper95 };

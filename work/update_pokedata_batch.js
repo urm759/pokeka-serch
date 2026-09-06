@@ -36,6 +36,13 @@ function normalizeName(value) {
   return String(value || "").normalize("NFKC").toLowerCase()
     .replace(/[’‘]/g, "'").replace(/[^a-z0-9'\u3040-\u30ff\u3400-\u9fff]+/g, " ").trim();
 }
+function cardVariant(value) {
+  const source = String(value || "").normalize("NFKC").toLowerCase();
+  if (/master\s*ball|マスターボール/.test(source)) return "master-ball";
+  if (/poke\s*ball|pokeball|モンスターボール/.test(source)) return "poke-ball";
+  if (/reverse\s*holo|reverse|ミラー/.test(source)) return "reverse-holo";
+  return "standard";
+}
 function localIdentity(card) {
   const name = String(card?.name || "");
   const standard = name.match(/\[\s*([A-Za-z0-9+-]+)\s+(\d{1,4})(?:\s*[-/]\s*(\d{1,4}))?\s*\]/);
@@ -45,7 +52,7 @@ function localIdentity(card) {
   const printedNumber = standard?.[3] ? `${standard[2]}/${standard[3]}` : promo ? `${promo[1]}/${promo[2]}` : number;
   const baseName = name.split("[")[0].trim();
   const rarity = (baseName.match(/\b(MUR|BWR|MA|SSR|CSR|CHR|SAR|UR|HR|SR|RRR|RR|AR|PR|P|H|C|U|R)\b/i) || [])[1] || null;
-  return { setCode, number, printedNumber, baseName, rarity };
+  return { setCode, number, printedNumber, baseName, rarity, variant: cardVariant(name) };
 }
 function sourceAverage(stats, source) {
   const row = (stats || []).find((item) => Number(item.source) === source);
@@ -142,7 +149,10 @@ function findDomestic(sourceCard, domesticByKey, aliases) {
   const alias = aliases.find((entry) => Number(entry.pokedataCardId) === Number(sourceCard.id) && entry.status !== "disabled");
   if (alias) return { status: alias.status === "confirmed" ? "manual-confirmed" : "auto-confirmed", localCardId: alias.localCardId, method: alias.method };
   const key = `${normalizeSetCode(sourceCard.set_code)}|${normalizeNumber(sourceCard.num)}`;
-  const candidates = domesticByKey.get(key) || [];
+  const allCandidates = domesticByKey.get(key) || [];
+  const sourceVariant = cardVariant(sourceCard.name);
+  const exactVariant = allCandidates.filter((card) => localIdentity(card).variant === sourceVariant);
+  const candidates = exactVariant.length ? exactVariant : allCandidates;
   if (candidates.length === 1) return { status: "auto-matched", localCardId: candidates[0].id, method: "set-code+card-number+language" };
   if (candidates.length > 1) return { status: "ambiguous", candidates: candidates.map((card) => card.id), method: "set-code+card-number" };
   return { status: "domestic-base-missing", candidates: [], method: "set-code+card-number" };
@@ -395,4 +405,4 @@ async function main() {
 
 if (require.main === module) main().catch((error) => { console.error(error); process.exitCode = 1; });
 
-module.exports = { findDomestic, individualSalesStatus, localIdentity, minimalTransactions, normalizeName, normalizeNumber, normalizeSetCode };
+module.exports = { cardVariant, findDomestic, individualSalesStatus, localIdentity, minimalTransactions, normalizeName, normalizeNumber, normalizeSetCode };

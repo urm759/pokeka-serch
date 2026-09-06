@@ -11,7 +11,7 @@ assert.strictEqual(normalizeNumber("009/100"), "9");
 assert.strictEqual(normalizeName("Lillie’s Clefairy ex"), "lillie's clefairy ex");
 assert.deepStrictEqual(localIdentity({ name: "リーリエのピッピex SAR [SV9 126/100](拡張パック)" }), {
   setCode: "SV9", number: "126", printedNumber: "126/100",
-  baseName: "リーリエのピッピex SAR", rarity: "SAR",
+  baseName: "リーリエのピッピex SAR", rarity: "SAR", variant: "standard",
 });
 
 const sourceCard = { id: 73990, set_code: "SV9", num: "126" };

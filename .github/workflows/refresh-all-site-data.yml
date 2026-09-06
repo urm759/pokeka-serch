@@ -111,9 +111,28 @@ jobs:
           POKEDATA_TIMEOUT_MS: "10000"
         run: node work/update_pokedata_batch.js
 
+      - name: Expand Japanese Pokemon Card 151 set
+        if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'pokedata'
+        timeout-minutes: 10
+        continue-on-error: true
+        env:
+          POKEDATA_SET: "Pokemon Card 151 Japanese"
+          POKEDATA_TARGET: "516"
+          POKEDATA_BATCH: "20"
+          POKEDATA_INTERVAL_MS: "1100"
+          POKEDATA_TIMEOUT_MS: "10000"
+        run: node work/update_pokedata_batch.js
+
       - name: Reapply authenticated PokeDATA sale captures
         if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'pokedata'
         run: node work/run_tracked_update.js pokedata work/import_pokedata_browser_capture.js
+
+      - name: Audit PokeDATA matches and build reference research
+        if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'pokedata' || inputs.source == 'marketAnalysis'
+        run: |
+          node work/audit_pokedata_matches.js
+          node work/build_market_research.js
+          node work/audit_modern_high_rarity.js
 
       - name: Resolve all Snkrdunk direct links
         if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'toreca'
@@ -206,6 +225,9 @@ jobs:
 
       - name: Verify PokeDATA aggregate consistency
         run: node work/test_pokedata_consistency.js
+
+      - name: Verify market research isolation and boundaries
+        run: node work/test_market_research.js
 
       - name: Commit all changes
         run: |

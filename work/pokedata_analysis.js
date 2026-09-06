@@ -186,6 +186,24 @@ function summarizeGrade(allRows, grade, fxRate) {
   const priorMedian = median(prior30.map((row) => row.priceJpy));
   const trendChangePct = recentMedian && priorMedian ? (recentMedian / priorMedian - 1) * 100 : null;
   const trendDirection = !Number.isFinite(trendChangePct) ? "蓄積中" : trendChangePct > 3 ? "上昇" : trendChangePct < -3 ? "下降" : "横ばい";
+  const periodSummary = (days) => {
+    const rows = days == null ? adopted : periodRows(0, days - 1);
+    const values = rows.map((row) => row.priceJpy);
+    return {
+      days,
+      count: rows.length,
+      medianJpy: median(values),
+      weightedMedianJpy: weightedMedian(rows.map((row) => {
+        const age = latestTime ? Math.max(0, (latestTime - Date.parse(row.date)) / 86400000) : 999;
+        return { ...row, weight: age <= 30 ? 3 : age <= 90 ? 2 : 1 };
+      })),
+      minJpy: values.length ? Math.min(...values) : null,
+      maxJpy: values.length ? Math.max(...values) : null,
+      lastSaleDate: rows.map((row) => row.date).filter(Boolean).sort().at(-1) || null,
+      sufficient: rows.length >= 3,
+      status: rows.length >= 3 ? "比較可" : "参考値・件数不足",
+    };
+  };
   return {
     grade,
     originalCount: original.length,
@@ -210,6 +228,7 @@ function summarizeGrade(allRows, grade, fxRate) {
     firstSaleDate: earliestDate,
     targetPeriod: earliestDate && latestDate ? `${earliestDate}～${latestDate}` : null,
     periodCounts: { days30: recent30.length, days90: periodRows(0, 89).length, all: adopted.length },
+    periods: { days30: periodSummary(30), days90: periodSummary(90), all: periodSummary(null) },
     trend: { direction: trendDirection, latest30MedianJpy: recentMedian, previous30MedianJpy: priorMedian, changePct: trendChangePct },
     confidence,
   };

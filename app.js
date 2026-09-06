@@ -23,6 +23,8 @@ const state = {
   snkrListingSummary: Object.create(null),
   pokedataSummary: Object.create(null),
   pokedataManifest: null,
+  marketResearch: null,
+  modernHighRarityAudit: null,
   pokedataAuditRecords: [],
   pokedataAuditSetFile: "",
   pokedataShardPayloads: Object.create(null),
@@ -761,7 +763,10 @@ function renderSourceObservability() {
     const records = state.pokedataAuditRecords.length ? state.pokedataAuditRecords : pokedata?.records || [];
     const manifestSets = state.pokedataManifest?.sets || [];
     const globalAcquisition = state.pokedataManifest?.acquisition || {};
-    const selectedSet = manifestSets.find((entry) => entry.file === state.pokedataAuditSetFile) || manifestSets[0] || null;
+    const selectedSet = manifestSets.find((entry) => entry.file === state.pokedataAuditSetFile)
+      || manifestSets.find((entry) => entry.setName === "Pokemon Card 151 Japanese")
+      || manifestSets[0]
+      || null;
     const selectedAcquisition = selectedSet?.acquisition || {};
     const statusLabel = (status) => ({
       "manual-confirmed": "手動確認済み", "auto-matched": "自動紐付け",
@@ -785,13 +790,13 @@ function renderSourceObservability() {
       <div class="overseas-summary-grid">
         <span>分割済みセット <b>${fmt.format(manifestSets.length)}セット</b></span>
         <span>PokeDATA掲載総数（展開済み${fmt.format(manifestSets.length)}セット合計）<b>${fmt.format(pokedata.sourceSetTotal || 0)}件</b></span>
-        <span>選択セット進捗 <b>${selectedSet ? `${fmt.format(selectedSet.linkageCount || 0)}/${fmt.format(selectedSet.sourceCount || 0)}件` : "未選択"}</b></span>
-        <span>選択セット・認証画面確認済み <b>${selectedSet ? `${fmt.format(selectedAcquisition.browserValidatedCards || 0)}/${fmt.format(selectedSet.count || 0)}枚・${formatRate(selectedAcquisition.browserValidationPct)}` : "未選択"}</b></span>
-        <span>選択セット・価格付き成約1件以上 <b>${selectedSet ? `${fmt.format(selectedAcquisition.browserPricedCards || 0)}/${fmt.format(selectedSet.count || 0)}枚・${formatRate(selectedAcquisition.pricedCardPct)}` : "未選択"}</b></span>
-        <span>選択セット・Raw有効中央値 <b>${selectedSet ? `${fmt.format(selectedAcquisition.usableRawMedianCards || 0)}/${fmt.format(selectedSet.count || 0)}枚・${formatRate(selectedAcquisition.usableRawMedianPct)}` : "未選択"}</b></span>
-        <span>選択セット・PSA10有効中央値 <b>${selectedSet ? `${fmt.format(selectedAcquisition.usablePsa10MedianCards || 0)}/${fmt.format(selectedSet.count || 0)}枚・${formatRate(selectedAcquisition.usablePsa10MedianPct)}` : "未選択"}</b></span>
-        <span>選択セット・PSA9有効中央値 <b>${selectedSet ? `${fmt.format(selectedAcquisition.usablePsa9MedianCards || 0)}/${fmt.format(selectedSet.count || 0)}枚・${formatRate(selectedAcquisition.usablePsa9MedianPct)}` : "未選択"}</b></span>
-        <span>選択セット・全グレード十分 <b>${selectedSet ? `${fmt.format(selectedAcquisition.allGradesSufficientCards || 0)}/${fmt.format(selectedSet.count || 0)}枚・${formatRate(selectedAcquisition.allGradesSufficientPct)}` : "未選択"}</b></span>
+        <span>優先／選択セット進捗 <b>${selectedSet ? `${escapeHtml(selectedSet.setName)} ${fmt.format(selectedSet.linkageCount || 0)}/${fmt.format(selectedSet.sourceCount || 0)}件` : "未選択"}</b></span>
+        <span>優先／選択セット・認証画面確認済み <b>${selectedSet ? `${fmt.format(selectedAcquisition.browserValidatedCards || 0)}/${fmt.format(selectedSet.count || 0)}枚・${formatRate(selectedAcquisition.browserValidationPct)}` : "未選択"}</b></span>
+        <span>優先／選択セット・価格付き成約1件以上 <b>${selectedSet ? `${fmt.format(selectedAcquisition.browserPricedCards || 0)}/${fmt.format(selectedSet.count || 0)}枚・${formatRate(selectedAcquisition.pricedCardPct)}` : "未選択"}</b></span>
+        <span>優先／選択セット・Raw有効中央値 <b>${selectedSet ? `${fmt.format(selectedAcquisition.usableRawMedianCards || 0)}/${fmt.format(selectedSet.count || 0)}枚・${formatRate(selectedAcquisition.usableRawMedianPct)}` : "未選択"}</b></span>
+        <span>優先／選択セット・PSA10有効中央値 <b>${selectedSet ? `${fmt.format(selectedAcquisition.usablePsa10MedianCards || 0)}/${fmt.format(selectedSet.count || 0)}枚・${formatRate(selectedAcquisition.usablePsa10MedianPct)}` : "未選択"}</b></span>
+        <span>優先／選択セット・PSA9有効中央値 <b>${selectedSet ? `${fmt.format(selectedAcquisition.usablePsa9MedianCards || 0)}/${fmt.format(selectedSet.count || 0)}枚・${formatRate(selectedAcquisition.usablePsa9MedianPct)}` : "未選択"}</b></span>
+        <span>優先／選択セット・全グレード十分 <b>${selectedSet ? `${fmt.format(selectedAcquisition.allGradesSufficientCards || 0)}/${fmt.format(selectedSet.count || 0)}枚・${formatRate(selectedAcquisition.allGradesSufficientPct)}` : "未選択"}</b></span>
         <span>全体・認証画面確認済み <b>${fmt.format(globalAcquisition.browserValidatedCards || 0)}/${fmt.format(globalAcquisition.linkedCards || 0)}枚・${formatRate(globalAcquisition.browserValidationPct)}</b></span>
         <span>全体・価格付き成約1件以上 <b>${fmt.format(globalAcquisition.browserPricedCards || 0)}/${fmt.format(globalAcquisition.linkedCards || 0)}枚・${formatRate(globalAcquisition.pricedCardPct)}</b></span>
         <span>全体・Raw有効中央値 <b>${fmt.format(globalAcquisition.usableRawMedianCards || 0)}/${fmt.format(globalAcquisition.linkedCards || 0)}枚・${formatRate(globalAcquisition.usableRawMedianPct)}</b></span>
@@ -815,7 +820,9 @@ function renderSourceObservability() {
         <span>国内基礎データなし <b>${fmt.format(pokedata.unmatched || 0)}</b></span>
         <span>展開済みセット内の紐付け率 <b>${formatRate(pokedata.validationMatchRatePct)}</b></span>
         <span>全${fmt.format(pokedata.totalCards || 0)}枚に対するカバー率 <b>${formatRate(pokedata.totalCoveragePct)}</b></span>
-        ${state.pokedataManifest?.qualityAudit ? `<span class="collector-stop-reason">自動一致監査 <b>${fmt.format(state.pokedataManifest.qualityAudit.sampleSize || 0)}行 / 誤一致 ${fmt.format(state.pokedataManifest.qualityAudit.mismatchCount || 0)}行（${formatRate(state.pokedataManifest.qualityAudit.mismatchRatePct)}）</b></span>` : ""}
+        ${state.pokedataManifest?.qualityAudit ? `<span class="collector-stop-reason">自動一致監査 <b>${fmt.format(state.pokedataManifest.qualityAudit.sampleSize || 0)}行 / 誤一致 ${fmt.format(state.pokedataManifest.qualityAudit.mismatchCount || 0)}行（${formatRate(state.pokedataManifest.qualityAudit.mismatchRatePct)}）/ 95%信頼上限 ${formatRate(state.pokedataManifest.qualityAudit.upper95Pct)} / ${escapeHtml(state.pokedataManifest.qualityAudit.precisionStatus || "精度確認中")}</b><small>監査シード ${escapeHtml(state.pokedataManifest.qualityAudit.seed || "未取得")} / 層別 ${escapeHtml((state.pokedataManifest.qualityAudit.strata || []).map((entry) => `${entry.name} ${entry.sampleSize}行・誤一致${entry.mismatchCount}`).join(" / ") || "対象行なし")}</small></span>` : ""}
+        ${state.marketResearch ? `<span class="collector-stop-reason">海外先行性 <b>${fmt.format(state.marketResearch.overseasLead?.savedCardCount || 0)}枚・${fmt.format(state.marketResearch.overseasLead?.savedDateCount || 0)}日 / ${escapeHtml(state.marketResearch.overseasLead?.status || "仮説・蓄積中")}</b></span><span class="collector-stop-reason">季節性 <b>${fmt.format(state.marketResearch.seasonality?.savedDateCount || 0)}日 / ${escapeHtml(state.marketResearch.seasonality?.status || "仮説・蓄積中")}</b><small>市場全体・買取掲載・非掲載を分離。仕入れ上限へ未反映</small></span><span>為替 <b>${Number.isFinite(state.marketResearch.fx?.rate) ? `1 USD = ¥${Number(state.marketResearch.fx.rate).toFixed(3)}` : "未取得"}</b><small>${escapeHtml(state.marketResearch.fx?.source || "取得元未取得")} / ${escapeHtml(state.marketResearch.fx?.rateDate || state.marketResearch.fx?.fetchedAt || "日時未取得")} / ${escapeHtml(state.marketResearch.fx?.latestOrPrevious || state.marketResearch.fx?.status || "未取得")}</small></span>` : ""}
+        ${state.modernHighRarityAudit ? `<span class="collector-stop-reason">2015年以降SR以上監査 <b>更新前不足 ${fmt.format(state.modernHighRarityAudit.missingBefore || 0)}枚 / 今回追加 ${fmt.format(state.modernHighRarityAudit.addedThisRun || 0)}枚 / 更新後不足 ${fmt.format(state.modernHighRarityAudit.missingAfter || 0)}枚</b><small>対象ホワイトリスト ${escapeHtml((state.modernHighRarityAudit.config?.rarityWhitelist || []).join("・"))} / CHR・ARは別集計</small></span>` : ""}
         ${state.pokedataManifest?.nextSetPriorities?.length ? `<span class="collector-stop-reason">次セット候補 <b>${escapeHtml(state.pokedataManifest.nextSetPriorities.slice(0, 3).map((entry, index) => `${index + 1}. ${entry.label}：${entry.reason}`).join(" / "))}</b></span>` : ""}
       </div>
       <label class="pokedata-record-search"><span>監査するセット</span><select id="pokedataAuditSet"><option value="">セットを選択</option>${manifestSets.map((entry) => `<option value="${escapeHtml(entry.file)}"${entry.file === state.pokedataAuditSetFile ? " selected" : ""}>${escapeHtml(entry.setName)}（詳細 ${fmt.format(entry.count || 0)}枚 / 照合 ${fmt.format(entry.linkageCount || 0)}件）</option>`).join("")}</select></label>
@@ -3106,12 +3113,18 @@ function render() {
         <div><span>PSA9以下の採用価格</span><strong>¥${fmt.format(Math.round(psa9Audit.value || 0))}</strong><small>${escapeHtml(psa9Audit.source || "未取得")} / 採用 ${fmt.format(psa9Audit.count || 0)}件 / 信頼度 ${escapeHtml(psa9Audit.confidence || "低")}${psa9Audit.estimated ? " / 推定値" : " / 実成約"}</small></div>
       </div>`;
     const pokedata = state.pokedataSummary?.[card.id] || null;
-    const pokedataMarket = (market, label) => market ? `
+    const pokedataMarket = (market, label, gradeKey) => {
+      const comparison = state.marketResearch?.comparisons?.[card.id]?.[gradeKey] || null;
+      const periodLine = comparison ? [
+        ["30日", comparison.days30], ["90日", comparison.days90], ["全期間", comparison.all],
+      ].map(([periodLabel, item]) => `${periodLabel} ${fmt.format(item.count || 0)}件・${Number.isFinite(item.overseasMedianJpy) ? `¥${fmt.format(item.overseasMedianJpy)}` : "未取得"}${item.comparable ? ` / 国内比 ${item.differenceRatePct >= 0 ? "+" : ""}${item.differenceRatePct}%・${item.level}` : " / 参考値・件数不足"}`).join("<br>") : "期間別比較を生成中";
+      return market ? `
       <div>
         <span>${escapeHtml(label)}</span>
         <strong>${Number.isFinite(market.medianJpy) ? `¥${fmt.format(Math.round(market.medianJpy))}` : Number.isFinite(market.apiAverageJpy) ? `¥${fmt.format(Math.round(market.apiAverageJpy))}` : "未取得"}</strong>
-        <small>PokeDATA集計表示 ${Number.isFinite(market.pageDisplayJpy) ? `¥${fmt.format(Math.round(market.pageDisplayJpy))}` : "未取得"}<br>取得行 ${fmt.format(market.originalCount || 0)}件 / 採用 ${fmt.format(market.adoptedCount || 0)}件 / 除外 ${fmt.format(market.excludedCount || 0)}件<br>有効中央値 ${Number.isFinite(market.medianJpy) ? `¥${fmt.format(Math.round(market.medianJpy))}` : "未取得"} / 加重中央値 ${Number.isFinite(market.weightedMedianJpy) ? `¥${fmt.format(Math.round(market.weightedMedianJpy))}` : "未取得"}<br>価格範囲 ${Number.isFinite(market.minJpy) ? `¥${fmt.format(Math.round(market.minJpy))}～¥${fmt.format(Math.round(market.maxJpy))}` : "未取得"} / 対象期間 ${escapeHtml(market.targetPeriod || "未取得")}<br>30日 ${fmt.format(market.periodCounts?.days30 || 0)}件 / 90日 ${fmt.format(market.periodCounts?.days90 || 0)}件 / 最終 ${escapeHtml(market.lastSaleDate || "未取得")} / 信頼度 ${escapeHtml(market.confidence || "参考値")}<br>${market.usableIndividualMedian ? "参考中央値あり（海外相場表示のみ）" : "件数不足・参考値（仕入れ判断へ不使用）"} / 国内比 ${Number.isFinite(market.comparisonToDomestic?.ratio) ? `${market.comparisonToDomestic.ratio.toFixed(3)}倍（${market.comparisonToDomestic.differenceJpy >= 0 ? "+" : ""}¥${fmt.format(market.comparisonToDomestic.differenceJpy)}）` : "比較不能"}</small>
+        <small>PokeDATA集計表示 ${Number.isFinite(market.pageDisplayJpy) ? `¥${fmt.format(Math.round(market.pageDisplayJpy))}` : "未取得"}<br>取得行 ${fmt.format(market.originalCount || 0)}件 / 採用 ${fmt.format(market.adoptedCount || 0)}件 / 除外 ${fmt.format(market.excludedCount || 0)}件<br>有効中央値 ${Number.isFinite(market.medianJpy) ? `¥${fmt.format(Math.round(market.medianJpy))}` : "未取得"} / 加重中央値 ${Number.isFinite(market.weightedMedianJpy) ? `¥${fmt.format(Math.round(market.weightedMedianJpy))}` : "未取得"}<br>価格範囲 ${Number.isFinite(market.minJpy) ? `¥${fmt.format(Math.round(market.minJpy))}～¥${fmt.format(Math.round(market.maxJpy))}` : "未取得"} / 対象期間 ${escapeHtml(market.targetPeriod || "未取得")}<br>${periodLine}<br>最終 ${escapeHtml(market.lastSaleDate || "未取得")} / 信頼度 ${escapeHtml(market.confidence || "参考値")}<br>${market.usableIndividualMedian ? "参考中央値あり（海外相場表示のみ）" : "件数不足・参考値（仕入れ判断へ不使用）"}</small>
       </div>` : "";
+    };
     const pokedataExcludedReasons = pokedata ? [pokedata.markets?.ebayRaw, pokedata.markets?.ebayPsa10, pokedata.markets?.ebayPsa9]
       .filter(Boolean)
       .reduce((totals, market) => {
@@ -3134,9 +3147,9 @@ function render() {
         <div class="pokedata-body">
           <div class="pokedata-note"><strong>${escapeHtml(pokedata.pokedata?.setName || "-")} / ${escapeHtml(pokedata.pokedata?.name || "-")} / ${escapeHtml(pokedata.pokedata?.printedNumber || pokedata.pokedata?.number || "-")}</strong><span>eBayとTCGPlayerは別市場として保存。個別成約タイトルで日本版・カード番号・鑑定会社・グレード・複数枚出品を再判定しています。</span></div>
           <div class="pokedata-markets">
-            ${pokedataMarket(pokedata.markets?.ebayRaw, "eBay 素体・クリーニング後中央値")}
-            ${pokedataMarket(pokedata.markets?.ebayPsa10, "eBay PSA10・クリーニング後中央値")}
-            ${pokedataMarket(pokedata.markets?.ebayPsa9, "eBay PSA9・クリーニング後中央値")}
+            ${pokedataMarket(pokedata.markets?.ebayRaw, "eBay 素体・クリーニング後中央値", "raw")}
+            ${pokedataMarket(pokedata.markets?.ebayPsa10, "eBay PSA10・クリーニング後中央値", "psa10")}
+            ${pokedataMarket(pokedata.markets?.ebayPsa9, "eBay PSA9・クリーニング後中央値", "psa9")}
             <div><span>TCGPlayer 素体</span><strong>${Number.isFinite(pokedata.markets?.tcgplayerRaw?.pageDisplayJpy) ? `¥${fmt.format(Math.round(pokedata.markets.tcgplayerRaw.pageDisplayJpy))}` : Number.isFinite(pokedata.markets?.tcgplayerRaw?.apiAverageJpy) ? `¥${fmt.format(Math.round(pokedata.markets.tcgplayerRaw.apiAverageJpy))}` : "未取得"}</strong><small>PokeDATA集計表示 / 取引数 ${escapeHtml(pokedata.markets?.tcgplayerRaw?.transactionCountStatus || "未取得")} / eBayとは合算しない</small></div>
           </div>
           <div class="pokedata-audit">
@@ -3148,7 +3161,7 @@ function render() {
             <span>除外理由：${escapeHtml(Object.entries(pokedataExcludedReasons).map(([reason, count]) => `${reason} ${count}件`).join(" / ") || "除外なし")}</span>
             <span>PSA POP：10 ${fmt.format(pokedata.population?.psa10 || 0)} / 9 ${fmt.format(pokedata.population?.psa9 || 0)} / 8 ${fmt.format(pokedata.population?.psa8 || 0)}</span>
             <span>海外PSA10方向：${escapeHtml(pokedata.trend?.overseas || "蓄積中")} / 国内方向：${escapeHtml(pokedata.trend?.domestic || "蓄積中")}</span>
-            <span>為替：1 USD = ¥${Number(pokedata.fx?.rate || 0).toFixed(3)}（${escapeHtml(pokedata.fx?.rateDate || "未取得")} / ${escapeHtml(pokedata.fx?.source || "未取得")}）</span>
+            <span>為替：1 USD = ¥${Number(pokedata.fx?.rate || 0).toFixed(3)}（${escapeHtml(pokedata.fx?.rateDate || "未取得")} / ${escapeHtml(pokedata.fx?.source || "未取得")} / ${escapeHtml(state.marketResearch?.fx?.latestOrPrevious || "取得状態未確認")}）</span>
           </div>
           <small class="pokedata-reference-note">海外相場は先行指標候補として参考表示のみです。十分なバックテストが完了するまで仕入れ上限・GO判定へ直接反映しません。</small>
         </div>
@@ -3691,6 +3704,8 @@ async function init() {
     const snkrListingData = await fetchJsonMaybe("./data/snkr-listing-summary.json");
     state.snkrListingSummary = snkrListingData?.cards || Object.create(null);
     state.pokedataManifest = await fetchJsonMaybe("./data/pokedata/manifest.json");
+    state.marketResearch = await fetchJsonMaybe("./data/market-research-summary.json");
+    state.modernHighRarityAudit = await fetchJsonMaybe("./data/modern-high-rarity-audit.json");
     if (!state.pokedataManifest) {
       const legacyPokedataData = await fetchJsonMaybe("./data/pokedata-summary.json");
       state.pokedataSummary = legacyPokedataData?.cards || Object.create(null);

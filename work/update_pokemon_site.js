@@ -411,6 +411,8 @@ async function main() {
     id: card.id,
     name: card.name,
     model: card.model,
+    rarity: card.rarity || null,
+    variant: card.variant || null,
     img: card.img,
     snkUrl: card.snkrUrl,
     price: card.price,
