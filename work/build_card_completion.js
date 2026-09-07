@@ -60,6 +60,7 @@ function main() {
   const cards = read("data/pokemon-cards.json", []);
   const inventory = read("work/toreca-source-inventory.json", { cards: [] });
   const diff = read("work/toreca_source_diff.json", { added: [] });
+  const arrivals = read("work/card-new-arrivals.json", { cards: {} });
   const updates = read("data/update-status.json", { sources: {} });
   const psa = read("data/psa-population-summary.json", { cards: {} });
   const buyback = read("data/shop-buyback-summary.json", { cards: {} });
@@ -118,7 +119,8 @@ function main() {
     if (seenIdentity.has(identity.key) && !identity.reviewRequired) duplicateIds.push([seenIdentity.get(identity.key), id]);
     else seenIdentity.set(identity.key, id);
     const firstSeenAt = String(card.firstSeenAt || "").slice(0, 10);
-    const isNew = Boolean(card.isNew || addedIds.has(id)
+    const registeredArrival = arrivals.cards?.[id]?.firstSeenAt || null;
+    const isNew = Boolean((registeredArrival && daysSince(registeredArrival) <= NEW_DAYS) || card.isNew || addedIds.has(id)
       || firstSeenAt && firstSeenAt !== baselineFirstSeenAt && daysSince(firstSeenAt) <= NEW_DAYS);
     const shopFound = Boolean(card.cardrushUrl || card.hareruya2Url || card.yuyuteiUrl || card.torecacampUrl || cardrush.cards?.[id] || hareruya2.cards?.[id] || yuyutei.cards?.[id] || torecacamp.cards?.[id]);
     const buybackRow = buyback.cards?.[id];

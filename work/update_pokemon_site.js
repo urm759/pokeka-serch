@@ -311,6 +311,9 @@ async function main() {
   const metaJsonPath = path.join(base, "pokemon-cards-meta.json");
   const previousMeta = safeReadJson(metaJsonPath, {});
   const stableIdAliases = safeReadJson(path.join(__dirname, "card-id-aliases.json"), {});
+  const arrivalsPath = path.join(__dirname, "card-new-arrivals.json");
+  const arrivals = safeReadJson(arrivalsPath, { version: 1, cards: {} });
+  arrivals.cards ||= {};
   const updatedAt = jstDate();
 
   let moduleMap = null;
@@ -347,6 +350,10 @@ async function main() {
   });
   const sourceIds = new Set(pokemonSource.map((card) => card.id));
   const addedCards = pokemonSource.filter((card) => !previousById.has(card.id) && !previousByIdentity.has(canonicalIdentity(card).key));
+  for (const card of addedCards) {
+    const stableId = stableIdAliases[card.id] || card.id;
+    arrivals.cards[stableId] ||= { firstSeenAt: updatedAt, sourceId: card.id, name: card.name };
+  }
   const removedIds = [...previousById.entries()]
     .filter(([id, card]) => !sourceIds.has(id) && !sourceIdentityKeys.has(card.identityKey || canonicalIdentity(card).key))
     .map(([id]) => id);
@@ -370,6 +377,8 @@ async function main() {
           psaQueryCandidates(psaQuery).map((key) => officialPsaByQuery[key] || officialPsaAliases[key]).find(Boolean) || null;
         const aliasedId = stableIdAliases[c.id] || null;
         const previous = previousById.get(c.id) || (aliasedId ? previousById.get(aliasedId) : null) || previousByIdentity.get(identity.key) || {};
+        const stableId = aliasedId || previous.id || c.id;
+        const arrival = arrivals.cards[stableId] || arrivals.cards[c.id] || null;
         // Cardrush matching scans its public catalog. Preserve existing links and
         // skip cards without a PSA10 market price, which cannot affect this site's
         // profit decisions and made a source refresh needlessly expensive.
@@ -391,7 +400,7 @@ async function main() {
           ? await resolveSnkrUrlFromPage(pageUrl, c)
           : { snkrUrl: previousSnkrUrl || buildSnkrSearchUrl(c) };
         return {
-          id: aliasedId || previous.id || c.id,
+          id: stableId,
           sourceId: c.id,
           title: c.title,
           name: c.name,
@@ -434,8 +443,8 @@ async function main() {
           yuyuteiUrl: previous.yuyuteiUrl || null,
           torecacampUrl: previous.torecacampUrl || null,
           identity,
-          firstSeenAt: previous.firstSeenAt || (addedCards.includes(c) ? updatedAt : previousMeta.updatedAt || updatedAt),
-          isNew: addedCards.includes(c) || Boolean(previous.isNew && isRecentDate(previous.firstSeenAt)),
+          firstSeenAt: arrival?.firstSeenAt || previous.firstSeenAt || (addedCards.includes(c) ? updatedAt : previousMeta.updatedAt || updatedAt),
+          isNew: Boolean(arrival && isRecentDate(arrival.firstSeenAt)) || addedCards.includes(c) || Boolean(previous.isNew && isRecentDate(previous.firstSeenAt)),
           sourceIdChanged: Boolean(previous.id && previous.id !== c.id),
         };
     }
@@ -483,6 +492,7 @@ async function main() {
   fs.mkdirSync(base, { recursive: true });
 
   fs.writeFileSync(jsonPath, JSON.stringify(sitePokemon), "utf8");
+  fs.writeFileSync(arrivalsPath, JSON.stringify({ ...arrivals, updatedAt, cards: arrivals.cards }, null, 2), "utf8");
   // Keep a compact, reproducible snapshot of the source identities used by the
   // modern high-rarity coverage audit. This is intentionally separate from the
   // rendered card data so the audit never proves completeness against itself.
