@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
+const { canonicalIdentity } = require("./card_identity");
 
 function resolveSiteRoot() {
   const standaloneRoot = path.join(__dirname, "..");
@@ -57,6 +58,11 @@ function resolveCardsChunkUrl(html, runtime) {
 
 function num(v) {
   return typeof v === "number" && Number.isFinite(v) ? v : null;
+}
+
+function isRecentDate(value, maxDays = 30) {
+  const parsed = Date.parse(value || "");
+  return Number.isFinite(parsed) && Date.now() - parsed <= maxDays * 86400000;
 }
 
 const MIN_OFFICIAL_PSA_RATE = Number(process.env.PSA_MIN_OFFICIAL_RATE || 1);
@@ -299,6 +305,12 @@ async function main() {
   const jsonPath = path.join(base, "pokemon-cards.json");
   const previousCards = safeReadJson(jsonPath, []);
   const previousById = new Map((Array.isArray(previousCards) ? previousCards : []).map((card) => [card.id, card]));
+  const previousByIdentity = new Map(
+    (Array.isArray(previousCards) ? previousCards : []).map((card) => [card.identityKey || canonicalIdentity(card).key, card])
+  );
+  const metaJsonPath = path.join(base, "pokemon-cards-meta.json");
+  const previousMeta = safeReadJson(metaJsonPath, {});
+  const updatedAt = jstDate();
 
   let moduleMap = null;
   const sandbox = {
@@ -319,15 +331,29 @@ async function main() {
   const mod = { exports: {} };
   moduleMap[93280](mod);
   const all = mod.exports;
-  const pokemonSource = all.filter((c) => c.title === "ポケモン");
+  const pokemonSourceRaw = all.filter((c) => c.title === "ポケモン");
+  const sourceDuplicateIds = [];
+  const sourceIdentityKeys = new Set();
+  const pokemonSource = pokemonSourceRaw.filter((card) => {
+    const identity = canonicalIdentity(card);
+    const key = identity.reviewRequired ? `${identity.key}|source:${card.id}` : identity.key;
+    if (sourceIdentityKeys.has(key)) {
+      sourceDuplicateIds.push(card.id);
+      return false;
+    }
+    sourceIdentityKeys.add(key);
+    return true;
+  });
   const sourceIds = new Set(pokemonSource.map((card) => card.id));
-  const addedCards = pokemonSource.filter((card) => !previousById.has(card.id));
-  const removedIds = [...previousById.keys()].filter((id) => !sourceIds.has(id));
+  const addedCards = pokemonSource.filter((card) => !previousById.has(card.id) && !previousByIdentity.has(canonicalIdentity(card).key));
+  const removedIds = [...previousById.entries()]
+    .filter(([id, card]) => !sourceIds.has(id) && !sourceIdentityKeys.has(card.identityKey || canonicalIdentity(card).key))
+    .map(([id]) => id);
   const isPromo = (card) => /プロモ|PROMO|(?:^|\s)[A-Z0-9-]+-P(?:\s|\]|$)/i.test(`${card.name || ""} ${card.model || ""}`);
   const snkrBatch = Math.max(0, Number(process.env.SNKR_BATCH || 500));
   const snkrPending = new Set(
     pokemonSource
-      .filter((card) => !isSnkrProductUrl(previousById.get(card.id)?.snkUrl))
+      .filter((card) => !isSnkrProductUrl((previousById.get(card.id) || previousByIdentity.get(canonicalIdentity(card).key))?.snkUrl))
       .slice(0, snkrBatch || 0)
       .map((card) => card.id)
   );
@@ -337,10 +363,11 @@ async function main() {
     pokemonSource,
     snkrConcurrency,
     async (c) => {
+        const identity = canonicalIdentity(c);
         const psaQuery = buildPsaQuery(c.name);
         const officialRow =
           psaQueryCandidates(psaQuery).map((key) => officialPsaByQuery[key] || officialPsaAliases[key]).find(Boolean) || null;
-        const previous = previousById.get(c.id) || {};
+        const previous = previousById.get(c.id) || previousByIdentity.get(identity.key) || {};
         // Cardrush matching scans its public catalog. Preserve existing links and
         // skip cards without a PSA10 market price, which cannot affect this site's
         // profit decisions and made a source refresh needlessly expensive.
@@ -362,7 +389,8 @@ async function main() {
           ? await resolveSnkrUrlFromPage(pageUrl, c)
           : { snkrUrl: previousSnkrUrl || buildSnkrSearchUrl(c) };
         return {
-          id: c.id,
+          id: previous.id || c.id,
+          sourceId: c.id,
           title: c.title,
           name: c.name,
           pageUrl,
@@ -403,12 +431,17 @@ async function main() {
           hareruya2Url: previous.hareruya2Url || null,
           yuyuteiUrl: previous.yuyuteiUrl || null,
           torecacampUrl: previous.torecacampUrl || null,
+          identity,
+          firstSeenAt: previous.firstSeenAt || (addedCards.includes(c) ? updatedAt : previousMeta.updatedAt || updatedAt),
+          isNew: addedCards.includes(c) || Boolean(previous.isNew && isRecentDate(previous.firstSeenAt)),
+          sourceIdChanged: Boolean(previous.id && previous.id !== c.id),
         };
     }
   );
   const pokemon = pokemonRows.sort((a, b) => (b.tv30 || 0) - (a.tv30 || 0) || (b.price || 0) - (a.price || 0));
   const sitePokemon = pokemon.map((card) => ({
     id: card.id,
+    sourceId: card.sourceId || card.id,
     name: card.name,
     model: card.model,
     rarity: card.rarity || null,
@@ -436,14 +469,17 @@ async function main() {
     hareruya2Url: card.hareruya2Url || null,
     yuyuteiUrl: card.yuyuteiUrl || null,
     torecacampUrl: card.torecacampUrl || null,
+    identityKey: card.identity.key,
+    setCode: card.identity.setCode || null,
+    cardNumber: card.identity.cardNumber || null,
+    language: card.identity.language,
+    identityReviewRequired: card.identity.reviewRequired,
+    firstSeenAt: card.firstSeenAt,
+    isNew: card.isNew,
   }));
 
   fs.mkdirSync(base, { recursive: true });
 
-  const metaJsonPath = path.join(base, "pokemon-cards-meta.json");
-  const previousMeta = safeReadJson(metaJsonPath, {});
-
-  const updatedAt = jstDate();
   fs.writeFileSync(jsonPath, JSON.stringify(sitePokemon), "utf8");
   // Keep a compact, reproducible snapshot of the source identities used by the
   // modern high-rarity coverage audit. This is intentionally separate from the
@@ -456,10 +492,18 @@ async function main() {
       total: sitePokemon.length,
       cards: sitePokemon.map((card) => ({
         id: card.id,
+        sourceId: card.sourceId || card.id,
         name: card.name,
         model: card.model || null,
         rarity: card.rarity || null,
         variant: card.variant || null,
+        identityKey: card.identityKey,
+        setCode: card.setCode,
+        cardNumber: card.cardNumber,
+        language: card.language,
+        identityReviewRequired: card.identityReviewRequired,
+        firstSeenAt: card.firstSeenAt,
+        isNew: card.isNew,
         days: Number.isFinite(Number(card.days)) ? Number(card.days) : null,
       })),
     }),
@@ -470,8 +514,12 @@ async function main() {
     JSON.stringify({
       updatedAt,
       sourceTotal: sitePokemon.length,
-      added: addedCards.map((card) => ({ id: card.id, name: card.name, promo: isPromo(card) })),
+      sourceRawTotal: pokemonSourceRaw.length,
+      previousTotal: previousCards.length,
+      listingRatePct: pokemonSource.length ? Number((sitePokemon.length / pokemonSource.length * 100).toFixed(3)) : null,
+      added: addedCards.map((card) => ({ id: card.id, name: card.name, promo: isPromo(card), identityKey: canonicalIdentity(card).key })),
       removedIds,
+      sourceDuplicateIds,
       addedPromoCount: addedCards.filter(isPromo).length,
     }),
     "utf8"

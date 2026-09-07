@@ -1261,6 +1261,12 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
   color: #f8fafc;
 }
 
+.catalog-scope{display:grid;grid-template-columns:minmax(260px,1fr) minmax(180px,260px);gap:10px 18px;align-items:end;margin:14px 0 0;padding:14px 16px;border:1px solid rgba(93,215,181,.28);border-radius:16px;background:linear-gradient(120deg,rgba(9,43,48,.92),rgba(12,25,48,.9))}
+.catalog-scope>div,.catalog-scope label{display:grid;gap:4px}.catalog-scope strong,.catalog-scope label>span{color:#e7fff8}.catalog-scope div>span,.catalog-scope>small{color:var(--muted);font-size:.82rem}.catalog-scope>small{grid-column:1/-1}.catalog-scope select{width:100%}
+.catalog-completion-details{grid-column:1/-1}.catalog-completion-details summary{cursor:pointer;color:#c9fff1;font-weight:800}.catalog-summary-grid,.catalog-item-rates{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:10px}.catalog-summary-grid span,.catalog-item-rates span{display:grid;gap:2px;padding:8px;border-radius:10px;background:rgba(4,12,24,.45)}.catalog-summary-grid b,.catalog-item-rates b{font-size:9px;color:var(--muted)}.catalog-summary-grid strong,.catalog-item-rates strong{font-size:14px}.catalog-item-rates small{font-size:8px;color:var(--muted)}
+.catalog-card-status{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:7px 0 2px;padding:7px 9px;border-radius:10px;border:1px solid rgba(250,204,21,.25);background:rgba(120,83,8,.14);font-size:10px}.catalog-card-status.ready{border-color:rgba(52,211,153,.28);background:rgba(6,78,59,.16)}.catalog-card-status.shortage{border-color:rgba(248,113,113,.3);background:rgba(127,29,29,.14)}.catalog-card-status span,.catalog-card-status small{color:var(--muted)}.catalog-card-status small{flex-basis:100%}
+@media(max-width:680px){.catalog-scope{grid-template-columns:1fr;padding:12px}.catalog-scope>small{grid-column:auto}.catalog-completion-details{grid-column:auto}.catalog-summary-grid,.catalog-item-rates{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
 .pokedata-record-pager {
   display: flex;
   align-items: center;

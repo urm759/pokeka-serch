@@ -6,6 +6,12 @@ const FORECAST_HORIZON_DAYS = 91;
 
 const state = {
   cards: [],
+  catalogCompletion: null,
+  catalogManifest: null,
+  catalogIndex: [],
+  catalogScope: "analysis",
+  catalogLoadedChunks: new Set(),
+  catalogLoadingChunks: new Set(),
   cardrushStock: Object.create(null),
   hareruya2Stock: Object.create(null),
   yuyuteiStock: Object.create(null),
@@ -155,6 +161,9 @@ const guideLines = [
 
 const els = {
   qInput: document.getElementById("qInput"),
+  catalogScopeInput: document.getElementById("catalogScopeInput"),
+  catalogCoverageSummary: document.getElementById("catalogCoverageSummary"),
+  catalogCompletionDetails: document.getElementById("catalogCompletionDetails"),
   feeInput: document.getElementById("feeInput"),
   psaPlanInput: document.getElementById("psaPlanInput"),
   psaPlanSummary: document.getElementById("psaPlanSummary"),
@@ -1152,7 +1161,7 @@ function parseCsvLine(line) {
 }
 
 function buildTorecaCardUrl(card) {
-  return `https://toreca-souba.com/cards/${card.id}`;
+  return `https://toreca-souba.com/cards/${card.sourceId || card.id}`;
 }
 
 function buildSnkrUrl(card) {
@@ -2295,6 +2304,73 @@ async function ensurePokedataForCardIds(cardIds) {
   return loaded.some(Boolean);
 }
 
+function mergeCatalogCards(rows) {
+  const byId = new Map(state.cards.map((card) => [String(card.id), card]));
+  for (const card of rows || []) byId.set(String(card.id), card);
+  state.cards = [...byId.values()];
+}
+
+async function loadCatalogChunk(chunkNumber) {
+  const key = Number(chunkNumber);
+  if (!Number.isInteger(key) || state.catalogLoadedChunks.has(key) || state.catalogLoadingChunks.has(key)) return false;
+  const file = state.catalogManifest?.files?.[key]?.file;
+  if (!file) return false;
+  state.catalogLoadingChunks.add(key);
+  try {
+    const payload = await fetchJsonMaybe(`./${String(file).replace(/^\.\//, "")}`);
+    if (!Array.isArray(payload)) return false;
+    mergeCatalogCards(payload);
+    state.catalogLoadedChunks.add(key);
+    return true;
+  } finally {
+    state.catalogLoadingChunks.delete(key);
+  }
+}
+
+function catalogIndexMatches(scope, query = "") {
+  const queryKey = compactSearch(query);
+  return state.catalogIndex.filter((entry) => {
+    const statusMatch = scope === "all"
+      || scope === "new" && entry.isNew
+      || scope === "completing" && entry.status === "データ補完中"
+      || scope === "shortage" && entry.status === "データ不足"
+      || scope === "analysis" && entry.status === "分析可能";
+    if (!queryKey) return statusMatch;
+    return compactSearch(`${entry.name || ""} ${entry.model || ""} ${entry.setCode || ""} ${entry.cardNumber || ""} ${entry.id || ""}`).includes(queryKey);
+  });
+}
+
+async function loadCatalogEntries(entries) {
+  const chunks = [...new Set((entries || []).map((entry) => Number(entry.chunk)).filter(Number.isInteger))]
+    .filter((chunk) => !state.catalogLoadedChunks.has(chunk));
+  let changed = false;
+  for (let offset = 0; offset < chunks.length; offset += 6) {
+    const loaded = await Promise.all(chunks.slice(offset, offset + 6).map(loadCatalogChunk));
+    changed ||= loaded.some(Boolean);
+  }
+  return changed;
+}
+
+let catalogQueryTimer = null;
+function scheduleCatalogQueryLoad() {
+  clearTimeout(catalogQueryTimer);
+  if (!state.q || !state.catalogIndex.length) return;
+  catalogQueryTimer = setTimeout(async () => {
+    const changed = await loadCatalogEntries(catalogIndexMatches(state.catalogScope, state.q));
+    if (changed) render();
+  }, 180);
+}
+
+async function setCatalogScope(scope) {
+  state.catalogScope = ["analysis", "all", "new", "completing", "shortage"].includes(scope) ? scope : "analysis";
+  if (els.catalogScopeInput) els.catalogScopeInput.value = state.catalogScope;
+  if (els.catalogCoverageSummary) els.catalogCoverageSummary.textContent = "対象カードを分割読込中";
+  await loadCatalogEntries(catalogIndexMatches(state.catalogScope));
+  state.visibleLimit = 60;
+  render();
+  updateUrl();
+}
+
 function syncLowRiskAvailabilityControl() {
   const active = state.purchaseMode === "low-risk";
   if (els.lowRiskAvailabilityControl) els.lowRiskAvailabilityControl.hidden = !active;
@@ -2303,6 +2379,7 @@ function syncLowRiskAvailabilityControl() {
 
 function readUrl() {
   const url = new URL(window.location.href);
+  const catalogScope = url.searchParams.get("catalog");
   const guide = url.searchParams.get("guide");
   const fee = parseOptionalNumber(url.searchParams.get("fee"));
   const psaPlan = url.searchParams.get("psaPlan");
@@ -2382,6 +2459,8 @@ function readUrl() {
   const lowRiskAvailability = url.searchParams.get("lowRiskBuy");
   const sort = url.searchParams.get("sort");
   const q = url.searchParams.get("q");
+  if (["analysis", "all", "new", "completing", "shortage"].includes(catalogScope)) state.catalogScope = catalogScope;
+  if (els.catalogScopeInput) els.catalogScopeInput.value = state.catalogScope;
   if (guide && guideModes[guide]) {
     state.guideMode = guide;
   }
@@ -2479,6 +2558,7 @@ function updateUrl() {
 
 function buildShareUrl() {
   const url = new URL(window.location.href);
+  if (state.catalogScope === "analysis") url.searchParams.delete("catalog"); else url.searchParams.set("catalog", state.catalogScope);
   url.searchParams.set("guide", state.guideMode);
   url.searchParams.set("fee", String(state.fee));
   url.searchParams.set("psaPlan", state.psaPlan);
@@ -2585,6 +2665,7 @@ function ratioLabel(value) {
 }
 
 function presetQualifications(card) {
+  const catalogReady = state.catalogCompletion?.cards?.[card.id]?.s === "分析可能";
   const finalLimit = Number(card.buyLimits?.clean?.finalMaxPrice || 0);
   const ultraLimit = Number(card.buyLimits?.clean?.ultraLowRiskMaxPrice || 0);
   const stressEconomics = card.buyLimits?.clean?.supplyStressAtFinal;
@@ -2592,15 +2673,16 @@ function presetQualifications(card) {
   const eligibleVerdict = !["見送り", "要確認", "資金不足"].includes(String(card.purchaseDecision?.verdict || ""));
   const gapToLimit = finalLimit > 0 ? Math.max(0, Number(card.price || 0) - finalLimit) / finalLimit * 100 : Infinity;
   const domesticExit = Number(card.psaTx30d || 0) > 0 || Number(card.buybackShops || 0) > 0;
-  const combinedEligible = domesticExit
+  const combinedEligible = catalogReady
+    && domesticExit
     && finalLimit > 0
     && stressSafe
     && eligibleVerdict
     && card.priceAggregation?.confidence !== "低"
     && !card.dataQuality?.dataAnomaly;
   const trusted = !card.dataQuality?.manualReview && !card.dataQuality?.dataAnomaly && card.priceAggregation?.confidence !== "低";
-  const now = card.purchaseAvailability?.verifiedNow === true && stressSafe && eligibleVerdict;
-  const lowRisk = finalLimit > 0
+  const now = catalogReady && card.purchaseAvailability?.verifiedNow === true && stressSafe && eligibleVerdict;
+  const lowRisk = catalogReady && finalLimit > 0
     && stressSafe
     && eligibleVerdict
     && ["A", "B"].includes(card.overallAssessment?.grade)
@@ -2609,7 +2691,7 @@ function presetQualifications(card) {
     && Number(card.overallAssessment?.supplyRisk || 0) >= 60
     && Number(card.futurePriceForecast?.downsidePct ?? Infinity) <= 10
     && ultraLimit > 0;
-  const turnover = finalLimit > 0
+  const turnover = catalogReady && finalLimit > 0
     && stressSafe
     && eligibleVerdict
     && Number(card.overallAssessment?.exitLiquidity || 0) >= 70
@@ -2618,7 +2700,8 @@ function presetQualifications(card) {
   const priceBandMaxTrades = Number(card.psa10 || 0) >= 100000 ? 8 : Number(card.psa10 || 0) >= 30000 ? 12 : 20;
   const minimumTrades = Number(card.psa10 || 0) >= 100000 ? 1 : 3;
   const highGrossThreshold = Math.max(10000, Number(card.price || 0) * 0.25);
-  const bargain = trusted
+  const bargain = catalogReady
+    && trusted
     && domesticExit
     && stressSafe
     && eligibleVerdict
@@ -2638,7 +2721,7 @@ function presetQualifications(card) {
     turnover ? "高回転" : "",
     !now && finalLimit > 0 ? (card.purchaseAvailability?.marketWithinLimit ? "購入先待ち" : "価格待ち") : "",
   ].filter(Boolean);
-  return { now, lowRisk, turnover, bargain, combined, domesticExit, trusted, stressSafe, gapToLimit, tags };
+  return { now, lowRisk, turnover, bargain, combined, domesticExit, trusted, stressSafe, gapToLimit, tags, catalogReady };
 }
 
 function combinedPresetSort(left, right) {
@@ -2745,6 +2828,7 @@ function render() {
   const normalizedQuery = normalize(state.q);
   const compactQuery = compactSearch(state.q);
   const calculated = state.cards.map(calc);
+  calculated.forEach((card) => { card.catalogCompletion = state.catalogCompletion?.cards?.[card.id] || null; });
   marketModel.applyStoreDemandRelativeRanking(calculated, { strongShare: 0.3 });
   // Store-demand labels are relative ranks and only become final after every
   // card is calculated. Refresh the display classification without changing
@@ -2789,6 +2873,16 @@ function render() {
     .filter((card) => {
       const haystack = normalize(`${card.name} ${card.model} ${card.id}`);
       const compactHaystack = compactSearch(`${card.name} ${card.model} ${card.id}`);
+      const completion = card.catalogCompletion;
+      if (normalizedQuery && !(haystack.includes(normalizedQuery) || compactHaystack.includes(compactQuery))) return false;
+      if (normalizedQuery && completion?.s !== "分析可能") return true;
+      if (!normalizedQuery) {
+        if (state.catalogScope === "analysis" && completion?.s !== "分析可能") return false;
+        if (state.catalogScope === "new" && !completion?.n) return false;
+        if (state.catalogScope === "completing" && completion?.s !== "データ補完中") return false;
+        if (state.catalogScope === "shortage" && completion?.s !== "データ不足") return false;
+      }
+      if (state.catalogScope !== "analysis" && state.purchaseMode === "normal") return true;
       if (card.saleTx30d < state.minSaleTx) return false;
       if (state.maxSaleTx != null && card.saleTx30d > state.maxSaleTx) return false;
       if (card.saleTx7d < state.minSaleTx7) return false;
@@ -2890,14 +2984,26 @@ function render() {
       if (state.stockDemand === "normal" && demand !== "普通") return false;
       if (state.stockDemand === "high" && demand !== "買う人が多い") return false;
       if (state.stockDemand === "known" && demand === "蓄積中") return false;
-      if (!normalizedQuery) return true;
-      return haystack.includes(normalizedQuery) || compactHaystack.includes(compactQuery);
+      return true;
     })
     .sort(state.purchaseMode === "combined" ? combinedPresetSort : sorters[state.sort]);
 
   recordOperationalLimitHistory(enriched);
 
-  els.totalStat.textContent = fmt.format(state.cards.length);
+  els.totalStat.textContent = fmt.format(state.catalogCompletion?.summary?.siteTotal || state.cards.length);
+  if (els.catalogCoverageSummary && state.catalogCompletion?.summary) {
+    const summary = state.catalogCompletion.summary;
+    els.catalogCoverageSummary.textContent = `全カード掲載 ${fmt.format(summary.siteTotal)} / ${fmt.format(summary.sourceTotal)}枚（${Number(summary.listingRatePct || 0).toFixed(1)}%）・分析可能 ${fmt.format(summary.analyzable)}枚（${Number(summary.analysisCompletionPct || 0).toFixed(1)}%）・補完優先キュー ${fmt.format(summary.priorityQueueRemaining)}枚`;
+  }
+  if (els.catalogCompletionDetails && state.catalogCompletion?.summary) {
+    const summary = state.catalogCompletion.summary;
+    const labels = {
+      domesticPrice: "国内美品価格", domesticTrades: "国内美品取引", psa10Price: "PSA10価格", psa10Trades: "PSA10取引",
+      psa9Sales: "PSA9実成約", psaOfficial: "PSA公式", shopStateA: "ショップ状態A", buyback: "買取表", pokedata: "PokeDATA", release: "発売日", identity: "カード識別",
+    };
+    const rates = Object.entries(state.catalogCompletion.itemTotals || {}).map(([key, row]) => `<span><b>${escapeHtml(labels[key] || key)}</b><strong>${Number(row.acquiredPct || 0).toFixed(1)}%</strong><small>取得済み ${fmt.format(row.acquired)} / 待ち ${fmt.format(row.pending)} / 元データなし・不能 ${fmt.format(row.noData)} / 失敗 ${fmt.format(row.failed)}</small></span>`).join("");
+    els.catalogCompletionDetails.innerHTML = `<div class="catalog-summary-grid"><span><b>みんトレ取得総数</b><strong>${fmt.format(summary.sourceTotal)}</strong></span><span><b>サイト掲載総数</b><strong>${fmt.format(summary.siteTotal)}</strong></span><span><b>未掲載</b><strong>${fmt.format(summary.unlisted)}</strong></span><span><b>今回追加 / 新着</b><strong>${fmt.format(summary.addedThisRun)} / ${fmt.format(summary.newCards)}</strong></span><span><b>完全識別 / 要確認</b><strong>${fmt.format(summary.completeIdentityMatches)} / ${fmt.format(summary.reviewRequired)}</strong></span><span><b>分析可能</b><strong>${fmt.format(summary.analyzable)}</strong></span><span><b>データ補完中</b><strong>${fmt.format(summary.completionInProgress)}</strong></span><span><b>優先キュー残件</b><strong>${fmt.format(summary.priorityQueueRemaining)}</strong></span></div><div class="catalog-item-rates">${rates}</div>`;
+  }
   els.countStat.textContent = fmt.format(enriched.length);
   const topRoi = enriched.reduce((highest, card) => Number.isFinite(card.roi) ? Math.max(highest, card.roi) : highest, -Infinity);
   const topProfit = enriched.reduce((highest, card) => Number.isFinite(card.psaDecision?.expectedProfit) ? Math.max(highest, card.psaDecision.expectedProfit) : highest, -Infinity);
@@ -2958,7 +3064,8 @@ function render() {
     if (loaded) render();
   });
   if (els.resultProgress) {
-    els.resultProgress.textContent = `${fmt.format(enriched.length)}枚中 ${fmt.format(visibleCards.length)}枚を表示`;
+    const loadedNote = state.catalogManifest ? ` / 読込済み ${fmt.format(state.cards.length)}枚` : "";
+    els.resultProgress.textContent = `${fmt.format(enriched.length)}枚中 ${fmt.format(visibleCards.length)}枚を表示${loadedNote}`;
   }
   if (els.loadMoreBtn) {
     els.loadMoreBtn.hidden = visibleCards.length >= enriched.length;
@@ -2981,6 +3088,8 @@ function render() {
     const presetTagsHtml = presetFlags.tags.length
       ? `<div class="preset-tags">${presetFlags.tags.map((tag) => `<b class="${tag === "今すぐ" ? "now" : tag === "相場基準" ? "market-range" : tag === "低リスク" ? "low-risk" : tag === "高回転" ? "turnover" : "waiting"}">${tag}</b>`).join("")}</div>`
       : "";
+    const catalogStatus = card.catalogCompletion;
+    const catalogStatusHtml = catalogStatus ? `<div class="catalog-card-status ${catalogStatus.s === "分析可能" ? "ready" : catalogStatus.s === "データ不足" ? "shortage" : "pending"}"><b>${catalogStatus.n ? "新着・" : ""}${escapeHtml(catalogStatus.s)}</b><span>充足 ${Number(catalogStatus.c || 0).toFixed(0)}% / 補完優先度 ${fmt.format(catalogStatus.p || 0)}</span><small>${escapeHtml((catalogStatus.r || []).join(" / "))}</small></div>` : "";
     const cardrushStock = state.cardrushStock[card.id] || null;
     const hareruya2Stock = state.hareruya2Stock[card.id] || null;
     const yuyuteiStock = state.yuyuteiStock[card.id] || null;
@@ -3533,6 +3642,7 @@ function render() {
             <button class="favorite-toggle ${favoriteActive ? "active" : ""}" type="button" data-toggle-favorite="${card.id}" aria-pressed="${favoriteActive}">${favoriteActive ? "★ お気に入り登録済み" : psaDecision?.expectedProfit < 0 ? "☆ お気に入りに追加" : "☆ 仕入れ候補に追加"}</button>
           </div>
           ${presetTagsHtml}
+          ${catalogStatusHtml}
 
           ${purchaseSummaryPanel}
           ${buyLimitPanel}
@@ -3654,6 +3764,7 @@ function syncFromUI() {
     : "all";
   state.sort = els.sortInput.value;
   state.q = els.qInput.value.trim();
+  scheduleCatalogQueryLoad();
   state.psaCapital = Number(els.psaCapitalInput.value || 0);
   state.lockedCapital = Number(els.lockedCapitalInput.value || 0);
   state.lockDays = Math.max(1, Number(els.lockDaysInput.value || 1));
@@ -3700,7 +3811,16 @@ async function init() {
       const loadedMeta = await fetchJsonMaybe("./data/pokemon-cards-meta.json");
       if (loadedMeta) meta = loadedMeta;
     }
-    if (Array.isArray(window.POKEMON_CARDS)) {
+    state.catalogCompletion = await fetchJsonMaybe("./data/card-catalog-completion.json");
+    state.catalogManifest = await fetchJsonMaybe("./data/card-catalog/manifest.json");
+    const catalogIndexPayload = await fetchJsonMaybe("./data/card-catalog/index.json");
+    state.catalogIndex = Array.isArray(catalogIndexPayload?.cards) ? catalogIndexPayload.cards : [];
+    const analysisCards = state.catalogManifest ? await fetchJsonMaybe("./data/card-catalog/analysis.json") : null;
+    if (Array.isArray(analysisCards)) {
+      state.cards = analysisCards;
+      const initialQuery = els.qInput?.value || "";
+      if (state.catalogScope !== "analysis" || initialQuery) await loadCatalogEntries(catalogIndexMatches(state.catalogScope, initialQuery));
+    } else if (Array.isArray(window.POKEMON_CARDS)) {
       state.cards = window.POKEMON_CARDS;
     } else {
       const res = await fetch("./data/pokemon-cards.json", { cache: "no-store" });
@@ -3792,10 +3912,18 @@ els.resetFiltersBtn.addEventListener("click", () => {
   els.officialOnlyInput.checked = false;
   els.sortInput.value = "overall-desc";
   state.purchaseMode = "normal";
+  state.catalogScope = "analysis";
+  if (els.catalogScopeInput) els.catalogScopeInput.value = "analysis";
   state.lowRiskAvailability = "all";
   syncLowRiskAvailabilityControl();
   document.querySelectorAll("[data-preset]").forEach((item) => item.classList.remove("active"));
   syncFromUI();
+});
+
+els.catalogScopeInput?.addEventListener("change", () => {
+  state.purchaseMode = "normal";
+  document.querySelectorAll("[data-preset]").forEach((item) => item.classList.remove("active"));
+  void setCatalogScope(els.catalogScopeInput.value);
 });
 
 document.querySelectorAll("[data-preset]").forEach((button) => {

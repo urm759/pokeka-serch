@@ -220,6 +220,9 @@ jobs:
       - name: Record link coverage and unresolved counts
         run: node work/audit_link_coverage.js
 
+      - name: Build all-card catalog and completion priority queue
+        run: node work/build_card_completion.js
+
       - name: Finalize source freshness and completed date
         run: node work/finalize_update_status.js
 
@@ -228,6 +231,9 @@ jobs:
 
       - name: Verify market research isolation and boundaries
         run: node work/test_market_research.js
+
+      - name: Verify all-card catalog and incremental completion rules
+        run: node work/test_card_catalog_completion.js
 
       - name: Commit all changes
         run: |

@@ -45,7 +45,21 @@ const pokedata = read("data/pokedata-summary.json");
 const pokedataManifest = read("data/pokedata/manifest.json", { sets: [] });
 const runs = read("work/source-update-runs.json", { sources: {} });
 const runHistory = read("work/source-update-history.json", { version: 1, sources: {} });
-const psaTask = read("work/psa_update_state.json", {});
+const psaStoredTask = read("work/psa_update_state.json", {});
+const psaAcquisition = read("work/psa_acquisition_result.json", {});
+const storedStartedAt = new Date(psaStoredTask.startedAt || psaStoredTask.lastAttemptAt || 0).getTime();
+const acquisitionStartedAt = new Date(psaAcquisition.startedAt || 0).getTime();
+const psaTask = acquisitionStartedAt > storedStartedAt ? {
+  ...psaStoredTask,
+  ...psaAcquisition,
+  lastAttemptAt: psaAcquisition.startedAt || null,
+  lastSuccessAt: psaAcquisition.status === "success" ? psaAcquisition.endedAt : psaStoredTask.lastSuccessAt || null,
+  lastError: psaAcquisition.error || null,
+  syncStatus: psaStoredTask.syncStatus || null,
+  syncError: psaStoredTask.syncError || null,
+  publishStatus: psaStoredTask.publishStatus || null,
+  publishError: psaStoredTask.publishError || null,
+} : psaStoredTask;
 
 // A workflow-level timeout can terminate the tracker before it writes its final
 // state. Finalization runs after every source step, so any remaining "running"

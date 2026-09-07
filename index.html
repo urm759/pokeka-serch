@@ -144,6 +144,28 @@
         <label class="preset-file-action">条件CSV読込<input id="importSearchInput" type="file" accept=".csv,text/csv" /></label>
       </div>
 
+      <section class="catalog-scope" aria-label="掲載カードの表示範囲">
+        <div>
+          <strong>掲載カード</strong>
+          <span id="catalogCoverageSummary">全カード掲載率を集計中</span>
+        </div>
+        <label>
+          <span>表示範囲</span>
+          <select id="catalogScopeInput">
+            <option value="analysis">分析可能</option>
+            <option value="all">全カードを表示</option>
+            <option value="new">新着カード</option>
+            <option value="completing">データ補完中</option>
+            <option value="shortage">データ不足</option>
+          </select>
+        </label>
+        <small>カードの掲載と分析データの完成は別管理です。検索欄では表示範囲にかかわらず全カードを探せます。</small>
+        <details class="catalog-completion-details">
+          <summary>全カード掲載・データ充足の内訳</summary>
+          <div id="catalogCompletionDetails"></div>
+        </details>
+      </section>
+
       <details class="advanced-filters">
         <summary>
           <span>詳細な検索条件</span>
@@ -723,6 +745,6 @@
   <script src="./decision-model.js?v=20260905-acquisition-v3"></script>
   <script src="./backtest-model.js?v=20260901-backtest-v2"></script>
   <script src="./market-analysis.js?v=20260902-supply-pipeline-v1"></script>
-  <script src="./app.js?v=20260906-sv2a-research-v1"></script>
+  <script src="./app.js?v=20260907-all-card-catalog-v1"></script>
 </body>
 </html>
