@@ -310,6 +310,7 @@ async function main() {
   );
   const metaJsonPath = path.join(base, "pokemon-cards-meta.json");
   const previousMeta = safeReadJson(metaJsonPath, {});
+  const stableIdAliases = safeReadJson(path.join(__dirname, "card-id-aliases.json"), {});
   const updatedAt = jstDate();
 
   let moduleMap = null;
@@ -367,7 +368,8 @@ async function main() {
         const psaQuery = buildPsaQuery(c.name);
         const officialRow =
           psaQueryCandidates(psaQuery).map((key) => officialPsaByQuery[key] || officialPsaAliases[key]).find(Boolean) || null;
-        const previous = previousById.get(c.id) || previousByIdentity.get(identity.key) || {};
+        const aliasedId = stableIdAliases[c.id] || null;
+        const previous = previousById.get(c.id) || (aliasedId ? previousById.get(aliasedId) : null) || previousByIdentity.get(identity.key) || {};
         // Cardrush matching scans its public catalog. Preserve existing links and
         // skip cards without a PSA10 market price, which cannot affect this site's
         // profit decisions and made a source refresh needlessly expensive.
@@ -389,7 +391,7 @@ async function main() {
           ? await resolveSnkrUrlFromPage(pageUrl, c)
           : { snkrUrl: previousSnkrUrl || buildSnkrSearchUrl(c) };
         return {
-          id: previous.id || c.id,
+          id: aliasedId || previous.id || c.id,
           sourceId: c.id,
           title: c.title,
           name: c.name,

@@ -47,7 +47,10 @@ assert.ok(appSource.includes("./data/card-catalog/analysis.json"), "initial load
 assert.ok(appSource.includes("loadCatalogChunk"), "full catalog must be loaded lazily by chunks");
 assert.ok(appSource.includes("catalogReady &&"), "quick presets must exclude incomplete cards");
 const updateSource = fs.readFileSync(path.join(__dirname, "update_pokemon_site.js"), "utf8");
+const stableIdAliases = read("work/card-id-aliases.json");
 assert.ok(updateSource.includes('all.filter((c) => c.title === "ポケモン")'), "Toreca ingestion must not filter by rarity");
+assert.ok(updateSource.includes("stableIdAliases[c.id]"), "source ID changes must reuse a saved stable ID alias");
+assert.equal(stableIdAliases["x-110058"], "pk-20928", "known source ID migration must preserve favorites and history");
 
 console.log(JSON.stringify({
   cards: cards.length,
@@ -55,5 +58,5 @@ console.log(JSON.stringify({
   chunks: manifest.files.length,
   newCards: completion.summary.newCards,
   queueRemaining: completion.summary.priorityQueueRemaining,
-  tests: 23,
+  tests: 25,
 }));
