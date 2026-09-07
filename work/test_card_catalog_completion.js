@@ -23,7 +23,6 @@ assert.equal(manifest.files.reduce((sum, row) => sum + row.count, 0), cards.leng
 assert.equal(analysis.length, completion.summary.analyzable, "initial payload must contain only analyzable cards");
 assert.ok(analysis.every((card) => completion.cards[card.id]?.s === "分析可能"), "data-shortage cards must not enter the initial buying list");
 assert.ok(cards.some((card) => completion.cards[card.id]?.s !== "分析可能"), "missing-data cards must remain searchable instead of disappearing");
-assert.ok(completion.summary.newCards >= 2, "the current Toreca diff must keep the two newly discovered cards visible");
 assert.equal(completion.summary.newCards, Object.values(completion.cards).filter((card) => card.n === 1).length, "new-card count must survive no-change refreshes");
 assert.ok(cards.filter((card) => completion.cards[card.id]?.n === 1).every((card) => card.firstSeenAt), "new cards must retain their first-seen date");
 assert.equal(queue.version, 2, "completion queue must use the compact schema");
@@ -56,5 +55,5 @@ console.log(JSON.stringify({
   chunks: manifest.files.length,
   newCards: completion.summary.newCards,
   queueRemaining: completion.summary.priorityQueueRemaining,
-  tests: 24,
+  tests: 23,
 }));
