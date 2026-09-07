@@ -154,7 +154,16 @@
   function resolvePsa9Price(input = {}) {
     const directPrice = Number(input.directPrice);
     if (directPrice > 0 && Number.isFinite(directPrice)) {
-      return { value: directPrice, source: "直近PSA9実成約", periodDays: Number(input.directPeriodDays || 0) || null, count: Math.max(1, Number(input.directCount || 1)), confidence: "高", estimated: false };
+      const measurementType = input.directKind === "aggregate" ? "aggregate" : "actual";
+      return {
+        value: directPrice,
+        source: input.directSource || (measurementType === "aggregate" ? "PSA9集計値（個別実成約未取得）" : "直近PSA9実成約"),
+        periodDays: Number(input.directPeriodDays || 0) || null,
+        count: measurementType === "actual" ? Math.max(1, Number(input.directCount || 1)) : Math.max(0, Number(input.directCount || 0)),
+        confidence: measurementType === "actual" ? "高" : "中",
+        estimated: false,
+        measurementType,
+      };
     }
     const asOf = dateOnly(input.asOfDate);
     const trades = (Array.isArray(input.trades) ? input.trades : [])
@@ -169,13 +178,13 @@
       if (period.length < minimum) continue;
       const aggregate = aggregatePrices(period, { asOfDate: asOf, staleAfterDays: days, excludeAfterDays: days, minRatio: 0.55, maxRatio: 1.8 });
       if (aggregate.value > 0 && aggregate.included.length >= minimum) {
-        return { value: aggregate.value, source: `${days}日PSA9成約中央値`, periodDays: days, count: aggregate.included.length, confidence: days === 30 ? "高" : "中", estimated: false, aggregate };
+        return { value: aggregate.value, source: `${days}日PSA9成約中央値`, periodDays: days, count: aggregate.included.length, confidence: days === 30 ? "高" : "中", estimated: false, measurementType: "actual", aggregate };
       }
     }
     const cohortRatio = Number(input.cohortRatio);
     const psa10Price = Number(input.psa10Price);
     if (cohortRatio > 0 && psa10Price > 0 && Number(input.cohortCount || 0) >= Number(input.minimumCohortCount || 12)) {
-      return { value: psa10Price * cohortRatio, source: "年代・価格帯・レアリティ別PSA10比率", periodDays: null, count: Number(input.cohortCount), confidence: "中", estimated: true };
+      return { value: psa10Price * cohortRatio, source: "年代・価格帯・レアリティ別PSA10比率", periodDays: null, count: Number(input.cohortCount), confidence: "中", estimated: true, measurementType: "estimate" };
     }
     const fallbackPrice = Number(input.fallbackPrice);
     return {
@@ -185,6 +194,7 @@
       count: 0,
       confidence: "低",
       estimated: true,
+      measurementType: "estimate",
     };
   }
 

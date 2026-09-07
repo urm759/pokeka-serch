@@ -314,6 +314,9 @@ async function main() {
   const arrivalsPath = path.join(__dirname, "card-new-arrivals.json");
   const arrivals = safeReadJson(arrivalsPath, { version: 1, cards: {} });
   arrivals.cards ||= {};
+  const lifecyclePath = path.join(__dirname, "card-lifecycle.json");
+  const lifecycle = safeReadJson(lifecyclePath, { version: 1, cards: {} });
+  lifecycle.cards ||= {};
   const updatedAt = jstDate();
 
   let moduleMap = null;
@@ -353,10 +356,26 @@ async function main() {
   for (const card of addedCards) {
     const stableId = stableIdAliases[card.id] || card.id;
     arrivals.cards[stableId] ||= { firstSeenAt: updatedAt, sourceId: card.id, name: card.name };
+    const previousLife = lifecycle.cards[stableId] || {};
+    lifecycle.cards[stableId] = {
+      ...previousLife,
+      firstSeenAt: previousLife.firstSeenAt || updatedAt,
+      lastSeenAt: updatedAt,
+      reappearedAt: previousLife.lastRemovedAt ? updatedAt : previousLife.reappearedAt || null,
+    };
   }
   const removedIds = [...previousById.entries()]
     .filter(([id, card]) => !sourceIds.has(id) && !sourceIdentityKeys.has(card.identityKey || canonicalIdentity(card).key))
     .map(([id]) => id);
+  for (const id of removedIds) lifecycle.cards[id] = { ...(lifecycle.cards[id] || {}), lastRemovedAt: updatedAt };
+  for (const card of pokemonSource) {
+    const stableId = stableIdAliases[card.id] || card.id;
+    lifecycle.cards[stableId] = {
+      ...(lifecycle.cards[stableId] || {}),
+      firstSeenAt: lifecycle.cards[stableId]?.firstSeenAt || arrivals.cards[stableId]?.firstSeenAt || updatedAt,
+      lastSeenAt: updatedAt,
+    };
+  }
   const isPromo = (card) => /プロモ|PROMO|(?:^|\s)[A-Z0-9-]+-P(?:\s|\]|$)/i.test(`${card.name || ""} ${card.model || ""}`);
   const snkrBatch = Math.max(0, Number(process.env.SNKR_BATCH || 500));
   const snkrPending = new Set(
@@ -493,6 +512,7 @@ async function main() {
 
   fs.writeFileSync(jsonPath, JSON.stringify(sitePokemon), "utf8");
   fs.writeFileSync(arrivalsPath, JSON.stringify({ ...arrivals, updatedAt, cards: arrivals.cards }, null, 2), "utf8");
+  fs.writeFileSync(lifecyclePath, JSON.stringify({ ...lifecycle, updatedAt, cards: lifecycle.cards }, null, 2), "utf8");
   // Keep a compact, reproducible snapshot of the source identities used by the
   // modern high-rarity coverage audit. This is intentionally separate from the
   // rendered card data so the audit never proves completeness against itself.

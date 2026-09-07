@@ -49,7 +49,7 @@ const psaStoredTask = read("work/psa_update_state.json", {});
 const psaAcquisition = read("work/psa_acquisition_result.json", {});
 const storedStartedAt = new Date(psaStoredTask.startedAt || psaStoredTask.lastAttemptAt || 0).getTime();
 const acquisitionStartedAt = new Date(psaAcquisition.startedAt || 0).getTime();
-const psaTask = acquisitionStartedAt > storedStartedAt ? {
+const psaTaskBase = acquisitionStartedAt > storedStartedAt ? {
   ...psaStoredTask,
   ...psaAcquisition,
   lastAttemptAt: psaAcquisition.startedAt || null,
@@ -60,6 +60,18 @@ const psaTask = acquisitionStartedAt > storedStartedAt ? {
   publishStatus: psaStoredTask.publishStatus || null,
   publishError: psaStoredTask.publishError || null,
 } : psaStoredTask;
+const psaTrackedRun = runs.sources?.psaOfficial || {};
+const trackedStartedAt = new Date(psaTrackedRun.startedAt || psaTrackedRun.lastAttemptAt || 0).getTime();
+const taskStartedAt = new Date(psaTaskBase.startedAt || psaTaskBase.lastAttemptAt || 0).getTime();
+const psaTask = trackedStartedAt > taskStartedAt ? {
+  ...psaTaskBase,
+  ...psaTrackedRun,
+  lastSuccessAt: psaTrackedRun.lastSuccessAt || psaTaskBase.lastSuccessAt || null,
+  syncStatus: psaTaskBase.syncStatus || null,
+  syncError: psaTaskBase.syncError || null,
+  publishStatus: psaTaskBase.publishStatus || null,
+  publishError: psaTaskBase.publishError || null,
+} : psaTaskBase;
 
 // A workflow-level timeout can terminate the tracker before it writes its final
 // state. Finalization runs after every source step, so any remaining "running"
@@ -168,10 +180,13 @@ for (const [sourceId, source] of Object.entries(sources)) {
   source.fresh = source.date === today && source.status === "success";
   if (sourceId === "psaOfficial" && latestPsaCount > 0 && latestPsaCount < psaTotalRows) {
     const latestRowAttempt = (psa.rows || []).map((row) => row.fetchedAt).filter(Boolean).sort().at(-1) || null;
-    source.lastAttemptAt = latestRowAttempt || source.lastAttemptAt;
+    if (psaTask.status !== "failed") source.lastAttemptAt = latestRowAttempt || source.lastAttemptAt;
     source.lastSuccessAt = latestRowAttempt || source.lastSuccessAt;
+    const latestAttemptFailed = psaTask.status === "failed";
     source.status = "partial";
-    source.sourceState = `一部セット更新（最新日 ${latestPsaDate}：${latestPsaCount}件 / 全${psaTotalRows}件）`;
+    source.sourceState = latestAttemptFailed
+      ? `前回データ保持・最新再取得失敗（最新日 ${latestPsaDate}：${latestPsaCount}件 / 全${psaTotalRows}件）`
+      : `一部セット更新（最新日 ${latestPsaDate}：${latestPsaCount}件 / 全${psaTotalRows}件）`;
     source.acquiredCount = psaTotalRows;
     source.updatedCount = latestPsaCount;
     source.fresh = false;

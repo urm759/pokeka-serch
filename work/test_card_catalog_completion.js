@@ -27,8 +27,8 @@ assert.ok(cards.some((card) => completion.cards[card.id]?.s !== "分析可能"),
 assert.equal(completion.summary.newCards, Object.values(completion.cards).filter((card) => card.n === 1).length, "new-card count must survive no-change refreshes");
 assert.ok(Object.keys(arrivals.cards).every((id) => completion.cards[id]?.n === 1), "recent registered arrivals must remain visible after no-change refreshes");
 assert.ok(cards.filter((card) => completion.cards[card.id]?.n === 1).every((card) => card.firstSeenAt), "new cards must retain their first-seen date");
-assert.equal(queue.version, 2, "completion queue must use the compact schema");
-assert.ok(Array.isArray(queue.itemSchema) && queue.itemSchema.length === 5, "compact queue schema must remain decodable");
+assert.equal(queue.version, 3, "completion queue must use the lifecycle-aware compact schema");
+assert.ok(Array.isArray(queue.itemSchema) && queue.itemSchema.length === 6, "compact queue schema must remain decodable");
 assert.ok(fs.statSync(path.join(ROOT, "work/card-completion-queue.json")).size < 25 * 1024 * 1024, "manual-upload queue file must stay under 25 MB");
 
 const normal = canonicalIdentity({ name: "ピカチュウ C [SV2a 025/165](ポケモンカード151)" });

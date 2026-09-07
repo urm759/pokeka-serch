@@ -235,6 +235,9 @@ jobs:
       - name: Verify all-card catalog and incremental completion rules
         run: node work/test_card_catalog_completion.js
 
+      - name: Verify release lifecycle and measured-data classifications
+        run: node work/test_catalog_semantics.js
+
       - name: Commit all changes
         run: |
           git config user.name "github-actions[bot]"

@@ -1998,6 +1998,8 @@ function buildPsa9Audit(card, cleanPrice, psa10Price) {
   const trades = Array.isArray(card.snkPsa9Trades) ? card.snkPsa9Trades : [];
   return decisionModel.resolvePsa9Price({
     directPrice: card.snkPsa9Price,
+    directKind: "aggregate",
+    directSource: "PSA9集計値（個別実成約未取得）",
     directCount: card.snkPsa9Count,
     directPeriodDays: card.snkPsa9PeriodDays,
     trades,
@@ -2331,7 +2333,9 @@ function catalogIndexMatches(scope, query = "") {
   const queryKey = compactSearch(query);
   return state.catalogIndex.filter((entry) => {
     const statusMatch = scope === "all"
-      || scope === "new" && entry.isNew
+      || scope === "new" && (entry.siteNew || entry.isNew)
+      || scope === "recent" && entry.recentRelease
+      || scope === "relisted" && entry.relisted
       || scope === "completing" && entry.status === "データ補完中"
       || scope === "shortage" && entry.status === "データ不足"
       || scope === "analysis" && entry.status === "分析可能";
@@ -2362,7 +2366,7 @@ function scheduleCatalogQueryLoad() {
 }
 
 async function setCatalogScope(scope) {
-  state.catalogScope = ["analysis", "all", "new", "completing", "shortage"].includes(scope) ? scope : "analysis";
+  state.catalogScope = ["analysis", "all", "new", "recent", "relisted", "completing", "shortage"].includes(scope) ? scope : "analysis";
   if (els.catalogScopeInput) els.catalogScopeInput.value = state.catalogScope;
   if (els.catalogCoverageSummary) els.catalogCoverageSummary.textContent = "対象カードを分割読込中";
   await loadCatalogEntries(catalogIndexMatches(state.catalogScope));
@@ -2459,7 +2463,7 @@ function readUrl() {
   const lowRiskAvailability = url.searchParams.get("lowRiskBuy");
   const sort = url.searchParams.get("sort");
   const q = url.searchParams.get("q");
-  if (["analysis", "all", "new", "completing", "shortage"].includes(catalogScope)) state.catalogScope = catalogScope;
+  if (["analysis", "all", "new", "recent", "relisted", "completing", "shortage"].includes(catalogScope)) state.catalogScope = catalogScope;
   if (els.catalogScopeInput) els.catalogScopeInput.value = state.catalogScope;
   if (guide && guideModes[guide]) {
     state.guideMode = guide;
@@ -2879,6 +2883,8 @@ function render() {
       if (!normalizedQuery) {
         if (state.catalogScope === "analysis" && completion?.s !== "分析可能") return false;
         if (state.catalogScope === "new" && !completion?.n) return false;
+        if (state.catalogScope === "recent" && !completion?.rr) return false;
+        if (state.catalogScope === "relisted" && !completion?.rl) return false;
         if (state.catalogScope === "completing" && completion?.s !== "データ補完中") return false;
         if (state.catalogScope === "shortage" && completion?.s !== "データ不足") return false;
       }
@@ -2993,16 +2999,20 @@ function render() {
   els.totalStat.textContent = fmt.format(state.catalogCompletion?.summary?.siteTotal || state.cards.length);
   if (els.catalogCoverageSummary && state.catalogCompletion?.summary) {
     const summary = state.catalogCompletion.summary;
-    els.catalogCoverageSummary.textContent = `全カード掲載 ${fmt.format(summary.siteTotal)} / ${fmt.format(summary.sourceTotal)}枚（${Number(summary.listingRatePct || 0).toFixed(1)}%）・分析可能 ${fmt.format(summary.analyzable)}枚（${Number(summary.analysisCompletionPct || 0).toFixed(1)}%）・補完優先キュー ${fmt.format(summary.priorityQueueRemaining)}枚`;
+    els.catalogCoverageSummary.textContent = `全カード掲載 ${fmt.format(summary.siteTotal)} / ${fmt.format(summary.sourceTotal)}枚（${Number(summary.listingRatePct || 0).toFixed(1)}%）・分析可能 ${fmt.format(summary.analyzable)}枚（うち一部不足 ${fmt.format(summary.analyzablePartial || 0)}枚）・補完優先キュー ${fmt.format(summary.priorityQueueRemaining)}枚`;
   }
   if (els.catalogCompletionDetails && state.catalogCompletion?.summary) {
     const summary = state.catalogCompletion.summary;
     const labels = {
       domesticPrice: "国内美品価格", domesticTrades: "国内美品取引", psa10Price: "PSA10価格", psa10Trades: "PSA10取引",
-      psa9Sales: "PSA9実成約", psaOfficial: "PSA公式", shopStateA: "ショップ状態A", buyback: "買取表", pokedata: "PokeDATA", release: "発売日", identity: "カード識別",
+      rawActualSales: "Raw個別実成約", psa10ActualSales: "PSA10個別実成約", psa9Sales: "PSA9個別実成約", psa9Aggregate: "PSA9集計値",
+      psaOfficial: "PSA公式", shopStateA: "ショップ状態A", buyback: "買取表", pokedata: "PokeDATA", release: "発売日", identity: "カード識別",
     };
     const rates = Object.entries(state.catalogCompletion.itemTotals || {}).map(([key, row]) => `<span><b>${escapeHtml(labels[key] || key)}</b><strong>${Number(row.acquiredPct || 0).toFixed(1)}%</strong><small>取得済み ${fmt.format(row.acquired)} / 待ち ${fmt.format(row.pending)} / 元データなし・不能 ${fmt.format(row.noData)} / 失敗 ${fmt.format(row.failed)}</small></span>`).join("");
-    els.catalogCompletionDetails.innerHTML = `<div class="catalog-summary-grid"><span><b>みんトレ取得総数</b><strong>${fmt.format(summary.sourceTotal)}</strong></span><span><b>サイト掲載総数</b><strong>${fmt.format(summary.siteTotal)}</strong></span><span><b>未掲載</b><strong>${fmt.format(summary.unlisted)}</strong></span><span><b>今回追加 / 新着</b><strong>${fmt.format(summary.addedThisRun)} / ${fmt.format(summary.newCards)}</strong></span><span><b>完全識別 / 要確認</b><strong>${fmt.format(summary.completeIdentityMatches)} / ${fmt.format(summary.reviewRequired)}</strong></span><span><b>分析可能</b><strong>${fmt.format(summary.analyzable)}</strong></span><span><b>データ補完中</b><strong>${fmt.format(summary.completionInProgress)}</strong></span><span><b>優先キュー残件</b><strong>${fmt.format(summary.priorityQueueRemaining)}</strong></span></div><div class="catalog-item-rates">${rates}</div>`;
+    const types = state.catalogCompletion.dataTypeTotals || {};
+    const p9 = types.psa9 || {};
+    const pokedata = types.pokedata || {};
+    els.catalogCompletionDetails.innerHTML = `<div class="catalog-summary-grid"><span><b>みんトレ取得総数</b><strong>${fmt.format(summary.sourceTotal)}</strong></span><span><b>サイト掲載総数</b><strong>${fmt.format(summary.siteTotal)}</strong></span><span><b>未掲載</b><strong>${fmt.format(summary.unlisted)}</strong></span><span><b>今回追加 / サイト新着</b><strong>${fmt.format(summary.addedThisRun)} / ${fmt.format(summary.siteNewCards ?? summary.newCards)}</strong><small>新着保持 ${fmt.format(summary.siteNewRetentionDays || 30)}日</small></span><span><b>最近発売 / 再掲載</b><strong>${fmt.format(summary.recentReleaseCards || 0)} / ${fmt.format(summary.relistedCards || 0)}</strong><small>最近発売は発売日から${fmt.format(summary.recentReleaseDays || 365)}日</small></span><span><b>発売日 / 年のみ / 不明</b><strong>${fmt.format(summary.releaseDateKnown || 0)} / ${fmt.format(summary.releaseYearOnly || 0)} / ${fmt.format(summary.releaseUnknown || 0)}</strong><small>日付充足 ${Number(summary.releaseDateCompletenessPct || 0).toFixed(1)}%・年含む ${Number(summary.releaseKnownCompletenessPct || 0).toFixed(1)}%</small></span><span><b>完全識別 / 要確認</b><strong>${fmt.format(summary.completeIdentityMatches)} / ${fmt.format(summary.reviewRequired)}</strong></span><span><b>分析可能</b><strong>${fmt.format(summary.analyzable)}</strong><small>完全 ${fmt.format(summary.analyzableComplete || 0)} / 一部参考データ不足 ${fmt.format(summary.analyzablePartial || 0)}</small></span><span><b>データ補完中</b><strong>${fmt.format(summary.completionInProgress)}</strong><small>分析可能カードの参考項目不足も含むため、優先キューより多くなります</small></span><span><b>補完優先キュー</b><strong>${fmt.format(summary.priorityQueueRemaining)}</strong><small>次の1項目で分析可能見込み ${fmt.format(summary.completableAfterNext || 0)}枚</small></span><span><b>PSA9データ区分</b><strong>実成約 ${fmt.format(p9.actual || 0)}</strong><small>集計値 ${fmt.format(p9.aggregate || 0)} / 推定 ${fmt.format(p9.estimate || 0)} / 未取得 ${fmt.format(p9.missing || 0)}</small></span><span><b>PokeDATA対象区分</b><strong>紐付済 ${fmt.format(pokedata.linked || 0)}</strong><small>対応セット未一致 ${fmt.format(pokedata.compatibleUnmatched || 0)} / 未展開 ${fmt.format(pokedata.unexpandedSet || 0)} / 非対応・存在未確認 ${fmt.format(pokedata.unsupportedOrUnconfirmed || 0)}</small></span></div><div class="catalog-item-rates">${rates}</div>`;
   }
   els.countStat.textContent = fmt.format(enriched.length);
   const topRoi = enriched.reduce((highest, card) => Number.isFinite(card.roi) ? Math.max(highest, card.roi) : highest, -Infinity);
@@ -3089,7 +3099,7 @@ function render() {
       ? `<div class="preset-tags">${presetFlags.tags.map((tag) => `<b class="${tag === "今すぐ" ? "now" : tag === "相場基準" ? "market-range" : tag === "低リスク" ? "low-risk" : tag === "高回転" ? "turnover" : "waiting"}">${tag}</b>`).join("")}</div>`
       : "";
     const catalogStatus = card.catalogCompletion;
-    const catalogStatusHtml = catalogStatus ? `<div class="catalog-card-status ${catalogStatus.s === "分析可能" ? "ready" : catalogStatus.s === "データ不足" ? "shortage" : "pending"}"><b>${catalogStatus.n ? "新着・" : ""}${escapeHtml(catalogStatus.s)}</b><span>充足 ${Number(catalogStatus.c || 0).toFixed(0)}% / 補完優先度 ${fmt.format(catalogStatus.p || 0)}</span><small>${escapeHtml((catalogStatus.r || []).join(" / "))}</small></div>` : "";
+    const catalogStatusHtml = catalogStatus ? `<div class="catalog-card-status ${catalogStatus.s === "分析可能" ? "ready" : catalogStatus.s === "データ不足" ? "shortage" : "pending"}"><b>${catalogStatus.n ? "サイト新着・" : ""}${catalogStatus.rr ? "最近発売・" : ""}${catalogStatus.rl ? "再掲載・" : ""}${escapeHtml(catalogStatus.s)}</b><span>充足 ${Number(catalogStatus.c || 0).toFixed(0)}% / 補完優先度 ${fmt.format(catalogStatus.p || 0)}</span><small>${catalogStatus.rd ? `発売日 ${escapeHtml(catalogStatus.rd)}（${escapeHtml(catalogStatus.rs || "取得済み")}） / ` : catalogStatus.ry ? `発売年 ${escapeHtml(String(catalogStatus.ry))}（${escapeHtml(catalogStatus.rs || "年のみ")}） / ` : "発売日不明 / "}${catalogStatus.m?.length ? `必須不足 ${escapeHtml(catalogStatus.m.join("・"))} / 次: ${escapeHtml(catalogStatus.x || "確認待ち")} / ` : ""}${escapeHtml((catalogStatus.r || []).join(" / "))}${catalogStatus.l ? ` / 最終試行 ${escapeHtml(String(catalogStatus.l).replace("T", " ").slice(0, 16))}` : ""}</small></div>` : "";
     const cardrushStock = state.cardrushStock[card.id] || null;
     const hareruya2Stock = state.hareruya2Stock[card.id] || null;
     const yuyuteiStock = state.yuyuteiStock[card.id] || null;
@@ -3243,7 +3253,7 @@ function render() {
         <div><span>期間内成約 / 採用</span><strong>${fmt.format(psa10Audit.rawCount || 0)}件 / ${fmt.format(psa10Audit.includedCount || 0)}件</strong><small>外れ値・期限除外 ${psa10Audit.excludedCount == null ? "明細未取得" : `${fmt.format(psa10Audit.excludedCount)}件`} / 最終成約 ${escapeHtml(psa10Audit.lastTradeAt || "未取得")}</small></div>
         <div><span>中央値 / 加重中央値</span><strong>¥${fmt.format(Math.round(psa10Audit.median || 0))} / ¥${fmt.format(Math.round(psa10Audit.weightedMedian || 0))}</strong><small>除外前 ${escapeHtml(psa10Audit.rawPriceRange || "範囲未取得")} / 除外後 ${escapeHtml(psa10Audit.priceRange || "範囲未取得")}</small></div>
         <div><span>PSA10出品最安値</span><strong>${Number.isFinite(psa10Audit.listingFloor) ? `¥${fmt.format(psa10Audit.listingFloor)}` : "未取得"}</strong><small>${escapeHtml([psa10Audit.aggregation, ...(psa10Audit.warnings || []), psa10Audit.limitations].filter(Boolean).join(" / "))}</small></div>
-        <div><span>PSA9以下の採用価格</span><strong>¥${fmt.format(Math.round(psa9Audit.value || 0))}</strong><small>${escapeHtml(psa9Audit.source || "未取得")} / 採用 ${fmt.format(psa9Audit.count || 0)}件 / 信頼度 ${escapeHtml(psa9Audit.confidence || "低")}${psa9Audit.estimated ? " / 推定値" : " / 実成約"}</small></div>
+        <div><span>PSA9以下の採用価格</span><strong>¥${fmt.format(Math.round(psa9Audit.value || 0))}</strong><small>${escapeHtml(psa9Audit.source || "未取得")} / 採用 ${fmt.format(psa9Audit.count || 0)}件 / 信頼度 ${escapeHtml(psa9Audit.confidence || "低")} / ${psa9Audit.measurementType === "actual" ? "実成約" : psa9Audit.measurementType === "aggregate" ? "集計値" : "推定値"}</small></div>
       </div>`;
     const pokedata = state.pokedataSummary?.[card.id] || null;
     const pokedataMarket = (market, label, gradeKey) => {
