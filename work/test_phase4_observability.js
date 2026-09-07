@@ -7,6 +7,8 @@ const root = path.join(__dirname, "..");
 const coverage = JSON.parse(fs.readFileSync(path.join(root, "data", "link-coverage.json"), "utf8"));
 const updateStatus = JSON.parse(fs.readFileSync(path.join(root, "data", "update-status.json"), "utf8"));
 const psaAcquisition = JSON.parse(fs.readFileSync(path.join(root, "work", "psa_acquisition_result.json"), "utf8").replace(/^\uFEFF/, ""));
+const psaStoredTask = JSON.parse(fs.readFileSync(path.join(root, "work", "psa_update_state.json"), "utf8").replace(/^\uFEFF/, ""));
+const sourceRuns = JSON.parse(fs.readFileSync(path.join(root, "work", "source-update-runs.json"), "utf8").replace(/^\uFEFF/, ""));
 const workflow = fs.readFileSync(path.join(root, ".github", "workflows", "refresh-all-site-data.yml"), "utf8");
 const updater = fs.readFileSync(path.join(root, "work", "update_yuyutei_torecacamp.js"), "utf8");
 const finalizer = fs.readFileSync(path.join(root, "work", "finalize_update_status.js"), "utf8");
@@ -61,9 +63,13 @@ assert.match(finalizer, /return jstDate\(parsed\)/);
 assert.match(finalizer, /timeout_or_forced_exit/);
 assert.match(finalizer, /majorSourceIds/);
 assert.match(finalizer, /psa_acquisition_result\.json/);
-if (psaAcquisition.status === "success") {
-  assert.strictEqual(updateStatus.sources.psaOfficial.startedAt, psaAcquisition.startedAt, "PSA status must use the latest manual acquisition start");
-  assert.strictEqual(updateStatus.sources.psaOfficial.endedAt, psaAcquisition.endedAt, "PSA status must use the latest manual acquisition end");
+const latestPsaRun = [psaStoredTask, psaAcquisition, sourceRuns.sources?.psaOfficial]
+  .filter((row) => row?.startedAt || row?.lastAttemptAt)
+  .sort((a, b) => new Date(b.startedAt || b.lastAttemptAt) - new Date(a.startedAt || a.lastAttemptAt))[0];
+if (latestPsaRun) {
+  assert.strictEqual(updateStatus.sources.psaOfficial.startedAt, latestPsaRun.startedAt || latestPsaRun.lastAttemptAt, "PSA status must use the latest acquisition attempt start");
+  assert.strictEqual(updateStatus.sources.psaOfficial.endedAt, latestPsaRun.endedAt, "PSA status must use the latest acquisition attempt end");
+  if (latestPsaRun.status === "failed") assert.match(updateStatus.sources.psaOfficial.sourceState, /最新再取得失敗/, "a failed refresh must remain visible while prior data is preserved");
 }
 assert.match(index, /主要データ完了日/);
 assert.match(index, /全データ完了日/);
