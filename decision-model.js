@@ -461,6 +461,40 @@
     };
   }
 
+  function aggressivePurchaseZone(input = {}) {
+    const offer = input.offer && typeof input.offer === "object" ? input.offer : null;
+    const offerPrice = Number(offer?.value);
+    const operationalLimit = Math.max(0, Number(input.operationalLimit || 0));
+    const stressBreakEvenLimit = Math.max(0, Number(input.stressBreakEvenLimit || 0));
+    const stressExpectedProfit = Number(input.stressExpectedProfit);
+    const centralExpectedProfit = Number(input.centralExpectedProfit);
+    const psa9Profit = Number(input.psa9Profit);
+    const eligible = offer?.fresh === true
+      && offer?.available === true
+      && input.priceReviewRequired !== true
+      && Number.isFinite(offerPrice)
+      && offerPrice > operationalLimit
+      && stressBreakEvenLimit > 0
+      && offerPrice <= stressBreakEvenLimit
+      && Number.isFinite(stressExpectedProfit)
+      && stressExpectedProfit >= 0
+      && Number.isFinite(psa9Profit)
+      && psa9Profit < 0;
+    return {
+      eligible,
+      label: "攻め仕入れ圏・PSA9時赤字あり",
+      offerPrice: Number.isFinite(offerPrice) && offerPrice > 0 ? offerPrice : null,
+      operationalLimit,
+      stressBreakEvenLimit,
+      centralExpectedProfit: Number.isFinite(centralExpectedProfit) ? centralExpectedProfit : null,
+      stressExpectedProfit: Number.isFinite(stressExpectedProfit) ? stressExpectedProfit : null,
+      psa9Profit: Number.isFinite(psa9Profit) ? psa9Profit : null,
+      operationalGap: Number.isFinite(offerPrice) ? offerPrice - operationalLimit : null,
+      breakEvenRoom: Number.isFinite(offerPrice) ? stressBreakEvenLimit - offerPrice : null,
+      excludedFromNormalGo: true,
+    };
+  }
+
   function bargainDecisionEligible(input = {}) {
     return String(input.verdict || "") === "価格次第" || String(input.goConfidence || "") === "暫定GO";
   }
@@ -770,5 +804,5 @@
     };
   }
 
-  return { aggregatePrices, bargainDecisionEligible, buybackExitProfit, capRoundingStep, capitalLimits, capitalPlan, economicsScenarioMatrix, expectedEconomics, gradeAssumptions, isSuspectedCardMismatch, matchConfidenceLabel, maxBuyPrice, median, operationalCap, operationalCapConcentration, portfolioPlan, portfolioStress, purchaseAvailability, purchaseCaps, purchaseDecision, purchaseLimitMarketRatio, resilienceMetrics, resolvePsa9Price, targetProfitMaxBuyPrice, weightedMedian };
+  return { aggressivePurchaseZone, aggregatePrices, bargainDecisionEligible, buybackExitProfit, capRoundingStep, capitalLimits, capitalPlan, economicsScenarioMatrix, expectedEconomics, gradeAssumptions, isSuspectedCardMismatch, matchConfidenceLabel, maxBuyPrice, median, operationalCap, operationalCapConcentration, portfolioPlan, portfolioStress, purchaseAvailability, purchaseCaps, purchaseDecision, purchaseLimitMarketRatio, resilienceMetrics, resolvePsa9Price, targetProfitMaxBuyPrice, weightedMedian };
 });

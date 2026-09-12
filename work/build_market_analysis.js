@@ -131,6 +131,10 @@ function psaWindowIncrease(official, key) {
 
 function main() {
   const cards = readJson(path.join(ROOT, "data", "pokemon-cards.json"), []);
+  const changedPath = process.env.CHANGED_CARD_IDS_PATH;
+  const changedIds = changedPath ? readJson(path.resolve(ROOT, changedPath), { ids: [] }).ids || [] : null;
+  const changedSet = changedIds ? new Set(changedIds.map(String)) : null;
+  const targetCards = changedSet ? cards.filter((card) => changedSet.has(String(card.id))) : cards;
   const meta = readJson(path.join(ROOT, "data", "pokemon-cards-meta.json"), {});
   const cardrush = readJson(path.join(ROOT, "data", "cardrush-stock-summary.json"), {}).cards || {};
   const hareruya2 = readJson(path.join(ROOT, "data", "hareruya2-stock-summary.json"), {}).cards || {};
@@ -140,12 +144,16 @@ function main() {
   if (!history.cards || typeof history.cards !== "object") history.cards = {};
   seedHistory(history);
   const updatedAt = validDate(meta.updatedAt || meta.generatedAt) || jstDate();
-  appendCurrent(history, cards, updatedAt);
+  appendCurrent(history, targetCards, updatedAt);
 
   const changes30 = Object.values(history.cards).map((rows) => windowChange(rows, 30)).filter(Number.isFinite);
   const marketChange30 = marketModel.median(changes30);
-  const summaries = {};
-  for (const card of cards) {
+  const previousSummary = readJson(SUMMARY_PATH, { cards: {} });
+  const summaries = changedSet ? { ...(previousSummary.cards || {}) } : {};
+  if (changedSet) {
+    for (const id of changedSet) if (!cards.some((card) => String(card.id) === id)) delete summaries[id];
+  }
+  for (const card of targetCards) {
     if (!(positive(card.price) && positive(card.snkPsa10Price))) continue;
     const cr = cardrush[card.id] || null;
     const h2 = hareruya2[card.id] || null;
@@ -209,7 +217,7 @@ function main() {
     historyRequirements: marketModel.HISTORY_REQUIREMENTS,
     cards: summaries,
   }), "utf8");
-  console.log(JSON.stringify({ updatedAt, historyDates: history.dates.length, cards: Object.keys(summaries).length }));
+  console.log(JSON.stringify({ updatedAt, historyDates: history.dates.length, cards: Object.keys(summaries).length, incremental: Boolean(changedSet), processedCards: targetCards.length }));
 }
 
 main();

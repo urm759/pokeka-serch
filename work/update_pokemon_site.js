@@ -1,7 +1,16 @@
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
+const crypto = require("crypto");
 const { canonicalIdentity } = require("./card_identity");
+
+const FAST_UPDATE = process.env.FAST_UPDATE === "1";
+const HTTP_CACHE_PATH = path.join(__dirname, "daily-http-cache.json");
+const UPDATE_METRICS = { httpRequests: 0, cacheHits: 0 };
+
+function contentHash(value) {
+  return crypto.createHash("sha256").update(String(value || "")).digest("hex");
+}
 
 function resolveSiteRoot() {
   const standaloneRoot = path.join(__dirname, "..");
@@ -15,6 +24,7 @@ async function fetchText(url) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 25000);
   try {
+    UPDATE_METRICS.httpRequests += 1;
     const res = await fetch(url, {
       headers: {
         "user-agent": "Mozilla/5.0",
@@ -25,6 +35,45 @@ async function fetchText(url) {
       throw new Error(`Failed to fetch ${url}: HTTP ${res.status}`);
     }
     return await res.text();
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function fetchSourceGate(url) {
+  const cache = safeReadJson(HTTP_CACHE_PATH, {});
+  const previous = cache[url] || {};
+  const headers = { "user-agent": "Mozilla/5.0" };
+  if (previous.etag) headers["if-none-match"] = previous.etag;
+  if (previous.lastModified) headers["if-modified-since"] = previous.lastModified;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 25000);
+  try {
+    UPDATE_METRICS.httpRequests += 1;
+    const response = await fetch(url, { headers, signal: controller.signal });
+    if (response.status === 304) {
+      UPDATE_METRICS.cacheHits += 1;
+      return { changed: false, cache, pending: previous, reason: "HTTP 304" };
+    }
+    if (!response.ok) throw new Error(`Failed to fetch ${url}: HTTP ${response.status}`);
+    const text = await response.text();
+    const hash = contentHash(text);
+    if (previous.hash && previous.hash === hash) {
+      UPDATE_METRICS.cacheHits += 1;
+      return { changed: false, cache, pending: previous, reason: "content hash unchanged" };
+    }
+    return {
+      changed: true,
+      text,
+      cache,
+      pending: {
+        etag: response.headers.get("etag") || null,
+        lastModified: response.headers.get("last-modified") || null,
+        hash,
+        checkedAt: new Date().toISOString(),
+      },
+      reason: previous.hash ? "content changed" : "initial cache",
+    };
   } finally {
     clearTimeout(timer);
   }
@@ -287,7 +336,13 @@ function buildOfficialPsaAliases(byQuery) {
 
 async function main() {
   const sourceUrl = "https://toreca-souba.com/cards";
-  const cardsHtml = await fetchText(sourceUrl);
+  const startedAt = Date.now();
+  const gate = FAST_UPDATE ? await fetchSourceGate(sourceUrl) : null;
+  if (FAST_UPDATE && !gate.changed) {
+    console.log(`FAST_UPDATE_RESULT ${JSON.stringify({ changed: false, changedCards: 0, processedCards: 0, regeneratedFiles: 0, httpRequests: UPDATE_METRICS.httpRequests, cacheHits: UPDATE_METRICS.cacheHits, durationMs: Date.now() - startedAt, reason: gate.reason, llmCalls: 0 })}`);
+    return;
+  }
+  const cardsHtml = FAST_UPDATE ? gate.text : await fetchText(sourceUrl);
   const scriptUrls = pickScriptUrls(cardsHtml);
   const runtimePath = scriptUrls.find((u) => u.includes("/webpack-"));
   if (!runtimePath) {
@@ -367,7 +422,10 @@ async function main() {
   const removedIds = [...previousById.entries()]
     .filter(([id, card]) => !sourceIds.has(id) && !sourceIdentityKeys.has(card.identityKey || canonicalIdentity(card).key))
     .map(([id]) => id);
-  for (const id of removedIds) lifecycle.cards[id] = { ...(lifecycle.cards[id] || {}), lastRemovedAt: updatedAt };
+  for (const id of removedIds) {
+    lifecycle.cards[id] = { ...(lifecycle.cards[id] || {}), lastRemovedAt: updatedAt };
+    delete arrivals.cards[id];
+  }
   for (const card of pokemonSource) {
     const stableId = stableIdAliases[card.id] || card.id;
     lifecycle.cards[stableId] = {
@@ -401,7 +459,7 @@ async function main() {
         // Cardrush matching scans its public catalog. Preserve existing links and
         // skip cards without a PSA10 market price, which cannot affect this site's
         // profit decisions and made a source refresh needlessly expensive.
-        const cardrushMatch = previous.cardrushUrl || !Number(c.snkPsa10Price)
+        const cardrushMatch = FAST_UPDATE || previous.cardrushUrl || !Number(c.snkPsa10Price)
           ? null
           : resolveCardrushMatch(c, cardrushCatalog);
         const officialRate = num(officialRow?.psa10Rate);
@@ -430,31 +488,31 @@ async function main() {
           psaQuery,
           img: c.img,
           snkrUrl: pageMeta.snkrUrl || "",
-          price: num(c.price),
-          snkPrice: num(c.snkPrice),
-          snkPsa10Price: num(c.snkPsa10Price),
-          snkPsa9Price: num(c.snkPsa9Price),
-          snkPsa10Min: num(c.snkPsa10Min),
-          snkPsa10Count: num(c.snkPsa10Count),
-          snkPsa9Count: num(c.snkPsa9Count),
+          price: num(c.price) ?? num(previous.price),
+          snkPrice: num(c.snkPrice) ?? num(previous.snkPrice),
+          snkPsa10Price: num(c.snkPsa10Price) ?? num(previous.snkPsa10Price),
+          snkPsa9Price: num(c.snkPsa9Price) ?? num(previous.snkPsa9Price),
+          snkPsa10Min: num(c.snkPsa10Min) ?? num(previous.snkPsa10Min),
+          snkPsa10Count: num(c.snkPsa10Count) ?? num(previous.snkPsa10Count),
+          snkPsa9Count: num(c.snkPsa9Count) ?? num(previous.snkPsa9Count),
           snkPsa10Trades: Array.isArray(c.snkPsa10Trades) ? c.snkPsa10Trades : Array.isArray(previous.snkPsa10Trades) ? previous.snkPsa10Trades : null,
           snkPsa9Trades: Array.isArray(c.snkPsa9Trades) ? c.snkPsa9Trades : Array.isArray(previous.snkPsa9Trades) ? previous.snkPsa9Trades : null,
           officialPsa10Count: keepOfficial ? officialCount : null,
           officialPsaTotal: keepOfficial ? officialTotal : null,
           officialPsaRate: keepOfficial ? officialRate : null,
-          tv7: num(c.tv7),
-          tv30: num(c.tv30),
-          p10tv7: num(c.p10tv7),
-          p10tv30: num(c.p10tv30),
-          chg7: num(c.chg7),
-          chg30: num(c.chg30),
-          tvel: num(c.tvel),
-          days: num(c.days),
-          kaitori: num(c.kaitori),
-          tLast: num(c.tLast),
-          tLastAt: c.tLastAt || "",
+          tv7: num(c.tv7) ?? num(previous.tv7),
+          tv30: num(c.tv30) ?? num(previous.tv30),
+          p10tv7: num(c.p10tv7) ?? num(previous.p10tv7),
+          p10tv30: num(c.p10tv30) ?? num(previous.p10tv30),
+          chg7: num(c.chg7) ?? num(previous.chg7),
+          chg30: num(c.chg30) ?? num(previous.chg30),
+          tvel: num(c.tvel) ?? num(previous.tvel),
+          days: num(c.days) ?? num(previous.days),
+          kaitori: num(c.kaitori) ?? num(previous.kaitori),
+          tLast: num(c.tLast) ?? num(previous.tLast),
+          tLastAt: c.tLastAt || previous.tLastAt || "",
           rawBacked: c.rawBacked ? 1 : 0,
-          snkListings: num(c.snkListings),
+          snkListings: num(c.snkListings) ?? num(previous.snkListings),
           cardrushUrl: previous.cardrushUrl || cardrushMatch?.detailUrl || null,
           cardrushState: cardrushMatch?.state || null,
           cardrushName: cardrushMatch?.name || null,
@@ -507,6 +565,11 @@ async function main() {
     firstSeenAt: card.firstSeenAt,
     isNew: card.isNew,
   }));
+  const stableComparable = (card) => JSON.stringify(card || null);
+  const changedIds = sitePokemon
+    .filter((card) => stableComparable(card) !== stableComparable(previousById.get(card.id)))
+    .map((card) => card.id);
+  changedIds.push(...removedIds);
 
   fs.mkdirSync(base, { recursive: true });
 
@@ -572,8 +635,14 @@ async function main() {
     ),
     "utf8"
   );
+  fs.writeFileSync(path.join(__dirname, "changed-card-ids.json"), JSON.stringify({ updatedAt: new Date().toISOString(), ids: [...new Set(changedIds)] }, null, 2), "utf8");
+  if (FAST_UPDATE) {
+    const committedCache = { ...gate.cache, [sourceUrl]: gate.pending };
+    fs.writeFileSync(HTTP_CACHE_PATH, JSON.stringify(committedCache, null, 2), "utf8");
+  }
   console.log(`pokemon cards: ${sitePokemon.length}`);
   console.log(jsonPath);
+  console.log(`FAST_UPDATE_RESULT ${JSON.stringify({ changed: changedIds.length > 0, changedCards: new Set(changedIds).size, processedCards: sitePokemon.length, regeneratedFiles: 6, httpRequests: UPDATE_METRICS.httpRequests, cacheHits: UPDATE_METRICS.cacheHits, durationMs: Date.now() - startedAt, reason: FAST_UPDATE ? gate.reason : "full update", llmCalls: 0 })}`);
 }
 
 main().catch((err) => {

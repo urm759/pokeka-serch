@@ -1,4 +1,4 @@
-name: Refresh All Site Data
+name: Manual Full Refresh
 
 on:
   workflow_dispatch:
@@ -19,11 +19,6 @@ on:
           - shopBuyback
           - marketAnalysis
           - psaJapan
-  schedule:
-    # 04:30 JST (finish target: 06:00) and 17:00 JST every day.
-    - cron: "30 19 * * *"
-    - cron: "0 8 * * *"
-
 permissions:
   contents: write
 

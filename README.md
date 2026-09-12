@@ -7,7 +7,9 @@
 - アップロードするのは、この `github-site` フォルダの中身だけです
 - `index.html` が GitHub リポジトリのルートに見える配置にします
 - 親フォルダ側の `work`、`.github`、`outputs` を別々にアップロードする必要はありません
-- `.github/workflows/refresh-all-site-data.yml` で毎日04:30と17:00（日本時間）に全データを一括更新します
+- `.github/workflows/daily-fast-update.yml` で毎日04:30と17:00（日本時間）に変更分だけを高速更新します
+- `.github/workflows/backfill-data.yml` で未取得の残件をチェックポイントから少量ずつ補完します
+- 認証が必要なPSA公式・PokeDATA取得は日次処理から分離し、認証切れ時は手動対応待ちとして停止します
 - 個別の相場更新とカードラッシュ更新は、Actions画面から手動実行できます
 
 ## 仕組み
@@ -44,8 +46,11 @@
 
 ## 自動更新
 
-`Refresh All Site Data` が毎日2回、日本時間の午前4時30分と午後5時に開始します。
-みんなのトレカ相場の新カード・価格・取引件数を取得したあと、スニダン直リンク、カードラッシュの商品・状態A価格・在庫を順番に更新します。
+`Daily Fast Update` が毎日2回、日本時間の午前4時30分と午後5時に開始します。日次処理は決定的なNode.jsスクリプトだけで動き、Codex・LLMは呼び出しません。ETag、Last-Modified、内容ハッシュを使い、変更されたカードだけを再計算し、該当JSONチャンクだけを再生成します。変更がない場合はコミットもデプロイも行いません。
+
+`Backfill Remaining Data` は遊々亭、トレカキャンプ、PSA公式、PokeDATAなどの残件を、保存済みチェックポイントから安全な件数だけ進めます。認証が必要な取得は通常更新と分離し、認証切れやCloudflare確認が発生した場合は回避せず「手動対応待ち」で停止します。`Manual Full Refresh` は障害復旧や監査用の手動処理で、日次には実行しません。
+
+日次高速更新は、みんなのトレカ相場の新カード・価格・取引件数と期限切れデータを前回値との差分で確認します。
 みんトレ一覧は前回との差分をカード番号・セット・名称・レアリティ・仕様・言語で照合し、レアリティに関係なく新規カードを自動登録します。新着、買取掲載、取引量、PSA10取引量、価格、必須データ不足を使って補完キューを並べ替え、確定済みの対応は再判定せず再利用します。
 午前4時30分開始分は、通常は午前6時までの完了を見込んだ設定です。ただしGitHub Actions側の混雑や取得元サイトの応答状況によって遅れることがあります。
 
@@ -59,13 +64,13 @@
 
 `work/build_market_analysis.js` は価格・取引・出品・店舗別在庫を最大91日だけ差分保存し、画面用の軽量な下値安定サマリーを生成します。履歴不足時は点数を作らず「蓄積中」にします。異なるサイトの取引数と在庫数は合算せず、在庫消化日数は同一店舗の現在在庫 ÷ 1日平均在庫減少数で店舗ごとに計算し、その中央値だけを表示します。
 
-`Refresh Pokemon Site Data` と `Refresh Cardrush Stock` は個別確認用の手動実行として残しています。通常の定期更新は `Refresh All Site Data` だけで完結します。
+`Refresh Pokemon Site Data` と `Refresh Cardrush Stock` は個別確認用の手動実行として残しています。通常の価格・新カード更新は `Daily Fast Update`、未取得残件は `Backfill Remaining Data` が担当します。
 
-### 手動で今すぐ一斉更新する
+### 手動で今すぐ更新する
 
-スマホまたはPCで GitHub のリポジトリを開き、`Actions` → `Refresh All Site Data` → `Run workflow` → 緑色の `Run workflow` の順に押します。処理と公開はGitHub側で行うため、自分のPCを起動したままにする必要はありません。
+スマホまたはPCで GitHub のリポジトリを開き、`Actions` → `Daily Fast Update` → `Run workflow` → 緑色の `Run workflow` の順に押します。残件補完だけ進めたい場合は `Backfill Remaining Data` を選びます。処理と公開はGitHub側で行うため、自分のPCを起動したままにする必要はありません。
 
-みんトレ、カードラッシュ、Web買取表、トレカクラブ、PSA Japan料金、評価モデルはこの操作で更新できます。PSA公式PopulationはPC側のログイン済みPSA専用Chromeから自動取得します。認証期限が切れた時だけ、専用Chromeで再ログインが必要です。
+みんトレ差分、Web買取表、PSA Japan料金、変更カードの評価は高速更新で処理します。PSA公式PopulationとPokeDATA認証成約はPC側のログイン済み専用Chromeを使う別処理です。認証期限が切れた時だけ、専用Chromeで再ログインが必要です。
 
 ## お気に入り仕入れ候補
 

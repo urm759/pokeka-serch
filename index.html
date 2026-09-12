@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20260905-acquisition-v4" />
+  <link rel="stylesheet" href="./styles.css?v=20260912-limit-tiers-v1" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -128,6 +128,7 @@
         <span>かんたん絞り込み</span>
         <button type="button" data-preset="combined"><strong>おまかせ総合</strong><small>候補を重複なしでまとめる</small></button>
         <button type="button" data-preset="now"><strong>今すぐ仕入れ</strong><small>新しい在庫あり価格が上限以下</small></button>
+        <button type="button" data-preset="aggressive"><strong>攻め仕入れ圏</strong><small>期待値は黒字・PSA9時赤字あり</small></button>
         <button type="button" data-preset="low-risk"><strong>低リスク候補</strong><small>価格待ちを含む</small></button>
         <label id="lowRiskAvailabilityControl" class="low-risk-availability" hidden>
           <span>候補内</span>
@@ -703,10 +704,11 @@
       <div class="toolbar-actions">
         <div class="toolbar-meta">主要データ完了日 <strong id="majorDataUpdatedAt">-</strong></div>
         <div class="toolbar-meta">全データ完了日 <strong id="allDataUpdatedAt">-</strong></div>
-        <div class="toolbar-meta">一斉更新 <strong>毎日 4:30 / 17:00 開始</strong></div>
+        <div class="toolbar-meta">日次高速更新 <strong>毎日 4:30 / 17:00 開始</strong></div>
         <button id="openFavoritesBtn" type="button">仕入れ候補 <strong id="favoriteCountToolbar">0</strong>枚</button>
         <button id="copyLinkBtn" type="button">この条件をURLに反映</button>
-        <a class="refresh-action" href="https://github.com/urm759/pokeka-serch/actions/workflows/refresh-all-site-data.yml" target="_blank" rel="noreferrer">スマホで全データ更新</a>
+        <a class="refresh-action" href="https://github.com/urm759/pokeka-serch/actions/workflows/daily-fast-update.yml" target="_blank" rel="noreferrer">スマホで高速更新</a>
+        <a class="refresh-action secondary" href="https://github.com/urm759/pokeka-serch/actions/workflows/backfill-data.yml" target="_blank" rel="noreferrer">残件を少量補完</a>
         <a id="sourceLink" href="https://toreca-souba.com/" target="_blank" rel="noreferrer">みんトレを見る</a>
       </div>
       <details class="source-monitor-panel coverage-panel">
@@ -744,9 +746,9 @@
     </section>
   </main>
 
-  <script src="./decision-model.js?v=20260905-acquisition-v3"></script>
+  <script src="./decision-model.js?v=20260912-limit-tiers-v1"></script>
   <script src="./backtest-model.js?v=20260901-backtest-v2"></script>
   <script src="./market-analysis.js?v=20260902-supply-pipeline-v1"></script>
-  <script src="./app.js?v=20260907-all-card-catalog-v1"></script>
+  <script src="./app.js?v=20260912-limit-tiers-v1"></script>
 </body>
 </html>

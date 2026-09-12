@@ -1,0 +1,53 @@
+name: Daily Fast Update
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 04:30 and 17:00 JST. GitHub cron is UTC.
+    - cron: "30 19 * * *"
+    - cron: "0 8 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: all-site-data-refresh
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Run deterministic delta update
+        run: node work/daily_fast_update.js
+      - name: Refresh PSA Japan plans
+        continue-on-error: true
+        run: node work/run_tracked_update.js psaJapan work/update_psa_japan_services.js
+      - name: Refresh web buyback tables
+        continue-on-error: true
+        run: node work/run_tracked_update.js shopBuyback work/update_shop_buybacks.js
+      - name: Finalize source status
+        run: node work/finalize_update_status.js
+      - name: Run fast regression tests
+        run: |
+          node --check app.js
+          node --check decision-model.js
+          node --check work/daily_fast_update.js
+          node work/test_limit_tiers.js
+          node work/test_daily_fast_update.js
+      - name: Commit changed data only
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data work/daily-http-cache.json work/changed-card-ids.json work/market_stability_history.json
+          if git diff --cached --quiet; then
+            echo "No source change. Commit and deployment skipped."
+            exit 0
+          fi
+          git commit -m "Run deterministic daily delta update"
+          git push

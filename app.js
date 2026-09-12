@@ -671,6 +671,20 @@ function renderSourceObservability() {
     els.freshnessSummary.textContent = failed ? `失敗 ${fmt.format(failed)}件` : partial ? `部分取得 ${fmt.format(partial)}件` : stale ? `未完了 ${fmt.format(stale)}件` : "全取得元 更新済み";
   }
   if (els.dataFreshness) {
+    const pipelines = state.updateStatus?.pipelines || {};
+    const pipelineCards = Object.values(pipelines).map((pipeline) => `<article class="source-status-card pipeline-card">
+      <div class="source-status-head"><strong>${escapeHtml(pipeline.label || "更新処理")}</strong><b>${escapeHtml(pipeline.runClass || pipeline.status || "未記録")}</b></div>
+      <dl>
+        <div><dt>最終実行</dt><dd>${escapeHtml(formatJstTimestamp(pipeline.updatedAt))}</dd></div>
+        <div><dt>処理 / 変更カード</dt><dd>${Number.isFinite(pipeline.processedCards) ? fmt.format(pipeline.processedCards) : "-"} / ${Number.isFinite(pipeline.changedCards) ? fmt.format(pipeline.changedCards) : "-"}</dd></div>
+        <div><dt>HTTP / キャッシュ</dt><dd>${Number.isFinite(pipeline.httpRequests) ? fmt.format(pipeline.httpRequests) : "-"} / ${Number.isFinite(pipeline.cacheHits) ? fmt.format(pipeline.cacheHits) : "-"}</dd></div>
+        <div><dt>キャッシュ率</dt><dd>${Number.isFinite(pipeline.cacheRatePct) ? `${pipeline.cacheRatePct.toFixed(1)}%` : "-"}</dd></div>
+        <div><dt>処理時間</dt><dd>${escapeHtml(formatDuration(pipeline.durationMs))}</dd></div>
+        <div><dt>再生成ファイル</dt><dd>${Number.isFinite(pipeline.regeneratedFiles) ? fmt.format(pipeline.regeneratedFiles) : "-"}</dd></div>
+        <div><dt>LLM / Codex</dt><dd>${fmt.format(pipeline.llmCalls || 0)} / ${fmt.format(pipeline.codexCalls || 0)}回</dd></div>
+      </dl>
+      <p>チェックポイント: ${escapeHtml(pipeline.checkpoint || "不要")}</p>
+    </article>`).join("");
     const sourceCards = Object.entries(sources).map(([sourceId, source]) => {
       const className = source.status === "failed" ? "failed" : source.status === "partial" ? "partial" : source.fresh ? "fresh" : "stale";
       const statusLabel = source.status === "failed" ? "失敗" : source.status === "partial" ? sourceId === "yuyutei" ? "巡回中／部分成功" : Number(source.fetchFailureCount || 0) > 0 ? "一部失敗" : "部分成功" : source.fresh ? "成功・最新" : source.status === "success" ? "成功・日付が古い" : "未記録";
@@ -719,7 +733,7 @@ function renderSourceObservability() {
       </dl>
       <p>${escapeHtml(governance.reason || "検証状況未記録")}</p>
     </article>` : "";
-    els.dataFreshness.innerHTML = sourceCards + learningCard;
+    els.dataFreshness.innerHTML = pipelineCards + sourceCards + learningCard;
   }
 
   const coverage = state.linkCoverage?.current?.storeCoverage;
@@ -1786,6 +1800,7 @@ function buildBuyLimits(card) {
     scenario.stressMaxPrice = floorToStep(caps.stressBreakEvenMaxPrice, 500);
     scenario.stressBreakEvenMaxPrice = scenario.stressMaxPrice;
     scenario.ultraLowRiskMaxPrice = floorToStep(caps.ultraLowRiskMaxPrice, 500);
+    scenario.psa9NonLossMaxPrice = floorToStep(scenario.resilience?.psa9NonLossMaxPrice, 500) || 0;
     scenario.effectiveEconomicMaxPrice = floorToStep(caps.effectiveEconomicMaxPrice, 500);
     scenario.capitalMaxPrice = floorToStep(caps.capitalMaxPrice, 500);
     scenario.theoreticalFinalMaxPrice = floorToStep(caps.finalMaxPrice, decisionModel.capRoundingStep(caps.finalMaxPrice));
@@ -1892,6 +1907,35 @@ function finalizeCardDecision(card) {
     decisionReasons: finalDecision?.reasons,
     priceReviewRequired: Boolean(card.dataQuality?.manualReview || card.dataQuality?.dataAnomaly || card.priceAggregation?.conflicted),
   });
+  const storeStressEconomics = scenarioMatrix.storeOffer?.supplyStress || null;
+  const storeCentralEconomics = scenarioMatrix.storeOffer?.centralForecast || null;
+  const storeResilience = cleanInput && card.currentStoreOffer
+    ? decisionModel.resilienceMetrics({
+      ...cleanInput,
+      purchasePrice: card.currentStoreOffer.value,
+      currentPsa10Price: card.psa10,
+      bearishPsa10Price: card.supplyStress?.price || card.futurePriceForecast?.bearishPrice,
+      targetProfit: state.minExpectedProfit,
+    })
+    : null;
+  card.aggressivePurchase = decisionModel.aggressivePurchaseZone({
+    offer: card.currentStoreOffer,
+    operationalLimit: cleanLimits?.finalMaxPrice,
+    stressBreakEvenLimit: cleanLimits?.stressBreakEvenMaxPrice,
+    centralExpectedProfit: storeCentralEconomics?.expectedProfit,
+    stressExpectedProfit: storeStressEconomics?.expectedProfit,
+    psa9Profit: storeResilience?.psa9Profit,
+    priceReviewRequired: Boolean(card.dataQuality?.manualReview || card.dataQuality?.dataAnomaly || card.priceAggregation?.conflicted),
+  });
+  if (card.aggressivePurchase.eligible) {
+    card.purchaseAvailability = {
+      ...card.purchaseAvailability,
+      label: card.aggressivePurchase.label,
+      reason: `店舗価格¥${Math.floor(card.aggressivePurchase.offerPrice).toLocaleString("ja-JP")}は安定重視上限を超えるため通常GOとは別枠です`,
+      aggressive: true,
+      verifiedNow: false,
+    };
+  }
   if (card.overallAssessment) {
     card.overallAssessment.economics = economics
       ? Math.round(clamp((economics.expectedRoi + 20) / 80 * 100, 0, 100))
@@ -2545,7 +2589,7 @@ function readUrl() {
   if (saleFeeRate != null && saleFeeRate >= 0) els.saleFeeRateInput.value = String(saleFeeRate);
   if (saleExtraCost != null && saleExtraCost >= 0) els.saleExtraCostInput.value = String(saleExtraCost);
   if (buybackDeductionRate != null && buybackDeductionRate >= 0 && buybackDeductionRate <= 5) els.buybackDeductionRateInput.value = String(buybackDeductionRate);
-  state.purchaseMode = riskMode === "low" ? "low-risk" : ["combined", "bargain", "turnover", "now"].includes(presetMode) ? presetMode : "normal";
+  state.purchaseMode = riskMode === "low" ? "low-risk" : ["combined", "bargain", "turnover", "now", "aggressive"].includes(presetMode) ? presetMode : "normal";
   state.lowRiskAvailability = ["all", "go", "price"].includes(lowRiskAvailability) ? lowRiskAvailability : "all";
   syncLowRiskAvailabilityControl();
   document.querySelectorAll("[data-preset]").forEach((button) => {
@@ -2637,7 +2681,7 @@ function buildShareUrl() {
   url.searchParams.set("buybackDeduction", String(state.buybackDeductionRate));
   if (state.purchaseMode === "low-risk") url.searchParams.set("riskMode", "low");
   else url.searchParams.delete("riskMode");
-  if (["combined", "bargain", "turnover", "now"].includes(state.purchaseMode)) url.searchParams.set("preset", state.purchaseMode);
+  if (["combined", "bargain", "turnover", "now", "aggressive"].includes(state.purchaseMode)) url.searchParams.set("preset", state.purchaseMode);
   else url.searchParams.delete("preset");
   if (state.purchaseMode === "low-risk" && state.lowRiskAvailability !== "all") url.searchParams.set("lowRiskBuy", state.lowRiskAvailability);
   else url.searchParams.delete("lowRiskBuy");
@@ -2686,6 +2730,7 @@ function presetQualifications(card) {
     && !card.dataQuality?.dataAnomaly;
   const trusted = !card.dataQuality?.manualReview && !card.dataQuality?.dataAnomaly && card.priceAggregation?.confidence !== "低";
   const now = catalogReady && card.purchaseAvailability?.verifiedNow === true && stressSafe && eligibleVerdict;
+  const aggressive = catalogReady && card.aggressivePurchase?.eligible === true;
   const lowRisk = catalogReady && finalLimit > 0
     && stressSafe
     && eligibleVerdict
@@ -2720,12 +2765,13 @@ function presetQualifications(card) {
   const combined = combinedEligible && (now || lowRisk || turnover);
   const tags = [
     now ? "今すぐ" : "",
+    aggressive ? "攻め仕入れ圏" : "",
     !now && card.purchaseAvailability?.marketWithinLimit ? "相場基準" : "",
     lowRisk ? "低リスク" : "",
     turnover ? "高回転" : "",
     !now && finalLimit > 0 ? (card.purchaseAvailability?.marketWithinLimit ? "購入先待ち" : "価格待ち") : "",
   ].filter(Boolean);
-  return { now, lowRisk, turnover, bargain, combined, domesticExit, trusted, stressSafe, gapToLimit, tags, catalogReady };
+  return { now, aggressive, lowRisk, turnover, bargain, combined, domesticExit, trusted, stressSafe, gapToLimit, tags, catalogReady };
 }
 
 function combinedPresetSort(left, right) {
@@ -2977,6 +3023,7 @@ function render() {
       const presetFlags = presetQualifications(card);
       if (state.purchaseMode === "combined" && !presetFlags.combined) return false;
       if (state.purchaseMode === "bargain" && !presetFlags.bargain) return false;
+      if (state.purchaseMode === "aggressive" && !presetFlags.aggressive) return false;
       if (state.purchaseMode === "now" && !presetFlags.now) return false;
       if (state.purchaseMode === "low-risk" && !presetFlags.lowRisk) return false;
       if (state.purchaseMode === "turnover" && !presetFlags.turnover) return false;
@@ -3096,7 +3143,7 @@ function render() {
     const name = card.name.replace(/\s+/g, " ");
     const presetFlags = presetQualifications(card);
     const presetTagsHtml = presetFlags.tags.length
-      ? `<div class="preset-tags">${presetFlags.tags.map((tag) => `<b class="${tag === "今すぐ" ? "now" : tag === "相場基準" ? "market-range" : tag === "低リスク" ? "low-risk" : tag === "高回転" ? "turnover" : "waiting"}">${tag}</b>`).join("")}</div>`
+      ? `<div class="preset-tags">${presetFlags.tags.map((tag) => `<b class="${tag === "今すぐ" ? "now" : tag === "攻め仕入れ圏" ? "aggressive" : tag === "相場基準" ? "market-range" : tag === "低リスク" ? "low-risk" : tag === "高回転" ? "turnover" : "waiting"}">${tag}</b>`).join("")}</div>`
       : "";
     const catalogStatus = card.catalogCompletion;
     const catalogStatusHtml = catalogStatus ? `<div class="catalog-card-status ${catalogStatus.s === "分析可能" ? "ready" : catalogStatus.s === "データ不足" ? "shortage" : "pending"}"><b>${catalogStatus.n ? "サイト新着・" : ""}${catalogStatus.rr ? "最近発売・" : ""}${catalogStatus.rl ? "再掲載・" : ""}${escapeHtml(catalogStatus.s)}</b><span>充足 ${Number(catalogStatus.c || 0).toFixed(0)}% / 補完優先度 ${fmt.format(catalogStatus.p || 0)}</span><small>${catalogStatus.rd ? `発売日 ${escapeHtml(catalogStatus.rd)}（${escapeHtml(catalogStatus.rs || "取得済み")}） / ` : catalogStatus.ry ? `発売年 ${escapeHtml(String(catalogStatus.ry))}（${escapeHtml(catalogStatus.rs || "年のみ")}） / ` : "発売日不明 / "}${catalogStatus.m?.length ? `必須不足 ${escapeHtml(catalogStatus.m.join("・"))} / 次: ${escapeHtml(catalogStatus.x || "確認待ち")} / ` : ""}${escapeHtml((catalogStatus.r || []).join(" / "))}${catalogStatus.l ? ` / 最終試行 ${escapeHtml(String(catalogStatus.l).replace("T", " ").slice(0, 16))}` : ""}</small></div>` : "";
@@ -3338,11 +3385,11 @@ function render() {
     ].filter(Boolean);
     const supplyBadgesHtml = supplyBadges.map((label) => `<b class="supply-badge ${supplyClass}">${escapeHtml(label)}</b>`).join("");
     const limitReasonLabel = (scenario) => ({
-      "stress-break-even": "供給ストレス時でも赤字を避ける上限を採用",
-      "ultra-low-risk": "低リスク設定：供給ストレス時でも目標利益を残す上限を採用",
-      operational: "理論上限の急変を抑えた運用上限を採用",
-      capital: "現在の資金上限を採用",
-      "normal-economics": scenario?.supplyRiskReflected ? "通常上限が供給ストレス時赤字回避上限以下・二重控除なし" : "通常上限を採用",
+      "stress-break-even": "供給ストレス損益分岐で制限",
+      "ultra-low-risk": "目標利益で制限（低リスク設定）",
+      operational: "過去上限からの平滑化で制限",
+      capital: "資金上限で制限",
+      "normal-economics": scenario?.supplyRiskReflected ? "目標利益で制限・供給リスク反映済み" : "目標利益で制限",
       none: "設定条件では仕入れ見送り",
     }[scenario?.limitingFactor] || "判定中");
     const resilience = buyLimits?.clean?.resilience;
@@ -3378,6 +3425,11 @@ function render() {
     const limitGap = Number(card.price) - Number(card.buyLimits?.clean?.finalMaxPrice || 0);
     const currentWithinLimit = Number(card.buyLimits?.clean?.finalMaxPrice || 0) > 0 && limitGap <= 0;
     const purchaseAvailability = card.purchaseAvailability || {};
+    const aggressive = card.aggressivePurchase || {};
+    const aggressiveCentralProfit = signedMoney(aggressive.centralExpectedProfit);
+    const aggressiveStressProfit = signedMoney(aggressive.stressExpectedProfit);
+    const aggressivePsa9Profit = signedMoney(aggressive.psa9Profit);
+    const psa9NonLossLimit = Number(buyLimits?.clean?.psa9NonLossMaxPrice || 0);
     const cleanMarketStatus = buyLimits?.clean?.maxPrice > 0
       ? card.price <= buyLimits.clean.maxPrice
         ? "相場基準では仕入れ圏"
@@ -3391,8 +3443,12 @@ function render() {
         </div>
         <div class="buy-limit-grid">
           <div class="buy-limit-card clean ${buyLimits.clean.maxPrice > 0 ? "available" : "blocked"}">
-            <span>${buyLimits.clean.provisional ? "暫定運用上限" : "実際に使える運用上限"}・美品</span>
+            <span>${buyLimits.clean.provisional ? "安定重視上限（暫定）" : "安定重視上限"}・美品</span>
             <strong>${buyLimitText(buyLimits.clean)}</strong>
+            <div class="buy-limit-breakdown">
+              <span>供給ストレス期待損益0円上限</span><em>¥${fmt.format(buyLimits.clean.stressBreakEvenMaxPrice || 0)}</em>
+              <span>PSA9赤字回避上限</span><em>¥${fmt.format(psa9NonLossLimit)}</em>
+            </div>
             <b>PSA10想定 ${buyLimits.clean.hitRate.toFixed(1)}%</b>
             <b class="${stressProfitAtFinal.className}">安全側利益 ${stressProfitAtFinal.text}${Number.isFinite(stressRoiAtFinal) ? ` / ${stressRoiAtFinal.toFixed(1)}%` : ""}</b>
             <small>${escapeHtml(cleanMarketStatus)} / ${escapeHtml(limitReasonLabel(buyLimits.clean))}</small>
@@ -3445,9 +3501,10 @@ function render() {
     ` : "";
     const purchaseSummaryPanel = psaDecision && purchaseDecision ? `
       <section class="purchase-summary ${decisionClass}">
-        <div class="purchase-final-limit"><span>${card.buyLimits?.clean?.provisional ? "暫定運用上限" : "実際に使える最終上限"}・美品</span><strong>${buyLimitText(card.buyLimits?.clean)}</strong><small>${escapeHtml(limitReasonLabel(card.buyLimits?.clean))}</small><div class="supply-badges">${supplyBadgesHtml}</div></div>
+        <div class="purchase-final-limit"><span>${card.buyLimits?.clean?.provisional ? "安定重視上限（暫定）" : "安定重視上限"}・美品</span><strong>${buyLimitText(card.buyLimits?.clean)}</strong><div class="purchase-limit-tiers"><span>供給ストレス期待損益0円上限 <b>¥${fmt.format(card.buyLimits?.clean?.stressBreakEvenMaxPrice || 0)}</b></span><span>PSA9赤字回避上限 <b>¥${fmt.format(psa9NonLossLimit)}</b></span></div><small>${escapeHtml(limitReasonLabel(card.buyLimits?.clean))}</small><div class="supply-badges">${supplyBadgesHtml}</div></div>
         <div class="purchase-verdict"><span>今回の仕入れ判断</span><strong>${escapeHtml(displayVerdict)}</strong><small>${escapeHtml(decisionReasons)}</small></div>
-        <div class="purchase-action ${purchaseAvailability.verifiedNow ? "verified" : purchaseAvailability.marketWithinLimit ? "market-range" : "waiting"}"><span>実店舗での仕入れ可否</span><strong>${escapeHtml(purchaseAvailability.label || "購入先未確認")}</strong><small>${escapeHtml(purchaseAvailability.reason || "新しい在庫情報を確認してください")}</small></div>
+        <div class="purchase-action ${purchaseAvailability.aggressive ? "aggressive" : purchaseAvailability.verifiedNow ? "verified" : purchaseAvailability.marketWithinLimit ? "market-range" : "waiting"}"><span>実店舗での仕入れ可否</span><strong>${escapeHtml(purchaseAvailability.label || "購入先未確認")}</strong><small>${escapeHtml(purchaseAvailability.reason || "新しい在庫情報を確認してください")}</small></div>
+        ${aggressive.eligible ? `<div class="aggressive-economics"><div><span>店舗価格</span><strong>¥${fmt.format(aggressive.offerPrice)}</strong></div><div><span>中央予測利益</span><strong class="${aggressiveCentralProfit.className}">${aggressiveCentralProfit.text}</strong></div><div><span>供給ストレス期待利益</span><strong class="${aggressiveStressProfit.className}">${aggressiveStressProfit.text}</strong></div><div><span>PSA9時損益</span><strong class="${aggressivePsa9Profit.className}">${aggressivePsa9Profit.text}</strong></div><div><span>安定重視上限との差</span><strong>+¥${fmt.format(Math.max(0, aggressive.operationalGap || 0))}</strong></div><div><span>損益分岐上限まで</span><strong>¥${fmt.format(Math.max(0, aggressive.breakEvenRoom || 0))}</strong></div></div>` : ""}
         <div><span>現在の基準購入価格</span><strong>¥${fmt.format(card.price)}</strong><small>外れ値除外中央値</small></div>
         <div><span>運用上限との差額</span><strong class="${currentWithinLimit ? "positive" : "negative"}">${currentWithinLimit ? "上限より" : "上限超過"} ¥${fmt.format(Math.abs(Math.round(limitGap)))}</strong></div>
         <div><span>現在購入できる店舗価格</span><strong>${card.currentStoreOffer ? `¥${fmt.format(card.currentStoreOffer.value)}` : "未取得"}</strong><small>${escapeHtml(card.currentStoreOffer?.source || "ショップ価格なし")}</small></div>

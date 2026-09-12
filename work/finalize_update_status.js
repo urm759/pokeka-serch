@@ -43,6 +43,7 @@ const psa = read("data/psa-official-populations.json");
 const services = read("data/psa-japan-services.json");
 const pokedata = read("data/pokedata-summary.json");
 const pokedataManifest = read("data/pokedata/manifest.json", { sets: [] });
+const updatePerformance = read("data/update-performance.json", {});
 const runs = read("work/source-update-runs.json", { sources: {} });
 const runHistory = read("work/source-update-history.json", { version: 1, sources: {} });
 const psaStoredTask = read("work/psa_update_state.json", {});
@@ -232,6 +233,38 @@ const payload = {
   // Keep the old field while deployed clients and bookmarked cached pages age out.
   completeDate: complete ? today : previous.allDataCompleteDate || previous.completeDate || null,
   manualPending,
+  pipelines: {
+    fast: {
+      label: "日次高速更新",
+      runClass: updatePerformance.runClass || "高速更新",
+      updatedAt: updatePerformance.updatedAt || null,
+      processedCards: Number.isFinite(updatePerformance.processedCards) ? updatePerformance.processedCards : null,
+      changedCards: Number.isFinite(updatePerformance.changedCards) ? updatePerformance.changedCards : null,
+      httpRequests: Number.isFinite(updatePerformance.httpRequests) ? updatePerformance.httpRequests : null,
+      cacheHits: Number.isFinite(updatePerformance.cacheHits) ? updatePerformance.cacheHits : null,
+      cacheRatePct: Number.isFinite(updatePerformance.cacheRatePct) ? updatePerformance.cacheRatePct : null,
+      durationMs: Number.isFinite(updatePerformance.durationMs) ? updatePerformance.durationMs : null,
+      regeneratedFiles: Number.isFinite(updatePerformance.regeneratedFiles) ? updatePerformance.regeneratedFiles : null,
+      checkpoint: updatePerformance.checkpoint || null,
+      llmCalls: Number.isFinite(updatePerformance.llmCalls) ? updatePerformance.llmCalls : 0,
+      codexCalls: Number.isFinite(updatePerformance.codexCalls) ? updatePerformance.codexCalls : 0,
+    },
+    backfill: {
+      label: "バックフィル",
+      status: sources.yuyutei?.status === "partial" || sources.torecacamp?.status === "partial" || sources.pokedata?.status === "partial" ? "巡回中" : "完了",
+      checkpoint: `遊々亭 ${Number(yuyutei.crawl?.searchedCurrentCount || 0)}件 / トレカキャンプ ${Number(torecacamp.crawl?.currentSitemapIndex || 1)}/${Number(torecacamp.crawl?.totalSitemaps || 44)}`,
+      llmCalls: 0,
+      codexCalls: 0,
+    },
+    authenticated: {
+      label: "認証取得",
+      status: psaTask.status === "success" ? "成功" : "手動対応待ちまたは部分取得",
+      updatedAt: psaTask.lastSuccessAt || null,
+      checkpoint: "PSA専用Chrome / PokeDATA認証セッション",
+      llmCalls: 0,
+      codexCalls: 0,
+    },
+  },
   sources,
 };
 fs.writeFileSync(OUTPUT, JSON.stringify(payload), "utf8");
