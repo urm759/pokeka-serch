@@ -782,6 +782,10 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .filter-explanation{grid-column:1/-1;margin:0;padding:8px 10px;border-radius:10px;background:rgba(125,211,252,.07);color:var(--muted);font-size:9px;line-height:1.5}
 .purchase-summary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:12px;padding:10px;border:1px solid rgba(125,211,252,.3);border-radius:18px;background:rgba(5,10,20,.56)}
 .purchase-summary>div{padding:10px;border-radius:13px;background:#0b1224}
+.purchase-summary .purchase-exclusion{grid-column:1/-1;border:1px solid rgba(148,163,184,.3);background:rgba(148,163,184,.08)}
+.purchase-summary .purchase-exclusion strong{margin:0;color:#e5edf9;font-size:15px;line-height:1.4}
+.purchase-summary .purchase-exclusion.price-only{border-color:rgba(251,191,36,.5);background:rgba(251,191,36,.1)}
+.purchase-summary .purchase-exclusion.price-only strong{color:#fde68a}
 .purchase-summary span,.purchase-summary small{display:block;color:var(--muted);font-size:9px;line-height:1.45}
 .purchase-summary strong{display:block;margin-top:3px;font-size:19px}
 .purchase-summary .purchase-final-limit{background:linear-gradient(135deg,rgba(56,217,150,.2),rgba(125,211,252,.11));border:1px solid rgba(56,217,150,.42)}

@@ -2,6 +2,7 @@ const fmt = new Intl.NumberFormat("ja-JP");
 const decisionModel = window.PurchaseDecisionModel;
 const marketModel = window.MarketAnalysisModel;
 const backtestModel = window.BacktestModel;
+const searchIndexModel = window.CardSearchIndexModel;
 const FORECAST_HORIZON_DAYS = 91;
 
 const state = {
@@ -9,6 +10,9 @@ const state = {
   catalogCompletion: null,
   catalogManifest: null,
   catalogIndex: [],
+  searchIndex: [],
+  searchRankById: new Map(),
+  searchRequestId: 0,
   catalogScope: "analysis",
   catalogLoadedChunks: new Set(),
   catalogLoadingChunks: new Set(),
@@ -107,7 +111,7 @@ const state = {
   supplyState: "all",
   minFloorScore: null,
   storeDemand: "all",
-  hideSkipped: false,
+  showSkipped: false,
   hideReview: false,
   fundingOnly: false,
   officialOnly: false,
@@ -132,6 +136,7 @@ const state = {
   saleFeeRate: 0,
   saleExtraCost: 0,
   buybackDeductionRate: 3,
+  exitPolicy: "buyback",
 };
 
 const FAVORITES_STORAGE_KEY = "pokeka-buy-favorites-v1";
@@ -212,7 +217,7 @@ const els = {
   supplyStateInput: document.getElementById("supplyStateInput"),
   minFloorScoreInput: document.getElementById("minFloorScoreInput"),
   storeDemandInput: document.getElementById("storeDemandInput"),
-  hideSkippedInput: document.getElementById("hideSkippedInput"),
+  showSkippedInput: document.getElementById("showSkippedInput"),
   hideReviewInput: document.getElementById("hideReviewInput"),
   fundingOnlyInput: document.getElementById("fundingOnlyInput"),
   officialOnlyInput: document.getElementById("officialOnlyInput"),
@@ -284,6 +289,7 @@ const els = {
   saleFeeRateInput: document.getElementById("saleFeeRateInput"),
   saleExtraCostInput: document.getElementById("saleExtraCostInput"),
   buybackDeductionRateInput: document.getElementById("buybackDeductionRateInput"),
+  exitPolicyInput: document.getElementById("exitPolicyInput"),
   gradingReserveStatus: document.getElementById("gradingReserveStatus"),
   capitalAvailabilityStatus: document.getElementById("capitalAvailabilityStatus"),
   shopReferenceLinks: document.getElementById("shopReferenceLinks"),
@@ -515,16 +521,11 @@ const sorters = {
 };
 
 function normalize(v) {
-  return (v || "")
-    .toString()
-    .toLowerCase()
-    .replace(/[０-９]/g, (s) => String.fromCharCode(s.charCodeAt(0) - 0xfee0))
-    .replace(/[‐−–—]/g, "-")
-    .trim();
+  return searchIndexModel?.normalize ? searchIndexModel.normalize(v) : String(v || "").toLowerCase().trim();
 }
 
 function compactSearch(v) {
-  return normalize(v).replace(/[^0-9a-z\u3040-\u30ff\u3400-\u9fff]+/gi, "");
+  return searchIndexModel?.compact ? searchIndexModel.compact(v) : normalize(v).replace(/[^0-9a-z\u3040-\u30ff\u3400-\u9fff]+/gi, "");
 }
 
 function roundToStep(value, step = 1000) {
@@ -1457,6 +1458,24 @@ function buildFuturePriceForecast(card, official, stock) {
   if (card.saleTx30d < 5) predictedPrice = predictedPrice * 0.4 + currentPrice * 0.6;
   else if (card.saleTx30d < 15) predictedPrice = predictedPrice * 0.7 + currentPrice * 0.3;
   predictedPrice = roundToStep(clamp(predictedPrice, rawPrice, currentPrice * 1.15), 1000);
+  const downtrendRegime = marketModel.evaluateDowntrendRegime({
+    currentPrice,
+    rawTrend7,
+    rawTrend30,
+    direction: card.marketStability?.direction,
+    supportBroken: card.marketStability?.supportBroken,
+    supportConfirmed: card.marketStability?.supportConfirmed,
+    newLow14: card.marketStability?.newLow14 ?? card.marketStability?.stats14?.newLowCount,
+    newLow30: card.marketStability?.newLow30 ?? card.marketStability?.stats30?.newLowCount,
+    psaIncrease7: card.marketStability?.psaIncrease7 ?? official?.w7?.d10,
+    psaTx7: card.psaTx7d,
+    psaTx30: card.psaTx30d,
+    pressureRatio: supplyDemandRatio,
+    storeDemandLabel: card.buybackAnalysis?.label,
+  });
+  if (Number.isFinite(downtrendRegime.maxCentralPrice)) {
+    predictedPrice = roundToStep(Math.min(predictedPrice, downtrendRegime.maxCentralPrice), 1000);
+  }
   const signedChangePct = (predictedPrice - currentPrice) / currentPrice * 100;
   const downsidePct = Math.max(0, -signedChangePct);
   const downsideScore = downsidePct <= 5 ? 100 : downsidePct <= 10 ? 88 : downsidePct <= 20 ? 68 : downsidePct <= 30 ? 43 : downsidePct <= 40 ? 23 : 8;
@@ -1468,9 +1487,13 @@ function buildFuturePriceForecast(card, official, stock) {
   const evidenceCount = Number(card.saleTx30d >= 10) + Number(card.psaTx30d >= 5) + Number(card.buybackShops > 0) + Number(officialFresh && Number.isFinite(official?.rate)) + Number(Boolean(growthWindow)) + Number(Boolean(card.cardrushUrl || card.hareruya2Url || card.yuyuteiUrl || card.torecacampUrl));
   const dataCompleteness = evidenceCount >= 5 ? "高" : evidenceCount >= 3 ? "中" : "低";
   const uncertaintyPct = dataCompleteness === "高" ? 0.1 : dataCompleteness === "中" ? 0.18 : 0.28;
-  const bearishPrice = roundToStep(Math.max(rawPrice, predictedPrice * (1 - uncertaintyPct)), 1000);
+  // In an active breakdown, the raw-card market is not a valid downside floor.
+  // A bearish scenario must never sit above the central scenario.
+  const bearishFloor = downtrendRegime.active ? 0 : Math.min(rawPrice, predictedPrice);
+  const bearishPrice = roundToStep(Math.min(predictedPrice, Math.max(bearishFloor, predictedPrice * (1 - uncertaintyPct))), 1000);
   const bullishPrice = roundToStep(Math.min(currentPrice * 1.2, predictedPrice * (1 + uncertaintyPct * 0.75)), 1000);
-  const phase = downsidePct >= 30 ? "下落余地大" : downsidePct >= 18 ? "調整警戒" : downsidePct <= 7 && gapRatio <= 1.7 ? "底値圏候補" : downsidePct <= 10 ? "横ばい・安定候補" : "小幅調整候補";
+  const phase = downtrendRegime.phaseOverride
+    || (downsidePct >= 30 ? "下落余地大" : downsidePct >= 18 ? "調整警戒" : downsidePct <= 7 && gapRatio <= 1.7 && downtrendRegime.bottomCandidateAllowed ? "底値圏候補" : downsidePct <= 10 ? "横ばい・安定候補" : "小幅調整候補");
   const reasons = [];
   if (gapRatio >= 2) reasons.push(`PSA10が平均美品の${gapRatio.toFixed(2)}倍`);
   else if (gapRatio >= 1.35 && gapRatio <= 1.7) reasons.push(`平均美品との倍率が収束圏（${gapRatio.toFixed(2)}倍）`);
@@ -1485,6 +1508,7 @@ function buildFuturePriceForecast(card, official, stock) {
   if (buybackRatio >= 0.75 && card.buybackShops > 0) reasons.push("店舗買取が市場価格を強く支える");
   if (psa10Rate != null && psa10Rate < 55) reasons.push(`PSA10取得率${psa10Rate.toFixed(1)}%で10の供給が限定的`);
   if (Number.isFinite(monthlyPsa10Increase)) reasons.push(`PSA10は30日換算+${fmt.format(Math.round(monthlyPsa10Increase))}枚・供給圧力${supplyPressure}`);
+  if (downtrendRegime.active) reasons.unshift(...downtrendRegime.reasons);
 
   return {
     predictedPrice,
@@ -1520,6 +1544,11 @@ function buildFuturePriceForecast(card, official, stock) {
     dataCompleteness,
     confidence: dataCompleteness,
     phase,
+    demandSupplyClass: downtrendRegime.demandSupplyClass,
+    downtrendActive: downtrendRegime.active,
+    bottomRecovered: downtrendRegime.bottomRecovered,
+    bottomRecoveryConditions: downtrendRegime.recoveryConditions,
+    supplyPressureRatio7: downtrendRegime.pressureRatio,
     reasons: reasons.slice(0, 4),
     rawTrend30,
     rawTrend7,
@@ -1738,11 +1767,39 @@ function buildSupplyStress(card) {
 
 function buildBuyLimitScenario(card, condition) {
   const input = buildScenarioInput(card, condition);
-  const economicMaxPrice = decisionModel.targetProfitMaxBuyPrice(input, state.minExpectedProfit);
+  const marketplaceEconomicMaxPrice = decisionModel.targetProfitMaxBuyPrice(input, state.minExpectedProfit);
   const stressForecastPrice = Number(card.supplyStress?.price) > 0 ? Number(card.supplyStress.price) : input.forecastPrice;
   const stressInput = buildScenarioInput(card, condition, stressForecastPrice);
-  const stressBreakEvenMaxPrice = decisionModel.targetProfitMaxBuyPrice(stressInput, 0);
-  const ultraLowRiskMaxPrice = decisionModel.targetProfitMaxBuyPrice(stressInput, state.minExpectedProfit);
+  const marketplaceStressBreakEvenMaxPrice = decisionModel.targetProfitMaxBuyPrice(stressInput, 0);
+  const marketplaceUltraLowRiskMaxPrice = decisionModel.targetProfitMaxBuyPrice(stressInput, state.minExpectedProfit);
+  const buybackExit = decisionModel.conservativeBuybackExit({
+    rows: card.buybackAnalysis?.rows,
+    currentPsa10Price: card.psa10,
+    stressPsa10Price: stressForecastPrice,
+    deductionRate: state.buybackDeductionRate,
+    saleExtraCost: state.saleExtraCost,
+    saleFeeRate: state.saleFeeRate,
+    assumptions: input.assumptions,
+    fee: state.fee,
+    minExpectedProfit: state.minExpectedProfit,
+    minExpectedRoi: state.minExpectedRoi,
+    minAnnualEfficiency: state.minAnnualEfficiency,
+    lockDays: state.lockDays,
+    step: 500,
+  });
+  const exitPolicy = decisionModel.exitPolicyCaps({
+    policy: state.exitPolicy,
+    marketplaceTargetCap: marketplaceEconomicMaxPrice,
+    marketplaceBreakEvenCap: marketplaceStressBreakEvenMaxPrice,
+    buyback: buybackExit,
+  });
+  const economicMaxPrice = exitPolicy.targetCap;
+  const stressBreakEvenMaxPrice = exitPolicy.breakEvenCap;
+  const ultraLowRiskMaxPrice = exitPolicy.adoptedPolicy === "buyback"
+    ? buybackExit.targetMaxPrice
+    : exitPolicy.adoptedPolicy === "both"
+      ? exitPolicy.bothSafeCap
+      : marketplaceUltraLowRiskMaxPrice;
   const atLimit = decisionModel.expectedEconomics({ ...input, purchasePrice: economicMaxPrice });
   const atStressLimit = decisionModel.expectedEconomics({ ...stressInput, purchasePrice: stressBreakEvenMaxPrice });
   const resilience = decisionModel.resilienceMetrics({
@@ -1761,6 +1818,11 @@ function buildBuyLimitScenario(card, condition) {
     stressBreakEvenMaxPrice,
     ultraLowRiskMaxPrice,
     stressForecastPrice,
+    marketplaceEconomicMaxPrice,
+    marketplaceStressBreakEvenMaxPrice,
+    marketplaceUltraLowRiskMaxPrice,
+    buybackExit,
+    exitPolicy,
     stressExpectedSale: floorToStep(atStressLimit.expectedSale, 500),
     hitRate: input.assumptions.hitRate * 100,
     lowerGradePrice: floorToStep(input.assumptions.lowerGradePrice, 500),
@@ -1830,6 +1892,14 @@ function buildBuyLimits(card) {
       centralForecastPrice: card.futurePriceForecast?.centralPrice || scenario.modelInput.forecastPrice,
       supplyStressPrice: scenario.supplyStressPrice,
     });
+    const buybackExpectedSale = Number(scenario.buybackExit?.expectedSale);
+    scenario.buybackEconomics = scenario.buybackExit?.usable && Number.isFinite(buybackExpectedSale)
+      ? {
+          currentPurchase: decisionModel.economicsFromExpectedSale({ purchasePrice: card.price, fee: state.fee, expectedSale: buybackExpectedSale, lockDays: state.lockDays }),
+          storeOffer: card.currentStoreOffer ? decisionModel.economicsFromExpectedSale({ purchasePrice: card.currentStoreOffer.value, fee: state.fee, expectedSale: buybackExpectedSale, lockDays: state.lockDays }) : null,
+          operationalLimit: decisionModel.economicsFromExpectedSale({ purchasePrice: scenario.finalMaxPrice, fee: state.fee, expectedSale: buybackExpectedSale, lockDays: state.lockDays }),
+        }
+      : null;
     scenario.currentMarketAtFinal = scenario.economicsScenarios.operationalLimit.currentMarket;
     scenario.centralAtFinal = scenario.economicsScenarios.operationalLimit.centralForecast;
     scenario.supplyStressAtFinal = scenario.economicsScenarios.operationalLimit.supplyStress;
@@ -1855,15 +1925,20 @@ function finalizeCardDecision(card) {
   card.buyLimits = buildBuyLimits(card);
   const cleanInput = card.buyLimits?.clean?.modelInput;
   const scenarioMatrix = card.buyLimits?.clean?.economicsScenarios || {};
-  const marketEconomics = cleanInput ? scenarioMatrix.currentPurchase?.centralForecast : null;
-  const storeEconomics = cleanInput && card.currentStoreOffer ? scenarioMatrix.storeOffer?.centralForecast : null;
-  const operationalEconomics = cleanInput ? scenarioMatrix.operationalLimit?.centralForecast : null;
+  const buybackEconomics = card.buyLimits?.clean?.buybackEconomics || null;
+  const useBuybackEconomics = card.buyLimits?.clean?.exitPolicy?.adoptedPolicy === "buyback" && buybackEconomics;
+  const marketEconomics = cleanInput ? (useBuybackEconomics ? buybackEconomics.currentPurchase : scenarioMatrix.currentPurchase?.centralForecast) : null;
+  const storeEconomics = cleanInput && card.currentStoreOffer ? (useBuybackEconomics ? buybackEconomics.storeOffer : scenarioMatrix.storeOffer?.centralForecast) : null;
+  const operationalEconomics = cleanInput ? (useBuybackEconomics ? buybackEconomics.operationalLimit : scenarioMatrix.operationalLimit?.centralForecast) : null;
   const capital = card.buyLimits?.capital;
   const cleanLimits = card.buyLimits?.clean;
   const capitalShare = state.psaCapital > 0 ? card.price / state.psaCapital * 100 : Infinity;
   const riskReasons = [];
   if (Number(card.overallAssessment?.exitLiquidity || 0) < 30) riskReasons.push("売却しやすさ30点未満");
-  if (Number(card.overallAssessment?.marketStability || 0) < 30) riskReasons.push("価格安定性30点未満");
+  const priceManagedDowntrend = card.futurePriceForecast?.demandSupplyClass === "高需要／供給多"
+    && Number(card.supplyStress?.price) > 0
+    && Number(cleanLimits?.stressBreakEvenMaxPrice) > 0;
+  if (Number(card.overallAssessment?.marketStability || 0) < 30 && !priceManagedDowntrend) riskReasons.push("価格安定性30点未満");
   if (Number(card.overallAssessment?.supplyRisk || 0) < 30) riskReasons.push("供給リスク耐性30点未満");
   if (Number(card.overallAssessment?.futurePrice || 0) < 30) riskReasons.push("将来価格評価30点未満");
   const decisionInput = cleanLimits ? {
@@ -1958,9 +2033,16 @@ function finalizeCardDecision(card) {
     finalMaxPrice: finalDecision?.finalMaxPrice,
     limitingFactor: finalDecision?.limitingFactor,
     forecastPsa10Net: economics.psa10Net,
-    calculationBasis: storeEconomics ? "現在購入できる実店舗価格 × 中央予測" : "現在の基準相場 × 中央予測",
+    calculationBasis: useBuybackEconomics
+      ? `${storeEconomics ? "現在購入できる実店舗価格" : "現在の基準相場"} × 買取店保守出口`
+      : `${storeEconomics ? "現在購入できる実店舗価格" : "現在の基準相場"} × 中央予測`,
   } : null;
   card.purchaseDecision = finalDecision;
+  if (card.buyLimits?.clean?.exitPolicy?.dataShortage) {
+    const message = card.buyLimits.clean.exitPolicy.reason || "買取データ不足";
+    card.dataQuality.dataShortage = true;
+    card.dataQuality.dataShortageReasons = [...new Set([...(card.dataQuality.dataShortageReasons || []), message])];
+  }
   card.hasPricingAnomaly = card.dataQuality.manualReview;
   return card;
 }
@@ -2374,8 +2456,7 @@ async function loadCatalogChunk(chunkNumber) {
 }
 
 function catalogIndexMatches(scope, query = "") {
-  const queryKey = compactSearch(query);
-  return state.catalogIndex.filter((entry) => {
+  const statusMatches = (entry) => {
     const statusMatch = scope === "all"
       || scope === "new" && (entry.siteNew || entry.isNew)
       || scope === "recent" && entry.recentRelease
@@ -2383,9 +2464,21 @@ function catalogIndexMatches(scope, query = "") {
       || scope === "completing" && entry.status === "データ補完中"
       || scope === "shortage" && entry.status === "データ不足"
       || scope === "analysis" && entry.status === "分析可能";
-    if (!queryKey) return statusMatch;
-    return compactSearch(`${entry.name || ""} ${entry.model || ""} ${entry.setCode || ""} ${entry.cardNumber || ""} ${entry.id || ""}`).includes(queryKey);
-  });
+    return statusMatch;
+  };
+  if (!query) return state.catalogIndex.filter(statusMatches);
+  if (searchIndexModel && state.searchIndex.length) {
+    const catalogById = new Map(state.catalogIndex.map((entry) => [String(entry.id), entry]));
+    const matches = searchIndexModel.search(state.searchIndex, query, { limit: 250 })
+      .map((entry) => catalogById.get(String(entry.id)) || { id: entry.id, chunk: entry.c })
+      .filter(statusMatches);
+    state.searchRankById = new Map(matches.map((entry, index) => [String(entry.id), index]));
+    return matches;
+  }
+  const queryKey = compactSearch(query);
+  const matches = state.catalogIndex.filter((entry) => statusMatches(entry) && compactSearch(`${entry.name || ""} ${entry.model || ""} ${entry.setCode || ""} ${entry.cardNumber || ""} ${entry.id || ""}`).includes(queryKey));
+  state.searchRankById = new Map(matches.map((entry, index) => [String(entry.id), index]));
+  return matches;
 }
 
 async function loadCatalogEntries(entries) {
@@ -2402,11 +2495,17 @@ async function loadCatalogEntries(entries) {
 let catalogQueryTimer = null;
 function scheduleCatalogQueryLoad() {
   clearTimeout(catalogQueryTimer);
-  if (!state.q || !state.catalogIndex.length) return;
+  const requestId = ++state.searchRequestId;
+  if (!state.q || !state.catalogIndex.length) {
+    state.searchRankById = new Map();
+    render();
+    return;
+  }
   catalogQueryTimer = setTimeout(async () => {
     const changed = await loadCatalogEntries(catalogIndexMatches(state.catalogScope, state.q));
-    if (changed) render();
-  }, 180);
+    if (requestId !== state.searchRequestId) return;
+    render();
+  }, 200);
 }
 
 async function setCatalogScope(scope) {
@@ -2486,7 +2585,8 @@ function readUrl() {
   const supplyState = url.searchParams.get("supplyState");
   const minFloorScore = parseOptionalNumber(url.searchParams.get("floorScore"));
   const storeDemand = url.searchParams.get("storeDemand");
-  const hideSkipped = url.searchParams.get("hideSkipped") === "1";
+  const showSkipped = url.searchParams.get("showSkipped") === "1";
+  const legacyHideSkipped = url.searchParams.get("hideSkipped") === "1";
   const hideReview = url.searchParams.get("hideReview") === "1";
   const fundingOnly = url.searchParams.get("fundingOnly") === "1";
   const officialOnly = url.searchParams.get("officialOnly") === "1";
@@ -2573,7 +2673,7 @@ function readUrl() {
   if (["all", "buy", "balanced", "sell", "collecting"].includes(supplyState)) els.supplyStateInput.value = supplyState;
   if (minFloorScore != null && minFloorScore >= 0) els.minFloorScoreInput.value = String(minFloorScore);
   if (["all", "strong", "normal-up", "normal", "weak", "collecting"].includes(storeDemand)) els.storeDemandInput.value = storeDemand;
-  els.hideSkippedInput.checked = hideSkipped;
+  els.showSkippedInput.checked = showSkipped && !legacyHideSkipped;
   els.hideReviewInput.checked = hideReview;
   els.fundingOnlyInput.checked = fundingOnly;
   els.officialOnlyInput.checked = officialOnly;
@@ -2589,6 +2689,8 @@ function readUrl() {
   if (saleFeeRate != null && saleFeeRate >= 0) els.saleFeeRateInput.value = String(saleFeeRate);
   if (saleExtraCost != null && saleExtraCost >= 0) els.saleExtraCostInput.value = String(saleExtraCost);
   if (buybackDeductionRate != null && buybackDeductionRate >= 0 && buybackDeductionRate <= 5) els.buybackDeductionRateInput.value = String(buybackDeductionRate);
+  const exitPolicy = url.searchParams.get("exitPolicy");
+  if (["buyback", "marketplace", "both"].includes(exitPolicy)) els.exitPolicyInput.value = exitPolicy;
   state.purchaseMode = riskMode === "low" ? "low-risk" : ["combined", "bargain", "turnover", "now", "aggressive"].includes(presetMode) ? presetMode : "normal";
   state.lowRiskAvailability = ["all", "go", "price"].includes(lowRiskAvailability) ? lowRiskAvailability : "all";
   syncLowRiskAvailabilityControl();
@@ -2662,7 +2764,8 @@ function buildShareUrl() {
   if (state.supplyState === "all") url.searchParams.delete("supplyState"); else url.searchParams.set("supplyState", state.supplyState);
   if (state.minFloorScore == null) url.searchParams.delete("floorScore"); else url.searchParams.set("floorScore", String(state.minFloorScore));
   if (state.storeDemand === "all") url.searchParams.delete("storeDemand"); else url.searchParams.set("storeDemand", state.storeDemand);
-  if (state.hideSkipped) url.searchParams.set("hideSkipped", "1"); else url.searchParams.delete("hideSkipped");
+  if (state.showSkipped) url.searchParams.set("showSkipped", "1"); else url.searchParams.delete("showSkipped");
+  url.searchParams.delete("hideSkipped");
   if (state.hideReview) url.searchParams.set("hideReview", "1"); else url.searchParams.delete("hideReview");
   if (state.fundingOnly) url.searchParams.set("fundingOnly", "1"); else url.searchParams.delete("fundingOnly");
   if (state.officialOnly) url.searchParams.set("officialOnly", "1"); else url.searchParams.delete("officialOnly");
@@ -2679,6 +2782,7 @@ function buildShareUrl() {
   url.searchParams.set("sellFee", String(state.saleFeeRate));
   url.searchParams.set("extraCost", String(state.saleExtraCost));
   url.searchParams.set("buybackDeduction", String(state.buybackDeductionRate));
+  url.searchParams.set("exitPolicy", state.exitPolicy);
   if (state.purchaseMode === "low-risk") url.searchParams.set("riskMode", "low");
   else url.searchParams.delete("riskMode");
   if (["combined", "bargain", "turnover", "now", "aggressive"].includes(state.purchaseMode)) url.searchParams.set("preset", state.purchaseMode);
@@ -2925,7 +3029,6 @@ function render() {
       const compactHaystack = compactSearch(`${card.name} ${card.model} ${card.id}`);
       const completion = card.catalogCompletion;
       if (normalizedQuery && !(haystack.includes(normalizedQuery) || compactHaystack.includes(compactQuery))) return false;
-      if (normalizedQuery && completion?.s !== "分析可能") return true;
       if (!normalizedQuery) {
         if (state.catalogScope === "analysis" && completion?.s !== "分析可能") return false;
         if (state.catalogScope === "new" && !completion?.n) return false;
@@ -2934,6 +3037,7 @@ function render() {
         if (state.catalogScope === "completing" && completion?.s !== "データ補完中") return false;
         if (state.catalogScope === "shortage" && completion?.s !== "データ不足") return false;
       }
+      if (!decisionModel.shouldIncludeVerdict(card.purchaseDecision?.verdict, state.showSkipped)) return false;
       if (state.catalogScope !== "analysis" && state.purchaseMode === "normal") return true;
       if (card.saleTx30d < state.minSaleTx) return false;
       if (state.maxSaleTx != null && card.saleTx30d > state.maxSaleTx) return false;
@@ -2978,7 +3082,7 @@ function render() {
       if (state.maxForecastDownside != null && (!card.futurePriceForecast || card.futurePriceForecast.downsidePct > state.maxForecastDownside)) return false;
       if (state.minForecastGap != null && (!card.futurePriceForecast || card.futurePriceForecast.gapRatio < state.minForecastGap)) return false;
       if (state.maxForecastGap != null && (!card.futurePriceForecast || card.futurePriceForecast.gapRatio > state.maxForecastGap)) return false;
-      const forecastPhaseKey = !card.futurePriceForecast ? "" : card.futurePriceForecast.phase === "下落余地大" ? "large" : card.futurePriceForecast.phase === "調整警戒" ? "caution" : card.futurePriceForecast.phase === "小幅調整候補" ? "small" : "stable";
+      const forecastPhaseKey = !card.futurePriceForecast ? "" : ["下落余地大", "下落継続警戒"].includes(card.futurePriceForecast.phase) ? "large" : ["調整警戒", "底値未確認"].includes(card.futurePriceForecast.phase) ? "caution" : card.futurePriceForecast.phase === "小幅調整候補" ? "small" : "stable";
       if (state.forecastPhase !== "all" && forecastPhaseKey !== state.forecastPhase) return false;
       const forecastConfidence = card.futurePriceForecast?.confidence || "";
       if (state.forecastConfidence === "high" && forecastConfidence !== "高") return false;
@@ -3000,7 +3104,6 @@ function render() {
       if (state.forecastMaturity === "known" && maturityKey === "unknown") return false;
       if (state.maxForecastMonthlyIncrease != null && (!Number.isFinite(card.futurePriceForecast?.monthlyPsa10Increase) || card.futurePriceForecast.monthlyPsa10Increase > state.maxForecastMonthlyIncrease)) return false;
       if (!card.overallAssessment && (state.minExitLiquidity || state.minEconomics || state.minMarketStability || state.minSupplyRisk || state.minFuturePriceScore)) return false;
-      if (state.hideSkipped && card.purchaseDecision?.verdict === "見送り") return false;
       if (state.hideReview && card.purchaseDecision?.verdict === "要確認") return false;
       if (state.dataQualityFilter === "manual" && !card.dataQuality?.manualReview) return false;
       if (state.dataQualityFilter === "shortage" && !card.dataQuality?.dataShortage) return false;
@@ -3039,7 +3142,14 @@ function render() {
       if (state.stockDemand === "known" && demand === "蓄積中") return false;
       return true;
     })
-    .sort(state.purchaseMode === "combined" ? combinedPresetSort : sorters[state.sort]);
+    .sort((left, right) => {
+      if (normalizedQuery) {
+        const leftRank = state.searchRankById.get(String(left.id)) ?? Number.MAX_SAFE_INTEGER;
+        const rightRank = state.searchRankById.get(String(right.id)) ?? Number.MAX_SAFE_INTEGER;
+        if (leftRank !== rightRank) return leftRank - rightRank;
+      }
+      return (state.purchaseMode === "combined" ? combinedPresetSort : sorters[state.sort])(left, right);
+    });
 
   recordOperationalLimitHistory(enriched);
 
@@ -3378,11 +3488,12 @@ function render() {
     const supplyClass = supply.strongDeclineWarning ? "severe" : supply.pressureKey || "collecting";
     const supplyBadges = [
       supply.status === "蓄積中" ? "蓄積中" : "供給リスク反映済み",
-      supply.classification === "高需要・供給過多" ? "高需要・供給過多" : "",
+      card.futurePriceForecast?.demandSupplyClass || "",
+      card.futurePriceForecast?.downtrendActive ? card.futurePriceForecast.phase : "",
       supply.strongDeclineWarning ? "強い下落警戒" : "",
       state.purchaseMode === "low-risk" ? "超低リスク上限" : "",
       buyLimits?.clean?.provisional ? "暫定上限" : "",
-    ].filter(Boolean);
+    ].filter((label, index, labels) => Boolean(label) && labels.indexOf(label) === index);
     const supplyBadgesHtml = supplyBadges.map((label) => `<b class="supply-badge ${supplyClass}">${escapeHtml(label)}</b>`).join("");
     const limitReasonLabel = (scenario) => ({
       "stress-break-even": "供給ストレス損益分岐で制限",
@@ -3430,6 +3541,18 @@ function render() {
     const aggressiveStressProfit = signedMoney(aggressive.stressExpectedProfit);
     const aggressivePsa9Profit = signedMoney(aggressive.psa9Profit);
     const psa9NonLossLimit = Number(buyLimits?.clean?.psa9NonLossMaxPrice || 0);
+    const exitPolicy = buyLimits?.clean?.exitPolicy || null;
+    const buybackExit = buyLimits?.clean?.buybackExit || null;
+    const finalLimit = Number(buyLimits?.clean?.finalMaxPrice || 0);
+    const observedPurchasePrice = Number(card.currentStoreOffer?.value || card.price || 0);
+    const priceOnlyExclusion = finalLimit > 0
+      && observedPurchasePrice > finalLimit
+      && !["見送り", "要確認"].includes(card.purchaseDecision?.verdict);
+    const exclusionExplanation = priceOnlyExclusion
+      ? "カード自体が見送りなのではなく、現在価格が資金上限・安全上限を超えているため対象外"
+      : card.purchaseDecision?.verdict === "見送り"
+        ? "価格だけでなく、銘柄品質・下落リスク条件も満たしていないため見送り"
+        : "現在の価格・利益・資金・リスク条件を合わせた判定";
     const cleanMarketStatus = buyLimits?.clean?.maxPrice > 0
       ? card.price <= buyLimits.clean.maxPrice
         ? "相場基準では仕入れ圏"
@@ -3462,7 +3585,7 @@ function render() {
         </div>
         <div class="supply-badges">${supplyBadgesHtml}</div>
         <div class="buy-limit-foot">
-          <span>個別カードは1枚で判定。${state.purchaseMode === "low-risk" ? "低リスク設定では、供給ストレス時でも目標利益を残す超低リスク上限を使用します。" : "通常上限・供給ストレス時赤字回避上限・資金上限の最小値を表示します。"}</span>
+          <span>表示上限は現在価格ではなく「この価格以下なら仕入れ候補」の意味です。個別カードは1枚で判定。${state.purchaseMode === "low-risk" ? "低リスク設定では、供給ストレス時でも目標利益を残す超低リスク上限を使用します。" : "通常上限・供給ストレス時赤字回避上限・資金上限の最小値を表示します。"}</span>
         </div>
       </section>
     ` : "";
@@ -3501,6 +3624,7 @@ function render() {
     ` : "";
     const purchaseSummaryPanel = psaDecision && purchaseDecision ? `
       <section class="purchase-summary ${decisionClass}">
+        <div class="purchase-exclusion ${priceOnlyExclusion ? "price-only" : ""}"><strong>${escapeHtml(exclusionExplanation)}</strong><small>暫定運用上限は現在価格ではなく「この価格以下なら仕入れ候補」という買値の基準です。</small></div>
         <div class="purchase-final-limit"><span>${card.buyLimits?.clean?.provisional ? "安定重視上限（暫定）" : "安定重視上限"}・美品</span><strong>${buyLimitText(card.buyLimits?.clean)}</strong><div class="purchase-limit-tiers"><span>供給ストレス期待損益0円上限 <b>¥${fmt.format(card.buyLimits?.clean?.stressBreakEvenMaxPrice || 0)}</b></span><span>PSA9赤字回避上限 <b>¥${fmt.format(psa9NonLossLimit)}</b></span></div><small>${escapeHtml(limitReasonLabel(card.buyLimits?.clean))}</small><div class="supply-badges">${supplyBadgesHtml}</div></div>
         <div class="purchase-verdict"><span>今回の仕入れ判断</span><strong>${escapeHtml(displayVerdict)}</strong><small>${escapeHtml(decisionReasons)}</small></div>
         <div class="purchase-action ${purchaseAvailability.aggressive ? "aggressive" : purchaseAvailability.verifiedNow ? "verified" : purchaseAvailability.marketWithinLimit ? "market-range" : "waiting"}"><span>実店舗での仕入れ可否</span><strong>${escapeHtml(purchaseAvailability.label || "購入先未確認")}</strong><small>${escapeHtml(purchaseAvailability.reason || "新しい在庫情報を確認してください")}</small></div>
@@ -3509,6 +3633,13 @@ function render() {
         <div><span>運用上限との差額</span><strong class="${currentWithinLimit ? "positive" : "negative"}">${currentWithinLimit ? "上限より" : "上限超過"} ¥${fmt.format(Math.abs(Math.round(limitGap)))}</strong></div>
         <div><span>現在購入できる店舗価格</span><strong>${card.currentStoreOffer ? `¥${fmt.format(card.currentStoreOffer.value)}` : "未取得"}</strong><small>${escapeHtml(card.currentStoreOffer?.source || "ショップ価格なし")}</small></div>
         <div><span>基準相場は上限以下か</span><strong class="${currentWithinLimit ? "positive" : "negative"}">${currentWithinLimit ? "相場基準では仕入れ圏" : "上限価格待ち"}</strong><small>${currentWithinLimit ? "成約中央値だけでは今すぐ仕入れにしません" : "現在の基準相場は運用上限超過"}</small></div>
+        <div class="purchase-basis-note"><span>採用した売却出口</span><strong>${escapeHtml(exitPolicy?.label || "フリマ基準")}</strong></div>
+        <div><span>買取店・保守的出口（減額前）</span><strong>${buybackExit?.usable ? `¥${fmt.format(buybackExit.grossForecast)}` : "買取データ不足"}</strong><small>${buybackExit?.usable ? `${fmt.format(buybackExit.storeCount)}店舗・返却時下落を反映` : escapeHtml(buybackExit?.reason || "新しい信頼価格が2店舗未満")}</small></div>
+        <div><span>買取店・減額適用後</span><strong>${buybackExit?.usable ? `¥${fmt.format(buybackExit.netForecast)}` : "算出しない"}</strong><small>${buybackExit?.usable ? `減額前から -¥${fmt.format(buybackExit.deductionAmount)}（${buybackExit.deductionRate.toFixed(1)}%）` : "推定値で補完しません"}</small></div>
+        <div><span>買取店売却・損益分岐仕入れ値</span><strong>${buybackExit?.usable ? `¥${fmt.format(buybackExit.breakEvenMaxPrice)}` : "算出しない"}</strong><small>PSA10率・PSA9以下・鑑定費・追加費用込み</small></div>
+        <div><span>買取店売却・目標利益込み上限</span><strong>${buybackExit?.usable ? `¥${fmt.format(buybackExit.targetMaxPrice)}` : "算出しない"}</strong><small>信頼度 ${escapeHtml(buybackExit?.confidence || "不足")}</small></div>
+        <div><span>フリマ基準上限</span><strong>¥${fmt.format(exitPolicy?.marketplaceTargetCap || 0)}</strong><small>販売手数料を反映</small></div>
+        <div><span>両方で赤字を避ける上限</span><strong>${Number.isFinite(exitPolicy?.bothSafeCap) ? `¥${fmt.format(exitPolicy.bothSafeCap)}` : "買取データ不足"}</strong><small>買取・フリマの損益分岐上限の小さい方</small></div>
         <div class="purchase-basis-note"><span>現在仕入値 ¥${fmt.format(card.price)}で購入</span><strong>売却価格シナリオ別</strong></div>
         <div><span>現在PSA10相場 ¥${fmt.format(card.psa10)}</span>${scenarioResult(currentScenarios.currentMarket)}</div>
         <div><span>中央予測 ¥${fmt.format(card.futurePriceForecast?.centralPrice || 0)}</span>${scenarioResult(currentScenarios.centralForecast)}</div>
@@ -3541,11 +3672,12 @@ function render() {
           <div><span>PSA10 ÷ 平均美品</span><strong>${forecast.gapRatio.toFixed(2)}倍</strong></div>
           <div><span>PSA10 30日換算増加</span><strong>${Number.isFinite(forecast.monthlyPsa10Increase) ? `+${fmt.format(Math.round(forecast.monthlyPsa10Increase))}枚` : "未判定"}</strong></div>
           <div><span>PSA10供給圧力</span><strong>${escapeHtml(forecast.supplyPressure)}</strong></div>
+          <div><span>需要／供給の分類</span><strong>${escapeHtml(forecast.demandSupplyClass || "蓄積中")}</strong></div>
           <div><span>公式セット年</span><strong>${Number.isFinite(forecast.releaseYear) ? `${forecast.releaseYear}年` : "未取得"}</strong></div>
           <div><span>供給成熟度</span><strong>${escapeHtml(forecast.maturityLabel)}</strong></div>
         </div>
         <p>${escapeHtml(forecastReasons)}</p>
-        <small>平均美品との価格差だけで決めず、発売後の経過年数・PSA10取得率・実際の供給増・取引量を反映します。古いカードでも供給増が高い場合は警戒を優先します。</small>
+        <small>平均美品との価格差だけで決めず、発売後の経過年数・PSA10取得率・実際の供給増・取引量を反映します。${forecast.downtrendActive ? `底値候補へ戻す条件：${escapeHtml((forecast.bottomRecoveryConditions || []).join("／"))}` : "古いカードでも供給増が高い場合は警戒を優先します。"}</small>
       </div>
     ` : "";
     const floor = card.marketStability;
@@ -3822,7 +3954,7 @@ function syncFromUI() {
   state.supplyState = els.supplyStateInput.value || "all";
   state.minFloorScore = parseOptionalNumber(els.minFloorScoreInput.value);
   state.storeDemand = els.storeDemandInput.value || "all";
-  state.hideSkipped = els.hideSkippedInput.checked;
+  state.showSkipped = els.showSkippedInput.checked;
   state.hideReview = els.hideReviewInput.checked;
   state.fundingOnly = els.fundingOnlyInput.checked;
   state.officialOnly = els.officialOnlyInput.checked;
@@ -3844,6 +3976,7 @@ function syncFromUI() {
   state.saleFeeRate = Number(els.saleFeeRateInput.value || 0);
   state.saleExtraCost = Number(els.saleExtraCostInput.value || 0);
   state.buybackDeductionRate = clamp(Number(els.buybackDeductionRateInput.value || 0), 0, 5);
+  state.exitPolicy = ["buyback", "marketplace", "both"].includes(els.exitPolicyInput.value) ? els.exitPolicyInput.value : "buyback";
   if (els.capitalAvailabilityStatus) {
     const capital = decisionModel.capitalPlan({ totalCapital: state.psaCapital, lockedCapital: state.lockedCapital, gradingReserve: state.gradingReserve, submissionCount: state.submissionCount, fee: state.fee });
     els.capitalAvailabilityStatus.className = capital.availableCapital > 0 ? "enough" : "short";
@@ -3882,6 +4015,8 @@ async function init() {
     state.catalogManifest = await fetchJsonMaybe("./data/card-catalog/manifest.json");
     const catalogIndexPayload = await fetchJsonMaybe("./data/card-catalog/index.json");
     state.catalogIndex = Array.isArray(catalogIndexPayload?.cards) ? catalogIndexPayload.cards : [];
+    const searchIndexPayload = await fetchJsonMaybe("./data/card-catalog/search-index.json");
+    state.searchIndex = Array.isArray(searchIndexPayload?.cards) ? searchIndexPayload.cards : [];
     const analysisCards = state.catalogManifest ? await fetchJsonMaybe("./data/card-catalog/analysis.json") : null;
     if (Array.isArray(analysisCards)) {
       state.cards = analysisCards;
@@ -3944,9 +4079,20 @@ async function init() {
   }
 }
 
-[els.qInput, els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.buyback7MinInput, els.buyback7MaxInput, els.buyback30MinInput, els.buyback30MaxInput, els.buyback90MinInput, els.buyback90MaxInput, els.buybackShopsMinInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.roiInput, els.expectedRoiFilterInput, els.expectedProfitFilterInput, els.stressExpectedRoiFilterInput, els.stressExpectedProfitFilterInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.purchaseLimitRatioMinInput, els.psaRateMinInput, els.overallFilterInput, els.minExitLiquidityInput, els.minEconomicsInput, els.minMarketStabilityInput, els.minSupplyRiskInput, els.minFuturePriceScoreInput, els.maxFuturePriceScoreInput, els.minForecastPriceInput, els.maxForecastPriceInput, els.minForecastDownsideInput, els.maxForecastDownsideInput, els.minForecastGapInput, els.maxForecastGapInput, els.forecastPhaseInput, els.forecastConfidenceInput, els.forecastSupplyPressureInput, els.minForecastAgeInput, els.forecastMaturityInput, els.maxForecastMonthlyIncreaseInput, els.stockDemandInput, els.dataQualityFilterInput, els.goConfidenceFilterInput, els.floorStateInput, els.priceDirectionInput, els.supplyStateInput, els.minFloorScoreInput, els.storeDemandInput, els.hideSkippedInput, els.hideReviewInput, els.fundingOnlyInput, els.officialOnlyInput, els.sortInput, els.psaCapitalInput, els.lockedCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput, els.buybackDeductionRateInput].forEach((el) =>
+[els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.buyback7MinInput, els.buyback7MaxInput, els.buyback30MinInput, els.buyback30MaxInput, els.buyback90MinInput, els.buyback90MaxInput, els.buybackShopsMinInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.roiInput, els.expectedRoiFilterInput, els.expectedProfitFilterInput, els.stressExpectedRoiFilterInput, els.stressExpectedProfitFilterInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.purchaseLimitRatioMinInput, els.psaRateMinInput, els.overallFilterInput, els.minExitLiquidityInput, els.minEconomicsInput, els.minMarketStabilityInput, els.minSupplyRiskInput, els.minFuturePriceScoreInput, els.maxFuturePriceScoreInput, els.minForecastPriceInput, els.maxForecastPriceInput, els.minForecastDownsideInput, els.maxForecastDownsideInput, els.minForecastGapInput, els.maxForecastGapInput, els.minForecastAgeInput, els.forecastMaturityInput, els.maxForecastMonthlyIncreaseInput, els.stockDemandInput, els.dataQualityFilterInput, els.goConfidenceFilterInput, els.floorStateInput, els.priceDirectionInput, els.supplyStateInput, els.minFloorScoreInput, els.storeDemandInput, els.showSkippedInput, els.hideReviewInput, els.fundingOnlyInput, els.officialOnlyInput, els.sortInput, els.psaCapitalInput, els.lockedCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput, els.buybackDeductionRateInput, els.exitPolicyInput].forEach((el) =>
   el.addEventListener("input", syncFromUI)
 );
+
+[els.forecastPhaseInput, els.forecastConfidenceInput, els.forecastSupplyPressureInput].forEach((el) =>
+  el.addEventListener("input", syncFromUI)
+);
+
+els.qInput.addEventListener("input", () => {
+  state.visibleLimit = 60;
+  state.q = els.qInput.value.trim();
+  scheduleCatalogQueryLoad();
+  updateUrl();
+});
 
 els.resetFiltersBtn.addEventListener("click", () => {
   els.qInput.value = "";
@@ -3973,7 +4119,7 @@ els.resetFiltersBtn.addEventListener("click", () => {
   els.supplyStateInput.value = "all";
   els.minFloorScoreInput.value = "";
   els.storeDemandInput.value = "all";
-  els.hideSkippedInput.checked = false;
+  els.showSkippedInput.checked = false;
   els.hideReviewInput.checked = false;
   els.fundingOnlyInput.checked = false;
   els.officialOnlyInput.checked = false;
@@ -4007,7 +4153,7 @@ document.querySelectorAll("[data-preset]").forEach((button) => {
     els.minSupplyRiskInput.value = preset === "low-risk" ? "60" : "0";
     els.maxForecastDownsideInput.value = preset === "low-risk" ? "10" : "";
     els.buybackShopsMinInput.value = preset === "turnover" ? "1" : "0";
-    els.hideSkippedInput.checked = preset === "now" || preset === "low-risk";
+    els.showSkippedInput.checked = false;
     els.fundingOnlyInput.checked = false;
     els.officialOnlyInput.checked = preset === "low-risk";
     els.sortInput.value = preset === "turnover" ? "exit-desc" : preset === "low-risk" ? "downside-asc" : preset === "bargain" ? "expectedProfit-desc" : "expectedProfit-desc";

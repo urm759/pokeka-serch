@@ -567,6 +567,86 @@
     return { key: "severe", label: "強い下落警戒", baseRisk: 96 };
   }
 
+  function classifyDemandSupply(input = {}) {
+    const pressureRatio = finite(input.pressureRatio);
+    const psaTx7 = Math.max(0, finite(input.psaTx7) || 0);
+    const psaTx30 = Math.max(0, finite(input.psaTx30) || 0);
+    const highDemand = input.storeDemandLabel === "強い" || psaTx7 >= 10 || psaTx30 >= 15;
+    if (pressureRatio == null) return { label: "蓄積中", highDemand, highSupply: null };
+    const highSupply = pressureRatio >= 2;
+    return {
+      label: highDemand
+        ? highSupply ? "高需要／供給多" : "高需要／供給少"
+        : highSupply ? "低需要／供給多" : "低需要／供給少",
+      highDemand,
+      highSupply,
+    };
+  }
+
+  function evaluateDowntrendRegime(input = {}) {
+    const currentPrice = positive(input.currentPrice);
+    const rawTrend7 = finite(input.rawTrend7);
+    const rawTrend30 = finite(input.rawTrend30);
+    const direction = String(input.direction || "");
+    const supportBroken = input.supportBroken === true;
+    const newLow14 = Math.max(0, finite(input.newLow14) || 0);
+    const newLow30 = Math.max(0, finite(input.newLow30) || 0);
+    const psaIncrease7 = finite(input.psaIncrease7);
+    const psaTx7 = finite(input.psaTx7);
+    const pressureRatio = psaIncrease7 != null && psaIncrease7 > 0 && psaTx7 != null && psaTx7 > 0
+      ? psaIncrease7 / psaTx7
+      : finite(input.pressureRatio);
+    const demandSupply = classifyDemandSupply({
+      pressureRatio,
+      psaTx7,
+      psaTx30: input.psaTx30,
+      storeDemandLabel: input.storeDemandLabel,
+    });
+    const falling = direction.includes("下降") || (rawTrend7 != null && rawTrend7 <= -5) || (rawTrend30 != null && rawTrend30 <= -8);
+    const makingNewLows = newLow14 > 0 || newLow30 > 1;
+    const supplyGrowing = pressureRatio != null && pressureRatio >= 2;
+    const active = supportBroken && falling && makingNewLows && supplyGrowing;
+    const declineSlowing = rawTrend7 != null && rawTrend30 != null
+      ? Math.abs(Math.min(0, rawTrend7)) <= Math.abs(Math.min(0, rawTrend30)) * 0.65
+      : false;
+    const supplyAbsorbed = pressureRatio != null && pressureRatio < 1;
+    const supportRecovered = input.supportConfirmed === true && !supportBroken;
+    const noNewLows = newLow14 === 0;
+    const bottomRecovered = noNewLows && declineSlowing && supportRecovered && supplyAbsorbed;
+    let phaseOverride = null;
+    if (active) phaseOverride = "下落継続警戒";
+    else if ((supportBroken || falling) && makingNewLows) phaseOverride = "底値未確認";
+    let maxCentralPrice = null;
+    if (currentPrice != null && (active || phaseOverride === "底値未確認")) {
+      const trendPenalty = Math.min(0.18, Math.max(
+        Math.abs(Math.min(0, rawTrend7 || 0)) / 100 * 0.45,
+        Math.abs(Math.min(0, rawTrend30 || 0)) / 100 * 0.35
+      ));
+      const supplyPenalty = pressureRatio == null ? 0 : pressureRatio >= 10 ? 0.16 : pressureRatio >= 5 ? 0.12 : pressureRatio >= 2 ? 0.07 : 0;
+      const supportPenalty = supportBroken ? 0.04 : 0;
+      const continuation = clamp(trendPenalty + supplyPenalty + supportPenalty, 0.05, 0.35);
+      maxCentralPrice = Math.round(currentPrice * (1 - continuation));
+    }
+    const reasons = [];
+    if (supportBroken) reasons.push("確認済み支持帯を下抜け");
+    if (makingNewLows) reasons.push(`安値更新 14日${newLow14}回・30日${newLow30}回`);
+    if (falling) reasons.push("価格方向が下降");
+    if (pressureRatio != null) reasons.push(`7日供給圧力比${pressureRatio.toFixed(2)}倍`);
+    return {
+      active,
+      phaseOverride,
+      bottomRecovered,
+      bottomCandidateAllowed: bottomRecovered || (!supportBroken && !makingNewLows && !falling),
+      maxCentralPrice,
+      pressureRatio: round(pressureRatio, 2),
+      demandSupplyClass: demandSupply.label,
+      highDemand: demandSupply.highDemand,
+      highSupply: demandSupply.highSupply,
+      recoveryConditions: ["7～14日間安値更新なし", "下落速度の鈍化", "支持帯の回復", "PSA10供給増加率の低下", "取引数が供給増加を吸収"],
+      reasons,
+    };
+  }
+
   function evaluateSupplyPipeline(input = {}) {
     const window7 = supplyWindow({
       targetDays: 7,
@@ -606,13 +686,12 @@
       : Math.max(0, finite(input.psaTx7) || 0) * 4.3;
     const storeDemandStrong = input.storeDemandLabel === "強い";
     const highDemand = storeDemandStrong || psaLiquidity >= 15;
-    let classification = "蓄積中";
-    if (selected) {
-      if (highDemand && selected.pressureRatio < 2) classification = "高需要・供給吸収";
-      else if (highDemand && selected.pressureRatio >= 2) classification = "高需要・供給過多";
-      else if (!highDemand && selected.pressureRatio >= 1) classification = "低需要・供給過多";
-      else classification = "低需要・低流動";
-    }
+    const classification = classifyDemandSupply({
+      pressureRatio: selected?.pressureRatio,
+      psaTx7: input.psaTx7,
+      psaTx30: input.psaTx30,
+      storeDemandLabel: input.storeDemandLabel,
+    }).label;
 
     let riskScore = selected ? pressure.baseRisk : null;
     if (riskScore != null) {
@@ -700,7 +779,8 @@
     else reasons.push("供給履歴不足のため追加下落率は未適用");
     const rawPrice = anchor * (1 - haircut);
     const step = Math.max(1, finite(input.step) || 500);
-    const price = Math.max(0, Math.floor(Math.min(bearishPrice, rawPrice) / step) * step);
+    const centralCeiling = centralPrice ?? bearishPrice;
+    const price = Math.max(0, Math.floor(Math.min(centralCeiling, bearishPrice, rawPrice) / step) * step);
     return {
       price: Number.isFinite(price) ? price : null,
       provisional: pipeline.status !== "判定可",
@@ -752,6 +832,8 @@
     buybackMetrics,
     applyStoreDemandRelativeRanking,
     HISTORY_REQUIREMENTS,
+    classifyDemandSupply,
+    evaluateDowntrendRegime,
     evaluatePriceFloor,
     evaluateStoreDemand,
     extremePriceState,

@@ -186,7 +186,7 @@ const absorbedPipeline = model.evaluateSupplyPipeline({
 assert.strictEqual(absorbedPipeline.status, "判定可");
 assert.strictEqual(absorbedPipeline.pressureRatio, 0.5);
 assert.strictEqual(absorbedPipeline.absorptionRate, 2);
-assert.strictEqual(absorbedPipeline.classification, "高需要・供給吸収");
+assert.strictEqual(absorbedPipeline.classification, "高需要／供給少");
 
 const busyOversupply = model.evaluateSupplyPipeline({
   psaIncrease30: 100, psaTx30: 20, psaDays30: 30, psaPartial30: false,
@@ -194,7 +194,7 @@ const busyOversupply = model.evaluateSupplyPipeline({
   storeDemandLabel: "強い",
 });
 assert.strictEqual(busyOversupply.pressureRatio, 5);
-assert.strictEqual(busyOversupply.classification, "高需要・供給過多");
+assert.strictEqual(busyOversupply.classification, "高需要／供給多");
 assert.strictEqual(busyOversupply.reservePipeline, true);
 
 const lowDemandOversupply = model.evaluateSupplyPipeline({
@@ -202,7 +202,7 @@ const lowDemandOversupply = model.evaluateSupplyPipeline({
   rawTx30: 3, psa10Rate: 80, releaseAgeMonths: 24, expectedProfit: 5000,
 });
 assert.strictEqual(lowDemandOversupply.pressureRatio, 20);
-assert.strictEqual(lowDemandOversupply.classification, "低需要・供給過多");
+assert.strictEqual(lowDemandOversupply.classification, "低需要／供給多");
 assert.strictEqual(lowDemandOversupply.strongDeclineWarning, true);
 
 const newReleaseCollecting = model.evaluateSupplyPipeline({

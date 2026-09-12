@@ -461,6 +461,138 @@
     };
   }
 
+  function economicsFromExpectedSale(input = {}) {
+    const purchasePrice = Math.max(0, Number(input.purchasePrice || 0));
+    const fee = Math.max(0, Number(input.fee || 0));
+    const expectedSale = Math.max(0, Number(input.expectedSale || 0));
+    const expectedProfit = expectedSale - purchasePrice - fee;
+    const investment = purchasePrice + fee;
+    const expectedRoi = investment > 0 ? expectedProfit / investment * 100 : NaN;
+    const annualEfficiency = investment > 0 && Number(input.lockDays) > 0 ? expectedRoi * 365 / Number(input.lockDays) : NaN;
+    return { purchasePrice, expectedSale, expectedProfit, expectedRoi, annualEfficiency, exitType: input.exitType || "buyback" };
+  }
+
+  function conservativeBuybackExit(input = {}) {
+    const rows = (Array.isArray(input.rows) ? input.rows : [])
+      .filter((row) => row?.valid && !row.stale && !row.outlier && !row.quarantined && Number(row.buybackPrice) > 0);
+    const byShop = new Map();
+    for (const row of rows) {
+      const shopId = String(row.shopId || row.shopName || "");
+      if (!shopId) continue;
+      const candidates = [row.buybackPrice, row.avg7, row.avg30]
+        .map(Number)
+        .filter((value) => Number.isFinite(value) && value > 0);
+      if (!candidates.length) continue;
+      const conservativePrice = Math.min(...candidates);
+      const previous = byShop.get(shopId);
+      if (!previous || String(row.priceDate || "") > String(previous.priceDate || "")) {
+        byShop.set(shopId, { ...row, conservativePrice });
+      }
+    }
+    const trusted = [...byShop.values()];
+    if (trusted.length < 2) {
+      return {
+        usable: false,
+        reason: "買取データ不足（新しく信頼できる価格が2店舗未満）",
+        storeCount: trusted.length,
+        grossCurrent: null,
+        grossForecast: null,
+        netForecast: null,
+        breakEvenMaxPrice: null,
+        targetMaxPrice: null,
+        confidence: "不足",
+      };
+    }
+    const grossCurrent = median(trusted.map((row) => row.conservativePrice));
+    const currentPsa10Price = Math.max(0, Number(input.currentPsa10Price || 0));
+    const stressPsa10Price = Math.max(0, Number(input.stressPsa10Price || 0));
+    const forecastRatio = currentPsa10Price > 0 && stressPsa10Price > 0
+      ? clamp(stressPsa10Price / currentPsa10Price, 0.35, 1)
+      : 1;
+    const grossForecast = grossCurrent * forecastRatio;
+    const deductionRate = clamp(Number(input.deductionRate ?? 3), 0, 5);
+    const deductionAmount = grossForecast * deductionRate / 100;
+    const netForecast = grossForecast - deductionAmount - Math.max(0, Number(input.saleExtraCost || 0));
+    const hitRate = clamp(Number(input.assumptions?.hitRate || 0), 0, 1);
+    const lowerGradePrice = Math.max(0, Number(input.assumptions?.lowerGradePrice || 0));
+    const marketplaceMultiplier = Math.max(0, 1 - Number(input.saleFeeRate || 0) / 100);
+    const lowerGradeNet = lowerGradePrice * marketplaceMultiplier - Math.max(0, Number(input.saleExtraCost || 0));
+    const expectedSale = hitRate * netForecast + (1 - hitRate) * lowerGradeNet;
+    const fee = Math.max(0, Number(input.fee || 0));
+    const targetProfit = Math.max(0, Number(input.minExpectedProfit || 0));
+    const annualRequiredRoi = Number(input.lockDays) > 0
+      ? Math.max(0, Number(input.minAnnualEfficiency || 0)) * Number(input.lockDays) / 365
+      : 0;
+    const requiredRoi = Math.max(0, Number(input.minExpectedRoi || 0), annualRequiredRoi) / 100;
+    const breakEvenRaw = expectedSale - fee;
+    const profitCap = expectedSale - fee - targetProfit;
+    const roiCap = (expectedSale - fee * (1 + requiredRoi)) / (1 + requiredRoi);
+    const step = Math.max(1, Number(input.step || 500));
+    const floorPrice = (value) => Math.max(0, Math.floor(Math.max(0, value) / step) * step);
+    const observedDays = Math.max(0, ...trusted.map((row) => Number(row.observed30 || 0)));
+    const continuityValues = trusted
+      .map((row) => Number(row.observed30) > 0 ? Number(row.c30 || 0) / Number(row.observed30) : null)
+      .filter(Number.isFinite);
+    const continuity30 = continuityValues.length ? median(continuityValues) : null;
+    return {
+      usable: true,
+      reason: "",
+      storeCount: trusted.length,
+      grossCurrent: Math.round(grossCurrent),
+      grossForecast: Math.round(grossForecast),
+      forecastRatio,
+      deductionRate,
+      deductionAmount: Math.round(deductionAmount),
+      netForecast: Math.round(netForecast),
+      lowerGradeNet: Math.round(lowerGradeNet),
+      expectedSale: Math.round(expectedSale),
+      breakEvenMaxPrice: floorPrice(breakEvenRaw),
+      targetMaxPrice: floorPrice(Math.min(profitCap, roiCap)),
+      continuity30,
+      observedDays,
+      confidence: trusted.length >= 3 && observedDays >= 7 && continuity30 != null ? "高" : "中",
+      trustedRows: trusted,
+      marketplaceFeeAppliedToPsa10: false,
+      marketplaceFeeAppliedToLowerGrade: true,
+    };
+  }
+
+  function exitPolicyCaps(input = {}) {
+    const requestedPolicy = ["buyback", "marketplace", "both"].includes(input.policy) ? input.policy : "buyback";
+    const marketplaceTargetCap = Math.max(0, Number(input.marketplaceTargetCap || 0));
+    const marketplaceBreakEvenCap = Math.max(0, Number(input.marketplaceBreakEvenCap || 0));
+    const buyback = input.buyback || {};
+    const buybackTargetCap = buyback.usable ? Math.max(0, Number(buyback.targetMaxPrice || 0)) : null;
+    const buybackBreakEvenCap = buyback.usable ? Math.max(0, Number(buyback.breakEvenMaxPrice || 0)) : null;
+    const bothSafeCap = buyback.usable
+      ? Math.min(marketplaceBreakEvenCap, buybackBreakEvenCap)
+      : null;
+    if (requestedPolicy === "buyback" && buyback.usable) {
+      return { requestedPolicy, adoptedPolicy: "buyback", label: "買取店優先", targetCap: buybackTargetCap, breakEvenCap: buybackBreakEvenCap, marketplaceTargetCap, marketplaceBreakEvenCap, buybackTargetCap, buybackBreakEvenCap, bothSafeCap, dataShortage: false };
+    }
+    if (requestedPolicy === "both" && buyback.usable) {
+      return { requestedPolicy, adoptedPolicy: "both", label: "両方で赤字回避", targetCap: bothSafeCap, breakEvenCap: bothSafeCap, marketplaceTargetCap, marketplaceBreakEvenCap, buybackTargetCap, buybackBreakEvenCap, bothSafeCap, dataShortage: false };
+    }
+    return {
+      requestedPolicy,
+      adoptedPolicy: "marketplace",
+      label: requestedPolicy === "marketplace" ? "フリマ優先" : "フリマ基準（買取データ不足）",
+      targetCap: marketplaceTargetCap,
+      breakEvenCap: marketplaceBreakEvenCap,
+      marketplaceTargetCap,
+      marketplaceBreakEvenCap,
+      buybackTargetCap,
+      buybackBreakEvenCap,
+      bothSafeCap,
+      dataShortage: requestedPolicy !== "marketplace" && !buyback.usable,
+      reason: buyback.reason || "",
+    };
+  }
+
+  function shouldIncludeVerdict(verdict, showSkipped = false) {
+    return showSkipped === true || String(verdict || "") !== "見送り";
+  }
+
   function aggressivePurchaseZone(input = {}) {
     const offer = input.offer && typeof input.offer === "object" ? input.offer : null;
     const offerPrice = Number(offer?.value);
@@ -804,5 +936,5 @@
     };
   }
 
-  return { aggressivePurchaseZone, aggregatePrices, bargainDecisionEligible, buybackExitProfit, capRoundingStep, capitalLimits, capitalPlan, economicsScenarioMatrix, expectedEconomics, gradeAssumptions, isSuspectedCardMismatch, matchConfidenceLabel, maxBuyPrice, median, operationalCap, operationalCapConcentration, portfolioPlan, portfolioStress, purchaseAvailability, purchaseCaps, purchaseDecision, purchaseLimitMarketRatio, resilienceMetrics, resolvePsa9Price, targetProfitMaxBuyPrice, weightedMedian };
+  return { aggressivePurchaseZone, aggregatePrices, bargainDecisionEligible, buybackExitProfit, conservativeBuybackExit, economicsFromExpectedSale, exitPolicyCaps, shouldIncludeVerdict, capRoundingStep, capitalLimits, capitalPlan, economicsScenarioMatrix, expectedEconomics, gradeAssumptions, isSuspectedCardMismatch, matchConfidenceLabel, maxBuyPrice, median, operationalCap, operationalCapConcentration, portfolioPlan, portfolioStress, purchaseAvailability, purchaseCaps, purchaseDecision, purchaseLimitMarketRatio, resilienceMetrics, resolvePsa9Price, targetProfitMaxBuyPrice, weightedMedian };
 });

@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { buildSearchIndex } = require("./build_search_index.js");
 
 const ROOT = path.join(__dirname, "..");
 const DATA = path.join(ROOT, "data");
@@ -73,6 +74,10 @@ function main() {
 
   index.cards = (index.cards || []).map((row) => changed.has(String(row.id)) ? indexFields(byId.get(String(row.id)), row) : row);
   if (writeIfChanged(indexPath, index)) regeneratedFiles += 1;
+  const searchPath = path.join(CATALOG, "search-index.json");
+  const previousSearch = readJson(searchPath, { version: 1, generatedAt: index.generatedAt, cards: [] });
+  const searchPayload = { version: 1, generatedAt: index.generatedAt || previousSearch.generatedAt, count: cards.length, cards: buildSearchIndex(cards, index) };
+  if (writeIfChanged(searchPath, searchPayload)) regeneratedFiles += 1;
   console.log(JSON.stringify({ fullRebuildRequired: false, changedCards: changed.size, regeneratedFiles, chunks: chunks.size }));
 }
 

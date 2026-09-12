@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { buildSearchIndex } = require("./build_search_index.js");
 const { canonicalIdentity } = require("./card_identity");
 const { normalizeSetCode, resolveRelease, lifecycleFlags, classifyPsa9, retryAt } = require("./catalog_semantics");
 
@@ -354,6 +355,7 @@ function main() {
   }
   const analysisCards = cards.filter((card) => statusById[card.id]?.s === "分析可能");
   fs.writeFileSync(path.join(CATALOG, "index.json"), JSON.stringify({ generatedAt, cards: index }), "utf8");
+  fs.writeFileSync(path.join(CATALOG, "search-index.json"), JSON.stringify({ version: 1, generatedAt, count: cards.length, cards: buildSearchIndex(cards, { cards: index }) }), "utf8");
   fs.writeFileSync(path.join(CATALOG, "analysis.json"), JSON.stringify(analysisCards), "utf8");
   fs.writeFileSync(path.join(CATALOG, "manifest.json"), JSON.stringify({ version: 1, generatedAt, totalCards: cards.length, analysisCards: analysisCards.length, chunkSize: CHUNK_SIZE, files }), "utf8");
   fs.writeFileSync(path.join(DATA, "card-catalog-completion.json"), JSON.stringify({ version: 2, generatedAt, summary, itemTotals, dataTypeTotals, cards: statusById, unlistedIds: sourceMissing, duplicateIds }), "utf8");
