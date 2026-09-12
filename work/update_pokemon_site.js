@@ -571,6 +571,13 @@ async function main() {
     .map((card) => card.id);
   changedIds.push(...removedIds);
 
+  // Arrivals describe cards that are currently listed. Removed cards retain
+  // their lifecycle history and will be marked as relisted if they return.
+  const currentCardIds = new Set(sitePokemon.map((card) => String(card.id)));
+  for (const id of Object.keys(arrivals.cards || {})) {
+    if (!currentCardIds.has(String(id))) delete arrivals.cards[id];
+  }
+
   fs.mkdirSync(base, { recursive: true });
 
   fs.writeFileSync(jsonPath, JSON.stringify(sitePokemon), "utf8");
