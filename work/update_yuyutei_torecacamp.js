@@ -284,6 +284,18 @@ async function updateYuyutei(cards, paths) {
   let parsedProducts = 0;
   const runFailures = [];
   const linkageMisses = [];
+  let consecutiveAccessBlocks = 0;
+  let externalBlock = null;
+  const recentAccessBlocks = (progress.failures || []).slice(-3);
+  if (!progress.lastExternalBlock && recentAccessBlocks.length === 3 && recentAccessBlocks.every((failure) => [401, 403].includes(Number(failure.httpStatus)))) {
+    progress.lastExternalBlock = {
+      type: "external_access_blocked",
+      httpStatus: Number(recentAccessBlocks.at(-1).httpStatus),
+      message: "GitHub Actions実行元から連続してアクセス拒否。過去の正常データを保持し、PCローカル更新待ちです。",
+      stoppedAfterFailures: recentAccessBlocks.length,
+      detectedAt: recentAccessBlocks.at(-1).at,
+    };
+  }
   for (const card of targets) {
     const signature = cardSignature(card); const signatureKey = JSON.stringify(signature);
     const priority = yuyuteiPriority(card, buybackCards);
@@ -354,6 +366,7 @@ async function updateYuyutei(cards, paths) {
       metric.saveMs = Date.now() - saveStartedAt;
       metric.status = "success";
       metric.stage = "complete";
+      consecutiveAccessBlocks = 0;
     } catch (error) {
       failed += 1;
       Object.assign(metric, error.metric || {});
@@ -375,9 +388,22 @@ async function updateYuyutei(cards, paths) {
       runFailures.push(failure);
       write(paths.progress, progress);
       console.warn(`yuyutei search failed ${card.id}: ${error.message}`);
+      if ([401, 403].includes(Number(metric.httpStatus))) consecutiveAccessBlocks += 1;
+      else consecutiveAccessBlocks = 0;
+      if (consecutiveAccessBlocks >= 3) {
+        externalBlock = {
+          type: "external_access_blocked",
+          httpStatus: Number(metric.httpStatus),
+          message: "GitHub Actions実行元から連続してアクセス拒否。過去の正常データを保持し、PCローカル更新待ちです。",
+          stoppedAfterFailures: consecutiveAccessBlocks,
+          detectedAt: new Date().toISOString(),
+        };
+        progress.lastExternalBlock = externalBlock;
+      }
     }
     metric.endedAt = new Date().toISOString();
     recordFetchMetric("yuyutei", metric);
+    if (externalBlock) break;
   }
   const catalogGuard = guardCatalogDrop(previousCatalog, [...byId.values()]);
   catalog = catalogGuard.catalog;
@@ -424,6 +450,7 @@ async function updateYuyutei(cards, paths) {
     progressHealth,
     lastSuccessfulPage: progress.lastSuccessfulPage || null,
     lastFailure: runFailures.at(-1) || null,
+    externalBlock: externalBlock || progress.lastExternalBlock || null,
     linkageMisses: linkageMisses.slice(-20), completionStatus, completedAt: new Date().toISOString(),
   };
   write(paths.catalog, catalog); write(paths.history, history); write(paths.progress, progress); write(paths.cache, pageCache);
@@ -437,7 +464,7 @@ async function updateYuyutei(cards, paths) {
     lastSuccessfulPage: progress.lastSuccessfulPage || null,
     lastFailure: runFailures.at(-1) || null,
     searchableTargetCount: searchableCards.length, searchedCurrentCount,
-    remainingSearchCount, completionStatus,
+    remainingSearchCount, completionStatus, externalBlock,
   };
 }
 

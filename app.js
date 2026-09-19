@@ -34,6 +34,7 @@ const state = {
   pokedataSummary: Object.create(null),
   pokedataManifest: null,
   marketResearch: null,
+  regulationPolicy: null,
   modernHighRarityAudit: null,
   pokedataAuditRecords: [],
   pokedataAuditSetFile: "",
@@ -123,6 +124,7 @@ const state = {
   favoriteCosts: Object.create(null),
   favoriteQuery: "",
   purchaseMode: "normal",
+  includeAggressiveInCombined: false,
   lowRiskAvailability: "all",
   psaCapital: 500000,
   lockedCapital: 0,
@@ -223,6 +225,8 @@ const els = {
   officialOnlyInput: document.getElementById("officialOnlyInput"),
   lowRiskAvailabilityInput: document.getElementById("lowRiskAvailabilityInput"),
   lowRiskAvailabilityControl: document.getElementById("lowRiskAvailabilityControl"),
+  includeAggressiveInput: document.getElementById("includeAggressiveInput"),
+  presetAuditSummary: document.getElementById("presetAuditSummary"),
   resetFiltersBtn: document.getElementById("resetFiltersBtn"),
   roiInput: document.getElementById("roiInput"),
   expectedRoiFilterInput: document.getElementById("expectedRoiFilterInput"),
@@ -678,6 +682,9 @@ function renderSourceObservability() {
       <dl>
         <div><dt>最終実行</dt><dd>${escapeHtml(formatJstTimestamp(pipeline.updatedAt))}</dd></div>
         <div><dt>処理 / 変更カード</dt><dd>${Number.isFinite(pipeline.processedCards) ? fmt.format(pipeline.processedCards) : "-"} / ${Number.isFinite(pipeline.changedCards) ? fmt.format(pipeline.changedCards) : "-"}</dd></div>
+        <div><dt>外部取得 / 外部変更</dt><dd>${Number.isFinite(pipeline.externalFetchedCards) ? fmt.format(pipeline.externalFetchedCards) : "-"} / ${Number.isFinite(pipeline.externalChangedCards) ? fmt.format(pipeline.externalChangedCards) : "-"}</dd></div>
+        <div><dt>既存データ再計算</dt><dd>${Number.isFinite(pipeline.recalculatedCards) ? fmt.format(pipeline.recalculatedCards) : "-"}</dd></div>
+        <div><dt>変更なし / 取得失敗</dt><dd>${Number.isFinite(pipeline.unchangedCards) ? fmt.format(pipeline.unchangedCards) : "-"} / ${Number.isFinite(pipeline.fetchFailures) ? fmt.format(pipeline.fetchFailures) : "-"}</dd></div>
         <div><dt>HTTP / キャッシュ</dt><dd>${Number.isFinite(pipeline.httpRequests) ? fmt.format(pipeline.httpRequests) : "-"} / ${Number.isFinite(pipeline.cacheHits) ? fmt.format(pipeline.cacheHits) : "-"}</dd></div>
         <div><dt>キャッシュ率</dt><dd>${Number.isFinite(pipeline.cacheRatePct) ? `${pipeline.cacheRatePct.toFixed(1)}%` : "-"}</dd></div>
         <div><dt>処理時間</dt><dd>${escapeHtml(formatDuration(pipeline.durationMs))}</dd></div>
@@ -711,9 +718,16 @@ function renderSourceObservability() {
           <div><dt>前回比</dt><dd>${previousComparison}</dd></div>
           <div><dt>更新件数</dt><dd>${updated}</dd></div>
           <div><dt>取得失敗数</dt><dd>${failures}</dd></div>
-          <div><dt>次回予定</dt><dd>${escapeHtml(formatJstTimestamp(source.nextScheduledAt))}</dd></div>
+          <div><dt>実行workflow</dt><dd>${escapeHtml(source.workflow || "未記録")}</dd></div>
+          <div><dt>実行環境</dt><dd>${escapeHtml(source.executionEnvironment || "過去履歴・未記録")}</dd></div>
+          <div><dt>予定</dt><dd>${escapeHtml(source.scheduleLabel || "自動更新なし")}</dd></div>
+          <div><dt>Actions遅延</dt><dd>${Number.isFinite(source.actionsDelayMinutes) ? `${fmt.format(source.actionsDelayMinutes)}分` : "対象外／未記録"}</dd></div>
+          <div><dt>連続失敗</dt><dd>${fmt.format(source.consecutiveFailures || 0)}回</dd></div>
+          <div><dt>更新期限</dt><dd>${source.stale ? `期限超過（${Number.isFinite(source.ageHours) ? `${source.ageHours}時間` : "成功履歴なし"}）` : `期限内（${fmt.format(source.updateTtlHours || 0)}時間）`}</dd></div>
+          <div><dt>次回予定</dt><dd>${source.automatic ? escapeHtml(formatJstTimestamp(source.nextScheduledAt)) : "自動更新なし"}</dd></div>
         </dl>
         <p>${escapeHtml(source.sourceState || "処理履歴を次回更新から記録")}</p>
+        ${source.diagnostics?.externalBlock ? `<p class="source-blocked">外部要因: ${escapeHtml(source.diagnostics.externalBlock.message || "アクセス制限")}</p>` : ""}
         ${source.syncStatus ? `<p>Git同期: ${escapeHtml(source.syncStatus)}${source.syncError ? ` / ${escapeHtml(source.syncError)}` : ""}</p>` : ""}
         ${source.publishStatus ? `<p>公開: ${escapeHtml(source.publishStatus)}${source.publishError ? ` / ${escapeHtml(source.publishError)}` : ""}</p>` : ""}
         ${source.lastError ? `<p>直近エラー: ${escapeHtml(source.lastError)}</p>` : ""}
@@ -1399,21 +1413,6 @@ function buildFuturePriceForecast(card, official, stock) {
     else if (rawTrend30 >= 15) convergenceMultiple += 0.12;
     else if (rawTrend30 >= 5) convergenceMultiple += 0.06;
   }
-  if (card.psaTx30d >= 20) convergenceMultiple += 0.1;
-  else if (card.psaTx30d >= 5) convergenceMultiple += 0.05;
-  else if (card.psaTx30d < 2) convergenceMultiple -= 0.08;
-  if (buybackRatio >= 0.8) convergenceMultiple += 0.1;
-  else if (buybackRatio >= 0.65) convergenceMultiple += 0.05;
-  else if (card.buybackShops === 0) convergenceMultiple -= 0.05;
-  if (card.buybackShops >= 2) convergenceMultiple += 0.04;
-  const psa10Rate = Number.isFinite(official?.rate) ? Number(official.rate) : null;
-  if (Number.isFinite(official?.rate)) {
-    if (official.rate < 35) convergenceMultiple += 0.18;
-    else if (official.rate < 55) convergenceMultiple += 0.1;
-    else if (official.rate > 90) convergenceMultiple -= 0.05;
-  }
-  if (stock?.demand === "買う人が多い") convergenceMultiple -= 0.08;
-  else if (stock?.demand === "少ない") convergenceMultiple += 0.04;
   const officialFresh = sourceAgeDays(official?.f) <= 2;
   const growthEntry = officialFresh
     ? [[30, official?.w30], [7, official?.w7], [90, official?.w90]].find(([, value]) => value)
@@ -1427,6 +1426,23 @@ function buildFuturePriceForecast(card, official, stock) {
   const supplyDemandRatio = Number.isFinite(monthlyPsa10Increase)
     ? monthlyPsa10Increase / Math.max(1, Number(card.psaTx30d || 0))
     : null;
+  const supplyAbsorbed = Number.isFinite(supplyDemandRatio) && supplyDemandRatio < 1
+    && !card.marketStability?.supportBroken && !String(card.marketStability?.direction || "").includes("下降");
+  if (card.psaTx30d < 2) convergenceMultiple -= 0.08;
+  else if (supplyAbsorbed && card.psaTx30d >= 20) convergenceMultiple += 0.1;
+  else if (supplyAbsorbed && card.psaTx30d >= 5) convergenceMultiple += 0.05;
+  if (card.buybackShops === 0) convergenceMultiple -= 0.05;
+  else if (supplyAbsorbed && buybackRatio >= 0.8) convergenceMultiple += 0.1;
+  else if (supplyAbsorbed && buybackRatio >= 0.65) convergenceMultiple += 0.05;
+  if (supplyAbsorbed && card.buybackShops >= 2) convergenceMultiple += 0.04;
+  const psa10Rate = Number.isFinite(official?.rate) ? Number(official.rate) : null;
+  if (Number.isFinite(official?.rate)) {
+    if (official.rate < 35) convergenceMultiple += 0.18;
+    else if (official.rate < 55) convergenceMultiple += 0.1;
+    else if (official.rate > 90) convergenceMultiple -= 0.05;
+  }
+  if (stock?.demand === "買う人が多い") convergenceMultiple -= 0.08;
+  else if (stock?.demand === "少ない") convergenceMultiple += 0.04;
   const supplyPressure = !Number.isFinite(monthlyPsa10Increase)
     ? "未判定"
     : monthlyGrowthRate >= 8 || (monthlyPsa10Increase >= 100 && supplyDemandRatio >= 2)
@@ -1454,10 +1470,15 @@ function buildFuturePriceForecast(card, official, stock) {
   if (releaseMaturity.ageYears >= 3 && card.psaTx30d >= 20 && supplyPressure !== "高い") scarcityRetention += 0.06;
   scarcityRetention = clamp(scarcityRetention, 0, 0.72);
   predictedPrice = predictedPrice * (1 - scarcityRetention) + currentPrice * scarcityRetention;
-  if (card.buybackPrice > 0) predictedPrice = predictedPrice * 0.82 + card.buybackPrice * 0.18;
+  if (card.buybackPrice > 0) {
+    const buybackBlend = predictedPrice * 0.82 + card.buybackPrice * 0.18;
+    predictedPrice = supplyAbsorbed ? buybackBlend : Math.min(predictedPrice, buybackBlend);
+  }
   if (card.saleTx30d < 5) predictedPrice = predictedPrice * 0.4 + currentPrice * 0.6;
   else if (card.saleTx30d < 15) predictedPrice = predictedPrice * 0.7 + currentPrice * 0.3;
   predictedPrice = roundToStep(clamp(predictedPrice, rawPrice, currentPrice * 1.15), 1000);
+  const lifecyclePenaltyPct = Number(card.supplyLifecycle?.forecastPenaltyPct || 0);
+  if (lifecyclePenaltyPct > 0) predictedPrice = roundToStep(predictedPrice * (1 - lifecyclePenaltyPct / 100), 1000);
   const downtrendRegime = marketModel.evaluateDowntrendRegime({
     currentPrice,
     rawTrend7,
@@ -1505,7 +1526,7 @@ function buildFuturePriceForecast(card, official, stock) {
   else if (rawTrend30 != null && rawTrend30 >= 5) reasons.push(`状態Aが30日で${rawTrend30.toFixed(1)}%上昇`);
   if (card.psaTx30d >= 20) reasons.push("PSA10の売買が活発");
   else if (card.psaTx30d < 5) reasons.push("PSA10の売買が少ない");
-  if (buybackRatio >= 0.75 && card.buybackShops > 0) reasons.push("店舗買取が市場価格を強く支える");
+  if (buybackRatio >= 0.75 && card.buybackShops > 0) reasons.push(supplyAbsorbed ? "店舗買取があり、供給吸収も確認" : "店舗買取需要は強いが、価格上昇根拠には未採用");
   if (psa10Rate != null && psa10Rate < 55) reasons.push(`PSA10取得率${psa10Rate.toFixed(1)}%で10の供給が限定的`);
   if (Number.isFinite(monthlyPsa10Increase)) reasons.push(`PSA10は30日換算+${fmt.format(Math.round(monthlyPsa10Increase))}枚・供給圧力${supplyPressure}`);
   if (downtrendRegime.active) reasons.unshift(...downtrendRegime.reasons);
@@ -1552,6 +1573,50 @@ function buildFuturePriceForecast(card, official, stock) {
     reasons: reasons.slice(0, 4),
     rawTrend30,
     rawTrend7,
+  };
+}
+
+function buildSupplyLifecycle(card, official, shopDrop30, marketStability) {
+  const catalog = state.catalogCompletion?.cards?.[card.id] || {};
+  const releaseDate = catalog.rd || null;
+  const releaseYear = Number(catalog.ry || String(releaseDate || "").slice(0, 4)) || null;
+  const explicitMark = String(card.regulationMark || "").trim().toUpperCase() || null;
+  const estimatedMark = explicitMark || (releaseYear === 2026 ? "J" : releaseYear === 2025 ? "I" : releaseYear === 2024 ? "H" : null);
+  const activeMarks = state.regulationPolicy?.activeStandardMarks || [];
+  const standardLegal = explicitMark ? activeMarks.includes(explicitMark) : null;
+  const shopInventoryIncreasing = Number.isFinite(shopDrop30) && shopDrop30 < 0;
+  const psaIncrease = sourceAgeDays(official?.f) <= 2 ? Number(official?.w30?.d10) : NaN;
+  const supplyOutrunsDemand = Number.isFinite(psaIncrease) && psaIncrease > Math.max(1, Number(card.p10tv30 || 0));
+  const priceFalling = String(marketStability?.direction || "").includes("下降") || Number(card.chg30) <= -8;
+  const supportBroken = marketStability?.supportBroken === true;
+  const restockCount = Number.isFinite(card.restockCount) ? Number(card.restockCount) : null;
+  const officialReprint = card.officialReprint?.confirmed === true ? card.officialReprint : null;
+  const onSale = typeof card.onSale === "boolean" ? card.onSale : null;
+  const confirmedSupplySignals = [shopInventoryIncreasing, supplyOutrunsDemand, priceFalling, supportBroken].filter(Boolean).length;
+  let reprintRisk = "未確認";
+  if (officialReprint || (restockCount >= 2 && confirmedSupplySignals >= 2)) reprintRisk = "高い";
+  else if (shopInventoryIncreasing && supplyOutrunsDemand && priceFalling) reprintRisk = "警戒";
+  else if (releaseYear && releaseYear <= 2022 && !shopInventoryIncreasing) reprintRisk = "低い";
+  const forecastPenaltyPct = reprintRisk === "高い" ? 10 : reprintRisk === "警戒" ? 5 : 0;
+  const rarity = (String(card.name || "").match(/\b(SAR|SR|UR|HR|SSR|CSR|MUR|BWR)\b/i) || [])[1]?.toUpperCase() || null;
+  const demandType = rarity ? "コレクション需要中心" : standardLegal === true ? "プレイ需要を含む可能性" : "未判定";
+  return {
+    regulationMark: explicitMark,
+    estimatedRegulationMark: explicitMark ? null : estimatedMark,
+    standardLegal,
+    releaseDate,
+    onSale,
+    officialReprint,
+    restockCount,
+    lastRestockAt: card.lastRestockAt || null,
+    reprintRisk,
+    demandType,
+    forecastPenaltyPct,
+    source: state.regulationPolicy?.officialSource || null,
+    checkedAt: state.regulationPolicy?.checkedAt || null,
+    reason: forecastPenaltyPct > 0
+      ? `在庫再増加・PSA供給超過・価格下降など${confirmedSupplySignals}条件が重複`
+      : "現行マークだけでは減点せず、再販・供給・価格下降の重複を確認",
   };
 }
 
@@ -1746,6 +1811,10 @@ function buildSupplyPipeline(card) {
     stockDrop30: card.shopDrop30,
     listingTrendPct,
     storeDemandLabel: demandLabel,
+    buybackShops: card.buybackShops,
+    priceDirection: card.marketStability?.direction,
+    supportBroken: card.marketStability?.supportBroken,
+    newLow30: card.marketStability?.newLow30 ?? card.marketStability?.stats30?.newLowCount,
     buybackRatio: card.buybackAnalysis?.ratioMedian,
     buybackTrendPct: card.buybackAnalysis?.priceTrendPct,
   });
@@ -2268,7 +2337,8 @@ function calc(card) {
   const profit = psa10Net - price - state.fee;
   const roiBase = price + state.fee;
   const roi = roiBase > 0 ? (profit / roiBase) * 100 : NaN;
-  const forecastBase = { ...card, price, torecaPrice, cardrushPrice, hareruya2Price, yuyuteiPrice, torecacampPrice, priceAggregation, currentStoreOffer, psa9Audit, psa10Audit, cardrushStock, hareruya2Stock, yuyuteiStock, torecacampStock, snkrListing, snkListings: snkrListing?.current ?? card.snkListings, psa10, psa10Net, profit, roi, official, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, hareruya2Drop30, hareruya2Drop7, shopDrop30, shopDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackBestPrice, buybackAggregation, buybackAvg30, buybackShops, buybackAnalysis, marketStability };
+  const supplyLifecycle = buildSupplyLifecycle(card, official, shopDrop30, marketStability);
+  const forecastBase = { ...card, price, torecaPrice, cardrushPrice, hareruya2Price, yuyuteiPrice, torecacampPrice, priceAggregation, currentStoreOffer, psa9Audit, psa10Audit, cardrushStock, hareruya2Stock, yuyuteiStock, torecacampStock, snkrListing, snkListings: snkrListing?.current ?? card.snkListings, psa10, psa10Net, profit, roi, official, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, hareruya2Drop30, hareruya2Drop7, shopDrop30, shopDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackBestPrice, buybackAggregation, buybackAvg30, buybackShops, buybackAnalysis, marketStability, supplyLifecycle };
   const futurePriceForecast = buildFuturePriceForecast(forecastBase, official, stock);
   const calculated = { ...forecastBase, futurePriceForecast };
   calculated.overallAssessment = buildOverallAssessment(calculated, official, stock);
@@ -2691,7 +2761,9 @@ function readUrl() {
   if (buybackDeductionRate != null && buybackDeductionRate >= 0 && buybackDeductionRate <= 5) els.buybackDeductionRateInput.value = String(buybackDeductionRate);
   const exitPolicy = url.searchParams.get("exitPolicy");
   if (["buyback", "marketplace", "both"].includes(exitPolicy)) els.exitPolicyInput.value = exitPolicy;
-  state.purchaseMode = riskMode === "low" ? "low-risk" : ["combined", "bargain", "turnover", "now", "aggressive"].includes(presetMode) ? presetMode : "normal";
+  state.purchaseMode = riskMode === "low" ? "low-risk" : ["curated", "combined", "bargain", "turnover", "now", "aggressive"].includes(presetMode) ? presetMode : "normal";
+  state.includeAggressiveInCombined = url.searchParams.get("includeAggressive") === "1";
+  if (els.includeAggressiveInput) els.includeAggressiveInput.checked = state.includeAggressiveInCombined;
   state.lowRiskAvailability = ["all", "go", "price"].includes(lowRiskAvailability) ? lowRiskAvailability : "all";
   syncLowRiskAvailabilityControl();
   document.querySelectorAll("[data-preset]").forEach((button) => {
@@ -2785,8 +2857,9 @@ function buildShareUrl() {
   url.searchParams.set("exitPolicy", state.exitPolicy);
   if (state.purchaseMode === "low-risk") url.searchParams.set("riskMode", "low");
   else url.searchParams.delete("riskMode");
-  if (["combined", "bargain", "turnover", "now", "aggressive"].includes(state.purchaseMode)) url.searchParams.set("preset", state.purchaseMode);
+  if (["curated", "combined", "bargain", "turnover", "now", "aggressive"].includes(state.purchaseMode)) url.searchParams.set("preset", state.purchaseMode);
   else url.searchParams.delete("preset");
+  if (state.includeAggressiveInCombined) url.searchParams.set("includeAggressive", "1"); else url.searchParams.delete("includeAggressive");
   if (state.purchaseMode === "low-risk" && state.lowRiskAvailability !== "all") url.searchParams.set("lowRiskBuy", state.lowRiskAvailability);
   else url.searchParams.delete("lowRiskBuy");
   if (state.minPrice == null) {
@@ -2866,7 +2939,11 @@ function presetQualifications(card) {
     && (Number(card.buybackShops || 0) > 0 || Number(card.buybackAnalysis?.ratioMedian || 0) >= 0.7)
     && !card.dataQuality?.dataShortage
     && !card.dataQuality?.outlierExcluded;
-  const combined = combinedEligible && (now || lowRisk || turnover);
+  const broadEligible = catalogReady && domesticExit && finalLimit > 0 && stressSafe && eligibleVerdict
+    && !card.dataQuality?.manualReview && !card.dataQuality?.dataAnomaly;
+  const priceWait = broadEligible && !now && ["GO", "価格次第"].includes(String(card.purchaseDecision?.verdict || ""));
+  const curated = combinedEligible && (now || lowRisk || turnover);
+  const combined = broadEligible && (now || lowRisk || turnover || priceWait || (state.includeAggressiveInCombined && aggressive));
   const tags = [
     now ? "今すぐ" : "",
     aggressive ? "攻め仕入れ圏" : "",
@@ -2875,7 +2952,42 @@ function presetQualifications(card) {
     turnover ? "高回転" : "",
     !now && finalLimit > 0 ? (card.purchaseAvailability?.marketWithinLimit ? "購入先待ち" : "価格待ち") : "",
   ].filter(Boolean);
-  return { now, aggressive, lowRisk, turnover, bargain, combined, domesticExit, trusted, stressSafe, gapToLimit, tags, catalogReady };
+  return { now, aggressive, lowRisk, turnover, bargain, curated, combined, priceWait, domesticExit, trusted, stressSafe, gapToLimit, tags, catalogReady };
+}
+
+function renderPresetAudit(cards) {
+  if (!els.presetAuditSummary) return;
+  const analyzable = cards.filter((card) => state.catalogCompletion?.cards?.[card.id]?.s === "分析可能");
+  const flags = analyzable.map((card) => ({ card, flags: presetQualifications(card) }));
+  const counts = {
+    total: analyzable.length,
+    curated: flags.filter((row) => row.flags.curated).length,
+    combined: flags.filter((row) => row.flags.combined).length,
+    now: flags.filter((row) => row.flags.now).length,
+    lowRisk: flags.filter((row) => row.flags.lowRisk).length,
+    turnover: flags.filter((row) => row.flags.turnover).length,
+    priceWait: flags.filter((row) => row.flags.priceWait).length,
+  };
+  const stages = [
+    ["分析不可", (card) => state.catalogCompletion?.cards?.[card.id]?.s !== "分析可能"],
+    ["手動確認・異常値", (card) => card.dataQuality?.manualReview || card.dataQuality?.dataAnomaly],
+    ["国内出口不足", (card, item) => !item.domesticExit],
+    ["上限未算出", (card) => !(Number(card.buyLimits?.clean?.finalMaxPrice) > 0)],
+    ["ストレス赤字", (card, item) => !item.stressSafe],
+    ["価格信頼度不足", (card) => card.priceAggregation?.confidence === "低"],
+    ["下降・供給警戒", (card) => card.supplyPipeline?.highSupply && String(card.marketStability?.direction || "").includes("下降")],
+    ["実店舗価格未取得", (card) => !card.currentStoreOffer],
+    ["利益条件未達", (card) => Number(card.psaDecision?.expectedProfit || -Infinity) < state.minExpectedProfit],
+    ["資金条件未達", (card) => card.purchaseDecision?.verdict === "資金不足"],
+    ["見送り", (card) => card.purchaseDecision?.verdict === "見送り"],
+  ];
+  const exclusions = stages.map(([label]) => [label, 0]);
+  cards.forEach((card) => {
+    const item = presetQualifications(card);
+    const stageIndex = stages.findIndex(([, excludes]) => excludes(card, item));
+    if (stageIndex >= 0) exclusions[stageIndex][1] += 1;
+  });
+  els.presetAuditSummary.innerHTML = `<b>分析可能 ${fmt.format(counts.total)}枚</b><span>厳選 ${fmt.format(counts.curated)}</span><span>おまかせ ${fmt.format(counts.combined)}</span><span>今すぐ ${fmt.format(counts.now)}</span><span>低リスク ${fmt.format(counts.lowRisk)}</span><span>高回転 ${fmt.format(counts.turnover)}</span><span>価格待ち ${fmt.format(counts.priceWait)}</span><details><summary>除外理由の段階集計</summary>${exclusions.map(([label, count]) => `<span>${label} <b>${fmt.format(count)}</b></span>`).join("")}</details>`;
 }
 
 function combinedPresetSort(left, right) {
@@ -3023,6 +3135,7 @@ function render() {
   });
   renderShopRateSummary(calculated);
   renderMarketBacktest();
+  renderPresetAudit(calculated);
   const enriched = calculated
     .filter((card) => {
       const haystack = normalize(`${card.name} ${card.model} ${card.id}`);
@@ -3125,6 +3238,7 @@ function render() {
       if (state.fundingOnly && !card.psaDecision?.recommended) return false;
       const presetFlags = presetQualifications(card);
       if (state.purchaseMode === "combined" && !presetFlags.combined) return false;
+      if (state.purchaseMode === "curated" && !presetFlags.curated) return false;
       if (state.purchaseMode === "bargain" && !presetFlags.bargain) return false;
       if (state.purchaseMode === "aggressive" && !presetFlags.aggressive) return false;
       if (state.purchaseMode === "now" && !presetFlags.now) return false;
@@ -3148,7 +3262,7 @@ function render() {
         const rightRank = state.searchRankById.get(String(right.id)) ?? Number.MAX_SAFE_INTEGER;
         if (leftRank !== rightRank) return leftRank - rightRank;
       }
-      return (state.purchaseMode === "combined" ? combinedPresetSort : sorters[state.sort])(left, right);
+      return (["combined", "curated"].includes(state.purchaseMode) ? combinedPresetSort : sorters[state.sort])(left, right);
     });
 
   recordOperationalLimitHistory(enriched);
@@ -3721,6 +3835,7 @@ function render() {
     const pressureRatioText = Number.isFinite(supply.pressureRatio) ? `${Number(supply.pressureRatio).toFixed(2)}倍` : "蓄積中";
     const absorptionRateText = Number.isFinite(supply.absorptionRate) ? Number(supply.absorptionRate).toFixed(3) : "蓄積中";
     const stressPriceText = Number(card.supplyStress?.price) > 0 ? `¥${fmt.format(card.supplyStress.price)}` : "蓄積中";
+    const lifecycle = card.supplyLifecycle || {};
     const supplyEvidence = [...(supply.evidence || []), ...(supply.cautions || [])].join(" / ") || "PSA公式推移と取引履歴を蓄積中";
     const riskReflectionText = card.buyLimits?.clean?.supplyRiskReflected
       ? "供給ストレスは価格側へ反映済み。通常上限がさらに低いため追加控除なし"
@@ -3729,12 +3844,19 @@ function render() {
       <div class="supply-pipeline-panel ${supplyClass}">
         <div class="supply-pipeline-head"><div><span>供給パイプライン評価</span><strong>${escapeHtml(supply.classification || "蓄積中")}</strong></div><b>${escapeHtml(supply.pressureLabel || "蓄積中")}</b></div>
         <div class="supply-pipeline-grid">
+          <div><span>流動性需要</span><strong>${escapeHtml(supply.liquidityDemand || "蓄積中")}</strong><small>売買件数・買取掲載・店舗数による売りやすさ</small></div>
+          <div><span>供給</span><strong>${escapeHtml(supply.supplyLevel || "蓄積中")}</strong><small>POP・出品・ショップ在庫の増減</small></div>
           <div><span>供給圧力比</span><strong>${pressureRatioText}</strong><small>PSA10増加数 ÷ PSA10取引数</small></div>
           <div><span>供給吸収率</span><strong>${absorptionRateText}</strong><small>PSA10取引数 ÷ PSA10増加数</small></div>
+          <div><span>価格吸収力</span><strong>${escapeHtml(supply.absorptionLabel || "蓄積中")}</strong><small>${escapeHtml(supply.priceConclusion || "供給履歴を蓄積中")}</small></div>
           <div><span>採用期間</span><strong>${supply.sourceWindowDays ? `${fmt.format(supply.sourceWindowDays)}日${supply.status === "暫定" ? "・暫定" : ""}` : "蓄積中"}</strong></div>
           <div><span>将来供給の予備軍</span><strong>${supply.reservePipeline ? "多い" : supply.status === "蓄積中" ? "蓄積中" : "通常"}</strong></div>
           <div><span>通常の弱気予測価格</span><strong>¥${fmt.format(card.futurePriceForecast?.bearishPrice || 0)}</strong><small>供給過多の追加反映前</small></div>
           <div><span>供給ストレス価格</span><strong>${stressPriceText}</strong><small>下落補正 ${Number.isFinite(card.supplyStress?.haircutPct) ? `${card.supplyStress.haircutPct}%` : "蓄積中"}</small></div>
+          <div><span>レギュレーション</span><strong>${escapeHtml(lifecycle.regulationMark || (lifecycle.estimatedRegulationMark ? `推定${lifecycle.estimatedRegulationMark}・未確認` : "未確認"))}</strong><small>スタンダード ${lifecycle.standardLegal == null ? "未確認" : lifecycle.standardLegal ? "使用可" : "使用不可"}</small></div>
+          <div><span>販売・再販状況</span><strong>${lifecycle.onSale == null ? "販売継続 未確認" : lifecycle.onSale ? "販売継続中" : "販売終了"} / 再販${escapeHtml(lifecycle.reprintRisk || "未確認")}</strong><small>公式再販 ${lifecycle.officialReprint ? "確認済み" : "未確認"}・再入荷 ${Number.isFinite(lifecycle.restockCount) ? `${fmt.format(lifecycle.restockCount)}回` : "未集計"}</small></div>
+          <div><span>需要タイプ</span><strong>${escapeHtml(lifecycle.demandType || "未判定")}</strong><small>${escapeHtml(lifecycle.reason || "供給履歴を蓄積中")}</small></div>
+          <div><span>価格への判断</span><strong>${escapeHtml(supply.priceConclusion || "蓄積中")}</strong><small>${supply.highDemand && supply.highSupply ? "需要が強くても供給過多のため上昇根拠にはしない" : "価格上昇への加点は供給吸収確認時のみ"}</small></div>
         </div>
         <div class="supply-limit-breakdown">
           <div><span>通常上限</span><strong>¥${fmt.format(card.buyLimits?.clean?.normalMaxPrice || 0)}</strong><small>中央予測で目標利益を確保</small></div>
@@ -4057,6 +4179,7 @@ async function init() {
     state.snkrListingSummary = snkrListingData?.cards || Object.create(null);
     state.pokedataManifest = await fetchJsonMaybe("./data/pokedata/manifest.json");
     state.marketResearch = await fetchJsonMaybe("./data/market-research-summary.json");
+    state.regulationPolicy = await fetchJsonMaybe("./data/regulation-policy.json");
     state.modernHighRarityAudit = await fetchJsonMaybe("./data/modern-high-rarity-audit.json");
     if (!state.pokedataManifest) {
       const legacyPokedataData = await fetchJsonMaybe("./data/pokedata-summary.json");
@@ -4125,6 +4248,8 @@ els.resetFiltersBtn.addEventListener("click", () => {
   els.officialOnlyInput.checked = false;
   els.sortInput.value = "overall-desc";
   state.purchaseMode = "normal";
+  state.includeAggressiveInCombined = false;
+  if (els.includeAggressiveInput) els.includeAggressiveInput.checked = false;
   state.catalogScope = "analysis";
   if (els.catalogScopeInput) els.catalogScopeInput.value = "analysis";
   state.lowRiskAvailability = "all";
@@ -4163,6 +4288,10 @@ document.querySelectorAll("[data-preset]").forEach((button) => {
 });
 
 els.lowRiskAvailabilityInput?.addEventListener("change", syncFromUI);
+els.includeAggressiveInput?.addEventListener("change", () => {
+  state.includeAggressiveInCombined = Boolean(els.includeAggressiveInput.checked);
+  syncFromUI();
+});
 
 els.psaPlanInput.addEventListener("change", () => {
   state.psaPlan = els.psaPlanInput.value;

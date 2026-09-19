@@ -571,15 +571,46 @@
     const pressureRatio = finite(input.pressureRatio);
     const psaTx7 = Math.max(0, finite(input.psaTx7) || 0);
     const psaTx30 = Math.max(0, finite(input.psaTx30) || 0);
-    const highDemand = input.storeDemandLabel === "強い" || psaTx7 >= 10 || psaTx30 >= 15;
-    if (pressureRatio == null) return { label: "蓄積中", highDemand, highSupply: null };
-    const highSupply = pressureRatio >= 2;
+    const rawTx30 = Math.max(0, finite(input.rawTx30) || 0);
+    const buybackShops = Math.max(0, finite(input.buybackShops) || 0);
+    const measuredLiquidityScore = Math.round(clamp(
+      Math.min(45, psaTx30 / 20 * 45)
+      + Math.min(25, rawTx30 / 40 * 25)
+      + Math.min(20, buybackShops / 3 * 20)
+      + (input.storeDemandLabel === "強い" ? 10 : 0)
+    ));
+    const liquidityScore = input.storeDemandLabel === "強い" || psaTx7 >= 10 || psaTx30 >= 15 ? Math.max(70, measuredLiquidityScore) : measuredLiquidityScore;
+    const liquidityDemand = liquidityScore >= 70 ? "強い" : liquidityScore >= 40 ? "普通" : "弱い";
+    const listingIncreasing = finite(input.listingTrendPct) != null && finite(input.listingTrendPct) > 10;
+    const shopInventoryIncreasing = finite(input.stockDrop30) != null && finite(input.stockDrop30) < 0;
+    const falling = String(input.priceDirection || "").includes("下降") || input.supportBroken === true || Math.max(0, finite(input.newLow30) || 0) > 1;
+    const highDemand = liquidityDemand === "強い" || psaTx7 >= 10;
+    if (pressureRatio == null) return {
+      label: "蓄積中", highDemand, highSupply: null, liquidityDemand, liquidityScore,
+      supplyLevel: listingIncreasing || shopInventoryIncreasing ? "多い" : "蓄積中",
+      absorptionLabel: "蓄積中", priceConclusion: "価格方向は供給履歴の蓄積待ち",
+    };
+    const highSupply = pressureRatio >= 2 || listingIncreasing || shopInventoryIncreasing;
+    const absorbed = pressureRatio < 1 && !listingIncreasing && !shopInventoryIncreasing;
+    const absorptionLabel = absorbed ? "吸収できている" : pressureRatio < 2 && !falling ? "均衡" : "吸収不足";
+    const supplyLevel = highSupply ? "多い" : pressureRatio < 1 ? "少ない" : "均衡";
+    const label = highDemand
+      ? highSupply ? "高需要／供給多" : "高需要／供給少"
+      : highSupply ? "低需要／供給多" : "低需要／供給少";
     return {
-      label: highDemand
-        ? highSupply ? "高需要／供給多" : "高需要／供給少"
-        : highSupply ? "低需要／供給多" : "低需要／供給少",
+      label,
       highDemand,
       highSupply,
+      liquidityDemand,
+      liquidityScore,
+      supplyLevel,
+      absorptionLabel,
+      priceConclusion: highDemand && highSupply
+        ? "高回転だが価格下落警戒"
+        : highDemand && absorbed
+          ? "需要が供給を吸収・価格安定候補"
+          : !highDemand && highSupply ? "低需要かつ供給過多・見送り候補" : "低流動性・価格上昇根拠なし",
+      priceSupportEligible: absorbed && !falling,
     };
   }
 
@@ -686,12 +717,20 @@
       : Math.max(0, finite(input.psaTx7) || 0) * 4.3;
     const storeDemandStrong = input.storeDemandLabel === "強い";
     const highDemand = storeDemandStrong || psaLiquidity >= 15;
-    const classification = classifyDemandSupply({
+    const demandSupply = classifyDemandSupply({
       pressureRatio: selected?.pressureRatio,
       psaTx7: input.psaTx7,
       psaTx30: input.psaTx30,
+      rawTx30: input.rawTx30,
+      buybackShops: input.buybackShops,
       storeDemandLabel: input.storeDemandLabel,
-    }).label;
+      listingTrendPct: input.listingTrendPct,
+      stockDrop30: input.stockDrop30,
+      priceDirection: input.priceDirection,
+      supportBroken: input.supportBroken,
+      newLow30: input.newLow30,
+    });
+    const classification = demandSupply.label;
 
     let riskScore = selected ? pressure.baseRisk : null;
     if (riskScore != null) {
@@ -700,7 +739,7 @@
       if (recent && shopStock != null && shopStock >= 20 && expectedProfit > 0) riskScore += 4;
       if (psaListings != null && psaListings >= Math.max(10, psaLiquidity * 2)) riskScore += 4;
       if (finite(input.listingTrendPct) > 10) riskScore += 6;
-      if (finite(input.stockDrop30) > 5 && rawTx30 >= 30) riskScore += 4;
+      if (finite(input.stockDrop30) < 0) riskScore += 6;
       if (finite(input.buybackTrendPct) < -5) riskScore += 5;
       if (finite(input.buybackRatio) >= 0.85 && finite(input.buybackTrendPct) >= 0) riskScore -= 5;
       riskScore = Math.round(clamp(riskScore));
@@ -726,6 +765,14 @@
       pressureLabel: pressure.label,
       strongDeclineWarning: pressure.key === "severe",
       classification,
+      highDemand: demandSupply.highDemand,
+      highSupply: demandSupply.highSupply,
+      liquidityDemand: demandSupply.liquidityDemand,
+      liquidityScore: demandSupply.liquidityScore,
+      supplyLevel: demandSupply.supplyLevel,
+      absorptionLabel: demandSupply.absorptionLabel,
+      priceConclusion: demandSupply.priceConclusion,
+      priceSupportEligible: demandSupply.priceSupportEligible,
       riskScore,
       reservePipeline,
       reserveSignalCount,

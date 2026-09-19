@@ -4,7 +4,8 @@ const path = require("path");
 const ROOT = path.join(__dirname, "..");
 const OUTPUT = path.join(ROOT, "data", "update-status.json");
 const HISTORY_OUTPUT = path.join(ROOT, "data", "update-history.json");
-const { countCurrentRecords, nextScheduledAt } = require("./source_observability.js");
+const { countCurrentRecords } = require("./source_observability.js");
+const { sourceTiming } = require("./workflow_schedule.js");
 
 function read(relativePath, fallback = {}) {
   try {
@@ -177,8 +178,9 @@ for (const [sourceId, source] of Object.entries(sources)) {
   source.publishStatus = run.publishStatus || null;
   source.publishError = run.publishError || null;
   source.lastError = run.lastError || null;
-  source.nextScheduledAt = nextScheduledAt();
-  source.fresh = source.date === today && source.status === "success";
+  const timing = sourceTiming(sourceId, { ...run, lastSuccessAt: source.lastSuccessAt, startedAt: source.startedAt, status: source.status }, runHistory.sources?.[sourceId] || []);
+  Object.assign(source, timing);
+  source.fresh = !source.stale && source.status === "success";
   if (sourceId === "psaOfficial" && latestPsaCount > 0 && latestPsaCount < psaTotalRows) {
     const latestRowAttempt = (psa.rows || []).map((row) => row.fetchedAt).filter(Boolean).sort().at(-1) || null;
     if (psaTask.status !== "failed") source.lastAttemptAt = latestRowAttempt || source.lastAttemptAt;
@@ -240,6 +242,11 @@ const payload = {
       updatedAt: updatePerformance.updatedAt || null,
       processedCards: Number.isFinite(updatePerformance.processedCards) ? updatePerformance.processedCards : null,
       changedCards: Number.isFinite(updatePerformance.changedCards) ? updatePerformance.changedCards : null,
+      externalFetchedCards: Number.isFinite(updatePerformance.externalFetchedCards) ? updatePerformance.externalFetchedCards : null,
+      externalChangedCards: Number.isFinite(updatePerformance.externalChangedCards) ? updatePerformance.externalChangedCards : null,
+      recalculatedCards: Number.isFinite(updatePerformance.recalculatedCards) ? updatePerformance.recalculatedCards : null,
+      unchangedCards: Number.isFinite(updatePerformance.unchangedCards) ? updatePerformance.unchangedCards : null,
+      fetchFailures: Number.isFinite(updatePerformance.fetchFailures) ? updatePerformance.fetchFailures : null,
       httpRequests: Number.isFinite(updatePerformance.httpRequests) ? updatePerformance.httpRequests : null,
       cacheHits: Number.isFinite(updatePerformance.cacheHits) ? updatePerformance.cacheHits : null,
       cacheRatePct: Number.isFinite(updatePerformance.cacheRatePct) ? updatePerformance.cacheRatePct : null,

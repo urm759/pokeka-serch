@@ -19,18 +19,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: "20"
+          node-version: "24"
       - name: Run deterministic delta update
         run: node work/daily_fast_update.js
       - name: Refresh PSA Japan plans
-        continue-on-error: true
         run: node work/run_tracked_update.js psaJapan work/update_psa_japan_services.js
       - name: Refresh web buyback tables
-        continue-on-error: true
         run: node work/run_tracked_update.js shopBuyback work/update_shop_buybacks.js
+      - name: Rebuild market demand and supply analysis
+        run: node work/run_tracked_update.js marketAnalysis work/build_market_analysis.js
       - name: Finalize source status
         run: node work/finalize_update_status.js
       - name: Run fast regression tests

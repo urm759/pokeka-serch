@@ -1,7 +1,8 @@
 const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
-const { nextScheduledAt, percent } = require("./source_observability.js");
+const { percent } = require("./source_observability.js");
+const { scheduleFor, sourceTiming } = require("./workflow_schedule.js");
 
 const root = path.join(__dirname, "..");
 const coverage = JSON.parse(fs.readFileSync(path.join(root, "data", "link-coverage.json"), "utf8"));
@@ -40,7 +41,7 @@ for (const source of Object.values(linkageSources)) {
 }
 
 for (const source of Object.values(updateStatus.sources)) {
-  for (const field of ["lastAttemptAt", "startedAt", "endedAt", "lastSuccessAt", "durationMs", "status", "acquiredCount", "updatedCount", "sourceState", "fetchFailureCount", "nextScheduledAt"]) {
+  for (const field of ["lastAttemptAt", "startedAt", "endedAt", "lastSuccessAt", "durationMs", "status", "acquiredCount", "updatedCount", "sourceState", "fetchFailureCount", "nextScheduledAt", "workflow", "scheduleLabel", "consecutiveFailures", "stale"]) {
     assert.ok(Object.hasOwn(source, field), `${source.label}: missing ${field}`);
   }
 }
@@ -48,17 +49,28 @@ for (const field of ["majorComplete", "majorDataCompleteDate", "allDataCompleteD
   assert.ok(Object.hasOwn(updateStatus, field), `update status: missing ${field}`);
 }
 
-assert.strictEqual(nextScheduledAt(new Date("2026-09-03T18:00:00Z")), "2026-09-04T04:30:00+09:00");
-assert.strictEqual(nextScheduledAt(new Date("2026-09-04T01:00:00Z")), "2026-09-04T17:00:00+09:00");
+assert.strictEqual(scheduleFor("toreca", new Date("2026-09-03T18:00:00Z")).nextScheduledAt, "2026-09-04T04:30:00+09:00");
+assert.strictEqual(scheduleFor("toreca", new Date("2026-09-04T01:00:00Z")).nextScheduledAt, "2026-09-04T17:00:00+09:00");
+assert.strictEqual(scheduleFor("cardrush").nextScheduledAt, null);
+assert.strictEqual(scheduleFor("cardrush").scheduleLabel, "自動更新なし");
+assert.strictEqual(scheduleFor("yuyutei").scheduleLabel, "自動更新なし");
+assert.strictEqual(sourceTiming("yuyutei", { status: "partial", fetchFailureCount: 2 }, [{ status: "partial", fetchFailureCount: 2 }, { status: "partial", fetchFailureCount: 2 }]).consecutiveFailures, 2);
+assert.strictEqual(sourceTiming("torecacamp", { status: "partial", fetchFailureCount: 0 }, [{ status: "partial", fetchFailureCount: 0 }]).consecutiveFailures, 0);
+assert.strictEqual(sourceTiming("toreca", { startedAt: "2026-09-04T08:05:00Z", executionEnvironment: "PCローカル" }).actionsDelayMinutes, null);
+assert.strictEqual(sourceTiming("toreca", { startedAt: "2026-09-04T08:05:00Z", executionEnvironment: "GitHub Actions" }).actionsDelayMinutes, 5);
 assert.match(workflow, /inputs:\s+[\s\S]*source:/);
-assert.match(workflow, /SHOP_SOURCE_ONLY: "yuyutei"/);
 assert.match(workflow, /SHOP_SOURCE_ONLY: "torecacamp"/);
-assert.match(workflow, /TRACKED_TIMEOUT_MS: "540000"/);
-assert.match(workflow, /continue-on-error: true/);
+assert.doesNotMatch(workflow, /Link Yu-Yu-Tei state-A listings/);
+assert.doesNotMatch(workflow, /continue-on-error: true/);
+assert.match(workflow, /actions\/checkout@v7/);
+assert.match(workflow, /actions\/setup-node@v7/);
+assert.match(workflow, /node-version: "24"/);
 assert.match(workflow, /build_linkage_review\.js/);
 assert.match(workflow, /build_snkr_listing_history\.js/);
 assert.match(updater, /sourceOnly === "all" \|\| sourceOnly === "yuyutei"/);
 assert.match(updater, /sourceOnly === "all" \|\| sourceOnly === "torecacamp"/);
+assert.match(updater, /external_access_blocked/);
+assert.match(updater, /consecutiveAccessBlocks >= 3/);
 assert.match(finalizer, /return jstDate\(parsed\)/);
 assert.match(finalizer, /timeout_or_forced_exit/);
 assert.match(finalizer, /majorSourceIds/);

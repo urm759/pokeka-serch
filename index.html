@@ -126,6 +126,7 @@
 
       <div class="quick-presets" aria-label="かんたん絞り込み">
         <span>かんたん絞り込み</span>
+        <button type="button" data-preset="curated"><strong>厳選候補</strong><small>従来のおまかせ同等の厳格条件</small></button>
         <button type="button" data-preset="combined"><strong>おまかせ総合</strong><small>候補を重複なしでまとめる</small></button>
         <button type="button" data-preset="now"><strong>今すぐ仕入れ</strong><small>新しい在庫あり価格が上限以下</small></button>
         <button type="button" data-preset="aggressive"><strong>攻め仕入れ圏</strong><small>期待値は黒字・PSA9時赤字あり</small></button>
@@ -140,6 +141,8 @@
         </label>
         <button type="button" data-preset="turnover"><strong>高回転候補</strong><small>価格待ちを含む</small></button>
         <button type="button" data-preset="bargain"><strong>薄商い・高粗利</strong><small>少数成約でも出口あり</small></button>
+        <label class="preset-aggressive-toggle"><input id="includeAggressiveInput" type="checkbox" /> おまかせ総合に攻め候補を含める</label>
+        <div id="presetAuditSummary" class="preset-audit-summary">候補内訳を計算中</div>
         <span class="preset-divider" aria-hidden="true"></span>
         <button id="exportSearchBtn" class="preset-file-action" type="button">条件をCSV保存</button>
         <label class="preset-file-action">条件CSV読込<input id="importSearchInput" type="file" accept=".csv,text/csv" /></label>
@@ -758,7 +761,7 @@
   <script src="./decision-model.js?v=20260913-exit-policy-v1"></script>
   <script src="./search-index-model.js?v=20260913-search-v1"></script>
   <script src="./backtest-model.js?v=20260901-backtest-v2"></script>
-  <script src="./market-analysis.js?v=20260913-downtrend-v2"></script>
-  <script src="./app.js?v=20260913-charizard-audit-v5"></script>
+  <script src="./market-analysis.js?v=20260913-supply-absorption-v3"></script>
+  <script src="./app.js?v=20260913-refresh-demand-v6"></script>
 </body>
 </html>

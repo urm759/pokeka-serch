@@ -110,7 +110,8 @@ assert.doesNotMatch(tracker, /Number\(match\[1\] \|\| 1\)/);
 for (const workflow of [refreshWorkflow, stockWorkflow]) {
   assert.match(workflow, /TORECACAMP_SITEMAPS_PER_RUN/);
   assert.match(workflow, /TORECACAMP_PRODUCT_DETAIL_BATCH/);
-  assert.match(workflow, /YUYUTEI_SEARCH_BATCH/);
+  assert.doesNotMatch(workflow, /YUYUTEI_SEARCH_BATCH/);
+  assert.match(workflow, /SHOP_SOURCE_ONLY: "torecacamp"/);
 }
 assert.doesNotMatch(stockWorkflow, /TORECACAMP_PAGES_PER_RUN/);
 

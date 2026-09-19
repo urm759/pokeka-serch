@@ -16,12 +16,12 @@ jobs:
     timeout-minutes: 300
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: "20"
+          node-version: "24"
 
       - name: Refresh all Cardrush listings
         env:
@@ -43,12 +43,10 @@ jobs:
           HARERUYA2_STOCK_CONCURRENCY: "10"
         run: node work/update_hareruya2_stock.js
 
-      - name: Link Yu-Yu-Tei and Toreca Camp state-A listings
+      - name: Link Toreca Camp state-A listings
         timeout-minutes: 10
-        continue-on-error: true
         env:
-          YUYUTEI_SEARCH_BATCH: "50"
-          YUYUTEI_CONCURRENCY: "1"
+          SHOP_SOURCE_ONLY: "torecacamp"
           TORECACAMP_SITEMAPS_PER_RUN: "1"
           TORECACAMP_PRODUCT_DETAIL_BATCH: "100"
           SHOP_FETCH_RETRIES: "2"

@@ -17,20 +17,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: "20"
-      - name: Continue Yu-Yu-Tei checkpoint
-        continue-on-error: true
-        env:
-          SHOP_SOURCE_ONLY: yuyutei
-          YUYUTEI_SEARCH_BATCH: "30"
-          YUYUTEI_CONCURRENCY: "1"
-          TRACKED_TIMEOUT_MS: "480000"
-        run: node work/run_tracked_update.js yuyutei work/update_yuyutei_torecacamp.js
+          node-version: "24"
       - name: Continue Toreca Camp checkpoint
-        continue-on-error: true
         env:
           SHOP_SOURCE_ONLY: torecacamp
           TORECACAMP_SITEMAPS_PER_RUN: "1"
@@ -38,7 +29,6 @@ jobs:
           TORECACAMP_RUNTIME_LIMIT_MS: "420000"
         run: node work/run_tracked_update.js torecacamp work/update_yuyutei_torecacamp.js
       - name: Continue public PokeDATA checkpoint
-        continue-on-error: true
         env:
           POKEDATA_SET: Pokemon Card 151 Japanese
           POKEDATA_TARGET: "516"
