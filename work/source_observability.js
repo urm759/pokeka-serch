@@ -293,6 +293,7 @@ function countCurrentRecords(sourceId, root = ROOT) {
     shopBuyback: ["data/shop-buyback-summary.json", "cards"],
     marketAnalysis: ["data/market-stability-summary.json", "cards"],
     psaJapan: ["data/psa-japan-services.json", "plans"],
+    snkrRaw: ["data/snkr-raw-flip-summary.json", "cards"],
   };
   const config = files[sourceId];
   if (!config) return null;
@@ -313,6 +314,7 @@ function sourceArtifactPaths(sourceId, root = ROOT) {
     marketAnalysis: ["data/market-stability-summary.json"],
     psaJapan: ["data/psa-japan-services.json"],
     pokedata: ["data/pokedata-summary.json", "data/pokedata/manifest.json", "data/pokedata-sales/pk-63635.json"],
+    snkrRaw: ["data/snkr-raw-flip-summary.json", "work/snkr-raw-flip-checkpoint.json"],
   };
   return (files[sourceId] || []).map((relative) => path.join(root, relative));
 }

@@ -3,6 +3,7 @@ const decisionModel = window.PurchaseDecisionModel;
 const marketModel = window.MarketAnalysisModel;
 const backtestModel = window.BacktestModel;
 const searchIndexModel = window.CardSearchIndexModel;
+const snkrRawFlipModel = window.SnkrRawFlipModel;
 const FORECAST_HORIZON_DAYS = 91;
 
 const state = {
@@ -31,6 +32,8 @@ const state = {
   psaPopulation: Object.create(null),
   psaHistoryCache: Object.create(null),
   snkrListingSummary: Object.create(null),
+  snkrRawFlipSummary: Object.create(null),
+  snkrRawFlipMeta: null,
   pokedataSummary: Object.create(null),
   pokedataManifest: null,
   marketResearch: null,
@@ -139,6 +142,19 @@ const state = {
   saleExtraCost: 0,
   buybackDeductionRate: 3,
   exitPolicy: "buyback",
+  snkrRawFeeRate: 7,
+  snkrRawShipping: 210,
+  snkrRawOtherCost: 0,
+  snkrRawMinTx7: 0,
+  snkrRawMinTx30: 3,
+  snkrRawMinProfit: 0,
+  snkrRawMinRoi: 0,
+  snkrRawMaxPurchase: null,
+  snkrRawMaxReleaseMonths: null,
+  snkrRawMaxAgeHours: 48,
+  snkrRawCurrentOnly: false,
+  snkrRawRecentOnly: false,
+  snkrRawIncludeReference: false,
 };
 
 const FAVORITES_STORAGE_KEY = "pokeka-buy-favorites-v1";
@@ -227,6 +243,21 @@ const els = {
   lowRiskAvailabilityControl: document.getElementById("lowRiskAvailabilityControl"),
   includeAggressiveInput: document.getElementById("includeAggressiveInput"),
   presetAuditSummary: document.getElementById("presetAuditSummary"),
+  snkrRawReferenceControl: document.getElementById("snkrRawReferenceControl"),
+  snkrRawIncludeReferenceInput: document.getElementById("snkrRawIncludeReferenceInput"),
+  snkrRawFeeRateInput: document.getElementById("snkrRawFeeRateInput"),
+  snkrRawShippingInput: document.getElementById("snkrRawShippingInput"),
+  snkrRawOtherCostInput: document.getElementById("snkrRawOtherCostInput"),
+  snkrRawTx7MinInput: document.getElementById("snkrRawTx7MinInput"),
+  snkrRawTx30MinInput: document.getElementById("snkrRawTx30MinInput"),
+  snkrRawProfitMinInput: document.getElementById("snkrRawProfitMinInput"),
+  snkrRawRoiMinInput: document.getElementById("snkrRawRoiMinInput"),
+  snkrRawPurchaseMaxInput: document.getElementById("snkrRawPurchaseMaxInput"),
+  snkrRawReleaseMonthsInput: document.getElementById("snkrRawReleaseMonthsInput"),
+  snkrRawMaxAgeInput: document.getElementById("snkrRawMaxAgeInput"),
+  snkrRawCurrentOnlyInput: document.getElementById("snkrRawCurrentOnlyInput"),
+  snkrRawRecentOnlyInput: document.getElementById("snkrRawRecentOnlyInput"),
+  snkrRawCoverageSummary: document.getElementById("snkrRawCoverageSummary"),
   resetFiltersBtn: document.getElementById("resetFiltersBtn"),
   roiInput: document.getElementById("roiInput"),
   expectedRoiFilterInput: document.getElementById("expectedRoiFilterInput"),
@@ -244,6 +275,12 @@ const els = {
   countStat: document.getElementById("countStat"),
   topRoiStat: document.getElementById("topRoiStat"),
   topProfitStat: document.getElementById("topProfitStat"),
+  topRoiLabel: document.getElementById("topRoiLabel"),
+  topProfitLabel: document.getElementById("topProfitLabel"),
+  topProfitNote: document.getElementById("topProfitNote"),
+  goCountLabel: document.getElementById("goCountLabel"),
+  conditionalCountLabel: document.getElementById("conditionalCountLabel"),
+  reviewCountLabel: document.getElementById("reviewCountLabel"),
   goCountStat: document.getElementById("goCountStat"),
   conditionalCountStat: document.getElementById("conditionalCountStat"),
   reviewCountStat: document.getElementById("reviewCountStat"),
@@ -524,6 +561,9 @@ const sorters = {
   "updated-asc": (a, b) => String(a.tLastAt || "").localeCompare(String(b.tLastAt || "")),
   "tvel-desc": (a, b) => (b.tvel ?? -Infinity) - (a.tvel ?? -Infinity),
   "tvel-asc": (a, b) => (a.tvel ?? Infinity) - (b.tvel ?? Infinity),
+  "snkrRawProfit-desc": (a, b) => (b.snkrRawFlip?.profit ?? -Infinity) - (a.snkrRawFlip?.profit ?? -Infinity),
+  "snkrRawRoi-desc": (a, b) => (b.snkrRawFlip?.roi ?? -Infinity) - (a.snkrRawFlip?.roi ?? -Infinity),
+  "snkrRawTx30-desc": (a, b) => (b.snkrRawFlip?.sold30Count ?? -Infinity) - (a.snkrRawFlip?.sold30Count ?? -Infinity),
 };
 
 function normalize(v) {
@@ -2258,6 +2298,57 @@ function buildPsa10Audit(card, psa10Price) {
   };
 }
 
+function buildSnkrRawFlip(card, currentStoreOffer) {
+  const source = state.snkrRawFlipSummary[card.id] || null;
+  if (!source || !snkrRawFlipModel) return null;
+  const completion = state.catalogCompletion?.cards?.[card.id] || null;
+  const releaseDate = completion?.rd || null;
+  const releaseTimestamp = Date.parse(releaseDate || "");
+  const releaseMonths = Number.isFinite(releaseTimestamp)
+    ? Math.max(0, (Date.now() - releaseTimestamp) / (30.4375 * 86400000))
+    : null;
+  const currentRegulation = releaseMonths != null ? releaseMonths <= 32 : null;
+  const result = snkrRawFlipModel.classify({
+    ...source,
+    purchasePrice: currentStoreOffer?.value,
+  }, {
+    feeRate: state.snkrRawFeeRate,
+    shipping: state.snkrRawShipping,
+    otherCost: state.snkrRawOtherCost,
+    minSold7: state.snkrRawMinTx7,
+    minSold30: state.snkrRawMinTx30,
+    minProfit: state.snkrRawMinProfit,
+    minRoi: state.snkrRawMinRoi,
+    maxAgeHours: state.snkrRawMaxAgeHours,
+  });
+  return {
+    ...source,
+    ...result,
+    domesticAveragePrice: Number(card.price) > 0 ? Number(card.price) : null,
+    purchaseStore: currentStoreOffer?.source || null,
+    purchaseUrl: currentStoreOffer?.url || null,
+    releaseDate,
+    releaseMonths,
+    currentRegulation,
+    recentRelease: Boolean(completion?.rr),
+  };
+}
+
+function snkrRawMatchesFilters(card) {
+  const raw = card.snkrRawFlip;
+  if (!raw || raw.tier === "none") return false;
+  if (!state.snkrRawIncludeReference && raw.tier === "reference") return false;
+  if (raw.sold7Count != null && raw.sold7Count < state.snkrRawMinTx7) return false;
+  if (raw.sold30Count != null && raw.sold30Count < state.snkrRawMinTx30 && raw.tier !== "reference") return false;
+  if (!Number.isFinite(raw.profit) || raw.profit < state.snkrRawMinProfit) return false;
+  if (!Number.isFinite(raw.roi) || raw.roi < state.snkrRawMinRoi) return false;
+  if (state.snkrRawMaxPurchase != null && (!Number.isFinite(raw.purchasePrice) || raw.purchasePrice > state.snkrRawMaxPurchase)) return false;
+  if (state.snkrRawMaxReleaseMonths != null && (!Number.isFinite(raw.releaseMonths) || raw.releaseMonths > state.snkrRawMaxReleaseMonths)) return false;
+  if (state.snkrRawCurrentOnly && raw.currentRegulation !== true) return false;
+  if (state.snkrRawRecentOnly && raw.recentRelease !== true) return false;
+  return true;
+}
+
 function calc(card) {
   const torecaPrice = Number(card.price);
   const cardrushStock = state.cardrushStock[card.id] || null;
@@ -2329,10 +2420,11 @@ function calc(card) {
   const currentStoreOffer = purchasableStorePrices.length
     ? purchasableStorePrices.reduce((lowest, entry) => entry.value < lowest.value ? entry : lowest)
     : null;
+  const snkrRawFlip = buildSnkrRawFlip(card, currentStoreOffer);
   const psa9Audit = buildPsa9Audit(card, price, psa10);
   const official = state.psaPopulation[card.id] || null;
   if (!(price > 0) || !(psa10 > 0)) {
-    return { ...card, price, torecaPrice, cardrushPrice, hareruya2Price, yuyuteiPrice, torecacampPrice, priceAggregation, currentStoreOffer, psa9Audit, psa10Audit, cardrushStock, hareruya2Stock, yuyuteiStock, torecacampStock, snkrListing, snkListings: snkrListing?.current ?? card.snkListings, psa10, psa10Net: NaN, profit: NaN, roi: NaN, futurePriceForecast: null, psaDecision: null, purchaseDecision: null, overallAssessment: null, official, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, hareruya2Drop30, hareruya2Drop7, shopDrop30, shopDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackBestPrice, buybackAggregation, buybackAvg30, buybackShops, buybackAnalysis, marketStability };
+    return { ...card, price, torecaPrice, cardrushPrice, hareruya2Price, yuyuteiPrice, torecacampPrice, priceAggregation, currentStoreOffer, snkrRawFlip, psa9Audit, psa10Audit, cardrushStock, hareruya2Stock, yuyuteiStock, torecacampStock, snkrListing, snkListings: snkrListing?.current ?? card.snkListings, psa10, psa10Net: NaN, profit: NaN, roi: NaN, futurePriceForecast: null, psaDecision: null, purchaseDecision: null, overallAssessment: null, official, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, hareruya2Drop30, hareruya2Drop7, shopDrop30, shopDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackBestPrice, buybackAggregation, buybackAvg30, buybackShops, buybackAnalysis, marketStability };
   }
   const saleMultiplier = Math.max(0, 1 - state.saleFeeRate / 100);
   const psa10Net = psa10 * saleMultiplier - state.saleExtraCost;
@@ -2340,7 +2432,7 @@ function calc(card) {
   const roiBase = price + state.fee;
   const roi = roiBase > 0 ? (profit / roiBase) * 100 : NaN;
   const supplyLifecycle = buildSupplyLifecycle(card, official, shopDrop30, marketStability);
-  const forecastBase = { ...card, price, torecaPrice, cardrushPrice, hareruya2Price, yuyuteiPrice, torecacampPrice, priceAggregation, currentStoreOffer, psa9Audit, psa10Audit, cardrushStock, hareruya2Stock, yuyuteiStock, torecacampStock, snkrListing, snkListings: snkrListing?.current ?? card.snkListings, psa10, psa10Net, profit, roi, official, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, hareruya2Drop30, hareruya2Drop7, shopDrop30, shopDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackBestPrice, buybackAggregation, buybackAvg30, buybackShops, buybackAnalysis, marketStability, supplyLifecycle };
+  const forecastBase = { ...card, price, torecaPrice, cardrushPrice, hareruya2Price, yuyuteiPrice, torecacampPrice, priceAggregation, currentStoreOffer, snkrRawFlip, psa9Audit, psa10Audit, cardrushStock, hareruya2Stock, yuyuteiStock, torecacampStock, snkrListing, snkListings: snkrListing?.current ?? card.snkListings, psa10, psa10Net, profit, roi, official, saleTx30d, saleTx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, hareruya2Drop30, hareruya2Drop7, shopDrop30, shopDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackBestPrice, buybackAggregation, buybackAvg30, buybackShops, buybackAnalysis, marketStability, supplyLifecycle };
   const futurePriceForecast = buildFuturePriceForecast(forecastBase, official, stock);
   const calculated = { ...forecastBase, futurePriceForecast };
   calculated.overallAssessment = buildOverallAssessment(calculated, official, stock);
@@ -2680,6 +2772,16 @@ function readUrl() {
   const lowRiskAvailability = url.searchParams.get("lowRiskBuy");
   const sort = url.searchParams.get("sort");
   const q = url.searchParams.get("q");
+  const snkrFee = parseOptionalNumber(url.searchParams.get("snkrFee"));
+  const snkrShip = parseOptionalNumber(url.searchParams.get("snkrShip"));
+  const snkrOther = parseOptionalNumber(url.searchParams.get("snkrOther"));
+  const snkrTx7 = parseOptionalNumber(url.searchParams.get("snkrTx7"));
+  const snkrTx30 = parseOptionalNumber(url.searchParams.get("snkrTx30"));
+  const snkrProfit = parseOptionalNumber(url.searchParams.get("snkrProfit"));
+  const snkrRoi = parseOptionalNumber(url.searchParams.get("snkrRoi"));
+  const snkrBuyMax = parseOptionalNumber(url.searchParams.get("snkrBuyMax"));
+  const snkrMonths = parseOptionalNumber(url.searchParams.get("snkrMonths"));
+  const snkrAge = parseOptionalNumber(url.searchParams.get("snkrAge"));
   if (["analysis", "all", "new", "recent", "relisted", "completing", "shortage"].includes(catalogScope)) state.catalogScope = catalogScope;
   if (els.catalogScopeInput) els.catalogScopeInput.value = state.catalogScope;
   if (guide && guideModes[guide]) {
@@ -2764,11 +2866,25 @@ function readUrl() {
   if (buybackDeductionRate != null && buybackDeductionRate >= 0 && buybackDeductionRate <= 5) els.buybackDeductionRateInput.value = String(buybackDeductionRate);
   const exitPolicy = url.searchParams.get("exitPolicy");
   if (["buyback", "marketplace", "both"].includes(exitPolicy)) els.exitPolicyInput.value = exitPolicy;
-  state.purchaseMode = riskMode === "low" ? "low-risk" : ["curated", "combined", "bargain", "turnover", "now", "aggressive"].includes(presetMode) ? presetMode : "normal";
+  if (snkrFee != null) els.snkrRawFeeRateInput.value = String(snkrFee);
+  if (snkrShip != null) els.snkrRawShippingInput.value = String(snkrShip);
+  if (snkrOther != null) els.snkrRawOtherCostInput.value = String(snkrOther);
+  if (snkrTx7 != null) els.snkrRawTx7MinInput.value = String(snkrTx7);
+  if (snkrTx30 != null) els.snkrRawTx30MinInput.value = String(snkrTx30);
+  if (snkrProfit != null) els.snkrRawProfitMinInput.value = String(snkrProfit);
+  if (snkrRoi != null) els.snkrRawRoiMinInput.value = String(snkrRoi);
+  if (snkrBuyMax != null) els.snkrRawPurchaseMaxInput.value = String(snkrBuyMax);
+  if (snkrMonths != null) els.snkrRawReleaseMonthsInput.value = String(snkrMonths);
+  if (snkrAge != null) els.snkrRawMaxAgeInput.value = String(snkrAge);
+  els.snkrRawCurrentOnlyInput.checked = url.searchParams.get("snkrCurrent") === "1";
+  els.snkrRawRecentOnlyInput.checked = url.searchParams.get("snkrRecent") === "1";
+  els.snkrRawIncludeReferenceInput.checked = url.searchParams.get("snkrReference") === "1";
+  state.purchaseMode = riskMode === "low" ? "low-risk" : ["curated", "combined", "bargain", "turnover", "now", "aggressive", "snkr-raw"].includes(presetMode) ? presetMode : "normal";
   state.includeAggressiveInCombined = url.searchParams.get("includeAggressive") === "1";
   if (els.includeAggressiveInput) els.includeAggressiveInput.checked = state.includeAggressiveInCombined;
   state.lowRiskAvailability = ["all", "go", "price"].includes(lowRiskAvailability) ? lowRiskAvailability : "all";
   syncLowRiskAvailabilityControl();
+  if (els.snkrRawReferenceControl) els.snkrRawReferenceControl.hidden = state.purchaseMode !== "snkr-raw";
   document.querySelectorAll("[data-preset]").forEach((button) => {
     button.classList.toggle("active", button.dataset.preset === state.purchaseMode || (state.purchaseMode === "low-risk" && button.dataset.preset === "low-risk"));
   });
@@ -2860,11 +2976,24 @@ function buildShareUrl() {
   url.searchParams.set("exitPolicy", state.exitPolicy);
   if (state.purchaseMode === "low-risk") url.searchParams.set("riskMode", "low");
   else url.searchParams.delete("riskMode");
-  if (["curated", "combined", "bargain", "turnover", "now", "aggressive"].includes(state.purchaseMode)) url.searchParams.set("preset", state.purchaseMode);
+  if (["curated", "combined", "bargain", "turnover", "now", "aggressive", "snkr-raw"].includes(state.purchaseMode)) url.searchParams.set("preset", state.purchaseMode);
   else url.searchParams.delete("preset");
   if (state.includeAggressiveInCombined) url.searchParams.set("includeAggressive", "1"); else url.searchParams.delete("includeAggressive");
   if (state.purchaseMode === "low-risk" && state.lowRiskAvailability !== "all") url.searchParams.set("lowRiskBuy", state.lowRiskAvailability);
   else url.searchParams.delete("lowRiskBuy");
+  url.searchParams.set("snkrFee", String(state.snkrRawFeeRate));
+  url.searchParams.set("snkrShip", String(state.snkrRawShipping));
+  url.searchParams.set("snkrOther", String(state.snkrRawOtherCost));
+  url.searchParams.set("snkrTx7", String(state.snkrRawMinTx7));
+  url.searchParams.set("snkrTx30", String(state.snkrRawMinTx30));
+  url.searchParams.set("snkrProfit", String(state.snkrRawMinProfit));
+  url.searchParams.set("snkrRoi", String(state.snkrRawMinRoi));
+  if (state.snkrRawMaxPurchase == null) url.searchParams.delete("snkrBuyMax"); else url.searchParams.set("snkrBuyMax", String(state.snkrRawMaxPurchase));
+  if (state.snkrRawMaxReleaseMonths == null) url.searchParams.delete("snkrMonths"); else url.searchParams.set("snkrMonths", String(state.snkrRawMaxReleaseMonths));
+  url.searchParams.set("snkrAge", String(state.snkrRawMaxAgeHours));
+  if (state.snkrRawCurrentOnly) url.searchParams.set("snkrCurrent", "1"); else url.searchParams.delete("snkrCurrent");
+  if (state.snkrRawRecentOnly) url.searchParams.set("snkrRecent", "1"); else url.searchParams.delete("snkrRecent");
+  if (state.snkrRawIncludeReference) url.searchParams.set("snkrReference", "1"); else url.searchParams.delete("snkrReference");
   if (state.minPrice == null) {
     url.searchParams.delete("priceMin");
   } else {
@@ -3153,6 +3282,8 @@ function render() {
         if (state.catalogScope === "completing" && completion?.s !== "データ補完中") return false;
         if (state.catalogScope === "shortage" && completion?.s !== "データ不足") return false;
       }
+      // 素体流しはPSA提出判断と独立させる。PSA価格・PSA判定の欠損で候補を落とさない。
+      if (state.purchaseMode === "snkr-raw") return snkrRawMatchesFilters(card);
       if (!decisionModel.shouldIncludeVerdict(card.purchaseDecision?.verdict, state.showSkipped)) return false;
       if (state.catalogScope !== "analysis" && state.purchaseMode === "normal") return true;
       if (card.saleTx30d < state.minSaleTx) return false;
@@ -3288,14 +3419,28 @@ function render() {
     const pokedata = types.pokedata || {};
     els.catalogCompletionDetails.innerHTML = `<div class="catalog-summary-grid"><span><b>みんトレ取得総数</b><strong>${fmt.format(summary.sourceTotal)}</strong></span><span><b>サイト掲載総数</b><strong>${fmt.format(summary.siteTotal)}</strong></span><span><b>未掲載</b><strong>${fmt.format(summary.unlisted)}</strong></span><span><b>今回追加 / サイト新着</b><strong>${fmt.format(summary.addedThisRun)} / ${fmt.format(summary.siteNewCards ?? summary.newCards)}</strong><small>新着保持 ${fmt.format(summary.siteNewRetentionDays || 30)}日</small></span><span><b>最近発売 / 再掲載</b><strong>${fmt.format(summary.recentReleaseCards || 0)} / ${fmt.format(summary.relistedCards || 0)}</strong><small>最近発売は発売日から${fmt.format(summary.recentReleaseDays || 365)}日</small></span><span><b>発売日 / 年のみ / 不明</b><strong>${fmt.format(summary.releaseDateKnown || 0)} / ${fmt.format(summary.releaseYearOnly || 0)} / ${fmt.format(summary.releaseUnknown || 0)}</strong><small>日付充足 ${Number(summary.releaseDateCompletenessPct || 0).toFixed(1)}%・年含む ${Number(summary.releaseKnownCompletenessPct || 0).toFixed(1)}%</small></span><span><b>完全識別 / 要確認</b><strong>${fmt.format(summary.completeIdentityMatches)} / ${fmt.format(summary.reviewRequired)}</strong></span><span><b>分析可能</b><strong>${fmt.format(summary.analyzable)}</strong><small>完全 ${fmt.format(summary.analyzableComplete || 0)} / 一部参考データ不足 ${fmt.format(summary.analyzablePartial || 0)}</small></span><span><b>データ補完中</b><strong>${fmt.format(summary.completionInProgress)}</strong><small>分析可能カードの参考項目不足も含むため、優先キューより多くなります</small></span><span><b>補完優先キュー</b><strong>${fmt.format(summary.priorityQueueRemaining)}</strong><small>次の1項目で分析可能見込み ${fmt.format(summary.completableAfterNext || 0)}枚</small></span><span><b>PSA9データ区分</b><strong>実成約 ${fmt.format(p9.actual || 0)}</strong><small>集計値 ${fmt.format(p9.aggregate || 0)} / 推定 ${fmt.format(p9.estimate || 0)} / 未取得 ${fmt.format(p9.missing || 0)}</small></span><span><b>PokeDATA対象区分</b><strong>紐付済 ${fmt.format(pokedata.linked || 0)}</strong><small>対応セット未一致 ${fmt.format(pokedata.compatibleUnmatched || 0)} / 未展開 ${fmt.format(pokedata.unexpandedSet || 0)} / 非対応・存在未確認 ${fmt.format(pokedata.unsupportedOrUnconfirmed || 0)}</small></span></div><div class="catalog-item-rates">${rates}</div>`;
   }
+  const rawMode = state.purchaseMode === "snkr-raw";
+  document.body.classList.toggle("snkr-raw-active", rawMode);
   els.countStat.textContent = fmt.format(enriched.length);
-  const topRoi = enriched.reduce((highest, card) => Number.isFinite(card.roi) ? Math.max(highest, card.roi) : highest, -Infinity);
-  const topProfit = enriched.reduce((highest, card) => Number.isFinite(card.psaDecision?.expectedProfit) ? Math.max(highest, card.psaDecision.expectedProfit) : highest, -Infinity);
+  const topRoi = enriched.reduce((highest, card) => {
+    const value = rawMode ? card.snkrRawFlip?.roi : card.roi;
+    return Number.isFinite(value) ? Math.max(highest, value) : highest;
+  }, -Infinity);
+  const topProfit = enriched.reduce((highest, card) => {
+    const value = rawMode ? card.snkrRawFlip?.profit : card.psaDecision?.expectedProfit;
+    return Number.isFinite(value) ? Math.max(highest, value) : highest;
+  }, -Infinity);
+  if (els.topRoiLabel) els.topRoiLabel.textContent = rawMode ? "素体流し 最大利益率" : "PSA10時 最大利益率";
+  if (els.topProfitLabel) els.topProfitLabel.textContent = rawMode ? "素体流し 最大利益" : "最大期待利益";
+  if (els.topProfitNote) els.topProfitNote.textContent = rawMode ? "手数料・送料・その他費用控除後" : "現在仕入値 × 中央予測";
+  if (els.goCountLabel) els.goCountLabel.textContent = rawMode ? "即売向き" : "GO";
+  if (els.conditionalCountLabel) els.conditionalCountLabel.textContent = rawMode ? "売買あり" : "価格次第";
+  if (els.reviewCountLabel) els.reviewCountLabel.textContent = rawMode ? "参考候補" : "手動確認";
   els.topRoiStat.textContent = Number.isFinite(topRoi) ? `${Math.round(topRoi)}%` : "-";
   els.topProfitStat.textContent = Number.isFinite(topProfit) ? `¥${fmt.format(Math.round(topProfit))}` : "-";
-  if (els.goCountStat) els.goCountStat.textContent = fmt.format(enriched.filter((card) => card.purchaseDecision?.verdict === "GO").length);
-  if (els.conditionalCountStat) els.conditionalCountStat.textContent = fmt.format(enriched.filter((card) => card.purchaseDecision?.verdict === "価格次第").length);
-  if (els.reviewCountStat) els.reviewCountStat.textContent = fmt.format(enriched.filter((card) => card.purchaseDecision?.verdict === "要確認").length);
+  if (els.goCountStat) els.goCountStat.textContent = fmt.format(enriched.filter((card) => rawMode ? card.snkrRawFlip?.tier === "instant" : card.purchaseDecision?.verdict === "GO").length);
+  if (els.conditionalCountStat) els.conditionalCountStat.textContent = fmt.format(enriched.filter((card) => rawMode ? card.snkrRawFlip?.tier === "trading" : card.purchaseDecision?.verdict === "価格次第").length);
+  if (els.reviewCountStat) els.reviewCountStat.textContent = fmt.format(enriched.filter((card) => rawMode ? card.snkrRawFlip?.tier === "reference" : card.purchaseDecision?.verdict === "要確認").length);
   if (els.dataShortageCountStat) els.dataShortageCountStat.textContent = fmt.format(enriched.filter((card) => card.dataQuality?.dataShortage).length);
   if (els.outlierExcludedCountStat) els.outlierExcludedCountStat.textContent = fmt.format(enriched.filter((card) => card.dataQuality?.outlierExcluded).length);
   if (els.operationalConcentrationStat) {
@@ -3374,6 +3519,22 @@ function render() {
       : "";
     const catalogStatus = card.catalogCompletion;
     const catalogStatusHtml = catalogStatus ? `<div class="catalog-card-status ${catalogStatus.s === "分析可能" ? "ready" : catalogStatus.s === "データ不足" ? "shortage" : "pending"}"><b>${catalogStatus.n ? "サイト新着・" : ""}${catalogStatus.rr ? "最近発売・" : ""}${catalogStatus.rl ? "再掲載・" : ""}${escapeHtml(catalogStatus.s)}</b><span>充足 ${Number(catalogStatus.c || 0).toFixed(0)}% / 補完優先度 ${fmt.format(catalogStatus.p || 0)}</span><small>${catalogStatus.rd ? `発売日 ${escapeHtml(catalogStatus.rd)}（${escapeHtml(catalogStatus.rs || "取得済み")}） / ` : catalogStatus.ry ? `発売年 ${escapeHtml(String(catalogStatus.ry))}（${escapeHtml(catalogStatus.rs || "年のみ")}） / ` : "発売日不明 / "}${catalogStatus.m?.length ? `必須不足 ${escapeHtml(catalogStatus.m.join("・"))} / 次: ${escapeHtml(catalogStatus.x || "確認待ち")} / ` : ""}${escapeHtml((catalogStatus.r || []).join(" / "))}${catalogStatus.l ? ` / 最終試行 ${escapeHtml(String(catalogStatus.l).replace("T", " ").slice(0, 16))}` : ""}</small></div>` : "";
+    const rawFlip = card.snkrRawFlip;
+    const rawMoney = (value) => Number.isFinite(value) ? `¥${fmt.format(Math.round(value))}` : "取得不能";
+    const rawCount = (value) => Number.isFinite(value) ? `${fmt.format(value)}件` : "取得不能";
+    const snkrRawPanel = rawFlip ? `
+      <section class="snkr-raw-flip tier-${escapeHtml(rawFlip.tier || "none")}" aria-label="スニダン素体流し">
+        <div class="snkr-raw-flip-head"><div><span>スニダン素体流し</span><strong>${escapeHtml(rawFlip.label || "対象外")}</strong></div><b>${rawFlip.soldConfirmed ? "状態A成約中央値" : "出品価格差・成約未確認"}</b></div>
+        <div class="snkr-raw-flip-grid">
+          <div><span>国内美品相場</span><strong>${rawMoney(rawFlip.domesticAveragePrice)}</strong><small>みんトレ基準</small></div>
+          <div><span>国内で買える状態A</span><strong>${rawMoney(rawFlip.purchasePrice)}</strong><small>${escapeHtml(rawFlip.purchaseStore || "在庫価格未取得")}</small></div>
+          <div><span>スニダン状態A</span><strong>${rawMoney(rawFlip.salePrice)}</strong><small>${rawFlip.soldConfirmed ? `30日成約中央値（出品最安 ${rawMoney(Number(rawFlip.currentListingPrice))}）` : "現在出品最安"}</small></div>
+          <div><span>手取り見込</span><strong>${rawMoney(rawFlip.takeHome)}</strong><small>手数料 ${Number(rawFlip.feeRate || 0).toFixed(1)}%・送料等 ${rawMoney(Number(rawFlip.shipping || 0) + Number(rawFlip.otherCost || 0))}</small></div>
+          <div class="profit"><span>手数料後の利益</span><strong>${rawMoney(rawFlip.profit)} / ${Number.isFinite(rawFlip.roi) ? `${rawFlip.roi.toFixed(1)}%` : "-"}</strong><small>${rawFlip.soldConfirmed ? "成約中央値基準" : "売却未確認の参考差額"}</small></div>
+          <div><span>素体取引 7日 / 30日</span><strong>${rawCount(rawFlip.sold7Count)} / ${rawCount(rawFlip.sold30Count)}</strong><small>PSA取引・みんトレ件数とは別集計</small></div>
+        </div>
+        <div class="snkr-raw-flip-meta"><span>取得 ${escapeHtml(formatJstTimestamp(rawFlip.fetchedAt))}</span><span>紐付け ${escapeHtml(rawFlip.linkageConfidence === "exact" ? "完全一致" : rawFlip.linkageConfidence || "未確認")}</span><a href="${escapeHtml(rawFlip.productUrl || card.snkUrl || "#")}" target="_blank" rel="noreferrer">スニダン商品ページ</a></div>
+      </section>` : "";
     const cardrushStock = state.cardrushStock[card.id] || null;
     const hareruya2Stock = state.hareruya2Stock[card.id] || null;
     const yuyuteiStock = state.yuyuteiStock[card.id] || null;
@@ -3953,7 +4114,7 @@ function render() {
       </details>
     ` : "";
     return `
-      <article class="row card" data-card-id="${card.id}">
+      <article class="row card ${state.purchaseMode === "snkr-raw" ? "snkr-raw-mode" : ""}" data-card-id="${card.id}">
         <a class="thumb" href="${buildTorecaCardUrl(card)}" target="_blank" rel="noreferrer" aria-label="みんトレで${name}を開く">
           <img src="${card.img}" alt="${name}" loading="lazy" />
           <div class="series">${card.rarity ? card.rarity : card.model}</div>
@@ -3967,7 +4128,15 @@ function render() {
           </div>
           ${presetTagsHtml}
           ${catalogStatusHtml}
+          ${snkrRawPanel}
+          ${state.purchaseMode === "snkr-raw" ? `
+            <div class="market-links snkr-raw-only-links" aria-label="外部サイトへの直リンク">
+              <div class="market-links-title">商品ページ</div>
+              <div class="market-links-grid">${marketLinks}</div>
+            </div>
+          ` : ""}
 
+          <div class="psa-decision-content">
           ${purchaseSummaryPanel}
           ${buyLimitPanel}
           ${dataQualityPanel}
@@ -4006,6 +4175,7 @@ function render() {
               </div>
             </div>
           </details>
+          </div>
 
         </div>
       </article>
@@ -4102,6 +4272,19 @@ function syncFromUI() {
   state.saleExtraCost = Number(els.saleExtraCostInput.value || 0);
   state.buybackDeductionRate = clamp(Number(els.buybackDeductionRateInput.value || 0), 0, 5);
   state.exitPolicy = ["buyback", "marketplace", "both"].includes(els.exitPolicyInput.value) ? els.exitPolicyInput.value : "buyback";
+  state.snkrRawFeeRate = clamp(Number(els.snkrRawFeeRateInput.value || 0), 0, 100);
+  state.snkrRawShipping = Math.max(0, Number(els.snkrRawShippingInput.value || 0));
+  state.snkrRawOtherCost = Math.max(0, Number(els.snkrRawOtherCostInput.value || 0));
+  state.snkrRawMinTx7 = Math.max(0, Number(els.snkrRawTx7MinInput.value || 0));
+  state.snkrRawMinTx30 = Math.max(0, Number(els.snkrRawTx30MinInput.value || 0));
+  state.snkrRawMinProfit = Number(els.snkrRawProfitMinInput.value || 0);
+  state.snkrRawMinRoi = Number(els.snkrRawRoiMinInput.value || 0);
+  state.snkrRawMaxPurchase = parseOptionalNumber(els.snkrRawPurchaseMaxInput.value);
+  state.snkrRawMaxReleaseMonths = parseOptionalNumber(els.snkrRawReleaseMonthsInput.value);
+  state.snkrRawMaxAgeHours = Math.max(1, Number(els.snkrRawMaxAgeInput.value || 48));
+  state.snkrRawCurrentOnly = Boolean(els.snkrRawCurrentOnlyInput.checked);
+  state.snkrRawRecentOnly = Boolean(els.snkrRawRecentOnlyInput.checked);
+  state.snkrRawIncludeReference = Boolean(els.snkrRawIncludeReferenceInput.checked);
   if (els.capitalAvailabilityStatus) {
     const capital = decisionModel.capitalPlan({ totalCapital: state.psaCapital, lockedCapital: state.lockedCapital, gradingReserve: state.gradingReserve, submissionCount: state.submissionCount, fee: state.fee });
     els.capitalAvailabilityStatus.className = capital.availableCapital > 0 ? "enough" : "short";
@@ -4180,6 +4363,25 @@ async function init() {
     state.marketBacktest = await fetchJsonMaybe("./data/market-backtest-summary.json");
     const snkrListingData = await fetchJsonMaybe("./data/snkr-listing-summary.json");
     state.snkrListingSummary = snkrListingData?.cards || Object.create(null);
+    const snkrRawData = await fetchJsonMaybe("./data/snkr-raw-flip-summary.json");
+    state.snkrRawFlipSummary = snkrRawData?.cards || Object.create(null);
+    state.snkrRawFlipMeta = snkrRawData || null;
+    if (snkrRawData?.defaults) {
+      const url = new URL(window.location.href);
+      if (!url.searchParams.has("snkrFee")) els.snkrRawFeeRateInput.value = String(snkrRawData.defaults.feeRate ?? 7);
+      if (!url.searchParams.has("snkrShip")) els.snkrRawShippingInput.value = String(snkrRawData.defaults.shipping ?? 210);
+      if (!url.searchParams.has("snkrOther")) els.snkrRawOtherCostInput.value = String(snkrRawData.defaults.otherCost ?? 0);
+    }
+    if (els.snkrRawCoverageSummary) {
+      const coverage = snkrRawData?.coverage || {};
+      els.snkrRawCoverageSummary.innerHTML = `<b>全カード ${fmt.format(coverage.totalCards || 0)}枚</b><span>直リンク ${fmt.format(coverage.directProductLinks || 0)}枚</span><span>完全一致 ${fmt.format(coverage.exactMatchedCards || 0)}枚（${Number(coverage.linkageRatePct || 0).toFixed(2)}%）</span><span>状態A現在価格 ${fmt.format(coverage.currentPriceCards || 0)}枚</span><span>30日成約 ${fmt.format(coverage.sold30Cards || 0)}枚（${Number(coverage.soldDataRatePct || 0).toFixed(2)}%）</span><span>未取得 ${fmt.format(coverage.unattemptedCards || 0)}枚</span><small>段階取得中。PSA取引件数は混ぜていません。</small>`;
+    }
+    if (state.purchaseMode === "snkr-raw") {
+      state.catalogScope = "all";
+      if (els.catalogScopeInput) els.catalogScopeInput.value = "all";
+      const rawIds = new Set(Object.keys(state.snkrRawFlipSummary));
+      await loadCatalogEntries(state.catalogIndex.filter((entry) => rawIds.has(String(entry.id))));
+    }
     state.pokedataManifest = await fetchJsonMaybe("./data/pokedata/manifest.json");
     state.marketResearch = await fetchJsonMaybe("./data/market-research-summary.json");
     state.regulationPolicy = await fetchJsonMaybe("./data/regulation-policy.json");
@@ -4205,7 +4407,7 @@ async function init() {
   }
 }
 
-[els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.buyback7MinInput, els.buyback7MaxInput, els.buyback30MinInput, els.buyback30MaxInput, els.buyback90MinInput, els.buyback90MaxInput, els.buybackShopsMinInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.roiInput, els.expectedRoiFilterInput, els.expectedProfitFilterInput, els.stressExpectedRoiFilterInput, els.stressExpectedProfitFilterInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.purchaseLimitRatioMinInput, els.psaRateMinInput, els.overallFilterInput, els.minExitLiquidityInput, els.minEconomicsInput, els.minMarketStabilityInput, els.minSupplyRiskInput, els.minFuturePriceScoreInput, els.maxFuturePriceScoreInput, els.minForecastPriceInput, els.maxForecastPriceInput, els.minForecastDownsideInput, els.maxForecastDownsideInput, els.minForecastGapInput, els.maxForecastGapInput, els.minForecastAgeInput, els.forecastMaturityInput, els.maxForecastMonthlyIncreaseInput, els.stockDemandInput, els.dataQualityFilterInput, els.goConfidenceFilterInput, els.floorStateInput, els.priceDirectionInput, els.supplyStateInput, els.minFloorScoreInput, els.storeDemandInput, els.showSkippedInput, els.hideReviewInput, els.fundingOnlyInput, els.officialOnlyInput, els.sortInput, els.psaCapitalInput, els.lockedCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput, els.buybackDeductionRateInput, els.exitPolicyInput].forEach((el) =>
+[els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.buyback7MinInput, els.buyback7MaxInput, els.buyback30MinInput, els.buyback30MaxInput, els.buyback90MinInput, els.buyback90MaxInput, els.buybackShopsMinInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.roiInput, els.expectedRoiFilterInput, els.expectedProfitFilterInput, els.stressExpectedRoiFilterInput, els.stressExpectedProfitFilterInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.purchaseLimitRatioMinInput, els.psaRateMinInput, els.overallFilterInput, els.minExitLiquidityInput, els.minEconomicsInput, els.minMarketStabilityInput, els.minSupplyRiskInput, els.minFuturePriceScoreInput, els.maxFuturePriceScoreInput, els.minForecastPriceInput, els.maxForecastPriceInput, els.minForecastDownsideInput, els.maxForecastDownsideInput, els.minForecastGapInput, els.maxForecastGapInput, els.minForecastAgeInput, els.forecastMaturityInput, els.maxForecastMonthlyIncreaseInput, els.stockDemandInput, els.dataQualityFilterInput, els.goConfidenceFilterInput, els.floorStateInput, els.priceDirectionInput, els.supplyStateInput, els.minFloorScoreInput, els.storeDemandInput, els.showSkippedInput, els.hideReviewInput, els.fundingOnlyInput, els.officialOnlyInput, els.sortInput, els.psaCapitalInput, els.lockedCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput, els.buybackDeductionRateInput, els.exitPolicyInput, els.snkrRawFeeRateInput, els.snkrRawShippingInput, els.snkrRawOtherCostInput, els.snkrRawTx7MinInput, els.snkrRawTx30MinInput, els.snkrRawProfitMinInput, els.snkrRawRoiMinInput, els.snkrRawPurchaseMaxInput, els.snkrRawReleaseMonthsInput, els.snkrRawMaxAgeInput, els.snkrRawCurrentOnlyInput, els.snkrRawRecentOnlyInput, els.snkrRawIncludeReferenceInput].forEach((el) =>
   el.addEventListener("input", syncFromUI)
 );
 
@@ -4250,6 +4452,20 @@ els.resetFiltersBtn.addEventListener("click", () => {
   els.fundingOnlyInput.checked = false;
   els.officialOnlyInput.checked = false;
   els.sortInput.value = "overall-desc";
+  els.snkrRawFeeRateInput.value = "7";
+  els.snkrRawShippingInput.value = "210";
+  els.snkrRawOtherCostInput.value = "0";
+  els.snkrRawTx7MinInput.value = "0";
+  els.snkrRawTx30MinInput.value = "3";
+  els.snkrRawProfitMinInput.value = "0";
+  els.snkrRawRoiMinInput.value = "0";
+  els.snkrRawPurchaseMaxInput.value = "";
+  els.snkrRawReleaseMonthsInput.value = "";
+  els.snkrRawMaxAgeInput.value = "48";
+  els.snkrRawCurrentOnlyInput.checked = false;
+  els.snkrRawRecentOnlyInput.checked = false;
+  els.snkrRawIncludeReferenceInput.checked = false;
+  if (els.snkrRawReferenceControl) els.snkrRawReferenceControl.hidden = true;
   state.purchaseMode = "normal";
   state.includeAggressiveInCombined = false;
   if (els.includeAggressiveInput) els.includeAggressiveInput.checked = false;
@@ -4268,9 +4484,23 @@ els.catalogScopeInput?.addEventListener("change", () => {
 });
 
 document.querySelectorAll("[data-preset]").forEach((button) => {
-  button.addEventListener("click", () => {
+  button.addEventListener("click", async () => {
     const preset = button.dataset.preset;
+    if (preset === "snkr-raw") {
+      state.purchaseMode = "snkr-raw";
+      state.catalogScope = "all";
+      if (els.catalogScopeInput) els.catalogScopeInput.value = "all";
+      if (els.snkrRawReferenceControl) els.snkrRawReferenceControl.hidden = false;
+      const rawIds = new Set(Object.keys(state.snkrRawFlipSummary));
+      await loadCatalogEntries(state.catalogIndex.filter((entry) => rawIds.has(String(entry.id))));
+      els.showSkippedInput.checked = false;
+      els.sortInput.value = "snkrRawProfit-desc";
+      document.querySelectorAll("[data-preset]").forEach((item) => item.classList.toggle("active", item === button));
+      syncFromUI();
+      return;
+    }
     state.purchaseMode = preset === "low-risk" ? "low-risk" : preset;
+    if (els.snkrRawReferenceControl) els.snkrRawReferenceControl.hidden = true;
     state.lowRiskAvailability = "all";
     syncLowRiskAvailabilityControl();
     els.saleTxMinInput.value = preset === "turnover" ? "20" : "0";

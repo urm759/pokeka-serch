@@ -44,6 +44,7 @@ const psa = read("data/psa-official-populations.json");
 const services = read("data/psa-japan-services.json");
 const pokedata = read("data/pokedata-summary.json");
 const pokedataManifest = read("data/pokedata/manifest.json", { sets: [] });
+const snkrRaw = read("data/snkr-raw-flip-summary.json", { coverage: {}, cards: {} });
 const updatePerformance = read("data/update-performance.json", {});
 const runs = read("work/source-update-runs.json", { sources: {} });
 const runHistory = read("work/source-update-history.json", { version: 1, sources: {} });
@@ -142,6 +143,7 @@ const sources = {
   psaOfficial: { label: "PSA公式枚数", date: latestPsaDate, automatic: true, note: "PC起動時にPSA専用Chromeで自動取得", coverageRows: latestPsaCount, dominantDate: dominantPsaDate, totalRows: psaTotalRows },
   psaJapan: { label: "PSA Japan料金", date: validDate(services.checkedAt || services.updatedAt), automatic: true, status: services.checkStatus || "unknown" },
   pokedata: { label: "PokeDATA海外相場", date: validDate(pokedataManifest.updatedAt || pokedata.updatedAt), automatic: false, note: "段階検証中。全カード完了とは別管理", diagnostics: { setCount: Number(pokedataManifest.sets?.length || 0), ...(pokedataManifest.acquisition || {}) } },
+  snkrRaw: { label: "スニダン素体A相場", date: validDate(snkrRaw.updatedAt), automatic: true, note: "PSA相場とは分離した状態A価格・成約履歴", diagnostics: snkrRaw.coverage || null },
 };
 
 for (const [sourceId, source] of Object.entries(sources)) {
@@ -199,6 +201,13 @@ for (const [sourceId, source] of Object.entries(sources)) {
     source.updatedCount = Number(pokedataManifest.totalCards || pokedata.coverage?.linkedDomesticCards || 0);
     source.status = "partial";
     source.sourceState = `検証中／部分取得（${Number(pokedataManifest.sets?.length || 0)}セット・照合${source.acquiredCount}件・国内${source.updatedCount}枚）`;
+    source.fresh = false;
+  }
+  if (sourceId === "snkrRaw" && Number(snkrRaw.coverage?.exactMatchedCards || 0) < Number(snkrRaw.coverage?.directProductLinks || 0)) {
+    source.acquiredCount = Number(snkrRaw.coverage?.attemptedCards || 0);
+    source.updatedCount = Number(snkrRaw.coverage?.exactMatchedCards || 0);
+    source.status = "partial";
+    source.sourceState = `段階取得中（完全一致 ${source.updatedCount}枚 / 直リンク ${Number(snkrRaw.coverage?.directProductLinks || 0)}枚・30日成約 ${Number(snkrRaw.coverage?.sold30Cards || 0)}枚）`;
     source.fresh = false;
   }
   if (sourceId === "yuyutei" && Number(yuyutei.crawl?.remainingSearchCount || 0) > 0) {

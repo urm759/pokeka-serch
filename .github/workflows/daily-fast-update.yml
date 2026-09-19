@@ -29,6 +29,11 @@ jobs:
         run: node work/run_tracked_update.js psaJapan work/update_psa_japan_services.js
       - name: Refresh web buyback tables
         run: node work/run_tracked_update.js shopBuyback work/update_shop_buybacks.js
+      - name: Refresh SNKRDUNK raw state-A delta
+        env:
+          SNKR_RAW_LIMIT: "100"
+          SNKR_RAW_MAX_RUNTIME_MS: "360000"
+        run: node work/run_tracked_update.js snkrRaw work/update_snkr_raw_flip.js
       - name: Rebuild market demand and supply analysis
         run: node work/run_tracked_update.js marketAnalysis work/build_market_analysis.js
       - name: Finalize source status
@@ -38,13 +43,15 @@ jobs:
           node --check app.js
           node --check decision-model.js
           node --check work/daily_fast_update.js
+          node --check work/update_snkr_raw_flip.js
+          node work/test_snkr_raw_flip.js
           node work/test_limit_tiers.js
           node work/test_daily_fast_update.js
       - name: Commit changed data only
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data work/daily-http-cache.json work/changed-card-ids.json work/market_stability_history.json
+          git add data work/daily-http-cache.json work/changed-card-ids.json work/market_stability_history.json work/snkr-raw-flip-cache.json work/snkr-raw-flip-checkpoint.json work/source-update-runs.json work/source-update-history.json
           if git diff --cached --quiet; then
             echo "No source change. Commit and deployment skipped."
             exit 0

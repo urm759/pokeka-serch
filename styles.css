@@ -1334,3 +1334,66 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
     padding: 7px;
   }
 }
+.snkr-raw-settings {
+  border-color: rgba(255, 151, 52, .38);
+}
+
+.snkr-raw-coverage {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 12px 0 0;
+  padding: 12px;
+  border: 1px solid rgba(255, 151, 52, .25);
+  border-radius: 14px;
+  background: rgba(255, 151, 52, .07);
+  color: var(--muted);
+}
+
+.snkr-raw-coverage b { color: var(--text); }
+.snkr-raw-coverage span { padding: 4px 8px; border-radius: 999px; background: var(--panel); }
+.snkr-raw-coverage small { flex-basis: 100%; }
+
+.snkr-raw-flip {
+  margin: 12px 0;
+  padding: 14px;
+  border: 1px solid rgba(255, 151, 52, .35);
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(255, 151, 52, .11), rgba(255, 207, 92, .035));
+}
+
+.snkr-raw-flip.tier-instant { border-color: rgba(34, 197, 94, .5); background: linear-gradient(135deg, rgba(34, 197, 94, .12), rgba(255, 151, 52, .04)); }
+.snkr-raw-flip.tier-reference { border-color: rgba(234, 179, 8, .42); }
+.snkr-raw-flip.tier-none { opacity: .82; }
+.snkr-raw-flip-head, .snkr-raw-flip-meta { display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+.snkr-raw-flip-head span, .snkr-raw-flip-grid span { display: block; color: var(--muted); font-size: 12px; }
+.snkr-raw-flip-head strong { font-size: 20px; }
+.snkr-raw-flip-head > b { padding: 5px 9px; border-radius: 999px; background: rgba(255, 151, 52, .18); font-size: 12px; }
+.snkr-raw-flip-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 12px 0; }
+.snkr-raw-flip-grid > div { min-width: 0; padding: 10px; border-radius: 12px; background: rgba(7, 14, 28, .48); }
+.snkr-raw-flip-grid strong { display: block; margin: 3px 0; font-size: 17px; overflow-wrap: anywhere; }
+.snkr-raw-flip-grid small { display: block; color: var(--muted); line-height: 1.35; }
+.snkr-raw-flip-grid .profit strong { color: #4ade80; }
+.snkr-raw-flip-meta { color: var(--muted); font-size: 12px; }
+.snkr-raw-flip-meta a { color: #ffb35c; font-weight: 800; }
+
+@media (max-width: 720px) {
+  .snkr-raw-flip-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .snkr-raw-flip-grid strong { font-size: 15px; }
+}
+
+@media (max-width: 420px) {
+  .snkr-raw-flip-grid { grid-template-columns: 1fr; }
+}
+.snkr-raw-mode .psa-decision-content {
+  display: none;
+}
+
+.snkr-raw-active .psa-only-stat {
+  display: none;
+}
+
+.snkr-raw-only-links {
+  margin-top: 12px;
+}

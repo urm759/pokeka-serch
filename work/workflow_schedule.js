@@ -9,6 +9,7 @@ const SOURCE_POLICIES = {
   psaOfficial: { workflow: "PCローカル PSA公式更新", times: ["04:30", "17:00"], ttlHours: 36, local: true },
   psaJapan: { workflow: "Daily Fast Update", times: ["04:30", "17:00"], ttlHours: 30 },
   pokedata: { workflow: "Incremental Data Backfill（公開分）", times: ["05:30"], ttlHours: 72 },
+  snkrRaw: { workflow: "Daily Fast Update", times: ["04:30", "17:00"], ttlHours: 30 },
 };
 
 function jstParts(value = new Date()) {

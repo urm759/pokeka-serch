@@ -115,6 +115,13 @@ jobs:
           SNKR_RECHECK_DAYS: "30"
         run: node work/update_snkr_links.js
 
+      - name: Refresh SNKRDUNK raw state-A sales
+        if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'toreca'
+        env:
+          SNKR_RAW_LIMIT: "180"
+          SNKR_RAW_MAX_RUNTIME_MS: "480000"
+        run: node work/run_tracked_update.js snkrRaw work/update_snkr_raw_flip.js
+
       - name: Cache Snkrdunk English names for PSA matching
         if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'toreca'
         env:

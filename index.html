@@ -121,6 +121,9 @@
             <option value="updated-asc">更新日が古い順</option>
             <option value="tvel-desc">サイト年利が高い順</option>
             <option value="tvel-asc">サイト年利が低い順</option>
+            <option value="snkrRawProfit-desc">スニダン素体流し利益が高い順</option>
+            <option value="snkrRawRoi-desc">スニダン素体流し利益率が高い順</option>
+            <option value="snkrRawTx30-desc">スニダン素体30日取引が多い順</option>
           </select>
         </label>
       </div>
@@ -142,12 +145,38 @@
         </label>
         <button type="button" data-preset="turnover"><strong>高回転候補</strong><small>価格待ちを含む</small></button>
         <button type="button" data-preset="bargain"><strong>薄商い・高粗利</strong><small>少数成約でも出口あり</small></button>
+        <button type="button" data-preset="snkr-raw"><strong>スニダン素体流し</strong><small>PSA判定とは別・手数料後の価格差</small></button>
+        <label id="snkrRawReferenceControl" class="preset-aggressive-toggle" hidden><input id="snkrRawIncludeReferenceInput" type="checkbox" /> 参考候補も含める</label>
         <label class="preset-aggressive-toggle"><input id="includeAggressiveInput" type="checkbox" /> おまかせ総合に攻め候補を含める</label>
         <div id="presetAuditSummary" class="preset-audit-summary">候補内訳を計算中</div>
         <span class="preset-divider" aria-hidden="true"></span>
         <button id="exportSearchBtn" class="preset-file-action" type="button">条件をCSV保存</button>
         <label class="preset-file-action">条件CSV読込<input id="importSearchInput" type="file" accept=".csv,text/csv" /></label>
       </div>
+
+      <details class="advanced-filters snkr-raw-settings">
+        <summary>
+          <span>スニダン素体流しの設定</span>
+          <small>状態Aの実成約を優先。PSA仕入れ判断には影響しません</small>
+        </summary>
+        <div class="controls controls-advanced">
+          <label class="control"><span>スニダン販売手数料率</span><input id="snkrRawFeeRateInput" type="number" min="0" max="100" step="0.1" value="7" /><small class="control-help">会員ランクに合わせて変更してください。初期値7%。</small></label>
+          <label class="control"><span>発送・梱包費</span><input id="snkrRawShippingInput" type="number" min="0" step="10" value="210" /></label>
+          <label class="control"><span>その他費用</span><input id="snkrRawOtherCostInput" type="number" min="0" step="10" value="0" /></label>
+          <label class="control"><span>素体7日取引 下限</span><input id="snkrRawTx7MinInput" type="number" min="0" step="1" value="0" /></label>
+          <label class="control"><span>素体30日取引 下限</span><input id="snkrRawTx30MinInput" type="number" min="0" step="1" value="3" /></label>
+          <label class="control"><span>最低利益額</span><input id="snkrRawProfitMinInput" type="number" step="100" value="0" /></label>
+          <label class="control"><span>最低利益率</span><input id="snkrRawRoiMinInput" type="number" step="1" value="0" /></label>
+          <label class="control"><span>最大購入価格</span><input id="snkrRawPurchaseMaxInput" type="number" min="0" step="1000" placeholder="空欄は条件なし" /></label>
+          <label class="control"><span>発売からの経過月数 上限</span><input id="snkrRawReleaseMonthsInput" type="number" min="0" step="1" placeholder="空欄は条件なし" /></label>
+          <label class="control"><span>データ取得からの経過時間 上限</span><input id="snkrRawMaxAgeInput" type="number" min="1" step="1" value="48" /><small class="control-help">時間。期限超過は利益候補から除外します。</small></label>
+          <div class="filter-switches">
+            <label><input id="snkrRawCurrentOnlyInput" type="checkbox" /> 現行レギュレーションのみ</label>
+            <label><input id="snkrRawRecentOnlyInput" type="checkbox" /> 新しいカードのみ</label>
+          </div>
+        </div>
+        <div id="snkrRawCoverageSummary" class="snkr-raw-coverage">素体データの取得率を確認中</div>
+      </details>
 
       <section class="catalog-scope" aria-label="掲載カードの表示範囲">
         <div>
@@ -563,35 +592,35 @@
           <strong id="countStat">0</strong>
         </div>
         <div class="stat">
-          <span class="k">PSA10時 最大利益率</span>
+          <span id="topRoiLabel" class="k">PSA10時 最大利益率</span>
           <strong id="topRoiStat">-</strong>
         </div>
         <div class="stat">
-          <span class="k">最大期待利益</span>
-          <small>現在仕入値 × 中央予測</small>
+          <span id="topProfitLabel" class="k">最大期待利益</span>
+          <small id="topProfitNote">現在仕入値 × 中央予測</small>
           <strong id="topProfitStat">-</strong>
         </div>
         <div class="stat">
-          <span class="k">GO</span>
+          <span id="goCountLabel" class="k">GO</span>
           <strong id="goCountStat">0</strong>
         </div>
         <div class="stat">
-          <span class="k">価格次第</span>
+          <span id="conditionalCountLabel" class="k">価格次第</span>
           <strong id="conditionalCountStat">0</strong>
         </div>
         <div class="stat">
-          <span class="k">手動確認</span>
+          <span id="reviewCountLabel" class="k">手動確認</span>
           <strong id="reviewCountStat">0</strong>
         </div>
-        <div class="stat stat-shortage">
+        <div class="stat stat-shortage psa-only-stat">
           <span class="k">データ不足</span>
           <strong id="dataShortageCountStat">0</strong>
         </div>
-        <div class="stat stat-outlier">
+        <div class="stat stat-outlier psa-only-stat">
           <span class="k">外れ値除外済み</span>
           <strong id="outlierExcludedCountStat">0</strong>
         </div>
-        <div class="stat">
+        <div class="stat psa-only-stat">
           <span class="k">最多運用上限</span>
           <strong id="operationalConcentrationStat">-</strong>
           <small>全カードの同額集中を監査</small>
@@ -763,6 +792,7 @@
   <script src="./search-index-model.js?v=20260913-search-v1"></script>
   <script src="./backtest-model.js?v=20260901-backtest-v2"></script>
   <script src="./market-analysis.js?v=20260913-supply-absorption-v3"></script>
-  <script src="./app.js?v=20260919-supply-update-v1"></script>
+  <script src="./snkr-raw-flip-model.js?v=20260920-raw-flip-v1"></script>
+  <script src="./app.js?v=20260920-snkr-raw-v1"></script>
 </body>
 </html>
