@@ -54,7 +54,7 @@ const state = {
   cardById: Object.create(null),
   snkrObserver: null,
   fee: 12980,
-  psaPlan: "regular",
+  psaPlan: "priority",
   psaHandlingFee: 1000,
   guideMode: "70",
   minSaleTx: 30,
@@ -354,14 +354,16 @@ function releaseMaturityFromOfficial(official, card) {
 function availablePsaPlans() {
   const plans = state.psaServices?.plans;
   return Array.isArray(plans) && plans.length ? plans.filter((plan) => plan.available !== false) : [
-    { id: "regular", name: "レギュラー", price: 11980, businessDays: 60, calendarDays: 84, declaredValueMax: 250000, available: true },
-    { id: "express", name: "エクスプレス", price: 22980, businessDays: 25, calendarDays: 35, declaredValueMax: 400000, available: true },
+    { id: "standard", name: "スタンダード", price: 9980, businessDays: 100, calendarDays: 140, declaredValueMax: 150000, available: true },
+    { id: "priority", name: "プライオリティ", price: 11980, businessDays: 80, calendarDays: 112, declaredValueMax: 250000, available: true },
+    { id: "express", name: "エクスプレス", price: 29980, businessDays: 25, calendarDays: 35, declaredValueMax: 400000, available: true },
   ];
 }
 
 function selectedPsaPlan() {
   const plans = availablePsaPlans();
-  return plans.find((plan) => plan.id === state.psaPlan) || plans[0];
+  const compatibleId = state.psaPlan === "regular" ? "priority" : state.psaPlan;
+  return plans.find((plan) => plan.id === compatibleId) || plans[0];
 }
 
 function psaPriceBand(price) {
@@ -2599,7 +2601,8 @@ function readUrl() {
   const catalogScope = url.searchParams.get("catalog");
   const guide = url.searchParams.get("guide");
   const fee = parseOptionalNumber(url.searchParams.get("fee"));
-  const psaPlan = url.searchParams.get("psaPlan");
+  const psaPlanParam = url.searchParams.get("psaPlan");
+  const psaPlan = psaPlanParam === "regular" ? "priority" : psaPlanParam;
   const saleTx = parseOptionalNumber(url.searchParams.get("tx"));
   const saleTxMax = parseOptionalNumber(url.searchParams.get("txMax"));
   const saleTx7 = parseOptionalNumber(url.searchParams.get("tx7"));

@@ -44,10 +44,11 @@ async function main() {
     .replace(/&nbsp;/gi, " ")
     .replace(/\s+/g, " ");
   const plans = [
-    planFromText(text, "regular", "レギュラー"),
+    planFromText(text, "standard", "スタンダード"),
+    planFromText(text, "priority", "プライオリティ"),
     planFromText(text, "express", "エクスプレス"),
   ].filter(Boolean);
-  if (plans.length !== 2) throw new Error("Could not parse both PSA Japan service plans; existing data was preserved.");
+  if (plans.length !== 3) throw new Error("Could not parse all PSA Japan service plans through Express; existing data was preserved.");
   const suspendedPlans = ["バリュー・バルク", "バリュー", "バリュー・プラス", "バリュー・マックス"]
     .filter((name) => text.includes(name) && text.includes("受付停止中"));
   const payload = {
@@ -74,6 +75,7 @@ main().catch((error) => {
       checkError: String(error.message || error).slice(0, 240),
     }), "utf8");
     console.warn(`PSA Japan plan refresh skipped; existing data was preserved: ${error.message || error}`);
+    process.exitCode = 1;
     return;
   }
   console.error(error);

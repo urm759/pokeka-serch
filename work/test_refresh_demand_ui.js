@@ -19,5 +19,9 @@ assert.match(finalizer, /sourceTiming/);
 assert.match(fast, /externalFetchedCards/);
 assert.match(fast, /recalculatedCards/);
 assert.match(fast, /unchangedCards/);
+assert.match(app, /state\.psaPlan === "regular" \? "priority"/);
+assert.match(index, /value="standard"/);
+assert.match(index, /value="priority"/);
+assert.match(index, /value="express"/);
 
 console.log(JSON.stringify({ refreshDemandUi: "ok" }));
