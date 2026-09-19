@@ -15,6 +15,7 @@ const beforeFingerprint = artifactFingerprint(sourceId);
 const configuredTimeoutMs = Number(process.env.TRACKED_TIMEOUT_MS || 0);
 const timeoutMs = Number.isFinite(configuredTimeoutMs) && configuredTimeoutMs > 0 ? configuredTimeoutMs : undefined;
 const executionEnvironment = process.env.GITHUB_ACTIONS === "true" ? "GitHub Actions" : "PCローカル";
+const workflowTrigger = process.env.GITHUB_EVENT_NAME || null;
 updateRun(sourceId, {
   lastAttemptAt: startedAt.toISOString(),
   startedAt: startedAt.toISOString(),
@@ -26,6 +27,7 @@ updateRun(sourceId, {
   lastError: null,
   executionEnvironment,
   workflowRunId: process.env.GITHUB_RUN_ID || null,
+  workflowTrigger,
 });
 const result = spawnSync(process.execPath, [path.resolve(ROOT, script), ...process.argv.slice(4)], {
   cwd: ROOT,
@@ -78,6 +80,7 @@ const record = {
     : null,
   executionEnvironment,
   workflowRunId: process.env.GITHUB_RUN_ID || null,
+  workflowTrigger,
 };
 // A clean partial batch is a successful checkpoint even though the complete
 // source crawl is still in progress. Keep that distinct from a failed batch.

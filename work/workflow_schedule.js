@@ -71,15 +71,17 @@ function sourceTiming(sourceId, run = {}, history = [], now = new Date()) {
   const runSchedule = Number.isFinite(startedMs) ? scheduleFor(sourceId, new Date(startedMs + 1000)) : schedule;
   const plannedMs = Date.parse(runSchedule.previousScheduledAt || "");
   const githubActionsRun = run.executionEnvironment === "GitHub Actions" || Boolean(run.workflowRunId);
+  const scheduledRun = run.workflowTrigger === "schedule";
   return {
     workflow: schedule.workflow,
     automatic: schedule.automatic,
     scheduleLabel: schedule.scheduleLabel,
     nextScheduledAt: schedule.nextScheduledAt,
     previousScheduledAt: schedule.previousScheduledAt,
-    actionsDelayMinutes: githubActionsRun && Number.isFinite(plannedMs) && Number.isFinite(startedMs) ? Math.max(0, Math.round((startedMs - plannedMs) / 60000)) : null,
+    actionsDelayMinutes: githubActionsRun && scheduledRun && Number.isFinite(plannedMs) && Number.isFinite(startedMs) ? Math.max(0, Math.round((startedMs - plannedMs) / 60000)) : null,
     executionEnvironment: run.executionEnvironment || null,
     workflowRunId: run.workflowRunId || null,
+    workflowTrigger: run.workflowTrigger || null,
     updateTtlHours: schedule.ttlHours,
     ageHours: Number.isFinite(ageHours) ? Math.round(ageHours * 10) / 10 : null,
     stale: ageHours == null || ageHours > schedule.ttlHours,
