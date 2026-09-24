@@ -44,6 +44,7 @@ const assumptions = { hitRate: 0.78, lowerGradePrice: 93500 };
 const buyback = decision.conservativeBuybackExit({
   rows,
   currentPsa10Price: 137000,
+  centralPsa10Price: 118000,
   stressPsa10Price: 85000,
   deductionRate: 3,
   saleFeeRate: 0,
@@ -62,12 +63,14 @@ assert.equal(decision.conservativeBuybackExit({ rows: rows.slice(0, 1), assumpti
 
 const policy = decision.exitPolicyCaps({
   policy: "buyback",
-  marketplaceTargetCap: 110000,
-  marketplaceBreakEvenCap: 101000,
+  marketplaceCurrentBreakEvenCap: 120000,
+  marketplaceCentralTargetCap: 110000,
+  marketplaceStressBreakEvenCap: 101000,
   buyback,
 });
 assert.equal(policy.adoptedPolicy, "buyback");
-assert.equal(policy.targetCap, buyback.targetMaxPrice);
+assert.equal(policy.targetCap, buyback.scenarios.central.targetMaxPrice);
+assert.equal(policy.breakEvenCap, buyback.scenarios.stress.breakEvenMaxPrice);
 const capital = decision.capitalPlan({ totalCapital: 500000, lockedCapital: 0, gradingReserve: 130000, submissionCount: 10, fee: 12980 });
 const caps = decision.purchaseCaps({ capital, economicMaxPrice: 101000, stressBreakEvenMaxPrice: 105000, maxCapitalShare: 10 });
 assert.equal(caps.finalMaxPrice, 50000);

@@ -3,6 +3,7 @@
   if (typeof module === "object" && module.exports) module.exports = api;
   if (root) root.PurchaseDecisionModel = api;
 })(typeof globalThis !== "undefined" ? globalThis : this, function createDecisionModel() {
+  const MODEL_VERSION = "purchase-decision-v4-buyback-scenarios";
   const clamp = (value, min = 0, max = 100) => Math.max(min, Math.min(max, value));
 
   function median(values) {
@@ -221,7 +222,7 @@
       highConfidenceDays: Math.max(3, Math.floor(Number(input.config?.highConfidenceDays ?? 7))),
       initialSafetyFactor: clamp(Number(input.config?.initialSafetyFactor ?? 1), 0.5, 1),
     };
-    const calculationVersion = "operational-cap-v2";
+    const calculationVersion = String(input.modelVersion || `operational-cap-v3:${MODEL_VERSION}`);
     const windowMedian = (days, currentOperational) => {
       const anchor = dateOnly(input.asOfDate) || dateOnly(new Date().toISOString());
       const values = history
@@ -275,6 +276,35 @@
       });
     }
     const previousOperational = Math.max(0, Number(previous.operational));
+    const previousVersion = String(previous.calculationVersion || "legacy");
+    const modelUpdate = previousVersion !== calculationVersion;
+    const theoreticalChangePct = Number(previous.theoretical) > 0
+      ? (rounded - Number(previous.theoretical)) / Number(previous.theoretical) * 100
+      : null;
+    if (!modelUpdate
+      && Number.isFinite(theoreticalChangePct)
+      && Math.abs(theoreticalChangePct) >= 25
+      && input.materialDataChange !== true) {
+      return withAudit({
+        theoretical,
+        roundedTheoretical: rounded,
+        operational: previousOperational,
+        previous: previousOperational,
+        previousDate: dateOnly(previous.date),
+        initial: false,
+        initialSafetyFactor: null,
+        smoothing: "25%以上の根拠不明急変を隔離",
+        change: 0,
+        changePct: 0,
+        reason: `根拠データの大きな変化がないまま理論上限が${Math.abs(theoreticalChangePct).toFixed(1)}%変化したため前回正常値を保持`,
+        confidence: "要確認",
+        provisional: true,
+        quarantinedAbruptChange: true,
+        proposedOperational: rounded,
+        modelUpdate: false,
+        step,
+      });
+    }
     let operational = previousOperational;
     let reason = "小幅変動のため前回上限を維持";
     if (rounded < previousOperational) {
@@ -310,6 +340,7 @@
       reason,
       confidence,
       provisional: distinctDays < 3,
+      modelUpdate,
       step,
     });
   }
@@ -501,34 +532,64 @@
         breakEvenMaxPrice: null,
         targetMaxPrice: null,
         confidence: "不足",
+        scenarios: { current: null, central: null, stress: null },
       };
     }
     const grossCurrent = median(trusted.map((row) => row.conservativePrice));
     const currentPsa10Price = Math.max(0, Number(input.currentPsa10Price || 0));
+    const centralPsa10Price = Math.max(0, Number(input.centralPsa10Price || currentPsa10Price));
     const stressPsa10Price = Math.max(0, Number(input.stressPsa10Price || 0));
-    const forecastRatio = currentPsa10Price > 0 && stressPsa10Price > 0
-      ? clamp(stressPsa10Price / currentPsa10Price, 0.35, 1)
-      : 1;
-    const grossForecast = grossCurrent * forecastRatio;
     const deductionRate = clamp(Number(input.deductionRate ?? 3), 0, 5);
-    const deductionAmount = grossForecast * deductionRate / 100;
-    const netForecast = grossForecast - deductionAmount - Math.max(0, Number(input.saleExtraCost || 0));
     const hitRate = clamp(Number(input.assumptions?.hitRate || 0), 0, 1);
     const lowerGradePrice = Math.max(0, Number(input.assumptions?.lowerGradePrice || 0));
     const marketplaceMultiplier = Math.max(0, 1 - Number(input.saleFeeRate || 0) / 100);
     const lowerGradeNet = lowerGradePrice * marketplaceMultiplier - Math.max(0, Number(input.saleExtraCost || 0));
-    const expectedSale = hitRate * netForecast + (1 - hitRate) * lowerGradeNet;
     const fee = Math.max(0, Number(input.fee || 0));
     const targetProfit = Math.max(0, Number(input.minExpectedProfit || 0));
     const annualRequiredRoi = Number(input.lockDays) > 0
       ? Math.max(0, Number(input.minAnnualEfficiency || 0)) * Number(input.lockDays) / 365
       : 0;
     const requiredRoi = Math.max(0, Number(input.minExpectedRoi || 0), annualRequiredRoi) / 100;
-    const breakEvenRaw = expectedSale - fee;
-    const profitCap = expectedSale - fee - targetProfit;
-    const roiCap = (expectedSale - fee * (1 + requiredRoi)) / (1 + requiredRoi);
     const step = Math.max(1, Number(input.step || 500));
     const floorPrice = (value) => Math.max(0, Math.floor(Math.max(0, value) / step) * step);
+    const buildScenario = (key, label, psa10Price) => {
+      if (!(currentPsa10Price > 0) || !(psa10Price > 0)) return null;
+      // The observed buyback median is today's anchor. Each forecast scenario is
+      // scaled once by its PSA10-price ratio; supply risk must not be deducted
+      // again when the resulting cap is combined with other limits.
+      const priceRatio = clamp(psa10Price / currentPsa10Price, 0.35, 1.25);
+      const grossPrice = grossCurrent * priceRatio;
+      const deductionAmount = grossPrice * deductionRate / 100;
+      const netPsa10 = grossPrice - deductionAmount - Math.max(0, Number(input.saleExtraCost || 0));
+      const expectedSale = hitRate * netPsa10 + (1 - hitRate) * lowerGradeNet;
+      const breakEvenRaw = expectedSale - fee;
+      const profitCap = expectedSale - fee - targetProfit;
+      const roiCap = (expectedSale - fee * (1 + requiredRoi)) / (1 + requiredRoi);
+      return {
+        key,
+        label,
+        psa10Price: Math.round(psa10Price),
+        priceRatio,
+        grossPrice: Math.round(grossPrice),
+        deductionRate,
+        deductionAmount: Math.round(deductionAmount),
+        netPsa10: Math.round(netPsa10),
+        lowerGradeNet: Math.round(lowerGradeNet),
+        hitRate,
+        expectedSale: Math.round(expectedSale),
+        breakEvenMaxPrice: floorPrice(breakEvenRaw),
+        targetMaxPrice: floorPrice(Math.min(profitCap, roiCap)),
+        targetProfit,
+        requiredRoiPct: requiredRoi * 100,
+        lockDays: Math.max(0, Number(input.lockDays || 0)),
+      };
+    };
+    const scenarios = {
+      current: buildScenario("current", "現在PSA10相場", currentPsa10Price),
+      central: buildScenario("central", "中央予測PSA10価格", centralPsa10Price),
+      stress: buildScenario("stress", "供給ストレスPSA10価格", stressPsa10Price || centralPsa10Price),
+    };
+    const legacyScenario = scenarios.stress || scenarios.central || scenarios.current;
     const observedDays = Math.max(0, ...trusted.map((row) => Number(row.observed30 || 0)));
     const continuityValues = trusted
       .map((row) => Number(row.observed30) > 0 ? Number(row.c30 || 0) / Number(row.observed30) : null)
@@ -539,15 +600,16 @@
       reason: "",
       storeCount: trusted.length,
       grossCurrent: Math.round(grossCurrent),
-      grossForecast: Math.round(grossForecast),
-      forecastRatio,
+      grossForecast: legacyScenario?.grossPrice ?? null,
+      forecastRatio: legacyScenario?.priceRatio ?? null,
       deductionRate,
-      deductionAmount: Math.round(deductionAmount),
-      netForecast: Math.round(netForecast),
+      deductionAmount: legacyScenario?.deductionAmount ?? null,
+      netForecast: legacyScenario?.netPsa10 ?? null,
       lowerGradeNet: Math.round(lowerGradeNet),
-      expectedSale: Math.round(expectedSale),
-      breakEvenMaxPrice: floorPrice(breakEvenRaw),
-      targetMaxPrice: floorPrice(Math.min(profitCap, roiCap)),
+      expectedSale: legacyScenario?.expectedSale ?? null,
+      breakEvenMaxPrice: legacyScenario?.breakEvenMaxPrice ?? null,
+      targetMaxPrice: legacyScenario?.targetMaxPrice ?? null,
+      scenarios,
       continuity30,
       observedDays,
       confidence: trusted.length >= 3 && observedDays >= 7 && continuity30 != null ? "高" : "中",
@@ -559,30 +621,53 @@
 
   function exitPolicyCaps(input = {}) {
     const requestedPolicy = ["buyback", "marketplace", "both"].includes(input.policy) ? input.policy : "buyback";
-    const marketplaceTargetCap = Math.max(0, Number(input.marketplaceTargetCap || 0));
-    const marketplaceBreakEvenCap = Math.max(0, Number(input.marketplaceBreakEvenCap || 0));
+    const marketplaceCurrentBreakEvenCap = Math.max(0, Number(input.marketplaceCurrentBreakEvenCap ?? input.marketplaceBreakEvenCap ?? 0));
+    const marketplaceCentralTargetCap = Math.max(0, Number(input.marketplaceCentralTargetCap ?? input.marketplaceTargetCap ?? 0));
+    const marketplaceStressBreakEvenCap = Math.max(0, Number(input.marketplaceStressBreakEvenCap ?? input.marketplaceBreakEvenCap ?? 0));
     const buyback = input.buyback || {};
-    const buybackTargetCap = buyback.usable ? Math.max(0, Number(buyback.targetMaxPrice || 0)) : null;
-    const buybackBreakEvenCap = buyback.usable ? Math.max(0, Number(buyback.breakEvenMaxPrice || 0)) : null;
-    const bothSafeCap = buyback.usable
-      ? Math.min(marketplaceBreakEvenCap, buybackBreakEvenCap)
-      : null;
-    if (requestedPolicy === "buyback" && buyback.usable) {
-      return { requestedPolicy, adoptedPolicy: "buyback", label: "買取店優先", targetCap: buybackTargetCap, breakEvenCap: buybackBreakEvenCap, marketplaceTargetCap, marketplaceBreakEvenCap, buybackTargetCap, buybackBreakEvenCap, bothSafeCap, dataShortage: false };
-    }
-    if (requestedPolicy === "both" && buyback.usable) {
-      return { requestedPolicy, adoptedPolicy: "both", label: "両方で赤字回避", targetCap: bothSafeCap, breakEvenCap: bothSafeCap, marketplaceTargetCap, marketplaceBreakEvenCap, buybackTargetCap, buybackBreakEvenCap, bothSafeCap, dataShortage: false };
-    }
+    const buybackCurrentBreakEvenCap = buyback.usable ? Math.max(0, Number(buyback.scenarios?.current?.breakEvenMaxPrice || 0)) : null;
+    const buybackCentralTargetCap = buyback.usable ? Math.max(0, Number(buyback.scenarios?.central?.targetMaxPrice || 0)) : null;
+    const buybackStressBreakEvenCap = buyback.usable ? Math.max(0, Number(buyback.scenarios?.stress?.breakEvenMaxPrice || 0)) : null;
+    const choose = (marketplaceCap, buybackCap) => requestedPolicy === "buyback" && buyback.usable
+      ? buybackCap
+      : requestedPolicy === "both" && buyback.usable
+        ? Math.min(marketplaceCap, buybackCap)
+        : marketplaceCap;
+    const adoptedPolicy = requestedPolicy === "buyback" && buyback.usable
+      ? "buyback"
+      : requestedPolicy === "both" && buyback.usable
+        ? "both"
+        : "marketplace";
+    const label = adoptedPolicy === "buyback"
+      ? "買取店優先"
+      : adoptedPolicy === "both"
+        ? "両方で赤字回避"
+        : requestedPolicy === "marketplace" ? "フリマ優先" : "フリマ基準（買取データ不足）";
+    const currentBreakEvenCap = choose(marketplaceCurrentBreakEvenCap, buybackCurrentBreakEvenCap);
+    const centralTargetCap = choose(marketplaceCentralTargetCap, buybackCentralTargetCap);
+    const stressBreakEvenCap = choose(marketplaceStressBreakEvenCap, buybackStressBreakEvenCap);
+    const bothSafeCap = buyback.usable ? Math.min(marketplaceStressBreakEvenCap, buybackStressBreakEvenCap) : null;
     return {
       requestedPolicy,
-      adoptedPolicy: "marketplace",
-      label: requestedPolicy === "marketplace" ? "フリマ優先" : "フリマ基準（買取データ不足）",
-      targetCap: marketplaceTargetCap,
-      breakEvenCap: marketplaceBreakEvenCap,
-      marketplaceTargetCap,
-      marketplaceBreakEvenCap,
-      buybackTargetCap,
-      buybackBreakEvenCap,
+      adoptedPolicy,
+      label,
+      currentBreakEvenCap,
+      centralTargetCap,
+      stressBreakEvenCap,
+      // Backward-compatible aliases. targetCap is always the central scenario;
+      // breakEvenCap is always the supply-stress scenario.
+      targetCap: centralTargetCap,
+      breakEvenCap: stressBreakEvenCap,
+      marketplaceCurrentBreakEvenCap,
+      marketplaceCentralTargetCap,
+      marketplaceStressBreakEvenCap,
+      marketplaceTargetCap: marketplaceCentralTargetCap,
+      marketplaceBreakEvenCap: marketplaceStressBreakEvenCap,
+      buybackCurrentBreakEvenCap,
+      buybackCentralTargetCap,
+      buybackStressBreakEvenCap,
+      buybackTargetCap: buybackCentralTargetCap,
+      buybackBreakEvenCap: buybackStressBreakEvenCap,
       bothSafeCap,
       dataShortage: requestedPolicy !== "marketplace" && !buyback.usable,
       reason: buyback.reason || "",
@@ -936,5 +1021,5 @@
     };
   }
 
-  return { aggressivePurchaseZone, aggregatePrices, bargainDecisionEligible, buybackExitProfit, conservativeBuybackExit, economicsFromExpectedSale, exitPolicyCaps, shouldIncludeVerdict, capRoundingStep, capitalLimits, capitalPlan, economicsScenarioMatrix, expectedEconomics, gradeAssumptions, isSuspectedCardMismatch, matchConfidenceLabel, maxBuyPrice, median, operationalCap, operationalCapConcentration, portfolioPlan, portfolioStress, purchaseAvailability, purchaseCaps, purchaseDecision, purchaseLimitMarketRatio, resilienceMetrics, resolvePsa9Price, targetProfitMaxBuyPrice, weightedMedian };
+  return { MODEL_VERSION, aggressivePurchaseZone, aggregatePrices, bargainDecisionEligible, buybackExitProfit, conservativeBuybackExit, economicsFromExpectedSale, exitPolicyCaps, shouldIncludeVerdict, capRoundingStep, capitalLimits, capitalPlan, economicsScenarioMatrix, expectedEconomics, gradeAssumptions, isSuspectedCardMismatch, matchConfidenceLabel, maxBuyPrice, median, operationalCap, operationalCapConcentration, portfolioPlan, portfolioStress, purchaseAvailability, purchaseCaps, purchaseDecision, purchaseLimitMarketRatio, resilienceMetrics, resolvePsa9Price, targetProfitMaxBuyPrice, weightedMedian };
 });

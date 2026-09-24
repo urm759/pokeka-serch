@@ -1,0 +1,23 @@
+{
+  "version": "purchase-decision-v4-buyback-scenarios",
+  "activatedAt": "2026-09-21",
+  "updateType": "explicit-model-update",
+  "dailyDataUpdatesMayChangeFormula": false,
+  "limits": {
+    "currentBreakEven": "current PSA10 exit scenario, expected profit = 0",
+    "centralTarget": "central forecast exit scenario, target profit and ROI",
+    "stressBreakEven": "supply stress exit scenario, expected profit = 0",
+    "finalTheoretical": "min(centralTarget, stressBreakEven, capital)",
+    "operational": "existing smoothing applied to finalTheoretical"
+  },
+  "buybackScenarios": [
+    "current",
+    "central",
+    "stress"
+  ],
+  "safety": {
+    "supplyRiskDiscountApplications": 1,
+    "unexplainedDailyLimitChangeQuarantinePct": 25,
+    "preservePreviousNormalValue": true
+  }
+}

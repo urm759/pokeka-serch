@@ -1397,3 +1397,31 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .snkr-raw-only-links {
   margin-top: 12px;
 }
+.search-diagnostic,
+.search-diagnostic-card {
+  display: flex;
+  gap: .55rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: .75rem 0;
+  padding: .75rem 1rem;
+  border: 1px solid #e2a63b;
+  border-radius: 14px;
+  background: #fff5dc;
+  color: #53370a;
+}
+
+.limit-model-audit-panel { margin: 1rem 0; padding: 0; }
+.limit-model-audit-panel > summary { cursor: pointer; padding: 1rem 1.2rem; font-weight: 800; }
+.limit-model-audit-panel > div { padding: 0 1rem 1rem; }
+.limit-audit-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .55rem; margin-bottom: .75rem; }
+.limit-audit-summary span { display: grid; gap: .2rem; padding: .65rem; border-radius: 10px; background: #f4f7fb; }
+.limit-audit-summary b { color: #466078; font-size: .75rem; }
+.limit-audit-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+
+.search-diagnostic[hidden] { display: none; }
+
+.search-diagnostic-card {
+  margin: 0 0 .8rem;
+  background: #fff9eb;
+}

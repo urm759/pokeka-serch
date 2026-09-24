@@ -10,6 +10,7 @@ const CHECKPOINT_PATH = path.join(__dirname, "snkr-raw-flip-checkpoint.json");
 const COMPLETION_PATH = path.join(ROOT, "data", "card-catalog-completion.json");
 const BUYBACK_PATH = path.join(ROOT, "data", "shop-buyback-summary.json");
 const LIMIT = Math.max(1, Number(process.argv.find((value) => value.startsWith("--limit="))?.split("=")[1] || process.env.SNKR_RAW_LIMIT || 40));
+const TARGET_IDS = new Set(String(process.argv.find((value) => value.startsWith("--ids="))?.slice(6) || "").split(",").map((value) => value.trim()).filter(Boolean));
 const DELAY_MS = Math.max(100, Number(process.env.SNKR_RAW_DELAY_MS || 350));
 const MAX_RUNTIME_MS = Math.max(30000, Number(process.env.SNKR_RAW_MAX_RUNTIME_MS || 8 * 60 * 1000));
 const MAX_AGE_HOURS = Math.max(1, Number(process.env.SNKR_RAW_REFRESH_HOURS || 22));
@@ -190,11 +191,12 @@ async function main() {
   const now = new Date();
   const eligible = cards.filter((card) => productId(card.snkUrl));
   const stale = eligible.filter((card) => {
+    if (TARGET_IDS.size) return TARGET_IDS.has(String(card.id));
     const fetched = Date.parse(previous.cards?.[card.id]?.fetchedAt || "");
     return !Number.isFinite(fetched) || (now.getTime() - fetched) / 3600000 >= MAX_AGE_HOURS;
   });
   stale.sort((a, b) => priority(b, completion, previous.cards?.[b.id], buyback.cards) - priority(a, completion, previous.cards?.[a.id], buyback.cards));
-  const queue = stale.slice(0, LIMIT);
+  const queue = stale.slice(0, TARGET_IDS.size ? Math.max(LIMIT, TARGET_IDS.size) : LIMIT);
   let succeeded = 0;
   let failed = 0;
   let rejected = 0;
