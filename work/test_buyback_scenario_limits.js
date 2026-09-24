@@ -112,7 +112,24 @@ const catalog = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "data", "p
 const completion = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "data", "card-catalog-completion.json"), "utf8"));
 assert(Number(completion.summary.listingRatePct) <= 100, "掲載率が100%を超えない");
 assert.equal(Number(completion.summary.siteTotal), catalog.length, "カタログ件数と掲載集計が一致");
-const yearTotal = Object.values(completion.releaseYearCounts || {}).reduce((sum, value) => sum + Number(value || 0), 0);
-if (yearTotal > 0) assert(yearTotal <= catalog.length, "年別掲載数がカタログを超えない");
+assert.equal(completion.summary.sourceMatched + completion.summary.unlisted, completion.summary.sourceTotal, "掲載率の分子と未掲載の合計が取得元総数に一致");
+const yearTotal = Object.values(completion.summary.releaseYearCounts || {}).reduce((sum, value) => sum + Number(value || 0), 0);
+assert.equal(yearTotal, catalog.length, "年別掲載数と発売年不明数の合計がカタログに一致");
+
+const audit = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "data", "purchase-limit-model-audit.json"), "utf8"));
+assert.equal(audit.modelVersion, model.MODEL_VERSION, "公開監査JSONのモデル番号が実装と一致");
+assert.equal(audit.scope, "分析可能カード・同一最新データで旧式と新式を再計算");
+assert.equal(audit.analyzedCards, audit.rows.length, "監査対象件数と行数が一致");
+assert.equal(audit.changedLimits, audit.rows.filter((row) => row.oldLimit !== row.newLimit).length);
+assert.equal(audit.changedVerdicts, audit.rows.filter((row) => row.oldVerdict !== row.newVerdict).length);
+assert.equal(Object.values(audit.verdictChanges).reduce((sum, value) => sum + value, 0), audit.changedVerdicts);
+assert(audit.rows.every((row) => Number.isFinite(row.oldLimit) && Number.isFinite(row.newLimit)
+  && Number.isFinite(row.newOperationalLimit) && row.oldLimit >= 0 && row.newLimit >= 0
+  && row.difference === row.newLimit - row.oldLimit), "全行で上限差額が一致");
+assert(audit.rows.every((row) => row.oldLimitingFactor && row.newLimitingFactor && row.operationalLimitingFactor), "理論と運用の制限要因が記録される");
+assert(audit.rows.every((row, index) => index === 0
+  || Math.abs(audit.rows[index - 1].changeRatePct) >= Math.abs(row.changeRatePct)), "変化率の大きい順に並ぶ");
+assert.equal(audit.settings.exitPolicy, "buyback", "買取店優先条件で監査");
+assert(!app.includes("/__save_audit"), "一時監査サーバーへの送信処理を公開しない");
 
 console.log(JSON.stringify({ modelVersion: model.MODEL_VERSION, buybackScenarios: exit.scenarios, policy, finalCap: caps.finalMaxPrice }, null, 2));

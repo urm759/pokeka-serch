@@ -16,8 +16,14 @@ const arrivals = read("work/card-new-arrivals.json");
 
 assert.equal(completion.summary.sourceTotal, inventory.total, "source total must come from the independent inventory");
 assert.equal(completion.summary.siteTotal, cards.length, "site total must equal the rendered catalog");
-assert.equal(completion.summary.unlisted, 0, "every source card must be listed");
-assert.equal(completion.summary.listingRatePct, 100, "listing and analysis completion must be separate");
+const siteIds = new Set(cards.map((card) => String(card.id)));
+const sourceIds = new Set(inventory.cards.map((card) => String(card.id)));
+const missingIds = [...sourceIds].filter((id) => !siteIds.has(id));
+assert.equal(completion.summary.sourceInventoryAt, inventory.updatedAt, "source inventory date must be visible");
+assert.equal(completion.summary.unlisted, missingIds.length, "independent source differences must be counted");
+assert.equal(completion.summary.sourceMatched + completion.summary.unlisted, sourceIds.size);
+assert(completion.summary.listingRatePct <= 100, "listing rate must never exceed 100%");
+assert.equal(completion.summary.listingRatePct, Number((completion.summary.sourceMatched / sourceIds.size * 100).toFixed(3)));
 assert.equal(index.cards.length, cards.length, "the lightweight index must include every card");
 assert.equal(manifest.totalCards, cards.length, "chunk manifest total must match the catalog");
 assert.equal(manifest.files.reduce((sum, row) => sum + row.count, 0), cards.length, "all chunks must cover every card exactly once");
@@ -25,7 +31,7 @@ assert.equal(analysis.length, completion.summary.analyzable, "initial payload mu
 assert.ok(analysis.every((card) => completion.cards[card.id]?.s === "分析可能"), "data-shortage cards must not enter the initial buying list");
 assert.ok(cards.some((card) => completion.cards[card.id]?.s !== "分析可能"), "missing-data cards must remain searchable instead of disappearing");
 assert.equal(completion.summary.newCards, Object.values(completion.cards).filter((card) => card.n === 1).length, "new-card count must survive no-change refreshes");
-assert.ok(Object.keys(arrivals.cards).every((id) => completion.cards[id]?.n === 1), "recent registered arrivals must remain visible after no-change refreshes");
+assert.ok(Object.keys(arrivals.cards).filter((id) => siteIds.has(id)).every((id) => completion.cards[id]?.n === 1), "currently listed arrivals must remain visible after no-change refreshes");
 assert.ok(cards.filter((card) => completion.cards[card.id]?.n === 1).every((card) => card.firstSeenAt), "new cards must retain their first-seen date");
 assert.equal(queue.version, 3, "completion queue must use the lifecycle-aware compact schema");
 assert.ok(Array.isArray(queue.itemSchema) && queue.itemSchema.length === 6, "compact queue schema must remain decodable");

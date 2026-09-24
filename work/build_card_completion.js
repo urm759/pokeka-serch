@@ -100,6 +100,7 @@ function main() {
   const siteIds = new Set(cards.map((card) => String(card.id)));
   const inventoryIds = new Set((inventory.cards || []).map((card) => String(card.id)));
   const sourceMissing = [...inventoryIds].filter((id) => !siteIds.has(id));
+  const retainedOnly = [...siteIds].filter((id) => !inventoryIds.has(id));
   const firstSeenCounts = cards.reduce((counts, card) => {
     const value = String(card.firstSeenAt || "").slice(0, 10);
     if (value) counts[value] = (counts[value] || 0) + 1;
@@ -128,6 +129,7 @@ function main() {
     dataShortage: 0, reviewRequired: 0, completableAfterNext: 0,
     releaseDateKnown: 0, releaseYearOnly: 0, releaseUnknown: 0,
     releaseSourceCounts: {},
+    releaseYearCounts: {},
     siteNewRetentionDays: NEW_DAYS, recentReleaseDays: RECENT_RELEASE_DAYS,
   };
   const itemTotals = {};
@@ -312,6 +314,8 @@ function main() {
     if (release.precision === "date") summary.releaseDateKnown += 1;
     else if (release.precision === "year") summary.releaseYearOnly += 1;
     else summary.releaseUnknown += 1;
+    const yearKey = release.year ? String(release.year) : "不明";
+    summary.releaseYearCounts[yearKey] = (summary.releaseYearCounts[yearKey] || 0) + 1;
     summary.releaseSourceCounts[release.source] = (summary.releaseSourceCounts[release.source] || 0) + 1;
     for (const [key, entry] of Object.entries(entries)) {
       itemTotals[key] ||= { total: 0, acquired: 0, pending: 0, noData: 0, failed: 0 };
@@ -326,9 +330,12 @@ function main() {
   for (const value of Object.values(itemTotals)) value.acquiredPct = Number((value.acquired / Math.max(1, value.total) * 100).toFixed(1));
   const queue = queueRows.sort((a, b) => b.priority - a.priority || a.name.localeCompare(b.name, "ja"));
   summary.sourceTotal = sourceTotal;
+  summary.sourceInventoryAt = inventory.updatedAt || null;
   summary.siteTotal = cards.length;
   summary.unlisted = sourceMissing.length;
-  summary.listingRatePct = sourceTotal ? Number((cards.length / sourceTotal * 100).toFixed(3)) : null;
+  summary.sourceMatched = inventoryIds.size - sourceMissing.length;
+  summary.retainedOnly = retainedOnly.length;
+  summary.listingRatePct = inventoryIds.size ? Number((summary.sourceMatched / inventoryIds.size * 100).toFixed(3)) : null;
   summary.analysisCompletionPct = cards.length ? Number((summary.analyzable / cards.length * 100).toFixed(1)) : null;
   summary.priorityQueueRemaining = queue.filter((row) => row.classification !== "分析可能").length;
   summary.addedThisRun = addedIds.size;

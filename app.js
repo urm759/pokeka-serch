@@ -3296,23 +3296,54 @@ function buildLimitModelAudit(cards) {
           ? Number(scenario.exitPolicy.bothSafeCap)
           : Number(scenario.marketplaceEconomicMaxPrice || 0);
       const stressCap = Number(scenario.stressBreakEvenMaxPrice || 0);
-      const capitalCap = Number(scenario.capitalMaxPrice || 0);
-      const oldTheoretical = Math.max(0, Math.min(oldNormal, stressCap, capitalCap));
-      const historyOld = scenario.operationalLimit?.modelUpdate && Number(scenario.previousOperationalMaxPrice) >= 0
-        ? Number(scenario.previousOperationalMaxPrice)
-        : null;
-      const oldLimit = historyOld ?? oldTheoretical;
-      const newLimit = Number(scenario.finalMaxPrice || 0);
+      const oldCaps = decisionModel.purchaseCaps({
+        capital: card.buyLimits.capital,
+        economicMaxPrice: oldNormal,
+        stressBreakEvenMaxPrice: stressCap,
+        ultraLowRiskMaxPrice: scenario.ultraLowRiskMaxPrice,
+        lowRiskMode: state.purchaseMode === "low-risk",
+        maxCapitalShare: state.maxCapitalShare,
+      });
+      const oldLimit = floorToStep(oldCaps.finalMaxPrice, decisionModel.capRoundingStep(oldCaps.finalMaxPrice));
+      const newLimit = Number(scenario.theoreticalFinalMaxPrice || 0);
+      const operationalLimit = Number(scenario.finalMaxPrice || 0);
       const difference = newLimit - oldLimit;
       const changeRate = oldLimit > 0 ? difference / oldLimit * 100 : newLimit > 0 ? 100 : 0;
-      const oldFactor = historyOld != null && historyOld < oldTheoretical
-        ? "operational"
-        : capitalCap <= Math.min(oldNormal, stressCap) ? "capital" : stressCap < oldNormal ? "stress-break-even" : "normal-economics";
+      const riskReasons = [];
+      if (Number(card.overallAssessment?.exitLiquidity || 0) < 30) riskReasons.push("売却しやすさ30点未満");
+      const managedDowntrend = card.futurePriceForecast?.demandSupplyClass === "高需要／供給多"
+        && Number(card.supplyStress?.price) > 0 && stressCap > 0;
+      if (Number(card.overallAssessment?.marketStability || 0) < 30 && !managedDowntrend) riskReasons.push("価格安定性30点未満");
+      if (Number(card.overallAssessment?.supplyRisk || 0) < 30) riskReasons.push("供給リスク耐性30点未満");
+      if (Number(card.overallAssessment?.futurePrice || 0) < 30) riskReasons.push("将来価格評価30点未満");
+      const buybackAdopted = scenario.exitPolicy?.adoptedPolicy === "buyback" && scenario.buybackExit?.usable;
       const purchasePrice = Number(card.currentStoreOffer?.value || card.price || 0);
-      const oldVerdict = card.dataQuality?.manualReview
-        ? "要確認"
-        : oldLimit <= 0 ? "見送り" : purchasePrice <= oldLimit ? "GO" : "価格次第";
-      const newVerdict = String(card.purchaseDecision?.verdict || "未判定");
+      const oldEconomics = buybackAdopted
+        ? decisionModel.economicsFromExpectedSale({ purchasePrice, fee: state.fee, expectedSale: scenario.buybackExit.scenarios.stress.expectedSale, lockDays: state.lockDays })
+        : (card.currentStoreOffer ? scenario.economicsScenarios?.storeOffer?.centralForecast : scenario.economicsScenarios?.currentPurchase?.centralForecast);
+      const newEconomics = buybackAdopted
+        ? decisionModel.economicsFromExpectedSale({ purchasePrice, fee: state.fee, expectedSale: scenario.buybackExit.scenarios.central.expectedSale, lockDays: state.lockDays })
+        : oldEconomics;
+      const commonDecisionInput = {
+        capital: card.buyLimits.capital,
+        stressBreakEvenMaxPrice: stressCap,
+        ultraLowRiskMaxPrice: scenario.ultraLowRiskMaxPrice,
+        lowRiskMode: state.purchaseMode === "low-risk",
+        qualityScore: card.overallAssessment?.score,
+        requiresManualReview: card.dataQuality?.manualReview,
+        manualReviewReasons: card.dataQuality?.manualReviewReasons,
+        dataShortageReasons: card.dataQuality?.dataShortageReasons,
+        riskEligible: riskReasons.length === 0,
+        riskReasons,
+        minExpectedProfit: state.minExpectedProfit,
+        minExpectedRoi: state.minExpectedRoi,
+        minAnnualEfficiency: state.minAnnualEfficiency,
+        maxCapitalShare: state.maxCapitalShare,
+      };
+      const oldDecision = oldEconomics && decisionModel.purchaseDecision({ ...commonDecisionInput, economics: oldEconomics, economicMaxPrice: oldNormal, operationalMaxPrice: oldLimit });
+      const newDecision = newEconomics && decisionModel.purchaseDecision({ ...commonDecisionInput, economics: newEconomics, economicMaxPrice: scenario.economicMaxPrice, operationalMaxPrice: newLimit });
+      const oldVerdict = String(oldDecision?.verdict || "未判定");
+      const newVerdict = String(newDecision?.verdict || "未判定");
       const adoptedBuyback = scenario.exitPolicy?.adoptedPolicy === "buyback" && scenario.buybackEconomics;
       const centralEconomics = adoptedBuyback
         ? scenario.buybackEconomics.operationalLimit?.centralForecast
@@ -3323,10 +3354,10 @@ function buildLimitModelAudit(cards) {
       const lowerGradeNet = Number(scenario.modelInput?.assumptions?.lowerGradePrice || 0)
         * Math.max(0, 1 - Number(state.saleFeeRate || 0) / 100)
         - Number(state.saleExtraCost || 0);
-      const psa9Profit = lowerGradeNet - newLimit - Number(state.fee || 0);
+      const psa9Profit = lowerGradeNet - operationalLimit - Number(state.fee || 0);
       const reasons = [];
-      if (difference !== 0) reasons.push("買取店出口を中央予測と供給ストレスへ分離");
-      if (scenario.limitingFactor === "operational") reasons.push(scenario.operationalLimit?.reason || "平滑化");
+      if (difference !== 0) reasons.push("同一データで買取店出口を中央予測と供給ストレスへ分離");
+      if (operationalLimit !== newLimit) reasons.push(scenario.operationalLimit?.reason || "平滑化");
       if (oldVerdict !== newVerdict) reasons.push(`判定 ${oldVerdict}→${newVerdict}`);
       if (!reasons.length) reasons.push("上限・判定とも変更なし");
       return {
@@ -3334,15 +3365,18 @@ function buildLimitModelAudit(cards) {
         cardName: card.name,
         oldLimit,
         newLimit,
+        newOperationalLimit: operationalLimit,
         difference,
         changeRatePct: changeRate,
-        oldLimitingFactor: factorLabel(oldFactor),
-        newLimitingFactor: factorLabel(scenario.limitingFactor),
+        oldLimitingFactor: factorLabel(oldCaps.limitingFactor),
+        newLimitingFactor: factorLabel(scenario.baseLimitingFactor || scenario.limitingFactor),
+        operationalLimitingFactor: factorLabel(scenario.limitingFactor),
         centralExpectedProfit: Number.isFinite(centralEconomics?.expectedProfit) ? Math.round(centralEconomics.expectedProfit) : null,
         supplyStressExpectedProfit: Number.isFinite(stressEconomics?.expectedProfit) ? Math.round(stressEconomics.expectedProfit) : null,
         psa9Profit: Number.isFinite(psa9Profit) ? Math.round(psa9Profit) : null,
         oldVerdict,
         newVerdict,
+        currentDisplayedVerdict: String(card.purchaseDecision?.verdict || "未判定"),
         decisionChangeReason: reasons.join(" / "),
       };
     })
@@ -3355,7 +3389,20 @@ function buildLimitModelAudit(cards) {
   return {
     generatedAt: new Date().toISOString(),
     modelVersion: decisionModel.MODEL_VERSION,
-    scope: "分析可能カード・共通計算経路",
+    scope: "分析可能カード・同一最新データで旧式と新式を再計算",
+    settings: {
+      exitPolicy: state.exitPolicy,
+      fee: state.fee,
+      saleFeeRate: state.saleFeeRate,
+      buybackDeductionRate: state.buybackDeductionRate,
+      minExpectedProfit: state.minExpectedProfit,
+      minExpectedRoi: state.minExpectedRoi,
+      minAnnualEfficiency: state.minAnnualEfficiency,
+      lockDays: state.lockDays,
+      capital: state.psaCapital,
+      maxCapitalShare: state.maxCapitalShare,
+      purchaseMode: state.purchaseMode,
+    },
     analyzedCards: rows.length,
     changedLimits: rows.filter((row) => row.difference !== 0).length,
     changedVerdicts: rows.filter((row) => row.oldVerdict !== row.newVerdict).length,
@@ -3372,8 +3419,8 @@ function renderLimitModelAudit(audit) {
     <script id="limitAuditJson" type="application/json">${JSON.stringify(audit).replace(/<\/script/gi, "<\\/script")}</script>
     <div class="limit-audit-summary"><span><b>モデル</b>${escapeHtml(audit.modelVersion)}</span><span><b>監査対象</b>${fmt.format(audit.analyzedCards)}枚</span><span><b>上限変更</b>${fmt.format(audit.changedLimits)}枚</span><span><b>判定変更</b>${fmt.format(audit.changedVerdicts)}枚</span><span><b>判定内訳</b>${escapeHtml(Object.entries(audit.verdictChanges).map(([key, value]) => `${key} ${value}件`).join(" / ") || "変更なし")}</span></div>
     <div class="limit-audit-actions"><button id="downloadLimitAudit" type="button" class="secondary-button">全件監査JSONを保存</button><a class="secondary-button" href="./data/purchase-limit-model-audit.json" target="_blank" rel="noreferrer">公開監査JSONを開く</a></div>
-    <div class="backtest-table-wrap"><table class="backtest-table compact"><thead><tr><th>カード</th><th>旧→新上限</th><th>変化</th><th>旧→新制限要因</th><th>中央／ストレス／PSA9損益</th><th>判定・理由</th></tr></thead><tbody>${rows.map((row) => `<tr><th>${escapeHtml(row.cardName)}</th><td>¥${fmt.format(row.oldLimit)} → ¥${fmt.format(row.newLimit)}</td><td>${signed(row.difference)}<small>${row.changeRatePct >= 0 ? "+" : ""}${row.changeRatePct.toFixed(1)}%</small></td><td>${escapeHtml(row.oldLimitingFactor)} → ${escapeHtml(row.newLimitingFactor)}</td><td>${signed(row.centralExpectedProfit)} / ${signed(row.supplyStressExpectedProfit)} / ${signed(row.psa9Profit)}</td><td>${escapeHtml(row.oldVerdict)} → ${escapeHtml(row.newVerdict)}<small>${escapeHtml(row.decisionChangeReason)}</small></td></tr>`).join("")}</tbody></table></div>
-    <small>旧上限は旧共通式（買取店優先時に供給ストレス買取出口を通常上限にも使用）を再現。新上限は中央予測目標利益・供給ストレス損益分岐・資金上限の最小値へ平滑化を適用しています。表示は変化率上位60件、JSONは全件です。</small>`;
+    <div class="backtest-table-wrap"><table class="backtest-table compact"><thead><tr><th>カード</th><th>旧→新理論上限 / 運用上限</th><th>理論差</th><th>旧→新制限要因</th><th>中央／ストレス／PSA9損益</th><th>判定・理由</th></tr></thead><tbody>${rows.map((row) => `<tr><th>${escapeHtml(row.cardName)}</th><td>¥${fmt.format(row.oldLimit)} → ¥${fmt.format(row.newLimit)}<small>運用 ¥${fmt.format(row.newOperationalLimit)}</small></td><td>${signed(row.difference)}<small>${row.changeRatePct >= 0 ? "+" : ""}${row.changeRatePct.toFixed(1)}%</small></td><td>${escapeHtml(row.oldLimitingFactor)} → ${escapeHtml(row.newLimitingFactor)}</td><td>${signed(row.centralExpectedProfit)} / ${signed(row.supplyStressExpectedProfit)} / ${signed(row.psa9Profit)}</td><td>${escapeHtml(row.oldVerdict)} → ${escapeHtml(row.newVerdict)}<small>${escapeHtml(row.decisionChangeReason)}</small></td></tr>`).join("")}</tbody></table></div>
+    <small>旧・新理論上限は同じ最新データと設定で計算式だけを比較した参考値です。運用上限はブラウザの保存履歴による平滑化を含みます。判定変更も理論上限での再評価です。損益は運用上限で購入した場合。表示は変化率上位60件、JSONは全件です。</small>`;
   document.getElementById("downloadLimitAudit")?.addEventListener("click", () => {
     const blob = new Blob([JSON.stringify(audit, null, 2)], { type: "application/json" });
     const link = document.createElement("a");
@@ -3594,7 +3641,7 @@ function render() {
   els.totalStat.textContent = fmt.format(state.catalogCompletion?.summary?.siteTotal || state.cards.length);
   if (els.catalogCoverageSummary && state.catalogCompletion?.summary) {
     const summary = state.catalogCompletion.summary;
-    els.catalogCoverageSummary.textContent = `全カード掲載 ${fmt.format(summary.siteTotal)} / ${fmt.format(summary.sourceTotal)}枚（${Number(summary.listingRatePct || 0).toFixed(1)}%）・分析可能 ${fmt.format(summary.analyzable)}枚（うち一部不足 ${fmt.format(summary.analyzablePartial || 0)}枚）・補完優先キュー ${fmt.format(summary.priorityQueueRemaining)}枚`;
+    els.catalogCoverageSummary.textContent = `みんトレ掲載 ${fmt.format(summary.sourceMatched ?? Math.max(0, summary.sourceTotal - summary.unlisted))} / ${fmt.format(summary.sourceTotal)}枚（${Number(summary.listingRatePct || 0).toFixed(1)}%）・サイト保持総数 ${fmt.format(summary.siteTotal)}枚・分析可能 ${fmt.format(summary.analyzable)}枚・補完優先キュー ${fmt.format(summary.priorityQueueRemaining)}枚`;
   }
   if (els.catalogCompletionDetails && state.catalogCompletion?.summary) {
     const summary = state.catalogCompletion.summary;
@@ -3610,6 +3657,10 @@ function render() {
     els.catalogCompletionDetails.innerHTML = `<div class="catalog-summary-grid"><span><b>みんトレ取得総数</b><strong>${fmt.format(summary.sourceTotal)}</strong></span><span><b>サイト掲載総数</b><strong>${fmt.format(summary.siteTotal)}</strong></span><span><b>未掲載</b><strong>${fmt.format(summary.unlisted)}</strong></span><span><b>今回追加 / サイト新着</b><strong>${fmt.format(summary.addedThisRun)} / ${fmt.format(summary.siteNewCards ?? summary.newCards)}</strong><small>新着保持 ${fmt.format(summary.siteNewRetentionDays || 30)}日</small></span><span><b>最近発売 / 再掲載</b><strong>${fmt.format(summary.recentReleaseCards || 0)} / ${fmt.format(summary.relistedCards || 0)}</strong><small>最近発売は発売日から${fmt.format(summary.recentReleaseDays || 365)}日</small></span><span><b>発売日 / 年のみ / 不明</b><strong>${fmt.format(summary.releaseDateKnown || 0)} / ${fmt.format(summary.releaseYearOnly || 0)} / ${fmt.format(summary.releaseUnknown || 0)}</strong><small>日付充足 ${Number(summary.releaseDateCompletenessPct || 0).toFixed(1)}%・年含む ${Number(summary.releaseKnownCompletenessPct || 0).toFixed(1)}%</small></span><span><b>完全識別 / 要確認</b><strong>${fmt.format(summary.completeIdentityMatches)} / ${fmt.format(summary.reviewRequired)}</strong></span><span><b>分析可能</b><strong>${fmt.format(summary.analyzable)}</strong><small>完全 ${fmt.format(summary.analyzableComplete || 0)} / 一部参考データ不足 ${fmt.format(summary.analyzablePartial || 0)}</small></span><span><b>データ補完中</b><strong>${fmt.format(summary.completionInProgress)}</strong><small>分析可能カードの参考項目不足も含むため、優先キューより多くなります</small></span><span><b>補完優先キュー</b><strong>${fmt.format(summary.priorityQueueRemaining)}</strong><small>次の1項目で分析可能見込み ${fmt.format(summary.completableAfterNext || 0)}枚</small></span><span><b>PSA9データ区分</b><strong>実成約 ${fmt.format(p9.actual || 0)}</strong><small>集計値 ${fmt.format(p9.aggregate || 0)} / 推定 ${fmt.format(p9.estimate || 0)} / 未取得 ${fmt.format(p9.missing || 0)}</small></span><span><b>PokeDATA対象区分</b><strong>紐付済 ${fmt.format(pokedata.linked || 0)}</strong><small>対応セット未一致 ${fmt.format(pokedata.compatibleUnmatched || 0)} / 未展開 ${fmt.format(pokedata.unexpandedSet || 0)} / 非対応・存在未確認 ${fmt.format(pokedata.unsupportedOrUnconfirmed || 0)}</small></span></div><div class="catalog-item-rates">${rates}</div>`;
   }
   const rawMode = state.purchaseMode === "snkr-raw";
+  if (els.catalogCompletionDetails && state.catalogCompletion?.summary) {
+    const summary = state.catalogCompletion.summary;
+    els.catalogCompletionDetails.insertAdjacentHTML("afterbegin", `<p class="catalog-source-note">掲載率は、みんトレ取得一覧（${escapeHtml(summary.sourceInventoryAt || "取得日不明")}）とのID一致 ${fmt.format(summary.sourceMatched ?? Math.max(0, summary.sourceTotal - summary.unlisted))} / ${fmt.format(summary.sourceTotal)}枚で計算。サイト保持総数にはこの一覧にない保持済み ${fmt.format(summary.retainedOnly || 0)}枚も含みます。取得日が異なる場合、差分は現在の掲載漏れとは限りません。</p>`);
+  }
   document.body.classList.toggle("snkr-raw-active", rawMode);
   els.countStat.textContent = fmt.format(enriched.length);
   const topRoi = enriched.reduce((highest, card) => {

@@ -58,7 +58,7 @@ assert.strictEqual(initialCap.initial, true);
 assert.strictEqual(initialCap.previous, null);
 assert.strictEqual(initialCap.operational, 60000);
 assert.notStrictEqual(initialCap.operational, 50000);
-assert.strictEqual(initialCap.calculationVersion, "operational-cap-v2");
+assert.strictEqual(initialCap.calculationVersion, `operational-cap-v3:${model.MODEL_VERSION}`);
 
 const exact = identity.compareIdentity(
   "ブラッキーVMAX CSR[S8b 245/184]",
