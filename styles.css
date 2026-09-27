@@ -826,11 +826,30 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .card-details[open]>summary::after{content:"−"}
 .card-details>summary small{margin-left:auto;color:var(--muted);font-size:9px;font-weight:600}
 .card-details-body{padding:0 11px 12px}
+.detail-limit-comparison{margin-bottom:10px;padding:10px;border:1px solid rgba(125,211,252,.28);border-radius:14px;background:rgba(6,20,34,.8)}
 .buy-limit-panel{margin-top:14px;padding:14px;border:1px solid rgba(56,217,150,.38);border-radius:19px;background:linear-gradient(135deg,rgba(56,217,150,.12),rgba(125,211,252,.07) 55%,rgba(5,10,20,.58));box-shadow:0 12px 30px rgba(0,0,0,.16)}
 .buy-limit-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
 .buy-limit-head span,.buy-limit-head small{display:block;color:var(--muted);font-size:9px}
 .buy-limit-head strong{display:block;margin-top:2px;font-size:16px}
 .buy-limit-head small{text-align:right;line-height:1.5}
+.limit-comparison{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:8px;margin-top:10px}
+.limit-comparison>div{min-width:0;padding:12px 13px;border-radius:14px}
+.limit-comparison span,.limit-comparison small{display:block;line-height:1.45}
+.limit-comparison span{font-size:11px;font-weight:900}
+.limit-comparison strong{display:block;margin:5px 0;color:#fff;font-size:clamp(25px,3.2vw,37px);line-height:1.08;letter-spacing:-.035em}
+.limit-comparison small{font-size:9px;color:#cbd5e1}
+.limit-current{border:1px solid rgba(125,211,252,.65);background:linear-gradient(135deg,rgba(14,116,144,.43),rgba(5,10,20,.78))}
+.limit-current span{color:#bae6fd}
+.limit-stable{border:1px solid rgba(56,217,150,.55);background:linear-gradient(135deg,rgba(5,97,73,.36),rgba(5,10,20,.78))}
+.limit-stable span,.limit-stable strong{color:#86efac}
+.limit-context{display:flex;flex-wrap:wrap;gap:5px 12px;margin-top:9px;color:#dbeafe;font-size:9px;line-height:1.4}
+.limit-reason{margin-top:7px;color:#e2e8f0;font-size:10px;font-weight:800}
+.limit-warnings{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.limit-warnings span{padding:4px 7px;border:1px solid rgba(251,191,36,.45);border-radius:8px;background:rgba(251,191,36,.11);color:#fde68a;font-size:9px}
+.purchase-summary .purchase-final-limit .limit-comparison{margin-top:0}
+.purchase-summary .purchase-final-limit .limit-comparison strong{font-size:clamp(25px,3.2vw,37px);color:#fff}
+.purchase-summary .purchase-final-limit .limit-stable strong{color:#86efac}
+.purchase-summary .purchase-final-limit .limit-context span{display:inline;color:#dbeafe;font-size:9px}
 .buy-limit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:10px}
 .buy-limit-card{position:relative;overflow:hidden;padding:13px;border:1px solid rgba(255,255,255,.12);border-radius:15px;background:rgba(5,10,20,.62)}
 .buy-limit-card::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:#38d996}
@@ -1118,6 +1137,9 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
   .buy-limit-panel{padding:11px}
   .buy-limit-head{align-items:flex-start;flex-direction:column;gap:3px}
   .buy-limit-head small{text-align:left}
+  .limit-comparison{grid-template-columns:1fr;gap:6px}
+  .limit-comparison>div{padding:10px 11px}
+  .limit-comparison strong,.purchase-summary .purchase-final-limit .limit-comparison strong{font-size:29px}
   .buy-limit-grid{gap:6px}
   .buy-limit-card{padding:11px 8px 10px}
   .buy-limit-card strong{font-size:21px}

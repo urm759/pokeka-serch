@@ -6,14 +6,31 @@ const read = (file) => JSON.parse(fs.readFileSync(path.join(root, file), "utf8")
 
 function makeQueue({ cards, population, buybacks, setDates, setUrls, analysisIds, now }) {
   const setMap = new Map(setUrls.map((entry) => [String(entry.setCode || "").toUpperCase(), entry.url]));
+  const knownPopUrls = new Map();
+  for (const card of cards) {
+    const url = population[card.id]?.u;
+    const setCode = String(card.setCode || "").toUpperCase();
+    if (!setCode || !/^https:\/\/www\.psacard\.com\/pop\/tcg-cards\//.test(String(url || ""))) continue;
+    if (!knownPopUrls.has(setCode)) knownPopUrls.set(setCode, new Set());
+    knownPopUrls.get(setCode).add(url);
+  }
   const today = Date.parse(now);
   const counts = { linked: 0, unlinked: 0, ambiguous: 0, setUrlUnmapped: 0 };
   const rows = [];
   for (const card of cards) {
     if (population[card.id]) { counts.linked++; continue; }
     const setCode = String(card.setCode || "").toUpperCase();
-    const cardNumber = String(card.name || "").match(/\[[^\s\]]+\s+(\d+)\/\d+\]/)?.[1] || null;
-    const ambiguous = Boolean(card.identityReviewRequired || !cardNumber || !setCode);
+    const bracket = String(card.name || "").match(/\[([^\]]+)\]/)?.[1] || "";
+    const cardNumber = bracket.match(/^[^\s\]]+\s+(\d+)(?:\/\d+)?$/)?.[1]
+      || bracket.match(/^(\d+)\/[A-Z0-9-]+$/i)?.[1] || null;
+    const alternatePopUrls = [...(knownPopUrls.get(setCode) || [])];
+    const foreignLanguage = /【(?:中国語版|韓国語版|英語版)】/.test(String(card.name || ""));
+    const ambiguityReason = card.identityReviewRequired ? "カード仕様・絵柄要確認"
+      : foreignLanguage ? "日本語POPと異なる言語"
+        : !cardNumber ? "番号形式未解析"
+          : !setCode ? "セットコード未取得"
+            : alternatePopUrls.length > 1 && !setMap.has(setCode) ? "同一セットコードに複数年のPOP URL" : null;
+    const ambiguous = Boolean(ambiguityReason);
     const url = setMap.get(setCode) || null;
     const status = ambiguous ? "ambiguous" : !url ? "set-url-unmapped" : "unlinked";
     if (status === "ambiguous") counts.ambiguous++;
@@ -30,7 +47,7 @@ function makeQueue({ cards, population, buybacks, setDates, setUrls, analysisIds
       + (recent ? 35 : 0) + (analysis ? 30 : 0)
       + Math.min(30, Number(card.p10tv30 || 0));
     rows.push({ cardId: card.id, name: card.name, setCode, cardNumber,
-      releaseDate, status, sourceSetUrl: url, priority: score,
+      releaseDate, status, ambiguityReason, candidateOfficialUrls: ambiguous ? alternatePopUrls.slice(0, 5) : [], sourceSetUrl: url, priority: score,
       reason: [shopCount ? `買取掲載${shopCount}店・30日${listings30}回` : null,
         recent ? "発売1年以内" : null, analysis ? "分析対象" : null,
         card.p10tv30 ? `PSA10取引30日${card.p10tv30}件` : null].filter(Boolean).join(" / ") || "通常巡回" });
