@@ -35,6 +35,14 @@ assert.equal(exit.scenarios.central.deductionRate, 3);
 assert.equal(exit.scenarios.central.hitRate, 0.72);
 assert.equal(exit.scenarios.central.lockDays, 91);
 
+const noOfficialRate = model.gradeAssumptions({ condition: "clean", officialRate: null, fallbackRate: 0.7, fallbackLabel: "設定取得率", fallbackLowerGradePrice: 25000 });
+assert.equal(noOfficialRate.hitRate, 0.7, "公式値nullを0%として扱わない");
+assert.equal(noOfficialRate.hitRateSource, "設定取得率");
+assert.equal(model.gradeAssumptions({ condition: "clean", officialRate: "", fallbackRate: 0.7 }).hitRate, 0.7);
+const marketplaceWithRoi = model.maxBuyPrice({ forecastPrice: 100000, assumptions: { hitRate: 0.7, lowerGradePrice: 30000 }, purchasePrice: 0, fee: 13000, saleFeeRate: 8, saleExtraCost: 1000, lockDays: 120, minExpectedProfit: 10000, minExpectedRoi: 35, minAnnualEfficiency: 140 });
+const marketplaceAtCap = model.expectedEconomics({ forecastPrice: 100000, assumptions: { hitRate: 0.7, lowerGradePrice: 30000 }, purchasePrice: marketplaceWithRoi, fee: 13000, saleFeeRate: 8, saleExtraCost: 1000, lockDays: 120 });
+assert(marketplaceAtCap.expectedProfit >= 10000 && marketplaceAtCap.expectedRoi >= 35 && marketplaceAtCap.annualEfficiency >= 140, "フリマ出口の上限にも利益率・年換算効率を反映");
+
 const policy = model.exitPolicyCaps({
   policy: "buyback",
   marketplaceCurrentBreakEvenCap: 80000,
@@ -67,7 +75,7 @@ const decisionSource = fs.readFileSync(path.join(__dirname, "..", "decision-mode
 for (const forbidden of ["pk-70080", "pk-70051", "メガサーナイトex MUR", "メガルカリオex MUR"]) {
   assert(!app.includes(forbidden) && !decisionSource.includes(forbidden), `個別カードのハードコード禁止: ${forbidden}`);
 }
-assert(app.includes("buildBuyLimitScenario(card, condition)"), "新規カードも共通シナリオ計算を使用");
+assert(app.includes("buildBuyLimitScenario(card, condition, hypotheticalRate = null)"), "新規カードも共通シナリオ計算を使用");
 assert(app.includes("decisionModel.MODEL_VERSION"), "判断モデルにバージョン番号を付与");
 assert(app.includes("hasMaterialLimitSignalChange"), "25%以上の根拠不明急変を隔離");
 

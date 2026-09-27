@@ -730,13 +730,17 @@
         <form id="actualResultForm" class="actual-result-form">
           <label><span>カードID</span><input id="actualCardIdInput" required placeholder="例: pk-75875" /></label>
           <label><span>判定日</span><input id="actualBaseDateInput" type="date" required /></label>
+          <label><span>個体メモ</span><input id="actualSpecimenInput" required placeholder="例: 1枚目・店舗名など" /></label>
+          <label><span>仕入れ時の目視判定</span><select id="actualInspectionInput" required><option value="">選択</option><option>高</option><option>標準</option><option>低</option></select></label>
           <label><span>鑑定結果</span><select id="actualGradeInput" required><option value="">選択</option><option>PSA10</option><option>PSA9</option><option>PSA8以下</option></select></label>
-          <label><span>実売価格</span><input id="actualSalePriceInput" type="number" min="1" step="100" required /></label>
+          <label><span>実売価格（売却時だけ）</span><input id="actualSalePriceInput" type="number" min="1" step="100" /></label>
           <label><span>実鑑定費</span><input id="actualGradingFeeInput" type="number" min="0" step="100" placeholder="空欄は判定時点を使用" /></label>
           <label><span>売却手数料%</span><input id="actualSaleFeeInput" type="number" min="0" max="100" step="0.1" placeholder="空欄は判定時点を使用" /></label>
           <button type="submit">実鑑定結果を保存</button>
         </form>
-        <p id="actualResultStatus">実鑑定結果を入力したカードだけ「実現利益」を表示します。入力内容はこのブラウザに保存されます。</p>
+        <p id="actualResultStatus">鑑定結果だけでも保存できます。実売価格を入力した場合だけ「実現利益」を表示します。記録はこのブラウザに保存され、本番の仕入れ上限には反映しません。</p>
+        <div id="gradeHistorySummary" class="grade-history-summary"></div>
+        <div class="grade-history-actions"><button id="exportGradeHistoryBtn" type="button">鑑定記録をJSONで書き出す</button><label>別ブラウザの記録を読み込む<input id="importGradeHistoryInput" type="file" accept="application/json,.json" /></label></div>
       </details>
     </details>
 
@@ -796,10 +800,11 @@
   </main>
 
   <script src="./decision-model.js?v=20260921-buyback-scenarios-v4"></script>
+  <script src="./grade-calibration.js?v=20260924-v1"></script>
   <script src="./search-index-model.js?v=20260913-search-v1"></script>
   <script src="./backtest-model.js?v=20260901-backtest-v2"></script>
   <script src="./market-analysis.js?v=20260913-supply-absorption-v3"></script>
   <script src="./snkr-raw-flip-model.js?v=20260920-raw-flip-v1"></script>
-  <script src="./app.js?v=20260921-buyback-scenarios-v4"></script>
+  <script src="./app.js?v=20260924-shared-limits-v1"></script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 {
-  "version": "purchase-decision-v4-buyback-scenarios",
-  "activatedAt": "2026-09-21",
+  "version": "purchase-decision-v5-shared-limits",
+  "activatedAt": "2026-09-24",
   "updateType": "explicit-model-update",
   "dailyDataUpdatesMayChangeFormula": false,
   "limits": {
@@ -8,7 +8,7 @@
     "centralTarget": "central forecast exit scenario, target profit and ROI",
     "stressBreakEven": "supply stress exit scenario, expected profit = 0",
     "finalTheoretical": "min(centralTarget, stressBreakEven, capital)",
-    "operational": "existing smoothing applied to finalTheoretical"
+    "operational": "shared public history smoothing applied to finalTheoretical; missing history uses first-run safety factor"
   },
   "buybackScenarios": [
     "current",

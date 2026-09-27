@@ -3,7 +3,7 @@
   if (typeof module === "object" && module.exports) module.exports = api;
   if (root) root.PurchaseDecisionModel = api;
 })(typeof globalThis !== "undefined" ? globalThis : this, function createDecisionModel() {
-  const MODEL_VERSION = "purchase-decision-v4-buyback-scenarios";
+  const MODEL_VERSION = "purchase-decision-v5-shared-limits";
   const clamp = (value, min = 0, max = 100) => Math.max(min, Math.min(max, value));
 
   function median(values) {
@@ -392,7 +392,8 @@
   function gradeAssumptions(input) {
     const conditionFactor = input.condition === "scratch" ? 0.55 : 1;
     const officialRate = Number(input.officialRate);
-    const hasOfficialRate = Number.isFinite(officialRate) && officialRate >= 0;
+    const hasOfficialRate = input.officialRate != null && input.officialRate !== ""
+      && Number.isFinite(officialRate) && officialRate >= 0;
     const baseRate = hasOfficialRate ? officialRate / 100 : Number(input.fallbackRate || 0.7);
     const actualPsa9 = Number(input.psa9Price);
     const fallbackLowerGrade = Number(input.fallbackLowerGradePrice || 0);

@@ -38,6 +38,10 @@ jobs:
         run: node work/run_tracked_update.js marketAnalysis work/build_market_analysis.js
       - name: Finalize source status
         run: node work/finalize_update_status.js
+      - name: Rebuild catalog and shared purchase-limit audit
+        run: |
+          node work/build_card_completion.js
+          node work/build_purchase_limit_audit.js
       - name: Run fast regression tests
         run: |
           node --check app.js
@@ -46,6 +50,9 @@ jobs:
           node --check work/update_snkr_raw_flip.js
           node work/test_snkr_raw_flip.js
           node work/test_limit_tiers.js
+          node work/test_buyback_scenario_limits.js
+          node work/test_purchase_limit_audit.js
+          node work/test_grade_calibration.js
           node work/test_daily_fast_update.js
       - name: Commit changed data only
         run: |

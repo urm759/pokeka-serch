@@ -43,6 +43,12 @@ jobs:
           node work/audit_link_coverage.js
           node work/build_card_completion.js
           node work/finalize_update_status.js
+          node work/build_purchase_limit_audit.js
+      - name: Verify shared purchase limits before publishing
+        run: |
+          node work/test_buyback_scenario_limits.js
+          node work/test_purchase_limit_audit.js
+          node work/test_grade_calibration.js
       - name: Commit checkpoint progress
         run: |
           git config user.name "github-actions[bot]"

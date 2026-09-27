@@ -1425,3 +1425,23 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
   margin: 0 0 .8rem;
   background: #fff9eb;
 }
+.inspection-scenarios {
+  grid-column: 1 / -1;
+  border: 1px solid var(--line, #d8dfe5);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+.inspection-scenarios summary { cursor: pointer; font-weight: 700; }
+.inspection-scenario-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin: 10px 0; }
+.inspection-scenario-grid > div { display: grid; gap: 4px; padding: 10px; border-radius: 10px; background: rgba(230, 162, 36, .1); }
+.inspection-scenarios small { display: block; line-height: 1.5; }
+.grade-history-summary { display: grid; gap: 5px; margin-top: 10px; padding: 10px; border: 1px solid rgba(255,255,255,.12); border-radius: 10px; font-size: 11px; }
+.grade-history-summary span, .grade-history-summary small, .grade-card-history small { color: var(--muted); }
+.grade-history-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 10px; font-size: 10px; }
+.grade-history-actions button, .grade-history-actions label { padding: 8px; border: 1px solid rgba(255,255,255,.18); border-radius: 8px; background: #17243a; color: var(--text); }
+.grade-history-actions label { display: grid; gap: 4px; }
+.grade-card-history { margin: 8px 0; padding: 8px; border: 1px solid rgba(255,255,255,.12); border-radius: 9px; font-size: 10px; }
+.grade-card-history summary { cursor: pointer; font-weight: 700; }
+.grade-card-history small { display: block; margin-top: 6px; line-height: 1.5; }
+.search-incomplete-list { display: grid; gap: 6px; margin-top: 8px; }
+.search-incomplete-list a { display: flex; justify-content: space-between; gap: 8px; padding: 7px 9px; border-radius: 8px; background: rgba(255,255,255,.06); }

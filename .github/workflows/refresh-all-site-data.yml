@@ -196,6 +196,15 @@ jobs:
       - name: Finalize source freshness and completed date
         run: node work/finalize_update_status.js
 
+      - name: Rebuild shared purchase limits and all-card audit
+        run: node work/build_purchase_limit_audit.js
+
+      - name: Verify purchase limits before publishing
+        run: |
+          node work/test_buyback_scenario_limits.js
+          node work/test_purchase_limit_audit.js
+          node work/test_grade_calibration.js
+
       - name: Verify PokeDATA aggregate consistency
         run: node work/test_pokedata_consistency.js
 
