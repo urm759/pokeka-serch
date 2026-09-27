@@ -64,6 +64,7 @@ function build({ cards, capture, pokedataRowsByCard = {} }) {
   });
   return { generatedAt: new Date().toISOString(), dataStatus: "partial-trial-not-live-market",
     captureMethod: capture.captureMethod, capturedAt: capture.capturedAt,
+    sourceCacheStatus: capture.coverage,
     accessLimitation: capture.accessLimitation, fx: capture.fx,
     cardCount: certificates.length, psaExcerptRows: certificates.reduce((n, c) => n + c.salesHistory.excerptRows, 0),
     overlappedRows: certificates.reduce((n, c) => n + c.salesHistory.overlapWithPokedata, 0),

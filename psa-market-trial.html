@@ -23,7 +23,7 @@
   <main>
     <p><a href="./index.html">← カード検索へ戻る</a></p>
     <h1>PSA公式・海外データ試験</h1>
-    <p class="notice">公開証明書に表示された一部の類似成約だけを保存した試験です。PSA Estimateは成約価格ではなく、証明書のPopulationはそのグレードの枚数であり、カード全体のTOTALやPSA10取得率ではありません。全文のSales Historyと販売商品のタイトルは未検証です。30日・90日の総成約件数は未取得です。海外価格は国内仕入れ上限・GO判定に使用していません。</p>
+    <p class="notice">公開証明書の検索キャッシュに表示された一部の類似成約だけを保存した試験です。元ページの正確なキャッシュ日時と現在価格は確認できません。PSA Estimateは成約価格ではなく、証明書のPopulationはそのグレードの枚数であり、カード全体のTOTALやPSA10取得率ではありません。全文のSales Historyと販売商品のタイトルは未検証です。30日・90日の総成約件数は未取得です。海外価格は国内仕入れ上限・GO判定に使用していません。</p>
     <div id="summary" class="card">試験データを読み込み中...</div>
     <div id="cards"></div>
     <section class="card" id="linkage">PSA紐づけ優先キューを読み込み中...</section>
@@ -34,7 +34,7 @@
     const safe = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[c]);
     const yen = (value) => Number.isFinite(value) ? `¥${fmt.format(value)}` : "未取得";
     fetch("./data/psa-market-trial.json").then((res) => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.json(); }).then((data) => {
-      document.getElementById("summary").innerHTML = `<strong>対象 ${fmt.format(data.cardCount)}枚・PSA掲載の成約例 ${fmt.format(data.psaExcerptRows)}件</strong><p>PokeDATAと同一出品ID ${fmt.format(data.overlappedRows)}件。重複は合算しません。</p><small>参照為替 1 USD = ${safe(data.fx.rate)}円 / ${safe(data.fx.rateDate)} / <a href="${safe(data.fx.url)}" target="_blank" rel="noopener noreferrer">${safe(data.fx.source)}</a>。これは成約当日の為替ではなく参考換算です。${safe(data.accessLimitation)}</small>`;
+      document.getElementById("summary").innerHTML = `<strong>対象 ${fmt.format(data.cardCount)}枚・PSA掲載の成約例 ${fmt.format(data.psaExcerptRows)}件</strong><p>PokeDATAと同一出品ID ${fmt.format(data.overlappedRows)}件。重複は合算しません。</p><small>抜粋確認日 ${safe(data.capturedAt)}。PSA元ページのキャッシュ日時は不明で、数値の最新性は未確認。参照為替 1 USD = ${safe(data.fx.rate)}円 / ${safe(data.fx.rateDate)} / <a href="${safe(data.fx.url)}" target="_blank" rel="noopener noreferrer">${safe(data.fx.source)}</a>。これは成約当日の為替ではなく参考換算です。${safe(data.accessLimitation)}</small>`;
       document.getElementById("cards").innerHTML = data.certificates.map((c) => `<section class="card">
         <h2>${safe(c.cardName)}</h2>
         <p><a href="${safe(c.sourceUrl)}" target="_blank" rel="noopener noreferrer">PSA証明書 #${safe(c.certNumber)}</a> / <a href="./index.html?q=${encodeURIComponent(c.cardName)}">国内カードを検索</a></p>
