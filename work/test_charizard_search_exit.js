@@ -112,6 +112,9 @@ const searchContext = { state: searchState, searchIndexModel: search, compactSea
 const incompleteMatches = vm.runInNewContext(`${searchFunction}\ncatalogIndexMatches("analysis", "M6 113/076")`, searchContext);
 assert(incompleteMatches.some((entry) => entry.id === "pk-83048"), "名称検索は分析可能範囲でもデータ不足カードを読み込む");
 assert(!searchState.catalogIndex.find((entry) => entry.id === "pk-83048").status.includes("分析可能"), "テスト対象は実際にデータ不足");
+const renderSource = app.slice(app.indexOf("function render()"), app.indexOf("// Browser event bindings start here"));
+assert(!renderSource.includes("roiByPsaPriceBand.get("), "描画時に計算関数内の価格帯変数を参照しない");
+assert(renderSource.includes("card.roiPeerCount"), "価格帯比較はカードへ保存した集計値を使う");
 assert(!app.includes('if (normalizedQuery && completion?.s !== "分析可能") return true;'), "名称検索でフィルターを解除しない");
 assert(app.includes("decisionModel.shouldIncludeVerdict"), "見送りは明示ON時だけ表示");
 assert(app.includes("scheduleCatalogQueryLoad();"), "名称検索はデバウンス読込");

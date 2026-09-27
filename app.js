@@ -3554,6 +3554,9 @@ function prepareCalculatedCards(cards) {
   );
   calculated.forEach((card) => {
     card.psaTxPeerMedian = psaTxMedianByPriceBand.get(psaPriceBand(card.psa10).key) ?? null;
+    const roiPeers = roiByPsaPriceBand.get(psaPriceBand(card.psa10).key) || [];
+    card.roiPeerCount = roiPeers.length;
+    card.roiPeerMedian = medianRoiByPsaPriceBand.get(psaPriceBand(card.psa10).key) ?? null;
     card.overallAssessment = buildOverallAssessment(card, card.official, combineShopStock(state.cardrushStock[card.id], state.hareruya2Stock[card.id], state.yuyuteiStock[card.id]));
     finalizeCardDecision(card);
     applyGoConfidence(card);
@@ -3845,14 +3848,14 @@ function render() {
   els.grid.innerHTML = visibleCards.map((card) => {
     state.cardById[card.id] = card;
     const priceBand = psaPriceBand(card.psa10);
-    const peerValues = roiByPsaPriceBand.get(priceBand.key) || [];
-    const peerMedianRoi = medianRoiByPsaPriceBand.get(priceBand.key);
-    const hasReliablePeers = Number.isFinite(peerMedianRoi) && peerValues.length >= 8;
+    const peerCount = card.roiPeerCount || 0;
+    const peerMedianRoi = card.roiPeerMedian;
+    const hasReliablePeers = Number.isFinite(peerMedianRoi) && peerCount >= 8;
     const comparisonMedian = hasReliablePeers ? peerMedianRoi : card.roi;
     const roiDifference = card.roi - comparisonMedian;
     const roiAssessment = !hasReliablePeers ? "比較できる取引データが不足" : roiDifference >= 30 ? "同価格帯よりかなり高い" : roiDifference >= 5 ? "同価格帯より高い" : roiDifference <= -30 ? "同価格帯よりかなり低い" : roiDifference <= -5 ? "同価格帯より低い" : "同価格帯の中央値に近い";
     const roiAssessmentClass = roiDifference >= 5 ? "high" : roiDifference <= -5 ? "low" : "average";
-    const roiBandLabel = `PSA10 ¥${fmt.format(priceBand.min)}～¥${fmt.format(priceBand.max - 1)}・取引条件を満たす${fmt.format(peerValues.length)}枚`;
+    const roiBandLabel = `PSA10 ¥${fmt.format(priceBand.min)}～¥${fmt.format(priceBand.max - 1)}・取引条件を満たす${fmt.format(peerCount)}枚`;
     const name = card.name.replace(/\s+/g, " ");
     const presetFlags = presetQualifications(card);
     const presetTagsHtml = presetFlags.tags.length
