@@ -2758,16 +2758,16 @@ function catalogIndexMatches(scope, query = "") {
     return statusMatch;
   };
   if (!query) return state.catalogIndex.filter(statusMatches);
+  // Search must load matching cards even when the current catalog scope omits incomplete ones.
   if (searchIndexModel && state.searchIndex.length) {
     const catalogById = new Map(state.catalogIndex.map((entry) => [String(entry.id), entry]));
     const matches = searchIndexModel.search(state.searchIndex, query, { limit: 250 })
-      .map((entry) => catalogById.get(String(entry.id)) || { id: entry.id, chunk: entry.c })
-      .filter(statusMatches);
+      .map((entry) => catalogById.get(String(entry.id)) || { id: entry.id, chunk: entry.c });
     state.searchRankById = new Map(matches.map((entry, index) => [String(entry.id), index]));
     return matches;
   }
   const queryKey = compactSearch(query);
-  const matches = state.catalogIndex.filter((entry) => statusMatches(entry) && compactSearch(`${entry.name || ""} ${entry.model || ""} ${entry.setCode || ""} ${entry.cardNumber || ""} ${entry.id || ""}`).includes(queryKey));
+  const matches = state.catalogIndex.filter((entry) => compactSearch(`${entry.name || ""} ${entry.model || ""} ${entry.setCode || ""} ${entry.cardNumber || ""} ${entry.id || ""}`).includes(queryKey));
   state.searchRankById = new Map(matches.map((entry, index) => [String(entry.id), index]));
   return matches;
 }

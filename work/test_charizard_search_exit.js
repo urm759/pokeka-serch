@@ -1,6 +1,7 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
+const vm = require("node:vm");
 const market = require("../market-analysis.js");
 const decision = require("../decision-model.js");
 const search = require("../search-index-model.js");
@@ -104,6 +105,13 @@ assert.equal(new Set(matches.map((entry) => entry.p)).size, 1, "完全一致検�
 assert(elapsedMs < 50, `検索処理 ${elapsedMs.toFixed(1)}ms`);
 
 const app = fs.readFileSync(path.join(root, "app.js"), "utf8");
+const searchFunction = app.slice(app.indexOf("function catalogIndexMatches("), app.indexOf("async function loadCatalogEntries("));
+const catalogIndex = JSON.parse(fs.readFileSync(path.join(root, "data", "card-catalog", "index.json"), "utf8"));
+const searchState = { catalogIndex: catalogIndex.cards, searchIndex: payload.cards, searchRankById: new Map() };
+const searchContext = { state: searchState, searchIndexModel: search, compactSearch: search.compact, Map };
+const incompleteMatches = vm.runInNewContext(`${searchFunction}\ncatalogIndexMatches("analysis", "M6 113/076")`, searchContext);
+assert(incompleteMatches.some((entry) => entry.id === "pk-83048"), "名称検索は分析可能範囲でもデータ不足カードを読み込む");
+assert(!searchState.catalogIndex.find((entry) => entry.id === "pk-83048").status.includes("分析可能"), "テスト対象は実際にデータ不足");
 assert(!app.includes('if (normalizedQuery && completion?.s !== "分析可能") return true;'), "名称検索でフィルターを解除しない");
 assert(app.includes("decisionModel.shouldIncludeVerdict"), "見送りは明示ON時だけ表示");
 assert(app.includes("scheduleCatalogQueryLoad();"), "名称検索はデバウンス読込");
