@@ -101,6 +101,7 @@ function main() {
     const chunkMetrics = parseLastJsonLine(chunkResult.stdout) || {};
     regeneratedFiles += Number(chunkMetrics.regeneratedFiles || 0);
   }
+  run("work/audit_state_a_prices.js");
   run("work/build_market_backtest.js");
 
   const metrics = {

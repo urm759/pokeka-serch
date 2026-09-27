@@ -175,6 +175,9 @@ jobs:
         if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'marketAnalysis'
         run: node work/run_tracked_update.js marketAnalysis work/build_market_analysis.js
 
+      - name: Audit state-A price conflicts
+        run: node work/audit_state_a_prices.js
+
       - name: Record daily decisions and rebuild backtest
         run: node work/build_market_backtest.js
 
@@ -203,6 +206,8 @@ jobs:
         run: |
           node work/test_buyback_scenario_limits.js
           node work/test_purchase_limit_audit.js
+          node work/test_price_integrity.js
+          node work/test_candidate_daily_audit.js
           node work/test_grade_calibration.js
 
       - name: Verify PokeDATA aggregate consistency

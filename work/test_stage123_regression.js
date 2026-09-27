@@ -15,7 +15,7 @@ for (const parameter of ["filterExpRoi", "filterExpProfit", "preset", "riskMode"
   assert.ok(app.includes(`"${parameter}"`), `URLパラメータ ${parameter} を維持`);
 }
 for (const label of [
-  "現在仕入値 ¥",
+  "現在仕入値 ${cardPriceText}",
   "現在PSA10相場 ¥",
   "中央予測 ¥",
   "供給ストレス ¥",
@@ -25,6 +25,7 @@ for (const label of [
 ]) {
   assert.ok(implementation.includes(label), `表示 ${label} を維持`);
 }
+assert.ok(app.includes("未算出・価格確認待ち"), "価格対立時はNaN円とせず確認待ちを表示");
 assert.ok(app.includes("card.purchaseAvailability?.verifiedNow === true"), "今すぐ仕入れは購入先確認済みだけを使用");
 assert.ok(app.includes("const decisionInput = cleanLimits ?"), "仕入れ上限を算出できないカードで一覧全体を停止しない");
 assert.ok(app.includes("economics && capital && decisionInput"), "上限欠損時は個別判定だけを安全に保留する");

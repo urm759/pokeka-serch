@@ -38,6 +38,8 @@ jobs:
         run: node work/run_tracked_update.js marketAnalysis work/build_market_analysis.js
       - name: Finalize source status
         run: node work/finalize_update_status.js
+      - name: Audit state-A price conflicts and sale evidence
+        run: node work/audit_state_a_prices.js
       - name: Rebuild catalog and shared purchase-limit audit
         run: |
           node work/build_card_completion.js
@@ -53,6 +55,8 @@ jobs:
           node work/test_limit_display.js
           node work/test_buyback_scenario_limits.js
           node work/test_purchase_limit_audit.js
+          node work/test_price_integrity.js
+          node work/test_candidate_daily_audit.js
           node work/test_grade_calibration.js
           node work/test_daily_fast_update.js
           node work/test_psa_market_trial.js
@@ -62,7 +66,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data work/daily-http-cache.json work/changed-card-ids.json work/market_stability_history.json work/snkr-raw-flip-cache.json work/snkr-raw-flip-checkpoint.json work/source-update-runs.json work/source-update-history.json
+          git add data work/daily-http-cache.json work/changed-card-ids.json work/market_stability_history.json work/snkr-raw-flip-cache.json work/snkr-raw-flip-checkpoint.json work/source-update-runs.json work/source-update-history.json work/toreca-source-inventory.json work/toreca_source_diff.json work/card-new-arrivals.json work/card-lifecycle.json work/candidate-daily-history.json
           if git diff --cached --quiet; then
             echo "No source change. Commit and deployment skipped."
             exit 0

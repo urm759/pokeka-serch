@@ -88,6 +88,9 @@ function main() {
   const torecacamp = read("data/torecacamp-stock-summary.json", { cards: {} });
   const pokedata = read("data/pokedata/manifest.json", { sets: [] });
   const modernAudit = read("data/modern-high-rarity-audit.json", { manualReview: {} });
+  const priceEvidence = read("data/state-a-price-evidence.json", { cards: {} });
+  const priceAudit = read("data/state-a-price-audit.json", { cards: [] });
+  const disputedPrices = new Set((priceAudit.cards || []).map((row) => String(row.id)));
   const previousQueue = read("work/card-completion-queue.json", { cards: {} });
   const pokedataSales = readPokedataSales();
   const addedIds = new Set((diff.added || []).map((row) => String(row.id)));
@@ -126,7 +129,7 @@ function main() {
   const summary = {
     total: cards.length, newCards: 0, siteNewCards: 0, recentReleaseCards: 0, relistedCards: 0,
     analyzable: 0, analyzableComplete: 0, analyzablePartial: 0, completionInProgress: 0,
-    dataShortage: 0, reviewRequired: 0, completableAfterNext: 0,
+    dataShortage: 0, reviewRequired: 0, priceReviewRequired: 0, completableAfterNext: 0,
     releaseDateKnown: 0, releaseYearOnly: 0, releaseUnknown: 0,
     releaseSourceCounts: {},
     releaseYearCounts: {},
@@ -173,7 +176,10 @@ function main() {
     const buybackRow = buyback.cards?.[id];
     const official = psa.cards?.[id];
     const releaseKnown = Boolean(release.date || release.year);
-    const domesticPrice = finite(card.price) && card.price > 0;
+    const sourcePricePresent = finite(card.price) && card.price > 0;
+    const priceDisputed = disputedPrices.has(id);
+    const priceUnbacked = priceEvidence.cards?.[id]?.status === "unbacked";
+    const domesticPrice = sourcePricePresent && !priceDisputed && !priceUnbacked;
     const domesticTx = finite(card.tv7) && finite(card.tv30);
     const psa10Price = finite(card.snkPsa10Price) && card.snkPsa10Price > 0;
     const psa10Tx = finite(card.p10tv7) && finite(card.p10tv30);
@@ -195,8 +201,8 @@ function main() {
     else if (pokedataState === "unexpanded-set") dataTypeTotals.pokedata.unexpandedSet += 1;
     else dataTypeTotals.pokedata.unsupportedOrUnconfirmed += 1;
     const entries = {
-      domesticPrice: item(domesticPrice ? "取得済み" : "取得元にデータなし", "みんトレ", times.toreca, domesticPrice ? null : "美品価格の掲載なし"),
-      domesticTrades: item(domesticTx ? "取得済み" : "定期再確認", "みんトレ", times.toreca, domesticTx ? null : "現在取引なし・次回定期更新で再確認"),
+      domesticPrice: item(domesticPrice ? "取得済み" : priceDisputed || priceUnbacked ? "再試行待ち" : "取得元にデータなし", "みんトレ", times.toreca, domesticPrice ? null : priceDisputed ? "参考価格と複数店舗の状態A価格が対立・手動確認待ち" : priceUnbacked ? "実売の裏付けなし・参考価格は計算対象外" : "美品価格の掲載なし"),
+      domesticTrades: item(domesticTx ? "取得済み" : "定期再確認", "みんトレ・素体全状態", times.toreca, domesticTx ? null : "現在取引なし・次回定期更新で再確認"),
       psa10Price: item(psa10Price ? "取得済み" : "取得元にデータなし", "みんトレ／スニダン", times.toreca, psa10Price ? null : "PSA10相場の掲載なし"),
       psa10Trades: item(psa10Tx ? "取得済み" : "定期再確認", "みんトレ／スニダン", times.toreca, psa10Tx ? null : "現在取引なし・次回定期更新で再確認"),
       rawActualSales: item(rawActualCount > 0 ? "取得済み" : pokedataState === "unsupported-or-unconfirmed" ? "取得不能" : "取得待ち", "PokeDATA個別成約", times.pokedata, rawActualCount > 0 ? `${rawActualCount}件` : "Raw実成約未取得"),
@@ -249,7 +255,8 @@ function main() {
     if (isRecentRelease) reasons.push(`最近発売（${release.date}）`);
     if (missingRequired.length > 0 && missingRequired.length <= 2) reasons.push(`必須不足${missingRequired.length}項目・補完で分析可能に近い`);
     if (isSiteNew) reasons.push("サイト新着");
-    if (Number(card.tv30 || 0) >= 10) reasons.push(`美品取引30日${card.tv30}件`);
+    if (Number(card.tv30 || 0) >= 10) reasons.push(`素体全状態取引30日${card.tv30}件`);
+    if (priceDisputed) reasons.push("状態A価格対立・成約根拠の確認待ち");
     if (Number(card.p10tv30 || 0) >= 5) reasons.push(`PSA10取引30日${card.p10tv30}件`);
     if (!requiredReady) reasons.push("仕入れ判断の必須項目が不足");
     if (!reasons.length) reasons.push("通常補完キュー");
@@ -311,6 +318,7 @@ function main() {
     if (inProgress) summary.completionInProgress += 1;
     if (classification === "データ不足") summary.dataShortage += 1;
     if (identity.reviewRequired) summary.reviewRequired += 1;
+    if (priceDisputed || priceUnbacked) summary.priceReviewRequired += 1;
     if (release.precision === "date") summary.releaseDateKnown += 1;
     else if (release.precision === "year") summary.releaseYearOnly += 1;
     else summary.releaseUnknown += 1;

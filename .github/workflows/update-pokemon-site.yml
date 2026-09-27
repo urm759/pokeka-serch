@@ -37,6 +37,9 @@ jobs:
       - name: Record 91-day market history and rebuild market analysis
         run: node work/build_market_analysis.js
 
+      - name: Audit state-A price conflicts
+        run: node work/audit_state_a_prices.js
+
       - name: Record daily decisions and rebuild backtest
         run: node work/build_market_backtest.js
 
@@ -46,13 +49,15 @@ jobs:
           node work/build_purchase_limit_audit.js
           node work/test_buyback_scenario_limits.js
           node work/test_purchase_limit_audit.js
+          node work/test_price_integrity.js
+          node work/test_candidate_daily_audit.js
           node work/test_grade_calibration.js
 
       - name: Commit changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data work/card-lifecycle.json work/market_stability_history.json work/market_backtest_history.json work/snkr_link_progress.json work/cardrush_catalog.json work/cardrush_invalid_urls.json work/cardrush_recheck_ids.json work/cardrush_crawl_progress.json work/cardrush_target_progress.json work/card-completion-queue.json
+          git add data work/card-lifecycle.json work/market_stability_history.json work/market_backtest_history.json work/snkr_link_progress.json work/cardrush_catalog.json work/cardrush_invalid_urls.json work/cardrush_recheck_ids.json work/cardrush_crawl_progress.json work/cardrush_target_progress.json work/card-completion-queue.json work/candidate-daily-history.json
           if git diff --cached --quiet; then
             echo "No data changes."
             exit 0

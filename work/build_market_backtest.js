@@ -116,6 +116,9 @@ function main() {
   const floorData = readJson(path.join(ROOT, "data", "market-stability-summary.json"), {});
   const buybackData = readJson(path.join(ROOT, "data", "shop-buyback-summary.json"), {});
   const officialData = readJson(path.join(ROOT, "data", "psa-population-summary.json"), {});
+  const priceEvidence = readJson(path.join(ROOT, "data", "state-a-price-evidence.json"), { cards: {} });
+  const priceDisputes = readJson(path.join(ROOT, "data", "state-a-price-audit.json"), { cards: [] });
+  const disputedIds = new Set((priceDisputes.cards || []).map((row) => String(row.id)));
   const services = readJson(path.join(ROOT, "data", "psa-japan-services.json"), {});
   const settings = standardSettings(services);
   const updatedAt = dateOnly(meta.updatedAt || meta.generatedAt || floorData.updatedAt);
@@ -131,7 +134,7 @@ function main() {
   marketModel.applyStoreDemandRelativeRanking(demandCards, { strongShare: 0.3 });
   const demandById = new Map(demandCards.map((entry) => [String(entry.id), entry.buybackAnalysis]));
 
-  const candidates = cards.map((card) => buildSnapshotCandidate(
+  const candidates = cards.filter((card) => priceEvidence.cards?.[card.id]?.status !== "unbacked" && !disputedIds.has(String(card.id))).map((card) => buildSnapshotCandidate(
     card, floorData.cards?.[card.id], demandById.get(String(card.id)), officialData.cards?.[card.id], settings, updatedAt
   )).filter(Boolean)
     .filter((entry) => Number(entry.card.tv30 || 0) >= 3 || Number(entry.card.p10tv30 || 0) >= 3 || entry.demand.trustedCount > 0)
@@ -151,6 +154,7 @@ function main() {
   const cardNames = new Map(cards.map((card) => [String(card.id), card.name || card.id]));
   const outcomes = [];
   for (const [cardId, rows] of Object.entries(history.cards)) {
+    if (disputedIds.has(cardId) || priceEvidence.cards?.[cardId]?.status === "unbacked") continue;
     for (let index = 0; index < rows.length; index += 1) {
       const initial = backtestModel.decodeSnapshot(rows[index]);
       const horizons = [{ type: "days7", days: 7 }, { type: "days30", days: 30 }, { type: "exit", days: Number(initial.lockDays || 91) }];
@@ -164,6 +168,11 @@ function main() {
     }
   }
   outcomes.sort((a, b) => String(b.resultDate).localeCompare(String(a.resultDate)) || b.horizonDays - a.horizonDays);
+  const exitPending = Object.entries(history.cards).filter(([id]) => !disputedIds.has(id) && priceEvidence.cards?.[id]?.status !== "unbacked")
+    .flatMap(([, rows]) => rows.slice(0, 1)).map((row) => backtestModel.decodeSnapshot(row))
+    .filter((row) => row.date && Number(row.lockDays) > 0)
+    .map((row) => ({ date: row.date, readyAt: new Date(Date.parse(`${row.date}T00:00:00Z`) + Number(row.lockDays) * DAY_MS).toISOString().slice(0, 10) }));
+  const nextExitReadyAt = exitPending.map((row) => row.readyAt).sort()[0] || null;
   const latestSnapshots = Object.fromEntries(Object.entries(history.cards).map(([cardId, rows]) => [cardId, rows.at(-1)]));
   fs.writeFileSync(HISTORY_PATH, JSON.stringify(history), "utf8");
   fs.writeFileSync(SUMMARY_PATH, JSON.stringify({
@@ -173,6 +182,7 @@ function main() {
     cards: Object.keys(history.cards).length,
     snapshots: Object.values(history.cards).reduce((sum, rows) => sum + rows.length, 0),
     days7: aggregateByHorizon(outcomes, "days7"), days30: aggregateByHorizon(outcomes, "days30"), exit: aggregateByHorizon(outcomes, "exit"),
+    exitReadiness: { nextEligibleDate: nextExitReadyAt, cardsTracked: exitPending.length, outcomeCount: outcomes.filter((row) => row.horizonType === "exit").length, disputedHistoryExcluded: [...disputedIds].filter((id) => history.cards[id]).length, note: "鑑定返却に近い資金ロック期間到達後だけ想定出口利益を評価。価格対立の過去記録は保持するが集計から除外。" },
     latestSnapshots, outcomes: outcomes.slice(0, 500),
   }), "utf8");
   console.log(JSON.stringify({ updatedAt, candidates: candidates.length, snapshots: Object.values(history.cards).reduce((sum, rows) => sum + rows.length, 0), outcomes: outcomes.length, lockDays: settings.lockDays }));

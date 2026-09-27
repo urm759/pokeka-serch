@@ -9,9 +9,11 @@ const read = (file, fallback = null) => {
 };
 const write = (file, value) => fs.writeFileSync(path.join(root, file), JSON.stringify(value), "utf8");
 const model = require("../decision-model.js");
+const candidateDailyAudit = require("../candidate-daily-audit.js");
 const meta = read("data/pokemon-cards-meta.json", {});
 const window = {
   PurchaseDecisionModel: model,
+  PriceIntegrity: require("../price-integrity.js"),
   MarketAnalysisModel: require("../market-analysis.js"),
   BacktestModel: require("../backtest-model.js"),
   CardSearchIndexModel: require("../search-index-model.js"),
@@ -30,8 +32,8 @@ const context = vm.createContext({
   setTimeout,
   clearTimeout,
 });
-vm.runInContext(`${source.split(marker)[0]}\nglobalThis.auditApi = { state, prepareCalculatedCards, buildLimitModelAudit, operationalSettings };`, context, { filename: "app.js", timeout: 30000 });
-const { state, prepareCalculatedCards, buildLimitModelAudit, operationalSettings } = context.auditApi;
+vm.runInContext(`${source.split(marker)[0]}\nglobalThis.auditApi = { state, prepareCalculatedCards, buildLimitModelAudit, operationalSettings, presetQualifications };`, context, { filename: "app.js", timeout: 30000 });
+const { state, prepareCalculatedCards, buildLimitModelAudit, operationalSettings, presetQualifications } = context.auditApi;
 const loadCards = (file) => read(file, { cards: {} });
 const sourceFiles = {
   cardrush: loadCards("data/cardrush-stock-summary.json"),
@@ -46,6 +48,7 @@ const sourceFiles = {
 };
 state.cards = read("data/pokemon-cards.json", []);
 state.catalogCompletion = read("data/card-catalog-completion.json", { cards: {} });
+state.priceEvidence = read("data/state-a-price-evidence.json", { cards: {} });
 state.cardrushStock = sourceFiles.cardrush.cards || {};
 state.hareruya2Stock = sourceFiles.hareruya2.cards || {};
 state.yuyuteiStock = sourceFiles.yuyutei.cards || {};
@@ -76,12 +79,27 @@ state.fee = 12980;
 state.lockDays = 119;
 state.gradingReserve = 129800;
 const previous = read("data/operational-limit-history.json", null);
-const asOfDate = String(process.env.AUDIT_DATE || new Date().toISOString()).slice(0, 10);
+const asOfDate = String(process.env.AUDIT_DATE || meta.updatedAt || meta.generatedAt || new Date().toISOString()).slice(0, 10);
 state.operationalLimitHistory = previous && previous.modelVersion === model.MODEL_VERSION
   ? { ...previous, currentDataDate: asOfDate }
   : { modelVersion: model.MODEL_VERSION, currentDataDate: asOfDate, settings: operationalSettings(), cards: {} };
 const startedAt = Date.now();
 const calculated = prepareCalculatedCards(state.cards);
+const candidateHistory = read("work/candidate-daily-history.json", { version: 1, days: [] });
+const candidateSettings = {
+  modelVersion: model.MODEL_VERSION,
+  ...operationalSettings(),
+  minRawTrades30: 30,
+  minRoi: 40,
+  maxPsa10: 200000,
+  preset: "おまかせ総合",
+};
+const candidateSnapshot = candidateDailyAudit.snapshot(calculated, presetQualifications, state.catalogCompletion, candidateSettings, asOfDate);
+const earlier = candidateHistory.days.filter((row) => row.date < asOfDate).at(-1) || null;
+const candidateComparison = candidateDailyAudit.compare(earlier, candidateSnapshot);
+const candidateSummary = { version: 1, generatedAt: new Date().toISOString(), profile: candidateSettings,
+  current: { date: asOfDate, cardCount: candidateSnapshot.cardCount, candidates: candidateSnapshot.candidates, purchasable: candidateSnapshot.purchasable, exclusion: candidateSnapshot.reasons },
+  comparison: candidateComparison };
 const audit = buildLimitModelAudit(calculated);
 audit.catalogCards = calculated.length;
 audit.notAnalyzable = calculated.length - audit.analyzedCards;
@@ -127,5 +145,7 @@ if (process.argv.includes("--verify")) {
 } else {
   write("data/purchase-limit-model-audit.json", audit);
   write("data/operational-limit-history.json", history);
+  write("data/candidate-daily-audit.json", candidateSummary);
+  write("work/candidate-daily-history.json", { version: 1, days: [...candidateHistory.days.filter((row) => row.date < asOfDate), candidateSnapshot].slice(-14) });
 }
-console.log(JSON.stringify({ catalogCards: audit.catalogCards, analyzedCards: audit.analyzedCards, changedLimits: audit.changedLimits, changedVerdicts: audit.changedVerdicts, historyCards: Object.keys(historyCards).length, durationMs: audit.durationMs }));
+console.log(JSON.stringify({ catalogCards: audit.catalogCards, analyzedCards: audit.analyzedCards, changedLimits: audit.changedLimits, changedVerdicts: audit.changedVerdicts, historyCards: Object.keys(historyCards).length, candidateAudit: candidateSummary.current, candidateComparison: candidateComparison.status, durationMs: audit.durationMs }));
