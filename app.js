@@ -2438,7 +2438,7 @@ function buildPsa10Audit(card, psa10Price) {
   };
 }
 
-function buildSnkrRawFlip(card, currentStoreOffer) {
+function buildSnkrRawFlip(card, currentStoreOffer, priceIntegrity, referenceEvidence) {
   const source = state.snkrRawFlipSummary[card.id] || null;
   if (!source || !snkrRawFlipModel) return null;
   const completion = state.catalogCompletion?.cards?.[card.id] || null;
@@ -2464,7 +2464,7 @@ function buildSnkrRawFlip(card, currentStoreOffer) {
   return {
     ...source,
     ...result,
-    domesticAveragePrice: Number(card.price) > 0 ? Number(card.price) : null,
+    domesticAveragePrice: !priceIntegrity?.disputed && referenceEvidence !== "unbacked" && Number(card.price) > 0 ? Number(card.price) : null,
     purchaseStore: currentStoreOffer?.source || null,
     purchaseUrl: currentStoreOffer?.url || null,
     releaseDate,
@@ -2566,7 +2566,7 @@ function calc(card) {
   const currentStoreOffer = purchasableStorePrices.length
     ? purchasableStorePrices.reduce((lowest, entry) => entry.value < lowest.value ? entry : lowest)
     : null;
-  const snkrRawFlip = buildSnkrRawFlip(card, currentStoreOffer);
+  const snkrRawFlip = buildSnkrRawFlip(card, currentStoreOffer, priceIntegrity, referenceEvidence);
   const psa9Audit = buildPsa9Audit(card, price, psa10);
   const official = state.psaPopulation[card.id] || null;
   if (!(price > 0) || !(psa10 > 0)) {
@@ -3901,7 +3901,7 @@ function render() {
       <section class="snkr-raw-flip tier-${escapeHtml(rawFlip.tier || "none")}" aria-label="スニダン素体流し">
         <div class="snkr-raw-flip-head"><div><span>スニダン素体流し</span><strong>${escapeHtml(rawFlip.label || "対象外")}</strong></div><b>${rawFlip.soldConfirmed ? "状態A成約中央値" : "出品価格差・成約未確認"}</b></div>
         <div class="snkr-raw-flip-grid">
-          <div><span>国内美品相場</span><strong>${rawMoney(rawFlip.domesticAveragePrice)}</strong><small>みんトレ基準</small></div>
+          <div><span>国内美品相場</span><strong>${rawMoney(rawFlip.domesticAveragePrice)}</strong><small>${rawFlip.domesticAveragePrice == null ? "実売未確認・価格対立" : "みんトレ基準"}</small></div>
           <div><span>国内で買える状態A</span><strong>${rawMoney(rawFlip.purchasePrice)}</strong><small>${escapeHtml(rawFlip.purchaseStore || "在庫価格未取得")}</small></div>
           <div><span>スニダン状態A</span><strong>${rawMoney(rawFlip.salePrice)}</strong><small>${rawFlip.soldConfirmed ? `30日成約中央値（出品最安 ${rawMoney(Number(rawFlip.currentListingPrice))}）` : "現在出品最安"}</small></div>
           <div><span>手取り見込</span><strong>${rawMoney(rawFlip.takeHome)}</strong><small>手数料 ${Number(rawFlip.feeRate || 0).toFixed(1)}%・送料等 ${rawMoney(Number(rawFlip.shipping || 0) + Number(rawFlip.otherCost || 0))}</small></div>

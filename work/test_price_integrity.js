@@ -39,10 +39,12 @@ for (const [key, field] of [["cardrush", "cardrushStock"], ["hareruya2", "hareru
   state.sourceUpdates[key] = payload.updatedAt;
 }
 state.sourceUpdates.toreca = asOfDate;
+state.snkrRawFlipSummary = JSON.parse(fs.readFileSync(path.join(root, "data", "snkr-raw-flip-summary.json"), "utf8")).cards;
 const sourceCard = JSON.parse(fs.readFileSync(path.join(root, "data", "pokemon-cards.json"), "utf8")).find((row) => row.id === "pk-22204");
 const calculatedMew = calc(sourceCard);
 assert(Number.isNaN(calculatedMew.price), "neither the low quote nor high shop prices may become the adopted market price");
 assert.equal(calculatedMew.dataQuality.manualReview, true);
 assert.equal(calculatedMew.purchaseDecision, null, "conflicted price cannot enter GO");
 assert.equal(calculatedMew.stateATx30d, null, "all-condition trades may not become state-A trades");
+assert.equal(calculatedMew.snkrRawFlip.domesticAveragePrice, null, "the raw-flip panel must not repeat an unbacked reference quote");
 console.log(JSON.stringify({ disputed: audit.disputedCount, mewEvidence: evidence.cards["pk-22204"].status }));
