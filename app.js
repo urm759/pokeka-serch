@@ -5,6 +5,8 @@ const backtestModel = window.BacktestModel;
 const gradeCalibration = window.GradeCalibrationModel;
 const searchIndexModel = window.CardSearchIndexModel;
 const snkrRawFlipModel = window.SnkrRawFlipModel;
+const candidateVisibility = window.CandidateVisibility;
+const catalogIndexAdapter = window.CatalogIndexAdapter;
 const FORECAST_HORIZON_DAYS = 91;
 
 const state = {
@@ -118,6 +120,7 @@ const state = {
   minFloorScore: null,
   storeDemand: "all",
   showSkipped: false,
+  hideThinDemand: false,
   hideReview: false,
   fundingOnly: false,
   officialOnly: false,
@@ -242,6 +245,7 @@ const els = {
   minFloorScoreInput: document.getElementById("minFloorScoreInput"),
   storeDemandInput: document.getElementById("storeDemandInput"),
   showSkippedInput: document.getElementById("showSkippedInput"),
+  hideThinDemandInput: document.getElementById("hideThinDemandInput"),
   hideReviewInput: document.getElementById("hideReviewInput"),
   fundingOnlyInput: document.getElementById("fundingOnlyInput"),
   officialOnlyInput: document.getElementById("officialOnlyInput"),
@@ -2878,6 +2882,7 @@ function readUrl() {
   const minFloorScore = parseOptionalNumber(url.searchParams.get("floorScore"));
   const storeDemand = url.searchParams.get("storeDemand");
   const showSkipped = url.searchParams.get("showSkipped") === "1";
+  const hideThinDemand = url.searchParams.get("hideThin") === "1";
   const legacyHideSkipped = url.searchParams.get("hideSkipped") === "1";
   const hideReview = url.searchParams.get("hideReview") === "1";
   const fundingOnly = url.searchParams.get("fundingOnly") === "1";
@@ -2977,6 +2982,7 @@ function readUrl() {
   if (minFloorScore != null && minFloorScore >= 0) els.minFloorScoreInput.value = String(minFloorScore);
   if (["all", "strong", "normal-up", "normal", "weak", "collecting"].includes(storeDemand)) els.storeDemandInput.value = storeDemand;
   els.showSkippedInput.checked = showSkipped && !legacyHideSkipped;
+  els.hideThinDemandInput.checked = hideThinDemand;
   els.hideReviewInput.checked = hideReview;
   els.fundingOnlyInput.checked = fundingOnly;
   els.officialOnlyInput.checked = officialOnly;
@@ -3085,6 +3091,7 @@ function buildShareUrl() {
   if (state.minFloorScore == null) url.searchParams.delete("floorScore"); else url.searchParams.set("floorScore", String(state.minFloorScore));
   if (state.storeDemand === "all") url.searchParams.delete("storeDemand"); else url.searchParams.set("storeDemand", state.storeDemand);
   if (state.showSkipped) url.searchParams.set("showSkipped", "1"); else url.searchParams.delete("showSkipped");
+  if (state.hideThinDemand) url.searchParams.set("hideThin", "1"); else url.searchParams.delete("hideThin");
   url.searchParams.delete("hideSkipped");
   if (state.hideReview) url.searchParams.set("hideReview", "1"); else url.searchParams.delete("hideReview");
   if (state.fundingOnly) url.searchParams.set("fundingOnly", "1"); else url.searchParams.delete("fundingOnly");
@@ -3599,6 +3606,7 @@ function render() {
       }
       // 素体流しはPSA提出判断と独立させる。PSA価格・PSA判定の欠損で候補を落とさない。
       if (state.purchaseMode === "snkr-raw") return snkrRawMatchesFilters(card);
+      if (!candidateVisibility.isVisible(card, { enabled: state.hideThinDemand, query: state.q, purchaseMode: state.purchaseMode })) return false;
       if (!decisionModel.shouldIncludeVerdict(card.purchaseDecision?.verdict, state.showSkipped)) return false;
       if (state.catalogScope !== "analysis" && state.purchaseMode === "normal") return true;
       if (card.saleTx30d < state.minSaleTx) return false;
@@ -4615,6 +4623,7 @@ function syncFromUI() {
   state.minFloorScore = parseOptionalNumber(els.minFloorScoreInput.value);
   state.storeDemand = els.storeDemandInput.value || "all";
   state.showSkipped = els.showSkippedInput.checked;
+  state.hideThinDemand = els.hideThinDemandInput.checked;
   state.hideReview = els.hideReviewInput.checked;
   state.fundingOnly = els.fundingOnlyInput.checked;
   state.officialOnly = els.officialOnlyInput.checked;
@@ -4688,11 +4697,15 @@ async function init() {
     state.catalogCompletion = await fetchJsonMaybe("./data/card-catalog-completion.json");
     state.operationalLimitHistory = await fetchJsonMaybe("./data/operational-limit-history.json") || Object.create(null);
     state.catalogManifest = await fetchJsonMaybe("./data/card-catalog/manifest.json");
-    const catalogIndexPayload = await fetchJsonMaybe("./data/card-catalog/index.json");
-    state.catalogIndex = Array.isArray(catalogIndexPayload?.cards) ? catalogIndexPayload.cards : [];
-    migrateLegacyGradeResults();
     const searchIndexPayload = await fetchJsonMaybe("./data/card-catalog/search-index.json");
     state.searchIndex = Array.isArray(searchIndexPayload?.cards) ? searchIndexPayload.cards : [];
+    if (state.searchIndex.length && state.catalogCompletion?.cards && catalogIndexAdapter) {
+      state.catalogIndex = catalogIndexAdapter.fromSearchAndCompletion(state.searchIndex, state.catalogCompletion.cards);
+    } else {
+      const catalogIndexPayload = await fetchJsonMaybe("./data/card-catalog/index.json");
+      state.catalogIndex = Array.isArray(catalogIndexPayload?.cards) ? catalogIndexPayload.cards : [];
+    }
+    migrateLegacyGradeResults();
     const analysisCards = state.catalogManifest ? await fetchJsonMaybe("./data/card-catalog/analysis.json") : null;
     if (Array.isArray(analysisCards)) {
       state.cards = analysisCards;
@@ -4776,7 +4789,7 @@ async function init() {
 }
 
 // Browser event bindings start here; the audit runner evaluates the same model above this line.
-[els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.buyback7MinInput, els.buyback7MaxInput, els.buyback30MinInput, els.buyback30MaxInput, els.buyback90MinInput, els.buyback90MaxInput, els.buybackShopsMinInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.roiInput, els.expectedRoiFilterInput, els.expectedProfitFilterInput, els.stressExpectedRoiFilterInput, els.stressExpectedProfitFilterInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.purchaseLimitRatioMinInput, els.psaRateMinInput, els.overallFilterInput, els.minExitLiquidityInput, els.minEconomicsInput, els.minMarketStabilityInput, els.minSupplyRiskInput, els.minFuturePriceScoreInput, els.maxFuturePriceScoreInput, els.minForecastPriceInput, els.maxForecastPriceInput, els.minForecastDownsideInput, els.maxForecastDownsideInput, els.minForecastGapInput, els.maxForecastGapInput, els.minForecastAgeInput, els.forecastMaturityInput, els.maxForecastMonthlyIncreaseInput, els.stockDemandInput, els.dataQualityFilterInput, els.goConfidenceFilterInput, els.floorStateInput, els.priceDirectionInput, els.supplyStateInput, els.minFloorScoreInput, els.storeDemandInput, els.showSkippedInput, els.hideReviewInput, els.fundingOnlyInput, els.officialOnlyInput, els.sortInput, els.psaCapitalInput, els.lockedCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput, els.buybackDeductionRateInput, els.exitPolicyInput, els.snkrRawFeeRateInput, els.snkrRawShippingInput, els.snkrRawOtherCostInput, els.snkrRawTx7MinInput, els.snkrRawTx30MinInput, els.snkrRawProfitMinInput, els.snkrRawRoiMinInput, els.snkrRawPurchaseMaxInput, els.snkrRawReleaseMonthsInput, els.snkrRawMaxAgeInput, els.snkrRawCurrentOnlyInput, els.snkrRawRecentOnlyInput, els.snkrRawIncludeReferenceInput, els.diagnosticSearchInput].forEach((el) =>
+[els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.buyback7MinInput, els.buyback7MaxInput, els.buyback30MinInput, els.buyback30MaxInput, els.buyback90MinInput, els.buyback90MaxInput, els.buybackShopsMinInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.roiInput, els.expectedRoiFilterInput, els.expectedProfitFilterInput, els.stressExpectedRoiFilterInput, els.stressExpectedProfitFilterInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.purchaseLimitRatioMinInput, els.psaRateMinInput, els.overallFilterInput, els.minExitLiquidityInput, els.minEconomicsInput, els.minMarketStabilityInput, els.minSupplyRiskInput, els.minFuturePriceScoreInput, els.maxFuturePriceScoreInput, els.minForecastPriceInput, els.maxForecastPriceInput, els.minForecastDownsideInput, els.maxForecastDownsideInput, els.minForecastGapInput, els.maxForecastGapInput, els.minForecastAgeInput, els.forecastMaturityInput, els.maxForecastMonthlyIncreaseInput, els.stockDemandInput, els.dataQualityFilterInput, els.goConfidenceFilterInput, els.floorStateInput, els.priceDirectionInput, els.supplyStateInput, els.minFloorScoreInput, els.storeDemandInput, els.showSkippedInput, els.hideThinDemandInput, els.hideReviewInput, els.fundingOnlyInput, els.officialOnlyInput, els.sortInput, els.psaCapitalInput, els.lockedCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput, els.buybackDeductionRateInput, els.exitPolicyInput, els.snkrRawFeeRateInput, els.snkrRawShippingInput, els.snkrRawOtherCostInput, els.snkrRawTx7MinInput, els.snkrRawTx30MinInput, els.snkrRawProfitMinInput, els.snkrRawRoiMinInput, els.snkrRawPurchaseMaxInput, els.snkrRawReleaseMonthsInput, els.snkrRawMaxAgeInput, els.snkrRawCurrentOnlyInput, els.snkrRawRecentOnlyInput, els.snkrRawIncludeReferenceInput, els.diagnosticSearchInput].forEach((el) =>
   el.addEventListener("input", syncFromUI)
 );
 
@@ -4819,6 +4832,7 @@ els.resetFiltersBtn.addEventListener("click", () => {
   els.minFloorScoreInput.value = "";
   els.storeDemandInput.value = "all";
   els.showSkippedInput.checked = false;
+  els.hideThinDemandInput.checked = false;
   els.hideReviewInput.checked = false;
   els.fundingOnlyInput.checked = false;
   els.officialOnlyInput.checked = false;

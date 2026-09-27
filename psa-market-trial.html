@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PSA海外データ試験 | ポケカ仕入れ判断サイト</title>
+  <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml">
+  <style>
+    :root { color-scheme: dark; font-family: "Yu Gothic", Meiryo, sans-serif; background: #101b2d; color: #f2f6fc; }
+    body { margin: 0; background: radial-gradient(circle at top left, #24486a, #101b2d 48%); }
+    main { width: min(1040px, calc(100% - 28px)); margin: 24px auto 64px; }
+    a { color: #91d9ff; } h1 { margin-bottom: 6px; font-size: clamp(1.45rem, 4vw, 2rem); }
+    .notice { border: 1px solid #b28432; border-radius: 12px; padding: 14px; background: #302a1e; line-height: 1.7; }
+    .card { background: #16243b; border: 1px solid #38516d; border-radius: 16px; padding: 18px; margin-top: 18px; }
+    .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(165px, 1fr)); gap: 10px; }
+    .metric { padding: 10px; border-radius: 10px; background: #0f1c30; } .metric b { display: block; margin-top: 6px; font-size: 1.2rem; }
+    small { color: #b5c6d9; } .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 650px; } th, td { padding: 9px; border-bottom: 1px solid #3a4b61; text-align: left; }
+    th { color: #c8d9e9; } .tag { color: #ffd787; } .muted { color: #b5c6d9; }
+  </style>
+</head>
+<body>
+  <main>
+    <p><a href="./index.html">← カード検索へ戻る</a></p>
+    <h1>PSA公式・海外データ試験</h1>
+    <p class="notice">公開証明書に表示された一部の類似成約だけを保存した試験です。PSA Estimateは成約価格ではなく、証明書のPopulationはそのグレードの枚数であり、カード全体のTOTALやPSA10取得率ではありません。全文のSales Historyと販売商品のタイトルは未検証です。30日・90日の総成約件数は未取得です。海外価格は国内仕入れ上限・GO判定に使用していません。</p>
+    <div id="summary" class="card">試験データを読み込み中...</div>
+    <div id="cards"></div>
+    <section class="card" id="linkage">PSA紐づけ優先キューを読み込み中...</section>
+    <p><a href="./docs/REQUEST_STATUS.md">過去依頼の進捗台帳</a></p>
+  </main>
+  <script>
+    const fmt = new Intl.NumberFormat("ja-JP");
+    const safe = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[c]);
+    const yen = (value) => Number.isFinite(value) ? `¥${fmt.format(value)}` : "未取得";
+    fetch("./data/psa-market-trial.json").then((res) => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.json(); }).then((data) => {
+      document.getElementById("summary").innerHTML = `<strong>対象 ${fmt.format(data.cardCount)}枚・PSA掲載の成約例 ${fmt.format(data.psaExcerptRows)}件</strong><p>PokeDATAと同一出品ID ${fmt.format(data.overlappedRows)}件。重複は合算しません。</p><small>参照為替 1 USD = ${safe(data.fx.rate)}円 / ${safe(data.fx.rateDate)} / <a href="${safe(data.fx.url)}" target="_blank" rel="noopener noreferrer">${safe(data.fx.source)}</a>。これは成約当日の為替ではなく参考換算です。${safe(data.accessLimitation)}</small>`;
+      document.getElementById("cards").innerHTML = data.certificates.map((c) => `<section class="card">
+        <h2>${safe(c.cardName)}</h2>
+        <p><a href="${safe(c.sourceUrl)}" target="_blank" rel="noopener noreferrer">PSA証明書 #${safe(c.certNumber)}</a> / <a href="./index.html?q=${encodeURIComponent(c.cardName)}">国内カードを検索</a></p>
+        <div class="metrics">
+          <div class="metric">照合<b>${c.identity.matched ? "セット・番号・言語・レアリティ一致" : "未一致・採用停止"}</b></div>
+          <div class="metric">PSA${safe(c.identity.grade)} Population（証明書の抜粋）<b>${fmt.format(c.population.count)}枚</b></div>
+          <div class="metric">PSA Estimate（成約ではない）<b>$${safe(c.estimate.usd)} / ${yen(c.estimate.jpyAtReferenceFx)}</b></div>
+          <div class="metric">Sales of Similar Items（部分）<b>${fmt.format(c.salesHistory.excerptRows)}件</b><small>30日・90日総数：未取得</small></div>
+        </div>
+        <p class="muted">PokeDATAとの重複 ${fmt.format(c.salesHistory.overlapWithPokedata)}件（うちPokeDATA側で商品名確認済み ${fmt.format(c.salesHistory.overlapWithVerifiedPokedata)}件）。出品ID不明・商品名不明のものは同一性を証明できません。</p>
+        <div class="table-wrap"><table><thead><tr><th>成約日</th><th>グレード</th><th>価格</th><th>参考円換算</th><th>販売元</th><th>重複</th><th>元ページ</th></tr></thead><tbody>${c.salesHistory.sales.map((s) => `<tr><td>${safe(s.date)}</td><td>${safe(s.grade)}</td><td>$${safe(s.usd)}</td><td>${yen(s.jpyAtReferenceFx)}</td><td>${safe(s.source)} ${safe(s.saleType)}</td><td>${s.alsoInPokedata ? "PokeDATAと同一ID" : "確認なし"}</td><td><a href="${safe(s.listingUrl)}" target="_blank" rel="noopener noreferrer">出品 #${safe(s.listingId)}</a></td></tr>`).join("")}</tbody></table></div>
+        <small class="tag">公開ページの抜粋・日付範囲の網羅性なし。中央値や仕入れ判断には使用しません。</small>
+      </section>`).join("");
+    }).catch((error) => { document.getElementById("summary").textContent = `試験データを読めませんでした: ${error.message}`; });
+    fetch("./data/psa-linkage-priority.json").then((res) => res.json()).then((data) => {
+      document.getElementById("linkage").innerHTML = `<h2>PSA公式POP・紐づけの優先キュー</h2><p>紐づけ済み ${fmt.format(data.counts.linked)}枚 / 未一致 ${fmt.format(data.counts.unlinked)}枚 / 曖昧 ${fmt.format(data.counts.ambiguous)}枚 / セットURL未登録 ${fmt.format(data.counts.setUrlUnmapped)}枚。未一致とアクセス不能は別です。</p><small>${safe(data.note)} 先頭候補: ${data.priorityTop.slice(0, 5).map((row) => safe(row.name)).join("、")}</small>`;
+    }).catch(() => { document.getElementById("linkage").textContent = "優先キューは未取得です。"; });
+  </script>
+</body>
+</html>

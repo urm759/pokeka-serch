@@ -54,6 +54,8 @@ jobs:
           node work/test_purchase_limit_audit.js
           node work/test_grade_calibration.js
           node work/test_daily_fast_update.js
+          node work/test_psa_market_trial.js
+          node work/test_catalog_index_adapter.js
       - name: Commit changed data only
         run: |
           git config user.name "github-actions[bot]"
