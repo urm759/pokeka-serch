@@ -2,29 +2,40 @@
   "version": 1,
   "sources": {
     "yuyutei": {
-      "status": "partial",
-      "reason": null,
+      "status": "manual-action-required",
+      "reason": "HTTP 401/403・認証またはアクセス制限",
       "position": {
         "remaining": 10173,
         "lastSuccessfulPage": "cp3/016/032",
-        "retryQueue": 63,
+        "retryQueue": 64,
         "catalogCount": 243,
-        "accessBlock": null
+        "accessBlock": {
+          "type": "external_access_blocked",
+          "httpStatus": 403,
+          "message": "アクセス拒否または認証切れのため停止。過去の正常データを保持し、取得元への正規アクセスを確認してください。",
+          "stoppedAfterFailures": 1,
+          "detectedAt": "2026-09-28T22:23:11.192Z"
+        }
       },
-      "checkedAt": "2026-09-28T02:26:20.686Z",
-      "batches": 19,
-      "failures": 0
+      "checkedAt": "2026-09-28T22:23:11.829Z",
+      "batches": 1,
+      "failures": 1,
+      "durationMs": 2142
     },
     "priceEvidence": {
-      "status": "time-budget",
+      "status": "partial",
+      "reason": null,
       "position": {
-        "remaining": 1002,
-        "inspected": 45,
-        "resumeCardId": "pk-47917",
-        "stopReason": "fetch failed"
+        "remaining": 739,
+        "inspected": 305,
+        "unavailable": 13,
+        "resumeCardId": null,
+        "stopReason": null
       },
-      "checkedAt": "2026-09-28T02:26:20.695Z",
-      "batches": 0
+      "checkedAt": "2026-09-28T22:28:43.009Z",
+      "batches": 45,
+      "failures": 0,
+      "durationMs": 331180
     },
     "psaLinkage": {
       "status": "queue-updated",
@@ -33,33 +44,29 @@
         "unlinked": 4981,
         "note": "候補整理のみ。PSA公式の認証取得とは別工程"
       },
-      "checkedAt": "2026-09-28T02:26:20.875Z",
+      "checkedAt": "2026-09-28T22:28:43.135Z",
       "batches": 1,
-      "failures": 0
+      "failures": 0,
+      "durationMs": 124
     },
     "torecacamp": {
-      "status": "time-budget",
+      "status": "partial",
+      "reason": null,
       "position": {
-        "sitemap": 24,
-        "productIndex": 184,
+        "sitemap": 25,
+        "productIndex": 173,
         "totalSitemaps": 46,
-        "catalogCount": 5021,
-        "lastFailure": {
-          "pageKey": "sitemap-index",
-          "url": "https://torecacamp-pokemon.com/sitemap.xml",
-          "stage": "fetch-index",
-          "httpStatus": null,
-          "retryCount": 0,
-          "error": "fetch failed",
-          "at": "2026-09-28T02:24:25.117Z"
-        }
+        "catalogCount": 5161,
+        "lastFailure": null
       },
-      "checkedAt": "2026-09-28T02:26:20.925Z",
-      "batches": 0
+      "checkedAt": "2026-09-28T22:34:14.345Z",
+      "batches": 9,
+      "failures": 0,
+      "durationMs": 331219
     }
   },
-  "startedAt": "2026-09-28T02:24:49.677Z",
-  "status": "partial-or-complete",
-  "endedAt": "2026-09-28T02:26:20.926Z",
-  "durationMs": 91249
+  "startedAt": "2026-09-28T22:23:09.688Z",
+  "status": "partial-with-stop",
+  "endedAt": "2026-09-28T22:34:14.357Z",
+  "durationMs": 664669
 }
