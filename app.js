@@ -5171,6 +5171,15 @@ els.clearFavoritesBtn.addEventListener("click", () => {
   render();
 });
 
+function prioritizeCandidateLayout() {
+  const shell = document.querySelector(".shell");
+  const guide = shell?.querySelector(".guide-accordion");
+  if (!shell || !guide) return;
+  document.querySelectorAll(".hero > .stats, .hero > .stats-panel, .hero > .primary-settings, .hero > .catalog-scope, .hero > .advanced-filters:not(.primary-settings)")
+    .forEach((section) => shell.insertBefore(section, guide));
+}
+
+prioritizeCandidateLayout();
 init().catch((err) => {
   console.error(err);
   showStatus("予期しないエラーが発生しました。ブラウザの開発者ツールでコンソールを確認してください。", "error");

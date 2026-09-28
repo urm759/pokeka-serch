@@ -26,4 +26,6 @@ assert(markup.includes('class="advanced-filters primary-settings"'));
 assert(app.includes('aria-label="仕入れ判断の要点"'));
 assert(app.includes('推奨仕入れ値ではありません'));
 assert(app.includes('${purchaseSummaryPanel}') && app.includes('class="card-details"'));
+assert(app.includes("prioritizeCandidateLayout();"), "advanced panels move below the candidate list");
+assert(fs.readFileSync(path.join(root, "styles.css"), "utf8").includes(".shell>.stats,.shell>.stats-panel,.shell>.advanced-filters,.shell>.catalog-scope{order:6}"));
 console.log("safe checkpoint and compact candidate layout: ok");
