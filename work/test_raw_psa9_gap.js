@@ -16,12 +16,13 @@ const base = { asOf, cardId: card.id, identity, raw, psa9Trades: [trade("one", 1
 const valid = model.evaluate(base);
 assert.equal(valid.status, "比較可能・参考");
 assert.equal(valid.gapJpy, 3000);
-assert.equal(valid.netGapJpy, 2700);
+assert.equal(valid.netGapJpy, 1700, "手数料はPSA9の売価全体から引く");
 assert.equal(valid.psa10.premiumToRawJpy, 20000);
 assert.equal(valid.usedForPurchaseDecision, false);
 assert.equal(model.evaluate({ ...base, psa9Trades: [] }).status, "検証不能", "PSA9集計価格は個別成約の代わりにならない");
 assert.equal(model.evaluate({ ...base, raw: { ...raw, fetchedAt: "2026-09-10T00:00:00Z" } }).status, "検証不能");
 assert.equal(model.evaluate({ ...base, priceConflict: true }).status, "検証不能");
+assert.equal(model.evaluate({ ...base, psa9Trades: [trade("one", 12000), trade("two", 13000), trade("three", 30000)] }).status, "検証不能", "PSA9価格対立を比較に使わない");
 assert.equal(model.evaluate({ ...base, raw: { ...raw, identity: { ...raw.identity, observed: { ...identity, variant: "masterball" } } } }).status, "検証不能");
 assert.equal(model.evaluate({ ...base, psa9Trades: [trade("one", 12000), trade("two", 13000), trade("three", 14000, { number: "111" })] }).status, "検証不能");
 assert.equal(model.evaluate({ ...base, psa9Trades: [trade("one", 12000), trade("two", 13000), trade("three", 14000, { country: "US" })] }).status, "検証不能");

@@ -20,7 +20,7 @@ for (const card of Array.isArray(cards) ? cards : cards.cards || []) {
   const result = model.evaluate({ cardId: card.id, identity: model.identityFromCard(card), raw,
     psa9Trades: card.snkPsa9Trades, psa9Aggregate: card.snkPsa9Price, psa10Price: card.snkPsa10Price,
     saleFeeRate: 0, priceConflict: disputed.has(card.id), asOf: now });
-  if (result.raw.median && !result.reasons.some((reason) => reason.includes("取得日が古い"))) counts.stateAFreshExact += 1;
+  if (result.raw.median && result.raw.count >= 3 && raw.historyComplete30d && !result.reasons.some((reason) => reason.includes("状態A") || reason.includes("素体価格"))) counts.stateAFreshExact += 1;
   if (result.status === "比較可能・参考") counts.verifiedComparable += 1;
   if (examples.length < 5 && raw?.sold30Median && card.snkPsa9Price) examples.push({ id: card.id, name: card.name, status: result.status, reasons: result.reasons,
     stateAMedian: result.raw.median, stateACount: result.raw.count, psa9IndividualCount: result.psa9.count,

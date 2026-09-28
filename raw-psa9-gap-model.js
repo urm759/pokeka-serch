@@ -64,6 +64,7 @@
     const psa9Median = median(validTrades.map((trade) => trade.price));
     const psa9Latest = validTrades.length ? Math.max(...validTrades.map((trade) => trade.soldAt)) : null;
     if (validTrades.length < 3) reasons.push("国内PSA9の同一仕様・30日実成約が3件未満");
+    if (validTrades.length >= 3 && Math.max(...validTrades.map((trade) => trade.price)) / Math.min(...validTrades.map((trade) => trade.price)) > 1.5) reasons.push("国内PSA9成約価格が対立");
     if (rawDate && psa9Latest && Math.abs(rawDate - psa9Latest) > 14 * DAY) reasons.push("状態AとPSA9の最新成約日が14日超離れている");
     const status = reasons.length ? "検証不能" : "比較可能・参考";
     const feeRate = input.saleFeeRate != null && Number.isFinite(Number(input.saleFeeRate)) ? Math.min(100, Math.max(0, Number(input.saleFeeRate))) : null;
@@ -79,7 +80,7 @@
       saleFeeRate: feeRate,
       gapJpy: comparable ? Math.round(psa9Median - rawPrice) : null,
       gapPct: comparable ? Math.round((psa9Median / rawPrice - 1) * 1000) / 10 : null,
-      netGapJpy: comparable ? Math.round((psa9Median - rawPrice) * netMultiplier) : null,
+      netGapJpy: comparable ? Math.round(psa9Median * netMultiplier - rawPrice) : null,
       psa10: { price: psa10Price, premiumToRawJpy: exactRaw && rawPrice && psa10Price ? Math.round(psa10Price - rawPrice) : null },
       grading: { psa10Rate: input.psa10Rate != null && Number.isFinite(Number(input.psa10Rate)) ? Number(input.psa10Rate) : null, fee: positive(input.gradingFee), lockDays: positive(input.lockDays) },
       usedForPurchaseDecision: false,
