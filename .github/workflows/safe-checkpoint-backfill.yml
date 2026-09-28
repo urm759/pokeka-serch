@@ -1,0 +1,44 @@
+name: Safe Checkpoint Backfill
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 17 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: all-site-data-refresh
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+      - name: Continue bounded source checkpoints without an LLM
+        run: node work/run_safe_backfill.js
+      - name: Rebuild only dependent summaries
+        run: |
+          node work/build_card_completion.js
+          node work/build_purchase_limit_audit.js
+          node work/finalize_update_status.js
+      - name: Check publication safety
+        run: |
+          node work/test_price_integrity.js
+          node work/test_candidate_daily_audit.js
+          node work/test_safe_backfill.js
+          node work/test_purchase_limit_audit.js
+      - name: Commit safe progress and checkpoints
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data work
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Continue safe checkpoint backfill"
+          git push

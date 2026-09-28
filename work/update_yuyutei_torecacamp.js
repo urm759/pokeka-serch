@@ -229,7 +229,7 @@ function setStock(history, cardId, index, value) {
   history.stocks[cardId][index] = value;
 }
 
-function yuyuteiPriority(card, buybackCards = {}) {
+function yuyuteiPriority(card, buybackCards = {}, priorityContext = null) {
   const price = Number(card.price || 0);
   const psa10 = Number(card.snkPsa10Price || 0);
   const expectedGross = psa10 > 0 && price > 0 ? psa10 * 0.92 - price - 12980 : -Infinity;
@@ -237,8 +237,10 @@ function yuyuteiPriority(card, buybackCards = {}) {
   const hasPsa10Market = psa10 > 0;
   const hasBuyback = Object.values(buybackCards[card.id]?.shops || {})
     .some((shop) => Number(shop.price || 0) > 0 && !shop.quarantined);
-  const rank = currentCandidate ? 0 : hasPsa10Market ? 1 : hasBuyback ? 2 : price >= 30000 ? 3 : 4;
-  const labels = ["現在の候補カード", "PSA10相場あり", "買取掲載あり", "高価格帯", "残り全件"];
+  const oneItemAway = priorityContext?.oneItemAway?.has(card.id);
+  const priceReview = priorityContext?.priceReview?.has(card.id);
+  const rank = currentCandidate ? 0 : oneItemAway ? 1 : priceReview ? 2 : hasPsa10Market ? 3 : hasBuyback ? 4 : price >= 30000 ? 5 : 6;
+  const labels = ["現在の候補カード", "必須不足1項目", "価格確認対象", "PSA10相場あり", "買取掲載あり", "高価格帯", "残り全件"];
   return {
     rank,
     label: labels[rank],
@@ -258,23 +260,30 @@ async function updateYuyutei(cards, paths) {
   if (!pageCache.entries || typeof pageCache.entries !== "object") pageCache.entries = {};
   const byId = new Map(catalog.map((entry) => [entry.cardId, entry]));
   const buybackCards = read(path.join(ROOT, "data", "shop-buyback-summary.json"), { cards: {} }).cards || {};
+  const completion = read(path.join(ROOT, "data", "card-catalog-completion.json"), { cards: {} }).cards || {};
+  const priceAudit = read(path.join(ROOT, "data", "state-a-price-audit.json"), { cards: [] });
+  const priorityContext = {
+    oneItemAway: new Set(Object.entries(completion).filter(([, entry]) => entry.a === 1).map(([id]) => id)),
+    priceReview: new Set((priceAudit.cards || []).map((entry) => entry.id)),
+  };
   const onlyIds = new Set(String(process.env.YUYUTEI_ONLY_ID || "").split(",").map((value) => value.trim()).filter(Boolean));
   const batchLimit = Math.max(1, Number(process.env.YUYUTEI_SEARCH_BATCH || 100));
+  const maxFailures = Math.max(1, Number(process.env.SHOP_MAX_FAILURES || 3));
   const eligibleTargets = cards.filter((card) => {
     const signature = cardSignature(card);
     const searchable = Boolean(signature.setCode && signature.cardNo && signature.base);
     return searchable && (onlyIds.size ? onlyIds.has(card.id) : !byId.has(card.id) && due(progress.attemptedCards[card.id], JSON.stringify(signature)));
   })
     .sort((left, right) => {
-      const a = yuyuteiPriority(left, buybackCards);
-      const b = yuyuteiPriority(right, buybackCards);
+      const a = yuyuteiPriority(left, buybackCards, priorityContext);
+      const b = yuyuteiPriority(right, buybackCards, priorityContext);
       return a.rank - b.rank || b.secondaryScore - a.secondaryScore || String(left.id).localeCompare(String(right.id));
     });
   const targets = eligibleTargets.slice(0, batchLimit);
-  progress.priorityOrder = ["現在の候補カード", "PSA10相場あり", "買取掲載あり", "高価格帯", "残り全件"];
+  progress.priorityOrder = ["現在の候補カード", "必須不足1項目", "価格確認対象", "PSA10相場あり", "買取掲載あり", "高価格帯", "残り全件"];
   progress.batchLimit = batchLimit;
   progress.resumePosition = Math.max(0, cards.length - eligibleTargets.length);
-  progress.lastBatchTargets = targets.map((card) => ({ cardId: card.id, ...yuyuteiPriority(card, buybackCards) }));
+  progress.lastBatchTargets = targets.map((card) => ({ cardId: card.id, ...yuyuteiPriority(card, buybackCards, priorityContext) }));
   let linked = 0;
   let matched = 0;
   let updated = 0;
@@ -298,7 +307,7 @@ async function updateYuyutei(cards, paths) {
   }
   for (const card of targets) {
     const signature = cardSignature(card); const signatureKey = JSON.stringify(signature);
-    const priority = yuyuteiPriority(card, buybackCards);
+    const priority = yuyuteiPriority(card, buybackCards, priorityContext);
     const pageKey = `${signature.setCode || "unknown"}/${signature.cardNo || card.id}`;
     const query = `${signature.base} ${signature.cardNo}`;
     const searchUrl = `${YUYUTEI}/sell/poc/s/search?${new URLSearchParams({ search_word: query, rare: "", type: "", kizu: "0" })}`;
@@ -367,6 +376,7 @@ async function updateYuyutei(cards, paths) {
       metric.status = "success";
       metric.stage = "complete";
       consecutiveAccessBlocks = 0;
+      if (!metric.fromCache) progress.lastExternalBlock = null;
     } catch (error) {
       failed += 1;
       Object.assign(metric, error.metric || {});
@@ -390,11 +400,11 @@ async function updateYuyutei(cards, paths) {
       console.warn(`yuyutei search failed ${card.id}: ${error.message}`);
       if ([401, 403].includes(Number(metric.httpStatus))) consecutiveAccessBlocks += 1;
       else consecutiveAccessBlocks = 0;
-      if (consecutiveAccessBlocks >= 3) {
+      if (consecutiveAccessBlocks >= 1) {
         externalBlock = {
           type: "external_access_blocked",
           httpStatus: Number(metric.httpStatus),
-          message: "GitHub Actions実行元から連続してアクセス拒否。過去の正常データを保持し、PCローカル更新待ちです。",
+          message: "アクセス拒否または認証切れのため停止。過去の正常データを保持し、取得元への正規アクセスを確認してください。",
           stoppedAfterFailures: consecutiveAccessBlocks,
           detectedAt: new Date().toISOString(),
         };
@@ -403,7 +413,7 @@ async function updateYuyutei(cards, paths) {
     }
     metric.endedAt = new Date().toISOString();
     recordFetchMetric("yuyutei", metric);
-    if (externalBlock) break;
+    if (externalBlock || failed >= maxFailures) break;
   }
   const catalogGuard = guardCatalogDrop(previousCatalog, [...byId.values()]);
   catalog = catalogGuard.catalog;
@@ -421,7 +431,7 @@ async function updateYuyutei(cards, paths) {
   const completionStatus = failed > 0 || remainingSearchCount > 0 ? "partial" : "success";
   const priorityRemaining = searchableCards.reduce((counts, card) => {
     if (byId.has(card.id) || !due(progress.attemptedCards[card.id], JSON.stringify(cardSignature(card)))) return counts;
-    const priority = yuyuteiPriority(card, buybackCards);
+    const priority = yuyuteiPriority(card, buybackCards, priorityContext);
     counts[priority.label] = (counts[priority.label] || 0) + 1;
     return counts;
   }, {});

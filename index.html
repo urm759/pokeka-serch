@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20260928-limit-display-v1" />
+  <link rel="stylesheet" href="./styles.css?v=20260928-focus-v1" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -19,13 +19,17 @@
         平均美品価格とPSA10相場を比較して、仕入れ候補をすばやく確認できます。
       </p>
 
-      <div class="controls controls-primary">
+      <div class="control-search-row">
         <label class="control control-wide">
           <span>検索</span>
           <input id="qInput" type="text" placeholder="カード名・型番で検索" />
           <small>現在の絞り込み条件内を検索します。見つからない場合は診断表示で除外理由を確認できます。</small>
           <label class="inline-check"><input id="diagnosticSearchInput" type="checkbox" /> 診断表示（検索カードだけ条件外でも表示）</label>
         </label>
+      </div>
+      <details class="advanced-filters primary-settings">
+        <summary><span>詳細設定</span><small>鑑定プラン・利益条件・並び順</small></summary>
+        <div class="controls controls-primary">
         <label class="control psa-plan-control">
           <span>PSA Japan 鑑定プラン</span>
           <select id="psaPlanInput">
@@ -129,6 +133,7 @@
           </select>
         </label>
       </div>
+      </details>
 
       <div class="quick-presets" aria-label="かんたん絞り込み">
         <span>かんたん絞り込み</span>
@@ -595,6 +600,10 @@
           <span class="k">条件一致</span>
           <strong id="countStat">0</strong>
         </div>
+      </div>
+      <details class="stats-panel">
+        <summary>利益・判定の集計を表示</summary>
+        <div class="stats stats-secondary">
         <div class="stat">
           <span id="topRoiLabel" class="k">PSA10時 最大利益率</span>
           <strong id="topRoiStat">-</strong>
@@ -629,7 +638,8 @@
           <strong id="operationalConcentrationStat">-</strong>
           <small>全カードの同額集中を監査</small>
         </div>
-      </div>
+        </div>
+      </details>
     </section>
 
     <details class="card guide guide-accordion" aria-labelledby="buyGuideTitle">
@@ -746,21 +756,25 @@
       </details>
     </details>
 
-    <section class="toolbar card">
+    <section class="toolbar card" id="candidateList">
       <div>
         <h2>候補一覧</h2>
         <p>価格・取引件数・利益率を比較し、外部の商品ページへ直接移動できます。</p>
       </div>
       <div class="toolbar-actions">
-        <div class="toolbar-meta">主要データ完了日 <strong id="majorDataUpdatedAt">-</strong></div>
-        <div class="toolbar-meta">全データ完了日 <strong id="allDataUpdatedAt">-</strong></div>
-        <div class="toolbar-meta">日次高速更新 <strong>毎日 4:30 / 17:00 開始</strong></div>
         <button id="openFavoritesBtn" type="button">仕入れ候補 <strong id="favoriteCountToolbar">0</strong>枚</button>
         <button id="copyLinkBtn" type="button">この条件をURLに反映</button>
-        <a class="refresh-action" href="https://github.com/urm759/pokeka-serch/actions/workflows/daily-fast-update.yml" target="_blank" rel="noreferrer">スマホで高速更新</a>
-        <a class="refresh-action secondary" href="https://github.com/urm759/pokeka-serch/actions/workflows/backfill-data.yml" target="_blank" rel="noreferrer">残件を少量補完</a>
-        <a id="sourceLink" href="https://toreca-souba.com/" target="_blank" rel="noreferrer">みんトレを見る</a>
       </div>
+      <details class="toolbar-audit">
+        <summary>データ監査・取得状況を開く</summary>
+        <div class="toolbar-actions audit-actions">
+          <div class="toolbar-meta">主要データ完了日 <strong id="majorDataUpdatedAt">-</strong></div>
+          <div class="toolbar-meta">全データ完了日 <strong id="allDataUpdatedAt">-</strong></div>
+          <div class="toolbar-meta">日次高速更新 <strong>毎日 4:30 / 17:00 開始</strong></div>
+          <a class="refresh-action" href="https://github.com/urm759/pokeka-serch/actions/workflows/daily-fast-update.yml" target="_blank" rel="noreferrer">スマホで高速更新</a>
+          <a class="refresh-action secondary" href="https://github.com/urm759/pokeka-serch/actions/workflows/safe-checkpoint-backfill.yml" target="_blank" rel="noreferrer">補完をチェックポイントから再開</a>
+          <a id="sourceLink" href="https://toreca-souba.com/" target="_blank" rel="noreferrer">みんトレを見る</a>
+        </div>
       <details class="source-monitor-panel coverage-panel">
         <summary><span>国内ショップ・PSA公式の連携状況</span><strong id="cardrushCoverage">集計中</strong></summary>
         <div id="linkCoverageDetails" class="coverage-details" aria-label="ショップごとの連携率"></div>
@@ -775,6 +789,7 @@
         <div id="dataFreshness" class="data-freshness" aria-label="データ源ごとの更新状況"></div>
       </details>
       <div id="shopReferenceLinks" class="shop-reference-links" aria-label="参照ショップ"></div>
+      </details>
     </section>
 
     <details class="card limit-model-audit-panel">
@@ -813,6 +828,6 @@
   <script src="./candidate-visibility.js?v=20260927-v1"></script>
   <script src="./catalog-index-adapter.js?v=20260927-v1"></script>
   <script src="./limit-display-model.js?v=20260928-v1"></script>
-  <script src="./app.js?v=20260928-price-integrity-v2"></script>
+  <script src="./app.js?v=20260928-focus-v1"></script>
 </body>
 </html>

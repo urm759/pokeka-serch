@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "sources": {
+    "yuyutei": {
+      "status": "partial",
+      "reason": null,
+      "position": {
+        "remaining": 10173,
+        "lastSuccessfulPage": "cp3/016/032",
+        "retryQueue": 63,
+        "catalogCount": 243,
+        "accessBlock": null
+      },
+      "checkedAt": "2026-09-28T02:26:20.686Z",
+      "batches": 19,
+      "failures": 0
+    },
+    "priceEvidence": {
+      "status": "time-budget",
+      "position": {
+        "remaining": 1002,
+        "inspected": 45,
+        "resumeCardId": "pk-47917",
+        "stopReason": "fetch failed"
+      },
+      "checkedAt": "2026-09-28T02:26:20.695Z",
+      "batches": 0
+    },
+    "psaLinkage": {
+      "status": "queue-updated",
+      "reason": null,
+      "position": {
+        "unlinked": 4981,
+        "note": "候補整理のみ。PSA公式の認証取得とは別工程"
+      },
+      "checkedAt": "2026-09-28T02:26:20.875Z",
+      "batches": 1,
+      "failures": 0
+    },
+    "torecacamp": {
+      "status": "time-budget",
+      "position": {
+        "sitemap": 24,
+        "productIndex": 184,
+        "totalSitemaps": 46,
+        "catalogCount": 5021,
+        "lastFailure": {
+          "pageKey": "sitemap-index",
+          "url": "https://torecacamp-pokemon.com/sitemap.xml",
+          "stage": "fetch-index",
+          "httpStatus": null,
+          "retryCount": 0,
+          "error": "fetch failed",
+          "at": "2026-09-28T02:24:25.117Z"
+        }
+      },
+      "checkedAt": "2026-09-28T02:26:20.925Z",
+      "batches": 0
+    }
+  },
+  "startedAt": "2026-09-28T02:24:49.677Z",
+  "status": "partial-or-complete",
+  "endedAt": "2026-09-28T02:26:20.926Z",
+  "durationMs": 91249
+}

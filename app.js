@@ -4521,6 +4521,23 @@ function render() {
         </div>
       </details>
     ` : "";
+    const glanceProfit = signedMoney(card.currentStoreOffer
+      ? storeScenarios.centralForecast?.expectedProfit
+      : currentScenarios.centralForecast?.expectedProfit);
+    const glanceWarning = dataQuality.manualReviewReasons?.[0]
+      || dataQuality.dataAnomalyReasons?.[0]
+      || limitDisplay.warnings?.[0]
+      || dataQuality.dataShortageReasons?.[0]
+      || (purchaseDecision?.verdict === "見送り" ? purchaseDecision.reasons?.[0] : "");
+    const candidateGlance = state.purchaseMode === "snkr-raw" ? "" : `
+      <section class="candidate-glance" aria-label="仕入れ判断の要点">
+        <div class="glance-verdict"><span>今回の判定</span><strong>${escapeHtml(displayVerdict)}</strong><small>${escapeHtml(purchaseAvailability.label || "購入先未確認")}</small></div>
+        <div><span>現在買える状態A</span><strong>${card.currentStoreOffer ? `¥${fmt.format(card.currentStoreOffer.value)}` : "未取得"}</strong><small>${escapeHtml(card.currentStoreOffer?.source || "在庫あり価格なし")}</small></div>
+        <div class="glance-stable"><span>安定重視の仕入れ上限</span><strong>${limitMoney(limitDisplay.stableCap)}</strong><small>仕入れ判定・絞り込みの基準</small></div>
+        <div class="glance-break-even"><span>現相場の期待損益分岐上限</span><strong>${limitMoney(limitDisplay.currentCap)}</strong><small>推奨仕入れ値ではありません</small></div>
+        <div><span>期待利益</span><strong class="${glanceProfit.className}">${glanceProfit.text}</strong><small>${card.currentStoreOffer ? "店舗価格" : "基準相場"}で購入 × 中央予測</small></div>
+      </section>
+      ${glanceWarning ? `<div class="candidate-warning ${dataQuality.manualReview ? "manual" : ""}"><strong>注意：</strong>${escapeHtml(glanceWarning)}</div>` : ""}`;
     return `
       <article class="row card ${state.purchaseMode === "snkr-raw" ? "snkr-raw-mode" : ""}" data-card-id="${card.id}">
         <a class="thumb" href="${buildTorecaCardUrl(card)}" target="_blank" rel="noreferrer" aria-label="みんトレで${name}を開く">
@@ -4537,7 +4554,7 @@ function render() {
           ${presetTagsHtml}
           ${catalogStatusHtml}
           ${gradeHistoryHtml}
-          ${snkrRawPanel}
+          ${state.purchaseMode === "snkr-raw" ? snkrRawPanel : ""}
           ${state.purchaseMode === "snkr-raw" ? `
             <div class="market-links snkr-raw-only-links" aria-label="外部サイトへの直リンク">
               <div class="market-links-title">商品ページ</div>
@@ -4546,15 +4563,17 @@ function render() {
           ` : ""}
 
           <div class="psa-decision-content">
+          ${candidateGlance}
           ${searchDiagnosticPanel}
-          ${purchaseSummaryPanel}
-          ${buyLimitPanel}
-          ${dataQualityPanel}
-          ${marketSignalsPanel}
 
           <details class="card-details">
-            <summary><span>詳細データを見る</span><small>供給上限・下値安定・買取率・相場・公式PSA</small></summary>
+            <summary><span>計算内訳と相場データを見る</span><small>仕入れ上限・供給・相場・PSA公式</small></summary>
             <div class="card-details-body">
+              ${purchaseSummaryPanel}
+              ${buyLimitPanel}
+              ${dataQualityPanel}
+              ${marketSignalsPanel}
+              ${state.purchaseMode !== "snkr-raw" ? snkrRawPanel : ""}
               ${buyLimits ? `<div class="detail-limit-comparison">${limitComparison}</div>` : ""}
               <div class="metrics market-summary">
                 <div class="metric metric-primary"><span>平均美品価格（中央値）</span><strong>${cardPriceText}</strong><small>${priceSources}</small></div>

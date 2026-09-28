@@ -1,0 +1,9 @@
+{
+  "totalRuntimeMs": 1320000,
+  "sources": {
+    "yuyutei": { "runtimeMs": 360000, "batchTimeoutMs": 90000, "batchSize": 12, "intervalMs": 1100, "maxFailures": 1 },
+    "priceEvidence": { "runtimeMs": 360000, "batchTimeoutMs": 90000, "batchSize": 12, "intervalMs": 1100, "maxFailures": 2 },
+    "psaLinkage": { "runtimeMs": 30000, "batchTimeoutMs": 30000, "maxFailures": 1 },
+    "torecacamp": { "runtimeMs": 360000, "batchTimeoutMs": 180000, "batchSize": 35, "intervalMs": 1100, "maxFailures": 1 }
+  }
+}

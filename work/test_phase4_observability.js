@@ -71,7 +71,7 @@ assert.match(workflow, /build_snkr_listing_history\.js/);
 assert.match(updater, /sourceOnly === "all" \|\| sourceOnly === "yuyutei"/);
 assert.match(updater, /sourceOnly === "all" \|\| sourceOnly === "torecacamp"/);
 assert.match(updater, /external_access_blocked/);
-assert.match(updater, /consecutiveAccessBlocks >= 3/);
+assert.match(updater, /consecutiveAccessBlocks >= 1/, "HTTP 401/403 must stop on the first access block");
 assert.match(finalizer, /return jstDate\(parsed\)/);
 assert.match(finalizer, /timeout_or_forced_exit/);
 assert.match(finalizer, /majorSourceIds/);

@@ -1467,3 +1467,69 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .grade-card-history small { display: block; margin-top: 6px; line-height: 1.5; }
 .search-incomplete-list { display: grid; gap: 6px; margin-top: 8px; }
 .search-incomplete-list a { display: flex; justify-content: space-between; gap: 8px; padding: 7px 9px; border-radius: 8px; background: rgba(255,255,255,.06); }
+
+/* Keep the daily buying path ahead of reference tables and source audits. */
+.shell{display:flex;flex-direction:column}
+.shell>.hero{order:0}
+.shell>.toolbar{order:1}
+.shell>#searchDiagnostic{order:2}
+.shell>#grid{order:3}
+.shell>.load-more-wrap{order:4}
+.shell>#favoritesPanel{order:5}
+.shell>.guide-accordion{order:6}
+.shell>#shopRateSummaryPanel{order:7}
+.shell>#marketBacktestPanel{order:8}
+.shell>.limit-model-audit-panel{order:9}
+.shell>.footer{order:10}
+.hero{display:flex;flex-direction:column}
+.hero>.control-search-row{order:1;margin-top:14px}
+.hero>.quick-presets{order:2}
+.hero>.stats{order:3}
+.hero>.stats-panel{order:4}
+.hero>.primary-settings{order:5}
+.hero>.catalog-scope{order:6}
+.hero>.advanced-filters:not(.primary-settings){order:7}
+.control-search-row .control{position:relative;z-index:1}
+.primary-settings .controls-primary{grid-template-columns:repeat(auto-fit,minmax(210px,1fr));margin:0;padding:0 14px 14px}
+.stats-panel,.toolbar-audit{width:100%;margin-top:10px;border:1px solid var(--line);border-radius:15px;background:rgba(5,10,20,.34)}
+.stats-panel>summary,.toolbar-audit>summary{padding:11px 14px;cursor:pointer;color:#bae6fd;font-weight:800;list-style:none}
+.stats-panel>summary::-webkit-details-marker,.toolbar-audit>summary::-webkit-details-marker{display:none}
+.stats-panel>summary::after,.toolbar-audit>summary::after{content:" ＋"}
+.stats-panel[open]>summary::after,.toolbar-audit[open]>summary::after{content:" −"}
+.stats-panel .stats{margin:0;padding:0 10px 10px}
+.hero>.stats{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:10px}
+.toolbar-audit{flex-basis:100%}
+.toolbar-audit .audit-actions{padding:0 10px 10px}
+.toolbar-audit .source-monitor-panel{margin:0 10px 8px;width:calc(100% - 20px)}
+.toolbar-audit .shop-reference-links{padding:0 10px 10px;flex-wrap:wrap}
+.toolbar-meta{white-space:normal}
+.candidate-glance{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
+.candidate-glance>div{min-width:0;padding:11px;border:1px solid rgba(255,255,255,.14);border-radius:13px;background:#0b1224}
+.candidate-glance span,.candidate-glance small{display:block;color:var(--muted);font-size:11px;line-height:1.4}
+.candidate-glance strong{display:block;margin:4px 0;font-size:clamp(17px,1.8vw,23px);line-height:1.2;overflow-wrap:anywhere}
+.candidate-glance .glance-verdict{border-color:rgba(251,191,36,.48);background:rgba(251,191,36,.08)}
+.candidate-glance .glance-stable{border-color:rgba(56,217,150,.48);background:rgba(56,217,150,.08)}
+.candidate-glance .glance-stable strong{color:#86efac}
+.candidate-glance .glance-break-even{border-color:rgba(125,211,252,.42)}
+.candidate-glance .glance-break-even strong{color:#bae6fd}
+.candidate-warning{margin-top:8px;padding:9px 11px;border-left:3px solid #f59e0b;border-radius:9px;background:rgba(245,158,11,.1);color:#fde68a;font-size:11px;line-height:1.45;overflow-wrap:anywhere}
+.candidate-warning.manual{border-color:#f87171;background:rgba(248,113,113,.11);color:#fecaca}
+.candidate-glance .glance-break-even small{color:#fbbf24}
+@media(max-width:720px){
+  .hero{padding:14px}
+  .hero>.control-search-row{margin-top:10px}
+  .quick-presets button{min-height:55px;padding:10px 11px}
+  .quick-presets button strong{font-size:13px}
+  .quick-presets button small{font-size:10px}
+  .candidate-glance{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  .candidate-glance>div{padding:9px}
+  .candidate-glance .glance-verdict,.candidate-glance .glance-stable{grid-column:span 1}
+  .candidate-glance strong{font-size:17px}
+  .candidate-glance span,.candidate-glance small{font-size:10px}
+  .toolbar{padding:12px}
+  .toolbar-actions{gap:6px}
+  .toolbar-meta{padding:6px 8px;font-size:10px}
+  .thumb{min-height:250px}
+  .thumb img{max-height:245px;transform:scale(1.05)}
+  .thumb:hover img{transform:scale(1.05)}
+}
