@@ -2,13 +2,13 @@ const SOURCE_POLICIES = {
   toreca: { workflow: "Daily Fast Update", times: ["04:30", "17:00"], ttlHours: 30 },
   cardrush: { workflow: "Manual Full Refresh / Refresh Cardrush Stock", times: [], ttlHours: 72 },
   hareruya2: { workflow: "Manual Full Refresh", times: [], ttlHours: 72 },
-  yuyutei: { workflow: "PCローカル更新（GitHub共有ランナーは403）", times: [], ttlHours: 72 },
-  torecacamp: { workflow: "Incremental Data Backfill", times: ["05:30"], ttlHours: 48 },
+  yuyutei: { workflow: "Safe Checkpoint Backfill（GitHub共有ランナー403時は停止）", times: ["02:00"], ttlHours: 72 },
+  torecacamp: { workflow: "Safe Checkpoint Backfill", times: ["02:00"], ttlHours: 48 },
   shopBuyback: { workflow: "Daily Fast Update", times: ["04:30", "17:00"], ttlHours: 30 },
   marketAnalysis: { workflow: "Daily Fast Update", times: ["04:30", "17:00"], ttlHours: 30 },
   psaOfficial: { workflow: "PCローカル PSA公式更新", times: ["04:30", "17:00"], ttlHours: 36, local: true },
   psaJapan: { workflow: "Daily Fast Update", times: ["04:30", "17:00"], ttlHours: 30 },
-  pokedata: { workflow: "Incremental Data Backfill（公開分）", times: ["05:30"], ttlHours: 72 },
+  pokedata: { workflow: "PokeDATA Incremental Backfill（公開分）", times: ["05:30"], ttlHours: 72 },
   snkrRaw: { workflow: "Daily Fast Update", times: ["04:30", "17:00"], ttlHours: 30 },
 };
 

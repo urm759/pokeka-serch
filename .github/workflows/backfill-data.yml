@@ -1,4 +1,4 @@
-name: Incremental Data Backfill
+name: PokeDATA Incremental Backfill
 
 on:
   workflow_dispatch:
@@ -21,13 +21,6 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: "24"
-      - name: Continue Toreca Camp checkpoint
-        env:
-          SHOP_SOURCE_ONLY: torecacamp
-          TORECACAMP_SITEMAPS_PER_RUN: "1"
-          TORECACAMP_PRODUCT_DETAIL_BATCH: "80"
-          TORECACAMP_RUNTIME_LIMIT_MS: "420000"
-        run: node work/run_tracked_update.js torecacamp work/update_yuyutei_torecacamp.js
       - name: Continue public PokeDATA checkpoint
         env:
           POKEDATA_SET: Pokemon Card 151 Japanese

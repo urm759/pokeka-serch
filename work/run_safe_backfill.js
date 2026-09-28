@@ -26,7 +26,8 @@ const sourceProgress = (source) => {
   if (source === "priceEvidence") {
     const value = read(path.join(ROOT, "data", "state-a-price-audit.json"), {});
     return { remaining: value.lastRun?.remaining ?? Math.max(0, Number(value.disputedCount || 0) - Number(value.inspectedSourcePages || 0)),
-      inspected: value.inspectedSourcePages || 0, resumeCardId: value.lastRun?.resumeCardId || null,
+      inspected: value.inspectedSourcePages || 0, unavailable: value.unavailableSourcePages || 0,
+      resumeCardId: value.lastRun?.resumeCardId || null,
       stopReason: value.lastRun?.stopReason || null };
   }
   if (source === "psaLinkage") {
@@ -93,7 +94,7 @@ function run(options = {}) {
     while (Date.now() - sourceStarted < settings.runtimeMs && Date.now() - started < totalLimit) {
       const position = sourceProgress(source);
       if (complete(source, position) && source !== "psaLinkage") {
-        state.sources[source] = { status: "completed", position, checkedAt: now(), batches };
+        state.sources[source] = { status: source === "priceEvidence" && position.unavailable > 0 ? "reviewed-with-unavailable" : "completed", position, checkedAt: now(), batches };
         break;
       }
       if (source === "yuyutei" && process.env.GITHUB_ACTIONS === "true" && position.accessBlock?.httpStatus === 403) {
@@ -137,6 +138,7 @@ function run(options = {}) {
         const batch = shopBatch;
         const record = {
           lastAttemptAt: batchStartedAt, startedAt: batchStartedAt, endedAt: now(),
+          durationMs: Date.now() - Date.parse(batchStartedAt), checkpoint: after,
           status: stopped ? "failed" : "partial", sourceState: stopped ? "取得処理停止・過去データ保持" : "部分取得・チェックポイントから継続",
           acquiredCount: after.catalogCount, updatedCount: Number(batch.linked || 0) + Number(batch.updated || 0),
           fetchFailureCount: Number(batch.failed || 0) + (result.status !== 0 ? 1 : 0),
@@ -149,7 +151,7 @@ function run(options = {}) {
         appendRunHistory(source, record);
       }
       state.sources[source] = {
-        status: stopped ? accessBlocked ? "manual-action-required" : "stopped" : source === "psaLinkage" ? "queue-updated" : complete(source, after) ? "completed" : "partial",
+        status: stopped ? accessBlocked ? "manual-action-required" : "stopped" : source === "psaLinkage" ? "queue-updated" : complete(source, after) ? source === "priceEvidence" && after.unavailable > 0 ? "reviewed-with-unavailable" : "completed" : "partial",
         reason: accessBlocked ? "HTTP 401/403・認証またはアクセス制限" : abruptDrop ? "取得件数急減・監査待ち" : failure ? String(output?.stopReason || shopBatch.lastFailure?.error || after.lastFailure?.error || result.error?.message || result.stderr || `exit ${result.status}`).slice(0, 250) : null,
         position: after, checkedAt: now(), batches, failures,
       };
@@ -166,6 +168,7 @@ function run(options = {}) {
       previousPosition = marker;
     }
     if (state.sources[source].status === "pending") state.sources[source] = { status: "time-budget", position: sourceProgress(source), checkedAt: now(), batches };
+    state.sources[source].durationMs = Date.now() - sourceStarted;
     save(state);
   }
   state.endedAt = now();

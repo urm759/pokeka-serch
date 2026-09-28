@@ -46,6 +46,7 @@ const pokedata = read("data/pokedata-summary.json");
 const pokedataManifest = read("data/pokedata/manifest.json", { sets: [] });
 const snkrRaw = read("data/snkr-raw-flip-summary.json", { coverage: {}, cards: {} });
 const updatePerformance = read("data/update-performance.json", {});
+const safeBackfill = read("work/safe-backfill-progress.json", {});
 const runs = read("work/source-update-runs.json", { sources: {} });
 const runHistory = read("work/source-update-history.json", { version: 1, sources: {} });
 const psaStoredTask = read("work/psa_update_state.json", {});
@@ -268,6 +269,9 @@ const payload = {
     backfill: {
       label: "バックフィル",
       status: sources.yuyutei?.status === "partial" || sources.torecacamp?.status === "partial" || sources.pokedata?.status === "partial" ? "巡回中" : "完了",
+      updatedAt: safeBackfill.endedAt || null,
+      durationMs: Number.isFinite(safeBackfill.durationMs) ? safeBackfill.durationMs : null,
+      sourceStages: safeBackfill.sources || null,
       checkpoint: `遊々亭 ${Number(yuyutei.crawl?.searchedCurrentCount || 0)}件 / トレカキャンプ ${Number(torecacamp.crawl?.currentSitemapIndex || 1)}/${Number(torecacamp.crawl?.totalSitemaps || 44)}`,
       llmCalls: 0,
       codexCalls: 0,

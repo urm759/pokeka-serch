@@ -38,14 +38,6 @@ jobs:
           HARERUYA2_COLLECTION_BATCH: "120"
           HARERUYA2_STOCK_BATCH: "1"
         run: node work/update_hareruya2_stock.js
-      - name: Resolve unresolved Toreca Camp links
-        timeout-minutes: 45
-        env:
-          SHOP_SOURCE_ONLY: "torecacamp"
-          TORECACAMP_PAGES_PER_RUN: "10"
-          SHOP_FETCH_RETRIES: "1"
-          SHOP_FETCH_TIMEOUT_MS: "12000"
-        run: node work/update_yuyutei_torecacamp.js
       - name: Rebuild evaluations
         run: node work/build_evaluation_model.js
       - name: Record link coverage

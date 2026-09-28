@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20260928-focus-v2" />
+  <link rel="stylesheet" href="./styles.css?v=20260928-focus-v3" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -20,12 +20,12 @@
       </p>
 
       <div class="control-search-row">
-        <label class="control control-wide">
-          <span>検索</span>
+        <div class="control control-wide search-control">
+          <label for="qInput"><span>検索</span></label>
           <input id="qInput" type="text" placeholder="カード名・型番で検索" />
           <small>現在の絞り込み条件内を検索します。見つからない場合は診断表示で除外理由を確認できます。</small>
-          <label class="inline-check"><input id="diagnosticSearchInput" type="checkbox" /> 診断表示（検索カードだけ条件外でも表示）</label>
-        </label>
+        </div>
+        <label class="inline-check diagnostic-control" for="diagnosticSearchInput"><input id="diagnosticSearchInput" type="checkbox" /> 診断表示（検索カードだけ条件外でも表示）</label>
       </div>
       <details class="advanced-filters primary-settings">
         <summary><span>詳細設定</span><small>鑑定プラン・利益条件・並び順</small></summary>
@@ -828,6 +828,6 @@
   <script src="./candidate-visibility.js?v=20260927-v1"></script>
   <script src="./catalog-index-adapter.js?v=20260927-v1"></script>
   <script src="./limit-display-model.js?v=20260928-v1"></script>
-  <script src="./app.js?v=20260928-focus-v2"></script>
+  <script src="./app.js?v=20260928-focus-v3"></script>
 </body>
 </html>

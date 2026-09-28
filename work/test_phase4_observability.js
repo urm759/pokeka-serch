@@ -53,7 +53,9 @@ assert.strictEqual(scheduleFor("toreca", new Date("2026-09-03T18:00:00Z")).nextS
 assert.strictEqual(scheduleFor("toreca", new Date("2026-09-04T01:00:00Z")).nextScheduledAt, "2026-09-04T17:00:00+09:00");
 assert.strictEqual(scheduleFor("cardrush").nextScheduledAt, null);
 assert.strictEqual(scheduleFor("cardrush").scheduleLabel, "自動更新なし");
-assert.strictEqual(scheduleFor("yuyutei").scheduleLabel, "自動更新なし");
+assert.strictEqual(scheduleFor("yuyutei").scheduleLabel, "02:00 JST");
+assert.strictEqual(scheduleFor("torecacamp").scheduleLabel, "02:00 JST");
+assert.strictEqual(scheduleFor("pokedata").scheduleLabel, "05:30 JST");
 assert.strictEqual(sourceTiming("yuyutei", { status: "partial", fetchFailureCount: 2 }, [{ status: "partial", fetchFailureCount: 2 }, { status: "partial", fetchFailureCount: 2 }]).consecutiveFailures, 2);
 assert.strictEqual(sourceTiming("torecacamp", { status: "partial", fetchFailureCount: 0 }, [{ status: "partial", fetchFailureCount: 0 }]).consecutiveFailures, 0);
 assert.strictEqual(sourceTiming("toreca", { startedAt: "2026-09-04T08:05:00Z", executionEnvironment: "PCローカル" }).actionsDelayMinutes, null);

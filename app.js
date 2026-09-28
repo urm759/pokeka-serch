@@ -738,6 +738,8 @@ function renderSourceObservability() {
   }
   if (els.dataFreshness) {
     const pipelines = state.updateStatus?.pipelines || {};
+    const stageLabels = { yuyutei: "遊々亭", priceEvidence: "状態A実売確認", psaLinkage: "PSA紐づけ候補", torecacamp: "トレカキャンプ" };
+    const stageStates = { completed: "対象の巡回完了", "reviewed-with-unavailable": "全件確認・取得不能あり", partial: "部分取得", "time-budget": "時間枠終了・次回再開", "queue-updated": "候補キュー更新（公式POP取得ではない）", stopped: "停止", "manual-action-required": "要手動対応", stalled: "進捗停滞" };
     const pipelineCards = Object.values(pipelines).map((pipeline) => `<article class="source-status-card pipeline-card">
       <div class="source-status-head"><strong>${escapeHtml(pipeline.label || "更新処理")}</strong><b>${escapeHtml(pipeline.runClass || pipeline.status || "未記録")}</b></div>
       <dl>
@@ -753,6 +755,15 @@ function renderSourceObservability() {
         <div><dt>LLM / Codex</dt><dd>${fmt.format(pipeline.llmCalls || 0)} / ${fmt.format(pipeline.codexCalls || 0)}回</dd></div>
       </dl>
       <p>チェックポイント: ${escapeHtml(pipeline.checkpoint || "不要")}</p>
+      ${pipeline.sourceStages ? `<details class="backfill-stage-details"><summary>取得元ごとの進捗・停止理由・実行時間</summary>${Object.entries(pipeline.sourceStages).map(([id, stage]) => {
+        const position = stage.position || {};
+        const resume = id === "yuyutei" ? `残り${fmt.format(position.remaining ?? 0)}件 / 最終ページ ${position.lastSuccessfulPage || "未記録"}`
+          : id === "priceEvidence" ? `確認${fmt.format(position.inspected ?? 0)}件 / 取得不能${fmt.format(position.unavailable ?? 0)}件 / 残り${fmt.format(position.remaining ?? 0)}件 / 次 ${position.resumeCardId || "未記録"}`
+          : id === "torecacamp" ? `サイトマップ${position.sitemap || "-"}/${position.totalSitemaps || "-"} / 商品位置${position.productIndex ?? "-"}`
+          : `未紐づけ${fmt.format(position.unlinked ?? 0)}件（候補整理のみ）`;
+        const stageState = stage.status === "time-budget" && !stage.batches ? "未実行・時間枠終了" : stageStates[stage.status] || stage.status || "未実行";
+        return `<div class="backfill-stage-row"><strong>${escapeHtml(stageLabels[id] || id)}：${escapeHtml(stageState)}</strong><span>${escapeHtml(resume)}</span><small>実行 ${escapeHtml(formatDuration(stage.durationMs))} / ${fmt.format(stage.batches || 0)}バッチ${stage.reason ? ` / 停止理由：${escapeHtml(stage.reason)}` : ""}</small></div>`;
+      }).join("")}</details>` : ""}
     </article>`).join("");
     const sourceCards = Object.entries(sources).map(([sourceId, source]) => {
       const className = source.status === "failed" ? "failed" : source.status === "partial" ? "partial" : source.fresh ? "fresh" : "stale";
@@ -3275,7 +3286,7 @@ function renderPresetAudit(cards) {
   const comparison = daily?.comparison || {};
   const reasonLabels = { search: "検索条件", data: "データ不足・価格対立", capital: "資金上限", profit: "利益・安全条件", inventory: "実店舗在庫", other: "その他" };
   const dailyHtml = daily ? `<details><summary>固定条件の候補数を日次比較：${escapeHtml(comparison.status || "蓄積中")}</summary><small>固定条件：おまかせ総合 / 素体全状態30日 ${daily.profile.minRawTrades30}件以上 / 利益率 ${daily.profile.minRoi}%以上 / PSA10 ¥${fmt.format(daily.profile.maxPsa10)}以下。ブックマーク条件とは別です。</small><br><span>当日 ${fmt.format(daily.current.candidates)}件</span>${comparison.sameSettings ? `<span>同一カード ${fmt.format(comparison.sameCardCount)}枚：前回 ${fmt.format(comparison.previousCandidates)}→今回 ${fmt.format(comparison.currentCandidates)}件</span><span>除外へ ${fmt.format(comparison.lostCount)}件 / 復帰 ${fmt.format(comparison.gainedCount)}件</span><span>除外カード中、素体またはPSA10価格変化あり ${fmt.format(comparison.priceChangedAmongLost)}件</span>${Object.entries(reasonLabels).map(([key, label]) => `<span>${label} ${fmt.format(comparison.exclusion?.[key] || 0)}件</span>`).join("")}<span>今すぐ候補から在庫なしへ ${fmt.format(comparison.inventoryLostFromNow || 0)}件</span>` : `<span>${escapeHtml(comparison.status || "初回基準日")}</span>`}<small>除外理由は重複計上。価格変化だけを相場下落・除外原因とは断定しません。</small><br><a href="./data/candidate-daily-audit.json" target="_blank" rel="noreferrer">日次比較JSON</a> / <a href="./data/state-a-price-audit.json" target="_blank" rel="noreferrer">状態A価格対立の全件監査</a></details>` : "";
-  els.presetAuditSummary.innerHTML = `<b>分析可能 ${fmt.format(counts.total)}枚</b><span>厳選 ${fmt.format(counts.curated)}</span><span>おまかせ ${fmt.format(counts.combined)}</span><span>今すぐ ${fmt.format(counts.now)}</span><span>低リスク ${fmt.format(counts.lowRisk)}</span><span>高回転 ${fmt.format(counts.turnover)}</span><span>価格待ち ${fmt.format(counts.priceWait)}</span><details><summary>除外理由の段階集計</summary>${exclusions.map(([label, count]) => `<span>${label} <b>${fmt.format(count)}</b></span>`).join("")}</details>${dailyHtml}`;
+  els.presetAuditSummary.innerHTML = `<b>分析可能 ${fmt.format(counts.total)}枚</b><span>厳選 ${fmt.format(counts.curated)}</span><span>おまかせ ${fmt.format(counts.combined)}（価格待ち含む）</span><span>購入先確認済み・今すぐ ${fmt.format(counts.now)}</span><span>低リスク ${fmt.format(counts.lowRisk)}</span><span>高回転 ${fmt.format(counts.turnover)}</span><span>価格待ち ${fmt.format(counts.priceWait)}</span><small class="preset-count-note">おまかせ候補すべてが現在買えるわけではありません。購入可能な店舗価格と最終判定を確認してください。</small><details><summary>除外理由の段階集計</summary>${exclusions.map(([label, count]) => `<span>${label} <b>${fmt.format(count)}</b></span>`).join("")}</details>${dailyHtml}`;
 }
 
 function combinedPresetSort(left, right) {
@@ -4529,6 +4540,16 @@ function render() {
       || limitDisplay.warnings?.[0]
       || dataQuality.dataShortageReasons?.[0]
       || (purchaseDecision?.verdict === "見送り" ? purchaseDecision.reasons?.[0] : "");
+    const readyToBuy = presetFlags.now === true;
+    const actionLabel = readyToBuy ? "購入先確認済み・今すぐ仕入れ候補"
+      : ["見送り", "要確認", "資金不足"].includes(purchaseDecision?.verdict) ? `${purchaseDecision.verdict}・今は買わない`
+      : purchaseAvailability.aggressive ? "攻め仕入れ圏・通常の今すぐ候補ではない"
+      : purchaseAvailability.offerWithinLimit && purchaseAvailability.offerFresh && purchaseAvailability.offerInStock ? "価格は仕入れ圏・追加条件未達"
+      : purchaseAvailability.offerWithinLimit ? "購入先の鮮度・在庫を要確認"
+      : card.currentStoreOffer ? "価格待ち・店舗価格が上限超過" : "購入先未確認・価格待ち";
+    const actionNote = readyToBuy ? `${card.currentStoreOffer?.source || "店舗"}の在庫あり価格で条件を満たす`
+      : "相場や損益分岐上限だけでは購入可能と判定しません";
+    const candidateAction = state.purchaseMode === "snkr-raw" ? "" : `<div class="candidate-action ${readyToBuy ? "ready" : "waiting"}"><strong>${escapeHtml(actionLabel)}</strong><small>${escapeHtml(actionNote)}</small></div>`;
     const candidateGlance = state.purchaseMode === "snkr-raw" ? "" : `
       <section class="candidate-glance" aria-label="仕入れ判断の要点">
         <div class="glance-verdict"><span>今回の判定</span><strong>${escapeHtml(displayVerdict)}</strong><small>${escapeHtml(purchaseAvailability.label || "購入先未確認")}</small></div>
@@ -4563,6 +4584,7 @@ function render() {
           ` : ""}
 
           <div class="psa-decision-content">
+          ${candidateAction}
           ${candidateGlance}
           ${searchDiagnosticPanel}
 
