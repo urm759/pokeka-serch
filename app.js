@@ -5,6 +5,7 @@ const backtestModel = window.BacktestModel;
 const gradeCalibration = window.GradeCalibrationModel;
 const searchIndexModel = window.CardSearchIndexModel;
 const snkrRawFlipModel = window.SnkrRawFlipModel;
+const rawPsa9GapModel = window.RawPsa9GapModel;
 const candidateVisibility = window.CandidateVisibility;
 const catalogIndexAdapter = window.CatalogIndexAdapter;
 const limitDisplayModel = window.LimitDisplayModel;
@@ -2580,8 +2581,15 @@ function calc(card) {
   const snkrRawFlip = buildSnkrRawFlip(card, currentStoreOffer, priceIntegrity, referenceEvidence);
   const psa9Audit = buildPsa9Audit(card, price, psa10);
   const official = state.psaPopulation[card.id] || null;
+  const rawPsa9Gap = rawPsa9GapModel?.evaluate({
+    cardId: card.id, identity: rawPsa9GapModel.identityFromCard(card),
+    raw: state.snkrRawFlipSummary[card.id], psa9Trades: card.snkPsa9Trades,
+    psa9Aggregate: card.snkPsa9Price, psa10Price: psa10, psa10Rate: official?.rate,
+    gradingFee: state.fee, lockDays: state.lockDays, saleFeeRate: state.saleFeeRate,
+    priceConflict: Boolean(priceIntegrity.disputed || priceAggregation.conflicted || referenceEvidence === "unbacked"),
+  });
   if (!(price > 0) || !(psa10 > 0)) {
-    const incomplete = { ...card, price, torecaPrice, referenceEvidence, priceIntegrity, cardrushPrice, hareruya2Price, yuyuteiPrice, torecacampPrice, priceAggregation, currentStoreOffer, snkrRawFlip, psa9Audit, psa10Audit, cardrushStock, hareruya2Stock, yuyuteiStock, torecacampStock, snkrListing, snkListings: snkrListing?.current ?? card.snkListings, psa10, psa10Net: NaN, profit: NaN, roi: NaN, futurePriceForecast: null, psaDecision: null, purchaseDecision: null, overallAssessment: null, official, saleTx30d, saleTx7d, stateATx30d, stateATx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, hareruya2Drop30, hareruya2Drop7, shopDrop30, shopDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackBestPrice, buybackAggregation, buybackAvg30, buybackShops, buybackAnalysis, marketStability };
+    const incomplete = { ...card, price, torecaPrice, referenceEvidence, priceIntegrity, cardrushPrice, hareruya2Price, yuyuteiPrice, torecacampPrice, priceAggregation, currentStoreOffer, snkrRawFlip, rawPsa9Gap, psa9Audit, psa10Audit, cardrushStock, hareruya2Stock, yuyuteiStock, torecacampStock, snkrListing, snkListings: snkrListing?.current ?? card.snkListings, psa10, psa10Net: NaN, profit: NaN, roi: NaN, futurePriceForecast: null, psaDecision: null, purchaseDecision: null, overallAssessment: null, official, saleTx30d, saleTx7d, stateATx30d, stateATx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, hareruya2Drop30, hareruya2Drop7, shopDrop30, shopDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackBestPrice, buybackAggregation, buybackAvg30, buybackShops, buybackAnalysis, marketStability };
     incomplete.dataQuality = classifyDecisionData(incomplete);
     return incomplete;
   }
@@ -2591,7 +2599,7 @@ function calc(card) {
   const roiBase = price + state.fee;
   const roi = roiBase > 0 ? (profit / roiBase) * 100 : NaN;
   const supplyLifecycle = buildSupplyLifecycle(card, official, shopDrop30, marketStability);
-  const forecastBase = { ...card, price, torecaPrice, referenceEvidence, priceIntegrity, cardrushPrice, hareruya2Price, yuyuteiPrice, torecacampPrice, priceAggregation, currentStoreOffer, snkrRawFlip, psa9Audit, psa10Audit, cardrushStock, hareruya2Stock, yuyuteiStock, torecacampStock, snkrListing, snkListings: snkrListing?.current ?? card.snkListings, psa10, psa10Net, profit, roi, official, saleTx30d, saleTx7d, stateATx30d, stateATx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, hareruya2Drop30, hareruya2Drop7, shopDrop30, shopDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackBestPrice, buybackAggregation, buybackAvg30, buybackShops, buybackAnalysis, marketStability, supplyLifecycle };
+  const forecastBase = { ...card, price, torecaPrice, referenceEvidence, priceIntegrity, cardrushPrice, hareruya2Price, yuyuteiPrice, torecacampPrice, priceAggregation, currentStoreOffer, snkrRawFlip, rawPsa9Gap, psa9Audit, psa10Audit, cardrushStock, hareruya2Stock, yuyuteiStock, torecacampStock, snkrListing, snkListings: snkrListing?.current ?? card.snkListings, psa10, psa10Net, profit, roi, official, saleTx30d, saleTx7d, stateATx30d, stateATx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, hareruya2Drop30, hareruya2Drop7, shopDrop30, shopDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackBestPrice, buybackAggregation, buybackAvg30, buybackShops, buybackAnalysis, marketStability, supplyLifecycle };
   const futurePriceForecast = buildFuturePriceForecast(forecastBase, official, stock);
   const calculated = { ...forecastBase, futurePriceForecast };
   calculated.overallAssessment = buildOverallAssessment(calculated, official, stock);
@@ -4078,6 +4086,19 @@ function render() {
         <div><span>PSA10出品最安値</span><strong>${Number.isFinite(psa10Audit.listingFloor) ? `¥${fmt.format(psa10Audit.listingFloor)}` : "未取得"}</strong><small>${escapeHtml([psa10Audit.aggregation, ...(psa10Audit.warnings || []), psa10Audit.limitations].filter(Boolean).join(" / "))}</small></div>
         <div><span>PSA9以下の採用価格</span><strong>¥${fmt.format(Math.round(psa9Audit.value || 0))}</strong><small>${escapeHtml(psa9Audit.source || "未取得")} / 採用 ${fmt.format(psa9Audit.count || 0)}件 / 信頼度 ${escapeHtml(psa9Audit.confidence || "低")} / ${psa9Audit.measurementType === "actual" ? "実成約" : psa9Audit.measurementType === "aggregate" ? "集計値" : "推定値"}</small></div>
       </div>`;
+    const rawPsa9Gap = card.rawPsa9Gap || {};
+    const rawPsa9Panel = `
+      <section class="raw-psa9-gap-panel" aria-label="素体状態Aと国内PSA9の価格差試験">
+        <div class="raw-psa9-gap-head"><strong>状態A素体と国内PSA9の価格差</strong><b>${escapeHtml(rawPsa9Gap.status || "検証不能")}</b></div>
+        <p>参考指標のみ。高低だけで割安・過熱とは判定せず、仕入れ上限・GO判定には使いません。</p>
+        <div class="raw-psa9-gap-grid">
+          <div><span>状態A・30日実成約中央値</span><strong>${Number.isFinite(rawPsa9Gap.raw?.median) ? `¥${fmt.format(rawPsa9Gap.raw.median)}` : "未確認"}</strong><small>${rawPsa9Gap.raw?.count == null ? "件数未取得" : `${fmt.format(rawPsa9Gap.raw.count)}件`} / 最終成約 ${escapeHtml(rawPsa9Gap.raw?.newestSaleAt?.slice(0, 10) || "未取得")} / 取得 ${escapeHtml(rawPsa9Gap.raw?.fetchedAt?.slice(0, 10) || "未取得")}</small></div>
+          <div><span>国内PSA9・30日個別実成約</span><strong>${Number.isFinite(rawPsa9Gap.psa9?.median) && rawPsa9Gap.psa9.count >= 3 ? `¥${fmt.format(rawPsa9Gap.psa9.median)}` : "未取得・件数不足"}</strong><small>採用 ${fmt.format(rawPsa9Gap.psa9?.count || 0)}件 / 最終成約 ${escapeHtml(rawPsa9Gap.psa9?.latestSaleAt?.slice(0, 10) || "未取得")} / PSA9集計価格 ${Number.isFinite(rawPsa9Gap.psa9?.aggregateReference) ? `¥${fmt.format(rawPsa9Gap.psa9.aggregateReference)}` : "なし"}（比較に不採用）</small></div>
+          <div><span>同期間・同一仕様の価格差</span><strong>${Number.isFinite(rawPsa9Gap.gapJpy) ? `${rawPsa9Gap.gapJpy >= 0 ? "+" : ""}¥${fmt.format(rawPsa9Gap.gapJpy)} / ${rawPsa9Gap.gapPct >= 0 ? "+" : ""}${rawPsa9Gap.gapPct}%` : "検証不能"}</strong><small>売却手数料 ${rawPsa9Gap.saleFeeRate == null ? "未設定" : `${rawPsa9Gap.saleFeeRate}%`} / 手数料後の差 ${Number.isFinite(rawPsa9Gap.netGapJpy) ? `${rawPsa9Gap.netGapJpy >= 0 ? "+" : ""}¥${fmt.format(rawPsa9Gap.netGapJpy)}` : "未算出"}</small></div>
+          <div><span>PSA10との関係・別指標</span><strong>${Number.isFinite(rawPsa9Gap.psa10?.price) ? `PSA10 ¥${fmt.format(rawPsa9Gap.psa10.price)}` : "PSA10未取得"}</strong><small>状態Aとの差 ${Number.isFinite(rawPsa9Gap.psa10?.premiumToRawJpy) ? `${rawPsa9Gap.psa10.premiumToRawJpy >= 0 ? "+" : ""}¥${fmt.format(rawPsa9Gap.psa10.premiumToRawJpy)}` : "比較不能"} / 想定PSA10率 ${rawPsa9Gap.grading?.psa10Rate == null ? "公式未取得" : `${rawPsa9Gap.grading.psa10Rate}%`} / 鑑定費 ${Number.isFinite(rawPsa9Gap.grading?.fee) ? `¥${fmt.format(rawPsa9Gap.grading.fee)}` : "未設定"} / 返却まで ${rawPsa9Gap.grading?.lockDays || "未設定"}日</small></div>
+        </div>
+        <small class="raw-psa9-gap-reasons">${escapeHtml(rawPsa9Gap.reasons?.join(" / ") || "比較条件を満たす実成約のみ採用。将来期間の検証は未完了")}</small>
+      </section>`;
     const pokedata = state.pokedataSummary?.[card.id] || null;
     const pokedataMarket = (market, label, gradeKey) => {
       const comparison = state.marketResearch?.comparisons?.[card.id]?.[gradeKey] || null;
@@ -4606,6 +4627,7 @@ function render() {
 
               ${priceAuditPanel}
               ${gradingPriceAuditPanel}
+              ${rawPsa9Panel}
               ${pokedataPanel}
               ${snkrListingPanel}
 
