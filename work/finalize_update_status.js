@@ -201,7 +201,7 @@ for (const [sourceId, source] of Object.entries(sources)) {
     source.acquiredCount = Number(pokedataManifest.totalLinkageRecords || pokedata.coverage?.acquired || 0);
     source.updatedCount = Number(pokedataManifest.totalCards || pokedata.coverage?.linkedDomesticCards || 0);
     source.status = "partial";
-    source.sourceState = `検証中／部分取得（${Number(pokedataManifest.sets?.length || 0)}セット・照合${source.acquiredCount}件・国内${source.updatedCount}枚）`;
+    source.sourceState = `検証中／部分取得（${Number(pokedataManifest.sets?.length || 0)}セット・照合${source.acquiredCount}件・国内${source.updatedCount}枚）${run.status === "no-progress" ? "・前回は処理成功／進捗なし" : ""}`;
     source.fresh = false;
   }
   if (sourceId === "snkrRaw" && Number(snkrRaw.coverage?.exactMatchedCards || 0) < Number(snkrRaw.coverage?.directProductLinks || 0)) {

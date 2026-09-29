@@ -1,0 +1,16 @@
+const assert = require("node:assert/strict");
+const model = require("../update-health-model.js");
+const now = Date.parse("2026-09-30T00:00:00Z");
+const run = (id, conclusion, updated_at) => ({ id, status: "completed", conclusion, created_at: updated_at, updated_at, html_url: `https://github.com/urm759/pokeka-serch/actions/runs/${id}` });
+const fresh = "2026-09-29T18:00:00Z";
+assert.equal(model.evaluate({ now, runs: [run(2, "success", fresh)], sourceLastSuccessAt: fresh }).status, "ok");
+const failures = model.evaluate({ now, runs: [run(4, "failure", fresh), run(3, "failure", "2026-09-29T12:00:00Z"), run(2, "success", "2026-09-28T00:00:00Z")], sourceLastSuccessAt: fresh });
+assert.equal(failures.status, "alert");
+assert.equal(failures.consecutiveFailures, 2);
+assert(failures.reasons.some((reason) => reason.includes("24時間以上")), "前回成功からの停止も検出する");
+const stale = model.evaluate({ now, runs: [run(2, "success", fresh)], sourceLastSuccessAt: "2026-09-28T23:59:00Z" });
+assert(stale.reasons.some((reason) => reason.includes("みんトレ")));
+assert.equal(model.evaluate({ now, runs: [], sourceLastSuccessAt: null }).status, "alert", "履歴欠損を正常扱いしない");
+assert.equal(model.fingerprint({ ...failures, sourceAgeHours: 1 }), model.fingerprint({ ...failures, sourceAgeHours: 3 }), "経過時間のみでは再通知しない");
+assert.notEqual(model.fingerprint(failures), model.fingerprint({ ...failures, latestRunId: 5 }), "新しい失敗は再通知する");
+console.log("update failure and 24-hour stall tests passed");

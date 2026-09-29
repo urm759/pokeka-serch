@@ -62,8 +62,9 @@
     }
     const previousCommon = commonIds.filter((id) => previous.rows[id][0]).length;
     const currentCommon = commonIds.filter((id) => current.rows[id][0]).length;
+    const isPreviousDay = Number.isFinite(Date.parse(previous.date)) && Date.parse(current.date) - Date.parse(previous.date) === 86400000;
     return {
-      status: "同一条件・同一カード群", sameSettings: true,
+      status: isPreviousDay ? "前日・同一条件と同一カード群" : "直近保存日比較（前日データなし）", sameSettings: true, isPreviousDay,
       previousDate: previous.date, currentDate: current.date, sameCardCount: commonIds.length,
       previousCandidates: previousCommon, currentCandidates: currentCommon,
       lostCount: lost.length, gainedCount: gained.length,

@@ -43,11 +43,11 @@ if (result.stderr) process.stderr.write(result.stderr);
 const endedAt = new Date();
 const output = `${result.stdout || ""}\n${result.stderr || ""}`;
 const timedOut = result.error?.code === "ETIMEDOUT";
-const completionStatus = (output.match(/"completionStatus"\s*:\s*"(success|partial)"/i) || [])[1]?.toLowerCase() || null;
+const completionStatus = (output.match(/"completionStatus"\s*:\s*"(success|partial|no-progress)"/i) || [])[1]?.toLowerCase() || null;
 const fetchFailureCount = [...output.matchAll(/\b(?:failed|failure|error)(?:Count)?["']?\s*[:=]\s*(\d+)/gi)]
   .reduce((total, match) => total + Number(match[1] || 0), 0)
   + (result.status !== 0 || timedOut ? 1 : 0);
-const status = result.status !== 0 || timedOut ? "failed" : fetchFailureCount > 0 || completionStatus === "partial" ? "partial" : "success";
+const status = result.status !== 0 || timedOut ? "failed" : completionStatus === "no-progress" ? "no-progress" : fetchFailureCount > 0 || completionStatus === "partial" ? "partial" : "success";
 const acquiredCount = countCurrentRecords(sourceId);
 const afterFingerprint = artifactFingerprint(sourceId);
 const dataChanged = afterFingerprint != null && beforeFingerprint !== afterFingerprint;
@@ -56,6 +56,8 @@ const updatedMatch = output.match(/(?:updated|更新(?:件数)?)\s*(?:[:=]\s*)?(
 const updatedCount = updatedMatch ? Number(updatedMatch[1]) : Number.isFinite(countDelta) && countDelta > 0 ? countDelta : dataChanged ? null : 0;
 const sourceState = status === "failed"
   ? "取得処理失敗"
+  : status === "no-progress"
+    ? "処理成功・進捗なし（次セット選択待ち）"
   : status === "partial"
     ? fetchFailureCount > 0 ? "一部取得失敗" : "部分取得・チェックポイントから継続"
     : dataChanged

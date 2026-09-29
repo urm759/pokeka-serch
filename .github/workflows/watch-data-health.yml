@@ -1,0 +1,40 @@
+name: Data Update Health Watchdog
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: [Daily Fast Update]
+    types: [completed]
+  schedule:
+    - cron: "17 */2 * * *"
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: all-site-data-refresh
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+      - name: Check failed runs and source age
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node work/watch_update_health.js
+      - name: Publish changed health state only
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/update-health.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Report data update health"
+          git push

@@ -21,15 +21,17 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: "24"
+      - name: Select next verified Japanese set
+        run: node work/select_pokedata_set.js
       - name: Continue public PokeDATA checkpoint
+        if: env.POKEDATA_SET_READY == '1'
         env:
-          POKEDATA_SET: Pokemon Card 151 Japanese
-          POKEDATA_TARGET: "516"
           POKEDATA_BATCH: "10"
           POKEDATA_INTERVAL_MS: "1100"
           POKEDATA_TIMEOUT_MS: "10000"
         run: node work/run_tracked_update.js pokedata work/update_pokedata_batch.js
       - name: Rebuild affected public summaries
+        if: env.POKEDATA_SET_READY == '1'
         run: |
           node work/audit_pokedata_matches.js
           node work/build_market_research.js
@@ -38,11 +40,13 @@ jobs:
           node work/finalize_update_status.js
           node work/build_purchase_limit_audit.js
       - name: Verify shared purchase limits before publishing
+        if: env.POKEDATA_SET_READY == '1'
         run: |
           node work/test_buyback_scenario_limits.js
           node work/test_purchase_limit_audit.js
           node work/test_grade_calibration.js
       - name: Commit checkpoint progress
+        if: env.POKEDATA_SET_READY == '1'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"

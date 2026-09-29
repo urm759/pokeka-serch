@@ -213,6 +213,12 @@ async function main() {
   const refreshStart = refreshTargets.length ? Math.max(0, Number(progress.refreshCursor || 0)) % refreshTargets.length : 0;
   const rotatedRefreshTargets = [...refreshTargets.slice(refreshStart), ...refreshTargets.slice(0, refreshStart)];
   const selected = (refreshLinked ? rotatedRefreshTargets : targets.filter((card) => !processed.has(Number(card.id)))).slice(0, BATCH_SIZE);
+  if (!selected.length) {
+    console.log(JSON.stringify({ setName: SET_NAME, sourceSetTotal: sourceCards.length, targetCount: targets.length,
+      acquired: existingRecords.size, attempted: 0, fetched: 0, cacheHits: 0, failed: 0,
+      completionStatus: "no-progress", reason: "対象セットのチェックポイントは終端。次の確認済みセットを選択する" }));
+    return;
+  }
   let attempted = 0; let fetched = 0; let cached = 0; let failed = 0;
 
   for (const sourceCard of selected) {

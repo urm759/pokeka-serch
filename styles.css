@@ -24,6 +24,12 @@ body{
   min-height:100vh;
 }
 a{color:var(--accent);text-decoration:none}
+.update-health-banner{display:flex;align-items:center;flex-wrap:wrap;gap:6px 12px;margin:12px 0;padding:10px 13px;border:1px solid #f97373;border-radius:12px;background:#3b1822;color:#ffe2e2;font-size:12px}
+.update-health-banner[hidden]{display:none}
+.update-health-banner strong{font-size:13px}
+.update-health-banner a{margin-left:auto;color:#fff;text-decoration:underline;font-weight:700}
+.update-health-banner[data-status="unknown"]{border-color:#eab308;background:#372b12;color:#fff3c4}
+@media(max-width:640px){.update-health-banner{align-items:flex-start;flex-direction:column}.update-health-banner a{margin-left:0}}
 .shell{max-width:1480px;margin:0 auto;padding:28px;position:relative;z-index:1}
 .backdrop{
   position:fixed;inset:auto;pointer-events:none;filter:blur(0);
