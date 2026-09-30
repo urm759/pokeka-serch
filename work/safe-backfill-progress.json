@@ -3,7 +3,7 @@
   "sources": {
     "yuyutei": {
       "status": "manual-action-required",
-      "reason": "HTTP 401/403・認証またはアクセス制限",
+      "reason": "GitHub ActionsからHTTP 403。正規アクセス確認待ち",
       "position": {
         "remaining": 10173,
         "lastSuccessfulPage": "cp3/016/032",
@@ -17,56 +17,55 @@
           "detectedAt": "2026-09-28T22:23:11.192Z"
         }
       },
-      "checkedAt": "2026-09-28T22:23:11.829Z",
-      "batches": 1,
-      "failures": 1,
-      "durationMs": 2142
+      "checkedAt": "2026-09-29T21:14:24.314Z",
+      "batches": 0,
+      "durationMs": 5
     },
     "priceEvidence": {
       "status": "partial",
       "reason": null,
       "position": {
-        "remaining": 739,
-        "inspected": 305,
-        "unavailable": 13,
+        "remaining": 445,
+        "inspected": 579,
+        "unavailable": 31,
         "resumeCardId": null,
         "stopReason": null
       },
-      "checkedAt": "2026-09-28T22:28:43.009Z",
-      "batches": 45,
+      "checkedAt": "2026-09-29T21:19:54.439Z",
+      "batches": 46,
       "failures": 0,
-      "durationMs": 331180
+      "durationMs": 330127
     },
     "psaLinkage": {
       "status": "queue-updated",
       "reason": null,
       "position": {
-        "unlinked": 4981,
+        "unlinked": 4988,
         "note": "候補整理のみ。PSA公式の認証取得とは別工程"
       },
-      "checkedAt": "2026-09-28T22:28:43.135Z",
+      "checkedAt": "2026-09-29T21:19:54.778Z",
       "batches": 1,
       "failures": 0,
-      "durationMs": 124
+      "durationMs": 337
     },
     "torecacamp": {
       "status": "partial",
       "reason": null,
       "position": {
-        "sitemap": 25,
-        "productIndex": 173,
+        "sitemap": 26,
+        "productIndex": 338,
         "totalSitemaps": 46,
-        "catalogCount": 5161,
+        "catalogCount": 5280,
         "lastFailure": null
       },
-      "checkedAt": "2026-09-28T22:34:14.345Z",
+      "checkedAt": "2026-09-29T21:25:34.089Z",
       "batches": 9,
       "failures": 0,
-      "durationMs": 331219
+      "durationMs": 339327
     }
   },
-  "startedAt": "2026-09-28T22:23:09.688Z",
+  "startedAt": "2026-09-29T21:14:24.309Z",
   "status": "partial-with-stop",
-  "endedAt": "2026-09-28T22:34:14.357Z",
-  "durationMs": 664669
+  "endedAt": "2026-09-29T21:25:34.106Z",
+  "durationMs": 669797
 }
