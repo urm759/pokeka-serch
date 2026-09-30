@@ -10,6 +10,7 @@ const read = (file, fallback = null) => {
 const write = (file, value) => fs.writeFileSync(path.join(root, file), JSON.stringify(value), "utf8");
 const model = require("../decision-model.js");
 const candidateDailyAudit = require("../candidate-daily-audit.js");
+const candidateAvailabilityAudit = require("../candidate-availability-audit.js");
 const meta = read("data/pokemon-cards-meta.json", {});
 const window = {
   PurchaseDecisionModel: model,
@@ -86,6 +87,7 @@ state.operationalLimitHistory = previous && previous.modelVersion === model.MODE
 const startedAt = Date.now();
 const calculated = prepareCalculatedCards(state.cards);
 const candidateHistory = read("work/candidate-daily-history.json", { version: 1, days: [] });
+const availabilityHistory = read("work/candidate-availability-history.json", { version: 1, runs: [] });
 const candidateSettings = {
   modelVersion: model.MODEL_VERSION,
   ...operationalSettings(),
@@ -100,6 +102,31 @@ const candidateComparison = candidateDailyAudit.compare(earlier, candidateSnapsh
 const candidateSummary = { version: 1, generatedAt: new Date().toISOString(), profile: candidateSettings,
   current: { date: asOfDate, cardCount: candidateSnapshot.cardCount, candidates: candidateSnapshot.candidates, purchasable: candidateSnapshot.purchasable, exclusion: candidateSnapshot.reasons },
   comparison: candidateComparison };
+const generatedAvailabilitySnapshot = candidateAvailabilityAudit.snapshot(calculated, presetQualifications, asOfDate,
+  candidateSummary.generatedAt, model.MODEL_VERSION);
+const priorAvailability = availabilityHistory.runs.at(-1);
+const availabilitySnapshot = priorAvailability?.date === asOfDate
+  && JSON.stringify(priorAvailability.rows) === JSON.stringify(generatedAvailabilitySnapshot.rows)
+  ? priorAvailability : generatedAvailabilitySnapshot;
+const availabilityComparison = availabilitySnapshot === priorAvailability
+  ? read("data/candidate-availability-audit.json", {})?.comparison || candidateAvailabilityAudit.compare(null, availabilitySnapshot)
+  : candidateAvailabilityAudit.compare(priorAvailability, availabilitySnapshot);
+const waitingWithShopLink = calculated.filter((card) => availabilitySnapshot.rows[card.id]?.status === "価格待ち"
+  && (card.cardrushUrl || card.hareruya2Url));
+const missingOfferPriority = waitingWithShopLink.filter((card) => !availabilitySnapshot.rows[card.id].offerPrice)
+  .sort((left, right) => Number(right.psaTx30d || 0) - Number(left.psaTx30d || 0)).slice(0, 20);
+const nearLimitPriority = waitingWithShopLink.filter((card) => availabilitySnapshot.rows[card.id].offerPrice)
+  .sort((left, right) => {
+    const leftRow = availabilitySnapshot.rows[left.id];
+    const rightRow = availabilitySnapshot.rows[right.id];
+    return leftRow.gap / Math.max(1, leftRow.limit) - rightRow.gap / Math.max(1, rightRow.limit);
+  }).slice(0, 20);
+const priority = [...missingOfferPriority, ...nearLimitPriority].map((card) => card.id);
+const availabilitySummary = { version: 1, generatedAt: availabilitySnapshot.generatedAt,
+  note: "仕入れ基準は変更しません。価格待ちから購入先確認済みへの移行だけを追跡します。",
+  current: { date: asOfDate, ...availabilitySnapshot.counts }, comparison: availabilityComparison,
+  priorityCount: priority.length, priorityBreakdown: { missingOffer: missingOfferPriority.length, nearLimit: nearLimitPriority.length },
+  priorityIds: priority };
 const audit = buildLimitModelAudit(calculated);
 audit.catalogCards = calculated.length;
 audit.notAnalyzable = calculated.length - audit.analyzedCards;
@@ -142,10 +169,19 @@ if (process.argv.includes("--verify")) {
     || publishedAudit?.modelVersion !== model.MODEL_VERSION) {
     throw new Error("Purchase-limit audit is stale or differs from the current model/data");
   }
+  const publishedAvailability = read("data/candidate-availability-audit.json");
+  if (JSON.stringify(publishedAvailability?.current) !== JSON.stringify(availabilitySummary.current)) {
+    throw new Error("Candidate availability audit is stale or differs from the current model/data");
+  }
 } else {
   write("data/purchase-limit-model-audit.json", audit);
   write("data/operational-limit-history.json", history);
   write("data/candidate-daily-audit.json", candidateSummary);
+  write("data/candidate-availability-audit.json", availabilitySummary);
   write("work/candidate-daily-history.json", { version: 1, days: [...candidateHistory.days.filter((row) => row.date < asOfDate), candidateSnapshot].slice(-14) });
+  const recordedRuns = availabilityHistory.runs.filter((row, index, rows) => index === 0
+    || row.date !== rows[index - 1].date || JSON.stringify(row.rows) !== JSON.stringify(rows[index - 1].rows));
+  write("work/candidate-availability-history.json", { version: 1,
+    runs: [...recordedRuns, ...(availabilitySnapshot === priorAvailability ? [] : [availabilitySnapshot])].slice(-28) });
 }
-console.log(JSON.stringify({ catalogCards: audit.catalogCards, analyzedCards: audit.analyzedCards, changedLimits: audit.changedLimits, changedVerdicts: audit.changedVerdicts, historyCards: Object.keys(historyCards).length, candidateAudit: candidateSummary.current, candidateComparison: candidateComparison.status, durationMs: audit.durationMs }));
+console.log(JSON.stringify({ catalogCards: audit.catalogCards, analyzedCards: audit.analyzedCards, changedLimits: audit.changedLimits, changedVerdicts: audit.changedVerdicts, historyCards: Object.keys(historyCards).length, candidateAudit: candidateSummary.current, candidateComparison: candidateComparison.status, availability: availabilitySummary.current, promoted: availabilityComparison.promoted, durationMs: audit.durationMs }));

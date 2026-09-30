@@ -57,6 +57,7 @@ jobs:
           node work/test_purchase_limit_audit.js
           node work/test_price_integrity.js
           node work/test_candidate_daily_audit.js
+          node work/test_candidate_availability_audit.js
           node work/test_grade_calibration.js
           node work/test_daily_fast_update.js
           node work/test_psa_market_trial.js
@@ -66,7 +67,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data work/daily-http-cache.json work/changed-card-ids.json work/market_stability_history.json work/snkr-raw-flip-cache.json work/snkr-raw-flip-checkpoint.json work/source-update-runs.json work/source-update-history.json work/toreca-source-inventory.json work/toreca_source_diff.json work/card-new-arrivals.json work/card-lifecycle.json work/candidate-daily-history.json
+          git add data work/daily-http-cache.json work/changed-card-ids.json work/market_stability_history.json work/snkr-raw-flip-cache.json work/snkr-raw-flip-checkpoint.json work/source-update-runs.json work/source-update-history.json work/toreca-source-inventory.json work/toreca_source_diff.json work/card-new-arrivals.json work/card-lifecycle.json work/candidate-daily-history.json work/candidate-availability-history.json
           if git diff --cached --quiet; then
             echo "No source change. Commit and deployment skipped."
             exit 0

@@ -28,6 +28,22 @@ assert.equal(comparison.exclusion.capital, 1);
 assert.equal(comparison.exclusion.profit, 2);
 assert.equal(comparison.exclusion.data, 1);
 assert.equal(comparison.exclusion.search, 1);
+assert.equal(comparison.newlyFailed.profit, 2);
+assert.equal(comparison.preexisting.profit, 0);
+assert.equal(comparison.lost.find((row) => row.id === "price").newlyFailed.includes("profit"), true);
+assert.equal(comparison.lost.find((row) => row.id === "price").before.expectedProfit, null);
+assert.equal(comparison.lost.find((row) => row.id === "price").after.store, 34000);
+const waitingBefore = model.snapshot([{ ...base("waiting"), now: false, currentStoreOffer: null }], flags,
+  { cards: { waiting: { s: "分析可能" } } }, settings, "2026-09-27");
+const waitingAfter = model.snapshot([{ ...base("waiting"), combined: false, now: false, currentStoreOffer: null, stressSafe: false }], flags,
+  { cards: { waiting: { s: "分析可能" } } }, settings, "2026-09-28");
+assert.deepEqual(model.compare(waitingBefore, waitingAfter).lost[0].newlyFailed, ["profit"]);
+assert.deepEqual(model.compare(waitingBefore, waitingAfter).lost[0].preexisting, ["inventory"]);
+const qualityAfter = model.snapshot([{ ...base("waiting"), combined: false, now: false, currentStoreOffer: null,
+  purchaseDecision: { verdict: "見送り", reasons: ["銘柄品質60点未満（53/100）"] } }], flags,
+  { cards: { waiting: { s: "分析可能" } } }, settings, "2026-09-28");
+assert.deepEqual(model.compare(waitingBefore, qualityAfter).lost[0].newlyFailed, ["quality"]);
+assert.deepEqual(model.compare(waitingBefore, qualityAfter).lost[0].preexisting, ["inventory"]);
 assert.equal(comparison.priceChangedAmongLost, 1);
 assert.equal(comparison.inventoryLostFromNow, 1);
 assert.equal(model.compare(null, current).sameSettings, false);

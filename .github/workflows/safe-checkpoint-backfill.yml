@@ -32,6 +32,7 @@ jobs:
         run: |
           node work/test_price_integrity.js
           node work/test_candidate_daily_audit.js
+          node work/test_candidate_availability_audit.js
           node work/test_safe_backfill.js
           node work/test_purchase_limit_audit.js
       - name: Commit safe progress and checkpoints
