@@ -3,6 +3,7 @@ const path = require("path");
 const vm = require("vm");
 const crypto = require("crypto");
 const { canonicalIdentity } = require("./card_identity");
+const { sourceReference } = require("./source_identity_guard");
 
 const FAST_UPDATE = process.env.FAST_UPDATE === "1";
 const HTTP_CACHE_PATH = path.join(__dirname, "daily-http-cache.json");
@@ -336,7 +337,7 @@ function buildOfficialPsaAliases(byQuery) {
 
 async function main() {
   const sourceUrl = "https://toreca-souba.com/cards";
-  const startedAt = Date.now();
+const startedAt = Date.now();
   const gate = FAST_UPDATE ? await fetchSourceGate(sourceUrl, process.env.FAST_DEEP_SCAN === "1") : null;
   if (FAST_UPDATE && !gate.changed) {
     console.log(`FAST_UPDATE_RESULT ${JSON.stringify({ changed: false, changedCards: 0, processedCards: 0, regeneratedFiles: 0, httpRequests: UPDATE_METRICS.httpRequests, cacheHits: UPDATE_METRICS.cacheHits, durationMs: Date.now() - startedAt, reason: gate.reason, llmCalls: 0 })}`);
@@ -458,6 +459,7 @@ async function main() {
         const aliasedId = stableIdAliases[c.id] || null;
         const previous = previousById.get(c.id) || (aliasedId ? previousById.get(aliasedId) : null) || previousByIdentity.get(identity.key) || {};
         const stableId = aliasedId || previous.id || c.id;
+        const sourceRef = sourceReference(c.id, stableId, previous, c.img);
         const arrival = arrivals.cards[stableId] || arrivals.cards[c.id] || null;
         // Cardrush matching scans its public catalog. Preserve existing links and
         // skip cards without a PSA10 market price, which cannot affect this site's
@@ -481,7 +483,7 @@ async function main() {
           : { snkrUrl: previousSnkrUrl || buildSnkrSearchUrl(c) };
         return {
           id: stableId,
-          sourceId: c.id,
+          sourceId: sourceRef.sourceId,
           title: c.title,
           name: c.name,
           pageUrl,
@@ -489,7 +491,7 @@ async function main() {
           variant: c.variant || "",
           rarity: c.rarity || "",
           psaQuery,
-          img: c.img,
+          img: sourceRef.image,
           snkrUrl: pageMeta.snkrUrl || "",
           price: num(c.price) ?? num(previous.price),
           snkPrice: num(c.snkPrice) ?? num(previous.snkPrice),
