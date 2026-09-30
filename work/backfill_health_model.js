@@ -3,13 +3,13 @@ function latestCompleted(runs = []) {
     .sort((a, b) => Date.parse(b.created_at || 0) - Date.parse(a.created_at || 0))[0] || null;
 }
 
-function workflowState(runs = [], previous = {}, marker = null, pending = false) {
+function workflowState(runs = [], previous = {}, marker = null, pending = false, failureDetail = null) {
   const latest = latestCompleted(runs);
   const changedRun = latest?.id && latest.id !== previous.runId;
   const stuckRuns = changedRun && pending && marker === previous.marker
     ? (previous.stuckRuns || 0) + 1 : changedRun ? 0 : previous.stuckRuns || 0;
   const failureReason = latest && ["failure", "timed_out"].includes(latest.conclusion)
-    ? latest.conclusion : null;
+    ? failureDetail || `unknown:${latest.id}` : null;
   const repeatedFailures = changedRun && failureReason && failureReason === previous.failureReason
     ? (previous.repeatedFailures || 0) + 1 : changedRun && failureReason ? 1 : changedRun ? 0 : previous.repeatedFailures || 0;
   return { runId: latest?.id || previous.runId || null, runUrl: latest?.html_url || null,
@@ -22,7 +22,7 @@ function manualId(row) {
 }
 
 function evaluate({ safeRuns = [], pokeRuns = [], safeProgress = {}, pokeProgress = [], pokeHold = null,
-  discovery = {}, ambiguousCandidates = [], previous = {}, now = Date.now() } = {}) {
+  discovery = {}, ambiguousCandidates = [], recovery = {}, previous = {}, now = Date.now() } = {}) {
   const issues = [];
   const saved = previous.backfills || {};
   const safeSources = safeProgress.sources || {};
@@ -35,8 +35,13 @@ function evaluate({ safeRuns = [], pokeRuns = [], safeProgress = {}, pokeProgres
     !["completed", "reviewed-with-unavailable", "manual-action-required"].includes(safeSources[source]?.status));
   const pokeMarker = pokeProgress.reduce((sum, row) => sum + (row.processedCardIds?.length || 0), 0);
   const pokePending = pokeProgress.some((row) => (row.processedCardIds?.length || 0) < Number(row.targetCount || row.sourceSetTotal || 0));
-  const safe = workflowState(safeRuns, saved.safe, safeMarker, safePending);
-  const pokedata = workflowState(pokeRuns, saved.pokedata, pokeMarker, pokePending);
+  const safeLatest = latestCompleted(safeRuns);
+  const pokeLatest = latestCompleted(pokeRuns);
+  const savedReason = (source, latest) => recovery.sources?.[source]?.workflowRunId
+    && String(recovery.sources[source].workflowRunId) === String(latest?.id)
+    ? recovery.sources[source].failureDetail : null;
+  const safe = workflowState(safeRuns, saved.safe, safeMarker, safePending, savedReason("safe", safeLatest));
+  const pokedata = workflowState(pokeRuns, saved.pokedata, pokeMarker, pokePending, savedReason("pokedata", pokeLatest));
   safe.sourceObservations = {};
   const safeRunChanged = safe.runId && safe.runId !== saved.safe?.runId;
   for (const source of ["yuyutei", "priceEvidence", "psaLinkage", "torecacamp"]) {

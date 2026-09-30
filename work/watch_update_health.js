@@ -35,7 +35,9 @@ async function main() {
     pokeRuns: pokeRuns.workflow_runs || [], safeProgress: read("safe-backfill-progress.json", {}),
     pokeProgress, pokeHold: read("pokedata-access-hold.json"),
     discovery: read("pokedata-set-discovery.json", {}),
-    ambiguousCandidates: read("pokedata-link-map.json", {}).ambiguousCandidates || [], previous: current || {} });
+    ambiguousCandidates: read("pokedata-link-map.json", {}).ambiguousCandidates || [],
+    recovery: (() => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, "data", "backfill-recovery.json"), "utf8")); } catch { return {}; } })(),
+    previous: current || {} });
   const dailyIssues = health.reasons.map((reason) => ({
     key: reason.includes("連続失敗") ? "daily:workflow-failure"
       : reason.includes("みんトレ") ? "daily:source-stale" : "daily:run-stale",

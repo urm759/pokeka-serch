@@ -30,8 +30,14 @@ const again = evaluate({ ...base, safeRuns: [run(5)], pokeRuns: [run(5)], previo
 assert(!again.newIssues.some((issue) => issue.key.endsWith(":stalled")), "停滞の継続通知を抑制");
 
 let failures = first;
-for (const id of [2, 3]) failures = evaluate({ ...base, safeRuns: [run(id, "failure")], pokeRuns: [run(id)], previous: failures });
+for (const id of [2, 3]) failures = evaluate({ ...base, safeRuns: [run(id, "failure")], pokeRuns: [run(id)],
+  recovery: { sources: { safe: { workflowRunId: String(id), failureDetail: "HTTP 429" } } }, previous: failures });
 assert(failures.issues.some((issue) => issue.key.startsWith("safe:repeated-failure")));
-assert(!evaluate({ ...base, safeRuns: [run(4, "failure")], pokeRuns: [run(4)], previous: failures })
+assert(!evaluate({ ...base, safeRuns: [run(4, "failure")], pokeRuns: [run(4)],
+  recovery: { sources: { safe: { workflowRunId: "4", failureDetail: "HTTP 429" } } }, previous: failures })
   .newIssues.some((issue) => issue.key.startsWith("safe:repeated-failure")));
+const differentFailure = evaluate({ ...base, safeRuns: [run(4, "failure")], pokeRuns: [run(4)],
+  recovery: { sources: { safe: { workflowRunId: "4", failureDetail: "HTML format changed" } } }, previous: failures });
+assert(!differentFailure.issues.some((issue) => issue.key.startsWith("safe:repeated-failure")),
+  "異なる失敗を同一原因として数えない");
 console.log("backfill health: green holds, new reviews, repeated failures, stalls, dedup passed");
