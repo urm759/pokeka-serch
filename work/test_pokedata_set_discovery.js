@@ -1,7 +1,7 @@
 const assert = require("node:assert/strict");
 const { discover, fetchSets } = require("./discover_pokedata_sets");
 const { activeQueue, selectNextSet } = require("./select_pokedata_set");
-const { fetchJson } = require("./update_pokedata_batch");
+const { fetchJson, sourceModeFor } = require("./update_pokedata_batch");
 
 const source = [
   { id: 1, name: "New Japanese Set", code: "M6", language: "JAPANESE", tcg: "Pokemon", live: true, release_date: "2026-09-01" },
@@ -25,6 +25,8 @@ const queue = activeQueue(manifest, { eligible: result.eligible });
 assert.deepEqual(queue.map((row) => row.setName), ["SM-P Promos", "New Japanese Set"]);
 assert.equal(selectNextSet(manifest, [queue[1]]).setName, "New Japanese Set");
 assert.throws(() => discover([], domestic, { sets: [] }, 1), /形式/);
+assert.match(sourceModeFor(1, new Set()), /未確認/);
+assert.match(sourceModeFor(1, new Set([1])), /認証済みChrome/);
 
 (async () => {
   await assert.rejects(fetchSets(async () => ({ status: 403, ok: false })), (error) => error.manual === true);

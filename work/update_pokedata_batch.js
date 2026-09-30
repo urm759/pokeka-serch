@@ -17,6 +17,9 @@ const CACHE = path.join(__dirname, "pokedata-page-cache.json");
 const METRICS = path.join(__dirname, "pokedata-fetch-metrics.json");
 const BROWSER_CAPTURES = path.join(__dirname, "pokedata-browser-captures.json");
 const ACCESS_HOLD = path.join(__dirname, "pokedata-access-hold.json");
+const sourceModeFor = (cardId, capturedIds) => capturedIds.has(Number(cardId))
+  ? "認証済みChrome個別成約確認＋公開API"
+  : "公開APIのみ・認証済み個別成約未確認";
 
 function read(file, fallback) {
   try { return JSON.parse(fs.readFileSync(file, "utf8").replace(/^\uFEFF/, "")); } catch { return fallback; }
@@ -333,7 +336,7 @@ async function main() {
           existing.cards[domestic.id] = {
             localCardId: domestic.id, localCardName: domestic.name,
             linkStatus: linkage.status, linkageMethod: linkage.method,
-            sourceMode: "公開API取得・一部認証済みChrome検証",
+            sourceMode: sourceModeFor(sourceCard.id, browserCapturedIds),
             sourceUrl: record.sourceUrl, pokedata: {
               pokedataCardId: Number(sourceCard.id), setId: sourceCard.set_id,
               setName: sourceCard.set_name, setCode: sourceCard.set_code,
@@ -423,7 +426,7 @@ async function main() {
     if (!record?.localCardId || record.localCardId !== localCardId) delete existing.cards[localCardId];
   }
   for (const detail of Object.values(existing.cards || {})) {
-    detail.sourceMode ||= "公開API取得・一部認証済みChrome検証";
+    detail.sourceMode = sourceModeFor(detail.pokedata?.pokedataCardId, browserCapturedIds);
     for (const market of [detail.markets?.ebayRaw, detail.markets?.ebayPsa10, detail.markets?.ebayPsa9].filter(Boolean)) {
       market.individualSalesStatus = individualSalesStatus(market);
       market.usableIndividualMedian = Number(market.adoptedCount || 0) >= 3;
@@ -491,4 +494,4 @@ async function main() {
 
 if (require.main === module) main().catch((error) => { console.error(error); process.exitCode = 1; });
 
-module.exports = { cardVariant, fetchJson, findDomestic, individualSalesStatus, localIdentity, minimalTransactions, normalizeName, normalizeNumber, normalizeSetCode };
+module.exports = { cardVariant, fetchJson, findDomestic, individualSalesStatus, localIdentity, minimalTransactions, normalizeName, normalizeNumber, normalizeSetCode, sourceModeFor };
