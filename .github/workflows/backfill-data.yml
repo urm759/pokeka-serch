@@ -28,11 +28,12 @@ jobs:
       - name: Continue public PokeDATA checkpoint
         if: env.POKEDATA_SET_READY == '1'
         env:
-          POKEDATA_BATCH: "10"
-          POKEDATA_INTERVAL_MS: "1100"
           POKEDATA_TIMEOUT_MS: "10000"
           TRACKED_ALLOW_PARTIAL: "1"
         run: node work/run_tracked_update.js pokedata work/update_pokedata_batch.js
+      - name: Record PokeDATA transient error rate and acquisition count
+        if: env.POKEDATA_SET_READY == '1' && always()
+        run: node work/record_pokedata_rate.js
       - name: Rebuild affected public summaries
         if: env.POKEDATA_SET_READY == '1'
         run: |
@@ -58,4 +59,13 @@ jobs:
           git add data work
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "Continue incremental data backfill"
+          git push
+      - name: Preserve recovery position if a required step failed
+        if: failure()
+        run: |
+          node work/save_backfill_recovery.js pokedata
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/backfill-recovery.json
+          git commit -m "Preserve PokeDATA recovery position"
           git push

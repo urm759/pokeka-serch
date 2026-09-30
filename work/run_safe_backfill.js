@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { spawnSync } = require("child_process");
 const { updateRun, appendRunHistory } = require("./source_observability.js");
+const backfillRate = require("./backfill_rate.js");
 
 const ROOT = path.join(__dirname, "..");
 const CONFIG = JSON.parse(fs.readFileSync(path.join(__dirname, "safe-backfill-config.json"), "utf8"));
@@ -85,7 +86,8 @@ function run(options = {}) {
   }
   save(state);
   for (const source of stages) {
-    const settings = CONFIG.sources[source];
+    const lastSample = [...backfillRate.read().samples].reverse().find((row) => row.source === source);
+    const settings = backfillRate.settings(CONFIG.sources[source], lastSample);
     const sourceStarted = Date.now();
     state.sources[source] = { status: "pending", position: sourceProgress(source), checkedAt: now(), batches: 0 };
     let failures = 0;
@@ -133,6 +135,16 @@ function run(options = {}) {
         || ["yuyutei", "torecacamp"].includes(source) && Number(position.catalogCount) >= 20
           && Number(after.catalogCount) < Math.floor(Number(position.catalogCount) * 0.7);
       const stopped = accessBlocked || abruptDrop || failures >= settings.maxFailures;
+      const attempted = Number(shopBatch.attempted || shopBatch.searched || output?.attempted || output?.searched
+        || output?.processed || Math.max(1, Number(after.inspected || after.catalogCount || 0) - Number(position.inspected || position.catalogCount || 0)));
+      const acquired = Math.max(0, Number(after.inspected || after.catalogCount || 0) - Number(position.inspected || position.catalogCount || 0));
+      backfillRate.record({ key: `${process.env.GITHUB_RUN_ID || state.startedAt}:${source}:${batches}`,
+        source, at: now(), batchSize: Number(task.env.YUYUTEI_SEARCH_BATCH || task.env.PRICE_EVIDENCE_FETCH_LIMIT
+          || task.env.TORECACAMP_PRODUCT_DETAIL_BATCH || settings.batchSize), intervalMs: settings.intervalMs,
+        adjustment: settings.adjustment, attempted, acquired, failed: batchFailures + (result.status !== 0 ? 1 : 0),
+        httpStatus: Number(shopBatch.lastFailure?.httpStatus || after.lastFailure?.httpStatus) || null,
+        error: failure ? String(output?.stopReason || shopBatch.lastFailure?.error || result.error?.message || result.stderr || "").slice(0, 250) : null,
+        manualHold: accessBlocked || abruptDrop });
       if (abruptDrop) unsafeDropDetected = true;
       if (["yuyutei", "torecacamp"].includes(source)) {
         const batch = shopBatch;

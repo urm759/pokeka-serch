@@ -3,7 +3,7 @@ name: Data Update Health Watchdog
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: [Daily Fast Update]
+    workflows: [Daily Fast Update, Safe Checkpoint Backfill, PokeDATA Incremental Backfill]
     types: [completed]
   schedule:
     - cron: "17 */2 * * *"
@@ -25,7 +25,12 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: "24"
-      - name: Check failed runs and source age
+      - name: Check alert deduplication and safe backoff rules
+        run: |
+          node work/test_update_health.js
+          node work/test_backfill_health.js
+          node work/test_backfill_rate.js
+      - name: Check workflow results and saved checkpoint holds
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node work/watch_update_health.js

@@ -1,5 +1,6 @@
 const fs = require("node:fs");
 const path = require("node:path");
+const backfillRate = require("./backfill_rate.js");
 
 const ROOT = path.join(__dirname, "..");
 const SET_QUEUE = [
@@ -41,15 +42,17 @@ if (require.main === module) {
   const selectedAt = new Map((selection.runs || []).map((row) => [row.setName, row.at]));
   queue.sort((a, b) => String(selectedAt.get(a.setName) || "").localeCompare(String(selectedAt.get(b.setName) || "")));
   const next = queue.length ? selectNextSet(manifest, queue) : null;
+  const lastSample = [...backfillRate.read().samples].reverse().find((row) => row.source === "pokedata");
+  const throttle = backfillRate.settings({ batchSize: 10, intervalMs: 1100 }, lastSample);
   const values = next
-    ? `POKEDATA_SET=${next.setName}\nPOKEDATA_SET_CODE=${next.setCode || ""}\nPOKEDATA_TARGET=10000\nPOKEDATA_SET_READY=1\n`
+    ? `POKEDATA_SET=${next.setName}\nPOKEDATA_SET_CODE=${next.setCode || ""}\nPOKEDATA_TARGET=10000\nPOKEDATA_BATCH=${throttle.batchSize}\nPOKEDATA_INTERVAL_MS=${throttle.intervalMs}\nPOKEDATA_SET_READY=1\n`
     : "POKEDATA_SET_READY=0\n";
   if (process.env.GITHUB_ENV) fs.appendFileSync(process.env.GITHUB_ENV, values, "utf8");
   if (next) {
     selection.runs = [...(selection.runs || []), { setName: next.setName, at: new Date().toISOString() }].slice(-30);
     fs.writeFileSync(SELECTION, JSON.stringify(selection), "utf8");
   }
-  console.log(next ? `PokeDATA next set: ${next.setName} ${next.completed}/${next.sourceCount || "未取得"}`
+  console.log(next ? `PokeDATA next set: ${next.setName} ${next.completed}/${next.sourceCount || "未取得"}; ${throttle.adjustment} batch=${throttle.batchSize} interval=${throttle.intervalMs}ms`
     : `PokeDATA停止: ${accessHold?.reason || discovery.stopReason || "確認済み日本語セットの待機列なし"}`);
 }
 

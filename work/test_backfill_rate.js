@@ -1,0 +1,11 @@
+const assert = require("node:assert/strict");
+const rate = require("./backfill_rate.js");
+const base = { batchSize: 12, intervalMs: 1100 };
+assert.equal(rate.settings(base, { httpStatus: 429 }).batchSize, 6);
+assert.equal(rate.settings(base, { httpStatus: 429 }).intervalMs, 2200);
+assert.equal(rate.settings(base, { error: "ETIMEDOUT" }).adjustment, "transient-backoff");
+assert.equal(rate.settings(base, { httpStatus: 403, manualHold: true }).adjustment, "none");
+assert.equal(rate.settings(base, { error: "ambiguous card identity", manualHold: true }).adjustment, "none");
+assert.equal(rate.settings(base, { httpStatus: 200 }).adjustment, "none");
+assert.equal(rate.transient({ httpStatus: 403 }), false);
+console.log("transient-only bounded backoff tests passed");

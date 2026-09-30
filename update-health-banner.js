@@ -18,15 +18,20 @@
     : null;
   const snapshot = snapshotResult.status === "fulfilled" ? snapshotResult.value : null;
   const health = live || (sourceLastSuccessAt ? model.evaluate({ sourceLastSuccessAt }) : snapshot);
-  if (!health || health.status === "ok") return;
+  const backfillIssues = (snapshot?.issues || []).filter((issue) => !issue.key?.startsWith("daily:"));
+  const dailyReasons = live ? live.reasons : snapshot?.issues
+    ? snapshot.issues.filter((issue) => issue.key?.startsWith("daily:")).map((issue) => issue.reason)
+    : health?.reasons || [];
+  const reasons = [...dailyReasons, ...backfillIssues.map((issue) => issue.reason)];
+  if (!health || !reasons.length) return;
   banner.hidden = false;
-  banner.dataset.status = health.status;
+  banner.dataset.status = "alert";
   const title = document.createElement("strong");
-  title.textContent = health.status === "alert" ? "データ更新に注意" : "データ更新状況を確認できません";
+  title.textContent = "データ更新に注意";
   const message = document.createElement("span");
-  message.textContent = health.reasons?.join("／") || "最新の実行結果を確認してください。";
+  message.textContent = reasons.join("／");
   const link = document.createElement("a");
-  link.href = "https://github.com/urm759/pokeka-serch/actions/workflows/daily-fast-update.yml";
+  link.href = backfillIssues[0]?.url || "https://github.com/urm759/pokeka-serch/actions";
   link.target = "_blank";
   link.rel = "noreferrer";
   link.textContent = "実行履歴を見る";
