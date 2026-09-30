@@ -1,4 +1,4 @@
-param([int]$Retries = 3)
+param([int]$Retries = 1)
 
 $ErrorActionPreference = 'Stop'
 $Repo = Split-Path -Parent $PSScriptRoot
@@ -26,7 +26,7 @@ function Invoke-Step {
     if ($exitCode -eq 0) { return @{ Name = $Name; Attempts = $attempt; Success = $true } }
     if ($attempt -lt $MaxAttempts) { Start-Sleep -Seconds ([Math]::Min(20, 5 * $attempt)) }
   }
-  throw "$Name failed after $MaxAttempts attempt(s)."
+  throw "$Name failed after $MaxAttempts attempt(s). $lastOutput"
 }
 
 try {
@@ -35,7 +35,9 @@ try {
   $env:PSA_MIN_TOTAL_POPULATION = '500'
   Invoke-Step -Name 'PSA priority queue build' -Operation { & $Node (Join-Path $PSScriptRoot 'build_psa_priority_queue.js') } | Out-Null
   Invoke-Step -Name 'PSA official population update' -MaxAttempts $Retries -Operation { & $Node (Join-Path $PSScriptRoot 'update_psa_official_populations.js') } | Out-Null
-  Invoke-Step -Name 'Snkr English name update' -MaxAttempts 2 -Operation { & $Node (Join-Path $PSScriptRoot 'update_snkr_english_names.js') } | Out-Null
+  if ($env:PSA_REFRESH_ENGLISH_NAMES -eq '1') {
+    Invoke-Step -Name 'Snkr English name update' -MaxAttempts 1 -Operation { & $Node (Join-Path $PSScriptRoot 'update_snkr_english_names.js') } | Out-Null
+  }
   Invoke-Step -Name 'PSA history build' -Operation { & $Node (Join-Path $PSScriptRoot 'build_psa_history.js') } | Out-Null
 
   $afterPayload = Get-Content $PsaDataPath -Raw | ConvertFrom-Json
@@ -53,6 +55,7 @@ try {
     status = 'success'
     acquiredCount = @($afterPayload.rows).Count
     updatedCount = $updatedCount
+    newAcquiredCount = @($afterPayload.rows | Where-Object { -not $BeforeRows.ContainsKey("$($_.setCode)|$($_.cardNo)|$($_.cardName)") }).Count
     fetchFailureCount = 0
     sourceState = if ($updatedCount -gt 0) { '取得成功・データ更新あり' } else { '取得成功・データ元更新なし' }
     error = $null
@@ -61,6 +64,8 @@ try {
   Write-Output ("PSA acquisition completed: acquired={0} updated={1}" -f $result.acquiredCount, $updatedCount)
 } catch {
   $EndedAt = Get-Date
+  $fetchAuditPath = Join-Path $PSScriptRoot 'psa-fetch-progress.json'
+  $fetchAudit = if (Test-Path $fetchAuditPath) { Get-Content $fetchAuditPath -Raw | ConvertFrom-Json } else { $null }
   @{
     startedAt = $StartedAt.ToString('o')
     endedAt = $EndedAt.ToString('o')
@@ -69,8 +74,8 @@ try {
     acquiredCount = if (Test-Path $PsaDataPath) { @((Get-Content $PsaDataPath -Raw | ConvertFrom-Json).rows).Count } else { 0 }
     updatedCount = 0
     fetchFailureCount = 1
-    sourceState = 'PSA取得処理失敗'
-    error = $_.Exception.Message
+    sourceState = if ($fetchAudit.status -eq 'manual-wait') { '手動対応待ち・過去正常データ保持' } else { 'PSA取得処理失敗' }
+    error = if ($fetchAudit.stopReason) { $fetchAudit.stopReason } else { $_.Exception.Message }
   } | ConvertTo-Json | Set-Content -Path $ResultPath -Encoding utf8
   throw
 }

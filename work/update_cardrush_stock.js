@@ -183,6 +183,7 @@ function writeOutputs({ cards, catalog, history, invalidUrls, recheckIds, paths 
     const drop30 = totalDecrease(values, 30);
     const stock = values[currentDateIndex];
     summaryCards[card.id] = {
+      updatedAt: catalogEntry?.observedAt || null,
       stock: Number.isFinite(stock) ? stock : Number.isFinite(catalogEntry?.stock) ? catalogEntry.stock : null,
       cardrushPrice: cardrushPrice > 0 ? cardrushPrice : null,
       avg7,
@@ -365,7 +366,8 @@ async function main() {
   console.log(`cardrush stock complete: checked=${checked}, rejected=${stateRejected}, broken=${broken}, failed=${failed}`);
 }
 
-main().catch((error) => {
+if (require.main === module) main().catch((error) => {
   console.error(error);
   process.exit(1);
 });
+module.exports = { parseProductPage };

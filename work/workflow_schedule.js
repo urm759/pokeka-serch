@@ -1,7 +1,7 @@
 const SOURCE_POLICIES = {
   toreca: { workflow: "Daily Fast Update", times: ["04:30", "17:00"], ttlHours: 30 },
-  cardrush: { workflow: "Manual Full Refresh / Refresh Cardrush Stock", times: [], ttlHours: 72 },
-  hareruya2: { workflow: "Manual Full Refresh", times: [], ttlHours: 72 },
+  cardrush: { workflow: "Daily Fast Update（候補価格のみ・403時停止）／全件は手動", times: ["04:30", "17:00"], ttlHours: 48 },
+  hareruya2: { workflow: "Daily Fast Update（候補価格20件まで）／全件は手動", times: ["04:30", "17:00"], ttlHours: 48 },
   yuyutei: { workflow: "Safe Checkpoint Backfill（GitHub共有ランナー403時は停止）", times: ["02:00"], ttlHours: 72 },
   torecacamp: { workflow: "Safe Checkpoint Backfill", times: ["02:00"], ttlHours: 48 },
   shopBuyback: { workflow: "Daily Fast Update", times: ["04:30", "17:00"], ttlHours: 30 },
@@ -57,7 +57,7 @@ function consecutiveFailures(history = [], current = {}) {
   if (current.lastAttemptAt && (!rows.length || rows.at(-1)?.startedAt !== current.lastAttemptAt)) rows.push({ status: current.status });
   let count = 0;
   for (const row of rows.reverse()) {
-    const failed = row.status === "failed" || (row.status === "partial" && Number(row.fetchFailureCount || 0) > 0);
+    const failed = row.status === "failed" || row.status === "manual-wait" || (row.status === "partial" && Number(row.fetchFailureCount || 0) > 0);
     if (!failed) break;
     count += 1;
   }
@@ -77,7 +77,8 @@ function sourceTiming(sourceId, run = {}, history = [], now = new Date()) {
     workflow: schedule.workflow,
     automatic: schedule.automatic,
     scheduleLabel: schedule.scheduleLabel,
-    nextScheduledAt: schedule.nextScheduledAt,
+    nextScheduledAt: run.status === "manual-wait" ? null : schedule.nextScheduledAt,
+    acquisitionStopped: run.status === "manual-wait",
     previousScheduledAt: schedule.previousScheduledAt,
     actionsDelayMinutes: githubActionsRun && scheduledRun && Number.isFinite(plannedMs) && Number.isFinite(startedMs) ? Math.max(0, Math.round((startedMs - plannedMs) / 60000)) : null,
     executionEnvironment: run.executionEnvironment || null,

@@ -39,7 +39,7 @@ if (Test-PsaChrome) {
   if ($Show) {
     Start-Process -FilePath $Chrome -ArgumentList $Arguments
   } else {
-    Start-Process -FilePath $Chrome -ArgumentList $Arguments -WindowStyle Minimized
+    Start-Process -FilePath $Chrome -ArgumentList $Arguments -WindowStyle Hidden
   }
 }
 

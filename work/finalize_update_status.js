@@ -44,6 +44,7 @@ const psa = read("data/psa-official-populations.json");
 const services = read("data/psa-japan-services.json");
 const pokedata = read("data/pokedata-summary.json");
 const pokedataManifest = read("data/pokedata/manifest.json", { sets: [] });
+const acquisitionAudit = read("data/acquisition-progress-audit.json", {});
 const snkrRaw = read("data/snkr-raw-flip-summary.json", { coverage: {}, cards: {} });
 const updatePerformance = read("data/update-performance.json", {});
 const safeBackfill = read("work/safe-backfill-progress.json", {});
@@ -175,6 +176,7 @@ for (const [sourceId, source] of Object.entries(sources)) {
   source.acquiredCount = Number.isFinite(run.acquiredCount) ? run.acquiredCount : (Number.isFinite(fallbackCount) ? fallbackCount : null);
   source.fetchFailureCount = Number.isFinite(run.fetchFailureCount) ? run.fetchFailureCount : null;
   source.updatedCount = Number.isFinite(run.updatedCount) ? run.updatedCount : null;
+  source.acquisitionAudit = acquisitionAudit.sources?.[sourceId] || null;
   source.sourceState = run.sourceState || (source.status === "failed" ? "取得処理失敗" : "過去データ・処理履歴未記録");
   source.syncStatus = run.syncStatus || null;
   source.syncError = run.syncError || null;
@@ -194,14 +196,14 @@ for (const [sourceId, source] of Object.entries(sources)) {
       ? `前回データ保持・最新再取得失敗（最新日 ${latestPsaDate}：${latestPsaCount}件 / 全${psaTotalRows}件）`
       : `一部セット更新（最新日 ${latestPsaDate}：${latestPsaCount}件 / 全${psaTotalRows}件）`;
     source.acquiredCount = psaTotalRows;
-    source.updatedCount = latestPsaCount;
+    source.latestDayRows = latestPsaCount;
     source.fresh = false;
   }
   if (sourceId === "pokedata" && Number(pokedataManifest.totalCards || pokedata.coverage?.linkedDomesticCards || 0) < 12033) {
     source.acquiredCount = Number(pokedataManifest.totalLinkageRecords || pokedata.coverage?.acquired || 0);
-    source.updatedCount = Number(pokedataManifest.totalCards || pokedata.coverage?.linkedDomesticCards || 0);
+    source.cumulativeLinkedCards = Number(pokedataManifest.totalCards || pokedata.coverage?.linkedDomesticCards || 0);
     source.status = "partial";
-    source.sourceState = `検証中／部分取得（${Number(pokedataManifest.sets?.length || 0)}セット・照合${source.acquiredCount}件・国内${source.updatedCount}枚）${run.status === "no-progress" ? "・前回は処理成功／進捗なし" : ""}`;
+    source.sourceState = `検証中／部分取得（${Number(pokedataManifest.sets?.length || 0)}セット・照合${source.acquiredCount}件・国内${source.cumulativeLinkedCards}枚）${run.status === "no-progress" ? "・前回は処理成功／進捗なし" : ""}`;
     source.fresh = false;
   }
   if (sourceId === "snkrRaw" && Number(snkrRaw.coverage?.exactMatchedCards || 0) < Number(snkrRaw.coverage?.directProductLinks || 0)) {

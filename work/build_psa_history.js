@@ -122,8 +122,8 @@ function compactRows(payload) {
   const rows = source.map((row) => ({
     set: shortSet(row.setCode || String(row.sourceSet || row.setName || "").replace(/^\d{4}\s+Pokemon Japanese\s+/i, "")),
     no: normalizeNo(row.cardNo), name: String(row.cardName || "").replace(/Shop with Affiliates/gi, "").trim(),
-    ten: Number(row.psa10Count), total: Number(row.psaTotal), url: row.sourceUrl || "", fetchedAt: row.fetchedAt || payload.generatedAt || "",
-  })).filter((row) => row.set && row.no && Number.isFinite(row.ten) && Number.isFinite(row.total) && row.total >= row.ten && row.ten >= 0);
+    ten: row.psa10Count == null ? null : Number(row.psa10Count), total: row.psaTotal == null ? null : Number(row.psaTotal), url: row.sourceUrl || "", fetchedAt: row.fetchedAt || payload.generatedAt || "",
+  })).filter((row) => row.set && row.no && Number.isFinite(row.ten) && Number.isFinite(row.total) && row.total > 0 && row.total >= row.ten && row.ten >= 0);
   const deduped = new Map();
   for (const row of rows) {
     const key = `${row.set}|${row.no}|${cleanName(row.name)}`;
@@ -212,4 +212,5 @@ function main() {
   console.log(JSON.stringify({ matched: summary.matched, total: cards.length, english: Object.keys(english).length, date: today }));
 }
 
-main();
+if (require.main === module) main();
+module.exports = { cardIdentity, compactRows, cleanName, shortSet, normalizeNo };

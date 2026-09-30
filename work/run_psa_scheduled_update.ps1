@@ -30,6 +30,9 @@ try {
   $sync = if (Test-Path $SyncPath) { Get-Content $SyncPath -Raw | ConvertFrom-Json } else { [pscustomobject]@{ status = 'unknown'; message = '同期結果未記録' } }
   if ($syncExit -ne 0) { Write-Warning "Git sync warning; continuing acquisition: $($sync.message)" }
 
+  & $Node (Join-Path $PSScriptRoot 'audit_acquisition_progress.js') --baseline
+  if ($LASTEXITCODE -ne 0) { throw 'PSA acquisition baseline audit failed.' }
+
   & (Join-Path $PSScriptRoot 'acquire_psa_data.ps1')
   if ($LASTEXITCODE -ne 0) { throw 'PSA acquisition phase failed.' }
   $acquisition = Get-Content $AcquisitionPath -Raw | ConvertFrom-Json
@@ -54,8 +57,10 @@ try {
     publishError = $null
   } | ConvertTo-Json | Set-Content -Path $StatePath -Encoding utf8
 
-  & $Node (Join-Path $PSScriptRoot 'finalize_update_status.js')
-  if ($LASTEXITCODE -ne 0) { throw 'Update status finalization failed.' }
+  foreach ($Script in @('build_card_completion.js', 'build_purchase_limit_audit.js', 'audit_acquisition_progress.js', 'audit_link_coverage.js', 'finalize_update_status.js', 'test_acquisition_progress.js', 'test_purchase_limit_audit.js')) {
+    & $Node (Join-Path $PSScriptRoot $Script)
+    if ($LASTEXITCODE -ne 0) { throw "PSA post-acquisition verification failed: $Script" }
+  }
 
   try {
     & (Join-Path $PSScriptRoot 'publish_psa_update.ps1')

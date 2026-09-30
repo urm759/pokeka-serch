@@ -85,6 +85,32 @@ state.operationalLimitHistory = previous && previous.modelVersion === model.MODE
   ? { ...previous, currentDataDate: asOfDate }
   : { modelVersion: model.MODEL_VERSION, currentDataDate: asOfDate, settings: operationalSettings(), cards: {} };
 const startedAt = Date.now();
+if (process.env.SHOP_EFFECT_AUDIT_REF) {
+  const { execFileSync } = require("child_process");
+  const ref = process.env.SHOP_EFFECT_AUDIT_REF;
+  const gitRead = (file) => JSON.parse(execFileSync("git", ["show", `${ref}:${file}`], { cwd: root, encoding: "utf8", maxBuffer: 30000000 }));
+  const actual = { psa: state.psaPopulation, cardrush: state.cardrushStock, hareruya2: state.hareruya2Stock };
+  state.psaPopulation = gitRead("data/psa-population-summary.json").cards;
+  for (const id of ["cardrush", "hareruya2"]) {
+    const old = gitRead(`data/${id}-stock-summary.json`).cards;
+    const catalog = gitRead(`work/${id}_catalog.json`);
+    const byUrl = new Map(catalog.map((entry) => [entry.detailUrl, entry]));
+    const byId = new Map(catalog.map((entry) => [entry.cardId, entry]));
+    for (const card of state.cards) if (old[card.id]) old[card.id].updatedAt = (byId.get(card.id) || byUrl.get(card[`${id}Url`]))?.observedAt || null;
+    state[`${id}Stock`] = old;
+  }
+  const before = candidateAvailabilityAudit.snapshot(prepareCalculatedCards(state.cards), presetQualifications, asOfDate, new Date().toISOString(), model.MODEL_VERSION);
+  state.cardrushStock = actual.cardrush; state.hareruya2Stock = actual.hareruya2;
+  const after = candidateAvailabilityAudit.snapshot(prepareCalculatedCards(state.cards), presetQualifications, asOfDate, new Date().toISOString(), model.MODEL_VERSION);
+  const comparison = candidateAvailabilityAudit.compare(before, after);
+  const effect = { referenceCommit: ref, baselineAt: read("work/acquisition-audit-baseline.json", {}).at || null,
+    generatedAt: new Date().toISOString(), modelVersion: model.MODEL_VERSION, settings: operationalSettings(),
+    fixedPsa: true, fixedMarketHistory: true, correctedIndividualPriceDates: true, before: before.counts, after: after.counts, comparison,
+    rows: Object.keys(before.rows).map((id) => ({ id, before: before.rows[id], after: after.rows[id] || null })) };
+  write("data/shop-refresh-isolated-effect.json", effect);
+  console.log(JSON.stringify({ before: effect.before, after: effect.after, promoted: comparison.promoted, ref }));
+  process.exit(0);
+}
 const calculated = prepareCalculatedCards(state.cards);
 const candidateHistory = read("work/candidate-daily-history.json", { version: 1, days: [] });
 const availabilityHistory = read("work/candidate-availability-history.json", { version: 1, runs: [] });
@@ -174,6 +200,21 @@ if (process.argv.includes("--verify")) {
     throw new Error("Candidate availability audit is stale or differs from the current model/data");
   }
 } else {
+  const cohortBaseline = read("work/acquisition-audit-baseline.json", null);
+  const cohortIds = new Set(Object.keys(cohortBaseline?.availability?.rows || {}));
+  if (cohortIds.size) {
+    const rows = {};
+    for (const card of calculated.filter((item) => cohortIds.has(item.id))) {
+      const flags = presetQualifications(card);
+      rows[card.id] = { name: card.name, status: flags.now ? "購入先確認済み" : "価格待ち", eligible: flags.combined,
+        limit: Number(card.buyLimits?.clean?.finalMaxPrice) || null, offerPrice: card.currentStoreOffer?.value ?? null,
+        store: card.currentStoreOffer?.source || null, storeUpdatedAt: card.currentStoreOffer?.updatedAt || null,
+        verdict: card.purchaseDecision?.verdict || null, reasons: card.purchaseDecision?.reasons || [],
+        currentReferencePrice: Number(card.price) || null, priceConfidence: card.priceAggregation?.confidence || null,
+        manualReview: Boolean(card.dataQuality?.manualReview), dataAnomaly: Boolean(card.dataQuality?.dataAnomaly) };
+    }
+    write("work/candidate-cohort-current.json", { settings: candidateSettings, modelVersion: model.MODEL_VERSION, rows });
+  }
   write("data/purchase-limit-model-audit.json", audit);
   write("data/operational-limit-history.json", history);
   write("data/candidate-daily-audit.json", candidateSummary);

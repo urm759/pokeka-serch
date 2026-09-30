@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { shortSet, normalizeNo, cleanName } = require("./build_psa_history.js");
 
 let chromium;
 try {
@@ -16,6 +17,7 @@ const SITE_ROOT = fs.existsSync(path.join(STANDALONE_ROOT, "index.html"))
 const OUTPUT_DIR = path.join(SITE_ROOT, "data");
 const OUTPUT_JSON = path.join(OUTPUT_DIR, "psa-official-populations.json");
 const OUTPUT_JS = path.join(OUTPUT_DIR, "psa-official-populations.js");
+const PROGRESS_PATH = path.join(__dirname, "psa-fetch-progress.json");
 const PRIORITY_QUEUE_PATH = process.env.PSA_PRIORITY_QUEUE_PATH || path.join(__dirname, "psa_priority_queue.json");
 const MIN_TOTAL_POPULATION = Number(process.env.PSA_MIN_TOTAL_POPULATION || 0);
 const MAX_PAGES = Number(process.env.PSA_MAX_PAGES || 200);
@@ -79,6 +81,25 @@ function cleanCardName(value) {
     .replace(/\bShop with Affiliates\b/gi, "")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function rowObjects(set) {
+  return set.rows.map((row) => ({ cardNo: normalizeNo(row.cardNo), cardName: cleanCardName(row.cardName),
+    psa10Count: row.psa10Count, psaTotal: row.psaTotal, psa10Rate: row.psa10Rate,
+    setCode: shortSet(set.setCode), sourceSet: set.name, sourceUrl: set.url, fetchedAt: set.fetchedAt }));
+}
+
+function mergeRows(before, after) {
+  const key = (row) => `${shortSet(row.setCode)}|${normalizeNo(row.cardNo)}|${cleanName(row.cardName)}`;
+  const map = new Map(before.map((row) => [key(row), row]));
+  let newCount = 0, changedCount = 0;
+  for (const row of after) {
+    const old = map.get(key(row));
+    if (!old) newCount += 1;
+    else if (old.psa10Count !== row.psa10Count || old.psaTotal !== row.psaTotal) changedCount += 1;
+    map.set(key(row), row);
+  }
+  return { rows: [...map.values()], newCount, changedCount };
 }
 
 function parseSinglePopulation(bodyText, titleText, setCode) {
@@ -183,7 +204,9 @@ async function collectSet(context, entry) {
   };
 
   try {
-    await page.goto(entry.url, { waitUntil: "domcontentloaded", timeout: 60000 });
+    const response = await page.goto(entry.url, { waitUntil: "domcontentloaded", timeout: 30000 });
+    result.httpStatus = response?.status() ?? null;
+    if ([401, 403, 429].includes(result.httpStatus)) throw new Error(`PSA HTTP ${result.httpStatus}; acquisition stopped without bypass.`);
     await page.waitForTimeout(8000);
 
     if (page.url().includes("signin")) {
@@ -279,12 +302,15 @@ async function collectSet(context, entry) {
       throw new Error(`Unable to find a populated table for ${entry.url}`);
     }
 
+    result.parsedRows = rows.length;
     result.rows = rows.filter((row) => {
       if (!row.cardNo || row.cardNo.toUpperCase() === "TOTAL") return false;
+      if (!Number.isFinite(row.psaTotal) || row.psaTotal <= 0 || !Number.isFinite(row.psa10Count) || row.psa10Count < 0 || row.psa10Count > row.psaTotal) return false;
       const key = `${String(result.setCode || "").toUpperCase()}|${String(row.cardNo).replace(/^0+(?=\d)/, "")}`;
       // High-priority legacy cards remain available even below the normal 500-pop cutoff.
       return Number(row.psaTotal || 0) >= MIN_TOTAL_POPULATION || priorityCards.has(key);
     });
+    result.excludedRows = rows.length - result.rows.length;
     result.headers = lastHeaders;
   } catch (error) {
     result.error = error instanceof Error ? error.message : String(error);
@@ -296,6 +322,12 @@ async function collectSet(context, entry) {
 }
 
 async function main() {
+  const startedAt = new Date().toISOString();
+  const checkpoint = readJson(PROGRESS_PATH, { completedUrls: [] });
+  const priorCompleted = new Set(checkpoint.completedUrls || []);
+  const audit = { startedAt, endedAt: null, cycleDate: startedAt.slice(0, 10), status: "running", attemptedCount: 0,
+    newAcquiredCount: 0, changedCount: 0, refreshedCount: 0, completedUrls: [...priorCompleted], records: [], nextUrl: null, stopReason: null };
+  const saveProgress = () => writeJson(PROGRESS_PATH, { ...audit, durationMs: Date.now() - Date.parse(startedAt) });
   const fullManifest = readJson(MANIFEST_PATH, []);
   const priorityQueue = readJson(PRIORITY_QUEUE_PATH, { rows: [], orderedSets: [] });
   priorityCards = new Set((priorityQueue.rows || []).map((row) => `${String(row.setCode || "").toUpperCase()}|${String(row.cardNo || "").replace(/^0+(?=\d)/, "")}`));
@@ -307,19 +339,29 @@ async function main() {
     : fullManifest;
   // Current buyback candidates are processed first, so an interrupted run still
   // refreshes the cards most relevant to sourcing today.
-  const manifest = [...selectedManifest].sort((a, b) => {
+  const orderedManifest = [...selectedManifest].sort((a, b) => {
     const aOrder = priorityOrder.get(String(a.setCode || "").toUpperCase());
     const bOrder = priorityOrder.get(String(b.setCode || "").toUpperCase());
     return (aOrder ?? Number.MAX_SAFE_INTEGER) - (bOrder ?? Number.MAX_SAFE_INTEGER);
   });
+  if (!filterRegex && orderedManifest.filter((entry) => entry.url).every((entry) => priorCompleted.has(entry.url))) priorCompleted.clear();
+  audit.completedUrls = [...priorCompleted];
+  audit.unregisteredSetCount = orderedManifest.filter((entry) => !entry.url).length;
+  const pendingManifest = orderedManifest.filter((entry) => entry.url && !priorCompleted.has(entry.url));
+  const manifest = pendingManifest.slice(0, Math.max(1, Number(process.env.PSA_SET_BATCH || 8)));
+  audit.pendingSets = pendingManifest.length;
+  audit.nextUrl = manifest[0]?.url || null;
+  saveProgress();
   const previousPayload = readJson(OUTPUT_JSON, { rows: [] });
-  if (!Array.isArray(manifest) || manifest.length === 0) {
+  if (!Array.isArray(orderedManifest) || orderedManifest.length === 0) {
     throw new Error(`No PSA set manifest found at ${MANIFEST_PATH}`);
   }
+  if (!manifest.length) { audit.status = "no-progress"; audit.endedAt = new Date().toISOString(); saveProgress(); return; }
 
   let browser = null;
   let context = null;
   let ownsContext = false;
+  try {
   if (CDP_ENDPOINT) {
     browser = await chromium.connectOverCDP(CDP_ENDPOINT, { timeout: 30000 });
     context = browser.contexts()[0] || null;
@@ -336,10 +378,19 @@ async function main() {
     });
     ownsContext = true;
   }
+  } catch (error) {
+    audit.status = "manual-wait"; audit.stopReason = `認証済みChromeへ接続不能: ${error.message}`;
+    audit.endedAt = new Date().toISOString(); saveProgress(); throw error;
+  }
 
   const collected = [];
   try {
     for (const entry of manifest) {
+      if (Date.now() - Date.parse(startedAt) > Number(process.env.PSA_TIME_LIMIT_MS || 600000)) {
+        audit.status = "partial"; audit.stopReason = "時間上限・安全停止"; break;
+      }
+      audit.nextUrl = entry.url || null;
+      saveProgress();
       if (!entry || !entry.url) {
         collected.push({
           name: entry?.name || "",
@@ -352,34 +403,47 @@ async function main() {
           rows: [],
           error: entry?.note || "Skipped because the manifest URL is empty.",
         });
+        audit.records.push({ setCode: entry?.setCode, url: null, status: "url-unregistered", error: entry?.note || "セットURL未登録" });
+        saveProgress();
         continue;
       }
 
       const record = await collectSet(context, entry);
+      audit.attemptedCount += 1;
       collected.push(record);
+      audit.records.push({ setCode: record.setCode, url: record.url, httpStatus: record.httpStatus ?? null,
+        fetchedAt: record.fetchedAt, rowCount: record.rows.length, parsedRows: record.parsedRows ?? null,
+        excludedRows: record.excludedRows ?? null, minimumPopulation: MIN_TOTAL_POPULATION, error: record.error });
+      if (!record.error && record.rows.length) {
+        const staged = mergeRows(previousPayload.rows || [], collected.flatMap(rowObjects));
+        writeJson(OUTPUT_JSON, { ...previousPayload, generatedAt: new Date().toISOString(), totalRows: staged.rows.length, rows: staged.rows });
+        // Only checkpoint sets after their values have actually been saved.
+        audit.completedUrls.push(entry.url); audit.lastSuccessAt = record.fetchedAt;
+      }
+      if (record.error && /403|401|429|sign-in|Cloudflare|robot|verification|populated table/i.test(record.error)) {
+        audit.status = "manual-wait"; audit.stopReason = record.error; saveProgress(); break;
+      }
+      saveProgress();
       console.log(`${record.name}: ${record.rows.length} rows${record.error ? ` (warning: ${record.error})` : ""}`);
     }
   } finally {
     if (ownsContext) await context.close().catch(() => {});
   }
 
-  const freshRows = collected.flatMap((set) => set.rows.map((row) => ({
-    cardNo: row.cardNo,
-    cardName: cleanCardName(row.cardName),
-    psa10Count: row.psa10Count,
-    psaTotal: row.psaTotal,
-    psa10Rate: row.psa10Rate,
-    setCode: set.setCode,
-    sourceSet: set.name,
-    sourceUrl: set.url,
-    fetchedAt: set.fetchedAt,
-  })));
-  if (freshRows.length < (filterRegex ? 1 : 100)) {
+  const freshRows = collected.flatMap(rowObjects);
+  audit.endedAt = new Date().toISOString();
+  audit.nextUrl = orderedManifest.find((entry) => !audit.completedUrls.includes(entry.url))?.url || null;
+  if (!freshRows.length) {
+    audit.status = audit.status === "manual-wait" ? audit.status : "failed";
+    audit.stopReason ||= "新しい有効Populationは0件・前回正常値を保持"; saveProgress();
     throw new Error("No reliable fresh PSA population data was collected. Existing data was preserved.");
   }
-  const successfulUrls = new Set(collected.filter((set) => !set.error && set.rows.length).map((set) => set.url).filter(Boolean));
-  const preservedRows = (previousPayload.rows || []).filter((row) => !successfulUrls.has(row.sourceUrl));
-  const rows = [...freshRows, ...preservedRows];
+  const merged = mergeRows(previousPayload.rows || [], freshRows);
+  audit.newAcquiredCount = merged.newCount; audit.changedCount = merged.changedCount;
+  const rows = merged.rows;
+  audit.refreshedCount = freshRows.length;
+  audit.status = audit.status === "manual-wait" ? audit.status : audit.nextUrl ? "partial" : "success";
+  saveProgress();
 
   const payload = {
     generatedAt: new Date().toISOString(),
@@ -406,9 +470,10 @@ async function main() {
   }
 }
 
-main()
+if (require.main === module) main()
   .then(() => process.exit(0))
   .catch((error) => {
     console.error(error);
     process.exit(1);
   });
+module.exports = { inferTableMetrics, parseSinglePopulation, mergeRows };

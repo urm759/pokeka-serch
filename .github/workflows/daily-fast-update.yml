@@ -38,6 +38,14 @@ jobs:
         run: node work/run_tracked_update.js snkrRaw work/update_snkr_raw_flip.js
       - name: Rebuild market demand and supply analysis
         run: node work/run_tracked_update.js marketAnalysis work/build_market_analysis.js
+      - name: Recheck candidate shop prices in bounded direct-origin batches
+        env:
+          CANDIDATE_SHOP_BATCH: "20"
+          CANDIDATE_SHOP_TIME_MS: "90000"
+        run: |
+          node work/audit_acquisition_progress.js --baseline
+          node work/refresh_candidate_shops.js cardrush
+          node work/refresh_candidate_shops.js hareruya2
       - name: Finalize source status
         run: node work/finalize_update_status.js
       - name: Audit state-A price conflicts and sale evidence
@@ -47,6 +55,10 @@ jobs:
           node work/build_card_completion.js
           node work/build_purchase_limit_audit.js
           node work/build_supply_maturity_hypothesis.js
+          SHOP_EFFECT_AUDIT_REF="$GITHUB_SHA" node work/build_purchase_limit_audit.js
+          node work/audit_acquisition_progress.js
+          node work/audit_link_coverage.js
+          node work/finalize_update_status.js
       - name: Run fast regression tests
         run: |
           node --check app.js
@@ -61,6 +73,7 @@ jobs:
           node work/test_price_integrity.js
           node work/test_candidate_daily_audit.js
           node work/test_candidate_availability_audit.js
+          node work/test_acquisition_progress.js
           node work/test_grade_calibration.js
           node work/test_daily_fast_update.js
           node work/test_psa_market_trial.js
@@ -72,7 +85,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data work/daily-http-cache.json work/changed-card-ids.json work/market_stability_history.json work/snkr-raw-flip-cache.json work/snkr-raw-flip-checkpoint.json work/source-update-runs.json work/source-update-history.json work/toreca-source-inventory.json work/toreca_source_diff.json work/card-new-arrivals.json work/card-lifecycle.json work/candidate-daily-history.json work/candidate-availability-history.json
+          git add data work/daily-http-cache.json work/changed-card-ids.json work/market_stability_history.json work/snkr-raw-flip-cache.json work/snkr-raw-flip-checkpoint.json work/source-update-runs.json work/source-update-history.json work/toreca-source-inventory.json work/toreca_source_diff.json work/card-new-arrivals.json work/card-lifecycle.json work/candidate-daily-history.json work/candidate-availability-history.json work/candidate-shop-refresh.json work/cardrush_catalog.json work/hareruya2_catalog.json work/cardrush_stock_history.json work/hareruya2_stock_history.json work/acquisition-progress-last.json
           if git diff --cached --quiet; then
             echo "No source change. Commit and deployment skipped."
             exit 0

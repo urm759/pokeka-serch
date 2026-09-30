@@ -44,10 +44,14 @@ jobs:
           node work/finalize_update_status.js
           node work/build_purchase_limit_audit.js
           node work/build_supply_maturity_hypothesis.js
+          node work/audit_acquisition_progress.js
+          node work/audit_link_coverage.js
+          node work/finalize_update_status.js
       - name: Verify shared purchase limits before publishing
         if: env.POKEDATA_SET_READY == '1'
         run: |
           node work/test_pokedata_set_discovery.js
+          node work/test_acquisition_progress.js
           node work/test_buyback_scenario_limits.js
           node work/test_purchase_limit_audit.js
           node work/test_grade_calibration.js

@@ -272,7 +272,21 @@ function buildStoreCoverage(root = ROOT) {
   };
   const uniqueUnmatchedCards = cards.filter((card) => ["cardrushUrl", "hareruya2Url", "yuyuteiUrl", "torecacampUrl"]
     .some((field) => !card[field])).length;
+  const acquisition = readJson(path.join(root, "data", "acquisition-progress-audit.json"), null);
+  if (acquisition?.psa) {
+    psaOfficial.fetchedProductMatchRatePct = acquisition.psa.acquiredRowMatchPct;
+    psaOfficial.mainUnmatchedReasons = [
+      reason("取得後の照合不一致", acquisition.psa.counts.acquiredUnmatched),
+      reason("セットURL未登録", acquisition.psa.counts.setUrlUnregistered),
+      reason("登録済みセット未取得", acquisition.psa.counts.registeredSetUnacquired),
+      reason("取得済みセット内の未取得（閾値・範囲・仕様）", acquisition.psa.counts.withinAcquiredSetUnacquired),
+    ].filter(Boolean);
+  }
   return {
+    acquisitionAudit: acquisition ? { generatedAt: acquisition.generatedAt, baselineAt: acquisition.baselineAt,
+      sources: acquisition.sources, definitions: acquisition.definitions,
+      psa: { ...acquisition.psa, categories: undefined },
+      shopEffect: { ...acquisition.shopEffect, rows: undefined }, remaining: acquisition.remaining } : null,
     totalCards, comparableTargetCards: signatureTargets.length, uniqueUnmatchedCards,
     uniqueUnmatchedDefinition: "サイト全カードのうち、国内4ショップ（カードラッシュ・晴れる屋2・遊々亭・トレカキャンプ）の直リンクが1つでも未取得のカード数。各データ元の未紐付け件数の合計ではありません。",
     stores, linkageSources: { ...stores, psaOfficial }, overseasSources: { pokedata: pokedataSource },

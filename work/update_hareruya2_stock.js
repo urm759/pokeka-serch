@@ -71,7 +71,7 @@ function cardFinish(value) {
 function stateFromTitle(title) {
   const text = String(title || "");
   if (/\b(?:PSA|BGS|CGC)\s*\d+/i.test(text) || /鑑定品/.test(text)) return "graded";
-  const match = text.match(/【\s*状態\s*([A-D])\s*】/i);
+  const match = text.match(/[【〔]\s*状態\s*([A-D](?:-)?)\s*[】〕]/i);
   return match ? match[1].toUpperCase() : "A";
 }
 
@@ -372,6 +372,7 @@ function writeSummary(cards, catalog, history, paths) {
     const avg30 = averageDailyDecrease(values, 30);
     const drop30 = totalDecrease(values, 30);
     summary[card.id] = {
+      updatedAt: entry?.observedAt || null,
       stock: Number.isFinite(values[currentIndex]) ? values[currentIndex] : Number.isFinite(entry?.stock) ? entry.stock : null,
       hareruya2Price: Number(entry?.price) > 0 ? Number(entry.price) : null,
       avg7: averageDailyDecrease(values, 7),
@@ -605,7 +606,8 @@ async function main() {
   console.log(`hareruya2 collections=${groups.length}/${unprocessed.length} linked=${linked} search=${searchLinked}/${searchTargets.length} coverage=${coverage}/${nextCards.length} stock=${checked}/${stockTargets.length} rejected=${rejected}${collectionWarning ? ` collectionWarning=${collectionWarning}` : ""}`);
 }
 
-main().catch((error) => {
+if (require.main === module) main().catch((error) => {
   console.error(error);
   process.exit(1);
 });
+module.exports = { extractCardSignature, productMatchesCard, stateFromTitle, parseProductPage };

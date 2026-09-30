@@ -29,11 +29,15 @@ jobs:
           node work/build_purchase_limit_audit.js
           node work/finalize_update_status.js
           node work/build_supply_maturity_hypothesis.js
+          node work/audit_acquisition_progress.js
+          node work/audit_link_coverage.js
+          node work/finalize_update_status.js
       - name: Check publication safety
         run: |
           node work/test_price_integrity.js
           node work/test_candidate_daily_audit.js
           node work/test_candidate_availability_audit.js
+          node work/test_acquisition_progress.js
           node work/test_safe_backfill.js
           node work/test_purchase_limit_audit.js
           node work/test_supply_maturity_hypothesis.js

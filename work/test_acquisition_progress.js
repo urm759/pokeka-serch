@@ -1,0 +1,53 @@
+const assert = require("node:assert/strict");
+const fs = require("fs");
+const { psaAudit, progress, validPop } = require("./audit_acquisition_progress.js");
+const { exactIdentity, shopifyQuote } = require("./refresh_candidate_shops.js");
+const { mergeRows } = require("./update_psa_official_populations.js");
+const { compactRows } = require("./build_psa_history.js");
+
+const card = (id, set, number) => ({ id, name: `ピカチュウ SR[${set} ${number}/100]`, snkPsa10Price: 10000 });
+const rows = [{ setCode: "SV9", cardNo: "001", cardName: "Pikachu", psa10Count: 10, psaTotal: 20, sourceUrl: "official", fetchedAt: "2026-09-30" }];
+const audit = psaAudit([card("linked", "SV9", "001"), card("mismatch", "SV9", "001"), card("inside", "SV9", "002"), card("pending", "SV8", "001"), card("missingUrl", "SM3", "001")], rows,
+  { linked: { ten: 10, total: 20, n: "Pikachu", u: "official" } }, [{ setCode: "SV9", url: "official" }, { setCode: "SV8", url: "next" }]);
+assert.deepEqual(audit.counts, { linked: 1, acquiredUnmatched: 1, setUrlUnregistered: 1, registeredSetUnacquired: 1, withinAcquiredSetUnacquired: 1 });
+assert.equal(audit.notAcquired, 3);
+assert.equal(audit.acquiredRowMatchPct, 100);
+assert.equal(Object.values(audit.counts).reduce((n, value) => n + value, 0), audit.targetCount);
+assert.equal(validPop({ ten: null, total: 100 }), false);
+assert.equal(validPop({ ten: 0, total: 100 }), true);
+assert.equal(validPop({ ten: 10, total: 0 }), false);
+assert.equal(validPop({ ten: 101, total: 100 }), false);
+assert.equal(validPop({ ten: Infinity, total: 100 }), false);
+assert.equal(compactRows({ rows: [{ ...rows[0], psa10Count: null }] }).length, 0, "missing official grade count is not zero percent");
+assert.deepEqual(progress(null, {}), { newAcquired: null, newLinked: null, usableAdded: null, usableLost: null, usableNet: null });
+const before = { acquiredKeys: ["1"], linkedIds: ["a"], usableIds: ["a"] };
+const after = { acquiredKeys: ["1", "2"], linkedIds: ["a", "b"], usableIds: ["b"] };
+assert.equal(progress(before, after).newAcquired, 1);
+assert.equal(progress(before, after).usableNet, 0, "a new ID is not a net gain if a usable old value is lost");
+const merged = mergeRows(rows, [{ ...rows[0], cardNo: "1", psa10Count: 11 }]);
+assert.equal(merged.newCount, 0, "zero padding is not a new official product");
+assert.equal(merged.changedCount, 1);
+assert.equal(merged.rows.length, 1);
+assert.equal(mergeRows(rows, []).rows.length, 1, "failed zero-row acquisition preserves normal data");
+
+const local = { name: "メガゲンガーex SAR [M2a 240/193]" };
+const title = "メガゲンガーex(SAR){悪}〈240/193〉[M2a]";
+assert.equal(exactIdentity(local, { title }), true);
+for (const wrong of [title.replace("240", "241"), title.replace("SAR", "SR"), `【状態A-】${title}`, `【状態C】${title}`, `${title} PSA10`, `${title} 英語版`]) assert.equal(exactIdentity(local, { title: wrong }), false);
+const quote = shopifyQuote({ variants: [{ price: 4500000, available: false, title: "Default Title" }] }, null, "url");
+assert.deepEqual(quote, { price: 45000, stock: 0, available: false });
+assert.equal(shopifyQuote({ variants: [{ price: 4500000, available: true }] }, null, "url").stock, null, "boolean stock must not become a fabricated quantity");
+
+const published = JSON.parse(fs.readFileSync("data/acquisition-progress-audit.json", "utf8"));
+const manifest = JSON.parse(fs.readFileSync("data/pokedata/manifest.json", "utf8"));
+assert.equal(published.sources.pokedata.usableValues, manifest.acquisition.usablePsa10MedianCards);
+assert.equal(published.sources.pokedata.effectiveForDecision, 0, "overseas prices remain reference-only");
+const domesticPsa9 = JSON.parse(fs.readFileSync("data/raw-psa9-gap-audit.json", "utf8"));
+assert.equal(published.remaining.domesticPsa9ActualCards, domesticPsa9.counts.domesticPsa9IndividualSales, "overseas PSA9 medians are not domestic sales");
+assert.equal(published.psa.targetCount, Object.values(published.psa.counts).reduce((n, value) => n + value, 0));
+assert.equal(typeof published.shopEffect.sameModel, "boolean");
+const coverage = JSON.parse(fs.readFileSync("data/link-coverage.json", "utf8")).current.storeCoverage;
+assert.deepEqual(coverage.acquisitionAudit.sources, published.sources);
+const status = JSON.parse(fs.readFileSync("data/update-status.json", "utf8"));
+for (const id of Object.keys(published.sources)) assert.deepEqual(status.sources[id].acquisitionAudit, published.sources[id]);
+console.log("Acquisition progress, exact identity, provenance and published consistency tests passed");

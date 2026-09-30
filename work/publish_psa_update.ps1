@@ -16,7 +16,31 @@ $paths = @(
   'work/psa_priority_queue.json',
   'work/psa_acquisition_result.json',
   'work/repo_sync_state.json'
+  'work/psa-fetch-progress.json'
+  'work/source-update-runs.json'
+  'work/source-update-history.json'
+  'work/acquisition-progress-last.json'
+  'work/candidate-cohort-current.json'
+  'work/candidate-daily-history.json'
+  'work/candidate-availability-history.json'
+  'data/acquisition-progress-audit.json'
+  'data/psa-fetch-progress.json'
+  'data/candidate-shop-refresh.json'
+  'data/link-coverage.json'
+  'data/candidate-daily-audit.json'
+  'data/candidate-availability-audit.json'
+  'data/purchase-limit-model-audit.json'
+  'data/operational-limit-history.json'
+  'data/card-catalog'
+  'data/card-catalog-completion.json'
+  'data/card-completion-status.json'
+  'data/card-completion-queue.json'
+  'data/pokemon-cards.json'
+  'data/pokemon-cards.js'
+  'data/pokemon-cards-meta.json'
 )
+
+$paths = @($paths | Where-Object { Test-Path (Join-Path $Repo $_) })
 
 & $Git -C $Repo add -- $paths
 if ($LASTEXITCODE -ne 0) { throw 'Git add failed while preparing PSA publication.' }
