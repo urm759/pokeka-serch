@@ -46,7 +46,9 @@ const state = {
   snkrRawFlipMeta: null,
   pokedataSummary: Object.create(null),
   pokedataManifest: null,
+  pokedataSetDiscovery: null,
   marketResearch: null,
+  supplyMaturityHypothesis: null,
   regulationPolicy: null,
   modernHighRarityAudit: null,
   pokedataAuditRecords: [],
@@ -934,6 +936,8 @@ function renderSourceObservability() {
         <span>全${fmt.format(pokedata.totalCards || 0)}枚に対するカバー率 <b>${formatRate(pokedata.totalCoveragePct)}</b></span>
         ${state.pokedataManifest?.qualityAudit ? `<span class="collector-stop-reason">自動一致監査 <b>${fmt.format(state.pokedataManifest.qualityAudit.sampleSize || 0)}行 / 誤一致 ${fmt.format(state.pokedataManifest.qualityAudit.mismatchCount || 0)}行（${formatRate(state.pokedataManifest.qualityAudit.mismatchRatePct)}）/ 95%信頼上限 ${formatRate(state.pokedataManifest.qualityAudit.upper95Pct)} / ${escapeHtml(state.pokedataManifest.qualityAudit.precisionStatus || "精度確認中")}</b><small>監査シード ${escapeHtml(state.pokedataManifest.qualityAudit.seed || "未取得")} / 層別 ${escapeHtml((state.pokedataManifest.qualityAudit.strata || []).map((entry) => `${entry.name} ${entry.sampleSize}行・誤一致${entry.mismatchCount}`).join(" / ") || "対象行なし")}</small>${state.pokedataManifest.qualityAudit.specialVariantAudit ? `<small>SV2a特殊ミラー全件監査 ${fmt.format(state.pokedataManifest.qualityAudit.specialVariantAudit.audited || 0)}件 / ${escapeHtml((state.pokedataManifest.qualityAudit.specialVariantAudit.strata || []).map((entry) => `${entry.name} ${entry.audited}件・誤一致${entry.mismatchCount}・95%上限${formatRate(entry.upper95Pct)}`).join(" / ") || "対象なし")}</small>` : ""}</span>` : ""}
         ${state.marketResearch ? `<span class="collector-stop-reason">海外先行性 <b>${fmt.format(state.marketResearch.overseasLead?.savedCardCount || 0)}枚・${fmt.format(state.marketResearch.overseasLead?.savedDateCount || 0)}日 / ${escapeHtml(state.marketResearch.overseasLead?.status || "仮説・蓄積中")}</b></span><span class="collector-stop-reason">季節性 <b>${fmt.format(state.marketResearch.seasonality?.savedDateCount || 0)}日 / ${escapeHtml(state.marketResearch.seasonality?.status || "仮説・蓄積中")}</b><small>市場全体・買取掲載・非掲載を分離。仕入れ上限へ未反映</small></span><span>為替 <b>${Number.isFinite(state.marketResearch.fx?.rate) ? `1 USD = ¥${Number(state.marketResearch.fx.rate).toFixed(3)}` : "未取得"}</b><small>${escapeHtml(state.marketResearch.fx?.source || "取得元未取得")} / ${escapeHtml(state.marketResearch.fx?.rateDate || state.marketResearch.fx?.fetchedAt || "日時未取得")} / ${escapeHtml(state.marketResearch.fx?.latestOrPrevious || state.marketResearch.fx?.status || "未取得")}</small></span>` : ""}
+        ${state.pokedataSetDiscovery ? `<span class="collector-stop-reason">日本語セット自動発見 <b>${fmt.format(state.pokedataSetDiscovery.eligibleSets || 0)}セット候補 / 確認待ち ${fmt.format(state.pokedataSetDiscovery.manualReviewCount || 0)}件</b><small>${escapeHtml(state.pokedataSetDiscovery.status || "未取得")} / ${escapeHtml((state.pokedataSetDiscovery.topSets || []).slice(0, 3).map((row) => `${row.setCode} ${row.setName} ${row.completed}/${row.sourceCount ?? "?"}`).join("・") || "巡回候補なし")}。403・曖昧コード・形式変更は自動採用しません。</small></span>` : ""}
+        ${state.supplyMaturityHypothesis ? `<span class="collector-stop-reason">供給成熟・需要の仮説 <b>${fmt.format(state.supplyMaturityHypothesis.counts?.hypothesis || 0)}枚 / ${escapeHtml(state.supplyMaturityHypothesis.returnDateBacktest?.status || "蓄積中")}</b><small>絶版確認ではありません。供給警戒 ${fmt.format(state.supplyMaturityHypothesis.counts?.supplyWarningAmongHypothesis || 0)}枚は既存リスクと分離。返却時の国内売却検証は ${fmt.format(state.supplyMaturityHypothesis.returnDateBacktest?.hypothesis?.evaluated || 0)}件。仕入れ上限へ未反映。</small></span>` : ""}
         ${state.modernHighRarityAudit ? `<span class="collector-stop-reason">2015年以降SR以上監査 <b>${state.modernHighRarityAudit.reproducible ? "全件スナップショット照合済み" : "全件スナップショット待ち"} / 更新後不足 ${fmt.format(state.modernHighRarityAudit.missingAfter || 0)}枚</b><small>みんトレ取得 ${fmt.format(state.modernHighRarityAudit.sourceListedTotal || 0)}件 / 発売年確定 ${fmt.format(state.modernHighRarityAudit.releaseYearKnownTotal || 0)}件 / 発売年不明 ${fmt.format(state.modernHighRarityAudit.releaseYearUnknownTotal || 0)}件 / 対象レア ${fmt.format(state.modernHighRarityAudit.targetRarityTotal || 0)}件 / 2015年以降対象 ${fmt.format(state.modernHighRarityAudit.eligibleSourceTotal || 0)}件 / 一致 ${fmt.format(state.modernHighRarityAudit.matchedTotal || 0)}件 / 除外 ${fmt.format(Object.values(state.modernHighRarityAudit.exclusionCounts || {}).reduce((sum, value) => sum + Number(value || 0), 0))}件 / 重複 ${fmt.format(state.modernHighRarityAudit.sourceDuplicateIds || 0)}件</small><small>対象ホワイトリスト ${escapeHtml((state.modernHighRarityAudit.config?.rarityWhitelist || []).join("・"))} / CHR・AR・日本語版以外は別集計</small></span>` : ""}
         ${state.pokedataManifest?.nextSetPriorities?.length ? `<span class="collector-stop-reason">次セット候補 <b>${escapeHtml(state.pokedataManifest.nextSetPriorities.slice(0, 3).map((entry, index) => `${index + 1}. ${entry.label}：${entry.reason}`).join(" / "))}</b></span>` : ""}
       </div>
@@ -4645,6 +4649,7 @@ function render() {
               ${floorPanel}
               ${forecastPanel}
               ${supplyPipelinePanel}
+              ${state.supplyMaturityHypothesis?.cards?.[card.id] ? `<div class="metric"><span>供給成熟・需要の仮説（参考）</span><strong>検証中・絶版未確認</strong><small>発売後${fmt.format(state.supplyMaturityHypothesis.cards[card.id].ageMonths)}か月 / 素体30日${fmt.format(state.supplyMaturityHypothesis.cards[card.id].rawTrades30)}件 / PSA10 30日${fmt.format(state.supplyMaturityHypothesis.cards[card.id].psaTrades30)}件 / 買取掲載${fmt.format(state.supplyMaturityHypothesis.cards[card.id].buybackShops30)}店</small><small>${state.supplyMaturityHypothesis.cards[card.id].supplyWarning ? "既存の供給警戒あり。需要だけで価格安定と判断しません。" : "供給制約は未証明。"} 仕入れ上限・GOへ未反映。返却時の国内出口で検証待ち。</small></div>` : ""}
               ${overallPanel}
               ${activityPanel}
               ${stockPanel}
@@ -4877,6 +4882,8 @@ async function init() {
     }
     state.pokedataManifest = await fetchJsonMaybe("./data/pokedata/manifest.json");
     state.marketResearch = await fetchJsonMaybe("./data/market-research-summary.json");
+    state.pokedataSetDiscovery = await fetchJsonMaybe("./data/pokedata-set-discovery.json");
+    state.supplyMaturityHypothesis = await fetchJsonMaybe("./data/supply-maturity-hypothesis.json");
     state.regulationPolicy = await fetchJsonMaybe("./data/regulation-policy.json");
     state.modernHighRarityAudit = await fetchJsonMaybe("./data/modern-high-rarity-audit.json");
     if (!state.pokedataManifest) {

@@ -40,12 +40,12 @@ async function fetchText(url) {
   }
 }
 
-async function fetchSourceGate(url) {
+async function fetchSourceGate(url, forceDeepScan = false) {
   const cache = safeReadJson(HTTP_CACHE_PATH, {});
   const previous = cache[url] || {};
   const headers = { "user-agent": "Mozilla/5.0" };
-  if (previous.etag) headers["if-none-match"] = previous.etag;
-  if (previous.lastModified) headers["if-modified-since"] = previous.lastModified;
+  if (!forceDeepScan && previous.etag) headers["if-none-match"] = previous.etag;
+  if (!forceDeepScan && previous.lastModified) headers["if-modified-since"] = previous.lastModified;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 25000);
   try {
@@ -58,7 +58,7 @@ async function fetchSourceGate(url) {
     if (!response.ok) throw new Error(`Failed to fetch ${url}: HTTP ${response.status}`);
     const text = await response.text();
     const hash = contentHash(text);
-    if (previous.hash && previous.hash === hash) {
+    if (!forceDeepScan && previous.hash && previous.hash === hash) {
       UPDATE_METRICS.cacheHits += 1;
       return { changed: false, cache, pending: previous, reason: "content hash unchanged" };
     }
@@ -72,7 +72,7 @@ async function fetchSourceGate(url) {
         hash,
         checkedAt: new Date().toISOString(),
       },
-      reason: previous.hash ? "content changed" : "initial cache",
+      reason: forceDeepScan ? "scheduled source-ID deep scan" : previous.hash ? "content changed" : "initial cache",
     };
   } finally {
     clearTimeout(timer);
@@ -337,7 +337,7 @@ function buildOfficialPsaAliases(byQuery) {
 async function main() {
   const sourceUrl = "https://toreca-souba.com/cards";
   const startedAt = Date.now();
-  const gate = FAST_UPDATE ? await fetchSourceGate(sourceUrl) : null;
+  const gate = FAST_UPDATE ? await fetchSourceGate(sourceUrl, process.env.FAST_DEEP_SCAN === "1") : null;
   if (FAST_UPDATE && !gate.changed) {
     console.log(`FAST_UPDATE_RESULT ${JSON.stringify({ changed: false, changedCards: 0, processedCards: 0, regeneratedFiles: 0, httpRequests: UPDATE_METRICS.httpRequests, cacheHits: UPDATE_METRICS.cacheHits, durationMs: Date.now() - startedAt, reason: gate.reason, llmCalls: 0 })}`);
     return;
@@ -406,6 +406,9 @@ async function main() {
     sourceIdentityKeys.add(key);
     return true;
   });
+  if (previousCards.length >= 1000 && pokemonSource.length < Math.floor(previousCards.length * 0.85)) {
+    throw new Error(`みんトレ掲載数急減 ${previousCards.length}→${pokemonSource.length}。既存カタログを保持して形式・取得状態の確認待ち`);
+  }
   const sourceIds = new Set(pokemonSource.map((card) => card.id));
   const addedCards = pokemonSource.filter((card) => !previousById.has(card.id) && !previousByIdentity.has(canonicalIdentity(card).key));
   for (const card of addedCards) {
@@ -575,6 +578,10 @@ async function main() {
     .filter((card) => stableComparable(card) !== stableComparable(previousById.get(card.id)))
     .map((card) => card.id);
   changedIds.push(...removedIds);
+  if (FAST_UPDATE && changedIds.length === 0) {
+    console.log(`FAST_UPDATE_RESULT ${JSON.stringify({ changed: false, changedCards: 0, processedCards: sitePokemon.length, regeneratedFiles: 0, httpRequests: UPDATE_METRICS.httpRequests, cacheHits: UPDATE_METRICS.cacheHits, durationMs: Date.now() - startedAt, reason: "深掘り確認済み・新ID/価格変更なし", llmCalls: 0 })}`);
+    return;
+  }
 
   // Arrivals describe cards that are currently listed. Removed cards retain
   // their lifecycle history and will be marked as relisted if they return.

@@ -16,6 +16,7 @@ const PROGRESS = path.join(__dirname, SET_NAME === "Battle Partners" ? "pokedata
 const CACHE = path.join(__dirname, "pokedata-page-cache.json");
 const METRICS = path.join(__dirname, "pokedata-fetch-metrics.json");
 const BROWSER_CAPTURES = path.join(__dirname, "pokedata-browser-captures.json");
+const ACCESS_HOLD = path.join(__dirname, "pokedata-access-hold.json");
 
 function read(file, fallback) {
   try { return JSON.parse(fs.readFileSync(file, "utf8").replace(/^\uFEFF/, "")); } catch { return fallback; }
@@ -129,17 +130,25 @@ async function fetchJson(url, retries = 2) {
       });
       const text = await response.text();
       const metric = { url, httpStatus: response.status, retryCount: attempt, fetchMs: Date.now() - started, bytes: text.length };
-      if (response.ok) return { value: JSON.parse(text), metric };
+      if (response.ok) {
+        try { return { value: JSON.parse(text), metric }; }
+        catch {
+          const error = new Error("PokeDATA APIのJSON形式変更・手動確認待ち");
+          error.manual = true; error.metric = metric;
+          throw error;
+        }
+      }
       if ((response.status === 429 || response.status >= 500) && attempt < retries) {
         await sleep(1000 * (2 ** attempt));
         continue;
       }
       const error = new Error(`HTTP ${response.status}`);
+      error.manual = response.status === 401 || response.status === 403;
       error.metric = metric;
       throw error;
     } catch (error) {
-      if (error.metric || attempt >= retries || error.name === "TimeoutError") throw error;
-      throw error;
+      if (error.manual || error.metric || attempt >= retries) throw error;
+      await sleep(1000 * (2 ** attempt));
     }
   }
   throw new Error("retry exhausted");
@@ -165,6 +174,7 @@ function findDomestic(sourceCard, domesticByKey, aliases) {
 }
 
 async function main() {
+  if (fs.existsSync(ACCESS_HOLD)) throw new Error("PokeDATAアクセス・形式変更の手動確認待ち。保存済みチェックポイントを保持");
   const cards = read(path.join(ROOT, "data", "pokemon-cards.json"), []);
   const existing = read(OUTPUT, { version: 2, cards: {}, linkage: { records: [] } });
   const storedSet = loadSetState(ROOT, SET_NAME, existing);
@@ -172,6 +182,7 @@ async function main() {
   existing.linkage = { ...(existing.linkage || {}), records: storedSet.records };
   const linkMap = read(LINK_MAP, { version: 1, aliases: [], ambiguousCandidates: [] });
   const progress = read(PROGRESS, { version: 1, setName: SET_NAME, processedCardIds: [], failures: [] });
+  progress.retryByCard ||= {};
   const cache = read(CACHE, { version: 1, entries: {} });
   const browserCaptures = read(BROWSER_CAPTURES, { cards: [] });
   const browserCapturedIds = new Set((browserCaptures.cards || []).map((card) => Number(card.id)));
@@ -185,11 +196,44 @@ async function main() {
     domesticByKey.get(key).push(card);
   }
 
-  const [sourceResponse, fxResponse] = await Promise.all([
-    fetchJson(`${BASE}/api/cards?set_name=${encodeURIComponent(SET_NAME)}&stats=kwan`),
-    fetchJson("https://api.frankfurter.app/latest?from=USD&to=JPY"),
-  ]);
+  let sourceResponse, fxResponse;
+  try {
+    [sourceResponse, fxResponse] = await Promise.all([
+      fetchJson(`${BASE}/api/cards?set_name=${encodeURIComponent(SET_NAME)}&stats=kwan`),
+      fetchJson("https://api.frankfurter.app/latest?from=USD&to=JPY"),
+    ]);
+  } catch (error) {
+    if (!error.manual) throw error;
+    const hold = { setName: SET_NAME, url: error.metric?.url || `${BASE}/api/cards?set_name=${encodeURIComponent(SET_NAME)}&stats=kwan`,
+      reason: error.message, httpStatus: error.metric?.httpStatus || null, at: new Date().toISOString(), resumeCardId: progress.lastCardId || null };
+    write(ACCESS_HOLD, hold);
+    progress.manualHold = hold;
+    write(PROGRESS, progress);
+    console.log(JSON.stringify({ setName: SET_NAME, completionStatus: "manual-action-required", stopReason: hold.reason, attempted: 0, fetched: 0, failed: 0 }));
+    return;
+  }
+  if (!Array.isArray(sourceResponse.value) || sourceResponse.value.length < 1) {
+    const hold = { setName: SET_NAME, url: `${BASE}/api/cards?set_name=${encodeURIComponent(SET_NAME)}&stats=kwan`,
+      reason: "セット一覧が空または形式変更。旧データを保持して手動確認待ち", at: new Date().toISOString(), resumeCardId: progress.lastCardId || null };
+    write(ACCESS_HOLD, hold); progress.manualHold = hold; write(PROGRESS, progress);
+    console.log(JSON.stringify({ setName: SET_NAME, completionStatus: "manual-action-required", stopReason: hold.reason, attempted: 0, fetched: 0, failed: 0 }));
+    return;
+  }
   const sourceCards = Array.isArray(sourceResponse.value) ? sourceResponse.value.filter((card) => card.language === "JAPANESE") : [];
+  if (!sourceCards.length) {
+    const hold = { setName: SET_NAME, reason: "日本語カード0件。セット名またはAPI形式を手動確認", at: new Date().toISOString(), resumeCardId: progress.lastCardId || null };
+    write(ACCESS_HOLD, hold); progress.manualHold = hold; write(PROGRESS, progress);
+    console.log(JSON.stringify({ setName: SET_NAME, completionStatus: "manual-action-required", stopReason: hold.reason, attempted: 0, fetched: 0, failed: 0 }));
+    return;
+  }
+  const expectedCode = normalizeSetCode(process.env.POKEDATA_SET_CODE || "");
+  if (expectedCode && sourceCards.some((card) => normalizeSetCode(card.set_code) !== expectedCode || card.set_name !== SET_NAME)) {
+    const hold = { setName: SET_NAME, url: `${BASE}/api/cards?set_name=${encodeURIComponent(SET_NAME)}&stats=kwan`,
+      reason: `日本語セットのコードまたは名前が不一致（期待 ${expectedCode}）。手動確認待ち`, at: new Date().toISOString(), resumeCardId: progress.lastCardId || null };
+    write(ACCESS_HOLD, hold); progress.manualHold = hold; write(PROGRESS, progress);
+    console.log(JSON.stringify({ setName: SET_NAME, completionStatus: "manual-action-required", stopReason: hold.reason, attempted: 0, fetched: 0, failed: 0 }));
+    return;
+  }
   const fxRate = Number(fxResponse.value?.rates?.JPY);
   if (!(fxRate > 0)) throw new Error("USD/JPY rate unavailable");
   const preferred = [...sourceCards].sort((a, b) => {
@@ -212,14 +256,19 @@ async function main() {
   const refreshTargets = targets.filter((card) => linkedSourceIds.has(Number(card.id)));
   const refreshStart = refreshTargets.length ? Math.max(0, Number(progress.refreshCursor || 0)) % refreshTargets.length : 0;
   const rotatedRefreshTargets = [...refreshTargets.slice(refreshStart), ...refreshTargets.slice(0, refreshStart)];
-  const selected = (refreshLinked ? rotatedRefreshTargets : targets.filter((card) => !processed.has(Number(card.id)))).slice(0, BATCH_SIZE);
+  const retryAllowed = (card) => {
+    const retry = progress.retryByCard[card.id];
+    return !retry || !retry.manualReview && (!retry.nextRetryAt || Date.parse(retry.nextRetryAt) <= Date.now());
+  };
+  const selected = (refreshLinked ? rotatedRefreshTargets : targets.filter((card) => !processed.has(Number(card.id))))
+    .filter(retryAllowed).slice(0, BATCH_SIZE);
   if (!selected.length) {
     console.log(JSON.stringify({ setName: SET_NAME, sourceSetTotal: sourceCards.length, targetCount: targets.length,
       acquired: existingRecords.size, attempted: 0, fetched: 0, cacheHits: 0, failed: 0,
       completionStatus: "no-progress", reason: "対象セットのチェックポイントは終端。次の確認済みセットを選択する" }));
     return;
   }
-  let attempted = 0; let fetched = 0; let cached = 0; let failed = 0;
+  let attempted = 0; let fetched = 0; let cached = 0; let failed = 0; let manualStop = null;
 
   for (const sourceCard of selected) {
     attempted += 1;
@@ -245,6 +294,11 @@ async function main() {
           fetchedAt: new Date().toISOString(), httpStatus: response.metric.httpStatus,
           data: { page: transactionData.page, transactions: transactionData.transactions || [] },
         };
+      }
+      if (!transactionData || !Array.isArray(transactionData.transactions)) {
+        const error = new Error("PokeDATA個別成約APIの形式変更・手動確認待ち");
+        error.manual = true;
+        throw error;
       }
       metric.stage = "match";
       const linkage = findDomestic(sourceCard, domesticByKey, linkMap.aliases || []);
@@ -313,6 +367,7 @@ async function main() {
         }
       }
       processed.add(Number(sourceCard.id));
+      delete progress.retryByCard[sourceCard.id];
       progress.processedCardIds = [...processed];
       progress.lastCardId = Number(sourceCard.id);
       progress.lastSuccessfulCard = { id: Number(sourceCard.id), name: sourceCard.name, at: new Date().toISOString() };
@@ -336,17 +391,29 @@ async function main() {
       write(LINK_MAP, linkMap);
       write(PROGRESS, progress);
     } catch (error) {
-      failed += 1;
+      if (!error.manual) failed += 1;
       Object.assign(metric, error.metric || {});
-      metric.status = "failed";
+      metric.status = error.manual ? "manual-action-required" : "failed";
       metric.error = error.message;
       metric.exception = String(error.stack || error.message || error).slice(0, 1200);
       progress.lastFailure = { pokedataCardId: sourceCard.id, url, stage: metric.stage, httpStatus: metric.httpStatus || null, retryCount: metric.retryCount || 0, error: error.message, exception: metric.exception, at: new Date().toISOString() };
       progress.failures = [...(progress.failures || []), progress.lastFailure].slice(-50);
+      if (error.manual) {
+        manualStop = { setName: SET_NAME, url, reason: error.message,
+          httpStatus: metric.httpStatus || null, at: new Date().toISOString(), resumeCardId: sourceCard.id };
+        progress.manualHold = manualStop;
+        write(ACCESS_HOLD, manualStop);
+      } else {
+        const attempts = Number(progress.retryByCard[sourceCard.id]?.attempts || 0) + 1;
+        progress.retryByCard[sourceCard.id] = { attempts, manualReview: attempts >= 3,
+          nextRetryAt: attempts >= 3 ? null : new Date(Date.now() + Math.min(24, 2 ** attempts) * 3600000).toISOString(),
+          reason: error.message, url };
+      }
       write(PROGRESS, progress);
     }
     metric.endedAt = new Date().toISOString();
     recordMetric(metric);
+    if (manualStop) break;
   }
 
   const records = [...existingRecords.values()].filter((record) => targets.some((card) => Number(card.id) === Number(record.pokedataCardId)));
@@ -417,10 +484,11 @@ async function main() {
     setName: SET_NAME, sourceSetTotal: sourceCards.length, targetCount: targets.length,
     acquired, automaticMatched, manualMatched, ambiguous, domesticBaseMissing,
     attempted, fetched, cacheHits: cached, failed,
-    completionStatus: acquired >= targets.length && failed === 0 ? "success" : "partial",
+    completionStatus: manualStop ? "manual-action-required" : acquired >= targets.length && failed === 0 ? "success" : "partial",
+    stopReason: manualStop?.reason || null,
   }));
 }
 
 if (require.main === module) main().catch((error) => { console.error(error); process.exitCode = 1; });
 
-module.exports = { cardVariant, findDomestic, individualSalesStatus, localIdentity, minimalTransactions, normalizeName, normalizeNumber, normalizeSetCode };
+module.exports = { cardVariant, fetchJson, findDomestic, individualSalesStatus, localIdentity, minimalTransactions, normalizeName, normalizeNumber, normalizeSetCode };

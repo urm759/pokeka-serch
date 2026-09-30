@@ -21,6 +21,8 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: "24"
+      - name: Discover public Japanese sets and isolate ambiguous codes
+        run: node work/discover_pokedata_sets.js
       - name: Select next verified Japanese set
         run: node work/select_pokedata_set.js
       - name: Continue public PokeDATA checkpoint
@@ -29,6 +31,7 @@ jobs:
           POKEDATA_BATCH: "10"
           POKEDATA_INTERVAL_MS: "1100"
           POKEDATA_TIMEOUT_MS: "10000"
+          TRACKED_ALLOW_PARTIAL: "1"
         run: node work/run_tracked_update.js pokedata work/update_pokedata_batch.js
       - name: Rebuild affected public summaries
         if: env.POKEDATA_SET_READY == '1'
@@ -39,14 +42,16 @@ jobs:
           node work/build_card_completion.js
           node work/finalize_update_status.js
           node work/build_purchase_limit_audit.js
+          node work/build_supply_maturity_hypothesis.js
       - name: Verify shared purchase limits before publishing
         if: env.POKEDATA_SET_READY == '1'
         run: |
+          node work/test_pokedata_set_discovery.js
           node work/test_buyback_scenario_limits.js
           node work/test_purchase_limit_audit.js
           node work/test_grade_calibration.js
-      - name: Commit checkpoint progress
-        if: env.POKEDATA_SET_READY == '1'
+          node work/test_supply_maturity_hypothesis.js
+      - name: Commit discovery and checkpoint progress
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"

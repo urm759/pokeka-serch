@@ -43,11 +43,12 @@ if (result.stderr) process.stderr.write(result.stderr);
 const endedAt = new Date();
 const output = `${result.stdout || ""}\n${result.stderr || ""}`;
 const timedOut = result.error?.code === "ETIMEDOUT";
-const completionStatus = (output.match(/"completionStatus"\s*:\s*"(success|partial|no-progress)"/i) || [])[1]?.toLowerCase() || null;
+const completionStatus = (output.match(/"completionStatus"\s*:\s*"(success|partial|no-progress|manual-action-required)"/i) || [])[1]?.toLowerCase() || null;
 const fetchFailureCount = [...output.matchAll(/\b(?:failed|failure|error)(?:Count)?["']?\s*[:=]\s*(\d+)/gi)]
   .reduce((total, match) => total + Number(match[1] || 0), 0)
   + (result.status !== 0 || timedOut ? 1 : 0);
-const status = result.status !== 0 || timedOut ? "failed" : completionStatus === "no-progress" ? "no-progress" : fetchFailureCount > 0 || completionStatus === "partial" ? "partial" : "success";
+const status = result.status !== 0 || timedOut ? "failed" : completionStatus === "manual-action-required" ? "manual-action-required"
+  : completionStatus === "no-progress" ? "no-progress" : fetchFailureCount > 0 || completionStatus === "partial" ? "partial" : "success";
 const acquiredCount = countCurrentRecords(sourceId);
 const afterFingerprint = artifactFingerprint(sourceId);
 const dataChanged = afterFingerprint != null && beforeFingerprint !== afterFingerprint;
@@ -56,6 +57,8 @@ const updatedMatch = output.match(/(?:updated|更新(?:件数)?)\s*(?:[:=]\s*)?(
 const updatedCount = updatedMatch ? Number(updatedMatch[1]) : Number.isFinite(countDelta) && countDelta > 0 ? countDelta : dataChanged ? null : 0;
 const sourceState = status === "failed"
   ? "取得処理失敗"
+  : status === "manual-action-required"
+    ? "認証・403・形式変更のため停止。手動確認待ち"
   : status === "no-progress"
     ? "処理成功・進捗なし（次セット選択待ち）"
   : status === "partial"
@@ -77,8 +80,8 @@ const record = {
   timedOut,
   terminationReason: timedOut ? "timeout" : result.signal ? `signal:${result.signal}` : null,
   completionStatus,
-  lastError: status === "failed"
-    ? String(timedOut ? `取得処理が${Math.round(timeoutMs / 1000)}秒でタイムアウトしました` : result.error?.message || result.stderr || `exit ${result.status}`).slice(0, 500)
+  lastError: status === "failed" || status === "manual-action-required"
+    ? String(timedOut ? `取得処理が${Math.round(timeoutMs / 1000)}秒でタイムアウトしました` : (output.match(/"stopReason"\s*:\s*"([^"]+)"/) || [])[1] || result.error?.message || result.stderr || `exit ${result.status}`).slice(0, 500)
     : null,
   executionEnvironment,
   workflowRunId: process.env.GITHUB_RUN_ID || null,
@@ -92,4 +95,4 @@ if (status === "success" || (status === "partial" && fetchFailureCount === 0 && 
 updateRun(sourceId, record);
 appendRunHistory(sourceId, record);
 console.log(JSON.stringify({ sourceId, ...record }));
-if (status === "failed" || (status === "partial" && fetchFailureCount > 0)) process.exit(result.status || 1);
+if (status === "failed" || (status === "partial" && fetchFailureCount > 0 && process.env.TRACKED_ALLOW_PARTIAL !== "1")) process.exit(result.status || 1);
