@@ -74,6 +74,7 @@ jobs:
           node work/test_candidate_daily_audit.js
           node work/test_candidate_availability_audit.js
           node work/test_acquisition_progress.js
+          node work/test_checkpoint_publication.js
           node work/test_grade_calibration.js
           node work/test_daily_fast_update.js
           node work/test_psa_market_trial.js
@@ -90,5 +91,20 @@ jobs:
             echo "No source change. Commit and deployment skipped."
             exit 0
           fi
-          git commit -m "Run deterministic daily delta update"
-          git push
+          node work/publish_data_checkpoint.js "Run deterministic daily delta update"
+      - name: Save unpublished source data on failure
+        if: failure()
+        run: |
+          node work/save_backfill_recovery.js daily
+          node work/publish_data_checkpoint.js --capture-only
+      - name: Upload recovery checkpoint if publication or validation failed
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: daily-recovery-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            work/publish-recovery.bundle
+            work/publish-recovery.json
+            data/backfill-recovery.json
+          retention-days: 7
+          if-no-files-found: error

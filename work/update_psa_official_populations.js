@@ -2,11 +2,15 @@ const fs = require("fs");
 const path = require("path");
 const { shortSet, normalizeNo, cleanName } = require("./build_psa_history.js");
 
-let chromium;
-try {
-  ({ chromium } = require("playwright"));
-} catch {
-  ({ chromium } = require("C:/Users/polar/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright"));
+function loadChromium() {
+  try { return require("playwright").chromium; } catch (error) {
+    if (process.env.PLAYWRIGHT_MODULE_PATH) return require(process.env.PLAYWRIGHT_MODULE_PATH).chromium;
+    if (process.platform === "win32") {
+      const bundled = path.join(process.env.USERPROFILE || "", ".cache", "codex-runtimes", "codex-primary-runtime", "dependencies", "node", "node_modules", "playwright");
+      if (fs.existsSync(bundled)) return require(bundled).chromium;
+    }
+    throw new Error(`PSA browser dependency unavailable: ${error.code || error.message}`);
+  }
 }
 
 const MANIFEST_PATH = path.join(__dirname, "psa_set_urls.json");
@@ -322,6 +326,7 @@ async function collectSet(context, entry) {
 }
 
 async function main() {
+  const chromium = loadChromium();
   const startedAt = new Date().toISOString();
   const checkpoint = readJson(PROGRESS_PATH, { completedUrls: [] });
   const priorCompleted = new Set(checkpoint.completedUrls || []);

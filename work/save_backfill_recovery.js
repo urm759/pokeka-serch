@@ -6,11 +6,14 @@ const read = (file, fallback = null) => {
 };
 
 const source = process.argv[2];
-if (!["safe", "pokedata"].includes(source)) throw new Error("unknown backfill source");
+if (!["safe", "pokedata", "daily"].includes(source)) throw new Error("unknown backfill source");
 const file = path.join(ROOT, "data", "backfill-recovery.json");
 const previous = read(file, { sources: {} });
 const progressFiles = fs.readdirSync(__dirname).filter((name) => /^pokedata-progress(?:-.*)?\.json$/.test(name));
-const checkpoint = source === "safe"
+const checkpoint = source === "daily" ? { daily: read(path.join(__dirname, "daily-fast-update-metrics.json")),
+    shops: read(path.join(__dirname, "candidate-shop-refresh.json")),
+    runs: read(path.join(__dirname, "source-update-runs.json")) }
+  : source === "safe"
   ? read(path.join(__dirname, "safe-backfill-progress.json"), {})
   : { hold: read(path.join(__dirname, "pokedata-access-hold.json")),
       sets: progressFiles.map((name) => ({ file: name, progress: read(path.join(__dirname, name), {}) })) };
