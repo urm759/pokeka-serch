@@ -429,6 +429,13 @@ function demandLabel(count30, observedDays, shopCount) {
   return "買取掲載数：少ない";
 }
 
+function savedMatchConfidence(match) {
+  if (!match) return null;
+  const score = match.matchScore;
+  if (score == null || score === "" || !Number.isFinite(Number(score))) return null;
+  return decisionModel.matchConfidenceLabel(score);
+}
+
 function buildPriceTrust(history, cards, results) {
   const cardById = new Map(cards.map((card) => [String(card.id), card]));
   const quarantine = {};
@@ -660,7 +667,7 @@ async function main() {
         url: currentMatch?.url || "",
         matchMethod: currentMatch?.matchMethod || null,
         matchScore: currentMatch?.matchScore || null,
-        matchConfidence: currentMatch ? decisionModel.matchConfidenceLabel(currentMatch.matchScore) : null,
+        matchConfidence: savedMatchConfidence(currentMatch),
         quarantined: Boolean(quarantined),
         quarantineReason: quarantined?.reason || null,
         observed7: observedRecent(history.observedByShop[shopId], latestHistoryDate, 7),
@@ -796,4 +803,4 @@ if (require.main === module) main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
-module.exports = { main, SHOPS, fetchText };
+module.exports = { main, SHOPS, fetchText, savedMatchConfidence };
