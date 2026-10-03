@@ -17,55 +17,55 @@
           "detectedAt": "2026-09-28T22:23:11.192Z"
         }
       },
-      "checkedAt": "2026-09-29T21:14:24.314Z",
+      "checkedAt": "2026-10-02T21:08:10.133Z",
       "batches": 0,
-      "durationMs": 5
+      "durationMs": 4
     },
     "priceEvidence": {
-      "status": "partial",
+      "status": "reviewed-with-unavailable",
       "reason": null,
       "position": {
-        "remaining": 445,
-        "inspected": 579,
-        "unavailable": 31,
+        "remaining": 0,
+        "inspected": 1028,
+        "unavailable": 54,
         "resumeCardId": null,
         "stopReason": null
       },
-      "checkedAt": "2026-09-29T21:19:54.439Z",
-      "batches": 46,
+      "checkedAt": "2026-10-02T21:10:59.721Z",
+      "batches": 21,
       "failures": 0,
-      "durationMs": 330127
+      "durationMs": 169587
     },
     "psaLinkage": {
       "status": "queue-updated",
       "reason": null,
       "position": {
-        "unlinked": 4988,
+        "unlinked": 4978,
         "note": "候補整理のみ。PSA公式の認証取得とは別工程"
       },
-      "checkedAt": "2026-09-29T21:19:54.778Z",
+      "checkedAt": "2026-10-02T21:10:59.938Z",
       "batches": 1,
       "failures": 0,
-      "durationMs": 337
+      "durationMs": 218
     },
     "torecacamp": {
       "status": "partial",
       "reason": null,
       "position": {
-        "sitemap": 26,
-        "productIndex": 338,
+        "sitemap": 29,
+        "productIndex": 146,
         "totalSitemaps": 46,
-        "catalogCount": 5280,
+        "catalogCount": 5538,
         "lastFailure": null
       },
-      "checkedAt": "2026-09-29T21:25:34.089Z",
+      "checkedAt": "2026-10-02T21:16:27.895Z",
       "batches": 9,
       "failures": 0,
-      "durationMs": 339327
+      "durationMs": 327977
     }
   },
-  "startedAt": "2026-09-29T21:14:24.309Z",
+  "startedAt": "2026-10-02T21:08:10.128Z",
   "status": "partial-with-stop",
-  "endedAt": "2026-09-29T21:25:34.106Z",
-  "durationMs": 669797
+  "endedAt": "2026-10-02T21:16:27.917Z",
+  "durationMs": 497789
 }
