@@ -29,6 +29,6 @@ const output = { version: 1, generatedAt: new Date().toISOString(), baselineRef:
   newAcquired: run.newAcquiredCount, newLinked: run.newLinkedCount,
   validValuesNet: rows.reduce((sum, r) => sum + Number(r.after.price > 0) - Number(r.before.price > 0), 0),
   durationMs: run.durationMs, httpRequests: run.httpRequests, cacheHits: run.cacheHits, nextId: run.nextId, stopReason: run.stopReason,
-  rows, note: "同じ現在の優先カード群・同じ時刻で再計算。基準Git後の他実行も含む鮮度比較と、今回23試行22再確認を混同しない。期限超過解消は新規有効値追加ではない。" };
+  rows, note: `同じ現在の優先カード群・同じ時刻で再計算。基準Git後の他実行も含む鮮度比較と、今回${run.attemptedCount}試行${run.refreshedCount}再確認を混同しない。期限超過解消は新規有効値追加ではない。` };
 fs.writeFileSync(path.join(root, "data/priority-price-impact.json"), JSON.stringify(output));
 console.log(JSON.stringify({ ...output, rows: undefined }));

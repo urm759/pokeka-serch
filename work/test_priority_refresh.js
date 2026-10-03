@@ -40,6 +40,13 @@ assert.equal(mismatch.rows.stress, null);
 assert.ok(Number.isFinite(mismatch.rows.current.expectedProfit));
 assert.equal(memo.trial({ ...input, lockDays: 91 }, model).periodMatched, true);
 assert.equal(memo.trial({ ...input, lockDays: 35 }, model).rows.stress, null);
+for (const lockDays of [42, 119, 147]) {
+  const trial = memo.trial({ ...input, lockDays }, model);
+  assert.equal(trial.rows.central, null);
+  assert.equal(trial.rows.stress, null);
+  assert.ok(Number.isFinite(trial.rows.current.expectedProfit));
+  assert.match(trial.warning, new RegExp(`返却${lockDays}日`));
+}
 const app = fs.readFileSync(path.join(__dirname, "../app.js"), "utf8");
 assert.match(app, /url.searchParams.set\("year2020", state.year2020Only/);
 assert.match(app, /year2020Only: state.year2020Only/);
