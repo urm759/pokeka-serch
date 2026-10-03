@@ -1,40 +1,40 @@
 {
-  "error": null,
-  "independentObserverRegistered": false,
-  "observedAt": "2026-10-03T17:58:26.7775208+09:00",
+  "observedAt": "2026-10-04T04:30:48.0716039+09:00",
   "tasks": [
     {
-      "preStartFailure": false,
-      "state": "Ready",
-      "target": "site/work/run_psa_scheduled_update.ps1",
-      "registrationValid": true,
-      "nextRun": "2026-10-04T04:30:00.0000000+09:00",
-      "name": "Pokeka PSA Update 0430",
       "reason": null,
-      "result": 1,
-      "lastRun": "2026-10-03T17:14:36.0000000+09:00"
+      "result": 267009,
+      "nextRun": "2026-10-05T04:30:00.0000000+09:00",
+      "name": "Pokeka PSA Update 0430",
+      "lastRun": "2026-10-04T04:30:01.0000000+09:00",
+      "registrationValid": true,
+      "state": "Running",
+      "target": "site/work/run_psa_scheduled_update.ps1",
+      "preStartFailure": false
     },
     {
-      "preStartFailure": false,
-      "state": "Ready",
-      "target": "site/work/run_psa_scheduled_update.ps1",
-      "registrationValid": true,
+      "reason": null,
+      "result": 1,
       "nextRun": "2026-10-04T17:00:00.0000000+09:00",
       "name": "Pokeka PSA Update 1700",
-      "reason": null,
-      "result": 1,
-      "lastRun": "2026-10-03T17:14:36.0000000+09:00"
-    },
-    {
-      "preStartFailure": false,
+      "lastRun": "2026-10-03T17:14:36.0000000+09:00",
+      "registrationValid": true,
       "state": "Ready",
       "target": "site/work/run_psa_scheduled_update.ps1",
-      "registrationValid": true,
-      "nextRun": null,
-      "name": "Pokeka PSA Update Logon",
+      "preStartFailure": false
+    },
+    {
       "reason": null,
       "result": 1,
-      "lastRun": "2026-10-03T17:08:38.0000000+09:00"
+      "nextRun": null,
+      "name": "Pokeka PSA Update Logon",
+      "lastRun": "2026-10-03T17:08:38.0000000+09:00",
+      "registrationValid": true,
+      "state": "Ready",
+      "target": "site/work/run_psa_scheduled_update.ps1",
+      "preStartFailure": false
     }
-  ]
+  ],
+  "independentObserverRegistered": false,
+  "error": null
 }
