@@ -4,6 +4,7 @@ const { productMatchesCard, stateFromTitle, parseProductPage: parseHareruya } = 
 const { parseProductPage: parseCardrush } = require("./update_cardrush_stock.js");
 const { updateRun, appendRunHistory } = require("./source_observability.js");
 const { fairBatch, build: buildFocus } = require("./focus_monitor.js");
+const priceQueue = require("./priority_price_queue.js");
 const ROOT = path.join(__dirname, "..");
 const read = (file, fallback = {}) => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, file), "utf8")); } catch { return fallback; } };
 const write = (file, value) => fs.writeFileSync(path.join(ROOT, file), JSON.stringify(value));
@@ -69,7 +70,14 @@ async function main() {
     console.log(JSON.stringify({ status: "manual-wait", attemptedCount: 0, stopReason: checkpoint.sourceBlocked, nextId: checkpoint.nextId })); return;
   }
   const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Tokyo" }).format(new Date());
-  const completed = new Set(!checkpoint.cycleDate || checkpoint.cycleDate === today ? checkpoint.completedIds || [] : []);
+  const completed = new Set(checkpoint.completedIds || []);
+  const deadlineMode = process.env.CANDIDATE_SHOP_MODE === "deadline";
+  const config = read("data/priority-price-config.json");
+  const deadlines = read("work/priority-price-checkpoint.json", { sources: {} });
+  deadlines.sources ||= {};
+  const sourceJobs = deadlines.sources[sourceId] ||= { jobs: {} };
+  const httpCache = read("work/priority-price-http-cache.json", {});
+  const planned = priceQueue.load(sourceId);
   const manualWait = checkpoint.manualWait || {};
   const priorityIds = String(process.env.COMPLETION_PRIORITY_IDS || "").split(",").filter(Boolean);
   const priority = new Map(priorityIds.map((id, index) => [id, index]));
@@ -77,19 +85,22 @@ async function main() {
   const focused = (card) => focus.cards[card.id]?.pending.includes("shopStateA");
   const candidates = cards.filter((card) => (priority.size ? priority.has(card.id) : rows[card.id]?.status === "価格待ち" || focused(card)) && card[`${sourceId}Url`])
     .sort((a, b) => priority.size ? priority.get(a.id) - priority.get(b.id) : Number(Boolean(rows[a.id]?.offerPrice)) - Number(Boolean(rows[b.id]?.offerPrice)) || (rows[a.id]?.gap ?? 0) - (rows[b.id]?.gap ?? 0));
-  const pending = candidates.filter((card) => !completed.has(card.id) && manualWait[card.id]?.url !== card[`${sourceId}Url`]);
+  const pending = candidates.filter((card) => (priority.size || !completed.has(card.id)) && manualWait[card.id]?.url !== card[`${sourceId}Url`]);
   const size = Math.max(1, Number(process.env.CANDIDATE_SHOP_BATCH || 30));
-  const batch = priority.size ? pending.slice(0, size) : fairBatch(pending, size, focused, focus.maxFocusedShare);
+  const batch = deadlineMode && !priority.size ? planned.queue.map((row) => row.card) : priority.size ? pending.slice(0, size) : fairBatch(pending, size, focused, focus.maxFocusedShare);
+  const budget = Number(process.env.CANDIDATE_SHOP_TIME_MS || config.timeBudgetMs || 240000);
   const start = Date.now();
   const run = { startedAt: new Date(start).toISOString(), status: "running", attemptedCount: 0, refreshedCount: 0,
     newAcquiredCount: 0, newLinkedCount: 0, changedCount: 0, failedCount: 0, httpRequests: 0,
-    candidateTargets: candidates.length, previouslyCompleted: completed.size, records: [], stopReason: null };
+    candidateTargets: deadlineMode ? planned.records.length : candidates.length, previouslyCompleted: completed.size, records: [], stopReason: null,
+    mode: deadlineMode ? "deadline-price-refresh" : "completion-backfill", cacheHits: 0, llmCalls: 0, codexCalls: 0 };
   const byUrl = new Map(catalog.map((entry) => [entry.detailUrl, entry]));
   const byId = new Map(catalog.map((entry) => [entry.cardId, entry]));
   const save = () => {
     run.endedAt = new Date().toISOString(); run.durationMs = Date.now() - start;
-    run.nextId = candidates.find((card) => !completed.has(card.id) && manualWait[card.id]?.url !== card[`${sourceId}Url`])?.id || null;
-    run.remaining = candidates.filter((card) => !completed.has(card.id)).length;
+    const done = new Set(run.records.map((record) => record.id));
+    run.nextId = deadlineMode ? batch.find((card) => !done.has(card.id))?.id || null : candidates.find((card) => !completed.has(card.id) && manualWait[card.id]?.url !== card[`${sourceId}Url`])?.id || null;
+    run.remaining = deadlineMode ? batch.filter((card) => !done.has(card.id)).length : candidates.filter((card) => !completed.has(card.id)).length;
     run.manualWaitCount = Object.keys(manualWait).length;
     cache.sources[sourceId] = run;
     cache.checkpoints[sourceId] = { completedIds: [...completed], nextId: run.nextId, baselineAt: baseline.at,
@@ -98,20 +109,37 @@ async function main() {
     write(`data/${sourceId}-stock-summary.json`, summary);
     write(`work/${sourceId}_stock_history.json`, history);
     write("work/candidate-shop-refresh.json", cache);
+    sourceJobs.nextId = run.nextId; sourceJobs.lastRunAt = run.startedAt;
+    write("work/priority-price-checkpoint.json", deadlines);
+    write("work/priority-price-http-cache.json", httpCache);
   };
+  let lastRequestAt = 0;
   async function request(url) {
     for (let retry = 0; retry < 3; retry += 1) {
+      if (Date.now() - start + 16000 > budget) throw new Error("timeout: 通信前に時間予算を確認・保存して停止");
+      await sleep(Math.max(0, Math.max(1000, Number(config.intervalMs || 1200)) - (Date.now() - lastRequestAt)));
+      lastRequestAt = Date.now();
       run.httpRequests += 1;
-      const response = await fetch(url, { signal: AbortSignal.timeout(15000), headers: { "User-Agent": "PokemonSourcingAudit/1.0" } });
+      const previous = httpCache[url] || {};
+      const headers = { "User-Agent": "PokemonSourcingAudit/1.0" };
+      if (previous.body && previous.etag) headers["If-None-Match"] = previous.etag;
+      if (previous.body && previous.lastModified) headers["If-Modified-Since"] = previous.lastModified;
+      const response = await fetch(url, { signal: AbortSignal.timeout(15000), headers });
+      if (response.status === 304 && previous.body) { run.cacheHits += 1; return { text: async () => previous.body, json: async () => JSON.parse(previous.body) }; }
       if ([429, 500, 502, 503, 504].includes(response.status) && retry < 2) { await sleep(2000 * 2 ** retry); continue; }
       if (!response.ok) { const error = new Error(`HTTP ${response.status}`); error.status = response.status; throw error; }
-      return response;
+      const body = await response.text();
+      httpCache[url] = { etag: response.headers.get("etag"), lastModified: response.headers.get("last-modified"),
+        hash: require("node:crypto").createHash("sha256").update(body).digest("hex"), checkedAt: new Date().toISOString(),
+        ...(body.length <= 32000 ? { body } : {}) };
+      return { text: async () => body, json: async () => JSON.parse(body) };
     }
   }
   for (const card of batch) {
-    if (Date.now() - start > Number(process.env.CANDIDATE_SHOP_TIME_MS || 240000)) { run.stopReason = "時間上限・保存して安全停止"; break; }
+    if (Date.now() - start + 16000 > budget) { run.stopReason = "時間上限・保存して安全停止"; break; }
     const url = card[`${sourceId}Url`];
-    const record = { id: card.id, url, startedAt: new Date().toISOString(), status: "pending", error: null };
+    const record = { id: card.id, url, startedAt: new Date().toISOString(), status: "pending", error: null,
+      important: planned.records.find((row) => row.card.id === card.id)?.important || false };
     run.attemptedCount += 1;
     try {
       let quote, name;
@@ -160,6 +188,7 @@ async function main() {
         run.stopReason = null;
       }
     }
+    sourceJobs.jobs[card.id] = priceQueue.finish(sourceJobs.jobs[card.id], record, new Date().toISOString(), config);
     run.records.push(record); save();
     if (run.stopReason) break;
     await sleep(Math.max(1000, Number(process.env.CANDIDATE_SHOP_INTERVAL_MS || 1200)));
@@ -170,6 +199,7 @@ async function main() {
     fetchFailureCount: run.failedCount, lastError: run.stopReason, sourceState: `${run.refreshedCount}件の状態A実価格を再確認・新規紐づけ${run.newLinkedCount}件・${run.status}`,
     ...(run.lastSuccessAt ? { lastSuccessAt: run.lastSuccessAt } : {}) });
   appendRunHistory(sourceId, tracked);
+  priceQueue.write(ROOT);
   console.log(JSON.stringify(run));
 }
 if (require.main === module) main().catch((error) => { console.error(error); process.exitCode = 1; });

@@ -49,12 +49,12 @@ for (const field of ["majorComplete", "majorDataCompleteDate", "allDataCompleteD
   assert.ok(Object.hasOwn(updateStatus, field), `update status: missing ${field}`);
 }
 
-assert.strictEqual(scheduleFor("toreca", new Date("2026-09-03T18:00:00Z")).nextScheduledAt, "2026-09-04T04:30:00+09:00");
-assert.strictEqual(scheduleFor("toreca", new Date("2026-09-04T01:00:00Z")).nextScheduledAt, "2026-09-04T17:00:00+09:00");
+assert.strictEqual(scheduleFor("toreca", new Date("2026-09-03T18:00:00Z")).nextScheduledAt, "2026-09-04T03:20:00+09:00");
+assert.strictEqual(scheduleFor("toreca", new Date("2026-09-04T01:00:00Z")).nextScheduledAt, "2026-09-04T11:20:00+09:00");
 assert.notStrictEqual(scheduleFor("cardrush").nextScheduledAt, null);
 assert.strictEqual(sourceTiming("cardrush", { status: "manual-wait" }).nextScheduledAt, null, "403停止中は架空の再取得予定を出さない");
-assert.strictEqual(scheduleFor("cardrush").scheduleLabel, "04:30／17:00 JST");
-assert.match(scheduleFor("cardrush").workflow, /候補価格のみ/);
+assert.match(scheduleFor("cardrush").scheduleLabel, /01:20／03:20／04:30/);
+assert.match(scheduleFor("cardrush").workflow, /Priority Purchase Price Refresh/);
 assert.strictEqual(scheduleFor("unknown-source").scheduleLabel, "自動更新なし");
 assert.strictEqual(scheduleFor("yuyutei").scheduleLabel, "02:00 JST");
 assert.strictEqual(scheduleFor("torecacamp").scheduleLabel, "02:00 JST");

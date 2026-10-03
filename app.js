@@ -10,6 +10,7 @@ const candidateVisibility = window.CandidateVisibility;
 const catalogIndexAdapter = window.CatalogIndexAdapter;
 const limitDisplayModel = window.LimitDisplayModel;
 const purchaseMemoModel = window.PurchaseMemoModel;
+const releaseYearFilter = window.ReleaseYearFilter;
 const priceIntegrityModel = window.PriceIntegrity;
 const FORECAST_HORIZON_DAYS = 91;
 
@@ -174,6 +175,8 @@ const state = {
   snkrRawRecentOnly: false,
   snkrRawIncludeReference: false,
   diagnosticSearch: false,
+  year2020Only: false,
+  includeUnknownYear: false,
   limitModelAudit: null,
 };
 
@@ -204,6 +207,8 @@ const guideLines = [
 
 const els = {
   qInput: document.getElementById("qInput"),
+  year2020Input: document.getElementById("year2020Input"),
+  includeUnknownYearInput: document.getElementById("includeUnknownYearInput"),
   diagnosticSearchInput: document.getElementById("diagnosticSearchInput"),
   searchDiagnostic: document.getElementById("searchDiagnostic"),
   limitModelAudit: document.getElementById("limitModelAudit"),
@@ -844,7 +849,7 @@ function renderSourceObservability() {
     const focusLabels = { psaPopulation: "PSA公式POP", psaRate: "公式10率", domesticRaw: "国内美品", domesticPsa10: "国内PSA10", buyback: "買取価格", shopStateA: "在庫あり状態A取得価格（GOとは別）" };
     const focusHtml = focus ? `<article class="source-status-card"><details><summary>重点監視：スターミーV・S6aブイズ ${fmt.format(focus.count)}種</summary><p>重点処理枠は最大${Math.round(focus.maxFocusedShare * 100)}%。通常巡回を維持。鮮度基準48時間。監視だけで仕入れ上限を上げません。</p><div class="focus-summary">${Object.entries(focus.totals || {}).map(([key, t]) => `<p>${focusLabels[key]}：取得済み${t.valid}／鮮度適合${t.fresh}／古い${t.stale}／不足${t.missing}</p>`).join("")}</div><p>最後の改善：${escapeHtml(formatJstTimestamp(focus.lastProgress?.at))} / 有効値純増${valueOrUnknown(focus.lastProgress?.newValid)} / 鮮度回復${valueOrUnknown(focus.lastProgress?.newlyFresh)}項目（カード数・純増とは別）</p><div style="overflow-x:auto"><table><thead><tr><th>カード</th>${Object.values(focusLabels).map((label) => `<th>${label}</th>`).join("")}<th>優先理由／最終進捗</th></tr></thead><tbody>${Object.values(focus.cards || {}).map((row) => `<tr><th><a href="?q=${encodeURIComponent(row.name)}&diagnostic=1">${escapeHtml(row.name)}</a></th>${Object.keys(focusLabels).map((key) => { const item = row.items[key]; return `<td>${item.value == null ? "未取得" : key === "psaRate" ? `${item.value.toFixed(1)}%` : fmt.format(item.value)}<br><small>${escapeHtml(item.status)} / ${escapeHtml(formatJstTimestamp(item.at))}${key === "domesticRaw" ? "（取得日。状態A成約証明とは別）" : ""}</small></td>`; }).join("")}<td>${escapeHtml(row.priorityReason)}<br>${escapeHtml(formatJstTimestamp(row.lastProgressAt))}</td></tr>`).join("")}</tbody></table></div><a href="./data/focus-monitor.json" target="_blank" rel="noreferrer">重点カード別監査JSON</a> / <a href="./data/focus-acquisition-audit.json" target="_blank" rel="noreferrer">今回の実取得・純増</a></details></article>` : "";
     const backlogHtml = unified?.backlogStates ? `<article class="source-status-card"><details><summary>残件：自動巡回・未実装・認証待ち・時間待ち</summary><p>有効値純増は取得監査の比較基準からの差です。今回の取得だけの件数は「今回の実取得・純増」で確認できます。未記録は推定しません。</p>${unified.backlogStates.map((r) => `<p><b>${escapeHtml(r.label)}：${escapeHtml(r.category)}</b> / 残件${valueOrUnknown(r.remaining)} / 有効値純増${valueOrUnknown(r.usableNet)} / 最終進捗${escapeHtml(formatJstTimestamp(r.lastProgressAt))}<br><small>${escapeHtml(r.nextAction)}</small></p>`).join("")}</details></article>` : "";
-    els.dataFreshness.innerHTML = pipelineCards + sourceCards + unifiedHtml + focusHtml + backlogHtml + learningCard;
+    els.dataFreshness.innerHTML = pipelineCards + sourceCards + unifiedHtml + focusHtml + backlogHtml + learningCard + renderPriorityPriceMonitor();
   }
 
   const coverage = state.linkCoverage?.current?.storeCoverage;
@@ -1128,6 +1133,14 @@ function favoriteGuide(card) {
     recommended: calcGuideBuyPrice(psa10, cfg.hitRate, fee, 10),
     upper: calcGuideBuyPrice(psa10, cfg.hitRate, fee, 0),
   };
+}
+
+function renderPriorityPriceMonitor() {
+  const monitor = state.updateStatus?.priorityPriceMonitor;
+  if (!monitor) return "";
+  const value = (n) => n == null ? "未計測" : fmt.format(n);
+  const priceSourceNames = { hareruya2: "晴れる屋2", cardrush: "カードラッシュ", toreca: "みんトレ国内相場", shopBuyback: "店舗買取表" };
+  return `<article class="source-status-card"><details><summary>購入価格の期限付き更新（探索とは別）</summary><p>2時間ごとに期限判定・重要価格${monitor.targetHours}時間目標。通常巡回も継続。お気に入りはブラウザ内保存のため同期済みIDのみ優先。LLM/Codex呼び出し0。</p>${Object.entries(monitor.sources).map(([id, r]) => `<details><summary>${escapeHtml(priceSourceNames[id] || id)}：優先${r.priorityCards}枚／期限超過${r.overdue}枚</summary><p>${escapeHtml(r.status)}／${escapeHtml(r.stopReason || "停止なし")}<br>再確認${value(r.refreshed)}・変更${value(r.changed)}枚／${value(r.durationMs == null ? null : Math.round(r.durationMs / 1000))}秒／${value(r.cardsPerMinute)}枚/分<br>HTTP${value(r.httpRequests)}・キャッシュ${value(r.cacheHits)}／一巡の実処理見込み${value(r.estimatedSweepActiveMinutes)}分（Actions待機別）／再開${escapeHtml(r.checkpoint || "未記録")}</p><div style="overflow-x:auto"><table><thead><tr><th>カード</th><th>最終確認</th><th>次回期限</th><th>状態</th></tr></thead><tbody>${r.cards.map((row) => `<tr><td><a href="?q=${encodeURIComponent(row.name)}&diagnostic=1">${escapeHtml(row.name)}</a><small>${escapeHtml(row.priorityReason)}</small></td><td>${escapeHtml(formatJstTimestamp(row.lastConfirmedAt))}</td><td>${escapeHtml(formatJstTimestamp(row.nextDueAt))}</td><td>${escapeHtml(row.status)}</td></tr>`).join("")}</tbody></table></div></details>`).join("")}<a href="./data/priority-price-monitor.json">カード別期限・実測監査JSON</a></details></article>`;
 }
 
 function favoriteTrial(card) {
@@ -2371,6 +2384,14 @@ function finalizeCardDecision(card) {
       : `${storeEconomics ? "現在購入できる実店舗価格" : "現在の基準相場"} × 中央予測`,
   } : null;
   card.purchaseDecision = finalDecision;
+  if (Number(state.lockDays) !== FORECAST_HORIZON_DAYS) {
+    const reason = `期間不一致・返却時試算不可（予測${FORECAST_HORIZON_DAYS}日／返却${state.lockDays}日）。上限は91日モデルの参考値`;
+    card.purchaseDecision = { ...finalDecision, verdict: finalDecision?.verdict === "GO" ? "要確認" : finalDecision?.verdict, reasons: [reason, ...(finalDecision?.reasons || [])] };
+    card.forecastPeriodMismatch = true;
+    if (card.psaDecision) { card.psaDecision.recommended = false; card.psaDecision.reasons = card.purchaseDecision.reasons; card.psaDecision.calculationBasis = "91日モデルの参考計算・返却時は試算不可"; }
+    card.purchaseAvailability = { ...card.purchaseAvailability, verifiedNow: false, label: "期間不一致・返却時試算不可", reason };
+    card.aggressivePurchase = { ...card.aggressivePurchase, eligible: false };
+  }
   if (card.buyLimits?.clean?.exitPolicy?.dataShortage) {
     const message = card.buyLimits.clean.exitPolicy.reason || "買取データ不足";
     card.dataQuality.dataShortage = true;
@@ -2696,6 +2717,8 @@ function restoreQuickFilters() {
   try {
     const saved = JSON.parse(localStorage.getItem(QUICK_FILTER_STORAGE_KEY) || "{}");
     const url = new URL(window.location.href);
+    if (!url.searchParams.has("year2020")) els.year2020Input.checked = saved.year2020Only === true;
+    if (!url.searchParams.has("includeUnknownYear")) els.includeUnknownYearInput.checked = saved.includeUnknownYear === true;
     // A shared or bookmarked URL always wins over this device's last-used values.
     if (!url.searchParams.has("roi") && Number.isFinite(Number(saved.minRoi))) {
       els.roiInput.value = String(saved.minRoi);
@@ -2713,6 +2736,8 @@ function saveQuickFilters() {
     localStorage.setItem(QUICK_FILTER_STORAGE_KEY, JSON.stringify({
       minRoi: state.minRoi,
       minPurchaseLimitRatio: state.minPurchaseLimitRatio,
+      year2020Only: state.year2020Only,
+      includeUnknownYear: state.includeUnknownYear,
     }));
   } catch {
     // The current in-memory filter remains usable even if browser storage fails.
@@ -3020,6 +3045,8 @@ function readUrl() {
   const sort = url.searchParams.get("sort");
   const q = url.searchParams.get("q");
   const diagnosticSearch = url.searchParams.get("diagnostic") === "1";
+  if (url.searchParams.has("year2020")) els.year2020Input.checked = url.searchParams.get("year2020") === "1";
+  if (url.searchParams.has("includeUnknownYear")) els.includeUnknownYearInput.checked = url.searchParams.get("includeUnknownYear") === "1";
   const snkrFee = parseOptionalNumber(url.searchParams.get("snkrFee"));
   const snkrShip = parseOptionalNumber(url.searchParams.get("snkrShip"));
   const snkrOther = parseOptionalNumber(url.searchParams.get("snkrOther"));
@@ -3270,6 +3297,8 @@ function buildShareUrl() {
   }
   if (state.diagnosticSearch && state.q) url.searchParams.set("diagnostic", "1");
   else url.searchParams.delete("diagnostic");
+  url.searchParams.set("year2020", state.year2020Only ? "1" : "0");
+  url.searchParams.set("includeUnknownYear", state.includeUnknownYear ? "1" : "0");
   url.searchParams.delete("showSite");
   url.searchParams.delete("showCalc");
   url.searchParams.delete("hide");
@@ -3726,6 +3755,7 @@ function render() {
       const haystack = normalize(`${card.name} ${card.model} ${card.id}`);
       const compactHaystack = compactSearch(`${card.name} ${card.model} ${card.id}`);
       const completion = card.catalogCompletion;
+      if (!releaseYearFilter.matches(card, completion, state.year2020Only, state.includeUnknownYear)) return false;
       if (normalizedQuery && !(haystack.includes(normalizedQuery) || compactHaystack.includes(compactQuery))) return false;
       if (normalizedQuery && state.diagnosticSearch) return true;
       if (!normalizedQuery) {
@@ -3882,6 +3912,13 @@ function render() {
   }
 
   els.totalStat.textContent = fmt.format(state.catalogCompletion?.summary?.siteTotal || state.cards.length);
+  const yearRows = state.catalogIndex.length ? state.catalogIndex : state.cards;
+  const excludedOld = state.year2020Only ? yearRows.filter((c) => { const y = releaseYearFilter.year(c, state.catalogCompletion?.cards?.[c.id]); return y != null && y < 2020; }).length : 0;
+  const excludedUnknown = state.year2020Only && !state.includeUnknownYear ? yearRows.filter((c) => releaseYearFilter.year(c, state.catalogCompletion?.cards?.[c.id]) == null).length : 0;
+  document.getElementById("releaseYearFilterSummary").textContent = `固定発売年条件（2020年含む）。除外：2019年以前${fmt.format(excludedOld)}枚／年不明${fmt.format(excludedUnknown)}枚。最近発売365日とは別`;
+  const periodWarning = document.getElementById("forecastPeriodWarning");
+  periodWarning.hidden = Number(state.lockDays) === FORECAST_HORIZON_DAYS;
+  periodWarning.textContent = `期間不一致：予測${FORECAST_HORIZON_DAYS}日／返却目安${state.lockDays}日。返却時試算不可。価格待ち・上限は91日モデルの参考値で、返却時の推奨価格ではありません。GO・今すぐ仕入れは保留します。`;
   if (els.catalogCoverageSummary && state.catalogCompletion?.summary) {
     const summary = state.catalogCompletion.summary;
     els.catalogCoverageSummary.textContent = `みんトレ掲載 ${fmt.format(summary.sourceMatched ?? Math.max(0, summary.sourceTotal - summary.unlisted))} / ${fmt.format(summary.sourceTotal)}枚（${Number(summary.listingRatePct || 0).toFixed(1)}%）・サイト保持総数 ${fmt.format(summary.siteTotal)}枚・分析可能 ${fmt.format(summary.analyzable)}枚・補完優先キュー ${fmt.format(summary.priorityQueueRemaining)}枚`;
@@ -4829,6 +4866,8 @@ function syncFromUI() {
     : "all";
   state.sort = els.sortInput.value;
   state.q = els.qInput.value.trim();
+  state.year2020Only = els.year2020Input.checked;
+  state.includeUnknownYear = els.includeUnknownYearInput.checked;
   state.diagnosticSearch = Boolean(els.diagnosticSearchInput?.checked && state.q);
   scheduleCatalogQueryLoad();
   state.psaCapital = Number(els.psaCapitalInput.value || 0);
@@ -5011,7 +5050,11 @@ els.qInput.addEventListener("input", () => {
   updateUrl();
 });
 
+for (const input of [els.year2020Input, els.includeUnknownYearInput]) input.addEventListener("change", () => { readInputs(); render(); });
+
 els.resetFiltersBtn.addEventListener("click", () => {
+  els.year2020Input.checked = false;
+  els.includeUnknownYearInput.checked = false;
   els.qInput.value = "";
   if (els.diagnosticSearchInput) els.diagnosticSearchInput.checked = false;
   els.saleTxMinInput.value = "30";
@@ -5272,6 +5315,11 @@ els.copyFavoritesBtn.addEventListener("click", async () => {
 });
 
 els.exportFavoritesBtn.addEventListener("click", exportFavoritesCsv);
+document.getElementById("exportFavoritePriorityBtn").addEventListener("click", () => {
+  const config = { version: 1, importantHours: 6, normalHours: 48, favoriteIds: [...state.favorites], intervalMs: 1200, timeBudgetMs: 240000, retryLimit: 3, normalShare: 0.25 };
+  const url = URL.createObjectURL(new Blob([JSON.stringify(config, null, 2)], { type: "application/json" }));
+  const link = document.createElement("a"); link.href = url; link.download = "priority-price-config.json"; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+});
 
 els.exportSearchBtn.addEventListener("click", exportSearchCsv);
 

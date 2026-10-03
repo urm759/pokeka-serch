@@ -1,0 +1,53 @@
+name: Priority Purchase Price Refresh
+on:
+  workflow_dispatch:
+  schedule:
+    # Odd JST hours at :20. Queue checks every 2h; important-card target is 6h.
+    - cron: "20 */2 * * *"
+permissions:
+  contents: write
+concurrency:
+  group: all-site-data-refresh
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+      - name: Refresh due purchase prices without new-set exploration or LLM
+        run: node work/run_priority_price_refresh.js
+      - name: Verify safety and incremental acquisition
+        run: |
+          node --check app.js
+          node work/test_priority_refresh.js
+          node work/test_purchase_memo.js
+          node work/test_buyback_scenario_limits.js
+          node work/test_purchase_limit_audit.js
+          node work/test_price_integrity.js
+          node work/test_card_catalog_completion.js
+          node work/test_checkpoint_publication.js
+      - name: Publish validated data with conflict protection
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data work
+          node work/publish_data_checkpoint.js "Refresh due priority purchase prices"
+      - name: Preserve unpublished checkpoint on failure
+        if: failure()
+        run: |
+          node work/save_backfill_recovery.js priority-prices
+          node work/publish_data_checkpoint.js --capture-only
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: priority-price-recovery-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            work/publish-recovery.bundle
+            work/publish-recovery.json
+            data/backfill-recovery.json
+          retention-days: 7
+          if-no-files-found: error

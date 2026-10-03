@@ -16,10 +16,11 @@ async function api(url) {
 }
 
 async function main() {
-  const [runs, safeRuns, pokeRuns] = await Promise.all([
+  const [runs, safeRuns, pokeRuns, priceRuns] = await Promise.all([
     api(`${API}/actions/workflows/daily-fast-update.yml/runs?per_page=30`),
     api(`${API}/actions/workflows/safe-checkpoint-backfill.yml/runs?per_page=10`),
     api(`${API}/actions/workflows/backfill-data.yml/runs?per_page=10`),
+    api(`${API}/actions/workflows/priority-price-refresh.yml/runs?per_page=10`),
   ]);
   const status = JSON.parse(fs.readFileSync(path.join(ROOT, "data", "update-status.json"), "utf8"));
   const health = evaluate({ runs: runs.workflow_runs || [], sourceLastSuccessAt: status.sources?.toreca?.lastSuccessAt });
@@ -51,7 +52,14 @@ async function main() {
     return entries;
   });
   if (monitor.pc.health.status !== "観測受信済み") sourceIssues.push({ key: `pc:psa:${monitor.pc.health.status}`, reason: `PC側PSA: ${monitor.pc.health.status} / ${monitor.pc.health.reason}`, url: null });
-  const issues = [...dailyIssues, ...backfills.issues, ...sourceIssues];
+  const prices = status.priorityPriceMonitor?.sources || {};
+  const priceState = backfillModel.workflowState(priceRuns.workflow_runs || [], current?.priorityPriceRefresh || {},
+    JSON.stringify(Object.values(prices).map((source) => (source.cards || []).map((card) => card.lastConfirmedAt).filter(Boolean).sort().at(-1) || null)),
+    Object.values(prices).some((source) => source.overdue > 0 && !/403|認証|アクセス確認/.test(source.stopReason || "")));
+  const priceIssues = [];
+  if (["failure", "timed_out"].includes(priceState.conclusion)) priceIssues.push({ key: "priority-prices:workflow-failure", reason: "購入価格高速更新の保存・検証・公開失敗", url: priceState.runUrl });
+  if (priceState.stuckRuns >= 3) priceIssues.push({ key: "priority-prices:stalled", reason: "購入価格高速更新が3回連続で進捗なし・期限超過あり", url: priceState.runUrl });
+  const issues = [...dailyIssues, ...backfills.issues, ...sourceIssues, ...priceIssues];
   const previousKeys = new Set(current?.activeAlertKeys || []);
   const newlyDetected = issues.filter((issue) => !previousKeys.has(issue.key));
   const samples = backfillRate.read().samples;
@@ -60,7 +68,7 @@ async function main() {
     return [source, { before: recent[0] || null, after: recent[1] || null }];
   }));
   const result = { ...health, status: issues.length ? "alert" : health.status,
-    unifiedMonitor: monitor,
+    unifiedMonitor: monitor, priorityPriceRefresh: priceState,
     reasons: issues.map((issue) => issue.reason), issues,
     activeAlertKeys: issues.map((issue) => issue.key),
     backfills: { ...backfills.backfills, rateAudit } };

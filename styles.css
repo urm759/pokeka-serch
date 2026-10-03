@@ -10,6 +10,10 @@
   --accent3:#f59e0b;
   --shadow:0 28px 70px rgba(0,0,0,.38);
 }
+.release-year-filter { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 12px 0; }
+.release-year-filter input[type="checkbox"] { width: 18px; height: 18px; flex: 0 0 18px; }
+.release-year-filter small { flex: 1 1 260px; }
+#forecastPeriodWarning { font-size: 13px; line-height: 1.6; color: #ffe4a6; border: 1px solid #705d35; padding: 10px; }
 *{box-sizing:border-box}
 body{
   margin:0;

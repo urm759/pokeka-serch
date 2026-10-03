@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20261003-focus-v1" />
+  <link rel="stylesheet" href="./styles.css?v=20261003-priority-v2" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -28,6 +28,12 @@
         </div>
         <label class="inline-check diagnostic-control" for="diagnosticSearchInput"><input id="diagnosticSearchInput" type="checkbox" /> 診断表示（検索カードだけ条件外でも表示）</label>
       </div>
+      <div class="release-year-filter">
+        <label class="inline-check"><input id="year2020Input" type="checkbox" />2020年以降</label>
+        <label class="inline-check"><input id="includeUnknownYearInput" type="checkbox" />年不明も含める</label>
+        <small id="releaseYearFilterSummary">発売年条件。最近発売365日以内とは別です。</small>
+      </div>
+      <p id="forecastPeriodWarning" class="filter-explanation" hidden></p>
       <details class="advanced-filters primary-settings">
         <summary><span>詳細設定</span><small>鑑定プラン・利益条件・並び順</small></summary>
         <div class="controls controls-primary">
@@ -714,9 +720,11 @@
           <p id="favoritesHint">各カードの「仕入れ候補に追加」から登録してください。</p>
           <button id="copyFavoritesBtn" type="button">メモ用にコピー</button>
           <button id="exportFavoritesBtn" type="button">CSV保存</button>
+          <button id="exportFavoritePriorityBtn" type="button">優先更新IDを保存</button>
           <label class="import-favorites-btn">CSV読込<input id="importFavoritesInput" type="file" accept=".csv,text/csv" /></label>
           <button id="clearFavoritesBtn" class="danger" type="button">すべて解除</button>
         </div>
+        <small>お気に入りはこのブラウザだけに保存されます。Actionsでも優先更新するには「優先更新IDを保存」で出したJSONをGitHubのdata/priority-price-config.jsonへ反映してください。購入額・保有枚数は含めません。</small>
         <div id="favoritesPortfolioSummary" class="favorites-portfolio-summary"></div>
         <div id="favoritesStressSummary" class="favorites-stress-summary"></div>
         <label class="favorite-search">
@@ -833,9 +841,10 @@
   <script src="./candidate-visibility.js?v=20260927-v1"></script>
   <script src="./catalog-index-adapter.js?v=20260927-v1"></script>
   <script src="./limit-display-model.js?v=20261003-focus-v1"></script>
-  <script src="./purchase-memo-model.js?v=20261003-focus-v1"></script>
+  <script src="./purchase-memo-model.js?v=20261003-priority-v2"></script>
+  <script src="./release-year-filter.js?v=20261003-priority-v2"></script>
   <script src="./update-health-model.js?v=20260930-v1"></script>
   <script src="./update-health-banner.js?v=20261001-v1"></script>
-  <script src="./app.js?v=20261003-focus-v1"></script>
+  <script src="./app.js?v=20261003-priority-v2"></script>
 </body>
 </html>

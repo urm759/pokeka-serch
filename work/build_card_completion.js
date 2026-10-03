@@ -15,6 +15,12 @@ const RECENT_RELEASE_DAYS = Math.max(30, Number(process.env.CARD_RECENT_RELEASE_
 function read(file, fallback) {
   try { return JSON.parse(fs.readFileSync(path.join(ROOT, file), "utf8")); } catch { return fallback; }
 }
+function writeIfChanged(file, value) {
+  const text = JSON.stringify(value);
+  if (fs.existsSync(file) && fs.readFileSync(file, "utf8") === text) return false;
+  fs.writeFileSync(file, text, "utf8");
+  return true;
+}
 
 function finite(value) {
   return typeof value === "number" && Number.isFinite(value);
@@ -89,6 +95,7 @@ function main() {
   const pokedata = read("data/pokedata/manifest.json", { sets: [] });
   const modernAudit = read("data/modern-high-rarity-audit.json", { manualReview: {} });
   const priceEvidence = read("data/state-a-price-evidence.json", { cards: {} });
+  const pricePriorityIds = new Set(Object.values(read("data/priority-price-monitor.json", { sources: {} }).sources || {}).flatMap((source) => (source.cards || []).map((card) => card.id)));
   const priceAudit = read("data/state-a-price-audit.json", { cards: [] });
   const disputedPrices = new Set((priceAudit.cards || []).map((row) => String(row.id)));
   const previousQueue = read("work/card-completion-queue.json", { cards: {} });
@@ -238,7 +245,7 @@ function main() {
     const missingRequired = requiredKeys.filter((key) => entries[key]?.status !== "取得済み");
     const fetchableMissing = missingRequired.filter((key) => entries[key]?.status !== "取得不能");
     const completableAfterNext = !requiredReady && missingRequired.length === 1 && fetchableMissing.length === 1;
-    const nextItem = fetchableMissing[0] || Object.keys(entries).find((key) => ["取得待ち", "再試行待ち", "定期再確認"].includes(entries[key].status)) || null;
+    const nextItem = !release.year && pricePriorityIds.has(id) ? "release" : fetchableMissing[0] || Object.keys(entries).find((key) => ["取得待ち", "再試行待ち", "定期再確認"].includes(entries[key].status)) || null;
     let priority = 0;
     priority += Math.min(600, buyback30 * 20 + buyback90 * 4);
     priority += isRecentRelease ? 500 : 0;
@@ -250,7 +257,9 @@ function main() {
     priority += Math.min(120, Number(card.snkPsa10Price || 0) / 2500);
     priority += Math.min(120, Math.max(0, Number(card.snkPsa10Price || 0) - Number(card.price || 0) - 13000) / 2000);
     priority += !requiredReady ? 80 : 0;
+    if (!release.year && pricePriorityIds.has(id)) priority += 250;
     const reasons = [];
+    if (!release.year && pricePriorityIds.has(id)) reasons.push("購入・重点候補の発売年不明を優先補完");
     if (buyback30 > 0) reasons.push(`買取表30日${buyback30}店舗日`);
     if (isRecentRelease) reasons.push(`最近発売（${release.date}）`);
     if (missingRequired.length > 0 && missingRequired.length <= 2) reasons.push(`必須不足${missingRequired.length}項目・補完で分析可能に近い`);
@@ -354,14 +363,14 @@ function main() {
   summary.releaseKnownCompletenessPct = Number(((summary.releaseDateKnown + summary.releaseYearOnly) / Math.max(1, cards.length) * 100).toFixed(1));
 
   fs.mkdirSync(CHUNKS, { recursive: true });
-  for (const old of fs.readdirSync(CHUNKS).filter((name) => name.endsWith(".json"))) fs.unlinkSync(path.join(CHUNKS, old));
+  // Keep existing chunks; the manifest is authoritative and unchanged bytes need no rewrite.
   const index = [];
   const files = [];
   for (let offset = 0; offset < cards.length; offset += CHUNK_SIZE) {
     const chunkNo = Math.floor(offset / CHUNK_SIZE);
     const file = `chunks/${String(chunkNo).padStart(3, "0")}.json`;
     const rows = cards.slice(offset, offset + CHUNK_SIZE);
-    fs.writeFileSync(path.join(CATALOG, file), JSON.stringify(rows), "utf8");
+    writeIfChanged(path.join(CATALOG, file), rows);
     files.push({ file: `data/card-catalog/${file}`, count: rows.length, firstId: rows[0]?.id || null, lastId: rows.at(-1)?.id || null });
     for (const card of rows) {
       const completion = statusById[card.id];
@@ -371,7 +380,7 @@ function main() {
   const analysisCards = cards.filter((card) => statusById[card.id]?.s === "分析可能");
   fs.writeFileSync(path.join(CATALOG, "index.json"), JSON.stringify({ generatedAt, cards: index }), "utf8");
   fs.writeFileSync(path.join(CATALOG, "search-index.json"), JSON.stringify({ version: 1, generatedAt, count: cards.length, cards: buildSearchIndex(cards, { cards: index }) }), "utf8");
-  fs.writeFileSync(path.join(CATALOG, "analysis.json"), JSON.stringify(analysisCards), "utf8");
+  writeIfChanged(path.join(CATALOG, "analysis.json"), analysisCards);
   fs.writeFileSync(path.join(CATALOG, "manifest.json"), JSON.stringify({ version: 1, generatedAt, totalCards: cards.length, analysisCards: analysisCards.length, chunkSize: CHUNK_SIZE, files }), "utf8");
   fs.writeFileSync(path.join(DATA, "card-catalog-completion.json"), JSON.stringify({ version: 2, generatedAt, summary, itemTotals, dataTypeTotals, cards: statusById, unlistedIds: sourceMissing, duplicateIds }), "utf8");
   fs.writeFileSync(path.join(__dirname, "card-completion-queue.json"), JSON.stringify({

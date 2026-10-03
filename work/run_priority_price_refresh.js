@@ -1,0 +1,42 @@
+const fs = require("node:fs");
+const path = require("node:path");
+const { spawnSync } = require("node:child_process");
+const ROOT = path.join(__dirname, "..");
+const read = (file, fallback = {}) => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, file), "utf8")); } catch { return fallback; } };
+function due(record, now = Date.now()) {
+  const success = Date.parse(record?.lastSuccessAt);
+  const attempt = Date.parse(record?.lastAttemptAt);
+  // Failed origins cool down too; running often must not retry protected sources.
+  return (!Number.isFinite(success) || now - success >= 6 * 3600000) && (!Number.isFinite(attempt) || now - attempt >= 2 * 3600000);
+}
+function main() {
+  const started = Date.now(), runs = [];
+  const save = () => fs.writeFileSync(path.join(ROOT, "data/priority-price-execution.json"), JSON.stringify({ version: 1, startedAt: new Date(started).toISOString(), endedAt: new Date().toISOString(), durationMs: Date.now() - started,
+    runId: process.env.GITHUB_RUN_ID || null, runClass: "価格更新・探索なし", llmCalls: 0, codexCalls: 0, runs }));
+  function run(script, args = [], env = {}) {
+    const at = Date.now();
+    const child = spawnSync(process.execPath, [path.join(ROOT, script), ...args], { cwd: ROOT,
+      env: { ...process.env, ...env }, encoding: "utf8", maxBuffer: 64 * 1024 * 1024, timeout: 600000 });
+    process.stdout.write(child.stdout || ""); process.stderr.write(child.stderr || "");
+    let details = null;
+    for (const line of String(child.stdout || "").trim().split(/\r?\n/).reverse()) { try { details = JSON.parse(line); break; } catch { /* Non-JSON progress text. */ } }
+    const processStatus = child.status === 0 && !child.error ? "success" : "failed";
+    runs.push({ script, startedAt: new Date(at).toISOString(), endedAt: new Date().toISOString(), durationMs: Date.now() - at,
+      processStatus, status: processStatus === "failed" ? "failed" : details?.status || details?.completionStatus || "process-success",
+      attempted: details?.attemptedCount ?? null, refreshed: details?.refreshedCount ?? null, changed: details?.changedCount ?? null,
+      stopReason: details?.stopReason || null, error: child.error?.message || null });
+    save();
+    return child.status === 0 && !child.error;
+  }
+  const sources = read("work/source-update-runs.json").sources || {};
+  if (due(sources.toreca)) run("work/daily_fast_update.js", [], { FAST_DEEP_SCAN: "0", DAILY_RUNTIME_LIMIT_MS: "300000" });
+  if (due(sources.shopBuyback)) run("work/run_tracked_update.js", ["shopBuyback", "work/update_shop_buybacks.js"], { TRACKED_TIMEOUT_MS: "300000" });
+  for (const sourceId of ["cardrush", "hareruya2"]) run("work/refresh_candidate_shops.js", [sourceId], { CANDIDATE_SHOP_MODE: "deadline" });
+  for (const script of ["work/audit_state_a_prices.js", "work/build_card_completion.js", "work/build_purchase_limit_audit.js", "work/audit_acquisition_progress.js", "work/audit_link_coverage.js", "work/finalize_update_status.js"]) {
+    if (!run(script)) throw new Error(`Required rebuild failed: ${script}`);
+  }
+  save();
+  if (runs.some((row) => row.status === "failed")) process.exitCode = 1;
+}
+if (require.main === module) main();
+module.exports = { due };

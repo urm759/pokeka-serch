@@ -3,7 +3,7 @@ name: Data Update Health Watchdog
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: [Daily Fast Update, Safe Checkpoint Backfill, PokeDATA Incremental Backfill]
+    workflows: [Daily Fast Update, Safe Checkpoint Backfill, PokeDATA Incremental Backfill, Priority Purchase Price Refresh]
     types: [completed]
   schedule:
     - cron: "17 */2 * * *"
