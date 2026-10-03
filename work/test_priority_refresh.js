@@ -59,4 +59,10 @@ const workflow = fs.readFileSync(path.join(__dirname, "../.github/workflows/prio
 assert.match(workflow, /20 \*\/2/);
 assert.match(workflow, /all-site-data-refresh/);
 assert.match(workflow, /publish_data_checkpoint.js/);
+const monitor = JSON.parse(fs.readFileSync(path.join(__dirname, "../data/priority-price-monitor.json"), "utf8"));
+for (const source of Object.values(monitor.sources)) {
+  assert.equal(source.unconfirmed, source.cards.filter((card) => !card.nextDueAt).length);
+  assert.equal(source.overdue, source.cards.filter((card) => card.nextDueAt && Date.parse(card.nextDueAt) <= Date.parse(monitor.generatedAt)).length,
+    "Missing confirmation timestamps must not be counted as overdue prices");
+}
 console.log("year boundaries, persistence, fair deadlines, failed-value retention, cache, plan horizon and publication tests passed");

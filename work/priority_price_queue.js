@@ -66,7 +66,7 @@ function write(root = ROOT) {
     const budgetSeconds = Number(read(root, "data/priority-price-config.json").timeBudgetMs || 240000) / 1000;
     const important = planned.records.filter((r) => r.important);
     sources[id] = { total: planned.records.length, priorityCards: important.length,
-      overdue: important.filter((r) => r.due).length, pending: planned.queue.length,
+      overdue: important.filter((r) => r.due && r.nextDueAt).length, unconfirmed: important.filter((r) => !r.nextDueAt).length, pending: planned.queue.length,
       status: blocked ? "認証・アクセス確認待ち" : "期限付き価格更新", stopReason: blocked || run.stopReason || null,
       refreshed: run.refreshedCount ?? null, changed: run.changedCount ?? null, durationMs: run.durationMs ?? null,
       httpRequests: run.httpRequests ?? null, cacheHits: run.cacheHits ?? 0, cardsPerMinute: rate ? Number((rate * 60).toFixed(2)) : null,
@@ -95,7 +95,8 @@ function write(root = ROOT) {
       return { id: card.id, name: names.get(card.id), lastConfirmedAt: known ? at : null, nextDueAt,
         lastAttemptAt: runs[id]?.lastAttemptAt || null, status: !known ? "カード単位の確認日時なし・取得待ち" : time + 6 * 3600000 < now ? "期限超過" : "期限内", detail };
     });
-    return { total: cards.length, priorityCards: records.length, overdue: records.filter((r) => r.status !== "期限内").length,
+    return { total: cards.length, priorityCards: records.length, overdue: records.filter((r) => r.status === "期限超過").length,
+      unconfirmed: records.filter((r) => !r.lastConfirmedAt).length,
       pending: records.filter((r) => r.status !== "期限内").length, status: "正規一括差分・6時間目標", stopReason: runs[id]?.lastError || null,
       refreshed: runs[id]?.acquiredCount ?? null, changed: runs[id]?.updatedCount ?? null, durationMs: runs[id]?.durationMs ?? null,
       httpRequests: null, cacheHits: null, cardsPerMinute: null, estimatedSweepActiveMinutes: null,
