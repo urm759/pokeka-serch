@@ -66,6 +66,13 @@ function write(root = ROOT) {
     const normalRate = elapsed > 0 && run.refreshedCount > priorityVerified ? (run.refreshedCount - priorityVerified) / elapsed : null;
     const budgetSeconds = Number(read(root, "data/priority-price-config.json").timeBudgetMs || 240000) / 1000;
     const important = planned.records.filter((r) => r.important);
+    const storedJobs = checkpoint.sources?.[id]?.jobs;
+    if (storedJobs) for (const record of planned.records) {
+      const previous = storedJobs[record.card.id];
+      if (!previous || previous.url !== record.url) continue;
+      // A configured cadence change must also update the saved deadline, not the confirmed timestamp.
+      previous.nextDueAt = record.nextDueAt;
+    }
     sources[id] = { total: planned.records.length, priorityCards: important.length,
       overdue: important.filter((r) => r.due && r.nextDueAt).length, unconfirmed: important.filter((r) => !r.nextDueAt).length, pending: planned.queue.length,
       status: blocked ? "認証・アクセス確認待ち" : "期限付き価格更新", stopReason: blocked || run.stopReason || null,
@@ -122,6 +129,7 @@ function write(root = ROOT) {
     targetHours: read(root, "data/priority-price-config.json").importantHours || 6, scheduledHours: 2, sources,
     notes: "一巡見込みは実処理時間の参考値。Actions待機・通信変動を含まない。国内相場・買取表と重要ショップ価格は6時間目標、通常ショップ約6000枚は30日巡回目標。巡回目標とGOに採用する48時間等の価格鮮度は別で、古い値はGOに使わない。認証停止は古い値を保持。お気に入りは同期済みIDのみ。" };
   fs.writeFileSync(path.join(root, "data/priority-price-monitor.json"), JSON.stringify(output));
+  fs.writeFileSync(path.join(root, "work/priority-price-checkpoint.json"), JSON.stringify(checkpoint));
   return output;
 }
 if (require.main === module) { const output = write(); console.log(JSON.stringify({ ...output, sources: Object.fromEntries(Object.entries(output.sources).map(([id, row]) => [id, { ...row, cards: undefined }])) })); }
