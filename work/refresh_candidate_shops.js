@@ -70,8 +70,10 @@ async function main() {
   const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Tokyo" }).format(new Date());
   const completed = new Set(!checkpoint.cycleDate || checkpoint.cycleDate === today ? checkpoint.completedIds || [] : []);
   const manualWait = checkpoint.manualWait || {};
-  const candidates = cards.filter((card) => rows[card.id]?.status === "価格待ち" && card[`${sourceId}Url`])
-    .sort((a, b) => Number(Boolean(rows[a.id].offerPrice)) - Number(Boolean(rows[b.id].offerPrice)) || (rows[a.id].gap ?? 0) - (rows[b.id].gap ?? 0));
+  const priorityIds = String(process.env.COMPLETION_PRIORITY_IDS || "").split(",").filter(Boolean);
+  const priority = new Map(priorityIds.map((id, index) => [id, index]));
+  const candidates = cards.filter((card) => (priority.size ? priority.has(card.id) : rows[card.id]?.status === "価格待ち") && card[`${sourceId}Url`])
+    .sort((a, b) => priority.size ? priority.get(a.id) - priority.get(b.id) : Number(Boolean(rows[a.id].offerPrice)) - Number(Boolean(rows[b.id].offerPrice)) || (rows[a.id].gap ?? 0) - (rows[b.id].gap ?? 0));
   const pending = candidates.filter((card) => !completed.has(card.id) && manualWait[card.id]?.url !== card[`${sourceId}Url`]);
   const batch = pending.slice(0, Math.max(1, Number(process.env.CANDIDATE_SHOP_BATCH || 30)));
   const start = Date.now();

@@ -43,7 +43,15 @@ async function main() {
       : reason.includes("みんトレ") ? "daily:source-stale" : "daily:run-stale",
     reason, url: health.latestRunUrl,
   }));
-  const issues = [...dailyIssues, ...backfills.issues];
+  const monitor = require("./source_monitor.js").build(ROOT, status.sources || {}, status.unifiedMonitor || {});
+  const sourceIssues = Object.entries(monitor.rows).flatMap(([id, row]) => {
+    const entries = [];
+    if (row.stopReason && /403|認証|形式|曖昧|failed|失敗|競合/i.test(row.stopReason)) entries.push({ key: `source:${id}:manual-wait`, reason: `${row.label}: ${row.stopReason}`, url: row.failureUrl });
+    if (status.sources?.[id]?.stale && status.sources?.[id]?.automatic) entries.push({ key: `source:${id}:stale`, reason: `${row.label}: 更新期限超過（カード別鮮度 ${row.freshnessPct ?? "未記録"}%）`, url: row.failureUrl });
+    return entries;
+  });
+  if (monitor.pc.health.status !== "観測受信済み") sourceIssues.push({ key: `pc:psa:${monitor.pc.health.status}`, reason: `PC側PSA: ${monitor.pc.health.status} / ${monitor.pc.health.reason}`, url: null });
+  const issues = [...dailyIssues, ...backfills.issues, ...sourceIssues];
   const previousKeys = new Set(current?.activeAlertKeys || []);
   const newlyDetected = issues.filter((issue) => !previousKeys.has(issue.key));
   const samples = backfillRate.read().samples;
@@ -52,6 +60,7 @@ async function main() {
     return [source, { before: recent[0] || null, after: recent[1] || null }];
   }));
   const result = { ...health, status: issues.length ? "alert" : health.status,
+    unifiedMonitor: monitor,
     reasons: issues.map((issue) => issue.reason), issues,
     activeAlertKeys: issues.map((issue) => issue.key),
     backfills: { ...backfills.backfills, rateAudit } };

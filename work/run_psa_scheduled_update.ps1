@@ -18,7 +18,7 @@ try {
   Start-Transcript -Path $LogPath -Append | Out-Null
   $TranscriptStarted = $true
   $previous = if (Test-Path $StatePath) { Get-Content $StatePath -Raw | ConvertFrom-Json } else { [pscustomobject]@{} }
-  if (-not $Force -and $previous.lastSuccessSlot -eq $SuccessSlot) {
+  if (-not $Force -and $previous.lastSuccessSlot -eq $SuccessSlot -and $previous.publishStatus -eq 'success') {
     Write-Output "PSA update already completed for $SuccessSlot"
     exit 0
   }
@@ -39,13 +39,13 @@ try {
   $CompletedAt = Get-Date
   @{
     lastSuccessDate = $Today
-    lastSuccessSlot = $SuccessSlot
+    lastSuccessSlot = $previous.lastSuccessSlot
     lastSuccessAt = $CompletedAt.ToString('o')
     lastAttemptAt = $StartedAt.ToString('o')
     startedAt = $StartedAt.ToString('o')
     endedAt = $CompletedAt.ToString('o')
     durationMs = [Math]::Round(($CompletedAt - $StartedAt).TotalMilliseconds)
-    status = 'success'
+    status = 'acquired'
     acquiredCount = $acquisition.acquiredCount
     updatedCount = $acquisition.updatedCount
     sourceState = $acquisition.sourceState
@@ -53,7 +53,7 @@ try {
     lastError = $null
     syncStatus = $sync.status
     syncError = if ($sync.status -eq 'success') { $null } else { $sync.message }
-    publishStatus = 'success'
+    publishStatus = 'pending'
     publishError = $null
   } | ConvertTo-Json | Set-Content -Path $StatePath -Encoding utf8
 
@@ -65,6 +65,11 @@ try {
   try {
     & (Join-Path $PSScriptRoot 'publish_psa_update.ps1')
     if ($LASTEXITCODE -ne 0) { throw 'PSA publication phase failed.' }
+    $state = Get-Content $StatePath -Raw | ConvertFrom-Json
+    $state.publishStatus = 'success'
+    $state.status = 'success'
+    $state.lastSuccessSlot = $SuccessSlot
+    $state | ConvertTo-Json | Set-Content -Path $StatePath -Encoding utf8
   } catch {
     $state = Get-Content $StatePath -Raw | ConvertFrom-Json
     $state.publishStatus = 'failed'
@@ -104,5 +109,6 @@ try {
   Write-Error "PSA acquisition failed. Log: $LogPath`n$($_.Exception.Message)"
   exit 1
 } finally {
+  try { & (Join-Path $PSScriptRoot 'observe_psa_tasks.ps1') -Publish } catch { Write-Warning "Independent PSA observation failed: $($_.Exception.Message)" }
   if ($TranscriptStarted) { Stop-Transcript | Out-Null }
 }

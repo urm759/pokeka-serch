@@ -35,6 +35,17 @@ function main() {
   const buybacks = readJson(BUYBACK_PATH, { cards: {} }).cards || {};
   const population = readJson(POPULATION_PATH, { cards: {} }).cards || {};
   const manifest = readJson(MANIFEST_PATH, []);
+  const completion = readJson(path.join(__dirname, "card-completion-queue.json"), { cards: {} });
+  const linkage = readJson(path.join(ROOT, "data/psa-linkage-priority.json"), { priorityTop: [] });
+  const linkageById = new Map((linkage.priorityTop || []).map((row) => [row.cardId, row]));
+  const completionRows = cards.map((card) => {
+    const pending = linkageById.get(card.id);
+    if (!pending?.sourceSetUrl || pending.status !== "unlinked" || population[card.id]) return null;
+    const item = completion.cards[card.id] || {};
+    return { cardId: card.id, name: card.name, setCode: pending.setCode, cardNo: pending.cardNumber,
+      priority: Number(item.p || 0) * 1000000 + (item.m?.length === 1 ? 10000000000 : 0),
+      reason: item.r || [pending.reason], sourceSetUrl: pending.sourceSetUrl };
+  }).filter(Boolean);
   const legacyEntries = manifest.filter((entry) => releaseYear(entry) <= 2016 && entry.url);
   const legacySetCodes = new Set(legacyEntries.map((entry) => String(entry.setCode || "").toUpperCase()));
 
@@ -53,14 +64,16 @@ function main() {
     };
   }).filter(Boolean).sort((a, b) => b.priority - a.priority);
 
+  for (const row of completionRows) if (!rows.some((r) => r.cardId === row.cardId)) rows.push(row);
+  rows.sort((a, b) => b.priority - a.priority);
   const setPriority = [...new Set(rows.map((row) => row.setCode))];
   const orderedSets = [
-    ...legacyEntries.filter((entry) => setPriority.includes(String(entry.setCode || "").toUpperCase())),
+    ...manifest.filter((entry) => setPriority.includes(String(entry.setCode || "").toUpperCase())).sort((a, b) => setPriority.indexOf(String(a.setCode).toUpperCase()) - setPriority.indexOf(String(b.setCode).toUpperCase())),
     ...legacyEntries.filter((entry) => !setPriority.includes(String(entry.setCode || "").toUpperCase())),
   ].map((entry) => ({ setCode: entry.setCode, name: entry.name, url: entry.url }));
   const payload = {
     generatedAt: new Date().toISOString(),
-    purpose: "PSA未紐付けかつ現行買取表掲載の2016年以前カードを先行処理するキュー",
+    purpose: "補完優先度・あと1項目で分析可能・買取掲載をPSA認証取得へ接続。年代を限定せず曖昧URLは除外",
     total: rows.length,
     rows,
     orderedSets,

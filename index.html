@@ -584,6 +584,9 @@
             </select>
             <small class="control-help">買取店優先は新しく信頼できる2店舗以上の保守価格を使用。不足時はフリマ基準へ安全に戻します。</small>
           </label>
+          <label class="control"><span>利用する買取店</span><select id="buybackStoreModeInput"><option value="mail">郵送のみ</option><option value="all">店頭も利用</option><option value="selected">指定店舗のみ</option></select><small>店頭価格は郵送の出口へ混ぜません。</small></label>
+          <label class="control"><span>指定店舗ID（カンマ区切り）</span><input id="selectedBuybackStoresInput" type="text" placeholder="cardshop151-store,torecabank"><small>店舗IDは買取表詳細に表示します。</small></label>
+          <label class="control"><span>店頭交通費等／1枚</span><input id="storeTravelCostInput" type="number" min="0" step="100" value="0"><small>店頭出口だけに適用。まとめ売りの場合は1枚あたりへ配分してください。</small></label>
         </div>
         <div class="psa-settings-note">
           迷った場合は初期値のままで使えます。PSA10率は公式値を優先し、未取得時だけ70%／50%設定を使います。PSA9は実価格を優先し、未取得時は平均美品の75%で計算します。使用可能資金は「総資金－ロック中資金－鑑定費予備資金」です。買取店の減額率は買取出口だけに使い、フリマ販売手数料は加算しません。
@@ -819,7 +822,7 @@
     </section>
   </main>
 
-  <script src="./decision-model.js?v=20260927-shared-limits-v5"></script>
+  <script src="./decision-model.js?v=20261003-store-exit-v1"></script>
   <script src="./price-integrity.js?v=20260928-v1"></script>
   <script src="./grade-calibration.js?v=20260924-v1"></script>
   <script src="./search-index-model.js?v=20260913-search-v1"></script>
@@ -832,6 +835,6 @@
   <script src="./limit-display-model.js?v=20260928-v1"></script>
   <script src="./update-health-model.js?v=20260930-v1"></script>
   <script src="./update-health-banner.js?v=20261001-v1"></script>
-  <script src="./app.js?v=20261001-acquisition-audit-v1"></script>
+  <script src="./app.js?v=20261003-source-monitor-v1"></script>
 </body>
 </html>

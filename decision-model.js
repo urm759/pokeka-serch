@@ -504,9 +504,15 @@
     return { purchasePrice, expectedSale, expectedProfit, expectedRoi, annualEfficiency, exitType: input.exitType || "buyback" };
   }
 
+  function buybackStoreAllowed(row, input = {}) {
+    const mode = input.buybackStoreMode || "mail";
+    if (mode === "selected") return (Array.isArray(input.selectedBuybackStores) ? input.selectedBuybackStores : []).includes(row.shopId);
+    return mode === "all" || row.fulfilment !== "store";
+  }
+
   function conservativeBuybackExit(input = {}) {
     const rows = (Array.isArray(input.rows) ? input.rows : [])
-      .filter((row) => row?.valid && !row.stale && !row.outlier && !row.quarantined && Number(row.buybackPrice) > 0);
+      .filter((row) => row?.valid && !row.stale && !row.quarantined && buybackStoreAllowed(row, input) && Number(row.buybackPrice) > 0);
     const byShop = new Map();
     for (const row of rows) {
       const shopId = String(row.shopId || row.shopName || "");
@@ -537,6 +543,7 @@
       };
     }
     const grossCurrent = median(trusted.map((row) => row.conservativePrice));
+    const travelCost = median(trusted.map((row) => row.fulfilment === "store" ? Math.max(0, Number(input.storeTravelCost || 0)) : 0));
     const currentPsa10Price = Math.max(0, Number(input.currentPsa10Price || 0));
     const centralPsa10Price = Math.max(0, Number(input.centralPsa10Price || currentPsa10Price));
     const stressPsa10Price = Math.max(0, Number(input.stressPsa10Price || 0));
@@ -561,7 +568,7 @@
       const priceRatio = clamp(psa10Price / currentPsa10Price, 0.35, 1.25);
       const grossPrice = grossCurrent * priceRatio;
       const deductionAmount = grossPrice * deductionRate / 100;
-      const netPsa10 = grossPrice - deductionAmount - Math.max(0, Number(input.saleExtraCost || 0));
+      const netPsa10 = grossPrice - deductionAmount - Math.max(0, Number(input.saleExtraCost || 0)) - travelCost;
       const expectedSale = hitRate * netPsa10 + (1 - hitRate) * lowerGradeNet;
       const breakEvenRaw = expectedSale - fee;
       const profitCap = expectedSale - fee - targetProfit;
@@ -574,6 +581,7 @@
         grossPrice: Math.round(grossPrice),
         deductionRate,
         deductionAmount: Math.round(deductionAmount),
+        travelCost,
         netPsa10: Math.round(netPsa10),
         lowerGradeNet: Math.round(lowerGradeNet),
         hitRate,
@@ -601,6 +609,8 @@
       reason: "",
       storeCount: trusted.length,
       grossCurrent: Math.round(grossCurrent),
+      travelCost,
+      buybackStoreMode: input.buybackStoreMode || "mail",
       grossForecast: legacyScenario?.grossPrice ?? null,
       forecastRatio: legacyScenario?.priceRatio ?? null,
       deductionRate,

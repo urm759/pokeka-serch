@@ -23,7 +23,11 @@ jobs:
           node-version: "24"
       - name: Continue bounded source checkpoints without an LLM
         run: node work/run_safe_backfill.js
-      - name: Rebuild only dependent summaries
+      - name: Consume prioritized completion queue without an LLM
+        run: node work/consume_completion_queue.js
+      - name: Discover official PSA set links without bypassing authentication
+        run: node work/discover_psa_set_urls.js
+      - name: Rebuild completion and publication summaries
         run: |
           node work/build_card_completion.js
           node work/build_purchase_limit_audit.js
@@ -39,6 +43,7 @@ jobs:
           node work/test_candidate_availability_audit.js
           node work/test_acquisition_progress.js
           node work/test_checkpoint_publication.js
+          node work/test_source_monitor_and_completion.js
           node work/test_safe_backfill.js
           node work/test_purchase_limit_audit.js
           node work/test_supply_maturity_hypothesis.js

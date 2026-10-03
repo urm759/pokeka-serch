@@ -5,6 +5,8 @@ const marketModel = require("../market-analysis.js");
 
 const ROOT = path.join(__dirname, "..");
 const SHOPS = [
+  { id: "cardshop151-store", name: "CardShop151（店頭）", url: "https://cardshop151.com/", fulfilment: "store",
+    fetchItems: (shop) => require("./cardshop151.js").fetchItems(shop, fetchJson, readJson(path.join(ROOT, "data", "pokemon-cards.json"), [])) },
   {
     id: "torecabank",
     name: "トレカバンク",
@@ -133,12 +135,13 @@ async function fetchText(url, label) {
   let lastError;
   for (let attempt = 1; attempt <= 3; attempt += 1) {
     try {
-      const response = await fetch(url, { headers: { "user-agent": "Mozilla/5.0" } });
-      if (!response.ok) throw new Error(`${label}: HTTP ${response.status}`);
-      return response.text();
+      const response = await fetch(url, { headers: { "user-agent": "PokekaDataCollector/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (!response.ok) { const error = new Error(`${label}: HTTP ${response.status}`); error.status = response.status; throw error; }
+      return await response.text();
     } catch (error) {
       lastError = error;
-      if (attempt < 3) await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+      if (!(error.status === 429 || error.status >= 500 || /timeout|abort|fetch failed/i.test(error.message))) break;
+      if (attempt < 3) await new Promise((resolve) => setTimeout(resolve, 1000 * 2 ** (attempt - 1)));
     }
   }
   throw lastError;
@@ -476,6 +479,17 @@ async function main() {
   const imageMatches = readJson(imageMatchesPath, {});
   const itemMatches = readJson(itemMatchesPath, {});
   const history = readJson(historyPath, { dates: [], shops: {}, observedByShop: {} });
+  const previousSummary = readJson(SUMMARY_PATH, { shops: {}, cards: {} });
+  if (process.env.SHOP_BUYBACK_PRESERVE_REF) {
+    const baseline = JSON.parse(require("child_process").execFileSync("git", ["show", `${process.env.SHOP_BUYBACK_PRESERVE_REF}:data/shop-buyback-summary.json`], { cwd: ROOT, maxBuffer: 30000000, encoding: "utf8" }));
+    for (const [id, card] of Object.entries(baseline.cards || {})) {
+      previousSummary.cards[id] ||= { shops: {} };
+      for (const [shopId, row] of Object.entries(card.shops || {})) if (shopId !== process.env.SHOP_BUYBACK_SOURCE_ONLY) previousSummary.cards[id].shops[shopId] = row;
+    }
+  }
+  const previousCatalog = readJson(catalogPath, { shops: {} }).shops || {};
+  const previousUnmatched = readJson(unmatchedPath, { shops: {} }).shops || {};
+  const failures = [];
   if (!history.observedByShop || typeof history.observedByShop !== "object") history.observedByShop = {};
   // Older history predates per-shop success tracking. Seed once from the known daily runs,
   // then future refreshes maintain exact successful observation dates per shop.
@@ -498,12 +512,17 @@ async function main() {
   const matchCard = buildMatcher(cards);
   const results = [];
   for (const shop of SHOPS) {
+    if (process.env.SHOP_BUYBACK_SOURCE_ONLY && process.env.SHOP_BUYBACK_SOURCE_ONLY !== shop.id) continue;
     try {
       const fetched = await shop.fetchItems(shop);
+      if (!fetched.items?.length) throw new Error("取得0件。正常データは保持");
+      const previousCount = previousSummary.shops?.[shop.id]?.fetched;
+      if (previousCount >= 20 && fetched.items.length < previousCount * 0.5) throw new Error("取得件数が前回の半分未満。急減を隔離し正常データ保持");
       const matched = [];
       const unmatched = [];
       for (const item of fetched.items) {
         const sourceKey = `${shop.id}:${item.shopItemId}`;
+        if (item.strictIdentity && !item.verifiedCardId) { unmatched.push(item); continue; }
         const verifiedCard = item.verifiedCardId ? cards.find((card) => card.id === item.verifiedCardId) : null;
         const manualCardId = imageMatches[sourceKey];
         const imageCard = manualCardId ? cards.find((card) => card.id === manualCardId) : null;
@@ -514,7 +533,7 @@ async function main() {
         const result = verifiedCard || imageCard || (cachedCard && !cacheConflict) ? null : freshMatch;
         if (verifiedCard) {
           itemMatches[sourceKey] = verifiedCard.id;
-          matched.push({ ...item, cardId: verifiedCard.id, score: 100, matchMethod: "image-reviewed" });
+          matched.push({ ...item, cardId: verifiedCard.id, score: 100, matchMethod: item.matchMethod || "image-reviewed" });
         } else if (imageCard) {
           itemMatches[sourceKey] = imageCard.id;
           matched.push({ ...item, cardId: imageCard.id, score: 100, matchMethod: "image-reviewed" });
@@ -533,13 +552,18 @@ async function main() {
         }
         else unmatched.push(item);
       }
-      results.push({ shop, pages: fetched.pages, items: fetched.items, matched, unmatched });
+      results.push({ shop, ...fetched, matched, unmatched });
       console.log(`${shop.name}: pages=${fetched.pages}, items=${fetched.items.length}, matched=${matched.length}, activeMatched=${matched.filter((item) => item.active).length}, unmatched=${unmatched.length}`);
     } catch (error) {
+      failures.push({ source: shop.id, attemptedAt: new Date().toISOString(), error: String(error.message || error) });
       console.warn(`${shop.name}: existing data was preserved: ${error.message || error}`);
     }
   }
-  if (!results.length) throw new Error("全店舗の取得に失敗しました");
+  if (!results.length) {
+    for (const failure of failures) previousSummary.shops[failure.source] = { ...previousSummary.shops[failure.source], lastAttempt: failure.attemptedAt, error: failure.error, refreshed: false };
+    fs.writeFileSync(SUMMARY_PATH, JSON.stringify(previousSummary), "utf8");
+    throw new Error("全店舗の取得に失敗しました。正常データを保持・失敗時刻を記録");
+  }
 
   const today = jstDate();
   const previousDates = [...history.dates];
@@ -615,13 +639,21 @@ async function main() {
       const c7 = countRecent(values, history.dates, 7);
       const c30 = countRecent(values, history.dates, 30);
       const c90 = countRecent(values, history.dates, 90);
+      const preserved = previousSummary.cards?.[card.id]?.shops?.[shopId];
+      if (!results.some((result) => result.shop.id === shopId) && preserved) {
+        shops[shopId] = { ...preserved, fulfilment: SHOPS.find((s) => s.id === shopId)?.fulfilment || "mail" };
+        total7 += Number(preserved.c7 || 0); total30 += Number(preserved.c30 || 0); total90 += Number(preserved.c90 || 0);
+        continue;
+      }
       if (!c7 && !c30 && !c90) continue;
       const latestPriceIndex = values.findLastIndex((value) => Number(value) > 0);
       const currentPrice = latestPriceIndex >= 0 ? Number(values[latestPriceIndex]) : null;
-      const currentMatch = currentLinksByShop[shopId]?.get(card.id) || null;
+      const previousMatch = previousSummary.cards?.[card.id]?.shops?.[shopId];
+      const currentMatch = currentLinksByShop[shopId]?.get(card.id) || (previousMatch ? { ...previousMatch, matchScore: previousMatch.matchScore } : null);
       const quarantined = quarantine[`${shopId}:${card.id}`] || null;
       shops[shopId] = {
         c7, c30, c90, price: currentPrice,
+        fulfilment: SHOPS.find((s) => s.id === shopId)?.fulfilment || "mail",
         priceDate: latestPriceIndex >= 0 ? history.dates[latestPriceIndex] : null,
         url: currentMatch?.url || "",
         matchMethod: currentMatch?.matchMethod || null,
@@ -676,7 +708,24 @@ async function main() {
     };
   }
 
-  const previousSummary = readJson(SUMMARY_PATH, { shops: {} });
+  for (const [id, card] of Object.entries(previousSummary.cards || {})) {
+    for (const [shopId, row] of Object.entries(card.shops || {})) {
+      if (!activeShopIds.has(shopId) || results.some((result) => result.shop.id === shopId) || summaryCards[id]?.shops?.[shopId]) continue;
+      summaryCards[id] ||= { shops: {}, total7: 0, total30: 0, total90: 0 };
+      summaryCards[id].shops[shopId] = { ...row, fulfilment: SHOPS.find((s) => s.id === shopId)?.fulfilment || "mail" };
+      for (const days of [7, 30, 90]) summaryCards[id][`total${days}`] += Number(row[`c${days}`] || 0);
+    }
+  }
+  for (const card of Object.values(summaryCards)) {
+    const rows = Object.values(card.shops);
+    for (const days of [7, 30, 90]) {
+      card[`shop${days}`] = rows.filter((row) => Number(row[`c${days}`]) > 0).length;
+      const values = rows.map((row) => row[`avg${days}`]).filter((value) => Number(value) > 0).map(Number);
+      card[`avg${days}`] = values.length ? Math.round(values.reduce((sum, value) => sum + value, 0) / values.length) : null;
+    }
+    card.currentShops = rows.filter((row) => Number(row.price) > 0).length;
+  }
+
   const shopMeta = {};
   for (const shop of SHOPS) {
     const result = results.find((entry) => entry.shop.id === shop.id);
@@ -697,6 +746,19 @@ async function main() {
     shopMeta[shop.id] = {
       name: shop.name,
       url: shop.url,
+      fulfilment: shop.fulfilment || "mail",
+      lastAttempt: result || failures.some((f) => f.source === shop.id) ? new Date().toISOString() : previous.lastAttempt || null,
+      lastSuccess: result ? new Date().toISOString() : previous.lastSuccess || null,
+      sourceTotal: result?.sourceTotal ?? previous.sourceTotal ?? null,
+      fetched: result?.items?.length ?? previous.fetched ?? null,
+      attempted: result?.items?.length ?? null,
+      newAcquired: result ? result.items.filter((item) => ![...(previousCatalog[shop.id] || []), ...(previousUnmatched[shop.id] || [])].some((old) => old.shopItemId === item.shopItemId)).length : null,
+      newLinked: result ? new Set(result.matched.filter((item) => !previousSummary.cards?.[item.cardId]?.shops?.[shop.id]).map((item) => item.cardId)).size : null,
+      usableNet: result ? new Set(result.matched.filter((item) => item.active).map((item) => item.cardId)).size - Object.values(previousSummary.cards || {}).filter((card) => Number(card.shops?.[shop.id]?.price) > 0).length : null,
+      unmatched: result?.unmatched?.length ?? previous.unmatched ?? null,
+      sourceUpdatedAt: result ? null : previous.sourceUpdatedAt || null,
+      pagination: result?.pagination || previous.pagination || null,
+      error: failures.find((f) => f.source === shop.id)?.error || null,
       observedDays,
       matched: result ? result.matched.length : Number(previous.matched || 0),
       activeMatched: result ? result.matched.filter((item) => item.active).length : Number(previous.activeMatched || 0),
@@ -711,8 +773,8 @@ async function main() {
       reliability,
     };
   }
-  const catalog = Object.fromEntries(results.map((result) => [result.shop.id, result.matched]));
-  const unmatched = Object.fromEntries(results.map((result) => [result.shop.id, result.unmatched]));
+  const catalog = { ...readJson(catalogPath, {}).shops, ...Object.fromEntries(results.map((result) => [result.shop.id, result.matched])) };
+  const unmatched = { ...readJson(unmatchedPath, {}).shops, ...Object.fromEntries(results.map((result) => [result.shop.id, result.unmatched])) };
   fs.writeFileSync(historyPath, JSON.stringify(history), "utf8");
   fs.writeFileSync(catalogPath, JSON.stringify({ updatedAt: today, shops: catalog }), "utf8");
   fs.writeFileSync(unmatchedPath, JSON.stringify({ updatedAt: today, shops: unmatched }), "utf8");
@@ -720,13 +782,16 @@ async function main() {
   fs.writeFileSync(imageMatchesPath, JSON.stringify(imageMatches), "utf8");
   fs.writeFileSync(quarantinePath, JSON.stringify({ updatedAt: today, pairs: quarantine }), "utf8");
   fs.writeFileSync(SUMMARY_PATH, JSON.stringify({ updatedAt: today, dates: history.dates, shops: shopMeta, cards: summaryCards }), "utf8");
+  if (failures.length) throw new Error(`一部取得失敗（正常データ保持）: ${failures.map((f) => `${f.source}: ${f.error}`).join("; ")}`);
 }
 
-main().catch((error) => {
+if (require.main === module) main().catch((error) => {
   if (fs.existsSync(SUMMARY_PATH)) {
     console.warn(`shop buyback refresh skipped; existing data was preserved: ${error.message || error}`);
+    process.exitCode = 1;
     return;
   }
   console.error(error);
   process.exitCode = 1;
 });
+module.exports = { main, SHOPS, fetchText };

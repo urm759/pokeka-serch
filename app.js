@@ -155,6 +155,9 @@ const state = {
   saleExtraCost: 0,
   buybackDeductionRate: 3,
   exitPolicy: "buyback",
+  buybackStoreMode: "mail",
+  selectedBuybackStores: [],
+  storeTravelCost: 0,
   snkrRawFeeRate: 7,
   snkrRawShipping: 210,
   snkrRawOtherCost: 0,
@@ -349,6 +352,9 @@ const els = {
   saleExtraCostInput: document.getElementById("saleExtraCostInput"),
   buybackDeductionRateInput: document.getElementById("buybackDeductionRateInput"),
   exitPolicyInput: document.getElementById("exitPolicyInput"),
+  buybackStoreModeInput: document.getElementById("buybackStoreModeInput"),
+  selectedBuybackStoresInput: document.getElementById("selectedBuybackStoresInput"),
+  storeTravelCostInput: document.getElementById("storeTravelCostInput"),
   gradingReserveStatus: document.getElementById("gradingReserveStatus"),
   capitalAvailabilityStatus: document.getElementById("capitalAvailabilityStatus"),
   shopReferenceLinks: document.getElementById("shopReferenceLinks"),
@@ -782,6 +788,8 @@ function renderSourceObservability() {
         : null;
       const previousComparison = Number.isFinite(acquiredDelta) ? `${acquiredDelta >= 0 ? "+" : ""}${fmt.format(acquiredDelta)}件` : "比較不可";
       const diagnosticsHtml = renderCollectorDiagnostics(sourceId, source.diagnostics);
+      const monitor = state.updateStatus?.unifiedMonitor?.rows?.[sourceId];
+      const monitorHtml = monitor ? `<details class="source-run-history"><summary>統一監視・カード別鮮度</summary><p>公開main反映 ${escapeHtml(formatJstTimestamp(monitor.publishedAt))} / 残件 ${monitor.remaining ?? "未記録"}</p><p>新規取得 ${monitor.newAcquired ?? "未記録"} / 新規紐付け ${monitor.newLinked ?? "未記録"} / 有効値純増 ${monitor.usableNet ?? "未記録"}</p><p>最後の進捗 ${escapeHtml(formatJstTimestamp(monitor.lastProgressAt))}</p><p>鮮度充足 ${monitor.freshnessPct == null ? "カード別日時未記録" : `${monitor.freshnessPct}%（${monitor.freshCards}/${monitor.targetCards}枚）`}。48時間以内、素体24時間以内／全掲載カード</p>${monitor.stopReason ? `<p>停止理由 ${escapeHtml(monitor.stopReason)}</p>` : ""}${monitor.failureUrl ? `<a href="${escapeHtml(monitor.failureUrl)}" target="_blank" rel="noreferrer">対応するActions実行を確認</a>` : ""}</details>` : "";
       const historyHtml = history.length ? `<details class="source-run-history"><summary>直近${fmt.format(history.length)}回の処理履歴</summary>${history.map((run) => `<div><b>${escapeHtml(formatJstTimestamp(run.startedAt || run.lastAttemptAt))}</b><span>${escapeHtml(run.sourceState || run.status || "未記録")}</span><small>終了 ${escapeHtml(formatJstTimestamp(run.endedAt))} / 取得 ${Number.isFinite(run.acquiredCount) ? fmt.format(run.acquiredCount) : "-"} / 更新 ${Number.isFinite(run.updatedCount) ? fmt.format(run.updatedCount) : "-"}${run.lastError ? ` / ${escapeHtml(run.lastError)}` : ""}</small></div>`).join("")}</details>` : "";
       return `<article class="source-status-card ${className}">
         <div class="source-status-head"><strong>${escapeHtml(source.label)}</strong><b>${statusLabel}</b></div>
@@ -808,6 +816,8 @@ function renderSourceObservability() {
         ${source.publishStatus ? `<p>公開: ${escapeHtml(source.publishStatus)}${source.publishError ? ` / ${escapeHtml(source.publishError)}` : ""}</p>` : ""}
         ${source.lastError ? `<p>直近エラー: ${escapeHtml(source.lastError)}</p>` : ""}
         ${diagnosticsHtml}
+        ${monitorHtml}
+        ${sourceId === "psaOfficial" && state.updateStatus?.unifiedMonitor?.pc ? `<details class="source-run-history"><summary>PCタスク独立監視：${escapeHtml(state.updateStatus.unifiedMonitor.pc.health?.status || "未観測")}</summary><p>${escapeHtml(state.updateStatus.unifiedMonitor.pc.health?.reason || "")}</p><p>観測 ${escapeHtml(formatJstTimestamp(state.updateStatus.unifiedMonitor.pc.observedAt))}</p>${(state.updateStatus.unifiedMonitor.pc.tasks || []).map((t) => `<p>${escapeHtml(t.name)} / ${escapeHtml(t.target)} / 結果 ${t.result} / ${escapeHtml(formatJstTimestamp(t.lastRun))}${t.preStartFailure ? " / 起動前失敗" : ""}</p>`).join("")}</details>` : ""}
         ${historyHtml}
       </article>`;
     }).join("");
@@ -824,7 +834,10 @@ function renderSourceObservability() {
       </dl>
       <p>${escapeHtml(governance.reason || "検証状況未記録")}</p>
     </article>` : "";
-    els.dataFreshness.innerHTML = pipelineCards + sourceCards + learningCard;
+    const unified = state.updateStatus?.unifiedMonitor;
+    const valueOrUnknown = (v) => v == null ? "未記録" : escapeHtml(String(v));
+    const unifiedHtml = unified ? `<article class="source-status-card"><details><summary>全取得元・残件の統一監視</summary><p>${escapeHtml(unified.freshnessDefinition || "")}</p><div style="overflow-x:auto"><table><thead><tr><th>取得元</th><th>最終試行</th><th>最終成功</th><th>公開反映</th><th>残件</th><th>新規取得／有効純増</th><th>最終進捗</th><th>停止理由</th></tr></thead><tbody>${Object.values(unified.rows || {}).map((r) => `<tr><th>${escapeHtml(r.label)}${r.fulfilment === "store" ? "（店頭）" : ""}</th><td>${escapeHtml(formatJstTimestamp(r.lastAttempt))}</td><td>${escapeHtml(formatJstTimestamp(r.lastSuccess))}</td><td>${escapeHtml(formatJstTimestamp(r.publishedAt))}</td><td>${valueOrUnknown(r.remaining)}</td><td>${valueOrUnknown(r.newAcquired)}／${valueOrUnknown(r.usableNet)}</td><td>${escapeHtml(formatJstTimestamp(r.lastProgressAt))}</td><td>${escapeHtml(r.stopReason || "未記録・停止なし")}${r.failureUrl ? `<a href="${escapeHtml(r.failureUrl)}" target="_blank" rel="noreferrer">失敗実行</a>` : ""}</td></tr>`).join("")}</tbody></table></div><p>価格確認残 ${valueOrUnknown(unified.backlogs?.priceConfirmation)} / PSA未紐付け ${valueOrUnknown(unified.backlogs?.psaUnlinked)} / 国内PSA9：${escapeHtml(unified.backlogs?.domesticPsa9Status || "未記録")}</p><p>${escapeHtml(unified.backlogs?.returnBacktest || "")}</p><details><summary>補完キューの実取得と対応状況</summary><p>試行 ${valueOrUnknown(unified.completion?.attempted)} / 再取得 ${valueOrUnknown(unified.completion?.acquired)} / 新規取得 ${valueOrUnknown(unified.completion?.newAcquired)} / ${escapeHtml(unified.completion?.status || "未実行")}</p>${Object.entries(unified.completion?.support || {}).map(([id, row]) => `<p><b>${escapeHtml(id)}：${escapeHtml(row.status)}</b> ${escapeHtml(row.method || row.reason || "")}</p>`).join("")}<a href="./data/completion-acquisition.json" target="_blank" rel="noreferrer">カード別試行・再開位置</a></details><p><a href="./data/psa-set-discovery.json" target="_blank" rel="noreferrer">公式セットURL候補・停止理由</a></p></details></article>` : "";
+    els.dataFreshness.innerHTML = pipelineCards + sourceCards + unifiedHtml + learningCard;
   }
 
   const coverage = state.linkCoverage?.current?.storeCoverage;
@@ -1994,6 +2007,9 @@ function buildBuyLimitScenario(card, condition, hypotheticalRate = null) {
   const marketplaceStressBreakEvenMaxPrice = decisionModel.targetProfitMaxBuyPrice(stressInput, 0);
   const marketplaceUltraLowRiskMaxPrice = decisionModel.maxBuyPrice(stressInput);
   const buybackExit = decisionModel.conservativeBuybackExit({
+    buybackStoreMode: state.buybackStoreMode,
+    selectedBuybackStores: state.selectedBuybackStores,
+    storeTravelCost: state.storeTravelCost,
     rows: card.buybackAnalysis?.rows,
     currentPsa10Price: card.psa10,
     centralPsa10Price: input.forecastPrice,
@@ -2562,7 +2578,15 @@ function calc(card) {
   const shopDrop7 = Number.isFinite(stock?.drop7) ? Number(stock.drop7) : null;
   const combined30 = saleTx30d + (shopDrop30 || 0);
   const combined7 = saleTx7d + (shopDrop7 || 0);
-  const buyback = state.shopBuybacks[card.id] || null;
+  const originalBuyback = state.shopBuybacks[card.id] || null;
+  const allowedBuybackShops = Object.fromEntries(Object.entries(originalBuyback?.shops || {}).filter(([shopId, shop]) => {
+    if (state.buybackStoreMode === "selected") return state.selectedBuybackStores.includes(shopId);
+    return state.buybackStoreMode === "all" || (shop.fulfilment || state.buybackShops[shopId]?.fulfilment) !== "store";
+  }));
+  const allowedShopRows = Object.values(allowedBuybackShops);
+  const buyback = originalBuyback ? { ...originalBuyback, shops: allowedBuybackShops,
+    ...Object.fromEntries([7, 30, 90].map((days) => { const values = allowedShopRows.map((shop) => shop[`avg${days}`]).filter((value) => Number(value) > 0); return [`avg${days}`, values.length ? Math.round(values.reduce((sum, value) => sum + Number(value), 0) / values.length) : null]; })),
+    ...Object.fromEntries([7, 30, 90].flatMap((days) => [[`total${days}`, Object.values(allowedBuybackShops).reduce((sum, shop) => sum + Number(shop[`c${days}`] || 0), 0)], [`shop${days}`, Object.values(allowedBuybackShops).filter((shop) => Number(shop[`c${days}`]) > 0).length]])) } : null;
   const buyback7 = Number(buyback?.total7 || 0);
   const buyback30 = Number(buyback?.total30 || 0);
   const buyback90 = Number(buyback?.total90 || 0);
@@ -2572,6 +2596,7 @@ function calc(card) {
     sourceName: state.buybackShops[shopId]?.name || shopId,
   }));
   const buybackAnalysis = buildBuybackAnalysis(card, buybackShopValues, psa10);
+  buybackAnalysis.referenceRows = buildBuybackAnalysis(card, Object.entries(originalBuyback?.shops || {}).map(([shopId, shop]) => ({ ...shop, shopId, sourceName: state.buybackShops[shopId]?.name || shopId })), psa10).rows;
   const trustedBuybackShopValues = buybackShopValues.filter((shop) => !shop.quarantined && buybackCardMatched(card, shop));
   const marketStability = state.marketStability[card.id] || {
     score: null, state: "蓄積中", direction: "蓄積中", supplyState: "蓄積中",
@@ -2666,6 +2691,7 @@ function operationalSettings() {
     lockDays: state.lockDays, capital: state.psaCapital, lockedCapital: state.lockedCapital,
     gradingReserve: state.gradingReserve, submissionCount: state.submissionCount,
     maxCapitalShare: state.maxCapitalShare, exitPolicy: state.exitPolicy,
+    buybackStoreMode: state.buybackStoreMode, selectedBuybackStores: [...state.selectedBuybackStores].sort().join(","), storeTravelCost: state.storeTravelCost,
     purchaseMode: state.purchaseMode, guideMode: state.guideMode,
   };
 }
@@ -2673,8 +2699,10 @@ function operationalSettings() {
 function sharedOperationalSettingsMatch() {
   const shared = state.operationalLimitHistory;
   const current = operationalSettings();
+  const previousSettings = { buybackStoreMode: "mail", selectedBuybackStores: "", storeTravelCost: 0, ...shared?.settings };
+  if (Array.isArray(previousSettings.selectedBuybackStores)) previousSettings.selectedBuybackStores = [...previousSettings.selectedBuybackStores].sort().join(",");
   return shared?.modelVersion === decisionModel.MODEL_VERSION
-    && Object.keys(current).every((key) => shared.settings?.[key] === current[key]);
+    && Object.keys(current).every((key) => previousSettings[key] === current[key]);
 }
 
 function operationalHistory(cardId, condition) {
@@ -3051,6 +3079,9 @@ function readUrl() {
   if (buybackDeductionRate != null && buybackDeductionRate >= 0 && buybackDeductionRate <= 5) els.buybackDeductionRateInput.value = String(buybackDeductionRate);
   const exitPolicy = url.searchParams.get("exitPolicy");
   if (["buyback", "marketplace", "both"].includes(exitPolicy)) els.exitPolicyInput.value = exitPolicy;
+  if (["mail", "all", "selected"].includes(url.searchParams.get("buybackStores"))) els.buybackStoreModeInput.value = url.searchParams.get("buybackStores");
+  if (url.searchParams.has("selectedStores")) els.selectedBuybackStoresInput.value = url.searchParams.get("selectedStores");
+  if (url.searchParams.has("storeTravel")) els.storeTravelCostInput.value = String(Math.max(0, Number(url.searchParams.get("storeTravel")) || 0));
   if (snkrFee != null) els.snkrRawFeeRateInput.value = String(snkrFee);
   if (snkrShip != null) els.snkrRawShippingInput.value = String(snkrShip);
   if (snkrOther != null) els.snkrRawOtherCostInput.value = String(snkrOther);
@@ -3161,6 +3192,9 @@ function buildShareUrl() {
   url.searchParams.set("extraCost", String(state.saleExtraCost));
   url.searchParams.set("buybackDeduction", String(state.buybackDeductionRate));
   url.searchParams.set("exitPolicy", state.exitPolicy);
+  url.searchParams.set("buybackStores", state.buybackStoreMode);
+  url.searchParams.set("selectedStores", state.selectedBuybackStores.join(","));
+  url.searchParams.set("storeTravel", String(state.storeTravelCost));
   if (state.purchaseMode === "low-risk") url.searchParams.set("riskMode", "low");
   else url.searchParams.delete("riskMode");
   if (["curated", "combined", "bargain", "turnover", "now", "aggressive", "snkr-raw"].includes(state.purchaseMode)) url.searchParams.set("preset", state.purchaseMode);
@@ -4004,7 +4038,7 @@ function render() {
           </div>
         `
       : "";
-    const buybackShopRows = (card.buybackAnalysis?.rows || [])
+    const buybackShopRows = (card.buybackAnalysis?.referenceRows || card.buybackAnalysis?.rows || [])
       .slice()
       .sort((a, b) => String(b.priceDate || "").localeCompare(String(a.priceDate || "")) || Number(b.buybackPrice || 0) - Number(a.buybackPrice || 0))
       .map((shop, index) => {
@@ -4019,7 +4053,7 @@ function render() {
       const differenceText = differencePct == null ? "-" : `${differencePct >= 0 ? "+" : ""}${differencePct.toFixed(1)}%`;
       const rowClass = !shop.valid ? "invalid" : shop.stale ? "stale" : shop.outlier ? "outlier" : "trusted";
       return `<div class="buyback-shop-row ${index === 0 ? "buyback-shop-primary" : ""} ${rowClass}">
-        <div>${leadLabel}<strong>${shopName}</strong>${warning ? `<small class="buyback-warning">${escapeHtml(warning)}</small>` : ""}</div>
+        <div>${leadLabel}<strong>${shopName}</strong><small>${shop.fulfilment === "store" ? "店頭価格" : "郵送価格"} / ID: ${escapeHtml(shop.shopId)}${card.buybackAnalysis?.rows?.some((r) => r.shopId === shop.shopId) ? " / 出口対象" : " / 設定により出口対象外"}</small>${warning ? `<small class="buyback-warning">${escapeHtml(warning)}</small>` : ""}</div>
         <div><span>店舗買取 / 更新</span><b>${shop.buybackPrice ? `¥${fmt.format(shop.buybackPrice)}` : "-"}</b><small>${escapeHtml(shop.priceDate || "未取得")}</small></div>
         <div><span>相場比買取率</span><b>${ratioLabel(shop.marketRatio)}</b><small>市場 ¥${shop.marketPrice ? fmt.format(shop.marketPrice) : "-"}</small></div>
         <div><span>相場差率</span><b>${ratioLabel(shop.marketDifference)}</b><small>${differenceText}</small></div>
@@ -4774,6 +4808,9 @@ function syncFromUI() {
   state.saleExtraCost = Number(els.saleExtraCostInput.value || 0);
   state.buybackDeductionRate = clamp(Number(els.buybackDeductionRateInput.value || 0), 0, 5);
   state.exitPolicy = ["buyback", "marketplace", "both"].includes(els.exitPolicyInput.value) ? els.exitPolicyInput.value : "buyback";
+  state.buybackStoreMode = ["mail", "all", "selected"].includes(els.buybackStoreModeInput?.value) ? els.buybackStoreModeInput.value : "mail";
+  state.selectedBuybackStores = String(els.selectedBuybackStoresInput?.value || "").split(",").map((id) => id.trim()).filter(Boolean);
+  state.storeTravelCost = Math.max(0, Number(els.storeTravelCostInput?.value) || 0);
   state.snkrRawFeeRate = clamp(Number(els.snkrRawFeeRateInput.value || 0), 0, 100);
   state.snkrRawShipping = Math.max(0, Number(els.snkrRawShippingInput.value || 0));
   state.snkrRawOtherCost = Math.max(0, Number(els.snkrRawOtherCostInput.value || 0));
@@ -4921,6 +4958,7 @@ async function init() {
 }
 
 // Browser event bindings start here; the audit runner evaluates the same model above this line.
+[els.buybackStoreModeInput, els.selectedBuybackStoresInput, els.storeTravelCostInput].forEach((el) => el?.addEventListener("input", syncFromUI));
 [els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.buyback7MinInput, els.buyback7MaxInput, els.buyback30MinInput, els.buyback30MaxInput, els.buyback90MinInput, els.buyback90MaxInput, els.buybackShopsMinInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.roiInput, els.expectedRoiFilterInput, els.expectedProfitFilterInput, els.stressExpectedRoiFilterInput, els.stressExpectedProfitFilterInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.purchaseLimitRatioMinInput, els.psaRateMinInput, els.overallFilterInput, els.minExitLiquidityInput, els.minEconomicsInput, els.minMarketStabilityInput, els.minSupplyRiskInput, els.minFuturePriceScoreInput, els.maxFuturePriceScoreInput, els.minForecastPriceInput, els.maxForecastPriceInput, els.minForecastDownsideInput, els.maxForecastDownsideInput, els.minForecastGapInput, els.maxForecastGapInput, els.minForecastAgeInput, els.forecastMaturityInput, els.maxForecastMonthlyIncreaseInput, els.stockDemandInput, els.dataQualityFilterInput, els.goConfidenceFilterInput, els.floorStateInput, els.priceDirectionInput, els.supplyStateInput, els.minFloorScoreInput, els.storeDemandInput, els.showSkippedInput, els.hideThinDemandInput, els.hideReviewInput, els.fundingOnlyInput, els.officialOnlyInput, els.sortInput, els.psaCapitalInput, els.lockedCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput, els.buybackDeductionRateInput, els.exitPolicyInput, els.snkrRawFeeRateInput, els.snkrRawShippingInput, els.snkrRawOtherCostInput, els.snkrRawTx7MinInput, els.snkrRawTx30MinInput, els.snkrRawProfitMinInput, els.snkrRawRoiMinInput, els.snkrRawPurchaseMaxInput, els.snkrRawReleaseMonthsInput, els.snkrRawMaxAgeInput, els.snkrRawCurrentOnlyInput, els.snkrRawRecentOnlyInput, els.snkrRawIncludeReferenceInput, els.diagnosticSearchInput].forEach((el) =>
   el.addEventListener("input", syncFromUI)
 );

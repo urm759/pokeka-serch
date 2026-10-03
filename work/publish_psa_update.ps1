@@ -9,6 +9,7 @@ $paths = @(
   'data/psa-official-populations.js',
   'data/psa-population-summary.json',
   'data/psa-history',
+  'data/psa-pc-observation.json',
   'data/update-status.json',
   'data/update-history.json',
   'work/snkr_english_names.json',
@@ -50,20 +51,8 @@ if ($LASTEXITCODE -eq 0) {
   exit 0
 }
 
-& $Git -C $Repo commit -m "Refresh PSA official population $Today"
-if ($LASTEXITCODE -ne 0) { throw 'Git commit failed after PSA acquisition.' }
-
-$lastOutput = ''
-for ($attempt = 1; $attempt -le $Retries; $attempt += 1) {
-  $output = & $Git -C $Repo push origin HEAD:main 2>&1
-  $exitCode = $LASTEXITCODE
-  $lastOutput = ($output | Out-String).Trim()
-  if ($lastOutput) { Write-Output $lastOutput }
-  if ($exitCode -eq 0) {
-    Write-Output "PSA publication completed on attempt $attempt."
-    exit 0
-  }
-  if ($attempt -lt $Retries) { Start-Sleep -Seconds ([Math]::Min(20, 5 * $attempt)) }
-}
-
-throw "Git push failed after $Retries attempts. The acquisition commit remains locally: $lastOutput"
+Push-Location $Repo
+try {
+  node work/publish_data_checkpoint.js "Refresh PSA official population $Today"
+  if ($LASTEXITCODE -ne 0) { throw 'PSA push failed. Local commit and work/publish-recovery.bundle preserve the acquisition; manual merge may be needed.' }
+} finally { Pop-Location }
