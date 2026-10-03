@@ -17,6 +17,7 @@ const saved = finish({}, row, new Date(now).toISOString(), { importantHours: 6 }
 assert.equal(saved.nextDueAt, "2026-10-03T20:59:00.000Z");
 const tomorrow = plan({ ...args, now: now + 120000, catalog: [{ cardId: "0", observedAt: new Date(now).toISOString(), price: 5000 }], jobs: { "0": saved } });
 assert.equal(tomorrow.queue.some((r) => r.card.id === "0"), false, "JST day change must not reset progress");
+assert.equal(finish({}, { ...row, important: false }, new Date(now).toISOString(), { normalHours: 720 }).nextDueAt, "2026-11-02T14:59:00.000Z");
 const failed = finish(saved, { ...row, status: "failed", error: "HTTP 429" }, "2026-10-03T15:00:00Z");
 assert.equal(failed.lastSuccessAt, saved.lastSuccessAt);
 assert.equal(failed.nextDueAt, saved.nextDueAt);

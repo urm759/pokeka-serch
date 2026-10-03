@@ -849,7 +849,7 @@ function renderSourceObservability() {
     const focusLabels = { psaPopulation: "PSA公式POP", psaRate: "公式10率", domesticRaw: "国内美品", domesticPsa10: "国内PSA10", buyback: "買取価格", shopStateA: "在庫あり状態A取得価格（GOとは別）" };
     const focusHtml = focus ? `<article class="source-status-card"><details><summary>重点監視：スターミーV・S6aブイズ ${fmt.format(focus.count)}種</summary><p>重点処理枠は最大${Math.round(focus.maxFocusedShare * 100)}%。通常巡回を維持。鮮度基準48時間。監視だけで仕入れ上限を上げません。</p><div class="focus-summary">${Object.entries(focus.totals || {}).map(([key, t]) => `<p>${focusLabels[key]}：取得済み${t.valid}／鮮度適合${t.fresh}／古い${t.stale}／不足${t.missing}</p>`).join("")}</div><p>最後の改善：${escapeHtml(formatJstTimestamp(focus.lastProgress?.at))} / 有効値純増${valueOrUnknown(focus.lastProgress?.newValid)} / 鮮度回復${valueOrUnknown(focus.lastProgress?.newlyFresh)}項目（カード数・純増とは別）</p><div style="overflow-x:auto"><table><thead><tr><th>カード</th>${Object.values(focusLabels).map((label) => `<th>${label}</th>`).join("")}<th>優先理由／最終進捗</th></tr></thead><tbody>${Object.values(focus.cards || {}).map((row) => `<tr><th><a href="?q=${encodeURIComponent(row.name)}&diagnostic=1">${escapeHtml(row.name)}</a></th>${Object.keys(focusLabels).map((key) => { const item = row.items[key]; return `<td>${item.value == null ? "未取得" : key === "psaRate" ? `${item.value.toFixed(1)}%` : fmt.format(item.value)}<br><small>${escapeHtml(item.status)} / ${escapeHtml(formatJstTimestamp(item.at))}${key === "domesticRaw" ? "（取得日。状態A成約証明とは別）" : ""}</small></td>`; }).join("")}<td>${escapeHtml(row.priorityReason)}<br>${escapeHtml(formatJstTimestamp(row.lastProgressAt))}</td></tr>`).join("")}</tbody></table></div><a href="./data/focus-monitor.json" target="_blank" rel="noreferrer">重点カード別監査JSON</a> / <a href="./data/focus-acquisition-audit.json" target="_blank" rel="noreferrer">今回の実取得・純増</a></details></article>` : "";
     const backlogHtml = unified?.backlogStates ? `<article class="source-status-card"><details><summary>残件：自動巡回・未実装・認証待ち・時間待ち</summary><p>有効値純増は取得監査の比較基準からの差です。今回の取得だけの件数は「今回の実取得・純増」で確認できます。未記録は推定しません。</p>${unified.backlogStates.map((r) => `<p><b>${escapeHtml(r.label)}：${escapeHtml(r.category)}</b> / 残件${valueOrUnknown(r.remaining)} / 有効値純増${valueOrUnknown(r.usableNet)} / 最終進捗${escapeHtml(formatJstTimestamp(r.lastProgressAt))}<br><small>${escapeHtml(r.nextAction)}</small></p>`).join("")}</details></article>` : "";
-    els.dataFreshness.innerHTML = pipelineCards + sourceCards + unifiedHtml + focusHtml + backlogHtml + learningCard + renderPriorityPriceMonitor();
+    els.dataFreshness.innerHTML = pipelineCards + sourceCards + unifiedHtml + focusHtml + backlogHtml + learningCard + renderPriorityPriceMonitor() + renderPriceCapacityNotice();
   }
 
   const coverage = state.linkCoverage?.current?.storeCoverage;
@@ -1135,6 +1135,11 @@ function favoriteGuide(card) {
   };
 }
 
+function renderPriceCapacityNotice() {
+  const row = state.updateStatus?.priorityPriceMonitor?.sources?.hareruya2;
+  if (!row) return "";
+  return `<p class="helper">通常巡回は${Number(row.normalTargetHours || 720) / 24}日目標。実測の通常枠${row.normalCardsPerMinute ?? "未計測"}枚/分、一巡約${row.estimatedNormalSweepDays ?? "未計測"}日（通信・Actions遅延別）。古い価格をGOへ使える期間は延長しません。</p>`;
+}
 function renderPriorityPriceMonitor() {
   const monitor = state.updateStatus?.priorityPriceMonitor;
   if (!monitor) return "";
@@ -5316,7 +5321,7 @@ els.copyFavoritesBtn.addEventListener("click", async () => {
 
 els.exportFavoritesBtn.addEventListener("click", exportFavoritesCsv);
 document.getElementById("exportFavoritePriorityBtn").addEventListener("click", () => {
-  const config = { version: 1, importantHours: 6, normalHours: 48, favoriteIds: [...state.favorites], intervalMs: 1200, timeBudgetMs: 240000, retryLimit: 3, normalShare: 0.25 };
+  const config = { version: 1, importantHours: 6, normalHours: 720, favoriteIds: [...state.favorites], intervalMs: 1200, timeBudgetMs: 240000, retryLimit: 3, normalShare: 0.25 };
   const url = URL.createObjectURL(new Blob([JSON.stringify(config, null, 2)], { type: "application/json" }));
   const link = document.createElement("a"); link.href = url; link.download = "priority-price-config.json"; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
 });

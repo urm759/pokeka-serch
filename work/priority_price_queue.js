@@ -16,7 +16,7 @@ function plan({ cards, sourceId, catalog, candidateRows = {}, focusConfig = {}, 
     const lastSuccessAt = entry?.observedAt || null;
     const time = Date.parse(lastSuccessAt);
     const validTime = Number.isFinite(time) && time <= now;
-    const hours = important ? config.importantHours || 6 : config.normalHours || 48;
+    const hours = important ? config.importantHours || 6 : config.normalHours || 720;
     const due = validTime ? time + hours * 3600000 : 0;
     const retry = Date.parse(previous.nextRetryAt);
     const waiting = manualWait[card.id]?.url === url || previous.url === url && previous.failures >= (config.retryLimit || 3);
@@ -51,7 +51,7 @@ function finish(previous = {}, record, at, config = {}) {
   return { ...previous, url: record.url, lastAttemptAt: record.startedAt, lastSuccessAt: ok ? at : previous.lastSuccessAt || null,
     failures, status: ok ? "success" : record.status, error: ok ? null : record.error,
     nextRetryAt: ok ? null : new Date(Date.parse(at) + Math.min(48, 2 ** failures) * 3600000).toISOString(),
-    nextDueAt: ok ? new Date(Date.parse(at) + (record.important ? config.importantHours || 6 : config.normalHours || 48) * 3600000).toISOString() : previous.nextDueAt || null };
+    nextDueAt: ok ? new Date(Date.parse(at) + (record.important ? config.importantHours || 6 : config.normalHours || 720) * 3600000).toISOString() : previous.nextDueAt || null };
 }
 function write(root = ROOT) {
   const checkpoint = read(root, "work/priority-price-checkpoint.json", { sources: {} });
@@ -63,6 +63,7 @@ function write(root = ROOT) {
     const rate = elapsed > 0 && run.refreshedCount > 0 ? run.refreshedCount / elapsed : null;
     const priorityVerified = (run.records || []).filter((record) => record.important && record.status === "verified").length;
     const priorityRate = elapsed > 0 && priorityVerified > 0 ? priorityVerified / elapsed : null;
+    const normalRate = elapsed > 0 && run.refreshedCount > priorityVerified ? (run.refreshedCount - priorityVerified) / elapsed : null;
     const budgetSeconds = Number(read(root, "data/priority-price-config.json").timeBudgetMs || 240000) / 1000;
     const important = planned.records.filter((r) => r.important);
     sources[id] = { total: planned.records.length, priorityCards: important.length,
@@ -71,6 +72,9 @@ function write(root = ROOT) {
       refreshed: run.refreshedCount ?? null, changed: run.changedCount ?? null, durationMs: run.durationMs ?? null,
       httpRequests: run.httpRequests ?? null, cacheHits: run.cacheHits ?? 0, cardsPerMinute: rate ? Number((rate * 60).toFixed(2)) : null,
       priorityCardsPerMinute: priorityRate ? Number((priorityRate * 60).toFixed(2)) : null,
+      normalCardsPerMinute: normalRate ? Number((normalRate * 60).toFixed(2)) : null,
+      estimatedNormalSweepDays: normalRate && !blocked ? Math.ceil((planned.records.length - important.length) / (normalRate * budgetSeconds * 12)) : null,
+      normalTargetHours: read(root, "data/priority-price-config.json").normalHours || 720,
       estimatedSweepActiveMinutes: priorityRate && !blocked ? Math.ceil(important.length / priorityRate / 60) : null,
       estimatedExecutionsToClearOverdue: priorityRate && !blocked ? Math.ceil(important.filter((r) => r.due).length / (priorityRate * budgetSeconds)) : null,
       estimatedFullSweepHours: priorityRate && !blocked ? Math.ceil(important.length / (priorityRate * budgetSeconds)) * 2 : null,
@@ -116,7 +120,7 @@ function write(root = ROOT) {
   }));
   const output = { version: 1, generatedAt: new Date().toISOString(), runClass: "購入価格高速更新（探索キューとは別）", llmCalls: 0, codexCalls: 0,
     targetHours: read(root, "data/priority-price-config.json").importantHours || 6, scheduledHours: 2, sources,
-    notes: "一巡見込みは実処理時間の参考値。Actions待機・通信変動を含まない。国内相場・買取表は正規一括取得を6時間目標、ショップはカード別期限。認証停止は古い値を保持。お気に入りは同期済みIDのみ。" };
+    notes: "一巡見込みは実処理時間の参考値。Actions待機・通信変動を含まない。国内相場・買取表と重要ショップ価格は6時間目標、通常ショップ約6000枚は30日巡回目標。巡回目標とGOに採用する48時間等の価格鮮度は別で、古い値はGOに使わない。認証停止は古い値を保持。お気に入りは同期済みIDのみ。" };
   fs.writeFileSync(path.join(root, "data/priority-price-monitor.json"), JSON.stringify(output));
   return output;
 }
