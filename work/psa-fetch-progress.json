@@ -1,12 +1,12 @@
 {
-  "startedAt": "2026-10-03T11:56:33.119Z",
-  "endedAt": "2026-10-03T11:56:54.202Z",
+  "startedAt": "2026-10-03T19:30:08.066Z",
+  "endedAt": "2026-10-03T19:30:29.469Z",
   "cycleDate": "2026-10-03",
-  "status": "success",
+  "status": "manual-wait",
   "attemptedCount": 2,
-  "newAcquiredCount": 151,
-  "changedCount": 50,
-  "refreshedCount": 201,
+  "newAcquiredCount": 2,
+  "changedCount": 1,
+  "refreshedCount": 3,
   "completedUrls": [
     "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
     "https://www.psacard.com/pop/tcg-cards/2016/pokemon-japanese-xy-promo/133615",
@@ -33,38 +33,39 @@
     "https://www.psacard.com/pop/tcg-cards/2012/pokemon-japanese-black-white-promo/105770",
     "https://www.psacard.com/pop/tcg-cards/2013/pokemon-japanese-black-white-promo/114603",
     "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-sword-shield-eevee-heroes/193866",
-    "https://www.psacard.com/pop/tcg-cards/2022/pokemon-japanese-sword-shield-battle-region/208916"
+    "https://www.psacard.com/pop/tcg-cards/2022/pokemon-japanese-sword-shield-battle-region/208916",
+    "https://www.psacard.com/pop/tcg-cards/2026/pokemon-japanese-m6-storm-emeralda/348263"
   ],
   "records": [
     {
-      "setCode": "S6A",
-      "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-sword-shield-eevee-heroes/193866",
+      "setCode": "M6",
+      "url": "https://www.psacard.com/pop/tcg-cards/2026/pokemon-japanese-m6-storm-emeralda/348263",
       "httpStatus": 200,
-      "fetchedAt": "2026-10-03T11:56:33.409Z",
-      "rowCount": 101,
-      "parsedRows": 102,
-      "excludedRows": 1,
-      "minimumPopulation": 0,
+      "fetchedAt": "2026-10-03T19:30:08.233Z",
+      "rowCount": 3,
+      "parsedRows": 14,
+      "excludedRows": 11,
+      "minimumPopulation": 500,
       "error": null
     },
     {
-      "setCode": "S9A",
-      "url": "https://www.psacard.com/pop/tcg-cards/2022/pokemon-japanese-sword-shield-battle-region/208916",
+      "setCode": "XY-P",
+      "url": "https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-xy-promo/142307",
       "httpStatus": 200,
-      "fetchedAt": "2026-10-03T11:56:43.959Z",
-      "rowCount": 100,
-      "parsedRows": 101,
-      "excludedRows": 1,
-      "minimumPopulation": 0,
-      "error": null
+      "fetchedAt": "2026-10-03T19:30:19.221Z",
+      "rowCount": 0,
+      "parsedRows": null,
+      "excludedRows": null,
+      "minimumPopulation": 500,
+      "error": "Unable to find a populated table for https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-xy-promo/142307"
     }
   ],
-  "nextUrl": null,
-  "stopReason": null,
+  "nextUrl": "https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-xy-promo/142307",
+  "stopReason": "Unable to find a populated table for https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-xy-promo/142307",
   "unregisteredSetCount": 0,
-  "focusedSelected": 2,
-  "normalSelected": 0,
-  "pendingSets": 2,
-  "lastSuccessAt": "2026-10-03T11:56:43.959Z",
-  "durationMs": 21094
+  "focusedSelected": 0,
+  "normalSelected": 8,
+  "pendingSets": 110,
+  "lastSuccessAt": "2026-10-03T19:30:08.233Z",
+  "durationMs": 21409
 }
