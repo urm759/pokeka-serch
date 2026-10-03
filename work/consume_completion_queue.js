@@ -2,6 +2,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
 const ROOT = path.join(__dirname, "..");
+const { fairBatch, write: buildFocus } = require("./focus_monitor.js");
 const read = (file, fallback = {}) => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, file), "utf8")); } catch { return fallback; } };
 const save = (file, value) => { const target = path.join(ROOT, file); fs.writeFileSync(`${target}.tmp`, JSON.stringify(value)); fs.renameSync(`${target}.tmp`, target); };
 function plan(cards, queue, checkpoint, now = Date.now()) {
@@ -12,15 +13,30 @@ function plan(cards, queue, checkpoint, now = Date.now()) {
   }).map((id) => ({ card: byId.get(id), detail: queue.cards?.[id] })).filter((row) => row.card && row.detail)
     .sort((a, b) => Number(b.detail.p || 0) - Number(a.detail.p || 0));
 }
+function eligibleForHareru(candidates, catalog, now = Date.now()) {
+  const byId = new Map(catalog.map((row) => [row.cardId, row]));
+  return candidates.filter((r) => {
+    const previous = byId.get(r.card.id);
+    const observed = Date.parse(previous?.observedAt || "");
+    return r.card.hareruya2Url && !(Number(previous?.price) > 0 && observed <= now && now - observed < 2 * 86400000);
+  });
+}
 function run() {
   const start = Date.now();
   const queue = read("work/card-completion-queue.json");
   const cards = read("data/pokemon-cards.json", []);
   const state = read("work/completion-acquisition-checkpoint.json", { cards: {} });
   const candidates = plan(cards, queue, state);
-  const currentCatalog = new Map(read("work/hareruya2_catalog.json", []).map((row) => [row.cardId, row]));
-  const selected = candidates.filter((r) => r.card.hareruya2Url && !(Number(currentCatalog.get(r.card.id)?.price) > 0 && Date.now() - Date.parse(currentCatalog.get(r.card.id)?.observedAt || "") < 2 * 86400000)).slice(0, Math.max(1, Number(process.env.COMPLETION_BATCH || 6)));
-  const run = { startedAt: new Date(start).toISOString(), llmCalls: 0, codexCalls: 0, selected: selected.map((r) => ({ id: r.card.id, priority: r.detail.p, reasons: r.detail.r, missingRequired: r.detail.m })), attempted: 0, acquired: 0, newAcquired: 0, newLinked: 0, failures: 0, checkpoint: null, stopReason: null };
+  const focus = buildFocus(ROOT);
+  const eligible = eligibleForHareru(candidates, read("work/hareruya2_catalog.json", []));
+  const groupOrder = new Map(focus.groups.map((g, i) => [g.id, i]));
+  eligible.sort((a, b) => {
+    const fa = focus.cards[a.card.id], fb = focus.cards[b.card.id];
+    return fa && fb ? groupOrder.get(fa.group) - groupOrder.get(fb.group) || Number(b.detail.p || 0) - Number(a.detail.p || 0)
+      : Number(Boolean(fb)) - Number(Boolean(fa)) || Number(b.detail.p || 0) - Number(a.detail.p || 0);
+  });
+  const selected = fairBatch(eligible, Math.max(1, Number(process.env.COMPLETION_BATCH || 6)), (r) => focus.cards[r.card.id]?.pending.includes("shopStateA"), focus.maxFocusedShare);
+  const run = { startedAt: new Date(start).toISOString(), llmCalls: 0, codexCalls: 0, focusedSelected: selected.filter((r) => focus.cards[r.card.id]).length, normalSelected: selected.filter((r) => !focus.cards[r.card.id]).length, selected: selected.map((r) => ({ id: r.card.id, priority: r.detail.p, reasons: [focus.cards[r.card.id]?.priorityReason, ...r.detail.r].filter(Boolean), missingRequired: r.detail.m })), attempted: 0, acquired: 0, newAcquired: 0, newLinked: 0, failures: 0, checkpoint: null, stopReason: null };
   save("work/completion-acquisition-checkpoint.json", { ...state, running: run });
   const maxTime = Math.max(10000, Number(process.env.COMPLETION_RUNTIME_MS || 120000));
   const result = selected.length ? spawnSync(process.execPath, ["work/refresh_candidate_shops.js", "hareruya2"], { cwd: ROOT, encoding: "utf8", timeout: maxTime + 3000,
@@ -51,7 +67,8 @@ function run() {
   };
   state.lastRun = run; delete state.running;
   save("work/completion-acquisition-checkpoint.json", state);
-  save("data/completion-acquisition.json", { version: 1, ...run, support, pending: candidates.length, cards: state.cards });
+  const pending = eligibleForHareru(plan(cards, queue, state), read("work/hareruya2_catalog.json", [])).length;
+  save("data/completion-acquisition.json", { version: 1, ...run, support, pending: candidates.length, eligiblePending: pending, pendingDefinition: "eligiblePendingは確定URLがあり、2日間隔と再試行制限を満たす晴れる屋2価格補完対象。全項目の補完キューとは別", cards: state.cards });
   for (const script of ["build_psa_linkage_queue.js", "build_psa_priority_queue.js"]) {
     const queued = spawnSync(process.execPath, [path.join(__dirname, script)], { cwd: ROOT, encoding: "utf8", timeout: 15000 });
     if (queued.status !== 0) { run.stopReason = `PSA優先キュー接続失敗: ${script}`; process.exitCode = 1; }
@@ -61,4 +78,4 @@ function run() {
   return run;
 }
 if (require.main === module) run();
-module.exports = { plan, run };
+module.exports = { plan, run, eligibleForHareru };

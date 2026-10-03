@@ -68,6 +68,8 @@ jobs:
           node work/test_snkr_raw_flip.js
           node work/test_limit_tiers.js
           node work/test_limit_display.js
+          node work/test_focus_monitor.js
+          node work/test_purchase_memo.js
           node work/test_buyback_scenario_limits.js
           node work/test_purchase_limit_audit.js
           node work/test_price_integrity.js

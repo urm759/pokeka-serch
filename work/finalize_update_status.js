@@ -290,6 +290,7 @@ const payload = {
   sources,
 };
 payload.unifiedMonitor = require("./source_monitor.js").build(ROOT, sources, previous.unifiedMonitor || {});
+payload.focusMonitor = require("./focus_monitor.js").write(ROOT);
 fs.writeFileSync(OUTPUT, JSON.stringify(payload), "utf8");
 const publishedHistory = { version: 1, updatedAt: runHistory.updatedAt || null, sources: {} };
 for (const sourceId of Object.keys(sources)) {

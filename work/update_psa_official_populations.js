@@ -352,8 +352,11 @@ async function main() {
   if (!filterRegex && orderedManifest.filter((entry) => entry.url).every((entry) => priorCompleted.has(entry.url))) priorCompleted.clear();
   audit.completedUrls = [...priorCompleted];
   audit.unregisteredSetCount = orderedManifest.filter((entry) => !entry.url).length;
-  const pendingManifest = orderedManifest.filter((entry) => entry.url && !priorCompleted.has(entry.url));
-  const manifest = pendingManifest.slice(0, Math.max(1, Number(process.env.PSA_SET_BATCH || 8)));
+  const focusSetUrls = new Set(priorityQueue.focusSetUrls || []);
+  const pendingManifest = orderedManifest.filter((entry) => entry.url && (!priorCompleted.has(entry.url) || focusSetUrls.has(entry.url)));
+  const manifest = require("./focus_monitor.js").fairBatch(pendingManifest, Math.max(1, Number(process.env.PSA_SET_BATCH || 8)), (entry) => focusSetUrls.has(entry.url), priorityQueue.maxFocusedShare ?? 0.4);
+  audit.focusedSelected = manifest.filter((entry) => focusSetUrls.has(entry.url)).length;
+  audit.normalSelected = manifest.length - audit.focusedSelected;
   audit.pendingSets = pendingManifest.length;
   audit.nextUrl = manifest[0]?.url || null;
   saveProgress();
@@ -423,7 +426,8 @@ async function main() {
         const staged = mergeRows(previousPayload.rows || [], collected.flatMap(rowObjects));
         writeJson(OUTPUT_JSON, { ...previousPayload, generatedAt: new Date().toISOString(), totalRows: staged.rows.length, rows: staged.rows });
         // Only checkpoint sets after their values have actually been saved.
-        audit.completedUrls.push(entry.url); audit.lastSuccessAt = record.fetchedAt;
+        if (!audit.completedUrls.includes(entry.url)) audit.completedUrls.push(entry.url);
+        audit.lastSuccessAt = record.fetchedAt;
       }
       if (record.error && /403|401|429|sign-in|Cloudflare|robot|verification|populated table/i.test(record.error)) {
         audit.status = "manual-wait"; audit.stopReason = record.error; saveProgress(); break;

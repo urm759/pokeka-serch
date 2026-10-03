@@ -20,10 +20,18 @@
   function summarize(input = {}) {
     const limit = input.limit || {};
     const exit = limit.exitPolicy || {};
-    const current = Number(limit.currentBreakEvenMaxPrice);
-    const stable = Number(limit.finalMaxPrice);
+    const current = limit.currentBreakEvenMaxPrice == null ? NaN : Number(limit.currentBreakEvenMaxPrice);
+    const stable = limit.finalMaxPrice == null ? NaN : Number(limit.finalMaxPrice);
     const currentCap = Number.isFinite(current) && current >= 0 && Number(input.psa10Price) > 0 ? current : null;
-    const stableCap = Number.isFinite(stable) && stable >= 0 ? stable : null;
+    const stableCap = Number.isFinite(stable) && stable >= 0 && Number(input.psa10Price) > 0 ? stable : null;
+    const zeroReasons = [];
+    if (stableCap === 0) {
+      if (Number.isFinite(limit.capitalMaxPrice) && limit.capitalMaxPrice <= 0) zeroReasons.push("資金枠なし");
+      if (Number.isFinite(limit.normalMaxPrice) && limit.normalMaxPrice <= 0) zeroReasons.push("目標利益・利益率・鑑定費条件");
+      if (Number.isFinite(limit.stressBreakEvenMaxPrice) && limit.stressBreakEvenMaxPrice <= 0) zeroReasons.push("供給ストレス時の採算");
+      if (Number.isFinite(limit.operationalMaxPrice) && limit.operationalMaxPrice <= 0 && Number(limit.theoreticalFinalMaxPrice) > 0) zeroReasons.push("平滑化・保留上限");
+    }
+    const stableLabel = stableCap == null ? "算出不可・データ不足" : stableCap === 0 ? "設定条件を満たす上限なし" : null;
     const buybackConstrained = exit.adoptedPolicy === "buyback" || (
       exit.adoptedPolicy === "both" && Number(exit.buybackCurrentBreakEvenCap) <= Number(exit.marketplaceCurrentBreakEvenCap)
     );
@@ -46,7 +54,7 @@
     return {
       currentCap, stableCap, gap, exitLabel, priceDate, age,
       hitRate: Number.isFinite(hitRate) && hitRate > 0 ? hitRate : null,
-      reason: String(input.reason || "制限理由未取得"), warnings,
+      reason: zeroReasons.length ? zeroReasons.join("／") : String(input.reason || "制限理由未取得"), warnings, stableLabel,
     };
   }
 

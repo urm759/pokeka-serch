@@ -3,6 +3,7 @@ const path = require("path");
 const { productMatchesCard, stateFromTitle, parseProductPage: parseHareruya } = require("./update_hareruya2_stock.js");
 const { parseProductPage: parseCardrush } = require("./update_cardrush_stock.js");
 const { updateRun, appendRunHistory } = require("./source_observability.js");
+const { fairBatch, build: buildFocus } = require("./focus_monitor.js");
 const ROOT = path.join(__dirname, "..");
 const read = (file, fallback = {}) => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, file), "utf8")); } catch { return fallback; } };
 const write = (file, value) => fs.writeFileSync(path.join(ROOT, file), JSON.stringify(value));
@@ -72,10 +73,13 @@ async function main() {
   const manualWait = checkpoint.manualWait || {};
   const priorityIds = String(process.env.COMPLETION_PRIORITY_IDS || "").split(",").filter(Boolean);
   const priority = new Map(priorityIds.map((id, index) => [id, index]));
-  const candidates = cards.filter((card) => (priority.size ? priority.has(card.id) : rows[card.id]?.status === "価格待ち") && card[`${sourceId}Url`])
-    .sort((a, b) => priority.size ? priority.get(a.id) - priority.get(b.id) : Number(Boolean(rows[a.id].offerPrice)) - Number(Boolean(rows[b.id].offerPrice)) || (rows[a.id].gap ?? 0) - (rows[b.id].gap ?? 0));
+  const focus = buildFocus(ROOT);
+  const focused = (card) => focus.cards[card.id]?.pending.includes("shopStateA");
+  const candidates = cards.filter((card) => (priority.size ? priority.has(card.id) : rows[card.id]?.status === "価格待ち" || focused(card)) && card[`${sourceId}Url`])
+    .sort((a, b) => priority.size ? priority.get(a.id) - priority.get(b.id) : Number(Boolean(rows[a.id]?.offerPrice)) - Number(Boolean(rows[b.id]?.offerPrice)) || (rows[a.id]?.gap ?? 0) - (rows[b.id]?.gap ?? 0));
   const pending = candidates.filter((card) => !completed.has(card.id) && manualWait[card.id]?.url !== card[`${sourceId}Url`]);
-  const batch = pending.slice(0, Math.max(1, Number(process.env.CANDIDATE_SHOP_BATCH || 30)));
+  const size = Math.max(1, Number(process.env.CANDIDATE_SHOP_BATCH || 30));
+  const batch = priority.size ? pending.slice(0, size) : fairBatch(pending, size, focused, focus.maxFocusedShare);
   const start = Date.now();
   const run = { startedAt: new Date(start).toISOString(), status: "running", attemptedCount: 0, refreshedCount: 0,
     newAcquiredCount: 0, newLinkedCount: 0, changedCount: 0, failedCount: 0, httpRequests: 0,

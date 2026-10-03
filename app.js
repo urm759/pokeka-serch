@@ -9,6 +9,7 @@ const rawPsa9GapModel = window.RawPsa9GapModel;
 const candidateVisibility = window.CandidateVisibility;
 const catalogIndexAdapter = window.CatalogIndexAdapter;
 const limitDisplayModel = window.LimitDisplayModel;
+const purchaseMemoModel = window.PurchaseMemoModel;
 const priceIntegrityModel = window.PriceIntegrity;
 const FORECAST_HORIZON_DAYS = 91;
 
@@ -138,6 +139,7 @@ const state = {
   favorites: new Set(),
   favoriteQuantities: Object.create(null),
   favoriteCosts: Object.create(null),
+  favoritePlans: Object.create(null),
   favoriteQuery: "",
   purchaseMode: "normal",
   includeAggressiveInCombined: false,
@@ -178,6 +180,7 @@ const state = {
 const FAVORITES_STORAGE_KEY = "pokeka-buy-favorites-v1";
 const FAVORITE_QUANTITIES_STORAGE_KEY = "pokeka-buy-favorite-quantities-v1";
 const FAVORITE_COSTS_STORAGE_KEY = "pokeka-buy-favorite-costs-v1";
+const FAVORITE_PLANS_STORAGE_KEY = "pokeka-buy-favorite-plans-v1";
 const ACTUAL_RESULTS_STORAGE_KEY = "pokeka-backtest-actual-results-v1";
 const GRADE_OBSERVATIONS_STORAGE_KEY = "pokeka-grade-observations-v1";
 const QUICK_FILTER_STORAGE_KEY = "pokeka-quick-filter-preferences-v1";
@@ -837,7 +840,11 @@ function renderSourceObservability() {
     const unified = state.updateStatus?.unifiedMonitor;
     const valueOrUnknown = (v) => v == null ? "未記録" : escapeHtml(String(v));
     const unifiedHtml = unified ? `<article class="source-status-card"><details><summary>全取得元・残件の統一監視</summary><p>${escapeHtml(unified.freshnessDefinition || "")}</p><div style="overflow-x:auto"><table><thead><tr><th>取得元</th><th>最終試行</th><th>最終成功</th><th>公開反映</th><th>残件</th><th>新規取得／有効純増</th><th>最終進捗</th><th>停止理由</th></tr></thead><tbody>${Object.values(unified.rows || {}).map((r) => `<tr><th>${escapeHtml(r.label)}${r.fulfilment === "store" ? "（店頭）" : ""}</th><td>${escapeHtml(formatJstTimestamp(r.lastAttempt))}</td><td>${escapeHtml(formatJstTimestamp(r.lastSuccess))}</td><td>${escapeHtml(formatJstTimestamp(r.publishedAt))}</td><td>${valueOrUnknown(r.remaining)}</td><td>${valueOrUnknown(r.newAcquired)}／${valueOrUnknown(r.usableNet)}</td><td>${escapeHtml(formatJstTimestamp(r.lastProgressAt))}</td><td>${escapeHtml(r.stopReason || "未記録・停止なし")}${r.failureUrl ? `<a href="${escapeHtml(r.failureUrl)}" target="_blank" rel="noreferrer">失敗実行</a>` : ""}</td></tr>`).join("")}</tbody></table></div><p>価格確認残 ${valueOrUnknown(unified.backlogs?.priceConfirmation)} / PSA未紐付け ${valueOrUnknown(unified.backlogs?.psaUnlinked)} / 国内PSA9：${escapeHtml(unified.backlogs?.domesticPsa9Status || "未記録")}</p><p>${escapeHtml(unified.backlogs?.returnBacktest || "")}</p><details><summary>補完キューの実取得と対応状況</summary><p>試行 ${valueOrUnknown(unified.completion?.attempted)} / 再取得 ${valueOrUnknown(unified.completion?.acquired)} / 新規取得 ${valueOrUnknown(unified.completion?.newAcquired)} / ${escapeHtml(unified.completion?.status || "未実行")}</p>${Object.entries(unified.completion?.support || {}).map(([id, row]) => `<p><b>${escapeHtml(id)}：${escapeHtml(row.status)}</b> ${escapeHtml(row.method || row.reason || "")}</p>`).join("")}<a href="./data/completion-acquisition.json" target="_blank" rel="noreferrer">カード別試行・再開位置</a></details><p><a href="./data/psa-set-discovery.json" target="_blank" rel="noreferrer">公式セットURL候補・停止理由</a></p></details></article>` : "";
-    els.dataFreshness.innerHTML = pipelineCards + sourceCards + unifiedHtml + learningCard;
+    const focus = state.updateStatus?.focusMonitor;
+    const focusLabels = { psaPopulation: "PSA公式POP", psaRate: "公式10率", domesticRaw: "国内美品", domesticPsa10: "国内PSA10", buyback: "買取価格", shopStateA: "在庫あり状態A取得価格（GOとは別）" };
+    const focusHtml = focus ? `<article class="source-status-card"><details><summary>重点監視：スターミーV・S6aブイズ ${fmt.format(focus.count)}種</summary><p>重点処理枠は最大${Math.round(focus.maxFocusedShare * 100)}%。通常巡回を維持。鮮度基準48時間。監視だけで仕入れ上限を上げません。</p><div class="focus-summary">${Object.entries(focus.totals || {}).map(([key, t]) => `<p>${focusLabels[key]}：取得済み${t.valid}／鮮度適合${t.fresh}／古い${t.stale}／不足${t.missing}</p>`).join("")}</div><p>最後の改善：${escapeHtml(formatJstTimestamp(focus.lastProgress?.at))} / 有効値純増${valueOrUnknown(focus.lastProgress?.newValid)} / 鮮度回復${valueOrUnknown(focus.lastProgress?.newlyFresh)}項目（カード数・純増とは別）</p><div style="overflow-x:auto"><table><thead><tr><th>カード</th>${Object.values(focusLabels).map((label) => `<th>${label}</th>`).join("")}<th>優先理由／最終進捗</th></tr></thead><tbody>${Object.values(focus.cards || {}).map((row) => `<tr><th><a href="?q=${encodeURIComponent(row.name)}&diagnostic=1">${escapeHtml(row.name)}</a></th>${Object.keys(focusLabels).map((key) => { const item = row.items[key]; return `<td>${item.value == null ? "未取得" : key === "psaRate" ? `${item.value.toFixed(1)}%` : fmt.format(item.value)}<br><small>${escapeHtml(item.status)} / ${escapeHtml(formatJstTimestamp(item.at))}${key === "domesticRaw" ? "（取得日。状態A成約証明とは別）" : ""}</small></td>`; }).join("")}<td>${escapeHtml(row.priorityReason)}<br>${escapeHtml(formatJstTimestamp(row.lastProgressAt))}</td></tr>`).join("")}</tbody></table></div><a href="./data/focus-monitor.json" target="_blank" rel="noreferrer">重点カード別監査JSON</a> / <a href="./data/focus-acquisition-audit.json" target="_blank" rel="noreferrer">今回の実取得・純増</a></details></article>` : "";
+    const backlogHtml = unified?.backlogStates ? `<article class="source-status-card"><details><summary>残件：自動巡回・未実装・認証待ち・時間待ち</summary><p>有効値純増は取得監査の比較基準からの差です。今回の取得だけの件数は「今回の実取得・純増」で確認できます。未記録は推定しません。</p>${unified.backlogStates.map((r) => `<p><b>${escapeHtml(r.label)}：${escapeHtml(r.category)}</b> / 残件${valueOrUnknown(r.remaining)} / 有効値純増${valueOrUnknown(r.usableNet)} / 最終進捗${escapeHtml(formatJstTimestamp(r.lastProgressAt))}<br><small>${escapeHtml(r.nextAction)}</small></p>`).join("")}</details></article>` : "";
+    els.dataFreshness.innerHTML = pipelineCards + sourceCards + unifiedHtml + focusHtml + backlogHtml + learningCard;
   }
 
   const coverage = state.linkCoverage?.current?.storeCoverage;
@@ -1021,6 +1028,8 @@ function loadFavorites() {
   } catch {
     state.favoriteCosts = Object.create(null);
   }
+  try { state.favoritePlans = JSON.parse(localStorage.getItem(FAVORITE_PLANS_STORAGE_KEY) || "{}") || {}; }
+  catch { state.favoritePlans = Object.create(null); }
   state.favorites.forEach((id) => {
     state.favoriteQuantities[id] = Math.max(1, Math.floor(Number(state.favoriteQuantities[id] || 1)));
     const savedCost = Number(state.favoriteCosts[id]);
@@ -1032,6 +1041,7 @@ function saveFavorites() {
   localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([...state.favorites]));
   localStorage.setItem(FAVORITE_QUANTITIES_STORAGE_KEY, JSON.stringify(state.favoriteQuantities));
   localStorage.setItem(FAVORITE_COSTS_STORAGE_KEY, JSON.stringify(state.favoriteCosts));
+  localStorage.setItem(FAVORITE_PLANS_STORAGE_KEY, JSON.stringify(state.favoritePlans));
 }
 
 function loadActualResults() {
@@ -1120,7 +1130,21 @@ function favoriteGuide(card) {
   };
 }
 
+function favoriteTrial(card) {
+  const plan = availablePsaPlans().find((p) => p.id === state.favoritePlans[card.id]);
+  const fee = plan ? Number(plan.price) + Number(state.psaHandlingFee || 0) : state.fee;
+  const lockDays = plan ? Number(plan.calendarDays) + 7 : state.lockDays;
+  return { ...purchaseMemoModel.trial({ limit: card.buyLimits?.clean, purchasePrice: favoritePurchasePrice(card), currentPrice: card.psa10, fee, lockDays }, decisionModel),
+    planName: plan?.name || "共通設定", declaredValueWarning: plan && card.psa10 > plan.declaredValueMax ? "申告価格上限超過・プランを確認" : null };
+}
+
+function memoMoney(value) {
+  return value == null || !Number.isFinite(Number(value)) ? "算出不可" : `${Number(value) < 0 ? "-" : "+"}\u00a5${fmt.format(Math.abs(Math.round(value)))}`;
+}
+
 function buyLimitText(limit) {
+  if (!limit || limit.maxPrice == null || !Number.isFinite(limit.maxPrice)) return "算出不可・データ不足";
+  if (!(limit.maxPrice > 0)) return "設定条件を満たす上限なし";
   return limit?.maxPrice > 0 ? `¥${fmt.format(limit.maxPrice)}以下` : "仕入れ見送り";
 }
 
@@ -1146,6 +1170,8 @@ function renderFavorites() {
   })), capital);
   const stressRows = decisionModel.portfolioStress(evaluatedCards.map((card) => ({
     ...(card.buyLimits?.clean?.modelInput || {}),
+    fee: favoriteTrial(card).fee,
+    lockDays: favoriteTrial(card).lockDays,
     assumptions: card.buyLimits?.clean?.assumptions,
     purchasePrice: favoritePurchasePrice(card),
     currentPsa10Price: card.psa10,
@@ -1207,14 +1233,16 @@ function renderFavorites() {
     const verdictRecommended = verdict === "GO・確認済み" || verdict === "暫定GO";
     const quantity = favoriteQuantity(card.id);
     const purchasePrice = favoritePurchasePrice(card);
+    const trial = favoriteTrial(card);
     const name = escapeHtml(String(card.name || "").replace(/\s+/g, " "));
     return `
       <article class="favorite-row" data-favorite-id="${escapeHtml(card.id)}">
         <img src="${escapeHtml(card.img)}" alt="" loading="lazy" />
         <div class="favorite-main">
           <h3>${name}</h3>
-          <div class="favorite-decision ${verdictRecommended ? "recommended" : "not-recommended"}">今回の仕入れ判断：${escapeHtml(verdict)}</div>
+          <div class="favorite-decision ${verdictRecommended ? "recommended" : "not-recommended"}">一覧の相場基準判断：${escapeHtml(verdict)}</div>
           <div class="favorite-position-inputs">
+            <label class="favorite-plan"><span>仮定試算のPSAプラン</span><select data-favorite-plan="${escapeHtml(card.id)}"><option value="">共通設定（\u00a5${fmt.format(state.fee)}）</option>${availablePsaPlans().map((p) => `<option value="${escapeHtml(p.id)}" ${state.favoritePlans[card.id] === p.id ? "selected" : ""}>${escapeHtml(p.name)}・\u00a5${fmt.format(Number(p.price) + Number(state.psaHandlingFee || 0))}</option>`).join("")}</select></label>
             <label class="favorite-quantity"><span>購入枚数</span><input type="number" min="1" step="1" value="${quantity}" data-favorite-quantity="${escapeHtml(card.id)}" /></label>
             <label class="favorite-cost"><span>仕入れ単価</span><input type="number" min="0" step="500" value="${Math.round(purchasePrice)}" data-favorite-cost="${escapeHtml(card.id)}" /></label>
             <b>仕入れ総額 ¥${fmt.format(Math.round(purchasePrice * quantity))}</b>
@@ -1223,9 +1251,10 @@ function renderFavorites() {
             <div><span>現在 / 予測PSA10</span><strong>¥${fmt.format(card.psa10)} / ¥${fmt.format(card.futurePriceForecast?.predictedPrice || card.psa10)}</strong></div>
             <div class="recommended"><span>美品なら</span><strong>${buyLimitText(limits?.clean)}</strong></div>
             <div class="scratch"><span>多少の傷ありなら</span><strong>${buyLimitText(limits?.scratch)}</strong></div>
-            <div><span>PSA10時 利益率</span><strong>${Number.isFinite(card.roi) ? `${Math.round(card.roi)}%` : "未判定"}</strong></div>
+            <div><span>相場基準PSA10時 利益率</span><strong>${Number.isFinite(card.roi) ? `${Math.round(card.roi)}%` : "未判定"}</strong></div>
           </div>
         </div>
+        <details class="favorite-trial" open><summary>入力した買値での仮定試算（判定には反映しない）</summary><p>\u00a5${fmt.format(purchasePrice)}／1枚・${escapeHtml(trial.planName)}・鑑定費等\u00a5${fmt.format(trial.fee || 0)}・返却目安${fmt.format(trial.lockDays || 0)}日</p><div class="favorite-prices"><div><span>現相場・期待損益</span><strong>${memoMoney(trial.rows?.current?.expectedProfit)}</strong></div><div><span>中央予測・期待損益</span><strong>${memoMoney(trial.rows?.central?.expectedProfit)}</strong></div><div><span>供給ストレス・期待損益</span><strong>${memoMoney(trial.rows?.stress?.expectedProfit)}</strong></div><div><span>PSA9以下想定売価での損益</span><strong>${memoMoney(trial.lowerGradeProfit)}</strong></div></div><small>${escapeHtml(trial.warning || trial.reason)} ${escapeHtml(trial.declaredValueWarning || "")} 下位グレード売価：${escapeHtml(trial.lowerGradeSource || "未取得")}</small></details>
         <button class="remove-favorite" type="button" data-remove-favorite="${escapeHtml(card.id)}" title="お気に入りを解除" aria-label="${name}をお気に入りから解除">×</button>
       </article>
     `;
@@ -1239,6 +1268,7 @@ function toggleFavorite(id, { confirmRemoval = false } = {}) {
     state.favorites.delete(key);
     delete state.favoriteQuantities[key];
     delete state.favoriteCosts[key];
+    delete state.favoritePlans[key];
   } else {
     state.favorites.add(key);
     state.favoriteQuantities[key] = 1;
@@ -1254,13 +1284,13 @@ function toggleFavorite(id, { confirmRemoval = false } = {}) {
 }
 
 function favoritesMemo() {
-  const header = `仕入れ候補 / PSA鑑定費 ¥${fmt.format(state.fee)}`;
+  const header = "仕入れ候補・入力買値の仮定試算 / 期待黒字は損失保証ではありません";
   const rows = favoriteCards().map((rawCard) => {
     const card = calc(rawCard);
     const limits = card.buyLimits;
-    const roi = Number.isFinite(card.roi) ? `${Math.round(card.roi)}%` : "-";
+    const trial = favoriteTrial(card);
     const quantity = favoriteQuantity(card.id);
-    return `${String(card.name || "").replace(/\s+/g, " ")} ×${quantity} / 仕入れ単価 ¥${fmt.format(favoritePurchasePrice(card))} / 上限 ${buyLimitText(limits?.clean)} / 傷あり ${buyLimitText(limits?.scratch)} / PSA10 ¥${fmt.format(card.psa10)} / 利益率 ${roi}`;
+    return `${String(card.name || "").replace(/\s+/g, " ")} ×${quantity} / 買値 ¥${fmt.format(favoritePurchasePrice(card))} / 安定上限 ${buyLimitText(limits?.clean)} / ${trial.planName} 鑑定費等¥${fmt.format(trial.fee || 0)} / 現相場EV ${memoMoney(trial.rows?.current?.expectedProfit)} / ストレスEV ${memoMoney(trial.rows?.stress?.expectedProfit)}`;
   });
   return [header, ...rows].join("\n");
 }
@@ -1298,8 +1328,14 @@ function exportFavoritesCsv() {
     const limits = card.buyLimits;
     const decision = card.psaDecision;
     const forecast = card.futurePriceForecast;
+    const trial = favoriteTrial(card);
     rows.push([card.id, card.name, card.model || "", favoriteQuantity(card.id), favoritePurchasePrice(card), card.psa10, forecast?.centralPrice || card.psa10, forecast ? forecast.downsidePct.toFixed(1) : "", forecast?.score ?? "", limits?.clean?.maxPrice ?? "", limits?.clean?.economicMaxPrice ?? "", limits?.clean?.stressBreakEvenMaxPrice ?? "", limits?.clean?.ultraLowRiskMaxPrice ?? "", Math.floor(limits?.clean?.resilience?.psa9NonLossMaxPrice || 0), limits?.clean?.capitalMaxPrice ?? "", limits?.scratch?.maxPrice ?? "", Math.round(limits?.clean?.resilience?.expectedBreakEvenPrice || 0), Math.round(limits?.clean?.resilience?.bearishExpectedProfit || 0), limits?.clean?.hitRate?.toFixed(1) ?? "", limits?.scratch?.hitRate?.toFixed(1) ?? "", limits?.rateSource || "", cfg.label, guide.ideal, guide.recommended, guide.upper, card.goConfidence || card.purchaseDecision?.verdict || "未判定", card.purchaseAvailability?.label || "未判定", Math.round(decision?.expectedProfit || 0), Math.round(decision?.expectedRoi || 0), Math.round(decision?.annualEfficiency || 0), Number(decision?.capitalShare || 0).toFixed(1), decision?.reasons.join(" / ") || "", buildTorecaCardUrl(card), card.cardrushUrl || "", card.hareruya2Url || "", card.yuyuteiUrl || "", card.torecacampUrl || ""]);
   });
+  favoriteCards().forEach((rawCard, index) => {
+    const card = calc(rawCard), trial = favoriteTrial(card);
+    rows[index + 1].push(state.favoritePlans[card.id] || "", trial.fee ?? "", trial.lockDays ?? "", trial.rows?.current?.expectedProfit ?? "", trial.rows?.central?.expectedProfit ?? "", trial.rows?.stress?.expectedProfit ?? "", trial.lowerGradeProfit ?? "");
+  });
+  rows[0].push("試算PSAプランID", "試算鑑定費等", "試算返却目安日数", "入力買値×現相場期待利益", "入力買値×中央予測期待利益", "入力買値×供給ストレス期待利益", "入力買値PSA9以下想定損益");
   const csv = `\uFEFF${rows.map((row) => row.map(csvCell).join(",")).join("\r\n")}`;
   const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
   const link = document.createElement("a");
@@ -4263,7 +4299,7 @@ function render() {
     const limitComparison = `
       <div class="limit-comparison">
         <div class="limit-current"><span>現相場が続く場合の期待損益分岐上限</span><strong>${limitMoney(limitDisplay.currentCap)}</strong><small>期待損益が約0円になる買値。現在の仕入れ推奨額ではありません。</small></div>
-        <div class="limit-stable"><span>安定重視の仕入れ上限${buyLimits?.clean?.provisional ? "（暫定）" : ""}</span><strong>${limitMoney(limitDisplay.stableCap)}</strong><small>仕入れ判定・絞り込みはこちらを使用</small></div>
+        <div class="limit-stable"><span>安定重視の仕入れ上限${buyLimits?.clean?.provisional ? "（暫定）" : ""}</span><strong>${escapeHtml(limitDisplay.stableLabel || limitMoney(limitDisplay.stableCap))}</strong><small>仕入れ判定・絞り込みはこちらを使用</small></div>
       </div>
       <div class="limit-context"><span>売却先：${escapeHtml(limitDisplay.exitLabel)}</span><span>採用価格データ更新日：${escapeHtml(limitDisplay.priceDate || "未取得")}</span><span>PSA10想定率：${limitDisplay.hitRate == null ? "未取得" : `${limitDisplay.hitRate.toFixed(1)}%`}</span><span>上限差額：${limitDisplay.gap == null ? "算出不可" : `${limitMoney(Math.abs(limitDisplay.gap))}（安定重視が${limitDisplay.gap >= 0 ? "低い" : "高い"}）`}</span></div>
       <div class="limit-reason">${limitDisplay.gap > 0 ? "安定重視を低くした主因" : "安定重視上限の制限要因"}：${escapeHtml(limitDisplay.reason)}</div>
@@ -4634,7 +4670,7 @@ function render() {
       <section class="candidate-glance" aria-label="仕入れ判断の要点">
         <div class="glance-verdict"><span>今回の判定</span><strong>${escapeHtml(displayVerdict)}</strong><small>${escapeHtml(purchaseAvailability.label || "購入先未確認")}</small></div>
         <div><span>現在買える状態A</span><strong>${card.currentStoreOffer ? `¥${fmt.format(card.currentStoreOffer.value)}` : "未取得"}</strong><small>${escapeHtml(card.currentStoreOffer?.source || "在庫あり価格なし")}</small></div>
-        <div class="glance-stable"><span>安定重視の仕入れ上限</span><strong>${limitMoney(limitDisplay.stableCap)}</strong><small>仕入れ判定・絞り込みの基準</small></div>
+        <div class="glance-stable"><span>安定重視の仕入れ上限</span><strong>${escapeHtml(limitDisplay.stableLabel || limitMoney(limitDisplay.stableCap))}</strong><small>${limitDisplay.stableCap === 0 ? escapeHtml(limitDisplay.reason) : "仕入れ判定・絞り込みの基準"}</small></div>
         <div class="glance-break-even"><span>現相場の期待損益分岐上限</span><strong>${limitMoney(limitDisplay.currentCap)}</strong><small>推奨仕入れ値ではありません</small></div>
         <div><span>期待利益</span><strong class="${glanceProfit.className}">${glanceProfit.text}</strong><small>${card.currentStoreOffer ? "店舗価格" : "基準相場"}で購入 × 中央予測</small></div>
       </section>
@@ -5214,6 +5250,12 @@ els.favoritesList.addEventListener("input", (event) => {
   updateFavoriteCost(event);
 });
 els.favoritesList.addEventListener("change", (event) => {
+  const plan = event.target.closest("[data-favorite-plan]");
+  if (plan && state.favorites.has(plan.dataset.favoritePlan)) {
+    state.favoritePlans[plan.dataset.favoritePlan] = plan.value;
+    saveFavorites();
+    renderFavorites();
+  }
   updateFavoriteQuantity(event, true);
   updateFavoriteCost(event, true);
 });
@@ -5257,16 +5299,19 @@ els.importFavoritesInput.addEventListener("change", async () => {
   const idIndex = Math.max(0, rows[0]?.findIndex((cell) => cell.trim().toLowerCase() === "id"));
   const quantityIndex = rows[0]?.findIndex((cell) => cell.trim() === "数量") ?? -1;
   const costIndex = rows[0]?.findIndex((cell) => cell.trim() === "仕入れ単価") ?? -1;
+  const planIndex = rows[0]?.findIndex((cell) => cell.trim() === "試算PSAプランID") ?? -1;
   const validIds = new Set(state.cards.map((card) => String(card.id)));
   const importedRows = rows.slice(1).filter((row) => validIds.has(String(row[idIndex] || "")));
   const imported = importedRows.map((row) => String(row[idIndex] || ""));
   state.favorites = new Set(imported);
   state.favoriteQuantities = Object.create(null);
   state.favoriteCosts = Object.create(null);
+  state.favoritePlans = Object.create(null);
   importedRows.forEach((row) => {
     const id = String(row[idIndex] || "");
     state.favoriteQuantities[id] = quantityIndex >= 0 ? Math.max(1, Math.floor(Number(row[quantityIndex] || 1))) : 1;
     if (costIndex >= 0 && Number(row[costIndex]) >= 0) state.favoriteCosts[id] = Number(row[costIndex]);
+    if (planIndex >= 0) state.favoritePlans[id] = String(row[planIndex] || "");
   });
   saveFavorites();
   render();
@@ -5278,6 +5323,7 @@ els.clearFavoritesBtn.addEventListener("click", () => {
   state.favorites.clear();
   state.favoriteQuantities = Object.create(null);
   state.favoriteCosts = Object.create(null);
+  state.favoritePlans = Object.create(null);
   saveFavorites();
   render();
 });

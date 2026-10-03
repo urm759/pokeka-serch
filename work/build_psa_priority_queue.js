@@ -65,6 +65,18 @@ function main() {
   }).filter(Boolean).sort((a, b) => b.priority - a.priority);
 
   for (const row of completionRows) if (!rows.some((r) => r.cardId === row.cardId)) rows.push(row);
+  const focus = require("./focus_monitor.js").write(ROOT);
+  for (const card of cards) {
+    const watched = focus.cards[card.id];
+    if (!watched || !watched.pending.some((key) => ["psaPopulation", "psaRate"].includes(key))) continue;
+    const key = identity(card);
+    const source = manifest.find((entry) => String(entry.setCode || "").toUpperCase() === key.setCode && entry.url);
+    if (!source) continue;
+    const row = { cardId: card.id, name: card.name, ...key, priority: 1e13, focused: true,
+      reason: [watched.priorityReason], sourceSetUrl: source.url };
+    const at = rows.findIndex((r) => r.cardId === card.id);
+    if (at >= 0) rows[at] = row; else rows.push(row);
+  }
   rows.sort((a, b) => b.priority - a.priority);
   const setPriority = [...new Set(rows.map((row) => row.setCode))];
   const orderedSets = [
@@ -77,6 +89,8 @@ function main() {
     total: rows.length,
     rows,
     orderedSets,
+    focusSetUrls: [...new Set(rows.filter((r) => r.focused).map((r) => r.sourceSetUrl))],
+    maxFocusedShare: focus.maxFocusedShare,
   };
   fs.writeFileSync(OUTPUT_PATH, JSON.stringify(payload, null, 2), "utf8");
   console.log(JSON.stringify({ priorityCards: rows.length, prioritySets: setPriority, output: OUTPUT_PATH }));
