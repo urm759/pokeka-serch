@@ -13,6 +13,9 @@ $Today = $StartedAt.ToString('yyyy-MM-dd')
 $Slot = if ($StartedAt.Hour -lt 12) { 'morning' } else { 'evening' }
 $SuccessSlot = "$Today-$Slot"
 $TranscriptStarted = $false
+$Lock = $null
+try { $Lock = [System.IO.File]::Open((Join-Path $LogDir 'psa-update.lock'), 'OpenOrCreate', 'ReadWrite', 'None') }
+catch { Write-Output 'Another PSA update owns the checkpoint lock. No duplicate acquisition.'; exit 0 }
 
 try {
   Start-Transcript -Path $LogPath -Append | Out-Null
@@ -76,7 +79,7 @@ try {
     $state.publishError = $_.Exception.Message
     $state | ConvertTo-Json | Set-Content -Path $StatePath -Encoding utf8
     & $Node (Join-Path $PSScriptRoot 'finalize_update_status.js')
-    Write-Error "PSA data was acquired and saved, but publication failed: $($_.Exception.Message)"
+    Write-Error "PSA data was acquired and saved, but publication failed: $($_.Exception.Message)" -ErrorAction Continue
     exit 2
   }
   Write-Output "PSA scheduled update completed: $SuccessSlot"
@@ -111,4 +114,5 @@ try {
 } finally {
   try { & (Join-Path $PSScriptRoot 'observe_psa_tasks.ps1') -Publish } catch { Write-Warning "Independent PSA observation failed: $($_.Exception.Message)" }
   if ($TranscriptStarted) { Stop-Transcript | Out-Null }
+  if ($Lock) { $Lock.Dispose() }
 }

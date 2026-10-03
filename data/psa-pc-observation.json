@@ -1,40 +1,40 @@
 {
-  "observedAt": "2026-10-03T17:16:44.3016881+09:00",
+  "independentObserverRegistered": false,
   "tasks": [
     {
-      "target": "site/work/run_psa_scheduled_update.ps1",
       "lastRun": "2026-10-03T17:14:36.0000000+09:00",
+      "target": "site/work/run_psa_scheduled_update.ps1",
+      "registrationValid": true,
+      "preStartFailure": false,
       "nextRun": "2026-10-04T04:30:00.0000000+09:00",
       "state": "Ready",
       "reason": null,
-      "registrationValid": true,
-      "name": "Pokeka PSA Update 0430",
-      "preStartFailure": false,
-      "result": 1
+      "result": 1,
+      "name": "Pokeka PSA Update 0430"
     },
     {
-      "target": "site/work/run_psa_scheduled_update.ps1",
       "lastRun": "2026-10-03T17:14:36.0000000+09:00",
-      "nextRun": "2026-10-04T17:00:00.0000000+09:00",
-      "state": "Running",
-      "reason": null,
+      "target": "site/work/run_psa_scheduled_update.ps1",
       "registrationValid": true,
-      "name": "Pokeka PSA Update 1700",
       "preStartFailure": false,
-      "result": 267009
+      "nextRun": "2026-10-04T17:00:00.0000000+09:00",
+      "state": "Ready",
+      "reason": null,
+      "result": 1,
+      "name": "Pokeka PSA Update 1700"
     },
     {
-      "target": "site/work/run_psa_scheduled_update.ps1",
       "lastRun": "2026-10-03T17:08:38.0000000+09:00",
+      "target": "site/work/run_psa_scheduled_update.ps1",
+      "registrationValid": true,
+      "preStartFailure": false,
       "nextRun": null,
       "state": "Ready",
       "reason": null,
-      "registrationValid": true,
-      "name": "Pokeka PSA Update Logon",
-      "preStartFailure": false,
-      "result": 1
+      "result": 1,
+      "name": "Pokeka PSA Update Logon"
     }
   ],
-  "error": null,
-  "independentObserverRegistered": false
+  "observedAt": "2026-10-03T17:33:32.0698539+09:00",
+  "error": null
 }

@@ -3,6 +3,8 @@ param([int]$Retries = 3)
 $ErrorActionPreference = 'Stop'
 $Repo = Split-Path -Parent $PSScriptRoot
 $Git = 'C:\Program Files\Git\cmd\git.exe'
+$Node = 'C:\Users\polar\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe'
+$env:PATH = (Split-Path $Git) + ';' + $env:PATH
 $Today = (Get-Date).ToString('yyyy-MM-dd HH:mm')
 $paths = @(
   'data/psa-official-populations.json',
@@ -53,6 +55,6 @@ if ($LASTEXITCODE -eq 0) {
 
 Push-Location $Repo
 try {
-  node work/publish_data_checkpoint.js "Refresh PSA official population $Today"
+  & $Node work/publish_data_checkpoint.js "Refresh PSA official population $Today"
   if ($LASTEXITCODE -ne 0) { throw 'PSA push failed. Local commit and work/publish-recovery.bundle preserve the acquisition; manual merge may be needed.' }
 } finally { Pop-Location }

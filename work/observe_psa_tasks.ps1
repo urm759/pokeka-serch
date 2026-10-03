@@ -4,6 +4,9 @@ $Repo = Split-Path -Parent $PSScriptRoot
 $File = Join-Path $Repo 'data/psa-pc-observation.json'
 $StateFile = Join-Path $PSScriptRoot 'psa_update_state.json'
 $Runner = Join-Path $PSScriptRoot 'run_psa_scheduled_update.ps1'
+$Node = 'C:\Users\polar\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe'
+$Git = 'C:\Program Files\Git\cmd\git.exe'
+$env:PATH = (Split-Path $Git) + ';' + $env:PATH
 $Observation = @{ observedAt = (Get-Date).ToString('o'); tasks = @(); error = $null }
 try {
   $State = if (Test-Path $StateFile) { Get-Content $StateFile -Raw | ConvertFrom-Json } else { $null }
@@ -22,7 +25,7 @@ try {
 $Observation | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $File -Encoding utf8
 if ($Publish) {
   Push-Location $Repo
-  try { node work/finalize_update_status.js; if ($LASTEXITCODE -ne 0) { throw '監視表示生成失敗' }; git add -- data/psa-pc-observation.json data/update-status.json data/update-history.json work/psa_update_state.json; node work/publish_data_checkpoint.js 'Record independent PSA PC task observation'; if ($LASTEXITCODE -ne 0) { throw '観測公開失敗。ローカル保存・復旧bundleを確認' } }
+  try { & $Node work/finalize_update_status.js; if ($LASTEXITCODE -ne 0) { throw '監視表示生成失敗' }; & $Git add -- data/psa-pc-observation.json data/update-status.json data/update-history.json work/psa_update_state.json; & $Node work/publish_data_checkpoint.js 'Record independent PSA PC task observation'; if ($LASTEXITCODE -ne 0) { throw '観測公開失敗。ローカル保存・復旧bundleを確認' } }
   finally { Pop-Location }
 }
 if ($Observation.error) { Write-Error $Observation.error; exit 1 }

@@ -647,12 +647,14 @@ async function main() {
       }
       if (!c7 && !c30 && !c90) continue;
       const latestPriceIndex = values.findLastIndex((value) => Number(value) > 0);
-      const currentPrice = latestPriceIndex >= 0 ? Number(values[latestPriceIndex]) : null;
+      const currentListingAbsent = results.find((result) => result.shop.id === shopId)?.fullListing && !currentLinksByShop[shopId]?.has(card.id);
+      const currentPrice = currentListingAbsent ? null : latestPriceIndex >= 0 ? Number(values[latestPriceIndex]) : null;
       const previousMatch = previousSummary.cards?.[card.id]?.shops?.[shopId];
       const currentMatch = currentLinksByShop[shopId]?.get(card.id) || (previousMatch ? { ...previousMatch, matchScore: previousMatch.matchScore } : null);
       const quarantined = quarantine[`${shopId}:${card.id}`] || null;
       shops[shopId] = {
         c7, c30, c90, price: currentPrice,
+        listingActive: currentListingAbsent ? false : currentPrice > 0 ? true : null,
         fulfilment: SHOPS.find((s) => s.id === shopId)?.fulfilment || "mail",
         priceDate: latestPriceIndex >= 0 ? history.dates[latestPriceIndex] : null,
         url: currentMatch?.url || "",
@@ -736,7 +738,7 @@ async function main() {
       ? result.matched.filter((item) => decisionModel.matchConfidenceLabel(item.score) === "low").length
       : Number(previous.mismatchSuspicions || 0);
     const reliability = marketModel.sourceReliability({
-      scheduledDays: history.dates.length,
+      scheduledDays: history.dates.filter((date) => date >= (history.observedByShop[shop.id]?.[0] || date)).length,
       successfulDays: (history.observedByShop[shop.id] || []).length,
       priceObservations: trustStats.priceObservations,
       outliers: trustStats.outliers,
@@ -759,7 +761,7 @@ async function main() {
       sourceUpdatedAt: result ? null : previous.sourceUpdatedAt || null,
       pagination: result?.pagination || previous.pagination || null,
       error: failures.find((f) => f.source === shop.id)?.error || null,
-      observedDays,
+      observedDays: (history.observedByShop[shop.id] || []).length,
       matched: result ? result.matched.length : Number(previous.matched || 0),
       activeMatched: result ? result.matched.filter((item) => item.active).length : Number(previous.activeMatched || 0),
       refreshed: Boolean(result),

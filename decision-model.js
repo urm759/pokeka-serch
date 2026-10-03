@@ -512,7 +512,7 @@
 
   function conservativeBuybackExit(input = {}) {
     const rows = (Array.isArray(input.rows) ? input.rows : [])
-      .filter((row) => row?.valid && !row.stale && !row.quarantined && buybackStoreAllowed(row, input) && Number(row.buybackPrice) > 0);
+      .filter((row) => row?.valid && !row.stale && !row.quarantined && !row.campaign && !row.temporaryCampaign && buybackStoreAllowed(row, input) && Number(row.buybackPrice) > 0);
     const byShop = new Map();
     for (const row of rows) {
       const shopId = String(row.shopId || row.shopName || "");

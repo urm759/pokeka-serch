@@ -251,7 +251,7 @@ function main() {
     priority += Math.min(120, Math.max(0, Number(card.snkPsa10Price || 0) - Number(card.price || 0) - 13000) / 2000);
     priority += !requiredReady ? 80 : 0;
     const reasons = [];
-    if (buyback30 > 0) reasons.push(`買取表30日${buyback30}日`);
+    if (buyback30 > 0) reasons.push(`買取表30日${buyback30}店舗日`);
     if (isRecentRelease) reasons.push(`最近発売（${release.date}）`);
     if (missingRequired.length > 0 && missingRequired.length <= 2) reasons.push(`必須不足${missingRequired.length}項目・補完で分析可能に近い`);
     if (isSiteNew) reasons.push("サイト新着");

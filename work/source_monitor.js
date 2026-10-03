@@ -36,7 +36,8 @@ function build(root, sources, previous = {}, now = Date.now()) {
     const progressNow = newAcquired > 0 || net > 0;
     rows[id] = { label: source.label, lastAttempt: a.lastAttemptAt || source.lastAttemptAt || null,
       lastSuccess: a.lastSuccessAt || source.lastSuccessAt || null, publishedAt: published,
-      remaining: id === "psaOfficial" ? linkage.counts?.unlinked ?? null : id === "yuyutei" ? read(root, "work/yuyutei_progress.json").lastRun?.remainingSearchCount ?? null : id === "pokedata" ? (read(root, "data/pokedata/manifest.json").sets || []).reduce((sum, s) => sum + Math.max(0, (s.sourceCount || s.linkageCount || 0) - (s.count || 0)), 0) : null,
+      remaining: id === "psaOfficial" ? linkage.counts?.unlinked ?? null : id === "yuyutei" ? read(root, "work/yuyutei_progress.json").lastRun?.remainingSearchCount ?? null : id === "torecacamp" ? read(root, "work/torecacamp_progress.json").lastRun?.estimatedRemainingProducts ?? null : id === "pokedata" ? (read(root, "data/pokedata/manifest.json").sets || []).reduce((sum, s) => sum + Math.max(0, (s.sourceCount || 0) - (s.linkageCount || 0)), 0) : null,
+      remainingDefinition: id === "pokedata" ? "展開済みセットの公開カード一覧未巡回数。国内一致詳細数・認証成約残数とは別" : id === "torecacamp" ? "サイトマップ商品残数（推定）" : "取得・紐付け残数",
       attempted: a.attempted ?? null, newAcquired, newLinked: a.newLinked ?? null,
       usableValues: a.usableValues ?? null, usableNet: net,
       lastProgressAt: progressNow ? a.lastSuccessAt || source.lastSuccessAt || old.lastProgressAt || null : old.lastProgressAt || null,

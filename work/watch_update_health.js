@@ -67,6 +67,8 @@ async function main() {
   const changed = JSON.stringify({ ...current, sourceAgeHours: null, runAgeHours: null })
     !== JSON.stringify({ ...result, sourceAgeHours: null, runAgeHours: null });
   if (changed) fs.writeFileSync(file, JSON.stringify(result), "utf8");
+  status.unifiedMonitor = monitor;
+  fs.writeFileSync(path.join(ROOT, "data", "update-status.json"), JSON.stringify(status), "utf8");
   console.log(JSON.stringify({ status: result.status, issues: result.issues,
     newIssueCount: newlyDetected.length, backfills: result.backfills }));
   if (newlyDetected.length) {

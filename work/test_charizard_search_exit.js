@@ -39,7 +39,7 @@ assert(stress.price <= 101000, "供給ストレス価格は中央予測を超え
 const rows = [
   { shopId: "a", valid: true, stale: false, outlier: false, buybackPrice: 125000, avg7: 130000, avg30: 142000, c30: 14, observed30: 15, priceDate: "2026-09-12" },
   { shopId: "b", valid: true, stale: false, outlier: false, buybackPrice: 120000, avg7: 128000, avg30: 138000, c30: 13, observed30: 15, priceDate: "2026-09-12" },
-  { shopId: "campaign", valid: true, stale: false, outlier: true, buybackPrice: 250000, avg7: 250000, avg30: 250000, c30: 1, observed30: 15, priceDate: "2026-09-12" },
+  { shopId: "campaign", campaign: true, valid: true, stale: false, outlier: true, buybackPrice: 250000, avg7: 250000, avg30: 250000, c30: 1, observed30: 15, priceDate: "2026-09-12" },
 ];
 const assumptions = { hitRate: 0.78, lowerGradePrice: 93500 };
 const buyback = decision.conservativeBuybackExit({

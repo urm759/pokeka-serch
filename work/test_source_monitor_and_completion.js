@@ -41,6 +41,11 @@ assert.equal(model.conservativeBuybackExit({ ...input, buybackStoreMode: "all", 
 assert.equal(model.conservativeBuybackExit({ ...input, buybackStoreMode: "selected", selectedBuybackStores: ["store"] }).usable, false);
 const catalog = JSON.parse(fs.readFileSync(path.join(__dirname, "shop_buyback_catalog.json"), "utf8")).shops["cardshop151-store"] || [];
 const cards = JSON.parse(fs.readFileSync(path.join(__dirname, "../data/pokemon-cards.json"), "utf8"));
+const sourceSummary = JSON.parse(fs.readFileSync(path.join(__dirname, "../data/shop-buyback-summary.json"), "utf8"));
+if (sourceSummary.shops["cardshop151-store"]?.refreshed) {
+  const positive = Object.values(sourceSummary.cards).filter((c) => Number(c.shops?.["cardshop151-store"]?.price) > 0).length;
+  assert.equal(positive, sourceSummary.shops["cardshop151-store"].activeMatched, "removed/stopped complete-listing prices must not remain current quotes");
+}
 for (const item of catalog) {
   const match = resolve({ genre: "ポケモンカード", type: "PSA10", name: item.identityEvidence.name, listNo: item.identityEvidence.number }, cards);
   assert.equal(match.cardId, item.cardId, "saved CardShop151 identity must revalidate");

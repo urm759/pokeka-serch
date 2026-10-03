@@ -57,7 +57,7 @@ function run() {
     if (queued.status !== 0) { run.stopReason = `PSA優先キュー接続失敗: ${script}`; process.exitCode = 1; }
   }
   console.log(JSON.stringify(run));
-  if (result?.status && result.status !== 0) process.exitCode = 1;
+  if (result && result.status !== 0) process.exitCode = 1;
   return run;
 }
 if (require.main === module) run();

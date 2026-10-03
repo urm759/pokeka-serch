@@ -4048,7 +4048,7 @@ function render() {
         ? `<a href="${escapeHtml(shopUrl)}" target="_blank" rel="noreferrer">${escapeHtml(shopMeta.name)} ${shop.url ? "商品・検索" : "買取表"}</a>`
         : escapeHtml(shopMeta.name);
       const leadLabel = index === 0 ? '<em class="buyback-lead-label">最新日優先</em>' : "";
-      const warning = !shop.valid ? shop.reason : shop.stale ? "価格更新が古い" : shop.outlier ? "単独高値・安値（価格は有効／標準需要率のみ分離）" : "";
+      const warning = shop.listingActive === false ? "現在の買取表に掲載なし・買取停止（履歴のみ）" : !shop.valid ? shop.reason : shop.stale ? "価格更新が古い" : shop.outlier ? "単独高値・安値（価格は有効／標準需要率のみ分離）" : "";
       const differencePct = Number.isFinite(shop.marketDifference) ? shop.marketDifference * 100 : null;
       const differenceText = differencePct == null ? "-" : `${differencePct >= 0 ? "+" : ""}${differencePct.toFixed(1)}%`;
       const rowClass = !shop.valid ? "invalid" : shop.stale ? "stale" : shop.outlier ? "outlier" : "trusted";

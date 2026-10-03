@@ -41,7 +41,7 @@ async function fetchItems(shop, fetchJson, cards) {
       identityStatus: match.status, mismatchReason: match.reason || null, candidateIds: match.candidates || [],
       matchMethod: match.method || null, identityEvidence: match.evidence || null, strictIdentity: true };
   });
-  return { pages: 1, items, sourceTotal: payload.items.length, psa10Total: payload.items.filter((r) => r.type === "PSA10").length,
+  return { pages: 1, fullListing: true, items, sourceTotal: payload.items.length, psa10Total: payload.items.filter((r) => r.type === "PSA10").length,
     pagination: "公開画面が使用する/api/itemsの全件応答。ページ送りなし" };
 }
 module.exports = { resolve, fetchItems };
