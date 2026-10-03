@@ -6,10 +6,10 @@ const fresh = (value, now, hours) => { const t = Date.parse(value); return Numbe
 function pcHealth(observation, now = Date.now()) {
   if (!fresh(observation.observedAt, now, 30)) return { status: "PC観測未受信", reason: "30時間以内の独立タスク観測なし。PC停止・観測起動失敗・未公開を区別して確認", action: "PCでobserve_psa_tasks.ps1を実行" };
   if (observation.error) return { status: "監視取得失敗", reason: observation.error };
-  if (observation.independentObserverRegistered === false) return { status: "独立監視未登録", reason: "Windowsのタスク登録権限が不足。通常PSAのfinally観測は稼働するが、起動前失敗を捕捉する独立タスクは未登録" };
   const tasks = observation.tasks || [];
   const failures = tasks.filter((t) => t.registrationValid === false || t.preStartFailure);
   if (failures.length) return { status: "起動前失敗", reason: failures.map((t) => `${t.name}: ${t.reason}`).join(" / ") };
+  if (observation.independentObserverRegistered === false) return { status: "独立監視未登録", reason: "Windowsのタスク登録権限が不足。通常PSAのfinally観測は稼働するが、起動前失敗を捕捉する独立タスクは未登録" };
   return { status: "観測受信済み", reason: "取得・公開の成否はPSA実行履歴で別判定" };
 }
 function build(root, sources, previous = {}, now = Date.now()) {

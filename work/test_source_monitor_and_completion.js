@@ -9,6 +9,7 @@ const model = require("../decision-model.js");
 const now = Date.parse("2026-10-01T08:00:00Z");
 assert.equal(pcHealth({}, now).status, "PC観測未受信");
 assert.equal(pcHealth({ observedAt: "2026-10-01T07:50:00Z", tasks: [{ name: "0430", preStartFailure: true, reason: "起動失敗" }] }, now).status, "起動前失敗");
+assert.equal(pcHealth({ observedAt: "2026-10-01T07:50:00Z", independentObserverRegistered: false, tasks: [{ name: "0430", preStartFailure: true, reason: "起動失敗" }] }, now).status, "起動前失敗", "registration warning must not hide a detected startup failure");
 assert(!fresh("2026-10-02", now, 48));
 assert(!fresh(null, now, 48));
 const queue = { queue: ["low", "blocked", "high"], cards: { low: { p: 1 }, high: { p: 100 }, blocked: { p: 200 } } };
