@@ -70,6 +70,7 @@ jobs:
           node work/test_limit_display.js
           node work/test_focus_monitor.js
           node work/test_purchase_memo.js
+          node work/test_return_reference.js
           node work/test_priority_refresh.js
           node work/test_buyback_scenario_limits.js
           node work/test_purchase_limit_audit.js
@@ -93,6 +94,7 @@ jobs:
           git add data work/daily-http-cache.json work/changed-card-ids.json work/market_stability_history.json work/snkr-raw-flip-cache.json work/snkr-raw-flip-checkpoint.json work/source-update-runs.json work/source-update-history.json work/toreca-source-inventory.json work/toreca_source_diff.json work/card-new-arrivals.json work/card-lifecycle.json work/candidate-daily-history.json work/candidate-availability-history.json work/candidate-shop-refresh.json work/cardrush_catalog.json work/hareruya2_catalog.json work/cardrush_stock_history.json work/hareruya2_stock_history.json work/acquisition-progress-last.json
           git add work/shop_buyback_history.json work/shop_buyback_catalog.json work/shop_buyback_unmatched.json work/shop_buyback_item_matches.json work/shop_buyback_image_matches.json work/shop_buyback_quarantine.json
           git add work/priority-price-checkpoint.json work/priority-price-http-cache.json
+          git add work/fixed-price-reference.json work/priority-freshness-history.json
           if git diff --cached --quiet; then
             echo "No source change. Commit and deployment skipped."
             exit 0

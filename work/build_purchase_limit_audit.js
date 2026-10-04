@@ -16,6 +16,8 @@ const window = {
   PurchaseDecisionModel: model,
   PriceIntegrity: require("../price-integrity.js"),
   MarketAnalysisModel: require("../market-analysis.js"),
+  ReturnHorizonModel: require("../return-horizon-model.js"),
+  PriceReferenceModel: require("../price-reference-model.js"),
   BacktestModel: require("../backtest-model.js"),
   CardSearchIndexModel: require("../search-index-model.js"),
   SnkrRawFlipModel: require("../snkr-raw-flip-model.js"),
@@ -65,6 +67,8 @@ state.snkrRawFlipSummary = sourceFiles.snkrRaw.cards || {};
 state.snkrRawFlipMeta = sourceFiles.snkrRaw;
 state.psaPopulation = sourceFiles.psa.cards || {};
 state.marketResearch = read("data/market-research-summary.json");
+state.returnCalibration = read("data/return-horizon-calibration.json");
+state.fixedPriceReference = read("data/fixed-price-reference-index.json");
 state.regulationPolicy = read("data/regulation-policy.json");
 state.evaluationModel = read("data/evaluation-model.json");
 state.evaluationGovernance = read("data/evaluation-governance.json");

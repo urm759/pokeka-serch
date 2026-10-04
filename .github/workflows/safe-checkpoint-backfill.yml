@@ -39,6 +39,7 @@ jobs:
       - name: Check publication safety
         run: |
           node work/test_price_integrity.js
+          node work/test_return_reference.js
           node work/test_candidate_daily_audit.js
           node work/test_candidate_availability_audit.js
           node work/test_acquisition_progress.js

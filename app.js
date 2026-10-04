@@ -13,6 +13,8 @@ const purchaseMemoModel = window.PurchaseMemoModel;
 const releaseYearFilter = window.ReleaseYearFilter;
 const priceIntegrityModel = window.PriceIntegrity;
 const FORECAST_HORIZON_DAYS = 91;
+const returnHorizonModel = window.ReturnHorizonModel;
+const priceReferenceModel = window.PriceReferenceModel;
 
 const state = {
   cards: [],
@@ -141,6 +143,10 @@ const state = {
   favoriteQuantities: Object.create(null),
   favoriteCosts: Object.create(null),
   favoritePlans: Object.create(null),
+  favoriteBreakEvenAnchors: Object.create(null),
+  returnCalibration: null,
+  fixedPriceReference: null,
+  referenceChunks: new Map(),
   favoriteQuery: "",
   purchaseMode: "normal",
   includeAggressiveInCombined: false,
@@ -1035,6 +1041,8 @@ function loadFavorites() {
   }
   try { state.favoritePlans = JSON.parse(localStorage.getItem(FAVORITE_PLANS_STORAGE_KEY) || "{}") || {}; }
   catch { state.favoritePlans = Object.create(null); }
+  try { state.favoriteBreakEvenAnchors = JSON.parse(localStorage.getItem('pokeka-fixed-purchase-anchor-v1') || '{}') || {}; }
+  catch { state.favoriteBreakEvenAnchors = Object.create(null); }
   state.favorites.forEach((id) => {
     state.favoriteQuantities[id] = Math.max(1, Math.floor(Number(state.favoriteQuantities[id] || 1)));
     const savedCost = Number(state.favoriteCosts[id]);
@@ -1047,6 +1055,7 @@ function saveFavorites() {
   localStorage.setItem(FAVORITE_QUANTITIES_STORAGE_KEY, JSON.stringify(state.favoriteQuantities));
   localStorage.setItem(FAVORITE_COSTS_STORAGE_KEY, JSON.stringify(state.favoriteCosts));
   localStorage.setItem(FAVORITE_PLANS_STORAGE_KEY, JSON.stringify(state.favoritePlans));
+  localStorage.setItem('pokeka-fixed-purchase-anchor-v1', JSON.stringify(state.favoriteBreakEvenAnchors));
 }
 
 function loadActualResults() {
@@ -1141,6 +1150,11 @@ function renderPriceCapacityNotice() {
   return `<p class="helper">通常巡回は${Number(row.normalTargetHours || 720) / 24}日目標。実測の通常枠${row.normalCardsPerMinute ?? "未計測"}枚/分、一巡約${row.estimatedNormalSweepDays ?? "未計測"}日（通信・Actions遅延別）。古い価格をGOへ使える期間は延長しません。</p>`;
 }
 function renderPriorityPriceMonitor() {
+  const monitor = state.updateStatus?.priorityPriceMonitor, fixed = monitor?.fixedCohortFreshness;
+  const stats = fixed ? `<article class="source-status-card"><details><summary>同一カード群の6時間確認率・確認待ち分類</summary><p>${escapeHtml(fixed.method)}／比較開始 ${escapeHtml(formatJstTimestamp(fixed.baselineAt))}</p>${Object.entries(fixed.sources).map(([id,r])=>`<p><b>${escapeHtml(id)}</b>：${r.latest.fresh6h}/${r.latest.cohort}枚（${r.latest.fresh6hPct?.toFixed(1) ?? '未計測'}%）／開始時 ${r.baseline?.fresh6hPct?.toFixed(1) ?? '未観測'}%／前回 ${r.previous?.fresh6hPct?.toFixed(1) ?? '未観測'}%／最大期限超過 ${r.latest.maxOverdueHours?.toFixed(1) ?? '未計測'}時間<br>自動巡回待ち ${r.latest.autoWait}／手動確認待ち ${r.latest.manualWait}／アクセス停止 ${r.latest.accessStopped}／確認日時なし ${r.latest.unconfirmed}。対象追加${r.latest.added}・消失${r.latest.missingFromCurrent}は相場変動と別集計。</p>`).join('')}<a href="./data/priority-manual-wait-audit.json">14商品の原因・同一仕様照合根拠・巡回復帰結果</a></details></article>` : '';
+  return renderPriorityPriceRows() + stats;
+}
+function renderPriorityPriceRows() {
   const monitor = state.updateStatus?.priorityPriceMonitor;
   if (!monitor) return "";
   const value = (n) => n == null ? "未計測" : fmt.format(n);
@@ -1152,8 +1166,70 @@ function favoriteTrial(card) {
   const plan = availablePsaPlans().find((p) => p.id === state.favoritePlans[card.id]);
   const fee = plan ? Number(plan.price) + Number(state.psaHandlingFee || 0) : state.fee;
   const lockDays = plan ? Number(plan.calendarDays) + 7 : state.lockDays;
-  return { ...purchaseMemoModel.trial({ limit: card.buyLimits?.clean, purchasePrice: favoritePurchasePrice(card), currentPrice: card.psa10, fee, lockDays }, decisionModel),
+  const period = buildReturnPeriodTrial(card, lockDays, fee, favoritePurchasePrice(card));
+  const trial = purchaseMemoModel.trial({ limit: period.limit || card.buyLimits?.clean, purchasePrice: favoritePurchasePrice(card), currentPrice: card.psa10, fee, lockDays,
+    forecastHorizonDays: period.available ? lockDays : FORECAST_HORIZON_DAYS, forecastReferenceOnly: period.referenceOnly, forecastUnavailable: !period.available }, decisionModel);
+  const inputs = {purchasePrice:favoritePurchasePrice(card),gradingFee:fee,extraCost:state.saleExtraCost,feeRate:state.saleFeeRate,hitRate:card.buyLimits?.clean?.assumptions?.hitRate,lowerGradePrice:card.buyLimits?.clean?.assumptions?.lowerGradePrice};
+  const exit = card.buyLimits?.clean?.exitPolicy?.adoptedPolicy || 'marketplace', quote=card.buyLimits?.clean?.buybackExit?.scenarios?.current;
+  const marketMultiplier=1-state.saleFeeRate/100, shopMultiplier=quote?.grossPrice>0 && card.psa10>0 ? quote.grossPrice/card.psa10*(1-Number(quote.deductionRate||0)/100) : null;
+  inputs.psa10Multiplier=exit==='marketplace'?marketMultiplier:exit==='both'&&shopMultiplier!=null?Math.min(marketMultiplier,shopMultiplier):shopMultiplier;
+  inputs.exitPolicy=exit;
+  const signature = JSON.stringify([inputs.purchasePrice,fee,lockDays,state.saleExtraCost,state.saleFeeRate,exit,state.buybackDeductionRate]);
+  if (Object.hasOwn(state.favoriteCosts, card.id) && Number.isFinite(inputs.hitRate) && Number.isFinite(inputs.lowerGradePrice) && Number.isFinite(inputs.psa10Multiplier) && inputs.psa10Multiplier>0) {
+    if (state.favoriteBreakEvenAnchors[card.id]?.signature !== signature) {
+      state.favoriteBreakEvenAnchors[card.id] = {signature,inputs,price:priceReferenceModel?.fixedBreakEven(inputs),recordedAt:new Date().toISOString(),basis:'入力買値と費用・保存時点の率/PSA9想定を固定。出口相場は別に再評価'};
+      try { localStorage.setItem('pokeka-fixed-purchase-anchor-v1', JSON.stringify(state.favoriteBreakEvenAnchors)); } catch { /* Storage is optional. */ }
+    }
+  }
+  return { ...trial, period, fixedBreakEvenAnchor:state.favoriteBreakEvenAnchors[card.id] || null,
     planName: plan?.name || "共通設定", declaredValueWarning: plan && card.psa10 > plan.declaredValueMax ? "申告価格上限超過・プランを確認" : null };
+}
+
+function buildReturnPeriodTrial(card, days = state.lockDays, fee = state.fee, purchasePrice = card.price) {
+  const projection = returnHorizonModel?.resolve({ currentPrice:card.psa10, days:Number(days), calibration:state.returnCalibration });
+  if (!projection?.available || !card.buyLimits?.clean) return { ...projection, available:false, horizonDays:Number(days), limit:null, centralProfit:null, stressProfit:null };
+  const oldFee=state.fee, oldDays=state.lockDays;
+  try {
+    state.fee=fee; state.lockDays=Number(days);
+    const referenceCard={...card,futurePriceForecast:{...card.futurePriceForecast,...projection,predictedPrice:projection.centralPrice}};
+    referenceCard.supplyStress=buildSupplyStress(referenceCard);
+    const limit=buildBuyLimitScenario(referenceCard,'clean');
+    const trial=purchaseMemoModel.trial({limit,purchasePrice,currentPrice:card.psa10,fee,lockDays:Number(days),forecastHorizonDays:Number(days),forecastReferenceOnly:projection.referenceOnly},decisionModel);
+    return {...projection,limit,centralProfit:trial.rows.central?.expectedProfit??null,stressProfit:trial.rows.stress?.expectedProfit??null,stressPrice:limit.stressForecastPrice,
+      normalLimit:limit.economicMaxPrice,stressLimit:limit.stressBreakEvenMaxPrice,appliedToDecision:false};
+  } finally {state.fee=oldFee;state.lockDays=oldDays;}
+}
+
+function renderReturnReference(card) {
+  const selected = buildReturnPeriodTrial(card), money=v=>v==null||!Number.isFinite(v)?'算出不可':`${v<0?'-':''}¥${fmt.format(Math.abs(Math.round(v)))}`;
+  const index=v=>v==null?'蓄積中':v.toFixed(1);
+  const change=v=>v==null?'蓄積中':`${v.toFixed(1)}%`;
+  const market=state.fixedPriceReference;
+  const last=market?.indices?.at(-1);
+  return `<details class="return-reference-panel"><summary>返却${state.lockDays}日・固定基準日の価格推移（参考）</summary>
+    <p>${escapeHtml(selected.status || '期間履歴を蓄積中')}。91日モデルの参考上限を${state.lockDays}日返却の推奨値にはしません。現在の仕入れ基準へ未適用。</p><p>以下は基準仕入値 ${money(card.price)}／鑑定費等 ${money(state.fee)}・現在設定の出口と費用を固定し、期間だけを比較した参考試算。プラン別の費用と入力買値はお気に入りのプラン選択で確認してください。</p>
+    <div class="table-scroll"><table><thead><tr><th>期間</th><th>中央 / ストレス</th><th>入力価格での期待利益</th><th>独立開始日 / 状態</th></tr></thead><tbody>${[42,91,119,147].map(days=>{const p=buildReturnPeriodTrial(card,days);return `<tr><th>${days}日</th><td>${money(p.centralPrice)} / ${money(p.stressPrice)}</td><td>中央 ${money(p.centralProfit)}<br>ストレス ${money(p.stressProfit)}</td><td>${p.evidence?.originDates??0}日 / ${escapeHtml(p.status||'算出不可')}</td></tr>`}).join('')}</tbody></table></div>
+    <small>同期間の国内集計値で価格帯別に比較。1カード1票。開始日が1日だけの好結果では本判定へ適用しません。供給補正は参考試算のストレス経路で1回だけ適用。海外価格・季節性は不使用。</small>
+    <p>固定基準日 ${escapeHtml(market?.baselineDate||'蓄積中')}＝100 / 固定${fmt.format(market?.cohortCount||0)}カード群。国内素体指数 ${index(last?.rawIndex)} / 国内PSA10指数 ${index(last?.psa10Index)}。観測：素体${fmt.format(last?.rawObserved||0)}／PSA10 ${fmt.format(last?.psa10Observed||0)}。欠損時は蓄積中で確定指数を出しません。</p>
+    <p>固定群の絶対騰落：素体30日 ${change(market?.marketReturns?.raw30)}／90日 ${change(market?.marketReturns?.raw90)}、PSA10 30日 ${change(market?.marketReturns?.psa1030)}／90日 ${change(market?.marketReturns?.psa1090)}</p><small>${escapeHtml(market?.method||'集計方法を取得中')}</small>
+    <details class="fixed-reference-card" data-reference-id="${escapeHtml(card.id)}"><summary>個別の絶対下落・市場比・支持帯割れ履歴</summary><div class="reference-content">開くと該当JSONだけ読み込みます。</div></details>
+    <a href="./data/fixed-price-reference-index.json">固定指数の対象・集計方法</a> / <a href="./data/return-horizon-calibration.json">期間別根拠</a> / <a href="./data/return-reference-audit.json">同一入力でのモデル変更・実取得変更の分離監査</a> / <a href="./data/scheduled-verification.json">直近定期実行の取得・保存工程</a></details>`;
+}
+
+function bindReferenceHistory() {
+document.addEventListener('toggle', async (event) => {
+  const panel = event.target;
+  if (!panel.matches?.('.fixed-reference-card') || !panel.open || !priceReferenceModel) return;
+  const content = panel.querySelector('.reference-content'), id = panel.dataset.referenceId;
+  const file = priceReferenceModel.bucket(id);
+  try {
+    if (!state.referenceChunks.has(file)) state.referenceChunks.set(file, fetchJsonMaybe(`./data/fixed-price-reference/${file}.json`));
+    const payload = await state.referenceChunks.get(file), row = payload?.cards?.[id];
+    if (!row) { content.textContent = 'このカードは固定基準日の価格履歴なし・蓄積中'; return; }
+    const num=v=>v==null?'蓄積中':v.toFixed(1), pct=v=>v==null?'蓄積中':`${v.toFixed(1)}%`;
+    content.innerHTML = `<p>個別指数（基準日＝100）：素体 ${num(row.rawIndex)}／PSA10 ${num(row.psa10Index)}</p><p>絶対騰落率：素体30日 ${pct(row.raw30)}／90日 ${pct(row.raw90)}、PSA10 30日 ${pct(row.psa1030)}／90日 ${pct(row.psa1090)}</p><p>市場比30日 ${pct(row.relativePsa1030)}（ポイント差）。市場より強くても絶対下落・GO判断は別。</p><strong>${escapeHtml(row.floorReference)}</strong><ul>${row.supportEvents.map(e=>`<li>${escapeHtml(e.detectedAt)}に支持帯 ¥${fmt.format(e.low)}～¥${fmt.format(e.high)}割れを観測／${e.resolvedAt?`${escapeHtml(e.resolvedAt)}維持条件確認（参考）`:'警戒継続・帯の下方変更だけでは解除しない'}</li>`).join('') || '<li>保存開始後の確定支持帯割れ記録なし（過去の割れがなかった証明ではありません）</li>'}</ul><small>参考検証のみ。本判定・上限には反映していません。支持帯は将来売価の保証ではありません。</small>`;
+  } catch { state.referenceChunks.delete(file); content.textContent = '履歴読込失敗・閉じて再度開くと再試行'; }
+}, true);
 }
 
 function memoMoney(value) {
@@ -1266,13 +1342,14 @@ function renderFavorites() {
             <b>仕入れ総額 ¥${fmt.format(Math.round(purchasePrice * quantity))}</b>
           </div>
           <div class="favorite-prices">
-            <div><span>現在 / 予測PSA10</span><strong>¥${fmt.format(card.psa10)} / ¥${fmt.format(card.futurePriceForecast?.predictedPrice || card.psa10)}</strong></div>
+            <div><span>現在 / 返却${trial.lockDays}日中央（参考）</span><strong>¥${fmt.format(card.psa10)} / ${trial.period?.centralPrice == null ? '算出不可' : `¥${fmt.format(Math.round(trial.period.centralPrice))}`}</strong></div>
             <div class="recommended"><span>美品なら</span><strong>${buyLimitText(limits?.clean)}</strong></div>
             <div class="scratch"><span>多少の傷ありなら</span><strong>${buyLimitText(limits?.scratch)}</strong></div>
             <div><span>相場基準PSA10時 利益率</span><strong>${Number.isFinite(card.roi) ? `${Math.round(card.roi)}%` : "未判定"}</strong></div>
           </div>
         </div>
         <details class="favorite-trial" open><summary>入力した買値での仮定試算（判定には反映しない）</summary><p>\u00a5${fmt.format(purchasePrice)}／1枚・${escapeHtml(trial.planName)}・鑑定費等\u00a5${fmt.format(trial.fee || 0)}・返却目安${fmt.format(trial.lockDays || 0)}日</p><div class="favorite-prices"><div><span>現相場・期待損益</span><strong>${memoMoney(trial.rows?.current?.expectedProfit)}</strong></div><div><span>中央予測・期待損益</span><strong>${memoMoney(trial.rows?.central?.expectedProfit)}</strong></div><div><span>供給ストレス・期待損益</span><strong>${memoMoney(trial.rows?.stress?.expectedProfit)}</strong></div><div><span>PSA9以下想定売価での損益</span><strong>${memoMoney(trial.lowerGradeProfit)}</strong></div></div><small>${escapeHtml(trial.warning || trial.reason)} ${escapeHtml(trial.declaredValueWarning || "")} 下位グレード売価：${escapeHtml(trial.lowerGradeSource || "未取得")}</small></details>
+        ${trial.fixedBreakEvenAnchor ? `<p class="helper">保存した購入条件の固定損益分岐PSA10：¥${fmt.format(Math.round(trial.fixedBreakEvenAnchor.price))}（${escapeHtml(formatJstTimestamp(trial.fixedBreakEvenAnchor.recordedAt))}）。買値・費用・プランを変更しない限り相場下落では書き換えません。保存時点の率・PSA9想定も固定。最新出口での損益は上の試算で別に再評価。</p>` : ''}
         <button class="remove-favorite" type="button" data-remove-favorite="${escapeHtml(card.id)}" title="お気に入りを解除" aria-label="${name}をお気に入りから解除">×</button>
       </article>
     `;
@@ -1287,6 +1364,7 @@ function toggleFavorite(id, { confirmRemoval = false } = {}) {
     delete state.favoriteQuantities[key];
     delete state.favoriteCosts[key];
     delete state.favoritePlans[key];
+    delete state.favoriteBreakEvenAnchors[key];
   } else {
     state.favorites.add(key);
     state.favoriteQuantities[key] = 1;
@@ -1340,6 +1418,10 @@ async function copyText(text) {
 function exportFavoritesCsv() {
   const cfg = guideConfig();
   const rows = [["id", "カード名", "型番", "数量", "仕入れ単価", "現在PSA10価格", "91日後中央推計", "予測下落余地%", "将来価格評価", "最終仕入れ上限", "通常上限", "供給ストレス時赤字回避上限", "超低リスク上限", "PSA9赤字回避上限", "現在の資金で買える上限", "傷あり仕入れ上限", "期待値損益分岐PSA10価格", "供給ストレス時期待利益", "美品PSA10想定率%", "傷ありPSA10想定率%", "取得率基準", "基準", "理想仕入れ", "おすすめ仕入れ", "上限仕入れ", "今回の仕入れ判断", "実店舗での仕入れ可否", "期待利益（現在仕入値×中央予測）", "期待利益率（現在仕入値×中央予測）", "年換算資金効率", "資金占有率", "判断理由", "みんトレURL", "カードラッシュURL", "晴れる屋2URL", "遊々亭URL", "トレカキャンプURL"]];
+  rows[0][6] = '従来91日モデル中央（参考・選択返却期間とは別）';
+  rows[0][9] = '一覧の安定上限（既存モデル・返却期間検証不足）';
+  rows[0][27] = '従来91日モデル期待利益（参考・返却時損益ではない）';
+  rows[0][28] = '従来91日モデル期待利益率（参考）';
   favoriteCards().forEach((rawCard) => {
     const card = calc(rawCard);
     const guide = favoriteGuide(card);
@@ -1351,9 +1433,9 @@ function exportFavoritesCsv() {
   });
   favoriteCards().forEach((rawCard, index) => {
     const card = calc(rawCard), trial = favoriteTrial(card);
-    rows[index + 1].push(state.favoritePlans[card.id] || "", trial.fee ?? "", trial.lockDays ?? "", trial.rows?.current?.expectedProfit ?? "", trial.rows?.central?.expectedProfit ?? "", trial.rows?.stress?.expectedProfit ?? "", trial.lowerGradeProfit ?? "");
+    rows[index + 1].push(state.favoritePlans[card.id] || "", trial.fee ?? "", trial.lockDays ?? "", trial.rows?.current?.expectedProfit ?? "", trial.rows?.central?.expectedProfit ?? "", trial.rows?.stress?.expectedProfit ?? "", trial.lowerGradeProfit ?? "", trial.period?.status || '期間履歴不足', trial.period?.centralPrice ?? '', trial.period?.stressPrice ?? '', trial.period?.normalLimit ?? '', trial.period?.stressLimit ?? '', trial.period?.version || '', JSON.stringify(trial.fixedBreakEvenAnchor || null));
   });
-  rows[0].push("試算PSAプランID", "試算鑑定費等", "試算返却目安日数", "入力買値×現相場期待利益", "入力買値×中央予測期待利益", "入力買値×供給ストレス期待利益", "入力買値PSA9以下想定損益");
+  rows[0].push("試算PSAプランID", "試算鑑定費等", "試算返却目安日数", "入力買値×現相場期待利益", "入力買値×中央予測期待利益", "入力買値×供給ストレス期待利益", "入力買値PSA9以下想定損益", "返却期間試算状態（参考・判定未適用）", "選択返却期間中央価格", "選択返却期間ストレス価格", "選択返却期間参考通常上限", "選択返却期間参考ストレス上限", "返却期間モデル版", "購入時固定損益分岐JSON");
   const csv = `\uFEFF${rows.map((row) => row.map(csvCell).join(",")).join("\r\n")}`;
   const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
   const link = document.createElement("a");
@@ -2706,7 +2788,8 @@ function calc(card) {
   const supplyLifecycle = buildSupplyLifecycle(card, official, shopDrop30, marketStability);
   const forecastBase = { ...card, price, torecaPrice, referenceEvidence, priceIntegrity, cardrushPrice, hareruya2Price, yuyuteiPrice, torecacampPrice, priceAggregation, currentStoreOffer, snkrRawFlip, rawPsa9Gap, psa9Audit, psa10Audit, cardrushStock, hareruya2Stock, yuyuteiStock, torecacampStock, snkrListing, snkListings: snkrListing?.current ?? card.snkListings, psa10, psa10Net, profit, roi, official, saleTx30d, saleTx7d, stateATx30d, stateATx7d, psaTx30d, psaTx7d, cardrushDrop30, cardrushDrop7, hareruya2Drop30, hareruya2Drop7, shopDrop30, shopDrop7, combined30, combined7, buyback, buyback7, buyback30, buyback90, buybackPrice, buybackBestPrice, buybackAggregation, buybackAvg30, buybackShops, buybackAnalysis, marketStability, supplyLifecycle };
   const futurePriceForecast = buildFuturePriceForecast(forecastBase, official, stock);
-  const calculated = { ...forecastBase, futurePriceForecast };
+  const returnForecast = returnHorizonModel?.resolve({currentPrice:psa10,days:Number(state.lockDays),calibration:state.returnCalibration}) || null;
+  const calculated = { ...forecastBase, futurePriceForecast, returnForecast };
   calculated.overallAssessment = buildOverallAssessment(calculated, official, stock);
   return finalizeCardDecision(calculated);
 }
@@ -3923,7 +4006,7 @@ function render() {
   document.getElementById("releaseYearFilterSummary").textContent = `固定発売年条件（2020年含む）。除外：2019年以前${fmt.format(excludedOld)}枚／年不明${fmt.format(excludedUnknown)}枚。最近発売365日とは別`;
   const periodWarning = document.getElementById("forecastPeriodWarning");
   periodWarning.hidden = Number(state.lockDays) === FORECAST_HORIZON_DAYS;
-  periodWarning.textContent = `期間不一致：予測${FORECAST_HORIZON_DAYS}日／返却目安${state.lockDays}日。返却時試算不可。価格待ち・上限は91日モデルの参考値で、返却時の推奨価格ではありません。GO・今すぐ仕入れは保留します。`;
+    periodWarning.textContent = `返却目安${state.lockDays}日の本予測は未検証。42日比較は開始日が1日だけの参考試算、119/147日は履歴不足です。上限は91日モデルの参考値で、期間不一致のGO・今すぐ仕入れは保留。カード詳細で同期間の実測根拠を確認できます。`;
   if (els.catalogCoverageSummary && state.catalogCompletion?.summary) {
     const summary = state.catalogCompletion.summary;
     els.catalogCoverageSummary.textContent = `みんトレ掲載 ${fmt.format(summary.sourceMatched ?? Math.max(0, summary.sourceTotal - summary.unlisted))} / ${fmt.format(summary.sourceTotal)}枚（${Number(summary.listingRatePct || 0).toFixed(1)}%）・サイト保持総数 ${fmt.format(summary.siteTotal)}枚・分析可能 ${fmt.format(summary.analyzable)}枚・補完優先キュー ${fmt.format(summary.priorityQueueRemaining)}枚`;
@@ -4513,6 +4596,7 @@ function render() {
     const forecastRiskClass = !forecast ? "pending" : forecast.downsidePct >= 25 ? "risk-high" : forecast.downsidePct >= 12 ? "risk-medium" : "risk-low";
     const forecastReasons = forecast?.reasons?.join(" / ") || "判定材料を蓄積中";
     const forecastPanel = forecast ? `
+      ${renderReturnReference(card)}
       <div class="future-price-forecast ${forecastRiskClass}">
         <div class="future-forecast-head">
           <div><span>${fmt.format(forecast.horizonDays)}日後のPSA10推計</span><strong>${escapeHtml(forecast.phase)}</strong><small>データ充足度 ${escapeHtml(forecast.dataCompleteness)}</small></div>
@@ -4690,9 +4774,8 @@ function render() {
         </div>
       </details>
     ` : "";
-    const glanceProfit = signedMoney(card.currentStoreOffer
-      ? storeScenarios.centralForecast?.expectedProfit
-      : currentScenarios.centralForecast?.expectedProfit);
+    const selectedPeriodTrial = buildReturnPeriodTrial(card, state.lockDays, state.fee, card.currentStoreOffer?.value ?? card.price);
+    const glanceProfit = signedMoney(selectedPeriodTrial.centralProfit);
     const glanceWarning = dataQuality.manualReviewReasons?.[0]
       || dataQuality.dataAnomalyReasons?.[0]
       || limitDisplay.warnings?.[0]
@@ -4714,7 +4797,7 @@ function render() {
         <div><span>現在買える状態A</span><strong>${card.currentStoreOffer ? `¥${fmt.format(card.currentStoreOffer.value)}` : "未取得"}</strong><small>${escapeHtml(card.currentStoreOffer?.source || "在庫あり価格なし")}</small></div>
         <div class="glance-stable"><span>安定重視の仕入れ上限</span><strong>${escapeHtml(limitDisplay.stableLabel || limitMoney(limitDisplay.stableCap))}</strong><small>${limitDisplay.stableCap === 0 ? escapeHtml(limitDisplay.reason) : "仕入れ判定・絞り込みの基準"}</small></div>
         <div class="glance-break-even"><span>現相場の期待損益分岐上限</span><strong>${limitMoney(limitDisplay.currentCap)}</strong><small>推奨仕入れ値ではありません</small></div>
-        <div><span>期待利益</span><strong class="${glanceProfit.className}">${glanceProfit.text}</strong><small>${card.currentStoreOffer ? "店舗価格" : "基準相場"}で購入 × 中央予測</small></div>
+        <div><span>返却${state.lockDays}日・期待利益（参考）</span><strong class="${glanceProfit.className}">${glanceProfit.text}</strong><small>${card.currentStoreOffer ? "店舗価格" : "基準相場"}で購入 × 同期間の中央比較／${escapeHtml(selectedPeriodTrial.status || '期間履歴不足')}</small></div>
       </section>
       ${glanceWarning ? `<div class="candidate-warning ${dataQuality.manualReview ? "manual" : ""}"><strong>注意：</strong>${escapeHtml(glanceWarning)}</div>` : ""}`;
     return `
@@ -4988,6 +5071,8 @@ async function init() {
     const marketStabilityData = await fetchJsonMaybe("./data/market-stability-summary.json");
     state.marketStability = marketStabilityData?.cards || Object.create(null);
     state.marketStabilityMeta = marketStabilityData || null;
+    state.returnCalibration = await fetchJsonMaybe('./data/return-horizon-calibration.json');
+    state.fixedPriceReference = await fetchJsonMaybe('./data/fixed-price-reference-index.json');
     state.marketBacktest = await fetchJsonMaybe("./data/market-backtest-summary.json");
     const snkrListingData = await fetchJsonMaybe("./data/snkr-listing-summary.json");
     state.snkrListingSummary = snkrListingData?.cards || Object.create(null);
@@ -5038,6 +5123,7 @@ async function init() {
 }
 
 // Browser event bindings start here; the audit runner evaluates the same model above this line.
+bindReferenceHistory();
 [els.buybackStoreModeInput, els.selectedBuybackStoresInput, els.storeTravelCostInput].forEach((el) => el?.addEventListener("input", syncFromUI));
 [els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.buyback7MinInput, els.buyback7MaxInput, els.buyback30MinInput, els.buyback30MaxInput, els.buyback90MinInput, els.buyback90MaxInput, els.buybackShopsMinInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.roiInput, els.expectedRoiFilterInput, els.expectedProfitFilterInput, els.stressExpectedRoiFilterInput, els.stressExpectedProfitFilterInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.purchaseLimitRatioMinInput, els.psaRateMinInput, els.overallFilterInput, els.minExitLiquidityInput, els.minEconomicsInput, els.minMarketStabilityInput, els.minSupplyRiskInput, els.minFuturePriceScoreInput, els.maxFuturePriceScoreInput, els.minForecastPriceInput, els.maxForecastPriceInput, els.minForecastDownsideInput, els.maxForecastDownsideInput, els.minForecastGapInput, els.maxForecastGapInput, els.minForecastAgeInput, els.forecastMaturityInput, els.maxForecastMonthlyIncreaseInput, els.stockDemandInput, els.dataQualityFilterInput, els.goConfidenceFilterInput, els.floorStateInput, els.priceDirectionInput, els.supplyStateInput, els.minFloorScoreInput, els.storeDemandInput, els.showSkippedInput, els.hideThinDemandInput, els.hideReviewInput, els.fundingOnlyInput, els.officialOnlyInput, els.sortInput, els.psaCapitalInput, els.lockedCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput, els.buybackDeductionRateInput, els.exitPolicyInput, els.snkrRawFeeRateInput, els.snkrRawShippingInput, els.snkrRawOtherCostInput, els.snkrRawTx7MinInput, els.snkrRawTx30MinInput, els.snkrRawProfitMinInput, els.snkrRawRoiMinInput, els.snkrRawPurchaseMaxInput, els.snkrRawReleaseMonthsInput, els.snkrRawMaxAgeInput, els.snkrRawCurrentOnlyInput, els.snkrRawRecentOnlyInput, els.snkrRawIncludeReferenceInput, els.diagnosticSearchInput].forEach((el) =>
   el.addEventListener("input", syncFromUI)
@@ -5353,6 +5439,7 @@ els.importFavoritesInput.addEventListener("change", async () => {
   const quantityIndex = rows[0]?.findIndex((cell) => cell.trim() === "数量") ?? -1;
   const costIndex = rows[0]?.findIndex((cell) => cell.trim() === "仕入れ単価") ?? -1;
   const planIndex = rows[0]?.findIndex((cell) => cell.trim() === "試算PSAプランID") ?? -1;
+  const anchorIndex = rows[0]?.findIndex((cell) => cell.trim() === '購入時固定損益分岐JSON') ?? -1;
   const validIds = new Set(state.cards.map((card) => String(card.id)));
   const importedRows = rows.slice(1).filter((row) => validIds.has(String(row[idIndex] || "")));
   const imported = importedRows.map((row) => String(row[idIndex] || ""));
@@ -5360,11 +5447,13 @@ els.importFavoritesInput.addEventListener("change", async () => {
   state.favoriteQuantities = Object.create(null);
   state.favoriteCosts = Object.create(null);
   state.favoritePlans = Object.create(null);
+  state.favoriteBreakEvenAnchors = Object.create(null);
   importedRows.forEach((row) => {
     const id = String(row[idIndex] || "");
     state.favoriteQuantities[id] = quantityIndex >= 0 ? Math.max(1, Math.floor(Number(row[quantityIndex] || 1))) : 1;
     if (costIndex >= 0 && Number(row[costIndex]) >= 0) state.favoriteCosts[id] = Number(row[costIndex]);
     if (planIndex >= 0) state.favoritePlans[id] = String(row[planIndex] || "");
+    if (anchorIndex >= 0) { try { const anchor = JSON.parse(row[anchorIndex]); if (anchor?.signature && Number.isFinite(anchor.price)) state.favoriteBreakEvenAnchors[id] = anchor; } catch { /* Older CSVs need no anchor. */ } }
   });
   saveFavorites();
   render();
@@ -5377,6 +5466,7 @@ els.clearFavoritesBtn.addEventListener("click", () => {
   state.favoriteQuantities = Object.create(null);
   state.favoriteCosts = Object.create(null);
   state.favoritePlans = Object.create(null);
+  state.favoriteBreakEvenAnchors = Object.create(null);
   saveFavorites();
   render();
 });

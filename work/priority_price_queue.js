@@ -128,6 +128,10 @@ function write(root = ROOT) {
   const output = { version: 1, generatedAt: new Date().toISOString(), runClass: "購入価格高速更新（探索キューとは別）", llmCalls: 0, codexCalls: 0,
     targetHours: read(root, "data/priority-price-config.json").importantHours || 6, scheduledHours: 2, sources,
     notes: "一巡見込みは実処理時間の参考値。Actions待機・通信変動を含まない。国内相場・買取表と重要ショップ価格は6時間目標、通常ショップ約6000枚は30日巡回目標。巡回目標とGOに採用する48時間等の価格鮮度は別で、古い値はGOに使わない。認証停止は古い値を保持。お気に入りは同期済みIDのみ。" };
+  const history = require('./fixed_freshness.js').observe(read(root, 'work/priority-freshness-history.json'), output);
+  fs.writeFileSync(path.join(root, 'work/priority-freshness-history.json'), JSON.stringify(history));
+  output.fixedCohortFreshness = {baselineAt:history.baselineAt,method:history.method,
+    sources:Object.fromEntries(Object.entries(history.sources).map(([id,r])=>[id,{baseline:r.observations[0],latest:r.observations.at(-1),previous:r.observations.at(-2)||null}]))};
   fs.writeFileSync(path.join(root, "data/priority-price-monitor.json"), JSON.stringify(output));
   fs.writeFileSync(path.join(root, "work/priority-price-checkpoint.json"), JSON.stringify(checkpoint));
   return output;

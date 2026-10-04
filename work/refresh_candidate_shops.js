@@ -13,8 +13,19 @@ const rarity = (name) => String(name || "").toUpperCase().match(/\b(MUR|BWR|SSR|
 
 function exactIdentity(card, product) {
   const name = String(product.title || "").replace(/〔/g, "【").replace(/〕/g, "】");
+  if (/PSA|BGS|CGC|TAG|ACE|英語版|韓国版|未開封|セット商品/i.test(name) || stateFromTitle(name) !== "A") return false;
+  const promo = name.match(/〈\s*(\d+)\s*\/\s*((?:SM|SV|S|XY|BW)-P)\s*〉\s*\[([^\]]+)\]/i);
+  if (promo && /\(PROMO\)/i.test(name)) {
+    const { parseSetAndNumber, normalizeToken } = require('./card_identity.js');
+    const identity = parseSetAndNumber(card.name, card.model);
+    const base = String(card.name).split('[')[0].split(/[:：]/)[0].replace(/\([^)]*\)/g,'').replace(/\b(SR|SAR|HR|UR|RRR|RR|P)\b/gi,'').trim();
+    const productBase = name.replace(/^【状態A】\s*/,'').split('(')[0].trim();
+    // PROMO is not a printed SR rarity. Exact promo-series/number/name identify the issue, not the marketing qualifier.
+    if (identity.setCode === normalizeToken(promo[2]) && normalizeToken(promo[3]) === identity.setCode
+      && identity.cardNumber === normalizeToken(promo[1]) && normalizeToken(base) === normalizeToken(productBase)) return true;
+  }
   const converted = { ...product, title: name.replace(/\{([^}]*\/[0-9]+)\}/g, "〈$1〉").replace(/【(MUR|BWR|SSR|CSR|CHR|SAR|UR|HR|SR|RRR|RR|AR)】/g, "($1)") };
-  return stateFromTitle(name) === "A" && productMatchesCard(card, converted)
+  return productMatchesCard(card, converted)
     && (!rarity(card.name) || rarity(card.name) === rarity(name))
     && (!/[:：]\s*SA\b/i.test(card.name) || /\bSA\b|スペシャルアート/i.test(name))
     && !/PSA|BGS|CGC|TAG|ACE|英語版|韓国版|未開封|セット商品/i.test(name);

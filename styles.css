@@ -1572,3 +1572,9 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
   .thumb img{max-height:245px;transform:scale(1.05)}
   .thumb:hover img{transform:scale(1.05)}
 }
+.row.card > .content { min-width: 0; }
+:is(.return-reference-panel, .fixed-reference-card) { margin-top: 12px; min-width: 0; max-width: 100%; }
+.return-reference-panel .table-scroll { max-width: 100%; overflow-x: auto; }
+.return-reference-panel table { border-collapse: collapse; width: 100%; min-width: 600px; }
+.return-reference-panel :is(td, th) { padding: 8px; text-align: left; border-bottom: 1px solid var(--border, #334155); }
+.return-reference-panel :is(p, small, a, li) { overflow-wrap: anywhere; }

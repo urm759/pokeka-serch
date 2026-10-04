@@ -1,4 +1,5 @@
 const releaseMaster = require("./set-release-dates.json");
+const releaseEvidence = require('./release-evidence.json');
 
 const DAY_MS = 86400000;
 
@@ -43,6 +44,12 @@ function resolveRelease(card, auditRow = null) {
   const auditDate = validDate(auditRow?.releaseDate);
   if (auditDate) return { date: auditDate, year: Number(auditDate.slice(0, 4)), source: "カード固有発売日", precision: "date" };
   const code = normalizeSetCode(card?.setCode);
+  const number = String(require('./card_identity.js').parseSetAndNumber(card?.name, card?.model).cardNumber || '').replace(/^0+/, '');
+  const verified = releaseEvidence.sets?.[code] || releaseEvidence.promos.find(row => row.set === code
+    && row.numbers.some(n=>String(n).replace(/^0+/,'')===number)
+    && (!row.nameIncludes || String(card.name).includes(row.nameIncludes)) && (!row.namePattern || new RegExp(row.namePattern,'i').test(card.name)));
+  if (verified) return {date:validDate(verified.date),year:validYear(verified.year || String(verified.date||'').slice(0,4)),
+    source:verified.date ? '公式商品・配布開始日から補完' : '公式発売・発送年のみ判明', precision:verified.date?'date':'year', evidenceUrl:verified.url,checkedAt:releaseEvidence.checkedAt};
   const setDate = !isPromo(card) ? validDate(releaseMaster.dates?.[code]) : null;
   if (setDate) return { date: setDate, year: Number(setDate.slice(0, 4)), source: "セット発売日から補完", precision: "date" };
   const explicitDate = String(card?.name || "").match(/((?:19|20)\d{2})[年\/-](\d{1,2})[月\/-](\d{1,2})/);
@@ -52,8 +59,7 @@ function resolveRelease(card, auditRow = null) {
   }
   const explicitYear = validYear(card?.releaseYear || auditRow?.releaseYear || String(card?.name || "").match(/((?:19|20)\d{2})年/)?.[1]);
   if (explicitYear) return { date: null, year: explicitYear, source: "発売年のみ判明", precision: "year" };
-  const seriesYear = !isPromo(card) ? inferSeriesYear(code) : null;
-  if (seriesYear) return { date: null, year: seriesYear, source: "発売年のみ判明", precision: "year" };
+  // A series code alone is not evidence of an official release year.
   return { date: null, year: null, source: "発売日不明", precision: "unknown" };
 }
 

@@ -5,7 +5,8 @@ const marketModel = require("../market-analysis.js");
 const ROOT = path.join(__dirname, "..");
 const HISTORY_PATH = path.join(__dirname, "market_stability_history.json");
 const SUMMARY_PATH = path.join(ROOT, "data", "market-stability-summary.json");
-const HISTORY_DAYS = 91;
+// Preserve enough actual dates to validate 147-day returns; never manufacture old observations.
+const HISTORY_DAYS = 181;
 const DAY_MS = 86400000;
 
 function readJson(filePath, fallback) {
@@ -211,7 +212,9 @@ function main() {
     };
   }
 
-  fs.writeFileSync(HISTORY_PATH, JSON.stringify(history), "utf8");
+  const historyText = JSON.stringify(history);
+  if (Buffer.byteLength(historyText) > 75 * 1024 * 1024) throw new Error("Domestic history exceeds storage safety budget; previous history retained");
+  fs.writeFileSync(HISTORY_PATH, historyText, "utf8");
   fs.writeFileSync(SUMMARY_PATH, JSON.stringify({
     updatedAt,
     historyDays: history.dates.length > 1
@@ -222,6 +225,7 @@ function main() {
     historyRequirements: marketModel.HISTORY_REQUIREMENTS,
     cards: summaries,
   }), "utf8");
+  require('./build_return_reference.js').build();
   console.log(JSON.stringify({ updatedAt, historyDates: history.dates.length, cards: Object.keys(summaries).length, incremental: Boolean(changedSet), processedCards: targetCards.length }));
 }
 
