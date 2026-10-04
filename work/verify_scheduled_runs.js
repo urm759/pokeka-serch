@@ -4,8 +4,10 @@ async function main(){
  const headers={Accept:'application/vnd.github+json','User-Agent':'pokeka-source-audit'};
  if(process.env.GITHUB_TOKEN)headers.Authorization=`Bearer ${process.env.GITHUB_TOKEN}`;
  async function get(url){const res=await fetch(url,{headers,signal:AbortSignal.timeout(20000)});if(!res.ok)throw new Error(`GitHub audit HTTP ${res.status}`);return res.json();}
+ const latest=await get('https://api.github.com/repos/urm759/pokeka-serch/actions/workflows/priority-price-refresh.yml/runs?event=schedule&per_page=1');
+ const targets=[...new Set([...ids,...latest.workflow_runs.map(r=>r.id)])];
  const runs=[];
- for(const id of ids){
+ for(const id of targets){
   const base=`https://api.github.com/repos/urm759/pokeka-serch/actions/runs/${id}`,run=await get(base),jobs=await get(`${base}/jobs?per_page=100`);
   runs.push({id,name:run.name,event:run.event,url:run.html_url,commit:run.head_sha,status:run.status,conclusion:run.conclusion,startedAt:run.run_started_at,endedAt:run.updated_at,
     durationSeconds:(Date.parse(run.updated_at)-Date.parse(run.run_started_at))/1000,
