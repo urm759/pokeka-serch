@@ -37,6 +37,15 @@ const missing=reference.build({...h,cards:{a:[h.cards.a[0]]}},first,{},dates[30]
 assert.equal(missing.indices.at(-1).psa10Index,null,'missing cohort member is not a changed market');
 const rolled=reference.build({dates:[dates[30]],cards:{a:[h.cards.a[1]]}},first,{},dates[30]);
 assert.equal(rolled.cards.a.psa10Index,70,'baseline survives retention rollover');
+const vanished=reference.build({dates:[dates[30]],cards:{}},first,{},dates[30]);
+assert.equal(vanished.cards.a.breakdownUnresolved,true,'support warning survives a missing or archived card');
+const resolved={...first,cards:{...first.cards,a:{...first.cards.a,supportEvents:first.cards.a.supportEvents.map(e=>({...e,resolvedAt:dates[30]}))}}};
+const brokenAgain=reference.build(h,resolved,{a:{supportBroken:true,supportConfirmed:true,supportLow:90,supportHigh:95}},dates[30]);
+assert.equal(brokenAgain.cards.a.supportEvents.length,2,'new break of previously recovered band is retained');
+const noncohort=reference.build({dates:[dates[0],dates[30]],cards:{a:h.cards.a,b:[[dates[0],300,400],[dates[30],null,200]]}}, {}, {},dates[30]);
+assert(!noncohort.cohort.includes('b'));
+const retained=reference.build({dates:[dates[30]],cards:{a:[h.cards.a[1]],b:[[dates[30],150,200]]}},noncohort,{},dates[30]);
+assert.equal(retained.cards.b.rawIndex,50,'individual fixed baseline survives even outside market cohort');
 assert.equal(reference.windowReturn([[dates[0],100,100],[dates[0],200,200],[dates[30],100,100]],dates[30],30,2),-50,'one latest record per day');
 const cost={purchasePrice:30000,gradingFee:13000,extraCost:1000,feeRate:8,hitRate:.7,lowerGradePrice:20000};
 assert.equal(reference.fixedBreakEven(cost),reference.fixedBreakEven({...cost,currentMarketPrice:1}));

@@ -17,7 +17,8 @@
     const cohortMethod='complete-initial-history-v1';
     const initialDates=(history.dates||[]).filter(d=>d>=baselineDate&&d<=asOfDate);
     const cohort = previous.cohortMethod===cohortMethod ? previous.cohort : Object.entries(history.cards || {}).filter(([,r])=>initialDates.length && initialDates.every(date=>positive(point(r,date,1)) && positive(point(r,date,2)))).map(([id])=>id).sort();
-    const baselinePrices = previous.baselinePrices || Object.fromEntries(cohort.map(id=>[id,[point(history.cards[id]||[],baselineDate,1),point(history.cards[id]||[],baselineDate,2)]]));
+    const baselinePrices = {...(previous.baselinePrices || {})};
+    for(const [id,rows] of Object.entries(history.cards || {})) if(!Object.hasOwn(baselinePrices,id)) baselinePrices[id]=[point(rows,baselineDate,1),point(rows,baselineDate,2)];
     const dates = (history.dates || []).filter(d=>d<=asOfDate);
     const indices = dates.map(date=> {
       const raw=[], psa=[];
@@ -29,21 +30,22 @@
         psa10Index: psa.length===cohort.length && cohort.length ? median(psa) : null, rawObserved:raw.length, psa10Observed:psa.length, cohort:cohort.length };
     });
     const cards={};
-    for(const [id,rawRows] of Object.entries(history.cards || {})) {
+    for(const id of new Set([...Object.keys(history.cards || {}),...Object.keys(previous.cards || {})])) {
+      const rawRows=history.cards?.[id] || [];
       const rows = [...new Map(rawRows.filter(r=>r[0]<=asOfDate).map(r=>[r[0],r])).values()].sort((a,b)=>a[0].localeCompare(b[0]));
       const braw=baselinePrices[id]?.[0]??point(rows,baselineDate,1), bpsa=baselinePrices[id]?.[1]??point(rows,baselineDate,2), raw=point(rows,asOfDate,1), psa=point(rows,asOfDate,2);
       const before=previous.cards?.[id] || {}, summary=market[id] || {};
       const events=(before.supportEvents || []).map(x=>({...x}));
       if(summary.supportBroken && summary.supportConfirmed && positive(summary.supportLow)) {
         const key=`${summary.supportLow}:${summary.supportHigh}`;
-        if(!events.some(e=>e.key===key)) events.push({key,detectedAt:asOfDate,low:summary.supportLow,high:summary.supportHigh,resolvedAt:null});
+        if(!events.some(e=>e.key===key&&!e.resolvedAt)) events.push({key,detectedAt:asOfDate,low:summary.supportLow,high:summary.supportHigh,resolvedAt:null});
       }
       const recent=rows.filter(r=>r[0]<=asOfDate && Date.parse(`${r[0]}T00:00:00Z`)>=Date.parse(`${asOfDate}T00:00:00Z`)-14*DAY && positive(r[2]));
       const span=recent.length ? (Date.parse(recent.at(-1)[0])-Date.parse(recent[0][0]))/DAY : 0;
       const rawPrices=recent.map(r=>r[1]).filter(positive);
       const rawMaintained=rawPrices.length>=8 && Math.max(...rawPrices)/Math.min(...rawPrices)<=1.1;
       const stable=rawMaintained && recent.length>=8 && span>=13 && summary.newLow14===0 && typeof summary.width14Pct==="number" && summary.width14Pct<=10
-        && summary.direction!=="下降" && Number(rows.find(r=>r[0]===asOfDate)?.[7])>=10 && typeof summary.supplyAbsorption==="number" && summary.supplyAbsorption<=1;
+        && !String(summary.direction||'').includes('下降') && !summary.supportBroken && Number(rows.find(r=>r[0]===asOfDate)?.[7])>=10 && typeof summary.supplyAbsorption==="number" && summary.supplyAbsorption<=1;
       if(stable) for(const event of events) if(!event.resolvedAt && (Date.parse(asOfDate)-Date.parse(event.detectedAt))/DAY>=14) event.resolvedAt=asOfDate;
       const unresolved=events.some(e=>!e.resolvedAt);
       cards[id]={ rawIndex:braw&&raw?raw/braw*100:null,psa10Index:bpsa&&psa?psa/bpsa*100:null,
