@@ -1,12 +1,12 @@
 const fs = require('node:fs');
 const path = require('node:path');
 function build(root, pc = {}) {
-  const workflows = ['priority-price-refresh.yml', 'daily-fast-update.yml', 'safe-checkpoint-backfill.yml', 'backfill-data.yml', 'watch-data-health.yml'];
+  const workflows = fs.readdirSync(path.join(root,'.github/workflows')).filter(file=>/\.ya?ml$/.test(file)).sort();
   const scripts = workflows.flatMap(file => {
     const target = path.join(root,'.github/workflows',file);
     if (!fs.existsSync(target)) return [];
     const text = fs.readFileSync(target,'utf8');
-    return [{name:text.match(/^name:\s*(.+)/m)?.[1] || file, platform:'GitHub Actions',
+    return [{name:text.match(/^name:\s*(.+)/m)?.[1] || file, platform:'GitHub Actions',role:file==='weekly-full-tests.yml'?'回帰テスト':'取得・探索・監視',
       schedule:[...text.matchAll(/cron:\s*["']([^"']+)/g)].map(m=>`${m[1]} UTC`).join('／') || '自動更新なし・手動のみ',
       llmCalls:0,codexCalls:0,url:`https://github.com/urm759/pokeka-serch/blob/main/.github/workflows/${file}`}];
   });

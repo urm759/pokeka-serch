@@ -79,4 +79,5 @@ api.state.favoriteCosts.test=0;assert.equal(api.favoritePurchasePrice(favorite),
 const tasks = require('./task_operations.js').build(root);
 assert(tasks.aiFollowup.status.startsWith('PAUSED'));assert.equal(tasks.aiFollowup.originalRequestComplete,false);
 assert(tasks.scripts.every(r=>r.llmCalls===0 && r.codexCalls===0));
+assert(tasks.scripts.some(r=>r.name==='Manual Full Refresh' && r.schedule==='自動更新なし・手動のみ'));
 console.log('ROI zero/boundaries/costs, PSA9 provenance/null/reference ratios, URL/reload, fixed-cohort and revalidation tests passed');
