@@ -1,1 +1,39 @@
-{"version":1,"checkedAt":"2026-10-06","status":"公開表示確認・自動取得未実装","validatedIndividualSalesCards":0,"source":"SNKRDUNK国内商品売買履歴","sample":{"cardId":"pk-71713","setCode":"M2","number":"110/080","rarity":"SAR","url":"https://snkrdunk.com/apparels/704401/sales-histories","visiblePsa9Rows":20,"visiblePriceMin":66950,"visiblePriceMax":94999,"exactDateRows":17,"relativeDateRows":3,"latestExactDate":"2026-09-30","visibleStableSaleId":false,"sameDaySamePriceRows":true,"usedForDecision":false},"feasibility":"公開画面でPSA9グレード別の日付・円価格を確認できるため、読み取り自体は可能。現時点で正規の提供API・自動取得/再利用条件・安定した成約IDは未確認。","blockers":["日次取得処理未実装","公開表示20件の先にある期間全件取得範囲が未確認","相対日時から正確な成約日時を推定しない","同日同額の別取引を識別する安定した成約IDが画面にない","大量自動取得と公開再利用の利用条件確認が必要"],"nextAction":"正規のデータ提供方法・許諾と安定IDを確認後、同一仕様と国内JPYを監査する小規模コレクターを実装。未確認値を0件・実成約採用済みにしない。","termsUrl":"https://snkrdunk.com/terms/"}
+{
+  "version": 2,
+  "checkedAt": "2026-10-06",
+  "status": "取得条件確認待ち・自動取得未実装",
+  "validatedIndividualSalesCards": 0,
+  "source": "SNKRDUNK国内商品売買履歴",
+  "sample": {
+    "cardId": "pk-71713", "setCode": "M2", "number": "110/080", "rarity": "SAR",
+    "url": "https://snkrdunk.com/apparels/704401/sales-histories",
+    "visiblePsa9Rows": 20, "visiblePriceMin": 66950, "visiblePriceMax": 94999,
+    "exactDateRows": 17, "relativeDateRows": 3, "latestExactDate": "2026-09-30",
+    "visibleStableSaleId": false, "sameDaySamePriceRows": true, "usedForDecision": false,
+    "observationBasis": "前回の公開画面確認。今回の再取得は0。20行を期間内全件数とは扱わない。"
+  },
+  "terms": {
+    "url": "https://snkrdunk.com/terms", "checkedAt": "2026-10-06",
+    "relevantClause": "第7条1項13号：クローリング・スクレイピング又は類似手段によるアクセス・情報取得を禁止",
+    "automatedCollectionPermission": "未取得",
+    "stopReason": "規約上の禁止を確認。正規のデータ提供又は明示許諾なしに自動取得を開始しない。",
+    "publicBulkApiConfirmed": false
+  },
+  "snapshotProposal": {
+    "status": "設計検討のみ・許諾後に実装", "stableIdRequiredForSnapshot": false,
+    "storage": "カード・仕様・グレード・観測日時・表示取得範囲を固定した変更不可スナップショット",
+    "withinSnapshot": "表示順と同一内容の出現順を保持。同日同額でも別行を統合しない。氏名・会員ID・アイコンは収集しない。",
+    "betweenSnapshots": "安定IDがない保存分は単純合算しない。1つの観測時点だけで集計し、重なりは不明として保持。",
+    "coverage": "画面20行だけでは30日全件数を確定しない。観測行数と期間完全件数を別項目にし、完全範囲未確認はnull。",
+    "relativeDates": "正確な成約日はnull。相対日付の行を30日・90日の確定集計へ採用しない。",
+    "adoption": "同一仕様・国内JPY・PSA9・個別行の品質・使用条件・対象期間を確認後のみ。現時点の仕入れ計算への採用0。"
+  },
+  "blockers": [
+    "自動取得の明示許諾・正規データ提供経路が未確認",
+    "表示20件より先の期間全件取得範囲が未確認",
+    "安定IDがないため複数観測間の同一取引を確定できない（スナップショット内の保存自体は可能）",
+    "相対日付3行の正確な成約日が未取得", "継続コレクター未実装"
+  ],
+  "nextAction": "運営へAPI・許諾付きデータ提供・公開再利用条件を確認。取得可能になれば重点カード1枚の期間限定スナップショットから実装する。",
+  "termsUrl": "https://snkrdunk.com/terms/"
+}

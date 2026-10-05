@@ -74,8 +74,11 @@
         <p class="filter-explanation">利益率下限0%は、PSA10率・PSA9以下・販売手数料・鑑定費・追加費用を含む期待値が0円以上という意味です。PSA9など全ての結果で赤字にならない保証ではありません。</p>
         <label class="control"><span>仕入れ値／国内PSA9 下限 %</span><input id="psa9RatioMinInput" type="number" min="0" step="1" placeholder="例：80" /></label>
         <label class="control"><span>仕入れ値／国内PSA9 上限 %</span><input id="psa9RatioMaxInput" type="number" min="0" step="1" placeholder="例：100" /></label>
-        <label class="check-control"><input id="psa9RatioReferenceInput" type="checkbox" />PSA9集計・推定／相場買値の参考比率も含める</label>
-        <p class="filter-explanation">比率は在庫あり状態Aの購入価格を優先。未取得時の基準相場は参考値です。PSA9と同額で買っても、鑑定費・手数料等の分だけ損失が出ます。国内PSA9個別成約は現在未取得のため、参考値OFFで比率条件を指定すると結果がありません。手入力買値はお気に入りの仮定試算で確認できます。</p>
+        <label class="check-control"><input id="psa9RatioAggregateInput" type="checkbox" />国内PSA9集計値を含める</label>
+        <label class="check-control"><input id="psa9RatioEstimateInput" type="checkbox" />PSA9推定値を含める（素体由来は検索対象外）</label>
+        <label class="check-control"><input id="psa9RatioMarketInput" type="checkbox" />購入価格未取得時の相場参考買値を含める</label>
+        <p id="psa9RatioCoverage" class="filter-explanation" aria-live="polite"></p>
+        <p class="filter-explanation">比率は在庫あり状態Aの購入価格を優先。国内集計・推定・相場買値は個別に選択してください。素体由来のPSA9推定は循環した割安判断になるため、選択しても比率検索から除外します。PSA9と同額で買っても費用分の損失が出ます。国内PSA9個別成約は現在未取得のため、参考値OFFで比率条件を指定すると結果がありません。手入力買値はお気に入りの仮定試算で確認できます。</p>
         <label class="control">
           <span>並び順</span>
           <select id="sortInput">
@@ -837,7 +840,7 @@
     </section>
   </main>
 
-  <script src="./decision-model.js?v=20261003-store-exit-v1"></script>
+  <script src="./decision-model.js?v=20261006-psa9-v2"></script>
   <script src="./price-integrity.js?v=20260928-v1"></script>
   <script src="./grade-calibration.js?v=20260924-v1"></script>
   <script src="./search-index-model.js?v=20260913-search-v1"></script>
@@ -845,7 +848,7 @@
   <script src="./market-analysis.js?v=20260913-supply-absorption-v3"></script>
   <script src="./snkr-raw-flip-model.js?v=20260920-raw-flip-v1"></script>
   <script src="./raw-psa9-gap-model.js?v=20260929-trial-v2"></script>
-  <script src="./purchase-ratio-model.js?v=20261006-v1"></script>
+  <script src="./purchase-ratio-model.js?v=20261006-v2"></script>
   <script src="./candidate-visibility.js?v=20260927-v1"></script>
   <script src="./catalog-index-adapter.js?v=20260927-v1"></script>
   <script src="./limit-display-model.js?v=20261003-focus-v1"></script>
@@ -855,6 +858,6 @@
   <script src="./release-year-filter.js?v=20261003-priority-v2"></script>
   <script src="./update-health-model.js?v=20260930-v1"></script>
   <script src="./update-health-banner.js?v=20261001-v1"></script>
-  <script src="./app.js?v=20261006-roi-v1"></script>
+  <script src="./app.js?v=20261006-psa9-v2"></script>
 </body>
 </html>

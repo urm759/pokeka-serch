@@ -792,6 +792,12 @@
     const lowerGradeNet = lowerGradePrice * saleMultiplier - saleExtraCost;
     const psa9Profit = lowerGradeNet - purchasePrice - fee;
     const psa9NonLossMaxPrice = Math.max(0, lowerGradeNet - fee);
+    // Keep the decision cap unchanged; retain the signed boundary for display.
+    const psa9NonLossRawPrice = input.assumptions?.lowerGradePrice != null && Number(input.assumptions.lowerGradePrice) > 0
+      && input.fee != null && Number.isFinite(Number(input.fee)) && Number(input.fee) >= 0
+      && Number.isFinite(Number(input.saleFeeRate ?? 0)) && Number(input.saleFeeRate ?? 0) >= 0 && Number(input.saleFeeRate ?? 0) < 100
+      && Number.isFinite(Number(input.saleExtraCost ?? 0)) && Number(input.saleExtraCost ?? 0) >= 0
+      && Number.isFinite(lowerGradeNet - fee) ? lowerGradeNet - fee : null;
     return {
       psa10BreakEvenPrice: Number.isFinite(psa10BreakEvenPrice) ? psa10BreakEvenPrice : null,
       expectedBreakEvenPrice: Number.isFinite(expectedBreakEvenPrice) ? Math.max(0, expectedBreakEvenPrice) : null,
@@ -802,6 +808,7 @@
       bearishExpectedProfit: bearishEconomics.expectedProfit,
       psa9Profit,
       psa9NonLossMaxPrice,
+      psa9NonLossRawPrice,
       currentPsa10Price,
       bearishPsa10Price,
       targetProfit,

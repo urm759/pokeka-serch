@@ -15,7 +15,7 @@ function build(root, pc = {}) {
   return {scripts,aiFollowup:{id:'automation',name:'価格高速更新と定期バックフィルの公開確認',status:'PAUSED・停止維持',checkedAt:'2026-10-06',
     originalRequestComplete:false,requiresApprovalToResume:true},pcObservation:{at:pc.observedAt || null,status:pc.health?.status || '未観測',
       independentObserverRegistered:pc.independentObserverRegistered ?? null,reason:pc.health?.reason || null},
-    domesticPsa9:{individualSalesCards:0,status:'公開表示確認・取得処理未実装',
-      reason:'国内公開売買履歴でPSA9の20行を確認。安定成約ID・全期間取得範囲・自動取得/再利用条件は未確認のため未採用。国内集計・推定・海外成約は加算しない。',auditUrl:'./data/domestic-psa9-route-audit.json'}};
+    domesticPsa9:{individualSalesCards:0,status:'取得条件確認待ち・取得処理未実装',
+      reason:'公開PSA9履歴20行は未採用。規約第7条1項13号の自動収集禁止を確認。正規データ提供・明示許諾が必要。同日同額の行は統合せず、安定IDがない観測同士は合算しない。国内集計・推定・海外成約は加算しない。',auditUrl:'./data/domestic-psa9-route-audit.json'}};
 }
 module.exports={build};
