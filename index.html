@@ -72,6 +72,10 @@
           <input id="stressExpectedProfitFilterInput" type="number" step="1000" value="0" />
         </label>
         <p class="filter-explanation">利益率下限0%は、PSA10率・PSA9以下・販売手数料・鑑定費・追加費用を含む期待値が0円以上という意味です。PSA9など全ての結果で赤字にならない保証ではありません。</p>
+        <label class="control"><span>仕入れ値／国内PSA9 下限 %</span><input id="psa9RatioMinInput" type="number" min="0" step="1" placeholder="例：80" /></label>
+        <label class="control"><span>仕入れ値／国内PSA9 上限 %</span><input id="psa9RatioMaxInput" type="number" min="0" step="1" placeholder="例：100" /></label>
+        <label class="check-control"><input id="psa9RatioReferenceInput" type="checkbox" />PSA9集計・推定／相場買値の参考比率も含める</label>
+        <p class="filter-explanation">比率は在庫あり状態Aの購入価格を優先。未取得時の基準相場は参考値です。PSA9と同額で買っても、鑑定費・手数料等の分だけ損失が出ます。国内PSA9個別成約は現在未取得のため、参考値OFFで比率条件を指定すると結果がありません。手入力買値はお気に入りの仮定試算で確認できます。</p>
         <label class="control">
           <span>並び順</span>
           <select id="sortInput">
@@ -538,13 +542,13 @@
           </label>
           <label class="control">
             <span>最低期待利益</span>
-            <input id="minExpectedProfitInput" type="number" step="1000" value="10000" />
-            <small class="control-help">1枚で最低いくら利益が欲しいか。1万円なら10000。</small>
+            <input id="minExpectedProfitInput" type="number" min="0" step="1000" value="10000" />
+            <small class="control-help">1枚の利益額条件。0円なら正の額条件だけ解除し、計算利益はそのまま。赤字は不可。</small>
           </label>
           <label class="control">
             <span>最低期待利益率</span>
             <input id="minExpectedRoiInput" type="number" min="0" step="1" value="30" />
-            <small class="control-help">仕入れ額に対して最低何％の期待利益が欲しいか。迷ったら30％。</small>
+            <small class="control-help">期待利益÷（実際の仕入れ値＋鑑定費）×100。手数料・減額・諸費用は手取りへ反映。迷ったら30％。</small>
           </label>
           <label class="control">
             <span>最低年換算資金効率</span>
@@ -595,6 +599,9 @@
           <label class="control"><span>店頭交通費等／1枚</span><input id="storeTravelCostInput" type="number" min="0" step="100" value="0"><small>店頭出口だけに適用。まとめ売りの場合は1枚あたりへ配分してください。</small></label>
         </div>
         <div class="psa-settings-note">
+          <button id="roiFocusButton" type="button">利益率中心（最低利益額だけ0円）</button>
+          <p>利益額の条件だけを0円に変更します。期待利益の計算値は変更しません。最低期待利益率・年換算効率・資金・品質・供給・返却期間の安全条件は維持します。期待利益率の分母は仕入れ値＋鑑定費です。販売手数料・減額・送料等は売却手取りへ反映します。</p>
+          <strong id="profitHurdleStatus"></strong>
           迷った場合は初期値のままで使えます。PSA10率は公式値を優先し、未取得時だけ70%／50%設定を使います。PSA9は実価格を優先し、未取得時は平均美品の75%で計算します。使用可能資金は「総資金－ロック中資金－鑑定費予備資金」です。買取店の減額率は買取出口だけに使い、フリマ販売手数料は加算しません。
           <strong id="capitalAvailabilityStatus"></strong>
           <strong id="gradingReserveStatus"></strong>
@@ -838,6 +845,7 @@
   <script src="./market-analysis.js?v=20260913-supply-absorption-v3"></script>
   <script src="./snkr-raw-flip-model.js?v=20260920-raw-flip-v1"></script>
   <script src="./raw-psa9-gap-model.js?v=20260929-trial-v2"></script>
+  <script src="./purchase-ratio-model.js?v=20261006-v1"></script>
   <script src="./candidate-visibility.js?v=20260927-v1"></script>
   <script src="./catalog-index-adapter.js?v=20260927-v1"></script>
   <script src="./limit-display-model.js?v=20261003-focus-v1"></script>
@@ -847,6 +855,6 @@
   <script src="./release-year-filter.js?v=20261003-priority-v2"></script>
   <script src="./update-health-model.js?v=20260930-v1"></script>
   <script src="./update-health-banner.js?v=20261001-v1"></script>
-  <script src="./app.js?v=20261004-reference-v1"></script>
+  <script src="./app.js?v=20261006-roi-v1"></script>
 </body>
 </html>

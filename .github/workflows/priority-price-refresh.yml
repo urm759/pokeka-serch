@@ -24,6 +24,7 @@ jobs:
         run: |
           node --check app.js
           node work/test_priority_refresh.js
+          node work/test_roi_psa9_ratio.js
           node work/test_purchase_memo.js
           node work/test_return_reference.js
           node work/test_buyback_scenario_limits.js

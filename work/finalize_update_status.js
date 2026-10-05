@@ -290,6 +290,7 @@ const payload = {
   sources,
 };
 payload.unifiedMonitor = require("./source_monitor.js").build(ROOT, sources, previous.unifiedMonitor || {});
+payload.taskOperations = require("./task_operations.js").build(ROOT, payload.unifiedMonitor.pc);
 payload.focusMonitor = require("./focus_monitor.js").write(ROOT);
 payload.priorityPriceMonitor = require("./priority_price_queue.js").write(ROOT);
 fs.writeFileSync(OUTPUT, JSON.stringify(payload), "utf8");

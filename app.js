@@ -15,6 +15,7 @@ const priceIntegrityModel = window.PriceIntegrity;
 const FORECAST_HORIZON_DAYS = 91;
 const returnHorizonModel = window.ReturnHorizonModel;
 const priceReferenceModel = window.PriceReferenceModel;
+const purchaseRatioModel = window.PurchaseRatioModel;
 
 const state = {
   cards: [],
@@ -103,6 +104,9 @@ const state = {
   minPrice: null,
   maxPrice: null,
   minPurchaseLimitRatio: null,
+  psa9RatioMin: null,
+  psa9RatioMax: null,
+  psa9RatioReference: false,
   minPsaRate: null,
   overallFilter: "all",
   minExitLiquidity: 0,
@@ -212,6 +216,11 @@ const guideLines = [
 ];
 
 const els = {
+  psa9RatioMinInput: document.getElementById("psa9RatioMinInput"),
+  psa9RatioMaxInput: document.getElementById("psa9RatioMaxInput"),
+  psa9RatioReferenceInput: document.getElementById("psa9RatioReferenceInput"),
+  roiFocusButton: document.getElementById("roiFocusButton"),
+  profitHurdleStatus: document.getElementById("profitHurdleStatus"),
   qInput: document.getElementById("qInput"),
   year2020Input: document.getElementById("year2020Input"),
   includeUnknownYearInput: document.getElementById("includeUnknownYearInput"),
@@ -1129,7 +1138,8 @@ function favoriteQuantity(id) {
 }
 
 function favoritePurchasePrice(card) {
-  const saved = Number(state.favoriteCosts[String(card.id)]);
+  const raw = state.favoriteCosts[String(card.id)];
+  const saved = raw == null || raw === "" ? NaN : Number(raw);
   return Number.isFinite(saved) && saved >= 0 ? saved : Math.max(0, Number(card.price || 0));
 }
 
@@ -1151,8 +1161,15 @@ function renderPriceCapacityNotice() {
 }
 function renderPriorityPriceMonitor() {
   const monitor = state.updateStatus?.priorityPriceMonitor, fixed = monitor?.fixedCohortFreshness;
-  const stats = fixed ? `<article class="source-status-card"><details><summary>同一カード群の6時間確認率・確認待ち分類</summary><p>${escapeHtml(fixed.method)}／比較開始 ${escapeHtml(formatJstTimestamp(fixed.baselineAt))}</p>${Object.entries(fixed.sources).map(([id,r])=>`<p><b>${escapeHtml(id)}</b>：${r.latest.fresh6h}/${r.latest.cohort}枚（${r.latest.fresh6hPct?.toFixed(1) ?? '未計測'}%）／開始時 ${r.baseline?.fresh6hPct?.toFixed(1) ?? '未観測'}%／前回 ${r.previous?.fresh6hPct?.toFixed(1) ?? '未観測'}%／最大期限超過 ${r.latest.maxOverdueHours?.toFixed(1) ?? '未計測'}時間<br>自動巡回待ち ${r.latest.autoWait}／手動確認待ち ${r.latest.manualWait}／アクセス停止 ${r.latest.accessStopped}／確認日時なし ${r.latest.unconfirmed}。対象追加${r.latest.added}・消失${r.latest.missingFromCurrent}は相場変動と別集計。</p>`).join('')}<a href="./data/priority-manual-wait-audit.json">14商品の原因・同一仕様照合根拠・巡回復帰結果</a></details></article>` : '';
-  return renderPriorityPriceRows() + stats;
+  const stats = fixed ? `<article class="source-status-card"><details><summary>同一カード群の6時間確認率・確認待ち分類</summary><p>${escapeHtml(fixed.method)}／比較開始 ${escapeHtml(formatJstTimestamp(fixed.baselineAt))}</p>${Object.entries(fixed.sources).map(([id,r])=>`<p><b>${escapeHtml(id)}</b>：${r.latest.fresh6h}/${r.latest.cohort}枚（${r.latest.fresh6hPct?.toFixed(1) ?? '未計測'}%）／開始時 ${r.baseline?.fresh6hPct?.toFixed(1) ?? '未観測'}%／前回 ${r.previous?.fresh6hPct?.toFixed(1) ?? '未観測'}%／最大期限超過 ${r.latest.maxOverdueHours?.toFixed(1) ?? '未計測'}時間<br>6時間超過の巡回待ち ${r.latest.autoWait}／手動確認待ち ${r.latest.manualWait}／アクセス停止 ${r.latest.accessStopped}／確認日時なし ${r.latest.unconfirmed}。対象追加${r.latest.added}・現在優先外${r.latest.missingFromCurrent}（うち6時間超過${r.latest.outsidePriorityStale ?? "未集計"}）は相場変動と別集計。優先外は通常巡回期限で処理します。</p>`).join('')}<a href="./data/freshness-correction-audit.json">同じ旧データ・時刻での鮮度集計修正</a> / <a href="./data/priority-manual-wait-audit.json">商品の確認待ち原因・巡回復帰結果</a></details></article>` : '';
+  return renderPriorityPriceRows() + stats + renderTaskOperations();
+}
+function renderTaskOperations() {
+  const operations = state.updateStatus?.taskOperations;
+  if (!operations) return "";
+  const pc = operations.pcObservation;
+  const pcNote = pc ? `<p>PC登録の最終観測：${escapeHtml(formatJstTimestamp(pc.at))}／${escapeHtml(pc.status)}。独立観測タスク：${pc.independentObserverRegistered === false ? "未登録・既知の権限制約" : "登録状態は観測値を参照"}。過去観測の次回時刻は現在の実行成功を保証しません。</p>` : "";
+  return `<article class="source-status-card"><details><summary>スクリプト取得とAI確認タスク（別運用）</summary><p>日常取得・探索・監視はスクリプトでLLM/Codex 0回。AI確認の完了は元の開発依頼の完了ではありません。AIタスクの作成・再開には事前確認が必要です。</p>${operations.scripts.map(r=>`<p><b>${escapeHtml(r.name)}</b>／${escapeHtml(r.platform)}／${escapeHtml(r.schedule)}／${escapeHtml(r.status || "スクリプト運用")} ${r.url ? `<a href="${escapeHtml(r.url)}" target="_blank" rel="noreferrer">workflow</a>` : ""}</p>`).join("")}${pcNote}<p>AI確認：${escapeHtml(operations.aiFollowup.name)}／${escapeHtml(operations.aiFollowup.status)}（確認日 ${escapeHtml(operations.aiFollowup.checkedAt)}。保存済み監査であり、アプリの現在状態を日次取得するものではありません）</p><p>国内PSA9個別成約：${escapeHtml(operations.domesticPsa9.status)}。${escapeHtml(operations.domesticPsa9.reason)}</p><a href="./data/domestic-psa9-route-audit.json">国内PSA9取得経路の調査</a> / <a href="./docs/REQUEST_STATUS.md">中断依頼と継続残件</a></details></article>`;
 }
 function renderPriorityPriceRows() {
   const monitor = state.updateStatus?.priorityPriceMonitor;
@@ -1234,6 +1251,12 @@ document.addEventListener('toggle', async (event) => {
 
 function memoMoney(value) {
   return value == null || !Number.isFinite(Number(value)) ? "算出不可" : `${Number(value) < 0 ? "-" : "+"}\u00a5${fmt.format(Math.abs(Math.round(value)))}`;
+}
+
+function signedExpectedMoney(value) {
+  if (value == null || value === "" || !Number.isFinite(Number(value))) return {className:"",text:"算出不可"};
+  const amount = Number(value);
+  return {className:amount >= 0 ? "positive" : "negative",text:`${amount < 0 ? "-" : ""}¥${fmt.format(Math.abs(Math.round(amount)))}`};
 }
 
 function buyLimitText(limit) {
@@ -1349,6 +1372,8 @@ function renderFavorites() {
           </div>
         </div>
         <details class="favorite-trial" open><summary>入力した買値での仮定試算（判定には反映しない）</summary><p>\u00a5${fmt.format(purchasePrice)}／1枚・${escapeHtml(trial.planName)}・鑑定費等\u00a5${fmt.format(trial.fee || 0)}・返却目安${fmt.format(trial.lockDays || 0)}日</p><div class="favorite-prices"><div><span>現相場・期待損益</span><strong>${memoMoney(trial.rows?.current?.expectedProfit)}</strong></div><div><span>中央予測・期待損益</span><strong>${memoMoney(trial.rows?.central?.expectedProfit)}</strong></div><div><span>供給ストレス・期待損益</span><strong>${memoMoney(trial.rows?.stress?.expectedProfit)}</strong></div><div><span>PSA9以下想定売価での損益</span><strong>${memoMoney(trial.lowerGradeProfit)}</strong></div></div><small>${escapeHtml(trial.warning || trial.reason)} ${escapeHtml(trial.declaredValueWarning || "")} 下位グレード売価：${escapeHtml(trial.lowerGradeSource || "未取得")}</small></details>
+        <p class="helper">${state.favoriteCosts[card.id] != null ? "手入力買値" : "相場参考買値"}＋鑑定費が分母。現相場の期待利益率 ${Number.isFinite(trial.rows?.current?.expectedRoi) ? `${trial.rows.current.expectedRoi.toFixed(1)}%` : "算出不可"}／返却期間中央の期待利益率 ${Number.isFinite(trial.rows?.central?.expectedRoi) ? `${trial.rows.central.expectedRoi.toFixed(1)}%` : "期間根拠不足"}。運用上限で買った利益率とは別です。</p>
+        ${purchasePsa9RatioHtml(card, purchasePrice, {fee:trial.fee, purchaseKind:state.favoriteCosts[card.id] != null ? "manual" : "market"})}
         ${trial.fixedBreakEvenAnchor ? `<p class="helper">保存した購入条件の固定損益分岐PSA10：¥${fmt.format(Math.round(trial.fixedBreakEvenAnchor.price))}（${escapeHtml(formatJstTimestamp(trial.fixedBreakEvenAnchor.recordedAt))}）。買値・費用・プランを変更しない限り相場下落では書き換えません。保存時点の率・PSA9想定も固定。最新出口での損益は上の試算で別に再評価。</p>` : ''}
         <button class="remove-favorite" type="button" data-remove-favorite="${escapeHtml(card.id)}" title="お気に入りを解除" aria-label="${name}をお気に入りから解除">×</button>
       </article>
@@ -2801,10 +2826,35 @@ function parseOptionalNumber(value) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+function purchasePsa9Ratio(card, manualPrice, purchaseKind) {
+  if (manualPrice === undefined) manualPrice = state.favoriteCosts[card.id];
+  const manual = manualPrice != null && Number.isFinite(Number(manualPrice));
+  const verified = card.rawPsa9Gap?.psa9;
+  const psa9 = verified?.count >= 3 && verified.median > 0 ? {value:verified.median,measurementType:"actual",count:verified.count,
+    updatedAt:verified.latestSaleAt,country:"jp",currency:"JPY",identityConfirmed:true} : card.psa9Audit;
+  return purchaseRatioModel?.evaluate({ purchasePrice: manual ? Number(manualPrice) : card.currentStoreOffer?.value ?? card.price,
+    purchaseKind: purchaseKind || (manual ? "manual" : card.currentStoreOffer ? "store" : "market"), psa9,
+    asOf: meta.generatedAt || meta.updatedAt, conflicted: card.priceAggregation?.conflicted || card.dataQuality?.manualReview,
+    fee: state.fee, saleFeeRate: state.saleFeeRate, extraCost: state.saleExtraCost }) || {ratio:null,reasons:["未取得"]};
+}
+
+function purchasePsa9RatioHtml(card, manualPrice, costs = {}) {
+  const row = purchasePsa9Ratio(card, manualPrice, costs.purchaseKind);
+  const cap = row.ratio != null && row.psa9Price > 0 ? Math.max(0, row.psa9Price * (1 - state.saleFeeRate / 100) - state.saleExtraCost - (costs.fee ?? state.fee)) : null;
+  const source = {actual:"国内実成約",aggregate:"国内集計値・実成約未取得",estimate:"推定値",missing:"未取得"}[row.measurementType] || "未取得";
+  const purchaseLabel = row.purchasePrice == null ? "未取得" : `¥${fmt.format(row.purchasePrice)}`;
+  return `<details class="purchase-ratio-details"><summary>仕入れ値／国内PSA9：${row.ratio == null ? "検証不能" : `${row.ratio.toFixed(1)}%`}・${escapeHtml(source)}</summary><p class="helper">${escapeHtml(row.purchaseKind === "manual" ? "手入力買値" : row.purchaseKind === "store" ? "店舗状態A価格" : "相場参考値")} ${purchaseLabel}／国内PSA9 ${row.psa9Price > 0 ? `¥${fmt.format(row.psa9Price)}` : "未取得"}。${row.reference ? "参考値・実成約基準ではありません。" : ""}<br>PSA9費用込み赤字回避上限：${cap == null ? "未算出" : `¥${fmt.format(Math.floor(cap))}`}（${escapeHtml(source)}・フリマ手数料${state.saleFeeRate}%、追加費用、鑑定費を控除）／更新日 ${escapeHtml(row.updatedAt?.slice(0,10) || "未確認")} ${escapeHtml(row.reasons.join("／"))}。比率・仮定試算は本番の仕入れ判定に反映しません。</p></details>`;
+}
+
 function restoreQuickFilters() {
   try {
     const saved = JSON.parse(localStorage.getItem(QUICK_FILTER_STORAGE_KEY) || "{}");
     const url = new URL(window.location.href);
+    for (const [key, field] of [["expProfit", "minExpectedProfit"], ["expRoi", "minExpectedRoi"], ["annual", "minAnnualEfficiency"], ["psa9RatioMin", "psa9RatioMin"], ["psa9RatioMax", "psa9RatioMax"]]) {
+      const element = els[`${field}Input`];
+      if (!url.searchParams.has(key) && element && saved[field] != null && Number.isFinite(Number(saved[field]))) element.value = String(saved[field]);
+    }
+    if (!url.searchParams.has("psa9RatioRef")) els.psa9RatioReferenceInput.checked = saved.psa9RatioReference === true;
     if (!url.searchParams.has("year2020")) els.year2020Input.checked = saved.year2020Only === true;
     if (!url.searchParams.has("includeUnknownYear")) els.includeUnknownYearInput.checked = saved.includeUnknownYear === true;
     // A shared or bookmarked URL always wins over this device's last-used values.
@@ -2826,6 +2876,8 @@ function saveQuickFilters() {
       minPurchaseLimitRatio: state.minPurchaseLimitRatio,
       year2020Only: state.year2020Only,
       includeUnknownYear: state.includeUnknownYear,
+      minExpectedProfit: state.minExpectedProfit, minExpectedRoi: state.minExpectedRoi, minAnnualEfficiency: state.minAnnualEfficiency,
+      psa9RatioMin: state.psa9RatioMin, psa9RatioMax: state.psa9RatioMax, psa9RatioReference: state.psa9RatioReference,
     }));
   } catch {
     // The current in-memory filter remains usable even if browser storage fails.
@@ -3049,6 +3101,10 @@ function syncLowRiskAvailabilityControl() {
 
 function readUrl() {
   const url = new URL(window.location.href);
+  for (const [key, el] of [["psa9RatioMin", els.psa9RatioMinInput], ["psa9RatioMax", els.psa9RatioMaxInput]]) {
+    if (url.searchParams.has(key)) el.value = url.searchParams.get(key);
+  }
+  if (url.searchParams.has("psa9RatioRef")) els.psa9RatioReferenceInput.checked = url.searchParams.get("psa9RatioRef") === "1";
   const catalogScope = url.searchParams.get("catalog");
   const guide = url.searchParams.get("guide");
   const fee = parseOptionalNumber(url.searchParams.get("fee"));
@@ -3289,6 +3345,10 @@ function buildShareUrl() {
   if (state.minBuybackPrice == null) url.searchParams.delete("bbPriceMin"); else url.searchParams.set("bbPriceMin", String(state.minBuybackPrice));
   if (state.maxBuybackPrice == null) url.searchParams.delete("bbPriceMax"); else url.searchParams.set("bbPriceMax", String(state.maxBuybackPrice));
   url.searchParams.set("roi", String(state.minRoi));
+  for (const [key, value] of [["psa9RatioMin", state.psa9RatioMin], ["psa9RatioMax", state.psa9RatioMax]]) {
+    if (value == null) url.searchParams.delete(key); else url.searchParams.set(key, String(value));
+  }
+  url.searchParams.set("psa9RatioRef", state.psa9RatioReference ? "1" : "0");
   if (state.minExpectedRoiFilter !== 0) url.searchParams.set("filterExpRoi", String(state.minExpectedRoiFilter)); else url.searchParams.delete("filterExpRoi");
   if (state.minExpectedProfitFilter !== 0) url.searchParams.set("filterExpProfit", String(state.minExpectedProfitFilter)); else url.searchParams.delete("filterExpProfit");
   if (state.minStressExpectedRoiFilter !== 0) url.searchParams.set("filterStressRoi", String(state.minStressExpectedRoiFilter)); else url.searchParams.delete("filterStressRoi");
@@ -3485,7 +3545,7 @@ function renderPresetAudit(cards) {
     ["価格信頼度不足", (card) => card.priceAggregation?.confidence === "低"],
     ["下降・供給警戒", (card) => card.supplyPipeline?.highSupply && String(card.marketStability?.direction || "").includes("下降")],
     ["実店舗価格未取得", (card) => !card.currentStoreOffer],
-    ["利益条件未達", (card) => Number(card.psaDecision?.expectedProfit || -Infinity) < state.minExpectedProfit],
+    ["利益条件未達", (card) => (card.psaDecision?.expectedProfit ?? -Infinity) < state.minExpectedProfit],
     ["資金条件未達", (card) => card.purchaseDecision?.verdict === "資金不足"],
     ["見送り", (card) => card.purchaseDecision?.verdict === "見送り"],
   ];
@@ -3846,6 +3906,7 @@ function render() {
       if (!releaseYearFilter.matches(card, completion, state.year2020Only, state.includeUnknownYear)) return false;
       if (normalizedQuery && !(haystack.includes(normalizedQuery) || compactHaystack.includes(compactQuery))) return false;
       if (normalizedQuery && state.diagnosticSearch) return true;
+      if (purchaseRatioModel && !purchaseRatioModel.matches(purchasePsa9Ratio(card), state.psa9RatioMin, state.psa9RatioMax, state.psa9RatioReference)) return false;
       if (!normalizedQuery) {
         if (state.catalogScope === "analysis" && completion?.s !== "分析可能") return false;
         if (state.catalogScope === "new" && !completion?.n) return false;
@@ -4437,14 +4498,7 @@ function render() {
         ? `¥${fmt.format(amount)} / ${room.rate.toFixed(1)}%`
         : `超過 ¥${fmt.format(Math.abs(amount))} / ${Math.abs(room.rate).toFixed(1)}%`;
     };
-    const signedMoney = (value) => {
-      const amount = Number(value);
-      if (!Number.isFinite(amount)) return { className: "", text: "算出不可" };
-      return {
-        className: amount >= 0 ? "positive" : "negative",
-        text: `${amount < 0 ? "-" : ""}¥${fmt.format(Math.abs(Math.round(amount)))}`,
-      };
-    };
+    const signedMoney = signedExpectedMoney;
     const scenarioMatrix = card.buyLimits?.clean?.economicsScenarios || {};
     const currentScenarios = scenarioMatrix.currentPurchase || {};
     const storeScenarios = scenarioMatrix.storeOffer || {};
@@ -4797,8 +4851,9 @@ function render() {
         <div><span>現在買える状態A</span><strong>${card.currentStoreOffer ? `¥${fmt.format(card.currentStoreOffer.value)}` : "未取得"}</strong><small>${escapeHtml(card.currentStoreOffer?.source || "在庫あり価格なし")}</small></div>
         <div class="glance-stable"><span>安定重視の仕入れ上限</span><strong>${escapeHtml(limitDisplay.stableLabel || limitMoney(limitDisplay.stableCap))}</strong><small>${limitDisplay.stableCap === 0 ? escapeHtml(limitDisplay.reason) : "仕入れ判定・絞り込みの基準"}</small></div>
         <div class="glance-break-even"><span>現相場の期待損益分岐上限</span><strong>${limitMoney(limitDisplay.currentCap)}</strong><small>推奨仕入れ値ではありません</small></div>
-        <div><span>返却${state.lockDays}日・期待利益（参考）</span><strong class="${glanceProfit.className}">${glanceProfit.text}</strong><small>${card.currentStoreOffer ? "店舗価格" : "基準相場"}で購入 × 同期間の中央比較／${escapeHtml(selectedPeriodTrial.status || '期間履歴不足')}</small></div>
+        <div><span>返却${state.lockDays}日・期待利益（参考）</span><strong class="${glanceProfit.className}">${glanceProfit.text}</strong><small>${card.currentStoreOffer ? "店舗価格" : "基準相場"}で購入 × 同期間の中央比較／期待利益率 ${Number.isFinite(selectedPeriodTrial.rows?.central?.expectedRoi) ? `${selectedPeriodTrial.rows.central.expectedRoi.toFixed(1)}%` : "算出不可"}／${escapeHtml(selectedPeriodTrial.status || '期間履歴不足')}</small></div>
       </section>
+      ${purchasePsa9RatioHtml(card)}
       ${glanceWarning ? `<div class="candidate-warning ${dataQuality.manualReview ? "manual" : ""}"><strong>注意：</strong>${escapeHtml(glanceWarning)}</div>` : ""}`;
     return `
       <article class="row card ${state.purchaseMode === "snkr-raw" ? "snkr-raw-mode" : ""}" data-card-id="${card.id}">
@@ -4886,6 +4941,9 @@ function render() {
 }
 
 function syncFromUI() {
+  state.psa9RatioMin = parseOptionalNumber(els.psa9RatioMinInput.value);
+  state.psa9RatioMax = parseOptionalNumber(els.psa9RatioMaxInput.value);
+  state.psa9RatioReference = els.psa9RatioReferenceInput.checked;
   state.visibleLimit = 60;
   state.psaPlan = els.psaPlanInput.value || state.psaPlan;
   applyPsaPlan();
@@ -4964,6 +5022,7 @@ function syncFromUI() {
   state.minExpectedProfit = Number(els.minExpectedProfitInput.value || 0);
   state.minExpectedRoi = Number(els.minExpectedRoiInput.value || 0);
   state.minAnnualEfficiency = Number(els.minAnnualEfficiencyInput.value || 0);
+  if (els.profitHurdleStatus) els.profitHurdleStatus.textContent = `残る採算条件：最低期待利益 ${fmt.format(state.minExpectedProfit)}円／期待利益率 ${state.minExpectedRoi}%／年換算効率 ${state.minAnnualEfficiency}%（返却${state.lockDays}日）。資金・品質60点・供給リスク・期間根拠も別途必要。検索側の中央利益額${fmt.format(state.minExpectedProfitFilter)}円／中央利益率${state.minExpectedRoiFilter}%／PSA10時利益率${state.minRoi}%も別条件。0円は計算利益を0にする設定ではありません。`;
   state.maxCapitalShare = Number(els.maxCapitalShareInput.value || 0);
   state.submissionCount = Math.max(1, Number(els.submissionCountInput.value || 1));
   state.gradingReserve = Number(els.gradingReserveInput.value || 0);
@@ -5123,6 +5182,11 @@ async function init() {
 }
 
 // Browser event bindings start here; the audit runner evaluates the same model above this line.
+els.roiFocusButton?.addEventListener("click", () => {
+  els.minExpectedProfitInput.value = String(purchaseRatioModel.roiOnly(state).minExpectedProfit);
+  syncFromUI();
+});
+[els.psa9RatioMinInput, els.psa9RatioMaxInput, els.psa9RatioReferenceInput].forEach(el => el?.addEventListener("input", syncFromUI));
 bindReferenceHistory();
 [els.buybackStoreModeInput, els.selectedBuybackStoresInput, els.storeTravelCostInput].forEach((el) => el?.addEventListener("input", syncFromUI));
 [els.saleTxMinInput, els.saleTxMaxInput, els.saleTx7MinInput, els.saleTx7MaxInput, els.psaTxMinInput, els.psaTxMaxInput, els.psaTx7MinInput, els.psaTx7MaxInput, els.buyback7MinInput, els.buyback7MaxInput, els.buyback30MinInput, els.buyback30MaxInput, els.buyback90MinInput, els.buyback90MaxInput, els.buybackShopsMinInput, els.buybackPriceMinInput, els.buybackPriceMaxInput, els.roiInput, els.expectedRoiFilterInput, els.expectedProfitFilterInput, els.stressExpectedRoiFilterInput, els.stressExpectedProfitFilterInput, els.psaMinInput, els.psaMaxInput, els.priceMinInput, els.priceMaxInput, els.purchaseLimitRatioMinInput, els.psaRateMinInput, els.overallFilterInput, els.minExitLiquidityInput, els.minEconomicsInput, els.minMarketStabilityInput, els.minSupplyRiskInput, els.minFuturePriceScoreInput, els.maxFuturePriceScoreInput, els.minForecastPriceInput, els.maxForecastPriceInput, els.minForecastDownsideInput, els.maxForecastDownsideInput, els.minForecastGapInput, els.maxForecastGapInput, els.minForecastAgeInput, els.forecastMaturityInput, els.maxForecastMonthlyIncreaseInput, els.stockDemandInput, els.dataQualityFilterInput, els.goConfidenceFilterInput, els.floorStateInput, els.priceDirectionInput, els.supplyStateInput, els.minFloorScoreInput, els.storeDemandInput, els.showSkippedInput, els.hideThinDemandInput, els.hideReviewInput, els.fundingOnlyInput, els.officialOnlyInput, els.sortInput, els.psaCapitalInput, els.lockedCapitalInput, els.lockDaysInput, els.minExpectedProfitInput, els.minExpectedRoiInput, els.minAnnualEfficiencyInput, els.maxCapitalShareInput, els.submissionCountInput, els.gradingReserveInput, els.saleFeeRateInput, els.saleExtraCostInput, els.buybackDeductionRateInput, els.exitPolicyInput, els.snkrRawFeeRateInput, els.snkrRawShippingInput, els.snkrRawOtherCostInput, els.snkrRawTx7MinInput, els.snkrRawTx30MinInput, els.snkrRawProfitMinInput, els.snkrRawRoiMinInput, els.snkrRawPurchaseMaxInput, els.snkrRawReleaseMonthsInput, els.snkrRawMaxAgeInput, els.snkrRawCurrentOnlyInput, els.snkrRawRecentOnlyInput, els.snkrRawIncludeReferenceInput, els.diagnosticSearchInput].forEach((el) =>
@@ -5144,6 +5208,9 @@ els.qInput.addEventListener("input", () => {
 for (const input of [els.year2020Input, els.includeUnknownYearInput]) input.addEventListener("change", () => { readInputs(); render(); });
 
 els.resetFiltersBtn.addEventListener("click", () => {
+  els.psa9RatioMinInput.value = "";
+  els.psa9RatioMaxInput.value = "";
+  els.psa9RatioReferenceInput.checked = false;
   els.year2020Input.checked = false;
   els.includeUnknownYearInput.checked = false;
   els.qInput.value = "";
@@ -5407,7 +5474,7 @@ els.copyFavoritesBtn.addEventListener("click", async () => {
 
 els.exportFavoritesBtn.addEventListener("click", exportFavoritesCsv);
 document.getElementById("exportFavoritePriorityBtn").addEventListener("click", () => {
-  const config = { version: 1, importantHours: 6, normalHours: 720, favoriteIds: [...state.favorites], intervalMs: 1200, timeBudgetMs: 240000, retryLimit: 3, normalShare: 0.25 };
+  const config = { version: 2, importantHours: 6, normalHours: 720, favoriteIds: [...state.favorites], intervalMs: 1200, timeBudgetMs: 360000, retryLimit: 3, normalShare: 0.25 };
   const url = URL.createObjectURL(new Blob([JSON.stringify(config, null, 2)], { type: "application/json" }));
   const link = document.createElement("a"); link.href = url; link.download = "priority-price-config.json"; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
 });

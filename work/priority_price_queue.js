@@ -55,6 +55,7 @@ function finish(previous = {}, record, at, config = {}) {
 }
 function write(root = ROOT) {
   const checkpoint = read(root, "work/priority-price-checkpoint.json", { sources: {} });
+  const fixedHistory = read(root, "work/priority-freshness-history.json");
   const sources = {};
   for (const id of ["cardrush", "hareruya2"]) {
     const planned = load(id, root), run = read(root, "work/candidate-shop-refresh.json").sources?.[id] || {};
@@ -88,13 +89,18 @@ function write(root = ROOT) {
       lastRunAt: run.startedAt || null, checkpoint: run.nextId || null,
       cards: important.map((r) => ({ id: r.card.id, name: r.card.name, lastConfirmedAt: r.lastSuccessAt, nextDueAt: r.nextDueAt,
         lastAttemptAt: checkpoint.sources?.[id]?.jobs?.[r.card.id]?.lastAttemptAt || null, status: blocked ? "アクセス確認待ち・正常値保持" : r.status, priorityReason: r.reason })) };
+    const fixedIds = new Set(fixedHistory.sources?.[id]?.cohort || []);
+    sources[id].fixedCards = planned.records.filter(r => fixedIds.has(r.card.id)).map(r => ({id:r.card.id,
+      lastConfirmedAt:r.lastSuccessAt, status:blocked ? "アクセス確認待ち・正常値保持" : r.status}));
   }
   const cards = read(root, "data/pokemon-cards.json", []);
   const names = new Map(cards.map((card) => [card.id, card.name]));
   const candidates = read(root, "work/candidate-availability-history.json").runs?.at(-1)?.rows || {};
   const focusConfig = read(root, "data/focus-monitor-config.json");
   const favorites = new Set(read(root, "data/priority-price-config.json").favoriteIds || []);
-  const priorityCards = cards.filter((card) => candidates[card.id] || groupFor(card, focusConfig) || favorites.has(card.id));
+  const isPriority = card => candidates[card.id] || groupFor(card, focusConfig) || favorites.has(card.id);
+  const fixedBulkIds = new Set([...(fixedHistory.sources?.toreca?.cohort || []), ...(fixedHistory.sources?.shopBuyback?.cohort || [])]);
+  const priorityCards = cards.filter((card) => isPriority(card) || fixedBulkIds.has(card.id));
   const inventory = read(root, "work/toreca-source-inventory.json"), present = new Set((inventory.cards || []).map((card) => card.id));
   const runs = read(root, "work/source-update-runs.json").sources || {};
   const buys = read(root, "data/shop-buyback-summary.json");
@@ -106,17 +112,20 @@ function write(root = ROOT) {
       return { id: card.id, name: names.get(card.id), lastConfirmedAt: known ? at : null, nextDueAt,
         lastAttemptAt: runs[id]?.lastAttemptAt || null, status: !known ? "カード単位の確認日時なし・取得待ち" : time + 6 * 3600000 < now ? "期限超過" : "期限内", detail };
     });
-    return { total: cards.length, priorityCards: records.length, overdue: records.filter((r) => r.status === "期限超過").length,
-      unconfirmed: records.filter((r) => !r.lastConfirmedAt).length,
-      pending: records.filter((r) => r.status !== "期限内").length, status: "正規一括差分・6時間目標", stopReason: runs[id]?.lastError || null,
+    const fixedIds = new Set(fixedHistory.sources?.[id]?.cohort || []);
+    const fixedCards = records.filter(r => fixedIds.has(r.id));
+    const currentIds = new Set(cards.filter(isPriority).map(c => c.id));
+    const current = records.filter(r => currentIds.has(r.id));
+    return { total: cards.length, priorityCards: current.length, overdue: current.filter((r) => r.status === "期限超過").length,
+      unconfirmed: current.filter((r) => !r.lastConfirmedAt).length,
+      pending: current.filter((r) => r.status !== "期限内").length, status: "正規一括差分・6時間目標", stopReason: runs[id]?.lastError || null,
       refreshed: runs[id]?.acquiredCount ?? null, changed: runs[id]?.updatedCount ?? null, durationMs: runs[id]?.durationMs ?? null,
       httpRequests: null, cacheHits: null, cardsPerMinute: null, estimatedSweepActiveMinutes: null,
-      lastRunAt: runs[id]?.startedAt || null, checkpoint: "一括差分・カードID照合", cards: records };
+      lastRunAt: runs[id]?.startedAt || null, checkpoint: "一括差分・カードID照合", cards: current, fixedCards };
   }
-  const torecaDay = runs.toreca?.lastSuccessAt ? new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Tokyo" }).format(new Date(runs.toreca.lastSuccessAt)) : null;
-  const inventoryAt = runs.toreca?.status === "success" && inventory.updatedAt === torecaDay ? runs.toreca.lastSuccessAt : inventory.updatedAt;
+  const inventoryAt = confirmedInventoryAt(inventory, runs.toreca);
   sources.toreca = bulkSource("toreca", priorityCards.map((card) => ({ card,
-    at: present.has(card.id) && Number(card.price) > 0 ? inventoryAt : null, detail: "取得一覧ID一致と成功実行日の一致を確認。成約日時・状態A実売証明とは別" })));
+    at: present.has(card.id) && Number(card.price) > 0 ? inventoryAt : null, detail: "取得一覧ID・取得件数を成功記録と照合。変更なし再確認の日時であり、実成約日時・状態A実売証明ではない" })));
   sources.shopBuyback = bulkSource("shopBuyback", priorityCards.map((card) => {
     const rows = Object.entries(buys.cards?.[card.id]?.shops || {}).map(([shopId, price]) => {
       const shop = buys.shops?.[shopId];
@@ -137,4 +146,12 @@ function write(root = ROOT) {
   return output;
 }
 if (require.main === module) { const output = write(); console.log(JSON.stringify({ ...output, sources: Object.fromEntries(Object.entries(output.sources).map(([id, row]) => [id, { ...row, cards: undefined }])) })); }
-module.exports = { plan, finish, load, write };
+function confirmedInventoryAt(inventory, run) {
+  const at = Date.parse(run?.lastSuccessAt);
+  const inventoryAt = Date.parse(inventory?.updatedAt);
+  const count = (inventory?.cards || []).length;
+  return run?.status === "success" && count > 0 && count === Number(inventory.total)
+    && count === Number(run.acquiredCount) && Number.isFinite(at) && Number.isFinite(inventoryAt) && inventoryAt <= at
+    ? run.lastSuccessAt : null;
+}
+module.exports = { plan, finish, load, write, confirmedInventoryAt };

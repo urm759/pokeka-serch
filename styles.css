@@ -113,6 +113,7 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
 .psa-settings-note strong{display:block;margin-top:7px;color:var(--text)}
 .psa-settings-note strong.enough{color:#86efac}
 .psa-settings-note strong.short{color:#fca5a5}
+#roiFocusButton{padding:12px 14px;border:1px solid var(--accent);border-radius:10px;background:rgba(125,211,252,.12);color:var(--text);font:inherit;font-size:12px;font-weight:700;line-height:1.5;cursor:pointer}
 .control-wide{
   grid-column:1 / -1;
 }
@@ -140,6 +141,10 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
   color:var(--text);
 }
 .control-help{display:block;margin-top:8px;color:var(--muted);font-size:10px;line-height:1.45;font-weight:600}
+.check-control{grid-column:1/-1;display:flex;align-items:center;gap:9px;font-size:12px}
+.check-control input[type="checkbox"]{width:18px;height:18px;flex:0 0 18px;accent-color:var(--accent)}
+.purchase-ratio-details{margin-top:10px;font-size:11px;color:var(--muted)}
+.purchase-ratio-details summary{cursor:pointer;line-height:1.5}
 .psa-plan-control{background:linear-gradient(135deg,rgba(125,211,252,.11),rgba(56,217,150,.06));border-color:rgba(125,211,252,.25)}
 .psa-plan-control select{padding:7px 10px}
 .range-pair{
