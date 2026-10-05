@@ -17,53 +17,67 @@
           "detectedAt": "2026-09-28T22:23:11.192Z"
         }
       },
-      "checkedAt": "2026-10-04T19:53:28.115Z",
+      "checkedAt": "2026-10-05T23:02:34.931Z",
       "batches": 0,
-      "durationMs": 5
+      "durationMs": 4
     },
     "priceEvidence": {
       "status": "reviewed-with-unavailable",
       "position": {
         "remaining": 0,
-        "inspected": 1071,
-        "unavailable": 58,
+        "inspected": 1088,
+        "unavailable": 57,
         "resumeCardId": null,
         "stopReason": null
       },
-      "checkedAt": "2026-10-04T19:53:28.120Z",
+      "checkedAt": "2026-10-05T23:02:34.936Z",
       "batches": 0,
-      "durationMs": 5
+      "durationMs": 4
     },
     "psaLinkage": {
       "status": "queue-updated",
       "reason": null,
       "position": {
-        "unlinked": 4757,
+        "unlinked": 4759,
         "note": "候補整理のみ。PSA公式の認証取得とは別工程"
       },
-      "checkedAt": "2026-10-04T19:53:28.337Z",
+      "checkedAt": "2026-10-05T23:02:35.165Z",
       "batches": 1,
       "failures": 0,
-      "durationMs": 217
+      "durationMs": 228
     },
     "torecacamp": {
-      "status": "partial",
-      "reason": null,
+      "status": "stopped",
+      "reason": "HTTP 503",
       "position": {
-        "sitemap": 31,
-        "productIndex": 475,
+        "sitemap": 32,
+        "productIndex": 537,
         "totalSitemaps": 46,
-        "catalogCount": 5816,
-        "lastFailure": null
+        "catalogCount": 5878,
+        "lastFailure": {
+          "sitemapNumber": 32,
+          "pageKey": "sitemap-32",
+          "url": "https://torecacamp-pokemon.com/products/rc_itekvxn7xc64_b9ln.js",
+          "productEntry": 537,
+          "httpStatus": 503,
+          "stage": "fetch-product",
+          "retryCount": 1,
+          "timedOut": false,
+          "exceptionName": "Error",
+          "error": "HTTP 503",
+          "exception": "Error: HTTP 503\n    at fetchText (/home/runner/work/pokeka-serch/pokeka-serch/work/update_yuyutei_torecacamp.js:110:21)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async fetchJson (/home/runner/work/pokeka-serch/pokeka-serch/work/update_yuyutei_torecacamp.js:131:18)\n    at async updateTorecaCamp (/home/runner/work/pokeka-serch/pokeka-serch/work/update_yuyutei_torecacamp.js:712:33)\n    at async main (/home/runner/work/pokeka-serch/pokeka-serch/work/update_yuyutei_torecacamp.js:846:76)",
+          "at": "2026-10-05T23:05:21.088Z",
+          "lastSuccessfulSitemap": 31
+        }
       },
-      "checkedAt": "2026-10-04T19:58:46.214Z",
-      "batches": 9,
-      "failures": 0,
-      "durationMs": 317895
+      "checkedAt": "2026-10-05T23:05:21.339Z",
+      "batches": 5,
+      "failures": 1,
+      "durationMs": 166174
     }
   },
-  "startedAt": "2026-10-04T19:53:28.110Z",
+  "startedAt": "2026-10-05T23:02:34.926Z",
   "status": "partial-with-stop",
-  "endedAt": "2026-10-04T19:58:46.232Z",
-  "durationMs": 318123
+  "endedAt": "2026-10-05T23:05:21.340Z",
+  "durationMs": 166414
 }
