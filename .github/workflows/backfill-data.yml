@@ -62,6 +62,7 @@ jobs:
           node work/test_psa_resilience.js
           node work/test_buyback_scenario_limits.js
           node work/test_purchase_limit_audit.js
+          node work/test_preset_exploration.js
           node work/test_grade_calibration.js
           node work/test_supply_maturity_hypothesis.js
       - name: Commit discovery and checkpoint progress

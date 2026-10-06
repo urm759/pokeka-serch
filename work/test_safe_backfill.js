@@ -28,7 +28,7 @@ assert(markup.indexOf('class="quick-presets"') < markup.indexOf('id="candidateLi
 assert(markup.includes('class="advanced-filters primary-settings"'));
 assert(app.includes('aria-label="仕入れ判断の要点"'));
 assert(app.includes('購入先確認済み・今すぐ仕入れ候補'));
-assert(app.includes('おまかせ ${fmt.format(counts.combined)}（価格待ち含む）'));
+assert(app.includes('プリセットのみ ${fmt.format(audit.presetOnly)} → 追加条件後 ${fmt.format(audit.final)}件'));
 assert(app.includes('推奨仕入れ値ではありません'));
 assert(app.includes('${purchaseSummaryPanel}') && app.includes('class="card-details"'));
 assert(app.includes("prioritizeCandidateLayout();"), "advanced panels move below the candidate list");

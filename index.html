@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20261006-completion-v3" />
+  <link rel="stylesheet" href="./styles.css?v=20261006-filter-v1" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -34,6 +34,7 @@
         <small id="releaseYearFilterSummary">発売年条件。最近発売365日以内とは別です。</small>
       </div>
       <p id="forecastPeriodWarning" class="filter-explanation" hidden></p>
+      <div id="activeFilterSummary" class="active-filter-summary" aria-live="polite"></div>
       <details class="advanced-filters primary-settings">
         <summary><span>詳細設定</span><small>鑑定プラン・利益条件・並び順</small></summary>
         <div class="controls controls-primary">
@@ -53,14 +54,17 @@
         </label>
         <label class="control">
           <span>期待利益率 下限</span>
-          <small>現在仕入値 × 中央予測</small>
-          <input id="expectedRoiFilterInput" type="number" step="1" value="0" />
+          <small>下の検索計算基準を使用。空欄は無効</small>
+          <input id="expectedRoiFilterInput" type="number" step="1" value="0" placeholder="無効" />
         </label>
         <label class="control">
           <span>期待利益額 下限</span>
-          <small>現在仕入値 × 中央予測</small>
-          <input id="expectedProfitFilterInput" type="number" step="1000" value="0" />
+          <small>0円は赤字除外。空欄は利益額フィルター無効</small>
+          <input id="expectedProfitFilterInput" type="number" step="1000" value="0" placeholder="無効" />
         </label>
+        <label class="control"><span>利益検索の計算基準</span><select id="profitSearchBasisInput"><option value="auto">自動：価格待ちは上限／今すぐは店舗</option><option value="limit">安定重視上限で購入 × 中央予測</option><option value="store">実店舗在庫価格で購入 × 中央予測</option><option value="current">基準相場で購入 × 中央予測</option></select></label>
+        <label class="check-control"><input id="includePeriodReferenceInput" type="checkbox" checked />価格待ち探索に期間不一致の参考値を含める（GO不可）</label>
+        <p class="filter-explanation">今すぐ仕入れは検索基準によらず実店舗在庫価格で再判定します。期間不一致は返却時利益ではなく91日モデルの参考探索です。価格待ちでも出口・安全条件と上限×供給ストレスの赤字回避が必要です。</p>
         <label class="control safety-profit-control">
           <span>安全側利益率 下限</span>
           <small>仕入れ上限 × 供給ストレス予測</small>
@@ -98,7 +102,7 @@
             <option value="downside-asc">予測下落余地が小さい順</option>
             <option value="forecastPrice-desc">予測PSA10価格が高い順</option>
             <option value="forecastPrice-asc">予測PSA10価格が低い順</option>
-            <option value="expectedProfit-desc">期待利益が高い順（現在仕入値×中央予測）</option>
+            <option value="expectedProfit-desc">期待利益が高い順（選択した検索計算基準）</option>
             <option value="stressExpectedProfit-desc">安全側利益が高い順（仕入れ上限×供給ストレス）</option>
             <option value="stressExpectedRoi-desc">安全側利益率が高い順（仕入れ上限×供給ストレス）</option>
             <option value="annualEfficiency-desc">年換算資金効率が高い順</option>
@@ -858,6 +862,6 @@
   <script src="./release-year-filter.js?v=20261003-priority-v2"></script>
   <script src="./update-health-model.js?v=20260930-v1"></script>
   <script src="./update-health-banner.js?v=20261001-v1"></script>
-  <script src="./app.js?v=20261006-resilience-v1"></script>
+  <script src="./app.js?v=20261006-filter-v1"></script>
 </body>
 </html>

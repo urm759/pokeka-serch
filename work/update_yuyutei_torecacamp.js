@@ -600,9 +600,18 @@ function preferCampEntry(previous, candidate) {
 function migrateCampRetries(progress, now = Date.now()) {
   const policy = require("./acquisition_retry.js");
   progress.retryByUrl ||= {};
+  for (const [key, row] of Object.entries(progress.retryByUrl)) {
+    const url = String(row.url || key).replace(/\.js$/, "");
+    if (url !== key) {
+      const previous = progress.retryByUrl[url];
+      if (!previous || Date.parse(row.lastAttemptAt || "") > Date.parse(previous.lastAttemptAt || "")) progress.retryByUrl[url] = { ...row, url };
+      delete progress.retryByUrl[key];
+    } else row.url = url;
+  }
   for (const [key, row] of Object.entries(progress.failedSitemaps || {})) {
     if (row.stage === "fetch-product" && row.url) {
-      progress.retryByUrl[row.url] ||= { ...policy.failure({}, row, Date.parse(row.at) || now), url: row.url, sitemapIndex: Math.max(0, Number(row.sitemapNumber || key) - 1), entryIndex: Math.max(0, Number(row.productEntry || 1) - 1) };
+      const url = row.url.replace(/\.js$/, "");
+      progress.retryByUrl[url] ||= { ...policy.failure({}, row, Date.parse(row.at) || now), url, sitemapIndex: Math.max(0, Number(row.sitemapNumber || key) - 1), entryIndex: Math.max(0, Number(row.productEntry || 1) - 1) };
       delete progress.failedSitemaps[key];
     } else if (!row.retry) row.retry = policy.failure({}, row, Date.parse(row.at) || now);
   }

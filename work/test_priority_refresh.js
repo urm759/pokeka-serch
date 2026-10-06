@@ -51,7 +51,7 @@ for (const lockDays of [42, 119, 147]) {
 const app = fs.readFileSync(path.join(__dirname, "../app.js"), "utf8");
 assert.match(app, /url.searchParams.set\("year2020", state.year2020Only/);
 assert.match(app, /year2020Only: state.year2020Only/);
-assert.ok(app.indexOf("releaseYearFilter.matches(card, completion") < app.indexOf("if (normalizedQuery && state.diagnosticSearch) return true"));
+assert.ok(app.indexOf("releaseYearFilter.matches(card, completion") < app.indexOf("if (normalizedQuery && state.diagnosticSearch) return reasons"));
 const refresh = fs.readFileSync(path.join(__dirname, "refresh_candidate_shops.js"), "utf8");
 assert.doesNotMatch(refresh, /checkpoint.cycleDate === today/);
 assert.match(refresh, /If-None-Match/);

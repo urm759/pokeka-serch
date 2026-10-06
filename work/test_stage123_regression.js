@@ -33,8 +33,8 @@ assert.ok(app.includes("decisionModel.bargainDecisionEligible"), "薄商い・�
 assert.ok(app.includes("主因: ${dominantFactorLabel}"), "同一運用上限の集中理由を監査表示");
 assert.ok(app.includes("economicsScenarioMatrix"), "6シナリオを共通計算で生成");
 assert.ok(app.includes("String(row.date).slice(0, 10) < currentDataDate"), "同日値を過去の運用上限として平滑化しない");
-assert.ok(html.includes("期待利益が高い順（現在仕入値×中央予測）"), "期待利益の並び順シナリオを明記");
-assert.ok(html.includes("現在仕入値 × 中央予測"), "期待利益フィルターのシナリオを明記");
+assert.ok(html.includes("期待利益が高い順（選択した検索計算基準）"), "期待利益の並び順シナリオを明記");
+assert.ok(html.includes('id="profitSearchBasisInput"') && app.includes('searchProfitView(card)'), "期待利益フィルターのシナリオを選択・明記");
 
 console.log(JSON.stringify({
   presets: ["combined", "now", "low-risk", "turnover", "bargain"],

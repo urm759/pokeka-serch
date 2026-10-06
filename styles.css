@@ -1586,3 +1586,11 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .return-reference-panel table { border-collapse: collapse; width: 100%; min-width: 600px; }
 .return-reference-panel :is(td, th) { padding: 8px; text-align: left; border-bottom: 1px solid var(--border, #334155); }
 .return-reference-panel :is(p, small, a, li) { overflow-wrap: anywhere; }
+.active-filter-summary { display: grid; gap: 8px; margin: 12px 0; font-size: 13px; }
+.active-filter-summary > div { display: flex; flex-wrap: wrap; gap: 6px; }
+.active-filter-summary button { font-size: 12px; padding: 6px 9px; max-width: 100%; overflow-wrap: anywhere; }
+.active-filter-summary small { line-height: 1.5; }
+.candidate-profit-comparison { padding: 12px; border: 1px solid var(--border, #344156); border-radius: 12px; margin: 10px 0; font-size: 12px; }
+.candidate-profit-comparison > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 8px 0; }
+.candidate-profit-comparison span { overflow-wrap: anywhere; }
+.candidate-profit-comparison small { display: block; line-height: 1.6; }

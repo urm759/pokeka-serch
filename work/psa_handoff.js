@@ -91,7 +91,7 @@ function publish(root = ROOT, options = {}) {
           git(["worktree", "add", "--detach", checkout, base]);
           applyPacket(checkout, packet);
           if (options.beforeBuild) options.beforeBuild(checkout, attempt);
-          for (const script of options.scripts || ["build_psa_history.js", "build_card_completion.js", "audit_completion_outcomes.js", "build_psa_linkage_queue.js", "build_purchase_limit_audit.js", "audit_acquisition_progress.js", "audit_link_coverage.js", "finalize_update_status.js", "test_completion_routes.js", "test_purchase_limit_audit.js"]) {
+          for (const script of options.scripts || ["build_psa_history.js", "build_card_completion.js", "audit_completion_outcomes.js", "build_psa_linkage_queue.js", "build_purchase_limit_audit.js", "audit_acquisition_progress.js", "audit_link_coverage.js", "finalize_update_status.js", "test_completion_routes.js", "test_purchase_limit_audit.js", "test_preset_exploration.js"]) {
             const run = spawnSync(process.execPath, [path.join(checkout, "work", script)], { cwd: checkout, encoding: "utf8", timeout: 60000, maxBuffer: 16 * 1024 * 1024 });
             if (run.status !== 0) throw new Error(`Saved-data verification failed (${script}): ${run.stderr || run.stdout}`);
           }
