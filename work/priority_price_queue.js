@@ -3,6 +3,7 @@ const path = require("node:path");
 const { groupFor } = require("./focus_monitor.js");
 const ROOT = path.join(__dirname, "..");
 const proactive = require("./proactive_refresh.js");
+const { observationTime } = require('../decision-model.js');
 const read = (root, file, fallback = {}) => { try { return JSON.parse(fs.readFileSync(path.join(root, file), "utf8")); } catch { return fallback; } };
 function plan({ cards, sourceId, catalog, candidateRows = {}, focusConfig = {}, config = {}, jobs = {}, manualWait = {}, now = Date.now() }) {
   const byId = new Map(catalog.filter((row) => row.cardId).map((row) => [row.cardId, row]));
@@ -15,7 +16,7 @@ function plan({ cards, sourceId, catalog, candidateRows = {}, focusConfig = {}, 
     const important = focus || candidate || favorites.has(card.id);
     const entry = byId.get(card.id) || byUrl.get(url);
     const lastSuccessAt = entry?.observedAt || null;
-    const time = Date.parse(lastSuccessAt);
+    const time = observationTime(lastSuccessAt);
     const validTime = Number.isFinite(time) && time <= now;
     const hours = important ? config.importantHours || 6 : config.normalHours || 720;
     const due = validTime ? time + hours * 3600000 : 0;

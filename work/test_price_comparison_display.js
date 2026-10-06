@@ -5,13 +5,13 @@ const path = require('node:path');
 const root = path.join(__dirname, '..');
 const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
 const start = app.indexOf('function priceComparisonCells(');
-const context = vm.createContext({ Intl, Date, fmt: new Intl.NumberFormat('ja-JP'), escapeHtml: s => String(s).replaceAll('<', '&lt;') });
+const context = vm.createContext({ Intl, Date, decisionModel: require('../decision-model.js'), fmt: new Intl.NumberFormat('ja-JP'), escapeHtml: s => String(s).replaceAll('<', '&lt;') });
 vm.runInContext(app.slice(start, app.indexOf('\nfunction render()', start)) + '\nglobalThis.cells=priceComparisonCells;', context);
 const now = Date.parse('2026-10-06T12:00:00Z');
 const limit = { stableCap: 40000, currentCap: 61000, reason: '供給ストレスで制限' };
 const card = {
   price: 9999, psa10: 82000, futurePriceForecast: { centralPrice: 999999 },
-  currentStoreOffer: { value: 32000, source: '晴れる屋2', available: true, fresh: true, updatedAt: '2026-10-06T10:00:00Z' },
+  currentStoreOffer: { value: 32000, source: '晴れる屋2', available: true, fresh: true, updatedAt: '2026-10-06T10:00:00Z', inventoryAt: '2026-10-06T10:00:00Z' },
   psa10Audit: { adoptedPrice: 82000, source: 'みんトレ集約値' },
 };
 const snapshot = JSON.stringify(card);
@@ -28,6 +28,8 @@ assert.match(render({ ...card, currentStoreOffer: null }), /未取得.*新しい
 assert.doesNotMatch(render({ ...card, currentStoreOffer: null }), /9,999/);
 assert.doesNotMatch(render({ ...card, currentStoreOffer: { ...card.currentStoreOffer, fresh: false } }), /32,000/);
 assert.doesNotMatch(render({ ...card, currentStoreOffer: { ...card.currentStoreOffer, updatedAt: '2026-09-01' } }), /32,000/);
+assert.doesNotMatch(render({ ...card, currentStoreOffer: { ...card.currentStoreOffer, inventoryAt: null } }), /32,000/);
+assert.doesNotMatch(render({ ...card, currentStoreOffer: { ...card.currentStoreOffer, inventoryAt: '2026-09-16' } }), /32,000/);
 assert.match(render(card, '2026-09-01'), /古い価格/);
 assert.match(render(card, null), /確認日時未取得/);
 assert.match(render(card, '2026-10-06'), /時刻未取得/);

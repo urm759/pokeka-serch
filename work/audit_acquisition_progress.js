@@ -8,7 +8,7 @@ const read = (file, fallback = {}) => {
 };
 const write = (file, value) => fs.writeFileSync(path.join(ROOT, file), JSON.stringify(value));
 const validPop = (row) => Number.isFinite(row?.ten) && Number.isFinite(row?.total) && row.total > 0 && row.ten >= 0 && row.ten <= row.total;
-const ageHours = (date, now) => date && Number.isFinite(Date.parse(date)) ? (now - Date.parse(date)) / 3600000 : Infinity;
+const ageHours = (date, now) => { const at = require('../decision-model.js').observationTime(date); return Number.isFinite(at) && at <= now ? (now - at) / 3600000 : Infinity; };
 const compactKey = (value) => String(value).replace(/^https?:\/\/[^/]+\//, "");
 const additions = (before, after) => { const known = new Set(before.map(compactKey)); return after.filter((id) => !known.has(compactKey(id))); };
 
@@ -61,7 +61,7 @@ function capture(now = Date.now()) {
       const price = Number(value?.[`${id}Price`] ?? value?.price ?? entry?.price);
       if (!(price > 0) || !Number.isFinite(price) || value?.quarantined || value?.priceQuarantined || entry?.priceQuarantined || value?.conditionAccepted === false || entry?.state && entry.state !== "A") continue;
       usable.push(card.id);
-      const date = value?.updatedAt === undefined ? entry?.observedAt : value.updatedAt;
+      const date = require('../decision-model.js').shopObservation(value || entry).priceAt;
       if (ageHours(date, now) <= 48) {
         fresh.push(card.id);
         if (Number(value?.stock ?? entry?.stock) > 0 || value?.available === true) purchasable.push(card.id);

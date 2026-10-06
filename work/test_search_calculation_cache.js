@@ -40,6 +40,7 @@ state.cardrushStock={...state.cardrushStock};
 assert.notStrictEqual(api.calculatedCardsForSearch(state.cards),priorCache,'data replacement invalidates');
 const now=Date.now(),expiry=now+15000;
 assert.equal(api.freshnessDeadline([{currentStoreOffer:{updatedAt:new Date(expiry-48*3600000-1).toISOString()}}],now),expiry);
+assert.equal(api.freshnessDeadline([{currentStoreOffer:{updatedAt:new Date(now).toISOString(),inventoryAt:new Date(expiry-48*3600000-1).toISOString()}}],now),expiry,'inventory expires independently');
 priorCache=api.calculatedCardsForSearch(state.cards,{now});
 assert.notStrictEqual(api.calculatedCardsForSearch(state.cards,{now:now+61000}),priorCache,'freshness expiration invalidates');
 const result={generatedAt:new Date().toISOString(),cards:state.cards.length,timingEnvironment:'Node.js production model; not browser paint',times,financialValuesAndCandidateIdsUnchanged:true};

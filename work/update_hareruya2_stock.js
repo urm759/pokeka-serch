@@ -373,6 +373,7 @@ function writeSummary(cards, catalog, history, paths) {
     const drop30 = totalDecrease(values, 30);
     summary[card.id] = {
       updatedAt: entry?.observedAt || null,
+      identityVerified: entry?.cardId === card.id,
       stock: Number.isFinite(values[currentIndex]) ? values[currentIndex] : Number.isFinite(entry?.stock) ? entry.stock : null,
       hareruya2Price: Number(entry?.price) > 0 ? Number(entry.price) : null,
       avg7: averageDailyDecrease(values, 7),
@@ -459,7 +460,7 @@ async function main() {
         price: productPrice(match),
         stock: null,
         available: isAvailable(match),
-        observedAt: jstDate(),
+        observedAt: new Date().toISOString(),
       };
       catalogById.set(card.id, entry);
       linked += 1;
@@ -514,7 +515,7 @@ async function main() {
       price: productPrice(match),
       stock: null,
       available: isAvailable(match),
-      observedAt: jstDate(),
+      observedAt: new Date().toISOString(),
     });
     linked += 1;
     searchLinked += 1;
@@ -586,7 +587,7 @@ async function main() {
     entry.price = result.page.price || entry.price;
     entry.stock = result.page.stock;
     entry.available = result.page.stock !== 0;
-    entry.observedAt = today;
+    entry.observedAt = new Date().toISOString();
     if (!history.stocks[result.card.id]) history.stocks[result.card.id] = Array(history.dates.length).fill(null);
     while (history.stocks[result.card.id].length < history.dates.length) history.stocks[result.card.id].unshift(null);
     history.stocks[result.card.id][dateIndex] = result.page.stock;

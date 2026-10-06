@@ -4,6 +4,7 @@ const vm = require("vm");
 const crypto = require("crypto");
 const { canonicalIdentity } = require("./card_identity");
 const { sourceReference } = require("./source_identity_guard");
+const { retainedPriceObservations } = require("./retained_price_observation.js");
 
 const FAST_UPDATE = process.env.FAST_UPDATE === "1";
 const HTTP_CACHE_PATH = path.join(__dirname, "daily-http-cache.json");
@@ -497,6 +498,7 @@ const startedAt = Date.now();
           snkPrice: num(c.snkPrice) ?? num(previous.snkPrice),
           snkPsa10Price: num(c.snkPsa10Price) ?? num(previous.snkPsa10Price),
           snkPsa9Price: num(c.snkPsa9Price) ?? num(previous.snkPsa9Price),
+          ...retainedPriceObservations(c, previous, previousMeta.updatedAt),
           snkPsa10Min: num(c.snkPsa10Min) ?? num(previous.snkPsa10Min),
           snkPsa10Count: num(c.snkPsa10Count) ?? num(previous.snkPsa10Count),
           snkPsa9Count: num(c.snkPsa9Count) ?? num(previous.snkPsa9Count),
@@ -546,6 +548,8 @@ const startedAt = Date.now();
     price: card.price,
     snkPsa10Price: card.snkPsa10Price,
     snkPsa9Price: card.snkPsa9Price,
+    ...(Object.hasOwn(card, 'priceObservedAt') ? { priceObservedAt: card.priceObservedAt } : {}),
+    ...(Object.hasOwn(card, 'psa10ObservedAt') ? { psa10ObservedAt: card.psa10ObservedAt } : {}),
     snkPsa10Min: card.snkPsa10Min,
     snkPsa10Count: card.snkPsa10Count,
     ...(Array.isArray(card.snkPsa10Trades) && card.snkPsa10Trades.length ? { snkPsa10Trades: card.snkPsa10Trades } : {}),

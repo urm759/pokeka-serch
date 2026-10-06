@@ -42,26 +42,9 @@ function shopifyQuote(product, html, url) {
 }
 
 function provenanceOnly() {
-  let corrected = 0;
-  const cards = read("data/pokemon-cards.json", []);
-  for (const id of ["cardrush", "hareruya2"]) {
-    const catalog = read(`work/${id}_catalog.json`, []);
-    const byUrl = new Map(catalog.map((entry) => [entry.detailUrl, entry]));
-    const byId = new Map(catalog.map((entry) => [entry.cardId, entry]));
-    const data = read(`data/${id}-stock-summary.json`);
-    for (const card of cards) {
-      if (!data.cards?.[card.id]) continue;
-      const entry = byId.get(card.id) || byUrl.get(card[`${id}Url`]);
-      if (data.cards[card.id].updatedAt === undefined) {
-        data.cards[card.id].updatedAt = entry?.observedAt || null; corrected += 1;
-      }
-    }
-    write(`data/${id}-stock-summary.json`, data);
-  }
-  write("work/shop-provenance-correction.json", { at: new Date().toISOString(), corrected,
-    baselineAt: read("work/acquisition-audit-baseline.json").at || null,
-    reason: "全体の更新日をカード価格日に転用せず、各カタログの実観測日を使用。価格そのものは変更しない。" });
-  console.log(JSON.stringify({ corrected, acquired: 0, mode: "provenance-only" }));
+  const result = require('./reconcile_shop_observations.js').run(ROOT);
+  console.log(JSON.stringify(result));
+  return result;
 }
 
 async function main() {

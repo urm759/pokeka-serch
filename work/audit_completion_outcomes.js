@@ -1,5 +1,6 @@
 const fs = require("node:fs"), path = require("node:path");
 const { routes } = require("./completion_routes.js");
+const { observationTime } = require('../decision-model.js');
 const read = (root, file, fallback = {}) => { try { return JSON.parse(fs.readFileSync(path.join(root, file), "utf8").replace(/^\uFEFF/, "")); } catch { return fallback; } };
 const shops = ["cardrush", "hareruya2", "yuyutei", "torecacamp"];
 const sourceKeys = [...shops, "psaOfficial", "pokedata"];
@@ -18,7 +19,7 @@ function snapshot(root, now = Date.now()) {
   const cardrushIds = new Map(cards.filter((c) => c.cardrushUrl).map((c) => [c.cardrushUrl, c.id]));
   const catalogs = Object.fromEntries(shops.map((s) => [s, read(root, `work/${s}_catalog.json`, [])]));
   const rows = {};
-  const fresh = (date) => Number.isFinite(Date.parse(date)) && Date.parse(date) <= now && now - Date.parse(date) <= 48 * 3600000;
+  const fresh = (date) => { const at = observationTime(date); return Number.isFinite(at) && at <= now && now - at <= 48 * 3600000; };
   for (const id of ids) rows[id] = { analysis: completion.cards?.[id]?.s === "分析可能", fields: Object.entries(completion.cards?.[id]?.i || {}).filter(([, s]) => s === "取得済み").map(([k]) => k), sources: {} };
   for (const s of shops) for (const row of catalogs[s]) {
     const id = row.cardId || (s === "cardrush" ? cardrushIds.get(row.detailUrl) : null);

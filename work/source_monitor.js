@@ -1,8 +1,9 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
+const { observationTime } = require('../decision-model.js');
 const read = (root, file, fallback = {}) => { try { return JSON.parse(fs.readFileSync(path.join(root, file), "utf8").replace(/^\uFEFF/, "")); } catch { return fallback; } };
-const fresh = (value, now, hours) => { const t = Date.parse(value); return Number.isFinite(t) && t <= now && now - t <= hours * 3600000; };
+const fresh = (value, now, hours) => { const t = observationTime(value); return Number.isFinite(t) && t <= now && now - t <= hours * 3600000; };
 function pcHealth(observation, now = Date.now()) {
   if (!fresh(observation.observedAt, now, 30)) return { status: "PC観測未受信", reason: "30時間以内の独立タスク観測なし。PC停止・観測起動失敗・未公開を区別して確認", action: "PCでobserve_psa_tasks.ps1を実行" };
   if (observation.error) return { status: "監視取得失敗", reason: observation.error };

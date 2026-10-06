@@ -15,13 +15,13 @@ function safeReadJson(filePath, fallback) {
   }
 }
 
-function jstDate() {
+function jstDate(value = new Date()) {
   return new Intl.DateTimeFormat("sv-SE", {
     timeZone: "Asia/Tokyo",
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
-  }).format(new Date());
+  }).format(new Date(value));
 }
 
 function decodeHtml(value) {
@@ -184,6 +184,7 @@ function writeOutputs({ cards, catalog, history, invalidUrls, recheckIds, paths 
     const stock = values[currentDateIndex];
     summaryCards[card.id] = {
       updatedAt: catalogEntry?.observedAt || null,
+      identityVerified: Boolean(catalogEntry?.identityVerifiedAt),
       stock: Number.isFinite(stock) ? stock : Number.isFinite(catalogEntry?.stock) ? catalogEntry.stock : null,
       cardrushPrice: cardrushPrice > 0 ? cardrushPrice : null,
       avg7,
@@ -256,7 +257,7 @@ async function main() {
   if (process.env.CARDRUSH_STOCK_SOURCE !== "product") {
     for (const card of linked) {
       const entry = catalogByUrl.get(card.cardrushUrl);
-      const fresh = entry?.observedAt === today;
+      const fresh = entry?.observedAt && Number.isFinite(Date.parse(entry.observedAt)) && jstDate(entry.observedAt) === today;
       if (entry && requireFreshCatalog && !fresh) {
         // A known direct link can be older than today's catalog crawl. Keep it and
         // retry later instead of treating the valid product URL as broken.
@@ -342,7 +343,7 @@ async function main() {
         catalogEntry.state = page.state;
         catalogEntry.stock = page.stock;
         catalogEntry.price = page.price;
-        catalogEntry.observedAt = today;
+        catalogEntry.observedAt = new Date().toISOString();
       }
       if (page.state !== "A") {
         invalidUrls.add(card.cardrushUrl);

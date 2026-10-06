@@ -36,13 +36,14 @@ function freshnessDeadline(cards, now) {
   let deadline = Math.min(now + 60000, Math.floor(now / 86400000 + 1) * 86400000,
     Math.floor((now + 9 * 3600000) / 86400000 + 1) * 86400000 - 9 * 3600000);
   const consider = (date, hours) => {
-    const expiry = Date.parse(date) + hours * 3600000 + 1;
+    const expiry = decisionModel.observationTime(date) + hours * 3600000 + 1;
     if (Number.isFinite(expiry) && expiry > now) deadline = Math.min(deadline,expiry);
   };
   consider(state.updateStatus?.sources?.toreca?.lastSuccessAt,30);
   consider(state.sourceUpdates.toreca,30);
   for (const card of cards) {
     consider(card.currentStoreOffer?.updatedAt,48);
+    consider(card.currentStoreOffer?.inventoryAt,48);
     consider(card.psa9Audit?.latestSaleAt || card.psa9Audit?.updatedAt,720);
     consider(card.psa10Audit?.lastTradeAt,720);
     consider(card.official?.f,48);
@@ -721,6 +722,7 @@ function escapeHtml(value) {
 
 function formatJstTimestamp(value) {
   if (!value) return "未記録";
+  if (/^\d{4}-\d{2}-\d{2}$/.test(String(value))) return `${value}（時刻未取得）`;
   const parsed = new Date(value);
   if (!Number.isFinite(parsed.getTime())) return String(value);
   return parsed.toLocaleString("ja-JP", {
@@ -946,7 +948,8 @@ function renderSourceObservability() {
     const focusLabels = { psaPopulation: "PSA公式POP", psaRate: "公式10率", domesticRaw: "国内美品", domesticPsa10: "国内PSA10", buyback: "買取価格", shopStateA: "在庫あり状態A取得価格（GOとは別）" };
     const focusHtml = focus ? `<article class="source-status-card"><details><summary>重点監視：スターミーV・S6aブイズ ${fmt.format(focus.count)}種</summary><p>重点処理枠は最大${Math.round(focus.maxFocusedShare * 100)}%。通常巡回を維持。鮮度基準48時間。監視だけで仕入れ上限を上げません。</p><div class="focus-summary">${Object.entries(focus.totals || {}).map(([key, t]) => `<p>${focusLabels[key]}：取得済み${t.valid}／鮮度適合${t.fresh}／古い${t.stale}／不足${t.missing}</p>`).join("")}</div><p>最後の改善：${escapeHtml(formatJstTimestamp(focus.lastProgress?.at))} / 有効値純増${valueOrUnknown(focus.lastProgress?.newValid)} / 鮮度回復${valueOrUnknown(focus.lastProgress?.newlyFresh)}項目（カード数・純増とは別）</p><div style="overflow-x:auto"><table><thead><tr><th>カード</th>${Object.values(focusLabels).map((label) => `<th>${label}</th>`).join("")}<th>優先理由／最終進捗</th></tr></thead><tbody>${Object.values(focus.cards || {}).map((row) => `<tr><th><a href="?q=${encodeURIComponent(row.name)}&diagnostic=1">${escapeHtml(row.name)}</a></th>${Object.keys(focusLabels).map((key) => { const item = row.items[key]; return `<td>${item.value == null ? "未取得" : key === "psaRate" ? `${item.value.toFixed(1)}%` : fmt.format(item.value)}<br><small>${escapeHtml(item.status)} / ${escapeHtml(formatJstTimestamp(item.at))}${key === "domesticRaw" ? "（取得日。状態A成約証明とは別）" : ""}</small></td>`; }).join("")}<td>${escapeHtml(row.priorityReason)}<br>${escapeHtml(formatJstTimestamp(row.lastProgressAt))}</td></tr>`).join("")}</tbody></table></div><a href="./data/focus-monitor.json" target="_blank" rel="noreferrer">重点カード別監査JSON</a> / <a href="./data/focus-acquisition-audit.json" target="_blank" rel="noreferrer">今回の実取得・純増</a></details></article>` : "";
     const backlogHtml = unified?.backlogStates ? `<article class="source-status-card"><details><summary>残件：自動巡回・未実装・認証待ち・時間待ち</summary><p>有効値純増は取得監査の比較基準からの差です。今回の取得だけの件数は「今回の実取得・純増」で確認できます。未記録は推定しません。</p>${unified.backlogStates.map((r) => `<p><b>${escapeHtml(r.label)}：${escapeHtml(r.category)}</b> / 残件${valueOrUnknown(r.remaining)} / 有効値純増${valueOrUnknown(r.usableNet)} / 最終進捗${escapeHtml(formatJstTimestamp(r.lastProgressAt))}<br><small>${escapeHtml(r.nextAction)}</small></p>`).join("")}</details></article>` : "";
-    els.dataFreshness.innerHTML = pipelineCards + sourceCards + outcomesHtml + unifiedHtml + resilienceHtml + focusHtml + backlogHtml + learningCard + renderPriorityPriceMonitor() + renderPriceCapacityNotice();
+    const observationHtml = `<article class="source-status-card"><details><summary>店舗価格・在庫の個別確認日時</summary><p>カードラッシュ・晴れる屋2・遊々亭・トレカキャンプはカード個別の確認日時を使用します。ファイル更新日や在庫履歴の日付では代用しません。価格・在庫が48時間以内の場合だけ購入先へ採用し、日時不明・古値は履歴として保持します。日付だけの記録は時刻未取得と表示し、鮮度はその日の日本時間0時から保守的に判定します。</p><p>参考相場の外れ値除外と購入先の除外は別です。同一仕様・状態A・在庫が確認された正常な安値は、価格差だけでは除外しません。価格対立・誤紐付け・既存の異常値隔離は引き続きGOを保留します。</p><a href="./data/shop-observation-audit.json" target="_blank" rel="noreferrer">同一価格での修正前後・カード別除外理由</a> / <a href="./data/shop-observation-reconciliation.json" target="_blank" rel="noreferrer">保存済み個別日時の復元結果</a></details></article>`;
+    els.dataFreshness.innerHTML = pipelineCards + sourceCards + observationHtml + outcomesHtml + unifiedHtml + resilienceHtml + focusHtml + backlogHtml + learningCard + renderPriorityPriceMonitor() + renderPriceCapacityNotice();
   }
 
   const coverage = state.linkCoverage?.current?.storeCoverage;
@@ -2831,12 +2834,19 @@ function calc(card) {
   const rawTorecacampPrice = Number(torecacampStock?.torecacampPrice);
   const torecacampPrice = rawTorecacampPrice > 0 ? rawTorecacampPrice : NaN;
   const priceEntries = [
-    { source: "みんトレ状態A", value: torecaPrice, kind: referenceEvidence === "backed" ? "成約相場" : "参考価格", condition: "状態A", conditionAccepted: true, valid: referenceEvidence !== "unbacked", invalidReason: "実売の裏付けなし・計算対象外", updatedAt: state.sourceUpdates.toreca || meta.updatedAt, url: buildTorecaCardUrl(card) },
-    { source: "カードラッシュ状態A", value: cardrushPrice, kind: "販売価格", condition: "状態A", conditionAccepted: cardrushStock?.conditionAccepted !== false, conditionReason: cardrushStock?.conditionReason, updatedAt: cardrushStock?.updatedAt === undefined ? state.sourceUpdates.cardrush : cardrushStock.updatedAt, url: card.cardrushUrl, available: Number(cardrushStock?.stock) > 0 || cardrushStock?.available === true, availabilityLabel: Number(cardrushStock?.stock) > 0 || cardrushStock?.available === true ? "在庫あり" : "在庫なし・未確認", valid: !decisionModel.isSuspectedCardMismatch(cardrushStock) },
-    { source: "晴れる屋2状態A", value: hareruya2Price, kind: "販売価格", condition: "状態Aまたは状態表記なし", conditionAccepted: hareruya2Stock?.conditionAccepted !== false, conditionReason: hareruya2Stock?.conditionReason, updatedAt: hareruya2Stock?.updatedAt === undefined ? state.sourceUpdates.hareruya2 : hareruya2Stock.updatedAt, url: card.hareruya2Url, available: Number(hareruya2Stock?.stock) > 0 || hareruya2Stock?.available === true, availabilityLabel: Number(hareruya2Stock?.stock) > 0 || hareruya2Stock?.available === true ? "在庫あり" : "在庫なし・未確認", valid: !decisionModel.isSuspectedCardMismatch(hareruya2Stock) },
-    { source: "遊々亭状態A", value: yuyuteiPrice, kind: "販売価格", condition: "美品扱い", conditionAccepted: yuyuteiStock?.conditionAccepted !== false, updatedAt: state.sourceUpdates.yuyutei, url: card.yuyuteiUrl, available: Number(yuyuteiStock?.stock) > 0, availabilityLabel: Number(yuyuteiStock?.stock) > 0 ? "在庫あり" : "在庫なし・未確認", valid: !decisionModel.isSuspectedCardMismatch(yuyuteiStock) },
-    { source: "トレカキャンプ状態A", value: torecacampPrice, kind: "販売価格", condition: "美品扱い", conditionAccepted: torecacampStock?.conditionAccepted !== false, updatedAt: state.sourceUpdates.torecacamp, url: card.torecacampUrl, available: torecacampStock?.available === true, availabilityLabel: torecacampStock?.available === true ? "在庫あり" : "在庫なし・未確認", valid: !decisionModel.isSuspectedCardMismatch(torecacampStock) && torecacampStock?.priceQuarantined !== true, invalidReason: torecacampStock?.quarantineReason || undefined },
+    { source: "みんトレ状態A", value: torecaPrice, kind: referenceEvidence === "backed" ? "成約相場" : "参考価格", condition: "状態A", conditionAccepted: true, valid: referenceEvidence !== "unbacked", invalidReason: "実売の裏付けなし・計算対象外", updatedAt: Object.hasOwn(card, "priceObservedAt") ? card.priceObservedAt : state.sourceUpdates.toreca || meta.updatedAt, url: buildTorecaCardUrl(card) },
+    { source: "カードラッシュ状態A", value: cardrushPrice, kind: "販売価格", condition: "状態A", conditionAccepted: cardrushStock?.conditionAccepted !== false, conditionReason: cardrushStock?.conditionReason, updatedAt: decisionModel.shopObservation(cardrushStock || {}).priceAt, url: card.cardrushUrl, available: Number(cardrushStock?.stock) > 0 || cardrushStock?.available === true, availabilityLabel: Number(cardrushStock?.stock) > 0 || cardrushStock?.available === true ? "在庫あり" : "在庫なし・未確認", valid: !decisionModel.isSuspectedCardMismatch(cardrushStock) },
+    { source: "晴れる屋2状態A", value: hareruya2Price, kind: "販売価格", condition: "状態Aまたは状態表記なし", conditionAccepted: hareruya2Stock?.conditionAccepted !== false, conditionReason: hareruya2Stock?.conditionReason, updatedAt: decisionModel.shopObservation(hareruya2Stock || {}).priceAt, url: card.hareruya2Url, available: Number(hareruya2Stock?.stock) > 0 || hareruya2Stock?.available === true, availabilityLabel: Number(hareruya2Stock?.stock) > 0 || hareruya2Stock?.available === true ? "在庫あり" : "在庫なし・未確認", valid: !decisionModel.isSuspectedCardMismatch(hareruya2Stock) },
+    { source: "遊々亭状態A", value: yuyuteiPrice, kind: "販売価格", condition: "美品扱い", conditionAccepted: yuyuteiStock?.conditionAccepted !== false, updatedAt: decisionModel.shopObservation(yuyuteiStock || {}).priceAt, url: card.yuyuteiUrl, available: Number(yuyuteiStock?.stock) > 0, availabilityLabel: Number(yuyuteiStock?.stock) > 0 ? "在庫あり" : "在庫なし・未確認", valid: !decisionModel.isSuspectedCardMismatch(yuyuteiStock) },
+    { source: "トレカキャンプ状態A", value: torecacampPrice, kind: "販売価格", condition: "美品扱い", conditionAccepted: torecacampStock?.conditionAccepted !== false, updatedAt: decisionModel.shopObservation(torecacampStock || {}).priceAt, url: card.torecacampUrl, available: torecacampStock?.available === true, availabilityLabel: torecacampStock?.available === true ? "在庫あり" : "在庫なし・未確認", valid: !decisionModel.isSuspectedCardMismatch(torecacampStock) && torecacampStock?.priceQuarantined !== true, invalidReason: torecacampStock?.quarantineReason || undefined },
   ];
+  const shopRows = [cardrushStock, hareruya2Stock, yuyuteiStock, torecacampStock];
+  for (let index = 1; index < priceEntries.length; index += 1) {
+    const row = shopRows[index - 1] || {};
+    const observed = decisionModel.shopObservation(row);
+    Object.assign(priceEntries[index], { updatedAt: observed.priceAt, inventoryAt: observed.inventoryAt,
+      stock: row.stock ?? null, identityVerified: row.identityVerified === true || Boolean(row.identityVerifiedAt) });
+  }
   const priceIntegrity = priceIntegrityModel?.audit(torecaPrice, priceEntries, { asOfDate: meta.updatedAt || meta.generatedAt }) || { disputed: false };
   const priceAggregation = decisionModel.aggregatePrices(priceEntries, { asOfDate: meta.updatedAt || meta.generatedAt, staleAfterDays: 14, excludeAfterDays: 45, minRatio: 0.55, maxRatio: 1.8, clusterRatio: 1.35, divergencePct: 35 });
   // A split between a reference quote and multiple exact-card shop quotes needs manual resolution.
@@ -2893,12 +2903,10 @@ function calc(card) {
   const buybackShops = Number(buyback?.shop30 || 0);
   const psaTx30d = Number(card.p10tv30 || 0);
   const psaTx7d = Number(card.p10tv7 || 0);
-  const purchasableStorePrices = priceAggregation.included
-    .filter((entry) => entry.kind === "販売価格" && entry.available === true && sourceAgeDays(entry.updatedAt) <= 2)
-    .map((entry) => ({ ...entry, fresh: true }));
-  const currentStoreOffer = purchasableStorePrices.length
-    ? purchasableStorePrices.reduce((lowest, entry) => entry.value < lowest.value ? entry : lowest)
-    : null;
+  const storePriceAudit = decisionModel.storeOffers(priceEntries, priceAggregation);
+  const currentStoreOffer = storePriceAudit.offer;
+  // Keep every saved quote visible in details, including expired and undated observations.
+  card = { ...card, storePriceAudit: storePriceAudit.rows };
   const snkrRawFlip = buildSnkrRawFlip(card, currentStoreOffer, priceIntegrity, referenceEvidence);
   const psa9Audit = buildPsa9Audit(card, price, psa10);
   const official = state.psaPopulation[card.id] || null;
@@ -3636,7 +3644,7 @@ function currentMarketView(card) {
     deductionRate:state.buybackDeductionRate,
   });
   const source = state.updateStatus?.sources?.toreca;
-  const checkedAt = source?.date === String(state.sourceUpdates.toreca || "").slice(0,10)
+  const checkedAt = Object.hasOwn(card, 'psa10ObservedAt') ? card.psa10ObservedAt : source?.date === String(state.sourceUpdates.toreca || "").slice(0,10)
     ? source.lastSuccessAt || state.sourceUpdates.toreca : state.sourceUpdates.toreca;
   const result = currentMarketModel.evaluate({card,assumptions:input.assumptions,
     marketUpdatedAt:checkedAt,manualPrice:state.currentMarketManualPrice,fee:state.fee,
@@ -4322,6 +4330,7 @@ function cardSearchExclusions(card, {mode = state.purchaseMode,diagnostic=true} 
 
 // Presentation only: neither market references nor forecasts are purchase offers.
 function priceComparisonCells(card, limitDisplay, confirmedAt, now = Date.now(), trial = null) {
+  if (Object.hasOwn(card, 'psa10ObservedAt')) confirmedAt = card.psa10ObservedAt;
   const money = value => Number.isFinite(value) && value >= 0 ? `¥${fmt.format(value)}` : "算出不可";
   const dateText = value => {
     const time = value ? Date.parse(value) : NaN;
@@ -4331,10 +4340,12 @@ function priceComparisonCells(card, limitDisplay, confirmedAt, now = Date.now(),
     }).format(time) + (String(value).includes("T") ? "" : "（時刻未取得）") : "日時未取得";
   };
   const offer = card.currentStoreOffer;
-  const offerTime = offer?.updatedAt ? Date.parse(offer.updatedAt) : NaN;
+  const offerTime = decisionModel.observationTime(offer?.updatedAt);
+  const inventoryTime = decisionModel.observationTime(offer?.inventoryAt);
   const usableOffer = offer?.available === true && offer?.fresh === true
     && Number.isFinite(offer.value) && offer.value > 0 && Number.isFinite(offerTime)
-    && now - offerTime <= 2 * 86400000;
+    && offerTime <= now && now - offerTime <= 2 * 86400000
+    && Number.isFinite(inventoryTime) && inventoryTime <= now && now - inventoryTime <= 2 * 86400000;
   const marketPrice = card.psa10Audit?.adoptedPrice ?? card.psa10;
   const hasMarket = Number.isFinite(marketPrice) && marketPrice > 0;
   const checkedTime = confirmedAt ? Date.parse(confirmedAt) : NaN;
@@ -4349,7 +4360,7 @@ function priceComparisonCells(card, limitDisplay, confirmedAt, now = Date.now(),
   const capText = limitDisplay.currentCapState === 'loss-at-zero' ? '0円仕入れでも赤字' : limitDisplay.currentCap == null ? 'データ不足で算出不可' : money(limitDisplay.currentCap);
   const breakCell = `<div class="price-cell glance-break-even" data-price-kind="break-even" data-cap-state="${limitDisplay.currentCapState || 'available'}"><span>現相場の期待損益分岐上限</span><strong>${escapeHtml(capText)}</strong><small>${escapeHtml(limitDisplay.currentCapLabel || '仕入れ可能な上限あり')}${limitDisplay.currentCapNote ? `／${escapeHtml(limitDisplay.currentCapNote)}` : ''}</small><small>現相場が続く場合の期待値基準。推奨仕入れ値ではありません</small></div>`;
   return `
-    <div class="price-cell" data-price-kind="store"><span>${trial?.purchaseKind === "manual" ? "購入価格（手入力試算）" : "現在買える状態A価格"}</span><strong>${usableOffer ? money(offer.value) : trial?.purchaseKind === "manual" ? money(trial.purchasePrice) : "未取得"}</strong><small>${escapeHtml(usableOffer ? offer.source : trial?.purchaseKind === "manual" ? "手入力試算・購入先未確認。相場参考買値ではありません" : "新しい在庫あり価格未取得・素体相場で代用しません")}</small>${usableOffer ? `<small>価格確認：${escapeHtml(dateText(offer.updatedAt))}</small>` : ""}</div>
+    <div class="price-cell" data-price-kind="store"><span>${trial?.purchaseKind === "manual" ? "購入価格（手入力試算）" : "現在買える状態A価格"}</span><strong>${usableOffer ? money(offer.value) : trial?.purchaseKind === "manual" ? money(trial.purchasePrice) : "未取得"}</strong><small>${escapeHtml(usableOffer ? offer.source : trial?.purchaseKind === "manual" ? "手入力試算・購入先未確認。相場参考買値ではありません" : "新しい在庫あり価格未取得・素体相場で代用しません")}</small>${usableOffer ? `<small>価格確認：${escapeHtml(dateText(offer.updatedAt))}<br>在庫確認：${escapeHtml(dateText(offer.inventoryAt))}</small>` : ""}<small>素体参考相場：中央値 ${Number.isFinite(card.priceAggregation?.value) ? money(Math.round(card.priceAggregation.value)) : "算出不可"}・採用元${card.priceAggregation?.included?.length || 0}件（販売価格・成約相場は別）</small></div>
     <div class="price-cell" data-price-kind="psa10"><span>PSA10現在相場</span><strong>${hasMarket ? money(marketPrice) : "未取得"}</strong><small>${escapeHtml(card.psa10Audit?.source || "取得元未取得")}</small><small>提供元の価格確認：${escapeHtml(dateText(confirmedAt))}</small>${lastSale ? `<small>最終成約：${escapeHtml(dateText(lastSale))}</small>` : ""}<small class="price-note ${stale ? "price-stale" : ""}">${escapeHtml(marketNotice)}</small></div>
     ${trial ? breakCell + stableCell : stableCell + breakCell}`;
 }
@@ -4739,7 +4750,8 @@ function render() {
           <span>現在購入できる店舗価格 ${card.currentStoreOffer ? `${escapeHtml(card.currentStoreOffer.source)} ¥${fmt.format(card.currentStoreOffer.value)}` : "未取得"}</span>
         </div>
         <div class="price-audit-rows">${priceAuditRows.map((entry) => `<div class="${entry.auditStatus.startsWith("採用") ? "included" : "excluded"}"><span>${entry.url ? `<a href="${escapeHtml(entry.url)}" target="_blank" rel="noreferrer">${escapeHtml(entry.source || "不明")}</a>` : escapeHtml(entry.source || "不明")}</span><strong>${Number(entry.value) > 0 ? `¥${fmt.format(entry.value)}` : "未取得"}</strong><small>${escapeHtml(entry.kind || "価格種別未記録")} / ${escapeHtml(entry.condition || "状態未記録")} / ${escapeHtml(entry.kind === "販売価格" ? entry.availabilityLabel || "在庫未確認" : "成約相場・購入先ではない")} / 更新 ${escapeHtml(String(entry.updatedAt || "未取得").slice(0, 10))}<br>${escapeHtml(entry.auditStatus)}：${escapeHtml(entry.auditReason)}</small></div>`).join("")}</div>
-        <small>みんトレの参考価格は実売確認の有無を別記します。ショップ販売価格は成約価格・成約件数に加算しません。</small>
+        <details class="store-offer-audit"><summary>店舗別の購入先監査（相場集計の採否とは別）</summary><div class="price-audit-rows">${(card.storePriceAudit || []).map(entry => `<div class="${entry.purchaseEligible ? 'included' : 'excluded'}"><span>${entry.url ? `<a href="${escapeHtml(entry.url)}" target="_blank" rel="noreferrer">${escapeHtml(entry.source)}</a>` : escapeHtml(entry.source)}</span><strong>${Number(entry.value) > 0 ? `¥${fmt.format(entry.value)}` : '価格未取得'}</strong><small>販売価格／${escapeHtml(entry.condition)}／${escapeHtml(entry.availabilityLabel)}${Number.isFinite(entry.stock) ? ` ${fmt.format(entry.stock)}枚` : ''}<br>価格確認 ${escapeHtml(formatJstTimestamp(entry.updatedAt))}<br>在庫確認 ${escapeHtml(formatJstTimestamp(entry.inventoryAt))}<br>相場集計：${entry.marketIncluded ? '採用' : entry.marketOutlier ? '外れ値除外' : '対象外'}／購入先：${entry.purchaseEligible ? '採用可能（GOは別判定）' : '不採用'}<br>${escapeHtml(entry.purchaseReason)}</small></div>`).join('')}</div></details>
+        <small>みんトレの参考価格は実売確認の有無を別記します。ショップ販売価格は成約価格・成約件数に加算しません。相場外れ値でも同一仕様・状態A・在庫を確認した正常な安値は独立して購入先を評価します。日時不明・期限超過は購入先に不採用。</small>
       </div>`;
     const psa10Audit = card.psa10Audit || {};
     const psa9Audit = card.psa9Audit || {};
@@ -4875,7 +4887,7 @@ function render() {
       hitRate:Number.isFinite(currentTrial.assumedRate) ? currentTrial.assumedRate * 100 : null} : baseLimitDisplay;
     const limitMoney = (value) => value == null ? "算出不可" : `¥${fmt.format(value)}`;
     const marketConfirmation = state.updateStatus?.sources?.toreca;
-    const marketConfirmedAt = marketConfirmation?.lastSuccessAt
+    const marketConfirmedAt = Object.hasOwn(card, "psa10ObservedAt") ? card.psa10ObservedAt : marketConfirmation?.lastSuccessAt
       && marketConfirmation.date === String(state.sourceUpdates.toreca || "").slice(0, 10)
       ? marketConfirmation.lastSuccessAt : state.sourceUpdates.toreca;
     const priceCells = priceComparisonCells(card, limitDisplay, marketConfirmedAt, Date.now(), currentTrial);

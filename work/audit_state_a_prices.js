@@ -28,7 +28,7 @@ for (const card of cards) {
       source: source.label,
       kind: "販売価格",
       value: row[source.field],
-      updatedAt: source.data.updatedAt,
+      updatedAt: decisionModel.shopObservation(row).priceAt,
       valid: row.priceQuarantined !== true && !decisionModel.isSuspectedCardMismatch(row),
       conditionAccepted: row.conditionAccepted !== false,
     };

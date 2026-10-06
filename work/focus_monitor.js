@@ -27,7 +27,7 @@ function fairBatch(rows, size, isFocused, maxShare = 0.4) {
 }
 function observation(value, at, now, hours, extra = {}) {
   const valid = value != null && Number.isFinite(Number(value)) && Number(value) > 0;
-  const timestamp = Date.parse(at || "");
+  const timestamp = decisionModel.observationTime(at);
   const ageHours = Number.isFinite(timestamp) && timestamp <= now ? (now - timestamp) / 3600000 : null;
   const fresh = valid && ageHours != null && ageHours <= hours;
   return { value: valid ? Number(value) : null, at: at || null, ageHours: ageHours == null ? null : Math.round(ageHours * 10) / 10,
@@ -54,7 +54,7 @@ function build(root, now = Date.now()) {
       const value = p?.currentPrice ?? p?.price ?? p?.hareruya2Price ?? p?.cardrushPrice ?? p?.yuyuteiPrice ?? p?.torecacampPrice;
       const inStock = p?.available === true || Number(p?.currentStock ?? p?.stock) > 0;
       if (!inStock || p?.priceQuarantined || p?.cardMismatchSuspected || p?.matchStatus === "mismatch") return [];
-      const row = observation(value, p.updatedAt || p.observedAt, now, config.ttlHours, { source, url: card[`${source}Url`] || p.detailUrl || null });
+      const row = observation(value, decisionModel.shopObservation(p).priceAt, now, config.ttlHours, { source, url: card[`${source}Url`] || p.detailUrl || null });
       return row.valid ? [row] : [];
     });
     const bb = Object.entries(buybacks[card.id]?.shops || {}).flatMap(([source, p]) => {
@@ -63,8 +63,10 @@ function build(root, now = Date.now()) {
       return row.valid ? [row] : [];
     });
     const best = (list) => [...list].sort((a, b) => Number(b.fresh) - Number(a.fresh) || a.value - b.value)[0];
-    const priceEntries = Object.entries(prices).map(([source, entries]) => ({ source, value: entries[card.id]?.[`${source}Price`], kind: "販売価格", updatedAt: entries[card.id]?.updatedAt,
-      conditionAccepted: entries[card.id]?.conditionAccepted !== false, valid: !decisionModel.isSuspectedCardMismatch(entries[card.id]) && !entries[card.id]?.priceQuarantined }));
+    const priceEntries = Object.entries(prices).map(([source, entries]) => { const p = entries[card.id] || {}, at = decisionModel.shopObservation(p); return {
+      source, value:p[`${source}Price`],kind:'販売価格',updatedAt:at.priceAt,inventoryAt:at.inventoryAt,
+      available:p.available === true || Number(p.stock)>0, identityVerified:p.identityVerified === true || Boolean(p.identityVerifiedAt),
+      conditionAccepted:p.conditionAccepted !== false,valid:!decisionModel.isSuspectedCardMismatch(p) && !p.priceQuarantined }; });
     priceEntries.push({ source: "toreca", value: card.price, valid: card.rawBacked !== false, updatedAt: meta.updatedAt || meta.generatedAt });
     const aggregation = decisionModel.aggregatePrices(priceEntries, { asOfDate: meta.updatedAt || meta.generatedAt, staleAfterDays: 14, excludeAfterDays: 45, minRatio: 0.55, maxRatio: 1.8, clusterRatio: 1.35, divergencePct: 35 });
     const items = {
@@ -76,8 +78,9 @@ function build(root, now = Date.now()) {
       buyback: best(bb) || observation(null, null, now, config.ttlHours, { source: "shopBuyback" }),
       shopStateA: best(quotes) || observation(null, null, now, config.ttlHours, { source: "hareruya2" }),
     };
-    items.shopStateA.calculationEligible = items.shopStateA.valid && !aggregation.conflicted && aggregation.included.some((p) => p.source === items.shopStateA.source);
-    items.shopStateA.calculationNotice = !items.shopStateA.valid ? "購入可能価格未取得" : items.shopStateA.calculationEligible ? "価格監査の採用対象。GOは別判定" : "取得価格は多数価格帯から外れるため本判定の購入可能価格には不採用。診断表示で確認";
+    const offers = decisionModel.storeOffers(priceEntries, aggregation, {now});
+    items.shopStateA.calculationEligible = items.shopStateA.valid && !aggregation.conflicted && offers.rows.some(p => p.source === items.shopStateA.source && p.purchaseEligible);
+    items.shopStateA.calculationNotice = !items.shopStateA.valid ? "購入可能価格未取得" : items.shopStateA.calculationEligible ? "個別日時・状態A・在庫確認済み。GOは別判定" : "個別確認の期限・日時・仕様・在庫条件を満たさない。診断表示で確認";
     if (items.shopStateA.valid && !items.shopStateA.calculationEligible) items.shopStateA.status += "・価格監査対象外";
     const old = prior.cards?.[card.id]?.items || {};
     let newValid = 0, newlyFresh = 0;

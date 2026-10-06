@@ -212,7 +212,8 @@ function historySummary(cards, catalog, history, field) {
     const entry = catalogById.get(card.id); const values = history.stocks[card.id] || [];
     if (!entry && !values.length) continue;
     const current = Number.isFinite(values[latest]) ? values[latest] : entry?.stock ?? null;
-    output[card.id] = { [field]: Number(entry?.price) || null, stock: current, samples: values.filter(Number.isFinite).length };
+    output[card.id] = { [field]: Number(entry?.price) || null, stock: current, samples: values.filter(Number.isFinite).length,
+      observedAt: entry?.observedAt || null, identityVerified: entry?.cardId === card.id };
   }
   return output;
 }
@@ -364,7 +365,7 @@ async function updateYuyutei(cards, paths) {
         const previousEntry = byId.get(card.id);
         if (!previousEntry || previousEntry.detailUrl !== match.detailUrl) linked += 1;
         else if (previousEntry.price !== match.price || previousEntry.stock !== match.stock) updated += 1;
-        byId.set(card.id, { cardId: card.id, ...match, observedAt: jstDate() });
+        byId.set(card.id, { cardId: card.id, ...match, observedAt: new Date().toISOString() });
       }
       progress.lastSuccessfulPage = pageKey;
       catalog = [...byId.values()];
@@ -784,7 +785,7 @@ async function updateTorecaCamp(cards, paths) {
         const entry = {
           cardId: card.id, productId: String(product.id), title: product.title,
           detailUrl: sitemapEntry.url, price: campVariantPrice(variant), priceUnit: "JPY",
-          available: variant.available === true, observedAt: jstDate(),
+          available: variant.available === true, observedAt: new Date().toISOString(),
           sourceSitemap: sitemapIndex + 1, lastModified: sitemapEntry.lastModified || null,
         };
         const quarantine = campPriceQuarantine(card, entry.price);
@@ -856,6 +857,7 @@ async function updateTorecaCamp(cards, paths) {
     availabilityLabel: entry.available ? "在庫あり" : "在庫なし",
     detailUrl: entry.detailUrl || null,
     observedAt: entry.observedAt || null,
+    identityVerified: Boolean(entry.cardId),
     priceQuarantined: entry.priceQuarantined === true,
     quarantineReason: entry.quarantineReason || null,
     marketPriceRatio: Number.isFinite(entry.marketPriceRatio) ? entry.marketPriceRatio : null,
@@ -940,6 +942,7 @@ async function exclusiveMain() {
 if (require.main === module) exclusiveMain().catch((error) => { console.error(error); process.exitCode = 1; });
 
 module.exports = {
+  historySummary,
   campA, campMatchesCard, campPriceQuarantine, campSignature, campVariantPrice, cardSignature, migrateCampCatalogPrices, normalizeSetCode,
   guardCatalogDrop, updateProgressHealth, migrateCampRetries,
   parseProductSitemap, parseProductSitemapIndex, preferCampEntry,

@@ -152,6 +152,46 @@
     };
   }
 
+  function shopObservation(row = {}) {
+    const at = (specific) => Object.hasOwn(row, specific) ? row[specific]
+      : Object.hasOwn(row, 'observedAt') ? row.observedAt : row.updatedAt ?? null;
+    return { priceAt: at('priceObservedAt'), inventoryAt: at('inventoryObservedAt') };
+  }
+
+  function observationTime(value) {
+    if (!value) return NaN;
+    return Date.parse(/^\d{4}-\d{2}-\d{2}$/.test(String(value)) ? `${value}T00:00:00+09:00` : value);
+  }
+
+  // Reference-price clustering and a verified in-stock purchase offer are separate decisions.
+  function storeOffers(entries, aggregation, options = {}) {
+    const now = options.now ?? Date.now(), ttl = options.ttlMs ?? 48 * 3600000;
+    const rows = entries.filter(row => row.kind === '販売価格').map(row => {
+      const rejected = aggregation.excluded?.find(e => e.source === row.source);
+      const outlier = aggregation.outliers?.some(e => e.source === row.source) === true;
+      const reasons = [];
+      if (!(Number(row.value) > 0) || !Number.isFinite(Number(row.value))) reasons.push('価格未取得');
+      if (row.valid === false) reasons.push(row.invalidReason || 'カード仕様の照合不一致');
+      if (row.conditionAccepted === false) reasons.push(row.conditionReason || '状態A以外');
+      if (row.languageAccepted === false) reasons.push('日本語版以外');
+      if (rejected?.quarantined || row.quarantined) reasons.push(rejected?.quarantineReason || '異常値として計算対象外');
+      for (const [label, at] of [['価格', row.updatedAt], ['在庫', row.inventoryAt]]) {
+        const time = observationTime(at);
+        if (!Number.isFinite(time)) reasons.push(`${label}確認日時不明`);
+        else if (time > now) reasons.push(`${label}確認日時が未来`);
+        else if (now - time > ttl) reasons.push(`${label}確認期限超過`);
+      }
+      if (row.available !== true) reasons.push('在庫なし・未確認');
+      if (outlier && row.identityVerified !== true) reasons.push('相場外れ値・同一仕様の確認不足');
+      return { ...row, marketIncluded: aggregation.included?.some(e => e.source === row.source) === true,
+        marketOutlier: outlier, purchaseReasons: [...new Set(reasons)], purchaseEligible: reasons.length === 0,
+        fresh: !reasons.some(r => /確認日時|確認期限/.test(r)),
+        purchaseReason: reasons.length ? [...new Set(reasons)].join('／') : outlier ? '同一仕様・状態A・在庫確認済みの安値。相場集計の外れ値とは別に購入先へ採用' : '同一カードの新しい状態A在庫価格' };
+    });
+    const eligible = rows.filter(row => row.purchaseEligible);
+    return { rows, offer: eligible.length ? eligible.reduce((a,b) => a.value <= b.value ? a : b) : null };
+  }
+
   function resolvePsa9Price(input = {}) {
     const directPrice = Number(input.directPrice);
     if (directPrice > 0 && Number.isFinite(directPrice)) {
@@ -1039,5 +1079,5 @@
     };
   }
 
-  return { MODEL_VERSION, aggressivePurchaseZone, aggregatePrices, bargainDecisionEligible, buybackExitProfit, conservativeBuybackExit, economicsFromExpectedSale, exitPolicyCaps, shouldIncludeVerdict, capRoundingStep, capitalLimits, capitalPlan, economicsScenarioMatrix, expectedEconomics, gradeAssumptions, isSuspectedCardMismatch, matchConfidenceLabel, maxBuyPrice, median, operationalCap, operationalCapConcentration, portfolioPlan, portfolioStress, purchaseAvailability, purchaseCaps, purchaseDecision, purchaseLimitMarketRatio, resilienceMetrics, resolvePsa9Price, targetProfitMaxBuyPrice, weightedMedian };
+  return { MODEL_VERSION, shopObservation, observationTime, storeOffers, aggressivePurchaseZone, aggregatePrices, bargainDecisionEligible, buybackExitProfit, conservativeBuybackExit, economicsFromExpectedSale, exitPolicyCaps, shouldIncludeVerdict, capRoundingStep, capitalLimits, capitalPlan, economicsScenarioMatrix, expectedEconomics, gradeAssumptions, isSuspectedCardMismatch, matchConfidenceLabel, maxBuyPrice, median, operationalCap, operationalCapConcentration, portfolioPlan, portfolioStress, purchaseAvailability, purchaseCaps, purchaseDecision, purchaseLimitMarketRatio, resilienceMetrics, resolvePsa9Price, targetProfitMaxBuyPrice, weightedMedian };
 });

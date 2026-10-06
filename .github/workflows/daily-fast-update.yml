@@ -61,6 +61,7 @@ jobs:
           node work/finalize_update_status.js
       - name: Run fast regression tests
         run: |
+          node work/test_shop_observation.js
           node work/test_roi_psa9_ratio.js
           node --check app.js
           node --check decision-model.js
