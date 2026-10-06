@@ -4154,6 +4154,38 @@ function cardSearchExclusions(card, {mode = state.purchaseMode} = {}) {
       return [...new Set(reasons)];
 }
 
+// Presentation only: neither market references nor forecasts are purchase offers.
+function priceComparisonCells(card, limitDisplay, confirmedAt, now = Date.now()) {
+  const money = value => Number.isFinite(value) && value >= 0 ? `¥${fmt.format(value)}` : "算出不可";
+  const dateText = value => {
+    const time = value ? Date.parse(value) : NaN;
+    return Number.isFinite(time) ? new Intl.DateTimeFormat("ja-JP", {
+      timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit",
+      ...(String(value).includes("T") ? { hour: "2-digit", minute: "2-digit" } : {}),
+    }).format(time) : "日時未取得";
+  };
+  const offer = card.currentStoreOffer;
+  const offerTime = offer?.updatedAt ? Date.parse(offer.updatedAt) : NaN;
+  const usableOffer = offer?.available === true && offer?.fresh === true
+    && Number.isFinite(offer.value) && offer.value > 0 && Number.isFinite(offerTime)
+    && now - offerTime <= 2 * 86400000;
+  const marketPrice = card.psa10Audit?.adoptedPrice ?? card.psa10;
+  const hasMarket = Number.isFinite(marketPrice) && marketPrice > 0;
+  const checkedTime = confirmedAt ? Date.parse(confirmedAt) : NaN;
+  const lastSale = card.psa10Audit?.lastTradeAt;
+  const saleTime = lastSale ? Date.parse(lastSale) : NaN;
+  const stale = Number.isFinite(checkedTime) && now - checkedTime > 30 * 3600000
+    || card.psa10Audit?.measured && Number.isFinite(saleTime) && now - saleTime > 30 * 86400000;
+  const marketNotice = !hasMarket ? "未取得・予測値で補完しません"
+    : stale ? "古い価格・最新相場とは限りません"
+    : !Number.isFinite(checkedTime) ? "確認日時未取得" : "予測・買取価格ではありません";
+  return `
+    <div class="price-cell" data-price-kind="store"><span>現在買える状態A価格</span><strong>${usableOffer ? money(offer.value) : "未取得"}</strong><small>${escapeHtml(usableOffer ? offer.source : "新しい在庫あり価格未取得・素体相場で代用しません")}</small>${usableOffer ? `<small>価格確認：${escapeHtml(dateText(offer.updatedAt))}</small>` : ""}</div>
+    <div class="price-cell" data-price-kind="psa10"><span>PSA10現在相場</span><strong>${hasMarket ? money(marketPrice) : "未取得"}</strong><small>${escapeHtml(card.psa10Audit?.source || "取得元未取得")}</small><small>提供元の価格確認：${escapeHtml(dateText(confirmedAt))}</small>${lastSale ? `<small>最終成約：${escapeHtml(dateText(lastSale))}</small>` : ""}<small class="price-note ${stale ? "price-stale" : ""}">${escapeHtml(marketNotice)}</small></div>
+    <div class="price-cell glance-stable" data-price-kind="stable"><span>安定重視の仕入れ上限</span><strong>${escapeHtml(limitDisplay.stableLabel || money(limitDisplay.stableCap))}</strong><small>${escapeHtml(limitDisplay.reason || "仕入れ判定・絞り込みの基準")}</small></div>
+    <div class="price-cell glance-break-even" data-price-kind="break-even"><span>現相場の期待損益分岐上限</span><strong>${money(limitDisplay.currentCap)}</strong><small>現相場が続く場合の期待値基準。推奨仕入れ値ではありません</small></div>`;
+}
+
 function render() {
   const normalizedQuery = normalize(state.q);
   const compactQuery = compactSearch(state.q);
@@ -4634,11 +4666,9 @@ function render() {
       reason: limitReasonLabel(buyLimits?.clean),
     });
     const limitMoney = (value) => value == null ? "算出不可" : `¥${fmt.format(value)}`;
+    const priceCells = priceComparisonCells(card, limitDisplay, state.sourceUpdates.toreca);
     const limitComparison = `
-      <div class="limit-comparison">
-        <div class="limit-current"><span>現相場が続く場合の期待損益分岐上限</span><strong>${limitMoney(limitDisplay.currentCap)}</strong><small>期待損益が約0円になる買値。現在の仕入れ推奨額ではありません。</small></div>
-        <div class="limit-stable"><span>安定重視の仕入れ上限${buyLimits?.clean?.provisional ? "（暫定）" : ""}</span><strong>${escapeHtml(limitDisplay.stableLabel || limitMoney(limitDisplay.stableCap))}</strong><small>仕入れ判定・絞り込みはこちらを使用</small></div>
-      </div>
+      <div class="price-comparison-grid" aria-label="現在価格と仕入れ上限の比較">${priceCells}</div>
       <div class="limit-context"><span>売却先：${escapeHtml(limitDisplay.exitLabel)}</span><span>採用価格データ更新日：${escapeHtml(limitDisplay.priceDate || "未取得")}</span><span>PSA10想定率：${limitDisplay.hitRate == null ? "未取得" : `${limitDisplay.hitRate.toFixed(1)}%`}</span><span>上限差額：${limitDisplay.gap == null ? "算出不可" : `${limitMoney(Math.abs(limitDisplay.gap))}（安定重視が${limitDisplay.gap >= 0 ? "低い" : "高い"}）`}</span></div>
       <div class="limit-reason">${limitDisplay.gap > 0 ? "安定重視を低くした主因" : "安定重視上限の制限要因"}：${escapeHtml(limitDisplay.reason)}</div>
       ${limitDisplay.warnings.length ? `<div class="limit-warnings" role="note">${limitDisplay.warnings.map((warning) => `<span>注意：${escapeHtml(warning)}</span>`).join("")}</div>` : ""}`;
@@ -4708,7 +4738,6 @@ function render() {
           <div><span>店舗で見る仕入れ上限</span><strong>この状態なら、ここまで</strong></div>
           <small>${escapeHtml(buyLimits.rateSource)}・PSA鑑定費・売却手数料を反映</small>
         </div>
-        ${card.psaDecision && card.purchaseDecision ? "" : limitComparison}
         <div class="buy-limit-grid">
           <div class="buy-limit-card clean ${buyLimits.clean.maxPrice > 0 ? "available" : "blocked"}">
             <span>美品・上限の内訳</span>
@@ -4769,7 +4798,7 @@ function render() {
     const purchaseSummaryPanel = psaDecision && purchaseDecision ? `
       <section class="purchase-summary ${decisionClass}">
         <div class="purchase-exclusion ${priceOnlyExclusion ? "price-only" : ""}"><strong>${escapeHtml(exclusionExplanation)}</strong><small>暫定運用上限は現在価格ではなく「この価格以下なら仕入れ候補」という買値の基準です。</small></div>
-        <div class="purchase-final-limit">${limitComparison}<div class="purchase-limit-tiers"><span>中央予測・利益を狙う上限 <b>¥${fmt.format(card.buyLimits?.clean?.normalMaxPrice || 0)}</b></span><span>供給ストレス・安全側損益分岐 <b>¥${fmt.format(card.buyLimits?.clean?.stressBreakEvenMaxPrice || 0)}</b></span><span>PSA9赤字回避 <b>${escapeHtml(psa9NonLossLimit)}</b></span><span>資金上限 <b>¥${fmt.format(card.buyLimits?.clean?.capitalMaxPrice || 0)}</b></span></div><div class="supply-badges">${supplyBadgesHtml}</div></div>
+        <div class="purchase-final-limit"><div class="purchase-limit-tiers"><span>中央予測・利益を狙う上限 <b>¥${fmt.format(card.buyLimits?.clean?.normalMaxPrice || 0)}</b></span><span>供給ストレス・安全側損益分岐 <b>¥${fmt.format(card.buyLimits?.clean?.stressBreakEvenMaxPrice || 0)}</b></span><span>PSA9赤字回避 <b>${escapeHtml(psa9NonLossLimit)}</b></span><span>資金上限 <b>¥${fmt.format(card.buyLimits?.clean?.capitalMaxPrice || 0)}</b></span></div><div class="supply-badges">${supplyBadgesHtml}</div></div>
         <div class="purchase-verdict"><span>今回の仕入れ判断</span><strong>${escapeHtml(displayVerdict)}</strong><small>${escapeHtml(decisionReasons)}</small></div>
         ${inspectionScenarioHtml}
         <div class="purchase-action ${purchaseAvailability.aggressive ? "aggressive" : purchaseAvailability.verifiedNow ? "verified" : purchaseAvailability.marketWithinLimit ? "market-range" : "waiting"}"><span>実店舗での仕入れ可否</span><strong>${escapeHtml(purchaseAvailability.label || "購入先未確認")}</strong><small>${escapeHtml(purchaseAvailability.reason || "新しい在庫情報を確認してください")}</small></div>
@@ -5006,10 +5035,8 @@ function render() {
     const candidateGlance = state.purchaseMode === "snkr-raw" ? "" : `
       <section class="candidate-glance" aria-label="仕入れ判断の要点">
         <div class="glance-verdict"><span>今回の判定</span><strong>${escapeHtml(displayVerdict)}</strong><small>${escapeHtml(purchaseAvailability.label || "購入先未確認")}</small></div>
-        <div><span>現在買える状態A</span><strong>${card.currentStoreOffer ? `¥${fmt.format(card.currentStoreOffer.value)}` : "未取得"}</strong><small>${escapeHtml(card.currentStoreOffer?.source || "在庫あり価格なし")}</small></div>
-        <div class="glance-stable"><span>安定重視の仕入れ上限</span><strong>${escapeHtml(limitDisplay.stableLabel || limitMoney(limitDisplay.stableCap))}</strong><small>${limitDisplay.stableCap === 0 ? escapeHtml(limitDisplay.reason) : "仕入れ判定・絞り込みの基準"}</small></div>
-        <div class="glance-break-even"><span>現相場の期待損益分岐上限</span><strong>${limitMoney(limitDisplay.currentCap)}</strong><small>推奨仕入れ値ではありません</small></div>
-        <div><span>返却${state.lockDays}日・期待利益（参考）</span><strong class="${glanceProfit.className}">${glanceProfit.text}</strong><small>${card.currentStoreOffer ? "店舗価格" : "基準相場"}で購入 × 同期間の中央比較／期待利益率 ${Number.isFinite(selectedPeriodTrial.rows?.central?.expectedRoi) ? `${selectedPeriodTrial.rows.central.expectedRoi.toFixed(1)}%` : "算出不可"}／${escapeHtml(selectedPeriodTrial.status || '期間履歴不足')}</small></div>
+        ${priceCells}
+        <div class="glance-profit"><span>返却${state.lockDays}日・期待利益（参考）</span><strong class="${glanceProfit.className}">${glanceProfit.text}</strong><small>${card.currentStoreOffer ? "店舗価格" : "基準相場"}で購入 × 同期間の中央比較／期待利益率 ${Number.isFinite(selectedPeriodTrial.rows?.central?.expectedRoi) ? `${selectedPeriodTrial.rows.central.expectedRoi.toFixed(1)}%` : "算出不可"}／${escapeHtml(selectedPeriodTrial.status || '期間履歴不足')}</small></div>
       </section>
       ${profitComparison}
       ${purchasePsa9RatioHtml(card)}
@@ -5046,15 +5073,15 @@ function render() {
           <details class="card-details">
             <summary><span>計算内訳と相場データを見る</span><small>仕入れ上限・供給・相場・PSA公式</small></summary>
             <div class="card-details-body">
+              <div class="detail-limit-comparison">${limitComparison}</div>
               ${purchaseSummaryPanel}
               ${buyLimitPanel}
               ${dataQualityPanel}
               ${marketSignalsPanel}
               ${state.purchaseMode !== "snkr-raw" ? snkrRawPanel : ""}
-              ${buyLimits ? `<div class="detail-limit-comparison">${limitComparison}</div>` : ""}
               <div class="metrics market-summary">
                 <div class="metric metric-primary"><span>平均美品価格（中央値）</span><strong>${cardPriceText}</strong><small>${priceSources}</small></div>
-                <div class="metric"><span>PSA10市場価格</span><strong>¥${fmt.format(card.psa10)}</strong><small>みんトレ市場価格 / 手数料・追加費用差引後の受取見込 ${psa10NetText}</small></div>
+                <div class="metric"><span>PSA10手取り見込</span><strong>${psa10NetText}</strong><small>現在相場から手数料・追加費用を差し引いた見込額。期待利益とは別です。</small></div>
                 <div class="metric"><span>PSA10時の手取り利益</span><strong>${profitText}</strong><small>PSA10になった場合。期待利益とは別です。</small></div>
                 <div class="metric metric-roi"><span>PSA10時の手取り利益率</span><strong>${Number.isFinite(card.roi) ? `${Math.round(card.roi)}%` : "未算出"}</strong><small>利益 ÷（平均美品＋PSA鑑定費）</small></div>
               </div>

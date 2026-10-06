@@ -1594,3 +1594,14 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .candidate-profit-comparison > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 8px 0; }
 .candidate-profit-comparison span { overflow-wrap: anywhere; }
 .candidate-profit-comparison small { display: block; line-height: 1.6; }
+.candidate-glance,.price-comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.candidate-glance .glance-verdict,.candidate-glance .glance-profit{grid-column:1/-1}
+.price-comparison-grid .price-cell{min-width:0;padding:11px;border:1px solid rgba(255,255,255,.14);border-radius:13px;background:#0b1224}
+.price-cell span,.price-cell small{display:block;font-size:11px;line-height:1.45;color:var(--muted);overflow-wrap:anywhere}
+.candidate-glance .price-cell strong,.price-comparison-grid .price-cell strong{display:block;margin:5px 0;font-size:clamp(19px,1.8vw,23px);line-height:1.25;overflow-wrap:anywhere}
+.price-comparison-grid .glance-stable{border-color:rgba(56,217,150,.48)}
+.price-comparison-grid .glance-stable strong{color:#86efac}
+.price-comparison-grid .glance-break-even{border-color:rgba(125,211,252,.42)}
+.price-comparison-grid .glance-break-even strong{color:#bae6fd}
+.price-cell.glance-break-even small,.price-cell .price-stale{color:#fbbf24}
+@media(max-width:720px){.candidate-glance,.price-comparison-grid{gap:6px}.price-comparison-grid .price-cell{padding:9px}.price-cell span,.price-cell small{font-size:10px}}
