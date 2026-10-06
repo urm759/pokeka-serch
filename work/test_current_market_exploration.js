@@ -66,7 +66,7 @@ const context = vm.createContext({ window: { location: { href: 'https://example.
   CandidateVisibility: require('../candidate-visibility.js'), PurchaseRatioModel: require('../purchase-ratio-model.js') },
   document, URL, URLSearchParams, console, setTimeout, clearTimeout,
   localStorage: { getItem: key => saved[key] ?? null, setItem: (key, value) => saved[key] = value } });
-vm.runInContext(source.split('// Browser event bindings start here;')[0] + '\nglobalThis.api={state,searchProfitView,cardSearchExclusions,readUrl,buildShareUrl,saveQuickFilters,restoreQuickFilters,sorters,gradeRateSummary};', context);
+vm.runInContext(source.split('// Browser event bindings start here;')[0] + '\nglobalThis.api={state,searchProfitView,cardSearchExclusions,readUrl,buildShareUrl,saveQuickFilters,restoreQuickFilters,sorters,gradeRateSummary,currentMarketProfitPanel};', context);
 const api = context.api, state = api.state;
 Object.assign(state, { purchaseMode: 'current-market', exitPolicy: 'marketplace', minSaleTx: 0, minRoi: 0, maxPsa10: null, minExpectedProfitFilter: 0, minExpectedRoiFilter: 0, sourceUpdates: { toreca: new Date().toISOString() } });
 const card = { ...input.card, id: 'fixture', name: 'テスト SR[SV1 100/078]',
@@ -99,6 +99,11 @@ elements.get('currentMarketCapMinInput').value = '';
 api.restoreQuickFilters();
 assert.equal(elements.get('currentMarketCapMinInput').value, '0');
 assert(!api.gradeRateSummary({ official: { total: 100 } }).includes('NaN'));
+const panel = api.currentMarketProfitPanel(v);
+assert(panel.includes('40,000'));
+assert(panel.includes('推定値'));
+assert(!panel.includes('NaN'));
+assert(!api.currentMarketProfitPanel(missing).includes('NaN'));
 assert(api.gradeRateSummary({ official: { rate: 0, total: 100, ten: 0 } }).includes('0.0%'));
 assert(source.includes('period-profit-detail'), 'return model comparison remains in details');
 console.log('Current-market: actual/manual price, current exits, fees, deduction, null/zero, stale/conflict safety, URL/storage and unchanged stable limits PASS');

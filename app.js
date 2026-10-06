@@ -4252,6 +4252,7 @@ function gradeRateSummary(card, trial = null) {
 }
 
 function currentMarketProfitPanel(view) {
+  const money = value => `¥${fmt.format(Math.round(value))}`;
   const profit = signedExpectedMoney(view.economics?.expectedProfit);
   const lower = signedExpectedMoney(view.psa9Profit);
   return `<div class="current-market-profit"><div><span>現相場の期待利益・利益率</span><strong class="${profit.className}">${profit.text}／${Number.isFinite(view.economics?.expectedRoi) ? `${view.economics.expectedRoi.toFixed(1)}%` : "算出不可"}</strong><small>${escapeHtml(view.purchaseSource || "購入価格未取得")} × 現在相場／出口 ${escapeHtml(view.exitLabel || "未取得")}。分母は買値＋鑑定費。損益分岐上限を買値に代用しません。</small></div><div><span>PSA9時損益（${escapeHtml(view.psa9Type || "未取得")}）</span><strong class="${lower.className}">${lower.text}</strong><small>採用PSA9売価 ${Number.isFinite(view.lowerGradePrice) ? money(view.lowerGradePrice) : "未取得"}／確認 ${escapeHtml(view.psa9UpdatedAt || "未取得・推定には実成約日なし")}。フリマ出口・販売手数料、鑑定費、諸費用控除後。PSA8以下・失敗は未評価。</small></div></div>`;
