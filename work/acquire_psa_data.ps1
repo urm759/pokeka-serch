@@ -36,7 +36,17 @@ try {
   Invoke-Step -Name 'PSA regular Chrome startup' -MaxAttempts 2 -Operation { & (Join-Path $PSScriptRoot 'start_psa_regular_chrome.ps1') } | Out-Null
   $env:PSA_CDP_ENDPOINT = 'http://127.0.0.1:9222'
   $env:PSA_MIN_TOTAL_POPULATION = '500'
-  Invoke-Step -Name 'PSA priority queue build' -Operation { & $Node (Join-Path $PSScriptRoot 'build_psa_priority_queue.js') } | Out-Null
+  & $Node (Join-Path $PSScriptRoot 'psa_handoff.js') --inputs
+  if ($LASTEXITCODE -eq 0) {
+    $inputs = Get-Content (Join-Path $PSScriptRoot 'psa-acquisition-inputs/audit.json') -Raw | ConvertFrom-Json
+    $env:PSA_MANIFEST_PATH = $inputs.manifestPath
+    $env:PSA_PRIORITY_QUEUE_PATH = $inputs.priorityPath
+  } else {
+    Write-Warning 'Latest PSA inputs unavailable. Keep local known inputs and user data.'
+    Remove-Item Env:PSA_MANIFEST_PATH -ErrorAction SilentlyContinue
+    Remove-Item Env:PSA_PRIORITY_QUEUE_PATH -ErrorAction SilentlyContinue
+    Invoke-Step -Name 'PSA priority queue build' -Operation { & $Node (Join-Path $PSScriptRoot 'build_psa_priority_queue.js') } | Out-Null
+  }
   Invoke-Step -Name 'PSA official population update' -MaxAttempts $Retries -Operation { & $Node (Join-Path $PSScriptRoot 'update_psa_official_populations.js') } | Out-Null
   $fetchAudit = Get-Content $HoldPath -Raw | ConvertFrom-Json
   if ($fetchAudit.refreshedCount -le 0) { throw 'No newly verified PSA values; preserved rows are not new acquisition.' }

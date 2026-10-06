@@ -5,7 +5,7 @@ const path = require("node:path");
 const { spawnSync } = require("node:child_process");
 const retry = require("./acquisition_retry.js");
 const { nextBatch } = require("./run_pokedata_backfill.js");
-const { applyPacket, enqueue, mergeCheckpoint, publish } = require("./psa_handoff.js");
+const { applyPacket, enqueue, mergeCheckpoint, publish, prepareInputs } = require("./psa_handoff.js");
 const now = Date.now();
 for (const error of ["HTTP 429", "HTTP 503", "ETIMEDOUT"]) {
   const first = retry.failure({}, { error }, now);
@@ -40,6 +40,8 @@ fs.mkdirSync(path.join(producer, "work")); fs.mkdirSync(path.join(producer, "dat
 const pop = { setCode: "SV9", cardNo: "126", cardName: "Clefairy", sourceUrl: "https://www.psacard.com/pop/tcg-cards/2025/verified/292980", fetchedAt: "2026-10-05T00:00:00Z", psa10Count: 100, psaTotal: 120 };
 retry.atomicWrite(path.join(producer, "data/psa-official-populations.json"), { rows: [pop] });
 retry.atomicWrite(path.join(producer, "work/psa-fetch-progress.json"), { startedAt: "2026-10-06T00:00:00Z", completedUrls: [pop.sourceUrl] });
+retry.atomicWrite(path.join(producer, "work/psa_set_urls.json"), [{ setCode: "SV9", url: pop.sourceUrl }]);
+retry.atomicWrite(path.join(producer, "work/psa_priority_queue.json"), { rows: [{ cardId: "new-card", setCode: "SV9", cardNo: "126" }] });
 git(["add", "data", "work"], producer); git(["commit", "-m", "Initial"], producer); git(["push", "origin", "main"], producer);
 git(["clone", remote, other]); git(["config", "user.name", "Other"], other); git(["config", "user.email", "other@example.test"], other);
 retry.atomicWrite(path.join(producer, "data/psa-official-populations.json"), { rows: [{ ...pop, fetchedAt: "2026-10-06T00:00:00Z", psa10Count: 101 }] });
@@ -61,4 +63,9 @@ assert.equal(JSON.parse(git(["show", "main:data/shop.json"], remote)).newerShopP
 assert(fs.readFileSync(path.join(producer, "USER-NOTES.txt"), "utf8").includes("survive"));
 assert.deepEqual(publish(producer, { scripts: [] }).published, [], "acknowledged packet is not republished");
 assert(fs.existsSync(packetFile), "immutable saved packet retained after publication");
+const inputs = prepareInputs(producer);
+assert.equal(inputs.status, "latest-fetched-main");
+assert.equal(inputs.httpAcquisitionRequests, 0);
+assert.equal(JSON.parse(fs.readFileSync(inputs.priorityPath)).rows[0].cardId, "new-card");
+assert(fs.readFileSync(path.join(producer, "USER-NOTES.txt"), "utf8").includes("survive"));
 console.log("Transient retries, URL/source isolation, adaptive rate, duplicate lock, saved packet checksum, concurrent Git publication and newer checkpoint preservation: passed");

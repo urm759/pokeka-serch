@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-06T09:27:20.660Z",
+  "generatedAt": "2026-10-06T09:34:02.756Z",
   "llmCalls": 0,
   "codexCalls": 0,
   "retryPolicy": {
@@ -43,11 +43,13 @@
       "firstPassDaysEstimate": null,
       "observedExecutionDays": 0,
       "processedPerExecutionDay": null,
-      "estimateConditions": "実行があった観測日2日以上の試行数平均。新規有効値数ではない。停止・日次枠・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
+      "firstPassObservationDays": 0,
+      "firstPassProgressField": "publicNewRecords",
+      "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-06T09:27:11.702Z",
-        "to": "2026-10-06T09:27:18.620Z"
+        "from": "2026-10-06T09:33:02.762Z",
+        "to": "2026-10-06T09:34:00.528Z"
       },
       "sinceBaseline": {
         "newLinked": 5,
@@ -69,7 +71,7 @@
         "total": 46
       },
       "sourceState": "partial",
-      "stopReason": "公開一覧APIの25,000商品上限（101ページ目がHTTP 400）。サイトマップ経路への切替が必要",
+      "stopReason": "商品詳細の1回上限 20件に到達",
       "retryUrls": [
         {
           "kind": "transient",
@@ -204,12 +206,14 @@
       },
       "observedExecutionDays": 6,
       "processedPerExecutionDay": 102.5,
-      "firstPassDaysEstimate": 140,
-      "estimateConditions": "実行があった観測日2日以上の試行数平均。新規有効値数ではない。停止・日次枠・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
+      "firstPassObservationDays": 1,
+      "firstPassProgressField": "newlyVisitedProducts",
+      "firstPassDaysEstimate": null,
+      "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-06T09:27:11.702Z",
-        "to": "2026-10-06T09:27:18.620Z"
+        "from": "2026-10-06T09:33:02.762Z",
+        "to": "2026-10-06T09:34:00.528Z"
       },
       "sinceBaseline": {
         "newLinked": 20,
@@ -375,12 +379,14 @@
       "authenticatedStatus": "認証・確認待ち／今回の公開取得で代替しない",
       "observedExecutionDays": 5,
       "processedPerExecutionDay": 20.6,
-      "firstPassDaysEstimate": 25,
-      "estimateConditions": "実行があった観測日2日以上の試行数平均。新規有効値数ではない。停止・日次枠・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
+      "firstPassObservationDays": 1,
+      "firstPassProgressField": "publicNewRecords",
+      "firstPassDaysEstimate": null,
+      "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-06T09:27:11.702Z",
-        "to": "2026-10-06T09:27:18.620Z"
+        "from": "2026-10-06T09:33:02.762Z",
+        "to": "2026-10-06T09:34:00.528Z"
       },
       "sinceBaseline": {
         "newLinked": 49,

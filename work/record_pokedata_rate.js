@@ -9,6 +9,8 @@ if (run?.lastAttemptAt) {
   const cards = read("pokedata-fetch-metrics.json").cards || [];
   const recent = cards.filter((row) => Date.parse(row.startedAt || "") >= Date.parse(run.lastAttemptAt));
   const failed = Number(run.fetchFailureCount || 0);
+  const budget = read("pokedata-budget-progress.json");
+  const budgetMatches = Array.isArray(budget.batches) && Date.parse(budget.startedAt) >= Date.parse(run.lastAttemptAt) && Date.parse(budget.endedAt) <= Date.parse(run.endedAt) + 1000;
   const transientMetric = recent.find((row) => rate.transient(row));
   const sample = { key: `pokedata:${run.workflowRunId || run.lastAttemptAt}`, source: "pokedata",
     at: run.endedAt || new Date().toISOString(), batchSize: Number(process.env.POKEDATA_BATCH || 10),
@@ -18,6 +20,10 @@ if (run?.lastAttemptAt) {
     failed, httpStatus: transientMetric?.httpStatus || null,
     error: transientMetric?.error || run.lastError || null,
     manualHold: run.completionStatus === "manual-action-required" };
+  if (budgetMatches) Object.assign(sample, { attempted: budget.attempted, acquired: budget.fetched, failed: budget.failed,
+    publicNewRecords: budget.publicNewRecords, domesticNewLinked: budget.newLinked, durationMs: budget.durationMs,
+    httpRequests: budget.httpRequests, batches: budget.batches.length, batchSizes: budget.batches.map(row => row.batchSize),
+    intervalMs: budget.throttle?.intervalMs, adjustment: budget.failed ? "transient-backoff" : "adaptive-time-budget" });
   rate.record(sample);
   console.log(JSON.stringify(sample));
 }

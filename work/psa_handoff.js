@@ -9,6 +9,40 @@ const FILES = ["data/psa-official-populations.json", "work/psa-fetch-progress.js
 const read = (file, fallback = {}) => { try { return JSON.parse(fs.readFileSync(file, "utf8").replace(/^\uFEFF/, "")); } catch { return fallback; } };
 const timestamp = value => Date.parse(value?.startedAt || value?.observedAt || value?.lastAttemptAt || "") || 0;
 function mergeCheckpoint(current, incoming) { return timestamp(incoming) < timestamp(current) ? current : { ...current, ...incoming }; }
+function prepareInputs(root = ROOT) {
+  const directory = path.join(root, "work/psa-acquisition-inputs");
+  const resultFile = path.join(directory, "audit.json");
+  const show = ref => {
+    const r = spawnSync("git", ["show", ref], { cwd: root, encoding: "utf8", maxBuffer: 32 * 1024 * 1024 });
+    if (r.status !== 0) throw new Error(r.stderr);
+    return r.stdout;
+  };
+  fs.mkdirSync(directory, { recursive: true });
+  try {
+    const revision = spawnSync("git", ["rev-parse", "origin/main"], { cwd: root, encoding: "utf8" });
+    const commit = revision.status === 0 && /^[a-f0-9]{40}$/.test(revision.stdout.trim()) ? revision.stdout.trim() : null;
+    if (!commit) throw new Error("Latest fetched main commit is unavailable");
+    const rawManifest = JSON.parse(show(`${commit}:work/psa_set_urls.json`));
+    const priority = JSON.parse(show(`${commit}:work/psa_priority_queue.json`));
+    if (!Array.isArray(rawManifest) || !rawManifest.length || !Array.isArray(priority.rows)) throw new Error("PSA input format requires review; existing inputs retained");
+    const quarantinedUrls = [];
+    const manifest = rawManifest.map(row => {
+      if (row && (!row.url || /^https:\/\/www\.psacard\.com\/(?:pop\/tcg-cards\/|spec\/psa\/\d+)/.test(row.url))) return row;
+      quarantinedUrls.push({ setCode: row?.setCode || null, url: row?.url || null, reason: "公式URL形式の確認待ち・この対象のみ隔離" });
+      return { ...row, url: null, quarantinedUrl: row?.url || null, note: "公式URL形式の確認待ち" };
+    });
+    const snapshotDirectory = path.join(directory, commit); fs.mkdirSync(snapshotDirectory, { recursive: true });
+    atomicWrite(path.join(snapshotDirectory, "manifest.json"), manifest);
+    atomicWrite(path.join(snapshotDirectory, "priority.json"), priority);
+    const result = { status: "latest-fetched-main", commit, preparedAt: new Date().toISOString(), quarantinedUrls, manifestPath: path.join(snapshotDirectory, "manifest.json"), priorityPath: path.join(snapshotDirectory, "priority.json"), httpAcquisitionRequests: 0 };
+    atomicWrite(resultFile, result); return result;
+  } catch (error) {
+    const cached = read(resultFile);
+    if (!cached.manifestPath || !fs.existsSync(cached.manifestPath) || !fs.existsSync(cached.priorityPath)) throw error;
+    const result = { ...cached, status: "previous-inputs", lastAttemptAt: new Date().toISOString(), error: error.message };
+    atomicWrite(resultFile, result); return result;
+  }
+}
 function enqueue(root = ROOT) {
   const files = Object.fromEntries(FILES.filter(file => fs.existsSync(path.join(root, file))).map(file => [file, read(path.join(root, file))]));
   if (!Array.isArray(files[FILES[0]]?.rows)) throw new Error("Saved PSA rows missing; no publication packet created");
@@ -84,7 +118,7 @@ function publish(root = ROOT, options = {}) {
   } finally { release(); }
 }
 if (require.main === module) {
-  try { console.log(JSON.stringify(process.argv.includes("--enqueue") ? { packet: enqueue() } : publish())); }
+  try { console.log(JSON.stringify(process.argv.includes("--inputs") ? prepareInputs() : process.argv.includes("--enqueue") ? { packet: enqueue() } : publish())); }
   catch (error) { console.error(error.message); process.exitCode = 1; }
 }
-module.exports = { enqueue, applyPacket, mergeCheckpoint, publish };
+module.exports = { enqueue, applyPacket, mergeCheckpoint, publish, prepareInputs };

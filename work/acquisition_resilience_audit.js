@@ -2,13 +2,21 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { atomicWrite, classify } = require("./acquisition_retry.js");
 const read = (root, file, fallback = {}) => { try { return JSON.parse(fs.readFileSync(path.join(root, file), "utf8").replace(/^\uFEFF/, "")); } catch { return fallback; } };
-function dailyRate(samples, remaining) {
+function dailyRate(samples, remaining, progressField = "attempted") {
   const days = new Map();
   for (const row of samples) { const date = String(row.at || "").slice(0, 10); if (!date) continue; days.set(date, (days.get(date) || 0) + Number(row.attempted || 0)); }
   const total = [...days.values()].reduce((a, b) => a + b, 0), daily = days.size >= 2 ? total / days.size : null;
+  const progressDays = new Map();
+  for (const row of samples) {
+    if (typeof row[progressField] !== "number" || !Number.isFinite(row[progressField])) continue;
+    const day = String(row.at || "").slice(0, 10);
+    if (day) progressDays.set(day, (progressDays.get(day) || 0) + Math.max(0, row[progressField]));
+  }
+  const progressRate = progressDays.size >= 2 ? [...progressDays.values()].reduce((a, b) => a + b, 0) / progressDays.size : null;
   return { observedExecutionDays: days.size, processedPerExecutionDay: daily == null ? null : Math.round(daily * 10) / 10,
-    firstPassDaysEstimate: remaining != null && daily > 0 ? Math.ceil(remaining / daily) : null,
-    estimateConditions: "実行があった観測日2日以上の試行数平均。新規有効値数ではない。停止・日次枠・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない" };
+    firstPassObservationDays: progressDays.size, firstPassProgressField: progressField,
+    firstPassDaysEstimate: remaining != null && progressRate > 0 ? Math.ceil(remaining / progressRate) : null,
+    estimateConditions: "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない" };
 }
 function build(root) {
   const samples = read(root, "work/backfill-rate-history.json").samples || [];
@@ -37,7 +45,8 @@ function build(root) {
     { source: "pokedata", label: "PokeDATA公開一覧・成約行", remaining: pokeRemaining, queueDefinition: "展開済みセットの未巡回ID。認証済み実成約とは別", sourceState: poke.status || "未実行", stopReason: poke.stopReason || null, checkpoint: poke.checkpoint || null, lastRun: poke, authenticatedStatus: "認証・確認待ち／今回の公開取得で代替しない" },
   ];
   for (const row of rows) {
-    Object.assign(row, dailyRate(samples.filter(s => s.source === row.source).slice(-100), row.remaining));
+    Object.assign(row, dailyRate(samples.filter(s => s.source === row.source).slice(-100), row.remaining, row.source === "torecacamp" ? "newlyVisitedProducts" : "publicNewRecords"));
+    if (row.source === "torecacamp") row.stopReason = camp.sourceRetry?.reason || camp.lastRun?.stoppingReason || null;
     row.usableNet = outcomes.previousObservation?.sources?.[row.source]?.usableNet ?? null;
     row.observationPeriod = { from: outcomes.previousObservation?.baselineAt || null, to: outcomes.generatedAt || null };
     row.sinceBaseline = outcomes.sinceBaseline?.sources?.[row.source] || null;

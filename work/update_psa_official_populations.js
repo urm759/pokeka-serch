@@ -14,7 +14,7 @@ function loadChromium() {
   }
 }
 
-const MANIFEST_PATH = path.join(__dirname, "psa_set_urls.json");
+const MANIFEST_PATH = process.env.PSA_MANIFEST_PATH || path.join(__dirname, "psa_set_urls.json");
 const STANDALONE_ROOT = path.join(__dirname, "..");
 const SITE_ROOT = fs.existsSync(path.join(STANDALONE_ROOT, "index.html"))
   ? STANDALONE_ROOT

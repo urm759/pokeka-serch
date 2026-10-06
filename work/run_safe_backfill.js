@@ -37,7 +37,7 @@ const sourceProgress = (source) => {
   }
   const value = read(path.join(__dirname, "torecacamp_progress.json"), {});
   return { sitemap: Number(value.currentSitemapIndex || 0) + 1, productIndex: value.currentEntryIndex || 0,
-    totalSitemaps: value.totalSitemaps || null, catalogCount: read(path.join(__dirname, "torecacamp_catalog.json"), []).length,
+    totalSitemaps: value.totalSitemaps || null, visitedProducts: value.seenProductUrls?.length || 0, catalogCount: read(path.join(__dirname, "torecacamp_catalog.json"), []).length,
     lastFailure: value.lastFailure || null, sourceRetry: value.sourceRetry || null, retryQueue: Object.keys(value.retryByUrl || {}).length,
     failedSitemaps: Object.keys(value.failedSitemaps || {}).length };
 };
@@ -153,7 +153,7 @@ function run(options = {}) {
       backfillRate.record({ key: `${process.env.GITHUB_RUN_ID || state.startedAt}:${source}:${batches}`,
         source, at: now(), batchSize: Number(task.env.YUYUTEI_SEARCH_BATCH || task.env.PRICE_EVIDENCE_FETCH_LIMIT
           || task.env.TORECACAMP_PRODUCT_DETAIL_BATCH || settings.batchSize), intervalMs: settings.intervalMs,
-        adjustment: settings.adjustment, attempted, acquired, failed: batchFailures + (result.status !== 0 ? 1 : 0),
+        adjustment: settings.adjustment, attempted, acquired, newlyVisitedProducts: source === "torecacamp" ? Math.max(0, after.visitedProducts - position.visitedProducts) : null, failed: batchFailures + (result.status !== 0 ? 1 : 0),
         httpStatus: Number(shopBatch.lastFailure?.httpStatus || after.lastFailure?.httpStatus) || null,
         error: failure ? String(output?.stopReason || shopBatch.lastFailure?.error || result.error?.message || result.stderr || "").slice(0, 250) : null,
         manualHold: accessBlocked || abruptDrop });
