@@ -33,10 +33,19 @@ async function get(url) {
         item.evidence = log.split('\n').filter(line => /processedCards|newAcquired|newLinked|usableNet|newlyAnalyzable|remaining|HTTP 403|HTTP 503|llmCalls|codexCalls|stopReason|checkpoint|nothing to commit|-> main|safe-stop|durationMs/.test(line)).map(line => {
           try {
             const value = JSON.parse(line.slice(line.indexOf('{')));
-            const keys = ['sourceId','status','completionStatus','sourceState','startedAt','endedAt','attemptedCount','acquiredCount','refreshedCount','updatedCount','newAcquiredCount','newLinkedCount','usableNet','changedCards','processedCards','remaining','stopReason','durationMs','checkpoint','llmCalls','codexCalls'];
+            const keys = ['sourceId','source','status','completionStatus','sourceState','startedAt','endedAt','attemptedCount','acquiredCount','refreshedCount','updatedCount','newAcquiredCount','newLinkedCount','usableNet','changedCards','processedCards','remaining','stopReason','reason','durationMs','checkpoint','llmCalls','codexCalls'];
             return Object.fromEntries(keys.filter(key => Object.hasOwn(value,key)).map(key=>[key,value[key]]));
           } catch { return line.slice(0, 320); }
         }).filter(row=>typeof row==='string'||Object.keys(row).length).slice(-20);
+        item.publication = log.split('\n').map(line => {
+          try { const value=JSON.parse(line.slice(line.indexOf('{'))); return value.status==='published' ? {published:value.published,commit:value.commit}:null; }
+          catch { return null; }
+        }).filter(Boolean).at(-1) || null;
+        item.sourceStops = log.split('\n').map(line => {
+          try { const value=JSON.parse(line.slice(line.indexOf('{'))); return value.source && value.reason
+            ? {source:value.source,status:value.status,reason:value.reason,checkpoint:value.position?.sitemap ? `${value.position.sitemap}/${value.position.totalSitemaps}・${value.position.productIndex}`:null} : null; }
+          catch { return null; }
+        }).filter(Boolean);
       }
       summary.jobs.push(item);
     }
