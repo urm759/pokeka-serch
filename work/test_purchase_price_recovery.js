@@ -20,6 +20,7 @@ const queue = plan({cards,catalog:[],sourceId:'hareruya2',candidateRows:{0:{curr
 assert.equal(queue.queue[0].card.id,'0'); assert(queue.queue[0].reason.includes('現相場採算'));
 assert.deepEqual(queue.queue.slice(0,4).map(r=>r.important),[true,true,true,false]);
 assert.equal(issueCategory({reason:'遊々亭 HTTP 403'}),'アクセス・手動対応待ち');
+assert.equal(issueCategory({reason:'独立監視未登録 / タスク登録権限不足。起動前失敗を捕捉するタスクは未登録'}),'アクセス・手動対応待ち');
 assert.equal(issueCategory({key:'priority-prices:workflow-failure'}),'取得処理の故障');
 assert.equal(issueCategory({reason:'3回連続で進捗なし'}),'鮮度未達・進捗停滞');
 assert.equal(m.MODEL_VERSION,'purchase-decision-v5-shared-limits');

@@ -47,6 +47,7 @@
   }
   function issueCategory(issue) {
     const text = `${issue.key || ''} ${issue.reason || ''}`;
+    if (/独立監視未登録/.test(text)) return 'アクセス・手動対応待ち';
     if (/workflow-failure|保存.*失敗|競合|起動前失敗|監視取得失敗/.test(text)) return '取得処理の故障';
     if (/403|認証|sign.?in|log.?in|許諾|独立監視未登録/i.test(text)) return 'アクセス・手動対応待ち';
     if (/stalled|停滞|進捗なし|期限超過|以上停止|以上なし|stale/.test(text)) return '鮮度未達・進捗停滞';
