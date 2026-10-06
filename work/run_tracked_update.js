@@ -58,7 +58,7 @@ const updatedCount = updatedMatch ? Number(updatedMatch[1]) : Number.isFinite(co
 const sourceState = status === "failed"
   ? "取得処理失敗"
   : status === "manual-action-required"
-    ? "認証・403・形式変更のため停止。手動確認待ち"
+    ? (output.includes("許諾未確認") ? "許諾確認待ち・自動収集保留" : "認証・403・形式変更のため停止。手動確認待ち")
   : status === "no-progress"
     ? "処理成功・進捗なし（次セット選択待ち）"
   : status === "partial"

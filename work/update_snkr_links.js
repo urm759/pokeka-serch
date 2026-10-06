@@ -70,6 +70,7 @@ function isDue(entry, now, recheckDays) {
 }
 
 async function main() {
+  if (require("./snkr_access_policy.js").hold("link-discovery")) return;
   const siteRoot = resolveSiteRoot();
   const dataPath = path.join(siteRoot, "data", "pokemon-cards.json");
   const progressPath = path.join(__dirname, "snkr_link_progress.json");

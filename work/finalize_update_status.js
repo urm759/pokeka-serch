@@ -228,6 +228,11 @@ for (const [sourceId, source] of Object.entries(sources)) {
 }
 // A completed refresh requires both cloud sources and the login-dependent
 // PSA task on the user's PC to be current.
+if (!require("./snkr_access_policy.js").permitted(ROOT) && sources.snkrRaw) {
+  Object.assign(sources.snkrRaw, {status:"manual-action-required", fresh:false, acquisitionStopped:true,
+    sourceState:"許諾確認待ち・自動収集保留（過去の正常データを保持）", note:"直接取得の許諾未確認。保存済み値の日時は更新しない",
+    nextScheduledAt:null, scheduleLabel:"自動取得保留・許諾確認が必要", acquiredCount:0, updatedCount:0});
+}
 const automaticSources = Object.values(sources).filter((source) => source.automatic);
 const complete = automaticSources.length > 0 && automaticSources.every((source) => source.fresh);
 // These sources directly drive the visible sourcing decision. Yu-Yu-Tei and
@@ -292,7 +297,9 @@ const payload = {
 payload.unifiedMonitor = require("./source_monitor.js").build(ROOT, sources, previous.unifiedMonitor || {});
 payload.taskOperations = require("./task_operations.js").build(ROOT, payload.unifiedMonitor.pc);
 payload.focusMonitor = require("./focus_monitor.js").write(ROOT);
-payload.priorityPriceMonitor = require("./priority_price_queue.js").write(ROOT);
+  payload.priorityPriceMonitor = require("./priority_price_queue.js").write(ROOT);
+  payload.sourceAccessPolicy = JSON.parse(fs.readFileSync(path.join(ROOT, "data/snkr-access-policy.json"), "utf8"));
+  require("child_process").execFileSync(process.execPath, [path.join(ROOT,"work/audit_proactive_refresh.js")], {cwd:ROOT});
 fs.writeFileSync(OUTPUT, JSON.stringify(payload), "utf8");
 const publishedHistory = { version: 1, updatedAt: runHistory.updatedAt || null, sources: {} };
 for (const sourceId of Object.keys(sources)) {

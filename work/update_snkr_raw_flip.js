@@ -181,6 +181,7 @@ function priority(card, completion, previous, buybackCards) {
 }
 
 async function main() {
+  if (require("./snkr_access_policy.js").hold("raw-price-sales-listings")) return;
   const startedAt = new Date();
   const cards = readJson(path.join(ROOT, "data", "pokemon-cards.json"), []);
   const completion = readJson(COMPLETION_PATH, { cards: {} });

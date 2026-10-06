@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+if (require("./snkr_access_policy.js").hold("listing-history-without-confirmed-observation")) process.exit(0);
 
 const ROOT = path.join(__dirname, "..");
 const HISTORY = path.join(__dirname, "snkr_listing_history.json");

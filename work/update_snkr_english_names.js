@@ -48,6 +48,7 @@ async function mapLimit(items, limit, mapper) {
 }
 
 async function main() {
+  if (require("./snkr_access_policy.js").hold("english-name")) return;
   const cards = readJson(CARDS_PATH, []);
   const cache = readJson(CACHE_PATH, { version: 1, cards: {} });
   cache.cards ||= {};

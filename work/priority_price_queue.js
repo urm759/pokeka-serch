@@ -2,6 +2,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { groupFor } = require("./focus_monitor.js");
 const ROOT = path.join(__dirname, "..");
+const proactive = require("./proactive_refresh.js");
 const read = (root, file, fallback = {}) => { try { return JSON.parse(fs.readFileSync(path.join(root, file), "utf8")); } catch { return fallback; } };
 function plan({ cards, sourceId, catalog, candidateRows = {}, focusConfig = {}, config = {}, jobs = {}, manualWait = {}, now = Date.now() }) {
   const byId = new Map(catalog.filter((row) => row.cardId).map((row) => [row.cardId, row]));
@@ -22,12 +23,13 @@ function plan({ cards, sourceId, catalog, candidateRows = {}, focusConfig = {}, 
     const waiting = manualWait[card.id]?.url === url || previous.url === url && previous.failures >= (config.retryLimit || 3);
     return { card, important, focus, url, lastSuccessAt, lastAttemptAt: previous.lastAttemptAt || null,
       nextDueAt: due ? new Date(due).toISOString() : null, due: due <= now,
-      eligible: due <= now && !waiting && (!Number.isFinite(retry) || retry <= now),
-      status: waiting ? "手動確認待ち" : Number.isFinite(retry) && retry > now ? "再試行待ち" : due <= now ? "期限超過・取得待ち" : "期限内",
+      proactive: important && due > now && proactive.eligibleDeadline(due, important, now, config),
+      eligible: proactive.eligibleDeadline(due, important, now, config) && !waiting && (!Number.isFinite(retry) || retry <= now),
+      status: waiting ? "手動確認待ち" : Number.isFinite(retry) && retry > now ? "再試行待ち" : due <= now ? "期限超過・取得待ち" : proactive.eligibleDeadline(due, important, now, config) ? "次回完了前に期限切れ・先回り待ち" : "期限内",
       reason: [focus && "重点カード", candidate && "購入候補", favorites.has(card.id) && "同期済みお気に入り", !important && "通常巡回"].filter(Boolean).join("／"),
       score: (validTime ? Math.max(0, (now - due) / 3600000) : 100000) + (important ? 24 : 0) };
   });
-  const sorted = records.filter((row) => row.eligible).sort((a, b) => b.score - a.score || a.card.id.localeCompare(b.card.id));
+  const sorted = records.filter((row) => row.eligible).sort((a, b) => Number(b.due) - Number(a.due) || b.score - a.score || a.card.id.localeCompare(b.card.id));
   const preferred = sorted.filter((row) => row.important), ordinary = sorted.filter((row) => !row.important);
   const queue = [];
   // Three priority requests followed by one ordinary request prevent starvation.
@@ -41,7 +43,7 @@ function plan({ cards, sourceId, catalog, candidateRows = {}, focusConfig = {}, 
 function load(sourceId, root = ROOT, now = Date.now()) {
   return plan({ cards: read(root, "data/pokemon-cards.json", []), sourceId,
     catalog: read(root, `work/${sourceId}_catalog.json`, []), candidateRows: read(root, "work/candidate-availability-history.json").runs?.at(-1)?.rows || read(root, "work/acquisition-audit-baseline.json").availability?.rows || {},
-    focusConfig: read(root, "data/focus-monitor-config.json"), config: read(root, "data/priority-price-config.json"),
+    focusConfig: read(root, "data/focus-monitor-config.json"), config: timingConfig(root),
     jobs: read(root, "work/priority-price-checkpoint.json").sources?.[sourceId]?.jobs || {},
     manualWait: read(root, "work/candidate-shop-refresh.json").checkpoints?.[sourceId]?.manualWait || {}, now });
 }
@@ -75,7 +77,8 @@ function write(root = ROOT) {
       previous.nextDueAt = record.nextDueAt;
     }
     sources[id] = { total: planned.records.length, priorityCards: important.length,
-      overdue: important.filter((r) => r.due && r.nextDueAt).length, unconfirmed: important.filter((r) => !r.nextDueAt).length, pending: planned.queue.length,
+      overdue: important.filter((r) => r.due && r.nextDueAt).length, proactivePending: important.filter(r => r.proactive && r.eligible).length,
+      proactiveWindow: proactive.lead(timingConfig(root)), unconfirmed: important.filter((r) => !r.nextDueAt).length, pending: planned.queue.length,
       status: blocked ? "認証・アクセス確認待ち" : "期限付き価格更新", stopReason: blocked || run.stopReason || null,
       refreshed: run.refreshedCount ?? null, changed: run.changedCount ?? null, durationMs: run.durationMs ?? null,
       httpRequests: run.httpRequests ?? null, cacheHits: run.cacheHits ?? 0, cardsPerMinute: rate ? Number((rate * 60).toFixed(2)) : null,
@@ -110,7 +113,7 @@ function write(root = ROOT) {
       const time = Date.parse(at), known = Number.isFinite(time) && time <= now;
       const nextDueAt = known ? new Date(time + 6 * 3600000).toISOString() : null;
       return { id: card.id, name: names.get(card.id), lastConfirmedAt: known ? at : null, nextDueAt,
-        lastAttemptAt: runs[id]?.lastAttemptAt || null, status: !known ? "カード単位の確認日時なし・取得待ち" : time + 6 * 3600000 < now ? "期限超過" : "期限内", detail };
+        lastAttemptAt: runs[id]?.lastAttemptAt || null, status: !known ? "カード単位の確認日時なし・取得待ち" : time + 6 * 3600000 < now ? "期限超過" : proactive.eligibleDeadline(time + 6 * 3600000, true, now, timingConfig(root)) ? "次回完了前に期限切れ・先回り待ち" : "期限内", detail };
     });
     const fixedIds = new Set(fixedHistory.sources?.[id]?.cohort || []);
     const fixedCards = records.filter(r => fixedIds.has(r.id));
@@ -140,7 +143,7 @@ function write(root = ROOT) {
   const history = require('./fixed_freshness.js').observe(read(root, 'work/priority-freshness-history.json'), output);
   fs.writeFileSync(path.join(root, 'work/priority-freshness-history.json'), JSON.stringify(history));
   output.fixedCohortFreshness = {baselineAt:history.baselineAt,method:history.method,
-    sources:Object.fromEntries(Object.entries(history.sources).map(([id,r])=>[id,{baseline:r.observations[0],latest:r.observations.at(-1),previous:r.observations.at(-2)||null}]))};
+    sources:Object.fromEntries(Object.entries(history.sources).map(([id,r])=>[id,{baseline:r.observations[0],latest:r.observations.at(-1),previous:r.observations.at(-2)||null,intervalMinimum:r.intervalMinima?.at(-1)||null}]))};
   fs.writeFileSync(path.join(root, "data/priority-price-monitor.json"), JSON.stringify(output));
   fs.writeFileSync(path.join(root, "work/priority-price-checkpoint.json"), JSON.stringify(checkpoint));
   return output;
@@ -154,4 +157,10 @@ function confirmedInventoryAt(inventory, run) {
     && count === Number(run.acquiredCount) && Number.isFinite(at) && Number.isFinite(inventoryAt) && inventoryAt <= at
     ? run.lastSuccessAt : null;
 }
-module.exports = { plan, finish, load, write, confirmedInventoryAt };
+function timingConfig(root = ROOT) {
+  const config = read(root, "data/priority-price-config.json");
+  const execution = read(root, "data/priority-price-execution.json");
+  return {...config, pipelineBudgetMs: 24 * 60000,
+    ...(Number.isFinite(execution.startDelayMs) ? {observedStartDelayMs:Math.max(30*60000,execution.startDelayMs)} : {})};
+}
+module.exports = { plan, finish, load, write, confirmedInventoryAt, timingConfig };
