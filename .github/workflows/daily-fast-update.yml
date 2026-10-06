@@ -81,6 +81,7 @@ jobs:
           node work/test_acquisition_progress.js
           node work/test_checkpoint_publication.js
           node work/test_source_monitor_and_completion.js
+          node work/test_completion_routes.js
           node work/test_grade_calibration.js
           node work/test_daily_fast_update.js
           node work/test_proactive_refresh.js
@@ -98,6 +99,7 @@ jobs:
           git add work/shop_buyback_history.json work/shop_buyback_catalog.json work/shop_buyback_unmatched.json work/shop_buyback_item_matches.json work/shop_buyback_image_matches.json work/shop_buyback_quarantine.json
           git add work/priority-price-checkpoint.json work/priority-price-http-cache.json
           git add work/fixed-price-reference.json work/priority-freshness-history.json
+          git add work/completion-outcomes-baseline.json work/completion-outcomes-last.json work/completion-outcome-history work/card-completion-queue.json
           if git diff --cached --quiet; then
             echo "No source change. Commit and deployment skipped."
             exit 0

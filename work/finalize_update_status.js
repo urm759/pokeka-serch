@@ -50,7 +50,9 @@ const updatePerformance = read("data/update-performance.json", {});
 const safeBackfill = read("work/safe-backfill-progress.json", {});
 const runs = read("work/source-update-runs.json", { sources: {} });
 const runHistory = read("work/source-update-history.json", { version: 1, sources: {} });
-const psaStoredTask = read("work/psa_update_state.json", {});
+const localPsaStoredTask = read("work/psa_update_state.json", {});
+const observedPsaTask = read("data/psa-pc-observation.json", {}).acquisitionState || {};
+const psaStoredTask = Date.parse(observedPsaTask.lastAttemptAt || "") > Date.parse(localPsaStoredTask.lastAttemptAt || "") ? observedPsaTask : localPsaStoredTask;
 const psaAcquisition = read("work/psa_acquisition_result.json", {});
 const storedStartedAt = new Date(psaStoredTask.startedAt || psaStoredTask.lastAttemptAt || 0).getTime();
 const acquisitionStartedAt = new Date(psaAcquisition.startedAt || 0).getTime();
@@ -228,6 +230,11 @@ for (const [sourceId, source] of Object.entries(sources)) {
 }
 // A completed refresh requires both cloud sources and the login-dependent
 // PSA task on the user's PC to be current.
+if (/sign.?in|log.?in|403|cloudflare|認証/i.test(psaTask.lastError || psaTask.sourceState || "")) {
+  Object.assign(sources.psaOfficial, { acquisitionStopped: true, fresh: false,
+    note: "定期タスクは登録済み。取得は認証対応待ち、PC側の保存・公開は別工程で監視",
+    scheduleLabel: "定期起動あり・取得は認証対応待ち" });
+}
 if (!require("./snkr_access_policy.js").permitted(ROOT) && sources.snkrRaw) {
   Object.assign(sources.snkrRaw, {status:"manual-action-required", fresh:false, acquisitionStopped:true,
     sourceState:"許諾確認待ち・自動収集保留（過去の正常データを保持）", note:"直接取得の許諾未確認。保存済み値の日時は更新しない",

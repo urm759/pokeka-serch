@@ -81,7 +81,7 @@ assert.match(finalizer, /return jstDate\(parsed\)/);
 assert.match(finalizer, /timeout_or_forced_exit/);
 assert.match(finalizer, /majorSourceIds/);
 assert.match(finalizer, /psa_acquisition_result\.json/);
-const latestPsaRun = [psaStoredTask, psaAcquisition, sourceRuns.sources?.psaOfficial]
+const latestPsaRun = [psaStoredTask, psaAcquisition, sourceRuns.sources?.psaOfficial, JSON.parse(fs.readFileSync(path.join(root, "data/psa-pc-observation.json"), "utf8").replace(/^\uFEFF/, "")).acquisitionState]
   .filter((row) => row?.startedAt || row?.lastAttemptAt)
   .sort((a, b) => new Date(b.startedAt || b.lastAttemptAt) - new Date(a.startedAt || a.lastAttemptAt))[0];
 if (latestPsaRun) {

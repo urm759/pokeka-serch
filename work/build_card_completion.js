@@ -180,6 +180,10 @@ function main() {
     const isRecentRelease = Boolean(flags.recentRelease);
     const isRelisted = Boolean(flags.relisted && daysSince(life.reappearedAt) <= NEW_DAYS);
     const shopFound = Boolean(card.cardrushUrl || card.hareruya2Url || card.yuyuteiUrl || card.torecacampUrl || cardrush.cards?.[id] || hareruya2.cards?.[id] || yuyutei.cards?.[id] || torecacamp.cards?.[id]);
+    const shopValue = [cardrush, hareruya2, yuyutei, torecacamp].some((source) => {
+      const row = source.cards?.[id];
+      return row && !row.priceQuarantined && [row.price, row.cardrushPrice, row.hareruya2Price, row.yuyuteiPrice, row.torecacampPrice].some((value) => finite(value) && value > 0);
+    });
     const buybackRow = buyback.cards?.[id];
     const official = psa.cards?.[id];
     const releaseKnown = Boolean(release.date || release.year);
@@ -215,9 +219,9 @@ function main() {
       rawActualSales: item(rawActualCount > 0 ? "取得済み" : pokedataState === "unsupported-or-unconfirmed" ? "取得不能" : "取得待ち", "PokeDATA個別成約", times.pokedata, rawActualCount > 0 ? `${rawActualCount}件` : "Raw実成約未取得"),
       psa10ActualSales: item(psa10ActualCount > 0 ? "取得済み" : pokedataState === "unsupported-or-unconfirmed" ? "取得不能" : "取得待ち", "PokeDATA個別成約", times.pokedata, psa10ActualCount > 0 ? `${psa10ActualCount}件` : "PSA10実成約未取得"),
       psa9Sales: item(psa9ActualCount > 0 ? "取得済み" : pokedataState === "unsupported-or-unconfirmed" ? "取得不能" : "取得待ち", "PokeDATA個別成約", times.pokedata, psa9ActualCount > 0 ? `${psa9ActualCount}件` : psa9Kind.kind === "aggregate" ? "集計値はあるが個別実成約は未取得" : "PSA9実成約を優先取得"),
-      psa9Aggregate: item(psa9Kind.kind === "actual" || psa9Kind.kind === "aggregate" ? "取得済み" : psa9Kind.kind === "estimate" ? "推定値" : "取得待ち", "みんトレ／スニダン", times.toreca, psa9Kind.label),
+      psa9Aggregate: item(finite(card.snkPsa9Price) && card.snkPsa9Price > 0 ? "取得済み" : domesticPrice ? "推定値" : "取得待ち", "国内集計・みんトレ／スニダン", times.toreca, finite(card.snkPsa9Price) && card.snkPsa9Price > 0 ? "国内集計値・個別実成約とは別" : "国内実成約・集計値は未取得。海外PSA9から補完しない"),
       psaOfficial: item(official && finite(official.rate) ? "取得済み" : "取得待ち", "PSA公式", times.psa, official ? "TOTALまたはPSA10率が不足" : "公式Population未紐付け"),
-      shopStateA: item(shopFound ? "取得済み" : "取得待ち", "国内ショップ", times.cardrush, shopFound ? null : "ショップ巡回・紐付け待ち"),
+      shopStateA: item(shopValue ? "取得済み" : "取得待ち", "国内ショップ", times.cardrush, shopValue ? null : shopFound ? "紐付け済み・有効状態A価格は未取得" : "ショップ巡回・紐付け待ち"),
       buyback: item(buybackRow ? "取得済み" : "定期再確認", "Web買取表", times.buyback, buybackRow ? null : "現在掲載なし・次回定期更新で再確認"),
       pokedata: item(pokedataState === "linked" ? "取得済み" : pokedataState === "compatible-unmatched" ? "再試行待ち" : pokedataState === "unexpanded-set" ? "取得待ち" : "取得不能", "PokeDATA", times.pokedata, pokedataState === "linked" ? null : pokedataState === "compatible-unmatched" ? "対応セットだがカード未一致" : pokedataState === "unexpanded-set" ? "未展開セット" : "PokeDATA非対応／存在未確認"),
       release: item(releaseKnown ? "取得済み" : "取得待ち", "セット発売日マスタ", times.toreca, releaseKnown ? null : "発売日未確定"),
@@ -249,6 +253,7 @@ function main() {
     let priority = 0;
     priority += Math.min(600, buyback30 * 20 + buyback90 * 4);
     priority += isRecentRelease ? 500 : 0;
+    priority += release.year >= 2020 ? 100 : 0;
     priority += missingRequired.length > 0 && missingRequired.length <= 2 ? 400 : 0;
     priority += shopFound ? 90 : 0;
     priority += isSiteNew ? 80 : 0;
@@ -262,6 +267,7 @@ function main() {
     if (!release.year && pricePriorityIds.has(id)) reasons.push("購入・重点候補の発売年不明を優先補完");
     if (buyback30 > 0) reasons.push(`買取表30日${buyback30}店舗日`);
     if (isRecentRelease) reasons.push(`最近発売（${release.date}）`);
+    if (release.year >= 2020) reasons.push("2020年以降・発売年確認済み");
     if (missingRequired.length > 0 && missingRequired.length <= 2) reasons.push(`必須不足${missingRequired.length}項目・補完で分析可能に近い`);
     if (isSiteNew) reasons.push("サイト新着");
     if (Number(card.tv30 || 0) >= 10) reasons.push(`素体全状態取引30日${card.tv30}件`);

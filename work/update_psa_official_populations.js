@@ -326,9 +326,12 @@ async function collectSet(context, entry) {
 }
 
 async function main() {
-  const chromium = loadChromium();
   const startedAt = new Date().toISOString();
   const checkpoint = readJson(PROGRESS_PATH, { completedUrls: [] });
+  if (checkpoint.status === "manual-wait" && /sign-in|401|403|Cloudflare|robot|verification|認証済みChrome/i.test(checkpoint.stopReason || "") && process.env.PSA_RESUME_AUTH !== "1") {
+    throw new Error(`PSA手動確認待ち・再通信なし。ログイン／正規アクセス確認後にPSA_RESUME_AUTH=1で再開: ${checkpoint.stopReason}`);
+  }
+  const chromium = loadChromium();
   const priorCompleted = new Set(checkpoint.completedUrls || []);
   const audit = { startedAt, endedAt: null, cycleDate: startedAt.slice(0, 10), status: "running", attemptedCount: 0,
     newAcquiredCount: 0, changedCount: 0, refreshedCount: 0, completedUrls: [...priorCompleted], records: [], nextUrl: null, stopReason: null };

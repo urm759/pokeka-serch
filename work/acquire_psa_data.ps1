@@ -30,6 +30,11 @@ function Invoke-Step {
 }
 
 try {
+  $HoldPath = Join-Path $PSScriptRoot 'psa-fetch-progress.json'
+  $Hold = if (Test-Path $HoldPath) { Get-Content $HoldPath -Raw | ConvertFrom-Json } else { $null }
+  if ($Hold.status -eq 'manual-wait' -and $Hold.stopReason -match 'sign-in|401|403|Cloudflare|robot|verification|認証済みChrome' -and $env:PSA_RESUME_AUTH -ne '1') {
+    throw "PSA手動確認待ち・Chrome起動と再通信なし。ログイン確認後にPSA_RESUME_AUTH=1で再開: $($Hold.stopReason)"
+  }
   Invoke-Step -Name 'PSA regular Chrome startup' -MaxAttempts 2 -Operation { & (Join-Path $PSScriptRoot 'start_psa_regular_chrome.ps1') } | Out-Null
   $env:PSA_CDP_ENDPOINT = 'http://127.0.0.1:9222'
   $env:PSA_MIN_TOTAL_POPULATION = '500'

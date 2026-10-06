@@ -3,13 +3,14 @@ const path = require("node:path");
 const { spawnSync } = require("node:child_process");
 const ROOT = path.join(__dirname, "..");
 const { fairBatch, write: buildFocus } = require("./focus_monitor.js");
+const { needs, routes, failureState } = require("./completion_routes.js");
 const read = (file, fallback = {}) => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, file), "utf8")); } catch { return fallback; } };
 const save = (file, value) => { const target = path.join(ROOT, file); fs.writeFileSync(`${target}.tmp`, JSON.stringify(value)); fs.renameSync(`${target}.tmp`, target); };
 function plan(cards, queue, checkpoint, now = Date.now()) {
   const byId = new Map(cards.map((c) => [c.id, c]));
   return (queue.queue || []).filter((id) => {
     const old = checkpoint.cards?.[id];
-    return !old || (old.failures || 0) < 3 && (!old.nextRetryAt || Date.parse(old.nextRetryAt) <= now);
+    return !old || !old.held && (old.failures || 0) < 3 && (!old.nextRetryAt || Date.parse(old.nextRetryAt) <= now);
   }).map((id) => ({ card: byId.get(id), detail: queue.cards?.[id] })).filter((row) => row.card && row.detail)
     .sort((a, b) => Number(b.detail.p || 0) - Number(a.detail.p || 0));
 }
@@ -18,7 +19,7 @@ function eligibleForHareru(candidates, catalog, now = Date.now()) {
   return candidates.filter((r) => {
     const previous = byId.get(r.card.id);
     const observed = Date.parse(previous?.observedAt || "");
-    return r.card.hareruya2Url && !(Number(previous?.price) > 0 && observed <= now && now - observed < 2 * 86400000);
+    return r.detail && needs(r.detail, "shopStateA") && r.card.hareruya2Url && !(Number(previous?.price) > 0 && observed <= now && now - observed < 2 * 86400000);
   });
 }
 function run() {
@@ -49,11 +50,7 @@ function run() {
     run.attempted = shop.attemptedCount ?? 0; run.acquired = shop.refreshedCount ?? 0; run.newAcquired = shop.newAcquiredCount ?? 0; run.newLinked = shop.newLinkedCount ?? 0; run.failures = shop.failedCount ?? 0;
     run.stopReason = shop.stopReason || null; run.checkpoint = shop.nextId || null;
     for (const record of shop.records || []) {
-      const old = state.cards[record.id] || {};
-      const blocked = record.status === "manual-wait" || /HTTP (401|403)|同一カード|形式/.test(record.error || "");
-      state.cards[record.id] = { lastAttemptAt: record.startedAt, lastSuccessAt: record.status === "verified" ? shop.lastSuccessAt : old.lastSuccessAt || null,
-        status: record.status, failures: record.status === "verified" ? 0 : (old.failures || 0) + 1,
-        reason: record.error || null, nextRetryAt: blocked ? "9999-12-31T00:00:00Z" : new Date(Date.now() + (record.status === "verified" ? 2 * 86400000 : 3600000 * 2 ** Math.min(3, old.failures || 0))).toISOString() };
+      state.cards[record.id] = { ...failureState(state.cards[record.id], record), field: "shopStateA", source: "hareruya2" };
     }
   } else if (result) run.stopReason = result.error?.message || String(result.stderr || "補完実行失敗").slice(-300);
   run.endedAt = new Date().toISOString(); run.durationMs = Date.now() - start;
@@ -63,19 +60,27 @@ function run() {
     cardrush: { status: "認証・アクセス確認待ち", reason: "403停止を維持。自動回避なし" },
     yuyutei: { status: "認証・アクセス確認待ち", reason: "403停止を維持" },
     torecacamp: { status: "自動補完対応済み", method: "別担当のサイトマップ段階巡回。二重取得しない" },
-    psaOfficial: { status: "認証待ち／PC側対応済み", method: "下記優先キューをPC定期取得へ渡す。未登録セットURLは確認待ち" },
+    psaOfficial: { status: "PC取得処理あり・認証／公開復旧待ち", method: "優先キュー生成は取得0件。実取得・保存・公開を個別監査。未登録セットURLは確認待ち" },
     pokedata: { status: "公開情報対応済み／実成約は認証待ち", method: "別担当のセット・ページチェックポイント。個別成約を推定しない" },
     domesticPsa9: { status: "取得処理未実装", reason: "同一日本語カードの国内PSA9個別実成約を取得する正規経路未確定" },
-    rawActualSales: { status: "取得不能・状態A証明不足は確認待ち", reason: "全状態取引件数を状態A成約件数へ代用しない" },
+    rawActualSales: { status: "海外実成約は認証確認待ち", reason: "PokeDATA Rawは国内状態A成約とは別指標" },
+    domesticStateASales: { status: "取得処理未実装・許諾確認待ち", reason: "全状態取引件数・海外Rawを状態A成約件数へ代用しない" },
   };
   state.lastRun = run; delete state.running;
   save("work/completion-acquisition-checkpoint.json", state);
   const pending = eligibleForHareru(plan(cards, queue, state), read("work/hareruya2_catalog.json", [])).length;
-  save("data/completion-acquisition.json", { version: 1, ...run, support, pending: candidates.length, eligiblePending: pending, pendingDefinition: "eligiblePendingは確定URLがあり、2日間隔と再試行制限を満たす晴れる屋2価格補完対象。全項目の補完キューとは別", cards: state.cards });
+  const routing = {};
+  for (const candidate of candidates) for (const route of routes(candidate.detail)) {
+    const key = `${route.source}:${route.mode}`;
+    routing[key] ||= { source: route.source, mode: route.mode, cards: 0, requiredItems: 0 };
+    routing[key].cards++; routing[key].requiredItems += Number(route.required);
+  }
   for (const script of ["build_psa_linkage_queue.js", "build_psa_priority_queue.js"]) {
     const queued = spawnSync(process.execPath, [path.join(__dirname, script)], { cwd: ROOT, encoding: "utf8", timeout: 15000 });
     if (queued.status !== 0) { run.stopReason = `PSA優先キュー接続失敗: ${script}`; process.exitCode = 1; }
   }
+  save("data/completion-acquisition.json", { version: 2, ...run, support, routing, pending: candidates.length, eligiblePending: pending, pendingDefinition: "eligiblePendingは状態A価格が不足し確定URL・再試行条件を満たす対象。PSAだけ不足するカードを店舗取得へ送らない。routing.cardsはカード×項目数で合算不可", cards: state.cards });
+  state.lastRun = run; save("work/completion-acquisition-checkpoint.json", state);
   console.log(JSON.stringify(run));
   if (result && result.status !== 0) process.exitCode = 1;
   return run;

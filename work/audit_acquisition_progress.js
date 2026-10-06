@@ -59,7 +59,7 @@ function capture(now = Date.now()) {
       const entry = byId.get(card.id) || byUrl.get(card[`${id}Url`]);
       const value = summary[card.id];
       const price = Number(value?.[`${id}Price`] ?? value?.price ?? entry?.price);
-      if (!(price > 0) || !Number.isFinite(price) || value?.quarantined || value?.conditionAccepted === false || entry?.state && entry.state !== "A") continue;
+      if (!(price > 0) || !Number.isFinite(price) || value?.quarantined || value?.priceQuarantined || entry?.priceQuarantined || value?.conditionAccepted === false || entry?.state && entry.state !== "A") continue;
       usable.push(card.id);
       const date = value?.updatedAt === undefined ? entry?.observedAt : value.updatedAt;
       if (ageHours(date, now) <= 48) {
@@ -112,7 +112,9 @@ function main() {
   const baseline = read("work/acquisition-audit-baseline.json", null) || read("work/acquisition-progress-last.json", null);
   const runs = read("work/source-update-runs.json").sources || {};
   const shopRuns = read("work/candidate-shop-refresh.json").sources || {};
-  const psaRun = read("work/psa-fetch-progress.json");
+  const storedPsaRun = read("work/psa-fetch-progress.json");
+  const observedPsaRun = read("data/psa-pc-observation.json").fetchProgress || {};
+  const psaRun = Date.parse(observedPsaRun.startedAt || "") > Date.parse(storedPsaRun.startedAt || "") ? observedPsaRun : storedPsaRun;
   const sourceHistory = read("work/source-update-history.json").sources || {};
   const pokeProgress = fs.readdirSync(__dirname).filter((file) => /^pokedata-progress.*\.json$/.test(file))
     .map((file) => ({ file, ...read(`work/${file}`) })).filter((row) => row.lastRun)
@@ -120,7 +122,14 @@ function main() {
   const labels = { psaOfficial: "PSA公式Population", cardrush: "カードラッシュ", hareruya2: "晴れる屋2", yuyutei: "遊々亭", torecacamp: "トレカキャンプ", pokedata: "PokeDATA海外相場" };
   const sources = {};
   for (const [id, data] of Object.entries(current.sources)) {
-    const run = id === "psaOfficial" ? psaRun : shopRuns[id] || runs[id] || {};
+    let run = id === "psaOfficial" ? psaRun : shopRuns[id] || runs[id] || {};
+    if (id === "torecacamp") {
+      const progress = read("work/torecacamp_progress.json").lastRun || {};
+      if (Date.parse(progress.completedAt || "") > Date.parse(run.startedAt || "")) run = { ...progress, attemptedCount: progress.detailFetched, refreshedCount: progress.detailFetched,
+        startedAt: progress.startedAt || progress.completedAt, endedAt: progress.completedAt,
+        status: progress.fetchFailureCount ? "failed" : "partial", lastSuccessAt: progress.detailFetched > 0 && !progress.fetchFailureCount ? progress.completedAt : runs[id]?.lastSuccessAt,
+        nextId: `${progress.currentCursor}/${progress.totalSitemaps}・${progress.currentEntryIndex}`, stopReason: progress.stoppingReason || null };
+    }
     const delta = progress(baseline?.sources[id], data);
     const windowRuns = (sourceHistory[id] || []).filter((row) => baseline?.at && String(row.startedAt) >= baseline.at && Number.isFinite(row.attemptedCount));
     const freshBefore = baseline?.sources[id]?.freshUsableIds;
@@ -137,9 +146,10 @@ function main() {
       status: run.status || "未記録", stopReason: run.stopReason || run.lastError || null,
       durationMs: run.durationMs ?? null, checkpoint: run.nextUrl || run.nextId || null,
       manualWaitCount: run.manualWaitCount ?? 0,
-      evidence: id === "psaOfficial" ? "./data/psa-fetch-progress.json" : "./data/candidate-shop-refresh.json",
+      evidence: id === "psaOfficial" ? "./data/psa-fetch-progress.json" : id === "torecacamp" ? "./data/torecacamp-stock-summary.json" : "./data/candidate-shop-refresh.json",
       referenceOnly: id === "pokedata" };
     if (data.domesticBaseMissing != null) sources[id].domesticBaseMissing = data.domesticBaseMissing;
+    if (id === "psaOfficial") sources[id].savedRecovery = { ...read("data/psa-saved-recovery.json"), evidence: undefined };
     if (id === "pokedata" && pokeProgress) {
       sources[id].attempted = pokeProgress.lastRun.attempted ?? null;
       sources[id].refreshed = pokeProgress.lastRun.fetched ?? null;

@@ -605,6 +605,12 @@ async function updateTorecaCamp(cards, paths) {
   write(path.join(__dirname, "torecacamp_price_migration_audit.json"), priceMigration.audit);
   const previousCatalog = [...catalog];
   const progress = reset ? {} : read(paths.progress, {});
+  const repeated = (progress.failures || []).filter((f) => f.url === progress.lastFailure?.url && f.httpStatus === progress.lastFailure?.httpStatus && f.productEntry === progress.lastFailure?.productEntry);
+  if (!reset && progress.lastFailure && progress.currentEntryIndex === progress.lastFailure.productEntry && repeated.length >= 2 && process.env.TORECACAMP_RETRY_SITEMAP === undefined) {
+    progress.manualHold = { reason: "同一URL・工程で2回失敗。原因確認まで再通信停止", url: progress.lastFailure.url, checkpoint: { sitemap: progress.currentSitemapIndex, entry: progress.currentEntryIndex }, resumeCondition: "原因・正規URL確認後に対象サイトマップを明示して再開" };
+    write(paths.progress, progress);
+    return { completionStatus: "manual-action-required", failed: 0, detailFetched: 0, lastFailure: progress.lastFailure, manualHold: progress.manualHold, currentCursor: progress.currentSitemapIndex, coverage: previousCatalog.length };
+  }
   const sitemapCache = reset ? { version: 1 } : read(paths.sitemapCache, { version: 1 });
   const migratedFromCollectionApi = progress.paginationMode !== "sitemap";
   if (migratedFromCollectionApi) {
@@ -639,6 +645,7 @@ async function updateTorecaCamp(cards, paths) {
   const detailLimit = Math.max(1, Number(process.env.TORECACAMP_PRODUCT_DETAIL_BATCH || 100));
   const runtimeLimitMs = Math.max(30000, Number(process.env.TORECACAMP_RUNTIME_LIMIT_MS || 480000));
   const stopBy = Date.now() + runtimeLimitMs;
+  const startedAt = new Date().toISOString();
   const forcedSitemap = Math.max(0, Number(process.env.TORECACAMP_RETRY_SITEMAP || 0) - 1);
   let sitemapUrls = [];
   let listedProducts = 0; let detailFetched = 0; let parsed = 0; let stateA = 0;
@@ -735,6 +742,10 @@ async function updateTorecaCamp(cards, paths) {
         seenProductUrls.add(sitemapEntry.url);
         seenProductIds.add(String(product.id));
         progress.currentEntryIndex = entryIndex + 1;
+        if (progress.lastFailure?.sitemapNumber === sitemapIndex + 1 && progress.currentEntryIndex > progress.lastFailure.productEntry) {
+          progress.lastFailure = null;
+          delete progress.manualHold;
+        }
         progress.seenProductUrls = [...seenProductUrls];
         progress.seenProductIds = [...seenProductIds];
         catalog = [...byId.values()];
@@ -797,6 +808,7 @@ async function updateTorecaCamp(cards, paths) {
   const progressHealth = updateProgressHealth(progress, seenProductUrls.size);
   if (crawlComplete) stoppingReason = null;
   progress.lastRun = {
+    startedAt, durationMs: Date.now() - Date.parse(startedAt),
     paginationMode: "sitemap", currentCursor: progress.currentSitemapIndex + 1,
     currentSitemapIndex: progress.currentSitemapIndex + 1, currentEntryIndex: progress.currentEntryIndex,
     currentSitemapUrl: sitemapUrls[progress.currentSitemapIndex] || null,

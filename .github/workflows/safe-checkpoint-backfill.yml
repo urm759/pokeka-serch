@@ -45,6 +45,7 @@ jobs:
           node work/test_acquisition_progress.js
           node work/test_checkpoint_publication.js
           node work/test_source_monitor_and_completion.js
+          node work/test_completion_routes.js
           node work/test_safe_backfill.js
           node work/test_purchase_limit_audit.js
           node work/test_supply_maturity_hypothesis.js

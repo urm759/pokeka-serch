@@ -16,7 +16,7 @@ assert.equal(fairBatch(list, 10, (r) => r.focus).filter((r) => r.focus).length, 
 assert.equal(fairBatch(list, 6, (r) => r.focus).filter((r) => r.focus).length, 2);
 assert.equal(fairBatch(list.filter((r) => r.focus), 6, (r) => r.focus).length, 6);
 const now = Date.parse("2026-10-03T12:00Z");
-const candidate = [{ card: { id: "a", hareruya2Url: "https://www.hareruya2.com/products/a" } }, { card: { id: "b" } }];
+const candidate = [{ card: { id: "a", hareruya2Url: "https://www.hareruya2.com/products/a" }, detail: { i: { shopStateA: ["取得待ち"] } } }, { card: { id: "b" }, detail: { i: { shopStateA: ["取得待ち"] } } }];
 assert.equal(eligibleForHareru(candidate, [], now).length, 1);
 assert.equal(eligibleForHareru(candidate, [{ cardId: "a", price: 100, observedAt: "2026-10-03T11:00Z" }], now).length, 0);
 assert.equal(eligibleForHareru(candidate, [{ cardId: "a", price: 100, observedAt: "2026-10-04T11:00Z" }], now).length, 1);

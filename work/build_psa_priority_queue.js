@@ -17,6 +17,8 @@ function normalizeNo(value) {
 }
 
 function identity(card) {
+  const parsed = require("./build_psa_linkage_queue.js").psaIdentity(card);
+  if (parsed.cardNumber) return { setCode: parsed.setCode, cardNo: parsed.cardNumber };
   const query = String(card.psaQuery || "").match(/^Pokemon Japanese\s+(.+?)\s+([^\s]+)$/i);
   if (query) return { setCode: query[1].toUpperCase(), cardNo: normalizeNo(query[2].split("/")[0]) };
   const inside = String(card.name || "").match(/\[([^\]]+)\]/)?.[1] || "";
@@ -36,8 +38,8 @@ function main() {
   const population = readJson(POPULATION_PATH, { cards: {} }).cards || {};
   const manifest = readJson(MANIFEST_PATH, []);
   const completion = readJson(path.join(__dirname, "card-completion-queue.json"), { cards: {} });
-  const linkage = readJson(path.join(ROOT, "data/psa-linkage-priority.json"), { priorityTop: [] });
-  const linkageById = new Map((linkage.priorityTop || []).map((row) => [row.cardId, row]));
+  const linkage = readJson(path.join(ROOT, "work/psa-linkage-all.json"), readJson(path.join(ROOT, "data/psa-linkage-priority.json"), { priorityTop: [] }));
+  const linkageById = new Map((linkage.rows || linkage.priorityTop || []).map((row) => [row.cardId, row]));
   const completionRows = cards.map((card) => {
     const pending = linkageById.get(card.id);
     if (!pending?.sourceSetUrl || pending.status !== "unlinked" || population[card.id]) return null;
@@ -92,7 +94,7 @@ function main() {
     focusSetUrls: [...new Set(rows.filter((r) => r.focused).map((r) => r.sourceSetUrl))],
     maxFocusedShare: focus.maxFocusedShare,
   };
-  fs.writeFileSync(OUTPUT_PATH, JSON.stringify(payload, null, 2), "utf8");
+  fs.writeFileSync(OUTPUT_PATH, JSON.stringify(payload), "utf8");
   console.log(JSON.stringify({ priorityCards: rows.length, prioritySets: setPriority, output: OUTPUT_PATH }));
 }
 

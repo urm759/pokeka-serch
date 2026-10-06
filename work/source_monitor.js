@@ -13,6 +13,7 @@ function pcHealth(observation, now = Date.now()) {
   return { status: "観測受信済み", reason: "取得・公開の成否はPSA実行履歴で別判定" };
 }
 function build(root, sources, previous = {}, now = Date.now()) {
+  const outcomes = require("./audit_completion_outcomes.js").build(root, now);
   const audit = read(root, "data/acquisition-progress-audit.json").sources || {};
   const total = read(root, "data/pokemon-cards.json", []).length;
   const queue = read(root, "work/card-completion-queue.json");
@@ -34,16 +35,18 @@ function build(root, sources, previous = {}, now = Date.now()) {
     const newAcquired = a.newAcquired ?? null;
     const net = a.usableNet ?? null;
     const progressNow = newAcquired > 0 || net > 0;
-    rows[id] = { label: source.label, lastAttempt: a.lastAttemptAt || source.lastAttemptAt || null,
-      lastSuccess: a.lastSuccessAt || source.lastSuccessAt || null, publishedAt: published,
+    const sourceIsNewer = Date.parse(source.lastAttemptAt || "") > Date.parse(a.lastAttemptAt || "");
+    const latestSuccess = [a.lastSuccessAt, source.lastSuccessAt].filter(Boolean).sort((a, b) => Date.parse(b) - Date.parse(a))[0] || null;
+    rows[id] = { label: source.label, lastAttempt: sourceIsNewer ? source.lastAttemptAt : a.lastAttemptAt || source.lastAttemptAt || null,
+      lastSuccess: latestSuccess, publishedAt: published,
       remaining: id === "psaOfficial" ? linkage.counts?.unlinked ?? null : id === "yuyutei" ? read(root, "work/yuyutei_progress.json").lastRun?.remainingSearchCount ?? null : id === "torecacamp" ? read(root, "work/torecacamp_progress.json").lastRun?.estimatedRemainingProducts ?? null : id === "pokedata" ? (read(root, "data/pokedata/manifest.json").sets || []).reduce((sum, s) => sum + Math.max(0, (s.sourceCount || 0) - (s.linkageCount || 0)), 0) : null,
       remainingDefinition: id === "pokedata" ? "展開済みセットの公開カード一覧未巡回数。国内一致詳細数・認証成約残数とは別" : id === "torecacamp" ? "サイトマップ商品残数（推定）" : "取得・紐付け残数",
       attempted: a.attempted ?? null, newAcquired, newLinked: a.newLinked ?? null,
       usableValues: a.usableValues ?? null, usableNet: net,
       lastProgressAt: progressNow ? a.lastSuccessAt || source.lastSuccessAt || old.lastProgressAt || null : old.lastProgressAt || null,
       freshCards: freshRows, targetCards: total, freshnessPct: freshRows == null || !total ? null : Number((freshRows / total * 100).toFixed(2)),
-      stopReason: a.stopReason || source.lastError || source.diagnostics?.externalBlock?.message || null,
-      status: a.status || source.status, checkpoint: a.checkpoint || source.diagnostics?.currentCursor || null,
+      stopReason: sourceIsNewer ? source.lastError || null : a.stopReason || source.lastError || source.diagnostics?.externalBlock?.message || null,
+      status: sourceIsNewer ? source.status : a.status || source.status, checkpoint: a.checkpoint || source.diagnostics?.currentCursor || null,
       failureUrl: failure?.url || (workflowRunId ? `https://github.com/urm759/pokeka-serch/actions/runs/${workflowRunId}` : null) };
   }
   const observation = read(root, "data/psa-pc-observation.json");
@@ -56,7 +59,8 @@ function build(root, sources, previous = {}, now = Date.now()) {
       fulfilment: shop.fulfilment || "mail", sourceUpdatedAt: shop.sourceUpdatedAt || null,
       note: "最終成功は当サイトの取得日時。元サイト更新日時は未公表ならnull。未紐付けは取得不存在ではない" };
   }
-  const psaProgress = read(root, "work/psa-fetch-progress.json");
+  const storedPsaProgress = read(root, "work/psa-fetch-progress.json");
+  const psaProgress = Date.parse(observation.fetchProgress?.lastAttemptAt || "") > Date.parse(storedPsaProgress.lastAttemptAt || "") ? observation.fetchProgress : storedPsaProgress;
   const pokedata = read(root, "data/pokedata/manifest.json");
   const publicRemaining = (pokedata.sets || []).reduce((n, s) => n + Math.max(0, Number(s.sourceCount || 0) - Number(s.linkageCount || 0)), 0);
   const backlogStates = [
@@ -74,7 +78,7 @@ function build(root, sources, previous = {}, now = Date.now()) {
   return { version: 1, observedAt: new Date(now).toISOString(), rows, backlogStates,
     freshnessDefinition: "48時間以内（スニダン素体24時間）のカード別取得日が確認できた有効価格・POP / サイト全カード。少数更新で全体を最新扱いしない。公開日は該当ファイルの公開main最終コミット日。純増は取得監査の比較基準からの差。今回の重点実行分は重点監査JSONで別表示。純増不明は未記録。",
     pc: { ...observation, health: pcHealth(observation, now) },
-    completion: read(root, "data/completion-acquisition.json"),
+    completion: read(root, "data/completion-acquisition.json"), outcomes,
     backlogs: { priceConfirmation: price.lastRun?.remaining ?? null, psaUnlinked: linkage.counts?.unlinked ?? null,
       domesticPsa9IndividualSales: 0, domesticPsa9Status: "取得処理未実装・実成約0枚。海外・集計・推定を含めない",
       completionQueue: queue.summary?.priorityQueueRemaining ?? null, returnBacktest: "時間待ち：12月以降の返却時期未到達" } };
