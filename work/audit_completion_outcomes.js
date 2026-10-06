@@ -23,7 +23,7 @@ function snapshot(root, now = Date.now()) {
   for (const s of shops) for (const row of catalogs[s]) {
     const id = row.cardId || (s === "cardrush" ? cardrushIds.get(row.detailUrl) : null);
     if (!rows[id]) continue;
-    const v = Number(row.price) > 0 && !row.priceQuarantined;
+    const v = Number.isFinite(Number(row.price)) && Number(row.price) > 0 && !row.priceQuarantined;
     const old = rows[id].sources[s];
     rows[id].sources[s] = { linked: true, valid: Boolean(v || old?.valid), fresh: Boolean(v && fresh(row.observedAt) || old?.fresh) };
   }
@@ -31,7 +31,11 @@ function snapshot(root, now = Date.now()) {
   for (const set of poke.sets || []) for (const id of Array.isArray(set.localCardIds) ? set.localCardIds : String(set.localCardIds || "").split(/\s+/)) if (rows[id]) rows[id].sources.pokedata = { linked: true, valid: false, fresh: false };
   for (const file of fs.existsSync(path.join(root, "data/pokedata-sales")) ? fs.readdirSync(path.join(root, "data/pokedata-sales")) : []) {
     const sale = read(root, `data/pokedata-sales/${file}`), id = sale.localCardId;
-    if (rows[id]?.sources.pokedata) rows[id].sources.pokedata.valid = sale.summaries?.psa10?.adoptedCount >= 3;
+    if (rows[id]?.sources.pokedata) {
+      const valid = sale.summaries?.psa10?.adoptedCount >= 3 && Number.isFinite(sale.summaries?.psa10?.medianJpy) && sale.summaries.psa10.medianJpy > 0;
+      rows[id].sources.pokedata.valid = valid;
+      rows[id].sources.pokedata.fresh = valid && fresh(sale.capturedAt);
+    }
   }
   return { at: new Date(now).toISOString(), schemaVersion: 2, rows };
 }
