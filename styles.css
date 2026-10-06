@@ -489,6 +489,9 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
 .source-monitor-panel>summary strong{font-size:11px;color:#bae6fd;text-align:right}
 .data-freshness,.coverage-details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding:0 12px 12px}
 .source-status-card,.coverage-card{min-width:0;padding:11px;border:1px solid rgba(148,163,184,.18);border-radius:13px;background:rgba(15,23,42,.78)}
+.completion-outcome-table{min-width:640px;border-collapse:collapse;font-size:13px}
+.completion-outcome-table th,.completion-outcome-table td{padding:7px 9px;white-space:nowrap;text-align:right;border-bottom:1px solid rgba(148,163,184,.18)}
+.completion-outcome-table th:first-child{text-align:left}
 .source-status-card.fresh{border-color:rgba(56,217,150,.34)}
 .source-status-card.stale{border-color:rgba(245,158,11,.38)}
 .source-status-card.partial{border-color:rgba(251,191,36,.58);background:rgba(120,53,15,.16)}

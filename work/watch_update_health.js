@@ -67,7 +67,7 @@ async function main() {
   const monitor = require("./source_monitor.js").build(ROOT, status.sources || {}, status.unifiedMonitor || {});
   const sourceIssues = Object.entries(monitor.rows).flatMap(([id, row]) => {
     const entries = [];
-    if (row.stopReason && /403|認証|形式|曖昧|failed|失敗|競合/i.test(row.stopReason)) entries.push({ key: `source:${id}:manual-wait`, reason: `${row.label}: ${row.stopReason}`, url: row.failureUrl });
+    if (row.stopReason && /403|認証|形式|曖昧|failed|失敗|競合|sign.?in|log.?in|cloudflare/i.test(row.stopReason)) entries.push({ key: `source:${id}:manual-wait`, reason: `${row.label}: ${row.stopReason}`, url: row.failureUrl });
     if (status.sources?.[id]?.stale && status.sources?.[id]?.automatic) entries.push({ key: `source:${id}:stale`, reason: `${row.label}: 更新期限超過（カード別鮮度 ${row.freshnessPct ?? "未記録"}%）`, url: row.failureUrl });
     return entries;
   });
