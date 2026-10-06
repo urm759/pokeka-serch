@@ -3661,7 +3661,7 @@ function renderActiveFilters() {
   for (const el of document.querySelectorAll(".advanced-filters input, .advanced-filters select")) {
     if (!el.id || el.type === "hidden" || protectedFields.has(el.id) || el.id.startsWith("snkrRaw")) continue;
     const value = el.type === "checkbox" ? (el.checked ? "ON" : "") : String(el.value);
-    if (!value || (value === "0" && !["expectedProfitFilterInput","expectedRoiFilterInput","stressExpectedProfitFilterInput","stressExpectedRoiFilterInput"].includes(el.id)) || ["all","normal"].includes(value)) continue;
+    if (!value || (value === "0" && !["roiInput","expectedProfitFilterInput","expectedRoiFilterInput","stressExpectedProfitFilterInput","stressExpectedRoiFilterInput"].includes(el.id)) || ["all","normal"].includes(value)) continue;
     const label = el.closest("label")?.querySelector("span")?.textContent || el.closest("label")?.textContent.trim() || el.id;
     const text = el.tagName === "SELECT" ? el.options[el.selectedIndex]?.textContent : value;
     items.push(`<button type="button" data-clear-condition="${escapeHtml(el.id)}" title="この検索条件だけ解除">${escapeHtml(label)}：${escapeHtml(text)} ×</button>`);
