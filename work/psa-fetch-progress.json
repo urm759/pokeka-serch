@@ -1,12 +1,12 @@
 {
-  "startedAt": "2026-10-03T19:30:08.066Z",
-  "endedAt": "2026-10-03T19:30:29.469Z",
-  "cycleDate": "2026-10-03",
+  "startedAt": "2026-10-05T19:30:46.874Z",
+  "endedAt": "2026-10-05T19:30:55.371Z",
+  "cycleDate": "2026-10-05",
   "status": "manual-wait",
-  "attemptedCount": 2,
-  "newAcquiredCount": 2,
-  "changedCount": 1,
-  "refreshedCount": 3,
+  "attemptedCount": 1,
+  "newAcquiredCount": 0,
+  "changedCount": 0,
+  "refreshedCount": 0,
   "completedUrls": [
     "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
     "https://www.psacard.com/pop/tcg-cards/2016/pokemon-japanese-xy-promo/133615",
@@ -34,38 +34,40 @@
     "https://www.psacard.com/pop/tcg-cards/2013/pokemon-japanese-black-white-promo/114603",
     "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-sword-shield-eevee-heroes/193866",
     "https://www.psacard.com/pop/tcg-cards/2022/pokemon-japanese-sword-shield-battle-region/208916",
-    "https://www.psacard.com/pop/tcg-cards/2026/pokemon-japanese-m6-storm-emeralda/348263"
+    "https://www.psacard.com/pop/tcg-cards/2026/pokemon-japanese-m6-storm-emeralda/348263",
+    "https://www.psacard.com/pop/tcg-cards/1996/pokemon-japanese-basic/55428",
+    "https://www.psacard.com/pop/tcg-cards/2001/pokemon-japanese-expedition/99974",
+    "https://www.psacard.com/pop/tcg-cards/2001/pokemon-japanese-vs/63661",
+    "https://www.psacard.com/pop/tcg-cards/2016/pokemon-japanese-expansion-20th-anniversary/139101",
+    "https://www.psacard.com/pop/tcg-cards/2009/pokemon-japanese-heartgold-collection/101622",
+    "https://www.psacard.com/pop/tcg-cards/2015/pokemon-japanese-xy-emerald-break/127710",
+    "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+    "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+    "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mbd-mega-starter-set-diancie-ex/316159",
+    "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mbg-mega-starter-set-gengar-ex/316158",
+    "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv4a-shiny-treasure-ex/255404",
+    "https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-sun-moon-strength-expansion-pack-shining-legends/151058",
+    "https://www.psacard.com/pop/tcg-cards/2018/pokemon-japanese-sun-moon-strength-expansion-pack-dark-order/158860"
   ],
   "records": [
     {
-      "setCode": "M6",
-      "url": "https://www.psacard.com/pop/tcg-cards/2026/pokemon-japanese-m6-storm-emeralda/348263",
+      "setCode": "S6A",
+      "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-sword-shield-eevee-heroes/193866",
       "httpStatus": 200,
-      "fetchedAt": "2026-10-03T19:30:08.233Z",
-      "rowCount": 3,
-      "parsedRows": 14,
-      "excludedRows": 11,
-      "minimumPopulation": 500,
-      "error": null
-    },
-    {
-      "setCode": "XY-P",
-      "url": "https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-xy-promo/142307",
-      "httpStatus": 200,
-      "fetchedAt": "2026-10-03T19:30:19.221Z",
+      "fetchedAt": "2026-10-05T19:30:46.951Z",
       "rowCount": 0,
       "parsedRows": null,
       "excludedRows": null,
       "minimumPopulation": 500,
-      "error": "Unable to find a populated table for https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-xy-promo/142307"
+      "error": "PSA sign-in page opened instead of the set page. Use a Chrome profile that is already logged in to PSA."
     }
   ],
   "nextUrl": "https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-xy-promo/142307",
-  "stopReason": "Unable to find a populated table for https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-xy-promo/142307",
+  "stopReason": "PSA sign-in page opened instead of the set page. Use a Chrome profile that is already logged in to PSA.",
   "unregisteredSetCount": 0,
-  "focusedSelected": 0,
-  "normalSelected": 8,
-  "pendingSets": 110,
+  "focusedSelected": 2,
+  "normalSelected": 6,
+  "pendingSets": 95,
   "lastSuccessAt": "2026-10-03T19:30:08.233Z",
-  "durationMs": 21409
+  "durationMs": 8497
 }

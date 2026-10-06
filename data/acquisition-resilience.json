@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-06T09:26:11.808Z",
+  "generatedAt": "2026-10-06T09:27:20.660Z",
   "llmCalls": 0,
   "codexCalls": 0,
   "retryPolicy": {
@@ -30,15 +30,15 @@
       "remaining": 1287,
       "queueDefinition": "あとPSAだけで分析可能な国内カード。全PSA未取得とは別",
       "sourceState": "manual-wait",
-      "failureScope": "url",
-      "stopReason": "Unable to find a populated table for https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-xy-promo/142307",
+      "failureScope": "source",
+      "stopReason": "PSA sign-in page opened instead of the set page. Use a Chrome profile that is already logged in to PSA.",
       "authRecovery": null,
       "retryUrls": [],
       "lastRun": {
-        "attempted": 2,
-        "newAcquired": 2,
-        "refreshed": 3,
-        "durationMs": 21409
+        "attempted": 1,
+        "newAcquired": 0,
+        "refreshed": 0,
+        "durationMs": 8497
       },
       "firstPassDaysEstimate": null,
       "observedExecutionDays": 0,
@@ -46,8 +46,8 @@
       "estimateConditions": "実行があった観測日2日以上の試行数平均。新規有効値数ではない。停止・日次枠・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-06T09:22:21.124Z",
-        "to": "2026-10-06T09:26:09.554Z"
+        "from": "2026-10-06T09:27:11.702Z",
+        "to": "2026-10-06T09:27:18.620Z"
       },
       "sinceBaseline": {
         "newLinked": 5,
@@ -208,8 +208,8 @@
       "estimateConditions": "実行があった観測日2日以上の試行数平均。新規有効値数ではない。停止・日次枠・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-06T09:22:21.124Z",
-        "to": "2026-10-06T09:26:09.554Z"
+        "from": "2026-10-06T09:27:11.702Z",
+        "to": "2026-10-06T09:27:18.620Z"
       },
       "sinceBaseline": {
         "newLinked": 20,
@@ -379,8 +379,8 @@
       "estimateConditions": "実行があった観測日2日以上の試行数平均。新規有効値数ではない。停止・日次枠・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-06T09:22:21.124Z",
-        "to": "2026-10-06T09:26:09.554Z"
+        "from": "2026-10-06T09:27:11.702Z",
+        "to": "2026-10-06T09:27:18.620Z"
       },
       "sinceBaseline": {
         "newLinked": 49,

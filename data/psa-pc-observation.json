@@ -1,47 +1,47 @@
 {
   "phases": {
     "acquisitionStop": "PSA sign-in page opened instead of the set page. Use a Chrome profile that is already logged in to PSA.",
-    "note": "最後の取得成功と最後の公開成功は別。登録先のデータと実行結果を読み取った観測",
+    "startup": "起動済み",
     "acquisition": "停止・認証または取得異常",
+    "publication": "not-run",
+    "note": "最後の取得成功と最後の公開成功は別。登録先のデータと実行結果を読み取った観測",
     "save": "過去正常値とチェックポイントを保持",
     "publicationStop": null,
-    "publication": "not-run",
-    "startup": "起動済み",
     "savedDataLastSuccessAt": "2026-10-05T17:56:13.6751771+09:00"
   },
   "tasks": [
     {
-      "reason": null,
-      "target": "site/work/run_psa_scheduled_update.ps1",
-      "registrationValid": true,
-      "state": "Ready",
-      "preStartFailure": false,
-      "nextRun": "2026-10-07T04:30:00.0000000+09:00",
       "lastRun": "2026-10-06T04:30:01.0000000+09:00",
       "name": "Pokeka PSA Update 0430",
-      "result": 1
+      "registrationValid": true,
+      "reason": null,
+      "preStartFailure": false,
+      "target": "site/work/run_psa_scheduled_update.ps1",
+      "state": "Ready",
+      "result": 1,
+      "nextRun": "2026-10-07T04:30:00.0000000+09:00"
     },
     {
-      "reason": null,
-      "target": "site/work/run_psa_scheduled_update.ps1",
-      "registrationValid": true,
-      "state": "Ready",
-      "preStartFailure": false,
-      "nextRun": "2026-10-07T17:00:00.0000000+09:00",
       "lastRun": "2026-10-06T17:00:01.0000000+09:00",
       "name": "Pokeka PSA Update 1700",
-      "result": 1
+      "registrationValid": true,
+      "reason": null,
+      "preStartFailure": false,
+      "target": "site/work/run_psa_scheduled_update.ps1",
+      "state": "Ready",
+      "result": 1,
+      "nextRun": "2026-10-07T17:00:00.0000000+09:00"
     },
     {
-      "reason": null,
-      "target": "site/work/run_psa_scheduled_update.ps1",
-      "registrationValid": true,
-      "state": "Ready",
-      "preStartFailure": false,
-      "nextRun": null,
       "lastRun": "2026-10-05T17:48:19.0000000+09:00",
       "name": "Pokeka PSA Update Logon",
-      "result": 1
+      "registrationValid": true,
+      "reason": null,
+      "preStartFailure": false,
+      "target": "site/work/run_psa_scheduled_update.ps1",
+      "state": "Ready",
+      "result": 1,
+      "nextRun": null
     }
   ],
   "fetchProgress": {
@@ -117,10 +117,10 @@
     "durationMs": 8497
   },
   "error": null,
-  "observedAt": "2026-10-06T18:25:03.8867035+09:00",
+  "observedAt": "2026-10-06T18:27:03.9102685+09:00",
   "registeredRepo": "C:\\Users\\polar\\Documents\\ChatGPT\\ポケカ仕入れサイト\\site",
   "acquisitionState": {
-    "durationMs": 20451.0,
+    "durationMs": 20451,
     "lastSuccessDate": "2026-10-05",
     "lastError": "PSA sign-in page opened instead of the set page. Use a Chrome profile that is already logged in to PSA.",
     "lastAttemptAt": "2026-10-06T17:00:02.3951502+09:00",
