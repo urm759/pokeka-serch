@@ -10,7 +10,7 @@ const headers = { "User-Agent": "pokeka-update-watchdog", Accept: "application/v
 if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
 
 async function api(url) {
-  const response = await fetch(url, { headers, signal: AbortSignal.timeout(15000) });
+  const response = await fetch(url, { headers: url.startsWith(API + '/') ? headers : {"User-Agent":"pokeka-update-watchdog"}, signal: AbortSignal.timeout(15000) });
   if (!response.ok) throw new Error(`GitHub API ${response.status}: ${url}`);
   return response.json();
 }
@@ -23,6 +23,26 @@ async function main() {
     api(`${API}/actions/workflows/priority-price-refresh.yml/runs?per_page=10`),
   ]);
   const status = JSON.parse(fs.readFileSync(path.join(ROOT, "data", "update-status.json"), "utf8"));
+  const evidenceFile=path.join(ROOT,'data/proactive-refresh-audit.json');
+  if(fs.existsSync(evidenceFile)) {
+    const evidence=JSON.parse(fs.readFileSync(evidenceFile,'utf8'));
+    const latest=priceRuns.workflow_runs?.find(r=>r.event==='schedule'&&r.status==='completed');
+    const execution=JSON.parse(fs.readFileSync(path.join(ROOT,'data/priority-price-execution.json'),'utf8'));
+    if(latest && execution.priceQueueModel==='deadline-v2' && String(execution.runId)===String(latest.id)
+      && !(evidence.publicationEvidence?.runId===latest.id && evidence.publicationEvidence?.confirmed)) {
+      try {
+        const [jobs,publicExecution,deployments]=await Promise.all([api(`${API}/actions/runs/${latest.id}/jobs`),
+          api('https://urm759.github.io/pokeka-serch/data/priority-price-execution.json'),api(`${API}/actions/runs?per_page=30`)]);
+        const pages=deployments.workflow_runs?.find(r=>r.name==='pages build and deployment'&&r.status==='completed'&&r.conclusion==='success');
+        evidence.publicationEvidence=require('./price_publication_evidence.js').verify(latest,jobs,publicExecution,pages);
+        evidence.postChangeScheduledValidation=evidence.publicationEvidence.confirmed ? '期限順修正後の定期取得・保存push・公開JSON・Pages成功を確認' : '処理記録あり・保存/公開の照合未完了';
+        fs.writeFileSync(evidenceFile,JSON.stringify(evidence));
+      } catch(error) {
+        evidence.publicationCheckError=error.message;
+        fs.writeFileSync(evidenceFile,JSON.stringify(evidence));
+      }
+    }
+  }
   const health = evaluate({ runs: runs.workflow_runs || [], sourceLastSuccessAt: status.sources?.toreca?.lastSuccessAt });
   const file = path.join(ROOT, "data", "update-health.json");
   const current = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, "utf8")) : null;

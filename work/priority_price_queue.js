@@ -29,7 +29,8 @@ function plan({ cards, sourceId, catalog, candidateRows = {}, focusConfig = {}, 
       reason: [focus && "重点カード", candidate && "購入候補", favorites.has(card.id) && "同期済みお気に入り", !important && "通常巡回"].filter(Boolean).join("／"),
       score: (validTime ? Math.max(0, (now - due) / 3600000) : 100000) + (important ? 24 : 0) };
   });
-  const sorted = records.filter((row) => row.eligible).sort((a, b) => Number(b.due) - Number(a.due) || b.score - a.score || a.card.id.localeCompare(b.card.id));
+  const sorted = records.filter((row) => row.eligible).sort((a, b) => Number(b.due) - Number(a.due)
+    || (Date.parse(a.nextDueAt) || 0) - (Date.parse(b.nextDueAt) || 0) || a.card.id.localeCompare(b.card.id));
   const preferred = sorted.filter((row) => row.important), ordinary = sorted.filter((row) => !row.important);
   const queue = [];
   // Three priority requests followed by one ordinary request prevent starvation.
@@ -95,6 +96,12 @@ function write(root = ROOT) {
     const fixedIds = new Set(fixedHistory.sources?.[id]?.cohort || []);
     sources[id].fixedCards = planned.records.filter(r => fixedIds.has(r.card.id)).map(r => ({id:r.card.id,
       lastConfirmedAt:r.lastSuccessAt, status:blocked ? "アクセス確認待ち・正常値保持" : r.status}));
+    sources[id].capacity = require('./refresh_capacity.js').estimate({importantCount:important.length,
+      eligibleCount:planned.queue.filter(r=>r.important).length, manualCount:important.filter(r=>r.status==='手動確認待ち').length,
+      retryCount:important.filter(r=>r.status==='再試行待ち').length,blocked:Boolean(blocked),
+      verifiedCount:run.refreshedCount,durationMs:run.durationMs,budgetMs:budgetSeconds*1000});
+    sources[id].proactiveVerified = run.proactiveVerified ?? null;
+    sources[id].proactiveAttempted = run.proactiveAttempted ?? null;
   }
   const cards = read(root, "data/pokemon-cards.json", []);
   const names = new Map(cards.map((card) => [card.id, card.name]));

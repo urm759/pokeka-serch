@@ -16,7 +16,7 @@ function main() {
   scheduled.setUTCHours(Math.floor(scheduled.getUTCHours()/2)*2);
   if (scheduled.getTime() > started) scheduled.setUTCHours(scheduled.getUTCHours()-2);
   const save = () => fs.writeFileSync(path.join(ROOT, "data/priority-price-execution.json"), JSON.stringify({ version: 1, startedAt: new Date(started).toISOString(), endedAt: new Date().toISOString(), durationMs: Date.now() - started,
-    runId: process.env.GITHUB_RUN_ID || null, priceQueueModel:"proactive-v1", startDelayMs: process.env.GITHUB_EVENT_NAME === "schedule" ? started - scheduled.getTime() : null,
+    runId: process.env.GITHUB_RUN_ID || null, headSha:process.env.GITHUB_SHA || null, priceQueueModel:"deadline-v2", startDelayMs: process.env.GITHUB_EVENT_NAME === "schedule" ? started - scheduled.getTime() : null,
     scheduledSlotAt: process.env.GITHUB_EVENT_NAME === "schedule" ? scheduled.toISOString() : null,
     delayMethod: "直近の定期cron枠から実処理開始まで。2時間超の遅延は識別不能のため手動監査対象",
     runClass: "価格更新・探索なし", llmCalls: 0, codexCalls: 0, runs }));
@@ -31,6 +31,8 @@ function main() {
     runs.push({ script, startedAt: new Date(at).toISOString(), endedAt: new Date().toISOString(), durationMs: Date.now() - at,
       processStatus, status: processStatus === "failed" ? "failed" : details?.status || details?.completionStatus || "process-success",
       attempted: details?.attemptedCount ?? null, refreshed: details?.refreshedCount ?? null, changed: details?.changedCount ?? null,
+      proactiveAttempted:details?.proactiveAttempted ?? null, proactiveVerified:details?.proactiveVerified ?? null,
+      httpRequests:details?.httpRequests ?? null, deadlineOrderVersion:details?.deadlineOrderVersion || null,
       stopReason: details?.stopReason || null, error: child.error?.message || null });
     save();
     return child.status === 0 && !child.error;

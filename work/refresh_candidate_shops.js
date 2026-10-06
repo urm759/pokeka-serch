@@ -103,6 +103,7 @@ async function main() {
   const start = Date.now();
   const run = { startedAt: new Date(start).toISOString(), status: "running", attemptedCount: 0, refreshedCount: 0,
     newAcquiredCount: 0, newLinkedCount: 0, changedCount: 0, failedCount: 0, httpRequests: 0,
+    proactiveAttempted:0, proactiveVerified:0, deadlineOrderVersion:"deadline-v2",
     candidateTargets: deadlineMode ? planned.records.length : candidates.length, previouslyCompleted: completed.size, records: [], stopReason: null,
     mode: deadlineMode ? "deadline-price-refresh" : "completion-backfill", cacheHits: 0, llmCalls: 0, codexCalls: 0 };
   const byUrl = new Map(catalog.map((entry) => [entry.detailUrl, entry]));
@@ -149,9 +150,12 @@ async function main() {
   for (const card of batch) {
     if (Date.now() - start + 16000 > budget) { run.stopReason = "時間上限・保存して安全停止"; break; }
     const url = card[`${sourceId}Url`];
+    const plannedRecord = planned.records.find(row=>row.card.id===card.id);
     const record = { id: card.id, url, startedAt: new Date().toISOString(), status: "pending", error: null,
+      proactive:plannedRecord?.proactive || false, deadlineAt:plannedRecord?.nextDueAt || null,
       important: planned.records.find((row) => row.card.id === card.id)?.important || false };
     run.attemptedCount += 1;
+    if (record.proactive) run.proactiveAttempted++;
     try {
       let quote, name;
       if (sourceId === "hareruya2") {
@@ -200,6 +204,7 @@ async function main() {
       }
     }
     sourceJobs.jobs[card.id] = priceQueue.finish(sourceJobs.jobs[card.id], record, new Date().toISOString(), config);
+    if(record.proactive && record.status==='verified') run.proactiveVerified++;
     run.records.push(record); save();
     if (run.stopReason) break;
     await sleep(Math.max(1000, Number(process.env.CANDIDATE_SHOP_INTERVAL_MS || 1200)));

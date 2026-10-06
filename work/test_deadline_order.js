@@ -1,0 +1,27 @@
+const assert=require('node:assert/strict');
+const {plan}=require('./priority_price_queue.js');
+const {estimate}=require('./refresh_capacity.js');
+const now=Date.parse('2026-10-06T03:00:00Z');
+const definitions=[['a-late',120],['z-early',15],['overdue',-20],['retry',5],['manual',2],['normal',-100]];
+const cards=definitions.map(([id])=>({id,name:id,hareruya2Url:'https://example.test/'+id}));
+const catalog=definitions.map(([cardId,minutes])=>({cardId,observedAt:new Date(now+minutes*60000-(cardId==='normal'?720:6)*3600000).toISOString()}));
+const args={cards,catalog,sourceId:'hareruya2',now,candidateRows:Object.fromEntries(cards.filter(c=>c.id!=='normal').map(c=>[c.id,{}])),
+ jobs:{retry:{nextRetryAt:new Date(now+60000).toISOString()}},manualWait:{manual:{url:'https://example.test/manual'}}};
+const selected=plan(args).queue;
+assert.deepEqual(selected.map(r=>r.card.id),['overdue','z-early','a-late','normal']);
+assert.deepEqual(selected.slice(0,2).map(r=>r.card.id),['overdue','z-early'],'insufficient budget must defer later deadlines');
+assert.equal(selected.some(r=>r.card.id==='manual'||r.card.id==='retry'),false);
+assert.equal(plan({...args,now:now+2*60000}).queue.find(r=>r.card.id==='retry')?.status,'次回完了前に期限切れ・先回り待ち');
+const weak=estimate({importantCount:300,eligibleCount:150,verifiedCount:20,durationMs:360000});
+assert.equal(weak.requiredPerRun,100);assert.equal(weak.availablePerRun,15);assert.equal(weak.deficitPerRun,85);assert.equal(weak.sustainable,false);
+assert.equal(estimate({importantCount:10,eligibleCount:5,verifiedCount:0,durationMs:1000}).availablePerRun,null);
+assert.equal(estimate({importantCount:10,eligibleCount:5,blocked:true,verifiedCount:0,durationMs:1000}).availablePerRun,0);
+assert.equal(estimate({importantCount:30,eligibleCount:25,verifiedCount:40,durationMs:360000,manualCount:1}).sustainable,false);
+console.log('PASS deadline order, 15min vs 2h, overdue, limited slots, manual/retry holds, capacity deficits');
+const {verify}=require('./price_publication_evidence.js');
+const run={id:100,event:'schedule',conclusion:'success'};
+const jobs={jobs:[{steps:['Refresh due purchase prices','Verify safety','Publish validated data'].map(name=>({name,conclusion:'success'}))}]};
+assert.equal(verify(run,jobs,{runId:100},{conclusion:'success'}).confirmed,true);
+assert.equal(verify(run,jobs,{runId:99},{conclusion:'success'}).confirmed,false);
+assert.equal(verify(run,{jobs:[]},{runId:100},{conclusion:'success'}).confirmed,false);
+assert.equal(verify({...run,event:'workflow_dispatch'},jobs,{runId:100},{conclusion:'success'}).confirmed,false);
