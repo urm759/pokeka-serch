@@ -17,7 +17,59 @@ const returnHorizonModel = window.ReturnHorizonModel;
 const priceReferenceModel = window.PriceReferenceModel;
 const purchaseRatioModel = window.PurchaseRatioModel;
 const currentMarketModel = window.CurrentMarketModel;
-const currentMarketViewCache = new WeakMap();
+let currentMarketViewCache = new WeakMap();
+let loadedDataRevision = 0;
+let calculatedCardCache = null;
+let freshnessRenderTimer = null;
+let calculationCacheHit = false;
+let forceNextSearchCalculation = false;
+let lastSearchTiming = null;
+let favoriteCalculationCache = null;
+const computationFields = ["fee","psaPlan","psaHandlingFee","guideMode","psaCapital","lockedCapital","lockDays","minExpectedProfit","minExpectedRoi","minAnnualEfficiency","maxCapitalShare","submissionCount","gradingReserve","saleFeeRate","saleExtraCost","buybackDeductionRate","exitPolicy","buybackStoreMode","selectedBuybackStores","storeTravelCost","snkrRawFeeRate","snkrRawShipping","snkrRawOtherCost","snkrRawMaxAgeHours"];
+const computationSources = ["catalogCompletion","priceEvidence","cardrushStock","hareruya2Stock","yuyuteiStock","torecacampStock","shopBuybacks","buybackShops","buybackDates","buybackUpdatedAt","marketStability","marketStabilityMeta","psaPopulation","snkrListingSummary","snkrRawFlipSummary","snkrRawFlipMeta","pokedataSummary","psaServices","evaluationModel","evaluationGovernance","operationalLimitHistory","regulationPolicy","returnCalibration","fixedPriceReference","marketResearch","supplyMaturityHypothesis","updateStatus"];
+function computationKey() {
+  return JSON.stringify([loadedDataRevision,meta,computationFields.map(key=>state[key]),
+    state.purchaseMode === "current-market" ? "normal" : state.purchaseMode,state.sourceUpdates,state.gradeObservations]);
+}
+function freshnessDeadline(cards, now) {
+  // Refresh at exact known expiries as well as day boundaries used by older models.
+  let deadline = Math.min(now + 60000, Math.floor(now / 86400000 + 1) * 86400000,
+    Math.floor((now + 9 * 3600000) / 86400000 + 1) * 86400000 - 9 * 3600000);
+  const consider = (date, hours) => {
+    const expiry = Date.parse(date) + hours * 3600000 + 1;
+    if (Number.isFinite(expiry) && expiry > now) deadline = Math.min(deadline,expiry);
+  };
+  consider(state.updateStatus?.sources?.toreca?.lastSuccessAt,30);
+  consider(state.sourceUpdates.toreca,30);
+  for (const card of cards) {
+    consider(card.currentStoreOffer?.updatedAt,48);
+    consider(card.psa9Audit?.latestSaleAt || card.psa9Audit?.updatedAt,720);
+    consider(card.psa10Audit?.lastTradeAt,720);
+    consider(card.official?.f,48);
+    for (const row of card.buybackAnalysis?.rows || []) consider(row.updatedAt || row.priceDate,168);
+  }
+  return deadline;
+}
+function calculatedCardsForSearch(cards, {force=false,now=Date.now()} = {}) {
+  const key = computationKey();
+  const sources = computationSources.map(name=>state[name]);
+  calculationCacheHit = !force && calculatedCardCache?.cards === cards
+    && calculatedCardCache.length === cards.length && calculatedCardCache.key === key
+    && now < calculatedCardCache.expires && sources.every((source,i)=>source === calculatedCardCache.sources[i]);
+  if (calculationCacheHit) return calculatedCardCache.value;
+  currentMarketViewCache = new WeakMap();
+  const value = prepareCalculatedCards(cards);
+  calculatedCardCache = {cards,length:cards.length,key,sources,value,expires:freshnessDeadline(value,now)};
+  return value;
+}
+function auditIsOpen(element) {
+  let parent = element?.parentElement;
+  while (parent) {
+    if (parent.tagName === "DETAILS" && !parent.open) return false;
+    parent = parent.parentElement;
+  }
+  return Boolean(element);
+}
 
 const state = {
   cards: [],
@@ -161,6 +213,7 @@ const state = {
   purchaseMode: "normal",
   currentMarketCapMin: null,
   currentMarketManualPrice: null,
+  currentMarketSearchKind: "cap",
   includeAggressiveInCombined: false,
   lowRiskAvailability: "all",
   psaCapital: 500000,
@@ -781,7 +834,7 @@ function renderSourceObservability() {
     const stale = sourceList.filter((source) => !source.fresh && !["failed", "partial"].includes(source.status)).length;
     els.freshnessSummary.textContent = failed ? `失敗 ${fmt.format(failed)}件` : partial ? `部分取得 ${fmt.format(partial)}件` : stale ? `未完了 ${fmt.format(stale)}件` : "全取得元 更新済み";
   }
-  if (els.dataFreshness) {
+  if (auditIsOpen(els.dataFreshness)) {
     const pipelines = state.updateStatus?.pipelines || {};
     const stageLabels = { yuyutei: "遊々亭", priceEvidence: "状態A実売確認", psaLinkage: "PSA紐づけ候補", torecacamp: "トレカキャンプ" };
     const stageStates = { completed: "対象の巡回完了", "reviewed-with-unavailable": "全件確認・取得不能あり", partial: "部分取得", "time-budget": "時間枠終了・次回再開", "queue-updated": "候補キュー更新（公式POP取得ではない）", stopped: "停止", "manual-action-required": "要手動対応", stalled: "進捗停滞" };
@@ -905,7 +958,7 @@ function renderSourceObservability() {
     const uniqueUnmatched = Number(coverage?.uniqueUnmatchedCards || 0);
     els.cardrushCoverage.textContent = stores.length ? `${fmt.format(stores.length)}データ元 / 未紐付けがあるデータ元：${fmt.format(problemCount)} / 国内4店のいずれか未紐付け：${fmt.format(uniqueUnmatched)}枚` : "集計中";
   }
-  if (els.linkCoverageDetails) {
+  if (auditIsOpen(els.linkCoverageDetails)) {
     const acquisition = coverage?.acquisitionAudit;
     const countOrUnknown = (value) => Number.isFinite(value) ? fmt.format(value) : "未記録";
     const progressHtml = acquisition ? `<article class="coverage-card"><h3>実取得と有効値の増加監査</h3>
@@ -955,7 +1008,7 @@ function renderSourceObservability() {
       ? `${pokedata.statusLabel || `検証中／部分取得（${fmt.format(pokedata.acquired || 0)}件）`} / 全カードカバー率 ${formatRate(pokedata.totalCoveragePct)}`
       : "PokeDATA 検証状況を確認中";
   }
-  if (els.pokedataCoverageDetails) {
+  if (auditIsOpen(els.pokedataCoverageDetails)) {
     const records = state.pokedataAuditRecords.length ? state.pokedataAuditRecords : pokedata?.records || [];
     const manifestSets = state.pokedataManifest?.sets || [];
     const globalAcquisition = state.pokedataManifest?.acquisition || {};
@@ -1306,7 +1359,17 @@ function favoriteCards() {
 function renderFavorites() {
   if (!els.favoritesList) return;
   const allCards = favoriteCards();
-  const evaluatedCards = allCards.map(calc);
+  const key = computationKey();
+  const sources = computationSources.map(name=>state[name]);
+  if (!favoriteCalculationCache || favoriteCalculationCache.key !== key
+    || Date.now() >= favoriteCalculationCache.expires
+    || !sources.every((source,i)=>source === favoriteCalculationCache.sources[i])
+    || allCards.length !== favoriteCalculationCache.cards.length
+    || !allCards.every((card,i)=>card === favoriteCalculationCache.cards[i])) {
+    const value = allCards.map(calc);
+    favoriteCalculationCache = {key,sources,cards:allCards,value,expires:freshnessDeadline(value,Date.now())};
+  }
+  const evaluatedCards = favoriteCalculationCache.value;
   const capital = decisionModel.capitalPlan({
     totalCapital: state.psaCapital,
     lockedCapital: state.lockedCapital,
@@ -2911,8 +2974,9 @@ function restoreQuickFilters() {
     if (!url.searchParams.has("year2020")) els.year2020Input.checked = saved.year2020Only === true;
     if (!url.searchParams.has("includeUnknownYear")) els.includeUnknownYearInput.checked = saved.includeUnknownYear === true;
     // A shared or bookmarked URL always wins over this device's last-used values.
-    if (!url.searchParams.has("roi") && Number.isFinite(Number(saved.minRoi))) {
-      els.roiInput.value = String(saved.minRoi);
+    if (!url.searchParams.has("marketSearch") && ["cap","purchase"].includes(saved.currentMarketSearchKind)) document.getElementById("currentMarketSearchKindInput").value = saved.currentMarketSearchKind;
+    if (!url.searchParams.has("roi") && Object.hasOwn(saved,"minRoi") && (saved.minRoi == null || Number.isFinite(Number(saved.minRoi)))) {
+      els.roiInput.value = saved.minRoi == null ? "" : String(saved.minRoi);
     }
     if (!url.searchParams.has("buyLimitRatio") && saved.minPurchaseLimitRatio != null && Number.isFinite(Number(saved.minPurchaseLimitRatio))) {
       els.purchaseLimitRatioMinInput.value = String(saved.minPurchaseLimitRatio);
@@ -2926,6 +2990,7 @@ function saveQuickFilters() {
   try {
     localStorage.setItem(QUICK_FILTER_STORAGE_KEY, JSON.stringify({
       minRoi: state.minRoi,
+      currentMarketSearchKind: state.currentMarketSearchKind,
       currentMarketCapMin: state.currentMarketCapMin, currentMarketManualPrice: state.currentMarketManualPrice,
       profitSearchBasis: state.profitSearchBasis, includePeriodReference: state.includePeriodReference,
       minExpectedProfitFilter: state.minExpectedProfitFilter, minExpectedRoiFilter: state.minExpectedRoiFilter,
@@ -3016,7 +3081,9 @@ async function fetchJsonMaybe(url) {
   try {
     const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) return null;
-    return await res.json();
+    const payload = await res.json();
+    loadedDataRevision++;
+    return payload;
   } catch {
     return null;
   }
@@ -3160,6 +3227,11 @@ function readUrl() {
   const filterUrl = new URL(window.location.href);
   for (const [param,id] of [["marketCapMin","currentMarketCapMinInput"],["marketBuy","currentMarketManualPriceInput"]]) {
     if (filterUrl.searchParams.has(param)) document.getElementById(id).value = filterUrl.searchParams.get(param);
+  }
+  if (["cap","purchase"].includes(filterUrl.searchParams.get("marketSearch"))) document.getElementById("currentMarketSearchKindInput").value = filterUrl.searchParams.get("marketSearch");
+  if (filterUrl.searchParams.get("roi") === "off" || filterUrl.searchParams.has("roi") && filterUrl.searchParams.get("roi") === "") els.roiInput.value = "";
+  for (const [param,id] of [["filterStressProfit","stressExpectedProfitFilterInput"],["filterStressRoi","stressExpectedRoiFilterInput"]]) {
+    if (filterUrl.searchParams.get(param) === "off") document.getElementById(id).value = "";
   }
   const profitBasisInput = document.getElementById("profitSearchBasisInput");
   if (profitBasisInput && ["auto", "limit", "store", "current"].includes(filterUrl.searchParams.get("profitBasis"))) profitBasisInput.value = filterUrl.searchParams.get("profitBasis");
@@ -3414,7 +3486,8 @@ function buildShareUrl() {
   url.searchParams.set("bbShops", String(state.minBuybackShops));
   if (state.minBuybackPrice == null) url.searchParams.delete("bbPriceMin"); else url.searchParams.set("bbPriceMin", String(state.minBuybackPrice));
   if (state.maxBuybackPrice == null) url.searchParams.delete("bbPriceMax"); else url.searchParams.set("bbPriceMax", String(state.maxBuybackPrice));
-  url.searchParams.set("roi", String(state.minRoi));
+  url.searchParams.set("roi", state.minRoi == null ? "off" : String(state.minRoi));
+  url.searchParams.set("marketSearch",state.currentMarketSearchKind);
   for (const [key, value] of [["psa9RatioMin", state.psa9RatioMin], ["psa9RatioMax", state.psa9RatioMax]]) {
     if (value == null) url.searchParams.delete(key); else url.searchParams.set(key, String(value));
   }
@@ -3427,8 +3500,8 @@ function buildShareUrl() {
   url.searchParams.set("periodReference", state.includePeriodReference ? "1" : "0");
   if (state.minExpectedRoiFilter !== 0) url.searchParams.set("filterExpRoi", state.minExpectedRoiFilter == null ? "off" : String(state.minExpectedRoiFilter)); else url.searchParams.delete("filterExpRoi");
   if (state.minExpectedProfitFilter !== 0) url.searchParams.set("filterExpProfit", state.minExpectedProfitFilter == null ? "off" : String(state.minExpectedProfitFilter)); else url.searchParams.delete("filterExpProfit");
-  if (state.minStressExpectedRoiFilter !== 0) url.searchParams.set("filterStressRoi", String(state.minStressExpectedRoiFilter)); else url.searchParams.delete("filterStressRoi");
-  if (state.minStressExpectedProfitFilter !== 0) url.searchParams.set("filterStressProfit", String(state.minStressExpectedProfitFilter)); else url.searchParams.delete("filterStressProfit");
+  url.searchParams.set("filterStressRoi",state.minStressExpectedRoiFilter == null ? "off" : String(state.minStressExpectedRoiFilter));
+  url.searchParams.set("filterStressProfit",state.minStressExpectedProfitFilter == null ? "off" : String(state.minStressExpectedProfitFilter));
   url.searchParams.set("psaMin", String(state.minPsa10));
   if (state.maxPsa10 == null) url.searchParams.delete("psaMax"); else url.searchParams.set("psaMax", String(state.maxPsa10));
   if (state.minPsaRate == null) url.searchParams.delete("psaRate"); else url.searchParams.set("psaRate", String(state.minPsaRate));
@@ -3534,7 +3607,9 @@ function ratioLabel(value) {
 }
 
 function currentMarketView(card) {
-  if (currentMarketViewCache.has(card)) return currentMarketViewCache.get(card);
+  const key = JSON.stringify([state.currentMarketManualPrice,computationFields.map(name=>state[name]),state.sourceUpdates,state.updateStatus?.sources?.toreca]);
+  const cached = currentMarketViewCache.get(card);
+  if (cached?.key === key && Date.now() < cached.expires) return cached.value;
   if (!currentMarketModel || !card.buyLimits?.clean) return {eligible:false,reasons:["分析データ不足"],cap:null,economics:null,psa10Roi:null};
   const input = buildScenarioInput(card, "clean", card.psa10);
   const buybackExit = decisionModel.conservativeBuybackExit({
@@ -3551,7 +3626,7 @@ function currentMarketView(card) {
     marketUpdatedAt:checkedAt,manualPrice:state.currentMarketManualPrice,fee:state.fee,
     feeRate:state.saleFeeRate,extraCost:state.saleExtraCost,lockDays:state.lockDays,
     exitPolicy:state.exitPolicy,buybackExit}, decisionModel);
-  currentMarketViewCache.set(card,result);
+  currentMarketViewCache.set(card,{key,value:result,expires:freshnessDeadline([card],Date.now())});
   return result;
 }
 
@@ -3654,7 +3729,7 @@ function presetQualifications(card) {
     "current-market": catalogReady && currentMarketView(card).eligible };
 }
 
-function buildSearchAudit(cards) {
+function buildSearchAudit(cards, {includePresets=true} = {}) {
   const modes = {curated:"厳選候補",combined:"おまかせ総合",now:"今すぐ仕入れ","low-risk":"低リスク候補",turnover:"高回転候補",bargain:"薄商い・高粗利",aggressive:"攻め仕入れ圏","snkr-raw":"スニダン素体流し","current-market":"現相場採算（購入GOとは別）"};
   const evaluations = cards.map(card => ({card, flags:presetQualifications(card), reasons:cardSearchExclusions(card)}));
   const modeKey = state.purchaseMode === "low-risk" ? "lowRisk" : state.purchaseMode;
@@ -3691,13 +3766,13 @@ function buildSearchAudit(cards) {
   return {loadedCards:cards.length, mode:state.purchaseMode, presetOnly:base.length, final:final.length, presetOverlap, presetSequential,
     sequential, overlap, periodHeld:state.purchaseMode === "current-market" ? 0 : final.filter(row=>row.card.forecastPeriodMismatch).length,
     now:state.purchaseMode === "current-market" ? 0 : final.filter(row=>row.flags.now).length,
-    presets:Object.entries(modes).map(([mode,label])=>{
+    presets:includePresets ? Object.entries(modes).map(([mode,label])=>{
       const key=mode === "low-risk" ? "lowRisk" : mode;
       const rows=evaluations.filter(row=>mode === "snkr-raw" ? row.card.snkrRawFlip?.tier && row.card.snkrRawFlip.tier !== "none" : row.flags[key]);
       // Other presets' totals are a qualification comparison under the active model.
       const additional=rows.filter(row=>cardSearchExclusions(row.card, {mode}).length === 0);
       return {mode,label,presetOnly:rows.length,final:mode === state.purchaseMode ? final.length : additional.length};
-    })};
+    }) : []};
 }
 
 function renderActiveFilters() {
@@ -3705,20 +3780,34 @@ function renderActiveFilters() {
   if (!target) return;
   const protectedFields = new Set(["psaPlanInput","feeInput","psaCapitalInput","lockedCapitalInput","gradingReserveInput","submissionCountInput","maxCapitalShareInput","lockDaysInput","minExpectedProfitInput","minExpectedRoiInput","minAnnualEfficiencyInput","saleFeeRateInput","saleExtraCostInput","buybackDeductionRateInput","exitPolicyInput","buybackStoreModeInput","selectedBuybackStoresInput","storeTravelCostInput","sortInput","profitSearchBasisInput","includePeriodReferenceInput"]);
   const items=[];
+  const currentMode = state.purchaseMode === "current-market";
+  const ignored = new Set(["profitSearchBasisInput","includePeriodReferenceInput","stressExpectedProfitFilterInput","stressExpectedRoiFilterInput","purchaseLimitRatioMinInput","fundingOnlyInput","goConfidenceFilterInput"]);
+  if (state.currentMarketSearchKind === "cap") ["roiInput","expectedProfitFilterInput","expectedRoiFilterInput","psa9RatioMinInput","psa9RatioMaxInput","psa9RatioAggregateInput","psa9RatioEstimateInput","psa9RatioMarketInput"].forEach(id=>ignored.add(id));
   for (const el of document.querySelectorAll(".advanced-filters input, .advanced-filters select")) {
-    if (!el.id || el.disabled || el.type === "hidden" || protectedFields.has(el.id) || el.id.startsWith("snkrRaw")) continue;
+    if (!el.id || el.type === "hidden" || protectedFields.has(el.id) || el.id.startsWith("snkrRaw")) continue;
     const value = el.type === "checkbox" ? (el.checked ? "ON" : "") : String(el.value);
     if (!value || (value === "0" && !["roiInput","expectedProfitFilterInput","expectedRoiFilterInput","stressExpectedProfitFilterInput","stressExpectedRoiFilterInput"].includes(el.id)) || ["all","normal"].includes(value)) continue;
     const label = el.closest("label")?.querySelector("span")?.textContent || el.closest("label")?.textContent.trim() || el.id;
     const text = el.tagName === "SELECT" ? el.options[el.selectedIndex]?.textContent : value;
-    items.push(`<button type="button" data-clear-condition="${escapeHtml(el.id)}" title="この検索条件だけ解除">${escapeHtml(label)}：${escapeHtml(text)} ×</button>`);
+    const category = currentMode && ignored.has(el.id) ? "不適用・保存保持" : "共有・適用中";
+    items.push(`<button type="button" data-clear-condition="${escapeHtml(el.id)}" title="この検索条件だけ解除">${category}：${escapeHtml(label)}：${escapeHtml(text)} ×</button>`);
   }
-  const basis = state.purchaseMode === "current-market" ? "実店舗状態A価格／未取得時は手入力買値 × 現在出口相場（購入GOとは別）" : searchProfitView({}).label;
+  const basis = currentMode ? state.currentMarketSearchKind === "cap" ? "損益分岐上限から探す（購入時利益条件は不適用・未取得を0円にしない）" : "購入価格で黒字を探す：実店舗状態A／手入力 × 現在出口相場" : searchProfitView({}).label;
   target.innerHTML = `<strong>追加検索条件（プリセット切替でも保持）</strong><small>利益基準：${escapeHtml(basis)}／返却${state.lockDays}日。資金・売却先・発売年は変更しません。</small><div>${items.join("") || "追加条件なし"}</div><small>判定用条件（検索フィルターとは別）：目標利益¥${fmt.format(state.minExpectedProfit)}／期待利益率${state.minExpectedRoi}%／年換算${state.minAnnualEfficiency}%／総資金¥${fmt.format(state.psaCapital)}−ロック¥${fmt.format(state.lockedCapital)}−鑑定予備¥${fmt.format(state.gradingReserve)}。出口 ${escapeHtml({buyback:"買取店優先",marketplace:"フリマ優先",both:"両方で赤字回避"}[state.exitPolicy] || state.exitPolicy)}／利用店 ${escapeHtml(state.buybackStoreMode)}。</small><button type="button" data-open-profit-settings>資金・売却先・利益条件を確認</button>`;
 }
 
-function renderPresetAudit(cards) {
+function renderPresetAudit(cards, {details=false} = {}) {
   if (!els.presetAuditSummary) return;
+  if (!details) {
+    const audit = buildSearchAudit(cards,{includePresets:false});
+    window.PRESET_SEARCH_AUDIT = audit;
+    renderActiveFilters();
+    els.presetAuditSummary.innerHTML = `<strong>選択中：プリセットのみ ${fmt.format(audit.presetOnly)} → 追加条件後 ${fmt.format(audit.final)}件</strong><small>購入GOとは別。未取得と赤字は別理由で集計します。</small><details id="presetAuditDetails"><summary>候補・除外理由と日次監査を開く</summary><div id="presetAuditContent"></div></details>`;
+    document.getElementById("presetAuditDetails")?.addEventListener("toggle",event=>{
+      if (event.target.open) renderPresetAudit(cards,{details:true});
+    });
+    return;
+  }
   const analyzable = cards.filter((card) => state.catalogCompletion?.cards?.[card.id]?.s === "分析可能");
   const flags = analyzable.map((card) => ({ card, flags: presetQualifications(card) }));
   const counts = {
@@ -3745,7 +3834,7 @@ function renderPresetAudit(cards) {
   const availability = state.candidateAvailabilityAudit;
   const movement = availability?.comparison;
   const availabilityHtml = availability ? `<details><summary>購入先確認済みへの移行：${fmt.format(movement?.promoted || 0)}件（直近取得間）</summary><span>保存時のおまかせ ${fmt.format(availability.current.combined)}件 ／ 今すぐ ${fmt.format(availability.current.now)}件 ／ 価格待ち ${fmt.format(availability.current.priceWait)}件</span><span>在庫あり価格未取得 ${fmt.format(availability.current.missingOffer)}件 ／ 店舗価格が上限超過 ${fmt.format(availability.current.aboveLimit)}件</span><span>次回の店舗確認優先 ${fmt.format(availability.priorityCount || 0)}枚（未確認 ${fmt.format(availability.priorityBreakdown?.missingOffer || 0)}・上限に近い ${fmt.format(availability.priorityBreakdown?.nearLimit || 0)}）</span><span>今すぐから価格待ちへ ${fmt.format(movement?.demoted || 0)}件</span><small>${escapeHtml(movement?.status || "初回基準")}。基準は緩めず、状態Aの購入可能価格が確認できた場合だけ移行します。</small><a href="./data/candidate-availability-audit.json" target="_blank" rel="noreferrer">移行監査JSON</a></details>` : "";
-  els.presetAuditSummary.innerHTML = `<b>分析可能 ${fmt.format(counts.total)}枚</b>${auditHtml}<small class="preset-count-note">価格待ちと実購入GOは別です。期間不一致は参考探索だけで、返却時の利益を保証しません。<a href="./data/preset-search-impact.json" target="_blank" rel="noreferrer">同一条件の修正前後監査</a>（公開時の固定条件、現在の設定とは別）</small>${availabilityHtml}${dailyHtml}`;
+  document.getElementById("presetAuditContent").innerHTML = `<b>分析可能 ${fmt.format(counts.total)}枚</b>${auditHtml}<small class="preset-count-note">価格待ちと実購入GOは別です。期間不一致は参考探索だけで、返却時の利益を保証しません。<a href="./data/preset-search-impact.json" target="_blank" rel="noreferrer">同一条件の修正前後監査</a>（公開時の固定条件、現在の設定とは別）</small>${availabilityHtml}${dailyHtml}`;
 }
 
 function combinedPresetSort(left, right) {
@@ -4070,7 +4159,7 @@ function prepareCalculatedCards(cards) {
   return calculated;
 }
 
-function cardSearchExclusions(card, {mode = state.purchaseMode} = {}) {
+function cardSearchExclusions(card, {mode = state.purchaseMode,diagnostic=true} = {}) {
   const reasons = [];
   const currentMode = mode === "current-market";
   const normalizedQuery = normalize(state.q);
@@ -4081,9 +4170,9 @@ function cardSearchExclusions(card, {mode = state.purchaseMode} = {}) {
       const completion = card.catalogCompletion;
       if (!releaseYearFilter.matches(card, completion, state.year2020Only, state.includeUnknownYear)) reasons.push("発売年");
       if (normalizedQuery && !(haystack.includes(normalizedQuery) || compactHaystack.includes(compactQuery))) reasons.push("名称検索");
-      if (normalizedQuery && state.diagnosticSearch) return reasons;
+      if (diagnostic && normalizedQuery && state.diagnosticSearch) return reasons;
       const ratioView = currentMode ? profitView.purchasePrice == null ? {ratio:null,measurementType:"missing"} : purchasePsa9Ratio(card,profitView.purchasePrice,profitView.purchaseKind) : purchasePsa9Ratio(card);
-      if (purchaseRatioModel && !purchaseRatioModel.matches(ratioView, state.psa9RatioMin, state.psa9RatioMax, psa9RatioOptions())) reasons.push("国内PSA9比率");
+      if ((!currentMode || state.currentMarketSearchKind === "purchase") && purchaseRatioModel && !purchaseRatioModel.matches(ratioView, state.psa9RatioMin, state.psa9RatioMax, psa9RatioOptions())) reasons.push("国内PSA9比率");
       if (!normalizedQuery) {
         if (state.catalogScope === "analysis" && completion?.s !== "分析可能") reasons.push("表示範囲・データ不足");
         if (state.catalogScope === "new" && !completion?.n) reasons.push("表示範囲・データ不足");
@@ -4120,13 +4209,19 @@ function cardSearchExclusions(card, {mode = state.purchaseMode} = {}) {
       if (card.buybackShops < state.minBuybackShops) reasons.push("取引・掲載件数");
       if (state.minBuybackPrice != null && card.buybackPrice < state.minBuybackPrice) reasons.push("価格帯・相場比");
       if (state.maxBuybackPrice != null && card.buybackPrice > state.maxBuybackPrice) reasons.push("価格帯・相場比");
-      if (!Number.isFinite(profitView.psa10Roi) || profitView.psa10Roi < state.minRoi) reasons.push("利益条件");
-      if (state.minExpectedRoiFilter != null && (!Number.isFinite(profitView.economics?.expectedRoi) || profitView.economics.expectedRoi < state.minExpectedRoiFilter)) reasons.push("利益条件");
-      if (state.minExpectedProfitFilter != null && (!Number.isFinite(profitView.economics?.expectedProfit) || profitView.economics.expectedProfit < state.minExpectedProfitFilter)) reasons.push("利益条件");
+      const purchaseProfitSearch = !currentMode || state.currentMarketSearchKind === "purchase";
+      if (currentMode && purchaseProfitSearch && profitView.purchasePrice == null) reasons.push("購入価格未取得");
+      if (currentMode && purchaseProfitSearch && Number.isFinite(profitView.economics?.expectedProfit) && profitView.economics.expectedProfit < 0) reasons.push("実購入時の赤字");
+      if (purchaseProfitSearch) {
+        const missingReason = currentMode ? "購入時利益算出不可" : "利益条件";
+        if (state.minRoi != null && (!Number.isFinite(profitView.psa10Roi) || profitView.psa10Roi < state.minRoi)) reasons.push(Number.isFinite(profitView.psa10Roi) ? "利益条件" : missingReason);
+        if (state.minExpectedRoiFilter != null && (!Number.isFinite(profitView.economics?.expectedRoi) || profitView.economics.expectedRoi < state.minExpectedRoiFilter)) reasons.push(Number.isFinite(profitView.economics?.expectedRoi) ? "利益条件" : missingReason);
+        if (state.minExpectedProfitFilter != null && (!Number.isFinite(profitView.economics?.expectedProfit) || profitView.economics.expectedProfit < state.minExpectedProfitFilter)) reasons.push(Number.isFinite(profitView.economics?.expectedProfit) ? "利益条件" : missingReason);
+      }
       const stressAtLimit = card.buyLimits?.clean?.supplyStressAtFinal;
       if (!currentMode && card.forecastPeriodMismatch && (!state.includePeriodReference || mode === "now" || profitView.basis !== "limit")) reasons.push("期間不一致・返却時試算不可");
-      if (!currentMode && (!Number.isFinite(stressAtLimit?.expectedRoi) || stressAtLimit.expectedRoi < state.minStressExpectedRoiFilter)) reasons.push("利益条件");
-      if (!currentMode && (!Number.isFinite(stressAtLimit?.expectedProfit) || stressAtLimit.expectedProfit < state.minStressExpectedProfitFilter)) reasons.push("利益条件");
+      if (!currentMode && state.minStressExpectedRoiFilter != null && (!Number.isFinite(stressAtLimit?.expectedRoi) || stressAtLimit.expectedRoi < state.minStressExpectedRoiFilter)) reasons.push("利益条件");
+      if (!currentMode && state.minStressExpectedProfitFilter != null && (!Number.isFinite(stressAtLimit?.expectedProfit) || stressAtLimit.expectedProfit < state.minStressExpectedProfitFilter)) reasons.push("利益条件");
       if (card.psa10 < state.minPsa10) reasons.push("価格帯・相場比");
       if (state.maxPsa10 != null && card.psa10 > state.maxPsa10) reasons.push("価格帯・相場比");
       if (state.minPrice != null && card.price < state.minPrice) reasons.push("価格帯・相場比");
@@ -4259,14 +4354,19 @@ function currentMarketProfitPanel(view) {
 }
 
 function render() {
+  const renderStarted = performance.now();
   const normalizedQuery = normalize(state.q);
   const compactQuery = compactSearch(state.q);
-  const calculated = prepareCalculatedCards(state.cards);
-  state.limitModelAudit = buildLimitModelAudit(calculated);
-  window.PURCHASE_LIMIT_MODEL_AUDIT = state.limitModelAudit;
-  renderLimitModelAudit(state.limitModelAudit);
-  renderShopRateSummary(calculated);
-  renderMarketBacktest();
+  const calculated = calculatedCardsForSearch(state.cards,{force:forceNextSearchCalculation});
+  forceNextSearchCalculation = false;
+  const calculationMs = performance.now() - renderStarted;
+  if (auditIsOpen(els.limitModelAudit)) {
+    state.limitModelAudit = buildLimitModelAudit(calculated);
+    window.PURCHASE_LIMIT_MODEL_AUDIT = state.limitModelAudit;
+    renderLimitModelAudit(state.limitModelAudit);
+  }
+  if (auditIsOpen(els.shopRateSummary)) renderShopRateSummary(calculated);
+  if (auditIsOpen(els.marketBacktestSummary)) renderMarketBacktest();
   renderPresetAudit(calculated);
   if (els.psa9RatioCoverage) {
     const counts = {total:0,eligible:0,"data-missing":0,"reference-disabled":0,"circular-estimate":0};
@@ -4328,7 +4428,7 @@ function render() {
     const summary = state.catalogCompletion.summary;
     els.catalogCoverageSummary.textContent = `みんトレ掲載 ${fmt.format(summary.sourceMatched ?? Math.max(0, summary.sourceTotal - summary.unlisted))} / ${fmt.format(summary.sourceTotal)}枚（${Number(summary.listingRatePct || 0).toFixed(1)}%）・サイト保持総数 ${fmt.format(summary.siteTotal)}枚・分析可能 ${fmt.format(summary.analyzable)}枚・補完優先キュー ${fmt.format(summary.priorityQueueRemaining)}枚`;
   }
-  if (els.catalogCompletionDetails && state.catalogCompletion?.summary) {
+  if (auditIsOpen(els.catalogCompletionDetails) && state.catalogCompletion?.summary) {
     const summary = state.catalogCompletion.summary;
     const labels = {
       domesticPrice: "国内美品参考価格", domesticTrades: "国内素体・全状態取引", psa10Price: "PSA10価格", psa10Trades: "PSA10取引",
@@ -4342,7 +4442,7 @@ function render() {
     els.catalogCompletionDetails.innerHTML = `<div class="catalog-summary-grid"><span><b>みんトレ取得総数</b><strong>${fmt.format(summary.sourceTotal)}</strong></span><span><b>サイト掲載総数</b><strong>${fmt.format(summary.siteTotal)}</strong></span><span><b>未掲載</b><strong>${fmt.format(summary.unlisted)}</strong></span><span><b>今回追加 / サイト新着</b><strong>${fmt.format(summary.addedThisRun)} / ${fmt.format(summary.siteNewCards ?? summary.newCards)}</strong><small>新着保持 ${fmt.format(summary.siteNewRetentionDays || 30)}日</small></span><span><b>最近発売 / 再掲載</b><strong>${fmt.format(summary.recentReleaseCards || 0)} / ${fmt.format(summary.relistedCards || 0)}</strong><small>最近発売は発売日から${fmt.format(summary.recentReleaseDays || 365)}日</small></span><span><b>発売日 / 年のみ / 不明</b><strong>${fmt.format(summary.releaseDateKnown || 0)} / ${fmt.format(summary.releaseYearOnly || 0)} / ${fmt.format(summary.releaseUnknown || 0)}</strong><small>日付充足 ${Number(summary.releaseDateCompletenessPct || 0).toFixed(1)}%・年含む ${Number(summary.releaseKnownCompletenessPct || 0).toFixed(1)}%</small></span><span><b>完全識別 / 要確認</b><strong>${fmt.format(summary.completeIdentityMatches)} / ${fmt.format(summary.reviewRequired)}</strong></span><span><b>分析可能</b><strong>${fmt.format(summary.analyzable)}</strong><small>完全 ${fmt.format(summary.analyzableComplete || 0)} / 一部参考データ不足 ${fmt.format(summary.analyzablePartial || 0)}</small></span><span><b>データ補完中</b><strong>${fmt.format(summary.completionInProgress)}</strong><small>分析可能カードの参考項目不足も含むため、優先キューより多くなります</small></span><span><b>補完優先キュー</b><strong>${fmt.format(summary.priorityQueueRemaining)}</strong><small>次の1項目で分析可能見込み ${fmt.format(summary.completableAfterNext || 0)}枚</small></span><span><b>PSA9データ区分</b><strong>実成約 ${fmt.format(p9.actual || 0)}</strong><small>集計値 ${fmt.format(p9.aggregate || 0)} / 推定 ${fmt.format(p9.estimate || 0)} / 未取得 ${fmt.format(p9.missing || 0)}</small></span><span><b>PokeDATA対象区分</b><strong>紐付済 ${fmt.format(pokedata.linked || 0)}</strong><small>対応セット未一致 ${fmt.format(pokedata.compatibleUnmatched || 0)} / 未展開 ${fmt.format(pokedata.unexpandedSet || 0)} / 非対応・存在未確認 ${fmt.format(pokedata.unsupportedOrUnconfirmed || 0)}</small></span></div><div class="catalog-item-rates">${rates}</div>`;
   }
   const rawMode = state.purchaseMode === "snkr-raw";
-  if (els.catalogCompletionDetails && state.catalogCompletion?.summary) {
+  if (auditIsOpen(els.catalogCompletionDetails) && state.catalogCompletion?.summary) {
     const summary = state.catalogCompletion.summary;
     els.catalogCompletionDetails.insertAdjacentHTML("afterbegin", `<p class="catalog-source-note">掲載率は、みんトレ取得一覧（${escapeHtml(summary.sourceInventoryAt || "取得日不明")}）とのID一致 ${fmt.format(summary.sourceMatched ?? Math.max(0, summary.sourceTotal - summary.unlisted))} / ${fmt.format(summary.sourceTotal)}枚で計算。サイト保持総数にはこの一覧にない保持済み ${fmt.format(summary.retainedOnly || 0)}枚も含みます。取得日が異なる場合、差分は現在の掲載漏れとは限りません。</p>`);
   }
@@ -4421,7 +4521,7 @@ function render() {
     els.allDataUpdatedAt.textContent = state.updateStatus?.allDataCompleteDate || state.updateStatus?.completeDate || "全取得元 未完了";
   }
   renderSourceObservability();
-  renderGuide();
+  if (auditIsOpen(els.guidePanels)) renderGuide();
   const visibleCards = enriched.slice(0, state.visibleLimit);
   const lazyPokedataIds = new Set([...state.favorites].map(String));
   if (state.q) visibleCards.forEach((card) => lazyPokedataIds.add(String(card.id)));
@@ -4438,6 +4538,7 @@ function render() {
 
   state.cardById = Object.create(null);
   els.grid.innerHTML = visibleCards.map((card) => {
+    if (state.diagnosticSearch) card.searchDiagnosticReasons = cardSearchExclusions(card,{diagnostic:false});
     state.cardById[card.id] = card;
     const cardPriceText = Number.isFinite(card.price) ? `¥${fmt.format(card.price)}` : "未算出・価格確認待ち";
     const psa10NetText = Number.isFinite(card.psa10Net) ? `¥${fmt.format(Math.round(card.psa10Net))}` : "未算出";
@@ -5129,7 +5230,7 @@ function render() {
     const candidateGlance = state.purchaseMode === "snkr-raw" ? "" : `
       ${gradeRateSummary(card,currentTrial)}
       <section class="candidate-glance" aria-label="仕入れ判断の要点">
-        <div class="glance-verdict"><span>${currentExploration ? "現相場の探索（購入判断とは別）" : "今回の判定"}</span><strong>${currentExploration ? currentTrial.economics ? currentTrial.economics.expectedProfit >= 0 ? "現相場採算あり・仮定" : "現相場では赤字・仮定" : "試算不可・購入価格またはデータ不足" : escapeHtml(displayVerdict)}</strong><small>${currentExploration ? escapeHtml(currentTrial.purchaseSource || "購入価格未取得") : escapeHtml(purchaseAvailability.label || "購入先未確認")}</small></div>
+        <div class="glance-verdict"><span>${currentExploration ? "現相場の探索（購入判断とは別）" : "今回の判定"}</span><strong>${currentExploration ? currentTrial.economics ? currentTrial.economics.expectedProfit >= 0 ? "現相場採算あり・仮定" : "現相場では赤字・仮定" : currentTrial.eligible ? "上限探索・購入価格未取得" : "必要データ不足・試算不可" : escapeHtml(displayVerdict)}</strong><small>${currentExploration ? escapeHtml(currentTrial.purchaseSource || "購入価格未取得") : escapeHtml(purchaseAvailability.label || "購入先未確認")}</small></div>
         ${priceCells}
       </section>
       ${currentExploration ? currentMarketProfitPanel(currentTrial) : ""}
@@ -5221,9 +5322,21 @@ function render() {
     details.addEventListener("toggle", () => { if (details.open) renderPsaHistory(details); }, { once: true });
   });
   renderFavorites();
+  const timing = document.getElementById("searchPerformance");
+  lastSearchTiming = {calculationMs,domMs:performance.now()-renderStarted-calculationMs,cacheHit:calculationCacheHit};
+  if (timing) timing.textContent = `条件処理：計算 ${calculationMs.toFixed(1)}ms${calculationCacheHit ? "（再利用・全件再計算なし）" : "（更新）"}／検索・DOM生成 ${lastSearchTiming.domMs.toFixed(1)}ms。画面描画・通信時間は含みません。`;
+  clearTimeout(freshnessRenderTimer);
+  if (calculatedCardCache) freshnessRenderTimer = setTimeout(render, Math.max(1,calculatedCardCache.expires-Date.now()));
 }
 
-function syncFromUI() {
+let pendingUIUpdate = null;
+function syncFromUI(event) {
+  clearTimeout(pendingUIUpdate);
+  if (event?.type === "input") {
+    pendingUIUpdate = setTimeout(()=>syncFromUI(),200);
+    return;
+  }
+  state.currentMarketSearchKind = document.getElementById("currentMarketSearchKindInput")?.value === "purchase" ? "purchase" : "cap";
   state.currentMarketCapMin = parseOptionalNumber(document.getElementById("currentMarketCapMinInput")?.value);
   state.currentMarketManualPrice = parseOptionalNumber(document.getElementById("currentMarketManualPriceInput")?.value);
   const currentControls = document.getElementById("currentMarketControls");
@@ -5260,11 +5373,11 @@ function syncFromUI() {
   state.minBuybackShops = Number(els.buybackShopsMinInput.value || 0);
   state.minBuybackPrice = parseOptionalNumber(els.buybackPriceMinInput.value);
   state.maxBuybackPrice = parseOptionalNumber(els.buybackPriceMaxInput.value);
-  state.minRoi = Number(els.roiInput.value || 0);
+  state.minRoi = parseOptionalNumber(els.roiInput.value);
   state.minExpectedRoiFilter = parseOptionalNumber(els.expectedRoiFilterInput.value);
   state.minExpectedProfitFilter = parseOptionalNumber(els.expectedProfitFilterInput.value);
-  state.minStressExpectedRoiFilter = Number(els.stressExpectedRoiFilterInput.value || 0);
-  state.minStressExpectedProfitFilter = Number(els.stressExpectedProfitFilterInput.value || 0);
+  state.minStressExpectedRoiFilter = parseOptionalNumber(els.stressExpectedRoiFilterInput.value);
+  state.minStressExpectedProfitFilter = parseOptionalNumber(els.stressExpectedProfitFilterInput.value);
   state.minPsa10 = Number(els.psaMinInput.value || 0);
   state.maxPsa10 = parseOptionalNumber(els.psaMaxInput.value);
   state.minPrice = parseOptionalNumber(els.priceMinInput.value);
@@ -5478,6 +5591,51 @@ async function init() {
 }
 
 // Browser event bindings start here; the audit runner evaluates the same model above this line.
+document.querySelectorAll(".source-monitor-panel").forEach(panel=>panel.addEventListener("toggle",()=>{
+  if (panel.open) renderSourceObservability();
+}));
+document.getElementById("benchmarkSearchButton")?.addEventListener("click",async event=>{
+  event.target.disabled = true;
+  const rows=[];
+  let expected=null;
+  const frame=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+  try {
+    for (const kind of ["全件再計算","計算結果再利用"]) {
+      for (let i=0;i<3;i++) {
+        forceNextSearchCalculation = kind === "全件再計算";
+        const start=performance.now();
+        render();
+        const snapshot=JSON.stringify(calculatedCardCache.value.map(card=>[card.id,card.buyLimits?.clean,card.purchaseDecision]));
+        const ids=JSON.stringify([...els.grid.querySelectorAll("[data-card-id]")].map(el=>el.dataset.cardId));
+        const signature=snapshot+ids;
+        if (expected == null) expected=signature;
+        if (signature !== expected) throw new Error("同条件の計算値・候補IDが一致しません");
+        const timing={...lastSearchTiming};
+        await frame();
+        rows.push({kind,...timing,frameCompletionMs:performance.now()-start});
+      }
+    }
+    document.getElementById("searchBenchmarkResult").textContent = JSON.stringify({width:window.innerWidth,loadedCards:state.cards.length,valuesAndIdsUnchanged:true,rows});
+  } catch(error) {
+    document.getElementById("searchBenchmarkResult").textContent=error.message;
+  } finally { event.target.disabled=false; }
+});
+document.getElementById("currentMarketSearchKindInput")?.addEventListener("change",syncFromUI);
+for (const element of [els.limitModelAudit,els.shopRateSummary,els.marketBacktestSummary,els.catalogCompletionDetails,els.dataFreshness,els.guidePanels]) {
+  element?.closest("details")?.addEventListener("toggle",event=>{
+    if (!event.target.open || !auditIsOpen(element)) return;
+    const cards = calculatedCardsForSearch(state.cards);
+    if (element === els.limitModelAudit) {
+      state.limitModelAudit = buildLimitModelAudit(cards);
+      window.PURCHASE_LIMIT_MODEL_AUDIT = state.limitModelAudit;
+      renderLimitModelAudit(state.limitModelAudit);
+    } else if (element === els.shopRateSummary) renderShopRateSummary(cards);
+    else if (element === els.marketBacktestSummary) renderMarketBacktest();
+    else if (element === els.dataFreshness) renderSourceObservability();
+    else if (element === els.guidePanels) renderGuide();
+    else render();
+  });
+}
 els.roiFocusButton?.addEventListener("click", () => {
   els.minExpectedProfitInput.value = String(purchaseRatioModel.roiOnly(state).minExpectedProfit);
   syncFromUI();
@@ -5626,7 +5784,7 @@ document.getElementById("activeFilterSummary")?.addEventListener("click", (event
       const option = [...el.options].find(row => row.value === "all");
       if (!option) return;
       el.value = option.value;
-    } else el.value = ["roiInput","stressExpectedProfitFilterInput","stressExpectedRoiFilterInput"].includes(el.id) ? "0" : "";
+    } else el.value = "";
     syncFromUI();
   }
   if (event.target.closest("[data-open-profit-settings]")) {

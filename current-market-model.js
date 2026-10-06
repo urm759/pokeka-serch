@@ -36,7 +36,8 @@
     if (card.psa9Audit?.estimated !== false) warnings.push('PSA9は推定値');
     else if (card.psa9Audit?.measurementType !== 'actual') warnings.push('PSA9は集計値・個別実成約未取得');
     const psa9UpdatedAt = card.psa9Audit?.latestSaleAt || card.psa9Audit?.updatedAt || null;
-    if (card.psa9Audit?.estimated === false && (age(psa9UpdatedAt) == null || age(psa9UpdatedAt) > 30 * 24)) reasons.push('PSA9価格が古い・確認日時不明');
+    if (card.psa9Audit?.estimated === false && age(psa9UpdatedAt) == null) reasons.push('PSA9価格の確認日時不足');
+    else if (card.psa9Audit?.estimated === false && (age(psa9UpdatedAt) < 0 || age(psa9UpdatedAt) > 30 * 24)) reasons.push('PSA9価格が古い・日時不正');
     if (finite(card.official?.rate) == null) warnings.push('公式取得率未取得・設定10率を使用');
     else if (age(card.official?.f) == null || age(card.official?.f) > 48) warnings.push('公式Populationの確認日が古い・未取得');
     if (card.dataQuality?.dataShortage) warnings.push(...(card.dataQuality.dataShortageReasons || ['一部データ不足']));

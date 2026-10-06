@@ -1614,3 +1614,6 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .grade-rate-summary strong{display:block;font-size:24px;color:#fde68a;margin:4px 0}
 .current-market-profit strong,.period-profit-detail strong{display:block;font-size:19px;margin:4px 0;overflow-wrap:anywhere}
 @media(max-width:720px){.grade-rate-summary,.current-market-profit{gap:6px}.grade-rate-summary>div,.current-market-profit>div{padding:9px}.grade-rate-summary span,.grade-rate-summary small,.current-market-profit span,.current-market-profit small{font-size:10px}}
+.search-performance { display: block; margin: 0.6rem 0; color: var(--muted, #94a3b8); font-size: 0.75rem; }
+.search-benchmark { margin: 0.6rem 0; font-size: 0.8rem; }
+.search-benchmark pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 15rem; overflow-y: auto; }

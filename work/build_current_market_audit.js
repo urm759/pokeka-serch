@@ -15,6 +15,8 @@ for (const policy of ['buyback','marketplace','both']) {
   policies[policy]={eligible:usable.length,storePurchase:usable.filter(row=>row.view.purchaseKind==='store').length,
     missingPurchase:usable.filter(row=>row.view.purchaseKind==='missing').length,
     positiveAtStore:usable.filter(row=>row.view.purchaseKind==='store'&&row.view.economics?.expectedProfit>=0).length,
+    capExplorationWithoutPurchase:usable.filter(row=>row.view.purchaseKind==='missing'&&Number.isFinite(row.view.cap)).length,
+    missingPurchaseExamples:usable.filter(row=>row.view.purchaseKind==='missing'&&row.view.cap>0).slice(0,3).map(({card,view})=>({id:card.id,name:card.name,cap:view.cap,profit:view.economics,psa9Profit:view.psa9Profit,purchaseGo:false})),
     reasons:Object.fromEntries([...new Set(rows.flatMap(row=>row.view.reasons))].map(reason=>[reason,rows.filter(row=>row.view.reasons.includes(reason)).length])),
     examples:usable.filter(row=>row.view.purchaseKind==='store').sort((a,b)=>(b.view.economics?.expectedProfit??-Infinity)-(a.view.economics?.expectedProfit??-Infinity)).slice(0,5).map(({card,view})=>({
       id:card.id,name:card.name,marketPsa10:card.psa10,purchasePrice:view.purchasePrice,store:view.purchaseSource,
