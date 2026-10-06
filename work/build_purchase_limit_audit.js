@@ -36,8 +36,8 @@ const context = vm.createContext({
   setTimeout,
   clearTimeout,
 });
-vm.runInContext(`${source.split(marker)[0]}\nglobalThis.auditApi = { state, prepareCalculatedCards, buildLimitModelAudit, operationalSettings, presetQualifications };`, context, { filename: "app.js", timeout: 30000 });
-const { state, prepareCalculatedCards, buildLimitModelAudit, operationalSettings, presetQualifications } = context.auditApi;
+vm.runInContext(`${source.split(marker)[0]}\nglobalThis.auditApi = { state, prepareCalculatedCards, buildLimitModelAudit, operationalSettings, presetQualifications, currentMarketView };`, context, { filename: "app.js", timeout: 30000 });
+const { state, prepareCalculatedCards, buildLimitModelAudit, operationalSettings, presetQualifications, currentMarketView } = context.auditApi;
 const loadCards = (file) => read(file, { cards: {} });
 const sourceFiles = {
   cardrush: loadCards("data/cardrush-stock-summary.json"),
@@ -51,6 +51,7 @@ const sourceFiles = {
   psa: loadCards("data/psa-population-summary.json"),
 };
 state.cards = read("data/pokemon-cards.json", []);
+state.updateStatus = read("data/update-status.json", {});
 state.catalogCompletion = read("data/card-catalog-completion.json", { cards: {} });
 state.priceEvidence = read("data/state-a-price-evidence.json", { cards: {} });
 state.cardrushStock = sourceFiles.cardrush.cards || {};
@@ -117,6 +118,24 @@ if (process.env.SHOP_EFFECT_AUDIT_REF) {
   process.exit(0);
 }
 const calculated = prepareCalculatedCards(state.cards);
+const priceTargets = {};
+for (const card of calculated) {
+  const combined = presetQualifications(card).combined;
+  const current = currentMarketView(card);
+  const currentCandidate = current.eligible && current.capState === 'available';
+  if (!combined && !currentCandidate) continue;
+  priceTargets[card.id] = { name: card.name, combined, currentMarket: currentCandidate,
+    purchasePriceMissing: !card.currentStoreOffer, priceRefreshReady: currentCandidate && !card.currentStoreOffer,
+    offerPrice: card.currentStoreOffer?.value ?? null, offerSource:card.currentStoreOffer?.source || null,
+    reason: currentCandidate ? '現相場採算の非負上限探索・購入価格再確認' : '安定重視の価格待ち',
+    purchaseState: card.purchasePriceStatus?.code || null };
+}
+const freshPriceAudit = { generatedAt: new Date().toISOString(), comparisonType: '価格更新優先キュー・判断条件変更なし',
+  catalog: calculated.length, currentMarketCandidates: Object.values(priceTargets).filter(r => r.currentMarket).length,
+  readyByPurchaseRefresh: Object.values(priceTargets).filter(r => r.priceRefreshReady).length,
+  referenceFreshness: Object.fromEntries(['recent','stale','unknown'].map(field => [field, calculated.reduce((sum, card) => sum + model.referenceFreshness(card.priceAggregation)[field], 0)])),
+  freshVsOld: calculated.flatMap(card => { const audit = model.referenceFreshness(card.priceAggregation); return audit.freshVsOldSources.length ? [{id:card.id,name:card.name, sources:audit.freshVsOldSources, referenceMedian:card.priceAggregation.value, warning:audit.warning, purchasePrice:card.currentStoreOffer?.value ?? null}] : []; }),
+  purchaseStates: Object.fromEntries(['available','expired','out-of-stock','stopped','unacquired'].map(code => [code,calculated.filter(card => card.purchasePriceStatus?.code === code).length])) };
 const candidateHistory = read("work/candidate-daily-history.json", { version: 1, days: [] });
 const availabilityHistory = read("work/candidate-availability-history.json", { version: 1, runs: [] });
 const candidateSettings = {
@@ -205,6 +224,11 @@ if (process.argv.includes("--verify")) {
     throw new Error("Candidate availability audit is stale or differs from the current model/data");
   }
 } else {
+  write('work/purchase-price-targets.json', { generatedAt:freshPriceAudit.generatedAt, profile:'公開監査の既定費用・売却先（ユーザー設定は変更しない）', rows:priceTargets });
+  write('data/purchase-price-freshness-audit.json', freshPriceAudit);
+  write('work/purchase-price-observation-snapshot.json', { at:freshPriceAudit.generatedAt,
+    analyzed:calculated.filter(card => card.catalogCompletion?.s === '分析可能').length,
+    rows:Object.fromEntries(calculated.map(card => [card.id,{status:card.purchasePriceStatus?.code,price:card.currentStoreOffer?.value ?? null,source:card.currentStoreOffer?.source || null,at:card.currentStoreOffer?.updatedAt || null}])) });
   const cohortBaseline = read("work/acquisition-audit-baseline.json", null);
   const cohortIds = new Set(Object.keys(cohortBaseline?.availability?.rows || {}));
   if (cohortIds.size) {

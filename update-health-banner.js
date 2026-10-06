@@ -29,7 +29,14 @@
   const title = document.createElement("strong");
   title.textContent = "データ更新に注意";
   const message = document.createElement("span");
-  message.textContent = reasons.join("／");
+  message.textContent = '';
+  const categorized = [...dailyReasons.map(reason => ({reason})), ...backfillIssues];
+  for (const category of [...new Set(categorized.map(issue => model.issueCategory(issue)))]) {
+    const line = document.createElement('span');
+    line.style.display = 'block';
+    line.textContent = `${category}：${categorized.filter(issue => model.issueCategory(issue) === category).map(issue => issue.reason).join('／')}`;
+    message.append(line);
+  }
   const link = document.createElement("a");
   link.href = backfillIssues[0]?.url || "https://github.com/urm759/pokeka-serch/actions";
   link.target = "_blank";

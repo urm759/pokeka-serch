@@ -62,6 +62,7 @@ jobs:
       - name: Run fast regression tests
         run: |
           node work/test_shop_observation.js
+          node work/test_purchase_price_recovery.js
           node work/test_roi_psa9_ratio.js
           node --check app.js
           node --check decision-model.js

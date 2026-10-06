@@ -24,7 +24,8 @@ assert.ok(html.indexOf('data-price-kind="store"') < html.indexOf('data-price-kin
 assert.ok(html.indexOf('data-price-kind="stable"') < html.indexOf('data-price-kind="break-even"'));
 assert.match(html, /推奨仕入れ値ではありません/);
 assert.match(html, /2026\/10\/06 19:00/);
-assert.match(render({ ...card, currentStoreOffer: null }), /未取得.*新しい在庫あり価格未取得/s);
+assert.match(render({ ...card, currentStoreOffer: null }), /未取得.*素体相場で代用しません・GO不可/s);
+assert.match(render({ ...card, currentStoreOffer: null }), /48時間以内0／古値0／日時不明0元/);
 assert.doesNotMatch(render({ ...card, currentStoreOffer: null }), /9,999/);
 assert.doesNotMatch(render({ ...card, currentStoreOffer: { ...card.currentStoreOffer, fresh: false } }), /32,000/);
 assert.doesNotMatch(render({ ...card, currentStoreOffer: { ...card.currentStoreOffer, updatedAt: '2026-09-01' } }), /32,000/);

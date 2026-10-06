@@ -79,7 +79,8 @@ async function main() {
   const priceIssues = [];
   if (["failure", "timed_out"].includes(priceState.conclusion)) priceIssues.push({ key: "priority-prices:workflow-failure", reason: "購入価格高速更新の保存・検証・公開失敗", url: priceState.runUrl });
   if (priceState.stuckRuns >= 3) priceIssues.push({ key: "priority-prices:stalled", reason: "購入価格高速更新が3回連続で進捗なし・期限超過あり", url: priceState.runUrl });
-  const issues = [...dailyIssues, ...backfills.issues, ...sourceIssues, ...priceIssues];
+  const issues = [...dailyIssues, ...backfills.issues, ...sourceIssues, ...priceIssues].map(issue => ({ ...issue,
+    category: require('../update-health-model.js').issueCategory(issue) }));
   const previousKeys = new Set(current?.activeAlertKeys || []);
   const newlyDetected = issues.filter((issue) => !previousKeys.has(issue.key));
   const samples = backfillRate.read().samples;

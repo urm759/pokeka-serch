@@ -34,6 +34,7 @@ jobs:
           node work/test_preset_exploration.js
           node work/test_price_integrity.js
           node work/test_shop_observation.js
+          node work/test_purchase_price_recovery.js
           node work/test_card_catalog_completion.js
           node work/test_checkpoint_publication.js
       - name: Publish validated data with conflict protection

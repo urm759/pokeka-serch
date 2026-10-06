@@ -162,7 +162,9 @@ async function main() {
       const previous = summary.cards?.[card.id] || {};
       summary.cards ||= {};
       summary.cards[card.id] = { ...previous, [`${sourceId}Price`]: quote.price, stock: quote.stock, available: quote.available,
-        updatedAt: entry.observedAt, conditionAccepted: true, identityVerifiedAt: entry.identityVerifiedAt };
+        observedAt: entry.observedAt, updatedAt: entry.observedAt,
+        priceObservedAt: entry.observedAt, inventoryObservedAt: entry.observedAt,
+        conditionAccepted: true, identityVerifiedAt: entry.identityVerifiedAt };
       // Do not fabricate a quantity from the boolean 'available' field.
       if (Number.isFinite(quote.stock)) {
         if (!history.dates.includes(today)) { history.dates.push(today); for (const values of Object.values(history.stocks)) values.push(null); }
@@ -172,7 +174,9 @@ async function main() {
       }
       run.refreshedCount += 1;
       if (oldPrice !== quote.price || oldStock !== quote.stock) run.changedCount += 1;
-      record.status = "verified"; Object.assign(record, { price: quote.price, stock: quote.stock, available: quote.available, oldPrice, oldStock });
+      record.status = "verified"; Object.assign(record, { price: quote.price, stock: quote.stock, available: quote.available, oldPrice, oldStock,
+        confirmedAt: entry.observedAt, previousConfirmedAt: previous.priceObservedAt || previous.observedAt || previous.updatedAt || null,
+        currentMarketTarget: plannedRecord?.currentMarket || false, priceRefreshReady:plannedRecord?.priceRefreshReady || false });
       completed.add(card.id);
       run.lastSuccessAt = entry.observedAt;
     } catch (error) {

@@ -163,6 +163,33 @@
     return Date.parse(/^\d{4}-\d{2}-\d{2}$/.test(String(value)) ? `${value}T00:00:00+09:00` : value);
   }
 
+  function referenceFreshness(aggregation = {}, now = Date.now(), ttlMs = 48 * 3600000) {
+    const included = aggregation.included || [];
+    const fresh = row => { const t = observationTime(row.updatedAt); return Number.isFinite(t) && t <= now && now - t <= ttlMs; };
+    const known = row => Number.isFinite(observationTime(row.updatedAt));
+    const recent = included.filter(fresh).length;
+    const unknown = included.filter(row => !known(row)).length;
+    const stale = included.length - recent - unknown;
+    const freshVsOld = (aggregation.outliers || []).filter(row => fresh(row) && included.length >= 2 && recent === 0);
+    return { recent, stale, unknown, total: included.length,
+      label: `48時間以内${recent}／古値${stale}／日時不明${unknown}元`,
+      freshVsOldSources: freshVsOld.map(row => row.source),
+      warning: freshVsOld.length ? '古い価格帯と新しい価格が乖離・最新価格の誤りとは未確定' : recent === 0 && included.length ? '最新の参考相場ではありません' : null };
+  }
+
+  function purchasePriceState(rows = [], offer = null) {
+    if (offer) return { code: 'available', label: '購入価格確認済み' };
+    const linked = rows.filter(row => row.url);
+    const retryable = linked.filter(row => !row.sourceBlocked);
+    if (retryable.some(row => Number(row.value) > 0 && !row.fresh
+      && (Number.isFinite(observationTime(row.updatedAt)) || Number.isFinite(observationTime(row.inventoryAt)))))
+      return { code: 'expired', label: '期限超過・再確認待ち' };
+    if (retryable.some(row => row.fresh && row.inventoryKnown && row.available === false))
+      return { code: 'out-of-stock', label: '在庫なし' };
+    if (linked.length && !retryable.length) return { code: 'stopped', label: '取得停止' };
+    return { code: 'unacquired', label: '未取得' };
+  }
+
   // Reference-price clustering and a verified in-stock purchase offer are separate decisions.
   function storeOffers(entries, aggregation, options = {}) {
     const now = options.now ?? Date.now(), ttl = options.ttlMs ?? 48 * 3600000;
@@ -189,7 +216,8 @@
         purchaseReason: reasons.length ? [...new Set(reasons)].join('／') : outlier ? '同一仕様・状態A・在庫確認済みの安値。相場集計の外れ値とは別に購入先へ採用' : '同一カードの新しい状態A在庫価格' };
     });
     const eligible = rows.filter(row => row.purchaseEligible);
-    return { rows, offer: eligible.length ? eligible.reduce((a,b) => a.value <= b.value ? a : b) : null };
+    const offer = eligible.length ? eligible.reduce((a,b) => a.value <= b.value ? a : b) : null;
+    return { rows, offer, state: purchasePriceState(rows, offer) };
   }
 
   function resolvePsa9Price(input = {}) {
@@ -1079,5 +1107,5 @@
     };
   }
 
-  return { MODEL_VERSION, shopObservation, observationTime, storeOffers, aggressivePurchaseZone, aggregatePrices, bargainDecisionEligible, buybackExitProfit, conservativeBuybackExit, economicsFromExpectedSale, exitPolicyCaps, shouldIncludeVerdict, capRoundingStep, capitalLimits, capitalPlan, economicsScenarioMatrix, expectedEconomics, gradeAssumptions, isSuspectedCardMismatch, matchConfidenceLabel, maxBuyPrice, median, operationalCap, operationalCapConcentration, portfolioPlan, portfolioStress, purchaseAvailability, purchaseCaps, purchaseDecision, purchaseLimitMarketRatio, resilienceMetrics, resolvePsa9Price, targetProfitMaxBuyPrice, weightedMedian };
+  return { MODEL_VERSION, referenceFreshness, purchasePriceState, shopObservation, observationTime, storeOffers, aggressivePurchaseZone, aggregatePrices, bargainDecisionEligible, buybackExitProfit, conservativeBuybackExit, economicsFromExpectedSale, exitPolicyCaps, shouldIncludeVerdict, capRoundingStep, capitalLimits, capitalPlan, economicsScenarioMatrix, expectedEconomics, gradeAssumptions, isSuspectedCardMismatch, matchConfidenceLabel, maxBuyPrice, median, operationalCap, operationalCapConcentration, portfolioPlan, portfolioStress, purchaseAvailability, purchaseCaps, purchaseDecision, purchaseLimitMarketRatio, resilienceMetrics, resolvePsa9Price, targetProfitMaxBuyPrice, weightedMedian };
 });

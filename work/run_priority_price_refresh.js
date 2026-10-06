@@ -38,13 +38,18 @@ function main() {
     return child.status === 0 && !child.error;
   }
   const sources = read("work/source-update-runs.json").sources || {};
+  // Rebuild eligibility from saved data before selecting prices; no HTTP or LLM here.
+  if (!run('work/build_purchase_limit_audit.js')) throw new Error('Purchase target queue rebuild failed');
+  if (!run('work/audit_purchase_price_recovery.js', ['--baseline'])) throw new Error('Freshness baseline save failed');
   const config = require("./priority_price_queue.js").timingConfig(ROOT);
   if (due(sources.toreca, Date.now(), config)) run("work/daily_fast_update.js", [], { FAST_DEEP_SCAN: "0", DAILY_RUNTIME_LIMIT_MS: "300000" });
   if (due(sources.shopBuyback, Date.now(), config)) run("work/run_tracked_update.js", ["shopBuyback", "work/update_shop_buybacks.js"], { TRACKED_TIMEOUT_MS: "300000" });
   for (const sourceId of ["cardrush", "hareruya2"]) run("work/refresh_candidate_shops.js", [sourceId], { CANDIDATE_SHOP_MODE: "deadline" });
-  for (const script of ["work/audit_state_a_prices.js", "work/build_card_completion.js", "work/build_purchase_limit_audit.js", "work/audit_acquisition_progress.js", "work/audit_link_coverage.js", "work/finalize_update_status.js"]) {
+  for (const script of ["work/audit_state_a_prices.js", "work/build_card_completion.js", "work/build_purchase_limit_audit.js", "work/audit_acquisition_progress.js", "work/audit_link_coverage.js"]) {
     if (!run(script)) throw new Error(`Required rebuild failed: ${script}`);
   }
+  if (!run('work/audit_purchase_price_recovery.js')) throw new Error('Purchase freshness outcome audit failed');
+  if (!run('work/finalize_update_status.js')) throw new Error('Update status rebuild failed');
   save();
   if (runs.some((row) => row.status === "failed")) process.exitCode = 1;
 }
