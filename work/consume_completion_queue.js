@@ -9,8 +9,10 @@ const save = (file, value) => { const target = path.join(ROOT, file); fs.writeFi
 function plan(cards, queue, checkpoint, now = Date.now()) {
   const byId = new Map(cards.map((c) => [c.id, c]));
   return (queue.queue || []).filter((id) => {
-    const old = checkpoint.cards?.[id];
-    return !old || !old.held && (old.failures || 0) < 3 && (!old.nextRetryAt || Date.parse(old.nextRetryAt) <= now);
+    const retry = require("./acquisition_retry.js");
+    const old = retry.migrateLegacy(checkpoint.cards?.[id], now);
+    if (old && checkpoint.cards) checkpoint.cards[id] = old;
+    return retry.eligible(old, now);
   }).map((id) => ({ card: byId.get(id), detail: queue.cards?.[id] })).filter((row) => row.card && row.detail)
     .sort((a, b) => Number(b.detail.p || 0) - Number(a.detail.p || 0));
 }
@@ -30,6 +32,12 @@ function run() {
   const candidates = plan(cards, queue, state);
   const focus = buildFocus(ROOT);
   const eligible = eligibleForHareru(candidates, read("work/hareruya2_catalog.json", []));
+  const selectionReasons = { queuedCards: (queue.queue || []).length, retryEligibleCards: candidates.length,
+    missingStateACards: candidates.filter(r => needs(r.detail, "shopStateA")).length,
+    missingStateAWithUrl: candidates.filter(r => needs(r.detail, "shopStateA") && r.card.hareruya2Url).length,
+    eligibleHareruCards: eligible.length, psaOnlyCards: candidates.filter(r => r.detail.m?.length === 1 && r.detail.m[0] === "psaOfficial").length,
+    heldCards: Object.values(state.cards || {}).filter(r => r.held).length,
+    retryWaitingCards: Object.values(state.cards || {}).filter(r => !r.held && Date.parse(r.nextRetryAt) > start).length };
   const groupOrder = new Map(focus.groups.map((g, i) => [g.id, i]));
   eligible.sort((a, b) => {
     const fa = focus.cards[a.card.id], fb = focus.cards[b.card.id];
@@ -41,7 +49,7 @@ function run() {
   const msPerCard = last.refreshedCount > 0 ? Math.max(3000, last.durationMs / last.refreshedCount) : 5000;
   const capacity = Math.max(1, Math.floor((maxTime - 36000) / msPerCard));
   const selected = fairBatch(eligible, Math.max(1, Number(process.env.COMPLETION_BATCH || capacity)), (r) => focus.cards[r.card.id]?.pending.includes("shopStateA"), focus.maxFocusedShare);
-  const run = { startedAt: new Date(start).toISOString(), llmCalls: 0, codexCalls: 0, focusedSelected: selected.filter((r) => focus.cards[r.card.id]).length, normalSelected: selected.filter((r) => !focus.cards[r.card.id]).length, selected: selected.map((r) => ({ id: r.card.id, priority: r.detail.p, reasons: [focus.cards[r.card.id]?.priorityReason, ...r.detail.r].filter(Boolean), missingRequired: r.detail.m })), attempted: 0, acquired: 0, newAcquired: 0, newLinked: 0, failures: 0, checkpoint: null, stopReason: null };
+  const run = { startedAt: new Date(start).toISOString(), llmCalls: 0, codexCalls: 0, selectionReasons, zeroTargetReason: selected.length ? null : !selectionReasons.missingStateACards ? "状態A不足は現選択対象にない。他項目の補完待ちは継続" : !selectionReasons.missingStateAWithUrl ? "状態A不足カードの晴れる屋2確定URLなし・探索担当へ" : "正常値キャッシュまたは再試行待ち・全補完完了ではない", focusedSelected: selected.filter((r) => focus.cards[r.card.id]).length, normalSelected: selected.filter((r) => !focus.cards[r.card.id]).length, selected: selected.map((r) => ({ id: r.card.id, priority: r.detail.p, reasons: [focus.cards[r.card.id]?.priorityReason, ...r.detail.r].filter(Boolean), missingRequired: r.detail.m })), attempted: 0, acquired: 0, newAcquired: 0, newLinked: 0, failures: 0, checkpoint: null, stopReason: null };
   save("work/completion-acquisition-checkpoint.json", { ...state, running: run });
   const result = selected.length ? spawnSync(process.execPath, ["work/refresh_candidate_shops.js", "hareruya2"], { cwd: ROOT, encoding: "utf8", timeout: maxTime + 3000,
     env: { ...process.env, COMPLETION_PRIORITY_IDS: selected.map((r) => r.card.id).join(","), CANDIDATE_SHOP_BATCH: String(selected.length), CANDIDATE_SHOP_TIME_MS: String(maxTime - 20000), CANDIDATE_SHOP_INTERVAL_MS: "1200" } }) : null;
@@ -56,7 +64,7 @@ function run() {
   run.endedAt = new Date().toISOString(); run.durationMs = Date.now() - start;
   run.status = /時間予算|time budget/i.test(run.stopReason || "") ? "時間予算で安全停止・次回継続" : run.stopReason ? "停止・確認待ち" : run.acquired ? "部分取得" : "処理成功・進捗なし";
   const support = {
-    hareruya2: { status: "自動補完対応済み", method: "確定済み商品URLの状態A価格。完了カードの再試行は2日間隔", intervalMs: 1200, maxRetries: 3 },
+    hareruya2: { status: "自動補完対応済み", method: "確定済み商品URLの状態A価格。通信一時障害は待機後に再試行。完了カードは2日間隔", intervalMs: 1200, maxRetries: 5 },
     cardrush: { status: "認証・アクセス確認待ち", reason: "403停止を維持。自動回避なし" },
     yuyutei: { status: "認証・アクセス確認待ち", reason: "403停止を維持" },
     torecacamp: { status: "自動補完対応済み", method: "別担当のサイトマップ段階巡回。二重取得しない" },

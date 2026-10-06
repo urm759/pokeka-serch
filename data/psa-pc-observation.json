@@ -1,70 +1,49 @@
 {
-  "registeredRepo": "C:\\Users\\polar\\Documents\\ChatGPT\\ポケカ仕入れサイト\\site",
   "phases": {
+    "acquisitionStop": "PSA sign-in page opened instead of the set page. Use a Chrome profile that is already logged in to PSA.",
+    "note": "最後の取得成功と最後の公開成功は別。登録先のデータと実行結果を読み取った観測",
+    "acquisition": "停止・認証または取得異常",
+    "save": "過去正常値とチェックポイントを保持",
     "publicationStop": null,
     "publication": "not-run",
-    "acquisition": "停止・認証または取得異常",
-    "note": "最後の取得成功と最後の公開成功は別。登録先のデータと実行結果を読み取った観測",
     "startup": "起動済み",
-    "savedDataLastSuccessAt": "2026-10-05T17:56:13.6751771+09:00",
-    "acquisitionStop": "PSA sign-in page opened instead of the set page. Use a Chrome profile that is already logged in to PSA.",
-    "save": "過去正常値とチェックポイントを保持"
-  },
-  "acquisitionState": {
-    "acquiredCount": 2501,
-    "syncError": "git ff-only merge skipped/failed: hint: Diverging branches can't be fast-forwarded, you need to either:\r\nhint:\r\nhint: \tgit merge --no-ff\r\nhint:\r\nhint: or:\r\nhint:\r\nhint: \tgit rebase\r\nhint:\r\nhint: Disable this message with \"git config set advice.diverging false\"\r\nfatal: Not possible to fast-forward, aborting.",
-    "lastSuccessDate": "2026-10-05",
-    "lastError": "PSA sign-in page opened instead of the set page. Use a Chrome profile that is already logged in to PSA.",
-    "durationMs": 52803.0,
-    "syncStatus": "warning",
-    "publishStatus": "not-run",
-    "publishError": null,
-    "lastSuccessSlot": "2026-10-04-morning",
-    "status": "failed",
-    "startedAt": "2026-10-06T04:30:02.7001688+09:00",
-    "lastSuccessAt": "2026-10-05T17:56:13.6751771+09:00",
-    "sourceState": "PSA取得処理失敗",
-    "updatedCount": 0,
-    "endedAt": "2026-10-06T04:30:55.50291+09:00",
-    "fetchFailureCount": 1,
-    "lastAttemptAt": "2026-10-06T04:30:02.7001688+09:00"
+    "savedDataLastSuccessAt": "2026-10-05T17:56:13.6751771+09:00"
   },
   "tasks": [
     {
-      "result": 1,
+      "reason": null,
       "target": "site/work/run_psa_scheduled_update.ps1",
       "registrationValid": true,
-      "preStartFailure": false,
       "state": "Ready",
+      "preStartFailure": false,
       "nextRun": "2026-10-07T04:30:00.0000000+09:00",
       "lastRun": "2026-10-06T04:30:01.0000000+09:00",
-      "reason": null,
-      "name": "Pokeka PSA Update 0430"
+      "name": "Pokeka PSA Update 0430",
+      "result": 1
     },
     {
-      "result": 2,
+      "reason": null,
       "target": "site/work/run_psa_scheduled_update.ps1",
       "registrationValid": true,
-      "preStartFailure": false,
       "state": "Ready",
-      "nextRun": "2026-10-06T17:00:00.0000000+09:00",
-      "lastRun": "2026-10-05T17:54:17.0000000+09:00",
-      "reason": null,
-      "name": "Pokeka PSA Update 1700"
+      "preStartFailure": false,
+      "nextRun": "2026-10-07T17:00:00.0000000+09:00",
+      "lastRun": "2026-10-06T17:00:01.0000000+09:00",
+      "name": "Pokeka PSA Update 1700",
+      "result": 1
     },
     {
-      "result": 1,
+      "reason": null,
       "target": "site/work/run_psa_scheduled_update.ps1",
       "registrationValid": true,
-      "preStartFailure": false,
       "state": "Ready",
+      "preStartFailure": false,
       "nextRun": null,
       "lastRun": "2026-10-05T17:48:19.0000000+09:00",
-      "reason": null,
-      "name": "Pokeka PSA Update Logon"
+      "name": "Pokeka PSA Update Logon",
+      "result": 1
     }
   ],
-  "observedAt": "2026-10-06T12:37:37.5979663+09:00",
   "fetchProgress": {
     "startedAt": "2026-10-05T19:30:46.874Z",
     "endedAt": "2026-10-05T19:30:55.371Z",
@@ -138,5 +117,26 @@
     "durationMs": 8497
   },
   "error": null,
+  "observedAt": "2026-10-06T18:25:03.8867035+09:00",
+  "registeredRepo": "C:\\Users\\polar\\Documents\\ChatGPT\\ポケカ仕入れサイト\\site",
+  "acquisitionState": {
+    "durationMs": 20451.0,
+    "lastSuccessDate": "2026-10-05",
+    "lastError": "PSA sign-in page opened instead of the set page. Use a Chrome profile that is already logged in to PSA.",
+    "lastAttemptAt": "2026-10-06T17:00:02.3951502+09:00",
+    "startedAt": "2026-10-06T17:00:02.3951502+09:00",
+    "publishStatus": "not-run",
+    "fetchFailureCount": 1,
+    "acquiredCount": 2501,
+    "lastSuccessSlot": "2026-10-04-morning",
+    "status": "failed",
+    "publishError": null,
+    "endedAt": "2026-10-06T17:00:22.8464555+09:00",
+    "syncError": "git ff-only merge skipped/failed: hint: Diverging branches can't be fast-forwarded, you need to either:\r\nhint:\r\nhint: \tgit merge --no-ff\r\nhint:\r\nhint: or:\r\nhint:\r\nhint: \tgit rebase\r\nhint:\r\nhint: Disable this message with \"git config set advice.diverging false\"\r\nfatal: Not possible to fast-forward, aborting.",
+    "updatedCount": 0,
+    "sourceState": "PSA取得処理失敗",
+    "syncStatus": "warning",
+    "lastSuccessAt": "2026-10-05T17:56:13.6751771+09:00"
+  },
   "independentObserverRegistered": false
 }

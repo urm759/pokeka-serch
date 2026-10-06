@@ -38,11 +38,12 @@ const sourceProgress = (source) => {
   const value = read(path.join(__dirname, "torecacamp_progress.json"), {});
   return { sitemap: Number(value.currentSitemapIndex || 0) + 1, productIndex: value.currentEntryIndex || 0,
     totalSitemaps: value.totalSitemaps || null, catalogCount: read(path.join(__dirname, "torecacamp_catalog.json"), []).length,
-    lastFailure: value.lastFailure || null };
+    lastFailure: value.lastFailure || null, sourceRetry: value.sourceRetry || null, retryQueue: Object.keys(value.retryByUrl || {}).length,
+    failedSitemaps: Object.keys(value.failedSitemaps || {}).length };
 };
 const complete = (source, progress) => source === "yuyutei" || source === "priceEvidence"
   ? progress.remaining === 0
-  : source === "torecacamp" ? progress.totalSitemaps != null && progress.sitemap > progress.totalSitemaps : true;
+  : source === "torecacamp" ? progress.totalSitemaps != null && progress.sitemap > progress.totalSitemaps && !progress.retryQueue && !progress.failedSitemaps : true;
 const command = (source, settings) => {
   if (source === "yuyutei") return {
     script: "work/update_yuyutei_torecacamp.js",
@@ -85,10 +86,20 @@ function run(options = {}) {
     return state;
   }
   save(state);
+  let donatedMs = 0;
   for (const source of stages) {
     const lastSample = [...backfillRate.read().samples].reverse().find((row) => row.source === source);
     const settings = backfillRate.settings(CONFIG.sources[source], lastSample);
+    const allocatedMs = Math.min(settings.runtimeMs + donatedMs, settings.maxRuntimeMs || settings.runtimeMs * 2);
+    donatedMs = Math.max(0, donatedMs - (allocatedMs - settings.runtimeMs));
+    settings.runtimeMs = allocatedMs;
     const sourceStarted = Date.now();
+    const retryPolicy = require("./acquisition_retry.js");
+    const previousRetry = state.sources[source]?.retry;
+    if (previousRetry && !retryPolicy.eligible(previousRetry)) {
+      state.sources[source] = { ...state.sources[source], checkedAt: now(), status: previousRetry.status, durationMs: 0 };
+      donatedMs += allocatedMs; save(state); continue;
+    }
     state.sources[source] = { status: "pending", position: sourceProgress(source), checkedAt: now(), batches: 0 };
     let failures = 0;
     let batches = 0;
@@ -134,7 +145,8 @@ function run(options = {}) {
       const abruptDrop = source === "priceEvidence" && Number(after.inspected) < Number(position.inspected)
         || ["yuyutei", "torecacamp"].includes(source) && Number(position.catalogCount) >= 20
           && Number(after.catalogCount) < Math.floor(Number(position.catalogCount) * 0.7);
-      const stopped = accessBlocked || abruptDrop || failures >= settings.maxFailures;
+      const localCampFailure = source === "torecacamp" && result.status === 0 && batchFailures > 0 && !after.sourceRetry;
+      const stopped = accessBlocked || abruptDrop || !localCampFailure && failures >= settings.maxFailures;
       const attempted = Number(shopBatch.attempted || shopBatch.searched || output?.attempted || output?.searched
         || output?.processed || Math.max(1, Number(after.inspected || after.catalogCount || 0) - Number(position.inspected || position.catalogCount || 0)));
       const acquired = Math.max(0, Number(after.inspected || after.catalogCount || 0) - Number(position.inspected || position.catalogCount || 0));
@@ -166,6 +178,7 @@ function run(options = {}) {
         status: stopped ? accessBlocked ? "manual-action-required" : "stopped" : source === "psaLinkage" ? "queue-updated" : complete(source, after) ? source === "priceEvidence" && after.unavailable > 0 ? "reviewed-with-unavailable" : "completed" : "partial",
         reason: accessBlocked ? "HTTP 401/403・認証またはアクセス制限" : abruptDrop ? "取得件数急減・監査待ち" : failure ? String(output?.stopReason || shopBatch.lastFailure?.error || after.lastFailure?.error || result.error?.message || result.stderr || `exit ${result.status}`).slice(0, 250) : null,
         position: after, checkedAt: now(), batches, failures,
+        retry: stopped && !abruptDrop ? retryPolicy.failure(previousRetry, { error: accessBlocked ? "HTTP 403" : String(shopBatch.lastFailure?.error || output?.stopReason || result.error?.message || result.stderr || "取得工程異常") }) : null,
       };
       save(state);
       console.log(JSON.stringify({ source, ...state.sources[source] }));
@@ -181,6 +194,8 @@ function run(options = {}) {
     }
     if (state.sources[source].status === "pending") state.sources[source] = { status: "time-budget", position: sourceProgress(source), checkedAt: now(), batches };
     state.sources[source].durationMs = Date.now() - sourceStarted;
+    state.sources[source].allocatedMs = allocatedMs;
+    donatedMs += Math.max(0, allocatedMs - state.sources[source].durationMs);
     save(state);
   }
   state.endedAt = now();
@@ -192,5 +207,8 @@ function run(options = {}) {
   return state;
 }
 
-if (require.main === module) run();
+if (require.main === module) {
+  const release = require("./acquisition_retry.js").lock(path.join(__dirname, "safe-backfill.lock"));
+  try { run(); } finally { release(); }
+}
 module.exports = { run, sourceProgress, command, complete, lastJsonLine, batchFailureCount };

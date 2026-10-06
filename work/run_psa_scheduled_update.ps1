@@ -21,6 +21,9 @@ try {
   Start-Transcript -Path $LogPath -Append | Out-Null
   $TranscriptStarted = $true
   $previous = if (Test-Path $StatePath) { Get-Content $StatePath -Raw | ConvertFrom-Json } else { [pscustomobject]@{} }
+  # Saved-data publication is independent of acquisition and repository synchronization.
+  try { & (Join-Path $PSScriptRoot 'publish_psa_update.ps1') -PendingOnly }
+  catch { Write-Warning 'Pending publication retained; continue independent acquisition.' }
   if (-not $Force -and $previous.lastSuccessSlot -eq $SuccessSlot -and $previous.publishStatus -eq 'success') {
     Write-Output "PSA update already completed for $SuccessSlot"
     exit 0
@@ -60,18 +63,15 @@ try {
     publishError = $null
   } | ConvertTo-Json | Set-Content -Path $StatePath -Encoding utf8
 
-  foreach ($Script in @('build_card_completion.js', 'build_purchase_limit_audit.js', 'audit_acquisition_progress.js', 'audit_link_coverage.js', 'finalize_update_status.js', 'test_acquisition_progress.js', 'test_purchase_limit_audit.js')) {
-    & $Node (Join-Path $PSScriptRoot $Script)
-    if ($LASTEXITCODE -ne 0) { throw "PSA post-acquisition verification failed: $Script" }
-  }
+  # Verification and derived JSON are generated on latest main in the isolated publisher.
 
   try {
     & (Join-Path $PSScriptRoot 'publish_psa_update.ps1')
     if ($LASTEXITCODE -ne 0) { throw 'PSA publication phase failed.' }
     $state = Get-Content $StatePath -Raw | ConvertFrom-Json
     $state.publishStatus = 'success'
-    $state.status = 'success'
-    $state.lastSuccessSlot = $SuccessSlot
+    $state.status = $acquisition.status
+    if ($acquisition.status -eq 'success') { $state.lastSuccessSlot = $SuccessSlot }
     $state | ConvertTo-Json | Set-Content -Path $StatePath -Encoding utf8
   } catch {
     $state = Get-Content $StatePath -Raw | ConvertFrom-Json
@@ -109,10 +109,14 @@ try {
     publishError = $null
   } | ConvertTo-Json | Set-Content -Path $StatePath -Encoding utf8
   @{ failedAt = $FailedAt.ToString('o'); phase = 'acquisition'; message = $_.Exception.Message; log = $LogPath } | ConvertTo-Json | Set-Content -Path (Join-Path $LogDir 'psa-update-last-failure.json') -Encoding utf8
+  try {
+    & $Node (Join-Path $PSScriptRoot 'psa_handoff.js') --enqueue
+    & (Join-Path $PSScriptRoot 'publish_psa_update.ps1') -PendingOnly
+  } catch { Write-Warning 'Saved normal data and acquisition stop remain in the publication outbox.' }
   Write-Error "PSA acquisition failed. Log: $LogPath`n$($_.Exception.Message)"
   exit 1
 } finally {
-  try { & (Join-Path $PSScriptRoot 'observe_psa_tasks.ps1') -Publish } catch { Write-Warning "Independent PSA observation failed: $($_.Exception.Message)" }
+  try { & (Join-Path $PSScriptRoot 'observe_psa_tasks.ps1') } catch { Write-Warning "Independent PSA observation failed: $($_.Exception.Message)" }
   if ($TranscriptStarted) { Stop-Transcript | Out-Null }
   if ($Lock) { $Lock.Dispose() }
 }

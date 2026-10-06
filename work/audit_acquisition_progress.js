@@ -155,6 +155,13 @@ function main() {
       sources[id].refreshed = pokeProgress.lastRun.fetched ?? null;
       sources[id].checkpoint = `${pokeProgress.setName}: ${pokeProgress.lastRun.currentCursor}/${pokeProgress.lastRun.targetCount}`;
       sources[id].evidence = `./data/acquisition-progress-audit.json`;
+      const budget = read("work/pokedata-budget-progress.json");
+      if (Date.parse(budget.endedAt || "") >= Date.parse(pokeProgress.lastSuccessfulCard?.at || "")) {
+        Object.assign(sources[id], { attempted: budget.attempted, refreshed: budget.fetched, durationMs: budget.durationMs,
+          lastAttemptAt: budget.startedAt, lastSuccessAt: budget.failed === 0 && budget.fetched > 0 ? budget.endedAt : sources[id].lastSuccessAt,
+          status: budget.status, checkpoint: `${budget.checkpoint?.setName}: ${budget.checkpoint?.acquired}/${budget.checkpoint?.total}`,
+          stopReason: budget.stopReason, evidence: "./data/pokedata-budget-progress.json" });
+      }
     }
   }
   const beforeRows = baseline?.availability?.rows || {};

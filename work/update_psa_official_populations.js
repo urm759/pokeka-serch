@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const retryPolicy = require("./acquisition_retry.js");
 const { shortSet, normalizeNo, cleanName } = require("./build_psa_history.js");
 
 function loadChromium() {
@@ -43,7 +44,7 @@ function readJson(filePath, fallback) {
 
 function writeJson(filePath, value) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
-  fs.writeFileSync(filePath, JSON.stringify(value, null, 2), "utf8");
+  retryPolicy.atomicWrite(filePath, value);
 }
 
 function normalizeText(value) {
@@ -99,6 +100,7 @@ function mergeRows(before, after) {
   let newCount = 0, changedCount = 0;
   for (const row of after) {
     const old = map.get(key(row));
+    if (old && Number.isFinite(Date.parse(old.fetchedAt)) && !(Date.parse(row.fetchedAt) > Date.parse(old.fetchedAt))) continue;
     if (!old) newCount += 1;
     else if (old.psa10Count !== row.psa10Count || old.psaTotal !== row.psaTotal) changedCount += 1;
     map.set(key(row), row);
@@ -210,7 +212,7 @@ async function collectSet(context, entry) {
   try {
     const response = await page.goto(entry.url, { waitUntil: "domcontentloaded", timeout: 30000 });
     result.httpStatus = response?.status() ?? null;
-    if ([401, 403, 429].includes(result.httpStatus)) throw new Error(`PSA HTTP ${result.httpStatus}; acquisition stopped without bypass.`);
+    if (result.httpStatus >= 400) throw new Error(`PSA HTTP ${result.httpStatus}; acquisition stopped without bypass.`);
     await page.waitForTimeout(8000);
 
     if (page.url().includes("signin")) {
@@ -328,13 +330,13 @@ async function collectSet(context, entry) {
 async function main() {
   const startedAt = new Date().toISOString();
   const checkpoint = readJson(PROGRESS_PATH, { completedUrls: [] });
-  if (checkpoint.status === "manual-wait" && /sign-in|401|403|Cloudflare|robot|verification|認証済みChrome/i.test(checkpoint.stopReason || "") && process.env.PSA_RESUME_AUTH !== "1") {
-    throw new Error(`PSA手動確認待ち・再通信なし。ログイン／正規アクセス確認後にPSA_RESUME_AUTH=1で再開: ${checkpoint.stopReason}`);
+  if (checkpoint.sourceRetry && !retryPolicy.eligible(checkpoint.sourceRetry)) {
+    if (checkpoint.sourceRetry.kind !== "authentication" && checkpoint.sourceRetry.kind !== "access") throw new Error(`PSA待機期限未到達: ${checkpoint.sourceRetry.nextRetryAt || checkpoint.sourceRetry.reason}`);
   }
-  const chromium = loadChromium();
   const priorCompleted = new Set(checkpoint.completedUrls || []);
   const audit = { startedAt, endedAt: null, cycleDate: startedAt.slice(0, 10), status: "running", attemptedCount: 0,
-    newAcquiredCount: 0, changedCount: 0, refreshedCount: 0, completedUrls: [...priorCompleted], records: [], nextUrl: null, stopReason: null };
+    newAcquiredCount: 0, changedCount: 0, refreshedCount: 0, completedUrls: [...priorCompleted], records: [], nextUrl: null, stopReason: null,
+    retryByUrl: checkpoint.retryByUrl || {}, lastSuccessAt: checkpoint.lastSuccessAt || null, authRecovery: null };
   const saveProgress = () => writeJson(PROGRESS_PATH, { ...audit, durationMs: Date.now() - Date.parse(startedAt) });
   const fullManifest = readJson(MANIFEST_PATH, []);
   const priorityQueue = readJson(PRIORITY_QUEUE_PATH, { rows: [], orderedSets: [] });
@@ -356,7 +358,7 @@ async function main() {
   audit.completedUrls = [...priorCompleted];
   audit.unregisteredSetCount = orderedManifest.filter((entry) => !entry.url).length;
   const focusSetUrls = new Set(priorityQueue.focusSetUrls || []);
-  const pendingManifest = orderedManifest.filter((entry) => entry.url && (!priorCompleted.has(entry.url) || focusSetUrls.has(entry.url)));
+  const pendingManifest = orderedManifest.filter((entry) => entry.url && (!priorCompleted.has(entry.url) || focusSetUrls.has(entry.url)) && retryPolicy.eligible(audit.retryByUrl[entry.url]));
   const manifest = require("./focus_monitor.js").fairBatch(pendingManifest, Math.max(1, Number(process.env.PSA_SET_BATCH || 8)), (entry) => focusSetUrls.has(entry.url), priorityQueue.maxFocusedShare ?? 0.4);
   audit.focusedSelected = manifest.filter((entry) => focusSetUrls.has(entry.url)).length;
   audit.normalSelected = manifest.length - audit.focusedSelected;
@@ -367,12 +369,14 @@ async function main() {
   if (!Array.isArray(orderedManifest) || orderedManifest.length === 0) {
     throw new Error(`No PSA set manifest found at ${MANIFEST_PATH}`);
   }
-  if (!manifest.length) { audit.status = "no-progress"; audit.endedAt = new Date().toISOString(); saveProgress(); return; }
+  const authPending = checkpoint.sourceRetry?.kind === "authentication" || checkpoint.sourceRetry?.kind === "access" || (checkpoint.status === "manual-wait" && /sign-in|401|403|Cloudflare|robot|verification|認証済みChrome/i.test(checkpoint.stopReason || ""));
+  if (!manifest.length && !authPending) { audit.status = "no-progress"; audit.endedAt = new Date().toISOString(); audit.stopReason = "選択対象0件・URL未登録または個別再試行待ち。取得成功ではない"; saveProgress(); throw new Error(audit.stopReason); }
 
   let browser = null;
   let context = null;
   let ownsContext = false;
   try {
+  const chromium = loadChromium();
   if (CDP_ENDPOINT) {
     browser = await chromium.connectOverCDP(CDP_ENDPOINT, { timeout: 30000 });
     context = browser.contexts()[0] || null;
@@ -390,12 +394,41 @@ async function main() {
     ownsContext = true;
   }
   } catch (error) {
-    audit.status = "manual-wait"; audit.stopReason = `認証済みChromeへ接続不能: ${error.message}`;
+    audit.sourceRetry = retryPolicy.failure(checkpoint.sourceRetry, { error: error.message });
+    audit.status = audit.sourceRetry.status; audit.stopReason = `Chrome接続工程: ${error.message}`;
     audit.endedAt = new Date().toISOString(); saveProgress(); throw error;
   }
 
   const collected = [];
   try {
+    // A login click alone is not recovery. A real population table on a known URL must parse successfully.
+    if (authPending) {
+      const knownUrls = new Set((previousPayload.rows || []).map(row => row.sourceUrl).filter(Boolean));
+      const probes = orderedManifest.filter(entry => entry.url && knownUrls.has(entry.url)).slice(0, 2);
+      if (!probes.length && manifest[0]) probes.push(manifest[0]);
+      let probeEntry, probe;
+      for (const candidate of probes) {
+        probeEntry = candidate; probe = await collectSet(context, candidate);
+        if (!probe.error && Number(probe.parsedRows) > 0) break;
+        const failure = retryPolicy.failure(audit.retryByUrl[candidate.url], { error: probe.error, httpStatus: probe.httpStatus });
+        if (failure.scope === "source") break;
+        audit.retryByUrl[candidate.url] = { ...failure, url: candidate.url, setCode: candidate.setCode };
+      }
+      if (!probe) throw new Error("PSA認証復帰確認用の登録済み正規URLなし");
+      audit.authRecovery = { checkedAt: probe.fetchedAt, url: probeEntry.url, verified: !probe.error && Number(probe.parsedRows) > 0, error: probe.error || null };
+      if (!audit.authRecovery.verified) {
+        const policy = retryPolicy.classify({ error: probe.error, httpStatus: probe.httpStatus });
+        audit.status = "manual-wait"; audit.stopReason = checkpoint.stopReason;
+        audit.authRecovery.failureScope = policy.scope;
+        audit.endedAt = new Date().toISOString(); saveProgress();
+        throw new Error(`PSA認証の正規ページ確認未完了: ${probe.error}`);
+      }
+      delete audit.sourceRetry;
+      audit.authRecovery.resumedFromCheckpoint = true;
+      probeEntry.preverifiedRecord = probe;
+      if (!manifest.includes(probeEntry)) manifest.unshift(probeEntry);
+      saveProgress();
+    }
     for (const entry of manifest) {
       if (Date.now() - Date.parse(startedAt) > Number(process.env.PSA_TIME_LIMIT_MS || 600000)) {
         audit.status = "partial"; audit.stopReason = "時間上限・安全停止"; break;
@@ -419,21 +452,27 @@ async function main() {
         continue;
       }
 
-      const record = await collectSet(context, entry);
+      const record = entry.preverifiedRecord || await collectSet(context, entry);
       audit.attemptedCount += 1;
       collected.push(record);
       audit.records.push({ setCode: record.setCode, url: record.url, httpStatus: record.httpStatus ?? null,
         fetchedAt: record.fetchedAt, rowCount: record.rows.length, parsedRows: record.parsedRows ?? null,
         excludedRows: record.excludedRows ?? null, minimumPopulation: MIN_TOTAL_POPULATION, error: record.error });
-      if (!record.error && record.rows.length) {
+      if (!record.error && record.parsedRows > 0) {
         const staged = mergeRows(previousPayload.rows || [], collected.flatMap(rowObjects));
         writeJson(OUTPUT_JSON, { ...previousPayload, generatedAt: new Date().toISOString(), totalRows: staged.rows.length, rows: staged.rows });
         // Only checkpoint sets after their values have actually been saved.
         if (!audit.completedUrls.includes(entry.url)) audit.completedUrls.push(entry.url);
         audit.lastSuccessAt = record.fetchedAt;
+        delete audit.retryByUrl[entry.url];
       }
-      if (record.error && /403|401|429|sign-in|Cloudflare|robot|verification|populated table/i.test(record.error)) {
-        audit.status = "manual-wait"; audit.stopReason = record.error; saveProgress(); break;
+      if (record.error) {
+        const retry = retryPolicy.failure(audit.retryByUrl[entry.url], { error: record.error, httpStatus: record.httpStatus });
+        audit.retryByUrl[entry.url] = { ...retry, url: entry.url, setCode: entry.setCode };
+        Object.assign(audit.records.at(-1), { failureKind: retry.kind, stopScope: retry.scope, nextRetryAt: retry.nextRetryAt, retryAttempts: retry.attempts });
+        if (retry.scope === "source") {
+          audit.sourceRetry = retry; audit.status = retry.status; audit.stopReason = record.error; saveProgress(); break;
+        }
       }
       saveProgress();
       console.log(`${record.name}: ${record.rows.length} rows${record.error ? ` (warning: ${record.error})` : ""}`);
@@ -446,7 +485,7 @@ async function main() {
   audit.endedAt = new Date().toISOString();
   audit.nextUrl = orderedManifest.find((entry) => !audit.completedUrls.includes(entry.url))?.url || null;
   if (!freshRows.length) {
-    audit.status = audit.status === "manual-wait" ? audit.status : "failed";
+    audit.status = ["manual-wait", "retry-wait"].includes(audit.status) ? audit.status : "failed";
     audit.stopReason ||= "新しい有効Populationは0件・前回正常値を保持"; saveProgress();
     throw new Error("No reliable fresh PSA population data was collected. Existing data was preserved.");
   }
@@ -454,7 +493,7 @@ async function main() {
   audit.newAcquiredCount = merged.newCount; audit.changedCount = merged.changedCount;
   const rows = merged.rows;
   audit.refreshedCount = freshRows.length;
-  audit.status = audit.status === "manual-wait" ? audit.status : audit.nextUrl ? "partial" : "success";
+  audit.status = ["manual-wait", "retry-wait"].includes(audit.status) ? audit.status : audit.nextUrl || Object.keys(audit.retryByUrl).length ? "partial" : "success";
   saveProgress();
 
   const payload = {
@@ -482,10 +521,14 @@ async function main() {
   }
 }
 
-if (require.main === module) main()
+async function exclusiveMain() {
+  const release = retryPolicy.lock(path.join(__dirname, "psa-acquisition.lock"));
+  try { return await main(); } finally { release(); }
+}
+if (require.main === module) exclusiveMain()
   .then(() => process.exit(0))
   .catch((error) => {
     console.error(error);
     process.exit(1);
   });
-module.exports = { inferTableMetrics, parseSinglePopulation, mergeRows };
+module.exports = { inferTableMetrics, parseSinglePopulation, mergeRows, collectSet };

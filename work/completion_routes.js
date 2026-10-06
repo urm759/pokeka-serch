@@ -32,10 +32,13 @@ function failureState(old = {}, record, now = Date.now()) {
   const success = record.status === "verified";
   const reason = record.error || null;
   const consecutiveSameCause = success ? 0 : old.reason === reason ? Number(old.consecutiveSameCause || 1) + 1 : 1;
-  const held = !success && (consecutiveSameCause >= 2 || record.status === "manual-wait" || /HTTP (401|403)|同一カード|形式/.test(reason || ""));
+  const retry = require("./acquisition_retry.js").failure(old, { ...record, reason }, now);
+  const held = !success && retry.held;
   return { lastAttemptAt: record.startedAt, lastSuccessAt: success ? record.endedAt || new Date(now).toISOString() : old.lastSuccessAt || null,
-    status: success ? "verified" : held ? "manual-wait" : record.status, failures: success ? 0 : Number(old.failures || 0) + 1,
-    consecutiveSameCause, reason, held, nextRetryAt: held ? "9999-12-31T00:00:00Z" : new Date(now + (success ? 2 * 86400000 : 3600000 * 2 ** Math.min(3, old.failures || 0))).toISOString(),
-    resumeCondition: held ? "原因確認・正規URLまたは認証の復旧後に該当項目だけ再開" : null };
+    status: success ? "verified" : retry.status, failures: success ? 0 : retry.attempts,
+    consecutiveSameCause, reason, held, kind: success ? null : retry.kind, scope: retry.scope,
+    maxAttempts: retry.maxAttempts, waitMs: success ? null : retry.waitMs,
+    nextRetryAt: success ? new Date(now + 2 * 86400000).toISOString() : retry.nextRetryAt,
+    resumeCondition: success ? null : retry.resumeCondition };
 }
 module.exports = { REQUIRED, ROUTES, itemState, needs, routes, failureState };

@@ -24,10 +24,11 @@ const before = { acquiredKeys: ["1"], linkedIds: ["a"], usableIds: ["a"] };
 const after = { acquiredKeys: ["1", "2"], linkedIds: ["a", "b"], usableIds: ["b"] };
 assert.equal(progress(before, after).newAcquired, 1);
 assert.equal(progress(before, after).usableNet, 0, "a new ID is not a net gain if a usable old value is lost");
-const merged = mergeRows(rows, [{ ...rows[0], cardNo: "1", psa10Count: 11 }]);
+const merged = mergeRows(rows, [{ ...rows[0], cardNo: "1", psa10Count: 11, fetchedAt: "2026-10-01" }]);
 assert.equal(merged.newCount, 0, "zero padding is not a new official product");
 assert.equal(merged.changedCount, 1);
 assert.equal(merged.rows.length, 1);
+assert.equal(mergeRows(merged.rows, rows).rows[0].psa10Count, 11, "older acquisition cannot overwrite concurrent newer data");
 assert.equal(mergeRows(rows, []).rows.length, 1, "failed zero-row acquisition preserves normal data");
 
 const local = { name: "メガゲンガーex SAR [M2a 240/193]" };

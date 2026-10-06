@@ -30,7 +30,9 @@ jobs:
         env:
           POKEDATA_TIMEOUT_MS: "10000"
           TRACKED_ALLOW_PARTIAL: "1"
-        run: node work/run_tracked_update.js pokedata work/update_pokedata_batch.js
+          POKEDATA_BUDGET_MS: "360000"
+          POKEDATA_DAILY_CAP: "200"
+        run: node work/run_tracked_update.js pokedata work/run_pokedata_backfill.js
       - name: Record PokeDATA transient error rate and acquisition count
         if: env.POKEDATA_SET_READY == '1' && always()
         run: node work/record_pokedata_rate.js
@@ -41,6 +43,7 @@ jobs:
           node work/build_market_research.js
           node work/audit_link_coverage.js
           node work/build_card_completion.js
+          node work/audit_completion_outcomes.js
           node work/finalize_update_status.js
           node work/build_purchase_limit_audit.js
           node work/build_supply_maturity_hypothesis.js
@@ -55,6 +58,8 @@ jobs:
           node work/test_checkpoint_publication.js
           node work/test_source_monitor_and_completion.js
           node work/test_completion_routes.js
+          node work/test_acquisition_resilience.js
+          node work/test_psa_resilience.js
           node work/test_buyback_scenario_limits.js
           node work/test_purchase_limit_audit.js
           node work/test_grade_calibration.js

@@ -32,14 +32,14 @@ function Invoke-Step {
 try {
   $HoldPath = Join-Path $PSScriptRoot 'psa-fetch-progress.json'
   $Hold = if (Test-Path $HoldPath) { Get-Content $HoldPath -Raw | ConvertFrom-Json } else { $null }
-  if ($Hold.status -eq 'manual-wait' -and $Hold.stopReason -match 'sign-in|401|403|Cloudflare|robot|verification|認証済みChrome' -and $env:PSA_RESUME_AUTH -ne '1') {
-    throw "PSA手動確認待ち・Chrome起動と再通信なし。ログイン確認後にPSA_RESUME_AUTH=1で再開: $($Hold.stopReason)"
-  }
+  # The collector verifies a normal population page before clearing an authentication hold.
   Invoke-Step -Name 'PSA regular Chrome startup' -MaxAttempts 2 -Operation { & (Join-Path $PSScriptRoot 'start_psa_regular_chrome.ps1') } | Out-Null
   $env:PSA_CDP_ENDPOINT = 'http://127.0.0.1:9222'
   $env:PSA_MIN_TOTAL_POPULATION = '500'
   Invoke-Step -Name 'PSA priority queue build' -Operation { & $Node (Join-Path $PSScriptRoot 'build_psa_priority_queue.js') } | Out-Null
   Invoke-Step -Name 'PSA official population update' -MaxAttempts $Retries -Operation { & $Node (Join-Path $PSScriptRoot 'update_psa_official_populations.js') } | Out-Null
+  $fetchAudit = Get-Content $HoldPath -Raw | ConvertFrom-Json
+  if ($fetchAudit.refreshedCount -le 0) { throw 'No newly verified PSA values; preserved rows are not new acquisition.' }
   if ($env:PSA_REFRESH_ENGLISH_NAMES -eq '1') {
     Invoke-Step -Name 'Snkr English name update' -MaxAttempts 1 -Operation { & $Node (Join-Path $PSScriptRoot 'update_snkr_english_names.js') } | Out-Null
   }
@@ -57,12 +57,13 @@ try {
     startedAt = $StartedAt.ToString('o')
     endedAt = $EndedAt.ToString('o')
     durationMs = [Math]::Round(($EndedAt - $StartedAt).TotalMilliseconds)
-    status = 'success'
-    acquiredCount = @($afterPayload.rows).Count
+    status = if ($fetchAudit.status -eq 'success') { 'success' } else { 'partial' }
+    acquiredCount = $fetchAudit.refreshedCount
+    savedTotalCount = @($afterPayload.rows).Count
     updatedCount = $updatedCount
     newAcquiredCount = @($afterPayload.rows | Where-Object { -not $BeforeRows.ContainsKey("$($_.setCode)|$($_.cardNo)|$($_.cardName)") }).Count
-    fetchFailureCount = 0
-    sourceState = if ($updatedCount -gt 0) { '取得成功・データ更新あり' } else { '取得成功・データ元更新なし' }
+    fetchFailureCount = @($fetchAudit.records | Where-Object { $_.error }).Count
+    sourceState = if ($fetchAudit.status -ne 'success') { '部分取得・未巡回または停止対象あり' } elseif ($updatedCount -gt 0) { '取得成功・データ更新あり' } else { '取得成功・データ元更新なし' }
     error = $null
   }
   $result | ConvertTo-Json | Set-Content -Path $ResultPath -Encoding utf8
@@ -76,7 +77,8 @@ try {
     endedAt = $EndedAt.ToString('o')
     durationMs = [Math]::Round(($EndedAt - $StartedAt).TotalMilliseconds)
     status = 'failed'
-    acquiredCount = if (Test-Path $PsaDataPath) { @((Get-Content $PsaDataPath -Raw | ConvertFrom-Json).rows).Count } else { 0 }
+    acquiredCount = 0
+    savedTotalCount = if (Test-Path $PsaDataPath) { @((Get-Content $PsaDataPath -Raw | ConvertFrom-Json).rows).Count } else { 0 }
     updatedCount = 0
     fetchFailureCount = 1
     sourceState = if ($fetchAudit.status -eq 'manual-wait') { '手動対応待ち・過去正常データ保持' } else { 'PSA取得処理失敗' }

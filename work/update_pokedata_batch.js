@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { analyzeSales } = require("./pokedata_analysis.js");
 const { loadSetState, setSlug, writeSetState } = require("./pokedata_storage.js");
+const retryPolicy = require("./acquisition_retry.js");
 
 const ROOT = path.join(__dirname, "..");
 const BASE = "https://www.pokedata.io";
@@ -17,6 +18,7 @@ const CACHE = path.join(__dirname, "pokedata-page-cache.json");
 const METRICS = path.join(__dirname, "pokedata-fetch-metrics.json");
 const BROWSER_CAPTURES = path.join(__dirname, "pokedata-browser-captures.json");
 const ACCESS_HOLD = path.join(__dirname, "pokedata-access-hold.json");
+const SET_HOLD = path.join(__dirname, `pokedata-set-hold-${setSlug(SET_NAME)}.json`);
 const sourceModeFor = (cardId, capturedIds) => capturedIds.has(Number(cardId))
   ? "認証済みChrome個別成約確認＋公開API"
   : "公開APIのみ・認証済み個別成約未確認";
@@ -178,6 +180,7 @@ function findDomestic(sourceCard, domesticByKey, aliases) {
 
 async function main() {
   if (fs.existsSync(ACCESS_HOLD)) throw new Error("PokeDATAアクセス・形式変更の手動確認待ち。保存済みチェックポイントを保持");
+  if (fs.existsSync(SET_HOLD)) throw new Error("PokeDATA個別セットの形式・仕様確認待ち。他のセットは継続可能");
   const cards = read(path.join(ROOT, "data", "pokemon-cards.json"), []);
   const existing = read(OUTPUT, { version: 2, cards: {}, linkage: { records: [] } });
   const storedSet = loadSetState(ROOT, SET_NAME, existing);
@@ -185,6 +188,10 @@ async function main() {
   existing.linkage = { ...(existing.linkage || {}), records: storedSet.records };
   const linkMap = read(LINK_MAP, { version: 1, aliases: [], ambiguousCandidates: [] });
   const progress = read(PROGRESS, { version: 1, setName: SET_NAME, processedCardIds: [], failures: [] });
+  if (progress.sourceRetry && !retryPolicy.eligible(progress.sourceRetry)) {
+    console.log(JSON.stringify({ setName: SET_NAME, completionStatus: progress.sourceRetry.status, attempted: 0, fetched: 0, failed: 0, reason: "source-cooldown", nextRetryAt: progress.sourceRetry.nextRetryAt }));
+    return;
+  }
   progress.retryByCard ||= {};
   const cache = read(CACHE, { version: 1, entries: {} });
   const browserCaptures = read(BROWSER_CAPTURES, { cards: [] });
@@ -201,12 +208,22 @@ async function main() {
 
   let sourceResponse, fxResponse;
   try {
-    [sourceResponse, fxResponse] = await Promise.all([
-      fetchJson(`${BASE}/api/cards?set_name=${encodeURIComponent(SET_NAME)}&stats=kwan`),
-      fetchJson("https://api.frankfurter.app/latest?from=USD&to=JPY"),
-    ]);
+    cache.sets ||= {};
+    const setCache = cache.sets[SET_NAME];
+    sourceResponse = setCache && Date.now() - Date.parse(setCache.fetchedAt) < 86400000 ? { value: setCache.value }
+      : await fetchJson(`${BASE}/api/cards?set_name=${encodeURIComponent(SET_NAME)}&stats=kwan`);
+    if (sourceResponse.metric) cache.sets[SET_NAME] = { value: sourceResponse.value, fetchedAt: new Date().toISOString() };
+    fxResponse = cache.fx && Date.now() - Date.parse(cache.fx.fetchedAt) < 6 * 3600000 ? { value: cache.fx.value }
+      : await fetchJson("https://api.frankfurter.app/latest?from=USD&to=JPY");
+    if (fxResponse.metric) cache.fx = { value: fxResponse.value, fetchedAt: new Date().toISOString() };
   } catch (error) {
-    if (!error.manual) throw error;
+    if (!error.manual) {
+      const policy = retryPolicy.failure(progress.sourceRetry, { error: error.message, httpStatus: error.metric?.httpStatus });
+      progress.sourceRetry = policy;
+      write(PROGRESS, progress);
+      console.log(JSON.stringify({ setName: SET_NAME, completionStatus: policy.status, stopReason: error.message, nextRetryAt: policy.nextRetryAt, attempted: 0, fetched: 0, failed: 1 }));
+      return;
+    }
     const hold = { setName: SET_NAME, url: error.metric?.url || `${BASE}/api/cards?set_name=${encodeURIComponent(SET_NAME)}&stats=kwan`,
       reason: error.message, httpStatus: error.metric?.httpStatus || null, at: new Date().toISOString(), resumeCardId: progress.lastCardId || null };
     write(ACCESS_HOLD, hold);
@@ -218,14 +235,14 @@ async function main() {
   if (!Array.isArray(sourceResponse.value) || sourceResponse.value.length < 1) {
     const hold = { setName: SET_NAME, url: `${BASE}/api/cards?set_name=${encodeURIComponent(SET_NAME)}&stats=kwan`,
       reason: "セット一覧が空または形式変更。旧データを保持して手動確認待ち", at: new Date().toISOString(), resumeCardId: progress.lastCardId || null };
-    write(ACCESS_HOLD, hold); progress.manualHold = hold; write(PROGRESS, progress);
+    write(SET_HOLD, hold); progress.manualHold = hold; write(PROGRESS, progress);
     console.log(JSON.stringify({ setName: SET_NAME, completionStatus: "manual-action-required", stopReason: hold.reason, attempted: 0, fetched: 0, failed: 0 }));
     return;
   }
   const sourceCards = Array.isArray(sourceResponse.value) ? sourceResponse.value.filter((card) => card.language === "JAPANESE") : [];
   if (!sourceCards.length) {
     const hold = { setName: SET_NAME, reason: "日本語カード0件。セット名またはAPI形式を手動確認", at: new Date().toISOString(), resumeCardId: progress.lastCardId || null };
-    write(ACCESS_HOLD, hold); progress.manualHold = hold; write(PROGRESS, progress);
+    write(SET_HOLD, hold); progress.manualHold = hold; write(PROGRESS, progress);
     console.log(JSON.stringify({ setName: SET_NAME, completionStatus: "manual-action-required", stopReason: hold.reason, attempted: 0, fetched: 0, failed: 0 }));
     return;
   }
@@ -233,12 +250,13 @@ async function main() {
   if (expectedCode && sourceCards.some((card) => normalizeSetCode(card.set_code) !== expectedCode || card.set_name !== SET_NAME)) {
     const hold = { setName: SET_NAME, url: `${BASE}/api/cards?set_name=${encodeURIComponent(SET_NAME)}&stats=kwan`,
       reason: `日本語セットのコードまたは名前が不一致（期待 ${expectedCode}）。手動確認待ち`, at: new Date().toISOString(), resumeCardId: progress.lastCardId || null };
-    write(ACCESS_HOLD, hold); progress.manualHold = hold; write(PROGRESS, progress);
+    write(SET_HOLD, hold); progress.manualHold = hold; write(PROGRESS, progress);
     console.log(JSON.stringify({ setName: SET_NAME, completionStatus: "manual-action-required", stopReason: hold.reason, attempted: 0, fetched: 0, failed: 0 }));
     return;
   }
   const fxRate = Number(fxResponse.value?.rates?.JPY);
   if (!(fxRate > 0)) throw new Error("USD/JPY rate unavailable");
+  delete progress.sourceRetry;
   const preferred = [...sourceCards].sort((a, b) => {
     const aMatch = (domesticByKey.get(`${normalizeSetCode(a.set_code)}|${normalizeNumber(a.num)}`) || []).length === 1 ? 0 : 1;
     const bMatch = (domesticByKey.get(`${normalizeSetCode(b.set_code)}|${normalizeNumber(b.num)}`) || []).length === 1 ? 0 : 1;
@@ -260,20 +278,24 @@ async function main() {
   const refreshStart = refreshTargets.length ? Math.max(0, Number(progress.refreshCursor || 0)) % refreshTargets.length : 0;
   const rotatedRefreshTargets = [...refreshTargets.slice(refreshStart), ...refreshTargets.slice(0, refreshStart)];
   const retryAllowed = (card) => {
-    const retry = progress.retryByCard[card.id];
-    return !retry || !retry.manualReview && (!retry.nextRetryAt || Date.parse(retry.nextRetryAt) <= Date.now());
+    const state = retryPolicy.migrateLegacy(progress.retryByCard[card.id]);
+    if (state) progress.retryByCard[card.id] = state;
+    return retryPolicy.eligible(state);
   };
   const selected = (refreshLinked ? rotatedRefreshTargets : targets.filter((card) => !processed.has(Number(card.id))))
     .filter(retryAllowed).slice(0, BATCH_SIZE);
   if (!selected.length) {
     console.log(JSON.stringify({ setName: SET_NAME, sourceSetTotal: sourceCards.length, targetCount: targets.length,
       acquired: existingRecords.size, attempted: 0, fetched: 0, cacheHits: 0, failed: 0,
-      completionStatus: "no-progress", reason: "対象セットのチェックポイントは終端。次の確認済みセットを選択する" }));
+      completionStatus: "no-progress", reason: targets.every(card => processed.has(Number(card.id))) ? "first-pass-complete" : "retry-or-manual-queue-only",
+      retryWaiting: Object.values(progress.retryByCard).filter(row => !row.manualReview).length,
+      manualWaiting: Object.values(progress.retryByCard).filter(row => row.manualReview).length }));
     return;
   }
   let attempted = 0; let fetched = 0; let cached = 0; let failed = 0; let manualStop = null;
 
   for (const sourceCard of selected) {
+    if (Number(process.env.POKEDATA_RUN_DEADLINE_MS) > 0 && Date.now() + TIMEOUT_MS * 3 + 5000 >= Number(process.env.POKEDATA_RUN_DEADLINE_MS)) break;
     attempted += 1;
     const url = `${BASE}/api/transactions?card_id=${sourceCard.id}&page=0`;
     const metric = { pokedataCardId: sourceCard.id, sourceUrl: sourceUrl(sourceCard), url, startedAt: new Date().toISOString(), stage: "fetch", status: "running" };
@@ -344,7 +366,7 @@ async function main() {
               name: sourceCard.name, language: sourceCard.language, localCardId: domestic.id,
             },
             capturedAt: new Date().toISOString(),
-            fx: { pair: "USD/JPY", rate: fxRate, source: "Frankfurter / ECB reference rates", sourceUrl: "https://api.frankfurter.app/latest?from=USD&to=JPY", rateDate: fxResponse.value.date, fetchedAt: new Date().toISOString() },
+            fx: { pair: "USD/JPY", rate: fxRate, source: "Frankfurter / ECB reference rates", sourceUrl: "https://api.frankfurter.app/latest?from=USD&to=JPY", rateDate: fxResponse.value.date, fetchedAt: cache.fx?.fetchedAt || new Date().toISOString(), cacheUsed: !fxResponse.metric },
             markets: {
               ebayRaw: marketSummary(rawAggregate, analysis.summaries.raw, fxRate, domestic.price, "PokeDATA eBay aggregate + public transaction page"),
               tcgplayerRaw: { pageDisplayJpy: tcgAggregate > 0 ? Math.round(tcgAggregate * fxRate) : null, apiAverageUsd: tcgAggregate, apiAverageJpy: tcgAggregate > 0 ? Math.round(tcgAggregate * fxRate) : null, transactionCount: null, transactionCountStatus: "取得不能", comparisonToDomestic: compare(tcgAggregate * fxRate, domestic.price) },
@@ -401,16 +423,16 @@ async function main() {
       metric.exception = String(error.stack || error.message || error).slice(0, 1200);
       progress.lastFailure = { pokedataCardId: sourceCard.id, url, stage: metric.stage, httpStatus: metric.httpStatus || null, retryCount: metric.retryCount || 0, error: error.message, exception: metric.exception, at: new Date().toISOString() };
       progress.failures = [...(progress.failures || []), progress.lastFailure].slice(-50);
-      if (error.manual) {
+      const retry = retryPolicy.failure(progress.retryByCard[sourceCard.id], { error: error.message, httpStatus: metric.httpStatus });
+      progress.retryByCard[sourceCard.id] = { ...retry, url };
+      if (retry.manual && retry.scope === "source") {
         manualStop = { setName: SET_NAME, url, reason: error.message,
           httpStatus: metric.httpStatus || null, at: new Date().toISOString(), resumeCardId: sourceCard.id };
         progress.manualHold = manualStop;
         write(ACCESS_HOLD, manualStop);
-      } else {
-        const attempts = Number(progress.retryByCard[sourceCard.id]?.attempts || 0) + 1;
-        progress.retryByCard[sourceCard.id] = { attempts, manualReview: attempts >= 3,
-          nextRetryAt: attempts >= 3 ? null : new Date(Date.now() + Math.min(24, 2 ** attempts) * 3600000).toISOString(),
-          reason: error.message, url };
+      } else if (retry.kind === "rate-limit") {
+        progress.sourceRetry = retry;
+        manualStop = { reason: "HTTP 429・待機期限後に自動再試行", nextRetryAt: retry.nextRetryAt, temporary: true };
       }
       write(PROGRESS, progress);
     }
@@ -487,8 +509,10 @@ async function main() {
     setName: SET_NAME, sourceSetTotal: sourceCards.length, targetCount: targets.length,
     acquired, automaticMatched, manualMatched, ambiguous, domesticBaseMissing,
     attempted, fetched, cacheHits: cached, failed,
-    completionStatus: manualStop ? "manual-action-required" : acquired >= targets.length && failed === 0 ? "success" : "partial",
+    completionStatus: manualStop ? manualStop.temporary ? "retry-wait" : "manual-action-required" : acquired >= targets.length && failed === 0 ? "success" : "partial",
     stopReason: manualStop?.reason || null,
+    httpRequests: fetched + Number(Boolean(sourceResponse.metric)) + Number(Boolean(fxResponse.metric)),
+    nextRetryAt: manualStop?.nextRetryAt || null,
   }));
 }
 

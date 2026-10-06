@@ -15,7 +15,7 @@ assert.equal(routes({pk:"unexpanded-set", i:{pokedata:["取得待ち"]}}).find(r
 assert.equal(routes({pk:"unsupported-or-unconfirmed", i:{pokedata:["取得不能"]}}).find(r=>r.key==="pokedata").mode, "取得不能・存在未確認／照合待ち");
 const first = failureState({}, { status: "failed", error: "HTTP 503", startedAt: new Date(now).toISOString() }, now);
 assert(!first.held);
-assert(failureState(first, { status: "failed", error: "HTTP 503" }, now).held);
+assert(!failureState(first, { status: "failed", error: "HTTP 503" }, now).held);
 assert(failureState({}, { status: "failed", error: "HTTP 403" }, now).held);
 const before = { at: "2026-10-05T00:00:00Z", schemaVersion: 2, rows: { one: { analysis: false, fields: ["domesticPrice"], sources: { psaOfficial: { linked: false, valid: false, fresh: false } } } } };
 assert.deepEqual(unpack(pack(before)), { at: before.at, schemaVersion: 2, rows: { one: { ...before.rows.one, sources: Object.fromEntries(["cardrush", "hareruya2", "yuyutei", "torecacamp", "psaOfficial", "pokedata"].map((s) => [s, { linked: false, valid: false, fresh: false }])) } } });

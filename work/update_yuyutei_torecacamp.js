@@ -597,6 +597,18 @@ function preferCampEntry(previous, candidate) {
   return previous;
 }
 
+function migrateCampRetries(progress, now = Date.now()) {
+  const policy = require("./acquisition_retry.js");
+  progress.retryByUrl ||= {};
+  for (const [key, row] of Object.entries(progress.failedSitemaps || {})) {
+    if (row.stage === "fetch-product" && row.url) {
+      progress.retryByUrl[row.url] ||= { ...policy.failure({}, row, Date.parse(row.at) || now), url: row.url, sitemapIndex: Math.max(0, Number(row.sitemapNumber || key) - 1), entryIndex: Math.max(0, Number(row.productEntry || 1) - 1) };
+      delete progress.failedSitemaps[key];
+    } else if (!row.retry) row.retry = policy.failure({}, row, Date.parse(row.at) || now);
+  }
+  return progress;
+}
+
 async function updateTorecaCamp(cards, paths) {
   const reset = process.env.TORECACAMP_RESET === "1";
   const loadedCatalog = reset ? [] : read(paths.catalog, []);
@@ -605,11 +617,13 @@ async function updateTorecaCamp(cards, paths) {
   write(path.join(__dirname, "torecacamp_price_migration_audit.json"), priceMigration.audit);
   const previousCatalog = [...catalog];
   const progress = reset ? {} : read(paths.progress, {});
-  const repeated = (progress.failures || []).filter((f) => f.url === progress.lastFailure?.url && f.httpStatus === progress.lastFailure?.httpStatus && f.productEntry === progress.lastFailure?.productEntry);
-  if (!reset && progress.lastFailure && progress.currentEntryIndex === progress.lastFailure.productEntry && repeated.length >= 2 && process.env.TORECACAMP_RETRY_SITEMAP === undefined) {
-    progress.manualHold = { reason: "同一URL・工程で2回失敗。原因確認まで再通信停止", url: progress.lastFailure.url, checkpoint: { sitemap: progress.currentSitemapIndex, entry: progress.currentEntryIndex }, resumeCondition: "原因・正規URL確認後に対象サイトマップを明示して再開" };
+  const retryPolicy = require("./acquisition_retry.js");
+  progress.retryByUrl ||= {};
+  if (progress.manualHold && /2回失敗/.test(progress.manualHold.reason || "") && !retryPolicy.classify(progress.lastFailure).manual) delete progress.manualHold;
+  if (progress.sourceRetry && !retryPolicy.eligible(progress.sourceRetry)) {
+    progress.manualHold = progress.sourceRetry.manual ? progress.sourceRetry : null;
     write(paths.progress, progress);
-    return { completionStatus: "manual-action-required", failed: 0, detailFetched: 0, lastFailure: progress.lastFailure, manualHold: progress.manualHold, currentCursor: progress.currentSitemapIndex, coverage: previousCatalog.length };
+    return { completionStatus: progress.sourceRetry.status, stopReason: progress.sourceRetry.reason, failed: 0, detailFetched: 0, lastFailure: progress.lastFailure, nextRetryAt: progress.sourceRetry.nextRetryAt, currentCursor: progress.currentSitemapIndex, coverage: previousCatalog.length };
   }
   const sitemapCache = reset ? { version: 1 } : read(paths.sitemapCache, { version: 1 });
   const migratedFromCollectionApi = progress.paginationMode !== "sitemap";
@@ -631,6 +645,7 @@ async function updateTorecaCamp(cards, paths) {
   });
   progress.processedSitemaps = Array.isArray(progress.processedSitemaps) ? progress.processedSitemaps : [];
   progress.failedSitemaps = progress.failedSitemaps && typeof progress.failedSitemaps === "object" ? progress.failedSitemaps : {};
+  migrateCampRetries(progress);
   progress.sitemapProductCounts = progress.sitemapProductCounts && typeof progress.sitemapProductCounts === "object" ? progress.sitemapProductCounts : {};
   progress.seenProductUrls = Array.isArray(progress.seenProductUrls) ? progress.seenProductUrls : [];
   progress.seenProductIds = Array.isArray(progress.seenProductIds) ? progress.seenProductIds : [];
@@ -663,14 +678,26 @@ async function updateTorecaCamp(cards, paths) {
     failed += 1;
     progress.lastFailure = { pageKey: "sitemap-index", url: `${TORECA_CAMP}/sitemap.xml`, stage: "fetch-index", httpStatus: error.metric?.httpStatus || null, retryCount: error.metric?.retryCount || 0, error: error.message, at: new Date().toISOString() };
     progress.failures = [...(progress.failures || []), progress.lastFailure].slice(-50);
+    progress.sourceRetry = { ...retryPolicy.failure(progress.sourceRetry, { error: error.message, httpStatus: error.metric?.httpStatus, scope: "source" }), scope: "source" };
+    stoppingReason = progress.sourceRetry.reason;
   }
 
-  for (let runIndex = 0; runIndex < sitemapLimit && sitemapUrls.length && detailFetched < detailLimit && failed === 0; runIndex += 1) {
-    let sitemapIndex = forcedSitemap >= 0 && process.env.TORECACAMP_RETRY_SITEMAP
+  for (let runIndex = 0; runIndex < sitemapLimit && sitemapUrls.length && detailFetched < detailLimit && !stoppingReason; runIndex += 1) {
+    const due = Object.values(progress.retryByUrl).find(row => retryPolicy.eligible(row));
+    const dueSitemap = Object.entries(progress.failedSitemaps).find(([, row]) => row.retry && retryPolicy.eligible(row.retry));
+    const normalCursor = { sitemap: progress.currentSitemapIndex, entry: progress.currentEntryIndex };
+    const retryOnly = Boolean(due && !process.env.TORECACAMP_RETRY_SITEMAP);
+    const retrySitemap = !retryOnly && Boolean(dueSitemap) && !process.env.TORECACAMP_RETRY_SITEMAP;
+    let sitemapIndex = retryOnly ? due.sitemapIndex : retrySitemap ? Number(dueSitemap[0]) - 1 : forcedSitemap >= 0 && process.env.TORECACAMP_RETRY_SITEMAP
       ? forcedSitemap
       : progress.currentSitemapIndex;
-    while (sitemapIndex < sitemapUrls.length && progress.processedSitemaps.includes(sitemapIndex + 1)) sitemapIndex += 1;
-    if (sitemapIndex >= sitemapUrls.length) break;
+    while (!retryOnly && !retrySitemap && sitemapIndex < sitemapUrls.length && progress.processedSitemaps.includes(sitemapIndex + 1)) sitemapIndex += 1;
+      if (sitemapIndex >= sitemapUrls.length) break;
+    const sitemapRetry = progress.failedSitemaps[sitemapIndex + 1]?.retry;
+    if (!retryOnly && sitemapRetry && !retryPolicy.eligible(sitemapRetry)) {
+      progress.currentSitemapIndex = sitemapIndex + 1; progress.currentEntryIndex = 0;
+      write(paths.progress, progress); continue;
+    }
     const sitemapUrl = sitemapUrls[sitemapIndex];
     const pageKey = `sitemap-${sitemapIndex + 1}`;
     const metric = { source: "torecacamp", pageKey, sitemapNumber: sitemapIndex + 1, url: sitemapUrl, startedAt: new Date().toISOString(), status: "running", stage: "fetch-sitemap", retryCount: 0 };
@@ -693,35 +720,56 @@ async function updateTorecaCamp(cards, paths) {
       }
       progress.sitemapProductCounts[sitemapIndex + 1] = entries.length;
       listedProducts += entries.length;
-      const startingEntry = progress.currentSitemapIndex === sitemapIndex ? progress.currentEntryIndex : 0;
+      const startingEntry = retryOnly || retrySitemap ? 0 : progress.currentSitemapIndex === sitemapIndex ? progress.currentEntryIndex : 0;
+      let retryEntryCursor = 0;
       for (let entryIndex = startingEntry; entryIndex < entries.length; entryIndex += 1) {
         if (Date.now() >= stopBy - 5000) {
           stoppingReason = `安全停止時間 ${Math.round(runtimeLimitMs / 1000)}秒に到達`;
           break;
         }
         const sitemapEntry = entries[entryIndex];
-        progress.currentSitemapIndex = sitemapIndex;
-        progress.currentEntryIndex = entryIndex;
-        if (seenProductUrls.has(sitemapEntry.url)) { duplicateUrls += 1; progress.currentEntryIndex = entryIndex + 1; continue; }
+        const advance = () => { if (retrySitemap) retryEntryCursor = entryIndex + 1; else if (!retryOnly) progress.currentEntryIndex = entryIndex + 1; };
+        if (retryOnly && (sitemapEntry.url !== due.url || !retryPolicy.eligible(progress.retryByUrl[sitemapEntry.url]))) continue;
+        if (!retryOnly && progress.retryByUrl[sitemapEntry.url]) { advance(); continue; }
+        if (!retryOnly && !retrySitemap) { progress.currentSitemapIndex = sitemapIndex; progress.currentEntryIndex = entryIndex; }
+        if (seenProductUrls.has(sitemapEntry.url)) { duplicateUrls += 1; advance(); continue; }
         parsed += 1;
         const stub = { title: sitemapEntry.title, handle: sitemapEntry.handle, tags: [] };
         const sig = campSignature(stub);
-        if (!sig.cardNo) { excluded.noCardNumber += 1; seenProductUrls.add(sitemapEntry.url); progress.currentEntryIndex = entryIndex + 1; continue; }
+        if (!sig.cardNo) { excluded.noCardNumber += 1; seenProductUrls.add(sitemapEntry.url); advance(); continue; }
         const candidates = byNumber.get(sig.cardNo) || [];
-        if (!candidates.length) { excluded.noLocalCandidate += 1; seenProductUrls.add(sitemapEntry.url); progress.currentEntryIndex = entryIndex + 1; continue; }
+        if (!candidates.length) { excluded.noLocalCandidate += 1; seenProductUrls.add(sitemapEntry.url); advance(); continue; }
         const matches = candidates.filter((row) => campMatchesCard(row, stub));
-        if (matches.length !== 1) { excluded[matches.length > 1 ? "ambiguous" : "identityMismatch"] += 1; seenProductUrls.add(sitemapEntry.url); progress.currentEntryIndex = entryIndex + 1; continue; }
+        if (matches.length !== 1) { excluded[matches.length > 1 ? "ambiguous" : "identityMismatch"] += 1; seenProductUrls.add(sitemapEntry.url); advance(); continue; }
         if (detailFetched >= detailLimit) {
           stoppingReason = `商品詳細の1回上限 ${detailLimit}件に到達`;
           break;
         }
         metric.stage = "fetch-product";
-        const productResponse = await fetchJson(`${sitemapEntry.url}.js`, { intervalMs: 1100 });
+        let productResponse;
+        try {
+          productResponse = await fetchJson(`${sitemapEntry.url}.js`, { intervalMs: 1100 });
+        } catch (error) {
+          failed += 1;
+          const retry = retryPolicy.failure(progress.retryByUrl[sitemapEntry.url], { error: error.message, httpStatus: error.metric?.httpStatus });
+          progress.retryByUrl[sitemapEntry.url] = { ...retry, url: sitemapEntry.url, sitemapIndex, entryIndex };
+          progress.lastFailure = { ...retry, error: error.message, httpStatus: error.metric?.httpStatus || null, stage: "fetch-product", url: sitemapEntry.url, sitemapNumber: sitemapIndex + 1, productEntry: entryIndex, at: new Date().toISOString() };
+          progress.failures = [...(progress.failures || []), progress.lastFailure].slice(-50);
+          if (retry.scope === "source") { progress.sourceRetry = retry; stoppingReason = retry.reason; break; }
+          advance();
+          write(paths.progress, progress);
+          continue;
+        }
         detailFetched += 1;
         const product = productResponse.value;
-        if (seenProductIds.has(String(product.id))) { duplicateProductIds += 1; seenProductUrls.add(sitemapEntry.url); progress.currentEntryIndex = entryIndex + 1; continue; }
+        if (!product?.id || typeof product.title !== "string" || !Array.isArray(product.variants)) {
+          progress.retryByUrl[sitemapEntry.url] = { ...retryPolicy.failure(progress.retryByUrl[sitemapEntry.url], { error: "商品JSON形式変更・このURLのみ確認待ち" }), url: sitemapEntry.url, sitemapIndex, entryIndex };
+          failed++; advance(); write(paths.progress, progress); continue;
+        }
+        delete progress.retryByUrl[sitemapEntry.url];
+        if (seenProductIds.has(String(product.id))) { duplicateProductIds += 1; seenProductUrls.add(sitemapEntry.url); advance(); continue; }
         const variant = (product.variants || []).find(campA);
-        if (!variant) { excluded.noStateA += 1; seenProductUrls.add(sitemapEntry.url); seenProductIds.add(String(product.id)); progress.currentEntryIndex = entryIndex + 1; continue; }
+        if (!variant) { excluded.noStateA += 1; seenProductUrls.add(sitemapEntry.url); seenProductIds.add(String(product.id)); advance(); continue; }
         stateA += 1;
         const card = matches[0];
         const entry = {
@@ -741,7 +789,7 @@ async function updateTorecaCamp(cards, paths) {
         byId.set(card.id, chosen);
         seenProductUrls.add(sitemapEntry.url);
         seenProductIds.add(String(product.id));
-        progress.currentEntryIndex = entryIndex + 1;
+        advance();
         if (progress.lastFailure?.sitemapNumber === sitemapIndex + 1 && progress.currentEntryIndex > progress.lastFailure.productEntry) {
           progress.lastFailure = null;
           delete progress.manualHold;
@@ -752,11 +800,10 @@ async function updateTorecaCamp(cards, paths) {
         write(paths.catalog, catalog);
         write(paths.progress, progress);
       }
-      if (!stoppingReason && progress.currentEntryIndex >= entries.length) {
+      if (!retryOnly && !stoppingReason && (retrySitemap ? retryEntryCursor : progress.currentEntryIndex) >= entries.length) {
         progress.processedSitemaps = [...new Set([...progress.processedSitemaps, sitemapIndex + 1])].sort((a, b) => a - b);
         progress.lastSuccessfulSitemap = sitemapIndex + 1;
-        progress.currentSitemapIndex = sitemapIndex + 1;
-        progress.currentEntryIndex = 0;
+        if (!retrySitemap) { progress.currentSitemapIndex = sitemapIndex + 1; progress.currentEntryIndex = 0; }
         delete progress.failedSitemaps[sitemapIndex + 1];
         progress.lastFailure = null;
         sitemapsSucceeded += 1;
@@ -773,18 +820,23 @@ async function updateTorecaCamp(cards, paths) {
       metric.exceptionName = error.name || "Error";
       metric.exception = String(error.stack || error.message || error).slice(0, 1200);
       const failure = { sitemapNumber: sitemapIndex + 1, pageKey, url: metric.url, productEntry: progress.currentEntryIndex, httpStatus: metric.httpStatus || null, stage: metric.stage, retryCount: metric.retryCount || 0, timedOut: Boolean(metric.timedOut), exceptionName: metric.exceptionName, error: error.message, exception: metric.exception, at: new Date().toISOString(), lastSuccessfulSitemap: progress.lastSuccessfulSitemap || null };
+      const previousRetry = progress.failedSitemaps[sitemapIndex + 1]?.retry;
       progress.failedSitemaps[sitemapIndex + 1] = failure;
       progress.lastFailure = failure;
       progress.failures = [...(progress.failures || []), failure].slice(-50);
+      const retry = retryPolicy.failure(previousRetry, failure);
+      progress.failedSitemaps[sitemapIndex + 1].retry = retry;
+      if (retry.scope === "source") progress.sourceRetry = retry;
       stoppingReason = `サイトマップ${sitemapIndex + 1}の${metric.stage}で停止。次回は同じ商品から再開`;
     }
+    if (retryOnly || retrySitemap) { progress.currentSitemapIndex = normalCursor.sitemap; progress.currentEntryIndex = normalCursor.entry; }
     progress.seenProductUrls = [...seenProductUrls];
     progress.seenProductIds = [...seenProductIds];
     write(paths.catalog, [...byId.values()]);
     write(paths.progress, progress);
     metric.endedAt = new Date().toISOString();
     recordFetchMetric("torecacamp", metric);
-    if (stoppingReason || failed > 0 || process.env.TORECACAMP_RETRY_SITEMAP) break;
+    if (stoppingReason || process.env.TORECACAMP_RETRY_SITEMAP) break;
   }
   const catalogGuard = guardCatalogDrop(previousCatalog, [...byId.values()]);
   const nextCatalog = catalogGuard.catalog;
@@ -804,7 +856,8 @@ async function updateTorecaCamp(cards, paths) {
   const knownSitemaps = Object.keys(progress.sitemapProductCounts).length;
   const estimatedTotalProducts = knownSitemaps > 0 ? Math.round(knownProducts / knownSitemaps * Number(progress.totalSitemaps || knownSitemaps)) : 0;
   const estimatedRemainingProducts = estimatedTotalProducts > 0 ? Math.max(0, estimatedTotalProducts - seenProductUrls.size) : null;
-  const crawlComplete = Boolean(progress.totalSitemaps && processedSitemapCount >= progress.totalSitemaps);
+  const firstPassComplete = Boolean(progress.totalSitemaps && processedSitemapCount >= progress.totalSitemaps);
+  const crawlComplete = firstPassComplete && !Object.keys(progress.retryByUrl || {}).length && !Object.keys(progress.failedSitemaps || {}).length;
   const progressHealth = updateProgressHealth(progress, seenProductUrls.size);
   if (crawlComplete) stoppingReason = null;
   progress.lastRun = {
@@ -816,6 +869,7 @@ async function updateTorecaCamp(cards, paths) {
     totalSitemaps: progress.totalSitemaps || sitemapUrls.length || 44,
     cumulativeProductCount: seenProductUrls.size, estimatedTotalProducts, estimatedRemainingProducts,
     cumulativeMatchedCount: nextCatalog.length, hasMorePages: !crawlComplete, crawlComplete,
+    firstPassComplete, retryQueue: Object.values(progress.retryByUrl || {}),
     priceMigration: priceMigration.audit,
     quarantinedPriceCount: nextCatalog.filter((entry) => entry.priceQuarantined).length,
     sitemapsSucceeded, listedProducts, detailFetched, parsed, stateA, newLinkCount: linked,
@@ -845,6 +899,7 @@ async function updateTorecaCamp(cards, paths) {
     totalSitemaps: progress.totalSitemaps || sitemapUrls.length || 44,
     estimatedRemainingProducts, cumulativeProductCount: seenProductUrls.size,
     cumulativeMatchedCount: nextCatalog.length, crawlComplete,
+    firstPassComplete, retryQueue: Object.values(progress.retryByUrl || {}), sourceRetry: progress.sourceRetry || null,
     completionStatus: crawlComplete && failed === 0 ? "success" : "partial",
   };
 }
@@ -866,11 +921,18 @@ async function main() {
   write(path.join(ROOT, "data", "pokemon-cards.json"), updatedCards);
   console.log(JSON.stringify({ sourceOnly, yuyutei, torecacamp }));
 }
-if (require.main === module) main().catch((error) => { console.error(error); process.exitCode = 1; });
+async function exclusiveMain() {
+  const retry = require("./acquisition_retry.js"), releases = [];
+  try {
+    for (const source of (process.env.SHOP_SOURCE_ONLY === "all" || !process.env.SHOP_SOURCE_ONLY ? ["yuyutei", "torecacamp"] : [process.env.SHOP_SOURCE_ONLY])) releases.push(retry.lock(path.join(__dirname, `${source}-acquisition.lock`)));
+    return await main();
+  } finally { for (const release of releases.reverse()) release(); }
+}
+if (require.main === module) exclusiveMain().catch((error) => { console.error(error); process.exitCode = 1; });
 
 module.exports = {
   campA, campMatchesCard, campPriceQuarantine, campSignature, campVariantPrice, cardSignature, migrateCampCatalogPrices, normalizeSetCode,
-  guardCatalogDrop, updateProgressHealth,
+  guardCatalogDrop, updateProgressHealth, migrateCampRetries,
   parseProductSitemap, parseProductSitemapIndex, preferCampEntry,
   yuyuteiPriority,
   numberMatches, parseYuyuteiResults, titleMatches,

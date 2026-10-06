@@ -39,7 +39,7 @@ try {
 $Observation | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $File -Encoding utf8
 if ($Publish) {
   Push-Location $Repo
-  try { & $Node work/finalize_update_status.js; if ($LASTEXITCODE -ne 0) { throw '監視表示生成失敗' }; & $Git add -- data/psa-pc-observation.json data/update-status.json data/update-history.json work/psa_update_state.json; & $Node work/publish_data_checkpoint.js 'Record independent PSA PC task observation'; if ($LASTEXITCODE -ne 0) { throw '観測公開失敗。ローカル保存・復旧bundleを確認' } }
+  try { & (Join-Path $PSScriptRoot 'publish_psa_update.ps1'); if ($LASTEXITCODE -ne 0) { throw '観測公開待ち。保存済みPSA受渡しを保持' } }
   finally { Pop-Location }
 }
 if ($Observation.error) { Write-Error $Observation.error; exit 1 }

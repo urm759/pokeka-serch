@@ -43,12 +43,12 @@ if (result.stderr) process.stderr.write(result.stderr);
 const endedAt = new Date();
 const output = `${result.stdout || ""}\n${result.stderr || ""}`;
 const timedOut = result.error?.code === "ETIMEDOUT";
-const completionStatus = (output.match(/"completionStatus"\s*:\s*"(success|partial|no-progress|manual-action-required)"/i) || [])[1]?.toLowerCase() || null;
+const completionStatus = (output.match(/"completionStatus"\s*:\s*"(success|partial-with-failure|partial|no-progress|retry-wait|manual-action-required)"/i) || [])[1]?.toLowerCase() || null;
 const fetchFailureCount = [...output.matchAll(/\b(?:failed|failure|error)(?:Count)?["']?\s*[:=]\s*(\d+)/gi)]
   .reduce((total, match) => total + Number(match[1] || 0), 0)
   + (result.status !== 0 || timedOut ? 1 : 0);
 const status = result.status !== 0 || timedOut ? "failed" : completionStatus === "manual-action-required" ? "manual-action-required"
-  : completionStatus === "no-progress" ? "no-progress" : fetchFailureCount > 0 || completionStatus === "partial" ? "partial" : "success";
+  : completionStatus === "no-progress" ? "no-progress" : fetchFailureCount > 0 || ["partial", "partial-with-failure", "retry-wait"].includes(completionStatus) ? "partial" : "success";
 const acquiredCount = countCurrentRecords(sourceId);
 const afterFingerprint = artifactFingerprint(sourceId);
 const dataChanged = afterFingerprint != null && beforeFingerprint !== afterFingerprint;
