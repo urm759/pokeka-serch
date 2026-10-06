@@ -18,7 +18,7 @@ const old = source.includes('function cardSearchExclusions(') ? null : source.sl
 vm.runInContext('globalThis.filterApi={state,presetQualifications,'+(old ? 'exclude:card=>('+old.trim().replace(/^\\.filter\\(/,'').replace(/\\)$/, '')+')(card)?[]:["旧フィルター除外"]' : 'exclude:cardSearchExclusions,buildSearchAudit')+'};',context);
 const api=context.filterApi;
 const calculated=prepareCalculatedCards(state.cards);
-const financialHash=require('node:crypto').createHash('sha256').update(JSON.stringify(calculated.map(c=>[c.id,c.price,c.psa10,c.buyLimits?.clean,c.purchaseDecision,c.psaDecision]))).digest('hex');
+const financialHash=require('node:crypto').createHash('sha256').update(JSON.stringify(calculated.map(c=>[c.id,c.price,c.psa10,c.buyLimits?.clean,c.purchaseDecision,c.psaDecision]),(key,value)=>key==='currentBreakEvenRaw'?undefined:value)).digest('hex');
 vm.runInContext('globalThis.normalizedQuery="";globalThis.compactQuery="";',context);
 const rows=[];
 for(const mode of ['combined','curated','now','low-risk','turnover','bargain']) {

@@ -618,7 +618,7 @@ async function renderPsaHistory(details) {
 }
 
 const sorters = {
-  "currentBreakEven-desc": (a, b) => (currentMarketView(b).cap ?? -Infinity) - (currentMarketView(a).cap ?? -Infinity),
+  "currentBreakEven-desc": (a, b) => currentMarketModel.compareCaps(currentMarketView(a), currentMarketView(b)),
   "roi-desc": (a, b) => state.purchaseMode === "current-market" ? (currentMarketView(b).economics?.expectedRoi ?? -Infinity) - (currentMarketView(a).economics?.expectedRoi ?? -Infinity) : b.roi - a.roi,
   "roi-asc": (a, b) => state.purchaseMode === "current-market" ? (currentMarketView(a).economics?.expectedRoi ?? Infinity) - (currentMarketView(b).economics?.expectedRoi ?? Infinity) : a.roi - b.roi,
   "profit-desc": (a, b) => state.purchaseMode === "current-market" ? (currentMarketView(b).economics?.expectedProfit ?? -Infinity) - (currentMarketView(a).economics?.expectedProfit ?? -Infinity) : b.profit - a.profit,
@@ -937,7 +937,7 @@ function renderSourceObservability() {
       <p>${escapeHtml((change?.nonComparableSources || []).join(" / "))}</p>
       <details><summary>不足項目ごとの取得先・停止理由</summary>${outcomes.routes.map((r) => `<p>${escapeHtml(r.key)}：${r.count}枚 / ${escapeHtml(r.source)} / ${escapeHtml(r.mode)} / ${escapeHtml(r.status)}<br><small>${escapeHtml(r.reason)}</small></p>`).join("")}</details>
       <p>PC PSA：${escapeHtml(unified.pc?.phases?.startup || "未観測")} / ${escapeHtml(unified.pc?.phases?.acquisition || "未観測")} / 公開 ${escapeHtml(unified.pc?.phases?.publication || "未観測")}<br>${escapeHtml(unified.pc?.phases?.acquisitionStop || "")}</p>
-      <a href="./data/completion-outcomes.json" target="_blank" rel="noreferrer">全件補完監査JSON</a> / <a href="./data/psa-saved-recovery.json" target="_blank" rel="noreferrer">未公開PSA回収の根拠</a>
+      <a href="./data/completion-outcomes.json" target="_blank" rel="noreferrer">全件補完監査JSON</a> / <a href="./data/psa-saved-recovery.json" target="_blank" rel="noreferrer">未公開PSA回収の根拠</a> / <a href="./data/scheduled-execution-audit.json" target="_blank" rel="noreferrer">定期実行ログ確認結果</a>
     </details></article>` : "";
     const unifiedHtml = unified ? `<article class="source-status-card"><details><summary>全取得元・残件の統一監視</summary><p>${escapeHtml(unified.freshnessDefinition || "")}</p><div style="overflow-x:auto"><table><thead><tr><th>取得元</th><th>最終試行</th><th>最終成功</th><th>公開反映</th><th>残件</th><th>新規取得／有効純増</th><th>最終進捗</th><th>停止理由</th></tr></thead><tbody>${Object.values(unified.rows || {}).map((r) => `<tr><th>${escapeHtml(r.label)}${r.fulfilment === "store" ? "（店頭）" : ""}</th><td>${escapeHtml(formatJstTimestamp(r.lastAttempt))}</td><td>${escapeHtml(formatJstTimestamp(r.lastSuccess))}</td><td>${escapeHtml(formatJstTimestamp(r.publishedAt))}</td><td>${valueOrUnknown(r.remaining)}</td><td>${valueOrUnknown(r.newAcquired)}／${valueOrUnknown(r.usableNet)}</td><td>${escapeHtml(formatJstTimestamp(r.lastProgressAt))}</td><td>${escapeHtml(r.stopReason || "未記録・停止なし")}${r.failureUrl ? `<a href="${escapeHtml(r.failureUrl)}" target="_blank" rel="noreferrer">失敗実行</a>` : ""}</td></tr>`).join("")}</tbody></table></div><p>価格確認残 ${valueOrUnknown(unified.backlogs?.priceConfirmation)} / PSA未紐付け ${valueOrUnknown(unified.backlogs?.psaUnlinked)} / 国内PSA9：${escapeHtml(unified.backlogs?.domesticPsa9Status || "未記録")}</p><p>${escapeHtml(unified.backlogs?.returnBacktest || "")}</p><details><summary>補完キューの実取得と対応状況</summary><p>試行 ${valueOrUnknown(unified.completion?.attempted)} / 再取得 ${valueOrUnknown(unified.completion?.acquired)} / 新規取得 ${valueOrUnknown(unified.completion?.newAcquired)} / ${escapeHtml(unified.completion?.status || "未実行")}</p>${Object.entries(unified.completion?.support || {}).map(([id, row]) => `<p><b>${escapeHtml(id)}：${escapeHtml(row.status)}</b> ${escapeHtml(row.method || row.reason || "")}</p>`).join("")}<a href="./data/completion-acquisition.json" target="_blank" rel="noreferrer">カード別試行・再開位置</a></details><p><a href="./data/psa-set-discovery.json" target="_blank" rel="noreferrer">公式セットURL候補・停止理由</a></p></details></article>` : "";
     const resilience = state.updateStatus?.acquisitionResilience;
@@ -1536,6 +1536,10 @@ async function copyText(text) {
   textarea.remove();
 }
 
+function currentCapCsvFields(view) {
+  return [view.cap ?? '', view.capLabel || 'データ不足で算出不可', view.rawCap ?? '', view.capNote || '', view.reasons.join('／')];
+}
+
 function exportFavoritesCsv() {
   const cfg = guideConfig();
   const rows = [["id", "カード名", "型番", "数量", "仕入れ単価", "現在PSA10価格", "91日後中央推計", "予測下落余地%", "将来価格評価", "最終仕入れ上限", "通常上限", "供給ストレス時赤字回避上限", "超低リスク上限", "PSA9赤字回避上限", "現在の資金で買える上限", "傷あり仕入れ上限", "期待値損益分岐PSA10価格", "供給ストレス時期待利益", "美品PSA10想定率%", "傷ありPSA10想定率%", "取得率基準", "基準", "理想仕入れ", "おすすめ仕入れ", "上限仕入れ", "今回の仕入れ判断", "実店舗での仕入れ可否", "期待利益（現在仕入値×中央予測）", "期待利益率（現在仕入値×中央予測）", "年換算資金効率", "資金占有率", "判断理由", "みんトレURL", "カードラッシュURL", "晴れる屋2URL", "遊々亭URL", "トレカキャンプURL"]];
@@ -1555,9 +1559,11 @@ function exportFavoritesCsv() {
   favoriteCards().forEach((rawCard, index) => {
     const card = calc(rawCard), trial = favoriteTrial(card);
     rows[index + 1][14] = psa9NonLossDisplay(card.buyLimits?.clean?.resilience);
-    rows[index + 1].push(state.favoritePlans[card.id] || "", trial.fee ?? "", trial.lockDays ?? "", trial.rows?.current?.expectedProfit ?? "", trial.rows?.central?.expectedProfit ?? "", trial.rows?.stress?.expectedProfit ?? "", trial.lowerGradeProfit ?? "", trial.period?.status || '期間履歴不足', trial.period?.centralPrice ?? '', trial.period?.stressPrice ?? '', trial.period?.normalLimit ?? '', trial.period?.stressLimit ?? '', trial.period?.version || '', JSON.stringify(trial.fixedBreakEvenAnchor || null));
+    const currentCap = currentMarketView(card);
+    rows[index + 1].push(state.favoritePlans[card.id] || "", trial.fee ?? "", trial.lockDays ?? "", trial.rows?.current?.expectedProfit ?? "", trial.rows?.central?.expectedProfit ?? "", trial.rows?.stress?.expectedProfit ?? "", trial.lowerGradeProfit ?? "", trial.period?.status || '期間履歴不足', trial.period?.centralPrice ?? '', trial.period?.stressPrice ?? '', trial.period?.normalLimit ?? '', trial.period?.stressLimit ?? '', trial.period?.version || '', JSON.stringify(trial.fixedBreakEvenAnchor || null), ...currentCapCsvFields(currentCap));
   });
   rows[0].push("試算PSAプランID", "試算鑑定費等", "試算返却目安日数", "入力買値×現相場期待利益", "入力買値×中央予測期待利益", "入力買値×供給ストレス期待利益", "入力買値PSA9以下想定損益", "返却期間試算状態（参考・判定未適用）", "選択返却期間中央価格", "選択返却期間ストレス価格", "選択返却期間参考通常上限", "選択返却期間参考ストレス上限", "返却期間モデル版", "購入時固定損益分岐JSON");
+  rows[0].push('現相場探索上限（現在の共通設定・推奨買値ではない）', '現相場探索上限の状態', '現相場探索上限の切下げ前値', '現相場探索上限の端数区分', '現相場探索の算出不可理由');
   const csv = `\uFEFF${rows.map((row) => row.map(csvCell).join(",")).join("\r\n")}`;
   const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
   const link = document.createElement("a");
@@ -2291,6 +2297,11 @@ function buildBuyLimitScenario(card, condition, hypotheticalRate = null) {
     buyback: buybackExit,
   });
   const currentBreakEvenMaxPrice = exitPolicy.currentBreakEvenCap;
+  // Display metadata only: preserve the signed pre-rounding value, not a new decision cap.
+  const marketplaceCurrentRaw = decisionModel.expectedEconomics({ ...currentInput, purchasePrice: 0, riskBufferPct: 0 }).expectedSale - state.fee;
+  const buybackCurrentRaw = buybackExit.usable ? buybackExit.scenarios.current.expectedSale - state.fee : null;
+  const currentBreakEvenRaw = exitPolicy.adoptedPolicy === 'buyback' ? buybackCurrentRaw
+    : exitPolicy.adoptedPolicy === 'both' ? Math.min(marketplaceCurrentRaw, buybackCurrentRaw) : marketplaceCurrentRaw;
   const economicMaxPrice = exitPolicy.centralTargetCap;
   const stressBreakEvenMaxPrice = exitPolicy.stressBreakEvenCap;
   const ultraLowRiskMaxPrice = exitPolicy.adoptedPolicy === "buyback"
@@ -2313,6 +2324,7 @@ function buildBuyLimitScenario(card, condition, hypotheticalRate = null) {
     economicMaxPrice,
     normalMaxPrice: economicMaxPrice,
     currentBreakEvenMaxPrice,
+    currentBreakEvenRaw,
     stressMaxPrice: stressBreakEvenMaxPrice,
     stressBreakEvenMaxPrice,
     ultraLowRiskMaxPrice,
@@ -2914,6 +2926,10 @@ function calc(card) {
   const calculated = { ...forecastBase, futurePriceForecast, returnForecast };
   calculated.overallAssessment = buildOverallAssessment(calculated, official, stock);
   return finalizeCardDecision(calculated);
+}
+
+function optionalConditionText(value, unit) {
+  return value == null ? '条件なし' : `${fmt.format(value)}${unit}`;
 }
 
 function parseOptionalNumber(value) {
@@ -3610,7 +3626,7 @@ function currentMarketView(card) {
   const key = JSON.stringify([state.currentMarketManualPrice,computationFields.map(name=>state[name]),state.sourceUpdates,state.updateStatus?.sources?.toreca]);
   const cached = currentMarketViewCache.get(card);
   if (cached?.key === key && Date.now() < cached.expires) return cached.value;
-  if (!currentMarketModel || !card.buyLimits?.clean) return {eligible:false,reasons:["分析データ不足"],cap:null,economics:null,psa10Roi:null};
+  if (!currentMarketModel || !card.buyLimits?.clean) return {eligible:false,reasons:["分析データ不足"],cap:null,rawCap:null,capState:'unavailable',capLabel:'データ不足で算出不可',economics:null,psa10Roi:null,warnings:[]};
   const input = buildScenarioInput(card, "clean", card.psa10);
   const buybackExit = decisionModel.conservativeBuybackExit({
     ...input, assumptions:input.assumptions, currentPsa10Price:card.psa10,
@@ -4188,7 +4204,7 @@ function cardSearchExclusions(card, {mode = state.purchaseMode,diagnostic=true} 
       if (currentMode) {
         const view = currentMarketView(card);
         if (!view.eligible) reasons.push(...view.reasons);
-        if (!currentMarketModel?.matchesCap(view,state.currentMarketCapMin)) reasons.push("現相場損益分岐上限");
+        if (!currentMarketModel?.matchesCap(view,state.currentMarketCapMin)) reasons.push(currentMarketModel.capExclusion(view));
         if (state.currentMarketCapMin != null && state.currentMarketCapMin < 0) reasons.push("現相場上限下限の入力を確認");
       }
       if (state.catalogScope !== "analysis" && mode === "normal") return reasons;
@@ -4330,7 +4346,8 @@ function priceComparisonCells(card, limitDisplay, confirmedAt, now = Date.now(),
     : stale ? "古い価格・最新相場とは限りません"
     : !Number.isFinite(checkedTime) ? "確認日時未取得" : "予測・買取価格ではありません";
   const stableCell = `<div class="price-cell glance-stable" data-price-kind="stable"><span>安定重視の仕入れ上限${trial ? "（比較用）" : ""}</span><strong>${escapeHtml(limitDisplay.stableLabel || money(limitDisplay.stableCap))}</strong><small>${escapeHtml(limitDisplay.reason || "仕入れ判定・絞り込みの基準")}</small></div>`;
-  const breakCell = `<div class="price-cell glance-break-even" data-price-kind="break-even"><span>現相場の期待損益分岐上限</span><strong>${money(limitDisplay.currentCap)}</strong><small>現相場が続く場合の期待値基準。推奨仕入れ値ではありません${trial?.noNonLossPrice ? "／赤字回避できる買値なし" : ""}</small></div>`;
+  const capText = limitDisplay.currentCapState === 'loss-at-zero' ? '0円仕入れでも赤字' : limitDisplay.currentCap == null ? 'データ不足で算出不可' : money(limitDisplay.currentCap);
+  const breakCell = `<div class="price-cell glance-break-even" data-price-kind="break-even" data-cap-state="${limitDisplay.currentCapState || 'available'}"><span>現相場の期待損益分岐上限</span><strong>${escapeHtml(capText)}</strong><small>${escapeHtml(limitDisplay.currentCapLabel || '仕入れ可能な上限あり')}${limitDisplay.currentCapNote ? `／${escapeHtml(limitDisplay.currentCapNote)}` : ''}</small><small>現相場が続く場合の期待値基準。推奨仕入れ値ではありません</small></div>`;
   return `
     <div class="price-cell" data-price-kind="store"><span>${trial?.purchaseKind === "manual" ? "購入価格（手入力試算）" : "現在買える状態A価格"}</span><strong>${usableOffer ? money(offer.value) : trial?.purchaseKind === "manual" ? money(trial.purchasePrice) : "未取得"}</strong><small>${escapeHtml(usableOffer ? offer.source : trial?.purchaseKind === "manual" ? "手入力試算・購入先未確認。相場参考買値ではありません" : "新しい在庫あり価格未取得・素体相場で代用しません")}</small>${usableOffer ? `<small>価格確認：${escapeHtml(dateText(offer.updatedAt))}</small>` : ""}</div>
     <div class="price-cell" data-price-kind="psa10"><span>PSA10現在相場</span><strong>${hasMarket ? money(marketPrice) : "未取得"}</strong><small>${escapeHtml(card.psa10Audit?.source || "取得元未取得")}</small><small>提供元の価格確認：${escapeHtml(dateText(confirmedAt))}</small>${lastSale ? `<small>最終成約：${escapeHtml(dateText(lastSale))}</small>` : ""}<small class="price-note ${stale ? "price-stale" : ""}">${escapeHtml(marketNotice)}</small></div>
@@ -4850,7 +4867,10 @@ function render() {
       domesticPsa10UpdatedAt: state.sourceUpdates.toreca,
       reason: limitReasonLabel(buyLimits?.clean),
     });
-    const limitDisplay = currentExploration ? {...baseLimitDisplay,currentCap:currentTrial.cap,exitLabel:currentTrial.exitLabel || "未取得",
+    const limitDisplay = currentExploration ? {...baseLimitDisplay,currentCap:currentTrial.cap,
+      currentCapState:currentTrial.capState || 'unavailable',currentCapLabel:currentTrial.capLabel || 'データ不足で算出不可',currentCapNote:currentTrial.capNote,
+      exitLabel:currentTrial.exitLabel || "未取得",
+      warnings:[...new Set([...baseLimitDisplay.warnings.filter(w=>!w.includes('フリマ基準')), ...currentTrial.reasons])],
       gap:Number.isFinite(currentTrial.cap) && Number.isFinite(baseLimitDisplay.stableCap) ? currentTrial.cap - baseLimitDisplay.stableCap : null,
       hitRate:Number.isFinite(currentTrial.assumedRate) ? currentTrial.assumedRate * 100 : null} : baseLimitDisplay;
     const limitMoney = (value) => value == null ? "算出不可" : `¥${fmt.format(value)}`;
@@ -5109,7 +5129,7 @@ function render() {
           <div><span>価格への判断</span><strong>${escapeHtml(supply.priceConclusion || "蓄積中")}</strong><small>${supply.highDemand && supply.highSupply ? "需要が強くても供給過多のため上昇根拠にはしない" : "価格上昇への加点は供給吸収確認時のみ"}</small></div>
         </div>
         <div class="supply-limit-breakdown">
-          <div><span>現在相場での損益分岐上限</span><strong>¥${fmt.format(card.buyLimits?.clean?.currentBreakEvenMaxPrice || 0)}</strong><small>現在PSA10相場の出口で期待利益0円</small></div>
+          <div><span>現相場の期待損益分岐上限</span><strong>${escapeHtml(limitDisplay.currentCapState === 'loss-at-zero' ? '0円仕入れでも赤字' : limitDisplay.currentCap == null ? 'データ不足で算出不可' : limitMoney(limitDisplay.currentCap))}</strong><small>${escapeHtml(limitDisplay.currentCapNote || limitDisplay.currentCapLabel)}。推奨仕入れ値ではありません</small></div>
           <div><span>利益を狙う仕入れ上限</span><strong>¥${fmt.format(card.buyLimits?.clean?.normalMaxPrice || 0)}</strong><small>中央予測で目標利益・利益率・資金ロック条件を確保</small></div>
           <div><span>安全側損益分岐上限</span><strong>¥${fmt.format(card.buyLimits?.clean?.stressBreakEvenMaxPrice || 0)}</strong><small>供給ストレス価格でも期待利益0円以上</small></div>
           <div><span>超低リスク上限</span><strong>¥${fmt.format(card.buyLimits?.clean?.ultraLowRiskMaxPrice || 0)}</strong><small>供給ストレス価格でも目標利益を確保</small></div>
@@ -5431,7 +5451,7 @@ function syncFromUI(event) {
   state.minExpectedProfit = Number(els.minExpectedProfitInput.value || 0);
   state.minExpectedRoi = Number(els.minExpectedRoiInput.value || 0);
   state.minAnnualEfficiency = Number(els.minAnnualEfficiencyInput.value || 0);
-  if (els.profitHurdleStatus) els.profitHurdleStatus.textContent = `残る採算条件：最低期待利益 ${fmt.format(state.minExpectedProfit)}円／期待利益率 ${state.minExpectedRoi}%／年換算効率 ${state.minAnnualEfficiency}%（返却${state.lockDays}日）。資金・品質60点・供給リスク・期間根拠も別途必要。検索側の中央利益額${fmt.format(state.minExpectedProfitFilter)}円／中央利益率${state.minExpectedRoiFilter}%／PSA10時利益率${state.minRoi}%も別条件。0円は計算利益を0にする設定ではありません。`;
+  if (els.profitHurdleStatus) els.profitHurdleStatus.textContent = `残る採算条件：最低期待利益 ${fmt.format(state.minExpectedProfit)}円／期待利益率 ${state.minExpectedRoi}%／年換算効率 ${state.minAnnualEfficiency}%（返却${state.lockDays}日）。資金・品質60点・供給リスク・期間根拠も別途必要。検索側の中央利益額${optionalConditionText(state.minExpectedProfitFilter, '円')}／中央利益率${optionalConditionText(state.minExpectedRoiFilter, '%')}／PSA10時利益率${optionalConditionText(state.minRoi, '%')}も別条件。0円は計算利益を0にする設定ではありません。`;
   state.maxCapitalShare = Number(els.maxCapitalShareInput.value || 0);
   state.submissionCount = Math.max(1, Number(els.submissionCountInput.value || 1));
   state.gradingReserve = Number(els.gradingReserveInput.value || 0);

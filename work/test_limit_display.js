@@ -52,6 +52,11 @@ const missing = model.summarize({ ...base, domesticPsa10UpdatedAt: null, psa10Pr
 assert.equal(missing.currentCap, null);
 assert.ok(missing.warnings.some((message) => message.includes("更新日未取得")));
 assert.equal(model.summarize({ ...base, limit: { ...base.limit, currentBreakEvenMaxPrice: 0, finalMaxPrice: 0 } }).currentCap, 0);
+for (const [raw, state, cap] of [[-1,'loss-at-zero',null],[0,'available',0],[499,'available',0],[500,'available',500],[null,'unavailable',null]]) {
+  const result=model.summarize({...base,limit:{...base.limit,currentBreakEvenMaxPrice:0,currentBreakEvenRaw:raw}});
+  assert.equal(result.currentCapState,state);
+  assert.equal(result.currentCap,cap);
+}
 
 // The display module must not mutate caps or purchase verdicts.
 const original = structuredClone(base.limit);

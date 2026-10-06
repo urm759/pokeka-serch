@@ -37,6 +37,11 @@ for (const missing of [null, NaN, Infinity, 0, -1]) {
   assert.doesNotMatch(output, /NaN|Infinity|999,999/);
 }
 assert.equal(JSON.stringify(card), snapshot, 'Display must not mutate financial inputs');
+for (const [state, cap, text] of [['loss-at-zero',null,'0円仕入れでも赤字'],['unavailable',null,'データ不足で算出不可'],['available',0,'¥0']]) {
+  const output=context.cells(card,{...limit,currentCapState:state,currentCap:cap},'2026-10-06T10:00:00Z',now);
+  assert.match(output,new RegExp(text));
+  if(state!=='available') assert.doesNotMatch(output, /<strong>¥0<\/strong>/);
+}
 assert.match(app, /card-details-body">\s*<div class="detail-limit-comparison">\$\{limitComparison\}/);
 const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
 assert.match(css, /\.candidate-glance,\.price-comparison-grid\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);

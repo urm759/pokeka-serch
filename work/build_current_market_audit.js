@@ -12,7 +12,13 @@ for (const policy of ['buyback','marketplace','both']) {
   const cards=prepareCalculatedCards(state.cards);
   const rows=cards.map(card=>({card,view:context.currentApi.currentMarketView(card)}));
   const usable=rows.filter(row=>row.view.eligible);
-  policies[policy]={eligible:usable.length,storePurchase:usable.filter(row=>row.view.purchaseKind==='store').length,
+  const states=Object.fromEntries(['available','loss-at-zero','unavailable'].map(s=>[s,rows.filter(r=>r.view.capState===s).length]));
+  policies[policy]={eligible:usable.length,capStates:states,validZero:usable.filter(r=>r.view.cap===0).length,
+    exactZero:usable.filter(r=>r.view.rawCap===0).length,roundedZero:usable.filter(r=>r.view.rawCap>0&&r.view.rawCap<500).length,
+    zeroExamples:usable.filter(r=>r.view.cap===0).map(({card,view})=>({id:card.id,name:card.name,cap:view.cap,rawCap:view.rawCap,note:view.capNote})),
+    nonNegativeSearch:usable.filter(r=>r.view.capState==='available').length,
+    lossAtZeroExamples:usable.filter(r=>r.view.capState==='loss-at-zero').slice(0,5).map(({card,view})=>({id:card.id,name:card.name,cap:view.cap,rawCap:view.rawCap,state:view.capLabel})),
+    storePurchase:usable.filter(row=>row.view.purchaseKind==='store').length,
     missingPurchase:usable.filter(row=>row.view.purchaseKind==='missing').length,
     positiveAtStore:usable.filter(row=>row.view.purchaseKind==='store'&&row.view.economics?.expectedProfit>=0).length,
     capExplorationWithoutPurchase:usable.filter(row=>row.view.purchaseKind==='missing'&&Number.isFinite(row.view.cap)).length,
@@ -21,7 +27,7 @@ for (const policy of ['buyback','marketplace','both']) {
     examples:usable.filter(row=>row.view.purchaseKind==='store').sort((a,b)=>(b.view.economics?.expectedProfit??-Infinity)-(a.view.economics?.expectedProfit??-Infinity)).slice(0,5).map(({card,view})=>({
       id:card.id,name:card.name,marketPsa10:card.psa10,purchasePrice:view.purchasePrice,store:view.purchaseSource,
       currentExpectedProfit:view.economics.expectedProfit,currentExpectedRoi:view.economics.expectedRoi,psa9Profit:view.psa9Profit,
-      cap:view.cap,stableCap:card.buyLimits.clean.finalMaxPrice,assumedRate:view.assumedRate,
+      cap:view.cap,rawCap:view.rawCap,capState:view.capState,capLabel:view.capLabel,stableCap:card.buyLimits.clean.finalMaxPrice,assumedRate:view.assumedRate,
       official:card.official,psa9Type:view.psa9Type,lowerGradePrice:view.lowerGradePrice,exit:view.exitLabel,warnings:view.warnings}))};
 }
 const result={generatedAt:new Date().toISOString(),catalog:state.cards.length,model:'current-market-hypothesis-v1',

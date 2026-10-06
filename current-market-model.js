@@ -1,8 +1,8 @@
 (function (root, factory) {
-  const api = factory();
+  const api = factory(typeof module === 'object' && module.exports ? require('./limit-display-model.js') : root.LimitDisplayModel);
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.CurrentMarketModel = api;
-})(typeof window === 'object' ? window : globalThis, function () {
+})(typeof window === 'object' ? window : globalThis, function (displayModel) {
   const finite = value => value != null && value !== '' && Number.isFinite(Number(value)) ? Number(value) : null;
   function evaluate(input, model) {
     const card = input.card || {}, reasons = [], warnings = [];
@@ -54,13 +54,13 @@
       current = useMarket ? market : store;
       psa10Net = useMarket ? market.psa10Net : buyback.scenarios.current.netPsa10;
       rawCap = current.expectedSale - fee;
-      cap = rawCap < 0 ? 0 : Math.floor(rawCap / 500) * 500;
+      cap = displayModel.classifyCap(rawCap).cap;
       economics = purchasePrice == null ? null : current;
       // PSA9 is a separate lower-grade marketplace exit, also when PSA10 uses buyback.
       psa9Profit = purchasePrice == null ? null : market.lowerGradeNet - fee - purchasePrice;
     }
     return { eligible: reasons.length === 0, reasons: [...new Set(reasons)], warnings: [...new Set(warnings)],
-      cap, rawCap, noNonLossPrice: rawCap != null && rawCap < 0, purchasePrice, purchaseKind,
+      ...displayModel.classifyCap(rawCap), noNonLossPrice: rawCap != null && rawCap < 0, purchasePrice, purchaseKind,
       purchaseSource: storeUsable ? offer.source : purchasePrice != null ? '手入力試算・購入先未確認' : '購入価格未取得',
       economics, psa9Profit, exitLabel, assumedRate: finite(assumptions?.hitRate),
       lowerGradePrice: finite(assumptions?.lowerGradePrice),
@@ -70,6 +70,11 @@
       buybackDeductionRate: buyback?.scenarios?.current?.deductionRate ?? null,
     };
   }
-  function matchesCap(view, minimum) { return minimum == null || finite(view.cap) != null && view.cap >= minimum; }
-  return { evaluate, matchesCap };
+  function matchesCap(view, minimum) { return minimum == null || !view.noNonLossPrice && view.capState !== 'loss-at-zero' && finite(view.cap) != null && view.cap >= minimum; }
+  function compareCaps(a, b) {
+    const rank = view => view.capState === 'loss-at-zero' || view.noNonLossPrice ? 1 : finite(view.cap) != null ? 2 : 0;
+    return rank(b) - rank(a) || (rank(a) === 2 ? b.cap - a.cap : 0);
+  }
+  function capExclusion(view) { return view.capState === 'loss-at-zero' || view.noNonLossPrice ? '0円仕入れでも赤字' : finite(view.cap) == null ? '損益分岐上限・データ不足で算出不可' : '現相場損益分岐上限'; }
+  return { evaluate, matchesCap, compareCaps, capExclusion };
 });

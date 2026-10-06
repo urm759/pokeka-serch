@@ -53,6 +53,26 @@ const zero = evaluate({ fee: v.economics.expectedSale });
 assert.equal(zero.rawCap, 0);
 assert.equal(zero.cap, 0);
 assert(current.matchesCap(zero, 0));
+assert.equal(zero.capState, 'available');
+assert.equal(zero.capNote, '正確な損益分岐は0円');
+const lossAtZero = evaluate({fee: v.economics.expectedSale + 1});
+assert.equal(lossAtZero.rawCap, -1);
+assert.equal(lossAtZero.cap, null);
+assert.equal(lossAtZero.capState, 'loss-at-zero');
+assert(!current.matchesCap(lossAtZero, 0));
+assert.equal(current.capExclusion(lossAtZero), '0円仕入れでも赤字');
+const roundedZero = evaluate({fee:v.economics.expectedSale - 499});
+assert.equal(roundedZero.cap, 0);
+assert.equal(roundedZero.rawCap, 499);
+assert(current.matchesCap(roundedZero, 0));
+assert.match(roundedZero.capNote, /切下げ/);
+assert.equal(evaluate({fee:v.economics.expectedSale - 500}).cap, 500);
+const unavailable = evaluate({marketUpdatedAt:null});
+assert.equal(unavailable.capState, 'unavailable');
+assert.equal(unavailable.rawCap, null);
+assert(!current.matchesCap(unavailable, 0));
+assert.deepEqual([unavailable, lossAtZero, zero, v].sort(current.compareCaps).map(x=>x.capState), ['available','available','loss-at-zero','unavailable']);
+assert.equal(current.compareCaps(unavailable, unavailable), 0, 'missing caps do not return NaN');
 assert(!current.matchesCap({ cap: null }, 0));
 assert(!evaluate({ assumptions: { hitRate: null, lowerGradePrice: null } }).eligible);
 for (const value of [NaN, Infinity, -1]) assert(!evaluate({ fee: value }).eligible);
@@ -66,8 +86,19 @@ const context = vm.createContext({ window: { location: { href: 'https://example.
   CandidateVisibility: require('../candidate-visibility.js'), PurchaseRatioModel: require('../purchase-ratio-model.js') },
   document, URL, URLSearchParams, console, setTimeout, clearTimeout,
   localStorage: { getItem: key => saved[key] ?? null, setItem: (key, value) => saved[key] = value } });
-vm.runInContext(source.split('// Browser event bindings start here;')[0] + '\nglobalThis.api={state,searchProfitView,cardSearchExclusions,readUrl,buildShareUrl,saveQuickFilters,restoreQuickFilters,sorters,gradeRateSummary,currentMarketProfitPanel};', context);
+vm.runInContext(source.split('// Browser event bindings start here;')[0] + '\nglobalThis.api={state,searchProfitView,cardSearchExclusions,readUrl,buildShareUrl,saveQuickFilters,restoreQuickFilters,sorters,gradeRateSummary,currentMarketProfitPanel,optionalConditionText,currentCapCsvFields};', context);
 const api = context.api, state = api.state;
+assert.equal(api.optionalConditionText(null, '%'), '条件なし');
+assert.equal(api.optionalConditionText(0, '%'), '0%');
+assert.equal(api.optionalConditionText(null, '円'), '条件なし');
+assert.equal(api.currentCapCsvFields(lossAtZero)[0], '');
+assert.equal(api.currentCapCsvFields(lossAtZero)[1], '0円仕入れでも赤字');
+assert.equal(api.currentCapCsvFields(lossAtZero)[2], -1);
+assert.equal(api.currentCapCsvFields(zero)[0], 0);
+assert.equal(api.currentCapCsvFields(roundedZero)[0], 0);
+assert.equal(api.currentCapCsvFields(unavailable)[0], '');
+assert.equal(api.currentCapCsvFields(unavailable)[1], 'データ不足で算出不可');
+assert(source.includes("'現相場探索上限の状態'"), 'CSV carries explicit cap state rather than a false zero');
 Object.assign(state, { purchaseMode: 'current-market', exitPolicy: 'marketplace', minSaleTx: 0, minRoi: 0, maxPsa10: null, minExpectedProfitFilter: 0, minExpectedRoiFilter: 0, sourceUpdates: { toreca: new Date().toISOString() } });
 const card = { ...input.card, id: 'fixture', name: 'テスト SR[SV1 100/078]',
   currentStoreOffer: { ...input.card.currentStoreOffer, updatedAt: new Date().toISOString() },

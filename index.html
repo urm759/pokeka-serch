@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20261007-search-reuse-v1" />
+  <link rel="stylesheet" href="./styles.css?v=20261007-cap-state-v1" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -185,7 +185,7 @@
         <strong>現相場が続く仮定の探索（購入GOではありません）</strong>
         <div class="controls">
           <label class="control"><span>現相場専用：探索方法</span><select id="currentMarketSearchKindInput"><option value="cap">損益分岐上限から探す</option><option value="purchase">購入価格で黒字のカードを探す</option></select><small>上限探索では購入価格未取得も掲載。利益・PSA9損益は算出不可、購入GOにはしません。</small></label>
-          <label class="control"><span>現相場の期待損益分岐上限 下限（円）</span><input id="currentMarketCapMinInput" type="number" min="0" step="500" placeholder="空欄は条件なし" /><small>有効な0円と算出不可は別。安定重視上限を変更しません。</small></label>
+          <label class="control"><span>現相場の期待損益分岐上限 下限（円）</span><input id="currentMarketCapMinInput" type="number" min="0" step="500" placeholder="空欄は条件なし" /><small>0円以上は「0円仕入れでも赤字」と算出不可を除外。正確な0円と非負の端数切下げ0円は有効。安定重視上限は変更しません。</small></label>
           <label class="control"><span>店舗価格未取得時の手入力試算買値（円）</span><input id="currentMarketManualPriceInput" type="number" min="0" step="500" placeholder="未入力は購入価格未取得" /><small>在庫ありの新しい店舗価格があるカードは店舗価格を優先。手入力は購入先確認ではありません。</small></label>
         </div>
         <p>共有条件：名称・価格帯・取引数・発売年・費用・売却先。現相場専用：上限下限・手入力買値・探索方法。上限探索では購入時利益下限は不適用（保存保持）。黒字探索は実店舗価格（未取得時だけ手入力）×現在出口相場を使います。空欄はフィルター無効、0は非負条件。安定上限・ストレス利益・期間適合・購入GO条件は不適用ですが、対立・誤紐付け・古値・必要データの確認は維持します。売却先は自動変更しません。</p>
@@ -610,7 +610,7 @@
               <option value="marketplace">フリマ優先</option>
               <option value="both">両方で赤字回避</option>
             </select>
-            <small class="control-help">買取店優先は新しく信頼できる2店舗以上の保守価格を使用。不足時はフリマ基準へ安全に戻します。</small>
+            <small class="control-help">買取店優先は新しく信頼できる2店舗以上の保守価格を使用。現相場探索では不足時に算出不可とし、フリマへ自動切替しません。従来の安定重視モデルの参考計算は、不足時にフリマ基準を使います。</small>
           </label>
           <label class="control"><span>利用する買取店</span><select id="buybackStoreModeInput"><option value="mail">郵送のみ</option><option value="all">店頭も利用</option><option value="selected">指定店舗のみ</option></select><small>店頭価格は郵送の出口へ混ぜません。</small></label>
           <label class="control"><span>指定店舗ID（カンマ区切り）</span><input id="selectedBuybackStoresInput" type="text" placeholder="cardshop151-store,torecabank"><small>店舗IDは買取表詳細に表示します。</small></label>
@@ -868,14 +868,14 @@
   <script src="./purchase-ratio-model.js?v=20261006-v2"></script>
   <script src="./candidate-visibility.js?v=20260927-v1"></script>
   <script src="./catalog-index-adapter.js?v=20260927-v1"></script>
-  <script src="./limit-display-model.js?v=20261003-focus-v1"></script>
+  <script src="./limit-display-model.js?v=20261007-cap-state-v1"></script>
   <script src="./return-horizon-model.js?v=20261004-reference-v1"></script>
   <script src="./price-reference-model.js?v=20261004-reference-v1"></script>
   <script src="./purchase-memo-model.js?v=20261004-reference-v1"></script>
   <script src="./release-year-filter.js?v=20261003-priority-v2"></script>
   <script src="./update-health-model.js?v=20260930-v1"></script>
   <script src="./update-health-banner.js?v=20261001-v1"></script>
-  <script src="./current-market-model.js?v=20261007-search-reuse-v1"></script>
-  <script src="./app.js?v=20261007-search-reuse-v1"></script>
+  <script src="./current-market-model.js?v=20261007-cap-state-v1"></script>
+  <script src="./app.js?v=20261007-cap-state-v1"></script>
 </body>
 </html>
