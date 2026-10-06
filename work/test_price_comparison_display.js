@@ -30,6 +30,7 @@ assert.doesNotMatch(render({ ...card, currentStoreOffer: { ...card.currentStoreO
 assert.doesNotMatch(render({ ...card, currentStoreOffer: { ...card.currentStoreOffer, updatedAt: '2026-09-01' } }), /32,000/);
 assert.match(render(card, '2026-09-01'), /古い価格/);
 assert.match(render(card, null), /確認日時未取得/);
+assert.match(render(card, '2026-10-06'), /時刻未取得/);
 for (const missing of [null, NaN, Infinity, 0, -1]) {
   const output = render({ ...card, psa10: missing, psa10Audit: { adoptedPrice: missing } });
   assert.match(output, /未取得・予測値で補完しません/);

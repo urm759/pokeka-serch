@@ -4162,7 +4162,7 @@ function priceComparisonCells(card, limitDisplay, confirmedAt, now = Date.now())
     return Number.isFinite(time) ? new Intl.DateTimeFormat("ja-JP", {
       timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit",
       ...(String(value).includes("T") ? { hour: "2-digit", minute: "2-digit" } : {}),
-    }).format(time) : "日時未取得";
+    }).format(time) + (String(value).includes("T") ? "" : "（時刻未取得）") : "日時未取得";
   };
   const offer = card.currentStoreOffer;
   const offerTime = offer?.updatedAt ? Date.parse(offer.updatedAt) : NaN;
@@ -4666,7 +4666,11 @@ function render() {
       reason: limitReasonLabel(buyLimits?.clean),
     });
     const limitMoney = (value) => value == null ? "算出不可" : `¥${fmt.format(value)}`;
-    const priceCells = priceComparisonCells(card, limitDisplay, state.sourceUpdates.toreca);
+    const marketConfirmation = state.updateStatus?.sources?.toreca;
+    const marketConfirmedAt = marketConfirmation?.lastSuccessAt
+      && marketConfirmation.date === String(state.sourceUpdates.toreca || "").slice(0, 10)
+      ? marketConfirmation.lastSuccessAt : state.sourceUpdates.toreca;
+    const priceCells = priceComparisonCells(card, limitDisplay, marketConfirmedAt);
     const limitComparison = `
       <div class="price-comparison-grid" aria-label="現在価格と仕入れ上限の比較">${priceCells}</div>
       <div class="limit-context"><span>売却先：${escapeHtml(limitDisplay.exitLabel)}</span><span>採用価格データ更新日：${escapeHtml(limitDisplay.priceDate || "未取得")}</span><span>PSA10想定率：${limitDisplay.hitRate == null ? "未取得" : `${limitDisplay.hitRate.toFixed(1)}%`}</span><span>上限差額：${limitDisplay.gap == null ? "算出不可" : `${limitMoney(Math.abs(limitDisplay.gap))}（安定重視が${limitDisplay.gap >= 0 ? "低い" : "高い"}）`}</span></div>
