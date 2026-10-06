@@ -21,6 +21,7 @@ const window = {
   BacktestModel: require("../backtest-model.js"),
   CardSearchIndexModel: require("../search-index-model.js"),
   SnkrRawFlipModel: require("../snkr-raw-flip-model.js"),
+  CurrentMarketModel: require("../current-market-model.js"),
   POKEMON_CARDS_META: meta,
 };
 const source = fs.readFileSync(path.join(root, "app.js"), "utf8");

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20261006-price-layout-v2" />
+  <link rel="stylesheet" href="./styles.css?v=20261006-current-market-v1" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -54,7 +54,7 @@
         </label>
         <label class="control">
           <span>期待利益率 下限</span>
-          <small>下の検索計算基準を使用。空欄は無効</small>
+          <small>下の検索計算基準を使用。現相場採算モードは実店舗／手入力買値×現在出口相場。空欄は無効</small>
           <input id="expectedRoiFilterInput" type="number" step="1" value="0" placeholder="無効" />
         </label>
         <label class="control">
@@ -62,7 +62,7 @@
           <small>0円は赤字除外。空欄は利益額フィルター無効</small>
           <input id="expectedProfitFilterInput" type="number" step="1000" value="0" placeholder="無効" />
         </label>
-        <label class="control"><span>利益検索の計算基準</span><select id="profitSearchBasisInput"><option value="auto">自動：価格待ちは上限／今すぐは店舗</option><option value="limit">安定重視上限で購入 × 中央予測</option><option value="store">実店舗在庫価格で購入 × 中央予測</option><option value="current">基準相場で購入 × 中央予測</option></select></label>
+        <label class="control"><span>安定重視モードの利益検索基準</span><select id="profitSearchBasisInput"><option value="auto">自動：価格待ちは上限／今すぐは店舗</option><option value="limit">安定重視上限で購入 × 中央予測</option><option value="store">実店舗在庫価格で購入 × 中央予測</option><option value="current">基準相場で購入 × 中央予測</option></select><small>現相場採算では実店舗／手入力買値×現在出口相場に固定。戻すと保存済み基準を使います。</small></label>
         <label class="check-control"><input id="includePeriodReferenceInput" type="checkbox" checked />価格待ち探索に期間不一致の参考値を含める（GO不可）</label>
         <p class="filter-explanation">今すぐ仕入れは検索基準によらず実店舗在庫価格で再判定します。期間不一致は返却時利益ではなく91日モデルの参考探索です。価格待ちでも出口・安全条件と上限×供給ストレスの赤字回避が必要です。</p>
         <label class="control safety-profit-control">
@@ -87,6 +87,7 @@
           <span>並び順</span>
           <select id="sortInput">
             <option value="overall-desc">銘柄品質が高い順</option>
+            <option value="currentBreakEven-desc">現相場の期待損益分岐上限が高い順</option>
             <option value="buyLimitClean-desc">美品の仕入れ上限が高い順</option>
             <option value="buyLimitScratch-desc">傷ありの仕入れ上限が高い順</option>
             <option value="roi-desc">利益率が高い順</option>
@@ -157,6 +158,7 @@
         <span>かんたん絞り込み</span>
         <button type="button" data-preset="curated"><strong>厳選候補</strong><small>従来のおまかせ同等の厳格条件</small></button>
         <button type="button" data-preset="combined"><strong>おまかせ総合</strong><small>候補を重複なしでまとめる</small></button>
+        <button type="button" data-preset="current-market"><strong>現相場採算で探す</strong><small>現相場維持の仮定探索・購入GOとは別</small></button>
         <button type="button" data-preset="now"><strong>今すぐ仕入れ</strong><small>新しい在庫あり価格が上限以下</small></button>
         <button type="button" data-preset="aggressive"><strong>攻め仕入れ圏</strong><small>期待値は黒字・PSA9時赤字あり</small></button>
         <button type="button" data-preset="low-risk"><strong>低リスク候補</strong><small>価格待ちを含む</small></button>
@@ -179,6 +181,14 @@
         <label class="preset-file-action">条件CSV読込<input id="importSearchInput" type="file" accept=".csv,text/csv" /></label>
       </div>
 
+      <section id="currentMarketControls" class="current-market-controls" hidden aria-label="現相場採算の探索条件">
+        <strong>現相場が続く仮定の探索（購入GOではありません）</strong>
+        <div class="controls">
+          <label class="control"><span>現相場の期待損益分岐上限 下限（円）</span><input id="currentMarketCapMinInput" type="number" min="0" step="500" placeholder="空欄は条件なし" /><small>有効な0円と算出不可は別。安定重視上限を変更しません。</small></label>
+          <label class="control"><span>店舗価格未取得時の手入力試算買値（円）</span><input id="currentMarketManualPriceInput" type="number" min="0" step="500" placeholder="未入力は購入価格未取得" /><small>在庫ありの新しい店舗価格があるカードは店舗価格を優先。手入力は購入先確認ではありません。</small></label>
+        </div>
+        <p>利益検索は実店舗価格（未取得時だけ手入力）×現在の売却相場。返却時の相場維持や全鑑定結果の黒字は保証しません。安定上限・ストレス利益・期間適合・購入GO条件はこの探索に適用しませんが、価格対立・誤紐付け・古値・必要データの確認は維持します。詳細設定の費用・売却先・利益下限を使用します。</p>
+      </section>
       <details class="advanced-filters snkr-raw-settings">
         <summary>
           <span>スニダン素体流しの設定</span>
@@ -862,6 +872,7 @@
   <script src="./release-year-filter.js?v=20261003-priority-v2"></script>
   <script src="./update-health-model.js?v=20260930-v1"></script>
   <script src="./update-health-banner.js?v=20261001-v1"></script>
-  <script src="./app.js?v=20261006-price-layout-v2"></script>
+  <script src="./current-market-model.js?v=20261006-current-market-v1"></script>
+  <script src="./app.js?v=20261006-current-market-v1"></script>
 </body>
 </html>
