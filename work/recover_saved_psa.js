@@ -6,7 +6,7 @@ function merge(previous, incoming, now = Date.now()) {
   const audit = { added: 0, refreshed: 0, changed: 0, rejected: 0, olderOrSame: 0, evidence: [] };
   for (const row of incoming) {
     const date = Date.parse(row.fetchedAt), old = map.get(key(row));
-    if (!/^https:\/\/www\.psacard\.com\/pop\/tcg-cards\//.test(row.sourceUrl || "") || !row.setCode || !row.cardNo || !row.cardName
+    if (!/^https:\/\/www\.psacard\.com\/(?:pop\/tcg-cards\/|spec\/psa\/\d+(?:[/?#]|$))/.test(row.sourceUrl || "") || !row.setCode || !row.cardNo || !row.cardName
       || !Number.isInteger(row.psaTotal) || row.psaTotal <= 0 || !Number.isInteger(row.psa10Count) || row.psa10Count < 0 || row.psa10Count > row.psaTotal || !Number.isFinite(date) || date > now) { audit.rejected++; continue; }
     if (old && date <= Date.parse(old.fetchedAt || "")) { audit.olderOrSame++; continue; }
     if (!old) audit.added++; else {
