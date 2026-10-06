@@ -566,10 +566,10 @@ async function renderPsaHistory(details) {
 
 const sorters = {
   "currentBreakEven-desc": (a, b) => (currentMarketView(b).cap ?? -Infinity) - (currentMarketView(a).cap ?? -Infinity),
-  "roi-desc": (a, b) => b.roi - a.roi,
-  "roi-asc": (a, b) => a.roi - b.roi,
-  "profit-desc": (a, b) => b.profit - a.profit,
-  "profit-asc": (a, b) => a.profit - b.profit,
+  "roi-desc": (a, b) => state.purchaseMode === "current-market" ? (currentMarketView(b).economics?.expectedRoi ?? -Infinity) - (currentMarketView(a).economics?.expectedRoi ?? -Infinity) : b.roi - a.roi,
+  "roi-asc": (a, b) => state.purchaseMode === "current-market" ? (currentMarketView(a).economics?.expectedRoi ?? Infinity) - (currentMarketView(b).economics?.expectedRoi ?? Infinity) : a.roi - b.roi,
+  "profit-desc": (a, b) => state.purchaseMode === "current-market" ? (currentMarketView(b).economics?.expectedProfit ?? -Infinity) - (currentMarketView(a).economics?.expectedProfit ?? -Infinity) : b.profit - a.profit,
+  "profit-asc": (a, b) => state.purchaseMode === "current-market" ? (currentMarketView(a).economics?.expectedProfit ?? Infinity) - (currentMarketView(b).economics?.expectedProfit ?? Infinity) : a.profit - b.profit,
   "psaRecommend-desc": (a, b) => Number(b.psaDecision?.recommended) - Number(a.psaDecision?.recommended) || (b.psaDecision?.annualEfficiency ?? -Infinity) - (a.psaDecision?.annualEfficiency ?? -Infinity),
   "overall-desc": (a, b) => (b.overallAssessment?.score ?? -Infinity) - (a.overallAssessment?.score ?? -Infinity) || b.roi - a.roi,
   "buyLimitClean-desc": (a, b) => (b.buyLimits?.clean?.maxPrice ?? -Infinity) - (a.buyLimits?.clean?.maxPrice ?? -Infinity),
@@ -5607,7 +5607,15 @@ document.querySelectorAll("[data-preset]").forEach((button) => {
 els.lowRiskAvailabilityInput?.addEventListener("change", syncFromUI);
 document.getElementById("profitSearchBasisInput")?.addEventListener("change", syncFromUI);
 document.getElementById("includePeriodReferenceInput")?.addEventListener("change", syncFromUI);
-for (const id of ["currentMarketCapMinInput","currentMarketManualPriceInput"]) document.getElementById(id)?.addEventListener("change",syncFromUI);
+let currentMarketInputTimer;
+for (const id of ["currentMarketCapMinInput","currentMarketManualPriceInput"]) {
+  const input = document.getElementById(id);
+  input?.addEventListener("change",syncFromUI);
+  input?.addEventListener("input", () => {
+    clearTimeout(currentMarketInputTimer);
+    currentMarketInputTimer = setTimeout(syncFromUI, 200);
+  });
+}
 document.getElementById("activeFilterSummary")?.addEventListener("click", (event) => {
   const clear = event.target.closest("[data-clear-condition]");
   if (clear) {
