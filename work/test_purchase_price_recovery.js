@@ -10,6 +10,13 @@ assert(dailyWorkflow.includes('git add work/purchase-price-targets.json work/pur
 const recoveryScript = fs.readFileSync(require('node:path').join(__dirname,'audit_purchase_price_recovery.js'),'utf8');
 assert(recoveryScript.includes('newAnalyzable:analysisRecorded ?'));
 assert(recoveryScript.includes('analyzableNet:current.analyzed-before.analyzed'));
+const appSource = fs.readFileSync(require('node:path').join(__dirname,'../app.js'),'utf8');
+const renderer = appSource.slice(appSource.indexOf('function renderPriorityPriceMonitor()'), appSource.indexOf('function renderTaskOperations()'));
+const context = {state:{updateStatus:{purchasePriceRecovery:{baselineAt:'2026-10-07T00:00:00Z',generatedAt:'2026-10-07T01:00:00Z',newAnalyzable:null,analyzableNet:1}}},escapeHtml:String,formatJstTimestamp:String,renderPriorityPriceRows:()=>'',renderTaskOperations:()=>''};
+const rendered = require('node:vm').runInNewContext(renderer+'\nrenderPriorityPriceMonitor()',context);
+assert(rendered.includes('比較期間：2026-10-07T00:00:00Z'));
+assert(rendered.includes('新規分析可能未記録'));
+assert(!rendered.includes('null枚'));
 const now = Date.parse('2026-10-07T00:00:00Z');
 const quote = (source,value,updatedAt,extra={}) => ({source,value,updatedAt,inventoryAt:updatedAt,kind:'販売価格',url:'https://example.test/'+source,available:true,identityVerified:true,inventoryKnown:true,...extra});
 const rows = [quote('old1',10000,'2026-09-20'),quote('old2',10500,'2026-09-20'),quote('old3',11000,'2026-09-20'),quote('new',5000,'2026-10-06T23:00:00Z')];

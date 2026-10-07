@@ -1245,6 +1245,7 @@ function renderPriceCapacityNotice() {
   return `<p class="helper">通常巡回は${Number(row.normalTargetHours || 720) / 24}日目標。実測の通常枠${row.normalCardsPerMinute ?? "未計測"}枚/分、一巡約${row.estimatedNormalSweepDays ?? "未計測"}日（通信・Actions遅延別）。古い価格をGOへ使える期間は延長しません。</p>`;
 }
 function renderPriorityPriceMonitor() {
+  const dateText = formatJstTimestamp;
   const monitor = state.updateStatus?.priorityPriceMonitor, fixed = monitor?.fixedCohortFreshness;
   const stats = fixed ? `<article class="source-status-card"><details><summary>同一カード群の6時間確認率・確認待ち分類</summary><p>${escapeHtml(fixed.method)}／比較開始 ${escapeHtml(formatJstTimestamp(fixed.baselineAt))}</p>${Object.entries(fixed.sources).map(([id,r])=>`<p><b>${escapeHtml(id)}</b>：${r.latest.fresh6h}/${r.latest.cohort}枚（${r.latest.fresh6hPct?.toFixed(1) ?? '未計測'}%）／開始時 ${r.baseline?.fresh6hPct?.toFixed(1) ?? '未観測'}%／前回 ${r.previous?.fresh6hPct?.toFixed(1) ?? '未観測'}%／最大期限超過 ${r.latest.maxOverdueHours?.toFixed(1) ?? '未計測'}時間<br>6時間超過の巡回待ち ${r.latest.autoWait}／手動確認待ち ${r.latest.manualWait}／アクセス停止 ${r.latest.accessStopped}／確認日時なし ${r.latest.unconfirmed}。対象追加${r.latest.added}・現在優先外${r.latest.missingFromCurrent}（うち6時間超過${r.latest.outsidePriorityStale ?? "未集計"}）は相場変動と別集計。優先外は通常巡回期限で処理します。</p>`).join('')}<a href="./data/freshness-correction-audit.json">同じ旧データ・時刻での鮮度集計修正</a> / <a href="./data/priority-manual-wait-audit.json">商品の確認待ち原因・巡回復帰結果</a></details></article>` : '';
   const policy = state.updateStatus?.sourceAccessPolicy;
