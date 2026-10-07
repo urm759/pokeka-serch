@@ -89,7 +89,7 @@ async function main() {
       : reason.includes("みんトレ") ? "daily:source-stale" : "daily:run-stale",
     reason, url: health.latestRunUrl,
   }));
-  const monitor = require("./source_monitor.js").build(ROOT, status.sources || {}, status.unifiedMonitor || {});
+  const monitor = require("./source_monitor.js").build(ROOT, status.sources || {}, status.unifiedMonitor || {}, Date.now(), { savedOutcomes: true });
   const sourceIssues = Object.entries(monitor.rows).flatMap(([id, row]) => {
     const entries = [];
     if (row.stopReason && /403|認証|形式|曖昧|failed|失敗|競合|sign.?in|log.?in|cloudflare/i.test(row.stopReason)) entries.push({ key: `source:${id}:manual-wait`, reason: `${row.label}: ${row.stopReason}`, url: row.failureUrl });

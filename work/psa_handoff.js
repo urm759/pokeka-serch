@@ -34,7 +34,7 @@ function prepareInputs(root = ROOT) {
     const snapshotDirectory = path.join(directory, commit); fs.mkdirSync(snapshotDirectory, { recursive: true });
     atomicWrite(path.join(snapshotDirectory, "manifest.json"), manifest);
     atomicWrite(path.join(snapshotDirectory, "priority.json"), priority);
-    const runtimeFiles = ['update_psa_official_populations.js','build_psa_history.js','acquisition_retry.js'];
+    const runtimeFiles = ['update_psa_official_populations.js','build_psa_history.js','acquisition_retry.js','fair_batch.js'];
     const runtimeHashes = {};
     for (const file of runtimeFiles) {
       const source = show(`${commit}:work/${file}`);
@@ -42,6 +42,13 @@ function prepareInputs(root = ROOT) {
       fs.writeFileSync(target, source);
       runtimeHashes[file] = crypto.createHash('sha256').update(source).digest('hex');
       if (crypto.createHash('sha256').update(fs.readFileSync(target)).digest('hex') !== runtimeHashes[file]) throw new Error('PSA runtime snapshot integrity failed');
+    }
+    for (const file of runtimeFiles) {
+      const source = fs.readFileSync(path.join(snapshotDirectory, file), 'utf8');
+      for (const match of source.matchAll(/require\(["'](\.\.?\/[^"']+)["']\)/g)) {
+        const target = path.resolve(snapshotDirectory, match[1]);
+        if (!fs.existsSync(target) && !fs.existsSync(target + '.js')) throw new Error('PSA runtime dependency missing: ' + match[1]);
+      }
     }
     const result = { status: "latest-fetched-main", commit, preparedAt: new Date().toISOString(), quarantinedUrls, manifestPath: path.join(snapshotDirectory, "manifest.json"), priorityPath: path.join(snapshotDirectory, "priority.json"),
       collectorPath:path.join(snapshotDirectory,'update_psa_official_populations.js'),historyPath:path.join(snapshotDirectory,'build_psa_history.js'),runtimeHashes,httpAcquisitionRequests: 0 };

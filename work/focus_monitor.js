@@ -1,6 +1,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const decisionModel = require("../decision-model.js");
+const { fairBatch } = require("./fair_batch.js");
 const read = (root, file, fallback = {}) => { try { return JSON.parse(fs.readFileSync(path.join(root, file), "utf8")); } catch { return fallback; } };
 const normalized = (value) => String(value || "").normalize("NFKC").toUpperCase();
 function groupFor(card, config) {
@@ -11,19 +12,6 @@ function groupFor(card, config) {
     && (!g.number || number === normalized(g.number))
     && g.names.some((name) => String(card.name || "").startsWith(name))
     && (!g.rarity || new RegExp(`\\b${g.rarity}\\b`).test(normalized(card.name)))) || null;
-}
-function fairBatch(rows, size, isFocused, maxShare = 0.4) {
-  const count = Math.max(0, Math.floor(size));
-  if (!count) return [];
-  const focused = rows.filter(isFocused), normal = rows.filter((r) => !isFocused(r));
-  // Reserve ordinary work while it exists; spare capacity may serve focused work.
-  const quota = Math.floor(count * Math.min(0.5, Math.max(0, maxShare)));
-  const chosen = [...focused.slice(0, quota), ...normal.slice(0, count - quota)];
-  if (chosen.length < count) {
-    const used = new Set(chosen);
-    chosen.push(...rows.filter((r) => !used.has(r)).slice(0, count - chosen.length));
-  }
-  return chosen;
 }
 function observation(value, at, now, hours, extra = {}) {
   const valid = value != null && Number.isFinite(Number(value)) && Number(value) > 0;

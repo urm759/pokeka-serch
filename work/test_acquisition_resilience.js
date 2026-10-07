@@ -42,7 +42,7 @@ retry.atomicWrite(path.join(producer, "data/psa-official-populations.json"), { r
 retry.atomicWrite(path.join(producer, "work/psa-fetch-progress.json"), { startedAt: "2026-10-06T00:00:00Z", completedUrls: [pop.sourceUrl] });
 retry.atomicWrite(path.join(producer, "work/psa_set_urls.json"), [{ setCode: "SV9", url: pop.sourceUrl }]);
 retry.atomicWrite(path.join(producer, "work/psa_priority_queue.json"), { rows: [{ cardId: "new-card", setCode: "SV9", cardNo: "126" }] });
-for (const file of ['update_psa_official_populations.js','build_psa_history.js','acquisition_retry.js']) {
+for (const file of ['update_psa_official_populations.js','build_psa_history.js','acquisition_retry.js','fair_batch.js']) {
   fs.copyFileSync(path.join(__dirname,file),path.join(producer,'work',file));
 }
 git(["add", "data", "work"], producer); git(["commit", "-m", "Initial"], producer); git(["push", "origin", "main"], producer);
@@ -72,6 +72,11 @@ assert.equal(inputs.httpAcquisitionRequests, 0);
 assert.equal(JSON.parse(fs.readFileSync(inputs.priorityPath)).rows[0].cardId, "new-card");
 assert.equal(require(inputs.collectorPath).cellTextWithSpecification({childNodes:[{textContent:'Pikachu'},{textContent:'Master Ball Reverse Holo'}]}),'Pikachu | Master Ball Reverse Holo');
 assert.equal(fs.readFileSync(inputs.historyPath,'utf8').replace(/\r\n/g,'\n'),fs.readFileSync(path.join(__dirname,'build_psa_history.js'),'utf8').replace(/\r\n/g,'\n'),'snapshot comes from fetched commit, not an edited working source');
-assert.equal(Object.keys(inputs.runtimeHashes).length,3);
+assert.equal(Object.keys(inputs.runtimeHashes).length,4);
+assert.equal(require(path.join(path.dirname(inputs.collectorPath),'fair_batch.js')).fairBatch([1,2,3],2,x=>x===1).length,2);
+for (const file of Object.keys(inputs.runtimeHashes)) {
+  const source=fs.readFileSync(path.join(path.dirname(inputs.collectorPath),file),'utf8');
+  for(const match of source.matchAll(/require\(["'](\.\.?\/[^"']+)["']\)/g)) assert.doesNotThrow(()=>require.resolve(path.resolve(path.dirname(inputs.collectorPath),match[1])));
+}
 assert(fs.readFileSync(path.join(producer, "USER-NOTES.txt"), "utf8").includes("survive"));
 console.log("Transient retries, URL/source isolation, adaptive rate, duplicate lock, saved packet checksum, concurrent Git publication and newer checkpoint preservation: passed");

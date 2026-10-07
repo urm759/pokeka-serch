@@ -13,8 +13,11 @@ function pcHealth(observation, now = Date.now()) {
   if (observation.independentObserverRegistered === false) return { status: "独立監視未登録", reason: "Windowsのタスク登録権限が不足。通常PSAのfinally観測は稼働するが、起動前失敗を捕捉する独立タスクは未登録" };
   return { status: "観測受信済み", reason: "取得・公開の成否はPSA実行履歴で別判定" };
 }
-function build(root, sources, previous = {}, now = Date.now()) {
-  const outcomes = require("./audit_completion_outcomes.js").build(root, now);
+function build(root, sources, previous = {}, now = Date.now(), options = {}) {
+  const outcomes = options.savedOutcomes
+    ? read(root, "data/completion-outcomes.json", null)
+    : require("./audit_completion_outcomes.js").build(root, now);
+  if (!outcomes) throw new Error("Saved completion outcomes missing; acquisition summary must be generated first");
   const audit = read(root, "data/acquisition-progress-audit.json").sources || {};
   const total = read(root, "data/pokemon-cards.json", []).length;
   const queue = read(root, "work/card-completion-queue.json");

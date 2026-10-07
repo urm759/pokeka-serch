@@ -35,6 +35,8 @@ assert.equal(q.rows[0].status, "ambiguous"); assert.equal(q.rows[0].sourceSetUrl
 const published = JSON.parse(fs.readFileSync("data/completion-outcomes.json", "utf8"));
 const status = JSON.parse(fs.readFileSync("data/update-status.json", "utf8"));
 const completion = JSON.parse(fs.readFileSync("data/card-catalog-completion.json", "utf8"));
+const savedMonitor = require('./source_monitor.js').build(process.cwd(), status.sources || {}, status.unifiedMonitor || {}, Date.now(), { savedOutcomes: true });
+assert.deepEqual(savedMonitor.outcomes, published, 'read-only monitoring must preserve saved acquisition deltas');
 assert.deepEqual(status.unifiedMonitor.outcomes, published, "screen and downloadable audit must have identical counts");
 assert.equal(published.counts.listed, completion.summary.total);
 assert.equal(published.counts.analyzable, completion.summary.analyzable);
