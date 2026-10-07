@@ -20,9 +20,9 @@ function measure(){
     const t=performance.now();texts.forEach(text=>JSON.parse(text));return performance.now()-t;
   };
   const jsonParseMs=median(Array.from({length:3},()=>parsePayload(false))),doubleJsonParseMs=median(Array.from({length:3},()=>parsePayload(true)));
-  const index=codec.decode(JSON.parse(fs.readFileSync(path.join(root,manifest.aliases['data/card-catalog/search-index.json'])))).cards;
+  const index=search.hydrate(codec.decode(JSON.parse(fs.readFileSync(path.join(root,manifest.aliases['data/card-catalog/search-index.json'])))).cards);
   const searchTimes=[];
-  const doubledIndex=codec.decode(JSON.parse(doubledPayload.get(manifest.aliases['data/card-catalog/search-index.json']))).cards;
+  const doubledIndex=search.hydrate(codec.decode(JSON.parse(doubledPayload.get(manifest.aliases['data/card-catalog/search-index.json']))).cards);
   const doubleSearchTimes=[];
   for(let repeat=0;repeat<5;repeat++){
     const t=performance.now();const found=search.search(index,'M2 110/080');searchTimes.push(performance.now()-t);

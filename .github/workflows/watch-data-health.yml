@@ -43,7 +43,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           node work/build_ui_data.js
           node work/test_ui_data.js
-          git add data/update-health.json data/update-status.json data/proactive-refresh-audit.json data/scheduled-cycle-verification.json
+          git add data/update-health.json data/update-status.json data/proactive-refresh-audit.json data/scheduled-cycle-verification.json data/refresh-cadence-audit.json
           git add data/ui
           if git diff --cached --quiet; then exit 0; fi
           node work/publish_data_checkpoint.js "Report data update health"

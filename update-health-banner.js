@@ -31,10 +31,14 @@
   const message = document.createElement("span");
   message.textContent = '';
   const categorized = [...dailyReasons.map(reason => ({reason})), ...backfillIssues];
-  for (const category of [...new Set(categorized.map(issue => model.issueCategory(issue)))]) {
+  const summaries = [...new Map(categorized.map(issue => {
+    const summary = model.summarizeIssue(issue);
+    return [JSON.stringify(summary), summary];
+  })).values()];
+  for (const summary of summaries) {
     const line = document.createElement('span');
     line.style.display = 'block';
-    line.textContent = `${category}：${categorized.filter(issue => model.issueCategory(issue) === category).map(issue => issue.reason).join('／')}`;
+    line.textContent = `${summary.cause}／${summary.impact}／${summary.action}`;
     message.append(line);
   }
   const link = document.createElement("a");
@@ -42,5 +46,13 @@
   link.target = "_blank";
   link.rel = "noreferrer";
   link.textContent = "実行履歴を見る";
-  banner.replaceChildren(title, message, link);
+  const details = document.createElement('details');
+  const heading = document.createElement('summary');
+  heading.textContent = '停止理由・詳細ログ';
+  const log = document.createElement('pre');
+  log.style.whiteSpace = 'pre-wrap';
+  log.style.overflowWrap = 'anywhere';
+  log.textContent = categorized.map(issue => issue.reason).join('\n\n');
+  details.append(heading, log);
+  banner.replaceChildren(title, message, link, details);
 })();

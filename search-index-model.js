@@ -74,5 +74,12 @@
       .map((item) => item.entry);
   }
 
-  return { compact, normalize, numberKey, queryParts, rankEntry, search };
+  function hydrate(entries) {
+    return entries.map(entry => ({ ...entry,
+      p:entry.p ?? `data/card-catalog/chunks/${String(Number(entry.c||0)).padStart(3,'0')}.json`,
+      k:entry.k ?? compact(`${entry.n||''} ${(entry.a||[]).join(' ')} ${entry.s||''} ${entry.no||''} ${entry.r||''} ${entry.id||''}`),
+      sk:entry.sk ?? compact(entry.s||''), nok:entry.nok ?? numberKey(entry.no||''),
+      x:entry.x ?? (numberKey(entry.no||'')&&compact(entry.s||'')?`${compact(entry.s)}|${numberKey(entry.no)}`:'') }));
+  }
+  return { compact, normalize, numberKey, queryParts, rankEntry, search, hydrate };
 });

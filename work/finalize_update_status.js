@@ -60,7 +60,7 @@ const psaTaskBase = acquisitionStartedAt > storedStartedAt ? {
   ...psaStoredTask,
   ...psaAcquisition,
   lastAttemptAt: psaAcquisition.startedAt || null,
-  lastSuccessAt: psaAcquisition.status === "success" ? psaAcquisition.endedAt : psaStoredTask.lastSuccessAt || null,
+  lastSuccessAt: ['success','partial'].includes(psaAcquisition.status) && psaAcquisition.acquiredCount > 0 ? psaAcquisition.endedAt : psaStoredTask.lastSuccessAt || null,
   lastError: psaAcquisition.error || null,
   syncStatus: psaStoredTask.syncStatus || null,
   syncError: psaStoredTask.syncError || null,

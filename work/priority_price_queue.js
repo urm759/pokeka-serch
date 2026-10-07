@@ -90,11 +90,11 @@ function write(root = ROOT) {
       httpRequests: run.httpRequests ?? null, cacheHits: run.cacheHits ?? 0, cardsPerMinute: rate ? Number((rate * 60).toFixed(2)) : null,
       priorityCardsPerMinute: priorityRate ? Number((priorityRate * 60).toFixed(2)) : null,
       normalCardsPerMinute: normalRate ? Number((normalRate * 60).toFixed(2)) : null,
-      estimatedNormalSweepDays: normalRate && !blocked ? Math.ceil((planned.records.length - important.length) / (normalRate * budgetSeconds * 12)) : null,
+        estimatedNormalSweepDays: normalRate && !blocked ? Math.ceil((planned.records.length - important.length) / (normalRate * budgetSeconds * (86400000 / proactive.lead(timingConfig(root)).intervalMs))) : null,
       normalTargetHours: read(root, "data/priority-price-config.json").normalHours || 720,
       estimatedSweepActiveMinutes: priorityRate && !blocked ? Math.ceil(important.length / priorityRate / 60) : null,
       estimatedExecutionsToClearOverdue: priorityRate && !blocked ? Math.ceil(important.filter((r) => r.due).length / (priorityRate * budgetSeconds)) : null,
-      estimatedFullSweepHours: priorityRate && !blocked ? Math.ceil(important.length / (priorityRate * budgetSeconds)) * 2 : null,
+        estimatedFullSweepHours: priorityRate && !blocked ? Math.ceil(important.length / (priorityRate * budgetSeconds)) * proactive.lead(timingConfig(root)).intervalMs / 3600000 : null,
       lastRunAt: run.startedAt || null, checkpoint: run.nextId || null,
       cards: important.map((r) => ({ id: r.card.id, name: r.card.name, lastConfirmedAt: r.lastSuccessAt, nextDueAt: r.nextDueAt,
         lastAttemptAt: checkpoint.sources?.[id]?.jobs?.[r.card.id]?.lastAttemptAt || null, status: blocked ? "アクセス確認待ち・正常値保持" : r.status, priorityReason: r.reason })) };
@@ -104,7 +104,8 @@ function write(root = ROOT) {
     sources[id].capacity = require('./refresh_capacity.js').estimate({importantCount:important.length,
       eligibleCount:planned.queue.filter(r=>r.important).length, manualCount:important.filter(r=>r.status==='手動確認待ち').length,
       retryCount:important.filter(r=>r.status==='再試行待ち').length,blocked:Boolean(blocked),
-      verifiedCount:run.refreshedCount,durationMs:run.durationMs,budgetMs:budgetSeconds*1000});
+      verifiedCount:run.refreshedCount,durationMs:run.durationMs,budgetMs:budgetSeconds*1000,
+      intervalMs:proactive.lead(timingConfig(root)).intervalMs});
     sources[id].proactiveVerified = run.proactiveVerified ?? null;
     sources[id].proactiveAttempted = run.proactiveAttempted ?? null;
   }
@@ -177,7 +178,9 @@ function confirmedInventoryAt(inventory, run) {
 function timingConfig(root = ROOT) {
   const config = read(root, "data/priority-price-config.json");
   const execution = read(root, "data/priority-price-execution.json");
+  const cadence = read(root, "data/refresh-cadence-audit.json");
   return {...config, pipelineBudgetMs: 24 * 60000,
+    ...(Date.now()-Date.parse(cadence.checkedAt)<48*3600000 && cadence.observedSuccessfulIntervalMs>0 ? {observedSuccessfulIntervalMs:cadence.observedSuccessfulIntervalMs} : {}),
     ...(Number.isFinite(execution.startDelayMs) ? {observedStartDelayMs:Math.max(30*60000,execution.startDelayMs)} : {})};
 }
 module.exports = { plan, finish, load, write, confirmedInventoryAt, timingConfig };

@@ -910,7 +910,7 @@ function renderSourceObservability() {
         ${source.diagnostics?.externalBlock ? `<p class="source-blocked">外部要因: ${escapeHtml(source.diagnostics.externalBlock.message || "アクセス制限")}</p>` : ""}
         ${source.syncStatus ? `<p>Git同期: ${escapeHtml(source.syncStatus)}${source.syncError ? ` / ${escapeHtml(source.syncError)}` : ""}</p>` : ""}
         ${source.publishStatus ? `<p>公開: ${escapeHtml(source.publishStatus)}${source.publishError ? ` / ${escapeHtml(source.publishError)}` : ""}</p>` : ""}
-        ${source.lastError ? `<p>直近エラー: ${escapeHtml(source.lastError)}</p>` : ""}
+        ${source.lastError ? `<details><summary>直近エラー・詳細ログ</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">${escapeHtml(source.lastError)}</pre></details>` : ""}
         ${diagnosticsHtml}
         ${monitorHtml}
         ${sourceId === "psaOfficial" && state.updateStatus?.unifiedMonitor?.pc ? `<details class="source-run-history"><summary>PCタスク独立監視：${escapeHtml(state.updateStatus.unifiedMonitor.pc.health?.status || "未観測")}</summary><p>${escapeHtml(state.updateStatus.unifiedMonitor.pc.health?.reason || "")}</p><p>観測 ${escapeHtml(formatJstTimestamp(state.updateStatus.unifiedMonitor.pc.observedAt))}</p>${(state.updateStatus.unifiedMonitor.pc.tasks || []).map((t) => `<p>${escapeHtml(t.name)} / ${escapeHtml(t.target)} / 結果 ${t.result} / ${escapeHtml(formatJstTimestamp(t.lastRun))}${t.preStartFailure ? " / 起動前失敗" : ""}</p>`).join("")}</details>` : ""}
@@ -3149,7 +3149,10 @@ async function fetchJsonMaybe(url, { detail = false } = {}) {
     const jsonParseMs = performance.now() - parseStart;
     const decodeStart = performance.now();
     const payload = window.UiDataCodec ? await window.UiDataCodec.decodeAsync(parsed) : parsed;
-    uiLoadMetrics.push({ file, bytes: raw.byteLength, networkMs, verifyMs, jsonParseMs, decodeMs: performance.now() - decodeStart });
+    const resource = performance.getEntriesByName(res.url).at(-1);
+    uiLoadMetrics.push({ file, bytes: raw.byteLength, networkMs, verifyMs, jsonParseMs, decodeMs: performance.now() - decodeStart,
+      transferBytes: resource?.transferSize ?? null, compressedBodyBytes: resource?.encodedBodySize ?? null,
+      expandedBodyBytes: resource?.decodedBodySize ?? null });
     loadedDataRevision++;
     return payload;
   } catch (error) {
@@ -5620,7 +5623,7 @@ async function init() {
     state.operationalLimitHistory = await fetchJsonMaybe("./data/operational-limit-history.json") || Object.create(null);
     state.catalogManifest = await fetchJsonMaybe("./data/card-catalog/manifest.json");
     const searchIndexPayload = await fetchJsonMaybe("./data/card-catalog/search-index.json");
-    state.searchIndex = Array.isArray(searchIndexPayload?.cards) ? searchIndexPayload.cards : [];
+    state.searchIndex = Array.isArray(searchIndexPayload?.cards) ? searchIndexModel.hydrate(searchIndexPayload.cards) : [];
     if (state.searchIndex.length && state.catalogCompletion?.cards && catalogIndexAdapter) {
       state.catalogIndex = catalogIndexAdapter.fromSearchAndCompletion(state.searchIndex, state.catalogCompletion.cards);
     } else {
@@ -5708,7 +5711,9 @@ async function init() {
     const metrics = document.createElement("details");
     metrics.className = "ui-load-metrics";
     const bytes = uiLoadMetrics.reduce((n, r) => n + r.bytes, 0);
-    metrics.innerHTML = `<summary>初期読込 ${(bytes / 1048576).toFixed(2)} MiB / ${uiLoadMetrics.length} JSON（監査は必要時）</summary><small>JSON解析 ${uiLoadMetrics.reduce((n,r)=>n+r.jsonParseMs,0).toFixed(1)}ms / 展開 ${uiLoadMetrics.reduce((n,r)=>n+r.decodeMs,0).toFixed(1)}ms。通信は並列のため時間を合算しません。詳細と元データは保持。<a href="./data/ui-improvement-audit.json">実補完・現在/2倍の測定結果</a> / <a href="./data/recovery-completion-audit.json" target="_blank" rel="noreferrer">公開失敗の回収・今回の実補完監査</a></small>`;
+    const transfer = uiLoadMetrics.reduce((n,r)=>n+(r.transferBytes||0),0);
+    const compressed = uiLoadMetrics.reduce((n,r)=>n+(r.compressedBodyBytes||0),0);
+    metrics.innerHTML = `<summary>初期JSON展開前容量 ${(bytes / 1048576).toFixed(2)} MiB / ${uiLoadMetrics.length} JSON（監査は必要時）</summary><small>通信 ${transfer ? (transfer/1048576).toFixed(2)+' MiB' : 'キャッシュまたは計測不可'}／圧縮本文 ${compressed ? (compressed/1048576).toFixed(2)+' MiB' : '計測不可'}。JSON解析 ${uiLoadMetrics.reduce((n,r)=>n+r.jsonParseMs,0).toFixed(1)}ms / 展開 ${uiLoadMetrics.reduce((n,r)=>n+r.decodeMs,0).toFixed(1)}ms。通信時間は並列のため合算しません。計算・描画は固定条件で別測定。詳細と元データは保持。<a href="./data/ui-improvement-audit.json">実補完・現在/2倍の測定結果</a> / <a href="./data/recovery-completion-audit.json" target="_blank" rel="noreferrer">公開失敗の回収・今回の実補完監査</a></small>`;
     metrics.dataset.measurements = JSON.stringify(uiLoadMetrics);
     els.catalogCoverageSummary?.after(metrics);
   } catch (err) {

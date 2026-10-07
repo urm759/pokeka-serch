@@ -121,7 +121,9 @@ function publish(root = ROOT, options = {}) {
           result.published.push(commit); journal.status = "published"; success = true;
         } catch (error) {
           journal.attempts.push({ at: new Date().toISOString(), status: "failed", error: error.message });
-          if (!/rejected|fetch first|non-fast-forward|remote.*(500|502|503)|unable to access/i.test(error.message)) break;
+          if (!/rejected|fetch first|non-fast-forward|remote.*(500|502|503)|unable to access|curl (?:28|55|56)|connection (?:was )?reset|unexpected disconnect/i.test(error.message)) break;
+          // Retry publication only; keep the immutable acquisition packet.
+          if (attempt + 1 < (options.retries || 3)) Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, Math.min(4000, 1000 * 2 ** attempt));
         } finally {
           atomicWrite(path.join(outbox, `${packet.digest}.journal.json`), journal);
           // Remove only this newly created, committed, clean checkout; never force removal.

@@ -18,6 +18,17 @@ function project(name, input) {
     }
   }
   if (name === 'market-research-summary') delete value.comparisons;
+  if (name === 'card-catalog/search-index') {
+    const search = require('../search-index-model');
+    for (const row of value.cards) {
+      const slim = { ...row }; for (const key of ['k','sk','nok','x','p']) delete slim[key];
+      const hydrated = search.hydrate([slim])[0];
+      for (const key of ['k','sk','nok','x','p']) if (row[key] === hydrated[key]) delete row[key];
+    }
+  }
+  if (name === 'snkr-raw-flip-summary') for (const row of Object.values(value.cards||{})) {
+    delete row.identity; delete row.http;
+  }
   return value;
 }
 const SUMMARY = ['card-catalog-completion', 'operational-limit-history', 'market-stability-summary', 'market-research-summary',

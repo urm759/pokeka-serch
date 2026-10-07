@@ -23,6 +23,7 @@ async function main() {
     api(`${API}/actions/workflows/priority-price-refresh.yml/runs?per_page=10`),
   ]);
   const status = JSON.parse(fs.readFileSync(path.join(ROOT, "data", "update-status.json"), "utf8"));
+  fs.writeFileSync(path.join(ROOT,'data/refresh-cadence-audit.json'),JSON.stringify(require('./refresh_cadence').audit(priceRuns.workflow_runs||[])));
   // Verify saved run receipts without triggering acquisition or waiting for future runs.
   const cycleFile=path.join(ROOT,'data/scheduled-cycle-verification.json');
   let cycles=fs.existsSync(cycleFile)?JSON.parse(fs.readFileSync(cycleFile,'utf8')):{version:1,pipelines:{}};

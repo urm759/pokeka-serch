@@ -48,6 +48,7 @@ jobs:
           node work/test_card_catalog_completion.js
           node work/test_checkpoint_publication.js
           node work/test_recovery_and_url_discovery.js
+          node work/test_cadence_payload.js
       - name: Publish validated data with conflict protection
         run: |
           node work/scheduled_cycle_evidence.js priority

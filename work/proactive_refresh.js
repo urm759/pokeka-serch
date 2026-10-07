@@ -1,11 +1,13 @@
 const HOUR = 3600000;
 function lead(config = {}) {
-  const intervalMs = Number(config.executionIntervalMs) || 2 * HOUR;
+  const configuredIntervalMs = Number(config.executionIntervalMs) || 2 * HOUR;
+  const observedIntervalMs = Number(config.observedSuccessfulIntervalMs);
+  const intervalMs = Number.isFinite(observedIntervalMs) && observedIntervalMs > 0 ? Math.max(configuredIntervalMs, observedIntervalMs) : configuredIntervalMs;
   const delayMs = Math.max(0, Number(config.observedStartDelayMs ?? config.startDelayAllowanceMs ?? 30 * 60000));
   const processingMs = Math.max(0, Number(config.observedProcessingMs ?? config.pipelineBudgetMs ?? config.timeBudgetMs ?? 24 * 60000));
   const requestedMs = intervalMs + delayMs + processingMs;
   const freshnessMs = (Number(config.importantHours) || 6) * HOUR;
-  return { intervalMs, delayMs, processingMs, requestedMs, leadMs: Math.min(requestedMs, freshnessMs - 1),
+  return { configuredIntervalMs, intervalMs, observedIntervalMs:Number.isFinite(observedIntervalMs)&&observedIntervalMs>0?observedIntervalMs:null, delayMs, processingMs, requestedMs, leadMs: Math.min(requestedMs, freshnessMs - 1),
     delayBasis: config.observedStartDelayMs == null ? "設定上の遅延余裕・実績未取得" : "観測開始遅延",
     capacityWarning: requestedMs >= freshnessMs ? "実行間隔・遅延・処理時間が鮮度期限以上" : null };
 }
