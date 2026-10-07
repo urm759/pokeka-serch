@@ -30,6 +30,10 @@ const performance = Object.fromEntries(['desktop','mobile'].map(width => {
     caveat:'同じPCの画面幅試験。2倍は合成負荷、通信量は推計を別記。rAFにはブラウザ抑制があるため実描画時間・高速化の証拠に使用しない。DOM生成とレイアウト実測を別集計。'}];
 }));
 const recovery = read('data/purchase-price-recovery.json');
+const scaleProof = read('work/ui-scale-card-proof.json');
+const financialText = text => text.split('計算内訳と相場データを見る')[0].trim();
+const sameFinancialDisplay = scaleProof.double.every(row => financialText(row.text) === financialText(scaleProof.current[0].text));
+if (!sameFinancialDisplay) throw new Error('Production scale financial display differs');
 const result = {version:1, generatedAt:new Date().toISOString(), baseCommit:base,
   comparison:'同じ既存ID群。手動の実取得・表示軽量化と、以前の定期取得成果を分離。',
   before:{total:before.summary.total, analyzable:before.summary.analyzable, mandatoryQueue:before.summary.priorityQueueRemaining},
@@ -40,6 +44,14 @@ const result = {version:1, generatedAt:new Date().toISOString(), baseCommit:base
   capacity:read('data/priority-price-monitor.json').sources.hareruya2.capacity,
   modelPerformance:read('data/ui-performance-audit.json'), browserPerformance:performance,
   runtimePerformance:Object.fromEntries(['desktop','mobile'].map(width=>[width,read(`work/ui-runtime-${width}-metrics.json`)])),
+  productionScalePerformance:Object.fromEntries(['desktop','mobile'].map(width=>[width, {
+    current:read(`work/ui-runtime-single-${width}-scale-metrics.json`),
+    double:read(`work/ui-runtime-double-${width}-metrics.json`),
+    caveat:'本番appを同じ設定で実行。2倍はローカル合成カードで元データに書き込まない。条件処理は各3回。初期読込は各規模1回、画面幅とJSON本文量を明記。gzip後の通信量・携帯実機速度は未計測。'
+  }])),
+  scaleFinancialDisplay:{sameFinancialDisplay, currentIds:scaleProof.current.map(r=>r.id),
+    doubleIds:scaleProof.double.map(r=>r.id),
+    note:'価格・率・判定・重要警告は一致。遅延生成された詳細欄の見出しフッターは計測時点で異なるため財務比較から除外。'},
   financialModelChanged:false, safetyChanged:false, routineLlmCalls:0, routineCodexCalls:0,
   unfinished:'定期実績・PSA認証取得・国内PSA9/状態A個別実成約・期間実証等は未完了。軽量化は通信削減、CPU展開の追加コストも計測。'};
 fs.writeFileSync(path.join(root, 'data/ui-improvement-audit.json'), JSON.stringify(result));
