@@ -1,12 +1,12 @@
 {
-  "startedAt": "2026-10-06T19:30:14.487Z",
-  "endedAt": "2026-10-06T19:32:04.451Z",
-  "cycleDate": "2026-10-06",
+  "startedAt": "2026-10-07T02:42:46.076Z",
+  "endedAt": "2026-10-07T02:43:15.505Z",
+  "cycleDate": "2026-10-07",
   "status": "partial",
-  "attemptedCount": 8,
-  "newAcquiredCount": 75,
-  "changedCount": 111,
-  "refreshedCount": 191,
+  "attemptedCount": 2,
+  "newAcquiredCount": 211,
+  "changedCount": 133,
+  "refreshedCount": 344,
   "completedUrls": [
     "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
     "https://www.psacard.com/pop/tcg-cards/2016/pokemon-japanese-xy-promo/133615",
@@ -52,110 +52,36 @@
     "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mp1-start-deck-100-battle-collection-corociao-version/297732",
     "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-sword-shield-blue-sky-stream/196709",
     "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-25th-anniversary-collection/199357",
-    "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935"
+    "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
+    "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
+    "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725"
   ],
   "records": [
     {
-      "setCode": "S6A",
-      "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-sword-shield-eevee-heroes/193866",
+      "setCode": "SV11W",
+      "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
       "httpStatus": 200,
-      "fetchedAt": "2026-10-06T19:30:43.396Z",
-      "rowCount": 39,
-      "parsedRows": 102,
-      "excludedRows": 63,
-      "minimumPopulation": 500,
+      "fetchedAt": "2026-10-07T02:42:47.557Z",
+      "rowCount": 172,
+      "parsedRows": 173,
+      "excludedRows": 1,
+      "minimumPopulation": 0,
       "error": null
     },
     {
-      "setCode": "S9A",
-      "url": "https://www.psacard.com/pop/tcg-cards/2022/pokemon-japanese-sword-shield-battle-region/208916",
+      "setCode": "SV11B",
+      "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
       "httpStatus": 200,
-      "fetchedAt": "2026-10-06T19:30:32.730Z",
-      "rowCount": 10,
-      "parsedRows": 101,
-      "excludedRows": 91,
-      "minimumPopulation": 500,
-      "error": null
-    },
-    {
-      "setCode": "S8A-G",
-      "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-asia-25th-anniversary-promo/202700",
-      "httpStatus": 200,
-      "fetchedAt": "2026-10-06T19:30:53.948Z",
-      "rowCount": 10,
-      "parsedRows": 17,
-      "excludedRows": 7,
-      "minimumPopulation": 500,
-      "error": null
-    },
-    {
-      "setCode": "M-P",
-      "url": "https://www.psacard.com/spec/psa/14234253",
-      "httpStatus": 200,
-      "fetchedAt": "2026-10-06T19:31:04.235Z",
-      "rowCount": 0,
-      "parsedRows": null,
-      "excludedRows": null,
-      "minimumPopulation": 500,
-      "error": "Unable to find a populated table for https://www.psacard.com/spec/psa/14234253",
-      "failureKind": "missing-page",
-      "stopScope": "url",
-      "nextRetryAt": null,
-      "retryAttempts": 1
-    },
-    {
-      "setCode": "MP1",
-      "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mp1-start-deck-100-battle-collection-corociao-version/297732",
-      "httpStatus": 200,
-      "fetchedAt": "2026-10-06T19:31:12.712Z",
-      "rowCount": 1,
-      "parsedRows": 4,
-      "excludedRows": 3,
-      "minimumPopulation": 500,
-      "error": null
-    },
-    {
-      "setCode": "S7R",
-      "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-sword-shield-blue-sky-stream/196709",
-      "httpStatus": 200,
-      "fetchedAt": "2026-10-06T19:31:23.088Z",
-      "rowCount": 33,
-      "parsedRows": 58,
-      "excludedRows": 25,
-      "minimumPopulation": 500,
-      "error": null
-    },
-    {
-      "setCode": "S8A",
-      "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-25th-anniversary-collection/199357",
-      "httpStatus": 200,
-      "fetchedAt": "2026-10-06T19:31:43.270Z",
-      "rowCount": 47,
-      "parsedRows": 56,
-      "excludedRows": 9,
-      "minimumPopulation": 500,
-      "error": null
-    },
-    {
-      "setCode": "SV9A",
-      "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
-      "httpStatus": 200,
-      "fetchedAt": "2026-10-06T19:31:53.750Z",
-      "rowCount": 51,
-      "parsedRows": 67,
-      "excludedRows": 16,
-      "minimumPopulation": 500,
+      "fetchedAt": "2026-10-07T02:43:05.101Z",
+      "rowCount": 172,
+      "parsedRows": 173,
+      "excludedRows": 1,
+      "minimumPopulation": 0,
       "error": null
     }
   ],
   "nextUrl": "https://www.psacard.com/spec/psa/14234253",
   "stopReason": null,
-  "unregisteredSetCount": 0,
-  "focusedSelected": 2,
-  "normalSelected": 6,
-  "pendingSets": 95,
-  "lastSuccessAt": "2026-10-06T19:31:53.750Z",
-  "durationMs": 109973,
   "retryByUrl": {
     "https://www.psacard.com/spec/psa/14234253": {
       "kind": "missing-page",
@@ -178,11 +104,11 @@
       "setCode": "M-P"
     }
   },
-  "authRecovery": {
-    "checkedAt": "2026-10-06T19:30:32.730Z",
-    "url": "https://www.psacard.com/pop/tcg-cards/2022/pokemon-japanese-sword-shield-battle-region/208916",
-    "verified": true,
-    "error": null,
-    "resumedFromCheckpoint": true
-  }
+  "lastSuccessAt": "2026-10-07T02:43:05.101Z",
+  "authRecovery": null,
+  "unregisteredSetCount": 0,
+  "focusedSelected": 0,
+  "normalSelected": 2,
+  "pendingSets": 87,
+  "durationMs": 29441
 }

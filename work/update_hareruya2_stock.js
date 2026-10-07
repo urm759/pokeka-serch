@@ -78,9 +78,10 @@ function stateFromTitle(title) {
 function extractCardSignature(card) {
   const source = String(card?.name || "").replace(/\s+/g, " ").trim();
   const sourceWithoutPack = source.replace(/\([^()]*\)\s*$/, "").trim();
-  const setAndNumber = source.match(/\[\s*([A-Za-z0-9-]+)\s+(\d{1,4}(?:\s*[-/]\s*\d{1,4})?)\s*\]/);
+  const setAndNumber = source.match(/\[\s*([A-Za-z0-9+-]+)\s+(\d{1,4}(?:\s*[-/]\s*\d{1,4})?)\s*\]/);
   const promoNumberFirst = source.match(/\[\s*(\d{1,4})\s+([A-Za-z0-9-]+-P)\s*\]/i);
-  const setCode = promoNumberFirst?.[2] || setAndNumber?.[1] || "";
+  const slashPromo = source.match(/\[\s*(\d{1,4})\s*\/\s*([A-Za-z0-9-]+-P)\s*\]/i);
+  const setCode = promoNumberFirst?.[2] || slashPromo?.[2] || setAndNumber?.[1] || "";
   const cardNo = promoNumberFirst?.[1] || setAndNumber?.[2] || String(card?.model || "").replace(/^[A-Za-z-]+\s+/, "");
   const base = sourceWithoutPack
     .split("[")[0]
@@ -90,8 +91,8 @@ function extractCardSignature(card) {
     .trim();
   const pack = (source.match(/\(([^()]*)\)\s*$/) || [])[1] || "";
   return {
-    setCode: normalize(setCode),
-    cardNo: String(cardNo || "").replace(/\s/g, ""),
+    setCode: normalize(setCode).replace(/\+$/, 'p'),
+    cardNo: slashPromo ? `${slashPromo[1]}/${slashPromo[2]}` : String(cardNo || "").replace(/\s/g, ""),
     base: compactName(base),
     finish: cardFinish(source),
     pack: normalize(pack),
@@ -152,8 +153,10 @@ function sleep(milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
 
-async function fetchJson(url) {
+async function fetchJson(url, options = {}) {
   for (let attempt = 0; attempt < 5; attempt += 1) {
+    if (options.deadlineAt && Date.now() > options.deadlineAt - 15000) throw new Error('time budget timeout・チェックポイント保存');
+    options.onRequest?.(url);
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 15000);
     try {
@@ -217,10 +220,11 @@ async function mapLimit(items, limit, mapper) {
   return results;
 }
 
-async function fetchAllCollections() {
+async function fetchAllCollections(options = {}) {
   const collections = [];
   for (let page = 1; page <= 20; page += 1) {
-    const payload = await fetchJson(`${SHOP_ORIGIN}/collections.json?limit=250&page=${page}`);
+    if(page>1 && options.intervalMs) await sleep(options.intervalMs);
+    const payload = await fetchJson(`${SHOP_ORIGIN}/collections.json?limit=250&page=${page}`, options);
     const rows = Array.isArray(payload?.collections) ? payload.collections : [];
     collections.push(...rows);
     if (rows.length < 250) break;
@@ -249,10 +253,11 @@ function findCollectionForPack(pack, collections) {
   return candidates[0] || null;
 }
 
-async function fetchCollectionProducts(handle) {
+async function fetchCollectionProducts(handle, options = {}) {
   const products = [];
   for (let page = 1; page <= 20; page += 1) {
-    const payload = await fetchJson(`${SHOP_ORIGIN}/collections/${encodeURIComponent(handle)}/products.json?limit=250&page=${page}`);
+    if(page>1 && options.intervalMs) await sleep(options.intervalMs);
+    const payload = await fetchJson(`${SHOP_ORIGIN}/collections/${encodeURIComponent(handle)}/products.json?limit=250&page=${page}`, options);
     const rows = Array.isArray(payload?.products) ? payload.products : [];
     products.push(...rows);
     if (rows.length < 250) break;
@@ -611,4 +616,5 @@ if (require.main === module) main().catch((error) => {
   console.error(error);
   process.exit(1);
 });
-module.exports = { extractCardSignature, productMatchesCard, stateFromTitle, parseProductPage };
+module.exports = { extractCardSignature, extractProductSignature, productMatchesCard, stateFromTitle, parseProductPage,
+  fetchAllCollections, fetchCollectionProducts, findCollectionForPack, chooseProduct, productPrice, isAvailable };

@@ -308,6 +308,14 @@ payload.taskOperations = require("./task_operations.js").build(ROOT, payload.uni
 payload.focusMonitor = require("./focus_monitor.js").write(ROOT);
   payload.priorityPriceMonitor = require("./priority_price_queue.js").write(ROOT);
   payload.purchasePriceRecovery = read('data/purchase-price-recovery.json');
+  const recoveredCompletion = read('data/recovery-completion-audit.json');
+  payload.recoveredCompletion = recoveredCompletion?.after ? {
+    generatedAt:recoveredCompletion.generatedAt, baselineCommit:recoveredCompletion.baselineCommit,
+    recoveredRun:recoveredCompletion.recovery.runId, recoveredChecks:recoveredCompletion.recovery.checks,
+    filledCards:recoveredCompletion.filledCards.length,newlyAnalyzable:recoveredCompletion.newlyAnalyzable.length,
+    psaBefore:recoveredCompletion.psa.beforeLinked,psaAfter:recoveredCompletion.psa.afterLinked,
+    urlDiscovery:recoveredCompletion.urlDiscovery,newShopPrices:recoveredCompletion.newShopAcquisition.newAcquiredCount
+  } : null;
   const purchaseFreshness = read('data/purchase-price-freshness-audit.json');
   payload.purchasePriceFreshness = purchaseFreshness ? {...purchaseFreshness, freshVsOld:undefined, freshVsOldCount:purchaseFreshness.freshVsOld?.length || 0} : null;
   payload.sourceAccessPolicy = JSON.parse(fs.readFileSync(path.join(ROOT, "data/snkr-access-policy.json"), "utf8"));

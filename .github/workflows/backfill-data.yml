@@ -78,13 +78,16 @@ jobs:
         if: failure()
         run: |
           node work/save_backfill_recovery.js pokedata
-          node work/publish_data_checkpoint.js --capture-only
+      - name: Preserve raw PokeDATA regardless of metadata errors
+        if: failure()
+        run: node work/capture_unpublished_data.js pokedata
       - name: Upload unpublished source data and checkpoints
         if: failure()
         uses: actions/upload-artifact@v7
         with:
           name: pokedata-recovery-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
+            work/unpublished-recovery/
             work/publish-recovery.bundle
             work/publish-recovery.json
             data/backfill-recovery.json

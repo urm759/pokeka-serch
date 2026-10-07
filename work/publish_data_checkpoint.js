@@ -14,12 +14,11 @@ function publish({ cwd = path.join(__dirname, ".."), message = "Publish determin
     const added = git(['add', 'data/ui'], cwd);
     if (!added.ok) throw new Error(added.output);
   }
-  syncUiData();
   if (captureOnly) {
-    if (fs.existsSync(path.join(cwd, "work", "publish-recovery.bundle"))) return { status: "recovery-already-saved", published: false };
-    const stagedRecovery = git(["add", "data", "work"], cwd);
-    if (!stagedRecovery.ok) throw new Error(stagedRecovery.output);
+    const raw = require('./capture_unpublished_data.js').capture({cwd, source:'capture-only'});
+    return {status:'raw-recovery-saved', published:false, raw};
   }
+  if (!captureOnly) syncUiData();
   const staged = git(["diff", "--cached", "--quiet"], cwd);
   if (staged.ok) return { status: "unchanged", published: false };
   const base = git(["rev-parse", "HEAD"], cwd).output;
@@ -47,7 +46,16 @@ function publish({ cwd = path.join(__dirname, ".."), message = "Publish determin
     // Git's three-way merge keeps independent source changes. Conflicts require review, never "ours" or force push.
     const merged = git(["merge", "--no-edit", "origin/main"], cwd);
     record.attempts.push({ at: new Date().toISOString(), stage: "merge", ok: merged.ok, message: merged.output });
-    if (!merged.ok) { record.status = "manual-merge-required"; save(); throw new Error(`Publication conflict; checkpoint bundle saved. ${merged.output}`); }
+    if (!merged.ok) {
+      let resolved=false;
+      try { resolved=require('./resolve_generated_merge.js').resolve(cwd); }
+      catch(error) { record.attempts.push({stage:'regenerate-derived',ok:false,message:error.message}); }
+      if (!resolved) {
+        require('./capture_unpublished_data.js').capture({cwd,source:'publication-conflict'});
+        record.status = "manual-merge-required"; save(); throw new Error(`Publication conflict; checkpoint bundle saved. ${merged.output}`);
+      }
+      record.attempts.push({stage:'regenerate-derived',ok:true});
+    }
     syncUiData();
     if (!git(['diff', '--cached', '--quiet'], cwd).ok) {
       const reconciled = git(['commit', '-m', 'Reconcile pinned UI summaries after data merge'], cwd);

@@ -954,7 +954,9 @@ function renderSourceObservability() {
     const focusHtml = focus ? `<article class="source-status-card"><details><summary>重点監視：スターミーV・S6aブイズ ${fmt.format(focus.count)}種</summary><p>重点処理枠は最大${Math.round(focus.maxFocusedShare * 100)}%。通常巡回を維持。鮮度基準48時間。監視だけで仕入れ上限を上げません。</p><div class="focus-summary">${Object.entries(focus.totals || {}).map(([key, t]) => `<p>${focusLabels[key]}：取得済み${t.valid}／鮮度適合${t.fresh}／古い${t.stale}／不足${t.missing}</p>`).join("")}</div><p>最後の改善：${escapeHtml(formatJstTimestamp(focus.lastProgress?.at))} / 有効値純増${valueOrUnknown(focus.lastProgress?.newValid)} / 鮮度回復${valueOrUnknown(focus.lastProgress?.newlyFresh)}項目（カード数・純増とは別）</p><div style="overflow-x:auto"><table><thead><tr><th>カード</th>${Object.values(focusLabels).map((label) => `<th>${label}</th>`).join("")}<th>優先理由／最終進捗</th></tr></thead><tbody>${Object.values(focus.cards || {}).map((row) => `<tr><th><a href="?q=${encodeURIComponent(row.name)}&diagnostic=1">${escapeHtml(row.name)}</a></th>${Object.keys(focusLabels).map((key) => { const item = row.items[key]; return `<td>${item.value == null ? "未取得" : key === "psaRate" ? `${item.value.toFixed(1)}%` : fmt.format(item.value)}<br><small>${escapeHtml(item.status)} / ${escapeHtml(formatJstTimestamp(item.at))}${key === "domesticRaw" ? "（取得日。状態A成約証明とは別）" : ""}</small></td>`; }).join("")}<td>${escapeHtml(row.priorityReason)}<br>${escapeHtml(formatJstTimestamp(row.lastProgressAt))}</td></tr>`).join("")}</tbody></table></div><a href="./data/focus-monitor.json" target="_blank" rel="noreferrer">重点カード別監査JSON</a> / <a href="./data/focus-acquisition-audit.json" target="_blank" rel="noreferrer">今回の実取得・純増</a></details></article>` : "";
     const backlogHtml = unified?.backlogStates ? `<article class="source-status-card"><details><summary>残件：自動巡回・未実装・認証待ち・時間待ち</summary><p>有効値純増は取得監査の比較基準からの差です。今回の取得だけの件数は「今回の実取得・純増」で確認できます。未記録は推定しません。</p>${unified.backlogStates.map((r) => `<p><b>${escapeHtml(r.label)}：${escapeHtml(r.category)}</b> / 残件${valueOrUnknown(r.remaining)} / 有効値純増${valueOrUnknown(r.usableNet)} / 最終進捗${escapeHtml(formatJstTimestamp(r.lastProgressAt))}<br><small>${escapeHtml(r.nextAction)}</small></p>`).join("")}</details></article>` : "";
     const observationHtml = `<article class="source-status-card"><details><summary>店舗価格・在庫の個別確認日時</summary><p>カードラッシュ・晴れる屋2・遊々亭・トレカキャンプはカード個別の確認日時を使用します。ファイル更新日や在庫履歴の日付では代用しません。価格・在庫が48時間以内の場合だけ購入先へ採用し、日時不明・古値は履歴として保持します。日付だけの記録は時刻未取得と表示し、鮮度はその日の日本時間0時から保守的に判定します。</p><p>参考相場の外れ値除外と購入先の除外は別です。同一仕様・状態A・在庫が確認された正常な安値は、価格差だけでは除外しません。価格対立・誤紐付け・既存の異常値隔離は引き続きGOを保留します。</p><a href="./data/shop-observation-audit.json" target="_blank" rel="noreferrer">同一価格での修正前後・カード別除外理由</a> / <a href="./data/shop-observation-reconciliation.json" target="_blank" rel="noreferrer">保存済み個別日時の復元結果</a></details></article>`;
-    els.dataFreshness.innerHTML = pipelineCards + sourceCards + observationHtml + outcomesHtml + unifiedHtml + resilienceHtml + focusHtml + backlogHtml + learningCard + renderPriorityPriceMonitor() + renderPriceCapacityNotice();
+    const recovered=state.updateStatus?.recoveredCompletion;
+    const recoveryHtml=recovered ? `<article class="source-status-card"><details><summary>公開失敗の回収と実補完（${escapeHtml(formatJstTimestamp(recovered.generatedAt))}）</summary><p>失敗実行 ${escapeHtml(recovered.recoveredRun)}：取得済み${recovered.recoveredChecks}件を再取得せず回収。不足補完 ${recovered.filledCards}枚／新規分析可能 ${recovered.newlyAnalyzable}枚。PSA POP紐付け ${recovered.psaBefore}→${recovered.psaAfter}枚。正規商品URL探索 ${recovered.urlDiscovery.attempted}枚→${recovered.urlDiscovery.newLinked}URL／実価格新規 ${recovered.newShopPrices}枚。</p><p>回収した旧実行と今回の新規取得は別集計。全データ完了・購入GOへの昇格を意味しません。</p><a href="./data/recovery-completion-audit.json" target="_blank" rel="noreferrer">回収・補完カードID・チェックポイントを確認</a></details></article>` : '';
+    els.dataFreshness.innerHTML = pipelineCards + sourceCards + recoveryHtml + observationHtml + outcomesHtml + unifiedHtml + resilienceHtml + focusHtml + backlogHtml + learningCard + renderPriorityPriceMonitor() + renderPriceCapacityNotice();
   }
 
   const coverage = state.linkCoverage?.current?.storeCoverage;
@@ -5359,6 +5361,7 @@ function render() {
           <details class="card-details" data-card-detail="${escapeHtml(card.id)}" ${state.openCardDetails.has(String(card.id)) ? 'open' : ''}>
             <summary><span>計算内訳と相場データを見る</span><small>仕入れ上限・供給・相場・PSA公式</small></summary>
             <div class="card-details-body">
+              ${state.openCardDetails.has(String(card.id)) ? `
               <div class="detail-limit-comparison">${limitComparison}</div>
               ${periodProfitSummary}
               ${profitComparison}
@@ -5398,6 +5401,7 @@ function render() {
                 <div class="market-links-title">商品ページ</div>
                 <div class="market-links-grid">${marketLinks}</div>
               </div>
+              ` : ''}
             </div>
           </details>
           </div>
@@ -5417,6 +5421,7 @@ function render() {
       const id = details.dataset.cardDetail;
       if (!details.open) { state.openCardDetails.delete(id); return; }
       state.openCardDetails.add(id);
+      if (!details.querySelector('.card-details-body')?.childElementCount) { render(); return; }
       if (await ensurePokedataForCardIds([id])) render();
     });
   });
@@ -5697,7 +5702,7 @@ async function init() {
     const metrics = document.createElement("details");
     metrics.className = "ui-load-metrics";
     const bytes = uiLoadMetrics.reduce((n, r) => n + r.bytes, 0);
-    metrics.innerHTML = `<summary>初期読込 ${(bytes / 1048576).toFixed(2)} MiB / ${uiLoadMetrics.length} JSON（監査は必要時）</summary><small>JSON解析 ${uiLoadMetrics.reduce((n,r)=>n+r.jsonParseMs,0).toFixed(1)}ms / 展開 ${uiLoadMetrics.reduce((n,r)=>n+r.decodeMs,0).toFixed(1)}ms。通信は並列のため時間を合算しません。詳細と元データは保持。<a href="./data/ui-improvement-audit.json">実補完・現在/2倍の測定結果</a></small>`;
+    metrics.innerHTML = `<summary>初期読込 ${(bytes / 1048576).toFixed(2)} MiB / ${uiLoadMetrics.length} JSON（監査は必要時）</summary><small>JSON解析 ${uiLoadMetrics.reduce((n,r)=>n+r.jsonParseMs,0).toFixed(1)}ms / 展開 ${uiLoadMetrics.reduce((n,r)=>n+r.decodeMs,0).toFixed(1)}ms。通信は並列のため時間を合算しません。詳細と元データは保持。<a href="./data/ui-improvement-audit.json">実補完・現在/2倍の測定結果</a> / <a href="./data/recovery-completion-audit.json" target="_blank" rel="noreferrer">公開失敗の回収・今回の実補完監査</a></small>`;
     metrics.dataset.measurements = JSON.stringify(uiLoadMetrics);
     els.catalogCoverageSummary?.after(metrics);
   } catch (err) {

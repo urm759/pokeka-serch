@@ -24,7 +24,9 @@ jobs:
       - name: Continue bounded source checkpoints without an LLM
         run: node work/run_safe_backfill.js
       - name: Consume prioritized completion queue without an LLM
-        run: node work/consume_completion_queue.js
+        run: |
+          node work/discover_state_a_urls.js
+          node work/consume_completion_queue.js
       - name: Discover official PSA set links without bypassing authentication
         run: node work/discover_psa_set_urls.js
       - name: Rebuild completion and publication summaries
@@ -47,6 +49,7 @@ jobs:
           node work/test_candidate_availability_audit.js
           node work/test_acquisition_progress.js
           node work/test_checkpoint_publication.js
+          node work/test_recovery_and_url_discovery.js
           node work/test_source_monitor_and_completion.js
           node work/test_completion_routes.js
           node work/test_acquisition_resilience.js
@@ -64,15 +67,18 @@ jobs:
           node work/publish_data_checkpoint.js "Continue safe checkpoint backfill"
       - name: Preserve recovery position if a required step failed
         if: failure()
+        run: node work/capture_unpublished_data.js safe
+      - name: Record safe recovery metadata independently
+        if: failure()
         run: |
           node work/save_backfill_recovery.js safe
-          node work/publish_data_checkpoint.js --capture-only
       - name: Upload unpublished source data and checkpoints
         if: failure()
         uses: actions/upload-artifact@v7
         with:
           name: safe-recovery-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
+            work/unpublished-recovery/
             work/publish-recovery.bundle
             work/publish-recovery.json
             data/backfill-recovery.json

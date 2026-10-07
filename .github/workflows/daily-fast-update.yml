@@ -122,13 +122,16 @@ jobs:
         if: failure()
         run: |
           node work/save_backfill_recovery.js daily
-          node work/publish_data_checkpoint.js --capture-only
+      - name: Preserve raw data regardless of metadata errors
+        if: failure()
+        run: node work/capture_unpublished_data.js daily
       - name: Upload recovery checkpoint if publication or validation failed
         if: failure()
         uses: actions/upload-artifact@v7
         with:
           name: daily-recovery-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
+            work/unpublished-recovery/
             work/publish-recovery.bundle
             work/publish-recovery.json
             data/backfill-recovery.json

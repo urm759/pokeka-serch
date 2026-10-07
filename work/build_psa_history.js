@@ -97,6 +97,9 @@ function candidateVariant(row) {
   return "base";
 }
 function suspicious(value) { return /missing texture|error|no rarity|misprint|stamp|mirror|reverse|1st edition|unlimited/i.test(String(value || "")); }
+function variantsCompatible(cardName,englishName,row) {
+  return candidateVariant(row)===variantOf(`${englishName || ''} ${cardName || ''}`);
+}
 function shardFor(id) { let hash = 2166136261; for (const ch of String(id)) { hash ^= ch.charCodeAt(0); hash = Math.imul(hash, 16777619); } return (hash >>> 0) % SHARDS; }
 function daysBetween(a, b) { return Math.max(1, Math.round((Date.UTC(+b.slice(0,4),+b.slice(4,6)-1,+b.slice(6,8))-Date.UTC(+a.slice(0,4),+a.slice(4,6)-1,+a.slice(6,8)))/86400000)); }
 function windowChange(history, days, today) {
@@ -147,6 +150,7 @@ function main() {
   const shards = Array.from({ length: SHARDS }, (_, i) => readJson(path.join(HISTORY_DIR, `${String(i).padStart(2,"0")}.json`), { v: 1, cards: {} }));
   const today = dayKey(), cutoff = dayKey(new Date(Date.now()-RETENTION_DAYS*86400000));
   const summary = { v: 1, updatedAt: population.generatedAt || new Date().toISOString(), date: today, matched: 0, cards: {} };
+  const variantReview=[];
   for (const card of cards) {
     const identity = cardIdentity(card); if (!identity) continue;
     let candidates = identity.no ? (groups.get(`${identity.set}|${identity.no}`) || []) : (setGroups.get(identity.set) || []); if (!candidates.length) continue;
@@ -194,6 +198,13 @@ function main() {
     }
     if (!selected && candidates.length === 1 && !suspicious(candidates[0].name)) { selected = candidates[0]; method = "set-number-unique"; }
     if (!selected) continue;
+    // A unique number or a similar name cannot establish a mirror/edition identity.
+    const expectedVariant=variantOf(`${englishName} ${card.name || ''}`);
+    if (!variantsCompatible(card.name,englishName,selected)) {
+      variantReview.push({id:card.id,name:card.name,expectedVariant,candidateVariant:candidateVariant(selected),
+        sourceName:selected.name,sourceUrl:selected.url,observedAt:selected.fetchedAt,reason:'仕様不一致・POP採用保留'});
+      continue;
+    }
     const shard = shardFor(card.id), store = shards[shard]; store.cards ||= {};
     let history = Array.isArray(store.cards[card.id]) ? store.cards[card.id].filter((row)=>row[0]>=cutoff) : [];
     const sourceDay = String(selected.fetchedAt || population.generatedAt || "").slice(0,10).replace(/-/g, "") || today;
@@ -208,9 +219,10 @@ function main() {
   }
   for (let i=0;i<SHARDS;i+=1) fs.writeFileSync(path.join(HISTORY_DIR, `${String(i).padStart(2,"0")}.json`), JSON.stringify(shards[i]), "utf8");
   fs.writeFileSync(SUMMARY_PATH, JSON.stringify(summary), "utf8");
+  fs.writeFileSync(path.join(path.dirname(SUMMARY_PATH),'psa-mapping-review.json'),JSON.stringify({generatedAt:new Date().toISOString(),count:variantReview.length,rows:variantReview}),'utf8');
   fs.writeFileSync(POP_PATH, JSON.stringify({ v: 2, generatedAt: population.generatedAt || new Date().toISOString(), totalSets: population.totalSets || 0, totalRows: sourceRows.length, rows: sourceRows.map((row) => ({ setCode: row.set, cardNo: row.no, cardName: row.name, psa10Count: row.ten, psaTotal: row.total, sourceUrl: row.url, fetchedAt: row.fetchedAt })) }), "utf8");
   console.log(JSON.stringify({ matched: summary.matched, total: cards.length, english: Object.keys(english).length, date: today }));
 }
 
 if (require.main === module) main();
-module.exports = { cardIdentity, compactRows, cleanName, shortSet, normalizeNo };
+module.exports = { cardIdentity, compactRows, cleanName, shortSet, normalizeNo, variantsCompatible };

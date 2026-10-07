@@ -45,7 +45,7 @@ for (const [state, cap, text] of [['loss-at-zero',null,'0円仕入れでも赤�
   assert.match(output,new RegExp(text));
   if(state!=='available') assert.doesNotMatch(output, /<strong>¥0<\/strong>/);
 }
-assert.match(app, /card-details-body">\s*<div class="detail-limit-comparison">\$\{limitComparison\}/);
+assert.match(app, /card-details-body">\s*\$\{state\.openCardDetails\.has\(String\(card\.id\)\) \? `\s*<div class="detail-limit-comparison">\$\{limitComparison\}/);
 const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
 assert.match(css, /\.candidate-glance,\.price-comparison-grid\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
 assert.match(css, /\.candidate-glance \.price-cell strong,\.price-comparison-grid \.price-cell strong/);

@@ -39,6 +39,7 @@ jobs:
           node work/test_purchase_price_recovery.js
           node work/test_card_catalog_completion.js
           node work/test_checkpoint_publication.js
+          node work/test_recovery_and_url_discovery.js
       - name: Publish validated data with conflict protection
         run: |
           git config user.name "github-actions[bot]"
@@ -47,14 +48,17 @@ jobs:
           node work/publish_data_checkpoint.js "Refresh due priority purchase prices"
       - name: Preserve unpublished checkpoint on failure
         if: failure()
+        run: node work/capture_unpublished_data.js priority-prices
+      - name: Record failure metadata independently
+        if: failure()
         run: |
           node work/save_backfill_recovery.js priority-prices
-          node work/publish_data_checkpoint.js --capture-only
       - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: priority-price-recovery-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
+            work/unpublished-recovery/
             work/publish-recovery.bundle
             work/publish-recovery.json
             data/backfill-recovery.json

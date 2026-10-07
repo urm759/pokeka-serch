@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { execFileSync } = require('node:child_process');
 const root = path.join(__dirname, '..');
-const legacy = Object.fromEntries(['index.html','app.js'].map(f=>[f,execFileSync('git',['show',`ec674c80:${f}`],{cwd:root,maxBuffer:3000000})]));
+const legacy = Object.fromEntries(['index.html','app.js'].map(f=>[f,execFileSync('git',['show',`3be46e04:${f}`],{cwd:root,maxBuffer:3000000})]));
 let doubled;
 http.createServer((req,res)=>{
   const url = new URL(req.url, 'http://localhost');

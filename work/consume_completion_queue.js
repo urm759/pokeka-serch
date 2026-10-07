@@ -64,7 +64,7 @@ function run() {
   run.endedAt = new Date().toISOString(); run.durationMs = Date.now() - start;
   run.status = /時間予算|time budget/i.test(run.stopReason || "") ? "時間予算で安全停止・次回継続" : run.stopReason ? "停止・確認待ち" : run.acquired ? "部分取得" : "処理成功・進捗なし";
   const support = {
-    hareruya2: { status: "自動補完対応済み", method: "確定済み商品URLの状態A価格。通信一時障害は待機後に再試行。完了カードは2日間隔", intervalMs: 1200, maxRetries: 5 },
+    hareruya2: { status: "自動補完対応済み", method: "正規一覧でURL探索後、確定済み商品URLの状態A価格を実取得。通信一時障害は待機後に再試行。完了カードは2日間隔", intervalMs: 1200, maxRetries: 5 },
     cardrush: { status: "認証・アクセス確認待ち", reason: "403停止を維持。自動回避なし" },
     yuyutei: { status: "認証・アクセス確認待ち", reason: "403停止を維持" },
     torecacamp: { status: "自動補完対応済み", method: "別担当のサイトマップ段階巡回。二重取得しない" },
@@ -87,7 +87,7 @@ function run() {
     const queued = spawnSync(process.execPath, [path.join(__dirname, script)], { cwd: ROOT, encoding: "utf8", timeout: 15000 });
     if (queued.status !== 0) { run.stopReason = `PSA優先キュー接続失敗: ${script}`; process.exitCode = 1; }
   }
-  save("data/completion-acquisition.json", { version: 2, ...run, support, routing, pending: candidates.length, eligiblePending: pending, pendingDefinition: "eligiblePendingは状態A価格が不足し確定URL・再試行条件を満たす対象。PSAだけ不足するカードを店舗取得へ送らない。routing.cardsはカード×項目数で合算不可", cards: state.cards });
+  save("data/completion-acquisition.json", { version: 2, ...run, urlDiscovery:read('data/state-a-url-discovery.json'), support, routing, pending: candidates.length, eligiblePending: pending, pendingDefinition: "eligiblePendingは状態A価格が不足し確定URL・再試行条件を満たす対象。PSAだけ不足するカードを店舗取得へ送らない。routing.cardsはカード×項目数で合算不可", cards: state.cards });
   state.lastRun = run; save("work/completion-acquisition-checkpoint.json", state);
   console.log(JSON.stringify(run));
   if (result && result.status !== 0) process.exitCode = 1;

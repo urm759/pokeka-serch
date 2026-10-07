@@ -9,7 +9,7 @@ async function read(file) {
 }
 async function main() {
   const html = await read('index.html?verify=' + Date.now());
-  assert(html.includes('20261007-ui-summary-v1') && html.includes('ui-data-codec.js'));
+  assert(html.includes('20261007-recovery-lazy-v1') && html.includes('ui-data-codec.js'));
   const manifest = JSON.parse(await read('data/ui/manifest.json?verify=' + Date.now()));
   const verified = [];
   let completion, update, audit;
@@ -23,13 +23,16 @@ async function main() {
     if (original.includes('ui-improvement')) audit = data;
     verified.push(file);
   }
-  assert.equal(completion.summary.total, audit.after.total);
-  assert.equal(completion.summary.analyzable, audit.after.analyzable);
+  const recovery = JSON.parse(await read('data/recovery-completion-audit.json?verify=' + Date.now()));
+  assert.equal(completion.summary.total, recovery.after.total);
+  assert.equal(completion.summary.analyzable, recovery.after.analyzable);
+  const population = codec.decode(JSON.parse(await read((manifest.aliases['data/psa-population-summary.json'] || 'data/psa-population-summary.json') + '?verify=' + Date.now())));
+  assert.equal(Object.keys(population.cards).length, recovery.psa.afterLinked);
   assert.equal(update.complete, false, 'partial data must not become all-complete');
   assert(audit.modelPerformance.cases.every(c=>c.financialAndCandidateEquality));
   console.log(JSON.stringify({url:base,revision:manifest.revision,verified,
     total:completion.summary.total,analyzable:completion.summary.analyzable,
-    filled:audit.filledCards.length,newAnalyzable:audit.newlyAnalyzable.length,
-    recovered:audit.purchaseRecovery.freshnessRecovered,allComplete:update.complete}));
+    filled:recovery.filledCards.length,newAnalyzable:recovery.newlyAnalyzable.length,
+    psaLinked:recovery.psa.afterLinked,recovered:recovery.recovery.purchaseFreshnessRecovered,allComplete:update.complete}));
 }
 main().catch(error=>{console.error(error.message);process.exitCode=1;});

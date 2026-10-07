@@ -45,13 +45,14 @@ jobs:
           node work/publish_data_checkpoint.js "Report data update health"
       - name: Preserve unpublished monitor state
         if: failure()
-        run: node work/publish_data_checkpoint.js --capture-only
+        run: node work/capture_unpublished_data.js health
       - name: Save monitor recovery bundle
         if: failure()
         uses: actions/upload-artifact@v7
         with:
           name: monitor-recovery-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
+            work/unpublished-recovery/
             work/publish-recovery.bundle
             work/publish-recovery.json
           retention-days: 7
