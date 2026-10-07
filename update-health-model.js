@@ -59,7 +59,7 @@
     if (/Cannot find module|dependency|依存|MODULE_NOT_FOUND/i.test(text))
       return {cause:'PSA実行ファイルの依存不足',impact:'新規取得が停止（保存済みデータは保持）',action:'修正版で再実行・認証操作とは別'};
     if (/403|認証|sign.?in|log.?in/i.test(text))
-      return {cause:'取得元のアクセス・認証待ち',impact:'この取得元の更新を停止',action:'正規ページで認証を確認。制限は回避しない'};
+      return {cause:(text.split(/[:：]/)[0].slice(0,24)||'取得元')+'：アクセス・認証待ち',impact:'この取得元の更新を停止',action:'正規ページで認証を確認。制限は回避しない'};
     if (/curl 55|connection.*reset|公開.*失敗|push|競合/i.test(text))
       return {cause:'保存後の公開失敗',impact:'取得済みデータは保持',action:'再取得せず公開工程だけ再試行'};
     if (/独立監視未登録/.test(text))

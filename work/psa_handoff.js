@@ -84,6 +84,10 @@ function applyPacket(root, packet) {
   atomicWrite(path.join(root, "data/psa-publication-handoff.json"), { packetId: packet.digest, appliedAt: new Date().toISOString(), ...merged.audit, evidence: undefined, acquisitionRequests: 0, note: "保存済みPSAのみ統合。別取得元と新しいチェックポイントは保持" });
   return merged.audit;
 }
+function publicationRetryable(message) {
+  if (/HTTP.?403|error: 403|authentication failed|permission denied|access denied/i.test(message)) return false;
+  return /rejected|fetch first|non-fast-forward|remote.*(500|502|503)|unable to access|curl (?:28|55|56)|connection (?:was )?reset|unexpected disconnect/i.test(message);
+}
 function publish(root = ROOT, options = {}) {
   const outbox = path.join(root, "work/psa-outbox"); fs.mkdirSync(outbox, { recursive: true });
   const release = lock(path.join(outbox, "publish.lock"));
@@ -121,7 +125,7 @@ function publish(root = ROOT, options = {}) {
           result.published.push(commit); journal.status = "published"; success = true;
         } catch (error) {
           journal.attempts.push({ at: new Date().toISOString(), status: "failed", error: error.message });
-          if (!/rejected|fetch first|non-fast-forward|remote.*(500|502|503)|unable to access|curl (?:28|55|56)|connection (?:was )?reset|unexpected disconnect/i.test(error.message)) break;
+          if (!publicationRetryable(error.message)) break;
           // Retry publication only; keep the immutable acquisition packet.
           if (attempt + 1 < (options.retries || 3)) Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, Math.min(4000, 1000 * 2 ** attempt));
         } finally {
@@ -140,4 +144,4 @@ if (require.main === module) {
   try { console.log(JSON.stringify(process.argv.includes("--inputs") ? prepareInputs() : process.argv.includes("--enqueue") ? { packet: enqueue() } : publish())); }
   catch (error) { console.error(error.message); process.exitCode = 1; }
 }
-module.exports = { enqueue, applyPacket, mergeCheckpoint, publish, prepareInputs };
+module.exports = { enqueue, applyPacket, mergeCheckpoint, publish, prepareInputs, publicationRetryable };

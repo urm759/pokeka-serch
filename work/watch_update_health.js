@@ -103,6 +103,11 @@ async function main() {
     JSON.stringify(Object.values(prices).map((source) => (source.cards || []).map((card) => card.lastConfirmedAt).filter(Boolean).sort().at(-1) || null)),
     Object.values(prices).some((source) => source.overdue > 0 && !/403|認証|アクセス確認/.test(source.stopReason || "")));
   const priceIssues = [];
+  const cadence = JSON.parse(fs.readFileSync(path.join(ROOT,'data/refresh-cadence-audit.json'),'utf8'));
+  if (cadence.observedSuccessfulIntervalMs >= 6*3600000) priceIssues.push({
+    key:'priority-prices:cadence-stale',
+    reason:`重要価格更新：設定2時間に対し実績成功間隔（直近最大）${(cadence.observedSuccessfulIntervalMs/3600000).toFixed(2)}時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能`,
+    url:priceState.runUrl});
   if (["failure", "timed_out"].includes(priceState.conclusion)) priceIssues.push({ key: "priority-prices:workflow-failure", reason: "購入価格高速更新の保存・検証・公開失敗", url: priceState.runUrl });
   if (priceState.stuckRuns >= 3) priceIssues.push({ key: "priority-prices:stalled", reason: "購入価格高速更新が3回連続で進捗なし・期限超過あり", url: priceState.runUrl });
   const issues = [...dailyIssues, ...backfills.issues, ...sourceIssues, ...priceIssues].map(issue => ({ ...issue,

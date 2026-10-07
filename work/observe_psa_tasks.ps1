@@ -11,6 +11,33 @@ $env:PATH = (Split-Path $Git) + ';' + $env:PATH
 $Observation = @{ observedAt = (Get-Date).ToString('o'); tasks = @(); error = $null }
 try {
   $State = if (Test-Path $StateFile) { Get-Content $StateFile -Raw | ConvertFrom-Json } else { $null }
+  $Observation.lastScheduledState = $State
+  $ResultFile = Join-Path $TaskRepo 'work/psa_acquisition_result.json'
+  $Result = if (Test-Path $ResultFile) { Get-Content $ResultFile -Raw | ConvertFrom-Json } else { $null }
+  if ($Result.startedAt -and (!$State.lastAttemptAt -or ([datetime]$Result.startedAt -gt [datetime]$State.lastAttemptAt))) {
+    $Merged = @{}
+    if ($State) { foreach ($Property in $State.PSObject.Properties) { $Merged[$Property.Name] = $Property.Value } }
+    foreach ($Property in $Result.PSObject.Properties) { $Merged[$Property.Name] = $Property.Value }
+    $Merged.lastAttemptAt = $Result.startedAt
+    $Merged.lastError = $Result.error
+    $Merged.publishStatus = 'saved-pending'
+    $Merged.publishError = $null
+    if ($Result.status -in @('success','partial') -and $Result.acquiredCount -gt 0) { $Merged.lastSuccessAt = $Result.endedAt }
+    $Outbox = Join-Path $TaskRepo 'work/psa-outbox'
+    if (Test-Path $Outbox) {
+      foreach ($PacketFile in (Get-ChildItem $Outbox -Filter '*.json' | Where-Object { $_.Name -match '^[a-f0-9]{64}\.json$' })) {
+        $AckFile = $PacketFile.FullName + '.ack'
+        if (!(Test-Path $AckFile)) { continue }
+        $Packet = Get-Content $PacketFile.FullName -Raw | ConvertFrom-Json
+        if ($Packet.files.'work/psa_acquisition_result.json'.startedAt -ne $Result.startedAt) { continue }
+        $Ack = Get-Content $AckFile -Raw | ConvertFrom-Json
+        $Merged.publishStatus = 'published'
+        $Merged.publishedAt = $Ack.publishedAt
+        $Merged.publishedCommit = $Ack.commit
+      }
+    }
+    $State = [pscustomobject]$Merged
+  }
   $Observation.acquisitionState = $State
   $Observation.registeredRepo = $TaskRepo
   $Observation.fetchProgress = if (Test-Path (Join-Path $TaskRepo 'work/psa-fetch-progress.json')) { Get-Content (Join-Path $TaskRepo 'work/psa-fetch-progress.json') -Raw | ConvertFrom-Json } else { $null }

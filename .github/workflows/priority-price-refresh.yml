@@ -21,6 +21,7 @@ jobs:
       - name: Refresh due purchase prices without new-set exploration or LLM
         run: |
           node work/scheduled_cycle_evidence.js priority --baseline
+          node work/refresh_cadence.js
           node work/run_priority_price_refresh.js
       - name: Verify safety and incremental acquisition
         run: |

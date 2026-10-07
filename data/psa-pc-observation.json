@@ -1,58 +1,49 @@
 {
-  "phases": {
-    "save": "過去正常値とチェックポイントを保持",
-    "publicationStop": null,
-    "note": "最後の取得成功と最後の公開成功は別。登録先のデータと実行結果を読み取った観測",
-    "publication": "not-run",
-    "acquisitionStop": "PSA official population update failed after 1 attempt(s). Error: Cannot find module './focus_monitor.js'\r\nRequire stack:\r\n- C:\\Users\\polar\\Documents\\ChatGPT\\繝昴こ繧ｫ莉募・繧後し繧､繝・site\\work\\psa-acquisition-inputs\\9de641561116cb3bc00454a0d7104937bbb9f912\\update_psa_official_populations.js\r\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1517:15)\r\n    at wrapResolveFilename (node:internal/modules/cjs/loader:1071:27)\r\n    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1095:10)\r\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1122:12)\r\n    at Module._load (node:internal/modules/cjs/loader:1294:5)\r\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\r\n    at Module.require (node:internal/modules/cjs/loader:1617:12)\r\n    at require (node:internal/modules/helpers:153:16)\r\n    at main (C:\\Users\\polar\\Documents\\ChatGPT\\繝昴こ繧ｫ莉募・繧後し繧､繝・site\\work\\psa-acquisition-inputs\\9de641561116cb3bc00454a0d7104937bbb9f912\\update_psa_official_populations.js:378:20)\r\n    at exclusiveMain (C:\\Users\\polar\\Documents\\ChatGPT\\繝昴こ繧ｫ莉募・繧後し繧､繝・site\\work\\psa-acquisition-inputs\\9de641561116cb3bc00454a0d7104937bbb9f912\\update_psa_official_populations.js:542:22) {\r\n  code: 'MODULE_NOT_FOUND',\r\n  requireStack: [\r\n    'C:\\\\Users\\\\polar\\\\Documents\\\\ChatGPT\\\\繝昴こ繧ｫ莉募・繧後し繧､繝・\\site\\\\work\\\\psa-acquisition-inputs\\\\9de641561116cb3bc00454a0d7104937bbb9f912\\\\update_psa_official_populations.js'\r\n  ]\r\n}",
-    "acquisition": "停止・認証または取得異常",
-    "startup": "起動済み",
-    "savedDataLastSuccessAt": "2026-10-07T04:32:05.3821285+09:00"
-  },
+  "error": null,
   "tasks": [
     {
       "preStartFailure": false,
-      "state": "Ready",
+      "reason": null,
+      "name": "Pokeka PSA Update 0430",
       "lastRun": "2026-10-07T04:30:01.0000000+09:00",
-      "nextRun": "2026-10-08T04:30:00.0000000+09:00",
+      "state": "Ready",
       "target": "site/work/run_psa_scheduled_update.ps1",
       "result": 0,
-      "name": "Pokeka PSA Update 0430",
-      "registrationValid": true,
-      "reason": null
+      "nextRun": "2026-10-08T04:30:00.0000000+09:00",
+      "registrationValid": true
     },
     {
       "preStartFailure": false,
-      "state": "Running",
-      "lastRun": "2026-10-07T17:00:01.0000000+09:00",
-      "nextRun": "2026-10-08T17:00:00.0000000+09:00",
-      "target": "site/work/run_psa_scheduled_update.ps1",
-      "result": 267009,
+      "reason": null,
       "name": "Pokeka PSA Update 1700",
-      "registrationValid": true,
-      "reason": null
-    },
-    {
-      "preStartFailure": false,
+      "lastRun": "2026-10-07T17:00:01.0000000+09:00",
       "state": "Ready",
-      "lastRun": "2026-10-05T17:48:19.0000000+09:00",
-      "nextRun": null,
       "target": "site/work/run_psa_scheduled_update.ps1",
       "result": 1,
+      "nextRun": "2026-10-08T17:00:00.0000000+09:00",
+      "registrationValid": true
+    },
+    {
+      "preStartFailure": false,
+      "reason": null,
       "name": "Pokeka PSA Update Logon",
-      "registrationValid": true,
-      "reason": null
+      "lastRun": "2026-10-05T17:48:19.0000000+09:00",
+      "state": "Ready",
+      "target": "site/work/run_psa_scheduled_update.ps1",
+      "result": 1,
+      "nextRun": null,
+      "registrationValid": true
     }
   ],
   "fetchProgress": {
-    "startedAt": "2026-10-06T19:30:14.487Z",
-    "endedAt": "2026-10-06T19:32:04.451Z",
-    "cycleDate": "2026-10-06",
+    "startedAt": "2026-10-07T10:22:40.055Z",
+    "endedAt": "2026-10-07T10:23:14.67Z",
+    "cycleDate": "2026-10-07",
     "status": "partial",
-    "attemptedCount": 8,
-    "newAcquiredCount": 75,
-    "changedCount": 111,
-    "refreshedCount": 191,
+    "attemptedCount": 2,
+    "newAcquiredCount": 469,
+    "changedCount": 3,
+    "refreshedCount": 472,
     "completedUrls": [
       "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
       "https://www.psacard.com/pop/tcg-cards/2016/pokemon-japanese-xy-promo/133615",
@@ -102,95 +93,25 @@
     ],
     "records": [
       {
-        "setCode": "S6A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-sword-shield-eevee-heroes/193866",
-        "httpStatus": 200,
-        "fetchedAt": "2026-10-06T19:30:43.396Z",
-        "rowCount": 39,
-        "parsedRows": 102,
-        "excludedRows": 63,
-        "minimumPopulation": 500,
-        "error": null
-      },
-      {
-        "setCode": "S9A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2022/pokemon-japanese-sword-shield-battle-region/208916",
-        "httpStatus": 200,
-        "fetchedAt": "2026-10-06T19:30:32.73Z",
-        "rowCount": 10,
-        "parsedRows": 101,
-        "excludedRows": 91,
-        "minimumPopulation": 500,
-        "error": null
-      },
-      {
         "setCode": "S8A-G",
         "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-asia-25th-anniversary-promo/202700",
         "httpStatus": 200,
-        "fetchedAt": "2026-10-06T19:30:53.948Z",
-        "rowCount": 10,
-        "parsedRows": 17,
-        "excludedRows": 7,
-        "minimumPopulation": 500,
+        "fetchedAt": "2026-10-07T10:22:41.037Z",
+        "rowCount": 31,
+        "parsedRows": 32,
+        "excludedRows": 1,
+        "minimumPopulation": 0,
         "error": null
       },
       {
-        "setCode": "M-P",
-        "url": "https://www.psacard.com/spec/psa/14234253",
+        "setCode": "SV4A",
+        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv4a-shiny-treasure-ex/255404",
         "httpStatus": 200,
-        "fetchedAt": "2026-10-06T19:31:04.235Z",
-        "rowCount": 0,
-        "parsedRows": null,
-        "excludedRows": null,
-        "minimumPopulation": 500,
-        "error": "Unable to find a populated table for https://www.psacard.com/spec/psa/14234253",
-        "failureKind": "missing-page",
-        "stopScope": "url",
-        "nextRetryAt": null,
-        "retryAttempts": 1
-      },
-      {
-        "setCode": "MP1",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mp1-start-deck-100-battle-collection-corociao-version/297732",
-        "httpStatus": 200,
-        "fetchedAt": "2026-10-06T19:31:12.712Z",
-        "rowCount": 1,
-        "parsedRows": 4,
-        "excludedRows": 3,
-        "minimumPopulation": 500,
-        "error": null
-      },
-      {
-        "setCode": "S7R",
-        "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-sword-shield-blue-sky-stream/196709",
-        "httpStatus": 200,
-        "fetchedAt": "2026-10-06T19:31:23.088Z",
-        "rowCount": 33,
-        "parsedRows": 58,
-        "excludedRows": 25,
-        "minimumPopulation": 500,
-        "error": null
-      },
-      {
-        "setCode": "S8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-25th-anniversary-collection/199357",
-        "httpStatus": 200,
-        "fetchedAt": "2026-10-06T19:31:43.27Z",
-        "rowCount": 47,
-        "parsedRows": 56,
-        "excludedRows": 9,
-        "minimumPopulation": 500,
-        "error": null
-      },
-      {
-        "setCode": "SV9A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9a-heat-wave-arena/297935",
-        "httpStatus": 200,
-        "fetchedAt": "2026-10-06T19:31:53.75Z",
-        "rowCount": 51,
-        "parsedRows": 67,
-        "excludedRows": 16,
-        "minimumPopulation": 500,
+        "fetchedAt": "2026-10-07T10:22:51.795Z",
+        "rowCount": 441,
+        "parsedRows": 442,
+        "excludedRows": 1,
+        "minimumPopulation": 0,
         "error": null
       }
     ],
@@ -218,30 +139,24 @@
         "setCode": "M-P"
       }
     },
-    "lastSuccessAt": "2026-10-06T19:31:53.75Z",
-    "authRecovery": {
-      "checkedAt": "2026-10-06T19:30:32.73Z",
-      "url": "https://www.psacard.com/pop/tcg-cards/2022/pokemon-japanese-sword-shield-battle-region/208916",
-      "verified": true,
-      "error": null,
-      "resumedFromCheckpoint": true
-    },
+    "lastSuccessAt": "2026-10-07T10:22:51.795Z",
+    "authRecovery": null,
     "unregisteredSetCount": 0,
-    "focusedSelected": 2,
-    "normalSelected": 6,
-    "pendingSets": 95,
-    "durationMs": 109973
+    "specificationRecheckSets": 16,
+    "focusedSelected": 0,
+    "normalSelected": 2,
+    "pendingSets": 99,
+    "durationMs": 34626
   },
-  "error": null,
-  "observedAt": "2026-10-07T17:01:32.6614812+09:00",
+  "independentObserverRegistered": false,
   "registeredRepo": "C:\\Users\\polar\\Documents\\ChatGPT\\ポケカ仕入れサイト\\site",
-  "acquisitionState": {
+  "lastScheduledState": {
     "startedAt": "2026-10-07T17:00:02.4465124+09:00",
     "updatedCount": 0,
     "lastError": "PSA official population update failed after 1 attempt(s). Error: Cannot find module './focus_monitor.js'\r\nRequire stack:\r\n- C:\\Users\\polar\\Documents\\ChatGPT\\繝昴こ繧ｫ莉募・繧後し繧､繝・site\\work\\psa-acquisition-inputs\\9de641561116cb3bc00454a0d7104937bbb9f912\\update_psa_official_populations.js\r\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1517:15)\r\n    at wrapResolveFilename (node:internal/modules/cjs/loader:1071:27)\r\n    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1095:10)\r\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1122:12)\r\n    at Module._load (node:internal/modules/cjs/loader:1294:5)\r\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\r\n    at Module.require (node:internal/modules/cjs/loader:1617:12)\r\n    at require (node:internal/modules/helpers:153:16)\r\n    at main (C:\\Users\\polar\\Documents\\ChatGPT\\繝昴こ繧ｫ莉募・繧後し繧､繝・site\\work\\psa-acquisition-inputs\\9de641561116cb3bc00454a0d7104937bbb9f912\\update_psa_official_populations.js:378:20)\r\n    at exclusiveMain (C:\\Users\\polar\\Documents\\ChatGPT\\繝昴こ繧ｫ莉募・繧後し繧､繝・site\\work\\psa-acquisition-inputs\\9de641561116cb3bc00454a0d7104937bbb9f912\\update_psa_official_populations.js:542:22) {\r\n  code: 'MODULE_NOT_FOUND',\r\n  requireStack: [\r\n    'C:\\\\Users\\\\polar\\\\Documents\\\\ChatGPT\\\\繝昴こ繧ｫ莉募・繧後し繧､繝・\\site\\\\work\\\\psa-acquisition-inputs\\\\9de641561116cb3bc00454a0d7104937bbb9f912\\\\update_psa_official_populations.js'\r\n  ]\r\n}",
     "status": "failed",
     "syncStatus": "warning",
-    "durationMs": 13429,
+    "durationMs": 13429.0,
     "lastSuccessSlot": "2026-10-04-morning",
     "lastSuccessDate": "2026-10-07",
     "publishStatus": "not-run",
@@ -254,5 +169,39 @@
     "fetchFailureCount": 1,
     "acquiredCount": 0
   },
-  "independentObserverRegistered": false
+  "acquisitionState": {
+    "acquiredCount": 472,
+    "lastSuccessAt": "2026-10-07T19:23:15.3787537+09:00",
+    "sourceState": "部分取得・未巡回または停止対象あり",
+    "startedAt": "2026-10-07T19:22:39.2012842+09:00",
+    "lastSuccessSlot": "2026-10-04-morning",
+    "publishStatus": "published",
+    "lastAttemptAt": "2026-10-07T19:22:39.2012842+09:00",
+    "fetchFailureCount": 0,
+    "syncStatus": "warning",
+    "error": null,
+    "lastSuccessDate": "2026-10-07",
+    "savedTotalCount": 3045,
+    "endedAt": "2026-10-07T19:23:15.3787537+09:00",
+    "updatedCount": 472,
+    "lastError": null,
+    "status": "partial",
+    "durationMs": 36177.0,
+    "newAcquiredCount": 469,
+    "publishedCommit": "d61fd5e51a1f5e3fc086f75658c9b03544f6dc0c",
+    "publishError": null,
+    "publishedAt": "2026-10-07T10:31:20.598Z",
+    "syncError": "git ff-only merge skipped/failed: hint: Diverging branches can't be fast-forwarded, you need to either:\r\nhint:\r\nhint: \tgit merge --no-ff\r\nhint:\r\nhint: or:\r\nhint:\r\nhint: \tgit rebase\r\nhint:\r\nhint: Disable this message with \"git config set advice.diverging false\"\r\nfatal: Not possible to fast-forward, aborting."
+  },
+  "observedAt": "2026-10-07T19:37:18.1022361+09:00",
+  "phases": {
+    "publicationStop": null,
+    "savedDataLastSuccessAt": "2026-10-07T19:23:15.3787537+09:00",
+    "publication": "published",
+    "save": "過去正常値とチェックポイントを保持",
+    "startup": "起動済み",
+    "acquisitionStop": null,
+    "note": "最後の取得成功と最後の公開成功は別。登録先のデータと実行結果を読み取った観測",
+    "acquisition": "部分取得・未巡回または停止対象あり"
+  }
 }

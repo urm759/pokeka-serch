@@ -6,6 +6,11 @@ const {lead} = require('./proactive_refresh');
 const {project} = require('./build_ui_data');
 const search = require('../search-index-model');
 const root = path.join(__dirname,'..');
+const {publicationRetryable} = require('./psa_handoff');
+assert(publicationRetryable('RPC failed; curl 55 Send failure: Connection was reset'));
+assert(publicationRetryable('rejected non-fast-forward'));
+assert.equal(publicationRetryable('unable to access: requested URL returned error: 403'),false);
+assert.equal(publicationRetryable('Authentication failed'),false);
 const now = Date.parse('2026-10-07T10:00:00Z');
 const rows = [
   {id:1,event:'schedule',status:'completed',conclusion:'success',created_at:'2026-10-06T21:02:19Z',updated_at:'2026-10-06T21:09:40Z'},
