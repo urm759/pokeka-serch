@@ -17,7 +17,9 @@ function verify(run, jobs, receipt, publicTexts, pages) {
 function baseline(key,root=ROOT) {
   if(!process.env.GITHUB_RUN_ID)throw new Error('baseline requires a real Actions run ID');
   const snapshot=require('./audit_completion_outcomes').snapshot(root);
-  fs.writeFileSync(path.join(root,`work/scheduled-cycle-baseline-${key}.json`),JSON.stringify({runId:process.env.GITHUB_RUN_ID,snapshot}));
+  const monitor=path.join(root,'data/priority-price-monitor.json');
+  const fixedCohorts=fs.existsSync(monitor)?JSON.parse(fs.readFileSync(monitor,'utf8')).fixedCohortFreshness:null;
+  fs.writeFileSync(path.join(root,`work/scheduled-cycle-baseline-${key}.json`),JSON.stringify({runId:process.env.GITHUB_RUN_ID,snapshot,fixedCohorts}));
 }
 function record(key,root=ROOT) {
   if(!process.env.GITHUB_RUN_ID) throw new Error('scheduled receipt requires a real Actions run ID');
@@ -26,6 +28,7 @@ function record(key,root=ROOT) {
   const previous=fs.existsSync(file)?read('data/scheduled-cycle-receipts.json'):{version:1,pipelines:{}};
   const files=['data/card-catalog-completion.json','data/completion-outcomes.json','data/acquisition-progress-audit.json'];
   const completion=read(files[1]),progress=read(files[2]);
+  if(fs.existsSync(path.join(root,'data/priority-price-monitor.json')))files.push('data/priority-price-monitor.json');
   const optional=f=>{try{return read(f);}catch{return null;}};
   const before=optional(`work/scheduled-cycle-baseline-${key}.json`);
   const delta=String(before?.runId)===String(process.env.GITHUB_RUN_ID)
@@ -34,6 +37,7 @@ function record(key,root=ROOT) {
     headSha:process.env.GITHUB_SHA||null,recordedAt:new Date().toISOString(),
     hashes:Object.fromEntries(files.map(f=>[f,hash(fs.readFileSync(path.join(root,f),'utf8'))])),
     outcomes:{counts:completion.counts,runDelta:delta,deltaStatus:delta?'同じ実行の取得前スナップショットから比較':'取得前記録不足・増分を推定しない',
+      fixedCohortFreshness:{before:before?.fixedCohorts||null,after:optional('data/priority-price-monitor.json')?.fixedCohortFreshness||null},
       sources:Object.fromEntries(Object.entries(progress.sources||{}).map(([k,v])=>[k,{newLinked:v.newLinked,usableNet:v.usableNet,freshUsableAdded:v.freshUsableAdded,lastSuccessAt:v.lastSuccessAt}]))},
     checkpoints:{safe:optional('work/safe-backfill-progress.json'),pokedata:optional('data/pokedata-manifest.json')?.sets?.map(s=>({name:s.name,count:s.count,status:s.status})),
       priority:optional('data/priority-price-execution.json')?.runs?.map(r=>({script:r.script,status:r.status,attempted:r.attempted,changed:r.changed}))},

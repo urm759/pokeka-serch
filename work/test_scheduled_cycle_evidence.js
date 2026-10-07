@@ -20,6 +20,7 @@ put('data/pokemon-cards.json',[{id:'fixture'}]);
 put('data/card-catalog-completion.json',{cards:{fixture:{s:'データ不足',i:{}}}});
 put('data/completion-outcomes.json',{counts:{analyzable:0},previousObservation:{newlyAnalyzable:999}});
 put('data/acquisition-progress-audit.json',{sources:{}});
+put('data/priority-price-monitor.json',{fixedCohortFreshness:{sources:{shop:{latest:{cohort:192,fresh6h:114}}}}});
 const saved=process.env.GITHUB_RUN_ID;
 process.env.GITHUB_RUN_ID='test-only';
 try{
@@ -27,9 +28,13 @@ try{
   put('data/card-catalog-completion.json',{cards:{fixture:{s:'分析可能',i:{psaOfficial:'取得済み'}}}});
   // Rebuilding a summary can erase its previousObservation; the run baseline must survive it.
   put('data/completion-outcomes.json',{counts:{analyzable:1},previousObservation:{newlyAnalyzable:0}});
+  put('data/priority-price-monitor.json',{fixedCohortFreshness:{sources:{shop:{latest:{cohort:192,fresh6h:124}}}}});
   cycle.record('safe',temp);
   const result=JSON.parse(fs.readFileSync(path.join(temp,'data/scheduled-cycle-receipts.json')));
   assert.equal(result.pipelines.safe.outcomes.runDelta.newlyAnalyzable,1);
   assert.equal(result.pipelines.safe.outcomes.runDelta.filledCards,1);
+  assert.equal(result.pipelines.safe.outcomes.fixedCohortFreshness.before.sources.shop.latest.fresh6h,114);
+  assert.equal(result.pipelines.safe.outcomes.fixedCohortFreshness.after.sources.shop.latest.fresh6h,124);
+  assert(result.pipelines.safe.hashes['data/priority-price-monitor.json']);
 }finally{if(saved===undefined)delete process.env.GITHUB_RUN_ID;else process.env.GITHUB_RUN_ID=saved;}
 console.log('PASS: repeated summary generation cannot erase per-run completion gains');
