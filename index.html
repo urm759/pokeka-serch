@@ -835,7 +835,7 @@
     </details>
     <div id="searchDiagnostic" class="search-diagnostic" hidden></div>
     <small id="searchPerformance" class="search-performance" aria-live="polite"></small>
-    <details class="search-benchmark"><summary>検索速度の実測（任意）</summary><p>同じ画面で全件再計算／計算結果再利用を各3回比較します。旧公開版の描画時間そのものではありません。DOM生成と2フレーム到達を分離し、設定・安全条件は変更しません。</p><button id="benchmarkSearchButton" type="button">同条件で3回ずつ比較</button><pre id="searchBenchmarkResult"></pre></details>
+    <details class="search-benchmark"><summary>検索速度の実測（任意）</summary><p>同じ画面で全件再計算／計算結果再利用／最初のカード詳細展開を各3回比較します。同じ環境・計算値・候補IDの前回実測から30%超かつ20ms超の悪化を警告します。DOM生成と2フレーム到達は別指標です。設定・安全条件は変更しません。</p><button id="benchmarkSearchButton" type="button">同条件で3回ずつ比較</button><pre id="searchBenchmarkResult"></pre><p><a href="./data/performance-guard.json" target="_blank" rel="noreferrer">自動性能検査・前回比</a> ／ <a href="./data/performance-history.json" target="_blank" rel="noreferrer">過去90回の実測</a> ／ <a href="./data/scheduled-cycle-verification.json" target="_blank" rel="noreferrer">定期取得・保存・公開照合</a></p></details>
     <section id="grid" class="grid"></section>
     <div class="load-more-wrap">
       <p id="resultProgress"></p>
@@ -877,6 +877,6 @@
   <script src="./update-health-banner.js?v=20261007-price-recovery-v1"></script>
   <script src="./current-market-model.js?v=20261007-cap-state-v1"></script>
   <script src="./ui-data-codec.js?v=20261007-v1"></script>
-  <script src="./app.js?v=20261007-specification-reexploration-v1"></script>
+  <script src="./app.js?v=20261007-performance-comparison-v2"></script>
 </body>
 </html>

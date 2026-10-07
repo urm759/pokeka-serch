@@ -23,6 +23,31 @@ async function main() {
     api(`${API}/actions/workflows/priority-price-refresh.yml/runs?per_page=10`),
   ]);
   const status = JSON.parse(fs.readFileSync(path.join(ROOT, "data", "update-status.json"), "utf8"));
+  // Verify saved run receipts without triggering acquisition or waiting for future runs.
+  const cycleFile=path.join(ROOT,'data/scheduled-cycle-verification.json');
+  let cycles=fs.existsSync(cycleFile)?JSON.parse(fs.readFileSync(cycleFile,'utf8')):{version:1,pipelines:{}};
+  try {
+    const receipts=await api('https://urm759.github.io/pokeka-serch/data/scheduled-cycle-receipts.json');
+    const deployments=await api(`${API}/actions/runs?per_page=30`);
+    const pages=deployments.workflow_runs?.find(r=>r.name==='pages build and deployment'&&r.conclusion==='success');
+    for(const [key,list] of Object.entries({daily:runs,safe:safeRuns,pokedata:pokeRuns,priority:priceRuns})) {
+      const latest=list.workflow_runs?.find(r=>r.event==='schedule'&&r.status==='completed');
+      if(!latest || cycles.pipelines[key]?.runId===latest.id&&cycles.pipelines[key]?.confirmed)continue;
+      const receipt=receipts.pipelines?.[key],texts={};
+      if(receipt && String(receipt.runId)===String(latest.id)){
+        for(const file of Object.keys(receipt.hashes||{})){
+          if(!/^data\/[a-z0-9/-]+\.json$/i.test(file))throw new Error('Invalid receipt path');
+          const response=await fetch('https://urm759.github.io/pokeka-serch/'+file+'?run='+latest.id,{signal:AbortSignal.timeout(15000)});
+          if(response.ok)texts[file]=await response.text();
+        }
+      }
+      const jobs=await api(`${API}/actions/runs/${latest.id}/jobs`);
+      cycles.pipelines[key]=require('./scheduled_cycle_evidence').verify(latest,jobs,receipt,texts,pages);
+    }
+    cycles.checkedAt=new Date().toISOString();
+    delete cycles.checkError;
+  }catch(error){cycles.checkError=error.message;cycles.checkedAt=new Date().toISOString();}
+  fs.writeFileSync(cycleFile,JSON.stringify(cycles));
   const evidenceFile=path.join(ROOT,'data/proactive-refresh-audit.json');
   if(fs.existsSync(evidenceFile)) {
     const evidence=JSON.parse(fs.readFileSync(evidenceFile,'utf8'));

@@ -5727,6 +5727,8 @@ document.querySelectorAll(".source-monitor-panel").forEach(panel=>panel.addEvent
 document.getElementById("benchmarkSearchButton")?.addEventListener("click",async event=>{
   event.target.disabled = true;
   const rows=[];
+  const detailRows=[];
+  const originalDetails=new Set(state.openCardDetails);
   let expected=null;
   const frame=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
   try {
@@ -5745,10 +5747,35 @@ document.getElementById("benchmarkSearchButton")?.addEventListener("click",async
         rows.push({kind,...timing,frameCompletionMs:performance.now()-start});
       }
     }
-    document.getElementById("searchBenchmarkResult").textContent = JSON.stringify({width:window.innerWidth,loadedCards:state.cards.length,valuesAndIdsUnchanged:true,rows});
+    const firstId=els.grid.querySelector('[data-card-id]')?.dataset.cardId;
+    if(firstId)for(let i=0;i<3;i++){
+      state.openCardDetails.delete(firstId);render();
+      const start=performance.now();state.openCardDetails.add(firstId);render();
+      const generatedMs=performance.now()-start;
+      await frame();
+      detailRows.push({generatedMs,frameCompletionMs:performance.now()-start,
+        elements:els.grid.querySelector(`[data-card-id="${CSS.escape(firstId)}"] .card-details-body`)?.querySelectorAll('*').length||0});
+    }
+    const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(expected));
+    const conditionHash=[...new Uint8Array(digest)].map(n=>n.toString(16).padStart(2,'0')).join('');
+    const median=values=>values.slice().sort((a,b)=>a-b)[Math.floor(values.length/2)];
+    const measured={fullCalculationMs:median(rows.filter(r=>r.kind==='全件再計算').map(r=>r.calculationMs)),
+      renderMs:median(rows.filter(r=>r.kind==='計算結果再利用').map(r=>r.domMs)),
+      detailGenerationMs:detailRows.length?median(detailRows.map(r=>r.generatedMs)):null};
+    const key=`performance-browser-v2/${navigator.userAgent}/${window.innerWidth}/${conditionHash}`;
+    let previous=null;
+    try{previous=JSON.parse(localStorage.getItem('pokeka-performance-browser-v2')||'null');}catch{}
+    const comparison=previous?.key===key?Object.entries(measured).map(([metric,value])=>({metric,
+      before:previous.measured[metric],after:value,warning:Number.isFinite(value)&&Number.isFinite(previous.measured[metric])&&value>previous.measured[metric]*1.3&&value-previous.measured[metric]>20})):[];
+    const result={width:window.innerWidth,loadedCards:state.cards.length,valuesAndIdsUnchanged:true,
+      dataRevision:uiDataManifest?.revision,conditionHash,rows,detailRows,measured,comparison,
+      comparisonState:comparison.length?'同じ環境・計算値・候補IDでの前回比較':'同条件の前回実測なし',
+      scope:'実DOM生成と2フレーム到達。通信・端末実機・描画完了保証とは別。設定/安全条件を変更しない'};
+    try{localStorage.setItem('pokeka-performance-browser-v2',JSON.stringify({key,measured,at:new Date().toISOString()}));}catch{}
+    document.getElementById("searchBenchmarkResult").textContent = JSON.stringify(result);
   } catch(error) {
     document.getElementById("searchBenchmarkResult").textContent=error.message;
-  } finally { event.target.disabled=false; }
+  } finally { state.openCardDetails=originalDetails;render();event.target.disabled=false; }
 });
 document.getElementById("currentMarketSearchKindInput")?.addEventListener("change",syncFromUI);
 for (const element of [els.limitModelAudit,els.shopRateSummary,els.marketBacktestSummary,els.catalogCompletionDetails,els.dataFreshness,els.guidePanels]) {

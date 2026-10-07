@@ -1,0 +1,35 @@
+const assert=require('node:assert/strict');
+const {verify,hash}=require('./scheduled_cycle_evidence');
+const run={id:1,event:'schedule',conclusion:'success',created_at:'2026-10-07T00:00:00Z'};
+const jobs={jobs:[{steps:['Continue bounded source checkpoints','Check publication safety','Commit safe progress'].map(name=>({name,conclusion:'success'}))}]};
+const receipt={runId:'1',hashes:{'data/example.json':hash('{"n":1}')},outcomes:{newAnalyzable:0}};
+const pages={id:2,conclusion:'success',created_at:'2026-10-07T00:02:00Z'};
+assert(verify(run,jobs,receipt,{'data/example.json':'{"n":1}'},pages).confirmed);
+assert(!verify({...run,event:'workflow_dispatch'},jobs,receipt,{'data/example.json':'{"n":1}'},pages).confirmed);
+assert(!verify(run,jobs,receipt,{'data/example.json':'{"n":2}'},pages).confirmed);
+assert(!verify(run,jobs,{...receipt,runId:'2'}, {},pages).confirmed);
+assert(!verify(run,jobs,receipt,{'data/example.json':'{"n":1}'},{...pages,created_at:'2026-10-06'}).confirmed);
+assert(!verify(run,{jobs:[]},receipt,{'data/example.json':'{"n":1}'},pages).confirmed);
+assert.equal(verify(run,jobs,receipt,{'data/example.json':'{"n":1}'},pages).outcomes.newAnalyzable,0);
+console.log('PASS: scheduled stages, exact public hashes, receipt identity and Pages chronology');
+const fs=require('node:fs'),path=require('node:path'),os=require('node:os');
+const temp=fs.mkdtempSync(path.join(os.tmpdir(),'pokeka-cycle-test-'));
+fs.mkdirSync(path.join(temp,'data'));fs.mkdirSync(path.join(temp,'work'));
+const put=(file,value)=>fs.writeFileSync(path.join(temp,file),JSON.stringify(value));
+put('data/pokemon-cards.json',[{id:'fixture'}]);
+put('data/card-catalog-completion.json',{cards:{fixture:{s:'データ不足',i:{}}}});
+put('data/completion-outcomes.json',{counts:{analyzable:0},previousObservation:{newlyAnalyzable:999}});
+put('data/acquisition-progress-audit.json',{sources:{}});
+const saved=process.env.GITHUB_RUN_ID;
+process.env.GITHUB_RUN_ID='test-only';
+try{
+  const cycle=require('./scheduled_cycle_evidence');cycle.baseline('safe',temp);
+  put('data/card-catalog-completion.json',{cards:{fixture:{s:'分析可能',i:{psaOfficial:'取得済み'}}}});
+  // Rebuilding a summary can erase its previousObservation; the run baseline must survive it.
+  put('data/completion-outcomes.json',{counts:{analyzable:1},previousObservation:{newlyAnalyzable:0}});
+  cycle.record('safe',temp);
+  const result=JSON.parse(fs.readFileSync(path.join(temp,'data/scheduled-cycle-receipts.json')));
+  assert.equal(result.pipelines.safe.outcomes.runDelta.newlyAnalyzable,1);
+  assert.equal(result.pipelines.safe.outcomes.runDelta.filledCards,1);
+}finally{if(saved===undefined)delete process.env.GITHUB_RUN_ID;else process.env.GITHUB_RUN_ID=saved;}
+console.log('PASS: repeated summary generation cannot erase per-run completion gains');

@@ -25,6 +25,7 @@ jobs:
           node-version: "24"
       - name: Save purchase-price freshness baseline
         run: |
+          node work/scheduled_cycle_evidence.js daily --baseline
           node work/build_purchase_limit_audit.js
           node work/audit_purchase_price_recovery.js --baseline
       - name: Run deterministic delta update
@@ -72,6 +73,8 @@ jobs:
           node work/test_ui_data.js
           node work/test_specification_reexploration.js
           node work/test_performance_guard.js
+          node work/test_performance_comparison.js
+          node work/test_scheduled_cycle_evidence.js
           node work/test_shop_observation.js
           node work/test_purchase_price_recovery.js
           node work/test_roi_psa9_ratio.js
@@ -109,6 +112,9 @@ jobs:
           node work/test_supply_maturity_hypothesis.js
       - name: Commit changed data only
         run: |
+          node work/scheduled_cycle_evidence.js daily
+          node work/build_ui_data.js
+          node work/test_ui_data.js
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data work/daily-http-cache.json work/changed-card-ids.json work/market_stability_history.json work/snkr-raw-flip-cache.json work/snkr-raw-flip-checkpoint.json work/source-update-runs.json work/source-update-history.json work/toreca-source-inventory.json work/toreca_source_diff.json work/card-new-arrivals.json work/card-lifecycle.json work/candidate-daily-history.json work/candidate-availability-history.json work/candidate-shop-refresh.json work/cardrush_catalog.json work/hareruya2_catalog.json work/cardrush_stock_history.json work/hareruya2_stock_history.json work/acquisition-progress-last.json
@@ -117,6 +123,7 @@ jobs:
           git add work/purchase-price-targets.json work/purchase-price-observation-snapshot.json work/purchase-price-recovery-baseline.json work/purchase-price-recovery-history.json
           git add work/fixed-price-reference.json work/priority-freshness-history.json
           git add work/completion-outcomes-baseline.json work/completion-outcomes-last.json work/completion-outcome-history work/card-completion-queue.json
+          git add work/scheduled-cycle-baseline-daily.json
           if git diff --cached --quiet; then
             echo "No source change. Commit and deployment skipped."
             exit 0

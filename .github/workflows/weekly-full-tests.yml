@@ -26,4 +26,7 @@ jobs:
         shell: bash
         run: for test in work/test_*.js; do node "$test"; done
       - name: Fixed production-model performance budgets
-        run: node work/measure_performance_guard.js
+        run: |
+          node work/measure_performance_guard.js
+          node work/test_performance_comparison.js
+          node work/test_scheduled_cycle_evidence.js

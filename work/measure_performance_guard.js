@@ -2,6 +2,8 @@ const fs=require('node:fs'),path=require('node:path'),assert=require('node:asser
 const codec=require('../ui-data-codec'),search=require('../search-index-model');
 const root=path.join(__dirname,'..');
 const budgets=require('../data/performance-budgets.json');
+const comparison=require('./performance_comparison');
+const os=require('node:os');
 function median(a){return [...a].sort((a,b)=>a-b)[Math.floor(a.length/2)];}
 function violations(result,limits=budgets){
   return Object.entries(limits.maximum).filter(([key,max])=>!Number.isFinite(result[key]) || result[key]>max).map(([key,max])=>`${key}: ${result[key]} / maximum ${max}`);
@@ -41,21 +43,40 @@ function measure(){
       if(first)assert.deepEqual(rows.map(financial),first.map(financial));else first=rows;
       t=performance.now();assert.strictEqual(api.calculatedCardsForSearch(state.cards),rows);cached.push(performance.now()-t);
     }
-    const t=performance.now();const doubled=api.calculatedCardsForSearch(state.cards.concat(state.cards),{force:true});
-    const doubleCalculationMs=performance.now()-t;
-    assert.deepEqual(doubled.slice(0,first.length).map(financial),first.map(financial));
-    assert.deepEqual(doubled.slice(first.length).map(financial),first.map(financial));
-    const detailStart=performance.now();for(const card of first.slice(0,25))api.gradeRateSummary(card);
-    return {fullCalculationMs:median(timings),cacheMs:median(cached),doubleCalculationMs,detailSummary25Ms:performance.now()-detailStart,
+    const doubleTimes=[],detailTimes=[];
+    for(let i=0;i<3;i++){
+      const t=performance.now();const doubled=api.calculatedCardsForSearch(state.cards.concat(state.cards),{force:true});
+      doubleTimes.push(performance.now()-t);
+      assert.deepEqual(doubled.slice(0,first.length).map(financial),first.map(financial));
+      assert.deepEqual(doubled.slice(first.length).map(financial),first.map(financial));
+      const detailStart=performance.now();for(const card of first.slice(0,25))api.gradeRateSummary(card);
+      detailTimes.push(performance.now()-detailStart);
+    }
+    return {fullCalculationMs:median(timings),cacheMs:median(cached),doubleCalculationMs:median(doubleTimes),detailSummary25Ms:median(detailTimes),
+      samples:{fullCalculationMs:timings,cacheMs:cached,doubleCalculationMs:doubleTimes,detailSummary25Ms:detailTimes},
       cardCount:state.cards.length,calculationValuesEqual:true};`;
   const modelResult=new Function('require','__dirname','process','assert','median',prefix.replace('const source = fs.readFileSync',inject+'\nconst source = fs.readFileSync')+suffix)(require,__dirname,process,assert,median);
   const result={initialBytes,doubleInitialBytes,jsonParseMs,doubleJsonParseMs,searchMs:median(searchTimes),doubleSearchMs:median(doubleSearchTimes),...modelResult};
   const errors=violations(result);
   assert(app.includes("state.openCardDetails.has(String(card.id)) ? `"),'closed details must stay lazy');
-  assert(!files.some(f=>/psa-mapping-review|psa-history|performance-guard/.test(f)),'raw audit/history must not become startup payload');
+  assert(!files.some(f=>/psa-mapping-review|psa-history|performance-(?:guard|history)|scheduled-cycle/.test(f)),'raw audit/history must not become startup payload');
   return {generatedAt:new Date().toISOString(),environment:'Node.js same production calculation/index; not browser paint or gzip transfer',
     fixedQuery:'M2 110/080',repeats:3,settings:'production audit defaults / 119 days',...result,
+    comparisonKey:`node-production-v2/${process.platform}/${process.arch}/node${process.versions.node.split('.')[0]}/${os.cpus()[0]?.model||'unknown-cpu'}/${os.cpus().length}/119days/M2-110-080`,
+    hardware:{cpu:os.cpus()[0]?.model||null,logicalCores:os.cpus().length,node:process.versions.node},
+    codeFingerprint:comparison.fingerprint(root,[...fs.readdirSync(root).filter(f=>f.endsWith('.js')),'work/measure_performance_guard.js','work/performance_comparison.js','work/build_purchase_limit_audit.js','data/performance-budgets.json']),
+    dataFingerprint:comparison.fingerprint(root,files.map(f=>manifest.aliases[f]||f)),
+    measurementScope:{initial:'JSON本文サイズ・解析（通信/ブラウザpaintは未計測）',search:'軽量インデックス固定検索',calculation:'本番計算・値一致',detail:'25件の率表示文字列。実DOM展開/描画は別の実画面試験で確認'},
     limits:budgets.maximum,errors,status:errors.length?'regression':'pass',llmCalls:0,codexCalls:0};
 }
-if(require.main===module){const result=measure();fs.writeFileSync(path.join(root,'data/performance-guard.json'),JSON.stringify(result));console.log(JSON.stringify(result));if(result.errors.length)process.exitCode=1;}
+if(require.main===module){
+  const result=measure(),historyFile=path.join(root,'data/performance-history.json');
+  const history=fs.existsSync(historyFile)?JSON.parse(fs.readFileSync(historyFile,'utf8')):null;
+  const next=comparison.append(history,result);
+  fs.writeFileSync(historyFile,JSON.stringify(next));
+  fs.writeFileSync(path.join(root,'data/performance-guard.json'),JSON.stringify(result));
+  console.log(JSON.stringify(result));
+  if(result.comparison.warnings.length)console.warn(`::warning::同条件の前回比性能悪化: ${result.comparison.warnings.join(', ')}`);
+  if(result.errors.length)process.exitCode=1;
+}
 module.exports={violations,measure};

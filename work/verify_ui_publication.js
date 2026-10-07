@@ -9,7 +9,7 @@ async function read(file) {
 }
 async function main() {
   const html = await read('index.html?verify=' + Date.now());
-  assert(html.includes('20261007-specification-reexploration-v1') && html.includes('ui-data-codec.js'));
+  assert(html.includes('20261007-performance-comparison-v2') && html.includes('ui-data-codec.js'));
   const manifest = JSON.parse(await read('data/ui/manifest.json?verify=' + Date.now()));
   const verified = [];
   let completion, update, audit;

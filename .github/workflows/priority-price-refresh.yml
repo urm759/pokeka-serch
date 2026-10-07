@@ -19,7 +19,9 @@ jobs:
         with:
           node-version: "24"
       - name: Refresh due purchase prices without new-set exploration or LLM
-        run: node work/run_priority_price_refresh.js
+        run: |
+          node work/scheduled_cycle_evidence.js priority --baseline
+          node work/run_priority_price_refresh.js
       - name: Verify safety and incremental acquisition
         run: |
           node work/build_ui_data.js
@@ -28,6 +30,8 @@ jobs:
           node work/test_ui_data.js
           node work/test_specification_reexploration.js
           node work/test_performance_guard.js
+          node work/test_performance_comparison.js
+          node work/test_scheduled_cycle_evidence.js
           node --check app.js
           node work/test_priority_refresh.js
           node work/test_proactive_refresh.js
@@ -46,6 +50,9 @@ jobs:
           node work/test_recovery_and_url_discovery.js
       - name: Publish validated data with conflict protection
         run: |
+          node work/scheduled_cycle_evidence.js priority
+          node work/build_ui_data.js
+          node work/test_ui_data.js
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data work

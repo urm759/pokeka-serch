@@ -22,7 +22,9 @@ jobs:
         with:
           node-version: "24"
       - name: Continue bounded source checkpoints without an LLM
-        run: node work/run_safe_backfill.js
+        run: |
+          node work/scheduled_cycle_evidence.js safe --baseline
+          node work/run_safe_backfill.js
       - name: Consume prioritized completion queue without an LLM
         run: |
           node work/discover_state_a_urls.js
@@ -47,6 +49,8 @@ jobs:
           node work/test_ui_data.js
           node work/test_specification_reexploration.js
           node work/test_performance_guard.js
+          node work/test_performance_comparison.js
+          node work/test_scheduled_cycle_evidence.js
           node work/test_price_integrity.js
           node work/test_return_reference.js
           node work/test_candidate_daily_audit.js
@@ -64,6 +68,9 @@ jobs:
           node work/test_supply_maturity_hypothesis.js
       - name: Commit safe progress and checkpoints
         run: |
+          node work/scheduled_cycle_evidence.js safe
+          node work/build_ui_data.js
+          node work/test_ui_data.js
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data work
