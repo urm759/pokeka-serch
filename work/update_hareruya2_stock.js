@@ -616,5 +616,5 @@ if (require.main === module) main().catch((error) => {
   console.error(error);
   process.exit(1);
 });
-module.exports = { extractCardSignature, extractProductSignature, productMatchesCard, stateFromTitle, parseProductPage,
+module.exports = { writeSummary, extractCardSignature, extractProductSignature, productMatchesCard, stateFromTitle, parseProductPage,
   fetchAllCollections, fetchCollectionProducts, findCollectionForPack, chooseProduct, productPrice, isAvailable };
