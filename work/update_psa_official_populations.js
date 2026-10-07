@@ -91,7 +91,14 @@ function cleanCardName(value) {
 function rowObjects(set) {
   return set.rows.map((row) => ({ cardNo: normalizeNo(row.cardNo), cardName: cleanCardName(row.cardName),
     psa10Count: row.psa10Count, psaTotal: row.psaTotal, psa10Rate: row.psa10Rate,
-    setCode: shortSet(set.setCode), sourceSet: set.name, sourceUrl: set.url, fetchedAt: set.fetchedAt }));
+    setCode: shortSet(set.setCode), sourceSet: set.name, sourceUrl: set.url, fetchedAt: set.fetchedAt,
+    captureVersion: 2, completeSnapshot: !set.error && set.completeSnapshot === true }));
+}
+
+function cellTextWithSpecification(td) {
+  // Finish labels can be direct text siblings of the linked name.
+  return [...td.childNodes].map(node => (node.textContent || '').replace(/\s+/g, ' ').trim())
+    .filter(Boolean).join(' | ').replace(/\s+/g, ' ').trim();
 }
 
 function mergeRows(before, after) {
@@ -149,7 +156,9 @@ function inferTableMetrics(headers, cells) {
 }
 
 async function getTableSnapshot(page) {
-  const tables = await page.evaluate(() =>
+  const tables = await page.evaluate((cellReader) => {
+    const readCell = new Function('td', `return (${cellReader})(td)`);
+    return (
     [...document.querySelectorAll("table")].map((table, index) => ({
       index,
       id: table.id || "",
@@ -164,20 +173,20 @@ async function getTableSnapshot(page) {
         })
         .map((tr) =>
         [...tr.querySelectorAll(":scope > td")].map((td) => {
-          const parts = [...td.children].map((child) => (child.textContent || "").replace(/\s+/g, " ").trim()).filter(Boolean);
-          return (parts.length ? parts.join(" | ") : (td.textContent || "")).replace(/\s+/g, " ").trim();
+          return readCell(td);
         })
       ),
-    }))
-  );
-  const roleRows = await page.evaluate(() =>
+    })));
+  }, cellTextWithSpecification.toString());
+  const roleRows = await page.evaluate((cellReader) => {
+    const readCell = new Function('td', `return (${cellReader})(td)`);
+    return (
     [...document.querySelectorAll('[role="row"]')].map((row) =>
       [...row.querySelectorAll("td")].map((td) => {
-        const parts = [...td.children].map((child) => (child.textContent || "").replace(/\s+/g, " ").trim()).filter(Boolean);
-        return (parts.length ? parts.join(" | ") : (td.textContent || "")).replace(/\s+/g, " ").trim();
+        return readCell(td);
       })
-    )
-  );
+    ));
+  }, cellTextWithSpecification.toString());
   const roleHeaders = await page.evaluate(() =>
     [...document.querySelectorAll('[role="row"] th')].map((th) => (th.textContent || "").replace(/\s+/g, " ").trim())
   );
@@ -242,6 +251,7 @@ async function collectSet(context, entry) {
     }
 
     let rows = [];
+    let paginationCompleted = false;
     let lastHeaders = [];
     const seen = new Set();
     for (let pageIndex = 0; pageIndex < MAX_PAGES; pageIndex += 1) {
@@ -272,10 +282,10 @@ async function collectSet(context, entry) {
       }
 
       const dataTableNext = page.locator("#tablePSA_next");
-      if (!(await dataTableNext.count().catch(() => 0))) break;
-      if (!(await dataTableNext.isVisible().catch(() => false))) break;
+      if (!(await dataTableNext.count().catch(() => 0))) { paginationCompleted=true; break; }
+      if (!(await dataTableNext.isVisible().catch(() => false))) { paginationCompleted=true; break; }
       const nextClass = await dataTableNext.getAttribute("class").catch(() => "disabled");
-      if (/disabled/i.test(nextClass || "")) break;
+      if (/disabled/i.test(nextClass || "")) { paginationCompleted=true; break; }
       await page.locator("#spinner-wrap").waitFor({ state: "hidden", timeout: 10000 }).catch(() => {});
       // The PSA loading overlay can briefly cover the pagination control even
       // after the table is ready. A DOM click avoids losing the whole set.
@@ -309,6 +319,7 @@ async function collectSet(context, entry) {
     }
 
     result.parsedRows = rows.length;
+    result.completeSnapshot = paginationCompleted && MIN_TOTAL_POPULATION === 0;
     result.rows = rows.filter((row) => {
       if (!row.cardNo || row.cardNo.toUpperCase() === "TOTAL") return false;
       if (!Number.isFinite(row.psaTotal) || row.psaTotal <= 0 || !Number.isFinite(row.psa10Count) || row.psa10Count < 0 || row.psa10Count > row.psaTotal) return false;
@@ -339,6 +350,10 @@ async function main() {
     retryByUrl: checkpoint.retryByUrl || {}, lastSuccessAt: checkpoint.lastSuccessAt || null, authRecovery: null };
   const saveProgress = () => writeJson(PROGRESS_PATH, { ...audit, durationMs: Date.now() - Date.parse(startedAt) });
   const fullManifest = readJson(MANIFEST_PATH, []);
+  const savedPopulation = readJson(OUTPUT_JSON, { rows: [] });
+  const heldReview = readJson(path.join(OUTPUT_DIR, 'psa-mapping-review.json'), { rows: [] });
+  const completeSpecificationUrls = new Set((savedPopulation.rows || []).filter(row=>row.captureVersion >= 2 && row.completeSnapshot).map(row=>row.sourceUrl));
+  const specificationReviewUrls = new Set((heldReview.rows || []).map(row=>row.sourceUrl).filter(url=>url && !completeSpecificationUrls.has(url)));
   const priorityQueue = readJson(PRIORITY_QUEUE_PATH, { rows: [], orderedSets: [] });
   priorityCards = new Set((priorityQueue.rows || []).map((row) => `${String(row.setCode || "").toUpperCase()}|${String(row.cardNo || "").replace(/^0+(?=\d)/, "")}`));
   const priorityOrder = new Map((priorityQueue.orderedSets || []).map((entry, index) => [String(entry.setCode || "").toUpperCase(), index]));
@@ -358,7 +373,8 @@ async function main() {
   audit.completedUrls = [...priorCompleted];
   audit.unregisteredSetCount = orderedManifest.filter((entry) => !entry.url).length;
   const focusSetUrls = new Set(priorityQueue.focusSetUrls || []);
-  const pendingManifest = orderedManifest.filter((entry) => entry.url && (!priorCompleted.has(entry.url) || focusSetUrls.has(entry.url)) && retryPolicy.eligible(audit.retryByUrl[entry.url]));
+  const pendingManifest = orderedManifest.filter((entry) => entry.url && (!priorCompleted.has(entry.url) || focusSetUrls.has(entry.url) || specificationReviewUrls.has(entry.url)) && retryPolicy.eligible(audit.retryByUrl[entry.url]));
+  audit.specificationRecheckSets = pendingManifest.filter(entry=>specificationReviewUrls.has(entry.url)).length;
   const manifest = require("./focus_monitor.js").fairBatch(pendingManifest, Math.max(1, Number(process.env.PSA_SET_BATCH || 8)), (entry) => focusSetUrls.has(entry.url), priorityQueue.maxFocusedShare ?? 0.4);
   audit.focusedSelected = manifest.filter((entry) => focusSetUrls.has(entry.url)).length;
   audit.normalSelected = manifest.length - audit.focusedSelected;
@@ -531,4 +547,4 @@ if (require.main === module) exclusiveMain()
     console.error(error);
     process.exit(1);
   });
-module.exports = { inferTableMetrics, parseSinglePopulation, mergeRows, collectSet };
+module.exports = { inferTableMetrics, parseSinglePopulation, mergeRows, collectSet, cellTextWithSpecification };

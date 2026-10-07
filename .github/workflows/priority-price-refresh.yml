@@ -23,7 +23,11 @@ jobs:
       - name: Verify safety and incremental acquisition
         run: |
           node work/build_ui_data.js
+          node work/measure_performance_guard.js
+          node work/build_ui_data.js
           node work/test_ui_data.js
+          node work/test_specification_reexploration.js
+          node work/test_performance_guard.js
           node --check app.js
           node work/test_priority_refresh.js
           node work/test_proactive_refresh.js

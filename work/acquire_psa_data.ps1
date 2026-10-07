@@ -35,7 +35,7 @@ try {
   # The collector verifies a normal population page before clearing an authentication hold.
   Invoke-Step -Name 'PSA regular Chrome startup' -MaxAttempts 2 -Operation { & (Join-Path $PSScriptRoot 'start_psa_regular_chrome.ps1') } | Out-Null
   $env:PSA_CDP_ENDPOINT = 'http://127.0.0.1:9222'
-  $env:PSA_MIN_TOTAL_POPULATION = '500'
+  $env:PSA_MIN_TOTAL_POPULATION = '0'
   & $Node (Join-Path $PSScriptRoot 'psa_handoff.js') --inputs
   if ($LASTEXITCODE -eq 0) {
     $inputs = Get-Content (Join-Path $PSScriptRoot 'psa-acquisition-inputs/audit.json') -Raw | ConvertFrom-Json

@@ -25,3 +25,5 @@ jobs:
       - name: Full regression suite
         shell: bash
         run: for test in work/test_*.js; do node "$test"; done
+      - name: Fixed production-model performance budgets
+        run: node work/measure_performance_guard.js

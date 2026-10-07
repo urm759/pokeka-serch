@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-07T05:10:29.974Z",
+  "generatedAt": "2026-10-07T05:49:59.097Z",
   "llmCalls": 0,
   "codexCalls": 0,
   "retryPolicy": {
@@ -27,7 +27,7 @@
     {
       "source": "psaOfficial",
       "label": "PSA公式・PC正規認証",
-      "remaining": 1313,
+      "remaining": 1125,
       "queueDefinition": "あとPSAだけで分析可能な国内カード。全PSA未取得とは別",
       "sourceState": "partial",
       "failureScope": "url",
@@ -57,9 +57,9 @@
       ],
       "lastRun": {
         "attempted": 2,
-        "newAcquired": 211,
-        "refreshed": 344,
-        "durationMs": 29441
+        "newAcquired": 495,
+        "refreshed": 547,
+        "durationMs": 21414
       },
       "firstPassDaysEstimate": null,
       "observedExecutionDays": 0,
@@ -69,15 +69,15 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-07T05:09:10.568Z",
-        "to": "2026-10-07T05:10:27.731Z"
+        "from": "2026-10-07T05:49:52.794Z",
+        "to": "2026-10-07T05:49:56.834Z"
       },
       "sinceBaseline": {
-        "newLinked": 156,
-        "validAdded": 156,
-        "validLost": 93,
-        "usableNet": 63,
-        "freshnessRecovered": 461
+        "newLinked": 1137,
+        "validAdded": 1137,
+        "validLost": 25,
+        "usableNet": 1112,
+        "freshnessRecovered": 1728
       },
       "freshness": null
     },
@@ -196,8 +196,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-07T05:09:10.568Z",
-        "to": "2026-10-07T05:10:27.731Z"
+        "from": "2026-10-07T05:49:52.794Z",
+        "to": "2026-10-07T05:49:56.834Z"
       },
       "sinceBaseline": {
         "newLinked": 329,
@@ -439,8 +439,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-07T05:09:10.568Z",
-        "to": "2026-10-07T05:10:27.731Z"
+        "from": "2026-10-07T05:49:52.794Z",
+        "to": "2026-10-07T05:49:56.834Z"
       },
       "sinceBaseline": {
         "newLinked": 143,
@@ -453,12 +453,12 @@
     }
   ],
   "psaOnly": {
-    "count": 1313,
+    "count": 1125,
     "causes": {
       "個別セット確認待ち": 10,
       "仕様・URL曖昧": 305,
-      "公式セットURL未登録": 559,
-      "登録URLの取得範囲・未一致確認": 439
+      "登録URLの取得範囲・未一致確認": 251,
+      "公式セットURL未登録": 559
     },
     "cards": [
       {
@@ -474,34 +474,34 @@
         "cause": "仕様・URL曖昧"
       },
       {
+        "id": "pk-37254",
+        "setCode": "S8A-G",
+        "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-asia-25th-anniversary-promo/202700",
+        "cause": "登録URLの取得範囲・未一致確認"
+      },
+      {
         "id": "x-141447",
         "setCode": "S8A",
         "url": null,
         "cause": "仕様・URL曖昧"
       },
       {
+        "id": "pk-23854",
+        "setCode": "S8A-G",
+        "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-asia-25th-anniversary-promo/202700",
+        "cause": "登録URLの取得範囲・未一致確認"
+      },
+      {
+        "id": "pk-23856",
+        "setCode": "S8A-G",
+        "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-asia-25th-anniversary-promo/202700",
+        "cause": "登録URLの取得範囲・未一致確認"
+      },
+      {
         "id": "pk-49060",
         "setCode": "CLK",
         "url": null,
         "cause": "公式セットURL未登録"
-      },
-      {
-        "id": "x-740244",
-        "setCode": "MC",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mc-start-deck-100-battle-collection/326110",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-740404",
-        "setCode": "MC",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mc-start-deck-100-battle-collection/326110",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-471633",
-        "setCode": "SV8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-49133",
@@ -516,13 +516,13 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-128147",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
+        "id": "pk-33510",
+        "setCode": "S8A-G",
+        "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-asia-25th-anniversary-promo/202700",
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "pk-33510",
+        "id": "pk-23857",
         "setCode": "S8A-G",
         "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-asia-25th-anniversary-promo/202700",
         "cause": "登録URLの取得範囲・未一致確認"
@@ -576,6 +576,12 @@
         "cause": "公式セットURL未登録"
       },
       {
+        "id": "x-331668",
+        "setCode": "S8A-G",
+        "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-asia-25th-anniversary-promo/202700",
+        "cause": "登録URLの取得範囲・未一致確認"
+      },
+      {
         "id": "pk-48980",
         "setCode": "CLF",
         "url": null,
@@ -594,40 +600,16 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-471614",
-        "setCode": "SV8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128212",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-450624",
         "setCode": "10TH",
         "url": null,
         "cause": "仕様・URL曖昧"
       },
       {
-        "id": "x-128265",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-450631",
         "setCode": "10TH",
         "url": null,
         "cause": "仕様・URL曖昧"
-      },
-      {
-        "id": "x-471580",
-        "setCode": "SV8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "x-745687",
@@ -666,18 +648,6 @@
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "x-471566",
-        "setCode": "SV8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-732803",
-        "setCode": "M2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-1159",
         "setCode": "CP3",
         "url": null,
@@ -688,12 +658,6 @@
         "setCode": "PMCG3",
         "url": null,
         "cause": "仕様・URL曖昧"
-      },
-      {
-        "id": "x-127943",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "x-708760",
@@ -720,12 +684,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-471609",
-        "setCode": "SV8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-49052",
         "setCode": "CLK",
         "url": null,
@@ -736,18 +694,6 @@
         "setCode": "M-P",
         "url": "https://www.psacard.com/spec/psa/14234253",
         "cause": "個別セット確認待ち"
-      },
-      {
-        "id": "x-471594",
-        "setCode": "SV8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-471586",
-        "setCode": "SV8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-82052",
@@ -780,12 +726,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-127809",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-92118",
         "setCode": "NEO1",
         "url": null,
@@ -802,12 +742,6 @@
         "setCode": "SV-P",
         "url": null,
         "cause": "仕様・URL曖昧"
-      },
-      {
-        "id": "x-471657",
-        "setCode": "SV8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "x-392832",
@@ -852,12 +786,6 @@
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "x-471601",
-        "setCode": "SV8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-18495",
         "setCode": "CP5",
         "url": null,
@@ -874,18 +802,6 @@
         "setCode": "SP5",
         "url": null,
         "cause": "公式セットURL未登録"
-      },
-      {
-        "id": "x-128249",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128129",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-49055",
@@ -1044,34 +960,16 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "pk-17473",
-        "setCode": "S4A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2020/pokemon-japanese-sword-shield-shiny-star-v/186040",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-3599",
         "setCode": "SML",
         "url": null,
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-128148",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-5671",
         "setCode": "PCG-MR",
         "url": null,
         "cause": "公式セットURL未登録"
-      },
-      {
-        "id": "x-744298",
-        "setCode": "M2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "x-610624",
@@ -1084,12 +982,6 @@
         "setCode": "10TH",
         "url": null,
         "cause": "仕様・URL曖昧"
-      },
-      {
-        "id": "x-128250",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "x-671483",
@@ -1134,12 +1026,6 @@
         "cause": "仕様・URL曖昧"
       },
       {
-        "id": "x-744294",
-        "setCode": "M2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-18544",
         "setCode": "CP3",
         "url": null,
@@ -1152,12 +1038,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-732728",
-        "setCode": "M2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-708758",
         "setCode": "SV-P",
         "url": null,
@@ -1168,6 +1048,12 @@
         "setCode": "SV-P-SM",
         "url": null,
         "cause": "公式セットURL未登録"
+      },
+      {
+        "id": "x-331677",
+        "setCode": "S8A-G",
+        "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-asia-25th-anniversary-promo/202700",
+        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-21002",
@@ -1230,18 +1116,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-128211",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128131",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-56532",
         "setCode": "PCG7",
         "url": null,
@@ -1290,40 +1164,16 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-744299",
-        "setCode": "M2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-456156",
         "setCode": "PMCG2",
         "url": null,
         "cause": "仕様・URL曖昧"
       },
       {
-        "id": "x-128251",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-1500",
         "setCode": "XY10",
         "url": null,
         "cause": "公式セットURL未登録"
-      },
-      {
-        "id": "x-128248",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-466388",
-        "setCode": "SV8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-48993",
@@ -1392,12 +1242,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-744291",
-        "setCode": "M2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-435684",
         "setCode": "DP5",
         "url": null,
@@ -1458,40 +1302,10 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-128210",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128252",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128127",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128130",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-4067",
         "setCode": "CP3",
         "url": null,
         "cause": "公式セットURL未登録"
-      },
-      {
-        "id": "pk-38377",
-        "setCode": "S12A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2022/pokemon-japanese-sword-shield-vstar-universe/225772",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-49054",
@@ -1510,12 +1324,6 @@
         "setCode": "SMM",
         "url": null,
         "cause": "公式セットURL未登録"
-      },
-      {
-        "id": "pk-75201",
-        "setCode": "MC",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mc-start-deck-100-battle-collection/326110",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "x-405055",
@@ -1608,28 +1416,10 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-128258",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-708757",
         "setCode": "SV-P",
         "url": null,
         "cause": "仕様・URL曖昧"
-      },
-      {
-        "id": "x-128259",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128172",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-1127",
@@ -1648,12 +1438,6 @@
         "setCode": "M-P",
         "url": "https://www.psacard.com/spec/psa/14234253",
         "cause": "個別セット確認待ち"
-      },
-      {
-        "id": "pk-75865",
-        "setCode": "MC",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mc-start-deck-100-battle-collection/326110",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-4295",
@@ -1782,12 +1566,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-744296",
-        "setCode": "M2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-460388",
         "setCode": "NEO2",
         "url": null,
@@ -1824,18 +1602,6 @@
         "cause": "仕様・URL曖昧"
       },
       {
-        "id": "pk-51038",
-        "setCode": "SV4A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv4a-shiny-treasure-ex/255404",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "pk-17472",
-        "setCode": "S4A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2020/pokemon-japanese-sword-shield-shiny-star-v/186040",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-24623",
         "setCode": "SN",
         "url": null,
@@ -1846,12 +1612,6 @@
         "setCode": "SVOD",
         "url": null,
         "cause": "公式セットURL未登録"
-      },
-      {
-        "id": "x-744300",
-        "setCode": "M2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-69645",
@@ -1962,12 +1722,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-128174",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-169062",
         "setCode": "XY-P",
         "url": null,
@@ -2046,39 +1800,15 @@
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "x-128255",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-80655",
         "setCode": "BW5",
         "url": null,
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-128193",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-136991",
         "setCode": "S11",
         "url": "https://www.psacard.com/pop/tcg-cards/2022/pokemon-japanese-sword-shield-lost-abyss/217500",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "pk-75860",
-        "setCode": "MC",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mc-start-deck-100-battle-collection/326110",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128237",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
@@ -2098,24 +1828,6 @@
         "setCode": "SMH",
         "url": null,
         "cause": "公式セットURL未登録"
-      },
-      {
-        "id": "x-740407",
-        "setCode": "MC",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mc-start-deck-100-battle-collection/326110",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-740241",
-        "setCode": "MC",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mc-start-deck-100-battle-collection/326110",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-732802",
-        "setCode": "M2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-6179",
@@ -2322,12 +2034,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-128264",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-559",
         "setCode": "XY9",
         "url": null,
@@ -2394,18 +2100,6 @@
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "x-128246",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-744292",
-        "setCode": "M2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-334799",
         "setCode": "SM7A",
         "url": null,
@@ -2442,24 +2136,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-128198",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128192",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-609617",
-        "setCode": "SV11B",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-1805",
         "setCode": "SM2L",
         "url": null,
@@ -2490,28 +2166,10 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-128184",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-4387",
         "setCode": "SMP2",
         "url": null,
         "cause": "公式セットURL未登録"
-      },
-      {
-        "id": "x-128219",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "pk-17124",
-        "setCode": "S4A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2020/pokemon-japanese-sword-shield-shiny-star-v/186040",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-49059",
@@ -2856,12 +2514,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-744297",
-        "setCode": "M2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-109152",
         "setCode": "L1-S",
         "url": null,
@@ -2883,18 +2535,6 @@
         "id": "pk-61186",
         "setCode": "XY",
         "url": "https://www.psacard.com/pop/tcg-cards/2016/pokemon-japanese-xy-starter-pack/134700",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-744295",
-        "setCode": "M2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128178",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
@@ -2922,12 +2562,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-128272",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-2138",
         "setCode": "SMH",
         "url": null,
@@ -2938,12 +2572,6 @@
         "setCode": "BW",
         "url": null,
         "cause": "公式セットURL未登録"
-      },
-      {
-        "id": "x-744293",
-        "setCode": "M2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "x-775836",
@@ -2970,27 +2598,9 @@
         "cause": "仕様・URL曖昧"
       },
       {
-        "id": "x-128215",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-4217",
         "setCode": "XY",
         "url": "https://www.psacard.com/pop/tcg-cards/2016/pokemon-japanese-xy-starter-pack/134700",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128276",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128158",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
@@ -3018,18 +2628,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-128152",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128225",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-1598",
         "setCode": "SMH",
         "url": null,
@@ -3054,45 +2652,15 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-128260",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-7041",
         "setCode": "S1H",
         "url": "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-sword-shield/172685",
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "x-128132",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128166",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128213",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-393082",
         "setCode": "SM10A",
         "url": "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-sun-moon-gg-end/165966",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128157",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
@@ -3108,12 +2676,6 @@
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "pk-75868",
-        "setCode": "MC",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mc-start-deck-100-battle-collection/326110",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-432354",
         "setCode": "ADV2",
         "url": null,
@@ -3123,12 +2685,6 @@
         "id": "pk-60246",
         "setCode": "SV8",
         "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8-super-electric-breaker/284389",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-471630",
-        "setCode": "SV8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603",
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
@@ -3175,24 +2731,6 @@
       },
       {
         "id": "pk-75220",
-        "setCode": "MC",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mc-start-deck-100-battle-collection/326110",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "pk-75857",
-        "setCode": "MC",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mc-start-deck-100-battle-collection/326110",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "pk-75864",
-        "setCode": "MC",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mc-start-deck-100-battle-collection/326110",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "pk-75870",
         "setCode": "MC",
         "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mc-start-deck-100-battle-collection/326110",
         "cause": "登録URLの取得範囲・未一致確認"
@@ -3564,12 +3102,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-128197",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-91706",
         "setCode": "DP4",
         "url": null,
@@ -3726,24 +3258,6 @@
         "cause": "仕様・URL曖昧"
       },
       {
-        "id": "x-128207",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128247",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128206",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-352",
         "setCode": "XY3",
         "url": null,
@@ -3780,12 +3294,6 @@
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "x-128269",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-456669",
         "setCode": "PMCG4",
         "url": null,
@@ -3796,12 +3304,6 @@
         "setCode": "SM1S",
         "url": null,
         "cause": "公式セットURL未登録"
-      },
-      {
-        "id": "x-128179",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "x-93181",
@@ -3852,18 +3354,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-128275",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128151",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-1119",
         "setCode": "MMB",
         "url": null,
@@ -3880,12 +3370,6 @@
         "setCode": "XY8",
         "url": null,
         "cause": "公式セットURL未登録"
-      },
-      {
-        "id": "x-128138",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "x-299246",
@@ -3912,28 +3396,10 @@
         "cause": "仕様・URL曖昧"
       },
       {
-        "id": "x-128214",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-2549",
         "setCode": "SMI",
         "url": null,
         "cause": "公式セットURL未登録"
-      },
-      {
-        "id": "x-128180",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128233",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "x-396090",
@@ -3958,12 +3424,6 @@
         "setCode": "PMCGGYM3",
         "url": null,
         "cause": "仕様・URL曖昧"
-      },
-      {
-        "id": "x-128202",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-18903",
@@ -3996,34 +3456,10 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-128154",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-299257",
         "setCode": "S-P",
         "url": null,
         "cause": "仕様・URL曖昧"
-      },
-      {
-        "id": "x-128160",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128194",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128159",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-17454",
@@ -4089,12 +3525,6 @@
         "id": "pk-79882",
         "setCode": "M4",
         "url": "https://www.psacard.com/pop/tcg-cards/2026/pokemon-japanese-m4-ninja-spinner/333874",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-732652",
-        "setCode": "M2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
@@ -4644,12 +4074,6 @@
         "cause": "仕様・URL曖昧"
       },
       {
-        "id": "x-128245",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-1401",
         "setCode": "XY11-2",
         "url": null,
@@ -4896,12 +4320,6 @@
         "cause": "仕様・URL曖昧"
       },
       {
-        "id": "x-128195",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-21464",
         "setCode": "S7D",
         "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-sword-shield-skyscraping-perfection/196861",
@@ -4912,12 +4330,6 @@
         "setCode": "XY-P",
         "url": null,
         "cause": "仕様・URL曖昧"
-      },
-      {
-        "id": "x-128221",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-39528",
@@ -4950,18 +4362,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-128170",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128153",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-17789",
         "setCode": "SEF",
         "url": null,
@@ -4990,24 +4390,6 @@
         "setCode": "PMCG4",
         "url": null,
         "cause": "仕様・URL曖昧"
-      },
-      {
-        "id": "x-128156",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128143",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128223",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-18515",
@@ -5064,12 +4446,6 @@
         "cause": "仕様・URL曖昧"
       },
       {
-        "id": "x-128228",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-3841",
         "setCode": "MMB",
         "url": null,
@@ -5080,12 +4456,6 @@
         "setCode": "CP5",
         "url": null,
         "cause": "公式セットURL未登録"
-      },
-      {
-        "id": "x-128181",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-57379",
@@ -5106,12 +4476,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-128128",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-4044",
         "setCode": "XYF",
         "url": null,
@@ -5121,24 +4485,6 @@
         "id": "pk-53299",
         "setCode": "SV5K",
         "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv5k-wild-force/260324",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128268",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128262",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128168",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
@@ -5154,18 +4500,6 @@
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "x-609779",
-        "setCode": "SV11W",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-471591",
-        "setCode": "SV8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-20720",
         "setCode": "SP4",
         "url": null,
@@ -5176,12 +4510,6 @@
         "setCode": "DP2",
         "url": null,
         "cause": "仕様・URL曖昧"
-      },
-      {
-        "id": "x-128183",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "x-112247",
@@ -5196,33 +4524,9 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-128191",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128155",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-21445",
         "setCode": "S7D",
         "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-sword-shield-skyscraping-perfection/196861",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-466352",
-        "setCode": "SV8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128231",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
@@ -5256,34 +4560,10 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-128234",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128199",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-456676",
         "setCode": "PMCG4",
         "url": null,
         "cause": "仕様・URL曖昧"
-      },
-      {
-        "id": "x-128227",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128226",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-45917",
@@ -5310,12 +4590,6 @@
         "cause": "仕様・URL曖昧"
       },
       {
-        "id": "x-128238",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-396330",
         "setCode": "SM9",
         "url": "https://www.psacard.com/pop/tcg-cards/2018/pokemon-japanese-sun-moon-tag-bolt/163092",
@@ -5328,21 +4602,9 @@
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "x-128254",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-58229",
         "setCode": "SV7",
         "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv7-stellar-miracle/275669",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-740454",
-        "setCode": "MC",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mc-start-deck-100-battle-collection/326110",
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
@@ -5442,12 +4704,6 @@
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "pk-75855",
-        "setCode": "MC",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mc-start-deck-100-battle-collection/326110",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-81481",
         "setCode": "M5",
         "url": "https://www.psacard.com/pop/tcg-cards/2026/pokemon-japanese-m5-abyss-eye/341263",
@@ -5472,40 +4728,10 @@
         "cause": "仕様・URL曖昧"
       },
       {
-        "id": "x-466308",
-        "setCode": "SV8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-466427",
-        "setCode": "SV8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-740406",
-        "setCode": "MC",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mc-start-deck-100-battle-collection/326110",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-740648",
-        "setCode": "MC",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mc-start-deck-100-battle-collection/326110",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-432339",
         "setCode": "ADV2",
         "url": null,
         "cause": "公式セットURL未登録"
-      },
-      {
-        "id": "x-128216",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-1495",
@@ -6720,12 +5946,6 @@
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "x-609847",
-        "setCode": "SV11W",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-411759",
         "setCode": "XY-P",
         "url": null,
@@ -6822,12 +6042,6 @@
         "cause": "仕様・URL曖昧"
       },
       {
-        "id": "x-128201",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-18929",
         "setCode": "XY1",
         "url": null,
@@ -6894,12 +6108,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-128209",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-491",
         "setCode": "SM4A",
         "url": "https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-sun-moon-ultradimensional-beasts/152303",
@@ -6958,12 +6166,6 @@
         "setCode": "S-P",
         "url": null,
         "cause": "仕様・URL曖昧"
-      },
-      {
-        "id": "x-128224",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "x-562625",
@@ -7044,12 +6246,6 @@
         "cause": "仕様・URL曖昧"
       },
       {
-        "id": "x-128241",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-459251",
         "setCode": "PRMF1",
         "url": null,
@@ -7068,12 +6264,6 @@
         "cause": "仕様・URL曖昧"
       },
       {
-        "id": "x-128135",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-65704",
         "setCode": "PCG",
         "url": null,
@@ -7090,36 +6280,6 @@
         "setCode": "L1-S",
         "url": null,
         "cause": "公式セットURL未登録"
-      },
-      {
-        "id": "x-128217",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128279",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128229",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128208",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128161",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-23057",
@@ -7164,18 +6324,6 @@
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "x-128133",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128145",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-403607",
         "setCode": "SM-P",
         "url": null,
@@ -7194,12 +6342,6 @@
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "x-128240",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-404230",
         "setCode": "BW8",
         "url": null,
@@ -7210,12 +6352,6 @@
         "setCode": "105BWP",
         "url": null,
         "cause": "仕様・URL曖昧"
-      },
-      {
-        "id": "x-128242",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-65635",
@@ -7290,12 +6426,6 @@
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "x-128165",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-452576",
         "setCode": "E-P",
         "url": null,
@@ -7314,12 +6444,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-609627",
-        "setCode": "SV11B",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-391045",
         "setCode": "CP4",
         "url": null,
@@ -7335,18 +6459,6 @@
         "id": "pk-53301",
         "setCode": "SV5K",
         "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv5k-wild-force/260324",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128200",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128141",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
@@ -7380,28 +6492,10 @@
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "x-128171",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-299225",
         "setCode": "S-P",
         "url": null,
         "cause": "仕様・URL曖昧"
-      },
-      {
-        "id": "x-128144",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-471574",
-        "setCode": "SV8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-80640",
@@ -7414,18 +6508,6 @@
         "setCode": "ADV3",
         "url": null,
         "cause": "公式セットURL未登録"
-      },
-      {
-        "id": "x-128186",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128267",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-6111",
@@ -7443,12 +6525,6 @@
         "id": "x-396073",
         "setCode": "SM12A",
         "url": "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-sun-moon-tag-team-gx-all-stars/171183",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128162",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
@@ -7476,28 +6552,10 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "pk-61999",
-        "setCode": "SV8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-459369",
         "setCode": "NEO1",
         "url": null,
         "cause": "仕様・URL曖昧"
-      },
-      {
-        "id": "x-740343",
-        "setCode": "MC",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mc-start-deck-100-battle-collection/326110",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128230",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "x-111834",
@@ -7510,12 +6568,6 @@
         "setCode": "PMCGG1",
         "url": null,
         "cause": "仕様・URL曖昧"
-      },
-      {
-        "id": "x-128203",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-6367",
@@ -7533,12 +6585,6 @@
         "id": "pk-22993",
         "setCode": "S8B",
         "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-sword-shield-vmax-climax/204428",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128182",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
@@ -7560,12 +6606,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-128173",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-309414",
         "setCode": "PMCGG1",
         "url": null,
@@ -7582,12 +6622,6 @@
         "setCode": "SA",
         "url": null,
         "cause": "公式セットURL未登録"
-      },
-      {
-        "id": "x-471606",
-        "setCode": "SV8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-34759",
@@ -7692,12 +6726,6 @@
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "x-471604",
-        "setCode": "SV8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-49652",
         "setCode": "SV4K",
         "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv4k-ancient-roar/252104",
@@ -7746,18 +6774,6 @@
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "x-128140",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128163",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-36285",
         "setCode": "S11",
         "url": "https://www.psacard.com/pop/tcg-cards/2022/pokemon-japanese-sword-shield-lost-abyss/217500",
@@ -7770,22 +6786,10 @@
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "pk-62033",
-        "setCode": "SV8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-292984",
         "setCode": "S-P",
         "url": null,
         "cause": "仕様・URL曖昧"
-      },
-      {
-        "id": "x-471616",
-        "setCode": "SV8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-22189",
@@ -7803,12 +6807,6 @@
         "id": "pk-51084",
         "setCode": "SV4A",
         "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv4a-shiny-treasure-ex/255404",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-609859",
-        "setCode": "SV11W",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
@@ -8088,18 +7086,6 @@
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "pk-75863",
-        "setCode": "MC",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mc-start-deck-100-battle-collection/326110",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "pk-75869",
-        "setCode": "MC",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mc-start-deck-100-battle-collection/326110",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-79885",
         "setCode": "M4",
         "url": "https://www.psacard.com/pop/tcg-cards/2026/pokemon-japanese-m4-ninja-spinner/333874",
@@ -8122,36 +7108,6 @@
         "setCode": "M-P",
         "url": "https://www.psacard.com/spec/psa/14234253",
         "cause": "個別セット確認待ち"
-      },
-      {
-        "id": "x-609717",
-        "setCode": "SV11B",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-471623",
-        "setCode": "SV8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-609641",
-        "setCode": "SV11B",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-732702",
-        "setCode": "M2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-128232",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "x-147479",
@@ -8178,52 +7134,10 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-466318",
-        "setCode": "SV8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-466344",
-        "setCode": "SV8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-466381",
-        "setCode": "SV8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-471637",
-        "setCode": "SV8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-506837",
         "setCode": "SV-P",
         "url": null,
         "cause": "仕様・URL曖昧"
-      },
-      {
-        "id": "x-609655",
-        "setCode": "SV11B",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-609697",
-        "setCode": "SV11B",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-609755",
-        "setCode": "SV11W",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-22992",
@@ -8256,30 +7170,6 @@
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "x-471654",
-        "setCode": "SV8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-609855",
-        "setCode": "SV11W",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-609819",
-        "setCode": "SV11W",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-609865",
-        "setCode": "SV11W",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11w-white-flare/305728",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-40593",
         "setCode": "SV1A",
         "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv1a-triplet-beat/233886",
@@ -8304,12 +7194,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-471598",
-        "setCode": "SV8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-1775",
         "setCode": "SM7A",
         "url": null,
@@ -8322,18 +7206,6 @@
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "x-471618",
-        "setCode": "SV8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-732804",
-        "setCode": "M2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-558728",
         "setCode": "L2-L",
         "url": null,
@@ -8343,9 +7215,9 @@
   },
   "progress": {
     "listed": 12473,
-    "analyzable": 1727,
-    "pending": 10746,
-    "oneAway": 1620
+    "analyzable": 1915,
+    "pending": 10558,
+    "oneAway": 1475
   },
   "newlyAnalyzable": 0,
   "note": "一時障害の再試行、個別URL隔離、取得元停止を区別。未取得をデータ不存在に変更しない。巡回完了と全項目取得・最新価格は別"

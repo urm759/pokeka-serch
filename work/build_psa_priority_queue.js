@@ -67,6 +67,19 @@ function main() {
   }).filter(Boolean).sort((a, b) => b.priority - a.priority);
 
   for (const row of completionRows) if (!rows.some((r) => r.cardId === row.cardId)) rows.push(row);
+  const held = readJson(path.join(ROOT, 'data/psa-mapping-review.json'), {rows:[]});
+  for (const candidate of held.rows || []) {
+    const card = cards.find(card=>card.id===candidate.id);
+    if (!card || population[card.id]) continue;
+    const key = identity(card), item = completion.cards[card.id] || {};
+    const source = manifest.find(entry=>entry.url===candidate.sourceUrl && String(entry.setCode).toUpperCase()===key.setCode);
+    if (!source) continue;
+    const row = {cardId:card.id,name:card.name,...key,sourceSetUrl:source.url,
+      priority:Number(item.p || 0)*1000000 + (item.m?.length===1 ? 10000000000 : 0),
+      reason:['仕様不一致保留・公式の完全な仕様表記を再確認',...(item.r || [])],specificationHeld:true};
+    const at=rows.findIndex(row=>row.cardId===card.id);
+    if(at>=0)rows[at]=row;else rows.push(row);
+  }
   const focus = require("./focus_monitor.js").write(ROOT);
   for (const card of cards) {
     const watched = focus.cards[card.id];

@@ -105,6 +105,7 @@ const state = {
   actualResults: Object.create(null),
   gradeObservations: Object.create(null),
   psaPopulation: Object.create(null),
+  psaSpecificationHeld: Object.create(null),
   psaHistoryCache: Object.create(null),
   snkrListingSummary: Object.create(null),
   snkrRawFlipSummary: Object.create(null),
@@ -955,8 +956,10 @@ function renderSourceObservability() {
     const backlogHtml = unified?.backlogStates ? `<article class="source-status-card"><details><summary>残件：自動巡回・未実装・認証待ち・時間待ち</summary><p>有効値純増は取得監査の比較基準からの差です。今回の取得だけの件数は「今回の実取得・純増」で確認できます。未記録は推定しません。</p>${unified.backlogStates.map((r) => `<p><b>${escapeHtml(r.label)}：${escapeHtml(r.category)}</b> / 残件${valueOrUnknown(r.remaining)} / 有効値純増${valueOrUnknown(r.usableNet)} / 最終進捗${escapeHtml(formatJstTimestamp(r.lastProgressAt))}<br><small>${escapeHtml(r.nextAction)}</small></p>`).join("")}</details></article>` : "";
     const observationHtml = `<article class="source-status-card"><details><summary>店舗価格・在庫の個別確認日時</summary><p>カードラッシュ・晴れる屋2・遊々亭・トレカキャンプはカード個別の確認日時を使用します。ファイル更新日や在庫履歴の日付では代用しません。価格・在庫が48時間以内の場合だけ購入先へ採用し、日時不明・古値は履歴として保持します。日付だけの記録は時刻未取得と表示し、鮮度はその日の日本時間0時から保守的に判定します。</p><p>参考相場の外れ値除外と購入先の除外は別です。同一仕様・状態A・在庫が確認された正常な安値は、価格差だけでは除外しません。価格対立・誤紐付け・既存の異常値隔離は引き続きGOを保留します。</p><a href="./data/shop-observation-audit.json" target="_blank" rel="noreferrer">同一価格での修正前後・カード別除外理由</a> / <a href="./data/shop-observation-reconciliation.json" target="_blank" rel="noreferrer">保存済み個別日時の復元結果</a></details></article>`;
     const recovered=state.updateStatus?.recoveredCompletion;
+    const spec=state.updateStatus?.specificationRecheck;
+    const specificationHtml=spec ? `<article class="source-status-card"><details><summary>PSA仕様再照合・再探索（${escapeHtml(formatJstTimestamp(spec.generatedAt))}）</summary><p>有効POP紐付け ${spec.beforeLinked}→${spec.afterLinked}枚：新規${spec.newLinked}／再照合で保留${spec.lostLinked}／純増${spec.usableNet}。旧仕様保留${spec.beforeHeld}候補のうち、根拠確認で復帰${spec.restoredHeld}枚・未解決${spec.originalStillUnresolved}枚。追加検出を含む現在の保留は${spec.currentHeld}枚。</p><p>不足補完${spec.filledCards}枚／新規分析可能${spec.newAnalyzable}枚／分析保留${spec.lostAnalyzable}枚。通常版POPで代用せず、誤仕様疑いの過去履歴は保管して推移計算から隔離。モデル・仕入れ条件の緩和なし。</p><p>URL探索${spec.discoveryAttempted}枚→${spec.discoveryLinked}URL／実価格新規${spec.actualNewPrice}枚。再探索は発売90日以内1日、買取掲載優先3日、あと1項目・発売2年以内7日、通常30日。一覧変更は該当セットだけ再照合、曖昧保留は自動解除しません。</p><a href="./data/specification-recheck-audit.json" target="_blank" rel="noreferrer">カード別の根拠・未解決一覧</a> / <a href="./data/performance-guard.json" target="_blank" rel="noreferrer">固定条件の性能検査（Node・実描画とは別）</a></details></article>` : '';
     const recoveryHtml=recovered ? `<article class="source-status-card"><details><summary>公開失敗の回収と実補完（${escapeHtml(formatJstTimestamp(recovered.generatedAt))}）</summary><p>失敗実行 ${escapeHtml(recovered.recoveredRun)}：取得済み${recovered.recoveredChecks}件を再取得せず回収。不足補完 ${recovered.filledCards}枚／新規分析可能 ${recovered.newlyAnalyzable}枚。PSA POP紐付け ${recovered.psaBefore}→${recovered.psaAfter}枚（新規正常 ${recovered.psaNewLinked}／誤仕様疑い保留 ${recovered.psaHeld}）。仕様確認待ちで分析保留 ${recovered.lostAnalyzable}枚。相場下落による減少とは別です。正規商品URL探索 ${recovered.urlDiscovery.attempted}枚→${recovered.urlDiscovery.newLinked}URL／実価格新規 ${recovered.newShopPrices}枚。</p><p>回収した旧実行と今回の新規取得は別集計。全データ完了・購入GOへの昇格を意味しません。</p><a href="./data/recovery-completion-audit.json" target="_blank" rel="noreferrer">回収・補完カードID・チェックポイントを確認</a></details></article>` : '';
-    els.dataFreshness.innerHTML = pipelineCards + sourceCards + recoveryHtml + observationHtml + outcomesHtml + unifiedHtml + resilienceHtml + focusHtml + backlogHtml + learningCard + renderPriorityPriceMonitor() + renderPriceCapacityNotice();
+    els.dataFreshness.innerHTML = pipelineCards + sourceCards + specificationHtml + recoveryHtml + observationHtml + outcomesHtml + unifiedHtml + resilienceHtml + focusHtml + backlogHtml + learningCard + renderPriorityPriceMonitor() + renderPriceCapacityNotice();
   }
 
   const coverage = state.linkCoverage?.current?.storeCoverage;
@@ -4435,7 +4438,9 @@ function gradeRateSummary(card, trial = null) {
   const assumptions = card.buyLimits?.clean?.assumptions;
   const assumed = trial?.assumedRate ?? assumptions?.hitRate;
   const source = trial?.rateSource || assumptions?.hitRateSource || "未取得";
-  return `<div class="grade-rate-summary"><div><span>PSA10公式取得率</span><strong>${Number.isFinite(rate) ? `${rate.toFixed(1)}%` : "未取得"}</strong><small>${Number.isFinite(official?.total) ? `母数 TOTAL ${fmt.format(official.total)}枚／10 ${Number.isFinite(official.ten) ? fmt.format(official.ten) : "未取得"}枚` : "母数未取得"}／確認 ${escapeHtml(official?.f || "未取得")}</small></div><div><span>計算に採用した想定10率</span><strong>${Number.isFinite(assumed) ? `${(assumed * 100).toFixed(1)}%` : "未取得"}</strong><small>${escapeHtml(source)}。公式比率は目視選別後の成功保証ではありません。</small></div></div>`;
+  const held = state.psaSpecificationHeld[card.id];
+  const missingLabel = held ? "仕様不一致で保留" : "未取得";
+  return `<div class="grade-rate-summary"><div><span>PSA10公式取得率</span><strong>${Number.isFinite(rate) ? `${rate.toFixed(1)}%` : missingLabel}</strong><small>${Number.isFinite(official?.total) ? `母数 TOTAL ${fmt.format(official.total)}枚／10 ${Number.isFinite(official.ten) ? fmt.format(official.ten) : "未取得"}枚` : "母数未取得"}／確認 ${escapeHtml(official?.f || held?.f || "未取得")}</small>${held ? `<small class="price-stale">通常版POPで代用しません。${escapeHtml(held.reason)} <a href="${escapeHtml(held.u)}" target="_blank" rel="noreferrer">公式候補</a></small>` : ""}</div><div><span>計算に採用した想定10率</span><strong>${Number.isFinite(assumed) ? `${(assumed * 100).toFixed(1)}%` : "未取得"}</strong><small>${escapeHtml(source)}。公式比率は目視選別後の成功保証ではありません。</small></div></div>`;
 }
 
 function currentMarketProfitPanel(view) {
@@ -5696,6 +5701,7 @@ async function init() {
     }
     const psaData = await fetchJsonMaybe("./data/psa-population-summary.json");
     state.psaPopulation = psaData?.cards || Object.create(null);
+    state.psaSpecificationHeld = psaData?.specificationHeld || Object.create(null);
     attachBundlePopulations(state.psaPopulation);
     if (uiDataInvalid) throw new Error("公開データの版が一致しません。再読み込みしてください。");
     syncFromUI();

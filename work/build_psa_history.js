@@ -68,7 +68,7 @@ function variantOf(value) {
   if (/メタモンマーク|with ditto mark/.test(name)) return "ditto";
   if (/マスターボール/.test(name)) return "master-ball";
   if (/ロケット団(?:の)?マーク.*ミラー/.test(name)) return "team-rocket-reverse";
-  if (/モンスターボール|オシャボ|monster ball mirror|special monster ball/.test(name)) return "poke-ball";
+  if (/モンスターボール.*ミラー|オシャボ.*ミラー|monster ball mirror|special monster ball/.test(name)) return "poke-ball";
   if (/エネルギーマーク|energy mark mirror/.test(name)) return "energy-mark";
   if (/中国語.*エラー|中国語.*誤植/.test(name)) return "incorrect-texture";
   if (/テクスチャ(?:抜け|なし)|加工(?:抜け|なし)/.test(name)) return "missing-texture";
@@ -85,8 +85,8 @@ function variantOf(value) {
 }
 function candidateVariant(row) {
   const name = String(row?.name || "").toLowerCase();
-  if (/ditto/.test(name)) return "ditto";
-  if (/master ball reverse holo/.test(name)) return "master-ball";
+  if (/with ditto mark|ditto mark/.test(name)) return "ditto";
+  if (/master ball (reverse holo|mirror)/.test(name)) return "master-ball";
   if (/team rocket reverse holo/.test(name)) return "team-rocket-reverse";
   if (/poke ball reverse holo/.test(name)) return "poke-ball";
   if (row?.set === "M2A" && /reverse holo/.test(name)) return "energy-mark";
@@ -126,6 +126,7 @@ function compactRows(payload) {
     set: shortSet(row.setCode || String(row.sourceSet || row.setName || "").replace(/^\d{4}\s+Pokemon Japanese\s+/i, "")),
     no: normalizeNo(row.cardNo), name: String(row.cardName || "").replace(/Shop with Affiliates/gi, "").trim(),
     ten: row.psa10Count == null ? null : Number(row.psa10Count), total: row.psaTotal == null ? null : Number(row.psaTotal), url: row.sourceUrl || "", fetchedAt: row.fetchedAt || payload.generatedAt || "",
+    captureVersion: row.captureVersion || null, completeSnapshot: row.completeSnapshot === true,
   })).filter((row) => row.set && row.no && Number.isFinite(row.ten) && Number.isFinite(row.total) && row.total > 0 && row.total >= row.ten && row.ten >= 0);
   const deduped = new Map();
   for (const row of rows) {
@@ -136,10 +137,31 @@ function compactRows(payload) {
   return [...deduped.values()];
 }
 
+function authoritativeRows(rows) {
+  const verified = new Map();
+  for (const row of rows) if (row.captureVersion >= 2 && row.completeSnapshot) {
+    const key = `${row.set}|${row.url}`;
+    if (!verified.has(key) || row.fetchedAt > verified.get(key)) verified.set(key, row.fetchedAt);
+  }
+  return rows.filter(row => !verified.has(`${row.set}|${row.url}`) || row.captureVersion >= 2);
+}
+function reconcileHistory(store,id,history,selected,identity) {
+  const provenance=`${identity.set}|${identity.no}|${cleanName(selected.name)}|${candidateVariant(selected)}|${selected.captureVersion>=2?'full-label-v2':'legacy-label'}`;
+  store.identities ||= {};
+  if ((selected.captureVersion >= 2 || store.identities[id]) && store.identities[id]!==provenance && history.length) {
+    store.quarantined ||= {};store.quarantined[id] ||= [];
+    store.quarantined[id].push({at:new Date().toISOString(),reason:'完全な仕様表記への再照合・旧履歴の仕様根拠未確定',previousIdentity:store.identities[id] || null,points:history});
+    history=[];
+  }
+  store.identities[id]=provenance;
+  return history;
+}
+
 function main() {
   const cards = readJson(CARDS_PATH, []), population = readJson(POP_PATH, {}), english = readJson(ENGLISH_PATH, { cards: {} }).cards || {};
   const priorityRows = readJson(PRIORITY_ROWS_PATH, { rows: [] }).rows || [];
-  const sourceRows = compactRows({ ...population, rows: [...(population.rows || []), ...priorityRows] });
+  const allSourceRows = compactRows({ ...population, rows: [...(population.rows || []), ...priorityRows] });
+  const sourceRows = authoritativeRows(allSourceRows);
   const groups = new Map();
   const setGroups = new Map();
   for (const row of sourceRows) {
@@ -197,16 +219,22 @@ function main() {
       selected = candidates[0]; method = "set-number-variant";
     }
     if (!selected && candidates.length === 1 && !suspicious(candidates[0].name)) { selected = candidates[0]; method = "set-number-unique"; }
-    if (!selected) continue;
+    if (!selected) {
+      if (variantOf(fullName)!=='base') variantReview.push({id:card.id,name:card.name,
+        expectedVariant:variantOf(fullName),candidateVariant:null,sourceName:candidates.map(row=>row.name).join(' / '),
+        sourceUrl:candidates[0]?.url,observedAt:candidates[0]?.fetchedAt,reason:'仕様一致の確定候補なし・POP採用保留'});
+      continue;
+    }
     // A unique number or a similar name cannot establish a mirror/edition identity.
     const expectedVariant=variantOf(`${englishName} ${card.name || ''}`);
-    if (!variantsCompatible(card.name,englishName,selected)) {
+    if (!variantsCompatible(card.name,englishName,selected) || /pokemon-asia/i.test(selected.url)) {
       variantReview.push({id:card.id,name:card.name,expectedVariant,candidateVariant:candidateVariant(selected),
-        sourceName:selected.name,sourceUrl:selected.url,observedAt:selected.fetchedAt,reason:'仕様不一致・POP採用保留'});
+        sourceName:selected.name,sourceUrl:selected.url,observedAt:selected.fetchedAt,reason:/pokemon-asia/i.test(selected.url)?'日本語版の根拠不足・POP採用保留':'仕様不一致・POP採用保留'});
       continue;
     }
     const shard = shardFor(card.id), store = shards[shard]; store.cards ||= {};
     let history = Array.isArray(store.cards[card.id]) ? store.cards[card.id].filter((row)=>row[0]>=cutoff) : [];
+    history=reconcileHistory(store,card.id,history,selected,identity);
     const sourceDay = String(selected.fetchedAt || population.generatedAt || "").slice(0,10).replace(/-/g, "") || today;
     const point = [sourceDay, selected.ten, selected.total];
     const sameDayIndex = history.findIndex((row) => row[0] === sourceDay);
@@ -218,11 +246,12 @@ function main() {
     summary.matched += 1;
   }
   for (let i=0;i<SHARDS;i+=1) fs.writeFileSync(path.join(HISTORY_DIR, `${String(i).padStart(2,"0")}.json`), JSON.stringify(shards[i]), "utf8");
+  summary.specificationHeld = Object.fromEntries(variantReview.map(row=>[row.id,{reason:row.reason,u:row.sourceUrl,f:row.observedAt}]));
   fs.writeFileSync(SUMMARY_PATH, JSON.stringify(summary), "utf8");
   fs.writeFileSync(path.join(path.dirname(SUMMARY_PATH),'psa-mapping-review.json'),JSON.stringify({generatedAt:new Date().toISOString(),count:variantReview.length,rows:variantReview}),'utf8');
-  fs.writeFileSync(POP_PATH, JSON.stringify({ v: 2, generatedAt: population.generatedAt || new Date().toISOString(), totalSets: population.totalSets || 0, totalRows: sourceRows.length, rows: sourceRows.map((row) => ({ setCode: row.set, cardNo: row.no, cardName: row.name, psa10Count: row.ten, psaTotal: row.total, sourceUrl: row.url, fetchedAt: row.fetchedAt })) }), "utf8");
+  fs.writeFileSync(POP_PATH, JSON.stringify({ v: 2, generatedAt: population.generatedAt || new Date().toISOString(), totalSets: population.totalSets || 0, totalRows: allSourceRows.length, rows: allSourceRows.map((row) => ({ setCode: row.set, cardNo: row.no, cardName: row.name, psa10Count: row.ten, psaTotal: row.total, sourceUrl: row.url, fetchedAt: row.fetchedAt, captureVersion:row.captureVersion,completeSnapshot:row.completeSnapshot })) }), "utf8");
   console.log(JSON.stringify({ matched: summary.matched, total: cards.length, english: Object.keys(english).length, date: today }));
 }
 
 if (require.main === module) main();
-module.exports = { cardIdentity, compactRows, cleanName, shortSet, normalizeNo, variantsCompatible };
+module.exports = { cardIdentity, compactRows, cleanName, shortSet, normalizeNo, variantsCompatible, authoritativeRows, reconcileHistory };

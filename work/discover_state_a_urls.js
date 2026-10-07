@@ -2,6 +2,7 @@ const fs=require('node:fs');
 const path=require('node:path');
 const shop=require('./update_hareruya2_stock.js');
 const retry=require('./acquisition_retry.js');
+const crypto=require('node:crypto');
 const {needs}=require('./completion_routes.js');
 const root=path.join(__dirname,'..');
 const read=(file,fallback)=>{try{return JSON.parse(fs.readFileSync(path.join(root,file),'utf8'));}catch{return fallback;}};
@@ -24,10 +25,37 @@ function recordFailure(state,handle,error,now=Date.now()) {
   else state.collectionRetries[handle]=result;
   return result;
 }
+function retryPolicy(card,item,now=Date.now()) {
+  const release=Date.parse(item?.rd || card.releaseDate || '');
+  const ageDays=Number.isFinite(release) ? (now-release)/86400000 : null;
+  const frequent=(item?.r || []).some(reason=>/買取表30日(\d+)/.test(reason) && Number(reason.match(/買取表30日(\d+)/)[1])>=7);
+  if(ageDays!=null && ageDays>=0 && ageDays<=90)return {days:1,reason:'発売90日以内'};
+  if(item?.n || frequent)return {days:3,reason:item?.n?'サイト新規追加・探索優先':'買取掲載頻度が高い'};
+  if(item?.m?.length===1 || (ageDays!=null && ageDays>=0 && ageDays<=730))return {days:7,reason:'あと1項目で分析可能／発売2年以内'};
+  return {days:30,reason:'通常探索枠・存在未確認'};
+}
+function sourceFingerprint(products) {
+  return crypto.createHash('sha256').update(JSON.stringify(products.map(p=>[p.id || p.handle,p.title]).sort((a,b)=>String(a[0]).localeCompare(String(b[0]))))).digest('hex');
+}
+function matcherRevision(card,rules=read('data/source-matching-rules.json',{})) {
+  return rules.setRevisions?.[String(shop.extractCardSignature(card).setCode).toUpperCase()] || rules.defaultRevision || 'strict-state-a-v2';
+}
+function canRecheck(card,item,state,now=Date.now()) {
+  const previous=state.cards?.[card.id];
+  if(previous?.held)return false;
+  if(!previous)return true;
+  if((previous.matcherRevision || 'strict-state-a-v2')!==matcherRevision(card))return true;
+  const currentHash=state.cache?.[previous.collection]?.fingerprint;
+  if(previous.sourceFingerprint && currentHash && previous.sourceFingerprint!==currentHash)return true;
+  if(previous.matcherVersion!==2)return true;
+  const checked=Date.parse(previous.checkedAt);
+  const adaptive=Number.isFinite(checked)?checked+retryPolicy(card,item,now).days*86400000:Infinity;
+  const stored=Date.parse(previous.nextRetryAt);
+  return now>=Math.min(adaptive,Number.isFinite(stored)?stored:Infinity);
+}
 function select(cards,queue,state,now=Date.now(),limit=100) {
   const eligible=cards.filter(card=>!card.hareruya2Url && queue.cards?.[card.id] && needs(queue.cards[card.id],'shopStateA')
-    && (state.cards?.[card.id]?.matcherVersion!==2 || retry.eligible(state.cards?.[card.id],now))
-    && !state.cards?.[card.id]?.held);
+    && canRecheck(card,queue.cards[card.id],state,now));
   const ordered=eligible.sort((a,b)=>Number(queue.cards?.[b.id]?.p||0)-Number(queue.cards?.[a.id]?.p||0));
   const n=Math.max(1,Math.floor(limit*.25)),normal=[...eligible].sort((a,b)=>Date.parse(state.cards?.[a.id]?.lastAttemptAt||'1970-01-01')-Date.parse(state.cards?.[b.id]?.lastAttemptAt||'1970-01-01'));
   const priority=ordered.slice(0,limit-n),chosen=new Set(priority.map(c=>c.id));
@@ -43,7 +71,8 @@ async function run() {
     const candidates=select(cards,queue,state,start,Number(process.env.URL_DISCOVERY_CARD_LIMIT||100));
     const cache=state.collections;
     const collectionOptions={deadlineAt:start+budget,intervalMs:1200,onRequest:()=>audit.httpRequests++};
-    const collections=cache && start-Date.parse(cache.fetchedAt)<7*86400000 ? (audit.cacheHits++,cache.rows) : await shop.fetchAllCollections(collectionOptions);
+    const recentDiscovery=candidates.some(card=>retryPolicy(card,queue.cards[card.id],start).days<=3);
+    const collections=cache && start-Date.parse(cache.fetchedAt)<(recentDiscovery?1:7)*86400000 ? (audit.cacheHits++,cache.rows) : await shop.fetchAllCollections(collectionOptions);
     if (!collections.length) throw new Error('形式変更または正規一覧0件・過去データ保持');
     state.sourceRetry=null;
     state.collections={rows:collections,fetchedAt:cache && collections===cache.rows?cache.fetchedAt:new Date().toISOString()};
@@ -53,7 +82,8 @@ async function run() {
       if(!group?.handle) {
         const record={id:card.id,status:'collection-unmatched',checkedAt:new Date().toISOString(),
           reason:'正規セット一覧と収録情報が一致せず・商品取得未実行',url:null};
-        state.cards[card.id]={...record,matcherVersion:2,nextRetryAt:new Date(start+30*86400000).toISOString()};
+        const policy=retryPolicy(card,queue.cards[card.id],start);
+        state.cards[card.id]={...record,matcherVersion:2,matcherRevision:matcherRevision(card),recheckPolicy:policy,nextRetryAt:new Date(start+policy.days*86400000).toISOString()};
         audit.records.push(record);continue;
       }
       if(!groups.has(group.handle))groups.set(group.handle,[]);
@@ -68,8 +98,19 @@ async function run() {
       }
       let saved=state.cache[handle],products;
       try {
-        if(saved && Date.now()-Date.parse(saved.fetchedAt)<7*86400000){products=saved.rows;audit.cacheHits++;}
+        const previousHash=saved ? saved.fingerprint || sourceFingerprint(saved.rows) : null;
+        const ttlDays=Math.min(7,...targets.map(card=>retryPolicy(card,queue.cards[card.id]).days));
+        if(saved && Date.now()-Date.parse(saved.fetchedAt)<ttlDays*86400000){products=saved.rows;audit.cacheHits++;}
         else {await new Promise(r=>setTimeout(r,1200));products=await shop.fetchCollectionProducts(handle,collectionOptions);saved={rows:products,fetchedAt:new Date().toISOString()};state.cache[handle]=saved;}
+        saved.fingerprint=sourceFingerprint(products);
+        if(previousHash && previousHash!==saved.fingerprint) {
+          const selected=new Set(targets.map(card=>card.id));
+          for(const card of cards)if(!selected.has(card.id) && !card.hareruya2Url && !state.cards?.[card.id]?.held
+            && state.cards?.[card.id]?.collection===handle && queue.cards?.[card.id] && needs(queue.cards[card.id],'shopStateA')) {
+            if(audit.attempted+targets.length>=Number(process.env.URL_DISCOVERY_CARD_LIMIT||100))break;
+            targets.push(card);selected.add(card.id);audit.listingChangeRechecks=(audit.listingChangeRechecks||0)+1;
+          }
+        }
         for(const card of targets) {
           audit.attempted++;
           const matches=products.filter(p=>strictMatch(card,p));
@@ -80,7 +121,9 @@ async function run() {
             status:match?'linked':matches.length?'ambiguous':'no-candidate',url:match?`https://www.hareruya2.com/products/${encodeURIComponent(match.handle)}`:null};
           if(match){card.hareruya2Url=record.url;audit.newLinked++;}
           else if(matches.length)audit.ambiguous++;else audit.noCandidate++;
-          state.cards[card.id]={...record,matcherVersion:2,nextRetryAt:new Date(Date.now()+30*86400000).toISOString(),held:record.status==='ambiguous'};
+          const policy=retryPolicy(card,queue.cards[card.id]);
+          state.cards[card.id]={...record,matcherVersion:2,matcherRevision:matcherRevision(card),sourceFingerprint:saved.fingerprint,recheckPolicy:policy,
+            nextRetryAt:new Date(Date.now()+policy.days*86400000).toISOString(),held:record.status==='ambiguous'};
           audit.records.push(record);
         }
         if(state.collectionRetries)delete state.collectionRetries[handle];
@@ -99,4 +142,4 @@ async function run() {
   console.log(JSON.stringify(audit));return audit;
 }
 if(require.main===module)run().catch(e=>{console.error(e);process.exitCode=1;});
-module.exports={strictMatch,select,recordFailure,run};
+module.exports={strictMatch,select,recordFailure,run,retryPolicy,canRecheck,sourceFingerprint,matcherRevision};

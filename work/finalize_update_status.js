@@ -309,6 +309,7 @@ payload.focusMonitor = require("./focus_monitor.js").write(ROOT);
   payload.priorityPriceMonitor = require("./priority_price_queue.js").write(ROOT);
   payload.purchasePriceRecovery = read('data/purchase-price-recovery.json');
   const recoveredCompletion = read('data/recovery-completion-audit.json');
+  payload.specificationRecheck = read('data/specification-recheck-audit.json')?.summary || null;
   payload.recoveredCompletion = recoveredCompletion?.after ? {
     generatedAt:recoveredCompletion.generatedAt, baselineCommit:recoveredCompletion.baselineCommit,
     recoveredRun:recoveredCompletion.recovery.runId, recoveredChecks:recoveredCompletion.recovery.checks,
