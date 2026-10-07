@@ -16,7 +16,7 @@ async function main() {
   for (const original of ['data/card-catalog-completion.json','data/update-status.json','data/card-catalog/analysis.json','data/ui-improvement-audit.json']) {
     const file = manifest.aliases[original] || original;
     const text = await read(`${file}?v=${manifest.hashes[file]}`);
-    assert.equal(crypto.createHash('sha256').update(text).digest('hex'), manifest.hashes[file], file);
+    assert.equal(crypto.createHash('sha256').update(text.replace(/\r\n/g,'\n')).digest('hex'), manifest.hashes[file], file);
     const data = codec.decode(JSON.parse(text));
     if (original.includes('card-catalog-completion')) completion = data;
     if (original.includes('update-status')) update = data;

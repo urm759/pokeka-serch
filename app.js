@@ -3134,7 +3134,8 @@ async function fetchJsonMaybe(url, { detail = false } = {}) {
     const verifyStart = performance.now();
     const raw = new TextEncoder().encode(text);
     if (expected) {
-      const digest = [...new Uint8Array(await crypto.subtle.digest("SHA-256", raw))].map(v => v.toString(16).padStart(2, "0")).join("");
+      const canonical = new TextEncoder().encode(text.replace(/\r\n/g, "\n"));
+      const digest = [...new Uint8Array(await crypto.subtle.digest("SHA-256", canonical))].map(v => v.toString(16).padStart(2, "0")).join("");
       if (digest !== expected) throw new Error(`公開版が切り替わりました。再読込してください: ${file}`);
     }
     const verifyMs = performance.now() - verifyStart;

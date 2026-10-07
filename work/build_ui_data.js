@@ -45,13 +45,14 @@ function build(root = ROOT) {
       const file = `${dir}/${e.name}`;
       if (e.isDirectory()) scan(file);
       else if (e.name.endsWith('.json') && file !== 'data/ui/manifest.json') {
-        hashes[file] = crypto.createHash('sha256').update(fs.readFileSync(path.join(root, file))).digest('hex');
+        const canonical = fs.readFileSync(path.join(root, file), 'utf8').replace(/\r\n/g, '\n');
+        hashes[file] = crypto.createHash('sha256').update(canonical).digest('hex');
       }
     }
   }
   scan('data');
   const revision = crypto.createHash('sha256').update(JSON.stringify(hashes)).digest('hex');
-  const result = { version: 1, revision, hashes, aliases, bytes,
+  const result = { version: 1, revision, hashes, aliases, bytes, hashNormalization: 'UTF-8 text; CRLF normalized to LF (Git checkout safe)',
     detailSources: SUMMARY.map(name => `data/${name}.json`),
     rule: 'SHA256を照合して同じ版だけ採用。元データ保持。履歴・海外詳細は必要時に取得。計算・鮮度基準は変更しない' };
   write('data/ui/manifest.json', JSON.stringify(result));

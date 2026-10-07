@@ -11,7 +11,9 @@ for (const v of [null, 0, -5, ['test', 'test'], { a: [], b: null, c: 0, d: -4, e
 }
 const manifest = read('data/ui/manifest.json');
 for (const [file, hash] of Object.entries(manifest.hashes)) {
-  assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(root, file))).digest('hex'), hash, `published revision mismatch: ${file}`);
+  const text = fs.readFileSync(path.join(root, file),'utf8');
+  assert.equal(crypto.createHash('sha256').update(text.replace(/\r\n/g,'\n')).digest('hex'), hash, `published revision mismatch: ${file}`);
+  assert.equal(crypto.createHash('sha256').update(text.replace(/\r\n/g,'\n').replace(/\n/g,'\r\n').replace(/\r\n/g,'\n')).digest('hex'),hash,'Windows/Linux checkout must share a revision');
 }
 for (const name of SUMMARY) {
   const expected = project(name, read(`data/${name}.json`));
