@@ -228,7 +228,7 @@ if (process.argv.includes("--verify")) {
   write('data/purchase-price-freshness-audit.json', freshPriceAudit);
   write('work/purchase-price-observation-snapshot.json', { at:freshPriceAudit.generatedAt,
     analyzed:calculated.filter(card => card.catalogCompletion?.s === '分析可能').length,
-    rows:Object.fromEntries(calculated.map(card => [card.id,{status:card.purchasePriceStatus?.code,price:card.currentStoreOffer?.value ?? null,source:card.currentStoreOffer?.source || null,at:card.currentStoreOffer?.updatedAt || null}])) });
+    rows:Object.fromEntries(calculated.map(card => [card.id,{analyzable:card.catalogCompletion?.s === '分析可能',status:card.purchasePriceStatus?.code,price:card.currentStoreOffer?.value ?? null,source:card.currentStoreOffer?.source || null,at:card.currentStoreOffer?.updatedAt || null}])) });
   const cohortBaseline = read("work/acquisition-audit-baseline.json", null);
   const cohortIds = new Set(Object.keys(cohortBaseline?.availability?.rows || {}));
   if (cohortIds.size) {

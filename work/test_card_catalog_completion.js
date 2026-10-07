@@ -2,6 +2,7 @@ const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
 const { canonicalIdentity } = require("./card_identity");
+const { lifecycleFlags } = require("./catalog_semantics");
 
 const ROOT = path.join(__dirname, "..");
 const read = (file) => JSON.parse(fs.readFileSync(path.join(ROOT, file), "utf8"));
@@ -31,7 +32,11 @@ assert.equal(analysis.length, completion.summary.analyzable, "initial payload mu
 assert.ok(analysis.every((card) => completion.cards[card.id]?.s === "分析可能"), "data-shortage cards must not enter the initial buying list");
 assert.ok(cards.some((card) => completion.cards[card.id]?.s !== "分析可能"), "missing-data cards must remain searchable instead of disappearing");
 assert.equal(completion.summary.newCards, Object.values(completion.cards).filter((card) => card.n === 1).length, "new-card count must survive no-change refreshes");
-assert.ok(Object.keys(arrivals.cards).filter((id) => siteIds.has(id)).every((id) => completion.cards[id]?.n === 1), "currently listed arrivals must remain visible after no-change refreshes");
+const retainedArrivals = Object.entries(arrivals.cards).filter(([id, arrival]) => siteIds.has(id) && lifecycleFlags({
+  arrival, now: new Date(completion.generatedAt), siteNewDays: completion.summary.siteNewRetentionDays,
+}).siteNew);
+assert.ok(retainedArrivals.every(([id]) => completion.cards[id]?.n === 1), "arrivals within retention must remain visible after no-change refreshes");
+assert.equal(lifecycleFlags({arrival:{firstSeenAt:'2026-09-07'},now:new Date('2026-10-08T00:00:00Z'),siteNewDays:30}).siteNew,false,"expired arrivals must not remain new forever");
 assert.ok(cards.filter((card) => completion.cards[card.id]?.n === 1).every((card) => card.firstSeenAt), "new cards must retain their first-seen date");
 assert.equal(queue.version, 3, "completion queue must use the lifecycle-aware compact schema");
 assert.ok(Array.isArray(queue.itemSchema) && queue.itemSchema.length === 6, "compact queue schema must remain decodable");

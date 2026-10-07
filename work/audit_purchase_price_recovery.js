@@ -13,10 +13,13 @@ if (process.argv.includes('--baseline')) {
   const recovered = ids.filter(id => before.rows[id].status !== 'available' && current.rows[id].status === 'available');
   const lost = ids.filter(id => before.rows[id].status === 'available' && current.rows[id].status !== 'available');
   const freshnessOnly = ids.filter(id => before.rows[id].status === 'available' && current.rows[id].status === 'available' && before.rows[id].at !== current.rows[id].at);
+  const analysisRecorded = ids.every(id => typeof before.rows[id].analyzable === 'boolean' && typeof current.rows[id].analyzable === 'boolean');
   const output = { generatedAt:current.at,baselineAt:before.at, fixedCohort:ids.length,
     purchasableBefore:ids.filter(id=>before.rows[id].status==='available').length,purchasableAfter:ids.filter(id=>current.rows[id].status==='available').length,
     freshnessRecovered:recovered.length,freshnessReconfirmed:freshnessOnly.length,lost:lost.length,
-    analyzedBefore:before.analyzed,analyzedAfter:current.analyzed,newAnalyzable:Math.max(0,current.analyzed-before.analyzed),
+    analyzedBefore:before.analyzed,analyzedAfter:current.analyzed,analyzableNet:current.analyzed-before.analyzed,
+    newAnalyzable:analysisRecorded ? ids.filter(id=>!before.rows[id].analyzable && current.rows[id].analyzable).length : null,
+    lostAnalyzable:analysisRecorded ? ids.filter(id=>before.rows[id].analyzable && !current.rows[id].analyzable).length : null,
     rows:[...recovered,...lost].map(id=>({id,before:before.rows[id],after:current.rows[id]})),
     sourceRuns:Object.fromEntries(Object.entries(read('work/candidate-shop-refresh.json').sources).map(([id,r])=>[id,{startedAt:r.startedAt,inComparisonWindow:Date.parse(r.startedAt)>=Date.parse(before.at),attempted:r.attemptedCount,refreshed:r.refreshedCount,newLinks:r.newLinkedCount,durationMs:r.durationMs,httpRequests:r.httpRequests,stopReason:r.stopReason}])),
     llmCalls:0, note:'同一ID群・同一条件。再確認/既存価格復活は新規取得・紐付けと別。購入可能価格はGO保証ではない。' };

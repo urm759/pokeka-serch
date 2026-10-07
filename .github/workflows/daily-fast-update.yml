@@ -23,6 +23,10 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: "24"
+      - name: Save purchase-price freshness baseline
+        run: |
+          node work/build_purchase_limit_audit.js
+          node work/audit_purchase_price_recovery.js --baseline
       - name: Run deterministic delta update
         env:
           FAST_DEEP_SCAN: ${{ (github.event_name == 'workflow_dispatch' || github.event.schedule == '30 19 * * *') && '1' || '0' }}
@@ -58,6 +62,7 @@ jobs:
           SHOP_EFFECT_AUDIT_REF="$GITHUB_SHA" node work/build_purchase_limit_audit.js
           node work/audit_acquisition_progress.js
           node work/audit_link_coverage.js
+          node work/audit_purchase_price_recovery.js
           node work/finalize_update_status.js
       - name: Run fast regression tests
         run: |
@@ -103,6 +108,7 @@ jobs:
           git add data work/daily-http-cache.json work/changed-card-ids.json work/market_stability_history.json work/snkr-raw-flip-cache.json work/snkr-raw-flip-checkpoint.json work/source-update-runs.json work/source-update-history.json work/toreca-source-inventory.json work/toreca_source_diff.json work/card-new-arrivals.json work/card-lifecycle.json work/candidate-daily-history.json work/candidate-availability-history.json work/candidate-shop-refresh.json work/cardrush_catalog.json work/hareruya2_catalog.json work/cardrush_stock_history.json work/hareruya2_stock_history.json work/acquisition-progress-last.json
           git add work/shop_buyback_history.json work/shop_buyback_catalog.json work/shop_buyback_unmatched.json work/shop_buyback_item_matches.json work/shop_buyback_image_matches.json work/shop_buyback_quarantine.json
           git add work/priority-price-checkpoint.json work/priority-price-http-cache.json
+          git add work/purchase-price-targets.json work/purchase-price-observation-snapshot.json work/purchase-price-recovery-baseline.json work/purchase-price-recovery-history.json
           git add work/fixed-price-reference.json work/priority-freshness-history.json
           git add work/completion-outcomes-baseline.json work/completion-outcomes-last.json work/completion-outcome-history work/card-completion-queue.json
           if git diff --cached --quiet; then
