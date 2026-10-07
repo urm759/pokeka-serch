@@ -42,6 +42,9 @@ retry.atomicWrite(path.join(producer, "data/psa-official-populations.json"), { r
 retry.atomicWrite(path.join(producer, "work/psa-fetch-progress.json"), { startedAt: "2026-10-06T00:00:00Z", completedUrls: [pop.sourceUrl] });
 retry.atomicWrite(path.join(producer, "work/psa_set_urls.json"), [{ setCode: "SV9", url: pop.sourceUrl }]);
 retry.atomicWrite(path.join(producer, "work/psa_priority_queue.json"), { rows: [{ cardId: "new-card", setCode: "SV9", cardNo: "126" }] });
+for (const file of ['update_psa_official_populations.js','build_psa_history.js','acquisition_retry.js']) {
+  fs.copyFileSync(path.join(__dirname,file),path.join(producer,'work',file));
+}
 git(["add", "data", "work"], producer); git(["commit", "-m", "Initial"], producer); git(["push", "origin", "main"], producer);
 git(["clone", remote, other]); git(["config", "user.name", "Other"], other); git(["config", "user.email", "other@example.test"], other);
 retry.atomicWrite(path.join(producer, "data/psa-official-populations.json"), { rows: [{ ...pop, fetchedAt: "2026-10-06T00:00:00Z", psa10Count: 101 }] });
@@ -67,5 +70,8 @@ const inputs = prepareInputs(producer);
 assert.equal(inputs.status, "latest-fetched-main");
 assert.equal(inputs.httpAcquisitionRequests, 0);
 assert.equal(JSON.parse(fs.readFileSync(inputs.priorityPath)).rows[0].cardId, "new-card");
+assert.equal(require(inputs.collectorPath).cellTextWithSpecification({childNodes:[{textContent:'Pikachu'},{textContent:'Master Ball Reverse Holo'}]}),'Pikachu | Master Ball Reverse Holo');
+assert.equal(fs.readFileSync(inputs.historyPath,'utf8').replace(/\r\n/g,'\n'),fs.readFileSync(path.join(__dirname,'build_psa_history.js'),'utf8').replace(/\r\n/g,'\n'),'snapshot comes from fetched commit, not an edited working source');
+assert.equal(Object.keys(inputs.runtimeHashes).length,3);
 assert(fs.readFileSync(path.join(producer, "USER-NOTES.txt"), "utf8").includes("survive"));
 console.log("Transient retries, URL/source isolation, adaptive rate, duplicate lock, saved packet checksum, concurrent Git publication and newer checkpoint preservation: passed");

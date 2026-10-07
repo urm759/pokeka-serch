@@ -1,11 +1,11 @@
 const fs = require("fs");
 const path = require("path");
 
-const ROOT = path.join(__dirname, "..");
+const ROOT = process.env.PSA_ACQUISITION_ROOT || path.join(__dirname, "..");
 const CARDS_PATH = path.join(ROOT, "data", "pokemon-cards.json");
 const POP_PATH = path.join(ROOT, "data", "psa-official-populations.json");
-const ENGLISH_PATH = path.join(__dirname, "snkr_english_names.json");
-const PRIORITY_ROWS_PATH = path.join(__dirname, "priority_psa_rows.json");
+const ENGLISH_PATH = path.join(ROOT, "work", "snkr_english_names.json");
+const PRIORITY_ROWS_PATH = path.join(ROOT, "work", "priority_psa_rows.json");
 const SUMMARY_PATH = path.join(ROOT, "data", "psa-population-summary.json");
 const HISTORY_DIR = path.join(ROOT, "data", "psa-history");
 const SHARDS = 32;

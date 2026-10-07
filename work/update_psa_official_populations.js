@@ -15,14 +15,14 @@ function loadChromium() {
 }
 
 const MANIFEST_PATH = process.env.PSA_MANIFEST_PATH || path.join(__dirname, "psa_set_urls.json");
-const STANDALONE_ROOT = path.join(__dirname, "..");
+const STANDALONE_ROOT = process.env.PSA_ACQUISITION_ROOT || path.join(__dirname, "..");
 const SITE_ROOT = fs.existsSync(path.join(STANDALONE_ROOT, "index.html"))
   ? STANDALONE_ROOT
   : path.join(STANDALONE_ROOT, "outputs", "github-site");
 const OUTPUT_DIR = path.join(SITE_ROOT, "data");
 const OUTPUT_JSON = path.join(OUTPUT_DIR, "psa-official-populations.json");
 const OUTPUT_JS = path.join(OUTPUT_DIR, "psa-official-populations.js");
-const PROGRESS_PATH = path.join(__dirname, "psa-fetch-progress.json");
+const PROGRESS_PATH = path.join(SITE_ROOT, "work", "psa-fetch-progress.json");
 const PRIORITY_QUEUE_PATH = process.env.PSA_PRIORITY_QUEUE_PATH || path.join(__dirname, "psa_priority_queue.json");
 const MIN_TOTAL_POPULATION = Number(process.env.PSA_MIN_TOTAL_POPULATION || 0);
 const MAX_PAGES = Number(process.env.PSA_MAX_PAGES || 200);
@@ -538,7 +538,7 @@ async function main() {
 }
 
 async function exclusiveMain() {
-  const release = retryPolicy.lock(path.join(__dirname, "psa-acquisition.lock"));
+  const release = retryPolicy.lock(path.join(SITE_ROOT, "work", "psa-acquisition.lock"));
   try { return await main(); } finally { release(); }
 }
 if (require.main === module) exclusiveMain()

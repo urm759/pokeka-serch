@@ -36,24 +36,32 @@ try {
   Invoke-Step -Name 'PSA regular Chrome startup' -MaxAttempts 2 -Operation { & (Join-Path $PSScriptRoot 'start_psa_regular_chrome.ps1') } | Out-Null
   $env:PSA_CDP_ENDPOINT = 'http://127.0.0.1:9222'
   $env:PSA_MIN_TOTAL_POPULATION = '0'
+  $env:PSA_ACQUISITION_ROOT = $Repo
+  $CollectorPath = Join-Path $PSScriptRoot 'update_psa_official_populations.js'
+  $HistoryPath = Join-Path $PSScriptRoot 'build_psa_history.js'
   & $Node (Join-Path $PSScriptRoot 'psa_handoff.js') --inputs
   if ($LASTEXITCODE -eq 0) {
     $inputs = Get-Content (Join-Path $PSScriptRoot 'psa-acquisition-inputs/audit.json') -Raw | ConvertFrom-Json
     $env:PSA_MANIFEST_PATH = $inputs.manifestPath
     $env:PSA_PRIORITY_QUEUE_PATH = $inputs.priorityPath
+    if ($inputs.collectorPath -and $inputs.historyPath) {
+      $CollectorPath = $inputs.collectorPath
+      $HistoryPath = $inputs.historyPath
+      Write-Output "PSA collector snapshot: $($inputs.commit). Local source changes are preserved."
+    }
   } else {
     Write-Warning 'Latest PSA inputs unavailable. Keep local known inputs and user data.'
     Remove-Item Env:PSA_MANIFEST_PATH -ErrorAction SilentlyContinue
     Remove-Item Env:PSA_PRIORITY_QUEUE_PATH -ErrorAction SilentlyContinue
     Invoke-Step -Name 'PSA priority queue build' -Operation { & $Node (Join-Path $PSScriptRoot 'build_psa_priority_queue.js') } | Out-Null
   }
-  Invoke-Step -Name 'PSA official population update' -MaxAttempts $Retries -Operation { & $Node (Join-Path $PSScriptRoot 'update_psa_official_populations.js') } | Out-Null
+  Invoke-Step -Name 'PSA official population update' -MaxAttempts $Retries -Operation { & $Node $CollectorPath } | Out-Null
   $fetchAudit = Get-Content $HoldPath -Raw | ConvertFrom-Json
   if ($fetchAudit.refreshedCount -le 0) { throw 'No newly verified PSA values; preserved rows are not new acquisition.' }
   if ($env:PSA_REFRESH_ENGLISH_NAMES -eq '1') {
     Invoke-Step -Name 'Snkr English name update' -MaxAttempts 1 -Operation { & $Node (Join-Path $PSScriptRoot 'update_snkr_english_names.js') } | Out-Null
   }
-  Invoke-Step -Name 'PSA history build' -Operation { & $Node (Join-Path $PSScriptRoot 'build_psa_history.js') } | Out-Null
+  Invoke-Step -Name 'PSA history build' -Operation { & $Node $HistoryPath } | Out-Null
 
   $afterPayload = Get-Content $PsaDataPath -Raw | ConvertFrom-Json
   $updatedCount = 0
