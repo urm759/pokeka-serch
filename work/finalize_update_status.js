@@ -314,6 +314,8 @@ payload.focusMonitor = require("./focus_monitor.js").write(ROOT);
     recoveredRun:recoveredCompletion.recovery.runId, recoveredChecks:recoveredCompletion.recovery.checks,
     filledCards:recoveredCompletion.filledCards.length,newlyAnalyzable:recoveredCompletion.newlyAnalyzable.length,
     psaBefore:recoveredCompletion.psa.beforeLinked,psaAfter:recoveredCompletion.psa.afterLinked,
+    psaNewLinked:recoveredCompletion.psa.newLinkedIds.length,psaHeld:recoveredCompletion.psa.heldMappingIds.length,
+    lostAnalyzable:recoveredCompletion.lostAnalyzable.length,
     urlDiscovery:recoveredCompletion.urlDiscovery,newShopPrices:recoveredCompletion.newShopAcquisition.newAcquiredCount
   } : null;
   const purchaseFreshness = read('data/purchase-price-freshness-audit.json');

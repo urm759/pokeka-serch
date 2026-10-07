@@ -365,6 +365,10 @@ function demandLabel(avg30, drop30, samples, model) {
 }
 
 function writeSummary(cards, catalog, history, paths) {
+  let previous={};
+  try { previous=JSON.parse(fs.readFileSync(paths.summary,'utf8')).cards || {}; } catch(error) {
+    if(error.code!=='ENOENT')throw error;
+  }
   const catalogById = new Map(catalog.map((entry) => [entry.cardId, entry]));
   const currentIndex = history.dates.length - 1;
   const model = learnDemandThresholds(history);
@@ -372,7 +376,8 @@ function writeSummary(cards, catalog, history, paths) {
   for (const card of cards) {
     const entry = catalogById.get(card.id);
     const values = history.stocks[card.id] || [];
-    if (!entry && !values.length) continue;
+    const saved=previous[card.id];
+    if (!entry && !values.length && !saved) continue;
     const samples = values.filter(Number.isFinite).length;
     const avg30 = averageDailyDecrease(values, 30);
     const drop30 = totalDecrease(values, 30);
@@ -389,6 +394,14 @@ function writeSummary(cards, catalog, history, paths) {
       demand: demandLabel(avg30, drop30, samples, model),
       samples,
     };
+    const savedAt=Date.parse(saved?.priceObservedAt || saved?.observedAt || saved?.updatedAt || '');
+    const entryAt=Date.parse(entry?.observedAt || '');
+    // A direct product confirmation can be newer than, or absent from, the list catalog.
+    if(Number.isFinite(savedAt) && (!Number.isFinite(entryAt) || savedAt>=entryAt)) {
+      summary[card.id]={...summary[card.id],...saved,
+        avg7:summary[card.id].avg7,avg30,avg90:summary[card.id].avg90,
+        drop7:summary[card.id].drop7,drop30,demand:summary[card.id].demand,samples};
+    }
   }
   fs.writeFileSync(paths.summary, JSON.stringify({ updatedAt: jstDate(), demandModel: model, cards: summary }), "utf8");
 }

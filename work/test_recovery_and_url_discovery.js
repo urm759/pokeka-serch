@@ -15,6 +15,13 @@ assert(variantsCompatible('ピカチュウ マスターボールミラー','Pika
 assert(!variantsCompatible('ピカチュウ','Pikachu',{set:'SV2A',name:'Pikachu Master Ball Reverse Holo'}));
 const dir=fs.mkdtempSync(path.join(os.tmpdir(),'pokeka-raw-recovery-'));
 fs.mkdirSync(path.join(dir,'data'),{recursive:true});fs.mkdirSync(path.join(dir,'work'));
+const summaryFile=path.join(dir,'data/shop.json');
+fs.writeFileSync(summaryFile,JSON.stringify({cards:{fixture:{hareruya2Price:280000,stock:2,observedAt:'2026-10-07T02:49:37.987Z',identityVerifiedAt:'2026-10-07T02:49:37.987Z'}}}));
+require('./update_hareruya2_stock').writeSummary([{id:'fixture'}],[],{dates:['2026-10-07'],stocks:{fixture:[2]}},{summary:summaryFile});
+const savedShop=JSON.parse(fs.readFileSync(summaryFile,'utf8')).cards.fixture;
+assert.equal(savedShop.hareruya2Price,280000,'list absence must not erase directly confirmed prices');
+assert.equal(savedShop.observedAt,'2026-10-07T02:49:37.987Z');
+assert.equal(savedShop.identityVerifiedAt,'2026-10-07T02:49:37.987Z');
 fs.writeFileSync(path.join(dir,'data/broken.json'),'{broken');
 fs.writeFileSync(path.join(dir,'work/checkpoint.json'),'{"next":42}');
 fs.writeFileSync(path.join(dir,'ui-data-codec.js'),'throw new Error("summary failure")');
