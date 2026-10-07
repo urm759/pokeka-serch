@@ -11,7 +11,7 @@ function readJson(filePath, fallback) {
 }
 
 function writeJson(filePath, value) {
-  fs.writeFileSync(filePath, JSON.stringify(value), "utf8");
+  require('./acquisition_retry').atomicWrite(filePath, value, 0);
 }
 
 function percent(numerator, denominator) {

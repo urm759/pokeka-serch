@@ -16,13 +16,16 @@ async function api(url) {
 }
 
 async function main() {
-  const [runs, safeRuns, pokeRuns, priceRuns] = await Promise.all([
+  const [runs, safeRuns, pokeRuns, priceRuns, catchupRuns] = await Promise.all([
     api(`${API}/actions/workflows/daily-fast-update.yml/runs?per_page=30`),
     api(`${API}/actions/workflows/safe-checkpoint-backfill.yml/runs?per_page=10`),
     api(`${API}/actions/workflows/backfill-data.yml/runs?per_page=10`),
     api(`${API}/actions/workflows/priority-price-refresh.yml/runs?per_page=10`),
+    api(`${API}/actions/workflows/watch-data-health.yml/runs?per_page=10`),
   ]);
   const status = JSON.parse(fs.readFileSync(path.join(ROOT, "data", "update-status.json"), "utf8"));
+  fs.writeFileSync(path.join(ROOT,'work/automatic-workflow-evidence.json'), JSON.stringify({checkedAt:new Date().toISOString(),
+    runs:Object.entries({daily:runs,safe:safeRuns,pokedata:pokeRuns,priority:priceRuns}).map(([key,list])=>({key,...list.workflow_runs?.[0]}))}));
   fs.writeFileSync(path.join(ROOT,'data/refresh-cadence-audit.json'),JSON.stringify(require('./refresh_cadence').audit(priceRuns.workflow_runs||[])));
   // Verify saved run receipts without triggering acquisition or waiting for future runs.
   const cycleFile=path.join(ROOT,'data/scheduled-cycle-verification.json');
@@ -31,7 +34,7 @@ async function main() {
     const receipts=await api('https://urm759.github.io/pokeka-serch/data/scheduled-cycle-receipts.json');
     const deployments=await api(`${API}/actions/runs?per_page=30`);
     const pages=deployments.workflow_runs?.find(r=>r.name==='pages build and deployment'&&r.conclusion==='success');
-    for(const [key,list] of Object.entries({daily:runs,safe:safeRuns,pokedata:pokeRuns,priority:priceRuns})) {
+    for(const [key,list] of Object.entries({daily:runs,safe:safeRuns,pokedata:pokeRuns,priority:priceRuns,catchup:catchupRuns})) {
       const latest=list.workflow_runs?.find(r=>r.event==='schedule'&&r.status==='completed');
       if(!latest || cycles.pipelines[key]?.runId===latest.id&&cycles.pipelines[key]?.confirmed)continue;
       const receipt=receipts.pipelines?.[key],texts={};

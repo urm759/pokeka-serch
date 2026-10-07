@@ -7,7 +7,7 @@ const { fairBatch, build: buildFocus } = require("./focus_monitor.js");
 const priceQueue = require("./priority_price_queue.js");
 const ROOT = path.join(__dirname, "..");
 const read = (file, fallback = {}) => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, file), "utf8")); } catch { return fallback; } };
-const write = (file, value) => fs.writeFileSync(path.join(ROOT, file), JSON.stringify(value));
+const write = (file, value) => require('./acquisition_retry').atomicWrite(path.join(ROOT, file), value, 0);
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const rarity = (name) => String(name || "").toUpperCase().match(/\b(MUR|BWR|SSR|CSR|CHR|SAR|UR|HR|SR|RRR|RR|AR)\b/)?.[1] || null;
 
@@ -49,6 +49,7 @@ function provenanceOnly() {
 
 async function main() {
   if (process.argv.includes("--provenance-only")) return provenanceOnly();
+  if (process.argv.includes('--finalize-saved')) return finalizeSaved(process.argv[2]);
   const sourceId = process.argv[2] || "hareruya2";
   if (!["cardrush", "hareruya2"].includes(sourceId)) throw new Error("Unsupported source");
   const cards = read("data/pokemon-cards.json", []);
@@ -214,6 +215,33 @@ async function main() {
   appendRunHistory(sourceId, tracked);
   priceQueue.write(ROOT);
   console.log(JSON.stringify(run));
+}
+function finalizeSaved(sourceId) {
+  if (!['cardrush','hareruya2'].includes(sourceId)) throw new Error('Unsupported source');
+  const cache = read('work/candidate-shop-refresh.json');
+  const run = cache.sources?.[sourceId];
+  if (!run || run.status !== 'running') throw new Error('No interrupted saved batch');
+  const catalog = read(`work/${sourceId}_catalog.json`, []);
+  const summary = read(`data/${sourceId}-stock-summary.json`);
+  for (const record of run.records || []) {
+    if (record.status !== 'verified') continue;
+    const entry = catalog.find(r => r.cardId === record.id && r.observedAt === record.confirmedAt);
+    if (!entry || !entry.identityVerified || !entry.conditionAccepted) continue;
+    summary.cards[record.id] = { ...summary.cards[record.id], price: entry.price, stock: entry.stock,
+      available: entry.available, observedAt: entry.observedAt, updatedAt: entry.observedAt,
+      priceObservedAt: entry.observedAt, inventoryObservedAt: entry.observedAt,
+      identityVerified: entry.identityVerified, identityVerifiedAt: entry.identityVerifiedAt, conditionAccepted: true };
+  }
+  run.status = 'partial'; run.recoveryAt = new Date().toISOString();
+  run.stopReason = '保存工程が中断・正常な個別取得記録だけを復旧。未完走・再取得0';
+  write(`data/${sourceId}-stock-summary.json`, summary);
+  write('work/candidate-shop-refresh.json', cache);
+  const tracked = updateRun(sourceId, { ...run, lastAttemptAt:run.startedAt, acquiredCount:catalog.length,
+    updatedCount:run.changedCount, fetchFailureCount:run.failedCount, lastError:run.stopReason,
+    sourceState:run.stopReason, lastSuccessAt:run.lastSuccessAt });
+  appendRunHistory(sourceId, tracked);
+  priceQueue.write(ROOT);
+  console.log(JSON.stringify({status:'saved-batch-recovered',refreshed:run.refreshedCount,newHttpRequests:0,sourceId}));
 }
 if (require.main === module) main().catch((error) => { console.error(error); process.exitCode = 1; });
 module.exports = { exactIdentity, shopifyQuote };

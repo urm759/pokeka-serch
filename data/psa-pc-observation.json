@@ -1,40 +1,4 @@
 {
-  "error": null,
-  "tasks": [
-    {
-      "preStartFailure": false,
-      "reason": null,
-      "name": "Pokeka PSA Update 0430",
-      "lastRun": "2026-10-07T04:30:01.0000000+09:00",
-      "state": "Ready",
-      "target": "site/work/run_psa_scheduled_update.ps1",
-      "result": 0,
-      "nextRun": "2026-10-08T04:30:00.0000000+09:00",
-      "registrationValid": true
-    },
-    {
-      "preStartFailure": false,
-      "reason": null,
-      "name": "Pokeka PSA Update 1700",
-      "lastRun": "2026-10-07T17:00:01.0000000+09:00",
-      "state": "Ready",
-      "target": "site/work/run_psa_scheduled_update.ps1",
-      "result": 1,
-      "nextRun": "2026-10-08T17:00:00.0000000+09:00",
-      "registrationValid": true
-    },
-    {
-      "preStartFailure": false,
-      "reason": null,
-      "name": "Pokeka PSA Update Logon",
-      "lastRun": "2026-10-05T17:48:19.0000000+09:00",
-      "state": "Ready",
-      "target": "site/work/run_psa_scheduled_update.ps1",
-      "result": 1,
-      "nextRun": null,
-      "registrationValid": true
-    }
-  ],
   "fetchProgress": {
     "startedAt": "2026-10-07T10:22:40.055Z",
     "endedAt": "2026-10-07T10:23:14.67Z",
@@ -148,8 +112,7 @@
     "pendingSets": 99,
     "durationMs": 34626
   },
-  "independentObserverRegistered": false,
-  "registeredRepo": "C:\\Users\\polar\\Documents\\ChatGPT\\ポケカ仕入れサイト\\site",
+  "error": null,
   "lastScheduledState": {
     "startedAt": "2026-10-07T17:00:02.4465124+09:00",
     "updatedCount": 0,
@@ -169,39 +132,76 @@
     "fetchFailureCount": 1,
     "acquiredCount": 0
   },
+  "independentObserverRegistered": false,
   "acquisitionState": {
-    "acquiredCount": 472,
-    "lastSuccessAt": "2026-10-07T19:23:15.3787537+09:00",
     "sourceState": "部分取得・未巡回または停止対象あり",
     "startedAt": "2026-10-07T19:22:39.2012842+09:00",
-    "lastSuccessSlot": "2026-10-04-morning",
-    "publishStatus": "published",
-    "lastAttemptAt": "2026-10-07T19:22:39.2012842+09:00",
-    "fetchFailureCount": 0,
-    "syncStatus": "warning",
-    "error": null,
-    "lastSuccessDate": "2026-10-07",
-    "savedTotalCount": 3045,
-    "endedAt": "2026-10-07T19:23:15.3787537+09:00",
-    "updatedCount": 472,
-    "lastError": null,
+    "syncError": "git ff-only merge skipped/failed: hint: Diverging branches can't be fast-forwarded, you need to either:\r\nhint:\r\nhint: \tgit merge --no-ff\r\nhint:\r\nhint: or:\r\nhint:\r\nhint: \tgit rebase\r\nhint:\r\nhint: Disable this message with \"git config set advice.diverging false\"\r\nfatal: Not possible to fast-forward, aborting.",
     "status": "partial",
-    "durationMs": 36177.0,
-    "newAcquiredCount": 469,
-    "publishedCommit": "d61fd5e51a1f5e3fc086f75658c9b03544f6dc0c",
+    "endedAt": "2026-10-07T19:23:15.3787537+09:00",
     "publishError": null,
+    "publishStatus": "published",
+    "newAcquiredCount": 469,
+    "lastSuccessSlot": "2026-10-04-morning",
+    "updatedCount": 472,
+    "savedTotalCount": 3045,
+    "lastSuccessDate": "2026-10-07",
+    "lastAttemptAt": "2026-10-07T19:22:39.2012842+09:00",
     "publishedAt": "2026-10-07T10:31:20.598Z",
-    "syncError": "git ff-only merge skipped/failed: hint: Diverging branches can't be fast-forwarded, you need to either:\r\nhint:\r\nhint: \tgit merge --no-ff\r\nhint:\r\nhint: or:\r\nhint:\r\nhint: \tgit rebase\r\nhint:\r\nhint: Disable this message with \"git config set advice.diverging false\"\r\nfatal: Not possible to fast-forward, aborting."
+    "lastError": null,
+    "fetchFailureCount": 0,
+    "lastSuccessAt": "2026-10-07T19:23:15.3787537+09:00",
+    "durationMs": 36177.0,
+    "syncStatus": "warning",
+    "publishedCommit": "d61fd5e51a1f5e3fc086f75658c9b03544f6dc0c",
+    "acquiredCount": 472,
+    "error": null
   },
-  "observedAt": "2026-10-07T19:37:18.1022361+09:00",
+  "tasks": [
+    {
+      "target": "site/work/run_psa_scheduled_update.ps1",
+      "state": "Ready",
+      "registrationValid": true,
+      "nextRun": "2026-10-08T04:30:00.0000000+09:00",
+      "result": 0,
+      "lastRun": "2026-10-07T04:30:01.0000000+09:00",
+      "preStartFailure": false,
+      "name": "Pokeka PSA Update 0430",
+      "reason": null
+    },
+    {
+      "target": "site/work/run_psa_scheduled_update.ps1",
+      "state": "Ready",
+      "registrationValid": true,
+      "nextRun": "2026-10-08T17:00:00.0000000+09:00",
+      "result": 1,
+      "lastRun": "2026-10-07T17:00:01.0000000+09:00",
+      "preStartFailure": false,
+      "name": "Pokeka PSA Update 1700",
+      "reason": null
+    },
+    {
+      "target": "site/work/run_psa_scheduled_update.ps1",
+      "state": "Ready",
+      "registrationValid": true,
+      "nextRun": null,
+      "result": 1,
+      "lastRun": "2026-10-05T17:48:19.0000000+09:00",
+      "preStartFailure": false,
+      "name": "Pokeka PSA Update Logon",
+      "reason": null
+    }
+  ],
   "phases": {
-    "publicationStop": null,
-    "savedDataLastSuccessAt": "2026-10-07T19:23:15.3787537+09:00",
     "publication": "published",
-    "save": "過去正常値とチェックポイントを保持",
     "startup": "起動済み",
     "acquisitionStop": null,
+    "save": "過去正常値とチェックポイントを保持",
     "note": "最後の取得成功と最後の公開成功は別。登録先のデータと実行結果を読み取った観測",
-    "acquisition": "部分取得・未巡回または停止対象あり"
-  }
+    "savedDataLastSuccessAt": "2026-10-07T19:23:15.3787537+09:00",
+    "acquisition": "部分取得・未巡回または停止対象あり",
+    "publicationStop": null
+  },
+  "registeredRepo": "C:\\Users\\polar\\Documents\\ChatGPT\\ポケカ仕入れサイト\\site",
+  "observedAt": "2026-10-07T22:26:01.9970974+09:00"
 }

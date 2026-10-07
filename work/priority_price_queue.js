@@ -22,11 +22,12 @@ function plan({ cards, sourceId, catalog, candidateRows = {}, focusConfig = {}, 
     const due = validTime ? time + hours * 3600000 : 0;
     const retry = Date.parse(previous.nextRetryAt);
     const waiting = manualWait[card.id]?.url === url || previous.url === url && previous.failures >= (config.retryLimit || 3);
+    const recentlyChecked = important && validTime && now - time < 2 * 3600000;
     return { card, important, focus, url, lastSuccessAt, lastAttemptAt: previous.lastAttemptAt || null,
       nextDueAt: due ? new Date(due).toISOString() : null, due: due <= now,
       proactive: important && due > now && proactive.eligibleDeadline(due, important, now, config),
-      eligible: proactive.eligibleDeadline(due, important, now, config) && !waiting && (!Number.isFinite(retry) || retry <= now),
-      status: waiting ? "手動確認待ち" : Number.isFinite(retry) && retry > now ? "再試行待ち" : due <= now ? "期限超過・取得待ち" : proactive.eligibleDeadline(due, important, now, config) ? "次回完了前に期限切れ・先回り待ち" : "期限内",
+      eligible: proactive.eligibleDeadline(due, important, now, config) && !recentlyChecked && !waiting && (!Number.isFinite(retry) || retry <= now),
+      status: waiting ? "手動確認待ち" : Number.isFinite(retry) && retry > now ? "再試行待ち" : recentlyChecked ? "確認直後・共通取得間隔内" : due <= now ? "期限超過・取得待ち" : proactive.eligibleDeadline(due, important, now, config) ? "次回完了前に期限切れ・先回り待ち" : "期限内",
       priceRefreshReady: candidateRows[card.id]?.priceRefreshReady === true,
       currentMarket: candidateRows[card.id]?.currentMarket === true,
       reason: [focus && "重点カード", candidate && "購入候補", candidateRows[card.id]?.currentMarket && "現相場採算候補", candidateRows[card.id]?.priceRefreshReady && "購入価格再確認で試算可能", favorites.has(card.id) && "同期済みお気に入り", !important && "通常巡回"].filter(Boolean).join("／"),

@@ -80,6 +80,7 @@ function build(root, sources, previous = {}, now = Date.now(), options = {}) {
     { label: "返却時バックテスト", category: "時間待ち", remaining: null, usableNet: 0, lastProgressAt: null, nextAction: "最短2026-12-01以降。未到達を完了扱いしない" },
   ];
   return { version: 1, observedAt: new Date(now).toISOString(), rows, backlogStates,
+    operation: require('./automatic_operation').build(root, sources, rows, now),
     freshnessDefinition: "48時間以内（スニダン素体24時間）のカード別取得日が確認できた有効価格・POP / サイト全カード。少数更新で全体を最新扱いしない。公開日は該当ファイルの公開main最終コミット日。純増は取得監査の比較基準からの差。今回の重点実行分は重点監査JSONで別表示。純増不明は未記録。",
     pc: { ...observation, health: pcHealth(observation, now) },
     completion: read(root, "data/completion-acquisition.json"), outcomes,

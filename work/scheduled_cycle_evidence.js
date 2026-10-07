@@ -3,9 +3,9 @@ const ROOT=path.join(__dirname,'..');
 const hash=text=>crypto.createHash('sha256').update(text.replace(/\r\n/g,'\n')).digest('hex');
 function verify(run, jobs, receipt, publicTexts, pages) {
   const steps=(jobs.jobs||[]).flatMap(j=>j.steps||[]);
-  const stages={acquisition:steps.some(s=>/Refresh due purchase prices|Run deterministic delta update|Continue bounded source|Continue public PokeDATA/.test(s.name)&&s.conclusion==='success'),
-    validation:steps.some(s=>/Verify safety|Check publication safety|Verify shared purchase|Regression|regression/.test(s.name)&&s.conclusion==='success'),
-    savePublish:steps.some(s=>/Publish validated data|Commit safe progress|Commit discovery|Commit changed/.test(s.name)&&s.conclusion==='success')};
+  const stages={acquisition:steps.some(s=>/Refresh due purchase prices|Fill missed price intervals|Run deterministic delta update|Continue bounded source|Continue public PokeDATA/.test(s.name)&&s.conclusion==='success'),
+    validation:steps.some(s=>/Verify safety|Validate catchup data|Check publication safety|Verify shared purchase|Regression|regression/.test(s.name)&&s.conclusion==='success'),
+    savePublish:steps.some(s=>/Publish validated data|Publish changed health state|Commit safe progress|Commit discovery|Commit changed/.test(s.name)&&s.conclusion==='success')};
   const matched=receipt && String(receipt.runId)===String(run.id);
   const hashes=matched?Object.entries(receipt.hashes).map(([file,expected])=>({file,matched:typeof publicTexts[file]==='string'&&hash(publicTexts[file])===expected})):[];
   const pagesAfter=pages?.conclusion==='success' && Date.parse(pages.created_at)>=Date.parse(run.run_started_at||run.created_at);
@@ -24,6 +24,13 @@ function baseline(key,root=ROOT) {
 function record(key,root=ROOT) {
   if(!process.env.GITHUB_RUN_ID) throw new Error('scheduled receipt requires a real Actions run ID');
   const read=f=>JSON.parse(fs.readFileSync(path.join(root,f),'utf8'));
+  if (key === 'catchup') {
+    const file = path.join(root,'data/price-catchup-status.json');
+    const current = fs.existsSync(file) ? read('data/price-catchup-status.json') : null;
+    if (!current || String(current.runId) !== String(process.env.GITHUB_RUN_ID) || current.status !== 'acquired-saved') {
+      console.log('No new catchup acquisition; previous receipt retained'); return;
+    }
+  }
   const file=path.join(root,'data/scheduled-cycle-receipts.json');
   const previous=fs.existsSync(file)?read('data/scheduled-cycle-receipts.json'):{version:1,pipelines:{}};
   const files=['data/card-catalog-completion.json','data/completion-outcomes.json','data/acquisition-progress-audit.json'];

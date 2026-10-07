@@ -44,10 +44,16 @@ function migrateLegacy(state, now = Date.now()) {
   return { ...state, ...failure({ attempts: Math.max(0, Number(state.attempts || state.failures || 1) - 1), lastSuccessAt: state.lastSuccessAt }, state, now) };
 }
 
-function atomicWrite(file, value) {
+function atomicWrite(file, value, indent = 2) {
   const temp = `${file}.${process.pid}.tmp`;
-  fs.writeFileSync(temp, JSON.stringify(value, null, 2), "utf8");
-  fs.renameSync(temp, file);
+  fs.writeFileSync(temp, JSON.stringify(value, null, indent), "utf8");
+  for (let attempt = 0; ; attempt++) {
+    try { fs.renameSync(temp, file); break; }
+    catch (error) {
+      if (attempt >= 3 || !['EPERM','EACCES','EBUSY','UNKNOWN'].includes(error.code)) throw error;
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 100 * 2 ** attempt);
+    }
+  }
 }
 
 // Exclusive, OS-released process ownership; a live worker is never evicted by age.

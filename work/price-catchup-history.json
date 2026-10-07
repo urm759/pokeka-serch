@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "runs": [
+    {
+      "startedAt": "2026-10-07T13:30:01.528Z",
+      "runId": null,
+      "event": "local",
+      "route": "既存監視ジョブの空白補完",
+      "status": "failed",
+      "allowed": true,
+      "ageMs": 16837606,
+      "minimumIntervalMs": 9000000,
+      "reason": "定期の空白・既存の期限順キューで補完",
+      "llmCalls": 0,
+      "codexCalls": 0,
+      "error": "UNKNOWN: unknown error, open 'C:\\Users\\polar\\Documents\\ChatGPT\\ポケカ仕入れサイト\\resilience-20261006\\data\\priority-price-execution.json'",
+      "endedAt": "2026-10-07T13:31:32.761Z",
+      "durationMs": 91233,
+      "outcomes": {
+        "baselineAt": "2026-10-07T13:30:01.528Z",
+        "commonCards": 12473,
+        "addedCards": 4,
+        "removedCards": 0,
+        "newlyAnalyzable": 8,
+        "lostAnalyzable": 6,
+        "filledCards": 46,
+        "filledItems": 55,
+        "sources": {
+          "cardrush": {
+            "newLinked": 1,
+            "validAdded": 1,
+            "validLost": 1,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          },
+          "hareruya2": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 9
+          },
+          "yuyutei": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          },
+          "torecacamp": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          },
+          "psaOfficial": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          },
+          "pokedata": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          }
+        }
+      },
+      "publicationStatus": "保存済み・公開照合待ち"
+    }
+  ]
+}
