@@ -109,7 +109,12 @@ async function main() {
     write("work/priority-price-http-cache.json", httpCache);
   };
   let lastRequestAt = 0;
+  const executionResponses = new Map();
   async function request(url) {
+    if (executionResponses.has(url)) {
+      run.cacheHits += 1;
+      return executionResponses.get(url);
+    }
     for (let retry = 0; retry < 3; retry += 1) {
       if (Date.now() - start + 16000 > budget) throw new Error("timeout: 通信前に時間予算を確認・保存して停止");
       await sleep(Math.max(0, Math.max(1000, Number(config.intervalMs || 1200)) - (Date.now() - lastRequestAt)));
@@ -120,14 +125,19 @@ async function main() {
       if (previous.body && previous.etag) headers["If-None-Match"] = previous.etag;
       if (previous.body && previous.lastModified) headers["If-Modified-Since"] = previous.lastModified;
       const response = await fetch(url, { signal: AbortSignal.timeout(15000), headers });
-      if (response.status === 304 && previous.body) { run.cacheHits += 1; return { text: async () => previous.body, json: async () => JSON.parse(previous.body) }; }
+      if (response.status === 304 && previous.body) {
+        run.cacheHits += 1;
+        const cached = { text: async () => previous.body, json: async () => JSON.parse(previous.body) };
+        executionResponses.set(url, cached); return cached;
+      }
       if ([429, 500, 502, 503, 504].includes(response.status) && retry < 2) { await sleep(2000 * 2 ** retry); continue; }
       if (!response.ok) { const error = new Error(`HTTP ${response.status}`); error.status = response.status; throw error; }
       const body = await response.text();
       httpCache[url] = { etag: response.headers.get("etag"), lastModified: response.headers.get("last-modified"),
         hash: require("node:crypto").createHash("sha256").update(body).digest("hex"), checkedAt: new Date().toISOString(),
         ...(body.length <= 32000 ? { body } : {}) };
-      return { text: async () => body, json: async () => JSON.parse(body) };
+      const value = { text: async () => body, json: async () => JSON.parse(body) };
+      executionResponses.set(url, value); return value;
     }
   }
   for (const card of batch) {

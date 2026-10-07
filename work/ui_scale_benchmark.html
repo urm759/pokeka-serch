@@ -1,0 +1,30 @@
+<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>UI負荷検証（架空カードは保存しない）</title>
+<link rel="stylesheet" href="../styles.css"><main><h1>現在／2倍の表示負荷検証</h1><p>同じPCのChrome・画面幅別。合成負荷試験であり実カードの追加ではありません。通信はローカル・非圧縮です。</p><button id="start">3回測定</button><pre id="result">未実行</pre><div id="cards" class="card-grid"></div></main>
+<script src="../ui-data-codec.js"></script><script>
+const result=document.getElementById('result'),cards=document.getElementById('cards');
+const wait=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+const names=['card-catalog-completion','operational-limit-history','market-stability-summary','market-research-summary'];
+async function text(url){const t=performance.now();const r=await fetch(url,{cache:'no-store'});const value=await r.text();return {value,networkMs:performance.now()-t,bytes:new TextEncoder().encode(value).length};}
+async function render(rows){const start=performance.now();cards.replaceChildren();for(const row of rows.slice(0,30)){const e=document.createElement('article');e.className='card';e.textContent=row.n;cards.append(e);}const domMs=performance.now()-start;const layoutStart=performance.now();cards.getBoundingClientRect();const layoutMs=performance.now()-layoutStart;const visible=document.visibilityState==='visible';const paintStart=performance.now();if(visible)await wait();return {domMs,layoutMs,paintOpportunityMs:visible?performance.now()-paintStart:null,visibility:document.visibilityState};}
+document.getElementById('start').onclick=async()=>{
+ const cases=[];result.textContent='測定中';
+ const source=JSON.parse((await text('../data/card-catalog/search-index.json')).value).cards;
+ for(const scale of [1,2])for(const mode of ['full','summary']){
+  let bytes=0,networkMs=0;const texts=[];
+  for(const name of names){const r=await text('../data/'+(mode==='summary'?'ui/':'')+name+'.json');bytes+=r.bytes;networkMs+=r.networkMs;texts.push(r.value);}
+  const parse=[],decode=[],initial=[],search=[],filter=[];
+  const index=scale===1?source:[...source,...source.map(r=>({...r,id:'scale-'+r.id}))];
+  for(let i=0;i<3;i++){
+   let t=performance.now();let values=texts.map(s=>JSON.parse(s));parse.push(performance.now()-t);
+   t=performance.now();for(const v of values)await UiDataCodec.decodeAsync(v);decode.push(performance.now()-t);
+   // Repeat the decoded workload to model doubled cards without changing real files.
+   if(scale===2){t=performance.now();values=texts.map(s=>JSON.parse(s));parse[i]+=performance.now()-t;t=performance.now();for(const v of values)await UiDataCodec.decodeAsync(v);decode[i]+=performance.now()-t;}
+   initial.push(await render(index));
+   t=performance.now();const found=index.filter(r=>r.n.includes('ピカチュウ'));const calculation=performance.now()-t;search.push({indexMs:calculation,paintMs:await render(found)});
+   t=performance.now();const filtered=index.filter(r=>r.s==='M2').sort((a,b)=>a.n.localeCompare(b.n));const filtering=performance.now()-t;filter.push({filterMs:filtering,paintMs:await render(filtered)});
+  }
+  cases.push({scale,mode,cards:index.length,actualFetchedBytes:bytes,projectedDoubleBytes:bytes*scale,networkMs,parseMs:parse,decodeMs:decode,initialPaintMs:initial,search,filter});
+ }
+ result.textContent=JSON.stringify({viewport:innerWidth,environment:'Chrome on this PC; width simulation, not mobile hardware; hidden-tab paint is null, not fabricated',cases},null,2);
+};
+</script></html>

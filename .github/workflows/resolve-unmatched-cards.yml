@@ -44,6 +44,8 @@ jobs:
         run: node work/audit_link_coverage.js
       - name: Commit resolved mappings
         run: |
+          node work/build_ui_data.js
+          node work/test_ui_data.js
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data work

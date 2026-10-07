@@ -25,6 +25,10 @@ let calculationCacheHit = false;
 let forceNextSearchCalculation = false;
 let lastSearchTiming = null;
 let favoriteCalculationCache = null;
+let uiDataManifest = null;
+let uiDataInvalid = false;
+const uiFetchCache = new Map();
+const uiLoadMetrics = [];
 const computationFields = ["fee","psaPlan","psaHandlingFee","guideMode","psaCapital","lockedCapital","lockDays","minExpectedProfit","minExpectedRoi","minAnnualEfficiency","maxCapitalShare","submissionCount","gradingReserve","saleFeeRate","saleExtraCost","buybackDeductionRate","exitPolicy","buybackStoreMode","selectedBuybackStores","storeTravelCost","snkrRawFeeRate","snkrRawShipping","snkrRawOtherCost","snkrRawMaxAgeHours"];
 const computationSources = ["catalogCompletion","priceEvidence","cardrushStock","hareruya2Stock","yuyuteiStock","torecacampStock","shopBuybacks","buybackShops","buybackDates","buybackUpdatedAt","marketStability","marketStabilityMeta","psaPopulation","snkrListingSummary","snkrRawFlipSummary","snkrRawFlipMeta","pokedataSummary","psaServices","evaluationModel","evaluationGovernance","operationalLimitHistory","regulationPolicy","returnCalibration","fixedPriceReference","marketResearch","supplyMaturityHypothesis","updateStatus"];
 function computationKey() {
@@ -83,6 +87,7 @@ const state = {
   searchIndex: [],
   searchRankById: new Map(),
   searchRequestId: 0,
+  openCardDetails: new Set(),
   catalogScope: "analysis",
   catalogLoadedChunks: new Set(),
   catalogLoadingChunks: new Set(),
@@ -1251,10 +1256,12 @@ function renderPriorityPriceMonitor() {
   const policy = state.updateStatus?.sourceAccessPolicy;
   const permission = policy ? `<article class="source-status-card"><details><summary>スニダン取得経路：${escapeHtml(policy.status)}</summary>${policy.routes.map(r=>`<p>${escapeHtml(r.route)}：${escapeHtml(r.method)}／許諾 ${escapeHtml(r.permission)}／${escapeHtml(r.status)}</p>`).join('')}<p>${escapeHtml(policy.nextAction)}</p><a href="./data/snkr-access-policy.json">許諾・経路監査</a></details></article>` : '';
   const ahead = monitor ? `<article class="source-status-card"><details><summary>先回り価格更新・実行間の最低鮮度</summary><p>鮮度基準は6時間のまま。期限超過を先に、次回完了前に期限切れとなる重要カードを追加。通常巡回枠・再試行上限は維持。</p>${Object.entries(monitor.sources).map(([id,r])=>`<p>${escapeHtml(id)}：先回り待ち${r.proactivePending ?? '未集計'}枚／先回り幅${r.proactiveWindow ? Math.round(r.proactiveWindow.leadMs/60000)+'分' : '一括更新の期限判定'}。${escapeHtml(r.proactiveWindow?.delayBasis || '')}<br>前回観測から今回直前の最低鮮度 ${fixed?.sources[id]?.intervalMinimum?.minimumFreshnessPct?.toFixed(1) ?? '蓄積中'}%／最大期限超過 ${fixed?.sources[id]?.intervalMinimum?.maxOverdueHours?.toFixed(1) ?? '蓄積中'}時間。区間中の未観測更新は含まない保守的指標。</p>`).join('')}</details></article>` : '';
-  const capacity = monitor ? `<article class="source-status-card"><details><summary>6時間更新目標の処理能力・不足量</summary><p>能力は成功件数と実測時間に基づく推計です。174分幅・6時間基準・通常巡回枠は変更していません。</p>${Object.entries(monitor.sources).filter(([,r])=>r.capacity).map(([id,r])=>{const c=r.capacity;return `<p><b>${escapeHtml(id)}</b>：重要${c.importantCount}枚／今回対象${c.eligibleCount}枚／${c.measuredCardsPerMinute?.toFixed(1) ?? '未測定'}枚/分<br>1回必要${c.requiredPerRun}枚・利用枠${c.availablePerRun ?? '未測定'}枚／能力不足${c.deficitPerRun ?? '未測定'}枚・今回枠超過${c.queueOverflow ?? '未測定'}枚／手動待ち${c.manualCount}・再試行待ち${c.retryCount}枚。${escapeHtml(c.reason)}<br>先回り試行${r.proactiveAttempted ?? '未記録'}・再確認成功${r.proactiveVerified ?? '未記録'}。${escapeHtml(c.basis)}</p>`}).join('')}<a href="./data/proactive-refresh-audit.json">実測実行・観測最低率・保守的推計の比較</a></details></article>` : '';
+const capacity = monitor ? `<article class="source-status-card"><details><summary>6時間更新目標の処理能力・不足量</summary><p>能力は成功件数と実測時間に基づく推計です。先回り幅は既存の実行間隔・観測遅延から算出。6時間基準・通常巡回枠は変更していません。</p>${Object.entries(monitor.sources).filter(([,r])=>r.capacity).map(([id,r])=>{const c=r.capacity;return `<p><b>${escapeHtml(id)}</b>：重要${c.importantCount}枚／今回対象${c.eligibleCount}枚／${c.measuredCardsPerMinute?.toFixed(1) ?? '未測定'}枚/分<br>1回必要${c.requiredPerRun}枚・利用枠${c.availablePerRun ?? '未測定'}枚／能力不足${c.deficitPerRun ?? '未測定'}枚・今回枠超過${c.queueOverflow ?? '未測定'}枚／手動待ち${c.manualCount}・再試行待ち${c.retryCount}枚。${escapeHtml(c.reason)}<br>先回り試行${r.proactiveAttempted ?? '未記録'}・再確認成功${r.proactiveVerified ?? '未記録'}。${escapeHtml(c.basis)}</p>`}).join('')}<a href="./data/proactive-refresh-audit.json">実測実行・観測最低率・保守的推計の比較</a></details></article>` : '';
   const recovery = state.updateStatus?.purchasePriceRecovery, audit = state.updateStatus?.purchasePriceFreshness;
   const recovered = recovery ? `<article class="source-status-card"><details><summary>購入価格の鮮度回復（処理成功・新規補完とは別）</summary><p>比較期間：${escapeHtml(dateText(recovery.baselineAt))}→${escapeHtml(dateText(recovery.generatedAt))}。固定${recovery.fixedCohort}枚：購入価格あり${recovery.purchasableBefore}→${recovery.purchasableAfter}枚／鮮度回復${recovery.freshnessRecovered}・既存再確認${recovery.freshnessReconfirmed}・離脱${recovery.lost}枚。新規分析可能${recovery.newAnalyzable ?? '未記録'}枚／全体集計の分析可能純増${recovery.analyzableNet ?? recovery.analyzedAfter - recovery.analyzedBefore}枚（母数増減とは別）。購入価格の確認だけでGOへ昇格しません。</p><p>現相場探索の更新対象${audit?.currentMarketCandidates ?? '未集計'}枚／購入価格再確認待ち${audit?.readyByPurchaseRefresh ?? '未集計'}枚（公開監査の既定費用・売却先）。古値との最新価格乖離${audit?.freshVsOldCount ?? '未集計'}枚・価格誤りと自動断定しない。通常巡回枠25%を維持。</p><a href="./data/purchase-price-recovery.json">回復前後・カード別結果</a>／<a href="./data/purchase-price-freshness-audit.json">全カード・参考中央値の鮮度監査</a></details></article>` : '';
-  return recovered + renderPriorityPriceRows() + ahead + stats + capacity + permission + renderTaskOperations();
+  const change = state.uiImprovementAudit;
+  const improvement = change ? `<article class="source-status-card"><details><summary>軽量化と実補完の検証（${escapeHtml(dateText(change.generatedAt))}時点）</summary><p>比較元 ${escapeHtml(change.baseCommit)}／新規掲載${change.newListings.length}枚・不足項目が埋まった${change.filledCards.length}枚・新規分析可能${change.newlyAnalyzable.length}枚。購入価格復帰${change.purchaseRecovery.freshnessRecovered}枚は新規補完と別。仕入れ基準・計算式の変更なし。</p><p>現在${change.modelPerformance.cases[0].cards}枚／合成2倍${change.modelPerformance.cases[1].cards}枚で、各3回の計算値・候補ID一致。通信削減とJSON展開の追加負荷を分けて計測。PC・スマホ幅は同じPCの試験であり、携帯実機の速度ではありません。</p><a href="./data/ui-improvement-audit.json">純増・容量・通信/解析/DOM測定の全結果</a></details></article>` : '';
+  return improvement + recovered + renderPriorityPriceRows() + ahead + stats + capacity + permission + renderTaskOperations();
 }
 function renderTaskOperations() {
   const operations = state.updateStatus?.taskOperations;
@@ -3108,16 +3115,57 @@ function hasMaterialLimitSignalChange(previous, current) {
     || Math.abs(Number(previous.signals.targetProfit || 0) - Number(current.targetProfit || 0)) >= 500;
 }
 
-async function fetchJsonMaybe(url) {
+async function fetchJsonMaybe(url, { detail = false } = {}) {
+  const original = String(url).replace(/^\.\//, "");
+  const file = !detail && uiDataManifest?.aliases?.[original] || original;
+  const cacheKey = `${uiDataManifest?.revision || "legacy"}:${file}`;
+  if (uiFetchCache.has(cacheKey)) return uiFetchCache.get(cacheKey);
+  const request = (async () => {
   try {
-    const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) return null;
-    const payload = await res.json();
+    const start = performance.now();
+    const expected = uiDataManifest?.hashes?.[file];
+    const res = await fetch(`./${file}${expected ? `?v=${expected}` : ""}`, { cache: expected ? "default" : "no-store" });
+    if (!res.ok) {
+      if (expected) throw new Error(`同じ公開版のデータ取得失敗: ${file} HTTP ${res.status}`);
+      return null;
+    }
+    const text = await res.text();
+    const networkMs = performance.now() - start;
+    const verifyStart = performance.now();
+    const raw = new TextEncoder().encode(text);
+    if (expected) {
+      const digest = [...new Uint8Array(await crypto.subtle.digest("SHA-256", raw))].map(v => v.toString(16).padStart(2, "0")).join("");
+      if (digest !== expected) throw new Error(`公開版が切り替わりました。再読込してください: ${file}`);
+    }
+    const verifyMs = performance.now() - verifyStart;
+    const parseStart = performance.now();
+    const parsed = JSON.parse(text);
+    const jsonParseMs = performance.now() - parseStart;
+    const decodeStart = performance.now();
+    const payload = window.UiDataCodec ? await window.UiDataCodec.decodeAsync(parsed) : parsed;
+    uiLoadMetrics.push({ file, bytes: raw.byteLength, networkMs, verifyMs, jsonParseMs, decodeMs: performance.now() - decodeStart });
     loadedDataRevision++;
     return payload;
-  } catch {
+  } catch (error) {
+    if (uiDataManifest?.hashes?.[file]) {
+      uiDataInvalid = true;
+      if (els.catalogCoverageSummary) els.catalogCoverageSummary.textContent = `${error.message}（異なる版を混在させず停止）`;
+      console.error(error);
+    }
     return null;
   }
+  })();
+  uiFetchCache.set(cacheKey, request);
+  return request;
+}
+
+async function loadDeferredAudits(element) {
+  const fields = { updateHistory: "update-history", candidateDailyAudit: "candidate-daily-audit",
+    candidateAvailabilityAudit: "candidate-availability-audit", marketBacktest: "market-backtest-summary",
+    modernHighRarityAudit: "modern-high-rarity-audit", uiImprovementAudit: "ui-improvement-audit" };
+  const wanted = element === els.marketBacktestSummary ? ['marketBacktest']
+    : element === els.dataFreshness ? ['updateHistory','candidateDailyAudit','candidateAvailabilityAudit','modernHighRarityAudit','uiImprovementAudit'] : [];
+  for (const key of wanted) if (!state[key]) state[key] = await fetchJsonMaybe(`./data/${fields[key]}.json`);
 }
 
 function pokedataShardFilesForCardIds(cardIds) {
@@ -3159,6 +3207,10 @@ async function ensurePokedataForCardIds(cardIds) {
     .filter((file) => !state.pokedataLoadedFiles.has(file) && !state.pokedataFailedFiles.has(file));
   if (!pendingFiles.length) return false;
   const loaded = await Promise.all(pendingFiles.map((file) => loadPokedataShard(file)));
+  if (loaded.some(Boolean) && !state.marketResearch?.comparisons) {
+    const details = await fetchJsonMaybe("./data/market-research-summary.json", { detail: true });
+    if (details && state.marketResearch) state.marketResearch.comparisons = details.comparisons;
+  }
   return loaded.some(Boolean);
 }
 
@@ -4560,11 +4612,6 @@ function render() {
   renderSourceObservability();
   if (auditIsOpen(els.guidePanels)) renderGuide();
   const visibleCards = enriched.slice(0, state.visibleLimit);
-  const lazyPokedataIds = new Set([...state.favorites].map(String));
-  if (state.q) visibleCards.forEach((card) => lazyPokedataIds.add(String(card.id)));
-  void ensurePokedataForCardIds([...lazyPokedataIds]).then((loaded) => {
-    if (loaded) render();
-  });
   if (els.resultProgress) {
     const loadedNote = state.catalogManifest ? ` / 読込済み ${fmt.format(state.cards.length)}枚` : "";
     els.resultProgress.textContent = `${fmt.format(enriched.length)}枚中 ${fmt.format(visibleCards.length)}枚を表示${loadedNote}`;
@@ -5308,7 +5355,7 @@ function render() {
           ${candidateGlance}
           ${searchDiagnosticPanel}
 
-          <details class="card-details">
+          <details class="card-details" data-card-detail="${escapeHtml(card.id)}" ${state.openCardDetails.has(String(card.id)) ? 'open' : ''}>
             <summary><span>計算内訳と相場データを見る</span><small>仕入れ上限・供給・相場・PSA公式</small></summary>
             <div class="card-details-body">
               <div class="detail-limit-comparison">${limitComparison}</div>
@@ -5344,6 +5391,7 @@ function render() {
               ${stockPanel}
               ${buybackPanel}
               ${officialPsaPanel}
+              <p class="catalog-source-note">保存済み詳細：<a href="./data/card-catalog-completion.json" target="_blank" rel="noreferrer">項目別補完状態</a> / <a href="./data/operational-limit-history.json" target="_blank" rel="noreferrer">上限履歴・過去の計算根拠</a>（一覧用要約とは別・必要時のみ）</p>
 
               <div class="market-links" aria-label="外部サイトへの直リンク">
                 <div class="market-links-title">商品ページ</div>
@@ -5362,6 +5410,14 @@ function render() {
   [...els.grid.querySelectorAll("[data-card-id]")].forEach((el) => observer.observe(el));
   [...els.grid.querySelectorAll("[data-psa-history]")].forEach((details) => {
     details.addEventListener("toggle", () => { if (details.open) renderPsaHistory(details); }, { once: true });
+  });
+  [...els.grid.querySelectorAll('[data-card-detail]')].forEach(details => {
+    details.addEventListener('toggle', async () => {
+      const id = details.dataset.cardDetail;
+      if (!details.open) { state.openCardDetails.delete(id); return; }
+      state.openCardDetails.add(id);
+      if (await ensurePokedataForCardIds([id])) render();
+    });
   });
   renderFavorites();
   const timing = document.getElementById("searchPerformance");
@@ -5520,8 +5576,25 @@ async function init() {
   loadActualResults();
   loadGradeObservations();
   try {
+    const manifestRes = await fetch("./data/ui/manifest.json", { cache: "no-store" });
+    if (!manifestRes.ok) throw new Error("公開版の照合情報を取得できません。再読み込みしてください。");
+    uiDataManifest = await manifestRes.json();
+    if (uiDataManifest.version !== 1 || !uiDataManifest.revision || !uiDataManifest.hashes) {
+      throw new Error("公開版の照合情報が不正です。異なる版を混在させず停止します。");
+    }
+    const initialFiles = ["update-status", "link-coverage", "psa-japan-services", "evaluation-model", "evaluation-governance",
+      "pokemon-cards-meta", "card-catalog-completion", "state-a-price-evidence", "operational-limit-history",
+      "card-catalog/manifest", "card-catalog/search-index", "card-catalog/analysis",
+      "cardrush-stock-summary", "hareruya2-stock-summary", "yuyutei-stock-summary", "torecacamp-stock-summary",
+      "shop-buyback-summary", "market-stability-summary", "return-horizon-calibration", "fixed-price-reference-index",
+      "snkr-listing-summary", "snkr-raw-flip-summary", "pokedata/manifest", "market-research-summary",
+      "pokedata-set-discovery", "supply-maturity-hypothesis", "regulation-policy", "psa-population-summary"];
+    // Bound parallel reads; each financial input must still pass the pinned hash.
+    for (let i = 0; i < initialFiles.length; i += 4) {
+      await Promise.all(initialFiles.slice(i, i + 4).map(name => fetchJsonMaybe(`./data/${name}.json`)));
+      if (uiDataInvalid) throw new Error("公開データの版が一致しません。再読み込みしてください。");
+    }
     state.updateStatus = await fetchJsonMaybe("./data/update-status.json");
-    state.updateHistory = await fetchJsonMaybe("./data/update-history.json");
     state.linkCoverage = await fetchJsonMaybe("./data/link-coverage.json");
     state.psaServices = await fetchJsonMaybe("./data/psa-japan-services.json");
     state.evaluationModel = await fetchJsonMaybe("./data/evaluation-model.json");
@@ -5533,8 +5606,6 @@ async function init() {
     }
     state.catalogCompletion = await fetchJsonMaybe("./data/card-catalog-completion.json");
     state.priceEvidence = await fetchJsonMaybe("./data/state-a-price-evidence.json");
-    state.candidateDailyAudit = await fetchJsonMaybe("./data/candidate-daily-audit.json");
-    state.candidateAvailabilityAudit = await fetchJsonMaybe("./data/candidate-availability-audit.json");
     state.operationalLimitHistory = await fetchJsonMaybe("./data/operational-limit-history.json") || Object.create(null);
     state.catalogManifest = await fetchJsonMaybe("./data/card-catalog/manifest.json");
     const searchIndexPayload = await fetchJsonMaybe("./data/card-catalog/search-index.json");
@@ -5583,7 +5654,6 @@ async function init() {
     state.marketStabilityMeta = marketStabilityData || null;
     state.returnCalibration = await fetchJsonMaybe('./data/return-horizon-calibration.json');
     state.fixedPriceReference = await fetchJsonMaybe('./data/fixed-price-reference-index.json');
-    state.marketBacktest = await fetchJsonMaybe("./data/market-backtest-summary.json");
     const snkrListingData = await fetchJsonMaybe("./data/snkr-listing-summary.json");
     state.snkrListingSummary = snkrListingData?.cards || Object.create(null);
     const snkrRawData = await fetchJsonMaybe("./data/snkr-raw-flip-summary.json");
@@ -5610,7 +5680,6 @@ async function init() {
     state.pokedataSetDiscovery = await fetchJsonMaybe("./data/pokedata-set-discovery.json");
     state.supplyMaturityHypothesis = await fetchJsonMaybe("./data/supply-maturity-hypothesis.json");
     state.regulationPolicy = await fetchJsonMaybe("./data/regulation-policy.json");
-    state.modernHighRarityAudit = await fetchJsonMaybe("./data/modern-high-rarity-audit.json");
     if (!state.pokedataManifest) {
       const legacyPokedataData = await fetchJsonMaybe("./data/pokedata-summary.json");
       state.pokedataSummary = legacyPokedataData?.cards || Object.create(null);
@@ -5622,7 +5691,14 @@ async function init() {
     const psaData = await fetchJsonMaybe("./data/psa-population-summary.json");
     state.psaPopulation = psaData?.cards || Object.create(null);
     attachBundlePopulations(state.psaPopulation);
+    if (uiDataInvalid) throw new Error("公開データの版が一致しません。再読み込みしてください。");
     syncFromUI();
+    const metrics = document.createElement("details");
+    metrics.className = "ui-load-metrics";
+    const bytes = uiLoadMetrics.reduce((n, r) => n + r.bytes, 0);
+    metrics.innerHTML = `<summary>初期読込 ${(bytes / 1048576).toFixed(2)} MiB / ${uiLoadMetrics.length} JSON（監査は必要時）</summary><small>JSON解析 ${uiLoadMetrics.reduce((n,r)=>n+r.jsonParseMs,0).toFixed(1)}ms / 展開 ${uiLoadMetrics.reduce((n,r)=>n+r.decodeMs,0).toFixed(1)}ms。通信は並列のため時間を合算しません。詳細と元データは保持。<a href="./data/ui-improvement-audit.json">実補完・現在/2倍の測定結果</a></small>`;
+    metrics.dataset.measurements = JSON.stringify(uiLoadMetrics);
+    els.catalogCoverageSummary?.after(metrics);
   } catch (err) {
     console.error(err);
     showStatus(
@@ -5664,8 +5740,9 @@ document.getElementById("benchmarkSearchButton")?.addEventListener("click",async
 });
 document.getElementById("currentMarketSearchKindInput")?.addEventListener("change",syncFromUI);
 for (const element of [els.limitModelAudit,els.shopRateSummary,els.marketBacktestSummary,els.catalogCompletionDetails,els.dataFreshness,els.guidePanels]) {
-  element?.closest("details")?.addEventListener("toggle",event=>{
+  element?.closest("details")?.addEventListener("toggle",async event=>{
     if (!event.target.open || !auditIsOpen(element)) return;
+    await loadDeferredAudits(element);
     const cards = calculatedCardsForSearch(state.cards);
     if (element === els.limitModelAudit) {
       state.limitModelAudit = buildLimitModelAudit(cards);

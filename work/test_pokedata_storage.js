@@ -35,5 +35,7 @@ assert(elapsedMs < 100, `12,033-card manifest selection took ${elapsedMs.toFixed
 const app = fs.readFileSync(path.join(__dirname, "..", "app.js"), "utf8");
 assert.match(app, /pokedata\/manifest\.json/);
 assert.match(app, /ensurePokedataForCardIds/);
-assert.match(app, /if \(state\.q\) visibleCards/);
+assert.match(app, /data-card-detail/);
+assert.match(app, /ensurePokedataForCardIds\(\[id\]\)/);
+assert.doesNotMatch(app, /if \(state\.q\) visibleCards/);
 console.log(JSON.stringify({ pokedataStorage: "ok", simulatedCards: 12033, selectionMs: Number(elapsedMs.toFixed(3)) }));

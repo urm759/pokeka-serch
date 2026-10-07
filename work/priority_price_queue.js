@@ -165,8 +165,13 @@ function confirmedInventoryAt(inventory, run) {
   const at = Date.parse(run?.lastSuccessAt);
   const inventoryAt = Date.parse(inventory?.updatedAt);
   const count = (inventory?.cards || []).length;
+  const dayOnly = /^\d{4}-\d{2}-\d{2}$/.test(inventory?.updatedAt || '');
+  const successDay = Number.isFinite(at) ? new Intl.DateTimeFormat('sv-SE', {timeZone:'Asia/Tokyo'}).format(new Date(at)) : null;
+  // Inventory dates are JST labels, not UTC midnights. Never invent per-card
+  // sales dates: this is only a successful full-list revalidation timestamp.
+  const compatibleDate = dayOnly ? inventory.updatedAt <= successDay : Number.isFinite(inventoryAt) && inventoryAt <= at;
   return run?.status === "success" && count > 0 && count === Number(inventory.total)
-    && count === Number(run.acquiredCount) && Number.isFinite(at) && Number.isFinite(inventoryAt) && inventoryAt <= at
+    && count === Number(run.acquiredCount) && Number.isFinite(at) && compatibleDate
     ? run.lastSuccessAt : null;
 }
 function timingConfig(root = ROOT) {

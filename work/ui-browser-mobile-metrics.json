@@ -1,0 +1,390 @@
+{
+  "viewport": 390,
+  "environment": "Chrome on this PC; width simulation, not mobile hardware; hidden-tab paint is null, not fabricated",
+  "cases": [
+    {
+      "scale": 1,
+      "mode": "full",
+      "cards": 12473,
+      "actualFetchedBytes": 25805362,
+      "projectedDoubleBytes": 25805362,
+      "networkMs": 109.20000004768372,
+      "parseMs": [
+        55.299999952316284,
+        46,
+        73.90000009536743
+      ],
+      "decodeMs": [
+        0.10000014305114746,
+        0,
+        0.09999990463256836
+      ],
+      "initialPaintMs": [
+        {
+          "domMs": 0.20000004768371582,
+          "layoutMs": 0.6000001430511475,
+          "paintOpportunityMs": 808.2999999523163,
+          "visibility": "visible"
+        },
+        {
+          "domMs": 0.19999980926513672,
+          "layoutMs": 0.7000000476837158,
+          "paintOpportunityMs": 1002.7000000476837,
+          "visibility": "visible"
+        },
+        {
+          "domMs": 0.20000004768371582,
+          "layoutMs": 0.5999999046325684,
+          "paintOpportunityMs": 974.7999999523163,
+          "visibility": "visible"
+        }
+      ],
+      "search": [
+        {
+          "indexMs": 2.3999998569488525,
+          "paintMs": {
+            "domMs": 0.2999999523162842,
+            "layoutMs": 1.0999999046325684,
+            "paintOpportunityMs": 1029.4000000953674,
+            "visibility": "visible"
+          }
+        },
+        {
+          "indexMs": 2.200000047683716,
+          "paintMs": {
+            "domMs": 0.2999999523162842,
+            "layoutMs": 0.6000001430511475,
+            "paintOpportunityMs": 1030.7000000476837,
+            "visibility": "visible"
+          }
+        },
+        {
+          "indexMs": 1.7000000476837158,
+          "paintMs": {
+            "domMs": 0.20000004768371582,
+            "layoutMs": 0.5999999046325684,
+            "paintOpportunityMs": 1047.9000000953674,
+            "visibility": "visible"
+          }
+        }
+      ],
+      "filter": [
+        {
+          "filterMs": 1.5,
+          "paintMs": {
+            "domMs": 0.40000009536743164,
+            "layoutMs": 1,
+            "paintOpportunityMs": 1030.2999999523163,
+            "visibility": "visible"
+          }
+        },
+        {
+          "filterMs": 2.0999999046325684,
+          "paintMs": {
+            "domMs": 0.20000004768371582,
+            "layoutMs": 0.8999998569488525,
+            "paintOpportunityMs": 1029.9000000953674,
+            "visibility": "visible"
+          }
+        },
+        {
+          "filterMs": 1,
+          "paintMs": {
+            "domMs": 0.20000004768371582,
+            "layoutMs": 0.5999999046325684,
+            "paintOpportunityMs": 1031.2999999523163,
+            "visibility": "visible"
+          }
+        }
+      ]
+    },
+    {
+      "scale": 1,
+      "mode": "summary",
+      "cards": 12473,
+      "actualFetchedBytes": 5379235,
+      "projectedDoubleBytes": 5379235,
+      "networkMs": 31.5,
+      "parseMs": [
+        21.700000047683716,
+        24.299999952316284,
+        21.800000190734863
+      ],
+      "decodeMs": [
+        77.39999985694885,
+        37.80000019073486,
+        36.799999952316284
+      ],
+      "initialPaintMs": [
+        {
+          "domMs": 0.20000004768371582,
+          "layoutMs": 0.6000001430511475,
+          "paintOpportunityMs": 906,
+          "visibility": "visible"
+        },
+        {
+          "domMs": 0.19999980926513672,
+          "layoutMs": 0.7000000476837158,
+          "paintOpportunityMs": 986.7999999523163,
+          "visibility": "visible"
+        },
+        {
+          "domMs": 0.20000004768371582,
+          "layoutMs": 0.5999999046325684,
+          "paintOpportunityMs": 990.5,
+          "visibility": "visible"
+        }
+      ],
+      "search": [
+        {
+          "indexMs": 2.1999998092651367,
+          "paintMs": {
+            "domMs": 0.20000004768371582,
+            "layoutMs": 0.7999999523162842,
+            "paintOpportunityMs": 1030.2000000476837,
+            "visibility": "visible"
+          }
+        },
+        {
+          "indexMs": 1.8000001907348633,
+          "paintMs": {
+            "domMs": 0.2999999523162842,
+            "layoutMs": 0.7999999523162842,
+            "paintOpportunityMs": 1030.7999999523163,
+            "visibility": "visible"
+          }
+        },
+        {
+          "indexMs": 2.0999999046325684,
+          "paintMs": {
+            "domMs": 0.10000014305114746,
+            "layoutMs": 0.7000000476837158,
+            "paintOpportunityMs": 1047,
+            "visibility": "visible"
+          }
+        }
+      ],
+      "filter": [
+        {
+          "filterMs": 1.1000001430511475,
+          "paintMs": {
+            "domMs": 0.19999980926513672,
+            "layoutMs": 0.6000001430511475,
+            "paintOpportunityMs": 1048.0999999046326,
+            "visibility": "visible"
+          }
+        },
+        {
+          "filterMs": 1.1000001430511475,
+          "paintMs": {
+            "domMs": 0.19999980926513672,
+            "layoutMs": 0.7000000476837158,
+            "paintOpportunityMs": 1047.7999999523163,
+            "visibility": "visible"
+          }
+        },
+        {
+          "filterMs": 1.5999999046325684,
+          "paintMs": {
+            "domMs": 0.3000001907348633,
+            "layoutMs": 0.6999998092651367,
+            "paintOpportunityMs": 1047.3000001907349,
+            "visibility": "visible"
+          }
+        }
+      ]
+    },
+    {
+      "scale": 2,
+      "mode": "full",
+      "cards": 24946,
+      "actualFetchedBytes": 25805362,
+      "projectedDoubleBytes": 51610724,
+      "networkMs": 99.2999997138977,
+      "parseMs": [
+        108.10000014305115,
+        113.70000004768372,
+        116.20000004768372
+      ],
+      "decodeMs": [
+        0,
+        0.09999990463256836,
+        0
+      ],
+      "initialPaintMs": [
+        {
+          "domMs": 0.2999999523162842,
+          "layoutMs": 0.7000000476837158,
+          "paintOpportunityMs": 772.7999999523163,
+          "visibility": "visible"
+        },
+        {
+          "domMs": 0.2999999523162842,
+          "layoutMs": 0.6000001430511475,
+          "paintOpportunityMs": 935.0999999046326,
+          "visibility": "visible"
+        },
+        {
+          "domMs": 0.2999999523162842,
+          "layoutMs": 1,
+          "paintOpportunityMs": 932.3000001907349,
+          "visibility": "visible"
+        }
+      ],
+      "search": [
+        {
+          "indexMs": 3.3999998569488525,
+          "paintMs": {
+            "domMs": 0.3000001907348633,
+            "layoutMs": 1.0999999046325684,
+            "paintOpportunityMs": 1045.2000000476837,
+            "visibility": "visible"
+          }
+        },
+        {
+          "indexMs": 3.4000000953674316,
+          "paintMs": {
+            "domMs": 0.39999985694885254,
+            "layoutMs": 0.7999999523162842,
+            "paintOpportunityMs": 1045.4000000953674,
+            "visibility": "visible"
+          }
+        },
+        {
+          "indexMs": 3,
+          "paintMs": {
+            "domMs": 0.19999980926513672,
+            "layoutMs": 0.8000001907348633,
+            "paintOpportunityMs": 1046,
+            "visibility": "visible"
+          }
+        }
+      ],
+      "filter": [
+        {
+          "filterMs": 1.8999998569488525,
+          "paintMs": {
+            "domMs": 0.20000004768371582,
+            "layoutMs": 0.6000001430511475,
+            "paintOpportunityMs": 1030.7999999523163,
+            "visibility": "visible"
+          }
+        },
+        {
+          "filterMs": 2.6000001430511475,
+          "paintMs": {
+            "domMs": 0.2999999523162842,
+            "layoutMs": 0.5999999046325684,
+            "paintOpportunityMs": 1046.5,
+            "visibility": "visible"
+          }
+        },
+        {
+          "filterMs": 2.299999952316284,
+          "paintMs": {
+            "domMs": 0.20000004768371582,
+            "layoutMs": 0.5999999046325684,
+            "paintOpportunityMs": 1046.9000000953674,
+            "visibility": "visible"
+          }
+        }
+      ]
+    },
+    {
+      "scale": 2,
+      "mode": "summary",
+      "cards": 24946,
+      "actualFetchedBytes": 5379235,
+      "projectedDoubleBytes": 10758470,
+      "networkMs": 38.200000047683716,
+      "parseMs": [
+        42.299999952316284,
+        43.700000047683716,
+        42.59999990463257
+      ],
+      "decodeMs": [
+        154.90000009536743,
+        119.70000004768372,
+        107.90000009536743
+      ],
+      "initialPaintMs": [
+        {
+          "domMs": 0.2999999523162842,
+          "layoutMs": 0.7999999523162842,
+          "paintOpportunityMs": 795.2999999523163,
+          "visibility": "visible"
+        },
+        {
+          "domMs": 0.5,
+          "layoutMs": 1.2000000476837158,
+          "paintOpportunityMs": 884.6999998092651,
+          "visibility": "visible"
+        },
+        {
+          "domMs": 0.6000001430511475,
+          "layoutMs": 1.3999998569488525,
+          "paintOpportunityMs": 897.3000001907349,
+          "visibility": "visible"
+        }
+      ],
+      "search": [
+        {
+          "indexMs": 4,
+          "paintMs": {
+            "domMs": 0.40000009536743164,
+            "layoutMs": 1.2000000476837158,
+            "paintOpportunityMs": 1044.3999998569489,
+            "visibility": "visible"
+          }
+        },
+        {
+          "indexMs": 2.6000001430511475,
+          "paintMs": {
+            "domMs": 0.2999999523162842,
+            "layoutMs": 0.7999999523162842,
+            "paintOpportunityMs": 1046.2999999523163,
+            "visibility": "visible"
+          }
+        },
+        {
+          "indexMs": 2.3999998569488525,
+          "paintMs": {
+            "domMs": 0.20000004768371582,
+            "layoutMs": 0.5999999046325684,
+            "paintOpportunityMs": 1047,
+            "visibility": "visible"
+          }
+        }
+      ],
+      "filter": [
+        {
+          "filterMs": 1.9000000953674316,
+          "paintMs": {
+            "domMs": 0.20000004768371582,
+            "layoutMs": 0.6999998092651367,
+            "paintOpportunityMs": 1030.7000000476837,
+            "visibility": "visible"
+          }
+        },
+        {
+          "filterMs": 1.7000000476837158,
+          "paintMs": {
+            "domMs": 0.20000004768371582,
+            "layoutMs": 0.5,
+            "paintOpportunityMs": 1047.5,
+            "visibility": "visible"
+          }
+        },
+        {
+          "filterMs": 1.2000000476837158,
+          "paintMs": {
+            "domMs": 0.20000004768371582,
+            "layoutMs": 0.5999999046325684,
+            "paintOpportunityMs": 1047.9000000953674,
+            "visibility": "visible"
+          }
+        }
+      ]
+    }
+  ]
+}

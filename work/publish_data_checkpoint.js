@@ -8,6 +8,13 @@ function git(args, cwd) {
 }
 
 function publish({ cwd = path.join(__dirname, ".."), message = "Publish deterministic data checkpoint", retries = 2, captureOnly = false } = {}) {
+  function syncUiData() {
+    if (!fs.existsSync(path.join(cwd, 'ui-data-codec.js'))) return;
+    require('./build_ui_data.js').build(cwd);
+    const added = git(['add', 'data/ui'], cwd);
+    if (!added.ok) throw new Error(added.output);
+  }
+  syncUiData();
   if (captureOnly) {
     if (fs.existsSync(path.join(cwd, "work", "publish-recovery.bundle"))) return { status: "recovery-already-saved", published: false };
     const stagedRecovery = git(["add", "data", "work"], cwd);
@@ -41,6 +48,11 @@ function publish({ cwd = path.join(__dirname, ".."), message = "Publish determin
     const merged = git(["merge", "--no-edit", "origin/main"], cwd);
     record.attempts.push({ at: new Date().toISOString(), stage: "merge", ok: merged.ok, message: merged.output });
     if (!merged.ok) { record.status = "manual-merge-required"; save(); throw new Error(`Publication conflict; checkpoint bundle saved. ${merged.output}`); }
+    syncUiData();
+    if (!git(['diff', '--cached', '--quiet'], cwd).ok) {
+      const reconciled = git(['commit', '-m', 'Reconcile pinned UI summaries after data merge'], cwd);
+      if (!reconciled.ok) throw new Error(reconciled.output);
+    }
   }
   record.status = "publication-failed"; save();
   throw new Error("Data acquired and committed, but publication failed. Restore the saved checkpoint bundle; do not skip unpersisted data.");

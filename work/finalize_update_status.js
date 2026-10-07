@@ -335,4 +335,5 @@ for (const sourceId of Object.keys(sources)) {
   }
 }
 fs.writeFileSync(HISTORY_OUTPUT, JSON.stringify(publishedHistory), "utf8");
+require('./build_ui_data.js').build(ROOT);
 console.log(JSON.stringify({ complete, completeDate: payload.completeDate, sources }));

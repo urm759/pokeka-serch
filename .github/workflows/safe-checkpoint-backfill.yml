@@ -39,6 +39,8 @@ jobs:
           node work/finalize_update_status.js
       - name: Check publication safety
         run: |
+          node work/build_ui_data.js
+          node work/test_ui_data.js
           node work/test_price_integrity.js
           node work/test_return_reference.js
           node work/test_candidate_daily_audit.js

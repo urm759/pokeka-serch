@@ -64,6 +64,8 @@ jobs:
       - name: Rebuild shared purchase limits and verify
         run: |
           node work/build_purchase_limit_audit.js
+          node work/build_ui_data.js
+          node work/test_ui_data.js
           node work/test_buyback_scenario_limits.js
           node work/test_purchase_limit_audit.js
           node work/test_preset_exploration.js
@@ -71,6 +73,7 @@ jobs:
 
       - name: Commit changes
         run: |
+          git add data
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/pokemon-cards.json data/pokemon-cards-meta.json data/cardrush-stock-summary.json data/hareruya2-stock-summary.json data/yuyutei-stock-summary.json data/torecacamp-stock-summary.json data/purchase-limit-model-audit.json data/operational-limit-history.json work/cardrush_catalog.json work/cardrush_stock_history.json work/cardrush_stock_misses.json work/cardrush_invalid_urls.json work/cardrush_recheck_ids.json work/cardrush_crawl_progress.json work/cardrush_target_progress.json work/hareruya2_catalog.json work/hareruya2_stock_history.json work/hareruya2_collection_progress.json work/yuyutei_catalog.json work/yuyutei_stock_history.json work/yuyutei_progress.json work/torecacamp_catalog.json work/torecacamp_progress.json work/torecacamp_sitemap_cache.json

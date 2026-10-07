@@ -48,6 +48,8 @@ const success={status:'success',lastSuccessAt:'2026-10-05T16:50:19Z',acquiredCou
 assert.equal(confirmedInventoryAt(inventory,success),success.lastSuccessAt,'unchanged inventory can be revalidated after JST midnight');
 assert.equal(confirmedInventoryAt(inventory,{...success,status:'failed'}),null);
 assert.equal(confirmedInventoryAt(inventory,{...success,acquiredCount:0}),null);
+assert.equal(confirmedInventoryAt({...inventory,updatedAt:'2026-10-07'}, {...success,lastSuccessAt:'2026-10-06T23:10:42.218Z'}), '2026-10-06T23:10:42.218Z', 'JST list date and UTC run timestamp refer to the same day');
+assert.equal(confirmedInventoryAt({...inventory,updatedAt:'2026-10-08'}, {...success,lastSuccessAt:'2026-10-06T23:10:42.218Z'}), null, 'a future list day must not become fresh');
 const now=Date.parse(success.lastSuccessAt);
 const first=observe({}, {sources:{test:{cards:[{id:'a',lastConfirmedAt:success.lastSuccessAt,status:'期限内'}]}}},now);
 const next=observe(first,{sources:{test:{cards:[],fixedCards:[{id:'a',lastConfirmedAt:success.lastSuccessAt,status:'期限内'}]}}},now+1000);
