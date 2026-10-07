@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-07T08:56:41.362Z",
+  "generatedAt": "2026-10-07T10:30:14.989Z",
   "llmCalls": 0,
   "codexCalls": 0,
   "retryPolicy": {
@@ -27,7 +27,7 @@
     {
       "source": "psaOfficial",
       "label": "PSA公式・PC正規認証",
-      "remaining": 1142,
+      "remaining": 1136,
       "queueDefinition": "あとPSAだけで分析可能な国内カード。全PSA未取得とは別",
       "sourceState": "partial",
       "failureScope": "url",
@@ -57,9 +57,9 @@
       ],
       "lastRun": {
         "attempted": 2,
-        "newAcquired": 495,
-        "refreshed": 547,
-        "durationMs": 21414
+        "newAcquired": 469,
+        "refreshed": 472,
+        "durationMs": 34626
       },
       "firstPassDaysEstimate": null,
       "observedExecutionDays": 0,
@@ -69,15 +69,15 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-07T08:49:59.520Z",
-        "to": "2026-10-07T08:56:39.484Z"
+        "from": "2026-10-07T10:30:03.879Z",
+        "to": "2026-10-07T10:30:12.685Z"
       },
       "sinceBaseline": {
-        "newLinked": 1137,
-        "validAdded": 1137,
-        "validLost": 25,
-        "usableNet": 1112,
-        "freshnessRecovered": 1666
+        "newLinked": 1355,
+        "validAdded": 1355,
+        "validLost": 24,
+        "usableNet": 1331,
+        "freshnessRecovered": 1931
       },
       "freshness": null
     },
@@ -196,8 +196,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-07T08:49:59.520Z",
-        "to": "2026-10-07T08:56:39.484Z"
+        "from": "2026-10-07T10:30:03.879Z",
+        "to": "2026-10-07T10:30:12.685Z"
       },
       "sinceBaseline": {
         "newLinked": 329,
@@ -439,8 +439,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-07T08:49:59.520Z",
-        "to": "2026-10-07T08:56:39.484Z"
+        "from": "2026-10-07T10:30:03.879Z",
+        "to": "2026-10-07T10:30:12.685Z"
       },
       "sinceBaseline": {
         "newLinked": 143,
@@ -453,11 +453,11 @@
     }
   ],
   "psaOnly": {
-    "count": 1142,
+    "count": 1136,
     "causes": {
       "個別セット確認待ち": 11,
       "仕様・URL曖昧": 309,
-      "登録URLの取得範囲・未一致確認": 255,
+      "登録URLの取得範囲・未一致確認": 249,
       "公式セットURL未登録": 567
     },
     "cards": [
@@ -652,12 +652,6 @@
         "setCode": "CP3",
         "url": null,
         "cause": "公式セットURL未登録"
-      },
-      {
-        "id": "x-162128",
-        "setCode": "SV4A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv4a-shiny-treasure-ex/255404",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-18834",
@@ -4614,12 +4608,6 @@
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "pk-50949",
-        "setCode": "SV4A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv4a-shiny-treasure-ex/255404",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-54801",
         "setCode": "SV5A",
         "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv5a-crimson-haze/264649",
@@ -6594,12 +6582,6 @@
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "pk-50984",
-        "setCode": "SV4A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv4a-shiny-treasure-ex/255404",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-54814",
         "setCode": "SV5A",
         "url": "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv5a-crimson-haze/264649",
@@ -6876,12 +6858,6 @@
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "pk-51084",
-        "setCode": "SV4A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv4a-shiny-treasure-ex/255404",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-37016",
         "setCode": "S11A",
         "url": "https://www.psacard.com/pop/tcg-cards/2022/pokemon-japanese-sword-shield-incandescent-arcana/220055",
@@ -7035,12 +7011,6 @@
         "id": "pk-49644",
         "setCode": "SV4K",
         "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv4k-ancient-roar/252104",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "pk-51014",
-        "setCode": "SV4A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv4a-shiny-treasure-ex/255404",
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
@@ -7278,12 +7248,6 @@
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "pk-50603",
-        "setCode": "SV4A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv4a-shiny-treasure-ex/255404",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-36331",
         "setCode": "SPD",
         "url": null,
@@ -7317,10 +7281,10 @@
   },
   "progress": {
     "listed": 12473,
-    "analyzable": 1923,
-    "pending": 10550,
-    "oneAway": 1494
+    "analyzable": 1929,
+    "pending": 10544,
+    "oneAway": 1493
   },
-  "newlyAnalyzable": 9,
+  "newlyAnalyzable": 0,
   "note": "一時障害の再試行、個別URL隔離、取得元停止を区別。未取得をデータ不存在に変更しない。巡回完了と全項目取得・最新価格は別"
 }
