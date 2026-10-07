@@ -1,13 +1,13 @@
 {
-  "startedAt": "2026-10-07T17:00:14.9513188+09:00",
-  "error": "PSA official population update failed after 1 attempt(s). Error: Cannot find module './focus_monitor.js'\r\nRequire stack:\r\n- C:\\Users\\polar\\Documents\\ChatGPT\\繝昴こ繧ｫ莉募・繧後し繧､繝・site\\work\\psa-acquisition-inputs\\9de641561116cb3bc00454a0d7104937bbb9f912\\update_psa_official_populations.js\r\n    at Module._resolveFilename (node:internal/modules/cjs/loader:1517:15)\r\n    at wrapResolveFilename (node:internal/modules/cjs/loader:1071:27)\r\n    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1095:10)\r\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1122:12)\r\n    at Module._load (node:internal/modules/cjs/loader:1294:5)\r\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\r\n    at Module.require (node:internal/modules/cjs/loader:1617:12)\r\n    at require (node:internal/modules/helpers:153:16)\r\n    at main (C:\\Users\\polar\\Documents\\ChatGPT\\繝昴こ繧ｫ莉募・繧後し繧､繝・site\\work\\psa-acquisition-inputs\\9de641561116cb3bc00454a0d7104937bbb9f912\\update_psa_official_populations.js:378:20)\r\n    at exclusiveMain (C:\\Users\\polar\\Documents\\ChatGPT\\繝昴こ繧ｫ莉募・繧後し繧､繝・site\\work\\psa-acquisition-inputs\\9de641561116cb3bc00454a0d7104937bbb9f912\\update_psa_official_populations.js:542:22) {\r\n  code: 'MODULE_NOT_FOUND',\r\n  requireStack: [\r\n    'C:\\\\Users\\\\polar\\\\Documents\\\\ChatGPT\\\\繝昴こ繧ｫ莉募・繧後し繧､繝・\\site\\\\work\\\\psa-acquisition-inputs\\\\9de641561116cb3bc00454a0d7104937bbb9f912\\\\update_psa_official_populations.js'\r\n  ]\r\n}",
-  "updatedCount": 0,
-  "durationMs": 887,
-  "status": "failed",
-  "endedAt": "2026-10-07T17:00:15.8384545+09:00",
-  "newAcquiredCount": 75,
-  "sourceState": "PSA取得処理失敗",
-  "acquiredCount": 0,
-  "fetchFailureCount": 1,
-  "savedTotalCount": 2576
+  "startedAt": "2026-10-07T19:22:39.2012842+09:00",
+  "error": null,
+  "updatedCount": 472,
+  "durationMs": 36177,
+  "status": "partial",
+  "endedAt": "2026-10-07T19:23:15.3787537+09:00",
+  "newAcquiredCount": 469,
+  "sourceState": "部分取得・未巡回または停止対象あり",
+  "acquiredCount": 472,
+  "fetchFailureCount": 0,
+  "savedTotalCount": 3045
 }
