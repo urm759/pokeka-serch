@@ -17,7 +17,7 @@
           "detectedAt": "2026-09-28T22:23:11.192Z"
         }
       },
-      "checkedAt": "2026-10-06T21:25:52.135Z",
+      "checkedAt": "2026-10-08T21:46:36.368Z",
       "batches": 0,
       "durationMs": 4,
       "allocatedMs": 360000
@@ -26,57 +26,57 @@
       "status": "stalled",
       "reason": "2回連続でチェックポイント進捗なし",
       "position": {
-        "remaining": 14,
-        "inspected": 1091,
-        "unavailable": 57,
+        "remaining": 52,
+        "inspected": 1088,
+        "unavailable": 58,
         "resumeCardId": null,
         "stopReason": null
       },
-      "checkedAt": "2026-10-06T21:26:12.531Z",
+      "checkedAt": "2026-10-08T21:46:54.435Z",
       "batches": 2,
       "failures": 0,
       "retry": null,
-      "durationMs": 20396,
+      "durationMs": 18067,
       "allocatedMs": 719996
     },
     "psaLinkage": {
       "status": "queue-updated",
       "reason": null,
       "position": {
-        "unlinked": 4645,
+        "unlinked": 3390,
         "note": "候補整理のみ。PSA公式の認証取得とは別工程"
       },
-      "checkedAt": "2026-10-06T21:26:12.789Z",
+      "checkedAt": "2026-10-08T21:46:54.821Z",
       "batches": 1,
       "failures": 0,
       "retry": null,
-      "durationMs": 257,
+      "durationMs": 395,
       "allocatedMs": 60000
     },
     "torecacamp": {
-      "status": "partial",
+      "status": "completed",
       "reason": null,
       "position": {
-        "sitemap": 38,
-        "productIndex": 374,
+        "sitemap": 47,
+        "productIndex": 0,
         "totalSitemaps": 46,
-        "visitedProducts": 37371,
-        "catalogCount": 6189,
+        "visitedProducts": 45656,
+        "catalogCount": 6502,
         "lastFailure": null,
         "sourceRetry": null,
         "retryQueue": 0,
         "failedSitemaps": 0
       },
-      "checkedAt": "2026-10-06T21:37:32.526Z",
-      "batches": 19,
+      "checkedAt": "2026-10-08T21:56:31.204Z",
+      "batches": 20,
       "failures": 0,
       "retry": null,
-      "durationMs": 679763,
+      "durationMs": 576373,
       "allocatedMs": 720000
     }
   },
-  "startedAt": "2026-10-06T21:25:52.130Z",
+  "startedAt": "2026-10-08T21:46:36.363Z",
   "status": "partial-with-stop",
-  "endedAt": "2026-10-06T21:37:32.553Z",
-  "durationMs": 700423
+  "endedAt": "2026-10-08T21:56:31.205Z",
+  "durationMs": 594843
 }
