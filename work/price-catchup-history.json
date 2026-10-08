@@ -211,6 +211,76 @@
         }
       },
       "publicationStatus": "保存済み・公開照合待ち"
+    },
+    {
+      "startedAt": "2026-10-08T06:04:12.088Z",
+      "runId": "37735587001",
+      "event": "schedule",
+      "route": "既存監視ジョブの空白補完",
+      "status": "acquired-saved",
+      "allowed": true,
+      "ageMs": 29326214,
+      "minimumIntervalMs": 9000000,
+      "reason": "定期の空白・既存の期限順キューで補完",
+      "llmCalls": 0,
+      "codexCalls": 0,
+      "endedAt": "2026-10-08T06:11:33.842Z",
+      "durationMs": 441754,
+      "outcomes": {
+        "baselineAt": "2026-10-08T06:04:12.088Z",
+        "commonCards": 12477,
+        "addedCards": 0,
+        "removedCards": 0,
+        "newlyAnalyzable": 6,
+        "lostAnalyzable": 2,
+        "filledCards": 101,
+        "filledItems": 110,
+        "sources": {
+          "cardrush": {
+            "newLinked": 1,
+            "validAdded": 1,
+            "validLost": 1,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          },
+          "hareruya2": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 30
+          },
+          "yuyutei": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          },
+          "torecacamp": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          },
+          "psaOfficial": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          },
+          "pokedata": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          }
+        }
+      },
+      "publicationStatus": "保存済み・公開照合待ち"
     }
   ]
 }
