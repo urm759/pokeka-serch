@@ -17,45 +17,44 @@
           "detectedAt": "2026-09-28T22:23:11.192Z"
         }
       },
-      "checkedAt": "2026-10-08T21:46:36.368Z",
+      "checkedAt": "2026-10-09T21:26:24.779Z",
       "batches": 0,
-      "durationMs": 4,
+      "durationMs": 3,
       "allocatedMs": 360000
     },
     "priceEvidence": {
       "status": "stalled",
       "reason": "2回連続でチェックポイント進捗なし",
       "position": {
-        "remaining": 52,
-        "inspected": 1088,
-        "unavailable": 58,
+        "remaining": 67,
+        "inspected": 1087,
+        "unavailable": 59,
         "resumeCardId": null,
         "stopReason": null
       },
-      "checkedAt": "2026-10-08T21:46:54.435Z",
+      "checkedAt": "2026-10-09T21:26:45.077Z",
       "batches": 2,
       "failures": 0,
       "retry": null,
-      "durationMs": 18067,
-      "allocatedMs": 719996
+      "durationMs": 20297,
+      "allocatedMs": 719997
     },
     "psaLinkage": {
       "status": "queue-updated",
       "reason": null,
       "position": {
-        "unlinked": 3390,
+        "unlinked": 3395,
         "note": "候補整理のみ。PSA公式の認証取得とは別工程"
       },
-      "checkedAt": "2026-10-08T21:46:54.821Z",
+      "checkedAt": "2026-10-09T21:26:45.433Z",
       "batches": 1,
       "failures": 0,
       "retry": null,
-      "durationMs": 395,
+      "durationMs": 355,
       "allocatedMs": 60000
     },
     "torecacamp": {
       "status": "completed",
-      "reason": null,
       "position": {
         "sitemap": 47,
         "productIndex": 0,
@@ -67,16 +66,14 @@
         "retryQueue": 0,
         "failedSitemaps": 0
       },
-      "checkedAt": "2026-10-08T21:56:31.204Z",
-      "batches": 20,
-      "failures": 0,
-      "retry": null,
-      "durationMs": 576373,
+      "checkedAt": "2026-10-09T21:26:45.503Z",
+      "batches": 0,
+      "durationMs": 69,
       "allocatedMs": 720000
     }
   },
-  "startedAt": "2026-10-08T21:46:36.363Z",
+  "startedAt": "2026-10-09T21:26:24.774Z",
   "status": "partial-with-stop",
-  "endedAt": "2026-10-08T21:56:31.205Z",
-  "durationMs": 594843
+  "endedAt": "2026-10-09T21:26:45.503Z",
+  "durationMs": 20729
 }
