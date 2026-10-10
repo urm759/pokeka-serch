@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-10T12:41:18.009Z",
+  "generatedAt": "2026-10-10T12:45:27.726Z",
   "sourceLastSuccessAt": "2026-10-10T12:32:15.816Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-10-10T12:41:17.999Z",
-    "lastSuccessAt": "2026-10-10T12:41:17.999Z",
-    "runId": "38052291487",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/38052291487"
+    "lastAttemptAt": "2026-10-10T12:45:27.719Z",
+    "lastSuccessAt": "2026-10-10T12:45:27.719Z",
+    "runId": "38053020879",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/38053020879"
   },
   "issues": [
     {
@@ -73,20 +73,8 @@
     {
       "key": "priority-prices:cadence-stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38029488008",
-      "reason": "重要価格更新：設定2時間に対し実績成功間隔（直近最大）12.71時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
-    },
-    {
-      "key": "priority-prices:source-failure",
-      "category": "取得処理の故障",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38029488008",
-      "reason": "購入価格高速更新：取得元工程が失敗。保存済み正常データを保持し、必須検証後に公開する。計算失敗やpush失敗と混同しない"
-    },
-    {
-      "key": "monitor:workflow-failure",
-      "category": "取得処理の故障",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38029937897",
-      "reason": "監視確認または監視公開が未完了。補完失敗と監視自身の停止を分離して復旧"
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38052933652",
+      "reason": "重要価格更新：設定2時間に対し実績成功間隔（直近最大）13.97時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
     }
   ],
   "reasons": [
@@ -100,9 +88,7 @@
     "PSA Japan料金: PSA Japan refresh failed; previous verified values retained: PSA Japan HTTP 403",
     "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）",
     "PC側PSA: 独立監視未登録 / Windowsのタスク登録権限が不足。通常PSAのfinally観測は稼働するが、起動前失敗を捕捉する独立タスクは未登録",
-    "重要価格更新：設定2時間に対し実績成功間隔（直近最大）12.71時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能",
-    "購入価格高速更新：取得元工程が失敗。保存済み正常データを保持し、必須検証後に公開する。計算失敗やpush失敗と混同しない",
-    "監視確認または監視公開が未完了。補完失敗と監視自身の停止を分離して復旧"
+    "重要価格更新：設定2時間に対し実績成功間隔（直近最大）13.97時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
   ],
   "detailUrl": "./data/update-health.json"
 }
