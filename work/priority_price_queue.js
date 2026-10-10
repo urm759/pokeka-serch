@@ -108,11 +108,14 @@ function write(root = ROOT) {
     const fixedIds = new Set(fixedHistory.sources?.[id]?.cohort || []);
     sources[id].fixedCards = planned.records.filter(r => fixedIds.has(r.card.id)).map(r => ({id:r.card.id,
       lastConfirmedAt:r.lastSuccessAt, status:blocked ? "アクセス確認待ち・正常値保持" : r.status}));
-    sources[id].capacity = require('./refresh_capacity.js').estimate({importantCount:important.length,
+    const capacityRun = require('./refresh_capacity.js').measuredDeadlineRun(read(root, 'work/source-update-history.json').sources?.[id] || [], id, now);
+    sources[id].capacity = { ...require('./refresh_capacity.js').estimate({importantCount:important.length,
       eligibleCount:planned.queue.filter(r=>r.important).length, manualCount:important.filter(r=>r.status==='手動確認待ち').length,
       retryCount:important.filter(r=>r.status==='再試行待ち').length,blocked:Boolean(blocked),
-      verifiedCount:run.refreshedCount,durationMs:run.durationMs,budgetMs:budgetSeconds*1000,
-      intervalMs:proactive.lead(timingConfig(root)).intervalMs});
+      verifiedCount:capacityRun?.refreshedCount,durationMs:capacityRun?.durationMs,budgetMs:budgetSeconds*1000,
+      intervalMs:proactive.lead(timingConfig(root)).intervalMs}),
+      measuredAt: capacityRun?.startedAt || null, samples: capacityRun?.capacitySamples || 0,
+      measurementBasis: capacityRun?.capacityBasis || '期限付き価格巡回の実測なし・補完バッチで代用しない' };
     sources[id].proactiveVerified = run.proactiveVerified ?? null;
     sources[id].proactiveAttempted = run.proactiveAttempted ?? null;
   }

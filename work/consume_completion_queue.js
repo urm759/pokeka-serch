@@ -89,7 +89,7 @@ function run() {
   }
   const oneItem = require('./build_one_item_completion_audit').build(ROOT);
   run.oneItemCompletion = { total:oneItem.total, byField:oneItem.byField, byRoute:oneItem.byRoute };
-  save("data/completion-acquisition.json", { version: 2, ...run, urlDiscovery:read('data/state-a-url-discovery.json'), support, routing, pending: candidates.length, eligiblePending: pending, pendingDefinition: "eligiblePendingは状態A価格が不足し確定URL・再試行条件を満たす対象。PSAだけ不足するカードを店舗取得へ送らない。routing.cardsはカード×項目数で合算不可", cards: state.cards });
+  save("data/completion-acquisition.json", { version: 2, ...run, urlDiscovery:read('data/state-a-url-discovery.json'), support, routing, pending: candidates.length, eligiblePending: pending, pendingDefinition: "eligiblePendingは状態A価格が不足し確定URL・再試行条件を満たす対象。必須項目がPSAのみ不足するカードでも状態Aが別途不足する場合は店舗取得対象となるが、PSA補完や分析可能への移行成果には数えない。routing.cardsはカード×項目数で合算不可", cards: state.cards });
   state.lastRun = run; save("work/completion-acquisition-checkpoint.json", state);
   console.log(JSON.stringify(run));
   if (result && result.status !== 0) process.exitCode = 1;

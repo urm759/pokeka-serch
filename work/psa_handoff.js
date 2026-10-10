@@ -34,7 +34,7 @@ function prepareInputs(root = ROOT) {
     const snapshotDirectory = path.join(directory, commit); fs.mkdirSync(snapshotDirectory, { recursive: true });
     atomicWrite(path.join(snapshotDirectory, "manifest.json"), manifest);
     atomicWrite(path.join(snapshotDirectory, "priority.json"), priority);
-    const runtimeFiles = ['update_psa_official_populations.js','build_psa_history.js','acquisition_retry.js','fair_batch.js'];
+    const runtimeFiles = ['update_psa_official_populations.js','build_psa_history.js','acquisition_retry.js','fair_batch.js','psa_pending_sets.js'];
     const runtimeHashes = {};
     for (const file of runtimeFiles) {
       const source = show(`${commit}:work/${file}`);
@@ -112,8 +112,9 @@ function publish(root = ROOT, options = {}) {
           git(["worktree", "add", "--detach", checkout, base]);
           applyPacket(checkout, packet);
           if (options.beforeBuild) options.beforeBuild(checkout, attempt);
-          for (const script of options.scripts || ["build_psa_history.js", "build_card_completion.js", "audit_completion_outcomes.js", "build_psa_linkage_queue.js", "build_purchase_limit_audit.js", "audit_acquisition_progress.js", "audit_link_coverage.js", "finalize_update_status.js", "measure_performance_guard.js", "build_ui_data.js", "test_ui_data.js", "test_specification_reexploration.js", "test_performance_guard.js", "test_completion_routes.js", "test_purchase_limit_audit.js", "test_preset_exploration.js"]) {
-            const run = spawnSync(process.execPath, [path.join(checkout, "work", script)], { cwd: checkout, encoding: "utf8", timeout: 60000, maxBuffer: 16 * 1024 * 1024 });
+          for (const script of options.scripts || ["build_psa_history.js", "test_saved_psa_summary.js", "build_card_completion.js", "audit_completion_outcomes.js", "build_psa_linkage_queue.js", "build_psa_priority_queue.js", "build_purchase_limit_audit.js", "audit_acquisition_progress.js", "audit_link_coverage.js", "finalize_update_status.js", "measure_performance_guard.js", "build_ui_data.js", "test_ui_data.js", "test_specification_reexploration.js", "test_performance_guard.js", "test_completion_routes.js", "test_purchase_limit_audit.js", "test_preset_exploration.js", "test_psa_completion_publication.js"]) {
+            const run = spawnSync(process.execPath, [path.join(checkout, "work", script)], { cwd: checkout,
+              env: publicationEnvironment(checkout), encoding: "utf8", timeout: 60000, maxBuffer: 16 * 1024 * 1024 });
             if (run.status !== 0) throw new Error(`Saved-data verification failed (${script}): ${run.stderr || run.stdout}`);
           }
           git(["add", "data", "work"], checkout);
@@ -144,4 +145,10 @@ if (require.main === module) {
   try { console.log(JSON.stringify(process.argv.includes("--inputs") ? prepareInputs() : process.argv.includes("--enqueue") ? { packet: enqueue() } : publish())); }
   catch (error) { console.error(error.message); process.exitCode = 1; }
 }
-module.exports = { enqueue, applyPacket, mergeCheckpoint, publish, prepareInputs, publicationRetryable };
+function publicationEnvironment(checkout, inherited = process.env) {
+  // Acquisition may target the PC inbox. Publication must never rebuild that inbox instead of its own checkout.
+  return { ...inherited, PSA_ACQUISITION_ROOT: checkout,
+    PSA_MANIFEST_PATH: path.join(checkout, 'work/psa_set_urls.json'),
+    PSA_PRIORITY_QUEUE_PATH: path.join(checkout, 'work/psa_priority_queue.json') };
+}
+module.exports = { enqueue, applyPacket, mergeCheckpoint, publish, prepareInputs, publicationRetryable, publicationEnvironment };

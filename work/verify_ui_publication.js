@@ -10,7 +10,7 @@ async function read(file) {
 }
 async function main() {
   const html = await read('index.html?verify=' + Date.now());
-  assert(html.includes('20261010-profit-basis-v1') && html.includes('20261010-independent-monitor-v2') && html.includes('keyed-card-renderer.js') && html.includes('ui-data-codec.js') && html.includes('purchaseBelowCurrentCapInput'));
+  assert(html.includes('20261011-completion-v1') && html.includes('20261010-independent-monitor-v2') && html.includes('keyed-card-renderer.js') && html.includes('ui-data-codec.js') && html.includes('purchaseBelowCurrentCapInput'));
   const manifest = JSON.parse(await read('data/ui/manifest.json?verify=' + Date.now()));
   const expected = JSON.parse(fs.readFileSync(path.join(__dirname,'../data/ui/manifest.json'),'utf8'));
   assert.equal(manifest.revision, expected.revision, 'must verify the newly published revision');

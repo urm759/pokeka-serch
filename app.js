@@ -3814,7 +3814,7 @@ function searchProfitPanel(view) {
   const money = value => Number.isFinite(value) ? `¥${fmt.format(Math.round(value))}` : "算出不可";
   const rate = value => Number.isFinite(value) ? `${value.toFixed(2)}%` : "算出不可";
   const signedMoney = signedExpectedMoney;
-  return `<div class="candidate-profit-comparison search-profit-summary"><strong>検索と同じ買値：${money(view.purchasePrice)}／${escapeHtml(view.exitLabel || "出口未取得")}</strong><div><span>PSA10現在相場での手取り<br><b>${money(view.psa10Net)}</b></span><span>PSA10時の利益／利益率<br><b>${signedMoney(view.psa10Profit).text}／${rate(view.psa10Roi)}</b></span><span>中央予測の期待利益／期待利益率<br><b>${signedMoney(view.economics?.expectedProfit).text}／${rate(view.economics?.expectedRoi)}</b></span></div><small>${escapeHtml(view.label)}。PSA10時利益率＝（PSA10手取り−買値−鑑定費）÷（買値＋鑑定費）。期待利益率は非10の損益も含む別指標。買取減額とフリマ手数料は同じ出口に二重適用しません。</small></div>`;
+  return `<div class="candidate-profit-comparison search-profit-summary"><strong>検索と同じ買値：${money(view.purchasePrice)}／${escapeHtml(view.exitLabel || "出口未取得")}</strong><div><span>PSA10現在相場での手取り<br><b>${money(view.psa10Net)}</b></span><span>PSA10時の利益／利益率<br><b>${signedMoney(view.psa10Profit).text}／${rate(view.psa10Roi)}</b></span><span>中央予測の期待利益／期待利益率<br><b>${signedMoney(view.economics?.expectedProfit).text}／${rate(view.economics?.expectedRoi)}</b></span></div><details class="profit-calculation-note"><summary>計算基準を確認</summary><small>${escapeHtml(view.label)}。PSA10時利益率＝（PSA10手取り−買値−鑑定費）÷（買値＋鑑定費）。期待利益率は非10の損益も含む別指標。買取減額とフリマ手数料は同じ出口に二重適用しません。期待黒字は損失保証ではありません。</small></details></div>`;
 }
 
 const psa10PeriodDetails = new Map();
@@ -3822,14 +3822,15 @@ const psa10PeriodLoading = new Map();
 function psa10PeriodShard(id) { let h = 0; for (const c of String(id)) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h % 16; }
 function psa10PeriodPanel(id) {
   const row = state.psa10PeriodSummary?.cards?.[id];
-  const value = (mean, n, days) => Number.isFinite(mean) ? `¥${fmt.format(mean)}（${n}/${days}観測日${n < days ? '・参考値' : ''}）` : '蓄積中';
-  return `<div class="psa10-period-summary"><span>PSA10日次相場・7日平均 <b>${value(row?.[0],row?.[1],7)}</b></span><span>30日平均 <b>${value(row?.[2],row?.[3],30)}</b></span><small>国内集約相場の観測平均／実成約平均ではない／基準日 ${escapeHtml(state.psa10PeriodSummary?.asOf || '未取得')}／参考表示・上限へ未反映</small></div>`;
+  const latest = Number.isFinite(row?.[4]) ? new Date(Date.parse(state.psa10PeriodSummary.asOf + 'T00:00:00Z') - row[4]*86400000).toISOString().slice(0,10) : '未取得';
+  const value = (mean, n, days) => Number.isFinite(mean) ? `¥${fmt.format(mean)}（${n}/${days}日${n < (state.psa10PeriodSummary?.minimumObservationDays?.[days] ?? days) ? '・観測不足' : ''}${row?.[4] > 2 ? '・古い観測' : ''}）` : '蓄積中';
+  return `<div class="psa10-period-summary"><span>PSA10・7日観測平均 <b>${value(row?.[0],row?.[1],7)}</b></span><span>30日観測平均 <b>${value(row?.[2],row?.[3],30)}</b></span><small>国内日次・参考（実成約平均とは別）／最終観測 ${escapeHtml(latest)}／上限へ未反映</small></div>`;
 }
 function psa10PeriodDetailHtml(id) {
   const row = psa10PeriodDetails.get(id);
   if (!row) return '<p class="helper">国内PSA10期間集計の詳細を必要時に読み込みます。</p>';
   const money = n => Number.isFinite(n) ? `¥${fmt.format(n)}` : '未取得';
-  const snapshots = [7,30,90].map(days => { const s = row.snapshots[days]; return `<tr><th>${days}日</th><td>${money(s.mean)}</td><td>${money(s.median)}</td><td>${s.count}/${days}観測日</td><td>${escapeHtml(s.latestDate || '未取得')}</td><td>${s.count < days ? '参考値・履歴不足' : '日次観測値（参考）'}</td></tr>`; }).join('');
+  const snapshots = [7,30,90].map(days => { const s = row.snapshots[days]; return `<tr><th>${days}日</th><td>${money(s.mean)}</td><td>${money(s.median)}</td><td>${s.observedDays}/${days}日（必要${s.requiredObservedDays ?? days}日）</td><td>${escapeHtml(s.latestDate || '未取得')}</td><td>${escapeHtml(s.status || '参考値・観測充足未確認')}</td></tr>`; }).join('');
   const trades = row.actualTrades ? [7,30,90].map(days => { const s = row.actualTrades[days]; return `<p>${days}日実成約：平均 ${money(s.mean)}／中央値 ${money(s.median)}／${s.count}件／${s.sufficient ? '件数条件達成・参考表示' : '参考値・件数不足'}</p>`; }).join('') : '<p>国内PSA10個別実成約の平均・中央値・件数：未取得（0件や日次観測数に代用しません）</p>';
   return `<section class="psa10-period-detail"><h4>PSA10直近平均・中央値（国内・参考）</h4><div class="table-scroll"><table><thead><tr><th>期間</th><th>日次相場平均</th><th>中央値</th><th>観測日数</th><th>最終観測日</th><th>状態</th></tr></thead><tbody>${snapshots}</tbody></table></div>${trades}<small>同日1記録。欠損日は補完せず、海外・出品・買取を混ぜません。対象期間の終日は ${escapeHtml(state.psa10PeriodSummary?.asOf || '未取得')}。集約相場の最終観測日は個別成約日ではありません。</small></section>`;
 }
@@ -5736,6 +5737,13 @@ async function init() {
     }
     state.updateStatus = await fetchJsonMaybe("./data/update-status.json");
     state.psa10PeriodSummary = await fetchJsonMaybe("./data/psa10-period-summary.json");
+    const averageCoverage = document.getElementById('psa10AverageCoverage');
+    if (averageCoverage) {
+      const coverage = state.psa10PeriodSummary?.coverage;
+      averageCoverage.textContent = coverage ? `国内PSA10日次相場：履歴保有 ${fmt.format(coverage.historyCards ?? coverage.snapshotCards)}枚。`
+        + [7,30].map(days => `${days}日平均算出 ${fmt.format(coverage.byPeriod?.[days]?.meanCards || 0)}枚／観測${state.psa10PeriodSummary.minimumObservationDays?.[days] ?? days}日以上 ${fmt.format(coverage.byPeriod?.[days]?.observationSufficientCards || 0)}枚`).join('。')
+        + `。国内個別実成約 ${fmt.format(coverage.actualTradeCards)}枚とは別集計。欠測補完なし・すべて参考表示。` : '国内PSA10日次履歴：未取得';
+    }
     state.linkCoverage = await fetchJsonMaybe("./data/link-coverage.json");
     state.psaServices = await fetchJsonMaybe("./data/psa-japan-services.json");
     state.psaServicesReadAttempted = true;

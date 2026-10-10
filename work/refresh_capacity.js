@@ -12,4 +12,13 @@ function estimate({importantCount, eligibleCount, manualCount=0, retryCount=0, b
     reason:blocked?'アクセス停止・処理枠0':intervalMs>=freshnessMs?'実績成功間隔が6時間以上・取得速度だけでは期限維持不可':manualCount||retryCount?'手動待ち・再試行待ちがあり全対象の期限維持不可':measuredRate==null?'実測不足':deficitPerRun>0?'6時間目標に対し処理能力不足':queueOverflow>0?'平均能力は足りるが今回の対象が処理枠超過':'平均能力上は維持可能・実行間の実績確認が必要',
     basis:'実測成功件数/処理時間からの能力推計。Actions遅延・失敗変動を保証せず、固定群を減らして改善しない'};
 }
-module.exports={estimate};
+function measuredDeadlineRun(history, sourceId, now = Date.now()) {
+  const samples = (history || []).filter(r => r.sourceId === sourceId && r.mode === 'deadline-price-refresh'
+    && r.refreshedCount > 0 && r.durationMs > 0 && Date.parse(r.startedAt) <= now
+    && now - Date.parse(r.startedAt) <= 7 * 86400000).slice(-7);
+  if (!samples.length) return null;
+  const sorted = samples.slice().sort((a,b) => a.refreshedCount/a.durationMs - b.refreshedCount/b.durationMs);
+  return { ...sorted[Math.floor((sorted.length - 1)/2)], capacitySamples: samples.length,
+    capacityBasis: '直近7日・最大7回の期限付き価格巡回の実測速度中央値。新規補完バッチとは別集計' };
+}
+module.exports={estimate,measuredDeadlineRun};

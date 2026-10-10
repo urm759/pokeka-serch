@@ -373,8 +373,13 @@ async function main() {
   audit.completedUrls = [...priorCompleted];
   audit.unregisteredSetCount = orderedManifest.filter((entry) => !entry.url).length;
   const focusSetUrls = new Set(priorityQueue.focusSetUrls || []);
-  const pendingManifest = orderedManifest.filter((entry) => entry.url && (!priorCompleted.has(entry.url) || focusSetUrls.has(entry.url) || specificationReviewUrls.has(entry.url)) && retryPolicy.eligible(audit.retryByUrl[entry.url]));
-  audit.specificationRecheckSets = pendingManifest.filter(entry=>specificationReviewUrls.has(entry.url)).length;
+  const setPlan = require('./psa_pending_sets.js').planSets({ manifest: orderedManifest, completed: [...priorCompleted],
+    rows: savedPopulation.rows || [], priority: priorityQueue, reviews: heldReview.rows || [], retries: audit.retryByUrl });
+  const pendingManifest = setPlan.pending;
+  audit.specificationRecheckSets = setPlan.specificationRecheckSets;
+  audit.missingRecheckSets = setPlan.missingRecheckSets;
+  audit.freshMissingSets = setPlan.freshMissingSets;
+  audit.selectionReasons = setPlan.reasons;
   const manifest = require("./fair_batch.js").fairBatch(pendingManifest, Math.max(1, Number(process.env.PSA_SET_BATCH || 8)), (entry) => focusSetUrls.has(entry.url), priorityQueue.maxFocusedShare ?? 0.4);
   audit.focusedSelected = manifest.filter((entry) => focusSetUrls.has(entry.url)).length;
   audit.normalSelected = manifest.length - audit.focusedSelected;

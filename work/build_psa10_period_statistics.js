@@ -3,6 +3,7 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 const ROOT = path.join(__dirname, '..');
 const DAY = 86400000;
+const minimumObservationDays = { 7: 5, 30: 15, 90: 45 };
 const dayTime = value => /^\d{4}-\d{2}-\d{2}$/.test(String(value)) ? Date.parse(value + 'T00:00:00Z') : NaN;
 const positive = value => typeof value === 'number' && Number.isFinite(value) && value > 0;
 const median = values => { const a = values.slice().sort((x, y) => x - y); return a.length ? (a[Math.floor(a.length / 2)] + a[Math.floor((a.length - 1) / 2)]) / 2 : null; };
@@ -16,6 +17,13 @@ function statistics(rows, asOf, days, dateKey, priceKey) {
     start: new Date(start).toISOString().slice(0, 10), end: asOf,
     latestDate: accepted.map(r => r[dateKey]).sort().at(-1) || null,
     min: prices.length ? Math.min(...prices) : null, max: prices.length ? Math.max(...prices) : null };
+}
+function observationStatus(stat, days, asOf) {
+  const ageDays = stat.latestDate ? Math.round((dayTime(asOf) - dayTime(stat.latestDate)) / DAY) : null;
+  return { requiredObservedDays: minimumObservationDays[days], ageDays,
+    observationSufficient: stat.observedDays >= minimumObservationDays[days],
+    status: !stat.count ? '蓄積中' : ageDays > 2 ? '参考値・最終観測が古い'
+      : stat.observedDays < minimumObservationDays[days] ? '参考値・観測不足' : '観測条件充足・参考値' };
 }
 function dailyRows(rows) {
   const dates = new Map();
@@ -44,26 +52,40 @@ function build(root = ROOT) {
   const cards = read('data/pokemon-cards.json');
   const meta = read('data/pokemon-cards-meta.json');
   const asOf = String(meta.updatedAt || meta.generatedAt || history.dates.at(-1)).slice(0, 10);
-  const summary = { version: 1, asOf, periods: [7, 30, 90], minimumActualTrades: 3, shards: 16,
+  const summary = { version: 2, asOf, periods: [7, 30, 90], minimumActualTrades: 3, minimumObservationDays, staleObservationDays: 2, shards: 16,
     snapshotSource: '国内・みんトレPSA10集約相場の日次観測（実成約平均ではない）',
     rule: '同日1記録・欠損補完なし・参考表示のみ・仕入れ上限とGOへ未反映', cards: {} };
   const chunks = Array.from({ length: 16 }, () => ({ version: 1, asOf, cards: {} }));
-  let actualCards = 0;
+  let actualCards = 0, historyCards = 0;
+  const byPeriod = Object.fromEntries([7,30,90].map(days => [days,{meanCards:0, observationSufficientCards:0, recentSufficientCards:0, staleCards:0}]));
   for (const card of cards) {
     const daily = dailyRows(history.cards[card.id]);
     const actual = actualRows(card);
-    const snapshots = Object.fromEntries([7, 30, 90].map(days => [days, statistics(daily, asOf, days, 0, 2)]));
+    const snapshots = Object.fromEntries([7, 30, 90].map(days => {
+      const stat = statistics(daily, asOf, days, 0, 2);
+      return [days, {...stat,...observationStatus(stat,days,asOf)}];
+    }));
     const trades = Object.fromEntries([7, 30, 90].map(days => [days, { ...statistics(actual.rows, asOf, days, 'date', 'price'),
       sufficient: statistics(actual.rows, asOf, days, 'date', 'price').count >= 3 }]));
     if (!daily.length && !actual.rows.length) continue;
-    summary.cards[card.id] = [snapshots[7].mean, snapshots[7].count, snapshots[30].mean, snapshots[30].count];
+    summary.cards[card.id] = [snapshots[7].mean, snapshots[7].count, snapshots[30].mean, snapshots[30].count,
+      snapshots[30].ageDays];
+    if (daily.length) historyCards++;
+    for (const days of [7,30,90]) {
+      const stat = snapshots[days], coverage = byPeriod[days];
+      coverage.meanCards += Number(stat.count > 0);
+      coverage.observationSufficientCards += Number(stat.observationSufficient);
+      coverage.recentSufficientCards += Number(stat.observationSufficient && stat.ageDays <= 2);
+      coverage.staleCards += Number(stat.count > 0 && stat.ageDays > 2);
+    }
     chunks[shard(card.id)].cards[card.id] = { snapshots, actualTrades: actual.rows.length ? trades : null,
       actualTradeStatus: actual.rows.length ? '国内PSA10実成約・期間件数を確認' : '国内PSA10個別実成約未取得',
       actualSources: [...new Set(actual.rows.map(r => r.source))], rejected: actual.rejected,
       duplicateDatesRemoved: (history.cards[card.id]?.length || 0) - daily.length };
     if (actual.rows.length) actualCards++;
   }
-  summary.coverage = { catalog: cards.length, snapshotCards: Object.keys(summary.cards).length, actualTradeCards: actualCards };
+  summary.coverage = { catalog: cards.length, snapshotCards: historyCards, historyCards, summaryCards: Object.keys(summary.cards).length,
+    actualTradeCards: actualCards, byPeriod };
   const written = [];
   const write = (file, data) => { const target = path.join(root, file), text = JSON.stringify(data);
     if (fs.existsSync(target) && fs.readFileSync(target, 'utf8') === text) return;
@@ -76,4 +98,4 @@ function build(root = ROOT) {
   return { ...summary.coverage, asOf, changedFiles: written.length, inputHash };
 }
 if (require.main === module) console.log(JSON.stringify(build()));
-module.exports = { build, statistics, dailyRows, actualRows, shard };
+module.exports = { build, statistics, dailyRows, actualRows, shard, observationStatus };

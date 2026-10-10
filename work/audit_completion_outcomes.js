@@ -87,7 +87,7 @@ function build(root, now = Date.now()) {
   };
   const before = baseline || current;
   const result = { version: 1, generatedAt: current.at, counts: { listed: Object.keys(current.rows).length, analyzable: completion.summary?.analyzable, pending: completion.summary?.priorityQueueRemaining, oneAway: completion.summary?.completableAfterNext }, sources: aggregate, oneAway, routes: Object.values(routed), sinceBaseline: compare(before, current), previousObservation: compare(last, current), sevenDays: window(7), thirtyDays: window(30),
-    definitions: "紐付けはカタログ掲載IDへの対応、有効保存値は価格/POP検査済み、鮮度は48時間以内で分離（仕入れ基準の期限とは別）。PokeDATAはID対応と成約精査済み詳細を区別し、PSA10採用3件以上の参考中央値だけ有効値に数える。PSAのみ不足は店舗へ送らない。海外PSA9/Raw成約は国内PSA9/状態A成約と別。7/30日は同一ID群と項目の過去観測のみ比較・履歴不足は蓄積中。候補生成・再確認は新規補完に数えない。", domesticPsa9IndividualCards: 0,
+    definitions: "紐付けはカタログ掲載IDへの対応、有効保存値は価格/POP検査済み、鮮度は48時間以内で分離（仕入れ基準の期限とは別）。PokeDATAはID対応と成約精査済み詳細を区別し、PSA10採用3件以上の参考中央値だけ有効値に数える。状態A不足の店舗取得はPSA補完とは別成果。海外PSA9/Raw成約は国内PSA9/状態A成約と別。7/30日は同一ID群と項目の過去観測のみ比較・履歴不足は蓄積中。候補生成・再確認は新規補完に数えない。", domesticPsa9IndividualCards: 0,
     overseasAcquisition: read(root, "data/pokedata/manifest.json").acquisition || null };
   fs.writeFileSync(path.join(root, "data/completion-outcomes.json"), JSON.stringify(result));
   if (!baseline) fs.writeFileSync(path.join(root, "work/completion-outcomes-baseline.json"), JSON.stringify(pack(current)));

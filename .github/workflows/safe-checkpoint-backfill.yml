@@ -64,6 +64,9 @@ jobs:
           node work/test_keyed_render_and_completion.js
           node work/test_acquisition_resilience.js
           node work/test_psa_resilience.js
+          node work/test_psa_completion_publication.js
+          node work/test_deadline_capacity_samples.js
+          node work/test_psa10_period_statistics.js
           node work/test_safe_backfill.js
           node work/test_purchase_limit_audit.js
           node work/test_preset_exploration.js
