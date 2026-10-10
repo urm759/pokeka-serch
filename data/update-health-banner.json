@@ -1,25 +1,25 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-10T22:58:51.156Z",
+  "generatedAt": "2026-10-10T22:59:59.363Z",
   "sourceLastSuccessAt": "2026-10-10T22:46:49.381Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-10-10T20:42:44.717Z",
-    "lastSuccessAt": "2026-10-10T20:42:44.717Z",
-    "runId": "38084692771",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/38084692771"
+    "lastAttemptAt": "2026-10-10T22:59:59.352Z",
+    "lastSuccessAt": "2026-10-10T22:59:59.352Z",
+    "runId": "38093015353",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/38093015353"
   },
   "issues": [
     {
       "key": "daily:workflow-failure",
       "category": "取得処理の故障",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38058901934",
-      "reason": "Daily Fast Updateが2回連続失敗"
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38092666418",
+      "reason": "Daily Fast Updateが3回連続失敗"
     },
     {
       "key": "daily:run-stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38058901934",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38092666418",
       "reason": "日次更新の成功が24時間以上なし"
     },
     {
@@ -61,13 +61,19 @@
     {
       "key": "source:psaJapan:manual-wait",
       "category": "アクセス・手動対応待ち",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38058901934",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38092666418",
       "reason": "PSA Japan料金: PSA Japan refresh failed; previous verified values retained: PSA Japan HTTP 403"
+    },
+    {
+      "key": "source:psaJapan:stale",
+      "category": "鮮度未達・進捗停滞",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38092666418",
+      "reason": "PSA Japan料金: 更新期限超過（カード別鮮度 未記録%）"
     },
     {
       "key": "source:snkrRaw:stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38058901934",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38092666418",
       "reason": "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）"
     },
     {
@@ -84,7 +90,7 @@
     }
   ],
   "reasons": [
-    "Daily Fast Updateが2回連続失敗",
+    "Daily Fast Updateが3回連続失敗",
     "日次更新の成功が24時間以上なし",
     "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち",
     "状態A価格確認: 2回連続でチェックポイント進捗なし",
@@ -93,6 +99,7 @@
     "遊々亭: HTTP 403",
     "遊々亭: 更新期限超過（カード別鮮度 0%）",
     "PSA Japan料金: PSA Japan refresh failed; previous verified values retained: PSA Japan HTTP 403",
+    "PSA Japan料金: 更新期限超過（カード別鮮度 未記録%）",
     "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）",
     "PC側PSA: 独立監視未登録 / Windowsのタスク登録権限が不足。通常PSAのfinally観測は稼働するが、起動前失敗を捕捉する独立タスクは未登録",
     "重要価格更新：設定2時間に対し実績成功間隔（直近最大）13.97時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
