@@ -1,20 +1,20 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-10T14:23:54.796Z",
-  "sourceLastSuccessAt": "2026-10-10T12:32:15.816Z",
+  "generatedAt": "2026-10-10T14:36:10.257Z",
+  "sourceLastSuccessAt": "2026-10-10T14:16:03.735Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-10-10T12:45:27.719Z",
-    "lastSuccessAt": "2026-10-10T12:45:27.719Z",
-    "runId": "38053020879",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/38053020879"
+    "lastAttemptAt": "2026-10-10T14:22:54.561Z",
+    "lastSuccessAt": "2026-10-10T14:22:54.561Z",
+    "runId": "38059294204",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/38059294204"
   },
   "issues": [
     {
       "key": "daily:workflow-failure",
       "category": "取得処理の故障",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38004158170",
-      "reason": "Daily Fast Updateが1回連続失敗"
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38058901934",
+      "reason": "Daily Fast Updateが2回連続失敗"
     },
     {
       "key": "safe:yuyutei:manual-action-required:GitHub ActionsからHTTP #。正規アクセス確認待ち",
@@ -55,13 +55,13 @@
     {
       "key": "source:psaJapan:manual-wait",
       "category": "アクセス・手動対応待ち",
-      "url": null,
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38058901934",
       "reason": "PSA Japan料金: PSA Japan refresh failed; previous verified values retained: PSA Japan HTTP 403"
     },
     {
       "key": "source:snkrRaw:stale",
       "category": "鮮度未達・進捗停滞",
-      "url": null,
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38058901934",
       "reason": "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）"
     },
     {
@@ -78,7 +78,7 @@
     }
   ],
   "reasons": [
-    "Daily Fast Updateが1回連続失敗",
+    "Daily Fast Updateが2回連続失敗",
     "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち",
     "状態A価格確認: 2回連続でチェックポイント進捗なし",
     "カードラッシュ: pk-73737: HTTP 403",

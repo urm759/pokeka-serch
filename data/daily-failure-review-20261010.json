@@ -13,5 +13,18 @@
   "recoveryJsonCount": 629,
   "currentCodeStatus": "7efb1da4の取得元分離・必須検証・失敗記録を維持。失敗を非表示にしない。",
   "postFixScheduledSuccess": null,
-  "postFixScheduledStatus": "今回確認時点で修正後のDaily定期実行なし。手動確認を定期成功に代用しない。通常スクリプトで次回記録。AI予定タスクは停止。"
+  "postFixScheduledStatus": "修正後の定期実行38058901934を確認。PSA料金HTTP403は失敗を保持し、独立取得・必須検証・保存・Pages公開は成功。全取得元成功ではない。",
+  "postFixRunId": 38058901934,
+  "postFixRunUrl": "https://github.com/urm759/pokeka-serch/actions/runs/38058901934",
+  "postFixConclusion": "failure",
+  "postFixFailedStep": "Report independent acquisition failures without hiding them",
+  "postFixReason": "PSA Japan plans HTTP 403; previous normal fees preserved",
+  "independentAcquisition": true,
+  "requiredRegressionTests": "success",
+  "saveAndPush": "success",
+  "pagesRunId": 38059281048,
+  "pagesEvidence": "scheduled-cycle-verification.json: receipt matched, acquisition/validation/savePublish true, eight published hashes matched; confirmed true, partial true",
+  "scheduledDelta": { "filledCards": 2, "filledItems": 2, "newlyAnalyzable": 0, "hareruyaFreshnessRecovered": 17 },
+  "manualDeltaSeparate": { "attempted": 18, "refreshed": 18, "changed": 6, "newLinked": 0, "newValidPrices": 0, "durationMs": 46215, "httpRequests": 32 },
+  "overlapWarning": "定期17件と手動18件は重複し得るため、合算して純増とは表示しない。通常取得LLM/Codex呼び出し0。AI予定タスクは停止維持。"
 }
