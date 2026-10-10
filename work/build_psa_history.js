@@ -100,6 +100,15 @@ function suspicious(value) { return /missing texture|error|no rarity|misprint|st
 function variantsCompatible(cardName,englishName,row) {
   return candidateVariant(row)===variantOf(`${englishName || ''} ${cardName || ''}`);
 }
+function namesCompatible(englishName, row) {
+  const qualifiers = new Set(['c','u','r','p','pr','rr','rrr','sr','sar','hr','ur','ssr','csr','chr','ar','mur','bwr','ma','sa','s','k',
+    'full','art','secret','special','ultra','rare','double','holo','foil','reverse','master','poke','ball',
+    'mirror','normal','style','version','specification','trainer','promo','1st','edition','first','unlimited','hyper','illustration']);
+  const identity = value => [...tokens(String(value || '').split('|')[0]
+    .replace(/&#x27;|&#39;|&apos;|[’‘]/gi,"'").replace(/'s\b/gi,''))].filter(token=>!qualifiers.has(token)).sort().join('|');
+  const wanted = identity(englishName), actual = identity(row?.name);
+  return Boolean(wanted && actual && wanted === actual);
+}
 function shardFor(id) { let hash = 2166136261; for (const ch of String(id)) { hash ^= ch.charCodeAt(0); hash = Math.imul(hash, 16777619); } return (hash >>> 0) % SHARDS; }
 function daysBetween(a, b) { return Math.max(1, Math.round((Date.UTC(+b.slice(0,4),+b.slice(4,6)-1,+b.slice(6,8))-Date.UTC(+a.slice(0,4),+a.slice(4,6)-1,+a.slice(6,8)))/86400000)); }
 function windowChange(history, days, today) {
@@ -227,9 +236,9 @@ function main() {
     }
     // A unique number or a similar name cannot establish a mirror/edition identity.
     const expectedVariant=variantOf(`${englishName} ${card.name || ''}`);
-    if (!variantsCompatible(card.name,englishName,selected) || /pokemon-asia/i.test(selected.url)) {
+    if (!namesCompatible(englishName,selected) || !variantsCompatible(card.name,englishName,selected) || /pokemon-asia/i.test(selected.url)) {
       variantReview.push({id:card.id,name:card.name,expectedVariant,candidateVariant:candidateVariant(selected),
-        sourceName:selected.name,sourceUrl:selected.url,observedAt:selected.fetchedAt,reason:/pokemon-asia/i.test(selected.url)?'日本語版の根拠不足・POP採用保留':'仕様不一致・POP採用保留'});
+        sourceName:selected.name,sourceUrl:selected.url,observedAt:selected.fetchedAt,reason:/pokemon-asia/i.test(selected.url)?'日本語版の根拠不足・POP採用保留':!namesCompatible(englishName,selected)?'名称不一致または英語名未確認・POP採用保留':'仕様不一致・POP採用保留'});
       continue;
     }
     const shard = shardFor(card.id), store = shards[shard]; store.cards ||= {};
@@ -254,4 +263,4 @@ function main() {
 }
 
 if (require.main === module) main();
-module.exports = { cardIdentity, compactRows, cleanName, shortSet, normalizeNo, variantsCompatible, authoritativeRows, reconcileHistory };
+module.exports = { cardIdentity, compactRows, cleanName, shortSet, normalizeNo, variantsCompatible, namesCompatible, authoritativeRows, reconcileHistory };

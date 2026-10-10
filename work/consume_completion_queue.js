@@ -14,7 +14,7 @@ function plan(cards, queue, checkpoint, now = Date.now()) {
     if (old && checkpoint.cards) checkpoint.cards[id] = old;
     return retry.eligible(old, now);
   }).map((id) => ({ card: byId.get(id), detail: queue.cards?.[id] })).filter((row) => row.card && row.detail)
-    .sort((a, b) => Number(b.detail.p || 0) - Number(a.detail.p || 0));
+    .sort((a, b) => Number(b.detail.a || 0) - Number(a.detail.a || 0) || Number(b.detail.p || 0) - Number(a.detail.p || 0));
 }
 function eligibleForHareru(candidates, catalog, now = Date.now()) {
   const byId = new Map(catalog.map((row) => [row.cardId, row]));
@@ -87,6 +87,8 @@ function run() {
     const queued = spawnSync(process.execPath, [path.join(__dirname, script)], { cwd: ROOT, encoding: "utf8", timeout: 15000 });
     if (queued.status !== 0) { run.stopReason = `PSA優先キュー接続失敗: ${script}`; process.exitCode = 1; }
   }
+  const oneItem = require('./build_one_item_completion_audit').build(ROOT);
+  run.oneItemCompletion = { total:oneItem.total, byField:oneItem.byField, byRoute:oneItem.byRoute };
   save("data/completion-acquisition.json", { version: 2, ...run, urlDiscovery:read('data/state-a-url-discovery.json'), support, routing, pending: candidates.length, eligiblePending: pending, pendingDefinition: "eligiblePendingは状態A価格が不足し確定URL・再試行条件を満たす対象。PSAだけ不足するカードを店舗取得へ送らない。routing.cardsはカード×項目数で合算不可", cards: state.cards });
   state.lastRun = run; save("work/completion-acquisition-checkpoint.json", state);
   console.log(JSON.stringify(run));

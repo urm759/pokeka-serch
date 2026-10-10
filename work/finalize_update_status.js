@@ -314,6 +314,7 @@ payload.unifiedMonitor = require("./source_monitor.js").build(ROOT, sources, pre
 payload.acquisitionResilience = require("./acquisition_resilience_audit.js").build(ROOT);
 payload.acquisitionResilience.psaOnly.cards = undefined;
 payload.taskOperations = require("./task_operations.js").build(ROOT, payload.unifiedMonitor.pc);
+require('./build_one_item_completion_audit.js').build(ROOT);
 payload.focusMonitor = require("./focus_monitor.js").write(ROOT);
   payload.priorityPriceMonitor = require("./priority_price_queue.js").write(ROOT);
   payload.purchasePriceRecovery = read('data/purchase-price-recovery.json');

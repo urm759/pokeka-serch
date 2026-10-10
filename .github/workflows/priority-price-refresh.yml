@@ -37,6 +37,7 @@ jobs:
           node work/test_scheduled_cycle_evidence.js
           node --check app.js
           node work/test_priority_refresh.js
+          node work/test_keyed_render_and_completion.js
           node work/test_proactive_refresh.js
           node work/test_deadline_order.js
           node work/test_roi_psa9_ratio.js

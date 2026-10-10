@@ -4482,7 +4482,9 @@ function currentMarketProfitPanel(view) {
   return `<div class="current-market-profit"><div><span>現相場の期待利益・利益率</span><strong class="${profit.className}">${profit.text}／${Number.isFinite(view.economics?.expectedRoi) ? `${view.economics.expectedRoi.toFixed(1)}%` : "算出不可"}</strong><small>${escapeHtml(view.purchaseSource || "購入価格未取得")} × 現在相場／出口 ${escapeHtml(view.exitLabel || "未取得")}。分母は買値＋鑑定費。損益分岐上限を買値に代用しません。</small></div><div><span>PSA9時損益（${escapeHtml(view.psa9Type || "未取得")}）</span><strong class="${lower.className}">${lower.text}</strong><small>採用PSA9売価 ${Number.isFinite(view.lowerGradePrice) ? money(view.lowerGradePrice) : "未取得"}／確認 ${escapeHtml(view.psa9UpdatedAt || "未取得・推定には実成約日なし")}。フリマ出口・販売手数料、鑑定費、諸費用控除後。PSA8以下・失敗は未評価。</small></div></div>`;
 }
 
+let commitCardRows;
 function render() {
+  commitCardRows ||= window.KeyedCardRenderer.create();
   const renderStarted = performance.now();
   const normalizedQuery = normalize(state.q);
   const compactQuery = compactSearch(state.q);
@@ -4571,6 +4573,7 @@ function render() {
     els.catalogCompletionDetails.innerHTML = `<div class="catalog-summary-grid"><span><b>みんトレ取得総数</b><strong>${fmt.format(summary.sourceTotal)}</strong></span><span><b>サイト掲載総数</b><strong>${fmt.format(summary.siteTotal)}</strong></span><span><b>未掲載</b><strong>${fmt.format(summary.unlisted)}</strong></span><span><b>今回追加 / サイト新着</b><strong>${fmt.format(summary.addedThisRun)} / ${fmt.format(summary.siteNewCards ?? summary.newCards)}</strong><small>新着保持 ${fmt.format(summary.siteNewRetentionDays || 30)}日</small></span><span><b>最近発売 / 再掲載</b><strong>${fmt.format(summary.recentReleaseCards || 0)} / ${fmt.format(summary.relistedCards || 0)}</strong><small>最近発売は発売日から${fmt.format(summary.recentReleaseDays || 365)}日</small></span><span><b>発売日 / 年のみ / 不明</b><strong>${fmt.format(summary.releaseDateKnown || 0)} / ${fmt.format(summary.releaseYearOnly || 0)} / ${fmt.format(summary.releaseUnknown || 0)}</strong><small>日付充足 ${Number(summary.releaseDateCompletenessPct || 0).toFixed(1)}%・年含む ${Number(summary.releaseKnownCompletenessPct || 0).toFixed(1)}%</small></span><span><b>完全識別 / 要確認</b><strong>${fmt.format(summary.completeIdentityMatches)} / ${fmt.format(summary.reviewRequired)}</strong></span><span><b>分析可能</b><strong>${fmt.format(summary.analyzable)}</strong><small>完全 ${fmt.format(summary.analyzableComplete || 0)} / 一部参考データ不足 ${fmt.format(summary.analyzablePartial || 0)}</small></span><span><b>データ補完中</b><strong>${fmt.format(summary.completionInProgress)}</strong><small>分析可能カードの参考項目不足も含むため、優先キューより多くなります</small></span><span><b>補完優先キュー</b><strong>${fmt.format(summary.priorityQueueRemaining)}</strong><small>次の1項目で分析可能見込み ${fmt.format(summary.completableAfterNext || 0)}枚</small></span><span><b>PSA9データ区分</b><strong>実成約 ${fmt.format(p9.actual || 0)}</strong><small>集計値 ${fmt.format(p9.aggregate || 0)} / 推定 ${fmt.format(p9.estimate || 0)} / 未取得 ${fmt.format(p9.missing || 0)}</small></span><span><b>PokeDATA対象区分</b><strong>紐付済 ${fmt.format(pokedata.linked || 0)}</strong><small>対応セット未一致 ${fmt.format(pokedata.compatibleUnmatched || 0)} / 未展開 ${fmt.format(pokedata.unexpandedSet || 0)} / 非対応・存在未確認 ${fmt.format(pokedata.unsupportedOrUnconfirmed || 0)}</small></span></div><div class="catalog-item-rates">${rates}</div>`;
   }
   const rawMode = state.purchaseMode === "snkr-raw";
+  if (auditIsOpen(els.catalogCompletionDetails)) els.catalogCompletionDetails.insertAdjacentHTML('beforeend', '<p><a href="./data/one-item-completion-audit.json" target="_blank" rel="noreferrer">あと1項目：実取得担当・現在掲載なし・価格確認・PSA未登録の内訳</a>（URL発見だけは補完完了に含めません）／<a href="./data/expansion-freshness-audit.json" target="_blank" rel="noreferrer">今回の純増・PSA名称保留・固定群鮮度・画面検証の制約</a></p>');
   if (auditIsOpen(els.catalogCompletionDetails) && state.catalogCompletion?.summary) {
     const summary = state.catalogCompletion.summary;
     els.catalogCompletionDetails.insertAdjacentHTML("afterbegin", `<p class="catalog-source-note">掲載率は、みんトレ取得一覧（${escapeHtml(summary.sourceInventoryAt || "取得日不明")}）とのID一致 ${fmt.format(summary.sourceMatched ?? Math.max(0, summary.sourceTotal - summary.unlisted))} / ${fmt.format(summary.sourceTotal)}枚で計算。サイト保持総数にはこの一覧にない保持済み ${fmt.format(summary.retainedOnly || 0)}枚も含みます。取得日が異なる場合、差分は現在の掲載漏れとは限りません。</p>`);
@@ -4661,7 +4664,8 @@ function render() {
   }
 
   state.cardById = Object.create(null);
-  els.grid.innerHTML = visibleCards.map((card) => {
+  const markupStarted = performance.now();
+  const cardRows = visibleCards.map((card) => {
     if (state.diagnosticSearch) card.searchDiagnosticReasons = cardSearchExclusions(card,{diagnostic:false});
     state.cardById[card.id] = card;
     const cardPriceText = Number.isFinite(card.price) ? `¥${fmt.format(card.price)}` : "未算出・価格確認待ち";
@@ -5366,7 +5370,7 @@ function render() {
       ${currentExploration && currentTrial.purchasePrice == null ? `<p class="helper">購入価格未取得。手入力試算買値を設定すると利益を検証できます。</p>` : purchasePsa9RatioHtml(card, currentExploration ? currentTrial.purchasePrice : undefined, currentExploration ? {purchaseKind:currentTrial.purchaseKind} : {})}
       ${currentExploration ? `<div class="candidate-warning"><strong>仮定探索の注意：</strong>${escapeHtml([...(currentTrial.reasons || []),...(currentTrial.warnings || [])].join("／"))}／PSA10 ${state.exitPolicy === "marketplace" ? `フリマ手数料${state.saleFeeRate}%` : `買取減額${state.buybackDeductionRate}%（フリマ手数料を重複適用しない）`}・諸費用¥${fmt.format(state.saleExtraCost)}・鑑定費¥${fmt.format(state.fee)}。返却${state.lockDays}日まで現在相場が続く保証はありません。</div>` : ""}
       ${glanceWarning ? `<div class="candidate-warning ${dataQuality.manualReview ? "manual" : ""}"><strong>注意：</strong>${escapeHtml(glanceWarning)}</div>` : ""}`;
-    return `
+    return { id: card.id, html: `
       <article class="row card ${state.purchaseMode === "snkr-raw" ? "snkr-raw-mode" : ""}" data-card-id="${card.id}">
         <a class="thumb" href="${buildTorecaCardUrl(card)}" target="_blank" rel="noreferrer" aria-label="みんトレで${name}を開く">
           <img src="${card.img}" alt="${name}" loading="lazy" />
@@ -5445,15 +5449,19 @@ function render() {
 
         </div>
       </article>
-    `;
-  }).join("");
+    ` };
+  });
+  const markupMs = performance.now() - markupStarted;
+  const commitStarted = performance.now();
+  const committed = commitCardRows(els.grid, cardRows);
+  const domCommitMs = performance.now() - commitStarted;
 
   const observer = ensureSnkrObserver();
-  [...els.grid.querySelectorAll("[data-card-id]")].forEach((el) => observer.observe(el));
-  [...els.grid.querySelectorAll("[data-psa-history]")].forEach((details) => {
+  committed.changed.forEach((el) => observer.observe(el));
+  committed.changed.flatMap(el => [...el.querySelectorAll("[data-psa-history]")]).forEach((details) => {
     details.addEventListener("toggle", () => { if (details.open) renderPsaHistory(details); }, { once: true });
   });
-  [...els.grid.querySelectorAll('[data-card-detail]')].forEach(details => {
+  committed.changed.flatMap(el => [...el.querySelectorAll('[data-card-detail]')]).forEach(details => {
     details.addEventListener('toggle', async () => {
       const id = details.dataset.cardDetail;
       if (!details.open) { state.openCardDetails.delete(id); return; }
@@ -5464,8 +5472,9 @@ function render() {
   });
   renderFavorites();
   const timing = document.getElementById("searchPerformance");
-  lastSearchTiming = {calculationMs,domMs:performance.now()-renderStarted-calculationMs,cacheHit:calculationCacheHit};
-  if (timing) timing.textContent = `条件処理：計算 ${calculationMs.toFixed(1)}ms${calculationCacheHit ? "（再利用・全件再計算なし）" : "（更新）"}／検索・DOM生成 ${lastSearchTiming.domMs.toFixed(1)}ms。画面描画・通信時間は含みません。`;
+  lastSearchTiming = {calculationMs,domMs:performance.now()-renderStarted-calculationMs,cacheHit:calculationCacheHit,
+    markupMs,domCommitMs,changedCards:committed.changed.length,reusedCards:committed.reused};
+  if (timing) timing.textContent = `条件処理：計算 ${calculationMs.toFixed(1)}ms${calculationCacheHit ? "（再利用・全件再計算なし）" : "（更新）"}／検索・DOM生成 ${lastSearchTiming.domMs.toFixed(1)}ms（カードHTML ${markupMs.toFixed(1)}ms／DOM差分 ${domCommitMs.toFixed(1)}ms、更新${committed.changed.length}・再利用${committed.reused}枚）。画面描画・通信時間は含みません。`;
   clearTimeout(freshnessRenderTimer);
   if (calculatedCardCache) freshnessRenderTimer = setTimeout(render, Math.max(1,calculatedCardCache.expires-Date.now()));
 }

@@ -5,15 +5,17 @@ const ROOT = path.join(__dirname, "..");
 const proactive = require("./proactive_refresh.js");
 const { observationTime } = require('../decision-model.js');
 const read = (root, file, fallback = {}) => { try { return JSON.parse(fs.readFileSync(path.join(root, file), "utf8")); } catch { return fallback; } };
-function plan({ cards, sourceId, catalog, candidateRows = {}, focusConfig = {}, config = {}, jobs = {}, manualWait = {}, now = Date.now() }) {
+function plan({ cards, sourceId, catalog, candidateRows = {}, fixedIds = [], focusConfig = {}, config = {}, jobs = {}, manualWait = {}, now = Date.now() }) {
   const byId = new Map(catalog.filter((row) => row.cardId).map((row) => [row.cardId, row]));
   const byUrl = new Map(catalog.map((row) => [row.detailUrl, row]));
   const favorites = new Set(config.favoriteIds || []);
+  const fixed = new Set(fixedIds);
   const records = cards.filter((card) => card[`${sourceId}Url`]).map((card) => {
     const url = card[`${sourceId}Url`], previous = jobs[card.id] || {};
     const focus = Boolean(groupFor(card, focusConfig));
     const candidate = Boolean(candidateRows[card.id]);
-    const important = focus || candidate || favorites.has(card.id);
+    const fixedTarget = fixed.has(card.id);
+    const important = focus || candidate || favorites.has(card.id) || fixedTarget;
     const entry = byId.get(card.id) || byUrl.get(url);
     const lastSuccessAt = entry?.observedAt || null;
     const time = observationTime(lastSuccessAt);
@@ -23,14 +25,14 @@ function plan({ cards, sourceId, catalog, candidateRows = {}, focusConfig = {}, 
     const retry = Date.parse(previous.nextRetryAt);
     const waiting = manualWait[card.id]?.url === url || previous.url === url && previous.failures >= (config.retryLimit || 3);
     const recentlyChecked = important && validTime && now - time < 2 * 3600000;
-    return { card, important, focus, url, lastSuccessAt, lastAttemptAt: previous.lastAttemptAt || null,
+    return { card, important, focus, candidate, fixedTarget, url, lastSuccessAt, lastAttemptAt: previous.lastAttemptAt || null,
       nextDueAt: due ? new Date(due).toISOString() : null, due: due <= now,
       proactive: important && due > now && proactive.eligibleDeadline(due, important, now, config),
       eligible: proactive.eligibleDeadline(due, important, now, config) && !recentlyChecked && !waiting && (!Number.isFinite(retry) || retry <= now),
       status: waiting ? "手動確認待ち" : Number.isFinite(retry) && retry > now ? "再試行待ち" : recentlyChecked ? "確認直後・共通取得間隔内" : due <= now ? "期限超過・取得待ち" : proactive.eligibleDeadline(due, important, now, config) ? "次回完了前に期限切れ・先回り待ち" : "期限内",
       priceRefreshReady: candidateRows[card.id]?.priceRefreshReady === true,
       currentMarket: candidateRows[card.id]?.currentMarket === true,
-      reason: [focus && "重点カード", candidate && "購入候補", candidateRows[card.id]?.currentMarket && "現相場採算候補", candidateRows[card.id]?.priceRefreshReady && "購入価格再確認で試算可能", favorites.has(card.id) && "同期済みお気に入り", !important && "通常巡回"].filter(Boolean).join("／"),
+      reason: [focus && "重点カード", candidate && "購入候補", fixedTarget && "固定鮮度監視群・期限維持", candidateRows[card.id]?.currentMarket && "現相場採算候補", candidateRows[card.id]?.priceRefreshReady && "購入価格再確認で試算可能", favorites.has(card.id) && "同期済みお気に入り", !important && "通常巡回"].filter(Boolean).join("／"),
       score: (validTime ? Math.max(0, (now - due) / 3600000) : 100000) + (important ? 24 : 0) };
   });
   const sorted = records.filter((row) => row.eligible).sort((a, b) => Number(b.due) - Number(a.due)
@@ -47,6 +49,7 @@ function plan({ cards, sourceId, catalog, candidateRows = {}, focusConfig = {}, 
 }
 function load(sourceId, root = ROOT, now = Date.now()) {
   return plan({ cards: read(root, "data/pokemon-cards.json", []), sourceId,
+    fixedIds: read(root, "work/priority-freshness-history.json").sources?.[sourceId]?.cohort || [],
     catalog: read(root, `work/${sourceId}_catalog.json`, []), candidateRows: { ...(read(root, "work/candidate-availability-history.json").runs?.at(-1)?.rows || read(root, "work/acquisition-audit-baseline.json").availability?.rows || {}), ...read(root, 'work/purchase-price-targets.json').rows },
     focusConfig: read(root, "data/focus-monitor-config.json"), config: timingConfig(root),
     jobs: read(root, "work/priority-price-checkpoint.json").sources?.[sourceId]?.jobs || {},
@@ -83,6 +86,8 @@ function write(root = ROOT) {
       previous.nextDueAt = record.nextDueAt;
     }
     sources[id] = { total: planned.records.length, priorityCards: important.length,
+      fixedPriorityCards: important.filter(r => r.fixedTarget).length,
+      fixedPriorityRetainedOnly: important.filter(r => r.fixedTarget && !r.focus && !r.candidate).length,
       currentMarketTargets: important.filter(r => r.currentMarket).length,
       priceRefreshReady: important.filter(r => r.priceRefreshReady).length,
       overdue: important.filter((r) => r.due && r.nextDueAt).length, proactivePending: important.filter(r => r.proactive && r.eligible).length,
