@@ -49,12 +49,14 @@ const fetchFailureCount = [...output.matchAll(/\b(?:failed|failure|error)(?:Coun
   + (result.status !== 0 || timedOut ? 1 : 0);
 const status = result.status !== 0 || timedOut ? "failed" : completionStatus === "manual-action-required" ? "manual-action-required"
   : completionStatus === "no-progress" ? "no-progress" : fetchFailureCount > 0 || ["partial", "partial-with-failure", "retry-wait"].includes(completionStatus) ? "partial" : "success";
-const acquiredCount = countCurrentRecords(sourceId);
+const catalogCount = countCurrentRecords(sourceId);
+const batchMetrics = require('./source_batch_metrics').shopBatch(sourceId,result.stdout);
+const acquiredCount = batchMetrics?.acquiredCount ?? catalogCount;
 const afterFingerprint = artifactFingerprint(sourceId);
 const dataChanged = afterFingerprint != null && beforeFingerprint !== afterFingerprint;
-const countDelta = Number.isFinite(acquiredCount) && Number.isFinite(beforeCount) ? acquiredCount - beforeCount : null;
+const countDelta = Number.isFinite(catalogCount) && Number.isFinite(beforeCount) ? catalogCount - beforeCount : null;
 const updatedMatch = output.match(/(?:updated|更新(?:件数)?)\s*(?:[:=]\s*)?(\d+)/i);
-const updatedCount = updatedMatch ? Number(updatedMatch[1]) : Number.isFinite(countDelta) && countDelta > 0 ? countDelta : dataChanged ? null : 0;
+const updatedCount = batchMetrics ? batchMetrics.updatedCount : updatedMatch ? Number(updatedMatch[1]) : Number.isFinite(countDelta) && countDelta > 0 ? countDelta : dataChanged ? null : 0;
 const sourceState = status === "failed"
   ? "取得処理失敗"
   : status === "manual-action-required"
@@ -73,6 +75,8 @@ const record = {
   durationMs: endedAt - startedAt,
   status,
   acquiredCount,
+  catalogCount,
+  newLinkedCount: batchMetrics?.newLinkedCount ?? null,
   updatedCount,
   dataChanged,
   sourceState,

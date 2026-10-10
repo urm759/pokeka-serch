@@ -39,11 +39,12 @@ const sourceProgress = (source) => {
   return { sitemap: Number(value.currentSitemapIndex || 0) + 1, productIndex: value.currentEntryIndex || 0,
     totalSitemaps: value.totalSitemaps || null, visitedProducts: value.seenProductUrls?.length || 0, catalogCount: read(path.join(__dirname, "torecacamp_catalog.json"), []).length,
     lastFailure: value.lastFailure || null, sourceRetry: value.sourceRetry || null, retryQueue: Object.keys(value.retryByUrl || {}).length,
-    failedSitemaps: Object.keys(value.failedSitemaps || {}).length };
+    failedSitemaps: Object.keys(value.failedSitemaps || {}).length,
+    maintenance: value.maintenance || null, firstPassCompletedAt: value.firstPassCompletedAt || null };
 };
 const complete = (source, progress) => source === "yuyutei" || source === "priceEvidence"
   ? progress.remaining === 0
-  : source === "torecacamp" ? progress.totalSitemaps != null && progress.sitemap > progress.totalSitemaps && !progress.retryQueue && !progress.failedSitemaps : true;
+  : source === "torecacamp" ? false : true;
 const command = (source, settings) => {
   if (source === "yuyutei") return {
     script: "work/update_yuyutei_torecacamp.js",

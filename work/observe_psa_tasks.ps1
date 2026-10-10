@@ -38,6 +38,21 @@ try {
     }
     $State = [pscustomobject]$Merged
   }
+  # Acknowledgement may arrive after the scheduled acquisition state was saved.
+  $ScheduledOutbox = Join-Path $TaskRepo 'work/psa-outbox'
+  if ($State -and (Test-Path $ScheduledOutbox)) {
+    foreach ($PacketFile in (Get-ChildItem $ScheduledOutbox -Filter '*.json' | Where-Object { $_.Name -match '^[a-f0-9]{64}\.json$' })) {
+      $AckFile = $PacketFile.FullName + '.ack'
+      if (!(Test-Path $AckFile)) { continue }
+      $Packet = Get-Content $PacketFile.FullName -Raw | ConvertFrom-Json
+      if ($Packet.files.'work/psa_acquisition_result.json'.startedAt -ne $State.startedAt) { continue }
+      $Ack = Get-Content $AckFile -Raw | ConvertFrom-Json
+      $State | Add-Member -NotePropertyName publishStatus -NotePropertyValue 'published' -Force
+      $State | Add-Member -NotePropertyName publishedAt -NotePropertyValue $Ack.publishedAt -Force
+      $State | Add-Member -NotePropertyName publishedCommit -NotePropertyValue $Ack.commit -Force
+      $Observation.lastScheduledState = $State
+    }
+  }
   $Observation.acquisitionState = $State
   $Observation.registeredRepo = $TaskRepo
   $Observation.fetchProgress = if (Test-Path (Join-Path $TaskRepo 'work/psa-fetch-progress.json')) { Get-Content (Join-Path $TaskRepo 'work/psa-fetch-progress.json') -Raw | ConvertFrom-Json } else { $null }

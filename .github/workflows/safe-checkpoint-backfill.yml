@@ -43,6 +43,7 @@ jobs:
           node work/finalize_update_status.js
       - name: Check publication safety
         run: |
+          node work/test_postpass_cadence.js
           node work/build_ui_data.js
           node work/measure_performance_guard.js
           node work/build_ui_data.js

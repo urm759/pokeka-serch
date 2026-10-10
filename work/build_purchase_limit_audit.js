@@ -13,6 +13,7 @@ const candidateDailyAudit = require("../candidate-daily-audit.js");
 const candidateAvailabilityAudit = require("../candidate-availability-audit.js");
 const meta = read("data/pokemon-cards-meta.json", {});
 const window = {
+  PsaPlanModel: require("../psa-plan-model.js"),
   PurchaseDecisionModel: model,
   PriceIntegrity: require("../price-integrity.js"),
   MarketAnalysisModel: require("../market-analysis.js"),
@@ -75,6 +76,7 @@ state.regulationPolicy = read("data/regulation-policy.json");
 state.evaluationModel = read("data/evaluation-model.json");
 state.evaluationGovernance = read("data/evaluation-governance.json");
 state.psaServices = read("data/psa-japan-services.json");
+state.psaServicesReadAttempted = true;
 state.sourceUpdates = {
   toreca: meta.updatedAt || meta.generatedAt || null,
   cardrush: sourceFiles.cardrush.updatedAt || null,

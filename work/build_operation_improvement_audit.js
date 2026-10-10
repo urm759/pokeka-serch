@@ -28,7 +28,8 @@ const result = { version:1, generatedAt:now.at, baseline:ref, basis:'同一カ�
   completion:{attempted:read('data/completion-acquisition.json').attempted,acquired:read('data/completion-acquisition.json').acquired,
     zeroTargetReason:read('data/completion-acquisition.json').zeroTargetReason,selection:read('data/completion-acquisition.json').selectionReasons},
   scheduledPsa:read('data/psa-pc-observation.json').lastScheduledState,
-  periodicVerified:false,periodicReason:'今回の新処理はローカル小規模検証。修正後の定期・公開照合は通常監視で継続、手動成功を代用しない',
+  verifiedPeriodicPaths: Object.fromEntries(Object.entries(read('data/scheduled-cycle-verification.json').pipelines || {}).map(([key,value])=>[key,{confirmed:value.confirmed,runId:value.runId}])),
+  periodicVerified:false,periodicReason:'今回の改修後の定期運転は通常監視で確認する。verifiedPeriodicPathsとscheduledPsaは既存経路の実証済み実行を個別表示し、手動試験と区別する',
   llmCalls:0,codexCalls:0,fullDataComplete:false };
 require('./acquisition_retry').atomicWrite(path.join(root,'data/operation-improvement-audit.json'),result,0);
 console.log(JSON.stringify({counts:result.counts,sources:result.sources}));

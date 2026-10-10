@@ -20,6 +20,8 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: main
       - uses: actions/setup-node@v7
         with:
           node-version: "24"
@@ -32,25 +34,18 @@ jobs:
         env:
           FAST_DEEP_SCAN: ${{ (github.event_name == 'workflow_dispatch' || github.event.schedule == '30 19 * * *') && '1' || '0' }}
         run: node work/daily_fast_update.js
-      - name: Refresh PSA Japan plans
-        run: node work/run_tracked_update.js psaJapan work/update_psa_japan_services.js
-      - name: Refresh web buyback tables
-        run: node work/run_tracked_update.js shopBuyback work/update_shop_buybacks.js
-      - name: Refresh SNKRDUNK raw state-A delta
+      - name: Refresh independent sources and preserve individual failures
         env:
           SNKR_RAW_LIMIT: "100"
           SNKR_RAW_MAX_RUNTIME_MS: "360000"
-        run: node work/run_tracked_update.js snkrRaw work/update_snkr_raw_flip.js
-      - name: Rebuild market demand and supply analysis
-        run: node work/run_tracked_update.js marketAnalysis work/build_market_analysis.js
-      - name: Recheck candidate shop prices in bounded direct-origin batches
-        env:
           CANDIDATE_SHOP_MODE: "deadline"
           CANDIDATE_SHOP_TIME_MS: "180000"
         run: |
           node work/audit_acquisition_progress.js --baseline
-          node work/refresh_candidate_shops.js cardrush
-          node work/refresh_candidate_shops.js hareruya2
+          node work/run_daily_sources.js
+          node work/test_daily_source_isolation.js
+      - name: Rebuild market demand and supply analysis
+        run: node work/run_tracked_update.js marketAnalysis work/build_market_analysis.js
       - name: Finalize source status
         run: node work/finalize_update_status.js
       - name: Audit state-A price conflicts and sale evidence
@@ -67,6 +62,8 @@ jobs:
           node work/finalize_update_status.js
       - name: Run fast regression tests
         run: |
+          node work/test_daily_source_isolation.js
+          node work/test_postpass_cadence.js
           node work/build_ui_data.js
           node work/measure_performance_guard.js
           node work/build_ui_data.js
@@ -130,6 +127,8 @@ jobs:
             exit 0
           fi
           node work/publish_data_checkpoint.js "Run deterministic daily delta update"
+      - name: Report independent acquisition failures without hiding them
+        run: node work/run_daily_sources.js --report-failures
       - name: Save unpublished source data on failure
         if: failure()
         run: |

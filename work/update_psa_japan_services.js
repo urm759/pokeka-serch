@@ -1,83 +1,35 @@
-const fs = require("fs");
-const path = require("path");
-
-const ROOT = path.join(__dirname, "..");
-const OUTPUT_PATH = path.join(ROOT, "data", "psa-japan-services.json");
-const SOURCE_URL = "https://www.psacard.com/ja-JP/services/trad";
-const HANDLING_FEE = 1000;
-
-function number(value) {
-  const parsed = Number(String(value || "").replace(/[^0-9]/g, ""));
-  return Number.isFinite(parsed) ? parsed : null;
-}
-
-function jstDate() {
-  return new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Tokyo" }).format(new Date());
-}
-
-function planFromText(text, id, name) {
-  const start = text.indexOf(name);
-  if (start < 0) return null;
-  const block = text.slice(start, start + 500);
-  const price = number(block.match(/￥\s*([0-9,]+)\s*\/枚/)?.[1]);
-  const businessDays = number(block.match(/予定納期[：:]\s*([0-9,]+)\s*営業日/)?.[1]);
-  const calendarDays = number(block.match(/日数換算[：:]\s*約\s*([0-9,]+)日/)?.[1]);
-  const declaredValueMax = number(block.match(/申告価格[：:]\s*￥\s*([0-9,]+)以下/)?.[1]);
-  if (!(price > 0) || !(businessDays > 0) || !(declaredValueMax > 0)) return null;
-  return { id, name, price, businessDays, calendarDays, declaredValueMax, available: true };
-}
-
+const fs = require('node:fs'), path = require('node:path');
+const model = require('../psa-plan-model');
+const {atomicWrite, classify} = require('./acquisition_retry');
+const OUTPUT = path.join(__dirname,'../data/psa-japan-services.json');
+const URL = 'https://www.psacard.com/ja-JP/services/trad';
 async function main() {
-  let response = await fetch(SOURCE_URL, { headers: { "user-agent": "Mozilla/5.0 PSA-Japan-plan-monitor" } });
-  let fetchMethod = "official-direct";
-  if (!response.ok) {
-    response = await fetch(`https://r.jina.ai/http://www.psacard.com/ja-JP/services/trad`, { headers: { "user-agent": "Mozilla/5.0 PSA-Japan-plan-monitor" } });
-    fetchMethod = "official-text-fallback";
+  const at = new Date().toISOString();
+  const previous = fs.existsSync(OUTPUT) ? JSON.parse(fs.readFileSync(OUTPUT,'utf8')) : {};
+  let parsed;
+  try {
+    const response = await fetch(URL,{headers:{'user-agent':'Mozilla/5.0 PSA-Japan-plan-monitor'},signal:AbortSignal.timeout(15000)});
+    if (!response.ok) throw new Error(`PSA Japan HTTP ${response.status}`);
+    const html = await response.text();
+    if (/just a moment|verify you are human|cf-chl-/i.test(html)) throw new Error('PSA Japan Cloudflare・正規認証待ち');
+    parsed = model.parse(html);
+    if (parsed.some(p=>!p.plan)) throw new Error('PSA Japan format: '+parsed.filter(p=>!p.plan).map(p=>p.name+':'+p.reason).join('／'));
+    const date = new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo'}).format(new Date());
+    const value = {updatedAt:date,checkedAt:date,verifiedAt:at,lastAttemptAt:at,checkStatus:'success',fetchMethod:'official-direct',sourceUrl:URL,handlingFee:1000,
+      plans:parsed.map(p=>({...p.plan,verifiedAt:at,validationStatus:'valid'})),suspendedPlans:/バリュー.*受付.*停止/.test(html)?['バリュー']:[]};
+    atomicWrite(OUTPUT,value,0); console.log(JSON.stringify({completionStatus:'success',acquired:3,updated:3}));
+  } catch(error) {
+    const plans = model.definitions.map(([id,name])=>{
+      const old = previous.plans?.find(p=>p.id===id), candidate=parsed?.find(p=>p.id===id);
+      if (candidate?.plan) return {...candidate.plan,verifiedAt:at,validationStatus:'valid'};
+      const reason = candidate?.reason || model.problem(old);
+      return {...old,id,name,...(reason ? {validationStatus:'held',validationReason:reason} : {})};
+    });
+    atomicWrite(OUTPUT,{...previous,plans,lastAttemptAt:at,checkStatus:'failed',checkError:error.message,
+      failureKind:classify(error).kind,fetchMethod:'official-direct-no-bypass'},0);
+    console.error('PSA Japan refresh failed; previous verified values retained: '+error.message);
+    process.exitCode=1;
   }
-  if (!response.ok) throw new Error(`PSA Japan returned HTTP ${response.status}`);
-  const html = await response.text();
-  const text = html
-    .replace(/<script[\s\S]*?<\/script>/gi, " ")
-    .replace(/<style[\s\S]*?<\/style>/gi, " ")
-    .replace(/<[^>]+>/g, " ")
-    .replace(/&yen;|&#165;/gi, "￥")
-    .replace(/&nbsp;/gi, " ")
-    .replace(/\s+/g, " ");
-  const plans = [
-    planFromText(text, "standard", "スタンダード"),
-    planFromText(text, "priority", "プライオリティ"),
-    planFromText(text, "express", "エクスプレス"),
-  ].filter(Boolean);
-  if (plans.length !== 3) throw new Error("Could not parse all PSA Japan service plans through Express; existing data was preserved.");
-  const suspendedPlans = ["バリュー・バルク", "バリュー", "バリュー・プラス", "バリュー・マックス"]
-    .filter((name) => text.includes(name) && text.includes("受付停止中"));
-  const payload = {
-    updatedAt: jstDate(),
-    checkedAt: jstDate(),
-    checkStatus: "success",
-    fetchMethod,
-    sourceUrl: SOURCE_URL,
-    handlingFee: HANDLING_FEE,
-    plans,
-    suspendedPlans,
-  };
-  fs.writeFileSync(OUTPUT_PATH, JSON.stringify(payload), "utf8");
-  console.log(JSON.stringify(payload));
 }
-
-main().catch((error) => {
-  if (fs.existsSync(OUTPUT_PATH)) {
-    const previous = JSON.parse(fs.readFileSync(OUTPUT_PATH, "utf8"));
-    fs.writeFileSync(OUTPUT_PATH, JSON.stringify({
-      ...previous,
-      checkedAt: jstDate(),
-      checkStatus: "failed",
-      checkError: String(error.message || error).slice(0, 240),
-    }), "utf8");
-    console.warn(`PSA Japan plan refresh skipped; existing data was preserved: ${error.message || error}`);
-    process.exitCode = 1;
-    return;
-  }
-  console.error(error);
-  process.exitCode = 1;
-});
+if(require.main===module)main();
+module.exports={main};

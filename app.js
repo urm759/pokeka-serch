@@ -33,6 +33,7 @@ const computationFields = ["fee","psaPlan","psaHandlingFee","guideMode","psaCapi
 const computationSources = ["catalogCompletion","priceEvidence","cardrushStock","hareruya2Stock","yuyuteiStock","torecacampStock","shopBuybacks","buybackShops","buybackDates","buybackUpdatedAt","marketStability","marketStabilityMeta","psaPopulation","snkrListingSummary","snkrRawFlipSummary","snkrRawFlipMeta","pokedataSummary","psaServices","evaluationModel","evaluationGovernance","operationalLimitHistory","regulationPolicy","returnCalibration","fixedPriceReference","marketResearch","supplyMaturityHypothesis","updateStatus"];
 function computationKey() {
   return JSON.stringify([loadedDataRevision,meta,computationFields.map(key=>state[key]),
+    psaPlanProblem(),
     state.purchaseMode === "current-market" ? "normal" : state.purchaseMode,state.sourceUpdates,state.gradeObservations]);
 }
 function freshnessDeadline(cards, now) {
@@ -513,7 +514,7 @@ function releaseMaturityFromOfficial(official, card) {
 
 function availablePsaPlans() {
   const plans = state.psaServices?.plans;
-  return Array.isArray(plans) && plans.length ? plans.filter((plan) => plan.available !== false) : [
+  return Array.isArray(plans) && plans.length ? plans : [
     { id: "standard", name: "スタンダード", price: 9980, businessDays: 100, calendarDays: 140, declaredValueMax: 150000, available: true },
     { id: "priority", name: "プライオリティ", price: 11980, businessDays: 80, calendarDays: 112, declaredValueMax: 250000, available: true },
     { id: "express", name: "エクスプレス", price: 29980, businessDays: 25, calendarDays: 35, declaredValueMax: 400000, available: true },
@@ -557,6 +558,14 @@ function learnedPercentileScore(value, distribution) {
 }
 
 const median = decisionModel.median;
+function psaPlanProblem() {
+  if (state.psaServicesReadAttempted && !state.psaServices?.plans?.length) return 'PSA料金プラン未取得・判断保留';
+  const wanted = state.psaPlan === 'regular' ? 'priority' : state.psaPlan;
+  if (state.psaServicesReadAttempted && !state.psaServices.plans.some(plan=>plan.id===wanted)) return '選択PSAプラン未取得・判断保留';
+  const plan = selectedPsaPlan();
+  return window.PsaPlanModel ? window.PsaPlanModel.problem(plan)
+    : (!plan || !(Number(plan.price) > 0) || plan.validationStatus === 'held' ? 'PSA料金・納期確認待ち' : null);
+}
 
 function applyPsaPlan({ updateLockDays = false } = {}) {
   const plan = selectedPsaPlan();
@@ -583,6 +592,7 @@ function populatePsaPlans({ updateLockDays = false } = {}) {
   els.psaPlanInput.innerHTML = plans.map((plan) => `<option value="${escapeHtml(plan.id)}">${escapeHtml(plan.name)}</option>`).join("");
   if (!plans.some((plan) => plan.id === state.psaPlan)) state.psaPlan = plans[0].id;
   applyPsaPlan({ updateLockDays });
+  if (psaPlanProblem() && els.psaPlanSummary) els.psaPlanSummary.textContent = `判断保留：${psaPlanProblem()} / ${els.psaPlanSummary.textContent}`;
 }
 
 async function renderPsaHistory(details) {
@@ -774,10 +784,12 @@ function renderCollectorDiagnostics(sourceId, diagnostics) {
   const healthHtml = health ? `<span>進捗状態 <b>${health.status === "stalled" ? `停滞（${fmt.format(health.stagnantRuns || 0)}回連続）` : "進行中"}</b></span>` : "";
   const campProgress = sourceId === "torecacamp" ? `
     <div class="collector-progress-grid">
+      ${diagnostics.maintenanceMode ? `<span>運転区分 <b>初回一巡済み・新商品差分探索／既存価格再確認</b></span><span>再確認累計 <b>${fmt.format(diagnostics.maintenance?.refreshed || 0)}件・全価格最新とは別</b></span>` : ""}
       <span>現在位置 <b>${diagnostics.paginationMode === "sitemap" ? `${fmt.format(diagnostics.currentSitemapIndex || 1)}/${fmt.format(diagnostics.totalSitemaps || 44)}番目・${fmt.format(diagnostics.currentEntryIndex || 0)}件処理済み` : `${fmt.format(diagnostics.currentCursor || 0)}ページ`}</b></span>
       <span>完了単位 <b>${diagnostics.paginationMode === "sitemap" ? `${fmt.format(diagnostics.processedSitemapCount || 0)} / ${fmt.format(diagnostics.totalSitemaps || 44)}サイトマップ` : `${fmt.format(diagnostics.processedPageCount || 0)}ページ`}</b></span>
       <span>残りサイトマップ <b>${diagnostics.paginationMode === "sitemap" ? `${fmt.format(Math.max(0, (diagnostics.totalSitemaps || 44) - (diagnostics.processedSitemapCount || 0)))}件` : "旧一覧API"}</b></span>
-      <span>推定残り商品 <b>${Number.isFinite(diagnostics.estimatedRemainingProducts) ? `${fmt.format(diagnostics.estimatedRemainingProducts)}件` : "集計中"}</b></span>
+      <span>初回巡回の推定残り商品 <b>${Number.isFinite(diagnostics.estimatedRemainingProducts) ? `${fmt.format(diagnostics.estimatedRemainingProducts)}件` : "集計中"}</b></span>
+      ${diagnostics.maintenanceMode ? `<span>個別価格の再確認待ち <b>${Number.isFinite(diagnostics.maintenancePendingCount) ? `${fmt.format(diagnostics.maintenancePendingCount)}件` : "集計中"}</b></span>` : ""}
       <span>累計商品数 <b>${fmt.format(diagnostics.cumulativeProductCount || 0)}件</b></span>
       <span>累計紐付け <b>${fmt.format(diagnostics.cumulativeMatchedCount || 0)}件</b></span>
       <span>今回の新規紐付け <b>${fmt.format(diagnostics.newLinkCount || 0)}件</b></span>
@@ -843,10 +855,11 @@ function renderSourceObservability() {
     els.freshnessSummary.textContent = failed ? `失敗 ${fmt.format(failed)}件` : partial ? `部分取得 ${fmt.format(partial)}件` : stale ? `未完了 ${fmt.format(stale)}件` : "全取得元 更新済み";
   }
   if (auditIsOpen(els.dataFreshness)) {
+    const cadenceLink = `<p>通常ジョブの間隔と、補完込みのカード別確認間隔は別集計です。<a href="./data/effective-price-cadence.json" target="_blank" rel="noopener">公開まで照合済みの実効確認間隔・6時間鮮度</a>（観測不足は蓄積中）</p>`;
     const pipelines = state.updateStatus?.pipelines || {};
-    const stageLabels = { yuyutei: "遊々亭", priceEvidence: "状態A実売確認", psaLinkage: "PSA紐づけ候補", torecacamp: "トレカキャンプ" };
+    const stageLabels = { yuyutei: "遊々亭", priceEvidence: "状態A実売確認", psaLinkage: "PSA紐づけ候補", torecacamp: "トレカキャンプ", psaJapan: "PSA日本料金", shopBuyback: "Web買取表", snkrRaw: "スニダン素体", cardrush: "カードラッシュ", hareruya2: "晴れる屋2" };
     const stageStates = { completed: "対象の巡回完了", "reviewed-with-unavailable": "全件確認・取得不能あり", partial: "部分取得", "time-budget": "時間枠終了・次回再開", "queue-updated": "候補キュー更新（公式POP取得ではない）", stopped: "停止", "manual-action-required": "要手動対応", stalled: "進捗停滞" };
-    const pipelineCards = Object.values(pipelines).map((pipeline) => `<article class="source-status-card pipeline-card">
+    const pipelineCards = cadenceLink + Object.values(pipelines).map((pipeline) => `<article class="source-status-card pipeline-card">
       <div class="source-status-head"><strong>${escapeHtml(pipeline.label || "更新処理")}</strong><b>${escapeHtml(pipeline.runClass || pipeline.status || "未記録")}</b></div>
       <dl>
         <div><dt>最終実行</dt><dd>${escapeHtml(formatJstTimestamp(pipeline.updatedAt))}</dd></div>
@@ -866,8 +879,8 @@ function renderSourceObservability() {
         const resume = id === "yuyutei" ? `残り${fmt.format(position.remaining ?? 0)}件 / 最終ページ ${position.lastSuccessfulPage || "未記録"}`
           : id === "priceEvidence" ? `確認${fmt.format(position.inspected ?? 0)}件 / 取得不能${fmt.format(position.unavailable ?? 0)}件 / 残り${fmt.format(position.remaining ?? 0)}件 / 次 ${position.resumeCardId || "未記録"}`
           : id === "torecacamp" ? `サイトマップ${position.sitemap || "-"}/${position.totalSitemaps || "-"} / 商品位置${position.productIndex ?? "-"}`
-          : `未紐づけ${fmt.format(position.unlinked ?? 0)}件（候補整理のみ）`;
-        const stageState = stage.status === "time-budget" && !stage.batches ? "未実行・時間枠終了" : stageStates[stage.status] || stage.status || "未実行";
+          : id === "psaLinkage" ? `未紐づけ${fmt.format(position.unlinked ?? 0)}件（候補整理のみ）` : "取得処理結果・補完成果は別集計";
+        const stageState = stage.status === 'process-success' ? '処理成功（停止・取得成果は取得元の欄で確認）' : stage.status === 'failed' ? '取得失敗・正常値保持' : stage.status === "time-budget" && !stage.batches ? "未実行・時間枠終了" : stageStates[stage.status] || stage.status || "未実行";
         return `<div class="backfill-stage-row"><strong>${escapeHtml(stageLabels[id] || id)}：${escapeHtml(stageState)}</strong><span>${escapeHtml(resume)}</span><small>実行 ${escapeHtml(formatDuration(stage.durationMs))} / ${fmt.format(stage.batches || 0)}バッチ${stage.reason ? ` / 停止理由：${escapeHtml(stage.reason)}` : ""}</small></div>`;
       }).join("")}</details>` : ""}
     </article>`).join("");
@@ -2643,6 +2656,15 @@ function finalizeCardDecision(card) {
     card.dataQuality.dataShortageReasons = [...new Set([...(card.dataQuality.dataShortageReasons || []), message])];
   }
   card.hasPricingAnomaly = card.dataQuality.manualReview;
+  const planProblem = psaPlanProblem();
+  if (planProblem) {
+    card.dataQuality.manualReview = true;
+    card.dataQuality.manualReviewReasons = [planProblem, ...card.dataQuality.manualReviewReasons];
+    card.purchaseDecision = {...card.purchaseDecision, verdict:'要確認', reasons:[planProblem, ...(card.purchaseDecision?.reasons || [])]};
+    card.purchaseAvailability = {...card.purchaseAvailability, verifiedNow:false, label:'PSAプラン判断保留', reason:planProblem};
+    if (card.psaDecision) card.psaDecision.recommended = false;
+    card.aggressivePurchase = {...card.aggressivePurchase, eligible:false};
+  }
   return card;
 }
 
@@ -3708,6 +3730,7 @@ function currentMarketView(card) {
   const key = JSON.stringify([state.currentMarketManualPrice,computationFields.map(name=>state[name]),state.sourceUpdates,state.updateStatus?.sources?.toreca]);
   const cached = currentMarketViewCache.get(card);
   if (cached?.key === key && Date.now() < cached.expires) return cached.value;
+  if (psaPlanProblem()) return {eligible:false,reasons:[psaPlanProblem()],cap:null,rawCap:null,capState:'unavailable',capLabel:'PSAプラン判断保留',economics:null,psa10Roi:null,warnings:[psaPlanProblem()]};
   if (!currentMarketModel || !card.buyLimits?.clean) return {eligible:false,reasons:["分析データ不足"],cap:null,rawCap:null,capState:'unavailable',capLabel:'データ不足で算出不可',economics:null,psa10Roi:null,warnings:[]};
   const input = buildScenarioInput(card, "clean", card.psa10);
   const buybackExit = decisionModel.conservativeBuybackExit({
@@ -5617,6 +5640,7 @@ async function init() {
     state.updateStatus = await fetchJsonMaybe("./data/update-status.json");
     state.linkCoverage = await fetchJsonMaybe("./data/link-coverage.json");
     state.psaServices = await fetchJsonMaybe("./data/psa-japan-services.json");
+    state.psaServicesReadAttempted = true;
     state.evaluationModel = await fetchJsonMaybe("./data/evaluation-model.json");
     state.evaluationGovernance = await fetchJsonMaybe("./data/evaluation-governance.json");
     populatePsaPlans({ updateLockDays: !new URL(window.location.href).searchParams.has("lock") });

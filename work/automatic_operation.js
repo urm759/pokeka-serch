@@ -24,7 +24,8 @@ function build(root, sources, rows, now = Date.now()) {
   for (const [id, source] of Object.entries(sources)) {
     const policy = SOURCE_POLICIES[id], row = rows[id] || {};
     const latest = id === 'psaOfficial' ? pc.acquisitionState || {} : runs[id] || {};
-    const scheduled = id === 'psaOfficial' ? pc.lastScheduledState || {} : (history[id] || []).filter(r => r.workflowTrigger === 'schedule').at(-1) || {};
+    const scheduled = id === 'psaOfficial' ? pc.lastScheduledState || {} : (history[id] || []).filter(r => r.workflowTrigger === 'schedule'
+      || r.workflowTrigger === 'workflow_run' && cycles.catchup?.confirmed && String(r.workflowRunId) === String(cycles.catchup.runId)).at(-1) || {};
     const verification = cycles[route[id]];
     const positive = scheduled.acquiredCount > 0 && ['success','partial'].includes(scheduled.status) && !scheduled.lastError;
     // A receipt must identify this acquisition, not merely a successful unrelated workflow.

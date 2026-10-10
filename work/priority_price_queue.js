@@ -61,11 +61,12 @@ function finish(previous = {}, record, at, config = {}) {
     nextDueAt: ok ? new Date(Date.parse(at) + (record.important ? config.importantHours || 6 : config.normalHours || 720) * 3600000).toISOString() : previous.nextDueAt || null };
 }
 function write(root = ROOT) {
+  const now = Date.now();
   const checkpoint = read(root, "work/priority-price-checkpoint.json", { sources: {} });
   const fixedHistory = read(root, "work/priority-freshness-history.json");
   const sources = {};
   for (const id of ["cardrush", "hareruya2"]) {
-    const planned = load(id, root), run = read(root, "work/candidate-shop-refresh.json").sources?.[id] || {};
+    const planned = load(id, root, now), run = read(root, "work/candidate-shop-refresh.json").sources?.[id] || {};
     const blocked = read(root, "work/candidate-shop-refresh.json").checkpoints?.[id]?.sourceBlocked || null;
     const elapsed = Number(run.durationMs || 0) / 1000;
     const rate = elapsed > 0 && run.refreshedCount > 0 ? run.refreshedCount / elapsed : null;
@@ -121,13 +122,12 @@ function write(root = ROOT) {
   const inventory = read(root, "work/toreca-source-inventory.json"), present = new Set((inventory.cards || []).map((card) => card.id));
   const runs = read(root, "work/source-update-runs.json").sources || {};
   const buys = read(root, "data/shop-buyback-summary.json");
-  const now = Date.now();
   function bulkSource(id, observations) {
     const records = observations.map(({ card, at, detail }) => {
       const time = Date.parse(at), known = Number.isFinite(time) && time <= now;
       const nextDueAt = known ? new Date(time + 6 * 3600000).toISOString() : null;
       return { id: card.id, name: names.get(card.id), lastConfirmedAt: known ? at : null, nextDueAt,
-        lastAttemptAt: runs[id]?.lastAttemptAt || null, status: !known ? "カード単位の確認日時なし・取得待ち" : time + 6 * 3600000 < now ? "期限超過" : proactive.eligibleDeadline(time + 6 * 3600000, true, now, timingConfig(root)) ? "次回完了前に期限切れ・先回り待ち" : "期限内", detail };
+        lastAttemptAt: runs[id]?.lastAttemptAt || null, status: !known ? "カード単位の確認日時なし・取得待ち" : time + 6 * 3600000 <= now ? "期限超過" : proactive.eligibleDeadline(time + 6 * 3600000, true, now, timingConfig(root)) ? "次回完了前に期限切れ・先回り待ち" : "期限内", detail };
     });
     const fixedIds = new Set(fixedHistory.sources?.[id]?.cohort || []);
     const fixedCards = records.filter(r => fixedIds.has(r.id));
@@ -151,7 +151,7 @@ function write(root = ROOT) {
     }).filter(Boolean).sort();
     return { card, at: rows.at(-1) || null, detail: "正常な掲載価格の店舗別実取得日時。古い保存価格を最新扱いしない" };
   }));
-  const output = { version: 1, generatedAt: new Date().toISOString(), runClass: "購入価格高速更新（探索キューとは別）", llmCalls: 0, codexCalls: 0,
+  const output = { version: 1, generatedAt: new Date(now).toISOString(), runClass: "購入価格高速更新（探索キューとは別）", llmCalls: 0, codexCalls: 0,
     targetHours: read(root, "data/priority-price-config.json").importantHours || 6, scheduledHours: 2, sources,
     notes: "一巡見込みは実処理時間の参考値。Actions待機・通信変動を含まない。国内相場・買取表と重要ショップ価格は6時間目標、通常ショップ約6000枚は30日巡回目標。巡回目標とGOに採用する48時間等の価格鮮度は別で、古い値はGOに使わない。認証停止は古い値を保持。お気に入りは同期済みIDのみ。" };
   const history = require('./fixed_freshness.js').observe(read(root, 'work/priority-freshness-history.json'), output);

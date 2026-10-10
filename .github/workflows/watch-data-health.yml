@@ -34,6 +34,7 @@ jobs:
           node work/test_backfill_rate.js
           node work/test_deadline_order.js
           node work/test_scheduled_cycle_evidence.js
+          node work/test_postpass_cadence.js
           node work/test_automatic_operation.js
       - name: Fill missed price intervals with shared cooldown and access budgets
         run: |

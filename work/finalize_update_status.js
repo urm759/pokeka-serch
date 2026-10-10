@@ -260,6 +260,15 @@ const payload = {
   completeDate: complete ? today : previous.allDataCompleteDate || previous.completeDate || null,
   manualPending,
   pipelines: {
+    isolation: {
+      label: "取得元ごとの失敗局所化",
+      status: read("data/daily-source-isolation.json").status === 'partial-with-failure' ? "一部取得元停止・独立更新継続" : read("data/daily-source-isolation.json").endedAt ? "処理完了（取得成果は別）" : "未実行",
+      updatedAt: read("data/daily-source-isolation.json").endedAt || null,
+      durationMs: read("data/daily-source-isolation.json").endedAt ? Date.parse(read("data/daily-source-isolation.json").endedAt)-Date.parse(read("data/daily-source-isolation.json").startedAt) : null,
+      sourceStages: Object.fromEntries((read("data/daily-source-isolation.json").sources || []).map(row=>[row.source,{status:row.status,reason:row.error,durationMs:row.durationMs,batches:1}])),
+      checkpoint: "失敗取得元の前回正常値を保持。独立取得は継続、検証失敗は公開不可",
+      llmCalls: 0, codexCalls: 0,
+    },
     fast: {
       label: "日次高速更新",
       runClass: updatePerformance.runClass || "高速更新",

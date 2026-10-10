@@ -678,12 +678,17 @@ async function updateTorecaCamp(cards, paths) {
   let duplicateUrls = 0; let duplicateProductIds = 0;
   let stoppingReason = null;
   const excluded = { noStateA: 0, gradedProduct: 0, noCardNumber: 0, noLocalCandidate: 0, identityMismatch: 0, ambiguous: 0 };
+  let maintenanceMode = false;
+  const postpass = require('./camp_postpass');
+  const knownByUrl = new Map(catalog.map(entry=>[entry.detailUrl,entry]));
+  const important = new Set(Object.keys(read(path.join(__dirname,'purchase-price-targets.json'),{}).rows||{}));
   try {
     const indexResponse = await fetchText(`${TORECA_CAMP}/sitemap.xml`, { intervalMs: 1100 });
     sitemapUrls = parseProductSitemapIndex(indexResponse.text);
     if (!sitemapUrls.length) throw new Error("商品サイトマップが見つかりません");
     progress.totalSitemaps = sitemapUrls.length;
     progress.sitemapUrls = sitemapUrls;
+    maintenanceMode = postpass.prepare(progress,sitemapUrls.length);
   } catch (error) {
     failed += 1;
     progress.lastFailure = { pageKey: "sitemap-index", url: `${TORECA_CAMP}/sitemap.xml`, stage: "fetch-index", httpStatus: error.metric?.httpStatus || null, retryCount: error.metric?.retryCount || 0, error: error.message, at: new Date().toISOString() };
@@ -701,7 +706,7 @@ async function updateTorecaCamp(cards, paths) {
     let sitemapIndex = retryOnly ? due.sitemapIndex : retrySitemap ? Number(dueSitemap[0]) - 1 : forcedSitemap >= 0 && process.env.TORECACAMP_RETRY_SITEMAP
       ? forcedSitemap
       : progress.currentSitemapIndex;
-    while (!retryOnly && !retrySitemap && sitemapIndex < sitemapUrls.length && progress.processedSitemaps.includes(sitemapIndex + 1)) sitemapIndex += 1;
+    while (!maintenanceMode && !retryOnly && !retrySitemap && sitemapIndex < sitemapUrls.length && progress.processedSitemaps.includes(sitemapIndex + 1)) sitemapIndex += 1;
       if (sitemapIndex >= sitemapUrls.length) break;
     const sitemapRetry = progress.failedSitemaps[sitemapIndex + 1]?.retry;
     if (!retryOnly && sitemapRetry && !retryPolicy.eligible(sitemapRetry)) {
@@ -738,11 +743,17 @@ async function updateTorecaCamp(cards, paths) {
           break;
         }
         const sitemapEntry = entries[entryIndex];
-        const advance = () => { if (retrySitemap) retryEntryCursor = entryIndex + 1; else if (!retryOnly) progress.currentEntryIndex = entryIndex + 1; };
+        const advance = () => {
+          if (retrySitemap) retryEntryCursor = entryIndex + 1;
+          else if (!retryOnly) progress.currentEntryIndex = entryIndex + 1;
+          if (maintenanceMode) postpass.checkpoint(progress,sitemapUrls.length);
+        };
         if (retryOnly && (sitemapEntry.url !== due.url || !retryPolicy.eligible(progress.retryByUrl[sitemapEntry.url]))) continue;
         if (!retryOnly && progress.retryByUrl[sitemapEntry.url]) { advance(); continue; }
         if (!retryOnly && !retrySitemap) { progress.currentSitemapIndex = sitemapIndex; progress.currentEntryIndex = entryIndex; }
-        if (seenProductUrls.has(sitemapEntry.url)) { duplicateUrls += 1; advance(); continue; }
+        const existingProduct = knownByUrl.get(sitemapEntry.url);
+        const refreshExisting = maintenanceMode && existingProduct && postpass.due(existingProduct,important.has(existingProduct.cardId));
+        if (seenProductUrls.has(sitemapEntry.url) && !refreshExisting) { duplicateUrls += 1; advance(); continue; }
         parsed += 1;
         const stub = { title: sitemapEntry.title, handle: sitemapEntry.handle, tags: [] };
         const sig = campSignature(stub);
@@ -777,7 +788,7 @@ async function updateTorecaCamp(cards, paths) {
           failed++; advance(); write(paths.progress, progress); continue;
         }
         delete progress.retryByUrl[sitemapEntry.url];
-        if (seenProductIds.has(String(product.id))) { duplicateProductIds += 1; seenProductUrls.add(sitemapEntry.url); advance(); continue; }
+        if (seenProductIds.has(String(product.id)) && !refreshExisting) { duplicateProductIds += 1; seenProductUrls.add(sitemapEntry.url); advance(); continue; }
         const variant = (product.variants || []).find(campA);
         if (!variant) { excluded.noStateA += 1; seenProductUrls.add(sitemapEntry.url); seenProductIds.add(String(product.id)); advance(); continue; }
         stateA += 1;
@@ -797,6 +808,11 @@ async function updateTorecaCamp(cards, paths) {
         if (!previousEntry && chosen === entry) linked += 1;
         else if (chosen === entry && (previousEntry.detailUrl !== entry.detailUrl || previousEntry.price !== entry.price || previousEntry.available !== entry.available)) updated += 1;
         byId.set(card.id, chosen);
+        if (maintenanceMode) {
+          progress.maintenance.refreshed += 1;
+          if (!previousEntry) progress.maintenance.newLinks += 1;
+          knownByUrl.set(sitemapEntry.url,entry);
+        }
         seenProductUrls.add(sitemapEntry.url);
         seenProductIds.add(String(product.id));
         advance();
@@ -842,6 +858,7 @@ async function updateTorecaCamp(cards, paths) {
     if (retryOnly || retrySitemap) { progress.currentSitemapIndex = normalCursor.sitemap; progress.currentEntryIndex = normalCursor.entry; }
     progress.seenProductUrls = [...seenProductUrls];
     progress.seenProductIds = [...seenProductIds];
+    if (maintenanceMode) postpass.checkpoint(progress,sitemapUrls.length);
     write(paths.catalog, [...byId.values()]);
     write(paths.progress, progress);
     metric.endedAt = new Date().toISOString();
@@ -849,6 +866,7 @@ async function updateTorecaCamp(cards, paths) {
     if (stoppingReason || process.env.TORECACAMP_RETRY_SITEMAP) break;
   }
   const catalogGuard = guardCatalogDrop(previousCatalog, [...byId.values()]);
+  if (maintenanceMode) postpass.checkpoint(progress,sitemapUrls.length);
   const nextCatalog = catalogGuard.catalog;
   const summary = {};
   for (const entry of nextCatalog) summary[entry.cardId] = {
@@ -869,8 +887,8 @@ async function updateTorecaCamp(cards, paths) {
   const estimatedRemainingProducts = estimatedTotalProducts > 0 ? Math.max(0, estimatedTotalProducts - seenProductUrls.size) : null;
   const firstPassComplete = Boolean(progress.totalSitemaps && processedSitemapCount >= progress.totalSitemaps);
   const crawlComplete = firstPassComplete && !Object.keys(progress.retryByUrl || {}).length && !Object.keys(progress.failedSitemaps || {}).length;
-  const progressHealth = updateProgressHealth(progress, seenProductUrls.size);
-  if (crawlComplete) stoppingReason = null;
+  const progressHealth = updateProgressHealth(progress, seenProductUrls.size + Number(progress.maintenance?.refreshed || 0));
+  if (crawlComplete && !maintenanceMode) stoppingReason = null;
   progress.lastRun = {
     startedAt, durationMs: Date.now() - Date.parse(startedAt),
     paginationMode: "sitemap", currentCursor: progress.currentSitemapIndex + 1,
@@ -879,8 +897,10 @@ async function updateTorecaCamp(cards, paths) {
     processedSitemapCount, processedSitemaps: progress.processedSitemaps.slice(-44),
     totalSitemaps: progress.totalSitemaps || sitemapUrls.length || 44,
     cumulativeProductCount: seenProductUrls.size, estimatedTotalProducts, estimatedRemainingProducts,
-    cumulativeMatchedCount: nextCatalog.length, hasMorePages: !crawlComplete, crawlComplete,
+    cumulativeMatchedCount: nextCatalog.length, hasMorePages: maintenanceMode || !crawlComplete, crawlComplete,
     firstPassComplete, retryQueue: Object.values(progress.retryByUrl || {}),
+    maintenanceMode, maintenance:progress.maintenance||null, firstPassCompletedAt:progress.firstPassCompletedAt||null,
+    maintenancePendingCount: maintenanceMode ? nextCatalog.filter(entry=>postpass.due(entry,important.has(entry.cardId))).length : null,
     priceMigration: priceMigration.audit,
     quarantinedPriceCount: nextCatalog.filter((entry) => entry.priceQuarantined).length,
     sitemapsSucceeded, listedProducts, detailFetched, parsed, stateA, newLinkCount: linked,
@@ -894,7 +914,7 @@ async function updateTorecaCamp(cards, paths) {
     lastFailure: progress.lastFailure || null,
     failedSitemaps: Object.values(progress.failedSitemaps),
     stoppingReason,
-    completionStatus: crawlComplete && failed === 0 ? "success" : "partial",
+    completionStatus: maintenanceMode ? "partial" : crawlComplete && failed === 0 ? "success" : "partial",
     completedAt: new Date().toISOString(),
   };
   write(paths.catalog, nextCatalog); write(paths.progress, progress); write(paths.sitemapCache, sitemapCache);
@@ -911,7 +931,8 @@ async function updateTorecaCamp(cards, paths) {
     estimatedRemainingProducts, cumulativeProductCount: seenProductUrls.size,
     cumulativeMatchedCount: nextCatalog.length, crawlComplete,
     firstPassComplete, retryQueue: Object.values(progress.retryByUrl || {}), sourceRetry: progress.sourceRetry || null,
-    completionStatus: crawlComplete && failed === 0 ? "success" : "partial",
+    maintenanceMode, maintenance:progress.maintenance||null,
+    completionStatus: maintenanceMode ? "partial" : crawlComplete && failed === 0 ? "success" : "partial",
   };
 }
 

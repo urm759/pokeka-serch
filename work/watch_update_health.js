@@ -35,9 +35,10 @@ async function main() {
     const deployments=await api(`${API}/actions/runs?per_page=30`);
     const pages=deployments.workflow_runs?.find(r=>r.name==='pages build and deployment'&&r.conclusion==='success');
     for(const [key,list] of Object.entries({daily:runs,safe:safeRuns,pokedata:pokeRuns,priority:priceRuns,catchup:catchupRuns})) {
-      const latest=list.workflow_runs?.find(r=>r.event==='schedule'&&r.status==='completed');
+      const receipt=receipts.pipelines?.[key];
+      const latest=list.workflow_runs?.find(r=>r.status==='completed'&&(r.event==='schedule'||key==='catchup'&&String(r.id)===String(receipt?.runId)&&r.event==='workflow_run'));
       if(!latest || cycles.pipelines[key]?.runId===latest.id&&cycles.pipelines[key]?.confirmed)continue;
-      const receipt=receipts.pipelines?.[key],texts={};
+      const texts={};
       if(receipt && String(receipt.runId)===String(latest.id)){
         for(const file of Object.keys(receipt.hashes||{})){
           if(!/^data\/[a-z0-9/-]+\.json$/i.test(file))throw new Error('Invalid receipt path');
@@ -52,6 +53,7 @@ async function main() {
     delete cycles.checkError;
   }catch(error){cycles.checkError=error.message;cycles.checkedAt=new Date().toISOString();}
   fs.writeFileSync(cycleFile,JSON.stringify(cycles));
+  require('./effective_price_cadence').build(ROOT);
   const evidenceFile=path.join(ROOT,'data/proactive-refresh-audit.json');
   if(fs.existsSync(evidenceFile)) {
     const evidence=JSON.parse(fs.readFileSync(evidenceFile,'utf8'));

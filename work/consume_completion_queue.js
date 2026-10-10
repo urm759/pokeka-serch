@@ -68,7 +68,7 @@ function run() {
     cardrush: { status: "認証・アクセス確認待ち", reason: "403停止を維持。自動回避なし" },
     yuyutei: { status: "認証・アクセス確認待ち", reason: "403停止を維持" },
     torecacamp: { status: "自動補完対応済み", method: "別担当のサイトマップ段階巡回。二重取得しない" },
-    psaOfficial: { status: "PC取得処理あり・認証／公開復旧待ち", method: "優先キュー生成は取得0件。実取得・保存・公開を個別監査。未登録セットURLは確認待ち" },
+    psaOfficial: { status: read('data/psa-pc-observation.json').lastScheduledState?.publishStatus === 'published' ? "PC定期取得・公開確認済み／未登録・曖昧は別保留" : "PC取得処理あり・認証／公開復旧待ち", method: "優先キュー生成は取得0件。実取得・保存・公開を個別監査。未登録セットURLは確認待ち" },
     pokedata: { status: "公開情報対応済み／実成約は認証待ち", method: "別担当のセット・ページチェックポイント。個別成約を推定しない" },
     domesticPsa9: { status: "取得処理未実装", reason: "同一日本語カードの国内PSA9個別実成約を取得する正規経路未確定" },
     rawActualSales: { status: "海外実成約は認証確認待ち", reason: "PokeDATA Rawは国内状態A成約とは別指標" },
