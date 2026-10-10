@@ -1,11 +1,13 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-10T12:39:30.967Z",
+  "generatedAt": "2026-10-10T12:41:18.009Z",
   "sourceLastSuccessAt": "2026-10-10T12:32:15.816Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-10-10T10:27:10.795Z",
-    "lastSuccessAt": "2026-10-10T10:27:10.795Z"
+    "lastAttemptAt": "2026-10-10T12:41:17.999Z",
+    "lastSuccessAt": "2026-10-10T12:41:17.999Z",
+    "runId": "38052291487",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/38052291487"
   },
   "issues": [
     {
@@ -49,12 +51,6 @@
       "category": "鮮度未達・進捗停滞",
       "url": "https://github.com/urm759/pokeka-serch/actions/runs/36492032792",
       "reason": "遊々亭: 更新期限超過（カード別鮮度 0%）"
-    },
-    {
-      "key": "source:shopBuyback:manual-wait",
-      "category": "確認が必要",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38029937897",
-      "reason": "Web買取表: トレカクラブ: existing data was preserved: 取得件数が前回の半分未満。急減を隔離し正常データ保持"
     },
     {
       "key": "source:psaJapan:manual-wait",
@@ -101,7 +97,6 @@
     "カードラッシュ: 更新期限超過（カード別鮮度 0%）",
     "遊々亭: HTTP 403",
     "遊々亭: 更新期限超過（カード別鮮度 0%）",
-    "Web買取表: トレカクラブ: existing data was preserved: 取得件数が前回の半分未満。急減を隔離し正常データ保持",
     "PSA Japan料金: PSA Japan refresh failed; previous verified values retained: PSA Japan HTTP 403",
     "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）",
     "PC側PSA: 独立監視未登録 / Windowsのタスク登録権限が不足。通常PSAのfinally観測は稼働するが、起動前失敗を捕捉する独立タスクは未登録",
