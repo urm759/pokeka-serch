@@ -1,11 +1,11 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-10T10:17:59.110Z",
+  "generatedAt": "2026-10-10T10:31:10.279Z",
   "sourceLastSuccessAt": "2026-10-10T06:09:33.876Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-10-10T10:07:43.710Z",
-    "lastSuccessAt": "2026-10-10T10:07:43.710Z"
+    "lastAttemptAt": "2026-10-10T10:27:10.795Z",
+    "lastSuccessAt": "2026-10-10T10:27:10.795Z"
   },
   "issues": [
     {
@@ -81,10 +81,10 @@
       "reason": "重要価格更新：設定2時間に対し実績成功間隔（直近最大）12.71時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
     },
     {
-      "key": "priority-prices:workflow-failure",
+      "key": "priority-prices:source-failure",
       "category": "取得処理の故障",
       "url": "https://github.com/urm759/pokeka-serch/actions/runs/38029488008",
-      "reason": "購入価格高速更新の保存・検証・公開失敗"
+      "reason": "購入価格高速更新：取得元工程が失敗。保存済み正常データを保持し、必須検証後に公開する。計算失敗やpush失敗と混同しない"
     },
     {
       "key": "monitor:workflow-failure",
@@ -106,7 +106,7 @@
     "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）",
     "PC側PSA: 独立監視未登録 / Windowsのタスク登録権限が不足。通常PSAのfinally観測は稼働するが、起動前失敗を捕捉する独立タスクは未登録",
     "重要価格更新：設定2時間に対し実績成功間隔（直近最大）12.71時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能",
-    "購入価格高速更新の保存・検証・公開失敗",
+    "購入価格高速更新：取得元工程が失敗。保存済み正常データを保持し、必須検証後に公開する。計算失敗やpush失敗と混同しない",
     "監視確認または監視公開が未完了。補完失敗と監視自身の停止を分離して復旧"
   ],
   "detailUrl": "./data/update-health.json"

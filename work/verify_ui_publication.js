@@ -35,6 +35,14 @@ async function main() {
   assert.equal(update.complete, false, 'partial data must not become all-complete');
   const performance=JSON.parse(await read('data/performance-guard.json?verify='+Date.now()));
   assert(performance.calculationValuesEqual);
+  if(process.argv.includes('--record-recovery')) {
+    const commit=process.env.PUBLIC_COMMIT;
+    assert(/^[a-f0-9]{40}$/.test(commit||''),'explicit verified publication commit required');
+    const recovery=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/source-recovery-audit.json'),'utf8'));
+    recovery.publicationStatus='取得元回収分の必須検証・Pages公開・公開JSON照合済み（退避全体の完了とは別）';
+    recovery.publicationEvidence={commit,revision:manifest.revision,verifiedAt:new Date().toISOString(),verifiedFiles:verified};
+    require('./acquisition_retry').atomicWrite(path.join(__dirname,'../data/source-recovery-audit.json'),recovery,0);
+  }
   console.log(JSON.stringify({url:base,revision:manifest.revision,verified,
     total:completion.summary.total,analyzable:completion.summary.analyzable,
     filled:audit.counts.filledCards,newAnalyzable:audit.counts.newlyAnalyzable,

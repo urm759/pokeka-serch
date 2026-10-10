@@ -129,11 +129,13 @@ async function main() {
   }
   // Keep artifact metadata, never treat an unvalidated recovery bundle as published data.
   const unpublishedData=[];
+  const recovered=(()=>{try{return JSON.parse(fs.readFileSync(path.join(ROOT,'data/source-recovery-audit.json'),'utf8'));}catch{return {};}})();
   const failedRuns=[...(priceRuns.workflow_runs||[]),...(catchupRuns.workflow_runs||[])].filter(r=>r.conclusion==='failure').slice(0,4);
   for(const run of failedRuns) {
     const artifacts=await api(`${API}/actions/runs/${run.id}/artifacts`);
     for(const item of artifacts.artifacts||[])if(!item.expired)unpublishedData.push({runId:run.id,url:run.html_url,
-      artifactId:item.id,name:item.name,bytes:item.size_in_bytes,status:'退避あり・未検証／公開照合待ち'});
+      artifactId:item.id,name:item.name,bytes:item.size_in_bytes,status:String(recovered.runId)===String(run.id)&&recovered.publicationEvidence
+        ?`取得元${recovered.recoveredSourceFiles}ファイル回収分は公開照合済み／退避全体の完了とは別`:'退避あり・未検証／公開照合待ち'});
   }
   const cadence = JSON.parse(fs.readFileSync(path.join(ROOT,'data/refresh-cadence-audit.json'),'utf8'));
   if (cadence.observedSuccessfulIntervalMs >= 6*3600000) priceIssues.push({
@@ -143,8 +145,13 @@ async function main() {
   if (["failure", "timed_out"].includes(priceState.conclusion)) {
     const verified=cycles.pipelines?.priority;
     const partialPublished=String(verified?.runId)===String(priceState.runId)&&verified.confirmed&&verified.partial;
-    priceIssues.push({key:partialPublished?'priority-prices:source-failure':'priority-prices:workflow-failure',
-      reason:partialPublished?'購入価格高速更新：一部取得元が失敗。独立した正常データは必須検証・保存・公開照合済み':'購入価格高速更新：取得・検証・保存・公開のいずれかが未完了。実行ログで工程を確認',url:priceState.runUrl});
+    const audited=(()=>{try{return JSON.parse(fs.readFileSync(path.join(ROOT,'data/update-failure-audit.json'),'utf8')).rows||[];}catch{return [];}})()
+      .filter(row=>String(row.id)===String(priceState.runId)).flatMap(row=>row.failedSteps||[]);
+    const originFailure=audited.length>0&&audited.every(name=>/Refresh due purchase prices|Fill missed price intervals/.test(name));
+    priceIssues.push({key:partialPublished||originFailure?'priority-prices:source-failure':'priority-prices:workflow-failure',
+      reason:partialPublished?'購入価格高速更新：一部取得元が失敗。独立した正常データは必須検証・保存・公開照合済み':originFailure
+        ?'購入価格高速更新：取得元工程が失敗。保存済み正常データを保持し、必須検証後に公開する。計算失敗やpush失敗と混同しない'
+        :'購入価格高速更新：取得・検証・保存・公開のいずれかが未完了。実行ログで工程を確認',url:priceState.runUrl});
   }
   if (priceState.stuckRuns >= 3) priceIssues.push({ key: "priority-prices:stalled", reason: "購入価格高速更新が3回連続で進捗なし・期限超過あり", url: priceState.runUrl });
   const issues = [...dailyIssues, ...backfills.issues, ...sourceIssues, ...priceIssues, ...watchIssues].map(issue => ({ ...issue,

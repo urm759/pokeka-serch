@@ -13,7 +13,17 @@ function record(root,status,extra={}) {
 }
 function banner(root) {
   const health=read(root,'data/update-health.json'),status=read(root,'data/update-status.json');
-  const observation=read(root,'data/monitor-observation.json');
+  let observation=read(root,'data/monitor-observation.json');
+  const recovery=read(root,'data/source-recovery-audit.json');
+  if(recovery.publicationEvidence && observation.unpublishedData?.some(row=>String(row.runId)===String(recovery.runId))) {
+    const annotated=observation.unpublishedData.map(row=>String(row.runId)!==String(recovery.runId)?row:{...row,
+      status:`取得元${recovery.recoveredSourceFiles}ファイル回収分は公開照合済み／退避全体の完了とは別`,recoveryEvidence:recovery.publicationEvidence});
+    if(JSON.stringify(annotated)!==JSON.stringify(observation.unpublishedData)) {
+      observation={...observation,unpublishedData:annotated};
+      // A publication annotation is not a new API observation or price confirmation.
+      atomicWrite(path.join(root,'data/monitor-observation.json'),observation);
+    }
+  }
   const monitoring=Object.fromEntries(['status','lastAttemptAt','lastSuccessAt','runId','url','error'].filter(key=>observation[key]!=null).map(key=>[key,observation[key]]));
   const result={version:1,generatedAt:new Date().toISOString(),sourceLastSuccessAt:status.sources?.toreca?.lastSuccessAt||null,
     monitoring,
