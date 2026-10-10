@@ -38,7 +38,8 @@ assert(strictMatch({name:'リーリエ SR[SM4+ 119/114](ハイクラスパック
 assert(!strictMatch({name:'ミュウ UR[S8a 030/028](パック)'},{title:'ミュウ(SR){超}〈030/028〉[S8a]'}));
 const now=Date.now(),queue={cards:{fixture:{m:['shopStateA'],p:5}}};
 assert.equal(select([card],queue,{cards:{}},now).length,1);
-assert.equal(select([card],queue,{cards:{fixture:{matcherVersion:2,nextRetryAt:new Date(now+86400000).toISOString()}}},now).length,0);
+assert.equal(select([card],queue,{cards:{fixture:{matcherVersion:2,matcherRevision:'strict-promo-prefix-v3',nextRetryAt:new Date(now+86400000).toISOString()}}},now).length,0);
+assert.equal(select([card],queue,{cards:{fixture:{matcherVersion:2,matcherRevision:'strict-state-a-v2',nextRetryAt:new Date(now+86400000).toISOString()}}},now).length,1,'changed promo identification rechecks only affected cards');
 assert.equal(select([card],queue,{cards:{fixture:{held:true}}},now).length,0);
 const failures={};
 recordFailure(failures,'broken',new Error('HTTP 503'),now);

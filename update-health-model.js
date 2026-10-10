@@ -53,6 +53,13 @@
     if (/stalled|停滞|進捗なし|期限超過|以上停止|以上なし|stale/.test(text)) return '鮮度未達・進捗停滞';
     return '確認が必要';
   }
+  function monitorIssues(observation={},now=Date.now(),ttlHours=6) {
+    const issues=[];
+    const time=Date.parse(observation.lastSuccessAt||'');
+    if(observation.status==='failed')issues.push({key:'monitor:workflow-failure',reason:'監視取得失敗：'+String(observation.error||'原因未記録'),url:observation.url});
+    if(!Number.isFinite(time)||now-time>=ttlHours*HOUR)issues.push({key:'monitor:stale',reason:`監視自身の成功観測が${ttlHours}時間以上なし／取得更新の成功とは別`,url:observation.url});
+    return issues;
+  }
   function summarizeIssue(issue) {
     const text = String(issue.reason || '');
     const category = issueCategory(issue);
@@ -66,5 +73,5 @@
       return {cause:'PC独立監視は未登録',impact:'起動前の観測に制約',action:'登録権限の確認が必要'};
     return {cause:category,impact:text.split(/\r?\n/)[0].slice(0,100),action:'詳細と実行履歴を確認'};
   }
-  return { evaluate, fingerprint, issueCategory, summarizeIssue };
+  return { evaluate, fingerprint, issueCategory, summarizeIssue, monitorIssues };
 });

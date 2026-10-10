@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "generatedAt": "2026-10-10T10:17:59.110Z",
+  "sourceLastSuccessAt": "2026-10-10T06:09:33.876Z",
+  "monitoring": {
+    "status": "observed",
+    "lastAttemptAt": "2026-10-10T10:07:43.710Z",
+    "lastSuccessAt": "2026-10-10T10:07:43.710Z"
+  },
+  "issues": [
+    {
+      "key": "daily:workflow-failure",
+      "category": "取得処理の故障",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38004158170",
+      "reason": "Daily Fast Updateが1回連続失敗"
+    },
+    {
+      "key": "safe:yuyutei:manual-action-required:GitHub ActionsからHTTP #。正規アクセス確認待ち",
+      "category": "アクセス・手動対応待ち",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/37993419734",
+      "reason": "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち"
+    },
+    {
+      "key": "safe:priceEvidence:stalled:#回連続でチェックポイント進捗なし",
+      "category": "鮮度未達・進捗停滞",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/37993419734",
+      "reason": "状態A価格確認: 2回連続でチェックポイント進捗なし"
+    },
+    {
+      "key": "source:cardrush:manual-wait",
+      "category": "アクセス・手動対応待ち",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/35436609624",
+      "reason": "カードラッシュ: pk-73737: HTTP 403"
+    },
+    {
+      "key": "source:cardrush:stale",
+      "category": "鮮度未達・進捗停滞",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/35436609624",
+      "reason": "カードラッシュ: 更新期限超過（カード別鮮度 0%）"
+    },
+    {
+      "key": "source:yuyutei:manual-wait",
+      "category": "アクセス・手動対応待ち",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/36492032792",
+      "reason": "遊々亭: HTTP 403"
+    },
+    {
+      "key": "source:yuyutei:stale",
+      "category": "鮮度未達・進捗停滞",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/36492032792",
+      "reason": "遊々亭: 更新期限超過（カード別鮮度 0%）"
+    },
+    {
+      "key": "source:shopBuyback:manual-wait",
+      "category": "確認が必要",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38029937897",
+      "reason": "Web買取表: トレカクラブ: existing data was preserved: 取得件数が前回の半分未満。急減を隔離し正常データ保持"
+    },
+    {
+      "key": "source:psaJapan:manual-wait",
+      "category": "アクセス・手動対応待ち",
+      "url": null,
+      "reason": "PSA Japan料金: PSA Japan refresh failed; previous verified values retained: PSA Japan HTTP 403"
+    },
+    {
+      "key": "source:snkrRaw:stale",
+      "category": "鮮度未達・進捗停滞",
+      "url": null,
+      "reason": "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）"
+    },
+    {
+      "key": "pc:psa:独立監視未登録",
+      "category": "アクセス・手動対応待ち",
+      "url": null,
+      "reason": "PC側PSA: 独立監視未登録 / Windowsのタスク登録権限が不足。通常PSAのfinally観測は稼働するが、起動前失敗を捕捉する独立タスクは未登録"
+    },
+    {
+      "key": "priority-prices:cadence-stale",
+      "category": "鮮度未達・進捗停滞",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38029488008",
+      "reason": "重要価格更新：設定2時間に対し実績成功間隔（直近最大）12.71時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
+    },
+    {
+      "key": "priority-prices:workflow-failure",
+      "category": "取得処理の故障",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38029488008",
+      "reason": "購入価格高速更新の保存・検証・公開失敗"
+    },
+    {
+      "key": "monitor:workflow-failure",
+      "category": "取得処理の故障",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38029937897",
+      "reason": "監視確認または監視公開が未完了。補完失敗と監視自身の停止を分離して復旧"
+    }
+  ],
+  "reasons": [
+    "Daily Fast Updateが1回連続失敗",
+    "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち",
+    "状態A価格確認: 2回連続でチェックポイント進捗なし",
+    "カードラッシュ: pk-73737: HTTP 403",
+    "カードラッシュ: 更新期限超過（カード別鮮度 0%）",
+    "遊々亭: HTTP 403",
+    "遊々亭: 更新期限超過（カード別鮮度 0%）",
+    "Web買取表: トレカクラブ: existing data was preserved: 取得件数が前回の半分未満。急減を隔離し正常データ保持",
+    "PSA Japan料金: PSA Japan refresh failed; previous verified values retained: PSA Japan HTTP 403",
+    "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）",
+    "PC側PSA: 独立監視未登録 / Windowsのタスク登録権限が不足。通常PSAのfinally観測は稼働するが、起動前失敗を捕捉する独立タスクは未登録",
+    "重要価格更新：設定2時間に対し実績成功間隔（直近最大）12.71時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能",
+    "購入価格高速更新の保存・検証・公開失敗",
+    "監視確認または監視公開が未完了。補完失敗と監視自身の停止を分離して復旧"
+  ],
+  "detailUrl": "./data/update-health.json"
+}

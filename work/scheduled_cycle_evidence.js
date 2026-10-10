@@ -9,10 +9,11 @@ function verify(run, jobs, receipt, publicTexts, pages) {
   const matched=receipt && String(receipt.runId)===String(run.id);
   const hashes=matched?Object.entries(receipt.hashes).map(([file,expected])=>({file,matched:typeof publicTexts[file]==='string'&&hash(publicTexts[file])===expected})):[];
   const pagesAfter=pages?.conclusion==='success' && Date.parse(pages.created_at)>=Date.parse(run.run_started_at||run.created_at);
+  const reportName='Report independent acquisition failures without hiding them';
   const safePartial=receipt?.sourceIsolation && String(receipt.sourceIsolation.runId)===String(run.id)
     && receipt.sourceIsolation.status==='partial-with-failure'
-    && steps.filter(s=>s.conclusion==='failure').every(s=>s.name==='Report independent acquisition failures without hiding them')
-    && steps.some(s=>s.name==='Report independent acquisition failures without hiding them'&&s.conclusion==='failure');
+    && steps.filter(s=>s.conclusion==='failure').every(s=>s.name===reportName||s.name==='Report newly detected alerts')
+    && steps.some(s=>s.name===reportName&&s.conclusion==='failure');
   const scheduled=run.event==='schedule'||receipt?.pipeline==='catchup'&&run.event==='workflow_run';
   const confirmed=scheduled&&(run.conclusion==='success'||safePartial)&&Object.values(stages).every(Boolean)&&matched&&hashes.length>0&&hashes.every(r=>r.matched)&&pagesAfter;
   return {runId:run.id,headSha:run.head_sha,event:run.event,url:run.html_url,stages,receiptMatches:!!matched,
@@ -58,7 +59,12 @@ function record(key,root=ROOT) {
     ?require('./audit_completion_outcomes').compare(before.snapshot,require('./audit_completion_outcomes').snapshot(root)):null;
   previous.pipelines[key]={pipeline:key,runId:process.env.GITHUB_RUN_ID,event:process.env.GITHUB_EVENT_NAME||null,
     headSha:process.env.GITHUB_SHA||null,recordedAt:new Date().toISOString(),
-    sourceIsolation:key==='daily'?optional('data/daily-source-isolation.json'):null,
+    sourceIsolation:key==='daily'?optional('data/daily-source-isolation.json'):(()=>{
+      const execution=optional('data/priority-price-execution.json');
+      if(!['priority','catchup'].includes(key)||String(execution?.runId)!==String(process.env.GITHUB_RUN_ID))return null;
+      const failures=(execution.runs||[]).filter(r=>r.processStatus==='failed');
+      return {runId:execution.runId,status:failures.length?'partial-with-failure':'process-success',sources:failures.map(r=>({source:r.script,status:'failed'}))};
+    })(),
     cardObservations,
     hashes:Object.fromEntries(files.map(f=>[f,hash(fs.readFileSync(path.join(root,f),'utf8'))])),
     outcomes:{counts:completion.counts,runDelta:delta,deltaStatus:delta?'同じ実行の取得前スナップショットから比較':'取得前記録不足・増分を推定しない',

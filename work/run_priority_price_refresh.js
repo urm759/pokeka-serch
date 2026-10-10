@@ -10,6 +10,13 @@ function due(record, now = Date.now(), config = {}) {
   return (!Number.isFinite(success) || require("./proactive_refresh.js").eligibleDeadline(success + 6 * 3600000, true, now, config)) && (!Number.isFinite(attempt) || now - attempt >= 2 * 3600000);
 }
 function main() {
+  if (process.argv.includes('--report-failures')) {
+    const previous = read('data/priority-price-execution.json');
+    if (String(previous.runId || '') !== String(process.env.GITHUB_RUN_ID || '')) return;
+    const failed = (previous.runs || []).filter(row => row.processStatus === 'failed');
+    if (failed.length) { console.error('Independent source failures retained: ' + failed.map(row => row.script).join(', ')); process.exitCode = 1; }
+    return;
+  }
   const finalizeOnly = process.argv.includes('--finalize-only');
   const previous = finalizeOnly ? read('data/priority-price-execution.json') : {};
   const started = finalizeOnly ? Date.parse(previous.startedAt) || Date.now() : Date.now(), runs = previous.runs || [];
@@ -22,7 +29,7 @@ function main() {
     scheduledSlotAt: process.env.GITHUB_EVENT_NAME === "schedule" ? scheduled.toISOString() : null,
     delayMethod: "直近の定期cron枠から実処理開始まで。2時間超の遅延は識別不能のため手動監査対象",
     runClass: finalizeOnly ? "保存済み取得の集計復旧・再取得なし" : process.argv.includes('--catchup') ? "監視経路の空白補完・探索なし" : "価格更新・探索なし", llmCalls: 0, codexCalls: 0, runs });
-  function run(script, args = [], env = {}) {
+  function run(script, args = [], env = {}, role = 'required') {
     const at = Date.now();
     const child = spawnSync(process.execPath, [path.join(ROOT, script), ...args], { cwd: ROOT,
       env: { ...process.env, ...env }, encoding: "utf8", maxBuffer: 64 * 1024 * 1024, timeout: 600000 });
@@ -31,7 +38,8 @@ function main() {
     for (const line of String(child.stdout || "").trim().split(/\r?\n/).reverse()) { try { details = JSON.parse(line); break; } catch { /* Non-JSON progress text. */ } }
     const processStatus = child.status === 0 && !child.error ? "success" : "failed";
     runs.push({ script, startedAt: new Date(at).toISOString(), endedAt: new Date().toISOString(), durationMs: Date.now() - at,
-      processStatus, status: processStatus === "failed" ? "failed" : details?.status || details?.completionStatus || "process-success",
+      processStatus, failureClass:processStatus==='failed'?(role==='source'?'source-acquisition':'required-calculation'):null,
+      status: processStatus === "failed" ? "failed" : details?.status || details?.completionStatus || "process-success",
       attempted: details?.attemptedCount ?? null, refreshed: details?.refreshedCount ?? null, changed: details?.changedCount ?? null,
       proactiveAttempted:details?.proactiveAttempted ?? null, proactiveVerified:details?.proactiveVerified ?? null,
       httpRequests:details?.httpRequests ?? null, deadlineOrderVersion:details?.deadlineOrderVersion || null,
@@ -45,9 +53,9 @@ function main() {
   if (!run('work/build_purchase_limit_audit.js')) throw new Error('Purchase target queue rebuild failed');
   if (!run('work/audit_purchase_price_recovery.js', ['--baseline'])) throw new Error('Freshness baseline save failed');
   const config = require("./priority_price_queue.js").timingConfig(ROOT);
-  if (due(sources.toreca, Date.now(), config)) run("work/daily_fast_update.js", [], { FAST_DEEP_SCAN: "0", DAILY_RUNTIME_LIMIT_MS: "300000" });
-  if (due(sources.shopBuyback, Date.now(), config)) run("work/run_tracked_update.js", ["shopBuyback", "work/update_shop_buybacks.js"], { TRACKED_TIMEOUT_MS: "300000" });
-  for (const sourceId of ["cardrush", "hareruya2"]) run("work/refresh_candidate_shops.js", [sourceId], { CANDIDATE_SHOP_MODE: "deadline" });
+  if (due(sources.toreca, Date.now(), config)) run("work/daily_fast_update.js", [], { FAST_DEEP_SCAN: "0", DAILY_RUNTIME_LIMIT_MS: "300000" }, 'source');
+  if (due(sources.shopBuyback, Date.now(), config)) run("work/run_tracked_update.js", ["shopBuyback", "work/update_shop_buybacks.js"], { TRACKED_TIMEOUT_MS: "300000" }, 'source');
+  for (const sourceId of ["cardrush", "hareruya2"]) run("work/refresh_candidate_shops.js", [sourceId], { CANDIDATE_SHOP_MODE: "deadline" }, 'source');
   }
   for (const script of ["work/audit_state_a_prices.js", "work/build_card_completion.js", "work/build_purchase_limit_audit.js", "work/audit_acquisition_progress.js", "work/audit_link_coverage.js"]) {
     if (!run(script)) throw new Error(`Required rebuild failed: ${script}`);
@@ -55,10 +63,12 @@ function main() {
   if (!run('work/audit_purchase_price_recovery.js')) throw new Error('Purchase freshness outcome audit failed');
   if (!run('work/finalize_update_status.js')) throw new Error('Update status rebuild failed');
   save();
-  if (runs.some((row) => row.status === "failed")) process.exitCode = 1;
+  // Source failures remain visible, but only required rebuild failures stop validation.
+  return { sourceFailures: runs.filter(row => row.processStatus === 'failed').map(row => row.script) };
 }
 if (require.main === module) {
-  if (process.argv.includes('--finalize-only')) {
+  if (process.argv.includes('--report-failures')) main();
+  else if (process.argv.includes('--finalize-only')) {
     const release = require('./acquisition_retry').lock(path.join(ROOT,'work/priority-price-refresh.lock'));
     try { main(); } finally { release(); }
   } else {

@@ -8,6 +8,7 @@ const root=path.join(__dirname,'..');
 const read=(file,fallback)=>{try{return JSON.parse(fs.readFileSync(path.join(root,file),'utf8'));}catch{return fallback;}};
 const write=(file,value)=>{const target=path.join(root,file);fs.writeFileSync(target+'.tmp',JSON.stringify(value));fs.renameSync(target+'.tmp',target);};
 function strictMatch(card,product) {
+  if (/英語|海外|韓国|中国語|中文版|English|Korean|Chinese/i.test(card.name||'')) return false;
   if (shop.stateFromTitle(product.title)!=='A' || /PSA|BGS|CGC|TAG|ACE|鑑定|英語|海外|韓国|未開封|枚セット/i.test(product.title||'')) return false;
   const a=shop.extractCardSignature(card),b=shop.extractProductSignature(product);
   const number=s=>String(s).replace(/\/[A-Za-z0-9-]+-P$/i,'').split('/').map(n=>/^\d+$/.test(n)?String(Number(n)):n).join('/');
@@ -15,6 +16,27 @@ function strictMatch(card,product) {
   return Boolean(a.base && b.base && a.setCode && a.setCode===b.setCode && number(a.cardNo)===number(b.cardNo)
     && a.finish===b.finish && rarity(card.name.split('[')[0]) && rarity(card.name.split('[')[0])===rarity(product.title)
     && shop.productMatchesCard(card,product));
+}
+function diagnose(card,products) {
+  const signature=shop.extractCardSignature(card);
+  const number=s=>String(s||'').split('/').map(n=>/^\d+$/.test(n)?String(Number(n)):n.toLowerCase()).join('/');
+  const near=products.filter(p=>number(shop.extractProductSignature(p).cardNo)===number(signature.cardNo));
+  const reasons={};
+  if(!signature.setCode||!signature.cardNo)reasons['国内識別情報不足']=1;
+  if(!near.length)reasons['同一番号の掲載未確認']=1;
+  const samples=near.slice(0,3).map(product=>{
+    const p=shop.extractProductSignature(product),rejected=[];
+    if(signature.setCode!==p.setCode)rejected.push('セットコード不一致');
+    if(signature.finish!==p.finish)rejected.push(signature.finish==='first'&&!p.finish?'初版表記未確認':'仕様・ミラー不一致');
+    if(shop.stateFromTitle(product.title)!=='A')rejected.push('状態A以外');
+    if(/PSA|BGS|CGC|TAG|ACE|鑑定|海外|韓国|英語|未開封|枚セット/i.test(product.title))rejected.push('対象外仕様');
+    if(!shop.productMatchesCard(card,product)&&!rejected.length)rejected.push('名称一致未確認');
+    if(!strictMatch(card,product)&&!rejected.length)rejected.push('レアリティ・仕様確定待ち');
+    rejected.forEach(reason=>reasons[reason]=(reasons[reason]||0)+1);
+    return {title:product.title,url:product.handle?`https://www.hareruya2.com/products/${encodeURIComponent(product.handle)}`:null,rejected};
+  });
+  return {signature,listedProducts:products.length,sameNumberCandidates:near.length,reasons,samples,
+    note:'番号だけで自動採用しない。掲載未確認は商品不存在を意味しない'};
 }
 function recordFailure(state,handle,error,now=Date.now()) {
   state.collectionRetries ||= {};
@@ -38,7 +60,9 @@ function sourceFingerprint(products) {
   return crypto.createHash('sha256').update(JSON.stringify(products.map(p=>[p.id || p.handle,p.title]).sort((a,b)=>String(a[0]).localeCompare(String(b[0]))))).digest('hex');
 }
 function matcherRevision(card,rules=read('data/source-matching-rules.json',{})) {
-  return rules.setRevisions?.[String(shop.extractCardSignature(card).setCode).toUpperCase()] || rules.defaultRevision || 'strict-state-a-v2';
+  const signature=shop.extractCardSignature(card);
+  if(/-p$/.test(signature.setCode))return 'strict-promo-prefix-v3';
+  return rules.setRevisions?.[String(signature.setCode).toUpperCase()] || rules.defaultRevision || 'strict-state-a-v2';
 }
 function canRecheck(card,item,state,now=Date.now()) {
   const previous=state.cards?.[card.id];
@@ -78,7 +102,11 @@ async function run() {
     state.collections={rows:collections,fetchedAt:cache && collections===cache.rows?cache.fetchedAt:new Date().toISOString()};
     const groups=new Map();
     for(const card of candidates) {
-      const group=shop.findCollectionForPack(shop.extractCardSignature(card).pack,collections);
+      let group=shop.findCollectionForPack(shop.extractCardSignature(card).pack,collections);
+      if(!group?.handle) {
+        const cached=Object.entries(state.cache||{}).filter(([,value])=>value.rows?.some(p=>strictMatch(card,p)));
+        if(cached.length===1)group=collections.find(c=>c.handle===cached[0][0])||{handle:cached[0][0]};
+      }
       if(!group?.handle) {
         const record={id:card.id,status:'collection-unmatched',checkedAt:new Date().toISOString(),
           reason:'正規セット一覧と収録情報が一致せず・商品取得未実行',url:null};
@@ -118,7 +146,8 @@ async function run() {
           const specs=new Set(matches.map(p=>shop.extractProductSignature(p).base));
           const match=specs.size===1?shop.chooseProduct(matches):null;
           const record={id:card.id,collection:handle,checkedAt:new Date().toISOString(),observedAt:saved.fetchedAt,
-            status:match?'linked':matches.length?'ambiguous':'no-candidate',url:match?`https://www.hareruya2.com/products/${encodeURIComponent(match.handle)}`:null};
+            status:match?'linked':matches.length?'ambiguous':'no-candidate',url:match?`https://www.hareruya2.com/products/${encodeURIComponent(match.handle)}`:null,
+            diagnostic:match?null:diagnose(card,products)};
           if(match){card.hareruya2Url=record.url;audit.newLinked++;}
           else if(matches.length)audit.ambiguous++;else audit.noCandidate++;
           const policy=retryPolicy(card,queue.cards[card.id]);
@@ -142,4 +171,4 @@ async function run() {
   console.log(JSON.stringify(audit));return audit;
 }
 if(require.main===module)run().catch(e=>{console.error(e);process.exitCode=1;});
-module.exports={strictMatch,select,recordFailure,run,retryPolicy,canRecheck,sourceFingerprint,matcherRevision};
+module.exports={strictMatch,diagnose,select,recordFailure,run,retryPolicy,canRecheck,sourceFingerprint,matcherRevision};

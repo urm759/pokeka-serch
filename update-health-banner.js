@@ -7,18 +7,17 @@
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     return response.json();
   }
-  const [sourceResult, runResult, snapshotResult] = await Promise.allSettled([
-    json("./data/update-status.json"),
+  const [snapshotResult, runResult] = await Promise.allSettled([
+    json("./data/update-health-banner.json"),
     json("https://api.github.com/repos/urm759/pokeka-serch/actions/workflows/daily-fast-update.yml/runs?per_page=30"),
-    json("./data/update-health.json"),
   ]);
-  const sourceLastSuccessAt = sourceResult.status === "fulfilled" ? sourceResult.value.sources?.toreca?.lastSuccessAt : null;
+  const sourceLastSuccessAt = snapshotResult.status === "fulfilled" ? snapshotResult.value.sourceLastSuccessAt : null;
   const live = runResult.status === "fulfilled"
     ? model.evaluate({ runs: runResult.value.workflow_runs || [], sourceLastSuccessAt })
     : null;
   const snapshot = snapshotResult.status === "fulfilled" ? snapshotResult.value : null;
   const health = live || (sourceLastSuccessAt ? model.evaluate({ sourceLastSuccessAt }) : snapshot);
-  const backfillIssues = (snapshot?.issues || []).filter((issue) => !issue.key?.startsWith("daily:"));
+  const backfillIssues = [...(snapshot?.issues || []).filter((issue) => !issue.key?.startsWith("daily:")),...model.monitorIssues(snapshot?.monitoring)];
   const dailyReasons = live ? live.reasons : snapshot?.issues
     ? snapshot.issues.filter((issue) => issue.key?.startsWith("daily:")).map((issue) => issue.reason)
     : health?.reasons || [];
@@ -53,6 +52,9 @@
   log.style.whiteSpace = 'pre-wrap';
   log.style.overflowWrap = 'anywhere';
   log.textContent = categorized.map(issue => issue.reason).join('\n\n');
-  details.append(heading, log);
+  const auditLink = document.createElement('a');
+  auditLink.href = snapshot?.detailUrl || './data/update-health.json';
+  auditLink.textContent = '監視全項目・カード別鮮度・未公開データを確認';
+  details.append(heading, log, auditLink);
   banner.replaceChildren(title, message, link, details);
 })();

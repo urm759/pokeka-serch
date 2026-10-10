@@ -10,13 +10,13 @@ async function read(file) {
 }
 async function main() {
   const html = await read('index.html?verify=' + Date.now());
-  assert(html.includes('20261010-isolation-v1') && html.includes('psa-plan-model.js') && html.includes('ui-data-codec.js'));
+  assert(html.includes('20261010-isolation-v1') && html.includes('20261010-independent-monitor-v1') && html.includes('psa-plan-model.js') && html.includes('ui-data-codec.js'));
   const manifest = JSON.parse(await read('data/ui/manifest.json?verify=' + Date.now()));
   const expected = JSON.parse(fs.readFileSync(path.join(__dirname,'../data/ui/manifest.json'),'utf8'));
   assert.equal(manifest.revision, expected.revision, 'must verify the newly published revision');
   const verified = [];
   let completion, update, audit;
-  for (const original of ['data/card-catalog-completion.json','data/update-status.json','data/card-catalog/analysis.json','data/daily-source-isolation.json','data/effective-price-cadence.json','data/psa-japan-services.json','data/operation-improvement-audit.json','data/torecacamp-stock-summary.json']) {
+  for (const original of ['data/card-catalog-completion.json','data/update-status.json','data/card-catalog/analysis.json','data/daily-source-isolation.json','data/effective-price-cadence.json','data/psa-japan-services.json','data/operation-improvement-audit.json','data/torecacamp-stock-summary.json','data/source-recovery-audit.json','data/update-failure-audit.json','data/monitor-observation.json','data/update-health-banner.json']) {
     const file = manifest.aliases[original] || original;
     const text = await read(`${file}?v=${manifest.hashes[file]}`);
     assert.equal(crypto.createHash('sha256').update(text.replace(/\r\n/g,'\n')).digest('hex'), manifest.hashes[file], file);

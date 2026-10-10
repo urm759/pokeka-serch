@@ -81,8 +81,10 @@ function extractCardSignature(card) {
   const setAndNumber = source.match(/\[\s*([A-Za-z0-9+-]+)\s+(\d{1,4}(?:\s*[-/]\s*\d{1,4})?)\s*\]/);
   const promoNumberFirst = source.match(/\[\s*(\d{1,4})\s+([A-Za-z0-9-]+-P)\s*\]/i);
   const slashPromo = source.match(/\[\s*(\d{1,4})\s*\/\s*([A-Za-z0-9-]+-P)\s*\]/i);
-  const setCode = promoNumberFirst?.[2] || slashPromo?.[2] || setAndNumber?.[1] || "";
-  const cardNo = promoNumberFirst?.[1] || setAndNumber?.[2] || String(card?.model || "").replace(/^[A-Za-z-]+\s+/, "");
+  const prefixedPromo = source.match(/\[\s*([A-Za-z0-9-]+-P)\s+(\d{1,4})\s*\/\s*([A-Za-z0-9-]+-P)\s*\]/i);
+  const promoConflict = prefixedPromo && normalize(prefixedPromo[1])!==normalize(prefixedPromo[3]);
+  const setCode = promoConflict ? '' : prefixedPromo?.[1] || promoNumberFirst?.[2] || slashPromo?.[2] || setAndNumber?.[1] || "";
+  const cardNo = prefixedPromo?.[2] || promoNumberFirst?.[1] || setAndNumber?.[2] || String(card?.model || "").replace(/^[A-Za-z-]+\s+/, "");
   const base = sourceWithoutPack
     .split("[")[0]
     .replace(/\b(?:MUR|BWR|MA|SSR|CSR|CHR|SAR|UR|HR|SR|RRR|RR|AR|PR|P|H|C|U|R)\b(?:\s*[:：]\s*SA)?/gi, " ")

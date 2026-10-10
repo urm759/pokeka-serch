@@ -16,6 +16,15 @@ async function api(url) {
 }
 
 async function main() {
+  const observation=require('./monitor_observation');
+  if(process.argv.includes('--report-alerts')) {
+    const saved=JSON.parse(fs.readFileSync(path.join(ROOT,'data/monitor-observation.json'),'utf8'));
+    if(String(saved.runId||'')===String(process.env.GITHUB_RUN_ID||'') && saved.newIssueCount>0) {
+      console.error(`::error::New monitor alerts: ${saved.newIssueCount}. See saved health details.`);process.exitCode=1;
+    }
+    return;
+  }
+  observation.record(ROOT,'running');
   const [runs, safeRuns, pokeRuns, priceRuns, catchupRuns] = await Promise.all([
     api(`${API}/actions/workflows/daily-fast-update.yml/runs?per_page=30`),
     api(`${API}/actions/workflows/safe-checkpoint-backfill.yml/runs?per_page=10`),
@@ -108,14 +117,37 @@ async function main() {
     JSON.stringify(Object.values(prices).map((source) => (source.cards || []).map((card) => card.lastConfirmedAt).filter(Boolean).sort().at(-1) || null)),
     Object.values(prices).some((source) => source.overdue > 0 && !/403|認証|アクセス確認/.test(source.stopReason || "")));
   const priceIssues = [];
+  const lastWatch=catchupRuns.workflow_runs?.find(r=>r.status==='completed');
+  const watchIssues=[];
+  if(lastWatch) {
+    const jobs=await api(`${API}/actions/runs/${lastWatch.id}/jobs`);
+    const steps=(jobs.jobs||[]).flatMap(j=>j.steps||[]);
+    const completedObservation=steps.some(s=>s.name==='Check workflow results and saved checkpoint holds'&&s.conclusion==='success');
+    const monitorPublished=steps.some(s=>s.name==='Publish independent validated monitor state'&&s.conclusion==='success');
+    if(!completedObservation||(!monitorPublished&&lastWatch.conclusion==='failure'))watchIssues.push({key:'monitor:workflow-failure',
+      reason:'監視確認または監視公開が未完了。補完失敗と監視自身の停止を分離して復旧',url:lastWatch.html_url});
+  }
+  // Keep artifact metadata, never treat an unvalidated recovery bundle as published data.
+  const unpublishedData=[];
+  const failedRuns=[...(priceRuns.workflow_runs||[]),...(catchupRuns.workflow_runs||[])].filter(r=>r.conclusion==='failure').slice(0,4);
+  for(const run of failedRuns) {
+    const artifacts=await api(`${API}/actions/runs/${run.id}/artifacts`);
+    for(const item of artifacts.artifacts||[])if(!item.expired)unpublishedData.push({runId:run.id,url:run.html_url,
+      artifactId:item.id,name:item.name,bytes:item.size_in_bytes,status:'退避あり・未検証／公開照合待ち'});
+  }
   const cadence = JSON.parse(fs.readFileSync(path.join(ROOT,'data/refresh-cadence-audit.json'),'utf8'));
   if (cadence.observedSuccessfulIntervalMs >= 6*3600000) priceIssues.push({
     key:'priority-prices:cadence-stale',
     reason:`重要価格更新：設定2時間に対し実績成功間隔（直近最大）${(cadence.observedSuccessfulIntervalMs/3600000).toFixed(2)}時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能`,
     url:priceState.runUrl});
-  if (["failure", "timed_out"].includes(priceState.conclusion)) priceIssues.push({ key: "priority-prices:workflow-failure", reason: "購入価格高速更新の保存・検証・公開失敗", url: priceState.runUrl });
+  if (["failure", "timed_out"].includes(priceState.conclusion)) {
+    const verified=cycles.pipelines?.priority;
+    const partialPublished=String(verified?.runId)===String(priceState.runId)&&verified.confirmed&&verified.partial;
+    priceIssues.push({key:partialPublished?'priority-prices:source-failure':'priority-prices:workflow-failure',
+      reason:partialPublished?'購入価格高速更新：一部取得元が失敗。独立した正常データは必須検証・保存・公開照合済み':'購入価格高速更新：取得・検証・保存・公開のいずれかが未完了。実行ログで工程を確認',url:priceState.runUrl});
+  }
   if (priceState.stuckRuns >= 3) priceIssues.push({ key: "priority-prices:stalled", reason: "購入価格高速更新が3回連続で進捗なし・期限超過あり", url: priceState.runUrl });
-  const issues = [...dailyIssues, ...backfills.issues, ...sourceIssues, ...priceIssues].map(issue => ({ ...issue,
+  const issues = [...dailyIssues, ...backfills.issues, ...sourceIssues, ...priceIssues, ...watchIssues].map(issue => ({ ...issue,
     category: require('../update-health-model.js').issueCategory(issue) }));
   const previousKeys = new Set(current?.activeAlertKeys || []);
   const newlyDetected = issues.filter((issue) => !previousKeys.has(issue.key));
@@ -136,10 +168,15 @@ async function main() {
   fs.writeFileSync(path.join(ROOT, "data", "update-status.json"), JSON.stringify(status), "utf8");
   console.log(JSON.stringify({ status: result.status, issues: result.issues,
     newIssueCount: newlyDetected.length, backfills: result.backfills }));
-  if (newlyDetected.length) {
-    console.error(`::error::${newlyDetected.map((issue) => issue.reason).join(" / ")}`);
-    process.exitCode = 1;
-  }
+  observation.record(ROOT,'observed',{newIssueCount:newlyDetected.length,unpublishedData,
+    lastMonitorRun:lastWatch?{id:lastWatch.id,conclusion:lastWatch.conclusion,url:lastWatch.html_url}:null,
+    freshness:status.priorityPriceMonitor?.fixedCohortFreshness||null,
+    publicationStatus:'監視保存済み・公開工程は別'});
+  observation.banner(ROOT);
 }
 
-if (require.main === module) main().catch((error) => { console.error(error); process.exitCode = 1; });
+if (require.main === module) main().catch((error) => {
+  require('./monitor_observation').record(ROOT,'failed',{error:error.message});
+  require('./monitor_observation').banner(ROOT);
+  console.error(error); process.exitCode = 1;
+});

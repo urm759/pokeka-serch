@@ -31,7 +31,9 @@ function execute(root, callback, { catchup = false, now = Date.now() } = {}) {
     };
     save();
     try {
-      callback();
+      const outcome = callback();
+      record.sourceFailures = outcome?.sourceFailures || [];
+      record.acquisitionStatus = record.sourceFailures.length ? 'partial-with-failure' : 'process-success';
       record.status = process.exitCode ? 'partial-failure' : 'acquired-saved';
     } catch (error) {
       record.status = 'failed'; record.error = error.message; throw error;
