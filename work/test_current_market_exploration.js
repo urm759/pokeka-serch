@@ -129,7 +129,7 @@ const dearer = { ...card, roi: 999, profit: 999, currentStoreOffer: { ...card.cu
 assert(api.sorters['roi-desc'](cheaper, dearer) < 0);
 assert(api.sorters['profit-desc'](cheaper, dearer) < 0);
 state.purchaseMode = 'normal';
-assert(api.sorters['roi-desc'](cheaper, dearer) > 0, 'old mode retains the original sorter');
+assert.equal(api.sorters['roi-desc'](cheaper, dearer), 0, 'normal mode uses its selected reference buy price, not a stale cached ROI field');
 state.purchaseMode = 'current-market';
 state.currentMarketCapMin = view.cap + 500;
 assert(api.cardSearchExclusions(card).includes('現相場損益分岐上限'));

@@ -91,6 +91,8 @@ jobs:
           node work/test_buyback_scenario_limits.js
           node work/test_purchase_limit_audit.js
           node work/test_preset_exploration.js
+          node work/test_search_profit_consistency.js
+          node work/test_psa10_period_statistics.js
           node work/test_current_market_exploration.js
           node work/test_search_calculation_cache.js
           node work/test_price_integrity.js

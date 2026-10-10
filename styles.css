@@ -1617,3 +1617,10 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .search-performance { display: block; margin: 0.6rem 0; color: var(--muted, #94a3b8); font-size: 0.75rem; }
 .search-benchmark { margin: 0.6rem 0; font-size: 0.8rem; }
 .search-benchmark pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 15rem; overflow-y: auto; }
+.psa10-period-summary { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin:10px 0; font-size:12px; }
+.psa10-period-summary span { display:flex; flex-direction:column; gap:3px; }
+.psa10-period-summary small { grid-column:1/-1; color:var(--muted); }
+.buyback-continuity { display:grid; gap:5px; margin:12px 0; font-size:12px; }
+.psa10-period-detail table { width:100%; font-size:12px; border-collapse:collapse; }
+.psa10-period-detail td,.psa10-period-detail th { padding:6px; text-align:left; }
+.search-profit-summary { margin-top:8px; }

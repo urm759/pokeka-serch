@@ -1,0 +1,25 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const {statistics,dailyRows,actualRows,build,shard}=require('./build_psa10_period_statistics');
+const rows=dailyRows([['2026-10-01',1,100],['2026-10-01',1,200],['2026-10-04',1,400],['2026-10-11',1,900],['2026-10-05',1,null],['2026-10-06',1,0],['2026-10-07',1,Infinity]]);
+assert.equal(rows.length,3);
+const seven=statistics(rows,'2026-10-07',7,0,2);assert.equal(seven.mean,300);assert.equal(seven.count,2);assert.equal(seven.observedDays,2);assert.equal(seven.median,300);
+assert.equal(statistics(rows,'2026-10-10',7,0,2).mean,400,'exclude earlier dates and future snapshots');
+assert.equal(statistics([],'2026-10-10',90,0,2).mean,null,'missing is not zero/current price');
+const card={id:'test',identityKey:'identity',snkPsa10Trades:[]};
+const trade={source:'permitted-domestic',measurementType:'actual',market:'domestic',currency:'JPY',cardId:'test',identityKey:'identity',language:'ja',gradingCompany:'PSA',grade:10,identityConfirmed:true,date:'2026-10-10',price:1000};
+card.snkPsa10Trades=[{...trade,id:'a'},{...trade,id:'b'},{...trade,id:'a'},trade,trade,{...trade,market:'overseas'},{...trade,grade:9},{...trade,measurementType:'aggregate'},{...trade,price:null}];
+const actual=actualRows(card);assert.equal(actual.rows.length,4,'same date/price with no stable ID must not merge distinct transactions');assert.equal(actual.rejected['同一成約ID重複'],1);
+const root=path.join(__dirname,'..');const result=build(root),again=build(root);assert.equal(again.changedFiles,0,'unchanged data must not regenerate files');
+const summary=JSON.parse(fs.readFileSync(path.join(root,'data/psa10-period-summary.json'),'utf8'));
+const catalog=JSON.parse(fs.readFileSync(path.join(root,'data/pokemon-cards.json'),'utf8'));
+assert.equal(summary.coverage.actualTradeCards,catalog.filter(c=>actualRows(c).rows.length).length,'daily observations must not count as individual trades');
+const chunks=Array.from({length:16},(_,i)=>JSON.parse(fs.readFileSync(path.join(root,`data/psa10-periods/${i}.json`),'utf8')));
+for(const[id,row]of Object.entries(summary.cards)) {
+  const detail=chunks[shard(id)].cards[id];
+  assert.equal(row[0],detail.snapshots[7].mean);assert.equal(row[2],detail.snapshots[30].mean);
+}
+const app=fs.readFileSync(path.join(root,'app.js'),'utf8');const init=app.slice(app.indexOf('async function init()'),app.indexOf('// Browser event bindings start here;'));
+assert(!init.includes('psa10-periods/'),'90-day detail must not load at startup');
+const finance=app.slice(app.indexOf('function calculateCard'),app.indexOf('function calculateCard')+1000);
+assert(!finance.includes('psa10PeriodSummary'),'average is reference-only, not limit input');
+console.log(JSON.stringify({pass:true,...result}));

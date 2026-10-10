@@ -1,0 +1,17 @@
+{
+  "reviewedAt": "2026-10-10T14:05:00Z",
+  "runId": 38004158170,
+  "runUrl": "https://github.com/urm759/pokeka-serch/actions/runs/38004158170",
+  "jobId": 114068977886,
+  "trigger": "schedule",
+  "startedAt": "2026-10-09T23:23:14Z",
+  "status": "failure",
+  "failedStep": "Refresh PSA Japan plans",
+  "reason": "Could not parse all PSA Japan service plans through Express; existing data was preserved.",
+  "impact": "この旧版実行では後続の独立した店舗・買取更新がスキップされた。既存料金と正常データは保持。解析失敗のログだけから形式変更・アクセス制限は断定しない。",
+  "recoveryArtifactId": 11650128538,
+  "recoveryJsonCount": 629,
+  "currentCodeStatus": "7efb1da4の取得元分離・必須検証・失敗記録を維持。失敗を非表示にしない。",
+  "postFixScheduledSuccess": null,
+  "postFixScheduledStatus": "今回確認時点で修正後のDaily定期実行なし。手動確認を定期成功に代用しない。通常スクリプトで次回記録。AI予定タスクは停止。"
+}

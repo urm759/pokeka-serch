@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20261007-cap-state-v1" />
+  <link rel="stylesheet" href="./styles.css?v=20261010-profit-basis-v1" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -62,7 +62,9 @@
           <small>0円は赤字除外。空欄は利益額フィルター無効</small>
           <input id="expectedProfitFilterInput" type="number" step="1000" value="0" placeholder="無効" />
         </label>
-        <label class="control"><span>安定重視モードの利益検索基準</span><select id="profitSearchBasisInput"><option value="auto">自動：価格待ちは上限／今すぐは店舗</option><option value="limit">安定重視上限で購入 × 中央予測</option><option value="store">実店舗在庫価格で購入 × 中央予測</option><option value="current">基準相場で購入 × 中央予測</option></select><small>現相場採算では実店舗／手入力買値×現在出口相場に固定。戻すと保存済み基準を使います。</small></label>
+        <label class="control"><span>利益検索・表示・並び順の買値</span><select id="profitSearchBasisInput"><option value="auto">自動：価格待ちは上限／今すぐは店舗</option><option value="limit">安定重視上限で購入</option><option value="store">実店舗在庫価格で購入</option><option value="current">素体参考相場で購入（購入先未確認）</option></select><small>PSA10時利益率は現在PSA10出口、期待利益率は中央予測。採用買値・出口・手取りを各カードに表示。現相場採算では実店舗／手入力買値×現在出口相場に固定。</small></label>
+        <label class="check-control"><input id="purchaseBelowCurrentCapInput" type="checkbox" />現在買える状態A価格 ＜ 現相場の期待損益分岐上限</label>
+        <p class="filter-explanation">同額は対象外。新鮮な在庫あり店舗価格だけを比較し、相場参考値・手入力は代用しません。購入GOや安定重視上限は変更しません。未取得・古値・在庫なし・上限算出不可は除外内訳へ。</p>
         <label class="check-control"><input id="includePeriodReferenceInput" type="checkbox" checked />価格待ち探索に期間不一致の参考値を含める（GO不可）</label>
         <p class="filter-explanation">今すぐ仕入れは検索基準によらず実店舗在庫価格で再判定します。期間不一致は返却時利益ではなく91日モデルの参考探索です。価格待ちでも出口・安全条件と上限×供給ストレスの赤字回避が必要です。</p>
         <label class="control safety-profit-control">
@@ -90,10 +92,11 @@
             <option value="currentBreakEven-desc">現相場の期待損益分岐上限が高い順</option>
             <option value="buyLimitClean-desc">美品の仕入れ上限が高い順</option>
             <option value="buyLimitScratch-desc">傷ありの仕入れ上限が高い順</option>
-            <option value="roi-desc">利益率が高い順</option>
-            <option value="roi-asc">利益率が低い順</option>
-            <option value="profit-desc">利益額が高い順</option>
-            <option value="profit-asc">利益額が低い順</option>
+            <option value="roi-desc">PSA10時利益率が高い順（選択した買値・出口）</option>
+            <option value="roi-asc">PSA10時利益率が低い順（選択した買値・出口）</option>
+            <option value="profit-desc">PSA10時利益額が高い順（選択した買値・出口）</option>
+            <option value="profit-asc">PSA10時利益額が低い順（選択した買値・出口）</option>
+            <option value="expectedRoi-desc">期待利益率が高い順（選択した買値・出口）</option>
             <option value="psaRecommend-desc">今回の仕入れGOを優先</option>
             <option value="exit-desc">売りやすい順</option>
             <option value="futureScore-desc">将来価格評価が高い順</option>
@@ -170,7 +173,7 @@
             <option value="price">価格待ち／購入先待ち</option>
           </select>
         </label>
-        <button type="button" data-preset="turnover"><strong>高回転候補</strong><small>価格待ちを含む</small></button>
+        <button type="button" data-preset="turnover" title="PSA10 30日15件以上・素体全状態30日20件以上・利用可能買取30日1店以上・売りやすさ70点以上のAND条件。買取掲載は実買取件数ではありません"><strong>高回転候補</strong><small>厳格AND条件・価格待ちを含む</small></button>
         <button type="button" data-preset="bargain"><strong>薄商い・高粗利</strong><small>少数成約でも出口あり</small></button>
         <button type="button" data-preset="snkr-raw"><strong>スニダン素体流し</strong><small>PSA判定とは別・手数料後の価格差</small></button>
         <label id="snkrRawReferenceControl" class="preset-aggressive-toggle" hidden><input id="snkrRawIncludeReferenceInput" type="checkbox" /> 参考候補も含める</label>
@@ -835,7 +838,7 @@
     </details>
     <div id="searchDiagnostic" class="search-diagnostic" hidden></div>
     <small id="searchPerformance" class="search-performance" aria-live="polite"></small>
-    <details class="search-benchmark"><summary>検索速度の実測（任意）</summary><p>同じ画面で全件再計算／計算結果再利用／最初のカード詳細展開を各3回比較します。同じ環境・計算値・候補IDの前回実測から30%超かつ20ms超の悪化を警告します。DOM生成と2フレーム到達は別指標です。設定・安全条件は変更しません。</p><button id="benchmarkSearchButton" type="button">同条件で3回ずつ比較</button><pre id="searchBenchmarkResult"></pre><p><a href="./data/performance-guard.json" target="_blank" rel="noreferrer">自動性能検査・前回比</a> ／ <a href="./data/performance-history.json" target="_blank" rel="noreferrer">過去90回の実測</a> ／ <a href="./data/scheduled-cycle-verification.json" target="_blank" rel="noreferrer">定期取得・保存・公開照合</a></p></details>
+    <details class="search-benchmark"><summary>検索速度の実測（任意）</summary><p>同じ画面で全件再計算／計算結果再利用／最初のカード詳細展開を各3回比較します。同じ環境・計算値・候補IDの前回実測から30%超かつ20ms超の悪化を警告します。DOM生成と2フレーム到達は別指標です。設定・安全条件は変更しません。</p><button id="benchmarkSearchButton" type="button">同条件で3回ずつ比較</button><pre id="searchBenchmarkResult"></pre><p><a href="./data/performance-guard.json" target="_blank" rel="noreferrer">自動性能検査・前回比</a> ／ <a href="./data/performance-history.json" target="_blank" rel="noreferrer">過去90回の実測</a> ／ <a href="./data/scheduled-cycle-verification.json" target="_blank" rel="noreferrer">定期取得・保存・公開照合</a> ／ <a href="./data/search-profit-consistency-audit.json" target="_blank" rel="noreferrer">指定URLの買値・利益整合性監査</a></p></details>
     <section id="grid" class="grid"></section>
     <div class="load-more-wrap">
       <p id="resultProgress"></p>
@@ -875,10 +878,10 @@
   <script src="./release-year-filter.js?v=20261003-priority-v2"></script>
   <script src="./update-health-model.js?v=20261010-independent-monitor-v2"></script>
   <script src="./update-health-banner.js?v=20261010-independent-monitor-v2"></script>
-  <script src="./current-market-model.js?v=20261007-cap-state-v1"></script>
+  <script src="./current-market-model.js?v=20261010-profit-basis-v1"></script>
   <script src="./ui-data-codec.js?v=20261007-v1"></script>
   <script src="./psa-plan-model.js?v=20261010-isolation-v1"></script>
   <script src="./keyed-card-renderer.js?v=20261010-v1"></script>
-  <script src="./app.js?v=20261010-keyed-render-v1"></script>
+  <script src="./app.js?v=20261010-profit-basis-v1"></script>
 </body>
 </html>
