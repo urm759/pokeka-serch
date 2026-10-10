@@ -63,6 +63,8 @@
   function summarizeIssue(issue) {
     const text = String(issue.reason || '');
     const category = issueCategory(issue);
+    if (issue.key?.endsWith(':source-failure') || /取得元工程が失敗/.test(text))
+      return {cause:'一部の取得元が失敗',impact:'正常データは保持し必須検証を継続',action:'停止理由を確認。検証不合格なら公開しない'};
     if (/Cannot find module|dependency|依存|MODULE_NOT_FOUND/i.test(text))
       return {cause:'PSA実行ファイルの依存不足',impact:'新規取得が停止（保存済みデータは保持）',action:'修正版で再実行・認証操作とは別'};
     if (/403|認証|sign.?in|log.?in/i.test(text))

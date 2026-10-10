@@ -9,6 +9,7 @@ assert(model.monitorIssues(failed).some(row=>row.key==='monitor:workflow-failure
 assert(model.monitorIssues(success,Date.parse(success.lastSuccessAt)+6*3600000).some(row=>row.key==='monitor:stale'));
 assert.equal(model.monitorIssues(success,Date.parse(success.lastSuccessAt)+3600000).length,0);
 assert.notEqual(model.summarizeIssue({reason:'取得・検証・保存・公開のいずれかが未完了'}).cause,'保存後の公開失敗');
+assert.equal(model.summarizeIssue({key:'priority-prices:source-failure',reason:'取得元工程が失敗。計算失敗やpush失敗と混同しない'}).cause,'一部の取得元が失敗');
 const data=observer.banner(root);
 assert.equal(data.monitoring.lastSuccessAt,success.lastSuccessAt);
 assert(!Object.hasOwn(data,'unifiedMonitor'),'banner never loads full card histories');
