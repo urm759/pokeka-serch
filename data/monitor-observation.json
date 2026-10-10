@@ -1,12 +1,12 @@
 {
   "version": 1,
   "status": "observed",
-  "lastAttemptAt": "2026-10-10T22:59:59.352Z",
-  "runId": "38093015353",
-  "url": "https://github.com/urm759/pokeka-serch/actions/runs/38093015353",
+  "lastAttemptAt": "2026-10-10T23:35:17.046Z",
+  "runId": "38095443518",
+  "url": "https://github.com/urm759/pokeka-serch/actions/runs/38095443518",
   "llmCalls": 0,
   "codexCalls": 0,
-  "newIssueCount": 1,
+  "newIssueCount": 0,
   "unpublishedData": [
     {
       "runId": 38029488008,
@@ -14,6 +14,14 @@
       "artifactId": 11661193693,
       "name": "priority-price-recovery-38029488008-1",
       "bytes": 28868821,
+      "status": "退避あり・未検証／公開照合待ち"
+    },
+    {
+      "runId": 38093015353,
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38093015353",
+      "artifactId": 11684709183,
+      "name": "independent-monitor-38093015353-1",
+      "bytes": 30261014,
       "status": "退避あり・未検証／公開照合待ち"
     },
     {
@@ -50,20 +58,12 @@
           "data/update-health-banner.json"
         ]
       }
-    },
-    {
-      "runId": 38028999326,
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38028999326",
-      "artifactId": 11661860835,
-      "name": "monitor-recovery-38028999326-1",
-      "bytes": 28796462,
-      "status": "退避あり・未検証／公開照合待ち"
     }
   ],
   "lastMonitorRun": {
-    "id": 38084692771,
-    "conclusion": "success",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/38084692771"
+    "id": 38093015353,
+    "conclusion": "failure",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/38093015353"
   },
   "freshness": {
     "baselineAt": "2026-10-03T23:15:30.935Z",
@@ -288,5 +288,5 @@
     }
   },
   "publicationStatus": "監視保存済み・公開工程は別",
-  "lastSuccessAt": "2026-10-10T22:59:59.352Z"
+  "lastSuccessAt": "2026-10-10T23:35:17.046Z"
 }
