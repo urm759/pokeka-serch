@@ -2,6 +2,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
 const source=fs.readFileSync(path.join(__dirname,'../app.js'),'utf8');
 const elements=new Map();
 const context=vm.createContext({window:{location:{href:'https://example.test/'},PurchaseDecisionModel:require('../decision-model'),
+  ExplorationMetrics:require('../exploration-metrics'),LimitDisplayModel:require('../limit-display-model'),
   ReleaseYearFilter:require('../release-year-filter'),CandidateVisibility:require('../candidate-visibility'),PurchaseRatioModel:require('../purchase-ratio-model')},
   document:{getElementById:id=>{if(!elements.has(id))elements.set(id,{value:'',checked:false});return elements.get(id)},querySelectorAll:()=>[]},
   URL,URLSearchParams,console,setTimeout,clearTimeout,localStorage:{getItem:()=>null,setItem:()=>{}}});
@@ -24,8 +25,9 @@ s.saleFeeRate=15;assert.equal(view(card).psa10Net,27000,'no second marketplace f
 card.buyLimits.clean.exitPolicy.adoptedPolicy='marketplace';assert.equal(view(card).psa10Net,30360,'use already computed marketplace net');
 const higher={...card,buyLimits:{clean:{...card.buyLimits.clean,finalMaxPrice:5000}}};
 assert(sorters['roi-desc'](higher,card)<0);assert(sorters['profit-desc'](higher,card)<0);
-const offer={value:9999,updatedAt:new Date().toISOString(),fresh:true,available:true};
-const compare={currentStoreOffer:offer,testView:{eligible:true,capState:'available',cap:10000}};
+s.purchaseMode='current-market';
+const offer={value:9999,updatedAt:new Date().toISOString(),inventoryAt:new Date().toISOString(),fresh:true,available:true};
+const compare={currentStoreOffer:offer,buyLimits:{clean:{assumptions:{hitRate:0.8,lowerGradePrice:15000}}},testView:{eligible:true,capState:'available',cap:10000}};
 assert.equal(context.api.purchaseBelowCurrentCapReason(compare),null);
 assert(context.api.purchaseBelowCurrentCapReason({...compare,currentStoreOffer:{...offer,value:10000}}).includes('同額'));
 assert(context.api.purchaseBelowCurrentCapReason({...compare,currentStoreOffer:{...offer,updatedAt:null}}).includes('日時不明'));

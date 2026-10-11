@@ -5,21 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20261011-exploration-v2" />
+  <link rel="stylesheet" href="./styles.css?v=20261011-search-first-v1" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
   <div class="backdrop backdrop-b"></div>
   <main class="shell">
-    <section class="hero card">
-      <div class="eyebrow">Pokémon cards / buying guide</div>
-      <h1>ポケカ仕入れ判断サイト</h1>
-      <div class="site-owner">因幡のウサギ小屋専用サイト</div>
-      <p class="lede">
-        平均美品価格とPSA10相場を比較して、仕入れ候補をすばやく確認できます。
-      </p>
-      <div id="updateHealthBanner" class="update-health-banner" role="alert" hidden></div>
-
+    <section class="hero card search-settings" aria-label="検索・かんたん絞り込み・設定">
       <div class="control-search-row" id="searchConditions">
         <div class="control control-wide search-control">
           <label for="qInput"><span>検索</span></label>
@@ -35,6 +27,17 @@
       </div>
       <p id="forecastPeriodWarning" class="filter-explanation" hidden></p>
       <div id="activeFilterSummary" class="active-filter-summary" aria-live="polite"></div>
+      <details class="advanced-filters purchase-comparison-settings">
+        <summary><span>購入価格・仕入れ余裕率</span><small>表示した2価格の参考比較・GO判定とは別</small></summary>
+        <div class="controls controls-primary">
+          <label class="control"><span>現在買える状態A価格 下限（円）</span><input id="actualPurchaseMinInput" type="number" min="0" step="100" placeholder="条件なし" /></label>
+          <label class="control"><span>現在買える状態A価格 上限（円）</span><input id="actualPurchaseMaxInput" type="number" min="0" step="100" placeholder="条件なし" /></label>
+          <label class="control"><span>仕入れ余裕率 下限 %</span><input id="purchaseHeadroomMinInput" type="number" step="0.1" placeholder="条件なし" /></label>
+          <label class="control"><span>仕入れ余裕率 上限 %</span><input id="purchaseHeadroomMaxInput" type="number" step="0.1" placeholder="条件なし" /></label>
+          <label class="check-control"><input id="purchaseBelowCurrentCapInput" type="checkbox" />現在買える状態A価格 ＜ 現相場の期待損益分岐上限</label>
+          <p class="filter-explanation">余裕率＝（表示した損益分岐上限÷現在買える状態A価格−1）×100。利益率ではありません。同額0%（チェックは同額除外）。空欄は条件なし、0は有効。新鮮な在庫あり店舗価格だけを使い、参考相場・手入力は代用しません。PSA9日時未確認は参考警告を付けて比較しますが、プラスでも購入GOにはしません。計算材料不足・古い購入価格・在庫なしは比較不可です。</p>
+        </div>
+      </details>
       <details class="advanced-filters primary-settings">
         <summary><span>詳細設定</span><small>鑑定プラン・利益条件・並び順</small></summary>
         <div class="controls controls-primary">
@@ -63,18 +66,11 @@
           <input id="expectedProfitFilterInput" type="number" step="1000" value="0" placeholder="無効" />
         </label>
         <label class="control"><span>利益検索・表示・並び順の買値</span><select id="profitSearchBasisInput"><option value="auto">自動：価格待ちは上限／今すぐは店舗</option><option value="limit">安定重視上限で購入</option><option value="current-cap">現相場の期待損益分岐上限で購入（探索）</option><option value="store">実店舗在庫価格で購入</option><option value="current">素体参考相場で購入（購入先未確認）</option></select><small>現相場上限で購入する探索は現在出口相場の維持仮定。期待利益率は切下げ端数分を除きほぼ0%のため、10%以上などの条件とは両立しない場合があります（条件は保持）。通常は中央予測の期待利益、今すぐ仕入れは実店舗価格。観測平均の利益率は別のフリマ参考試算です。</small></label>
-        <label class="control"><span>現在買える状態A価格 下限（円）</span><input id="actualPurchaseMinInput" type="number" min="0" step="100" placeholder="条件なし" /></label>
-        <label class="control"><span>現在買える状態A価格 上限（円）</span><input id="actualPurchaseMaxInput" type="number" min="0" step="100" placeholder="条件なし" /></label>
-        <label class="control"><span>仕入れ余裕率 下限 %</span><input id="purchaseHeadroomMinInput" type="number" step="0.1" placeholder="条件なし" /></label>
-        <label class="control"><span>仕入れ余裕率 上限 %</span><input id="purchaseHeadroomMaxInput" type="number" step="0.1" placeholder="条件なし" /></label>
-        <p class="filter-explanation">余裕率＝（現相場損益分岐上限÷現在買える状態A価格−1）×100。利益率ではありません。同額0%、上限未満でプラス。新鮮な在庫あり店舗価格だけを使用。空欄は条件なし、0は有効。参考相場の価格帯検索とは別です。</p>
         <label class="control"><span>30日買取掲載率 下限 %</span><input id="postingRate30MinInput" type="number" min="0" max="100" step="0.1" placeholder="条件なし" /></label>
         <label class="control"><span>30日平均掲載店舗数 下限</span><input id="postingShops30MinInput" type="number" min="0" step="0.1" placeholder="条件なし" /></label>
         <label class="control"><span>買取掲載の最低観測日数</span><input id="postingDaysMinInput" type="number" min="0" max="30" step="1" placeholder="条件なし" /></label>
         <label class="control"><span>買取掲載取得カバー率 下限 %</span><input id="postingCoverageMinInput" type="number" min="0" max="100" step="0.1" placeholder="条件なし" /></label>
         <p class="filter-explanation">選択した郵送／店頭／指定店舗の正常な全掲載確認店舗日が分母。部分取得・失敗は未掲載とみなしません。取得カバー率＝確認店舗日÷対象店舗数÷30日。掲載数は実買取件数ではありません。</p>
-        <label class="check-control"><input id="purchaseBelowCurrentCapInput" type="checkbox" />現在買える状態A価格 ＜ 現相場の期待損益分岐上限</label>
-        <p class="filter-explanation">同額は対象外。新鮮な在庫あり店舗価格だけを比較し、相場参考値・手入力は代用しません。購入GOや安定重視上限は変更しません。未取得・古値・在庫なし・上限算出不可は除外内訳へ。</p>
         <label class="check-control"><input id="includePeriodReferenceInput" type="checkbox" checked />価格待ち探索に期間不一致の参考値を含める（GO不可）</label>
         <p class="filter-explanation">今すぐ仕入れは検索基準によらず実店舗在庫価格で再判定します。期間不一致は返却時利益ではなく91日モデルの参考探索です。価格待ちでも出口・安全条件と上限×供給ストレスの赤字回避が必要です。</p>
         <label class="control safety-profit-control">
@@ -690,6 +686,13 @@
       </details>
     </section>
 
+    <section class="card site-introduction" aria-label="サイト紹介・更新情報">
+      <div class="eyebrow">Pokémon cards / buying guide</div>
+      <h1>ポケカ仕入れ判断サイト</h1>
+      <div class="site-owner">因幡のウサギ小屋専用サイト</div>
+      <p class="lede">美品価格とPSA10相場を比較して、仕入れ候補を確認できます。参考比較は購入GOや利益保証とは別です。</p>
+      <div id="updateHealthBanner" class="update-health-banner" role="alert" hidden></div>
+    </section>
     <details class="card guide guide-accordion" aria-labelledby="buyGuideTitle">
       <summary class="guide-summary">
         <div>
@@ -888,13 +891,13 @@
   <script src="./purchase-memo-model.js?v=20261004-reference-v1"></script>
   <script src="./release-year-filter.js?v=20261003-priority-v2"></script>
   <script src="./update-health-model.js?v=20261010-independent-monitor-v2"></script>
-  <script src="./update-health-banner.js?v=20261010-independent-monitor-v2"></script>
+  <script src="./update-health-banner.js?v=20261011-search-first-v1"></script>
   <script src="./current-market-model.js?v=20261010-profit-basis-v1"></script>
   <script src="./ui-data-codec.js?v=20261007-v1"></script>
   <script src="./psa-plan-model.js?v=20261010-isolation-v1"></script>
   <script src="./keyed-card-renderer.js?v=20261010-v1"></script>
   <a class="return-to-filters" href="#searchConditions">検索条件へ</a>
-  <script src="./exploration-metrics.js?v=20261011-exploration-v2"></script>
-  <script src="./app.js?v=20261011-exploration-v3"></script>
+  <script src="./exploration-metrics.js?v=20261011-search-first-v1"></script>
+  <script src="./app.js?v=20261011-search-first-v1"></script>
 </body>
 </html>

@@ -10,7 +10,7 @@ async function read(file) {
 }
 async function main() {
   const html = await read('index.html?verify=' + Date.now());
-  assert(html.includes('20261011-exploration-v3') && html.includes('20261010-independent-monitor-v2') && html.includes('keyed-card-renderer.js') && html.includes('ui-data-codec.js') && html.includes('actualPurchaseMinInput'));
+  assert(html.includes('20261011-search-first-v1') && html.includes('keyed-card-renderer.js') && html.includes('ui-data-codec.js') && html.includes('actualPurchaseMinInput'));
   const manifest = JSON.parse(await read('data/ui/manifest.json?verify=' + Date.now()));
   const expected = JSON.parse(fs.readFileSync(path.join(__dirname,'../data/ui/manifest.json'),'utf8'));
   assert.equal(manifest.revision, expected.revision, 'must verify the newly published revision');
@@ -30,6 +30,12 @@ async function main() {
     verified.push(file);
   }
   assert.equal(completion.summary.analyzable, audit.counts.analyzableAfter);
+  const referenceFile='data/search-first-reference-audit.json';
+  const referenceText=await read(referenceFile+'?v='+manifest.hashes[referenceFile]);
+  assert.equal(crypto.createHash('sha256').update(referenceText.replace(/\r\n/g,'\n')).digest('hex'),manifest.hashes[referenceFile]);
+  const reference=JSON.parse(referenceText);
+  assert(reference.financialCalculationsUnchanged && reference.specifiedUrl.idsUnchanged);
+  verified.push(referenceFile);
   assert.equal(completion.summary.total, audit.counts.after);
   const population = codec.decode(JSON.parse(await read((manifest.aliases['data/psa-population-summary.json'] || 'data/psa-population-summary.json') + '?verify=' + Date.now())));
   const localPopulation=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/psa-population-summary.json'),'utf8'));

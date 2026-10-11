@@ -23,7 +23,7 @@ assert.doesNotMatch(html, /999,999|9,999/);
 assert.ok(html.indexOf('data-price-kind="store"') < html.indexOf('data-price-kind="psa10"'));
 assert.ok(html.indexOf('data-price-kind="stable"') < html.indexOf('data-price-kind="break-even"'));
 assert.match(html, /推奨仕入れ値ではありません/);
-assert.match(render({...card,comparisonBlocked:true}), /仕入れ余裕率 比較不可（PSA9価格の確認日時不足）/);
+assert.match(render({...card,comparisonBlocked:true}), /比較不可（PSA9価格の確認日時不足）/);
 assert.match(html, /2026\/10\/06 19:00/);
 assert.match(render({ ...card, currentStoreOffer: null }), /未取得.*素体相場で代用しません・GO不可/s);
 assert.match(render({ ...card, currentStoreOffer: null }), /48時間以内0／古値0／日時不明0元/);

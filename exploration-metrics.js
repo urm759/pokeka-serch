@@ -12,7 +12,8 @@
   }
   function offerPrice(offer, now = Date.now()) {
     const age = offer?.updatedAt ? (now - Date.parse(offer.updatedAt)) / 3600000 : NaN;
-    return offer?.available === true && offer?.fresh === true && finite(offer.value) && offer.value > 0 && age >= 0 && age <= 48 ? offer.value : null;
+    const stockAge = offer?.inventoryAt ? (now - Date.parse(offer.inventoryAt)) / 3600000 : NaN;
+    return offer?.available === true && offer?.fresh === true && finite(offer.value) && offer.value > 0 && age >= 0 && age <= 48 && stockAge >= 0 && stockAge <= 48 ? offer.value : null;
   }
   function meanSale(mean, buy, fee, feeRate, extra) {
     if (![mean,buy,fee,feeRate,extra].every(finite) || mean <= 0 || buy < 0 || fee < 0 || extra < 0 || feeRate < 0 || feeRate >= 100 || buy + fee <= 0) return {net:null,profit:null,roi:null};

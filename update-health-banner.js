@@ -34,12 +34,7 @@
     const summary = model.summarizeIssue(issue);
     return [JSON.stringify(summary), summary];
   })).values()];
-  for (const summary of summaries) {
-    const line = document.createElement('span');
-    line.style.display = 'block';
-    line.textContent = `${summary.cause}／${summary.impact}／${summary.action}`;
-    message.append(line);
-  }
+  message.textContent = `${summaries[0]?.cause || '更新確認待ち'}${summaries.length > 1 ? ` ほか${summaries.length - 1}項目` : ''}。影響と必要操作は詳細へ。`;
   const link = document.createElement("a");
   link.href = backfillIssues[0]?.url || "https://github.com/urm759/pokeka-serch/actions";
   link.target = "_blank";
@@ -51,7 +46,7 @@
   const log = document.createElement('pre');
   log.style.whiteSpace = 'pre-wrap';
   log.style.overflowWrap = 'anywhere';
-  log.textContent = categorized.map(issue => issue.reason).join('\n\n');
+  log.textContent = summaries.map(s=>`${s.cause}／${s.impact}／${s.action}`).join('\n') + '\n\n' + categorized.map(issue => issue.reason).join('\n\n');
   const auditLink = document.createElement('a');
   auditLink.href = snapshot?.detailUrl || './data/update-health.json';
   auditLink.textContent = '監視全項目・カード別鮮度・未公開データを確認';
