@@ -14,12 +14,18 @@ assert.equal(m.meanSale(33000,null,10980,8,0).roi,null);
 assert.equal(m.meanSale(100,100,10,0,3).profit,-13);
 assert.equal(m.atPurchase({expectedSale:20000},10000,10000).expectedRoi,0);
 const history={dates:['2026-10-10','2026-10-11'],confirmedCompleteByShop:{a:['2026-10-11','2026-10-11'],b:[]},shops:{a:{card:[100,100]},b:{card:[200,null]}}};
-const source={shops:{a:{fulfilment:'mail',lastSuccess:'2026-10-11T02:00:00Z',fullListingConfirmedAt:'2026-10-11T02:00:00Z'},b:{fulfilment:'store'}},cards:{card:{shops:{a:{listingActive:true}}}}};
+const source={shops:{a:{fulfilment:'mail',unmatched:0,lastSuccess:'2026-10-11T02:00:00Z',fullListingConfirmedAt:'2026-10-11T02:00:00Z'},b:{fulfilment:'store'}},cards:{card:{shops:{a:{listingActive:true}}}}};
 const summary=aggregate(history,source,new Date(now));
 let c=m.coverage(summary,'card','all',[],now);assert.equal(c.observedShopDays,1);assert.equal(c.postedShopDays,1);assert.equal(c.rate30,100);assert.equal(c.totalShops,2);assert.equal(c.listedShops,1);
 assert.equal(m.coverage(summary,'missing','all',[],now).rate30,0,'absence only on proven complete day');
 assert.equal(m.coverage(summary,'card','selected',['b'],now).rate30,null,'partial/unknown is not unlisted');
 assert.equal(m.coverage(summary,'card','mail',[],now).totalShops,1);
+const unresolved = aggregate(history,{...source,shops:{...source.shops,a:{...source.shops.a,unmatched:1}}},new Date(now));
+assert.equal(m.coverage(unresolved,'missing','all',[],now).rate30,null,'unmatched products prevent proving absence');
+assert.equal(m.coverage(unresolved,'missing','all',[],now).currentRate,null);
+assert.equal(m.coverage(unresolved,'card','all',[],now).rate30,100,'positive identity evidence remains usable');
+const duplicate = JSON.parse(JSON.stringify(summary)); duplicate.cards.card.a.listedDays.push('2026-10-11');
+assert.equal(m.coverage(duplicate,'card','all',[],now).postedShopDays,1,'duplicate same-day listings count once');
 const elements=new Map(), storage=new Map(), sourceText=fs.readFileSync(path.join(__dirname,'../app.js'),'utf8');
 const context=vm.createContext({window:{PurchaseDecisionModel:require('../decision-model'),ExplorationMetrics:m,location:{href:'https://example.test/?profitBasis=current-cap&purchaseMin=0&headroomMax=0&postingRate30=0'}},document:{getElementById:id=>{if(!elements.has(id))elements.set(id,{value:'',checked:false});return elements.get(id)},querySelectorAll:()=>[]},URL,URLSearchParams,console,setTimeout,clearTimeout,localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)}});
 vm.runInContext(sourceText.split('// Browser event bindings start here;')[0]+`\ncurrentMarketView=c=>c.testView; globalThis.api={state,readUrl,buildShareUrl,searchProfitView,psa10PeriodPanel,saveQuickFilters,restoreQuickFilters};`,context);
@@ -34,4 +40,11 @@ elements.get('actualPurchaseMinInput').value='';elements.get('purchaseHeadroomMa
 context.api.restoreQuickFilters();assert.equal(elements.get('actualPurchaseMinInput').value,0);assert.equal(elements.get('purchaseHeadroomMaxInput').value,0);
 assert.equal(elements.get('profitSearchBasisInput').value,'current-cap');
 assert(sourceText.includes("mode !== 'now'"),'cap exploration cannot override immediate purchase');
+assert(sourceText.includes('const exploration = purchaseExploration(card,now)'),'display and filters share the same eligibility and headroom');
+const auditApi=require('./audit_search_profit_consistency').load(sourceText,new Date().toISOString());
+const allCards=auditApi.prepareCalculatedCards(auditApi.state.cards);auditApi.state.profitSearchBasis='current-cap';
+for(const c of allCards) {
+  const view=auditApi.searchProfitView(c);
+  if(view.eligible) assert.equal(view.cap,require('../limit-display-model').summarize({limit:c.buyLimits.clean,psa10Price:c.psa10,psa9Audit:c.psa9Audit,domesticPsa10UpdatedAt:auditApi.state.sourceUpdates.toreca}).currentCap,'eligible search and displayed cap must match');
+}
 console.log('Exploration means/ROI, strict freshness, float boundaries, posting full-vs-partial, URL zero/null and break-even purchase PASS');

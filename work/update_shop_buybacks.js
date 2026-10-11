@@ -790,7 +790,13 @@ async function main() {
   }
   const catalog = { ...readJson(catalogPath, {}).shops, ...Object.fromEntries(results.map((result) => [result.shop.id, result.matched])) };
   const unmatched = { ...readJson(unmatchedPath, {}).shops, ...Object.fromEntries(results.map((result) => [result.shop.id, result.unmatched])) };
-  for (const result of results) if (result.fullListing === true || result.coverageComplete === true) shopMeta[result.shop.id].fullListingConfirmedAt = shopMeta[result.shop.id].lastSuccess;
+  for (const result of results) if (result.fullListing === true || result.coverageComplete === true) {
+    shopMeta[result.shop.id].fullListingConfirmedAt = shopMeta[result.shop.id].lastSuccess;
+    history.identityIncompleteByShop ||= {};
+    const dates = new Set(history.identityIncompleteByShop[result.shop.id] || []);
+    if (result.unmatched.length) dates.add(today); else dates.delete(today);
+    history.identityIncompleteByShop[result.shop.id] = [...dates].sort();
+  }
   fs.writeFileSync(historyPath, JSON.stringify(history), "utf8");
   fs.writeFileSync(catalogPath, JSON.stringify({ updatedAt: today, shops: catalog }), "utf8");
   fs.writeFileSync(unmatchedPath, JSON.stringify({ updatedAt: today, shops: unmatched }), "utf8");

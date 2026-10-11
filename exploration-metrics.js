@@ -30,10 +30,12 @@
     const dates = new Set(), rows = summary?.cards?.[cardId] || {};
     for (const [id,s] of shops) {
       const row = rows[id] || {};
+      const postedDays = new Set(row.listedDays || []), incompleteDays = new Set(s.identityIncompleteDays || []);
+      const knownDays = [...new Set(s.completeDays || [])].filter(date => !incompleteDays.has(date) || postedDays.has(date));
       const age = s.currentConfirmedAt ? (now - Date.parse(s.currentConfirmedAt)) / 3600000 : NaN;
-      if (age >= 0 && age <= 48) { confirmed++; listed += Number(row.currentListed === true); }
-      observed += s.completeDays.length; posted += (row.listedDays || []).length;
-      for (const date of s.completeDays) dates.add(date);
+      if (age >= 0 && age <= 48 && (s.currentIdentityComplete !== false || row.currentListed === true)) { confirmed++; listed += Number(row.currentListed === true); }
+      observed += knownDays.length; posted += knownDays.filter(date=>postedDays.has(date)).length;
+      for (const date of knownDays) dates.add(date);
     }
     return {totalShops:shops.length,confirmedShops:confirmed,listedShops:confirmed ? listed : null,currentRate:confirmed ? listed / confirmed * 100 : null,
       observedShopDays:observed,postedShopDays:posted,observedDays:dates.size,

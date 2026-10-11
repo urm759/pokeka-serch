@@ -3843,10 +3843,11 @@ function purchaseBelowCurrentCapReason(card) {
   return Number.isFinite(offer.value) && offer.value < view.cap ? null : "購入価格比較・上限以上（同額含む）";
 }
 
-function purchaseExploration(card) {
-  const price = explorationMetrics.offerPrice(card.currentStoreOffer);
+function purchaseExploration(card,now=Date.now()) {
+  const price = explorationMetrics.offerPrice(card.currentStoreOffer,now);
   const cap = currentMarketView(card);
-  return {price,headroom:price != null && cap.eligible && cap.capState === 'available' ? explorationMetrics.percent(cap.cap,price) : null};
+  return {price,headroom:price != null && cap.eligible && cap.capState === 'available' ? explorationMetrics.percent(cap.cap,price) : null,
+    reason:price == null ? card.purchasePriceStatus?.label || '新鮮な購入価格なし' : cap.reasons?.[0] || cap.capLabel || '上限算出不可'};
 }
 function postingCoverage(card) {
   return explorationMetrics.coverage(state.buybackPostingCoverage,card.id,state.buybackStoreMode,state.selectedBuybackStores || []);
@@ -4598,8 +4599,8 @@ function priceComparisonCells(card, limitDisplay, confirmedAt, now = Date.now(),
     : !Number.isFinite(checkedTime) ? "確認日時未取得" : "予測・買取価格ではありません";
   const stableCell = `<div class="price-cell glance-stable" data-price-kind="stable"><span>安定重視の仕入れ上限${trial ? "（比較用）" : ""}</span><strong>${escapeHtml(limitDisplay.stableLabel || money(limitDisplay.stableCap))}</strong><small>${escapeHtml(limitDisplay.reason || "仕入れ判定・絞り込みの基準")}</small></div>`;
   const capText = limitDisplay.currentCapState === 'loss-at-zero' ? '0円仕入れでも赤字' : limitDisplay.currentCap == null ? 'データ不足で算出不可' : money(limitDisplay.currentCap);
-  const headroom = explorationMetrics.percent(limitDisplay.currentCapState === 'available' ? limitDisplay.currentCap : null, explorationMetrics.offerPrice(offer,now));
-  const breakCell = `<div class="price-cell glance-break-even" data-price-kind="break-even" data-cap-state="${limitDisplay.currentCapState || 'available'}"><span>現相場の期待損益分岐上限</span><strong>${escapeHtml(capText)}</strong><small>${escapeHtml(limitDisplay.currentCapLabel || '仕入れ可能な上限あり')}${limitDisplay.currentCapNote ? `／${escapeHtml(limitDisplay.currentCapNote)}` : ''}</small><small>仕入れ余裕率 ${Number.isFinite(headroom) ? `${headroom > 0 ? '+' : ''}${headroom.toFixed(2)}%` : '比較不可（新鮮な購入価格または上限なし）'}・利益率とは別</small><small>現相場が続く場合の期待値基準。推奨仕入れ値ではありません</small></div>`;
+  const exploration = purchaseExploration(card,now), headroom=exploration.headroom;
+  const breakCell = `<div class="price-cell glance-break-even" data-price-kind="break-even" data-cap-state="${limitDisplay.currentCapState || 'available'}"><span>現相場の期待損益分岐上限</span><strong>${escapeHtml(capText)}</strong><small>${escapeHtml(limitDisplay.currentCapLabel || '仕入れ可能な上限あり')}${limitDisplay.currentCapNote ? `／${escapeHtml(limitDisplay.currentCapNote)}` : ''}</small><small>仕入れ余裕率 ${Number.isFinite(headroom) ? `${headroom > 0 ? '+' : ''}${headroom.toFixed(2)}%` : `比較不可（${escapeHtml(exploration.reason)}）`}・利益率とは別</small><small>現相場が続く場合の期待値基準。推奨仕入れ値ではありません</small></div>`;
   const referenceFreshness = decisionModel.referenceFreshness(card.priceAggregation, now);
   const purchaseStatus = usableOffer ? null : decisionModel.purchasePriceState(card.storePriceAudit || []).label;
   return `
