@@ -21,6 +21,8 @@ for(const[id,row]of Object.entries(summary.cards)) {
   const detail=chunks[shard(id)].cards[id];
   assert.equal(row[0],detail.snapshots[7].mean);assert.equal(row[2],detail.snapshots[30].mean);
   assert.equal(row[4],detail.snapshots[30].ageDays);
+  assert.equal(row[5],detail.snapshots[90].mean);assert.equal(row[6],detail.snapshots[90].observedDays);
+  assert.equal(row[7],detail.snapshots[7].ageDays);assert.equal(row[8],detail.snapshots[90].ageDays);
 }
 for(const days of [7,30,90]) assert.equal(summary.coverage.byPeriod[days].meanCards,chunks.reduce((n,c)=>n+Object.values(c.cards).filter(r=>r.snapshots[days].count>0).length,0));
 const app=fs.readFileSync(path.join(root,'app.js'),'utf8');const init=app.slice(app.indexOf('async function init()'),app.indexOf('// Browser event bindings start here;'));

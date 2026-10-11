@@ -592,6 +592,11 @@ async function main() {
   for (const result of results) {
     const shopId = result.shop.id;
     currentLinksByShop[shopId] = new Map();
+    // Only a complete successful listing proves that an absent card is unlisted.
+    if (result.fullListing === true || result.coverageComplete === true) {
+      history.confirmedCompleteByShop ||= {};
+      history.confirmedCompleteByShop[shopId] = [...new Set([...(history.confirmedCompleteByShop[shopId] || []), today])].filter(date => targetDates.includes(date)).sort();
+    }
     if (!history.shops[shopId]) history.shops[shopId] = {};
     const shopHistory = history.shops[shopId];
     for (const values of Object.values(shopHistory)) {
@@ -758,6 +763,7 @@ async function main() {
       fulfilment: shop.fulfilment || "mail",
       lastAttempt: result || failures.some((f) => f.source === shop.id) ? new Date().toISOString() : previous.lastAttempt || null,
       lastSuccess: result ? new Date().toISOString() : previous.lastSuccess || null,
+      fullListingConfirmedAt: result?.fullListing === true ? null : previous.fullListingConfirmedAt || null,
       sourceTotal: result?.sourceTotal ?? previous.sourceTotal ?? null,
       fetched: result?.items?.length ?? previous.fetched ?? null,
       attempted: result?.items?.length ?? null,
@@ -784,6 +790,7 @@ async function main() {
   }
   const catalog = { ...readJson(catalogPath, {}).shops, ...Object.fromEntries(results.map((result) => [result.shop.id, result.matched])) };
   const unmatched = { ...readJson(unmatchedPath, {}).shops, ...Object.fromEntries(results.map((result) => [result.shop.id, result.unmatched])) };
+  for (const result of results) if (result.fullListing === true || result.coverageComplete === true) shopMeta[result.shop.id].fullListingConfirmedAt = shopMeta[result.shop.id].lastSuccess;
   fs.writeFileSync(historyPath, JSON.stringify(history), "utf8");
   fs.writeFileSync(catalogPath, JSON.stringify({ updatedAt: today, shops: catalog }), "utf8");
   fs.writeFileSync(unmatchedPath, JSON.stringify({ updatedAt: today, shops: unmatched }), "utf8");

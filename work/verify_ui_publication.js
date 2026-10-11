@@ -10,11 +10,14 @@ async function read(file) {
 }
 async function main() {
   const html = await read('index.html?verify=' + Date.now());
-  assert(html.includes('20261011-completion-v1') && html.includes('20261010-independent-monitor-v2') && html.includes('keyed-card-renderer.js') && html.includes('ui-data-codec.js') && html.includes('purchaseBelowCurrentCapInput'));
+  assert(html.includes('20261011-exploration-v2') && html.includes('20261010-independent-monitor-v2') && html.includes('keyed-card-renderer.js') && html.includes('ui-data-codec.js') && html.includes('actualPurchaseMinInput'));
   const manifest = JSON.parse(await read('data/ui/manifest.json?verify=' + Date.now()));
   const expected = JSON.parse(fs.readFileSync(path.join(__dirname,'../data/ui/manifest.json'),'utf8'));
   assert.equal(manifest.revision, expected.revision, 'must verify the newly published revision');
   const verified = [];
+  const coverageText = await read('data/buyback-posting-coverage.json?v=' + manifest.hashes['data/buyback-posting-coverage.json']);
+  assert.equal(crypto.createHash('sha256').update(coverageText.replace(/\r\n/g,'\n')).digest('hex'), manifest.hashes['data/buyback-posting-coverage.json']);
+  verified.push('data/buyback-posting-coverage.json');
   let completion, update, audit;
   for (const original of ['data/card-catalog-completion.json','data/update-status.json','data/card-catalog/analysis.json','data/daily-source-isolation.json','data/effective-price-cadence.json','data/psa-japan-services.json','data/operation-improvement-audit.json','data/torecacamp-stock-summary.json','data/source-recovery-audit.json','data/update-failure-audit.json','data/monitor-observation.json','data/update-health-banner.json','data/one-item-completion-audit.json','data/expansion-freshness-audit.json','data/psa10-period-summary.json','data/search-profit-consistency-audit.json']) {
     const file = manifest.aliases[original] || original;

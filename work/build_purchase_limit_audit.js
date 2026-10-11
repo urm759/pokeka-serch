@@ -13,6 +13,7 @@ const candidateDailyAudit = require("../candidate-daily-audit.js");
 const candidateAvailabilityAudit = require("../candidate-availability-audit.js");
 const meta = read("data/pokemon-cards-meta.json", {});
 const window = {
+  ExplorationMetrics: require('../exploration-metrics.js'),
   PsaPlanModel: require("../psa-plan-model.js"),
   PurchaseDecisionModel: model,
   PriceIntegrity: require("../price-integrity.js"),

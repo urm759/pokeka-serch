@@ -1617,7 +1617,18 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .search-performance { display: block; margin: 0.6rem 0; color: var(--muted, #94a3b8); font-size: 0.75rem; }
 .search-benchmark { margin: 0.6rem 0; font-size: 0.8rem; }
 .search-benchmark pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 15rem; overflow-y: auto; }
-.psa10-period-summary { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin:10px 0; font-size:12px; }
+.psa10-period-summary { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin:10px 0; font-size:12px; }
+.psa10-period-summary > span { min-width:0; padding:8px; border:1px solid var(--line); border-radius:10px; }
+.psa10-period-summary > span b { font-size:16px; }
+.psa10-period-summary > span small { font-size:10px; overflow-wrap:anywhere; }
+.psa10-period-summary > details { grid-column:1/-1; }
+.raw-reference-median { display:block; font-size:16px; line-height:1.5; margin-top:8px; }
+.raw-reference-median b { font-size:19px; }
+.return-to-filters { position:fixed; right:12px; bottom:12px; z-index:20; padding:9px 12px; border-radius:20px; background:#133d4a; color:#fff; border:1px solid #8ad9c0; font-size:12px; text-decoration:none; box-shadow:0 3px 12px #0005; }
+#searchConditions { scroll-margin-top:12px; }
+.posting-coverage { font-size:12px; margin:8px 0; }
+.posting-coverage p { color:var(--muted); }
+@media(max-width:600px) { .psa10-period-summary { gap:4px; font-size:10px; } .psa10-period-summary > span {padding:5px;} .psa10-period-summary > span b {font-size:13px;} }
 .psa10-period-summary span { display:flex; flex-direction:column; gap:3px; }
 .psa10-period-summary small { grid-column:1/-1; color:var(--muted); }
 .buyback-continuity { display:grid; gap:5px; margin:12px 0; font-size:12px; }

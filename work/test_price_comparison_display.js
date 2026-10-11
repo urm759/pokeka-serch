@@ -5,7 +5,7 @@ const path = require('node:path');
 const root = path.join(__dirname, '..');
 const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
 const start = app.indexOf('function priceComparisonCells(');
-const context = vm.createContext({ Intl, Date, decisionModel: require('../decision-model.js'), fmt: new Intl.NumberFormat('ja-JP'), escapeHtml: s => String(s).replaceAll('<', '&lt;') });
+const context = vm.createContext({ Intl, Date, explorationMetrics: require('../exploration-metrics.js'), decisionModel: require('../decision-model.js'), fmt: new Intl.NumberFormat('ja-JP'), escapeHtml: s => String(s).replaceAll('<', '&lt;') });
 vm.runInContext(app.slice(start, app.indexOf('\nfunction render()', start)) + '\nglobalThis.cells=priceComparisonCells;', context);
 const now = Date.parse('2026-10-06T12:00:00Z');
 const limit = { stableCap: 40000, currentCap: 61000, reason: '供給ストレスで制限' };

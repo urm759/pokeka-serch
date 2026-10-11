@@ -1,0 +1,2639 @@
+{
+  "generatedAt": "2026-10-11T03:45:32.819Z",
+  "baseCommit": "8e3514e2",
+  "scope": "同一データ・指定URL・60表示、各3回。スマホ幅はPC Chromeでの幅検証、携帯実機ではない。二倍は合成データ。",
+  "measurements": [
+    {
+      "mode": "before",
+      "width": 1440,
+      "benchmark": {
+        "width": 1440,
+        "loadedCards": 2020,
+        "valuesAndIdsUnchanged": true,
+        "dataRevision": "7a98388e0604a43f320616d141683cf88f4fe4e56f6e7b22f286572bbab97728",
+        "conditionHash": "9ad95a59876fdb6466c14dbd40a028ba38ccc391329640905ff6fb5cd9d5b52a",
+        "rows": [
+          {
+            "kind": "全件再計算",
+            "calculationMs": 484.40000009536743,
+            "domMs": 262.30000019073486,
+            "cacheHit": false,
+            "markupMs": 64.59999990463257,
+            "domCommitMs": 0.5999999046325684,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 1044.4000000953674
+          },
+          {
+            "kind": "全件再計算",
+            "calculationMs": 454.80000019073486,
+            "domMs": 241.59999990463257,
+            "cacheHit": false,
+            "markupMs": 68.30000019073486,
+            "domCommitMs": 0.5,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 1083.4000000953674
+          },
+          {
+            "kind": "全件再計算",
+            "calculationMs": 531.6999998092651,
+            "domMs": 322.40000009536743,
+            "cacheHit": false,
+            "markupMs": 73.7999997138977,
+            "domCommitMs": 0.5,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 1066.4000000953674
+          },
+          {
+            "kind": "計算結果再利用",
+            "calculationMs": 0.19999980926513672,
+            "domMs": 261.2000002861023,
+            "cacheHit": true,
+            "markupMs": 69.40000009536743,
+            "domCommitMs": 0.40000009536743164,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 349.90000009536743
+          },
+          {
+            "kind": "計算結果再利用",
+            "calculationMs": 0.19999980926513672,
+            "domMs": 230.5,
+            "cacheHit": true,
+            "markupMs": 71.7000002861023,
+            "domCommitMs": 0.5,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 317
+          },
+          {
+            "kind": "計算結果再利用",
+            "calculationMs": 0.09999990463256836,
+            "domMs": 224.2999997138977,
+            "cacheHit": true,
+            "markupMs": 64.5,
+            "domCommitMs": 0.40000009536743164,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 299.7999997138977
+          }
+        ],
+        "detailRows": [
+          {
+            "generatedMs": 215.19999980926514,
+            "frameCompletionMs": 301.09999990463257,
+            "elements": 1191
+          },
+          {
+            "generatedMs": 205.69999980926514,
+            "frameCompletionMs": 346.40000009536743,
+            "elements": 1191
+          },
+          {
+            "generatedMs": 206.59999990463257,
+            "frameCompletionMs": 860.5,
+            "elements": 1191
+          }
+        ],
+        "measured": {
+          "fullCalculationMs": 484.40000009536743,
+          "renderMs": 230.5,
+          "detailGenerationMs": 206.59999990463257
+        },
+        "comparison": [],
+        "comparisonState": "同条件の前回実測なし",
+        "scope": "実DOM生成と2フレーム到達。通信・端末実機・描画完了保証とは別。設定/安全条件を変更しない"
+      },
+      "loads": [
+        {
+          "file": "data/ui/update-status.json",
+          "bytes": 297421,
+          "networkMs": 11.599999904632568,
+          "verifyMs": 1.9000000953674316,
+          "jsonParseMs": 1,
+          "decodeMs": 3.9000000953674316,
+          "transferBytes": 57884,
+          "compressedBodyBytes": 57584,
+          "expandedBodyBytes": 297421
+        },
+        {
+          "file": "data/link-coverage.json",
+          "bytes": 119081,
+          "networkMs": 19.399999618530273,
+          "verifyMs": 0.7000002861022949,
+          "jsonParseMs": 0.2999997138977051,
+          "decodeMs": 0,
+          "transferBytes": 21982,
+          "compressedBodyBytes": 21682,
+          "expandedBodyBytes": 119081
+        },
+        {
+          "file": "data/psa-japan-services.json",
+          "bytes": 785,
+          "networkMs": 20.299999713897705,
+          "verifyMs": 0.10000038146972656,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 766,
+          "compressedBodyBytes": 466,
+          "expandedBodyBytes": 785
+        },
+        {
+          "file": "data/evaluation-model.json",
+          "bytes": 3688,
+          "networkMs": 20.5,
+          "verifyMs": 0,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 1592,
+          "compressedBodyBytes": 1292,
+          "expandedBodyBytes": 3688
+        },
+        {
+          "file": "data/evaluation-governance.json",
+          "bytes": 11303,
+          "networkMs": 2.9000000953674316,
+          "verifyMs": 0.19999980926513672,
+          "jsonParseMs": 0.10000038146972656,
+          "decodeMs": 0,
+          "transferBytes": 1479,
+          "compressedBodyBytes": 1179,
+          "expandedBodyBytes": 11303
+        },
+        {
+          "file": "data/pokemon-cards-meta.json",
+          "bytes": 470,
+          "networkMs": 3.3000001907348633,
+          "verifyMs": 0,
+          "jsonParseMs": 0.09999990463256836,
+          "decodeMs": 0,
+          "transferBytes": 576,
+          "compressedBodyBytes": 276,
+          "expandedBodyBytes": 470
+        },
+        {
+          "file": "data/ui/state-a-price-evidence.json",
+          "bytes": 117832,
+          "networkMs": 73.40000009536743,
+          "verifyMs": 0.5,
+          "jsonParseMs": 0.3000001907348633,
+          "decodeMs": 2.9000000953674316,
+          "transferBytes": 17914,
+          "compressedBodyBytes": 17614,
+          "expandedBodyBytes": 117832
+        },
+        {
+          "file": "data/ui/card-catalog-completion.json",
+          "bytes": 2060383,
+          "networkMs": 26.600000381469727,
+          "verifyMs": 11.299999713897705,
+          "jsonParseMs": 14.400000095367432,
+          "decodeMs": 29.90000009536743,
+          "transferBytes": 122012,
+          "compressedBodyBytes": 121712,
+          "expandedBodyBytes": 2060383
+        },
+        {
+          "file": "data/card-catalog/manifest.json",
+          "bytes": 5005,
+          "networkMs": 45.90000009536743,
+          "verifyMs": 0.20000028610229492,
+          "jsonParseMs": 0.09999990463256836,
+          "decodeMs": 0,
+          "transferBytes": 1096,
+          "compressedBodyBytes": 796,
+          "expandedBodyBytes": 5005
+        },
+        {
+          "file": "data/ui/operational-limit-history.json",
+          "bytes": 1287163,
+          "networkMs": 25,
+          "verifyMs": 6.099999904632568,
+          "jsonParseMs": 6,
+          "decodeMs": 14.199999809265137,
+          "transferBytes": 101850,
+          "compressedBodyBytes": 101550,
+          "expandedBodyBytes": 1287163
+        },
+        {
+          "file": "data/ui/card-catalog/search-index.json",
+          "bytes": 2190870,
+          "networkMs": 66.5,
+          "verifyMs": 10.699999809265137,
+          "jsonParseMs": 5.400000095367432,
+          "decodeMs": 14.5,
+          "transferBytes": 377913,
+          "compressedBodyBytes": 377613,
+          "expandedBodyBytes": 2190870
+        },
+        {
+          "file": "data/ui/card-catalog/analysis.json",
+          "bytes": 1285609,
+          "networkMs": 97.19999980926514,
+          "verifyMs": 6.900000095367432,
+          "jsonParseMs": 2.1999998092651367,
+          "decodeMs": 22.600000381469727,
+          "transferBytes": 247965,
+          "compressedBodyBytes": 247665,
+          "expandedBodyBytes": 1285609
+        },
+        {
+          "file": "data/ui/cardrush-stock-summary.json",
+          "bytes": 527560,
+          "networkMs": 12,
+          "verifyMs": 4.099999904632568,
+          "jsonParseMs": 2.3000001907348633,
+          "decodeMs": 10.899999618530273,
+          "transferBytes": 57956,
+          "compressedBodyBytes": 57656,
+          "expandedBodyBytes": 527560
+        },
+        {
+          "file": "data/ui/yuyutei-stock-summary.json",
+          "bytes": 14887,
+          "networkMs": 44.40000009536743,
+          "verifyMs": 0.20000028610229492,
+          "jsonParseMs": 0,
+          "decodeMs": 0.2999997138977051,
+          "transferBytes": 4138,
+          "compressedBodyBytes": 3838,
+          "expandedBodyBytes": 14887
+        },
+        {
+          "file": "data/ui/hareruya2-stock-summary.json",
+          "bytes": 543131,
+          "networkMs": 29.200000286102295,
+          "verifyMs": 5.099999904632568,
+          "jsonParseMs": 2.6999998092651367,
+          "decodeMs": 14.099999904632568,
+          "transferBytes": 74669,
+          "compressedBodyBytes": 74369,
+          "expandedBodyBytes": 543131
+        },
+        {
+          "file": "data/ui/torecacamp-stock-summary.json",
+          "bytes": 890786,
+          "networkMs": 51.200000286102295,
+          "verifyMs": 7.5,
+          "jsonParseMs": 3.1999998092651367,
+          "decodeMs": 6.900000095367432,
+          "transferBytes": 145549,
+          "compressedBodyBytes": 145249,
+          "expandedBodyBytes": 890786
+        },
+        {
+          "file": "data/ui/shop-buyback-summary.json",
+          "bytes": 723416,
+          "networkMs": 16.300000190734863,
+          "verifyMs": 4.599999904632568,
+          "jsonParseMs": 2.0999999046325684,
+          "decodeMs": 6.699999809265137,
+          "transferBytes": 124925,
+          "compressedBodyBytes": 124625,
+          "expandedBodyBytes": 723416
+        },
+        {
+          "file": "data/return-horizon-calibration.json",
+          "bytes": 3337,
+          "networkMs": 99.5,
+          "verifyMs": 0.10000038146972656,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 886,
+          "compressedBodyBytes": 586,
+          "expandedBodyBytes": 3337
+        },
+        {
+          "file": "data/fixed-price-reference-index.json",
+          "bytes": 5401,
+          "networkMs": 99.5,
+          "verifyMs": 0.09999990463256836,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 1306,
+          "compressedBodyBytes": 1006,
+          "expandedBodyBytes": 5401
+        },
+        {
+          "file": "data/ui/market-stability-summary.json",
+          "bytes": 2215323,
+          "networkMs": 54.90000009536743,
+          "verifyMs": 16.700000286102295,
+          "jsonParseMs": 14,
+          "decodeMs": 24.799999713897705,
+          "transferBytes": 302705,
+          "compressedBodyBytes": 302405,
+          "expandedBodyBytes": 2215323
+        },
+        {
+          "file": "data/ui/snkr-listing-summary.json",
+          "bytes": 166749,
+          "networkMs": 9.200000286102295,
+          "verifyMs": 0.9000000953674316,
+          "jsonParseMs": 0.5,
+          "decodeMs": 3.0999999046325684,
+          "transferBytes": 22119,
+          "compressedBodyBytes": 21819,
+          "expandedBodyBytes": 166749
+        },
+        {
+          "file": "data/ui/snkr-raw-flip-summary.json",
+          "bytes": 531493,
+          "networkMs": 16.5,
+          "verifyMs": 3.299999713897705,
+          "jsonParseMs": 1.5,
+          "decodeMs": 5.400000095367432,
+          "transferBytes": 65628,
+          "compressedBodyBytes": 65328,
+          "expandedBodyBytes": 531493
+        },
+        {
+          "file": "data/pokedata/manifest.json",
+          "bytes": 19456,
+          "networkMs": 27,
+          "verifyMs": 0.19999980926513672,
+          "jsonParseMs": 0.09999990463256836,
+          "decodeMs": 0,
+          "transferBytes": 5242,
+          "compressedBodyBytes": 4942,
+          "expandedBodyBytes": 19456
+        },
+        {
+          "file": "data/ui/market-research-summary.json",
+          "bytes": 1981,
+          "networkMs": 27.299999713897705,
+          "verifyMs": 0.10000038146972656,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 1436,
+          "compressedBodyBytes": 1136,
+          "expandedBodyBytes": 1981
+        },
+        {
+          "file": "data/pokedata-set-discovery.json",
+          "bytes": 3628,
+          "networkMs": 3.5,
+          "verifyMs": 0,
+          "jsonParseMs": 0.09999990463256836,
+          "decodeMs": 0,
+          "transferBytes": 1220,
+          "compressedBodyBytes": 920,
+          "expandedBodyBytes": 3628
+        },
+        {
+          "file": "data/supply-maturity-hypothesis.json",
+          "bytes": 71558,
+          "networkMs": 4.5,
+          "verifyMs": 0.40000009536743164,
+          "jsonParseMs": 0.2999997138977051,
+          "decodeMs": 0.09999990463256836,
+          "transferBytes": 9283,
+          "compressedBodyBytes": 8983,
+          "expandedBodyBytes": 71558
+        },
+        {
+          "file": "data/regulation-policy.json",
+          "bytes": 391,
+          "networkMs": 5.199999809265137,
+          "verifyMs": 0.10000038146972656,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 633,
+          "compressedBodyBytes": 333,
+          "expandedBodyBytes": 391
+        },
+        {
+          "file": "data/ui/psa-population-summary.json",
+          "bytes": 1000821,
+          "networkMs": 23.300000190734863,
+          "verifyMs": 6.199999809265137,
+          "jsonParseMs": 2.5,
+          "decodeMs": 5.5,
+          "transferBytes": 228967,
+          "compressedBodyBytes": 228667,
+          "expandedBodyBytes": 1000821
+        },
+        {
+          "file": "data/psa10-period-summary.json",
+          "bytes": 344496,
+          "networkMs": 15.800000190734863,
+          "verifyMs": 2.299999713897705,
+          "jsonParseMs": 1.9000000953674316,
+          "decodeMs": 0,
+          "transferBytes": 104464,
+          "compressedBodyBytes": 104164,
+          "expandedBodyBytes": 344496
+        }
+      ]
+    },
+    {
+      "mode": "after",
+      "width": 1440,
+      "benchmark": {
+        "width": 1440,
+        "loadedCards": 2020,
+        "valuesAndIdsUnchanged": true,
+        "dataRevision": "7a98388e0604a43f320616d141683cf88f4fe4e56f6e7b22f286572bbab97728",
+        "conditionHash": "9ad95a59876fdb6466c14dbd40a028ba38ccc391329640905ff6fb5cd9d5b52a",
+        "rows": [
+          {
+            "kind": "全件再計算",
+            "calculationMs": 466,
+            "domMs": 260.19999980926514,
+            "cacheHit": false,
+            "markupMs": 77.69999980926514,
+            "domCommitMs": 0.5,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 1061.5
+          },
+          {
+            "kind": "全件再計算",
+            "calculationMs": 474,
+            "domMs": 246.19999980926514,
+            "cacheHit": false,
+            "markupMs": 67,
+            "domCommitMs": 0.5,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 1083.0999999046326
+          },
+          {
+            "kind": "全件再計算",
+            "calculationMs": 530.5,
+            "domMs": 324.30000019073486,
+            "cacheHit": false,
+            "markupMs": 77.10000038146973,
+            "domCommitMs": 0.5,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 1066.6999998092651
+          },
+          {
+            "kind": "計算結果再利用",
+            "calculationMs": 0.10000038146972656,
+            "domMs": 252.69999980926514,
+            "cacheHit": true,
+            "markupMs": 91.59999990463257,
+            "domCommitMs": 0.6999998092651367,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 616.7000002861023
+          },
+          {
+            "kind": "計算結果再利用",
+            "calculationMs": 0.09999990463256836,
+            "domMs": 222.80000019073486,
+            "cacheHit": true,
+            "markupMs": 71,
+            "domCommitMs": 0.5,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 302.90000009536743
+          },
+          {
+            "kind": "計算結果再利用",
+            "calculationMs": 0.09999990463256836,
+            "domMs": 271,
+            "cacheHit": true,
+            "markupMs": 75.2000002861023,
+            "domCommitMs": 0.5,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 352.8999996185303
+          }
+        ],
+        "detailRows": [
+          {
+            "generatedMs": 211.09999990463257,
+            "frameCompletionMs": 281.40000009536743,
+            "elements": 1159
+          },
+          {
+            "generatedMs": 205.89999961853027,
+            "frameCompletionMs": 261,
+            "elements": 1194
+          },
+          {
+            "generatedMs": 206.19999980926514,
+            "frameCompletionMs": 412.5,
+            "elements": 1194
+          }
+        ],
+        "measured": {
+          "fullCalculationMs": 474,
+          "renderMs": 252.69999980926514,
+          "detailGenerationMs": 206.19999980926514
+        },
+        "comparison": [
+          {
+            "metric": "fullCalculationMs",
+            "before": 484.40000009536743,
+            "after": 474,
+            "warning": false
+          },
+          {
+            "metric": "renderMs",
+            "before": 230.5,
+            "after": 252.69999980926514,
+            "warning": false
+          },
+          {
+            "metric": "detailGenerationMs",
+            "before": 206.59999990463257,
+            "after": 206.19999980926514,
+            "warning": false
+          }
+        ],
+        "comparisonState": "同じ環境・計算値・候補IDでの前回比較",
+        "scope": "実DOM生成と2フレーム到達。通信・端末実機・描画完了保証とは別。設定/安全条件を変更しない"
+      },
+      "loads": [
+        {
+          "file": "data/ui/update-status.json",
+          "bytes": 297421,
+          "networkMs": 12.399999618530273,
+          "verifyMs": 1.6000003814697266,
+          "jsonParseMs": 1,
+          "decodeMs": 3.799999713897705,
+          "transferBytes": 57884,
+          "compressedBodyBytes": 57584,
+          "expandedBodyBytes": 297421
+        },
+        {
+          "file": "data/link-coverage.json",
+          "bytes": 119081,
+          "networkMs": 19.40000009536743,
+          "verifyMs": 0.7999997138977051,
+          "jsonParseMs": 0.3000001907348633,
+          "decodeMs": 0,
+          "transferBytes": 21982,
+          "compressedBodyBytes": 21682,
+          "expandedBodyBytes": 119081
+        },
+        {
+          "file": "data/psa-japan-services.json",
+          "bytes": 785,
+          "networkMs": 20.40000009536743,
+          "verifyMs": 0,
+          "jsonParseMs": 0.09999990463256836,
+          "decodeMs": 0,
+          "transferBytes": 766,
+          "compressedBodyBytes": 466,
+          "expandedBodyBytes": 785
+        },
+        {
+          "file": "data/evaluation-model.json",
+          "bytes": 3688,
+          "networkMs": 20.40000009536743,
+          "verifyMs": 0,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 1592,
+          "compressedBodyBytes": 1292,
+          "expandedBodyBytes": 3688
+        },
+        {
+          "file": "data/evaluation-governance.json",
+          "bytes": 11303,
+          "networkMs": 3.0999999046325684,
+          "verifyMs": 0.20000028610229492,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 1479,
+          "compressedBodyBytes": 1179,
+          "expandedBodyBytes": 11303
+        },
+        {
+          "file": "data/pokemon-cards-meta.json",
+          "bytes": 470,
+          "networkMs": 3.299999713897705,
+          "verifyMs": 0.09999990463256836,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 576,
+          "compressedBodyBytes": 276,
+          "expandedBodyBytes": 470
+        },
+        {
+          "file": "data/ui/state-a-price-evidence.json",
+          "bytes": 117832,
+          "networkMs": 76,
+          "verifyMs": 0.40000009536743164,
+          "jsonParseMs": 0.5,
+          "decodeMs": 2.5999999046325684,
+          "transferBytes": 17914,
+          "compressedBodyBytes": 17614,
+          "expandedBodyBytes": 117832
+        },
+        {
+          "file": "data/ui/card-catalog-completion.json",
+          "bytes": 2060383,
+          "networkMs": 28,
+          "verifyMs": 12.099999904632568,
+          "jsonParseMs": 8.299999713897705,
+          "decodeMs": 32.5,
+          "transferBytes": 122012,
+          "compressedBodyBytes": 121712,
+          "expandedBodyBytes": 2060383
+        },
+        {
+          "file": "data/card-catalog/manifest.json",
+          "bytes": 5005,
+          "networkMs": 54.59999990463257,
+          "verifyMs": 0.09999990463256836,
+          "jsonParseMs": 0.10000038146972656,
+          "decodeMs": 0,
+          "transferBytes": 1096,
+          "compressedBodyBytes": 796,
+          "expandedBodyBytes": 5005
+        },
+        {
+          "file": "data/ui/operational-limit-history.json",
+          "bytes": 1287163,
+          "networkMs": 27.600000381469727,
+          "verifyMs": 5.399999618530273,
+          "jsonParseMs": 8.400000095367432,
+          "decodeMs": 13.700000286102295,
+          "transferBytes": 101850,
+          "compressedBodyBytes": 101550,
+          "expandedBodyBytes": 1287163
+        },
+        {
+          "file": "data/ui/card-catalog/search-index.json",
+          "bytes": 2190870,
+          "networkMs": 63.5,
+          "verifyMs": 11.5,
+          "jsonParseMs": 4.300000190734863,
+          "decodeMs": 15.699999809265137,
+          "transferBytes": 377913,
+          "compressedBodyBytes": 377613,
+          "expandedBodyBytes": 2190870
+        },
+        {
+          "file": "data/ui/card-catalog/analysis.json",
+          "bytes": 1285609,
+          "networkMs": 95.10000038146973,
+          "verifyMs": 7,
+          "jsonParseMs": 2,
+          "decodeMs": 28.59999990463257,
+          "transferBytes": 247965,
+          "compressedBodyBytes": 247665,
+          "expandedBodyBytes": 1285609
+        },
+        {
+          "file": "data/ui/cardrush-stock-summary.json",
+          "bytes": 527560,
+          "networkMs": 22.199999809265137,
+          "verifyMs": 3.5,
+          "jsonParseMs": 1.700000286102295,
+          "decodeMs": 10.099999904632568,
+          "transferBytes": 57956,
+          "compressedBodyBytes": 57656,
+          "expandedBodyBytes": 527560
+        },
+        {
+          "file": "data/ui/yuyutei-stock-summary.json",
+          "bytes": 14887,
+          "networkMs": 49.09999990463257,
+          "verifyMs": 0.10000038146972656,
+          "jsonParseMs": 0.19999980926513672,
+          "decodeMs": 0.40000009536743164,
+          "transferBytes": 4138,
+          "compressedBodyBytes": 3838,
+          "expandedBodyBytes": 14887
+        },
+        {
+          "file": "data/ui/hareruya2-stock-summary.json",
+          "bytes": 543131,
+          "networkMs": 37.5,
+          "verifyMs": 3.0999999046325684,
+          "jsonParseMs": 1.4000000953674316,
+          "decodeMs": 11.199999809265137,
+          "transferBytes": 74669,
+          "compressedBodyBytes": 74369,
+          "expandedBodyBytes": 543131
+        },
+        {
+          "file": "data/ui/torecacamp-stock-summary.json",
+          "bytes": 890786,
+          "networkMs": 53.200000286102295,
+          "verifyMs": 5.900000095367432,
+          "jsonParseMs": 1.6999998092651367,
+          "decodeMs": 5.099999904632568,
+          "transferBytes": 145549,
+          "compressedBodyBytes": 145249,
+          "expandedBodyBytes": 890786
+        },
+        {
+          "file": "data/ui/shop-buyback-summary.json",
+          "bytes": 723416,
+          "networkMs": 18.09999990463257,
+          "verifyMs": 6.100000381469727,
+          "jsonParseMs": 3,
+          "decodeMs": 11.599999904632568,
+          "transferBytes": 124925,
+          "compressedBodyBytes": 124625,
+          "expandedBodyBytes": 723416
+        },
+        {
+          "file": "data/return-horizon-calibration.json",
+          "bytes": 3337,
+          "networkMs": 89.7999997138977,
+          "verifyMs": 0.09999990463256836,
+          "jsonParseMs": 0,
+          "decodeMs": 0.10000038146972656,
+          "transferBytes": 886,
+          "compressedBodyBytes": 586,
+          "expandedBodyBytes": 3337
+        },
+        {
+          "file": "data/fixed-price-reference-index.json",
+          "bytes": 5401,
+          "networkMs": 89.90000009536743,
+          "verifyMs": 0,
+          "jsonParseMs": 0.09999990463256836,
+          "decodeMs": 0,
+          "transferBytes": 1306,
+          "compressedBodyBytes": 1006,
+          "expandedBodyBytes": 5401
+        },
+        {
+          "file": "data/ui/market-stability-summary.json",
+          "bytes": 2215323,
+          "networkMs": 62.200000286102295,
+          "verifyMs": 12.400000095367432,
+          "jsonParseMs": 7.399999618530273,
+          "decodeMs": 15.300000190734863,
+          "transferBytes": 302705,
+          "compressedBodyBytes": 302405,
+          "expandedBodyBytes": 2215323
+        },
+        {
+          "file": "data/ui/snkr-listing-summary.json",
+          "bytes": 166749,
+          "networkMs": 8.699999809265137,
+          "verifyMs": 1.200000286102295,
+          "jsonParseMs": 0.5,
+          "decodeMs": 3.5,
+          "transferBytes": 22119,
+          "compressedBodyBytes": 21819,
+          "expandedBodyBytes": 166749
+        },
+        {
+          "file": "data/ui/snkr-raw-flip-summary.json",
+          "bytes": 531493,
+          "networkMs": 18.200000286102295,
+          "verifyMs": 3.0999999046325684,
+          "jsonParseMs": 1.4000000953674316,
+          "decodeMs": 5.5,
+          "transferBytes": 65628,
+          "compressedBodyBytes": 65328,
+          "expandedBodyBytes": 531493
+        },
+        {
+          "file": "data/pokedata/manifest.json",
+          "bytes": 19456,
+          "networkMs": 28.399999618530273,
+          "verifyMs": 0.10000038146972656,
+          "jsonParseMs": 0.09999990463256836,
+          "decodeMs": 0,
+          "transferBytes": 5242,
+          "compressedBodyBytes": 4942,
+          "expandedBodyBytes": 19456
+        },
+        {
+          "file": "data/ui/market-research-summary.json",
+          "bytes": 1981,
+          "networkMs": 28.5,
+          "verifyMs": 0,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 1436,
+          "compressedBodyBytes": 1136,
+          "expandedBodyBytes": 1981
+        },
+        {
+          "file": "data/pokedata-set-discovery.json",
+          "bytes": 3628,
+          "networkMs": 3,
+          "verifyMs": 0.09999990463256836,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 1220,
+          "compressedBodyBytes": 920,
+          "expandedBodyBytes": 3628
+        },
+        {
+          "file": "data/supply-maturity-hypothesis.json",
+          "bytes": 71558,
+          "networkMs": 4,
+          "verifyMs": 0.5999999046325684,
+          "jsonParseMs": 0.5,
+          "decodeMs": 0,
+          "transferBytes": 9283,
+          "compressedBodyBytes": 8983,
+          "expandedBodyBytes": 71558
+        },
+        {
+          "file": "data/regulation-policy.json",
+          "bytes": 391,
+          "networkMs": 5.200000286102295,
+          "verifyMs": 0,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 633,
+          "compressedBodyBytes": 333,
+          "expandedBodyBytes": 391
+        },
+        {
+          "file": "data/ui/psa-population-summary.json",
+          "bytes": 1000821,
+          "networkMs": 23.200000286102295,
+          "verifyMs": 5.799999713897705,
+          "jsonParseMs": 2.6000003814697266,
+          "decodeMs": 5.799999713897705,
+          "transferBytes": 228967,
+          "compressedBodyBytes": 228667,
+          "expandedBodyBytes": 1000821
+        },
+        {
+          "file": "data/psa10-period-summary.json",
+          "bytes": 344496,
+          "networkMs": 13.599999904632568,
+          "verifyMs": 2.3000001907348633,
+          "jsonParseMs": 2,
+          "decodeMs": 0,
+          "transferBytes": 104464,
+          "compressedBodyBytes": 104164,
+          "expandedBodyBytes": 344496
+        },
+        {
+          "file": "data/buyback-posting-coverage.json",
+          "bytes": 24216,
+          "networkMs": 17.90000009536743,
+          "verifyMs": 0.09999990463256836,
+          "jsonParseMs": 0.20000028610229492,
+          "decodeMs": 0,
+          "transferBytes": 2080,
+          "compressedBodyBytes": 1780,
+          "expandedBodyBytes": 24216
+        }
+      ]
+    },
+    {
+      "mode": "double",
+      "width": 1440,
+      "benchmark": {
+        "width": 1440,
+        "loadedCards": 4040,
+        "valuesAndIdsUnchanged": true,
+        "dataRevision": "synthetic-double-7a98388e0604a43f320616d141683cf88f4fe4e56f6e7b22f286572bbab97728",
+        "conditionHash": "cc02b27555bc8ec8dda61b1e290457fe208b25fab90b58a405b11d15548e68f9",
+        "rows": [
+          {
+            "kind": "全件再計算",
+            "calculationMs": 1298.0999999046326,
+            "domMs": 497.09999990463257,
+            "cacheHit": false,
+            "markupMs": 77.90000009536743,
+            "domCommitMs": 0.40000009536743164,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 2045.6999998092651
+          },
+          {
+            "kind": "全件再計算",
+            "calculationMs": 1114.2000002861023,
+            "domMs": 507.59999990463257,
+            "cacheHit": false,
+            "markupMs": 80.69999980926514,
+            "domCommitMs": 0.5,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 2120.5
+          },
+          {
+            "kind": "全件再計算",
+            "calculationMs": 1395.8000001907349,
+            "domMs": 653.5,
+            "cacheHit": false,
+            "markupMs": 86.2999997138977,
+            "domCommitMs": 0.5,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 2196.4000000953674
+          },
+          {
+            "kind": "計算結果再利用",
+            "calculationMs": 0.3000001907348633,
+            "domMs": 480.19999980926514,
+            "cacheHit": true,
+            "markupMs": 88.19999980926514,
+            "domCommitMs": 0.6000003814697266,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 622
+          },
+          {
+            "kind": "計算結果再利用",
+            "calculationMs": 0,
+            "domMs": 407.09999990463257,
+            "cacheHit": true,
+            "markupMs": 71.2000002861023,
+            "domCommitMs": 0.2999997138977051,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 547.5
+          },
+          {
+            "kind": "計算結果再利用",
+            "calculationMs": 0.09999990463256836,
+            "domMs": 415.5,
+            "cacheHit": true,
+            "markupMs": 74.2000002861023,
+            "domCommitMs": 0.40000009536743164,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 579.9000000953674
+          }
+        ],
+        "detailRows": [
+          {
+            "generatedMs": 425.80000019073486,
+            "frameCompletionMs": 629.7000002861023,
+            "elements": 1194
+          },
+          {
+            "generatedMs": 417.80000019073486,
+            "frameCompletionMs": 1460.3000001907349,
+            "elements": 1194
+          },
+          {
+            "generatedMs": 424.09999990463257,
+            "frameCompletionMs": 592.5,
+            "elements": 1194
+          }
+        ],
+        "measured": {
+          "fullCalculationMs": 1298.0999999046326,
+          "renderMs": 415.5,
+          "detailGenerationMs": 424.09999990463257
+        },
+        "comparison": [],
+        "comparisonState": "同条件の前回実測なし",
+        "scope": "実DOM生成と2フレーム到達。通信・端末実機・描画完了保証とは別。設定/安全条件を変更しない"
+      },
+      "loads": [
+        {
+          "file": "data/ui/update-status.json",
+          "bytes": 297421,
+          "networkMs": 21,
+          "verifyMs": 1.9000000953674316,
+          "jsonParseMs": 1.3000001907348633,
+          "decodeMs": 4.599999904632568,
+          "transferBytes": 57884,
+          "compressedBodyBytes": 57584,
+          "expandedBodyBytes": 297421
+        },
+        {
+          "file": "data/link-coverage.json",
+          "bytes": 119081,
+          "networkMs": 28.59999990463257,
+          "verifyMs": 0.5999999046325684,
+          "jsonParseMs": 2.200000286102295,
+          "decodeMs": 0,
+          "transferBytes": 21982,
+          "compressedBodyBytes": 21682,
+          "expandedBodyBytes": 119081
+        },
+        {
+          "file": "data/psa-japan-services.json",
+          "bytes": 785,
+          "networkMs": 31.300000190734863,
+          "verifyMs": 0.09999990463256836,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 766,
+          "compressedBodyBytes": 466,
+          "expandedBodyBytes": 785
+        },
+        {
+          "file": "data/evaluation-model.json",
+          "bytes": 3688,
+          "networkMs": 31.40000009536743,
+          "verifyMs": 0.09999990463256836,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 1592,
+          "compressedBodyBytes": 1292,
+          "expandedBodyBytes": 3688
+        },
+        {
+          "file": "data/evaluation-governance.json",
+          "bytes": 11303,
+          "networkMs": 12.900000095367432,
+          "verifyMs": 0.09999990463256836,
+          "jsonParseMs": 0.09999990463256836,
+          "decodeMs": 0,
+          "transferBytes": 1479,
+          "compressedBodyBytes": 1179,
+          "expandedBodyBytes": 11303
+        },
+        {
+          "file": "data/pokemon-cards-meta.json",
+          "bytes": 376,
+          "networkMs": 12.899999618530273,
+          "verifyMs": 0.10000038146972656,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 554,
+          "compressedBodyBytes": 254,
+          "expandedBodyBytes": 376
+        },
+        {
+          "file": "data/ui/state-a-price-evidence.json",
+          "bytes": 204847,
+          "networkMs": 54.59999990463257,
+          "verifyMs": 0.5999999046325684,
+          "jsonParseMs": 0.9000000953674316,
+          "decodeMs": 7,
+          "transferBytes": 34921,
+          "compressedBodyBytes": 34621,
+          "expandedBodyBytes": 204847
+        },
+        {
+          "file": "data/ui/card-catalog-completion.json",
+          "bytes": 4214721,
+          "networkMs": 69.80000019073486,
+          "verifyMs": 26,
+          "jsonParseMs": 28.59999990463257,
+          "decodeMs": 106.5,
+          "transferBytes": 243339,
+          "compressedBodyBytes": 243039,
+          "expandedBodyBytes": 4214721
+        },
+        {
+          "file": "data/card-catalog/manifest.json",
+          "bytes": 5005,
+          "networkMs": 34.80000019073486,
+          "verifyMs": 0.19999980926513672,
+          "jsonParseMs": 0.09999990463256836,
+          "decodeMs": 0.10000038146972656,
+          "transferBytes": 1100,
+          "compressedBodyBytes": 800,
+          "expandedBodyBytes": 5005
+        },
+        {
+          "file": "data/ui/operational-limit-history.json",
+          "bytes": 2585418,
+          "networkMs": 36,
+          "verifyMs": 10,
+          "jsonParseMs": 13.199999809265137,
+          "decodeMs": 27.90000009536743,
+          "transferBytes": 202787,
+          "compressedBodyBytes": 202487,
+          "expandedBodyBytes": 2585418
+        },
+        {
+          "file": "data/ui/card-catalog/search-index.json",
+          "bytes": 3538107,
+          "networkMs": 105.90000009536743,
+          "verifyMs": 18.300000190734863,
+          "jsonParseMs": 10.299999713897705,
+          "decodeMs": 77.30000019073486,
+          "transferBytes": 553523,
+          "compressedBodyBytes": 553223,
+          "expandedBodyBytes": 3538107
+        },
+        {
+          "file": "data/ui/card-catalog/analysis.json",
+          "bytes": 1932543,
+          "networkMs": 161.7999997138977,
+          "verifyMs": 13.900000095367432,
+          "jsonParseMs": 9.599999904632568,
+          "decodeMs": 37.90000009536743,
+          "transferBytes": 392900,
+          "compressedBodyBytes": 392600,
+          "expandedBodyBytes": 1932543
+        },
+        {
+          "file": "data/ui/cardrush-stock-summary.json",
+          "bytes": 1100325,
+          "networkMs": 21.59999990463257,
+          "verifyMs": 9.599999904632568,
+          "jsonParseMs": 3.6000003814697266,
+          "decodeMs": 14.099999904632568,
+          "transferBytes": 116239,
+          "compressedBodyBytes": 115939,
+          "expandedBodyBytes": 1100325
+        },
+        {
+          "file": "data/ui/yuyutei-stock-summary.json",
+          "bytes": 25373,
+          "networkMs": 65.40000009536743,
+          "verifyMs": 0.3000001907348633,
+          "jsonParseMs": 0.19999980926513672,
+          "decodeMs": 1,
+          "transferBytes": 5096,
+          "compressedBodyBytes": 4796,
+          "expandedBodyBytes": 25373
+        },
+        {
+          "file": "data/ui/hareruya2-stock-summary.json",
+          "bytes": 1093345,
+          "networkMs": 49,
+          "verifyMs": 6.099999904632568,
+          "jsonParseMs": 2.9000000953674316,
+          "decodeMs": 15.5,
+          "transferBytes": 139940,
+          "compressedBodyBytes": 139640,
+          "expandedBodyBytes": 1093345
+        },
+        {
+          "file": "data/ui/torecacamp-stock-summary.json",
+          "bytes": 1530934,
+          "networkMs": 73.5,
+          "verifyMs": 8.399999618530273,
+          "jsonParseMs": 3.5,
+          "decodeMs": 9.200000286102295,
+          "transferBytes": 233518,
+          "compressedBodyBytes": 233218,
+          "expandedBodyBytes": 1530934
+        },
+        {
+          "file": "data/ui/shop-buyback-summary.json",
+          "bytes": 1338161,
+          "networkMs": 28.09999990463257,
+          "verifyMs": 8.300000190734863,
+          "jsonParseMs": 3.799999713897705,
+          "decodeMs": 12.200000286102295,
+          "transferBytes": 233198,
+          "compressedBodyBytes": 232898,
+          "expandedBodyBytes": 1338161
+        },
+        {
+          "file": "data/return-horizon-calibration.json",
+          "bytes": 3337,
+          "networkMs": 87,
+          "verifyMs": 0.10000038146972656,
+          "jsonParseMs": 0,
+          "decodeMs": 0.09999990463256836,
+          "transferBytes": 886,
+          "compressedBodyBytes": 586,
+          "expandedBodyBytes": 3337
+        },
+        {
+          "file": "data/fixed-price-reference-index.json",
+          "bytes": 5401,
+          "networkMs": 87.2000002861023,
+          "verifyMs": 0,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 1306,
+          "compressedBodyBytes": 1006,
+          "expandedBodyBytes": 5401
+        },
+        {
+          "file": "data/ui/market-stability-summary.json",
+          "bytes": 4466134,
+          "networkMs": 100,
+          "verifyMs": 23.90000009536743,
+          "jsonParseMs": 22,
+          "decodeMs": 105.90000009536743,
+          "transferBytes": 604876,
+          "compressedBodyBytes": 604576,
+          "expandedBodyBytes": 4466134
+        },
+        {
+          "file": "data/ui/snkr-listing-summary.json",
+          "bytes": 351712,
+          "networkMs": 8.5,
+          "verifyMs": 2,
+          "jsonParseMs": 1.1999998092651367,
+          "decodeMs": 5.200000286102295,
+          "transferBytes": 43693,
+          "compressedBodyBytes": 43393,
+          "expandedBodyBytes": 351712
+        },
+        {
+          "file": "data/pokedata/manifest.json",
+          "bytes": 19456,
+          "networkMs": 52.700000286102295,
+          "verifyMs": 0.19999980926513672,
+          "jsonParseMs": 0.09999990463256836,
+          "decodeMs": 0,
+          "transferBytes": 5242,
+          "compressedBodyBytes": 4942,
+          "expandedBodyBytes": 19456
+        },
+        {
+          "file": "data/ui/market-research-summary.json",
+          "bytes": 1981,
+          "networkMs": 53,
+          "verifyMs": 0,
+          "jsonParseMs": 0,
+          "decodeMs": 0.19999980926513672,
+          "transferBytes": 1436,
+          "compressedBodyBytes": 1136,
+          "expandedBodyBytes": 1981
+        },
+        {
+          "file": "data/ui/snkr-raw-flip-summary.json",
+          "bytes": 1072820,
+          "networkMs": 26.300000190734863,
+          "verifyMs": 6.199999809265137,
+          "jsonParseMs": 3.200000286102295,
+          "decodeMs": 17.799999713897705,
+          "transferBytes": 145976,
+          "compressedBodyBytes": 145676,
+          "expandedBodyBytes": 1072820
+        },
+        {
+          "file": "data/pokedata-set-discovery.json",
+          "bytes": 3628,
+          "networkMs": 3.200000286102295,
+          "verifyMs": 0,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 1220,
+          "compressedBodyBytes": 920,
+          "expandedBodyBytes": 3628
+        },
+        {
+          "file": "data/supply-maturity-hypothesis.json",
+          "bytes": 137625,
+          "networkMs": 4.899999618530273,
+          "verifyMs": 1.200000286102295,
+          "jsonParseMs": 0.6999998092651367,
+          "decodeMs": 0,
+          "transferBytes": 15882,
+          "compressedBodyBytes": 15582,
+          "expandedBodyBytes": 137625
+        },
+        {
+          "file": "data/regulation-policy.json",
+          "bytes": 355,
+          "networkMs": 6.799999713897705,
+          "verifyMs": 0,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 614,
+          "compressedBodyBytes": 314,
+          "expandedBodyBytes": 355
+        },
+        {
+          "file": "data/ui/psa-population-summary.json",
+          "bytes": 1677928,
+          "networkMs": 36.59999990463257,
+          "verifyMs": 10.099999904632568,
+          "jsonParseMs": 4.900000095367432,
+          "decodeMs": 8.699999809265137,
+          "transferBytes": 359677,
+          "compressedBodyBytes": 359377,
+          "expandedBodyBytes": 1677928
+        },
+        {
+          "file": "data/psa10-period-summary.json",
+          "bytes": 729800,
+          "networkMs": 27.700000286102295,
+          "verifyMs": 4.199999809265137,
+          "jsonParseMs": 4.599999904632568,
+          "decodeMs": 0.10000038146972656,
+          "transferBytes": 209655,
+          "compressedBodyBytes": 209355,
+          "expandedBodyBytes": 729800
+        },
+        {
+          "file": "data/buyback-posting-coverage.json",
+          "bytes": 48906,
+          "networkMs": 36.90000009536743,
+          "verifyMs": 0.5,
+          "jsonParseMs": 0.39999961853027344,
+          "decodeMs": 0,
+          "transferBytes": 3285,
+          "compressedBodyBytes": 2985,
+          "expandedBodyBytes": 48906
+        }
+      ]
+    },
+    {
+      "mode": "before",
+      "width": 390,
+      "benchmark": {
+        "width": 390,
+        "loadedCards": 2020,
+        "valuesAndIdsUnchanged": true,
+        "dataRevision": "7a98388e0604a43f320616d141683cf88f4fe4e56f6e7b22f286572bbab97728",
+        "conditionHash": "9ad95a59876fdb6466c14dbd40a028ba38ccc391329640905ff6fb5cd9d5b52a",
+        "rows": [
+          {
+            "kind": "全件再計算",
+            "calculationMs": 639.7000002861023,
+            "domMs": 278.09999990463257,
+            "cacheHit": false,
+            "markupMs": 70.80000019073486,
+            "domCommitMs": 0.5999999046325684,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 1044.6000003814697
+          },
+          {
+            "kind": "全件再計算",
+            "calculationMs": 576.6999998092651,
+            "domMs": 274.09999990463257,
+            "cacheHit": false,
+            "markupMs": 63.80000019073486,
+            "domCommitMs": 0.6999998092651367,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 1223.5999999046326
+          },
+          {
+            "kind": "全件再計算",
+            "calculationMs": 629.9000000953674,
+            "domMs": 293.59999990463257,
+            "cacheHit": false,
+            "markupMs": 67.09999990463257,
+            "domCommitMs": 0.5,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 1376.2999997138977
+          },
+          {
+            "kind": "計算結果再利用",
+            "calculationMs": 0.20000028610229492,
+            "domMs": 262.2999997138977,
+            "cacheHit": true,
+            "markupMs": 75.7999997138977,
+            "domCommitMs": 0.5,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 349.80000019073486
+          },
+          {
+            "kind": "計算結果再利用",
+            "calculationMs": 0.09999990463256836,
+            "domMs": 233.59999990463257,
+            "cacheHit": true,
+            "markupMs": 70,
+            "domCommitMs": 0.5,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 316.69999980926514
+          },
+          {
+            "kind": "計算結果再利用",
+            "calculationMs": 0,
+            "domMs": 231.5,
+            "cacheHit": true,
+            "markupMs": 67.90000009536743,
+            "domCommitMs": 0.5999999046325684,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 350
+          }
+        ],
+        "detailRows": [
+          {
+            "generatedMs": 230.2999997138977,
+            "frameCompletionMs": 832.1999998092651,
+            "elements": 1191
+          },
+          {
+            "generatedMs": 237.69999980926514,
+            "frameCompletionMs": 1234.3000001907349,
+            "elements": 1191
+          },
+          {
+            "generatedMs": 232.2000002861023,
+            "frameCompletionMs": 834,
+            "elements": 1191
+          }
+        ],
+        "measured": {
+          "fullCalculationMs": 629.9000000953674,
+          "renderMs": 233.59999990463257,
+          "detailGenerationMs": 232.2000002861023
+        },
+        "comparison": [],
+        "comparisonState": "同条件の前回実測なし",
+        "scope": "実DOM生成と2フレーム到達。通信・端末実機・描画完了保証とは別。設定/安全条件を変更しない"
+      },
+      "loads": [
+        {
+          "file": "data/ui/update-status.json",
+          "bytes": 297421,
+          "networkMs": 14.099999904632568,
+          "verifyMs": 1.9000000953674316,
+          "jsonParseMs": 1.200000286102295,
+          "decodeMs": 2.6999998092651367,
+          "transferBytes": 57884,
+          "compressedBodyBytes": 57584,
+          "expandedBodyBytes": 297421
+        },
+        {
+          "file": "data/link-coverage.json",
+          "bytes": 119081,
+          "networkMs": 21.300000190734863,
+          "verifyMs": 0.6999998092651367,
+          "jsonParseMs": 0.40000009536743164,
+          "decodeMs": 0,
+          "transferBytes": 21982,
+          "compressedBodyBytes": 21682,
+          "expandedBodyBytes": 119081
+        },
+        {
+          "file": "data/psa-japan-services.json",
+          "bytes": 785,
+          "networkMs": 22.299999713897705,
+          "verifyMs": 0,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 766,
+          "compressedBodyBytes": 466,
+          "expandedBodyBytes": 785
+        },
+        {
+          "file": "data/evaluation-model.json",
+          "bytes": 3688,
+          "networkMs": 22.299999713897705,
+          "verifyMs": 0,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 1592,
+          "compressedBodyBytes": 1292,
+          "expandedBodyBytes": 3688
+        },
+        {
+          "file": "data/evaluation-governance.json",
+          "bytes": 11303,
+          "networkMs": 4.300000190734863,
+          "verifyMs": 0.19999980926513672,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 1479,
+          "compressedBodyBytes": 1179,
+          "expandedBodyBytes": 11303
+        },
+        {
+          "file": "data/pokemon-cards-meta.json",
+          "bytes": 470,
+          "networkMs": 4.699999809265137,
+          "verifyMs": 0.09999990463256836,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 576,
+          "compressedBodyBytes": 276,
+          "expandedBodyBytes": 470
+        },
+        {
+          "file": "data/ui/state-a-price-evidence.json",
+          "bytes": 117832,
+          "networkMs": 75.40000009536743,
+          "verifyMs": 0.5999999046325684,
+          "jsonParseMs": 0.5999999046325684,
+          "decodeMs": 2.9000000953674316,
+          "transferBytes": 17914,
+          "compressedBodyBytes": 17614,
+          "expandedBodyBytes": 117832
+        },
+        {
+          "file": "data/ui/card-catalog-completion.json",
+          "bytes": 2060383,
+          "networkMs": 27.09999990463257,
+          "verifyMs": 11.699999809265137,
+          "jsonParseMs": 14.400000095367432,
+          "decodeMs": 62.40000009536743,
+          "transferBytes": 122012,
+          "compressedBodyBytes": 121712,
+          "expandedBodyBytes": 2060383
+        },
+        {
+          "file": "data/card-catalog/manifest.json",
+          "bytes": 5005,
+          "networkMs": 47.299999713897705,
+          "verifyMs": 0.09999990463256836,
+          "jsonParseMs": 0.20000028610229492,
+          "decodeMs": 0,
+          "transferBytes": 1096,
+          "compressedBodyBytes": 796,
+          "expandedBodyBytes": 5005
+        },
+        {
+          "file": "data/ui/operational-limit-history.json",
+          "bytes": 1287163,
+          "networkMs": 19.90000009536743,
+          "verifyMs": 5.900000095367432,
+          "jsonParseMs": 9.199999809265137,
+          "decodeMs": 13.099999904632568,
+          "transferBytes": 101850,
+          "compressedBodyBytes": 101550,
+          "expandedBodyBytes": 1287163
+        },
+        {
+          "file": "data/ui/card-catalog/search-index.json",
+          "bytes": 2190870,
+          "networkMs": 65.2999997138977,
+          "verifyMs": 14.300000190734863,
+          "jsonParseMs": 4.699999809265137,
+          "decodeMs": 17.300000190734863,
+          "transferBytes": 377913,
+          "compressedBodyBytes": 377613,
+          "expandedBodyBytes": 2190870
+        },
+        {
+          "file": "data/ui/card-catalog/analysis.json",
+          "bytes": 1285609,
+          "networkMs": 101.90000009536743,
+          "verifyMs": 8.199999809265137,
+          "jsonParseMs": 2.1999998092651367,
+          "decodeMs": 22,
+          "transferBytes": 247965,
+          "compressedBodyBytes": 247665,
+          "expandedBodyBytes": 1285609
+        },
+        {
+          "file": "data/ui/cardrush-stock-summary.json",
+          "bytes": 527560,
+          "networkMs": 13.300000190734863,
+          "verifyMs": 3.9000000953674316,
+          "jsonParseMs": 1.6999998092651367,
+          "decodeMs": 9.400000095367432,
+          "transferBytes": 57956,
+          "compressedBodyBytes": 57656,
+          "expandedBodyBytes": 527560
+        },
+        {
+          "file": "data/ui/yuyutei-stock-summary.json",
+          "bytes": 14887,
+          "networkMs": 41.19999980926514,
+          "verifyMs": 0.20000028610229492,
+          "jsonParseMs": 0.09999990463256836,
+          "decodeMs": 0.5,
+          "transferBytes": 4138,
+          "compressedBodyBytes": 3838,
+          "expandedBodyBytes": 14887
+        },
+        {
+          "file": "data/ui/hareruya2-stock-summary.json",
+          "bytes": 543131,
+          "networkMs": 28.09999990463257,
+          "verifyMs": 3.5999999046325684,
+          "jsonParseMs": 2,
+          "decodeMs": 10.300000190734863,
+          "transferBytes": 74669,
+          "compressedBodyBytes": 74369,
+          "expandedBodyBytes": 543131
+        },
+        {
+          "file": "data/ui/torecacamp-stock-summary.json",
+          "bytes": 890786,
+          "networkMs": 43.90000009536743,
+          "verifyMs": 4.900000095367432,
+          "jsonParseMs": 1.9000000953674316,
+          "decodeMs": 8.699999809265137,
+          "transferBytes": 145549,
+          "compressedBodyBytes": 145249,
+          "expandedBodyBytes": 890786
+        },
+        {
+          "file": "data/ui/shop-buyback-summary.json",
+          "bytes": 723416,
+          "networkMs": 16.09999990463257,
+          "verifyMs": 6.700000286102295,
+          "jsonParseMs": 2.3999996185302734,
+          "decodeMs": 6.700000286102295,
+          "transferBytes": 124925,
+          "compressedBodyBytes": 124625,
+          "expandedBodyBytes": 723416
+        },
+        {
+          "file": "data/return-horizon-calibration.json",
+          "bytes": 3337,
+          "networkMs": 51,
+          "verifyMs": 0.20000028610229492,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 886,
+          "compressedBodyBytes": 586,
+          "expandedBodyBytes": 3337
+        },
+        {
+          "file": "data/fixed-price-reference-index.json",
+          "bytes": 5401,
+          "networkMs": 55.59999990463257,
+          "verifyMs": 0,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 1306,
+          "compressedBodyBytes": 1006,
+          "expandedBodyBytes": 5401
+        },
+        {
+          "file": "data/ui/market-stability-summary.json",
+          "bytes": 2215323,
+          "networkMs": 56.30000019073486,
+          "verifyMs": 11.799999713897705,
+          "jsonParseMs": 7.800000190734863,
+          "decodeMs": 45.40000009536743,
+          "transferBytes": 302705,
+          "compressedBodyBytes": 302405,
+          "expandedBodyBytes": 2215323
+        },
+        {
+          "file": "data/ui/snkr-listing-summary.json",
+          "bytes": 166749,
+          "networkMs": 6.699999809265137,
+          "verifyMs": 1,
+          "jsonParseMs": 0.7000002861022949,
+          "decodeMs": 4,
+          "transferBytes": 22119,
+          "compressedBodyBytes": 21819,
+          "expandedBodyBytes": 166749
+        },
+        {
+          "file": "data/ui/snkr-raw-flip-summary.json",
+          "bytes": 531493,
+          "networkMs": 15.700000286102295,
+          "verifyMs": 2.6999998092651367,
+          "jsonParseMs": 1.5,
+          "decodeMs": 5.800000190734863,
+          "transferBytes": 65628,
+          "compressedBodyBytes": 65328,
+          "expandedBodyBytes": 531493
+        },
+        {
+          "file": "data/pokedata/manifest.json",
+          "bytes": 19456,
+          "networkMs": 25.800000190734863,
+          "verifyMs": 0.09999990463256836,
+          "jsonParseMs": 0.09999990463256836,
+          "decodeMs": 0,
+          "transferBytes": 5242,
+          "compressedBodyBytes": 4942,
+          "expandedBodyBytes": 19456
+        },
+        {
+          "file": "data/ui/market-research-summary.json",
+          "bytes": 1981,
+          "networkMs": 25.899999618530273,
+          "verifyMs": 0,
+          "jsonParseMs": 0,
+          "decodeMs": 0.10000038146972656,
+          "transferBytes": 1436,
+          "compressedBodyBytes": 1136,
+          "expandedBodyBytes": 1981
+        },
+        {
+          "file": "data/pokedata-set-discovery.json",
+          "bytes": 3628,
+          "networkMs": 2.8999996185302734,
+          "verifyMs": 0.10000038146972656,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 1220,
+          "compressedBodyBytes": 920,
+          "expandedBodyBytes": 3628
+        },
+        {
+          "file": "data/supply-maturity-hypothesis.json",
+          "bytes": 71558,
+          "networkMs": 4,
+          "verifyMs": 0.5999999046325684,
+          "jsonParseMs": 0.5,
+          "decodeMs": 0,
+          "transferBytes": 9283,
+          "compressedBodyBytes": 8983,
+          "expandedBodyBytes": 71558
+        },
+        {
+          "file": "data/regulation-policy.json",
+          "bytes": 391,
+          "networkMs": 5.400000095367432,
+          "verifyMs": 0,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 633,
+          "compressedBodyBytes": 333,
+          "expandedBodyBytes": 391
+        },
+        {
+          "file": "data/ui/psa-population-summary.json",
+          "bytes": 1000821,
+          "networkMs": 23.800000190734863,
+          "verifyMs": 6.299999713897705,
+          "jsonParseMs": 2.700000286102295,
+          "decodeMs": 5.799999713897705,
+          "transferBytes": 228967,
+          "compressedBodyBytes": 228667,
+          "expandedBodyBytes": 1000821
+        },
+        {
+          "file": "data/psa10-period-summary.json",
+          "bytes": 344496,
+          "networkMs": 16.90000009536743,
+          "verifyMs": 2.1999998092651367,
+          "jsonParseMs": 1.9000000953674316,
+          "decodeMs": 0,
+          "transferBytes": 104464,
+          "compressedBodyBytes": 104164,
+          "expandedBodyBytes": 344496
+        }
+      ]
+    },
+    {
+      "mode": "after",
+      "width": 390,
+      "benchmark": {
+        "width": 390,
+        "loadedCards": 2020,
+        "valuesAndIdsUnchanged": true,
+        "dataRevision": "7a98388e0604a43f320616d141683cf88f4fe4e56f6e7b22f286572bbab97728",
+        "conditionHash": "9ad95a59876fdb6466c14dbd40a028ba38ccc391329640905ff6fb5cd9d5b52a",
+        "rows": [
+          {
+            "kind": "全件再計算",
+            "calculationMs": 738.9000000953674,
+            "domMs": 442.5,
+            "cacheHit": false,
+            "markupMs": 132,
+            "domCommitMs": 1.3999996185302734,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 2062
+          },
+          {
+            "kind": "全件再計算",
+            "calculationMs": 670.4000000953674,
+            "domMs": 480.19999980926514,
+            "cacheHit": false,
+            "markupMs": 106.69999980926514,
+            "domCommitMs": 0.6000003814697266,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 1799.9000000953674
+          },
+          {
+            "kind": "全件再計算",
+            "calculationMs": 729.5,
+            "domMs": 407.59999990463257,
+            "cacheHit": false,
+            "markupMs": 103.90000009536743,
+            "domCommitMs": 0.5,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 1218.2999997138977
+          },
+          {
+            "kind": "計算結果再利用",
+            "calculationMs": 0,
+            "domMs": 299.1000003814697,
+            "cacheHit": true,
+            "markupMs": 75,
+            "domCommitMs": 0.8000001907348633,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 398.2000002861023
+          },
+          {
+            "kind": "計算結果再利用",
+            "calculationMs": 0.19999980926513672,
+            "domMs": 277.40000009536743,
+            "cacheHit": true,
+            "markupMs": 68.5,
+            "domCommitMs": 0.5,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 350.19999980926514
+          },
+          {
+            "kind": "計算結果再利用",
+            "calculationMs": 0.10000038146972656,
+            "domMs": 281.2999997138977,
+            "cacheHit": true,
+            "markupMs": 73.19999980926514,
+            "domCommitMs": 0.5,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 383
+          }
+        ],
+        "detailRows": [
+          {
+            "generatedMs": 239.30000019073486,
+            "frameCompletionMs": 826.9000000953674,
+            "elements": 1194
+          },
+          {
+            "generatedMs": 239.90000009536743,
+            "frameCompletionMs": 1155.1999998092651,
+            "elements": 1194
+          },
+          {
+            "generatedMs": 244.7000002861023,
+            "frameCompletionMs": 814,
+            "elements": 1194
+          }
+        ],
+        "measured": {
+          "fullCalculationMs": 729.5,
+          "renderMs": 281.2999997138977,
+          "detailGenerationMs": 239.90000009536743
+        },
+        "comparison": [
+          {
+            "metric": "fullCalculationMs",
+            "before": 629.9000000953674,
+            "after": 729.5,
+            "warning": false
+          },
+          {
+            "metric": "renderMs",
+            "before": 233.59999990463257,
+            "after": 281.2999997138977,
+            "warning": false
+          },
+          {
+            "metric": "detailGenerationMs",
+            "before": 232.2000002861023,
+            "after": 239.90000009536743,
+            "warning": false
+          }
+        ],
+        "comparisonState": "同じ環境・計算値・候補IDでの前回比較",
+        "scope": "実DOM生成と2フレーム到達。通信・端末実機・描画完了保証とは別。設定/安全条件を変更しない"
+      },
+      "loads": [
+        {
+          "file": "data/ui/update-status.json",
+          "bytes": 297421,
+          "networkMs": 16.699999809265137,
+          "verifyMs": 1.8000001907348633,
+          "jsonParseMs": 2.5999999046325684,
+          "decodeMs": 3,
+          "transferBytes": 57884,
+          "compressedBodyBytes": 57584,
+          "expandedBodyBytes": 297421
+        },
+        {
+          "file": "data/link-coverage.json",
+          "bytes": 119081,
+          "networkMs": 23.800000190734863,
+          "verifyMs": 0.9000000953674316,
+          "jsonParseMs": 0.6999998092651367,
+          "decodeMs": 0.09999990463256836,
+          "transferBytes": 21982,
+          "compressedBodyBytes": 21682,
+          "expandedBodyBytes": 119081
+        },
+        {
+          "file": "data/psa-japan-services.json",
+          "bytes": 785,
+          "networkMs": 25.5,
+          "verifyMs": 0,
+          "jsonParseMs": 0.09999990463256836,
+          "decodeMs": 0,
+          "transferBytes": 766,
+          "compressedBodyBytes": 466,
+          "expandedBodyBytes": 785
+        },
+        {
+          "file": "data/evaluation-model.json",
+          "bytes": 3688,
+          "networkMs": 25.5,
+          "verifyMs": 0,
+          "jsonParseMs": 0.20000028610229492,
+          "decodeMs": 0,
+          "transferBytes": 1592,
+          "compressedBodyBytes": 1292,
+          "expandedBodyBytes": 3688
+        },
+        {
+          "file": "data/evaluation-governance.json",
+          "bytes": 11303,
+          "networkMs": 4,
+          "verifyMs": 0.09999990463256836,
+          "jsonParseMs": 0.09999990463256836,
+          "decodeMs": 0,
+          "transferBytes": 1479,
+          "compressedBodyBytes": 1179,
+          "expandedBodyBytes": 11303
+        },
+        {
+          "file": "data/pokemon-cards-meta.json",
+          "bytes": 470,
+          "networkMs": 4.400000095367432,
+          "verifyMs": 0,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 576,
+          "compressedBodyBytes": 276,
+          "expandedBodyBytes": 470
+        },
+        {
+          "file": "data/ui/state-a-price-evidence.json",
+          "bytes": 117832,
+          "networkMs": 75,
+          "verifyMs": 0.40000009536743164,
+          "jsonParseMs": 0.3000001907348633,
+          "decodeMs": 2.6999998092651367,
+          "transferBytes": 17914,
+          "compressedBodyBytes": 17614,
+          "expandedBodyBytes": 117832
+        },
+        {
+          "file": "data/ui/card-catalog-completion.json",
+          "bytes": 2060383,
+          "networkMs": 27.700000286102295,
+          "verifyMs": 11,
+          "jsonParseMs": 15.599999904632568,
+          "decodeMs": 55.09999990463257,
+          "transferBytes": 122012,
+          "compressedBodyBytes": 121712,
+          "expandedBodyBytes": 2060383
+        },
+        {
+          "file": "data/card-catalog/manifest.json",
+          "bytes": 5005,
+          "networkMs": 50.40000009536743,
+          "verifyMs": 0.09999990463256836,
+          "jsonParseMs": 0.10000038146972656,
+          "decodeMs": 0,
+          "transferBytes": 1096,
+          "compressedBodyBytes": 796,
+          "expandedBodyBytes": 5005
+        },
+        {
+          "file": "data/ui/operational-limit-history.json",
+          "bytes": 1287163,
+          "networkMs": 17.09999990463257,
+          "verifyMs": 6,
+          "jsonParseMs": 11.900000095367432,
+          "decodeMs": 20.699999809265137,
+          "transferBytes": 101850,
+          "compressedBodyBytes": 101550,
+          "expandedBodyBytes": 1287163
+        },
+        {
+          "file": "data/ui/card-catalog/search-index.json",
+          "bytes": 2190870,
+          "networkMs": 63.89999961853027,
+          "verifyMs": 13.5,
+          "jsonParseMs": 4.900000095367432,
+          "decodeMs": 45.09999990463257,
+          "transferBytes": 377913,
+          "compressedBodyBytes": 377613,
+          "expandedBodyBytes": 2190870
+        },
+        {
+          "file": "data/ui/card-catalog/analysis.json",
+          "bytes": 1285609,
+          "networkMs": 102.19999980926514,
+          "verifyMs": 11.400000095367432,
+          "jsonParseMs": 6.400000095367432,
+          "decodeMs": 21.699999809265137,
+          "transferBytes": 247965,
+          "compressedBodyBytes": 247665,
+          "expandedBodyBytes": 1285609
+        },
+        {
+          "file": "data/ui/cardrush-stock-summary.json",
+          "bytes": 527560,
+          "networkMs": 15,
+          "verifyMs": 4.599999904632568,
+          "jsonParseMs": 2.6000003814697266,
+          "decodeMs": 10.599999904632568,
+          "transferBytes": 57956,
+          "compressedBodyBytes": 57656,
+          "expandedBodyBytes": 527560
+        },
+        {
+          "file": "data/ui/hareruya2-stock-summary.json",
+          "bytes": 543131,
+          "networkMs": 32.700000286102295,
+          "verifyMs": 4.400000095367432,
+          "jsonParseMs": 1.3999996185302734,
+          "decodeMs": 7.600000381469727,
+          "transferBytes": 74669,
+          "compressedBodyBytes": 74369,
+          "expandedBodyBytes": 543131
+        },
+        {
+          "file": "data/ui/yuyutei-stock-summary.json",
+          "bytes": 14887,
+          "networkMs": 46.200000286102295,
+          "verifyMs": 0.09999990463256836,
+          "jsonParseMs": 0.09999990463256836,
+          "decodeMs": 0.40000009536743164,
+          "transferBytes": 4138,
+          "compressedBodyBytes": 3838,
+          "expandedBodyBytes": 14887
+        },
+        {
+          "file": "data/ui/torecacamp-stock-summary.json",
+          "bytes": 890786,
+          "networkMs": 48.799999713897705,
+          "verifyMs": 4.800000190734863,
+          "jsonParseMs": 1.6999998092651367,
+          "decodeMs": 4.400000095367432,
+          "transferBytes": 145549,
+          "compressedBodyBytes": 145249,
+          "expandedBodyBytes": 890786
+        },
+        {
+          "file": "data/ui/shop-buyback-summary.json",
+          "bytes": 723416,
+          "networkMs": 15.200000286102295,
+          "verifyMs": 6.799999713897705,
+          "jsonParseMs": 3.5999999046325684,
+          "decodeMs": 15.800000190734863,
+          "transferBytes": 124925,
+          "compressedBodyBytes": 124625,
+          "expandedBodyBytes": 723416
+        },
+        {
+          "file": "data/return-horizon-calibration.json",
+          "bytes": 3337,
+          "networkMs": 53.10000038146973,
+          "verifyMs": 0.19999980926513672,
+          "jsonParseMs": 0,
+          "decodeMs": 0.09999990463256836,
+          "transferBytes": 886,
+          "compressedBodyBytes": 586,
+          "expandedBodyBytes": 3337
+        },
+        {
+          "file": "data/fixed-price-reference-index.json",
+          "bytes": 5401,
+          "networkMs": 54.60000038146973,
+          "verifyMs": 0.09999990463256836,
+          "jsonParseMs": 0.09999990463256836,
+          "decodeMs": 0,
+          "transferBytes": 1306,
+          "compressedBodyBytes": 1006,
+          "expandedBodyBytes": 5401
+        },
+        {
+          "file": "data/ui/market-stability-summary.json",
+          "bytes": 2215323,
+          "networkMs": 55.09999990463257,
+          "verifyMs": 12.100000381469727,
+          "jsonParseMs": 7.5,
+          "decodeMs": 37.799999713897705,
+          "transferBytes": 302705,
+          "compressedBodyBytes": 302405,
+          "expandedBodyBytes": 2215323
+        },
+        {
+          "file": "data/ui/snkr-listing-summary.json",
+          "bytes": 166749,
+          "networkMs": 9.700000286102295,
+          "verifyMs": 1.799999713897705,
+          "jsonParseMs": 1.5999999046325684,
+          "decodeMs": 5.900000095367432,
+          "transferBytes": 22119,
+          "compressedBodyBytes": 21819,
+          "expandedBodyBytes": 166749
+        },
+        {
+          "file": "data/ui/snkr-raw-flip-summary.json",
+          "bytes": 531493,
+          "networkMs": 83.40000009536743,
+          "verifyMs": 4.299999713897705,
+          "jsonParseMs": 1.5,
+          "decodeMs": 5.300000190734863,
+          "transferBytes": 65628,
+          "compressedBodyBytes": 65328,
+          "expandedBodyBytes": 531493
+        },
+        {
+          "file": "data/pokedata/manifest.json",
+          "bytes": 19456,
+          "networkMs": 94.5,
+          "verifyMs": 0.19999980926513672,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 5242,
+          "compressedBodyBytes": 4942,
+          "expandedBodyBytes": 19456
+        },
+        {
+          "file": "data/ui/market-research-summary.json",
+          "bytes": 1981,
+          "networkMs": 94.69999980926514,
+          "verifyMs": 0.09999990463256836,
+          "jsonParseMs": 0,
+          "decodeMs": 0.10000038146972656,
+          "transferBytes": 1436,
+          "compressedBodyBytes": 1136,
+          "expandedBodyBytes": 1981
+        },
+        {
+          "file": "data/pokedata-set-discovery.json",
+          "bytes": 3628,
+          "networkMs": 5.899999618530273,
+          "verifyMs": 0.10000038146972656,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 1220,
+          "compressedBodyBytes": 920,
+          "expandedBodyBytes": 3628
+        },
+        {
+          "file": "data/supply-maturity-hypothesis.json",
+          "bytes": 71558,
+          "networkMs": 6.799999713897705,
+          "verifyMs": 0.5,
+          "jsonParseMs": 0.40000009536743164,
+          "decodeMs": 0,
+          "transferBytes": 9283,
+          "compressedBodyBytes": 8983,
+          "expandedBodyBytes": 71558
+        },
+        {
+          "file": "data/regulation-policy.json",
+          "bytes": 391,
+          "networkMs": 7.699999809265137,
+          "verifyMs": 0.09999990463256836,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 633,
+          "compressedBodyBytes": 333,
+          "expandedBodyBytes": 391
+        },
+        {
+          "file": "data/ui/psa-population-summary.json",
+          "bytes": 1000821,
+          "networkMs": 24.90000009536743,
+          "verifyMs": 6.299999713897705,
+          "jsonParseMs": 2.4000000953674316,
+          "decodeMs": 5.599999904632568,
+          "transferBytes": 228967,
+          "compressedBodyBytes": 228667,
+          "expandedBodyBytes": 1000821
+        },
+        {
+          "file": "data/psa10-period-summary.json",
+          "bytes": 344496,
+          "networkMs": 14,
+          "verifyMs": 1.9000000953674316,
+          "jsonParseMs": 2,
+          "decodeMs": 0,
+          "transferBytes": 104464,
+          "compressedBodyBytes": 104164,
+          "expandedBodyBytes": 344496
+        },
+        {
+          "file": "data/buyback-posting-coverage.json",
+          "bytes": 24216,
+          "networkMs": 18,
+          "verifyMs": 0.09999990463256836,
+          "jsonParseMs": 0.09999990463256836,
+          "decodeMs": 0,
+          "transferBytes": 2080,
+          "compressedBodyBytes": 1780,
+          "expandedBodyBytes": 24216
+        }
+      ]
+    },
+    {
+      "mode": "double",
+      "width": 390,
+      "benchmark": {
+        "width": 390,
+        "loadedCards": 4040,
+        "valuesAndIdsUnchanged": true,
+        "dataRevision": "synthetic-double-7a98388e0604a43f320616d141683cf88f4fe4e56f6e7b22f286572bbab97728",
+        "conditionHash": "cc02b27555bc8ec8dda61b1e290457fe208b25fab90b58a405b11d15548e68f9",
+        "rows": [
+          {
+            "kind": "全件再計算",
+            "calculationMs": 1089.7000002861023,
+            "domMs": 460.90000009536743,
+            "cacheHit": false,
+            "markupMs": 70.39999961853027,
+            "domCommitMs": 0.5,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 1680
+          },
+          {
+            "kind": "全件再計算",
+            "calculationMs": 1031.8000001907349,
+            "domMs": 454,
+            "cacheHit": false,
+            "markupMs": 70.19999980926514,
+            "domCommitMs": 0.5,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 1669.7000002861023
+          },
+          {
+            "kind": "全件再計算",
+            "calculationMs": 1009.4000000953674,
+            "domMs": 495,
+            "cacheHit": false,
+            "markupMs": 73.30000019073486,
+            "domCommitMs": 1.299999713897705,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 1831.0999999046326
+          },
+          {
+            "kind": "計算結果再利用",
+            "calculationMs": 0.09999990463256836,
+            "domMs": 406.5,
+            "cacheHit": true,
+            "markupMs": 69.59999990463257,
+            "domCommitMs": 0.40000009536743164,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 564.5
+          },
+          {
+            "kind": "計算結果再利用",
+            "calculationMs": 0.09999990463256836,
+            "domMs": 405.30000019073486,
+            "cacheHit": true,
+            "markupMs": 66.59999990463257,
+            "domCommitMs": 0.40000009536743164,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 550
+          },
+          {
+            "kind": "計算結果再利用",
+            "calculationMs": 0,
+            "domMs": 396,
+            "cacheHit": true,
+            "markupMs": 70.39999961853027,
+            "domCommitMs": 0.3000001907348633,
+            "changedCards": 0,
+            "reusedCards": 60,
+            "frameCompletionMs": 533.5
+          }
+        ],
+        "detailRows": [
+          {
+            "generatedMs": 423.19999980926514,
+            "frameCompletionMs": 483.69999980926514,
+            "elements": 1159
+          },
+          {
+            "generatedMs": 394.80000019073486,
+            "frameCompletionMs": 428.90000009536743,
+            "elements": 1194
+          },
+          {
+            "generatedMs": 404.90000009536743,
+            "frameCompletionMs": 462.90000009536743,
+            "elements": 1194
+          }
+        ],
+        "measured": {
+          "fullCalculationMs": 1031.8000001907349,
+          "renderMs": 405.30000019073486,
+          "detailGenerationMs": 404.90000009536743
+        },
+        "comparison": [],
+        "comparisonState": "同条件の前回実測なし",
+        "scope": "実DOM生成と2フレーム到達。通信・端末実機・描画完了保証とは別。設定/安全条件を変更しない"
+      },
+      "loads": [
+        {
+          "file": "data/ui/update-status.json",
+          "bytes": 297421,
+          "networkMs": 20.699999809265137,
+          "verifyMs": 1.5,
+          "jsonParseMs": 2.3000001907348633,
+          "decodeMs": 4.099999904632568,
+          "transferBytes": 57884,
+          "compressedBodyBytes": 57584,
+          "expandedBodyBytes": 297421
+        },
+        {
+          "file": "data/link-coverage.json",
+          "bytes": 119081,
+          "networkMs": 28.300000190734863,
+          "verifyMs": 0.6999998092651367,
+          "jsonParseMs": 0.5,
+          "decodeMs": 0,
+          "transferBytes": 21982,
+          "compressedBodyBytes": 21682,
+          "expandedBodyBytes": 119081
+        },
+        {
+          "file": "data/psa-japan-services.json",
+          "bytes": 785,
+          "networkMs": 29.5,
+          "verifyMs": 0,
+          "jsonParseMs": 0.10000038146972656,
+          "decodeMs": 0,
+          "transferBytes": 766,
+          "compressedBodyBytes": 466,
+          "expandedBodyBytes": 785
+        },
+        {
+          "file": "data/evaluation-model.json",
+          "bytes": 3688,
+          "networkMs": 29.5,
+          "verifyMs": 0,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 1592,
+          "compressedBodyBytes": 1292,
+          "expandedBodyBytes": 3688
+        },
+        {
+          "file": "data/evaluation-governance.json",
+          "bytes": 11303,
+          "networkMs": 3.5999999046325684,
+          "verifyMs": 0.19999980926513672,
+          "jsonParseMs": 0.09999990463256836,
+          "decodeMs": 0,
+          "transferBytes": 1479,
+          "compressedBodyBytes": 1179,
+          "expandedBodyBytes": 11303
+        },
+        {
+          "file": "data/pokemon-cards-meta.json",
+          "bytes": 376,
+          "networkMs": 3.6999998092651367,
+          "verifyMs": 0.10000038146972656,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 554,
+          "compressedBodyBytes": 254,
+          "expandedBodyBytes": 376
+        },
+        {
+          "file": "data/ui/state-a-price-evidence.json",
+          "bytes": 204847,
+          "networkMs": 53.40000009536743,
+          "verifyMs": 0.5,
+          "jsonParseMs": 0.8000001907348633,
+          "decodeMs": 5.5,
+          "transferBytes": 34921,
+          "compressedBodyBytes": 34621,
+          "expandedBodyBytes": 204847
+        },
+        {
+          "file": "data/ui/card-catalog-completion.json",
+          "bytes": 4214721,
+          "networkMs": 67,
+          "verifyMs": 24.300000190734863,
+          "jsonParseMs": 26.5,
+          "decodeMs": 117.09999990463257,
+          "transferBytes": 243339,
+          "compressedBodyBytes": 243039,
+          "expandedBodyBytes": 4214721
+        },
+        {
+          "file": "data/card-catalog/manifest.json",
+          "bytes": 5005,
+          "networkMs": 33.700000286102295,
+          "verifyMs": 0.09999990463256836,
+          "jsonParseMs": 0.09999990463256836,
+          "decodeMs": 0,
+          "transferBytes": 1100,
+          "compressedBodyBytes": 800,
+          "expandedBodyBytes": 5005
+        },
+        {
+          "file": "data/ui/operational-limit-history.json",
+          "bytes": 2585418,
+          "networkMs": 34.30000019073486,
+          "verifyMs": 9.199999809265137,
+          "jsonParseMs": 12.400000095367432,
+          "decodeMs": 36.19999980926514,
+          "transferBytes": 202787,
+          "compressedBodyBytes": 202487,
+          "expandedBodyBytes": 2585418
+        },
+        {
+          "file": "data/ui/card-catalog/search-index.json",
+          "bytes": 3538107,
+          "networkMs": 102.5,
+          "verifyMs": 18.299999713897705,
+          "jsonParseMs": 10.200000286102295,
+          "decodeMs": 66.19999980926514,
+          "transferBytes": 553523,
+          "compressedBodyBytes": 553223,
+          "expandedBodyBytes": 3538107
+        },
+        {
+          "file": "data/ui/card-catalog/analysis.json",
+          "bytes": 1932543,
+          "networkMs": 157.59999990463257,
+          "verifyMs": 10.299999713897705,
+          "jsonParseMs": 11.100000381469727,
+          "decodeMs": 30.59999990463257,
+          "transferBytes": 392900,
+          "compressedBodyBytes": 392600,
+          "expandedBodyBytes": 1932543
+        },
+        {
+          "file": "data/ui/cardrush-stock-summary.json",
+          "bytes": 1100325,
+          "networkMs": 24.5,
+          "verifyMs": 6.199999809265137,
+          "jsonParseMs": 3,
+          "decodeMs": 12.700000286102295,
+          "transferBytes": 116239,
+          "compressedBodyBytes": 115939,
+          "expandedBodyBytes": 1100325
+        },
+        {
+          "file": "data/ui/hareruya2-stock-summary.json",
+          "bytes": 1093345,
+          "networkMs": 46.5,
+          "verifyMs": 6.200000286102295,
+          "jsonParseMs": 2.799999713897705,
+          "decodeMs": 7.900000095367432,
+          "transferBytes": 139940,
+          "compressedBodyBytes": 139640,
+          "expandedBodyBytes": 1093345
+        },
+        {
+          "file": "data/ui/yuyutei-stock-summary.json",
+          "bytes": 25373,
+          "networkMs": 63.30000019073486,
+          "verifyMs": 0.3000001907348633,
+          "jsonParseMs": 0.09999990463256836,
+          "decodeMs": 0.6999998092651367,
+          "transferBytes": 5096,
+          "compressedBodyBytes": 4796,
+          "expandedBodyBytes": 25373
+        },
+        {
+          "file": "data/ui/torecacamp-stock-summary.json",
+          "bytes": 1530934,
+          "networkMs": 66.90000009536743,
+          "verifyMs": 8.700000286102295,
+          "jsonParseMs": 3.5,
+          "decodeMs": 8.199999809265137,
+          "transferBytes": 233518,
+          "compressedBodyBytes": 233218,
+          "expandedBodyBytes": 1530934
+        },
+        {
+          "file": "data/ui/shop-buyback-summary.json",
+          "bytes": 1338161,
+          "networkMs": 27.199999809265137,
+          "verifyMs": 8.100000381469727,
+          "jsonParseMs": 3.799999713897705,
+          "decodeMs": 22,
+          "transferBytes": 233198,
+          "compressedBodyBytes": 232898,
+          "expandedBodyBytes": 1338161
+        },
+        {
+          "file": "data/return-horizon-calibration.json",
+          "bytes": 3337,
+          "networkMs": 92.90000009536743,
+          "verifyMs": 0,
+          "jsonParseMs": 0.09999990463256836,
+          "decodeMs": 0,
+          "transferBytes": 886,
+          "compressedBodyBytes": 586,
+          "expandedBodyBytes": 3337
+        },
+        {
+          "file": "data/fixed-price-reference-index.json",
+          "bytes": 5401,
+          "networkMs": 92.90000009536743,
+          "verifyMs": 0.09999990463256836,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 1306,
+          "compressedBodyBytes": 1006,
+          "expandedBodyBytes": 5401
+        },
+        {
+          "file": "data/ui/market-stability-summary.json",
+          "bytes": 4466134,
+          "networkMs": 108,
+          "verifyMs": 28.200000286102295,
+          "jsonParseMs": 14.899999618530273,
+          "decodeMs": 99.5,
+          "transferBytes": 604876,
+          "compressedBodyBytes": 604576,
+          "expandedBodyBytes": 4466134
+        },
+        {
+          "file": "data/ui/snkr-listing-summary.json",
+          "bytes": 351712,
+          "networkMs": 9.099999904632568,
+          "verifyMs": 2.299999713897705,
+          "jsonParseMs": 1.1000003814697266,
+          "decodeMs": 5.099999904632568,
+          "transferBytes": 43693,
+          "compressedBodyBytes": 43393,
+          "expandedBodyBytes": 351712
+        },
+        {
+          "file": "data/pokedata/manifest.json",
+          "bytes": 19456,
+          "networkMs": 45.80000019073486,
+          "verifyMs": 0.19999980926513672,
+          "jsonParseMs": 0.09999990463256836,
+          "decodeMs": 0,
+          "transferBytes": 5242,
+          "compressedBodyBytes": 4942,
+          "expandedBodyBytes": 19456
+        },
+        {
+          "file": "data/ui/market-research-summary.json",
+          "bytes": 1981,
+          "networkMs": 46.09999990463257,
+          "verifyMs": 0,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 1436,
+          "compressedBodyBytes": 1136,
+          "expandedBodyBytes": 1981
+        },
+        {
+          "file": "data/ui/snkr-raw-flip-summary.json",
+          "bytes": 1072820,
+          "networkMs": 27.09999990463257,
+          "verifyMs": 6.200000286102295,
+          "jsonParseMs": 3.299999713897705,
+          "decodeMs": 9.599999904632568,
+          "transferBytes": 145976,
+          "compressedBodyBytes": 145676,
+          "expandedBodyBytes": 1072820
+        },
+        {
+          "file": "data/pokedata-set-discovery.json",
+          "bytes": 3628,
+          "networkMs": 6.699999809265137,
+          "verifyMs": 0.09999990463256836,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 1220,
+          "compressedBodyBytes": 920,
+          "expandedBodyBytes": 3628
+        },
+        {
+          "file": "data/supply-maturity-hypothesis.json",
+          "bytes": 137625,
+          "networkMs": 7.599999904632568,
+          "verifyMs": 1.3000001907348633,
+          "jsonParseMs": 0.7999997138977051,
+          "decodeMs": 0,
+          "transferBytes": 15882,
+          "compressedBodyBytes": 15582,
+          "expandedBodyBytes": 137625
+        },
+        {
+          "file": "data/regulation-policy.json",
+          "bytes": 355,
+          "networkMs": 9.699999809265137,
+          "verifyMs": 0,
+          "jsonParseMs": 0,
+          "decodeMs": 0,
+          "transferBytes": 614,
+          "compressedBodyBytes": 314,
+          "expandedBodyBytes": 355
+        },
+        {
+          "file": "data/ui/psa-population-summary.json",
+          "bytes": 1677928,
+          "networkMs": 38.200000286102295,
+          "verifyMs": 9.699999809265137,
+          "jsonParseMs": 4.699999809265137,
+          "decodeMs": 8.600000381469727,
+          "transferBytes": 359677,
+          "compressedBodyBytes": 359377,
+          "expandedBodyBytes": 1677928
+        },
+        {
+          "file": "data/psa10-period-summary.json",
+          "bytes": 729800,
+          "networkMs": 24.5,
+          "verifyMs": 4.299999713897705,
+          "jsonParseMs": 3.4000000953674316,
+          "decodeMs": 0,
+          "transferBytes": 209655,
+          "compressedBodyBytes": 209355,
+          "expandedBodyBytes": 729800
+        },
+        {
+          "file": "data/buyback-posting-coverage.json",
+          "bytes": 48906,
+          "networkMs": 32.30000019073486,
+          "verifyMs": 0.2999997138977051,
+          "jsonParseMs": 0.20000028610229492,
+          "decodeMs": 0,
+          "transferBytes": 3285,
+          "compressedBodyBytes": 2985,
+          "expandedBodyBytes": 48906
+        }
+      ]
+    }
+  ]
+}

@@ -52,7 +52,7 @@ function build(root = ROOT) {
   const cards = read('data/pokemon-cards.json');
   const meta = read('data/pokemon-cards-meta.json');
   const asOf = String(meta.updatedAt || meta.generatedAt || history.dates.at(-1)).slice(0, 10);
-  const summary = { version: 2, asOf, periods: [7, 30, 90], minimumActualTrades: 3, minimumObservationDays, staleObservationDays: 2, shards: 16,
+  const summary = { version: 3, asOf, periods: [7, 30, 90], minimumActualTrades: 3, minimumObservationDays, staleObservationDays: 2, shards: 16,
     snapshotSource: '国内・みんトレPSA10集約相場の日次観測（実成約平均ではない）',
     rule: '同日1記録・欠損補完なし・参考表示のみ・仕入れ上限とGOへ未反映', cards: {} };
   const chunks = Array.from({ length: 16 }, () => ({ version: 1, asOf, cards: {} }));
@@ -69,7 +69,7 @@ function build(root = ROOT) {
       sufficient: statistics(actual.rows, asOf, days, 'date', 'price').count >= 3 }]));
     if (!daily.length && !actual.rows.length) continue;
     summary.cards[card.id] = [snapshots[7].mean, snapshots[7].count, snapshots[30].mean, snapshots[30].count,
-      snapshots[30].ageDays];
+      snapshots[30].ageDays, snapshots[90].mean, snapshots[90].count, snapshots[7].ageDays, snapshots[90].ageDays];
     if (daily.length) historyCards++;
     for (const days of [7,30,90]) {
       const stat = snapshots[days], coverage = byPeriod[days];
