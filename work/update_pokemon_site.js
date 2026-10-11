@@ -375,6 +375,7 @@ const startedAt = Date.now();
   const lifecycle = safeReadJson(lifecyclePath, { version: 1, cards: {} });
   lifecycle.cards ||= {};
   const updatedAt = jstDate();
+  const priceBatchObservedAt = new Date().toISOString();
 
   let moduleMap = null;
   const sandbox = {
@@ -498,7 +499,7 @@ const startedAt = Date.now();
           snkPrice: num(c.snkPrice) ?? num(previous.snkPrice),
           snkPsa10Price: num(c.snkPsa10Price) ?? num(previous.snkPsa10Price),
           snkPsa9Price: num(c.snkPsa9Price) ?? num(previous.snkPsa9Price),
-          ...retainedPriceObservations(c, previous, previousMeta.updatedAt),
+          ...retainedPriceObservations(c, previous, previousMeta.updatedAt, priceBatchObservedAt),
           snkPsa10Min: num(c.snkPsa10Min) ?? num(previous.snkPsa10Min),
           snkPsa10Count: num(c.snkPsa10Count) ?? num(previous.snkPsa10Count),
           snkPsa9Count: num(c.snkPsa9Count) ?? num(previous.snkPsa9Count),
@@ -548,6 +549,7 @@ const startedAt = Date.now();
     price: card.price,
     snkPsa10Price: card.snkPsa10Price,
     snkPsa9Price: card.snkPsa9Price,
+    psa9ObservedAt: card.psa9ObservedAt || null,
     ...(Object.hasOwn(card, 'priceObservedAt') ? { priceObservedAt: card.priceObservedAt } : {}),
     ...(Object.hasOwn(card, 'psa10ObservedAt') ? { psa10ObservedAt: card.psa10ObservedAt } : {}),
     snkPsa10Min: card.snkPsa10Min,

@@ -5,7 +5,12 @@
 })(typeof window === 'object' ? window : globalThis, function (displayModel) {
   const finite = value => value != null && value !== '' && Number.isFinite(Number(value)) ? Number(value) : null;
   function evaluate(input, model) {
-    const card = input.card || {}, reasons = [], warnings = [];
+    const card = input.card || {}, reasons = [], warnings = [], referenceReasons = [];
+    const reference = input.referenceCalculation === true;
+    const hold = (reason, canReference = false) => {
+      if (reference && canReference) { referenceReasons.push(reason); warnings.push('参考値・'+reason); }
+      else reasons.push(reason);
+    };
     const now = input.now ?? Date.now();
     const age = value => value && Number.isFinite(Date.parse(value)) ? (now - Date.parse(value)) / 3600000 : null;
     const marketPrice = finite(card.psa10);
@@ -16,9 +21,15 @@
     if (card.psa10Audit?.measured && (saleAge == null || saleAge > 30 * 24)) reasons.push('個別成約が古い・成約日時不明');
     if (card.dataQuality?.manualReview || card.dataQuality?.dataAnomaly || card.priceIntegrity?.disputed
       || card.priceAggregation?.conflicted || card.buybackAggregation?.conflicted) reasons.push('価格対立・誤紐付け・手動確認');
-    if (card.psa10Audit?.confidence === '低' || card.priceAggregation?.confidence === '低') reasons.push('相場データ信頼度不足');
-    if (finite(card.overallAssessment?.score) == null) reasons.push('銘柄品質データ不足');
-    else if (card.overallAssessment.score < 60) reasons.push('銘柄品質60点未満');
+    if (card.psa10Audit?.confidence === '低' || card.priceAggregation?.confidence === '低') {
+      if (!reference) reasons.push('相場データ信頼度不足');
+      else {
+        if (card.psa10Audit?.confidence === '低') hold('PSA10集計の取引件数・期間充足不足', !card.psa10Audit.measured && finite(card.psa10Audit.includedCount) != null);
+        if (card.priceAggregation?.confidence === '低') hold('素体価格の採用元・観測充足不足', Number(card.dataQuality?.trustedPriceCount) > 0);
+      }
+    }
+    if (finite(card.overallAssessment?.score) == null) hold('銘柄品質データ不足',true);
+    else if (card.overallAssessment.score < 60) hold('銘柄品質60点未満',true);
     const assumptions = input.assumptions;
     if (finite(assumptions?.hitRate) == null || assumptions.hitRate < 0 || assumptions.hitRate > 1
       || !(finite(assumptions?.lowerGradePrice) > 0)) reasons.push('想定10率・PSA9価格未取得');
@@ -36,8 +47,14 @@
     if (card.psa9Audit?.estimated !== false) warnings.push('PSA9は推定値');
     else if (card.psa9Audit?.measurementType !== 'actual') warnings.push('PSA9は集計値・個別実成約未取得');
     const psa9UpdatedAt = card.psa9Audit?.latestSaleAt || card.psa9Audit?.updatedAt || null;
-    if (card.psa9Audit?.estimated === false && age(psa9UpdatedAt) == null) reasons.push('PSA9価格の確認日時不足');
+    if (card.psa9Audit?.estimated === false && age(psa9UpdatedAt) == null) hold(reference ? 'PSA9日時未確認' : 'PSA9価格の確認日時不足',reference && finite(card.psa9Audit.value) > 0);
     else if (card.psa9Audit?.estimated === false && (age(psa9UpdatedAt) < 0 || age(psa9UpdatedAt) > 30 * 24)) reasons.push('PSA9価格が古い・日時不正');
+    if (reference) {
+      if (!(finite(card.psa9Audit?.value) > 0)) reasons.push('PSA9価格自体が未取得');
+      if (card.psa9Audit?.identityConfirmed === false || card.psa9Audit?.specificationMismatch
+        || card.psa9Audit?.country && card.psa9Audit.country !== 'jp' || card.psa9Audit?.currency && card.psa9Audit.currency !== 'JPY') reasons.push('PSA9仕様・国内価格の一致未確認');
+      if (card.psa9Audit?.estimated !== false) referenceReasons.push('PSA9推定値');
+    }
     if (finite(card.official?.rate) == null) warnings.push('公式取得率未取得・設定10率を使用');
     else if (age(card.official?.f) == null || age(card.official?.f) > 48) warnings.push('公式Populationの確認日が古い・未取得');
     if (card.dataQuality?.dataShortage) warnings.push(...(card.dataQuality.dataShortageReasons || ['一部データ不足']));
@@ -60,6 +77,7 @@
       psa9Profit = purchasePrice == null ? null : market.lowerGradeNet - fee - purchasePrice;
     }
     return { eligible: reasons.length === 0, reasons: [...new Set(reasons)], warnings: [...new Set(warnings)],
+      calculationState: reasons.length ? 'unavailable' : referenceReasons.length ? 'reference' : 'calculated', referenceReasons: [...new Set(referenceReasons)],
       ...displayModel.classifyCap(rawCap), noNonLossPrice: rawCap != null && rawCap < 0, purchasePrice, purchaseKind,
       purchaseSource: storeUsable ? offer.source : purchasePrice != null ? '手入力試算・購入先未確認' : '購入価格未取得',
       economics, psa9Profit, exitLabel, psa10Net,
@@ -78,5 +96,7 @@
     return rank(b) - rank(a) || (rank(a) === 2 ? b.cap - a.cap : 0);
   }
   function capExclusion(view) { return view.capState === 'loss-at-zero' || view.noNonLossPrice ? '0円仕入れでも赤字' : finite(view.cap) == null ? '損益分岐上限・データ不足で算出不可' : '現相場損益分岐上限'; }
-  return { evaluate, matchesCap, compareCaps, capExclusion };
+  // Reference evaluation is opt-in and never replaces the purchase-GO evaluator.
+  const evaluateReference = (input,model) => evaluate({...input,referenceCalculation:true},model);
+  return { evaluate, evaluateReference, matchesCap, compareCaps, capExclusion };
 });

@@ -20,6 +20,7 @@ const currentMarketModel = window.CurrentMarketModel;
 const explorationMetrics = window.ExplorationMetrics;
 const efficiencyFields = [['effMin','efficiencyMin',null],['effManual','efficiencyManualPrice',null],['sellDays','efficiencySaleDays',7],['payoutDays','efficiencyPayoutDays',3]];
 let efficiencyCache = new WeakMap();
+let efficiencyViewCache = new WeakMap();
 const explorationFields = [
   ['purchaseMin','actualPurchaseMin'],['purchaseMax','actualPurchaseMax'],
   ['headroomMin','purchaseHeadroomMin'],['headroomMax','purchaseHeadroomMax'],
@@ -171,6 +172,7 @@ const state = {
   profitSearchBasis: "auto",
   efficiencyMin: null, efficiencyManualPrice: null, efficiencySaleDays: 7, efficiencyPayoutDays: 3,
   efficiencyBuy: 'auto', efficiencyScenario: 'current',
+  efficiencyIncludeReference: false,
   purchaseBelowCurrentCap: false,
   psa10PeriodSummary: null,
   includePeriodReference: true,
@@ -670,7 +672,7 @@ const sorters = {
   "stressExpectedProfit-desc": (a, b) => (b.buyLimits?.clean?.supplyStressAtFinal?.expectedProfit ?? -Infinity) - (a.buyLimits?.clean?.supplyStressAtFinal?.expectedProfit ?? -Infinity),
   "stressExpectedRoi-desc": (a, b) => (b.buyLimits?.clean?.supplyStressAtFinal?.expectedRoi ?? -Infinity) - (a.buyLimits?.clean?.supplyStressAtFinal?.expectedRoi ?? -Infinity),
   "annualEfficiency-desc": (a, b) => (b.psaDecision?.annualEfficiency ?? -Infinity) - (a.psaDecision?.annualEfficiency ?? -Infinity),
-  "cardEfficiency-desc": (a,b) => compareSearchNumbers(cardEfficiency(a).annual,cardEfficiency(b).annual),
+  "cardEfficiency-desc": (a,b) => compareSearchNumbers(efficiencySearchValue(cardEfficiency(a)),efficiencySearchValue(cardEfficiency(b))),
   "capitalShare-asc": (a, b) => (a.psaDecision?.capitalShare ?? Infinity) - (b.psaDecision?.capitalShare ?? Infinity),
   "tx-desc": (a, b) => b.saleTx30d - a.saleTx30d,
   "tx-asc": (a, b) => a.saleTx30d - b.saleTx30d,
@@ -1617,12 +1619,12 @@ function exportFavoritesCsv() {
   rows[0].push("試算PSAプランID", "試算鑑定費等", "試算返却目安日数", "入力買値×現相場期待利益", "入力買値×中央予測期待利益", "入力買値×供給ストレス期待利益", "入力買値PSA9以下想定損益", "返却期間試算状態（参考・判定未適用）", "選択返却期間中央価格", "選択返却期間ストレス価格", "選択返却期間参考通常上限", "選択返却期間参考ストレス上限", "返却期間モデル版", "購入時固定損益分岐JSON");
   rows[0].push('現相場探索上限（現在の共通設定・推奨買値ではない）', '現相場探索上限の状態', '現相場探索上限の切下げ前値', '現相場探索上限の端数区分', '現相場探索の算出不可理由');
   rows[0].push('現在買える状態A価格','仕入れ余裕率%（利益率とは別）','検索採用買値','検索採用買値基準','検索期待利益','検索PSA10時利益率%','30日買取掲載率%','30日平均掲載店舗数','正常観測日数','取得カバー率%','余裕率の比較上限（一覧と同じ）','余裕率の参考警告','余裕率の比較不可理由');
-  rows[0].push('単体資金効率・買値','単体資金効率・買値基準','単体資金効率・売値基準','単体資金効率・売却先','単体期待利益','総投下額','単体期待利益率%','想定資金拘束日数','単体年換算効率%（参考）','単体資金効率・算出不可理由');
+  rows[0].push('単体資金効率・買値','単体資金効率・買値基準','単体資金効率・売値基準','単体資金効率・売却先','単体期待利益','総投下額','単体期待利益率%','想定資金拘束日数','単体年換算効率%（参考）','単体資金効率・算出不可理由','単体資金効率・計算区分','単体資金効率・参考警告','単体資金効率・検索採用');
   favoriteCards().forEach((rawCard,index)=>{
     const card = calc(rawCard), p = purchaseExploration(card), v = searchProfitView(card), c = postingCoverage(card);
     rows[index+1].push(p.price ?? '',p.headroom ?? '',v.purchasePrice ?? '',v.label,v.economics?.expectedProfit ?? '',v.psa10Roi ?? '',c.rate30 ?? '',c.averageShops30 ?? '',c.observedDays,c.retrievalCoverage ?? '',p.cap ?? '',p.warnings.join('／'),p.headroom == null ? p.reason : '');
     const e = cardEfficiency(card);
-    rows[index+1].push(e.purchasePrice ?? '',e.basis,e.scenario,e.exitLabel,e.profit ?? '',e.investment ?? '',e.roi ?? '',e.days ?? '',e.annual ?? '',e.reason || '');
+    rows[index+1].push(e.purchasePrice ?? '',e.basis,e.scenario,e.exitLabel,e.profit ?? '',e.investment ?? '',e.roi ?? '',e.days ?? '',e.annual ?? '',e.reason || '',e.calculationState,e.warnings.join('／'),efficiencySearchValue(e) != null ? '採用' : '対象外');
   });
   const csv = `\uFEFF${rows.map((row) => row.map(csvCell).join(",")).join("\r\n")}`;
   const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
@@ -2766,7 +2768,7 @@ function storeDemandKey(value) {
 
 function buildPsa9Audit(card, cleanPrice, psa10Price) {
   const trades = Array.isArray(card.snkPsa9Trades) ? card.snkPsa9Trades : [];
-  return decisionModel.resolvePsa9Price({
+  const audit = decisionModel.resolvePsa9Price({
     directPrice: card.snkPsa9Price,
     directKind: "aggregate",
     directSource: "PSA9集計値（個別実成約未取得）",
@@ -2780,6 +2782,11 @@ function buildPsa9Audit(card, cleanPrice, psa10Price) {
     fallbackPrice: cleanPrice * 0.75,
     fallbackSource: "平均美品価格の75%推定（実成約未取得）",
   });
+  if (audit.measurementType === 'aggregate' && audit.estimated === false && Number.isFinite(Date.parse(card.psa9ObservedAt))) {
+    audit.updatedAt = card.psa9ObservedAt;
+    audit.confirmationKind = '集計値の再取得日時・個別成約日ではない';
+  }
+  return audit;
 }
 
 function buildPsa10Audit(card, psa10Price) {
@@ -3050,6 +3057,7 @@ function restoreQuickFilters() {
   try {
     const saved = JSON.parse(localStorage.getItem(QUICK_FILTER_STORAGE_KEY) || "{}");
     const url = new URL(window.location.href);
+    if (!url.searchParams.has('effRef') && Object.hasOwn(saved,'efficiencyIncludeReference')) document.getElementById('efficiencyIncludeReferenceInput').checked = saved.efficiencyIncludeReference === true;
     for (const [param,field] of efficiencyFields) if (!url.searchParams.has(param) && Object.hasOwn(saved,field)) document.getElementById(field+'Input').value = saved[field] ?? '';
     for (const [param,field] of [['effBuy','efficiencyBuy'],['effScenario','efficiencyScenario']]) if (!url.searchParams.has(param) && saved[field]) document.getElementById(field+'Input').value = saved[field];
     for (const [param,field] of explorationFields) {
@@ -3091,6 +3099,7 @@ function saveQuickFilters() {
   try {
     localStorage.setItem(QUICK_FILTER_STORAGE_KEY, JSON.stringify({
       minRoi: state.minRoi,
+      efficiencyIncludeReference: state.efficiencyIncludeReference,
       ...Object.fromEntries([...efficiencyFields.map(([,field])=>[field,state[field]]),['efficiencyBuy',state.efficiencyBuy],['efficiencyScenario',state.efficiencyScenario]]),
       currentMarketSearchKind: state.currentMarketSearchKind,
       currentMarketCapMin: state.currentMarketCapMin, currentMarketManualPrice: state.currentMarketManualPrice,
@@ -3378,6 +3387,7 @@ function syncLowRiskAvailabilityControl() {
 
 function readUrl() {
   const filterUrl = new URL(window.location.href);
+  if (filterUrl.searchParams.has('effRef')) document.getElementById('efficiencyIncludeReferenceInput').checked = filterUrl.searchParams.get('effRef') === '1';
   for (const [param,field] of efficiencyFields) if (filterUrl.searchParams.has(param)) document.getElementById(field+'Input').value = parseOptionalNumber(filterUrl.searchParams.get(param)) ?? '';
   for (const [param,field,allowed] of [['effBuy','efficiencyBuy',['auto','manual','current-cap']],['effScenario','efficiencyScenario',['current','central','stress']]]) if (allowed.includes(filterUrl.searchParams.get(param))) document.getElementById(field+'Input').value=filterUrl.searchParams.get(param);
   for (const [param,id] of [["marketCapMin","currentMarketCapMinInput"],["marketBuy","currentMarketManualPriceInput"]]) {
@@ -3654,6 +3664,7 @@ function buildShareUrl() {
   url.searchParams.set("profitBasis", state.profitSearchBasis);
   for (const [param,field] of efficiencyFields) if (state[field] == null) url.searchParams.set(param,'off'); else url.searchParams.set(param,String(state[field]));
   url.searchParams.set('effBuy',state.efficiencyBuy); url.searchParams.set('effScenario',state.efficiencyScenario);
+  url.searchParams.set('effRef',state.efficiencyIncludeReference ? '1' : '0');
   for (const [param,field] of explorationFields) {
     if (state[field] == null) url.searchParams.delete(param);
     else url.searchParams.set(param,String(state[field]));
@@ -3771,9 +3782,10 @@ function ratioLabel(value) {
   return value != null && value !== "" && Number.isFinite(Number(value)) ? Number(value).toFixed(3) : "-";
 }
 
-function currentMarketView(card) {
-  const key = JSON.stringify([state.currentMarketManualPrice,computationFields.map(name=>state[name]),state.sourceUpdates,state.updateStatus?.sources?.toreca]);
-  const cached = currentMarketViewCache.get(card);
+function currentMarketView(card, reference = false) {
+  const key = JSON.stringify([reference,state.currentMarketManualPrice,computationFields.map(name=>state[name]),state.sourceUpdates,state.updateStatus?.sources?.toreca]);
+  const cache = reference ? efficiencyViewCache : currentMarketViewCache;
+  const cached = cache.get(card);
   if (cached?.key === key && Date.now() < cached.expires) return cached.value;
   if (psaPlanProblem()) return {eligible:false,reasons:[psaPlanProblem()],cap:null,rawCap:null,capState:'unavailable',capLabel:'PSAプラン判断保留',economics:null,psa10Roi:null,warnings:[psaPlanProblem()]};
   if (!currentMarketModel || !card.buyLimits?.clean) return {eligible:false,reasons:["分析データ不足"],cap:null,rawCap:null,capState:'unavailable',capLabel:'データ不足で算出不可',economics:null,psa10Roi:null,warnings:[]};
@@ -3788,11 +3800,12 @@ function currentMarketView(card) {
   const source = state.updateStatus?.sources?.toreca;
   const checkedAt = Object.hasOwn(card, 'psa10ObservedAt') ? card.psa10ObservedAt : source?.date === String(state.sourceUpdates.toreca || "").slice(0,10)
     ? source.lastSuccessAt || state.sourceUpdates.toreca : state.sourceUpdates.toreca;
-  const result = currentMarketModel.evaluate({card,assumptions:input.assumptions,
+  const evaluator = reference ? currentMarketModel.evaluateReference : currentMarketModel.evaluate;
+  const result = evaluator({card,assumptions:input.assumptions,
     marketUpdatedAt:checkedAt,manualPrice:state.currentMarketManualPrice,fee:state.fee,
     feeRate:state.saleFeeRate,extraCost:state.saleExtraCost,lockDays:state.lockDays,
     exitPolicy:state.exitPolicy,buybackExit}, decisionModel);
-  currentMarketViewCache.set(card,{key,value:result,expires:freshnessDeadline([card],Date.now())});
+  cache.set(card,{key,value:result,expires:freshnessDeadline([card],Date.now())});
   return result;
 }
 
@@ -3854,7 +3867,7 @@ function cardEfficiency(card, now=Date.now(), mode=state.purchaseMode) {
   if (cached?.key === key && now < cached.expires) return cached.value;
   const capBasis = state.efficiencyBuy === 'current-cap' || state.efficiencyBuy === 'auto' && state.profitSearchBasis === 'current-cap';
   const manualBasis = state.efficiencyBuy === 'manual' || state.efficiencyBuy === 'auto' && mode === 'current-market' && state.currentMarketManualPrice != null;
-  const source = currentMarketView(card);
+  const source = currentMarketView(card,true);
   const buy = capBasis ? source.eligible && source.capState === 'available' ? source.cap : null
     : manualBasis ? state.efficiencyBuy === 'manual' ? state.efficiencyManualPrice : state.currentMarketManualPrice
     : explorationMetrics.offerPrice(card.currentStoreOffer,now);
@@ -3882,12 +3895,34 @@ function cardEfficiency(card, now=Date.now(), mode=state.purchaseMode) {
   const result = {...explorationMetrics.efficiency(economics,buy,state.fee,state.saleExtraCost+travel,state.lockDays,state.efficiencySaleDays,state.efficiencyPayoutDays),
     purchasePrice:buy,basis:capBasis ? '現相場損益分岐上限・仮定' : manualBasis ? '手入力買値・仮定' : '実店舗状態A価格',
     scenario:scenario === 'current' ? '現在出口相場が続く仮定' : `${FORECAST_HORIZON_DAYS}日${scenario === 'central' ? '中央予測' : '供給ストレス'}`,
-    exitLabel,reason:reason || (!economics ? '選択した出口・シナリオのデータ不足' : null),warnings:source.warnings || [],capBasis,referenceOnly:true};
+    exitLabel,reason:reason || (!economics ? '選択した出口・シナリオのデータ不足' : null),warnings:source.warnings || [],capBasis,referenceOnly:true,
+    calculationState:source.calculationState || 'calculated',blockingReasons:source.reasons || [],referenceReasons:source.referenceReasons || []};
   if (result.annual == null && !result.reason) result.reason='拘束日数・費用・投下額を確認';
+  if (result.annual == null) result.calculationState='unavailable';
   efficiencyCache.set(card,{key,value:result,expires:freshnessDeadline([card],now)});
   return result;
 }
+function efficiencySearchValue(row) {
+  return row.calculationState === 'reference' && !state.efficiencyIncludeReference ? null : row.annual;
+}
+function efficiencySummary(cards) {
+  const counts={calculated:0,reference:0,unavailable:0,reasons:{},referenceReasons:{}};
+  for (const card of cards) {
+    const row=cardEfficiency(card); counts[row.calculationState]++;
+    const reasons=row.calculationState === 'unavailable' ? row.blockingReasons.length ? [...row.blockingReasons,...(row.purchasePrice == null ? [row.reason] : [])] : [row.reason] : [];
+    for (const reason of new Set(reasons.filter(Boolean))) counts.reasons[reason]=(counts.reasons[reason]||0)+1;
+    for (const reason of row.referenceReasons) counts.referenceReasons[reason]=(counts.referenceReasons[reason]||0)+1;
+  }
+  return counts;
+}
 function cardEfficiencyPanel(card) {
+  const row=cardEfficiency(card);
+  const label={calculated:'算出可能',reference:'参考計算可能・安全判定とは別',unavailable:'算出不可'}[row.calculationState];
+  const notes=row.calculationState === 'reference' ? row.warnings : row.calculationState === 'unavailable' ? [row.reason,...row.blockingReasons] : [];
+  const exitHelp=row.blockingReasons.some(reason=>reason.includes('買取出口データ不足')) ? '両出口の比較は算出不可。別途、売却先をフリマに明示変更した試算は可能（自動切替なし）。' : '';
+  return `<div class="efficiency-notice efficiency-${row.calculationState}"><b>資金効率：${label}</b><small>${escapeHtml([...new Set(notes)].join('／'))}${escapeHtml(exitHelp)}${row.calculationState === 'reference' ? state.efficiencyIncludeReference ? '／参考値を資金効率検索に含む' : '／参考値は資金効率検索・順位の対象外（設定で変更可）' : ''}</small></div>`+cardEfficiencyBody(card);
+}
+function cardEfficiencyBody(card) {
   const row=cardEfficiency(card), rate=n=>Number.isFinite(n) ? `${n.toFixed(2)}%` : '算出不可';
   return `<div class="card-efficiency" data-efficiency-annual="${Number.isFinite(row.annual) ? row.annual : ''}"><strong>単体・期待資金効率（参考）</strong><div><span>期待利益率 <b>${rate(row.roi)}</b></span><span>資金拘束 <b>${row.days == null ? '算出不可' : row.days+'日'}</b></span><span>単純年換算 <b>${rate(row.annual)}</b></span></div><small>${escapeHtml(row.basis)} ${Number.isFinite(row.purchasePrice) ? '¥'+fmt.format(row.purchasePrice) : '未取得'} × ${escapeHtml(row.scenario)}／${escapeHtml(row.exitLabel || '出口未取得')}${row.reason ? '／'+escapeHtml(row.reason) : ''}</small><details><summary>資金効率の計算基準・注意</summary><small>期待利益 ${signedExpectedMoney(row.profit).text} ÷ 総投下額 ${Number.isFinite(row.investment) ? '¥'+fmt.format(row.investment) : '算出不可'} ×365÷拘束日数。総投下額は買値・鑑定費・設定諸費用・該当交通費予備額。手取りで控除済みの費用を利益から再控除しません。返却${state.lockDays}日（既存の発送・返却7日を含む）＋売却待ち${state.efficiencySaleDays ?? '未設定'}日＋入金待ち${state.efficiencyPayoutDays ?? '未設定'}日。PSA9等を含む期待値でありPSA10時利益とは別。PSA8以下・失敗の確率/売価は未評価。${row.capBasis ? '損益分岐上限で購入×現在相場なら期待利益・資金効率は切下げ端数を除きほぼ0。' : ''}単純年換算で、年間利益・売却期間・損失回避を保証しません。GO・上限に反映せず、個人の総資金は不使用。${escapeHtml(row.warnings.join('／'))}</small></details></div>`;
 }
@@ -4493,15 +4528,15 @@ function prepareCalculatedCards(cards) {
   return calculated;
 }
 
-function cardSearchExclusions(card, {mode = state.purchaseMode,diagnostic=true} = {}) {
+function cardSearchExclusions(card, {mode = state.purchaseMode,diagnostic=true,efficiency=true} = {}) {
   const reasons = [];
   const currentMode = mode === "current-market";
   const normalizedQuery = normalize(state.q);
   const compactQuery = compactSearch(state.q);
   const profitView = searchProfitView(card, mode);
-  if (state.efficiencyMin != null && mode !== 'snkr-raw') {
+  if (efficiency && state.efficiencyMin != null && mode !== 'snkr-raw') {
     const efficiency = cardEfficiency(card,Date.now(),mode);
-    if (!explorationMetrics.inRange(efficiency.annual,state.efficiencyMin,null)) reasons.push(Number.isFinite(efficiency.annual) ? '単体年換算資金効率条件' : '単体資金効率算出不可・'+(efficiency.reason || 'データ不足'));
+    if (!explorationMetrics.inRange(efficiencySearchValue(efficiency),state.efficiencyMin,null)) reasons.push(efficiency.calculationState === 'reference' && !state.efficiencyIncludeReference ? '単体資金効率・参考値を検索対象外' : Number.isFinite(efficiency.annual) ? '単体年換算資金効率条件' : '単体資金効率算出不可・'+(efficiency.reason || 'データ不足'));
   }
       const haystack = normalize(`${card.name} ${card.model} ${card.id}`);
       const compactHaystack = compactSearch(`${card.name} ${card.model} ${card.id}`);
@@ -4748,6 +4783,15 @@ function render() {
       }
       return (["combined", "curated"].includes(state.purchaseMode) ? combinedPresetSort : sorters[state.sort])(left, right);
     });
+
+  const efficiencyTarget=document.getElementById('efficiencySummary');
+  if (efficiencyTarget) {
+    const pool=state.efficiencyMin == null ? enriched : calculated.filter(c=>!cardSearchExclusions(c,{efficiency:false}).length);
+    const counts=efficiencySummary(pool);
+    const reasonList=Object.entries(counts.reasons).map(([reason,count])=>`${reason} ${count}枚`).join('／');
+    const referenceList=Object.entries(counts.referenceReasons).map(([reason,count])=>`${reason} ${count}枚`).join('／');
+    efficiencyTarget.innerHTML=`<summary>資金効率：算出可能${counts.calculated}／参考計算可能${counts.reference}／算出不可${counts.unavailable}枚</summary><small>資金効率条件適用前の候補${pool.length}枚（読込済み・他検索条件適用後）。最終表示${enriched.length}枚。参考値は${state.efficiencyIncludeReference ? '検索に含む' : '資金効率検索・順位の対象外'}。理由は重複あり・段階除外数とは別。<br>参考理由：${escapeHtml(referenceList||'なし')}<br>算出不可：${escapeHtml(reasonList||'なし')}。参考計算の復帰はデータ補完や購入GOへの昇格ではありません。</small>`;
+  }
 
 
   if (els.searchDiagnostic) {
@@ -5740,6 +5784,7 @@ function syncFromUI(event) {
   for (const [,field,initial] of efficiencyFields) state[field] = document.getElementById(field+'Input') ? parseOptionalNumber(document.getElementById(field+'Input').value) : initial;
   state.efficiencyBuy = document.getElementById('efficiencyBuyInput')?.value || 'auto';
   state.efficiencyScenario = document.getElementById('efficiencyScenarioInput')?.value || 'current';
+  state.efficiencyIncludeReference = document.getElementById('efficiencyIncludeReferenceInput')?.checked === true;
   for (const [,field] of explorationFields) state[field] = parseOptionalNumber(document.getElementById(field+'Input')?.value);
   state.purchaseBelowCurrentCap = document.getElementById("purchaseBelowCurrentCapInput")?.checked === true;
   state.includePeriodReference = document.getElementById("includePeriodReferenceInput")?.checked !== false;
@@ -6223,7 +6268,7 @@ document.querySelectorAll("[data-preset]").forEach((button) => {
 
 els.lowRiskAvailabilityInput?.addEventListener("change", syncFromUI);
 document.getElementById("profitSearchBasisInput")?.addEventListener("change", syncFromUI);
-for (const field of ['efficiencyBuy','efficiencyScenario',...efficiencyFields.map(([,f])=>f)]) {
+for (const field of ['efficiencyBuy','efficiencyScenario','efficiencyIncludeReference',...efficiencyFields.map(([,f])=>f)]) {
   const input = document.getElementById(field+'Input');
   input?.addEventListener('change',syncFromUI);
   if (input?.tagName !== 'SELECT') {

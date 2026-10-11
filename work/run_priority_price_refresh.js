@@ -53,8 +53,20 @@ function main() {
   if (!run('work/build_purchase_limit_audit.js')) throw new Error('Purchase target queue rebuild failed');
   if (!run('work/audit_purchase_price_recovery.js', ['--baseline'])) throw new Error('Freshness baseline save failed');
   const config = require("./priority_price_queue.js").timingConfig(ROOT);
-  if (due(sources.toreca, Date.now(), config)) run("work/daily_fast_update.js", [], { FAST_DEEP_SCAN: "0", DAILY_RUNTIME_LIMIT_MS: "300000" }, 'source');
-  if (due(sources.shopBuyback, Date.now(), config)) run("work/run_tracked_update.js", ["shopBuyback", "work/update_shop_buybacks.js"], { TRACKED_TIMEOUT_MS: "300000" }, 'source');
+  const evidenceBefore=require('./efficiency_evidence_queue').pending(read('data/pokemon-cards.json',[]),read('data/shop-buyback-summary.json'));
+  // Use the existing bulk acquisition slots, not a second per-card crawler.
+  for (const [source,key,script,args,env] of [
+    ['toreca','psa9Evidence','work/daily_fast_update.js',[],{FAST_DEEP_SCAN:'0',DAILY_RUNTIME_LIMIT_MS:'300000'}],
+    ['shopBuyback','buybackExitEvidence','work/run_tracked_update.js',['shopBuyback','work/update_shop_buybacks.js'],{TRACKED_TIMEOUT_MS:'300000'}]
+  ]) {
+    const ready=due(sources[source],Date.now(),config);
+    if (ready) run(script,args,env,'source');
+    const evidenceAfter=require('./efficiency_evidence_queue').pending(read('data/pokemon-cards.json',[]),read('data/shop-buyback-summary.json'));
+    runs.push({source,field:key,status:ready?'補完ルート実処理後の監査':'確認期限・再試行間隔待ち',pendingBefore:evidenceBefore[key].length,pendingAfter:evidenceAfter[key].length,
+      recovered:evidenceBefore[key].filter(id=>!evidenceAfter[key].includes(id)).length,
+      reason:'一括取得で価格と確認日時を保存。集計確認を実成約取得として数えない。出現しない値は未取得のまま',llmCalls:0,codexCalls:0});
+    save();
+  }
   for (const sourceId of ["cardrush", "hareruya2"]) run("work/refresh_candidate_shops.js", [sourceId], { CANDIDATE_SHOP_MODE: "deadline" }, 'source');
   }
   for (const script of ["work/reconcile_saved_psa_summary.js", "work/audit_state_a_prices.js", "work/build_card_completion.js", "work/build_purchase_limit_audit.js", "work/audit_acquisition_progress.js", "work/audit_link_coverage.js"]) {

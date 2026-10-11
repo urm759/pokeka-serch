@@ -2,7 +2,7 @@ const http = require('node:http'),fs = require('node:fs'),path = require('node:p
 const {execFileSync} = require('node:child_process');
 const root = path.join(__dirname,'..');
 const doubled = require('./ui_double_fixture').fixture(root);
-const before = Object.fromEntries(['app.js','index.html','styles.css','exploration-metrics.js','update-health-banner.js'].map(f => [f,Buffer.from(execFileSync('git',['show',`${process.env.PERFORMANCE_BASE_COMMIT || 'ceba99b4'}:${f}`],{cwd:root,maxBuffer:8*1024*1024}))]));
+const before = Object.fromEntries(['app.js','index.html','styles.css','current-market-model.js','exploration-metrics.js','update-health-banner.js'].map(f => [f,Buffer.from(execFileSync('git',['show',`${process.env.PERFORMANCE_BASE_COMMIT || 'ceba99b4'}:${f}`],{cwd:root,maxBuffer:8*1024*1024}))]));
 const types = {'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8','.css':'text/css; charset=utf-8'};
 http.createServer((req,res) => {
   const url = new URL(req.url,'http://127.0.0.1'), parts = url.pathname.split('/').filter(Boolean), mode = parts.shift();

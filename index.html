@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20261011-efficiency-v1" />
+  <link rel="stylesheet" href="./styles.css?v=20261011-efficiency-reference-v1" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -42,6 +42,7 @@
         <summary><span>単体の期待資金効率</span><small>個人の総資金不要・購入GOとは別</small></summary>
         <div class="controls controls-primary">
           <label class="control"><span>単体・年換算資金効率 下限 %</span><input id="efficiencyMinInput" type="number" step="0.1" placeholder="条件なし" /><small>空欄＝無効、0＝非負。算出不可は0%にしません。</small></label>
+          <label class="control control-toggle"><input id="efficiencyIncludeReferenceInput" type="checkbox" /><span>資金効率の参考値も検索・順位に含める</span><small>PSA9日時未確認など。価格対立・仕様不一致・古い購入価格・買取出口不足は通しません。購入GOとは別です。</small></label>
           <label class="control"><span>資金効率の買値</span><select id="efficiencyBuyInput"><option value="auto">実店舗状態A（明示的な現相場上限・手入力は継承）</option><option value="manual">手入力買値・仮定</option><option value="current-cap">現相場損益分岐上限で購入・仮定</option></select><small>現相場探索の手入力を継承します。購入価格未取得時に参考相場・安定重視上限へ代用しません。</small></label>
           <label class="control"><span>手入力買値（円）</span><input id="efficiencyManualPriceInput" type="number" min="0" step="100" placeholder="未設定" /></label>
           <label class="control"><span>資金効率の売値シナリオ</span><select id="efficiencyScenarioInput"><option value="current">現在出口相場が続く仮定</option><option value="central">中央予測（期間一致時のみ）</option><option value="stress">供給ストレス（期間一致時のみ）</option></select><small>現相場採算モード・損益分岐上限の仮定では現在相場に統一。保存した予測条件は削除しません。</small></label>
@@ -658,6 +659,7 @@
           <strong id="countStat">0</strong>
         </div>
       </div>
+      <details id="efficiencySummary" class="efficiency-summary"><summary>資金効率の算出状況</summary></details>
       <details class="stats-panel">
         <summary>利益・判定の集計を表示</summary>
         <div class="stats stats-secondary">
@@ -905,13 +907,13 @@
   <script src="./release-year-filter.js?v=20261003-priority-v2"></script>
   <script src="./update-health-model.js?v=20261010-independent-monitor-v2"></script>
   <script src="./update-health-banner.js?v=20261011-search-first-v1"></script>
-  <script src="./current-market-model.js?v=20261010-profit-basis-v1"></script>
+  <script src="./current-market-model.js?v=20261011-efficiency-reference-v1"></script>
   <script src="./ui-data-codec.js?v=20261007-v1"></script>
   <script src="./psa-plan-model.js?v=20261010-isolation-v1"></script>
   <script src="./keyed-card-renderer.js?v=20261010-v1"></script>
   <a class="return-to-filters" href="#searchConditions">検索条件へ</a>
   <script src="./exploration-metrics.js?v=20261011-efficiency-v1"></script>
   <script src="./settings-disclosure.js?v=20261011-disclosure-v1"></script>
-  <script src="./app.js?v=20261011-efficiency-v1"></script>
+  <script src="./app.js?v=20261011-efficiency-reference-v1"></script>
 </body>
 </html>

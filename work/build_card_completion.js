@@ -185,6 +185,7 @@ function main() {
       return row && !row.priceQuarantined && [row.price, row.cardrushPrice, row.hareruya2Price, row.yuyuteiPrice, row.torecacampPrice].some((value) => finite(value) && value > 0);
     });
     const buybackRow = buyback.cards?.[id];
+    const efficiencyEvidence = require('./efficiency_evidence_queue').requirements(card,buybackRow,Date.parse(generatedAt));
     const official = psa.cards?.[id];
     const releaseKnown = Boolean(release.date || release.year);
     const sourcePricePresent = finite(card.price) && card.price > 0;
@@ -220,6 +221,10 @@ function main() {
       psa10ActualSales: item(psa10ActualCount > 0 ? "取得済み" : pokedataState === "unsupported-or-unconfirmed" ? "取得不能" : "取得待ち", "PokeDATA個別成約", times.pokedata, psa10ActualCount > 0 ? `${psa10ActualCount}件` : "PSA10実成約未取得"),
       psa9Sales: item(psa9ActualCount > 0 ? "取得済み" : pokedataState === "unsupported-or-unconfirmed" ? "取得不能" : "取得待ち", "PokeDATA個別成約", times.pokedata, psa9ActualCount > 0 ? `${psa9ActualCount}件` : psa9Kind.kind === "aggregate" ? "集計値はあるが個別実成約は未取得" : "PSA9実成約を優先取得"),
       psa9Aggregate: item(finite(card.snkPsa9Price) && card.snkPsa9Price > 0 ? "取得済み" : domesticPrice ? "推定値" : "取得待ち", "国内集計・みんトレ／スニダン", times.toreca, finite(card.snkPsa9Price) && card.snkPsa9Price > 0 ? "国内集計値・個別実成約とは別" : "国内実成約・集計値は未取得。海外PSA9から補完しない"),
+      psa9Evidence: item(efficiencyEvidence.psa9Evidence.ready ? '取得済み' : '定期再確認','国内PSA9集計・再取得確認',
+        {attempt:times.toreca.attempt,success:card.psa9ObservedAt || null},efficiencyEvidence.psa9Evidence.ready ? '価格再確認日時・実成約日ではない' : efficiencyEvidence.psa9Evidence.reason),
+      buybackExitEvidence: item(efficiencyEvidence.buybackExitEvidence.ready ? '取得済み' : '定期再確認','Web買取表・複数店',times.buyback,
+        efficiencyEvidence.buybackExitEvidence.ready ? '参考出口の基礎掲載。利用可能店舗・一致確認は別判定' : efficiencyEvidence.buybackExitEvidence.reason),
       psaOfficial: item(official && finite(official.rate) ? "取得済み" : psa.specificationHeld?.[id] ? "再照合待ち" : "取得待ち", "PSA公式", times.psa,
         official ? "TOTALまたはPSA10率が不足" : psa.specificationHeld?.[id]?.reason || "公式Population未紐付け"),
       shopStateA: item(shopValue ? "取得済み" : "取得待ち", "国内ショップ", times.cardrush, shopValue ? null : shopFound ? "紐付け済み・有効状態A価格は未取得" : "ショップ巡回・紐付け待ち"),
@@ -401,7 +406,7 @@ function main() {
     sourceByItem: {
       domesticPrice: "みんトレ", domesticTrades: "みんトレ", psa10Price: "みんトレ／スニダン",
       psa10Trades: "みんトレ／スニダン", rawActualSales: "PokeDATA／個別成約", psa10ActualSales: "PokeDATA／個別成約", psa9Sales: "PokeDATA／個別成約", psa9Aggregate: "みんトレ／スニダン", psaOfficial: "PSA公式",
-      shopStateA: "国内ショップ", buyback: "Web買取表", pokedata: "PokeDATA",
+      shopStateA: "国内ショップ", buyback: "Web買取表", psa9Evidence:"国内PSA9集計・確認日時", buybackExitEvidence:"Web買取表・複数店", pokedata: "PokeDATA",
       release: "セット発売日マスタ", identity: "みんトレ",
     },
     summary,
