@@ -36,6 +36,8 @@
       if (next !== null && Math.abs(next - root.scrollY) > 1) {
         root.scrollTo({ top: next, behavior: 'instant' });
       }
+      current.summary.dataset.disclosureShift = String(
+        current.summary.getBoundingClientRect().top - current.top);
       cancel();
     });
   }, true);

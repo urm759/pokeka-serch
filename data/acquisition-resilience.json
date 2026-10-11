@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-11T08:02:24.353Z",
+  "generatedAt": "2026-10-11T09:58:02.681Z",
   "llmCalls": 0,
   "codexCalls": 0,
   "retryPolicy": {
@@ -27,7 +27,7 @@
     {
       "source": "psaOfficial",
       "label": "PSA公式・PC正規認証",
-      "remaining": 1255,
+      "remaining": 1233,
       "queueDefinition": "あとPSAだけで分析可能な国内カード。全PSA未取得とは別",
       "sourceState": "partial",
       "failureScope": "url",
@@ -69,15 +69,15 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-11T08:02:13.675Z",
-        "to": "2026-10-11T08:02:22.305Z"
+        "from": "2026-10-11T09:44:31.076Z",
+        "to": "2026-10-11T09:57:59.995Z"
       },
       "sinceBaseline": {
-        "newLinked": 3057,
-        "validAdded": 3057,
-        "validLost": 261,
-        "usableNet": 2796,
-        "freshnessRecovered": 1635
+        "newLinked": 3198,
+        "validAdded": 3198,
+        "validLost": 264,
+        "usableNet": 2934,
+        "freshnessRecovered": 1381
       },
       "freshness": null
     },
@@ -214,8 +214,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-11T08:02:13.675Z",
-        "to": "2026-10-11T08:02:22.305Z"
+        "from": "2026-10-11T09:44:31.076Z",
+        "to": "2026-10-11T09:57:59.995Z"
       },
       "sinceBaseline": {
         "newLinked": 624,
@@ -266,8 +266,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-11T08:02:13.675Z",
-        "to": "2026-10-11T08:02:22.305Z"
+        "from": "2026-10-11T09:44:31.076Z",
+        "to": "2026-10-11T09:57:59.995Z"
       },
       "sinceBaseline": {
         "newLinked": 341,
@@ -280,11 +280,11 @@
     }
   ],
   "psaOnly": {
-    "count": 1255,
+    "count": 1233,
     "causes": {
       "個別セット確認待ち": 11,
-      "仕様・URL曖昧": 392,
-      "登録URLの取得範囲・未一致確認": 197,
+      "仕様・URL曖昧": 373,
+      "登録URLの取得範囲・未一致確認": 194,
       "公式セットURL未登録": 655
     },
     "cards": [
@@ -1169,6 +1169,12 @@
         "setCode": "XY4",
         "url": null,
         "cause": "公式セットURL未登録"
+      },
+      {
+        "id": "pk-4950",
+        "setCode": "175XYP",
+        "url": null,
+        "cause": "仕様・URL曖昧"
       },
       {
         "id": "pk-5672",
@@ -3865,12 +3871,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-411675",
-        "setCode": "XY-P",
-        "url": null,
-        "cause": "仕様・URL曖昧"
-      },
-      {
         "id": "x-452682",
         "setCode": "PCG-P",
         "url": null,
@@ -3979,12 +3979,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-411786",
-        "setCode": "XY-P",
-        "url": null,
-        "cause": "仕様・URL曖昧"
-      },
-      {
         "id": "x-429965",
         "setCode": "E3",
         "url": null,
@@ -4083,12 +4077,6 @@
       {
         "id": "x-456638",
         "setCode": "PMCG4",
-        "url": null,
-        "cause": "仕様・URL曖昧"
-      },
-      {
-        "id": "x-411748",
-        "setCode": "XY-P",
         "url": null,
         "cause": "仕様・URL曖昧"
       },
@@ -4306,12 +4294,6 @@
         "id": "pk-79882",
         "setCode": "M4",
         "url": "https://www.psacard.com/pop/tcg-cards/2026/pokemon-japanese-m4-ninja-spinner/333874",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "pk-81501",
-        "setCode": "M5",
-        "url": "https://www.psacard.com/pop/tcg-cards/2026/pokemon-japanese-m5-abyss-eye/341263",
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
@@ -4633,12 +4615,6 @@
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "x-411754",
-        "setCode": "XY-P",
-        "url": null,
-        "cause": "仕様・URL曖昧"
-      },
-      {
         "id": "x-430585",
         "setCode": "E5",
         "url": null,
@@ -4711,22 +4687,10 @@
         "cause": "仕様・URL曖昧"
       },
       {
-        "id": "x-413362",
-        "setCode": "XY-P",
-        "url": null,
-        "cause": "仕様・URL曖昧"
-      },
-      {
         "id": "pk-58634",
         "setCode": "PT4",
         "url": null,
         "cause": "公式セットURL未登録"
-      },
-      {
-        "id": "x-107461",
-        "setCode": "SM-P",
-        "url": null,
-        "cause": "仕様・URL曖昧"
       },
       {
         "id": "x-111822",
@@ -5257,12 +5221,6 @@
         "cause": "仕様・URL曖昧"
       },
       {
-        "id": "x-411659",
-        "setCode": "XY-P",
-        "url": null,
-        "cause": "仕様・URL曖昧"
-      },
-      {
         "id": "x-435507",
         "setCode": "DP4",
         "url": null,
@@ -5283,12 +5241,6 @@
       {
         "id": "x-456672",
         "setCode": "PMCG4",
-        "url": null,
-        "cause": "仕様・URL曖昧"
-      },
-      {
-        "id": "x-413376",
-        "setCode": "XY-P",
         "url": null,
         "cause": "仕様・URL曖昧"
       },
@@ -5325,12 +5277,6 @@
       {
         "id": "x-457772",
         "setCode": "PMCGGYM2",
-        "url": null,
-        "cause": "仕様・URL曖昧"
-      },
-      {
-        "id": "x-407861",
-        "setCode": "SM-P",
         "url": null,
         "cause": "仕様・URL曖昧"
       },
@@ -5393,12 +5339,6 @@
         "setCode": "CP3",
         "url": null,
         "cause": "公式セットURL未登録"
-      },
-      {
-        "id": "x-107496",
-        "setCode": "SM-P",
-        "url": null,
-        "cause": "仕様・URL曖昧"
       },
       {
         "id": "pk-18515",
@@ -5638,12 +5578,6 @@
         "id": "pk-75220",
         "setCode": "MC",
         "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mc-start-deck-100-battle-collection/326110",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "pk-81481",
-        "setCode": "M5",
-        "url": "https://www.psacard.com/pop/tcg-cards/2026/pokemon-japanese-m5-abyss-eye/341263",
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
@@ -5909,12 +5843,6 @@
         "setCode": "BW6",
         "url": null,
         "cause": "公式セットURL未登録"
-      },
-      {
-        "id": "pk-21980",
-        "setCode": "174XYP",
-        "url": null,
-        "cause": "仕様・URL曖昧"
       },
       {
         "id": "pk-98",
@@ -6415,12 +6343,6 @@
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "x-107575",
-        "setCode": "SM-P",
-        "url": null,
-        "cause": "仕様・URL曖昧"
-      },
-      {
         "id": "x-92167",
         "setCode": "PMCG11",
         "url": null,
@@ -6541,28 +6463,10 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-413377",
-        "setCode": "XY-P",
-        "url": null,
-        "cause": "仕様・URL曖昧"
-      },
-      {
         "id": "pk-63118",
         "setCode": "XY8",
         "url": null,
         "cause": "公式セットURL未登録"
-      },
-      {
-        "id": "x-107550",
-        "setCode": "SM-P",
-        "url": null,
-        "cause": "仕様・URL曖昧"
-      },
-      {
-        "id": "x-411789",
-        "setCode": "XY-P",
-        "url": null,
-        "cause": "仕様・URL曖昧"
       },
       {
         "id": "pk-18971",
@@ -6699,12 +6603,6 @@
       {
         "id": "x-460765",
         "setCode": "NEO4",
-        "url": null,
-        "cause": "仕様・URL曖昧"
-      },
-      {
-        "id": "x-411794",
-        "setCode": "XY-P",
         "url": null,
         "cause": "仕様・URL曖昧"
       },
@@ -6949,12 +6847,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-411759",
-        "setCode": "XY-P",
-        "url": null,
-        "cause": "仕様・URL曖昧"
-      },
-      {
         "id": "x-457763",
         "setCode": "PMCGGYM2",
         "url": null,
@@ -7025,12 +6917,6 @@
         "setCode": "E4",
         "url": null,
         "cause": "公式セットURL未登録"
-      },
-      {
-        "id": "x-107549",
-        "setCode": "SM-P",
-        "url": null,
-        "cause": "仕様・URL曖昧"
       },
       {
         "id": "pk-18500",
@@ -7183,12 +7069,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-407420",
-        "setCode": "SM-P",
-        "url": null,
-        "cause": "仕様・URL曖昧"
-      },
-      {
         "id": "x-450657",
         "setCode": "DP",
         "url": null,
@@ -7205,12 +7085,6 @@
         "setCode": "XY",
         "url": "https://www.psacard.com/pop/tcg-cards/2016/pokemon-japanese-xy-starter-pack/134700",
         "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-407820",
-        "setCode": "SM-P",
-        "url": null,
-        "cause": "仕様・URL曖昧"
       },
       {
         "id": "x-111830",
@@ -7711,12 +7585,6 @@
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "pk-81476",
-        "setCode": "M5",
-        "url": "https://www.psacard.com/pop/tcg-cards/2026/pokemon-japanese-m5-abyss-eye/341263",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-775837",
         "setCode": "30TH-P",
         "url": null,
@@ -7822,9 +7690,9 @@
   },
   "progress": {
     "listed": 12498,
-    "analyzable": 2023,
-    "pending": 10475,
-    "oneAway": 1664
+    "analyzable": 2045,
+    "pending": 10453,
+    "oneAway": 1659
   },
   "newlyAnalyzable": 0,
   "note": "一時障害の再試行、個別URL隔離、取得元停止を区別。未取得をデータ不存在に変更しない。巡回完了と全項目取得・最新価格は別"

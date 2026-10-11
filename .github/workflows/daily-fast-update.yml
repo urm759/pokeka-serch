@@ -45,7 +45,9 @@ jobs:
           node work/run_daily_sources.js
           node work/test_daily_source_isolation.js
       - name: Rebuild market demand and supply analysis
-        run: node work/run_tracked_update.js marketAnalysis work/build_market_analysis.js
+        run: |
+          node work/reconcile_saved_psa_summary.js
+          node work/run_tracked_update.js marketAnalysis work/build_market_analysis.js
       - name: Finalize source status
         run: node work/finalize_update_status.js
       - name: Audit state-A price conflicts and sale evidence
@@ -96,6 +98,7 @@ jobs:
           node work/test_exploration_metrics.js
           node work/test_search_first_reference_margin.js
           node work/test_settings_disclosure.js
+          node work/test_saved_psa_summary.js
           node work/test_psa_completion_publication.js
           node work/test_deadline_capacity_samples.js
           node work/test_current_market_exploration.js

@@ -57,7 +57,7 @@ function main() {
   if (due(sources.shopBuyback, Date.now(), config)) run("work/run_tracked_update.js", ["shopBuyback", "work/update_shop_buybacks.js"], { TRACKED_TIMEOUT_MS: "300000" }, 'source');
   for (const sourceId of ["cardrush", "hareruya2"]) run("work/refresh_candidate_shops.js", [sourceId], { CANDIDATE_SHOP_MODE: "deadline" }, 'source');
   }
-  for (const script of ["work/audit_state_a_prices.js", "work/build_card_completion.js", "work/build_purchase_limit_audit.js", "work/audit_acquisition_progress.js", "work/audit_link_coverage.js"]) {
+  for (const script of ["work/reconcile_saved_psa_summary.js", "work/audit_state_a_prices.js", "work/build_card_completion.js", "work/build_purchase_limit_audit.js", "work/audit_acquisition_progress.js", "work/audit_link_coverage.js"]) {
     if (!run(script)) throw new Error(`Required rebuild failed: ${script}`);
   }
   if (!run('work/audit_purchase_price_recovery.js')) throw new Error('Purchase freshness outcome audit failed');
