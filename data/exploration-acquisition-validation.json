@@ -85,5 +85,61 @@
   ],
   "nextScheduledResult": "今回改修後の定期運転は未到来・非AI受領証で継続確認",
   "llmCalls": 0,
-  "codexCalls": 0
+  "codexCalls": 0,
+  "integratedAutomaticSourceCommit": "21654551",
+  "integratedTotalDelta": {
+    "baselineAt": "2026-10-11T03:31:27.290Z",
+    "commonCards": 12498,
+    "addedCards": 0,
+    "removedCards": 0,
+    "newlyAnalyzable": 0,
+    "lostAnalyzable": 0,
+    "filledCards": 44,
+    "filledItems": 44,
+    "sources": {
+      "cardrush": {
+        "newLinked": 3,
+        "validAdded": 3,
+        "validLost": 0,
+        "usableNet": 3,
+        "freshnessRecovered": 0
+      },
+      "hareruya2": {
+        "newLinked": 45,
+        "validAdded": 45,
+        "validLost": 0,
+        "usableNet": 45,
+        "freshnessRecovered": 50
+      },
+      "yuyutei": {
+        "newLinked": 0,
+        "validAdded": 0,
+        "validLost": 0,
+        "usableNet": 0,
+        "freshnessRecovered": 0
+      },
+      "torecacamp": {
+        "newLinked": 0,
+        "validAdded": 0,
+        "validLost": 0,
+        "usableNet": 0,
+        "freshnessRecovered": 0
+      },
+      "psaOfficial": {
+        "newLinked": 0,
+        "validAdded": 0,
+        "validLost": 0,
+        "usableNet": 0,
+        "freshnessRecovered": 0
+      },
+      "pokedata": {
+        "newLinked": 0,
+        "validAdded": 0,
+        "validLost": 0,
+        "usableNet": 0,
+        "freshnessRecovered": 0
+      }
+    }
+  },
+  "integrationNote": "手動再確認の成果と、並行した自動商品URL照合・実価格取得の成果は別。カードラッシュの新規URL紐付けは古い正常価格の保存照合であり新規通信・鮮度回復ではない。"
 }

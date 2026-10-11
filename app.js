@@ -3874,7 +3874,7 @@ function psa10PeriodPanel(card, profitView) {
   return `<div class="psa10-period-summary">${periods.map(([days,mean,n,age])=>{
     const latest = Number.isFinite(age) ? new Date(Date.parse(state.psa10PeriodSummary.asOf+'T00:00:00Z')-age*86400000).toISOString().slice(0,10) : '未取得';
     const sale = explorationMetrics.meanSale(mean,profitView.purchasePrice,state.fee,state.saleFeeRate,state.saleExtraCost);
-    const delta = explorationMetrics.percent(card.psa10,mean);
+    const delta = card.psa10 > 0 ? explorationMetrics.percent(card.psa10,mean) : null;
     return `<span>${days}日観測平均<b>${Number.isFinite(mean) ? `¥${fmt.format(mean)}` : '蓄積中'}</b><small>現相場との差 ${signedRate(delta)}<br>平均売却PSA10時利益率 ${signedRate(sale.roi)}<br>${n ?? 0}/${days}観測日・最終 ${latest}${Number.isFinite(mean) && n < state.psa10PeriodSummary.minimumObservationDays[days] ? '・観測不足' : ''}${age > 2 ? '・古い観測' : ''}</small></span>`;
   }).join('')}<details><summary>観測平均・利益試算の基準</summary><small>国内日次・実成約平均とは別。欠測補完なし。現相場÷平均−1：＋は高い、−は低い、0%は同額。平均価格の売却はフリマ仮定（手数料${state.saleFeeRate}%・その他¥${fmt.format(state.saleExtraCost)}・鑑定費¥${fmt.format(state.fee)}）。検索と同じ買値 ${Number.isFinite(profitView.purchasePrice) ? `¥${fmt.format(profitView.purchasePrice)}` : '未取得・算出不可'}。実際の買取採算・PSA9を含む期待利益率とは別。将来売値の保証ではなく上限・GOへ未反映。</small></details></div>`;
 }
