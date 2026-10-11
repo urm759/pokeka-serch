@@ -3858,6 +3858,10 @@ function compareSearchNumbers(a, b, ascending = false) {
   if (!Number.isFinite(b)) return -1;
   return ascending ? a - b : b - a;
 }
+function resultSorter() {
+  if (state.sort === 'cardEfficiency-desc') return sorters[state.sort];
+  return ['combined','curated'].includes(state.purchaseMode) ? combinedPresetSort : sorters[state.sort];
+}
 
 function cardEfficiency(card, now=Date.now(), mode=state.purchaseMode) {
   const key = JSON.stringify([mode,state.profitSearchBasis,state.currentMarketManualPrice,state.efficiencyBuy,state.efficiencyScenario,
@@ -3911,7 +3915,7 @@ function efficiencySummary(cards) {
     const row=cardEfficiency(card); counts[row.calculationState]++;
     const reasons=row.calculationState === 'unavailable' ? row.blockingReasons.length ? [...row.blockingReasons,...(row.purchasePrice == null ? [row.reason] : [])] : [row.reason] : [];
     for (const reason of new Set(reasons.filter(Boolean))) counts.reasons[reason]=(counts.reasons[reason]||0)+1;
-    for (const reason of row.referenceReasons) counts.referenceReasons[reason]=(counts.referenceReasons[reason]||0)+1;
+    if (row.calculationState === 'reference') for (const reason of row.referenceReasons) counts.referenceReasons[reason]=(counts.referenceReasons[reason]||0)+1;
   }
   return counts;
 }
@@ -3943,7 +3947,7 @@ function purchaseBelowCurrentCapReason(card) {
 function purchaseExploration(card,now=Date.now()) {
   const price = explorationMetrics.offerPrice(card.currentStoreOffer,now);
   const limit = card.buyLimits?.clean, assumptions = limit?.assumptions;
-  const display = state.purchaseMode === 'current-market' ? currentMarketView(card) : limitDisplayModel.classifyCap(
+  const display = state.purchaseMode === 'current-market' || state.profitSearchBasis === 'current-cap' && state.purchaseMode !== 'now' ? currentMarketView(card) : limitDisplayModel.classifyCap(
     card.psa10 > 0 ? Object.hasOwn(limit || {},'currentBreakEvenRaw') ? limit.currentBreakEvenRaw : limit?.currentBreakEvenMaxPrice : null);
   const materialReady = Number.isFinite(assumptions?.hitRate) && assumptions.hitRate >= 0 && assumptions.hitRate <= 1
     && Number.isFinite(assumptions?.lowerGradePrice) && assumptions.lowerGradePrice > 0 && !psaPlanProblem();
@@ -3961,6 +3965,14 @@ function purchaseExploration(card,now=Date.now()) {
 }
 function postingCoverage(card) {
   return explorationMetrics.coverage(state.buybackPostingCoverage,card.id,state.buybackStoreMode,state.selectedBuybackStores || []);
+}
+function selectedLimitDisplay(card, base, trial) {
+  if (state.purchaseMode !== 'current-market' && !(state.profitSearchBasis === 'current-cap' && state.purchaseMode !== 'now')) return base;
+  const value=trial || searchProfitView(card);
+  return {...base,currentCap:value.cap,currentCapState:value.capState || 'unavailable',currentCapLabel:value.capLabel || 'データ不足で算出不可',currentCapNote:value.capNote,
+    exitLabel:value.exitLabel || '未取得',warnings:[...new Set([...base.warnings.filter(w=>!w.includes('フリマ基準')), ...value.reasons])],
+    gap:Number.isFinite(value.cap) && Number.isFinite(base.stableCap) ? value.cap-base.stableCap : null,
+    hitRate:Number.isFinite(value.assumedRate) ? value.assumedRate*100 : null};
 }
 function postingCoverageHtml(card) {
   const c = postingCoverage(card), num = (n,unit='') => Number.isFinite(n) ? `${n.toFixed(1)}${unit}` : '未取得';
@@ -4781,7 +4793,7 @@ function render() {
         const rightRank = state.searchRankById.get(String(right.id)) ?? Number.MAX_SAFE_INTEGER;
         if (leftRank !== rightRank) return leftRank - rightRank;
       }
-      return (["combined", "curated"].includes(state.purchaseMode) ? combinedPresetSort : sorters[state.sort])(left, right);
+      return resultSorter()(left, right);
     });
 
   const efficiencyTarget=document.getElementById('efficiencySummary');
@@ -4837,6 +4849,7 @@ function render() {
     const labels = {
       domesticPrice: "国内美品参考価格", domesticTrades: "国内素体・全状態取引", psa10Price: "PSA10価格", psa10Trades: "PSA10取引",
       rawActualSales: "海外Raw個別実成約", psa10ActualSales: "海外PSA10個別実成約", psa9Sales: "海外PSA9個別実成約", psa9Aggregate: "国内PSA9集計値（実成約とは別）",
+      psa9Evidence:"国内PSA9集計の確認日時",buybackExitEvidence:"複数店の新鮮な買取掲載（出口は別判定）",
       psaOfficial: "PSA公式", shopStateA: "ショップ状態A", buyback: "買取表", pokedata: "PokeDATA", release: "発売日", identity: "カード識別",
     };
     const rates = Object.entries(state.catalogCompletion.itemTotals || {}).map(([key, row]) => `<span><b>${escapeHtml(labels[key] || key)}</b><strong>${Number(row.acquiredPct || 0).toFixed(1)}%</strong><small>取得済み ${fmt.format(row.acquired)} / 待ち ${fmt.format(row.pending)} / 元データなし・不能 ${fmt.format(row.noData)} / 失敗 ${fmt.format(row.failed)}</small></span>`).join("");
@@ -5253,12 +5266,7 @@ function render() {
       domesticPsa10UpdatedAt: state.sourceUpdates.toreca,
       reason: limitReasonLabel(buyLimits?.clean),
     });
-    const limitDisplay = currentExploration ? {...baseLimitDisplay,currentCap:currentTrial.cap,
-      currentCapState:currentTrial.capState || 'unavailable',currentCapLabel:currentTrial.capLabel || 'データ不足で算出不可',currentCapNote:currentTrial.capNote,
-      exitLabel:currentTrial.exitLabel || "未取得",
-      warnings:[...new Set([...baseLimitDisplay.warnings.filter(w=>!w.includes('フリマ基準')), ...currentTrial.reasons])],
-      gap:Number.isFinite(currentTrial.cap) && Number.isFinite(baseLimitDisplay.stableCap) ? currentTrial.cap - baseLimitDisplay.stableCap : null,
-      hitRate:Number.isFinite(currentTrial.assumedRate) ? currentTrial.assumedRate * 100 : null} : baseLimitDisplay;
+    const limitDisplay = selectedLimitDisplay(card,baseLimitDisplay,currentTrial);
     const limitMoney = (value) => value == null ? "算出不可" : `¥${fmt.format(value)}`;
     const marketConfirmation = state.updateStatus?.sources?.toreca;
     const marketConfirmedAt = Object.hasOwn(card, "psa10ObservedAt") ? card.psa10ObservedAt : marketConfirmation?.lastSuccessAt
@@ -6271,7 +6279,7 @@ document.getElementById("profitSearchBasisInput")?.addEventListener("change", sy
 for (const field of ['efficiencyBuy','efficiencyScenario','efficiencyIncludeReference',...efficiencyFields.map(([,f])=>f)]) {
   const input = document.getElementById(field+'Input');
   input?.addEventListener('change',syncFromUI);
-  if (input?.tagName !== 'SELECT') {
+  if (input?.tagName !== 'SELECT' && input?.type !== 'checkbox') {
     let timer;
     input?.addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(syncFromUI,200);});
   }

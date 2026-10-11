@@ -24,7 +24,7 @@
     if (card.psa10Audit?.confidence === '低' || card.priceAggregation?.confidence === '低') {
       if (!reference) reasons.push('相場データ信頼度不足');
       else {
-        if (card.psa10Audit?.confidence === '低') hold('PSA10集計の取引件数・期間充足不足', !card.psa10Audit.measured && finite(card.psa10Audit.includedCount) != null);
+        if (card.psa10Audit?.confidence === '低') hold(card.psa10Audit.measured ? 'PSA10個別成約の低信頼理由・採用根拠を要確認' : 'PSA10集計の取引件数・期間充足不足', !card.psa10Audit.measured && finite(card.psa10Audit.includedCount) != null);
         if (card.priceAggregation?.confidence === '低') hold('素体価格の採用元・観測充足不足', Number(card.dataQuality?.trustedPriceCount) > 0);
       }
     }
@@ -43,17 +43,16 @@
     const purchaseKind = storeUsable ? 'store' : purchasePrice != null ? 'manual' : 'missing';
     const policy = input.exitPolicy || 'buyback';
     const buyback = input.buybackExit;
-    if (policy !== 'marketplace' && (!buyback?.usable || Number(buyback.storeCount) < 2 || !buyback.scenarios?.current)) reasons.push('買取出口データ不足・フリマへの自動切替なし');
+    if (policy !== 'marketplace' && (!buyback?.usable || !(finite(buyback.storeCount) >= 2) || finite(buyback.scenarios?.current?.expectedSale) == null || finite(buyback.scenarios?.current?.netPsa10) == null)) reasons.push('買取出口データ不足・フリマへの自動切替なし');
     if (card.psa9Audit?.estimated !== false) warnings.push('PSA9は推定値');
     else if (card.psa9Audit?.measurementType !== 'actual') warnings.push('PSA9は集計値・個別実成約未取得');
     const psa9UpdatedAt = card.psa9Audit?.latestSaleAt || card.psa9Audit?.updatedAt || null;
     if (card.psa9Audit?.estimated === false && age(psa9UpdatedAt) == null) hold(reference ? 'PSA9日時未確認' : 'PSA9価格の確認日時不足',reference && finite(card.psa9Audit.value) > 0);
     else if (card.psa9Audit?.estimated === false && (age(psa9UpdatedAt) < 0 || age(psa9UpdatedAt) > 30 * 24)) reasons.push('PSA9価格が古い・日時不正');
     if (reference) {
-      if (!(finite(card.psa9Audit?.value) > 0)) reasons.push('PSA9価格自体が未取得');
+      if (!(finite(card.psa9Audit?.value) > 0) || card.psa9Audit?.estimated !== false) reasons.push('PSA9価格自体が未取得・推定だけでは計算しない');
       if (card.psa9Audit?.identityConfirmed === false || card.psa9Audit?.specificationMismatch
         || card.psa9Audit?.country && card.psa9Audit.country !== 'jp' || card.psa9Audit?.currency && card.psa9Audit.currency !== 'JPY') reasons.push('PSA9仕様・国内価格の一致未確認');
-      if (card.psa9Audit?.estimated !== false) referenceReasons.push('PSA9推定値');
     }
     if (finite(card.official?.rate) == null) warnings.push('公式取得率未取得・設定10率を使用');
     else if (age(card.official?.f) == null || age(card.official?.f) > 48) warnings.push('公式Populationの確認日が古い・未取得');

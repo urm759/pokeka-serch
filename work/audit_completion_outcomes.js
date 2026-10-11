@@ -5,13 +5,15 @@ const read = (root, file, fallback = {}) => { try { return JSON.parse(fs.readFil
 const shops = ["cardrush", "hareruya2", "yuyutei", "torecacamp"];
 const sourceKeys = [...shops, "psaOfficial", "pokedata"];
 const fieldKeys = Object.keys(require("./completion_routes.js").ROUTES);
+const legacyFieldKeys = fieldKeys.filter(key=>!['psa9Evidence','buybackExitEvidence'].includes(key));
 function pack(value) {
-  return { at: value.at, schemaVersion: value.schemaVersion || 1, packed: true, rows: Object.fromEntries(Object.entries(value.rows).map(([id, r]) => [id,
+  return { at: value.at, schemaVersion: value.schemaVersion || 1, fieldKeys, packed: true, rows: Object.fromEntries(Object.entries(value.rows).map(([id, r]) => [id,
     [Number(r.analysis), r.fields.reduce((mask, f) => mask | 1 << fieldKeys.indexOf(f), 0), ...sourceKeys.map((s) => Number(Boolean(r.sources[s]?.linked)) + 2 * Number(Boolean(r.sources[s]?.valid)) + 4 * Number(Boolean(r.sources[s]?.fresh)))]])) };
 }
 function unpack(value) {
   if (!value?.packed) return value;
-  return { at: value.at, schemaVersion: value.schemaVersion || 1, rows: Object.fromEntries(Object.entries(value.rows).map(([id, r]) => [id, { analysis: Boolean(r[0]), fields: fieldKeys.filter((_, i) => r[1] & 1 << i), sources: Object.fromEntries(sourceKeys.map((s, i) => [s, { linked: Boolean(r[i + 2] & 1), valid: Boolean(r[i + 2] & 2), fresh: Boolean(r[i + 2] & 4) }])) }])) };
+  const keys=value.fieldKeys || legacyFieldKeys;
+  return { at: value.at, schemaVersion: value.schemaVersion || 1, fieldKeys:keys, rows: Object.fromEntries(Object.entries(value.rows).map(([id, r]) => [id, { analysis: Boolean(r[0]), fields: keys.filter((_, i) => r[1] & 1 << i), sources: Object.fromEntries(sourceKeys.map((s, i) => [s, { linked: Boolean(r[i + 2] & 1), valid: Boolean(r[i + 2] & 2), fresh: Boolean(r[i + 2] & 4) }])) }])) };
 }
 function snapshot(root, now = Date.now()) {
   const completion = read(root, "data/card-catalog-completion.json"), psa = read(root, "data/psa-population-summary.json").cards || {};
@@ -38,7 +40,7 @@ function snapshot(root, now = Date.now()) {
       rows[id].sources.pokedata.fresh = valid && fresh(sale.capturedAt);
     }
   }
-  return { at: new Date(now).toISOString(), schemaVersion: 2, rows };
+  return { at: new Date(now).toISOString(), schemaVersion: 2, fieldKeys, rows };
 }
 function compare(before, after) {
   if (!before) return null;
@@ -48,7 +50,8 @@ function compare(before, after) {
     if (!old) { out.addedCards++; continue; }
     out.commonCards++;
     out.newlyAnalyzable += Number(row.analysis && !old.analysis); out.lostAnalyzable += Number(!row.analysis && old.analysis);
-    const filled = row.fields.filter((f) => !old.fields.includes(f)); out.filledItems += filled.length; out.filledCards += Number(filled.length > 0);
+    const sharedKeys=before.fieldKeys || legacyFieldKeys;
+    const filled = row.fields.filter((f) => sharedKeys.includes(f) && !old.fields.includes(f)); out.filledItems += filled.length; out.filledCards += Number(filled.length > 0);
     for (const s of [...shops, "psaOfficial", "pokedata"]) {
       const a = row.sources[s] || {}, b = old.sources[s] || {};
       out.sources[s] ||= { newLinked: 0, validAdded: 0, validLost: 0, usableNet: 0, freshnessRecovered: 0 };

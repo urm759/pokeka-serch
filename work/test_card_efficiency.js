@@ -16,7 +16,7 @@ const now=Date.now(), date=new Date(now).toISOString();
 const context = vm.createContext({window:{PurchaseDecisionModel:require('../decision-model'),ExplorationMetrics:m,location:{href:'https://example.test/?effMin=0&effManual=10000&effBuy=manual&effScenario=current&sellDays=0&payoutDays=3'}},
   document:{getElementById:id=>{if(!inputs.has(id))inputs.set(id,{value:'',checked:false});return inputs.get(id);},querySelectorAll:()=>[]},
   URL,URLSearchParams,console,setTimeout,clearTimeout,localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)}});
-vm.runInContext(source.split('// Browser event bindings start here;')[0]+`\ncurrentMarketView=c=>c.testView;globalThis.api={state,cardEfficiency,cardEfficiencyPanel,readUrl,buildShareUrl,saveQuickFilters,restoreQuickFilters,computationKey};`,context);
+vm.runInContext(source.split('// Browser event bindings start here;')[0]+`\ncurrentMarketView=c=>c.testView;globalThis.api={state,cardEfficiency,cardEfficiencyPanel,resultSorter,efficiencySearchValue,efficiencySummary,readUrl,buildShareUrl,saveQuickFilters,restoreQuickFilters,computationKey};`,context);
 const api=context.api,s=api.state;
 Object.assign(s,{fee:10980,saleExtraCost:210,storeTravelCost:1000,lockDays:147,exitPolicy:'marketplace',efficiencyBuy:'auto',efficiencyScenario:'current',efficiencySaleDays:7,efficiencyPayoutDays:3,profitSearchBasis:'auto'});
 const card={id:'fixture',price:19000,currentStoreOffer:{value:10000,available:true,fresh:true,updatedAt:date,inventoryAt:date},
@@ -27,6 +27,18 @@ const key=api.computationKey();s.efficiencyMin=50;s.efficiencySaleDays=14;
 assert.equal(api.computationKey(),key,'search/wait settings never trigger full-card prediction/limit recalculation');
 e=api.cardEfficiency(card,now);assert.equal(e.days,164);
 s.psaCapital=0;s.lockedCapital=5000000;assert.equal(api.cardEfficiency(card,now).annual,e.annual,'personal capital is not used');
+const refCard={...card,testView:{...card.testView,calculationState:'reference',referenceReasons:['PSA9日時未確認']}};
+const ref=api.cardEfficiency(refCard,now);
+assert(Number.isFinite(ref.annual));assert.equal(api.efficiencySearchValue(ref),null,'reference excluded by default');
+s.efficiencyIncludeReference=true;assert.equal(api.efficiencySearchValue(ref),ref.annual);
+assert.equal(api.efficiencySummary([card,refCard]).reference,1);
+assert.equal(api.buildShareUrl().searchParams.get('effRef'),'1');
+api.saveQuickFilters();inputs.set('efficiencyIncludeReferenceInput',{checked:false});api.restoreQuickFilters();assert(inputs.get('efficiencyIncludeReferenceInput').checked);
+s.efficiencyIncludeReference=false;
+s.purchaseMode='combined';s.sort='cardEfficiency-desc';
+const cheaper={...card,currentStoreOffer:{...card.currentStoreOffer,value:8000}};
+assert(api.resultSorter()(cheaper,card)<0,'combined preset must not override an explicit efficiency sort');
+s.purchaseMode='normal';s.sort='expectedProfit-desc';
 for(const o of [{...card.currentStoreOffer,updatedAt:null},{...card.currentStoreOffer,updatedAt:'2026-09-01'},{...card.currentStoreOffer,inventoryAt:null},{...card.currentStoreOffer,available:false}]) {
   const value=api.cardEfficiency({...card,currentStoreOffer:o},now);assert.equal(value.purchasePrice,null);assert.equal(value.annual,null,'no silent reference/limit fallback');
 }

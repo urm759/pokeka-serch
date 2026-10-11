@@ -45,6 +45,11 @@ const auditApi=require('./audit_search_profit_consistency').load(sourceText,new 
 const allCards=auditApi.prepareCalculatedCards(auditApi.state.cards);auditApi.state.profitSearchBasis='current-cap';
 for(const c of allCards) {
   const view=auditApi.searchProfitView(c);
-  if(view.eligible) assert.equal(view.cap,require('../limit-display-model').summarize({limit:c.buyLimits.clean,psa10Price:c.psa10,psa9Audit:c.psa9Audit,domesticPsa10UpdatedAt:auditApi.state.sourceUpdates.toreca}).currentCap,'eligible search and displayed cap must match');
+  if(view.eligible) {
+    const base=require('../limit-display-model').summarize({limit:c.buyLimits.clean,psa10Price:c.psa10,psa9Audit:c.psa9Audit,domesticPsa10UpdatedAt:auditApi.state.sourceUpdates.toreca});
+    assert.equal(view.cap,auditApi.selectedLimitDisplay(c,base).currentCap,'eligible search and actual displayed cap must match');
+    assert.equal(view.cap,auditApi.purchaseExploration(c).cap,'comparison uses the same selected cap');
+    assert.equal(view.purchasePrice,view.cap,'cap-basis buy price matches displayed cap');
+  }
 }
 console.log('Exploration means/ROI, strict freshness, float boundaries, posting full-vs-partial, URL zero/null and break-even purchase PASS');

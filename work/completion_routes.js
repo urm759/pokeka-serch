@@ -11,13 +11,15 @@ const ROUTES = {
   psa10ActualSales: ["pokedataAuthenticated", "認証・手動確認待ち", "海外PSA10実成約のみ"],
   psa9Sales: ["pokedataAuthenticated", "認証・手動確認待ち", "海外PSA9実成約。国内PSA9の不足は埋まらない"],
   psa9Aggregate: ["toreca", "自動巡回中", "国内集計の再確認。推定値は実成約に含めない"],
-  psa9Evidence: ["toreca", "自動巡回中", "PSA9集計の価格と個別再取得日時を一括更新で再確認。個別実成約日とは別"],
-  buybackExitEvidence: ["shopBuyback", "自動巡回中", "複数店の新鮮な買取掲載をWeb表更新で再確認。未掲載や利用設定不一致は推定しない"],
   pokedata: ["pokedata", "自動巡回中", "確認済み対応セットの段階取得。未展開・曖昧は別管理"],
   release: ["release", "認証・手動確認待ち", "公式発売情報の確認。取得日で発売年を推定しない"],
   identity: ["identity", "認証・手動確認待ち", "仕様・番号・言語の曖昧一致を自動確定しない"],
+  psa9Evidence: ["toreca", "自動巡回中", "PSA9集計の価格と個別再取得日時を一括更新で再確認。個別実成約日とは別"],
+  buybackExitEvidence: ["shopBuyback", "自動巡回中", "複数店の新鮮な買取掲載をWeb表更新で再確認。未掲載や利用設定不一致は推定しない"],
 };
 function itemState(detail, key) {
+  const evidenceIndex=['psa9Evidence','buybackExitEvidence'].indexOf(key);
+  if (evidenceIndex >= 0 && Array.isArray(detail.e)) return {status:detail.e[evidenceIndex]===1?'取得済み':'定期再確認'};
   const value = detail.i?.[key];
   return Array.isArray(value) ? { status: value[0], lastAttemptAt: value[1], lastSuccessAt: value[2], retryCount: value[3], reason: value[4], nextRetryAt: value[5] } : { status: value };
 }

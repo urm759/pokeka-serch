@@ -243,7 +243,7 @@ function main() {
         entry.failureReason = previous.failureReason || entry.failureReason;
       }
     }
-    const values = Object.values(entries);
+    const values = Object.entries(entries).filter(([key])=>!['psa9Evidence','buybackExitEvidence'].includes(key)).map(([,value])=>value);
     const acquired = values.filter((entry) => entry.status === "取得済み").length;
     const completionPct = Number((acquired / values.length * 100).toFixed(1));
     const requiredReady = domesticPrice && domesticTx && psa10Price && psa10Tx && official && finite(official.rate) && !identity.reviewRequired;
@@ -322,7 +322,8 @@ function main() {
       l: values.map((entry) => entry.lastAttemptAt).filter(Boolean).sort().at(-1) || null,
       pk: pokedataState,
       p9: psa9Kind.kind,
-      i: Object.fromEntries(Object.entries(entries).map(([key, entry]) => [key, [
+      e: [Number(efficiencyEvidence.psa9Evidence.ready),Number(efficiencyEvidence.buybackExitEvidence.ready)],
+      i: Object.fromEntries(Object.entries(entries).filter(([key])=>!['psa9Evidence','buybackExitEvidence'].includes(key)).map(([key, entry]) => [key, [
         entry.status,
         entry.lastAttemptAt,
         entry.lastSuccessAt,
@@ -403,6 +404,8 @@ function main() {
     version: 3,
     generatedAt,
     itemSchema: ["status", "lastAttemptAt", "lastSuccessAt", "retryCount", "failureReason", "nextRetryAt"],
+    evidenceSourceTimes: {toreca:times.toreca,shopBuyback:times.buyback},
+    evidenceSchema: 'e=[PSA9集計確認,複数店買取確認]。1=取得済み、0=定期再確認の状態符号（価格・件数ではない）。PSA9確認日はカード別psa9ObservedAt、試行日はsource times、買取価格日と照合根拠は原票へ。実成約とは別。',
     sourceByItem: {
       domesticPrice: "みんトレ", domesticTrades: "みんトレ", psa10Price: "みんトレ／スニダン",
       psa10Trades: "みんトレ／スニダン", rawActualSales: "PokeDATA／個別成約", psa10ActualSales: "PokeDATA／個別成約", psa9Sales: "PokeDATA／個別成約", psa9Aggregate: "みんトレ／スニダン", psaOfficial: "PSA公式",

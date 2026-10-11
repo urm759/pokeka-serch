@@ -18,7 +18,7 @@ assert(!first.held);
 assert(!failureState(first, { status: "failed", error: "HTTP 503" }, now).held);
 assert(failureState({}, { status: "failed", error: "HTTP 403" }, now).held);
 const before = { at: "2026-10-05T00:00:00Z", schemaVersion: 2, rows: { one: { analysis: false, fields: ["domesticPrice"], sources: { psaOfficial: { linked: false, valid: false, fresh: false } } } } };
-assert.deepEqual(unpack(pack(before)), { at: before.at, schemaVersion: 2, rows: { one: { ...before.rows.one, sources: Object.fromEntries(["cardrush", "hareruya2", "yuyutei", "torecacamp", "psaOfficial", "pokedata"].map((s) => [s, { linked: false, valid: false, fresh: false }])) } } });
+assert.deepEqual(unpack(pack(before)), { at: before.at, schemaVersion: 2, fieldKeys:Object.keys(require('./completion_routes').ROUTES), rows: { one: { ...before.rows.one, sources: Object.fromEntries(["cardrush", "hareruya2", "yuyutei", "torecacamp", "psaOfficial", "pokedata"].map((s) => [s, { linked: false, valid: false, fresh: false }])) } } });
 const after = { at: new Date(now).toISOString(), rows: { one: { analysis: true, fields: ["domesticPrice", "psaOfficial"], sources: { psaOfficial: { linked: true, valid: true, fresh: true } } } } };
 const diff = compare(before, after);
 assert.equal(diff.newlyAnalyzable, 1); assert.equal(diff.filledCards, 1); assert.equal(diff.sources.psaOfficial.usableNet, 1);
