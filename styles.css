@@ -88,7 +88,7 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
   background:rgba(5,10,20,.34);
   overflow:hidden;
 }
-.advanced-filters summary{
+.advanced-filters>summary{
   cursor:pointer;
   list-style:none;
   display:flex;
@@ -99,10 +99,13 @@ h1{margin:12px 0 10px;font-size:36px;line-height:1.05}
   color:var(--text);
   font-weight:900;
 }
-.advanced-filters summary::-webkit-details-marker{display:none}
-.advanced-filters summary::after{content:"＋";font-size:20px;color:var(--accent)}
-.advanced-filters[open] summary::after{content:"−"}
-.advanced-filters summary small{color:var(--muted);font-weight:600;margin-left:auto}
+.advanced-filters>summary::-webkit-details-marker{display:none}
+.advanced-filters>summary::after{content:"＋";font-size:20px;color:var(--accent)}
+.advanced-filters[open]>summary::after{content:"−"}
+.advanced-filters>summary small{color:var(--muted);font-weight:600;margin-left:auto}
+.search-settings details{display:block;position:static;float:none}
+.search-settings details>summary{position:static;order:0;scroll-margin-block:12px}
+.search-settings details>summary~*{position:static;order:1}
 .controls-advanced{margin:0;padding:0 14px 14px}
 .filter-switches{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
 .filter-switches label{display:flex;align-items:center;gap:7px;padding:10px 12px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(5,10,20,.42);font-size:11px;font-weight:700;cursor:pointer}
