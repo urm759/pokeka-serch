@@ -62,7 +62,7 @@ function build() {
     example:{id:example.id,name:example.name,oldFilter:before.searchProfitView(oldExample),oldDetail:{purchasePrice:oldExample.price,psa10Roi:oldExample.roi},
       unified:variants,exclusions:after.cardSearchExclusions(example)},
     marketplaceExample:[plainCalculation(9000),plainCalculation(19000)],
-    audit:after.buildSearchAudit(newCards),browserVerification:'未実施・Computer Useが現在URLを確認できず停止',
+    audit:after.buildSearchAudit(newCards),browserVerification:'この監査はNodeによる同一データの計算・候補照合。実画面の別時点計測は data/exploration-browser-validation.json を参照し、定期取得の実証とは区別する。',
     newSourceAcquisitionCards:0,newlyAnalyzableCards:0};
   fs.writeFileSync(path.join(ROOT,'data/search-profit-consistency-audit.json'),JSON.stringify(report));
   console.log(JSON.stringify({catalog:report.catalog,before:report.before.final,after:report.after.final,limitsUnchanged:true,
