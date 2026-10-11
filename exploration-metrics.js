@@ -25,6 +25,18 @@
     const profit = economics.expectedSale - buy - fee;
     return {...economics,purchasePrice:buy,expectedProfit:profit,expectedRoi:profit / (buy + fee) * 100};
   }
+  function efficiency(economics, buy, fee, costs, returnDays, saleDays, payoutDays) {
+    const period = [returnDays,saleDays,payoutDays].every(finite) && returnDays > 0 && saleDays >= 0 && payoutDays >= 0 ? returnDays + saleDays + payoutDays : null;
+    const unavailable = {investment:null,profit:null,roi:null,days:finite(period) ? period : null,annual:null};
+    if (![buy,fee,costs,returnDays,saleDays,payoutDays].every(finite) || buy < 0 || fee < 0 || costs < 0
+      || returnDays <= 0 || saleDays < 0 || payoutDays < 0 || !finite(economics?.expectedSale)) return unavailable;
+    const investment = buy + fee + costs, days = period;
+    if (!(investment > 0 && days > 0) || !finite(investment) || !finite(days)) return unavailable;
+    // expectedSale already includes selling fees/deductions/extra costs. Do not subtract them twice.
+    const profit = economics.expectedSale - buy - fee, roi = profit / investment * 100;
+    const annual = roi * 365 / days;
+    return [profit,roi,annual].every(finite) ? {investment,profit,roi,days,annual} : unavailable;
+  }
   function coverage(summary, cardId, mode, selected, now = Date.now()) {
     const shops = Object.entries(summary?.shops || {}).filter(([id,s]) => mode === 'selected' ? selected.includes(id) : mode !== 'mail' || s.fulfilment !== 'store');
     let confirmed = 0, listed = 0, observed = 0, posted = 0;
@@ -43,5 +55,5 @@
       rate30:observed ? posted / observed * 100 : null,averageShops30:dates.size ? posted / dates.size : null,
       retrievalCoverage:shops.length ? observed / (shops.length * 30) * 100 : null};
   }
-  return {percent,inRange,offerPrice,meanSale,atPurchase,coverage};
+  return {percent,inRange,offerPrice,meanSale,atPurchase,efficiency,coverage};
 });

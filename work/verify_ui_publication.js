@@ -10,14 +10,14 @@ async function read(file) {
 }
 async function main() {
   const html = await read('index.html?verify=' + Date.now());
-  assert(html.includes('20261011-disclosure-v1') && html.includes('settings-disclosure.js') && html.includes('keyed-card-renderer.js') && html.includes('ui-data-codec.js') && html.includes('actualPurchaseMinInput'));
+  assert(html.includes('20261011-efficiency-v1') && html.includes('settings-disclosure.js') && html.includes('keyed-card-renderer.js') && html.includes('ui-data-codec.js') && html.includes('efficiencyMinInput'));
   const manifest = JSON.parse(await read('data/ui/manifest.json?verify=' + Date.now()));
   const expected = JSON.parse(fs.readFileSync(path.join(__dirname,'../data/ui/manifest.json'),'utf8'));
   assert.equal(manifest.revision, expected.revision, 'must verify the newly published revision');
   const verified = [];
   const disclosureScript = await read('settings-disclosure.js?verify=' + Date.now());
   assert.equal(disclosureScript.replace(/\r\n/g,'\n'), fs.readFileSync(path.join(__dirname,'../settings-disclosure.js'),'utf8').replace(/\r\n/g,'\n'));
-  for (const file of ['data/settings-disclosure-acquisition-audit.json','data/settings-disclosure-browser-validation.json']) {
+  for (const file of ['data/settings-disclosure-acquisition-audit.json','data/settings-disclosure-browser-validation.json','data/card-efficiency-audit.json','data/card-efficiency-browser-validation.json']) {
     const text = await read(file+'?verify='+Date.now());
     assert.equal(crypto.createHash('sha256').update(text.replace(/\r\n/g,'\n')).digest('hex'),manifest.hashes[file],file);
     verified.push(file);
@@ -52,6 +52,12 @@ async function main() {
   assert.equal(update.complete, false, 'partial data must not become all-complete');
   const performance=JSON.parse(await read('data/performance-guard.json?verify='+Date.now()));
   assert(performance.calculationValuesEqual);
+  const efficiency=JSON.parse(await read('data/card-efficiency-audit.json?verify='+Date.now()));
+  assert(efficiency.financialCalculationsUnchanged && efficiency.check.candidateIdsEqual);
+  for (const file of ['app.js','exploration-metrics.js']) {
+    const published=await read(file+'?verify='+Date.now());
+    assert.equal(published.replace(/\r\n/g,'\n'),fs.readFileSync(path.join(__dirname,'..',file),'utf8').replace(/\r\n/g,'\n'),file);
+  }
   if(process.argv.includes('--record-recovery')) {
     const commit=process.env.PUBLIC_COMMIT;
     assert(/^[a-f0-9]{40}$/.test(commit||''),'explicit verified publication commit required');

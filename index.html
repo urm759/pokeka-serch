@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20261011-disclosure-v1" />
+  <link rel="stylesheet" href="./styles.css?v=20261011-efficiency-v1" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -36,6 +36,18 @@
           <label class="control"><span>仕入れ余裕率 上限 %</span><input id="purchaseHeadroomMaxInput" type="number" step="0.1" placeholder="条件なし" /></label>
           <label class="check-control"><input id="purchaseBelowCurrentCapInput" type="checkbox" />現在買える状態A価格 ＜ 現相場の期待損益分岐上限</label>
           <p class="filter-explanation">余裕率＝（表示した損益分岐上限÷現在買える状態A価格−1）×100。利益率ではありません。同額0%（チェックは同額除外）。空欄は条件なし、0は有効。新鮮な在庫あり店舗価格だけを使い、参考相場・手入力は代用しません。PSA9日時未確認は参考警告を付けて比較しますが、プラスでも購入GOにはしません。計算材料不足・古い購入価格・在庫なしは比較不可です。</p>
+        </div>
+      </details>
+      <details class="advanced-filters efficiency-settings">
+        <summary><span>単体の期待資金効率</span><small>個人の総資金不要・購入GOとは別</small></summary>
+        <div class="controls controls-primary">
+          <label class="control"><span>単体・年換算資金効率 下限 %</span><input id="efficiencyMinInput" type="number" step="0.1" placeholder="条件なし" /><small>空欄＝無効、0＝非負。算出不可は0%にしません。</small></label>
+          <label class="control"><span>資金効率の買値</span><select id="efficiencyBuyInput"><option value="auto">実店舗状態A（明示的な現相場上限・手入力は継承）</option><option value="manual">手入力買値・仮定</option><option value="current-cap">現相場損益分岐上限で購入・仮定</option></select><small>現相場探索の手入力を継承します。購入価格未取得時に参考相場・安定重視上限へ代用しません。</small></label>
+          <label class="control"><span>手入力買値（円）</span><input id="efficiencyManualPriceInput" type="number" min="0" step="100" placeholder="未設定" /></label>
+          <label class="control"><span>資金効率の売値シナリオ</span><select id="efficiencyScenarioInput"><option value="current">現在出口相場が続く仮定</option><option value="central">中央予測（期間一致時のみ）</option><option value="stress">供給ストレス（期間一致時のみ）</option></select><small>現相場採算モード・損益分岐上限の仮定では現在相場に統一。保存した予測条件は削除しません。</small></label>
+          <label class="control"><span>売却待ち 日数</span><input id="efficiencySaleDaysInput" type="number" min="0" step="1" value="7" /></label>
+          <label class="control"><span>入金待ち 日数</span><input id="efficiencyPayoutDaysInput" type="number" min="0" step="1" value="3" /></label>
+          <p class="filter-explanation">期待利益÷（買値＋鑑定費＋諸費用＋該当交通費予備額）×100×365÷拘束日数。既存プランの返却日数には発送・返却7日を含むため再加算せず、売却待ち7日・入金待ち3日だけを追加します。利益には手取りで控除済みの手数料・査定減額・諸費用を再控除しません。PSA9等を含む期待値で、PSA10時利益とは別。単純年換算の参考値で年間利益や売却日数・損失回避の保証ではありません。個人資金を用いる判定用年換算条件・購入GO・上限は変更しません。</p>
         </div>
       </details>
       <details class="advanced-filters primary-settings">
@@ -115,7 +127,8 @@
             <option value="expectedProfit-desc">期待利益が高い順（選択した検索計算基準）</option>
             <option value="stressExpectedProfit-desc">安全側利益が高い順（仕入れ上限×供給ストレス）</option>
             <option value="stressExpectedRoi-desc">安全側利益率が高い順（仕入れ上限×供給ストレス）</option>
-            <option value="annualEfficiency-desc">年換算資金効率が高い順</option>
+            <option value="cardEfficiency-desc">単体・期待資金効率が高い順（表示と同じ買値・出口）</option>
+            <option value="annualEfficiency-desc">判定用の年換算効率が高い順（従来）</option>
             <option value="capitalShare-asc">資金占有率が低い順</option>
             <option value="combined30-desc">総合30日の動きが多い順</option>
             <option value="combined7-desc">総合7日の動きが多い順</option>
@@ -897,8 +910,8 @@
   <script src="./psa-plan-model.js?v=20261010-isolation-v1"></script>
   <script src="./keyed-card-renderer.js?v=20261010-v1"></script>
   <a class="return-to-filters" href="#searchConditions">検索条件へ</a>
-  <script src="./exploration-metrics.js?v=20261011-search-first-v1"></script>
+  <script src="./exploration-metrics.js?v=20261011-efficiency-v1"></script>
   <script src="./settings-disclosure.js?v=20261011-disclosure-v1"></script>
-  <script src="./app.js?v=20261011-search-first-v1"></script>
+  <script src="./app.js?v=20261011-efficiency-v1"></script>
 </body>
 </html>

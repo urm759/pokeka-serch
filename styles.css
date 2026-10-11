@@ -1649,3 +1649,8 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .psa10-period-detail table { width:100%; font-size:12px; border-collapse:collapse; }
 .psa10-period-detail td,.psa10-period-detail th { padding:6px; text-align:left; }
 .search-profit-summary { margin-top:8px; }
+.card-efficiency { border-top: 1px solid var(--line, #d8ddd8); padding-top: .55rem; }
+.card-efficiency > strong { font-size: .88rem; }
+.card-efficiency > div { display: flex; flex-wrap: wrap; gap: .3rem .85rem; margin: .25rem 0; font-size: .84rem; }
+.card-efficiency > small, .card-efficiency details small { display: block; line-height: 1.6; overflow-wrap: anywhere; }
+.card-efficiency details { margin-top: .3rem; font-size: .8rem; }

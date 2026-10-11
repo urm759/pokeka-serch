@@ -37,13 +37,19 @@ function plan({ cards, sourceId, catalog, candidateRows = {}, fixedIds = [], foc
   });
   const sorted = records.filter((row) => row.eligible).sort((a, b) => Number(b.due) - Number(a.due)
     || (Date.parse(a.nextDueAt) || 0) - (Date.parse(b.nextDueAt) || 0) || Number(b.priceRefreshReady) - Number(a.priceRefreshReady) || a.card.id.localeCompare(b.card.id));
-  const preferred = sorted.filter((row) => row.important), ordinary = sorted.filter((row) => !row.important);
+  const urgent = sorted.filter((row) => row.important && (row.fixedTarget || row.focus || row.priceRefreshReady || row.currentMarket));
+  const urgentIds = new Set(urgent.map(row=>row.card.id));
+  const preferred = sorted.filter((row) => row.important && !urgentIds.has(row.card.id)), ordinary = sorted.filter((row) => !row.important);
   const queue = [];
-  // Three priority requests followed by one ordinary request prevent starvation.
-  while (preferred.length || ordinary.length) {
-    queue.push(...preferred.splice(0, 3));
+  // Retain all targets: two critical, one other priority, one ordinary request.
+  // Each lane keeps overdue-first/deadline order; unused capacity crosses lanes.
+  while (urgent.length || preferred.length || ordinary.length) {
+    for (let slot=0;slot<3;slot++) {
+      const lane = slot < 2 ? urgent.length ? urgent : preferred : preferred.length ? preferred : urgent;
+      if (lane.length) queue.push(lane.shift());
+    }
     if (ordinary.length) queue.push(ordinary.shift());
-    else if (!preferred.length) break;
+    else if (!urgent.length && !preferred.length) break;
   }
   return { records, queue };
 }
@@ -87,6 +93,7 @@ function write(root = ROOT) {
     }
     sources[id] = { total: planned.records.length, priorityCards: important.length,
       fixedPriorityCards: important.filter(r => r.fixedTarget).length,
+      allocation: '期限順レーン：重点・固定鮮度群等2／他の優先1／通常1。全対象とアクセス間隔を維持',
       fixedPriorityRetainedOnly: important.filter(r => r.fixedTarget && !r.focus && !r.candidate).length,
       currentMarketTargets: important.filter(r => r.currentMarket).length,
       priceRefreshReady: important.filter(r => r.priceRefreshReady).length,
