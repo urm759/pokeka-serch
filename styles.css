@@ -1657,6 +1657,10 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .efficiency-notice { margin-top: .5rem; padding: .4rem .55rem; border-left: 3px solid #547360; background: #f2f6f3; font-size: .8rem; line-height: 1.5; overflow-wrap: anywhere; }
 .efficiency-reference { border-color: #a76b13; background: #fff7e5; }
 .efficiency-notice small { display: block; }
+.efficiency-settings .control-toggle { display: grid; grid-template-columns: 18px minmax(0,1fr); align-content: start; align-items: start; gap: .4rem; }
+.efficiency-settings .control-toggle input[type="checkbox"] { width: 18px; height: 18px; min-width: 18px; padding: 0; margin: 0; accent-color: var(--accent); }
+.efficiency-settings .control-toggle > span { margin: 0; }
+.efficiency-settings .control-toggle > small { grid-column: 1 / -1; margin: 0; }
 .efficiency-unavailable { border-color: #8c6058; background: #faf2ef; }
 .efficiency-summary { margin: .6rem 0; padding: .55rem; border: 1px solid var(--line); font-size: .85rem; }
 .efficiency-summary small { display: block; margin-top: .4rem; line-height: 1.6; overflow-wrap: anywhere; }
