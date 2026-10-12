@@ -22,8 +22,9 @@ function plan({ cards, sourceId, catalog, candidateRows = {}, fixedIds = [], foc
     const validTime = Number.isFinite(time) && time <= now;
     const hours = important ? config.importantHours || 6 : config.normalHours || 720;
     const due = validTime ? time + hours * 3600000 : 0;
-    const retry = Date.parse(previous.nextRetryAt);
-    const waiting = manualWait[card.id]?.url === url || previous.url === url && previous.failures >= (config.retryLimit || 3);
+    const budgetDeferred=/^(?:timeout: 通信前に時間予算を確認・保存して停止|時間予算・未取得カードから次回再開)$/.test(previous.error || '');
+    const retry = budgetDeferred ? NaN : Date.parse(previous.nextRetryAt);
+    const waiting = manualWait[card.id]?.url === url || !budgetDeferred && previous.url === url && previous.failures >= (config.retryLimit || 3);
     const recentlyChecked = important && validTime && now - time < 2 * 3600000;
     return { card, important, focus, candidate, fixedTarget, url, lastSuccessAt, lastAttemptAt: previous.lastAttemptAt || null,
       nextDueAt: due ? new Date(due).toISOString() : null, due: due <= now,
@@ -37,7 +38,8 @@ function plan({ cards, sourceId, catalog, candidateRows = {}, fixedIds = [], foc
   });
   const sorted = records.filter((row) => row.eligible).sort((a, b) => Number(b.due) - Number(a.due)
     || (Date.parse(a.nextDueAt) || 0) - (Date.parse(b.nextDueAt) || 0) || Number(b.priceRefreshReady) - Number(a.priceRefreshReady) || a.card.id.localeCompare(b.card.id));
-  const urgent = sorted.filter((row) => row.important && (row.fixedTarget || row.focus || row.priceRefreshReady || row.currentMarket));
+  // Broad exploration retains a priority slot but cannot starve fixed/focus maintenance.
+  const urgent = sorted.filter((row) => row.important && (row.fixedTarget || row.focus));
   const urgentIds = new Set(urgent.map(row=>row.card.id));
   const preferred = sorted.filter((row) => row.important && !urgentIds.has(row.card.id)), ordinary = sorted.filter((row) => !row.important);
   const queue = [];

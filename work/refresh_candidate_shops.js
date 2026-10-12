@@ -10,6 +10,14 @@ const read = (file, fallback = {}) => { try { return JSON.parse(fs.readFileSync(
 const write = (file, value) => require('./acquisition_retry').atomicWrite(path.join(ROOT, file), value, 0);
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const rarity = (name) => String(name || "").toUpperCase().match(/\b(MUR|BWR|SSR|CSR|CHR|SAR|UR|HR|SR|RRR|RR|AR)\b/)?.[1] || null;
+function budgetStop() {
+  const error=new Error('時間予算・未取得カードから次回再開');
+  error.code='SAFE_TIME_BUDGET';
+  return error;
+}
+function requestDelay(lastRequestAt, now, intervalMs) {
+  return Math.max(0,intervalMs-(now-lastRequestAt));
+}
 
 function exactIdentity(card, product) {
   const name = String(product.title || "").replace(/〔/g, "【").replace(/〕/g, "】");
@@ -68,6 +76,7 @@ async function main() {
   const completed = new Set(checkpoint.completedIds || []);
   const deadlineMode = process.env.CANDIDATE_SHOP_MODE === "deadline";
   const config = read("data/priority-price-config.json");
+  const accessIntervalMs=Math.max(1000,Number(config.intervalMs || 1200),Number(process.env.CANDIDATE_SHOP_INTERVAL_MS || 0));
   const deadlines = read("work/priority-price-checkpoint.json", { sources: {} });
   deadlines.sources ||= {};
   const sourceJobs = deadlines.sources[sourceId] ||= { jobs: {} };
@@ -87,14 +96,14 @@ async function main() {
   const start = Date.now();
   const run = { startedAt: new Date(start).toISOString(), status: "running", attemptedCount: 0, refreshedCount: 0,
     newAcquiredCount: 0, newLinkedCount: 0, changedCount: 0, failedCount: 0, httpRequests: 0,
-    proactiveAttempted:0, proactiveVerified:0, deadlineOrderVersion:"deadline-v2",
+    proactiveAttempted:0, proactiveVerified:0, deadlineOrderVersion:"deadline-v3-reserved-maintenance",
     candidateTargets: deadlineMode ? planned.records.length : candidates.length, previouslyCompleted: completed.size, records: [], stopReason: null,
     mode: deadlineMode ? "deadline-price-refresh" : "completion-backfill", cacheHits: 0, llmCalls: 0, codexCalls: 0 };
   const byUrl = new Map(catalog.map((entry) => [entry.detailUrl, entry]));
   const byId = new Map(catalog.map((entry) => [entry.cardId, entry]));
   const save = () => {
     run.endedAt = new Date().toISOString(); run.durationMs = Date.now() - start;
-    const done = new Set(run.records.map((record) => record.id));
+    const done = new Set(run.records.filter(record=>record.status!=='deferred').map((record) => record.id));
     run.nextId = deadlineMode ? batch.find((card) => !done.has(card.id))?.id || null : candidates.find((card) => !completed.has(card.id) && manualWait[card.id]?.url !== card[`${sourceId}Url`])?.id || null;
     run.remaining = deadlineMode ? batch.filter((card) => !done.has(card.id)).length : candidates.filter((card) => !completed.has(card.id)).length;
     run.manualWaitCount = Object.keys(manualWait).length;
@@ -117,8 +126,8 @@ async function main() {
       return executionResponses.get(url);
     }
     for (let retry = 0; retry < 3; retry += 1) {
-      if (Date.now() - start + 16000 > budget) throw new Error("timeout: 通信前に時間予算を確認・保存して停止");
-      await sleep(Math.max(0, Math.max(1000, Number(config.intervalMs || 1200)) - (Date.now() - lastRequestAt)));
+      if (Date.now() - start + 16000 > budget) throw budgetStop();
+      await sleep(requestDelay(lastRequestAt,Date.now(),accessIntervalMs));
       lastRequestAt = Date.now();
       run.httpRequests += 1;
       const previous = httpCache[url] || {};
@@ -147,7 +156,8 @@ async function main() {
     const plannedRecord = planned.records.find(row=>row.card.id===card.id);
     const record = { id: card.id, url, startedAt: new Date().toISOString(), status: "pending", error: null,
       proactive:plannedRecord?.proactive || false, deadlineAt:plannedRecord?.nextDueAt || null,
-      important: planned.records.find((row) => row.card.id === card.id)?.important || false };
+      important: plannedRecord?.important || false, fixedTarget:plannedRecord?.fixedTarget || false,
+      focus:plannedRecord?.focus || false };
     run.attemptedCount += 1;
     if (record.proactive) run.proactiveAttempted++;
     try {
@@ -191,6 +201,10 @@ async function main() {
       completed.add(card.id);
       run.lastSuccessAt = entry.observedAt;
     } catch (error) {
+      if (error.code==='SAFE_TIME_BUDGET') {
+        record.status='deferred';record.error=error.message;
+        run.stopReason=error.message;run.records.push(record);save();break;
+      }
       run.failedCount += 1; record.status = "failed"; record.error = error.message; record.httpStatus = error.status || null;
       run.stopReason = `${card.id}: ${error.message}`;
       // Protected access, identity ambiguity and format changes require a human, never a proxy fallback.
@@ -205,7 +219,8 @@ async function main() {
     if(record.proactive && record.status==='verified') run.proactiveVerified++;
     run.records.push(record); save();
     if (run.stopReason) break;
-    await sleep(Math.max(1000, Number(process.env.CANDIDATE_SHOP_INTERVAL_MS || 1200)));
+    // Every actual request passes through the shared start-to-start guard.
+    // A second per-card sleep would spend the same access budget twice.
   }
   run.status = run.status === "manual-wait" ? run.status : run.refreshedCount ? "partial" : run.stopReason ? "failed" : "no-progress";
   save();
@@ -244,4 +259,4 @@ function finalizeSaved(sourceId) {
   console.log(JSON.stringify({status:'saved-batch-recovered',refreshed:run.refreshedCount,newHttpRequests:0,sourceId}));
 }
 if (require.main === module) main().catch((error) => { console.error(error); process.exitCode = 1; });
-module.exports = { exactIdentity, shopifyQuote };
+module.exports = { exactIdentity, shopifyQuote, budgetStop, requestDelay };

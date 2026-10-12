@@ -34,6 +34,24 @@ let freshnessRenderTimer = null;
 let calculationCacheHit = false;
 let forceNextSearchCalculation = false;
 let lastSearchTiming = null;
+let renderMemo = null;
+let cardMarkupCache = null;
+function renderValue(card, key, calculate) {
+  if (!renderMemo) return calculate();
+  let values = renderMemo.get(card);
+  if (!values) renderMemo.set(card, values = new Map());
+  if (!values.has(key)) values.set(key, calculate());
+  return values.get(key);
+}
+function markupCacheFor(cards) {
+  const entries = Object.entries(state).filter(([key]) => key !== 'cardById');
+  const key = JSON.stringify(entries.filter(([,value]) => value == null || typeof value !== 'object'));
+  const refs = entries.filter(([,value]) => value != null && typeof value === 'object').map(([,value]) => value);
+  if (cardMarkupCache?.cards !== cards || cardMarkupCache.key !== key || refs.length !== cardMarkupCache.refs.length || refs.some((ref,i) => ref !== cardMarkupCache.refs[i])) {
+    cardMarkupCache = {cards,key,refs,rows:new WeakMap()};
+  }
+  return cardMarkupCache.rows;
+}
 let favoriteCalculationCache = null;
 let uiDataManifest = null;
 let uiDataInvalid = false;
@@ -3810,6 +3828,9 @@ function currentMarketView(card, reference = false) {
 }
 
 function searchProfitView(card, mode = state.purchaseMode, explicitBasis = null) {
+  return renderValue(card, `profit:${mode}:${explicitBasis}`, () => computeSearchProfitView(card,mode,explicitBasis));
+}
+function computeSearchProfitView(card, mode = state.purchaseMode, explicitBasis = null) {
   // Exploration uses the existing current-market economics, never the GO path.
   if (mode !== 'now' && (explicitBasis || state.profitSearchBasis) === 'current-cap') {
     const view = currentMarketView(card);
@@ -4029,6 +4050,9 @@ function buybackContinuityHtml(card) {
 }
 
 function presetQualifications(card) {
+  return renderValue(card, 'preset', () => computePresetQualifications(card));
+}
+function computePresetQualifications(card) {
   const catalogReady = state.catalogCompletion?.cards?.[card.id]?.s === "分析可能";
   const finalLimit = Number(card.buyLimits?.clean?.finalMaxPrice || 0);
   const ultraLimit = Number(card.buyLimits?.clean?.ultraLowRiskMaxPrice || 0);
@@ -4541,6 +4565,9 @@ function prepareCalculatedCards(cards) {
 }
 
 function cardSearchExclusions(card, {mode = state.purchaseMode,diagnostic=true,efficiency=true} = {}) {
+  return renderValue(card, `exclusions:${mode}:${diagnostic}:${efficiency}`, () => computeCardSearchExclusions(card,{mode,diagnostic,efficiency}));
+}
+function computeCardSearchExclusions(card, {mode = state.purchaseMode,diagnostic=true,efficiency=true} = {}) {
   const reasons = [];
   const currentMode = mode === "current-market";
   const normalizedQuery = normalize(state.q);
@@ -4760,6 +4787,12 @@ function currentMarketProfitPanel(view) {
 
 let commitCardRows;
 function render() {
+  // Scope search reuse to this synchronous render, including failure cleanup.
+  const previous = renderMemo;
+  renderMemo = new WeakMap();
+  try { return renderContent(); } finally { renderMemo = previous; }
+}
+function renderContent() {
   commitCardRows ||= window.KeyedCardRenderer.create();
   const renderStarted = performance.now();
   const normalizedQuery = normalize(state.q);
@@ -4950,10 +4983,16 @@ function render() {
   }
 
   state.cardById = Object.create(null);
+  const markupCache = markupCacheFor(calculated);
   const markupStarted = performance.now();
+  let reusedMarkup = 0;
   const cardRows = visibleCards.map((card) => {
     if (state.diagnosticSearch) card.searchDiagnosticReasons = cardSearchExclusions(card,{diagnostic:false});
     state.cardById[card.id] = card;
+    const variant = JSON.stringify([state.openCardDetails.has(card.id),state.favorites.has(card.id),
+      state.snkrUrlCache[card.id],state.actualResults[card.id],state.gradeObservations[card.id]]);
+    const cached = markupCache.get(card);
+    if (cached?.variant === variant) { reusedMarkup++; return cached.row; }
     const cardPriceText = Number.isFinite(card.price) ? `¥${fmt.format(card.price)}` : "未算出・価格確認待ち";
     const psa10NetText = Number.isFinite(card.psa10Net) ? `¥${fmt.format(Math.round(card.psa10Net))}` : "未算出";
     const profitText = Number.isFinite(card.profit) ? `¥${fmt.format(Math.round(card.profit))}` : "未算出";
@@ -5657,7 +5696,7 @@ function render() {
       ${currentExploration && currentTrial.purchasePrice == null ? `<p class="helper">購入価格未取得。手入力試算買値を設定すると利益を検証できます。</p>` : purchasePsa9RatioHtml(card, currentExploration ? currentTrial.purchasePrice : undefined, currentExploration ? {purchaseKind:currentTrial.purchaseKind} : {})}
       ${currentExploration ? `<div class="candidate-warning"><strong>仮定探索の注意：</strong>${escapeHtml([...(currentTrial.reasons || []),...(currentTrial.warnings || [])].join("／"))}／PSA10 ${state.exitPolicy === "marketplace" ? `フリマ手数料${state.saleFeeRate}%` : `買取減額${state.buybackDeductionRate}%（フリマ手数料を重複適用しない）`}・諸費用¥${fmt.format(state.saleExtraCost)}・鑑定費¥${fmt.format(state.fee)}。返却${state.lockDays}日まで現在相場が続く保証はありません。</div>` : ""}
       ${glanceWarning ? `<div class="candidate-warning ${dataQuality.manualReview ? "manual" : ""}"><strong>注意：</strong>${escapeHtml(glanceWarning)}</div>` : ""}`;
-    return { id: card.id, html: `
+    const row = { id: card.id, html: `
       <article class="row card ${state.purchaseMode === "snkr-raw" ? "snkr-raw-mode" : ""}" data-card-id="${card.id}">
         <a class="thumb" href="${buildTorecaCardUrl(card)}" target="_blank" rel="noreferrer" aria-label="みんトレで${name}を開く">
           <img src="${card.img}" alt="${name}" loading="lazy" />
@@ -5740,6 +5779,8 @@ function render() {
         </div>
       </article>
     ` };
+    markupCache.set(card,{variant,row});
+    return row;
   });
   const markupMs = performance.now() - markupStarted;
   const commitStarted = performance.now();
@@ -5765,7 +5806,7 @@ function render() {
   renderFavorites();
   const timing = document.getElementById("searchPerformance");
   lastSearchTiming = {calculationMs,domMs:performance.now()-renderStarted-calculationMs,cacheHit:calculationCacheHit,
-    markupMs,domCommitMs,changedCards:committed.changed.length,reusedCards:committed.reused};
+    markupMs,domCommitMs,reusedMarkup,changedCards:committed.changed.length,reusedCards:committed.reused};
   if (timing) timing.textContent = `条件処理：計算 ${calculationMs.toFixed(1)}ms${calculationCacheHit ? "（再利用・全件再計算なし）" : "（更新）"}／検索・DOM生成 ${lastSearchTiming.domMs.toFixed(1)}ms（カードHTML ${markupMs.toFixed(1)}ms／DOM差分 ${domCommitMs.toFixed(1)}ms、更新${committed.changed.length}・再利用${committed.reused}枚）。画面描画・通信時間は含みません。`;
   clearTimeout(freshnessRenderTimer);
   if (calculatedCardCache) freshnessRenderTimer = setTimeout(render, Math.max(1,calculatedCardCache.expires-Date.now()));

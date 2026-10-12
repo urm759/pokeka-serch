@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-11T23:54:16.077Z",
+  "generatedAt": "2026-10-12T01:16:29.009Z",
   "llmCalls": 0,
   "codexCalls": 0,
   "retryPolicy": {
@@ -27,7 +27,7 @@
     {
       "source": "psaOfficial",
       "label": "PSA公式・PC正規認証",
-      "remaining": 1243,
+      "remaining": 1244,
       "queueDefinition": "あとPSAだけで分析可能な国内カード。全PSA未取得とは別",
       "sourceState": "manual-wait",
       "failureScope": "source",
@@ -89,8 +89,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-11T23:53:54.627Z",
-        "to": "2026-10-11T23:54:13.976Z"
+        "from": "2026-10-12T01:04:10.802Z",
+        "to": "2026-10-12T01:16:26.460Z"
       },
       "sinceBaseline": {
         "newLinked": 3198,
@@ -234,8 +234,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-11T23:53:54.627Z",
-        "to": "2026-10-11T23:54:13.976Z"
+        "from": "2026-10-12T01:04:10.802Z",
+        "to": "2026-10-12T01:16:26.460Z"
       },
       "sinceBaseline": {
         "newLinked": 624,
@@ -565,8 +565,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-11T23:53:54.627Z",
-        "to": "2026-10-11T23:54:13.976Z"
+        "from": "2026-10-12T01:04:10.802Z",
+        "to": "2026-10-12T01:16:26.460Z"
       },
       "sinceBaseline": {
         "newLinked": 450,
@@ -579,11 +579,11 @@
     }
   ],
   "psaOnly": {
-    "count": 1243,
+    "count": 1244,
     "causes": {
       "個別セット確認待ち": 13,
       "仕様・URL曖昧": 375,
-      "認証・アクセス確認待ち": 193,
+      "認証・アクセス確認待ち": 194,
       "公式セットURL未登録": 662
     },
     "cards": [
@@ -5922,6 +5922,12 @@
         "cause": "認証・アクセス確認待ち"
       },
       {
+        "id": "pk-69846",
+        "setCode": "M1L",
+        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
+        "cause": "認証・アクセス確認待ち"
+      },
+      {
         "id": "pk-70073",
         "setCode": "M1S",
         "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
@@ -8051,7 +8057,7 @@
     "listed": 12506,
     "analyzable": 2055,
     "pending": 10451,
-    "oneAway": 1668
+    "oneAway": 1669
   },
   "newlyAnalyzable": 0,
   "note": "一時障害の再試行、個別URL隔離、取得元停止を区別。未取得をデータ不存在に変更しない。巡回完了と全項目取得・最新価格は別"

@@ -51,7 +51,15 @@ function compare(before, after) {
     out.commonCards++;
     out.newlyAnalyzable += Number(row.analysis && !old.analysis); out.lostAnalyzable += Number(!row.analysis && old.analysis);
     const sharedKeys=before.fieldKeys || legacyFieldKeys;
-    const filled = row.fields.filter((f) => sharedKeys.includes(f) && !old.fields.includes(f)); out.filledItems += filled.length; out.filledCards += Number(filled.length > 0);
+    const recovered = row.fields.filter((f) => sharedKeys.includes(f) && !old.fields.includes(f));
+    // Evidence availability can change at a date boundary without acquisition.
+    // It is not a newly filled price/POP item, even once the field is tracked.
+    const filled = recovered.filter(f=>!['psa9Evidence','buybackExitEvidence'].includes(f));
+    out.filledItems += filled.length; out.filledCards += Number(filled.length > 0);
+    for (const field of recovered.filter(f=>!filled.includes(f))) {
+      out.referenceEvidenceRecovered ||= {};
+      out.referenceEvidenceRecovered[field]=(out.referenceEvidenceRecovered[field]||0)+1;
+    }
     for (const s of [...shops, "psaOfficial", "pokedata"]) {
       const a = row.sources[s] || {}, b = old.sources[s] || {};
       out.sources[s] ||= { newLinked: 0, validAdded: 0, validLost: 0, usableNet: 0, freshnessRecovered: 0 };

@@ -1,0 +1,35 @@
+const fs=require('node:fs'),assert=require('node:assert/strict');
+const {load}=require('./audit_search_profit_consistency');
+const source=fs.readFileSync('app.js','utf8');
+const at=new Date().toISOString();
+const api=load(source,at);
+const scoped=load(source.replace('let renderMemo = null;','let renderMemo = new WeakMap();'),at);
+const renderModule=source.slice(source.indexOf('let renderMemo = null;'),source.indexOf('let favoriteCalculationCache'));
+const state={q:'',fee:100,favorites:new Set(),openCardDetails:new Set(),cardById:{},prices:{}};
+const helpers=new Function('state',renderModule+';return {begin(){renderMemo=new WeakMap()},end(){renderMemo=null},renderValue,markupCacheFor};')(state);
+const card={},cards=[card];let calls=0;
+helpers.begin();
+assert.equal(helpers.renderValue(card,'same',()=>++calls),1);
+assert.equal(helpers.renderValue(card,'same',()=>++calls),1);
+assert.equal(helpers.renderValue(card,'different',()=>++calls),2);
+helpers.end();assert.equal(helpers.renderValue(card,'same',()=>++calls),3,'no cross-render search result reuse');
+const cache=helpers.markupCacheFor(cards);cache.set(card,{html:'warning'});
+state.cardById={};assert.strictEqual(helpers.markupCacheFor(cards),cache,'render lookup replacement is not data change');
+state.q='changed';assert.notStrictEqual(helpers.markupCacheFor(cards),cache,'search/diagnostic labels invalidate markup');
+let next=helpers.markupCacheFor(cards);state.prices={};assert.notStrictEqual(helpers.markupCacheFor(cards),next,'source reference invalidates');
+next=helpers.markupCacheFor(cards);assert.notStrictEqual(helpers.markupCacheFor(cards.slice()),next,'freshness/calculation rebuild invalidates');
+const sample=api.prepareCalculatedCards(api.state.cards.slice(0,120));
+const memoSample=scoped.prepareCalculatedCards(scoped.state.cards.slice(0,120));
+for(let i=0;i<sample.length;i++) {
+  const c=sample[i],m=memoSample[i];
+  assert.equal(JSON.stringify(api.cardSearchExclusions(c)),JSON.stringify(scoped.cardSearchExclusions(m)));
+  assert.equal(JSON.stringify(api.searchProfitView(c)),JSON.stringify(scoped.searchProfitView(m)));
+  assert.strictEqual(scoped.cardSearchExclusions(m),scoped.cardSearchExclusions(m),'same search evaluation reused');
+  assert.strictEqual(scoped.searchProfitView(m),scoped.searchProfitView(m),'same profit evaluation reused');
+  assert.strictEqual(scoped.presetQualifications(m),scoped.presetQualifications(m),'same preset evaluation reused');
+  assert.notStrictEqual(scoped.cardSearchExclusions(m,{efficiency:false}),scoped.cardSearchExclusions(m),'different evaluation options are isolated');
+}
+assert.match(source,/finally \{ renderMemo = previous; \}/);
+assert.match(source,/state.openCardDetails.has\(card.id\),state.favorites.has\(card.id\)/);
+assert.match(source,/reusedMarkup\+\+/);
+console.log('PASS render-scoped reuse, markup invalidation, per-card mutable state and production financial results');

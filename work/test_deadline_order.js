@@ -11,9 +11,15 @@ const selected=plan(args).queue;
 assert.deepEqual(selected.map(r=>r.card.id),['overdue','z-early','a-late','normal']);
 assert.deepEqual(selected.slice(0,2).map(r=>r.card.id),['overdue','z-early'],'insufficient budget must defer later deadlines');
 assert.equal(selected.some(r=>r.card.id==='manual'||r.card.id==='retry'),false);
+assert(plan({...args,jobs:{...args.jobs,overdue:{url:cards[2].hareruya2Url,failures:3,error:'timeout: 通信前に時間予算を確認・保存して停止',nextRetryAt:new Date(now+3600000).toISOString()}}}).queue.some(r=>r.card.id==='overdue'),
+  'a recorded pre-request budget deferral is not a network failure or permanent manual hold');
 const lanes=plan({...args,fixedIds:['z-early','a-late']}).queue;
 assert.deepEqual(lanes.map(r=>r.card.id),['z-early','a-late','overdue','normal'],'critical lane must not be starved by broad historical backlog; all lanes retained');
 assert.deepEqual(lanes.slice(0,2).map(r=>r.card.id),['z-early','a-late'],'same lane stays deadline-first');
+const broad = plan({...args,fixedIds:['z-early','a-late'],candidateRows:Object.fromEntries(cards.filter(c=>c.id!=='normal').map(c=>[c.id,{currentMarket:true,priceRefreshReady:true}]))});
+assert.deepEqual(broad.queue.slice(0,4).map(r=>r.card.id),['z-early','a-late','overdue','normal'],
+  'old broad-exploration prices must not take the fixed maintenance reservations');
+assert.equal(broad.queue.length,selected.length,'reserving maintenance slots must not drop other candidates');
 assert.equal(plan({...args,now:now+2*60000}).queue.find(r=>r.card.id==='retry')?.status,'次回完了前に期限切れ・先回り待ち');
 const weak=estimate({importantCount:300,eligibleCount:150,verifiedCount:20,durationMs:360000});
 assert.equal(weak.requiredPerRun,100);assert.equal(weak.availablePerRun,15);assert.equal(weak.deficitPerRun,85);assert.equal(weak.sustainable,false);

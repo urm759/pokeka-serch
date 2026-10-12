@@ -41,3 +41,4 @@ assert.match(app,/committed.changed.flatMap/);
 assert.match(app,/changedCards:committed.changed.length/);
 assert.doesNotMatch(app,/els.grid.innerHTML = visibleCards/);
 console.log('keyed DOM identity, warnings, detail isolation, fixed cohort deadlines and field-specific routing: passed');
+require('./test_render_reuse');
