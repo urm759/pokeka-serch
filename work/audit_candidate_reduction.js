@@ -49,6 +49,8 @@ function build(){
   const current=snapshot({source,at});
   const saved=read('work/candidate-reduction-saved-extras.json');
   const savedUrl=extraUrl(saved),overlay=snapshot({source,at,url:savedUrl});
+  const latestSaved=read('work/candidate-reduction-saved-extras-latest.json');
+  const latestOverlay=latestSaved?snapshot({source,at,url:extraUrl(latestSaved)}):null;
   const previous=unpack(read('work/candidate-search-last.json'));
   const historical=process.argv.includes('--historical');
   const priorReport=read('data/candidate-reduction-audit.json');
@@ -75,6 +77,9 @@ function build(){
   const report={version:1,at,referenceUrlHash:digest(specifiedUrl),counts:current.counts,
     savedExtraConditionComparison:{capturedAt:saved?.observedAt||null,browserObservedCount:saved?.count??null,
       inputs:saved?.inputs||{},counts:overlay.counts,...profileDiff},comparisons,daily,incomparable,
+    latestSavedExtraConditionComparison:latestOverlay?{capturedAt:latestSaved.observedAt,browserObservedCount:latestSaved.count,
+      inputs:latestSaved.inputs,counts:latestOverlay.counts,...model.compare(current,latestOverlay),
+      sinceInitialCapture:model.compare(overlay,latestOverlay)}:null,
     definitions:'URLのみと保存追加条件は別。重複理由を合算して離脱枚数にしない。価格待ち・期間保留は購入GOではない。6時間更新目標と購入価格48時間有効期限は別。',
     llmCalls:0,codexCalls:0};
   atomicWrite(path.join(ROOT,'data/candidate-reduction-audit.json'),report);
