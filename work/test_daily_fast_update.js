@@ -25,6 +25,7 @@ assert(daily.includes('codexCalls: 0'));
 assert(daily.includes('if (!sourceMetrics.changed)'));
 assert(fastWorkflow.includes('30 19 * * *'));
 assert(fastWorkflow.includes('0 8 * * *'));
+assert(fastWorkflow.includes('git add work/candidate-cohort-current.json'), 'derived candidate cohort must be saved before publication merge');
 assert(fastWorkflow.includes("github.event.schedule == '30 19 * * *'"));
 assert(!backfillWorkflow.includes('update_yuyutei_torecacamp.js'), "05:30はPokeDATA専用");
 assert(backfillWorkflow.includes('run_pokedata_backfill.js'));
