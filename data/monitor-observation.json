@@ -1,26 +1,26 @@
 {
   "version": 1,
   "status": "observed",
-  "lastAttemptAt": "2026-10-12T17:34:54.351Z",
-  "runId": "38284982564",
-  "url": "https://github.com/urm759/pokeka-serch/actions/runs/38284982564",
+  "lastAttemptAt": "2026-10-12T23:14:55.601Z",
+  "runId": "38320952893",
+  "url": "https://github.com/urm759/pokeka-serch/actions/runs/38320952893",
   "llmCalls": 0,
   "codexCalls": 0,
-  "newIssueCount": 0,
+  "newIssueCount": 2,
   "unpublishedData": [
     {
-      "runId": 38029488008,
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38029488008",
-      "artifactId": 11661193693,
-      "name": "priority-price-recovery-38029488008-1",
-      "bytes": 28868821,
+      "runId": 38320075163,
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38320075163",
+      "artifactId": 11778752929,
+      "name": "priority-price-recovery-38320075163-1",
+      "bytes": 41619970,
       "status": "退避あり・未検証／公開照合待ち"
     }
   ],
   "lastMonitorRun": {
-    "id": 38272415489,
+    "id": 38284982564,
     "conclusion": "success",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/38272415489"
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/38284982564"
   },
   "freshness": {
     "baselineAt": "2026-10-03T23:15:30.935Z",
@@ -41,42 +41,42 @@
           "missingFromCurrent": 0
         },
         "latest": {
-          "at": "2026-10-12T16:43:18.877Z",
+          "at": "2026-10-12T23:11:05.678Z",
           "cohort": 203,
           "fresh6h": 0,
           "fresh6hPct": 0,
           "unconfirmed": 0,
-          "maxOverdueHours": 1066.7219102777779,
+          "maxOverdueHours": 1073.1849105555555,
           "autoWait": 0,
           "manualWait": 0,
           "accessStopped": 203,
-          "added": 153,
+          "added": 155,
           "missingFromCurrent": 0,
           "aggregationVersion": 2,
           "outsidePriorityStale": 0
         },
         "previous": {
-          "at": "2026-10-12T16:02:48.790Z",
+          "at": "2026-10-12T23:10:28.950Z",
           "cohort": 203,
           "fresh6h": 0,
           "fresh6hPct": 0,
           "unconfirmed": 0,
-          "maxOverdueHours": 1066.046886111111,
+          "maxOverdueHours": 1073.1747083333332,
           "autoWait": 0,
           "manualWait": 0,
           "accessStopped": 203,
-          "added": 153,
+          "added": 154,
           "missingFromCurrent": 0,
           "aggregationVersion": 2,
           "outsidePriorityStale": 0
         },
         "intervalMinimum": {
-          "from": "2026-10-12T16:02:48.790Z",
-          "to": "2026-10-12T16:43:18.877Z",
+          "from": "2026-10-12T23:10:28.950Z",
+          "to": "2026-10-12T23:11:05.678Z",
           "fresh": 0,
           "total": 203,
           "minimumFreshnessPct": 0,
-          "maxOverdueHours": 1066.7219102777779,
+          "maxOverdueHours": 1073.1849105555555,
           "method": "前回確認値を次の観測直前まで進めた保守的な最低鮮度。区間内の未観測更新は含まない"
         }
       },
@@ -95,28 +95,28 @@
           "missingFromCurrent": 0
         },
         "latest": {
-          "at": "2026-10-12T16:43:18.877Z",
+          "at": "2026-10-12T23:11:05.678Z",
           "cohort": 192,
-          "fresh6h": 94,
-          "fresh6hPct": 48.95833333333333,
+          "fresh6h": 121,
+          "fresh6hPct": 63.020833333333336,
           "unconfirmed": 0,
-          "maxOverdueHours": 898.7219102777777,
-          "autoWait": 90,
+          "maxOverdueHours": 905.1849105555556,
+          "autoWait": 63,
           "manualWait": 8,
           "accessStopped": 0,
-          "added": 149,
+          "added": 151,
           "missingFromCurrent": 0,
           "aggregationVersion": 2,
           "outsidePriorityStale": 0
         },
         "previous": {
-          "at": "2026-10-12T16:02:48.790Z",
+          "at": "2026-10-12T23:10:28.950Z",
           "cohort": 192,
-          "fresh6h": 109,
-          "fresh6hPct": 56.770833333333336,
+          "fresh6h": 121,
+          "fresh6hPct": 63.020833333333336,
           "unconfirmed": 0,
-          "maxOverdueHours": 898.0468861111111,
-          "autoWait": 75,
+          "maxOverdueHours": 905.1747083333333,
+          "autoWait": 63,
           "manualWait": 8,
           "accessStopped": 0,
           "added": 149,
@@ -125,12 +125,12 @@
           "outsidePriorityStale": 0
         },
         "intervalMinimum": {
-          "from": "2026-10-12T16:02:48.790Z",
-          "to": "2026-10-12T16:43:18.877Z",
-          "fresh": 94,
+          "from": "2026-10-12T23:10:28.950Z",
+          "to": "2026-10-12T23:11:05.678Z",
+          "fresh": 121,
           "total": 192,
-          "minimumFreshnessPct": 48.95833333333333,
-          "maxOverdueHours": 898.7219102777777,
+          "minimumFreshnessPct": 63.020833333333336,
+          "maxOverdueHours": 905.1849105555556,
           "method": "前回確認値を次の観測直前まで進めた保守的な最低鮮度。区間内の未観測更新は含まない"
         }
       },
@@ -149,7 +149,22 @@
           "missingFromCurrent": 0
         },
         "latest": {
-          "at": "2026-10-12T16:43:18.877Z",
+          "at": "2026-10-12T23:11:05.678Z",
+          "cohort": 233,
+          "fresh6h": 230,
+          "fresh6hPct": 98.71244635193133,
+          "unconfirmed": 3,
+          "maxOverdueHours": 0,
+          "autoWait": 3,
+          "manualWait": 0,
+          "accessStopped": 0,
+          "added": 193,
+          "missingFromCurrent": 46,
+          "aggregationVersion": 2,
+          "outsidePriorityStale": 3
+        },
+        "previous": {
+          "at": "2026-10-12T23:10:28.950Z",
           "cohort": 233,
           "fresh6h": 230,
           "fresh6hPct": 98.71244635193133,
@@ -163,24 +178,9 @@
           "aggregationVersion": 2,
           "outsidePriorityStale": 3
         },
-        "previous": {
-          "at": "2026-10-12T16:02:48.790Z",
-          "cohort": 233,
-          "fresh6h": 230,
-          "fresh6hPct": 98.71244635193133,
-          "unconfirmed": 3,
-          "maxOverdueHours": 0,
-          "autoWait": 3,
-          "manualWait": 0,
-          "accessStopped": 0,
-          "added": 187,
-          "missingFromCurrent": 46,
-          "aggregationVersion": 2,
-          "outsidePriorityStale": 3
-        },
         "intervalMinimum": {
-          "from": "2026-10-12T16:02:48.790Z",
-          "to": "2026-10-12T16:43:18.877Z",
+          "from": "2026-10-12T23:10:28.950Z",
+          "to": "2026-10-12T23:11:05.678Z",
           "fresh": 230,
           "total": 233,
           "minimumFreshnessPct": 98.71244635193133,
@@ -203,7 +203,22 @@
           "missingFromCurrent": 0
         },
         "latest": {
-          "at": "2026-10-12T16:43:18.877Z",
+          "at": "2026-10-12T23:11:05.678Z",
+          "cohort": 233,
+          "fresh6h": 176,
+          "fresh6hPct": 75.53648068669528,
+          "unconfirmed": 57,
+          "maxOverdueHours": 0,
+          "autoWait": 57,
+          "manualWait": 0,
+          "accessStopped": 0,
+          "added": 193,
+          "missingFromCurrent": 46,
+          "aggregationVersion": 2,
+          "outsidePriorityStale": 12
+        },
+        "previous": {
+          "at": "2026-10-12T23:10:28.950Z",
           "cohort": 233,
           "fresh6h": 176,
           "fresh6hPct": 75.53648068669528,
@@ -217,24 +232,9 @@
           "aggregationVersion": 2,
           "outsidePriorityStale": 12
         },
-        "previous": {
-          "at": "2026-10-12T16:02:48.790Z",
-          "cohort": 233,
-          "fresh6h": 176,
-          "fresh6hPct": 75.53648068669528,
-          "unconfirmed": 57,
-          "maxOverdueHours": 0,
-          "autoWait": 57,
-          "manualWait": 0,
-          "accessStopped": 0,
-          "added": 187,
-          "missingFromCurrent": 46,
-          "aggregationVersion": 2,
-          "outsidePriorityStale": 12
-        },
         "intervalMinimum": {
-          "from": "2026-10-12T16:02:48.790Z",
-          "to": "2026-10-12T16:43:18.877Z",
+          "from": "2026-10-12T23:10:28.950Z",
+          "to": "2026-10-12T23:11:05.678Z",
           "fresh": 176,
           "total": 233,
           "minimumFreshnessPct": 75.53648068669528,
@@ -245,5 +245,5 @@
     }
   },
   "publicationStatus": "監視保存済み・公開工程は別",
-  "lastSuccessAt": "2026-10-12T17:34:54.351Z"
+  "lastSuccessAt": "2026-10-12T23:14:55.601Z"
 }
