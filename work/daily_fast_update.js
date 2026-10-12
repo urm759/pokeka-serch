@@ -55,12 +55,15 @@ function main() {
   if (!sourceMetrics) throw new Error("差分取得メトリクスを読み取れませんでした");
   const sourceEndedAt = new Date().toISOString();
   const currentCatalog = JSON.parse(fs.readFileSync(path.join(ROOT, "data", "pokemon-cards.json"), "utf8").replace(/^\uFEFF/, ""));
+  if (!Array.isArray(currentCatalog) || !currentCatalog.length) throw new Error('保存済みカタログが空または不正です。公開を停止します');
+  const acquiredPrices = Number(sourceMetrics.processedCards || 0);
   recordSource("toreca", {
     lastAttemptAt: startedIso, startedAt: startedIso, endedAt: sourceEndedAt,
-    durationMs: Date.parse(sourceEndedAt) - startedAt, status: "success", lastSuccessAt: sourceEndedAt,
-    acquiredCount: Array.isArray(currentCatalog) ? currentCatalog.length : Number(sourceMetrics.processedCards || 0), updatedCount: Number(sourceMetrics.changedCards || 0),
+    durationMs: Date.parse(sourceEndedAt) - startedAt, status: acquiredPrices > 0 ? "success" : "no-progress",
+    ...(acquiredPrices > 0 ? {lastSuccessAt:sourceEndedAt} : {}),
+    acquiredCount: acquiredPrices, updatedCount: Number(sourceMetrics.changedCards || 0),
     fetchFailureCount: Number(sourceMetrics.fetchFailures || 0),
-    sourceState: sourceMetrics.changed ? "外部取得成功・変更カードを差分更新" : "外部取得成功・変更なし",
+    sourceState: acquiredPrices === 0 ? "ページキャッシュ確認のみ・価格未再確認（最終価格成功日時を保持）" : sourceMetrics.changed ? "外部取得成功・変更カードを差分更新" : "外部取得成功・変更なし",
   });
   if (!sourceMetrics.changed) {
     // An unchanged real payload can still add today's observation; it never changes financial coefficients.

@@ -13,6 +13,8 @@ const deepResolveWorkflow = fs.readFileSync(path.join(ROOT, ".github", "workflow
 const fullWorkflow = fs.readFileSync(path.join(ROOT, ".github", "workflows", "refresh-all-site-data.yml"), "utf8");
 
 assert(update.includes('response.status === 304'));
+assert.match(fs.readFileSync('work/daily_fast_update.js','utf8'),/acquiredCount: acquiredPrices/,'HTML gate must not report the whole saved catalog as newly confirmed prices');
+assert.match(fs.readFileSync('work/daily_fast_update.js','utf8'),/acquiredPrices > 0 \? \{lastSuccessAt:sourceEndedAt\} : \{\}/,'zero price confirmations preserve the previous success timestamp');
 assert(update.includes('content hash unchanged'));
 assert(update.includes('FAST_DEEP_SCAN === "1"'));
 assert(update.includes('みんトレ掲載数急減'));
@@ -34,5 +36,18 @@ assert(safeBackfillWorkflow.includes('0 17 * * *') && safeBackfillWorkflow.inclu
 assert(!deepResolveWorkflow.includes('update_yuyutei_torecacamp.js'), "09:00に店舗を重複巡回しない");
 assert(!fullWorkflow.includes('schedule:'), "巨大な全件更新は日次スケジュールから外す");
 assert(!/openai|anthropic|gemini|llm/i.test(fastWorkflow), "高速更新にLLMを含めない");
+
+const os=require('node:os'),fixture=fs.mkdtempSync(path.join(os.tmpdir(),'price-gate-success-'));
+try {
+  fs.mkdirSync(path.join(fixture,'work'));
+  const {updateRun}=require('./source_observability');
+  updateRun('toreca',{status:'success',acquiredCount:10,lastSuccessAt:'2026-10-12T00:00:00Z'},fixture);
+  const row=updateRun('toreca',{status:'no-progress',acquiredCount:0,lastAttemptAt:'2026-10-13T00:00:00Z'},fixture);
+  assert.equal(row.lastSuccessAt,'2026-10-12T00:00:00Z');assert.equal(row.acquiredCount,0);
+  assert.equal(updateRun('toreca',{status:'success',acquiredCount:10,lastSuccessAt:'2026-10-13T01:00:00Z'},fixture).lastSuccessAt,'2026-10-13T01:00:00Z');
+} finally {
+  assert.equal(path.dirname(fixture),path.resolve(os.tmpdir()));assert(path.basename(fixture).startsWith('price-gate-success-'));
+  fs.rmSync(fixture,{recursive:true,force:true});
+}
 
 console.log("daily fast update separation tests passed");
