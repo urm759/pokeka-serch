@@ -1,0 +1,478 @@
+{
+  "version": 1,
+  "at": "2026-10-12T11:40:00Z",
+  "baseCommit": "2e38afc4",
+  "scope": "同じ最新データ・指定URL・4候補・評価時刻をlocalhostだけ固定。各3回。同一PCの390px幅はスマホ実機ではない。",
+  "runs": [
+    {
+      "variant": "before",
+      "size": "normal",
+      "width": 1440,
+      "loadedCards": 2080,
+      "valuesAndIdsUnchanged": true,
+      "dataRevision": "caf2059270d61068f1dbc8b5c5439bb44b00bfc469c63dbf30959192b2ed6c8d",
+      "conditionHash": "bee738d627146781cab51e18653d7ec8c2cfc321feac5f180e5d764182601943",
+      "rows": [
+        {
+          "kind": "全件再計算",
+          "calculationMs": 634.4000000953674,
+          "domMs": 258.3999996185303,
+          "cacheHit": false,
+          "markupMs": 5,
+          "domCommitMs": 0.09999990463256836,
+          "reusedMarkup": 0,
+          "changedCards": 0,
+          "reusedCards": 4,
+          "frameCompletionMs": 978.5
+        },
+        {
+          "kind": "全件再計算",
+          "calculationMs": 579.3000001907349,
+          "domMs": 255.19999980926514,
+          "cacheHit": false,
+          "markupMs": 5.199999809265137,
+          "domCommitMs": 0.09999990463256836,
+          "reusedMarkup": 0,
+          "changedCards": 0,
+          "reusedCards": 4,
+          "frameCompletionMs": 916.2999997138977
+        },
+        {
+          "kind": "全件再計算",
+          "calculationMs": 576.5,
+          "domMs": 275.80000019073486,
+          "cacheHit": false,
+          "markupMs": 8.200000286102295,
+          "domCommitMs": 0.09999990463256836,
+          "reusedMarkup": 0,
+          "changedCards": 0,
+          "reusedCards": 4,
+          "frameCompletionMs": 933.3000001907349
+        },
+        {
+          "kind": "計算結果再利用",
+          "calculationMs": 0.09999990463256836,
+          "domMs": 165.90000009536743,
+          "cacheHit": true,
+          "markupMs": 0,
+          "domCommitMs": 0,
+          "reusedMarkup": 4,
+          "changedCards": 0,
+          "reusedCards": 4,
+          "frameCompletionMs": 250.09999990463257
+        },
+        {
+          "kind": "計算結果再利用",
+          "calculationMs": 0.09999990463256836,
+          "domMs": 147.2000002861023,
+          "cacheHit": true,
+          "markupMs": 0,
+          "domCommitMs": 0,
+          "reusedMarkup": 4,
+          "changedCards": 0,
+          "reusedCards": 4,
+          "frameCompletionMs": 1200.0999999046326
+        },
+        {
+          "kind": "計算結果再利用",
+          "calculationMs": 0.20000028610229492,
+          "domMs": 144.69999980926514,
+          "cacheHit": true,
+          "markupMs": 0,
+          "domCommitMs": 0,
+          "reusedMarkup": 4,
+          "changedCards": 0,
+          "reusedCards": 4,
+          "frameCompletionMs": 749.9000000953674
+        }
+      ],
+      "detailRows": [
+        {
+          "generatedMs": 155.40000009536743,
+          "frameCompletionMs": 1857.8000001907349,
+          "elements": 1219
+        },
+        {
+          "generatedMs": 152.59999990463257,
+          "frameCompletionMs": 1597.3999996185303,
+          "elements": 1219
+        },
+        {
+          "generatedMs": 155.40000009536743,
+          "frameCompletionMs": 378.30000019073486,
+          "elements": 1219
+        }
+      ],
+      "measured": {
+        "fullCalculationMs": 579.3000001907349,
+        "renderMs": 147.2000002861023,
+        "detailGenerationMs": 155.40000009536743
+      },
+      "comparison": [],
+      "comparisonState": "同条件の前回実測なし",
+      "scope": "実DOM生成と2フレーム到達。通信・端末実機・描画完了保証とは別。設定/安全条件を変更しない"
+    },
+    {
+      "variant": "after",
+      "size": "normal",
+      "width": 1440,
+      "loadedCards": 2080,
+      "valuesAndIdsUnchanged": true,
+      "dataRevision": "caf2059270d61068f1dbc8b5c5439bb44b00bfc469c63dbf30959192b2ed6c8d",
+      "conditionHash": "bee738d627146781cab51e18653d7ec8c2cfc321feac5f180e5d764182601943",
+      "rows": [
+        {
+          "kind": "全件再計算",
+          "calculationMs": 654.6999998092651,
+          "domMs": 196.90000009536743,
+          "cacheHit": false,
+          "markupMs": 4.900000095367432,
+          "domCommitMs": 0.09999990463256836,
+          "reusedMarkup": 0,
+          "changedCards": 0,
+          "reusedCards": 4,
+          "frameCompletionMs": 927.2999997138977
+        },
+        {
+          "kind": "全件再計算",
+          "calculationMs": 618.3000001907349,
+          "domMs": 274.19999980926514,
+          "cacheHit": false,
+          "markupMs": 7.900000095367432,
+          "domCommitMs": 0.09999990463256836,
+          "reusedMarkup": 0,
+          "changedCards": 0,
+          "reusedCards": 4,
+          "frameCompletionMs": 999.9000000953674
+        },
+        {
+          "kind": "全件再計算",
+          "calculationMs": 608.7000002861023,
+          "domMs": 241.89999961853027,
+          "cacheHit": false,
+          "markupMs": 8.400000095367432,
+          "domCommitMs": 0.09999990463256836,
+          "reusedMarkup": 0,
+          "changedCards": 0,
+          "reusedCards": 4,
+          "frameCompletionMs": 949.9000000953674
+        },
+        {
+          "kind": "計算結果再利用",
+          "calculationMs": 0.19999980926513672,
+          "domMs": 104.40000009536743,
+          "cacheHit": true,
+          "markupMs": 0.09999990463256836,
+          "domCommitMs": 0,
+          "reusedMarkup": 4,
+          "changedCards": 0,
+          "reusedCards": 4,
+          "frameCompletionMs": 200.09999990463257
+        },
+        {
+          "kind": "計算結果再利用",
+          "calculationMs": 0.20000028610229492,
+          "domMs": 96.7999997138977,
+          "cacheHit": true,
+          "markupMs": 0,
+          "domCommitMs": 0,
+          "reusedMarkup": 4,
+          "changedCards": 0,
+          "reusedCards": 4,
+          "frameCompletionMs": 1183.3000001907349
+        },
+        {
+          "kind": "計算結果再利用",
+          "calculationMs": 0.19999980926513672,
+          "domMs": 94.2000002861023,
+          "cacheHit": true,
+          "markupMs": 0.09999990463256836,
+          "domCommitMs": 0,
+          "reusedMarkup": 4,
+          "changedCards": 0,
+          "reusedCards": 4,
+          "frameCompletionMs": 766.5999999046326
+        }
+      ],
+      "detailRows": [
+        {
+          "generatedMs": 119.2000002861023,
+          "frameCompletionMs": 1919.0999999046326,
+          "elements": 1219
+        },
+        {
+          "generatedMs": 112.30000019073486,
+          "frameCompletionMs": 1647.8000001907349,
+          "elements": 1219
+        },
+        {
+          "generatedMs": 105.7999997138977,
+          "frameCompletionMs": 414.59999990463257,
+          "elements": 1219
+        }
+      ],
+      "measured": {
+        "fullCalculationMs": 618.3000001907349,
+        "renderMs": 96.7999997138977,
+        "detailGenerationMs": 112.30000019073486
+      },
+      "comparison": [
+        {
+          "metric": "fullCalculationMs",
+          "before": 612.7000002861023,
+          "after": 618.3000001907349,
+          "warning": false
+        },
+        {
+          "metric": "renderMs",
+          "before": 154.40000009536743,
+          "after": 96.7999997138977,
+          "warning": false
+        },
+        {
+          "metric": "detailGenerationMs",
+          "before": 155.80000019073486,
+          "after": 112.30000019073486,
+          "warning": false
+        }
+      ],
+      "comparisonState": "同じ環境・計算値・候補IDでの前回比較",
+      "scope": "実DOM生成と2フレーム到達。通信・端末実機・描画完了保証とは別。設定/安全条件を変更しない"
+    },
+    {
+      "variant": "before",
+      "size": "normal",
+      "width": 390,
+      "loadedCards": 2080,
+      "valuesAndIdsUnchanged": true,
+      "dataRevision": "caf2059270d61068f1dbc8b5c5439bb44b00bfc469c63dbf30959192b2ed6c8d",
+      "conditionHash": "bee738d627146781cab51e18653d7ec8c2cfc321feac5f180e5d764182601943",
+      "rows": [
+        {
+          "kind": "全件再計算",
+          "calculationMs": 637.0999999046326,
+          "domMs": 257.5,
+          "cacheHit": false,
+          "markupMs": 5,
+          "domCommitMs": 0,
+          "reusedMarkup": 0,
+          "changedCards": 0,
+          "reusedCards": 4,
+          "frameCompletionMs": 962.3000001907349
+        },
+        {
+          "kind": "全件再計算",
+          "calculationMs": 584.4000000953674,
+          "domMs": 248,
+          "cacheHit": false,
+          "markupMs": 5,
+          "domCommitMs": 0,
+          "reusedMarkup": 0,
+          "changedCards": 0,
+          "reusedCards": 4,
+          "frameCompletionMs": 916.5
+        },
+        {
+          "kind": "全件再計算",
+          "calculationMs": 568.7999997138977,
+          "domMs": 274.2000002861023,
+          "cacheHit": false,
+          "markupMs": 6,
+          "domCommitMs": 0,
+          "reusedMarkup": 0,
+          "changedCards": 0,
+          "reusedCards": 4,
+          "frameCompletionMs": 916.5999999046326
+        },
+        {
+          "kind": "計算結果再利用",
+          "calculationMs": 0,
+          "domMs": 173.7000002861023,
+          "cacheHit": true,
+          "markupMs": 0,
+          "domCommitMs": 0.09999990463256836,
+          "reusedMarkup": 4,
+          "changedCards": 0,
+          "reusedCards": 4,
+          "frameCompletionMs": 250
+        },
+        {
+          "kind": "計算結果再利用",
+          "calculationMs": 0,
+          "domMs": 153.80000019073486,
+          "cacheHit": true,
+          "markupMs": 0,
+          "domCommitMs": 0,
+          "reusedMarkup": 4,
+          "changedCards": 0,
+          "reusedCards": 4,
+          "frameCompletionMs": 1216.8000001907349
+        },
+        {
+          "kind": "計算結果再利用",
+          "calculationMs": 0,
+          "domMs": 147,
+          "cacheHit": true,
+          "markupMs": 0,
+          "domCommitMs": 0,
+          "reusedMarkup": 4,
+          "changedCards": 0,
+          "reusedCards": 4,
+          "frameCompletionMs": 766.5
+        }
+      ],
+      "detailRows": [
+        {
+          "generatedMs": 157.59999990463257,
+          "frameCompletionMs": 1856,
+          "elements": 1219
+        },
+        {
+          "generatedMs": 151.7999997138977,
+          "frameCompletionMs": 1620.3999996185303,
+          "elements": 1219
+        },
+        {
+          "generatedMs": 155.59999990463257,
+          "frameCompletionMs": 360.3999996185303,
+          "elements": 1219
+        }
+      ],
+      "measured": {
+        "fullCalculationMs": 584.4000000953674,
+        "renderMs": 153.80000019073486,
+        "detailGenerationMs": 155.59999990463257
+      },
+      "comparison": [],
+      "comparisonState": "同条件の前回実測なし",
+      "scope": "実DOM生成と2フレーム到達。通信・端末実機・描画完了保証とは別。設定/安全条件を変更しない"
+    },
+    {
+      "variant": "after",
+      "size": "normal",
+      "width": 390,
+      "loadedCards": 2080,
+      "valuesAndIdsUnchanged": true,
+      "dataRevision": "caf2059270d61068f1dbc8b5c5439bb44b00bfc469c63dbf30959192b2ed6c8d",
+      "conditionHash": "bee738d627146781cab51e18653d7ec8c2cfc321feac5f180e5d764182601943",
+      "rows": [
+        {
+          "kind": "全件再計算",
+          "calculationMs": 629.9000000953674,
+          "domMs": 192.69999980926514,
+          "cacheHit": false,
+          "markupMs": 5,
+          "domCommitMs": 0,
+          "reusedMarkup": 0,
+          "changedCards": 0,
+          "reusedCards": 4,
+          "frameCompletionMs": 895.0999999046326
+        },
+        {
+          "kind": "全件再計算",
+          "calculationMs": 583.8000001907349,
+          "domMs": 185,
+          "cacheHit": false,
+          "markupMs": 5.199999809265137,
+          "domCommitMs": 0.09999990463256836,
+          "reusedMarkup": 0,
+          "changedCards": 0,
+          "reusedCards": 4,
+          "frameCompletionMs": 849.9000000953674
+        },
+        {
+          "kind": "全件再計算",
+          "calculationMs": 579.1999998092651,
+          "domMs": 175.5,
+          "cacheHit": false,
+          "markupMs": 5.199999809265137,
+          "domCommitMs": 0,
+          "reusedMarkup": 0,
+          "changedCards": 0,
+          "reusedCards": 4,
+          "frameCompletionMs": 850.2999997138977
+        },
+        {
+          "kind": "計算結果再利用",
+          "calculationMs": 0.20000028610229492,
+          "domMs": 126.7999997138977,
+          "cacheHit": true,
+          "markupMs": 0,
+          "domCommitMs": 0,
+          "reusedMarkup": 4,
+          "changedCards": 0,
+          "reusedCards": 4,
+          "frameCompletionMs": 199.7000002861023
+        },
+        {
+          "kind": "計算結果再利用",
+          "calculationMs": 0.09999990463256836,
+          "domMs": 94,
+          "cacheHit": true,
+          "markupMs": 0,
+          "domCommitMs": 0,
+          "reusedMarkup": 4,
+          "changedCards": 0,
+          "reusedCards": 4,
+          "frameCompletionMs": 200.19999980926514
+        },
+        {
+          "kind": "計算結果再利用",
+          "calculationMs": 0.09999990463256836,
+          "domMs": 90,
+          "cacheHit": true,
+          "markupMs": 0,
+          "domCommitMs": 0,
+          "reusedMarkup": 4,
+          "changedCards": 0,
+          "reusedCards": 4,
+          "frameCompletionMs": 2000.0999999046326
+        }
+      ],
+      "detailRows": [
+        {
+          "generatedMs": 162.09999990463257,
+          "frameCompletionMs": 1922.7999997138977,
+          "elements": 1219
+        },
+        {
+          "generatedMs": 99.80000019073486,
+          "frameCompletionMs": 1694.4000000953674,
+          "elements": 1219
+        },
+        {
+          "generatedMs": 98.09999990463257,
+          "frameCompletionMs": 420.5,
+          "elements": 1219
+        }
+      ],
+      "measured": {
+        "fullCalculationMs": 583.8000001907349,
+        "renderMs": 94,
+        "detailGenerationMs": 99.80000019073486
+      },
+      "comparison": [
+        {
+          "metric": "fullCalculationMs",
+          "before": 584.4000000953674,
+          "after": 583.8000001907349,
+          "warning": false
+        },
+        {
+          "metric": "renderMs",
+          "before": 153.80000019073486,
+          "after": 94,
+          "warning": false
+        },
+        {
+          "metric": "detailGenerationMs",
+          "before": 155.59999990463257,
+          "after": 99.80000019073486,
+          "warning": false
+        }
+      ],
+      "comparisonState": "同じ環境・計算値・候補IDでの前回比較",
+      "scope": "実DOM生成と2フレーム到達。通信・端末実機・描画完了保証とは別。設定/安全条件を変更しない"
+    }
+  ]
+}

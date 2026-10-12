@@ -44,3 +44,4 @@ console.log('keyed DOM identity, warnings, detail isolation, fixed cohort deadli
 require('./test_render_reuse');
 require('./test_candidate_reduction');
 require('./test_search_organization');
+require('./test_efficiency_threshold_audit');

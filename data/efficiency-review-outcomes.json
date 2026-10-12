@@ -1,0 +1,131 @@
+{
+  "version": 1,
+  "at": "2026-10-12T11:53:00.299Z",
+  "baselineAt": "2026-10-12T11:36:10.659Z",
+  "commonCards": 12507,
+  "addedCards": 0,
+  "removedCards": 0,
+  "newlyAnalyzable": 0,
+  "lostAnalyzable": 0,
+  "filledCards": 14,
+  "filledItems": 14,
+  "sources": {
+    "cardrush": {
+      "newLinked": 0,
+      "validAdded": 0,
+      "validLost": 0,
+      "usableNet": 0,
+      "freshnessRecovered": 0
+    },
+    "hareruya2": {
+      "newLinked": 0,
+      "validAdded": 0,
+      "validLost": 0,
+      "usableNet": 0,
+      "freshnessRecovered": 11
+    },
+    "yuyutei": {
+      "newLinked": 0,
+      "validAdded": 0,
+      "validLost": 0,
+      "usableNet": 0,
+      "freshnessRecovered": 0
+    },
+    "torecacamp": {
+      "newLinked": 0,
+      "validAdded": 0,
+      "validLost": 0,
+      "usableNet": 0,
+      "freshnessRecovered": 0
+    },
+    "psaOfficial": {
+      "newLinked": 0,
+      "validAdded": 0,
+      "validLost": 0,
+      "usableNet": 0,
+      "freshnessRecovered": 0
+    },
+    "pokedata": {
+      "newLinked": 14,
+      "validAdded": 0,
+      "validLost": 0,
+      "usableNet": 0,
+      "freshnessRecovered": 0
+    }
+  },
+  "filledByItem": {
+    "pokedata": 14
+  },
+  "filledAnalysisRequiredItems": 0,
+  "priceRun": {
+    "attempted": 28,
+    "confirmed": 27,
+    "changed": 8,
+    "failed": 0,
+    "httpRequests": 50,
+    "durationMs": 59325,
+    "nextId": "pk-81499",
+    "stopReason": "時間予算・未取得カードから次回再開"
+  },
+  "pokeRun": {
+    "attempted": 46,
+    "publicNewRecords": 46,
+    "newLinked": 14,
+    "failed": 0,
+    "httpRequests": 47,
+    "durationMs": 55083,
+    "checkpoint": {
+      "setName": "Mega Dream",
+      "acquired": 329,
+      "total": 487
+    },
+    "status": "partial",
+    "stopReason": "time-budget-safe-stop",
+    "authenticatedSales": "認証工程は別処理・今回未実施"
+  },
+  "fixedFreshness": {
+    "before": {
+      "at": "2026-10-12T10:39:07.825Z",
+      "cohort": 192,
+      "fresh6h": 91,
+      "fresh6hPct": 47.39583333333333,
+      "unconfirmed": 0,
+      "maxOverdueHours": 892.6521736111112,
+      "autoWait": 93,
+      "manualWait": 8,
+      "accessStopped": 0,
+      "added": 152,
+      "missingFromCurrent": 0,
+      "aggregationVersion": 2,
+      "outsidePriorityStale": 0
+    },
+    "after": {
+      "at": "2026-10-12T11:44:04.143Z",
+      "cohort": 192,
+      "fresh6h": 105,
+      "fresh6hPct": 54.6875,
+      "unconfirmed": 0,
+      "maxOverdueHours": 893.7344841666667,
+      "autoWait": 79,
+      "manualWait": 8,
+      "accessStopped": 0,
+      "added": 146,
+      "missingFromCurrent": 0,
+      "aggregationVersion": 2,
+      "outsidePriorityStale": 0
+    },
+    "intervalMinimum": {
+      "from": "2026-10-12T11:39:04.323Z",
+      "to": "2026-10-12T11:44:04.143Z",
+      "fresh": 105,
+      "total": 192,
+      "minimumFreshnessPct": 54.6875,
+      "maxOverdueHours": 893.7344841666667,
+      "method": "前回確認値を次の観測直前まで進めた保守的な最低鮮度。区間内の未観測更新は含まない"
+    }
+  },
+  "evidence": "Only this saved baseline is used for growth. Manual acquisition is not proof of scheduled operation. Public PokeDATA metadata is not authenticated sale-price acquisition.",
+  "llmCalls": 0,
+  "codexCalls": 0,
+  "regularOperationVerified": false
+}

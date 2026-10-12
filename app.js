@@ -3958,6 +3958,27 @@ function efficiencySummary(cards) {
   }
   return counts;
 }
+let efficiencyAuditCards = [], efficiencyAuditFiltered = [];
+function renderEfficiencySummary(target) {
+  if (!target) return;
+  if (!target.dataset.efficiencyListener) {
+    target.dataset.efficiencyListener = '1';
+    target.addEventListener('toggle', () => renderEfficiencySummary(target));
+  }
+  let html = '<summary>資金効率の算出状況（開くと集計）</summary>';
+  if (target.open) {
+    const pool = state.efficiencyMin == null ? efficiencyAuditFiltered
+      : efficiencyAuditCards.filter(c => !cardSearchExclusions(c, {efficiency:false}).length);
+    const counts = efficiencySummary(pool);
+    const reasonList = Object.entries(counts.reasons).map(([reason,count]) => `${reason} ${count}枚`).join('／');
+    const referenceList = Object.entries(counts.referenceReasons).map(([reason,count]) => `${reason} ${count}枚`).join('／');
+    html = `<summary>資金効率：算出可能${counts.calculated}／参考計算可能${counts.reference}／算出不可${counts.unavailable}枚</summary><small>資金効率条件適用前の候補${pool.length}枚（読込済み・他検索条件適用後）。最終表示${efficiencyAuditFiltered.length}枚。参考値は${state.efficiencyIncludeReference ? '検索に含む' : '資金効率検索・順位の対象外'}。理由は重複あり・段階除外数とは別。<br>参考理由：${escapeHtml(referenceList||'なし')}<br>算出不可：${escapeHtml(reasonList||'なし')}。参考計算の復帰はデータ補完や購入GOへの昇格ではありません。</small>`;
+  }
+  if (target.dataset.efficiencyMarkup !== html) {
+    target.innerHTML = html;
+    target.dataset.efficiencyMarkup = html;
+  }
+}
 function cardEfficiencyPanel(card) {
   const row=cardEfficiency(card);
   const label={calculated:'算出可能',reference:'参考計算可能・安全判定とは別',unavailable:'算出不可'}[row.calculationState];
@@ -4879,14 +4900,9 @@ function renderContent() {
       return resultSorter()(left, right);
     });
 
-  const efficiencyTarget=document.getElementById('efficiencySummary');
-  if (efficiencyTarget) {
-    const pool=state.efficiencyMin == null ? enriched : calculated.filter(c=>!cardSearchExclusions(c,{efficiency:false}).length);
-    const counts=efficiencySummary(pool);
-    const reasonList=Object.entries(counts.reasons).map(([reason,count])=>`${reason} ${count}枚`).join('／');
-    const referenceList=Object.entries(counts.referenceReasons).map(([reason,count])=>`${reason} ${count}枚`).join('／');
-    efficiencyTarget.innerHTML=`<summary>資金効率：算出可能${counts.calculated}／参考計算可能${counts.reference}／算出不可${counts.unavailable}枚</summary><small>資金効率条件適用前の候補${pool.length}枚（読込済み・他検索条件適用後）。最終表示${enriched.length}枚。参考値は${state.efficiencyIncludeReference ? '検索に含む' : '資金効率検索・順位の対象外'}。理由は重複あり・段階除外数とは別。<br>参考理由：${escapeHtml(referenceList||'なし')}<br>算出不可：${escapeHtml(reasonList||'なし')}。参考計算の復帰はデータ補完や購入GOへの昇格ではありません。</small>`;
-  }
+  efficiencyAuditCards = calculated;
+  efficiencyAuditFiltered = enriched;
+  renderEfficiencySummary(document.getElementById('efficiencySummary'));
 
 
   if (els.searchDiagnostic) {
