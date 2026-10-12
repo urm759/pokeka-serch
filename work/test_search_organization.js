@@ -35,8 +35,9 @@ assert.match(css,/\.search-settings \[hidden\]\{display:none!important\}/,'displ
 assert.match(app,/if \(activeConditionKey===key\) return/,'unchanged active filters are not rebuilt');
 for(const [name,expected] of Object.entries(baseline.protectedFunctions)) {
   const source=app.replace(/\r\n/g,'\n')
-    .replace("  reasons.push(...explorationMetrics.observationExclusions(state.psa10PeriodSummary,card,state));\n",'')
-    .replace("  if (state.observationIncludeReference === false) url.searchParams.set('obsRef','0'); else url.searchParams.delete('obsRef');\n",'');
+    .replace("  reasons.push(...observationSearchExclusions(card));\n",'')
+    .replace("  if (state.observationIncludeReference === false) url.searchParams.set('obsRef','0'); else url.searchParams.delete('obsRef');\n",'')
+    .replace("    if (state[field] == null && param.startsWith('obs') && url.searchParams.has(param)) url.searchParams.set(param,'off');\n    else if",'    if');
   const start=source.indexOf('function '+name+'('),end=source.indexOf('\nfunction ',start+1);
   assert.equal(crypto.createHash('sha256').update(source.slice(start,end<0?undefined:end)).digest('hex'),expected,'financial/filter function must not change during UI reorganization: '+name);
 }

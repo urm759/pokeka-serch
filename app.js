@@ -3085,7 +3085,7 @@ function captureConditionOrigins(defaults, restored) {
   const bindings = new Map([...efficiencyFields,...explorationFields].map(([param,field])=>[field+'Input',param]));
   for(const [id,param] of Object.entries({roiInput:'roi',expectedProfitFilterInput:'filterExpProfit',expectedRoiFilterInput:'filterExpRoi',
     psa9RatioMinInput:'psa9RatioMin',psa9RatioMaxInput:'psa9RatioMax',psa9RatioAggregateInput:'psa9Aggregate',psa9RatioEstimateInput:'psa9Estimate',psa9RatioMarketInput:'psa9Market',
-    efficiencyIncludeReferenceInput:'effRef',efficiencyBuyInput:'effBuy',efficiencyScenarioInput:'effScenario',purchaseBelowCurrentCapInput:'buyBelowCap',
+    efficiencyIncludeReferenceInput:'effRef',observationIncludeReferenceInput:'obsRef',efficiencyBuyInput:'effBuy',efficiencyScenarioInput:'effScenario',purchaseBelowCurrentCapInput:'buyBelowCap',
     priceMinInput:'priceMin',priceMaxInput:'priceMax',psaMinInput:'psaMin',psaMaxInput:'psaMax',year2020Input:'year2020'})) bindings.set(id,param);
   for(const [id,param] of Object.entries({saleTxMinInput:'tx',saleTxMaxInput:'txMax',saleTx7MinInput:'tx7',saleTx7MaxInput:'tx7Max',psaTxMinInput:'psaTx',psaTxMaxInput:'psaTxMax',psaTx7MinInput:'psaTx7',psaTx7MaxInput:'psaTx7Max',buyback7MinInput:'bb7',buyback30MinInput:'bb30',buyback90MinInput:'bb90',buybackShopsMinInput:'bbShops',purchaseLimitRatioMinInput:'buyLimitRatio',stressExpectedProfitFilterInput:'filterStressProfit',stressExpectedRoiFilterInput:'filterStressRoi',currentMarketCapMinInput:'marketCapMin',includePeriodReferenceInput:'periodReference',profitSearchBasisInput:'profitBasis',sortInput:'sort'})) bindings.set(id,param);
   for (const [id,param] of Object.entries({includeUnknownYearInput:'includeUnknownYear',diagnosticSearchInput:'diagnostic',psaRateMinInput:'psaRate',overallFilterInput:'overall',minExitLiquidityInput:'exit',minEconomicsInput:'economics',minMarketStabilityInput:'stability',minSupplyRiskInput:'supply',minFuturePriceScoreInput:'futureScore',maxFuturePriceScoreInput:'futureScoreMax',minForecastPriceInput:'forecastMin',maxForecastPriceInput:'forecastMax',minForecastDownsideInput:'downsideMin',maxForecastDownsideInput:'downsideMax',minForecastGapInput:'gapMin',maxForecastGapInput:'gapMax',forecastPhaseInput:'forecastPhase',forecastConfidenceInput:'forecastConfidence',forecastSupplyPressureInput:'forecastSupply',minForecastAgeInput:'releaseAge',forecastMaturityInput:'forecastMaturity',maxForecastMonthlyIncreaseInput:'psaGrowthMax',stockDemandInput:'stockDemand',dataQualityFilterInput:'dataQuality',goConfidenceFilterInput:'goTrust',floorStateInput:'floorState',priceDirectionInput:'priceDirection',supplyStateInput:'supplyState',minFloorScoreInput:'floorScore',storeDemandInput:'storeDemand',showSkippedInput:'showSkipped',hideThinDemandInput:'hideThin',hideReviewInput:'hideReview',fundingOnlyInput:'fundingOnly',officialOnlyInput:'officialOnly',buyback7MaxInput:'bb7Max',buyback30MaxInput:'bb30Max',buyback90MaxInput:'bb90Max',buybackPriceMinInput:'bbPriceMin',buybackPriceMaxInput:'bbPriceMax',snkrRawTx7MinInput:'snkrTx7',snkrRawTx30MinInput:'snkrTx30',snkrRawProfitMinInput:'snkrProfit',snkrRawRoiMinInput:'snkrRoi',snkrRawPurchaseMaxInput:'snkrBuyMax',snkrRawReleaseMonthsInput:'snkrMonths'})) bindings.set(id,param);
@@ -3712,7 +3712,8 @@ function buildShareUrl() {
   url.searchParams.set('effRef',state.efficiencyIncludeReference ? '1' : '0');
   if (state.observationIncludeReference === false) url.searchParams.set('obsRef','0'); else url.searchParams.delete('obsRef');
   for (const [param,field] of explorationFields) {
-    if (state[field] == null) url.searchParams.delete(param);
+    if (state[field] == null && param.startsWith('obs') && url.searchParams.has(param)) url.searchParams.set(param,'off');
+    else if (state[field] == null) url.searchParams.delete(param);
     else url.searchParams.set(param,String(state[field]));
   }
   url.searchParams.set("buyBelowCap", state.purchaseBelowCurrentCap ? "1" : "0");
@@ -4067,7 +4068,7 @@ function renderObservationFilterStatus() {
   target.classList.toggle('reference-warning',errors.length > 0);
   target.textContent = (errors.length ? errors.map(days=>days+'日：下限が上限を超えています。入力を確認してください（自動補正しません）。').join(' ') : '')
     + ' 全掲載カードの平均保有／観測充足：'+[7,30,90,200].map(days=>`${days}日 ${coverage?.[days]?.meanCards ?? '未集計'}／${coverage?.[days]?.observationSufficientCards ?? '未集計'}枚`).join('・')
-    + '。完全200日観測 '+(coverage?.[200]?.completeCalendarCards ?? '未集計')+'枚。参考値を含めない200日条件は現状0枚です。対象数は他条件を適用する前です。';
+    + '。完全200日観測 '+(coverage?.[200]?.completeCalendarCards ?? '未集計')+'枚。'+(coverage?.[200]?.observationSufficientCards === 0 ? '参考値を含めない200日条件は現状0枚です。' : '')+'対象数は他条件を適用する前です。';
 }
 function psa10PeriodCompact(card) {
   return `<div class="psa10-period-summary observation-glance" aria-label="国内PSA10観測平均">${[7,30,90,200].map(days=>{
@@ -4267,7 +4268,7 @@ function renderActiveFilters() {
     }
     if (!controls.active(el) || ['calculation','context'].includes(controls.category(el.id)) || el.id==='qInput') continue;
     const label=labelNode?.dataset.searchLabel || el.id;
-    const value=el.type==='checkbox'?'ON':el.tagName==='SELECT'?el.options[el.selectedIndex]?.textContent:String(el.value);
+    const value=el.type==='checkbox'?(el.checked?'ON':'OFF'):el.tagName==='SELECT'?el.options[el.selectedIndex]?.textContent:String(el.value);
     const initial=searchConditionOrigins.get(el.id);
     const origin=initial&&initial.value===conditionValue(el)?initial.origin:'手動変更';
     const category=applicable?origin:'不適用・保存保持／'+origin;
@@ -4665,6 +4666,9 @@ function prepareCalculatedCards(cards) {
 function cardSearchExclusions(card, {mode = state.purchaseMode,diagnostic=true,efficiency=true} = {}) {
   return renderValue(card, `exclusions:${mode}:${diagnostic}:${efficiency}`, () => computeCardSearchExclusions(card,{mode,diagnostic,efficiency}));
 }
+function observationSearchExclusions(card) {
+  return renderValue(card,'observation-exclusions',()=>explorationMetrics.observationExclusions(state.psa10PeriodSummary,card,state));
+}
 function computeCardSearchExclusions(card, {mode = state.purchaseMode,diagnostic=true,efficiency=true} = {}) {
   const reasons = [];
   const currentMode = mode === "current-market";
@@ -4675,7 +4679,7 @@ function computeCardSearchExclusions(card, {mode = state.purchaseMode,diagnostic
     const efficiency = cardEfficiency(card,Date.now(),mode);
     if (!explorationMetrics.inRange(efficiencySearchValue(efficiency),state.efficiencyMin,null)) reasons.push(efficiency.calculationState === 'reference' && !state.efficiencyIncludeReference ? '単体資金効率・参考値を検索対象外' : Number.isFinite(efficiency.annual) ? '単体年換算資金効率条件' : '単体資金効率算出不可・'+(efficiency.reason || 'データ不足'));
   }
-  reasons.push(...explorationMetrics.observationExclusions(state.psa10PeriodSummary,card,state));
+  reasons.push(...observationSearchExclusions(card));
       const haystack = normalize(`${card.name} ${card.model} ${card.id}`);
       const compactHaystack = compactSearch(`${card.name} ${card.model} ${card.id}`);
       const completion = card.catalogCompletion;

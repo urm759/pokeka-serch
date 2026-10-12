@@ -55,7 +55,11 @@ function measure(){
     return {fullCalculationMs:median(timings),cacheMs:median(cached),doubleCalculationMs:median(doubleTimes),detailSummary25Ms:median(detailTimes),
       samples:{fullCalculationMs:timings,cacheMs:cached,doubleCalculationMs:doubleTimes,detailSummary25Ms:detailTimes},
       cardCount:state.cards.length,calculationValuesEqual:true};`;
-  const modelResult=new Function('require','__dirname','process','assert','median',prefix.replace('const source = fs.readFileSync',inject+'\nconst source = fs.readFileSync')+suffix)(require,__dirname,process,assert,median);
+  const evaluatedAt=Date.now();
+  class EvaluationDate extends Date { constructor(...args){super(...(args.length?args:[evaluatedAt]));} static now(){return evaluatedAt;} }
+  const measuredPrefix=prefix.replace('const source = fs.readFileSync',inject+'\nconst source = fs.readFileSync')
+    .replace('const context = vm.createContext({','const context = vm.createContext({ Date: EvaluationDate,');
+  const modelResult=new Function('require','__dirname','process','assert','median','EvaluationDate',measuredPrefix+suffix)(require,__dirname,process,assert,median,EvaluationDate);
   const result={initialBytes,doubleInitialBytes,jsonParseMs,doubleJsonParseMs,searchMs:median(searchTimes),doubleSearchMs:median(doubleSearchTimes),...modelResult};
   const errors=violations(result);
   assert(app.includes("state.openCardDetails.has(String(card.id)) ? `"),'closed details must stay lazy');

@@ -8,6 +8,7 @@ const elements=new Map();
 const document={getElementById:id=>{if(!elements.has(id))elements.set(id,{value:'',checked:false});return elements.get(id);},querySelectorAll:()=>[]};
 let saved={};
 const context=vm.createContext({window:{location:{href:'https://example.test/'},PurchaseDecisionModel:model,
+  ExplorationMetrics:require('../exploration-metrics.js'),
   ReleaseYearFilter:require('../release-year-filter.js'),CandidateVisibility:require('../candidate-visibility.js'),PurchaseRatioModel:require('../purchase-ratio-model.js')},document,
   URL,URLSearchParams,console,setTimeout,clearTimeout,localStorage:{getItem:k=>saved[k]??null,setItem:(k,v)=>saved[k]=v}});
 vm.runInContext(source.split('// Browser event bindings start here;')[0]+ '\nglobalThis.api={state,searchProfitView,cardSearchExclusions,buildSearchAudit,presetQualifications,readUrl,buildShareUrl,saveQuickFilters,restoreQuickFilters};',context);

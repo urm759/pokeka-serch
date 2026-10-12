@@ -82,6 +82,7 @@ const elements = new Map();
 let saved = {};
 const document = { getElementById: id => { if (!elements.has(id)) elements.set(id, { value: '', checked: false }); return elements.get(id); }, querySelectorAll: () => [] };
 const context = vm.createContext({ window: { location: { href: 'https://example.test/' }, PurchaseDecisionModel: model,
+  ExplorationMetrics:require('../exploration-metrics.js'),
   CurrentMarketModel: current, ReleaseYearFilter: require('../release-year-filter.js'),
   CandidateVisibility: require('../candidate-visibility.js'), PurchaseRatioModel: require('../purchase-ratio-model.js') },
   document, URL, URLSearchParams, console, setTimeout, clearTimeout,

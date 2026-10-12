@@ -24,6 +24,8 @@ for (const id of ['observation7MinInput','observation200MaxInput']) {
   const el={id,type:'number',value:'0'};assert(controls.active(el));assert(controls.clear(el));assert.equal(el.value,'');
   assert(controls.applicable(id,{purchaseMode:'current-market'}));
 }
+assert(controls.active({id:'observationIncludeReferenceInput',checked:false,type:'checkbox'}));
+assert(!controls.clear({id:'observationIncludeReferenceInput',checked:false,type:'checkbox'}),'bulk additional clear preserves reference adoption');
 const source=fs.readFileSync('app.js','utf8'),elements=new Map(),storage=new Map();
 const context=vm.createContext({window:{PurchaseDecisionModel:require('../decision-model'),ExplorationMetrics:m,location:{href:'https://example.test/?obs7Min=-20&obs7Max=0&obsRef=0'}},
   document:{getElementById:id=>{if(!elements.has(id))elements.set(id,{value:'',checked:false});return elements.get(id)},querySelectorAll:()=>[]},
@@ -34,6 +36,7 @@ assert.equal(elements.get('observation7MinInput').value,-20);assert.equal(elemen
 assert.equal(elements.get('observationIncludeReferenceInput').checked,false);
 Object.assign(api.state,{observation7Min:-20,observation7Max:0,observationIncludeReference:false,psa10PeriodSummary:sparse});
 let url=api.buildShareUrl();assert.equal(url.searchParams.get('obs7Min'),'-20');assert.equal(url.searchParams.get('obs7Max'),'0');assert.equal(url.searchParams.get('obsRef'),'0');
+api.state.observation7Max=null;assert.equal(api.buildShareUrl().searchParams.get('obs7Max'),'off','explicit clearing must override another browser saved value');api.state.observation7Max=0;
 api.saveQuickFilters();context.window.location.href='https://example.test/';elements.get('observation7MinInput').value='';api.restoreQuickFilters();
 assert.equal(elements.get('observation7MinInput').value,-20);assert.equal(elements.get('observationIncludeReferenceInput').checked,false);
 assert.match(api.psa10PeriodCompact(card),/参考・観測不足/);assert.match(api.psa10PeriodCompact(card),/古い観測/);

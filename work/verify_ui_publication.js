@@ -11,6 +11,7 @@ async function read(file) {
 async function main() {
   const html = await read('index.html?verify=' + Date.now());
   assert(html.includes('20261011-efficiency-v1') && html.includes('settings-disclosure.js') && html.includes('keyed-card-renderer.js') && html.includes('ui-data-codec.js') && html.includes('efficiencyMinInput'));
+  assert(html.includes('20261013-observation-search-v1') && html.includes('observation200MaxInput'));
   const manifest = JSON.parse(await read('data/ui/manifest.json?verify=' + Date.now()));
   const expected = JSON.parse(fs.readFileSync(path.join(__dirname,'../data/ui/manifest.json'),'utf8'));
   assert.equal(manifest.revision, expected.revision, 'must verify the newly published revision');
@@ -57,6 +58,11 @@ async function main() {
   for (const file of ['app.js','exploration-metrics.js']) {
     const published=await read(file+'?verify='+Date.now());
     assert.equal(published.replace(/\r\n/g,'\n'),fs.readFileSync(path.join(__dirname,'..',file),'utf8').replace(/\r\n/g,'\n'),file);
+  }
+  for (const file of ['styles.css','search-controls.js','data/psa10-observation-receipt.json','data/observation-search-report.json']) {
+    const published=await read(file+'?verify='+Date.now());
+    assert.equal(published.replace(/\r\n/g,'\n'),fs.readFileSync(path.join(__dirname,'..',file),'utf8').replace(/\r\n/g,'\n'),file);
+    verified.push(file);
   }
   if(process.argv.includes('--record-recovery')) {
     const commit=process.env.PUBLIC_COMMIT;

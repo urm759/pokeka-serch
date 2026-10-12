@@ -5,7 +5,7 @@
   const operations = ids('importSearchInput importFavoritesInput favoriteSearchInput actualCardIdInput actualBaseDateInput actualSpecimenInput actualInspectionInput actualGradeInput actualSalePriceInput actualGradingFeeInput actualSaleFeeInput importGradeHistoryInput');
   const settings = ids(`psaPlanInput feeInput psaCapitalInput lockedCapitalInput gradingReserveInput submissionCountInput maxCapitalShareInput lockDaysInput minExpectedProfitInput minExpectedRoiInput minAnnualEfficiencyInput saleFeeRateInput saleExtraCostInput buybackDeductionRateInput exitPolicyInput buybackStoreModeInput selectedBuybackStoresInput storeTravelCostInput efficiencyBuyInput efficiencyScenarioInput efficiencySaleDaysInput efficiencyPayoutDaysInput efficiencyManualPriceInput currentMarketManualPriceInput snkrRawFeeRateInput snkrRawShippingInput snkrRawOtherCostInput snkrRawMaxAgeInput`);
   const context = ids('profitSearchBasisInput includePeriodReferenceInput sortInput catalogScopeInput currentMarketSearchKindInput lowRiskAvailabilityInput includeAggressiveInput snkrRawIncludeReferenceInput');
-  const protectedFilters = ids('showSkippedInput efficiencyIncludeReferenceInput psa9RatioAggregateInput psa9RatioEstimateInput psa9RatioMarketInput');
+  const protectedFilters = ids('showSkippedInput efficiencyIncludeReferenceInput observationIncludeReferenceInput psa9RatioAggregateInput psa9RatioEstimateInput psa9RatioMarketInput');
   const currentIgnored = ids('profitSearchBasisInput includePeriodReferenceInput stressExpectedProfitFilterInput stressExpectedRoiFilterInput purchaseLimitRatioMinInput fundingOnlyInput goConfidenceFilterInput');
   const capIgnored = ids('roiInput expectedProfitFilterInput expectedRoiFilterInput psa9RatioMinInput psa9RatioMaxInput psa9RatioAggregateInput psa9RatioEstimateInput psa9RatioMarketInput');
   const optionalZero = ids('roiInput expectedProfitFilterInput expectedRoiFilterInput stressExpectedProfitFilterInput stressExpectedRoiFilterInput efficiencyMinInput actualPurchaseMinInput actualPurchaseMaxInput purchaseHeadroomMinInput purchaseHeadroomMaxInput currentMarketCapMinInput');
@@ -42,6 +42,7 @@
     return inSearch && category(id) === 'advanced' && !protectedFilters.has(id);
   }
   function active(el) {
+    if (el.id === 'observationIncludeReferenceInput') return true;
     if (['hidden','file'].includes(el.type)) return false;
     if (el.type === 'checkbox') return el.checked;
     const value = String(el.value ?? '');

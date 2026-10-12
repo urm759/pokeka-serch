@@ -594,8 +594,10 @@ const startedAt = Date.now();
       .map(card=>[card.id,[require('./psa10_observation_evidence').identity(card),card.snkPsa10Price]])),
   };
   const receiptPath = path.join(base,'psa10-observation-receipt.json');
-  fs.writeFileSync(receiptPath+'.tmp',JSON.stringify(observationReceipt));
-  fs.renameSync(receiptPath+'.tmp',receiptPath);
+  if (Object.keys(observationReceipt.cards).length) {
+    fs.writeFileSync(receiptPath+'.tmp',JSON.stringify(observationReceipt));
+    fs.renameSync(receiptPath+'.tmp',receiptPath);
+  }
   if (FAST_UPDATE && changedIds.length === 0) {
     console.log(`FAST_UPDATE_RESULT ${JSON.stringify({ changed: false, changedCards: 0, processedCards: sitePokemon.length, regeneratedFiles: 0, httpRequests: UPDATE_METRICS.httpRequests, cacheHits: UPDATE_METRICS.cacheHits, durationMs: Date.now() - startedAt, reason: "深掘り確認済み・新ID/価格変更なし", llmCalls: 0 })}`);
     return;
