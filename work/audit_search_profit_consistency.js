@@ -16,7 +16,7 @@ function inputs() {
   }
   return map;
 }
-function load(appSource, at) {
+function load(appSource, at, options = {}) {
   const inputElements = inputs();
   const NativeDate = Date;
   class FixedDate extends NativeDate { constructor(...args) { super(...(args.length ? args : [at])); } static now() { return NativeDate.parse(at); } }
@@ -27,9 +27,28 @@ function load(appSource, at) {
   prefix = prefix.replace('getElementById: () => null', "getElementById: id => {if(!inputElements.has(id)) inputElements.set(id,{value:'',checked:false,classList:{toggle(){}},dataset:{}});return inputElements.get(id);}");
   prefix = prefix.replace(/  console,\r?\n/, '  Date:FixedDate,\n  console,\n');
   const tail = `vm.runInContext("render=()=>{};updateUrl=()=>{};saveQuickFilters=()=>{};scheduleCatalogQueryLoad=()=>{};readUrl();syncFromUI();globalThis.searchApi={state,prepareCalculatedCards,searchProfitView,cardSearchExclusions,presetQualifications,searchProfitPanel:typeof searchProfitPanel==='function'?searchProfitPanel:null,purchaseExploration:typeof purchaseExploration==='function'?purchaseExploration:null,currentMarketView,cardEfficiency:typeof cardEfficiency==='function'?cardEfficiency:null,cardEfficiencyPanel:typeof cardEfficiencyPanel==='function'?cardEfficiencyPanel:null,computationKey,calculatedCardsForSearch,buildShareUrl,priceComparisonCells:typeof priceComparisonCells==='function'?priceComparisonCells:null,purchaseBelowCurrentCapReason:typeof purchaseBelowCurrentCapReason==='function'?purchaseBelowCurrentCapReason:null,sorters,buildSearchAudit};",context);
-    vm.runInContext("Object.assign(searchApi,{selectedLimitDisplay:typeof selectedLimitDisplay==='function'?selectedLimitDisplay:null,efficiencySummary:typeof efficiencySummary==='function'?efficiencySummary:null,efficiencySearchValue:typeof efficiencySearchValue==='function'?efficiencySearchValue:null});",context);
+    vm.runInContext("Object.assign(searchApi,{purchasePsa9Ratio,selectedLimitDisplay:typeof selectedLimitDisplay==='function'?selectedLimitDisplay:null,efficiencySummary:typeof efficiencySummary==='function'?efficiencySummary:null,efficiencySearchValue:typeof efficiencySearchValue==='function'?efficiencySearchValue:null});",context);
     return context.searchApi;`;
-  return new Function('require','__dirname','appSource','specifiedUrl','inputElements','FixedDate','process', prefix + tail)(require,__dirname,appSource,specifiedUrl,inputElements,FixedDate,{env:{}});
+  prefix=prefix.replace('state.psaPopulation = sourceFiles.psa.cards || {};',`state.psaPopulation = sourceFiles.psa.cards || {};
+    state.psaSpecificationHeld=sourceFiles.psa.specificationHeld || {};
+    state.buybackPostingCoverage=read('data/buyback-posting-coverage.json');
+    state.psa10PeriodSummary=read('data/psa10-period-summary.json');`);
+  const missing=[],cache=new Map();
+  const historical=file=>{
+    const relative=path.relative(ROOT,String(file)).replace(/\\/g,'/');
+    if(!options.dataRef || !relative.startsWith('data/')) return null;
+    if(!cache.has(relative)) {
+      try {cache.set(relative,execFileSync('git',['show',`${options.dataRef}:${relative}`],{cwd:ROOT,maxBuffer:64000000,stdio:['ignore','pipe','pipe']}));}
+      catch {cache.set(relative,false);missing.push(relative);}
+    }
+    return cache.get(relative);
+  };
+  const dataFs={...fs,existsSync:file=>{const value=historical(file);return value===null?fs.existsSync(file):value!==false;},
+    readFileSync:(file,encoding)=>{const value=historical(file);if(value===false)throw Error(`Historical input missing: ${file}`);return value===null?fs.readFileSync(file,encoding):encoding?value.toString(encoding):value;}};
+  const auditRequire=name=>['fs','node:fs'].includes(name)?dataFs:require(name);
+  const api=new Function('require','__dirname','appSource','specifiedUrl','inputElements','FixedDate','process', prefix + tail)(auditRequire,__dirname,appSource,options.url || specifiedUrl,inputElements,FixedDate,{env:{}});
+  api.missingHistoricalInputs=missing;
+  return api;
 }
 function build() {
   const at = new Date().toISOString();

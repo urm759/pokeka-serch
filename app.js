@@ -3071,6 +3071,22 @@ function purchasePsa9RatioHtml(card, manualPrice, costs = {}) {
   return `<details class="purchase-ratio-details"><summary>仕入れ値／国内PSA9：${row.ratio == null ? "検証不能" : `${row.ratio.toFixed(1)}%`}・${escapeHtml(source)}</summary><p class="helper">${escapeHtml(row.purchaseKind === "manual" ? "手入力買値" : row.purchaseKind === "store" ? "店舗状態A価格" : "相場参考値")} ${purchaseLabel}／国内PSA9 ${row.psa9Price > 0 ? `¥${fmt.format(row.psa9Price)}` : "未取得"}。${row.reference ? "参考値・実成約基準ではありません。" : ""}${row.circularEstimate ? "素体由来の循環推定のため割安検索には使用しません。" : ""}<br>PSA9費用込み赤字回避上限：${escapeHtml(cap)}（${escapeHtml(source)}・フリマ手数料${state.saleFeeRate}%、追加費用、鑑定費を控除）／更新日 ${escapeHtml(row.updatedAt?.slice(0,10) || "未確認")} ${escapeHtml(row.reasons.join("／"))}。比率・仮定試算は本番の仕入れ判定に反映しません。</p></details>`;
 }
 
+const searchConditionOrigins = new Map();
+const conditionValue = el => el.type === 'checkbox' ? String(el.checked) : String(el.value);
+function captureConditionOrigins(defaults, restored) {
+  const params = new URL(window.location.href).searchParams;
+  let saved={};try{saved=JSON.parse(localStorage.getItem(QUICK_FILTER_STORAGE_KEY)||'{}');}catch{}
+  const bindings = new Map([...efficiencyFields,...explorationFields].map(([param,field])=>[field+'Input',param]));
+  for(const [id,param] of Object.entries({roiInput:'roi',expectedProfitFilterInput:'filterExpProfit',expectedRoiFilterInput:'filterExpRoi',
+    psa9RatioMinInput:'psa9RatioMin',psa9RatioMaxInput:'psa9RatioMax',psa9RatioAggregateInput:'psa9Aggregate',psa9RatioEstimateInput:'psa9Estimate',psa9RatioMarketInput:'psa9Market',
+    efficiencyIncludeReferenceInput:'effRef',efficiencyBuyInput:'effBuy',efficiencyScenarioInput:'effScenario',purchaseBelowCurrentCapInput:'buyBelowCap',
+    priceMinInput:'priceMin',priceMaxInput:'priceMax',psaMinInput:'psaMin',psaMaxInput:'psaMax',year2020Input:'year2020'})) bindings.set(id,param);
+  for(const el of document.querySelectorAll('.advanced-filters input, .advanced-filters select')) {
+    const value=conditionValue(el),urlSpecified=params.has(bindings.get(el.id));
+    const stored=Object.hasOwn(saved,el.id.replace(/Input$/,''));
+    searchConditionOrigins.set(el.id,{value,origin:urlSpecified||value!==restored.get(el.id)?'URL指定':stored||restored.get(el.id)!==defaults.get(el.id)?'保存追加':'初期・詳細設定'});
+  }
+}
 function restoreQuickFilters() {
   try {
     const saved = JSON.parse(localStorage.getItem(QUICK_FILTER_STORAGE_KEY) || "{}");
@@ -4179,6 +4195,7 @@ function renderActiveFilters() {
   if (!target) return;
   const protectedFields = new Set(["psaPlanInput","feeInput","psaCapitalInput","lockedCapitalInput","gradingReserveInput","submissionCountInput","maxCapitalShareInput","lockDaysInput","minExpectedProfitInput","minExpectedRoiInput","minAnnualEfficiencyInput","saleFeeRateInput","saleExtraCostInput","buybackDeductionRateInput","exitPolicyInput","buybackStoreModeInput","selectedBuybackStoresInput","storeTravelCostInput","sortInput","profitSearchBasisInput","includePeriodReferenceInput"]);
   const items=[];
+  const savedItems=[];
   ['efficiencyBuyInput','efficiencyScenarioInput','efficiencySaleDaysInput','efficiencyPayoutDaysInput','efficiencyManualPriceInput'].forEach(id=>protectedFields.add(id));
   const currentMode = state.purchaseMode === "current-market";
   const ignored = new Set(["profitSearchBasisInput","includePeriodReferenceInput","stressExpectedProfitFilterInput","stressExpectedRoiFilterInput","purchaseLimitRatioMinInput","fundingOnlyInput","goConfidenceFilterInput"]);
@@ -4190,15 +4207,27 @@ function renderActiveFilters() {
     if (!value || (value === "0" && !["efficiencyMinInput","roiInput","expectedProfitFilterInput","expectedRoiFilterInput","stressExpectedProfitFilterInput","stressExpectedRoiFilterInput",...explorationFields.map(([,field])=>field+'Input')].includes(el.id)) || ["all","normal"].includes(value)) continue;
     const label = el.closest("label")?.querySelector("span")?.textContent || el.closest("label")?.textContent.trim() || el.id;
     const text = el.tagName === "SELECT" ? el.options[el.selectedIndex]?.textContent : value;
-    const category = currentMode && ignored.has(el.id) ? "不適用・保存保持" : "共有・適用中";
-    items.push(`<button type="button" data-clear-condition="${escapeHtml(el.id)}" title="この検索条件だけ解除">${category}：${escapeHtml(label)}：${escapeHtml(text)} ×</button>`);
+    const initial=searchConditionOrigins.get(el.id);
+    const origin=initial&&initial.value===conditionValue(el)?initial.origin:'手動変更';
+    const category = currentMode && ignored.has(el.id) ? "不適用・保存保持" : origin;
+    const chip=`<button type="button" data-clear-condition="${escapeHtml(el.id)}" title="この検索条件だけ解除">${category}：${escapeHtml(label)}：${escapeHtml(text)} ×</button>`;
+    items.push(chip);
+    if(category==='保存追加')savedItems.push(chip);
   }
   const basis = state.profitSearchBasis === 'current-cap' ? '現相場の期待損益分岐上限で購入 × 現在出口相場。期待利益率はほぼ0%のため、10%以上などの条件とは両立しない場合があります（条件は保持）' : currentMode ? state.currentMarketSearchKind === "cap" ? "損益分岐上限から探す（購入時利益条件は不適用・未取得を0円にしない）" : "購入価格で黒字を探す：実店舗状態A／手入力 × 現在出口相場" : searchProfitView({}).label;
   const efficiencyCap = state.efficiencyBuy === 'current-cap' || state.efficiencyBuy === 'auto' && state.profitSearchBasis === 'current-cap';
   const efficiencyManual = state.efficiencyBuy === 'manual' || state.efficiencyBuy === 'auto' && currentMode && state.currentMarketManualPrice != null;
   const efficiencyBasis = `${efficiencyCap ? '現相場損益分岐上限・仮定' : efficiencyManual ? '手入力買値・仮定' : '新鮮な実店舗状態A（未取得は算出不可）'} × ${currentMode || efficiencyCap ? '現在出口相場（予測条件は不適用・保存保持）' : {current:'現在出口相場',central:'期間一致の中央予測',stress:'期間一致の供給ストレス'}[state.efficiencyScenario]}／返却${state.lockDays}＋売却${state.efficiencySaleDays ?? '未設定'}＋入金${state.efficiencyPayoutDays ?? '未設定'}日`;
-  target.innerHTML = `<strong>追加検索条件（プリセット切替でも保持）</strong><small>利益基準：${escapeHtml(basis)}／返却${state.lockDays}日。資金・売却先・発売年は変更しません。</small><div>${items.join("") || "追加条件なし"}</div><small>判定用条件（検索フィルターとは別）：目標利益¥${fmt.format(state.minExpectedProfit)}／期待利益率${state.minExpectedRoi}%／年換算${state.minAnnualEfficiency}%／総資金¥${fmt.format(state.psaCapital)}−ロック¥${fmt.format(state.lockedCapital)}−鑑定予備¥${fmt.format(state.gradingReserve)}。出口 ${escapeHtml({buyback:"買取店優先",marketplace:"フリマ優先",both:"両方で赤字回避"}[state.exitPolicy] || state.exitPolicy)}／利用店 ${escapeHtml(state.buybackStoreMode)}。</small><button type="button" data-open-profit-settings>資金・売却先・利益条件を確認</button>`;
-  target.innerHTML += `<small>単体資金効率の検索・表示基準：${escapeHtml(efficiencyBasis)}。個人の総資金は不使用${state.purchaseMode === 'snkr-raw' ? '／素体流しではPSA資金効率フィルター不適用' : ''}。</small>`;
+  target.innerHTML = `<strong>保存追加条件 ${savedItems.length}項目（URLにない条件も保持）</strong><div>${savedItems.join('')||'この端末の保存追加条件なし'}</div><details><summary>URL・その他の適用条件と計算基準を確認</summary><small>利益基準：${escapeHtml(basis)}／返却${state.lockDays}日。資金・売却先・発売年は変更しません。</small><div>${items.join("") || "追加条件なし"}</div><small>判定用条件（検索フィルターとは別）：目標利益¥${fmt.format(state.minExpectedProfit)}／期待利益率${state.minExpectedRoi}%／年換算${state.minAnnualEfficiency}%／総資金¥${fmt.format(state.psaCapital)}−ロック¥${fmt.format(state.lockedCapital)}−鑑定予備¥${fmt.format(state.gradingReserve)}。出口 ${escapeHtml({buyback:"買取店優先",marketplace:"フリマ優先",both:"両方で赤字回避"}[state.exitPolicy] || state.exitPolicy)}／利用店 ${escapeHtml(state.buybackStoreMode)}。</small><button type="button" data-open-profit-settings>資金・売却先・利益条件を確認</button><small>単体資金効率の検索・表示基準：${escapeHtml(efficiencyBasis)}。個人の総資金は不使用${state.purchaseMode === 'snkr-raw' ? '／素体流しではPSA資金効率フィルター不適用' : ''}。</small></details>`;
+}
+
+async function loadCandidateReductionAudit(target) {
+  const report=await fetchJsonMaybe('./data/candidate-reduction-audit.json');
+  if(!target.isConnected)return;
+  if(!report){target.textContent='比較監査未取得。版照合が完了するまで値を混在させません。';return;}
+  const saved=report.savedExtraConditionComparison;
+  const comparison=(label,row)=>row?`<h4>${escapeHtml(label)}</h4><small>同じ${row.commonCards}枚：${row.before}→${row.after}件／離脱${row.lostCount}・復帰${row.gainedCount}／追加${row.addedCards}枚。${escapeHtml(row.from||row.at||'')} ～ ${escapeHtml(row.to||row.at||'')}</small><p>段階理由（重複なし）：${escapeHtml(Object.entries(row.sequential||{}).map(([k,v])=>`${k} ${v}枚`).join('／')||'離脱なし')}</p><details><summary>離脱カード・前後値（先頭25枚）</summary>${(row.lost||[]).slice(0,25).map(r=>`<p><strong>${escapeHtml(r.name)} (${escapeHtml(r.id)})</strong><br>新規不合格：${escapeHtml(r.newlyFailed.join('／'))}／以前から：${escapeHtml(r.preexisting.join('／')||'なし')}<br>利益 ${r.before.expectedProfit??'未取得'}→${r.after.expectedProfit??'未取得'}円／利益率 ${r.before.expectedRoi?.toFixed(1)??'未取得'}→${r.after.expectedRoi?.toFixed(1)??'未取得'}%<br>出口 ${escapeHtml(r.before.exit||'未取得')}→${escapeHtml(r.after.exit||'未取得')}／購入価格 ${r.before.store??'未取得'}→${r.after.store??'未取得'}円／上限 ${r.before.limit??'未取得'}→${r.after.limit??'未取得'}円<br>PSA9仕入比率 ${r.before.psa9Ratio?.toFixed(1)??'未取得'}→${r.after.psa9Ratio?.toFixed(1)??'未取得'}%</p>`).join('')}</details>`:'';
+  target.innerHTML=`<small>直近共有URLの固定条件・保存時刻 ${escapeHtml(report.at)}。現在の画面設定とは別の検証です。旧データ基準 ${escapeHtml(report.comparisons?.dataOnly?.ref||'未保存')}。実閲覧時刻がない期間は比較不能。</small><p>URLのみ：参考探索${report.counts.referenceExploration}／購入価格待ち${report.counts.purchasePriceWaiting}（参考探索と重複）／今すぐ${report.counts.now}件。期間保留${report.counts.periodHeld}件。</p>${comparison('検証端末の保存追加条件による変化',{...saved,at:report.at})}${Object.entries(report.comparisons||{}).map(([k,v])=>comparison({timeOnly:'時間経過のみ',dataOnly:'データ更新のみ',codeOnly:'コード変更のみ'}[k]||k,v)).join('')}${report.daily?.commonCards?comparison('保存記録との比較（時刻差を含む）',report.daily):''}<small>${escapeHtml(report.definitions)} ${escapeHtml(report.incomparable.join('／'))}</small><a href='./data/candidate-reduction-audit.json' target='_blank' rel='noreferrer'>全離脱カード・重複理由JSON</a>`;
 }
 
 function renderPresetAudit(cards, {details=false} = {}) {
@@ -4240,6 +4269,10 @@ function renderPresetAudit(cards, {details=false} = {}) {
   const movement = availability?.comparison;
   const availabilityHtml = availability ? `<details><summary>購入先確認済みへの移行：${fmt.format(movement?.promoted || 0)}件（直近取得間）</summary><span>保存時のおまかせ ${fmt.format(availability.current.combined)}件 ／ 今すぐ ${fmt.format(availability.current.now)}件 ／ 価格待ち ${fmt.format(availability.current.priceWait)}件</span><span>在庫あり価格未取得 ${fmt.format(availability.current.missingOffer)}件 ／ 店舗価格が上限超過 ${fmt.format(availability.current.aboveLimit)}件</span><span>次回の店舗確認優先 ${fmt.format(availability.priorityCount || 0)}枚（未確認 ${fmt.format(availability.priorityBreakdown?.missingOffer || 0)}・上限に近い ${fmt.format(availability.priorityBreakdown?.nearLimit || 0)}）</span><span>今すぐから価格待ちへ ${fmt.format(movement?.demoted || 0)}件</span><small>${escapeHtml(movement?.status || "初回基準")}。基準は緩めず、状態Aの購入可能価格が確認できた場合だけ移行します。</small><a href="./data/candidate-availability-audit.json" target="_blank" rel="noreferrer">移行監査JSON</a></details>` : "";
   document.getElementById("presetAuditContent").innerHTML = `<b>分析可能 ${fmt.format(counts.total)}枚</b>${auditHtml}<small class="preset-count-note">価格待ちと実購入GOは別です。期間不一致は参考探索だけで、返却時の利益を保証しません。<a href="./data/preset-search-impact.json" target="_blank" rel="noreferrer">同一条件の修正前後監査</a>（公開時の固定条件、現在の設定とは別）</small>${availabilityHtml}${dailyHtml}`;
+  const content=document.getElementById('presetAuditContent');
+  content.insertAdjacentHTML('beforeend',`<details id='sharedCandidateComparison'><summary>直近共有URL：コード・データ・期限切れを分離した監査</summary><div>開いたときに監査JSONを取得</div></details>`);
+  const disclosure=document.getElementById('sharedCandidateComparison');
+  disclosure.addEventListener('toggle',()=>{if(disclosure.open&&!disclosure.dataset.loaded){disclosure.dataset.loaded='1';loadCandidateReductionAudit(disclosure.querySelector('div'));}});
 }
 
 function combinedPresetSort(left, right) {
@@ -5961,8 +5994,11 @@ function syncFromUI(event) {
 }
 
 async function init() {
+  const conditionDefaults=new Map([...document.querySelectorAll('.advanced-filters input, .advanced-filters select')].map(el=>[el.id,conditionValue(el)]));
   restoreQuickFilters();
+  const restoredConditions=new Map([...document.querySelectorAll('.advanced-filters input, .advanced-filters select')].map(el=>[el.id,conditionValue(el)]));
   readUrl();
+  captureConditionOrigins(conditionDefaults,restoredConditions);
   loadFavorites();
   loadActualResults();
   loadGradeObservations();

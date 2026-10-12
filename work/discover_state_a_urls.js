@@ -77,10 +77,10 @@ function canRecheck(card,item,state,now=Date.now()) {
   const stored=Date.parse(previous.nextRetryAt);
   return now>=Math.min(adaptive,Number.isFinite(stored)?stored:Infinity);
 }
-function select(cards,queue,state,now=Date.now(),limit=100) {
-  const eligible=cards.filter(card=>!card.hareruya2Url && queue.cards?.[card.id] && needs(queue.cards[card.id],'shopStateA')
+function select(cards,queue,state,now=Date.now(),limit=100,recovery={}) {
+  const eligible=cards.filter(card=>!card.hareruya2Url && queue.cards?.[card.id] && (needs(queue.cards[card.id],'shopStateA') || recovery[card.id])
     && canRecheck(card,queue.cards[card.id],state,now));
-  const ordered=eligible.sort((a,b)=>Number(queue.cards?.[b.id]?.p||0)-Number(queue.cards?.[a.id]?.p||0));
+  const ordered=eligible.sort((a,b)=>Number(Boolean(recovery[b.id]))-Number(Boolean(recovery[a.id])) || Number(queue.cards?.[b.id]?.p||0)-Number(queue.cards?.[a.id]?.p||0));
   const n=Math.max(1,Math.floor(limit*.25)),normal=[...eligible].sort((a,b)=>Date.parse(state.cards?.[a.id]?.lastAttemptAt||'1970-01-01')-Date.parse(state.cards?.[b.id]?.lastAttemptAt||'1970-01-01'));
   const priority=ordered.slice(0,limit-n),chosen=new Set(priority.map(c=>c.id));
   return [...priority,...normal.filter(c=>!chosen.has(c.id)).slice(0,n)];
@@ -92,7 +92,7 @@ async function run() {
   const audit={startedAt:new Date(start).toISOString(),attempted:0,newLinked:0,ambiguous:0,noCandidate:0,httpRequests:0,cacheHits:0,llmCalls:0,codexCalls:0,records:[]};
   if (!retry.eligible(state.sourceRetry,start)) {audit.stopReason=state.sourceRetry.error||state.sourceRetry.reason||'取得元の再試行・正規アクセス確認待ち';}
   else try {
-    const candidates=select(cards,queue,state,start,Number(process.env.URL_DISCOVERY_CARD_LIMIT||100));
+    const candidates=select(cards,queue,state,start,Number(process.env.URL_DISCOVERY_CARD_LIMIT||100),read('work/candidate-recovery-targets.json',{}).rows||{});
     const cache=state.collections;
     const collectionOptions={deadlineAt:start+budget,intervalMs:1200,onRequest:()=>audit.httpRequests++};
     const recentDiscovery=candidates.some(card=>retryPolicy(card,queue.cards[card.id],start).days<=3);

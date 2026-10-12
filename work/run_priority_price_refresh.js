@@ -51,6 +51,7 @@ function main() {
   const sources = read("work/source-update-runs.json").sources || {};
   // Rebuild eligibility from saved data before selecting prices; no HTTP or LLM here.
   if (!run('work/build_purchase_limit_audit.js')) throw new Error('Purchase target queue rebuild failed');
+  if (!run('work/audit_candidate_reduction.js')) throw new Error('Fixed shared-search recovery queue rebuild failed');
   if (!run('work/audit_purchase_price_recovery.js', ['--baseline'])) throw new Error('Freshness baseline save failed');
   const config = require("./priority_price_queue.js").timingConfig(ROOT);
   const evidenceBefore=require('./efficiency_evidence_queue').pending(read('data/pokemon-cards.json',[]),read('data/shop-buyback-summary.json'));
@@ -73,6 +74,7 @@ function main() {
     if (!run(script)) throw new Error(`Required rebuild failed: ${script}`);
   }
   if (!run('work/audit_purchase_price_recovery.js')) throw new Error('Purchase freshness outcome audit failed');
+  if (!run('work/audit_candidate_reduction.js')) throw new Error('Fixed shared-search outcome audit failed');
   if (!run('work/finalize_update_status.js')) throw new Error('Update status rebuild failed');
   save();
   // Source failures remain visible, but only required rebuild failures stop validation.

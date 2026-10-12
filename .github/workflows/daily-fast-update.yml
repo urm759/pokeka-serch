@@ -61,6 +61,7 @@ jobs:
           node work/audit_acquisition_progress.js
           node work/audit_link_coverage.js
           node work/audit_purchase_price_recovery.js
+          node work/audit_candidate_reduction.js
           node work/finalize_update_status.js
       - name: Run fast regression tests
         run: |
@@ -132,6 +133,7 @@ jobs:
           git add work/shop_buyback_history.json work/shop_buyback_catalog.json work/shop_buyback_unmatched.json work/shop_buyback_item_matches.json work/shop_buyback_image_matches.json work/shop_buyback_quarantine.json
           git add work/priority-price-checkpoint.json work/priority-price-http-cache.json
           git add work/purchase-price-targets.json work/purchase-price-observation-snapshot.json work/purchase-price-recovery-baseline.json work/purchase-price-recovery-history.json
+          git add work/candidate-search-last.json work/candidate-search-history work/candidate-recovery-targets.json
           git add work/fixed-price-reference.json work/priority-freshness-history.json
           git add work/completion-outcomes-baseline.json work/completion-outcomes-last.json work/completion-outcome-history work/card-completion-queue.json
           git add work/scheduled-cycle-baseline-daily.json
