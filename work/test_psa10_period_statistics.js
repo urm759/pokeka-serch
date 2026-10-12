@@ -1,5 +1,6 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const {statistics,dailyRows,actualRows,build,shard,observationStatus}=require('./build_psa10_period_statistics');
+require('./test_psa10_long_observations');
 const rows=dailyRows([['2026-10-01',1,100],['2026-10-01',1,200],['2026-10-04',1,400],['2026-10-11',1,900],['2026-10-05',1,null],['2026-10-06',1,0],['2026-10-07',1,Infinity]]);
 assert.equal(rows.length,3);
 const seven=statistics(rows,'2026-10-07',7,0,2);assert.equal(seven.mean,300);assert.equal(seven.count,2);assert.equal(seven.observedDays,2);assert.equal(seven.median,300);
@@ -24,7 +25,12 @@ for(const[id,row]of Object.entries(summary.cards)) {
   assert.equal(row[5],detail.snapshots[90].mean);assert.equal(row[6],detail.snapshots[90].observedDays);
   assert.equal(row[7],detail.snapshots[7].ageDays);assert.equal(row[8],detail.snapshots[90].ageDays);
 }
-for(const days of [7,30,90]) assert.equal(summary.coverage.byPeriod[days].meanCards,chunks.reduce((n,c)=>n+Object.values(c.cards).filter(r=>r.snapshots[days].count>0).length,0));
+for(const days of [7,30,90,200]) assert.equal(summary.coverage.byPeriod[days].meanCards,chunks.reduce((n,c)=>n+Object.values(c.cards).filter(r=>r.snapshots[days].count>0).length,0));
+for(const [id,row] of Object.entries(summary.cards)) {
+  const detail=chunks[shard(id)].cards[id].snapshots[200];
+  assert.equal(row[9],detail.mean); assert.equal(row[10],detail.observedDays);
+  assert.equal(detail.missingDays,200-detail.observedDays);
+}
 const app=fs.readFileSync(path.join(root,'app.js'),'utf8');const init=app.slice(app.indexOf('async function init()'),app.indexOf('// Browser event bindings start here;'));
 assert(!init.includes('psa10-periods/'),'90-day detail must not load at startup');
 const finance=app.slice(app.indexOf('function calculateCard'),app.indexOf('function calculateCard')+1000);

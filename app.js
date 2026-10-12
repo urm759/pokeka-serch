@@ -4052,20 +4052,20 @@ function psa10PeriodShard(id) { let h = 0; for (const c of String(id)) h = (h * 
 function psa10PeriodPanel(card, profitView) {
   const id = card.id;
   const row = state.psa10PeriodSummary?.cards?.[id];
-  const periods = [[7,row?.[0],row?.[1],row?.[7]],[30,row?.[2],row?.[3],row?.[4]],[90,row?.[5],row?.[6],row?.[8]]];
+  const periods = [[7,row?.[0],row?.[1],row?.[7]],[30,row?.[2],row?.[3],row?.[4]],[90,row?.[5],row?.[6],row?.[8]],[200,row?.[9],row?.[10],row?.[11]]];
   const signedRate = n => Number.isFinite(n) ? `${n > 0 ? '+' : ''}${n.toFixed(2)}%` : '算出不可';
   return `<div class="psa10-period-summary">${periods.map(([days,mean,n,age])=>{
     const latest = Number.isFinite(age) ? new Date(Date.parse(state.psa10PeriodSummary.asOf+'T00:00:00Z')-age*86400000).toISOString().slice(0,10) : '未取得';
     const sale = explorationMetrics.meanSale(mean,profitView.purchasePrice,state.fee,state.saleFeeRate,state.saleExtraCost);
     const delta = card.psa10 > 0 ? explorationMetrics.percent(card.psa10,mean) : null;
-    return `<span>${days}日観測平均<b>${Number.isFinite(mean) ? `¥${fmt.format(mean)}` : '蓄積中'}</b><small>現相場との差 ${signedRate(delta)}<br>平均売却PSA10時利益率 ${signedRate(sale.roi)}<br>${n ?? 0}/${days}観測日・最終 ${latest}${Number.isFinite(mean) && n < state.psa10PeriodSummary.minimumObservationDays[days] ? '・観測不足' : ''}${age > 2 ? '・古い観測' : ''}</small></span>`;
-  }).join('')}<details><summary>観測平均・利益試算の基準</summary><small>国内日次・実成約平均とは別。欠測補完なし。現相場÷平均−1：＋は高い、−は低い、0%は同額。平均価格の売却はフリマ仮定（手数料${state.saleFeeRate}%・その他¥${fmt.format(state.saleExtraCost)}・鑑定費¥${fmt.format(state.fee)}）。検索と同じ買値 ${Number.isFinite(profitView.purchasePrice) ? `¥${fmt.format(profitView.purchasePrice)}` : '未取得・算出不可'}。実際の買取採算・PSA9を含む期待利益率とは別。将来売値の保証ではなく上限・GOへ未反映。</small></details></div>`;
+    return `<span>${days === 200 ? '200暦日内の観測平均・参考' : `${days}日観測平均`}<b>${Number.isFinite(mean) ? `¥${fmt.format(mean)}` : '蓄積中'}</b><small>現相場との差 ${signedRate(delta)}<br>平均売却PSA10時利益率 ${signedRate(sale.roi)}<br>${n ?? 0}/${days}観測日・欠測${days - (n ?? 0)}日<br>最終 ${latest}${Number.isFinite(mean) && n < (state.psa10PeriodSummary.minimumObservationDays[days] ?? days) ? '・蓄積中／観測不足' : ''}${age > 2 ? '・古い観測' : ''}${days === 200 && row?.[12] > 0 ? '・旧記録の取得根拠未確認' : ''}</small></span>`;
+  }).join('')}<details><summary>観測平均・利益試算の基準</summary><small>日本時間の直近暦日・同日1記録（株の200取引日とは別）。国内日次・実成約平均とは別。欠測補完なし。200日未充足や旧記録の取得根拠未確認は参考値で、完成した200日移動平均ではありません。現相場÷平均−1：＋は高い、−は低い、0%は同額。平均価格の売却はフリマ仮定（手数料${state.saleFeeRate}%・その他¥${fmt.format(state.saleExtraCost)}・鑑定費¥${fmt.format(state.fee)}）。検索と同じ買値 ${Number.isFinite(profitView.purchasePrice) ? `¥${fmt.format(profitView.purchasePrice)}` : '未取得・算出不可'}。実際の買取採算・PSA9を含む期待利益率とは別。将来売値の保証ではなく上限・GOへ未反映。</small></details></div>`;
 }
 function psa10PeriodDetailHtml(id) {
   const row = psa10PeriodDetails.get(id);
   if (!row) return '<p class="helper">国内PSA10期間集計の詳細を必要時に読み込みます。</p>';
   const money = n => Number.isFinite(n) ? `¥${fmt.format(n)}` : '未取得';
-  const snapshots = [7,30,90].map(days => { const s = row.snapshots[days]; return `<tr><th>${days}日</th><td>${money(s.mean)}</td><td>${money(s.median)}</td><td>${s.observedDays}/${days}日（必要${s.requiredObservedDays ?? days}日）</td><td>${escapeHtml(s.latestDate || '未取得')}</td><td>${escapeHtml(s.status || '参考値・観測充足未確認')}</td></tr>`; }).join('');
+  const snapshots = [7,30,90,200].map(days => { const s = row.snapshots[days]; if (!s) return `<tr><th>${days}暦日</th><td colspan="5">蓄積中・旧形式の要約</td></tr>`; return `<tr><th>${days}暦日</th><td>${money(s.mean)}</td><td>${money(s.median)}</td><td>${s.observedDays}/${days}日・欠測${s.missingDays ?? days-s.observedDays}日（必要${s.requiredObservedDays ?? days}日）</td><td>${escapeHtml(s.latestDate || '未取得')}</td><td>${escapeHtml(s.status || '参考値・観測充足未確認')}</td></tr>`; }).join('');
   const trades = row.actualTrades ? [7,30,90].map(days => { const s = row.actualTrades[days]; return `<p>${days}日実成約：平均 ${money(s.mean)}／中央値 ${money(s.median)}／${s.count}件／${s.sufficient ? '件数条件達成・参考表示' : '参考値・件数不足'}</p>`; }).join('') : '<p>国内PSA10個別実成約の平均・中央値・件数：未取得（0件や日次観測数に代用しません）</p>';
   return `<section class="psa10-period-detail"><h4>PSA10直近平均・中央値（国内・参考）</h4><div class="table-scroll"><table><thead><tr><th>期間</th><th>日次相場平均</th><th>中央値</th><th>観測日数</th><th>最終観測日</th><th>状態</th></tr></thead><tbody>${snapshots}</tbody></table></div>${trades}<small>同日1記録。欠損日は補完せず、海外・出品・買取を混ぜません。対象期間の終日は ${escapeHtml(state.psa10PeriodSummary?.asOf || '未取得')}。集約相場の最終観測日は個別成約日ではありません。</small></section>`;
 }
@@ -6063,7 +6063,7 @@ async function init() {
     if (averageCoverage) {
       const coverage = state.psa10PeriodSummary?.coverage;
       averageCoverage.textContent = coverage ? `国内PSA10日次相場：履歴保有 ${fmt.format(coverage.historyCards ?? coverage.snapshotCards)}枚。`
-        + [7,30].map(days => `${days}日平均算出 ${fmt.format(coverage.byPeriod?.[days]?.meanCards || 0)}枚／観測${state.psa10PeriodSummary.minimumObservationDays?.[days] ?? days}日以上 ${fmt.format(coverage.byPeriod?.[days]?.observationSufficientCards || 0)}枚`).join('。')
+        + [7,30,90,200].map(days => `${days}暦日平均算出 ${fmt.format(coverage.byPeriod?.[days]?.meanCards || 0)}枚／観測条件充足 ${fmt.format(coverage.byPeriod?.[days]?.observationSufficientCards || 0)}枚${days === 200 ? `／完全200日 ${fmt.format(coverage.byPeriod?.[days]?.completeCalendarCards || 0)}枚` : ''}`).join('。')
         + `。国内個別実成約 ${fmt.format(coverage.actualTradeCards)}枚とは別集計。欠測補完なし・すべて参考表示。` : '国内PSA10日次履歴：未取得';
     }
     state.linkCoverage = await fetchJsonMaybe("./data/link-coverage.json");

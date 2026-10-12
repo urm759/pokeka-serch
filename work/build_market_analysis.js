@@ -5,8 +5,8 @@ const marketModel = require("../market-analysis.js");
 const ROOT = path.join(__dirname, "..");
 const HISTORY_PATH = path.join(__dirname, "market_stability_history.json");
 const SUMMARY_PATH = path.join(ROOT, "data", "market-stability-summary.json");
-// Preserve enough actual dates to validate 147-day returns; never manufacture old observations.
-const HISTORY_DAYS = 181;
+// Keep a calendar year for long observation windows and return validation; never manufacture history.
+const HISTORY_DAYS = 365;
 const DAY_MS = 86400000;
 
 function readJson(filePath, fallback) {
@@ -34,12 +34,12 @@ function finite(value) {
   return Number.isFinite(number) ? number : null;
 }
 
-function compactRow(date, card, sameDayPrevious = null) {
+function compactRow(date, card, sameDayPrevious = null, observation = undefined) {
   const rawPrice = positive(card.price);
   const psaPrice = positive(card.snkPsa10Price ?? card.psa10Price);
   const rawInstantLow = Math.min(...[rawPrice, positive(sameDayPrevious?.[8]), positive(sameDayPrevious?.[1])].filter(Boolean));
   const psaInstantLow = Math.min(...[psaPrice, positive(sameDayPrevious?.[9]), positive(sameDayPrevious?.[2])].filter(Boolean));
-  return [
+  const row = [
     date,
     rawPrice,
     psaPrice,
@@ -51,6 +51,8 @@ function compactRow(date, card, sameDayPrevious = null) {
     Number.isFinite(rawInstantLow) ? rawInstantLow : null,
     Number.isFinite(psaInstantLow) ? psaInstantLow : null,
   ];
+  if (observation !== undefined) row.push(observation);
+  return row;
 }
 
 function seedHistory(history) {
@@ -71,20 +73,25 @@ function seedHistory(history) {
   }
 }
 
-function appendCurrent(history, cards, date) {
+function appendCurrent(history, cards, date, sourceEvidence = null) {
   const cutoff = Date.parse(`${date}T00:00:00Z`) - (HISTORY_DAYS - 1) * DAY_MS;
   for (const card of cards) {
-    if (!card?.id || !(positive(card.price) && positive(card.snkPsa10Price))) continue;
+    if (!card?.id || !positive(card.snkPsa10Price)) continue;
     const previous = Array.isArray(history.cards[card.id]) ? history.cards[card.id] : [];
+    const observation = require('./psa10_observation_evidence').confirmation(card, date, sourceEvidence);
+    if (!observation) continue;
     const sameDayPrevious = previous.find((row) => String(row?.[0] || "").slice(0, 10) === date) || null;
     const rows = previous.filter((row) => {
       const timestamp = Date.parse(`${String(row?.[0] || "").slice(0, 10)}T00:00:00Z`);
       return Number.isFinite(timestamp) && timestamp >= cutoff && String(row[0]).slice(0, 10) !== date;
     });
-    rows.push(compactRow(date, card, sameDayPrevious));
+    // A failed fetch never appends a calendar day; a real same-day receipt replaces it once.
+    rows.push(compactRow(date, card, sameDayPrevious, observation));
     history.cards[card.id] = rows.sort((a, b) => String(a[0]).localeCompare(String(b[0])));
   }
   history.dates = [...new Set(Object.values(history.cards).flatMap((rows) => rows.map((row) => row[0])))].sort();
+  history.retentionDays = HISTORY_DAYS;
+  history.psa10EvidenceSchema = 'row[10]=[price confirmation timestamp, identity hash]; null=unverified; absent=legacy reference';
 }
 
 function windowChange(rows, days) {
@@ -145,7 +152,12 @@ function main() {
   if (!history.cards || typeof history.cards !== "object") history.cards = {};
   seedHistory(history);
   const updatedAt = validDate(meta.updatedAt || meta.generatedAt) || jstDate();
-  appendCurrent(history, targetCards, updatedAt);
+  const sourceRun = readJson(path.join(ROOT, 'work', 'source-update-runs.json'), {}).sources?.toreca;
+  const inventory = readJson(path.join(ROOT, 'work', 'toreca-source-inventory.json'), {});
+  const sourceIdentities = new Map((inventory.updatedAt === updatedAt ? inventory.cards || [] : [])
+    .map(card => [card.id, card.identityKey]));
+  // Bulk-confirmed unchanged prices are observations too; only analysis stays incremental.
+  appendCurrent(history, cards, updatedAt, { meta, sourceRun, sourceIdentities });
 
   const changes30 = Object.values(history.cards).map((rows) => windowChange(rows, 30)).filter(Number.isFinite);
   const marketChange30 = marketModel.median(changes30);
@@ -213,8 +225,9 @@ function main() {
   }
 
   const historyText = JSON.stringify(history);
-  if (Buffer.byteLength(historyText) > 75 * 1024 * 1024) throw new Error("Domestic history exceeds storage safety budget; previous history retained");
-  fs.writeFileSync(HISTORY_PATH, historyText, "utf8");
+  if (Buffer.byteLength(historyText) > 512 * 1024 * 1024) throw new Error("Domestic history exceeds 365-day storage safety budget; previous history retained");
+  fs.writeFileSync(HISTORY_PATH + '.tmp', historyText, "utf8");
+  fs.renameSync(HISTORY_PATH + '.tmp', HISTORY_PATH);
   fs.writeFileSync(SUMMARY_PATH, JSON.stringify({
     updatedAt,
     historyDays: history.dates.length > 1
@@ -229,4 +242,5 @@ function main() {
   console.log(JSON.stringify({ updatedAt, historyDates: history.dates.length, cards: Object.keys(summaries).length, incremental: Boolean(changedSet), processedCards: targetCards.length }));
 }
 
-main();
+if (require.main === module) main();
+module.exports = { HISTORY_DAYS, compactRow, appendCurrent };
