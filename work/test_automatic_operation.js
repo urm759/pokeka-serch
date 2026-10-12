@@ -36,6 +36,7 @@ const release=require('./acquisition_retry').lock(path.join(root,'work/priority-
 assert.throws(()=>execute(root,()=>calls++,{now,catchup:true}),/already running/);
 release();
 const workflow=fs.readFileSync(path.join(__dirname,'../.github/workflows/watch-data-health.yml'),'utf8');
+assert(workflow.includes('47 * * * *'),'catchup checks are offset hourly; acquisition remains behind the shared gate');
 assert(workflow.includes('node work/run_priority_price_refresh.js --catchup'));
 assert(workflow.includes("steps.catchup_validation.outcome == 'success'"),'invalid acquired data must not be published');
 assert(workflow.includes('group: all-site-data-refresh'));

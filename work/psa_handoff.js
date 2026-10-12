@@ -50,7 +50,17 @@ function prepareInputs(root = ROOT) {
         if (!fs.existsSync(target) && !fs.existsSync(target + '.js')) throw new Error('PSA runtime dependency missing: ' + match[1]);
       }
     }
-    const result = { status: "latest-fetched-main", commit, preparedAt: new Date().toISOString(), quarantinedUrls, manifestPath: path.join(snapshotDirectory, "manifest.json"), priorityPath: path.join(snapshotDirectory, "priority.json"),
+    const incoming = JSON.parse(show(`${commit}:data/psa-official-populations.json`));
+    const local = read(path.join(root,'data/psa-official-populations.json'),{rows:[]});
+    const savedRecovery = merge(local.rows || [],incoming.rows || []);
+    if(savedRecovery.audit.rejected)throw new Error('Invalid published PSA rows; local data retained');
+    if(savedRecovery.audit.added || savedRecovery.audit.refreshed)atomicWrite(path.join(root,'data/psa-official-populations.json'),{
+      ...local,rows:savedRecovery.rows,totalRows:savedRecovery.rows.length});
+    const checkpoint = JSON.parse(show(`${commit}:work/psa-fetch-progress.json`));
+    atomicWrite(path.join(root,'work/psa-fetch-progress.json'),mergeCheckpoint(read(path.join(root,'work/psa-fetch-progress.json')),checkpoint));
+    const result = { status: "latest-fetched-main", commit, preparedAt: new Date().toISOString(), quarantinedUrls,
+      savedRecovery:{added:savedRecovery.audit.added,refreshed:savedRecovery.audit.refreshed,changed:savedRecovery.audit.changed,httpRequests:0},
+      manifestPath: path.join(snapshotDirectory, "manifest.json"), priorityPath: path.join(snapshotDirectory, "priority.json"),
       collectorPath:path.join(snapshotDirectory,'update_psa_official_populations.js'),historyPath:path.join(snapshotDirectory,'build_psa_history.js'),runtimeHashes,httpAcquisitionRequests: 0 };
     atomicWrite(resultFile, result); return result;
   } catch (error) {

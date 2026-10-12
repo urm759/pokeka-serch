@@ -55,6 +55,13 @@ try {
     Remove-Item Env:PSA_PRIORITY_QUEUE_PATH -ErrorAction SilentlyContinue
     Invoke-Step -Name 'PSA priority queue build' -Operation { & $Node (Join-Path $PSScriptRoot 'build_psa_priority_queue.js') } | Out-Null
   }
+  # Latest published rows/checkpoints are handed back before acquisition. They
+  # are saved recovery, not newly fetched rows in this run's result.
+  $BeforeRows = @{}
+  $beforePayload = Get-Content $PsaDataPath -Raw | ConvertFrom-Json
+  foreach ($row in $beforePayload.rows) {
+    $BeforeRows["$($row.setCode)|$($row.cardNo)|$($row.cardName)|$($row.sourceUrl)"] = "$($row.psa10Count)|$($row.psaTotal)"
+  }
   Invoke-Step -Name 'PSA official population update' -MaxAttempts $Retries -Operation { & $Node $CollectorPath } | Out-Null
   $fetchAudit = Get-Content $HoldPath -Raw | ConvertFrom-Json
   if ($fetchAudit.refreshedCount -le 0) { throw 'No newly verified PSA values; preserved rows are not new acquisition.' }
@@ -66,7 +73,7 @@ try {
   $afterPayload = Get-Content $PsaDataPath -Raw | ConvertFrom-Json
   $updatedCount = 0
   foreach ($row in $afterPayload.rows) {
-    $key = "$($row.setCode)|$($row.cardNo)|$($row.cardName)"
+    $key = "$($row.setCode)|$($row.cardNo)|$($row.cardName)|$($row.sourceUrl)"
     $value = "$($row.psa10Count)|$($row.psaTotal)"
     if (-not $BeforeRows.ContainsKey($key) -or $BeforeRows[$key] -ne $value) { $updatedCount += 1 }
   }
@@ -79,7 +86,8 @@ try {
     acquiredCount = $fetchAudit.refreshedCount
     savedTotalCount = @($afterPayload.rows).Count
     updatedCount = $updatedCount
-    newAcquiredCount = @($afterPayload.rows | Where-Object { -not $BeforeRows.ContainsKey("$($_.setCode)|$($_.cardNo)|$($_.cardName)") }).Count
+    newAcquiredCount = @($afterPayload.rows | Where-Object { -not $BeforeRows.ContainsKey("$($_.setCode)|$($_.cardNo)|$($_.cardName)|$($_.sourceUrl)") }).Count
+    publishedSavedRecovery = $inputs.savedRecovery
     fetchFailureCount = @($fetchAudit.records | Where-Object { $_.error }).Count
     sourceState = if ($fetchAudit.status -ne 'success') { '部分取得・未巡回または停止対象あり' } elseif ($updatedCount -gt 0) { '取得成功・データ更新あり' } else { '取得成功・データ元更新なし' }
     error = $null

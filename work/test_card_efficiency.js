@@ -23,6 +23,11 @@ const card={id:'fixture',price:19000,currentStoreOffer:{value:10000,available:tr
   testView:{eligible:true,reasons:[],warnings:['PSA9推定値'],rawCap:16778,capState:'available',cap:16500,exitLabel:'フリマ'},
   buyLimits:{clean:{buybackExit:{scenarios:{current:{expectedSale:25000,travelCost:1000}}}}}};
 let e=api.cardEfficiency(card,now);assert.equal(e.purchasePrice,10000);assert.equal(e.profit,6778);assert.equal(e.investment,21190);close(e.annual,example.annual);
+const previousHurdle=s.minAnnualEfficiency,previousFilter=s.efficiencyMin;
+s.minAnnualEfficiency=80;s.efficiencyMin=40;
+assert.equal(api.cardEfficiency(card,now).profit,6778,'judgment/search hurdles are not extra costs');
+close(api.cardEfficiency(card,now).annual,example.annual);
+s.minAnnualEfficiency=previousHurdle;s.efficiencyMin=previousFilter;
 const key=api.computationKey();s.efficiencyMin=50;s.efficiencySaleDays=14;
 assert.equal(api.computationKey(),key,'search/wait settings never trigger full-card prediction/limit recalculation');
 e=api.cardEfficiency(card,now);assert.equal(e.days,164);

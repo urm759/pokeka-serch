@@ -67,6 +67,11 @@ assert(fs.readFileSync(path.join(producer, "USER-NOTES.txt"), "utf8").includes("
 assert.deepEqual(publish(producer, { scripts: [] }).published, [], "acknowledged packet is not republished");
 assert(fs.existsSync(packetFile), "immutable saved packet retained after publication");
 const inputs = prepareInputs(producer);
+const restoredRows=JSON.parse(fs.readFileSync(path.join(producer,'data/psa-official-populations.json'))).rows;
+assert.equal(restoredRows.length,2);
+assert.equal(restoredRows.find(row=>row.cardNo==='126').psa10Count,102,'published newer rows are handed back without fetching');
+assert.equal(JSON.parse(fs.readFileSync(path.join(producer,'work/psa-fetch-progress.json'))).completedUrls[0],'newer-checkpoint');
+assert(inputs.savedRecovery.added>=1);
 assert.equal(inputs.status, "latest-fetched-main");
 assert.equal(inputs.httpAcquisitionRequests, 0);
 assert.equal(JSON.parse(fs.readFileSync(inputs.priorityPath)).rows[0].cardId, "new-card");
