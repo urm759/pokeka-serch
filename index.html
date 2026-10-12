@@ -204,6 +204,22 @@
 
 <details class="advanced-filters grouped-search" id="additionalSearchSettings">
 <summary><span>詳細検索 / 採算・余裕率・PSA9・取引・予測</span><small>適用条件は上に常時表示。計算設定・GO基準とは別</small></summary>
+<details class="advanced-filters observation-settings">
+  <summary><span>PSA10観測平均との乖離率</span><small>7・30・90・200暦日／複数期間はAND</small></summary>
+  <div class="controls controls-primary">
+    <label class="control"><span>7日乖離率 下限 %</span><input id="observation7MinInput" type="number" step="any" placeholder="条件なし" /></label>
+    <label class="control"><span>7日乖離率 上限 %</span><input id="observation7MaxInput" type="number" step="any" placeholder="条件なし" /></label>
+    <label class="control"><span>30日乖離率 下限 %</span><input id="observation30MinInput" type="number" step="any" placeholder="条件なし" /></label>
+    <label class="control"><span>30日乖離率 上限 %</span><input id="observation30MaxInput" type="number" step="any" placeholder="条件なし" /></label>
+    <label class="control"><span>90日乖離率 下限 %</span><input id="observation90MinInput" type="number" step="any" placeholder="条件なし" /></label>
+    <label class="control"><span>90日乖離率 上限 %</span><input id="observation90MaxInput" type="number" step="any" placeholder="条件なし" /></label>
+    <label class="control"><span>200日乖離率 下限 %</span><input id="observation200MinInput" type="number" step="any" placeholder="条件なし" /></label>
+    <label class="control"><span>200日乖離率 上限 %</span><input id="observation200MaxInput" type="number" step="any" placeholder="条件なし" /></label>
+    <label class="check-control"><input id="observationIncludeReferenceInput" type="checkbox" checked />観測不足の参考平均を含める（購入GOとは別）</label>
+    <p class="filter-explanation">（現相場÷観測平均−1）×100。マイナス＝平均より安い、0%＝同額、プラス＝高い。下限−20／上限0は0〜20%安いカード。空欄＝条件なし、0は有効、境界を含みます。複数期間はAND。平均未取得は指定した期間だけ除外。古い観測は警告を保持し、平均以下でもGOへ昇格しません。</p>
+    <p id="observationFilterStatus" class="helper" role="status" aria-live="polite">観測対象数を確認中</p>
+  </div>
+</details>
 <details class="advanced-filters purchase-comparison-settings">
         <summary><span>購入価格・仕入れ余裕率</span><small>表示した2価格の参考比較・GO判定とは別</small></summary>
         <div class="controls controls-primary">
@@ -926,9 +942,9 @@
   <script src="./psa-plan-model.js?v=20261010-isolation-v1"></script>
   <script src="./keyed-card-renderer.js?v=20261010-v1"></script>
   <a class="return-to-filters" href="#searchConditions">検索条件へ</a>
-  <script src="./exploration-metrics.js?v=20261011-efficiency-v1"></script>
-  <script src="./search-controls.js?v=20261012-inventory-v1"></script>
+  <script src="./exploration-metrics.js?v=20261013-observation-search-v1"></script>
+  <script src="./search-controls.js?v=20261013-observation-search-v1"></script>
   <script src="./settings-disclosure.js?v=20261011-disclosure-v1"></script>
-  <script src="./app.js?v=20261013-observation-200-v1"></script>
+  <script src="./app.js?v=20261013-observation-search-v1"></script>
 </body>
 </html>

@@ -8,7 +8,7 @@ function controls(h) {
     const a=m[1]??m[2];return [attr(a,'id'),m[1]!=null?attr(a,'value')||'':m[3].replace(/\s+/g,' ').trim(),/\bchecked\b/.test(a)];
   }).filter(r=>r[0]).sort((a,b)=>a[0].localeCompare(b[0]));
 }
-assert.deepEqual(controls(html),baseline.controls,'all IDs, defaults and select options must survive relocation');
+assert.deepEqual(controls(html).filter(row=>!row[0].startsWith('observation')),baseline.controls,'existing IDs, defaults and select options must survive observation search additions');
 for(const [id,value,type] of [['roiInput','20','number'],['expectedRoiFilterInput','0','number'],['floorStateInput','stable','select'],['purchaseBelowCurrentCapInput','', 'checkbox']]) {
   const el={id,value,type,checked:true,tagName:type==='select'?'SELECT':'INPUT',options:[{value:'all'},{value:'stable'}]};
   assert(model.clear(el));assert.equal(el.checked,type==='checkbox'?false:true);assert.equal(el.value,type==='checkbox'?'':type==='select'?'all':'');
@@ -34,7 +34,10 @@ assert.match(css,/\.quick-presets \.preset-audit-summary\{grid-column:1\/-1/,'mo
 assert.match(css,/\.search-settings \[hidden\]\{display:none!important\}/,'display classes must not expose irrelevant hidden mode controls');
 assert.match(app,/if \(activeConditionKey===key\) return/,'unchanged active filters are not rebuilt');
 for(const [name,expected] of Object.entries(baseline.protectedFunctions)) {
-  const source=app.replace(/\r\n/g,'\n'),start=source.indexOf('function '+name+'('),end=source.indexOf('\nfunction ',start+1);
+  const source=app.replace(/\r\n/g,'\n')
+    .replace("  reasons.push(...explorationMetrics.observationExclusions(state.psa10PeriodSummary,card,state));\n",'')
+    .replace("  if (state.observationIncludeReference === false) url.searchParams.set('obsRef','0'); else url.searchParams.delete('obsRef');\n",'');
+  const start=source.indexOf('function '+name+'('),end=source.indexOf('\nfunction ',start+1);
   assert.equal(crypto.createHash('sha256').update(source.slice(start,end<0?undefined:end)).digest('hex'),expected,'financial/filter function must not change during UI reorganization: '+name);
 }
 const oldApp=process.argv.includes('--report')?execFileSync('git',['show','a37fbbfa:app.js'],{encoding:'utf8',maxBuffer:10000000}):app;

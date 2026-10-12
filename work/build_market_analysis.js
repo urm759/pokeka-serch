@@ -151,13 +151,15 @@ function main() {
   const history = readJson(HISTORY_PATH, { dates: [], cards: {} });
   if (!history.cards || typeof history.cards !== "object") history.cards = {};
   seedHistory(history);
-  const updatedAt = validDate(meta.updatedAt || meta.generatedAt) || jstDate();
+  const receipt = readJson(path.join(ROOT,'data','psa10-observation-receipt.json'),null);
+  const updatedAt = require('./psa10_observation_evidence').calendarDay(receipt?.observedAt)
+    || validDate(meta.updatedAt || meta.generatedAt) || jstDate();
   const sourceRun = readJson(path.join(ROOT, 'work', 'source-update-runs.json'), {}).sources?.toreca;
   const inventory = readJson(path.join(ROOT, 'work', 'toreca-source-inventory.json'), {});
   const sourceIdentities = new Map((inventory.updatedAt === updatedAt ? inventory.cards || [] : [])
     .map(card => [card.id, card.identityKey]));
   // Bulk-confirmed unchanged prices are observations too; only analysis stays incremental.
-  appendCurrent(history, cards, updatedAt, { meta, sourceRun, sourceIdentities });
+  appendCurrent(history, cards, updatedAt, { meta, sourceRun, sourceIdentities, receipt });
 
   const changes30 = Object.values(history.cards).map((rows) => windowChange(rows, 30)).filter(Number.isFinite);
   const marketChange30 = marketModel.median(changes30);

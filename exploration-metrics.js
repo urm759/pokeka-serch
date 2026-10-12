@@ -55,5 +55,36 @@
       rate30:observed ? posted / observed * 100 : null,averageShops30:dates.size ? posted / dates.size : null,
       retrievalCoverage:shops.length ? observed / (shops.length * 30) * 100 : null};
   }
-  return {percent,inRange,offerPrice,meanSale,atPurchase,efficiency,coverage};
+  const observationPeriods = [7,30,90,200];
+  function observation(summary, id, current, days) {
+    const indices = {7:[0,1,7],30:[2,3,4],90:[5,6,8],200:[9,10,11]}[days];
+    const row = summary?.cards?.[id];
+    const [mean,count,age] = indices ? indices.map(i=>row?.[i]) : [];
+    const valid = finite(mean) && mean > 0 && Number.isInteger(count) && count > 0 && count <= days;
+    const required = summary?.minimumObservationDays?.[days] ?? days;
+    const reference = !valid || count < required || days === 200 && row?.[12] > 0;
+    const latest = finite(age) && age >= 0 && Number.isFinite(Date.parse(summary?.asOf))
+      ? new Date(Date.parse(summary.asOf+'T00:00:00Z')-age*86400000).toISOString().slice(0,10) : null;
+    return {days,mean:valid ? mean : null,count:valid ? count : null,age:finite(age) ? age : null,
+      delta:valid && finite(current) && current > 0 ? percent(current,mean) : null,reference,latest,
+      stale:!latest || age > (summary?.staleObservationDays ?? 2)};
+  }
+  function observationExclusions(summary, card, settings) {
+    const reasons = [];
+    for (const days of observationPeriods) {
+      const minimum = settings['observation'+days+'Min'], maximum = settings['observation'+days+'Max'];
+      if (minimum == null && maximum == null) continue;
+      const label = days+'日観測乖離率';
+      if (minimum != null && maximum != null && minimum > maximum) { reasons.push(label+'・下限＞上限'); continue; }
+      const value = observation(summary,card.id,card.psa10,days);
+      if (value.delta == null) reasons.push(label+'・平均または現相場未取得');
+      else if (value.reference && settings.observationIncludeReference === false) reasons.push(label+'・観測不足の参考値を対象外');
+      else {
+        const tolerance = Number.EPSILON * 8 * Math.max(1,Math.abs(value.delta),Math.abs(minimum ?? 0),Math.abs(maximum ?? 0));
+        if (minimum != null && value.delta < minimum-tolerance || maximum != null && value.delta > maximum+tolerance) reasons.push(label+'条件');
+      }
+    }
+    return reasons;
+  }
+  return {percent,inRange,offerPrice,meanSale,atPurchase,efficiency,coverage,observationPeriods,observation,observationExclusions};
 });

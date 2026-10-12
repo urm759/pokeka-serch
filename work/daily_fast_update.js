@@ -63,6 +63,10 @@ function main() {
     sourceState: sourceMetrics.changed ? "外部取得成功・変更カードを差分更新" : "外部取得成功・変更なし",
   });
   if (!sourceMetrics.changed) {
+    // An unchanged real payload can still add today's observation; it never changes financial coefficients.
+    writeJson(path.join(ROOT,'work','changed-card-ids.json'),{updatedAt:sourceEndedAt,ids:[]});
+    const observation = run('work/build_market_analysis.js',{CHANGED_CARD_IDS_PATH:'work/changed-card-ids.json'});
+    if (observation.status !== 0) throw new Error('再確認済み価格の観測保存に失敗しました');
     const unchangedMetrics = {
       version: 2, updatedAt: sourceEndedAt, runClass: "高速更新",
       processedCards: sourceMetrics.processedCards, changedCards: 0,

@@ -1648,6 +1648,8 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .search-benchmark { margin: 0.6rem 0; font-size: 0.8rem; }
 .search-benchmark pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 15rem; overflow-y: auto; }
 .psa10-period-summary { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin:10px 0; font-size:12px; }
+.observation-glance { grid-column:1/-1; margin:0; }
+.observation-glance > span small { line-height:1.45; }
 .psa10-period-summary > span { min-width:0; padding:8px; border:1px solid var(--line); border-radius:10px; }
 .psa10-period-summary > span b { font-size:16px; }
 .psa10-period-summary > span small { font-size:10px; overflow-wrap:anywhere; }

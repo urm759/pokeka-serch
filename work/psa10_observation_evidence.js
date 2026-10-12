@@ -16,6 +16,9 @@ function calendarDay(value) {
 function confirmation(card, day, evidence) {
   if (!card.identityKey || card.identityReviewRequired || (card.language && card.language !== 'ja')
     || !Number.isFinite(card.snkPsa10Price) || !(card.snkPsa10Price > 0)) return null;
+  const receipt = evidence?.receipt, checked = receipt?.cards?.[card.id];
+  if (receipt?.version === 1 && calendarDay(receipt.observedAt) === day && receipt.payloadHash
+    && checked?.[0] === identity(card) && checked?.[1] === card.snkPsa10Price) return [receipt.observedAt,checked[0]];
   if (evidence?.sourceIdentities && evidence.sourceIdentities.get(card.id) !== card.identityKey) return null;
   // An explicit retained timestamp always wins over the catalog's publication date.
   if (Object.hasOwn(card, 'psa10ObservedAt')) return calendarDay(card.psa10ObservedAt) === day

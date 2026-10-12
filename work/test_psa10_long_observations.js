@@ -30,6 +30,11 @@ assert.equal(confirmation(card,at(0),{meta,sourceRun,sourceIdentities:new Map([[
 for(const source of [{...sourceRun,status:'failed'},{...sourceRun,acquiredCount:0},{...sourceRun,lastSuccessAt:at(1)+'T03:00:00Z'}]) assert.equal(confirmation(card,at(0),{meta,sourceRun:source}),null);
 assert.equal(confirmation({...card,psa10ObservedAt:at(1)},at(0),{meta,sourceRun}),null,'old retained field cannot use a fresh batch timestamp');
 assert.equal(confirmation({...card,psa10ObservedAt:null},at(0),{meta,sourceRun}),null);
+const receipt={version:1,observedAt:'2026-10-14T03:00:00Z',payloadHash:'verified-payload',cards:{fixture:[identity(card),200]}};
+assert(confirmation(card,'2026-10-14',{receipt,meta,sourceRun}), 'actual unchanged price response on a new day is an observation');
+assert.equal(confirmation({...card,snkPsa10Price:201},'2026-10-14',{receipt}),null);
+assert.equal(confirmation({...card,identityKey:'mirror'},'2026-10-14',{receipt}),null);
+assert.equal(confirmation(card,'2026-10-15',{receipt}),null,'saved receipt cannot become a future observation');
 for (const bad of [{...card,language:'en'},{...card,identityReviewRequired:true},{...card,snkPsa10Price:Infinity}]) assert.equal(confirmation(bad,at(0),{meta,sourceRun}),null);
 const history={cards:{fixture:Array.from({length:400},(_,i)=>row(i))},dates:[]};
 appendCurrent(history,[card],at(0),{meta,sourceRun});

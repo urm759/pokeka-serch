@@ -62,6 +62,15 @@
 | `snkrRawCurrentOnlyInput` 現行レギュレーションのみ | false | snkr-raw | 表示された属性・対象範囲で絞り込み／表示基準を選択：ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない | 条件に不適合なカードを除外。欠損は0にしない。似た名称でも市場／買値／時点が異なる条件は統合しない |
 | `snkrRawRecentOnlyInput` 新しいカードのみ | false | snkr-raw | 表示された属性・対象範囲で絞り込み／表示基準を選択：ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない | 条件に不適合なカードを除外。欠損は0にしない。似た名称でも市場／買値／時点が異なる条件は統合しない |
 | `hideThinDemandInput` 取引・買取掲載ともにゼロのカードを通常候補から一時非表示 | false | normal／combined／current-market（上限探索）／current-market（購入採算）／current-market（上限買値）／low-risk | 予測・市場スコアを参考探索：表示された期間・履歴・供給吸収指標。履歴不足は未算出 | 指定値・分類に不適合または欠損なら除外。実価格、期待利益、GOと同義ではない。発売年と成熟年数も別 |
+| `observation7MinInput` 7日乖離率 下限 % | 空欄 | normal／combined／current-market（上限探索）／current-market（購入採算）／current-market（上限買値）／snkr-raw／low-risk | 国内PSA10の日次観測平均との乖離で参考探索：現相場÷7/30/90/200暦日観測平均−1。欠測補完なし・複数期間AND | 指定期間のみ未取得／参考非採用／上下限外を除外。空欄無効、0有効。実成約平均・将来予測・仕入れ上限・購入GOとは別 |
+| `observation7MaxInput` 7日乖離率 上限 % | 空欄 | normal／combined／current-market（上限探索）／current-market（購入採算）／current-market（上限買値）／snkr-raw／low-risk | 国内PSA10の日次観測平均との乖離で参考探索：現相場÷7/30/90/200暦日観測平均−1。欠測補完なし・複数期間AND | 指定期間のみ未取得／参考非採用／上下限外を除外。空欄無効、0有効。実成約平均・将来予測・仕入れ上限・購入GOとは別 |
+| `observation30MinInput` 30日乖離率 下限 % | 空欄 | normal／combined／current-market（上限探索）／current-market（購入採算）／current-market（上限買値）／snkr-raw／low-risk | 国内PSA10の日次観測平均との乖離で参考探索：現相場÷7/30/90/200暦日観測平均−1。欠測補完なし・複数期間AND | 指定期間のみ未取得／参考非採用／上下限外を除外。空欄無効、0有効。実成約平均・将来予測・仕入れ上限・購入GOとは別 |
+| `observation30MaxInput` 30日乖離率 上限 % | 空欄 | normal／combined／current-market（上限探索）／current-market（購入採算）／current-market（上限買値）／snkr-raw／low-risk | 国内PSA10の日次観測平均との乖離で参考探索：現相場÷7/30/90/200暦日観測平均−1。欠測補完なし・複数期間AND | 指定期間のみ未取得／参考非採用／上下限外を除外。空欄無効、0有効。実成約平均・将来予測・仕入れ上限・購入GOとは別 |
+| `observation90MinInput` 90日乖離率 下限 % | 空欄 | normal／combined／current-market（上限探索）／current-market（購入採算）／current-market（上限買値）／snkr-raw／low-risk | 国内PSA10の日次観測平均との乖離で参考探索：現相場÷7/30/90/200暦日観測平均−1。欠測補完なし・複数期間AND | 指定期間のみ未取得／参考非採用／上下限外を除外。空欄無効、0有効。実成約平均・将来予測・仕入れ上限・購入GOとは別 |
+| `observation90MaxInput` 90日乖離率 上限 % | 空欄 | normal／combined／current-market（上限探索）／current-market（購入採算）／current-market（上限買値）／snkr-raw／low-risk | 国内PSA10の日次観測平均との乖離で参考探索：現相場÷7/30/90/200暦日観測平均−1。欠測補完なし・複数期間AND | 指定期間のみ未取得／参考非採用／上下限外を除外。空欄無効、0有効。実成約平均・将来予測・仕入れ上限・購入GOとは別 |
+| `observation200MinInput` 200日乖離率 下限 % | 空欄 | normal／combined／current-market（上限探索）／current-market（購入採算）／current-market（上限買値）／snkr-raw／low-risk | 国内PSA10の日次観測平均との乖離で参考探索：現相場÷7/30/90/200暦日観測平均−1。欠測補完なし・複数期間AND | 指定期間のみ未取得／参考非採用／上下限外を除外。空欄無効、0有効。実成約平均・将来予測・仕入れ上限・購入GOとは別 |
+| `observation200MaxInput` 200日乖離率 上限 % | 空欄 | normal／combined／current-market（上限探索）／current-market（購入採算）／current-market（上限買値）／snkr-raw／low-risk | 国内PSA10の日次観測平均との乖離で参考探索：現相場÷7/30/90/200暦日観測平均−1。欠測補完なし・複数期間AND | 指定期間のみ未取得／参考非採用／上下限外を除外。空欄無効、0有効。実成約平均・将来予測・仕入れ上限・購入GOとは別 |
+| `observationIncludeReferenceInput` 観測不足の参考平均を含める（購入GOとは別） | true | normal／combined／current-market（上限探索）／current-market（購入採算）／current-market（上限買値）／snkr-raw／low-risk | 国内PSA10の日次観測平均との乖離で参考探索：現相場÷7/30/90/200暦日観測平均−1。欠測補完なし・複数期間AND | 指定期間のみ未取得／参考非採用／上下限外を除外。空欄無効、0有効。実成約平均・将来予測・仕入れ上限・購入GOとは別 |
 | `purchaseHeadroomMinInput` 仕入れ余裕率 下限 % | 空欄 | normal／combined／current-market（上限探索）／current-market（購入採算）／current-market（上限買値）／snkr-raw／low-risk | 購入価格と現相場損益分岐上限を比較：新鮮な状態A在庫価格と算出可能な現相場上限 | 欠損・古値・在庫なし・比較条件外を除外。PSA9日時不明のみは参考比較。余裕率は利益率ではない。厳密な小なりチェックと率0%以上は同額境界が異なる |
 | `purchaseHeadroomMaxInput` 仕入れ余裕率 上限 % | 空欄 | normal／combined／current-market（上限探索）／current-market（購入採算）／current-market（上限買値）／snkr-raw／low-risk | 購入価格と現相場損益分岐上限を比較：新鮮な状態A在庫価格と算出可能な現相場上限 | 欠損・古値・在庫なし・比較条件外を除外。PSA9日時不明のみは参考比較。余裕率は利益率ではない。厳密な小なりチェックと率0%以上は同額境界が異なる |
 | `purchaseBelowCurrentCapInput` 現在買える状態A価格 ＜ 現相場の期待損益分岐上限 | false | normal／combined／current-market（上限探索）／current-market（購入採算）／current-market（上限買値）／snkr-raw／low-risk | 購入価格と現相場損益分岐上限を比較：新鮮な状態A在庫価格と算出可能な現相場上限 | 欠損・古値・在庫なし・比較条件外を除外。PSA9日時不明のみは参考比較。余裕率は利益率ではない。厳密な小なりチェックと率0%以上は同額境界が異なる |
@@ -224,4 +233,4 @@
 ## 一覧表示
 
 主表示：判定／購入先・価格／PSA10現在相場／安定上限／現相場損益分岐上限（推奨値ではない）／想定10率／検索と同じ採算／重要警告。
-展開表示：観測平均・買取掲載・PSA9比率・補完優先理由・モデル比較・監査・取引履歴。取得元・鮮度・価格対立・仕様保留・期間不一致の警告は隠さない。
+常時表示：7/30/90/200暦日観測平均・現相場との乖離・観測日数。中央値/欠測/利益計算の根拠は展開表示。買取掲載・PSA9比率・補完優先理由・モデル比較・監査・取引履歴は必要時に開く。取得元・鮮度・価格対立・仕様保留・期間不一致の警告は隠さない。
