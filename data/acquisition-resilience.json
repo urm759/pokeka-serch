@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-12T08:02:25.900Z",
+  "generatedAt": "2026-10-12T08:23:35.172Z",
   "llmCalls": 0,
   "codexCalls": 0,
   "retryPolicy": {
@@ -27,7 +27,7 @@
     {
       "source": "psaOfficial",
       "label": "PSA公式・PC正規認証",
-      "remaining": 1260,
+      "remaining": 1240,
       "queueDefinition": "あとPSAだけで分析可能な国内カード。全PSA未取得とは別",
       "sourceState": "partial",
       "failureScope": "source",
@@ -95,15 +95,15 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-12T08:02:12.962Z",
-        "to": "2026-10-12T08:02:23.278Z"
+        "from": "2026-10-12T08:23:22.745Z",
+        "to": "2026-10-12T08:23:32.776Z"
       },
       "sinceBaseline": {
-        "newLinked": 3198,
-        "validAdded": 3198,
+        "newLinked": 3354,
+        "validAdded": 3354,
         "validLost": 264,
-        "usableNet": 2934,
-        "freshnessRecovered": 753
+        "usableNet": 3090,
+        "freshnessRecovered": 1362
       },
       "freshness": null
     },
@@ -240,8 +240,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-12T08:02:12.962Z",
-        "to": "2026-10-12T08:02:23.278Z"
+        "from": "2026-10-12T08:23:22.745Z",
+        "to": "2026-10-12T08:23:32.776Z"
       },
       "sinceBaseline": {
         "newLinked": 624,
@@ -571,8 +571,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-12T08:02:12.962Z",
-        "to": "2026-10-12T08:02:23.278Z"
+        "from": "2026-10-12T08:23:22.745Z",
+        "to": "2026-10-12T08:23:32.776Z"
       },
       "sinceBaseline": {
         "newLinked": 450,
@@ -585,11 +585,11 @@
     }
   ],
   "psaOnly": {
-    "count": 1260,
+    "count": 1240,
     "causes": {
       "個別セット確認待ち": 13,
       "仕様・URL曖昧": 381,
-      "登録URLの取得範囲・未一致確認": 196,
+      "登録URLの取得範囲・未一致確認": 176,
       "公式セットURL未登録": 670
     },
     "cards": [
@@ -1854,12 +1854,6 @@
         "cause": "仕様・URL曖昧"
       },
       {
-        "id": "pk-18902",
-        "setCode": "XY7",
-        "url": "https://www.psacard.com/pop/tcg-cards/2015/pokemon-japanese-xy-bandit-ring/129887",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-92096",
         "setCode": "NEOP",
         "url": null,
@@ -2790,12 +2784,6 @@
         "cause": "仕様・URL曖昧"
       },
       {
-        "id": "x-385531",
-        "setCode": "XY7",
-        "url": "https://www.psacard.com/pop/tcg-cards/2015/pokemon-japanese-xy-bandit-ring/129887",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-17854",
         "setCode": "SM-P",
         "url": null,
@@ -2920,12 +2908,6 @@
         "setCode": "E-P",
         "url": null,
         "cause": "公式セットURL未登録"
-      },
-      {
-        "id": "pk-18930",
-        "setCode": "XY7",
-        "url": "https://www.psacard.com/pop/tcg-cards/2015/pokemon-japanese-xy-bandit-ring/129887",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-56698",
@@ -3582,12 +3564,6 @@
         "cause": "仕様・URL曖昧"
       },
       {
-        "id": "pk-18962",
-        "setCode": "XY7",
-        "url": "https://www.psacard.com/pop/tcg-cards/2015/pokemon-japanese-xy-bandit-ring/129887",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-109",
         "setCode": "XY",
         "url": "https://www.psacard.com/pop/tcg-cards/2016/pokemon-japanese-xy-starter-pack/134700",
@@ -3658,12 +3634,6 @@
         "setCode": "NEO3",
         "url": null,
         "cause": "仕様・URL曖昧"
-      },
-      {
-        "id": "x-385465",
-        "setCode": "XY7",
-        "url": "https://www.psacard.com/pop/tcg-cards/2015/pokemon-japanese-xy-bandit-ring/129887",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "x-453469",
@@ -4509,12 +4479,6 @@
         "id": "pk-3892",
         "setCode": "XY6",
         "url": "https://www.psacard.com/pop/tcg-cards/2015/pokemon-japanese-xy-emerald-break/127710",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "pk-1557",
-        "setCode": "SM3+",
-        "url": "https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-sun-moon-strength-expansion-pack-shining-legends/151058",
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
@@ -5472,12 +5436,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "pk-69664",
-        "setCode": "XY7",
-        "url": "https://www.psacard.com/pop/tcg-cards/2015/pokemon-japanese-xy-bandit-ring/129887",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-814",
         "setCode": "XY9",
         "url": null,
@@ -5530,12 +5488,6 @@
         "setCode": "104BWP",
         "url": null,
         "cause": "仕様・URL曖昧"
-      },
-      {
-        "id": "x-339685",
-        "setCode": "SM12",
-        "url": "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-sun-moon-alter-genesis/170665",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "x-109377",
@@ -5868,12 +5820,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "pk-1504",
-        "setCode": "SM3+",
-        "url": "https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-sun-moon-strength-expansion-pack-shining-legends/151058",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-37026",
         "setCode": "S11A",
         "url": "https://www.psacard.com/pop/tcg-cards/2022/pokemon-japanese-sword-shield-incandescent-arcana/220055",
@@ -5998,12 +5944,6 @@
         "setCode": "30TH-P",
         "url": null,
         "cause": "公式セットURL未登録"
-      },
-      {
-        "id": "pk-3904",
-        "setCode": "XY7",
-        "url": "https://www.psacard.com/pop/tcg-cards/2015/pokemon-japanese-xy-bandit-ring/129887",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-3574",
@@ -6462,12 +6402,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "pk-3879",
-        "setCode": "XY7",
-        "url": "https://www.psacard.com/pop/tcg-cards/2015/pokemon-japanese-xy-bandit-ring/129887",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-48312",
         "setCode": "EM",
         "url": null,
@@ -6753,12 +6687,6 @@
         "id": "x-386087",
         "setCode": "XY",
         "url": "https://www.psacard.com/pop/tcg-cards/2016/pokemon-japanese-xy-starter-pack/134700",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "pk-3881",
-        "setCode": "XY7",
-        "url": "https://www.psacard.com/pop/tcg-cards/2015/pokemon-japanese-xy-bandit-ring/129887",
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
@@ -7176,12 +7104,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-339690",
-        "setCode": "SM12",
-        "url": "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-sun-moon-alter-genesis/170665",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-460733",
         "setCode": "NEO4",
         "url": null,
@@ -7236,12 +7158,6 @@
         "cause": "仕様・URL曖昧"
       },
       {
-        "id": "pk-18972",
-        "setCode": "XY7",
-        "url": "https://www.psacard.com/pop/tcg-cards/2015/pokemon-japanese-xy-bandit-ring/129887",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-813",
         "setCode": "XY",
         "url": "https://www.psacard.com/pop/tcg-cards/2016/pokemon-japanese-xy-starter-pack/134700",
@@ -7294,12 +7210,6 @@
         "setCode": "XY5",
         "url": null,
         "cause": "公式セットURL未登録"
-      },
-      {
-        "id": "pk-80638",
-        "setCode": "XY7",
-        "url": "https://www.psacard.com/pop/tcg-cards/2015/pokemon-japanese-xy-bandit-ring/129887",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-1577",
@@ -7500,12 +7410,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "pk-80665",
-        "setCode": "XY7",
-        "url": "https://www.psacard.com/pop/tcg-cards/2015/pokemon-japanese-xy-bandit-ring/129887",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-455390",
         "setCode": "PMCG11",
         "url": null,
@@ -7522,12 +7426,6 @@
         "setCode": "PMCG11",
         "url": null,
         "cause": "仕様・URL曖昧"
-      },
-      {
-        "id": "x-427850",
-        "setCode": "VS",
-        "url": "https://www.psacard.com/pop/tcg-cards/2001/pokemon-japanese-vs/63661",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "x-562430",
@@ -7602,12 +7500,6 @@
         "cause": "仕様・URL曖昧"
       },
       {
-        "id": "pk-3880",
-        "setCode": "XY7",
-        "url": "https://www.psacard.com/pop/tcg-cards/2015/pokemon-japanese-xy-bandit-ring/129887",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-65704",
         "setCode": "PCG",
         "url": null,
@@ -7623,12 +7515,6 @@
         "id": "pk-1177",
         "setCode": "SM3+",
         "url": "https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-sun-moon-strength-expansion-pack-shining-legends/151058",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
-        "id": "x-385387",
-        "setCode": "XY7",
-        "url": "https://www.psacard.com/pop/tcg-cards/2015/pokemon-japanese-xy-bandit-ring/129887",
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
@@ -7908,12 +7794,6 @@
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "x-427851",
-        "setCode": "VS",
-        "url": "https://www.psacard.com/pop/tcg-cards/2001/pokemon-japanese-vs/63661",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-44985",
         "setCode": "SVD",
         "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-svd-ex-start-deck/245165",
@@ -8157,9 +8037,9 @@
   },
   "progress": {
     "listed": 12507,
-    "analyzable": 2060,
-    "pending": 10447,
-    "oneAway": 1685
+    "analyzable": 2080,
+    "pending": 10427,
+    "oneAway": 1680
   },
   "newlyAnalyzable": 0,
   "note": "一時障害の再試行、個別URL隔離、取得元停止を区別。未取得をデータ不存在に変更しない。巡回完了と全項目取得・最新価格は別"

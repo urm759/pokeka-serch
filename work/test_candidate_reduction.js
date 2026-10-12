@@ -32,4 +32,5 @@ assert.match(app,/if\(disclosure.open&&!disclosure.dataset.loaded\)/,'audit only
 assert.match(app,/if\(!target.isConnected\)return/,'stale audit requests never replace a newer search');
 assert.match(fs.readFileSync('work/run_priority_price_refresh.js','utf8'),/audit_candidate_reduction.js/);
 assert.match(fs.readFileSync('.github/workflows/daily-fast-update.yml','utf8'),/candidate-search-history/);
+assert.match(fs.readFileSync('work/psa_handoff.js','utf8'),/audit_candidate_reduction.js/,'PSA publication refreshes fixed-profile audit from saved data too');
 console.log('PASS candidate loss attribution, overlap/unique counts, saved conditions, field-specific recovery and lazy audit');

@@ -5,6 +5,7 @@ const model=require('../candidate-reduction-model');
 const ROOT=path.join(__dirname,'..');
 const codec=require('../ui-data-codec');
 const zlib=require('node:zlib');
+const {atomicWrite}=require('./acquisition_retry');
 const jstDay=at=>new Date(Date.parse(at)+9*3600000).toISOString().slice(0,10);
 const pack=snapshot=>({codec:'candidate-gzip-v1',data:zlib.gzipSync(Buffer.from(JSON.stringify(snapshot))).toString('base64')});
 const unpack=payload=>payload?.codec==='candidate-gzip-v1'?JSON.parse(zlib.gunzipSync(Buffer.from(payload.data,'base64'))):codec.decode(payload);
@@ -76,14 +77,14 @@ function build(){
       inputs:saved?.inputs||{},counts:overlay.counts,...profileDiff},comparisons,daily,incomparable,
     definitions:'URLのみと保存追加条件は別。重複理由を合算して離脱枚数にしない。価格待ち・期間保留は購入GOではない。6時間更新目標と購入価格48時間有効期限は別。',
     llmCalls:0,codexCalls:0};
-  fs.writeFileSync(path.join(ROOT,'data/candidate-reduction-audit.json'),JSON.stringify(report));
-  fs.writeFileSync(path.join(ROOT,'work/candidate-recovery-targets.json'),JSON.stringify({at,rows:model.recoveryTargets(current.rows),
-    rule:'共有URL参考探索の購入価格補完のみ。固定・重点枠と通常枠を維持。認証・仕様保留は解除しない。復帰・GOの保証ではない'}));
-  fs.writeFileSync(path.join(ROOT,'work/candidate-search-last.json'),JSON.stringify(pack(current)));
+  atomicWrite(path.join(ROOT,'data/candidate-reduction-audit.json'),report);
+  atomicWrite(path.join(ROOT,'work/candidate-recovery-targets.json'),{at,rows:model.recoveryTargets(current.rows),
+    rule:'共有URL参考探索の購入価格補完のみ。固定・重点枠と通常枠を維持。認証・仕様保留は解除しない。復帰・GOの保証ではない'});
+  atomicWrite(path.join(ROOT,'work/candidate-search-last.json'),pack(current));
   const dir=path.join(ROOT,'work/candidate-search-history');fs.mkdirSync(dir,{recursive:true});
   const day=jstDay(at),file=path.join(dir,day+'.json');
-  if(!fs.existsSync(file))fs.writeFileSync(file,JSON.stringify(pack(current)));
-  else {const first=JSON.parse(fs.readFileSync(file,'utf8'));if(first.codec!=='candidate-gzip-v1')fs.writeFileSync(file,JSON.stringify(pack(unpack(first))));}
+  if(!fs.existsSync(file))atomicWrite(file,pack(current));
+  else {const first=JSON.parse(fs.readFileSync(file,'utf8'));if(first.codec!=='candidate-gzip-v1')atomicWrite(file,pack(unpack(first)));}
   console.log(JSON.stringify({at,current:current.counts,saved:overlay.counts,comparisons:Object.fromEntries(Object.entries(comparisons).map(([k,v])=>[k,{before:v.before,after:v.after,lost:v.lostCount,gained:v.gainedCount,overlap:v.overlap}]))}));return report;
 }
 if(require.main===module)build();
