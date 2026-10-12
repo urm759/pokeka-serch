@@ -1,0 +1,3721 @@
+{
+  "version": 1,
+  "usageTelemetry": "使用履歴は収集していない。未使用とは断定しない。",
+  "compatibility": "既存ID・URL・CSV列・保存キー・初期値を維持。変更は配置と明示解除のみ。",
+  "controls": [
+    {
+      "id": "qInput",
+      "label": "検索",
+      "category": "基本検索",
+      "initial": "",
+      "type": "text",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "日常検索の名称・発売年・価格帯を指定",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "diagnosticSearchInput",
+      "label": "診断表示（検索カードだけ条件外でも表示）",
+      "category": "基本検索",
+      "initial": false,
+      "type": "checkbox",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "日常検索の名称・発売年・価格帯を指定",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "year2020Input",
+      "label": "2020年以降",
+      "category": "基本検索",
+      "initial": false,
+      "type": "checkbox",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "日常検索の名称・発売年・価格帯を指定",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "includeUnknownYearInput",
+      "label": "年不明も含める",
+      "category": "基本検索",
+      "initial": false,
+      "type": "checkbox",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "日常検索の名称・発売年・価格帯を指定",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "actualPurchaseMinInput",
+      "label": "現在買える状態A価格 下限（円）",
+      "category": "基本検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "日常検索の名称・発売年・価格帯を指定",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "actualPurchaseMaxInput",
+      "label": "現在買える状態A価格 上限（円）",
+      "category": "基本検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "日常検索の名称・発売年・価格帯を指定",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "psaMinInput",
+      "label": "PSA10 下限",
+      "category": "基本検索",
+      "initial": "0",
+      "type": "number",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "日常検索の名称・発売年・価格帯を指定",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "psaMaxInput",
+      "label": "PSA10 上限",
+      "category": "基本検索",
+      "initial": "200000",
+      "type": "number",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "日常検索の名称・発売年・価格帯を指定",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "sortInput",
+      "label": "並び順",
+      "category": "探索基準・表示",
+      "initial": "overall-desc",
+      "type": "select",
+      "options": [
+        {
+          "value": "overall-desc",
+          "label": "銘柄品質が高い順",
+          "selected": false
+        },
+        {
+          "value": "currentBreakEven-desc",
+          "label": "現相場の期待損益分岐上限が高い順",
+          "selected": false
+        },
+        {
+          "value": "buyLimitClean-desc",
+          "label": "美品の仕入れ上限が高い順",
+          "selected": false
+        },
+        {
+          "value": "buyLimitScratch-desc",
+          "label": "傷ありの仕入れ上限が高い順",
+          "selected": false
+        },
+        {
+          "value": "roi-desc",
+          "label": "PSA10時利益率が高い順（選択した買値・出口）",
+          "selected": false
+        },
+        {
+          "value": "roi-asc",
+          "label": "PSA10時利益率が低い順（選択した買値・出口）",
+          "selected": false
+        },
+        {
+          "value": "profit-desc",
+          "label": "PSA10時利益額が高い順（選択した買値・出口）",
+          "selected": false
+        },
+        {
+          "value": "profit-asc",
+          "label": "PSA10時利益額が低い順（選択した買値・出口）",
+          "selected": false
+        },
+        {
+          "value": "expectedRoi-desc",
+          "label": "期待利益率が高い順（選択した買値・出口）",
+          "selected": false
+        },
+        {
+          "value": "psaRecommend-desc",
+          "label": "今回の仕入れGOを優先",
+          "selected": false
+        },
+        {
+          "value": "exit-desc",
+          "label": "売りやすい順",
+          "selected": false
+        },
+        {
+          "value": "futureScore-desc",
+          "label": "将来価格評価が高い順",
+          "selected": false
+        },
+        {
+          "value": "floorScore-desc",
+          "label": "下値安定点が高い順",
+          "selected": false
+        },
+        {
+          "value": "storeDemand-desc",
+          "label": "店舗需要が強い順",
+          "selected": false
+        },
+        {
+          "value": "buybackRatio-desc",
+          "label": "店舗買取率が高い順",
+          "selected": false
+        },
+        {
+          "value": "downside-asc",
+          "label": "予測下落余地が小さい順",
+          "selected": false
+        },
+        {
+          "value": "forecastPrice-desc",
+          "label": "予測PSA10価格が高い順",
+          "selected": false
+        },
+        {
+          "value": "forecastPrice-asc",
+          "label": "予測PSA10価格が低い順",
+          "selected": false
+        },
+        {
+          "value": "expectedProfit-desc",
+          "label": "期待利益が高い順（選択した検索計算基準）",
+          "selected": false
+        },
+        {
+          "value": "stressExpectedProfit-desc",
+          "label": "安全側利益が高い順（仕入れ上限×供給ストレス）",
+          "selected": false
+        },
+        {
+          "value": "stressExpectedRoi-desc",
+          "label": "安全側利益率が高い順（仕入れ上限×供給ストレス）",
+          "selected": false
+        },
+        {
+          "value": "cardEfficiency-desc",
+          "label": "単体・期待資金効率が高い順（表示と同じ買値・出口）",
+          "selected": false
+        },
+        {
+          "value": "annualEfficiency-desc",
+          "label": "判定用の年換算効率が高い順（従来）",
+          "selected": false
+        },
+        {
+          "value": "capitalShare-asc",
+          "label": "資金占有率が低い順",
+          "selected": false
+        },
+        {
+          "value": "combined30-desc",
+          "label": "総合30日の動きが多い順",
+          "selected": false
+        },
+        {
+          "value": "combined7-desc",
+          "label": "総合7日の動きが多い順",
+          "selected": false
+        },
+        {
+          "value": "tx-desc",
+          "label": "みんトレ素体・全状態30日件数が多い順",
+          "selected": false
+        },
+        {
+          "value": "tx-asc",
+          "label": "みんトレ素体・全状態30日件数が少ない順",
+          "selected": false
+        },
+        {
+          "value": "tx7-desc",
+          "label": "みんトレ素体・全状態7日件数が多い順",
+          "selected": false
+        },
+        {
+          "value": "tx7-asc",
+          "label": "みんトレ素体・全状態7日件数が少ない順",
+          "selected": false
+        },
+        {
+          "value": "cardrushDrop30-desc",
+          "label": "ショップ状態A・30日在庫減が多い順",
+          "selected": false
+        },
+        {
+          "value": "cardrushDrop7-desc",
+          "label": "ショップ状態A・7日在庫減が多い順",
+          "selected": false
+        },
+        {
+          "value": "buyback90-desc",
+          "label": "買取表90日掲載が多い順",
+          "selected": false
+        },
+        {
+          "value": "buyback30-desc",
+          "label": "買取表30日掲載が多い順",
+          "selected": false
+        },
+        {
+          "value": "buyback7-desc",
+          "label": "買取表7日掲載が多い順",
+          "selected": false
+        },
+        {
+          "value": "buybackPrice-desc",
+          "label": "店舗PSA10買取価格が高い順",
+          "selected": false
+        },
+        {
+          "value": "buybackPrice-asc",
+          "label": "店舗PSA10買取価格が低い順",
+          "selected": false
+        },
+        {
+          "value": "buybackAvg30-desc",
+          "label": "30日平均買取価格が高い順",
+          "selected": false
+        },
+        {
+          "value": "buybackAvg30-asc",
+          "label": "30日平均買取価格が低い順",
+          "selected": false
+        },
+        {
+          "value": "buybackShops-desc",
+          "label": "掲載ショップ数が多い順",
+          "selected": false
+        },
+        {
+          "value": "psaTx-desc",
+          "label": "PSA10 30日件数が多い順",
+          "selected": false
+        },
+        {
+          "value": "psaTx-asc",
+          "label": "PSA10 30日件数が少ない順",
+          "selected": false
+        },
+        {
+          "value": "psaTx7-desc",
+          "label": "PSA10 7日件数が多い順",
+          "selected": false
+        },
+        {
+          "value": "psaTx7-asc",
+          "label": "PSA10 7日件数が少ない順",
+          "selected": false
+        },
+        {
+          "value": "chg30-desc",
+          "label": "30日変動率が高い順",
+          "selected": false
+        },
+        {
+          "value": "chg30-asc",
+          "label": "30日変動率が低い順",
+          "selected": false
+        },
+        {
+          "value": "chg7-desc",
+          "label": "7日変動率が高い順",
+          "selected": false
+        },
+        {
+          "value": "chg7-asc",
+          "label": "7日変動率が低い順",
+          "selected": false
+        },
+        {
+          "value": "psa-desc",
+          "label": "PSA10が高い順",
+          "selected": false
+        },
+        {
+          "value": "psa-asc",
+          "label": "PSA10が安い順",
+          "selected": false
+        },
+        {
+          "value": "psaMin-desc",
+          "label": "PSA10下限が高い順",
+          "selected": false
+        },
+        {
+          "value": "psaMin-asc",
+          "label": "PSA10下限が低い順",
+          "selected": false
+        },
+        {
+          "value": "price-asc",
+          "label": "平均美品価格が安い順",
+          "selected": false
+        },
+        {
+          "value": "price-desc",
+          "label": "平均美品価格が高い順",
+          "selected": false
+        },
+        {
+          "value": "listings-desc",
+          "label": "掲載件数が多い順",
+          "selected": false
+        },
+        {
+          "value": "listings-asc",
+          "label": "掲載件数が少ない順",
+          "selected": false
+        },
+        {
+          "value": "days-desc",
+          "label": "掲載日数が長い順",
+          "selected": false
+        },
+        {
+          "value": "days-asc",
+          "label": "掲載日数が短い順",
+          "selected": false
+        },
+        {
+          "value": "updated-desc",
+          "label": "更新日が新しい順",
+          "selected": false
+        },
+        {
+          "value": "updated-asc",
+          "label": "更新日が古い順",
+          "selected": false
+        },
+        {
+          "value": "tvel-desc",
+          "label": "サイト年利が高い順",
+          "selected": false
+        },
+        {
+          "value": "tvel-asc",
+          "label": "サイト年利が低い順",
+          "selected": false
+        },
+        {
+          "value": "snkrRawProfit-desc",
+          "label": "スニダン素体流し利益が高い順",
+          "selected": false
+        },
+        {
+          "value": "snkrRawRoi-desc",
+          "label": "スニダン素体流し利益率が高い順",
+          "selected": false
+        },
+        {
+          "value": "snkrRawTx30-desc",
+          "label": "スニダン素体30日取引が多い順",
+          "selected": false
+        }
+      ],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "探索・並び・参考値の採用基準を保持",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "lowRiskAvailabilityInput",
+      "label": "候補内",
+      "category": "探索基準・表示",
+      "initial": "all",
+      "type": "select",
+      "options": [
+        {
+          "value": "all",
+          "label": "候補すべて",
+          "selected": false
+        },
+        {
+          "value": "go",
+          "label": "購入先確認済み／今すぐ",
+          "selected": false
+        },
+        {
+          "value": "price",
+          "label": "価格待ち／購入先待ち",
+          "selected": false
+        }
+      ],
+      "removable": false,
+      "modes": [
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "探索・並び・参考値の採用基準を保持",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "snkrRawIncludeReferenceInput",
+      "label": "参考候補も含める",
+      "category": "探索基準・表示",
+      "initial": false,
+      "type": "checkbox",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "snkr-raw"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "探索・並び・参考値の採用基準を保持",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "includeAggressiveInput",
+      "label": "おまかせ総合に攻め候補を含める",
+      "category": "探索基準・表示",
+      "initial": false,
+      "type": "checkbox",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "combined"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "探索・並び・参考値の採用基準を保持",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "importSearchInput",
+      "label": "条件CSV読込",
+      "category": "データ監査・記録操作",
+      "initial": "",
+      "type": "file",
+      "options": [],
+      "removable": false,
+      "modes": [],
+      "purpose": "保存条件の読み込み／お気に入り検索／実鑑定・実売記録",
+      "basis": "利用者が選択したCSV・カード・日付・実結果。推定結果で実現利益を作らない",
+      "effect": "操作しない限り検索・安全条件は変わらない。記録は削除対象にしない",
+      "overlap": "日次取得・自動探索・本番モデルの変更とは別"
+    },
+    {
+      "id": "currentMarketSearchKindInput",
+      "label": "現相場専用：探索方法",
+      "category": "探索基準・表示",
+      "initial": "cap",
+      "type": "select",
+      "options": [
+        {
+          "value": "cap",
+          "label": "損益分岐上限から探す",
+          "selected": false
+        },
+        {
+          "value": "purchase",
+          "label": "購入価格で黒字のカードを探す",
+          "selected": false
+        }
+      ],
+      "removable": false,
+      "modes": [
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "探索・並び・参考値の採用基準を保持",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "currentMarketCapMinInput",
+      "label": "現相場の期待損益分岐上限 下限（円）",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "currentMarketManualPriceInput",
+      "label": "店舗価格未取得時の手入力試算買値（円）",
+      "category": "仕入れ判定・計算設定",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）"
+      ],
+      "purpose": "計算の費用・出口・資金・仮定を設定",
+      "basis": "選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映",
+      "effect": "カードの計算値・安全判定に影響。検索条件だけの解除では変更しない",
+      "overlap": "検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別"
+    },
+    {
+      "id": "snkrRawFeeRateInput",
+      "label": "スニダン販売手数料率",
+      "category": "仕入れ判定・計算設定",
+      "initial": "7",
+      "type": "number",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "snkr-raw"
+      ],
+      "purpose": "計算の費用・出口・資金・仮定を設定",
+      "basis": "選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映",
+      "effect": "カードの計算値・安全判定に影響。検索条件だけの解除では変更しない",
+      "overlap": "検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別"
+    },
+    {
+      "id": "snkrRawShippingInput",
+      "label": "発送・梱包費",
+      "category": "仕入れ判定・計算設定",
+      "initial": "210",
+      "type": "number",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "snkr-raw"
+      ],
+      "purpose": "計算の費用・出口・資金・仮定を設定",
+      "basis": "選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映",
+      "effect": "カードの計算値・安全判定に影響。検索条件だけの解除では変更しない",
+      "overlap": "検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別"
+    },
+    {
+      "id": "snkrRawOtherCostInput",
+      "label": "その他費用",
+      "category": "仕入れ判定・計算設定",
+      "initial": "0",
+      "type": "number",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "snkr-raw"
+      ],
+      "purpose": "計算の費用・出口・資金・仮定を設定",
+      "basis": "選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映",
+      "effect": "カードの計算値・安全判定に影響。検索条件だけの解除では変更しない",
+      "overlap": "検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別"
+    },
+    {
+      "id": "snkrRawTx7MinInput",
+      "label": "素体7日取引 下限",
+      "category": "詳細検索",
+      "initial": "0",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "snkr-raw"
+      ],
+      "purpose": "取引量の期間別検索",
+      "basis": "ラベルの市場・グレード・7／30日。素体全状態は状態A限定成約ではない",
+      "effect": "指定上下限外または未取得を除外",
+      "overlap": "PSA10／素体／スニダンを合算しない。買取掲載も別"
+    },
+    {
+      "id": "snkrRawTx30MinInput",
+      "label": "素体30日取引 下限",
+      "category": "詳細検索",
+      "initial": "3",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "snkr-raw"
+      ],
+      "purpose": "取引量の期間別検索",
+      "basis": "ラベルの市場・グレード・7／30日。素体全状態は状態A限定成約ではない",
+      "effect": "指定上下限外または未取得を除外",
+      "overlap": "PSA10／素体／スニダンを合算しない。買取掲載も別"
+    },
+    {
+      "id": "snkrRawProfitMinInput",
+      "label": "最低利益額",
+      "category": "詳細検索",
+      "initial": "0",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "snkr-raw"
+      ],
+      "purpose": "選択中の採算で絞り込み",
+      "basis": "検索買値・出口・現在／中央／ストレスを分離。PSA10利益率と期待利益率は別",
+      "effect": "空欄は無効、0は非負。必要データ不足と赤字は別除外",
+      "overlap": "GOの最低利益条件とは独立。ストレス利益も中央利益とは別"
+    },
+    {
+      "id": "snkrRawRoiMinInput",
+      "label": "最低利益率",
+      "category": "詳細検索",
+      "initial": "0",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "snkr-raw"
+      ],
+      "purpose": "選択中の採算で絞り込み",
+      "basis": "検索買値・出口・現在／中央／ストレスを分離。PSA10利益率と期待利益率は別",
+      "effect": "空欄は無効、0は非負。必要データ不足と赤字は別除外",
+      "overlap": "GOの最低利益条件とは独立。ストレス利益も中央利益とは別"
+    },
+    {
+      "id": "snkrRawPurchaseMaxInput",
+      "label": "最大購入価格",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "snkr-raw"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "snkrRawReleaseMonthsInput",
+      "label": "発売からの経過月数 上限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "snkr-raw"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "snkrRawMaxAgeInput",
+      "label": "データ取得からの経過時間 上限",
+      "category": "仕入れ判定・計算設定",
+      "initial": "48",
+      "type": "number",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "snkr-raw"
+      ],
+      "purpose": "計算の費用・出口・資金・仮定を設定",
+      "basis": "選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映",
+      "effect": "カードの計算値・安全判定に影響。検索条件だけの解除では変更しない",
+      "overlap": "検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別"
+    },
+    {
+      "id": "snkrRawCurrentOnlyInput",
+      "label": "現行レギュレーションのみ",
+      "category": "詳細検索",
+      "initial": false,
+      "type": "checkbox",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "snkr-raw"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "snkrRawRecentOnlyInput",
+      "label": "新しいカードのみ",
+      "category": "詳細検索",
+      "initial": false,
+      "type": "checkbox",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "snkr-raw"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "catalogScopeInput",
+      "label": "表示範囲",
+      "category": "探索基準・表示",
+      "initial": "analysis",
+      "type": "select",
+      "options": [
+        {
+          "value": "analysis",
+          "label": "分析可能",
+          "selected": false
+        },
+        {
+          "value": "all",
+          "label": "全カードを表示",
+          "selected": false
+        },
+        {
+          "value": "new",
+          "label": "サイト新着",
+          "selected": false
+        },
+        {
+          "value": "recent",
+          "label": "最近発売",
+          "selected": false
+        },
+        {
+          "value": "relisted",
+          "label": "再掲載",
+          "selected": false
+        },
+        {
+          "value": "completing",
+          "label": "データ補完中",
+          "selected": false
+        },
+        {
+          "value": "shortage",
+          "label": "データ不足",
+          "selected": false
+        }
+      ],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "探索・並び・参考値の採用基準を保持",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "hideThinDemandInput",
+      "label": "取引・買取掲載ともにゼロのカードを通常候補から一時非表示",
+      "category": "詳細検索",
+      "initial": false,
+      "type": "checkbox",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "予測・市場スコアを参考探索",
+      "basis": "表示された期間・履歴・供給吸収指標。履歴不足は未算出",
+      "effect": "指定値・分類に不適合または欠損なら除外",
+      "overlap": "実価格、期待利益、GOと同義ではない。発売年と成熟年数も別"
+    },
+    {
+      "id": "purchaseHeadroomMinInput",
+      "label": "仕入れ余裕率 下限 %",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "購入価格と現相場損益分岐上限を比較",
+      "basis": "新鮮な状態A在庫価格と算出可能な現相場上限",
+      "effect": "欠損・古値・在庫なし・比較条件外を除外。PSA9日時不明のみは参考比較",
+      "overlap": "余裕率は利益率ではない。厳密な小なりチェックと率0%以上は同額境界が異なる"
+    },
+    {
+      "id": "purchaseHeadroomMaxInput",
+      "label": "仕入れ余裕率 上限 %",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "購入価格と現相場損益分岐上限を比較",
+      "basis": "新鮮な状態A在庫価格と算出可能な現相場上限",
+      "effect": "欠損・古値・在庫なし・比較条件外を除外。PSA9日時不明のみは参考比較",
+      "overlap": "余裕率は利益率ではない。厳密な小なりチェックと率0%以上は同額境界が異なる"
+    },
+    {
+      "id": "purchaseBelowCurrentCapInput",
+      "label": "現在買える状態A価格 ＜ 現相場の期待損益分岐上限",
+      "category": "詳細検索",
+      "initial": false,
+      "type": "checkbox",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "購入価格と現相場損益分岐上限を比較",
+      "basis": "新鮮な状態A在庫価格と算出可能な現相場上限",
+      "effect": "欠損・古値・在庫なし・比較条件外を除外。PSA9日時不明のみは参考比較",
+      "overlap": "余裕率は利益率ではない。厳密な小なりチェックと率0%以上は同額境界が異なる"
+    },
+    {
+      "id": "efficiencyMinInput",
+      "label": "単体・年換算資金効率 下限 %",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "カード単体の年換算資金効率で探索",
+      "basis": "指定買値・出口・シナリオの期待利益÷総投下額×365÷拘束日数",
+      "effect": "下限に満たない、計算不能、参考値非採用を除外",
+      "overlap": "判定用の最低年換算効率は別。新指標でGO昇格しない"
+    },
+    {
+      "id": "efficiencyIncludeReferenceInput",
+      "label": "資金効率の参考値も検索・順位に含める PSA9日時未確認など。価格対立・仕様不一致・古い購入価格・買取出口不足は通しません。購入GOとは別です。",
+      "category": "詳細検索",
+      "initial": false,
+      "type": "checkbox",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "カード単体の年換算資金効率で探索",
+      "basis": "指定買値・出口・シナリオの期待利益÷総投下額×365÷拘束日数",
+      "effect": "下限に満たない、計算不能、参考値非採用を除外",
+      "overlap": "判定用の最低年換算効率は別。新指標でGO昇格しない"
+    },
+    {
+      "id": "roiInput",
+      "label": "PSA10時利益率 下限",
+      "category": "詳細検索",
+      "initial": "40",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "選択中の採算で絞り込み",
+      "basis": "検索買値・出口・現在／中央／ストレスを分離。PSA10利益率と期待利益率は別",
+      "effect": "空欄は無効、0は非負。必要データ不足と赤字は別除外",
+      "overlap": "GOの最低利益条件とは独立。ストレス利益も中央利益とは別"
+    },
+    {
+      "id": "expectedRoiFilterInput",
+      "label": "期待利益率 下限",
+      "category": "詳細検索",
+      "initial": "0",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "選択中の採算で絞り込み",
+      "basis": "検索買値・出口・現在／中央／ストレスを分離。PSA10利益率と期待利益率は別",
+      "effect": "空欄は無効、0は非負。必要データ不足と赤字は別除外",
+      "overlap": "GOの最低利益条件とは独立。ストレス利益も中央利益とは別"
+    },
+    {
+      "id": "expectedProfitFilterInput",
+      "label": "期待利益額 下限",
+      "category": "詳細検索",
+      "initial": "0",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "選択中の採算で絞り込み",
+      "basis": "検索買値・出口・現在／中央／ストレスを分離。PSA10利益率と期待利益率は別",
+      "effect": "空欄は無効、0は非負。必要データ不足と赤字は別除外",
+      "overlap": "GOの最低利益条件とは独立。ストレス利益も中央利益とは別"
+    },
+    {
+      "id": "profitSearchBasisInput",
+      "label": "利益検索・表示・並び順の買値",
+      "category": "探索基準・表示",
+      "initial": "auto",
+      "type": "select",
+      "options": [
+        {
+          "value": "auto",
+          "label": "自動：価格待ちは上限／今すぐは店舗",
+          "selected": false
+        },
+        {
+          "value": "limit",
+          "label": "安定重視上限で購入",
+          "selected": false
+        },
+        {
+          "value": "current-cap",
+          "label": "現相場の期待損益分岐上限で購入（探索）",
+          "selected": false
+        },
+        {
+          "value": "store",
+          "label": "実店舗在庫価格で購入",
+          "selected": false
+        },
+        {
+          "value": "current",
+          "label": "素体参考相場で購入（購入先未確認）",
+          "selected": false
+        }
+      ],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "探索・並び・参考値の採用基準を保持",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "postingRate30MinInput",
+      "label": "30日買取掲載率 下限 %",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "postingShops30MinInput",
+      "label": "30日平均掲載店舗数 下限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "postingDaysMinInput",
+      "label": "買取掲載の最低観測日数",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "postingCoverageMinInput",
+      "label": "買取掲載取得カバー率 下限 %",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "includePeriodReferenceInput",
+      "label": "価格待ち探索に期間不一致の参考値を含める（GO不可）",
+      "category": "探索基準・表示",
+      "initial": true,
+      "type": "checkbox",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "探索・並び・参考値の採用基準を保持",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "stressExpectedRoiFilterInput",
+      "label": "安全側利益率 下限",
+      "category": "詳細検索",
+      "initial": "0",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "low-risk"
+      ],
+      "purpose": "選択中の採算で絞り込み",
+      "basis": "検索買値・出口・現在／中央／ストレスを分離。PSA10利益率と期待利益率は別",
+      "effect": "空欄は無効、0は非負。必要データ不足と赤字は別除外",
+      "overlap": "GOの最低利益条件とは独立。ストレス利益も中央利益とは別"
+    },
+    {
+      "id": "stressExpectedProfitFilterInput",
+      "label": "安全側利益額 下限",
+      "category": "詳細検索",
+      "initial": "0",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "low-risk"
+      ],
+      "purpose": "選択中の採算で絞り込み",
+      "basis": "検索買値・出口・現在／中央／ストレスを分離。PSA10利益率と期待利益率は別",
+      "effect": "空欄は無効、0は非負。必要データ不足と赤字は別除外",
+      "overlap": "GOの最低利益条件とは独立。ストレス利益も中央利益とは別"
+    },
+    {
+      "id": "psa9RatioMinInput",
+      "label": "仕入れ値／国内PSA9 下限 %",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（購入採算）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "国内PSA9価格との買値比率で探索",
+      "basis": "実店舗または明示した参考買値÷国内PSA9。実成約・集計・推定は別",
+      "effect": "選択した根拠と上下限に不適合なら除外",
+      "overlap": "費用込みPSA9赤字回避上限・GOとは別"
+    },
+    {
+      "id": "psa9RatioMaxInput",
+      "label": "仕入れ値／国内PSA9 上限 %",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（購入採算）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "国内PSA9価格との買値比率で探索",
+      "basis": "実店舗または明示した参考買値÷国内PSA9。実成約・集計・推定は別",
+      "effect": "選択した根拠と上下限に不適合なら除外",
+      "overlap": "費用込みPSA9赤字回避上限・GOとは別"
+    },
+    {
+      "id": "psa9RatioAggregateInput",
+      "label": "国内PSA9集計値を含める",
+      "category": "詳細検索",
+      "initial": false,
+      "type": "checkbox",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（購入採算）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "国内PSA9価格との買値比率で探索",
+      "basis": "実店舗または明示した参考買値÷国内PSA9。実成約・集計・推定は別",
+      "effect": "選択した根拠と上下限に不適合なら除外",
+      "overlap": "費用込みPSA9赤字回避上限・GOとは別"
+    },
+    {
+      "id": "psa9RatioEstimateInput",
+      "label": "PSA9推定値を含める（素体由来は検索対象外）",
+      "category": "詳細検索",
+      "initial": false,
+      "type": "checkbox",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（購入採算）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "国内PSA9価格との買値比率で探索",
+      "basis": "実店舗または明示した参考買値÷国内PSA9。実成約・集計・推定は別",
+      "effect": "選択した根拠と上下限に不適合なら除外",
+      "overlap": "費用込みPSA9赤字回避上限・GOとは別"
+    },
+    {
+      "id": "psa9RatioMarketInput",
+      "label": "購入価格未取得時の相場参考買値を含める",
+      "category": "詳細検索",
+      "initial": false,
+      "type": "checkbox",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（購入採算）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "国内PSA9価格との買値比率で探索",
+      "basis": "実店舗または明示した参考買値÷国内PSA9。実成約・集計・推定は別",
+      "effect": "選択した根拠と上下限に不適合なら除外",
+      "overlap": "費用込みPSA9赤字回避上限・GOとは別"
+    },
+    {
+      "id": "saleTxMinInput",
+      "label": "みんトレ素体・全状態件数 直近30日",
+      "category": "詳細検索",
+      "initial": "30",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "取引量の期間別検索",
+      "basis": "ラベルの市場・グレード・7／30日。素体全状態は状態A限定成約ではない",
+      "effect": "指定上下限外または未取得を除外",
+      "overlap": "PSA10／素体／スニダンを合算しない。買取掲載も別"
+    },
+    {
+      "id": "saleTxMaxInput",
+      "label": "みんトレ素体・全状態件数 直近30日",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "取引量の期間別検索",
+      "basis": "ラベルの市場・グレード・7／30日。素体全状態は状態A限定成約ではない",
+      "effect": "指定上下限外または未取得を除外",
+      "overlap": "PSA10／素体／スニダンを合算しない。買取掲載も別"
+    },
+    {
+      "id": "saleTx7MinInput",
+      "label": "みんトレ素体・全状態件数 直近7日",
+      "category": "詳細検索",
+      "initial": "0",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "取引量の期間別検索",
+      "basis": "ラベルの市場・グレード・7／30日。素体全状態は状態A限定成約ではない",
+      "effect": "指定上下限外または未取得を除外",
+      "overlap": "PSA10／素体／スニダンを合算しない。買取掲載も別"
+    },
+    {
+      "id": "saleTx7MaxInput",
+      "label": "みんトレ素体・全状態件数 直近7日",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "取引量の期間別検索",
+      "basis": "ラベルの市場・グレード・7／30日。素体全状態は状態A限定成約ではない",
+      "effect": "指定上下限外または未取得を除外",
+      "overlap": "PSA10／素体／スニダンを合算しない。買取掲載も別"
+    },
+    {
+      "id": "psaTxMinInput",
+      "label": "PSA10件数 直近30日",
+      "category": "詳細検索",
+      "initial": "0",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "取引量の期間別検索",
+      "basis": "ラベルの市場・グレード・7／30日。素体全状態は状態A限定成約ではない",
+      "effect": "指定上下限外または未取得を除外",
+      "overlap": "PSA10／素体／スニダンを合算しない。買取掲載も別"
+    },
+    {
+      "id": "psaTxMaxInput",
+      "label": "PSA10件数 直近30日",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "取引量の期間別検索",
+      "basis": "ラベルの市場・グレード・7／30日。素体全状態は状態A限定成約ではない",
+      "effect": "指定上下限外または未取得を除外",
+      "overlap": "PSA10／素体／スニダンを合算しない。買取掲載も別"
+    },
+    {
+      "id": "psaTx7MinInput",
+      "label": "PSA10件数 直近7日",
+      "category": "詳細検索",
+      "initial": "0",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "取引量の期間別検索",
+      "basis": "ラベルの市場・グレード・7／30日。素体全状態は状態A限定成約ではない",
+      "effect": "指定上下限外または未取得を除外",
+      "overlap": "PSA10／素体／スニダンを合算しない。買取掲載も別"
+    },
+    {
+      "id": "psaTx7MaxInput",
+      "label": "PSA10件数 直近7日",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "取引量の期間別検索",
+      "basis": "ラベルの市場・グレード・7／30日。素体全状態は状態A限定成約ではない",
+      "effect": "指定上下限外または未取得を除外",
+      "overlap": "PSA10／素体／スニダンを合算しない。買取掲載も別"
+    },
+    {
+      "id": "priceMinInput",
+      "label": "素体参考相場（中央値）の価格帯",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "priceMaxInput",
+      "label": "素体参考相場（中央値）の価格帯",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "purchaseLimitRatioMinInput",
+      "label": "現実的な仕入れ上限 相場比下限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "buyback7MinInput",
+      "label": "買取表掲載日数 直近7日",
+      "category": "詳細検索",
+      "initial": "0",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "buyback7MaxInput",
+      "label": "買取表掲載日数 直近7日",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "buyback30MinInput",
+      "label": "買取表掲載日数 直近30日",
+      "category": "詳細検索",
+      "initial": "0",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "buyback30MaxInput",
+      "label": "買取表掲載日数 直近30日",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "buyback90MinInput",
+      "label": "買取表掲載日数 直近90日",
+      "category": "詳細検索",
+      "initial": "0",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "buyback90MaxInput",
+      "label": "買取表掲載日数 直近90日",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "buybackShopsMinInput",
+      "label": "買取表掲載ショップ数 下限",
+      "category": "詳細検索",
+      "initial": "0",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "buybackPriceMinInput",
+      "label": "現在のPSA10買取価格帯",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "buybackPriceMaxInput",
+      "label": "現在のPSA10買取価格帯",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "psaRateMinInput",
+      "label": "PSA10公式取得率 下限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "overallFilterInput",
+      "label": "銘柄品質で絞る",
+      "category": "詳細検索",
+      "initial": "all",
+      "type": "select",
+      "options": [
+        {
+          "value": "all",
+          "label": "すべて表示",
+          "selected": false
+        },
+        {
+          "value": "ab",
+          "label": "A・Bのみ（高品質・良好）",
+          "selected": false
+        },
+        {
+          "value": "a",
+          "label": "Aのみ（高品質）",
+          "selected": false
+        }
+      ],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "minExitLiquidityInput",
+      "label": "売りやすさ 下限点",
+      "category": "詳細検索",
+      "initial": "0",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "minEconomicsInput",
+      "label": "利益条件 下限点",
+      "category": "詳細検索",
+      "initial": "0",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "minMarketStabilityInput",
+      "label": "銘柄品質内・従来価格安定 下限点",
+      "category": "詳細検索",
+      "initial": "0",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "予測・市場スコアを参考探索",
+      "basis": "表示された期間・履歴・供給吸収指標。履歴不足は未算出",
+      "effect": "指定値・分類に不適合または欠損なら除外",
+      "overlap": "実価格、期待利益、GOと同義ではない。発売年と成熟年数も別"
+    },
+    {
+      "id": "minSupplyRiskInput",
+      "label": "供給リスク耐性 下限点",
+      "category": "詳細検索",
+      "initial": "0",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "予測・市場スコアを参考探索",
+      "basis": "表示された期間・履歴・供給吸収指標。履歴不足は未算出",
+      "effect": "指定値・分類に不適合または欠損なら除外",
+      "overlap": "実価格、期待利益、GOと同義ではない。発売年と成熟年数も別"
+    },
+    {
+      "id": "stockDemandInput",
+      "label": "在庫減少ペースで絞る",
+      "category": "詳細検索",
+      "initial": "all",
+      "type": "select",
+      "options": [
+        {
+          "value": "all",
+          "label": "すべて表示",
+          "selected": false
+        },
+        {
+          "value": "steady",
+          "label": "少ない・普通のみ",
+          "selected": false
+        },
+        {
+          "value": "low",
+          "label": "少ないのみ",
+          "selected": false
+        },
+        {
+          "value": "normal",
+          "label": "普通のみ",
+          "selected": false
+        },
+        {
+          "value": "high",
+          "label": "買う人が多いのみ",
+          "selected": false
+        },
+        {
+          "value": "known",
+          "label": "蓄積中を除く",
+          "selected": false
+        }
+      ],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "予測・市場スコアを参考探索",
+      "basis": "表示された期間・履歴・供給吸収指標。履歴不足は未算出",
+      "effect": "指定値・分類に不適合または欠損なら除外",
+      "overlap": "実価格、期待利益、GOと同義ではない。発売年と成熟年数も別"
+    },
+    {
+      "id": "dataQualityFilterInput",
+      "label": "データ分類で絞る",
+      "category": "詳細検索",
+      "initial": "all",
+      "type": "select",
+      "options": [
+        {
+          "value": "all",
+          "label": "すべて表示",
+          "selected": false
+        },
+        {
+          "value": "manual",
+          "label": "手動確認のみ",
+          "selected": false
+        },
+        {
+          "value": "shortage",
+          "label": "データ不足のみ",
+          "selected": false
+        },
+        {
+          "value": "outlier",
+          "label": "外れ値除外済みのみ",
+          "selected": false
+        },
+        {
+          "value": "clean",
+          "label": "注意表示なしのみ",
+          "selected": false
+        }
+      ],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "goConfidenceFilterInput",
+      "label": "GO信頼度で絞る",
+      "category": "詳細検索",
+      "initial": "all",
+      "type": "select",
+      "options": [
+        {
+          "value": "all",
+          "label": "すべて表示",
+          "selected": false
+        },
+        {
+          "value": "verified",
+          "label": "GO・確認済みのみ",
+          "selected": false
+        },
+        {
+          "value": "provisional",
+          "label": "暫定GOのみ",
+          "selected": false
+        },
+        {
+          "value": "high-risk",
+          "label": "GO・高リスクのみ",
+          "selected": false
+        }
+      ],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "showSkippedInput",
+      "label": "見送りも表示",
+      "category": "詳細検索",
+      "initial": false,
+      "type": "checkbox",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "hideReviewInput",
+      "label": "手動確認を除外",
+      "category": "詳細検索",
+      "initial": false,
+      "type": "checkbox",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "fundingOnlyInput",
+      "label": "今回の仕入れGOのみ",
+      "category": "詳細検索",
+      "initial": false,
+      "type": "checkbox",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "officialOnlyInput",
+      "label": "PSA公式取得済みのみ",
+      "category": "詳細検索",
+      "initial": false,
+      "type": "checkbox",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "floorStateInput",
+      "label": "下値状態",
+      "category": "詳細検索",
+      "initial": "all",
+      "type": "select",
+      "options": [
+        {
+          "value": "all",
+          "label": "すべて表示",
+          "selected": false
+        },
+        {
+          "value": "stable",
+          "label": "安定のみ",
+          "selected": false
+        },
+        {
+          "value": "forming",
+          "label": "形成中のみ",
+          "selected": false
+        },
+        {
+          "value": "unformed",
+          "label": "未形成のみ",
+          "selected": false
+        },
+        {
+          "value": "broken",
+          "label": "下値割れのみ",
+          "selected": false
+        },
+        {
+          "value": "collecting",
+          "label": "蓄積中のみ",
+          "selected": false
+        }
+      ],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "予測・市場スコアを参考探索",
+      "basis": "表示された期間・履歴・供給吸収指標。履歴不足は未算出",
+      "effect": "指定値・分類に不適合または欠損なら除外",
+      "overlap": "実価格、期待利益、GOと同義ではない。発売年と成熟年数も別"
+    },
+    {
+      "id": "priceDirectionInput",
+      "label": "価格方向",
+      "category": "詳細検索",
+      "initial": "all",
+      "type": "select",
+      "options": [
+        {
+          "value": "all",
+          "label": "すべて表示",
+          "selected": false
+        },
+        {
+          "value": "up",
+          "label": "上昇のみ",
+          "selected": false
+        },
+        {
+          "value": "flat",
+          "label": "横ばいのみ",
+          "selected": false
+        },
+        {
+          "value": "down",
+          "label": "下降のみ",
+          "selected": false
+        }
+      ],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "予測・市場スコアを参考探索",
+      "basis": "表示された期間・履歴・供給吸収指標。履歴不足は未算出",
+      "effect": "指定値・分類に不適合または欠損なら除外",
+      "overlap": "実価格、期待利益、GOと同義ではない。発売年と成熟年数も別"
+    },
+    {
+      "id": "supplyStateInput",
+      "label": "需給状態",
+      "category": "詳細検索",
+      "initial": "all",
+      "type": "select",
+      "options": [
+        {
+          "value": "all",
+          "label": "すべて表示",
+          "selected": false
+        },
+        {
+          "value": "buy",
+          "label": "買い優勢のみ",
+          "selected": false
+        },
+        {
+          "value": "balanced",
+          "label": "均衡のみ",
+          "selected": false
+        },
+        {
+          "value": "sell",
+          "label": "売り優勢のみ",
+          "selected": false
+        },
+        {
+          "value": "collecting",
+          "label": "蓄積中のみ",
+          "selected": false
+        }
+      ],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "予測・市場スコアを参考探索",
+      "basis": "表示された期間・履歴・供給吸収指標。履歴不足は未算出",
+      "effect": "指定値・分類に不適合または欠損なら除外",
+      "overlap": "実価格、期待利益、GOと同義ではない。発売年と成熟年数も別"
+    },
+    {
+      "id": "minFloorScoreInput",
+      "label": "下値安定 下限点",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "予測・市場スコアを参考探索",
+      "basis": "表示された期間・履歴・供給吸収指標。履歴不足は未算出",
+      "effect": "指定値・分類に不適合または欠損なら除外",
+      "overlap": "実価格、期待利益、GOと同義ではない。発売年と成熟年数も別"
+    },
+    {
+      "id": "storeDemandInput",
+      "label": "店舗需要",
+      "category": "詳細検索",
+      "initial": "all",
+      "type": "select",
+      "options": [
+        {
+          "value": "all",
+          "label": "すべて表示",
+          "selected": false
+        },
+        {
+          "value": "strong",
+          "label": "強いのみ",
+          "selected": false
+        },
+        {
+          "value": "normal-up",
+          "label": "強い・普通のみ",
+          "selected": false
+        },
+        {
+          "value": "normal",
+          "label": "普通のみ",
+          "selected": false
+        },
+        {
+          "value": "weak",
+          "label": "弱いのみ",
+          "selected": false
+        },
+        {
+          "value": "collecting",
+          "label": "蓄積中のみ",
+          "selected": false
+        }
+      ],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "予測・市場スコアを参考探索",
+      "basis": "表示された期間・履歴・供給吸収指標。履歴不足は未算出",
+      "effect": "指定値・分類に不適合または欠損なら除外",
+      "overlap": "実価格、期待利益、GOと同義ではない。発売年と成熟年数も別"
+    },
+    {
+      "id": "minForecastPriceInput",
+      "label": "91日後の推計・中央価格",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "予測・市場スコアを参考探索",
+      "basis": "表示された期間・履歴・供給吸収指標。履歴不足は未算出",
+      "effect": "指定値・分類に不適合または欠損なら除外",
+      "overlap": "実価格、期待利益、GOと同義ではない。発売年と成熟年数も別"
+    },
+    {
+      "id": "maxForecastPriceInput",
+      "label": "91日後の推計・中央価格",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "予測・市場スコアを参考探索",
+      "basis": "表示された期間・履歴・供給吸収指標。履歴不足は未算出",
+      "effect": "指定値・分類に不適合または欠損なら除外",
+      "overlap": "実価格、期待利益、GOと同義ではない。発売年と成熟年数も別"
+    },
+    {
+      "id": "minForecastDownsideInput",
+      "label": "予測下落余地 %",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "予測・市場スコアを参考探索",
+      "basis": "表示された期間・履歴・供給吸収指標。履歴不足は未算出",
+      "effect": "指定値・分類に不適合または欠損なら除外",
+      "overlap": "実価格、期待利益、GOと同義ではない。発売年と成熟年数も別"
+    },
+    {
+      "id": "maxForecastDownsideInput",
+      "label": "予測下落余地 %",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "予測・市場スコアを参考探索",
+      "basis": "表示された期間・履歴・供給吸収指標。履歴不足は未算出",
+      "effect": "指定値・分類に不適合または欠損なら除外",
+      "overlap": "実価格、期待利益、GOと同義ではない。発売年と成熟年数も別"
+    },
+    {
+      "id": "minForecastGapInput",
+      "label": "PSA10 ÷ 平均美品 倍率",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "予測・市場スコアを参考探索",
+      "basis": "表示された期間・履歴・供給吸収指標。履歴不足は未算出",
+      "effect": "指定値・分類に不適合または欠損なら除外",
+      "overlap": "実価格、期待利益、GOと同義ではない。発売年と成熟年数も別"
+    },
+    {
+      "id": "maxForecastGapInput",
+      "label": "PSA10 ÷ 平均美品 倍率",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "予測・市場スコアを参考探索",
+      "basis": "表示された期間・履歴・供給吸収指標。履歴不足は未算出",
+      "effect": "指定値・分類に不適合または欠損なら除外",
+      "overlap": "実価格、期待利益、GOと同義ではない。発売年と成熟年数も別"
+    },
+    {
+      "id": "minFuturePriceScoreInput",
+      "label": "将来価格評価 点数",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "maxFuturePriceScoreInput",
+      "label": "将来価格評価 点数",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "forecastPhaseInput",
+      "label": "予測局面",
+      "category": "詳細検索",
+      "initial": "all",
+      "type": "select",
+      "options": [
+        {
+          "value": "all",
+          "label": "すべて表示",
+          "selected": false
+        },
+        {
+          "value": "stable",
+          "label": "底値圏・横ばい候補",
+          "selected": false
+        },
+        {
+          "value": "small",
+          "label": "小幅調整候補",
+          "selected": false
+        },
+        {
+          "value": "caution",
+          "label": "調整警戒",
+          "selected": false
+        },
+        {
+          "value": "large",
+          "label": "下落余地大",
+          "selected": false
+        }
+      ],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "予測・市場スコアを参考探索",
+      "basis": "表示された期間・履歴・供給吸収指標。履歴不足は未算出",
+      "effect": "指定値・分類に不適合または欠損なら除外",
+      "overlap": "実価格、期待利益、GOと同義ではない。発売年と成熟年数も別"
+    },
+    {
+      "id": "forecastConfidenceInput",
+      "label": "データ充足度",
+      "category": "詳細検索",
+      "initial": "all",
+      "type": "select",
+      "options": [
+        {
+          "value": "all",
+          "label": "すべて表示",
+          "selected": false
+        },
+        {
+          "value": "high",
+          "label": "高のみ",
+          "selected": false
+        },
+        {
+          "value": "medium-up",
+          "label": "中・高のみ",
+          "selected": false
+        },
+        {
+          "value": "medium",
+          "label": "中のみ",
+          "selected": false
+        },
+        {
+          "value": "low",
+          "label": "低のみ",
+          "selected": false
+        }
+      ],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "予測・市場スコアを参考探索",
+      "basis": "表示された期間・履歴・供給吸収指標。履歴不足は未算出",
+      "effect": "指定値・分類に不適合または欠損なら除外",
+      "overlap": "実価格、期待利益、GOと同義ではない。発売年と成熟年数も別"
+    },
+    {
+      "id": "forecastSupplyPressureInput",
+      "label": "PSA10供給圧力",
+      "category": "詳細検索",
+      "initial": "all",
+      "type": "select",
+      "options": [
+        {
+          "value": "all",
+          "label": "すべて表示",
+          "selected": false
+        },
+        {
+          "value": "low",
+          "label": "低いのみ",
+          "selected": false
+        },
+        {
+          "value": "low-normal",
+          "label": "低い・普通のみ",
+          "selected": false
+        },
+        {
+          "value": "normal",
+          "label": "普通のみ",
+          "selected": false
+        },
+        {
+          "value": "high",
+          "label": "高いのみ",
+          "selected": false
+        },
+        {
+          "value": "known",
+          "label": "未判定を除く",
+          "selected": false
+        }
+      ],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "予測・市場スコアを参考探索",
+      "basis": "表示された期間・履歴・供給吸収指標。履歴不足は未算出",
+      "effect": "指定値・分類に不適合または欠損なら除外",
+      "overlap": "実価格、期待利益、GOと同義ではない。発売年と成熟年数も別"
+    },
+    {
+      "id": "minForecastAgeInput",
+      "label": "発売からの経過年数 下限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "予測・市場スコアを参考探索",
+      "basis": "表示された期間・履歴・供給吸収指標。履歴不足は未算出",
+      "effect": "指定値・分類に不適合または欠損なら除外",
+      "overlap": "実価格、期待利益、GOと同義ではない。発売年と成熟年数も別"
+    },
+    {
+      "id": "forecastMaturityInput",
+      "label": "供給成熟度",
+      "category": "詳細検索",
+      "initial": "all",
+      "type": "select",
+      "options": [
+        {
+          "value": "all",
+          "label": "すべて表示",
+          "selected": false
+        },
+        {
+          "value": "mature",
+          "label": "供給成熟（3年以上）のみ",
+          "selected": false
+        },
+        {
+          "value": "established",
+          "label": "発売後1年以上のみ",
+          "selected": false
+        },
+        {
+          "value": "recent",
+          "label": "新しいカードのみ",
+          "selected": false
+        },
+        {
+          "value": "known",
+          "label": "発売年未取得を除く",
+          "selected": false
+        }
+      ],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "予測・市場スコアを参考探索",
+      "basis": "表示された期間・履歴・供給吸収指標。履歴不足は未算出",
+      "effect": "指定値・分類に不適合または欠損なら除外",
+      "overlap": "実価格、期待利益、GOと同義ではない。発売年と成熟年数も別"
+    },
+    {
+      "id": "maxForecastMonthlyIncreaseInput",
+      "label": "PSA10 30日換算増加 上限枚数",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "予測・市場スコアを参考探索",
+      "basis": "表示された期間・履歴・供給吸収指標。履歴不足は未算出",
+      "effect": "指定値・分類に不適合または欠損なら除外",
+      "overlap": "実価格、期待利益、GOと同義ではない。発売年と成熟年数も別"
+    },
+    {
+      "id": "psaPlanInput",
+      "label": "PSA Japan 鑑定プラン",
+      "category": "仕入れ判定・計算設定",
+      "initial": "standard",
+      "type": "select",
+      "options": [
+        {
+          "value": "standard",
+          "label": "スタンダード",
+          "selected": false
+        },
+        {
+          "value": "priority",
+          "label": "プライオリティ",
+          "selected": false
+        },
+        {
+          "value": "express",
+          "label": "エクスプレス",
+          "selected": false
+        }
+      ],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "計算の費用・出口・資金・仮定を設定",
+      "basis": "選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映",
+      "effect": "カードの計算値・安全判定に影響。検索条件だけの解除では変更しない",
+      "overlap": "検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別"
+    },
+    {
+      "id": "feeInput",
+      "label": "PSA Japan 鑑定プラン",
+      "category": "仕入れ判定・計算設定",
+      "initial": "12980",
+      "type": "hidden",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "計算の費用・出口・資金・仮定を設定",
+      "basis": "選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映",
+      "effect": "カードの計算値・安全判定に影響。検索条件だけの解除では変更しない",
+      "overlap": "検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別"
+    },
+    {
+      "id": "psaCapitalInput",
+      "label": "PSA運用の総資金",
+      "category": "仕入れ判定・計算設定",
+      "initial": "500000",
+      "type": "number",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "計算の費用・出口・資金・仮定を設定",
+      "basis": "選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映",
+      "effect": "カードの計算値・安全判定に影響。検索条件だけの解除では変更しない",
+      "overlap": "検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別"
+    },
+    {
+      "id": "lockedCapitalInput",
+      "label": "ロック中資金",
+      "category": "仕入れ判定・計算設定",
+      "initial": "0",
+      "type": "number",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "計算の費用・出口・資金・仮定を設定",
+      "basis": "選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映",
+      "effect": "カードの計算値・安全判定に影響。検索条件だけの解除では変更しない",
+      "overlap": "検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別"
+    },
+    {
+      "id": "lockDaysInput",
+      "label": "資金ロック日数",
+      "category": "仕入れ判定・計算設定",
+      "initial": "91",
+      "type": "number",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "計算の費用・出口・資金・仮定を設定",
+      "basis": "選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映",
+      "effect": "カードの計算値・安全判定に影響。検索条件だけの解除では変更しない",
+      "overlap": "検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別"
+    },
+    {
+      "id": "minExpectedProfitInput",
+      "label": "最低期待利益",
+      "category": "仕入れ判定・計算設定",
+      "initial": "10000",
+      "type": "number",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "計算の費用・出口・資金・仮定を設定",
+      "basis": "選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映",
+      "effect": "カードの計算値・安全判定に影響。検索条件だけの解除では変更しない",
+      "overlap": "検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別"
+    },
+    {
+      "id": "minExpectedRoiInput",
+      "label": "最低期待利益率",
+      "category": "仕入れ判定・計算設定",
+      "initial": "30",
+      "type": "number",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "計算の費用・出口・資金・仮定を設定",
+      "basis": "選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映",
+      "effect": "カードの計算値・安全判定に影響。検索条件だけの解除では変更しない",
+      "overlap": "検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別"
+    },
+    {
+      "id": "minAnnualEfficiencyInput",
+      "label": "最低年換算資金効率",
+      "category": "仕入れ判定・計算設定",
+      "initial": "40",
+      "type": "number",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "計算の費用・出口・資金・仮定を設定",
+      "basis": "選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映",
+      "effect": "カードの計算値・安全判定に影響。検索条件だけの解除では変更しない",
+      "overlap": "検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別"
+    },
+    {
+      "id": "maxCapitalShareInput",
+      "label": "1枚の最大資金占有率",
+      "category": "仕入れ判定・計算設定",
+      "initial": "10",
+      "type": "number",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "計算の費用・出口・資金・仮定を設定",
+      "basis": "選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映",
+      "effect": "カードの計算値・安全判定に影響。検索条件だけの解除では変更しない",
+      "overlap": "検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別"
+    },
+    {
+      "id": "submissionCountInput",
+      "label": "同時提出予定枚数",
+      "category": "仕入れ判定・計算設定",
+      "initial": "10",
+      "type": "number",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "計算の費用・出口・資金・仮定を設定",
+      "basis": "選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映",
+      "effect": "カードの計算値・安全判定に影響。検索条件だけの解除では変更しない",
+      "overlap": "検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別"
+    },
+    {
+      "id": "gradingReserveInput",
+      "label": "返却時の鑑定費予備資金",
+      "category": "仕入れ判定・計算設定",
+      "initial": "129800",
+      "type": "number",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "計算の費用・出口・資金・仮定を設定",
+      "basis": "選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映",
+      "effect": "カードの計算値・安全判定に影響。検索条件だけの解除では変更しない",
+      "overlap": "検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別"
+    },
+    {
+      "id": "saleFeeRateInput",
+      "label": "売却手数料率",
+      "category": "仕入れ判定・計算設定",
+      "initial": "0",
+      "type": "number",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "計算の費用・出口・資金・仮定を設定",
+      "basis": "選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映",
+      "effect": "カードの計算値・安全判定に影響。検索条件だけの解除では変更しない",
+      "overlap": "検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別"
+    },
+    {
+      "id": "saleExtraCostInput",
+      "label": "送料など販売経費",
+      "category": "仕入れ判定・計算設定",
+      "initial": "0",
+      "type": "number",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "計算の費用・出口・資金・仮定を設定",
+      "basis": "選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映",
+      "effect": "カードの計算値・安全判定に影響。検索条件だけの解除では変更しない",
+      "overlap": "検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別"
+    },
+    {
+      "id": "buybackDeductionRateInput",
+      "label": "PSA10買取店の減額リスク",
+      "category": "仕入れ判定・計算設定",
+      "initial": "3",
+      "type": "number",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "計算の費用・出口・資金・仮定を設定",
+      "basis": "選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映",
+      "effect": "カードの計算値・安全判定に影響。検索条件だけの解除では変更しない",
+      "overlap": "検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別"
+    },
+    {
+      "id": "exitPolicyInput",
+      "label": "売却出口の方針",
+      "category": "仕入れ判定・計算設定",
+      "initial": "buyback",
+      "type": "select",
+      "options": [
+        {
+          "value": "buyback",
+          "label": "買取店優先",
+          "selected": true
+        },
+        {
+          "value": "marketplace",
+          "label": "フリマ優先",
+          "selected": false
+        },
+        {
+          "value": "both",
+          "label": "両方で赤字回避",
+          "selected": false
+        }
+      ],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "計算の費用・出口・資金・仮定を設定",
+      "basis": "選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映",
+      "effect": "カードの計算値・安全判定に影響。検索条件だけの解除では変更しない",
+      "overlap": "検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別"
+    },
+    {
+      "id": "buybackStoreModeInput",
+      "label": "利用する買取店",
+      "category": "仕入れ判定・計算設定",
+      "initial": "selected",
+      "type": "select",
+      "options": [
+        {
+          "value": "mail",
+          "label": "郵送のみ",
+          "selected": false
+        },
+        {
+          "value": "all",
+          "label": "店頭も利用",
+          "selected": false
+        },
+        {
+          "value": "selected",
+          "label": "指定店舗のみ",
+          "selected": true
+        }
+      ],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "計算の費用・出口・資金・仮定を設定",
+      "basis": "選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映",
+      "effect": "カードの計算値・安全判定に影響。検索条件だけの解除では変更しない",
+      "overlap": "検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別"
+    },
+    {
+      "id": "selectedBuybackStoresInput",
+      "label": "指定店舗ID（カンマ区切り）",
+      "category": "仕入れ判定・計算設定",
+      "initial": "",
+      "type": "text",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "計算の費用・出口・資金・仮定を設定",
+      "basis": "選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映",
+      "effect": "カードの計算値・安全判定に影響。検索条件だけの解除では変更しない",
+      "overlap": "検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別"
+    },
+    {
+      "id": "storeTravelCostInput",
+      "label": "店頭交通費等／1枚",
+      "category": "仕入れ判定・計算設定",
+      "initial": "0",
+      "type": "number",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "計算の費用・出口・資金・仮定を設定",
+      "basis": "選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映",
+      "effect": "カードの計算値・安全判定に影響。検索条件だけの解除では変更しない",
+      "overlap": "検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別"
+    },
+    {
+      "id": "efficiencyBuyInput",
+      "label": "資金効率の買値",
+      "category": "仕入れ判定・計算設定",
+      "initial": "auto",
+      "type": "select",
+      "options": [
+        {
+          "value": "auto",
+          "label": "実店舗状態A（明示的な現相場上限・手入力は継承）",
+          "selected": false
+        },
+        {
+          "value": "manual",
+          "label": "手入力買値・仮定",
+          "selected": false
+        },
+        {
+          "value": "current-cap",
+          "label": "現相場損益分岐上限で購入・仮定",
+          "selected": false
+        }
+      ],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "計算の費用・出口・資金・仮定を設定",
+      "basis": "選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映",
+      "effect": "カードの計算値・安全判定に影響。検索条件だけの解除では変更しない",
+      "overlap": "検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別"
+    },
+    {
+      "id": "efficiencyManualPriceInput",
+      "label": "手入力買値（円）",
+      "category": "仕入れ判定・計算設定",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "計算の費用・出口・資金・仮定を設定",
+      "basis": "選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映",
+      "effect": "カードの計算値・安全判定に影響。検索条件だけの解除では変更しない",
+      "overlap": "検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別"
+    },
+    {
+      "id": "efficiencyScenarioInput",
+      "label": "資金効率の売値シナリオ",
+      "category": "仕入れ判定・計算設定",
+      "initial": "current",
+      "type": "select",
+      "options": [
+        {
+          "value": "current",
+          "label": "現在出口相場が続く仮定",
+          "selected": false
+        },
+        {
+          "value": "central",
+          "label": "中央予測（期間一致時のみ）",
+          "selected": false
+        },
+        {
+          "value": "stress",
+          "label": "供給ストレス（期間一致時のみ）",
+          "selected": false
+        }
+      ],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "low-risk"
+      ],
+      "purpose": "計算の費用・出口・資金・仮定を設定",
+      "basis": "選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映",
+      "effect": "カードの計算値・安全判定に影響。検索条件だけの解除では変更しない",
+      "overlap": "検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別"
+    },
+    {
+      "id": "efficiencySaleDaysInput",
+      "label": "売却待ち 日数",
+      "category": "仕入れ判定・計算設定",
+      "initial": "7",
+      "type": "number",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "計算の費用・出口・資金・仮定を設定",
+      "basis": "選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映",
+      "effect": "カードの計算値・安全判定に影響。検索条件だけの解除では変更しない",
+      "overlap": "検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別"
+    },
+    {
+      "id": "efficiencyPayoutDaysInput",
+      "label": "入金待ち 日数",
+      "category": "仕入れ判定・計算設定",
+      "initial": "3",
+      "type": "number",
+      "options": [],
+      "removable": false,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "計算の費用・出口・資金・仮定を設定",
+      "basis": "選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映",
+      "effect": "カードの計算値・安全判定に影響。検索条件だけの解除では変更しない",
+      "overlap": "検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別"
+    },
+    {
+      "id": "importFavoritesInput",
+      "label": "CSV読込",
+      "category": "データ監査・記録操作",
+      "initial": "",
+      "type": "file",
+      "options": [],
+      "removable": false,
+      "modes": [],
+      "purpose": "保存条件の読み込み／お気に入り検索／実鑑定・実売記録",
+      "basis": "利用者が選択したCSV・カード・日付・実結果。推定結果で実現利益を作らない",
+      "effect": "操作しない限り検索・安全条件は変わらない。記録は削除対象にしない",
+      "overlap": "日次取得・自動探索・本番モデルの変更とは別"
+    },
+    {
+      "id": "favoriteSearchInput",
+      "label": "お気に入りを検索",
+      "category": "データ監査・記録操作",
+      "initial": "",
+      "type": "search",
+      "options": [],
+      "removable": false,
+      "modes": [],
+      "purpose": "保存条件の読み込み／お気に入り検索／実鑑定・実売記録",
+      "basis": "利用者が選択したCSV・カード・日付・実結果。推定結果で実現利益を作らない",
+      "effect": "操作しない限り検索・安全条件は変わらない。記録は削除対象にしない",
+      "overlap": "日次取得・自動探索・本番モデルの変更とは別"
+    },
+    {
+      "id": "actualCardIdInput",
+      "label": "カードID",
+      "category": "データ監査・記録操作",
+      "initial": "",
+      "type": "text",
+      "options": [],
+      "removable": false,
+      "modes": [],
+      "purpose": "保存条件の読み込み／お気に入り検索／実鑑定・実売記録",
+      "basis": "利用者が選択したCSV・カード・日付・実結果。推定結果で実現利益を作らない",
+      "effect": "操作しない限り検索・安全条件は変わらない。記録は削除対象にしない",
+      "overlap": "日次取得・自動探索・本番モデルの変更とは別"
+    },
+    {
+      "id": "actualBaseDateInput",
+      "label": "判定日",
+      "category": "データ監査・記録操作",
+      "initial": "",
+      "type": "date",
+      "options": [],
+      "removable": false,
+      "modes": [],
+      "purpose": "保存条件の読み込み／お気に入り検索／実鑑定・実売記録",
+      "basis": "利用者が選択したCSV・カード・日付・実結果。推定結果で実現利益を作らない",
+      "effect": "操作しない限り検索・安全条件は変わらない。記録は削除対象にしない",
+      "overlap": "日次取得・自動探索・本番モデルの変更とは別"
+    },
+    {
+      "id": "actualSpecimenInput",
+      "label": "個体メモ",
+      "category": "データ監査・記録操作",
+      "initial": "",
+      "type": "text",
+      "options": [],
+      "removable": false,
+      "modes": [],
+      "purpose": "保存条件の読み込み／お気に入り検索／実鑑定・実売記録",
+      "basis": "利用者が選択したCSV・カード・日付・実結果。推定結果で実現利益を作らない",
+      "effect": "操作しない限り検索・安全条件は変わらない。記録は削除対象にしない",
+      "overlap": "日次取得・自動探索・本番モデルの変更とは別"
+    },
+    {
+      "id": "actualInspectionInput",
+      "label": "仕入れ時の目視判定",
+      "category": "データ監査・記録操作",
+      "initial": "",
+      "type": "select",
+      "options": [
+        {
+          "value": "",
+          "label": "選択",
+          "selected": false
+        },
+        {
+          "label": "高",
+          "selected": false
+        },
+        {
+          "label": "標準",
+          "selected": false
+        },
+        {
+          "label": "低",
+          "selected": false
+        }
+      ],
+      "removable": false,
+      "modes": [],
+      "purpose": "保存条件の読み込み／お気に入り検索／実鑑定・実売記録",
+      "basis": "利用者が選択したCSV・カード・日付・実結果。推定結果で実現利益を作らない",
+      "effect": "操作しない限り検索・安全条件は変わらない。記録は削除対象にしない",
+      "overlap": "日次取得・自動探索・本番モデルの変更とは別"
+    },
+    {
+      "id": "actualGradeInput",
+      "label": "鑑定結果",
+      "category": "データ監査・記録操作",
+      "initial": "",
+      "type": "select",
+      "options": [
+        {
+          "value": "",
+          "label": "選択",
+          "selected": false
+        },
+        {
+          "label": "PSA10",
+          "selected": false
+        },
+        {
+          "label": "PSA9",
+          "selected": false
+        },
+        {
+          "label": "PSA8以下",
+          "selected": false
+        }
+      ],
+      "removable": false,
+      "modes": [],
+      "purpose": "保存条件の読み込み／お気に入り検索／実鑑定・実売記録",
+      "basis": "利用者が選択したCSV・カード・日付・実結果。推定結果で実現利益を作らない",
+      "effect": "操作しない限り検索・安全条件は変わらない。記録は削除対象にしない",
+      "overlap": "日次取得・自動探索・本番モデルの変更とは別"
+    },
+    {
+      "id": "actualSalePriceInput",
+      "label": "実売価格（売却時だけ）",
+      "category": "データ監査・記録操作",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": false,
+      "modes": [],
+      "purpose": "保存条件の読み込み／お気に入り検索／実鑑定・実売記録",
+      "basis": "利用者が選択したCSV・カード・日付・実結果。推定結果で実現利益を作らない",
+      "effect": "操作しない限り検索・安全条件は変わらない。記録は削除対象にしない",
+      "overlap": "日次取得・自動探索・本番モデルの変更とは別"
+    },
+    {
+      "id": "actualGradingFeeInput",
+      "label": "実鑑定費",
+      "category": "データ監査・記録操作",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": false,
+      "modes": [],
+      "purpose": "保存条件の読み込み／お気に入り検索／実鑑定・実売記録",
+      "basis": "利用者が選択したCSV・カード・日付・実結果。推定結果で実現利益を作らない",
+      "effect": "操作しない限り検索・安全条件は変わらない。記録は削除対象にしない",
+      "overlap": "日次取得・自動探索・本番モデルの変更とは別"
+    },
+    {
+      "id": "actualSaleFeeInput",
+      "label": "売却手数料%",
+      "category": "データ監査・記録操作",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": false,
+      "modes": [],
+      "purpose": "保存条件の読み込み／お気に入り検索／実鑑定・実売記録",
+      "basis": "利用者が選択したCSV・カード・日付・実結果。推定結果で実現利益を作らない",
+      "effect": "操作しない限り検索・安全条件は変わらない。記録は削除対象にしない",
+      "overlap": "日次取得・自動探索・本番モデルの変更とは別"
+    },
+    {
+      "id": "importGradeHistoryInput",
+      "label": "別ブラウザの記録を読み込む",
+      "category": "データ監査・記録操作",
+      "initial": "",
+      "type": "file",
+      "options": [],
+      "removable": false,
+      "modes": [],
+      "purpose": "保存条件の読み込み／お気に入り検索／実鑑定・実売記録",
+      "basis": "利用者が選択したCSV・カード・日付・実結果。推定結果で実現利益を作らない",
+      "effect": "操作しない限り検索・安全条件は変わらない。記録は削除対象にしない",
+      "overlap": "日次取得・自動探索・本番モデルの変更とは別"
+    }
+  ],
+  "actions": [
+    {
+      "id": "curated",
+      "label": "厳選候補 従来のおまかせ同等の厳格条件",
+      "category": "基本検索",
+      "effect": "プリセットを選択。保存した追加条件・費用・資金・出口・発売年を勝手に解除しない"
+    },
+    {
+      "id": "combined",
+      "label": "おまかせ総合 候補を重複なしでまとめる",
+      "category": "基本検索",
+      "effect": "プリセットを選択。保存した追加条件・費用・資金・出口・発売年を勝手に解除しない"
+    },
+    {
+      "id": "current-market",
+      "label": "現相場採算で探す 現相場維持の仮定探索・購入GOとは別",
+      "category": "基本検索",
+      "effect": "プリセットを選択。保存した追加条件・費用・資金・出口・発売年を勝手に解除しない"
+    },
+    {
+      "id": "now",
+      "label": "今すぐ仕入れ 新しい在庫あり価格が上限以下",
+      "category": "基本検索",
+      "effect": "プリセットを選択。保存した追加条件・費用・資金・出口・発売年を勝手に解除しない"
+    },
+    {
+      "id": "aggressive",
+      "label": "攻め仕入れ圏 期待値は黒字・PSA9時赤字あり",
+      "category": "基本検索",
+      "effect": "プリセットを選択。保存した追加条件・費用・資金・出口・発売年を勝手に解除しない"
+    },
+    {
+      "id": "low-risk",
+      "label": "低リスク候補 価格待ちを含む",
+      "category": "基本検索",
+      "effect": "プリセットを選択。保存した追加条件・費用・資金・出口・発売年を勝手に解除しない"
+    },
+    {
+      "id": "turnover",
+      "label": "高回転候補 厳格AND条件・価格待ちを含む",
+      "category": "基本検索",
+      "effect": "プリセットを選択。保存した追加条件・費用・資金・出口・発売年を勝手に解除しない"
+    },
+    {
+      "id": "bargain",
+      "label": "薄商い・高粗利 少数成約でも出口あり",
+      "category": "基本検索",
+      "effect": "プリセットを選択。保存した追加条件・費用・資金・出口・発売年を勝手に解除しない"
+    },
+    {
+      "id": "snkr-raw",
+      "label": "スニダン素体流し PSA判定とは別・手数料後の価格差",
+      "category": "基本検索",
+      "effect": "プリセットを選択。保存した追加条件・費用・資金・出口・発売年を勝手に解除しない"
+    },
+    {
+      "id": "exportSearchBtn",
+      "label": "条件をCSV保存",
+      "category": "記録・表示操作",
+      "effect": "ラベルの保存・コピー・表示・記録操作。押さない限り変更しない。お気に入り解除は追加条件解除と別"
+    },
+    {
+      "id": "resetFiltersBtn",
+      "label": "従来の検索条件一括初期化（詳細操作）",
+      "category": "記録・表示操作",
+      "effect": "従来の広範囲検索初期化。年/名称/参考値採用も対象のため通常は追加条件だけ解除を使用"
+    },
+    {
+      "id": "roiFocusButton",
+      "label": "利益率中心（最低利益額だけ0円）",
+      "category": "仕入れ判定・計算設定",
+      "effect": "明示操作で判定用の最低利益額だけ0円。計算利益・利益率・年換算・GO安全条件は維持"
+    },
+    {
+      "id": "guide70Btn",
+      "label": "10率70%基準",
+      "category": "仕入れ判定・計算設定",
+      "effect": "設定10率70%/50%を変更。公式取得率があるカードは公式優先。未知の実績率で自動補正しない"
+    },
+    {
+      "id": "guide50Btn",
+      "label": "10率50%基準",
+      "category": "仕入れ判定・計算設定",
+      "effect": "設定10率70%/50%を変更。公式取得率があるカードは公式優先。未知の実績率で自動補正しない"
+    },
+    {
+      "id": "copyFavoritesBtn",
+      "label": "メモ用にコピー",
+      "category": "記録・表示操作",
+      "effect": "ラベルの保存・コピー・表示・記録操作。押さない限り変更しない。お気に入り解除は追加条件解除と別"
+    },
+    {
+      "id": "exportFavoritesBtn",
+      "label": "CSV保存",
+      "category": "記録・表示操作",
+      "effect": "ラベルの保存・コピー・表示・記録操作。押さない限り変更しない。お気に入り解除は追加条件解除と別"
+    },
+    {
+      "id": "exportFavoritePriorityBtn",
+      "label": "優先更新IDを保存",
+      "category": "記録・表示操作",
+      "effect": "ラベルの保存・コピー・表示・記録操作。押さない限り変更しない。お気に入り解除は追加条件解除と別"
+    },
+    {
+      "id": "clearFavoritesBtn",
+      "label": "すべて解除",
+      "category": "記録・表示操作",
+      "effect": "ラベルの保存・コピー・表示・記録操作。押さない限り変更しない。お気に入り解除は追加条件解除と別"
+    },
+    {
+      "id": "button-18",
+      "label": "実鑑定結果を保存",
+      "category": "記録・表示操作",
+      "effect": "ラベルの保存・コピー・表示・記録操作。押さない限り変更しない。お気に入り解除は追加条件解除と別"
+    },
+    {
+      "id": "exportGradeHistoryBtn",
+      "label": "鑑定記録をJSONで書き出す",
+      "category": "記録・表示操作",
+      "effect": "ラベルの保存・コピー・表示・記録操作。押さない限り変更しない。お気に入り解除は追加条件解除と別"
+    },
+    {
+      "id": "openFavoritesBtn",
+      "label": "仕入れ候補 0 枚",
+      "category": "記録・表示操作",
+      "effect": "ラベルの保存・コピー・表示・記録操作。押さない限り変更しない。お気に入り解除は追加条件解除と別"
+    },
+    {
+      "id": "copyLinkBtn",
+      "label": "この条件をURLに反映",
+      "category": "記録・表示操作",
+      "effect": "ラベルの保存・コピー・表示・記録操作。押さない限り変更しない。お気に入り解除は追加条件解除と別"
+    },
+    {
+      "id": "benchmarkSearchButton",
+      "label": "同条件で3回ずつ比較",
+      "category": "記録・表示操作",
+      "effect": "ラベルの保存・コピー・表示・記録操作。押さない限り変更しない。お気に入り解除は追加条件解除と別"
+    },
+    {
+      "id": "loadMoreBtn",
+      "label": "さらに60枚表示",
+      "category": "記録・表示操作",
+      "effect": "ラベルの保存・コピー・表示・記録操作。押さない限り変更しない。お気に入り解除は追加条件解除と別"
+    },
+    {
+      "id": "data-clear-extra-conditions",
+      "label": "追加検索条件だけ解除",
+      "category": "基本検索",
+      "effect": "利用者の明示操作のみ。費用・出口・資金・GO基準・参考採用・基本の年/価格帯・お気に入りは保持"
+    },
+    {
+      "id": "data-clear-condition",
+      "label": "個別の追加条件 ×",
+      "category": "基本検索",
+      "effect": "その検索フィルターだけ解除。計算値や安全判定を0に置換しない"
+    }
+  ]
+}

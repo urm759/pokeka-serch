@@ -43,3 +43,4 @@ assert.doesNotMatch(app,/els.grid.innerHTML = visibleCards/);
 console.log('keyed DOM identity, warnings, detail isolation, fixed cohort deadlines and field-specific routing: passed');
 require('./test_render_reuse');
 require('./test_candidate_reduction');
+require('./test_search_organization');

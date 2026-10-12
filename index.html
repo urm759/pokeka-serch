@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20261012-efficiency-reference-v3" />
+  <link rel="stylesheet" href="./styles.css?v=20261012-search-organization-v1" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -26,85 +26,18 @@
         <small id="releaseYearFilterSummary">発売年条件。最近発売365日以内とは別です。</small>
       </div>
       <p id="forecastPeriodWarning" class="filter-explanation" hidden></p>
-      <div id="activeFilterSummary" class="active-filter-summary" aria-live="polite"></div>
-      <details class="advanced-filters purchase-comparison-settings">
-        <summary><span>購入価格・仕入れ余裕率</span><small>表示した2価格の参考比較・GO判定とは別</small></summary>
-        <div class="controls controls-primary">
-          <label class="control"><span>現在買える状態A価格 下限（円）</span><input id="actualPurchaseMinInput" type="number" min="0" step="100" placeholder="条件なし" /></label>
-          <label class="control"><span>現在買える状態A価格 上限（円）</span><input id="actualPurchaseMaxInput" type="number" min="0" step="100" placeholder="条件なし" /></label>
-          <label class="control"><span>仕入れ余裕率 下限 %</span><input id="purchaseHeadroomMinInput" type="number" step="0.1" placeholder="条件なし" /></label>
-          <label class="control"><span>仕入れ余裕率 上限 %</span><input id="purchaseHeadroomMaxInput" type="number" step="0.1" placeholder="条件なし" /></label>
-          <label class="check-control"><input id="purchaseBelowCurrentCapInput" type="checkbox" />現在買える状態A価格 ＜ 現相場の期待損益分岐上限</label>
-          <p class="filter-explanation">余裕率＝（表示した損益分岐上限÷現在買える状態A価格−1）×100。利益率ではありません。同額0%（チェックは同額除外）。空欄は条件なし、0は有効。新鮮な在庫あり店舗価格だけを使い、参考相場・手入力は代用しません。PSA9日時未確認は参考警告を付けて比較しますが、プラスでも購入GOにはしません。計算材料不足・古い購入価格・在庫なしは比較不可です。</p>
-        </div>
-      </details>
-      <details class="advanced-filters efficiency-settings">
-        <summary><span>単体の期待資金効率</span><small>個人の総資金不要・購入GOとは別</small></summary>
-        <div class="controls controls-primary">
-          <label class="control"><span>単体・年換算資金効率 下限 %</span><input id="efficiencyMinInput" type="number" step="0.1" placeholder="条件なし" /><small>空欄＝無効、0＝非負。算出不可は0%にしません。</small></label>
-          <label class="control control-toggle"><input id="efficiencyIncludeReferenceInput" type="checkbox" /><span>資金効率の参考値も検索・順位に含める</span><small>PSA9日時未確認など。価格対立・仕様不一致・古い購入価格・買取出口不足は通しません。購入GOとは別です。</small></label>
-          <label class="control"><span>資金効率の買値</span><select id="efficiencyBuyInput"><option value="auto">実店舗状態A（明示的な現相場上限・手入力は継承）</option><option value="manual">手入力買値・仮定</option><option value="current-cap">現相場損益分岐上限で購入・仮定</option></select><small>現相場探索の手入力を継承します。購入価格未取得時に参考相場・安定重視上限へ代用しません。</small></label>
-          <label class="control"><span>手入力買値（円）</span><input id="efficiencyManualPriceInput" type="number" min="0" step="100" placeholder="未設定" /></label>
-          <label class="control"><span>資金効率の売値シナリオ</span><select id="efficiencyScenarioInput"><option value="current">現在出口相場が続く仮定</option><option value="central">中央予測（期間一致時のみ）</option><option value="stress">供給ストレス（期間一致時のみ）</option></select><small>現相場採算モード・損益分岐上限の仮定では現在相場に統一。保存した予測条件は削除しません。</small></label>
-          <label class="control"><span>売却待ち 日数</span><input id="efficiencySaleDaysInput" type="number" min="0" step="1" value="7" /></label>
-          <label class="control"><span>入金待ち 日数</span><input id="efficiencyPayoutDaysInput" type="number" min="0" step="1" value="3" /></label>
-          <p class="filter-explanation">期待利益÷（買値＋鑑定費＋諸費用＋該当交通費予備額）×100×365÷拘束日数。既存プランの返却日数には発送・返却7日を含むため再加算せず、売却待ち7日・入金待ち3日だけを追加します。利益には手取りで控除済みの手数料・査定減額・諸費用を再控除しません。PSA9等を含む期待値で、PSA10時利益とは別。単純年換算の参考値で年間利益や売却日数・損失回避の保証ではありません。個人資金を用いる判定用年換算条件・購入GO・上限は変更しません。</p>
-        </div>
-      </details>
-      <details class="advanced-filters primary-settings">
-        <summary><span>詳細設定</span><small>鑑定プラン・利益条件・並び順</small></summary>
-        <div class="controls controls-primary">
-        <label class="control psa-plan-control">
-          <span>PSA Japan 鑑定プラン</span>
-          <select id="psaPlanInput">
-            <option value="standard">スタンダード</option>
-            <option value="priority">プライオリティ</option>
-            <option value="express">エクスプレス</option>
-          </select>
-          <input id="feeInput" type="hidden" value="12980" />
-          <small id="psaPlanSummary" class="control-help">公式料金 ¥11,980＋各種手数料 ¥1,000＝¥12,980</small>
+<div class="controls controls-basic" aria-label="基本の価格帯・並び順">
+<label class="control"><span>現在買える状態A価格 下限（円）</span><input id="actualPurchaseMinInput" type="number" min="0" step="100" placeholder="条件なし" /></label>
+<label class="control"><span>現在買える状態A価格 上限（円）</span><input id="actualPurchaseMaxInput" type="number" min="0" step="100" placeholder="条件なし" /></label>
+<label class="control">
+          <span>PSA10 下限</span>
+          <input id="psaMinInput" type="number" min="0" step="1000" value="0" />
         </label>
-        <label class="control">
-          <span>PSA10時利益率 下限</span>
-          <input id="roiInput" type="number" min="0" step="1" value="40" />
+<label class="control">
+          <span>PSA10 上限</span>
+          <input id="psaMaxInput" type="number" min="0" step="1000" value="200000" />
         </label>
-        <label class="control">
-          <span>期待利益率 下限</span>
-          <small>下の検索計算基準を使用。現相場採算モードは実店舗／手入力買値×現在出口相場。空欄は無効</small>
-          <input id="expectedRoiFilterInput" type="number" step="1" value="0" placeholder="無効" />
-        </label>
-        <label class="control">
-          <span>期待利益額 下限</span>
-          <small>0円は赤字除外。空欄は利益額フィルター無効</small>
-          <input id="expectedProfitFilterInput" type="number" step="1000" value="0" placeholder="無効" />
-        </label>
-        <label class="control"><span>利益検索・表示・並び順の買値</span><select id="profitSearchBasisInput"><option value="auto">自動：価格待ちは上限／今すぐは店舗</option><option value="limit">安定重視上限で購入</option><option value="current-cap">現相場の期待損益分岐上限で購入（探索）</option><option value="store">実店舗在庫価格で購入</option><option value="current">素体参考相場で購入（購入先未確認）</option></select><small>現相場上限で購入する探索は現在出口相場の維持仮定。期待利益率は切下げ端数分を除きほぼ0%のため、10%以上などの条件とは両立しない場合があります（条件は保持）。通常は中央予測の期待利益、今すぐ仕入れは実店舗価格。観測平均の利益率は別のフリマ参考試算です。</small></label>
-        <label class="control"><span>30日買取掲載率 下限 %</span><input id="postingRate30MinInput" type="number" min="0" max="100" step="0.1" placeholder="条件なし" /></label>
-        <label class="control"><span>30日平均掲載店舗数 下限</span><input id="postingShops30MinInput" type="number" min="0" step="0.1" placeholder="条件なし" /></label>
-        <label class="control"><span>買取掲載の最低観測日数</span><input id="postingDaysMinInput" type="number" min="0" max="30" step="1" placeholder="条件なし" /></label>
-        <label class="control"><span>買取掲載取得カバー率 下限 %</span><input id="postingCoverageMinInput" type="number" min="0" max="100" step="0.1" placeholder="条件なし" /></label>
-        <p class="filter-explanation">選択した郵送／店頭／指定店舗の正常な全掲載確認店舗日が分母。部分取得・失敗は未掲載とみなしません。取得カバー率＝確認店舗日÷対象店舗数÷30日。掲載数は実買取件数ではありません。</p>
-        <label class="check-control"><input id="includePeriodReferenceInput" type="checkbox" checked />価格待ち探索に期間不一致の参考値を含める（GO不可）</label>
-        <p class="filter-explanation">今すぐ仕入れは検索基準によらず実店舗在庫価格で再判定します。期間不一致は返却時利益ではなく91日モデルの参考探索です。価格待ちでも出口・安全条件と上限×供給ストレスの赤字回避が必要です。</p>
-        <label class="control safety-profit-control">
-          <span>安全側利益率 下限</span>
-          <small>仕入れ上限 × 供給ストレス予測</small>
-          <input id="stressExpectedRoiFilterInput" type="number" step="1" value="0" />
-        </label>
-        <label class="control safety-profit-control">
-          <span>安全側利益額 下限</span>
-          <small>仕入れ上限 × 供給ストレス予測</small>
-          <input id="stressExpectedProfitFilterInput" type="number" step="1000" value="0" />
-        </label>
-        <p class="filter-explanation">利益率下限0%は、PSA10率・PSA9以下・販売手数料・鑑定費・追加費用を含む期待値が0円以上という意味です。PSA9など全ての結果で赤字にならない保証ではありません。</p>
-        <label class="control"><span>仕入れ値／国内PSA9 下限 %</span><input id="psa9RatioMinInput" type="number" min="0" step="1" placeholder="例：80" /></label>
-        <label class="control"><span>仕入れ値／国内PSA9 上限 %</span><input id="psa9RatioMaxInput" type="number" min="0" step="1" placeholder="例：100" /></label>
-        <label class="check-control"><input id="psa9RatioAggregateInput" type="checkbox" />国内PSA9集計値を含める</label>
-        <label class="check-control"><input id="psa9RatioEstimateInput" type="checkbox" />PSA9推定値を含める（素体由来は検索対象外）</label>
-        <label class="check-control"><input id="psa9RatioMarketInput" type="checkbox" />購入価格未取得時の相場参考買値を含める</label>
-        <p id="psa9RatioCoverage" class="filter-explanation" aria-live="polite"></p>
-        <p class="filter-explanation">比率は在庫あり状態Aの購入価格を優先。国内集計・推定・相場買値は個別に選択してください。素体由来のPSA9推定は循環した割安判断になるため、選択しても比率検索から除外します。PSA9と同額で買っても費用分の損失が出ます。国内PSA9個別成約は現在未取得のため、参考値OFFで比率条件を指定すると結果がありません。手入力買値はお気に入りの仮定試算で確認できます。</p>
-        <label class="control">
+<label class="control">
           <span>並び順</span>
           <select id="sortInput">
             <option value="overall-desc">銘柄品質が高い順</option>
@@ -174,8 +107,9 @@
             <option value="snkrRawTx30-desc">スニダン素体30日取引が多い順</option>
           </select>
         </label>
-      </div>
-      </details>
+</div>
+<div id="activeFilterSummary" class="active-filter-summary" aria-live="polite"></div>
+<p class="search-section-note">基本検索は名称・かんたん絞り込み・発売年・購入価格・PSA10価格帯。詳細条件と計算設定は別です。<a href="./docs/SEARCH_CONTROL_INVENTORY.md" target="_blank" rel="noreferrer">全項目の目的・初期値・適用先</a></p>
 
       <div class="quick-presets" aria-label="かんたん絞り込み">
         <span>かんたん絞り込み</span>
@@ -237,6 +171,7 @@
         <div id="snkrRawCoverageSummary" class="snkr-raw-coverage">素体データの取得率を確認中</div>
       </details>
 
+      <details class="advanced-filters catalog-settings"><summary><span>表示範囲・掲載データ監査</span><small>分析可能／全カード／新着・補完状態</small></summary>
       <section class="catalog-scope" aria-label="掲載カードの表示範囲">
         <div>
           <strong>掲載カード</strong>
@@ -262,8 +197,79 @@
           <div id="catalogCompletionDetails"></div>
         </details>
       </section>
+      </details>
 
-      <details class="advanced-filters">
+
+
+
+<details class="advanced-filters grouped-search" id="additionalSearchSettings">
+<summary><span>詳細検索 / 採算・余裕率・PSA9・取引・予測</span><small>適用条件は上に常時表示。計算設定・GO基準とは別</small></summary>
+<details class="advanced-filters purchase-comparison-settings">
+        <summary><span>購入価格・仕入れ余裕率</span><small>表示した2価格の参考比較・GO判定とは別</small></summary>
+        <div class="controls controls-primary">
+
+          <label class="control"><span>仕入れ余裕率 下限 %</span><input id="purchaseHeadroomMinInput" type="number" step="0.1" placeholder="条件なし" /></label>
+          <label class="control"><span>仕入れ余裕率 上限 %</span><input id="purchaseHeadroomMaxInput" type="number" step="0.1" placeholder="条件なし" /></label>
+          <label class="check-control"><input id="purchaseBelowCurrentCapInput" type="checkbox" />現在買える状態A価格 ＜ 現相場の期待損益分岐上限</label>
+          <p class="filter-explanation">余裕率＝（表示した損益分岐上限÷現在買える状態A価格−1）×100。利益率ではありません。同額0%（チェックは同額除外）。空欄は条件なし、0は有効。新鮮な在庫あり店舗価格だけを使い、参考相場・手入力は代用しません。PSA9日時未確認は参考警告を付けて比較しますが、プラスでも購入GOにはしません。計算材料不足・古い購入価格・在庫なしは比較不可です。</p>
+        </div>
+      </details>
+<details class="advanced-filters efficiency-settings">
+        <summary><span>単体の期待資金効率</span><small>個人の総資金不要・購入GOとは別</small></summary>
+        <div class="controls controls-primary">
+          <label class="control"><span>単体・年換算資金効率 下限 %</span><input id="efficiencyMinInput" type="number" step="0.1" placeholder="条件なし" /><small>空欄＝無効、0＝非負。算出不可は0%にしません。</small></label>
+          <label class="control control-toggle"><input id="efficiencyIncludeReferenceInput" type="checkbox" /><span>資金効率の参考値も検索・順位に含める</span><small>PSA9日時未確認など。価格対立・仕様不一致・古い購入価格・買取出口不足は通しません。購入GOとは別です。</small></label>
+          <p class="filter-explanation">期待利益÷（買値＋鑑定費＋諸費用＋該当交通費予備額）×100×365÷拘束日数。既存プランの返却日数には発送・返却7日を含むため再加算せず、売却待ち7日・入金待ち3日だけを追加します。利益には手取りで控除済みの手数料・査定減額・諸費用を再控除しません。PSA9等を含む期待値で、PSA10時利益とは別。単純年換算の参考値で年間利益や売却日数・損失回避の保証ではありません。個人資金を用いる判定用年換算条件・購入GO・上限は変更しません。</p>
+        </div>
+      </details>
+<details class="advanced-filters primary-settings">
+        <summary><span>詳細検索 / 採算・PSA9比率・買取掲載</span><small>検索条件と計算設定は別です</small></summary>
+        <div class="controls controls-primary">
+
+        <label class="control">
+          <span>PSA10時利益率 下限</span>
+          <input id="roiInput" type="number" min="0" step="1" value="40" />
+        </label>
+        <label class="control">
+          <span>期待利益率 下限</span>
+          <small>下の検索計算基準を使用。現相場採算モードは実店舗／手入力買値×現在出口相場。空欄は無効</small>
+          <input id="expectedRoiFilterInput" type="number" step="1" value="0" placeholder="無効" />
+        </label>
+        <label class="control">
+          <span>期待利益額 下限</span>
+          <small>0円は赤字除外。空欄は利益額フィルター無効</small>
+          <input id="expectedProfitFilterInput" type="number" step="1000" value="0" placeholder="無効" />
+        </label>
+        <label class="control"><span>利益検索・表示・並び順の買値</span><select id="profitSearchBasisInput"><option value="auto">自動：価格待ちは上限／今すぐは店舗</option><option value="limit">安定重視上限で購入</option><option value="current-cap">現相場の期待損益分岐上限で購入（探索）</option><option value="store">実店舗在庫価格で購入</option><option value="current">素体参考相場で購入（購入先未確認）</option></select><small>現相場上限で購入する探索は現在出口相場の維持仮定。期待利益率は切下げ端数分を除きほぼ0%のため、10%以上などの条件とは両立しない場合があります（条件は保持）。通常は中央予測の期待利益、今すぐ仕入れは実店舗価格。観測平均の利益率は別のフリマ参考試算です。</small></label>
+        <label class="control"><span>30日買取掲載率 下限 %</span><input id="postingRate30MinInput" type="number" min="0" max="100" step="0.1" placeholder="条件なし" /></label>
+        <label class="control"><span>30日平均掲載店舗数 下限</span><input id="postingShops30MinInput" type="number" min="0" step="0.1" placeholder="条件なし" /></label>
+        <label class="control"><span>買取掲載の最低観測日数</span><input id="postingDaysMinInput" type="number" min="0" max="30" step="1" placeholder="条件なし" /></label>
+        <label class="control"><span>買取掲載取得カバー率 下限 %</span><input id="postingCoverageMinInput" type="number" min="0" max="100" step="0.1" placeholder="条件なし" /></label>
+        <p class="filter-explanation">選択した郵送／店頭／指定店舗の正常な全掲載確認店舗日が分母。部分取得・失敗は未掲載とみなしません。取得カバー率＝確認店舗日÷対象店舗数÷30日。掲載数は実買取件数ではありません。</p>
+        <label class="check-control"><input id="includePeriodReferenceInput" type="checkbox" checked />価格待ち探索に期間不一致の参考値を含める（GO不可）</label>
+        <p class="filter-explanation">今すぐ仕入れは検索基準によらず実店舗在庫価格で再判定します。期間不一致は返却時利益ではなく91日モデルの参考探索です。価格待ちでも出口・安全条件と上限×供給ストレスの赤字回避が必要です。</p>
+        <label class="control safety-profit-control">
+          <span>安全側利益率 下限</span>
+          <small>仕入れ上限 × 供給ストレス予測</small>
+          <input id="stressExpectedRoiFilterInput" type="number" step="1" value="0" />
+        </label>
+        <label class="control safety-profit-control">
+          <span>安全側利益額 下限</span>
+          <small>仕入れ上限 × 供給ストレス予測</small>
+          <input id="stressExpectedProfitFilterInput" type="number" step="1000" value="0" />
+        </label>
+        <p class="filter-explanation">利益率下限0%は、PSA10率・PSA9以下・販売手数料・鑑定費・追加費用を含む期待値が0円以上という意味です。PSA9など全ての結果で赤字にならない保証ではありません。</p>
+        <label class="control"><span>仕入れ値／国内PSA9 下限 %</span><input id="psa9RatioMinInput" type="number" min="0" step="1" placeholder="例：80" /></label>
+        <label class="control"><span>仕入れ値／国内PSA9 上限 %</span><input id="psa9RatioMaxInput" type="number" min="0" step="1" placeholder="例：100" /></label>
+        <label class="check-control"><input id="psa9RatioAggregateInput" type="checkbox" />国内PSA9集計値を含める</label>
+        <label class="check-control"><input id="psa9RatioEstimateInput" type="checkbox" />PSA9推定値を含める（素体由来は検索対象外）</label>
+        <label class="check-control"><input id="psa9RatioMarketInput" type="checkbox" />購入価格未取得時の相場参考買値を含める</label>
+        <p id="psa9RatioCoverage" class="filter-explanation" aria-live="polite"></p>
+        <p class="filter-explanation">比率は在庫あり状態Aの購入価格を優先。国内集計・推定・相場買値は個別に選択してください。素体由来のPSA9推定は循環した割安判断になるため、選択しても比率検索から除外します。PSA9と同額で買っても費用分の損失が出ます。国内PSA9個別成約は現在未取得のため、参考値OFFで比率条件を指定すると結果がありません。手入力買値はお気に入りの仮定試算で確認できます。</p>
+
+      </div>
+      </details>
+<details class="advanced-filters">
         <summary>
           <span>詳細な検索条件</span>
           <small>取引件数・価格帯を調整</small>
@@ -298,7 +304,7 @@
           </div>
         </label>
         <label class="control">
-          <span>平均美品価格帯</span>
+          <span>素体参考相場（中央値）の価格帯</span>
           <div class="range-pair">
             <input id="priceMinInput" type="number" min="0" step="100" placeholder="下限" />
             <input id="priceMaxInput" type="number" min="0" step="100" placeholder="上限" />
@@ -309,14 +315,8 @@
           <input id="purchaseLimitRatioMinInput" type="number" min="0" max="100" step="1" placeholder="例: 70（空欄は条件なし）" />
           <small>70なら、仕入れ上限が平均美品価格の70%未満のカードを除外。利益率下限とこの条件は、この端末で次回も復元します。</small>
         </label>
-        <label class="control">
-          <span>PSA10 下限</span>
-          <input id="psaMinInput" type="number" min="0" step="1000" value="0" />
-        </label>
-        <label class="control">
-          <span>PSA10 上限</span>
-          <input id="psaMaxInput" type="number" min="0" step="1000" value="200000" />
-        </label>
+
+
         <label class="control">
           <span>買取表掲載日数 直近7日</span>
           <div class="range-pair">
@@ -413,11 +413,10 @@
           <label><input id="fundingOnlyInput" type="checkbox" /> 今回の仕入れGOのみ</label>
           <label><input id="officialOnlyInput" type="checkbox" /> PSA公式取得済みのみ</label>
         </div>
-        <button id="resetFiltersBtn" class="filter-reset" type="button">検索条件を初期値に戻す</button>
+        <button id="resetFiltersBtn" class="filter-reset" type="button">従来の検索条件一括初期化（詳細操作）</button>
         </div>
       </details>
-
-      <details class="advanced-filters market-analysis-filter-settings">
+<details class="advanced-filters market-analysis-filter-settings">
         <summary>
           <span>下値安定・店舗需要で絞る</span>
           <small>既存の仕入れ判断とは独立した市場指標</small>
@@ -471,8 +470,7 @@
           </label>
         </div>
       </details>
-
-      <details class="advanced-filters forecast-filter-settings">
+<details class="advanced-filters forecast-filter-settings">
         <summary>
           <span>PSA10将来価格予測で絞る</span>
           <small>予測価格・下落余地・供給量を個別に指定</small>
@@ -559,13 +557,22 @@
           </label>
         </div>
       </details>
-
-      <details class="advanced-filters psa-decision-settings">
+</details>
+<details class="advanced-filters psa-decision-settings" id="decisionCalculationSettings">
         <summary>
-          <span>PSA提出判断の設定</span>
+          <span>仕入れ判定・計算設定 / 鑑定プラン・費用・売却先・資金</span>
           <small>入力後のURLをブックマークできます</small>
         </summary>
-        <div class="controls controls-advanced">
+        <div class="controls controls-advanced"><label class="control psa-plan-control">
+          <span>PSA Japan 鑑定プラン</span>
+          <select id="psaPlanInput">
+            <option value="standard">スタンダード</option>
+            <option value="priority">プライオリティ</option>
+            <option value="express">エクスプレス</option>
+          </select>
+          <input id="feeInput" type="hidden" value="12980" />
+          <small id="psaPlanSummary" class="control-help">公式料金 ¥11,980＋各種手数料 ¥1,000＝¥12,980</small>
+        </label><p class="control-settings-note">ここは計算・購入GOの設定です。「追加検索条件だけ解除」では変更しません。検索の期待利益下限とは別に判定用の最低利益条件が残ります。</p>
           <label class="control">
             <span>PSA運用の総資金</span>
             <input id="psaCapitalInput" type="number" min="0" step="10000" value="500000" />
@@ -639,6 +646,13 @@
           <label class="control"><span>指定店舗ID（カンマ区切り）</span><input id="selectedBuybackStoresInput" type="text" placeholder="cardshop151-store,torecabank"><small>店舗IDは買取表詳細に表示します。</small></label>
           <label class="control"><span>店頭交通費等／1枚</span><input id="storeTravelCostInput" type="number" min="0" step="100" value="0"><small>店頭出口だけに適用。まとめ売りの場合は1枚あたりへ配分してください。</small></label>
         </div>
+        <details class="efficiency-calculation-settings"><summary>参考の資金効率 / 買値・売値シナリオ・売却待ち</summary><div class="controls controls-advanced">
+<label class="control"><span>資金効率の買値</span><select id="efficiencyBuyInput"><option value="auto">実店舗状態A（明示的な現相場上限・手入力は継承）</option><option value="manual">手入力買値・仮定</option><option value="current-cap">現相場損益分岐上限で購入・仮定</option></select><small>現相場探索の手入力を継承します。購入価格未取得時に参考相場・安定重視上限へ代用しません。</small></label>
+<label class="control"><span>手入力買値（円）</span><input id="efficiencyManualPriceInput" type="number" min="0" step="100" placeholder="未設定" /></label>
+<label class="control"><span>資金効率の売値シナリオ</span><select id="efficiencyScenarioInput"><option value="current">現在出口相場が続く仮定</option><option value="central">中央予測（期間一致時のみ）</option><option value="stress">供給ストレス（期間一致時のみ）</option></select><small>現相場採算モード・損益分岐上限の仮定では現在相場に統一。保存した予測条件は削除しません。</small></label>
+<label class="control"><span>売却待ち 日数</span><input id="efficiencySaleDaysInput" type="number" min="0" step="1" value="7" /></label>
+<label class="control"><span>入金待ち 日数</span><input id="efficiencyPayoutDaysInput" type="number" min="0" step="1" value="3" /></label>
+</div></details>
         <div class="psa-settings-note">
           <button id="roiFocusButton" type="button">利益率中心（最低利益額だけ0円）</button>
           <p>利益額の条件だけを0円に変更します。期待利益の計算値は変更しません。最低期待利益率・年換算効率・資金・品質・供給・返却期間の安全条件は維持します。期待利益率の分母は仕入れ値＋鑑定費です。販売手数料・減額・送料等は売却手取りへ反映します。</p>
@@ -913,7 +927,8 @@
   <script src="./keyed-card-renderer.js?v=20261010-v1"></script>
   <a class="return-to-filters" href="#searchConditions">検索条件へ</a>
   <script src="./exploration-metrics.js?v=20261011-efficiency-v1"></script>
+  <script src="./search-controls.js?v=20261012-inventory-v1"></script>
   <script src="./settings-disclosure.js?v=20261011-disclosure-v1"></script>
-  <script src="./app.js?v=20261012-render-reuse-v1"></script>
+  <script src="./app.js?v=20261012-search-organization-v1"></script>
 </body>
 </html>

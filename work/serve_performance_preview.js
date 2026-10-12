@@ -11,7 +11,14 @@ http.createServer((req,res) => {
   const target = path.resolve(root,file);
   if (!target.startsWith(root+path.sep) || !(file.startsWith('data/') || /^[a-z0-9-]+\.(html|js|css)$/.test(file))) {res.writeHead(403).end();return;}
   try {
-    const data = mode.startsWith('before') && before[file] || mode.endsWith('double') && doubled.get(file) || fs.readFileSync(target);
+    let data = mode.startsWith('before') && before[file] || mode.endsWith('double') && doubled.get(file) || fs.readFileSync(target);
+    const evaluationAt=process.env.PERFORMANCE_EVALUATION_AT;
+    if(file==='index.html'&&evaluationAt) {
+      const epoch=Date.parse(evaluationAt);if(!Number.isFinite(epoch))throw new Error('Invalid performance evaluation time');
+      const fixture=`<meta name="performance-evaluation-time" content="${new Date(epoch).toISOString()}"><script>{const RealDate=Date;class FixtureDate extends RealDate{constructor(...args){super(...(args.length?args:[${epoch}]))}static now(){return ${epoch}}}window.Date=FixtureDate;}</script>`;
+      // Only the localhost fixture is frozen; production HTML/data are untouched.
+      data=Buffer.from(data.toString('utf8').replace('</head>',fixture+'</head>'));
+    }
     const gzip = /gzip/.test(req.headers['accept-encoding'] || '');
     res.writeHead(200,{'content-type':types[path.extname(file)] || 'application/octet-stream','cache-control':'no-store',
       ...(gzip ? {'content-encoding':'gzip'} : {})});

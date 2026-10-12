@@ -1516,6 +1516,23 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .hero>.catalog-scope{order:7}
 .hero>.advanced-filters:not(.primary-settings):not(.purchase-comparison-settings):not(.snkr-raw-settings){order:8}
 .hero>#activeFilterSummary{order:2}
+.hero>.controls-basic{order:2;margin-top:10px;grid-template-columns:repeat(4,minmax(0,1fr))}
+.hero>.search-section-note{order:3;font-size:12px;color:var(--muted);margin:8px 0}
+.controls-basic .control{min-width:0}
+.control-settings-note{grid-column:1/-1;font-size:12px;color:var(--muted)}
+.grouped-search>details{margin:8px 12px}.grouped-search>summary{font-weight:900}
+.hero>.psa-decision-settings{order:9}
+.controls-basic .control:last-child{grid-column:1/-1}
+.search-settings [data-applicability]{display:block;color:#fcd888;font-size:11px;line-height:1.5}
+.search-settings [data-applicability][hidden]{display:none}
+.active-filter-chips{display:flex;gap:5px;flex-wrap:wrap}
+.active-filter-chips button,.active-filter-chips .filter-protected{font-size:11px;padding:6px 8px;max-width:100%;overflow-wrap:anywhere;border:1px solid var(--line);border-radius:9px;background:#0b1224;color:var(--text)}
+.active-filter-chips .filter-protected{color:var(--muted)}
+[data-clear-extra-conditions]{padding:9px 12px;margin:7px 0;border:1px solid #7dd3fc;border-radius:9px;background:#17344b;color:var(--text);cursor:pointer}
+[data-clear-extra-conditions]:disabled{opacity:.5;cursor:default}
+.zero-result-help{display:grid;gap:5px;padding:9px;border:1px solid #bd993d;border-radius:10px;font-size:12px}
+.catalog-card-explanation{flex-basis:100%;font-size:11px}.catalog-card-explanation>summary{cursor:pointer}
+@media(max-width:700px){.hero>.controls-basic{grid-template-columns:repeat(2,minmax(0,1fr))}.controls-basic .range-pair{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .hero>#forecastPeriodWarning{order:10}
 .hero>.stats,.hero>.stats-panel{order:11}
 .control-search-row .control{position:relative;z-index:1}

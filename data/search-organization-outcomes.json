@@ -1,0 +1,959 @@
+{
+  "version": 1,
+  "at": "2026-10-12T10:39:01.387Z",
+  "baselineAt": "2026-10-12T09:42:17.554Z",
+  "commonCards": 12507,
+  "addedCards": 0,
+  "removedCards": 0,
+  "newlyAnalyzable": 0,
+  "lostAnalyzable": 0,
+  "filledCards": 1,
+  "filledItems": 1,
+  "sources": {
+    "cardrush": {
+      "newLinked": 0,
+      "validAdded": 0,
+      "validLost": 0,
+      "usableNet": 0,
+      "freshnessRecovered": 0
+    },
+    "hareruya2": {
+      "newLinked": 0,
+      "validAdded": 0,
+      "validLost": 0,
+      "usableNet": 0,
+      "freshnessRecovered": 14
+    },
+    "yuyutei": {
+      "newLinked": 0,
+      "validAdded": 0,
+      "validLost": 0,
+      "usableNet": 0,
+      "freshnessRecovered": 0
+    },
+    "torecacamp": {
+      "newLinked": 0,
+      "validAdded": 0,
+      "validLost": 0,
+      "usableNet": 0,
+      "freshnessRecovered": 0
+    },
+    "psaOfficial": {
+      "newLinked": 0,
+      "validAdded": 0,
+      "validLost": 0,
+      "usableNet": 0,
+      "freshnessRecovered": 0
+    },
+    "pokedata": {
+      "newLinked": 0,
+      "validAdded": 0,
+      "validLost": 0,
+      "usableNet": 0,
+      "freshnessRecovered": 0
+    }
+  },
+  "evidence": "今回の保存ベースラインからの実取得・必須項目・分析可能・48時間購入価格の鮮度を別集計。手動確認は定期維持の証明ではない。",
+  "priceRun": {
+    "startedAt": "2026-10-12T10:34:11.313Z",
+    "endedAt": "2026-10-12T10:35:10.770Z",
+    "status": "partial",
+    "attempted": 29,
+    "confirmed": 29,
+    "newLinked": 0,
+    "changed": 12,
+    "httpRequests": 50,
+    "durationMs": 59457,
+    "stopReason": "時間上限・保存して安全停止",
+    "nextId": "pk-1859"
+  },
+  "discovery": {
+    "startedAt": "2026-10-12T10:37:18.595Z",
+    "attempted": 19,
+    "newLinked": 0,
+    "ambiguous": 0,
+    "noCandidate": 19,
+    "httpRequests": 1,
+    "cacheHits": 18,
+    "llmCalls": 0,
+    "codexCalls": 0,
+    "records": [
+      {
+        "id": "x-111820",
+        "status": "collection-unmatched",
+        "checkedAt": "2026-10-12T10:37:19.121Z",
+        "reason": "正規セット一覧と収録情報が一致せず・商品取得未実行",
+        "url": null
+      },
+      {
+        "id": "pk-18514",
+        "collection": "238",
+        "checkedAt": "2026-10-12T10:37:19.133Z",
+        "observedAt": "2026-10-12T00:57:23.184Z",
+        "status": "no-candidate",
+        "url": null,
+        "diagnostic": {
+          "signature": {
+            "setCode": "cp2",
+            "cardNo": "009/027",
+            "base": "ゼクロム1ed",
+            "finish": "first",
+            "pack": "コンセプトパック伝説キラコレクション"
+          },
+          "listedProducts": 27,
+          "sameNumberCandidates": 1,
+          "reasons": {
+            "初版表記未確認": 1
+          },
+          "samples": [
+            {
+              "title": "ゼクロム(R){雷}〈009/027〉[CP2]",
+              "url": "https://www.hareruya2.com/products/9015267459392",
+              "rejected": [
+                "初版表記未確認"
+              ]
+            }
+          ],
+          "note": "番号だけで自動採用しない。掲載未確認は商品不存在を意味しない"
+        }
+      },
+      {
+        "id": "pk-112",
+        "collection": "236",
+        "checkedAt": "2026-10-12T10:37:19.333Z",
+        "observedAt": "2026-10-08T21:57:09.632Z",
+        "status": "no-candidate",
+        "url": null,
+        "diagnostic": {
+          "signature": {
+            "setCode": "xy6",
+            "cardNo": "062/078",
+            "base": "mレックウザex1ed",
+            "finish": "first",
+            "pack": "拡張パックエメラルドブレイク"
+          },
+          "listedProducts": 91,
+          "sameNumberCandidates": 1,
+          "reasons": {
+            "初版表記未確認": 1
+          },
+          "samples": [
+            {
+              "title": "MレックウザEX(RR){無}〈062/078〉[XY6]",
+              "url": "https://www.hareruya2.com/products/9015453843776",
+              "rejected": [
+                "初版表記未確認"
+              ]
+            }
+          ],
+          "note": "番号だけで自動採用しない。掲載未確認は商品不存在を意味しない"
+        }
+      },
+      {
+        "id": "pk-322",
+        "collection": "248",
+        "checkedAt": "2026-10-12T10:37:19.491Z",
+        "observedAt": "2026-10-10T10:07:13.734Z",
+        "status": "no-candidate",
+        "url": null,
+        "diagnostic": {
+          "signature": {
+            "setCode": "cp6",
+            "cardNo": "070/087",
+            "base": "カイリューex1ed",
+            "finish": "first",
+            "pack": "コンセプトパックポケットモンスターカードゲーム拡張パック20thanniversary"
+          },
+          "listedProducts": 103,
+          "sameNumberCandidates": 1,
+          "reasons": {
+            "初版表記未確認": 1
+          },
+          "samples": [
+            {
+              "title": "カイリューEX(RR){無}〈070/087〉[CP6]",
+              "url": "https://www.hareruya2.com/products/9015587012928",
+              "rejected": [
+                "初版表記未確認"
+              ]
+            }
+          ],
+          "note": "番号だけで自動採用しない。掲載未確認は商品不存在を意味しない"
+        }
+      },
+      {
+        "id": "x-91388",
+        "collection": "301",
+        "checkedAt": "2026-10-12T10:37:19.651Z",
+        "observedAt": "2026-10-10T10:07:08.594Z",
+        "status": "no-candidate",
+        "url": null,
+        "diagnostic": {
+          "signature": {
+            "setCode": "",
+            "cardNo": "XY-P",
+            "base": "ギャラドス",
+            "finish": "",
+            "pack": "プロモーションカードxy-p"
+          },
+          "listedProducts": 424,
+          "sameNumberCandidates": 122,
+          "reasons": {
+            "国内識別情報不足": 1,
+            "セットコード不一致": 3
+          },
+          "samples": [
+            {
+              "title": "フレア団のしたっぱ(PROMO){サポート}〈XY-P〉[XY-P]",
+              "url": "https://www.hareruya2.com/products/9015564108096",
+              "rejected": [
+                "セットコード不一致"
+              ]
+            },
+            {
+              "title": "基本雷エネルギー:プロモ(PROMO){基本エネルギー}〈XY-P〉[XY-P]",
+              "url": "https://www.hareruya2.com/products/9015601791296",
+              "rejected": [
+                "セットコード不一致"
+              ]
+            },
+            {
+              "title": "コダック(PROMO){水}〈XY-P〉[XY-P]",
+              "url": "https://www.hareruya2.com/products/9015607689536",
+              "rejected": [
+                "セットコード不一致"
+              ]
+            }
+          ],
+          "note": "番号だけで自動採用しない。掲載未確認は商品不存在を意味しない"
+        }
+      },
+      {
+        "id": "x-109389",
+        "collection": "122",
+        "checkedAt": "2026-10-12T10:37:19.812Z",
+        "observedAt": "2026-10-08T21:57:14.749Z",
+        "status": "no-candidate",
+        "url": null,
+        "diagnostic": {
+          "signature": {
+            "setCode": "",
+            "cardNo": "DP3",
+            "base": "ダークライlvx☆",
+            "finish": "",
+            "pack": "拡張パックひかる闇"
+          },
+          "listedProducts": 123,
+          "sameNumberCandidates": 0,
+          "reasons": {
+            "国内識別情報不足": 1,
+            "同一番号の掲載未確認": 1
+          },
+          "samples": [],
+          "note": "番号だけで自動採用しない。掲載未確認は商品不存在を意味しない"
+        }
+      },
+      {
+        "id": "x-438197",
+        "collection": "77",
+        "checkedAt": "2026-10-12T10:37:19.980Z",
+        "observedAt": "2026-10-09T21:27:01.406Z",
+        "status": "no-candidate",
+        "url": null,
+        "diagnostic": {
+          "signature": {
+            "setCode": "pcg4",
+            "cardNo": "013/106",
+            "base": "ブースター★1ed",
+            "finish": "first",
+            "pack": "拡張パック金の空、銀の海"
+          },
+          "listedProducts": 109,
+          "sameNumberCandidates": 1,
+          "reasons": {
+            "セットコード不一致": 1,
+            "初版表記未確認": 1
+          },
+          "samples": [
+            {
+              "title": "ブースター(R){炎}〈013/106〉[P4]",
+              "url": "https://www.hareruya2.com/products/9014043115840",
+              "rejected": [
+                "セットコード不一致",
+                "初版表記未確認"
+              ]
+            }
+          ],
+          "note": "番号だけで自動採用しない。掲載未確認は商品不存在を意味しない"
+        }
+      },
+      {
+        "id": "pk-37897",
+        "collection": "77",
+        "checkedAt": "2026-10-12T10:37:19.981Z",
+        "observedAt": "2026-10-09T21:27:01.406Z",
+        "status": "no-candidate",
+        "url": null,
+        "diagnostic": {
+          "signature": {
+            "setCode": "pcg4",
+            "cardNo": "090/106",
+            "base": "ルギアex☆",
+            "finish": "",
+            "pack": "拡張パック金の空、銀の海"
+          },
+          "listedProducts": 109,
+          "sameNumberCandidates": 1,
+          "reasons": {
+            "セットコード不一致": 1
+          },
+          "samples": [
+            {
+              "title": "ルギアex(☆){無}〈090/106〉[P4]",
+              "url": "https://www.hareruya2.com/products/9014155608384",
+              "rejected": [
+                "セットコード不一致"
+              ]
+            }
+          ],
+          "note": "番号だけで自動採用しない。掲載未確認は商品不存在を意味しない"
+        }
+      },
+      {
+        "id": "x-91946",
+        "collection": "51",
+        "checkedAt": "2026-10-12T10:37:20.136Z",
+        "observedAt": "2026-10-07T05:40:19.257Z",
+        "status": "no-candidate",
+        "url": null,
+        "diagnostic": {
+          "signature": {
+            "setCode": "e3",
+            "cardNo": "088/087",
+            "base": "ニドキング☆",
+            "finish": "",
+            "pack": "拡張パック第3弾海からの風"
+          },
+          "listedProducts": 108,
+          "sameNumberCandidates": 2,
+          "reasons": {
+            "仕様・ミラー不一致": 1,
+            "名称一致未確認": 1
+          },
+          "samples": [
+            {
+              "title": "ニドキング:クリスタルタイプ:1ED(☆){無}〈088/087〉[e3]",
+              "url": "https://www.hareruya2.com/products/9013943009600",
+              "rejected": [
+                "仕様・ミラー不一致"
+              ]
+            },
+            {
+              "title": "ニドキング:クリスタルタイプ再販(☆){無}〈088/087〉[e3]",
+              "url": "https://www.hareruya2.com/products/9064097644864",
+              "rejected": [
+                "名称一致未確認"
+              ]
+            }
+          ],
+          "note": "番号だけで自動採用しない。掲載未確認は商品不存在を意味しない"
+        }
+      },
+      {
+        "id": "x-430583",
+        "collection": "53",
+        "checkedAt": "2026-10-12T10:37:20.298Z",
+        "observedAt": "2026-10-07T05:40:22.370Z",
+        "status": "no-candidate",
+        "url": null,
+        "diagnostic": {
+          "signature": {
+            "setCode": "e5",
+            "cardNo": "042/088",
+            "base": "ゴースト●1ed",
+            "finish": "first",
+            "pack": "拡張パック第5弾神秘なる山"
+          },
+          "listedProducts": 106,
+          "sameNumberCandidates": 1,
+          "reasons": {
+            "初版表記未確認": 1
+          },
+          "samples": [
+            {
+              "title": "ゴースト(C){超}〈042/088〉[e5]",
+              "url": "https://www.hareruya2.com/products/9013941305664",
+              "rejected": [
+                "初版表記未確認"
+              ]
+            }
+          ],
+          "note": "番号だけで自動採用しない。掲載未確認は商品不存在を意味しない"
+        }
+      },
+      {
+        "id": "x-91765",
+        "collection": "50",
+        "checkedAt": "2026-10-12T10:37:20.464Z",
+        "observedAt": "2026-10-10T20:39:07.807Z",
+        "status": "no-candidate",
+        "url": null,
+        "diagnostic": {
+          "signature": {
+            "setCode": "e2",
+            "cardNo": "026/092",
+            "base": "マリルリ★1ed",
+            "finish": "first",
+            "pack": "拡張パック第2弾地図にない町"
+          },
+          "listedProducts": 108,
+          "sameNumberCandidates": 2,
+          "reasons": {
+            "名称一致未確認": 1,
+            "初版表記未確認": 1
+          },
+          "samples": [
+            {
+              "title": "マリルリ:キラ1ED(★H){水}〈026/092〉[e2]",
+              "url": "https://www.hareruya2.com/products/9013886255424",
+              "rejected": [
+                "名称一致未確認"
+              ]
+            },
+            {
+              "title": "マリルリ:キラ再販(★H){水}〈026/092〉[e2]",
+              "url": "https://www.hareruya2.com/products/9064030765376",
+              "rejected": [
+                "初版表記未確認"
+              ]
+            }
+          ],
+          "note": "番号だけで自動採用しない。掲載未確認は商品不存在を意味しない"
+        }
+      },
+      {
+        "id": "x-309390",
+        "collection": "4",
+        "checkedAt": "2026-10-12T10:37:20.622Z",
+        "observedAt": "2026-10-07T13:36:31.378Z",
+        "status": "no-candidate",
+        "url": null,
+        "diagnostic": {
+          "signature": {
+            "setCode": "",
+            "cardNo": "PMCG3No.141",
+            "base": "カブトプス",
+            "finish": "old-back",
+            "pack": "拡張パック化石の秘密"
+          },
+          "listedProducts": 48,
+          "sameNumberCandidates": 0,
+          "reasons": {
+            "国内識別情報不足": 1,
+            "同一番号の掲載未確認": 1
+          },
+          "samples": [],
+          "note": "番号だけで自動採用しない。掲載未確認は商品不存在を意味しない"
+        }
+      },
+      {
+        "id": "pk-18914",
+        "collection": "234",
+        "checkedAt": "2026-10-12T10:37:22.317Z",
+        "observedAt": "2026-10-12T10:37:22.316Z",
+        "status": "no-candidate",
+        "url": null,
+        "diagnostic": {
+          "signature": {
+            "setCode": "xy5-t",
+            "cardNo": "072/070",
+            "base": "カイオーガex1ed",
+            "finish": "first",
+            "pack": "拡張パックタイダルストーム"
+          },
+          "listedProducts": 80,
+          "sameNumberCandidates": 1,
+          "reasons": {
+            "セットコード不一致": 1,
+            "初版表記未確認": 1
+          },
+          "samples": [
+            {
+              "title": "カイオーガEX(SR){水}〈072/070〉[XY5-l]",
+              "url": "https://www.hareruya2.com/products/9015368614208",
+              "rejected": [
+                "セットコード不一致",
+                "初版表記未確認"
+              ]
+            }
+          ],
+          "note": "番号だけで自動採用しない。掲載未確認は商品不存在を意味しない"
+        }
+      },
+      {
+        "id": "pk-6383",
+        "collection": "231",
+        "checkedAt": "2026-10-12T10:37:22.524Z",
+        "observedAt": "2026-10-10T10:07:28.401Z",
+        "status": "no-candidate",
+        "url": null,
+        "diagnostic": {
+          "signature": {
+            "setCode": "xy3",
+            "cardNo": "100/096",
+            "base": "カイリューex1ed",
+            "finish": "first",
+            "pack": "拡張パックライジングフィスト"
+          },
+          "listedProducts": 105,
+          "sameNumberCandidates": 1,
+          "reasons": {
+            "初版表記未確認": 1
+          },
+          "samples": [
+            {
+              "title": "カイリューEX(SR){ドラゴン}〈100/096〉[XY3]",
+              "url": "https://www.hareruya2.com/products/9015135240512",
+              "rejected": [
+                "初版表記未確認"
+              ]
+            }
+          ],
+          "note": "番号だけで自動採用しない。掲載未確認は商品不存在を意味しない"
+        }
+      },
+      {
+        "id": "x-558726",
+        "collection": "167",
+        "checkedAt": "2026-10-12T10:37:22.679Z",
+        "observedAt": "2026-10-09T21:27:20.045Z",
+        "status": "no-candidate",
+        "url": null,
+        "diagnostic": {
+          "signature": {
+            "setCode": "l2-l",
+            "cardNo": "015/080",
+            "base": "キングドラ☆1ed",
+            "finish": "mirror",
+            "pack": "拡張パックよみがえる伝説"
+          },
+          "listedProducts": 88,
+          "sameNumberCandidates": 1,
+          "reasons": {
+            "セットコード不一致": 1,
+            "仕様・ミラー不一致": 1
+          },
+          "samples": [
+            {
+              "title": "キングドラ(☆){水}〈015/080〉[L2-w]",
+              "url": "https://www.hareruya2.com/products/9063829864768",
+              "rejected": [
+                "セットコード不一致",
+                "仕様・ミラー不一致"
+              ]
+            }
+          ],
+          "note": "番号だけで自動採用しない。掲載未確認は商品不存在を意味しない"
+        }
+      },
+      {
+        "id": "x-109111",
+        "collection": "166",
+        "checkedAt": "2026-10-12T10:37:22.836Z",
+        "observedAt": "2026-10-08T21:56:47.751Z",
+        "status": "no-candidate",
+        "url": null,
+        "diagnostic": {
+          "signature": {
+            "setCode": "l1-s",
+            "cardNo": "009/070",
+            "base": "メガニウム☆1ed",
+            "finish": "first",
+            "pack": "拡張パックソウルシルバーコレクション"
+          },
+          "listedProducts": 139,
+          "sameNumberCandidates": 2,
+          "reasons": {
+            "セットコード不一致": 2,
+            "仕様・ミラー不一致": 1,
+            "初版表記未確認": 1
+          },
+          "samples": [
+            {
+              "title": "メガニウム:ミラー(☆){草}〈009/070〉[L1-l-M]",
+              "url": "https://www.hareruya2.com/products/9014744547648",
+              "rejected": [
+                "セットコード不一致",
+                "仕様・ミラー不一致"
+              ]
+            },
+            {
+              "title": "メガニウム(☆){草}〈009/070〉[L1-l]",
+              "url": "https://www.hareruya2.com/products/9014757589312",
+              "rejected": [
+                "セットコード不一致",
+                "初版表記未確認"
+              ]
+            }
+          ],
+          "note": "番号だけで自動採用しない。掲載未確認は商品不存在を意味しない"
+        }
+      },
+      {
+        "id": "x-454488",
+        "collection": "7",
+        "checkedAt": "2026-10-12T10:37:22.994Z",
+        "observedAt": "2026-10-08T21:57:04.210Z",
+        "status": "no-candidate",
+        "url": null,
+        "diagnostic": {
+          "signature": {
+            "setCode": "",
+            "cardNo": "PMCG-G2No.004",
+            "base": "カツラのヒトカゲlv16●",
+            "finish": "old-back",
+            "pack": "ジム拡張第2弾闇からの挑戦"
+          },
+          "listedProducts": 102,
+          "sameNumberCandidates": 0,
+          "reasons": {
+            "国内識別情報不足": 1,
+            "同一番号の掲載未確認": 1
+          },
+          "samples": [],
+          "note": "番号だけで自動採用しない。掲載未確認は商品不存在を意味しない"
+        }
+      },
+      {
+        "id": "pk-69648",
+        "collection": "232",
+        "checkedAt": "2026-10-12T10:37:23.150Z",
+        "observedAt": "2026-10-10T10:07:15.410Z",
+        "status": "no-candidate",
+        "url": null,
+        "diagnostic": {
+          "signature": {
+            "setCode": "xy4",
+            "cardNo": "034/088",
+            "base": "mゲンガーex1ed",
+            "finish": "first",
+            "pack": "拡張パックファントムゲート"
+          },
+          "listedProducts": 97,
+          "sameNumberCandidates": 1,
+          "reasons": {
+            "初版表記未確認": 1
+          },
+          "samples": [
+            {
+              "title": "MゲンガーEX(RR){超}〈034/088〉[XY4]",
+              "url": "https://www.hareruya2.com/products/9015291543872",
+              "rejected": [
+                "初版表記未確認"
+              ]
+            }
+          ],
+          "note": "番号だけで自動採用しない。掲載未確認は商品不存在を意味しない"
+        }
+      },
+      {
+        "id": "x-406103",
+        "collection": "192",
+        "checkedAt": "2026-10-12T10:37:23.307Z",
+        "observedAt": "2026-10-07T05:40:12.884Z",
+        "status": "no-candidate",
+        "url": null,
+        "diagnostic": {
+          "signature": {
+            "setCode": "bw6",
+            "cardNo": "062/059",
+            "base": "ホワイトキュレムex1ed",
+            "finish": "first",
+            "pack": "拡張パックコールドフレア"
+          },
+          "listedProducts": 65,
+          "sameNumberCandidates": 1,
+          "reasons": {
+            "セットコード不一致": 1,
+            "初版表記未確認": 1
+          },
+          "samples": [
+            {
+              "title": "ホワイトキュレムEX(SR){ドラゴン}〈062/059〉[BW6-r]",
+              "url": "https://www.hareruya2.com/products/9014883451200",
+              "rejected": [
+                "セットコード不一致",
+                "初版表記未確認"
+              ]
+            }
+          ],
+          "note": "番号だけで自動採用しない。掲載未確認は商品不存在を意味しない"
+        }
+      },
+      {
+        "id": "x-556831",
+        "collection": "165",
+        "checkedAt": "2026-10-12T10:37:23.470Z",
+        "observedAt": "2026-10-09T21:27:25.466Z",
+        "status": "no-candidate",
+        "url": null,
+        "diagnostic": {
+          "signature": {
+            "setCode": "l1-h",
+            "cardNo": "071/070",
+            "base": "アルフの石版★1ed",
+            "finish": "first",
+            "pack": "拡張パックハートゴールドコレクション"
+          },
+          "listedProducts": 139,
+          "sameNumberCandidates": 1,
+          "reasons": {
+            "セットコード不一致": 1,
+            "初版表記未確認": 1
+          },
+          "samples": [
+            {
+              "title": "アルフの石版(-){グッズ}〈071/070〉[L1-r]",
+              "url": "https://www.hareruya2.com/products/9014766764352",
+              "rejected": [
+                "セットコード不一致",
+                "初版表記未確認"
+              ]
+            }
+          ],
+          "note": "番号だけで自動採用しない。掲載未確認は商品不存在を意味しない"
+        }
+      }
+    ],
+    "queued": 20,
+    "collectionGroups": 18,
+    "endedAt": "2026-10-12T10:37:23.629Z",
+    "durationMs": 5034,
+    "status": "部分探索"
+  },
+  "fixedCohortFreshness": {
+    "baselineAt": "2026-10-03T23:15:30.935Z",
+    "method": "開始時の取得元別・固定優先カード群。同じID分母で6時間以内率と最大超過時間を比較。追加・消失は別計上。確認日時なしを新鮮扱いしない",
+    "sources": {
+      "cardrush": {
+        "baseline": {
+          "at": "2026-10-03T23:15:30.935Z",
+          "cohort": 203,
+          "fresh6h": 0,
+          "fresh6hPct": 0,
+          "unconfirmed": 0,
+          "maxOverdueHours": 857.2585930555556,
+          "autoWait": 0,
+          "manualWait": 0,
+          "accessStopped": 203,
+          "added": 0,
+          "missingFromCurrent": 0
+        },
+        "latest": {
+          "at": "2026-10-12T10:35:11.828Z",
+          "cohort": 203,
+          "fresh6h": 0,
+          "fresh6hPct": 0,
+          "unconfirmed": 0,
+          "maxOverdueHours": 1060.5866188888888,
+          "autoWait": 0,
+          "manualWait": 0,
+          "accessStopped": 203,
+          "added": 154,
+          "missingFromCurrent": 0,
+          "aggregationVersion": 2,
+          "outsidePriorityStale": 0
+        },
+        "previous": {
+          "at": "2026-10-12T08:23:36.456Z",
+          "cohort": 203,
+          "fresh6h": 0,
+          "fresh6hPct": 0,
+          "unconfirmed": 0,
+          "maxOverdueHours": 1058.39346,
+          "autoWait": 0,
+          "manualWait": 0,
+          "accessStopped": 203,
+          "added": 154,
+          "missingFromCurrent": 0,
+          "aggregationVersion": 2,
+          "outsidePriorityStale": 0
+        },
+        "intervalMinimum": {
+          "from": "2026-10-12T08:23:36.456Z",
+          "to": "2026-10-12T10:35:11.828Z",
+          "fresh": 0,
+          "total": 203,
+          "minimumFreshnessPct": 0,
+          "maxOverdueHours": 1060.5866188888888,
+          "method": "前回確認値を次の観測直前まで進めた保守的な最低鮮度。区間内の未観測更新は含まない"
+        }
+      },
+      "hareruya2": {
+        "baseline": {
+          "at": "2026-10-03T23:15:30.935Z",
+          "cohort": 192,
+          "fresh6h": 182,
+          "fresh6hPct": 94.79166666666666,
+          "unconfirmed": 0,
+          "maxOverdueHours": 689.2585930555556,
+          "autoWait": 0,
+          "manualWait": 10,
+          "accessStopped": 0,
+          "added": 0,
+          "missingFromCurrent": 0
+        },
+        "latest": {
+          "at": "2026-10-12T10:35:11.828Z",
+          "cohort": 192,
+          "fresh6h": 91,
+          "fresh6hPct": 47.39583333333333,
+          "unconfirmed": 0,
+          "maxOverdueHours": 892.5866188888889,
+          "autoWait": 93,
+          "manualWait": 8,
+          "accessStopped": 0,
+          "added": 152,
+          "missingFromCurrent": 0,
+          "aggregationVersion": 2,
+          "outsidePriorityStale": 0
+        },
+        "previous": {
+          "at": "2026-10-12T08:23:36.456Z",
+          "cohort": 192,
+          "fresh6h": 76,
+          "fresh6hPct": 39.58333333333333,
+          "unconfirmed": 0,
+          "maxOverdueHours": 890.39346,
+          "autoWait": 108,
+          "manualWait": 8,
+          "accessStopped": 0,
+          "added": 152,
+          "missingFromCurrent": 0,
+          "aggregationVersion": 2,
+          "outsidePriorityStale": 0
+        },
+        "intervalMinimum": {
+          "from": "2026-10-12T08:23:36.456Z",
+          "to": "2026-10-12T10:35:11.828Z",
+          "fresh": 76,
+          "total": 192,
+          "minimumFreshnessPct": 39.58333333333333,
+          "maxOverdueHours": 892.5866188888889,
+          "method": "前回確認値を次の観測直前まで進めた保守的な最低鮮度。区間内の未観測更新は含まない"
+        }
+      },
+      "toreca": {
+        "baseline": {
+          "at": "2026-10-03T23:15:30.935Z",
+          "cohort": 233,
+          "fresh6h": 233,
+          "fresh6hPct": 100,
+          "unconfirmed": 0,
+          "maxOverdueHours": 0,
+          "autoWait": 0,
+          "manualWait": 0,
+          "accessStopped": 0,
+          "added": 0,
+          "missingFromCurrent": 0
+        },
+        "latest": {
+          "at": "2026-10-12T10:35:11.828Z",
+          "cohort": 233,
+          "fresh6h": 230,
+          "fresh6hPct": 98.71244635193133,
+          "unconfirmed": 3,
+          "maxOverdueHours": 0,
+          "autoWait": 3,
+          "manualWait": 0,
+          "accessStopped": 0,
+          "added": 186,
+          "missingFromCurrent": 46,
+          "aggregationVersion": 2,
+          "outsidePriorityStale": 3
+        },
+        "previous": {
+          "at": "2026-10-12T08:23:36.456Z",
+          "cohort": 233,
+          "fresh6h": 230,
+          "fresh6hPct": 98.71244635193133,
+          "unconfirmed": 3,
+          "maxOverdueHours": 0,
+          "autoWait": 3,
+          "manualWait": 0,
+          "accessStopped": 0,
+          "added": 186,
+          "missingFromCurrent": 46,
+          "aggregationVersion": 2,
+          "outsidePriorityStale": 3
+        },
+        "intervalMinimum": {
+          "from": "2026-10-12T08:23:36.456Z",
+          "to": "2026-10-12T10:35:11.828Z",
+          "fresh": 230,
+          "total": 233,
+          "minimumFreshnessPct": 98.71244635193133,
+          "maxOverdueHours": 0,
+          "method": "前回確認値を次の観測直前まで進めた保守的な最低鮮度。区間内の未観測更新は含まない"
+        }
+      },
+      "shopBuyback": {
+        "baseline": {
+          "at": "2026-10-03T23:15:30.935Z",
+          "cohort": 233,
+          "fresh6h": 174,
+          "fresh6hPct": 74.67811158798283,
+          "unconfirmed": 59,
+          "maxOverdueHours": 0,
+          "autoWait": 59,
+          "manualWait": 0,
+          "accessStopped": 0,
+          "added": 0,
+          "missingFromCurrent": 0
+        },
+        "latest": {
+          "at": "2026-10-12T10:35:11.828Z",
+          "cohort": 233,
+          "fresh6h": 176,
+          "fresh6hPct": 75.53648068669528,
+          "unconfirmed": 57,
+          "maxOverdueHours": 0,
+          "autoWait": 57,
+          "manualWait": 0,
+          "accessStopped": 0,
+          "added": 186,
+          "missingFromCurrent": 46,
+          "aggregationVersion": 2,
+          "outsidePriorityStale": 12
+        },
+        "previous": {
+          "at": "2026-10-12T08:23:36.456Z",
+          "cohort": 233,
+          "fresh6h": 176,
+          "fresh6hPct": 75.53648068669528,
+          "unconfirmed": 57,
+          "maxOverdueHours": 0,
+          "autoWait": 57,
+          "manualWait": 0,
+          "accessStopped": 0,
+          "added": 186,
+          "missingFromCurrent": 46,
+          "aggregationVersion": 2,
+          "outsidePriorityStale": 12
+        },
+        "intervalMinimum": {
+          "from": "2026-10-12T08:23:36.456Z",
+          "to": "2026-10-12T10:35:11.828Z",
+          "fresh": 176,
+          "total": 233,
+          "minimumFreshnessPct": 75.53648068669528,
+          "maxOverdueHours": 0,
+          "method": "前回確認値を次の観測直前まで進めた保守的な最低鮮度。区間内の未観測更新は含まない"
+        }
+      }
+    }
+  },
+  "regularOperation": "既存非AI更新を維持。修正版定期実行は次回の取得・保存・公開受領証で確認。AI予定タスクは再開しない。",
+  "llmCalls": 0,
+  "codexCalls": 0
+}
