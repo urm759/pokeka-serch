@@ -6,7 +6,7 @@ const fromGit=(ref,file)=>JSON.parse(cp.execFileSync('git',['show',`${ref}:${fil
 const before=unpack(read('work/targeted-completion-before.json')),after=snapshot(root);
 const manual=fromGit('eb844aab','data/card-catalog-completion.json');
 const manualPsa=fromGit('eb844aab','data/psa-population-summary.json');
-const raw=read('work/psa-fetch-progress.json'),completion=read('data/card-catalog-completion.json');
+const raw=fromGit('eb844aab','work/psa-fetch-progress.json'),completion=read('data/card-catalog-completion.json');
 const oldOne=fromGit('588ef74b','data/one-item-completion-audit.json');
 const oldQueue=fromGit('eb844aab','work/psa_priority_queue.json');
 const oldRegistered=oldOne.rows.filter(row=>row.routing.includes('実取得')&&row.field==='psaOfficial');
@@ -14,20 +14,21 @@ const held=oldRegistered.filter(row=>oldQueue.rows.find(p=>p.cardId===row.id)?.s
 const manualIds=Object.keys(manualPsa.cards).filter(id=>before.rows[id]&&!before.rows[id].sources.psaOfficial?.valid);
 const analysisIds=Object.entries(manual.cards).filter(([id,row])=>before.rows[id]&&row.s==='分析可能'&&!before.rows[id].analysis).map(([id])=>id);
 const oldFresh=fromGit('588ef74b','work/priority-freshness-history.json').sources.hareruya2;
-const price=read('work/candidate-shop-refresh.json').sources.hareruya2;
+const price=fromGit('dad8c5f5','work/candidate-shop-refresh.json').sources.hareruya2;
+const scheduled=fromGit('dad8c5f5','data/price-catchup-status.json');
 const minimum=require('./proactive_refresh').intervalMinimum(oldFresh.lastConfirmedRows,oldFresh.cohort,
   Date.parse(oldFresh.observations.at(-1).at),Date.parse(price.startedAt));
 const names=new Map(read('data/pokemon-cards.json').map(row=>[row.id,row.name]));
 const report={version:1,generatedAt:after.at,beforeCatalog:Object.keys(before.rows).length,afterCatalog:Object.keys(after.rows).length,
   overall:compare(before,after),manualPsa:{setsAttempted:raw.attemptedCount,acquiredRows:raw.refreshedCount,newRawRows:raw.newAcquiredCount,
-    updatedRawRows:raw.changedCount,durationMs:raw.durationMs,savedRowCount:read('data/psa-official-populations.json').rows.length,
+    updatedRawRows:raw.changedCount,durationMs:raw.durationMs,savedRowCount:fromGit('eb844aab','data/psa-official-populations.json').rows.length,
     validDomesticAdded:manualIds.length,newlyAnalyzable:analysisIds.length,ids:manualIds,
     analysisCards:analysisIds.map(id=>({id,name:names.get(id)})),authRecovery:raw.authRecovery,remainingUrlHolds:Object.keys(raw.retryByUrl||{}),selection:raw.selectedLanes},
   registeredAudit:{previousReported:oldRegistered.length,actualAcquisitionWaiting:oldRegistered.length-held.length,specificationHeld:held.length,
     note:'分類修正であり89枚を取得成功・不存在へ移したわけではない。'},
-  scheduled:{runId:38270107861,source:'Data Update Health Watchdog / schedule',durationMs:read('data/price-catchup-status.json').durationMs,
+  scheduled:{runId:38270107861,source:'Data Update Health Watchdog / schedule',durationMs:scheduled.durationMs,
     acquiredPriceCards:price.refreshedCount,changed:price.changedCount,httpRequests:price.httpRequests,checkpoint:price.nextId,
-    outcomes:read('data/price-catchup-status.json').outcomes,minimumBeforeRun:minimum,
+    outcomes:scheduled.outcomes,minimumBeforeRun:minimum,
     latestFixedFreshness:read('data/priority-price-monitor.json').fixedCohortFreshness.sources.hareruya2.latest,
     acquisitionPublication:'dad8c5f5',monitorPublication:'cb3ab116',
     nextCodeConfirmation:'新しい毎時47分の補完確認と正確URL選択の定期実証は次回の非AI受領証。今回の定期は前のコード。'},
