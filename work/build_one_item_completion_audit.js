@@ -2,9 +2,12 @@ const fs = require('node:fs'), path = require('node:path');
 const {itemState} = require('./completion_routes');
 function classify(detail, linkage = {}) {
   const field = detail.m[0], item = itemState(detail, field);
-  if (field === 'psaOfficial') return linkage.status === 'unlinked' && linkage.sourceSetUrl
-    ? 'PC正規セット取得へ接続済み・実取得待ち'
-    : linkage.status === 'ambiguous' ? '仕様・セット曖昧・手動確認待ち' : '公式セットURL未登録・正規候補確認待ち';
+  if (field === 'psaOfficial') {
+    if (item.status === '再照合待ち' || linkage.specificationHeld) return '仕様不一致で保留・完全仕様表の再確認待ち';
+    return linkage.status === 'unlinked' && linkage.sourceSetUrl
+      ? 'PC正規セット取得へ接続済み・実取得待ち'
+      : linkage.status === 'ambiguous' ? '仕様・セット曖昧・手動確認待ち' : '公式セットURL未登録・正規候補確認待ち';
+  }
   if (/対立|裏付け|手動確認/.test(item.reason || '')) return '価格根拠確認待ち・店舗価格だけでは解除しない';
   if (item.status === '取得元にデータなし' || item.status === '定期再確認') return '一括差分再確認へ接続済み・現在掲載なし';
   return '一括差分取得へ接続済み・実取得待ち';

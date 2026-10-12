@@ -45,6 +45,7 @@ function main() {
     if (!pending?.sourceSetUrl || pending.status !== "unlinked" || population[card.id]) return null;
     const item = completion.cards[card.id] || {};
     return { cardId: card.id, name: card.name, setCode: pending.setCode, cardNo: pending.cardNumber,
+      analysisCompletionTarget: item.m?.length === 1 && item.m[0] === 'psaOfficial',
       priority: Number(item.p || 0) * 1000000 + (item.m?.length === 1 ? 10000000000 : 0),
       reason: item.r || [pending.reason], sourceSetUrl: pending.sourceSetUrl };
   }).filter(Boolean);
@@ -87,7 +88,8 @@ function main() {
     const key = identity(card);
     const source = manifest.find((entry) => String(entry.setCode || "").toUpperCase() === key.setCode && entry.url);
     if (!source) continue;
-    const row = { cardId: card.id, name: card.name, ...key, priority: 1e13, focused: true,
+    const previous = rows.find(row => row.cardId === card.id);
+    const row = { ...previous, cardId: card.id, name: card.name, ...key, priority: 1e13, focused: true,
       reason: [watched.priorityReason], sourceSetUrl: source.url };
     const at = rows.findIndex((r) => r.cardId === card.id);
     if (at >= 0) rows[at] = row; else rows.push(row);

@@ -380,7 +380,11 @@ async function main() {
   audit.missingRecheckSets = setPlan.missingRecheckSets;
   audit.freshMissingSets = setPlan.freshMissingSets;
   audit.selectionReasons = setPlan.reasons;
-  const manifest = require("./fair_batch.js").fairBatch(pendingManifest, Math.max(1, Number(process.env.PSA_SET_BATCH || 8)), (entry) => focusSetUrls.has(entry.url), priorityQueue.maxFocusedShare ?? 0.4);
+  const selection = require('./psa_pending_sets.js').selectBatch(pendingManifest,Math.max(1,Number(process.env.PSA_SET_BATCH || 8)),priorityQueue);
+  const manifest = selection.selected;
+  audit.selectionVersion = 'exact-url-analysis-completion-v1';
+  audit.selectedLanes = selection.lanes;
+  audit.selectedCompletionCards = selection.completionTargets;
   audit.focusedSelected = manifest.filter((entry) => focusSetUrls.has(entry.url)).length;
   audit.normalSelected = manifest.length - audit.focusedSelected;
   audit.pendingSets = pendingManifest.length;
@@ -446,6 +450,7 @@ async function main() {
       }
       delete audit.sourceRetry;
       audit.authRecovery.resumedFromCheckpoint = true;
+      audit.authRecovery.releasedAuthenticationUrls = require('./psa_pending_sets.js').releaseAuthenticationHolds(audit.retryByUrl,audit.authRecovery);
       probeEntry.preverifiedRecord = probe;
       if (!manifest.includes(probeEntry)) manifest.unshift(probeEntry);
       saveProgress();

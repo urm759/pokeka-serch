@@ -32,4 +32,5 @@ const retry = require("./acquisition_retry.js");
   assert.equal(merge([], [row]).audit.added, 1, "verified official individual population can be published");
   assert.equal(merge([], [{ ...row, sourceUrl: "https://other.test/spec/psa/14234253" }]).audit.rejected, 1);
   console.log("PSA HTTP failures, partial acquisition counts, and legacy failed-product checkpoint migration: passed");
+  require('./test_psa_completion_selection');
 })().catch(error => { console.error(error); process.exitCode = 1; });

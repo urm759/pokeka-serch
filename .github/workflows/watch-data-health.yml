@@ -6,7 +6,8 @@ on:
     workflows: [Daily Fast Update, Safe Checkpoint Backfill, PokeDATA Incremental Backfill, Priority Purchase Price Refresh]
     types: [completed]
   schedule:
-    - cron: "17 */2 * * *"
+    # Offset from :20 price jobs; the shared 2h acquisition gate still limits requests.
+    - cron: "47 * * * *"
 
 permissions:
   contents: write
