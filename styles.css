@@ -1522,6 +1522,9 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .control-settings-note{grid-column:1/-1;font-size:12px;color:var(--muted)}
 .grouped-search>details{margin:8px 12px}.grouped-search>summary{font-weight:900}
 .hero>.psa-decision-settings{order:9}
+.hero>#efficiencySummary{order:11}
+.quick-presets .preset-audit-summary{grid-column:1/-1;width:100%;box-sizing:border-box}
+.search-settings [hidden]{display:none!important}
 .controls-basic .control:last-child{grid-column:1/-1}
 .search-settings [data-applicability]{display:block;color:#fcd888;font-size:11px;line-height:1.5}
 .search-settings [data-applicability][hidden]{display:none}

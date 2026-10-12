@@ -29,6 +29,9 @@ assert(!app.slice(app.indexOf('function renderActiveFilters'),app.indexOf('async
 assert.match(html,/id="decisionCalculationSettings"/);
 assert(!html.includes('performance-evaluation-time'),'frozen evaluation time is local preview only');
 assert(!app.includes('window.Date=FixtureDate'),'production clock and freshness are unchanged');
+const css=fs.readFileSync('styles.css','utf8');
+assert.match(css,/\.quick-presets \.preset-audit-summary\{grid-column:1\/-1/,'mobile preset audit spans the full grid, not a narrow column');
+assert.match(css,/\.search-settings \[hidden\]\{display:none!important\}/,'display classes must not expose irrelevant hidden mode controls');
 assert.match(app,/if \(activeConditionKey===key\) return/,'unchanged active filters are not rebuilt');
 for(const [name,expected] of Object.entries(baseline.protectedFunctions)) {
   const source=app.replace(/\r\n/g,'\n'),start=source.indexOf('function '+name+'('),end=source.indexOf('\nfunction ',start+1);
