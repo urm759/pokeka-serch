@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-13T07:01:29.933Z",
+  "generatedAt": "2026-10-13T08:02:26.750Z",
   "llmCalls": 0,
   "codexCalls": 0,
   "retryPolicy": {
@@ -27,7 +27,7 @@
     {
       "source": "psaOfficial",
       "label": "PSA公式・PC正規認証",
-      "remaining": 1220,
+      "remaining": 1211,
       "queueDefinition": "あとPSAだけで分析可能な国内カード。全PSA未取得とは別",
       "sourceState": "partial",
       "failureScope": "url",
@@ -76,10 +76,10 @@
         }
       ],
       "lastRun": {
-        "attempted": 4,
-        "newAcquired": 44,
-        "refreshed": 84,
-        "durationMs": 51584
+        "attempted": 8,
+        "newAcquired": 290,
+        "refreshed": 828,
+        "durationMs": 90297
       },
       "firstPassDaysEstimate": null,
       "observedExecutionDays": 0,
@@ -89,15 +89,15 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-13T06:54:24.770Z",
-        "to": "2026-10-13T07:01:27.723Z"
+        "from": "2026-10-13T08:01:55.912Z",
+        "to": "2026-10-13T08:02:24.031Z"
       },
       "sinceBaseline": {
-        "newLinked": 3573,
-        "validAdded": 3573,
+        "newLinked": 3668,
+        "validAdded": 3668,
         "validLost": 265,
-        "usableNet": 3308,
-        "freshnessRecovered": 1416
+        "usableNet": 3403,
+        "freshnessRecovered": 1588
       },
       "freshness": null
     },
@@ -234,8 +234,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-13T06:54:24.770Z",
-        "to": "2026-10-13T07:01:27.723Z"
+        "from": "2026-10-13T08:01:55.912Z",
+        "to": "2026-10-13T08:02:24.031Z"
       },
       "sinceBaseline": {
         "newLinked": 624,
@@ -587,8 +587,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-13T06:54:24.770Z",
-        "to": "2026-10-13T07:01:27.723Z"
+        "from": "2026-10-13T08:01:55.912Z",
+        "to": "2026-10-13T08:02:24.031Z"
       },
       "sinceBaseline": {
         "newLinked": 549,
@@ -601,11 +601,11 @@
     }
   ],
   "psaOnly": {
-    "count": 1220,
+    "count": 1211,
     "causes": {
       "個別セット確認待ち": 12,
       "仕様・URL曖昧": 389,
-      "登録URLの取得範囲・未一致確認": 136,
+      "登録URLの取得範囲・未一致確認": 127,
       "公式セットURL未登録": 683
     },
     "cards": [
@@ -4498,12 +4498,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "pk-19743",
-        "setCode": "CP6",
-        "url": "https://www.psacard.com/pop/tcg-cards/2016/pokemon-japanese-expansion-20th-anniversary/139101",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-744295",
         "setCode": "M2A",
         "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
@@ -4664,12 +4658,6 @@
         "setCode": "M-P",
         "url": "https://www.psacard.com/spec/psa/14234253",
         "cause": "個別セット確認待ち"
-      },
-      {
-        "id": "pk-18527",
-        "setCode": "CP2",
-        "url": "https://www.psacard.com/pop/tcg-cards/2015/pokemon-japanese-legendary-shine-collection/130624",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-21974",
@@ -5440,12 +5428,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-429523",
-        "setCode": "E2",
-        "url": "https://www.psacard.com/pop/tcg-cards/2002/pokemon-japanese-town-no-map/114452",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-408138",
         "setCode": "EBB",
         "url": null,
@@ -5714,12 +5696,6 @@
         "setCode": "CP3",
         "url": null,
         "cause": "公式セットURL未登録"
-      },
-      {
-        "id": "pk-18515",
-        "setCode": "CP2",
-        "url": "https://www.psacard.com/pop/tcg-cards/2015/pokemon-japanese-legendary-shine-collection/130624",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-18482",
@@ -6808,12 +6784,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "pk-19741",
-        "setCode": "CP6",
-        "url": "https://www.psacard.com/pop/tcg-cards/2016/pokemon-japanese-expansion-20th-anniversary/139101",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-18971",
         "setCode": "XY2",
         "url": null,
@@ -6962,12 +6932,6 @@
         "setCode": "PMCG12",
         "url": null,
         "cause": "仕様・URL曖昧"
-      },
-      {
-        "id": "pk-19720",
-        "setCode": "CP6",
-        "url": "https://www.psacard.com/pop/tcg-cards/2016/pokemon-japanese-expansion-20th-anniversary/139101",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-18502",
@@ -7172,12 +7136,6 @@
         "setCode": "PCG7",
         "url": null,
         "cause": "公式セットURL未登録"
-      },
-      {
-        "id": "pk-19742",
-        "setCode": "CP6",
-        "url": "https://www.psacard.com/pop/tcg-cards/2016/pokemon-japanese-expansion-20th-anniversary/139101",
-        "cause": "登録URLの取得範囲・未一致確認"
       },
       {
         "id": "pk-18504",
@@ -7516,12 +7474,6 @@
         "cause": "公式セットURL未登録"
       },
       {
-        "id": "x-429464",
-        "setCode": "E2",
-        "url": "https://www.psacard.com/pop/tcg-cards/2002/pokemon-japanese-town-no-map/114452",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "x-556871",
         "setCode": "L1-S",
         "url": null,
@@ -7816,12 +7768,6 @@
         "cause": "登録URLの取得範囲・未一致確認"
       },
       {
-        "id": "pk-18510",
-        "setCode": "CP2",
-        "url": "https://www.psacard.com/pop/tcg-cards/2015/pokemon-japanese-legendary-shine-collection/130624",
-        "cause": "登録URLの取得範囲・未一致確認"
-      },
-      {
         "id": "pk-4378",
         "setCode": "SMP2",
         "url": null,
@@ -7933,10 +7879,10 @@
   },
   "progress": {
     "listed": 12516,
-    "analyzable": 2138,
-    "pending": 10378,
-    "oneAway": 1686
+    "analyzable": 2147,
+    "pending": 10369,
+    "oneAway": 1681
   },
-  "newlyAnalyzable": 9,
+  "newlyAnalyzable": 0,
   "note": "一時障害の再試行、個別URL隔離、取得元停止を区別。未取得をデータ不存在に変更しない。巡回完了と全項目取得・最新価格は別"
 }

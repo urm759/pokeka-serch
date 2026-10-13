@@ -1,12 +1,12 @@
 {
-  "startedAt": "2026-10-13T01:54:23.918Z",
-  "endedAt": "2026-10-13T01:55:15.467Z",
+  "startedAt": "2026-10-13T08:00:15.610Z",
+  "endedAt": "2026-10-13T08:01:45.867Z",
   "cycleDate": "2026-10-13",
   "status": "partial",
-  "attemptedCount": 4,
-  "newAcquiredCount": 44,
-  "changedCount": 39,
-  "refreshedCount": 84,
+  "attemptedCount": 8,
+  "newAcquiredCount": 290,
+  "changedCount": 126,
+  "refreshedCount": 828,
   "completedUrls": [
     "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
     "https://www.psacard.com/pop/tcg-cards/2016/pokemon-japanese-xy-promo/133615",
@@ -114,53 +114,94 @@
     "https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-xy-promo/142307",
     "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-sun-moon-alter-genesis/170665",
     "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980",
-    "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-sun-moon-remix-bout/168309"
+    "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-sun-moon-remix-bout/168309",
+    "https://www.psacard.com/pop/tcg-cards/2002/pokemon-japanese-town-no-map/114452"
   ],
   "records": [
     {
-      "setCode": "S8A-P",
-      "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-promo-card-pack-25th-anniversary-edition/201768",
+      "setCode": "S-P",
+      "url": "https://www.psacard.com/pop/tcg-cards/2022/pokemon-japanese-s-promo/206522",
       "httpStatus": 200,
-      "fetchedAt": "2026-10-13T01:54:25.398Z",
-      "rowCount": 25,
-      "parsedRows": 26,
+      "fetchedAt": "2026-10-13T08:00:16.387Z",
+      "rowCount": 113,
+      "parsedRows": 114,
       "excludedRows": 1,
       "minimumPopulation": 0,
       "error": null
     },
     {
-      "setCode": "MBD",
-      "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mbd-mega-starter-set-diancie-ex/316159",
+      "setCode": "S-P",
+      "url": "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-s-promo/172661",
       "httpStatus": 200,
-      "fetchedAt": "2026-10-13T01:54:36.113Z",
-      "rowCount": 7,
-      "parsedRows": 8,
+      "fetchedAt": "2026-10-13T08:00:27.391Z",
+      "rowCount": 34,
+      "parsedRows": 35,
       "excludedRows": 1,
       "minimumPopulation": 0,
       "error": null
     },
     {
-      "setCode": "SVD",
-      "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-svd-ex-start-deck/245165",
+      "setCode": "E2",
+      "url": "https://www.psacard.com/pop/tcg-cards/2002/pokemon-japanese-town-no-map/114452",
       "httpStatus": 200,
-      "fetchedAt": "2026-10-13T01:54:46.598Z",
-      "rowCount": 0,
-      "parsedRows": null,
-      "excludedRows": null,
+      "fetchedAt": "2026-10-13T08:00:37.964Z",
+      "rowCount": 177,
+      "parsedRows": 178,
+      "excludedRows": 1,
       "minimumPopulation": 0,
-      "error": "Unable to find a populated table for https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-svd-ex-start-deck/245165",
-      "failureKind": "missing-page",
-      "stopScope": "url",
-      "nextRetryAt": null,
-      "retryAttempts": 1
+      "error": null
     },
     {
-      "setCode": "SM11A",
-      "url": "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-sun-moon-remix-bout/168309",
+      "setCode": "CP2",
+      "url": "https://www.psacard.com/pop/tcg-cards/2015/pokemon-japanese-legendary-shine-collection/130624",
       "httpStatus": 200,
-      "fetchedAt": "2026-10-13T01:54:56.918Z",
-      "rowCount": 52,
-      "parsedRows": 53,
+      "fetchedAt": "2026-10-13T08:00:49.163Z",
+      "rowCount": 28,
+      "parsedRows": 29,
+      "excludedRows": 1,
+      "minimumPopulation": 0,
+      "error": null
+    },
+    {
+      "setCode": "CP6",
+      "url": "https://www.psacard.com/pop/tcg-cards/2016/pokemon-japanese-expansion-20th-anniversary/139101",
+      "httpStatus": 200,
+      "fetchedAt": "2026-10-13T08:00:59.688Z",
+      "rowCount": 103,
+      "parsedRows": 104,
+      "excludedRows": 1,
+      "minimumPopulation": 0,
+      "error": null
+    },
+    {
+      "setCode": "S-P",
+      "url": "https://www.psacard.com/pop/tcg-cards/2020/pokemon-japanese-s-promo/175853",
+      "httpStatus": 200,
+      "fetchedAt": "2026-10-13T08:01:14.523Z",
+      "rowCount": 125,
+      "parsedRows": 126,
+      "excludedRows": 1,
+      "minimumPopulation": 0,
+      "error": null
+    },
+    {
+      "setCode": "S-P",
+      "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-s-promo/189313",
+      "httpStatus": 200,
+      "fetchedAt": "2026-10-13T08:01:25.008Z",
+      "rowCount": 87,
+      "parsedRows": 88,
+      "excludedRows": 1,
+      "minimumPopulation": 0,
+      "error": null
+    },
+    {
+      "setCode": "XY-P",
+      "url": "https://www.psacard.com/pop/tcg-cards/2016/pokemon-japanese-xy-promo/133615",
+      "httpStatus": 200,
+      "fetchedAt": "2026-10-13T08:01:35.305Z",
+      "rowCount": 161,
+      "parsedRows": 162,
       "excludedRows": 1,
       "minimumPopulation": 0,
       "error": null
@@ -210,14 +251,13 @@
       "setCode": "SVD"
     }
   },
-  "lastSuccessAt": "2026-10-13T01:54:56.918Z",
+  "lastSuccessAt": "2026-10-13T08:01:35.305Z",
   "authRecovery": null,
   "unregisteredSetCount": 0,
-  "specificationRecheckSets": 13,
-  "missingRecheckSets": 69,
-  "freshMissingSets": 25,
+  "specificationRecheckSets": 12,
+  "missingRecheckSets": 66,
+  "freshMissingSets": 28,
   "selectionReasons": {
-    "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-promo-card-pack-25th-anniversary-edition/201768": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2022/pokemon-japanese-s-promo/206522": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-s-promo/172661": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2020/pokemon-japanese-s-promo/175853": "不足カードの登録済みセットを再確認",
@@ -256,9 +296,6 @@
     "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-sun-moon-dream-league/169301": "未巡回",
     "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-sun-moon-miracle-twin/167601": "未巡回",
     "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-sun-moon-double-blaze/165073": "未巡回",
-    "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mbd-mega-starter-set-diancie-ex/316159": "不足カードの登録済みセットを再確認",
-    "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-sun-moon-remix-bout/168309": "未巡回",
-    "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-svd-ex-start-deck/245165": "未巡回",
     "https://www.psacard.com/pop/tcg-cards/2002/pokemon-japanese-town-no-map/114452": "未巡回",
     "https://www.psacard.com/pop/tcg-cards/2016/pokemon-japanese-expansion-20th-anniversary/139101": "完全仕様表を再取得",
     "https://www.psacard.com/pop/tcg-cards/2015/pokemon-japanese-legendary-shine-collection/130624": "不足カードの登録済みセットを再確認",
@@ -316,29 +353,49 @@
   "selectionVersion": "exact-url-analysis-completion-v1",
   "selectedLanes": [
     {
-      "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-promo-card-pack-25th-anniversary-edition/201768",
+      "url": "https://www.psacard.com/pop/tcg-cards/2022/pokemon-japanese-s-promo/206522",
       "lane": "ordinary",
       "completionCards": 0
     },
     {
-      "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mbd-mega-starter-set-diancie-ex/316159",
-      "lane": "analysis-completion",
-      "completionCards": 1
+      "url": "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-s-promo/172661",
+      "lane": "ordinary",
+      "completionCards": 0
     },
     {
-      "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-svd-ex-start-deck/245165",
+      "url": "https://www.psacard.com/pop/tcg-cards/2002/pokemon-japanese-town-no-map/114452",
       "lane": "analysis-completion",
-      "completionCards": 1
+      "completionCards": 2
     },
     {
-      "url": "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-sun-moon-remix-bout/168309",
+      "url": "https://www.psacard.com/pop/tcg-cards/2015/pokemon-japanese-legendary-shine-collection/130624",
       "lane": "analysis-completion",
-      "completionCards": 1
+      "completionCards": 3
+    },
+    {
+      "url": "https://www.psacard.com/pop/tcg-cards/2016/pokemon-japanese-expansion-20th-anniversary/139101",
+      "lane": "analysis-completion",
+      "completionCards": 5
+    },
+    {
+      "url": "https://www.psacard.com/pop/tcg-cards/2020/pokemon-japanese-s-promo/175853",
+      "lane": "spare",
+      "completionCards": 0
+    },
+    {
+      "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-s-promo/189313",
+      "lane": "spare",
+      "completionCards": 0
+    },
+    {
+      "url": "https://www.psacard.com/pop/tcg-cards/2016/pokemon-japanese-xy-promo/133615",
+      "lane": "spare",
+      "completionCards": 0
     }
   ],
-  "selectedCompletionCards": 3,
+  "selectedCompletionCards": 10,
   "focusedSelected": 0,
-  "normalSelected": 4,
-  "pendingSets": 98,
-  "durationMs": 51584
+  "normalSelected": 8,
+  "pendingSets": 93,
+  "durationMs": 90297
 }
