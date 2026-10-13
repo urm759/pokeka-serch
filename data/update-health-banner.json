@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-13T20:29:50.138Z",
+  "generatedAt": "2026-10-13T21:22:51.648Z",
   "sourceLastSuccessAt": "2026-10-13T12:12:13.827Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-10-13T19:43:57.828Z",
-    "lastSuccessAt": "2026-10-13T19:43:57.828Z",
-    "runId": "38455678560",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/38455678560"
+    "lastAttemptAt": "2026-10-13T21:22:51.637Z",
+    "lastSuccessAt": "2026-10-13T21:22:51.637Z",
+    "runId": "38470000363",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/38470000363"
   },
   "issues": [
     {
@@ -65,12 +65,6 @@
       "reason": "Web買取表: 買取ホムラ（郵送）: existing data was preserved: 取得0件。正常データは保持"
     },
     {
-      "key": "source:psaOfficial:manual-wait",
-      "category": "確認が必要",
-      "url": null,
-      "reason": "PSA公式枚数: Conversion from JSON failed with error: Unterminated string. Expected delimiter: \". Path 'reason', line 1, position 145."
-    },
-    {
       "key": "source:psaJapan:manual-wait",
       "category": "アクセス・手動対応待ち",
       "url": "https://github.com/urm759/pokeka-serch/actions/runs/38423569427",
@@ -97,8 +91,14 @@
     {
       "key": "priority-prices:cadence-stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38427661212",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38469789678",
       "reason": "重要価格更新：設定2時間に対し実績成功間隔（直近最大）24.40時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
+    },
+    {
+      "key": "priority-prices:workflow-failure",
+      "category": "取得処理の故障",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38469789678",
+      "reason": "購入価格高速更新：取得・検証・保存・公開のいずれかが未完了。実行ログで工程を確認"
     }
   ],
   "reasons": [
@@ -111,12 +111,12 @@
     "遊々亭: HTTP 403",
     "遊々亭: 更新期限超過（カード別鮮度 0%）",
     "Web買取表: 買取ホムラ（郵送）: existing data was preserved: 取得0件。正常データは保持",
-    "PSA公式枚数: Conversion from JSON failed with error: Unterminated string. Expected delimiter: \". Path 'reason', line 1, position 145.",
     "PSA Japan料金: PSA Japan refresh failed; previous verified values retained: PSA Japan HTTP 403",
     "PSA Japan料金: 更新期限超過（カード別鮮度 未記録%）",
     "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）",
     "PC側PSA: 独立監視未登録 / Windowsのタスク登録権限が不足。通常PSAのfinally観測は稼働するが、起動前失敗を捕捉する独立タスクは未登録",
-    "重要価格更新：設定2時間に対し実績成功間隔（直近最大）24.40時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
+    "重要価格更新：設定2時間に対し実績成功間隔（直近最大）24.40時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能",
+    "購入価格高速更新：取得・検証・保存・公開のいずれかが未完了。実行ログで工程を確認"
   ],
   "detailUrl": "./data/update-health.json"
 }
