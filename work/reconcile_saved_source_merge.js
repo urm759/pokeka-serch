@@ -10,6 +10,10 @@ function latest(a,b,base){
   return x>y?a:b;
 }
 function byKey(a,b,key,base=[]){const original=new Map(base.map(r=>[key(r),r]));const rows=new Map(a.map(r=>[key(r),r]));for(const r of b){const k=key(r);rows.set(k,latest(rows.get(k),r,original.get(k)));}return [...rows.values()];}
+function mergeRun(a,b,base){
+  const selected=latest(a,b,base),successful=[a?.lastSuccessAt,b?.lastSuccessAt,base?.lastSuccessAt].filter(v=>Number.isFinite(Date.parse(v)));
+  return successful.length?{...selected,lastSuccessAt:successful.sort((x,y)=>Date.parse(x)-Date.parse(y)).at(-1)}:selected;
+}
 function historyUnion(a,b){const m=new Map();for(const r of [...b,...a]){
   const key=r&&typeof r==='object'&&!Array.isArray(r)?r.startedAt||r.at||r.recordedAt||r.date||r.runId:null;
   const k=key==null?JSON.stringify(r):String(key),old=m.get(k);
@@ -46,7 +50,7 @@ function run(){
         return x==null?y??null:y==null?x:newer===a?x:y;
       });merged={dates,stocks};
     }else if(file==='work/source-update-runs.json'){
-      merged={...a,sources:{...a.sources}};for(const [id,row]of Object.entries(b.sources||{}))merged.sources[id]=latest(merged.sources[id],row,base.sources?.[id]);
+      merged={...a,sources:{...a.sources}};for(const [id,row]of Object.entries(b.sources||{}))merged.sources[id]=mergeRun(merged.sources[id],row,base.sources?.[id]);
     }else if(file==='work/priority-price-http-cache.json'){
       merged={...a};for(const [url,row]of Object.entries(b))merged[url]=latest(merged[url],row,base[url]);
     }else if(file==='work/priority-price-checkpoint.json'){
@@ -79,4 +83,4 @@ function run(){
   console.log(JSON.stringify({resolved:out.length,status:'rebuild-required',rawStageBackups:files.length}));
 }
 if(require.main===module)run();
-module.exports={latest,byKey,seedMerge};
+module.exports={latest,byKey,seedMerge,mergeRun};

@@ -1,4 +1,4 @@
-const assert=require('node:assert/strict'),{latest,byKey,seedMerge}=require('./reconcile_saved_source_merge');
+const assert=require('node:assert/strict'),{latest,byKey,seedMerge,mergeRun}=require('./reconcile_saved_source_merge');
 const a={id:'a',price:10,observedAt:'2026-10-12T00:00:00Z'},b={...a,price:20,observedAt:'2026-10-13T00:00:00Z'};
 assert.deepEqual(latest(a,b),b);assert.deepEqual(latest(b,a),b);
 assert.throws(()=>latest(a,{...a,price:30}),/distinct timestamps/);
@@ -7,4 +7,8 @@ assert.equal(byKey([a],[b],r=>r.id)[0].price,20);
 const history=seedMerge({days:[]},{days:[{date:'2026-10-12',n:1}]},{days:[{date:'2026-10-13',n:2}]});
 assert.equal(history.days.length,2);
 assert.equal(seedMerge({days:[]},{days:[{date:'2026-10-12',n:1}]},{days:[{date:'2026-10-12',n:2}]}).days.length,1,'same date is not double-counted');
+const actual={startedAt:'2026-10-13T01:00:00Z',lastSuccessAt:'2026-10-13T01:01:00Z',status:'success'};
+const cached={startedAt:'2026-10-13T02:00:00Z',lastSuccessAt:'2026-10-12T00:00:00Z',status:'no-progress'};
+assert.equal(mergeRun(actual,cached).status,'no-progress');
+assert.equal(mergeRun(actual,cached).lastSuccessAt,actual.lastSuccessAt,'later cache gate cannot roll back real price confirmation');
 console.log('PASS saved source merge: newer individual observation, timestamp conflict hold, one-sided identity repair, daily history preservation');

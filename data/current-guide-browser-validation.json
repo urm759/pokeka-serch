@@ -1,111 +1,111 @@
 {
-  "version": 1,
-  "at": "2026-10-13T02:00:00Z",
-  "shownCards": 60,
-  "samples": 3,
+  "version": 2,
+  "checkedAt": "2026-10-13T03:16:27.785Z",
+  "evaluationAt": "2026-10-13T02:50:00Z",
+  "scope": "同一データ・設定・評価時刻、PC1440px/スマホ幅390px、表示60枚、通常/2倍件数、各3回。端末実機・通信量・paint完了保証とは別。",
   "profiles": [
     {
       "profile": "before-pc",
-      "width": 1920,
+      "width": 1440,
       "loadedCards": 2129,
       "valuesAndIdsUnchanged": true,
-      "dataRevision": "358021cd52a007be574c8b158d9ff39883cbea311c597196749c60749aba7760",
+      "dataRevision": "a23eb78d9fb43c4ee527103a8666b993582e9e681db1606f2f2957a8a858b796",
       "conditionHash": "49b970cdcd1801b40a4e46b2d920e374b18e2c64e895bb054b3d6fe57cf0f288",
       "rows": [
         {
           "kind": "全件再計算",
-          "calculationMs": 712.5,
-          "domMs": 230.30000019073486,
+          "calculationMs": 745.1999998092651,
+          "domMs": 231,
           "cacheHit": false,
-          "markupMs": 81.30000019073486,
+          "markupMs": 88.2000002861023,
           "domCommitMs": 0.5999999046325684,
           "reusedMarkup": 0,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 2010.6000003814697
+          "frameCompletionMs": 1993.7999997138977
         },
         {
           "kind": "全件再計算",
-          "calculationMs": 680.5999999046326,
-          "domMs": 220.90000009536743,
+          "calculationMs": 769.9000000953674,
+          "domMs": 215.19999980926514,
           "cacheHit": false,
-          "markupMs": 85,
-          "domCommitMs": 0.7999997138977051,
+          "markupMs": 85.59999990463257,
+          "domCommitMs": 1.3000001907348633,
           "reusedMarkup": 0,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 1449.7999997138977
+          "frameCompletionMs": 1416.3000001907349
         },
         {
           "kind": "全件再計算",
-          "calculationMs": 629,
-          "domMs": 208.2000002861023,
+          "calculationMs": 637.7999997138977,
+          "domMs": 215,
           "cacheHit": false,
-          "markupMs": 83.19999980926514,
-          "domCommitMs": 0.8000001907348633,
+          "markupMs": 85.5,
+          "domCommitMs": 0.6999998092651367,
           "reusedMarkup": 0,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 916.5
+          "frameCompletionMs": 949.6999998092651
         },
         {
           "kind": "計算結果再利用",
-          "calculationMs": 0.09999990463256836,
-          "domMs": 94.90000009536743,
-          "cacheHit": true,
-          "markupMs": 0,
-          "domCommitMs": 0.09999990463256836,
-          "reusedMarkup": 60,
-          "changedCards": 0,
-          "reusedCards": 60,
-          "frameCompletionMs": 183.30000019073486
-        },
-        {
-          "kind": "計算結果再利用",
-          "calculationMs": 0.09999990463256836,
-          "domMs": 98.09999990463257,
+          "calculationMs": 0.10000038146972656,
+          "domMs": 88.5,
           "cacheHit": true,
           "markupMs": 0,
           "domCommitMs": 0,
           "reusedMarkup": 60,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 183.5
+          "frameCompletionMs": 200.30000019073486
         },
         {
           "kind": "計算結果再利用",
-          "calculationMs": 0.09999990463256836,
+          "calculationMs": 0.19999980926513672,
           "domMs": 128.5,
           "cacheHit": true,
           "markupMs": 0,
-          "domCommitMs": 0.09999990463256836,
+          "domCommitMs": 0.19999980926513672,
           "reusedMarkup": 60,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 1216.5999999046326
+          "frameCompletionMs": 218.19999980926514
+        },
+        {
+          "kind": "計算結果再利用",
+          "calculationMs": 0.10000038146972656,
+          "domMs": 92.5,
+          "cacheHit": true,
+          "markupMs": 0.09999990463256836,
+          "domCommitMs": 0,
+          "reusedMarkup": 60,
+          "changedCards": 0,
+          "reusedCards": 60,
+          "frameCompletionMs": 1198.4000000953674
         }
       ],
       "detailRows": [
         {
-          "generatedMs": 147.10000038146973,
-          "frameCompletionMs": 1893.6000003814697,
+          "generatedMs": 127,
+          "frameCompletionMs": 1943.2999997138977,
           "elements": 1254
         },
         {
-          "generatedMs": 95.69999980926514,
-          "frameCompletionMs": 1492,
+          "generatedMs": 97.59999990463257,
+          "frameCompletionMs": 1137.9000000953674,
           "elements": 1254
         },
         {
-          "generatedMs": 103,
-          "frameCompletionMs": 1939.8999996185303,
+          "generatedMs": 91.90000009536743,
+          "frameCompletionMs": 1920.0999999046326,
           "elements": 1254
         }
       ],
       "measured": {
-        "fullCalculationMs": 680.5999999046326,
-        "renderMs": 98.09999990463257,
-        "detailGenerationMs": 103
+        "fullCalculationMs": 745.1999998092651,
+        "renderMs": 92.5,
+        "detailGenerationMs": 97.59999990463257
       },
       "comparison": [],
       "comparisonState": "同条件の前回実測なし",
@@ -113,124 +113,124 @@
     },
     {
       "profile": "after-pc",
-      "width": 1920,
+      "width": 1440,
       "loadedCards": 2129,
       "valuesAndIdsUnchanged": true,
-      "dataRevision": "358021cd52a007be574c8b158d9ff39883cbea311c597196749c60749aba7760",
+      "dataRevision": "a23eb78d9fb43c4ee527103a8666b993582e9e681db1606f2f2957a8a858b796",
       "conditionHash": "49b970cdcd1801b40a4e46b2d920e374b18e2c64e895bb054b3d6fe57cf0f288",
       "rows": [
         {
           "kind": "全件再計算",
-          "calculationMs": 664,
-          "domMs": 231.60000038146973,
+          "calculationMs": 687.9000000953674,
+          "domMs": 269.90000009536743,
           "cacheHit": false,
-          "markupMs": 86.19999980926514,
-          "domCommitMs": 0.9000000953674316,
-          "reusedMarkup": 0,
-          "changedCards": 0,
-          "reusedCards": 60,
-          "frameCompletionMs": 2027.8000001907349
-        },
-        {
-          "kind": "全件再計算",
-          "calculationMs": 736.3000001907349,
-          "domMs": 222.59999990463257,
-          "cacheHit": false,
-          "markupMs": 86.59999990463257,
+          "markupMs": 89.59999990463257,
           "domCommitMs": 0.5999999046325684,
           "reusedMarkup": 0,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 1616.4000000953674
+          "frameCompletionMs": 1293.7000002861023
         },
         {
           "kind": "全件再計算",
-          "calculationMs": 617.1999998092651,
-          "domMs": 218.7000002861023,
+          "calculationMs": 818.1999998092651,
+          "domMs": 241.80000019073486,
           "cacheHit": false,
-          "markupMs": 87.90000009536743,
-          "domCommitMs": 0.7000002861022949,
+          "markupMs": 84.7999997138977,
+          "domCommitMs": 0.6000003814697266,
           "reusedMarkup": 0,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 916.4000000953674
+          "frameCompletionMs": 2166.5999999046326
+        },
+        {
+          "kind": "全件再計算",
+          "calculationMs": 871,
+          "domMs": 260.19999980926514,
+          "cacheHit": false,
+          "markupMs": 116.40000009536743,
+          "domCommitMs": 0.6999998092651367,
+          "reusedMarkup": 0,
+          "changedCards": 0,
+          "reusedCards": 60,
+          "frameCompletionMs": 1649.9000000953674
         },
         {
           "kind": "計算結果再利用",
-          "calculationMs": 0.2999997138977051,
-          "domMs": 91.90000009536743,
+          "calculationMs": 0.19999980926513672,
+          "domMs": 117.59999990463257,
           "cacheHit": true,
           "markupMs": 0.09999990463256836,
           "domCommitMs": 0,
           "reusedMarkup": 60,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 166.7999997138977
+          "frameCompletionMs": 234
         },
         {
           "kind": "計算結果再利用",
-          "calculationMs": 0.09999990463256836,
-          "domMs": 90.80000019073486,
-          "cacheHit": true,
-          "markupMs": 0,
-          "domCommitMs": 0.09999990463256836,
-          "reusedMarkup": 60,
-          "changedCards": 0,
-          "reusedCards": 60,
-          "frameCompletionMs": 167.09999990463257
-        },
-        {
-          "kind": "計算結果再利用",
-          "calculationMs": 0.09999990463256836,
-          "domMs": 143.59999990463257,
+          "calculationMs": 0.2999997138977051,
+          "domMs": 137.90000009536743,
           "cacheHit": true,
           "markupMs": 0.09999990463256836,
-          "domCommitMs": 0.10000038146972656,
+          "domCommitMs": 0,
           "reusedMarkup": 60,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 1232.8999996185303
+          "frameCompletionMs": 219.90000009536743
+        },
+        {
+          "kind": "計算結果再利用",
+          "calculationMs": 0,
+          "domMs": 87.69999980926514,
+          "cacheHit": true,
+          "markupMs": 0,
+          "domCommitMs": 0.20000028610229492,
+          "reusedMarkup": 60,
+          "changedCards": 0,
+          "reusedCards": 60,
+          "frameCompletionMs": 183.5
         }
       ],
       "detailRows": [
         {
-          "generatedMs": 126.7999997138977,
-          "frameCompletionMs": 1940.7999997138977,
+          "generatedMs": 100.90000009536743,
+          "frameCompletionMs": 624.5999999046326,
           "elements": 1264
         },
         {
-          "generatedMs": 91.2000002861023,
-          "frameCompletionMs": 1178.3000001907349,
+          "generatedMs": 92.7999997138977,
+          "frameCompletionMs": 404.09999990463257,
           "elements": 1264
         },
         {
-          "generatedMs": 94.7000002861023,
-          "frameCompletionMs": 1939.9000000953674,
+          "generatedMs": 94.69999980926514,
+          "frameCompletionMs": 1110,
           "elements": 1264
         }
       ],
       "measured": {
-        "fullCalculationMs": 664,
-        "renderMs": 91.90000009536743,
-        "detailGenerationMs": 94.7000002861023
+        "fullCalculationMs": 818.1999998092651,
+        "renderMs": 117.59999990463257,
+        "detailGenerationMs": 94.69999980926514
       },
       "comparison": [
         {
           "metric": "fullCalculationMs",
-          "before": 680.5999999046326,
-          "after": 664,
+          "before": 745.1999998092651,
+          "after": 818.1999998092651,
           "warning": false
         },
         {
           "metric": "renderMs",
-          "before": 98.09999990463257,
-          "after": 91.90000009536743,
+          "before": 92.5,
+          "after": 117.59999990463257,
           "warning": false
         },
         {
           "metric": "detailGenerationMs",
-          "before": 103,
-          "after": 94.7000002861023,
+          "before": 97.59999990463257,
+          "after": 94.69999980926514,
           "warning": false
         }
       ],
@@ -242,103 +242,103 @@
       "width": 390,
       "loadedCards": 2129,
       "valuesAndIdsUnchanged": true,
-      "dataRevision": "358021cd52a007be574c8b158d9ff39883cbea311c597196749c60749aba7760",
+      "dataRevision": "a23eb78d9fb43c4ee527103a8666b993582e9e681db1606f2f2957a8a858b796",
       "conditionHash": "49b970cdcd1801b40a4e46b2d920e374b18e2c64e895bb054b3d6fe57cf0f288",
       "rows": [
         {
           "kind": "全件再計算",
-          "calculationMs": 744.2999997138977,
-          "domMs": 228.5,
+          "calculationMs": 693.5,
+          "domMs": 291.5,
           "cacheHit": false,
-          "markupMs": 85.80000019073486,
-          "domCommitMs": 0.6999998092651367,
-          "reusedMarkup": 0,
-          "changedCards": 0,
-          "reusedCards": 60,
-          "frameCompletionMs": 2010.1999998092651
-        },
-        {
-          "kind": "全件再計算",
-          "calculationMs": 691.1999998092651,
-          "domMs": 213.7000002861023,
-          "cacheHit": false,
-          "markupMs": 81.40000009536743,
+          "markupMs": 86.7999997138977,
           "domCommitMs": 0.5999999046325684,
           "reusedMarkup": 0,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 1467
+          "frameCompletionMs": 1677.6999998092651
         },
         {
           "kind": "全件再計算",
-          "calculationMs": 635.5,
-          "domMs": 229.40000009536743,
+          "calculationMs": 869.8000001907349,
+          "domMs": 254.59999990463257,
           "cacheHit": false,
-          "markupMs": 90.10000038146973,
-          "domCommitMs": 0.5,
+          "markupMs": 92.5,
+          "domCommitMs": 0.7000002861022949,
           "reusedMarkup": 0,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 949.3000001907349
+          "frameCompletionMs": 1716.4000000953674
+        },
+        {
+          "kind": "全件再計算",
+          "calculationMs": 711.6999998092651,
+          "domMs": 215.7000002861023,
+          "cacheHit": false,
+          "markupMs": 83.09999990463257,
+          "domCommitMs": 0.5999999046325684,
+          "reusedMarkup": 0,
+          "changedCards": 0,
+          "reusedCards": 60,
+          "frameCompletionMs": 1033.1999998092651
         },
         {
           "kind": "計算結果再利用",
-          "calculationMs": 0.09999990463256836,
-          "domMs": 105.5,
+          "calculationMs": 0,
+          "domMs": 92.7999997138977,
+          "cacheHit": true,
+          "markupMs": 0,
+          "domCommitMs": 0.09999990463256836,
+          "reusedMarkup": 60,
+          "changedCards": 0,
+          "reusedCards": 60,
+          "frameCompletionMs": 206.5
+        },
+        {
+          "kind": "計算結果再利用",
+          "calculationMs": 0.19999980926513672,
+          "domMs": 125.90000009536743,
           "cacheHit": true,
           "markupMs": 0.09999990463256836,
           "domCommitMs": 0,
           "reusedMarkup": 60,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 183.19999980926514
+          "frameCompletionMs": 210.59999990463257
         },
         {
           "kind": "計算結果再利用",
           "calculationMs": 0.09999990463256836,
-          "domMs": 130.30000019073486,
-          "cacheHit": true,
-          "markupMs": 0.09999990463256836,
-          "domCommitMs": 0.09999990463256836,
-          "reusedMarkup": 60,
-          "changedCards": 0,
-          "reusedCards": 60,
-          "frameCompletionMs": 252.09999990463257
-        },
-        {
-          "kind": "計算結果再利用",
-          "calculationMs": 0.09999990463256836,
-          "domMs": 96.40000009536743,
+          "domMs": 124.59999990463257,
           "cacheHit": true,
           "markupMs": 0,
-          "domCommitMs": 0.19999980926513672,
+          "domCommitMs": 0.10000038146972656,
           "reusedMarkup": 60,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 1181.5
+          "frameCompletionMs": 1049.5999999046326
         }
       ],
       "detailRows": [
         {
-          "generatedMs": 121.19999980926514,
-          "frameCompletionMs": 1942.9000000953674,
+          "generatedMs": 102.80000019073486,
+          "frameCompletionMs": 1909.7000002861023,
           "elements": 1254
         },
         {
-          "generatedMs": 95.2999997138977,
-          "frameCompletionMs": 1186.1999998092651,
+          "generatedMs": 90.59999990463257,
+          "frameCompletionMs": 229.59999990463257,
           "elements": 1254
         },
         {
-          "generatedMs": 144.90000009536743,
-          "frameCompletionMs": 1874.7000002861023,
+          "generatedMs": 86.90000009536743,
+          "frameCompletionMs": 988.2000002861023,
           "elements": 1254
         }
       ],
       "measured": {
-        "fullCalculationMs": 691.1999998092651,
-        "renderMs": 105.5,
-        "detailGenerationMs": 121.19999980926514
+        "fullCalculationMs": 711.6999998092651,
+        "renderMs": 124.59999990463257,
+        "detailGenerationMs": 90.59999990463257
       },
       "comparison": [],
       "comparisonState": "同条件の前回実測なし",
@@ -349,121 +349,121 @@
       "width": 390,
       "loadedCards": 2129,
       "valuesAndIdsUnchanged": true,
-      "dataRevision": "358021cd52a007be574c8b158d9ff39883cbea311c597196749c60749aba7760",
+      "dataRevision": "a23eb78d9fb43c4ee527103a8666b993582e9e681db1606f2f2957a8a858b796",
       "conditionHash": "49b970cdcd1801b40a4e46b2d920e374b18e2c64e895bb054b3d6fe57cf0f288",
       "rows": [
         {
           "kind": "全件再計算",
-          "calculationMs": 883.4000000953674,
-          "domMs": 227.90000009536743,
+          "calculationMs": 663.4000000953674,
+          "domMs": 254.89999961853027,
           "cacheHit": false,
-          "markupMs": 85.2000002861023,
-          "domCommitMs": 0.6999998092651367,
-          "reusedMarkup": 0,
-          "changedCards": 0,
-          "reusedCards": 60,
-          "frameCompletionMs": 2020.2000002861023
-        },
-        {
-          "kind": "全件再計算",
-          "calculationMs": 832.2999997138977,
-          "domMs": 225,
-          "cacheHit": false,
-          "markupMs": 86.80000019073486,
-          "domCommitMs": 0.6999998092651367,
-          "reusedMarkup": 0,
-          "changedCards": 0,
-          "reusedCards": 60,
-          "frameCompletionMs": 1949.7999997138977
-        },
-        {
-          "kind": "全件再計算",
-          "calculationMs": 620.9000000953674,
-          "domMs": 252.2000002861023,
-          "cacheHit": false,
-          "markupMs": 127.19999980926514,
+          "markupMs": 82.90000009536743,
           "domCommitMs": 0.5,
           "reusedMarkup": 0,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 952.3000001907349
+          "frameCompletionMs": 2027.9000000953674
         },
         {
-          "kind": "計算結果再利用",
-          "calculationMs": 0.09999990463256836,
-          "domMs": 96.80000019073486,
-          "cacheHit": true,
-          "markupMs": 0.09999990463256836,
-          "domCommitMs": 0.09999990463256836,
-          "reusedMarkup": 60,
+          "kind": "全件再計算",
+          "calculationMs": 730.5,
+          "domMs": 317,
+          "cacheHit": false,
+          "markupMs": 107.40000009536743,
+          "domCommitMs": 0.5,
+          "reusedMarkup": 0,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 181.5
+          "frameCompletionMs": 1433.2999997138977
         },
         {
-          "kind": "計算結果再利用",
-          "calculationMs": 0.09999990463256836,
-          "domMs": 88.69999980926514,
-          "cacheHit": true,
-          "markupMs": 0.10000038146972656,
-          "domCommitMs": 0,
-          "reusedMarkup": 60,
+          "kind": "全件再計算",
+          "calculationMs": 863.3000001907349,
+          "domMs": 294.5,
+          "cacheHit": false,
+          "markupMs": 92,
+          "domCommitMs": 0.7999997138977051,
+          "reusedMarkup": 0,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 165.90000009536743
+          "frameCompletionMs": 1283.2000002861023
         },
         {
           "kind": "計算結果再利用",
           "calculationMs": 0.19999980926513672,
-          "domMs": 88.40000009536743,
+          "domMs": 112.90000009536743,
           "cacheHit": true,
           "markupMs": 0.09999990463256836,
           "domCommitMs": 0.09999990463256836,
           "reusedMarkup": 60,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 1167
+          "frameCompletionMs": 217.40000009536743
+        },
+        {
+          "kind": "計算結果再利用",
+          "calculationMs": 0,
+          "domMs": 151.5,
+          "cacheHit": true,
+          "markupMs": 0,
+          "domCommitMs": 0.19999980926513672,
+          "reusedMarkup": 60,
+          "changedCards": 0,
+          "reusedCards": 60,
+          "frameCompletionMs": 304.3999996185303
+        },
+        {
+          "kind": "計算結果再利用",
+          "calculationMs": 0.10000038146972656,
+          "domMs": 107.7999997138977,
+          "cacheHit": true,
+          "markupMs": 0.09999990463256836,
+          "domCommitMs": 0,
+          "reusedMarkup": 60,
+          "changedCards": 0,
+          "reusedCards": 60,
+          "frameCompletionMs": 1194.8000001907349
         }
       ],
       "detailRows": [
         {
-          "generatedMs": 110.09999990463257,
-          "frameCompletionMs": 1945.9000000953674,
+          "generatedMs": 100,
+          "frameCompletionMs": 1193.3000001907349,
           "elements": 1264
         },
         {
-          "generatedMs": 95.09999990463257,
-          "frameCompletionMs": 1191.9000000953674,
+          "generatedMs": 89.30000019073486,
+          "frameCompletionMs": 993.2000002861023,
           "elements": 1264
         },
         {
-          "generatedMs": 97.40000009536743,
-          "frameCompletionMs": 1930.3000001907349,
+          "generatedMs": 114.60000038146973,
+          "frameCompletionMs": 981.9000000953674,
           "elements": 1264
         }
       ],
       "measured": {
-        "fullCalculationMs": 832.2999997138977,
-        "renderMs": 88.69999980926514,
-        "detailGenerationMs": 97.40000009536743
+        "fullCalculationMs": 730.5,
+        "renderMs": 112.90000009536743,
+        "detailGenerationMs": 100
       },
       "comparison": [
         {
           "metric": "fullCalculationMs",
-          "before": 691.1999998092651,
-          "after": 832.2999997138977,
+          "before": 711.6999998092651,
+          "after": 730.5,
           "warning": false
         },
         {
           "metric": "renderMs",
-          "before": 105.5,
-          "after": 88.69999980926514,
+          "before": 124.59999990463257,
+          "after": 112.90000009536743,
           "warning": false
         },
         {
           "metric": "detailGenerationMs",
-          "before": 121.19999980926514,
-          "after": 97.40000009536743,
+          "before": 90.59999990463257,
+          "after": 100,
           "warning": false
         }
       ],
@@ -475,103 +475,103 @@
       "width": 1440,
       "loadedCards": 4258,
       "valuesAndIdsUnchanged": true,
-      "dataRevision": "synthetic-double-358021cd52a007be574c8b158d9ff39883cbea311c597196749c60749aba7760",
+      "dataRevision": "synthetic-double-a23eb78d9fb43c4ee527103a8666b993582e9e681db1606f2f2957a8a858b796",
       "conditionHash": "a2b8b338c9a839ddcd33d2f27ffd98f78c9b5309cbdab8a18b035119184e8a52",
       "rows": [
         {
           "kind": "全件再計算",
-          "calculationMs": 1402.8999996185303,
-          "domMs": 359.2000002861023,
+          "calculationMs": 1375.5,
+          "domMs": 344.2000002861023,
           "cacheHit": false,
-          "markupMs": 92.69999980926514,
-          "domCommitMs": 0.8000001907348633,
+          "markupMs": 90.09999990463257,
+          "domCommitMs": 0.6999998092651367,
           "reusedMarkup": 0,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 2027.5999999046326
+          "frameCompletionMs": 2061
         },
         {
           "kind": "全件再計算",
-          "calculationMs": 1294,
-          "domMs": 350.69999980926514,
+          "calculationMs": 1191.4000000953674,
+          "domMs": 325.80000019073486,
           "cacheHit": false,
-          "markupMs": 91.2000002861023,
-          "domCommitMs": 0.5,
-          "reusedMarkup": 0,
-          "changedCards": 0,
-          "reusedCards": 60,
-          "frameCompletionMs": 3049.9000000953674
-        },
-        {
-          "kind": "全件再計算",
-          "calculationMs": 1194.5,
-          "domMs": 357.3999996185303,
-          "cacheHit": false,
-          "markupMs": 107.80000019073486,
+          "markupMs": 80.69999980926514,
           "domCommitMs": 0.9000000953674316,
           "reusedMarkup": 0,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 1733.3999996185303
+          "frameCompletionMs": 3266.4000000953674
         },
         {
-          "kind": "計算結果再利用",
-          "calculationMs": 0.20000028610229492,
-          "domMs": 248,
-          "cacheHit": true,
-          "markupMs": 0.09999990463256836,
-          "domCommitMs": 0.09999990463256836,
-          "reusedMarkup": 60,
+          "kind": "全件再計算",
+          "calculationMs": 1321.7000002861023,
+          "domMs": 343.2999997138977,
+          "cacheHit": false,
+          "markupMs": 85.10000038146973,
+          "domCommitMs": 0.6999998092651367,
+          "reusedMarkup": 0,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 418.2000002861023
+          "frameCompletionMs": 1849.8000001907349
         },
         {
           "kind": "計算結果再利用",
           "calculationMs": 0.09999990463256836,
-          "domMs": 187,
+          "domMs": 233.40000009536743,
+          "cacheHit": true,
+          "markupMs": 0.10000038146972656,
+          "domCommitMs": 0.09999990463256836,
+          "reusedMarkup": 60,
+          "changedCards": 0,
+          "reusedCards": 60,
+          "frameCompletionMs": 387.7999997138977
+        },
+        {
+          "kind": "計算結果再利用",
+          "calculationMs": 0.10000038146972656,
+          "domMs": 173.39999961853027,
           "cacheHit": true,
           "markupMs": 0,
           "domCommitMs": 0.09999990463256836,
           "reusedMarkup": 60,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 348.19999980926514
+          "frameCompletionMs": 345.5
         },
         {
           "kind": "計算結果再利用",
-          "calculationMs": 0.09999990463256836,
-          "domMs": 187.90000009536743,
+          "calculationMs": 0,
+          "domMs": 174.2999997138977,
           "cacheHit": true,
           "markupMs": 0,
-          "domCommitMs": 0.09999990463256836,
+          "domCommitMs": 0.19999980926513672,
           "reusedMarkup": 60,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 1350.0999999046326
+          "frameCompletionMs": 633.2999997138977
         }
       ],
       "detailRows": [
         {
-          "generatedMs": 191.80000019073486,
-          "frameCompletionMs": 1853.5,
+          "generatedMs": 176.60000038146973,
+          "frameCompletionMs": 933.5,
           "elements": 1254
         },
         {
-          "generatedMs": 199.2000002861023,
-          "frameCompletionMs": 1421.8000001907349,
+          "generatedMs": 182.09999990463257,
+          "frameCompletionMs": 1410.3000001907349,
           "elements": 1254
         },
         {
-          "generatedMs": 204.69999980926514,
-          "frameCompletionMs": 1827.7999997138977,
+          "generatedMs": 182.2000002861023,
+          "frameCompletionMs": 1835.4000000953674,
           "elements": 1254
         }
       ],
       "measured": {
-        "fullCalculationMs": 1294,
-        "renderMs": 187.90000009536743,
-        "detailGenerationMs": 199.2000002861023
+        "fullCalculationMs": 1321.7000002861023,
+        "renderMs": 174.2999997138977,
+        "detailGenerationMs": 182.09999990463257
       },
       "comparison": [],
       "comparisonState": "同条件の前回実測なし",
@@ -582,122 +582,122 @@
       "width": 1440,
       "loadedCards": 4258,
       "valuesAndIdsUnchanged": true,
-      "dataRevision": "synthetic-double-358021cd52a007be574c8b158d9ff39883cbea311c597196749c60749aba7760",
+      "dataRevision": "synthetic-double-a23eb78d9fb43c4ee527103a8666b993582e9e681db1606f2f2957a8a858b796",
       "conditionHash": "a2b8b338c9a839ddcd33d2f27ffd98f78c9b5309cbdab8a18b035119184e8a52",
       "rows": [
         {
           "kind": "全件再計算",
-          "calculationMs": 1440.8000001907349,
-          "domMs": 370.5,
+          "calculationMs": 1355.2999997138977,
+          "domMs": 342.5,
           "cacheHit": false,
-          "markupMs": 96.5,
-          "domCommitMs": 1.1000003814697266,
-          "reusedMarkup": 0,
-          "changedCards": 0,
-          "reusedCards": 60,
-          "frameCompletionMs": 2026
-        },
-        {
-          "kind": "全件再計算",
-          "calculationMs": 1289.6000003814697,
-          "domMs": 354.5,
-          "cacheHit": false,
-          "markupMs": 90.59999990463257,
-          "domCommitMs": 0.5999999046325684,
-          "reusedMarkup": 0,
-          "changedCards": 0,
-          "reusedCards": 60,
-          "frameCompletionMs": 3050
-        },
-        {
-          "kind": "全件再計算",
-          "calculationMs": 1281,
-          "domMs": 347.5,
-          "cacheHit": false,
-          "markupMs": 91,
+          "markupMs": 91.5,
           "domCommitMs": 0.5,
           "reusedMarkup": 0,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 1799.6000003814697
+          "frameCompletionMs": 2078.3999996185303
         },
         {
-          "kind": "計算結果再利用",
-          "calculationMs": 0.19999980926513672,
-          "domMs": 254.09999990463257,
-          "cacheHit": true,
-          "markupMs": 0.10000038146972656,
-          "domCommitMs": 0,
-          "reusedMarkup": 60,
+          "kind": "全件再計算",
+          "calculationMs": 1191.5,
+          "domMs": 330.30000019073486,
+          "cacheHit": false,
+          "markupMs": 86,
+          "domCommitMs": 0.5999999046325684,
+          "reusedMarkup": 0,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 416.69999980926514
+          "frameCompletionMs": 2166.4000000953674
+        },
+        {
+          "kind": "全件再計算",
+          "calculationMs": 1529.3000001907349,
+          "domMs": 530.6999998092651,
+          "cacheHit": false,
+          "markupMs": 153.40000009536743,
+          "domCommitMs": 0.5,
+          "reusedMarkup": 0,
+          "changedCards": 0,
+          "reusedCards": 60,
+          "frameCompletionMs": 2349.7000002861023
         },
         {
           "kind": "計算結果再利用",
           "calculationMs": 0.09999990463256836,
-          "domMs": 191,
+          "domMs": 200.09999990463257,
           "cacheHit": true,
           "markupMs": 0,
           "domCommitMs": 0.09999990463256836,
           "reusedMarkup": 60,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 349.80000019073486
+          "frameCompletionMs": 366.5
         },
         {
           "kind": "計算結果再利用",
-          "calculationMs": 0,
-          "domMs": 187.2000002861023,
+          "calculationMs": 0.19999980926513672,
+          "domMs": 317.40000009536743,
           "cacheHit": true,
-          "markupMs": 0,
+          "markupMs": 0.20000028610229492,
+          "domCommitMs": 0.19999980926513672,
+          "reusedMarkup": 60,
+          "changedCards": 0,
+          "reusedCards": 60,
+          "frameCompletionMs": 504.2999997138977
+        },
+        {
+          "kind": "計算結果再利用",
+          "calculationMs": 0.10000038146972656,
+          "domMs": 281.09999990463257,
+          "cacheHit": true,
+          "markupMs": 0.10000038146972656,
           "domCommitMs": 0.09999990463256836,
           "reusedMarkup": 60,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 1350.1999998092651
+          "frameCompletionMs": 517
         }
       ],
       "detailRows": [
         {
-          "generatedMs": 198.19999980926514,
-          "frameCompletionMs": 1839.4000000953674,
+          "generatedMs": 264.40000009536743,
+          "frameCompletionMs": 365.59999990463257,
           "elements": 1264
         },
         {
-          "generatedMs": 200.5,
-          "frameCompletionMs": 1391.5,
+          "generatedMs": 185.19999980926514,
+          "frameCompletionMs": 2028,
           "elements": 1264
         },
         {
-          "generatedMs": 217.90000009536743,
-          "frameCompletionMs": 1844.3000001907349,
+          "generatedMs": 292.09999990463257,
+          "frameCompletionMs": 884.5999999046326,
           "elements": 1264
         }
       ],
       "measured": {
-        "fullCalculationMs": 1289.6000003814697,
-        "renderMs": 191,
-        "detailGenerationMs": 200.5
+        "fullCalculationMs": 1355.2999997138977,
+        "renderMs": 281.09999990463257,
+        "detailGenerationMs": 264.40000009536743
       },
       "comparison": [
         {
           "metric": "fullCalculationMs",
-          "before": 1294,
-          "after": 1289.6000003814697,
+          "before": 1321.7000002861023,
+          "after": 1355.2999997138977,
           "warning": false
         },
         {
           "metric": "renderMs",
-          "before": 187.90000009536743,
-          "after": 191,
-          "warning": false
+          "before": 174.2999997138977,
+          "after": 281.09999990463257,
+          "warning": true
         },
         {
           "metric": "detailGenerationMs",
-          "before": 199.2000002861023,
-          "after": 200.5,
-          "warning": false
+          "before": 182.09999990463257,
+          "after": 264.40000009536743,
+          "warning": true
         }
       ],
       "comparisonState": "同じ環境・計算値・候補IDでの前回比較",
@@ -708,103 +708,103 @@
       "width": 390,
       "loadedCards": 4258,
       "valuesAndIdsUnchanged": true,
-      "dataRevision": "synthetic-double-358021cd52a007be574c8b158d9ff39883cbea311c597196749c60749aba7760",
+      "dataRevision": "synthetic-double-a23eb78d9fb43c4ee527103a8666b993582e9e681db1606f2f2957a8a858b796",
       "conditionHash": "a2b8b338c9a839ddcd33d2f27ffd98f78c9b5309cbdab8a18b035119184e8a52",
       "rows": [
         {
           "kind": "全件再計算",
-          "calculationMs": 1418.2000002861023,
-          "domMs": 372.09999990463257,
+          "calculationMs": 1330.9000000953674,
+          "domMs": 341.2999997138977,
           "cacheHit": false,
-          "markupMs": 89.59999990463257,
-          "domCommitMs": 0.6999998092651367,
-          "reusedMarkup": 0,
-          "changedCards": 0,
-          "reusedCards": 60,
-          "frameCompletionMs": 2018
-        },
-        {
-          "kind": "全件再計算",
-          "calculationMs": 1329.9000000953674,
-          "domMs": 356.30000019073486,
-          "cacheHit": false,
-          "markupMs": 94.5,
+          "markupMs": 88.40000009536743,
           "domCommitMs": 0.5999999046325684,
           "reusedMarkup": 0,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 3024.5
+          "frameCompletionMs": 2212.4000000953674
         },
         {
           "kind": "全件再計算",
-          "calculationMs": 1282.2000002861023,
-          "domMs": 384,
+          "calculationMs": 1520.1999998092651,
+          "domMs": 513.1999998092651,
           "cacheHit": false,
-          "markupMs": 106.7000002861023,
-          "domCommitMs": 0.6999998092651367,
+          "markupMs": 143.09999990463257,
+          "domCommitMs": 0.7999997138977051,
           "reusedMarkup": 0,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 1882.9000000953674
+          "frameCompletionMs": 2513.8999996185303
+        },
+        {
+          "kind": "全件再計算",
+          "calculationMs": 1171.9000000953674,
+          "domMs": 343.2000002861023,
+          "cacheHit": false,
+          "markupMs": 100,
+          "domCommitMs": 0.5999999046325684,
+          "reusedMarkup": 0,
+          "changedCards": 0,
+          "reusedCards": 60,
+          "frameCompletionMs": 1722.1000003814697
+        },
+        {
+          "kind": "計算結果再利用",
+          "calculationMs": 0.2999997138977051,
+          "domMs": 242.90000009536743,
+          "cacheHit": true,
+          "markupMs": 0.09999990463256836,
+          "domCommitMs": 0.19999980926513672,
+          "reusedMarkup": 60,
+          "changedCards": 0,
+          "reusedCards": 60,
+          "frameCompletionMs": 436.7999997138977
         },
         {
           "kind": "計算結果再利用",
           "calculationMs": 0,
-          "domMs": 305.1000003814697,
+          "domMs": 180.40000009536743,
           "cacheHit": true,
           "markupMs": 0.09999990463256836,
           "domCommitMs": 0,
           "reusedMarkup": 60,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 499.90000009536743
+          "frameCompletionMs": 390.80000019073486
         },
         {
           "kind": "計算結果再利用",
           "calculationMs": 0.09999990463256836,
-          "domMs": 283.90000009536743,
+          "domMs": 283.5,
           "cacheHit": true,
           "markupMs": 0.09999990463256836,
-          "domCommitMs": 0.20000028610229492,
+          "domCommitMs": 0.10000038146972656,
           "reusedMarkup": 60,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 441.30000019073486
-        },
-        {
-          "kind": "計算結果再利用",
-          "calculationMs": 0.09999990463256836,
-          "domMs": 190.09999990463257,
-          "cacheHit": true,
-          "markupMs": 0.09999990463256836,
-          "domCommitMs": 0.09999990463256836,
-          "reusedMarkup": 60,
-          "changedCards": 0,
-          "reusedCards": 60,
-          "frameCompletionMs": 1358.8999996185303
+          "frameCompletionMs": 516.9000000953674
         }
       ],
       "detailRows": [
         {
-          "generatedMs": 230.19999980926514,
-          "frameCompletionMs": 1803.0999999046326,
+          "generatedMs": 268.90000009536743,
+          "frameCompletionMs": 808.5999999046326,
           "elements": 1254
         },
         {
-          "generatedMs": 187.7999997138977,
-          "frameCompletionMs": 1445.0999999046326,
+          "generatedMs": 183.59999990463257,
+          "frameCompletionMs": 643.3999996185303,
           "elements": 1254
         },
         {
-          "generatedMs": 200.69999980926514,
-          "frameCompletionMs": 1839.1999998092651,
+          "generatedMs": 198,
+          "frameCompletionMs": 868.3000001907349,
           "elements": 1254
         }
       ],
       "measured": {
-        "fullCalculationMs": 1329.9000000953674,
-        "renderMs": 283.90000009536743,
-        "detailGenerationMs": 200.69999980926514
+        "fullCalculationMs": 1330.9000000953674,
+        "renderMs": 242.90000009536743,
+        "detailGenerationMs": 198
       },
       "comparison": [],
       "comparisonState": "同条件の前回実測なし",
@@ -815,121 +815,121 @@
       "width": 390,
       "loadedCards": 4258,
       "valuesAndIdsUnchanged": true,
-      "dataRevision": "synthetic-double-358021cd52a007be574c8b158d9ff39883cbea311c597196749c60749aba7760",
+      "dataRevision": "synthetic-double-a23eb78d9fb43c4ee527103a8666b993582e9e681db1606f2f2957a8a858b796",
       "conditionHash": "a2b8b338c9a839ddcd33d2f27ffd98f78c9b5309cbdab8a18b035119184e8a52",
       "rows": [
         {
           "kind": "全件再計算",
-          "calculationMs": 1412.3000001907349,
-          "domMs": 368.7999997138977,
+          "calculationMs": 1300.8000001907349,
+          "domMs": 338.19999980926514,
           "cacheHit": false,
-          "markupMs": 92.89999961853027,
-          "domCommitMs": 0.7000002861022949,
+          "markupMs": 94,
+          "domCommitMs": 0.5,
           "reusedMarkup": 0,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 2009.5
+          "frameCompletionMs": 2011.5
         },
         {
           "kind": "全件再計算",
-          "calculationMs": 1296.5999999046326,
-          "domMs": 350.80000019073486,
+          "calculationMs": 1176.8000001907349,
+          "domMs": 321.3999996185303,
           "cacheHit": false,
-          "markupMs": 88.69999980926514,
-          "domCommitMs": 0.7000002861022949,
-          "reusedMarkup": 0,
-          "changedCards": 0,
-          "reusedCards": 60,
-          "frameCompletionMs": 3039.5
-        },
-        {
-          "kind": "全件再計算",
-          "calculationMs": 1268.0999999046326,
-          "domMs": 367.09999990463257,
-          "cacheHit": false,
-          "markupMs": 92.7999997138977,
+          "markupMs": 83.89999961853027,
           "domCommitMs": 0.6000003814697266,
           "reusedMarkup": 0,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 1810.8000001907349
+          "frameCompletionMs": 3483
+        },
+        {
+          "kind": "全件再計算",
+          "calculationMs": 1405.4000000953674,
+          "domMs": 407.80000019073486,
+          "cacheHit": false,
+          "markupMs": 101.09999990463257,
+          "domCommitMs": 0.5999999046325684,
+          "reusedMarkup": 0,
+          "changedCards": 0,
+          "reusedCards": 60,
+          "frameCompletionMs": 1966.4000000953674
         },
         {
           "kind": "計算結果再利用",
           "calculationMs": 0,
-          "domMs": 230.5,
+          "domMs": 276.69999980926514,
+          "cacheHit": true,
+          "markupMs": 0,
+          "domCommitMs": 0.19999980926513672,
+          "reusedMarkup": 60,
+          "changedCards": 0,
+          "reusedCards": 60,
+          "frameCompletionMs": 434.2999997138977
+        },
+        {
+          "kind": "計算結果再利用",
+          "calculationMs": 0.10000038146972656,
+          "domMs": 170,
           "cacheHit": true,
           "markupMs": 0,
           "domCommitMs": 0.10000038146972656,
           "reusedMarkup": 60,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 388.59999990463257
+          "frameCompletionMs": 315.7000002861023
         },
         {
           "kind": "計算結果再利用",
           "calculationMs": 0.09999990463256836,
-          "domMs": 183.40000009536743,
+          "domMs": 175.2000002861023,
           "cacheHit": true,
           "markupMs": 0,
-          "domCommitMs": 0.20000028610229492,
+          "domCommitMs": 0,
           "reusedMarkup": 60,
           "changedCards": 0,
           "reusedCards": 60,
-          "frameCompletionMs": 344
-        },
-        {
-          "kind": "計算結果再利用",
-          "calculationMs": 0.19999980926513672,
-          "domMs": 191.80000019073486,
-          "cacheHit": true,
-          "markupMs": 0.09999990463256836,
-          "domCommitMs": 0.09999990463256836,
-          "reusedMarkup": 60,
-          "changedCards": 0,
-          "reusedCards": 60,
-          "frameCompletionMs": 1350.1999998092651
+          "frameCompletionMs": 566.8000001907349
         }
       ],
       "detailRows": [
         {
-          "generatedMs": 187.2000002861023,
-          "frameCompletionMs": 1835.3000001907349,
+          "generatedMs": 232.19999980926514,
+          "frameCompletionMs": 875.2999997138977,
           "elements": 1264
         },
         {
-          "generatedMs": 188.40000009536743,
-          "frameCompletionMs": 1453.2000002861023,
+          "generatedMs": 186.09999990463257,
+          "frameCompletionMs": 942.2000002861023,
           "elements": 1264
         },
         {
-          "generatedMs": 189.09999990463257,
-          "frameCompletionMs": 1838.0999999046326,
+          "generatedMs": 176.69999980926514,
+          "frameCompletionMs": 826,
           "elements": 1264
         }
       ],
       "measured": {
-        "fullCalculationMs": 1296.5999999046326,
-        "renderMs": 191.80000019073486,
-        "detailGenerationMs": 188.40000009536743
+        "fullCalculationMs": 1300.8000001907349,
+        "renderMs": 175.2000002861023,
+        "detailGenerationMs": 186.09999990463257
       },
       "comparison": [
         {
           "metric": "fullCalculationMs",
-          "before": 1329.9000000953674,
-          "after": 1296.5999999046326,
+          "before": 1330.9000000953674,
+          "after": 1300.8000001907349,
           "warning": false
         },
         {
           "metric": "renderMs",
-          "before": 283.90000009536743,
-          "after": 191.80000019073486,
+          "before": 242.90000009536743,
+          "after": 175.2000002861023,
           "warning": false
         },
         {
           "metric": "detailGenerationMs",
-          "before": 200.69999980926514,
-          "after": 188.40000009536743,
+          "before": 198,
+          "after": 186.09999990463257,
           "warning": false
         }
       ],
@@ -937,5 +937,6 @@
       "scope": "実DOM生成と2フレーム到達。通信・端末実機・描画完了保証とは別。設定/安全条件を変更しない"
     }
   ],
-  "scope": "同一PCの1440/390px。実機・通信時間とは別。通常/2倍で同一データ・条件・時刻、計算と候補ハッシュ一致"
+  "allValuesAndIdsUnchanged": true,
+  "allPairedConditionHashesEqual": true
 }
