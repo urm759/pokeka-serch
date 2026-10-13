@@ -8,7 +8,7 @@ function controls(h) {
     const a=m[1]??m[2];return [attr(a,'id'),m[1]!=null?attr(a,'value')||'':m[3].replace(/\s+/g,' ').trim(),/\bchecked\b/.test(a)];
   }).filter(r=>r[0]).sort((a,b)=>a[0].localeCompare(b[0]));
 }
-assert.deepEqual(controls(html).filter(row=>!row[0].startsWith('observation')),baseline.controls,'existing IDs, defaults and select options must survive observation search additions');
+assert.deepEqual(controls(html).filter(row=>!row[0].startsWith('observation')).map(row=>row[0]==='profitSearchBasisInput'?[row[0],row[1].replace('<option value="current-target">利益確保の仕入れ目安で購入・現相場基準（探索）</option>',''),row[2]]:row),baseline.controls,'existing IDs/defaults/options survive the explicitly added guide basis');
 for(const [id,value,type] of [['roiInput','20','number'],['expectedRoiFilterInput','0','number'],['floorStateInput','stable','select'],['purchaseBelowCurrentCapInput','', 'checkbox']]) {
   const el={id,value,type,checked:true,tagName:type==='select'?'SELECT':'INPUT',options:[{value:'all'},{value:'stable'}]};
   assert(model.clear(el));assert.equal(el.checked,type==='checkbox'?false:true);assert.equal(el.value,type==='checkbox'?'':type==='select'?'all':'');
@@ -35,6 +35,11 @@ assert.match(css,/\.search-settings \[hidden\]\{display:none!important\}/,'displ
 assert.match(app,/if \(activeConditionKey===key\) return/,'unchanged active filters are not rebuilt');
 for(const [name,expected] of Object.entries(baseline.protectedFunctions)) {
   const source=app.replace(/\r\n/g,'\n')
+    .replace(/  if \(mode !== 'now' && \(explicitBasis \|\| state.profitSearchBasis\) === 'current-target'\) \{[\s\S]*?\n  }\n/,'')
+    .replace(/  if \(diagnostic && normalizedQuery && state.diagnosticSearch\) \{[\s\S]*?\n  }\n/,'')
+    .replace('      if (state.purchaseBelowCurrentCap)', '      if (diagnostic && normalizedQuery && state.diagnosticSearch) return reasons;\n      if (state.purchaseBelowCurrentCap)')
+    .replace("['current-cap','current-target'].includes(profitView.basis)","profitView.basis === 'current-cap'")
+    .replace("['limit','current-cap','current-target']","['limit','current-cap']")
     .replace("  reasons.push(...observationSearchExclusions(card));\n",'')
     .replace("  if (state.observationIncludeReference === false) url.searchParams.set('obsRef','0'); else url.searchParams.delete('obsRef');\n",'')
     .replace("    if (state[field] == null && param.startsWith('obs') && url.searchParams.has(param)) url.searchParams.set(param,'off');\n    else if",'    if');

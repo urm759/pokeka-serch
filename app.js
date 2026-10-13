@@ -1632,7 +1632,7 @@ function exportFavoritesCsv() {
   favoriteCards().forEach((rawCard, index) => {
     const card = calc(rawCard), trial = favoriteTrial(card);
     rows[index + 1][14] = psa9NonLossDisplay(card.buyLimits?.clean?.resilience);
-    const currentCap = currentMarketView(card);
+    const currentCap = state.profitSearchBasis === 'current-target' ? currentGuideBreakEven(card) : currentMarketView(card);
     rows[index + 1].push(state.favoritePlans[card.id] || "", trial.fee ?? "", trial.lockDays ?? "", trial.rows?.current?.expectedProfit ?? "", trial.rows?.central?.expectedProfit ?? "", trial.rows?.stress?.expectedProfit ?? "", trial.lowerGradeProfit ?? "", trial.period?.status || '期間履歴不足', trial.period?.centralPrice ?? '', trial.period?.stressPrice ?? '', trial.period?.normalLimit ?? '', trial.period?.stressLimit ?? '', trial.period?.version || '', JSON.stringify(trial.fixedBreakEvenAnchor || null), ...currentCapCsvFields(currentCap));
   });
   rows[0].push("試算PSAプランID", "試算鑑定費等", "試算返却目安日数", "入力買値×現相場期待利益", "入力買値×中央予測期待利益", "入力買値×供給ストレス期待利益", "入力買値PSA9以下想定損益", "返却期間試算状態（参考・判定未適用）", "選択返却期間中央価格", "選択返却期間ストレス価格", "選択返却期間参考通常上限", "選択返却期間参考ストレス上限", "返却期間モデル版", "購入時固定損益分岐JSON");
@@ -1640,6 +1640,7 @@ function exportFavoritesCsv() {
   rows[0].push('現在買える状態A価格','仕入れ余裕率%（利益率とは別）','検索採用買値','検索採用買値基準','検索期待利益','検索PSA10時利益率%','30日買取掲載率%','30日平均掲載店舗数','正常観測日数','取得カバー率%','余裕率の比較上限（一覧と同じ）','余裕率の参考警告','余裕率の比較不可理由');
   rows[0].push('単体資金効率・買値','単体資金効率・買値基準','単体資金効率・売値基準','単体資金効率・売却先','単体期待利益','総投下額','単体期待利益率%','想定資金拘束日数','単体年換算効率%（参考）','単体資金効率・算出不可理由','単体資金効率・計算区分','単体資金効率・参考警告','単体資金効率・検索採用');
   for (const days of [7,30,90,200]) rows[0].push(`${days}日観測平均`,`${days}日乖離率%`,`${days}日観測日数`,`${days}日最終観測`,`${days}日観測状態`);
+  rows[0].push('利益確保の仕入れ目安・現相場基準','目安の切下げ前値','目安の最低期待利益','目安の最低期待利益率%','目安の状態','目安の売却先','素体参考相場70%（上限ではない）');
   favoriteCards().forEach((rawCard,index)=>{
     const card = calc(rawCard), p = purchaseExploration(card), v = searchProfitView(card), c = postingCoverage(card);
     rows[index+1].push(p.price ?? '',p.headroom ?? '',v.purchasePrice ?? '',v.label,v.economics?.expectedProfit ?? '',v.psa10Roi ?? '',c.rate30 ?? '',c.averageShops30 ?? '',c.observedDays,c.retrievalCoverage ?? '',p.cap ?? '',p.warnings.join('／'),p.headroom == null ? p.reason : '');
@@ -1649,6 +1650,8 @@ function exportFavoritesCsv() {
       const o = explorationMetrics.observation(state.psa10PeriodSummary,card.id,card.psa10,days);
       rows[index+1].push(o.mean ?? '',o.delta ?? '',o.count ?? '',o.latest || '',o.mean == null ? '未取得' : `${o.reference ? '参考・観測不足' : '観測充足'}${o.stale ? '／古い観測' : ''}`);
     }
+    const g=currentProfitGuide(card);
+    rows[index+1].push(g.cap ?? '',g.rawCap ?? '',g.minProfit ?? '',g.minRoi ?? '',g.capState,g.exitLabel,g.practicalPrice ?? '');
   });
   const csv = `\uFEFF${rows.map((row) => row.map(csvCell).join(",")).join("\r\n")}`;
   const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
@@ -3110,7 +3113,7 @@ function restoreQuickFilters() {
     for (const [param, field, id] of [["marketCapMin","currentMarketCapMin","currentMarketCapMinInput"],["marketBuy","currentMarketManualPrice","currentMarketManualPriceInput"]]) {
       if (!url.searchParams.has(param) && saved[field] != null) document.getElementById(id).value = String(saved[field]);
     }
-    if (!url.searchParams.has("profitBasis") && ["auto", "limit", "store", "current", "current-cap"].includes(saved.profitSearchBasis)) document.getElementById("profitSearchBasisInput").value = saved.profitSearchBasis;
+    if (!url.searchParams.has("profitBasis") && ["auto", "limit", "store", "current", "current-cap", "current-target"].includes(saved.profitSearchBasis)) document.getElementById("profitSearchBasisInput").value = saved.profitSearchBasis;
     if (!url.searchParams.has("buyBelowCap") && typeof saved.purchaseBelowCurrentCap === "boolean") document.getElementById("purchaseBelowCurrentCapInput").checked = saved.purchaseBelowCurrentCap;
     if (!url.searchParams.has("periodReference") && typeof saved.includePeriodReference === "boolean") document.getElementById("includePeriodReferenceInput").checked = saved.includePeriodReference;
     for (const [parameter, field, el] of [["filterExpProfit", "minExpectedProfitFilter", els.expectedProfitFilterInput], ["filterExpRoi", "minExpectedRoiFilter", els.expectedRoiFilterInput]]) {
@@ -3445,7 +3448,7 @@ function readUrl() {
   const profitBasisInput = document.getElementById("profitSearchBasisInput");
   const belowCapInput = document.getElementById("purchaseBelowCurrentCapInput");
   if (belowCapInput && filterUrl.searchParams.has("buyBelowCap")) belowCapInput.checked = filterUrl.searchParams.get("buyBelowCap") === "1";
-  if (profitBasisInput && ["auto", "limit", "store", "current", "current-cap"].includes(filterUrl.searchParams.get("profitBasis"))) profitBasisInput.value = filterUrl.searchParams.get("profitBasis");
+  if (profitBasisInput && ["auto", "limit", "store", "current", "current-cap", "current-target"].includes(filterUrl.searchParams.get("profitBasis"))) profitBasisInput.value = filterUrl.searchParams.get("profitBasis");
   for (const [param,field] of explorationFields) if (filterUrl.searchParams.has(param)) document.getElementById(field+'Input').value = parseOptionalNumber(filterUrl.searchParams.get(param)) ?? '';
   if (filterUrl.searchParams.has('obsRef')) document.getElementById('observationIncludeReferenceInput').checked = filterUrl.searchParams.get('obsRef') !== '0';
   const periodReferenceInput = document.getElementById("includePeriodReferenceInput");
@@ -3859,7 +3862,34 @@ function currentMarketView(card, reference = false) {
 function searchProfitView(card, mode = state.purchaseMode, explicitBasis = null) {
   return renderValue(card, `profit:${mode}:${explicitBasis}`, () => computeSearchProfitView(card,mode,explicitBasis));
 }
+function currentGuideSource(card) {
+  const strict=currentMarketView(card);
+  return strict.eligible ? strict : currentMarketView(card,true);
+}
+function currentProfitGuide(card) {
+  return renderValue(card, 'current-profit-guide', () => {
+    const view = currentGuideSource(card);
+    return {...view,breakEvenCap:view.cap,breakEvenRawCap:view.rawCap,breakEvenState:view.capState,
+      breakEvenLabel:view.capLabel,breakEvenNote:view.capNote,
+      ...currentMarketModel.targetGuide(view,{fee:state.fee,minProfit:state.minExpectedProfit,
+      minRoi:state.minExpectedRoi,rawMarket:card.priceAggregation?.value ?? card.price})};
+  });
+}
+function currentGuideBreakEven(card) {
+  const g=currentProfitGuide(card);
+  return {...g,cap:g.breakEvenCap,rawCap:g.breakEvenRawCap,capState:g.breakEvenState,capLabel:g.breakEvenLabel,capNote:g.breakEvenNote};
+}
 function computeSearchProfitView(card, mode = state.purchaseMode, explicitBasis = null) {
+  if (mode !== 'now' && (explicitBasis || state.profitSearchBasis) === 'current-target') {
+    const guide = currentProfitGuide(card), buy = guide.cap;
+    const profit = buy != null && Number.isFinite(guide.psa10Net) ? guide.psa10Net - buy - state.fee : null;
+    const psa9 = explorationMetrics.meanSale(guide.lowerGradePrice,buy,state.fee,state.saleFeeRate,state.saleExtraCost);
+    return {...guide,eligible:guide.eligible && buy != null,basis:'current-target',purchaseKind:'current-target',purchaseSource:'利益確保の仕入れ目安で購入・仮定',
+      purchasePrice:buy,psa9Profit:psa9.profit,psa10Profit:profit,
+      psa10Roi:profit != null && guide.economics?.investment > 0 ? profit / guide.economics.investment * 100 : null,
+      stress:null,referenceOnly:true,horizonDays:0,
+      label:'利益確保の仕入れ目安で購入 × 現在出口相場（維持仮定・購入GOではない）'};
+  }
   // Exploration uses the existing current-market economics, never the GO path.
   if (mode !== 'now' && (explicitBasis || state.profitSearchBasis) === 'current-cap') {
     const view = currentMarketView(card);
@@ -3920,12 +3950,13 @@ function cardEfficiency(card, now=Date.now(), mode=state.purchaseMode) {
   const cached = efficiencyCache.get(card);
   if (cached?.key === key && now < cached.expires) return cached.value;
   const capBasis = state.efficiencyBuy === 'current-cap' || state.efficiencyBuy === 'auto' && state.profitSearchBasis === 'current-cap';
+  const targetBasis = state.efficiencyBuy === 'auto' && state.profitSearchBasis === 'current-target' && mode !== 'now';
   const manualBasis = state.efficiencyBuy === 'manual' || state.efficiencyBuy === 'auto' && mode === 'current-market' && state.currentMarketManualPrice != null;
   const source = currentMarketView(card,true);
-  const buy = capBasis ? source.eligible && source.capState === 'available' ? source.cap : null
+  const buy = targetBasis ? currentProfitGuide(card).cap : capBasis ? source.eligible && source.capState === 'available' ? source.cap : null
     : manualBasis ? state.efficiencyBuy === 'manual' ? state.efficiencyManualPrice : state.currentMarketManualPrice
     : explorationMetrics.offerPrice(card.currentStoreOffer,now);
-  const scenario = capBasis || mode === 'current-market' ? 'current' : state.efficiencyScenario;
+  const scenario = capBasis || targetBasis || mode === 'current-market' ? 'current' : state.efficiencyScenario;
   const reason = buy == null ? capBasis ? '損益分岐上限算出不可' : manualBasis ? '手入力買値未設定' : card.purchasePriceStatus?.label || '新鮮な購入価格未取得'
     : !source.eligible ? source.reasons.join('／') : scenario !== 'current' && state.lockDays !== FORECAST_HORIZON_DAYS ? `期間不一致・${FORECAST_HORIZON_DAYS}日予測／返却${state.lockDays}日` : null;
   let economics = null, exitLabel = source.exitLabel, travel = 0;
@@ -3947,7 +3978,7 @@ function cardEfficiency(card, now=Date.now(), mode=state.purchaseMode) {
     exitLabel = state.exitPolicy === 'both' ? `${usesStore ? '買取店' : 'フリマ'}（両出口の保守側）` : source.exitLabel;
   }
   const result = {...explorationMetrics.efficiency(economics,buy,state.fee,state.saleExtraCost+travel,state.lockDays,state.efficiencySaleDays,state.efficiencyPayoutDays),
-    purchasePrice:buy,basis:capBasis ? '現相場損益分岐上限・仮定' : manualBasis ? '手入力買値・仮定' : '実店舗状態A価格',
+    purchasePrice:buy,basis:targetBasis ? '利益確保の仕入れ目安・仮定' : capBasis ? '現相場損益分岐上限・仮定' : manualBasis ? '手入力買値・仮定' : '実店舗状態A価格',
     scenario:scenario === 'current' ? '現在出口相場が続く仮定' : `${FORECAST_HORIZON_DAYS}日${scenario === 'central' ? '中央予測' : '供給ストレス'}`,
     exitLabel,reason:reason || (!economics ? '選択した出口・シナリオのデータ不足' : null),warnings:source.warnings || [],capBasis,referenceOnly:true,
     calculationState:source.calculationState || 'calculated',blockingReasons:source.reasons || [],referenceReasons:source.referenceReasons || []};
@@ -4018,7 +4049,7 @@ function purchaseBelowCurrentCapReason(card) {
 function purchaseExploration(card,now=Date.now()) {
   const price = explorationMetrics.offerPrice(card.currentStoreOffer,now);
   const limit = card.buyLimits?.clean, assumptions = limit?.assumptions;
-  const display = state.purchaseMode === 'current-market' || state.profitSearchBasis === 'current-cap' && state.purchaseMode !== 'now' ? currentMarketView(card) : limitDisplayModel.classifyCap(
+  const display = state.profitSearchBasis === 'current-target' && state.purchaseMode !== 'now' ? currentGuideBreakEven(card) : state.purchaseMode === 'current-market' || state.profitSearchBasis === 'current-cap' && state.purchaseMode !== 'now' ? currentMarketView(card) : limitDisplayModel.classifyCap(
     card.psa10 > 0 ? Object.hasOwn(limit || {},'currentBreakEvenRaw') ? limit.currentBreakEvenRaw : limit?.currentBreakEvenMaxPrice : null);
   const materialReady = Number.isFinite(assumptions?.hitRate) && assumptions.hitRate >= 0 && assumptions.hitRate <= 1
     && Number.isFinite(assumptions?.lowerGradePrice) && assumptions.lowerGradePrice > 0 && !psaPlanProblem();
@@ -4038,8 +4069,8 @@ function postingCoverage(card) {
   return explorationMetrics.coverage(state.buybackPostingCoverage,card.id,state.buybackStoreMode,state.selectedBuybackStores || []);
 }
 function selectedLimitDisplay(card, base, trial) {
-  if (state.purchaseMode !== 'current-market' && !(state.profitSearchBasis === 'current-cap' && state.purchaseMode !== 'now')) return base;
-  const value=trial || searchProfitView(card);
+  if (state.purchaseMode !== 'current-market' && !(['current-cap','current-target'].includes(state.profitSearchBasis) && state.purchaseMode !== 'now')) return base;
+  const value=state.profitSearchBasis === 'current-target' && state.purchaseMode !== 'now' ? currentGuideBreakEven(card) : trial || searchProfitView(card);
   return {...base,currentCap:value.cap,currentCapState:value.capState || 'unavailable',currentCapLabel:value.capLabel || 'データ不足で算出不可',currentCapNote:value.capNote,
     exitLabel:value.exitLabel || '未取得',warnings:[...new Set([...base.warnings.filter(w=>!w.includes('フリマ基準')), ...value.reasons])],
     gap:Number.isFinite(value.cap) && Number.isFinite(base.stableCap) ? value.cap-base.stableCap : null,
@@ -4054,7 +4085,8 @@ function searchProfitPanel(view) {
   const money = value => Number.isFinite(value) ? `¥${fmt.format(Math.round(value))}` : "算出不可";
   const rate = value => Number.isFinite(value) ? `${value.toFixed(2)}%` : "算出不可";
   const signedMoney = signedExpectedMoney;
-  return `<div class="candidate-profit-comparison search-profit-summary"><strong>検索と同じ買値：${money(view.purchasePrice)}／${escapeHtml(view.exitLabel || "出口未取得")}</strong><div><span>PSA10現在相場での手取り<br><b>${money(view.psa10Net)}</b></span><span>PSA10時の利益／利益率<br><b>${signedMoney(view.psa10Profit).text}／${rate(view.psa10Roi)}</b></span><span>${view.horizonDays === 0 ? '現在出口相場' : '中央予測'}の期待利益／期待利益率<br><b>${signedMoney(view.economics?.expectedProfit).text}／${rate(view.economics?.expectedRoi)}</b></span></div><details class="profit-calculation-note"><summary>計算基準を確認</summary><small>${escapeHtml(view.label)}。PSA10時利益率＝（PSA10手取り−買値−鑑定費）÷（買値＋鑑定費）。期待利益率は非10の損益も含む別指標。買取減額とフリマ手数料は同じ出口に二重適用しません。期待黒字は損失保証ではありません。${view.basis === 'current-cap' ? '損益分岐上限で購入×現在相場の期待利益率はほぼ0%（切下げ端数分あり）。利益率下限10%などは条件不一致として除外します。条件を自動解除しません。' : ''}</small></details></div>`;
+  const denominatorNote = view.basis === 'current-target' ? '買値＋鑑定費＋投下諸費用（売却手取りから控除済みの費用は再控除しない）' : '買値＋鑑定費';
+  return `<div class="candidate-profit-comparison search-profit-summary"><strong>検索と同じ買値：${money(view.purchasePrice)}／${escapeHtml(view.exitLabel || "出口未取得")}</strong><div><span>PSA10現在相場での手取り<br><b>${money(view.psa10Net)}</b></span><span>PSA10時の利益／利益率<br><b>${signedMoney(view.psa10Profit).text}／${rate(view.psa10Roi)}</b></span><span>${view.horizonDays === 0 ? '現在出口相場' : '中央予測'}の期待利益／期待利益率<br><b>${signedMoney(view.economics?.expectedProfit).text}／${rate(view.economics?.expectedRoi)}</b></span></div><details class="profit-calculation-note"><summary>計算基準を確認</summary><small>${escapeHtml(view.label)}。PSA10時利益率＝（PSA10手取り−買値−鑑定費）÷（${denominatorNote}）。期待利益率は非10の損益も含む別指標。買取減額とフリマ手数料は同じ出口に二重適用しません。期待黒字は損失保証ではありません。${view.basis === 'current-cap' ? '損益分岐上限で購入×現在相場の期待利益率はほぼ0%（切下げ端数分あり）。利益率下限10%などは条件不一致として除外します。条件を自動解除しません。' : ''}</small></details></div>`;
 }
 
 const psa10PeriodDetails = new Map();
@@ -4278,7 +4310,7 @@ function renderActiveFilters() {
     const text=escapeHtml(category+'：'+label+'：'+value);
     items.push(canClear ? '<button type="button" data-clear-condition="'+escapeHtml(el.id)+'" title="この追加検索条件だけ解除">'+text+' ×</button>' : '<span class="filter-protected">'+text+'（基本条件／安全・参考採用は個別設定で変更）</span>');
   }
-  const basis = state.profitSearchBasis === 'current-cap' ? '現相場の期待損益分岐上限で購入 × 現在出口相場。期待利益率はほぼ0%（条件は保持）' : state.purchaseMode === 'current-market' ? state.currentMarketSearchKind === 'cap' ? '損益分岐上限探索（購入時利益条件は不適用）' : '実店舗状態A／手入力 × 現在出口相場' : searchProfitView({}).label;
+  const basis = state.profitSearchBasis === 'current-target' ? '利益確保の仕入れ目安で購入 × 現在出口相場（利益額・利益率の目標のみ適用・購入GOではない）' : state.profitSearchBasis === 'current-cap' ? '現相場の期待損益分岐上限で購入 × 現在出口相場。期待利益率はほぼ0%（条件は保持）' : state.purchaseMode === 'current-market' ? state.currentMarketSearchKind === 'cap' ? '損益分岐上限探索（購入時利益条件は不適用）' : '実店舗状態A／手入力 × 現在出口相場' : searchProfitView({}).label;
   const exit={buyback:'買取店優先',marketplace:'フリマ優先',both:'両方で赤字回避'}[state.exitPolicy]||state.exitPolicy;
   const html='<strong>追加検索条件・出所（保存追加 '+saved+'／不適用 '+inactive+'）</strong><div class="active-filter-chips">'+(items.join('')||'追加条件なし')+'</div><button type="button" data-clear-extra-conditions '+(removable?'':'disabled')+'>追加検索条件だけ解除（'+removable+'項目）</button><small>基本の名称・発売年・価格帯、計算基準・費用・売却先・資金・GO安全条件・参考値採用・お気に入りは保持します。条件は自動で緩めません。</small><small>検索採算：'+escapeHtml(basis)+'／売却先 '+escapeHtml(exit)+'／返却 '+state.lockDays+'日。掲載範囲：'+escapeHtml({analysis:'分析可能',all:'全カード',new:'サイト新着',recent:'最近発売',relisted:'再掲載',completing:'補完中',shortage:'データ不足'}[state.catalogScope]||state.catalogScope)+'／期間不一致の参考探索 '+(state.includePeriodReference?'ON（GO不可）':'OFF')+'。並び順と不適用条件も保存。</small><small>購入判定・上限の設定（解除対象外）：鑑定費¥'+fmt.format(state.fee)+'／最低期待利益¥'+fmt.format(state.minExpectedProfit)+'／期待利益率'+state.minExpectedRoi+'%／年換算'+state.minAnnualEfficiency+'%。資金・利用店舗は計算設定で確認。</small><details'+(keepOpen?' open':'')+'><summary>計算設定と検索の違いを確認</summary><small>判定用：最低利益¥'+fmt.format(state.minExpectedProfit)+'／最低期待利益率'+state.minExpectedRoi+'%／最低年換算'+state.minAnnualEfficiency+'%。これらは追加検索の利益下限と別で、解除しません。総資金−ロック−鑑定予備を使用。単体資金効率は個人総資金とは別。期待黒字は損失保証ではありません。</small><button type="button" data-open-profit-settings>計算設定へ</button><a href="./docs/SEARCH_CONTROL_INVENTORY.md" target="_blank" rel="noreferrer">全項目の棚卸し</a></details>';
   if (target.dataset.conditionMarkup !== html) { target.innerHTML=html;target.dataset.conditionMarkup=html; }
@@ -4674,6 +4706,11 @@ function computeCardSearchExclusions(card, {mode = state.purchaseMode,diagnostic
   const currentMode = mode === "current-market";
   const normalizedQuery = normalize(state.q);
   const compactQuery = compactSearch(state.q);
+  if (diagnostic && normalizedQuery && state.diagnosticSearch) {
+    const haystack = normalize(`${card.name} ${card.model} ${card.id}`);
+    const compactHaystack = compactSearch(`${card.name} ${card.model} ${card.id}`);
+    return haystack.includes(normalizedQuery) || compactHaystack.includes(compactQuery) ? [] : ['名称検索'];
+  }
   const profitView = searchProfitView(card, mode);
   if (efficiency && state.efficiencyMin != null && mode !== 'snkr-raw') {
     const efficiency = cardEfficiency(card,Date.now(),mode);
@@ -4685,7 +4722,6 @@ function computeCardSearchExclusions(card, {mode = state.purchaseMode,diagnostic
       const completion = card.catalogCompletion;
       if (!releaseYearFilter.matches(card, completion, state.year2020Only, state.includeUnknownYear)) reasons.push("発売年");
       if (normalizedQuery && !(haystack.includes(normalizedQuery) || compactHaystack.includes(compactQuery))) reasons.push("名称検索");
-      if (diagnostic && normalizedQuery && state.diagnosticSearch) return reasons;
       if (state.purchaseBelowCurrentCap) { const reason = purchaseBelowCurrentCapReason(card); if (reason) reasons.push(reason); }
       if (state.actualPurchaseMin != null || state.actualPurchaseMax != null || state.purchaseHeadroomMin != null || state.purchaseHeadroomMax != null) {
         const p = purchaseExploration(card);
@@ -4735,7 +4771,7 @@ function computeCardSearchExclusions(card, {mode = state.purchaseMode,diagnostic
       if (card.buybackShops < state.minBuybackShops) reasons.push("取引・掲載件数");
       if (state.minBuybackPrice != null && card.buybackPrice < state.minBuybackPrice) reasons.push("価格帯・相場比");
       if (state.maxBuybackPrice != null && card.buybackPrice > state.maxBuybackPrice) reasons.push("価格帯・相場比");
-      const purchaseProfitSearch = !currentMode || state.currentMarketSearchKind === "purchase" || profitView.basis === 'current-cap';
+      const purchaseProfitSearch = !currentMode || state.currentMarketSearchKind === "purchase" || ['current-cap','current-target'].includes(profitView.basis);
       if (currentMode && purchaseProfitSearch && profitView.purchasePrice == null) reasons.push("購入価格未取得");
       if (currentMode && purchaseProfitSearch && Number.isFinite(profitView.economics?.expectedProfit) && profitView.economics.expectedProfit < 0) reasons.push("実購入時の赤字");
       if (purchaseProfitSearch) {
@@ -4745,7 +4781,7 @@ function computeCardSearchExclusions(card, {mode = state.purchaseMode,diagnostic
         if (state.minExpectedProfitFilter != null && (!Number.isFinite(profitView.economics?.expectedProfit) || profitView.economics.expectedProfit < state.minExpectedProfitFilter)) reasons.push(Number.isFinite(profitView.economics?.expectedProfit) ? "利益条件" : missingReason);
       }
       const stressAtLimit = card.buyLimits?.clean?.supplyStressAtFinal;
-      if (!currentMode && card.forecastPeriodMismatch && (!state.includePeriodReference || mode === "now" || !['limit','current-cap'].includes(profitView.basis))) reasons.push("期間不一致・返却時試算不可");
+      if (!currentMode && card.forecastPeriodMismatch && (!state.includePeriodReference || mode === "now" || !['limit','current-cap','current-target'].includes(profitView.basis))) reasons.push("期間不一致・返却時試算不可");
       if (!currentMode && state.minStressExpectedRoiFilter != null && (!Number.isFinite(stressAtLimit?.expectedRoi) || stressAtLimit.expectedRoi < state.minStressExpectedRoiFilter)) reasons.push("利益条件");
       if (!currentMode && state.minStressExpectedProfitFilter != null && (!Number.isFinite(stressAtLimit?.expectedProfit) || stressAtLimit.expectedProfit < state.minStressExpectedProfitFilter)) reasons.push("利益条件");
       if (card.psa10 < state.minPsa10) reasons.push("価格帯・相場比");
@@ -4858,7 +4894,8 @@ function priceComparisonCells(card, limitDisplay, confirmedAt, now = Date.now(),
   const marketNotice = !hasMarket ? "未取得・予測値で補完しません"
     : stale ? "古い価格・最新相場とは限りません"
     : !Number.isFinite(checkedTime) ? "確認日時未取得" : "予測・買取価格ではありません";
-  const stableCell = `<div class="price-cell glance-stable" data-price-kind="stable"><span>安定重視の仕入れ上限${trial ? "（比較用）" : ""}</span><strong>${escapeHtml(limitDisplay.stableLabel || money(limitDisplay.stableCap))}</strong><small>${escapeHtml(limitDisplay.reason || "仕入れ判定・絞り込みの基準")}</small></div>`;
+  const guide = currentProfitGuide(card);
+  const stableCell = `<div class="price-cell glance-stable" data-price-kind="current-target"><span>利益確保の仕入れ目安・現相場基準</span><strong>${escapeHtml(guide.capState === 'loss-at-zero' ? '利益条件を満たす買値なし' : money(guide.cap))}</strong><small>最低期待利益 ${money(guide.minProfit)}／最低期待利益率 ${guide.minRoi ?? '未設定'}%・出口 ${escapeHtml(guide.exitLabel || '未取得')}</small><small>${guide.noProfitMargin ? '利益条件はすべて0。利益余裕を確保した目安ではありません。' : '現相場維持の仮定。返却時の黒字保証・購入GOではありません。'}</small>${guide.belowPractical ? '<small class="reference-warning">採算上、実務価格帯では仕入れが難しい（参考相場70%未満）</small>' : ''}${guide.reasons.map(r=>`<small class="reference-warning">${escapeHtml(r)}</small>`).join('')}${guide.warnings.map(r=>`<small class="reference-warning">${escapeHtml(r)}</small>`).join('')}<details><summary>目安の根拠・安定重視上限</summary><small>相場70%：${money(guide.practicalPrice)}（上限を引き上げる根拠ではありません）。年換算効率・資金枠・予測・供給ストレス・平滑化はこの目安に適用しません。投下額は買値＋鑑定費＋諸費用。諸費用は期待手取りから控除済みで再控除しません。</small><b>安定重視の仕入れ上限 ${escapeHtml(limitDisplay.stableLabel || money(limitDisplay.stableCap))}</b><small>${escapeHtml(limitDisplay.reason || '')}</small></details></div>`;
   const capText = limitDisplay.currentCapState === 'loss-at-zero' ? '0円仕入れでも赤字' : limitDisplay.currentCap == null ? 'データ不足で算出不可' : money(limitDisplay.currentCap);
   const exploration = purchaseExploration(card,now), headroom=exploration.headroom;
   const breakCell = `<div class="price-cell glance-break-even" data-price-kind="break-even" data-cap-state="${limitDisplay.currentCapState || 'available'}"><span>現相場の期待損益分岐上限</span><strong>${escapeHtml(capText)}</strong><small>${escapeHtml(limitDisplay.currentCapLabel || '仕入れ可能な上限あり')}${limitDisplay.currentCapNote ? `／${escapeHtml(limitDisplay.currentCapNote)}` : ''}</small><div class="purchase-headroom"><span>仕入れ余裕率（価格差率）</span><b>${Number.isFinite(headroom) ? `${headroom > 0 ? '+' : ''}${headroom.toFixed(2)}%` : `比較不可（${escapeHtml(exploration.reason)}）`}</b><small>利益率ではありません・プラスでも購入GOではありません</small>${(exploration.warnings || []).map(w=>`<small class="reference-warning">${escapeHtml(w)}</small>`).join('')}</div><small>現相場が続く場合の期待値基準。推奨仕入れ値ではありません</small></div>`;
@@ -4886,7 +4923,8 @@ function currentMarketProfitPanel(view) {
   const money = value => `¥${fmt.format(Math.round(value))}`;
   const profit = signedExpectedMoney(view.economics?.expectedProfit);
   const lower = signedExpectedMoney(view.psa9Profit);
-  return `<div class="current-market-profit"><div><span>現相場の期待利益・利益率</span><strong class="${profit.className}">${profit.text}／${Number.isFinite(view.economics?.expectedRoi) ? `${view.economics.expectedRoi.toFixed(1)}%` : "算出不可"}</strong><small>${escapeHtml(view.purchaseSource || "購入価格未取得")} × 現在相場／出口 ${escapeHtml(view.exitLabel || "未取得")}。分母は買値＋鑑定費。${view.basis === 'current-cap' ? '選択された上限購入の仮定。実店舗採算とは別です。' : '損益分岐上限を買値に代用しません。'}</small></div><div><span>PSA9時損益（${escapeHtml(view.psa9Type || "未取得")}）</span><strong class="${lower.className}">${lower.text}</strong><small>採用PSA9売価 ${Number.isFinite(view.lowerGradePrice) ? money(view.lowerGradePrice) : "未取得"}／確認 ${escapeHtml(view.psa9UpdatedAt || "未取得・推定には実成約日なし")}。フリマ出口・販売手数料、鑑定費、諸費用控除後。PSA8以下・失敗は未評価。</small></div></div>`;
+  const investmentLabel = view.basis === 'current-target' ? '買値＋鑑定費＋投下諸費用' : '買値＋鑑定費';
+  return `<div class="current-market-profit"><div><span>現相場の期待利益・利益率</span><strong class="${profit.className}">${profit.text}／${Number.isFinite(view.economics?.expectedRoi) ? `${view.economics.expectedRoi.toFixed(1)}%` : "算出不可"}</strong><small>${escapeHtml(view.purchaseSource || "購入価格未取得")} × 現在相場／出口 ${escapeHtml(view.exitLabel || "未取得")}。分母は${investmentLabel}。${['current-cap','current-target'].includes(view.basis) ? '選択された上限・目安購入の仮定。実店舗採算とは別です。' : '損益分岐上限を買値に代用しません。'}</small></div><div><span>PSA9時損益（${escapeHtml(view.psa9Type || "未取得")}）</span><strong class="${lower.className}">${lower.text}</strong><small>採用PSA9売価 ${Number.isFinite(view.lowerGradePrice) ? money(view.lowerGradePrice) : "未取得"}／確認 ${escapeHtml(view.psa9UpdatedAt || "未取得・推定には実成約日なし")}。フリマ出口・販売手数料、鑑定費、諸費用控除後。PSA8以下・失敗は未評価。</small></div></div>`;
 }
 
 let commitCardRows;
@@ -5771,7 +5809,9 @@ function renderContent() {
       : card.currentStoreOffer ? "価格待ち・店舗価格が上限超過" : "購入先未確認・価格待ち";
     const actionNote = readyToBuy ? `${card.currentStoreOffer?.source || "店舗"}の在庫あり価格で条件を満たす`
       : "相場や損益分岐上限だけでは購入可能と判定しません";
-    const candidateAction = state.purchaseMode === "snkr-raw" ? "" : currentExploration
+    const candidateAction = state.diagnosticSearch && state.q && card.searchDiagnosticReasons?.length
+      ? `<div class="candidate-action waiting"><strong>条件外の診断対象・通常候補／購入GOではありません</strong><small>${escapeHtml(card.searchDiagnosticReasons.join('／'))}</small></div>`
+      : state.purchaseMode === "snkr-raw" ? "" : currentExploration
       ? `<div class="candidate-action"><strong>現相場維持の仮定探索・購入GOではありません</strong><small>既存の安定重視判定：${escapeHtml(displayVerdict)}。供給ストレス・返却時予測・資金の安全条件は変えていません。</small></div>`
       : `<div class="candidate-action ${readyToBuy ? "ready" : "waiting"}"><strong>${escapeHtml(actionLabel)}</strong><small>${escapeHtml(actionNote)}</small></div>`;
     const chosenProfit = searchProfitView(card);
@@ -5787,9 +5827,9 @@ function renderContent() {
         <div class="glance-verdict"><span>${currentExploration ? "現相場の探索（購入判断とは別）" : "今回の判定"}</span><strong>${currentExploration ? currentTrial.economics ? currentTrial.economics.expectedProfit >= 0 ? "現相場採算あり・仮定" : "現相場では赤字・仮定" : currentTrial.eligible ? "上限探索・購入価格未取得" : "必要データ不足・試算不可" : escapeHtml(displayVerdict)}</strong><small>${currentExploration ? escapeHtml(currentTrial.purchaseSource || "購入価格未取得") : escapeHtml(purchaseAvailability.label || "購入先未確認")}</small></div>
         ${priceCells}
       </section>
-      ${currentExploration && chosenProfit.basis !== 'current-cap' ? "" : searchProfitPanel(chosenProfit)}
+      ${currentExploration && !['current-cap','current-target'].includes(chosenProfit.basis) ? "" : searchProfitPanel(chosenProfit)}
       ${cardEfficiencyPanel(card)}
-      ${chosenProfit.basis === 'current-cap' ? `<details class="actual-purchase-comparison"><summary>実店舗価格で買った場合の現相場採算（探索買値とは別）</summary>${currentMarketProfitPanel(currentMarketView(card))}</details>` : ''}
+      ${['current-cap','current-target'].includes(chosenProfit.basis) ? `<details class="actual-purchase-comparison"><summary>実店舗価格で買った場合の現相場採算（探索買値とは別）</summary>${currentMarketProfitPanel(currentGuideSource(card))}</details>` : ''}
       ${currentExploration ? currentMarketProfitPanel(currentTrial) : ""}
       ${currentExploration && currentTrial.purchasePrice == null ? `<p class="helper">購入価格未取得。手入力試算買値を設定すると利益を検証できます。</p>` : purchasePsa9RatioHtml(card, currentExploration ? currentTrial.purchasePrice : undefined, currentExploration ? {purchaseKind:currentTrial.purchaseKind} : {})}
       ${currentExploration ? `<div class="candidate-warning"><strong>仮定探索の注意：</strong>${escapeHtml([...(currentTrial.reasons || []),...(currentTrial.warnings || [])].join("／"))}／PSA10 ${state.exitPolicy === "marketplace" ? `フリマ手数料${state.saleFeeRate}%` : `買取減額${state.buybackDeductionRate}%（フリマ手数料を重複適用しない）`}・諸費用¥${fmt.format(state.saleExtraCost)}・鑑定費¥${fmt.format(state.fee)}。返却${state.lockDays}日まで現在相場が続く保証はありません。</div>` : ""}

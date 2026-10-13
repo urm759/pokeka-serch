@@ -27,14 +27,14 @@
     if (id === 'lowRiskAvailabilityInput') return mode === 'low-risk';
     if (id === 'includeAggressiveInput') return mode === 'combined';
     if (mode === 'snkr-raw' && id.startsWith('efficiency')) return false;
-    if (id === 'efficiencyScenarioInput' && (mode === 'current-market' || state.efficiencyBuy === 'current-cap' || state.efficiencyBuy === 'auto' && state.profitSearchBasis === 'current-cap')) return false;
+    if (id === 'efficiencyScenarioInput' && (mode === 'current-market' || state.efficiencyBuy === 'current-cap' || state.efficiencyBuy === 'auto' && ['current-cap','current-target'].includes(state.profitSearchBasis))) return false;
     if (id === 'efficiencyManualPriceInput' && state.efficiencyBuy && state.efficiencyBuy !== 'manual') return false;
     if (mode === 'snkr-raw' && ['basic','advanced'].includes(category(id)) && !sharedEarly.has(id)) return false;
     if (mode === 'normal' && state.catalogScope && state.catalogScope !== 'analysis' && ['basic','advanced'].includes(category(id)) && !sharedEarly.has(id)) return false;
     if (mode !== 'current-market') return true;
-    if (currentIgnored.has(id)) return id === 'profitSearchBasisInput' && state.profitSearchBasis === 'current-cap';
+    if (currentIgnored.has(id)) return id === 'profitSearchBasisInput' && ['current-cap','current-target'].includes(state.profitSearchBasis);
     if (state.currentMarketSearchKind === 'cap' && capIgnored.has(id)) {
-      return state.profitSearchBasis === 'current-cap' && ['roiInput','expectedProfitFilterInput','expectedRoiFilterInput'].includes(id);
+      return ['current-cap','current-target'].includes(state.profitSearchBasis) && ['roiInput','expectedProfitFilterInput','expectedRoiFilterInput'].includes(id);
     }
     return true;
   }

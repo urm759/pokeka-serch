@@ -54,3 +54,4 @@ for(const c of allCards) {
 }
 console.log('Exploration means/ROI, strict freshness, float boundaries, posting full-vs-partial, URL zero/null and break-even purchase PASS');
 require('./test_observation_search');
+require('./test_current_profit_guide');

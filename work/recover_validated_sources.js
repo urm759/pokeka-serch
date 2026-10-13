@@ -2,6 +2,7 @@ const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypt
 const snapshots=require('./integrate_saved_snapshots'),{atomicWrite}=require('./acquisition_retry');
 const root=path.join(__dirname,'..');
 const files=['data/pokemon-cards.json','data/pokemon-cards-meta.json','data/shop-buyback-summary.json','data/hareruya2-stock-summary.json',
+  'data/psa10-observation-receipt.json',
   'data/priority-price-execution.json','data/price-catchup-status.json','work/price-catchup-history.json',
   'work/hareruya2_catalog.json','work/hareruya2_stock_history.json','work/candidate-shop-refresh.json',
   'work/priority-price-checkpoint.json','work/priority-price-http-cache.json','work/source-update-runs.json','work/source-update-history.json',

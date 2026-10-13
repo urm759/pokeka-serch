@@ -5,7 +5,7 @@ const path = require('node:path');
 const root = path.join(__dirname, '..');
 const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
 const start = app.indexOf('function priceComparisonCells(');
-const context = vm.createContext({ Intl, Date, explorationMetrics: require('../exploration-metrics.js'), purchaseExploration:c=>({headroom:c.comparisonBlocked ? null : 20,reason:'PSA9価格の確認日時不足'}), decisionModel: require('../decision-model.js'), fmt: new Intl.NumberFormat('ja-JP'), escapeHtml: s => String(s).replaceAll('<', '&lt;') });
+const context = vm.createContext({ Intl, Date, currentProfitGuide:()=>({cap:40000,minProfit:0,minRoi:10,practicalPrice:null,reasons:[],warnings:[]}), explorationMetrics: require('../exploration-metrics.js'), purchaseExploration:c=>({headroom:c.comparisonBlocked ? null : 20,reason:'PSA9価格の確認日時不足'}), decisionModel: require('../decision-model.js'), fmt: new Intl.NumberFormat('ja-JP'), escapeHtml: s => String(s).replaceAll('<', '&lt;') });
 vm.runInContext('const state={psa10PeriodSummary:null};'+app.slice(app.indexOf('function psa10PeriodCompact('),app.indexOf('function psa10PeriodPanel('))
   +app.slice(start, app.indexOf('\nfunction render()', start)) + '\nglobalThis.cells=priceComparisonCells;', context);
 const now = Date.parse('2026-10-06T12:00:00Z');
@@ -22,7 +22,8 @@ assert.match(html, /¥32,000/);
 assert.match(html, /¥82,000/);
 assert.doesNotMatch(html, /999,999|9,999/);
 assert.ok(html.indexOf('data-price-kind="store"') < html.indexOf('data-price-kind="psa10"'));
-assert.ok(html.indexOf('data-price-kind="stable"') < html.indexOf('data-price-kind="break-even"'));
+assert.ok(html.indexOf('data-price-kind="current-target"') < html.indexOf('data-price-kind="break-even"'));
+assert.match(html, /目安の根拠・安定重視上限/);
 assert.match(html, /推奨仕入れ値ではありません/);
 assert.match(render({...card,comparisonBlocked:true}), /比較不可（PSA9価格の確認日時不足）/);
 assert.match(html, /2026\/10\/06 19:00/);

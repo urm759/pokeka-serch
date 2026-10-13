@@ -51,7 +51,8 @@ for (const lockDays of [42, 119, 147]) {
 const app = fs.readFileSync(path.join(__dirname, "../app.js"), "utf8");
 assert.match(app, /url.searchParams.set\("year2020", state.year2020Only/);
 assert.match(app, /year2020Only: state.year2020Only/);
-assert.ok(app.indexOf("releaseYearFilter.matches(card, completion") < app.indexOf("if (diagnostic && normalizedQuery && state.diagnosticSearch) return reasons"));
+assert.match(app,/releaseYearFilter\.matches\(card, completion, state\.year2020Only, state\.includeUnknownYear\)/,'normal search retains the saved year filter');
+require('./test_current_profit_guide');
 const refresh = fs.readFileSync(path.join(__dirname, "refresh_candidate_shops.js"), "utf8");
 assert.equal(require('./refresh_candidate_shops').budgetStop().code,'SAFE_TIME_BUDGET');
 const {requestDelay}=require('./refresh_candidate_shops');

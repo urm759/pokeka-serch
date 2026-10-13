@@ -256,7 +256,7 @@
           <small>0円は赤字除外。空欄は利益額フィルター無効</small>
           <input id="expectedProfitFilterInput" type="number" step="1000" value="0" placeholder="無効" />
         </label>
-        <label class="control"><span>利益検索・表示・並び順の買値</span><select id="profitSearchBasisInput"><option value="auto">自動：価格待ちは上限／今すぐは店舗</option><option value="limit">安定重視上限で購入</option><option value="current-cap">現相場の期待損益分岐上限で購入（探索）</option><option value="store">実店舗在庫価格で購入</option><option value="current">素体参考相場で購入（購入先未確認）</option></select><small>現相場上限で購入する探索は現在出口相場の維持仮定。期待利益率は切下げ端数分を除きほぼ0%のため、10%以上などの条件とは両立しない場合があります（条件は保持）。通常は中央予測の期待利益、今すぐ仕入れは実店舗価格。観測平均の利益率は別のフリマ参考試算です。</small></label>
+        <label class="control"><span>利益検索・表示・並び順の買値</span><select id="profitSearchBasisInput"><option value="auto">自動：価格待ちは上限／今すぐは店舗</option><option value="limit">安定重視上限で購入</option><option value="current-cap">現相場の期待損益分岐上限で購入（探索）</option><option value="current-target">利益確保の仕入れ目安で購入・現相場基準（探索）</option><option value="store">実店舗在庫価格で購入</option><option value="current">素体参考相場で購入（購入先未確認）</option></select><small>新しい目安は計算設定の最低期待利益・最低期待利益率を確保する現相場維持の仮定。個人の資金枠・年換算条件・将来予測・平滑化は重ねません。選択は自動変更しません。損益分岐上限購入では期待利益率は端数を除きほぼ0%です。通常は中央予測、今すぐ仕入れは引き続き実店舗価格・既存安全判定です。</small></label>
         <label class="control"><span>30日買取掲載率 下限 %</span><input id="postingRate30MinInput" type="number" min="0" max="100" step="0.1" placeholder="条件なし" /></label>
         <label class="control"><span>30日平均掲載店舗数 下限</span><input id="postingShops30MinInput" type="number" min="0" step="0.1" placeholder="条件なし" /></label>
         <label class="control"><span>買取掲載の最低観測日数</span><input id="postingDaysMinInput" type="number" min="0" max="30" step="1" placeholder="条件なし" /></label>
@@ -937,14 +937,14 @@
   <script src="./release-year-filter.js?v=20261003-priority-v2"></script>
   <script src="./update-health-model.js?v=20261010-independent-monitor-v2"></script>
   <script src="./update-health-banner.js?v=20261011-search-first-v1"></script>
-  <script src="./current-market-model.js?v=20261011-efficiency-reference-v1"></script>
+  <script src="./current-market-model.js?v=20261013-current-target-v1"></script>
   <script src="./ui-data-codec.js?v=20261007-v1"></script>
   <script src="./psa-plan-model.js?v=20261010-isolation-v1"></script>
   <script src="./keyed-card-renderer.js?v=20261010-v1"></script>
   <a class="return-to-filters" href="#searchConditions">検索条件へ</a>
   <script src="./exploration-metrics.js?v=20261013-observation-search-v1"></script>
-  <script src="./search-controls.js?v=20261013-observation-search-v1"></script>
+  <script src="./search-controls.js?v=20261013-current-target-v1"></script>
   <script src="./settings-disclosure.js?v=20261011-disclosure-v1"></script>
-  <script src="./app.js?v=20261013-observation-search-v1"></script>
+  <script src="./app.js?v=20261013-current-target-v1"></script>
 </body>
 </html>

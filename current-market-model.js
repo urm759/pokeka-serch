@@ -87,6 +87,7 @@
       rateSource: assumptions?.hitRateSource || '未取得', psa9Type: card.psa9Audit?.estimated !== false ? '推定値' : card.psa9Audit?.measurementType === 'actual' ? '実成約' : '集計値',
       psa10Roi: economics && purchasePrice + fee > 0 ? (psa10Net - purchasePrice - fee) / (purchasePrice + fee) * 100 : null,
       buybackDeductionRate: buyback?.scenarios?.current?.deductionRate ?? null,
+      investmentExtra: extra + (current && current.exitType === 'buyback' ? finite(buyback?.scenarios?.current?.travelCost) || 0 : 0),
     };
   }
   function matchesCap(view, minimum) { return minimum == null || !view.noNonLossPrice && view.capState !== 'loss-at-zero' && finite(view.cap) != null && view.cap >= minimum; }
@@ -97,5 +98,25 @@
   function capExclusion(view) { return view.capState === 'loss-at-zero' || view.noNonLossPrice ? '0円仕入れでも赤字' : finite(view.cap) == null ? '損益分岐上限・データ不足で算出不可' : '現相場損益分岐上限'; }
   // Reference evaluation is opt-in and never replaces the purchase-GO evaluator.
   const evaluateReference = (input,model) => evaluate({...input,referenceCalculation:true},model);
-  return { evaluate, evaluateReference, matchesCap, compareCaps, capExclusion };
+  function targetGuide(view, input = {}) {
+    const fee = finite(input.fee), profit = finite(input.minProfit), roi = finite(input.minRoi);
+    const extra = finite(view.investmentExtra) ?? 0;
+    const available = view.eligible && finite(view.rawCap) != null && fee != null && fee >= 0
+      && profit != null && profit >= 0 && roi != null && roi >= 0 && extra >= 0;
+    // The net exit already deducts selling costs; include funded costs only in the ROI denominator.
+    const rawCap = available ? Math.min(view.rawCap - profit, (view.rawCap - roi / 100 * (fee + extra)) / (1 + roi / 100)) : null;
+    const classified = displayModel.classifyCap(rawCap);
+    const market = finite(input.rawMarket), practicalPrice = market > 0 ? market * .7 : null;
+    const economicsAt = buy => {
+      if (!available || finite(buy) == null || buy < 0) return null;
+      const expectedProfit = view.rawCap - buy, investment = buy + fee + extra;
+      return {purchasePrice:buy,expectedSale:view.rawCap + fee,expectedProfit,investment,
+        expectedRoi:investment > 0 ? expectedProfit / investment * 100 : null};
+    };
+    return {...classified, rawCap, economics:economicsAt(classified.cap),
+      minProfit:profit,minRoi:roi,investmentExtra:extra,practicalPrice,
+      belowPractical:classified.cap != null && practicalPrice != null && classified.cap < practicalPrice,
+      noProfitMargin:profit === 0 && roi === 0, economicsAt};
+  }
+  return { evaluate, evaluateReference, targetGuide, matchesCap, compareCaps, capExclusion };
 });
