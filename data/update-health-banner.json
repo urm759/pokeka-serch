@@ -1,25 +1,25 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-13T01:46:04.160Z",
+  "generatedAt": "2026-10-13T01:47:55.427Z",
   "sourceLastSuccessAt": "2026-10-12T23:03:52.040Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-10-12T23:43:57.569Z",
-    "lastSuccessAt": "2026-10-12T23:43:57.569Z",
-    "runId": "38323512760",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/38323512760"
+    "lastAttemptAt": "2026-10-13T01:47:55.419Z",
+    "lastSuccessAt": "2026-10-13T01:47:55.419Z",
+    "runId": "38333057976",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/38333057976"
   },
   "issues": [
     {
       "key": "daily:workflow-failure",
       "category": "取得処理の故障",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38284111435",
-      "reason": "Daily Fast Updateが6回連続失敗"
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38332459493",
+      "reason": "Daily Fast Updateが7回連続失敗"
     },
     {
       "key": "daily:run-stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38284111435",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38332459493",
       "reason": "日次更新の成功が24時間以上なし"
     },
     {
@@ -61,7 +61,7 @@
     {
       "key": "source:shopBuyback:manual-wait",
       "category": "確認が必要",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38320075163",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38333057976",
       "reason": "Web買取表: トレカバンク: existing data was preserved: 取得件数が前回の半分未満。急減を隔離し正常データ保持"
     },
     {
@@ -102,7 +102,7 @@
     }
   ],
   "reasons": [
-    "Daily Fast Updateが6回連続失敗",
+    "Daily Fast Updateが7回連続失敗",
     "日次更新の成功が24時間以上なし",
     "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち",
     "状態A価格確認: 2回連続でチェックポイント進捗なし",
