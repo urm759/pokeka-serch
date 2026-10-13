@@ -215,7 +215,7 @@
     <label class="control"><span>90日乖離率 上限 %</span><input id="observation90MaxInput" type="number" step="any" placeholder="条件なし" /></label>
     <label class="control"><span>200日乖離率 下限 %</span><input id="observation200MinInput" type="number" step="any" placeholder="条件なし" /></label>
     <label class="control"><span>200日乖離率 上限 %</span><input id="observation200MaxInput" type="number" step="any" placeholder="条件なし" /></label>
-    <label class="check-control"><input id="observationIncludeReferenceInput" type="checkbox" checked />観測不足の参考平均を含める（購入GOとは別）</label>
+    <label class="check-control"><input id="observationIncludeReferenceInput" type="checkbox" checked />観測不足の参考平均を含める（乖離率・平均資金効率／購入GOとは別）</label><small>平均資金効率の検索・順位へ欠測平均を採用するには、この設定と「資金効率の参考値」の両方がONである必要があります。OFFでも参考比較は表示します。保存値は自動変更しません。</small>
     <p class="filter-explanation">（現相場÷観測平均−1）×100。マイナス＝平均より安い、0%＝同額、プラス＝高い。下限−20／上限0は0〜20%安いカード。空欄＝条件なし、0は有効、境界を含みます。複数期間はAND。平均未取得は指定した期間だけ除外。古い観測は警告を保持し、平均以下でもGOへ昇格しません。</p>
     <p id="observationFilterStatus" class="helper" role="status" aria-live="polite">観測対象数を確認中</p>
   </div>
@@ -234,7 +234,7 @@
         <summary><span>単体の期待資金効率</span><small>個人の総資金不要・購入GOとは別</small></summary>
         <div class="controls controls-primary">
           <label class="control"><span>単体・年換算資金効率 下限 %</span><input id="efficiencyMinInput" type="number" step="0.1" placeholder="条件なし" /><small>検索用。空欄＝無効、0＝非負。算出不可は0%にしません。判定用の最低年換算条件は別に残ります。</small></label>
-          <label class="control control-toggle"><input id="efficiencyIncludeReferenceInput" type="checkbox" /><span>資金効率の参考値も検索・順位に含める</span><small>PSA9日時未確認など。価格対立・仕様不一致・古い購入価格・買取出口不足は通しません。購入GOとは別です。</small></label>
+          <label class="control control-toggle"><input id="efficiencyIncludeReferenceInput" type="checkbox" /><span>資金効率の参考値も検索・順位に含める</span><small>PSA9日時未確認・平均の欠測ありなど。観測乖離率検索の参考採用とは別設定。価格対立・仕様不一致・古い購入価格・買取出口不足は通しません。購入GOとは別です。</small></label>
           <p class="filter-explanation">期待利益÷（買値＋鑑定費＋諸費用＋該当交通費予備額）×100×365÷拘束日数。既存プランの返却日数には発送・返却7日を含むため再加算せず、売却待ち7日・入金待ち3日だけを追加します。利益には手取りで控除済みの手数料・査定減額・諸費用を再控除しません。PSA9等を含む期待値で、PSA10時利益とは別。単純年換算の参考値で年間利益や売却日数・損失回避の保証ではありません。個人資金を用いる判定用年換算条件・購入GO・上限は変更しません。</p>
         </div>
       </details>
@@ -665,7 +665,7 @@
         <details class="efficiency-calculation-settings"><summary>参考の資金効率 / 買値・売値シナリオ・売却待ち</summary><div class="controls controls-advanced">
 <label class="control"><span>資金効率の買値</span><select id="efficiencyBuyInput"><option value="auto">実店舗状態A（明示的な現相場上限・手入力は継承）</option><option value="manual">手入力買値・仮定</option><option value="current-cap">現相場損益分岐上限で購入・仮定</option></select><small>現相場探索の手入力を継承します。購入価格未取得時に参考相場・安定重視上限へ代用しません。</small></label>
 <label class="control"><span>手入力買値（円）</span><input id="efficiencyManualPriceInput" type="number" min="0" step="100" placeholder="未設定" /></label>
-<label class="control"><span>資金効率の売値シナリオ</span><select id="efficiencyScenarioInput"><option value="current">現在出口相場が続く仮定</option><option value="central">中央予測（期間一致時のみ）</option><option value="stress">供給ストレス（期間一致時のみ）</option></select><small>現相場採算モード・損益分岐上限の仮定では現在相場に統一。保存した予測条件は削除しません。</small></label>
+<label class="control"><span>資金効率の売値シナリオ</span><select id="efficiencyScenarioInput"><option value="current">現在出口相場が続く仮定</option><option value="central">中央予測（期間一致時のみ）</option><option value="stress">供給ストレス（期間一致時のみ）</option><option value="obs7">7暦日内PSA10観測平均・比較</option><option value="obs30">30暦日内PSA10観測平均・比較</option><option value="obs90">90暦日内PSA10観測平均・比較</option><option value="obs200">200暦日内PSA10観測平均・比較</option></select><small>明示選択時はPSA10だけ平均／非10は現在国内PSA9仮置き。買取履歴は保持していますが、店舗・仕様・減額を揃えた平均要約は未整備。買取・両出口は算出不可（自動切替なし）。欠測平均は資金効率の参考設定に従います。平均への回帰・返却時売価は保証しません。プランから期間は自動選択しません。従来の予測は現相場探索では不適用・保存保持。</small></label>
 <label class="control"><span>売却待ち 日数</span><input id="efficiencySaleDaysInput" type="number" min="0" step="1" value="7" /></label>
 <label class="control"><span>入金待ち 日数</span><input id="efficiencyPayoutDaysInput" type="number" min="0" step="1" value="3" /></label>
 </div></details>
@@ -942,9 +942,9 @@
   <script src="./psa-plan-model.js?v=20261010-isolation-v1"></script>
   <script src="./keyed-card-renderer.js?v=20261010-v1"></script>
   <a class="return-to-filters" href="#searchConditions">検索条件へ</a>
-  <script src="./exploration-metrics.js?v=20261013-observation-search-v1"></script>
-  <script src="./search-controls.js?v=20261013-current-target-v1"></script>
+  <script src="./exploration-metrics.js?v=20261013-observation-efficiency-v1"></script>
+  <script src="./search-controls.js?v=20261013-observation-efficiency-v1"></script>
   <script src="./settings-disclosure.js?v=20261011-disclosure-v1"></script>
-  <script src="./app.js?v=20261013-render-reuse-v2"></script>
+  <script src="./app.js?v=20261013-observation-efficiency-v1"></script>
 </body>
 </html>

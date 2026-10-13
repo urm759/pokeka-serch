@@ -24,6 +24,7 @@ for(const[id,row]of Object.entries(summary.cards)) {
   assert.equal(row[4],detail.snapshots[30].ageDays);
   assert.equal(row[5],detail.snapshots[90].mean);assert.equal(row[6],detail.snapshots[90].observedDays);
   assert.equal(row[7],detail.snapshots[7].ageDays);assert.equal(row[8],detail.snapshots[90].ageDays);
+  for(const days of [7,30,90,200])assert.equal(row[summary.observationEvidenceIndices[days]],detail.snapshots[days].legacyUnverifiedDays,'small summary carries exact provenance without loading history');
 }
 for(const days of [7,30,90,200]) assert.equal(summary.coverage.byPeriod[days].meanCards,chunks.reduce((n,c)=>n+Object.values(c.cards).filter(r=>r.snapshots[days].count>0).length,0));
 for(const [id,row] of Object.entries(summary.cards)) {

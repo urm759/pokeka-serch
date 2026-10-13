@@ -86,5 +86,27 @@
     }
     return reasons;
   }
-  return {percent,inRange,offerPrice,meanSale,atPurchase,efficiency,coverage,observationPeriods,observation,observationExclusions};
+  function observationEconomics(summary, card, view, days, policy, feeRate, extra, now = Date.now()) {
+    const observed = observation(summary,card.id,card.psa10,days);
+    const row=summary?.cards?.[card.id], index=summary?.observationEvidenceIndices?.[days] ?? ({7:13,30:14,90:15,200:12})[days];
+    const legacy=row?.[index];
+    observed.unverifiedDays=Number.isInteger(legacy) && legacy >= 0 ? legacy : row?.[12] === 0 ? 0 : null;
+    // New mean-efficiency assumptions require every calendar day for a non-sparse label.
+    // This does not change existing observation-deviation filter thresholds.
+    observed.reference = observed.reference || observed.count !== days || observed.unverifiedDays !== 0;
+    const warnings = [], reasons = [];
+    if (policy !== 'marketplace') reasons.push('選択した買取出口の同条件平均要約未整備（店舗・仕様・減額の照合が必要）・フリマへの自動切替なし');
+    if (observed.mean == null) reasons.push(days+'日観測平均未取得');
+    const today = Math.floor((now+9*3600000)/86400000);
+    const age = observed.latest ? today-Date.parse(observed.latest)/86400000 : null;
+    if (observed.mean != null && (age == null || age < 0 || age > (summary?.staleObservationDays ?? 2))) reasons.push('観測平均の最終観測が古い・日時不正');
+    if (![view.assumedRate,view.lowerGradePrice,feeRate,extra].every(finite) || view.assumedRate < 0 || view.assumedRate > 1 || view.lowerGradePrice <= 0 || feeRate < 0 || feeRate >= 100 || extra < 0) reasons.push('想定10率・PSA9現在価格・費用未取得');
+    if (observed.reference) warnings.push(`参考・観測不足 ${observed.count ?? 0}/${days}日（欠測${days-(observed.count ?? 0)}日）`);
+    if (observed.unverifiedDays !== 0) warnings.push(`参考・観測の取得根拠未確認 ${observed.unverifiedDays == null ? '日数未集計' : observed.unverifiedDays+'日'}。日時・仕様の証拠は捏造しない`);
+    if (finite(card.psa10) && observed.mean > card.psa10) warnings.push('平均が現在相場より高い：下落局面では楽観的な試算になる可能性。平均への回帰・返却時売価の保証なし');
+    warnings.push('PSA10は国内日次観測平均／非10は現在の国内PSA9価格で仮置き。実成約平均・買取平均ではない');
+    const expectedSale = reasons.length ? null : (view.assumedRate * observed.mean + (1-view.assumedRate)*view.lowerGradePrice)*(1-feeRate/100)-extra;
+    return {expectedSale:finite(expectedSale) ? expectedSale : null,observed:{...observed,age},warnings,reasons};
+  }
+  return {percent,inRange,offerPrice,meanSale,atPurchase,efficiency,coverage,observationPeriods,observation,observationExclusions,observationEconomics};
 });

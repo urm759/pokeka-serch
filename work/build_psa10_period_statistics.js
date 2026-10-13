@@ -72,7 +72,8 @@ function build(root = ROOT, now = new Date()) {
   const meta = read('data/pokemon-cards-meta.json');
   // The window advances even when acquisition fails; old data must age rather than reset the clock.
   const asOf = require('./psa10_observation_evidence').calendarDay(now.toISOString());
-  const summary = { version: 4, asOf, periods: PERIODS, calendar: 'Asia/Tokyo・直近暦日・同日1記録（株の取引日ではない）', retentionDays: 365,
+  const summary = { version: 5, asOf, periods: PERIODS, calendar: 'Asia/Tokyo・直近暦日・同日1記録（株の取引日ではない）', retentionDays: 365,
+    observationEvidenceIndices:{7:13,30:14,90:15,200:12},
     minimumActualTrades: 3, minimumObservationDays, staleObservationDays: 2, shards: 16,
     snapshotSource: '国内・みんトレPSA10集約相場の日次観測（実成約平均ではない）',
     rule: '同日1記録・欠損補完なし・参考表示のみ・仕入れ上限とGOへ未反映', cards: {} };
@@ -92,7 +93,8 @@ function build(root = ROOT, now = new Date()) {
     if (!daily.length && !actual.rows.length) continue;
     summary.cards[card.id] = [snapshots[7].mean, snapshots[7].count, snapshots[30].mean, snapshots[30].count,
       snapshots[30].ageDays, snapshots[90].mean, snapshots[90].count, snapshots[7].ageDays, snapshots[90].ageDays,
-      snapshots[200].mean, snapshots[200].count, snapshots[200].ageDays, snapshots[200].legacyUnverifiedDays];
+      snapshots[200].mean, snapshots[200].count, snapshots[200].ageDays, snapshots[200].legacyUnverifiedDays,
+      snapshots[7].legacyUnverifiedDays,snapshots[30].legacyUnverifiedDays,snapshots[90].legacyUnverifiedDays];
     if (daily.length) historyCards++;
     for (const days of PERIODS) {
       const stat = snapshots[days], coverage = byPeriod[days];

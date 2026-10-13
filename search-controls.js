@@ -27,7 +27,7 @@
     if (id === 'lowRiskAvailabilityInput') return mode === 'low-risk';
     if (id === 'includeAggressiveInput') return mode === 'combined';
     if (mode === 'snkr-raw' && id.startsWith('efficiency')) return false;
-    if (id === 'efficiencyScenarioInput' && (mode === 'current-market' || state.efficiencyBuy === 'current-cap' || state.efficiencyBuy === 'auto' && ['current-cap','current-target'].includes(state.profitSearchBasis))) return false;
+    if (id === 'efficiencyScenarioInput' && !/^obs(7|30|90|200)$/.test(state.efficiencyScenario) && (mode === 'current-market' || state.efficiencyBuy === 'current-cap' || state.efficiencyBuy === 'auto' && ['current-cap','current-target'].includes(state.profitSearchBasis))) return false;
     if (id === 'efficiencyManualPriceInput' && state.efficiencyBuy && state.efficiencyBuy !== 'manual') return false;
     if (mode === 'snkr-raw' && ['basic','advanced'].includes(category(id)) && !sharedEarly.has(id)) return false;
     if (mode === 'normal' && state.catalogScope && state.catalogScope !== 'analysis' && ['basic','advanced'].includes(category(id)) && !sharedEarly.has(id)) return false;
@@ -62,10 +62,10 @@
   function describe(id) {
     if (id.startsWith('observation')) return {purpose:'国内PSA10の日次観測平均との乖離で参考探索',basis:'現相場÷7/30/90/200暦日観測平均−1。欠測補完なし・複数期間AND',effect:'指定期間のみ未取得／参考非採用／上下限外を除外。空欄無効、0有効',overlap:'実成約平均・将来予測・仕入れ上限・購入GOとは別'};
     if (operations.has(id)) return {purpose:'保存条件の読み込み／お気に入り検索／実鑑定・実売記録',basis:'利用者が選択したCSV・カード・日付・実結果。推定結果で実現利益を作らない',effect:'操作しない限り検索・安全条件は変わらない。記録は削除対象にしない',overlap:'日次取得・自動探索・本番モデルの変更とは別'};
+    if (id.startsWith('efficiency')) return {purpose:'カード単体の期待資金効率を探索・比較',basis:'指定買値・出口・拘束日数。平均仮定ではPSA10だけ日次観測平均／非10は現在国内PSA9',effect:'資金効率の表示・検索・順位・CSVのみ。上限・購入GOの式へ反映しない',overlap:'判定用年換算条件と観測乖離率の参考採用は別。欠測平均を採用する場合は参考値設定で明示'};
     if (settings.has(id)) return {purpose:'計算の費用・出口・資金・仮定を設定', basis:'選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映', effect:'カードの計算値・安全判定に影響。検索条件だけの解除では変更しない', overlap:'検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別'};
     if (id.includes('Ratio') && id.includes('psa9')) return {purpose:'国内PSA9価格との買値比率で探索', basis:'実店舗または明示した参考買値÷国内PSA9。実成約・集計・推定は別', effect:'選択した根拠と上下限に不適合なら除外', overlap:'費用込みPSA9赤字回避上限・GOとは別'};
     if (id.includes('Headroom') || id === 'purchaseBelowCurrentCapInput') return {purpose:'購入価格と現相場損益分岐上限を比較', basis:'新鮮な状態A在庫価格と算出可能な現相場上限', effect:'欠損・古値・在庫なし・比較条件外を除外。PSA9日時不明のみは参考比較', overlap:'余裕率は利益率ではない。厳密な小なりチェックと率0%以上は同額境界が異なる'};
-    if (id.startsWith('efficiency')) return {purpose:'カード単体の年換算資金効率で探索', basis:'指定買値・出口・シナリオの期待利益÷総投下額×365÷拘束日数', effect:'下限に満たない、計算不能、参考値非採用を除外', overlap:'判定用の最低年換算効率は別。新指標でGO昇格しない'};
     if (/Profit|Roi|roiInput/.test(id)) return {purpose:'選択中の採算で絞り込み', basis:'検索買値・出口・現在／中央／ストレスを分離。PSA10利益率と期待利益率は別', effect:'空欄は無効、0は非負。必要データ不足と赤字は別除外', overlap:'GOの最低利益条件とは独立。ストレス利益も中央利益とは別'};
     if (/Forecast|forecast|Floor|floor|Direction|Supply|supply|Stability|Demand/.test(id)) return {purpose:'予測・市場スコアを参考探索', basis:'表示された期間・履歴・供給吸収指標。履歴不足は未算出', effect:'指定値・分類に不適合または欠損なら除外', overlap:'実価格、期待利益、GOと同義ではない。発売年と成熟年数も別'};
     if (/buyback|posting/.test(id)) return {purpose:'利用可能な買取掲載・価格・観測量で探索', basis:'選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない', effect:'指定件数・カバー率・期間の不足で除外', overlap:'現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない'};

@@ -73,3 +73,4 @@ after.state.efficiencyMin=0;
 for(const c of newCards) if(!after.cardSearchExclusions(c).length) assert(after.cardEfficiency(c).annual>=0,'filter/display shared, unavailable excluded');
 console.log(JSON.stringify({test:'Card efficiency PASS',example,financialHash:hash(newCards),cards:newCards.length}));
 require('./test_efficiency_reference');
+require('./test_observation_efficiency');

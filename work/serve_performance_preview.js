@@ -19,6 +19,9 @@ http.createServer((req,res) => {
       // Only the localhost fixture is frozen; production HTML/data are untouched.
       data=Buffer.from(data.toString('utf8').replace('</head>',fixture+'</head>'));
     }
+    if(file==='index.html' && process.env.PERFORMANCE_PROBE==='observation') {
+      data=Buffer.from(data.toString('utf8').replace('</body>','<script>'+fs.readFileSync(path.join(__dirname,'observation_efficiency_browser_probe.js'),'utf8')+'</script></body>'));
+    }
     const gzip = /gzip/.test(req.headers['accept-encoding'] || '');
     res.writeHead(200,{'content-type':types[path.extname(file)] || 'application/octet-stream','cache-control':'no-store',
       ...(gzip ? {'content-encoding':'gzip'} : {})});
