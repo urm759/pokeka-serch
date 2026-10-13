@@ -4102,9 +4102,9 @@ function renderEfficiencyComparison(panel, card) {
   const rate=n=>Number.isFinite(n) ? n.toFixed(2)+'%' : '算出不可';
   const rows=['current','obs7','obs30','obs90','obs200'].map(scenario=>{
     const e=cardEfficiency(card,Date.now(),state.purchaseMode,scenario),o=e.observation;
-    return `<tr><th>${escapeHtml(e.scenario)}</th><td>${rate(e.roi)}</td><td>${rate(e.annual)}</td><td>${o ? `${o.count ?? 0}/${o.days}日・最終${escapeHtml(o.latest || '未取得')}` : '現在出口相場'}</td><td>${escapeHtml(e.reason || (e.calculationState === 'reference' ? '参考計算・根拠不足' : '仮定の試算'))}</td></tr>`;
+    return `<tr><th>${escapeHtml(e.scenario)}</th><td>${escapeHtml(e.exitLabel)}</td><td>${rate(e.roi)}</td><td>${rate(e.annual)}</td><td>${o ? `${o.count ?? 0}/${o.days}日・最終${escapeHtml(o.latest || '未取得')}` : '現在出口相場'}</td><td>${escapeHtml(e.reason || (e.calculationState === 'reference' ? '参考計算・根拠不足' : '仮定の試算'))}</td></tr>`;
   });
-  panel.querySelector('div').innerHTML=`<div class="table-scroll"><table><thead><tr><th>売価仮定</th><th>期待利益率</th><th>期待資金効率</th><th>観測充足</th><th>状態</th></tr></thead><tbody>${rows.join('')}</tbody></table></div><small>同じ買値・想定10率・費用・売却先・拘束日数。非10は現在の国内PSA9仮置き、PSA8以下未評価。平均への回帰・将来売価は保証しません。プランと平均期間の対応は未検証のため自動選択しません。参考平均の検索採否は資金効率の参考値設定に従い、保存された観測乖離率設定は変更しません。</small>`;
+  panel.querySelector('div').innerHTML=`<div class="table-scroll"><table><thead><tr><th>売価仮定</th><th>採用出口</th><th>期待利益率</th><th>期待資金効率</th><th>観測充足</th><th>状態</th></tr></thead><tbody>${rows.join('')}</tbody></table></div><small>同じ買値・想定10率・費用・出口方針・拘束日数。両出口は各シナリオで期待手取りの低い側を採用。現相場の保守的買取算定は従来どおり維持。非10は現在国内PSA9のフリマ仮置き、PSA8以下未評価。平均回帰・将来売価は保証しません。参考平均の検索採用には資金効率参考値/参考平均の両方ONが必要。保存条件は変更しません。</small>`;
 }
 function cardEfficiencyBodyBase(card,row=cardEfficiency(card)) {
   const rate=n=>Number.isFinite(n) ? `${n.toFixed(2)}%` : '算出不可';
