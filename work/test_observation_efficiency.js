@@ -43,4 +43,7 @@ s.lockDays=42;assert.equal(api.cardEfficiency(card,now).days,52,'average period 
 s.exitPolicy='both';assert.equal(api.cardEfficiency(card,now).annual,null);assert.match(api.cardEfficiency(card,now).reason,/買取出口/);assert(!api.cardEfficiency(card,now).exitLabel.includes('フリマ（両出口の保守側）'),'unavailable both-exit average is not labelled a marketplace fallback');
 s.exitPolicy='marketplace';assert.equal(api.cardEfficiency(card,now+3*86400000).annual,null);
 assert(source.includes('data-efficiency-comparison'),'comparison is lazy');
+const clock=require('./measure_performance_guard'),realDate=global.Date;
+clock.withEvaluationDate(now,()=>assert.equal(Date.now(),now));assert.equal(global.Date,realDate);
+assert.throws(()=>clock.withEvaluationDate(now,()=>{throw Error('fixture');}));assert.equal(global.Date,realDate,'even failed benchmark restores real Node clock');
 console.log('Observation expected efficiency: fees, mixed grades, exits, gaps, staleness, plans, URL/storage and cache PASS');

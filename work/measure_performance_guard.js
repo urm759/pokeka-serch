@@ -5,6 +5,12 @@ const budgets=require('../data/performance-budgets.json');
 const comparison=require('./performance_comparison');
 const os=require('node:os');
 function median(a){return [...a].sort((a,b)=>a-b)[Math.floor(a.length/2)];}
+function withEvaluationDate(at,run){
+  const RealDate=global.Date;
+  class EvaluationDate extends RealDate {constructor(...args){super(...(args.length?args:[at]));}static now(){return at;}}
+  global.Date=EvaluationDate;
+  try{return run(EvaluationDate);}finally{global.Date=RealDate;}
+}
 function violations(result,limits=budgets){
   return Object.entries(limits.maximum).filter(([key,max])=>!Number.isFinite(result[key]) || result[key]>max).map(([key,max])=>`${key}: ${result[key]} / maximum ${max}`);
 }
@@ -56,10 +62,9 @@ function measure(){
       samples:{fullCalculationMs:timings,cacheMs:cached,doubleCalculationMs:doubleTimes,detailSummary25Ms:detailTimes},
       cardCount:state.cards.length,calculationValuesEqual:true};`;
   const evaluatedAt=Date.now();
-  class EvaluationDate extends Date { constructor(...args){super(...(args.length?args:[evaluatedAt]));} static now(){return evaluatedAt;} }
   const measuredPrefix=prefix.replace('const source = fs.readFileSync',inject+'\nconst source = fs.readFileSync')
     .replace('const context = vm.createContext({','const context = vm.createContext({ Date: EvaluationDate,');
-  const modelResult=new Function('require','__dirname','process','assert','median','EvaluationDate',measuredPrefix+suffix)(require,__dirname,process,assert,median,EvaluationDate);
+  const modelResult=withEvaluationDate(evaluatedAt,EvaluationDate=>new Function('require','__dirname','process','assert','median','EvaluationDate',measuredPrefix+suffix)(require,__dirname,process,assert,median,EvaluationDate));
   const result={initialBytes,doubleInitialBytes,jsonParseMs,doubleJsonParseMs,searchMs:median(searchTimes),doubleSearchMs:median(doubleSearchTimes),...modelResult};
   const errors=violations(result);
   assert(app.includes("state.openCardDetails.has(String(card.id)) ? `"),'closed details must stay lazy');
@@ -83,4 +88,4 @@ if(require.main===module){
   if(result.comparison.warnings.length)console.warn(`::warning::同条件の前回比性能悪化: ${result.comparison.warnings.join(', ')}`);
   if(result.errors.length)process.exitCode=1;
 }
-module.exports={violations,measure};
+module.exports={violations,measure,withEvaluationDate};
