@@ -682,6 +682,7 @@ async function updateTorecaCamp(cards, paths) {
   const postpass = require('./camp_postpass');
   const knownByUrl = new Map(catalog.map(entry=>[entry.detailUrl,entry]));
   const important = new Set(Object.keys(read(path.join(__dirname,'purchase-price-targets.json'),{}).rows||{}));
+  for(const row of read(path.join(__dirname,'search-profile-targets.json'),{}).routes?.domesticShops||[])important.add(row.id);
   try {
     const indexResponse = await fetchText(`${TORECA_CAMP}/sitemap.xml`, { intervalMs: 1100 });
     sitemapUrls = parseProductSitemapIndex(indexResponse.text);

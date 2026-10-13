@@ -92,7 +92,8 @@ async function run() {
   const audit={startedAt:new Date(start).toISOString(),attempted:0,newLinked:0,ambiguous:0,noCandidate:0,httpRequests:0,cacheHits:0,llmCalls:0,codexCalls:0,records:[]};
   if (!retry.eligible(state.sourceRetry,start)) {audit.stopReason=state.sourceRetry.error||state.sourceRetry.reason||'取得元の再試行・正規アクセス確認待ち';}
   else try {
-    const candidates=select(cards,queue,state,start,Number(process.env.URL_DISCOVERY_CARD_LIMIT||100),read('work/candidate-recovery-targets.json',{}).rows||{});
+    const requested=Object.fromEntries((read('work/search-profile-targets.json',{}).routes?.domesticShops||[]).map(r=>[r.id,{requestedProfile:true}]));
+    const candidates=select(cards,queue,state,start,Number(process.env.URL_DISCOVERY_CARD_LIMIT||100),{...(read('work/candidate-recovery-targets.json',{}).rows||{}),...requested});
     const cache=state.collections;
     const collectionOptions={deadlineAt:start+budget,intervalMs:1200,onRequest:()=>audit.httpRequests++};
     const recentDiscovery=candidates.some(card=>retryPolicy(card,queue.cards[card.id],start).days<=3);

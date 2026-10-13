@@ -32,6 +32,7 @@ function run() {
   const candidates = plan(cards, queue, state);
   const focus = buildFocus(ROOT);
   const eligible = eligibleForHareru(candidates, read("work/hareruya2_catalog.json", []));
+  const requested=new Set((read('work/search-profile-targets.json').routes?.domesticShops||[]).map(r=>r.id));
   const selectionReasons = { queuedCards: (queue.queue || []).length, retryEligibleCards: candidates.length,
     missingStateACards: candidates.filter(r => needs(r.detail, "shopStateA")).length,
     missingStateAWithUrl: candidates.filter(r => needs(r.detail, "shopStateA") && r.card.hareruya2Url).length,
@@ -42,7 +43,7 @@ function run() {
   eligible.sort((a, b) => {
     const fa = focus.cards[a.card.id], fb = focus.cards[b.card.id];
     return fa && fb ? groupOrder.get(fa.group) - groupOrder.get(fb.group) || Number(b.detail.p || 0) - Number(a.detail.p || 0)
-      : Number(Boolean(fb)) - Number(Boolean(fa)) || Number(b.detail.p || 0) - Number(a.detail.p || 0);
+      : Number(Boolean(fb)) - Number(Boolean(fa)) || Number(requested.has(b.card.id))-Number(requested.has(a.card.id)) || Number(b.detail.p || 0) - Number(a.detail.p || 0);
   });
   const maxTime = Math.max(10000, Number(process.env.COMPLETION_RUNTIME_MS || 120000));
   const last = read("work/candidate-shop-refresh.json").sources?.hareruya2 || {};

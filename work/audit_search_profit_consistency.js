@@ -32,7 +32,8 @@ function load(appSource, at, options = {}) {
   prefix=prefix.replace('state.psaPopulation = sourceFiles.psa.cards || {};',`state.psaPopulation = sourceFiles.psa.cards || {};
     state.psaSpecificationHeld=sourceFiles.psa.specificationHeld || {};
     state.buybackPostingCoverage=read('data/buyback-posting-coverage.json');
-    state.psa10PeriodSummary=read('data/psa10-period-summary.json');`);
+    state.psa10PeriodSummary=read('data/psa10-period-summary.json');
+    state.buybackObservationSummary=read('data/buyback-observation-summary.json');`);
   const missing=[],cache=new Map();
   const historical=file=>{
     const relative=path.relative(ROOT,String(file)).replace(/\\/g,'/');

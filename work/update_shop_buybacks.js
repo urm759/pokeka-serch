@@ -528,6 +528,7 @@ async function main() {
       const matched = [];
       const unmatched = [];
       for (const item of fetched.items) {
+        item.observedAt ||= new Date().toISOString();
         const sourceKey = `${shop.id}:${item.shopItemId}`;
         if (item.strictIdentity && !item.verifiedCardId) { unmatched.push(item); continue; }
         const verifiedCard = item.verifiedCardId ? cards.find((card) => card.id === item.verifiedCardId) : null;

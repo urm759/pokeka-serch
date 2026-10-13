@@ -108,5 +108,42 @@
     const expectedSale = reasons.length ? null : (view.assumedRate * observed.mean + (1-view.assumedRate)*view.lowerGradePrice)*(1-feeRate/100)-extra;
     return {expectedSale:finite(expectedSale) ? expectedSale : null,observed:{...observed,age},warnings,reasons};
   }
-  return {percent,inRange,offerPrice,meanSale,atPurchase,efficiency,coverage,observationPeriods,observation,observationExclusions,observationEconomics};
+  function buybackObservationEconomics(summary,card,view,days,settings,now=Date.now()) {
+    const reasons=[],warnings=[],median=xs=>{const s=xs.slice().sort((a,b)=>a-b),n=s.length;return n?s[Math.floor(n/2)]/2+s[Math.floor((n-1)/2)]/2:null;};
+    if(!summary)reasons.push('機能データ未生成・買取平均要約未取得');
+    const shops=[];
+    for(const [id,row] of Object.entries(summary?.cards?.[card.id]||{})) {
+      const meta=summary.shops?.[id], quote=card.buybackAnalysis?.rows?.find(r=>r.shopId===id);
+      if(settings.mode==='selected' && !settings.selected.includes(id) || settings.mode==='mail' && meta?.fulfilment==='store')continue;
+      const [mean,count,at]=row.periods?.[days]||[],age=(now-Date.parse(at))/3600000;
+      if(row.identity!==card.identityKey || !quote?.valid || quote.stale || quote.quarantined || quote.campaign || quote.temporaryCampaign || !finite(mean) || mean<=0 || !Number.isInteger(count) || count<1 || count>days || !(age>=0 && age<=48))continue;
+      shops.push({id,mean,count,at,travel:meta?.fulfilment==='store'?settings.travel:0});
+    }
+    if(shops.length<2)reasons.push('買取出口不足・同仕様の新鮮な平均が2店舗未満');
+    const material=[view.assumedRate,view.lowerGradePrice,settings.feeRate,settings.extra,settings.deduction,settings.travel];
+    if(!material.every(finite)||view.assumedRate<0||view.assumedRate>1||view.lowerGradePrice<=0||settings.feeRate<0||settings.feeRate>=100||settings.extra<0||settings.travel<0||settings.deduction<0||settings.deduction>5)reasons.push('想定10率・PSA9現在価格・費用未取得');
+    const mean=median(shops.map(s=>s.mean)),travel=median(shops.map(s=>s.travel)),count=shops.length?Math.min(...shops.map(s=>s.count)):null;
+    const latest=shops.length?shops.map(s=>s.at).sort()[0]:null;
+    const observed={days,mean,count,latest:latest?new Date(Date.parse(latest)+9*3600000).toISOString().slice(0,10):null,unverifiedDays:0,reference:count!==days,stores:shops.map(s=>s.id),source:'買取店舗別観測平均の中央値'};
+    if(observed.reference)warnings.push(`参考・買取平均の観測不足 ${count??0}/${days}日（店舗別最少・欠測補完なし）`);
+    const current=median(shops.map(s=>card.buybackAnalysis.rows.find(r=>r.shopId===s.id)?.buybackPrice).filter(finite));
+    if(finite(current)&&mean>current)warnings.push('買取平均が現在の買取価格より高い：下落局面では楽観的な試算になる可能性。平均回帰の保証なし');
+    warnings.push('PSA10は選択した買取店舗の観測平均／非10は現在国内PSA9のフリマ手取りで仮置き。PSA8以下未評価');
+    const p10Net=mean*(1-settings.deduction/100)-settings.extra-travel;
+    const lowerNet=view.lowerGradePrice*(1-settings.feeRate/100)-settings.extra;
+    const expectedSale=reasons.length?null:view.assumedRate*p10Net+(1-view.assumedRate)*lowerNet;
+    return {expectedSale:finite(expectedSale)?expectedSale:null,travelCost:travel||0,expiresAt:shops.length?Math.min(...shops.map(s=>Date.parse(s.at)+48*3600000)):Infinity,observed,reasons,warnings,exitLabel:'買取店（店舗別平均の中央値）'};
+  }
+  function meanEfficiencyEconomics(summary,buybackSummary,card,view,days,policy,settings,now=Date.now()) {
+    const market=policy==='buyback'?null:observationEconomics(summary,card,view,days,'marketplace',settings.feeRate,settings.extra,now);
+    const store=policy==='marketplace'?null:buybackObservationEconomics(buybackSummary,card,view,days,settings,now);
+    if(policy==='marketplace')return {...market,travelCost:0,exitLabel:'フリマ（日次相場観測平均）'};
+    if(policy==='buyback')return store;
+    const reasons=[...market.reasons,...store.reasons];
+    const chosen=reasons.length?store:market.expectedSale<=store.expectedSale?market:store;
+    return {...chosen,expectedSale:reasons.length?null:chosen.expectedSale,travelCost:chosen===store?store.travelCost:0,
+      exitLabel:reasons.length?'両出口・根拠不足（自動切替なし）':`${chosen===store?'買取店':'フリマ'}（両出口平均の保守側）`,
+      expiresAt:store.expiresAt,reasons,warnings:[...market.warnings,...store.warnings],observed:{...chosen.observed,reference:market.observed.reference||store.observed.reference}};
+  }
+  return {percent,inRange,offerPrice,meanSale,atPurchase,efficiency,coverage,observationPeriods,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics};
 });

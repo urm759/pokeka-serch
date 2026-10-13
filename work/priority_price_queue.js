@@ -56,9 +56,14 @@ function plan({ cards, sourceId, catalog, candidateRows = {}, fixedIds = [], foc
   return { records, queue };
 }
 function load(sourceId, root = ROOT, now = Date.now()) {
+  const requested=read(root,'work/search-profile-targets.json');
+  const profileRows=Object.fromEntries([
+    ...(requested.profiles||[]).flatMap(p=>p.urlsMatched||[]),
+    ...(requested.routes?.domesticShops||[]).map(r=>r.id)
+  ].map(id=>[id,{priceRefreshReady:true,requestedProfile:true}]));
   return plan({ cards: read(root, "data/pokemon-cards.json", []), sourceId,
     fixedIds: read(root, "work/priority-freshness-history.json").sources?.[sourceId]?.cohort || [],
-    catalog: read(root, `work/${sourceId}_catalog.json`, []), candidateRows: { ...read(root,'work/candidate-recovery-targets.json').rows, ...(read(root, "work/candidate-availability-history.json").runs?.at(-1)?.rows || read(root, "work/acquisition-audit-baseline.json").availability?.rows || {}), ...read(root, 'work/purchase-price-targets.json').rows },
+    catalog: read(root, `work/${sourceId}_catalog.json`, []), candidateRows: { ...read(root,'work/candidate-recovery-targets.json').rows, ...(read(root, "work/candidate-availability-history.json").runs?.at(-1)?.rows || read(root, "work/acquisition-audit-baseline.json").availability?.rows || {}), ...read(root, 'work/purchase-price-targets.json').rows,...profileRows },
     focusConfig: read(root, "data/focus-monitor-config.json"), config: timingConfig(root),
     jobs: read(root, "work/priority-price-checkpoint.json").sources?.[sourceId]?.jobs || {},
     manualWait: read(root, "work/candidate-shop-refresh.json").checkpoints?.[sourceId]?.manualWait || {}, now });

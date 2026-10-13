@@ -65,6 +65,7 @@ state.shopBuybacks = sourceFiles.buyback.cards || {};
 state.buybackShops = sourceFiles.buyback.shops || {};
 state.buybackDates = sourceFiles.buyback.dates || [];
 state.buybackUpdatedAt = sourceFiles.buyback.updatedAt || null;
+state.buybackObservationSummary = read('data/buyback-observation-summary.json');
 state.marketStability = sourceFiles.marketStability.cards || {};
 state.marketStabilityMeta = sourceFiles.marketStability;
 state.snkrListingSummary = sourceFiles.snkrListing.cards || {};

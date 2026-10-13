@@ -94,6 +94,10 @@ function main() {
     const at = rows.findIndex((r) => r.cardId === card.id);
     if (at >= 0) rows[at] = row; else rows.push(row);
   }
+  const requested=new Set((readJson(path.join(__dirname,'search-profile-targets.json'),{}).routes?.psaOfficial||[]).map(r=>r.id));
+  for(const row of rows)if(requested.has(row.cardId)) {
+    row.priority+=1e10;row.reason=[...(row.reason||[]),'指定URL A/Bの不足PSA補完（適合未確認・通常巡回は維持）'];
+  }
   rows.sort((a, b) => b.priority - a.priority);
   const setPriority = [...new Set(rows.map((row) => row.setCode))];
   const orderedSets = [

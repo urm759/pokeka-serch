@@ -74,3 +74,4 @@ for(const c of newCards) if(!after.cardSearchExclusions(c).length) assert(after.
 console.log(JSON.stringify({test:'Card efficiency PASS',example,financialHash:hash(newCards),cards:newCards.length}));
 require('./test_efficiency_reference');
 require('./test_observation_efficiency');
+require('./test_buyback_observation');

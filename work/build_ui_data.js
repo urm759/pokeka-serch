@@ -33,7 +33,7 @@ function project(name, input) {
 }
 const SUMMARY = ['card-catalog-completion', 'operational-limit-history', 'market-stability-summary', 'market-research-summary',
   'cardrush-stock-summary', 'hareruya2-stock-summary', 'yuyutei-stock-summary', 'torecacamp-stock-summary',
-  'shop-buyback-summary', 'state-a-price-evidence', 'snkr-listing-summary', 'snkr-raw-flip-summary',
+  'shop-buyback-summary', 'buyback-observation-summary', 'state-a-price-evidence', 'snkr-listing-summary', 'snkr-raw-flip-summary',
   'psa-population-summary', 'card-catalog/analysis', 'card-catalog/search-index', 'update-status'];
 function build(root = ROOT) {
   const hashes = {}, aliases = {}, bytes = {};
