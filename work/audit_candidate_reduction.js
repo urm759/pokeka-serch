@@ -16,8 +16,9 @@ const bindings={efficiencyMinInput:'effMin',efficiencyManualPriceInput:'effManua
   efficiencyIncludeReferenceInput:'effRef',actualPurchaseMinInput:'purchaseMin',actualPurchaseMaxInput:'purchaseMax',
   purchaseHeadroomMinInput:'headroomMin',purchaseHeadroomMaxInput:'headroomMax',postingRate30MinInput:'postingRate30',
   postingShops30MinInput:'postingShops30',postingDaysMinInput:'postingDays',postingCoverageMinInput:'postingCoverage',
-  purchaseBelowCurrentCapInput:'buyBelowCap',expectedProfitFilterInput:'filterExpProfit'};
-function extraUrl(saved){const url=new URL(specifiedUrl);for(const [id,value]of Object.entries(saved?.inputs||{})){
+  purchaseBelowCurrentCapInput:'buyBelowCap',expectedProfitFilterInput:'filterExpProfit',
+  observationIncludeReferenceInput:'obsRef',...Object.fromEntries([7,30,90,200].flatMap(d=>[['observation'+d+'MinInput','obs'+d+'Min'],['observation'+d+'MaxInput','obs'+d+'Max']]))};
+function extraUrl(saved,baseUrl=specifiedUrl){const url=new URL(baseUrl);for(const [id,value]of Object.entries(saved?.inputs||{})){
   const param=bindings[id];if(!param||url.searchParams.has(param)||value==null)continue;
   url.searchParams.set(param,typeof value==='boolean'?value?'1':'0':value===''?'off':value);
 }return url.toString();}
@@ -36,6 +37,8 @@ function snapshot({ref=null,source,at,url=specifiedUrl}){return withClock(at,()=
       storeSource:card.currentStoreOffer?.source||null,storeObservedAt:card.currentStoreOffer?.updatedAt||null,
       searchBuyPrice:p.purchasePrice??p.economics?.purchasePrice??null,
       psa9Price:ratio.psa9Price??null,psa9Ratio:ratio.ratio??null,psa9BuyKind:ratio.purchaseKind??null,
+      psa9Type:ratio.measurementType??null,officialRate:card.official?.rate??null,officialTotal:card.official?.total??null,
+      psa10Net:p.psa10Net??null,psa10Profit:p.psa10Profit??null,
       expectedProfit:p.economics?.expectedProfit??null,expectedRoi:p.economics?.expectedRoi??null,
       psa10Roi:p.psa10Roi??null,exit:p.exitLabel||null,limit:card.buyLimits?.clean?.finalMaxPrice??null,
       psaMissing:!Number.isFinite(card.official?.rate),specificationHeld:!!api.state.psaSpecificationHeld?.[card.id]};

@@ -42,3 +42,6 @@ assert(workflow.includes("steps.catchup_validation.outcome == 'success'"),'inval
 assert(workflow.includes('group: all-site-data-refresh'));
 assert(!workflow.includes('actions: write'),'no new dispatch permission or AI task');
 console.log(JSON.stringify({automaticStatus:'passed',missedRunCatchup:'passed',duplicateFetch:'passed',validationBeforePublication:'passed',llmCalls:0}));
+require('./test_calendar_progress');
+require('./test_pc_resume_gate');
+require('./test_partial_publication');

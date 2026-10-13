@@ -13,6 +13,7 @@ async function main() {
   assert(html.includes('exploration-metrics.js') && html.includes('settings-disclosure.js') && html.includes('keyed-card-renderer.js') && html.includes('ui-data-codec.js') && html.includes('efficiencyMinInput'));
   assert(html.includes('20261013-observation-search-v1') && html.includes('observation200MaxInput'));
   assert(html.includes('20261013-current-target-v1') && html.includes('value="current-target"'));
+  assert(html.includes('20261013-render-reuse-v2'));
   const manifest = JSON.parse(await read('data/ui/manifest.json?verify=' + Date.now()));
   const expected = JSON.parse(fs.readFileSync(path.join(__dirname,'../data/ui/manifest.json'),'utf8'));
   assert.equal(manifest.revision, expected.revision, 'must verify the newly published revision');
@@ -60,7 +61,7 @@ async function main() {
     const published=await read(file+'?verify='+Date.now());
     assert.equal(published.replace(/\r\n/g,'\n'),fs.readFileSync(path.join(__dirname,'..',file),'utf8').replace(/\r\n/g,'\n'),file);
   }
-  for (const file of ['styles.css','search-controls.js','current-market-model.js','data/psa10-observation-receipt.json','data/observation-search-report.json','data/current-profit-guide-validation.json','data/current-guide-progress.json','data/current-guide-browser-validation.json']) {
+  for (const file of ['styles.css','search-controls.js','current-market-model.js','data/psa10-observation-receipt.json','data/observation-search-report.json','data/current-profit-guide-validation.json','data/current-guide-progress.json','data/current-guide-browser-validation.json','data/candidate-continuity-audit.json','data/runtime-availability-audit.json','data/runtime-improvement-outcomes.json','data/runtime-browser-validation.json']) {
     const published=await read(file+'?verify='+Date.now());
     assert.equal(published.replace(/\r\n/g,'\n'),fs.readFileSync(path.join(__dirname,'..',file),'utf8').replace(/\r\n/g,'\n'),file);
     verified.push(file);

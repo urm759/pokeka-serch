@@ -45,3 +45,4 @@ require('./test_render_reuse');
 require('./test_candidate_reduction');
 require('./test_search_organization');
 require('./test_efficiency_threshold_audit');
+require('./test_search_memo');

@@ -30,7 +30,7 @@ const source=fs.readFileSync('app.js','utf8'),elements=new Map(),storage=new Map
 const context=vm.createContext({window:{PurchaseDecisionModel:require('../decision-model'),ExplorationMetrics:m,location:{href:'https://example.test/?obs7Min=-20&obs7Max=0&obsRef=0'}},
   document:{getElementById:id=>{if(!elements.has(id))elements.set(id,{value:'',checked:false});return elements.get(id)},querySelectorAll:()=>[]},
   URL,URLSearchParams,console,setTimeout,clearTimeout,localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)}});
-vm.runInContext(source.split('// Browser event bindings start here;')[0]+'\nglobalThis.api={state,readUrl,buildShareUrl,saveQuickFilters,restoreQuickFilters,psa10PeriodCompact};',context);
+vm.runInContext(source.split('// Browser event bindings start here;')[0]+'\nglobalThis.api={state,readUrl,buildShareUrl,saveQuickFilters,restoreQuickFilters,persistExplicitSearchSettings,psa10PeriodCompact};',context);
 const api=context.api;api.readUrl();
 assert.equal(elements.get('observation7MinInput').value,-20);assert.equal(elements.get('observation7MaxInput').value,0);
 assert.equal(elements.get('observationIncludeReferenceInput').checked,false);
@@ -39,6 +39,13 @@ let url=api.buildShareUrl();assert.equal(url.searchParams.get('obs7Min'),'-20');
 api.state.observation7Max=null;assert.equal(api.buildShareUrl().searchParams.get('obs7Max'),'off','explicit clearing must override another browser saved value');api.state.observation7Max=0;
 api.saveQuickFilters();context.window.location.href='https://example.test/';elements.get('observation7MinInput').value='';api.restoreQuickFilters();
 assert.equal(elements.get('observation7MinInput').value,-20);assert.equal(elements.get('observationIncludeReferenceInput').checked,false);
+context.window.location.href='https://example.test/?obs7Min=off&obsRef=1';
+api.readUrl();api.persistExplicitSearchSettings();
+context.window.location.href='https://example.test/';elements.get('observation7MinInput').value='1000';elements.get('observationIncludeReferenceInput').checked=false;
+api.restoreQuickFilters();
+assert.equal(elements.get('observation7MinInput').value,'','explicit clear persists before network/model load');
+assert.equal(elements.get('observationIncludeReferenceInput').checked,true);
+assert.equal(elements.get('observation7MaxInput').value,0,'unmentioned saved bound is preserved');
 assert.match(api.psa10PeriodCompact(card),/参考・観測不足/);assert.match(api.psa10PeriodCompact(card),/古い観測/);
 assert(source.indexOf('${psa10PeriodCompact(card)}') < source.indexOf('class="card-details-body"'),'summary is visible outside deferred details');
 assert.match(source,/rows\[index\+1\]\.push\(o.mean \?\? '',o.delta/,'CSV uses the same unrounded metrics');

@@ -138,6 +138,7 @@ jobs:
           git add work/fixed-price-reference.json work/priority-freshness-history.json
           git add work/completion-outcomes-baseline.json work/completion-outcomes-last.json work/completion-outcome-history work/card-completion-queue.json
           git add work/scheduled-cycle-baseline-daily.json
+          git add work/calendar-progress-history.json
           if git diff --cached --quiet; then
             echo "No source change. Commit and deployment skipped."
             exit 0

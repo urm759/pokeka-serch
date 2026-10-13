@@ -1,0 +1,18 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const app=fs.readFileSync('app.js','utf8');
+assert.match(app,/const topRoi = enriched\.reduce[\s\S]*?searchProfitView\(card\)\.psa10Roi/,'maximum ROI display uses the selected search buy/exit basis');
+let now=1000;
+const state={q:'',fee:10980,favorites:new Set(),openCardDetails:new Set(),gradeObservations:{},actualResults:{},source:{},sort:'name',visibleLimit:60};
+const context=vm.createContext({state,Date:{now:()=>now},calculatedCardCache:{expires:2000}});
+vm.runInContext('let searchMemoCache=null;'+app.slice(app.indexOf('function searchMemoFor('),app.indexOf('function renderValue('))+';this.memo=searchMemoFor;',context);
+const cards=[{}],first=context.memo(cards);
+state.openCardDetails.add('a');state.sort='profit';state.visibleLimit=120;
+assert.equal(context.memo(cards),first,'presentation changes reuse exclusion economics');
+state.q='a';assert.notEqual(context.memo(cards),first,'query change invalidates exclusions');
+let prior=context.memo(cards);state.favorites.add('a');assert.notEqual(context.memo(cards),prior,'in-place favorite change invalidates');
+prior=context.memo(cards);state.fee=12980;assert.notEqual(context.memo(cards),prior,'costs invalidate');
+prior=context.memo(cards);state.source={};assert.notEqual(context.memo(cards),prior,'new source identity invalidates');
+prior=context.memo(cards);state.gradeObservations.a={grade:10};assert.notEqual(context.memo(cards),prior,'grading observations invalidate');
+prior=context.memo(cards);now=2000;assert.notEqual(context.memo(cards),prior,'exact freshness deadline invalidates');
+assert.notEqual(context.memo([...cards]),context.memo(cards),'new calculated cohort invalidates');
+console.log('PASS render memo: filters, costs, data, in-place favorites/results, exact expiry; detail/sort do not redo financial exclusions');

@@ -25,6 +25,8 @@ const url=new URL(extraUrl({inputs:{expectedProfitFilterInput:500,efficiencyMinI
 assert.equal(url.searchParams.get('filterExpProfit'),'500');
 assert.equal(url.searchParams.get('effMin'),'0');assert.equal(url.searchParams.get('purchaseMax'),'off');
 assert.equal(url.searchParams.get('exitPolicy'),'both');assert.equal(url.searchParams.get('roi'),'20');
+const observations=new URL(extraUrl({inputs:{observation7MinInput:-20,observation7MaxInput:0,observationIncludeReferenceInput:false}}));
+assert.equal(observations.searchParams.get('obs7Min'),'-20');assert.equal(observations.searchParams.get('obs7Max'),'0');assert.equal(observations.searchParams.get('obsRef'),'0');
 const DateBefore=Date;assert.equal(withClock('2026-10-12T01:00:00Z',()=>Date.now()),Date.parse('2026-10-12T01:00:00Z'));assert.strictEqual(Date,DateBefore);
 const app=fs.readFileSync('app.js','utf8');
 assert.match(app,/captureConditionOrigins\(conditionDefaults,restoredConditions\)/);

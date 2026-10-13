@@ -62,7 +62,8 @@ async function main() {
     delete cycles.checkError;
   }catch(error){cycles.checkError=error.message;cycles.checkedAt=new Date().toISOString();}
   fs.writeFileSync(cycleFile,JSON.stringify(cycles));
-  require('./effective_price_cadence').build(ROOT);
+  const effectiveCadence=require('./effective_price_cadence').build(ROOT);
+  fs.writeFileSync(path.join(ROOT,'data/refresh-cadence-audit.json'),JSON.stringify(require('./refresh_cadence').audit(priceRuns.workflow_runs||[],{verifiedRuns:effectiveCadence.runs})));
   const evidenceFile=path.join(ROOT,'data/proactive-refresh-audit.json');
   if(fs.existsSync(evidenceFile)) {
     const evidence=JSON.parse(fs.readFileSync(evidenceFile,'utf8'));
@@ -180,6 +181,7 @@ async function main() {
     freshness:status.priorityPriceMonitor?.fixedCohortFreshness||null,
     publicationStatus:'監視保存済み・公開工程は別'});
   observation.banner(ROOT);
+  require('./build_runtime_availability').build(ROOT);
 }
 
 if (require.main === module) main().catch((error) => {

@@ -36,7 +36,20 @@ let calculationCacheHit = false;
 let forceNextSearchCalculation = false;
 let lastSearchTiming = null;
 let renderMemo = null;
+let searchMemoCache = null;
 let cardMarkupCache = null;
+function searchMemoFor(cards) {
+  const entries = Object.entries(state).filter(([key]) => !['cardById','openCardDetails','visibleLimit','sort'].includes(key));
+  const key = JSON.stringify([entries.filter(([,value]) => value == null || typeof value !== 'object'),
+    [...state.favorites],state.gradeObservations,state.actualResults]);
+  const refs = entries.filter(([,value]) => value != null && typeof value === 'object').map(([,value]) => value);
+  const now = Date.now();
+  if (searchMemoCache?.cards !== cards || searchMemoCache.key !== key || now >= searchMemoCache.expires
+    || refs.length !== searchMemoCache.refs.length || refs.some((ref,i) => ref !== searchMemoCache.refs[i])) {
+    searchMemoCache = {cards,key,refs,expires:calculatedCardCache?.expires ?? now,values:new WeakMap(),audits:new Map()};
+  }
+  return searchMemoCache.values;
+}
 function renderValue(card, key, calculate) {
   if (!renderMemo) return calculate();
   let values = renderMemo.get(card);
@@ -1013,7 +1026,8 @@ function renderSourceObservability() {
     const spec=state.updateStatus?.specificationRecheck;
     const specificationHtml=spec ? `<article class="source-status-card"><details><summary>PSA仕様再照合・再探索（${escapeHtml(formatJstTimestamp(spec.generatedAt))}）</summary><p>有効POP紐付け ${spec.beforeLinked}→${spec.afterLinked}枚：新規${spec.newLinked}／再照合で保留${spec.lostLinked}／純増${spec.usableNet}。旧仕様保留${spec.beforeHeld}候補のうち、根拠確認で復帰${spec.restoredHeld}枚・未解決${spec.originalStillUnresolved}枚。追加検出を含む現在の保留は${spec.currentHeld}枚。</p><p>不足補完${spec.filledCards}枚／新規分析可能${spec.newAnalyzable}枚／分析保留${spec.lostAnalyzable}枚。通常版POPで代用せず、誤仕様疑いの過去履歴は保管して推移計算から隔離。モデル・仕入れ条件の緩和なし。</p><p>URL探索${spec.discoveryAttempted}枚→${spec.discoveryLinked}URL／実価格新規${spec.actualNewPrice}枚。再探索は発売90日以内1日、買取掲載優先3日、あと1項目・発売2年以内7日、通常30日。一覧変更は該当セットだけ再照合、曖昧保留は自動解除しません。</p><a href="./data/specification-recheck-audit.json" target="_blank" rel="noreferrer">カード別の根拠・未解決一覧</a> / <a href="./data/performance-guard.json" target="_blank" rel="noreferrer">固定条件の性能検査（Node・実描画とは別）</a></details></article>` : '';
     const recoveryHtml=recovered ? `<article class="source-status-card"><details><summary>公開失敗の回収と実補完（${escapeHtml(formatJstTimestamp(recovered.generatedAt))}）</summary><p>失敗実行 ${escapeHtml(recovered.recoveredRun)}：取得済み${recovered.recoveredChecks}件を再取得せず回収。不足補完 ${recovered.filledCards}枚／新規分析可能 ${recovered.newlyAnalyzable}枚。PSA POP紐付け ${recovered.psaBefore}→${recovered.psaAfter}枚（新規正常 ${recovered.psaNewLinked}／誤仕様疑い保留 ${recovered.psaHeld}）。仕様確認待ちで分析保留 ${recovered.lostAnalyzable}枚。相場下落による減少とは別です。正規商品URL探索 ${recovered.urlDiscovery.attempted}枚→${recovered.urlDiscovery.newLinked}URL／実価格新規 ${recovered.newShopPrices}枚。</p><p>回収した旧実行と今回の新規取得は別集計。全データ完了・購入GOへの昇格を意味しません。</p><a href="./data/recovery-completion-audit.json" target="_blank" rel="noreferrer">回収・補完カードID・チェックポイントを確認</a></details></article>` : '';
-    els.dataFreshness.innerHTML = pipelineCards + operationSummary + sourceCards + specificationHtml + recoveryHtml + observationHtml + outcomesHtml + unifiedHtml + resilienceHtml + focusHtml + backlogHtml + learningCard + renderPriorityPriceMonitor() + renderPriceCapacityNotice();
+    const runtimeLink = '<article class="source-status-card"><details><summary>PC非稼働時の取得経路・暦日進捗</summary><p>国内相場・正常店舗・買取表・新規探索・公開PokeDATAはGitHubの独立経路。PSA正規認証・認証実成約はPCが必要。記録なしをPC停止と断定せず、稼働中速度と暦日進捗、取得・保存・公開を分けます。</p><a href="./data/runtime-availability-audit.json" target="_blank" rel="noreferrer">取得元別経路・既存PCタスク・暦日能力の監査</a></details></article>';
+    els.dataFreshness.innerHTML = pipelineCards + operationSummary + runtimeLink + sourceCards + specificationHtml + recoveryHtml + observationHtml + outcomesHtml + unifiedHtml + resilienceHtml + focusHtml + backlogHtml + learningCard + renderPriorityPriceMonitor() + renderPriceCapacityNotice();
   }
 
   const coverage = state.linkCoverage?.current?.storeCoverage;
@@ -3141,6 +3155,30 @@ function restoreQuickFilters() {
   }
 }
 
+function persistExplicitSearchSettings() {
+  try {
+    const params=new URL(window.location.href).searchParams;
+    const saved=JSON.parse(localStorage.getItem(QUICK_FILTER_STORAGE_KEY)||'{}');
+    const fields=[...efficiencyFields.map(([p,f])=>[p,f,f+'Input','number']),
+      ...explorationFields.map(([p,f])=>[p,f,f+'Input','number']),
+      ['roi','minRoi','roiInput','number'],['filterExpProfit','minExpectedProfitFilter','expectedProfitFilterInput','number'],
+      ['filterExpRoi','minExpectedRoiFilter','expectedRoiFilterInput','number'],
+      ['effRef','efficiencyIncludeReference','efficiencyIncludeReferenceInput','boolean'],
+      ['obsRef','observationIncludeReference','observationIncludeReferenceInput','boolean'],
+      ['profitBasis','profitSearchBasis','profitSearchBasisInput','string'],
+      ['effBuy','efficiencyBuy','efficiencyBuyInput','string'],['effScenario','efficiencyScenario','efficiencyScenarioInput','string']];
+    let changed=false;
+    for(const [param,field,id,type]of fields) {
+      const input=document.getElementById(id);
+      if(!params.has(param)||!input)continue;
+      saved[field]=type==='boolean'?input.checked:type==='number'?parseOptionalNumber(input.value):input.value;
+      changed=true;
+    }
+    // Persist only explicit URL choices before awaiting data; an early close must not revive old filters.
+    if(changed)localStorage.setItem(QUICK_FILTER_STORAGE_KEY,JSON.stringify(saved));
+  } catch { /* Storage restrictions do not alter the visible search conditions. */ }
+}
+
 function saveQuickFilters() {
   try {
     localStorage.setItem(QUICK_FILTER_STORAGE_KEY, JSON.stringify({
@@ -4228,6 +4266,14 @@ function computePresetQualifications(card) {
 }
 
 function buildSearchAudit(cards, {includePresets=true} = {}) {
+  if (renderMemo && searchMemoCache?.cards === cards) {
+    const key = includePresets ? 'all-presets' : 'selected-preset';
+    if (!searchMemoCache.audits.has(key)) searchMemoCache.audits.set(key,computeSearchAudit(cards,{includePresets}));
+    return searchMemoCache.audits.get(key);
+  }
+  return computeSearchAudit(cards,{includePresets});
+}
+function computeSearchAudit(cards, {includePresets=true} = {}) {
   const modes = {curated:"厳選候補",combined:"おまかせ総合",now:"今すぐ仕入れ","low-risk":"低リスク候補",turnover:"高回転候補",bargain:"薄商い・高粗利",aggressive:"攻め仕入れ圏","snkr-raw":"スニダン素体流し","current-market":"現相場採算（購入GOとは別）"};
   const evaluations = cards.map(card => ({card, flags:presetQualifications(card), reasons:cardSearchExclusions(card)}));
   const modeKey = state.purchaseMode === "low-risk" ? "lowRisk" : state.purchaseMode;
@@ -4368,6 +4414,7 @@ function renderPresetAudit(cards, {details=false} = {}) {
   document.getElementById("presetAuditContent").innerHTML = `<b>分析可能 ${fmt.format(counts.total)}枚</b>${auditHtml}<small class="preset-count-note">価格待ちと実購入GOは別です。期間不一致は参考探索だけで、返却時の利益を保証しません。<a href="./data/preset-search-impact.json" target="_blank" rel="noreferrer">同一条件の修正前後監査</a>（公開時の固定条件、現在の設定とは別）</small>${availabilityHtml}${dailyHtml}`;
   const content=document.getElementById('presetAuditContent');
   content.insertAdjacentHTML('beforeend',`<small><a href='./data/candidate-reduction-outcomes.json' target='_blank' rel='noreferrer'>今回の保存済みPSA再照合：不足補完・分析可能・鮮度の実差分</a></small>`);
+  content.insertAdjacentHTML('beforeend',`<small><a href='./data/candidate-continuity-audit.json' target='_blank' rel='noreferrer'>最新共有URL：同じカード群・設定で時間/データ/コードを分けた比較</a>（保存条件は記録された端末分のみ。未記録期間は比較不能）</small>`);
   content.insertAdjacentHTML('beforeend',`<details id='sharedCandidateComparison'><summary>直近共有URL：コード・データ・期限切れを分離した監査</summary><div>開いたときに監査JSONを取得</div></details>`);
   const disclosure=document.getElementById('sharedCandidateComparison');
   disclosure.addEventListener('toggle',()=>{if(disclosure.open&&!disclosure.dataset.loaded){disclosure.dataset.loaded='1';loadCandidateReductionAudit(disclosure.querySelector('div'));}});
@@ -4942,6 +4989,8 @@ function renderContent() {
   const calculated = calculatedCardsForSearch(state.cards,{force:forceNextSearchCalculation});
   forceNextSearchCalculation = false;
   const calculationMs = performance.now() - renderStarted;
+  renderMemo = searchMemoFor(calculated);
+  const filteringStarted = performance.now();
   if (auditIsOpen(els.limitModelAudit)) {
     state.limitModelAudit = buildLimitModelAudit(calculated);
     window.PURCHASE_LIMIT_MODEL_AUDIT = state.limitModelAudit;
@@ -5037,7 +5086,7 @@ function renderContent() {
   document.body.classList.toggle("snkr-raw-active", rawMode);
   els.countStat.textContent = fmt.format(enriched.length);
   const topRoi = enriched.reduce((highest, card) => {
-    const value = rawMode ? card.snkrRawFlip?.roi : state.purchaseMode === "current-market" ? searchProfitView(card).economics?.expectedRoi : card.roi;
+    const value = rawMode ? card.snkrRawFlip?.roi : state.purchaseMode === "current-market" ? searchProfitView(card).economics?.expectedRoi : searchProfitView(card).psa10Roi;
     return Number.isFinite(value) ? Math.max(highest, value) : highest;
   }, -Infinity);
   const topProfit = enriched.reduce((highest, card) => {
@@ -5111,6 +5160,7 @@ function renderContent() {
   renderSourceObservability();
   if (auditIsOpen(els.guidePanels)) renderGuide();
   const visibleCards = enriched.slice(0, state.visibleLimit);
+  const filteringMs = performance.now() - filteringStarted;
   if (els.resultProgress) {
     const loadedNote = state.catalogManifest ? ` / 読込済み ${fmt.format(state.cards.length)}枚` : "";
     els.resultProgress.textContent = `${fmt.format(enriched.length)}枚中 ${fmt.format(visibleCards.length)}枚を表示${loadedNote}`;
@@ -5946,7 +5996,7 @@ function renderContent() {
   renderFavorites();
   const timing = document.getElementById("searchPerformance");
   lastSearchTiming = {calculationMs,domMs:performance.now()-renderStarted-calculationMs,cacheHit:calculationCacheHit,
-    markupMs,domCommitMs,reusedMarkup,changedCards:committed.changed.length,reusedCards:committed.reused};
+    filteringMs,markupMs,domCommitMs,reusedMarkup,changedCards:committed.changed.length,reusedCards:committed.reused};
   if (timing) timing.textContent = `条件処理：計算 ${calculationMs.toFixed(1)}ms${calculationCacheHit ? "（再利用・全件再計算なし）" : "（更新）"}／検索・DOM生成 ${lastSearchTiming.domMs.toFixed(1)}ms（カードHTML ${markupMs.toFixed(1)}ms／DOM差分 ${domCommitMs.toFixed(1)}ms、更新${committed.changed.length}・再利用${committed.reused}枚）。画面描画・通信時間は含みません。`;
   clearTimeout(freshnessRenderTimer);
   if (calculatedCardCache) freshnessRenderTimer = setTimeout(render, Math.max(1,calculatedCardCache.expires-Date.now()));
@@ -6109,6 +6159,7 @@ async function init() {
   const restoredConditions=new Map([...document.querySelectorAll('.search-settings input, .search-settings select')].map(el=>[el.id,conditionValue(el)]));
   readUrl();
   captureConditionOrigins(conditionDefaults,restoredConditions);
+  persistExplicitSearchSettings();
   loadFavorites();
   loadActualResults();
   loadGradeObservations();

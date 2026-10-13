@@ -74,6 +74,9 @@ try {
     @{ name = $_.TaskName; registrationValid = $Valid; target = if ($Valid) { 'site/work/run_psa_scheduled_update.ps1' } else { '登録先不一致・実行ファイルなし' }
        state = $_.State.ToString(); lastRun = $Info.LastRunTime.ToString('o'); result = $Info.LastTaskResult
        nextRun = if ($Info.NextRunTime.Year -gt 2000) { $Info.NextRunTime.ToString('o') } else { $null }
+       startWhenAvailable = [bool]$_.Settings.StartWhenAvailable; multipleInstances = $_.Settings.MultipleInstances.ToString()
+       wakeToRun = [bool]$_.Settings.WakeToRun; executionTimeLimit = $_.Settings.ExecutionTimeLimit
+       triggers = @($_.Triggers | ForEach-Object { @{ type = $_.CimClass.CimClassName; enabled = $_.Enabled; startBoundary = $_.StartBoundary } })
        preStartFailure = $PreStart; reason = if (!$Valid) { '登録先確認が必要' } elseif ($PreStart) { 'PSA処理の最終試行より新しいタスク起動失敗' } else { $null } }
   })
   if ($Observation.tasks.Count -ne 3) { $Observation.error = 'PSA更新タスクの登録数が3件ではありません' }

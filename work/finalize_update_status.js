@@ -359,5 +359,6 @@ fs.writeFileSync(HISTORY_OUTPUT, JSON.stringify(publishedHistory), "utf8");
 require('./build_psa10_period_statistics.js').build(ROOT);
 require('./build_buyback_posting_coverage.js').build(ROOT);
 require('./monitor_observation').banner(ROOT);
+require('./build_runtime_availability').build(ROOT);
 require('./build_ui_data.js').build(ROOT);
 console.log(JSON.stringify({ complete, completeDate: payload.completeDate, sources }));

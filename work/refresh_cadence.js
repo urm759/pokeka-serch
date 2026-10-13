@@ -1,5 +1,5 @@
 const HOUR = 3600000;
-function audit(runs, { now = Date.now(), intervalMs = 2 * HOUR, minute = 20 } = {}) {
+function audit(runs, { now = Date.now(), intervalMs = 2 * HOUR, minute = 20, verifiedRuns=[] } = {}) {
   const rows = runs.filter(r => r.event === 'schedule' && Number.isFinite(Date.parse(r.created_at)))
     .sort((a,b) => Date.parse(a.created_at)-Date.parse(b.created_at));
   const successes = rows.filter(r => r.conclusion === 'success');
@@ -18,7 +18,17 @@ function audit(runs, { now = Date.now(), intervalMs = 2 * HOUR, minute = 20 } = 
   }
   const latestGap=gaps.at(-1)?.ms ?? null;
   const conservativeGap=gaps.length?Math.max(...gaps.slice(-12).map(g=>g.ms)):null;
+  const publications=verifiedRuns.filter(r=>['priority','catchup','daily'].includes(r.key)&&Number.isFinite(Date.parse(r.recordedAt)))
+    .sort((a,b)=>Date.parse(a.recordedAt)-Date.parse(b.recordedAt));
+  const publicationGaps=publications.slice(1).map((r,i)=>({from:publications[i].recordedAt,to:r.recordedAt,
+    fromRun:publications[i].runId,toRun:r.runId,route:r.key,ms:Date.parse(r.recordedAt)-Date.parse(publications[i].recordedAt)}));
   return {version:1,checkedAt:new Date(now).toISOString(),configuredIntervalMs:intervalMs,
+    verifiedPublicationCadence:{samples:publications.length,gaps:publicationGaps,
+      latestMs:publicationGaps.at(-1)?.ms??null,maximumMs:publicationGaps.length?Math.max(...publicationGaps.map(g=>g.ms)):null,
+      basis:'取得・検証・保存・公開照合済みの経路を含む。独立取得元の部分失敗でジョブ全体が赤い場合も、正常値の公開証拠がある実行を別集計。カード別確認間隔・継続鮮度とは別'},
+    runStages:rows.map(r=>({id:r.id,url:r.html_url,status:r.status,conclusion:r.conclusion,createdAt:r.created_at,startedAt:r.run_started_at,
+      queuedMs:r.run_started_at?Math.max(0,Date.parse(r.run_started_at)-Date.parse(r.created_at)):null,
+      updatedAt:r.updated_at,note:'取得・保存・公開の個別工程は実行ログ/受領証で確認。APIの最終更新を公開時刻として代用しない'})),
     observedSuccessfulIntervalMs:conservativeGap,lastSuccessfulIntervalMs:latestGap,
     observedGeneratedIntervalMs:generatedGaps.length?Math.max(...generatedGaps.slice(-12)):null,
     sampleCount:rows.length,successSampleCount:successes.length,gaps,slots,

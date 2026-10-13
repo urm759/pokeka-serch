@@ -24,6 +24,13 @@ try {
   # Saved-data publication is independent of acquisition and repository synchronization.
   try { & (Join-Path $PSScriptRoot 'publish_psa_update.ps1') -PendingOnly }
   catch { Write-Warning 'Pending publication retained; continue independent acquisition.' }
+  if (Test-Path $StatePath) {
+    $ResumeArgs = @((Join-Path $PSScriptRoot 'pc_resume_gate.js'), $StatePath)
+    if ($Force) { $ResumeArgs += '--force' }
+    $Resume = (& $Node @ResumeArgs | ConvertFrom-Json)
+    if ($LASTEXITCODE -ne 0) { throw 'PC resume eligibility validation failed. Saved acquisition retained.' }
+    if (-not $Resume.allowed) { Write-Output $Resume.reason; exit 0 }
+  }
   if (-not $Force -and $previous.lastSuccessSlot -eq $SuccessSlot -and $previous.publishStatus -eq 'success') {
     Write-Output "PSA update already completed for $SuccessSlot"
     exit 0
