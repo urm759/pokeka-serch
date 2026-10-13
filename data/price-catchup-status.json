@@ -1,12 +1,12 @@
 {
-  "startedAt": "2026-10-13T06:53:30.892Z",
-  "runId": "38359269389",
+  "startedAt": "2026-10-13T12:11:43.659Z",
+  "runId": "38395472405",
   "event": "schedule",
-  "route": "通常価格更新",
+  "route": "既存監視ジョブの空白補完",
   "status": "acquired-saved",
   "allowed": true,
-  "ageMs": 18906431,
-  "minimumIntervalMs": 7200000,
+  "ageMs": 19092239,
+  "minimumIntervalMs": 9000000,
   "reason": "定期の空白・既存の期限順キューで補完",
   "llmCalls": 0,
   "codexCalls": 0,
@@ -14,23 +14,23 @@
     "work/run_tracked_update.js"
   ],
   "acquisitionStatus": "partial-with-failure",
-  "endedAt": "2026-10-13T07:01:39.653Z",
-  "durationMs": 488761,
+  "endedAt": "2026-10-13T12:19:55.531Z",
+  "durationMs": 491872,
   "outcomes": {
-    "baselineAt": "2026-10-13T06:53:30.892Z",
-    "commonCards": 12516,
-    "addedCards": 0,
-    "removedCards": 0,
-    "newlyAnalyzable": 9,
-    "lostAnalyzable": 0,
-    "filledCards": 36,
-    "filledItems": 51,
+    "baselineAt": "2026-10-13T12:11:43.659Z",
+    "commonCards": 12514,
+    "addedCards": 5,
+    "removedCards": 2,
+    "newlyAnalyzable": 7,
+    "lostAnalyzable": 2,
+    "filledCards": 39,
+    "filledItems": 44,
     "sources": {
       "cardrush": {
-        "newLinked": 0,
-        "validAdded": 0,
-        "validLost": 0,
-        "usableNet": 0,
+        "newLinked": 2,
+        "validAdded": 2,
+        "validLost": 1,
+        "usableNet": 1,
         "freshnessRecovered": 0
       },
       "hareruya2": {
@@ -70,8 +70,7 @@
       }
     },
     "referenceEvidenceRecovered": {
-      "psa9Evidence": 7,
-      "buybackExitEvidence": 7
+      "psa9Evidence": 10
     }
   },
   "publicationStatus": "保存済み・公開照合待ち"
