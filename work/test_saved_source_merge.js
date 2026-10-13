@@ -1,0 +1,10 @@
+const assert=require('node:assert/strict'),{latest,byKey,seedMerge}=require('./reconcile_saved_source_merge');
+const a={id:'a',price:10,observedAt:'2026-10-12T00:00:00Z'},b={...a,price:20,observedAt:'2026-10-13T00:00:00Z'};
+assert.deepEqual(latest(a,b),b);assert.deepEqual(latest(b,a),b);
+assert.throws(()=>latest(a,{...a,price:30}),/distinct timestamps/);
+assert.deepEqual(latest({...a,id:'correct'},a,a),{...a,id:'correct'},'one-sided identity repair survives unchanged normal data');
+assert.equal(byKey([a],[b],r=>r.id)[0].price,20);
+const history=seedMerge({days:[]},{days:[{date:'2026-10-12',n:1}]},{days:[{date:'2026-10-13',n:2}]});
+assert.equal(history.days.length,2);
+assert.equal(seedMerge({days:[]},{days:[{date:'2026-10-12',n:1}]},{days:[{date:'2026-10-12',n:2}]}).days.length,1,'same date is not double-counted');
+console.log('PASS saved source merge: newer individual observation, timestamp conflict hold, one-sided identity repair, daily history preservation');
