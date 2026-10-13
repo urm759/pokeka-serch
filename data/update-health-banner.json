@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-13T19:41:56.757Z",
+  "generatedAt": "2026-10-13T19:43:57.837Z",
   "sourceLastSuccessAt": "2026-10-13T12:12:13.827Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-10-13T16:10:04.592Z",
-    "lastSuccessAt": "2026-10-13T16:10:04.592Z",
-    "runId": "38427986957",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/38427986957"
+    "lastAttemptAt": "2026-10-13T19:43:57.828Z",
+    "lastSuccessAt": "2026-10-13T19:43:57.828Z",
+    "runId": "38455678560",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/38455678560"
   },
   "issues": [
     {
@@ -61,8 +61,14 @@
     {
       "key": "source:shopBuyback:manual-wait",
       "category": "確認が必要",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38423569427",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38455678560",
       "reason": "Web買取表: 買取ホムラ（郵送）: existing data was preserved: 取得0件。正常データは保持"
+    },
+    {
+      "key": "source:psaOfficial:manual-wait",
+      "category": "確認が必要",
+      "url": null,
+      "reason": "PSA公式枚数: Conversion from JSON failed with error: Unterminated string. Expected delimiter: \". Path 'reason', line 1, position 145."
     },
     {
       "key": "source:psaJapan:manual-wait",
@@ -105,6 +111,7 @@
     "遊々亭: HTTP 403",
     "遊々亭: 更新期限超過（カード別鮮度 0%）",
     "Web買取表: 買取ホムラ（郵送）: existing data was preserved: 取得0件。正常データは保持",
+    "PSA公式枚数: Conversion from JSON failed with error: Unterminated string. Expected delimiter: \". Path 'reason', line 1, position 145.",
     "PSA Japan料金: PSA Japan refresh failed; previous verified values retained: PSA Japan HTTP 403",
     "PSA Japan料金: 更新期限超過（カード別鮮度 未記録%）",
     "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）",
