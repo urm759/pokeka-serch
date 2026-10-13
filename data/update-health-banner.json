@@ -1,11 +1,13 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-13T02:49:39.839Z",
+  "generatedAt": "2026-10-13T03:55:05.449Z",
   "sourceLastSuccessAt": "2026-10-13T01:31:00.632Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-10-13T02:20:28.402Z",
-    "lastSuccessAt": "2026-10-13T02:20:28.402Z"
+    "lastAttemptAt": "2026-10-13T03:55:05.440Z",
+    "lastSuccessAt": "2026-10-13T03:55:05.440Z",
+    "runId": "38343806692",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/38343806692"
   },
   "issues": [
     {
@@ -65,19 +67,19 @@
     {
       "key": "source:psaJapan:manual-wait",
       "category": "アクセス・手動対応待ち",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38284111435",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38332459493",
       "reason": "PSA Japan料金: PSA Japan refresh failed; previous verified values retained: PSA Japan HTTP 403"
     },
     {
       "key": "source:psaJapan:stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38284111435",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38332459493",
       "reason": "PSA Japan料金: 更新期限超過（カード別鮮度 未記録%）"
     },
     {
       "key": "source:snkrRaw:stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38284111435",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38332459493",
       "reason": "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）"
     },
     {
@@ -97,30 +99,6 @@
       "category": "確認が必要",
       "url": "https://github.com/urm759/pokeka-serch/actions/runs/38320075163",
       "reason": "購入価格高速更新：一部取得元が失敗。独立した正常データは必須検証・保存・公開照合済み"
-    },
-    {
-      "key": "source:shopBuyback:manual-wait",
-      "category": "確認が必要",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38332459493",
-      "reason": "Web買取表: トレカバンク: existing data was preserved: 取得件数が前回の半分未満。急減を隔離し正常データ保持"
-    },
-    {
-      "key": "source:psaJapan:manual-wait",
-      "category": "アクセス・手動対応待ち",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38332459493",
-      "reason": "PSA Japan料金: PSA Japan refresh failed; previous verified values retained: PSA Japan HTTP 403"
-    },
-    {
-      "key": "source:psaJapan:stale",
-      "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38332459493",
-      "reason": "PSA Japan料金: 更新期限超過（カード別鮮度 未記録%）"
-    },
-    {
-      "key": "source:snkrRaw:stale",
-      "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38332459493",
-      "reason": "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）"
     }
   ],
   "reasons": [
