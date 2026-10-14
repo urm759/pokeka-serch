@@ -1,0 +1,15 @@
+const assert=require('node:assert/strict'),{combine,mergeRows}=require('./merge_expanded_daily_checkpoint');
+const b=[{id:'a',price:1000,url:null},{id:'gone',price:1000}];
+const a=[{id:'a',price:1100,url:'verified'},{id:'gone',price:1000},{id:'ours',price:2000}];
+const t=[{id:'a',price:1200,url:null},{id:'theirs',price:3000}];
+const rows=mergeRows(b,a,t,r=>r.id,'theirs');
+assert.equal(rows.find(r=>r.id==='a').url,'verified');
+assert.equal(rows.find(r=>r.id==='a').price,1200);
+assert(!rows.some(r=>!r||r.id==='gone'));
+assert(rows.some(r=>r.id==='ours')&&rows.some(r=>r.id==='theirs'));
+const old={price:1000,observedAt:'2026-10-14T00:00:00Z'},later={price:1100,observedAt:'2026-10-14T02:00:00Z'};
+assert.equal(combine({},old,later,'ours','/cards/a').price,1100);
+const checkpoints=combine({jobs:{}},{jobs:{a:{lastAttemptAt:'2026-10-14T01:00:00Z'}}},{jobs:{b:{lastAttemptAt:'2026-10-14T02:00:00Z'}}});
+assert.deepEqual(Object.keys(checkpoints.jobs).sort(),['a','b']);
+assert.deepEqual(combine([],['a'],['b']),['a','b']);
+console.log('PASS expanded daily merge: fieldwise URL preservation, current prices, additions, deletions and independent checkpoints');

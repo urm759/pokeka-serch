@@ -13,9 +13,14 @@ function build() {
   const added=current.filter(c=>!old.has(c.id)).map(c=>({id:c.id,name:c.name,price:c.price,psa10:c.snkPsa10Price,qualifiedProfiles:cycle.profiles.filter(p=>p.firstQualified.includes(c.id)).map(p=>p.id)}));
   const newlyAnalyzable=Object.entries(now.rows).filter(([id,r])=>prior.rows[id]&&!prior.rows[id].analysis&&r.analysis).map(([id])=>({id,name:byId.get(id)?.name}));
   const newPurchaseUrls=current.filter(c=>old.has(c.id)&&!old.get(c.id).hareruya2Url&&c.hareruya2Url).map(c=>({id:c.id,name:c.name,url:c.hareruya2Url}));
+  const manualRef='c0b1fef6';
+  const integration=fs.existsSync(path.join(ROOT,'work/expanded-daily-merge.json'))?read('work/expanded-daily-merge.json'):null;
+  const manual=integration?JSON.parse(cp.execFileSync('git',['show',`${manualRef}:data/expanded-profile-outcomes.json`],{cwd:ROOT,maxBuffer:10000000})):null;
+  const manualSnapshot=integration?outcomes.unpack(JSON.parse(cp.execFileSync('git',['show',`${manualRef}:work/completion-outcomes-last.json`],{cwd:ROOT,maxBuffer:30000000}))):null;
   const completionRuns=['work/expanded-completion-20261014.log','work/expanded-completion-broad-20261014.log'].map(f=>lastJson(f,x=>Array.isArray(x.selected)&&Number.isFinite(x.attempted)));
   const report={version:1,at:now.at,baselineAt:before.at,baseCommit:'e1431005',conditions:'固定URL A/Bと承認済み2項目のみ。その他端末条件は未観測。安全/鮮度/式/点数は変更しない',
     overall:outcomes.compare(prior,now),newListed:added,newlyAnalyzable,newPurchaseUrls,
+    integration:integration?{...integration,manualCheckpoint:{commit:manualRef,overall:manual.overall,profiles:manual.profiles.map(p=>({id:p.id,before:p.before,after:p.after,filled:p.profileFilledCards,firstQualified:p.firstQualified}))},afterManual:outcomes.compare(manualSnapshot,now),note:'手動実取得の成果と、その後の定期Daily統合の変化を分離。再取得0、両原票はGitと三者退避に保持。'}:null,
     acquisition:{psa:read('work/psa-fetch-progress.json'),completionRuns:completionRuns.map(r=>r&&({startedAt:r.startedAt,endedAt:r.endedAt,durationMs:r.durationMs,attempted:r.attempted,acquired:r.acquired,newAcquired:r.newAcquired,failures:r.failures,stopReason:r.stopReason})),
       priceRefresh:read('work/candidate-shop-refresh.json').sources.hareruya2},
     profiles:cycle.profiles,freshness:read('data/priority-price-monitor.json').fixedCohortFreshness,
