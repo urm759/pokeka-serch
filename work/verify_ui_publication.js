@@ -3,6 +3,10 @@ const crypto = require('node:crypto');
 const fs = require('node:fs'), path = require('node:path');
 const codec = require('../ui-data-codec.js');
 const base = 'https://urm759.github.io/pokeka-serch/';
+function validatePublishedHtml(html, expected) {
+  assert.equal(html.replace(/\r\n/g,'\n'),expected.replace(/\r\n/g,'\n'),'published HTML and cache-version URLs must match the saved version');
+  for (const feature of ['exploration-metrics.js','settings-disclosure.js','keyed-card-renderer.js','ui-data-codec.js','efficiencyMinInput','observation200MaxInput','value="current-target"','value="obs200"']) assert(html.includes(feature),`published feature missing: ${feature}`);
+}
 async function read(file) {
   const response = await fetch(base + file, {signal:AbortSignal.timeout(30000)});
   if (!response.ok) throw new Error(`${file}: HTTP ${response.status}`);
@@ -10,10 +14,7 @@ async function read(file) {
 }
 async function main() {
   const html = await read('index.html?verify=' + Date.now());
-  assert(html.includes('exploration-metrics.js') && html.includes('settings-disclosure.js') && html.includes('keyed-card-renderer.js') && html.includes('ui-data-codec.js') && html.includes('efficiencyMinInput'));
-  assert(html.includes('20261013-observation-efficiency-v1') && html.includes('observation200MaxInput'));
-  assert(html.includes('20261013-current-target-v1') && html.includes('value="current-target"'));
-  assert(html.includes('20261014-period-efficiency-v1') && html.includes('value="obs200"'));
+  validatePublishedHtml(html,fs.readFileSync(path.join(__dirname,'../index.html'),'utf8'));
   const manifest = JSON.parse(await read('data/ui/manifest.json?verify=' + Date.now()));
   const expected = JSON.parse(fs.readFileSync(path.join(__dirname,'../data/ui/manifest.json'),'utf8'));
   assert.equal(manifest.revision, expected.revision, 'must verify the newly published revision');
@@ -79,4 +80,5 @@ async function main() {
     filled:audit.counts.filledCards,newAnalyzable:audit.counts.newlyAnalyzable,
     psaLinked:Object.keys(population.cards).length,currentHeld:Object.keys(population.specificationHeld).length,allComplete:update.complete}));
 }
-main().catch(error=>{console.error(error.message);process.exitCode=1;});
+if(require.main===module)main().catch(error=>{console.error(error.message);process.exitCode=1;});
+module.exports={validatePublishedHtml};

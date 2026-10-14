@@ -27,4 +27,4 @@ http.createServer((req,res) => {
       ...(gzip ? {'content-encoding':'gzip'} : {})});
     res.end(gzip ? zlib.gzipSync(data) : data);
   } catch { res.writeHead(404).end(); }
-}).listen(8765,'127.0.0.1',()=>console.log('Local performance preview: before/after share identical current data; double is an isolated synthetic fixture.'));
+}).listen(Number(process.env.PERFORMANCE_PREVIEW_PORT || 8765),'127.0.0.1',()=>console.log('Local performance preview: before/after share identical current data; double is an isolated synthetic fixture.'));
