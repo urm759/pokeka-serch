@@ -26,7 +26,8 @@ assert.equal(both.expectedSale,store.expectedSale);assert.match(both.exitLabel,/
 assert.equal(m.meanEfficiencyEconomics(null,summary,card,view,7,'both',settings,now).expectedSale,null,'missing other exit cannot switch');
 const config=require('./priority-search-profiles.json');assert.equal(config.profiles.length,2);
 assert.equal(new URL(config.profiles[0].url).searchParams.get('annual'),'40');assert.equal(new URL(config.profiles[0].url).searchParams.get('effMin'),'15');
-assert.equal(new URL(config.profiles[1].url).searchParams.get('storeDemand'),'normal-up');assert.equal(config.knownSavedOverlay.obs7Min,'1000');assert.equal(config.knownSavedOverlay.obsRef,'0');
+assert.equal(new URL(config.profiles[1].url).searchParams.get('storeDemand'),'normal-up');assert.equal(config.historicalSavedOverlay.obs7Min,'1000');assert.equal(config.historicalSavedOverlay.obsRef,'0');
+assert.equal(config.knownSavedOverlay.obs7Min,'off');assert.equal(config.knownSavedOverlay.obsRef,'1','only the two explicitly approved restored conditions apply, never the obsolete validation overlay');
 const route=require('./build_priority_search_targets').routeNeededFields({i:{shopStateA:'取得済み'},e:[1,1]},['shopStateA','buybackExitEvidence']);
 assert.deepEqual(route.map(r=>r.source).sort(),['domesticShops','shopBuyback'],'expired acquired fields still route to rechecks');
 console.log('PASS buyback mean proof, calendar gaps, same-day, identity, exits, costs, expiry, fixed A/B profiles');

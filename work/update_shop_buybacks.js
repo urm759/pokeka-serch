@@ -774,7 +774,7 @@ async function main() {
       unmatched: result?.unmatched?.length ?? previous.unmatched ?? null,
       sourceUpdatedAt: result ? null : previous.sourceUpdatedAt || null,
       pagination: result?.pagination || previous.pagination || null,
-      error: failures.find((f) => f.source === shop.id)?.error || null,
+      error: result ? null : failures.find((f) => f.source === shop.id)?.error || previous.error || null,
       observedDays: (history.observedByShop[shop.id] || []).length,
       matched: result ? result.matched.length : Number(previous.matched || 0),
       activeMatched: result ? result.matched.filter((item) => item.active).length : Number(previous.activeMatched || 0),

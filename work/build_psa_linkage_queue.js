@@ -8,7 +8,7 @@ function psaIdentity(card) {
   const promo = bracket.match(/^(\d+)[\s/]+((?:XY|SM|S|SV|M)-P)$/);
   const standard = bracket.match(/^([A-Z0-9+\-]+)\s+(\d+)(?:\/\d+)?$/);
   return promo ? { setCode: promo[2], cardNumber: String(Number(promo[1])) }
-    : standard ? { setCode: standard[1], cardNumber: String(Number(standard[2])) }
+    : standard ? { setCode: standard[1]==='XY' && /THE BEST OF XY/i.test(card.name || '') ? 'XY-BEST' : standard[1], cardNumber: String(Number(standard[2])) }
       : { setCode: String(card.setCode || "").toUpperCase().replace(/^(XY|SM|S|SV|M)P$/, "$1-P"), cardNumber: null };
 }
 

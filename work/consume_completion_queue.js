@@ -31,7 +31,8 @@ function run() {
   const state = read("work/completion-acquisition-checkpoint.json", { cards: {} });
   const candidates = plan(cards, queue, state);
   const focus = buildFocus(ROOT);
-  const requested=new Set([...(read('work/search-profile-targets.json').routes?.domesticShops||[]).map(r=>r.id),
+  const profileTargets=read('work/search-profile-targets.json');
+  const requested=new Set([...(profileTargets.readyRoutes?.domesticShops || profileTargets.routes?.domesticShops || []).map(r=>r.id),
     ...(read('data/state-a-url-discovery.json').records||[]).filter(r=>r.status==='linked').map(r=>r.id)]);
   const eligible = eligibleForHareru(candidates, read("work/hareruya2_catalog.json", []),start,requested);
   const selectionReasons = { queuedCards: (queue.queue || []).length, retryEligibleCards: candidates.length,

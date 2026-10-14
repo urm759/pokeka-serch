@@ -18,7 +18,12 @@ function profileDelta(before,after,beforeRows,afterRows) {
     const b=beforeRows[id],a=afterRows[id];
     if(b&&a&&Object.entries(a.sources).some(([s,v])=>v.fresh&&v.valid&&!b.sources[s]?.fresh))freshnessRestored.push(id);
   }
+  const purchaseFilled=(before.rows || []).filter(r=>r.unverifiedProspect&&r.missing?.includes('shopStateA')&&r.buy==null&&after.inspectedRows?.[r.id]?.purchaseConfirmed).map(r=>r.id);
+  const buybackFilled=(before.rows || []).filter(r=>r.unverifiedProspect&&r.missing?.includes('buybackExitEvidence')&&after.inspectedRows?.[r.id]?.buybackConfirmed).map(r=>r.id);
   return {id:after.id,before:before.ids.length,after:after.ids.length,newListed:Object.keys(afterRows).filter(id=>!beforeRows[id]).length,
+    purchaseFilled,buybackFilled,profileFilledCards:new Set([...completed.map(r=>r.id),...purchaseFilled,...buybackFilled]).size,
+    completedProspectOutcomes:[...new Set([...completed.map(r=>r.id),...purchaseFilled,...buybackFilled])].map(id=>({id,name:(before.rows || []).find(r=>r.id===id)?.name || null,
+      qualified:current.has(id),values:after.inspectedRows?.[id] || null,reasons:after.allExclusions?.[id] || []})),
     filledCards:completed.length,completed,newLinked:linked,firstQualified:gained.filter(id=>!seen.has(id)&&!freshnessRestored.includes(id)),freshnessRestored,gained,lost,
     lostReasons:lost.map(id=>({id,reasons:after.allExclusions?.[id]||['最新条件で不合格・別監査で根拠確認']})),
     remainingProspects:after.prospects,routePending:Object.fromEntries(Object.entries(after.routes).map(([s,r])=>[s,new Set(r.map(x=>x.id)).size])),
@@ -37,8 +42,10 @@ function record(key,root=ROOT) {
   const before=read(root,`work/search-profile-cycle-baseline-${key}.json`,null);
   if(!before||String(before.runId)!==String(process.env.GITHUB_RUN_ID||null))return null;
   const now=new Date().toISOString(),config=read(root,'work/priority-search-profiles.json');
-  const profiles=config.profiles.map(p=>evaluate(p,now,{},before.profiles.find(r=>r.id===p.id)?.ids||[]));
+  const profiles=config.profiles.map(p=>evaluate(p,now,{},(before.profiles.find(r=>r.id===p.id)?.rows||[]).map(r=>r.id)));
   const afterRows=outcomes.snapshot(root,Date.parse(now)).rows,beforeRows=outcomes.unpack(before.snapshot).rows;
+  const currentPsaUrls=Object.fromEntries((read(root,'work/psa-linkage-all.json').rows||[]).map(r=>[r.cardId,r.sourceSetUrl]));
+  const currentPop=read(root,'data/psa-population-summary.json').cards || {};
   const inRun=at=>Date.parse(at)>=Date.parse(before.at)&&Date.parse(at)<=Date.parse(now);
   const comparisons=profiles.map(p=>{
     const b=before.profiles.find(r=>r.id===p.id);if(b?.urlHash!==p.urlHash)return {id:p.id,status:'条件変更・比較不能'};
@@ -48,11 +55,11 @@ function record(key,root=ROOT) {
       const ids=new Set(requests.map(r=>r.id));
       const shopRecords=source==='domesticShops'?Object.values(read(root,'work/candidate-shop-refresh.json').sources||{}).flatMap(s=>s.records||[]):[];
       const psaRecords=source==='psaOfficial'?(read(root,'work/psa-fetch-progress.json').records||[]):[];
-      const attempted=source==='psaOfficial'?[...ids].filter(id=>psaRecords.some(r=>r.url===before.psaUrls?.[id]&&inRun(r.fetchedAt)))
+      const attempted=source==='psaOfficial'?[...ids].filter(id=>psaRecords.some(r=>r.url===(currentPop[id]?.u || currentPsaUrls[id] || before.psaUrls?.[id])&&inRun(r.fetchedAt)))
         :shopRecords.filter(r=>ids.has(r.id)&&inRun(r.startedAt)).map(r=>r.id);
       const sourceRecord=read(root,'work/source-update-runs.json').sources?.[source==='domesticShops'?'hareruya2':source];
       delta.consumption[source]={requestedCards:ids.size,itemAttemptedIds:[...new Set(attempted)],
-        itemEvidenceCoverage:source==='psaOfficial'&&!before.psaUrls?'取得前のカード別URL記録なし・試行0件と断定しない':'個別記録に基づく試行数。最新実行以外は取得履歴を参照',
+        itemEvidenceCoverage:source==='psaOfficial'?'カード所属の公式セットURLの取得記録（今回の正規URL発見を含む）。カードの取得・仕様照合成功とは別':'個別記録に基づく試行数。最新実行以外は取得履歴を参照',
         bulkAttempted:sourceRecord&&inRun(sourceRecord.lastAttemptAt)?{at:sourceRecord.lastAttemptAt,status:sourceRecord.status,reason:sourceRecord.lastError||null}:null,
         note:'個別試行の証拠と一括取得の実行を分離。成功やURL発見を新規有効値と数えない'};
     }

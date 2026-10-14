@@ -8,6 +8,10 @@ const delta=profileDelta(before,after,b,a);
 assert.equal(delta.newListed,1);assert.equal(delta.filledCards,1);assert.deepEqual(delta.completed[0].fields,['psaOfficial']);assert.equal(delta.completed[0].newlyAnalyzable,true);
 assert.deepEqual(delta.firstQualified,['pending','new'],'known historical candidate returning is not first qualification');assert.deepEqual(delta.freshnessRestored,['returned']);assert.equal(delta.newLinked.length,1);assert.deepEqual(delta.lost,['leaving']);assert.equal(delta.routePending.psaOfficial,1);
 assert(delta.lostReasons[0].reasons.includes('購入価格・期限超過'));
+const priceOnly=profileDelta({...before,rows:[{id:'pending',unverifiedProspect:true,missing:['shopStateA'],buy:null}]},
+  {...after,inspectedRows:{pending:{purchaseConfirmed:true}}},b,b);
+assert.deepEqual(priceOnly.purchaseFilled,['pending'],'new fresh in-stock price is completed even when a reference field was previously acquired');
+assert.equal(priceOnly.profileFilledCards,1);
 const {eligibleForHareru}=require('./consume_completion_queue');
 const pending=[{card:{id:'url-found',hareruya2Url:'https://www.hareruya2.com/products/fixture'},detail:{i:{shopStateA:'取得済み'}}}];
 assert.equal(eligibleForHareru(pending,[],Date.now(),new Set(['url-found'])).length,1,'new exact URL must reach real price acquisition even when a reference field was already present');
