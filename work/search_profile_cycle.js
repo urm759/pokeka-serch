@@ -25,7 +25,11 @@ function profileDelta(before,after,beforeRows,afterRows) {
     completedProspectOutcomes:[...new Set([...completed.map(r=>r.id),...purchaseFilled,...buybackFilled])].map(id=>({id,name:(before.rows || []).find(r=>r.id===id)?.name || null,
       qualified:current.has(id),values:after.inspectedRows?.[id] || null,reasons:after.allExclusions?.[id] || []})),
     filledCards:completed.length,completed,newLinked:linked,firstQualified:gained.filter(id=>!seen.has(id)&&!freshnessRestored.includes(id)),freshnessRestored,gained,lost,
-    lostReasons:lost.map(id=>({id,reasons:after.allExclusions?.[id]||['最新条件で不合格・別監査で根拠確認']})),
+    lostReasons:lost.map(id=>({id,reasons:after.allExclusions?.[id]||['最新条件で不合格・別監査で根拠確認'],
+      before:before.rows.find(r=>r.id===id)?.metrics||null,after:after.inspectedRows?.[id]?.metrics||null,
+      newlyFailed:(after.allExclusions?.[id]||[]).filter(r=>!before.rows.find(b=>b.id===id)?.reasons?.includes(r)),
+      newDecisionFailures:(after.inspectedRows?.[id]?.metrics?.decision?.reasons||[]).filter(r=>!before.rows.find(b=>b.id===id)?.metrics?.decision?.reasons?.includes(r)),
+      comparability:before.rows.find(r=>r.id===id)?.metrics?'個別前後値を保存済み':'旧版の個別詳細不足・原因を断定しない'})),
     remainingProspects:after.prospects,routePending:Object.fromEntries(Object.entries(after.routes).map(([s,r])=>[s,new Set(r.map(x=>x.id)).size])),
     note:'URL全項目固定、取得前後の実時刻は別。期限経過も差分要因で相場変化と断定しない。補完は必須項目復帰、URL発見/再確認とは別。鮮度復帰は初適合へ重複計上しない。探索適合は購入GOではない'};
 }

@@ -16,9 +16,13 @@ function plan(cards, queue, checkpoint, now = Date.now()) {
   }).map((id) => ({ card: byId.get(id), detail: queue.cards?.[id] })).filter((row) => row.card && row.detail)
     .sort((a, b) => Number(b.detail.a || 0) - Number(a.detail.a || 0) || Number(b.detail.p || 0) - Number(a.detail.p || 0));
 }
-function eligibleForHareru(candidates, catalog, now = Date.now(), requested = new Set()) {
+function eligibleForHareru(candidates, catalog, now = Date.now(), requested = new Set(), guard = {}) {
+  if(guard.sourceBlocked)return [];
   const byId = new Map(catalog.map((row) => [row.cardId, row]));
   return candidates.filter((r) => {
+    if(guard.manualWait?.[r.card.id]?.url===r.card.hareruya2Url)return false;
+    const job=guard.jobs?.[r.card.id],at=Date.parse(job?.nextRetryAt||'');
+    if(job?.url===r.card.hareruya2Url&&Number.isFinite(at)&&at>now)return false;
     const previous = byId.get(r.card.id);
     const observed = Date.parse(previous?.observedAt || "");
     return r.detail && (needs(r.detail, "shopStateA") || requested.has(r.card.id)) && r.card.hareruya2Url && !(Number(previous?.price) > 0 && observed <= now && now - observed < 2 * 86400000);
@@ -34,13 +38,17 @@ function run() {
   const profileTargets=read('work/search-profile-targets.json');
   const requested=new Set([...(profileTargets.readyRoutes?.domesticShops || profileTargets.routes?.domesticShops || []).map(r=>r.id),
     ...(read('data/state-a-url-discovery.json').records||[]).filter(r=>r.status==='linked').map(r=>r.id)]);
-  const eligible = eligibleForHareru(candidates, read("work/hareruya2_catalog.json", []),start,requested);
+  const shopGuard=read('work/candidate-shop-refresh.json').checkpoints?.hareruya2 || {};
+  const guard={...shopGuard,jobs:read('work/priority-price-checkpoint.json').sources?.hareruya2?.jobs||{}};
+  const eligible = eligibleForHareru(candidates, read("work/hareruya2_catalog.json", []),start,requested,guard);
   const selectionReasons = { queuedCards: (queue.queue || []).length, retryEligibleCards: candidates.length,
     missingStateACards: candidates.filter(r => needs(r.detail, "shopStateA")).length,
     missingStateAWithUrl: candidates.filter(r => needs(r.detail, "shopStateA") && r.card.hareruya2Url).length,
     eligibleHareruCards: eligible.length, psaOnlyCards: candidates.filter(r => r.detail.m?.length === 1 && r.detail.m[0] === "psaOfficial").length,
     heldCards: Object.values(state.cards || {}).filter(r => r.held).length,
-    retryWaitingCards: Object.values(state.cards || {}).filter(r => !r.held && Date.parse(r.nextRetryAt) > start).length };
+    retryWaitingCards: Object.values(state.cards || {}).filter(r => !r.held && Date.parse(r.nextRetryAt) > start).length,
+    shopManualWaitCards:candidates.filter(r=>requested.has(r.card.id)&&shopGuard.manualWait?.[r.card.id]?.url===r.card.hareruya2Url).length,
+    sourceBlocked:shopGuard.sourceBlocked || null };
   const groupOrder = new Map(focus.groups.map((g, i) => [g.id, i]));
   eligible.sort((a, b) => {
     const fa = focus.cards[a.card.id], fb = focus.cards[b.card.id];
@@ -52,7 +60,11 @@ function run() {
   const msPerCard = last.refreshedCount > 0 ? Math.max(3000, last.durationMs / last.refreshedCount) : 5000;
   const capacity = Math.max(1, Math.floor((maxTime - 36000) / msPerCard));
   const selected = fairBatch(eligible, Math.max(1, Number(process.env.COMPLETION_BATCH || capacity)), (r) => focus.cards[r.card.id]?.pending.includes("shopStateA"), focus.maxFocusedShare);
-  const run = { startedAt: new Date(start).toISOString(), llmCalls: 0, codexCalls: 0, selectionReasons, zeroTargetReason: selected.length ? null : !selectionReasons.missingStateACards ? "状態A不足は現選択対象にない。他項目の補完待ちは継続" : !selectionReasons.missingStateAWithUrl ? "状態A不足カードの晴れる屋2確定URLなし・探索担当へ" : "正常値キャッシュまたは再試行待ち・全補完完了ではない", focusedSelected: selected.filter((r) => focus.cards[r.card.id]).length, normalSelected: selected.filter((r) => !focus.cards[r.card.id]).length, selected: selected.map((r) => ({ id: r.card.id, priority: r.detail.p, reasons: [focus.cards[r.card.id]?.priorityReason, ...r.detail.r].filter(Boolean), missingRequired: r.detail.m })), attempted: 0, acquired: 0, newAcquired: 0, newLinked: 0, failures: 0, checkpoint: null, stopReason: null };
+  const zeroTargetReason=selected.length?null:shopGuard.sourceBlocked?'取得元のアクセス停止・正常値と再開位置を保持'
+    :selectionReasons.shopManualWaitCards?'指定条件の購入URLは仕様・手動確認待ち。別対象の通常巡回は維持'
+    :!selectionReasons.missingStateACards?'状態A不足は現選択対象にない。他項目の補完待ちは継続'
+    :!selectionReasons.missingStateAWithUrl?'状態A不足カードの晴れる屋2確定URLなし・探索担当へ':'正常値キャッシュまたは再試行待ち・全補完完了ではない';
+  const run = { startedAt: new Date(start).toISOString(), llmCalls: 0, codexCalls: 0, selectionReasons, zeroTargetReason, focusedSelected: selected.filter((r) => focus.cards[r.card.id]).length, normalSelected: selected.filter((r) => !focus.cards[r.card.id]).length, selected: selected.map((r) => ({ id: r.card.id, priority: r.detail.p, reasons: [focus.cards[r.card.id]?.priorityReason, ...r.detail.r].filter(Boolean), missingRequired: r.detail.m })), attempted: 0, acquired: 0, newAcquired: 0, newLinked: 0, failures: 0, checkpoint: null, stopReason: null };
   save("work/completion-acquisition-checkpoint.json", { ...state, running: run });
   const result = selected.length ? spawnSync(process.execPath, ["work/refresh_candidate_shops.js", "hareruya2"], { cwd: ROOT, encoding: "utf8", timeout: maxTime + 3000,
     env: { ...process.env, COMPLETION_PRIORITY_IDS: selected.map((r) => r.card.id).join(","), CANDIDATE_SHOP_BATCH: String(selected.length), CANDIDATE_SHOP_TIME_MS: String(maxTime - 20000), CANDIDATE_SHOP_INTERVAL_MS: "1200" } }) : null;
@@ -79,7 +91,7 @@ function run() {
   };
   state.lastRun = run; delete state.running;
   save("work/completion-acquisition-checkpoint.json", state);
-  const pending = eligibleForHareru(plan(cards, queue, state), read("work/hareruya2_catalog.json", []),Date.now(),requested).length;
+  const pending = eligibleForHareru(plan(cards, queue, state), read("work/hareruya2_catalog.json", []),Date.now(),requested,guard).length;
   const routing = {};
   for (const candidate of candidates) for (const route of routes(candidate.detail)) {
     const key = `${route.source}:${route.mode}`;

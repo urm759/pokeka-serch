@@ -1,0 +1,25 @@
+{
+  "runId": 38530514320,
+  "jobId": 115741012331,
+  "trigger": "schedule",
+  "sha": "0b0f82daeeb2ffbc4e882950a30f4184a3275ce6",
+  "fetch": "success-with-independent-buyback-failure",
+  "validation": "success",
+  "publication": "8b8e54a92e231a24f19196acaf03ebafe2830f93",
+  "overall": "failure",
+  "failureStage": "Report independent acquisition failures without hiding them",
+  "stopReason": "買取ホムラ0件・正常データ保持。公開工程の失敗ではない",
+  "evidence": [
+    "2026-10-14T07:47:55.4218586Z FAST_UPDATE_RESULT {\"changed\":true,\"changedCards\":6669,\"processedCards\":12523,\"regeneratedFiles\":6,\"httpRequests\":3,\"cacheHits\":0,\"durationMs\":1940,\"reason\":\"content changed\",\"llmCalls\":0}",
+    "2026-10-14T07:48:15.4546027Z {\"sourceId\":\"shopBuyback\",\"lastAttemptAt\":\"2026-10-14T07:47:56.045Z\",\"startedAt\":\"2026-10-14T07:47:56.045Z\",\"endedAt\":\"2026-10-14T07:48:15.410Z\",\"durationMs\":19365,\"status\":\"failed\",\"acquiredCount\":1003,\"catalogCount\":1003,\"newLinkedCount\":null,\"updatedCount\":3,\"dataChanged\":true,\"sourceState\":\"取得処理失敗\",\"fetchFailureCount\":1,\"timedOut\":false,\"terminationReason\":null,\"completionStatus\":null,\"lastError\":\"買取ホムラ（郵送）: existing data was preserved: 取得0件。正常データは保持\\nshop buyback refresh skipped; existing data was preserved: 一部取得失敗（正常データ保持）: kaitori-homura-mail: 取得0件。正常データは保持\\n\",\"executionEnvironment\":\"GitHub Actions\",\"workflowRunId\":\"38530514320\",\"workflowTrigger\":\"schedule\"}",
+    "2026-10-14T07:48:15.4548808Z 買取ホムラ（郵送）: existing data was preserved: 取得0件。正常データは保持",
+    "2026-10-14T07:48:15.4549691Z shop buyback refresh skipped; existing data was preserved: 一部取得失敗（正常データ保持）: kaitori-homura-mail: 取得0件。正常データは保持",
+    "2026-10-14T07:56:25.7314278Z {\"recorded\":\"priority\",\"runId\":\"38530514320\",\"counts\":{\"listed\":12523,\"analyzable\":2222,\"pending\":10301,\"oneAway\":1673}}",
+    "2026-10-14T07:56:56.9802397Z {\"status\":\"published\",\"published\":true,\"commit\":\"8b8e54a92e231a24f19196acaf03ebafe2830f93\"}",
+    "2026-10-14T07:56:57.0452455Z Independent source failures retained: work/run_tracked_update.js",
+    "2026-10-14T07:56:59.2054830Z {\"directory\":\"/home/runner/work/pokeka-serch/pokeka-serch/work/unpublished-recovery/38530514320-1791964617082\",\"files\":739,\"invalidJson\":[],\"verified\":true}",
+    "2026-10-14T07:56:59.2636637Z {\"source\":\"priority-prices\",\"recovery\":\"/home/runner/work/pokeka-serch/pokeka-serch/data/backfill-recovery.json\",\"workflowRunId\":\"38530514320\"}",
+    "2026-10-14T07:56:59.2749339Z   name: priority-price-recovery-38530514320-1",
+    "2026-10-14T07:56:59.7226196Z Uploading artifact: priority-price-recovery-38530514320-1.zip"
+  ]
+}

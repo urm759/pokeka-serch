@@ -26,11 +26,9 @@ function build(root) {
   const psaOnly = Object.entries(completion.cards || {}).filter(([, c]) => c.m?.length === 1 && c.m[0] === "psaOfficial");
   const links = new Map((linkage.rows || []).map(row => [row.cardId, row]));
   const causes = {}, records = [];
-  for (const [id] of psaOnly) {
-    const link = links.get(id), retry = psa.retryByUrl?.[link?.sourceSetUrl];
-    const cause = !link ? "照合キュー未接続" : link.status === "ambiguous" ? "仕様・URL曖昧" : !link.sourceSetUrl ? "公式セットURL未登録"
-      : retry ? retry.status === "retry-wait" ? "一時障害・再試行待ち" : "個別セット確認待ち"
-        : /manual-wait/.test(psa.status || "") ? "認証・アクセス確認待ち" : "登録URLの取得範囲・未一致確認";
+  for (const [id,detail] of psaOnly) {
+    const link = links.get(id);
+    const cause = !link ? "照合キュー未接続" : require('./build_one_item_completion_audit').classify(detail,link,psa);
     causes[cause] = (causes[cause] || 0) + 1;
     records.push({ id, setCode: link?.setCode || null, url: link?.sourceSetUrl || null, cause });
   }

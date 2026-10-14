@@ -1,5 +1,13 @@
 function buybackState(row,meta,now=Date.now()) {
   if(row?.quarantined)return 'quarantined';
+  if(row?.listingActive===false){
+    const checked=Date.parse(meta.lastSuccess||'');
+    if(meta.error)return 'source-failure';
+    if(!Number.isFinite(checked))return 'unacquired';
+    if(checked>now||now-checked>168*3600000)return 'table-expired';
+    if(meta.fullListingConfirmedAt!==meta.lastSuccess)return 'coverage-incomplete';
+    return meta.unmatched===0?'confirmed-unlisted':'unmatched-or-unlisted';
+  }
   if(row?.stale)return 'expired';
   if(row?.valid && row.buybackPrice>0)return 'usable';
   if(row?.buybackPrice>0)return 'identity-or-price-unverified';

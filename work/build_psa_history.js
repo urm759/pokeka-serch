@@ -16,7 +16,7 @@ function dayKey(date = new Date()) { return new Intl.DateTimeFormat("sv-SE", { t
 function normalizeNo(value) { const raw = String(value || "").replace(/^#/, "").trim().toUpperCase(); return raw.replace(/^0+(?=\d)/, ""); }
 function shortSet(value) {
   const raw = String(value || "").trim().toUpperCase();
-  if (/^(?:XY-BEST|S8A-[PG]|(?:XY|SM|S|SV|M)-P)$/.test(raw)) return raw;
+  if (/^(?:SC-SHINY|XY-BEST|S8A-[PG]|(?:XY|SM|S|SV|M)-P)$/.test(raw)) return raw;
   return raw.split(/[-\s]/)[0];
 }
 function cardIdentity(card) {
@@ -31,7 +31,9 @@ function cardIdentity(card) {
   }
   const parts = inside.split(/\s+/);
   const numberToken = parts.slice(1).find((part) => /^\d/.test(part)) || parts[1] || "";
-  return { set: parts[0]==='XY' && /THE BEST OF XY/i.test(card.name || '') ? 'XY-BEST' : shortSet(parts[0]), no: normalizeNo(numberToken.split("/")[0]) };
+  const set=parts[0]==='SC' && /シャイニーコレクション/i.test(card.name || '') ? 'SC-SHINY'
+    : parts[0]==='XY' && /THE BEST OF XY/i.test(card.name || '') ? 'XY-BEST' : shortSet(parts[0]);
+  return { set, no: normalizeNo(numberToken.split("/")[0]) };
 }
 function cleanName(value) {
   return String(value || "").toLowerCase()

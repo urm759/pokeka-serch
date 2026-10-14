@@ -16,4 +16,7 @@ const {eligibleForHareru}=require('./consume_completion_queue');
 const pending=[{card:{id:'url-found',hareruya2Url:'https://www.hareruya2.com/products/fixture'},detail:{i:{shopStateA:'取得済み'}}}];
 assert.equal(eligibleForHareru(pending,[],Date.now(),new Set(['url-found'])).length,1,'new exact URL must reach real price acquisition even when a reference field was already present');
 assert.equal(eligibleForHareru(pending,[{cardId:'url-found',price:100,observedAt:new Date().toISOString()}],Date.now(),new Set(['url-found'])).length,0,'fresh saved purchase price keeps the existing cooldown');
+assert.equal(eligibleForHareru(pending,[],Date.now(),new Set(['url-found']),{manualWait:{'url-found':{url:pending[0].card.hareruya2Url}}}).length,0,'manual-held URL is not repeatedly dispatched');
+assert.equal(eligibleForHareru(pending,[],Date.now(),new Set(['url-found']),{sourceBlocked:'HTTP 403'}).length,0);
+assert.equal(eligibleForHareru(pending,[],Date.now(),new Set(['url-found']),{jobs:{'url-found':{url:pending[0].card.hareruya2Url,nextRetryAt:new Date(Date.now()+3600000).toISOString()}}}).length,0);
 console.log('PASS fixed search-profile cycle: actual fields, new listing, first qualification, returning freshness, reasons and overlapping route counts');

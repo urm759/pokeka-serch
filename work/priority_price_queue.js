@@ -59,6 +59,7 @@ function load(sourceId, root = ROOT, now = Date.now()) {
   const requested=read(root,'work/search-profile-targets.json');
   const profileRows=Object.fromEntries([
     ...(requested.profiles||[]).flatMap(p=>p.urlsMatched||[]),
+    ...(requested.freshnessRecovery||[]).map(r=>r.id),
     ...(requested.routes?.domesticShops||[]).map(r=>r.id)
   ].map(id=>[id,{priceRefreshReady:true,requestedProfile:true}]));
   return plan({ cards: read(root, "data/pokemon-cards.json", []), sourceId,

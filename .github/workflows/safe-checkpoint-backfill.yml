@@ -73,6 +73,8 @@ jobs:
           node work/test_period_efficiency_average.js
           node work/test_search_profile_cycle.js
           node work/test_profile_completion_routes.js
+          node work/test_profile_candidate_evidence.js
+          node work/test_profile_buyback_unmatched.js
           node work/test_safe_backfill.js
           node work/test_purchase_limit_audit.js
           node work/test_preset_exploration.js
