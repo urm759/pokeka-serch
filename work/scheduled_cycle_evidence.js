@@ -22,6 +22,7 @@ function verify(run, jobs, receipt, publicTexts, pages) {
 }
 function baseline(key,root=ROOT) {
   if(!process.env.GITHUB_RUN_ID)throw new Error('baseline requires a real Actions run ID');
+  require('./search_profile_cycle').baseline(key,root);
   const snapshot=require('./audit_completion_outcomes').snapshot(root);
   const monitor=path.join(root,'data/priority-price-monitor.json');
   const fixedCohorts=fs.existsSync(monitor)?JSON.parse(fs.readFileSync(monitor,'utf8')).fixedCohortFreshness:null;
@@ -37,12 +38,14 @@ function record(key,root=ROOT) {
       console.log('No new catchup acquisition; previous receipt retained'); return;
     }
   }
+  require('./search_profile_cycle').record(key,root);
   const file=path.join(root,'data/scheduled-cycle-receipts.json');
   const previous=fs.existsSync(file)?read('data/scheduled-cycle-receipts.json'):{version:1,pipelines:{}};
   const files=['data/card-catalog-completion.json','data/completion-outcomes.json','data/acquisition-progress-audit.json'];
   const completion=read(files[1]),progress=read(files[2]);
   if(fs.existsSync(path.join(root,'data/priority-price-monitor.json')))files.push('data/priority-price-monitor.json');
   const optional=f=>{try{return read(f);}catch{return null;}};
+  if(optional('data/search-profile-cycle-progress.json'))files.push('data/search-profile-cycle-progress.json');
   const monitorSources=optional('data/priority-price-monitor.json')?.sources||{};
   const cardObservations=Object.fromEntries(Object.entries(monitorSources).map(([id,source])=>[id,
     [...new Map([...(source.fixedCards||[]),...(source.cards||[])].map(row=>[row.id,{id:row.id,at:row.lastConfirmedAt}])).values()]]));

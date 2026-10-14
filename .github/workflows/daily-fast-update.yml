@@ -98,6 +98,8 @@ jobs:
           node work/test_psa10_period_statistics.js
           node work/test_exploration_metrics.js
           node work/test_card_efficiency.js
+          node work/test_period_efficiency_average.js
+          node work/test_search_profile_cycle.js
           node work/test_search_first_reference_margin.js
           node work/test_settings_disclosure.js
           node work/test_saved_psa_summary.js
@@ -138,6 +140,7 @@ jobs:
           git add work/fixed-price-reference.json work/priority-freshness-history.json
           git add work/completion-outcomes-baseline.json work/completion-outcomes-last.json work/completion-outcome-history work/card-completion-queue.json
           git add work/scheduled-cycle-baseline-daily.json
+          git add work/search-profile-cycle-baseline-daily.json
           git add work/calendar-progress-history.json
           if git diff --cached --quiet; then
             echo "No source change. Commit and deployment skipped."

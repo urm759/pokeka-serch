@@ -36,6 +36,9 @@ assert(!strictMatch(card,{...product,title:product.title.replace('001/','002/')}
 for(const prefix of ['【状態A-】','【状態C】','PSA10 ','韓国版 ','マスターボールミラー ']) assert(!strictMatch(card,{...product,title:prefix+product.title}));
 assert(strictMatch({name:'リーリエ SR[SM4+ 119/114](ハイクラスパック「GXバトルブースト」)'},{title:'リーリエ(SR){サポート}〈119/114〉[SM4p]'}));
 assert(!strictMatch({name:'ミュウ UR[S8a 030/028](パック)'},{title:'ミュウ(SR){超}〈030/028〉[S8a]'}));
+const mirror={name:'ゲンガー マスターボールミラー R[SV2a 094/165](強化拡張パックポケモンカード151)'},mirrorProduct={title:'ゲンガー:マスターボールミラー(R){超}〈094/165〉[SV2a-Ma]'};
+assert(strictMatch(mirror,mirrorProduct),'explicit mirror title and store suffix describe the same set and exact finish');
+for(const title of ['ゲンガー(R){超}〈094/165〉[SV2a-Ma]','ゲンガー:モンスターボールミラー(R){超}〈094/165〉[SV2a-Mo]','ゲンガー:マスターボールミラー(R){超}〈094/165〉[SV2a-Mo]','ゲンガー:マスターボールミラー(R){超}〈095/165〉[SV2a-Ma]','韓国版 ゲンガー:マスターボールミラー(R){超}〈094/165〉[SV2a-Ma]'])assert(!strictMatch(mirror,{title}));
 const now=Date.now(),queue={cards:{fixture:{m:['shopStateA'],p:5}}};
 assert.equal(select([card],queue,{cards:{}},now).length,1);
 assert.equal(select([card],queue,{cards:{fixture:{matcherVersion:2,matcherRevision:'strict-promo-prefix-v3',nextRetryAt:new Date(now+86400000).toISOString()}}},now).length,0);

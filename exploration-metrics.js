@@ -143,7 +143,13 @@
     const chosen=reasons.length?store:market.expectedSale<=store.expectedSale?market:store;
     return {...chosen,expectedSale:reasons.length?null:chosen.expectedSale,travelCost:chosen===store?store.travelCost:0,
       exitLabel:reasons.length?'両出口・根拠不足（自動切替なし）':`${chosen===store?'買取店':'フリマ'}（両出口平均の保守側）`,
-      expiresAt:store.expiresAt,reasons,warnings:[...market.warnings,...store.warnings],observed:{...chosen.observed,reference:market.observed.reference||store.observed.reference}};
+      expiresAt:store.expiresAt,reasons,warnings:[...market.warnings,...store.warnings],observed:{...chosen.observed,reference:market.observed.reference||store.observed.reference,
+        exitObservations:{marketplace:market.observed,buyback:store.observed}}};
   }
-  return {percent,inRange,offerPrice,meanSale,atPurchase,efficiency,coverage,observationPeriods,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics};
+  function periodEfficiencyAverage(rows) {
+    const adopted=rows.filter(row=>finite(row.annual));
+    return {annual:adopted.length ? adopted.reduce((sum,row)=>sum+row.annual,0)/adopted.length : null,
+      adopted:adopted.length,total:rows.length,reference:adopted.some(row=>row.calculationState==='reference'||row.observation?.reference)};
+  }
+  return {percent,inRange,offerPrice,meanSale,atPurchase,efficiency,coverage,observationPeriods,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics,periodEfficiencyAverage};
 });

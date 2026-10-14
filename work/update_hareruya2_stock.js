@@ -113,7 +113,12 @@ function extractProductSignature(product) {
     .replace(/#\d+$/g, "")
     .replace(/\s+/g, " ")
     .trim();
-  return { setCode: normalize(setCode), cardNo: String(cardNo).replace(/\s/g, ""), base: compactName(base), finish: cardFinish(title) };
+  const finish=cardFinish(title);
+  const normalizedSet=normalize(setCode);
+  // Store mirror suffixes are aliases only when the title explicitly proves that same finish.
+  const canonicalSet=finish==='master' && /-ma$/.test(normalizedSet) ? normalizedSet.slice(0,-3)
+    : finish==='monster' && /-mo$/.test(normalizedSet) ? normalizedSet.slice(0,-3) : normalizedSet;
+  return { setCode: canonicalSet, cardNo: String(cardNo).replace(/\s/g, ""), base: compactName(base), finish };
 }
 
 function sameCardNo(left, right) {

@@ -25,10 +25,12 @@ try {
   try { & (Join-Path $PSScriptRoot 'publish_psa_update.ps1') -PendingOnly }
   catch { Write-Warning 'Pending publication retained; continue independent acquisition.' }
   if (Test-Path $StatePath) {
-    $ResumeArgs = @((Join-Path $PSScriptRoot 'pc_resume_gate.js'), $StatePath)
+    $ResumePath = Join-Path $LogDir 'psa-resume-decision.json'
+    $ResumeArgs = @((Join-Path $PSScriptRoot 'pc_resume_gate.js'), $StatePath, '--output', $ResumePath)
     if ($Force) { $ResumeArgs += '--force' }
-    $Resume = (& $Node @ResumeArgs | ConvertFrom-Json)
+    & $Node @ResumeArgs | Out-Host
     if ($LASTEXITCODE -ne 0) { throw 'PC resume eligibility validation failed. Saved acquisition retained.' }
+    $Resume = Get-Content -LiteralPath $ResumePath -Raw -Encoding utf8 | ConvertFrom-Json
     if (-not $Resume.allowed) { Write-Output $Resume.reason; exit 0 }
   }
   if (-not $Force -and $previous.lastSuccessSlot -eq $SuccessSlot -and $previous.publishStatus -eq 'success') {

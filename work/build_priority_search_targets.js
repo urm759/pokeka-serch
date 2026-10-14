@@ -9,12 +9,14 @@ function routeNeededFields(detail,fields) {
   }
   return require('./completion_routes').routes(next).filter(r=>fields.includes(r.key));
 }
-function evaluate(profile,at,overlay={}) {
+function evaluate(profile,at,overlay={},inspectIds=[]) {
   const url=new URL(profile.url);for(const [k,v]of Object.entries(overlay))if(!url.searchParams.has(k))url.searchParams.set(k,v);
   const api=load(fs.readFileSync(path.join(ROOT,'app.js'),'utf8'),at,{url:url.href}),cards=api.prepareCalculatedCards(api.state.cards),rows=[],reasons={},routes={};
   const completion=JSON.parse(fs.readFileSync(path.join(ROOT,'work/card-completion-queue.json'),'utf8'));
+  const inspected=new Set(inspectIds),allExclusions={};
   for(const c of cards) {
     const excluded=api.cardSearchExclusions(c),e=api.cardEfficiency(c);
+    if(inspected.has(c.id))allExclusions[c.id]=excluded;
     for(const r of new Set(excluded))reasons[r]=(reasons[r]||0)+1;
     const missing=completion.cards?.[c.id]?.m||[];
     // Only known price gates screen a completion prospect. Unknown data never proves suitability.
@@ -38,7 +40,7 @@ function evaluate(profile,at,overlay={}) {
     }
   }
   return {id:profile.id,urlHash:hash(profile.url),parameters:Object.fromEntries([...url.searchParams].filter(([k])=>!['cap','locked','reserve','maxShare','batch'].includes(k))),
-    qualified:rows.filter(r=>r.qualified).length,ids:rows.filter(r=>r.qualified).map(r=>r.id),prospects:rows.filter(r=>r.unverifiedProspect).length,reasons,rows,routes,
+    qualified:rows.filter(r=>r.qualified).length,ids:rows.filter(r=>r.qualified).map(r=>r.id),prospects:rows.filter(r=>r.unverifiedProspect).length,reasons,rows,routes,allExclusions,
     explanation:'既知価格範囲を通った不足カードは未判定の補完候補。適合/GOとは数えない。原因の重複数と候補減少は別'};
 }
 function build(root=ROOT,at=new Date().toISOString()) {

@@ -16,12 +16,12 @@ function plan(cards, queue, checkpoint, now = Date.now()) {
   }).map((id) => ({ card: byId.get(id), detail: queue.cards?.[id] })).filter((row) => row.card && row.detail)
     .sort((a, b) => Number(b.detail.a || 0) - Number(a.detail.a || 0) || Number(b.detail.p || 0) - Number(a.detail.p || 0));
 }
-function eligibleForHareru(candidates, catalog, now = Date.now()) {
+function eligibleForHareru(candidates, catalog, now = Date.now(), requested = new Set()) {
   const byId = new Map(catalog.map((row) => [row.cardId, row]));
   return candidates.filter((r) => {
     const previous = byId.get(r.card.id);
     const observed = Date.parse(previous?.observedAt || "");
-    return r.detail && needs(r.detail, "shopStateA") && r.card.hareruya2Url && !(Number(previous?.price) > 0 && observed <= now && now - observed < 2 * 86400000);
+    return r.detail && (needs(r.detail, "shopStateA") || requested.has(r.card.id)) && r.card.hareruya2Url && !(Number(previous?.price) > 0 && observed <= now && now - observed < 2 * 86400000);
   });
 }
 function run() {
@@ -31,8 +31,9 @@ function run() {
   const state = read("work/completion-acquisition-checkpoint.json", { cards: {} });
   const candidates = plan(cards, queue, state);
   const focus = buildFocus(ROOT);
-  const eligible = eligibleForHareru(candidates, read("work/hareruya2_catalog.json", []));
-  const requested=new Set((read('work/search-profile-targets.json').routes?.domesticShops||[]).map(r=>r.id));
+  const requested=new Set([...(read('work/search-profile-targets.json').routes?.domesticShops||[]).map(r=>r.id),
+    ...(read('data/state-a-url-discovery.json').records||[]).filter(r=>r.status==='linked').map(r=>r.id)]);
+  const eligible = eligibleForHareru(candidates, read("work/hareruya2_catalog.json", []),start,requested);
   const selectionReasons = { queuedCards: (queue.queue || []).length, retryEligibleCards: candidates.length,
     missingStateACards: candidates.filter(r => needs(r.detail, "shopStateA")).length,
     missingStateAWithUrl: candidates.filter(r => needs(r.detail, "shopStateA") && r.card.hareruya2Url).length,
@@ -77,7 +78,7 @@ function run() {
   };
   state.lastRun = run; delete state.running;
   save("work/completion-acquisition-checkpoint.json", state);
-  const pending = eligibleForHareru(plan(cards, queue, state), read("work/hareruya2_catalog.json", [])).length;
+  const pending = eligibleForHareru(plan(cards, queue, state), read("work/hareruya2_catalog.json", []),Date.now(),requested).length;
   const routing = {};
   for (const candidate of candidates) for (const route of routes(candidate.detail)) {
     const key = `${route.source}:${route.mode}`;

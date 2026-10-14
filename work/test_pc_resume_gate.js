@@ -5,4 +5,10 @@ assert.equal(decision(s,now+3600000).allowed,true,'resume checkpoint at interval
 assert.equal(decision(s,now,true).allowed,true);
 assert.equal(decision({...s,lastSuccessAt:'2026-10-13T09:00:00Z'},now).allowed,false);
 assert.equal(decision({...s,status:'failed',acquiredCount:0},now).allowed,true,'collector owns authentication holds; do not claim recovery');
+const fs=require('node:fs'),path=require('node:path'),os=require('node:os'),cp=require('node:child_process');
+const dir=fs.mkdtempSync(path.join(os.tmpdir(),'psa-gate-')),input=path.join(dir,'input.json'),output=path.join(dir,'output.json');
+fs.writeFileSync(input,JSON.stringify({status:'failed',lastSuccessAt:new Date(Date.now()-3*3600000).toISOString()}));
+const text=cp.execFileSync(process.execPath,[path.join(__dirname,'pc_resume_gate.js'),input,'--output',output],{encoding:'utf8'});
+assert.equal(text.trim(),'Resume gate saved');assert.equal(JSON.parse(fs.readFileSync(output,'utf8')).allowed,true);
+assert(fs.readFileSync(output,'utf8').includes('保存チェックポイント'),'Japanese reason is read from a UTF-8 file, not a native console JSON pipeline');
 console.log('PASS partial PC acquisition cooldown, saved publication recovery, current single checkpoint batch and missing evidence');

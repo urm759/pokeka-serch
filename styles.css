@@ -1676,6 +1676,14 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .card-efficiency > div { display: flex; flex-wrap: wrap; gap: .3rem .85rem; margin: .25rem 0; font-size: .84rem; }
 .card-efficiency > small, .card-efficiency details small { display: block; line-height: 1.6; overflow-wrap: anywhere; }
 .card-efficiency details { margin-top: .3rem; font-size: .8rem; }
+.period-efficiency { margin-top: .55rem; padding-top: .55rem; border-top: 1px solid var(--line); }
+.period-efficiency-heading { display: flex; flex-wrap: wrap; align-items: baseline; gap: .25rem .6rem; font-size: .83rem; }
+.period-efficiency-heading > b { font-size: 1.08rem; }
+.period-efficiency-values { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: .4rem; margin: .4rem 0; }
+.period-efficiency-values > div { padding: .4rem; background: rgba(126,179,198,.08); border-radius: .35rem; min-width: 0; }
+.period-efficiency-values span { display: block; font-size: .85rem; }
+.period-efficiency small { display: block; font-size: .72rem; line-height: 1.45; overflow-wrap: anywhere; }
+@media (max-width: 640px) { .period-efficiency-values { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 .efficiency-notice { margin-top: .5rem; padding: .4rem .55rem; border-left: 3px solid #547360; background: #0f2d31; color: #e8f1f4; font-size: .8rem; line-height: 1.5; overflow-wrap: anywhere; }
 .efficiency-reference { border-color: #a76b13; background: #382b18; color: #f4d391; }
 .efficiency-notice small { display: block; color: inherit; }
