@@ -17,16 +17,17 @@ function evaluate(profile,at,overlay={},inspectIds=[]) {
   const shops=JSON.parse(fs.readFileSync(path.join(ROOT,'data/shop-buyback-summary.json'),'utf8')).shops;
   const psaProgress=JSON.parse(fs.readFileSync(path.join(ROOT,'work/psa-fetch-progress.json'),'utf8'));
   const inspected=new Set(inspectIds),allExclusions={},inspectedRows={};
+  const scope={catalog:cards.length,unknownPriceCards:0,confirmedPriceFailures:0,identityHeld:0,qualified:0,completionProspects:0,notSelected:0};
   for(const c of cards) {
     const excluded=api.cardSearchExclusions(c),e=api.cardEfficiency(c);
     if(inspected.has(c.id))allExclusions[c.id]=excluded;
     for(const r of new Set(excluded))reasons[r]=(reasons[r]||0)+1;
     const missing=completion.cards?.[c.id]?.m||[];
     // Only known price gates screen a completion prospect. Unknown data never proves suitability.
-    const p=url.searchParams,knownPrice=c.price;
-    const priceFail=Number.isFinite(knownPrice)&&(p.has('priceMin')&&knownPrice<Number(p.get('priceMin'))||p.has('priceMax')&&knownPrice>Number(p.get('priceMax')));
-    const offer=c.currentStoreOffer,knownBuy=offer?.fresh&&offer.available?offer.value:null;
-    const purchaseFail=Number.isFinite(knownBuy)&&(p.has('purchaseMin')&&knownBuy<Number(p.get('purchaseMin'))||p.has('purchaseMax')&&knownBuy>Number(p.get('purchaseMax')));
+    const p=url.searchParams,priceGates=require('./profile_discovery_gates').gates(c,p);
+    const priceFail=Object.values(priceGates).includes('fail');
+    if(Object.values(priceGates).includes('unknown'))scope.unknownPriceCards++;
+    if(priceFail)scope.confirmedPriceFailures++;
     const fields=[...missing];
     if(inspected.has(c.id))inspectedRows[c.id]={buy:e.purchasePrice,profit:e.profit,annual:e.annual,
       purchaseConfirmed:Boolean(c.currentStoreOffer?.fresh&&c.currentStoreOffer?.available&&Number.isFinite(c.currentStoreOffer.value)),
@@ -38,18 +39,21 @@ function evaluate(profile,at,overlay={},inspectIds=[]) {
     const hard=c.dataQuality?.manualReview||c.priceIntegrity?.disputed||c.priceAggregation?.conflicted||c.dataQuality?.dataAnomaly;
     const knownDisqualifying=excluded.filter(r=>!/(未取得|不足|算出不可|期限|古い|保留|分析|プリセット|期間|条件)/.test(r));
     const confirmedEfficiencyFail=missing.length===0&&Number.isFinite(e.annual)&&p.has('effMin')&&e.annual<Number(p.get('effMin'));
-    const prospect=excluded.length>0&&!priceFail&&!purchaseFail&&!hard&&!confirmedEfficiencyFail&&fields.length>0&&knownDisqualifying.length===0;
+    const prospect=excluded.length>0&&!priceFail&&!hard&&!confirmedEfficiencyFail&&fields.length>0&&knownDisqualifying.length===0;
     const selected=!excluded.length;
+    const discoveryPriority=require('./profile_discovery_gates').priority(c,completion.cards?.[c.id]);
+    if(hard)scope.identityHeld++;
+    if(selected)scope.qualified++;else if(prospect)scope.completionProspects++;else scope.notSelected++;
     if(selected||prospect)rows.push({id:c.id,name:c.name,qualified:selected,unverifiedProspect:prospect,missing:[...new Set(fields)],reasons:excluded,
-      buy:e.purchasePrice,profit:e.profit,annual:e.annual,go:c.purchaseDecision?.verdict||c.purchaseDecision?.status||null,priority:completion.cards?.[c.id]?.p||0,
+      buy:e.purchasePrice,profit:e.profit,annual:e.annual,go:c.purchaseDecision?.verdict||c.purchaseDecision?.status||null,priority:discoveryPriority.score,priorityReasons:discoveryPriority.reasons,priceGates,
       metrics:require('./profile_candidate_evidence').cardFacts(api,c),
       completionPlan:prospect?require('./profile_completion_routes').prospectPlan(c,fields,{shops,linkage,psaProgress,now:Date.parse(at),storeMode:p.get('buybackStores') || 'mail',selected:(p.get('selectedStores') || '').split(',')}):null});
     if(prospect)for(const route of routeNeededFields(completion.cards?.[c.id],fields)) {
-      (routes[route.source]||=[]).push({id:c.id,field:route.key,mode:route.mode,priority:completion.cards?.[c.id]?.p||0});
+      (routes[route.source]||=[]).push({id:c.id,field:route.key,mode:route.mode,priority:discoveryPriority.score});
     }
   }
   return {id:profile.id,urlHash:hash(profile.url),parameters:Object.fromEntries([...url.searchParams].filter(([k])=>!['cap','locked','reserve','maxShare','batch'].includes(k))),
-    qualified:rows.filter(r=>r.qualified).length,ids:rows.filter(r=>r.qualified).map(r=>r.id),prospects:rows.filter(r=>r.unverifiedProspect).length,reasons,rows,routes,allExclusions,inspectedRows,
+    qualified:rows.filter(r=>r.qualified).length,ids:rows.filter(r=>r.qualified).map(r=>r.id),prospects:rows.filter(r=>r.unverifiedProspect).length,reasons,rows,routes,scope,allExclusions,inspectedRows,
     explanation:'既知価格範囲を通った不足カードは未判定の補完候補。適合/GOとは数えない。原因の重複数と候補減少は別'};
 }
 function build(root=ROOT,at=new Date().toISOString()) {

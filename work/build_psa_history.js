@@ -113,14 +113,56 @@ function namesCompatible(englishName, row) {
 }
 function shardFor(id) { let hash = 2166136261; for (const ch of String(id)) { hash ^= ch.charCodeAt(0); hash = Math.imul(hash, 16777619); } return (hash >>> 0) % SHARDS; }
 function daysBetween(a, b) { return Math.max(1, Math.round((Date.UTC(+b.slice(0,4),+b.slice(4,6)-1,+b.slice(6,8))-Date.UTC(+a.slice(0,4),+a.slice(4,6)-1,+a.slice(6,8)))/86400000)); }
+function observationTime(value) {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})$/i.test(value)) return null;
+  const time = Date.parse(value);
+  return Number.isFinite(time) ? time : null;
+}
+function appendObservation(history, selected, specificationIdentity = null) {
+  const time = observationTime(selected.fetchedAt);
+  if (time == null || !Number.isFinite(selected.ten) || !Number.isFinite(selected.total)
+    || selected.ten < 0 || selected.total <= 0 || selected.total < selected.ten) return history;
+  const point = [dayKey(new Date(time)), selected.ten, selected.total, {
+    observedAt: selected.fetchedAt, sourceUrl: selected.url || null, specificationIdentity,
+    captureVersion: selected.captureVersion || null, completeSnapshot: selected.completeSnapshot === true,
+  }];
+  const sameDayIndex = history.findIndex(row => row[0] === point[0]
+    && observationTime(row[3]?.observedAt) != null && row[3]?.sourceUrl === point[3].sourceUrl);
+  const result = [...history];
+  if (sameDayIndex >= 0) {
+    if (time <= observationTime(history[sameDayIndex][3].observedAt)) return history;
+    result[sameDayIndex] = point;
+  } else result.push(point);
+  // Legacy points have no observation time; retain them without backfilling provenance.
+  return result.sort((a, b) => a[0].localeCompare(b[0])
+    || (observationTime(a[3]?.observedAt) ?? -Infinity) - (observationTime(b[3]?.observedAt) ?? -Infinity));
+}
 function windowChange(history, days, today) {
-  if (history.length < 2) return null;
-  const cutoff = new Date(Date.UTC(+today.slice(0,4), +today.slice(4,6)-1, +today.slice(6,8))); cutoff.setUTCDate(cutoff.getUTCDate()-days);
-  const cutoffKey = cutoff.toISOString().slice(0,10).replace(/-/g, "");
-  const fullWindowBase = [...history].reverse().find((row) => row[0] <= cutoffKey);
-  const base = fullWindowBase || history[0];
-  const latest = history[history.length-1];
-  const actualDays = daysBetween(base[0], latest[0]);
+  const rows = history.filter(row => /^\d{8}$/.test(row[0]) && Number.isFinite(row[1])
+    && Number.isFinite(row[2]) && row[1] >= 0 && row[2] >= row[1] && row[2] > 0)
+    .sort((a, b) => a[0].localeCompare(b[0])
+      || (observationTime(a[3]?.observedAt) ?? -Infinity) - (observationTime(b[3]?.observedAt) ?? -Infinity));
+  if (rows.length < 2) return null;
+  const latest = rows.at(-1), latestTime = observationTime(latest[3]?.observedAt);
+  const known = rows.filter(row => observationTime(row[3]?.observedAt) != null && row[3]?.sourceUrl);
+  if (new Set(known.map(row => row[3].sourceUrl)).size > 1
+    || new Set(known.map(row => row[3].specificationIdentity).filter(Boolean)).size > 1) return null;
+  const measured = latestTime != null && latest[3]?.sourceUrl && known.length >= 2
+    && latestTime - observationTime(known[0][3].observedAt) >= 2 * 86400000;
+  let fullWindowBase, base, actualDays;
+  if (measured) {
+    const cutoffTime = latestTime - days * 86400000;
+    fullWindowBase = [...known].reverse().find(row => observationTime(row[3].observedAt) <= cutoffTime);
+    base = fullWindowBase || known[0];
+    actualDays = (latestTime - observationTime(base[3].observedAt)) / 86400000;
+  } else {
+    const anchor = today || latest[0];
+    const cutoff = new Date(Date.UTC(+anchor.slice(0,4), +anchor.slice(4,6)-1, +anchor.slice(6,8))); cutoff.setUTCDate(cutoff.getUTCDate()-days);
+    const cutoffKey = cutoff.toISOString().slice(0,10).replace(/-/g, "");
+    fullWindowBase = [...rows].reverse().find(row => row[0] <= cutoffKey);
+    base = fullWindowBase || rows[0];
+    actualDays = daysBetween(base[0], latest[0]);
+  }
   if (actualDays < 2) return null;
   const delta10 = latest[1]-base[1], deltaTotal = latest[2]-base[2];
   const rate = base[1] > 0 ? delta10/base[1] : 0, daily = delta10/actualDays;
@@ -128,7 +170,11 @@ function windowChange(history, days, today) {
   if (delta10 > 0 && (daily >= 10 || rate >= .1)) status = "急増化";
   else if (delta10 > 0 && (daily >= 1 || rate >= .02)) status = "増加";
   else if (delta10 > 0) status = "少ない";
-  return { d10: delta10, dt: deltaTotal, s: status, days: actualDays, partial: !fullWindowBase };
+  const endpoint = row => ({ date: row[0], ten: row[1], total: row[2],
+    observedAt: row[3]?.observedAt || null, sourceUrl: row[3]?.sourceUrl || null });
+  return { d10: delta10, dt: deltaTotal, s: status, days: actualDays, partial: !fullWindowBase,
+    reference: !measured, provenanceUnknown: !measured, base: endpoint(base), latest: endpoint(latest),
+    monthlyExtrapolation: { d10: daily * 30, dt: deltaTotal / actualDays * 30, estimate: true } };
 }
 
 function compactRows(payload) {
@@ -136,16 +182,22 @@ function compactRows(payload) {
   const rows = source.map((row) => ({
     set: shortSet(row.setCode || String(row.sourceSet || row.setName || "").replace(/^\d{4}\s+Pokemon Japanese\s+/i, "")),
     no: normalizeNo(row.cardNo), name: String(row.cardName || "").replace(/Shop with Affiliates/gi, "").trim(),
-    ten: row.psa10Count == null ? null : Number(row.psa10Count), total: row.psaTotal == null ? null : Number(row.psaTotal), url: row.sourceUrl || "", fetchedAt: row.fetchedAt || payload.generatedAt || "",
+    ten: row.psa10Count == null ? null : Number(row.psa10Count), total: row.psaTotal == null ? null : Number(row.psaTotal), url: row.sourceUrl || "", fetchedAt: row.fetchedAt || "",
     captureVersion: row.captureVersion || null, completeSnapshot: row.completeSnapshot === true,
   })).filter((row) => row.set && row.no && Number.isFinite(row.ten) && Number.isFinite(row.total) && row.total > 0 && row.total >= row.ten && row.ten >= 0);
   const deduped = new Map();
   for (const row of rows) {
-    const key = `${row.set}|${row.no}|${cleanName(row.name)}`;
+    const key = `${row.set}|${row.no}|${cleanName(row.name)}|${row.url}`;
     const previous = deduped.get(key);
-    if (!previous || String(row.fetchedAt) >= String(previous.fetchedAt)) deduped.set(key, row);
+    const time = observationTime(row.fetchedAt), previousTime = observationTime(previous?.fetchedAt);
+    if (!previous || (time != null && (previousTime == null || time > previousTime))) deduped.set(key, row);
   }
   return [...deduped.values()];
+}
+function compactWindow(change) {
+  if (!change) return null;
+  const { d10, dt, s, days, partial, reference, provenanceUnknown } = change;
+  return { d10, dt, s, days, partial, reference, provenanceUnknown };
 }
 
 function authoritativeRows(rows) {
@@ -159,12 +211,19 @@ function authoritativeRows(rows) {
 function reconcileHistory(store,id,history,selected,identity) {
   const provenance=`${identity.set}|${identity.no}|${cleanName(selected.name)}|${candidateVariant(selected)}|${selected.captureVersion>=2?'full-label-v2':'legacy-label'}`;
   store.identities ||= {};
-  if ((selected.captureVersion >= 2 || store.identities[id]) && store.identities[id]!==provenance && history.length) {
+  store.sources ||= {};
+  const recordedSources = [...new Set(history.map(row => row[3]?.sourceUrl).filter(Boolean))];
+  const sourceUrl = selected.url || null, previousSource = store.sources[id] || recordedSources.at(-1) || null;
+  const sourceChanged = (previousSource && previousSource !== sourceUrl) || recordedSources.some(url => url !== sourceUrl);
+  const specificationChanged = (selected.captureVersion >= 2 || store.identities[id]) && store.identities[id]!==provenance;
+  if ((sourceChanged || specificationChanged) && history.length) {
     store.quarantined ||= {};store.quarantined[id] ||= [];
-    store.quarantined[id].push({at:new Date().toISOString(),reason:'完全な仕様表記への再照合・旧履歴の仕様根拠未確定',previousIdentity:store.identities[id] || null,points:history});
+    store.quarantined[id].push({at:new Date().toISOString(),reason:sourceChanged ? 'source-url-changed' : '完全な仕様表記への再照合・旧履歴の仕様根拠未確定',
+      previousIdentity:store.identities[id] || null, previousSource, sourceUrl, points:history});
     history=[];
   }
   store.identities[id]=provenance;
+  store.sources[id]=sourceUrl;
   return history;
 }
 
@@ -246,14 +305,12 @@ function main() {
     const shard = shardFor(card.id), store = shards[shard]; store.cards ||= {};
     let history = Array.isArray(store.cards[card.id]) ? store.cards[card.id].filter((row)=>row[0]>=cutoff) : [];
     history=reconcileHistory(store,card.id,history,selected,identity);
-    const sourceDay = String(selected.fetchedAt || population.generatedAt || "").slice(0,10).replace(/-/g, "") || today;
-    const point = [sourceDay, selected.ten, selected.total];
-    const sameDayIndex = history.findIndex((row) => row[0] === sourceDay);
-    if (sameDayIndex >= 0) history[sameDayIndex] = point;
-    else if (!history.length || history.at(-1)[1] !== point[1] || history.at(-1)[2] !== point[2]) history.push(point);
-    history.sort((a, b) => a[0].localeCompare(b[0]));
+    history = appendObservation(history, selected, store.identities[card.id]);
     store.cards[card.id] = history;
-    summary.cards[card.id] = { n: selected.name, e: englishName, ten: selected.ten, total: selected.total, rate: selected.total ? selected.ten/selected.total*100 : null, u: selected.url, m: method, f: selected.fetchedAt || "", sh: String(shard).padStart(2,"0"), w7: windowChange(history,7,sourceDay), w30: windowChange(history,30,sourceDay), w90: windowChange(history,90,sourceDay) };
+    const latest = history.at(-1), selectedTime = observationTime(selected.fetchedAt);
+    const newerSaved = selectedTime != null && observationTime(latest?.[3]?.observedAt) > selectedTime;
+    const ten = newerSaved ? latest[1] : selected.ten, total = newerSaved ? latest[2] : selected.total;
+    summary.cards[card.id] = { n: selected.name, e: englishName, ten, total, rate: total ? ten/total*100 : null, u: selected.url, m: method, f: newerSaved ? latest[3].observedAt : selected.fetchedAt || "", sh: String(shard).padStart(2,"0"), w7: compactWindow(windowChange(history,7)), w30: compactWindow(windowChange(history,30)), w90: compactWindow(windowChange(history,90)) };
     summary.matched += 1;
   }
   for (let i=0;i<SHARDS;i+=1) fs.writeFileSync(path.join(HISTORY_DIR, `${String(i).padStart(2,"0")}.json`), JSON.stringify(shards[i]), "utf8");
@@ -265,4 +322,4 @@ function main() {
 }
 
 if (require.main === module) main();
-module.exports = { cardIdentity, compactRows, cleanName, shortSet, normalizeNo, variantsCompatible, namesCompatible, authoritativeRows, reconcileHistory };
+module.exports = { cardIdentity, compactRows, cleanName, shortSet, normalizeNo, variantsCompatible, namesCompatible, authoritativeRows, reconcileHistory, dayKey, observationTime, appendObservation, windowChange, compactWindow };

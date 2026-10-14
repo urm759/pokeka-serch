@@ -78,10 +78,26 @@ function canRecheck(card,item,state,now=Date.now()) {
   const stored=Date.parse(previous.nextRetryAt);
   return now>=Math.min(adaptive,Number.isFinite(stored)?stored:Infinity);
 }
-function select(cards,queue,state,now=Date.now(),limit=100,recovery={}) {
-  const eligible=cards.filter(card=>!card.hareruya2Url && queue.cards?.[card.id] && (needs(queue.cards[card.id],'shopStateA') || recovery[card.id])
-    && canRecheck(card,queue.cards[card.id],state,now));
-  const ordered=eligible.sort((a,b)=>Number(Boolean(recovery[b.id]))-Number(Boolean(recovery[a.id])) || Number(queue.cards?.[b.id]?.p||0)-Number(queue.cards?.[a.id]?.p||0));
+function cachedTargets(cards,state) {
+  const index=new Map(),number=s=>String(s||'').replace(/\/[A-Za-z0-9-]+-P$/i,'').split('/').map(n=>/^\d+$/.test(n)?String(Number(n)):n).join('/');
+  for(const [handle,value]of Object.entries(state.cache||{}))for(const product of value.rows||[]) {
+    const s=shop.extractProductSignature(product),key=s.setCode+'|'+number(s.cardNo);
+    if(!index.has(key))index.set(key,[]);
+    index.get(key).push({handle,product});
+  }
+  const result={};
+  for(const card of cards) {
+    if(card.hareruya2Url || state.cards?.[card.id]?.held)continue;
+    const s=shop.extractCardSignature(card),hits=(index.get(s.setCode+'|'+number(s.cardNo))||[]).filter(row=>strictMatch(card,row.product));
+    const handles=[...new Set(hits.map(row=>row.handle))];
+    if(handles.length===1)result[card.id]={handle:handles[0],reason:'取得済み正規一覧で同一仕様を再発見・個別価格取得は別工程'};
+  }
+  return result;
+}
+function select(cards,queue,state,now=Date.now(),limit=100,recovery={},cached={}) {
+  const eligible=cards.filter(card=>!card.hareruya2Url && queue.cards?.[card.id] && (needs(queue.cards[card.id],'shopStateA') || recovery[card.id] || cached[card.id])
+    && !state.cards?.[card.id]?.held && (canRecheck(card,queue.cards[card.id],state,now) || cached[card.id]));
+  const ordered=eligible.sort((a,b)=>Number(Boolean(recovery[b.id]))-Number(Boolean(recovery[a.id])) || Number(Boolean(cached[b.id]))-Number(Boolean(cached[a.id])) || Number(queue.cards?.[b.id]?.p||0)-Number(queue.cards?.[a.id]?.p||0));
   const n=Math.max(1,Math.floor(limit*.25)),normal=[...eligible].sort((a,b)=>Date.parse(state.cards?.[a.id]?.lastAttemptAt||'1970-01-01')-Date.parse(state.cards?.[b.id]?.lastAttemptAt||'1970-01-01'));
   const priority=ordered.slice(0,limit-n),chosen=new Set(priority.map(c=>c.id));
   return [...priority,...normal.filter(c=>!chosen.has(c.id)).slice(0,n)];
@@ -95,7 +111,9 @@ async function run() {
   else try {
     const profileTargets=read('work/search-profile-targets.json',{});
     const requested=Object.fromEntries((profileTargets.readyRoutes?.domesticShops || profileTargets.routes?.domesticShops || []).map(r=>[r.id,{requestedProfile:true}]));
-    const candidates=select(cards,queue,state,start,Number(process.env.URL_DISCOVERY_CARD_LIMIT||100),{...(read('work/candidate-recovery-targets.json',{}).rows||{}),...requested});
+    const cacheTargets=cachedTargets(cards,state);
+    const candidates=select(cards,queue,state,start,Number(process.env.URL_DISCOVERY_CARD_LIMIT||100),{...(read('work/candidate-recovery-targets.json',{}).rows||{}),...requested},cacheTargets);
+    audit.catalogInspected=cards.length;audit.cachedExactOpportunities=Object.keys(cacheTargets).length;
     const cache=state.collections;
     const collectionOptions={deadlineAt:start+budget,intervalMs:1200,onRequest:()=>audit.httpRequests++};
     const recentDiscovery=candidates.some(card=>retryPolicy(card,queue.cards[card.id],start).days<=3);
@@ -105,7 +123,7 @@ async function run() {
     state.collections={rows:collections,fetchedAt:cache && collections===cache.rows?cache.fetchedAt:new Date().toISOString()};
     const groups=new Map();
     for(const card of candidates) {
-      let group=shop.findCollectionForPack(shop.extractCardSignature(card).pack,collections);
+      let group=cacheTargets[card.id] ? collections.find(c=>c.handle===cacheTargets[card.id].handle)||{handle:cacheTargets[card.id].handle} : shop.findCollectionForPack(shop.extractCardSignature(card).pack,collections);
       if(!group?.handle) {
         const cached=Object.entries(state.cache||{}).filter(([,value])=>value.rows?.some(p=>strictMatch(card,p)));
         if(cached.length===1)group=collections.find(c=>c.handle===cached[0][0])||{handle:cached[0][0]};
@@ -174,4 +192,4 @@ async function run() {
   console.log(JSON.stringify(audit));return audit;
 }
 if(require.main===module)run().catch(e=>{console.error(e);process.exitCode=1;});
-module.exports={strictMatch,diagnose,select,recordFailure,run,retryPolicy,canRecheck,sourceFingerprint,matcherRevision};
+module.exports={strictMatch,diagnose,select,recordFailure,run,retryPolicy,canRecheck,sourceFingerprint,matcherRevision,cachedTargets};
