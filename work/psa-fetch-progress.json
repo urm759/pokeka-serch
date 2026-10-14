@@ -1,12 +1,12 @@
 {
-  "startedAt": "2026-10-13T20:26:40.041Z",
-  "endedAt": "2026-10-13T20:28:34.866Z",
-  "cycleDate": "2026-10-13",
+  "startedAt": "2026-10-14T02:06:25.004Z",
+  "endedAt": "2026-10-14T02:08:03.761Z",
+  "cycleDate": "2026-10-14",
   "status": "partial",
   "attemptedCount": 8,
   "newAcquiredCount": 0,
-  "changedCount": 64,
-  "refreshedCount": 467,
+  "changedCount": 148,
+  "refreshedCount": 480,
   "completedUrls": [
     "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1s-mega-symphonia/312125",
     "https://www.psacard.com/pop/tcg-cards/2016/pokemon-japanese-xy-promo/133615",
@@ -119,89 +119,93 @@
   ],
   "records": [
     {
-      "setCode": "SM3+",
-      "url": "https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-sun-moon-strength-expansion-pack-shining-legends/151058",
+      "setCode": "SM-P",
+      "url": "https://www.psacard.com/pop/tcg-cards/2018/pokemon-japanese-sm-promo/155528",
       "httpStatus": 200,
-      "fetchedAt": "2026-10-13T20:26:41.347Z",
-      "rowCount": 52,
-      "parsedRows": 53,
-      "excludedRows": 1,
-      "minimumPopulation": 0,
-      "error": null
-    },
-    {
-      "setCode": "M5",
-      "url": "https://www.psacard.com/pop/tcg-cards/2026/pokemon-japanese-m5-abyss-eye/341263",
-      "httpStatus": 200,
-      "fetchedAt": "2026-10-13T20:26:52.638Z",
-      "rowCount": 52,
-      "parsedRows": 53,
-      "excludedRows": 1,
-      "minimumPopulation": 0,
-      "error": null
-    },
-    {
-      "setCode": "XY",
-      "url": "https://www.psacard.com/pop/tcg-cards/2016/pokemon-japanese-xy-starter-pack/134700",
-      "httpStatus": 200,
-      "fetchedAt": "2026-10-13T20:27:03.115Z",
-      "rowCount": 79,
-      "parsedRows": 80,
-      "excludedRows": 1,
-      "minimumPopulation": 0,
-      "error": null
-    },
-    {
-      "setCode": "S8A-G",
-      "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-asia-25th-anniversary-promo/202700",
-      "httpStatus": 200,
-      "fetchedAt": "2026-10-13T20:27:25.558Z",
-      "rowCount": 31,
-      "parsedRows": 32,
-      "excludedRows": 1,
-      "minimumPopulation": 0,
-      "error": null
-    },
-    {
-      "setCode": "SC",
-      "url": "https://www.psacard.com/pop/tcg-cards/2020/pokemon-japanese-sword-shield-charizard-vmax-starter-set/175882",
-      "httpStatus": 200,
-      "fetchedAt": "2026-10-13T20:27:38.516Z",
-      "rowCount": 7,
-      "parsedRows": 8,
-      "excludedRows": 1,
-      "minimumPopulation": 0,
-      "error": null
-    },
-    {
-      "setCode": "MP1",
-      "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mp1-start-deck-100-battle-collection-corociao-version/297732",
-      "httpStatus": 200,
-      "fetchedAt": "2026-10-13T20:27:48.749Z",
-      "rowCount": 3,
-      "parsedRows": 4,
-      "excludedRows": 1,
-      "minimumPopulation": 0,
-      "error": null
-    },
-    {
-      "setCode": "SH",
-      "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-sword-shield-family-card-game/193596",
-      "httpStatus": 200,
-      "fetchedAt": "2026-10-13T20:27:59.125Z",
-      "rowCount": 60,
-      "parsedRows": 61,
+      "fetchedAt": "2026-10-14T02:06:34.145Z",
+      "rowCount": 130,
+      "parsedRows": 131,
       "excludedRows": 1,
       "minimumPopulation": 0,
       "error": null
     },
     {
       "setCode": "SM-P",
-      "url": "https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-sm-promo/142008",
+      "url": "https://www.psacard.com/pop/tcg-cards/2016/pokemon-japanese-sm-promo/141030",
       "httpStatus": 200,
-      "fetchedAt": "2026-10-13T20:28:24.499Z",
-      "rowCount": 183,
-      "parsedRows": 184,
+      "fetchedAt": "2026-10-14T02:06:45.130Z",
+      "rowCount": 16,
+      "parsedRows": 17,
+      "excludedRows": 1,
+      "minimumPopulation": 0,
+      "error": null
+    },
+    {
+      "setCode": "SM-P",
+      "url": "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-sm-promo/163897",
+      "httpStatus": 200,
+      "fetchedAt": "2026-10-14T02:06:55.560Z",
+      "rowCount": 0,
+      "parsedRows": null,
+      "excludedRows": null,
+      "minimumPopulation": 0,
+      "error": "Unable to find a populated table for https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-sm-promo/163897",
+      "failureKind": "missing-page",
+      "stopScope": "url",
+      "nextRetryAt": null,
+      "retryAttempts": 1
+    },
+    {
+      "setCode": "S8A-P",
+      "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-promo-card-pack-25th-anniversary-edition/201768",
+      "httpStatus": 200,
+      "fetchedAt": "2026-10-14T02:07:05.862Z",
+      "rowCount": 25,
+      "parsedRows": 26,
+      "excludedRows": 1,
+      "minimumPopulation": 0,
+      "error": null
+    },
+    {
+      "setCode": "XY-P",
+      "url": "https://www.psacard.com/pop/tcg-cards/2013/pokemon-japanese-xy-promo/120187",
+      "httpStatus": 200,
+      "fetchedAt": "2026-10-14T02:07:21.463Z",
+      "rowCount": 23,
+      "parsedRows": 24,
+      "excludedRows": 1,
+      "minimumPopulation": 0,
+      "error": null
+    },
+    {
+      "setCode": "XY-P",
+      "url": "https://www.psacard.com/pop/tcg-cards/2014/pokemon-japanese-xy-promo/118674",
+      "httpStatus": 200,
+      "fetchedAt": "2026-10-14T02:07:31.642Z",
+      "rowCount": 127,
+      "parsedRows": 128,
+      "excludedRows": 1,
+      "minimumPopulation": 0,
+      "error": null
+    },
+    {
+      "setCode": "XY-P",
+      "url": "https://www.psacard.com/pop/tcg-cards/2015/pokemon-japanese-xy-promo/128401",
+      "httpStatus": 200,
+      "fetchedAt": "2026-10-14T02:07:42.029Z",
+      "rowCount": 157,
+      "parsedRows": 158,
+      "excludedRows": 1,
+      "minimumPopulation": 0,
+      "error": null
+    },
+    {
+      "setCode": "XY-P",
+      "url": "https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-xy-promo/142307",
+      "httpStatus": 200,
+      "fetchedAt": "2026-10-14T02:07:53.069Z",
+      "rowCount": 2,
+      "parsedRows": 3,
       "excludedRows": 1,
       "minimumPopulation": 0,
       "error": null
@@ -249,28 +253,44 @@
       "resumeCondition": "正規アクセス・形式・同一仕様の確認後に停止範囲だけ再開",
       "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-svd-ex-start-deck/245165",
       "setCode": "SVD"
+    },
+    "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-sm-promo/163897": {
+      "kind": "missing-page",
+      "scope": "url",
+      "manual": true,
+      "attempts": 1,
+      "failures": 1,
+      "maxAttempts": 5,
+      "exhausted": false,
+      "reason": "Unable to find a populated table for https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-sm-promo/163897",
+      "lastAttemptAt": "2026-10-14T02:07:05.828Z",
+      "lastSuccessAt": null,
+      "status": "manual-wait",
+      "held": true,
+      "manualReview": true,
+      "waitMs": null,
+      "nextRetryAt": null,
+      "resumeCondition": "正規アクセス・形式・同一仕様の確認後に停止範囲だけ再開",
+      "url": "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-sm-promo/163897",
+      "setCode": "SM-P"
     }
   },
-  "lastSuccessAt": "2026-10-13T20:28:24.499Z",
+  "lastSuccessAt": "2026-10-14T02:07:53.069Z",
   "authRecovery": null,
   "unregisteredSetCount": 0,
   "specificationRecheckSets": 11,
-  "missingRecheckSets": 84,
-  "freshMissingSets": 11,
+  "missingRecheckSets": 78,
+  "freshMissingSets": 17,
   "selectionReasons": {
-    "https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-sun-moon-strength-expansion-pack-shining-legends/151058": "不足カードの登録済みセットを再確認",
-    "https://www.psacard.com/pop/tcg-cards/2016/pokemon-japanese-xy-starter-pack/134700": "不足カードの登録済みセットを再確認",
-    "https://www.psacard.com/pop/tcg-cards/2026/pokemon-japanese-m5-abyss-eye/341263": "不足カードの登録済みセットを再確認",
-    "https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-sm-promo/142008": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2018/pokemon-japanese-sm-promo/155528": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2016/pokemon-japanese-sm-promo/141030": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-sm-promo/163897": "不足カードの登録済みセットを再確認",
+    "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-promo-card-pack-25th-anniversary-edition/201768": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2013/pokemon-japanese-xy-promo/120187": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2014/pokemon-japanese-xy-promo/118674": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2015/pokemon-japanese-xy-promo/128401": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-xy-promo/142307": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-25th-anniversary-collection/199357": "不足カードの登録済みセットを再確認",
-    "https://www.psacard.com/pop/tcg-cards/2021/pokemon-asia-25th-anniversary-promo/202700": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2022/pokemon-japanese-sword-shield-vstar-universe/225772": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2018/pokemon-japanese-sun-moon-tag-bolt/163092": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-sword-shield-vmax-climax/204428": "不足カードの登録済みセットを再確認",
@@ -278,14 +298,12 @@
     "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv10-glory-team-rocket/301192": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-sword-shield-blue-sky-stream/196709": "不足カードの登録済みセットを再確認",
-    "https://www.psacard.com/pop/tcg-cards/2020/pokemon-japanese-sword-shield-charizard-vmax-starter-set/175882": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-sun-moon-alter-genesis/170665": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-sun-moon-tag-team-gx-all-stars/171183": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv7a-paradise-dragona/281224": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8a-terastal-fest-ex/288603": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv9-battle-partners/292980": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv5a-crimson-haze/264649": "不足カードの登録済みセットを再確認",
-    "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mp1-start-deck-100-battle-collection-corociao-version/297732": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv8-super-electric-breaker/284389": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2020/pokemon-japanese-sword-shield-legendary-heartbeat/178313": "未巡回",
@@ -301,11 +319,11 @@
     "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mc-start-deck-100-battle-collection/326110": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2022/pokemon-japanese-sword-shield-dark-phantasma/213459": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2024/pokemon-japanese-sv5k-wild-force/260324": "不足カードの登録済みセットを再確認",
-    "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-sword-shield-family-card-game/193596": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2001/pokemon-japanese-vs/63661": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-sun-moon-dream-league/169301": "未巡回",
     "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-sun-moon-miracle-twin/167601": "未巡回",
     "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-sun-moon-double-blaze/165073": "未巡回",
+    "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-sun-moon-remix-bout/168309": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2015/pokemon-japanese-xy-emerald-break/127710": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2026/pokemon-japanese-m6-storm-emeralda/348263": "不足カードの登録済みセットを再確認",
     "https://www.psacard.com/pop/tcg-cards/2026/pokemon-japanese-m3-nullifying-zero/329234": "不足カードの登録済みセットを再確認",
@@ -369,49 +387,49 @@
   "selectionVersion": "exact-url-analysis-completion-v1",
   "selectedLanes": [
     {
-      "url": "https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-sun-moon-strength-expansion-pack-shining-legends/151058",
+      "url": "https://www.psacard.com/pop/tcg-cards/2018/pokemon-japanese-sm-promo/155528",
       "lane": "ordinary",
       "completionCards": 0
     },
     {
-      "url": "https://www.psacard.com/pop/tcg-cards/2026/pokemon-japanese-m5-abyss-eye/341263",
+      "url": "https://www.psacard.com/pop/tcg-cards/2016/pokemon-japanese-sm-promo/141030",
       "lane": "ordinary",
       "completionCards": 0
     },
     {
-      "url": "https://www.psacard.com/pop/tcg-cards/2016/pokemon-japanese-xy-starter-pack/134700",
-      "lane": "analysis-completion",
-      "completionCards": 14
+      "url": "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-sm-promo/163897",
+      "lane": "spare",
+      "completionCards": 0
     },
     {
-      "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-asia-25th-anniversary-promo/202700",
-      "lane": "analysis-completion",
-      "completionCards": 7
+      "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-promo-card-pack-25th-anniversary-edition/201768",
+      "lane": "spare",
+      "completionCards": 0
     },
     {
-      "url": "https://www.psacard.com/pop/tcg-cards/2020/pokemon-japanese-sword-shield-charizard-vmax-starter-set/175882",
-      "lane": "analysis-completion",
-      "completionCards": 11
+      "url": "https://www.psacard.com/pop/tcg-cards/2013/pokemon-japanese-xy-promo/120187",
+      "lane": "spare",
+      "completionCards": 0
     },
     {
-      "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mp1-start-deck-100-battle-collection-corociao-version/297732",
-      "lane": "analysis-completion",
-      "completionCards": 2
+      "url": "https://www.psacard.com/pop/tcg-cards/2014/pokemon-japanese-xy-promo/118674",
+      "lane": "spare",
+      "completionCards": 0
     },
     {
-      "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-sword-shield-family-card-game/193596",
-      "lane": "analysis-completion",
-      "completionCards": 3
+      "url": "https://www.psacard.com/pop/tcg-cards/2015/pokemon-japanese-xy-promo/128401",
+      "lane": "spare",
+      "completionCards": 0
     },
     {
-      "url": "https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-sm-promo/142008",
+      "url": "https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-xy-promo/142307",
       "lane": "spare",
       "completionCards": 0
     }
   ],
-  "selectedCompletionCards": 37,
+  "selectedCompletionCards": 0,
   "focusedSelected": 0,
   "normalSelected": 8,
-  "pendingSets": 110,
-  "durationMs": 114878
+  "pendingSets": 104,
+  "durationMs": 98796
 }
