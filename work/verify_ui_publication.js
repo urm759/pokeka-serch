@@ -67,6 +67,17 @@ async function main() {
     assert.equal(published.replace(/\r\n/g,'\n'),fs.readFileSync(path.join(__dirname,'..',file),'utf8').replace(/\r\n/g,'\n'),file);
     verified.push(file);
   }
+  const supportFiles = ['data/buyback-support-audit.json','data/buyback-support-isolation.json','data/store-support-acquisition.json','data/purchase-issue-alias-audit.json',
+    ...fs.readdirSync(path.join(__dirname,'../data/buyback-support-details')).filter(name=>name.endsWith('.json')).map(name=>'data/buyback-support-details/'+name)];
+  for (const file of supportFiles) {
+    const published=await read(file+'?verify='+Date.now());
+    assert.equal(published.replace(/\r\n/g,'\n'),fs.readFileSync(path.join(__dirname,'..',file),'utf8').replace(/\r\n/g,'\n'),file);
+    verified.push(file);
+  }
+  const supportFile=manifest.aliases['data/buyback-observation-summary.json'] || 'data/buyback-observation-summary.json';
+  const supportText=await read(supportFile+'?verify='+Date.now());
+  assert.equal(crypto.createHash('sha256').update(supportText.replace(/\r\n/g,'\n')).digest('hex'),manifest.hashes[supportFile],supportFile);
+  verified.push(supportFile);
   if(process.argv.includes('--record-recovery')) {
     const commit=process.env.PUBLIC_COMMIT;
     assert(/^[a-f0-9]{40}$/.test(commit||''),'explicit verified publication commit required');
