@@ -17,7 +17,11 @@ const cache=helpers.markupCacheFor(cards);cache.set(card,{html:'warning'});
 state.cardById={};assert.strictEqual(helpers.markupCacheFor(cards),cache,'render lookup replacement is not data change');
 state.q='changed';assert.notStrictEqual(helpers.markupCacheFor(cards),cache,'search/diagnostic labels invalidate markup');
 let next=helpers.markupCacheFor(cards);state.prices={};assert.notStrictEqual(helpers.markupCacheFor(cards),next,'source reference invalidates');
-next=helpers.markupCacheFor(cards);assert.notStrictEqual(helpers.markupCacheFor(cards.slice()),next,'freshness/calculation rebuild invalidates');
+next=helpers.markupCacheFor(cards);assert.strictEqual(helpers.markupCacheFor(cards.slice()),next,'same sources/settings can reuse identical recalculated markup');
+const stable={id:'stable',price:100};next.set(stable,{html:'same'});
+assert.equal(next.get({...stable}).html,'same');assert.equal(next.get({...stable,price:200}),undefined,'changed calculation must rebuild');
+const stamp=Date.now();state.psa10PeriodSummary={tradeDemand:{times:[new Date(stamp-48*3600000+100).toISOString()]}};
+const timed=helpers.markupCacheFor(cards,stamp);assert.notStrictEqual(helpers.markupCacheFor(cards,stamp+101),timed,'exact trade freshness expiry invalidates');
 const sample=api.prepareCalculatedCards(api.state.cards.slice(0,120));
 const memoSample=scoped.prepareCalculatedCards(scoped.state.cards.slice(0,120));
 for(let i=0;i<sample.length;i++) {
@@ -32,4 +36,6 @@ for(let i=0;i<sample.length;i++) {
 assert.match(source,/finally \{ renderMemo = previous; \}/);
 assert.match(source,/state.openCardDetails.has\(card.id\),state.favorites.has\(card.id\)/);
 assert.match(source,/reusedMarkup\+\+/);
+assert.match(source,/const comparisonMatrix = detailsOpen \?/,'closed detail must not dereference deferred profit trials');
+assert.match(source,/const selectedPeriodTrial = detailsOpen \?/,'closed detail must not build return-period trial');
 console.log('PASS render-scoped reuse, markup invalidation, per-card mutable state and production financial results');

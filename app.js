@@ -58,12 +58,22 @@ function renderValue(card, key, calculate) {
   if (!values.has(key)) values.set(key, calculate());
   return values.get(key);
 }
-function markupCacheFor(cards) {
+function markupCacheFor(cards,now=Date.now()) {
   const entries = Object.entries(state).filter(([key]) => key !== 'cardById');
   const key = JSON.stringify(entries.filter(([,value]) => value == null || typeof value !== 'object'));
   const refs = entries.filter(([,value]) => value != null && typeof value === 'object').map(([,value]) => value);
-  if (cardMarkupCache?.cards !== cards || cardMarkupCache.key !== key || refs.length !== cardMarkupCache.refs.length || refs.some((ref,i) => ref !== cardMarkupCache.refs[i])) {
-    cardMarkupCache = {cards,key,refs,rows:new WeakMap()};
+  if (!cardMarkupCache || now>=cardMarkupCache.expires || cardMarkupCache.key !== key || refs.length !== cardMarkupCache.refs.length || refs.some((ref,i) => ref !== cardMarkupCache.refs[i])) {
+    const saved=new Map();
+    let expires=Math.min(now+60000,Math.floor((now+9*3600000)/86400000+1)*86400000-9*3600000,
+      typeof calculatedCardCache==='undefined'?Infinity:calculatedCardCache?.expires ?? Infinity);
+    for(const at of state.psa10PeriodSummary?.tradeDemand?.times || []) {
+      const end=Date.parse(at)+48*3600000+1;if(Number.isFinite(end)&&end>now)expires=Math.min(expires,end);
+    }
+    // Only visible cards are fingerprinted; identical recomputed values can reuse HTML.
+    const rows={get(card){const row=saved.get(card.id || card);return row && row.fingerprint===JSON.stringify(card)?row.value:undefined;},
+      set(card,value){const id=card.id || card;if(!saved.has(id)&&saved.size>=256)saved.delete(saved.keys().next().value);
+        saved.set(id,{fingerprint:JSON.stringify(card),value});}};
+    cardMarkupCache = {key,refs,expires,rows};
   }
   return cardMarkupCache.rows;
 }
@@ -4247,8 +4257,15 @@ function psa10PeriodCompact(card) {
   return `<div class="psa10-period-summary observation-glance" aria-label="国内PSA10観測平均">${[7,30,90,200].map(days=>{
     const value = explorationMetrics.observation(state.psa10PeriodSummary,card.id,card.psa10,days);
     const delta = value.delta == null ? '比較不可' : `${value.delta > 0 ? '+' : ''}${value.delta.toFixed(2)}%`;
-    return `<span>${days}暦日・観測平均<b>${value.mean == null ? '蓄積中' : `¥${fmt.format(value.mean)}`}</b><small>現相場との差 ${delta}<br>${value.count ?? 0}/${days}観測日・最終 ${value.latest || '未取得'}${value.reference ? '<br>参考・観測不足' : ''}${value.stale ? '<br>古い観測／日時未確認' : ''}</small></span>`;
+    const trade=explorationMetrics.tradeDemand(state.psa10PeriodSummary,card.id,days);
+    return `<span>${days}暦日・観測平均<b>${value.mean == null ? '蓄積中' : `¥${fmt.format(value.mean)}`}</b><small>現相場との差 ${delta}<br>${value.count ?? 0}/${days}観測日・最終 ${value.latest || '未取得'}${value.reference ? '<br>参考・観測不足' : ''}${value.stale ? '<br>古い観測／日時未確認' : ''}</small><small class="psa10-trade-glance">国内PSA10 ${trade.count==null?'件数未取得':fmt.format(trade.count)+'件'} / ${trade.daily==null?'日平均算出不可':trade.daily.toFixed(2)+'件/日'}<br>${days<=30?'取得元集計（個別成約ではない）':trade.count==null?'個別履歴不足・合算/推定なし':'個別実成約・全範囲確認'}${trade.stale?'・古値':''}<br>確認 ${escapeHtml(formatJstTimestamp(trade.at))}</small></span>`;
   }).join('')}</div>`;
+}
+function tradeDemandReferenceHtml(card) {
+  const rows=[7,30].map(days=>{const trade=explorationMetrics.tradeDemand(state.psa10PeriodSummary,card.id,days),p=trade.pop;
+    return `<span>${days}日：国内取引 ${trade.count==null?'未取得':fmt.format(trade.count)+'件'} / 世界POP ${p?`${p.delta>=0?'+':''}${fmt.format(p.delta)}枚（実測${p.span}日）`:'日時根拠付き履歴不足'}<small>${p?escapeHtml(p.status):'旧日付記録や新紐付けを供給増へ代用しない'}${p?.ratio!=null?'・国内件数/世界POP純増 '+p.ratio.toFixed(2)+'倍':''}</small></span>`;}).join('');
+  const support=cardBuybackSupport(card);
+  return `<details class="trade-pop-reference"><summary>POP警戒と取引・買取の支持を別確認（参考）</summary><div>${rows}</div><p>選択店舗の相場以上提示 ${support.above}/${support.count}店。取引は売りやすさ、POPは鑑定枚数増の警戒材料。国内取引と全世界POPは範囲が異なり、再売買も含み得ます。比率が1倍超でも新規供給吸収・安全・上昇・購入GOとは判定しません。</p><small>7/30件数はみんトレの直近期間集計（時刻境界未公表）。個別成約とは別。90/200日は全範囲の正規成約履歴待ち。重複する直近集計を合算しません。新指標は採算/点数/GOへ未反映。</small></details>`;
 }
 function psa10PeriodPanel(card, profitView) {
   const id = card.id;
@@ -4268,7 +4285,10 @@ function psa10PeriodDetailHtml(id) {
   const money = n => Number.isFinite(n) ? `¥${fmt.format(n)}` : '未取得';
   const snapshots = [7,30,90,200].map(days => { const s = row.snapshots[days]; if (!s) return `<tr><th>${days}暦日</th><td colspan="5">蓄積中・旧形式の要約</td></tr>`; return `<tr><th>${days}暦日</th><td>${money(s.mean)}</td><td>${money(s.median)}</td><td>${s.observedDays}/${days}日・欠測${s.missingDays ?? days-s.observedDays}日（必要${s.requiredObservedDays ?? days}日）</td><td>${escapeHtml(s.latestDate || '未取得')}</td><td>${escapeHtml(s.status || '参考値・観測充足未確認')}</td></tr>`; }).join('');
   const trades = row.actualTrades ? [7,30,90].map(days => { const s = row.actualTrades[days]; return `<p>${days}日実成約：平均 ${money(s.mean)}／中央値 ${money(s.median)}／${s.count}件／${s.sufficient ? '件数条件達成・参考表示' : '参考値・件数不足'}</p>`; }).join('') : '<p>国内PSA10個別実成約の平均・中央値・件数：未取得（0件や日次観測数に代用しません）</p>';
-  return `<section class="psa10-period-detail"><h4>PSA10直近平均・中央値（国内・参考）</h4><div class="table-scroll"><table><thead><tr><th>期間</th><th>日次相場平均</th><th>中央値</th><th>観測日数</th><th>最終観測日</th><th>状態</th></tr></thead><tbody>${snapshots}</tbody></table></div>${trades}<small>同日1記録。欠損日は補完せず、海外・出品・買取を混ぜません。対象期間の終日は ${escapeHtml(state.psa10PeriodSummary?.asOf || '未取得')}。集約相場の最終観測日は個別成約日ではありません。</small></section>`;
+  const counts=row.tradeDemand?.aggregate;
+  const rolling=row.tradeDemand?.rolling;
+  const rollingText=rolling ? [90,200].map(days=>{const r=rolling[days]?.[30];return `${days}暦日内の直近30日集計件数・観測平均 ${Number.isFinite(r?.mean)?r.mean.toFixed(2)+'件':'算出不可'}（${r?.observedDays || 0}/${days}観測日・最終${r?.latest || '未取得'}）。`;}).join(' ') : '';
+  return `<section class="psa10-period-detail"><h4>PSA10直近平均・中央値（国内・参考）</h4><div class="table-scroll"><table><thead><tr><th>期間</th><th>日次相場平均</th><th>中央値</th><th>観測日数</th><th>最終観測日</th><th>状態</th></tr></thead><tbody>${snapshots}</tbody></table></div>${trades}<p>国内PSA10件数出典：${counts?.source?`<a href="${escapeHtml(counts.source)}" target="_blank" rel="noreferrer">みんトレ・取得元集計</a>`:'取得根拠未確認'}。確認 ${escapeHtml(counts?.at || '未取得')}。${escapeHtml(counts?.periodBoundary || '対象期間未確認')}。</p><p>${escapeHtml(rollingText)}重複期間集計の観測平均は90/200日の実成約総数ではありません。個別成約原票・許諾済み取得経路は継続残件。集計値から同一品の再売買を識別できません。</p><small>同日1記録。欠損日は補完せず、海外・出品・買取を混ぜません。対象期間の終日は ${escapeHtml(state.psa10PeriodSummary?.asOf || '未取得')}。集約相場の最終観測日は個別成約日ではありません。</small></section>`;
 }
 async function loadPsa10PeriodDetail(id) {
   if (!psa10PeriodDetails.has(id)) {
@@ -5283,6 +5303,7 @@ function renderContent() {
       state.snkrUrlCache[card.id],state.actualResults[card.id],state.gradeObservations[card.id]]);
     const cached = markupCache.get(card);
     if (cached?.variant === variant) { reusedMarkup++; return cached.row; }
+    const detailsOpen=state.openCardDetails.has(String(card.id));
     const cardPriceText = Number.isFinite(card.price) ? `¥${fmt.format(card.price)}` : "未算出・価格確認待ち";
     const psa10NetText = Number.isFinite(card.psa10Net) ? `¥${fmt.format(Math.round(card.psa10Net))}` : "未算出";
     const profitText = Number.isFinite(card.profit) ? `¥${fmt.format(Math.round(card.profit))}` : "未算出";
@@ -5327,7 +5348,7 @@ function renderContent() {
     const stock = combineShopStock(cardrushStock, hareruya2Stock, yuyuteiStock);
     const snkUrl = card.snkUrl || state.snkrUrlCache[card.id] || buildSnkrUrl(card);
     const snkrDirect = /snkrdunk\.com\/(apparels|trading-cards|products)\/\d+/i.test(snkUrl);
-    const marketLinks = [
+    const marketLinks = detailsOpen || state.purchaseMode === 'snkr-raw' ? [
       `<a class="market-link toreca" href="${buildTorecaCardUrl(card)}" target="_blank" rel="noreferrer"><span>相場元</span><strong>みんトレ直リンク</strong></a>`,
       `<a class="market-link snkr" href="${snkUrl}" data-snk-link target="_blank" rel="noreferrer"><span>フリマ</span><strong>${snkrDirect ? "スニダン直リンク" : "スニダン検索"}</strong></a>`,
       card.cardrushUrl
@@ -5342,7 +5363,7 @@ function renderContent() {
       card.torecacampUrl
         ? `<a class="market-link torecacamp" href="${card.torecacampUrl}" target="_blank" rel="noreferrer"><span>ショップ・状態A</span><strong>トレカキャンプ直リンク</strong></a>`
         : "",
-    ].join("");
+    ].join("") : '';
     const demandClass = stock?.demand === "買う人が多い" ? "risk-high" : stock?.demand === "普通" ? "risk-medium" : stock?.demand === "少ない" ? "risk-low" : "pending";
     const demandBadge = stock?.demand && stock.demand !== "蓄積中" ? `<b>在庫減少ペース：${stock.demand}</b>` : "";
     const avgStock = (value) => Number.isFinite(value) ? `${Number(value).toFixed(2)}枚/日` : "-";
@@ -5354,7 +5375,7 @@ function renderContent() {
       card.yuyuteiUrl ? `<span>遊々亭 <b>${Number.isFinite(yuyuteiStock?.stock) ? `${fmt.format(yuyuteiStock.stock)}点` : "-"}</b></span>` : "",
       card.torecacampUrl ? `<span>トレカキャンプ <b>${torecacampStock?.available === true ? "在庫あり" : torecacampStock?.available === false ? "在庫なし" : "-"}</b></span>` : "",
     ].filter(Boolean).join("");
-    const stockPanel = (card.cardrushUrl || card.hareruya2Url || card.yuyuteiUrl || card.torecacampUrl)
+    const stockPanel = detailsOpen && (card.cardrushUrl || card.hareruya2Url || card.yuyuteiUrl || card.torecacampUrl)
       ? `
           <div class="stock-panel ${demandClass}">
             <div class="stock-title">
@@ -5370,7 +5391,7 @@ function renderContent() {
           </div>
         `
       : "";
-    const buybackShopRows = (card.buybackAnalysis?.referenceRows || card.buybackAnalysis?.rows || [])
+    const buybackShopRows = (detailsOpen ? card.buybackAnalysis?.referenceRows || card.buybackAnalysis?.rows || [] : [])
       .slice()
       .sort((a, b) => String(b.priceDate || "").localeCompare(String(a.priceDate || "")) || Number(b.buybackPrice || 0) - Number(a.buybackPrice || 0))
       .map((shop, index) => {
@@ -5945,7 +5966,7 @@ function renderContent() {
         </div>
       </details>
     ` : "";
-    const selectedPeriodTrial = buildReturnPeriodTrial(card, state.lockDays, state.fee, card.currentStoreOffer?.value ?? card.price);
+    const selectedPeriodTrial = detailsOpen ? buildReturnPeriodTrial(card, state.lockDays, state.fee, card.currentStoreOffer?.value ?? card.price) : {};
     const glanceProfit = signedMoney(selectedPeriodTrial.centralProfit);
     const glanceWarning = dataQuality.manualReviewReasons?.[0]
       || dataQuality.dataAnomalyReasons?.[0]
@@ -5969,9 +5990,9 @@ function renderContent() {
       ? `<div class="candidate-action"><strong>現相場維持の仮定探索・購入GOではありません</strong><small>既存の安定重視判定：${escapeHtml(displayVerdict)}。供給ストレス・返却時予測・資金の安全条件は変えていません。</small></div>`
       : `<div class="candidate-action ${readyToBuy ? "ready" : "waiting"}"><strong>${escapeHtml(actionLabel)}</strong><small>${escapeHtml(actionNote)}</small></div>`;
     const chosenProfit = searchProfitView(card);
-    const comparisonStore = searchProfitView(card, "normal", "store");
-    const comparisonLimit = searchProfitView(card, "normal", "limit");
-    const comparisonMatrix = {storeOffer:{centralForecast:comparisonStore.economics,supplyStress:comparisonStore.stress},operationalLimit:{centralForecast:comparisonLimit.economics,supplyStress:comparisonLimit.stress}};
+    const comparisonStore = detailsOpen ? searchProfitView(card, "normal", "store") : null;
+    const comparisonLimit = detailsOpen ? searchProfitView(card, "normal", "limit") : null;
+    const comparisonMatrix = detailsOpen ? {storeOffer:{centralForecast:comparisonStore.economics,supplyStress:comparisonStore.stress},operationalLimit:{centralForecast:comparisonLimit.economics,supplyStress:comparisonLimit.stress}} : null;
     const comparisonProfit = row => `${signedMoney(row?.expectedProfit).text}／${Number.isFinite(row?.expectedRoi) ? row.expectedRoi.toFixed(1) + "%" : "算出不可"}`;
     const profitComparison = `<div class="candidate-profit-comparison"><strong>利益比較・${FORECAST_HORIZON_DAYS}日モデル${card.forecastPeriodMismatch ? "（返却期間不一致・参考値）" : ""}</strong><div><span>実店舗価格で購入 × 中央予測<br><b>${comparisonProfit(comparisonMatrix?.storeOffer?.centralForecast)}</b></span><span>安定重視上限で購入 × 中央予測<br><b>${comparisonProfit(comparisonMatrix?.operationalLimit?.centralForecast)}</b></span><span>実店舗価格で購入 × 供給ストレス<br><b>${comparisonProfit(comparisonMatrix?.storeOffer?.supplyStress)}</b></span><span>安定重視上限で購入 × 供給ストレス<br><b>${comparisonProfit(comparisonMatrix?.operationalLimit?.supplyStress)}</b></span></div><small>検索・期待利益の並び順：${escapeHtml(chosenProfit.label)}。期待黒字は全鑑定結果の損失保証ではありません。</small></div>`;
     const periodProfitSummary = `<div class="period-profit-detail"><span>返却${state.lockDays}日・期待利益（参考）</span><strong class="${glanceProfit.className}">${glanceProfit.text}</strong><small>${card.currentStoreOffer ? "店舗価格" : "基準相場"}で購入 × 同期間の中央比較／期待利益率 ${Number.isFinite(selectedPeriodTrial.rows?.central?.expectedRoi) ? `${selectedPeriodTrial.rows.central.expectedRoi.toFixed(1)}%` : "算出不可"}／${escapeHtml(selectedPeriodTrial.status || '期間履歴不足')}</small></div>`;
@@ -5984,6 +6005,7 @@ function renderContent() {
       ${currentExploration && !['current-cap','current-target'].includes(chosenProfit.basis) ? "" : searchProfitPanel(chosenProfit)}
       ${cardEfficiencyPanel(card)}
       ${buybackSupportHtml(card)}
+      ${tradeDemandReferenceHtml(card)}
       ${['current-cap','current-target'].includes(chosenProfit.basis) ? `<details class="actual-purchase-comparison"><summary>実店舗価格で買った場合の現相場採算（探索買値とは別）</summary>${currentMarketProfitPanel(currentGuideSource(card))}</details>` : ''}
       ${currentExploration ? currentMarketProfitPanel(currentTrial) : ""}
       ${currentExploration && currentTrial.purchasePrice == null ? `<p class="helper">購入価格未取得。手入力試算買値を設定すると利益を検証できます。</p>` : purchasePsa9RatioHtml(card, currentExploration ? currentTrial.purchasePrice : undefined, currentExploration ? {purchaseKind:currentTrial.purchaseKind} : {})}

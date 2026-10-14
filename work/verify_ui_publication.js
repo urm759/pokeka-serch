@@ -58,7 +58,7 @@ async function main() {
   assert(performance.calculationValuesEqual);
   const efficiency=JSON.parse(await read('data/card-efficiency-audit.json?verify='+Date.now()));
   assert(efficiency.financialCalculationsUnchanged && efficiency.check.candidateIdsEqual);
-  for (const file of ['app.js','exploration-metrics.js']) {
+  for (const file of ['app.js','exploration-metrics.js','search-index-model.js']) {
     const published=await read(file+'?verify='+Date.now());
     assert.equal(published.replace(/\r\n/g,'\n'),fs.readFileSync(path.join(__dirname,'..',file),'utf8').replace(/\r\n/g,'\n'),file);
   }
@@ -67,7 +67,7 @@ async function main() {
     assert.equal(published.replace(/\r\n/g,'\n'),fs.readFileSync(path.join(__dirname,'..',file),'utf8').replace(/\r\n/g,'\n'),file);
     verified.push(file);
   }
-  const supportFiles = ['data/buyback-support-audit.json','data/buyback-support-isolation.json','data/store-support-acquisition.json','data/purchase-issue-alias-audit.json',
+  const supportFiles = ['data/trade-demand-audit.json','data/trade-demand-outcomes.json','data/buyback-support-audit.json','data/buyback-support-isolation.json','data/store-support-acquisition.json','data/purchase-issue-alias-audit.json',
     ...fs.readdirSync(path.join(__dirname,'../data/buyback-support-details')).filter(name=>name.endsWith('.json')).map(name=>'data/buyback-support-details/'+name)];
   for (const file of supportFiles) {
     const published=await read(file+'?verify='+Date.now());

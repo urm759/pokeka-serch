@@ -62,6 +62,7 @@ function sourceFingerprint(products) {
 }
 function matcherRevision(card,rules=read('data/source-matching-rules.json',{})) {
   const signature=shop.extractCardSignature(card);
+  if(/[&＆]/.test(card.name || ''))return 'strict-ampersand-equivalence-v1|'+(rules.setRevisions?.[String(signature.setCode).toUpperCase()]||rules.defaultRevision||'strict-state-a-v2');
   if(['master','monster'].includes(signature.finish))return 'strict-explicit-mirror-suffix-v4|'+(rules.setRevisions?.[String(signature.setCode).toUpperCase()]||rules.defaultRevision||'strict-state-a-v2');
   if(/-p$/.test(signature.setCode))return 'strict-promo-prefix-v3';
   return rules.setRevisions?.[String(signature.setCode).toUpperCase()] || rules.defaultRevision || 'strict-state-a-v2';

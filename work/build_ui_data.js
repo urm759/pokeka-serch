@@ -36,12 +36,13 @@ function project(name, input) {
       delete row.h; delete row.baseline; delete row.periods; delete row.premium;
     }
   }
+  if(name==='psa10-period-summary' && value.tradeDemand)for(const row of Object.values(value.tradeDemand.cards))while(row.length && row.at(-1)==null)row.pop();
   return value;
 }
 const SUMMARY = ['card-catalog-completion', 'operational-limit-history', 'market-stability-summary', 'market-research-summary',
   'cardrush-stock-summary', 'hareruya2-stock-summary', 'yuyutei-stock-summary', 'torecacamp-stock-summary',
   'shop-buyback-summary', 'buyback-observation-summary', 'state-a-price-evidence', 'snkr-listing-summary', 'snkr-raw-flip-summary',
-  'psa-population-summary', 'card-catalog/analysis', 'card-catalog/search-index', 'update-status'];
+  'psa-population-summary', 'psa10-period-summary', 'card-catalog/analysis', 'card-catalog/search-index', 'update-status'];
 function build(root = ROOT) {
   const hashes = {}, aliases = {}, bytes = {};
   const write = (file, text) => {

@@ -1,9 +1,17 @@
 const norm = (v) => String(v || "").normalize("NFKC").toLowerCase().replace(/[＆&]/g, "and").replace(/[\s:：・【】{}\[\]（）()_-]/g, "");
 const number = (v) => {
   const m = String(v || "").normalize("NFKC").match(/(\d{1,3})\s*\/\s*(\d{1,3}|(?:XY|SM|SV|BW|S)-P)/i);
-  return m ? `${Number(m[1])}/${/^\d+$/.test(m[2]) ? Number(m[2]) : m[2].toUpperCase()}` : null;
+  if(m)return `${Number(m[1])}/${/^\d+$/.test(m[2]) ? Number(m[2]) : m[2].toUpperCase()}`;
+  const prefix=String(v || '').normalize('NFKC').match(/(?:^|\[)((?:XY|SM|SV|BW|S)-P)\s+(\d{1,3})(?:$|\])/i);
+  return prefix ? `${Number(prefix[2])}/${prefix[1].toUpperCase()}` : null;
 };
-const name = (v) => norm(String(v || "").split("[")[0].replace(/\b(?:SAR|MUR|BWR|SSR|CSR|CHR|SR|HR|UR|RRR|RR|AR|R|H|SA)\b/gi, "").replace(/マスターボールミラー|モンスターボールミラー|ミラー/g, "").replace(/プロモ$/, ""));
+const name = (v) => norm(String(v || "").split("[")[0].replace(/\b(?:SAR|MUR|BWR|SSR|CSR|CHR|SR|HR|UR|RRR|RR|AR|R|H|SA|PROMO|P)\b/gi, "").replace(/マスターボールミラー|モンスターボールミラー|ミラー/g, "").replace(/プロモ$/, ""));
+function names(v) {
+  const head=String(v || '').split('[')[0], result=[name(head)];
+  const alias=head.match(/^([^（(]+)[（(]([^）)]+)[）)]/);
+  if(alias && norm(alias[2]).includes(norm(alias[1])) && !/ミラー|仕様|初版|未開封|英語|エラー|サイン/.test(alias[2]))result.push(name(alias[1]));
+  return result.filter(Boolean);
+}
 const spec = (v) => /マスターボール/.test(v) ? "master" : /モンスターボール/.test(v) ? "monster" : /ミラー/.test(v) ? "mirror" : /\bSA\b/i.test(v) ? "sa" : "base";
 
 function resolve(row, cards) {
@@ -11,7 +19,7 @@ function resolve(row, cards) {
   if (/セット|未開封|BOX|英語|韓国|中国|ゴッホ/i.test(row.name)) return { status: "確認待ち", reason: "言語・単品仕様の確認が必要" };
   const serial = number(row.listNo);
   if (!serial) return { status: "確認待ち", reason: "カード番号を確認できない" };
-  const candidates = cards.filter((c) => number(c.model || c.name) === serial && name(c.name) === name(row.name));
+  const candidates = cards.filter((c) => number(c.model || c.name) === serial && names(c.name).some(n=>names(row.name).includes(n)));
   // Missing variant/rarity is not permission to select the cheaper normal artwork.
   const explicitVariant = spec(row.name);
   const compatible = explicitVariant === "base" ? candidates : candidates.filter((c) => spec(c.name) === explicitVariant);

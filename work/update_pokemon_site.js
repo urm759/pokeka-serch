@@ -587,11 +587,13 @@ const startedAt = Date.now();
     .map((card) => card.id);
   changedIds.push(...removedIds);
   // This receipt is written only after parsing the actual price payload, not the HTML/304 gate.
+  const observedSourceRows=new Map(pokemonSource.map(card=>[String(card.id),card]));
   const observationReceipt = {
     version: 1, observedAt: priceBatchObservedAt, sourceUrl, chunkUrl, payloadHash: contentHash(chunk),
     cards: Object.fromEntries(sitePokemon.filter(card=>!card.identityReviewRequired && card.language === 'ja'
       && !Object.hasOwn(card,'psa10ObservedAt') && Number.isFinite(card.snkPsa10Price) && card.snkPsa10Price > 0)
-      .map(card=>[card.id,[require('./psa10_observation_evidence').identity(card),card.snkPsa10Price]])),
+      .map(card=>{const original=observedSourceRows.get(String(card.sourceId || card.id));return [card.id,[require('./psa10_observation_evidence').identity(card),card.snkPsa10Price,
+        num(original?.p10tv7),num(original?.p10tv30)]];})),
   };
   const receiptPath = path.join(base,'psa10-observation-receipt.json');
   if (Object.keys(observationReceipt.cards).length) {

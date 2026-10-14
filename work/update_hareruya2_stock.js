@@ -34,7 +34,7 @@ function normalize(value) {
     .replace(/[０-９]/g, (char) => String.fromCharCode(char.charCodeAt(0) - 0xfee0))
     .replace(/[‐−–—]/g, "-")
     .replace(/[「」『』【】\[\]〈〉(){}:：・,，.\s]/g, "")
-    .replace(/&/g, "")
+    .replace(/[&＆]/g, "")
     .trim();
 }
 

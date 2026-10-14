@@ -15,9 +15,14 @@ function capture(saved,catalog,source,cards) {
       const cleanName=String(item.name).replace(/\s+\d{1,3}\s*\/\s*(?:\d{1,3}|(?:XY|SM|SV|BW|S)-P)\b/ig,'');
       const result=require('./cardshop151').resolve({type:'PSA10',genre:'ポケモンカード',name:cleanName,listNo:item.number||item.name},cards);
       const explicit=String(item.name).match(/\[((?:SV|SM|XY|BW|S|M)[a-z0-9+-]*)\s/i)?.[1];
+      const promo=String(item.number || item.name).match(/\d{1,3}\s*\/\s*((?:XY|SM|SV|BW|S)-P)/i)?.[1];
+      const setNorm=v=>String(v || '').toUpperCase().replace(/[^A-Z0-9]/g,'');
+      const explicitMismatch=explicit && setNorm(explicit)!==setNorm(c.setCode)
+        && !(promo && setNorm(c.setCode)===setNorm(promo) && setNorm(explicit)===setNorm(promo).slice(0,-1));
       const identity=require('./card_identity'),rarity=identity.extractRarity(item.name),cardRarity=identity.extractRarity(c.name,c.rarity);
       const variant=identity.extractVariant(c.name),sourceVariant=identity.extractVariant(item.name);
-      if(result.cardId!==c.id || /mirror/.test(variant) && variant!==sourceVariant || item.language && item.language!=='ja' || item.currency && String(item.currency).toUpperCase()!=='JPY' || item.gradingCompany && String(item.gradingCompany).toUpperCase()!=='PSA' || item.grade!=null && !['10','PSA10'].includes(String(item.grade)) || rarity && rarity!==cardRarity || explicit && explicit.toUpperCase()!==String(c.setCode).toUpperCase()) {reject('番号・名称・仕様・日本語の一意照合不可');continue;}
+      const rarityMismatch=rarity && rarity!==cardRarity && !(variant==='promo' && !cardRarity && /^(PROMO|P|PR)$/.test(rarity));
+      if(result.cardId!==c.id || /mirror/.test(variant) && variant!==sourceVariant || item.language && item.language!=='ja' || item.currency && String(item.currency).toUpperCase()!=='JPY' || item.gradingCompany && String(item.gradingCompany).toUpperCase()!=='PSA' || item.grade!=null && !['10','PSA10'].includes(String(item.grade)) || rarityMismatch || explicitMismatch) {reject('番号・名称・仕様・日本語の一意照合不可');continue;}
       const observedAt=item.observedAt||meta.lastSuccess, date=day(observedAt);
       if(date!==quote.priceDate || Date.parse(observedAt)>Date.parse(meta.lastSuccess)+60000) {reject('取得日時の証拠不一致');continue;}
       const rows=((next.shops[shop]||={})[c.id]||={});

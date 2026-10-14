@@ -27,6 +27,9 @@ function fixture(root) {
     if (original === 'data/buyback-observation-summary.json' && value.support?.cards) {
       for (const [id,row] of Object.entries({...value.support.cards})) value.support.cards['scale-'+id]=structuredClone(row);
     }
+    if (original === 'data/psa10-period-summary.json' && value.tradeDemand?.cards) {
+      for(const [id,row] of Object.entries({...value.tradeDemand.cards}))value.tradeDemand.cards['scale-'+id]=structuredClone(row);
+    }
     if (original === 'data/card-catalog-completion.json') {
       const ratio = /Pct|Rate|Days|Retention/;
       for (const [key,n] of Object.entries(value.summary)) if(typeof n==='number'&&!ratio.test(key)) value.summary[key]=n*2;

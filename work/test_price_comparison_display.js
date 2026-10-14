@@ -6,7 +6,7 @@ const root = path.join(__dirname, '..');
 const app = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
 const start = app.indexOf('function priceComparisonCells(');
 const context = vm.createContext({ Intl, Date, currentProfitGuide:()=>({cap:40000,minProfit:0,minRoi:10,practicalPrice:null,reasons:[],warnings:[]}), explorationMetrics: require('../exploration-metrics.js'), purchaseExploration:c=>({headroom:c.comparisonBlocked ? null : 20,reason:'PSA9価格の確認日時不足'}), decisionModel: require('../decision-model.js'), fmt: new Intl.NumberFormat('ja-JP'), escapeHtml: s => String(s).replaceAll('<', '&lt;') });
-vm.runInContext('const state={psa10PeriodSummary:null};'+app.slice(app.indexOf('function psa10PeriodCompact('),app.indexOf('function psa10PeriodPanel('))
+vm.runInContext('const state={psa10PeriodSummary:null};'+app.slice(app.indexOf('function formatJstTimestamp('),app.indexOf('\nfunction ',app.indexOf('function formatJstTimestamp(')+1))+app.slice(app.indexOf('function psa10PeriodCompact('),app.indexOf('function psa10PeriodPanel('))
   +app.slice(start, app.indexOf('\nfunction render()', start)) + '\nglobalThis.cells=priceComparisonCells;', context);
 const now = Date.parse('2026-10-06T12:00:00Z');
 const limit = { stableCap: 40000, currentCap: 61000, reason: '供給ストレスで制限' };

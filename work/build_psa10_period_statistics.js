@@ -79,6 +79,8 @@ function build(root = ROOT, now = new Date()) {
     rule: '同日1記録・欠損補完なし・参考表示のみ・仕入れ上限とGOへ未反映', cards: {} };
   const chunks = Array.from({ length: 16 }, () => ({ version: 2, asOf,
     legacyEvidenceNote: '旧形式の記録は原票を保持して参考集計。取得根拠を捏造せず、完全200日観測には含めない', cards: {} }));
+  const tradeDemand=require('./psa10_trade_statistics').prepare(root,cards,now);
+  summary.tradeDemand=tradeDemand.summary;
   let actualCards = 0, historyCards = 0;
   const byPeriod = Object.fromEntries(PERIODS.map(days => [days,{meanCards:0, observationSufficientCards:0, recentSufficientCards:0, staleCards:0, completeCalendarCards:0}]));
   for (const card of cards) {
@@ -109,7 +111,7 @@ function build(root = ROOT, now = new Date()) {
       actualSources: [...new Set(actual.rows.map(r => r.source))], rejected: actual.rejected,
       duplicateDatesRemoved: (history.cards[card.id] || []).filter(r => positive(r[2])).length
         - new Set((history.cards[card.id] || []).filter(r => positive(r[2])).map(r => r[0])).size,
-      excludedObservationRows: (history.cards[card.id]?.length || 0) - daily.length };
+      excludedObservationRows: (history.cards[card.id]?.length || 0) - daily.length,tradeDemand:tradeDemand.details.get(card.id) };
     if (actual.rows.length) actualCards++;
   }
   summary.coverage = { catalog: cards.length, snapshotCards: historyCards, historyCards, summaryCards: Object.keys(summary.cards).length,

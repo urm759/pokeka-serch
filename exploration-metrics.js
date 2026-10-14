@@ -187,5 +187,17 @@
       multiStoreSupport:rates.filter(r=>r>=1).length>=2,
       note:'減額・手数料等を含まない参考支持。掲載は実買取件数ではなく上昇/GOの保証なし。同一店舗は1店、複数受付がある場合は保守側1提示'};
   }
-  return {percent,inRange,offerPrice,meanSale,atPurchase,efficiency,coverage,observationPeriods,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics,periodEfficiencyAverage,buybackSupport};
+  function tradeDemand(summary,id,days,now=Date.now()) {
+    const data=summary?.tradeDemand,row=data?.cards?.[id], at=data?.times?.[row?.[days===90?7:days===200?8:2]] || null;
+    const n=row?.[{7:0,30:1,90:5,200:6}[days]];
+    const measured=Number.isInteger(n)&&n>=0, pop=days===7?row?.[3]:days===30?row?.[4]:null;
+    const stale=at?now-Date.parse(at)>48*3600000:false;
+    return {count:measured?n:null,daily:measured?n/days:null,at,stale,
+      kind:days<=30?'取得元の国内PSA10集計':'国内PSA10個別実成約（範囲確認済み）',
+      status:!measured?days<=30?'取得根拠未確認':'履歴不足・総数算出不可':stale?'古い集計・参考値':'取得済み・参考',
+      source:data?.sourceUrl || null,pop:pop?{delta:pop[0],start:data.times[pop[1]],end:data.times[pop[2]],span:pop[3],
+        status:pop[4]===0?'近い期間の参考比較':pop[4]===2?'POP減少・訂正等':'期間不一致・部分期間',
+        ratio:measured&&!stale&&pop[4]===0&&pop[0]>0?n/pop[0]:null}:null};
+  }
+  return {percent,inRange,offerPrice,meanSale,atPurchase,efficiency,coverage,observationPeriods,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics,periodEfficiencyAverage,buybackSupport,tradeDemand};
 });
