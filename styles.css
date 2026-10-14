@@ -1694,3 +1694,10 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .efficiency-unavailable { border-color: #8c6058; background: #342129; color: #f2c7ba; }
 .efficiency-summary { margin: .6rem 0; padding: .55rem; border: 1px solid var(--line); font-size: .85rem; }
 .efficiency-summary small { display: block; margin-top: .4rem; line-height: 1.6; overflow-wrap: anywhere; }
+.buyback-support-compact { display:flex; flex-wrap:wrap; gap:.15rem .65rem; margin:.45rem 0; padding:.4rem .55rem; border-left:2px solid var(--accent); background:rgba(126,179,198,.06); font-size:.8rem; }
+.buyback-support-compact small { flex-basis:100%; font-size:.72rem; line-height:1.45; overflow-wrap:anywhere; }
+.buyback-support-detail { margin:.65rem 0; padding:.6rem; border:1px solid var(--line); }
+.buyback-support-detail small { display:block; font-size:.72rem; line-height:1.45; overflow-wrap:anywhere; }
+.buyback-support-detail th,.buyback-support-detail td { padding:.45rem; text-align:left; vertical-align:top; }
+.buyback-support-windows { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.55rem; margin:.4rem 0; font-size:.8rem; }
+@media (max-width:640px) { .buyback-support-windows { grid-template-columns:1fr; } }

@@ -520,6 +520,11 @@ async function main() {
   const results = [];
   for (const shop of SHOPS) {
     if (process.env.SHOP_BUYBACK_SOURCE_ONLY && process.env.SHOP_BUYBACK_SOURCE_ONLY !== shop.id) continue;
+    const permission = readJson(path.join(__dirname, 'buyback-source-permissions.json'), {}).sources?.[shop.id];
+    if (permission?.status === 'pending') {
+      failures.push({ source: shop.id, error: permission.reason, permissionWait: true });
+      continue;
+    }
     try {
       const fetched = await shop.fetchItems(shop);
       if (!fetched.items?.length) throw new Error("取得0件。正常データは保持");
@@ -762,7 +767,10 @@ async function main() {
       name: shop.name,
       url: shop.url,
       fulfilment: shop.fulfilment || "mail",
-      lastAttempt: result || failures.some((f) => f.source === shop.id) ? new Date().toISOString() : previous.lastAttempt || null,
+      merchantId: shop.id.replace(/-(?:store|mail)$/, ''),
+      acquisitionPermission: readJson(path.join(__dirname, 'buyback-source-permissions.json'), {}).sources?.[shop.id]?.status || null,
+      permissionCheckedAt: readJson(path.join(__dirname, 'buyback-source-permissions.json'), {}).sources?.[shop.id]?.checkedAt || null,
+      lastAttempt: result || failures.some((f) => f.source === shop.id && !f.permissionWait) ? new Date().toISOString() : previous.lastAttempt || null,
       lastSuccess: result ? new Date().toISOString() : previous.lastSuccess || null,
       fullListingConfirmedAt: result?.fullListing === true ? null : previous.fullListingConfirmedAt || null,
       sourceTotal: result?.sourceTotal ?? previous.sourceTotal ?? null,
@@ -774,7 +782,7 @@ async function main() {
       unmatched: result?.unmatched?.length ?? previous.unmatched ?? null,
       sourceUpdatedAt: result ? null : previous.sourceUpdatedAt || null,
       pagination: result?.pagination || previous.pagination || null,
-      error: result ? null : failures.find((f) => f.source === shop.id)?.error || previous.error || null,
+      error: result ? null : readJson(path.join(__dirname, 'buyback-source-permissions.json'), {}).sources?.[shop.id]?.reason || failures.find((f) => f.source === shop.id)?.error || previous.error || null,
       observedDays: (history.observedByShop[shop.id] || []).length,
       matched: result ? result.matched.length : Number(previous.matched || 0),
       activeMatched: result ? result.matched.filter((item) => item.active).length : Number(previous.activeMatched || 0),

@@ -41,7 +41,8 @@ function evaluate(profile,at,overlay={},inspectIds=[]) {
     const confirmedEfficiencyFail=missing.length===0&&Number.isFinite(e.annual)&&p.has('effMin')&&e.annual<Number(p.get('effMin'));
     const prospect=excluded.length>0&&!priceFail&&!hard&&!confirmedEfficiencyFail&&fields.length>0&&knownDisqualifying.length===0;
     const selected=!excluded.length;
-    const discoveryPriority=require('./profile_discovery_gates').priority(c,completion.cards?.[c.id]);
+    const support = selected || prospect ? require('../exploration-metrics').buybackSupport(api.state.buybackObservationSummary,c.id,p.get('buybackStores') || 'mail',(p.get('selectedStores')||'').split(','),Date.parse(at),c.psa10,c.identityKey) : null;
+    const discoveryPriority=require('./profile_discovery_gates').priority(c,completion.cards?.[c.id],support);
     if(hard)scope.identityHeld++;
     if(selected)scope.qualified++;else if(prospect)scope.completionProspects++;else scope.notSelected++;
     if(selected||prospect)rows.push({id:c.id,name:c.name,qualified:selected,unverifiedProspect:prospect,missing:[...new Set(fields)],reasons:excluded,

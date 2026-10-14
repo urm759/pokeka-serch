@@ -21,7 +21,8 @@ function capture(saved,catalog,source,cards) {
       const observedAt=item.observedAt||meta.lastSuccess, date=day(observedAt);
       if(date!==quote.priceDate || Date.parse(observedAt)>Date.parse(meta.lastSuccess)+60000) {reject('取得日時の証拠不一致');continue;}
       const rows=((next.shops[shop]||={})[c.id]||={});
-      const value={price:item.price,observedAt,identity:c.identityKey,url:item.itemUrl||meta.url,method:result.method,timestampBasis:item.observedAt?'individual-fetch':'matching-successful-source-record',grade:'PSA10',currency:'JPY',identityAuditVersion:3,title:item.name};
+      const value={price:item.price,observedAt,identity:c.identityKey,url:item.itemUrl||meta.url,method:result.method,timestampBasis:item.observedAt?'individual-fetch':'matching-successful-source-record',grade:'PSA10',currency:'JPY',identityAuditVersion:3,title:item.name,
+        campaign:item.campaign===true,quantityLimited:item.quantityLimited===true,conditionsConfirmed:item.conditionsConfirmed!==false};
       if(!rows[date] || Date.parse(rows[date].observedAt)<=Date.parse(observedAt)) rows[date]=value;
       audit.accepted++;
     }

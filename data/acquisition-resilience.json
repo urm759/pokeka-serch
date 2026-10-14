@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-14T14:02:08.830Z",
+  "generatedAt": "2026-10-14T18:51:09.215Z",
   "llmCalls": 0,
   "codexCalls": 0,
   "retryPolicy": {
@@ -27,7 +27,7 @@
     {
       "source": "psaOfficial",
       "label": "PSA公式・PC正規認証",
-      "remaining": 1192,
+      "remaining": 1193,
       "queueDefinition": "あとPSAだけで分析可能な国内カード。全PSA未取得とは別",
       "sourceState": "partial",
       "failureScope": "url",
@@ -97,9 +97,9 @@
       ],
       "lastRun": {
         "attempted": 8,
-        "newAcquired": 295,
-        "refreshed": 1075,
-        "durationMs": 97965
+        "newAcquired": 0,
+        "refreshed": 645,
+        "durationMs": 102885
       },
       "firstPassDaysEstimate": null,
       "observedExecutionDays": 0,
@@ -109,15 +109,15 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-14T13:54:35.539Z",
-        "to": "2026-10-14T14:02:06.508Z"
+        "from": "2026-10-14T18:18:42.205Z",
+        "to": "2026-10-14T18:51:06.707Z"
       },
       "sinceBaseline": {
         "newLinked": 3904,
         "validAdded": 3904,
         "validLost": 258,
         "usableNet": 3646,
-        "freshnessRecovered": 3486
+        "freshnessRecovered": 3436
       },
       "freshness": null
     },
@@ -254,8 +254,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-14T13:54:35.539Z",
-        "to": "2026-10-14T14:02:06.508Z"
+        "from": "2026-10-14T18:18:42.205Z",
+        "to": "2026-10-14T18:51:06.707Z"
       },
       "sinceBaseline": {
         "newLinked": 627,
@@ -306,8 +306,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-14T13:54:35.539Z",
-        "to": "2026-10-14T14:02:06.508Z"
+        "from": "2026-10-14T18:18:42.205Z",
+        "to": "2026-10-14T18:51:06.707Z"
       },
       "sinceBaseline": {
         "newLinked": 549,
@@ -320,13 +320,13 @@
     }
   ],
   "psaOnly": {
-    "count": 1192,
+    "count": 1193,
     "causes": {
       "PSA個別URL保留・他セット巡回継続": 13,
       "仕様・セット曖昧・手動確認待ち": 303,
       "日本語版根拠未確認・言語照合待ち": 7,
       "仕様不一致で保留・完全仕様表の再確認待ち": 182,
-      "公式セットURL未登録・正規候補確認待ち": 682,
+      "公式セットURL未登録・正規候補確認待ち": 683,
       "PC正規セット取得へ接続済み・実取得待ち": 5
     },
     "cards": [
@@ -2253,6 +2253,12 @@
       {
         "id": "x-452747",
         "setCode": "PCG-P",
+        "url": null,
+        "cause": "公式セットURL未登録・正規候補確認待ち"
+      },
+      {
+        "id": "pk-20993",
+        "setCode": "EVS",
         "url": null,
         "cause": "公式セットURL未登録・正規候補確認待ち"
       },
@@ -7486,10 +7492,10 @@
   },
   "progress": {
     "listed": 12524,
-    "analyzable": 2250,
-    "pending": 10274,
-    "oneAway": 1666
+    "analyzable": 2256,
+    "pending": 10268,
+    "oneAway": 1661
   },
-  "newlyAnalyzable": 0,
+  "newlyAnalyzable": 6,
   "note": "一時障害の再試行、個別URL隔離、取得元停止を区別。未取得をデータ不存在に変更しない。巡回完了と全項目取得・最新価格は別"
 }

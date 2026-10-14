@@ -151,5 +151,41 @@
     return {annual:adopted.length ? adopted.reduce((sum,row)=>sum+row.annual,0)/adopted.length : null,
       adopted:adopted.length,total:rows.length,reference:adopted.some(row=>row.calculationState==='reference'||row.observation?.reference)};
   }
-  return {percent,inRange,offerPrice,meanSale,atPurchase,efficiency,coverage,observationPeriods,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics,periodEfficiencyAverage};
+  function buybackSupport(summary, id, mode, selected = [], now = Date.now(), currentMarket = null, identityKey = null) {
+    const median = values => { const a = values.slice().sort((x,y)=>x-y); return a.length ? (a[Math.floor(a.length/2)] + a[Math.floor((a.length-1)/2)])/2 : null; };
+    const support = summary?.support, entries = support?.cards?.[id] || {}, rows = [], daily = new Map();
+    const fresh = at => Number.isFinite(Date.parse(at)) && Date.parse(at) <= now && now - Date.parse(at) <= 48 * 3600000;
+    for (const [shop, row] of Object.entries(entries)) {
+      const meta = support.shops?.[shop];
+      if (!meta || meta.permission === 'pending' || mode === 'selected' && !selected.includes(shop) || mode === 'mail' && meta.fulfilment === 'store') continue;
+      if (identityKey && summary.cards?.[id]?.[shop]?.identity !== identityKey) continue;
+      const [ratio,price,marketPrice,at,marketAt,date] = row.current;
+      const valid = row.current[6] !== false && fresh(at) && fresh(marketAt) && finite(ratio) && ratio > 0 && finite(currentMarket) && currentMarket === marketPrice;
+      const b = row.baseline || [], standard = b[0], premium = finite(standard) && standard > 0 ? (ratio / standard - 1) * 100 : null;
+      rows.push({shop,merchant:meta.merchantId || shop,name:meta.name,fulfilment:meta.fulfilment,ratio,price,marketPrice,at,marketAt,date,valid,
+        standard,premium,samples:b[1] || 0,excluded:b[3] || 0,cohort:b[5],band:b[6],reference:b[7],periods:row.periods,premiumPeriods:row.premium,
+        reason:valid ? null : row.current[6] === false ? '現在の掲載・価格・照合未確認（履歴のみ）' : !finite(currentMarket) ? '現在の国内PSA10相場未取得・履歴のみ' : !fresh(at) || !fresh(marketAt) ? '買取/国内相場の確認が48時間外・参考履歴のみ' : '国内PSA10現在価格と観測値不一致・再確認待ち'});
+      for (const [day,rate] of row.days || []) {
+        if (!finite(rate)) continue;
+        if (!daily.has(day)) daily.set(day,new Map());
+        const values = daily.get(day), merchant = meta.merchantId || shop;
+        values.set(merchant, values.has(merchant) ? Math.min(values.get(merchant),rate) : rate);
+      }
+    }
+    const current = new Map();
+    for (const row of rows.filter(r=>r.valid)) if (!current.has(row.merchant) || row.ratio < current.get(row.merchant).ratio) current.set(row.merchant,row);
+    const currentRows = [...current.values()], rates = currentRows.map(r=>r.ratio), latest = currentRows.map(r=>r.at).sort().at(-1) || null;
+    const asOf = new Date(now+9*3600000).toISOString().slice(0,10), windows = {};
+    for (const days of [7,30]) {
+      const adopted = [...daily].filter(([date])=>date<=asOf && Date.parse(date)>=Date.parse(asOf)-(days-1)*86400000).sort((a,b)=>a[0].localeCompare(b[0]));
+      const medians = adopted.map(([,values])=>median([...values.values()])), merchants = new Set(adopted.flatMap(([,v])=>[...v.keys()]));
+      windows[days] = {mean:medians.length?medians.reduce((s,r)=>s+r,0)/medians.length:null,median:median(medians),days:medians.length,
+        aboveDays:medians.filter(r=>r>=1).length,aboveRate:medians.length?medians.filter(r=>r>=1).length/medians.length*100:null,
+        stores:merchants.size,lastDate:adopted.at(-1)?.[0]||null,reference:medians.length!==days};
+    }
+    return {rows,median:median(rates),max:rates.length?Math.max(...rates):null,above:rates.filter(r=>r>=1).length,count:rates.length,latest,windows,
+      multiStoreSupport:rates.filter(r=>r>=1).length>=2,
+      note:'減額・手数料等を含まない参考支持。掲載は実買取件数ではなく上昇/GOの保証なし。同一店舗は1店、複数受付がある場合は保守側1提示'};
+  }
+  return {percent,inRange,offerPrice,meanSale,atPurchase,efficiency,coverage,observationPeriods,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics,periodEfficiencyAverage,buybackSupport};
 });

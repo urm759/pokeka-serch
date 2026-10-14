@@ -50,10 +50,12 @@ function run() {
     shopManualWaitCards:candidates.filter(r=>requested.has(r.card.id)&&shopGuard.manualWait?.[r.card.id]?.url===r.card.hareruya2Url).length,
     sourceBlocked:shopGuard.sourceBlocked || null };
   const groupOrder = new Map(focus.groups.map((g, i) => [g.id, i]));
+  const supportSummary=read('data/buyback-observation-summary.json');
+  const supportPriority=new Map(eligible.map(r=>[r.card.id,require('../exploration-metrics').buybackSupport(supportSummary,r.card.id,'all',[],start,r.card.snkPsa10Price,r.card.identityKey).multiStoreSupport ? 200 : 0]));
   eligible.sort((a, b) => {
     const fa = focus.cards[a.card.id], fb = focus.cards[b.card.id];
     return fa && fb ? groupOrder.get(fa.group) - groupOrder.get(fb.group) || Number(b.detail.p || 0) - Number(a.detail.p || 0)
-      : Number(Boolean(fb)) - Number(Boolean(fa)) || Number(requested.has(b.card.id))-Number(requested.has(a.card.id)) || Number(b.detail.p || 0) - Number(a.detail.p || 0);
+      : Number(Boolean(fb)) - Number(Boolean(fa)) || Number(requested.has(b.card.id))-Number(requested.has(a.card.id)) || (Number(b.detail.p || 0)+supportPriority.get(b.card.id)) - (Number(a.detail.p || 0)+supportPriority.get(a.card.id));
   });
   const maxTime = Math.max(10000, Number(process.env.COMPLETION_RUNTIME_MS || 120000));
   const last = read("work/candidate-shop-refresh.json").sources?.hareruya2 || {};
@@ -64,7 +66,7 @@ function run() {
     :selectionReasons.shopManualWaitCards?'指定条件の購入URLは仕様・手動確認待ち。別対象の通常巡回は維持'
     :!selectionReasons.missingStateACards?'状態A不足は現選択対象にない。他項目の補完待ちは継続'
     :!selectionReasons.missingStateAWithUrl?'状態A不足カードの晴れる屋2確定URLなし・探索担当へ':'正常値キャッシュまたは再試行待ち・全補完完了ではない';
-  const run = { startedAt: new Date(start).toISOString(), llmCalls: 0, codexCalls: 0, selectionReasons, zeroTargetReason, focusedSelected: selected.filter((r) => focus.cards[r.card.id]).length, normalSelected: selected.filter((r) => !focus.cards[r.card.id]).length, selected: selected.map((r) => ({ id: r.card.id, priority: r.detail.p, reasons: [focus.cards[r.card.id]?.priorityReason, ...r.detail.r].filter(Boolean), missingRequired: r.detail.m })), attempted: 0, acquired: 0, newAcquired: 0, newLinked: 0, failures: 0, checkpoint: null, stopReason: null };
+  const run = { startedAt: new Date(start).toISOString(), llmCalls: 0, codexCalls: 0, selectionReasons, zeroTargetReason, focusedSelected: selected.filter((r) => focus.cards[r.card.id]).length, normalSelected: selected.filter((r) => !focus.cards[r.card.id]).length, selected: selected.map((r) => ({ id: r.card.id, priority: r.detail.p, reasons: [focus.cards[r.card.id]?.priorityReason, ...r.detail.r, supportPriority.get(r.card.id)?'複数店の価格支持・取得順のみ参考':null].filter(Boolean), missingRequired: r.detail.m })), attempted: 0, acquired: 0, newAcquired: 0, newLinked: 0, failures: 0, checkpoint: null, stopReason: null };
   save("work/completion-acquisition-checkpoint.json", { ...state, running: run });
   const result = selected.length ? spawnSync(process.execPath, ["work/refresh_candidate_shops.js", "hareruya2"], { cwd: ROOT, encoding: "utf8", timeout: maxTime + 3000,
     env: { ...process.env, COMPLETION_PRIORITY_IDS: selected.map((r) => r.card.id).join(","), CANDIDATE_SHOP_BATCH: String(selected.length), CANDIDATE_SHOP_TIME_MS: String(maxTime - 20000), CANDIDATE_SHOP_INTERVAL_MS: "1200" } }) : null;

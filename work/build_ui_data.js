@@ -29,6 +29,13 @@ function project(name, input) {
   if (name === 'snkr-raw-flip-summary') for (const row of Object.values(value.cards||{})) {
     delete row.identity; delete row.http;
   }
+  if (name === 'buyback-observation-summary' && value.support) {
+    value.support.compact = true;
+    delete value.support.schema; delete value.support.audit; delete value.support.rule;
+    for (const shops of Object.values(value.support.cards)) for (const row of Object.values(shops)) {
+      delete row.h; delete row.baseline; delete row.periods; delete row.premium;
+    }
+  }
   return value;
 }
 const SUMMARY = ['card-catalog-completion', 'operational-limit-history', 'market-stability-summary', 'market-research-summary',

@@ -19,8 +19,16 @@ function requestDelay(lastRequestAt, now, intervalMs) {
   return Math.max(0,intervalMs-(now-lastRequestAt));
 }
 
+function issueCompatible(card, title) {
+  const target = String(card.name || '');
+  const primary = target.split('[')[0];
+  if (/未開封|BOX|複数枚|枚セット/i.test(primary) || /[)）]\s*未開封(?:パック|BOX|ボックス)?\s*$/i.test(target)) return false;
+  if (/電話抽選|抽選\s*\d+\s*名|当選者|当選品/.test(target) && !/電話抽選|抽選\s*\d+\s*名|当選者|当選品/.test(String(title || ''))) return false;
+  return true;
+}
 function exactIdentity(card, product) {
   const name = String(product.title || "").replace(/〔/g, "【").replace(/〕/g, "】");
+  if (!issueCompatible(card,name)) return false;
   if (/PSA|BGS|CGC|TAG|ACE|英語版|韓国版|未開封|セット商品/i.test(name) || stateFromTitle(name) !== "A") return false;
   const promo = name.match(/〈\s*(\d+)\s*\/\s*((?:SM|SV|S|XY|BW)-P)\s*〉\s*\[([^\]]+)\]/i);
   if (promo && /\(PROMO\)/i.test(name)) {
@@ -176,10 +184,13 @@ async function main() {
         quote = { price: page.price, stock: page.stock, available: Number(page.stock) > 0 };
       }
       if (!quote || !Number.isFinite(quote.price) || !(quote.price > 0)) throw new Error("実価格を解析できない");
-      let entry = byId.get(card.id) || byUrl.get(url);
+      const existingUrl = byUrl.get(url), other = cards.find(row=>row.id===existingUrl?.cardId);
+      if (!byId.has(card.id) && existingUrl && other?.id !== card.id
+        && (!card.identityKey || !other?.identityKey || card.identityKey.split('|').slice(0,6).join('|') !== other.identityKey.split('|').slice(0,6).join('|'))) throw new Error('同一URLに異なるカード仕様が対応・曖昧一致で保留');
+      let entry = byId.get(card.id);
       const oldPrice = entry?.price ?? null, oldStock = entry?.stock ?? null;
       if (!entry) { entry = { cardId: card.id, detailUrl: url }; catalog.push(entry); byId.set(card.id, entry); byUrl.set(url, entry); run.newAcquiredCount += 1; }
-      Object.assign(entry, { name, ...quote, state: "A", observedAt: run.endedAt = new Date().toISOString(), identityVerifiedAt: new Date().toISOString() });
+      Object.assign(entry, { cardId: card.id, detailUrl: url, name, ...quote, state: "A", observedAt: run.endedAt = new Date().toISOString(), identityVerifiedAt: new Date().toISOString() });
       const previous = summary.cards?.[card.id] || {};
       summary.cards ||= {};
       summary.cards[card.id] = { ...previous, [`${sourceId}Price`]: quote.price, stock: quote.stock, available: quote.available,
@@ -259,4 +270,4 @@ function finalizeSaved(sourceId) {
   console.log(JSON.stringify({status:'saved-batch-recovered',refreshed:run.refreshedCount,newHttpRequests:0,sourceId}));
 }
 if (require.main === module) main().catch((error) => { console.error(error); process.exitCode = 1; });
-module.exports = { exactIdentity, shopifyQuote, budgetStop, requestDelay };
+module.exports = { exactIdentity, shopifyQuote, budgetStop, requestDelay, issueCompatible };

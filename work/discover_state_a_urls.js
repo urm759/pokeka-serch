@@ -8,6 +8,7 @@ const root=path.join(__dirname,'..');
 const read=(file,fallback)=>{try{return JSON.parse(fs.readFileSync(path.join(root,file),'utf8'));}catch{return fallback;}};
 const write=(file,value)=>{const target=path.join(root,file);fs.writeFileSync(target+'.tmp',JSON.stringify(value));fs.renameSync(target+'.tmp',target);};
 function strictMatch(card,product) {
+  if (!require('./refresh_candidate_shops').issueCompatible(card,product.title)) return false;
   if (/英語|海外|韓国|中国語|中文版|English|Korean|Chinese/i.test(card.name||'')) return false;
   if (shop.stateFromTitle(product.title)!=='A' || /PSA|BGS|CGC|TAG|ACE|鑑定|英語|海外|韓国|中国語|中文版|English|Korean|Chinese|未開封|枚セット/i.test(product.title||'')) return false;
   const a=shop.extractCardSignature(card),b=shop.extractProductSignature(product);

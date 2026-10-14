@@ -17,12 +17,13 @@ function gates(card, params) {
     purchasePrice: priceGate(offer?.fresh && offer.available ? offer.value : null, params, 'purchaseMin', 'purchaseMax'),
   };
 }
-function priority(card, detail = {}) {
+function priority(card, detail = {}, support = null) {
   const reasons = [...(detail.r || [])];
   const knownOutletCount = Number(card.buybackShops || 0);
-  const score = Number(detail.p || 0) + (detail.m?.length === 1 ? 500 : 0) + Math.min(5, knownOutletCount) * 100;
+  let score = Number(detail.p || 0) + (detail.m?.length === 1 ? 500 : 0) + Math.min(5, knownOutletCount) * 100;
   if (detail.m?.length === 1) reasons.push('必須あと1項目を優先');
   if (knownOutletCount >= 2) reasons.push('複数店舗の買取掲載を確認');
+  if (support?.multiStoreSupport) { score += 200; reasons.push('複数店舗の相場以上提示を確認・参考支持で取得順のみ優先'); }
   return { score, reasons: [...new Set(reasons)] };
 }
 module.exports = { priceGate, gates, priority };

@@ -4164,6 +4164,50 @@ function purchaseExploration(card,now=Date.now()) {
 function postingCoverage(card) {
   return explorationMetrics.coverage(state.buybackPostingCoverage,card.id,state.buybackStoreMode,state.selectedBuybackStores || []);
 }
+const buybackSupportCache = new WeakMap();
+const buybackSupportDetails = new Map(), buybackSupportDetailRequests = new Map();
+function cardBuybackSupport(card, now = Date.now(), detailed = false) {
+  const summary = state.buybackObservationSummary;
+  if (detailed && buybackSupportDetails.has(card.id)) return explorationMetrics.buybackSupport({...summary,support:{...summary.support,cards:{[card.id]:buybackSupportDetails.get(card.id)}}},card.id,state.buybackStoreMode,state.selectedBuybackStores,now,card.psa10,card.identityKey);
+  if (!summary) return explorationMetrics.buybackSupport(null,card.id,state.buybackStoreMode,state.selectedBuybackStores,now,card.psa10);
+  let cache = buybackSupportCache.get(summary);
+  if (!cache) { cache = new Map(); buybackSupportCache.set(summary,cache); }
+  const key = JSON.stringify([card.id,card.identityKey,card.psa10,state.buybackStoreMode,state.selectedBuybackStores]);
+  const previous = cache.get(key);
+  if (previous && now >= previous.at && now < previous.expires) return previous.result;
+  const result = explorationMetrics.buybackSupport(summary,card.id,state.buybackStoreMode,state.selectedBuybackStores,now,card.psa10,card.identityKey);
+  const midnight = Date.parse(new Date(now+9*3600000).toISOString().slice(0,10)) + 86400000 - 9*3600000;
+  const expiries = result.rows.flatMap(r=>[r.at,r.marketAt]).map(at=>Date.parse(at)+48*3600000+1).filter(at=>at>now);
+  cache.set(key,{at:now,expires:Math.min(midnight,...expiries),result}); return result;
+}
+function buybackSupportHtml(card, detailed = false) {
+  const value = cardBuybackSupport(card,Date.now(),detailed);
+  const rate = n => Number.isFinite(n) ? n.toFixed(3) : '算出不可';
+  const pct = n => Number.isFinite(n) ? `${n>=0?'+':''}${n.toFixed(1)}%` : '算出不可';
+  const windows = [7,30].map(days=>{
+    const w=value.windows[days];
+    return `<span>${days}日 日次中央値の平均 ${rate(w.mean)}／相場以上 ${w.aboveRate==null?'未取得':w.aboveRate.toFixed(1)+'%'} <small>${w.days}/${days}観測日・${w.stores}店・最終${escapeHtml(w.lastDate || '未取得')}${w.reference?'・蓄積中/参考':''}</small></span>`;
+  }).join('');
+  if (!detailed) return `<div class="buyback-support-compact" data-buyback-support="${escapeHtml(card.id)}"><b>買取価格支持・参考</b><span>相場比 中央値 ${rate(value.median)}／最高 ${rate(value.max)}／1.0以上 ${value.above}/${value.count}店</span><small>選択中の買取先・減額前提示。最終確認 ${escapeHtml(value.latest || '未取得')}。高い提示は実買取件数・上昇・GOの保証ではありません。</small></div>`;
+  const rows = value.rows.map(r=>`<tr><th>${escapeHtml(r.name)}<small>${r.fulfilment==='store'?'店頭':'郵送'}／${escapeHtml(r.date)}</small></th><td>${rate(r.ratio)}<small>提示 ¥${fmt.format(r.price)} / 同日国内PSA10 ¥${fmt.format(r.marketPrice)}</small></td><td>${rate(r.standard)}<small>${r.samples}枚・${r.cohort==='common'?'複数店共通カード群':'同店の同価格帯'}・自身除外/外れ値${r.excluded}枚・${escapeHtml(r.band || '')}${r.reference?'・標本不足/参考':''}</small></td><td>${pct(r.premium)}<small>${r.reason?escapeHtml(r.reason):'同店の通常水準との比較（実額の有利さとは別）'}</small></td><td>${[7,30].map(days=>{const p=r.premiumPeriods?.[days];return `${days}日 ${pct(p?.[0])} / ${p?.[1]??0}日${p?.[3]?'・参考':''}`;}).join('<br>')}<small>上乗せ率を計算できた日だけ採用</small></td></tr>`).join('');
+  const file=state.buybackObservationSummary?.support?.detailFiles?.[card.id];
+  return `<section class="buyback-support-detail" data-buyback-support-detail="${escapeHtml(card.id)}"><strong>買取価格支持（点数・採算へ未反映）</strong><div class="buyback-support-windows">${windows}</div><p class="helper">相場比＝減額前PSA10提示÷同日の国内PSA10。1.000は同額、0.900は10%低い、1.100は10%高い。上乗せ＝相場比÷同店の標準率−1。標準は同日・同価格帯の中央値、対象自身を除外。3枚未満は算出不可、10枚未満は参考。未取得日は未掲載/0とせず、同一店は1店。日次中央値が1.0以上だった日の割合で、キャンペーン/数量条件付き提示は除外します。</p>${state.buybackObservationSummary?.support?.compact && !buybackSupportDetails.has(card.id)?'<small>店舗標準・上乗せ詳細を読込中（根拠のない値では代用しません）</small>':''}<div class="shop-rate-table-wrap"><table><thead><tr><th>店舗・観測日</th><th>相場に対して高いか</th><th>同店標準</th><th>その店舗として高いか</th><th>上乗せ継続</th></tr></thead><tbody>${rows || '<tr><td colspan="5">同日・仕様・価格確認の根拠不足で算出不可</td></tr>'}</tbody></table></div>${file?`<a href="./${escapeHtml(file)}" target="_blank" rel="noreferrer">同日照合の原票・取得日時（必要時のみ読込）</a>`:''}<small>需要指標には費用を控除しません。実際の採算は既存の査定減額・費用を別途適用。価格支持だけで高回転・相場上昇・購入GOとは判定しません。</small></section>`;
+}
+async function loadBuybackSupportDetail(id) {
+  const file=state.buybackObservationSummary?.support?.detailFiles?.[id];
+  if (!file || !state.buybackObservationSummary?.support?.compact) return;
+  if (!buybackSupportDetails.has(id)) {
+    if (!buybackSupportDetailRequests.has(file)) buybackSupportDetailRequests.set(file,fetchJsonMaybe('./'+file,{detail:true}));
+    const payload=await buybackSupportDetailRequests.get(file);
+    for (const [cardId,rows] of Object.entries(payload?.summaries || {})) buybackSupportDetails.set(cardId,rows);
+  }
+  const target=document.querySelector(`[data-buyback-support-detail="${CSS.escape(id)}"]`),card=state.cardById[id];
+  if (target && card && buybackSupportDetails.has(id)) {
+    const calculated=calculatedCardCache?.value?.find(row=>row.id===id) || calc(card);
+    const template=document.createElement('template');template.innerHTML=buybackSupportHtml(calculated,true);
+    target.replaceWith(template.content.firstElementChild);
+  }
+}
 function selectedLimitDisplay(card, base, trial) {
   if (state.purchaseMode !== 'current-market' && !(['current-cap','current-target'].includes(state.profitSearchBasis) && state.purchaseMode !== 'now')) return base;
   const value=state.profitSearchBasis === 'current-target' && state.purchaseMode !== 'now' ? currentGuideBreakEven(card) : trial || searchProfitView(card);
@@ -5379,6 +5423,7 @@ function renderContent() {
           <span>売買流動性 <b>${fmt.format(demandComponents.liquidity || 0)}<small>/15</small></b></span>
         </div>
         <div class="buyback-shops buyback-primary-shop">${buybackPrimaryShop}</div>
+        ${state.openCardDetails.has(String(card.id)) ? buybackSupportHtml(card,true) : ''}
         ${buybackOtherShops}
         <div class="buyback-total"><span>全店舗合計</span><b>7日 ${fmt.format(card.buyback7)}回 / ${fmt.format(card.buyback.shop7 || 0)}店</b><b>30日 ${fmt.format(card.buyback30)}回 / ${fmt.format(card.buyback.shop30 || 0)}店</b><b>90日 ${fmt.format(card.buyback90)}回 / ${fmt.format(card.buyback.shop90 || 0)}店</b></div>
         <div class="buyback-price-averages"><span>全店舗平均買取（参考）</span><b>7日 ${card.buyback.avg7 ? `¥${fmt.format(card.buyback.avg7)}` : "-"}</b><b>30日 ${card.buyback.avg30 ? `¥${fmt.format(card.buyback.avg30)}` : "-"}</b><b>90日 ${card.buyback.avg90 ? `¥${fmt.format(card.buyback.avg90)}` : "-"}</b></div>
@@ -5937,6 +5982,7 @@ function renderContent() {
       </section>
       ${currentExploration && !['current-cap','current-target'].includes(chosenProfit.basis) ? "" : searchProfitPanel(chosenProfit)}
       ${cardEfficiencyPanel(card)}
+      ${buybackSupportHtml(card)}
       ${['current-cap','current-target'].includes(chosenProfit.basis) ? `<details class="actual-purchase-comparison"><summary>実店舗価格で買った場合の現相場採算（探索買値とは別）</summary>${currentMarketProfitPanel(currentGuideSource(card))}</details>` : ''}
       ${currentExploration ? currentMarketProfitPanel(currentTrial) : ""}
       ${currentExploration && currentTrial.purchasePrice == null ? `<p class="helper">購入価格未取得。手入力試算買値を設定すると利益を検証できます。</p>` : purchasePsa9RatioHtml(card, currentExploration ? currentTrial.purchasePrice : undefined, currentExploration ? {purchaseKind:currentTrial.purchaseKind} : {})}
@@ -6053,7 +6099,7 @@ function renderContent() {
       if (await ensurePokedataForCardIds([id])) render();
     });
   });
-  committed.changed.flatMap(el => [...el.querySelectorAll('[data-card-detail][open]')]).forEach(details => { void loadPsa10PeriodDetail(details.dataset.cardDetail); });
+  committed.changed.flatMap(el => [...el.querySelectorAll('[data-card-detail][open]')]).forEach(details => { void loadPsa10PeriodDetail(details.dataset.cardDetail); void loadBuybackSupportDetail(details.dataset.cardDetail); });
   renderFavorites();
   const timing = document.getElementById("searchPerformance");
   lastSearchTiming = {calculationMs,domMs:performance.now()-renderStarted-calculationMs,cacheHit:calculationCacheHit,
