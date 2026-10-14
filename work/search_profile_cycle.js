@@ -2,7 +2,7 @@ const fs=require('node:fs'),path=require('node:path');
 const ROOT=path.join(__dirname,'..');
 const outcomes=require('./audit_completion_outcomes'),{evaluate}=require('./build_priority_search_targets');
 const read=(root,file,fallback={})=>{try{return JSON.parse(fs.readFileSync(path.join(root,file),'utf8'));}catch{return fallback;}};
-const write=(root,file,value)=>require('./acquisition_retry').atomicWrite(path.join(root,file),value);
+const write=(root,file,value)=>require('./acquisition_retry').atomicWrite(path.join(root,file),value,0);
 function profileDelta(before,after,beforeRows,afterRows) {
   const prior=new Set(before.ids),current=new Set(after.ids),seen=new Set([...(before.seenQualified||[]),...prior]);
   const gained=after.ids.filter(id=>!prior.has(id)),lost=before.ids.filter(id=>!current.has(id));
@@ -19,10 +19,10 @@ function profileDelta(before,after,beforeRows,afterRows) {
     if(b&&a&&Object.entries(a.sources).some(([s,v])=>v.fresh&&v.valid&&!b.sources[s]?.fresh))freshnessRestored.push(id);
   }
   return {id:after.id,before:before.ids.length,after:after.ids.length,newListed:Object.keys(afterRows).filter(id=>!beforeRows[id]).length,
-    filledCards:completed.length,completed,newLinked:linked,firstQualified:gained.filter(id=>!seen.has(id)),freshnessRestored,gained,lost,
+    filledCards:completed.length,completed,newLinked:linked,firstQualified:gained.filter(id=>!seen.has(id)&&!freshnessRestored.includes(id)),freshnessRestored,gained,lost,
     lostReasons:lost.map(id=>({id,reasons:after.allExclusions?.[id]||['最新条件で不合格・別監査で根拠確認']})),
     remainingProspects:after.prospects,routePending:Object.fromEntries(Object.entries(after.routes).map(([s,r])=>[s,new Set(r.map(x=>x.id)).size])),
-    note:'URL全項目固定、取得前後の実時刻は別。期限経過も差分要因で相場変化と断定しない。補完は必須項目復帰、URL発見/再確認とは別。鮮度復帰と初適合は重複しうる。探索適合は購入GOではない'};
+    note:'URL全項目固定、取得前後の実時刻は別。期限経過も差分要因で相場変化と断定しない。補完は必須項目復帰、URL発見/再確認とは別。鮮度復帰は初適合へ重複計上しない。探索適合は購入GOではない'};
 }
 function baseline(key,root=ROOT) {
   const at=new Date().toISOString(),config=read(root,'work/priority-search-profiles.json');
@@ -52,6 +52,7 @@ function record(key,root=ROOT) {
         :shopRecords.filter(r=>ids.has(r.id)&&inRun(r.startedAt)).map(r=>r.id);
       const sourceRecord=read(root,'work/source-update-runs.json').sources?.[source==='domesticShops'?'hareruya2':source];
       delta.consumption[source]={requestedCards:ids.size,itemAttemptedIds:[...new Set(attempted)],
+        itemEvidenceCoverage:source==='psaOfficial'&&!before.psaUrls?'取得前のカード別URL記録なし・試行0件と断定しない':'個別記録に基づく試行数。最新実行以外は取得履歴を参照',
         bulkAttempted:sourceRecord&&inRun(sourceRecord.lastAttemptAt)?{at:sourceRecord.lastAttemptAt,status:sourceRecord.status,reason:sourceRecord.lastError||null}:null,
         note:'個別試行の証拠と一括取得の実行を分離。成功やURL発見を新規有効値と数えない'};
     }

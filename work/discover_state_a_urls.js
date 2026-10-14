@@ -9,7 +9,7 @@ const read=(file,fallback)=>{try{return JSON.parse(fs.readFileSync(path.join(roo
 const write=(file,value)=>{const target=path.join(root,file);fs.writeFileSync(target+'.tmp',JSON.stringify(value));fs.renameSync(target+'.tmp',target);};
 function strictMatch(card,product) {
   if (/英語|海外|韓国|中国語|中文版|English|Korean|Chinese/i.test(card.name||'')) return false;
-  if (shop.stateFromTitle(product.title)!=='A' || /PSA|BGS|CGC|TAG|ACE|鑑定|英語|海外|韓国|未開封|枚セット/i.test(product.title||'')) return false;
+  if (shop.stateFromTitle(product.title)!=='A' || /PSA|BGS|CGC|TAG|ACE|鑑定|英語|海外|韓国|中国語|中文版|English|Korean|Chinese|未開封|枚セット/i.test(product.title||'')) return false;
   const a=shop.extractCardSignature(card),b=shop.extractProductSignature(product);
   const number=s=>String(s).replace(/\/[A-Za-z0-9-]+-P$/i,'').split('/').map(n=>/^\d+$/.test(n)?String(Number(n)):n).join('/');
   const rarity=s=>/プロモ|PROMO/i.test(s)?'PROMO':(String(s).match(/(?:\b|[\{【])(MUR|BWR|SSR|CSR|CHR|SAR|UR|HR|SR|RRR|RR|AR|PR|P|H|C|U|R)(?:\b|[\}】])/i)||[])[1]?.toUpperCase();
@@ -61,7 +61,7 @@ function sourceFingerprint(products) {
 }
 function matcherRevision(card,rules=read('data/source-matching-rules.json',{})) {
   const signature=shop.extractCardSignature(card);
-  if(['master','monster'].includes(signature.finish))return 'strict-explicit-mirror-suffix-v4';
+  if(['master','monster'].includes(signature.finish))return 'strict-explicit-mirror-suffix-v4|'+(rules.setRevisions?.[String(signature.setCode).toUpperCase()]||rules.defaultRevision||'strict-state-a-v2');
   if(/-p$/.test(signature.setCode))return 'strict-promo-prefix-v3';
   return rules.setRevisions?.[String(signature.setCode).toUpperCase()] || rules.defaultRevision || 'strict-state-a-v2';
 }

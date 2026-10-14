@@ -61,7 +61,7 @@ async function main() {
     const published=await read(file+'?verify='+Date.now());
     assert.equal(published.replace(/\r\n/g,'\n'),fs.readFileSync(path.join(__dirname,'..',file),'utf8').replace(/\r\n/g,'\n'),file);
   }
-  for (const file of ['styles.css','search-controls.js','current-market-model.js','data/psa10-observation-receipt.json','data/observation-search-report.json','data/current-profit-guide-validation.json','data/current-guide-progress.json','data/current-guide-browser-validation.json','data/candidate-continuity-audit.json','data/runtime-availability-audit.json','data/runtime-improvement-outcomes.json','data/runtime-browser-validation.json','data/observation-efficiency-validation.json']) {
+  for (const file of ['styles.css','search-controls.js','current-market-model.js','data/psa10-observation-receipt.json','data/observation-search-report.json','data/current-profit-guide-validation.json','data/current-guide-progress.json','data/current-guide-browser-validation.json','data/candidate-continuity-audit.json','data/runtime-availability-audit.json','data/runtime-improvement-outcomes.json','data/runtime-browser-validation.json','data/observation-efficiency-validation.json','data/four-period-efficiency-validation.json','data/four-period-checkpoint-recovery.json','data/search-profile-cycle-progress.json']) {
     const published=await read(file+'?verify='+Date.now());
     assert.equal(published.replace(/\r\n/g,'\n'),fs.readFileSync(path.join(__dirname,'..',file),'utf8').replace(/\r\n/g,'\n'),file);
     verified.push(file);
