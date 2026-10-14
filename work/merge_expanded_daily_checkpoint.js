@@ -22,7 +22,8 @@ function run() {
   const git=args=>cp.execFileSync('git',args,{cwd:root,maxBuffer:100e6,encoding:'utf8'});
   const files=git(['diff','--name-only','--diff-filter=U']).trim().split(/\r?\n/).filter(Boolean);
   assert(files.every(f=>f.endsWith('.json')&&/^(?:data|work)\//.test(f)),'non-data conflict requires separate review');
-  const directory=path.join(root,'work/expanded-daily-merge-stages');
+  const incoming=git(['rev-parse','MERGE_HEAD']).trim();
+  const directory=path.join(root,'work/expanded-daily-merge-stages',incoming);
   const read=(stage,f)=>JSON.parse(git(['show',`:${stage}:${f}`]));
   const committed=(ref,f)=>JSON.parse(git(['show',`${ref}:${f}`]));
   const summaries=[committed('HEAD','data/shop-buyback-summary.json'),committed('MERGE_HEAD','data/shop-buyback-summary.json')];
