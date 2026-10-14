@@ -4,7 +4,7 @@ const path = require("path");
 const ROOT = path.join(__dirname, "..");
 const OUTPUT = path.join(ROOT, "data", "update-status.json");
 const HISTORY_OUTPUT = path.join(ROOT, "data", "update-history.json");
-const { countCurrentRecords } = require("./source_observability.js");
+const { countCurrentRecords, psaAuthenticationRequired, taskStageFields } = require("./source_observability.js");
 const { sourceTiming } = require("./workflow_schedule.js");
 
 function read(relativePath, fallback = {}) {
@@ -62,10 +62,7 @@ const psaTaskBase = acquisitionStartedAt > storedStartedAt ? {
   lastAttemptAt: psaAcquisition.startedAt || null,
   lastSuccessAt: ['success','partial'].includes(psaAcquisition.status) && psaAcquisition.acquiredCount > 0 ? psaAcquisition.endedAt : psaStoredTask.lastSuccessAt || null,
   lastError: psaAcquisition.error || null,
-  syncStatus: psaStoredTask.syncStatus || null,
-  syncError: psaStoredTask.syncError || null,
-  publishStatus: psaStoredTask.publishStatus || null,
-  publishError: psaStoredTask.publishError || null,
+  ...taskStageFields(psaAcquisition),
 } : psaStoredTask;
 const psaTrackedRun = runs.sources?.psaOfficial || {};
 const trackedStartedAt = new Date(psaTrackedRun.startedAt || psaTrackedRun.lastAttemptAt || 0).getTime();
@@ -74,10 +71,7 @@ const psaTask = trackedStartedAt > taskStartedAt ? {
   ...psaTaskBase,
   ...psaTrackedRun,
   lastSuccessAt: psaTrackedRun.lastSuccessAt || psaTaskBase.lastSuccessAt || null,
-  syncStatus: psaTaskBase.syncStatus || null,
-  syncError: psaTaskBase.syncError || null,
-  publishStatus: psaTaskBase.publishStatus || null,
-  publishError: psaTaskBase.publishError || null,
+  ...taskStageFields(psaTrackedRun),
 } : psaTaskBase;
 
 // A workflow-level timeout can terminate the tracker before it writes its final
@@ -230,7 +224,7 @@ for (const [sourceId, source] of Object.entries(sources)) {
 }
 // A completed refresh requires both cloud sources and the login-dependent
 // PSA task on the user's PC to be current.
-if (/sign.?in|log.?in|403|cloudflare|認証/i.test(psaTask.lastError || psaTask.sourceState || "")) {
+if (psaAuthenticationRequired(psaTask)) {
   Object.assign(sources.psaOfficial, { acquisitionStopped: true, fresh: false,
     note: "定期タスクは登録済み。取得は認証対応待ち、PC側の保存・公開は別工程で監視",
     scheduleLabel: "定期起動あり・取得は認証対応待ち" });

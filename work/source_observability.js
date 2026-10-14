@@ -46,6 +46,17 @@ function runFor(sourceId, runs) {
   return runs?.sources?.[sourceId] || {};
 }
 
+function psaAuthenticationRequired(task) {
+  const evidence=[task?.lastError,task?.sourceState].filter(Boolean).join(' / ');
+  return /\b(?:401|403)\b|cloudflare|認証(?:対応待ち|待ち|切れ|失敗|が必要)|未認証|authentication(?:\s+is)?\s+(?:required|expired|failed)/i.test(evidence)
+    || /sign.?in|log.?in/i.test(task?.lastError||'')
+    || /(?:sign.?in|log.?in).{0,24}(?:required|expired|failed|待ち|必要)/i.test(task?.sourceState||'');
+}
+
+function taskStageFields(record) {
+  return Object.fromEntries(['syncStatus','syncError','publishStatus','publishError'].map(k=>[k,record?.[k]??null]));
+}
+
 function reason(label, count) {
   return Number(count) > 0 ? { label, count: Number(count) } : null;
 }
@@ -388,4 +399,5 @@ function nextScheduledAt(now = new Date()) {
 module.exports = {
   ROOT, RUNS_PATH, RUN_HISTORY_PATH, readJson, writeJson, percent, cardSignature, productSignature,
   appendRunHistory, artifactFingerprint, buildStoreCoverage, countCurrentRecords, sourceArtifactPaths, updateRun, nextScheduledAt,
+  psaAuthenticationRequired, taskStageFields,
 };

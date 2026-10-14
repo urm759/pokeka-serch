@@ -1,5 +1,15 @@
 const assert=require('node:assert/strict'),{transition,cardFacts}=require('./profile_candidate_evidence');
 const {priceOnlyRecovery}=require('./profile_candidate_evidence');
+const {psaAuthenticationRequired,taskStageFields}=require('./source_observability');
+assert(!psaAuthenticationRequired({sourceState:'PC認証済みChrome・手動実取得',lastError:null}));
+assert(!psaAuthenticationRequired({sourceState:'login confirmed',lastError:null}));
+assert(psaAuthenticationRequired({sourceState:'login required'}));
+assert(psaAuthenticationRequired({lastError:'PSA HTTP 403'}));
+assert(psaAuthenticationRequired({sourceState:'認証対応待ち'}));
+assert(!psaAuthenticationRequired({lastError:'個別セットの表が見つからない'}));
+assert.deepEqual(taskStageFields({syncStatus:'saved',syncError:null,publishStatus:'success',publishError:null}),
+  {syncStatus:'saved',syncError:null,publishStatus:'success',publishError:null});
+assert.equal(taskStageFields({}).publishStatus,null,'new acquisition must not inherit old publication failure');
 assert(priceOnlyRecovery({efficiency:{blockingReasons:['期限超過・再確認待ち']}}));
 assert(!priceOnlyRecovery({efficiency:{blockingReasons:['期限超過・再確認待ち','買取出口データ不足']}}));
 assert(!priceOnlyRecovery({dataQuality:{manualReview:true},efficiency:{blockingReasons:['期限超過・再確認待ち']}}));
