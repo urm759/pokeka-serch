@@ -4,7 +4,7 @@ const ROOT = path.join(__dirname, '..');
 const periods = [7, 30], DAY = 86400000;
 const band = price => price < 30000 ? 'under30k' : price < 100000 ? 'from30kTo100k' : 'over100k';
 const physicalKey = card => [String(card.identityKey).split('|').slice(0,6).join('|'),
-  String(card.name || '').match(/電話抽選|抽選\s*\d+\s*名|当選者|当選品/)?.[0] || '',card.variant || ''].join('|');
+  String(card.name || '').normalize('NFKC').match(/(?:電話)?抽選\s*\d+\s*名|当選者|当選品|電話抽選/)?.[0]?.replace(/\s/g,'') || '',card.variant || ''].join('|');
 const constrained = row => row.campaign === true || row.quantityLimited === true || row.conditionsConfirmed === false
   || /キャンペーン|数量限定|先着|お一人様|まとめ売り|セット販売|PSA\s*9|BGS|CGC|TAG|ACE/i.test(row.title || '');
 function joined(observations, history, cards, source, now = Date.now()) {
@@ -120,4 +120,4 @@ function build(root = ROOT) {
   write('data/buyback-support-audit.json', report); return report;
 }
 if (require.main === module) console.log(JSON.stringify(build()));
-module.exports = { joined, baseline, aggregate, build, constrained };
+module.exports = { joined, baseline, aggregate, build, constrained, physicalKey };

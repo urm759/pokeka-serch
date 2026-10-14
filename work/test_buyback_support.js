@@ -45,6 +45,8 @@ const issue=require('./refresh_candidate_shops').issueCompatible;
 assert.equal(issue({name:'ピカチュウ プロモ 未開封パック'},'ピカチュウ(PROMO)'),false);
 assert.equal(issue({name:'プロモ 電話抽選100名限定配布品'},'通常来場者プロモ'),false);
 assert.equal(issue({name:'プロモ 電話抽選100名限定配布品'},'電話抽選100名限定配布品'),true);
+assert.equal(issue({name:'プロモ 電話抽選100名限定配布品'},'電話抽選50名限定配布品'),false);
+assert.notEqual(builder.physicalKey({...card,name:'電話抽選100名限定'}),builder.physicalKey({...card,name:'電話抽選50名限定'}));
 assert.equal(issue({name:'フクオカのピカチュウ P [SV-P 289](スペシャルBOX「ポケモンセンターフクオカ」)'},'フクオカのピカチュウ(PROMO)'),true,'a card included in a box is not the sealed box itself');
 for(const file of ['.github/workflows/daily-fast-update.yml','.github/workflows/priority-price-refresh.yml','.github/workflows/safe-checkpoint-backfill.yml'])assert(fs.readFileSync(file,'utf8').includes('test_buyback_support.js'));
 assert(fs.readFileSync('app.js','utf8').includes("state.openCardDetails.has(String(card.id)) ? buybackSupportHtml(card,true) : ''"),'detail generation lazy');

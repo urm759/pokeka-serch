@@ -1,28 +1,30 @@
 {
-  "startedAt": "2026-10-14T13:31:21.169Z",
-  "runId": "38572388407",
-  "event": "workflow_run",
-  "route": "既存監視ジョブの空白補完",
+  "startedAt": "2026-10-14T18:43:23.135Z",
+  "runId": "38617482568",
+  "event": "schedule",
+  "route": "通常価格更新",
   "status": "acquired-saved",
   "allowed": true,
-  "ageMs": 20675937,
-  "minimumIntervalMs": 9000000,
+  "ageMs": 18721464,
+  "minimumIntervalMs": 7200000,
   "reason": "定期の空白・既存の期限順キューで補完",
   "llmCalls": 0,
   "codexCalls": 0,
-  "sourceFailures": [],
-  "acquisitionStatus": "process-success",
-  "endedAt": "2026-10-14T13:38:41.516Z",
-  "durationMs": 440347,
+  "sourceFailures": [
+    "work/run_tracked_update.js"
+  ],
+  "acquisitionStatus": "partial-with-failure",
+  "endedAt": "2026-10-14T18:52:19.094Z",
+  "durationMs": 535959,
   "outcomes": {
-    "baselineAt": "2026-10-14T13:31:21.169Z",
+    "baselineAt": "2026-10-14T18:43:23.135Z",
     "commonCards": 12524,
     "addedCards": 0,
     "removedCards": 0,
     "newlyAnalyzable": 0,
     "lostAnalyzable": 0,
-    "filledCards": 0,
-    "filledItems": 0,
+    "filledCards": 1,
+    "filledItems": 1,
     "sources": {
       "cardrush": {
         "newLinked": 0,
@@ -32,11 +34,11 @@
         "freshnessRecovered": 0
       },
       "hareruya2": {
-        "newLinked": 0,
-        "validAdded": 0,
+        "newLinked": 40,
+        "validAdded": 40,
         "validLost": 0,
-        "usableNet": 0,
-        "freshnessRecovered": 36
+        "usableNet": 40,
+        "freshnessRecovered": 42
       },
       "yuyutei": {
         "newLinked": 0,

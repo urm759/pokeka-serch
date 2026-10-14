@@ -24,6 +24,9 @@ function issueCompatible(card, title) {
   const primary = target.split('[')[0];
   if (/未開封|BOX|複数枚|枚セット/i.test(primary) || /[)）]\s*未開封(?:パック|BOX|ボックス)?\s*$/i.test(target)) return false;
   if (/電話抽選|抽選\s*\d+\s*名|当選者|当選品/.test(target) && !/電話抽選|抽選\s*\d+\s*名|当選者|当選品/.test(String(title || ''))) return false;
+  const targetCount = target.normalize('NFKC').match(/抽選\s*(\d+)\s*名/)?.[1];
+  const sourceCount = String(title || '').normalize('NFKC').match(/抽選\s*(\d+)\s*名/)?.[1];
+  if (targetCount && targetCount !== sourceCount) return false;
   return true;
 }
 function exactIdentity(card, product) {
