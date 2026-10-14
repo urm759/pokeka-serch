@@ -44,7 +44,7 @@ const shopCount=history=>Object.values(history.shops||{}).flatMap(cards=>Object.
 const report={version:1,at,baseline,evaluationAt:'2026-10-14T02:12:00Z',profiles,delta,periods,
   buybackCardDays:{before:shopCount(old('work/buyback-price-observations.json')),after:shopCount(read('work/buyback-price-observations.json'))},
   pairs,cycle:read('data/search-profile-cycle-progress.json').cycles.at(-1),freshness:read('data/priority-price-monitor.json').fixedCohortFreshness.sources.hareruya2,
-  note:'3回中央値、60枚、同じPCの1440/390幅。原票初期読込なし。解析/通信は1読込、計算/DOMは3回。paint・実機スマホ・定期維持成功とは別。実データ差分は定期処理を含む。',
+  note:'性能は150価格の退避回収前に固定した同一コーパス・3回中央値・60枚・同じPCの1440/390幅。最新補完差分とは別。原票初期読込なし。解析/通信は1読込、計算/DOMは3回。paint・実機スマホ・定期維持成功とは別。実データ差分は定期処理を含む。',
   nextScheduledVerification:'新コードの次回定期取得・保存・公開照合は未実証。非AI受領証で継続',llmCalls:0,codexCalls:0};
 fs.writeFileSync('data/four-period-efficiency-validation.json',JSON.stringify(report));
 console.log(JSON.stringify({profiles,delta,periods,buybackCardDays:report.buybackCardDays,pairs}));
