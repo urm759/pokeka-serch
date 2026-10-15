@@ -50,10 +50,11 @@ function actualPeriod(card, days, asOf, now) {
     if(row.certificateId){if(certificates.has(row.certificateId))repeats++;certificates.add(row.certificateId);}
     accepted.push(row);
   }
-  return {count:complete && !Object.keys(excluded).some(k=>k!=='同一成約ID重複') ? accepted.length : null,
+  const usable=complete && !Object.keys(excluded).some(k=>k!=='同一成約ID重複');
+  return {count:usable ? accepted.length : null,
     availableRows:accepted.length,complete,startAt:new Date(start).toISOString(),endAt:new Date(end).toISOString(),
     observedAt:coverage?.observedAt || null,repeatedCertificateTransactions:repeats,excluded,
-    status:complete?'個別国内PSA10実成約・全範囲確認':'個別成約取得範囲不足・総数算出不可'};
+    status:usable?'個別国内PSA10実成約・全範囲確認':complete?'個別成約の仕様/識別根拠不足・総数算出不可':'個別成約取得範囲不足・総数算出不可'};
 }
 function prepare(root, cards, now=new Date()) {
   const receipt=read(root,'data/psa10-observation-receipt.json'), asOf=evidence.calendarDay(now.toISOString());
@@ -66,7 +67,16 @@ function prepare(root, cards, now=new Date()) {
     coverage:{aggregate7:0,aggregate30:0,actual90:0,actual200:0,matchedPop7:0,matchedPop30:0}};
   const details=new Map();let addedDays=0;
   for(const card of cards) {
-    const a=aggregate(card,receipt,+now), stored=previous.cards[card.id] || [];
+    const incoming=aggregate(card,receipt,+now), stored=previous.cards[card.id] || [];
+    // Older scheduled collectors omit counts. Preserve the proven snapshot's own timestamp.
+    const saved=[...stored].filter(r=>r[1]===evidence.identity(card) && r[5]
+      && evidence.calendarDay(r[4])===r[0] && Date.parse(r[4])<=+now && (count(r[2])||count(r[3])))
+      .sort((a,b)=>Date.parse(b[4])-Date.parse(a[4]))[0];
+    const a=incoming && (incoming.counts[7]!=null||incoming.counts[30]!=null) ? incoming
+      : saved && !card.identityReviewRequired && card.language==='ja'
+        ? {at:saved[4],source:saved[5],counts:{7:count(saved[2])?saved[2]:null,30:count(saved[3])?saved[3]:null},
+          periodBoundary:'保存済み取得元集計・元の確認日時を維持',stale:+now-Date.parse(saved[4])>48*3600000}
+        : incoming;
     if(a && (a.counts[7]!=null||a.counts[30]!=null)) {
       const day=evidence.calendarDay(a.at), existing=stored.find(r=>r[0]===day && r[1]===evidence.identity(card));
       if(!existing){stored.push([day,evidence.identity(card),a.counts[7],a.counts[30],a.at,a.source]);addedDays++;}

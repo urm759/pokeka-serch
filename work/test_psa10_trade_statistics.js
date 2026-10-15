@@ -36,6 +36,11 @@ try{
   assert.equal(metrics.tradeDemand(s,card.id,7,now+49*3600000).stale,true);
   const zero=structuredClone(s);zero.tradeDemand.cards.card[0]=0;
   assert.equal(metrics.tradeDemand(zero,card.id,7,now).daily,0);
+  fs.writeFileSync(path.join(root,'data/psa10-observation-receipt.json'),JSON.stringify({...receipt,observedAt:new Date(now).toISOString(),cards:{card:[evidence.identity(card),30000]}}));
+  const retained=stats.prepare(root,[card],new Date(now+2000));
+  assert.equal(retained.details.get(card.id).aggregate.at,receipt.observedAt);
+  assert.equal(retained.details.get(card.id).aggregate.counts[30],18);
+  assert.equal(retained.addedDays,0);
 }finally{fs.rmSync(root,{recursive:true,force:true});}
 const entries=search.hydrate([{id:'exact',n:'マリィ（マリィの練習）',s:'S-P',no:'140'},{id:'wrong',n:'別仕様',s:'SM-P',no:'140'}]);
 for(const q of ['マリィの練習','140/S-P','S-P 140'])assert.equal(search.search(entries,q)[0].id,'exact');

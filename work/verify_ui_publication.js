@@ -68,6 +68,7 @@ async function main() {
     verified.push(file);
   }
   const supportFiles = ['data/trade-demand-audit.json','data/trade-demand-outcomes.json','data/buyback-support-audit.json','data/buyback-support-isolation.json','data/store-support-acquisition.json','data/purchase-issue-alias-audit.json',
+    ...fs.readdirSync(path.join(__dirname,'../data/psa10-periods')).filter(name=>name.endsWith('.json')).map(name=>'data/psa10-periods/'+name),
     ...fs.readdirSync(path.join(__dirname,'../data/buyback-support-details')).filter(name=>name.endsWith('.json')).map(name=>'data/buyback-support-details/'+name)];
   for (const file of supportFiles) {
     const published=await read(file+'?verify='+Date.now());

@@ -8,7 +8,7 @@ const previousCompletion=JSON.parse(cp.execFileSync('git',['show','4d9e3375:data
 const completion=read('data/card-catalog-completion.json'),names=new Map(read('data/pokemon-cards.json').map(c=>[c.id,c.name]));
 const result={version:1,at:after.at,baseline:'048066e5',...compare(before,after),
   manual:{addedCards:savedManual.addedCards,filledCards:savedManual.filledCards,newlyAnalyzable:savedManual.newlyAnalyzable,sources:savedManual.sources},
-  integratedScheduled:'26dfa888bc76f6b9234bc9c9d84ff25664ba540e',
+  integratedScheduled:'33d8074ae62bf39663012e9de308d9ca46b2c1ee',
   integrationAnalysisChanges:Object.keys(completion.cards).filter(id=>(previousCompletion.cards[id]?.s==='分析可能')!==(completion.cards[id]?.s==='分析可能')).map(id=>({id,name:names.get(id),before:previousCompletion.cards[id]?.s,after:completion.cards[id]?.s,missing:completion.cards[id]?.m,reasons:completion.cards[id]?.r})),
   counts:read('data/psa10-period-summary.json').tradeDemand.coverage,
   profiles:read('data/search-profile-cycle-progress.json'),
