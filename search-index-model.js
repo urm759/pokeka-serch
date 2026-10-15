@@ -31,7 +31,7 @@
     const number = numberKey(value);
     const rawNormalized = String(value || "").normalize("NFKC").toLowerCase().replace(/[‐‑‒–—―ー−]/g, "-");
     const promo = rawNormalized.trim().match(/^(?:(\d{1,3})\s*\/\s*((?:xy|sm|s|sv|m)-p)|((?:xy|sm|s|sv|m)-p)\s+(\d{1,3}))$/);
-    if(promo)return {normalized,compacted,number:String(Number(promo[1]||promo[4])),setCandidate:compact(promo[2]||promo[3])};
+    if(promo)return {normalized,compacted,number:String(Number(promo[1]||promo[4])),setCandidate:compact(promo[2]||promo[3]),promo:true};
     const setCandidate = rawNormalized
       .replace(/\d{1,3}\s*\/\s*\d{1,3}.*/, "")
       .split(" ")
@@ -85,5 +85,11 @@
       sk:entry.sk ?? compact(entry.s||''), nok:entry.nok ?? numberKey(entry.no||''),
       x:entry.x ?? (numberKey(entry.no||'')&&compact(entry.s||'')?`${compact(entry.s)}|${numberKey(entry.no)}`:'') }));
   }
-  return { compact, normalize, numberKey, queryParts, rankEntry, search, hydrate };
+  function matchesCard(card, query) {
+    const parts=queryParts(query),text=`${card.name || ''} ${card.model || ''} ${card.id || ''}`;
+    if(normalize(text).includes(parts.normalized)||compact(text).includes(parts.compacted))return true;
+    return Boolean(parts.promo && compact(card.setCode)===parts.setCandidate
+      && numberKey(card.cardNumber || card.model)===parts.number);
+  }
+  return { compact, normalize, numberKey, queryParts, rankEntry, search, hydrate, matchesCard };
 });

@@ -4879,7 +4879,7 @@ function computeCardSearchExclusions(card, {mode = state.purchaseMode,diagnostic
   if (diagnostic && normalizedQuery && state.diagnosticSearch) {
     const haystack = normalize(`${card.name} ${card.model} ${card.id}`);
     const compactHaystack = compactSearch(`${card.name} ${card.model} ${card.id}`);
-    return haystack.includes(normalizedQuery) || compactHaystack.includes(compactQuery) ? [] : ['名称検索'];
+    return haystack.includes(normalizedQuery) || compactHaystack.includes(compactQuery) || searchIndexModel?.matchesCard(card,state.q) ? [] : ['名称検索'];
   }
   const profitView = searchProfitView(card, mode);
   if (efficiency && state.efficiencyMin != null && mode !== 'snkr-raw') {
@@ -4891,7 +4891,7 @@ function computeCardSearchExclusions(card, {mode = state.purchaseMode,diagnostic
       const compactHaystack = compactSearch(`${card.name} ${card.model} ${card.id}`);
       const completion = card.catalogCompletion;
       if (!releaseYearFilter.matches(card, completion, state.year2020Only, state.includeUnknownYear)) reasons.push("発売年");
-      if (normalizedQuery && !(haystack.includes(normalizedQuery) || compactHaystack.includes(compactQuery))) reasons.push("名称検索");
+      if (normalizedQuery && !(haystack.includes(normalizedQuery) || compactHaystack.includes(compactQuery) || searchIndexModel?.matchesCard(card,state.q))) reasons.push("名称検索");
       if (state.purchaseBelowCurrentCap) { const reason = purchaseBelowCurrentCapReason(card); if (reason) reasons.push(reason); }
       if (state.actualPurchaseMin != null || state.actualPurchaseMax != null || state.purchaseHeadroomMin != null || state.purchaseHeadroomMax != null) {
         const p = purchaseExploration(card);
@@ -5126,7 +5126,7 @@ function renderContent() {
     const counts = {total:0,eligible:0,"data-missing":0,"reference-disabled":0,"circular-estimate":0};
     for (const card of calculated) {
       if (!releaseYearFilter.matches(card,card.catalogCompletion,state.year2020Only,state.includeUnknownYear)) continue;
-      if (normalizedQuery && !normalize(`${card.name} ${card.model} ${card.id}`).includes(normalizedQuery) && !compactSearch(`${card.name} ${card.model} ${card.id}`).includes(compactQuery)) continue;
+      if (normalizedQuery && !normalize(`${card.name} ${card.model} ${card.id}`).includes(normalizedQuery) && !compactSearch(`${card.name} ${card.model} ${card.id}`).includes(compactQuery) && !searchIndexModel?.matchesCard(card,state.q)) continue;
       counts.total++;
       counts[purchaseRatioModel.eligibility(purchasePsa9Ratio(card),psa9RatioOptions())]++;
     }
@@ -5152,7 +5152,7 @@ function renderContent() {
     const matchingCatalog = normalizedQuery ? calculated.filter((card) => {
       const haystack = normalize(`${card.name} ${card.model} ${card.id}`);
       const compactHaystack = compactSearch(`${card.name} ${card.model} ${card.id}`);
-      return haystack.includes(normalizedQuery) || compactHaystack.includes(compactQuery);
+      return haystack.includes(normalizedQuery) || compactHaystack.includes(compactQuery) || searchIndexModel?.matchesCard(card,state.q);
     }) : [];
     const matchingCatalogCount = matchingCatalog.length;
     const incomplete = matchingCatalog.filter((card) => card.catalogCompletion?.s !== "分析可能").slice(0, 8);

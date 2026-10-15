@@ -36,6 +36,8 @@ assert.match(css,/\.search-settings \[hidden\]\{display:none!important\}/,'displ
 assert.match(app,/if \(activeConditionKey===key\) return/,'unchanged active filters are not rebuilt');
 for(const [name,expected] of Object.entries(baseline.protectedFunctions)) {
   const source=app.replace(/\r\n/g,'\n')
+    // Promo identity equivalence is tested separately; all financial gates stay hash-protected.
+    .replaceAll(' || searchIndexModel?.matchesCard(card,state.q)','')
     .replace("reasons.push(efficiency.observation?.reference && !state.observationIncludeReference ? '単体資金効率・観測不足の参考平均を対象外' : efficiency.calculationState", "reasons.push(efficiency.calculationState")
     .replace(/  if \(mode !== 'now' && \(explicitBasis \|\| state.profitSearchBasis\) === 'current-target'\) \{[\s\S]*?\n  }\n/,'')
     .replace(/  if \(diagnostic && normalizedQuery && state.diagnosticSearch\) \{[\s\S]*?\n  }\n/,'')

@@ -44,6 +44,18 @@ try{
 }finally{fs.rmSync(root,{recursive:true,force:true});}
 const entries=search.hydrate([{id:'exact',n:'マリィ（マリィの練習）',s:'S-P',no:'140'},{id:'wrong',n:'別仕様',s:'SM-P',no:'140'}]);
 for(const q of ['マリィの練習','140/S-P','S-P 140'])assert.equal(search.search(entries,q)[0].id,'exact');
+for(const q of ['マリィの練習','140/S-P','S-P 140'])assert(search.matchesCard({name:'マリィ（マリィの練習）',setCode:'SP',cardNumber:'140',model:'S-P 140'},q));
+assert(!search.matchesCard({name:'別カード',setCode:'SMP',cardNumber:'140',model:'SM-P 140'},'140/S-P'));
+const live=require('./audit_search_profit_consistency').load(fs.readFileSync(path.join(__dirname,'../app.js'),'utf8'),new Date().toISOString());
+const subject=live.state.cards.find(c=>c.id==='x-91114');
+assert(subject,'existing catalog promo must not be added again');
+const calculated=live.prepareCalculatedCards([subject])[0];
+for(const q of ['マリィの練習','140/S-P','S-P 140']) {
+  live.state.q=q;live.state.diagnosticSearch=true;
+  assert.equal(live.cardSearchExclusions(calculated).length,0,'diagnosis uses the same identity as the index');
+  live.state.diagnosticSearch=false;
+  assert(!live.cardSearchExclusions(calculated).includes('名称検索'));
+}
 assert.equal(search.numberKey('110/080'),'110/80');
 const matching=require('./discover_state_a_urls');
 const tag={id:'ordinary',name:'メガミミロップ＆プリンGX SR:SA [SM12 104/095](拡張パック「オルタージェネシス」)'};
