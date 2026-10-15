@@ -1,0 +1,21 @@
+{
+  "version":1,"evaluationAt":"2026-10-15T14:59:00.000Z","beforeCode":"b2cd2af9","afterCode":"20261016-eevee-operations",
+  "repetitions":3,"visibleCards":60,"actualWidthsVerified":true,"sameDataSettingsAndTime":true,"candidateIdsEqual":true,"financialHashesEqual":true,
+  "discardedRuns":"Initial two PC samples actually used 1280px, not requested 1440px. Excluded; all four adopted pairs verify actual width. A click during page initialization did not start and was retried after confirming empty result and enabled control.",
+  "units":"ms rounded to 0.1; decoded JSON and local gzip /data transfer bytes are separate. Transfer includes one explicit detail expansion, not pure first paint. Viewport emulation, not physical phone.",
+  "rows":[
+    {"width":1440,"scale":1,"analyzed":2261,"decodedJsonBytes":16984134,"dataTransferBytes":2658940,"bytesEqual":true,"hash":"0bd48fb7199e93d7c9dea27720b2ab1ebc7d8dd25e25ac25193bb91758800edc",
+      "before":{"parse":59.9,"decode":240.1,"calculation":[758.7,676.9,585.3],"searchDom":[324.8,156.6,169.3],"filter":[167.4,141.3,152.1],"markup":[142.8,14,16.3],"commit":[13.6,0.1,0.1],"conditionDom":[34.6,20,21.8]},
+      "after":{"parse":77.7,"decode":234.9,"calculation":[858.7,658.5,597.1],"searchDom":[338.8,157,157.4],"filter":[180.1,140.6,143.3],"markup":[143.5,15.6,13.4],"commit":[13.8,0.1,0.1],"conditionDom":[26,20.5,18.4]}},
+    {"width":1440,"scale":2,"analyzed":4522,"decodedJsonBytes":31228579,"dataTransferBytes":4448322,"bytesEqual":true,"hash":"968c0b77463889c178bbca34279a489a5a6ec494ef7fc9bdca1a5cb7e686b0b6",
+      "before":{"parse":135.9,"decode":506.3,"calculation":[1476.3,1187.5,1509.8],"searchDom":[471.8,301,436.7],"filter":[307.1,286.8,403.4],"markup":[149.9,13.1,21.8],"commit":[13,0.1,9.1],"conditionDom":[31.3,21.5,31.1]},
+      "after":{"parse":191.3,"decode":530.7,"calculation":[1498,1224,1177.1],"searchDom":[473.8,302.8,297.3],"filter":[313.2,288.9,282.8],"markup":[144.8,12.8,13.7],"commit":[14.1,0.2,0.1],"conditionDom":[30.7,21.8,21.3]}},
+    {"width":390,"scale":1,"analyzed":2261,"decodedJsonBytes":16984134,"dataTransferBytes":2658940,"bytesEqual":true,"hash":"0bd48fb7199e93d7c9dea27720b2ab1ebc7d8dd25e25ac25193bb91758800edc",
+      "before":{"parse":77.8,"decode":295.7,"calculation":[864.4,645.6,593],"searchDom":[353.9,155,154.4],"filter":[183.8,141,140.7],"markup":[151.4,13.2,13],"commit":[17.3,0.1,0.2],"conditionDom":[24.4,19,17.5]},
+      "after":{"parse":67.6,"decode":245.8,"calculation":[735.8,656.5,585.5],"searchDom":[324.5,163.2,161.4],"filter":[162.7,149.3,143.3],"markup":[147.3,13.1,17.2],"commit":[13.2,0.1,0.1],"conditionDom":[22.2,18.4,19.3]}},
+    {"width":390,"scale":2,"analyzed":4522,"decodedJsonBytes":31228579,"dataTransferBytes":4448322,"bytesEqual":true,"hash":"968c0b77463889c178bbca34279a489a5a6ec494ef7fc9bdca1a5cb7e686b0b6",
+      "before":{"parse":132.4,"decode":460.2,"calculation":[1493,1238.6,1191.8],"searchDom":[514.7,305.2,283.8],"filter":[324.5,289.8,270.1],"markup":[175.1,14.2,12.7],"commit":[13.3,0.2,0.1],"conditionDom":[29,24.8,21.7]},
+      "after":{"parse":133.6,"decode":455.2,"calculation":[1465.9,1213.2,1152.9],"searchDom":[474.9,312.4,295.2],"filter":[310.4,298.3,280.5],"markup":[148.2,13.1,13.6],"commit":[14.5,0,0],"conditionDom":[30.2,24.3,22.8]}}
+  ],
+  "assessment":"PC median search/DOM 169.3->157.4ms; double 436.7->302.8ms with substantial run variation. Mobile 155.0->161.4ms; double 305.2->312.4ms. Not a structural speedup claim; filtering/full recalculation and cold frames remain costly. No cards removed for speed. Details/history remain lazy and calculations reused."
+}

@@ -683,6 +683,8 @@ async function updateTorecaCamp(cards, paths) {
   const knownByUrl = new Map(catalog.map(entry=>[entry.detailUrl,entry]));
   const important = new Set(Object.keys(read(path.join(__dirname,'purchase-price-targets.json'),{}).rows||{}));
   for(const row of read(path.join(__dirname,'search-profile-targets.json'),{}).routes?.domesticShops||[])important.add(row.id);
+  const comparisonIds=read(path.join(__dirname,'comparison-price-targets.json'),{}).ids||[];
+  for(const id of comparisonIds)important.add(id);
   try {
     const indexResponse = await fetchText(`${TORECA_CAMP}/sitemap.xml`, { intervalMs: 1100 });
     sitemapUrls = parseProductSitemapIndex(indexResponse.text);
@@ -698,6 +700,34 @@ async function updateTorecaCamp(cards, paths) {
     stoppingReason = progress.sourceRetry.reason;
   }
 
+  // Legacy known URLs lack a sitemap number. Refresh them without inventing provenance or moving the normal cursor.
+  progress.knownUrlRetries ||= {};
+  const legacyRequested=[...new Set([...comparisonIds,...(read(path.join(__dirname,'search-profile-targets.json'),{}).readyRoutes?.domesticShops||[]).filter(r=>r.field==='referenceMedian').map(r=>r.id)])];
+  const legacyRecords=[];
+  if(!stoppingReason)for(const previousEntry of postpass.legacyTargets(catalog,legacyRequested,{...progress.knownUrlRetries,...progress.retryByUrl}).slice(0,Math.floor(detailLimit/3))) {
+    if(Date.now()>=stopBy-Math.max(15000,runtimeLimitMs/2))break;
+    const url=previousEntry.detailUrl,record={id:previousEntry.cardId,url,startedAt:new Date().toISOString(),sourceSitemap:null};
+    try {
+      const product=(await fetchJson(url+'.js',{intervalMs:1100})).value;detailFetched++;
+      if(!product?.id||typeof product.title!=='string'||!Array.isArray(product.variants))throw new Error('商品JSON形式変更・正規確認待ち');
+      const matches=(byNumber.get(campSignature(product).cardNo)||[]).filter(c=>campMatchesCard(c,{title:product.title,tags:Array.isArray(product.tags)?product.tags:[]}));
+      if(matches.length!==1||matches[0].id!==previousEntry.cardId)throw new Error('仕様不一致または曖昧一致・正規確認待ち');
+      const variant=product.variants.find(campA);if(!variant)throw new Error('状態A仕様を確認できない');
+      const entry={...previousEntry,title:product.title,productId:String(product.id),price:campVariantPrice(variant),priceUnit:'JPY',available:variant.available===true,
+        observedAt:new Date().toISOString(),identityVerifiedAt:new Date().toISOString(),sourceSitemap:null};
+      if(!(entry.price>0))throw new Error('実価格解析不能');
+      const q=campPriceQuarantine(matches[0],entry.price);Object.assign(entry,{priceQuarantined:q.quarantined,quarantineReason:q.reason,marketPriceRatio:q.ratio});
+      const chosen=preferCampEntry(previousEntry,entry);byId.set(entry.cardId,chosen);
+      if(chosen===entry){updated+=Number(entry.price!==previousEntry.price||entry.available!==previousEntry.available);stateA++;knownByUrl.set(url,entry);}
+      delete progress.knownUrlRetries[url];Object.assign(record,{status:'verified',confirmedAt:entry.observedAt,price:entry.price,available:entry.available,adopted:chosen===entry});
+    }catch(error){
+      failed++;const r=retryPolicy.failure(progress.knownUrlRetries[url],{error:error.message,httpStatus:error.metric?.httpStatus});
+      progress.knownUrlRetries[url]={...r,url};Object.assign(record,{status:r.status,reason:r.reason});
+      if(r.scope==='source'){progress.sourceRetry=r;stoppingReason=r.reason;}
+    }
+    legacyRecords.push(record);catalog=[...byId.values()];write(paths.catalog,catalog);write(paths.progress,progress);
+    if(stoppingReason)break;
+  }
   for (let runIndex = 0; runIndex < sitemapLimit && sitemapUrls.length && detailFetched < detailLimit && !stoppingReason; runIndex += 1) {
     const due = Object.values(progress.retryByUrl).find(row => retryPolicy.eligible(row));
     const dueSitemap = Object.entries(progress.failedSitemaps).find(([, row]) => row.retry && retryPolicy.eligible(row.retry));
@@ -740,7 +770,7 @@ async function updateTorecaCamp(cards, paths) {
       const normalStart=retryOnly || retrySitemap ? 0 : progress.currentSitemapIndex === sitemapIndex ? progress.currentEntryIndex : 0;
       const prioritized=maintenanceMode&&!retryOnly&&!retrySitemap;
       if(prioritized) {
-        const requested=(read(path.join(__dirname,'search-profile-targets.json'),{}).readyRoutes?.domesticShops||[]).filter(r=>r.field==='referenceMedian').map(r=>r.id);
+        const requested=[...comparisonIds,...(read(path.join(__dirname,'search-profile-targets.json'),{}).readyRoutes?.domesticShops||[]).filter(r=>r.field==='referenceMedian').map(r=>r.id)];
         entries=postpass.prioritize(entries,normalStart,catalog.filter(r=>r.sourceSitemap<=sitemapUrls.length),[...new Set(requested)],detailLimit,progress.retryByUrl);
       }
       const startingEntry=prioritized?0:normalStart;
@@ -902,7 +932,7 @@ async function updateTorecaCamp(cards, paths) {
   const estimatedTotalProducts = knownSitemaps > 0 ? Math.round(knownProducts / knownSitemaps * Number(progress.totalSitemaps || knownSitemaps)) : 0;
   const estimatedRemainingProducts = estimatedTotalProducts > 0 ? Math.max(0, estimatedTotalProducts - seenProductUrls.size) : null;
   const firstPassComplete = Boolean(progress.totalSitemaps && processedSitemapCount >= progress.totalSitemaps);
-  const crawlComplete = firstPassComplete && !Object.keys(progress.retryByUrl || {}).length && !Object.keys(progress.failedSitemaps || {}).length;
+  const crawlComplete = firstPassComplete && !Object.keys(progress.retryByUrl || {}).length && !Object.keys(progress.knownUrlRetries || {}).length && !Object.keys(progress.failedSitemaps || {}).length;
   const progressHealth = updateProgressHealth(progress, seenProductUrls.size + Number(progress.maintenance?.refreshed || 0));
   if (crawlComplete && !maintenanceMode) stoppingReason = null;
   progress.lastRun = {
@@ -914,7 +944,7 @@ async function updateTorecaCamp(cards, paths) {
     totalSitemaps: progress.totalSitemaps || sitemapUrls.length || 44,
     cumulativeProductCount: seenProductUrls.size, estimatedTotalProducts, estimatedRemainingProducts,
     cumulativeMatchedCount: nextCatalog.length, hasMorePages: maintenanceMode || !crawlComplete, crawlComplete,
-    firstPassComplete, retryQueue: Object.values(progress.retryByUrl || {}),
+    firstPassComplete, retryQueue: [...Object.values(progress.retryByUrl || {}),...Object.values(progress.knownUrlRetries||{})],legacyRecords,
     maintenanceMode, maintenance:progress.maintenance||null, firstPassCompletedAt:progress.firstPassCompletedAt||null,
     maintenancePendingCount: maintenanceMode ? nextCatalog.filter(entry=>postpass.due(entry,important.has(entry.cardId))).length : null,
     priceMigration: priceMigration.audit,
@@ -946,7 +976,7 @@ async function updateTorecaCamp(cards, paths) {
     totalSitemaps: progress.totalSitemaps || sitemapUrls.length || 44,
     estimatedRemainingProducts, cumulativeProductCount: seenProductUrls.size,
     cumulativeMatchedCount: nextCatalog.length, crawlComplete,
-    firstPassComplete, retryQueue: Object.values(progress.retryByUrl || {}), sourceRetry: progress.sourceRetry || null,
+    firstPassComplete, retryQueue: [...Object.values(progress.retryByUrl || {}),...Object.values(progress.knownUrlRetries||{})], sourceRetry: progress.sourceRetry || null,
     maintenanceMode, maintenance:progress.maintenance||null,
     completionStatus: maintenanceMode ? "partial" : crawlComplete && failed === 0 ? "success" : "partial",
   };

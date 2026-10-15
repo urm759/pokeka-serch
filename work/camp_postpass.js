@@ -33,4 +33,11 @@ function prioritize(entries,start,catalog,requested,detailLimit,retries={},now=D
   while(n<normal.length||p<selected.length){if(n<normal.length)result.push(normal[n++]);if(p<selected.length)result.push(selected[p++]);}
   return result;
 }
-module.exports={prepare,due,checkpoint,prioritize};
+function legacyTargets(catalog,requested,retries={},now=Date.now()) {
+  const order=new Map(requested.map((id,i)=>[id,i]));
+  return catalog.filter(r=>order.has(r.cardId)&&!Number.isInteger(r.sourceSitemap)&&!r.priceQuarantined
+    &&/^https:\/\/torecacamp-pokemon\.com\/products\/[a-zA-Z0-9_%~-]+$/.test(r.detailUrl||'')
+    &&due(r,true,now)&&require('./acquisition_retry').eligible(retries[r.detailUrl],now))
+    .sort((a,b)=>order.get(a.cardId)-order.get(b.cardId));
+}
+module.exports={prepare,due,checkpoint,prioritize,legacyTargets};

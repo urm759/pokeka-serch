@@ -179,7 +179,7 @@ for (const [sourceId, source] of Object.entries(sources)) {
   source.publishStatus = run.publishStatus || null;
   source.publishError = run.publishError || null;
   source.lastError = run.lastError || null;
-  const timing = sourceTiming(sourceId, { ...run, lastSuccessAt: source.lastSuccessAt, startedAt: source.startedAt, status: source.status }, runHistory.sources?.[sourceId] || []);
+  const timing = sourceTiming(sourceId, { ...run, diagnostics:source.diagnostics, lastSuccessAt: source.lastSuccessAt, startedAt: source.startedAt, status: source.status }, runHistory.sources?.[sourceId] || []);
   Object.assign(source, timing);
   source.fresh = !source.stale && source.status === "success";
   if (sourceId === "psaOfficial" && latestPsaCount > 0 && latestPsaCount < psaTotalRows) {
@@ -210,8 +210,9 @@ for (const [sourceId, source] of Object.entries(sources)) {
     source.fresh = false;
   }
   if (sourceId === "yuyutei" && Number(yuyutei.crawl?.remainingSearchCount || 0) > 0) {
-    source.status = "partial";
-    source.sourceState = `巡回中／部分成功（検索済み ${Number(yuyutei.crawl?.searchedCurrentCount || 0)}件・残り ${Number(yuyutei.crawl.remainingSearchCount)}件）`;
+    source.status = source.acquisitionStopped ? "manual-wait" : "partial";
+    source.sourceState = `${source.acquisitionStopped?'アクセス停止・正規復旧確認待ち':'巡回中／部分成功'}（検索済み ${Number(yuyutei.crawl?.searchedCurrentCount || 0)}件・残り ${Number(yuyutei.crawl.remainingSearchCount)}件）`;
+    if(source.acquisitionStopped) source.scheduleLabel='定期処理は設定あり・遊々亭の取得は403停止中';
     source.fresh = false;
   }
   if (sourceId === "torecacamp" && !torecacamp.crawl?.crawlComplete) {

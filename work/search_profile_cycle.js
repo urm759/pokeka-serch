@@ -74,7 +74,8 @@ function record(key,root=ROOT) {
     return delta;
   });
   const previous=read(root,'data/search-profile-cycle-progress.json',{version:1,cycles:[]});
-  const cycle={key,runId:before.runId,event:process.env.GITHUB_EVENT_NAME||'manual-local',baselineAt:before.at,recordedAt:now,
+  const uniqueOutcomes=uniqueProfileOutcomes(comparisons);
+  const cycle={key,runId:before.runId,event:process.env.GITHUB_EVENT_NAME||'manual-local',baselineAt:before.at,recordedAt:now,uniqueOutcomes,
     profiles:comparisons,llmCalls:0,codexCalls:0,publication:'保存済み・公開照合は別受領証',
     note:'定期記録は取得/補完/適合を分離。正常データの公開成功はscheduled-cycle-receiptsと公開ハッシュで確認。未取得を仮定しない'};
   previous.cycles=previous.cycles.filter(r=>!(r.key===key&&r.runId===before.runId&&r.baselineAt===before.at));
@@ -82,4 +83,13 @@ function record(key,root=ROOT) {
   write(root,'data/search-profile-cycle-progress.json',previous);return cycle;
 }
 if(require.main===module){const key=process.argv[2]||'manual';if(process.argv.includes('--baseline'))baseline(key);else console.log(JSON.stringify(record(key)));}
-module.exports={baseline,record,profileDelta};
+function uniqueProfileOutcomes(profiles){
+  const out={};
+  for(const field of ['purchaseFilled','buybackFilled','medianEvidenceRecovered','firstQualified','requalified','freshnessRestored','gained','lost'])
+    out[field]=[...new Set(profiles.flatMap(p=>p[field]||[]))].sort();
+  out.requiredFilled=[...new Set(profiles.flatMap(p=>(p.completed||[]).map(c=>c.id)))].sort();
+  out.distinctChangedCards=[...new Set(Object.values(out).flat())].sort();
+  out.note='Unique IDs per outcome across original and median A/B; categories may overlap and must not be summed. Per-profile first qualification is not newly listed.';
+  return out;
+}
+module.exports={baseline,record,profileDelta,uniqueProfileOutcomes};

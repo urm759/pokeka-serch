@@ -1,0 +1,16 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const {isEeveeVSa}=require('./audit_eevee_comparison');
+assert(isEeveeVSa({setCode:'S6a',name:'グレイシアV SR: SA[S6a 077/069]'}));
+assert(!isEeveeVSa({setCode:'S6a',name:'グレイシアV SR[S6a 076/069]'}));
+assert(!isEeveeVSa({setCode:'S6a',name:'グレイシアVMAX HR: SA[S6a 091/069]'}));
+const source=fs.readFileSync('app.js','utf8'),fn=source.slice(source.indexOf('function updateUrl()'),source.indexOf('function buildShareUrl()'));
+const original='https://example.test/?effBuy=auto&fee=10980&headroomMin=0&effMin=15&obs7Min=1000';
+const link={hidden:true},context=vm.createContext({URL,buildShareUrl:()=>new URL(original),window:{history:{replaceState:()=>{}}},document:{getElementById:()=>link}});
+vm.runInContext(fn+'\nupdateUrl();',context);const variant=new URL(link.href),old=new URL(original);
+assert.equal(variant.searchParams.get('effBuy'),'median');assert.equal(link.hidden,false);
+assert.deepEqual([...variant.searchParams].filter(([k])=>k!=='effBuy'),[...old.searchParams].filter(([k])=>k!=='effBuy'));
+const shops=JSON.parse(fs.readFileSync('data/additional-shop-access-audit.json'));
+assert.equal(shops.kanabell.scheduled,false);assert.equal(shops.kanabell.merchantCount,1);
+assert.equal(shops.kanabell.states.A.price,null);assert.equal(shops.kanabell.states.S.price,null);assert.equal(shops.kanabell.saMidpoint,null);
+assert.equal(shops.dorasuta.scheduled,false);assert.equal(shops.dorasuta.httpStatus,403);
+console.log('PASS exact eight-species selection, explicit median link preserves every other condition, and blocked shops never fabricate S/A offers');

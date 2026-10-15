@@ -26,3 +26,5 @@ assert.equal(eligibleForHareru(pending,[],Date.now(),new Set(['url-found']),{man
 assert.equal(eligibleForHareru(pending,[],Date.now(),new Set(['url-found']),{sourceBlocked:'HTTP 403'}).length,0);
 assert.equal(eligibleForHareru(pending,[],Date.now(),new Set(['url-found']),{jobs:{'url-found':{url:pending[0].card.hareruya2Url,nextRetryAt:new Date(Date.now()+3600000).toISOString()}}}).length,0);
 console.log('PASS fixed search-profile cycle: actual fields, new listing, first qualification, returning freshness, reasons and overlapping route counts');
+const unique=require('./search_profile_cycle').uniqueProfileOutcomes([{firstQualified:['a','b'],completed:[{id:'a'}]},{firstQualified:['a'],completed:[{id:'a'}]}]);
+assert.deepEqual(unique.firstQualified,['a','b']);assert.deepEqual(unique.requiredFilled,['a']);assert.deepEqual(unique.distinctChangedCards,['a','b']);

@@ -21,6 +21,12 @@ assert.equal(postpass.prioritize([],0,[{...catalog[0],detailUrl:'https://unrelat
 const batch=require('./source_batch_metrics').shopBatch('torecacamp',JSON.stringify({torecacamp:{detailFetched:4,coverage:6502,updated:1,linked:0}}));
 assert.equal(batch.acquiredCount,4);assert.equal(batch.catalogCount,6502);assert.equal(batch.newLinkedCount,0);
 console.log('postpass continuation tests passed');
+const legacy={cardId:'wanted',detailUrl:'https://torecacamp-pokemon.com/products/known',observedAt:new Date(now-7*3600000).toISOString()};
+assert.equal(postpass.legacyTargets([legacy],['wanted'],{},now).length,1,'missing sitemap is not a permanent exclusion of a canonical saved URL');
+assert.equal(postpass.legacyTargets([{...legacy,sourceSitemap:2}],['wanted'],{},now).length,0,'normal known-sitemap queue owns this product');
+assert.equal(postpass.legacyTargets([legacy],['wanted'],{[legacy.detailUrl]:{held:true,manual:true,status:'manual-wait'}},now).length,0);
+assert.equal(postpass.legacyTargets([{...legacy,detailUrl:'https://other.test/products/x'}],['wanted'],{},now).length,0);
+assert.equal(postpass.legacyTargets([{...legacy,observedAt:new Date(now).toISOString()}],['wanted'],{},now).length,0);
 const observe=require('./effective_price_cadence').observe;
 const proof={pipelines:{priority:{confirmed:true,runId:1}}},receipts={pipelines:{priority:{runId:1,recordedAt:new Date(now-3*3600000).toISOString(),cardObservations:{hareruya2:[{id:'a',at:new Date(now-3*3600000).toISOString()}]}}}};
 const first=observe({},proof,receipts,now);assert.equal(first.sources.hareruya2.maximumIntervalMs,null);

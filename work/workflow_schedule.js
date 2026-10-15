@@ -65,6 +65,10 @@ function consecutiveFailures(history = [], current = {}) {
 }
 
 function sourceTiming(sourceId, run = {}, history = [], now = new Date()) {
+  const block=run.diagnostics?.externalBlock;
+  const recoveredBlock=run.status==='success'&&Number.isFinite(Date.parse(block?.detectedAt))&&Date.parse(run.lastSuccessAt)>Date.parse(block.detectedAt);
+  const stopped = run.status === 'manual-wait' || Boolean(block&&!recoveredBlock)
+    || Boolean(run.sourceBlocked) || Boolean(run.sourceRetry?.scope === 'source' && run.sourceRetry?.manual);
   const schedule = scheduleFor(sourceId, now);
   const lastSuccessMs = Date.parse(run.lastSuccessAt || "");
   const ageHours = Number.isFinite(lastSuccessMs) ? (now.getTime() - lastSuccessMs) / 3600000 : null;
@@ -77,8 +81,8 @@ function sourceTiming(sourceId, run = {}, history = [], now = new Date()) {
     workflow: schedule.workflow,
     automatic: schedule.automatic,
     scheduleLabel: schedule.scheduleLabel,
-    nextScheduledAt: run.status === "manual-wait" ? null : schedule.nextScheduledAt,
-    acquisitionStopped: run.status === "manual-wait",
+    nextScheduledAt: stopped ? null : schedule.nextScheduledAt,
+    acquisitionStopped: stopped,
     previousScheduledAt: schedule.previousScheduledAt,
     actionsDelayMinutes: githubActionsRun && scheduledRun && Number.isFinite(plannedMs) && Number.isFinite(startedMs) ? Math.max(0, Math.round((startedMs - plannedMs) / 60000)) : null,
     executionEnvironment: run.executionEnvironment || null,

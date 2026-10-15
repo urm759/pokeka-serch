@@ -3747,6 +3747,8 @@ function readUrl() {
 function updateUrl() {
   const url = buildShareUrl();
   window.history.replaceState({}, "", url);
+  const medianLink=document.getElementById('medianBasisLink');
+  if(medianLink){const variant=new URL(url);variant.searchParams.set('effBuy','median');medianLink.href=variant.href;medianLink.hidden=false;}
 }
 
 function buildShareUrl() {
