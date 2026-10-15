@@ -64,6 +64,8 @@ jobs:
           node work/test_performance_comparison.js
           node work/test_scheduled_cycle_evidence.js
           node work/test_pokedata_set_discovery.js
+          node work/test_median_efficiency.js
+          node work/test_supply_demand_validation.js
           node work/test_acquisition_progress.js
           node work/test_checkpoint_publication.js
           node work/test_source_monitor_and_completion.js

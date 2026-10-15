@@ -35,6 +35,7 @@ function prepareInputs(root = ROOT) {
     atomicWrite(path.join(snapshotDirectory, "manifest.json"), manifest);
     atomicWrite(path.join(snapshotDirectory, "priority.json"), priority);
     const runtimeFiles = ['update_psa_official_populations.js','build_psa_history.js','acquisition_retry.js','fair_batch.js','psa_pending_sets.js'];
+    if (/require\(['"]\.\/psa-name-aliases\.json['"]\)/.test(show(`${commit}:work/build_psa_history.js`))) runtimeFiles.push('psa-name-aliases.json');
     const runtimeHashes = {};
     for (const file of runtimeFiles) {
       const source = show(`${commit}:work/${file}`);

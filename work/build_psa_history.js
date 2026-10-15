@@ -108,7 +108,12 @@ function namesCompatible(englishName, row) {
     'mirror','normal','style','version','specification','trainer','promo','1st','edition','first','unlimited','hyper','illustration']);
   const identity = value => [...tokens(String(value || '').split('|')[0]
     .replace(/&#x27;|&#39;|&apos;|[’‘]/gi,"'").replace(/'s\b/gi,''))].filter(token=>!qualifiers.has(token)).sort().join('|');
-  const wanted = identity(englishName), actual = identity(row?.name);
+  const aliases=require('./psa-name-aliases.json').aliases;
+  const canonical=value=>{
+    const key=identity(value);
+    return aliases.find(a=>a.evidence.length>=2 && identity(a.from)===key)?.to || value;
+  };
+  const wanted = identity(canonical(englishName)), actual = identity(canonical(row?.name));
   return Boolean(wanted && actual && wanted === actual);
 }
 function shardFor(id) { let hash = 2166136261; for (const ch of String(id)) { hash ^= ch.charCodeAt(0); hash = Math.imul(hash, 16777619); } return (hash >>> 0) % SHARDS; }

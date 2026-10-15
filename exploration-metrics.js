@@ -15,6 +15,30 @@
     const stockAge = offer?.inventoryAt ? (now - Date.parse(offer.inventoryAt)) / 3600000 : NaN;
     return offer?.available === true && offer?.fresh === true && finite(offer.value) && offer.value > 0 && age >= 0 && age <= 48 && stockAge >= 0 && stockAge <= 48 ? offer.value : null;
   }
+  function referenceMedian(card, now=Date.now()) {
+    const a=card.priceAggregation || {},rows=a.included || [],reasons=[],warnings=[],origins=new Set();
+    let independent=0,unknown=0,expiresAt=Infinity;
+    const evidence=rows.map(r=>{
+      let host='';try{host=new URL(r.url).hostname.toLowerCase().replace(/^www\./,'');}catch{}
+      if(!host||!/^https?:\/\//.test(r.url || '')||!finite(r.value)||r.value<=0||r.valid===false||r.conditionAccepted===false)reasons.push('中央値の採用価格・出典・状態の根拠不足');
+      const direct=/^(cardrush-pokemon\.jp|hareruya2\.com|yuyu-tei\.jp|torecacamp-pokemon\.com)$/.test(host);
+      const origin=r.upstreamSource || r.originId || r.merchantId || (direct?host:null);
+      const at=Date.parse(r.updatedAt),fresh=typeof r.updatedAt==='string'&&r.updatedAt.includes('T')&&Number.isFinite(at)&&at<=now&&now-at<=48*3600000;
+      if(!fresh)reasons.push('中央値の採用価格に古値・日時不明あり');
+      else expiresAt=Math.min(expiresAt,at+48*3600000);
+      if(origin){if(origins.has(origin))reasons.push('中央値の採用元に転載・同一店舗の重複あり');else{origins.add(origin);independent++;}}
+      else unknown++;
+      return {source:r.source,origin:origin || null,url:r.url || null,price:r.value,observedAt:r.updatedAt || null,fresh,kind:r.kind || '価格区分未確認'};
+    });
+    if(!(finite(a.value)&&a.value>0)||!rows.length)reasons.push('素体参考中央値未取得');
+    if(a.conflicted||card.priceIntegrity?.disputed||card.identityReviewRequired||card.dataQuality?.manualReview||card.dataQuality?.dataAnomaly)reasons.push('中央値の価格対立・仕様照合保留');
+    if(rows.length===1)warnings.push('単一ソース参考');
+    if(unknown)warnings.push('集計元の内訳・独立性未確認'+unknown+'元（独立店舗数に加算しない）');
+    warnings.push('中央値で実際に購入できるとは限らない・購入GOとは別');
+    return {value:reasons.length?null:a.value,displayValue:finite(a.value)?a.value:null,count:rows.length,independent,unknown,
+      min:rows.length?Math.min(...rows.map(r=>r.value)):null,max:rows.length?Math.max(...rows.map(r=>r.value)):null,
+      rows:evidence,reasons:[...new Set(reasons)],warnings,reference:true,expiresAt};
+  }
   function meanSale(mean, buy, fee, feeRate, extra) {
     if (![mean,buy,fee,feeRate,extra].every(finite) || mean <= 0 || buy < 0 || fee < 0 || extra < 0 || feeRate < 0 || feeRate >= 100 || buy + fee <= 0) return {net:null,profit:null,roi:null};
     const net = mean * (1 - feeRate / 100) - extra, profit = net - buy - fee;
@@ -199,5 +223,5 @@
         status:pop[4]===0?'近い期間の参考比較':pop[4]===2?'POP減少・訂正等':'期間不一致・部分期間',
         ratio:measured&&!stale&&pop[4]===0&&pop[0]>0?n/pop[0]:null}:null};
   }
-  return {percent,inRange,offerPrice,meanSale,atPurchase,efficiency,coverage,observationPeriods,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics,periodEfficiencyAverage,buybackSupport,tradeDemand};
+  return {percent,inRange,offerPrice,referenceMedian,meanSale,atPurchase,efficiency,coverage,observationPeriods,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics,periodEfficiencyAverage,buybackSupport,tradeDemand};
 });

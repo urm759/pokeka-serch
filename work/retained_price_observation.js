@@ -6,6 +6,8 @@ function retainedPriceObservations(current, previous, previousBatchAt, currentBa
     result[dateField] = Object.hasOwn(previous, dateField) ? previous[dateField]
       : typeof previous[field] === 'number' && Number.isFinite(previous[field]) ? previousBatchAt || null : null;
   }
+  if (typeof current.price === 'number' && Number.isFinite(current.price) && current.price > 0
+    && typeof currentBatchAt === 'string' && currentBatchAt.includes('T') && Number.isFinite(Date.parse(currentBatchAt))) result.priceObservedAt=currentBatchAt;
   // Only a price actually present in this response gets a new confirmation time.
   // This is a retrieval time, never the date of an individual sale.
   if (Object.hasOwn(current,'snkPsa9Price') || Object.hasOwn(previous,'snkPsa9Price') || Object.hasOwn(previous,'psa9ObservedAt')) {

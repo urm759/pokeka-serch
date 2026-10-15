@@ -355,6 +355,7 @@ require('./audit_purchase_issue_aliases.js').build(ROOT);
 require('./build_buyback_posting_coverage.js').build(ROOT);
 require('./build_buyback_observation_summary.js').build(ROOT);
 require('./build_buyback_support.js').build(ROOT);
+require('./supply_demand_validation.js').build(ROOT);
 require('./build_priority_search_targets.js').build(ROOT);
 require('./monitor_observation').banner(ROOT);
 require('./build_runtime_availability').build(ROOT);

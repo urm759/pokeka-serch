@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20261015-trade-demand-v1" />
+  <link rel="stylesheet" href="./styles.css?v=20261015-median-shadow-v1" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -663,7 +663,7 @@
           <label class="control"><span>店頭交通費等／1枚</span><input id="storeTravelCostInput" type="number" min="0" step="100" value="0"><small>店頭出口だけに適用。まとめ売りの場合は1枚あたりへ配分してください。</small></label>
         </div>
         <details class="efficiency-calculation-settings"><summary>参考の資金効率 / 買値・売値シナリオ・売却待ち</summary><div class="controls controls-advanced">
-<label class="control"><span>資金効率の買値</span><select id="efficiencyBuyInput"><option value="auto">実店舗状態A（明示的な現相場上限・手入力は継承）</option><option value="manual">手入力買値・仮定</option><option value="current-cap">現相場損益分岐上限で購入・仮定</option></select><small>現相場探索の手入力を継承します。購入価格未取得時に参考相場・安定重視上限へ代用しません。</small></label>
+<label class="control"><span>資金効率の買値</span><select id="efficiencyBuyInput"><option value="auto">実店舗状態A（明示的な現相場上限・手入力は継承）</option><option value="store">実店舗状態A価格のみ</option><option value="median">素体参考相場・中央値（購入保証なし）</option><option value="manual">手入力買値・仮定</option><option value="current-cap">現相場損益分岐上限で購入・仮定</option></select><small>選択した買値を別基準へ代用しません。中央値は個別確認48時間内の参考比較で、購入GOには実店舗在庫が必要です。既存の自動基準・保存条件は維持します。</small></label>
 <label class="control"><span>手入力買値（円）</span><input id="efficiencyManualPriceInput" type="number" min="0" step="100" placeholder="未設定" /></label>
 <label class="control"><span>資金効率の売値シナリオ</span><select id="efficiencyScenarioInput"><option value="current">現在出口相場が続く仮定</option><option value="central">中央予測（期間一致時のみ）</option><option value="stress">供給ストレス（期間一致時のみ）</option><option value="obs7">7暦日内PSA10観測平均・比較</option><option value="obs30">30暦日内PSA10観測平均・比較</option><option value="obs90">90暦日内PSA10観測平均・比較</option><option value="obs200">200暦日内PSA10観測平均・比較</option></select><small>PSA10だけ選択出口の平均／非10は現在国内PSA9のフリマ手取りで仮置き。買取は同仕様・日時の根拠がある2店舗以上の店舗別平均中央値に減額と該当交通費を適用。両出口は両方の根拠が必要で低い期待手取りを採用。フリマ平均への代用・自動切替なし。欠測は参考、検索採用には資金効率参考値と参考平均の両方ONが必要（保存値は保持）。平均回帰・返却時売価は保証しません。予測期間不一致とは別判定。プランから平均期間は自動選択しません。</small></label>
 <label class="control"><span>売却待ち 日数</span><input id="efficiencySaleDaysInput" type="number" min="0" step="1" value="7" /></label>
@@ -942,9 +942,9 @@
   <script src="./psa-plan-model.js?v=20261010-isolation-v1"></script>
   <script src="./keyed-card-renderer.js?v=20261010-v1"></script>
   <a class="return-to-filters" href="#searchConditions">検索条件へ</a>
-  <script src="./exploration-metrics.js?v=20261015-trade-demand-v1"></script>
+  <script src="./exploration-metrics.js?v=20261015-median-shadow-v1"></script>
   <script src="./search-controls.js?v=20261013-observation-efficiency-v1"></script>
   <script src="./settings-disclosure.js?v=20261011-disclosure-v1"></script>
-  <script src="./app.js?v=20261015-trade-demand-v2"></script>
+  <script src="./app.js?v=20261015-median-shadow-v1"></script>
 </body>
 </html>
