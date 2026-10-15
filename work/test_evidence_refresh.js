@@ -18,6 +18,10 @@ assert.equal(require('./update_yuyutei_torecacamp').campMatchesCard({name}, {tit
 assert.equal(require('./quarantine_shop_identity').reason({name,language:'ja'},'PSA10 グレイシアV SR(SA) S6a 077/069'),'素体カードへの鑑定品紐付け');
 assert.equal(require('./refresh_candidate_shops').exactIdentity({name:'ポニータ C: マスターボールミラー[SV2a 077/165]',model:'077/165'},{title:'ポニータ:マスターボールミラー(C){炎}〈077/165〉[SV2a-Ma]'}),true,'existing verified merchant-specific set suffix is not a new language/grade mismatch');
 assert.equal(require('./quarantine_shop_identity').identityUsable({price:10000,cardMismatchSuspected:true}),false,'price existence is not a valid linkage/completion');
+const recoverJob=require('./recover_saved_shop_quotes').recoverJob,record={url:'https://example.test/item',error:'identity',startedAt:at},job={...record,lastAttemptAt:at,status:'manual-wait',failures:1};
+assert.equal(recoverJob(job,record,at).status,'success');assert.equal(recoverJob(job,record,at).lastSuccessAt,at,'saved response keeps original observation time');
+assert.equal(recoverJob({...job,error:'HTTP 403'},record,at).error,'HTTP 403','unrelated access stop is not lifted');
+assert.equal(recoverJob({...job,lastAttemptAt:'2026-10-17T00:00:00Z'},record,at).status,'manual-wait','older saved response cannot clear a newer failure');
 const stats=require('./psa9_sale_statistics'),identity=require('../raw-psa9-gap-model').identityFromCard({name:'テスト SAR [M2 110/080]'}),card={id:'fixture',name:'テスト SAR [M2 110/080]'};
 const t=id=>({...identity,cardId:card.id,transactionId:id,source:'authorized-vendor',grade:9,gradingCompany:'PSA',currency:'JPY',country:'JP',marketScope:'domestic-jp',saleType:'sold',singleCard:true,price:10000,soldAt:'2026-10-15T00:00:00Z'});
 let s=stats.summarize(card,{permission:'confirmed',permissionEvidence:'fixture-only-permission-receipt',trades:[t('a'),t('b'),t('a')]},now);
