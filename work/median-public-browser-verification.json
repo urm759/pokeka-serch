@@ -1,0 +1,58 @@
+{
+  "verifiedCommit": "04c8205ffbd8beb899ddd4fc7f5a50bc57640d25",
+  "verificationDate": "2026-10-15",
+  "surface": "Codex in-app Chromium; viewport tests, not physical mobile device",
+  "widths": [1440, 390],
+  "comparison": {
+    "cardId": "x-104600",
+    "median": 17000,
+    "actualShop": 17000,
+    "medianAnnualPctDisplayed": 55.92,
+    "shopAnnualPctDisplayed": 55.92,
+    "selectedBasis": "median",
+    "scenario": "current",
+    "independentShops": 1,
+    "unconfirmedProvenanceSources": 1,
+    "mobileHorizontalOverflowPx": 0,
+    "evidenceLazilyExpanded": true,
+    "warning": "Median does not guarantee purchase availability; reference calculation is not GO"
+  },
+  "subjects": [
+    {
+      "cardId": "pk-21475",
+      "query": "S7R 075/067",
+      "singleExpectedCardFound": true,
+      "purchasePrice": 14000,
+      "purchaseConfirmationJst": "2026-10-15 13:23",
+      "psa10CurrentAggregate": 25980,
+      "psa9CurrentAggregate": 25949,
+      "official10": 1169,
+      "officialTotal": 1356,
+      "officialConfirmedAt": "2026-10-14T08:01:26.690Z",
+      "medianEfficiency": null,
+      "medianReasons": ["stale adopted source", "price conflict"],
+      "verdict": "要確認",
+      "previousPriceInversionExplanation": "Unresolved; updated aggregate no longer inverted, no inferred correction"
+    },
+    {
+      "cardId": "x-91128",
+      "query": "069/S-P",
+      "singleExpectedCardFound": true,
+      "purchasePrice": 28000,
+      "purchaseConfirmationJst": "2026-10-15 13:55",
+      "psa10CurrentAggregate": 44444,
+      "psa9CurrentAggregate": 19299,
+      "official10": 3800,
+      "officialTotal": 4736,
+      "officialConfirmedAt": "2026-10-14T08:50:34.658Z",
+      "medianEfficiency": null,
+      "medianReasons": ["stale adopted source"],
+      "verdict": "価格次第"
+    }
+  ],
+  "savedConditions": "Other existing device settings retained. Diagnostic subject views do not assert fixed profile candidate counts.",
+  "viewportReset": true,
+  "newCodeScheduledAcquisitionVerified": false,
+  "productionModelChanged": false,
+  "purchaseGoSafetyChanged": false
+}
