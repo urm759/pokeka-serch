@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-15T15:16:01.027Z",
-  "sourceLastSuccessAt": "2026-10-15T04:51:42.827Z",
+  "generatedAt": "2026-10-15T17:25:15.680Z",
+  "sourceLastSuccessAt": "2026-10-15T17:09:55.743Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-10-15T13:16:52.857Z",
-    "lastSuccessAt": "2026-10-15T13:16:52.857Z",
-    "runId": "38741030160",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/38741030160"
+    "lastAttemptAt": "2026-10-15T17:25:15.670Z",
+    "lastSuccessAt": "2026-10-15T17:25:15.670Z",
+    "runId": "38776785294",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/38776785294"
   },
   "issues": [
     {
@@ -67,13 +67,13 @@
     {
       "key": "source:shopBuyback:manual-wait",
       "category": "アクセス・手動対応待ち",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38739805537",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38774898272",
       "reason": "Web買取表: 買取ホムラ（郵送）: existing data was preserved: 取得0件。正常データは保持"
     },
     {
       "key": "source:shopBuyback:stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38739805537",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38774898272",
       "reason": "Web買取表: 更新期限超過（カード別鮮度 未記録%）"
     },
     {
@@ -103,13 +103,13 @@
     {
       "key": "priority-prices:cadence-stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38729081270",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38774898272",
       "reason": "重要価格更新：設定2時間に対し実績成功間隔（直近最大）12.56時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
     },
     {
       "key": "priority-prices:source-failure",
       "category": "確認が必要",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38729081270",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38774898272",
       "reason": "購入価格高速更新：一部取得元が失敗。独立した正常データは必須検証・保存・公開照合済み"
     }
   ],
