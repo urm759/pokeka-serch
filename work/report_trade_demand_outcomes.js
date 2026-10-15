@@ -1,9 +1,15 @@
-const fs=require('node:fs'), path=require('node:path');
+const fs=require('node:fs'), path=require('node:path'),cp=require('node:child_process');
 const {snapshot,compare,unpack}=require('./audit_completion_outcomes');
 const root=path.join(__dirname,'..'),read=file=>JSON.parse(fs.readFileSync(path.join(root,file),'utf8'));
 const baseline=read('work/search-profile-cycle-baseline-trade-demand-20261015.json');
 const before=unpack(baseline.snapshot),after=snapshot(root);
+const savedManual=JSON.parse(cp.execFileSync('git',['show','4d9e3375:data/trade-demand-outcomes.json'],{encoding:'utf8',maxBuffer:20e6}));
+const previousCompletion=JSON.parse(cp.execFileSync('git',['show','4d9e3375:data/card-catalog-completion.json'],{encoding:'utf8',maxBuffer:20e6}));
+const completion=read('data/card-catalog-completion.json'),names=new Map(read('data/pokemon-cards.json').map(c=>[c.id,c.name]));
 const result={version:1,at:after.at,baseline:'048066e5',...compare(before,after),
+  manual:{addedCards:savedManual.addedCards,filledCards:savedManual.filledCards,newlyAnalyzable:savedManual.newlyAnalyzable,sources:savedManual.sources},
+  integratedScheduled:'26dfa888bc76f6b9234bc9c9d84ff25664ba540e',
+  integrationAnalysisChanges:Object.keys(completion.cards).filter(id=>(previousCompletion.cards[id]?.s==='分析可能')!==(completion.cards[id]?.s==='分析可能')).map(id=>({id,name:names.get(id),before:previousCompletion.cards[id]?.s,after:completion.cards[id]?.s,missing:completion.cards[id]?.m,reasons:completion.cards[id]?.r})),
   counts:read('data/psa10-period-summary.json').tradeDemand.coverage,
   profiles:read('data/search-profile-cycle-progress.json'),
   acquisition:read('work/trade-demand-acquisition-runs-20261015.json'),

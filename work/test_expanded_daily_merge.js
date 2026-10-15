@@ -9,6 +9,7 @@ assert(!rows.some(r=>!r||r.id==='gone'));
 assert(rows.some(r=>r.id==='ours')&&rows.some(r=>r.id==='theirs'));
 const old={price:1000,observedAt:'2026-10-14T00:00:00Z'},later={price:1100,observedAt:'2026-10-14T02:00:00Z'};
 assert.equal(combine({},old,later,'ours','/cards/a').price,1100);
+assert.equal(mergeRows([],[{id:'a',...later}],[{id:'a',...old}],r=>r.id,'theirs')[0].observedAt,later.observedAt);
 const checkpoints=combine({jobs:{}},{jobs:{a:{lastAttemptAt:'2026-10-14T01:00:00Z'}}},{jobs:{b:{lastAttemptAt:'2026-10-14T02:00:00Z'}}});
 assert.deepEqual(Object.keys(checkpoints.jobs).sort(),['a','b']);
 assert.deepEqual(combine([],['a'],['b']),['a','b']);

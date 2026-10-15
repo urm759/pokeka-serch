@@ -16,7 +16,7 @@ function combine(b,a,t,preferred='ours',where='') {
 }
 function mergeRows(b,a,t,key,preferred='theirs') {
   const maps=[b,a,t].map(rows=>{const m=new Map(rows.map(r=>[key(r),r]));assert.equal(m.size,rows.length,'duplicate source row');return m;});
-  return [...new Set([...maps[1].keys(),...maps[2].keys()])].map(k=>combine(maps[0].get(k),maps[1].get(k),maps[2].get(k),preferred)).filter(r=>r!=null);
+  return [...new Set([...maps[1].keys(),...maps[2].keys()])].map(k=>combine(maps[0].get(k),maps[1].get(k),maps[2].get(k),preferred,'/row')).filter(r=>r!=null);
 }
 function run() {
   const git=args=>cp.execFileSync('git',args,{cwd:root,maxBuffer:100e6,encoding:'utf8'});
