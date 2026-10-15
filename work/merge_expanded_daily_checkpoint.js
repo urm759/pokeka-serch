@@ -18,6 +18,13 @@ function mergeRows(b,a,t,key,preferred='theirs') {
   const maps=[b,a,t].map(rows=>{const m=new Map(rows.map(r=>[key(r),r]));assert.equal(m.size,rows.length,'duplicate source row');return m;});
   return [...new Set([...maps[1].keys(),...maps[2].keys()])].map(k=>combine(maps[0].get(k),maps[1].get(k),maps[2].get(k),preferred,'/row')).filter(r=>r!=null);
 }
+function retainKnownPriceTime(row,candidates) {
+  if(Object.hasOwn(row,'priceObservedAt')||!row.identityKey||!(row.price>0))return row;
+  const same=candidates.filter(r=>r?.identityKey===row.identityKey&&r.price===row.price&&typeof r.priceObservedAt==='string'
+    &&r.priceObservedAt.includes('T')&&Number.isFinite(Date.parse(r.priceObservedAt)));
+  if(!same.length)return row;
+  return {...row,priceObservedAt:same.map(r=>r.priceObservedAt).sort((a,b)=>Date.parse(b)-Date.parse(a))[0]};
+}
 function run() {
   const git=args=>cp.execFileSync('git',args,{cwd:root,maxBuffer:100e6,encoding:'utf8'});
   const files=git(['diff','--name-only','--diff-filter=U']).trim().split(/\r?\n/).filter(Boolean);
@@ -34,7 +41,10 @@ function run() {
   for(const f of files) {
     const rows=[1,2,3].map(stage=>{const text=git(['show',`:${stage}:${f}`]),target=path.join(directory,String(stage),f);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,text);return JSON.parse(text);});
     const [b,a,t]=rows;let value;
-    if(f==='data/pokemon-cards.json')value=mergeRows(b,a,t,r=>r.id,newestSource);
+    if(f==='data/pokemon-cards.json') {
+      const byId=new Map(a.map(r=>[r.id,r])),incomingById=new Map(t.map(r=>[r.id,r]));
+      value=mergeRows(b,a,t,r=>r.id,newestSource).map(r=>retainKnownPriceTime(r,[byId.get(r.id),incomingById.get(r.id)]));
+    }
     else if(f==='work/hareruya2_catalog.json') {
       value=mergeRows(b,a,t,r=>r.cardId||r.detailUrl);
       for(const r of [...a,...t])assert(stamp(value.find(v=>(v.cardId||v.detailUrl)===(r.cardId||r.detailUrl)))>=stamp(r),'individual confirmation must not regress');
@@ -68,6 +78,10 @@ function run() {
         value.cards[id]=[...new Set([...left.keys(),...right.keys()])].sort().map(d=>{const x=left.get(d),y=right.get(d);return equal(x,y)||equal(y,old.get(d))?x:equal(x,old.get(d))?y:!x?y:!y?x:newestSource==='ours'?x:y;});
       }
     } else if(['data/pokemon-cards-meta.json','data/psa10-observation-receipt.json','work/daily-http-cache.json'].includes(f))value=newestSource==='ours'?a:t;
+    else if(f==='work/psa10-trade-observations.json') {
+      value={...t,cards:{}};
+      for(const id of new Set([...Object.keys(a.cards||{}),...Object.keys(t.cards||{})]))value.cards[id]=require('./psa10_trade_statistics').dailyObservations([...(a.cards[id]||[]),...(t.cards[id]||[])]);
+    }
     else if(f==='work/changed-card-ids.json')value=combine(b,a,t,newestSource);
     else if(f==='data/state-a-price-evidence.json')value=combine(b,a,t,'theirs','/evidence');
     else if(f.startsWith('work/')||['data/update-history.json','data/performance-history.json','data/search-profile-cycle-progress.json'].includes(f))value=combine(b,a,t,'theirs');
@@ -81,4 +95,4 @@ function run() {
   return result;
 }
 if(require.main===module)run();
-module.exports={combine,mergeRows};
+module.exports={combine,mergeRows,retainKnownPriceTime};

@@ -37,6 +37,14 @@ function build(at=new Date().toISOString()) {
   const outcomes=require('./audit_completion_outcomes'),baseline=JSON.parse(fs.readFileSync(path.join(ROOT,'work/search-profile-cycle-baseline-median-shadow-20261015.json')));
   report.dataChanges=outcomes.compare(outcomes.unpack(baseline.snapshot),outcomes.snapshot(ROOT,Date.parse(at)));
   report.dataChanges.note='不足状態の復帰は最新データからの再評価を含む。新規原票取得68枚という意味ではない。Cardrushは保存済みURL照合のみでHTTP0・有効純増0。PSA1枚は保存済み公式行の再照合で追加HTTP0。';
+  const reentryFile=path.join(ROOT,'work/median-reentry-pk3123.json');
+  if(fs.existsSync(reentryFile)) {
+    const evidence=JSON.parse(fs.readFileSync(reentryFile));
+    report.scheduledDataReentry={id:'pk-3123',name:evidence.merged.name,firstEverQualified:false,
+      before:{efficiency:evidence.localSaved.efficiency,exclusions:evidence.localSaved.exclusions,facts:evidence.localSaved.facts},
+      after:{efficiency:evidence.merged.efficiency,exclusions:evidence.merged.exclusions,facts:evidence.merged.facts},
+      note:'同時刻・同コードで保存済み定期データを比較。買値/在庫/個別時刻は不変、買取の価格/確認日更新後に年効率14.94%から15.24%へ再適合。個別店舗の単独寄与までは切り分けていない。初適合/新規掲載/新規GOには数えない'};
+  }
   fs.writeFileSync(path.join(ROOT,'data/median-efficiency-audit.json'),JSON.stringify(report));
   console.log(JSON.stringify(profiles.map(p=>({id:p.id,unchanged:p.cases.unchangedBasis.ids.length,median:p.cases.medianBasis.ids.length,basisChange:p.basisChange,subjects:p.cases.unchangedBasis.subjects.map(c=>({id:c.id,store:c.efficiency.purchasePrice,median:c.medianEfficiency.purchasePrice,annual:c.medianEfficiency.annual,reasons:c.exclusions}))}))));
   return report;

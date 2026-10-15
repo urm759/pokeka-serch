@@ -152,7 +152,7 @@ function validate(rows,days,now=Date.now()) {
 function build(root=ROOT,now=new Date()) {
   const captured=capture(root,now),dir=path.join(root,'data/research-supply-demand/days'),rows=[];
   if(fs.existsSync(dir))for(const file of fs.readdirSync(dir).filter(n=>/^\d{4}-\d{2}-\d{2}\.json$/.test(n)).sort())rows.push(...Object.values(readDay(root,'data/research-supply-demand/days/'+file).cards||{}));
-  const algorithmHash=crypto.createHash('sha256').update(fs.readFileSync(__filename)).digest('hex');
+  const algorithmHash=crypto.createHash('sha256').update(fs.readFileSync(__filename,'utf8').replace(/\r\n/g,'\n')).digest('hex');
   const old=read(root,'data/supply-demand-validation-summary.json'),due=!old.trainedAt||old.algorithmHash!==algorithmHash||+now-Date.parse(old.trainedAt)>=7*DAY;
   const details=due?HORIZONS.map(h=>validate(rows,h,+now)):read(root,'data/supply-demand-validation-details.json').horizons||[];
   const eligibleTraining=due?HORIZONS.map(days=>{const sample=nonoverlapping(labels(rows,days,+now));return {days,rows:sample.length,model:fit(sample)};}):null;

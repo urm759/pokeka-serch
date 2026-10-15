@@ -3,6 +3,15 @@ const evidence = require('./psa10_observation_evidence');
 const DAY = 86400000;
 const count = n => typeof n === 'number' && Number.isInteger(n) && n >= 0;
 const read = (root, file, fallback = {}) => { try { return JSON.parse(fs.readFileSync(path.join(root,file),'utf8')); } catch { return fallback; } };
+function dailyObservations(rows) {
+  const unique=new Map();
+  for(const r of rows || []) {
+    if(!Array.isArray(r)||!r[1]||!r[5]||evidence.calendarDay(r[4])!==r[0]||!Number.isFinite(Date.parse(r[4]))||!count(r[2])&&!count(r[3]))continue;
+    const key=r[0]+'|'+r[1],old=unique.get(key);
+    if(!old||Date.parse(r[4])>Date.parse(old[4]))unique.set(key,r);
+  }
+  return [...unique.values()].sort((a,b)=>a[0].localeCompare(b[0])||a[1].localeCompare(b[1]));
+}
 function aggregate(card, receipt, now) {
   const row = receipt?.cards?.[card.id], at = Date.parse(receipt?.observedAt);
   if (receipt?.version !== 1 || !receipt.payloadHash || !receipt.sourceUrl || !row
@@ -67,7 +76,8 @@ function prepare(root, cards, now=new Date()) {
     coverage:{aggregate7:0,aggregate30:0,actual90:0,actual200:0,matchedPop7:0,matchedPop30:0}};
   const details=new Map();let addedDays=0;
   for(const card of cards) {
-    const incoming=aggregate(card,receipt,+now), stored=previous.cards[card.id] || [];
+    const incoming=aggregate(card,receipt,+now), stored=dailyObservations(previous.cards[card.id]);
+    if(previous.cards[card.id])previous.cards[card.id]=stored;
     // Older scheduled collectors omit counts. Preserve the proven snapshot's own timestamp.
     const saved=[...stored].filter(r=>r[1]===evidence.identity(card) && r[5]
       && evidence.calendarDay(r[4])===r[0] && Date.parse(r[4])<=+now && (count(r[2])||count(r[3])))
@@ -110,4 +120,4 @@ function prepare(root, cards, now=new Date()) {
   if(!fs.existsSync(target)||fs.readFileSync(target,'utf8')!==text)require('./acquisition_retry').atomicWrite(target,previous,0);
   return {summary,details,addedDays};
 }
-module.exports={aggregate,popWindow,actualPeriod,prepare};
+module.exports={aggregate,popWindow,actualPeriod,prepare,dailyObservations};

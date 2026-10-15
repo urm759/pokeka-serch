@@ -24,5 +24,14 @@ a.state.efficiencyBuy='store';assert.equal(a.cardEfficiency({...card,currentStor
 a.state.efficiencyBuy='median';assert.equal(a.cardEfficiency(card,now+48*3600000+1).annual,null,'cache expires at individual source deadline');
 assert.equal(a.buildShareUrl().searchParams.get('effBuy'),'median');a.readUrl();assert.equal(inputs.get('efficiencyBuyInput').value,'median');a.saveQuickFilters();context.window.location.href='https://example.test/';inputs.get('efficiencyBuyInput').value='auto';a.restoreQuickFilters();assert.equal(inputs.get('efficiencyBuyInput').value,'median');
 const psa=require('./build_psa_history');assert(psa.namesCompatible('Pokemon Center&#x27;s Big sister: PROMO[S-P 069]',{name:'Full Art/Pokemon Center Lady | Infinity Zone Booster Box |'}));
+const merge=require('./merge_expanded_daily_checkpoint').retainKnownPriceTime;
+const old={identityKey:'same',price:10000,priceObservedAt:at};
+assert.equal(merge({identityKey:'same',price:10000},[old]).priceObservedAt,at,'old collector must not erase a proven individual time');
+assert.equal(merge({identityKey:'same',price:11000},[old]).priceObservedAt,undefined,'different price is not a reconfirmation');
+assert.equal(merge({identityKey:'other',price:10000},[old]).priceObservedAt,undefined,'different specification never borrows a timestamp');
+assert.equal(merge({identityKey:'same',price:10000,priceObservedAt:null},[old]).priceObservedAt,null,'explicit unknown is retained');
+const daily=require('./psa10_trade_statistics').dailyObservations;
+const d=['2026-10-15','identity',3,10,at,'source'],later=[...d];later[4]='2026-10-15T05:00:00Z';later[3]=12;
+assert.deepEqual(daily([d,later,d]),[later],'concurrent same-day observations are not summed or double weighted');
 assert(!psa.namesCompatible('Pokemon Center Lady',{name:'Full Art/Pokemon Lady Other'}));assert(!psa.variantsCompatible('マスターボールミラー','Pokemon Center Lady',{name:'Full Art/Pokemon Center Lady'}));
 console.log('PASS median basis, source independence, per-source expiry, no fallback, cache, URL/save and verified translation (not print identity)');

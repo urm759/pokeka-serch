@@ -2398,6 +2398,83 @@
         }
       },
       "publicationStatus": "保存済み・公開照合待ち"
+    },
+    {
+      "startedAt": "2026-10-15T04:51:25.860Z",
+      "runId": "38683621209",
+      "event": "schedule",
+      "route": "通常価格更新",
+      "status": "acquired-saved",
+      "allowed": true,
+      "ageMs": 22474194,
+      "minimumIntervalMs": 7200000,
+      "reason": "定期の空白・既存の期限順キューで補完",
+      "llmCalls": 0,
+      "codexCalls": 0,
+      "sourceFailures": [
+        "work/run_tracked_update.js"
+      ],
+      "acquisitionStatus": "partial-with-failure",
+      "endedAt": "2026-10-15T04:59:28.958Z",
+      "durationMs": 483098,
+      "outcomes": {
+        "baselineAt": "2026-10-15T04:51:25.860Z",
+        "commonCards": 12524,
+        "addedCards": 0,
+        "removedCards": 0,
+        "newlyAnalyzable": 7,
+        "lostAnalyzable": 2,
+        "filledCards": 67,
+        "filledItems": 80,
+        "sources": {
+          "cardrush": {
+            "newLinked": 1,
+            "validAdded": 1,
+            "validLost": 1,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          },
+          "hareruya2": {
+            "newLinked": 19,
+            "validAdded": 19,
+            "validLost": 0,
+            "usableNet": 19,
+            "freshnessRecovered": 44
+          },
+          "yuyutei": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          },
+          "torecacamp": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          },
+          "psaOfficial": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          },
+          "pokedata": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          }
+        },
+        "referenceEvidenceRecovered": {
+          "psa9Evidence": 26
+        }
+      },
+      "publicationStatus": "保存済み・公開照合待ち"
     }
   ]
 }
