@@ -8,7 +8,16 @@ postpass.checkpoint(p,46);assert.equal(p.maintenance.cycles,1);
 assert(postpass.due({observedAt:new Date(now-7*3600000).toISOString()},true,now));
 assert(!postpass.due({observedAt:new Date(now-7*3600000).toISOString()},false,now));
 assert(!postpass.due({observedAt:new Date(now+1).toISOString()},true,now));
-assert(!postpass.prepare({...p,retryByUrl:{bad:{}}},46,now));
+assert(postpass.prepare({...p,retryByUrl:{bad:{held:true}}},46,now),'one held URL does not stop normal completed-pass maintenance');
+const priorityUrl='https://torecacamp-pokemon.com/products/priority',heldUrl='https://torecacamp-pokemon.com/products/held';
+const catalog=[{cardId:'wanted',detailUrl:priorityUrl,title:'exact',sourceSitemap:2,observedAt:'2026-09-01'},
+  {cardId:'held',detailUrl:heldUrl,sourceSitemap:3,observedAt:'2026-09-01'}];
+const planned=postpass.prioritize([{url:'old'},{url:'normal1'},{url:'normal2'}],1,catalog,['wanted','held'],4,{[heldUrl]:{held:true}},now);
+assert.deepEqual(planned.map(r=>r.url),['normal1',priorityUrl,'normal2']);
+assert.deepEqual(planned.filter(r=>!r.priorityRefresh).map(r=>r.normalIndex),[1,2],'normal cursor never uses virtual priority offsets');
+assert.equal(planned[1].sourceSitemap,2,'retry provenance retains original sitemap, not current maintenance page');
+assert.equal(postpass.prioritize([{url:priorityUrl}],0,catalog,['wanted'],4,{},now).filter(r=>r.priorityRefresh).length,0,'no duplicate URL acquisition');
+assert.equal(postpass.prioritize([],0,[{...catalog[0],detailUrl:'https://unrelated.test/target'}],['wanted'],4,{},now).length,0,'saved URLs cannot change acquisition origin');
 const batch=require('./source_batch_metrics').shopBatch('torecacamp',JSON.stringify({torecacamp:{detailFetched:4,coverage:6502,updated:1,linked:0}}));
 assert.equal(batch.acquiredCount,4);assert.equal(batch.catalogCount,6502);assert.equal(batch.newLinkedCount,0);
 console.log('postpass continuation tests passed');

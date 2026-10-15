@@ -736,7 +736,14 @@ async function updateTorecaCamp(cards, paths) {
       }
       progress.sitemapProductCounts[sitemapIndex + 1] = entries.length;
       listedProducts += entries.length;
-      const startingEntry = retryOnly || retrySitemap ? 0 : progress.currentSitemapIndex === sitemapIndex ? progress.currentEntryIndex : 0;
+      const normalEntryCount=entries.length;
+      const normalStart=retryOnly || retrySitemap ? 0 : progress.currentSitemapIndex === sitemapIndex ? progress.currentEntryIndex : 0;
+      const prioritized=maintenanceMode&&!retryOnly&&!retrySitemap;
+      if(prioritized) {
+        const requested=(read(path.join(__dirname,'search-profile-targets.json'),{}).readyRoutes?.domesticShops||[]).filter(r=>r.field==='referenceMedian').map(r=>r.id);
+        entries=postpass.prioritize(entries,normalStart,catalog.filter(r=>r.sourceSitemap<=sitemapUrls.length),[...new Set(requested)],detailLimit,progress.retryByUrl);
+      }
+      const startingEntry=prioritized?0:normalStart;
       let retryEntryCursor = 0;
       for (let entryIndex = startingEntry; entryIndex < entries.length; entryIndex += 1) {
         if (Date.now() >= stopBy - 5000) {
@@ -744,14 +751,16 @@ async function updateTorecaCamp(cards, paths) {
           break;
         }
         const sitemapEntry = entries[entryIndex];
+        const productSitemapIndex=sitemapEntry.priorityRefresh?sitemapEntry.sourceSitemap-1:sitemapIndex;
+        const productEntryIndex=sitemapEntry.normalIndex??entryIndex;
         const advance = () => {
           if (retrySitemap) retryEntryCursor = entryIndex + 1;
-          else if (!retryOnly) progress.currentEntryIndex = entryIndex + 1;
+          else if (!retryOnly&&!sitemapEntry.priorityRefresh) progress.currentEntryIndex = (sitemapEntry.normalIndex??entryIndex) + 1;
           if (maintenanceMode) postpass.checkpoint(progress,sitemapUrls.length);
         };
         if (retryOnly && (sitemapEntry.url !== due.url || !retryPolicy.eligible(progress.retryByUrl[sitemapEntry.url]))) continue;
         if (!retryOnly && progress.retryByUrl[sitemapEntry.url]) { advance(); continue; }
-        if (!retryOnly && !retrySitemap) { progress.currentSitemapIndex = sitemapIndex; progress.currentEntryIndex = entryIndex; }
+        if (!retryOnly && !retrySitemap && !sitemapEntry.priorityRefresh) { progress.currentSitemapIndex = sitemapIndex; progress.currentEntryIndex = sitemapEntry.normalIndex??entryIndex; }
         const existingProduct = knownByUrl.get(sitemapEntry.url);
         const refreshExisting = maintenanceMode && existingProduct && postpass.due(existingProduct,important.has(existingProduct.cardId));
         if (seenProductUrls.has(sitemapEntry.url) && !refreshExisting) { duplicateUrls += 1; advance(); continue; }
@@ -774,8 +783,8 @@ async function updateTorecaCamp(cards, paths) {
         } catch (error) {
           failed += 1;
           const retry = retryPolicy.failure(progress.retryByUrl[sitemapEntry.url], { error: error.message, httpStatus: error.metric?.httpStatus });
-          progress.retryByUrl[sitemapEntry.url] = { ...retry, url: sitemapEntry.url, sitemapIndex, entryIndex };
-          progress.lastFailure = { ...retry, error: error.message, httpStatus: error.metric?.httpStatus || null, stage: "fetch-product", url: sitemapEntry.url, sitemapNumber: sitemapIndex + 1, productEntry: entryIndex, at: new Date().toISOString() };
+          progress.retryByUrl[sitemapEntry.url] = { ...retry, url: sitemapEntry.url, sitemapIndex:productSitemapIndex, entryIndex:productEntryIndex };
+          progress.lastFailure = { ...retry, error: error.message, httpStatus: error.metric?.httpStatus || null, stage: "fetch-product", url: sitemapEntry.url, sitemapNumber: productSitemapIndex + 1, productEntry: productEntryIndex, at: new Date().toISOString() };
           progress.failures = [...(progress.failures || []), progress.lastFailure].slice(-50);
           if (retry.scope === "source") { progress.sourceRetry = retry; stoppingReason = retry.reason; break; }
           advance();
@@ -785,8 +794,14 @@ async function updateTorecaCamp(cards, paths) {
         detailFetched += 1;
         const product = productResponse.value;
         if (!product?.id || typeof product.title !== "string" || !Array.isArray(product.variants)) {
-          progress.retryByUrl[sitemapEntry.url] = { ...retryPolicy.failure(progress.retryByUrl[sitemapEntry.url], { error: "商品JSON形式変更・このURLのみ確認待ち" }), url: sitemapEntry.url, sitemapIndex, entryIndex };
+          progress.retryByUrl[sitemapEntry.url] = { ...retryPolicy.failure(progress.retryByUrl[sitemapEntry.url], { error: "商品JSON形式変更・このURLのみ確認待ち" }), url: sitemapEntry.url, sitemapIndex:productSitemapIndex, entryIndex:productEntryIndex };
           failed++; advance(); write(paths.progress, progress); continue;
+        }
+        if(!campMatchesCard(matches[0],{title:product.title,tags:Array.isArray(product.tags)?product.tags:[]})) {
+          excluded.identityMismatch++;
+          progress.retryByUrl[sitemapEntry.url]={...retryPolicy.failure({}, {error:'取得商品と対象カードの仕様不一致・正規確認待ち',kind:'ambiguous'}),
+            url:sitemapEntry.url,sitemapIndex:productSitemapIndex,entryIndex:productEntryIndex};
+          advance();write(paths.progress,progress);continue;
         }
         delete progress.retryByUrl[sitemapEntry.url];
         if (seenProductIds.has(String(product.id)) && !refreshExisting) { duplicateProductIds += 1; seenProductUrls.add(sitemapEntry.url); advance(); continue; }
@@ -798,7 +813,7 @@ async function updateTorecaCamp(cards, paths) {
           cardId: card.id, productId: String(product.id), title: product.title,
           detailUrl: sitemapEntry.url, price: campVariantPrice(variant), priceUnit: "JPY",
           available: variant.available === true, observedAt: new Date().toISOString(),
-          sourceSitemap: sitemapIndex + 1, lastModified: sitemapEntry.lastModified || null,
+          sourceSitemap: sitemapEntry.sourceSitemap || sitemapIndex + 1, lastModified: sitemapEntry.lastModified || null,
         };
         const quarantine = campPriceQuarantine(card, entry.price);
         entry.priceQuarantined = quarantine.quarantined;
@@ -827,7 +842,7 @@ async function updateTorecaCamp(cards, paths) {
         write(paths.catalog, catalog);
         write(paths.progress, progress);
       }
-      if (!retryOnly && !stoppingReason && (retrySitemap ? retryEntryCursor : progress.currentEntryIndex) >= entries.length) {
+      if (!retryOnly && !stoppingReason && (retrySitemap ? retryEntryCursor : progress.currentEntryIndex) >= normalEntryCount) {
         progress.processedSitemaps = [...new Set([...progress.processedSitemaps, sitemapIndex + 1])].sort((a, b) => a - b);
         progress.lastSuccessfulSitemap = sitemapIndex + 1;
         if (!retrySitemap) { progress.currentSitemapIndex = sitemapIndex + 1; progress.currentEntryIndex = 0; }

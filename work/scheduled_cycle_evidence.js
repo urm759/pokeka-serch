@@ -46,6 +46,7 @@ function record(key,root=ROOT) {
   if(fs.existsSync(path.join(root,'data/priority-price-monitor.json')))files.push('data/priority-price-monitor.json');
   const optional=f=>{try{return read(f);}catch{return null;}};
   if(optional('data/search-profile-cycle-progress.json'))files.push('data/search-profile-cycle-progress.json');
+  for(const file of ['data/supply-demand-validation-summary.json','data/supply-demand-validation-details.json'])if(optional(file))files.push(file);
   const monitorSources=optional('data/priority-price-monitor.json')?.sources||{};
   const cardObservations=Object.fromEntries(Object.entries(monitorSources).map(([id,source])=>[id,
     [...new Map([...(source.fixedCards||[]),...(source.cards||[])].map(row=>[row.id,{id:row.id,at:row.lastConfirmedAt}])).values()]]));

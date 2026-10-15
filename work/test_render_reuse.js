@@ -33,7 +33,7 @@ for(let i=0;i<sample.length;i++) {
   assert.strictEqual(scoped.presetQualifications(m),scoped.presetQualifications(m),'same preset evaluation reused');
   assert.notStrictEqual(scoped.cardSearchExclusions(m,{efficiency:false}),scoped.cardSearchExclusions(m),'different evaluation options are isolated');
 }
-assert.match(source,/finally \{ renderMemo = previous; \}/);
+assert.match(source,/finally \{ renderMemo = previous; efficiencyRenderPass=previousEfficiency; \}/,'render caches clear on normal completion and exceptions');
 assert.match(source,/state.openCardDetails.has\(card.id\),state.favorites.has\(card.id\)/);
 assert.match(source,/reusedMarkup\+\+/);
 assert.match(source,/const comparisonMatrix = detailsOpen \?/,'closed detail must not dereference deferred profit trials');

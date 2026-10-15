@@ -12,6 +12,12 @@ const priceOnly=profileDelta({...before,rows:[{id:'pending',unverifiedProspect:t
   {...after,inspectedRows:{pending:{purchaseConfirmed:true}}},b,b);
 assert.deepEqual(priceOnly.purchaseFilled,['pending'],'new fresh in-stock price is completed even when a reference field was previously acquired');
 assert.equal(priceOnly.profileFilledCards,1);
+const medianOnly=profileDelta({...before,rows:[{id:'pending',unverifiedProspect:true,missing:['referenceMedian'],buy:null}]},
+  {...after,inspectedRows:{pending:{buy:10000,purchaseConfirmed:false}}},b,b);
+assert.deepEqual(medianOnly.medianEvidenceRecovered,['pending']);assert.deepEqual(medianOnly.purchaseFilled,[],'reference recovery is not an actual purchasable price');
+const freshFirst=profileDelta({ids:[],seenQualified:[],rows:[]},{...after,ids:['new']},
+  {new:record([],false,{torecacamp:{fresh:false}})},{new:record([],false,{torecacamp:{fresh:true,valid:true}})});
+assert.deepEqual(freshFirst.firstQualified,['new']);assert.deepEqual(freshFirst.freshnessRestored,[],'first ever qualification is not a historical candidate return');
 const {eligibleForHareru}=require('./consume_completion_queue');
 const pending=[{card:{id:'url-found',hareruya2Url:'https://www.hareruya2.com/products/fixture'},detail:{i:{shopStateA:'取得済み'}}}];
 assert.equal(eligibleForHareru(pending,[],Date.now(),new Set(['url-found'])).length,1,'new exact URL must reach real price acquisition even when a reference field was already present');

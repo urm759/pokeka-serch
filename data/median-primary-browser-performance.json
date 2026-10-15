@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "evaluationAt": "2026-10-15T09:49:00.000Z",
+  "beforeCode": "4e2eeb34",
+  "afterCode": "20261015-median-primary-v2",
+  "repetitions": 3,
+  "visibleCards": 60,
+  "efficiencyBuy": "median",
+  "actualViewportVerified": true,
+  "sameDataAndSettings": true,
+  "candidateIdsEqual": true,
+  "financialHashesEqual": true,
+  "longHistoryInitialRequests": 0,
+  "longHistoryRequestsAfterOneExplicitDetail": 1,
+  "units": "milliseconds, rounded to 0.1ms",
+  "scope": "Local real-browser viewport measurements, not physical phone or public WAN. dataTransferBytes is local gzip /data transfer through one explicit detail expansion. decodedJsonBytes is expanded JSON, not transfer. SearchDom includes filtering, markup and commit, not paint completion. Cold run and cached runs are retained separately in the arrays.",
+  "rows": [
+    {
+      "viewport": [1440, 1000], "cards": 2261, "scale": 1,
+      "decodedJsonBytes": 16946022, "dataTransferBytes": 2648679,
+      "financialHash": "beca054e3ee73a2700976d09d605c24d1c395738389d8cbbb5e8193cc8e169e2",
+      "before": {"jsonParse":77.8,"fullCalculation":[620.3,544.5,449.4],"searchDom":[258.5,103.8,96.0],"filtering":[123.1,86,81.2],"markup":[118.4,17.2,14.4],"commit":[15.1,0.1,0.1],"conditionCalculation":[0.2,0.2,0],"conditionDom":[26.4,23.4,23.2],"detailDom":[33.8,32.6,22.3]},
+      "after": {"jsonParse":63.1,"fullCalculation":[610.5,487.8,507.9],"searchDom":[243.0,110.8,108.4],"filtering":[104.5,97.3,93.6],"markup":[121.3,13.1,13.5],"commit":[15.9,0,0.1],"conditionCalculation":[0.2,0.1,0],"conditionDom":[26.1,18.5,27.4],"detailDom":[36,22.1,25.1]}
+    },
+    {
+      "viewport": [1440, 1000], "cards": 4522, "scale": 2,
+      "decodedJsonBytes": 31170022, "dataTransferBytes": 4434085,
+      "financialHash": "282090963877ff0719ca1650f40f3aae8bf50e99a24335e9856f41e1b316b85b",
+      "before": {"jsonParse":130.8,"fullCalculation":[1218.8,927.4,875.8],"searchDom":[324.5,184,168.6],"filtering":[194.8,167.9,154.7],"markup":[115,15,13.4],"commit":[13.3,0,0],"conditionCalculation":[0.1,0.1,0],"conditionDom":[27.4,24.5,21.1],"detailDom":[31.4,25.9,23.8]},
+      "after": {"jsonParse":152.5,"fullCalculation":[1148.4,902.5,915.9],"searchDom":[316.8,185.1,167.4],"filtering":[192.1,171.2,153.8],"markup":[109.7,13,12.9],"commit":[13.2,0.1,0],"conditionCalculation":[0,0,0],"conditionDom":[33.3,28.6,22.7],"detailDom":[33.7,42.5,24.7]}
+    },
+    {
+      "viewport": [390, 844], "cards": 2261, "scale": 1,
+      "decodedJsonBytes": 16946022, "dataTransferBytes": 2648679,
+      "financialHash": "beca054e3ee73a2700976d09d605c24d1c395738389d8cbbb5e8193cc8e169e2",
+      "before": {"jsonParse":63.4,"fullCalculation":[618.5,580,478.6],"searchDom":[306.3,107,98.7],"filtering":[108.2,92.3,85],"markup":[158.5,13.9,13.1],"commit":[37.4,0.1,0.1],"conditionCalculation":[0.1,0.1,0],"conditionDom":[23.4,17.5,17.5],"detailDom":[26.9,25.4,20.8]},
+      "after": {"jsonParse":59.1,"fullCalculation":[825.6,498.5,477.1],"searchDom":[317,103.1,105.1],"filtering":[171.8,89.3,89.9],"markup":[127.4,13.3,14.6],"commit":[15.9,0.1,0.1],"conditionCalculation":[0.1,0,0.1],"conditionDom":[31.2,18.5,19.3],"detailDom":[35.3,22.2,23.5]}
+    },
+    {
+      "viewport": [390, 844], "cards": 4522, "scale": 2,
+      "decodedJsonBytes": 31170022, "dataTransferBytes": 4434085,
+      "financialHash": "282090963877ff0719ca1650f40f3aae8bf50e99a24335e9856f41e1b316b85b",
+      "before": {"jsonParse":136.1,"fullCalculation":[1241.7,923.3,950.9],"searchDom":[327.9,181.8,180.2],"filtering":[196.5,168.1,164.7],"markup":[115.8,13,14.2],"commit":[14,0.1,0.1],"conditionCalculation":[0,0,0],"conditionDom":[26.6,20.4,21],"detailDom":[36.7,28.2,29.6]},
+      "after": {"jsonParse":152.5,"fullCalculation":[1229.1,945.3,874.8],"searchDom":[325.2,184.7,178.9],"filtering":[193.1,170.6,164.5],"markup":[116.6,13.5,13.6],"commit":[14,0,0.1],"conditionCalculation":[0.1,0,0],"conditionDom":[38.2,22.9,23.2],"detailDom":[50.4,26.8,36.3]}
+    }
+  ],
+  "assessment": "No broad performance improvement established. Median searchDom: PC 103.8->110.8ms, PC double 184.0->185.1ms, mobile viewport 107.0->105.1ms, mobile double 181.8->184.7ms. Filtering the full analysis pool remains the dominant repeated cost; condition changes reuse calculations. Three repetitions do not establish statistical significance. No candidates or data were removed for speed."
+}

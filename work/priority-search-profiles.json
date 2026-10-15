@@ -1,6 +1,9 @@
 {
   "version": 1,
   "providedAt": "2026-10-14",
+  "preferredEfficiencyBasis": "median",
+  "medianVariants": [{"id":"A-median","baseId":"A"},{"id":"B-median","baseId":"B"}],
+  "basisMigration": "2026-10-15の明示依頼。元A/BとeffBuy=autoの意味は保持し、中央値版はeffBuy=medianだけを変更した別URLで保存。基準切替とデータ補完は別集計。",
   "historicalSavedOverlay": {"obs7Min":"1000","obsRef":"0"},
   "knownSavedOverlay": {"obs7Min":"off","obsRef":"1"},
   "overlayStatus": "10/14にユーザーが承認した2項目（7日下限なし・参考平均ON）だけを監査へ反映。1000%・OFFはhistoricalSavedOverlayに原記録として保持し、日常探索へ再適用しない。他の端末保存条件は未観測。固定URLやChrome設定への書込みは行わない",

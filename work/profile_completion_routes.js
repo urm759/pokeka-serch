@@ -38,6 +38,15 @@ function prospectPlan(card,fields,{shops={},linkage={},psaProgress={},storeMode=
         stopScope:waiting?retry.scope || 'url':null,nextRetryAt:retry?.nextRetryAt || null,
         url:url || null,candidateUrls:source.candidateOfficialUrls || [],reason:waiting?retry.reason:/pokemon-asia/i.test(url || '')?'日本語版の根拠不足':source.ambiguityReason || null,
         nextAction:usable?'PC正規認証取得→仕様照合→保存→公開':'正規セットURL・日本語・番号・仕様の確認',resumeCondition:usable?'認証済み通常ページへのアクセス確認':'公式リンクと同一仕様の根拠確定'});
+    }else if(field==='referenceMedian'){
+      const rows=(card.priceAggregation?.included || []).filter(r=>{
+        const at=Date.parse(r.updatedAt||r.observedAt||'');return !Number.isFinite(at)||at>now||now-at>48*3600000;
+      });
+      const sources=rows.map(r=>({source:/hareruya2\.com/.test(r.url||'')?'hareruya2':/torecacamp-pokemon\.com/.test(r.url||'')?'torecacamp':/cardrush-pokemon\.jp/.test(r.url||'')?'cardrush':/yuyu-tei\.jp/.test(r.url||'')?'yuyutei':'toreca',url:r.url||null,at:r.updatedAt||r.observedAt||null}));
+      const automatic=sources.some(r=>['hareruya2','torecacamp','toreca'].includes(r.source));
+      requirements.push({field,source:'domesticShops',state:card.priceAggregation?.conflicted?'price-conflict-review':sources.length?'adopted-source-refresh':'median-evidence-unavailable',
+        automatic:automatic&&!card.priceAggregation?.conflicted,evidence:sources,
+        nextAction:'古い採用元そのものの正規再確認。別店舗の新鮮価格だけを繰り返さず、価格対立は自動解除しない',resumeCondition:'同一仕様・個別日時・採用元の正常再確認'});
     }else if(field==='shopStateA'){
       const urls=['hareruya2','torecacamp'].flatMap(source=>card[source+'Url']?[{source,url:card[source+'Url']}]:[]);
       requirements.push({field,source:'domesticShops',state:urls.length?'price-and-stock-acquisition':'url-discovery',automatic:true,urls,

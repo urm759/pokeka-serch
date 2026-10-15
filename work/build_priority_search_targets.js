@@ -7,11 +7,16 @@ function routeNeededFields(detail,fields) {
     if(['psa9Evidence','buybackExitEvidence'].includes(key))next.e[['psa9Evidence','buybackExitEvidence'].indexOf(key)]=0;
     else if(!require('./completion_routes').needs(next,key))next.i[key]='定期再確認';
   }
-  return require('./completion_routes').routes(next).filter(r=>fields.includes(r.key));
+  const result=require('./completion_routes').routes(next).filter(r=>fields.includes(r.key));
+  if(fields.includes('referenceMedian'))result.push({key:'referenceMedian',source:'domesticShops',mode:'採用元の個別再確認・通常巡回と共有'});
+  return result;
 }
-function evaluate(profile,at,overlay={},inspectIds=[]) {
+function evaluate(profile,at,overlay={},inspectIds=[],calculationCache=null) {
   const url=new URL(profile.url);for(const [k,v]of Object.entries(overlay))if(!url.searchParams.has(k))url.searchParams.set(k,v);
-  const api=load(fs.readFileSync(path.join(ROOT,'app.js'),'utf8'),at,{url:url.href}),cards=api.prepareCalculatedCards(api.state.cards),rows=[],reasons={},routes={};
+  const api=load(fs.readFileSync(path.join(ROOT,'app.js'),'utf8'),at,{url:url.href}),calculationKey=at+':'+api.computationKey();
+  let cards=calculationCache?.get(calculationKey);
+  if(!cards){cards=api.prepareCalculatedCards(api.state.cards);calculationCache?.set(calculationKey,cards);}
+  const rows=[],reasons={},routes={};
   const completion=JSON.parse(fs.readFileSync(path.join(ROOT,'work/card-completion-queue.json'),'utf8'));
   const linkage=Object.fromEntries(JSON.parse(fs.readFileSync(path.join(ROOT,'work/psa-linkage-all.json'),'utf8')).rows.map(r=>[r.cardId,r]));
   const shops=JSON.parse(fs.readFileSync(path.join(ROOT,'data/shop-buyback-summary.json'),'utf8')).shops;
@@ -33,11 +38,12 @@ function evaluate(profile,at,overlay={},inspectIds=[]) {
       purchaseConfirmed:Boolean(c.currentStoreOffer?.fresh&&c.currentStoreOffer?.available&&Number.isFinite(c.currentStoreOffer.value)),
       buybackConfirmed:!e.blockingReasons.some(r=>r.includes('買取出口'))&&require('./profile_completion_routes').prospectPlan(c,['buybackExitEvidence'],{shops,linkage,now:Date.parse(at),storeMode:p.get('buybackStores') || 'mail',selected:(p.get('selectedStores') || '').split(',')}).requirements[0].evidence.filter(r=>r.state==='usable').length>=2,
       metrics:require('./profile_candidate_evidence').cardFacts(api,c)};
-    if(e.purchasePrice==null)fields.push('shopStateA');
+    if(!c.currentStoreOffer?.fresh || !c.currentStoreOffer.available)fields.push('shopStateA');
+    if(p.get('effBuy')==='median' && e.medianEvidence?.reasons.length)fields.push('referenceMedian');
     if(e.blockingReasons.some(r=>r.includes('買取出口')))fields.push('buybackExitEvidence');
     if(e.blockingReasons.some(r=>r.includes('PSA9')))fields.push('psa9Evidence');
     const hard=c.dataQuality?.manualReview||c.priceIntegrity?.disputed||c.priceAggregation?.conflicted||c.dataQuality?.dataAnomaly;
-    const knownDisqualifying=excluded.filter(r=>!/(未取得|不足|算出不可|期限|古い|保留|分析|プリセット|期間|条件)/.test(r));
+    const knownDisqualifying=excluded.filter(r=>!/(未取得|不足|算出不可|期限|古い|古値|日時不明|保留|分析|プリセット|期間|条件)/.test(r));
     const confirmedEfficiencyFail=missing.length===0&&Number.isFinite(e.annual)&&p.has('effMin')&&e.annual<Number(p.get('effMin'));
     const prospect=excluded.length>0&&!priceFail&&!hard&&!confirmedEfficiencyFail&&fields.length>0&&knownDisqualifying.length===0;
     const selected=!excluded.length;
@@ -63,7 +69,11 @@ function build(root=ROOT,at=new Date().toISOString()) {
   const previousFile=path.join(root,'work/search-profile-targets.json');
   const previous=fs.existsSync(previousFile)?JSON.parse(fs.readFileSync(previousFile,'utf8')):{profiles:[]};
   const inspectFor=p=>[...(previous.profiles.find(r=>r.id===p.id)?.urlsMatched||[]),...(previous.freshnessRecovery||[]).filter(r=>r.profile===p.id).map(r=>r.id)];
-  const profiles=config.profiles.map(p=>({urlOnly:evaluate(p,at,{},inspectFor(p)),knownSavedConditions:evaluate(p,at,config.knownSavedOverlay)}));
+  const definitions=require('./search_profile_variants').allProfiles(config);
+  require('./search_profile_variants').saveMedianProfiles(root,config);
+  // This cache exists only within a build over the same saved files/time. Buy-basis/search changes do not change production economics.
+  const calculationCache=new Map();
+  const profiles=definitions.map(p=>({urlOnly:evaluate(p,at,{},inspectFor(p),calculationCache),knownSavedConditions:evaluate(p,at,config.knownSavedOverlay,[],calculationCache)}));
   const transitions=profiles.map(p=>{
     const old=previous.profiles.find(r=>r.id===p.urlOnly.id),same=old?.urlHash===p.urlOnly.urlHash;
     const seen=new Set([...(old?.seenQualified||[]),...(old?.urlsMatched||[])]);
@@ -88,7 +98,13 @@ function build(root=ROOT,at=new Date().toISOString()) {
     targets.routes[source]=[...map.values()].sort((a,b)=>b.priority-a.priority);
   }
   for(const [source,rows]of Object.entries(targets.routes))targets.readyRoutes[source]=rows.filter(r=>profiles.some(p=>p.urlOnly.rows.some(c=>c.id===r.id&&c.completionPlan?.requirements.some(f=>f.field===r.field&&f.automatic))));
-  const report={version:2,at,profiles,transitions,overlayStatus:config.overlayStatus,llmCalls:0,codexCalls:0,newSourceAcquisition:0,
+  const basisComparisons=definitions.filter(p=>p.baseId).map(p=>{
+    const base=profiles.find(r=>r.urlOnly.id===p.baseId).urlOnly,next=profiles.find(r=>r.urlOnly.id===p.id).urlOnly;
+    return {original:p.baseId,median:p.id,at,originalCount:base.qualified,medianCount:next.qualified,
+      gainedByBasis:next.ids.filter(id=>!base.ids.includes(id)),lostByBasis:base.ids.filter(id=>!next.ids.includes(id)),
+      note:'同じデータ/時刻・effBuyだけ変更。新規掲載/補完/初適合に計上しない'};
+  });
+  const report={version:3,at,profiles,transitions,basisComparisons,overlayStatus:config.overlayStatus,llmCalls:0,codexCalls:0,newSourceAcquisition:0,
     note:'要約・キュー生成は実取得・補完ではない。URLだけと確認済み保存追加条件の再現を分離。他の端末設定は未観測'};
   for(const [f,x]of [['work/search-profile-targets.json',targets],['data/priority-search-profile-audit.json',report]])fs.writeFileSync(path.join(root,f),JSON.stringify(x));
   console.log(JSON.stringify(profiles.map(p=>({id:p.urlOnly.id,urlOnly:p.urlOnly.qualified,withKnownSaved:p.knownSavedConditions.qualified,prospects:p.urlOnly.prospects}))));

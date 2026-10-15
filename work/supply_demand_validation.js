@@ -153,17 +153,38 @@ function build(root=ROOT,now=new Date()) {
   const captured=capture(root,now),dir=path.join(root,'data/research-supply-demand/days'),rows=[];
   if(fs.existsSync(dir))for(const file of fs.readdirSync(dir).filter(n=>/^\d{4}-\d{2}-\d{2}\.json$/.test(n)).sort())rows.push(...Object.values(readDay(root,'data/research-supply-demand/days/'+file).cards||{}));
   const algorithmHash=crypto.createHash('sha256').update(fs.readFileSync(__filename,'utf8').replace(/\r\n/g,'\n')).digest('hex');
-  const old=read(root,'data/supply-demand-validation-summary.json'),due=!old.trainedAt||old.algorithmHash!==algorithmHash||+now-Date.parse(old.trainedAt)>=7*DAY;
+  const old=read(root,'data/supply-demand-validation-summary.json'),inputHash=hash(rows),inputChanged=old.inputHash!==inputHash;
+  const algorithmChanged=old.algorithmHash!==algorithmHash;
+  const lastValidationAt=old.lastValidationAt || old.trainedAt || null;
+  const intervalDue=!lastValidationAt || +now-Date.parse(lastValidationAt)>=7*DAY;
+  // A calendar tick alone creates neither observations nor future outcomes.
+  const due=algorithmChanged || intervalDue && inputChanged;
+  const oldCounts=old.availableLabelCounts || Object.fromEntries((old.horizons||[]).map(h=>[h.days,h.labelled]));
+  const samples=due || inputChanged ? HORIZONS.map(days=>({days,sample:nonoverlapping(labels(rows,days,+now))})) : null;
+  const counts=samples?Object.fromEntries(samples.map(r=>[r.days,r.sample.length])):oldCounts;
   const details=due?HORIZONS.map(h=>validate(rows,h,+now)):read(root,'data/supply-demand-validation-details.json').horizons||[];
-  const eligibleTraining=due?HORIZONS.map(days=>{const sample=nonoverlapping(labels(rows,days,+now));return {days,rows:sample.length,model:fit(sample)};}):null;
-  const summary={version:1,candidateVersion:VERSION,algorithmHash,asOf:now.toISOString(),trainedAt:due?now.toISOString():old.trainedAt,
+  const eligibleTraining=due?samples.map(({days,sample})=>({days,rows:sample.length,cards:new Set(sample.map(r=>r.physicalIdentity||r.identity)).size,
+    model:sample.length>=30&&new Set(sample.map(r=>r.physicalIdentity||r.identity)).size>=10?fit(sample):null})):null;
+  const established=Boolean(eligibleTraining?.some(r=>r.model));
+  const previousFit=old.learning?.established===true;
+  const trainedAt=established?now.toISOString():due?null:previousFit?old.trainedAt:null;
+  const summary={version:2,candidateVersion:VERSION,algorithmHash,asOf:now.toISOString(),trainedAt,
+    lastValidationAt:due?now.toISOString():lastValidationAt,
+    execution:{attemptedAt:now.toISOString(),validationExecuted:due,inputChanged,algorithmChanged,intervalDue,
+      newObservations:Math.max(0,rows.length-Number(old.storedObservations||0)),
+      newLabels:Object.fromEntries(HORIZONS.map(h=>[h,Math.max(0,(counts[h]||0)-(oldCounts[h]||0))])),
+      reason:due?'候補検証を実行・有効学習/改善は別集計':!inputChanged?'同一入力・新しい観測/将来結果なし・再学習省略':'新観測を保存・7日間隔待ち'},
+    availableLabelCounts:counts,
+    learning:{established:due?established:previousFit,
+      status:trainedAt?'標本条件を満たす候補学習あり・本番未採用':'有効学習未成立・将来結果/独立標本不足',
+      minimumRows:30,minimumCards:10,improved:details.some(h=>h.passedEvidenceGates)},
     dailyCapture:captured,storedObservations:rows.length,observedDays:new Set(rows.map(r=>proof.calendarDay(r.availableAt))).size,
     coverage:Object.fromEntries(['pop30','trades30','grossBuybackRate','buybackPremiumPct','continuity30','releaseAgeDays','reprintStatus','popularityClass','marketChange30'].map(k=>[k,rows.filter(r=>r.features[k]!=null).length])),
     popCoverage:{measured30:rows.filter(r=>r.features.pop30?.delta!=null).length,aligned30:rows.filter(r=>r.features.pop30?.aligned===true).length,
       measured7:rows.filter(r=>r.features.pop7?.delta!=null).length,aligned7:rows.filter(r=>r.features.pop7?.aligned===true).length,
       note:'部分期間の実測POP差を30日取引へ厳密対応させず、alignedの根拠がある特徴だけPOP層別学習へ使用'},
-    inputHash:hash(rows),trainingInputHash:due?hash(rows):old.trainingInputHash || read(root,'data/research-supply-demand/models/'+old.modelHash+'.json').inputHash || null,
-    horizons:details.map(({predictions,...r})=>r),modelHash:due?hash({algorithmHash,horizons:eligibleTraining}):old.modelHash,
+    inputHash,trainingInputHash:established?inputHash:trainedAt?old.trainingInputHash:null,
+    horizons:details.map(({predictions,...r})=>r),modelHash:due?established?hash({algorithmHash,horizons:eligibleTraining}):null:previousFit?old.modelHash:null,
     adoption:{adopted:false,automaticAdoption:false,productionCandidateChanges:0,productionGoChanges:0,
       candidateImpact:null,reason:'需給シャドーモデルは本番から独立。承認・全カード影響監査前に係数やGOを変更しない',
       gates:'各期間3非重複fold・100検証例・30カード・下落10例、MAE改善かつ下落見落とし/損失側誤差非悪化。その後、明示承認と全件差分監査',
@@ -171,7 +192,8 @@ function build(root=ROOT,now=new Date()) {
     method:'JST日次・実確認時刻と特徴の利用可能時刻を分離。過去学習/未来検証、30日embargo、同カード重複ラベル期間除外。固定分類を全体平均へ30例分縮約。欠損分類は推定しない',
     limitations:['国内取引と世界POPは範囲差・再売買あり','価格予測であり返却時の手数料込み損益検証とは別','人気/再販/市場分類は根拠付き入力が未接続・null','旧候補モデルの検証完了を意味しない'],
     detailFile:'data/supply-demand-validation-details.json',llmCalls:0,codexCalls:0};
-  if(due){write(root,'data/supply-demand-validation-details.json',{version:1,algorithmHash,trainedAt:summary.trainedAt,horizons:details});write(root,'data/research-supply-demand/models/'+summary.modelHash+'.json',{version:VERSION,algorithmHash,trainedAt:summary.trainedAt,inputHash:summary.inputHash,horizons:eligibleTraining});}
+  if(due)write(root,'data/supply-demand-validation-details.json',{version:2,algorithmHash,validatedAt:summary.lastValidationAt,trainedAt:summary.trainedAt,horizons:details});
+  if(established)write(root,'data/research-supply-demand/models/'+summary.modelHash+'.json',{version:VERSION,algorithmHash,trainedAt:summary.trainedAt,inputHash:summary.inputHash,horizons:eligibleTraining});
   write(root,'data/supply-demand-validation-summary.json',summary);return summary;
 }
 if(require.main===module){const r=build();console.log(JSON.stringify({captured:r.dailyCapture,observations:r.storedObservations,horizons:r.horizons.map(h=>({days:h.days,labelled:h.labelled,status:h.status}))}));}

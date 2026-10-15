@@ -16,15 +16,17 @@ function profileDelta(before,after,beforeRows,afterRows) {
   }
   for(const id of gained) {
     const b=beforeRows[id],a=afterRows[id];
-    if(b&&a&&Object.entries(a.sources).some(([s,v])=>v.fresh&&v.valid&&!b.sources[s]?.fresh))freshnessRestored.push(id);
+    if(seen.has(id)&&b&&a&&Object.entries(a.sources).some(([s,v])=>v.fresh&&v.valid&&!b.sources[s]?.fresh))freshnessRestored.push(id);
   }
   const purchaseFilled=(before.rows || []).filter(r=>r.unverifiedProspect&&r.missing?.includes('shopStateA')&&r.buy==null&&after.inspectedRows?.[r.id]?.purchaseConfirmed).map(r=>r.id);
   const buybackFilled=(before.rows || []).filter(r=>r.unverifiedProspect&&r.missing?.includes('buybackExitEvidence')&&after.inspectedRows?.[r.id]?.buybackConfirmed).map(r=>r.id);
+  const medianEvidenceRecovered=(before.rows || []).filter(r=>r.unverifiedProspect&&r.missing?.includes('referenceMedian')&&r.buy==null&&Number.isFinite(after.inspectedRows?.[r.id]?.buy)).map(r=>r.id);
   return {id:after.id,before:before.ids.length,after:after.ids.length,newListed:Object.keys(afterRows).filter(id=>!beforeRows[id]).length,
-    purchaseFilled,buybackFilled,profileFilledCards:new Set([...completed.map(r=>r.id),...purchaseFilled,...buybackFilled]).size,
-    completedProspectOutcomes:[...new Set([...completed.map(r=>r.id),...purchaseFilled,...buybackFilled])].map(id=>({id,name:(before.rows || []).find(r=>r.id===id)?.name || null,
+    purchaseFilled,buybackFilled,medianEvidenceRecovered,profileFilledCards:new Set([...completed.map(r=>r.id),...purchaseFilled,...buybackFilled,...medianEvidenceRecovered]).size,
+    completedProspectOutcomes:[...new Set([...completed.map(r=>r.id),...purchaseFilled,...buybackFilled,...medianEvidenceRecovered])].map(id=>({id,name:(before.rows || []).find(r=>r.id===id)?.name || null,
       qualified:current.has(id),values:after.inspectedRows?.[id] || null,reasons:after.allExclusions?.[id] || []})),
-    filledCards:completed.length,completed,newLinked:linked,firstQualified:gained.filter(id=>!seen.has(id)&&!freshnessRestored.includes(id)),freshnessRestored,gained,lost,
+    filledCards:completed.length,completed,newLinked:linked,firstQualified:gained.filter(id=>!seen.has(id)),freshnessRestored,
+    requalified:gained.filter(id=>seen.has(id)),gained,lost,
     lostReasons:lost.map(id=>({id,reasons:after.allExclusions?.[id]||['最新条件で不合格・別監査で根拠確認'],
       before:before.rows.find(r=>r.id===id)?.metrics||null,after:after.inspectedRows?.[id]?.metrics||null,
       newlyFailed:(after.allExclusions?.[id]||[]).filter(r=>!before.rows.find(b=>b.id===id)?.reasons?.includes(r)),
@@ -37,7 +39,8 @@ function baseline(key,root=ROOT) {
   const at=new Date().toISOString(),config=read(root,'work/priority-search-profiles.json');
   if(!Array.isArray(config.profiles))return null;
   const history=read(root,'work/search-profile-targets.json');
-  const profiles=config.profiles.map(p=>({...evaluate(p,at),seenQualified:history.profiles?.find(r=>r.id===p.id)?.seenQualified||[]}));
+  const calculationCache=new Map();
+  const profiles=require('./search_profile_variants').allProfiles(config).map(p=>({...evaluate(p,at,{},[],calculationCache),seenQualified:history.profiles?.find(r=>r.id===p.id)?.seenQualified||[]}));
   const snapshot=outcomes.pack(outcomes.snapshot(root,Date.parse(at)));
   const psaUrls=Object.fromEntries((read(root,'work/psa-linkage-all.json').rows||[]).map(r=>[r.cardId,r.sourceSetUrl]));
   write(root,`work/search-profile-cycle-baseline-${key}.json`,{at,runId:process.env.GITHUB_RUN_ID||null,profiles,snapshot,psaUrls});
@@ -46,7 +49,8 @@ function record(key,root=ROOT) {
   const before=read(root,`work/search-profile-cycle-baseline-${key}.json`,null);
   if(!before||String(before.runId)!==String(process.env.GITHUB_RUN_ID||null))return null;
   const now=new Date().toISOString(),config=read(root,'work/priority-search-profiles.json');
-  const profiles=config.profiles.map(p=>evaluate(p,now,{},(before.profiles.find(r=>r.id===p.id)?.rows||[]).map(r=>r.id)));
+  const calculationCache=new Map();
+  const profiles=require('./search_profile_variants').allProfiles(config).filter(p=>before.profiles.some(b=>b.id===p.id)).map(p=>evaluate(p,now,{},(before.profiles.find(r=>r.id===p.id)?.rows||[]).map(r=>r.id),calculationCache));
   const afterRows=outcomes.snapshot(root,Date.parse(now)).rows,beforeRows=outcomes.unpack(before.snapshot).rows;
   const currentPsaUrls=Object.fromEntries((read(root,'work/psa-linkage-all.json').rows||[]).map(r=>[r.cardId,r.sourceSetUrl]));
   const currentPop=read(root,'data/psa-population-summary.json').cards || {};

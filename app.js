@@ -21,6 +21,7 @@ const explorationMetrics = window.ExplorationMetrics;
 const efficiencyFields = [['effMin','efficiencyMin',null],['effManual','efficiencyManualPrice',null],['sellDays','efficiencySaleDays',7],['payoutDays','efficiencyPayoutDays',3]];
 let efficiencyCache = new WeakMap();
 let observationEfficiencyCache = new WeakMap();
+let efficiencyRenderPass = null;
 let efficiencyViewCache = new WeakMap();
 const explorationFields = [
   ['purchaseMin','actualPurchaseMin'],['purchaseMax','actualPurchaseMax'],
@@ -214,7 +215,7 @@ const state = {
   minExpectedProfitFilter: 0,
   profitSearchBasis: "auto",
   efficiencyMin: null, efficiencyManualPrice: null, efficiencySaleDays: 7, efficiencyPayoutDays: 3,
-  efficiencyBuy: 'auto', efficiencyScenario: 'current',
+  efficiencyBuy: 'median', efficiencyScenario: 'current',
   efficiencyIncludeReference: false,
   purchaseBelowCurrentCap: false,
   psa10PeriodSummary: null,
@@ -3131,10 +3132,22 @@ function captureConditionOrigins(defaults, restored) {
     searchConditionOrigins.set(el.id,{value,origin:urlSpecified||value!==restored.get(el.id)?'URL指定':stored||restored.get(el.id)!==defaults.get(el.id)?'保存追加':'初期・詳細設定'});
   }
 }
+const EFFICIENCY_BASIS_MIGRATION_KEY=QUICK_FILTER_STORAGE_KEY+':median-basis-v1';
 function restoreQuickFilters() {
   try {
     const saved = JSON.parse(localStorage.getItem(QUICK_FILTER_STORAGE_KEY) || "{}");
     const url = new URL(window.location.href);
+    if(!url.searchParams.has('effBuy')&&!localStorage.getItem(EFFICIENCY_BASIS_MIGRATION_KEY)) {
+      const migrate=!url.searchParams.has('effBuy')&&saved.efficiencyBuy==='auto';
+      localStorage.setItem(EFFICIENCY_BASIS_MIGRATION_KEY,JSON.stringify({version:1,at:new Date().toISOString(),
+        status:migrate?'migrated-explicit-median':'explicit-choice-retained',previous:migrate?saved:null}));
+      if(migrate) {
+        saved.efficiencyBuy='median';
+        localStorage.setItem(QUICK_FILTER_STORAGE_KEY,JSON.stringify(saved));
+        const notice=document.getElementById('efficiencyBuyMigrationNotice');
+        if(notice)notice.textContent='依頼に基づき保存済み買値をautoから明示的な中央値へ移行しました。旧設定は端末内に退避。他の条件は保持し、この選択から旧autoへ戻せます。中央値で買える保証や購入GOではありません。';
+      }
+    }
     if (!url.searchParams.has('obsRef') && typeof saved.observationIncludeReference === 'boolean') document.getElementById('observationIncludeReferenceInput').checked = saved.observationIncludeReference;
     if (!url.searchParams.has('effRef') && Object.hasOwn(saved,'efficiencyIncludeReference')) document.getElementById('efficiencyIncludeReferenceInput').checked = saved.efficiencyIncludeReference === true;
     for (const [param,field] of efficiencyFields) if (!url.searchParams.has(param) && Object.hasOwn(saved,field)) document.getElementById(field+'Input').value = saved[field] ?? '';
@@ -4009,6 +4022,13 @@ function resultSorter() {
 }
 
 function cardEfficiency(card, now=Date.now(), mode=state.purchaseMode, selectedScenario=state.efficiencyScenario, selectedBuy=state.efficiencyBuy) {
+  const passKey=JSON.stringify([mode,selectedScenario,selectedBuy]);
+  const passEntry=efficiencyRenderPass?.get(card)?.get(passKey);
+  if(passEntry && now<passEntry.expires)return passEntry.value;
+  const remember=entry=>{
+    if(efficiencyRenderPass){let variants=efficiencyRenderPass.get(card);if(!variants)efficiencyRenderPass.set(card,variants=new Map());variants.set(passKey,entry);}
+    return entry.value;
+  };
   const observationDays = /^obs(7|30|90|200)$/.test(selectedScenario) ? Number(selectedScenario.slice(3)) : null;
   const key = JSON.stringify([mode,efficiencyDataKey(card),state.profitSearchBasis,state.currentMarketManualPrice,selectedBuy,state.efficiencyScenario,
     selectedBuy==='median' && [card.priceAggregation?.value,card.priceAggregation?.included,card.identityReviewRequired],
@@ -4018,7 +4038,7 @@ function cardEfficiency(card, now=Date.now(), mode=state.purchaseMode, selectedS
   const variantKey=selectedBuy+':'+selectedScenario;
   const periodCache = observationDays || selectedBuy!==state.efficiencyBuy ? observationEfficiencyCache.get(card) || new Map() : null;
   const cached = periodCache ? periodCache.get(variantKey) : efficiencyCache.get(card);
-  if (cached?.key === key && now < cached.expires) return cached.value;
+  if (cached?.key === key && now < cached.expires) return remember(cached);
   const capBasis = selectedBuy === 'current-cap' || selectedBuy === 'auto' && state.profitSearchBasis === 'current-cap';
   const targetBasis = selectedBuy === 'auto' && state.profitSearchBasis === 'current-target' && mode !== 'now';
   const manualBasis = selectedBuy === 'manual' || selectedBuy === 'auto' && mode === 'current-market' && state.currentMarketManualPrice != null;
@@ -4066,7 +4086,7 @@ function cardEfficiency(card, now=Date.now(), mode=state.purchaseMode, selectedS
   const entry={key,value:result,expires:Math.min(freshnessDeadline([card],now),average ? nextJstDay : Infinity,average?.expiresAt ?? Infinity,medianEvidence?.expiresAt ?? Infinity)};
   if(periodCache){periodCache.set(variantKey,entry);observationEfficiencyCache.set(card,periodCache);}
   else efficiencyCache.set(card,entry);
-  return result;
+  return remember(entry);
 }
 function efficiencySearchValue(row) {
   if (row.observation?.reference && !state.observationIncludeReference) return null;
@@ -5120,8 +5140,10 @@ let commitCardRows;
 function render() {
   // Scope search reuse to this synchronous render, including failure cleanup.
   const previous = renderMemo;
+  const previousEfficiency=efficiencyRenderPass;
+  efficiencyRenderPass=new WeakMap();
   renderMemo = new WeakMap();
-  try { return renderContent(); } finally { renderMemo = previous; }
+  try { return renderContent(); } finally { renderMemo = previous; efficiencyRenderPass=previousEfficiency; }
 }
 function renderContent() {
   commitCardRows ||= window.KeyedCardRenderer.create();
@@ -6173,7 +6195,13 @@ function syncFromUI(event) {
   }
   state.profitSearchBasis = document.getElementById("profitSearchBasisInput")?.value || "auto";
   for (const [,field,initial] of efficiencyFields) state[field] = document.getElementById(field+'Input') ? parseOptionalNumber(document.getElementById(field+'Input').value) : initial;
-  state.efficiencyBuy = document.getElementById('efficiencyBuyInput')?.value || 'auto';
+  state.efficiencyBuy = document.getElementById('efficiencyBuyInput')?.value || 'median';
+  if(event?.target?.id==='efficiencyBuyInput') {
+    try {
+      const migration=JSON.parse(localStorage.getItem(EFFICIENCY_BASIS_MIGRATION_KEY)||'{}');
+      localStorage.setItem(EFFICIENCY_BASIS_MIGRATION_KEY,JSON.stringify({...migration,status:'explicit-choice-retained',chosen:state.efficiencyBuy}));
+    } catch { /* A storage restriction must not alter the selected buying basis. */ }
+  }
   state.efficiencyScenario = document.getElementById('efficiencyScenarioInput')?.value || 'current';
   state.efficiencyIncludeReference = document.getElementById('efficiencyIncludeReferenceInput')?.checked === true;
   for (const [,field] of explorationFields) state[field] = parseOptionalNumber(document.getElementById(field+'Input')?.value);

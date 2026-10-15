@@ -21,7 +21,7 @@ probeButton.onclick=()=>setTimeout(async()=>{
   const samples=[];
   const initialMetrics=uiLoadMetrics.map(r=>({...r}));
   state.efficiencyMin=null;state.q='';state.purchaseMode='normal';state.catalogScope='analysis';state.visibleLimit=60;
-  state.diagnosticSearch=false;state.efficiencyScenario='current';
+  state.diagnosticSearch=false;state.efficiencyScenario='current';state.efficiencyBuy='median';
   state.profitSearchBasis='limit';state.includePeriodReference=true;
   for(const [key] of explorationFields) { const mapping=explorationFields.find(x=>x[0]===key);state[mapping[1]]=null; }
   Object.assign(state,{minRoi:null,minExpectedProfitFilter:null,minExpectedRoiFilter:null,minStressExpectedProfitFilter:null,minStressExpectedRoiFilter:null,
