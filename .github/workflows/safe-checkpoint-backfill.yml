@@ -62,6 +62,8 @@ jobs:
           node work/test_recovery_and_url_discovery.js
           node work/test_source_monitor_and_completion.js
           node work/test_source_access_display.js
+          node work/test_evidence_refresh.js
+          node work/build_psa9_provenance.js --verify
           node work/test_completion_routes.js
           node work/test_keyed_render_and_completion.js
           node work/test_acquisition_resilience.js

@@ -6,6 +6,10 @@ const OUTPUT = path.join(ROOT, "data", "update-status.json");
 const HISTORY_OUTPUT = path.join(ROOT, "data", "update-history.json");
 const { countCurrentRecords, psaAuthenticationRequired, taskStageFields } = require("./source_observability.js");
 const { sourceTiming } = require("./workflow_schedule.js");
+require('./quarantine_shop_identity').build(ROOT);
+require('./build_psa9_provenance').build(ROOT);
+require('./build_psa9_provenance').verify(ROOT);
+require('./build_linkage_evidence_audit').build(ROOT);
 
 function read(relativePath, fallback = {}) {
   try {
@@ -309,6 +313,8 @@ payload.unifiedMonitor = require("./source_monitor.js").build(ROOT, sources, pre
 payload.acquisitionResilience = require("./acquisition_resilience_audit.js").build(ROOT);
 payload.acquisitionResilience.psaOnly.cards = undefined;
 payload.taskOperations = require("./task_operations.js").build(ROOT, payload.unifiedMonitor.pc);
+payload.psa9Provenance = { ...read('data/psa9-provenance-audit.json'), inputs:undefined };
+payload.linkageEvidence = { ...read('data/linkage-evidence-audit.json'), inputs:undefined };
 require('./build_one_item_completion_audit.js').build(ROOT);
 payload.focusMonitor = require("./focus_monitor.js").write(ROOT);
   payload.priorityPriceMonitor = require("./priority_price_queue.js").write(ROOT);

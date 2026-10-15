@@ -114,13 +114,14 @@ function normalizeCardNumber(value) {
 function rarityFrom(value) {
   const source = String(value || "").normalize("NFKC").toUpperCase();
   const rarities = ["MUR", "SAR", "CSR", "CHR", "UR", "HR", "SR", "AR", "RRR", "RR", "PROMO", "H", "S", "R", "U", "C"];
-  return rarities.find((rarity) => new RegExp(`(?:^|[^A-Z])${rarity}(?:[^A-Z]|$)`).test(source)) || "";
+  return rarities.find((rarity) => new RegExp(`(?:^|[^A-Z0-9])${rarity}(?:[^A-Z0-9]|$)`).test(source)) || "";
 }
 
 function variantFrom(value) {
   const source = String(value || "").normalize("NFKC").toLowerCase();
   const variants = [];
   if (/マスターボール|master\s*ball/.test(source)) variants.push("masterball");
+  else if (/モンスターボール|monster\s*ball|poke\s*ball/.test(source)) variants.push("monsterball");
   else if (/ミラー|mirror/.test(source)) variants.push("mirror");
   if (/(?:^|[^a-z])sa(?:[^a-z]|$)|スペシャルアート/.test(source)) variants.push("sa");
   if (/1\s*ed|1st/.test(source)) variants.push("1ed");
@@ -130,11 +131,11 @@ function variantFrom(value) {
 }
 
 function extractIdentity(input) {
-  const source = typeof input === "object" && input ? `${input.name || input.title || ""} ${input.model || ""}` : String(input || "");
+  const source = normalizeWidth(typeof input === "object" && input ? `${input.name || input.title || ""} ${input.model || ""}` : String(input || "")).replace(/[〈＜]/g,'<').replace(/[〉＞]/g,'>');
   const bracket = source.match(/\[\s*([A-Za-z0-9+-]+)\s+(\d{1,4}(?:-\d{1,4})?\/\d{1,4})\s*\]/);
   const reversePromo = source.match(/\[\s*(\d{1,4})\s+([A-Za-z0-9]+-P)\s*\]/i);
   const braces = source.match(/[<{]\s*(\d{1,4}(?:-\d{1,4})?\/\d{1,4})\s*[>}]\s*\[\s*([A-Za-z0-9+-]+)\s*\]/);
-  const setCode = normalizeSetCode(reversePromo?.[2] || bracket?.[1] || braces?.[2] || input?.setCode || "");
+  const setCode = normalizeSetCode(reversePromo?.[2] || bracket?.[1] || braces?.[2] || input?.setCode || source.match(/\[([A-Za-z0-9+-]*\d[A-Za-z0-9+-]*)\]/)?.[1] || "");
   const cardNumber = normalizeCardNumber(reversePromo ? `${reversePromo[1]}-${reversePromo[2]}` : bracket?.[2] || braces?.[1] || input?.cardNo || input?.model || source);
   const rarity = rarityFrom(input?.rarity || source);
   const variant = variantFrom(`${input?.variant || ""} ${source}`);
@@ -154,7 +155,13 @@ function compareIdentity(leftInput, rightInput) {
   if (left.variant && right.variant && left.variant !== right.variant) reasons.push("絵柄・仕様違い");
   const nameCompatible = !left.baseName || !right.baseName || left.baseName === right.baseName || left.baseName.includes(right.baseName) || right.baseName.includes(left.baseName);
   if (!nameCompatible) reasons.push("カード名違い");
-  const hardMismatch = reasons.some((reason) => reason.includes("番号違い") || reason.includes("仕様違い"));
+  const label=input=>typeof input==='object'?`${input?.name || input?.title || ''} ${input?.language || ''}`:String(input || '');
+  const lang=input=>['ja','en','ko','zh','id'].includes(input?.language)?input.language:extractLanguage(label(input));
+  const language=lang(leftInput),otherLanguage=lang(rightInput);
+  if(language!==otherLanguage)reasons.push('言語違い');
+  const grade=text=>String(text).match(/(?:PSA|BGS|CGC|ARS|ACE)\s*\d+(?:\.\d+)?/i)?.[0]?.replace(/\s/g,'').toUpperCase() || 'raw';
+  if(grade(label(leftInput))!==grade(label(rightInput)))reasons.push('素体・鑑定品グレード違い');
+  const hardMismatch = reasons.some((reason) => /番号違い|仕様違い|言語違い|グレード違い/.test(reason));
   let score = 0;
   if (left.setCode && left.setCode === right.setCode) score += 35;
   if (left.cardNumber && left.cardNumber === right.cardNumber) score += 45;

@@ -24,11 +24,12 @@ function snapshot(root, now = Date.now()) {
   const fresh = (date) => { const at = observationTime(date); return Number.isFinite(at) && at <= now && now - at <= 48 * 3600000; };
   for (const id of ids) rows[id] = { analysis: completion.cards?.[id]?.s === "分析可能", fields: Object.entries(completion.cards?.[id]?.i || {}).filter(([, s]) => s === "取得済み").map(([k]) => k), sources: {} };
   for (const s of shops) for (const row of catalogs[s]) {
-    const id = row.cardId || (s === "cardrush" ? cardrushIds.get(row.detailUrl) : null);
+    const id = row.cardId || row.quarantinedCardId || (s === "cardrush" ? cardrushIds.get(row.detailUrl) : null);
     if (!rows[id]) continue;
-    const v = Number.isFinite(Number(row.price)) && Number(row.price) > 0 && !row.priceQuarantined;
+    const linked=require('./quarantine_shop_identity').identityUsable(row);
+    const v = linked && Number.isFinite(Number(row.price)) && Number(row.price) > 0 && !row.priceQuarantined;
     const old = rows[id].sources[s];
-    rows[id].sources[s] = { linked: true, valid: Boolean(v || old?.valid), fresh: Boolean(v && fresh(row.observedAt) || old?.fresh) };
+    rows[id].sources[s] = { linked: Boolean(linked || old?.linked), valid: Boolean(v || old?.valid), fresh: Boolean(v && fresh(row.observedAt) || old?.fresh) };
   }
   for (const [id, row] of Object.entries(psa)) if (rows[id]) rows[id].sources.psaOfficial = { linked: true, valid: Number.isFinite(row.rate) && row.total > 0, fresh: fresh(row.f) };
   for (const set of poke.sets || []) for (const id of Array.isArray(set.localCardIds) ? set.localCardIds : String(set.localCardIds || "").split(/\s+/)) if (rows[id]) rows[id].sources.pokedata = { linked: true, valid: false, fresh: false };
@@ -40,11 +41,12 @@ function snapshot(root, now = Date.now()) {
       rows[id].sources.pokedata.fresh = valid && fresh(sale.capturedAt);
     }
   }
-  return { at: new Date(now).toISOString(), schemaVersion: 2, fieldKeys, rows };
+  return { at: new Date(now).toISOString(), schemaVersion: 3, fieldKeys, rows };
 }
 function compare(before, after) {
   if (!before) return null;
   const out = { baselineAt: before.at, commonCards: 0, addedCards: 0, removedCards: 0, newlyAnalyzable: 0, lostAnalyzable: 0, filledCards: 0, filledItems: 0, sources: {} };
+  if((before.schemaVersion || 1)<3)out.validityDefinitionNote='明示的な仕様不一致の隔離を有効値/紐付け集計にも反映。減少は価格下落・取得失敗と同義ではない';
   for (const [id, row] of Object.entries(after.rows)) {
     const old = before.rows[id];
     if (!old) { out.addedCards++; continue; }

@@ -1,0 +1,28 @@
+{
+  "version":1,
+  "evaluationAt":"2026-10-15T18:30:00Z",
+  "baselineCode":"ab025c84",
+  "visibleCards":60,
+  "repetitions":3,
+  "sameDataAndSettings":true,
+  "allFourPairsCandidateIdsEqual":true,
+  "allFourPairsFinancialHashesEqual":true,
+  "allFourPairsInitialBytesEqual":true,
+  "normalFinancialHash":"7fca17140edbd512c39e0abff29788a121ed87a7584ffd7661ce3fb487d9b602",
+  "doubleFinancialHash":"67fd777fa030dfd4d6c2493206b401481b4e833efbeb38db92fcfb6af07fd62e",
+  "rows":[
+    {"width":1440,"scale":1,"analyzed":2262,"initialJsonBytes":17137646,"transferBytes":2665821,"before":{"parse":61.6,"decode":236.8,"calculation":[898.6,656.3,604.8],"searchDom":[357.8,165.5,152.9],"conditionDom":[23.4,20.9,17.9],"detail":[26.6,23.1,23.3]},"after":{"parse":66.2,"decode":242.9,"calculation":[800,630.2,662.8],"searchDom":[340.7,156.9,152.9],"conditionDom":[24.2,18.7,23.2],"detail":[27.3,24.9,23.8]}},
+    {"width":1440,"scale":2,"analyzed":4524,"initialJsonBytes":31527383,"transferBytes":4457698,"before":{"parse":138.9,"decode":486.4,"calculation":[1441,1229.1,1159.4],"searchDom":[479.5,305.9,287.4],"conditionDom":[27.4,25.5,21.9],"detail":[35.2,30,26.8]},"after":{"parse":139.9,"decode":456,"calculation":[1641,1278.6,1180.9],"searchDom":[491.6,309.9,308],"conditionDom":[31.9,25.9,22.6],"detail":[37.2,28.8,27.4]}},
+    {"width":390,"scale":1,"analyzed":2262,"initialJsonBytes":17137646,"transferBytes":2665821,"before":{"parse":69.4,"decode":253.5,"calculation":[827.8,668.5,612.2],"searchDom":[343,160.9,161.2],"conditionDom":[24.3,22,24.2],"detail":[28.6,23.1,24.6]},"after":{"parse":64.1,"decode":252.4,"calculation":[830.9,657.9,596.8],"searchDom":[346,162.7,153.9],"conditionDom":[23.6,21.6,16.7],"detail":[27.9,23.1,21.3]}},
+    {"width":390,"scale":2,"analyzed":4524,"initialJsonBytes":31527383,"transferBytes":4457698,"before":{"parse":132.9,"decode":467.9,"calculation":[1548.3,1263.5,1255.5],"searchDom":[479.9,378.3,288],"conditionDom":[26.6,26.8,23.9],"detail":[35.6,33.2,28.6]},"after":{"parse":138.6,"decode":434.9,"calculation":[1522.2,1259.2,1171.8],"searchDom":[502,285.4,293.7],"conditionDom":[25.8,22.1,31.4],"detail":[35.9,31.1,37]}}
+  ],
+  "conditionCalculationMsRange":[0,0.2],
+  "notes":[
+    "Local gzip data traffic includes one explicit detail expansion; it is not pure first paint or physical-mobile performance.",
+    "The first PC pair overlapped background report generation and was discarded; adopted pairs ran without that workload.",
+    "Large audit and provenance detail files are not added to production initial requests; long-history detail remains lazy.",
+    "Median recomputation intentionally changes median-basis qualification; this broad benchmark has efficiency filtering disabled and validates financial/GO/visible-ID preservation.",
+    "The PC-double full calculation and detail phases remain expensive. Mobile-double improvement includes baseline variability and is not proof of structural speedup."
+  ],
+  "temporaryViewportReset":true
+}

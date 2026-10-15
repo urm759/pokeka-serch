@@ -4,6 +4,7 @@
   else root.ExplorationMetrics = api;
 })(typeof window === 'object' ? window : globalThis, function() {
   const finite = n => typeof n === 'number' && Number.isFinite(n);
+  const referenceMedianCache=new WeakMap();
   function percent(numerator, denominator) {
     return finite(numerator) && finite(denominator) && denominator > 0 ? (numerator / denominator - 1) * 100 : null;
   }
@@ -16,7 +17,14 @@
     return offer?.available === true && offer?.fresh === true && finite(offer.value) && offer.value > 0 && age >= 0 && age <= 48 && stockAge >= 0 && stockAge <= 48 ? offer.value : null;
   }
   function referenceMedian(card, now=Date.now()) {
-    const a=card.priceAggregation || {},rows=a.included || [],reasons=[],warnings=[],origins=new Set();
+    const a=card.priceAggregation || {},allRows=a.included || [],reasons=[],warnings=[],origins=new Set();
+    const cacheKey=JSON.stringify([allRows.map(r=>[r.value,r.updatedAt,r.url,r.valid,r.conditionAccepted,r.upstreamSource,r.originId,r.merchantId]),a.value,a.conflicted,card.priceIntegrity?.disputed,card.identityReviewRequired,card.dataQuality?.manualReview,card.dataQuality?.dataAnomaly]);
+    const cached=referenceMedianCache.get(a);
+    if(cached?.key===cacheKey&&now>=cached.at&&now<=cached.expires)return cached.result;
+    const freshAt=r=>typeof r.updatedAt==='string'&&r.updatedAt.includes('T')&&Number.isFinite(Date.parse(r.updatedAt))&&Date.parse(r.updatedAt)<=now&&now-Date.parse(r.updatedAt)<=48*3600000;
+    // Keep historical quotes in the original aggregation. Only this independent
+    // exploration basis is rebuilt; purchase limits and GO retain their inputs.
+    const omitted=allRows.filter(r=>!freshAt(r)),rows=allRows.filter(freshAt);
     let independent=0,unknown=0,expiresAt=Infinity;
     const evidence=rows.map(r=>{
       let host='';try{host=new URL(r.url).hostname.toLowerCase().replace(/^www\./,'');}catch{}
@@ -30,14 +38,21 @@
       else unknown++;
       return {source:r.source,origin:origin || null,url:r.url || null,price:r.value,observedAt:r.updatedAt || null,fresh,kind:r.kind || '価格区分未確認'};
     });
-    if(!(finite(a.value)&&a.value>0)||!rows.length)reasons.push('素体参考中央値未取得');
+    if(!rows.length)reasons.push(allRows.length?'中央値の採用価格に古値・日時不明あり':'素体参考中央値未取得');
+    if(omitted.length)warnings.push(`古値・日時不明${omitted.length}元を参考中央値から除外・原価格と日時は履歴保持`);
+    if(allRows.length>1&&rows.length<2)reasons.push('新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない');
     if(a.conflicted||card.priceIntegrity?.disputed||card.identityReviewRequired||card.dataQuality?.manualReview||card.dataQuality?.dataAnomaly)reasons.push('中央値の価格対立・仕様照合保留');
     if(rows.length===1)warnings.push('単一ソース参考');
     if(unknown)warnings.push('集計元の内訳・独立性未確認'+unknown+'元（独立店舗数に加算しない）');
     warnings.push('中央値で実際に購入できるとは限らない・購入GOとは別');
-    return {value:reasons.length?null:a.value,displayValue:finite(a.value)?a.value:null,count:rows.length,independent,unknown,
+    const sorted=rows.map(r=>r.value).filter(v=>finite(v)&&v>0).sort((x,y)=>x-y),n=sorted.length;
+    const rebuilt=n?(sorted[Math.floor(n/2)]+sorted[Math.floor((n-1)/2)])/2:null;
+    const result={value:reasons.length?null:rebuilt,displayValue:rebuilt,historicalValue:finite(a.value)?a.value:null,count:rows.length,independent,unknown,
       min:rows.length?Math.min(...rows.map(r=>r.value)):null,max:rows.length?Math.max(...rows.map(r=>r.value)):null,
-      rows:evidence,reasons:[...new Set(reasons)],warnings,reference:true,expiresAt};
+      rows:evidence,omitted:omitted.map(r=>({source:r.source,url:r.url || null,price:r.value,observedAt:r.updatedAt || null,reason:'古値・日時不明・参考中央値不採用'})),reasons:[...new Set(reasons)],warnings,reference:true,expiresAt};
+    const future=allRows.map(r=>Date.parse(r.updatedAt)).filter(t=>Number.isFinite(t)&&t>now);
+    referenceMedianCache.set(a,{key:cacheKey,at:now,expires:Math.min(expiresAt,...future.map(t=>t-1)),result});
+    return result;
   }
   function meanSale(mean, buy, fee, feeRate, extra) {
     if (![mean,buy,fee,feeRate,extra].every(finite) || mean <= 0 || buy < 0 || fee < 0 || extra < 0 || feeRate < 0 || feeRate >= 100 || buy + fee <= 0) return {net:null,profit:null,roi:null};

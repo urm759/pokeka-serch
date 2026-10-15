@@ -46,7 +46,7 @@ function load(appSource, at, options = {}) {
   };
   const dataFs={...fs,existsSync:file=>{const value=historical(file);return value===null?fs.existsSync(file):value!==false;},
     readFileSync:(file,encoding)=>{const value=historical(file);if(value===false)throw Error(`Historical input missing: ${file}`);return value===null?fs.readFileSync(file,encoding):encoding?value.toString(encoding):value;}};
-  const auditRequire=name=>['fs','node:fs'].includes(name)?dataFs:require(name);
+  const auditRequire=name=>['fs','node:fs'].includes(name)?dataFs:options.explorationMetrics && /exploration-metrics/.test(name)?options.explorationMetrics:require(name);
   const api=new Function('require','__dirname','appSource','specifiedUrl','inputElements','FixedDate','process', prefix + tail)(auditRequire,__dirname,appSource,options.url || specifiedUrl,inputElements,FixedDate,{env:{}});
   api.missingHistoricalInputs=missing;
   return api;

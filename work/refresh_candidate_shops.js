@@ -32,6 +32,7 @@ function issueCompatible(card, title) {
 function exactIdentity(card, product) {
   const name = String(product.title || "").replace(/〔/g, "【").replace(/〕/g, "】");
   if (!issueCompatible(card,name)) return false;
+  if(require('./quarantine_shop_identity').reason(card,name))return false;
   if (/PSA|BGS|CGC|TAG|ACE|英語版|韓国版|未開封|セット商品/i.test(name) || stateFromTitle(name) !== "A") return false;
   const promo = name.match(/〈\s*(\d+)\s*\/\s*((?:SM|SV|S|XY|BW)-P)\s*〉\s*\[([^\]]+)\]/i);
   if (promo && /\(PROMO\)/i.test(name)) {
@@ -193,13 +194,13 @@ async function main() {
       let entry = byId.get(card.id);
       const oldPrice = entry?.price ?? null, oldStock = entry?.stock ?? null;
       if (!entry) { entry = { cardId: card.id, detailUrl: url }; catalog.push(entry); byId.set(card.id, entry); byUrl.set(url, entry); run.newAcquiredCount += 1; }
-      Object.assign(entry, { cardId: card.id, detailUrl: url, name, ...quote, state: "A", observedAt: run.endedAt = new Date().toISOString(), identityVerifiedAt: new Date().toISOString() });
+      Object.assign(entry, { cardId: card.id, detailUrl: url, name, ...quote, state: "A", observedAt: run.endedAt = new Date().toISOString(), identityVerifiedAt: new Date().toISOString(), identityVerified:true,cardMismatchSuspected:false,matchStatus:'verified',identityHoldReason:null });
       const previous = summary.cards?.[card.id] || {};
       summary.cards ||= {};
       summary.cards[card.id] = { ...previous, [`${sourceId}Price`]: quote.price, stock: quote.stock, available: quote.available,
         observedAt: entry.observedAt, updatedAt: entry.observedAt,
         priceObservedAt: entry.observedAt, inventoryObservedAt: entry.observedAt,
-        conditionAccepted: true, identityVerifiedAt: entry.identityVerifiedAt };
+        conditionAccepted: true, identityVerifiedAt: entry.identityVerifiedAt,identityVerified:true,cardMismatchSuspected:false,matchStatus:'verified',identityHoldReason:null };
       // Do not fabricate a quantity from the boolean 'available' field.
       if (Number.isFinite(quote.stock)) {
         if (!history.dates.includes(today)) { history.dates.push(today); for (const values of Object.values(history.stocks)) values.push(null); }

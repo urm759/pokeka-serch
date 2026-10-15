@@ -555,6 +555,7 @@ function campSignature(product) {
 }
 function campMatchesCard(card, product) {
   const signature = cardSignature(card); const productSig = campSignature(product);
+  if(require('./quarantine_shop_identity').reason(card,productSig.title))return false;
   if (/\b(?:PSA|BGS|CGC)\s*\d+|鑑定品/i.test(productSig.title)) return false;
   if (!titleMatches(card, productSig.title, productSig.cardNo)) return false;
   // Product titles are not a reliable substitute for a set code. Requiring a
@@ -589,6 +590,7 @@ function parseProductSitemap(xml) {
 
 function preferCampEntry(previous, candidate) {
   if (!previous) return candidate;
+  if(Boolean(previous.cardMismatchSuspected)!==Boolean(candidate.cardMismatchSuspected))return candidate.cardMismatchSuspected?previous:candidate;
   if (previous.detailUrl === candidate.detailUrl) return candidate;
   if (previous.priceQuarantined !== candidate.priceQuarantined) return candidate.priceQuarantined ? previous : candidate;
   if (candidate.available !== previous.available) return candidate.available ? candidate : previous;
@@ -921,7 +923,10 @@ async function updateTorecaCamp(cards, paths) {
     availabilityLabel: entry.available ? "在庫あり" : "在庫なし",
     detailUrl: entry.detailUrl || null,
     observedAt: entry.observedAt || null,
-    identityVerified: Boolean(entry.cardId),
+    identityVerified: Boolean(entry.cardId) && !entry.cardMismatchSuspected,
+    cardMismatchSuspected: entry.cardMismatchSuspected === true,
+    matchStatus: entry.matchStatus || null,
+    identityHoldReason: entry.identityHoldReason || null,
     priceQuarantined: entry.priceQuarantined === true,
     quarantineReason: entry.quarantineReason || null,
     marketPriceRatio: Number.isFinite(entry.marketPriceRatio) ? entry.marketPriceRatio : null,

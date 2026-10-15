@@ -182,7 +182,7 @@ function main() {
     const shopFound = Boolean(card.cardrushUrl || card.hareruya2Url || card.yuyuteiUrl || card.torecacampUrl || cardrush.cards?.[id] || hareruya2.cards?.[id] || yuyutei.cards?.[id] || torecacamp.cards?.[id]);
     const shopValue = [cardrush, hareruya2, yuyutei, torecacamp].some((source) => {
       const row = source.cards?.[id];
-      return row && !row.priceQuarantined && [row.price, row.cardrushPrice, row.hareruya2Price, row.yuyuteiPrice, row.torecacampPrice].some((value) => finite(value) && value > 0);
+      return require('./quarantine_shop_identity').identityUsable(row) && !row.priceQuarantined && row.conditionAccepted!==false && [row.price, row.cardrushPrice, row.hareruya2Price, row.yuyuteiPrice, row.torecacampPrice].some((value) => finite(value) && value > 0);
     });
     const buybackRow = buyback.cards?.[id];
     const efficiencyEvidence = require('./efficiency_evidence_queue').requirements(card,buybackRow,Date.parse(generatedAt));

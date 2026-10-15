@@ -23,7 +23,7 @@
       setCode: promo?.[2] || standard?.[1] || card.setCode || "",
       number: promo?.[1] || standard?.[2] || "",
       rarity: card.rarity || name.match(/\b(MUR|BWR|SAR|SSR|CSR|CHR|RRR|SR|UR|HR|AR|RR|PR|R|U|C|H|P)\b/i)?.[1] || "",
-      variant: /マスターボール/i.test(name) ? "masterball" : /モンスターボール/i.test(name) ? "monsterball" : /ミラー/i.test(name) ? "mirror" : "normal",
+      variant: /マスターボール/i.test(name) ? "masterball" : /モンスターボール/i.test(name) ? "monsterball" : /ミラー/i.test(name) ? "mirror" : /(?:[:：]|\s)SA\b/i.test(name) ? "sa" : "normal",
       language: card.language || "ja",
     };
   }
