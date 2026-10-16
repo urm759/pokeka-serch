@@ -18,6 +18,7 @@ function joined(observations, history, cards, source, now = Date.now()) {
       const prices = new Map((history.cards?.[id] || []).map(row => [row[0], row]));
       for (const [date, quote] of Object.entries(dates)) {
         const point = prices.get(date), observed = point?.[10];
+        if (quote.quarantined || quote.cardMismatchSuspected || quote.matchStatus === 'mismatch') { reject('買取原票の仕様・価格保留'); continue; }
         if (quote.identityAuditVersion !== 3 || quote.identity !== card.identityKey || quote.grade !== 'PSA10' || quote.currency !== 'JPY'
           || evidence.calendarDay(quote.observedAt) !== date || Date.parse(quote.observedAt) > now || !Number.isFinite(quote.price) || !(quote.price > 0)) { reject('買取の仕様・日付・価格証拠不足'); continue; }
         if (constrained(quote)) { reject('キャンペーン・数量・条件付き提示'); continue; }

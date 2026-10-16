@@ -25,7 +25,10 @@ function eligibleForHareru(candidates, catalog, now = Date.now(), requested = ne
     if(job?.url===r.card.hareruya2Url&&Number.isFinite(at)&&at>now)return false;
     const previous = byId.get(r.card.id);
     const observed = Date.parse(previous?.observedAt || "");
-    return r.detail && (needs(r.detail, "shopStateA") || requested.has(r.card.id)) && r.card.hareruya2Url && !(Number(previous?.price) > 0 && observed <= now && now - observed < 2 * 86400000);
+    const usable = require('./quarantine_shop_identity').identityUsable(previous)
+      && !previous?.priceQuarantined && (!previous?.detailUrl || previous.detailUrl === r.card.hareruya2Url);
+    return r.detail && (needs(r.detail, "shopStateA") || requested.has(r.card.id)) && r.card.hareruya2Url
+      && !(usable && Number(previous?.price) > 0 && observed <= now && now - observed < 2 * 86400000);
   });
 }
 function run() {

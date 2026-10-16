@@ -103,6 +103,7 @@ jobs:
           node work/build_psa9_provenance.js --verify
           node work/test_median_primary.js
           node work/test_supply_demand_validation.js
+          node work/test_research_evidence_gate.js
           node work/test_period_efficiency_average.js
           node work/test_search_profile_cycle.js
           node work/test_profile_completion_routes.js

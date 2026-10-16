@@ -33,6 +33,7 @@ function strata(r) {
 function capture(root,now=new Date()) {
   const cards=read(root,'data/pokemon-cards.json',[]),receipt=read(root,'data/psa10-observation-receipt.json');
   const periods=read(root,'data/psa10-period-summary.json'),buyback=read(root,'data/buyback-observation-summary.json');
+  const buybackRaw=read(root,'work/buyback-price-observations.json');
   const population=read(root,'data/psa-population-summary.json'),historyCache=new Map();
   const releases=new Map((read(root,'data/card-catalog/index.json').cards||[]).map(c=>[c.id,c.releaseDate]));
   const fixed=read(root,'work/fixed-price-reference.json');
@@ -78,6 +79,8 @@ function capture(root,now=new Date()) {
         market:fixed.asOfDate===day?{asOf:fixed.asOfDate,baseline:fixed.baselineDate,cohortHash:hash(fixed.cohort || []),method:fixed.cohortMethod}:null}};
     saved.cards[c.id]={id:c.id,identity:c.identityKey,physicalIdentity:require('./build_buyback_support').physicalKey(c),price:row[1],observedAt:receipt.observedAt,availableAt:now.toISOString(),
       source:receipt.sourceUrl,receiptHash:receipt.payloadHash,features:feature,
+      featureEvidence:{buyback:s.rows.filter(r=>r.valid).map(r=>({shop:r.shop,day:r.date,observedAt:r.at,
+        price:r.price,url:buybackRaw.shops?.[r.shop]?.[c.id]?.[r.date]?.url || null}))},
       unavailableFeatures:['人気分類の正規根拠','当時の再販確認','固定群市場30日変化'],
       note:'国内集計価格・取引と世界POPの範囲差あり。取引は新供給吸収数ではない。新紐付けの累計POPを増分にしない'};
     added++;
@@ -150,15 +153,19 @@ function validate(rows,days,now=Date.now()) {
     predictions};
 }
 function build(root=ROOT,now=new Date()) {
-  const captured=capture(root,now),dir=path.join(root,'data/research-supply-demand/days'),rows=[];
-  if(fs.existsSync(dir))for(const file of fs.readdirSync(dir).filter(n=>/^\d{4}-\d{2}-\d{2}\.json$/.test(n)).sort())rows.push(...Object.values(readDay(root,'data/research-supply-demand/days/'+file).cards||{}));
-  const algorithmHash=crypto.createHash('sha256').update(fs.readFileSync(__filename,'utf8').replace(/\r\n/g,'\n')).digest('hex');
+  const captured=capture(root,now),dir=path.join(root,'data/research-supply-demand/days'),rawRows=[];
+  if(fs.existsSync(dir))for(const file of fs.readdirSync(dir).filter(n=>/^\d{4}-\d{2}-\d{2}\.json$/.test(n)).sort())rawRows.push(...Object.values(readDay(root,'data/research-supply-demand/days/'+file).cards||{}));
+  const gate=require('./research_evidence_gate'),checked=gate.filter(rawRows,gate.load(root)),rows=checked.rows;
+  const evidenceHash=hash(checked.details);
+  const algorithmHash=crypto.createHash('sha256').update([__filename,path.join(__dirname,'research_evidence_gate.js')]
+    .map(f=>fs.readFileSync(f,'utf8').replace(/\r\n/g,'\n')).join('\n')).digest('hex');
   const old=read(root,'data/supply-demand-validation-summary.json'),inputHash=hash(rows),inputChanged=old.inputHash!==inputHash;
   const algorithmChanged=old.algorithmHash!==algorithmHash;
   const lastValidationAt=old.lastValidationAt || old.trainedAt || null;
   const intervalDue=!lastValidationAt || +now-Date.parse(lastValidationAt)>=7*DAY;
   // A calendar tick alone creates neither observations nor future outcomes.
-  const due=algorithmChanged || intervalDue && inputChanged;
+  const evidenceChanged=old.evidenceGate?.hash!==evidenceHash;
+  const due=algorithmChanged || evidenceChanged || intervalDue && inputChanged;
   const oldCounts=old.availableLabelCounts || Object.fromEntries((old.horizons||[]).map(h=>[h.days,h.labelled]));
   const samples=due || inputChanged ? HORIZONS.map(days=>({days,sample:nonoverlapping(labels(rows,days,+now))})) : null;
   const counts=samples?Object.fromEntries(samples.map(r=>[r.days,r.sample.length])):oldCounts;
@@ -170,7 +177,8 @@ function build(root=ROOT,now=new Date()) {
   const trainedAt=established?now.toISOString():due?null:previousFit?old.trainedAt:null;
   const summary={version:2,candidateVersion:VERSION,algorithmHash,asOf:now.toISOString(),trainedAt,
     lastValidationAt:due?now.toISOString():lastValidationAt,
-    execution:{attemptedAt:now.toISOString(),validationExecuted:due,inputChanged,algorithmChanged,intervalDue,
+    evidenceGate:{...checked.summary,hash:evidenceHash,detailFile:'data/supply-demand-evidence-audit.json'},
+    execution:{attemptedAt:now.toISOString(),validationExecuted:due,inputChanged,algorithmChanged,intervalDue,evidenceChanged,
       newObservations:Math.max(0,rows.length-Number(old.storedObservations||0)),
       newLabels:Object.fromEntries(HORIZONS.map(h=>[h,Math.max(0,(counts[h]||0)-(oldCounts[h]||0))])),
       reason:due?'候補検証を実行・有効学習/改善は別集計':!inputChanged?'同一入力・新しい観測/将来結果なし・再学習省略':'新観測を保存・7日間隔待ち'},
@@ -193,6 +201,7 @@ function build(root=ROOT,now=new Date()) {
     limitations:['国内取引と世界POPは範囲差・再売買あり','価格予測であり返却時の手数料込み損益検証とは別','人気/再販/市場分類は根拠付き入力が未接続・null','旧候補モデルの検証完了を意味しない'],
     detailFile:'data/supply-demand-validation-details.json',llmCalls:0,codexCalls:0};
   if(due)write(root,'data/supply-demand-validation-details.json',{version:2,algorithmHash,validatedAt:summary.lastValidationAt,trainedAt:summary.trainedAt,horizons:details});
+  write(root,'data/supply-demand-evidence-audit.json',{version:1,...checked.summary,...checked.details});
   if(established)write(root,'data/research-supply-demand/models/'+summary.modelHash+'.json',{version:VERSION,algorithmHash,trainedAt:summary.trainedAt,inputHash:summary.inputHash,horizons:eligibleTraining});
   write(root,'data/supply-demand-validation-summary.json',summary);return summary;
 }

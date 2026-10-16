@@ -9,6 +9,12 @@ const now = Date.parse("2026-10-06T04:00:00Z");
 const rows = [{ card: { id: "psaOnly", hareruya2Url: "https://shop.example/1" }, detail: { m: ["psaOfficial"], i: { shopStateA: ["取得済み"], psaOfficial: ["取得待ち"] } } },
   { card: { id: "shopMissing", hareruya2Url: "https://shop.example/2" }, detail: { m: [], i: { shopStateA: ["取得待ち"] } } }];
 assert.deepEqual(eligibleForHareru(rows, [], now).map((r) => r.card.id), ["shopMissing"]);
+const cached = { cardId: 'shopMissing', detailUrl: rows[1].card.hareruya2Url, price: 1000, observedAt: new Date(now - 1000).toISOString() };
+assert.equal(eligibleForHareru(rows, [cached], now).length, 0, 'valid fresh prices do not consume the missing-data budget again');
+assert.equal(eligibleForHareru(rows, [{...cached, cardMismatchSuspected:true}], now).length, 1, 'quarantined prices are not valid cache hits');
+assert.equal(eligibleForHareru(rows, [{...cached, priceQuarantined:true}], now).length, 1);
+assert.equal(eligibleForHareru(rows, [{...cached, detailUrl:'https://old.example/1'}], now).length, 1, 'a different saved URL does not prove this URL was verified');
+assert.equal(eligibleForHareru(rows, [], now, new Set(), {sourceBlocked:'HTTP 403'}).length, 0);
 assert(routes(rows[0].detail).some((r) => r.key === "psaOfficial" && r.source === "psaOfficial"));
 assert(!routes(rows[0].detail).some((r) => r.key === "shopStateA"));
 assert.equal(routes({pk:"unexpanded-set", i:{pokedata:["取得待ち"]}}).find(r=>r.key==="pokedata").mode, "自動巡回中");
