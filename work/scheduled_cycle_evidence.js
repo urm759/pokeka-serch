@@ -46,6 +46,7 @@ function record(key,root=ROOT) {
   if(fs.existsSync(path.join(root,'data/priority-price-monitor.json')))files.push('data/priority-price-monitor.json');
   const optional=f=>{try{return read(f);}catch{return null;}};
   if(optional('data/search-profile-cycle-progress.json'))files.push('data/search-profile-cycle-progress.json');
+  if(optional('data/priority-search-profile-audit.json'))files.push('data/priority-search-profile-audit.json');
   for(const file of ['data/supply-demand-validation-summary.json','data/supply-demand-validation-details.json'])if(optional(file))files.push(file);
   const monitorSources=optional('data/priority-price-monitor.json')?.sources||{};
   const cardObservations=Object.fromEntries(Object.entries(monitorSources).map(([id,source])=>[id,
@@ -75,6 +76,7 @@ function record(key,root=ROOT) {
       fixedCohortFreshness:{before:before?.fixedCohorts||null,after:optional('data/priority-price-monitor.json')?.fixedCohortFreshness||null},
       sources:Object.fromEntries(Object.entries(progress.sources||{}).map(([k,v])=>[k,{newLinked:v.newLinked,usableNet:v.usableNet,freshUsableAdded:v.freshUsableAdded,lastSuccessAt:v.lastSuccessAt}]))},
     checkpoints:{safe:optional('work/safe-backfill-progress.json'),pokedata:optional('data/pokedata-manifest.json')?.sets?.map(s=>({name:s.name,count:s.count,status:s.status})),
+      profileRecovery:optional('work/search-profile-targets.json')?.repairRequests||[],
       priority:optional('data/priority-price-execution.json')?.runs?.map(r=>({script:r.script,status:r.status,attempted:r.attempted,changed:r.changed}))},
     llmCalls:0,codexCalls:0};
   fs.writeFileSync(file,JSON.stringify(previous));

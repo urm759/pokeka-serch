@@ -6,9 +6,11 @@ function cardFacts(api,card) {
     const r=api.state[source+'Stock']?.[card.id];if(!r)continue;
     sources[source]={price:r[source+'Price']??r.price??null,stock:r.stock??null,available:r.available??null,
       priceObservedAt:r.priceObservedAt||r.observedAt||r.updatedAt||null,
-      inventoryObservedAt:r.inventoryObservedAt||r.observedAt||r.updatedAt||null};
+      inventoryObservedAt:r.inventoryObservedAt||r.observedAt||r.updatedAt||null,
+      sourceFailure:api.state.updateStatus?.sources?.[source]?.lastError||null};
   }
-  return {referencePrice:number(card.price),psa10:number(card.psa10),purchase:offer?{
+  const review=card.priceAggregation?.comparison || card.priceAggregation || {};
+  return {identityKey:card.identityKey||null,referencePrice:number(card.price),psa10:number(card.psa10),purchase:offer?{
     price:number(offer.value),source:offer.source,available:offer.available,fresh:offer.fresh,
     priceObservedAt:offer.updatedAt||null,inventoryObservedAt:offer.inventoryAt||null,stock:offer.stock??null,
     reason:offer.purchaseReason||null,url:offer.url||null}:null,sourceQuotes:sources,
@@ -20,6 +22,12 @@ function cardFacts(api,card) {
       priceDate:r.priceDate||null,observedAt:r.observedAt||r.updatedAt||null,valid:r.valid,stale:r.stale,
       listingActive:r.listingActive,reason:r.reason||null})),
     specificationHeld:Boolean(api.state.psaSpecificationHeld?.[card.id]),dataQuality:card.dataQuality,
+    priceReview:{conflicted:Boolean(review.conflicted),integrityDisputed:Boolean(card.priceIntegrity?.disputed),
+      manualReview:Boolean(card.dataQuality?.manualReview),reasons:review.reasons||[],
+      sources:[...(review.included||[]),...(review.excluded||[])].map(r=>({source:r.source,url:r.url||null,value:r.value??r.price??null,at:r.updatedAt||r.observedAt||null,reason:r.reason||null}))},
+    medianEvidence:{reasons:eff.medianEvidence?.reasons||[]},
+    inputs:{fee:api.state.fee??null,saleFeeRate:api.state.saleFeeRate??null,saleExtraCost:api.state.saleExtraCost??null,
+      buybackDeductionRate:api.state.buybackDeductionRate??null,hitRate:card.buyLimits?.clean?.assumptions?.hitRate??null},
     assessment:{supplyRisk:card.overallAssessment?.supplyRisk??null,marketStability:card.overallAssessment?.marketStability??null,
       cautions:card.overallAssessment?.cautions||[],stockDemand:card.hareruya2Stock?.demand||card.cardrushStock?.demand||null},
     forecastEvidence:{rawTrend30:card.futurePriceForecast?.rawTrend30??null,downsideScore:card.futurePriceForecast?.downsideScore??null,

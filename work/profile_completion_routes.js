@@ -44,8 +44,9 @@ function prospectPlan(card,fields,{shops={},linkage={},psaProgress={},storeMode=
       });
       const sources=rows.map(r=>({source:/hareruya2\.com/.test(r.url||'')?'hareruya2':/torecacamp-pokemon\.com/.test(r.url||'')?'torecacamp':/cardrush-pokemon\.jp/.test(r.url||'')?'cardrush':/yuyu-tei\.jp/.test(r.url||'')?'yuyutei':'toreca',url:r.url||null,at:r.updatedAt||r.observedAt||null}));
       const automatic=sources.some(r=>['hareruya2','torecacamp','toreca'].includes(r.source));
-      requirements.push({field,source:'domesticShops',state:card.priceAggregation?.conflicted?'price-conflict-review':sources.length?'adopted-source-refresh':'median-evidence-unavailable',
-        automatic:automatic&&!card.priceAggregation?.conflicted,evidence:sources,
+      const conflicted=(card.priceAggregation?.comparison||card.priceAggregation)?.conflicted;
+      requirements.push({field,source:'domesticShops',state:conflicted?'price-conflict-review':sources.length?'adopted-source-refresh':'median-evidence-unavailable',
+        automatic:automatic&&!conflicted,evidence:sources,
         nextAction:'古い採用元そのものの正規再確認。別店舗の新鮮価格だけを繰り返さず、価格対立は自動解除しない',resumeCondition:'同一仕様・個別日時・採用元の正常再確認'});
     }else if(field==='shopStateA'){
       const urls=['hareruya2','torecacamp'].flatMap(source=>card[source+'Url']?[{source,url:card[source+'Url']}]:[]);
