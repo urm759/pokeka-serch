@@ -1,0 +1,18 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path');
+const {build}=require('./build_linkage_evidence_audit');
+const root=fs.mkdtempSync(path.join(os.tmpdir(),'linkage-delta-'));
+const write=(f,x)=>{fs.mkdirSync(path.dirname(path.join(root,f)),{recursive:true});fs.writeFileSync(path.join(root,f),JSON.stringify(x));};
+const now=Date.parse('2026-10-16T00:00:00Z'),name='ピカチュウ SR [S1H 001/060]';
+write('data/pokemon-cards.json',[{id:'a',name,language:'ja',identityKey:'same'}]);
+const quote={cardId:'a',name,price:1000,observedAt:new Date(now-3600000).toISOString()};
+write('work/hareruya2_catalog.json',[quote]);
+let a=build(root,now);assert.equal(a.verification.mode,'full');assert.equal(a.verification.verified,1);
+const get=()=>JSON.parse(fs.readFileSync(path.join(root,'data/linkage-evidence-details.json'))).rows[0];
+const original=get();a=build(root,now+60000);assert.equal(a.verification.reused,1);assert.equal(a.verification.verified,0);
+assert.deepEqual(get(),original,'same evidence has the same exact row');
+a=build(root,now+49*3600000);assert.equal(a.verification.reused,1);assert.equal(get().stale,true,'cache must not freeze freshness');
+write('work/hareruya2_catalog.json',[{...quote,name:'ピカチュウ SR [S1H 002/060]'}]);
+a=build(root,now+50*3600000);assert.equal(a.verification.verified,1);assert(get().reasons.length);
+a=build(root,now+8*86400000);assert.equal(a.verification.mode,'full');assert.equal(a.verification.verified,1);
+assert.equal(build(root,now+8*86400000,{full:true}).verification.mode,'full');
+console.log('PASS incremental identity evidence, price/time refresh, changed specification and weekly full audit');

@@ -60,6 +60,7 @@ jobs:
           node work/test_purchase_limit_audit.js
           node work/test_median_efficiency.js
           node work/test_evidence_refresh.js
+          node work/test_incremental_linkage_evidence.js
           node work/build_psa9_provenance.js --verify
           node work/test_median_primary.js
           node work/test_supply_demand_validation.js

@@ -1,7 +1,18 @@
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const {compareIdentity,extractIdentity}=require('./card_identity');
 const ROOT=path.join(__dirname,'..'),hash=b=>crypto.createHash('sha256').update(String(b).replace(/\r\n/g,'\n')).digest('hex');
-function build(root=ROOT,now=Date.now()) {
+function build(root=ROOT,now=Date.now(),options={}) {
+  const previousFile=path.join(root,'data/linkage-evidence-audit.json'),detailFile=path.join(root,'data/linkage-evidence-details.json');
+  const previous=fs.existsSync(previousFile)?JSON.parse(fs.readFileSync(previousFile)):{};
+  const rulesHash=hash(fs.readFileSync(path.join(__dirname,'card_identity.js')))+hash(fs.readFileSync(__filename));
+  const previousFull=Date.parse(previous.verification?.lastFullAt);
+  let full=options.full===true || previous.verification?.rulesHash!==rulesHash || !Number.isFinite(previousFull)
+    || now<previousFull || now-previousFull>=7*86400000;
+  const saved=!full&&fs.existsSync(detailFile)?JSON.parse(fs.readFileSync(detailFile)):null;
+  if(!full && (!saved || saved.generatedAt!==previous.generatedAt || saved.catalogHash!==previous.catalogHash))full=true;
+  const cached=!full?saved.rows || []:[];
+  const cache=new Map(cached.filter(r=>r.identityInputHash).map(r=>[r.identityInputHash,r]));
+  let verified=0,reused=0;
   const inputs={},read=(file,fallback={})=>{const p=path.join(root,file);if(!fs.existsSync(p))return fallback;const bytes=fs.readFileSync(p);inputs[file]=hash(bytes);return JSON.parse(bytes);};
   const cards=read('data/pokemon-cards.json',[]),byId=new Map(cards.map(c=>[c.id,c]));
   const byUrl=new Map();for(const c of cards)for(const field of ['cardrushUrl','hareruya2Url','yuyuteiUrl','torecacampUrl'])if(c[field]){const rows=byUrl.get(c[field])||[];rows.push(c);byUrl.set(c[field],rows);}
@@ -11,16 +22,19 @@ function build(root=ROOT,now=Date.now()) {
   const result=[],counts={},add=(card,source,row,expectedGrade='raw')=>{
     if(!card)return;
     const name=row.title || row.name || row.n || '',observedAt=row.priceObservedAt ?? row.fetchedAt ?? row.observedAt ?? row.f ?? null;
-    const compared=compareIdentity({name:expectedGrade==='raw'?card.name:`${card.name} PSA10`},expectedGrade==='raw'?{name}:{name:`${name} PSA10`});
-    const expected=extractIdentity({name:card.name}),observed=extractIdentity({name});
+    const identityInputHash=hash(JSON.stringify([source,card.id,card.name,card.identityKey,card.language,name,expectedGrade]));
+    const old=cache.get(identityInputHash);
+    const compared=old?null:compareIdentity({name:expectedGrade==='raw'?card.name:`${card.name} PSA10`},expectedGrade==='raw'?{name}:{name:`${name} PSA10`});
+    const expected=old?.expected || extractIdentity({name:card.name}),observed=old?.observed || extractIdentity({name});
+    if(old)reused++;else verified++;
     // Missing source fields and translated POP labels are not proof of mismatch.
     const missing=['setCode','cardNumber','rarity'].filter(k=>!observed[k]);
     if(expected.variant && expected.variant!==observed.variant)missing.push('仕様表記（通常版/SA/特殊加工）');
     const at=Date.parse(observedAt),stale=!String(observedAt||'').includes('T')||!Number.isFinite(at)||at>now||now-at>48*3600000;
-    const mismatch=compared.reasons.filter(r=>!/カード名違い/.test(r));
-    const status=mismatch.length?'仕様不一致・要根拠確認':missing.length || !compared.nameCompatible?'根拠不足・曖昧':'仕様一致';
+    const mismatch=old?.reasons || compared.reasons.filter(r=>!/カード名違い/.test(r));
+    const status=old?.status || (mismatch.length?'仕様不一致・要根拠確認':missing.length || !compared.nameCompatible?'根拠不足・曖昧':'仕様一致');
     counts[source] ||= {rows:0,exact:0,held:0,ambiguous:0,stale:0};const n=counts[source];n.rows++;n.exact+=status==='仕様一致';n.held+=mismatch.length>0;n.ambiguous+=status==='根拠不足・曖昧';n.stale+=stale;
-    result.push({id:card.id,name:card.name,source,priority:priority.has(card.id),expected,observed,status,reasons:mismatch,missing,sourceTitle:name,url:row.detailUrl || row.url || row.sourceUrl || row.u || null,observedAt,stale,
+    result.push({id:card.id,name:card.name,source,identityInputHash,priority:priority.has(card.id),expected,observed,status,reasons:mismatch,missing,sourceTitle:name,url:row.detailUrl || row.url || row.sourceUrl || row.u || null,observedAt,stale,
       grade:expectedGrade,kind:source==='psaOfficial'?'Population・価格ではない':source.startsWith('buyback:')?'PSA10買取提示':'素体販売価格・実成約ではない',price:row.price ?? row.value ?? null,priceConflict:priceReview.get(card.id)?.disputed===true || priceReview.get(card.id)?.evidence==='disputed',priceEvidenceState:priceReview.get(card.id)?.evidence || null,priceQuarantined:row.priceQuarantined===true,sourceStopped:sourceStates[source]?.acquisitionStopped===true,correctionApplied:false});
   };
   for(const [source,file] of [['hareruya2','work/hareruya2_catalog.json'],['torecacamp','work/torecacamp_catalog.json'],['cardrush','work/cardrush_catalog.json'],['yuyutei','work/yuyutei_catalog.json']]) {
@@ -41,11 +55,13 @@ function build(root=ROOT,now=Date.now()) {
   for(const [shop,data]of Object.entries(buyback.shops||{}))for(const row of Array.isArray(data)?data:data.items||[])add(byId.get(row.cardId || matches[`${shop}:${row.shopItemId || row.id}`]),'buyback:'+shop,{...row,observedAt:row.observedAt || null},'PSA10');
   result.sort((a,b)=>Number(b.priority)-Number(a.priority)||a.id.localeCompare(b.id));
   const summary={version:1,generatedAt:new Date(now).toISOString(),catalogTotal:cards.length,catalogHash:inputs['data/pokemon-cards.json'],inputs,counts,rows:result.length,priorityRows:result.filter(r=>r.priority).length,
+    verification:{mode:full?'full':'changed-record-identities',rulesHash,lastFullAt:full?new Date(now).toISOString():previous.verification.lastFullAt,verified,reused,
+      policy:'同一仕様入力と同一照合コードだけ再利用。鮮度・価格・停止状態・公式原票対応は毎回確認。7日経過またはルール変更で全体再照合'},
     corrections:0,note:'保存済み原票の横断監査。値段の乖離は誤紐付けの証拠としない。翻訳・省略仕様は要確認であり、PSA既存厳格照合の代わりではない。原票/長期詳細は初期読込しない。'};
   fs.writeFileSync(path.join(root,'data/linkage-evidence-audit.json'),JSON.stringify(summary));
   fs.writeFileSync(path.join(root,'data/linkage-evidence-details.json'),JSON.stringify({generatedAt:summary.generatedAt,catalogHash:summary.catalogHash,rows:result}));
   const statusPath=path.join(root,'data/update-status.json');if(fs.existsSync(statusPath)){const status=JSON.parse(fs.readFileSync(statusPath));status.linkageEvidence={...summary,inputs:undefined};fs.writeFileSync(statusPath,JSON.stringify(status));}
   return summary;
 }
-if(require.main===module)console.log(JSON.stringify(build()));
+if(require.main===module)console.log(JSON.stringify(build(ROOT,Date.now(),{full:process.argv.includes('--full')})));
 module.exports={build};
