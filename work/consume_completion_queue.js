@@ -31,6 +31,19 @@ function eligibleForHareru(candidates, catalog, now = Date.now(), requested = ne
       && !(usable && Number(previous?.price) > 0 && observed <= now && now - observed < 2 * 86400000);
   });
 }
+function profilePlans(targets) {
+  const result=new Map();
+  for(const profile of targets.profiles||[])for(const row of profile.prospects||[]) {
+    const requirements=row.completionPlan?.requirements||[];
+    const plan={profiles:[profile.id],selectedProfile:profile.id,missing:[...new Set(row.missing||[])],requirements,
+      automatic:requirements.length>0&&requirements.every(r=>r.automatic===true)};
+    const old=result.get(row.id);
+    if(!old || Number(plan.automatic)>Number(old.automatic) || plan.automatic===old.automatic&&plan.missing.length<old.missing.length) {
+      plan.profiles=[...new Set([...(old?.profiles||[]),...plan.profiles])];result.set(row.id,plan);
+    } else old.profiles=[...new Set([...old.profiles,profile.id])];
+  }
+  return result;
+}
 function run() {
   const start = Date.now();
   const queue = read("work/card-completion-queue.json");
@@ -39,6 +52,7 @@ function run() {
   const candidates = plan(cards, queue, state);
   const focus = buildFocus(ROOT);
   const profileTargets=read('work/search-profile-targets.json');
+  const executablePlans=profilePlans(profileTargets);
   const requested=new Set([...(profileTargets.readyRoutes?.domesticShops || profileTargets.routes?.domesticShops || []).map(r=>r.id),
     ...(read('data/state-a-url-discovery.json').records||[]).filter(r=>r.status==='linked').map(r=>r.id)]);
   const shopGuard=read('work/candidate-shop-refresh.json').checkpoints?.hareruya2 || {};
@@ -58,7 +72,10 @@ function run() {
   eligible.sort((a, b) => {
     const fa = focus.cards[a.card.id], fb = focus.cards[b.card.id];
     return fa && fb ? groupOrder.get(fa.group) - groupOrder.get(fb.group) || Number(b.detail.p || 0) - Number(a.detail.p || 0)
-      : Number(Boolean(fb)) - Number(Boolean(fa)) || Number(requested.has(b.card.id))-Number(requested.has(a.card.id)) || (Number(b.detail.p || 0)+supportPriority.get(b.card.id)) - (Number(a.detail.p || 0)+supportPriority.get(a.card.id));
+      : Number(Boolean(fb)) - Number(Boolean(fa)) || Number(requested.has(b.card.id))-Number(requested.has(a.card.id))
+        || Number(executablePlans.get(b.card.id)?.automatic||false)-Number(executablePlans.get(a.card.id)?.automatic||false)
+        || (executablePlans.get(a.card.id)?.missing.length??99)-(executablePlans.get(b.card.id)?.missing.length??99)
+        || (Number(b.detail.p || 0)+supportPriority.get(b.card.id)) - (Number(a.detail.p || 0)+supportPriority.get(a.card.id));
   });
   const maxTime = Math.max(10000, Number(process.env.COMPLETION_RUNTIME_MS || 120000));
   const last = read("work/candidate-shop-refresh.json").sources?.hareruya2 || {};
@@ -69,7 +86,7 @@ function run() {
     :selectionReasons.shopManualWaitCards?'指定条件の購入URLは仕様・手動確認待ち。別対象の通常巡回は維持'
     :!selectionReasons.missingStateACards?'状態A不足は現選択対象にない。他項目の補完待ちは継続'
     :!selectionReasons.missingStateAWithUrl?'状態A不足カードの晴れる屋2確定URLなし・探索担当へ':'正常値キャッシュまたは再試行待ち・全補完完了ではない';
-  const run = { startedAt: new Date(start).toISOString(), llmCalls: 0, codexCalls: 0, selectionReasons, zeroTargetReason, focusedSelected: selected.filter((r) => focus.cards[r.card.id]).length, normalSelected: selected.filter((r) => !focus.cards[r.card.id]).length, selected: selected.map((r) => ({ id: r.card.id, priority: r.detail.p, reasons: [focus.cards[r.card.id]?.priorityReason, ...r.detail.r, supportPriority.get(r.card.id)?'複数店の価格支持・取得順のみ参考':null].filter(Boolean), missingRequired: r.detail.m })), attempted: 0, acquired: 0, newAcquired: 0, newLinked: 0, failures: 0, checkpoint: null, stopReason: null };
+  const run = { startedAt: new Date(start).toISOString(), llmCalls: 0, codexCalls: 0, selectionReasons, zeroTargetReason, focusedSelected: selected.filter((r) => focus.cards[r.card.id]).length, normalSelected: selected.filter((r) => !focus.cards[r.card.id]).length, selected: selected.map((r) => ({ id: r.card.id, priority: r.detail.p, reasons: [focus.cards[r.card.id]?.priorityReason, ...r.detail.r, supportPriority.get(r.card.id)?'複数店の価格支持・取得順のみ参考':null].filter(Boolean), missingRequired: r.detail.m, requestedPlan:executablePlans.get(r.card.id)||null })), attempted: 0, acquired: 0, newAcquired: 0, newLinked: 0, failures: 0, checkpoint: null, stopReason: null };
   save("work/completion-acquisition-checkpoint.json", { ...state, running: run });
   const result = selected.length ? spawnSync(process.execPath, ["work/refresh_candidate_shops.js", "hareruya2"], { cwd: ROOT, encoding: "utf8", timeout: maxTime + 3000,
     env: { ...process.env, COMPLETION_PRIORITY_IDS: selected.map((r) => r.card.id).join(","), CANDIDATE_SHOP_BATCH: String(selected.length), CANDIDATE_SHOP_TIME_MS: String(maxTime - 20000), CANDIDATE_SHOP_INTERVAL_MS: "1200" } }) : null;
@@ -116,4 +133,4 @@ function run() {
   return run;
 }
 if (require.main === module) run();
-module.exports = { plan, run, eligibleForHareru };
+module.exports = { plan, run, eligibleForHareru, profilePlans };

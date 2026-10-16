@@ -1,0 +1,26 @@
+[
+  {
+    "name": "prices",
+    "script": "work/refresh_candidate_shops.js",
+    "start": "2026-10-15T19:52:13.440Z",
+    "end": "2026-10-15T19:57:59.662Z",
+    "exit": 0,
+    "error": null
+  },
+  {
+    "name": "discovery",
+    "script": "work/discover_state_a_urls.js",
+    "start": "2026-10-15T19:57:59.664Z",
+    "end": "2026-10-15T19:58:23.394Z",
+    "exit": 0,
+    "error": null
+  },
+  {
+    "name": "completion",
+    "script": "work/consume_completion_queue.js",
+    "start": "2026-10-15T19:58:23.395Z",
+    "end": "2026-10-15T19:59:18.046Z",
+    "exit": 0,
+    "error": null
+  }
+]

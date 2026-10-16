@@ -29,13 +29,24 @@ function evaluate(source,cohort,history,now=Date.now()) {
 }
 function build(root,monitor,history,now=Date.now()) {
   const executions=read(root,'work/source-update-history.json').sources||{},sources={};
+  const pipeline=read(root,'data/priority-price-execution.json');
   for(const id of ['hareruya2','cardrush'])if(monitor.sources?.[id]) {
     const cohort=history.sources?.[id]?.cohort||[];
     sources[id]=evaluate(monitor.sources[id],cohort,executions[id],now);
+    const latest=sources[id].summary.latestDeadlineRun;
+    const parent=latest&&(pipeline.runs||[]).find(r=>r.script==='work/refresh_candidate_shops.js'
+      &&Date.parse(r.startedAt)<=Date.parse(latest.startedAt)&&Date.parse(r.endedAt)>=Date.parse(latest.endedAt));
+    if(latest)latest.parentExecution=parent?{runId:pipeline.runId,startedAt:parent.startedAt,endedAt:parent.endedAt,
+      evidence:'親工程の実行時間範囲と一致。古い取得元workflowRunIdの継承値では紐付けない'}:null;
     sources[id].summary.intervalMinimum=history.sources?.[id]?.intervalMinima?.at(-1)||null;
+    const normal=context=>context?.runId&&['schedule','workflow_run'].includes(context.event);
+    const intervals=(history.sources?.[id]?.intervalMinima||[]).filter(r=>normal(r.executionContext?.from)&&normal(r.executionContext?.to));
+    sources[id].summary.verifiedNormalIntervalMinimum=intervals.length?Math.min(...intervals.map(r=>r.minimumFreshnessPct)):null;
+    sources[id].summary.normalIntervalSamples=intervals.length;
+    sources[id].summary.intervalScopeNote='手動・古い未観測コンテキストを定期最低鮮度の実証へ加算しない。保存枝の古値と公開済み新値の混在は別監査';
   }
   const result={version:1,generatedAt:new Date(now).toISOString(),sources,
-    scheduling:read(root,'data/priority-price-execution.json').startDelayMs??null,
+    scheduling:pipeline.startDelayMs??null,
     limits:'6時間は確認目標で、48時間等の計算採用期限とは別。区間最低は前回値の保守的推計、連続実測ではない。開始遅延だけで原因を断定しない',
     llmCalls:0,codexCalls:0};
   require('./acquisition_retry').atomicWrite(path.join(root,'data/operational-freshness-audit.json'),result,0);

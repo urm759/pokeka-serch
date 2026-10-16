@@ -11,4 +11,10 @@ assert.equal(r.summary.cohort,5);assert.deepEqual(r.summary.buckets,{'automatic-
 assert.equal(r.rows[0].lastConfirmedIntervalMs,3600000);assert.equal(r.rows[0].targetOverdueHours,1);
 assert.equal(r.rows[1].confirmedIntervalSamples,0,'missing card datetime is not replaced by file/run time');
 assert.equal(r.rows.at(-1).lastConfirmedAt,null);
+const observe=require('./fixed_freshness').observe,context={event:'schedule',runId:'actual'};
+const h=observe({}, {executionContext:context,sources:{s:{cards:source.cards}}},now);
+assert.deepEqual(h.sources.s.observations[0].executionContext,context);
+const next=observe(h,{executionContext:{event:'manual-local',runId:null},sources:{s:{cards:source.cards}}},now+1000);
+assert.equal(next.sources.s.intervalMinima[0].executionContext.from.event,'schedule');
+assert.equal(next.sources.s.intervalMinima[0].executionContext.to.event,'manual-local','manual recovery is never relabelled as scheduled interval evidence');
 console.log('PASS fixed denominator, card-confirmed intervals, source/manual/retry/unlinked separation and no timestamp invention');

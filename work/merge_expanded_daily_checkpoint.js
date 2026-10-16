@@ -25,6 +25,24 @@ function retainKnownPriceTime(row,candidates) {
   if(!same.length)return row;
   return {...row,priceObservedAt:same.map(r=>r.priceObservedAt).sort((a,b)=>Date.parse(b)-Date.parse(a))[0]};
 }
+function mergeCardRows(base,local,incoming,preferred) {
+  const maps=[base,local,incoming].map(rows=>new Map(rows.map(r=>[r.id,r])));
+  return [...new Set([...maps[1].keys(),...maps[2].keys()])]
+    .map(id=>combine(maps[0].get(id),maps[1].get(id),maps[2].get(id),preferred,''))
+    .filter(r=>r!=null).map(r=>retainKnownPriceTime(r,[maps[1].get(r.id),maps[2].get(r.id)]));
+}
+function mergeFreshness(local,incoming) {
+  const result={...local,sources:{...local.sources}};
+  for(const [id,b] of Object.entries(incoming.sources||{})) {
+    const a=result.sources[id];if(!a){result.sources[id]=b;continue;}
+    assert.deepEqual(a.cohort,b.cohort,'Fixed freshness denominator must remain identical');
+    const newest=Date.parse(a.observations?.at(-1)?.at)>=Date.parse(b.observations?.at(-1)?.at)?a:b;
+    result.sources[id]={...newest,cohort:a.cohort,
+      observations:[...new Map([...(a.observations||[]),...(b.observations||[])].map(r=>[r.at,r])).values()].sort((x,y)=>Date.parse(x.at)-Date.parse(y.at)),
+      intervalMinima:[...new Map([...(a.intervalMinima||[]),...(b.intervalMinima||[])].map(r=>[r.from+'|'+r.to,r])).values()].sort((x,y)=>Date.parse(x.to)-Date.parse(y.to)).slice(-500)};
+  }
+  return result;
+}
 function run() {
   const git=args=>cp.execFileSync('git',args,{cwd:root,maxBuffer:100e6,encoding:'utf8'});
   const files=git(['diff','--name-only','--diff-filter=U']).trim().split(/\r?\n/).filter(Boolean);
@@ -42,10 +60,8 @@ function run() {
     const rows=[1,2,3].map(stage=>{const text=git(['show',`:${stage}:${f}`]),target=path.join(directory,String(stage),f);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,text);return JSON.parse(text);});
     const [b,a,t]=rows;let value;
     if(f==='data/pokemon-cards.json') {
-      const baseById=new Map(b.map(r=>[r.id,r])),byId=new Map(a.map(r=>[r.id,r])),incomingById=new Map(t.map(r=>[r.id,r]));
       // A new domestic-market receipt must not discard independently discovered shop URLs.
-      value=[...new Set([...byId.keys(),...incomingById.keys()])].map(id=>retainKnownPriceTime(
-        combine(baseById.get(id),byId.get(id),incomingById.get(id),newestSource,''),[byId.get(id),incomingById.get(id)]));
+      value=mergeCardRows(b,a,t,newestSource);
     }
     else if(f==='work/hareruya2_catalog.json') {
       value=mergeRows(b,a,t,r=>r.cardId||r.detailUrl);
@@ -73,7 +89,8 @@ function run() {
         const left=a.shops[shop]||{},right=t.shops[shop]||{};shops[shop]={};
         for(const id of new Set([...Object.keys(left),...Object.keys(right)]))shops[shop][id]=dates.map(d=>{const x=left[id]?.[a.dates.indexOf(d)],y=right[id]?.[t.dates.indexOf(d)];return x==null?y??null:y==null?x:isOurs(shop)?x:y;});
       }value={...combine(b,a,t),dates,shops};
-    } else if(f==='work/market_stability_history.json') {
+    } else if(f==='work/priority-freshness-history.json') value=mergeFreshness(a,t);
+    else if(f==='work/market_stability_history.json') {
       value={...t,dates:[...new Set([...a.dates,...t.dates])].sort(),cards:{}};
       for(const id of new Set([...Object.keys(a.cards),...Object.keys(t.cards)])) {
         const old=new Map((b.cards[id]||[]).map(r=>[r[0],r])),left=new Map((a.cards[id]||[]).map(r=>[r[0],r])),right=new Map((t.cards[id]||[]).map(r=>[r[0],r]));
@@ -97,4 +114,4 @@ function run() {
   return result;
 }
 if(require.main===module)run();
-module.exports={combine,mergeRows,retainKnownPriceTime};
+module.exports={combine,mergeRows,retainKnownPriceTime,mergeCardRows,mergeFreshness};

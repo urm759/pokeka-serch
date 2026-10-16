@@ -1,0 +1,27 @@
+node:assert:152
+  throw new AssertionError(obj);
+  ^
+
+AssertionError [ERR_ASSERTION]: published revision mismatch: data/operational-freshness-audit.json
++ actual - expected
+
++ '41ec4cfcb55a5bd6f0168732868864bea331712ca491de22120ed307f7950873'
+- '525e169e4efbce572b466fcc5dfd72db31e28ac769cfca081be9fbbc91bebc7d'
+
+    at Object.<anonymous> (C:\Users\polar\Documents\ChatGPT\ポケカ仕入れサイト\resilience-20261006\work\test_ui_data.js:15:10)
+    at Module._compile (node:internal/modules/cjs/loader:1872:14)
+    at Object..js (node:internal/modules/cjs/loader:2003:10)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: '41ec4cfcb55a5bd6f0168732868864bea331712ca491de22120ed307f7950873',
+  expected: '525e169e4efbce572b466fcc5dfd72db31e28ac769cfca081be9fbbc91bebc7d',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

@@ -15,6 +15,12 @@ assert.equal(eligibleForHareru(rows, [{...cached, cardMismatchSuspected:true}], 
 assert.equal(eligibleForHareru(rows, [{...cached, priceQuarantined:true}], now).length, 1);
 assert.equal(eligibleForHareru(rows, [{...cached, detailUrl:'https://old.example/1'}], now).length, 1, 'a different saved URL does not prove this URL was verified');
 assert.equal(eligibleForHareru(rows, [], now, new Set(), {sourceBlocked:'HTTP 403'}).length, 0);
+const plans=require('./consume_completion_queue').profilePlans({profiles:[
+  {id:'A',prospects:[{id:'a',missing:['shopStateA','psaOfficial'],completionPlan:{requirements:[{field:'shopStateA',automatic:true},{field:'psaOfficial',automatic:false}]}}]},
+  {id:'A-median',prospects:[{id:'a',missing:['referenceMedian'],completionPlan:{requirements:[{field:'referenceMedian',automatic:true}]}}]}
+]});
+assert.equal(plans.size,1);assert.equal(plans.get('a').automatic,true);assert.deepEqual(plans.get('a').profiles,['A','A-median']);
+assert.deepEqual(plans.get('a').missing,['referenceMedian'],'keep the executable shortest completion path without merging different profile requirements');
 assert(routes(rows[0].detail).some((r) => r.key === "psaOfficial" && r.source === "psaOfficial"));
 assert(!routes(rows[0].detail).some((r) => r.key === "shopStateA"));
 assert.equal(routes({pk:"unexpanded-set", i:{pokedata:["取得待ち"]}}).find(r=>r.key==="pokedata").mode, "自動巡回中");

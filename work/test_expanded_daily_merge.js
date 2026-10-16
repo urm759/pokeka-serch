@@ -13,4 +13,15 @@ assert.equal(mergeRows([],[{id:'a',...later}],[{id:'a',...old}],r=>r.id,'theirs'
 const checkpoints=combine({jobs:{}},{jobs:{a:{lastAttemptAt:'2026-10-14T01:00:00Z'}}},{jobs:{b:{lastAttemptAt:'2026-10-14T02:00:00Z'}}});
 assert.deepEqual(Object.keys(checkpoints.jobs).sort(),['a','b']);
 assert.deepEqual(combine([],['a'],['b']),['a','b']);
+const fixed=require('./merge_expanded_daily_checkpoint').mergeCardRows(
+  [{id:'a',price:1000,url:null,priceObservedAt:'2026-10-14T00:00:00Z'},{id:'removed',price:10}],
+  [{id:'a',price:1000,url:'verified-shop',priceObservedAt:'2026-10-14T00:00:00Z'},{id:'removed',price:10}],
+  [{id:'a',price:1200,url:null,priceObservedAt:'2026-10-15T00:00:00Z'}],'theirs');
+assert.equal(fixed.length,1);assert.equal(fixed[0].url,'verified-shop');assert.equal(fixed[0].price,1200);
+const mergedFreshness=require('./merge_expanded_daily_checkpoint').mergeFreshness(
+  {sources:{s:{cohort:['a'],observations:[{at:'2026-10-16T01:00:00Z'}],lastConfirmedRows:[{id:'a',lastConfirmedAt:'new'}]}}},
+  {sources:{s:{cohort:['a'],observations:[{at:'2026-10-15T20:00:00Z'}],lastConfirmedRows:[{id:'a',lastConfirmedAt:'old'}]}}});
+assert.equal(mergedFreshness.sources.s.observations.at(-1).at,'2026-10-16T01:00:00Z');
+assert.equal(mergedFreshness.sources.s.lastConfirmedRows[0].lastConfirmedAt,'new');
+assert.throws(()=>require('./merge_expanded_daily_checkpoint').mergeFreshness({sources:{s:{cohort:['a']}}},{sources:{s:{cohort:['b']}}}),/denominator/);
 console.log('PASS expanded daily merge: fieldwise URL preservation, current prices, additions, deletions and independent checkpoints');

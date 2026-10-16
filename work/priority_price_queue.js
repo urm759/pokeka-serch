@@ -175,6 +175,8 @@ function write(root = ROOT) {
     return { card, at: rows.at(-1) || null, detail: "正常な掲載価格の店舗別実取得日時。古い保存価格を最新扱いしない" };
   }));
   const output = { version: 1, generatedAt: new Date(now).toISOString(), runClass: "購入価格高速更新（探索キューとは別）", llmCalls: 0, codexCalls: 0,
+    executionContext:{event:process.env.GITHUB_EVENT_NAME || 'manual-local',runId:process.env.GITHUB_RUN_ID || null,
+      environment:process.env.GITHUB_ACTIONS==='true'?'GitHub Actions':'PCローカル'},
     targetHours: read(root, "data/priority-price-config.json").importantHours || 6, scheduledHours: 2, sources,
     notes: "一巡見込みは実処理時間の参考値。Actions待機・通信変動を含まない。国内相場・買取表と重要ショップ価格は6時間目標、通常ショップ約6000枚は30日巡回目標。巡回目標とGOに採用する48時間等の価格鮮度は別で、古い値はGOに使わない。認証停止は古い値を保持。お気に入りは同期済みIDのみ。" };
   const history = require('./fixed_freshness.js').observe(read(root, 'work/priority-freshness-history.json'), output);

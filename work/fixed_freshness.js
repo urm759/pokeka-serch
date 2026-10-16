@@ -1,5 +1,6 @@
 function observe(previous = {}, monitor, now = Date.now()) {
   const sources = {};
+  const executionContext=monitor.executionContext || {event:'unobserved',runId:null};
   for (const [id, source] of Object.entries(monitor.sources || {})) {
     const before = previous.sources?.[id] || {};
     const cohort = before.cohort || source.cards.map(r => r.id).sort();
@@ -19,7 +20,7 @@ function observe(previous = {}, monitor, now = Date.now()) {
       else if (/手動確認/.test(row?.status || '')) manualWait += 1;
       else if (stale) autoWait += 1;
     }
-    const snapshot = {at:new Date(now).toISOString(),cohort:cohort.length,fresh6h:fresh,
+    const snapshot = {at:new Date(now).toISOString(),executionContext,cohort:cohort.length,fresh6h:fresh,
       fresh6hPct:cohort.length?fresh/cohort.length*100:null,unconfirmed:missing,
       maxOverdueHours:maxAge==null?null:Math.max(0,maxAge-6),autoWait,manualWait,accessStopped:stopped,
       added:source.cards.filter(r=>!cohort.includes(r.id)).length,missingFromCurrent:cohort.filter(id=>!currentIds.has(id)).length,
@@ -29,6 +30,7 @@ function observe(previous = {}, monitor, now = Date.now()) {
     if (observations.at(-1)?.at !== snapshot.at) observations.push(snapshot);
     const interval = require('./proactive_refresh.js').intervalMinimum(before.lastConfirmedRows, cohort,
       Date.parse(before.observations?.at(-1)?.at), now);
+    if(interval)interval.executionContext={from:before.observations?.at(-1)?.executionContext || {event:'unobserved',runId:null},to:executionContext};
     sources[id] = {cohort,observations,lastConfirmedRows:[...rows.values()].map(r=>({id:r.id,lastConfirmedAt:r.lastConfirmedAt})),
       intervalMinima:[...(before.intervalMinima || []), ...(interval ? [interval] : [])].slice(-500)};
   }

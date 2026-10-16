@@ -107,6 +107,8 @@ async function main() {
   const budget = Number(process.env.CANDIDATE_SHOP_TIME_MS || config.timeBudgetMs || 240000);
   const start = Date.now();
   const run = { startedAt: new Date(start).toISOString(), status: "running", attemptedCount: 0, refreshedCount: 0,
+    workflowRunId:process.env.GITHUB_RUN_ID || null,workflowTrigger:process.env.GITHUB_EVENT_NAME || null,
+    executionEnvironment:process.env.GITHUB_ACTIONS === 'true'?'GitHub Actions':'PCローカル',
     newAcquiredCount: 0, newLinkedCount: 0, changedCount: 0, failedCount: 0, httpRequests: 0,
     proactiveAttempted:0, proactiveVerified:0, deadlineOrderVersion:"deadline-v3-reserved-maintenance",
     candidateTargets: deadlineMode ? planned.records.length : candidates.length, previouslyCompleted: completed.size, records: [], stopReason: null,
