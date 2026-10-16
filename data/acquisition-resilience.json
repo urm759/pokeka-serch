@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-16T19:37:58.089Z",
+  "generatedAt": "2026-10-16T20:02:12.232Z",
   "llmCalls": 0,
   "codexCalls": 0,
   "retryPolicy": {
@@ -109,8 +109,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-16T19:37:19.856Z",
-        "to": "2026-10-16T19:37:55.343Z"
+        "from": "2026-10-16T20:01:08.257Z",
+        "to": "2026-10-16T20:02:10.299Z"
       },
       "sinceBaseline": {
         "newLinked": 3951,
@@ -127,21 +127,21 @@
       "remaining": 0,
       "queueDefinition": "未巡回商品数推計。全国内カードの不足項目数とは別",
       "checkpoint": {
-        "sitemap": 23,
-        "entry": 583,
+        "sitemap": 25,
+        "entry": 874,
         "total": 46
       },
       "sourceState": "partial",
-      "stopReason": "商品詳細の1回上限 35件に到達",
+      "stopReason": "安全停止時間 40秒に到達",
       "retryUrls": [],
       "lastRun": {
-        "startedAt": "2026-10-15T20:21:51.449Z",
-        "durationMs": 38697,
+        "startedAt": "2026-10-16T19:59:39.149Z",
+        "durationMs": 35399,
         "paginationMode": "sitemap",
-        "currentCursor": 23,
-        "currentSitemapIndex": 23,
-        "currentEntryIndex": 583,
-        "currentSitemapUrl": "https://torecacamp-pokemon.com/sitemap_products_23.xml?from=8920129306798&to=8920854986926",
+        "currentCursor": 25,
+        "currentSitemapIndex": 25,
+        "currentEntryIndex": 874,
+        "currentSitemapUrl": "https://torecacamp-pokemon.com/sitemap_products_25.xml?from=8936009924782&to=8945373642926",
         "processedSitemapCount": 46,
         "processedSitemaps": [
           3,
@@ -190,10 +190,10 @@
           46
         ],
         "totalSitemaps": 46,
-        "cumulativeProductCount": 46123,
+        "cumulativeProductCount": 46153,
         "estimatedTotalProducts": 45644,
         "estimatedRemainingProducts": 0,
-        "cumulativeMatchedCount": 6557,
+        "cumulativeMatchedCount": 6562,
         "hasMorePages": true,
         "crawlComplete": true,
         "firstPassComplete": true,
@@ -201,18 +201,18 @@
         "legacyRecords": [],
         "maintenanceMode": true,
         "maintenance": {
-          "sitemapIndex": 22,
-          "entryIndex": 583,
+          "sitemapIndex": 24,
+          "entryIndex": 874,
           "cycles": 1,
-          "refreshed": 3810,
-          "newLinks": 55,
-          "checkedAt": "2026-10-15T20:22:30.142Z"
+          "refreshed": 4442,
+          "newLinks": 60,
+          "checkedAt": "2026-10-16T20:00:14.544Z"
         },
         "firstPassCompletedAt": "2026-10-08T21:56:31.044Z",
-        "maintenancePendingCount": 4663,
+        "maintenancePendingCount": 4710,
         "priceMigration": {
           "version": 1,
-          "updatedAt": "2026-10-15T20:21:51.390Z",
+          "updatedAt": "2026-10-16T19:59:39.090Z",
           "correctedCount": 0,
           "cumulativeCorrectedCount": 0,
           "preCorrectionExtremeCount": 0,
@@ -222,48 +222,48 @@
         "quarantinedPriceCount": 31,
         "sitemapsSucceeded": 0,
         "listedProducts": 1000,
-        "detailFetched": 35,
-        "parsed": 37,
-        "stateA": 35,
+        "detailFetched": 32,
+        "parsed": 33,
+        "stateA": 32,
         "newLinkCount": 0,
-        "updatedCount": 17,
+        "updatedCount": 4,
         "fetchFailureCount": 0,
-        "duplicateUrlCount": 172,
+        "duplicateUrlCount": 16,
         "duplicateProductIdCount": 0,
         "abruptDropDetected": false,
-        "previousCatalogCount": 6557,
-        "proposedCatalogCount": 6557,
+        "previousCatalogCount": 6562,
+        "proposedCatalogCount": 6562,
         "progressHealth": {
-          "value": 49933,
-          "previousValue": 49898,
+          "value": 50595,
+          "previousValue": 50563,
           "stagnantRuns": 0,
           "status": "progressing",
-          "checkedAt": "2026-10-15T20:22:30.146Z"
+          "checkedAt": "2026-10-16T20:00:14.548Z"
         },
-        "lastSuccessfulPage": "サイトマップ 22",
+        "lastSuccessfulPage": "サイトマップ 24",
         "lastFailure": null,
         "failedSitemaps": [],
-        "stoppingReason": "商品詳細の1回上限 35件に到達",
+        "stoppingReason": "安全停止時間 40秒に到達",
         "completionStatus": "partial",
-        "completedAt": "2026-10-15T20:22:30.150Z"
+        "completedAt": "2026-10-16T20:00:14.551Z"
       },
-      "observedExecutionDays": 5,
-      "processedPerExecutionDay": 29.4,
-      "firstPassObservationDays": 5,
+      "observedExecutionDays": 6,
+      "processedPerExecutionDay": 25.2,
+      "firstPassObservationDays": 6,
       "firstPassProgressField": "newlyVisitedProducts",
       "firstPassDaysEstimate": 0,
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-16T19:37:19.856Z",
-        "to": "2026-10-16T19:37:55.343Z"
+        "from": "2026-10-16T20:01:08.257Z",
+        "to": "2026-10-16T20:02:10.299Z"
       },
       "sinceBaseline": {
-        "newLinked": 668,
-        "validAdded": 668,
+        "newLinked": 673,
+        "validAdded": 673,
         "validLost": 77,
-        "usableNet": 591,
-        "freshnessRecovered": 1300
+        "usableNet": 596,
+        "freshnessRecovered": 1909
       },
       "freshness": null
     },
@@ -556,16 +556,16 @@
         "status": "partial"
       },
       "authenticatedStatus": "認証・確認待ち／今回の公開取得で代替しない",
-      "observedExecutionDays": 7,
-      "processedPerExecutionDay": 175.3,
-      "firstPassObservationDays": 7,
+      "observedExecutionDays": 5,
+      "processedPerExecutionDay": 184.6,
+      "firstPassObservationDays": 5,
       "firstPassProgressField": "publicNewRecords",
       "firstPassDaysEstimate": 0,
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-16T19:37:19.856Z",
-        "to": "2026-10-16T19:37:55.343Z"
+        "from": "2026-10-16T20:01:08.257Z",
+        "to": "2026-10-16T20:02:10.299Z"
       },
       "sinceBaseline": {
         "newLinked": 634,
