@@ -9,7 +9,7 @@ const fields = Object.fromEntries(credential.stdout.trim().split('\n').map(line 
 const headers = { Authorization: `Bearer ${fields.password}`, 'User-Agent': 'pokeka-scheduled-log-audit' };
 const base = 'https://api.github.com/repos/urm759/pokeka-serch';
 async function get(url) {
-  const response = await fetch(url, { headers });
+  const response = await fetch(url, { headers, signal: AbortSignal.timeout(20000) });
   if (!response.ok) throw new Error(`GitHub read failed ${response.status}`);
   return response;
 }

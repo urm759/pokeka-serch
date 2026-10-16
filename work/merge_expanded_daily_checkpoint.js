@@ -42,8 +42,10 @@ function run() {
     const rows=[1,2,3].map(stage=>{const text=git(['show',`:${stage}:${f}`]),target=path.join(directory,String(stage),f);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,text);return JSON.parse(text);});
     const [b,a,t]=rows;let value;
     if(f==='data/pokemon-cards.json') {
-      const byId=new Map(a.map(r=>[r.id,r])),incomingById=new Map(t.map(r=>[r.id,r]));
-      value=mergeRows(b,a,t,r=>r.id,newestSource).map(r=>retainKnownPriceTime(r,[byId.get(r.id),incomingById.get(r.id)]));
+      const baseById=new Map(b.map(r=>[r.id,r])),byId=new Map(a.map(r=>[r.id,r])),incomingById=new Map(t.map(r=>[r.id,r]));
+      // A new domestic-market receipt must not discard independently discovered shop URLs.
+      value=[...new Set([...byId.keys(),...incomingById.keys()])].map(id=>retainKnownPriceTime(
+        combine(baseById.get(id),byId.get(id),incomingById.get(id),newestSource,''),[byId.get(id),incomingById.get(id)]));
     }
     else if(f==='work/hareruya2_catalog.json') {
       value=mergeRows(b,a,t,r=>r.cardId||r.detailUrl);

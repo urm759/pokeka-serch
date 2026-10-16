@@ -181,6 +181,7 @@ function write(root = ROOT) {
   fs.writeFileSync(path.join(root, 'work/priority-freshness-history.json'), JSON.stringify(history));
   output.fixedCohortFreshness = {baselineAt:history.baselineAt,method:history.method,
     sources:Object.fromEntries(Object.entries(history.sources).map(([id,r])=>[id,{baseline:r.observations[0],latest:r.observations.at(-1),previous:r.observations.at(-2)||null,intervalMinimum:r.intervalMinima?.at(-1)||null}]))};
+  require('./operational_freshness_audit').build(root,output,history,now);
   fs.writeFileSync(path.join(root, "data/priority-price-monitor.json"), JSON.stringify(output));
   fs.writeFileSync(path.join(root, "work/priority-price-checkpoint.json"), JSON.stringify(checkpoint));
   return output;
