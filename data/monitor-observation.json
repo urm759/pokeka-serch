@@ -1,13 +1,21 @@
 {
   "version": 1,
   "status": "observed",
-  "lastAttemptAt": "2026-10-16T20:18:55.660Z",
-  "runId": "38959668104",
-  "url": "https://github.com/urm759/pokeka-serch/actions/runs/38959668104",
+  "lastAttemptAt": "2026-10-16T21:24:53.080Z",
+  "runId": "38969036011",
+  "url": "https://github.com/urm759/pokeka-serch/actions/runs/38969036011",
   "llmCalls": 0,
   "codexCalls": 0,
-  "newIssueCount": 0,
+  "newIssueCount": 1,
   "unpublishedData": [
+    {
+      "runId": 38968711261,
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38968711261",
+      "artifactId": 12075084615,
+      "name": "priority-price-recovery-38968711261-1",
+      "bytes": 48265929,
+      "status": "退避あり・未検証／公開照合待ち"
+    },
     {
       "runId": 38907015091,
       "url": "https://github.com/urm759/pokeka-serch/actions/runs/38907015091",
@@ -31,20 +39,12 @@
       "name": "priority-price-recovery-38729081270-1",
       "bytes": 46001157,
       "status": "退避あり・未検証／公開照合待ち"
-    },
-    {
-      "runId": 38683621209,
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38683621209",
-      "artifactId": 11948759652,
-      "name": "priority-price-recovery-38683621209-1",
-      "bytes": 48750379,
-      "status": "退避あり・未検証／公開照合待ち"
     }
   ],
   "lastMonitorRun": {
-    "id": 38959659616,
-    "conclusion": "failure",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/38959659616"
+    "id": 38959668104,
+    "conclusion": "success",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/38959668104"
   },
   "freshness": {
     "baselineAt": "2026-10-03T23:15:30.935Z",
@@ -357,5 +357,5 @@
     }
   },
   "publicationStatus": "監視保存済み・公開工程は別",
-  "lastSuccessAt": "2026-10-16T20:18:55.660Z"
+  "lastSuccessAt": "2026-10-16T21:24:53.080Z"
 }
