@@ -9,7 +9,8 @@ function inspect(before, after, context = {}) {
   const roots = [], derived = [];
   const add = (code, evidence) => { if (!roots.some(r=>r.code===code)) roots.push({code,evidence}); };
   const has = pattern => failures.some(r=>pattern.test(r));
-  const comparable = Boolean(before && after && context.before?.settingsHash && context.after?.settingsHash && context.before?.codeHash && context.after?.codeHash);
+  const comparable = Boolean(before && after && context.before?.settingsHash && context.after?.settingsHash && context.before?.codeHash && context.after?.codeHash
+    && (context.before.fingerprintVersion??0)===(context.after.fingerprintVersion??0));
   const settingsChanged = comparable && context.before.settingsHash !== context.after.settingsHash;
   const codeChanged = comparable && context.before.codeHash !== context.after.codeHash;
   if (settingsChanged) add('search-settings-changed','保存された実効設定hashが変化。価格変化と混同しない');
@@ -38,8 +39,11 @@ function inspect(before, after, context = {}) {
     add('unresolved-review','確認待ちの根拠不足。未知の不具合を自動修正しない');
   if(!roots.length&&reasons.some(r=>/プリセット|見送り非表示/.test(r)))
     add('preset-or-verdict-condition','最終判定・プリセット条件の不合格。採算悪化や価格下落が原因とは未確定');
-  const blockedBy = roots.filter(r=>['identity-or-specification-hold','price-conflict-or-evidence-hold','expired-price','missing-data','acquisition-failure'].includes(r.code)).map(r=>r.code);
-  for (const reason of failures) if (/算出不可|比率|効率|プリセット/.test(reason) && blockedBy.length)
+  const blockedBy = roots.filter(r=>['identity-or-specification-hold','price-conflict-or-evidence-hold','expired-price','missing-data','acquisition-failure',
+    'out-of-stock','forecast-period-hold','unresolved-review'].includes(r.code)).map(r=>r.code);
+  for (const reason of failures) if (blockedBy.length && (/算出不可|プリセット/.test(reason)
+    || /比率/.test(reason)&&!Number.isFinite(after?.psa9?.ratio)
+    || /効率/.test(reason)&&!Number.isFinite(after?.efficiency?.annual)))
     derived.push({reason,blockedBy:[...blockedBy],causality:'根拠ゲートによる派生候補。複数根拠は併記し、単一原因と断定しない'});
   const newFailures = reasons.filter(r=>!previous.includes(r));
   const oldReasons=[...previous,...(before?.efficiency?.blockingReasons||[])].join('／');
@@ -74,22 +78,23 @@ function inspect(before, after, context = {}) {
     if (has(/公式.*不足|Population.*未取得|PSA公式.*未取得/)) fields.push('psaOfficial');
   }
   return {status,comparable,temporalOnly,settingsChanged,codeChanged,changedInputs,roots,derived,
-    newFailures,existingFailures:reasons.filter(r=>previous.includes(r)),
+    newFailures,existingFailures:reasons.filter(r=>previous.includes(r)),directFailures:reasons.filter(r=>!derived.some(d=>d.reason===r)),
     repair:{fields:unique(fields),automaticReviewRelease:false,held,reason:!after?'最新カタログに対象なし・原履歴を保持':held?'根拠確認待ち。仕様・対立・アクセス停止を解除しない':'既存の取得元別キューへ。期限・間隔・再試行制限を維持'}};
 }
 function summarize(rows) {
   const byCause={},ids=new Set();
   for(const row of rows){ids.add(row.id);for(const root of row.departureAudit?.roots||[]) (byCause[root.code] ||= new Set()).add(row.id);}
   return {uniqueDeparted:ids.size,overlappingRootCounts:Object.fromEntries(Object.entries(byCause).map(([k,v])=>[k,v.size])),
-    note:'原因は重複するため合算不可。算出不能等の派生理由を独立した離脱枚数へ加算しない'};
+    unconfirmedCauseIds:unique(rows.filter(r=>!r.departureAudit?.comparable).map(r=>r.id)),
+    note:'現在の妨げの重複件数は合算不可。比較記録不足なら当時の離脱原因は未確定。派生理由を独立した離脱枚数へ加算しない'};
 }
 function metadata(profile, codeHash, at) {
-  return {settingsHash:hash({url:profile.urlHash,parameters:profile.parameters}),codeHash,at};
+  return {fingerprintVersion:1,settingsHash:hash({url:profile.urlHash,parameters:profile.parameters}),codeHash,at};
 }
 function codeHash(root) {
   const fs=require('node:fs'),path=require('node:path');
   return hash(['app.js','decision-model.js','price-integrity.js','current-market-model.js','exploration-metrics.js','work/profile_discovery_gates.js',
-    'work/build_priority_search_targets.js','work/profile_departure_audit.js','work/build_buyback_observation_summary.js',
+    'work/build_buyback_observation_summary.js',
     'work/build_psa10_period_statistics.js','work/reconcile_shop_observations.js']
     .map(f=>[f,fs.readFileSync(path.join(root,f),'utf8').replace(/\r\n/g,'\n')]));
 }

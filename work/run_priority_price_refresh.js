@@ -61,7 +61,6 @@ function main() {
   // Rebuild eligibility from saved data before selecting prices; no HTTP or LLM here.
   if (!run('work/build_purchase_limit_audit.js')) throw new Error('Purchase target queue rebuild failed');
   if (!run('work/audit_candidate_reduction.js')) throw new Error('Fixed shared-search recovery queue rebuild failed');
-  if (!run('work/build_priority_search_targets.js')) throw new Error('Profile departure and field-specific recovery queue rebuild failed');
   if (!run('work/audit_purchase_price_recovery.js', ['--baseline'])) throw new Error('Freshness baseline save failed');
   const config = require("./priority_price_queue.js").timingConfig(ROOT);
   const evidenceBefore=require('./efficiency_evidence_queue').pending(read('data/pokemon-cards.json',[]),read('data/shop-buyback-summary.json'));

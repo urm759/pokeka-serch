@@ -14,6 +14,8 @@ assert(inspect(before,{...expired,sourceQuotes:{shop:{price:10000,stock:1,source
 const held=inspect(before,{...expired,specificationHeld:true,priceReview:{conflicted:true}},context);
 assert(held.repair.held);assert.deepEqual(held.repair.fields,[]);assert.equal(held.repair.automaticReviewRelease,false);
 assert(held.roots.some(r=>r.code==='identity-or-specification-hold'));assert(held.roots.some(r=>r.code==='price-conflict-or-evidence-hold'));
+const numericRatio=inspect(before,{...expired,specificationHeld:true,psa9:{price:20000,ratio:50},exclusions:['国内PSA9比率']},context);
+assert(numericRatio.directFailures.includes('国内PSA9比率'));assert(!numericRatio.derived.some(r=>r.reason==='国内PSA9比率'),'a known ratio must not be labelled unavailable because a different gate is held');
 assert(inspect(before,{...expired,priceReview:{manualReview:true},dataQuality:{manualReviewReasons:['未知の要確認']}},context).repair.held);
 assert(!inspect(before,{...expired,priceReview:{manualReview:true},dataQuality:{manualReviewReasons:['古値だけの価格乖離・再確認待ち']}},context).repair.held);
 assert(inspect(before,{...expired,priceReview:{manualReview:true},dataQuality:{manualReviewReasons:['PSA10買取価格が複数グループに分かれて対立']}},context).repair.held);
@@ -53,6 +55,6 @@ const queue=require('./priority_price_queue').load('hareruya2',root,Date.parse('
 assert(queue.queue.some(r=>r.card.id==='returning'&&r.important));assert(queue.queue.some(r=>r.card.id==='ordinary1'&&!r.important));
 write('work/candidate-shop-refresh.json',{checkpoints:{hareruya2:{manualWait:{returning:{url:cards[0].hareruya2Url}}}}});
 assert(!require('./priority_price_queue').load('hareruya2',root).queue.some(r=>r.card.id==='returning'),'recovery cannot override a held URL');
-for(const file of ['daily-fast-update.yml','priority-price-refresh.yml','safe-checkpoint-backfill.yml','refresh-all-site-data.yml','update-pokemon-site.yml','watch-data-health.yml'])
+for(const file of ['daily-fast-update.yml','priority-price-refresh.yml','safe-checkpoint-backfill.yml','refresh-all-site-data.yml','update-pokemon-site.yml','watch-data-health.yml','backfill-data.yml'])
   assert(fs.readFileSync(path.join(__dirname,'../.github/workflows',file),'utf8').includes('node work/test_profile_departure_audit.js'));
 console.log('PASS departure roots vs derivatives, temporal expiry, source failures, stock, field routing, settings/code, overlap and shared review holds');
