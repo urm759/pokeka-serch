@@ -72,7 +72,11 @@ async function fetchEvidence(row) {
       throw error;
     }
     const html = await response.text();
-    evidence.cards[row.id] = { status: integrity.classifyReference(html), checkedAt: new Date().toISOString(), url: row.url, httpStatus: response.status };
+    const proofFile = `work/price-source-${String(row.id).replace(/[^a-zA-Z0-9_-]/g, '_')}.html`;
+    fs.writeFileSync(path.join(root, proofFile), html);
+    evidence.cards[row.id] = { status: integrity.classifyReference(html), checkedAt: new Date().toISOString(), url: row.url, httpStatus: response.status,
+      pageSha256: require('node:crypto').createHash('sha256').update(html).digest('hex'), proofFile,
+      priceKind: /美品の現在価格（フリマ最安）|フリマ最安/.test(html) ? '出品参考価格・成約中央値とは別' : '価格区分要確認' };
     return { success: true };
   } catch (error) {
     evidence.cards[row.id] = { ...old, status: old?.status || "unknown", lastAttemptAt: new Date().toISOString(), error: String(error.message || error) };
@@ -89,7 +93,10 @@ async function main() {
   let failed = 0;
   let stopReason = null;
   let resumeCardId = null;
-  for (const row of suspects) {
+  const requested = String(process.env.PRICE_EVIDENCE_IDS || '').split(',').filter(Boolean)
+    .map(id => cardsById.get(id)).filter(Boolean).map(card => ({id:card.id,url:`https://toreca-souba.com/cards/${encodeURIComponent(card.id)}`}));
+  const targets = [...requested, ...suspects.filter(row=>!requested.some(r=>r.id===row.id))];
+  for (const row of targets) {
     if (fetched >= limit || Date.now() >= deadline) break;
     if (evidence.cards[row.id]?.checkedAt && Date.now() - Date.parse(evidence.cards[row.id].checkedAt) < 7 * 86400000) continue;
     if (evidence.cards[row.id]?.lastAttemptAt && Date.now() - Date.parse(evidence.cards[row.id].lastAttemptAt) < 3600000) continue;

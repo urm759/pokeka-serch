@@ -38,6 +38,11 @@ for(const [name,expected] of Object.entries(baseline.protectedFunctions)) {
   const source=app.replace(/\r\n/g,'\n')
     // Promo identity equivalence is tested separately; all financial gates stay hash-protected.
     .replaceAll(' || searchIndexModel?.matchesCard(card,state.q)','')
+    // Only the audited price-evidence selector changed, not these financial gates.
+    // Its stale/reference/true-conflict behaviour is covered by test_price_comparison.
+    .replaceAll('(card.priceAggregation?.comparison || card.priceAggregation)?.conflicted','card.priceAggregation?.conflicted')
+    .replaceAll('decisionModel.priceReview(priceAggregation).conflicted','priceAggregation.conflicted')
+    .replace('  priceAggregation.comparison = decisionModel.comparablePriceEvidence(priceAggregation, { now: Date.now(), divergencePct: 35 });\n','')
     .replace("reasons.push(efficiency.observation?.reference && !state.observationIncludeReference ? '単体資金効率・観測不足の参考平均を対象外' : efficiency.calculationState", "reasons.push(efficiency.calculationState")
     .replace(/  if \(mode !== 'now' && \(explicitBasis \|\| state.profitSearchBasis\) === 'current-target'\) \{[\s\S]*?\n  }\n/,'')
     .replace(/  if \(diagnostic && normalizedQuery && state.diagnosticSearch\) \{[\s\S]*?\n  }\n/,'')

@@ -163,6 +163,40 @@
     return Date.parse(/^\d{4}-\d{2}-\d{2}$/.test(String(value)) ? `${value}T00:00:00+09:00` : value);
   }
 
+  function comparablePriceEvidence(aggregation = {}, options = {}) {
+    const now = options.now ?? Date.now(), ttl = options.ttlMs ?? 48 * 3600000;
+    const all = [...(aggregation.included || []), ...(aggregation.outliers || []), ...(aggregation.excluded || [])];
+    const seen = new Set(), included = [], excluded = [];
+    for (const row of all) {
+      const reasons = [], at = observationTime(row.updatedAt);
+      if (!(Number(row.value) > 0)) reasons.push('価格未取得');
+      if (row.valid === false || row.conditionAccepted === false || row.languageAccepted === false || row.quarantined)
+        reasons.push(row.quarantineReason || row.invalidReason || '仕様・状態の照合保留');
+      if (row.kind !== '販売価格' && row.kind !== '成約相場') reasons.push('実売根拠未確認の参考価格');
+      if (typeof row.updatedAt !== 'string' || !row.updatedAt.includes('T')) reasons.push('個別確認時刻未取得');
+      if (!Number.isFinite(at)) reasons.push('個別確認日時不明');
+      else if (at > now) reasons.push('個別確認日時が未来');
+      else if (now - at > ttl) reasons.push('古値との比較・48時間外');
+      let origin = row.upstreamSource || row.originId || row.merchantId;
+      if (!origin && row.kind === '成約相場') reasons.push('成約集計の上流元・独立性未確認');
+      if (!origin) try { origin = new URL(row.url).hostname.replace(/^www\./, ''); } catch {}
+      if (!origin) reasons.push('独立した採用元の根拠不足');
+      if (origin && seen.has(origin)) reasons.push('同一店舗・転載の重複');
+      const item = { ...row, comparisonReasons: reasons };
+      if (reasons.length) excluded.push(item);
+      else { included.push(item); seen.add(origin); }
+    }
+    const prices = included.map(r => Number(r.value)), center = prices.length ? median(prices) : null;
+    const spreadPct = prices.length > 1 ? (Math.max(...prices) - Math.min(...prices)) / center * 100 : 0;
+    const priceDivergence = prices.length > 1 && spreadPct > Number(options.divergencePct ?? 35);
+    return { version: 1, included, excluded, value: center, spreadPct, priceDivergence,
+      conflicted: priceDivergence, confidence: included.length < 2 || priceDivergence ? '低' : included.length >= 3 ? '高' : '中',
+      at: new Date(now).toISOString(), ttlMs: ttl,
+      reason: priceDivergence ? '新鮮な同一仕様・同等状態の価格が対立' : included.length < 2 ? '新鮮な独立根拠が2元未満' : '新鮮な比較可能価格に対立なし' };
+  }
+
+  function priceReview(aggregation = {}) { return aggregation?.comparison || aggregation || {}; }
+
   function referenceFreshness(aggregation = {}, now = Date.now(), ttlMs = 48 * 3600000) {
     const included = aggregation.included || [];
     const fresh = row => { const t = observationTime(row.updatedAt); return Number.isFinite(t) && t <= now && now - t <= ttlMs; };
@@ -1107,5 +1141,5 @@
     };
   }
 
-  return { MODEL_VERSION, referenceFreshness, purchasePriceState, shopObservation, observationTime, storeOffers, aggressivePurchaseZone, aggregatePrices, bargainDecisionEligible, buybackExitProfit, conservativeBuybackExit, economicsFromExpectedSale, exitPolicyCaps, shouldIncludeVerdict, capRoundingStep, capitalLimits, capitalPlan, economicsScenarioMatrix, expectedEconomics, gradeAssumptions, isSuspectedCardMismatch, matchConfidenceLabel, maxBuyPrice, median, operationalCap, operationalCapConcentration, portfolioPlan, portfolioStress, purchaseAvailability, purchaseCaps, purchaseDecision, purchaseLimitMarketRatio, resilienceMetrics, resolvePsa9Price, targetProfitMaxBuyPrice, weightedMedian };
+  return { MODEL_VERSION, comparablePriceEvidence, priceReview, referenceFreshness, purchasePriceState, shopObservation, observationTime, storeOffers, aggressivePurchaseZone, aggregatePrices, bargainDecisionEligible, buybackExitProfit, conservativeBuybackExit, economicsFromExpectedSale, exitPolicyCaps, shouldIncludeVerdict, capRoundingStep, capitalLimits, capitalPlan, economicsScenarioMatrix, expectedEconomics, gradeAssumptions, isSuspectedCardMismatch, matchConfidenceLabel, maxBuyPrice, median, operationalCap, operationalCapConcentration, portfolioPlan, portfolioStress, purchaseAvailability, purchaseCaps, purchaseDecision, purchaseLimitMarketRatio, resilienceMetrics, resolvePsa9Price, targetProfitMaxBuyPrice, weightedMedian };
 });

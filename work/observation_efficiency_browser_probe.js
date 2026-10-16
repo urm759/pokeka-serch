@@ -44,9 +44,12 @@ probeButton.onclick=()=>setTimeout(async()=>{
   const cards=calculatedCardsForSearch(state.cards);
   const payload=JSON.stringify(cards.map(c=>[c.id,c.buyLimits,c.purchaseDecision]));
   const financialHash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(payload)))).map(v=>v.toString(16).padStart(2,'0')).join('');
+  const arithmetic=JSON.stringify(cards.map(c=>[c.id,c.price,c.psa10,c.buyLimits?.clean?.maxPrice,
+    c.buyLimits?.clean?.currentBreakEvenRaw,c.buyLimits?.clean?.normalMaxPrice,c.buyLimits?.clean?.stressBreakEvenMaxPrice,c.buyLimits?.clean?.assumptions]));
+  const arithmeticHash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(arithmetic)))).map(v=>v.toString(16).padStart(2,'0')).join('');
   const ids=[...document.querySelectorAll('article.card')].map(e=>e.dataset.cardId || e.querySelector('[data-card-detail]')?.dataset.cardDetail);
   const resources=performance.getEntriesByType('resource').filter(r=>r.name.includes('/data/'));
-  probeResult.textContent=JSON.stringify({width:innerWidth,loadedCards:cards.length,displayed:ids.length,ids,financialHash,samples,
+  probeResult.textContent=JSON.stringify({width:innerWidth,loadedCards:cards.length,displayed:ids.length,ids,financialHash,arithmeticHash,samples,
     initialJsonBytes:initialMetrics.reduce((n,r)=>n+r.bytes,0),jsonParseMs:initialMetrics.reduce((n,r)=>n+r.jsonParseMs,0),decodeMs:initialMetrics.reduce((n,r)=>n+r.decodeMs,0),
     transferredBytes:resources.reduce((sum,r)=>sum+r.transferSize,0),decodedBytes:resources.reduce((sum,r)=>sum+r.decodedBodySize,0),
     lazyHistoryRequests:resources.filter(r=>/psa10-periods|psa10-price-history/.test(r.name)).map(r=>r.name),

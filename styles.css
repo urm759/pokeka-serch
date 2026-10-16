@@ -8,6 +8,12 @@
   --accent:#7dd3fc;
   --accent2:#38d996;
   --accent3:#f59e0b;
+  --value-buy:#8ed8ff;
+  --value-psa:#d2b6ff;
+  --value-profit:#8aefb2;
+  --value-loss:#ffabb4;
+  --value-neutral:#d1d9e9;
+  --value-warning:#ffd28a;
   --shadow:0 28px 70px rgba(0,0,0,.38);
 }
 .release-year-filter { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 12px 0; }
@@ -1709,3 +1715,22 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .median-efficiency > div { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .5rem; margin: .3rem 0; }
 .median-efficiency span, .median-efficiency small { overflow-wrap: anywhere; }
 .median-efficiency small { display: block; }
+
+/* Semantic roles are shared by list and lazy detail; labels/signs remain visible. */
+.price-cell[data-price-kind="store"] > strong,
+.price-cell[data-price-kind="current-target"] > strong,
+.price-cell[data-price-kind="break-even"] > strong,
+.raw-reference-median b,
+.candidate-profit-comparison > strong,
+.break-even-detail strong { color:var(--value-buy); }
+.price-cell[data-price-kind="psa10"] > strong,
+.grade-rate-summary strong,
+.psa10-period-compact strong { color:var(--value-psa); }
+.card .positive,.current-market-profit .positive,.candidate-profit-comparison .positive,
+.card-efficiency .positive,.period-efficiency .positive { color:var(--value-profit); }
+.card .negative,.current-market-profit .negative,.candidate-profit-comparison .negative,
+.card-efficiency .negative,.period-efficiency .negative { color:var(--value-loss); }
+.card .neutral,.card-efficiency .neutral,.period-efficiency .neutral { color:var(--value-neutral); }
+.card .value-unavailable,.card-efficiency .value-unavailable,.period-efficiency .value-unavailable,
+.reference-warning,.price-stale,.data-quality-notice.manual,.efficiency-reference { color:var(--value-warning); }
+.card [data-price-kind] > strong.value-unavailable { color:var(--value-warning); }

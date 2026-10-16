@@ -16,7 +16,9 @@
       .filter((row) => {
         const date = String(row.updatedAt || "").slice(0, 10);
         const age = date && asOf ? (Date.parse(`${asOf}T00:00:00Z`) - Date.parse(`${date}T00:00:00Z`)) / 86400000 : null;
-        return row.kind === "販売価格" && row.valid !== false && row.conditionAccepted !== false && row.languageAccepted !== false && Number(row.value) > 0 && row.stale !== true && !(age > 45);
+        const observed = row.updatedAt ? Date.parse(/^\d{4}-\d{2}-\d{2}$/.test(row.updatedAt) ? row.updatedAt+'T00:00:00+09:00' : row.updatedAt) : NaN;
+        const fresh = options.now == null ? !(age > 45) : Number.isFinite(observed) && observed <= options.now && options.now-observed <= (options.ttlMs ?? 48*3600000);
+        return row.kind === "販売価格" && row.valid !== false && row.conditionAccepted !== false && row.languageAccepted !== false && Number(row.value) > 0 && row.stale !== true && !row.quarantined && fresh;
       })
       .map((row) => ({ source: row.source, value: Number(row.value) }))
       .sort((left, right) => left.value - right.value);
@@ -36,7 +38,8 @@
       corroboratingShops: cluster.map((row) => row.source),
       shopMedian,
       ratio,
-      reason: disputed ? `状態A参考価格と複数店舗価格が${Math.max(ratio, 1 / ratio).toFixed(1)}倍乖離。成約根拠・カード仕様を要確認` : null,
+      comparisonKind: 'reference-evidence-gap',
+      reason: disputed ? `状態A参考価格と複数店舗価格が${Math.max(ratio, 1 / ratio).toFixed(1)}倍乖離。参考価格の実売根拠・カード仕様を要確認（最新店舗同士の対立とは別）` : null,
     };
   }
 

@@ -45,6 +45,7 @@ jobs:
         id: catchup_validation
         run: |
           node work/test_price_integrity.js
+          node work/test_price_comparison.js
           node work/test_shop_observation.js
           node work/test_purchase_price_recovery.js
           node work/test_buyback_scenario_limits.js
