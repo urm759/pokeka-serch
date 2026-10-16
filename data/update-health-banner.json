@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-16T20:13:48.432Z",
+  "generatedAt": "2026-10-16T20:15:49.883Z",
   "sourceLastSuccessAt": "2026-10-16T06:24:57.304Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-10-16T18:14:25.600Z",
-    "lastSuccessAt": "2026-10-16T18:14:25.600Z",
-    "runId": "38945558426",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/38945558426"
+    "lastAttemptAt": "2026-10-16T20:15:49.874Z",
+    "lastSuccessAt": "2026-10-16T20:15:49.874Z",
+    "runId": "38959659616",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/38959659616"
   },
   "issues": [
     {
@@ -25,13 +25,13 @@
     {
       "key": "safe:yuyutei:manual-action-required:GitHub ActionsからHTTP #。正規アクセス確認待ち",
       "category": "アクセス・手動対応待ち",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38799710015",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38957494414",
       "reason": "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち"
     },
     {
       "key": "safe:priceEvidence:stalled:#回連続でチェックポイント進捗なし",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38799710015",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38957494414",
       "reason": "状態A価格確認: 2回連続でチェックポイント進捗なし"
     },
     {
@@ -61,13 +61,13 @@
     {
       "key": "source:shopBuyback:manual-wait",
       "category": "アクセス・手動対応待ち",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38936053043",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38959659616",
       "reason": "Web買取表: 買取ホムラ（郵送）: existing data was preserved: 取得0件。正常データは保持"
     },
     {
       "key": "source:shopBuyback:stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38936053043",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38959659616",
       "reason": "Web買取表: 更新期限超過（カード別鮮度 未記録%）"
     },
     {
@@ -89,10 +89,10 @@
       "reason": "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）"
     },
     {
-      "key": "pc:psa:PC観測未受信",
-      "category": "確認が必要",
+      "key": "pc:psa:独立監視未登録",
+      "category": "アクセス・手動対応待ち",
       "url": null,
-      "reason": "PC側PSA: PC観測未受信 / 30時間以内の独立タスク観測なし。PC停止・観測起動失敗・未公開を区別して確認"
+      "reason": "PC側PSA: 独立監視未登録 / Windowsのタスク登録権限が不足。通常PSAのfinally観測は稼働するが、起動前失敗を捕捉する独立タスクは未登録"
     },
     {
       "key": "priority-prices:cadence-stale",
@@ -121,7 +121,7 @@
     "PSA Japan料金: PSA Japan refresh failed; previous verified values retained: PSA Japan HTTP 403",
     "PSA Japan料金: 更新期限超過（カード別鮮度 未記録%）",
     "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）",
-    "PC側PSA: PC観測未受信 / 30時間以内の独立タスク観測なし。PC停止・観測起動失敗・未公開を区別して確認",
+    "PC側PSA: 独立監視未登録 / Windowsのタスク登録権限が不足。通常PSAのfinally観測は稼働するが、起動前失敗を捕捉する独立タスクは未登録",
     "重要価格更新：設定2時間に対し実績成功間隔（直近最大）22.22時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能",
     "購入価格高速更新が3回連続で進捗なし・期限超過あり"
   ],
