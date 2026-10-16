@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-16T03:09:54.713Z",
+  "generatedAt": "2026-10-16T06:39:45.194Z",
   "llmCalls": 0,
   "codexCalls": 0,
   "retryPolicy": {
@@ -27,7 +27,7 @@
     {
       "source": "psaOfficial",
       "label": "PSA公式・PC正規認証",
-      "remaining": 1226,
+      "remaining": 1228,
       "queueDefinition": "あとPSAだけで分析可能な国内カード。全PSA未取得とは別",
       "sourceState": "partial",
       "failureScope": "url",
@@ -107,17 +107,17 @@
       "firstPassObservationDays": 0,
       "firstPassProgressField": "publicNewRecords",
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
-      "usableNet": 0,
+      "usableNet": 3,
       "observationPeriod": {
-        "from": "2026-10-16T03:00:17.644Z",
-        "to": "2026-10-16T03:09:52.090Z"
+        "from": "2026-10-16T06:33:09.303Z",
+        "to": "2026-10-16T06:39:42.488Z"
       },
       "sinceBaseline": {
         "newLinked": 3951,
         "validAdded": 3951,
         "validLost": 257,
         "usableNet": 3694,
-        "freshnessRecovered": 3493
+        "freshnessRecovered": 2764
       },
       "freshness": null
     },
@@ -253,10 +253,10 @@
       "firstPassProgressField": "newlyVisitedProducts",
       "firstPassDaysEstimate": 0,
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
-      "usableNet": 0,
+      "usableNet": 3,
       "observationPeriod": {
-        "from": "2026-10-16T03:00:17.644Z",
-        "to": "2026-10-16T03:09:52.090Z"
+        "from": "2026-10-16T06:33:09.303Z",
+        "to": "2026-10-16T06:39:42.488Z"
       },
       "sinceBaseline": {
         "newLinked": 668,
@@ -564,8 +564,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-16T03:00:17.644Z",
-        "to": "2026-10-16T03:09:52.090Z"
+        "from": "2026-10-16T06:33:09.303Z",
+        "to": "2026-10-16T06:39:42.488Z"
       },
       "sinceBaseline": {
         "newLinked": 634,
@@ -578,13 +578,13 @@
     }
   ],
   "psaOnly": {
-    "count": 1226,
+    "count": 1228,
     "causes": {
       "PSA個別URL保留・他セット巡回継続": 13,
       "仕様・セット曖昧・手動確認待ち": 315,
       "日本語版根拠未確認・言語照合待ち": 7,
       "仕様不一致で保留・完全仕様表の再確認待ち": 182,
-      "公式セットURL未登録・正規候補確認待ち": 702,
+      "公式セットURL未登録・正規候補確認待ち": 704,
       "PC正規セット取得へ接続済み・実取得待ち": 7
     },
     "cards": [
@@ -5245,12 +5245,6 @@
         "cause": "仕様不一致で保留・完全仕様表の再確認待ち"
       },
       {
-        "id": "pk-1691",
-        "setCode": "CP6",
-        "url": "https://www.psacard.com/pop/tcg-cards/2016/pokemon-japanese-expansion-20th-anniversary/139101",
-        "cause": "仕様不一致で保留・完全仕様表の再確認待ち"
-      },
-      {
         "id": "pk-48319",
         "setCode": "EM",
         "url": null,
@@ -6113,6 +6107,12 @@
         "setCode": "058LP",
         "url": null,
         "cause": "仕様・セット曖昧・手動確認待ち"
+      },
+      {
+        "id": "x-91951",
+        "setCode": "E5",
+        "url": null,
+        "cause": "公式セットURL未登録・正規候補確認待ち"
       },
       {
         "id": "pk-45895",
@@ -7411,6 +7411,12 @@
         "cause": "公式セットURL未登録・正規候補確認待ち"
       },
       {
+        "id": "x-455451",
+        "setCode": "PMCG12",
+        "url": null,
+        "cause": "仕様不一致で保留・完全仕様表の再確認待ち"
+      },
+      {
         "id": "pk-18549",
         "setCode": "CP3",
         "url": null,
@@ -7617,6 +7623,12 @@
       {
         "id": "pk-20971",
         "setCode": "PTS",
+        "url": null,
+        "cause": "公式セットURL未登録・正規候補確認待ち"
+      },
+      {
+        "id": "pk-18534",
+        "setCode": "CP3",
         "url": null,
         "cause": "公式セットURL未登録・正規候補確認待ち"
       },
@@ -7948,9 +7960,9 @@
   },
   "progress": {
     "listed": 12544,
-    "analyzable": 2265,
-    "pending": 10279,
-    "oneAway": 1707
+    "analyzable": 2270,
+    "pending": 10274,
+    "oneAway": 1708
   },
   "newlyAnalyzable": 0,
   "note": "一時障害の再試行、個別URL隔離、取得元停止を区別。未取得をデータ不存在に変更しない。巡回完了と全項目取得・最新価格は別"

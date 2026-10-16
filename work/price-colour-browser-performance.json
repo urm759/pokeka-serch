@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-16",
+  "baselineCode": "3fe6b3d4",
+  "displayed": 60,
+  "repetitions": 3,
+  "environment": "Same desktop IAB, viewport 1440x1000 and 390x844; not a physical phone. Fixed final source data and evaluation time; local gzip. DOM timings exclude paint.",
+  "checks": {"displayedIdsEqual": true, "arithmeticHashesEqual": true, "initialBytesEqual": true, "decisionHashesEqual": false},
+  "decisionDifference": "Expected evidence-review changes, independently recorded in data/price-comparison-audit.json. No assertion that review verdicts are unchanged.",
+  "initialJsonBytes": {"normal": 17342423, "double": 31914801},
+  "transferBytesIncludingOneLazyDetail": {"normal": 2696327, "double": 4507356},
+  "samples": [
+    {"width":1440,"cards":2270,"mode":"before","fullCalculationMs":[779.4,618,580.2],"searchDomMs":[332.5,155.6,150.1],"conditionDomMs":[23.8,18,18.4],"detailDomMs":[28.5,24.8,27.4],"jsonParseMs":63.1},
+    {"width":1440,"cards":2270,"mode":"after","fullCalculationMs":[776.1,663.6,727],"searchDomMs":[330.4,158.1,154.8],"conditionDomMs":[21.4,19.1,18.7],"detailDomMs":[27.7,24.4,24.8],"jsonParseMs":52.3},
+    {"width":1440,"cards":4540,"mode":"before","fullCalculationMs":[1223.2,1095.4,1096.7],"searchDomMs":[452.3,334.1,274],"conditionDomMs":[24.4,21.5,21],"detailDomMs":[30.9,26,25.7],"jsonParseMs":118.7},
+    {"width":1440,"cards":4540,"mode":"after","fullCalculationMs":[1387.5,1355.8,1228.8],"searchDomMs":[478.9,300,286.6],"conditionDomMs":[25.6,280.6,23.9],"conditionCalculationMs":[0.1,1271.7,0],"detailDomMs":[34.9,28.7,29],"jsonParseMs":126.9},
+    {"width":390,"cards":2270,"mode":"before","fullCalculationMs":[690.1,586.9,573.9],"searchDomMs":[329.3,157,146.3],"conditionDomMs":[18.7,19,17.7],"detailDomMs":[27.8,23.3,25.8],"jsonParseMs":52.6},
+    {"width":390,"cards":2270,"mode":"after","fullCalculationMs":[776.8,671.1,633.2],"searchDomMs":[324.5,148.2,148.9],"conditionDomMs":[20.2,20.9,17.4],"detailDomMs":[25,22.4,25.1],"jsonParseMs":52.5},
+    {"width":390,"cards":4540,"mode":"before","fullCalculationMs":[1281.2,1201.6,1098.9],"searchDomMs":[649.8,315.6,291.5],"conditionDomMs":[24.1,25.3,24.6],"detailDomMs":[28.7,35.9,30.1],"jsonParseMs":117.2},
+    {"width":390,"cards":4540,"mode":"after","fullCalculationMs":[1524.3,1586.4,1313.2],"searchDomMs":[474.9,349.5,293.2],"conditionDomMs":[25.9,28.5,23.5],"detailDomMs":[30,29.7,27.2],"jsonParseMs":114}
+  ],
+  "limits": "Full recalculation increased; not a speed improvement. One PC double condition sample invalidated the cache and recalculated; retained rather than discarded. Other condition calculations 0-0.2ms. Long histories and comparison audits remain lazy; one opened card fetched one PSA10 period chunk. Performance optimization remains open."
+}
