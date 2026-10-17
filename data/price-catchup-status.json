@@ -1,28 +1,30 @@
 {
-  "startedAt": "2026-10-16T23:06:10.683Z",
-  "runId": "38979125005",
+  "startedAt": "2026-10-17T06:13:41.787Z",
+  "runId": "39009080407",
   "event": "schedule",
   "route": "既存監視ジョブの空白補完",
   "status": "acquired-saved",
   "allowed": true,
-  "ageMs": 10823793,
+  "ageMs": 25650536,
   "minimumIntervalMs": 9000000,
   "reason": "定期の空白・既存の期限順キューで補完",
   "llmCalls": 0,
   "codexCalls": 0,
-  "sourceFailures": [],
-  "acquisitionStatus": "process-success",
-  "endedAt": "2026-10-16T23:14:13.564Z",
-  "durationMs": 482881,
+  "sourceFailures": [
+    "work/run_tracked_update.js"
+  ],
+  "acquisitionStatus": "partial-with-failure",
+  "endedAt": "2026-10-17T06:23:08.630Z",
+  "durationMs": 566843,
   "outcomes": {
-    "baselineAt": "2026-10-16T23:06:10.683Z",
+    "baselineAt": "2026-10-17T06:13:41.787Z",
     "commonCards": 12544,
     "addedCards": 0,
     "removedCards": 0,
     "newlyAnalyzable": 0,
     "lostAnalyzable": 0,
-    "filledCards": 0,
-    "filledItems": 0,
+    "filledCards": 6,
+    "filledItems": 6,
     "sources": {
       "cardrush": {
         "newLinked": 0,
@@ -66,6 +68,9 @@
         "usableNet": 0,
         "freshnessRecovered": 0
       }
+    },
+    "referenceEvidenceRecovered": {
+      "buybackExitEvidence": 273
     }
   },
   "publicationStatus": "保存済み・公開照合待ち"
