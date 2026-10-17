@@ -17,27 +17,27 @@
           "detectedAt": "2026-09-28T22:23:11.192Z"
         }
       },
-      "checkedAt": "2026-10-16T19:48:05.282Z",
+      "checkedAt": "2026-10-17T19:00:15.058Z",
       "batches": 0,
-      "durationMs": 3,
+      "durationMs": 4,
       "allocatedMs": 360000
     },
     "priceEvidence": {
       "status": "stalled",
       "reason": "2回連続でチェックポイント進捗なし",
       "position": {
-        "remaining": 66,
-        "inspected": 629,
+        "remaining": 63,
+        "inspected": 631,
         "unavailable": 27,
         "resumeCardId": null,
         "stopReason": null
       },
-      "checkedAt": "2026-10-16T19:48:23.921Z",
-      "batches": 2,
+      "checkedAt": "2026-10-17T19:00:41.314Z",
+      "batches": 3,
       "failures": 0,
       "retry": null,
-      "durationMs": 18631,
-      "allocatedMs": 719997
+      "durationMs": 26059,
+      "allocatedMs": 719996
     },
     "psaLinkage": {
       "status": "queue-updated",
@@ -46,46 +46,46 @@
         "unlinked": 1234,
         "note": "候補整理のみ。PSA公式の認証取得とは別工程"
       },
-      "checkedAt": "2026-10-16T19:48:24.123Z",
+      "checkedAt": "2026-10-17T19:00:41.566Z",
       "batches": 1,
       "failures": 0,
       "retry": null,
-      "durationMs": 201,
+      "durationMs": 252,
       "allocatedMs": 60000
     },
     "torecacamp": {
       "status": "partial",
       "reason": null,
       "position": {
-        "sitemap": 25,
-        "productIndex": 874,
+        "sitemap": 28,
+        "productIndex": 878,
         "totalSitemaps": 46,
         "visitedProducts": 46153,
         "catalogCount": 6562,
         "lastFailure": null,
         "sourceRetry": null,
-        "retryQueue": 0,
+        "retryQueue": 1,
         "failedSitemaps": 0,
         "maintenance": {
-          "sitemapIndex": 24,
-          "entryIndex": 874,
+          "sitemapIndex": 27,
+          "entryIndex": 878,
           "cycles": 1,
-          "refreshed": 4442,
+          "refreshed": 5046,
           "newLinks": 60,
-          "checkedAt": "2026-10-16T20:00:14.544Z"
+          "checkedAt": "2026-10-17T19:12:18.830Z"
         },
         "firstPassCompletedAt": "2026-10-08T21:56:31.044Z"
       },
-      "checkedAt": "2026-10-16T20:00:14.773Z",
-      "batches": 19,
+      "checkedAt": "2026-10-17T19:12:19.120Z",
+      "batches": 18,
       "failures": 0,
       "retry": null,
-      "durationMs": 710667,
+      "durationMs": 697574,
       "allocatedMs": 720000
     }
   },
-  "startedAt": "2026-10-16T19:48:05.278Z",
+  "startedAt": "2026-10-17T19:00:15.052Z",
   "status": "partial-with-stop",
-  "endedAt": "2026-10-16T20:00:14.791Z",
-  "durationMs": 729513
+  "endedAt": "2026-10-17T19:12:19.141Z",
+  "durationMs": 724090
 }
