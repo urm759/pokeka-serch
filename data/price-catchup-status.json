@@ -1,11 +1,11 @@
 {
-  "startedAt": "2026-10-17T06:13:41.787Z",
-  "runId": "39009080407",
+  "startedAt": "2026-10-17T11:11:21.705Z",
+  "runId": "39027702305",
   "event": "schedule",
   "route": "既存監視ジョブの空白補完",
   "status": "acquired-saved",
   "allowed": true,
-  "ageMs": 25650536,
+  "ageMs": 17859359,
   "minimumIntervalMs": 9000000,
   "reason": "定期の空白・既存の期限順キューで補完",
   "llmCalls": 0,
@@ -14,17 +14,17 @@
     "work/run_tracked_update.js"
   ],
   "acquisitionStatus": "partial-with-failure",
-  "endedAt": "2026-10-17T06:23:08.630Z",
-  "durationMs": 566843,
+  "endedAt": "2026-10-17T11:19:58.183Z",
+  "durationMs": 516478,
   "outcomes": {
-    "baselineAt": "2026-10-17T06:13:41.787Z",
+    "baselineAt": "2026-10-17T11:11:21.705Z",
     "commonCards": 12544,
     "addedCards": 0,
     "removedCards": 0,
     "newlyAnalyzable": 0,
     "lostAnalyzable": 0,
-    "filledCards": 6,
-    "filledItems": 6,
+    "filledCards": 8,
+    "filledItems": 8,
     "sources": {
       "cardrush": {
         "newLinked": 0,
@@ -38,7 +38,7 @@
         "validAdded": 0,
         "validLost": 0,
         "usableNet": 0,
-        "freshnessRecovered": 38
+        "freshnessRecovered": 42
       },
       "yuyutei": {
         "newLinked": 0,
@@ -70,7 +70,7 @@
       }
     },
     "referenceEvidenceRecovered": {
-      "buybackExitEvidence": 273
+      "buybackExitEvidence": 7
     }
   },
   "publicationStatus": "保存済み・公開照合待ち"
