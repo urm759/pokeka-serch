@@ -1,13 +1,21 @@
 {
   "version": 1,
   "status": "observed",
-  "lastAttemptAt": "2026-10-17T14:38:47.795Z",
-  "runId": "39040707654",
-  "url": "https://github.com/urm759/pokeka-serch/actions/runs/39040707654",
+  "lastAttemptAt": "2026-10-17T15:47:10.248Z",
+  "runId": "39046456215",
+  "url": "https://github.com/urm759/pokeka-serch/actions/runs/39046456215",
   "llmCalls": 0,
   "codexCalls": 0,
-  "newIssueCount": 0,
+  "newIssueCount": 1,
   "unpublishedData": [
+    {
+      "runId": 39046248399,
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/39046248399",
+      "artifactId": 12105763300,
+      "name": "priority-price-recovery-39046248399-1",
+      "bytes": 49085137,
+      "status": "退避あり・未検証／公開照合待ち"
+    },
     {
       "runId": 38968711261,
       "url": "https://github.com/urm759/pokeka-serch/actions/runs/38968711261",
@@ -25,26 +33,18 @@
       "status": "退避あり・未検証／公開照合待ち"
     },
     {
-      "runId": 38774898272,
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38774898272",
-      "artifactId": 11993417327,
-      "name": "priority-price-recovery-38774898272-1",
-      "bytes": 54338309,
-      "status": "退避あり・未検証／公開照合待ち"
-    },
-    {
-      "runId": 39027702305,
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/39027702305",
-      "artifactId": 12098939868,
-      "name": "monitor-recovery-39027702305-1",
-      "bytes": 57893180,
+      "runId": 39040707654,
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/39040707654",
+      "artifactId": 12104357128,
+      "name": "monitor-recovery-39040707654-1",
+      "bytes": 58077386,
       "status": "退避あり・未検証／公開照合待ち"
     }
   ],
   "lastMonitorRun": {
-    "id": 39031984376,
-    "conclusion": "success",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/39031984376"
+    "id": 39040707654,
+    "conclusion": "failure",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/39040707654"
   },
   "freshness": {
     "baselineAt": "2026-10-03T23:15:30.935Z",
@@ -357,5 +357,5 @@
     }
   },
   "publicationStatus": "監視保存済み・公開工程は別",
-  "lastSuccessAt": "2026-10-17T14:38:47.795Z"
+  "lastSuccessAt": "2026-10-17T15:47:10.248Z"
 }
