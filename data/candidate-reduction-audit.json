@@ -1,27 +1,27 @@
 {
   "version": 1,
-  "at": "2026-10-17T19:30:29.783Z",
+  "at": "2026-10-17T19:35:07.062Z",
   "referenceUrlHash": "3820c03297c011e7b8271c1c23ea3b2a59f7d0f41cbca60cfa861a09c9dd9eb6",
   "counts": {
     "catalog": 12544,
-    "presetOnly": 330,
-    "selected": 73,
-    "referenceExploration": 73,
+    "presetOnly": 325,
+    "selected": 71,
+    "referenceExploration": 71,
     "now": 0,
     "purchasePriceWaiting": 12,
-    "periodHeld": 73,
+    "periodHeld": 71,
     "purchase": {
-      "available": 61,
+      "available": 59,
       "unacquired": 5,
       "out-of-stock": 7
     },
     "overlap": {
-      "価格帯・相場比": 184,
-      "国内PSA9比率": 170
+      "価格帯・相場比": 182,
+      "国内PSA9比率": 169
     },
     "sequential": {
-      "価格帯・相場比": 87,
-      "国内PSA9比率": 170
+      "価格帯・相場比": 85,
+      "国内PSA9比率": 169
     }
   },
   "savedExtraConditionComparison": {
@@ -48,7 +48,7 @@
     },
     "counts": {
       "catalog": 12544,
-      "presetOnly": 330,
+      "presetOnly": 325,
       "selected": 5,
       "referenceExploration": 5,
       "now": 0,
@@ -61,10 +61,10 @@
         "単体資金効率算出不可・在庫なし": 25,
         "購入価格条件・在庫なし": 25,
         "仕入れ余裕率・上限算出不可": 132,
-        "価格帯・相場比": 184,
-        "単体年換算資金効率条件": 118,
-        "現在買える状態A価格範囲": 100,
-        "国内PSA9比率": 170,
+        "価格帯・相場比": 182,
+        "単体年換算資金効率条件": 113,
+        "現在買える状態A価格範囲": 98,
+        "国内PSA9比率": 169,
         "単体資金効率算出不可・期限超過・再確認待ち": 42,
         "購入価格条件・期限超過・再確認待ち": 42,
         "仕入れ余裕率条件": 31,
@@ -78,7 +78,7 @@
       },
       "sequential": {
         "単体資金効率算出不可・在庫なし": 25,
-        "単体年換算資金効率条件": 118,
+        "単体年換算資金効率条件": 113,
         "現在買える状態A価格範囲": 20,
         "単体資金効率算出不可・期限超過・再確認待ち": 42,
         "国内PSA9比率": 1,
@@ -91,15 +91,15 @@
       }
     },
     "commonCards": 12544,
-    "before": 73,
+    "before": 71,
     "after": 5,
-    "lostCount": 68,
+    "lostCount": 66,
     "gainedCount": 0,
     "addedCards": 0,
     "removedCards": 0,
     "newSelected": 0,
     "overlap": {
-      "単体年換算資金効率条件": 42,
+      "単体年換算資金効率条件": 40,
       "仕入れ余裕率条件": 10,
       "単体資金効率算出不可・買取出口データ不足・フリマへの自動切替なし": 14,
       "単体資金効率算出不可・未取得": 5,
@@ -109,7 +109,7 @@
       "購入価格条件・在庫なし": 7
     },
     "sequential": {
-      "単体年換算資金効率条件": 42,
+      "単体年換算資金効率条件": 40,
       "単体資金効率算出不可・買取出口データ不足・フリマへの自動切替なし": 14,
       "単体資金効率算出不可・未取得": 5,
       "単体資金効率算出不可・在庫なし": 7
@@ -426,84 +426,6 @@
         "newlyFailed": [
           "単体年換算資金効率条件",
           "仕入れ余裕率条件"
-        ],
-        "preexisting": []
-      },
-      {
-        "id": "pk-38392",
-        "name": "リザードンVSTAR SAR[s12a 212/172](ハイクラスパック「VSTARユニバース」)",
-        "before": {
-          "name": "リザードンVSTAR SAR[s12a 212/172](ハイクラスパック「VSTARユニバース」)",
-          "selected": true,
-          "preset": true,
-          "now": false,
-          "exclusions": [],
-          "holds": [
-            "予測期間不一致・参考探索のみ"
-          ],
-          "purchaseState": "available",
-          "periodHeld": true,
-          "referenceBasis": "limit",
-          "raw": 10000,
-          "psa10": 28000,
-          "store": 11000,
-          "storeSource": "晴れる屋2状態A",
-          "storeObservedAt": "2026-10-17T11:15:21.291Z",
-          "searchBuyPrice": 2000,
-          "psa9Price": 10500,
-          "psa9Ratio": 104.76190476190477,
-          "psa9BuyKind": "store",
-          "psa9Type": "aggregate",
-          "officialRate": 86.56588030364938,
-          "officialTotal": 46501,
-          "psa10Net": 23259,
-          "psa10Profit": 10279,
-          "expectedProfit": 3418,
-          "expectedRoi": 26.332819722650232,
-          "psa10Roi": 79.19106317411402,
-          "exit": "買取店・フリマの低い手取り",
-          "limit": 2000,
-          "psaMissing": false,
-          "specificationHeld": false
-        },
-        "after": {
-          "name": "リザードンVSTAR SAR[s12a 212/172](ハイクラスパック「VSTARユニバース」)",
-          "selected": false,
-          "preset": true,
-          "now": false,
-          "exclusions": [
-            "単体年換算資金効率条件"
-          ],
-          "holds": [
-            "予測期間不一致・参考探索のみ"
-          ],
-          "purchaseState": "available",
-          "periodHeld": true,
-          "referenceBasis": "limit",
-          "raw": 10000,
-          "psa10": 28000,
-          "store": 11000,
-          "storeSource": "晴れる屋2状態A",
-          "storeObservedAt": "2026-10-17T11:15:21.291Z",
-          "searchBuyPrice": 2000,
-          "psa9Price": 10500,
-          "psa9Ratio": 104.76190476190477,
-          "psa9BuyKind": "store",
-          "psa9Type": "aggregate",
-          "officialRate": 86.56588030364938,
-          "officialTotal": 46501,
-          "psa10Net": 23259,
-          "psa10Profit": 10279,
-          "expectedProfit": 3418,
-          "expectedRoi": 26.332819722650232,
-          "psa10Roi": 79.19106317411402,
-          "exit": "買取店・フリマの低い手取り",
-          "limit": 2000,
-          "psaMissing": false,
-          "specificationHeld": false
-        },
-        "newlyFailed": [
-          "単体年換算資金効率条件"
         ],
         "preexisting": []
       },
@@ -967,84 +889,6 @@
           "psa10Roi": 53.72080088987764,
           "exit": "買取店・フリマの低い手取り",
           "limit": 7000,
-          "psaMissing": false,
-          "specificationHeld": false
-        },
-        "newlyFailed": [
-          "単体年換算資金効率条件"
-        ],
-        "preexisting": []
-      },
-      {
-        "id": "pk-38442",
-        "name": "アルセウスVSTAR UR[s12a 262/172](ハイクラスパック「VSTARユニバース」)",
-        "before": {
-          "name": "アルセウスVSTAR UR[s12a 262/172](ハイクラスパック「VSTARユニバース」)",
-          "selected": true,
-          "preset": true,
-          "now": false,
-          "exclusions": [],
-          "holds": [
-            "予測期間不一致・参考探索のみ"
-          ],
-          "purchaseState": "available",
-          "periodHeld": true,
-          "referenceBasis": "limit",
-          "raw": 18000,
-          "psa10": 29400,
-          "store": 16800,
-          "storeSource": "トレカキャンプ状態A",
-          "storeObservedAt": "2026-10-16T19:49:14.684Z",
-          "searchBuyPrice": 4500,
-          "psa9Price": 20000,
-          "psa9Ratio": 84,
-          "psa9BuyKind": "store",
-          "psa9Type": "aggregate",
-          "officialRate": 92.17457830886372,
-          "officialTotal": 27449,
-          "psa10Net": 24977,
-          "psa10Profit": 9497,
-          "expectedProfit": 4754,
-          "expectedRoi": 30.710594315245476,
-          "psa10Roi": 61.35012919896641,
-          "exit": "買取店・フリマの低い手取り",
-          "limit": 4500,
-          "psaMissing": false,
-          "specificationHeld": false
-        },
-        "after": {
-          "name": "アルセウスVSTAR UR[s12a 262/172](ハイクラスパック「VSTARユニバース」)",
-          "selected": false,
-          "preset": true,
-          "now": false,
-          "exclusions": [
-            "単体年換算資金効率条件"
-          ],
-          "holds": [
-            "予測期間不一致・参考探索のみ"
-          ],
-          "purchaseState": "available",
-          "periodHeld": true,
-          "referenceBasis": "limit",
-          "raw": 18000,
-          "psa10": 29400,
-          "store": 16800,
-          "storeSource": "トレカキャンプ状態A",
-          "storeObservedAt": "2026-10-16T19:49:14.684Z",
-          "searchBuyPrice": 4500,
-          "psa9Price": 20000,
-          "psa9Ratio": 84,
-          "psa9BuyKind": "store",
-          "psa9Type": "aggregate",
-          "officialRate": 92.17457830886372,
-          "officialTotal": 27449,
-          "psa10Net": 24977,
-          "psa10Profit": 9497,
-          "expectedProfit": 4754,
-          "expectedRoi": 30.710594315245476,
-          "psa10Roi": 61.35012919896641,
-          "exit": "買取店・フリマの低い手取り",
-          "limit": 4500,
           "psaMissing": false,
           "specificationHeld": false
         },
@@ -6042,23 +5886,109 @@
   },
   "daily": {
     "from": "2026-10-16T16:58:58.390Z",
-    "to": "2026-10-17T19:30:29.783Z",
+    "to": "2026-10-17T19:35:07.062Z",
     "basis": "前日以前の保存記録",
     "commonCards": 12544,
     "before": 68,
-    "after": 73,
-    "lostCount": 3,
+    "after": 71,
+    "lostCount": 5,
     "gainedCount": 8,
     "addedCards": 0,
     "removedCards": 0,
     "newSelected": 0,
     "overlap": {
+      "見送り非表示": 2,
+      "利益条件": 1,
+      "プリセット条件": 2,
       "国内PSA9比率": 3
     },
     "sequential": {
+      "見送り非表示": 2,
       "国内PSA9比率": 3
     },
     "lost": [
+      {
+        "id": "pk-38392",
+        "name": "リザードンVSTAR SAR[s12a 212/172](ハイクラスパック「VSTARユニバース」)",
+        "before": {
+          "name": "リザードンVSTAR SAR[s12a 212/172](ハイクラスパック「VSTARユニバース」)",
+          "selected": true,
+          "preset": true,
+          "now": false,
+          "exclusions": [],
+          "holds": [
+            "予測期間不一致・参考探索のみ"
+          ],
+          "purchaseState": "available",
+          "periodHeld": true,
+          "referenceBasis": "limit",
+          "raw": 10000,
+          "psa10": 28000,
+          "store": 11000,
+          "storeSource": "晴れる屋2状態A",
+          "storeObservedAt": "2026-10-15T23:19:41.730Z",
+          "searchBuyPrice": 1500,
+          "psa9Price": 10500,
+          "psa9Ratio": 104.76190476190477,
+          "psa9BuyKind": "store",
+          "psa9Type": "aggregate",
+          "officialRate": 86.56588030364938,
+          "officialTotal": 46501,
+          "psa10Net": 22948,
+          "psa10Profit": 10468,
+          "expectedProfit": 3717,
+          "expectedRoi": 29.783653846153847,
+          "psa10Roi": 83.87820512820512,
+          "exit": "買取店・フリマの低い手取り",
+          "limit": 1500,
+          "psaMissing": false,
+          "specificationHeld": false
+        },
+        "after": {
+          "name": "リザードンVSTAR SAR[s12a 212/172](ハイクラスパック「VSTARユニバース」)",
+          "selected": false,
+          "preset": false,
+          "now": false,
+          "exclusions": [
+            "見送り非表示",
+            "利益条件",
+            "プリセット条件"
+          ],
+          "holds": [
+            "予測期間不一致・参考探索のみ"
+          ],
+          "purchaseState": "available",
+          "periodHeld": true,
+          "referenceBasis": "limit",
+          "raw": 10000,
+          "psa10": 28000,
+          "store": 11000,
+          "storeSource": "晴れる屋2状態A",
+          "storeObservedAt": "2026-10-17T11:15:21.291Z",
+          "searchBuyPrice": 0,
+          "psa9Price": 10500,
+          "psa9Ratio": 104.76190476190477,
+          "psa9BuyKind": "store",
+          "psa9Type": "aggregate",
+          "officialRate": 86.56918029974914,
+          "officialTotal": 46639,
+          "psa10Net": 23259,
+          "psa10Profit": 12279,
+          "expectedProfit": null,
+          "expectedRoi": null,
+          "psa10Roi": 111.83060109289617,
+          "exit": "買取店・フリマの低い手取り",
+          "limit": 0,
+          "psaMissing": false,
+          "specificationHeld": false
+        },
+        "newlyFailed": [
+          "見送り非表示",
+          "利益条件",
+          "プリセット条件"
+        ],
+        "preexisting": []
+      },
       {
         "id": "pk-78744",
         "name": "メガジガルデex MUR [M3 117/080](拡張パック「ムニキスゼロ」)",
@@ -6212,6 +6142,87 @@
         },
         "newlyFailed": [
           "国内PSA9比率"
+        ],
+        "preexisting": []
+      },
+      {
+        "id": "pk-38442",
+        "name": "アルセウスVSTAR UR[s12a 262/172](ハイクラスパック「VSTARユニバース」)",
+        "before": {
+          "name": "アルセウスVSTAR UR[s12a 262/172](ハイクラスパック「VSTARユニバース」)",
+          "selected": true,
+          "preset": true,
+          "now": false,
+          "exclusions": [],
+          "holds": [
+            "購入価格・有効期限超過",
+            "予測期間不一致・参考探索のみ"
+          ],
+          "purchaseState": "expired",
+          "periodHeld": true,
+          "referenceBasis": "limit",
+          "raw": 17000,
+          "psa10": 29400,
+          "store": null,
+          "storeSource": null,
+          "storeObservedAt": null,
+          "searchBuyPrice": 4500,
+          "psa9Price": 20000,
+          "psa9Ratio": 85,
+          "psa9BuyKind": "market",
+          "psa9Type": "aggregate",
+          "officialRate": 92.17457830886372,
+          "officialTotal": 27449,
+          "psa10Net": 24928,
+          "psa10Profit": 9448,
+          "expectedProfit": 4717,
+          "expectedRoi": 30.47157622739018,
+          "psa10Roi": 61.03359173126614,
+          "exit": "買取店・フリマの低い手取り",
+          "limit": 4500,
+          "psaMissing": false,
+          "specificationHeld": false
+        },
+        "after": {
+          "name": "アルセウスVSTAR UR[s12a 262/172](ハイクラスパック「VSTARユニバース」)",
+          "selected": false,
+          "preset": false,
+          "now": false,
+          "exclusions": [
+            "見送り非表示",
+            "プリセット条件"
+          ],
+          "holds": [
+            "予測期間不一致・参考探索のみ"
+          ],
+          "purchaseState": "available",
+          "periodHeld": true,
+          "referenceBasis": "limit",
+          "raw": 18000,
+          "psa10": 29400,
+          "store": 16800,
+          "storeSource": "トレカキャンプ状態A",
+          "storeObservedAt": "2026-10-16T19:49:14.684Z",
+          "searchBuyPrice": 3500,
+          "psa9Price": 20000,
+          "psa9Ratio": 84,
+          "psa9BuyKind": "store",
+          "psa9Type": "aggregate",
+          "officialRate": 92.18159348647863,
+          "officialTotal": 27512,
+          "psa10Net": 24977,
+          "psa10Profit": 10497,
+          "expectedProfit": 3401,
+          "expectedRoi": 23.48756906077348,
+          "psa10Roi": 72.49309392265192,
+          "exit": "買取店・フリマの低い手取り",
+          "limit": 3500,
+          "psaMissing": false,
+          "specificationHeld": false
+        },
+        "newlyFailed": [
+          "見送り非表示",
+          "プリセット条件"
         ],
         "preexisting": []
       },
@@ -6932,7 +6943,7 @@
     },
     "counts": {
       "catalog": 12544,
-      "presetOnly": 330,
+      "presetOnly": 325,
       "selected": 0,
       "referenceExploration": 0,
       "now": 0,
@@ -6943,10 +6954,10 @@
         "単体資金効率算出不可・在庫なし": 25,
         "購入価格条件・在庫なし": 25,
         "仕入れ余裕率・上限算出不可": 132,
-        "価格帯・相場比": 184,
-        "単体年換算資金効率条件": 118,
-        "現在買える状態A価格範囲": 115,
-        "国内PSA9比率": 170,
+        "価格帯・相場比": 182,
+        "単体年換算資金効率条件": 113,
+        "現在買える状態A価格範囲": 112,
+        "国内PSA9比率": 169,
         "単体資金効率算出不可・期限超過・再確認待ち": 42,
         "購入価格条件・期限超過・再確認待ち": 42,
         "仕入れ余裕率条件": 31,
@@ -6960,7 +6971,7 @@
       },
       "sequential": {
         "単体資金効率算出不可・在庫なし": 25,
-        "単体年換算資金効率条件": 118,
+        "単体年換算資金効率条件": 113,
         "価格帯・相場比": 14,
         "現在買える状態A価格範囲": 12,
         "単体資金効率算出不可・期限超過・再確認待ち": 42,
@@ -6973,16 +6984,16 @@
       }
     },
     "commonCards": 12544,
-    "before": 73,
+    "before": 71,
     "after": 0,
-    "lostCount": 73,
+    "lostCount": 71,
     "gainedCount": 0,
     "addedCards": 0,
     "removedCards": 0,
     "newSelected": 0,
     "overlap": {
-      "単体年換算資金効率条件": 42,
-      "現在買える状態A価格範囲": 61,
+      "単体年換算資金効率条件": 40,
+      "現在買える状態A価格範囲": 59,
       "仕入れ余裕率条件": 10,
       "単体資金効率算出不可・買取出口データ不足・フリマへの自動切替なし": 14,
       "単体資金効率算出不可・未取得": 5,
@@ -6992,7 +7003,7 @@
       "購入価格条件・在庫なし": 7
     },
     "sequential": {
-      "単体年換算資金効率条件": 42,
+      "単体年換算資金効率条件": 40,
       "現在買える状態A価格範囲": 5,
       "単体資金効率算出不可・買取出口データ不足・フリマへの自動切替なし": 14,
       "単体資金効率算出不可・未取得": 5,
@@ -7396,86 +7407,6 @@
           "単体年換算資金効率条件",
           "現在買える状態A価格範囲",
           "仕入れ余裕率条件"
-        ],
-        "preexisting": []
-      },
-      {
-        "id": "pk-38392",
-        "name": "リザードンVSTAR SAR[s12a 212/172](ハイクラスパック「VSTARユニバース」)",
-        "before": {
-          "name": "リザードンVSTAR SAR[s12a 212/172](ハイクラスパック「VSTARユニバース」)",
-          "selected": true,
-          "preset": true,
-          "now": false,
-          "exclusions": [],
-          "holds": [
-            "予測期間不一致・参考探索のみ"
-          ],
-          "purchaseState": "available",
-          "periodHeld": true,
-          "referenceBasis": "limit",
-          "raw": 10000,
-          "psa10": 28000,
-          "store": 11000,
-          "storeSource": "晴れる屋2状態A",
-          "storeObservedAt": "2026-10-17T11:15:21.291Z",
-          "searchBuyPrice": 2000,
-          "psa9Price": 10500,
-          "psa9Ratio": 104.76190476190477,
-          "psa9BuyKind": "store",
-          "psa9Type": "aggregate",
-          "officialRate": 86.56588030364938,
-          "officialTotal": 46501,
-          "psa10Net": 23259,
-          "psa10Profit": 10279,
-          "expectedProfit": 3418,
-          "expectedRoi": 26.332819722650232,
-          "psa10Roi": 79.19106317411402,
-          "exit": "買取店・フリマの低い手取り",
-          "limit": 2000,
-          "psaMissing": false,
-          "specificationHeld": false
-        },
-        "after": {
-          "name": "リザードンVSTAR SAR[s12a 212/172](ハイクラスパック「VSTARユニバース」)",
-          "selected": false,
-          "preset": true,
-          "now": false,
-          "exclusions": [
-            "単体年換算資金効率条件",
-            "現在買える状態A価格範囲"
-          ],
-          "holds": [
-            "予測期間不一致・参考探索のみ"
-          ],
-          "purchaseState": "available",
-          "periodHeld": true,
-          "referenceBasis": "limit",
-          "raw": 10000,
-          "psa10": 28000,
-          "store": 11000,
-          "storeSource": "晴れる屋2状態A",
-          "storeObservedAt": "2026-10-17T11:15:21.291Z",
-          "searchBuyPrice": 2000,
-          "psa9Price": 10500,
-          "psa9Ratio": 104.76190476190477,
-          "psa9BuyKind": "store",
-          "psa9Type": "aggregate",
-          "officialRate": 86.56588030364938,
-          "officialTotal": 46501,
-          "psa10Net": 23259,
-          "psa10Profit": 10279,
-          "expectedProfit": 3418,
-          "expectedRoi": 26.332819722650232,
-          "psa10Roi": 79.19106317411402,
-          "exit": "買取店・フリマの低い手取り",
-          "limit": 2000,
-          "psaMissing": false,
-          "specificationHeld": false
-        },
-        "newlyFailed": [
-          "単体年換算資金効率条件",
-          "現在買える状態A価格範囲"
         ],
         "preexisting": []
       },
@@ -8028,86 +7959,6 @@
           "psa10Roi": 53.72080088987764,
           "exit": "買取店・フリマの低い手取り",
           "limit": 7000,
-          "psaMissing": false,
-          "specificationHeld": false
-        },
-        "newlyFailed": [
-          "単体年換算資金効率条件",
-          "現在買える状態A価格範囲"
-        ],
-        "preexisting": []
-      },
-      {
-        "id": "pk-38442",
-        "name": "アルセウスVSTAR UR[s12a 262/172](ハイクラスパック「VSTARユニバース」)",
-        "before": {
-          "name": "アルセウスVSTAR UR[s12a 262/172](ハイクラスパック「VSTARユニバース」)",
-          "selected": true,
-          "preset": true,
-          "now": false,
-          "exclusions": [],
-          "holds": [
-            "予測期間不一致・参考探索のみ"
-          ],
-          "purchaseState": "available",
-          "periodHeld": true,
-          "referenceBasis": "limit",
-          "raw": 18000,
-          "psa10": 29400,
-          "store": 16800,
-          "storeSource": "トレカキャンプ状態A",
-          "storeObservedAt": "2026-10-16T19:49:14.684Z",
-          "searchBuyPrice": 4500,
-          "psa9Price": 20000,
-          "psa9Ratio": 84,
-          "psa9BuyKind": "store",
-          "psa9Type": "aggregate",
-          "officialRate": 92.17457830886372,
-          "officialTotal": 27449,
-          "psa10Net": 24977,
-          "psa10Profit": 9497,
-          "expectedProfit": 4754,
-          "expectedRoi": 30.710594315245476,
-          "psa10Roi": 61.35012919896641,
-          "exit": "買取店・フリマの低い手取り",
-          "limit": 4500,
-          "psaMissing": false,
-          "specificationHeld": false
-        },
-        "after": {
-          "name": "アルセウスVSTAR UR[s12a 262/172](ハイクラスパック「VSTARユニバース」)",
-          "selected": false,
-          "preset": true,
-          "now": false,
-          "exclusions": [
-            "単体年換算資金効率条件",
-            "現在買える状態A価格範囲"
-          ],
-          "holds": [
-            "予測期間不一致・参考探索のみ"
-          ],
-          "purchaseState": "available",
-          "periodHeld": true,
-          "referenceBasis": "limit",
-          "raw": 18000,
-          "psa10": 29400,
-          "store": 16800,
-          "storeSource": "トレカキャンプ状態A",
-          "storeObservedAt": "2026-10-16T19:49:14.684Z",
-          "searchBuyPrice": 4500,
-          "psa9Price": 20000,
-          "psa9Ratio": 84,
-          "psa9BuyKind": "store",
-          "psa9Type": "aggregate",
-          "officialRate": 92.17457830886372,
-          "officialTotal": 27449,
-          "psa10Net": 24977,
-          "psa10Profit": 9497,
-          "expectedProfit": 4754,
-          "expectedRoi": 30.710594315245476,
-          "psa10Roi": 61.35012919896641,
-          "exit": "買取店・フリマの低い手取り",
-          "limit": 4500,
           "psaMissing": false,
           "specificationHeld": false
         },
