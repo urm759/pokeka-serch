@@ -17,7 +17,7 @@ const bindings={efficiencyMinInput:'effMin',efficiencyManualPriceInput:'effManua
   purchaseHeadroomMinInput:'headroomMin',purchaseHeadroomMaxInput:'headroomMax',postingRate30MinInput:'postingRate30',
   postingShops30MinInput:'postingShops30',postingDaysMinInput:'postingDays',postingCoverageMinInput:'postingCoverage',
   purchaseBelowCurrentCapInput:'buyBelowCap',expectedProfitFilterInput:'filterExpProfit',
-  observationIncludeReferenceInput:'obsRef',...Object.fromEntries([7,30,90,200].flatMap(d=>[['observation'+d+'MinInput','obs'+d+'Min'],['observation'+d+'MaxInput','obs'+d+'Max']]))};
+  observationIncludeReferenceInput:'obsRef',...Object.fromEntries([7,30,75,200].flatMap(d=>[['observation'+d+'MinInput','obs'+d+'Min'],['observation'+d+'MaxInput','obs'+d+'Max']]))};
 function extraUrl(saved,baseUrl=specifiedUrl){const url=new URL(baseUrl);for(const [id,value]of Object.entries(saved?.inputs||{})){
   const param=bindings[id];if(!param||url.searchParams.has(param)||value==null)continue;
   url.searchParams.set(param,typeof value==='boolean'?value?'1':'0':value===''?'off':value);

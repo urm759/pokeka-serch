@@ -3,8 +3,8 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 const ROOT = path.join(__dirname, '..');
 const DAY = 86400000;
-const minimumObservationDays = { 7: 5, 30: 15, 90: 45, 200: 200 };
-const PERIODS = [7, 30, 90, 200];
+const minimumObservationDays = { 7: 5, 30: 15, 75: 45, 200: 200 };
+const PERIODS = [7, 30, 75, 200];
 const dayTime = value => {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(String(value))) return NaN;
   const stamp = Date.parse(value + 'T00:00:00Z');
@@ -72,8 +72,8 @@ function build(root = ROOT, now = new Date()) {
   const meta = read('data/pokemon-cards-meta.json');
   // The window advances even when acquisition fails; old data must age rather than reset the clock.
   const asOf = require('./psa10_observation_evidence').calendarDay(now.toISOString());
-  const summary = { version: 5, asOf, periods: PERIODS, calendar: 'Asia/Tokyo・直近暦日・同日1記録（株の取引日ではない）', retentionDays: 365,
-    observationEvidenceIndices:{7:13,30:14,90:15,200:12},
+  const summary = { version: 6, asOf, periods: PERIODS, migration:'独自観測比較90→75暦日・日付原票から再集計。取得元独自90日・鑑定返却期間は別', calendar: 'Asia/Tokyo・直近暦日・同日1記録（株の取引日ではない）', retentionDays: 365,
+    observationEvidenceIndices:{7:13,30:14,75:15,200:12},
     minimumActualTrades: 3, minimumObservationDays, staleObservationDays: 2, shards: 16,
     snapshotSource: '国内・みんトレPSA10集約相場の日次観測（実成約平均ではない）',
     rule: '同日1記録・欠損補完なし・参考表示のみ・仕入れ上限とGOへ未反映', cards: {} };
@@ -90,13 +90,13 @@ function build(root = ROOT, now = new Date()) {
       const stat = statistics(daily, asOf, days, 0, 2);
       return [days, {...stat,...observationStatus(stat,days,asOf)}];
     }));
-    const trades = Object.fromEntries([7, 30, 90].map(days => [days, { ...statistics(actual.rows, asOf, days, 'date', 'price'),
+    const trades = Object.fromEntries([7, 30, 75].map(days => [days, { ...statistics(actual.rows, asOf, days, 'date', 'price'),
       sufficient: statistics(actual.rows, asOf, days, 'date', 'price').count >= 3 }]));
     if (!daily.length && !actual.rows.length) continue;
     summary.cards[card.id] = [snapshots[7].mean, snapshots[7].count, snapshots[30].mean, snapshots[30].count,
-      snapshots[30].ageDays, snapshots[90].mean, snapshots[90].count, snapshots[7].ageDays, snapshots[90].ageDays,
+      snapshots[30].ageDays, snapshots[75].mean, snapshots[75].count, snapshots[7].ageDays, snapshots[75].ageDays,
       snapshots[200].mean, snapshots[200].count, snapshots[200].ageDays, snapshots[200].legacyUnverifiedDays,
-      snapshots[7].legacyUnverifiedDays,snapshots[30].legacyUnverifiedDays,snapshots[90].legacyUnverifiedDays];
+      snapshots[7].legacyUnverifiedDays,snapshots[30].legacyUnverifiedDays,snapshots[75].legacyUnverifiedDays];
     if (daily.length) historyCards++;
     for (const days of PERIODS) {
       const stat = snapshots[days], coverage = byPeriod[days];

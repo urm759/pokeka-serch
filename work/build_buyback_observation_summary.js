@@ -1,5 +1,5 @@
 const fs=require('node:fs'),path=require('node:path');
-const ROOT=path.join(__dirname,'..'),periods=[7,30,90,200];
+const ROOT=path.join(__dirname,'..'),periods=[7,30,75,200];
 const day=at=>Number.isFinite(Date.parse(at))?new Date(Date.parse(at)+9*3600000).toISOString().slice(0,10):null;
 function capture(saved,catalog,source,cards) {
   const next=structuredClone(saved || {version:1,shops:{}}),byId=new Map(cards.map(c=>[c.id,c]));

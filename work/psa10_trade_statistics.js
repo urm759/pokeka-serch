@@ -70,10 +70,10 @@ function prepare(root, cards, now=new Date()) {
   const previous=read(root,'work/psa10-trade-observations.json',{version:1,cards:{}});
   const population=read(root,'data/psa-population-summary.json'), histories=new Map(), times=[], timeMap=new Map();
   const timeIndex=value=>{if(!value)return null;if(!timeMap.has(value)){timeMap.set(value,times.length);times.push(value);}return timeMap.get(value);};
-  const summary={version:1,asOf,sourceUrl:receipt.sourceUrl || null,times,cards:{},
+  const summary={version:2,periods:[7,30,75,200],asOf,sourceUrl:receipt.sourceUrl || null,times,cards:{},
     label:'国内PSA10・取得元の期間集計件数（個別成約ではない）',boundary:'提供元の直近7/30日・時刻境界未公表',
-    rule:'7/30集計を合算しない。90/200日総数は完全範囲の個別履歴のみ。国内取引と世界POPは参考比較・GO未反映',
-    coverage:{aggregate7:0,aggregate30:0,actual90:0,actual200:0,matchedPop7:0,matchedPop30:0}};
+    rule:'7/30集計を合算しない。75/200日総数は完全範囲の個別履歴のみ。国内取引と世界POPは参考比較・GO未反映',
+    coverage:{aggregate7:0,aggregate30:0,actual75:0,actual200:0,matchedPop7:0,matchedPop30:0}};
   const details=new Map();let addedDays=0;
   for(const card of cards) {
     const incoming=aggregate(card,receipt,+now), stored=dailyObservations(previous.cards[card.id]);
@@ -100,7 +100,7 @@ function prepare(root, cards, now=new Date()) {
       history=(shard.cards?.[card.id] || []).filter(r=>r[3]?.sourceUrl===official.u && r[3]?.specificationIdentity===shard.identities?.[card.id]);
     }
     const windows={}, actual={}, rolling={};
-    for(const days of [7,30,90,200]) {
+    for(const days of [7,30,75,200]) {
       windows[days]=popWindow(history,days,a?.at || now.toISOString(),+now);
       actual[days]=actualPeriod(card,days,asOf,+now);
       const adopted=(previous.cards[card.id] || []).filter(r=>r[1]===evidence.identity(card)&&r[0]<=asOf && Date.parse(r[0])>=Date.parse(asOf)-(days-1)*DAY);
@@ -108,10 +108,10 @@ function prepare(root, cards, now=new Date()) {
         observedDays:points.length,latest:points.at(-1)?.[0] || null,label:`直近${period}日集計件数の観測平均（期間成約総数ではない）`}];}));
     }
     const pack=days=>{const w=windows[days];return w.delta==null?null:[w.delta,timeIndex(w.startAt),timeIndex(w.endAt),Math.round(w.span*100)/100,w.ratioEligible?0:w.delta<0?2:1];};
-    if((a && (a.counts[7]!=null || a.counts[30]!=null)) || actual[90].count!=null || actual[200].count!=null || windows[7].delta!=null || windows[30].delta!=null)
-      summary.cards[card.id]=[a?.counts[7]??null,a?.counts[30]??null,timeIndex(a?.at),pack(7),pack(30),actual[90].count,actual[200].count,timeIndex(actual[90].observedAt),timeIndex(actual[200].observedAt)];
+    if((a && (a.counts[7]!=null || a.counts[30]!=null)) || actual[75].count!=null || actual[200].count!=null || windows[7].delta!=null || windows[30].delta!=null)
+      summary.cards[card.id]=[a?.counts[7]??null,a?.counts[30]??null,timeIndex(a?.at),pack(7),pack(30),actual[75].count,actual[200].count,timeIndex(actual[75].observedAt),timeIndex(actual[200].observedAt)];
     for(const days of [7,30]){summary.coverage['aggregate'+days]+=Number(a?.counts[days]!=null);summary.coverage['matchedPop'+days]+=Number(windows[days].ratioEligible && a?.counts[days]!=null);}
-    for(const days of [90,200])summary.coverage['actual'+days]+=Number(actual[days].count!=null);
+    for(const days of [75,200])summary.coverage['actual'+days]+=Number(actual[days].count!=null);
     details.set(card.id,{aggregate:a,actual,rolling,pop:windows,
       note:'POPは全世界の鑑定枚数で市場出品ではない。国内取引は再売買を含み得る。集計件数では重複/再売買識別不能。新紐付け・回収・仕様訂正を増加日へ移さない。'});
   }

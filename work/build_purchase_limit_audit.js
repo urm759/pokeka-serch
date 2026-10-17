@@ -9,6 +9,16 @@ const read = (file, fallback = null) => {
 };
 const write = (file, value) => fs.writeFileSync(path.join(root, file), JSON.stringify(value), "utf8");
 const model = require("../decision-model.js");
+// Verification replays the audit's original instant, not a later freshness boundary.
+// Current data/model are still loaded and fully compared; live freshness has its own checks.
+const recordedAudit = process.argv?.includes('--verify') ? read('data/purchase-limit-model-audit.json',{}) : {};
+const evaluationAt = recordedAudit.evaluationAt || new Date().toISOString();
+if (!Number.isFinite(Date.parse(evaluationAt))) throw new Error('Invalid purchase audit evaluation time');
+const NativeDate=Date;
+class AuditEvaluationDate extends NativeDate {
+  constructor(...args) { super(...(args.length?args:[evaluationAt])); }
+  static now() { return NativeDate.parse(evaluationAt); }
+}
 const candidateDailyAudit = require("../candidate-daily-audit.js");
 const candidateAvailabilityAudit = require("../candidate-availability-audit.js");
 const meta = read("data/pokemon-cards-meta.json", {});
@@ -31,6 +41,7 @@ const source = fs.readFileSync(path.join(root, "app.js"), "utf8");
 const marker = "// Browser event bindings start here; the audit runner evaluates the same model above this line.";
 if (source.split(marker).length !== 2) throw new Error("Browser binding marker missing or duplicated");
 const context = vm.createContext({
+  Date: AuditEvaluationDate,
   window,
   document: { getElementById: () => null, querySelectorAll: () => [] },
   console,
@@ -186,6 +197,7 @@ const audit = buildLimitModelAudit(calculated);
 audit.catalogCards = calculated.length;
 audit.notAnalyzable = calculated.length - audit.analyzedCards;
 audit.inputDate = asOfDate;
+audit.evaluationAt = evaluationAt;
 audit.durationMs = Date.now() - startedAt;
 const previousCards = state.operationalLimitHistory.cards || {};
 const historyCards = {};
@@ -222,6 +234,9 @@ if (process.argv.includes("--verify")) {
   if (JSON.stringify(publishedAudit?.rows) !== JSON.stringify(audit.rows)
     || JSON.stringify(publishedHistory?.cards) !== JSON.stringify(history.cards)
     || publishedAudit?.modelVersion !== model.MODEL_VERSION) {
+    const prior=new Map((publishedAudit?.rows||[]).map(r=>[r.cardId,r]));
+    const changed=audit.rows.filter(r=>JSON.stringify(prior.get(r.cardId))!==JSON.stringify(r));
+    console.error(JSON.stringify({auditMismatch:true,evaluationAt,changed:changed.length,examples:changed.slice(0,3).map(r=>({id:r.cardId,fields:Object.keys(r).filter(k=>JSON.stringify(r[k])!==JSON.stringify(prior.get(r.cardId)?.[k])).map(k=>({field:k,before:prior.get(r.cardId)?.[k],after:r[k]}))}))}));
     throw new Error("Purchase-limit audit is stale or differs from the current model/data");
   }
   const publishedAvailability = read("data/candidate-availability-audit.json");

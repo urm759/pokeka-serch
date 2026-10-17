@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const metrics=require('../exploration-metrics');
 const now=Date.parse('2026-10-13T09:00:00Z');
-const summary={asOf:'2026-10-13',minimumObservationDays:{7:5,30:15,90:45,200:200},staleObservationDays:2,
+const summary={asOf:'2026-10-13',minimumObservationDays:{7:5,30:15,75:38,200:200},staleObservationDays:2,
   cards:{fixture:[40000,7,41000,20,0,44000,43,0,0,45000,43,0,0]}};
 const view={assumedRate:.8,lowerGradePrice:15000,eligible:true,rawCap:21200,capState:'available',cap:21000,
   reasons:[],referenceReasons:[],warnings:[],exitLabel:'フリマ',calculationState:'calculated'};

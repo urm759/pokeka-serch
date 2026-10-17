@@ -35,7 +35,7 @@ function build() {
   for(const policy of ['marketplace','buyback','both']) {
     oldApi.state.exitPolicy=policy;newApi.state.exitPolicy=policy;
     const oldCards=oldApi.prepareCalculatedCards(oldApi.state.cards),newCards=newApi.prepareCalculatedCards(newApi.state.cards);
-    for(const scenario of ['current','central','stress','obs7','obs30','obs90','obs200']) {
+    for(const scenario of ['current','central','stress','obs7','obs30','obs75','obs200']) {
       oldApi.state.efficiencyScenario=scenario;newApi.state.efficiencyScenario=scenario;
       const count=(api,cards)=>cards.reduce((r,c)=>{const e=api.cardEfficiency(c);r[e.calculationState]++;if(e.reason)r.reasons[e.reason]=(r.reasons[e.reason]||0)+1;return r;},{calculated:0,reference:0,unavailable:0,reasons:{}});
       policies[policy+':'+scenario]={before:count(oldApi,oldCards),after:count(newApi,newCards)};

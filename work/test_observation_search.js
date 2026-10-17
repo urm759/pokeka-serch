@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict'), fs = require('node:fs'), vm = require('node:vm');
 const m = require('../exploration-metrics'), controls = require('../search-controls');
-const summary = {asOf:'2026-10-13',minimumObservationDays:{7:5,30:15,90:45,200:200},
+const summary = {asOf:'2026-10-13',minimumObservationDays:{7:5,30:15,75:38,200:200},
   cards:{fixture:[100,7,100,30,0,100,90,0,0,100,200,0,0]}};
 const card = {id:'fixture',psa10:80};
 const filter = s=>m.observationExclusions(summary,card,s);

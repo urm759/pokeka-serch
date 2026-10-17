@@ -14,7 +14,7 @@ function summarize(card,input,now=Date.now()) {
     if(reason){excluded[reason]=(excluded[reason]||0)+1;if(reason==='同一取引IDの内容対立'){const i=rows.findIndex(x=>x.key===key);if(i>=0)rows.splice(i,1);}continue;}
     seen.set(key,fingerprint);rows.push({...r,key,at});
   }
-  const periods={};for(const days of [7,30,90,200]){
+  const periods={};for(const days of [7,30,75,200]){
     const adopted=rows.filter(r=>now-r.at<days*86400000),values=adopted.map(r=>r.price);
     periods[days]={mean:values.length?values.reduce((s,n)=>s+n,0)/values.length:null,median:median(values),observedSales:values.length,
       count:permitted&&input?.coverage?.[card.id]?.[days]?.complete===true?values.length:null,coverageComplete:permitted&&input?.coverage?.[card.id]?.[days]?.complete===true,

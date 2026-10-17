@@ -2,6 +2,10 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const model=require('../psa-plan-model'),{run}=require('./run_daily_sources');
 const root=fs.mkdtempSync(path.join(os.tmpdir(),'daily-isolation-'));fs.mkdirSync(path.join(root,'data'));
 const called=[];
+const {failureKinds}=require('./run_daily_sources');
+assert.deepEqual(failureKinds('HTTP 403'),['access-restricted']);
+assert.deepEqual(failureKinds('許諾確認待ち; 取得0件。正常データ保持'),['permission-wait','empty-result']);
+assert.deepEqual(failureKinds('形式変更・正規一覧にPSA10商品属性がない'),['format-review']);
 const result=run([{source:'psaJapan'},{source:'shopBuyback'},{source:'hareruya2'}],t=>{called.push(t.source);return {status:t.source==='psaJapan'?1:0,stderr:'HTTP 403'};},root);
 assert.deepEqual(called,['psaJapan','shopBuyback','hareruya2']);assert.equal(result.status,'partial-with-failure');
 const valid={price:11980,businessDays:80,calendarDays:112,declaredValueMax:250000};

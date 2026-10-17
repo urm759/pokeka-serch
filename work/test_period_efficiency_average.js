@@ -5,7 +5,7 @@ assert.equal(metrics.periodEfficiencyAverage([row(-20),row(0),row(null),row(40)]
 assert.deepEqual(metrics.periodEfficiencyAverage([row(null),row(NaN),row(Infinity),row(null)]),{annual:null,adopted:0,total:4,reference:false});
 assert.equal(metrics.periodEfficiencyAverage([row(0),row(null),row(null),row(null)]).annual,0);
 assert.equal(metrics.periodEfficiencyAverage([{...row(10),calculationState:'reference'},row(30),row(null),row(null)]).reference,true);
-const now=Date.parse('2026-10-14T00:00:00Z'),summary={asOf:'2026-10-14',cards:{fixture:[40000,2,41000,2,0,42000,2,0,0,43000,2,0,0,0,0,0]}};
+const now=Date.parse('2026-10-14T00:00:00Z'),summary={periods:[7,30,75,200],asOf:'2026-10-14',cards:{fixture:[40000,2,41000,2,0,42000,2,0,0,43000,2,0,0,0,0,0]}};
 const card={id:'fixture',name:'fixture',psa10:40000,testView:{assumedRate:.8,lowerGradePrice:15000,eligible:true,rawCap:21100,cap:21000,capState:'available',reasons:[],warnings:[],calculationState:'calculated',exitLabel:'フリマ'},
   currentStoreOffer:{value:10000,available:true,fresh:true,updatedAt:new Date(now).toISOString(),inventoryAt:new Date(now).toISOString()}};
 let calls=0;const counted={...metrics,meanEfficiencyEconomics(...args){calls++;return metrics.meanEfficiencyEconomics(...args);}};
@@ -18,6 +18,11 @@ const current=api.cardEfficiency(card,now),key=api.computationKey(),panel=api.pe
 assert.equal(calls,4);assert(panel.includes('採用4/4期間'));assert(panel.includes('参考値'));assert(panel.includes('検索対象外'));assert(panel.includes('2/200日'));assert(panel.includes('欠測198日'));assert(panel.includes('最終2026-10-14'));assert(panel.includes('4つの独立予測'));
 api.periodEfficiencyPanel(card,now+1000);assert.equal(calls,4,'cached visible-card comparison does not recalculate four periods on every render');
 assert.equal(api.cardEfficiency(card,now),current,'comparison does not evict the selected current calculation');
+const canonical=s.psa10PeriodSummary;
+s.psa10PeriodSummary={...canonical,periods:[7,30,90,200]};
+assert.equal(api.cardEfficiency(card,now,s.purchaseMode,'obs75').annual,null);
+s.psa10PeriodSummary=canonical;
+assert(Number.isFinite(api.cardEfficiency(card,now,s.purchaseMode,'obs75').annual),'schema-only period metadata update invalidates the unavailable cache');
 assert.equal(api.computationKey(),key);assert.equal(s.efficiencyScenario,'current');assert.equal(s.observationIncludeReference,false);
 assert.equal(api.efficiencySearchValue(api.cardEfficiency(card,now,s.purchaseMode,'obs7')),null);
 s.psa10PeriodSummary={...summary,cards:{fixture:[null,0,...summary.cards.fixture.slice(2)]}};

@@ -355,6 +355,9 @@ async function fetchKaitoriHomura(shop) {
   const pages = [firstPage];
   for (let page = 2; page <= maxPage; page += 1) pages.push(await fetchPage(page));
   const parsed = pages.flatMap(parseKaitoriHomuraItems);
+  if (!parsed.length && pages.some(page=>page.includes('/_expo/static/js/'))) {
+    throw new Error('形式変更・正規一覧にPSA10商品属性がない。自動確定せず取得経路の確認待ち・正常データ保持');
+  }
   return { pages: maxPage, items: [...new Map(parsed.map((item) => [item.shopItemId, item])).values()] };
 }
 
@@ -525,6 +528,11 @@ async function main() {
       failures.push({ source: shop.id, error: permission.reason, permissionWait: true });
       continue;
     }
+    const review=previousSummary.shops?.[shop.id];
+    if(review?.reviewStatus==='format-review') {
+      failures.push({source:shop.id,error:review.error,reviewWait:true});
+      continue;
+    }
     try {
       const fetched = await shop.fetchItems(shop);
       if (!fetched.items?.length) throw new Error("取得0件。正常データは保持");
@@ -573,7 +581,8 @@ async function main() {
     }
   }
   if (!results.length) {
-    for (const failure of failures) previousSummary.shops[failure.source] = { ...previousSummary.shops[failure.source], lastAttempt: failure.attemptedAt, error: failure.error, refreshed: false };
+    for (const failure of failures) previousSummary.shops[failure.source] = { ...previousSummary.shops[failure.source], lastAttempt: failure.attemptedAt || previousSummary.shops[failure.source]?.lastAttempt || null, error: failure.error, refreshed: false,
+      reviewStatus:/形式変更/.test(failure.error||'')?'format-review':previousSummary.shops[failure.source]?.reviewStatus || null };
     fs.writeFileSync(SUMMARY_PATH, JSON.stringify(previousSummary), "utf8");
     throw new Error("全店舗の取得に失敗しました。正常データを保持・失敗時刻を記録");
   }
@@ -770,7 +779,8 @@ async function main() {
       merchantId: shop.id.replace(/-(?:store|mail)$/, ''),
       acquisitionPermission: readJson(path.join(__dirname, 'buyback-source-permissions.json'), {}).sources?.[shop.id]?.status || null,
       permissionCheckedAt: readJson(path.join(__dirname, 'buyback-source-permissions.json'), {}).sources?.[shop.id]?.checkedAt || null,
-      lastAttempt: result || failures.some((f) => f.source === shop.id && !f.permissionWait) ? new Date().toISOString() : previous.lastAttempt || null,
+      lastAttempt: result || failures.some((f) => f.source === shop.id && !f.permissionWait && !f.reviewWait) ? new Date().toISOString() : previous.lastAttempt || null,
+      reviewStatus:result?null:/形式変更/.test(failures.find(f=>f.source===shop.id)?.error||'')?'format-review':previous.reviewStatus || null,
       lastSuccess: result ? new Date().toISOString() : previous.lastSuccess || null,
       fullListingConfirmedAt: result?.fullListing === true ? null : previous.fullListingConfirmedAt || null,
       sourceTotal: result?.sourceTotal ?? previous.sourceTotal ?? null,

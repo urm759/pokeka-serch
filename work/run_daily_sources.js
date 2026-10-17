@@ -1,6 +1,11 @@
 const fs=require('node:fs'),path=require('node:path'),{spawnSync}=require('node:child_process');
 const {atomicWrite}=require('./acquisition_retry');
 const ROOT=path.join(__dirname,'..');
+function failureKinds(message) {
+  return [['access-restricted',/HTTP 403|認証|sign.in/i],['permission-wait',/許諾|商業利用禁止/],
+    ['empty-result',/取得0件|zero records/i],['format-review',/形式変更|商品属性がない/],
+    ['temporary',/429|timeout|timed.out|HTTP 5\d\d/i]].filter(([,pattern])=>pattern.test(message||'')).map(([kind])=>kind);
+}
 function run(tasks, execute, root=ROOT) {
   const result={version:1,runId:process.env.GITHUB_RUN_ID||null,startedAt:new Date().toISOString(),sources:[],llmCalls:0,codexCalls:0};
   for(const task of tasks) {
@@ -9,6 +14,8 @@ function run(tasks, execute, root=ROOT) {
     const record={source:task.source,startedAt:new Date(at).toISOString(),endedAt:new Date().toISOString(),durationMs:Date.now()-at,
       status:child.status===0&&!child.error?'process-success':'failed',error:child.status===0?null:String(child.error?.message||child.stderr||'exit '+child.status).slice(-600)};
     result.sources.push(record);result.status=result.sources.some(r=>r.status==='failed')?'partial-with-failure':'process-success';
+    record.failureKinds=record.status==='failed'?failureKinds(record.error):[];
+    record.stage='acquisition';record.publication='後続の必須検証・保存・公開受領証で別確認';
     atomicWrite(path.join(root,'data/daily-source-isolation.json'),result,0);
   }
   result.endedAt=new Date().toISOString();atomicWrite(path.join(root,'data/daily-source-isolation.json'),result,0);
@@ -22,4 +29,4 @@ if(require.main===module){
   if(process.argv.includes('--report-failures')) {const d=JSON.parse(fs.readFileSync(path.join(ROOT,'data/daily-source-isolation.json')));if(d.sources.some(r=>r.status==='failed')){console.error('Independent acquisition failures retained: '+d.sources.filter(r=>r.status==='failed').map(r=>r.source).join(','));process.exitCode=1;}}
   else console.log(JSON.stringify(run(tasks,task=>{const r=spawnSync(process.execPath,task.args,{cwd:ROOT,env:{...process.env,TRACKED_TIMEOUT_MS:'300000'},encoding:'utf8',timeout:330000,maxBuffer:64*1024*1024});process.stdout.write(r.stdout||'');process.stderr.write(r.stderr||'');return r;})));
 }
-module.exports={run};
+module.exports={run,failureKinds};

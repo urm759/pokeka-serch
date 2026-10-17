@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20261016-comparable-prices-v1" />
+  <link rel="stylesheet" href="./styles.css?v=20261018-observation75-v1" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -205,19 +205,20 @@
 <details class="advanced-filters grouped-search" id="additionalSearchSettings">
 <summary><span>詳細検索 / 採算・余裕率・PSA9・取引・予測</span><small>適用条件は上に常時表示。計算設定・GO基準とは別</small></summary>
 <details class="advanced-filters observation-settings">
-  <summary><span>PSA10観測平均との乖離率</span><small>7・30・90・200暦日／複数期間はAND</small></summary>
+  <summary><span>PSA10観測平均との乖離率</span><small>7・30・75・200暦日／複数期間はAND</small></summary>
   <div class="controls controls-primary">
     <label class="control"><span>7日乖離率 下限 %</span><input id="observation7MinInput" type="number" step="any" placeholder="条件なし" /></label>
     <label class="control"><span>7日乖離率 上限 %</span><input id="observation7MaxInput" type="number" step="any" placeholder="条件なし" /></label>
     <label class="control"><span>30日乖離率 下限 %</span><input id="observation30MinInput" type="number" step="any" placeholder="条件なし" /></label>
     <label class="control"><span>30日乖離率 上限 %</span><input id="observation30MaxInput" type="number" step="any" placeholder="条件なし" /></label>
-    <label class="control"><span>90日乖離率 下限 %</span><input id="observation90MinInput" type="number" step="any" placeholder="条件なし" /></label>
-    <label class="control"><span>90日乖離率 上限 %</span><input id="observation90MaxInput" type="number" step="any" placeholder="条件なし" /></label>
+    <label class="control"><span>75日乖離率 下限 %</span><input id="observation75MinInput" type="number" step="any" placeholder="条件なし" /></label>
+    <label class="control"><span>75日乖離率 上限 %</span><input id="observation75MaxInput" type="number" step="any" placeholder="条件なし" /></label>
     <label class="control"><span>200日乖離率 下限 %</span><input id="observation200MinInput" type="number" step="any" placeholder="条件なし" /></label>
     <label class="control"><span>200日乖離率 上限 %</span><input id="observation200MaxInput" type="number" step="any" placeholder="条件なし" /></label>
     <label class="check-control"><input id="observationIncludeReferenceInput" type="checkbox" checked />観測不足の参考平均を含める（乖離率・平均資金効率／購入GOとは別）</label><small>平均資金効率の検索・順位へ欠測平均を採用するには、この設定と「資金効率の参考値」の両方がONである必要があります。OFFでも参考比較は表示します。保存値は自動変更しません。</small>
     <p class="filter-explanation">（現相場÷観測平均−1）×100。マイナス＝平均より安い、0%＝同額、プラス＝高い。下限−20／上限0は0〜20%安いカード。空欄＝条件なし、0は有効、境界を含みます。複数期間はAND。平均未取得は指定した期間だけ除外。古い観測は警告を保持し、平均以下でもGOへ昇格しません。</p>
     <p id="observationFilterStatus" class="helper" role="status" aria-live="polite">観測対象数を確認中</p>
+    <p id="observationPeriodMigrationNotice" class="helper reference-warning" role="status" hidden></p>
   </div>
 </details>
 <details class="advanced-filters purchase-comparison-settings">
@@ -666,7 +667,7 @@
 <label class="control"><span>資金効率の買値</span><select id="efficiencyBuyInput"><option value="auto">実店舗状態A（明示的な現相場上限・手入力は継承）</option><option value="store">実店舗状態A価格のみ</option><option value="median" selected>素体参考相場・中央値（購入保証なし）</option><option value="manual">手入力買値・仮定</option><option value="current-cap">現相場損益分岐上限で購入・仮定</option></select><small id="efficiencyBuyMigrationNotice">未指定時は中央値。明示URLは最優先・autoの計算は従来どおり。URL未指定の旧保存autoだけは旧設定を端末内に退避して中央値へ一度移行し、他の保存条件・手入力等は保持します。新鮮な同一仕様の中央値がなければ実店舗で代用しません。参考値の検索採用設定は別。購入GOには実店舗在庫が必要です。</small></label>
 <p><a id="medianBasisLink" href="#" hidden>現在の他条件を保持して中央値版を開く</a>（買値基準だけを変更・購入GOとは別）</p>
 <label class="control"><span>手入力買値（円）</span><input id="efficiencyManualPriceInput" type="number" min="0" step="100" placeholder="未設定" /></label>
-<label class="control"><span>資金効率の売値シナリオ</span><select id="efficiencyScenarioInput"><option value="current">現在出口相場が続く仮定</option><option value="central">中央予測（期間一致時のみ）</option><option value="stress">供給ストレス（期間一致時のみ）</option><option value="obs7">7暦日内PSA10観測平均・比較</option><option value="obs30">30暦日内PSA10観測平均・比較</option><option value="obs90">90暦日内PSA10観測平均・比較</option><option value="obs200">200暦日内PSA10観測平均・比較</option></select><small>PSA10だけ選択出口の平均／非10は現在国内PSA9のフリマ手取りで仮置き。買取は同仕様・日時の根拠がある2店舗以上の店舗別平均中央値に減額と該当交通費を適用。両出口は両方の根拠が必要で低い期待手取りを採用。フリマ平均への代用・自動切替なし。欠測は参考、検索採用には資金効率参考値と参考平均の両方ONが必要（保存値は保持）。平均回帰・返却時売価は保証しません。予測期間不一致とは別判定。プランから平均期間は自動選択しません。</small></label>
+<label class="control"><span>資金効率の売値シナリオ</span><select id="efficiencyScenarioInput"><option value="current">現在出口相場が続く仮定</option><option value="central">中央予測（期間一致時のみ）</option><option value="stress">供給ストレス（期間一致時のみ）</option><option value="obs7">7暦日内PSA10観測平均・比較</option><option value="obs30">30暦日内PSA10観測平均・比較</option><option value="obs75">75暦日内PSA10観測平均・比較</option><option value="obs200">200暦日内PSA10観測平均・比較</option></select><small>PSA10だけ選択出口の平均／非10は現在国内PSA9のフリマ手取りで仮置き。買取は同仕様・日時の根拠がある2店舗以上の店舗別平均中央値に減額と該当交通費を適用。両出口は両方の根拠が必要で低い期待手取りを採用。フリマ平均への代用・自動切替なし。欠測は参考、検索採用には資金効率参考値と参考平均の両方ONが必要（保存値は保持）。平均回帰・返却時売価は保証しません。予測期間不一致とは別判定。プランから平均期間は自動選択しません。</small></label>
 <label class="control"><span>売却待ち 日数</span><input id="efficiencySaleDaysInput" type="number" min="0" step="1" value="7" /></label>
 <label class="control"><span>入金待ち 日数</span><input id="efficiencyPayoutDaysInput" type="number" min="0" step="1" value="3" /></label>
 </div></details>
@@ -920,8 +921,8 @@
     </section>
   </main>
 
-  <script src="./decision-model.js?v=20261016-comparable-prices-v1"></script>
-  <script src="./price-integrity.js?v=20261016-comparable-prices-v1"></script>
+  <script src="./decision-model.js?v=20261018-observation75-v1"></script>
+  <script src="./price-integrity.js?v=20261018-observation75-v1"></script>
   <script src="./grade-calibration.js?v=20260924-v1"></script>
   <script src="./search-index-model.js?v=20261015-trade-demand-v2"></script>
   <script src="./backtest-model.js?v=20260901-backtest-v2"></script>
@@ -938,14 +939,14 @@
   <script src="./release-year-filter.js?v=20261003-priority-v2"></script>
   <script src="./update-health-model.js?v=20261010-independent-monitor-v2"></script>
   <script src="./update-health-banner.js?v=20261011-search-first-v1"></script>
-  <script src="./current-market-model.js?v=20261016-comparable-prices-v1"></script>
+  <script src="./current-market-model.js?v=20261018-observation75-v1"></script>
   <script src="./ui-data-codec.js?v=20261007-v1"></script>
   <script src="./psa-plan-model.js?v=20261010-isolation-v1"></script>
   <script src="./keyed-card-renderer.js?v=20261010-v1"></script>
   <a class="return-to-filters" href="#searchConditions">検索条件へ</a>
-  <script src="./exploration-metrics.js?v=20261016-comparable-prices-v1"></script>
-  <script src="./search-controls.js?v=20261013-observation-efficiency-v1"></script>
+  <script src="./exploration-metrics.js?v=20261018-observation75-v1"></script>
+  <script src="./search-controls.js?v=20261018-observation75-v1"></script>
   <script src="./settings-disclosure.js?v=20261011-disclosure-v1"></script>
-  <script src="./app.js?v=20261016-comparable-prices-v1"></script>
+  <script src="./app.js?v=20261018-observation75-v1"></script>
 </body>
 </html>

@@ -95,10 +95,27 @@
       rate30:observed ? posted / observed * 100 : null,averageShops30:dates.size ? posted / dates.size : null,
       retrievalCoverage:shops.length ? observed / (shops.length * 30) * 100 : null};
   }
-  const observationPeriods = [7,30,90,200];
+  const observationPeriods = [7,30,75,200];
+  function migrateObservationSettings(input, url = false) {
+    const value = {...input}, previous = {};
+    for (const suffix of ['Min','Max']) {
+      const old = (url ? 'obs90' : 'observation90')+suffix;
+      const next = (url ? 'obs75' : 'observation75')+suffix;
+      if (Object.hasOwn(value,old)) {
+        previous[old]=value[old];
+        if (!Object.hasOwn(value,next)) value[next]=value[old];
+        delete value[old];
+      }
+    }
+    const scenario=url?'effScenario':'efficiencyScenario';
+    if (value[scenario]==='obs90') { previous[scenario]='obs90'; value[scenario]='obs75'; }
+    return {value,previous,changed:Object.keys(previous).length>0};
+  }
   function observation(summary, id, current, days) {
-    const indices = {7:[0,1,7],30:[2,3,4],90:[5,6,8],200:[9,10,11]}[days];
+    const indices = {7:[0,1,7],30:[2,3,4],75:[5,6,8],200:[9,10,11]}[days];
     const row = summary?.cards?.[id];
+    // Never relabel the compact slot of an old 90-day summary as 75 days.
+    if (days === 75 && !summary?.periods?.includes(75)) return {days,mean:null,count:null,age:null,delta:null,reference:true,latest:null,stale:true};
     const [mean,count,age] = indices ? indices.map(i=>row?.[i]) : [];
     const valid = finite(mean) && mean > 0 && Number.isInteger(count) && count > 0 && count <= days;
     const required = summary?.minimumObservationDays?.[days] ?? days;
@@ -128,7 +145,7 @@
   }
   function observationEconomics(summary, card, view, days, policy, feeRate, extra, now = Date.now()) {
     const observed = observation(summary,card.id,card.psa10,days);
-    const row=summary?.cards?.[card.id], index=summary?.observationEvidenceIndices?.[days] ?? ({7:13,30:14,90:15,200:12})[days];
+    const row=summary?.cards?.[card.id], index=summary?.observationEvidenceIndices?.[days] ?? ({7:13,30:14,75:15,200:12})[days];
     const legacy=row?.[index];
     observed.unverifiedDays=Number.isInteger(legacy) && legacy >= 0 ? legacy : row?.[12] === 0 ? 0 : null;
     // New mean-efficiency assumptions require every calendar day for a non-sparse label.
@@ -228,8 +245,8 @@
       note:'減額・手数料等を含まない参考支持。掲載は実買取件数ではなく上昇/GOの保証なし。同一店舗は1店、複数受付がある場合は保守側1提示'};
   }
   function tradeDemand(summary,id,days,now=Date.now()) {
-    const data=summary?.tradeDemand,row=data?.cards?.[id], at=data?.times?.[row?.[days===90?7:days===200?8:2]] || null;
-    const n=row?.[{7:0,30:1,90:5,200:6}[days]];
+    const data=summary?.tradeDemand,row=data?.cards?.[id], at=data?.times?.[row?.[days===75?7:days===200?8:2]] || null;
+    const n=days===75&&!data?.periods?.includes(75)?null:row?.[{7:0,30:1,75:5,200:6}[days]];
     const measured=Number.isInteger(n)&&n>=0, pop=days===7?row?.[3]:days===30?row?.[4]:null;
     const stale=at?now-Date.parse(at)>48*3600000:false;
     return {count:measured?n:null,daily:measured?n/days:null,at,stale,
@@ -239,5 +256,5 @@
         status:pop[4]===0?'近い期間の参考比較':pop[4]===2?'POP減少・訂正等':'期間不一致・部分期間',
         ratio:measured&&!stale&&pop[4]===0&&pop[0]>0?n/pop[0]:null}:null};
   }
-  return {percent,inRange,offerPrice,referenceMedian,meanSale,atPurchase,efficiency,coverage,observationPeriods,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics,periodEfficiencyAverage,buybackSupport,tradeDemand};
+  return {percent,inRange,offerPrice,referenceMedian,meanSale,atPurchase,efficiency,coverage,observationPeriods,migrateObservationSettings,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics,periodEfficiencyAverage,buybackSupport,tradeDemand};
 });

@@ -49,7 +49,7 @@ function resolveRelease(card, auditRow = null) {
     && row.numbers.some(n=>String(n).replace(/^0+/,'')===number)
     && (!row.nameIncludes || String(card.name).includes(row.nameIncludes)) && (!row.namePattern || new RegExp(row.namePattern,'i').test(card.name)));
   if (verified) return {date:validDate(verified.date),year:validYear(verified.year || String(verified.date||'').slice(0,4)),
-    source:verified.date ? '公式商品・配布開始日から補完' : '公式発売・発送年のみ判明', precision:verified.date?'date':'year', evidenceUrl:verified.url,checkedAt:releaseEvidence.checkedAt};
+    source:verified.date ? '公式商品・配布開始日から補完' : '公式発売・発送年のみ判明', precision:verified.date?'date':'year', evidenceUrl:verified.url,checkedAt:verified.checkedAt || releaseEvidence.checkedAt};
   const setDate = !isPromo(card) ? validDate(releaseMaster.dates?.[code]) : null;
   if (setDate) return { date: setDate, year: Number(setDate.slice(0, 4)), source: "セット発売日から補完", precision: "date" };
   const explicitDate = String(card?.name || "").match(/((?:19|20)\d{2})[年\/-](\d{1,2})[月\/-](\d{1,2})/);

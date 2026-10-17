@@ -61,7 +61,7 @@ const elements = new Map();
 const document = {getElementById:id=>{if(!elements.has(id))elements.set(id,{value:'',checked:false});return elements.get(id);},querySelectorAll:()=>[]};
 let saved={};
 const localStorage={getItem:k=>saved[k]??null,setItem:(k,v)=>{saved[k]=v;}};
-const context=vm.createContext({window:{location:{href:'https://example.test/?expProfit=0&expRoi=30&annual=40&psa9RatioMin=80&psa9RatioMax=100&psa9RatioRef=1'},PurchaseRatioModel:ratio,PurchaseDecisionModel:model},document,URL,URLSearchParams,localStorage,console,setTimeout,clearTimeout});
+const context=vm.createContext({window:{ExplorationMetrics:require('../exploration-metrics'),location:{href:'https://example.test/?expProfit=0&expRoi=30&annual=40&psa9RatioMin=80&psa9RatioMax=100&psa9RatioRef=1'},PurchaseRatioModel:ratio,PurchaseDecisionModel:model},document,URL,URLSearchParams,localStorage,console,setTimeout,clearTimeout});
 vm.runInContext(source.split('// Browser event bindings start here;')[0]+`\nglobalThis.api={state,els,readUrl,buildShareUrl,restoreQuickFilters,saveQuickFilters,purchasePsa9Ratio,purchasePsa9RatioHtml,psa9NonLossDisplay,signedExpectedMoney,favoritePurchasePrice};`,context);
 const api=context.api;
 api.readUrl();assert.equal(api.els.minExpectedProfitInput.value,'0');assert.equal(api.els.psa9RatioMinInput.value,'80');assert(api.els.psa9RatioAggregateInput.checked);assert(api.els.psa9RatioMarketInput.checked);

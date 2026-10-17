@@ -27,7 +27,7 @@
     if (id === 'lowRiskAvailabilityInput') return mode === 'low-risk';
     if (id === 'includeAggressiveInput') return mode === 'combined';
     if (mode === 'snkr-raw' && id.startsWith('efficiency')) return false;
-    if (id === 'efficiencyScenarioInput' && !/^obs(7|30|90|200)$/.test(state.efficiencyScenario) && (mode === 'current-market' || state.efficiencyBuy === 'current-cap' || state.efficiencyBuy === 'auto' && ['current-cap','current-target'].includes(state.profitSearchBasis))) return false;
+    if (id === 'efficiencyScenarioInput' && !/^obs(7|30|75|200)$/.test(state.efficiencyScenario) && (mode === 'current-market' || state.efficiencyBuy === 'current-cap' || state.efficiencyBuy === 'auto' && ['current-cap','current-target'].includes(state.profitSearchBasis))) return false;
     if (id === 'efficiencyManualPriceInput' && state.efficiencyBuy && state.efficiencyBuy !== 'manual') return false;
     if (mode === 'snkr-raw' && ['basic','advanced'].includes(category(id)) && !sharedEarly.has(id)) return false;
     if (mode === 'normal' && state.catalogScope && state.catalogScope !== 'analysis' && ['basic','advanced'].includes(category(id)) && !sharedEarly.has(id)) return false;
@@ -60,7 +60,7 @@
     return true;
   }
   function describe(id) {
-    if (id.startsWith('observation')) return {purpose:'国内PSA10の日次観測平均との乖離で参考探索',basis:'現相場÷7/30/90/200暦日観測平均−1。欠測補完なし・複数期間AND',effect:'指定期間のみ未取得／参考非採用／上下限外を除外。空欄無効、0有効',overlap:'実成約平均・将来予測・仕入れ上限・購入GOとは別'};
+    if (id.startsWith('observation')) return {purpose:'国内PSA10の日次観測平均との乖離で参考探索',basis:'現相場÷7/30/75/200暦日観測平均−1。欠測補完なし・複数期間AND',effect:'指定期間のみ未取得／参考非採用／上下限外を除外。空欄無効、0有効',overlap:'実成約平均・将来予測・仕入れ上限・購入GOとは別'};
     if (operations.has(id)) return {purpose:'保存条件の読み込み／お気に入り検索／実鑑定・実売記録',basis:'利用者が選択したCSV・カード・日付・実結果。推定結果で実現利益を作らない',effect:'操作しない限り検索・安全条件は変わらない。記録は削除対象にしない',overlap:'日次取得・自動探索・本番モデルの変更とは別'};
     if (id.startsWith('efficiency')) return {purpose:'カード単体の期待資金効率を探索・比較',basis:'指定買値・出口・拘束日数。平均仮定ではPSA10だけ日次観測平均／非10は現在国内PSA9',effect:'資金効率の表示・検索・順位・CSVのみ。上限・購入GOの式へ反映しない',overlap:'判定用年換算条件と観測乖離率の参考採用は別。欠測平均を採用する場合は参考値設定で明示'};
     if (settings.has(id)) return {purpose:'計算の費用・出口・資金・仮定を設定', basis:'選択した鑑定プラン／出口／想定率。利益目標と資金は既存GO・上限計算へ反映', effect:'カードの計算値・安全判定に影響。検索条件だけの解除では変更しない', overlap:'検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別'};
