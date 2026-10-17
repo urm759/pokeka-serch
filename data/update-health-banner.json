@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-17T19:36:10.618Z",
+  "generatedAt": "2026-10-17T19:45:25.783Z",
   "sourceLastSuccessAt": "2026-10-16T22:10:07.935Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-10-17T19:21:33.970Z",
-    "lastSuccessAt": "2026-10-17T19:21:33.970Z",
-    "runId": "39061931312",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/39061931312"
+    "lastAttemptAt": "2026-10-17T19:45:25.774Z",
+    "lastSuccessAt": "2026-10-17T19:45:25.774Z",
+    "runId": "39063642706",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/39063642706"
   },
   "issues": [
     {
@@ -89,10 +89,10 @@
       "reason": "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）"
     },
     {
-      "key": "pc:psa:PC観測未受信",
-      "category": "確認が必要",
+      "key": "pc:psa:独立監視未登録",
+      "category": "アクセス・手動対応待ち",
       "url": null,
-      "reason": "PC側PSA: PC観測未受信 / 30時間以内の独立タスク観測なし。PC停止・観測起動失敗・未公開を区別して確認"
+      "reason": "PC側PSA: 独立監視未登録 / Windowsのタスク登録権限が不足。通常PSAのfinally観測は稼働するが、起動前失敗を捕捉する独立タスクは未登録"
     },
     {
       "key": "priority-prices:cadence-stale",
@@ -127,7 +127,7 @@
     "PSA Japan料金: PSA Japan refresh failed; previous verified values retained: PSA Japan HTTP 403",
     "PSA Japan料金: 更新期限超過（カード別鮮度 未記録%）",
     "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）",
-    "PC側PSA: PC観測未受信 / 30時間以内の独立タスク観測なし。PC停止・観測起動失敗・未公開を区別して確認",
+    "PC側PSA: 独立監視未登録 / Windowsのタスク登録権限が不足。通常PSAのfinally観測は稼働するが、起動前失敗を捕捉する独立タスクは未登録",
     "重要価格更新：設定2時間に対し実績成功間隔（直近最大）10.85時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能",
     "購入価格高速更新：取得・検証・保存・公開のいずれかが未完了。実行ログで工程を確認",
     "購入価格高速更新が3回連続で進捗なし・期限超過あり"
