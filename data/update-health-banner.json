@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-16T23:19:14.209Z",
+  "generatedAt": "2026-10-17T00:39:43.019Z",
   "sourceLastSuccessAt": "2026-10-16T22:10:07.935Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-10-16T23:19:14.153Z",
-    "lastSuccessAt": "2026-10-16T23:19:14.153Z",
-    "runId": "38979524758",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/38979524758"
+    "lastAttemptAt": "2026-10-17T00:39:43.013Z",
+    "lastSuccessAt": "2026-10-17T00:39:43.013Z",
+    "runId": "38987228173",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/38987228173"
   },
   "issues": [
     {
@@ -97,19 +97,13 @@
     {
       "key": "priority-prices:cadence-stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38968711261",
-      "reason": "重要価格更新：設定2時間に対し実績成功間隔（直近最大）22.22時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
-    },
-    {
-      "key": "priority-prices:workflow-failure",
-      "category": "取得処理の故障",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38968711261",
-      "reason": "購入価格高速更新：取得・検証・保存・公開のいずれかが未完了。実行ログで工程を確認"
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38986974874",
+      "reason": "重要価格更新：設定2時間に対し実績成功間隔（直近最大）10.85時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
     },
     {
       "key": "priority-prices:stalled",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38968711261",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/38986974874",
       "reason": "購入価格高速更新が3回連続で進捗なし・期限超過あり"
     }
   ],
@@ -128,8 +122,7 @@
     "PSA Japan料金: 更新期限超過（カード別鮮度 未記録%）",
     "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）",
     "PC側PSA: 独立監視未登録 / Windowsのタスク登録権限が不足。通常PSAのfinally観測は稼働するが、起動前失敗を捕捉する独立タスクは未登録",
-    "重要価格更新：設定2時間に対し実績成功間隔（直近最大）22.22時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能",
-    "購入価格高速更新：取得・検証・保存・公開のいずれかが未完了。実行ログで工程を確認",
+    "重要価格更新：設定2時間に対し実績成功間隔（直近最大）10.85時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能",
     "購入価格高速更新が3回連続で進捗なし・期限超過あり"
   ],
   "detailUrl": "./data/update-health.json"
