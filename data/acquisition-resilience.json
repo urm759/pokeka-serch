@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-18T12:34:43.306Z",
+  "generatedAt": "2026-10-18T13:06:21.052Z",
   "llmCalls": 0,
   "codexCalls": 0,
   "retryPolicy": {
@@ -113,13 +113,53 @@
           "resumeCondition": "正規アクセス・形式・同一仕様の確認後に停止範囲だけ再開",
           "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-asia-25th-anniversary-promo/202700",
           "setCode": "S8A-G"
+        },
+        {
+          "kind": "missing-page",
+          "scope": "url",
+          "manual": true,
+          "attempts": 1,
+          "failures": 1,
+          "maxAttempts": 5,
+          "exhausted": false,
+          "reason": "Unable to find a populated table for https://www.psacard.com/pop/tcg-cards/2018/pokemon-japanese-sm-promo/155528",
+          "lastAttemptAt": "2026-10-18T13:02:44.347Z",
+          "lastSuccessAt": null,
+          "status": "manual-wait",
+          "held": true,
+          "manualReview": true,
+          "waitMs": null,
+          "nextRetryAt": null,
+          "resumeCondition": "正規アクセス・形式・同一仕様の確認後に停止範囲だけ再開",
+          "url": "https://www.psacard.com/pop/tcg-cards/2018/pokemon-japanese-sm-promo/155528",
+          "setCode": "SM-P"
+        },
+        {
+          "kind": "missing-page",
+          "scope": "url",
+          "manual": true,
+          "attempts": 1,
+          "failures": 1,
+          "maxAttempts": 5,
+          "exhausted": false,
+          "reason": "Unable to find a populated table for https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-promo-card-pack-25th-anniversary-edition/201768",
+          "lastAttemptAt": "2026-10-18T13:03:38.819Z",
+          "lastSuccessAt": null,
+          "status": "manual-wait",
+          "held": true,
+          "manualReview": true,
+          "waitMs": null,
+          "nextRetryAt": null,
+          "resumeCondition": "正規アクセス・形式・同一仕様の確認後に停止範囲だけ再開",
+          "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-promo-card-pack-25th-anniversary-edition/201768",
+          "setCode": "S8A-P"
         }
       ],
       "lastRun": {
         "attempted": 8,
         "newAcquired": 0,
-        "refreshed": 718,
-        "durationMs": 96675
+        "refreshed": 533,
+        "durationMs": 210146
       },
       "firstPassDaysEstimate": null,
       "observedExecutionDays": 0,
@@ -129,8 +169,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-18T12:32:43.337Z",
-        "to": "2026-10-18T12:34:40.948Z"
+        "from": "2026-10-18T13:05:45.479Z",
+        "to": "2026-10-18T13:06:18.315Z"
       },
       "sinceBaseline": {
         "newLinked": 3951,
@@ -319,8 +359,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-18T12:32:43.337Z",
-        "to": "2026-10-18T12:34:40.948Z"
+        "from": "2026-10-18T13:05:45.479Z",
+        "to": "2026-10-18T13:06:18.315Z"
       },
       "sinceBaseline": {
         "newLinked": 673,
@@ -672,8 +712,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-18T12:32:43.337Z",
-        "to": "2026-10-18T12:34:40.948Z"
+        "from": "2026-10-18T13:05:45.479Z",
+        "to": "2026-10-18T13:06:18.315Z"
       },
       "sinceBaseline": {
         "newLinked": 735,
