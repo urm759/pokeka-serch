@@ -139,6 +139,10 @@ function main() {
       : "みんトレ全件スナップショット未生成のため不足0枚を証明できません。次回取得後に再監査します。",
   };
   write(OUTPUT, result);
+  // Every regeneration must retain the current 2020+ readiness denominator.
+  if (fs.existsSync(path.join(ROOT, 'data/card-catalog-completion.json'))) {
+    require('./build_high_rarity_readiness').build(ROOT);
+  }
   console.log(JSON.stringify({ reproducible, sourceListedTotal: result.sourceListedTotal, releaseYearKnownTotal: result.releaseYearKnownTotal, releaseYearUnknownTotal: result.releaseYearUnknownTotal, targetRarityTotal: result.targetRarityTotal, eligibleSourceTotal: result.eligibleSourceTotal, matchedTotal: result.matchedTotal, missingBefore: result.missingBefore, addedThisRun: result.addedThisRun, missingAfter: result.missingAfter, exclusionCounts, duplicateIds: result.duplicateIds, sourceDuplicateIds }));
 }
 

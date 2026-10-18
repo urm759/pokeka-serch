@@ -1,0 +1,23 @@
+{
+  "at":"2026-10-18",
+  "environment":"Chrome, viewport 1440x900 / 390x844, same data and evaluation time, 60 displayed cards, 3 repetitions",
+  "baseline":"9663bbe9",
+  "scope":"2268 analysis cards / doubled 4536; all-catalog Node guard measured separately",
+  "samples":[
+    {"width":1440,"cards":2268,"before":{"calculationMs":[833.2,693.3,581],"domMs":[322.5,153.4,142.5],"conditionDomMs":[21.3,21.1,18.4],"parseMs":60.4},"after":{"calculationMs":[770.1,619.6,564.7],"domMs":[310.6,150.2,136.3],"conditionDomMs":[26.5,19.5,19],"parseMs":70.8}},
+    {"width":1440,"cards":4536,"before":{"calculationMs":[1425.5,1182.9,1141.1],"domMs":[436.8,266.2,253.9],"conditionDomMs":[36.7,20.7,22.3],"parseMs":143.2},"after":{"calculationMs":[1423.1,1135.6,1219.4],"domMs":[435.4,263.8,320.4],"conditionDomMs":[24.5,21,22.1],"parseMs":152.2}},
+    {"width":390,"cards":2268,"before":{"calculationMs":[802.5,647.6,573],"domMs":[345.5,147.2,142.5],"conditionDomMs":[22,19.2,19.4],"parseMs":53.7},"after":{"calculationMs":[712.4,609.7,558.8],"domMs":[305.1,143,141.9],"conditionDomMs":[27.4,19.7,16.6],"parseMs":67.3}},
+    {"width":390,"cards":4536,"before":{"calculationMs":[1387.2,1160.9,1145.4],"domMs":[442.3,262.6,250.8],"conditionDomMs":[25.1,21.5,24.6],"parseMs":157.3},"after":{"calculationMs":[1361.6,1168,1159.5],"domMs":[446.8,263,271.5],"conditionDomMs":[26,22,21.3],"parseMs":125.4}}
+  ],
+  "hashesEqual":true,
+  "arithmeticHash":{"normal":"446a818d0e9b8e73d7be26b6670da162a99794f2001ef6ea341f44c08faebf05","double":"fa970bf92257b44f2fb712fd494c1fc5f562d45bb40c417e090ab758f6d8e9a9"},
+  "financialHash":{"normal":"6a58b5471dec0006326ca5c40aff06df3b3816a7f4829ef3585f9376c0638de6","double":"6d0c660fb86f5416d673f132b825273219ca77864d0bac10b0d757603d4eedf0"},
+  "displayedIdsEqual":true,
+  "allConditionSamplesCacheHit":true,
+  "conditionCalculationMsRange":[0,0.2],
+  "initialDecodedBytes":{"before":17893980,"after":17903148,"doubleBefore":32964866,"doubleAfter":32974034},
+  "transferredBytes":{"before":2754707,"after":2762230,"doubleBefore":4595405,"doubleAfter":4602928},
+  "longHistoryRequests":1,
+  "longHistoryNote":"Only one shard after deliberately opening one card detail; no full long-history load",
+  "remaining":"Doubled full filtering/DOM remains above baseline in some samples; not claimed resolved. Mobile viewport, not a physical phone. Bytes are local gzip preview, not CDN transfer."
+}

@@ -33,6 +33,9 @@ assert.equal(project({...record,sourceUrl:'javascript:bad'},card),null);
 assert.equal(project({...record,markets:{ebayPsa10:{...record.markets.ebayPsa10,grade:'PSA9'}}},card),null);
 assert.equal(project({...record,localCardName:'テスト SR:SA [S4 100/100]'},card),null);
 const fs=require('node:fs'),vm=require('node:vm'),storage=new Map(),inputs=new Map();
+require('node:child_process').execFileSync(process.execPath,['work/audit_modern_high_rarity.js'],{stdio:'pipe'});
+const readiness=JSON.parse(fs.readFileSync('data/modern-high-rarity-audit.json')).readiness2020;
+assert(readiness && readiness.srFamily.listed<=readiness.srFamily.sourceTarget,'all-card audit regeneration preserves current readiness and bounded coverage');
 const context=vm.createContext({window:{PurchaseDecisionModel:require('../decision-model'),ExplorationMetrics:m,
   location:{href:'https://test.local/?obs90Min=0&obs90Max=10&effScenario=obs90&effBuy=auto&lock=91'}},
   document:{getElementById:id=>{if(!inputs.has(id))inputs.set(id,{value:'',checked:false,classList:{toggle(){}}});return inputs.get(id);},querySelectorAll:()=>[]},
