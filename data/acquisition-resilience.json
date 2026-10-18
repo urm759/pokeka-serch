@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-18T21:46:33.077Z",
+  "generatedAt": "2026-10-18T23:49:49.320Z",
   "llmCalls": 0,
   "codexCalls": 0,
   "retryPolicy": {
@@ -27,7 +27,7 @@
     {
       "source": "psaOfficial",
       "label": "PSA公式・PC正規認証",
-      "remaining": 1228,
+      "remaining": 1227,
       "queueDefinition": "あとPSAだけで分析可能な国内カード。全PSA未取得とは別",
       "sourceState": "partial",
       "failureScope": "url",
@@ -169,8 +169,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-18T21:44:24.416Z",
-        "to": "2026-10-18T21:46:30.767Z"
+        "from": "2026-10-18T23:41:48.265Z",
+        "to": "2026-10-18T23:49:46.925Z"
       },
       "sinceBaseline": {
         "newLinked": 3951,
@@ -315,8 +315,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-18T21:44:24.416Z",
-        "to": "2026-10-18T21:46:30.767Z"
+        "from": "2026-10-18T23:41:48.265Z",
+        "to": "2026-10-18T23:49:46.925Z"
       },
       "sinceBaseline": {
         "newLinked": 697,
@@ -668,8 +668,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-18T21:44:24.416Z",
-        "to": "2026-10-18T21:46:30.767Z"
+        "from": "2026-10-18T23:41:48.265Z",
+        "to": "2026-10-18T23:49:46.925Z"
       },
       "sinceBaseline": {
         "newLinked": 735,
@@ -682,13 +682,13 @@
     }
   ],
   "psaOnly": {
-    "count": 1228,
+    "count": 1227,
     "causes": {
       "PSA個別URL保留・他セット巡回継続": 13,
       "仕様・セット曖昧・手動確認待ち": 315,
       "日本語版根拠未確認・言語照合待ち": 7,
       "仕様不一致で保留・完全仕様表の再確認待ち": 182,
-      "公式セットURL未登録・正規候補確認待ち": 704,
+      "公式セットURL未登録・正規候補確認待ち": 703,
       "PC正規セット取得へ接続済み・実取得待ち": 7
     },
     "cards": [
@@ -2891,12 +2891,6 @@
       {
         "id": "pk-4399",
         "setCode": "SMP2",
-        "url": null,
-        "cause": "公式セットURL未登録・正規候補確認待ち"
-      },
-      {
-        "id": "pk-49063",
-        "setCode": "CLK",
         "url": null,
         "cause": "公式セットURL未登録・正規候補確認待ち"
       },
@@ -8064,8 +8058,8 @@
   },
   "progress": {
     "listed": 12544,
-    "analyzable": 2268,
-    "pending": 10276,
+    "analyzable": 2267,
+    "pending": 10277,
     "oneAway": 1710
   },
   "newlyAnalyzable": 0,
