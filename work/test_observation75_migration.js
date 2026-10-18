@@ -33,9 +33,16 @@ assert.equal(project({...record,sourceUrl:'javascript:bad'},card),null);
 assert.equal(project({...record,markets:{ebayPsa10:{...record.markets.ebayPsa10,grade:'PSA9'}}},card),null);
 assert.equal(project({...record,localCardName:'テスト SR:SA [S4 100/100]'},card),null);
 const fs=require('node:fs'),vm=require('node:vm'),storage=new Map(),inputs=new Map();
-require('node:child_process').execFileSync(process.execPath,['work/audit_modern_high_rarity.js'],{stdio:'pipe'});
-const readiness=JSON.parse(fs.readFileSync('data/modern-high-rarity-audit.json')).readiness2020;
-assert(readiness && readiness.srFamily.listed<=readiness.srFamily.sourceTarget,'all-card audit regeneration preserves current readiness and bounded coverage');
+const auditFile='data/modern-high-rarity-audit.json',auditBefore=fs.readFileSync(auditFile);
+try {
+  require('node:child_process').execFileSync(process.execPath,['work/audit_modern_high_rarity.js'],{stdio:'pipe'});
+  const readiness=JSON.parse(fs.readFileSync(auditFile)).readiness2020;
+  assert(readiness && readiness.srFamily.listed<=readiness.srFamily.sourceTarget,'all-card audit regeneration preserves current readiness and bounded coverage');
+} finally {
+  // Exercising regeneration must not mutate a release file pinned by its UI manifest.
+  fs.writeFileSync(auditFile,auditBefore);
+}
+assert.deepEqual(fs.readFileSync(auditFile),auditBefore,'regression tests leave the publication snapshot unchanged');
 const context=vm.createContext({window:{PurchaseDecisionModel:require('../decision-model'),ExplorationMetrics:m,
   location:{href:'https://test.local/?obs90Min=0&obs90Max=10&effScenario=obs90&effBuy=auto&lock=91'}},
   document:{getElementById:id=>{if(!inputs.has(id))inputs.set(id,{value:'',checked:false,classList:{toggle(){}}});return inputs.get(id);},querySelectorAll:()=>[]},
@@ -59,6 +66,8 @@ assert.equal(inputs.get('observation75MinInput').value,'','explicit new clear wi
   const before=context.api.revision();
   await context.api.fetchJsonMaybe('./data/overseas-glance/0.json',{detail:true,affectsCalculation:false});
   assert.equal(context.api.revision(),before,'display-only foreign data cannot trigger full financial recalculation');
+  await context.api.fetchJsonMaybe('./data/psa-pop-glance/00.json',{detail:true,affectsCalculation:false});
+  assert.equal(context.api.revision(),before,'display-only POP summary cannot change finance cache');
   await context.api.fetchJsonMaybe('./data/hareruya2-stock-summary.json');
   assert.equal(context.api.revision(),before+1,'real calculation input fetch still invalidates calculations');
   await context.api.fetchJsonMaybe('./data/psa-population-summary.json',{affectsCalculation:false});

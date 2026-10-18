@@ -22,7 +22,8 @@ const efficiencyFields = [['effMin','efficiencyMin',null],['effManual','efficien
 function readiness2020Text(value) {
   if(!value?.srFamily||!value?.arChr)return '';
   const x=value.srFamily,a=value.arChr,p=n=>n==null?'未判定':n.toFixed(1)+'%';
-  return `<small>2020年以降SR系：取得元${x.sourceTarget}／掲載${x.listed}（${p(x.listingPct)}）／分析可能${x.analyzable}（${p(x.analysisPct)}／目標90%）。年・レア未判定の可能対象${x.unknown}枚は別計上、達成扱いにしません。AR/CHR：掲載${a.listed}／分析可能${a.analyzable}（${p(a.analysisPct)}）。詳細は同じ監査JSONのreadiness2020。</small>`;
+  const c=value.classification;
+  return `<small>2020年以降SR系：取得元${x.sourceTarget}／掲載${x.listed}（${p(x.listingPct)}）／分析可能${x.analyzable}（${p(x.analysisPct)}／目標90%）。年・レア未判定の可能対象${x.unknown}枚は別計上、達成扱いにしません。AR/CHR：掲載${a.listed}／分析可能${a.analyzable}（${p(a.analysisPct)}）。${c?`取得元日本語全体：明示された低レア${c.confirmedLowRarity}／分類不明${c.unclassified}／その他の既知ラベル${c.knownOther}（高レア・AR/CHRとは別）。分類母数の訂正を実補完とは数えません。`:''}詳細は同じ監査JSONのreadiness2020。</small>`;
 }
 let efficiencyCache = new WeakMap();
 let observationEfficiencyCache = new WeakMap();
@@ -671,7 +672,15 @@ async function renderPsaHistory(details) {
   try {
     if (!state.psaHistoryCache[shard]) {
       const data = await fetchJsonMaybe(`./data/psa-history/${shard}.json`);
-      state.psaHistoryCache[shard] = data?.cards || {};
+      state.psaHistoryCache[shard] = Object.fromEntries(Object.entries(data?.cards||{}).map(([key,rows])=>{
+        let segment=[];
+        for(const r of [...rows].sort((a,b)=>Date.parse(a[3]?.observedAt)-Date.parse(b[3]?.observedAt))){
+          const at=Date.parse(r[3]?.observedAt);if(!/T\d{2}:/.test(r[3]?.observedAt||'')||!Number.isFinite(at)||at>Date.now())continue;
+          if(!data.identities?.[key]||!data.sources?.[key]||r[3]?.specificationIdentity!==data.identities[key]||r[3]?.sourceUrl!==data.sources[key]){segment=[];continue;}
+          segment.push(r);
+        }
+        return [key,segment];
+      }));
     }
     const rows = state.psaHistoryCache[shard]?.[id] || [];
     if (rows.length < 2) {
@@ -682,12 +691,13 @@ async function renderPsaHistory(details) {
     const width = 360, height = 120, pad = 10;
     const maxValue = Math.max(...rows.flatMap((row) => [Number(row[1] || 0), Number(row[2] || 0)]), 1);
     const points = (index) => rows.map((row, i) => {
-      const x = pad + (rows.length === 1 ? 0 : i / (rows.length - 1)) * (width - pad * 2);
+      const start=Date.parse(rows[0][3].observedAt),end=Date.parse(rows.at(-1)[3].observedAt);
+      const x = pad + (end>start?(Date.parse(row[3].observedAt)-start)/(end-start):0) * (width - pad * 2);
       const y = height - pad - Number(row[index] || 0) / maxValue * (height - pad * 2);
       return `${x.toFixed(1)},${y.toFixed(1)}`;
     }).join(" ");
     const first = rows[0], last = rows[rows.length - 1];
-    target.innerHTML = `
+    target.innerHTML = `${psaPopGlance({id,official:state.psaPopulation[id]},true)}
       <svg class="psa-chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="PSA10枚数とTOTAL枚数の推移">
         <polyline class="psa-line-total" points="${points(2)}"></polyline>
         <polyline class="psa-line-ten" points="${points(1)}"></polyline>
@@ -3372,7 +3382,7 @@ async function fetchJsonMaybe(url, { detail = false, affectsCalculation = true }
     uiLoadMetrics.push({ file, bytes: raw.byteLength, networkMs, verifyMs, jsonParseMs, decodeMs: performance.now() - decodeStart,
       transferBytes: resource?.transferSize ?? null, compressedBodyBytes: resource?.encodedBodySize ?? null,
       expandedBodyBytes: resource?.decodedBodySize ?? null });
-    if (affectsCalculation || !/^data\/overseas-glance\/\d+\.json$/.test(original)) loadedDataRevision++;
+    if (affectsCalculation || !/^data\/(?:overseas-glance|psa-pop-glance)\/\d+\.json$/.test(original)) loadedDataRevision++;
     return payload;
   } catch (error) {
     if (uiDataManifest?.hashes?.[file]) {
@@ -5137,6 +5147,35 @@ async function ensureOverseasGlance(cards) {
     if(card) {const html=overseasPriceGlance(card,el.dataset.overseasGrade);if(el.innerHTML!==html)el.innerHTML=html;}
   }
 }
+const psaPopGlanceCache=new Map(),psaPopGlanceRequests=new Map(),psaPopGlanceFailures=new Set();
+function psaPopGlance(card,detail=false,now=Date.now()) {
+  const official=card.official,held=state.psaSpecificationHeld?.[card.id];
+  if(held)return '<small class="price-stale">POP推移：仕様保留・通常版で代用しません</small>';
+  if(!Number.isInteger(official?.ten))return '<small class="price-stale">PSA10 POP：未取得</small>';
+  const row=psaPopGlanceCache.get(card.id);
+  const current=row&&row.at===official.f&&row.ten===official.ten?row:null;
+  const ttl=state.updateStatus?.sources?.psaOfficial?.updateTtlHours||36;
+  const age=now-Date.parse(official.f),stale=!/T\d{2}:/.test(official.f||'')||!Number.isFinite(age)||age<0||age>ttl*3600000;
+  const cell=(w,days)=>{
+    const label=days==null?current?.dailyPrevious?'前回の日次保存から':'前回確認から':`${days}日枠`;
+    if(!w)return `<span>${label}<b>${psaPopGlanceFailures.has(official.sh)?'要約読込失敗・履歴未確認':'比較履歴不足'}</b></span>`;
+    const [delta,base,span,,flag]=w,rate=base>0?delta/base*100:null;
+    return `<span>${label}・観測${fmt.format(span)}日間<b>${delta>0?'+':''}${fmt.format(delta)}枚${rate==null?'／率算出不可':`（${rate>0?'+':''}${rate.toFixed(2)}%）`}</b>${flag===2?'<small class="price-stale">減少・公式訂正等を含む／供給減とは未確定</small>':flag===1?'<small class="price-stale">旧取得根拠・参考比較</small>':''}</span>`;
+  };
+  const period=i=>current?.p?.[i]==null?null:current.windows[current.p[i]];
+  return `<div class="pop-glance" aria-label="PSA10 POP推移"><span>現在のPSA10 POP<b>${fmt.format(official.ten)}枚</b></span>${cell(period(0),null)}${(detail?[75,200]:[7,30]).map(d=>cell(period([7,30,75,200].indexOf(d)+1),d)).join('')}<small class="pop-glance-note ${stale?'price-stale':''}">公式確認 ${escapeHtml(official.f||'日時不明')}${stale?'／古値・更新待ち':''}。開始時POP比・月換算なし。${current?.changed?'紐付け変更前は比較外。':''}世界の鑑定枚数≠流通在庫。上限/GOへ不使用。</small></div>`;
+}
+async function ensurePsaPopGlance(cards) {
+  for(const sh of new Set(cards.map(c=>c.official?.sh).filter(s=>/^\d{2}$/.test(s||'')))) {
+    if(!psaPopGlanceRequests.has(sh))psaPopGlanceRequests.set(sh,fetchJsonMaybe(`./data/psa-pop-glance/${sh}.json`,{detail:true,affectsCalculation:false}).then(data=>{for(const [id,row]of Object.entries(data?.cards||{}))psaPopGlanceCache.set(id,row);}).catch(()=>{psaPopGlanceFailures.add(sh);}));
+    await psaPopGlanceRequests.get(sh);
+  }
+  const byId=new Map(cards.map(c=>[c.id,c]));
+  for(const el of document.querySelectorAll('[data-psa-pop-glance]')){
+    const card=byId.get(el.dataset.psaPopGlance);if(!card)continue;
+    const html=psaPopGlance(card,el.dataset.popDetail==='true');if(el.innerHTML!==html)el.innerHTML=html;
+  }
+}
 // Presentation only: neither market references nor forecasts are purchase offers.
 function priceComparisonCells(card, limitDisplay, confirmedAt, now = Date.now(), trial = null) {
   if (Object.hasOwn(card, 'psa10ObservedAt')) confirmedAt = card.psa10ObservedAt;
@@ -5188,7 +5227,7 @@ function gradeRateSummary(card, trial = null) {
   const source = trial?.rateSource || assumptions?.hitRateSource || "未取得";
   const held = state.psaSpecificationHeld[card.id];
   const missingLabel = held ? "仕様不一致で保留" : "未取得";
-  return `<div class="grade-rate-summary"><div><span>PSA10公式取得率</span><strong class="${Number.isFinite(rate) ? "" : "value-unavailable"}">${Number.isFinite(rate) ? `${rate.toFixed(1)}%` : missingLabel}</strong><small>${Number.isFinite(official?.total) ? `母数 TOTAL ${fmt.format(official.total)}枚／10 ${Number.isFinite(official.ten) ? fmt.format(official.ten) : "未取得"}枚` : "母数未取得"}／確認 ${escapeHtml(official?.f || held?.f || "未取得")}</small>${held ? `<small class="price-stale">通常版POPで代用しません。${escapeHtml(held.reason)} <a href="${escapeHtml(held.u)}" target="_blank" rel="noreferrer">公式候補</a></small>` : ""}</div><div><span>計算に採用した想定10率</span><strong class="${Number.isFinite(assumed) ? "" : "value-unavailable"}">${Number.isFinite(assumed) ? `${(assumed * 100).toFixed(1)}%` : "未取得"}</strong><small>${escapeHtml(source)}。公式比率は目視選別後の成功保証ではありません。</small></div></div>`;
+  return `<div class="grade-rate-summary"><div><span>PSA10公式取得率</span><strong class="${Number.isFinite(rate) ? "" : "value-unavailable"}">${Number.isFinite(rate) ? `${rate.toFixed(1)}%` : missingLabel}</strong><small>${Number.isFinite(official?.total) ? `母数 TOTAL ${fmt.format(official.total)}枚／10 ${Number.isFinite(official.ten) ? fmt.format(official.ten) : "未取得"}枚` : "母数未取得"}／確認 ${escapeHtml(official?.f || held?.f || "未取得")}</small>${held ? `<small class="price-stale">通常版POPで代用しません。${escapeHtml(held.reason)} <a href="${escapeHtml(held.u)}" target="_blank" rel="noreferrer">公式候補</a></small>` : ""}</div><div><span>計算に採用した想定10率</span><strong class="${Number.isFinite(assumed) ? "" : "value-unavailable"}">${Number.isFinite(assumed) ? `${(assumed * 100).toFixed(1)}%` : "未取得"}</strong><small>${escapeHtml(source)}。公式比率は目視選別後の成功保証ではありません。</small></div></div><div data-psa-pop-glance="${escapeHtml(card.id)}">${psaPopGlance(card)}</div>`;
 }
 
 function currentMarketProfitPanel(view) {
@@ -6222,6 +6261,7 @@ function renderContent() {
   });
   committed.changed.forEach((el) => observer.observe(el));
   void ensureOverseasGlance(visibleCards);
+  void ensurePsaPopGlance(visibleCards);
   committed.changed.flatMap(el => [...el.querySelectorAll("[data-psa-history]")]).forEach((details) => {
     details.addEventListener("toggle", () => { if (details.open) renderPsaHistory(details); }, { once: true });
   });

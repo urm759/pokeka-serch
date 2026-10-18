@@ -214,9 +214,9 @@ function main() {
     else dataTypeTotals.pokedata.unsupportedOrUnconfirmed += 1;
     const entries = {
       domesticPrice: item(domesticPrice ? "取得済み" : priceDisputed || priceUnbacked ? "再試行待ち" : "取得元にデータなし", "みんトレ", times.toreca, domesticPrice ? null : priceDisputed ? "参考価格と複数店舗の状態A価格が対立・手動確認待ち" : priceUnbacked ? "実売の裏付けなし・参考価格は計算対象外" : "美品価格の掲載なし"),
-      domesticTrades: item(domesticTx ? "取得済み" : "定期再確認", "みんトレ・素体全状態", times.toreca, domesticTx ? null : "現在取引なし・次回定期更新で再確認"),
+      domesticTrades: item(domesticTx ? "取得済み" : "定期再確認", "みんトレ・素体全状態", times.toreca, domesticTx ? null : "7/30日件数未取得・0件/データなしとは未確定。正規一括差分で再確認"),
       psa10Price: item(psa10Price ? "取得済み" : "取得元にデータなし", "みんトレ／スニダン", times.toreca, psa10Price ? null : "PSA10相場の掲載なし"),
-      psa10Trades: item(psa10Tx ? "取得済み" : "定期再確認", "みんトレ／スニダン", times.toreca, psa10Tx ? null : "現在取引なし・次回定期更新で再確認"),
+      psa10Trades: item(psa10Tx ? "取得済み" : "定期再確認", "みんトレ／スニダン", times.toreca, psa10Tx ? null : "7/30日件数未取得・0件/データなしとは未確定。正規一括差分で再確認"),
       rawActualSales: item(rawActualCount > 0 ? "取得済み" : pokedataState === "unsupported-or-unconfirmed" ? "取得不能" : "取得待ち", "PokeDATA個別成約", times.pokedata, rawActualCount > 0 ? `${rawActualCount}件` : "Raw実成約未取得"),
       psa10ActualSales: item(psa10ActualCount > 0 ? "取得済み" : pokedataState === "unsupported-or-unconfirmed" ? "取得不能" : "取得待ち", "PokeDATA個別成約", times.pokedata, psa10ActualCount > 0 ? `${psa10ActualCount}件` : "PSA10実成約未取得"),
       psa9Sales: item(psa9ActualCount > 0 ? "取得済み" : pokedataState === "unsupported-or-unconfirmed" ? "取得不能" : "取得待ち", "PokeDATA個別成約", times.pokedata, psa9ActualCount > 0 ? `${psa9ActualCount}件` : psa9Kind.kind === "aggregate" ? "集計値はあるが個別実成約は未取得" : "PSA9実成約を優先取得"),

@@ -142,6 +142,22 @@ function appendObservation(history, selected, specificationIdentity = null) {
   return result.sort((a, b) => a[0].localeCompare(b[0])
     || (observationTime(a[3]?.observedAt) ?? -Infinity) - (observationTime(b[3]?.observedAt) ?? -Infinity));
 }
+function previousConfirmation(history,selected,identity){
+  const time=observationTime(selected.fetchedAt);
+  if(time==null)return null;
+  return [...history].filter(r=>r[3]?.sourceUrl===selected.url&&r[3]?.specificationIdentity===identity
+    &&observationTime(r[3]?.observedAt)!=null&&observationTime(r[3].observedAt)<time
+    &&Number.isInteger(r[1])&&Number.isInteger(r[2])&&r[1]>=0&&r[2]>=r[1])
+    .sort((a,b)=>observationTime(a[3].observedAt)-observationTime(b[3].observedAt)).at(-1)||null;
+}
+function rememberPreviousConfirmation(store,id,history,selected){
+  store.previousConfirmations||={};
+  const identity=store.identities[id],previous=previousConfirmation(history,selected,identity);
+  const latestKnown=Math.max(-Infinity,...history.filter(r=>r[3]?.sourceUrl===selected.url&&r[3]?.specificationIdentity===identity).map(r=>observationTime(r[3]?.observedAt)??-Infinity));
+  if(previous&&observationTime(selected.fetchedAt)>latestKnown)store.previousConfirmations[id]=previous;
+  const remembered=store.previousConfirmations[id];
+  if(remembered&&(remembered[3]?.sourceUrl!==selected.url||remembered[3]?.specificationIdentity!==identity))delete store.previousConfirmations[id];
+}
 function windowChange(history, days, today) {
   const rows = history.filter(row => /^\d{8}$/.test(row[0]) && Number.isFinite(row[1])
     && Number.isFinite(row[2]) && row[1] >= 0 && row[2] >= row[1] && row[2] > 0)
@@ -310,6 +326,7 @@ function main() {
     const shard = shardFor(card.id), store = shards[shard]; store.cards ||= {};
     let history = Array.isArray(store.cards[card.id]) ? store.cards[card.id].filter((row)=>row[0]>=cutoff) : [];
     history=reconcileHistory(store,card.id,history,selected,identity);
+    rememberPreviousConfirmation(store,card.id,history,selected);
     history = appendObservation(history, selected, store.identities[card.id]);
     store.cards[card.id] = history;
     const latest = history.at(-1), selectedTime = observationTime(selected.fetchedAt);
@@ -327,4 +344,4 @@ function main() {
 }
 
 if (require.main === module) main();
-module.exports = { cardIdentity, compactRows, cleanName, shortSet, normalizeNo, variantsCompatible, namesCompatible, authoritativeRows, reconcileHistory, dayKey, observationTime, appendObservation, windowChange, compactWindow };
+module.exports = { cardIdentity, compactRows, cleanName, shortSet, normalizeNo, variantsCompatible, namesCompatible, authoritativeRows, reconcileHistory, dayKey, observationTime, appendObservation, windowChange, compactWindow, previousConfirmation, rememberPreviousConfirmation };

@@ -1648,6 +1648,9 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .grade-rate-summary>div,.current-market-profit>div,.period-profit-detail{min-width:0;padding:11px;border:1px solid rgba(255,255,255,.15);border-radius:12px;background:#0b1224}
 .grade-rate-summary span,.grade-rate-summary small,.current-market-profit span,.current-market-profit small,.period-profit-detail span,.period-profit-detail small{display:block;font-size:11px;line-height:1.45;color:var(--muted);overflow-wrap:anywhere}
 .grade-rate-summary strong{display:block;font-size:24px;color:#fde68a;margin:4px 0}
+.pop-glance{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:8px 0;padding:10px;border:1px solid #34415b;border-radius:12px;background:#101a2b;color:#c9d5e6;font-size:11px;line-height:1.5}
+.pop-glance>span{min-width:0;overflow-wrap:anywhere}.pop-glance b,.pop-glance small{display:block}.pop-glance b{font-size:13px;color:#d5dff1;font-variant-numeric:tabular-nums}.pop-glance-note{grid-column:1/-1;color:#aebed3}.pop-glance .price-stale{color:#ffcb7c}
+@media(max-width:720px){.pop-glance{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;font-size:11px}.pop-glance b{font-size:12px}}
 .current-market-profit strong,.period-profit-detail strong{display:block;font-size:19px;margin:4px 0;overflow-wrap:anywhere}
 @media(max-width:720px){.grade-rate-summary,.current-market-profit{gap:6px}.grade-rate-summary>div,.current-market-profit>div{padding:9px}.grade-rate-summary span,.grade-rate-summary small,.current-market-profit span,.current-market-profit small{font-size:10px}}
 .search-performance { display: block; margin: 0.6rem 0; color: var(--muted, #94a3b8); font-size: 0.75rem; }
