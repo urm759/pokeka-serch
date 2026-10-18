@@ -19,9 +19,21 @@ function build() {
     profiles.push({id:p.id,ids:ids(after,a),financialHash:finances(a),codeOnlyDifference:0});
   }
   const before=outcomes.unpack(read('work/20261018-before-completion.json')),after=outcomes.snapshot(root);
-  const acquired=read('work/candidate-shop-refresh.json').sources.hareruya2;
+  const filledByField={},filledExamples=[];
+  for(const [id,row]of Object.entries(after.rows)){
+    const old=before.rows[id];if(!old)continue;
+    const fields=row.fields.filter(f=>!old.fields.includes(f)&&!['psa9Evidence','buybackExitEvidence'].includes(f));
+    for(const field of fields)filledByField[field]=(filledByField[field]||0)+1;
+    if(fields.some(f=>f!=='release'))filledExamples.push({id,fields});
+  }
+  const prior=JSON.parse(cp.execFileSync('git',['show','8f718187:data/observation75-operations.json'],{encoding:'utf8',maxBuffer:8e6})).profiles;
+  const previousIds=new Set(prior.flatMap(p=>p.ids)),currentIds=new Set(profiles.flatMap(p=>p.ids));
+  const acquired=JSON.parse(cp.execFileSync('git',['show','8f718187:work/candidate-shop-refresh.json'],{encoding:'utf8',maxBuffer:8e6})).sources.hareruya2;
   const result={at,baseline:base,comparison:'同一の最新データ・URL全項目・評価時刻。75日を未選択の既存4条件',profiles,
-    dataDelta:outcomes.compare(before,after),newSourceAcquisition:{purchaseAttempted:acquired.attemptedCount,purchaseConfirmed:acquired.refreshedCount,
+    dataDelta:outcomes.compare(before,after),filledByField,filledExamples,
+    independentCandidates:{before:previousIds.size,after:currentIds.size,gained:[...currentIds].filter(id=>!previousIds.has(id)),lost:[...previousIds].filter(id=>!currentIds.has(id))},
+    dataScope:'今回の手動取得と再開中にmainへ届いた定期/PC保存データを含む。日付補完と必須不足補完は分離。',
+    manualAcquisitionEvidence:'8f718187:work/candidate-shop-refresh.json',newSourceAcquisition:{purchaseAttempted:acquired.attemptedCount,purchaseConfirmed:acquired.refreshedCount,
       http:acquired.httpRequests,durationMs:acquired.durationMs,newLinks:acquired.newLinkedCount,newPrices:acquired.newAcquiredCount},
     releaseEvidence:['https://www.pokemon-card.com/ex/mc/','https://www.30th.pokemon-card.com/product/m6a'],
     readiness2020:read('data/modern-high-rarity-audit.json').readiness2020,

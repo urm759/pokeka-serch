@@ -42,3 +42,37 @@ git(["bundle", "verify", path.join(repo, "work", "publish-recovery.bundle")], re
 const portable = spawnSync(process.execPath, ["-e", "Object.defineProperty(process,'platform',{value:'linux'});require('./work/update_psa_official_populations.js');console.log('portable import passed')"], { cwd: path.join(__dirname, ".."), encoding: "utf8" });
 assert.equal(portable.status, 0, portable.stderr);
 console.log("Portable PSA import, recoverable publication, non-overlapping merge and conflicting data isolation passed");
+
+function generatedFixture(failValidation) {
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'pokeka-generated-merge-'));
+  const origin=path.join(dir,'origin.git'),left=path.join(dir,'left'),right=path.join(dir,'right');
+  git(['init','--bare','--initial-branch=main',origin]);git(['clone',origin,left]);config(left);
+  fs.mkdirSync(path.join(left,'data/ui'),{recursive:true});fs.mkdirSync(path.join(left,'work'));
+  const put=(cwd,file,value)=>fs.writeFileSync(path.join(cwd,file),JSON.stringify(value));
+  function generated(cwd,day){
+    put(cwd,'data/update-status.json',{completeDate:day});
+    put(cwd,'data/performance-history.json',{version:1,records:[{generatedAt:day+'T00:00:00Z',value:day}]});
+    put(cwd,'data/runtime-availability-audit.json',{at:day});
+    put(cwd,'data/ui/manifest.json',{revision:day});
+  }
+  generated(left,'2026-10-01');put(left,'data/source.json',{price:12345,observedAt:'2026-10-01'});
+  git(['add','data'],left);git(['commit','-m','Initial derived snapshots'],left);git(['push','origin','main'],left);
+  git(['clone',origin,right]);config(right);generated(right,'2026-10-02');
+  git(['add','data'],right);git(['commit','-m','Remote generated update'],right);git(['push','origin','main'],right);
+  generated(left,'2026-10-03');git(['add','data'],left);git(['commit','-m','Local generated update'],left);git(['fetch','origin','main'],left);
+  assert.notEqual(spawnSync('git',['merge','--no-edit','origin/main'],{cwd:left,encoding:'utf8'}).status,0);
+  const head=git(['rev-parse','HEAD'],left),incoming=git(['rev-parse','MERGE_HEAD'],left);
+  const resolve=require('./resolve_generated_merge').resolve;
+  const rebuild=()=>{
+    if(failValidation)throw Error('Required validation failed');
+    const history=JSON.parse(fs.readFileSync(path.join(left,'data/performance-history.json')));
+    assert.deepEqual(history.records.map(r=>r.generatedAt),['2026-10-02T00:00:00Z','2026-10-03T00:00:00Z']);
+    assert.equal(JSON.parse(fs.readFileSync(path.join(left,'data/update-status.json'))).completeDate,'2026-10-02');
+    assert.equal(JSON.parse(fs.readFileSync(path.join(left,'data/source.json'))).price,12345);
+  };
+  if(failValidation){assert.throws(()=>resolve(left,{rebuild}),/Required validation failed/);assert.equal(git(['rev-parse','HEAD'],left),head);}
+  else {assert(resolve(left,{rebuild}));assert.equal(git(['diff','--name-only','--diff-filter=U'],left),'');}
+  for(const stage of [1,2,3])assert(fs.existsSync(path.join(left,'work/generated-merge-stages',incoming,String(stage),'data/ui/manifest.json')));
+}
+generatedFixture(false);generatedFixture(true);
+console.log('PASS generated-only publication conflicts, all-side archive, history preservation and failed validation publication stop');
