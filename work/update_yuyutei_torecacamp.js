@@ -590,6 +590,7 @@ function parseProductSitemap(xml) {
 
 function preferCampEntry(previous, candidate) {
   if (!previous) return candidate;
+  if(Boolean(previous.referenceOnly)!==Boolean(candidate.referenceOnly))return candidate.referenceOnly?previous:candidate;
   if(Boolean(previous.cardMismatchSuspected)!==Boolean(candidate.cardMismatchSuspected))return candidate.cardMismatchSuspected?previous:candidate;
   if (previous.detailUrl === candidate.detailUrl) return candidate;
   if (previous.priceQuarantined !== candidate.priceQuarantined) return candidate.priceQuarantined ? previous : candidate;
@@ -675,7 +676,7 @@ async function updateTorecaCamp(cards, paths) {
   const startedAt = new Date().toISOString();
   const forcedSitemap = Math.max(0, Number(process.env.TORECACAMP_RETRY_SITEMAP || 0) - 1);
   let sitemapUrls = [];
-  let listedProducts = 0; let detailFetched = 0; let parsed = 0; let stateA = 0;
+  let listedProducts = 0; let detailFetched = 0; let parsed = 0; let stateA = 0; let referenceUpdated = 0;
   let linked = 0; let updated = 0; let failed = 0; let cacheHits = 0; let sitemapsSucceeded = 0;
   let duplicateUrls = 0; let duplicateProductIds = 0;
   let stoppingReason = null;
@@ -719,8 +720,9 @@ async function updateTorecaCamp(cards, paths) {
         observedAt:new Date().toISOString(),identityVerifiedAt:new Date().toISOString(),sourceSitemap:null};
       if(!(entry.price>0))throw new Error('実価格解析不能');
       const q=campPriceQuarantine(matches[0],entry.price);Object.assign(entry,{priceQuarantined:q.quarantined,quarantineReason:q.reason,marketPriceRatio:q.ratio});
+      if(require('./quarantine_shop_identity').recordReference(ROOT,'torecacamp',entry,matches[0]))referenceUpdated++;
       const chosen=preferCampEntry(previousEntry,entry);byId.set(entry.cardId,chosen);
-      if(chosen===entry){updated+=Number(entry.price!==previousEntry.price||entry.available!==previousEntry.available);stateA++;knownByUrl.set(url,entry);}
+      if(chosen===entry){updated+=Number(entry.price!==previousEntry.price||entry.available!==previousEntry.available);stateA+=Number(!entry.referenceOnly);knownByUrl.set(url,entry);}
       delete progress.knownUrlRetries[url];Object.assign(record,{status:'verified',confirmedAt:entry.observedAt,price:entry.price,available:entry.available,adopted:chosen===entry});
     }catch(error){
       failed++;const r=retryPolicy.failure(progress.knownUrlRetries[url],{error:error.message,httpStatus:error.metric?.httpStatus});
@@ -839,7 +841,6 @@ async function updateTorecaCamp(cards, paths) {
         if (seenProductIds.has(String(product.id)) && !refreshExisting) { duplicateProductIds += 1; seenProductUrls.add(sitemapEntry.url); advance(); continue; }
         const variant = (product.variants || []).find(campA);
         if (!variant) { excluded.noStateA += 1; seenProductUrls.add(sitemapEntry.url); seenProductIds.add(String(product.id)); advance(); continue; }
-        stateA += 1;
         const card = matches[0];
         const entry = {
           cardId: card.id, productId: String(product.id), title: product.title,
@@ -852,6 +853,7 @@ async function updateTorecaCamp(cards, paths) {
         entry.quarantineReason = quarantine.reason;
         entry.marketPriceRatio = Number.isFinite(quarantine.ratio) ? Math.round(quarantine.ratio * 1000) / 1000 : null;
         const previousEntry = byId.get(card.id);
+        if(require('./quarantine_shop_identity').recordReference(ROOT,'torecacamp',entry,card))referenceUpdated++;else stateA++;
         const chosen = preferCampEntry(previousEntry, entry);
         if (!previousEntry && chosen === entry) linked += 1;
         else if (chosen === entry && (previousEntry.detailUrl !== entry.detailUrl || previousEntry.price !== entry.price || previousEntry.available !== entry.available)) updated += 1;
@@ -929,6 +931,8 @@ async function updateTorecaCamp(cards, paths) {
     identityHoldReason: entry.identityHoldReason || null,
     priceQuarantined: entry.priceQuarantined === true,
     quarantineReason: entry.quarantineReason || null,
+    rawCondition: entry.rawCondition || null, referenceOnly: entry.referenceOnly === true,
+    conditionAccepted: entry.referenceOnly ? false : entry.conditionAccepted,
     marketPriceRatio: Number.isFinite(entry.marketPriceRatio) ? entry.marketPriceRatio : null,
   };
   const processedSitemapCount = progress.processedSitemaps.length;
@@ -954,7 +958,7 @@ async function updateTorecaCamp(cards, paths) {
     maintenancePendingCount: maintenanceMode ? nextCatalog.filter(entry=>postpass.due(entry,important.has(entry.cardId))).length : null,
     priceMigration: priceMigration.audit,
     quarantinedPriceCount: nextCatalog.filter((entry) => entry.priceQuarantined).length,
-    sitemapsSucceeded, listedProducts, detailFetched, parsed, stateA, newLinkCount: linked,
+    sitemapsSucceeded, listedProducts, detailFetched, parsed, stateA, referenceUpdated, newLinkCount: linked,
     updatedCount: updated, fetchFailureCount: failed, duplicateUrlCount: duplicateUrls,
     duplicateProductIdCount: duplicateProductIds,
     abruptDropDetected: catalogGuard.abruptDrop,
@@ -974,7 +978,7 @@ async function updateTorecaCamp(cards, paths) {
     crawl: { ...progress.lastRun, recentFailures: (progress.failures || []).slice(-10) },
   });
   return {
-    sitemapsSucceeded, listedProducts, detailFetched, parsed, stateA, linked, updated, failed, cacheHits, excluded,
+    sitemapsSucceeded, listedProducts, detailFetched, parsed, stateA, referenceUpdated, linked, updated, failed, cacheHits, excluded,
     duplicateUrls, duplicateProductIds, progressHealth,
     coverage: nextCatalog.length, lastSuccessfulPage: progress.lastRun.lastSuccessfulPage,
     currentCursor: progress.currentSitemapIndex + 1, processedSitemapCount,

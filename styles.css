@@ -1739,3 +1739,19 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .card [data-price-kind] > strong.value-unavailable { color:var(--value-warning); }
 .overseas-glance { display:block; margin-top:.45rem; padding-top:.35rem; border-top:1px solid #64748b55; font-size:.75rem; line-height:1.5; color:#cbd5e1; }
 .overseas-glance b { color:#c4b5fd; font-size:.8rem; }
+
+/* Compact buying facts; full evidence is generated only in the opened detail. */
+.row.card { grid-template-columns:minmax(180px,23%) minmax(0,1fr); }
+.row.card > .thumb { min-height:280px; align-items:flex-start; padding-top:24px; }
+.row.card > .thumb img { max-width:230px; max-height:340px; transform:none; }
+.candidate-glance .observation-glance { grid-column:1/-1; margin:2px 0; gap:5px; }
+.compact-periods .period-efficiency-values { gap:4px; }
+.detail-price-comparison { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px; }
+.candidate-glance .price-cell { padding:9px; }
+.candidate-profit-comparison small,.efficiency-notice small { line-height:1.45; }
+@media(max-width:760px) {
+  .row.card { grid-template-columns:minmax(0,1fr); }
+  .row.card > .thumb { min-height:0;height:150px;padding:8px;align-items:center; }
+  .row.card > .thumb img { max-width:110px;max-height:140px; }
+  .row.card > .content { padding:12px; }
+}

@@ -1,0 +1,16 @@
+const fs=require('node:fs'),assert=require('node:assert/strict');
+const app=fs.readFileSync('app.js','utf8');
+assert.match(app,/searchProfitPanel\(chosenProfit,true\)/);
+assert.match(app,/cardEfficiencyPanel\(card,true\)/);
+const body=app.slice(app.indexOf('<div class="card-details-body">'),app.indexOf('const committed =',app.indexOf('<div class="card-details-body">')));
+assert.match(body,/state\.openCardDetails\.has[\s\S]*?data-raw-reference/,'raw reference UI is inside lazy card detail');
+const loader=app.slice(app.indexOf('async function renderRawConditionReference'),app.indexOf('const psa10PeriodLoading'));
+assert.match(loader,/data\?\.version!==1\|\|!data\.cards/,'null fetch/schema failure cannot mean no sales');
+assert.match(app,/if\(rawReferenceRevision!==revision\)\{rawReferenceRequests.clear\(\)/);
+assert.match(loader,/参考要約の読込失敗/);
+assert(!app.match(/Promise\.all\([^;]*raw-condition-reference/s),'no initial full reference history request');
+assert.match(app,/非10はPSA9仮置き・PSA8以下未評価/);
+assert.match(app,/compactWarningText\(\[\.\.\.guide\.reasons,\.\.\.guide\.warnings\]\)/);
+const preset=app.slice(app.indexOf('function computePresetQualifications'),app.indexOf('function ',app.indexOf('function computePresetQualifications')+10));
+assert.match(preset,/get "current-market"\(\)/,'defer independent market trial until that preset is requested');
+console.log('PASS compact core values, visible warnings, lazy evidence and independent market eligibility');

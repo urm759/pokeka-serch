@@ -19,6 +19,7 @@ function evaluate(profile,at,overlay={},inspectIds=[],calculationCache=null) {
   if(!cards){cards=api.prepareCalculatedCards(api.state.cards);calculationCache?.set(calculationKey,cards);}
   const rows=[],reasons={},routes={};
   const efficiencyAvailability={main:{calculated:0,reference:0,unavailable:0,reasons:{}},comparisons:{},scope:'現在適合または既知価格帯を満たす不足補完候補。主計算と期間比較は別。理由は重複あり'};
+  efficiencyAvailability.allCatalog={main:{calculated:0,reference:0,unavailable:0,reasons:{}},comparisons:{},scope:'全掲載カードを同一条件で確認。既知条件不合格への反復取得はしない'};
   const countEfficiency=(group,value)=>{
     group[value.calculationState]++;
     const reasons=value.annual==null?[...value.blockingReasons,...(value.purchasePrice==null||!value.blockingReasons.length?String(value.reason||'').split('／'):[])]:[];
@@ -33,6 +34,11 @@ function evaluate(profile,at,overlay={},inspectIds=[],calculationCache=null) {
   const scope={catalog:cards.length,unknownPriceCards:0,confirmedPriceFailures:0,identityHeld:0,qualified:0,completionProspects:0,notSelected:0};
   for(const c of cards) {
     const excluded=api.cardSearchExclusions(c),e=api.cardEfficiency(c);
+    countEfficiency(efficiencyAvailability.allCatalog.main,e);
+    for(const days of require('../exploration-metrics').observationPeriods){
+      const group=efficiencyAvailability.allCatalog.comparisons[days]||={calculated:0,reference:0,unavailable:0,reasons:{}};
+      countEfficiency(group,api.cardEfficiency(c,Date.parse(at),api.state.purchaseMode,'obs'+days));
+    }
     if(inspected.has(c.id))allExclusions[c.id]=excluded;
     for(const r of new Set(excluded))reasons[r]=(reasons[r]||0)+1;
     const missing=completion.cards?.[c.id]?.m||[];

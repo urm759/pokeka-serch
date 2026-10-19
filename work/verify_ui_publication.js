@@ -67,7 +67,9 @@ async function main() {
     assert.equal(published.replace(/\r\n/g,'\n'),fs.readFileSync(path.join(__dirname,'..',file),'utf8').replace(/\r\n/g,'\n'),file);
     verified.push(file);
   }
-  const supportFiles = ['data/trade-demand-audit.json','data/trade-demand-outcomes.json','data/buyback-support-audit.json','data/buyback-support-isolation.json','data/store-support-acquisition.json','data/purchase-issue-alias-audit.json',
+  const supportFiles = ['data/raw-condition-reference-summary.json',
+    ...fs.readdirSync(path.join(__dirname,'../data/raw-condition-reference')).filter(name=>name.endsWith('.json')).map(name=>'data/raw-condition-reference/'+name),
+    'data/trade-demand-audit.json','data/trade-demand-outcomes.json','data/buyback-support-audit.json','data/buyback-support-isolation.json','data/store-support-acquisition.json','data/purchase-issue-alias-audit.json',
     'data/domestic-trade-source-audit.json','data/modern-high-rarity-audit.json','data/pop-operations-outcomes.json',
     'data/psa-pop-coverage.json','data/psa-pop-recovery-audit.json','data/pop-resilience-outcomes.json',
     ...fs.readdirSync(path.join(__dirname,'../data/psa-pop-recovered')).filter(name=>name.endsWith('.json')).map(name=>'data/psa-pop-recovered/'+name),
