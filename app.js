@@ -662,8 +662,25 @@ function populatePsaPlans({ updateLockDays = false } = {}) {
   if (psaPlanProblem() && els.psaPlanSummary) els.psaPlanSummary.textContent = `判断保留：${psaPlanProblem()} / ${els.psaPlanSummary.textContent}`;
 }
 
+function mergePsaDisplayHistory(data,recovered={cards:{}}){
+  return Object.fromEntries(Object.entries(data?.cards||{}).map(([key,original])=>{
+    const identity=data.identities?.[key],source=data.sources?.[key],extra=recovered?.cards?.[key];
+    const known=new Set(original.filter(r=>r[3]?.sourceUrl===source&&r[3]?.specificationIdentity===identity&&/T\d{2}:/.test(r[3]?.observedAt||'')).map(r=>r[0]));
+    const add=extra?.identity===identity&&extra?.sourceUrl===source?(extra.points||[]).filter(r=>!known.has(r[0])):[];
+    let segment=[];
+    for(const r of [...original,...add].sort((a,b)=>Date.parse(a[3]?.observedAt)-Date.parse(b[3]?.observedAt))){
+      const at=Date.parse(r[3]?.observedAt);if(!/T\d{2}:/.test(r[3]?.observedAt||'')||!Number.isFinite(at)||at>Date.now())continue;
+      if(!identity||!source||r[3]?.specificationIdentity!==identity||r[3]?.sourceUrl!==source){segment=[];continue;}
+      if(!Number.isInteger(r[1])||!Number.isInteger(r[2])||r[1]<0||r[2]<r[1])continue;
+      segment.push(r);
+    }
+    return [key,segment];
+  }));
+}
 async function renderPsaHistory(details) {
-  if (details.dataset.loaded === "1") return;
+  const revision=uiDataManifest?.revision||'legacy';
+  if (details.dataset.loaded === "1"&&details.dataset.popHistoryRevision===revision) return;
+  if(state.psaHistoryRevision!==revision){state.psaHistoryCache={};state.psaHistoryRevision=revision;}
   const id = details.dataset.psaHistory;
   const shard = details.dataset.psaShard;
   const target = details.querySelector("[data-psa-chart]");
@@ -671,21 +688,18 @@ async function renderPsaHistory(details) {
   target.textContent = "履歴を読み込み中…";
   try {
     if (!state.psaHistoryCache[shard]) {
-      const data = await fetchJsonMaybe(`./data/psa-history/${shard}.json`);
-      state.psaHistoryCache[shard] = Object.fromEntries(Object.entries(data?.cards||{}).map(([key,rows])=>{
-        let segment=[];
-        for(const r of [...rows].sort((a,b)=>Date.parse(a[3]?.observedAt)-Date.parse(b[3]?.observedAt))){
-          const at=Date.parse(r[3]?.observedAt);if(!/T\d{2}:/.test(r[3]?.observedAt||'')||!Number.isFinite(at)||at>Date.now())continue;
-          if(!data.identities?.[key]||!data.sources?.[key]||r[3]?.specificationIdentity!==data.identities[key]||r[3]?.sourceUrl!==data.sources[key]){segment=[];continue;}
-          segment.push(r);
-        }
-        return [key,segment];
-      }));
+      const data = await fetchJsonMaybe(`./data/psa-history/${shard}.json`,{detail:true,affectsCalculation:false});
+      const recoveryFile=`data/psa-pop-recovered/${shard}.json`;
+      const recovered=uiDataManifest?.hashes?.[recoveryFile]?await fetchJsonMaybe('./'+recoveryFile,{detail:true,affectsCalculation:false}):null;
+      if(!data||(uiDataManifest?.hashes?.[recoveryFile]&&!recovered))throw new Error('履歴原票の読込失敗・比較不足とは別です');
+      if((uiDataManifest?.revision||'legacy')!==revision)return;
+      state.psaHistoryCache[shard] = mergePsaDisplayHistory(data,recovered);
     }
     const rows = state.psaHistoryCache[shard]?.[id] || [];
     if (rows.length < 2) {
       target.innerHTML = '<p class="psa-chart-empty">推移を蓄積中です。2回目の取得後から線グラフを表示します。</p>';
       details.dataset.loaded = "1";
+      details.dataset.popHistoryRevision=revision;
       return;
     }
     const width = 360, height = 120, pad = 10;
@@ -705,6 +719,7 @@ async function renderPsaHistory(details) {
       <div class="psa-chart-legend"><span class="ten">PSA10</span><span class="total">TOTAL</span><small>${first[0]} → ${last[0]} / ${rows.length}記録</small></div>
     `;
     details.dataset.loaded = "1";
+    details.dataset.popHistoryRevision=revision;
   } catch {
     target.textContent = "履歴を読み込めませんでした。";
   }
@@ -3382,7 +3397,7 @@ async function fetchJsonMaybe(url, { detail = false, affectsCalculation = true }
     uiLoadMetrics.push({ file, bytes: raw.byteLength, networkMs, verifyMs, jsonParseMs, decodeMs: performance.now() - decodeStart,
       transferBytes: resource?.transferSize ?? null, compressedBodyBytes: resource?.encodedBodySize ?? null,
       expandedBodyBytes: resource?.decodedBodySize ?? null });
-    if (affectsCalculation || !/^data\/(?:overseas-glance|psa-pop-glance)\/\d+\.json$/.test(original)) loadedDataRevision++;
+    if (affectsCalculation || !/^data\/(?:overseas-glance|psa-pop-glance|psa-pop-recovered|psa-history)\/\d+\.json$/.test(original)) loadedDataRevision++;
     return payload;
   } catch (error) {
     if (uiDataManifest?.hashes?.[file]) {
@@ -5148,27 +5163,55 @@ async function ensureOverseasGlance(cards) {
   }
 }
 const psaPopGlanceCache=new Map(),psaPopGlanceRequests=new Map(),psaPopGlanceFailures=new Set();
+let psaPopGlanceRevision=null;
+function psaPopSourceKey(official){let h=2166136261;for(const c of `${official?.u||''}|${official?.n||''}`){h^=c.charCodeAt(0);h=Math.imul(h,16777619);}return (h>>>0).toString(16);}
+function decodePsaPopRow(row){
+  const codes=['comparable','single-confirmation','no-history','confirmation-time-unknown','identity-unproven','identity-or-undated-history','latest-or-provenance-mismatch'];
+  const value=Array.isArray(row)?{at:row[0],ten:row[1],k:row[2],r:codes[row[3]]}:row;
+  if(!value||!Number.isInteger(value.ten)||value.ten<0||!/^[0-9a-f]{1,8}$/.test(value.k||''))throw Error('POP summary record invalid');
+  if(Array.isArray(row)){
+    if(row.length!==4||!Number.isInteger(row[3])||row[3]<1||row[3]>=codes.length)throw Error('POP summary reason incompatible');
+  }else if(!Array.isArray(row.windows)||!Array.isArray(row.p)||row.p.length!==5
+    ||row.p.some(n=>n!==null&&(!Number.isInteger(n)||n<0||n>=row.windows.length))
+    ||row.windows.some(w=>!Array.isArray(w)||w.length!==5||!Number.isInteger(w[0])||!Number.isInteger(w[1])||w[1]<0||!(w[2]>0)||!Number.isFinite(w[3])||![0,1,2].includes(w[4])))throw Error('POP summary windows incompatible');
+  return value;
+}
 function psaPopGlance(card,detail=false,now=Date.now()) {
   const official=card.official,held=state.psaSpecificationHeld?.[card.id];
   if(held)return '<small class="price-stale">POP推移：仕様保留・通常版で代用しません</small>';
   if(!Number.isInteger(official?.ten))return '<small class="price-stale">PSA10 POP：未取得</small>';
   const row=psaPopGlanceCache.get(card.id);
-  const current=row&&row.at===official.f&&row.ten===official.ten?row:null;
+  const current=row&&(row.at===official.f||row.at===Date.parse(official.f))&&row.ten===official.ten&&row.k===psaPopSourceKey(official)?row:null;
+  const reasons={'single-confirmation':'実測1点のみ・次回比較待ち','no-history':'実測履歴なし','confirmation-time-unknown':'確認日時未確定',
+    'identity-unproven':'履歴の仕様未確認','identity-or-undated-history':'旧履歴の仕様・日時未確認','latest-or-provenance-mismatch':'最新POPと履歴の接続保留'};
+  const unavailable=psaPopGlanceFailures.has(official.sh)?'要約読込失敗・履歴未確認':row&&!current?'公開要約と最新POPが不一致・再読込':current?reasons[current.r]||'比較履歴不足':'要約読込待ち・履歴未確認';
   const ttl=state.updateStatus?.sources?.psaOfficial?.updateTtlHours||36;
   const age=now-Date.parse(official.f),stale=!/T\d{2}:/.test(official.f||'')||!Number.isFinite(age)||age<0||age>ttl*3600000;
   const cell=(w,days)=>{
     const label=days==null?current?.dailyPrevious?'前回の日次保存から':'前回確認から':`${days}日枠`;
-    if(!w)return `<span>${label}<b>${psaPopGlanceFailures.has(official.sh)?'要約読込失敗・履歴未確認':'比較履歴不足'}</b></span>`;
+    if(!w)return `<span>${label}<b>${unavailable}</b></span>`;
     const [delta,base,span,,flag]=w,rate=base>0?delta/base*100:null;
-    return `<span>${label}・観測${fmt.format(span)}日間<b>${delta>0?'+':''}${fmt.format(delta)}枚${rate==null?'／率算出不可':`（${rate>0?'+':''}${rate.toFixed(2)}%）`}</b>${flag===2?'<small class="price-stale">減少・公式訂正等を含む／供給減とは未確定</small>':flag===1?'<small class="price-stale">旧取得根拠・参考比較</small>':''}</span>`;
+    const elapsed=span<0.001?(span*86400<0.1?'0.1秒未満':`${(span*86400).toFixed(1)}秒`):`${fmt.format(span)}日間`;
+    return `<span>${label}・観測${elapsed}<b>${delta>0?'+':''}${fmt.format(delta)}枚${rate==null?'／率算出不可':`（${rate>0?'+':''}${rate.toFixed(2)}%）`}</b>${days!=null&&span<days?'<small>参考・対象期間未充足</small>':''}${flag===2?'<small class="price-stale">減少・公式訂正等を含む／供給減とは未確定</small>':flag===1?'<small class="price-stale">旧取得根拠・参考比較</small>':''}</span>`;
   };
   const period=i=>current?.p?.[i]==null?null:current.windows[current.p[i]];
   return `<div class="pop-glance" aria-label="PSA10 POP推移"><span>現在のPSA10 POP<b>${fmt.format(official.ten)}枚</b></span>${cell(period(0),null)}${(detail?[75,200]:[7,30]).map(d=>cell(period([7,30,75,200].indexOf(d)+1),d)).join('')}<small class="pop-glance-note ${stale?'price-stale':''}">公式確認 ${escapeHtml(official.f||'日時不明')}${stale?'／古値・更新待ち':''}。開始時POP比・月換算なし。${current?.changed?'紐付け変更前は比較外。':''}世界の鑑定枚数≠流通在庫。上限/GOへ不使用。</small></div>`;
 }
 async function ensurePsaPopGlance(cards) {
-  for(const sh of new Set(cards.map(c=>c.official?.sh).filter(s=>/^\d{2}$/.test(s||'')))) {
-    if(!psaPopGlanceRequests.has(sh))psaPopGlanceRequests.set(sh,fetchJsonMaybe(`./data/psa-pop-glance/${sh}.json`,{detail:true,affectsCalculation:false}).then(data=>{for(const [id,row]of Object.entries(data?.cards||{}))psaPopGlanceCache.set(id,row);}).catch(()=>{psaPopGlanceFailures.add(sh);}));
+  const revision=uiDataManifest?.revision||'legacy';
+  if(psaPopGlanceRevision!==revision){psaPopGlanceCache.clear();psaPopGlanceRequests.clear();psaPopGlanceFailures.clear();psaPopGlanceRevision=revision;}
+  const active=cards.filter(c=>!state.psaSpecificationHeld?.[c.id]);
+  for(const sh of new Set(active.map(c=>c.official?.sh).filter(s=>/^\d{2}$/.test(s||'')))) {
+    if(!psaPopGlanceRequests.has(sh))psaPopGlanceRequests.set(sh,fetchJsonMaybe(`./data/psa-pop-glance/${sh}.json`,{detail:true,affectsCalculation:false}).then(data=>{
+      if(!data||data.version!==2||!data.cards||typeof data.cards!=='object'||Array.isArray(data.cards))throw new Error('POP summary unavailable or incompatible');
+      if(psaPopGlanceRevision!==revision)return;
+      const rows=Object.entries(data.cards).map(([id,row])=>[id,decodePsaPopRow(row)]);
+      for(const [id,row]of rows)psaPopGlanceCache.set(id,row);
+      if(active.some(c=>c.official?.sh===sh&&!data.cards[c.id]))throw new Error('POP summary record missing');
+    }).catch(()=>{if(psaPopGlanceRevision===revision)psaPopGlanceFailures.add(sh);}));
     await psaPopGlanceRequests.get(sh);
+    if(psaPopGlanceRevision!==revision)return;
+    if(active.some(c=>c.official?.sh===sh&&!psaPopGlanceCache.get(c.id)))psaPopGlanceFailures.add(sh);
   }
   const byId=new Map(cards.map(c=>[c.id,c]));
   for(const el of document.querySelectorAll('[data-psa-pop-glance]')){

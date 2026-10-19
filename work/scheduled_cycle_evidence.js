@@ -47,7 +47,7 @@ function record(key,root=ROOT) {
   const optional=f=>{try{return read(f);}catch{return null;}};
   if(optional('data/search-profile-cycle-progress.json'))files.push('data/search-profile-cycle-progress.json');
   if(optional('data/priority-search-profile-audit.json'))files.push('data/priority-search-profile-audit.json');
-  for(const file of ['data/supply-demand-validation-summary.json','data/supply-demand-validation-details.json'])if(optional(file))files.push(file);
+  for(const file of ['data/supply-demand-validation-summary.json','data/supply-demand-validation-details.json','data/psa-pop-coverage.json','data/psa-pop-recovery-audit.json'])if(optional(file))files.push(file);
   const monitorSources=optional('data/priority-price-monitor.json')?.sources||{};
   const cardObservations=Object.fromEntries(Object.entries(monitorSources).map(([id,source])=>[id,
     [...new Map([...(source.fixedCards||[]),...(source.cards||[])].map(row=>[row.id,{id:row.id,at:row.lastConfirmedAt}])).values()]]));
@@ -73,6 +73,7 @@ function record(key,root=ROOT) {
     cardObservations,
     hashes:Object.fromEntries(files.map(f=>[f,hash(fs.readFileSync(path.join(root,f),'utf8'))])),
     outcomes:{counts:completion.counts,runDelta:delta,deltaStatus:delta?'同じ実行の取得前スナップショットから比較':'取得前記録不足・増分を推定しない',
+      popComparison:(()=>{const c=optional('data/psa-pop-coverage.json');return c?{at:c.at,reasons:c.reasons,periods:c.periods,fresh:c.fresh,stale:c.stale,comparable:c.comparable}:null;})(),
       fixedCohortFreshness:{before:before?.fixedCohorts||null,after:optional('data/priority-price-monitor.json')?.fixedCohortFreshness||null},
       sources:Object.fromEntries(Object.entries(progress.sources||{}).map(([k,v])=>[k,{newLinked:v.newLinked,usableNet:v.usableNet,freshUsableAdded:v.freshUsableAdded,lastSuccessAt:v.lastSuccessAt}]))},
     checkpoints:{safe:optional('work/safe-backfill-progress.json'),pokedata:optional('data/pokedata-manifest.json')?.sets?.map(s=>({name:s.name,count:s.count,status:s.status})),

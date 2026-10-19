@@ -36,4 +36,6 @@ for (const name of ['data/card-catalog/search-index.json', 'data/card-catalog/an
   }
 }
 assert.deepEqual(fs.readFileSync(path.join(root, file)), original);
+const popFile='data/psa-pop-glance/00.json',pop=JSON.parse(fs.readFileSync(path.join(root,popFile))),pop2=JSON.parse(doubled.get(popFile));
+assert.equal(Object.keys(pop2.cards).length,2*Object.keys(pop.cards).length,'lazy POP shards also represent doubled cards without inventing missing-history warnings');
 console.log('PASS: synthetic double fixture retains source values and does not persist fake cards');

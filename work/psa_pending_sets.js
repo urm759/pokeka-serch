@@ -12,15 +12,20 @@ function planSets({ manifest, completed, rows = [], priority = {}, reviews = [],
   const focused = new Set(priority.focusSetUrls || []);
   const specification = new Set(reviews.map(row => row.sourceUrl).filter(url => url && !complete.has(url)));
   const reasons = {};
+  const usedUrls=new Set();let duplicateUrls=0;
   const pending = manifest.filter(entry => {
     if (!entry.url || retries[entry.url]?.status === 'manual-wait' || !eligible(retries[entry.url], now)) return false;
+    if(usedUrls.has(entry.url)){duplicateUrls++;return false;}usedUrls.add(entry.url);
     const stale = !latest.has(entry.url) || now - latest.get(entry.url) >= recheckHours * 3600000;
-    const reason = !completedUrls.has(entry.url) ? '未巡回' : specification.has(entry.url) ? '完全仕様表を再取得'
-      : missing.has(entry.url) && stale ? '不足カードの登録済みセットを再確認' : focused.has(entry.url) && stale ? '重点セットの更新期限' : null;
+    const reason = !completedUrls.has(entry.url) && (stale || !complete.has(entry.url)) ? '未巡回' : specification.has(entry.url) && stale ? '完全仕様表を再取得'
+      : missing.has(entry.url) && stale ? '不足カードの登録済みセットを再確認' : focused.has(entry.url) && stale ? '重点セットの更新期限'
+      : stale ? '通常セットの期限再確認' : null;
     if (!reason) return false;
     reasons[entry.url] = reason; return true;
   });
-  return { pending, reasons, specificationRecheckSets: pending.filter(e => specification.has(e.url)).length,
+  pending.sort((a,b)=>(latest.get(a.url)||0)-(latest.get(b.url)||0));
+  return { pending, reasons, duplicateUrls, normalRecheckSets:pending.filter(e=>reasons[e.url]==='通常セットの期限再確認').length,
+    specificationRecheckSets: pending.filter(e => specification.has(e.url)).length,
     missingRecheckSets: pending.filter(e => completedUrls.has(e.url) && missing.has(e.url)).length,
     freshMissingSets: manifest.filter(e => e.url && missing.has(e.url) && latest.has(e.url) && now - latest.get(e.url) < recheckHours * 3600000).length };
 }

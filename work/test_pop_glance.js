@@ -20,6 +20,7 @@ assert.equal(summarize(official(120),[point(2,100,{observedAt:'2026-10-16'}),poi
 assert.equal(summarize(official(120),[point(0,120)],key,end-1),null,'future observation excluded');
 assert.equal(summarize(official(121),[point(0,120)],key,end),null,'current population must match provenance');
 assert.equal(summarize(official(120),[point(0,119),point(0,120)],key,end),null,'conflicting duplicate timestamps isolated');
+assert(summarize(official(120),[point(1/86400,120),point(0,120)],key,end).previous[2]>0,'short real confirmations must not round into a false zero-length window');
 const remember=require('./build_psa_history').rememberPreviousConfirmation,store={identities:{card:key}};
 const priorHour=point(1/24,110),selected={url,fetchedAt:official(120).f};
 remember(store,'card',[point(2,100),priorHour],selected);
@@ -52,11 +53,11 @@ const fragment=app.slice(app.indexOf('const psaPopGlanceCache='),app.indexOf('//
 const ctx=vm.createContext({Date,Map,Set,fmt:new Intl.NumberFormat('ja-JP'),escapeHtml:s=>String(s),state:{psaSpecificationHeld:{}},document:{}});
 vm.runInContext(fragment+'\nglobalThis.api={psaPopGlance,cache:psaPopGlanceCache};',ctx);
 const c2={id:'display',official:official(120)};
-ctx.api.cache.set(c2.id,{at:c2.official.f,ten:120,windows:[[20,100,2,new Date(end-2*DAY).toISOString(),0]],p:[0,0,0,0,0]});
+ctx.api.cache.set(c2.id,{at:c2.official.f,ten:120,k:require('./build_psa_pop_glance').sourceKey(c2.official),windows:[[20,100,2,new Date(end-2*DAY).toISOString(),0]],p:[0,0,0,0,0]});
 const html=ctx.api.psaPopGlance(c2,false,end);
 assert(html.includes('観測2日間'));assert(html.includes('+20枚（+20.00%）'));assert(!html.includes('+300枚'));
 assert(ctx.api.psaPopGlance(c2,false,end+4*DAY).includes('古値・更新待ち'));
-ctx.api.cache.set(c2.id,{at:c2.official.f,ten:120,windows:[[5,0,2,'start',0]],p:[0,0,0,0,0]});
+ctx.api.cache.set(c2.id,{at:c2.official.f,ten:120,k:require('./build_psa_pop_glance').sourceKey(c2.official),windows:[[5,0,2,'start',0]],p:[0,0,0,0,0]});
 assert(ctx.api.psaPopGlance(c2,false,end).includes('率算出不可'));
 ctx.state.psaSpecificationHeld.display={};assert(ctx.api.psaPopGlance(c2).includes('仕様保留'));
 console.log('PASS POP actual periods, zero/missing, correction/mapping, raw trade provenance and rarity denominator separation');

@@ -21,6 +21,12 @@ const plan=planSets({manifest:pending,completed:['u3','u4'],priority,now,
 assert(!plan.pending.some(r=>['u3','u5','u6'].includes(r.url)));
 assert(plan.pending.some(r=>r.url==='u4'));
 assert(!selectBatch(plan.pending,8,priority).selected.some(r=>['u3','u5','u6'].includes(r.url)));
+const cycle=planSets({manifest:[{url:'old',setCode:'S4'},{url:'fresh',setCode:'S5'},{url:'old',setCode:'S4'},{url:'blocked',setCode:'S6'}],
+  completed:['old','fresh','blocked'],now,rows:[{sourceUrl:'old',fetchedAt:'2026-10-10T00:00:00Z'},
+    {sourceUrl:'fresh',fetchedAt:'2026-10-12T23:00:00Z'}],retries:{blocked:{status:'manual-wait'}}});
+assert.deepEqual(cycle.pending.map(r=>r.url),['old'],'completed normal sets must return when stale even if some other set is blocked');
+assert.equal(cycle.normalRecheckSets,1);assert.equal(cycle.duplicateUrls,1);
+assert.equal(selectBatch(cycle.pending,8).selected.length,1,'one official page is one request despite aliases');
 const {classify}=require('./build_one_item_completion_audit');
 assert.match(classify({m:['psaOfficial'],i:{psaOfficial:['再照合待ち']}},{status:'unlinked',sourceSetUrl:'u3'}),/仕様不一致で保留/);
 assert.match(classify({m:['psaOfficial'],i:{psaOfficial:['取得待ち']}},{status:'unlinked',sourceSetUrl:'u3'}),/実取得待ち/);

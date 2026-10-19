@@ -11,6 +11,8 @@ require('./build_psa9_provenance').build(ROOT);
 require('./build_psa9_provenance').verify(ROOT);
 require('./build_linkage_evidence_audit').build(ROOT);
 require('./build_high_rarity_readiness').build(ROOT);
+require('./build_one_item_completion_audit').build(ROOT);
+const popCoverage=require('./build_psa_pop_glance').build(ROOT);
 
 function read(relativePath, fallback = {}) {
   try {
@@ -335,6 +337,7 @@ payload.focusMonitor = require("./focus_monitor.js").write(ROOT);
   payload.purchasePriceFreshness = purchaseFreshness ? {...purchaseFreshness, freshVsOld:undefined, freshVsOldCount:purchaseFreshness.freshVsOld?.length || 0} : null;
   payload.sourceAccessPolicy = JSON.parse(fs.readFileSync(path.join(ROOT, "data/snkr-access-policy.json"), "utf8"));
   require("child_process").execFileSync(process.execPath, [path.join(ROOT,"work/audit_proactive_refresh.js")], {cwd:ROOT});
+if(payload.sources?.psaOfficial)payload.sources.psaOfficial.popComparison=popCoverage;
 fs.writeFileSync(OUTPUT, JSON.stringify(payload), "utf8");
 const publishedHistory = { version: 1, updatedAt: runHistory.updatedAt || null, sources: {} };
 for (const sourceId of Object.keys(sources)) {
@@ -359,7 +362,6 @@ for (const sourceId of Object.keys(sources)) {
 }
 fs.writeFileSync(HISTORY_OUTPUT, JSON.stringify(publishedHistory), "utf8");
 require('./build_psa10_period_statistics.js').build(ROOT);
-require('./build_psa_pop_glance').build(ROOT);
 require('./build_overseas_price_glance').build(ROOT);
 require('./audit_purchase_issue_aliases.js').build(ROOT);
 require('./build_buyback_posting_coverage.js').build(ROOT);

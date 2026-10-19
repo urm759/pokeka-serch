@@ -379,6 +379,8 @@ async function main() {
   audit.specificationRecheckSets = setPlan.specificationRecheckSets;
   audit.missingRecheckSets = setPlan.missingRecheckSets;
   audit.freshMissingSets = setPlan.freshMissingSets;
+  audit.normalRecheckSets = setPlan.normalRecheckSets;
+  audit.duplicateSetUrlsSkipped = setPlan.duplicateUrls;
   audit.selectionReasons = setPlan.reasons;
   const selection = require('./psa_pending_sets.js').selectBatch(pendingManifest,Math.max(1,Number(process.env.PSA_SET_BATCH || 8)),priorityQueue);
   const manifest = selection.selected;

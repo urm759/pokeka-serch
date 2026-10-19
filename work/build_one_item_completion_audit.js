@@ -13,6 +13,7 @@ function classify(detail, linkage = {}, progress = {}) {
       : linkage.status === 'ambiguous' ? '仕様・セット曖昧・手動確認待ち' : '公式セットURL未登録・正規候補確認待ち';
   }
   if (/対立|裏付け|手動確認/.test(item.reason || '')) return '価格根拠確認待ち・店舗価格だけでは解除しない';
+  if(['domesticTrades','psa10Trades'].includes(field)&&item.status==='定期再確認')return '期間件数未取得・正規一括差分で再確認（データなし未確定）';
   if (item.status === '取得元にデータなし' || item.status === '定期再確認') return '一括差分再確認へ接続済み・現在掲載なし';
   return '一括差分取得へ接続済み・実取得待ち';
 }
@@ -31,7 +32,9 @@ function build(root) {
       lastAttemptAt:itemState(detail,field).lastAttemptAt || null,
       nextRetryAt:itemState(detail,field).nextRetryAt || null,sourceSetUrl:links.get(id)?.sourceSetUrl || null};
   }).sort((a,b)=>b.priority-a.priority);
-  const output = {version:1,generatedAt:new Date().toISOString(),total:rows.length,byField,byRoute,
+  const inputHashes=Object.fromEntries(['work/card-completion-queue.json','work/psa-linkage-all.json','data/pokemon-cards.json'].map(file=>[file,
+    require('node:crypto').createHash('sha256').update(fs.readFileSync(path.join(root,file),'utf8').replace(/\r\n/g,'\n')).digest('hex')]));
+  const output = {version:1,generatedAt:new Date().toISOString(),inputHashes,total:rows.length,byField,byRoute,
     note:'見込み枚数は取得成功の保証ではない。現在掲載なし・未取得・曖昧・URL未登録を分離。URL発見は価格補完ではなく、取得と分析可能純増は別成果。通常取得LLM/Codex0。',rows};
   require('./acquisition_retry').atomicWrite(path.join(root,'data/one-item-completion-audit.json'),output,0);
   return output;

@@ -1,0 +1,466 @@
+{
+  "at": "2026-10-18T23:50:00.393Z",
+  "runs": [
+    {
+      "id": 39172377174,
+      "name": "Priority Purchase Price Refresh",
+      "sha": "6671330b89383d1ece184acfe754efa4863791b2",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-10-18T22:28:29Z",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/39172377174",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Refresh due purchase prices without new-set exploration or LLM",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify safety and incremental acquisition",
+          "conclusion": "success"
+        },
+        {
+          "name": "Publish validated data with conflict protection",
+          "conclusion": "success"
+        },
+        {
+          "name": "Report independent acquisition failures without hiding them",
+          "conclusion": "success"
+        },
+        {
+          "name": "Preserve unpublished checkpoint on failure",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Record failure metadata independently",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run actions/upload-artifact@v7",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Run actions/setup-node@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 39177500433,
+      "name": "Data Update Health Watchdog",
+      "sha": "02c415b1b20b6ab99f2ec0da1ac431387f0c4c62",
+      "status": "in_progress",
+      "conclusion": null,
+      "createdAt": "2026-10-18T23:40:23Z",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/39177500433",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Check alert deduplication and safe backoff rules",
+          "conclusion": "success"
+        },
+        {
+          "name": "Fill missed price intervals with shared cooldown and access budgets",
+          "conclusion": null
+        },
+        {
+          "name": "Validate catchup data without changing purchase criteria",
+          "conclusion": null
+        },
+        {
+          "name": "Publish changed health state only",
+          "conclusion": null
+        },
+        {
+          "name": "Report independent acquisition failures without hiding them",
+          "conclusion": null
+        },
+        {
+          "name": "Preserve unpublished monitor state",
+          "conclusion": null
+        },
+        {
+          "name": "Save monitor recovery bundle",
+          "conclusion": null
+        },
+        {
+          "name": "Post Run actions/setup-node@v7",
+          "conclusion": null
+        },
+        {
+          "name": "Post Run actions/checkout@v7",
+          "conclusion": null
+        }
+      ]
+    },
+    {
+      "id": 39157656827,
+      "name": "Safe Checkpoint Backfill",
+      "sha": "c402886744ce10e147be5beabe9cbd142bb03cb4",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-10-18T19:11:58Z",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/39157656827",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Continue bounded source checkpoints without an LLM",
+          "conclusion": "success"
+        },
+        {
+          "name": "Consume prioritized completion queue without an LLM",
+          "conclusion": "success"
+        },
+        {
+          "name": "Discover official PSA set links without bypassing authentication",
+          "conclusion": "success"
+        },
+        {
+          "name": "Rebuild completion and publication summaries",
+          "conclusion": "success"
+        },
+        {
+          "name": "Check publication safety",
+          "conclusion": "success"
+        },
+        {
+          "name": "Commit safe progress and checkpoints",
+          "conclusion": "success"
+        },
+        {
+          "name": "Preserve recovery position if a required step failed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Record safe recovery metadata independently",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Upload unpublished source data and checkpoints",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Run actions/setup-node@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 39168740182,
+      "name": "Daily Fast Update",
+      "sha": "9f0cdae71437b40312c5c98d83255d1df52d3bba",
+      "status": "completed",
+      "conclusion": "failure",
+      "createdAt": "2026-10-18T21:38:33Z",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/39168740182",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Save purchase-price freshness baseline",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run deterministic delta update",
+          "conclusion": "success"
+        },
+        {
+          "name": "Refresh independent sources and preserve individual failures",
+          "conclusion": "success"
+        },
+        {
+          "name": "Rebuild market demand and supply analysis",
+          "conclusion": "success"
+        },
+        {
+          "name": "Finalize source status",
+          "conclusion": "success"
+        },
+        {
+          "name": "Audit state-A price conflicts and sale evidence",
+          "conclusion": "success"
+        },
+        {
+          "name": "Rebuild catalog and shared purchase-limit audit",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run fast regression tests",
+          "conclusion": "success"
+        },
+        {
+          "name": "Commit changed data only",
+          "conclusion": "success"
+        },
+        {
+          "name": "Report independent acquisition failures without hiding them",
+          "conclusion": "failure"
+        },
+        {
+          "name": "Save unpublished source data on failure",
+          "conclusion": "success"
+        },
+        {
+          "name": "Preserve raw data regardless of metadata errors",
+          "conclusion": "success"
+        },
+        {
+          "name": "Upload recovery checkpoint if publication or validation failed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-node@v7",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Run actions/checkout@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 39172574118,
+      "name": "PokeDATA Incremental Backfill",
+      "sha": "6671330b89383d1ece184acfe754efa4863791b2",
+      "status": "completed",
+      "conclusion": "failure",
+      "createdAt": "2026-10-18T22:31:06Z",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/39172574118",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Discover public Japanese sets and isolate ambiguous codes",
+          "conclusion": "success"
+        },
+        {
+          "name": "Select next verified Japanese set",
+          "conclusion": "success"
+        },
+        {
+          "name": "Continue public PokeDATA checkpoint",
+          "conclusion": "success"
+        },
+        {
+          "name": "Record PokeDATA transient error rate and acquisition count",
+          "conclusion": "success"
+        },
+        {
+          "name": "Rebuild affected public summaries",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify shared purchase limits before publishing",
+          "conclusion": "success"
+        },
+        {
+          "name": "Commit discovery and checkpoint progress",
+          "conclusion": "failure"
+        },
+        {
+          "name": "Preserve recovery position if a required step failed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Preserve raw PokeDATA regardless of metadata errors",
+          "conclusion": "success"
+        },
+        {
+          "name": "Upload unpublished source data and checkpoints",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-node@v7",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Run actions/checkout@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 39076259332,
+      "name": "Weekly Full Regression Tests",
+      "sha": "15792d919a9dcb23104346e8d86e6dc0e0e9ae9f",
+      "status": "completed",
+      "conclusion": "failure",
+      "createdAt": "2026-10-17T22:44:05Z",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/39076259332",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Syntax and JSON validation",
+          "conclusion": "success"
+        },
+        {
+          "name": "Full regression suite",
+          "conclusion": "failure"
+        },
+        {
+          "name": "Fixed production-model performance budgets",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Run actions/setup-node@v7",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Run actions/checkout@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 39091139182,
+      "name": "Deep Resolve Unmatched Cards",
+      "sha": "17fbffaeed1be07f1d9d9fa652619c3bddb0bebb",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-10-18T02:44:07Z",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/39091139182",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Resolve unresolved Snkrdunk links",
+          "conclusion": "success"
+        },
+        {
+          "name": "Resolve unresolved Cardrush links",
+          "conclusion": "success"
+        },
+        {
+          "name": "Resolve unresolved Hareruya2 links",
+          "conclusion": "success"
+        },
+        {
+          "name": "Rebuild evaluations",
+          "conclusion": "success"
+        },
+        {
+          "name": "Record link coverage",
+          "conclusion": "success"
+        },
+        {
+          "name": "Commit resolved mappings",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-node@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ]
+}

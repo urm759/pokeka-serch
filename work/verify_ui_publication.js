@@ -69,6 +69,8 @@ async function main() {
   }
   const supportFiles = ['data/trade-demand-audit.json','data/trade-demand-outcomes.json','data/buyback-support-audit.json','data/buyback-support-isolation.json','data/store-support-acquisition.json','data/purchase-issue-alias-audit.json',
     'data/domestic-trade-source-audit.json','data/modern-high-rarity-audit.json','data/pop-operations-outcomes.json',
+    'data/psa-pop-coverage.json','data/psa-pop-recovery-audit.json','data/pop-resilience-outcomes.json',
+    ...fs.readdirSync(path.join(__dirname,'../data/psa-pop-recovered')).filter(name=>name.endsWith('.json')).map(name=>'data/psa-pop-recovered/'+name),
     ...fs.readdirSync(path.join(__dirname,'../data/psa-pop-glance')).filter(name=>name.endsWith('.json')).map(name=>'data/psa-pop-glance/'+name),
     ...fs.readdirSync(path.join(__dirname,'../data/psa10-periods')).filter(name=>name.endsWith('.json')).map(name=>'data/psa10-periods/'+name),
     ...fs.readdirSync(path.join(__dirname,'../data/buyback-support-details')).filter(name=>name.endsWith('.json')).map(name=>'data/buyback-support-details/'+name)];

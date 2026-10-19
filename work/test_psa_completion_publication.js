@@ -1,5 +1,7 @@
 const assert = require('node:assert/strict'), path = require('node:path');
 const { publicationEnvironment } = require('./psa_handoff.js');
+assert.equal(require('./psa_handoff').publicationStepTimeout('finalize_update_status.js'),180000,'heavy deterministic validation needs its measured budget, not bypass');
+assert.equal(require('./psa_handoff').publicationStepTimeout('test_ui_data.js'),60000,'validation remains mandatory and bounded');
 const { planSets } = require('./psa_pending_sets.js');
 const env = publicationEnvironment('/publication', { PSA_ACQUISITION_ROOT: '/pc-inbox', TOKEN: 'preserved' });
 assert.equal(env.PSA_ACQUISITION_ROOT, '/publication');

@@ -39,9 +39,19 @@ function fixture(root) {
     buffers.set(file,Buffer.from(text));
     manifest.hashes[file]=crypto.createHash('sha256').update(text).digest('hex');
   }
+  const initialBytes=[...buffers.values()].reduce((n,b)=>n+b.length,0);
+  for(const directory of ['psa-pop-glance','psa-pop-recovered','psa-history','overseas-glance']){
+    const dir=path.join(root,'data',directory);if(!fs.existsSync(dir))continue;
+    for(const name of fs.readdirSync(dir).filter(n=>/^\d+\.json$/.test(n))){
+      const file='data/'+directory+'/'+name,value=JSON.parse(fs.readFileSync(path.join(root,file),'utf8'));
+      for(const field of ['cards','identities','sources','previousConfirmations'])if(value[field]&&!Array.isArray(value[field]))
+        for(const[id,row]of Object.entries({...value[field]}))value[field]['scale-'+id]=structuredClone(row);
+      const text=JSON.stringify(value);buffers.set(file,Buffer.from(text));manifest.hashes[file]=crypto.createHash('sha256').update(text).digest('hex');
+    }
+  }
   manifest.revision='synthetic-double-'+manifest.revision;
   manifest.syntheticDouble=true;
   buffers.set('data/ui/manifest.json',Buffer.from(JSON.stringify(manifest)));
-  return {get:name=>buffers.get(name), byteLength:[...buffers.values()].reduce((n,b)=>n+b.length,0)};
+  return {get:name=>buffers.get(name), byteLength:initialBytes+buffers.get('data/ui/manifest.json').length};
 }
 module.exports={fixture};

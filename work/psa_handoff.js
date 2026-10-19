@@ -124,9 +124,12 @@ function publish(root = ROOT, options = {}) {
           applyPacket(checkout, packet);
           if (options.beforeBuild) options.beforeBuild(checkout, attempt);
           for (const script of options.scripts || ["build_psa_history.js", "test_saved_psa_summary.js", "build_card_completion.js", "audit_completion_outcomes.js", "build_psa_linkage_queue.js", "build_psa_priority_queue.js", "build_purchase_limit_audit.js", "audit_acquisition_progress.js", "audit_link_coverage.js", "audit_candidate_reduction.js", "finalize_update_status.js", "measure_performance_guard.js", "build_ui_data.js", "test_ui_data.js", "test_specification_reexploration.js", "test_performance_guard.js", "test_completion_routes.js", "test_purchase_limit_audit.js", "test_preset_exploration.js", "test_psa_completion_publication.js"]) {
+            const stepStarted=Date.now();
             const run = spawnSync(process.execPath, [path.join(checkout, "work", script)], { cwd: checkout,
-              env: publicationEnvironment(checkout), encoding: "utf8", timeout: 60000, maxBuffer: 16 * 1024 * 1024 });
-            if (run.status !== 0) throw new Error(`Saved-data verification failed (${script}): ${run.stderr || run.stdout}`);
+              env: publicationEnvironment(checkout), encoding: "utf8", timeout: publicationStepTimeout(script), maxBuffer: 16 * 1024 * 1024 });
+            journal.steps||=[];journal.steps.push({script,durationMs:Date.now()-stepStarted,budgetMs:publicationStepTimeout(script),exit:run.status,errorCode:run.error?.code||null});
+            atomicWrite(path.join(outbox, `${packet.digest}.journal.json`),journal);
+            if (run.status !== 0) throw new Error(`Saved-data verification failed (${script}; ${run.error?.code||run.signal||run.status}; budget ${publicationStepTimeout(script)}ms): ${String(run.stderr || run.stdout).slice(-4000)}`);
           }
           git(["add", "data", "work"], checkout);
           git(["-c", "user.name=PSA checkpoint publisher", "-c", "user.email=psa-checkpoint@users.noreply.github.com", "commit", "-m", "Publish saved PSA handoff without reacquisition"], checkout);
@@ -162,4 +165,5 @@ function publicationEnvironment(checkout, inherited = process.env) {
     PSA_MANIFEST_PATH: path.join(checkout, 'work/psa_set_urls.json'),
     PSA_PRIORITY_QUEUE_PATH: path.join(checkout, 'work/psa_priority_queue.json') };
 }
-module.exports = { enqueue, applyPacket, mergeCheckpoint, publish, prepareInputs, publicationRetryable, publicationEnvironment };
+function publicationStepTimeout(script){return ['finalize_update_status.js','build_purchase_limit_audit.js','measure_performance_guard.js'].includes(script)?180000:60000;}
+module.exports = { enqueue, applyPacket, mergeCheckpoint, publish, prepareInputs, publicationRetryable, publicationEnvironment, publicationStepTimeout };

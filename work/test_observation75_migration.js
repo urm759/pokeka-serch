@@ -68,6 +68,9 @@ assert.equal(inputs.get('observation75MinInput').value,'','explicit new clear wi
   assert.equal(context.api.revision(),before,'display-only foreign data cannot trigger full financial recalculation');
   await context.api.fetchJsonMaybe('./data/psa-pop-glance/00.json',{detail:true,affectsCalculation:false});
   assert.equal(context.api.revision(),before,'display-only POP summary cannot change finance cache');
+  await context.api.fetchJsonMaybe('./data/psa-pop-recovered/00.json',{detail:true,affectsCalculation:false});
+  await context.api.fetchJsonMaybe('./data/psa-history/00.json',{detail:true,affectsCalculation:false});
+  assert.equal(context.api.revision(),before,'lazy chart originals and recovered POP evidence are not financial inputs');
   await context.api.fetchJsonMaybe('./data/hareruya2-stock-summary.json');
   assert.equal(context.api.revision(),before+1,'real calculation input fetch still invalidates calculations');
   await context.api.fetchJsonMaybe('./data/psa-population-summary.json',{affectsCalculation:false});
