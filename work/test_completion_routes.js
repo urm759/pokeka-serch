@@ -23,8 +23,15 @@ assert.equal(plans.size,1);assert.equal(plans.get('a').automatic,true);assert.de
 assert.deepEqual(plans.get('a').missing,['referenceMedian'],'keep the executable shortest completion path without merging different profile requirements');
 assert(routes(rows[0].detail).some((r) => r.key === "psaOfficial" && r.source === "psaOfficial"));
 assert(!routes(rows[0].detail).some((r) => r.key === "shopStateA"));
-assert.equal(routes({pk:"unexpanded-set", i:{pokedata:["取得待ち"]}}).find(r=>r.key==="pokedata").mode, "自動巡回中");
-assert.equal(routes({pk:"unsupported-or-unconfirmed", i:{pokedata:["取得不能"]}}).find(r=>r.key==="pokedata").mode, "取得不能・存在未確認／照合待ち");
+const permitted = {psaAllowed:true,overseasAllowed:true};
+assert.equal(routes({pk:"unexpanded-set", i:{pokedata:["取得待ち"]}},permitted).find(r=>r.key==="pokedata").mode, "自動巡回中");
+assert.equal(routes({pk:"unsupported-or-unconfirmed", i:{pokedata:["取得不能"]}},permitted).find(r=>r.key==="pokedata").mode, "取得不能・存在未確認／照合待ち");
+const stopped = routes({i:{pokedata:['取得待ち',null,null,1,'未照合','2026-10-07'],psaOfficial:['取得待ち']}},{psaAllowed:false,overseasAllowed:false});
+for (const r of stopped.filter(r=>['pokedata','pokedataAuthenticated','psaOfficial'].includes(r.source))) {
+  assert.equal(r.mode,'許諾待ち');assert.equal(r.nextRetryAt,null);assert.equal(r.acquisitionStatus,'permission-wait');
+}
+assert.equal(stopped.find(r=>r.key==='pokedata').status,'取得待ち','permission wait does not relabel missing data as nonexistent');
+assert.equal(stopped.find(r=>r.key==='domesticPrice').mode,'自動巡回中','independent domestic routes continue');
 const first = failureState({}, { status: "failed", error: "HTTP 503", startedAt: new Date(now).toISOString() }, now);
 assert(!first.held);
 assert(!failureState(first, { status: "failed", error: "HTTP 503" }, now).held);

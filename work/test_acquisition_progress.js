@@ -1,6 +1,6 @@
 const assert = require("node:assert/strict");
 const fs = require("fs");
-const { psaAudit, progress, validPop } = require("./audit_acquisition_progress.js");
+const { psaAudit, progress, validPop, capture } = require("./audit_acquisition_progress.js");
 const { exactIdentity, shopifyQuote } = require("./refresh_candidate_shops.js");
 const { mergeRows } = require("./update_psa_official_populations.js");
 const { compactRows } = require("./build_psa_history.js");
@@ -41,7 +41,14 @@ assert.equal(shopifyQuote({ variants: [{ price: 4500000, available: true }] }, n
 
 const published = JSON.parse(fs.readFileSync("data/acquisition-progress-audit.json", "utf8"));
 const manifest = JSON.parse(fs.readFileSync("data/pokedata/manifest.json", "utf8"));
-assert.equal(published.sources.pokedata.usableValues, manifest.acquisition.usablePsa10MedianCards);
+const publicPoke = capture().sources.pokedata;
+assert.equal(published.sources.pokedata.usableValues, publicPoke.usableIds.length,
+  "published usable values must be backed by current public records, not historical private manifest totals");
+if (!require('./overseas_access_policy').allowed(require('node:path').join(__dirname, '..'), 'public')) {
+  assert.equal(publicPoke.usableIds.length, 0, "permission-wait prices must not leak into public usable values");
+  assert.equal(published.sources.pokedata.gradeCounts.psa10, manifest.acquisition.usablePsa10MedianCards,
+    "historical acquisition metadata is retained separately from publicly usable prices");
+}
 assert.equal(published.sources.pokedata.effectiveForDecision, 0, "overseas prices remain reference-only");
 const domesticPsa9 = JSON.parse(fs.readFileSync("data/raw-psa9-gap-audit.json", "utf8"));
 assert.equal(published.remaining.domesticPsa9ActualCards, domesticPsa9.counts.domesticPsa9IndividualSales, "overseas PSA9 medians are not domestic sales");

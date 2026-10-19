@@ -24,9 +24,19 @@ function itemState(detail, key) {
   return Array.isArray(value) ? { status: value[0], lastAttemptAt: value[1], lastSuccessAt: value[2], retryCount: value[3], reason: value[4], nextRetryAt: value[5] } : { status: value };
 }
 function needs(detail, key) { return itemState(detail, key).status !== "取得済み"; }
-function routes(detail) {
+function routes(detail, permissions) {
+  if (!permissions) {
+    const root = require('node:path').join(__dirname, '..');
+    permissions = { psaAllowed: require('./psa_access_policy').decision(require('./psa_access_policy').read(root)).allowed,
+      overseasAllowed: require('./overseas_access_policy').allowed(root) };
+  }
   return Object.keys(ROUTES).filter((key) => needs(detail, key)).map((key) => {
     const [source, mode, reason] = ROUTES[key], state = itemState(detail, key);
+    const permissionWait = source === 'psaOfficial' && !permissions.psaAllowed
+      || ['pokedata', 'pokedataAuthenticated'].includes(source) && !permissions.overseasAllowed;
+    if (permissionWait) return { key, source, mode: '許諾待ち',
+      reason: `${source === 'psaOfficial' ? 'PSA自動取得・公開利用' : 'PokeDATA用途・API契約・公開利用'}の許諾確認待ち・新規取得停止。${state.reason || reason}`,
+      status: state.status || '未取得', acquisitionStatus: 'permission-wait', required: REQUIRED.includes(key), nextRetryAt: null };
     const held = state.status === "取得不能" || (key === "pokedata" && ["unsupported-or-unconfirmed", "supported-unmatched"].includes(detail.pk));
     return { key, source, mode: held ? "取得不能・存在未確認／照合待ち" : mode, reason: state.reason || reason,
       status: state.status || "未取得", required: REQUIRED.includes(key), nextRetryAt: state.nextRetryAt || null };
