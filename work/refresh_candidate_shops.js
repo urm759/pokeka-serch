@@ -8,6 +8,20 @@ const priceQueue = require("./priority_price_queue.js");
 const ROOT = path.join(__dirname, "..");
 const read = (file, fallback = {}) => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, file), "utf8")); } catch { return fallback; } };
 const write = (file, value) => require('./acquisition_retry').atomicWrite(path.join(ROOT, file), value, 0);
+function publishRunEvidence(root, cache) {
+  const file = path.join(root, 'data/candidate-shop-refresh.json');
+  let previous = {};
+  try { previous = JSON.parse(fs.readFileSync(file, 'utf8')); } catch {}
+  const result = { ...previous, sources: { ...previous.sources }, checkpoints: { ...previous.checkpoints } };
+  for (const [id, run] of Object.entries(cache.sources || {})) {
+    const stamp = row => Date.parse(row?.endedAt || row?.startedAt || '') || 0;
+    if (stamp(run) < stamp(previous.sources?.[id])) continue;
+    result.sources[id] = run;
+    if (cache.checkpoints?.[id]) result.checkpoints[id] = cache.checkpoints[id];
+  }
+  require('./acquisition_retry').atomicWrite(file, result, 0);
+  return result;
+}
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const rarity = (name) => String(name || "").toUpperCase().match(/\b(MUR|BWR|SSR|CSR|CHR|SAR|UR|HR|SR|RRR|RR|AR)\b/)?.[1] || null;
 function budgetStop() {
@@ -128,6 +142,7 @@ async function main() {
     write(`data/${sourceId}-stock-summary.json`, summary);
     write(`work/${sourceId}_stock_history.json`, history);
     write("work/candidate-shop-refresh.json", cache);
+    publishRunEvidence(ROOT, cache);
     sourceJobs.nextId = run.nextId; sourceJobs.lastRunAt = run.startedAt;
     write("work/priority-price-checkpoint.json", deadlines);
     write("work/priority-price-http-cache.json", httpCache);
@@ -276,4 +291,4 @@ function finalizeSaved(sourceId) {
   console.log(JSON.stringify({status:'saved-batch-recovered',refreshed:run.refreshedCount,newHttpRequests:0,sourceId}));
 }
 if (require.main === module) main().catch((error) => { console.error(error); process.exitCode = 1; });
-module.exports = { exactIdentity, shopifyQuote, budgetStop, requestDelay, issueCompatible };
+module.exports = { exactIdentity, shopifyQuote, budgetStop, requestDelay, issueCompatible, publishRunEvidence };

@@ -112,4 +112,4 @@ async function main() {
   console.log(JSON.stringify({ localCardId: alias.localCardId, capturedSales: analysis.classified.length, summaries: analysis.summaries, fx: cardSummary.fx, coverage: payload.coverage }));
 }
 
-main().catch((error) => { console.error(error); process.exit(1); });
+if(require.main===module){console.error('Legacy website pricing trial stopped; documented official API and permission required');process.exitCode=1;}

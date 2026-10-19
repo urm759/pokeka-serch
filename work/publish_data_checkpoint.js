@@ -10,6 +10,7 @@ function git(args, cwd) {
 function publish({ cwd = path.join(__dirname, ".."), message = "Publish deterministic data checkpoint", retries = 2, captureOnly = false } = {}) {
   function syncUiData() {
     if (!fs.existsSync(path.join(cwd, 'ui-data-codec.js'))) return;
+    require('./enforce_overseas_publication').enforce(cwd);
     require('./build_ui_data.js').build(cwd);
     const added = git(['add', 'data/ui'], cwd);
     if (!added.ok) throw new Error(added.output);
@@ -19,6 +20,7 @@ function publish({ cwd = path.join(__dirname, ".."), message = "Publish determin
     return {status:'raw-recovery-saved', published:false, raw};
   }
   if (!captureOnly) syncUiData();
+  if(fs.existsSync(path.join(cwd,'data/overseas-access-policy.json')))require('./enforce_overseas_publication').verify(cwd,{staged:true});
   const staged = git(["diff", "--cached", "--quiet"], cwd);
   if (staged.ok) return { status: "unchanged", published: false };
   const base = git(["rev-parse", "HEAD"], cwd).output;
@@ -36,6 +38,7 @@ function publish({ cwd = path.join(__dirname, ".."), message = "Publish determin
   save();
   if (captureOnly) return { status: "recovery-saved", published: false, commit: saved };
   for (let attempt = 0; attempt <= retries; attempt += 1) {
+    if(fs.existsSync(path.join(cwd,'data/overseas-access-policy.json')))require('./enforce_overseas_publication').verify(cwd,{staged:true});
     const pushed = git(["push", "origin", "HEAD:main"], cwd);
     record.attempts.push({ at: new Date().toISOString(), stage: "push", ok: pushed.ok, message: pushed.output });
     if (pushed.ok) { record.status = "published"; save(); return { status: "published", published: true, commit: git(["rev-parse", "HEAD"], cwd).output }; }
@@ -57,6 +60,7 @@ function publish({ cwd = path.join(__dirname, ".."), message = "Publish determin
       record.attempts.push({stage:'regenerate-derived',ok:true});
     }
     syncUiData();
+    if(fs.existsSync(path.join(cwd,'data/overseas-access-policy.json')))require('./enforce_overseas_publication').verify(cwd,{staged:true});
     if (!git(['diff', '--cached', '--quiet'], cwd).ok) {
       const reconciled = git(['commit', '-m', 'Reconcile pinned UI summaries after data merge'], cwd);
       if (!reconciled.ok) throw new Error(reconciled.output);

@@ -3,9 +3,10 @@ const http = require("http");
 const path = require("path");
 
 const PORT = Math.max(1024, Number(process.env.POKEDATA_RECEIVER_PORT || 8771));
-const OUTPUT = path.join(__dirname, "pokedata-browser-captures.json");
-const PROGRESS = path.join(__dirname, "pokedata-browser-progress.json");
 const ROOT = path.join(__dirname, "..");
+const access=require('./overseas_access_policy');
+const OUTPUT = access.privatePath(ROOT,'legacy-browser-captures.json');
+const PROGRESS = access.privatePath(ROOT,'legacy-browser-progress.json');
 const MAX_BYTES = 25 * 1024 * 1024;
 
 function readJson(file, fallback) {
@@ -17,12 +18,14 @@ function readJson(file, fallback) {
 }
 
 function writeJson(file, value) {
+  fs.mkdirSync(path.dirname(file),{recursive:true});
   const temporary = `${file}.tmp`;
   fs.writeFileSync(temporary, JSON.stringify(value), "utf8");
   fs.renameSync(temporary, file);
 }
 
 function mergeCapture(payload) {
+  access.assertInternal(ROOT);
   if (!payload || !Array.isArray(payload.cards)) throw new Error("cards array is required");
   const current = readJson(OUTPUT, { version: 1, cards: [] });
   const byId = new Map((current.cards || []).map((card) => [Number(card.id), card]));

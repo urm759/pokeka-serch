@@ -74,6 +74,8 @@ function build({ cards, capture, pokedataRowsByCard = {} }) {
 }
 
 function main() {
+  console.log(JSON.stringify({status:'stopped',reason:'PSA price acquisition development stopped; PokeDATA official API preferred',httpRequests:0}));
+  return;
   const capture = read("work/psa_market_trial_capture.json");
   const cards = read("data/pokemon-cards.json");
   const pokedataRowsByCard = Object.fromEntries(capture.certificates.map((cert) => {

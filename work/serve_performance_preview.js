@@ -6,6 +6,7 @@ const before = Object.fromEntries(['app.js','index.html','styles.css','decision-
 const types = {'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8','.css':'text/css; charset=utf-8'};
 // Local benchmark adapter only: identical POP evidence, legacy wire representation.
 const legacy = [false,true].map(double=>{
+  if(before['app.js'].toString('utf8').includes('data.version!==2'))return new Map();
   const files=new Map(),manifest=JSON.parse((double&&doubled.get('data/ui/manifest.json')||fs.readFileSync(path.join(root,'data/ui/manifest.json'))).toString());
   for(let i=0;i<32;i++){
     const file=`data/psa-pop-glance/${String(i).padStart(2,'0')}.json`;

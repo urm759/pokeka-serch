@@ -158,6 +158,7 @@ function missingCauseAudit(card, rows, publicRows) {
 }
 
 function main() {
+  throw Error('Legacy browser capture import stopped. Documented official API is the selected route; original captures retained privately');
   const capture = readJson(CAPTURES, { cards: [] });
   if (!capture.cards?.length) throw new Error("No authenticated browser captures found");
   const summary = readJson(SUMMARY, { version: 2, linkage: { records: [] } });

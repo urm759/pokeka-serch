@@ -6,6 +6,7 @@ const OUTPUT = path.join(ROOT, "data", "update-status.json");
 const HISTORY_OUTPUT = path.join(ROOT, "data", "update-history.json");
 const { countCurrentRecords, psaAuthenticationRequired, taskStageFields } = require("./source_observability.js");
 const { sourceTiming } = require("./workflow_schedule.js");
+require('./refresh_candidate_shops').publishRunEvidence(ROOT, read('work/candidate-shop-refresh.json'));
 require('./quarantine_shop_identity').build(ROOT);
 require('./build_psa9_provenance').build(ROOT);
 require('./build_psa9_provenance').verify(ROOT);
@@ -246,6 +247,12 @@ if (!psaAccess.allowed) Object.assign(sources.psaOfficial, {
   automatic:false, acquisitionStopped:true, fresh:false, status:'manual-action-required',
   sourceState:'許諾確認待ち・新規自動取得/公開保留', lastError:psaAccess.reason,
   note:psaAccess.resumeCondition, nextScheduledAt:null, scheduleLabel:'起動設定は保持・許諾待ち（ログインだけでは解除不可）',
+});
+const overseasAccess=require('./overseas_access_policy');
+if(!overseasAccess.allowed(ROOT))Object.assign(sources.pokedata,{
+  automatic:false,acquisitionStopped:true,status:'manual-action-required',fresh:false,
+  sourceState:'公式API優先・用途/契約/再公開の許諾確認待ち',lastError:overseasAccess.read(ROOT)?.reason,
+  nextScheduledAt:null,scheduleLabel:'取得保留・他取得元は独立継続',publicationAllowed:false,
 });
 const automaticSources = Object.values(sources).filter((source) => source.automatic);
 const complete = automaticSources.length > 0 && automaticSources.every((source) => source.fresh);

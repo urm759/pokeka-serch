@@ -24,11 +24,12 @@ function build(root) {
   const completion = read(root, "work/card-completion-queue.json");
   const psa = read(root, "work/psa-fetch-progress.json"), linkage = read(root, "work/psa-linkage-all.json");
   const psaOnly = Object.entries(completion.cards || {}).filter(([, c]) => c.m?.length === 1 && c.m[0] === "psaOfficial");
+  const psaAccess=require('./psa_access_policy').decision(require('./psa_access_policy').read(root));
   const links = new Map((linkage.rows || []).map(row => [row.cardId, row]));
   const causes = {}, records = [];
   for (const [id,detail] of psaOnly) {
     const link = links.get(id);
-    const cause = !link ? "照合キュー未接続" : require('./build_one_item_completion_audit').classify(detail,link,psa);
+    const cause = !link ? "照合キュー未接続" : require('./build_one_item_completion_audit').classify(detail,link,psa,psaAccess);
     causes[cause] = (causes[cause] || 0) + 1;
     records.push({ id, setCode: link?.setCode || null, url: link?.sourceSetUrl || null, cause });
   }
@@ -43,13 +44,15 @@ function build(root) {
     { source: "pokedata", label: "PokeDATA公開一覧・成約行", remaining: pokeRemaining, queueDefinition: "展開済みセットの未巡回ID。認証済み実成約とは別", sourceState: poke.status || "未実行", stopReason: poke.stopReason || null, checkpoint: poke.checkpoint || null, lastRun: poke, authenticatedStatus: "認証・確認待ち／今回の公開取得で代替しない" },
   ];
   for (const row of rows) {
+    const policy=row.source==='psaOfficial'?psaAccess:row.source==='pokedata'?{allowed:require('./overseas_access_policy').allowed(root),reason:require('./overseas_access_policy').read(root)?.reason}:null;
+    if(policy&&!policy.allowed){row.sourceState='permission-wait';row.stopReason=policy.reason;row.failureScope='source';}
     Object.assign(row, dailyRate(samples.filter(s => s.source === row.source).slice(-100), row.remaining, row.source === "torecacamp" ? "newlyVisitedProducts" : "publicNewRecords"));
     if (row.source === "torecacamp") row.stopReason = camp.sourceRetry?.reason || camp.lastRun?.stoppingReason || null;
     row.usableNet = outcomes.previousObservation?.sources?.[row.source]?.usableNet ?? null;
     row.observationPeriod = { from: outcomes.previousObservation?.baselineAt || null, to: outcomes.generatedAt || null };
     row.sinceBaseline = outcomes.sinceBaseline?.sources?.[row.source] || null;
     row.freshness = read(root, "data/priority-price-monitor.json").sources?.[row.source] || null;
-    if (row.source === "psaOfficial" || /manual|authentication|access/.test(row.sourceState || "")) row.firstPassDaysEstimate = null;
+    if (row.source === "psaOfficial" || /manual|authentication|access|permission/.test(row.sourceState || "")) row.firstPassDaysEstimate = null;
   }
   const result = { version: 1, generatedAt: new Date().toISOString(), llmCalls: 0, codexCalls: 0, retryPolicy: { transientMaxAttempts: 5, waitsHours: [1, 2, 4, 8, 16], sourceStop: ["401", "403", "authentication"], urlIsolation: ["missing table", "identity", "format"] }, rows,
     psaOnly: { count: psaOnly.length, causes, cards: records }, progress: outcomes.counts || {}, newlyAnalyzable: outcomes.previousObservation?.newlyAnalyzable ?? null,

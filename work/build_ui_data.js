@@ -44,6 +44,7 @@ const SUMMARY = ['card-catalog-completion', 'operational-limit-history', 'market
   'shop-buyback-summary', 'buyback-observation-summary', 'state-a-price-evidence', 'snkr-listing-summary', 'snkr-raw-flip-summary',
   'psa-population-summary', 'psa10-period-summary', 'card-catalog/analysis', 'card-catalog/search-index', 'update-status'];
 function build(root = ROOT) {
+  require('./enforce_overseas_publication').enforce(root);
   const hashes = {}, aliases = {}, bytes = {};
   const write = (file, text) => {
     const target = path.join(root, file);

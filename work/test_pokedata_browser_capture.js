@@ -12,7 +12,12 @@ const sv2a = manifest.sets.find((entry) => entry.setName === "Pokemon Card 151 J
 assert(battle);
 assert(terastal);
 assert(sv2a);
-assert(capture.cards.length >= 215);
+const publicHold=manifest.publicationStatus==='permission-wait';
+if(publicHold){
+  assert.equal(capture.publicationStatus,'permission-wait');
+  assert.equal(Object.keys(capture.cards).length,0,'unlicensed raw rows are not repository test fixtures');
+  for(const set of manifest.sets){const shard=JSON.parse(fs.readFileSync(path.join(root,set.file)));for(const row of Object.values(shard.cards))assert.equal(Object.keys(row.markets).length,0);}
+}else assert(capture.cards.length >= 215);
 assert.equal(battle.acquisition.browserValidatedCards, battle.count);
 assert(battle.acquisition.usableRawMedianCards >= 50);
 assert(battle.acquisition.usablePsa10MedianCards >= 15);
@@ -30,7 +35,7 @@ assert.equal(battle.acquisition.formatParseFailureRows, 0);
 assert(battle.acquisition.classificationCounts["auto-matched"] > 0);
 assert(battle.acquisition.classificationCounts.unverifiable > 0);
 
-for (const captured of capture.cards) {
+for (const captured of publicHold?[]:capture.cards) {
   const salesPath = path.join(root, "data", "pokedata-sales", `${captured.localId}.json`);
   assert(fs.existsSync(salesPath), `missing sales audit for ${captured.localId}`);
   const sales = JSON.parse(fs.readFileSync(salesPath, "utf8"));

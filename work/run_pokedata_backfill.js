@@ -15,6 +15,7 @@ function nextBatch(previous, sample) {
 }
 
 function run(options = {}) {
+  require('./overseas_access_policy').assertInternal(ROOT);
   const release = retry.lock(path.join(__dirname, "pokedata-budget.lock"));
   try {
     const started = Date.now(), budget = Number(options.budgetMs || process.env.POKEDATA_BUDGET_MS || 360000);

@@ -67,6 +67,7 @@ function previousItemsFor(previousQueue, id) {
 }
 
 function readPokedataSales() {
+  if(!require('./overseas_access_policy').allowed(ROOT,'public'))return new Map();
   const dir = path.join(DATA, "pokedata-sales");
   const rows = new Map();
   if (!fs.existsSync(dir)) return rows;
@@ -79,6 +80,7 @@ function readPokedataSales() {
 }
 
 function main() {
+  const overseasPublic=require('./overseas_access_policy').allowed(ROOT,'public');
   const generatedAt = new Date().toISOString();
   const cards = read("data/pokemon-cards.json", []);
   const inventory = read("work/toreca-source-inventory.json", { cards: [] });
@@ -217,9 +219,9 @@ function main() {
       domesticTrades: item(domesticTx ? "取得済み" : "定期再確認", "みんトレ・素体全状態", times.toreca, domesticTx ? null : "7/30日件数未取得・0件/データなしとは未確定。正規一括差分で再確認"),
       psa10Price: item(psa10Price ? "取得済み" : "取得元にデータなし", "みんトレ／スニダン", times.toreca, psa10Price ? null : "PSA10相場の掲載なし"),
       psa10Trades: item(psa10Tx ? "取得済み" : "定期再確認", "みんトレ／スニダン", times.toreca, psa10Tx ? null : "7/30日件数未取得・0件/データなしとは未確定。正規一括差分で再確認"),
-      rawActualSales: item(rawActualCount > 0 ? "取得済み" : pokedataState === "unsupported-or-unconfirmed" ? "取得不能" : "取得待ち", "PokeDATA個別成約", times.pokedata, rawActualCount > 0 ? `${rawActualCount}件` : "Raw実成約未取得"),
-      psa10ActualSales: item(psa10ActualCount > 0 ? "取得済み" : pokedataState === "unsupported-or-unconfirmed" ? "取得不能" : "取得待ち", "PokeDATA個別成約", times.pokedata, psa10ActualCount > 0 ? `${psa10ActualCount}件` : "PSA10実成約未取得"),
-      psa9Sales: item(psa9ActualCount > 0 ? "取得済み" : pokedataState === "unsupported-or-unconfirmed" ? "取得不能" : "取得待ち", "PokeDATA個別成約", times.pokedata, psa9ActualCount > 0 ? `${psa9ActualCount}件` : psa9Kind.kind === "aggregate" ? "集計値はあるが個別実成約は未取得" : "PSA9実成約を優先取得"),
+      rawActualSales: item(!overseasPublic?'許諾待ち':rawActualCount > 0 ? "取得済み" : "取得待ち", "PokeDATA海外個別成約（国内状態Aとは別）", times.pokedata, !overseasPublic?'海外個別成約・許諾待ち':rawActualCount > 0 ? `${rawActualCount}件` : "Raw実成約未取得・存在未確認"),
+      psa10ActualSales: item(!overseasPublic?'許諾待ち':psa10ActualCount > 0 ? "取得済み" : "取得待ち", "PokeDATA海外個別成約", times.pokedata, !overseasPublic?'海外個別成約・許諾待ち':psa10ActualCount > 0 ? `${psa10ActualCount}件` : "PSA10実成約未取得・存在未確認"),
+      psa9Sales: item(!overseasPublic?'許諾待ち':psa9ActualCount > 0 ? "取得済み" : "取得待ち", "PokeDATA海外個別成約（国内PSA9とは別）", times.pokedata, !overseasPublic?'海外個別成約・許諾待ち':psa9ActualCount > 0 ? `${psa9ActualCount}件` : "PSA9実成約未取得・存在未確認"),
       psa9Aggregate: item(finite(card.snkPsa9Price) && card.snkPsa9Price > 0 ? "取得済み" : domesticPrice ? "推定値" : "取得待ち", "国内集計・みんトレ／スニダン", times.toreca, finite(card.snkPsa9Price) && card.snkPsa9Price > 0 ? "国内集計値・個別実成約とは別" : "国内実成約・集計値は未取得。海外PSA9から補完しない"),
       psa9Evidence: item(efficiencyEvidence.psa9Evidence.ready ? '取得済み' : '定期再確認','国内PSA9集計・再取得確認',
         {attempt:times.toreca.attempt,success:card.psa9ObservedAt || null},efficiencyEvidence.psa9Evidence.ready ? '価格再確認日時・実成約日ではない' : efficiencyEvidence.psa9Evidence.reason),
@@ -405,6 +407,7 @@ function main() {
     generatedAt,
     itemSchema: ["status", "lastAttemptAt", "lastSuccessAt", "retryCount", "failureReason", "nextRetryAt"],
     evidenceSourceTimes: {toreca:times.toreca,shopBuyback:times.buyback},
+    overseasPolicyExplanation: '原本は非公開保持。公式APIの個別成約提供は未確認。集計価格を個別成約・期間件数に代用しない。国内PSA9・状態A個別成約は別の未実装経路。',
     evidenceSchema: 'e=[PSA9集計確認,複数店買取確認]。1=取得済み、0=定期再確認の状態符号（価格・件数ではない）。PSA9確認日はカード別psa9ObservedAt、試行日はsource times、買取価格日と照合根拠は原票へ。実成約とは別。',
     sourceByItem: {
       domesticPrice: "みんトレ", domesticTrades: "みんトレ", psa10Price: "みんトレ／スニダン",

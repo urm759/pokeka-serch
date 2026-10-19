@@ -1,8 +1,9 @@
 const fs = require('node:fs'), path = require('node:path');
 const {itemState} = require('./completion_routes');
-function classify(detail, linkage = {}, progress = {}) {
+function classify(detail, linkage = {}, progress = {}, access = null) {
   const field = detail.m[0], item = itemState(detail, field);
   if (field === 'psaOfficial') {
+    if(access&&!access.allowed)return 'PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持';
     if (item.status === '再照合待ち' || linkage.specificationHeld) return '仕様不一致で保留・完全仕様表の再確認待ち';
     if(/pokemon-asia/i.test(linkage.sourceSetUrl || ''))return '日本語版根拠未確認・言語照合待ち';
     const retry=progress.sourceRetry || progress.retryByUrl?.[linkage.sourceSetUrl];
@@ -23,9 +24,10 @@ function build(root) {
   const links = new Map(read('work/psa-linkage-all.json').rows.map(row=>[row.cardId,row]));
   const cards = new Map(read('data/pokemon-cards.json').map(card=>[card.id,card]));
   const progress=read('work/psa-fetch-progress.json');
+  const psaAccess=require('./psa_access_policy').decision(require('./psa_access_policy').read(root));
   const byField = {}, byRoute = {};
   const rows = Object.entries(queue.cards).filter(([,detail])=>detail.m?.length === 1).map(([id,detail])=>{
-    const field = detail.m[0], routing = classify(detail,links.get(id),progress);
+    const field = detail.m[0], routing = classify(detail,links.get(id),progress,psaAccess);
     byField[field] = (byField[field] || 0) + 1;
     byRoute[routing] = (byRoute[routing] || 0) + 1;
     return {id,name:cards.get(id)?.name,field,routing,priority:detail.p,reasons:detail.r,

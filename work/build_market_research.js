@@ -47,6 +47,7 @@ function periodComparison(market, domestic, minimum) {
   };
 }
 function loadPokedata() {
+  if(!require('./overseas_access_policy').allowed(ROOT,'public'))return {manifest:{sets:[]},details:{}};
   const manifest = read(path.join(ROOT, "data", "pokedata", "manifest.json"), { sets: [] });
   const details = {};
   for (const entry of manifest.sets || []) {

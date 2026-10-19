@@ -114,6 +114,7 @@ async function fetchSets(fetcher = fetch) {
 }
 
 async function main() {
+  require('./overseas_access_policy').assertInternal(ROOT);
   const previous = read(OUTPUT, {});
   try {
     const sets = await fetchSets();

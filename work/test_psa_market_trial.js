@@ -5,9 +5,14 @@ const { makeQueue } = require("./build_psa_linkage_queue.js");
 const visibility = require("../candidate-visibility.js");
 
 const cards = require("../data/pokemon-cards.json");
-const capture = require("./psa_market_trial_capture.json");
 const saved = require("../data/psa-market-trial.json");
-const sales = require("../data/pokedata-sales/pk-63635.json");
+// Synthetic fixtures exercise the archived parser without redistributing source transactions.
+const capture={fx:{rate:157.59},certificates:[['pk-63635','SV9','126','SAR'],['pk-70080','M1S','092','MUR']].map(([cardId,setCode,cardNumber,rarity],i)=>({
+  cardId,setCode,cardNumber,rarity,language:'Japanese',grade:10,certNumber:'synthetic-'+i,
+  url:'https://www.psacard.com/cert/synthetic-'+i,estimateUsd:300,
+  sales:Array.from({length:5},(_,j)=>({listingId:String(111000000000+i*10+j),marketplace:'eBay',usd:j?100+j:215,date:'2026-01-01',saleType:'synthetic'})),
+}))};
+const sales={rows:capture.certificates[0].sales.map(s=>({listingId:s.listingId,status:'candidate'}))};
 const output = build({ cards, capture, pokedataRowsByCard: { "pk-63635": sales.rows } });
 assert.equal(output.cardCount, 2);
 assert.equal(output.psaExcerptRows, 10);
@@ -16,7 +21,7 @@ assert(output.certificates.every((cert) => cert.identity.matched));
 assert(output.certificates.every((cert) => cert.salesHistory.count30 === null && cert.salesHistory.count90 === null));
 assert(output.certificates.every((cert) => cert.verifiedForTrading === false));
 assert.equal(output.tcgplayerNewAcquisitionStopped, false);
-assert.equal(saved.overlappedRows, output.overlappedRows);
+assert.equal(saved.publicationStatus,'permission-wait');assert.equal(saved.certificates.length,0,'no unlicensed original prices published');
 assert.equal(output.certificates[0].salesHistory.sales[0].jpyAtReferenceFx, Math.round(215 * 157.59));
 assert.equal(output.certificates[0].estimate.type, "PSA Estimate, not a sale");
 assert.equal(output.certificates[0].population.type, "grade-specific-cert-snapshot");

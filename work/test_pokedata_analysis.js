@@ -52,26 +52,13 @@ if (fs.existsSync(generatedPath)) {
   const shard = JSON.parse(fs.readFileSync(path.join(__dirname, "..", ...battlePartners.file.split("/")), "utf8"));
   const card = shard.cards["pk-63635"];
   assert(card, "Lillie's Clefairy ex trial data is missing");
-  assert.equal(card.referenceOnly, true);
-    assert.equal(card.limitImpact, "仕入れ上限へ未反映");
-    assert.equal(card.markets.tcgplayerRaw.transactionCount, null);
-    assert.equal(card.markets.tcgplayerRaw.transactionCountStatus, "取得不能");
-  assert(card.markets.ebayRaw.originalCount >= 100);
-  assert(card.markets.ebayRaw.adoptedCount >= 64);
-  assert(card.markets.ebayPsa10.originalCount >= 180);
-  assert(card.markets.ebayPsa10.adoptedCount >= 60);
-  assert(card.markets.ebayPsa9.originalCount >= 5);
-  assert(card.markets.ebayPsa9.adoptedCount >= 3);
-  assert.equal(card.markets.ebayRaw.pageDisplayJpy, 28600.5);
-  assert.equal(card.markets.tcgplayerRaw.pageDisplayJpy, 20309.05);
-  assert.equal(card.markets.ebayPsa10.pageDisplayJpy, 30449.69);
-  assert.equal(card.markets.ebayPsa9.pageDisplayJpy, 20517.82);
-  for (const market of [card.markets.ebayRaw, card.markets.ebayPsa10, card.markets.ebayPsa9]) {
-    assert.equal(market.originalCount, market.adoptedCount + market.excludedCount);
-    assert(Number.isFinite(market.medianJpy));
-    assert(Number.isFinite(market.minJpy));
-    assert(Number.isFinite(market.maxJpy));
-    assert(market.targetPeriod);
+  if(manifest.publicationStatus==='permission-wait'){
+    assert.equal(generated.publicationStatus,'permission-wait');
+    assert.deepEqual(card.markets,{},'unlicensed prices cannot remain a repository fixture');
+    assert.equal(require('./enforce_overseas_publication').priceLeaks(shard).length,0);
+  }else for(const market of Object.values(card.markets||{}).filter(m=>m.priceSource==='actual-sale')){
+    assert.equal(market.originalCount,market.adoptedCount+market.excludedCount);
+    assert(Number.isFinite(market.medianJpy));assert(market.targetPeriod);
   }
 }
 

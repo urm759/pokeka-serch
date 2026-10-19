@@ -3456,6 +3456,7 @@ async function loadPokedataShard(file, { audit = false } = {}) {
 }
 
 async function ensurePokedataForCardIds(cardIds) {
+  if(state.pokedataManifest?.publicationStatus==='permission-wait')return;
   const pendingFiles = pokedataShardFilesForCardIds(cardIds)
     .filter((file) => !state.pokedataLoadedFiles.has(file) && !state.pokedataFailedFiles.has(file));
   if (!pendingFiles.length) return false;
@@ -5142,6 +5143,7 @@ let overseasGlanceRevision=null;
 function overseasGlanceShard(id){let h=0;for(const c of String(id||''))h=(h*31+c.charCodeAt(0))>>>0;return h%16;}
 function overseasPriceGlance(card,key,now=Date.now()) {
   const label='海外'+(key==='raw'?'素体':'PSA10');
+  if(state.pokedataManifest?.publicationStatus==='permission-wait')return label+'：公開許諾確認待ち';
   if(overseasGlanceFailures.has(overseasGlanceShard(card.id)))return label+'：要約読込失敗・履歴未確認';
   const record=overseasGlanceCache.get(card.id),row=record?.[key];
   if(!row)return label+'：実成約未取得';
@@ -5157,6 +5159,7 @@ function overseasPriceGlance(card,key,now=Date.now()) {
   return `<b>${label} ¥${fmt.format(Math.round(row.jpy))}</b>（${escapeHtml(row.condition)}）${fresh&&recent?'・参考':'・古い履歴／現在相場ではない'}${gap==null?'':`／国内比 ${gap>0?'+':''}${gap.toFixed(1)}%`}<span> ${escapeHtml(row.source)}／最終成約 ${escapeHtml(row.lastSale||'未取得')}${fxFresh?'':'／為替の日時不足・古値'}</span><details><summary>海外実成約の根拠</summary>${escapeHtml(row.period||'期間不明')}／採用${row.count}件／取得 ${escapeHtml(record.at||'未取得')}／USD ${row.usd??'未取得'}・為替 ${record.fx?.rate??'未取得'}（${escapeHtml(record.fx?.rateDate||'基準日未取得')}）<br>${escapeHtml(row.note)}。国内と比較可能なときだけ価格差を表示。上限・GOへ不使用。<a href="${escapeHtml(record.url)}" target="_blank" rel="noreferrer">元ページ</a></details>`;
 }
 async function ensureOverseasGlance(cards) {
+  if(state.pokedataManifest?.publicationStatus==='permission-wait')return;
   const revision=uiDataManifest?.revision||'legacy';
   if(overseasGlanceRevision!==revision){overseasGlanceCache.clear();overseasGlanceRequests.clear();overseasGlanceFailures.clear();overseasGlanceRevision=revision;}
   const linked=new Set((state.pokedataManifest?.sets||[]).flatMap(s=>s.localCardIds||[]));

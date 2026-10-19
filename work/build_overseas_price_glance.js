@@ -21,6 +21,11 @@ function project(record,card) {
   return result.raw||result.psa10?result:null;
 }
 function build(root=ROOT) {
+  if(!require('./overseas_access_policy').allowed(root,'public')) {
+    const dir=path.join(root,'data/overseas-glance');fs.mkdirSync(dir,{recursive:true});
+    for(let i=0;i<16;i++)fs.writeFileSync(path.join(dir,i+'.json'),JSON.stringify({version:1,publicationStatus:'permission-wait',cards:{}}));
+    return {cards:0,status:'permission-wait',newAcquired:0};
+  }
   const read=f=>JSON.parse(fs.readFileSync(path.join(root,f),'utf8'));
   const cards=new Map(read('data/pokemon-cards.json').map(c=>[c.id,c]));
   const chunks=Array.from({length:16},()=>({version:1,cards:{}}));

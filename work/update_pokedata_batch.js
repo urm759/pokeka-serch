@@ -179,6 +179,7 @@ function findDomestic(sourceCard, domesticByKey, aliases) {
 }
 
 async function main() {
+  throw new Error('Legacy website API acquisition stopped. Use the documented PokeDATA /v0 API only after use-case permission and API budget approval; saved checkpoint retained');
   if (fs.existsSync(ACCESS_HOLD)) throw new Error("PokeDATAアクセス・形式変更の手動確認待ち。保存済みチェックポイントを保持");
   if (fs.existsSync(SET_HOLD)) throw new Error("PokeDATA個別セットの形式・仕様確認待ち。他のセットは継続可能");
   const cards = read(path.join(ROOT, "data", "pokemon-cards.json"), []);

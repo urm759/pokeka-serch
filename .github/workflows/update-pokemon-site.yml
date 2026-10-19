@@ -71,4 +71,5 @@ jobs:
             exit 0
           fi
           git commit -m "Refresh Pokemon card data"
+          node work/enforce_overseas_publication.js --verify --staged
           git push
