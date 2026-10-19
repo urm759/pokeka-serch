@@ -1,4 +1,4 @@
-const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
 const app=fs.readFileSync('app.js','utf8');
 const fetchCode=app.slice(app.indexOf('async function fetchJsonMaybe('),app.indexOf('async function fetchJsonMaybe(')+app.slice(app.indexOf('async function fetchJsonMaybe(')).indexOf('\nasync function ',20));
 const glance=app.slice(app.indexOf('const psaPopGlanceCache='),app.indexOf('// Presentation only:'));
@@ -55,6 +55,13 @@ const response=(value,ok=true)=>({ok,status:ok?200:404,url:'https://test.local/d
   const recovered={cards:{fixture:{identity:store.identities.fixture,sourceUrl:raw.url,points:[p0]}}};
   assert.equal(displayContext.merge(actual,recovered).fixture.length,2,'recovered dated evidence reaches the existing lazy chart too');
   assert.equal(displayContext.merge(actual,{cards:{fixture:{...recovered.cards.fixture,identity:'other'}}}).fixture.length,1,'other specification never reaches the chart');
+  assert.equal(displayContext.merge({cards:{legacy:[['20261017',1,2]]}},{cards:{}}).legacy.length,0,'a legacy row without identity and recovery must not crash the whole shard');
+  for(let i=0;i<32;i++){
+    const sh=String(i).padStart(2,'0'),base=path.join(__dirname,'../data');
+    const raw=JSON.parse(fs.readFileSync(path.join(base,'psa-history',sh+'.json'),'utf8'));
+    const recovered=JSON.parse(fs.readFileSync(path.join(base,'psa-pop-recovered',sh+'.json'),'utf8'));
+    assert.doesNotThrow(()=>displayContext.merge(raw,recovered),'all real legacy/mapped cards in a shard remain isolated');
+  }
   const {completeDays}=require('./build_psa_pop_glance');
   const observed=new Set(['20261019','20261018','20261017','20261016','20261015','20261014','20261013','20261012']);
   assert(completeDays(observed,Date.parse('2026-10-19T00:00:00Z'),7));

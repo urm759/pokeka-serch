@@ -666,7 +666,7 @@ function mergePsaDisplayHistory(data,recovered={cards:{}}){
   return Object.fromEntries(Object.entries(data?.cards||{}).map(([key,original])=>{
     const identity=data.identities?.[key],source=data.sources?.[key],extra=recovered?.cards?.[key];
     const known=new Set(original.filter(r=>r[3]?.sourceUrl===source&&r[3]?.specificationIdentity===identity&&/T\d{2}:/.test(r[3]?.observedAt||'')).map(r=>r[0]));
-    const add=extra?.identity===identity&&extra?.sourceUrl===source?(extra.points||[]).filter(r=>!known.has(r[0])):[];
+    const add=identity&&source&&extra?.identity===identity&&extra?.sourceUrl===source?(extra.points||[]).filter(r=>!known.has(r[0])):[];
     let segment=[];
     for(const r of [...original,...add].sort((a,b)=>Date.parse(a[3]?.observedAt)-Date.parse(b[3]?.observedAt))){
       const at=Date.parse(r[3]?.observedAt);if(!/T\d{2}:/.test(r[3]?.observedAt||'')||!Number.isFinite(at)||at>Date.now())continue;
