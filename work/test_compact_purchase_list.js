@@ -15,6 +15,8 @@ const loader=app.slice(app.indexOf('async function renderRawConditionReference')
 assert.match(loader,/data\?\.version!==1\|\|!data\.cards/,'null fetch/schema failure cannot mean no sales');
 assert.match(app,/if\(rawReferenceRevision!==revision\)\{rawReferenceRequests.clear\(\)/);
 assert.match(loader,/参考要約の読込失敗/);
+assert.match(app,/openRawReferenceDetails\.has\(card\.id\)\?'open'/,'keep reference fold open across asynchronous detail refreshes');
+assert.match(app,/if\(panel.open\)void renderRawConditionReference\(panel\)/,'reconnect loaded content after a preserved open fold is rendered');
 assert(!app.match(/Promise\.all\([^;]*raw-condition-reference/s),'no initial full reference history request');
 assert.match(app,/非10はPSA9仮置き・PSA8以下未評価/);
 assert.match(app,/compactWarningText\(\[\.\.\.guide\.reasons,\.\.\.guide\.warnings\]\)/);

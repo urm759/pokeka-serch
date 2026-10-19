@@ -4365,13 +4365,14 @@ function searchProfitPanel(view,compact=false) {
 
 const psa10PeriodDetails = new Map();
 const rawReferenceRequests=new Map();
+const openRawReferenceDetails=new Set();
 let rawReferenceRevision=null;
 async function renderRawConditionReference(panel) {
   const id=panel.dataset.rawReference,revision=uiDataManifest?.revision || 'legacy',key=revision+':'+overseasGlanceShard(id);
   if(rawReferenceRevision!==revision){rawReferenceRequests.clear();rawReferenceRevision=revision;}
   try {
     if(!rawReferenceRequests.has(key))rawReferenceRequests.set(key,fetchJsonMaybe(`./data/raw-condition-reference/${overseasGlanceShard(id)}.json`,{detail:true,affectsCalculation:false}).then(data=>{if(data?.version!==1||!data.cards)throw Error('Unavailable');return data;}));
-    const data=await rawReferenceRequests.get(key);if(revision!==(uiDataManifest?.revision||'legacy'))return;
+    const data=await rawReferenceRequests.get(key);if(revision!==(uiDataManifest?.revision||'legacy')||!panel.isConnected)return;
     const r=data.cards[id],target=panel.querySelector('div');if(!r){target.textContent='同一仕様の採用根拠は未取得。0件とは扱いません。';return;}
     const money=n=>Number.isFinite(n)?'¥'+fmt.format(n):'未取得';
     const stale=r.evidence.some(e=>e.adopted&&Date.now()-Date.parse(e.observedAt)>48*3600000);
@@ -6294,7 +6295,7 @@ function renderContent() {
               ${catalogStatusHtml}${gradeHistoryHtml}${searchDiagnosticPanel}
               <div class="candidate-warning">${escapeHtml(criticalWarnings.join('／'))}</div>
               <section class="detail-price-comparison">${priceComparisonCells(card,limitDisplay,marketConfirmedAt,Date.now(),currentTrial)}</section>
-              <details data-raw-reference="${escapeHtml(card.id)}"><summary>美品・単品未開封の参考集計（中央値とは別）</summary><div>開くと保存済み要約を確認します。</div></details>
+              <details data-raw-reference="${escapeHtml(card.id)}" ${openRawReferenceDetails.has(card.id)?'open':''}><summary>美品・単品未開封の参考集計（中央値とは別）</summary><div>開くと保存済み要約を確認します。</div></details>
               ${searchProfitPanel(chosenProfit)}${cardEfficiencyBody(card)}${buybackSupportHtml(card)}${tradeDemandReferenceHtml(card)}
               ${purchasePsa9RatioHtml(card,currentExploration?currentTrial.purchasePrice:undefined,currentExploration?{purchaseKind:currentTrial.purchaseKind}:{})}
               <div class="detail-limit-comparison">${limitComparison}</div>
@@ -6364,7 +6365,13 @@ function renderContent() {
   committed.changed.flatMap(el=>[...el.querySelectorAll('[data-median-evidence]')]).forEach(panel=>{
     panel.addEventListener('toggle',()=>{if(panel.open){const card=calculated.find(c=>c.id===panel.dataset.medianEvidence);if(card)renderMedianEfficiencyEvidence(panel,card);}});
   });
-  committed.changed.flatMap(el=>[...el.querySelectorAll('[data-raw-reference]')]).forEach(panel=>panel.addEventListener('toggle',()=>{if(panel.open)void renderRawConditionReference(panel);}));
+  committed.changed.flatMap(el=>[...el.querySelectorAll('[data-raw-reference]')]).forEach(panel=>{
+    panel.addEventListener('toggle',()=>{
+      if(panel.open){openRawReferenceDetails.add(panel.dataset.rawReference);void renderRawConditionReference(panel);}
+      else openRawReferenceDetails.delete(panel.dataset.rawReference);
+    });
+    if(panel.open)void renderRawConditionReference(panel);
+  });
   committed.changed.forEach((el) => observer.observe(el));
   void ensureOverseasGlance(visibleCards);
   void ensurePsaPopGlance(visibleCards);

@@ -31,7 +31,7 @@ function sales(records, {start,end,complete=false}={}) {
   for(const r of records || []) {
     const at=Date.parse(r.soldAt), key=r.marketplace && r.transactionId ? `${r.marketplace}:${r.transactionId}` : null;
     const kind=condition(r.title || '',r.condition);
-    if(r.kind!=='completed-sale' || r.language!=='ja' || r.currency!=='JPY' || r.grade!=='raw' || r.unitCount!==1
+    if(r.kind!=='completed-sale' || r.marketScope!=='domestic' || r.language!=='ja' || r.currency!=='JPY' || r.grade!=='raw' || r.unitCount!==1
       || /(?:PSA|BGS|CGC|ARS|TAG|ACE)\s*\d|鑑定品/i.test(r.title||'') || r.identityVerified!==true || !key || !r.evidenceUrl
       || !['mint','sealed-single'].includes(kind) || !Number.isFinite(at) || at<Date.parse(start) || at>Date.parse(end)
       || !Number.isFinite(r.price)||r.price<=0){excluded.push({...r,reason:'成約/仕様/条件/期間/取引IDの根拠不足'});continue;}
@@ -51,7 +51,7 @@ function aggregates(records,{start,end}={}) {
   for(const r of records || []) {
     if(seen.has(r.aggregateId)){const old=seen.get(r.aggregateId);if(JSON.stringify(old)!==JSON.stringify(r))old.conflicted=true;continue;}
     const record={...r};seen.set(r.aggregateId,record);
-    if(r.kind!=='completed-sale-aggregate'||r.identityVerified!==true||r.language!=='ja'||r.currency!=='JPY'||r.grade!=='raw'||r.unitCount!==1||!r.aggregateId||!r.evidenceUrl
+    if(r.kind!=='completed-sale-aggregate'||r.marketScope!=='domestic'||r.identityVerified!==true||r.language!=='ja'||r.currency!=='JPY'||r.grade!=='raw'||r.unitCount!==1||!r.aggregateId||!r.evidenceUrl
       ||Date.parse(r.start)!==Date.parse(start)||Date.parse(r.end)!==Date.parse(end)||!r.overlapVerified||!r.partitionAuthority||!r.disjointGroup
       ||!['mint','sealed-single'].includes(r.condition)||!Number.isInteger(r.count)||r.count<0
       ||!(r.count===0?r.mean==null:Number.isFinite(r.mean)&&r.mean>0))continue;
