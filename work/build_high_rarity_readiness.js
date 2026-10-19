@@ -49,11 +49,12 @@ function build(root=ROOT) {
   const queue=read('work/card-completion-queue.json');
   const linkage=Object.fromEntries(read('work/psa-linkage-all.json').rows.map(r=>[r.cardId,r]));
   const psaProgress=read('work/psa-fetch-progress.json'),byId=new Map(cards.map(c=>[c.id,c]));
-  result.requiredAvailability={automatic:0,pcAuthenticatedRoute:0,retryWait:0,identityOrUrlReview:0,confirmedNoData:0,unimplemented:0};
+  result.requiredAvailability={automatic:0,pcAuthenticatedRoute:0,retryWait:0,permissionWait:0,identityOrUrlReview:0,confirmedNoData:0,unimplemented:0};
+  const psaAccess=require('./psa_access_policy').decision(require('./psa_access_policy').read(root));
   for(const id of result.srFamily.ids)for(const field of completion.cards?.[id]?.m||[]) {
     if(field==='psaOfficial') {
-      const r=require('./profile_completion_routes').prospectPlan(byId.get(id),['psaOfficial'],{linkage,psaProgress}).requirements[0];
-      result.requiredAvailability[r.automatic?'pcAuthenticatedRoute':r.nextRetryAt?'retryWait':'identityOrUrlReview']++;
+      const r=require('./profile_completion_routes').prospectPlan(byId.get(id),['psaOfficial'],{linkage,psaProgress,psaAccess}).requirements[0];
+      result.requiredAvailability[r.state==='permission-wait'?'permissionWait':r.automatic?'pcAuthenticatedRoute':r.nextRetryAt?'retryWait':'identityOrUrlReview']++;
     } else if(['domesticPrice','domesticTrades','psa10Price','psa10Trades'].includes(field))result.requiredAvailability.automatic++;
     else result.requiredAvailability.identityOrUrlReview++;
   }

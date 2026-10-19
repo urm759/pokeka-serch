@@ -3,6 +3,7 @@ const fs = require("node:fs");
 function classify(error = {}) {
   const message = String(error.error || error.message || error.reason || "");
   const httpStatus = Number(error.httpStatus || error.metric?.httpStatus || message.match(/HTTP\s+(\d{3})/i)?.[1]);
+  if (/permission-wait|PSA_PERMISSION_REQUIRED/.test(message)) return { kind: 'permission', scope: 'source', manual: true };
   if (httpStatus === 401 || /sign-in|sign in|認証切れ|login required/i.test(message)) return { kind: "authentication", scope: "source", manual: true };
   if (httpStatus === 403 || /Cloudflare|robot|verification|external_access_blocked/i.test(message)) return { kind: "access", scope: "source", manual: true };
   if (httpStatus === 429) return { kind: "rate-limit", scope: "source", manual: false };
@@ -26,7 +27,7 @@ function failure(old = {}, error = {}, now = Date.now(), options = {}) {
     held: policy.manual || exhausted, manualReview: policy.manual || exhausted,
     waitMs: policy.manual || exhausted ? null : delayMs,
     nextRetryAt: policy.manual || exhausted ? null : new Date(now + delayMs).toISOString(),
-    resumeCondition: exhausted ? "再試行上限に到達。原因確認後にこのURLの試行回数のみ再開" : policy.manual ? "正規アクセス・形式・同一仕様の確認後に停止範囲だけ再開" : "待機期限後の定期実行で自動再試行" };
+    resumeCondition: policy.kind === 'permission' ? '自動取得・公開利用の許諾範囲を確認。ログイン成功だけでは解除しない' : exhausted ? "再試行上限に到達。原因確認後にこのURLの試行回数のみ再開" : policy.manual ? "正規アクセス・形式・同一仕様の確認後に停止範囲だけ再開" : "待機期限後の定期実行で自動再試行" };
 }
 
 function eligible(state, now = Date.now()) {

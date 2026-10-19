@@ -21,6 +21,8 @@ try {
   Start-Transcript -Path $LogPath -Append | Out-Null
   $TranscriptStarted = $true
   $previous = if (Test-Path $StatePath) { Get-Content $StatePath -Raw | ConvertFrom-Json } else { [pscustomobject]@{} }
+  & $Node (Join-Path $PSScriptRoot 'psa_access_policy.js') --record
+  if ($LASTEXITCODE -ne 0) { Write-Warning 'PSA permission pending. Saved state, outbox and checkpoint retained.'; exit 3 }
   # Saved-data publication is independent of acquisition and repository synchronization.
   try { & (Join-Path $PSScriptRoot 'publish_psa_update.ps1') -PendingOnly }
   catch { Write-Warning 'Pending publication retained; continue independent acquisition.' }

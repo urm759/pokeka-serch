@@ -339,6 +339,7 @@ async function collectSet(context, entry) {
 }
 
 async function main() {
+  require('./psa_access_policy').assertAllowed(STANDALONE_ROOT);
   const startedAt = new Date().toISOString();
   const checkpoint = readJson(PROGRESS_PATH, { completedUrls: [] });
   if (checkpoint.sourceRetry && !retryPolicy.eligible(checkpoint.sourceRetry)) {

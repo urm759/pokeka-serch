@@ -18,7 +18,7 @@ function buybackState(row,meta,now=Date.now()) {
   if(meta.fullListingConfirmedAt!==meta.lastSuccess)return 'coverage-incomplete';
   return meta.unmatched===0?'confirmed-unlisted':'unmatched-or-unlisted';
 }
-function prospectPlan(card,fields,{shops={},linkage={},psaProgress={},storeMode='all',selected=[],now=Date.now()}={}) {
+function prospectPlan(card,fields,{shops={},linkage={},psaProgress={},psaAccess=null,storeMode='all',selected=[],now=Date.now()}={}) {
   const requirements=[];
   for(const field of [...new Set(fields)]) {
     if(field==='buybackExitEvidence' || field==='buyback'){
@@ -30,6 +30,11 @@ function prospectPlan(card,fields,{shops={},linkage={},psaProgress={},storeMode=
         nextAction:absent?'正常な未掲載。カード別の同じ再取得はせず、通常の買取表差分更新後に再評価':'独立した買取表更新／保存原票の仕様照合。未掲載と取得不足を混同しない',
         resumeCondition:absent?'店舗一覧または掲載内容の変化':'正常取得・2店舗以上の新鮮で同一仕様の掲載'});
     }else if(field==='psaOfficial'){
+      if (psaAccess && !psaAccess.allowed) {
+        requirements.push({field,source:'psaOfficial',state:'permission-wait',automatic:false,stopScope:'source',nextRetryAt:null,
+          url:linkage[card.id]?.sourceSetUrl || null,reason:psaAccess.reason,nextAction:'書面許諾・正規提供条件の確認。ほかの取得元の補完は継続',resumeCondition:psaAccess.resumeCondition});
+        continue;
+      }
       const source=linkage[card.id] || {},url=source.sourceSetUrl;
       const retry=psaProgress.sourceRetry || psaProgress.retryByUrl?.[url];
       const waiting=retry&&!require('./acquisition_retry').eligible(retry,now);

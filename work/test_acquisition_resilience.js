@@ -37,12 +37,13 @@ const remote = path.join(temp, "remote.git"), producer = path.join(temp, "produc
 git(["init", "--bare", "--initial-branch=main", remote]); git(["clone", remote, producer]);
 git(["config", "user.name", "Test"], producer); git(["config", "user.email", "test@example.test"], producer);
 fs.mkdirSync(path.join(producer, "work")); fs.mkdirSync(path.join(producer, "data"));
+retry.atomicWrite(path.join(producer, 'data/psa-access-policy.json'), {version:1,automaticAcquisition:true,publicationOfNewData:true,permissionEvidence:'local-fixture-only; no external PSA requests'});
 const pop = { setCode: "SV9", cardNo: "126", cardName: "Clefairy", sourceUrl: "https://www.psacard.com/pop/tcg-cards/2025/verified/292980", fetchedAt: "2026-10-05T00:00:00Z", psa10Count: 100, psaTotal: 120 };
 retry.atomicWrite(path.join(producer, "data/psa-official-populations.json"), { rows: [pop] });
 retry.atomicWrite(path.join(producer, "work/psa-fetch-progress.json"), { startedAt: "2026-10-06T00:00:00Z", completedUrls: [pop.sourceUrl] });
 retry.atomicWrite(path.join(producer, "work/psa_set_urls.json"), [{ setCode: "SV9", url: pop.sourceUrl }]);
 retry.atomicWrite(path.join(producer, "work/psa_priority_queue.json"), { rows: [{ cardId: "new-card", setCode: "SV9", cardNo: "126" }] });
-for (const file of ['update_psa_official_populations.js','build_psa_history.js','acquisition_retry.js','fair_batch.js','psa_pending_sets.js','psa-name-aliases.json']) {
+for (const file of ['update_psa_official_populations.js','build_psa_history.js','acquisition_retry.js','fair_batch.js','psa_pending_sets.js','psa-name-aliases.json','psa_access_policy.js']) {
   fs.copyFileSync(path.join(__dirname,file),path.join(producer,'work',file));
 }
 git(["add", "data", "work"], producer); git(["commit", "-m", "Initial"], producer); git(["push", "origin", "main"], producer);
@@ -77,7 +78,7 @@ assert.equal(inputs.httpAcquisitionRequests, 0);
 assert.equal(JSON.parse(fs.readFileSync(inputs.priorityPath)).rows[0].cardId, "new-card");
 assert.equal(require(inputs.collectorPath).cellTextWithSpecification({childNodes:[{textContent:'Pikachu'},{textContent:'Master Ball Reverse Holo'}]}),'Pikachu | Master Ball Reverse Holo');
 assert.equal(fs.readFileSync(inputs.historyPath,'utf8').replace(/\r\n/g,'\n'),fs.readFileSync(path.join(__dirname,'build_psa_history.js'),'utf8').replace(/\r\n/g,'\n'),'snapshot comes from fetched commit, not an edited working source');
-assert.equal(Object.keys(inputs.runtimeHashes).length,6);
+assert.equal(Object.keys(inputs.runtimeHashes).length,7);
 assert(inputs.runtimeHashes['psa-name-aliases.json'],'verified name aliases travel with the immutable collector runtime');
 assert(inputs.runtimeHashes['psa_pending_sets.js'], 'checkpoint recheck planner is included in the immutable runtime');
 assert.equal(require(path.join(path.dirname(inputs.collectorPath),'fair_batch.js')).fairBatch([1,2,3],2,x=>x===1).length,2);

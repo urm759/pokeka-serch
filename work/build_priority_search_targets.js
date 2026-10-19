@@ -28,6 +28,7 @@ function evaluate(profile,at,overlay={},inspectIds=[],calculationCache=null) {
   const linkage=Object.fromEntries(JSON.parse(fs.readFileSync(path.join(ROOT,'work/psa-linkage-all.json'),'utf8')).rows.map(r=>[r.cardId,r]));
   const shops=JSON.parse(fs.readFileSync(path.join(ROOT,'data/shop-buyback-summary.json'),'utf8')).shops;
   const psaProgress=JSON.parse(fs.readFileSync(path.join(ROOT,'work/psa-fetch-progress.json'),'utf8'));
+  const psaAccess=require('./psa_access_policy').decision(require('./psa_access_policy').read(ROOT));
   const inspected=new Set(inspectIds),allExclusions={},inspectedRows={};
   const scope={catalog:cards.length,unknownPriceCards:0,confirmedPriceFailures:0,identityHeld:0,qualified:0,completionProspects:0,notSelected:0};
   for(const c of cards) {
@@ -70,7 +71,7 @@ function evaluate(profile,at,overlay={},inspectIds=[],calculationCache=null) {
     if(selected||prospect)rows.push({id:c.id,name:c.name,qualified:selected,unverifiedProspect:prospect,missing:[...new Set(fields)],reasons:excluded,
       buy:e.purchasePrice,profit:e.profit,annual:e.annual,go:c.purchaseDecision?.verdict||c.purchaseDecision?.status||null,priority:discoveryPriority.score,priorityReasons:discoveryPriority.reasons,priceGates,
       metrics:require('./profile_candidate_evidence').cardFacts(api,c),
-      completionPlan:prospect?require('./profile_completion_routes').prospectPlan(c,fields,{shops,linkage,psaProgress,now:Date.parse(at),storeMode:p.get('buybackStores') || 'mail',selected:(p.get('selectedStores') || '').split(',')}):null});
+      completionPlan:prospect?require('./profile_completion_routes').prospectPlan(c,fields,{shops,linkage,psaProgress,psaAccess,now:Date.parse(at),storeMode:p.get('buybackStores') || 'mail',selected:(p.get('selectedStores') || '').split(',')}):null});
     if(prospect)for(const route of routeNeededFields(completion.cards?.[c.id],fields)) {
       (routes[route.source]||=[]).push({id:c.id,field:route.key,mode:route.mode,priority:discoveryPriority.score});
     }
@@ -90,6 +91,7 @@ function build(root=ROOT,at=new Date().toISOString()) {
   const completion=JSON.parse(fs.readFileSync(path.join(root,'work/card-completion-queue.json'),'utf8'));
   const rawCards=new Map(JSON.parse(fs.readFileSync(path.join(root,'data/pokemon-cards.json'),'utf8')).map(c=>[c.id,c]));
   const repairContext={shops:JSON.parse(fs.readFileSync(path.join(root,'data/shop-buyback-summary.json'),'utf8')).shops,
+    psaAccess:require('./psa_access_policy').decision(require('./psa_access_policy').read(root)),
     linkage:Object.fromEntries(JSON.parse(fs.readFileSync(path.join(root,'work/psa-linkage-all.json'),'utf8')).rows.map(r=>[r.cardId,r])),
     psaProgress:JSON.parse(fs.readFileSync(path.join(root,'work/psa-fetch-progress.json'),'utf8')),now:Date.parse(at)};
   const inspectFor=p=>[...(previous.profiles.find(r=>r.id===p.id)?.urlsMatched||[]),...(previous.freshnessRecovery||[]).filter(r=>r.profile===p.id).map(r=>r.id),...priorDepartures.filter(r=>r.profile===p.id).map(r=>r.id)];

@@ -7,6 +7,7 @@ function candidates(html) {
   return urls.map((url) => ({ url, setCode: url.match(/pokemon-japanese-((?:sv|sm|xy|bw|s|m)\d[a-z0-9]*)-/i)?.[1]?.toUpperCase() || null, status: "候補・手動照合待ち", reason: "公式の実リンク。未取得POP・絵柄・年代の確認前に自動登録しない" }));
 }
 async function run() {
+  require('./psa_access_policy').assertAllowed(ROOT);
   let old = {}; try { old = JSON.parse(fs.readFileSync(FILE, "utf8")); } catch {}
   if (old.manualWait && process.env.PSA_DISCOVERY_RETRY !== "1") { console.log(JSON.stringify({ status: "manual-wait", reason: old.stopReason, checkpoint: old.url, httpRequests: 0 })); return; }
   const url = "https://www.psacard.com/pop/tcg-cards/156940";
@@ -24,5 +25,5 @@ async function run() {
   } catch (error) { state.stopReason = error.message; state.status = state.manualWait ? "manual-wait" : "retry-wait"; }
   state.endedAt = new Date().toISOString(); fs.writeFileSync(FILE, JSON.stringify(state)); console.log(JSON.stringify(state));
 }
-if (require.main === module) run();
+if (require.main === module) run().catch(error=>{console.error(error.message);process.exitCode=1;});
 module.exports = { candidates };

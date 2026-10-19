@@ -64,13 +64,15 @@ function build(root, sources, previous = {}, now = Date.now(), options = {}) {
       note: "最終成功は当サイトの取得日時。元サイト更新日時は未公表ならnull。未紐付けは取得不存在ではない" };
   }
   const storedPsaProgress = read(root, "work/psa-fetch-progress.json");
+  const psaAccess = require('./psa_access_policy').decision(require('./psa_access_policy').read(root));
+  if (rows.psaOfficial && !psaAccess.allowed) Object.assign(rows.psaOfficial, {status:'permission-wait',stopReason:psaAccess.reason});
   const psaProgress = Date.parse(observation.fetchProgress?.lastAttemptAt || "") > Date.parse(storedPsaProgress.lastAttemptAt || "") ? observation.fetchProgress : storedPsaProgress;
   const pokedata = read(root, "data/pokedata/manifest.json");
   const publicRemaining = (pokedata.sets || []).reduce((n, s) => n + Math.max(0, Number(s.sourceCount || 0) - Number(s.linkageCount || 0)), 0);
   const backlogStates = [
     { label: "状態A元ページ価格確認", category: "実際に自動巡回中", remaining: price.lastRun?.remaining ?? null, usableNet: null, lastProgressAt: price.lastProgressAt || null, nextAction: "安全バックフィルで元ページを確認。今回の晴れる屋2価格取得とは別処理。実成約取得の完了ではない。純増・最終進捗の未記録を他ソースから代用しない" },
     { label: "晴れる屋2価格補完", category: "実際に自動巡回中", remaining: read(root, "data/completion-acquisition.json").eligiblePending ?? null, usableNet: rows.hareruya2?.usableNet ?? null, lastProgressAt: read(root, "data/completion-acquisition.json").acquired > 0 ? read(root, "data/completion-acquisition.json").endedAt : rows.hareruya2?.lastProgressAt || null, nextAction: "残件は確定URLがあり2日間隔・再試行制限を満たす価格対象。重点枠最大40%と通常枠を併用。鮮度回復と純増は別集計" },
-    { label: "PSA公式未取得・未紐付け", category: /manual-wait|failed/.test(psaProgress.status || "") ? "認証・形式確認待ち" : "実際に自動巡回中（PC起動・認証が必要）", remaining: linkage.counts?.unlinked ?? null, usableNet: rows.psaOfficial?.usableNet ?? null, lastProgressAt: psaProgress.refreshedCount > 0 ? psaProgress.lastSuccessAt : rows.psaOfficial?.lastProgressAt || null, nextAction: psaProgress.stopReason || "登録済みセットはPC定期取得。未登録URL・曖昧一致は確認待ち。取得率を推定で補わない" },
+    { label: "PSA公式未取得・未紐付け", category: !psaAccess.allowed ? '許諾確認待ち' : /manual-wait|failed/.test(psaProgress.status || "") ? "認証・形式確認待ち" : "実際に自動巡回中（PC起動・認証が必要）", remaining: linkage.counts?.unlinked ?? null, usableNet: rows.psaOfficial?.usableNet ?? null, lastProgressAt: psaProgress.refreshedCount > 0 ? psaProgress.lastSuccessAt : rows.psaOfficial?.lastProgressAt || null, nextAction: !psaAccess.allowed ? psaAccess.resumeCondition : psaProgress.stopReason || "登録済みセットはPC定期取得。未登録URL・曖昧一致は確認待ち。取得率を推定で補わない" },
     { label: "国内PSA9個別実成約／状態A限定実成約", category: "取得処理未実装", remaining: null, usableNet: 0, lastProgressAt: null, nextAction: "利用可能な正規取得経路と状態証明の確定が必要。集計・海外・推定値を実成約数に加えない" },
     { label: "PokeDATA公開一覧", category: "実際に自動巡回中", remaining: publicRemaining, usableNet: rows.pokedata?.usableNet ?? null, lastProgressAt: rows.pokedata?.lastProgressAt || null, nextAction: "SM-P等の保存地点から継続。公開マスクを実価格と数えない" },
     { label: "PokeDATA認証済み実成約", category: "認証・手動対応待ち", remaining: null, usableNet: null, lastProgressAt: null, nextAction: "認証画面で確認できる実価格のみ保存。公開APIの進捗とは分離" },

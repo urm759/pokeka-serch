@@ -241,6 +241,12 @@ if (!require("./snkr_access_policy.js").permitted(ROOT) && sources.snkrRaw) {
     sourceState:"許諾確認待ち・自動収集保留（過去の正常データを保持）", note:"直接取得の許諾未確認。保存済み値の日時は更新しない",
     nextScheduledAt:null, scheduleLabel:"自動取得保留・許諾確認が必要", acquiredCount:0, updatedCount:0});
 }
+const psaAccess = require('./psa_access_policy').decision(require('./psa_access_policy').read(ROOT));
+if (!psaAccess.allowed) Object.assign(sources.psaOfficial, {
+  automatic:false, acquisitionStopped:true, fresh:false, status:'manual-action-required',
+  sourceState:'許諾確認待ち・新規自動取得/公開保留', lastError:psaAccess.reason,
+  note:psaAccess.resumeCondition, nextScheduledAt:null, scheduleLabel:'起動設定は保持・許諾待ち（ログインだけでは解除不可）',
+});
 const automaticSources = Object.values(sources).filter((source) => source.automatic);
 const complete = automaticSources.length > 0 && automaticSources.every((source) => source.fresh);
 // These sources directly drive the visible sourcing decision. Yu-Yu-Tei and

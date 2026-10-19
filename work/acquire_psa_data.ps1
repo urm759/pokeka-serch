@@ -8,6 +8,9 @@ $ResultPath = Join-Path $PSScriptRoot 'psa_acquisition_result.json'
 $StartedAt = Get-Date
 $BeforeRows = @{}
 
+& $Node (Join-Path $PSScriptRoot 'psa_access_policy.js') --record
+if ($LASTEXITCODE -ne 0) { Write-Warning 'PSA permission pending. No Chrome startup, fetch, or checkpoint changes.'; exit 3 }
+
 if (Test-Path $PsaDataPath) {
   $beforePayload = Get-Content $PsaDataPath -Raw | ConvertFrom-Json
   foreach ($row in $beforePayload.rows) {
