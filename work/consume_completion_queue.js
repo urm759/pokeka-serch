@@ -6,6 +6,16 @@ const { fairBatch, write: buildFocus } = require("./focus_monitor.js");
 const { needs, routes, failureState } = require("./completion_routes.js");
 const read = (file, fallback = {}) => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, file), "utf8")); } catch { return fallback; } };
 const save = (file, value) => { const target = path.join(ROOT, file); fs.writeFileSync(`${target}.tmp`, JSON.stringify(value)); fs.renameSync(`${target}.tmp`, target); };
+function permissionSupport(psa,overseasAllowed) {
+  return {
+    psaOfficial:{status:psa.allowed?'PC取得処理あり・取得/保存/公開は実行別に確認':'許諾確認待ち・新規取得停止',
+      method:psa.allowed?'優先キュー生成は取得0件。未登録/曖昧は別保留':psa.reason,resumeCondition:psa.resumeCondition},
+    pokedata:{status:overseasAllowed?'許諾確認済み・公式API取得キュー未接続':'用途/契約/公開利用の確認待ち・新規取得停止',
+      method:'保存済みメタデータ/チェックポイントを保持。未承認API呼出・フリマへの自動切替なし'},
+    rawActualSales:{status:overseasAllowed?'公式APIの個別成約提供範囲未確認・取得処理未接続':'海外実成約の許諾/認証確認待ち・新規取得停止',
+      reason:'PokeDATA Rawは国内状態A実成約とは別。集計価格を個別成約として扱わない'}
+  };
+}
 function plan(cards, queue, checkpoint, now = Date.now()) {
   const byId = new Map(cards.map((c) => [c.id, c]));
   return (queue.queue || []).filter((id) => {
@@ -111,6 +121,7 @@ function run() {
     rawActualSales: { status: "海外実成約は認証確認待ち", reason: "PokeDATA Rawは国内状態A成約とは別指標" },
     domesticStateASales: { status: "取得処理未実装・許諾確認待ち", reason: "全状態取引件数・海外Rawを状態A成約件数へ代用しない" },
   };
+  Object.assign(support,permissionSupport(require('./psa_access_policy').decision(require('./psa_access_policy').read(ROOT)),require('./overseas_access_policy').allowed(ROOT)));
   state.lastRun = run; delete state.running;
   save("work/completion-acquisition-checkpoint.json", state);
   const pending = eligibleForHareru(plan(cards, queue, state), read("work/hareruya2_catalog.json", []),Date.now(),requested,guard).length;
@@ -133,4 +144,4 @@ function run() {
   return run;
 }
 if (require.main === module) run();
-module.exports = { plan, run, eligibleForHareru, profilePlans };
+module.exports = { plan, run, eligibleForHareru, profilePlans, permissionSupport };

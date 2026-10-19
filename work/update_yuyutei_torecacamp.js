@@ -588,6 +588,11 @@ function parseProductSitemap(xml) {
   return rows;
 }
 
+function campPurchaseUrl(entry, previousUrl, reset=false) {
+  if(!entry)return reset?null:previousUrl || null;
+  if(!require('./quarantine_shop_identity').identityUsable(entry))return reset||previousUrl===entry.detailUrl?null:previousUrl || null;
+  return entry.detailUrl || (reset?null:previousUrl) || null;
+}
 function preferCampEntry(previous, candidate) {
   if (!previous) return candidate;
   if(Boolean(previous.referenceOnly)!==Boolean(candidate.referenceOnly))return candidate.referenceOnly?previous:candidate;
@@ -1004,7 +1009,7 @@ async function main() {
   const yuyuteiById = new Map(read(path.join(__dirname, "yuyutei_catalog.json"), []).map((entry) => [entry.cardId, entry]));
   const campById = new Map(read(path.join(__dirname, "torecacamp_catalog.json"), []).map((entry) => [entry.cardId, entry]));
   const resetCamp = process.env.TORECACAMP_RESET === "1";
-  const updatedCards = latestCards.map((card) => ({ ...card, yuyuteiUrl: yuyuteiById.get(card.id)?.detailUrl || card.yuyuteiUrl || null, torecacampUrl: campById.get(card.id)?.detailUrl || (resetCamp ? null : card.torecacampUrl) || null }));
+  const updatedCards = latestCards.map((card) => ({ ...card, yuyuteiUrl: yuyuteiById.get(card.id)?.detailUrl || card.yuyuteiUrl || null, torecacampUrl: campPurchaseUrl(campById.get(card.id),card.torecacampUrl,resetCamp) }));
   write(path.join(ROOT, "data", "pokemon-cards.json"), updatedCards);
   console.log(JSON.stringify({ sourceOnly, yuyutei, torecacamp }));
 }
@@ -1021,7 +1026,7 @@ module.exports = {
   historySummary,
   campA, campMatchesCard, campPriceQuarantine, campSignature, campVariantPrice, cardSignature, migrateCampCatalogPrices, normalizeSetCode,
   guardCatalogDrop, updateProgressHealth, migrateCampRetries,
-  parseProductSitemap, parseProductSitemapIndex, preferCampEntry,
+  parseProductSitemap, parseProductSitemapIndex, preferCampEntry, campPurchaseUrl,
   yuyuteiPriority,
   numberMatches, parseYuyuteiResults, titleMatches,
 };

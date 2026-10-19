@@ -4188,7 +4188,22 @@ function renderEfficiencySummary(target) {
   }
 }
 function compactWarningText(values) {
-  return [...new Set((values || []).filter(Boolean).map(value=>String(value).length>65?String(value).slice(0,62)+'…':String(value)))].join('／');
+  const labels=[
+    [/価格対立|誤紐付け|仕様.*(?:不一致|保留)|手動確認/,'価格・仕様の確認待ち'],
+    [/PSA9(?:価格|売値|売価)(?:自体)?(?:が|は|[:：])?(?:未取得|不足|なし)/,'PSA9価格未取得'],
+    [/PSA9.*(?:日時|確認日|更新日)|日時.*PSA9/,'PSA9日時未確認・参考'],
+    [/PSA8|非10/,'非10はPSA9仮置き・PSA8以下未評価'],
+    [/PSA10.*(?:古い|古値|日時不明)/,'PSA10相場の鮮度不足'],
+    [/古値|古い|期限超過|日時不明/,'古値・日時不明の根拠あり'],
+    [/(?:中央値|採用根拠|独立).*?(?:不足|1元|未確認)/,'中央値の新鮮な独立根拠不足'],
+    [/買取.*(?:不足|未取得|未確認)|出口.*不足/,'選択した買取出口が不足'],
+    [/平均.*現在.*高|平均.*下落/,'平均基準は下落局面で楽観的'],
+    [/期間.*(?:未検証|不一致|不足)|返却.*(?:不一致|未評価)/,'返却期間の予測は未検証']
+  ];
+  return [...new Set((values||[]).filter(Boolean).map(value=>{
+    const text=String(value),label=labels.find(([pattern])=>pattern.test(text));
+    return label?label[1]:text.length>38?text.slice(0,35)+'…':text;
+  }))].join('／');
 }
 function cardEfficiencyPanel(card, compact = false) {
   const row=cardEfficiency(card);

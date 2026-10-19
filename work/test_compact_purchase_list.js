@@ -1,5 +1,12 @@
 const fs=require('node:fs'),assert=require('node:assert/strict');
 const app=fs.readFileSync('app.js','utf8');
+const warning=new Function('return '+app.slice(app.indexOf('function compactWarningText('),app.indexOf('function cardEfficiencyPanel(')))();
+assert.equal(warning(['PSA9価格の確認日時不足']),'PSA9日時未確認・参考');
+assert.equal(warning(['PSA9価格自体が未取得・推定だけでは計算しない']),'PSA9価格未取得');
+assert.equal(warning(['価格対立・PSA9日時未確認']),'価格・仕様の確認待ち');
+const stopped=require('./consume_completion_queue').permissionSupport({allowed:false,reason:'permission-wait'},false);
+assert.match(stopped.psaOfficial.status,/取得停止/);assert.match(stopped.pokedata.status,/取得停止/);
+assert.doesNotMatch(stopped.psaOfficial.status,/巡回中|成功/);
 assert.match(app,/searchProfitPanel\(chosenProfit,true\)/);
 assert.match(app,/cardEfficiencyPanel\(card,true\)/);
 const body=app.slice(app.indexOf('<div class="card-details-body">'),app.indexOf('const committed =',app.indexOf('<div class="card-details-body">')));

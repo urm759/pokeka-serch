@@ -19,8 +19,11 @@ async function main() {
   const expected = JSON.parse(fs.readFileSync(path.join(__dirname,'../data/ui/manifest.json'),'utf8'));
   assert.equal(manifest.revision, expected.revision, 'must verify the newly published revision');
   const verified = [];
-  const disclosureScript = await read('settings-disclosure.js?verify=' + Date.now());
-  assert.equal(disclosureScript.replace(/\r\n/g,'\n'), fs.readFileSync(path.join(__dirname,'../settings-disclosure.js'),'utf8').replace(/\r\n/g,'\n'));
+  for(const file of ['app.js','styles.css','settings-disclosure.js']) {
+    const source=await read(file+'?verify='+Date.now());
+    assert.equal(source.replace(/\r\n/g,'\n'),fs.readFileSync(path.join(__dirname,'..',file),'utf8').replace(/\r\n/g,'\n'),file);
+    verified.push(file);
+  }
   for (const file of ['data/settings-disclosure-acquisition-audit.json','data/settings-disclosure-browser-validation.json','data/card-efficiency-audit.json','data/card-efficiency-browser-validation.json']) {
     const text = await read(file+'?verify='+Date.now());
     assert.equal(crypto.createHash('sha256').update(text.replace(/\r\n/g,'\n')).digest('hex'),manifest.hashes[file],file);

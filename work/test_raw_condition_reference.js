@@ -44,4 +44,7 @@ try{
   assert.equal(JSON.parse(fs.readFileSync(path.join(root,'data/torecacamp-stock-summary.json'))).cards.fixture,undefined,'sealed does not create an ordinary purchase offer');
 }finally{fs.rmSync(root,{recursive:true,force:true});}
 assert.equal(require('./update_yuyutei_torecacamp').preferCampEntry({price:21000,referenceOnly:false},{price:19800,referenceOnly:true}).price,21000);
+const purchaseLink=require('./update_yuyutei_torecacamp').campPurchaseUrl;
+assert.equal(purchaseLink({referenceOnly:true,detailUrl:'https://example.test/sealed'},'https://example.test/sealed'),null);
+assert.equal(purchaseLink({referenceOnly:true,detailUrl:'https://example.test/sealed'},'https://example.test/verified-mint'),'https://example.test/verified-mint');
 console.log('PASS single sealed reference identity, separate conditions, IDs/periods/weighted means, null vs zero and unchanged purchase adoption');
