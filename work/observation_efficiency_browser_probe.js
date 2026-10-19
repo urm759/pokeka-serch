@@ -52,6 +52,8 @@ probeButton.onclick=()=>setTimeout(async()=>{
   probeResult.textContent=JSON.stringify({width:innerWidth,loadedCards:cards.length,displayed:ids.length,ids,financialHash,arithmeticHash,samples,
     initialJsonBytes:initialMetrics.reduce((n,r)=>n+r.bytes,0),jsonParseMs:initialMetrics.reduce((n,r)=>n+r.jsonParseMs,0),decodeMs:initialMetrics.reduce((n,r)=>n+r.decodeMs,0),
     transferredBytes:resources.reduce((sum,r)=>sum+r.transferSize,0),decodedBytes:resources.reduce((sum,r)=>sum+r.decodedBodySize,0),
+    popSummaryCount:document.querySelectorAll('[data-psa-pop-glance]').length,
+    popReadFailureCount:[...document.querySelectorAll('[data-psa-pop-glance]')].filter(e=>/要約読込失敗|公開要約と最新POPが不一致/.test(e.textContent)).length,
     lazyHistoryRequests:resources.filter(r=>/psa10-periods|psa10-price-history/.test(r.name)).map(r=>r.name),
     note:'同じPCの幅別・同データ・60枚表示。通信はローカルgzip、paint完了・実機スマホとは別。詳細1枚の展開後に原票リクエストを記録。'});
 },0);

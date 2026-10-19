@@ -11,7 +11,6 @@ require('./build_psa9_provenance').build(ROOT);
 require('./build_psa9_provenance').verify(ROOT);
 require('./build_linkage_evidence_audit').build(ROOT);
 require('./build_high_rarity_readiness').build(ROOT);
-require('./build_one_item_completion_audit').build(ROOT);
 const popCoverage=require('./build_psa_pop_glance').build(ROOT);
 
 function read(relativePath, fallback = {}) {

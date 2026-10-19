@@ -2,7 +2,7 @@ const fs=require('node:fs'),path=require('node:path'),cp=require('node:child_pro
 const b=require('./build_psa_history'),ROOT=path.join(__dirname,'..');
 const hash=x=>crypto.createHash('sha256').update(x).digest('hex');
 function certify(row,card,official,identity,now=Date.now()){
-  if(row.captureVersion<2||!row.completeSnapshot)return {reason:'legacy-specification-not-proven'};
+  if(!(row.captureVersion>=2)||row.completeSnapshot!==true)return {reason:'legacy-specification-not-proven'};
   if(!Number.isInteger(row.ten)||!Number.isInteger(row.total)||row.ten<0||row.total<=0||row.total<row.ten)return {reason:'invalid-counts'};
   const at=b.observationTime(row.fetchedAt),end=b.observationTime(official?.f);
   if(at==null||end==null||at>end||at>now||at<now-400*86400000)return {reason:'date-out-of-range'};

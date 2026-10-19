@@ -40,7 +40,7 @@ const response=(value,ok=true)=>({ok,status:ok?200:404,url:'https://test.local/d
   b.reconcileHistory(store,fixture.id,[],raw,b.cardIdentity(fixture));
   const cert=certify(raw,fixture,target,store.identities.fixture,Date.parse(official.f));
   assert.equal(cert.point[3].observedAt,raw.fetchedAt,'recovery retains original acquisition time');
-  for(const bad of [{...raw,captureVersion:null},{...raw,fetchedAt:null},{...raw,url:raw.url+'/other'}, {...raw,total:0},{...raw,name:'Test SR Reverse Holo'}])
+  for(const bad of [{...raw,captureVersion:null},{...raw,captureVersion:undefined},{...raw,completeSnapshot:1},{...raw,fetchedAt:null},{...raw,url:raw.url+'/other'}, {...raw,total:0},{...raw,name:'Test SR Reverse Holo'}])
     assert(!certify(bad,fixture,target,store.identities.fixture,Date.parse(official.f)).point,'uncertain recovery is never made comparable');
   const merge=require('./resolve_generated_merge');
   const merged=merge.mergeReceipts({pipelines:{priority:{runId:'new',recordedAt:'2026-10-19T02:00:00Z'}}},

@@ -1,11 +1,11 @@
 {
-  "startedAt": "2026-10-18T21:03:16.432Z",
-  "runId": "39166040554",
+  "startedAt": "2026-10-18T23:41:09.987Z",
+  "runId": "39177500433",
   "event": "schedule",
   "route": "既存監視ジョブの空白補完",
   "status": "acquired-saved",
   "allowed": true,
-  "ageMs": 9957654,
+  "ageMs": 9473001,
   "minimumIntervalMs": 9000000,
   "reason": "定期の空白・既存の期限順キューで補完",
   "llmCalls": 0,
@@ -14,15 +14,15 @@
     "work/run_tracked_update.js"
   ],
   "acquisitionStatus": "partial-with-failure",
-  "endedAt": "2026-10-18T21:13:00.821Z",
-  "durationMs": 584389,
+  "endedAt": "2026-10-18T23:50:54.516Z",
+  "durationMs": 584529,
   "outcomes": {
-    "baselineAt": "2026-10-18T21:03:16.432Z",
+    "baselineAt": "2026-10-18T23:41:09.987Z",
     "commonCards": 12544,
     "addedCards": 0,
     "removedCards": 0,
     "newlyAnalyzable": 0,
-    "lostAnalyzable": 0,
+    "lostAnalyzable": 1,
     "filledCards": 0,
     "filledItems": 0,
     "sources": {
@@ -38,7 +38,7 @@
         "validAdded": 0,
         "validLost": 0,
         "usableNet": 0,
-        "freshnessRecovered": 43
+        "freshnessRecovered": 40
       },
       "yuyutei": {
         "newLinked": 0,
