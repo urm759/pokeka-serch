@@ -86,4 +86,6 @@ vm.runInContext('const state={buybackObservationSummary:'+JSON.stringify(compact
 const html=context.render({...card,psa10:10000});
 assert.match(html,/最高買取 0.900倍/);assert.match(html,/同店通常 0.800倍/);assert.match(html,/通常比 \+12.5%/);assert.match(html,/同店内上位7.7%/);
 assert.match(html,/採算用出口とは別/);
+const glance=app.slice(app.indexOf('const candidateGlance ='),app.indexOf('const row = { id: card.id, html:',app.indexOf('const candidateGlance =')));
+assert(glance.includes('${buybackSupportHtml(card)}'),'compact highest quote is visible without opening the card detail');
 console.log('PASS gross support: no costs; same-day proof/spec; own-excluded band/common baseline; null/small sample; high valid prices; missing/partial days; outlet selection and merchant dedupe; freshness; lazy details; acquisition priority only');

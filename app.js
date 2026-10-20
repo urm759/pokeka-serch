@@ -6263,6 +6263,7 @@ function renderContent() {
       </section>
       ${searchProfitPanel(chosenProfit,true)}
       ${cardEfficiencyPanel(card,true)}
+      ${buybackSupportHtml(card)}
       ${['current-cap','current-target'].includes(chosenProfit.basis) ? `<details class="actual-purchase-comparison"><summary>実店舗価格で買った場合の現相場採算（探索買値とは別）</summary>${currentMarketProfitPanel(currentGuideSource(card))}</details>` : ''}
       ${currentExploration ? `<details><summary>PSA9時損益・実購入採算</summary>${currentMarketProfitPanel(currentTrial)}</details>` : ""}
       ${currentExploration && currentTrial.purchasePrice == null ? `<p class="helper">購入価格未取得・実購入利益は算出不可</p>` : ''}
@@ -6302,7 +6303,7 @@ function renderContent() {
               <div class="candidate-warning">${escapeHtml(criticalWarnings.join('／'))}</div>
               <section class="detail-price-comparison">${priceComparisonCells(card,limitDisplay,marketConfirmedAt,Date.now(),currentTrial)}</section>
               <details data-raw-reference="${escapeHtml(card.id)}" ${openRawReferenceDetails.has(card.id)?'open':''}><summary>美品・単品未開封の参考集計（中央値とは別）</summary><div>開くと保存済み要約を確認します。</div></details>
-              ${searchProfitPanel(chosenProfit)}${cardEfficiencyBody(card)}${buybackSupportHtml(card)}${tradeDemandReferenceHtml(card)}
+              ${searchProfitPanel(chosenProfit)}${cardEfficiencyBody(card)}${tradeDemandReferenceHtml(card)}
               ${purchasePsa9RatioHtml(card,currentExploration?currentTrial.purchasePrice:undefined,currentExploration?{purchaseKind:currentTrial.purchaseKind}:{})}
               <div class="detail-limit-comparison">${limitComparison}</div>
               ${periodProfitSummary}
