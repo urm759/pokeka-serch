@@ -2,7 +2,7 @@ const fs=require('node:fs'),path=require('node:path'),cp=require('node:child_pro
 const {atomicWrite}=require('./acquisition_retry');
 const root=path.join(__dirname,'..'),git=args=>cp.execFileSync('git',args,{cwd:root,encoding:'utf8',maxBuffer:128e6});
 const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
-const stamp=r=>Math.max(0,...['observedAt','fetchedAt','lastAttemptAt','confirmedAt','checkedAt','startedAt','endedAt','generatedAt','updatedAt','at'].map(k=>Date.parse(r?.[k])||0));
+const stamp=r=>Math.max(0,...['observedAt','fetchedAt','lastAttemptAt','confirmedAt','checkedAt','startedAt','endedAt','generatedAt','updatedAt','at','date'].map(k=>Date.parse(r?.[k])||0));
 function latest(a,b,base){
   if(!a)return b;if(!b)return a;if(same(a,b))return a;
   if(base!==undefined){if(same(base,a))return b;if(same(base,b))return a;}
@@ -14,11 +14,24 @@ function mergeRun(a,b,base){
   const selected=latest(a,b,base),successful=[a?.lastSuccessAt,b?.lastSuccessAt,base?.lastSuccessAt].filter(v=>Number.isFinite(Date.parse(v)));
   return successful.length?{...selected,lastSuccessAt:successful.sort((x,y)=>Date.parse(x)-Date.parse(y)).at(-1)}:selected;
 }
+function mergeStockHistory(base,a,b,leftTimes,rightTimes){
+  if(![base,a,b].every(r=>Array.isArray(r?.dates)&&r.stocks))throw Error('Stock history schema changed');
+  const dates=[...new Set([...a.dates,...b.dates])].sort(),stocks={};
+  for(const id of new Set([...Object.keys(a.stocks),...Object.keys(b.stocks)]))stocks[id]=dates.map(day=>{
+    const x=a.stocks[id]?.[a.dates.indexOf(day)],y=b.stocks[id]?.[b.dates.indexOf(day)];
+    if(x==null)return y??null;if(y==null||x===y)return x;
+    const original=base.stocks[id]?.[base.dates.indexOf(day)];
+    if(x===original)return y;if(y===original)return x;
+    if((leftTimes[id]||0)===(rightTimes[id]||0))throw Error('Conflicting stock history without distinct card observation times');
+    return (leftTimes[id]||0)>(rightTimes[id]||0)?x:y;
+  });
+  return {dates,stocks};
+}
 function historyUnion(a,b){const m=new Map();for(const r of [...b,...a]){
   const key=r&&typeof r==='object'&&!Array.isArray(r)?r.startedAt||r.at||r.recordedAt||r.date||r.runId:null;
   const k=key==null?JSON.stringify(r):String(key),old=m.get(k);
   if(!old||stamp(r)>stamp(old)||stamp(r)===stamp(old))m.set(k,r);
-}return [...m.values()];}
+}return [...m.values()].sort((a,b)=>stamp(a)-stamp(b));}
 function seedMerge(base,a,b){
   if(same(a,b)||same(base,b))return a;if(same(base,a))return b;
   if(Array.isArray(a)&&Array.isArray(b))return historyUnion(a,b);
@@ -38,17 +51,18 @@ function run(){
   const shopSummary=snapshots['data/shop-buyback-summary.json'];
   for(const [file,[base,a,b]]of Object.entries(snapshots)){
     let merged;
-    if(file==='work/hareruya2_catalog.json')merged=byKey(a,b,r=>r.detailUrl||r.productId||r.cardId,base);
+    if(file==='data/scheduled-cycle-receipts.json')merged=require('./resolve_generated_merge').mergeReceipts(a,b);
+    else if(['data/priority-price-execution.json','data/price-catchup-status.json'].includes(file))merged=latest(a,b,base);
+    else if(file==='work/hareruya2_catalog.json')merged=byKey(a,b,r=>r.detailUrl||r.productId||r.cardId,base);
     else if(file==='data/hareruya2-stock-summary.json'){
       merged={...a,cards:{...a.cards}};for(const [id,row]of Object.entries(b.cards||{}))merged.cards[id]=latest(merged.cards[id],row,base.cards?.[id]);
       merged.updatedAt=[a.updatedAt,b.updatedAt].sort().at(-1);
     }else if(file==='work/hareruya2_stock_history.json'){
-      const dates=[...new Set([...a.dates,...b.dates])].sort(),stocks={};
-      const newer=stamp(snapshots['work/candidate-shop-refresh.json'][1].sources.hareruya2)>stamp(snapshots['work/candidate-shop-refresh.json'][2].sources.hareruya2)?a:b;
-      for(const id of new Set([...Object.keys(a.stocks),...Object.keys(b.stocks)]))stocks[id]=dates.map(day=>{
-        const x=a.stocks[id]?.[a.dates.indexOf(day)],y=b.stocks[id]?.[b.dates.indexOf(day)];
-        return x==null?y??null:y==null?x:newer===a?x:y;
-      });merged={dates,stocks};
+      const catalogs=snapshots['work/hareruya2_catalog.json'];
+      if(!catalogs)throw Error('Per-card stock history requires both source catalogs');
+      const times=rows=>{const result={};for(const row of rows)if(row.cardId)result[row.cardId]=Math.max(result[row.cardId]||0,stamp(row));return result;};
+      const leftTimes=times(catalogs[1]),rightTimes=times(catalogs[2]);
+      merged=mergeStockHistory(base,a,b,leftTimes,rightTimes);
     }else if(file==='work/source-update-runs.json'){
       merged={...a,sources:{...a.sources}};for(const [id,row]of Object.entries(b.sources||{}))merged.sources[id]=mergeRun(merged.sources[id],row,base.sources?.[id]);
     }else if(file==='work/priority-price-http-cache.json'){
@@ -83,4 +97,4 @@ function run(){
   console.log(JSON.stringify({resolved:out.length,status:'rebuild-required',rawStageBackups:files.length}));
 }
 if(require.main===module)run();
-module.exports={latest,byKey,seedMerge,mergeRun};
+module.exports={latest,byKey,seedMerge,mergeRun,mergeStockHistory};

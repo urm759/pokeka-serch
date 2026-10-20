@@ -1,0 +1,248 @@
+{
+  "at": "2026-10-20T13:23:50.028Z",
+  "base": "4643fd49",
+  "profiles": [
+    {
+      "id": "A",
+      "count": 9,
+      "ids": [
+        "pk-6015",
+        "x-122054",
+        "pk-55727",
+        "pk-20743",
+        "pk-14592",
+        "pk-3123",
+        "pk-4376",
+        "pk-39522",
+        "x-104600"
+      ],
+      "unchanged": true,
+      "financeHash": "8080089c840ed11a6096c5a5f946aa81b021493157b449319bdde7ffb7edb187",
+      "addedByData": [],
+      "lostByData": [],
+      "thresholds": {
+        "1": [
+          "pk-6015",
+          "pk-55727",
+          "pk-20743",
+          "pk-3123",
+          "pk-4376",
+          "pk-39522",
+          "x-104600"
+        ],
+        "1.05": [
+          "pk-6015",
+          "pk-55727",
+          "pk-20743",
+          "pk-3123",
+          "x-104600"
+        ]
+      }
+    },
+    {
+      "id": "B",
+      "count": 18,
+      "ids": [
+        "pk-22379",
+        "pk-43860",
+        "pk-51076",
+        "pk-67583",
+        "pk-51078",
+        "pk-45925",
+        "pk-7040",
+        "x-107497",
+        "pk-6036",
+        "x-91119",
+        "pk-21474",
+        "pk-5202",
+        "pk-18241",
+        "pk-4376",
+        "pk-19003",
+        "x-129023",
+        "x-104592",
+        "x-104636"
+      ],
+      "unchanged": true,
+      "financeHash": "01fa7dcdd0633e76461989e8540c4898b7740fd3c63baf4ff67b124b6bc53042",
+      "addedByData": [],
+      "lostByData": [],
+      "thresholds": {
+        "1": [
+          "pk-51078",
+          "pk-7040",
+          "pk-6036",
+          "pk-5202",
+          "pk-4376",
+          "x-104592",
+          "x-104636"
+        ],
+        "1.05": [
+          "pk-7040",
+          "pk-6036"
+        ]
+      }
+    },
+    {
+      "id": "A-median",
+      "count": 4,
+      "ids": [
+        "pk-6015",
+        "pk-20743",
+        "pk-3123",
+        "pk-4376"
+      ],
+      "unchanged": true,
+      "financeHash": "8080089c840ed11a6096c5a5f946aa81b021493157b449319bdde7ffb7edb187",
+      "addedByData": [],
+      "lostByData": [],
+      "thresholds": {
+        "1": [
+          "pk-6015",
+          "pk-20743",
+          "pk-3123",
+          "pk-4376"
+        ],
+        "1.05": [
+          "pk-6015",
+          "pk-20743",
+          "pk-3123"
+        ]
+      }
+    },
+    {
+      "id": "B-median",
+      "count": 4,
+      "ids": [
+        "pk-6036",
+        "pk-5202",
+        "pk-18241",
+        "pk-4376"
+      ],
+      "unchanged": true,
+      "financeHash": "01fa7dcdd0633e76461989e8540c4898b7740fd3c63baf4ff67b124b6bc53042",
+      "addedByData": [],
+      "lostByData": [],
+      "thresholds": {
+        "1": [
+          "pk-6036",
+          "pk-5202",
+          "pk-4376"
+        ],
+        "1.05": [
+          "pk-6036"
+        ]
+      }
+    }
+  ],
+  "independent": 26,
+  "listedAdded": [],
+  "filled": [],
+  "newlyAnalyzable": [],
+  "freshRestored": [],
+  "pop": {
+    "catalog": 12544,
+    "official": 6185,
+    "comparable": 3171,
+    "reasons": {
+      "comparable": 3171,
+      "single-confirmation": 3014,
+      "official-not-linked": 5656,
+      "specification-or-url-held": 703
+    },
+    "fresh": 0,
+    "stale": 6185
+  },
+  "highRarity": {
+    "listed": 1328,
+    "analyzable": 668,
+    "listingPct": 100,
+    "analysisPct": 50.30120481927711,
+    "unknown": 5003,
+    "availability": {
+      "automatic": 1507,
+      "pcAuthenticatedRoute": 0,
+      "retryWait": 0,
+      "permissionWait": 182,
+      "identityOrUrlReview": 0,
+      "confirmedNoData": 0,
+      "unimplemented": 0
+    }
+  },
+  "freshness": {
+    "baseline": {
+      "at": "2026-10-03T23:15:30.935Z",
+      "cohort": 192,
+      "fresh6h": 182,
+      "fresh6hPct": 94.79166666666666,
+      "unconfirmed": 0,
+      "maxOverdueHours": 689.2585930555556,
+      "autoWait": 0,
+      "manualWait": 10,
+      "accessStopped": 0,
+      "added": 0,
+      "missingFromCurrent": 0
+    },
+    "latest": {
+      "at": "2026-10-20T13:18:50.543Z",
+      "executionContext": {
+        "event": "manual-local",
+        "runId": null,
+        "environment": "PCローカル"
+      },
+      "cohort": 192,
+      "fresh6h": 82,
+      "fresh6hPct": 42.70833333333333,
+      "unconfirmed": 0,
+      "maxOverdueHours": 1087.3140397222223,
+      "autoWait": 103,
+      "manualWait": 7,
+      "accessStopped": 0,
+      "added": 154,
+      "missingFromCurrent": 0,
+      "aggregationVersion": 2,
+      "outsidePriorityStale": 0
+    },
+    "previous": {
+      "at": "2026-10-20T10:35:51.782Z",
+      "executionContext": {
+        "event": "schedule",
+        "runId": "39407863520",
+        "environment": "GitHub Actions"
+      },
+      "cohort": 192,
+      "fresh6h": 162,
+      "fresh6hPct": 84.375,
+      "unconfirmed": 0,
+      "maxOverdueHours": 1084.5977172222222,
+      "autoWait": 23,
+      "manualWait": 7,
+      "accessStopped": 0,
+      "added": 152,
+      "missingFromCurrent": 0,
+      "aggregationVersion": 2,
+      "outsidePriorityStale": 0
+    },
+    "intervalMinimum": {
+      "from": "2026-10-20T10:35:51.782Z",
+      "to": "2026-10-20T13:18:50.543Z",
+      "fresh": 9,
+      "total": 192,
+      "minimumFreshnessPct": 4.6875,
+      "maxOverdueHours": 1087.3140397222223,
+      "method": "前回確認値を次の観測直前まで進めた保守的な最低鮮度。区間内の未観測更新は含まない",
+      "executionContext": {
+        "from": {
+          "event": "schedule",
+          "runId": "39407863520",
+          "environment": "GitHub Actions"
+        },
+        "to": {
+          "event": "manual-local",
+          "runId": null,
+          "environment": "PCローカル"
+        }
+      }
+    }
+  },
+  "note": "同じ現在データ・時刻で未指定時の旧/新コードを比較。差分取得・再確認・独立初適合は別。過去適合の有無は既存サイクル監査を確認する。"
+}

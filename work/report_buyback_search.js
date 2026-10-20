@@ -1,6 +1,8 @@
 const fs=require('node:fs'),cp=require('node:child_process'),assert=require('node:assert/strict'),crypto=require('node:crypto');
 const base=process.argv[2],at=new Date().toISOString();
+const output=process.argv[3] || 'work/20261020-buyback-search-outcomes.json';
 if(!/^[a-f0-9]{7,40}$/.test(base||''))throw Error('Explicit baseline commit required');
+if(!/^work\/[a-zA-Z0-9_-]+\.json$/.test(output))throw Error('Report path must stay inside work');
 const oldFile=file=>JSON.parse(cp.execFileSync('git',['show',base+':'+file],{encoding:'utf8',maxBuffer:64e6}));
 const read=file=>JSON.parse(fs.readFileSync(file,'utf8'));
 const before=cp.execFileSync('git',['show',base+':app.js'],{encoding:'utf8',maxBuffer:16e6}),after=fs.readFileSync('app.js','utf8');
@@ -35,5 +37,5 @@ const report={at,base,profiles,independent:new Set(profiles.flatMap(p=>p.ids)).s
   highRarity:((r)=>({listed:r.srFamily.listed,analyzable:r.srFamily.analyzable,listingPct:r.srFamily.listingPct,analysisPct:r.srFamily.analysisPct,unknown:r.srFamily.unknown,availability:r.requiredAvailability}))(read('data/modern-high-rarity-audit.json').readiness2020),
   freshness:read('data/priority-price-monitor.json').fixedCohortFreshness?.sources?.hareruya2,
   note:'同じ現在データ・時刻で未指定時の旧/新コードを比較。差分取得・再確認・独立初適合は別。過去適合の有無は既存サイクル監査を確認する。'};
-fs.writeFileSync('work/20261020-buyback-search-outcomes.json',JSON.stringify(report,null,2));
+fs.writeFileSync(output,JSON.stringify(report,null,2));
 console.log(JSON.stringify({...report,profiles:profiles.map(p=>({...p,ids:undefined,thresholds:Object.fromEntries(Object.entries(p.thresholds).map(([n,ids])=>[n,ids.length]))})),freshness:undefined}));

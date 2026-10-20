@@ -1,4 +1,8 @@
 const assert=require('node:assert/strict'),{latest,byKey,seedMerge,mergeRun}=require('./reconcile_saved_source_merge');
+const {mergeStockHistory}=require('./reconcile_saved_source_merge');
+const baseStocks={dates:['2026-10-20'],stocks:{a:[5],b:[5]}},leftStocks={dates:baseStocks.dates,stocks:{a:[3],b:[4]}},rightStocks={dates:baseStocks.dates,stocks:{a:[2],b:[1]}};
+assert.deepEqual(mergeStockHistory(baseStocks,leftStocks,rightStocks,{a:20,b:10},{a:10,b:20}).stocks,{a:[3],b:[1]},'a later source-wide run cannot overwrite a newer individual card');
+assert.throws(()=>mergeStockHistory(baseStocks,leftStocks,rightStocks,{a:20,b:10},{a:20,b:20}),/distinct card observation/);
 const a={id:'a',price:10,observedAt:'2026-10-12T00:00:00Z'},b={...a,price:20,observedAt:'2026-10-13T00:00:00Z'};
 assert.deepEqual(latest(a,b),b);assert.deepEqual(latest(b,a),b);
 assert.throws(()=>latest(a,{...a,price:30}),/distinct timestamps/);
@@ -6,6 +10,7 @@ assert.deepEqual(latest({...a,id:'correct'},a,a),{...a,id:'correct'},'one-sided 
 assert.equal(byKey([a],[b],r=>r.id)[0].price,20);
 const history=seedMerge({days:[]},{days:[{date:'2026-10-12',n:1}]},{days:[{date:'2026-10-13',n:2}]});
 assert.equal(history.days.length,2);
+assert.deepEqual(history.days.map(r=>r.date),['2026-10-12','2026-10-13'],'history stays chronological after independent publication');
 assert.equal(seedMerge({days:[]},{days:[{date:'2026-10-12',n:1}]},{days:[{date:'2026-10-12',n:2}]}).days.length,1,'same date is not double-counted');
 const actual={startedAt:'2026-10-13T01:00:00Z',lastSuccessAt:'2026-10-13T01:01:00Z',status:'success'};
 const cached={startedAt:'2026-10-13T02:00:00Z',lastSuccessAt:'2026-10-12T00:00:00Z',status:'no-progress'};
