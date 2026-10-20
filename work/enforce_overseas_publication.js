@@ -28,10 +28,13 @@ function project(file,value){
 // Inspect nested values as well as file paths: a renamed report must not leak prices.
 function priceLeaks(value,trail='',foreign=false){
   if(!value||typeof value!=='object')return [];
+  if(value.schema==='private-overseas-analysis-v1'||value.usage==='private-only')return [trail+'.private-only'];
   const context=foreign||(value.localCardId!=null&&value.pokedata!=null)||value.psaSourceUrl!=null||/overseas|ebayRaw|ebayPsa|psaMarket/i.test(trail)
     ||/pokedata(?:\.io)?/i.test([value.source,value.sourceUrl,value.provider].filter(v=>typeof v==='string').join(' '));
   const out=[];
   for(const [k,v]of Object.entries(value)){
+    if(v!==null&&['string','number'].includes(typeof v)&&(/^(?:foreignJpy|gapPct|overseasGapPct|overseasDecisionLabel)$/.test(k)
+      || /^(?:api[_-]?key|api[_-]?token|authorization)$/i.test(k)&&String(v).trim()))out.push(trail+'.'+k);
     if(v!==null&&['string','number'].includes(typeof v)&&(/^(?:overseasMedianJpy|medianUsd|sold_price|jpyAtReferenceFx)$/.test(k)||context&&/^(?:medianJpy|jpy|usd|price|priceText|value|rawPrice|psa10Price)$/.test(k)))out.push(trail+'.'+k);
     if(typeof v==='object')out.push(...priceLeaks(v,trail+'.'+k,context));
   }
@@ -62,8 +65,18 @@ function enforce(root=ROOT){
   const f=access.privatePath(root,'archive-manifests/'+hash(JSON.stringify(changed))+'.json');fs.mkdirSync(path.dirname(f),{recursive:true});if(changed.length)fs.writeFileSync(f,JSON.stringify(audit));
   return {status:'permission-wait',changed:changed.length,privatelyPreservedBytes:bytes};
 }
+function privateLeaks(value,trail=''){
+  if(!value||typeof value!=='object')return [];
+  if(value.schema==='private-overseas-analysis-v1'||value.usage==='private-only')return [trail+'.private-only'];
+  return Object.entries(value).flatMap(([key,v])=>{
+    const at=trail+'.'+key;
+    if(v!==null&&['string','number'].includes(typeof v)&&(/^(?:foreignJpy|gapPct|overseasGapPct|overseasDecisionLabel)$/.test(key)
+      || /^(?:api[_-]?key|api[_-]?token|authorization)$/i.test(key)&&String(v).trim()))return [at];
+    return typeof v==='object'?privateLeaks(v,at):[];
+  });
+}
 function verify(root=ROOT,{staged=false}={}){
-  if(access.allowed(root,'public'))return {checked:0};
+  const publicAllowed=access.allowed(root,'public');
   const names=staged?cp.execFileSync('git',['ls-files','-z'],{cwd:root,encoding:'utf8'}).split('\0').filter(Boolean):files(root);
   const bad=[];let checked=0;
   if(staged){
@@ -72,12 +85,13 @@ function verify(root=ROOT,{staged=false}={}){
   }
   for(const file of names){
     if(/^\.private\//.test(file)){bad.push(file);continue;}
+    if(/\.html?$/.test(file)&&fs.readFileSync(path.join(root,file),'utf8').includes('data-private-overseas="true"')){bad.push(file);continue;}
     if(!file.endsWith('.json'))continue;
     let value;try{value=JSON.parse(fs.readFileSync(path.join(root,file)));}catch{if(staged||file.startsWith('data/'))throw Error('Invalid JSON; publication stopped: '+file);continue;}
     checked++;
-    if(restricted(file)&&JSON.stringify(project(file,value))!==JSON.stringify(value)||priceLeaks(value).length)bad.push(file);
+    if(privateLeaks(value).length||!publicAllowed&&(restricted(file)&&JSON.stringify(project(file,value))!==JSON.stringify(value)||priceLeaks(value).length))bad.push(file);
   }
   if(bad.length)throw Error('Unlicensed overseas prices/raw in publication: '+bad.slice(0,12).join(', '));return {checked};
 }
 if(require.main===module){try{console.log(JSON.stringify(process.argv.includes('--verify')?verify(ROOT,{staged:process.argv.includes('--staged')}):enforce()));}catch(e){console.error(e.message);process.exitCode=1;}}
-module.exports={enforce,verify,project,restricted,priceLeaks};
+module.exports={enforce,verify,project,restricted,priceLeaks,privateLeaks};

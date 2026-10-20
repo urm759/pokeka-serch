@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "checkedAt": "2026-10-19",
+  "checkedAt": "2026-10-20",
   "preferredPriceSource": "pokedata-official-api",
   "psaPriceDevelopment": "stopped",
   "internalAnalysisAllowed": false,
@@ -9,7 +9,7 @@
   "apiSubscriptionConfirmed": false,
   "useCase": "仕入れ分析。非営利の個人利用と、商用・内部業務・再公開の適用範囲は未確認",
   "status": "permission-wait",
-  "reason": "公式APIはnon-commercial use only。仕入れ分析用途と公開JSON/リポジトリへの再配布可否を確認するまで価格取得・公開を保留",
+  "reason": "利用者はAPI未契約と確認。契約・問い合わせ送信は保留。内部仕入れ分析の利用範囲も未確認で、新規通信0。公開価格・原票・乖離率・判定は内部処理と分離",
   "docsUrl": "https://documenter.getpostman.com/view/16115980/2sA3JF9iWW",
   "termsUrl": "https://www.iubenda.com/terms-and-conditions/81884871",
   "resumeCondition": "用途・内部保存・公開範囲の許諾確認、利用者承認済み契約/既存API権限と予算の確認。問い合わせ送信・有料契約は別承認",

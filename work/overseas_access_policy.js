@@ -1,6 +1,15 @@
 const fs=require('node:fs'),path=require('node:path');
 function read(root){try{return JSON.parse(fs.readFileSync(path.join(root,'data/overseas-access-policy.json'),'utf8'));}catch{return null;}}
 function allowed(root,phase='internal'){
+  if(phase==='internal'){
+    try{
+      const grant=JSON.parse(fs.readFileSync(privatePath(root,'api/permission.json'),'utf8'));
+      if(grant.version===1&&grant.internalAnalysisAllowed===true&&grant.apiSubscriptionConfirmed===true
+        &&typeof grant.permissionEvidence==='string'&&grant.permissionEvidence.trim()
+        &&Number.isFinite(Date.parse(grant.reviewedAt))
+        &&(!grant.expiresAt||Date.parse(grant.expiresAt)>Date.now()))return true;
+    }catch{}
+  }
   const p=read(root);return p?.version===1&&typeof p.permissionEvidence==='string'&&p.permissionEvidence.trim().length>0
     &&p[phase==='public'?'publicPricesAllowed':'internalAnalysisAllowed']===true;
 }

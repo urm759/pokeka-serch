@@ -9,6 +9,7 @@ function pricing(payload,{capturedAt,fx=null}={}){
     const currency=r.currency.toUpperCase(),rate=fx?.currency===currency&&Number.isFinite(fx?.jpyRate)&&fx.jpyRate>0&&Number.isFinite(Date.parse(fx?.rateDate))?fx.jpyRate:null;
     return {value:r.value,currency,jpy:currency==='JPY'?r.value:rate==null?null:r.value*rate,
       fxDate:currency==='JPY'?null:rate==null?null:fx.rateDate,priceType:'provider-aggregate',
+      fx:currency==='JPY'||rate==null?null:{currency,jpyRate:rate,rateDate:fx.rateDate,sourceUrl:fx.sourceUrl||null},
       individualSales:null,saleCount:null,lastSaleAt:null,providerObservedAt:null,capturedAt,
       condition:key==='eBay Raw'?'状態混在・美品未証明':'PSA10',sourceLabel:key};
   };
@@ -40,6 +41,7 @@ async function request(root,endpoint,params={},options={}){
     if(Number.isFinite(wait)&&wait>0)await new Promise(r=>setTimeout(r,wait));
     state={...state,day,reservedCredits:used+COSTS[endpoint],lastRequestAt:new Date().toISOString()};retry.atomicWrite(stateFile,state);
     try{
+      options.onRequest?.();
       const response=await(options.fetcher||fetch)(url.href,{headers:{Authorization:'Bearer '+token},signal:AbortSignal.timeout(10000)});
       if(!response.ok)throw Object.assign(Error('PokeDATA official API HTTP '+response.status),{httpStatus:response.status});
       const payload=await response.json();

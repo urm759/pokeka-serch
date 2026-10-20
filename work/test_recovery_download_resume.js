@@ -1,0 +1,15 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),os=require('node:os');
+const {resumeOffset,responseRange}=require('./fetch_recovery_bundle');
+const root=fs.mkdtempSync(path.join(os.tmpdir(),'recovery-range-')),file=path.join(root,'bundle.part'),checkpoint=path.join(root,'checkpoint.json');
+assert.equal(resumeOffset(file,checkpoint,1),0);
+fs.writeFileSync(file,'retained');
+assert.throws(()=>resumeOffset(file,checkpoint,1),/Unproven/);
+fs.writeFileSync(checkpoint,JSON.stringify({artifactId:1,bytes:8}));
+assert.equal(resumeOffset(file,checkpoint,1),8);
+assert.throws(()=>resumeOffset(file,checkpoint,2),/identity/);
+fs.appendFileSync(file,'!');assert.throws(()=>resumeOffset(file,checkpoint,1),/length/);
+assert.deepEqual(responseRange(200,null,0),{append:false,total:null});
+assert.deepEqual(responseRange(206,'bytes 8-15/16',8),{append:true,total:16});
+for(const [status,header,offset]of [[200,null,8],[206,'bytes 0-15/16',8],[206,'bytes 8-15/*',8],[206,'bytes 8-16/16',8],[416,null,8]])assert.throws(()=>responseRange(status,header,offset),/not honored/);
+assert.equal(fs.readFileSync(file,'utf8'),'retained!','failure never discards the saved archive');
+console.log('PASS immutable artifact identity, exact checkpoint length, safe 206 range append, ignored/invalid range rejection and partial retention');

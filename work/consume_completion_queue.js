@@ -10,7 +10,7 @@ function permissionSupport(psa,overseasAllowed) {
   return {
     psaOfficial:{status:psa.allowed?'PC取得処理あり・取得/保存/公開は実行別に確認':'許諾確認待ち・新規取得停止',
       method:psa.allowed?'優先キュー生成は取得0件。未登録/曖昧は別保留':psa.reason,resumeCondition:psa.resumeCondition},
-    pokedata:{status:overseasAllowed?'許諾確認済み・公式API取得キュー未接続':'用途/契約/公開利用の確認待ち・新規取得停止',
+    pokedata:{status:overseasAllowed?'内部用公式API処理あり・公開取得経路へは非接続':'用途/契約/公開利用の確認待ち・新規取得停止',
       method:'保存済みメタデータ/チェックポイントを保持。未承認API呼出・フリマへの自動切替なし'},
     rawActualSales:{status:overseasAllowed?'公式APIの個別成約提供範囲未確認・取得処理未接続':'海外実成約の許諾/認証確認待ち・新規取得停止',
       reason:'PokeDATA Rawは国内状態A実成約とは別。集計価格を個別成約として扱わない'}
