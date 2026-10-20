@@ -1,25 +1,25 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-20T13:47:59.420Z",
+  "generatedAt": "2026-10-20T13:52:06.726Z",
   "sourceLastSuccessAt": "2026-10-20T13:37:32.224Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-10-20T11:56:42.677Z",
-    "lastSuccessAt": "2026-10-20T11:56:42.677Z",
-    "runId": "39418195951",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/39418195951"
+    "lastAttemptAt": "2026-10-20T13:52:06.719Z",
+    "lastSuccessAt": "2026-10-20T13:52:06.719Z",
+    "runId": "39431796103",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/39431796103"
   },
   "issues": [
     {
       "key": "daily:workflow-failure",
       "category": "取得処理の故障",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/39338597589",
-      "reason": "Daily Fast Updateが21回連続失敗"
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/39429745428",
+      "reason": "Daily Fast Updateが22回連続失敗"
     },
     {
       "key": "daily:run-stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/39338597589",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/39429745428",
       "reason": "日次更新の成功が24時間以上なし"
     },
     {
@@ -61,20 +61,14 @@
     {
       "key": "source:shopBuyback:manual-wait",
       "category": "アクセス・手動対応待ち",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/39407863520",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/39431796103",
       "reason": "Web買取表: shop buyback refresh skipped; existing data was preserved: 一部取得失敗（正常データ保持）: cardshop151-store: 利用規約第5条の商業利用禁止。公開再利用・自動取得の許諾確認待ち。正常な過去データ保持、追加取得と新需要指標への採用は保留; kaitori-homura-mail: 形式変更・正規一覧にPSA10商品属性がない。自動確定せず取得経路の確認待ち・正常データ保持"
     },
     {
       "key": "source:shopBuyback:stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/39407863520",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/39431796103",
       "reason": "Web買取表: 更新期限超過（カード別鮮度 未記録%）"
-    },
-    {
-      "key": "source:marketAnalysis:stale",
-      "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/39168740182",
-      "reason": "下値安定・買取率分析: 更新期限超過（カード別鮮度 未記録%）"
     },
     {
       "key": "source:psaJapan:manual-wait",
@@ -113,7 +107,7 @@
     }
   ],
   "reasons": [
-    "Daily Fast Updateが21回連続失敗",
+    "Daily Fast Updateが22回連続失敗",
     "日次更新の成功が24時間以上なし",
     "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち",
     "状態A価格確認: 2回連続でチェックポイント進捗なし",
@@ -123,7 +117,6 @@
     "遊々亭: 更新期限超過（カード別鮮度 0%）",
     "Web買取表: shop buyback refresh skipped; existing data was preserved: 一部取得失敗（正常データ保持）: cardshop151-store: 利用規約第5条の商業利用禁止。公開再利用・自動取得の許諾確認待ち。正常な過去データ保持、追加取得と新需要指標への採用は保留; kaitori-homura-mail: 形式変更・正規一覧にPSA10商品属性がない。自動確定せず取得経路の確認待ち・正常データ保持",
     "Web買取表: 更新期限超過（カード別鮮度 未記録%）",
-    "下値安定・買取率分析: 更新期限超過（カード別鮮度 未記録%）",
     "PSA Japan料金: PSA Japan refresh failed; previous verified values retained: PSA Japan HTTP 403",
     "PSA Japan料金: 更新期限超過（カード別鮮度 未記録%）",
     "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）",
