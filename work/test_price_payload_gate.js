@@ -1,0 +1,13 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),{due}=require('./price_payload_gate');
+const now=Date.parse('2026-10-20T08:00:00Z'),receipt={version:1,payloadHash:'actual-payload-hash',cards:{fixture:['identity',10000]},observedAt:'2026-10-20T06:00:00Z'};
+const before=JSON.stringify(receipt);
+assert.equal(due(receipt,now),false);
+assert.equal(due({...receipt,observedAt:'2026-10-20T04:00:00.001Z'},now),false);
+assert.equal(due({...receipt,observedAt:'2026-10-20T04:00:00Z'},now),true,'price payload, not HTML cache, defines the recheck boundary');
+assert.equal(due({...receipt,observedAt:'2026-10-19T23:00:00Z'},now),true);
+for(const r of [null,{}, {...receipt,cards:{}},{...receipt,payloadHash:null},{...receipt,observedAt:'2026-10-21'}])assert.equal(due(r,now),true);
+assert.equal(JSON.stringify(receipt),before,'failed/skipped checks cannot mutate receipt dates');
+const source=fs.readFileSync('work/update_pokemon_site.js','utf8');
+assert(source.includes('process.env.FAST_DEEP_SCAN === "1" || pricePayloadDue'));
+assert(source.includes('processedCards: 0'),'an unchanged shell alone still cannot fabricate confirmations');
+console.log('PASS actual price-payload expiry, ahead-of-next-interval boundary, missing/future evidence and no timestamp mutation');

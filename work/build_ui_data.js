@@ -33,6 +33,8 @@ function project(name, input) {
     value.support.compact = true;
     delete value.support.schema; delete value.support.audit; delete value.support.rule;
     for (const shops of Object.values(value.support.cards)) for (const row of Object.values(shops)) {
+      const b = row.baseline || [];
+      row.glance = [b[0] ?? null,b[1] ?? 0,b[7] ?? true,b[8] ?? null];
       delete row.h; delete row.baseline; delete row.periods; delete row.premium;
     }
   }

@@ -111,6 +111,9 @@ jobs:
           node work/test_profile_completion_routes.js
           node work/test_profile_discovery_gates.js
           node work/test_buyback_support.js
+          node work/test_optional_source_publication.js
+          node work/test_price_payload_gate.js
+          node work/test_saved_domestic_recovery.js
           node work/test_psa10_trade_statistics.js
           node work/test_psa_growth_provenance.js
           node work/test_profile_basis_transitions.js
@@ -165,6 +168,7 @@ jobs:
           git add work/scheduled-cycle-baseline-daily.json
           git add work/search-profile-cycle-baseline-daily.json
           git add work/calendar-progress-history.json
+          git add -u -- data work
           if git diff --cached --quiet; then
             echo "No source change. Commit and deployment skipped."
             exit 0

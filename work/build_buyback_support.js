@@ -7,6 +7,8 @@ const physicalKey = card => [String(card.identityKey).split('|').slice(0,6).join
   String(card.name || '').normalize('NFKC').match(/(?:電話)?抽選\s*\d+\s*名|当選者|当選品|電話抽選/)?.[0]?.replace(/\s/g,'') || '',card.variant || ''].join('|');
 const constrained = row => row.campaign === true || row.quantityLimited === true || row.conditionsConfirmed === false
   || /キャンペーン|数量限定|先着|お一人様|まとめ売り|セット販売|PSA\s*9|BGS|CGC|TAG|ACE/i.test(row.title || '');
+const stopped = meta => Boolean(meta?.reviewStatus || meta?.acquisitionStopped
+  || /HTTP\s*(?:401|403)|認証切れ|許諾確認待ち/.test(meta?.error || ''));
 function joined(observations, history, cards, source, now = Date.now()) {
   const byId = new Map(cards.map(c => [c.id, c])), rows = [], audit = { accepted: 0, rejected: 0, reasons: {} };
   const reject = reason => { audit.rejected++; audit.reasons[reason] = (audit.reasons[reason] || 0) + 1; };
@@ -38,15 +40,17 @@ function baseline(target, peers, commonIds) {
   // The subject never contributes to its own normal rate. A price outlier is only
   // separated from the peer baseline, not from the subject's valid offer.
   const key = r => r.physicalIdentity || r.id, unique = new Map();
-  for (const row of peers.filter(r => key(r) !== key(target))) {
+  for (const row of peers.filter(r => key(r) !== key(target) && r.shop === target.shop && r.date === target.date && r.band === target.band)) {
     if (!unique.has(key(row))) unique.set(key(row),[]); unique.get(key(row)).push(row);
   }
   const own = [...unique.values()].map(rows=>({...rows[0],ratio:market.median(rows.map(r=>r.ratio))})), common = own.filter(r => commonIds.has(key(r)));
   const useCommon = common.length >= 3, selected = useCommon ? common : own;
   const marked = market.markRatioOutliers(selected.map(r => ({ ...r, marketRatio: r.ratio, valid: true, stale: false })));
   const trusted = marked.filter(r => !r.outlier), count = trusted.length;
+  // Inclusive ties give a conservative rank. Rank is descriptive, never a score.
+  const topPct = count >= 10 ? (trusted.filter(r => r.ratio >= target.ratio).length + 1) / (count + 1) * 100 : null;
   return [count >= 3 ? market.median(trusted.map(r => r.ratio)) : null, count, selected.length,
-    marked.filter(r => r.outlier).length, common.length, useCommon ? 'common' : 'own-band', target.band, count < 10];
+    marked.filter(r => r.outlier).length, common.length, useCommon ? 'common' : 'own-band', target.band, count < 10, topPct];
 }
 function aggregate(rows, source, cards, now = Date.now()) {
   const asOf = evidence.calendarDay(new Date(now).toISOString()), groups = new Map(), common = new Map();
@@ -60,13 +64,13 @@ function aggregate(rows, source, cards, now = Date.now()) {
   }
   const output = { version: 1, asOf, staleHours: 48, periods, shops: {}, cards: {},
     schema: {current: ['ratio','grossOffer','domesticPsa10','quoteObservedAt','marketObservedAt','date','currentlyListed'],
-      baseline: ['median','acceptedCards','rawCards','excludedOutliers','commonCards','cohort','priceBand','reference'],
+      baseline: ['median','acceptedCards','rawCards','excludedOutliers','commonCards','cohort','priceBand','reference','inclusiveTopPct'],
       period: ['meanRatio','medianRatio','observedDays','daysAtOrAboveMarket','lastObservedAt','firstDate'],
       premium: ['meanPremiumPct','observedDays','positiveDays','reference']},
     rule: '減額前提示/同日確認した国内PSA10。店舗・同日1記録。標準は対象自身除外・同日同価格帯・3枚未満不可/10枚未満参考。共通カード群3枚以上を優先。手数料等なし。需要・価格上昇・購入GOを保証しない' };
   for (const [shop, meta] of Object.entries(source.shops || {})) output.shops[shop] = {
     name: meta.name, fulfilment: meta.fulfilment || 'mail', merchantId: meta.merchantId || shop,
-    permission: meta.acquisitionPermission || null };
+    permission: meta.acquisitionPermission || null, stopped: stopped(meta) };
   const detail = {}, byCardShop = new Map();
   for (const row of rows) {
     const peers = groups.get([row.shop, row.date, row.band].join('|'));
@@ -79,7 +83,8 @@ function aggregate(rows, source, cards, now = Date.now()) {
   for (const records of byCardShop.values()) {
     records.sort((a,b) => a.date.localeCompare(b.date)); const last = records.at(-1);
     const quote = source.cards?.[last.id]?.shops?.[last.shop];
-    const currentlyListed = quote?.listingActive === true && quote?.quarantined !== true && quote?.matchConfidence === 'high' && quote.price === last.price;
+    const currentlyListed = quote?.listingActive === true && quote?.quarantined !== true && quote?.matchConfidence === 'high' && quote.price === last.price
+      && !constrained(quote) && !stopped(source.shops?.[last.shop]);
     const result = { h: evidence.identity({ identityKey: last.identity }),
       current: [last.ratio, last.price, last.marketPrice, last.observedAt, last.marketAt, last.date, currentlyListed],
       baseline: last.baseline, days: records.map(r => [r.date, r.ratio]), periods: {}, premium: {} };
@@ -121,4 +126,4 @@ function build(root = ROOT) {
   write('data/buyback-support-audit.json', report); return report;
 }
 if (require.main === module) console.log(JSON.stringify(build()));
-module.exports = { joined, baseline, aggregate, build, constrained, physicalKey };
+module.exports = { joined, baseline, aggregate, build, constrained, physicalKey, stopped };

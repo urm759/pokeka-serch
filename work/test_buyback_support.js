@@ -12,6 +12,10 @@ assert.equal(builder.joined(saved,history,[{...card,identityReviewRequired:true}
 assert.equal(builder.joined(saved,history,[card],{shops:{a:{acquisitionPermission:'pending'}}},now).rows.length,0);
 const target={...result.rows[0],ratio:.9,band:'under30k'}, peers=Array.from({length:12},(_,i)=>({...target,id:'peer'+i,physicalIdentity:'peer'+i,ratio:.8}));
 let standard=builder.baseline(target,[target,...peers],new Set()); assert.equal(standard[0],.8);assert.equal(standard[1],12);assert.equal(standard[7],false);
+assert.equal(standard[8],100/13,'rank excludes target from peer sample and includes target once in ranking');
+assert.equal(builder.baseline(target,peers.slice(0,9),new Set())[8],null,'small samples do not claim a percentile');
+assert.equal(builder.baseline({...target,ratio:.8},peers,new Set())[8],100,'inclusive ties cannot claim a false top rank');
+assert.equal(builder.baseline(target,[...peers,{...peers[0],id:'other-date',date:'2026-10-14',ratio:4},{...peers[0],id:'other-band',band:'over100k',ratio:4}],new Set())[1],12);
 assert(Math.abs((target.ratio / standard[0]-1)*100-12.5)<1e-12);
 assert.equal(builder.baseline({...target,ratio:9},[{...target,ratio:9},...peers],new Set())[0],.8,'target excluded even when highest offer');
 assert.equal(builder.baseline(target,[target,...peers.slice(0,2)],new Set())[0],null,'no 0/1 fallback');
@@ -37,9 +41,20 @@ summary.cards.fixture.aMail=structuredClone(summary.cards.fixture.a);summary.car
 summary.cards.fixture.b=structuredClone(summary.cards.fixture.a);
 summary.shops.aMail={...source.shops.aMail};summary.shops.b=source.shops.b;
 view=m.buybackSupport(wrapped,'fixture','all',[],now,10000);assert.equal(view.count,2,'same merchant not double counted');assert.equal(view.median,1.4);assert(view.multiStoreSupport);
+assert.equal(view.max,1.8);assert.equal(view.highestQuote.ratio,1.8);
+summary.cards.fixture.b.current[0]=1.2;
+view=m.buybackSupport(wrapped,'fixture','all',[],now,10000);
+assert.equal(view.max,1.2,'legacy conservative maximum for existing evaluation remains unchanged');
+assert.equal(view.highestQuote.ratio,1.8,'a higher store/mail offer must not disappear into the merchant minimum');
+assert.equal(view.highestQuote.shop,'a');
+summary.shops.a.stopped=true;
+assert.notEqual(m.buybackSupport(wrapped,'fixture','all',[],now,10000).highestQuote?.shop,'a','stopped source excluded from current demand');
+delete summary.shops.a.stopped;
 assert.equal(m.buybackSupport(wrapped,'fixture','mail',[],now,10000).count,1);
 summary.cards.fixture.a.current[6]=false;summary.cards.fixture.aMail.current[6]=false;
 assert.equal(m.buybackSupport(wrapped,'fixture','mail',[],now,10000).count,0,'removed listing keeps history only');
+assert.equal(builder.aggregate(result.rows,{...source,shops:{a:{...source.shops.a,reviewStatus:'format-review'}}},[card],now).summary.cards.fixture.a.current[6],false);
+assert.equal(builder.aggregate(result.rows,{...source,cards:{fixture:{shops:{a:{...source.cards.fixture.shops.a,campaign:true}}}}},[card],now).summary.cards.fixture.a.current[6],false);
 const score = require('./profile_discovery_gates').priority({}, {}, {multiStoreSupport:true});assert.equal(score.score,200);
 const issue=require('./refresh_candidate_shops').issueCompatible;
 assert.equal(issue({name:'ピカチュウ プロモ 未開封パック'},'ピカチュウ(PROMO)'),false);
@@ -55,5 +70,20 @@ assert.equal(require('./buyback-source-permissions.json').sources['cardshop151-s
 assert(fs.readFileSync('.github/workflows/daily-fast-update.yml','utf8').includes('work/buyback-price-observations.json'),'normal daily publication must retain genuine observed quote history');
 const slim = require('./build_ui_data').project('buyback-observation-summary',wrapped);
 assert.equal(slim.support.compact,true);assert.equal(slim.support.cards.fixture.a.baseline,undefined);
+assert.deepEqual(slim.support.cards.fixture.a.glance,[null,0,true,null]);
 assert.deepEqual(m.buybackSupport(slim,'fixture','all',[],now,10000).windows,m.buybackSupport(wrapped,'fixture','all',[],now,10000).windows,'projected list and full details share the same day ratios');
+const reference=builder.aggregate([target,...peers],source,[card],now).summary;
+const rich={support:reference,cards:wrapped.cards};
+const compact=require('./build_ui_data').project('buyback-observation-summary',rich);
+assert.deepEqual(m.buybackSupport(compact,'fixture','all',[],now,10000,card.identityKey).highestQuote?.standard,
+  m.buybackSupport(rich,'fixture','all',[],now,10000,card.identityKey).highestQuote?.standard,'compact list keeps the same normal rate as detail');
+const vm=require('node:vm'),app=fs.readFileSync('app.js','utf8');
+const context=vm.createContext({Date:class extends Date{static now(){return now;}},Map,WeakMap,JSON,Intl,explorationMetrics:m,
+  fmt:new Intl.NumberFormat('ja-JP'),escapeHtml:s=>String(s).replaceAll('<','&lt;')});
+vm.runInContext('const state={buybackObservationSummary:'+JSON.stringify(compact)+',buybackStoreMode:"all",selectedBuybackStores:[]};'
+  +app.slice(app.indexOf('const buybackSupportCache ='),app.indexOf('async function loadBuybackSupportDetail'))
+  +'globalThis.render=buybackSupportHtml;',context);
+const html=context.render({...card,psa10:10000});
+assert.match(html,/最高買取 0.900倍/);assert.match(html,/同店通常 0.800倍/);assert.match(html,/通常比 \+12.5%/);assert.match(html,/同店内上位7.7%/);
+assert.match(html,/採算用出口とは別/);
 console.log('PASS gross support: no costs; same-day proof/spec; own-excluded band/common baseline; null/small sample; high valid prices; missing/partial days; outlet selection and merchant dedupe; freshness; lazy details; acquisition priority only');

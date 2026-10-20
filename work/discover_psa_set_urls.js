@@ -6,14 +6,22 @@ function candidates(html) {
   const urls = [...new Set([...String(html).matchAll(/(?:https:\/\/www\.psacard\.com)?\/pop\/tcg-cards\/\d{4}\/pokemon-japanese-[a-z0-9-]+\/\d+/gi)].map((m) => new URL(m[0], "https://www.psacard.com").href))];
   return urls.map((url) => ({ url, setCode: url.match(/pokemon-japanese-((?:sv|sm|xy|bw|s|m)\d[a-z0-9]*)-/i)?.[1]?.toUpperCase() || null, status: "候補・手動照合待ち", reason: "公式の実リンク。未取得POP・絵柄・年代の確認前に自動登録しない" }));
 }
-async function run() {
-  require('./psa_access_policy').assertAllowed(ROOT);
-  let old = {}; try { old = JSON.parse(fs.readFileSync(FILE, "utf8")); } catch {}
+async function run({root=ROOT,optionalPermission=false,fetcher=fetch}={}) {
+  const file=path.join(root,'data/psa-set-discovery.json'),policy=require('./psa_access_policy');
+  let old = {}; try { old = JSON.parse(fs.readFileSync(file, "utf8")); } catch {}
+  const permission=policy.decision(policy.read(root));
+  if (!permission.allowed) {
+    if (!optionalPermission) policy.assertAllowed(root);
+    const held={...old,status:'permission-wait',stopReason:permission.reason,policyCheckedAt:new Date().toISOString(),
+      httpRequests:0,acquiredCount:0,nextRetryAt:null,llmCalls:0,codexCalls:0};
+    require('./acquisition_retry').atomicWrite(file,held,0);
+    console.log(JSON.stringify(held));return held;
+  }
   if (old.manualWait && process.env.PSA_DISCOVERY_RETRY !== "1") { console.log(JSON.stringify({ status: "manual-wait", reason: old.stopReason, checkpoint: old.url, httpRequests: 0 })); return; }
   const url = "https://www.psacard.com/pop/tcg-cards/156940";
   const state = { ...old, attemptedAt: new Date().toISOString(), url, httpRequests: 1, candidates: old.candidates || [], stopReason: null };
   try {
-    const response = await fetch(url, { signal: AbortSignal.timeout(10000), headers: { "User-Agent": "PokekaDataCollector/1.0" } });
+    const response = await fetcher(url, { signal: AbortSignal.timeout(10000), headers: { "User-Agent": "PokekaDataCollector/1.0" } });
     state.httpStatus = response.status;
     if ([401, 403].includes(response.status)) { state.manualWait = true; throw new Error(`HTTP ${response.status}・正規認証確認待ち。回避しない`); }
     if (!response.ok) throw new Error(`HTTP ${response.status}・次回のみ再試行`);
@@ -23,7 +31,7 @@ async function run() {
     if (!found.length) { state.manualWait = true; throw new Error("公開HTMLにセットリンクなし・形式／認証を確認。取得0件を成功扱いしない"); }
     state.candidates = found; state.lastSuccessAt = new Date().toISOString(); state.status = "候補取得・未確定";
   } catch (error) { state.stopReason = error.message; state.status = state.manualWait ? "manual-wait" : "retry-wait"; }
-  state.endedAt = new Date().toISOString(); fs.writeFileSync(FILE, JSON.stringify(state)); console.log(JSON.stringify(state));
+  state.endedAt = new Date().toISOString(); fs.writeFileSync(file, JSON.stringify(state)); console.log(JSON.stringify(state));return state;
 }
-if (require.main === module) run().catch(error=>{console.error(error.message);process.exitCode=1;});
-module.exports = { candidates };
+if (require.main === module) run({optionalPermission:process.argv.includes('--optional-permission')}).catch(error=>{console.error(error.message);process.exitCode=1;});
+module.exports = { candidates,run };
