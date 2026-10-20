@@ -7,6 +7,18 @@ const before={purchase:{price:10000,available:true,fresh:true},sourceQuotes:{sho
 const expired={...before,purchase:null,psa9:{price:20000,ratio:null},efficiency:{annual:null,blockingReasons:['期限超過・再確認待ち']},exclusions:['資金効率算出不可','PSA9比率算出不可']};
 const time=inspect(before,expired,context);
 assert(time.temporalOnly);assert(time.roots.some(r=>r.code==='expired-price'));
+const originalOffer={price:10000,available:true,fresh:true,priceObservedAt:'2026-10-14T00:00:00Z',inventoryObservedAt:'2026-10-14T00:00:00Z'};
+const fallbackBefore={...before,purchase:originalOffer,sourceQuotes:{original:originalOffer,other:{...originalOffer,price:12000,priceObservedAt:meta.at,inventoryObservedAt:meta.at}}};
+const fallbackAfter={...fallbackBefore,purchase:{...fallbackBefore.sourceQuotes.other,fresh:true},efficiency:{annual:10},exclusions:['単体年換算資金効率条件']};
+const fallbackContext={before:meta,after:{...meta,at:'2026-10-16T00:00:00.001Z'}};
+const fallbackAudit=inspect(fallbackBefore,fallbackAfter,fallbackContext);
+assert(fallbackAudit.roots.some(r=>r.code==='expired-price'),'a fresh alternative does not conceal previous offer expiry');
+assert(fallbackAudit.roots.some(r=>r.code==='profitability-or-assessment-condition'));
+assert(fallbackAudit.repair.fields.includes('shopStateA'));assert.equal(fallbackAfter.purchase.fresh,true);
+assert(!inspect(fallbackBefore,{...fallbackAfter,sourceQuotes:{...fallbackAfter.sourceQuotes,unrelated:{sourceFailure:'HTTP 403'}}},fallbackContext).roots.some(r=>r.code==='acquisition-failure'),'unrelated stopped stores do not establish the expiry cause');
+assert(!inspect(fallbackBefore,{...fallbackAfter,sourceQuotes:{...fallbackAfter.sourceQuotes,original:{...originalOffer,sourceFailure:'時間予算・次回継続'}}},fallbackContext).roots.some(r=>r.code==='acquisition-failure'),'normal budget deferral is not an acquisition fault');
+assert(!inspect(fallbackBefore,fallbackAfter,context).roots.some(r=>r.code==='expired-price'),'exact 48-hour boundary remains usable');
+assert(!inspect(fallbackBefore,{...fallbackAfter,sourceQuotes:{...fallbackAfter.sourceQuotes,original:{...originalOffer,priceObservedAt:meta.at,inventoryObservedAt:meta.at}}},fallbackContext).roots.some(r=>r.code==='expired-price'),'a renewed original source is not expired');
 assert.equal(time.derived.length,2);assert.deepEqual(time.repair.fields,['shopStateA']);
 assert(!inspect(before,expired,{}).comparable,'old missing metadata cannot prove the cause');
 assert(!inspect(before,{...expired,sourceQuotes:{shop:{price:9000,stock:1}}},context).temporalOnly,'new input is not time only');

@@ -801,6 +801,11 @@
               "previouslyPresent": null
             },
             {
+              "code": "expired-price",
+              "evidence": "前回採用した店舗価格が期限切れ。別店舗の新鮮な高値による採算不合格と併記",
+              "previouslyPresent": false
+            },
+            {
               "code": "profitability-or-assessment-condition",
               "evidence": "現在の条件不合格。市場下落が原因かどうかは前後入力を別比較",
               "previouslyPresent": false
@@ -815,7 +820,9 @@
             "単体年換算資金効率条件"
           ],
           "repair": {
-            "fields": [],
+            "fields": [
+              "shopStateA"
+            ],
             "automaticReviewRelease": false,
             "held": false,
             "reason": "既存の取得元別キューへ。期限・間隔・再試行制限を維持"
@@ -1328,37 +1335,30 @@
               "previouslyPresent": null
             },
             {
+              "code": "expired-price",
+              "evidence": "前回採用した店舗価格が期限切れ。別店舗の新鮮な高値による採算不合格と併記",
+              "previouslyPresent": false
+            },
+            {
               "code": "out-of-stock",
               "evidence": "個別在庫記録。価格不足・期限切れとは別",
               "previouslyPresent": false
-            },
-            {
-              "code": "expired-price",
-              "evidence": "価格採用期限・個別確認日時を確認。6時間目標超過とは別",
-              "previouslyPresent": false
-            },
-            {
-              "code": "acquisition-failure",
-              "evidence": "期限切れ対象に取得停止の記録あり。別店舗の正常価格を巻き込まない",
-              "previouslyPresent": true
             }
           ],
           "derived": [
             {
               "reason": "単体資金効率算出不可・期限超過・再確認待ち",
               "blockedBy": [
-                "out-of-stock",
                 "expired-price",
-                "acquisition-failure"
+                "out-of-stock"
               ],
               "causality": "根拠ゲートによる派生候補。複数根拠は併記し、単一原因と断定しない"
             },
             {
               "reason": "仕入れ余裕率・上限算出不可",
               "blockedBy": [
-                "out-of-stock",
                 "expired-price",
-                "acquisition-failure"
+                "out-of-stock"
               ],
               "causality": "根拠ゲートによる派生候補。複数根拠は併記し、単一原因と断定しない"
             }
@@ -1375,7 +1375,9 @@
             "国内PSA9比率"
           ],
           "repair": {
-            "fields": [],
+            "fields": [
+              "shopStateA"
+            ],
             "automaticReviewRelease": false,
             "held": false,
             "reason": "既存の取得元別キューへ。期限・間隔・再試行制限を維持"
@@ -1384,6 +1386,32 @@
       }
     ],
     "codeEffectsExcludedByFixedDataComparison": true,
-    "note": "比較時刻差を含む保存履歴の差分。同時刻の旧新コード一致とは別。初適合は保存履歴内、補完と再確認は別集計。"
+    "note": "比較時刻差を含む保存履歴の差分。同時刻の旧新コード一致とは別。初適合は保存履歴内、補完と再確認は別集計。",
+    "auditedAt": "2026-10-20T20:21:33.281Z"
+  },
+  "sameCauseRepair": {
+    "detected": [
+      "x-122054",
+      "pk-19003",
+      "pk-71713",
+      "pk-6015",
+      "pk-6036",
+      "pk-5202",
+      "pk-51076",
+      "pk-45925",
+      "pk-43860"
+    ],
+    "routedForRecheck": [
+      "x-122054",
+      "pk-19003",
+      "pk-71713",
+      "pk-6015",
+      "pk-6036",
+      "pk-5202",
+      "pk-51076",
+      "pk-45925",
+      "pk-43860"
+    ],
+    "automaticReviewRelease": false
   }
 }

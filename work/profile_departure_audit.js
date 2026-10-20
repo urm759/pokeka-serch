@@ -25,11 +25,27 @@ function inspect(before, after, context = {}) {
   const purchase = after?.purchase;
   const quotes = Object.values(after?.sourceQuotes || {});
   const evaluatedAt=Date.parse(context.after?.at||'');
+  const quoteFresh=(quote,at)=>['priceObservedAt','inventoryObservedAt'].every(key=>{
+    const time=Date.parse(quote?.[key]||'');return Number.isFinite(time)&&time<=at&&at-time<=48*3600000;
+  });
+  // A valid, dearer fallback must not conceal expiry of the previously adopted offer.
+  const prior=before?.purchase;
+  const priorSources=Object.entries(before?.sourceQuotes||{}).filter(([,quote])=>prior?.fresh===true&&Number.isFinite(prior.price)
+    &&quote.price===prior.price&&quote.priceObservedAt===prior.priceObservedAt&&quote.inventoryObservedAt===prior.inventoryObservedAt);
+  const priorSource=priorSources.length===1?priorSources[0][0]:null;
+  const priorQuote=priorSource&&after?.sourceQuotes?.[priorSource];
+  const previousOfferExpired=Boolean(priorQuote&&quoteFresh(prior,Date.parse(context.before?.at||''))
+    &&!quoteFresh(priorQuote,evaluatedAt)&&['priceObservedAt','inventoryObservedAt'].some(key=>{
+      const time=Date.parse(priorQuote[key]||'');return Number.isFinite(time)&&evaluatedAt-time>48*3600000;
+    }));
+  if(previousOfferExpired)add('expired-price','前回採用した店舗価格が期限切れ。別店舗の新鮮な高値による採算不合格と併記');
   const freshStock=quotes.filter(r=>{const at=Date.parse(r.inventoryObservedAt||'');return Number.isFinite(at)&&at<=evaluatedAt&&evaluatedAt-at<=48*3600000;});
   if (purchase?.available === false && purchase.fresh === true || !purchase && freshStock.length && freshStock.every(r=>r.available===false || r.stock===0))
     add('out-of-stock','個別在庫記録。価格不足・期限切れとは別');
   if (purchase?.fresh === false || has(/期限超過|期限切れ|古値|古い|鮮度|再確認待ち/)) add('expired-price','価格採用期限・個別確認日時を確認。6時間目標超過とは別');
-  if(roots.some(r=>r.code==='expired-price')&&quotes.some(r=>r.sourceFailure)) add('acquisition-failure','期限切れ対象に取得停止の記録あり。別店舗の正常価格を巻き込まない');
+  const expiryQuotes=previousOfferExpired?[priorQuote]:quotes.filter(quote=>!quoteFresh(quote,evaluatedAt));
+  if(roots.some(r=>r.code==='expired-price')&&expiryQuotes.some(r=>/HTTP|認証|アクセス|取得失敗|停止|error|fail|timeout|timed out|形式/i.test(r.sourceFailure||'')))
+    add('acquisition-failure','期限切れ側の取得元に失敗・停止記録あり。他店舗の停止や正常な時間予算繰越と区別');
   if (has(/未取得|データ不足|日時不明|日時不足|未確認|出口不足|価格なし|中央値.*不足/) || after?.medianEvidence?.reasons?.length) add('missing-data','未取得・確認日時・出口等の不足。不存在とは断定しない');
   if (!specification && !conflict && !has(/期限超過|期限切れ|古値|古い|未取得|データ不足|算出不可/) && reasons.some(r=>/価格範囲|利益|効率|比率|資金|需要|供給/.test(r)))
     add('profitability-or-assessment-condition','現在の条件不合格。市場下落が原因かどうかは前後入力を別比較');
@@ -62,7 +78,7 @@ function inspect(before, after, context = {}) {
     : key==='buyback' ? (facts.buyback||[]).map(r=>({shopId:r.shopId,price:r.price,priceDate:r.priceDate,observedAt:r.observedAt})) : facts[key];
   const changedInputs = before && after ? inputKeys.filter(key=>!same(material(before,key),material(after,key))) : [];
   const temporalOnly = comparable && !settingsChanged && !codeChanged && !changedInputs.length
-    && roots.some(r=>r.code==='expired-price') && before.purchase?.fresh===true && after.purchase?.fresh!==true;
+    && roots.some(r=>r.code==='expired-price') && before.purchase?.fresh===true && (after.purchase?.fresh!==true||previousOfferExpired);
   const status = !comparable ? '原因未確定・比較可能な前後記録不足'
     : temporalOnly ? '同一入力・設定・コードで時間経過による期限切れ'
     : settingsChanged || codeChanged ? '設定またはコード変更を含む・寄与の分離には再現比較が必要'
@@ -71,7 +87,7 @@ function inspect(before, after, context = {}) {
   const held = !after || specification || conflict || roots.some(r=>r.code==='unresolved-review');
   const fields = [];
   if (!held) {
-    if (purchase?.fresh===false || !purchase && !roots.some(r=>r.code==='out-of-stock')) fields.push('shopStateA');
+    if (previousOfferExpired || purchase?.fresh===false || !purchase && !roots.some(r=>r.code==='out-of-stock')) fields.push('shopStateA');
     if (has(/中央値/) && has(/古値|古い|不足|未取得/) || after?.medianEvidence?.reasons?.length) fields.push('referenceMedian');
     if (has(/買取.*不足|買取出口/)) fields.push('buybackExitEvidence');
     if (has(/PSA9.*不足|PSA9.*日時|PSA9.*未取得/)) fields.push('psa9Evidence');
