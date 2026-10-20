@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-20T10:40:43.428Z",
+  "generatedAt": "2026-10-20T11:56:42.685Z",
   "sourceLastSuccessAt": "2026-10-20T08:22:56.794Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-10-20T10:40:43.415Z",
-    "lastSuccessAt": "2026-10-20T10:40:43.415Z",
-    "runId": "39407863520",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/39407863520"
+    "lastAttemptAt": "2026-10-20T11:56:42.677Z",
+    "lastSuccessAt": "2026-10-20T11:56:42.677Z",
+    "runId": "39418195951",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/39418195951"
   },
   "issues": [
     {
@@ -108,14 +108,8 @@
     {
       "key": "priority-prices:cadence-stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/39372518179",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/39417696644",
       "reason": "重要価格更新：設定2時間に対し実績成功間隔（直近最大）25.30時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
-    },
-    {
-      "key": "priority-prices:source-failure",
-      "category": "確認が必要",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/39372518179",
-      "reason": "購入価格高速更新：一部取得元が失敗。独立した正常データは必須検証・保存・公開照合済み"
     }
   ],
   "reasons": [
@@ -135,8 +129,7 @@
     "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）",
     "買取ホムラ（郵送）: 形式変更・正規一覧にPSA10商品属性がない。自動確定せず取得経路の確認待ち・正常データ保持",
     "PC側PSA: PC観測未受信 / 30時間以内の独立タスク観測なし。PC停止・観測起動失敗・未公開を区別して確認",
-    "重要価格更新：設定2時間に対し実績成功間隔（直近最大）25.30時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能",
-    "購入価格高速更新：一部取得元が失敗。独立した正常データは必須検証・保存・公開照合済み"
+    "重要価格更新：設定2時間に対し実績成功間隔（直近最大）25.30時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
   ],
   "detailUrl": "./data/update-health.json"
 }
