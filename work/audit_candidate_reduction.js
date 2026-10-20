@@ -16,6 +16,7 @@ const bindings={efficiencyMinInput:'effMin',efficiencyManualPriceInput:'effManua
   efficiencyIncludeReferenceInput:'effRef',actualPurchaseMinInput:'purchaseMin',actualPurchaseMaxInput:'purchaseMax',
   purchaseHeadroomMinInput:'headroomMin',purchaseHeadroomMaxInput:'headroomMax',postingRate30MinInput:'postingRate30',
   postingShops30MinInput:'postingShops30',postingDaysMinInput:'postingDays',postingCoverageMinInput:'postingCoverage',
+  buybackHighestMinInput:'buybackMaxMin',
   purchaseBelowCurrentCapInput:'buyBelowCap',expectedProfitFilterInput:'filterExpProfit',
   observationIncludeReferenceInput:'obsRef',...Object.fromEntries([7,30,75,200].flatMap(d=>[['observation'+d+'MinInput','obs'+d+'Min'],['observation'+d+'MaxInput','obs'+d+'Max']]))};
 function extraUrl(saved,baseUrl=specifiedUrl){const url=new URL(baseUrl);for(const [id,value]of Object.entries(saved?.inputs||{})){

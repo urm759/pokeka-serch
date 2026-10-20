@@ -36,6 +36,8 @@ assert.equal(context.api.searchProfitView({...card,testView:{...card.testView,ca
 context.api.readUrl();assert.equal(elements.get('profitSearchBasisInput').value,'current-cap');assert.equal(elements.get('actualPurchaseMinInput').value,0);
 s.actualPurchaseMin=0;s.purchaseHeadroomMax=0;s.postingRate30Min=0;const url=context.api.buildShareUrl();assert.equal(url.searchParams.get('purchaseMin'),'0');assert.equal(url.searchParams.get('headroomMax'),'0');assert.equal(url.searchParams.get('postingRate30'),'0');
 context.api.saveQuickFilters(); context.window.location.href='https://example.test/';
+s.buybackHighestMin=0;context.api.saveQuickFilters();context.document.getElementById('buybackHighestMinInput').value='';
+context.api.restoreQuickFilters();assert.equal(elements.get('buybackHighestMinInput').value,0,'saved explicit zero is retained for highest quote');
 elements.get('actualPurchaseMinInput').value='';elements.get('purchaseHeadroomMaxInput').value='';
 context.api.restoreQuickFilters();assert.equal(elements.get('actualPurchaseMinInput').value,0);assert.equal(elements.get('purchaseHeadroomMaxInput').value,0);
 assert.equal(elements.get('profitSearchBasisInput').value,'current-cap');

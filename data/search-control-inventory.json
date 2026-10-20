@@ -1357,6 +1357,28 @@
       "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
     },
     {
+      "id": "buybackHighestMinInput",
+      "label": "最高買取倍率 下限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "最高の有効な買取提示倍率で探索",
+      "basis": "選択店舗・受付の減額前提示額÷同時期の国内PSA10相場。表示と同じ最高提示",
+      "effect": "空欄無効、0有効。未取得・古値・仕様保留は条件有効時のみ除外",
+      "overlap": "同店・他カードの通常倍率／店舗別中央値の並び順／費用込み採算・GOとは別"
+    },
+    {
       "id": "postingRate30MinInput",
       "label": "30日買取掲載率 下限 %",
       "category": "詳細検索",

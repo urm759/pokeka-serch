@@ -2,7 +2,7 @@ const http = require('node:http'),fs = require('node:fs'),path = require('node:p
 const {execFileSync} = require('node:child_process');
 const root = path.join(__dirname,'..');
 const doubled = require('./ui_double_fixture').fixture(root);
-const before = Object.fromEntries(['app.js','index.html','styles.css','decision-model.js','price-integrity.js','current-market-model.js','exploration-metrics.js','update-health-banner.js'].map(f => [f,Buffer.from(execFileSync('git',['show',`${process.env.PERFORMANCE_BASE_COMMIT || 'ceba99b4'}:${f}`],{cwd:root,maxBuffer:8*1024*1024}))]));
+const before = Object.fromEntries(['app.js','index.html','styles.css','decision-model.js','price-integrity.js','current-market-model.js','exploration-metrics.js','search-controls.js','update-health-banner.js'].map(f => [f,Buffer.from(execFileSync('git',['show',`${process.env.PERFORMANCE_BASE_COMMIT || 'ceba99b4'}:${f}`],{cwd:root,maxBuffer:8*1024*1024}))]));
 const types = {'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8','.css':'text/css; charset=utf-8'};
 // Local benchmark adapter only: identical POP evidence, legacy wire representation.
 const legacy = [false,true].map(double=>{

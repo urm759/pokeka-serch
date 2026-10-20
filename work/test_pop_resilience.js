@@ -25,8 +25,16 @@ const response=(value,ok=true)=>({ok,status:ok?200:404,url:'https://test.local/d
   await c.api.ensurePsaPopGlance([card]);assert.equal(requests,1,'same published shard is fetched once');
   assert(c.api.psaPopGlance({...card,official:{...official,ten:101}}).includes('公開要約と最新POPが不一致'));
   assert(c.api.psaPopGlance({...card,official:{...official,u:official.u+'/other'}}).includes('不一致'));
+  assert(c.api.psaPopGlance({...card,official:{...official,sh:null}}).includes('接続先未登録・保留'),'missing shard mapping is not a never-ending loading state');
   c.uiDataManifest.revision='v2';await c.api.ensurePsaPopGlance([card]);assert.equal(requests,2,'new version cannot reuse stale display/cache promises');
   assert.equal(c.loadedDataRevision,0,'display summary does not invalidate finance');
+  c.state.updateStatus={sources:{psaOfficial:{acquisitionStopped:true,sourceState:'許諾確認待ち'}}};
+  assert(c.api.psaPopGlance(card).includes('許諾待ち・新規取得停止'),'permission wait does not pretend to be normal polling');
+  assert(c.api.psaPopGlance({id:'unlinked'}).includes('公式未紐付け・未取得'),'unlinked is distinct from one measured point');
+  assert(c.api.psaPopGlance(card).includes('実測1点のみ'),'one observation remains one observation during permission wait');
+  c.state.psaSpecificationHeld.test={reason:'wrong specification'};
+  assert(c.api.psaPopGlance(card).includes('仕様保留'));
+  delete c.state.psaSpecificationHeld.test;
   await c.api.ensurePsaPopGlance([{...card,id:'newly-visible'}]);assert(c.api.psaPopGlance({...card,id:'newly-visible'}).includes('要約読込失敗'),'missing later-visible records cannot remain loading or become history shortage');
   const b=require('./build_psa_history');let rows=[];
   const selected={url:official.u,ten:100,total:120,fetchedAt:'2026-10-17T00:00:00Z',captureVersion:2,completeSnapshot:true};

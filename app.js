@@ -23,7 +23,7 @@ function readiness2020Text(value) {
   if(!value?.srFamily||!value?.arChr)return '';
   const x=value.srFamily,a=value.arChr,p=n=>n==null?'未判定':n.toFixed(1)+'%';
   const c=value.classification;
-  return `<small>2020年以降SR系：取得元${x.sourceTarget}／掲載${x.listed}（${p(x.listingPct)}）／分析可能${x.analyzable}（${p(x.analysisPct)}／目標90%）。年・レア未判定の可能対象${x.unknown}枚は別計上、達成扱いにしません。AR/CHR：掲載${a.listed}／分析可能${a.analyzable}（${p(a.analysisPct)}）。${c?`取得元日本語全体：明示された低レア${c.confirmedLowRarity}／分類不明${c.unclassified}／その他の既知ラベル${c.knownOther}（高レア・AR/CHRとは別）。分類母数の訂正を実補完とは数えません。`:''}詳細は同じ監査JSONのreadiness2020。</small>`;
+  return `<small>2020年以降SR系：取得元${x.sourceTarget}／掲載${x.listed}（${p(x.listingPct)}）／分析可能${x.analyzable}（${p(x.analysisPct)}／目標90%）。必須PSA不足${value.requiredAvailability?.permissionWait ?? '未集計'}件は許諾待ちで自動補完停止。年・レア未判定の可能対象${x.unknown}枚は別計上、達成扱いにしません。AR/CHR：掲載${a.listed}／分析可能${a.analyzable}（${p(a.analysisPct)}）。${c?`取得元日本語全体：明示された低レア${c.confirmedLowRarity}／分類不明${c.unclassified}／その他の既知ラベル${c.knownOther}（高レア・AR/CHRとは別）。分類母数の訂正を実補完とは数えません。`:''}詳細は同じ監査JSONのreadiness2020。</small>`;
 }
 let efficiencyCache = new WeakMap();
 let observationEfficiencyCache = new WeakMap();
@@ -32,6 +32,7 @@ let efficiencyViewCache = new WeakMap();
 const explorationFields = [
   ['purchaseMin','actualPurchaseMin'],['purchaseMax','actualPurchaseMax'],
   ['headroomMin','purchaseHeadroomMin'],['headroomMax','purchaseHeadroomMax'],
+  ['buybackMaxMin','buybackHighestMin'],
   ['postingRate30','postingRate30Min'],['postingShops30','postingShops30Min'],
   ['postingDays','postingDaysMin'],['postingCoverage','postingCoverageMin'],
   ...[7,30,75,200].flatMap(days=>[['obs'+days+'Min','observation'+days+'Min'],['obs'+days+'Max','observation'+days+'Max']]),
@@ -107,6 +108,9 @@ function freshnessDeadline(cards, now) {
   consider(state.updateStatus?.sources?.toreca?.lastSuccessAt,30);
   consider(state.sourceUpdates.toreca,30);
   for (const card of cards) {
+    for (const row of Object.values(state.buybackObservationSummary?.support?.cards?.[card.id] || {})) {
+      consider(row.current?.[3],48); consider(row.current?.[4],48);
+    }
     consider(card.currentStoreOffer?.updatedAt,48);
     consider(card.currentStoreOffer?.inventoryAt,48);
     consider(card.psa9Audit?.latestSaleAt || card.psa9Audit?.updatedAt,720);
@@ -1707,6 +1711,7 @@ function exportFavoritesCsv() {
   rows[0].push('利益確保の仕入れ目安・現相場基準','目安の切下げ前値','目安の最低期待利益','目安の最低期待利益率%','目安の状態','目安の売却先','素体参考相場70%（上限ではない）');
   rows[0].push('資金効率採用平均・暦日期間','資金効率採用平均価格','資金効率平均・観測日数','資金効率平均・欠測日数','資金効率平均・最終観測日','平均資金効率・非10価格基準','資金効率平均・根拠未確認日数');
   rows[0].push('中央値買値・参考年換算効率%','実店舗買値・年換算効率%','中央値採用元数','中央値独立店舗数','中央値内訳未確認元数','中央値価格下端','中央値価格上端','中央値個別根拠JSON','中央値比較不可理由');
+  rows[0].push('最高買取倍率（減額前・選択受付）','最高提示店舗','最高提示受付','最高提示確認日時','同店・他カードの通常倍率（中央値）','通常倍率の比較枚数','最高買取倍率・下限条件');
   favoriteCards().forEach((rawCard,index)=>{
     const card = calc(rawCard), p = purchaseExploration(card), v = searchProfitView(card), c = postingCoverage(card);
     rows[index+1].push(p.price ?? '',p.headroom ?? '',v.purchasePrice ?? '',v.label,v.economics?.expectedProfit ?? '',v.psa10Roi ?? '',c.rate30 ?? '',c.averageShops30 ?? '',c.observedDays,c.retrievalCoverage ?? '',p.cap ?? '',p.warnings.join('／'),p.headroom == null ? p.reason : '');
@@ -1722,6 +1727,7 @@ function exportFavoritesCsv() {
     rows[index+1].push(o?.days ?? '',o?.mean ?? '',o?.count ?? '',o ? o.days-(o.count ?? 0) : '',o?.latest || '',o ? '現在の国内PSA9・非10仮置き／PSA8以下未評価' : '',o?.unverifiedDays ?? '');
     const median=cardEfficiency(card,Date.now(),state.purchaseMode,state.efficiencyScenario,'median'), evidence=median.medianEvidence;
     rows[index+1].push(median.annual ?? '',cardEfficiency(card,Date.now(),state.purchaseMode,state.efficiencyScenario,'store').annual ?? '',evidence.count,evidence.independent,evidence.unknown,evidence.min ?? '',evidence.max ?? '',JSON.stringify(evidence.rows),median.reason || '');
+    rows[index+1].push(...buybackSupportCsvFields(card));
   });
   const csv = `\uFEFF${rows.map((row) => row.map(csvCell).join(",")).join("\r\n")}`;
   const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
@@ -4317,7 +4323,7 @@ function buybackSupportHtml(card, detailed = false) {
   const rate = n => Number.isFinite(n) ? n.toFixed(3) : '算出不可';
   const pct = n => Number.isFinite(n) ? `${n>=0?'+':''}${n.toFixed(1)}%` : '算出不可';
   const highest = value.highestQuote;
-  const highestText = highest ? `<b>最高買取 ${rate(highest.ratio)}倍</b><span>${escapeHtml(highest.name)}・${highest.fulfilment==='store'?'店頭':'郵送'}｜同店通常 ${Number.isFinite(highest.standard)?rate(highest.standard)+'倍':'比較不足'}｜通常比 ${pct(highest.premium)}${Number.isFinite(highest.topPct)?`｜同店内上位${highest.topPct.toFixed(1)}%`:''}</span><small>確認 ${escapeHtml(highest.at)}｜比較${highest.samples}枚${highest.reference?'・標本不足/参考':''}｜減額前・同日同価格帯。他カード比較で、実買取件数・GOの保証ではありません。</small>` : '<b>最高買取 比較不足</b><small>選択中の受付に新鮮な同日・同仕様の提示なし</small>';
+  const highestText = highest ? `<b class="buyback-highest">最高買取 ${rate(highest.ratio)}倍</b><span>${escapeHtml(highest.name)}・${highest.fulfilment==='store'?'店頭':'郵送'}｜<span class="buyback-normal ${highest.reference?'reference-warning':''}">同店・他カードの通常倍率 ${Number.isFinite(highest.standard)?rate(highest.standard)+'倍':'比較不足'}${highest.reference?'・参考':''}</span>｜通常比 ${pct(highest.premium)}${Number.isFinite(highest.topPct)?`｜同店内上位${highest.topPct.toFixed(1)}%`:''}</span><small>確認 ${escapeHtml(highest.at)}｜比較${highest.samples}枚${highest.reference?'・標本不足/参考':''}｜減額前・同日同価格帯。他カード比較で、実買取件数・GOの保証ではありません。</small>` : '<b class="reference-warning">最高買取 比較不足</b><small class="reference-warning">選択中の受付に新鮮な同日・同仕様の提示なし（古値・停止・保留は対象外）</small>';
   const windows = [7,30].map(days=>{
     const w=value.windows[days];
     return `<span>${days}日 日次中央値の平均 ${rate(w.mean)}／相場以上 ${w.aboveRate==null?'未取得':w.aboveRate.toFixed(1)+'%'} <small>${w.days}/${days}観測日・${w.stores}店・最終${escapeHtml(w.lastDate || '未取得')}${w.reference?'・蓄積中/参考':''}</small></span>`;
@@ -4328,9 +4334,20 @@ function buybackSupportHtml(card, detailed = false) {
     return `<span>${days}日 平均 ${Number.isFinite(p?.[0])?rate(p[0])+'倍':'未取得'}／相場以上 ${p?.[2]>0?(p[3]/p[2]*100).toFixed(1)+'%':'未取得'} <small>${p?.[2]??0}/${days}観測日・最終${escapeHtml(p?.[4] || '未取得')}${p?.[2]!==days?'・蓄積中/参考':''}</small></span>`;
   }).join('');
   const bandLabel = {under30k:'PSA10 3万円未満',from30kTo100k:'PSA10 3万～10万円未満',over100k:'PSA10 10万円以上'};
-  const rows = value.rows.map(r=>`<tr><th>${escapeHtml(r.name)}<small>${r.fulfilment==='store'?'店頭':'郵送'}／${escapeHtml(r.date)}</small></th><td>${rate(r.ratio)}<small>提示 ¥${fmt.format(r.price)} / 同日国内PSA10 ¥${fmt.format(r.marketPrice)}</small><small>提示確認 ${escapeHtml(r.at)} / 相場確認 ${escapeHtml(r.marketAt)}</small></td><td>${rate(r.standard)}<small>${r.samples}枚・${r.cohort==='common'?'複数店共通カード群':'同店の同価格帯'}・自身/別IDの同一カード除外・外れ値${r.excluded}枚・${escapeHtml(bandLabel[r.band] || '価格帯未確認')}${r.reference?'・標本不足/参考':''}</small></td><td>${pct(r.premium)}<small>${r.reason?escapeHtml(r.reason):'同店の通常水準との比較（実額の有利さとは別）'}</small></td><td>${[7,30].map(days=>{const p=r.premiumPeriods?.[days];return `${days}日 ${pct(p?.[0])} / ${p?.[1]??0}日${p?.[3]?'・参考':''}`;}).join('<br>')}<small>上乗せ率を計算できた日だけ採用</small></td></tr>`).join('');
+  const rows = value.rows.map(r=>`<tr><th>${escapeHtml(r.name)}<small>${r.fulfilment==='store'?'店頭':'郵送'}／${escapeHtml(r.date)}</small></th><td class="${r.valid?'buyback-highest':'reference-warning'}">${rate(r.ratio)}<small>提示 ¥${fmt.format(r.price)} / 同日国内PSA10 ¥${fmt.format(r.marketPrice)}</small><small>提示確認 ${escapeHtml(r.at)} / 相場確認 ${escapeHtml(r.marketAt)}</small></td><td class="${r.reference?'reference-warning':'buyback-normal'}">${rate(r.standard)}<small>${r.samples}枚・${r.cohort==='common'?'複数店共通カード群':'同店の同価格帯'}・自身/別IDの同一カード除外・外れ値${r.excluded}枚・${escapeHtml(bandLabel[r.band] || '価格帯未確認')}${r.reference?'・標本不足/参考':''}</small></td><td>${pct(r.premium)}<small>${r.reason?escapeHtml(r.reason):'同店の通常水準との比較（実額の有利さとは別）'}</small></td><td>${[7,30].map(days=>{const p=r.premiumPeriods?.[days];return `${days}日 ${pct(p?.[0])} / ${p?.[1]??0}日${p?.[3]?'・参考':''}`;}).join('<br>')}<small>上乗せ率を計算できた日だけ採用</small></td></tr>`).join('');
   const file=state.buybackObservationSummary?.support?.detailFiles?.[card.id];
-  return `<section class="buyback-support-detail" data-buyback-support-detail="${escapeHtml(card.id)}"><strong>買取価格支持（点数・採算へ未反映）</strong><div class="buyback-support-compact">${highestText}</div><strong>現在の最高提示と同じ受付の履歴</strong><div class="buyback-support-windows">${highestPeriods}</div><small>全店・店舗別保守側の日次中央値</small><div class="buyback-support-windows">${windows}</div><p class="helper">1.000倍は同額、1.100倍は相場より10%高い減額前提示。標準は同日・同価格帯・対象自身/重複IDを除外した中央値。3枚未満は不可、10枚未満は参考。上位率は10枚以上の比較標本で同率を含む保守的順位（対象を含む順位/標本数+1）。未観測日は0にしません。最高提示を店舗別の保守集約や採算出口へ置換しません。</p>${state.buybackObservationSummary?.support?.compact && !buybackSupportDetails.has(card.id)?'<small>受付別の継続・比較根拠を読込中</small>':''}<div class="shop-rate-table-wrap"><table><thead><tr><th>店舗・観測日</th><th>相場に対して高いか</th><th>同店標準</th><th>その店舗として高いか</th><th>上乗せ継続</th></tr></thead><tbody>${rows || '<tr><td colspan="5">同日・仕様・価格確認の根拠不足で算出不可</td></tr>'}</tbody></table></div>${file?`<a href="./${escapeHtml(file)}" target="_blank" rel="noreferrer">同日照合の原票・取得日時（必要時のみ読込）</a>`:''}<small>減額・手数料・交通費は実際の採算で別途適用。単独高値を消さず表示しますが、実需要・相場上昇・購入GOの保証ではありません。</small></section>`;
+  return `<section class="buyback-support-detail" data-buyback-support-detail="${escapeHtml(card.id)}"><strong>買取価格支持（点数・採算へ未反映）</strong><div class="buyback-support-compact">${highestText}</div><strong>現在の最高提示と同じ受付の履歴</strong><div class="buyback-support-windows">${highestPeriods}</div><small>全店・店舗別保守側の日次中央値</small><div class="buyback-support-windows">${windows}</div><p class="helper">1.000倍は同額、1.100倍は相場より10%高い減額前提示。標準は同日・同価格帯・対象自身/重複IDを除外した中央値。3枚未満は不可、10枚未満は参考。上位率は10枚以上の比較標本で同率を含む保守的順位（対象を含む順位/標本数+1）。未観測日は0にしません。最高提示を店舗別の保守集約や採算出口へ置換しません。</p>${state.buybackObservationSummary?.support?.compact && !buybackSupportDetails.has(card.id)?'<small>受付別の継続・比較根拠を読込中</small>':''}<div class="shop-rate-table-wrap"><table><thead><tr><th>店舗・観測日</th><th>相場に対して高いか</th><th>同店・他カードの通常倍率（中央値）</th><th>その店舗として高いか</th><th>上乗せ継続</th></tr></thead><tbody>${rows || '<tr><td colspan="5">同日・仕様・価格確認の根拠不足で算出不可</td></tr>'}</tbody></table></div>${file?`<a href="./${escapeHtml(file)}" target="_blank" rel="noreferrer">同日照合の原票・取得日時（必要時のみ読込）</a>`:''}<small>減額・手数料・交通費は実際の採算で別途適用。単独高値を消さず表示しますが、実需要・相場上昇・購入GOの保証ではありません。</small></section>`;
+}
+function buybackHighestExclusion(card) {
+  if (state.buybackHighestMin == null) return null;
+  if (!Number.isFinite(state.buybackHighestMin) || state.buybackHighestMin < 0) return '最高買取倍率・下限入力を確認';
+  const quote = cardBuybackSupport(card).highestQuote;
+  if (!quote) return '最高買取倍率・未取得／古値／仕様・取得保留';
+  return quote.ratio < state.buybackHighestMin ? '最高買取倍率・下限未達' : null;
+}
+function buybackSupportCsvFields(card) {
+  const q = cardBuybackSupport(card).highestQuote;
+  return [q?.ratio ?? '',q?.name || '',q ? q.fulfilment === 'store' ? '店頭' : '郵送' : '',q?.at || '',q?.standard ?? '',q?.samples ?? '',state.buybackHighestMin ?? ''];
 }
 async function loadBuybackSupportDetail(id) {
   const file=state.buybackObservationSummary?.support?.detailFiles?.[id];
@@ -5033,6 +5050,8 @@ function computeCardSearchExclusions(card, {mode = state.purchaseMode,diagnostic
     if (!explorationMetrics.inRange(efficiencySearchValue(efficiency),state.efficiencyMin,null)) reasons.push(efficiency.observation?.reference && !state.observationIncludeReference ? '単体資金効率・観測不足の参考平均を対象外' : efficiency.calculationState === 'reference' && !state.efficiencyIncludeReference ? '単体資金効率・参考値を検索対象外' : Number.isFinite(efficiency.annual) ? '単体年換算資金効率条件' : '単体資金効率算出不可・'+(efficiency.reason || 'データ不足'));
   }
   reasons.push(...observationSearchExclusions(card));
+  const buybackReason = buybackHighestExclusion(card);
+  if (buybackReason) reasons.push(buybackReason);
       const haystack = normalize(`${card.name} ${card.model} ${card.id}`);
       const compactHaystack = compactSearch(`${card.name} ${card.model} ${card.id}`);
       const completion = card.catalogCompletion;
@@ -5243,12 +5262,14 @@ function decodePsaPopRow(row){
 function psaPopGlance(card,detail=false,now=Date.now()) {
   const official=card.official,held=state.psaSpecificationHeld?.[card.id];
   if(held)return '<small class="price-stale">POP推移：仕様保留・通常版で代用しません</small>';
-  if(!Number.isInteger(official?.ten))return '<small class="price-stale">PSA10 POP：未取得</small>';
+  const permissionPending=state.updateStatus?.sources?.psaOfficial?.acquisitionStopped===true && /許諾/.test(state.updateStatus.sources.psaOfficial.sourceState||'');
+  const permissionNote=permissionPending?'／許諾待ち・新規取得停止':'';
+  if(!Number.isInteger(official?.ten))return `<small class="price-stale">PSA10 POP：公式未紐付け・未取得${permissionNote}</small>`;
   const row=psaPopGlanceCache.get(card.id);
   const current=row&&(row.at===official.f||row.at===Date.parse(official.f))&&row.ten===official.ten&&row.k===psaPopSourceKey(official)?row:null;
   const reasons={'single-confirmation':'実測1点のみ・次回比較待ち','no-history':'実測履歴なし','confirmation-time-unknown':'確認日時未確定',
     'identity-unproven':'履歴の仕様未確認','identity-or-undated-history':'旧履歴の仕様・日時未確認','latest-or-provenance-mismatch':'最新POPと履歴の接続保留'};
-  const unavailable=psaPopGlanceFailures.has(official.sh)?'要約読込失敗・履歴未確認':row&&!current?'公開要約と最新POPが不一致・再読込':current?reasons[current.r]||'比較履歴不足':'要約読込待ち・履歴未確認';
+  const unavailable=!/^\d{2}$/.test(official.sh||'')?'公式履歴の接続先未登録・保留':psaPopGlanceFailures.has(official.sh)?'要約読込失敗・履歴未確認':row&&!current?'公開要約と最新POPが不一致・再読込':current?reasons[current.r]||'比較履歴不足':'要約読込待ち・履歴未確認';
   const ttl=state.updateStatus?.sources?.psaOfficial?.updateTtlHours||36;
   const age=now-Date.parse(official.f),stale=!/T\d{2}:/.test(official.f||'')||!Number.isFinite(age)||age<0||age>ttl*3600000;
   const cell=(w,days)=>{
@@ -5259,7 +5280,7 @@ function psaPopGlance(card,detail=false,now=Date.now()) {
     return `<span>${label}・観測${elapsed}<b>${delta>0?'+':''}${fmt.format(delta)}枚${rate==null?'／率算出不可':`（${rate>0?'+':''}${rate.toFixed(2)}%）`}</b>${days!=null&&span<days?'<small>参考・対象期間未充足</small>':''}${flag===2?'<small class="price-stale">減少・公式訂正等を含む／供給減とは未確定</small>':flag===1?'<small class="price-stale">旧取得根拠・参考比較</small>':''}</span>`;
   };
   const period=i=>current?.p?.[i]==null?null:current.windows[current.p[i]];
-  return `<div class="pop-glance" aria-label="PSA10 POP推移"><span>現在のPSA10 POP<b>${fmt.format(official.ten)}枚</b></span>${cell(period(0),null)}${(detail?[75,200]:[7,30]).map(d=>cell(period([7,30,75,200].indexOf(d)+1),d)).join('')}<small class="pop-glance-note ${stale?'price-stale':''}">公式確認 ${escapeHtml(official.f||'日時不明')}${stale?'／古値・更新待ち':''}。開始時POP比・月換算なし。${current?.changed?'紐付け変更前は比較外。':''}世界の鑑定枚数≠流通在庫。上限/GOへ不使用。</small></div>`;
+  return `<div class="pop-glance" aria-label="PSA10 POP推移"><span>現在のPSA10 POP<b>${fmt.format(official.ten)}枚</b></span>${cell(period(0),null)}${(detail?[75,200]:[7,30]).map(d=>cell(period([7,30,75,200].indexOf(d)+1),d)).join('')}<small class="pop-glance-note ${stale||permissionPending?'price-stale':''}">公式確認 ${escapeHtml(official.f||'日時不明')}${stale?'／古値・更新待ち':''}${permissionNote}。開始時POP比・月換算なし。${current?.changed?'紐付け変更前は比較外。':''}世界の鑑定枚数≠流通在庫。上限/GOへ不使用。</small></div>`;
 }
 async function ensurePsaPopGlance(cards) {
   const revision=uiDataManifest?.revision||'legacy';

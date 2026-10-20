@@ -27,6 +27,8 @@ assert.equal(url.searchParams.get('effMin'),'0');assert.equal(url.searchParams.g
 assert.equal(url.searchParams.get('exitPolicy'),'both');assert.equal(url.searchParams.get('roi'),'20');
 const observations=new URL(extraUrl({inputs:{observation7MinInput:-20,observation7MaxInput:0,observationIncludeReferenceInput:false}}));
 assert.equal(observations.searchParams.get('obs7Min'),'-20');assert.equal(observations.searchParams.get('obs7Max'),'0');assert.equal(observations.searchParams.get('obsRef'),'0');
+assert.equal(new URL(extraUrl({inputs:{buybackHighestMinInput:1.05}})).searchParams.get('buybackMaxMin'),'1.05');
+assert.equal(new URL(extraUrl({inputs:{buybackHighestMinInput:''}})).searchParams.get('buybackMaxMin'),'off');
 const DateBefore=Date;assert.equal(withClock('2026-10-12T01:00:00Z',()=>Date.now()),Date.parse('2026-10-12T01:00:00Z'));assert.strictEqual(Date,DateBefore);
 const app=fs.readFileSync('app.js','utf8');
 assert.match(app,/captureConditionOrigins\(conditionDefaults,restoredConditions\)/);

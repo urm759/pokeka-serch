@@ -12,6 +12,8 @@
   const zeroNoOp = ids('saleTxMinInput saleTx7MinInput psaTxMinInput psaTx7MinInput buyback7MinInput buyback30MinInput buyback90MinInput buybackShopsMinInput psaMinInput minExitLiquidityInput minEconomicsInput minMarketStabilityInput minSupplyRiskInput minFuturePriceScoreInput');
   const sharedEarly = ids('qInput diagnosticSearchInput year2020Input includeUnknownYearInput actualPurchaseMinInput actualPurchaseMaxInput purchaseHeadroomMinInput purchaseHeadroomMaxInput purchaseBelowCurrentCapInput postingRate30MinInput postingShops30MinInput postingDaysMinInput postingCoverageMinInput psa9RatioMinInput psa9RatioMaxInput psa9RatioAggregateInput psa9RatioEstimateInput psa9RatioMarketInput catalogScopeInput efficiencyMinInput efficiencyIncludeReferenceInput');
   const labels = {basic:'基本検索', advanced:'詳細検索', calculation:'仕入れ判定・計算設定', context:'探索基準・表示', audit:'データ監査・記録操作'};
+  optionalZero.add('buybackHighestMinInput');
+  sharedEarly.add('buybackHighestMinInput');
   function category(id, inSearch = true) {
     if (!inSearch || operations.has(id)) return 'audit';
     if (basic.has(id)) return 'basic';
@@ -60,6 +62,7 @@
     return true;
   }
   function describe(id) {
+    if (id === 'buybackHighestMinInput') return {purpose:'最高の有効な買取提示倍率で探索',basis:'選択店舗・受付の減額前提示額÷同時期の国内PSA10相場。表示と同じ最高提示',effect:'空欄無効、0有効。未取得・古値・仕様保留は条件有効時のみ除外',overlap:'同店・他カードの通常倍率／店舗別中央値の並び順／費用込み採算・GOとは別'};
     if (id.startsWith('observation')) return {purpose:'国内PSA10の日次観測平均との乖離で参考探索',basis:'現相場÷7/30/75/200暦日観測平均−1。欠測補完なし・複数期間AND',effect:'指定期間のみ未取得／参考非採用／上下限外を除外。空欄無効、0有効',overlap:'実成約平均・将来予測・仕入れ上限・購入GOとは別'};
     if (operations.has(id)) return {purpose:'保存条件の読み込み／お気に入り検索／実鑑定・実売記録',basis:'利用者が選択したCSV・カード・日付・実結果。推定結果で実現利益を作らない',effect:'操作しない限り検索・安全条件は変わらない。記録は削除対象にしない',overlap:'日次取得・自動探索・本番モデルの変更とは別'};
     if (id.startsWith('efficiency')) return {purpose:'カード単体の期待資金効率を探索・比較',basis:'指定買値・出口・拘束日数。平均仮定ではPSA10だけ日次観測平均／非10は現在国内PSA9',effect:'資金効率の表示・検索・順位・CSVのみ。上限・購入GOの式へ反映しない',overlap:'判定用年換算条件と観測乖離率の参考採用は別。欠測平均を採用する場合は参考値設定で明示'};
