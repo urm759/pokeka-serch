@@ -28,9 +28,10 @@ function routes(detail, permissions) {
   if (!permissions) {
     const root = require('node:path').join(__dirname, '..');
     permissions = { psaAllowed: require('./psa_access_policy').decision(require('./psa_access_policy').read(root)).allowed,
-      overseasAllowed: require('./overseas_access_policy').allowed(root) };
+      overseasAllowed: require('./overseas_access_policy').allowed(root), overseasCancelled:require('./overseas_access_policy').cancelled(root) };
   }
-  return Object.keys(ROUTES).filter((key) => needs(detail, key)).map((key) => {
+  return Object.keys(ROUTES).filter((key) => needs(detail, key)
+    && !(permissions.overseasCancelled&&['pokedata','pokedataAuthenticated'].includes(ROUTES[key][0]))).map((key) => {
     const [source, mode, reason] = ROUTES[key], state = itemState(detail, key);
     const permissionWait = source === 'psaOfficial' && !permissions.psaAllowed
       || ['pokedata', 'pokedataAuthenticated'].includes(source) && !permissions.overseasAllowed;

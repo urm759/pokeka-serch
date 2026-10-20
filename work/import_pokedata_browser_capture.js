@@ -158,6 +158,7 @@ function missingCauseAudit(card, rows, publicRows) {
 }
 
 function main() {
+  if(require('./overseas_access_policy').cancelled(ROOT)){console.log('PokeDATA: 利用者判断で中止・保存済み原票保持');return;}
   throw Error('Legacy browser capture import stopped. Documented official API is the selected route; original captures retained privately');
   const capture = readJson(CAPTURES, { cards: [] });
   if (!capture.cards?.length) throw new Error("No authenticated browser captures found");

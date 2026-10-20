@@ -17,6 +17,7 @@ function render(report) {
     <p>照合済みメタデータ ${number(report.coverage.exactMetadataMappings)}枚 / 比較可能 ${number(report.coverage.comparable)}枚。対象内対応率の分母は未確定。</p>${rows || '<p>比較できる許諾済み入力はありません。取得日時を成約日・価格確認日に代用しません。</p>'}</html>`;
 }
 function createServer(root) {
+  if(access.cancelled(root))throw Error('利用者判断で中止・内部分析画面は起動しない');
   return http.createServer((req, res) => {
     const host = req.headers.host || '';
     if (host !== `127.0.0.1:${res.socket.localPort}` || req.headers.origin && req.headers.origin !== `http://${host}`
@@ -34,7 +35,9 @@ function createServer(root) {
   });
 }
 if (require.main === module) {
-  const root = path.resolve(__dirname, '..'); analysis.build(root);
+  const root = path.resolve(__dirname, '..');
+  if(access.cancelled(root)){console.log('利用者判断で中止・内部分析画面は起動しない');process.exit(0);}
+  analysis.build(root);
   const server = createServer(root);
   server.listen(8879, '127.0.0.1', () => console.log('Internal only: http://127.0.0.1:8879/ (stop with Ctrl+C)'));
 }

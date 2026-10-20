@@ -9,6 +9,9 @@ if (!sourceId || !script) {
   process.exit(2);
 }
 
+if(sourceId==='pokedata'&&require('./overseas_access_policy').cancelled(ROOT)){
+  console.log(JSON.stringify({source:sourceId,status:'cancelled',reason:'利用者判断で中止',httpRequests:0,checkpointPreserved:true}));process.exit(0);
+}
 const startedAt = new Date();
 const beforeCount = countCurrentRecords(sourceId);
 const beforeFingerprint = artifactFingerprint(sourceId);

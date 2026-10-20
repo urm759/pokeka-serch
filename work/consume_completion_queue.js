@@ -122,6 +122,7 @@ function run() {
     domesticStateASales: { status: "取得処理未実装・許諾確認待ち", reason: "全状態取引件数・海外Rawを状態A成約件数へ代用しない" },
   };
   Object.assign(support,permissionSupport(require('./psa_access_policy').decision(require('./psa_access_policy').read(ROOT)),require('./overseas_access_policy').allowed(ROOT)));
+  if(require('./overseas_access_policy').cancelled(ROOT)){delete support.pokedata;delete support.rawActualSales;}
   state.lastRun = run; delete state.running;
   save("work/completion-acquisition-checkpoint.json", state);
   const pending = eligibleForHareru(plan(cards, queue, state), read("work/hareruya2_catalog.json", []),Date.now(),requested,guard).length;

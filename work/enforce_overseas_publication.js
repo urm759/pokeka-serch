@@ -1,12 +1,18 @@
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),cp=require('node:child_process');
 const access=require('./overseas_access_policy'),ROOT=path.resolve(__dirname,'..');
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
-const hold={version:1,publicationStatus:'permission-wait',note:'海外価格・原票は公開許諾未確認のため非公開。未取得/0件とは異なる。内部原本・チェックポイントは保持'};
+const moduleHold={version:1,publicationStatus:'permission-wait',note:'海外価格・原票は公開許諾未確認のため非公開。未取得/0件とは異なる。内部原本・チェックポイントは保持'};
 const pick=(row,keys)=>Object.fromEntries(keys.filter(k=>Object.hasOwn(row||{},k)).map(k=>[k,row[k]]));
 function restricted(file){return /^(?:data\/(?:pokedata(?:\/|-)|overseas-glance\/|psa-market-trial\.json)|work\/(?:pokedata[-_].*\.json|pokedata-progress\.json|psa_market_trial_capture\.json|overseas_lead_history\.json))/.test(file);}
-function project(file,value){
+function project(file,value,options={}){
+  const hold=options.cancelled?{version:1,publicationStatus:'cancelled',note:'利用者判断で中止・保存済み原本/履歴/チェックポイントは非公開保持'}:moduleHold;
   if(file==='data/pokedata-route-status.json')return value;
-  if(file==='data/market-research-summary.json')return {...value,comparisons:{},overseasLead:{status:'permission-wait'},fx:{rate:null,status:'海外価格非公開',stale:true},publicationStatus:hold.publicationStatus};
+  if(file==='data/market-research-summary.json')return {...value,comparisons:{},overseasLead:{status:options.cancelled?'cancelled':'permission-wait'},fx:{rate:null,status:options.cancelled?'利用者判断で中止':'海外価格非公開',stale:true},publicationStatus:hold.publicationStatus};
+  if(options.cancelled){
+    if(file==='data/pokedata/manifest.json')return {...pick(value,['version','updatedAt','totalCards','totalLinkageRecords','acquisition']),...hold,sets:[],nextSetPriorities:[]};
+    if(file==='data/psa-market-trial.json')return {...hold,certificates:[],priceDevelopment:'stopped'};
+    return {...hold,cards:{},sets:[],rows:[],records:[],linkageRecords:[],markets:{}};
+  }
   if(file==='data/pokedata/manifest.json')return {...pick(value,['version','updatedAt','totalCards','totalLinkageRecords','acquisition','qualityAudit','nextSetPriorities']),...hold,
     sets:(value.sets||[]).map(s=>pick(s,['setName','setCode','count','linkageCount','sourceCount','updatedAt','file','localCardIds','status','acquisition']))};
   if(file.startsWith('data/pokedata/sets/'))return {...pick(value,['version','setName','setCode','updatedAt','sourceCount','count','linkageCount','acquisition']),...hold,
@@ -53,7 +59,7 @@ function enforce(root=ROOT){
   for(const file of files(root)){
     if(!restricted(file)&&file!=='data/market-research-summary.json')continue;
     const before=fs.readFileSync(path.join(root,file));let value;try{value=JSON.parse(before);}catch{throw Error('Invalid overseas JSON; publication stopped: '+file);}
-    const next=project(file,value),text=JSON.stringify(next);
+    const next=project(file,value,{cancelled:access.cancelled(root)}),text=JSON.stringify(next);
     if(priceLeaks(next).length)throw Error('Projection contains restricted price: '+file);
     if(JSON.stringify(value)===text)continue;
     const target=access.privatePath(root,'archive/'+hash(before)+'/'+file);fs.mkdirSync(path.dirname(target),{recursive:true});
@@ -63,7 +69,7 @@ function enforce(root=ROOT){
   }
   const audit={at:new Date().toISOString(),changed,bytes,restoration:'Private immutable originals by SHA256; never upload archive or publish historical raw data'};
   const f=access.privatePath(root,'archive-manifests/'+hash(JSON.stringify(changed))+'.json');fs.mkdirSync(path.dirname(f),{recursive:true});if(changed.length)fs.writeFileSync(f,JSON.stringify(audit));
-  return {status:'permission-wait',changed:changed.length,privatelyPreservedBytes:bytes};
+  return {status:access.cancelled(root)?'cancelled':'permission-wait',changed:changed.length,privatelyPreservedBytes:bytes};
 }
 function privateLeaks(value,trail=''){
   if(!value||typeof value!=='object')return [];
@@ -89,7 +95,7 @@ function verify(root=ROOT,{staged=false}={}){
     if(!file.endsWith('.json'))continue;
     let value;try{value=JSON.parse(fs.readFileSync(path.join(root,file)));}catch{if(staged||file.startsWith('data/'))throw Error('Invalid JSON; publication stopped: '+file);continue;}
     checked++;
-    if(privateLeaks(value).length||!publicAllowed&&(restricted(file)&&JSON.stringify(project(file,value))!==JSON.stringify(value)||priceLeaks(value).length))bad.push(file);
+    if(privateLeaks(value).length||!publicAllowed&&(restricted(file)&&JSON.stringify(project(file,value,{cancelled:access.cancelled(root)}))!==JSON.stringify(value)||priceLeaks(value).length))bad.push(file);
   }
   if(bad.length)throw Error('Unlicensed overseas prices/raw in publication: '+bad.slice(0,12).join(', '));return {checked};
 }

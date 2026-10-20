@@ -48,6 +48,11 @@ if (fs.existsSync(generatedPath)) {
   const generated = JSON.parse(fs.readFileSync(generatedPath, "utf8"));
   const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "data", "pokedata", "manifest.json"), "utf8"));
   const battlePartners = manifest.sets.find((entry) => entry.setName === "Battle Partners");
+  if(manifest.publicationStatus==='cancelled'){
+    assert.equal(generated.publicationStatus,'cancelled');
+    assert.deepEqual(manifest.sets,[],'saved matching records are private after cancellation');
+    assert.deepEqual(manifest.nextSetPriorities,[]);
+  }else{
   assert(battlePartners, "Battle Partners shard is missing");
   const shard = JSON.parse(fs.readFileSync(path.join(__dirname, "..", ...battlePartners.file.split("/")), "utf8"));
   const card = shard.cards["pk-63635"];
@@ -59,6 +64,7 @@ if (fs.existsSync(generatedPath)) {
   }else for(const market of Object.values(card.markets||{}).filter(m=>m.priceSource==='actual-sale')){
     assert.equal(market.originalCount,market.adoptedCount+market.excludedCount);
     assert(Number.isFinite(market.medianJpy));assert(market.targetPeriod);
+  }
   }
 }
 

@@ -1,5 +1,9 @@
 # PokeDATA Internal Analysis
 
+## Cancelled By User
+
+2026-10-21: the user withdrew overseas price acquisition, contracts, inquiries, matching expansion, private analysis, price-gap comparison and the 90% matching target. This document is historical implementation evidence, not a pending task or recommendation. Do not run the commands or send the draft below. Saved data stays private and unchanged. PSA official price development stays stopped; PSA POP/rate remains a separate permission-wait item. Only a new explicit user instruction can reconsider this policy; a key, contract or private permission file cannot override cancellation.
+
 ## Current Status
 
 - 2026-10-20: user confirmed no API subscription; purchase and inquiry delivery remain on hold.

@@ -25,16 +25,17 @@ async function main() {
     return;
   }
   observation.record(ROOT,'running');
+  const overseasCancelled=require('./overseas_access_policy').cancelled(ROOT);
   const [runs, safeRuns, pokeRuns, priceRuns, catchupRuns] = await Promise.all([
     api(`${API}/actions/workflows/daily-fast-update.yml/runs?per_page=30`),
     api(`${API}/actions/workflows/safe-checkpoint-backfill.yml/runs?per_page=10`),
-    api(`${API}/actions/workflows/backfill-data.yml/runs?per_page=10`),
+    overseasCancelled?Promise.resolve({workflow_runs:[]}):api(`${API}/actions/workflows/backfill-data.yml/runs?per_page=10`),
     api(`${API}/actions/workflows/priority-price-refresh.yml/runs?per_page=10`),
     api(`${API}/actions/workflows/watch-data-health.yml/runs?per_page=10`),
   ]);
   const status = JSON.parse(fs.readFileSync(path.join(ROOT, "data", "update-status.json"), "utf8"));
   fs.writeFileSync(path.join(ROOT,'work/automatic-workflow-evidence.json'), JSON.stringify({checkedAt:new Date().toISOString(),
-    runs:Object.entries({daily:runs,safe:safeRuns,pokedata:pokeRuns,priority:priceRuns}).map(([key,list])=>({key,...list.workflow_runs?.[0]}))}));
+    runs:Object.entries({daily:runs,safe:safeRuns,pokedata:pokeRuns,priority:priceRuns}).filter(([key])=>key!=='pokedata'||!overseasCancelled).map(([key,list])=>({key,...list.workflow_runs?.[0]}))}));
   fs.writeFileSync(path.join(ROOT,'data/refresh-cadence-audit.json'),JSON.stringify(require('./refresh_cadence').audit(priceRuns.workflow_runs||[])));
   // Verify saved run receipts without triggering acquisition or waiting for future runs.
   const cycleFile=path.join(ROOT,'data/scheduled-cycle-verification.json');
@@ -44,6 +45,7 @@ async function main() {
     const deployments=await api(`${API}/actions/runs?per_page=30`);
     const pages=deployments.workflow_runs?.find(r=>r.name==='pages build and deployment'&&r.conclusion==='success');
     for(const [key,list] of Object.entries({daily:runs,safe:safeRuns,pokedata:pokeRuns,priority:priceRuns,catchup:catchupRuns})) {
+      if(key==='pokedata'&&overseasCancelled)continue;
       const receipt=receipts.pipelines?.[key];
       const latest=list.workflow_runs?.find(r=>r.status==='completed'&&(r.event==='schedule'||key==='catchup'&&String(r.id)===String(receipt?.runId)&&r.event==='workflow_run'));
       if(!latest || cycles.pipelines[key]?.runId===latest.id&&cycles.pipelines[key]?.confirmed)continue;
@@ -90,7 +92,7 @@ async function main() {
   const read = (name, fallback = null) => {
     try { return JSON.parse(fs.readFileSync(path.join(ROOT, "work", name), "utf8")); } catch { return fallback; }
   };
-  const pokeProgress = fs.readdirSync(path.join(ROOT, "work"))
+  const pokeProgress = (overseasCancelled?[]:fs.readdirSync(path.join(ROOT, "work")))
     .filter((name) => /^pokedata-progress(?:-.*)?\.json$/.test(name))
     .map((name) => read(name)).filter(Boolean);
   const backfills = backfillModel.evaluate({ safeRuns: safeRuns.workflow_runs || [],
@@ -99,7 +101,7 @@ async function main() {
     discovery: read("pokedata-set-discovery.json", {}),
     ambiguousCandidates: read("pokedata-link-map.json", {}).ambiguousCandidates || [],
     recovery: (() => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, "data", "backfill-recovery.json"), "utf8")); } catch { return {}; } })(),
-    previous: current || {} });
+    previous: current || {},overseasCancelled });
   const dailyIssues = health.reasons.map((reason) => ({
     key: reason.includes("連続失敗") ? "daily:workflow-failure"
       : reason.includes("みんトレ") ? "daily:source-stale" : "daily:run-stale",
@@ -160,7 +162,7 @@ async function main() {
   const previousKeys = new Set(current?.activeAlertKeys || []);
   const newlyDetected = issues.filter((issue) => !previousKeys.has(issue.key));
   const samples = backfillRate.read().samples;
-  const rateAudit = Object.fromEntries(["yuyutei", "priceEvidence", "torecacamp", "pokedata"].map((source) => {
+  const rateAudit = Object.fromEntries(["yuyutei", "priceEvidence", "torecacamp", "pokedata"].filter(source=>source!=='pokedata'||!overseasCancelled).map((source) => {
     const recent = samples.filter((row) => row.source === source).slice(-2);
     return [source, { before: recent[0] || null, after: recent[1] || null }];
   }));

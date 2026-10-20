@@ -22,7 +22,7 @@ function manualId(row) {
 }
 
 function evaluate({ safeRuns = [], pokeRuns = [], safeProgress = {}, pokeProgress = [], pokeHold = null,
-  discovery = {}, ambiguousCandidates = [], recovery = {}, previous = {}, now = Date.now() } = {}) {
+  discovery = {}, ambiguousCandidates = [], recovery = {}, previous = {}, now = Date.now(), overseasCancelled = false } = {}) {
   const issues = [];
   const saved = previous.backfills || {};
   const safeSources = safeProgress.sources || {};
@@ -92,11 +92,15 @@ function evaluate({ safeRuns = [], pokeRuns = [], safeProgress = {}, pokeProgres
   const newReviews = reviewIds.filter((id) => !knownReviews.has(id));
   if (newReviews.length) issues.push({ key: `pokedata:new-manual-review:${newReviews.join("|")}`,
     reason: `PokeDATAに新規の手動確認待ち${newReviews.length}件`, url: pokedata.runUrl });
+  if(overseasCancelled){
+    for(let i=issues.length-1;i>=0;i--)if(issues[i].key.startsWith('pokedata:'))issues.splice(i,1);
+    Object.assign(pokedata,{status:'cancelled',stuckRuns:0,repeatedFailures:0,failureReason:null});
+  }
   const activeKeys = issues.map((issue) => issue.key);
   const previousKeys = new Set(previous.activeAlertKeys || []);
   return { issues, activeAlertKeys: activeKeys, newIssues: issues.filter((issue) => !previousKeys.has(issue.key)),
-    backfills: { safe, pokedata, reviewIds, newManualReviewCount: newReviews.length,
-      safeProgress: safeSources, pokeProgress: pokeProgress.map((row) => ({ setName: row.setName,
+    backfills: { safe, pokedata, reviewIds:overseasCancelled?[]:reviewIds, newManualReviewCount: overseasCancelled?0:newReviews.length,
+      safeProgress: safeSources, pokeProgress: (overseasCancelled?[]:pokeProgress).map((row) => ({ setName: row.setName,
         processed: row.processedCardIds?.length || 0, target: row.targetCount || row.sourceSetTotal || null,
         lastCardId: row.lastCardId || null, lastFailure: row.lastFailure || null })) },
   };

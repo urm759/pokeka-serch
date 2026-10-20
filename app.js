@@ -1132,13 +1132,15 @@ function renderSourceObservability() {
       </article>`;
     }).join("") : `<p class="empty-note">連携監査データを生成中です。</p>`;
   }
-  const pokedata = coverage?.overseasSources?.pokedata || null;
+  const overseasCancelled=state.updateStatus?.sources?.pokedata?.status==='cancelled'||state.pokedataManifest?.publicationStatus==='cancelled';
+  const pokedata = overseasCancelled?null:coverage?.overseasSources?.pokedata || null;
   if (els.pokedataCoverage) {
     els.pokedataCoverage.textContent = pokedata
       ? `${pokedata.statusLabel || `検証中／部分取得（${fmt.format(pokedata.acquired || 0)}件）`} / 全カードカバー率 ${formatRate(pokedata.totalCoveragePct)}`
-      : "PokeDATA 検証状況を確認中";
+      : overseasCancelled?"海外価格：利用者判断で中止（保存データは非公開保持）":"PokeDATA 検証状況を確認中";
   }
-  if (auditIsOpen(els.pokedataCoverageDetails)) {
+  if (overseasCancelled&&els.pokedataCoverageDetails)els.pokedataCoverageDetails.innerHTML='利用者判断で中止';
+  if (!overseasCancelled&&auditIsOpen(els.pokedataCoverageDetails)) {
     const records = state.pokedataAuditRecords.length ? state.pokedataAuditRecords : pokedata?.records || [];
     const manifestSets = state.pokedataManifest?.sets || [];
     const globalAcquisition = state.pokedataManifest?.acquisition || {};
@@ -1200,7 +1202,7 @@ function renderSourceObservability() {
         <span>展開済みセット内の紐付け率 <b>${formatRate(pokedata.validationMatchRatePct)}</b></span>
         <span>全${fmt.format(pokedata.totalCards || 0)}枚に対するカバー率 <b>${formatRate(pokedata.totalCoveragePct)}</b></span>
         ${state.pokedataManifest?.qualityAudit ? `<span class="collector-stop-reason">自動一致監査 <b>${fmt.format(state.pokedataManifest.qualityAudit.sampleSize || 0)}行 / 誤一致 ${fmt.format(state.pokedataManifest.qualityAudit.mismatchCount || 0)}行（${formatRate(state.pokedataManifest.qualityAudit.mismatchRatePct)}）/ 95%信頼上限 ${formatRate(state.pokedataManifest.qualityAudit.upper95Pct)} / ${escapeHtml(state.pokedataManifest.qualityAudit.precisionStatus || "精度確認中")}</b><small>監査シード ${escapeHtml(state.pokedataManifest.qualityAudit.seed || "未取得")} / 層別 ${escapeHtml((state.pokedataManifest.qualityAudit.strata || []).map((entry) => `${entry.name} ${entry.sampleSize}行・誤一致${entry.mismatchCount}`).join(" / ") || "対象行なし")}</small>${state.pokedataManifest.qualityAudit.specialVariantAudit ? `<small>SV2a特殊ミラー全件監査 ${fmt.format(state.pokedataManifest.qualityAudit.specialVariantAudit.audited || 0)}件 / ${escapeHtml((state.pokedataManifest.qualityAudit.specialVariantAudit.strata || []).map((entry) => `${entry.name} ${entry.audited}件・誤一致${entry.mismatchCount}・95%上限${formatRate(entry.upper95Pct)}`).join(" / ") || "対象なし")}</small>` : ""}</span>` : ""}
-        ${state.marketResearch ? `<span class="collector-stop-reason">海外先行性 <b>${fmt.format(state.marketResearch.overseasLead?.savedCardCount || 0)}枚・${fmt.format(state.marketResearch.overseasLead?.savedDateCount || 0)}日 / ${escapeHtml(state.marketResearch.overseasLead?.status || "仮説・蓄積中")}</b></span><span class="collector-stop-reason">季節性 <b>${fmt.format(state.marketResearch.seasonality?.savedDateCount || 0)}日 / ${escapeHtml(state.marketResearch.seasonality?.status || "仮説・蓄積中")}</b><small>市場全体・買取掲載・非掲載を分離。仕入れ上限へ未反映</small></span><span>為替 <b>${Number.isFinite(state.marketResearch.fx?.rate) ? `1 USD = ¥${Number(state.marketResearch.fx.rate).toFixed(3)}` : "未取得"}</b><small>${escapeHtml(state.marketResearch.fx?.source || "取得元未取得")} / ${escapeHtml(state.marketResearch.fx?.rateDate || state.marketResearch.fx?.fetchedAt || "日時未取得")} / ${escapeHtml(state.marketResearch.fx?.latestOrPrevious || state.marketResearch.fx?.status || "未取得")}</small></span>` : ""}
+        ${state.marketResearch ? `<span class="collector-stop-reason">国内季節性 <b>${fmt.format(state.marketResearch.seasonality?.savedDateCount || 0)}日 / ${escapeHtml(state.marketResearch.seasonality?.status || "仮説・蓄積中")}</b><small>市場全体・買取掲載・非掲載を分離。仕入れ上限へ未反映</small></span>` : ""}
         ${state.pokedataSetDiscovery ? `<span class="collector-stop-reason">日本語セット自動発見 <b>${fmt.format(state.pokedataSetDiscovery.eligibleSets || 0)}セット候補 / 確認待ち ${fmt.format(state.pokedataSetDiscovery.manualReviewCount || 0)}件</b><small>${escapeHtml(state.pokedataSetDiscovery.status || "未取得")} / ${escapeHtml((state.pokedataSetDiscovery.topSets || []).slice(0, 3).map((row) => `${row.setCode} ${row.setName} ${row.completed}/${row.sourceCount ?? "?"}`).join("・") || "巡回候補なし")}。403・曖昧コード・形式変更は自動採用しません。</small></span>` : ""}
         ${state.supplyMaturityHypothesis ? `<span class="collector-stop-reason">供給成熟・需要の仮説 <b>${fmt.format(state.supplyMaturityHypothesis.counts?.hypothesis || 0)}枚 / ${escapeHtml(state.supplyMaturityHypothesis.returnDateBacktest?.status || "蓄積中")}</b><small>絶版確認ではありません。供給警戒 ${fmt.format(state.supplyMaturityHypothesis.counts?.supplyWarningAmongHypothesis || 0)}枚は既存リスクと分離。返却時の国内売却検証は ${fmt.format(state.supplyMaturityHypothesis.returnDateBacktest?.hypothesis?.evaluated || 0)}件。仕入れ上限へ未反映。</small></span>` : ""}
         ${state.modernHighRarityAudit ? `<span class="collector-stop-reason">2020年以降・高レア掲載と分析 ${readiness2020Text(state.modernHighRarityAudit.readiness2020)}<small>SR系ホワイトリスト ${escapeHtml((state.modernHighRarityAudit.config?.rarityWhitelist || []).join("・"))}／AR・CHRは別集計。公式マスタ・個別根拠のみ、旧2015監査の系列年推定を今回の率へ混ぜません。</small></span>` : ""}
@@ -5206,6 +5208,7 @@ const overseasGlanceFailures=new Set();
 let overseasGlanceRevision=null;
 function overseasGlanceShard(id){let h=0;for(const c of String(id||''))h=(h*31+c.charCodeAt(0))>>>0;return h%16;}
 function overseasPriceGlance(card,key,now=Date.now()) {
+  if(state.pokedataManifest?.publicationStatus==='cancelled'||state.updateStatus?.sources?.pokedata?.status==='cancelled')return '';
   const label='海外'+(key==='raw'?'素体':'PSA10');
   if(state.pokedataManifest?.publicationStatus==='permission-wait')return label+'：公開許諾確認待ち';
   if(overseasGlanceFailures.has(overseasGlanceShard(card.id)))return label+'：要約読込失敗・履歴未確認';
@@ -5223,6 +5226,7 @@ function overseasPriceGlance(card,key,now=Date.now()) {
   return `<b>${label} ¥${fmt.format(Math.round(row.jpy))}</b>（${escapeHtml(row.condition)}）${fresh&&recent?'・参考':'・古い履歴／現在相場ではない'}${gap==null?'':`／国内比 ${gap>0?'+':''}${gap.toFixed(1)}%`}<span> ${escapeHtml(row.source)}／最終成約 ${escapeHtml(row.lastSale||'未取得')}${fxFresh?'':'／為替の日時不足・古値'}</span><details><summary>海外実成約の根拠</summary>${escapeHtml(row.period||'期間不明')}／採用${row.count}件／取得 ${escapeHtml(record.at||'未取得')}／USD ${row.usd??'未取得'}・為替 ${record.fx?.rate??'未取得'}（${escapeHtml(record.fx?.rateDate||'基準日未取得')}）<br>${escapeHtml(row.note)}。国内と比較可能なときだけ価格差を表示。上限・GOへ不使用。<a href="${escapeHtml(record.url)}" target="_blank" rel="noreferrer">元ページ</a></details>`;
 }
 async function ensureOverseasGlance(cards) {
+  if(state.pokedataManifest?.publicationStatus==='cancelled'||state.updateStatus?.sources?.pokedata?.status==='cancelled')return;
   if(state.pokedataManifest?.publicationStatus==='permission-wait')return;
   const revision=uiDataManifest?.revision||'legacy';
   if(overseasGlanceRevision!==revision){overseasGlanceCache.clear();overseasGlanceRequests.clear();overseasGlanceFailures.clear();overseasGlanceRevision=revision;}

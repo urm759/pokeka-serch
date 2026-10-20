@@ -22,6 +22,7 @@ function build(root, sources, rows, now = Date.now()) {
   const route = { toreca:'daily',shopBuyback:'daily',marketAnalysis:'daily',psaJapan:'daily',cardrush:'priority',hareruya2:'priority',yuyutei:'safe',torecacamp:'safe',pokedata:'pokedata' };
   const result = {};
   for (const [id, source] of Object.entries(sources)) {
+    if (id === 'pokedata' && require('./overseas_access_policy').cancelled(root)) continue;
     const policy = SOURCE_POLICIES[id], row = rows[id] || {};
     const latest = id === 'psaOfficial' ? pc.acquisitionState || {} : runs[id] || {};
     const scheduled = id === 'psaOfficial' ? pc.lastScheduledState || {} : (history[id] || []).filter(r => r.workflowTrigger === 'schedule'

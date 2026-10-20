@@ -21,6 +21,7 @@ function project(record,card) {
   return result.raw||result.psa10?result:null;
 }
 function build(root=ROOT) {
+  if(require('./overseas_access_policy').cancelled(root))return {cards:0,status:'cancelled',newAcquired:0};
   if(!require('./overseas_access_policy').allowed(root,'public')) {
     const dir=path.join(root,'data/overseas-glance');fs.mkdirSync(dir,{recursive:true});
     for(let i=0;i<16;i++)fs.writeFileSync(path.join(dir,i+'.json'),JSON.stringify({version:1,publicationStatus:'permission-wait',cards:{}}));

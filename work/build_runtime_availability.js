@@ -21,6 +21,7 @@ function build(root=ROOT,now=Date.now()) {
   const sourceNames=new Set([...Object.keys(status),...history.flatMap(s=>Object.keys(s.observations))]);
   const sources={};
   for(const source of sourceNames) {
+    if(source==='pokedata'&&require('./overseas_access_policy').cancelled(root))continue;
     const samples=history.filter(s=>s.observations[source]).map(s=>{
       const start=Date.parse(s.from||s.delta?.baselineAt||''),end=Date.parse(s.at);
       const confirmed=s.confirmedCounts?.[source]??(Number.isFinite(start)?s.observations[source].filter(r=>Date.parse(r.at)>=start&&Date.parse(r.at)<=end).length:null);

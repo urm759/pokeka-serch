@@ -3,7 +3,7 @@ name: Data Update Health Watchdog
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: [Daily Fast Update, Safe Checkpoint Backfill, PokeDATA Incremental Backfill, Priority Purchase Price Refresh]
+    workflows: [Daily Fast Update, Safe Checkpoint Backfill, Priority Purchase Price Refresh]
     types: [completed]
   schedule:
     # Offset from :20 price jobs; the shared 2h acquisition gate still limits requests.
@@ -37,6 +37,7 @@ jobs:
           node work/test_scheduled_cycle_evidence.js
           node work/test_postpass_cadence.js
           node work/test_automatic_operation.js
+          node work/test_overseas_cancellation.js
       - name: Fill missed price intervals with shared cooldown and access budgets
         run: |
           node work/scheduled_cycle_evidence.js catchup --baseline
@@ -44,6 +45,11 @@ jobs:
       - name: Validate catchup data without changing purchase criteria
         id: catchup_validation
         run: |
+          # Acquisition may be skipped by cooldown; saved data still needs a coherent audit.
+          if [ "$(node -p "require('./data/priority-price-execution.json').runId || ''")" != "$GITHUB_RUN_ID" ]; then
+            node work/build_card_completion.js
+            node work/finalize_update_status.js
+          fi
           node work/test_price_integrity.js
           node work/test_price_comparison.js
           node work/test_profile_departure_audit.js

@@ -64,6 +64,7 @@ assert.deepEqual(status.unifiedMonitor.outcomes, published, "screen and download
 assert.equal(published.counts.listed, completion.summary.total);
 assert.equal(published.counts.analyzable, completion.summary.analyzable);
 assert.equal(published.domesticPsa9IndividualCards, 0, "overseas PSA9 is not domestic completed acquisition");
-assert.equal(published.sources.pokedata.valid, published.overseasAcquisition.usablePsa10MedianCards);
+if(require('./overseas_access_policy').cancelled(process.cwd()))assert.equal(published.sources.pokedata,undefined,'cancelled scope is not an active completion source');
+else assert.equal(published.sources.pokedata.valid, published.overseasAcquisition.usablePsa10MedianCards);
 assert(!JSON.stringify(published).match(/NaN|Infinity/));
 console.log("completion routes, same-cause hold, outcome deltas, saved PSA recovery, promo ambiguity: passed");

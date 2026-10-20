@@ -9,6 +9,13 @@ const battle = manifest.sets.find((entry) => entry.setName === "Battle Partners"
 const terastal = manifest.sets.find((entry) => entry.setName === "Terastal Festival ex");
 const sv2a = manifest.sets.find((entry) => entry.setName === "Pokemon Card 151 Japanese");
 
+if(manifest.publicationStatus==='cancelled'){
+  assert.equal(capture.publicationStatus,'cancelled');
+  assert.deepEqual(capture.cards,{});
+  assert.deepEqual(manifest.sets,[]);
+  assert.deepEqual(manifest.nextSetPriorities,[]);
+  console.log('PASS cancelled captures are private; no active matching expansion');
+}else{
 assert(battle);
 assert(terastal);
 assert(sv2a);
@@ -64,3 +71,4 @@ console.log(JSON.stringify({
   expandedSet: terastal.setName,
   expandedRecords: terastal.linkageCount,
 }));
+}

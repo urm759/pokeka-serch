@@ -22,6 +22,10 @@ function setup(fetch){
   c.uiDataManifest.revision='v2';await c.api.ensureOverseasGlance([card]);assert.equal(calls,2);
   const missing=setup(async()=>({version:1,cards:{}}));await missing.api.ensureOverseasGlance([card]);
   assert(missing.api.overseasPriceGlance(card,'psa10',now).includes('実成約未取得'));
+  let cancelledRequests=0;const cancelled=setup(async()=>{cancelledRequests++;throw Error('cancelled must not load');});
+  cancelled.state.updateStatus={sources:{pokedata:{status:'cancelled'}}};
+  await cancelled.api.ensureOverseasGlance([card]);
+  assert.equal(cancelledRequests,0);assert.equal(cancelled.api.overseasPriceGlance(card,'psa10',now),'');
   let resolveOld;const race=setup(()=>new Promise(resolve=>{resolveOld=resolve;}));
   const first=race.api.ensureOverseasGlance([card]);race.uiDataManifest.revision='v2';
   race.fetchJsonMaybe=async()=>({version:1,cards:{test:{...row,psa10:{...row.psa10,jpy:13000}}}});

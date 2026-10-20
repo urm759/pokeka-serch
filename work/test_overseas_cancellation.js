@@ -1,0 +1,54 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path');
+const access=require('./overseas_access_policy'),api=require('./pokedata_official_api');
+const root=fs.mkdtempSync(path.join(os.tmpdir(),'overseas-cancelled-'));
+const write=(f,v)=>{const file=path.join(root,f);fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(v));};
+write('data/overseas-access-policy.json',{version:1,status:'cancelled',cancelledByUser:true,internalAnalysisAllowed:true,publicPricesAllowed:true,permissionEvidence:'synthetic-old-grant'});
+write('.private/overseas/api/permission.json',{version:1,internalAnalysisAllowed:true,apiSubscriptionConfirmed:true,permissionEvidence:'synthetic-old-grant',reviewedAt:'2026-01-01'});
+write('.private/overseas/api/queue.json',{cards:{one:{lastSuccessAt:'2026-01-01'}}});
+write('.private/overseas/analysis/report.json',{retained:'do-not-reanalyse'});
+write('data/psa-access-policy.json',{version:1,automaticAcquisition:false,permissionEvidence:null});
+const snapshot=f=>fs.readFileSync(path.join(root,f),'utf8');
+const queue=snapshot('.private/overseas/api/queue.json'),report=snapshot('.private/overseas/analysis/report.json'),popPolicy=snapshot('data/psa-access-policy.json');
+assert(access.cancelled(root));assert(!access.allowed(root));assert(!access.allowed(root,'public'));
+assert.throws(()=>access.assertInternal(root),e=>e.code==='POKEDATA_CANCELLED');
+assert.equal(require('./private_overseas_analysis').build(root).status,'cancelled');
+assert.throws(()=>require('./serve_private_overseas').createServer(root),/中止/);
+const routes=require('./completion_routes').routes({i:{}},{psaAllowed:false,overseasAllowed:false,overseasCancelled:true});
+assert(!routes.some(r=>/pokedata/i.test(r.source)));assert(routes.some(r=>r.key==='psaOfficial'&&r.acquisitionStatus==='permission-wait'));
+assert(routes.some(r=>r.key==='domesticTrades'));
+const health=require('./backfill_health_model').evaluate({overseasCancelled:true,now:Date.parse('2026-10-21'),
+ safeRuns:[{id:1,status:'completed',conclusion:'failure',updated_at:'2026-10-18'}],
+ pokeRuns:[{id:2,status:'completed',conclusion:'failure',updated_at:'2026-10-01'}],
+ pokeHold:{reason:'authentication'},discovery:{manualReview:[{id:3,reason:'ambiguous'}]}});
+assert(!health.issues.some(r=>r.key.startsWith('pokedata:')));assert(health.issues.some(r=>r.key==='safe:run-overdue'));
+assert.equal(health.backfills.pokedata.status,'cancelled');
+const projection=require('./enforce_overseas_publication').project;
+const manifest=projection('data/pokedata/manifest.json',{sets:[{file:'x',localCardIds:['one']}],nextSetPriorities:['x'],acquisition:{linkedCards:1}},{cancelled:true});
+assert.deepStrictEqual(manifest.sets,[]);assert.deepStrictEqual(manifest.nextSetPriorities,[]);
+const shard=projection('data/pokedata/sets/x.json',{cards:{one:{pokedata:{id:1}}},linkageRecords:[{id:1}]},{cancelled:true});
+assert.deepStrictEqual(shard.cards,{});assert.deepStrictEqual(shard.linkageRecords,[]);
+write('data/pokedata/sets/synthetic.json',{cards:{one:{localCardId:'one',pokedata:{id:1}}},checkpoint:{next:2}});
+const savedOriginal=snapshot('data/pokedata/sets/synthetic.json');
+const guard=require('./enforce_overseas_publication');
+assert.equal(guard.enforce(root).status,'cancelled');
+const digest=require('node:crypto').createHash('sha256').update(savedOriginal).digest('hex');
+assert.equal(snapshot('.private/overseas/archive/'+digest+'/data/pokedata/sets/synthetic.json'),savedOriginal,'exact original and checkpoint retained privately before projection');
+assert.equal(guard.enforce(root).changed,0,'cancellation projection is idempotent');
+assert.equal(guard.verify(root).checked>0,true);
+assert.equal(require('./workflow_schedule').scheduleFor('pokedata').automatic,false);
+const workflow=fs.readFileSync(path.join(__dirname,'../.github/workflows/backfill-data.yml'),'utf8');
+assert(!workflow.includes('cron:'));assert(workflow.includes('if: ${{ false }}'));
+const watcher=fs.readFileSync(path.join(__dirname,'../.github/workflows/watch-data-health.yml'),'utf8');
+assert(!watcher.includes('PokeDATA Incremental Backfill'));
+const validation=watcher.slice(watcher.indexOf('id: catchup_validation'),watcher.indexOf('- name: Publish changed health state only'));
+assert(validation.indexOf('finalize_update_status.js')<validation.indexOf('test_purchase_limit_audit.js'),'cooldown does not skip saved-data regeneration');
+assert(validation.includes('runId')&&validation.includes('$GITHUB_RUN_ID'),'already finalized acquisition is not rebuilt a second time');
+assert(!validation.includes('refresh_candidate_shops.js'),'audit repair is not another acquisition');
+(async()=>{
+ let calls=0;const fetcher=()=>{calls++;throw Error('not reached');};
+ await assert.rejects(()=>api.request(root,'pricing',{id:1,asset_type:'CARD'},{approvedCredits:100,token:'synthetic',fetcher}),e=>e.code==='POKEDATA_CANCELLED');
+ assert.equal((await require('./run_private_pokedata').run(root,{token:'synthetic',fetcher})).status,'cancelled');assert.equal(calls,0);
+ assert.equal(snapshot('.private/overseas/api/queue.json'),queue);assert.equal(snapshot('.private/overseas/analysis/report.json'),report);
+ assert.equal(snapshot('data/psa-access-policy.json'),popPolicy,'POP policy is independent');
+ console.log('PASS user cancellation overrides grants, no API/analysis/queue rewrite, no overseas retry/alerts/schedule, POP unchanged and coherent cooldown audit');
+})().catch(e=>{console.error(e);process.exitCode=1;});

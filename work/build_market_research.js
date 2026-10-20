@@ -119,8 +119,8 @@ function main() {
     leadRows[cardId] = [date, positive(local.price), positive(raw?.periods?.days30?.medianJpy), positive(local.snkPsa10Price), positive(psa10?.periods?.days30?.medianJpy), positive(local.snkPsa9Price), positive(psa9?.periods?.days30?.medianJpy), fx, Number(raw?.periods?.days30?.count || 0), Number(psa10?.periods?.days30?.count || 0), Number(psa9?.periods?.days30?.count || 0), new Date().toISOString()];
   }
   const leadHistory = read(LEAD_HISTORY_PATH, { version: 1, dates: [], cards: {} });
-  appendDaily(leadHistory, date, leadRows);
-  write(LEAD_HISTORY_PATH, leadHistory);
+  const overseasCancelled=require('./overseas_access_policy').cancelled(ROOT);
+  if(!overseasCancelled){appendDaily(leadHistory, date, leadRows);write(LEAD_HISTORY_PATH, leadHistory);}
 
   const listed = (card) => Object.keys(buybacks[card.id]?.shops || {}).length > 0;
   const groups = {
@@ -149,6 +149,7 @@ function main() {
     seasonality: { status: seasonHistory.dates.length < 120 ? "仮説・蓄積中" : "検証中", savedDateCount: seasonHistory.dates.length, activeEvents, configuredEvents: config.seasonalEvents, groups, minimumValidation: "複数年または複数回のイベント検証" },
     comparisons,
   };
+  if(overseasCancelled){summary.overseasLead={status:'cancelled'};summary.comparisons={};summary.fx={rate:null,status:'利用者判断で中止',stale:true};summary.pokedata={status:'cancelled'};}
   write(OUTPUT, summary);
   console.log(JSON.stringify({ pokedataCards: summary.pokedata.cardCount, comparableCards: summary.pokedata.comparisonCardCount, leadSnapshots: summary.overseasLead.savedCardCount, seasonDates: summary.seasonality.savedDateCount, fx: summary.fx }));
 }

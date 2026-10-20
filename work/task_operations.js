@@ -3,6 +3,7 @@ const path = require('node:path');
 function build(root, pc = {}) {
   const workflows = fs.readdirSync(path.join(root,'.github/workflows')).filter(file=>/\.ya?ml$/.test(file)).sort();
   const scripts = workflows.flatMap(file => {
+    if (file === 'backfill-data.yml' && require('./overseas_access_policy').cancelled(root)) return [];
     const target = path.join(root,'.github/workflows',file);
     if (!fs.existsSync(target)) return [];
     const text = fs.readFileSync(target,'utf8');

@@ -27,6 +27,7 @@ function build(root, sources, previous = {}, now = Date.now(), options = {}) {
   const price = read(root, "data/state-a-price-audit.json");
   const rows = {};
   for (const [id, source] of Object.entries(sources)) {
+    if(id==='pokedata'&&require('./overseas_access_policy').cancelled(root))continue;
     const a = audit[id] || {};
     const filename = { toreca: "data/pokemon-cards.json", cardrush: "work/cardrush_catalog.json", hareruya2: "work/hareruya2_catalog.json", yuyutei: "work/yuyutei_catalog.json", torecacamp: "work/torecacamp_catalog.json", psaOfficial: "data/psa-population-summary.json", pokedata: "data/pokedata/manifest.json", shopBuyback: "data/shop-buyback-summary.json", snkrRaw: "data/snkr-raw-flip-summary.json", psaJapan: "data/psa-japan-services.json", marketAnalysis: "data/market-stability-summary.json" }[id];
     const old = previous.rows?.[id] || {};
@@ -82,7 +83,8 @@ function build(root, sources, previous = {}, now = Date.now(), options = {}) {
     { label: "カードラッシュ／遊々亭", category: "アクセス確認待ち（403）", remaining: rows.yuyutei?.remaining ?? null, usableNet: 0, lastProgressAt: rows.yuyutei?.lastProgressAt || null, nextAction: "403停止・前回正常値を維持。自動回避しない" },
     { label: "季節性・海外先行性の検証", category: "時間待ち（記録は日次自動保存）", remaining: null, usableNet: null, lastProgressAt: null, nextAction: "将来期間・複数イベントを待つ。仕入れ上限に適用しない" },
     { label: "返却時バックテスト", category: "時間待ち", remaining: null, usableNet: 0, lastProgressAt: null, nextAction: "最短2026-12-01以降。未到達を完了扱いしない" },
-  ];
+  ].filter(row=>!overseasAccess.cancelled(root)||!row.label.startsWith('PokeDATA'));
+  if(overseasAccess.cancelled(root))for(const row of backlogStates)if(row.label==='季節性・海外先行性の検証')row.label='国内季節性の検証';
   return { version: 1, observedAt: new Date(now).toISOString(), rows, backlogStates,
     operation: require('./automatic_operation').build(root, sources, rows, now),
     freshnessDefinition: "48時間以内（スニダン素体24時間）のカード別取得日が確認できた有効価格・POP / サイト全カード。少数更新で全体を最新扱いしない。公開日は該当ファイルの公開main最終コミット日。純増は取得監査の比較基準からの差。今回の重点実行分は重点監査JSONで別表示。純増不明は未記録。",

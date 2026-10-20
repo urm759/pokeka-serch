@@ -48,7 +48,10 @@ assert.ok(completion.summary.releaseDateCompletenessPct > 19.2, "set master must
 
 const unsupported = Object.values(queue.cards).find((row) => row.pk === "unsupported-or-unconfirmed");
 assert.ok(unsupported);
-assert.equal(unsupported.i.pokedata[0], "取得不能", "unsupported/unconfirmed PokeDATA rows must not be retried forever");
+if (require('./overseas_access_policy').cancelled(process.cwd())) {
+  assert.equal(unsupported.i.pokedata[0], '中止');
+  assert.equal(unsupported.i.pokedata[5], null, 'cancelled data is not retryable missing data');
+} else assert.equal(unsupported.i.pokedata[0], "取得不能", "unsupported/unconfirmed PokeDATA rows must not be retried forever");
 const sortedPriorities = queue.queue.slice(0, 100).map((id) => queue.cards[id].p);
 assert.deepEqual(sortedPriorities, [...sortedPriorities].sort((a, b) => b - a), "priority queue must process the highest score first");
 

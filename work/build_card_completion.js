@@ -244,6 +244,11 @@ function main() {
         entry.retryCount = Number(previous.retryCount || 0);
         entry.failureReason = previous.failureReason || entry.failureReason;
       }
+      if(require('./overseas_access_policy').cancelled(ROOT)&&['rawActualSales','psa10ActualSales','psa9Sales','pokedata'].includes(key)){
+        entry.planStatus='cancelled';entry.nextRetryAt=null;entry.failureReason='利用者判断で中止';
+        entry.lastAttemptAt=null;entry.lastSuccessAt=null;entry.retryCount=0;
+        if(entry.status!=='取得済み')entry.status='中止';
+      }
     }
     const values = Object.entries(entries).filter(([key])=>!['psa9Evidence','buybackExitEvidence'].includes(key)).map(([,value])=>value);
     const acquired = values.filter((entry) => entry.status === "取得済み").length;
@@ -407,7 +412,7 @@ function main() {
     generatedAt,
     itemSchema: ["status", "lastAttemptAt", "lastSuccessAt", "retryCount", "failureReason", "nextRetryAt"],
     evidenceSourceTimes: {toreca:times.toreca,shopBuyback:times.buyback},
-    overseasPolicyExplanation: '原本は非公開保持。公式APIの個別成約提供は未確認。集計価格を個別成約・期間件数に代用しない。国内PSA9・状態A個別成約は別の未実装経路。',
+    overseasPolicyExplanation: require('./overseas_access_policy').cancelled(ROOT)?'利用者判断で中止・取得/紐付け拡大/分析/契約/問い合わせの予定なし。原本は非公開保持。PSA POPと国内成約は別件。':'原本は非公開保持。公式APIの個別成約提供は未確認。集計価格を個別成約・期間件数に代用しない。国内PSA9・状態A個別成約は別の未実装経路。',
     evidenceSchema: 'e=[PSA9集計確認,複数店買取確認]。1=取得済み、0=定期再確認の状態符号（価格・件数ではない）。PSA9確認日はカード別psa9ObservedAt、試行日はsource times、買取価格日と照合根拠は原票へ。実成約とは別。',
     sourceByItem: {
       domesticPrice: "みんトレ", domesticTrades: "みんトレ", psa10Price: "みんトレ／スニダン",

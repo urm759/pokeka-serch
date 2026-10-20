@@ -2,6 +2,7 @@ const fs = require('node:fs'), path = require('node:path');
 const access = require('./overseas_access_policy'), api = require('./pokedata_official_api');
 const retry = require('./acquisition_retry'), analysis = require('./private_overseas_analysis');
 async function run(root, options = {}) {
+  if(access.cancelled(root))return {status:'cancelled',httpRequests:0,acquired:0,checkpointPreserved:true};
   const started = Date.now(), file = access.privatePath(root, 'api/queue.json');
   fs.mkdirSync(path.dirname(file), { recursive: true });
   const release = retry.lock(file + '.lock');
@@ -70,5 +71,5 @@ async function run(root, options = {}) {
     return receipt;
   } finally { release(); }
 }
-if (require.main === module) run(path.resolve(__dirname, '..')).then(r => console.log(JSON.stringify({ status: r.status, httpRequests: r.httpRequests, privateCheckpointSaved: true }))).catch(() => { console.error('Private PokeDATA processing failed; inspect local checkpoint'); process.exitCode = 1; });
+if (require.main === module) run(path.resolve(__dirname, '..')).then(r => console.log(JSON.stringify({ status: r.status, httpRequests: r.httpRequests, privateCheckpointSaved: r.status!=='cancelled' }))).catch(() => { console.error('Private PokeDATA processing failed; inspect local checkpoint'); process.exitCode = 1; });
 module.exports = { run };

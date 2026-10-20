@@ -710,7 +710,7 @@ async function updateTorecaCamp(cards, paths) {
 
   // Legacy known URLs lack a sitemap number. Refresh them without inventing provenance or moving the normal cursor.
   progress.knownUrlRetries ||= {};
-  const legacyRequested=[...new Set([...comparisonIds,...(read(path.join(__dirname,'search-profile-targets.json'),{}).readyRoutes?.domesticShops||[]).filter(r=>r.field==='referenceMedian').map(r=>r.id)])];
+  const legacyRequested=campRequestedIds(read(path.join(__dirname,'search-profile-targets.json'),{}),comparisonIds);
   const legacyRecords=[];
   if(!stoppingReason)for(const previousEntry of postpass.legacyTargets(catalog,legacyRequested,{...progress.knownUrlRetries,...progress.retryByUrl}).slice(0,Math.floor(detailLimit/3))) {
     if(Date.now()>=stopBy-Math.max(15000,runtimeLimitMs/2))break;
@@ -779,7 +779,7 @@ async function updateTorecaCamp(cards, paths) {
       const normalStart=retryOnly || retrySitemap ? 0 : progress.currentSitemapIndex === sitemapIndex ? progress.currentEntryIndex : 0;
       const prioritized=maintenanceMode&&!retryOnly&&!retrySitemap;
       if(prioritized) {
-        const requested=[...comparisonIds,...(read(path.join(__dirname,'search-profile-targets.json'),{}).readyRoutes?.domesticShops||[]).filter(r=>r.field==='referenceMedian').map(r=>r.id)];
+        const requested=campRequestedIds(read(path.join(__dirname,'search-profile-targets.json'),{}),comparisonIds);
         entries=postpass.prioritize(entries,normalStart,catalog.filter(r=>r.sourceSitemap<=sitemapUrls.length),[...new Set(requested)],detailLimit,progress.retryByUrl);
       }
       const startingEntry=prioritized?0:normalStart;
@@ -1022,11 +1022,16 @@ async function exclusiveMain() {
 }
 if (require.main === module) exclusiveMain().catch((error) => { console.error(error); process.exitCode = 1; });
 
+function campRequestedIds(targets,comparisonIds=[]) {
+  return [...new Set([...comparisonIds,...(targets.readyRoutes?.domesticShops||[])
+    .filter(r=>['referenceMedian','shopStateA'].includes(r.field)).map(r=>r.id)])];
+}
 module.exports = {
   historySummary,
   campA, campMatchesCard, campPriceQuarantine, campSignature, campVariantPrice, cardSignature, migrateCampCatalogPrices, normalizeSetCode,
   guardCatalogDrop, updateProgressHealth, migrateCampRetries,
   parseProductSitemap, parseProductSitemapIndex, preferCampEntry, campPurchaseUrl,
   yuyuteiPriority,
+  campRequestedIds,
   numberMatches, parseYuyuteiResults, titleMatches,
 };

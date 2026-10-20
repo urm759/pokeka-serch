@@ -103,6 +103,7 @@ function verifyPayload(payload, mapping) {
     && typeof payload.name === 'string' && identity.normalizeToken(payload.name) === identity.normalizeToken(mapping.providerName);
 }
 function build(root, options = {}) {
+  if(access.cancelled(root))return {schema:SCHEMA,status:'cancelled',rows:[],reason:'利用者判断で中止・保存済みレポートは変更しない'};
   const now = options.now ?? Date.now(), meta = metadata(root), allowed = access.allowed(root);
   const input = read(root, '.private/overseas/analysis-input.json', { rows: [] });
   const summary = read(root, 'data/buyback-observation-summary.json', {});
@@ -151,6 +152,6 @@ function build(root, options = {}) {
 if (require.main === module) {
   const root = path.resolve(__dirname, '..');
   const report = build(root);
-  console.log(JSON.stringify({ status: report.status, privateReportWritten: true, httpRequests: 0, publicDataChanged: false }));
+  console.log(JSON.stringify({ status: report.status, privateReportWritten: report.status!=='cancelled', httpRequests: 0, publicDataChanged: false }));
 }
 module.exports = { SCHEMA, comparison, metadata, verifyPayload, build, sameIdentity };

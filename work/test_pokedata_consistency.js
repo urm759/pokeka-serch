@@ -8,6 +8,18 @@ const read = (file) => JSON.parse(fs.readFileSync(path.join(root, file), "utf8")
 const manifest = read("data/pokedata/manifest.json");
 const status = read("data/update-status.json");
 const coverage = read("data/link-coverage.json").current.storeCoverage.overseasSources.pokedata;
+if (require('./overseas_access_policy').cancelled(root)) {
+  assert.equal(manifest.publicationStatus, 'cancelled');
+  assert.deepStrictEqual(manifest.sets, [], 'matching records must remain private after cancellation');
+  assert.deepStrictEqual(manifest.nextSetPriorities, [], 'cancelled exploration must not retain an active priority queue');
+  for (const name of fs.readdirSync(path.join(root, 'data/pokedata/sets'))) {
+    const shard = read('data/pokedata/sets/' + name);
+    assert.equal(shard.publicationStatus, 'cancelled');
+    assert.deepStrictEqual(shard.cards, {});
+    assert.deepStrictEqual(shard.linkageRecords, []);
+  }
+  console.log(JSON.stringify({ cancelled: true, publicMatchingRecords: 0, consistent: true }));
+} else {
 const expected = fromSetEntries(manifest.sets, manifest.acquisition.updatedAt);
 
 assert.deepStrictEqual(manifest.acquisition, expected, "manifest must contain the shared acquisition aggregate");
@@ -35,3 +47,4 @@ assert.match(fs.readFileSync(path.join(root, "app.js"), "utf8"), /認証画面�
 assert.match(fs.readFileSync(path.join(root, "app.js"), "utf8"), /全グレード十分/);
 
 console.log(JSON.stringify({ aggregate: manifest.acquisition, consistent: true }));
+}

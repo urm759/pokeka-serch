@@ -300,7 +300,7 @@ function buildStoreCoverage(root = ROOT) {
       shopEffect: { ...acquisition.shopEffect, rows: undefined }, remaining: acquisition.remaining } : null,
     totalCards, comparableTargetCards: signatureTargets.length, uniqueUnmatchedCards,
     uniqueUnmatchedDefinition: "サイト全カードのうち、国内4ショップ（カードラッシュ・晴れる屋2・遊々亭・トレカキャンプ）の直リンクが1つでも未取得のカード数。各データ元の未紐付け件数の合計ではありません。",
-    stores, linkageSources: { ...stores, psaOfficial }, overseasSources: { pokedata: pokedataSource },
+    stores, linkageSources: { ...stores, psaOfficial }, overseasSources: { pokedata: require('./overseas_access_policy').cancelled(root)?{...pokedataSource,status:'cancelled',statusLabel:'利用者判断で中止・過去の記録のみ',mainUnmatchedReasons:[]}:pokedataSource },
   };
 }
 

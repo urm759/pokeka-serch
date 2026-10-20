@@ -21,7 +21,7 @@ assert(output.certificates.every((cert) => cert.identity.matched));
 assert(output.certificates.every((cert) => cert.salesHistory.count30 === null && cert.salesHistory.count90 === null));
 assert(output.certificates.every((cert) => cert.verifiedForTrading === false));
 assert.equal(output.tcgplayerNewAcquisitionStopped, false);
-assert.equal(saved.publicationStatus,'permission-wait');assert.equal(saved.certificates.length,0,'no unlicensed original prices published');
+assert.equal(saved.publicationStatus,require('./overseas_access_policy').cancelled(process.cwd())?'cancelled':'permission-wait');assert.equal(saved.certificates.length,0,'no unlicensed original prices published');
 assert.equal(output.certificates[0].salesHistory.sales[0].jpyAtReferenceFx, Math.round(215 * 157.59));
 assert.equal(output.certificates[0].estimate.type, "PSA Estimate, not a sale");
 assert.equal(output.certificates[0].population.type, "grade-specific-cert-snapshot");

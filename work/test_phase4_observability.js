@@ -58,7 +58,8 @@ assert.match(scheduleFor("cardrush").workflow, /Priority Purchase Price Refresh/
 assert.strictEqual(scheduleFor("unknown-source").scheduleLabel, "自動更新なし");
 assert.strictEqual(scheduleFor("yuyutei").scheduleLabel, "02:00 JST");
 assert.strictEqual(scheduleFor("torecacamp").scheduleLabel, "02:00 JST");
-assert.strictEqual(scheduleFor("pokedata").scheduleLabel, "05:30 JST");
+assert.strictEqual(scheduleFor("pokedata").scheduleLabel, "自動更新なし");
+assert.strictEqual(scheduleFor("pokedata").automatic, false);
 assert.strictEqual(sourceTiming("yuyutei", { status: "partial", fetchFailureCount: 2 }, [{ status: "partial", fetchFailureCount: 2 }, { status: "partial", fetchFailureCount: 2 }]).consecutiveFailures, 2);
 assert.strictEqual(sourceTiming("torecacamp", { status: "partial", fetchFailureCount: 0 }, [{ status: "partial", fetchFailureCount: 0 }]).consecutiveFailures, 0);
 assert.strictEqual(sourceTiming("toreca", { startedAt: "2026-09-04T08:05:00Z", executionEnvironment: "PCローカル" }).actionsDelayMinutes, null);

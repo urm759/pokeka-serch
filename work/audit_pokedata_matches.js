@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 
 const ROOT = path.join(__dirname, "..");
+if(require.main===module&&require('./overseas_access_policy').cancelled(ROOT)){console.log('PokeDATA: 利用者判断で中止・再照合しない');process.exit(0);}
 const MANIFEST = path.join(ROOT, "data", "pokedata", "manifest.json");
 const OUTPUT = path.join(ROOT, "data", "pokedata-match-audit.json");
 const SAMPLE_SIZE = Math.max(150, Number(process.env.POKEDATA_AUDIT_SAMPLE || 300));

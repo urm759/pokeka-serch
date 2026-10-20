@@ -14,7 +14,6 @@ on:
           - cardrush
           - hareruya2
           - torecacamp
-          - pokedata
           - shopBuyback
           - marketAnalysis
           - psaJapan
@@ -62,7 +61,7 @@ jobs:
         run: node work/run_tracked_update.js torecacamp work/update_yuyutei_torecacamp.js
 
       - name: Expand PokeDATA validation batch
-        if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'pokedata'
+        if: ${{ false }}
         timeout-minutes: 10
         env:
           POKEDATA_SET: "Battle Partners"
@@ -74,7 +73,7 @@ jobs:
         run: node work/run_tracked_update.js pokedata work/update_pokedata_batch.js
 
       - name: Expand priority PokeDATA set
-        if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'pokedata'
+        if: ${{ false }}
         timeout-minutes: 10
         env:
           POKEDATA_SET: "Terastal Festival ex"
@@ -85,7 +84,7 @@ jobs:
         run: node work/update_pokedata_batch.js
 
       - name: Expand Japanese Pokemon Card 151 set
-        if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'pokedata'
+        if: ${{ false }}
         timeout-minutes: 10
         env:
           POKEDATA_SET: "Pokemon Card 151 Japanese"
@@ -96,7 +95,7 @@ jobs:
         run: node work/update_pokedata_batch.js
 
       - name: Reapply authenticated PokeDATA sale captures
-        if: github.event_name == 'schedule' || inputs.source == 'all' || inputs.source == 'pokedata'
+        if: ${{ false }}
         run: node work/run_tracked_update.js pokedata work/import_pokedata_browser_capture.js
 
       - name: Audit PokeDATA matches and build reference research

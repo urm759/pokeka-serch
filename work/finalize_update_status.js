@@ -255,6 +255,10 @@ if(!overseasAccess.allowed(ROOT))Object.assign(sources.pokedata,{
   sourceState:'公式API優先・用途/契約/再公開の許諾確認待ち',lastError:overseasAccess.read(ROOT)?.reason,
   nextScheduledAt:null,scheduleLabel:'取得保留・他取得元は独立継続',publicationAllowed:false,
 });
+if(overseasAccess.cancelled(ROOT))Object.assign(sources.pokedata,{
+  status:'cancelled',cancelledByUser:true,sourceState:'利用者判断で中止',lastError:null,note:'保存済みデータは非公開保持。補完・通知・再開提案の対象外',
+  scheduleLabel:'中止・自動再開なし',nextScheduledAt:null,remaining:null,
+});
 const automaticSources = Object.values(sources).filter((source) => source.automatic);
 const complete = automaticSources.length > 0 && automaticSources.every((source) => source.fresh);
 // These sources directly drive the visible sourcing decision. Yu-Yu-Tei and
@@ -263,7 +267,7 @@ const complete = automaticSources.length > 0 && automaticSources.every((source) 
 const majorSourceIds = ["toreca", "cardrush", "hareruya2", "shopBuyback", "marketAnalysis", "psaOfficial", "psaJapan"];
 const majorComplete = majorSourceIds.every((sourceId) => sources[sourceId]?.fresh);
 const manualPending = Object.entries(sources)
-  .filter(([, source]) => !source.automatic && !source.fresh)
+  .filter(([, source]) => !source.automatic && !source.fresh && source.status!=='cancelled')
   .map(([key]) => key);
 const payload = {
   checkedAt: new Date().toISOString(),
@@ -318,7 +322,7 @@ const payload = {
       label: "認証取得",
       status: psaTask.status === "success" ? "成功" : "手動対応待ちまたは部分取得",
       updatedAt: psaTask.lastSuccessAt || null,
-      checkpoint: "PSA専用Chrome / PokeDATA認証セッション",
+      checkpoint: "PSA専用Chrome（許諾待ち方針を維持）",
       llmCalls: 0,
       codexCalls: 0,
     },

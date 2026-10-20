@@ -16,6 +16,7 @@ async function get(url) {
 (async () => {
   const results = [];
   for (const workflow of ['daily-fast-update.yml', 'priority-price-refresh.yml', 'safe-checkpoint-backfill.yml', 'backfill-data.yml', 'watch-data-health.yml']) {
+    if(workflow==='backfill-data.yml'&&require('./overseas_access_policy').cancelled(root))continue;
     const data = await (await get(`${base}/actions/workflows/${workflow}/runs?event=schedule&per_page=1`)).json();
     const run = data.workflow_runs?.[0];
     if (!run) { results.push({ workflow, status: '未実行' }); continue; }

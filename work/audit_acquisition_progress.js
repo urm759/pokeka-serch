@@ -148,6 +148,7 @@ function main() {
       manualWaitCount: run.manualWaitCount ?? 0,
       evidence: id === "psaOfficial" ? "./data/psa-fetch-progress.json" : id === "torecacamp" ? "./data/torecacamp-stock-summary.json" : "./data/candidate-shop-refresh.json",
       referenceOnly: id === "pokedata" };
+    if(id==='pokedata'&&require('./overseas_access_policy').cancelled(ROOT))Object.assign(sources[id],{status:'cancelled',active:false,stopReason:'利用者判断で中止・過去記録のみ',remaining:null});
     if (data.domesticBaseMissing != null) sources[id].domesticBaseMissing = data.domesticBaseMissing;
     if (id === "psaOfficial") sources[id].savedRecovery = { ...read("data/psa-saved-recovery.json"), evidence: undefined };
     if (id === "pokedata" && pokeProgress) {
