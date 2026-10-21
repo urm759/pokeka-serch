@@ -19,4 +19,13 @@ const summary={asOf:'2026-10-14',periods:[7,30,75,200],drawdownIndices:{7:16},ca
 assert.equal(m.observation(summary,'x',100,7).drawdown,-20);
 assert(m.observation(summary,'x',100,7).drawdownReference);
 assert.equal(m.observation({...summary,drawdownIndices:{}},'x',100,7).drawdown,null);
+const fs=require('node:fs'),vm=require('node:vm'),app=fs.readFileSync('app.js','utf8');
+const context=vm.createContext({psa10PeriodDetails:new Map([['fixture',{snapshots:{75:{...boundary,requiredObservedDays:45,status:'reference'}},
+  actualTrades:{75:{mean:100,median:100,count:3,sufficient:true}},tradeDemand:{rolling:{75:{30:{mean:12,observedDays:2,latest:'2026-10-14'}},90:{30:{mean:999}}}}}]]),
+  fmt:new Intl.NumberFormat('ja-JP'),escapeHtml:String,state:{psa10PeriodSummary:{asOf:'2026-10-14'}}});
+vm.runInContext(app.slice(app.indexOf('function psa10PeriodDetailHtml('),app.indexOf('async function loadPsa10PeriodDetail('))+';globalThis.detail=psa10PeriodDetailHtml;',context);
+const html=context.detail('fixture');
+assert.match(html,/75暦日内の直近30日集計件数・観測平均 12.00件/);
+assert.doesNotMatch(html,/999|90暦日内/,'a 90 day slot cannot replace the real 75 day evidence');
+assert.match(html,/観測最大下落 -10.0%・参考/);
 console.log('PASS chronological drawdown, order, genuine zero, missing, calendar window, summary compatibility');
