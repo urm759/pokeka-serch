@@ -108,6 +108,7 @@ function freshnessDeadline(cards, now) {
   consider(state.updateStatus?.sources?.toreca?.lastSuccessAt,30);
   consider(state.sourceUpdates.toreca,30);
   for (const card of cards) {
+    consider(card.psa10ObservedAt,30);
     for (const row of Object.values(state.buybackObservationSummary?.support?.cards?.[card.id] || {})) {
       consider(row.current?.[3],48); consider(row.current?.[4],48);
     }
@@ -3177,7 +3178,7 @@ function captureConditionOrigins(defaults, restored) {
   for (const [id,param] of Object.entries({includeUnknownYearInput:'includeUnknownYear',diagnosticSearchInput:'diagnostic',psaRateMinInput:'psaRate',overallFilterInput:'overall',minExitLiquidityInput:'exit',minEconomicsInput:'economics',minMarketStabilityInput:'stability',minSupplyRiskInput:'supply',minFuturePriceScoreInput:'futureScore',maxFuturePriceScoreInput:'futureScoreMax',minForecastPriceInput:'forecastMin',maxForecastPriceInput:'forecastMax',minForecastDownsideInput:'downsideMin',maxForecastDownsideInput:'downsideMax',minForecastGapInput:'gapMin',maxForecastGapInput:'gapMax',forecastPhaseInput:'forecastPhase',forecastConfidenceInput:'forecastConfidence',forecastSupplyPressureInput:'forecastSupply',minForecastAgeInput:'releaseAge',forecastMaturityInput:'forecastMaturity',maxForecastMonthlyIncreaseInput:'psaGrowthMax',stockDemandInput:'stockDemand',dataQualityFilterInput:'dataQuality',goConfidenceFilterInput:'goTrust',floorStateInput:'floorState',priceDirectionInput:'priceDirection',supplyStateInput:'supplyState',minFloorScoreInput:'floorScore',storeDemandInput:'storeDemand',showSkippedInput:'showSkipped',hideThinDemandInput:'hideThin',hideReviewInput:'hideReview',fundingOnlyInput:'fundingOnly',officialOnlyInput:'officialOnly',buyback7MaxInput:'bb7Max',buyback30MaxInput:'bb30Max',buyback90MaxInput:'bb90Max',buybackPriceMinInput:'bbPriceMin',buybackPriceMaxInput:'bbPriceMax',snkrRawTx7MinInput:'snkrTx7',snkrRawTx30MinInput:'snkrTx30',snkrRawProfitMinInput:'snkrProfit',snkrRawRoiMinInput:'snkrRoi',snkrRawPurchaseMaxInput:'snkrBuyMax',snkrRawReleaseMonthsInput:'snkrMonths'})) bindings.set(id,param);
   for(const el of document.querySelectorAll('.search-settings input, .search-settings select')) {
     const value=conditionValue(el),urlSpecified=params.has(bindings.get(el.id));
-    const stored=Object.hasOwn(saved,el.id.replace(/Input$/,''));
+    const stored=Object.hasOwn(saved,el.id.replace(/Input$/,'')) || Object.hasOwn(saved,({roiInput:'minRoi',saleTxMinInput:'minSaleTx',psaMaxInput:'maxPsa10',expectedProfitFilterInput:'minExpectedProfitFilter',expectedRoiFilterInput:'minExpectedRoiFilter',stressExpectedProfitFilterInput:'minStressExpectedProfitFilter',stressExpectedRoiFilterInput:'minStressExpectedRoiFilter',purchaseLimitRatioMinInput:'minPurchaseLimitRatio'})[el.id] || '');
     searchConditionOrigins.set(el.id,{value,origin:urlSpecified||value!==restored.get(el.id)?'URL指定':stored||restored.get(el.id)!==defaults.get(el.id)?'保存追加':'初期・詳細設定'});
   }
 }
@@ -3200,7 +3201,7 @@ function restoreQuickFilters() {
   try {
     const migration=migrateObservationControls(JSON.parse(localStorage.getItem(QUICK_FILTER_STORAGE_KEY) || "{}"));
     const saved = migration.value;
-    for(const [param,field,id] of [['filterStressProfit','minStressExpectedProfitFilter','stressExpectedProfitFilterInput'],['filterStressRoi','minStressExpectedRoiFilter','stressExpectedRoiFilterInput']]) if(!new URL(window.location.href).searchParams.has(param) && Object.hasOwn(saved,field)) document.getElementById(id).value=saved[field] ?? '';
+    for(const [param,field,id] of [['filterStressProfit','minStressExpectedProfitFilter','stressExpectedProfitFilterInput'],['filterStressRoi','minStressExpectedRoiFilter','stressExpectedRoiFilterInput'],['tx','minSaleTx','saleTxMinInput'],['psaMax','maxPsa10','psaMaxInput']]) if(!new URL(window.location.href).searchParams.has(param) && Object.hasOwn(saved,field)) document.getElementById(id).value=saved[field] ?? '';
     if (!new URL(window.location.href).searchParams.has('preset')) state.purchaseMode = quickSearchMode(saved.purchaseMode);
     if(migration.changed) localStorage.setItem(QUICK_FILTER_STORAGE_KEY,JSON.stringify(saved));
     const url = new URL(window.location.href);
@@ -3284,6 +3285,7 @@ function saveQuickFilters() {
     localStorage.setItem(QUICK_FILTER_STORAGE_KEY, JSON.stringify({
       purchaseMode: quickSearchMode(state.purchaseMode),
       specifiedImplicitInputs: state.specifiedImplicitInputs || [],
+      minSaleTx:state.minSaleTx,maxPsa10:state.maxPsa10,
       minStressExpectedProfitFilter:state.minStressExpectedProfitFilter,minStressExpectedRoiFilter:state.minStressExpectedRoiFilter,
       minRoi: state.minRoi,
       observationIncludeReference: state.observationIncludeReference,
@@ -3582,7 +3584,7 @@ function migrateQuickSearchMode(url) {
   try { saved = JSON.parse(localStorage.getItem(QUICK_FILTER_STORAGE_KEY) || '{}'); } catch {}
   const previous = url.searchParams.get('riskMode') === 'low' ? 'low-risk' : url.searchParams.get('preset') || saved.purchaseMode;
   const mode = quickSearchMode(previous);
-  const optionalSiteFilters=[['stressExpectedProfitFilterInput','filterStressProfit','minStressExpectedProfitFilter'],['stressExpectedRoiFilterInput','filterStressRoi','minStressExpectedRoiFilter'],['purchaseLimitRatioMinInput','buyLimitRatio','minPurchaseLimitRatio']];
+  const optionalSiteFilters=[['stressExpectedProfitFilterInput','filterStressProfit','minStressExpectedProfitFilter'],['stressExpectedRoiFilterInput','filterStressRoi','minStressExpectedRoiFilter'],['purchaseLimitRatioMinInput','buyLimitRatio','minPurchaseLimitRatio'],['roiInput','roi','minRoi'],['expectedProfitFilterInput','filterExpProfit','minExpectedProfitFilter'],['expectedRoiFilterInput','filterExpRoi','minExpectedRoiFilter'],['saleTxMinInput','tx','minSaleTx'],['psaMaxInput','psaMax','maxPsa10']];
   state.specifiedImplicitInputs=optionalSiteFilters.filter(([id,param,field])=>!url.searchParams.has(param) && (!Object.hasOwn(saved,field) || saved.specifiedImplicitInputs?.includes(id))).map(([id])=>id);
   state.quickModeOrigin = url.searchParams.has('preset') || url.searchParams.has('riskMode') ? 'URL指定' : saved.purchaseMode ? '保存条件' : '初期値';
   if (previous && previous !== mode) {
@@ -3600,6 +3602,7 @@ function migrateQuickSearchMode(url) {
 function readUrl() {
   const filterUrl = new URL(window.location.href);
   if (filterUrl.searchParams.get('buyLimitRatio') === 'off') els.purchaseLimitRatioMinInput.value='';
+  for(const [param,id] of [['tx','saleTxMinInput'],['psaMax','psaMaxInput']]) if(filterUrl.searchParams.get(param)==='off') document.getElementById(id).value='';
   filterUrl.search=new URLSearchParams(migrateObservationControls(Object.fromEntries(filterUrl.searchParams),true).value).toString();
   if (filterUrl.searchParams.has('effRef')) document.getElementById('efficiencyIncludeReferenceInput').checked = filterUrl.searchParams.get('effRef') === '1';
   for (const [param,field] of efficiencyFields) if (filterUrl.searchParams.has(param)) document.getElementById(field+'Input').value = parseOptionalNumber(filterUrl.searchParams.get(param)) ?? '';
@@ -3954,7 +3957,7 @@ function buildShareUrl() {
   if (state.purchaseMode === "low-risk") url.searchParams.set("riskMode", "low");
   else url.searchParams.delete("riskMode");
   url.searchParams.set("preset", quickSearchMode(state.purchaseMode));
-  if (state.purchaseMode === 'specified') for(const [id,param] of [['stressExpectedProfitFilterInput','filterStressProfit'],['stressExpectedRoiFilterInput','filterStressRoi'],['purchaseLimitRatioMinInput','buyLimitRatio']]) if(state.specifiedImplicitInputs?.includes(id)) url.searchParams.set(param,'off');
+  if (state.purchaseMode === 'specified') for(const [id,param] of [['stressExpectedProfitFilterInput','filterStressProfit'],['stressExpectedRoiFilterInput','filterStressRoi'],['purchaseLimitRatioMinInput','buyLimitRatio'],['roiInput','roi'],['expectedProfitFilterInput','filterExpProfit'],['expectedRoiFilterInput','filterExpRoi'],['saleTxMinInput','tx'],['psaMaxInput','psaMax']]) if(state.specifiedImplicitInputs?.includes(id)) url.searchParams.set(param,'off');
   if (state.includeAggressiveInCombined) url.searchParams.set("includeAggressive", "1"); else url.searchParams.delete("includeAggressive");
   if (state.purchaseMode === "low-risk" && state.lowRiskAvailability !== "all") url.searchParams.set("lowRiskBuy", state.lowRiskAvailability);
   else url.searchParams.delete("lowRiskBuy");
@@ -5085,8 +5088,18 @@ function specifiedDataExclusions(card) {
   if (state.catalogCompletion?.cards?.[card.id]?.s !== '分析可能') reasons.push('分析データ不足');
   if (card.identityReviewRequired || state.psaSpecificationHeld?.[card.id]) reasons.push('仕様確認待ち');
   if ((card.priceAggregation?.comparison || card.priceAggregation)?.conflicted || card.priceIntegrity?.disputed || card.dataQuality?.dataAnomaly) reasons.push('価格対立・根拠確認待ち');
+  const priceNeeded=state.minPsa10>0 || specifiedFilterEnabled('specified','psaMaxInput') && state.maxPsa10!=null
+    || [['roiInput','minRoi'],['expectedRoiFilterInput','minExpectedRoiFilter'],['expectedProfitFilterInput','minExpectedProfitFilter']].some(([id,field])=>specifiedFilterEnabled('specified',id)&&state[field]!=null)
+    || explorationFields.some(([param,field])=>param.startsWith('obs')&&state[field]!=null);
+  if(priceNeeded) {
+    const source=state.updateStatus?.sources?.toreca;
+    const confirmedAt=Object.hasOwn(card,'psa10ObservedAt')?card.psa10ObservedAt:source?.date===String(state.sourceUpdates.toreca||'').slice(0,10)?source.lastSuccessAt||state.sourceUpdates.toreca:state.sourceUpdates.toreca;
+    const time=Date.parse(confirmedAt||'');
+    if(!(Number.isFinite(card.psa10)&&card.psa10>0))reasons.push('PSA10価格未取得');
+    if(!Number.isFinite(time)||time>Date.now()||Date.now()-time>30*3600000)reasons.push('PSA10相場の期限切れ・確認日時不足');
+  }
   const ranges=[['saleTx30d',state.minSaleTx,state.maxSaleTx],['saleTx7d',state.minSaleTx7,state.maxSaleTx7],['psaTx30d',state.minPsaTx,state.maxPsaTx],['psaTx7d',state.minPsaTx7,state.maxPsaTx7],['buyback7',state.minBuyback7,state.maxBuyback7],['buyback30',state.minBuyback30,state.maxBuyback30],['buyback90',state.minBuyback90,state.maxBuyback90],['buybackShops',state.minBuybackShops,null]];
-  for (const [field,min,max] of ranges) if ((min>0 || max!=null) && !Number.isFinite(card[field])) reasons.push('取引・掲載件数未取得');
+  for (const [field,min,max] of ranges) if (((min>0 && (field!=='saleTx30d' || specifiedFilterEnabled('specified','saleTxMinInput'))) || max!=null) && !Number.isFinite(card[field])) reasons.push('取引・掲載件数未取得');
   return reasons;
 }
 function specifiedFilterEnabled(mode,id) {
@@ -5148,7 +5161,7 @@ function computeCardSearchExclusions(card, {mode = state.purchaseMode,diagnostic
         if (state.currentMarketCapMin != null && state.currentMarketCapMin < 0) reasons.push("現相場上限下限の入力を確認");
       }
       if (state.catalogScope !== "analysis" && mode === "normal") return reasons;
-      if (card.saleTx30d < state.minSaleTx) reasons.push("取引・掲載件数");
+      if (specifiedFilterEnabled(mode,'saleTxMinInput') && card.saleTx30d < state.minSaleTx) reasons.push("取引・掲載件数");
       if (state.maxSaleTx != null && card.saleTx30d > state.maxSaleTx) reasons.push("取引・掲載件数");
       if (card.saleTx7d < state.minSaleTx7) reasons.push("取引・掲載件数");
       if (state.maxSaleTx7 != null && card.saleTx7d > state.maxSaleTx7) reasons.push("取引・掲載件数");
@@ -5170,17 +5183,17 @@ function computeCardSearchExclusions(card, {mode = state.purchaseMode,diagnostic
       if (currentMode && purchaseProfitSearch && Number.isFinite(profitView.economics?.expectedProfit) && profitView.economics.expectedProfit < 0) reasons.push("実購入時の赤字");
       if (purchaseProfitSearch) {
         const missingReason = currentMode ? "購入時利益算出不可" : "利益条件";
-        if (state.minRoi != null && (!Number.isFinite(profitView.psa10Roi) || profitView.psa10Roi < state.minRoi)) reasons.push(Number.isFinite(profitView.psa10Roi) ? "利益条件" : missingReason);
-        if (state.minExpectedRoiFilter != null && (!Number.isFinite(profitView.economics?.expectedRoi) || profitView.economics.expectedRoi < state.minExpectedRoiFilter)) reasons.push(Number.isFinite(profitView.economics?.expectedRoi) ? "利益条件" : missingReason);
-        if (state.minExpectedProfitFilter != null && (!Number.isFinite(profitView.economics?.expectedProfit) || profitView.economics.expectedProfit < state.minExpectedProfitFilter)) reasons.push(Number.isFinite(profitView.economics?.expectedProfit) ? "利益条件" : missingReason);
+        if (specifiedFilterEnabled(mode,'roiInput') && state.minRoi != null && (!Number.isFinite(profitView.psa10Roi) || profitView.psa10Roi < state.minRoi)) reasons.push(Number.isFinite(profitView.psa10Roi) ? "利益条件" : missingReason);
+        if (specifiedFilterEnabled(mode,'expectedRoiFilterInput') && state.minExpectedRoiFilter != null && (!Number.isFinite(profitView.economics?.expectedRoi) || profitView.economics.expectedRoi < state.minExpectedRoiFilter)) reasons.push(Number.isFinite(profitView.economics?.expectedRoi) ? "利益条件" : missingReason);
+        if (specifiedFilterEnabled(mode,'expectedProfitFilterInput') && state.minExpectedProfitFilter != null && (!Number.isFinite(profitView.economics?.expectedProfit) || profitView.economics.expectedProfit < state.minExpectedProfitFilter)) reasons.push(Number.isFinite(profitView.economics?.expectedProfit) ? "利益条件" : missingReason);
       }
       const stressAtLimit = card.buyLimits?.clean?.supplyStressAtFinal;
-      const forecastFilterActive = [state.minExpectedRoiFilter,state.minExpectedProfitFilter].some(n=>n!=null) && !['current-cap','current-target'].includes(profitView.basis) || specifiedFilterEnabled(mode,'stressExpectedRoiFilterInput') && state.minStressExpectedRoiFilter!=null || specifiedFilterEnabled(mode,'stressExpectedProfitFilterInput') && state.minStressExpectedProfitFilter!=null;
+      const forecastFilterActive = (specifiedFilterEnabled(mode,'expectedRoiFilterInput') && state.minExpectedRoiFilter!=null || specifiedFilterEnabled(mode,'expectedProfitFilterInput') && state.minExpectedProfitFilter!=null) && !['current-cap','current-target'].includes(profitView.basis) || specifiedFilterEnabled(mode,'stressExpectedRoiFilterInput') && state.minStressExpectedRoiFilter!=null || specifiedFilterEnabled(mode,'stressExpectedProfitFilterInput') && state.minStressExpectedProfitFilter!=null;
       if ((mode !== 'specified' || forecastFilterActive) && !currentMode && card.forecastPeriodMismatch && (!state.includePeriodReference || mode === "now" || !['limit','current-cap','current-target'].includes(profitView.basis))) reasons.push("期間不一致・返却時試算不可");
       if (specifiedFilterEnabled(mode,'stressExpectedRoiFilterInput') && !currentMode && state.minStressExpectedRoiFilter != null && (!Number.isFinite(stressAtLimit?.expectedRoi) || stressAtLimit.expectedRoi < state.minStressExpectedRoiFilter)) reasons.push("利益条件");
       if (specifiedFilterEnabled(mode,'stressExpectedProfitFilterInput') && !currentMode && state.minStressExpectedProfitFilter != null && (!Number.isFinite(stressAtLimit?.expectedProfit) || stressAtLimit.expectedProfit < state.minStressExpectedProfitFilter)) reasons.push("利益条件");
       if (card.psa10 < state.minPsa10) reasons.push("価格帯・相場比");
-      if (state.maxPsa10 != null && card.psa10 > state.maxPsa10) reasons.push("価格帯・相場比");
+      if (specifiedFilterEnabled(mode,'psaMaxInput') && state.maxPsa10 != null && card.psa10 > state.maxPsa10) reasons.push("価格帯・相場比");
       if (state.minPrice != null && card.price < state.minPrice) reasons.push("価格帯・相場比");
       if (state.maxPrice != null && card.price > state.maxPrice) reasons.push("価格帯・相場比");
       const purchaseLimitRatio = decisionModel.purchaseLimitMarketRatio(card.buyLimits?.clean?.maxPrice, card.price);

@@ -12,12 +12,16 @@ function routeNeededFields(detail,fields) {
   if(fields.includes('referenceMedian'))result.push({key:'referenceMedian',source:'domesticShops',mode:'採用元の個別再確認・通常巡回と共有'});
   return result;
 }
+function efficiencySummaryKey(calculationKey,state) {
+  const fields=['efficiencyBuy','efficiencyManualPrice','efficiencyScenario','efficiencySaleDays','efficiencyPayoutDays','profitSearchBasis','currentMarketManualPrice','currentMarketSearchKind','observationIncludeReference','efficiencyIncludeReference','psa9RatioAggregate','psa9RatioEstimate','psa9RatioMarket'];
+  return 'efficiency-all:'+JSON.stringify([calculationKey,fields.map(key=>state[key])]);
+}
 function evaluate(profile,at,overlay={},inspectIds=[],calculationCache=null) {
   const url=new URL(profile.url);for(const [k,v]of Object.entries(overlay))if(!url.searchParams.has(k))url.searchParams.set(k,v);
-  const api=load(fs.readFileSync(path.join(ROOT,'app.js'),'utf8'),at,{url:url.href}),calculationKey=at+':'+api.computationKey();
+  const api=load(fs.readFileSync(path.join(ROOT,'app.js'),'utf8'),at,{url:url.href,fixedModelClock:true}),calculationKey=at+':'+api.computationKey();
   let cards=calculationCache?.get(calculationKey);
   if(!cards){cards=api.prepareCalculatedCards(api.state.cards);calculationCache?.set(calculationKey,cards);}
-  const summaryKey='efficiency-all:'+JSON.stringify([calculationKey,api.state.efficiencyBuy,api.state.efficiencyManualPrice,api.state.efficiencyScenario,api.state.efficiencySaleDays,api.state.efficiencyPayoutDays]);
+  const summaryKey=efficiencySummaryKey(calculationKey,api.state);
   const sharedAllCatalog=calculationCache?.get(summaryKey);
   const rows=[],reasons={},routes={};
   const efficiencyAvailability={main:{calculated:0,reference:0,unavailable:0,reasons:{}},comparisons:{},scope:'現在適合または既知価格帯を満たす不足補完候補。主計算と期間比較は別。理由は重複あり'};
@@ -187,4 +191,4 @@ function build(root=ROOT,at=new Date().toISOString()) {
   return report;
 }
 if(require.main===module)build();
-module.exports={build,evaluate,routeNeededFields};
+module.exports={build,evaluate,routeNeededFields,efficiencySummaryKey};

@@ -40,7 +40,7 @@ for(const [name,expected] of Object.entries(baseline.protectedFunctions)) {
     .replace('"combined", "specified", "curated"','"combined", "curated"')
     .replace("  if (mode === 'specified') reasons.push(...specifiedDataExclusions(card));\n",'')
     .replace("mode !== 'specified' && !currentMode",'!currentMode')
-    .replace(/specifiedFilterEnabled\(mode,'[^']+'\) && !currentMode/g,'!currentMode')
+    .replace(/specifiedFilterEnabled\(mode,'[^']+'\) && /g,'')
     .replace(/  if \(state.purchaseMode === 'specified'\) for\(const \[id,param\][^\n]+\n/,'')
     .replace(/      const forecastFilterActive = [^\n]+\n/,'')
     .replace("(mode !== 'specified' || forecastFilterActive) && !currentMode",'!currentMode')
