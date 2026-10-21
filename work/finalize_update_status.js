@@ -389,6 +389,7 @@ require('./supply_demand_validation.js').build(ROOT);
 // Rebuild from finalized saved data before required verification; never bypass it.
 require('node:child_process').execFileSync(process.execPath,[path.join(__dirname,'build_purchase_limit_audit.js')],{cwd:ROOT,timeout:60000,maxBuffer:32*1024*1024});
 require('./build_priority_search_targets.js').build(ROOT);
+require('./audit_25th_promo.js').build(ROOT);
 require('./monitor_observation').banner(ROOT);
 require('./build_runtime_availability').build(ROOT);
 require('./build_ui_data.js').build(ROOT);

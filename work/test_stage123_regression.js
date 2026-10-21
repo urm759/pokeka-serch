@@ -8,9 +8,10 @@ const decisionModel = fs.readFileSync(path.join(root, "decision-model.js"), "utf
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const implementation = `${app}\n${decisionModel}`;
 
-for (const preset of ["combined", "now", "low-risk", "turnover", "bargain"]) {
-  assert.ok(html.includes(`data-preset="${preset}"`), `既存プリセット ${preset} を維持`);
+for (const preset of ["combined", "specified"]) {
+  assert.ok(html.includes(`data-preset="${preset}"`), `依頼された2モード ${preset} を表示`);
 }
+assert.equal([...html.matchAll(/data-preset=/g)].length,2,'removed presets cannot remain hidden buttons');
 for (const parameter of ["filterExpRoi", "filterExpProfit", "preset", "riskMode"]) {
   assert.ok(app.includes(`"${parameter}"`), `URLパラメータ ${parameter} を維持`);
 }
@@ -37,7 +38,7 @@ assert.ok(html.includes("期待利益が高い順（選択した検索計算基�
 assert.ok(html.includes('id="profitSearchBasisInput"') && app.includes('searchProfitView(card)'), "期待利益フィルターのシナリオを選択・明記");
 
 console.log(JSON.stringify({
-  presets: ["combined", "now", "low-risk", "turnover", "bargain"],
+  presets: ["combined", "specified"],
   urlParameters: ["filterExpRoi", "filterExpProfit", "preset", "riskMode"],
   scenarioMatrix: "current/limit x market/central/stress",
   nowRule: "fresh in-stock offer at or below operational limit",

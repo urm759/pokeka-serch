@@ -113,12 +113,9 @@
 
       <div class="quick-presets" aria-label="かんたん絞り込み">
         <span>かんたん絞り込み</span>
-        <button type="button" data-preset="curated"><strong>厳選候補</strong><small>従来のおまかせ同等の厳格条件</small></button>
-        <button type="button" data-preset="combined"><strong>おまかせ総合</strong><small>候補を重複なしでまとめる</small></button>
-        <button type="button" data-preset="current-market"><strong>現相場採算で探す</strong><small>現相場維持の仮定探索・購入GOとは別</small></button>
-        <button type="button" data-preset="now"><strong>今すぐ仕入れ</strong><small>新しい在庫あり価格が上限以下</small></button>
-        <button type="button" data-preset="aggressive"><strong>攻め仕入れ圏</strong><small>期待値は黒字・PSA9時赤字あり</small></button>
-        <button type="button" data-preset="low-risk"><strong>低リスク候補</strong><small>価格待ちを含む</small></button>
+        <button type="button" data-preset="combined"><strong>サイト基準で厳選</strong><small>従来のおまかせ総合＋指定条件</small></button>
+        <button type="button" data-preset="specified"><strong>指定条件で検索</strong><small>分析可能な全カード＋指定条件</small></button>
+        <small id="quickModeMigrationNotice" hidden></small>
         <label id="lowRiskAvailabilityControl" class="low-risk-availability" hidden>
           <span>候補内</span>
           <select id="lowRiskAvailabilityInput">
@@ -127,11 +124,8 @@
             <option value="price">価格待ち／購入先待ち</option>
           </select>
         </label>
-        <button type="button" data-preset="turnover" title="PSA10 30日15件以上・素体全状態30日20件以上・利用可能買取30日1店以上・売りやすさ70点以上のAND条件。買取掲載は実買取件数ではありません"><strong>高回転候補</strong><small>厳格AND条件・価格待ちを含む</small></button>
-        <button type="button" data-preset="bargain"><strong>薄商い・高粗利</strong><small>少数成約でも出口あり</small></button>
-        <button type="button" data-preset="snkr-raw"><strong>スニダン素体流し</strong><small>PSA判定とは別・手数料後の価格差</small></button>
         <label id="snkrRawReferenceControl" class="preset-aggressive-toggle" hidden><input id="snkrRawIncludeReferenceInput" type="checkbox" /> 参考候補も含める</label>
-        <label class="preset-aggressive-toggle"><input id="includeAggressiveInput" type="checkbox" /> おまかせ総合に攻め候補を含める</label>
+        <label class="preset-aggressive-toggle"><input id="includeAggressiveInput" type="checkbox" /> サイト基準に攻め候補を含める</label>
         <div id="presetAuditSummary" class="preset-audit-summary">候補内訳を計算中</div>
         <span class="preset-divider" aria-hidden="true"></span>
         <button id="exportSearchBtn" class="preset-file-action" type="button">条件をCSV保存</button>

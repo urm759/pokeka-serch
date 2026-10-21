@@ -427,7 +427,9 @@ const startedAt = Date.now();
       reappearedAt: previousLife.lastRemovedAt ? updatedAt : previousLife.reappearedAt || null,
     };
   }
+  const supplementIds = new Set(safeReadJson(path.join(__dirname,'domestic-catalog-supplements.json'),{cards:[]}).cards.map(card=>card.id));
   const removedIds = [...previousById.entries()]
+    .filter(([id]) => !supplementIds.has(id))
     .filter(([id, card]) => !sourceIds.has(id) && !sourceIdentityKeys.has(card.identityKey || canonicalIdentity(card).key))
     .map(([id]) => id);
   for (const id of removedIds) {
@@ -583,6 +585,7 @@ const startedAt = Date.now();
     firstSeenAt: card.firstSeenAt,
     isNew: card.isNew,
   }));
+  require('./domestic_catalog_supplements').apply(sitePokemon, safeReadJson(path.join(__dirname,'domestic-catalog-supplements.json'),{cards:[]}).cards, previousCards);
   const stableComparable = (card) => JSON.stringify(card || null);
   const changedIds = sitePokemon
     .filter((card) => stableComparable(card) !== stableComparable(previousById.get(card.id)))

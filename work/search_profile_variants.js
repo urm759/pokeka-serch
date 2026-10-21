@@ -21,4 +21,12 @@ function saveMedianProfiles(root,config) {
   if(!fs.existsSync(file)||fs.readFileSync(file,'utf8')!==text)require('./acquisition_retry').atomicWrite(file,value,0);
   return value;
 }
-module.exports={medianProfile,allProfiles,saveMedianProfiles};
+function searchModeProfiles(config) {
+  const site=allProfiles(config);
+  return [...site,...site.map(p=>{
+    const url=new URL(p.url);url.searchParams.set('preset','specified');
+    assert.deepEqual([...url.searchParams].filter(([k])=>k!=='preset'),[...new URL(p.url).searchParams].filter(([k])=>k!=='preset'));
+    return {...p,id:p.id+'-specified',baseId:p.baseId?p.baseId+'-specified':undefined,siteProfileId:p.id,searchMode:'specified',url:url.href};
+  })];
+}
+module.exports={medianProfile,allProfiles,saveMedianProfiles,searchModeProfiles};

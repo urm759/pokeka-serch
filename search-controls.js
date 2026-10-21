@@ -23,6 +23,8 @@
   }
   function applicable(id, state) {
     const mode = state.purchaseMode;
+    if (mode === 'specified' && state.specifiedImplicitInputs?.includes(id)) return false;
+    if (mode === 'specified' && id === 'showSkippedInput') return false;
     if (id.startsWith('observation')) return true;
     if (id.startsWith('snkrRaw')) return mode === 'snkr-raw';
     if (id.startsWith('currentMarket')) return mode === 'current-market';

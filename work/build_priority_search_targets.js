@@ -17,9 +17,12 @@ function evaluate(profile,at,overlay={},inspectIds=[],calculationCache=null) {
   const api=load(fs.readFileSync(path.join(ROOT,'app.js'),'utf8'),at,{url:url.href}),calculationKey=at+':'+api.computationKey();
   let cards=calculationCache?.get(calculationKey);
   if(!cards){cards=api.prepareCalculatedCards(api.state.cards);calculationCache?.set(calculationKey,cards);}
+  const summaryKey='efficiency-all:'+JSON.stringify([calculationKey,api.state.efficiencyBuy,api.state.efficiencyManualPrice,api.state.efficiencyScenario,api.state.efficiencySaleDays,api.state.efficiencyPayoutDays]);
+  const sharedAllCatalog=calculationCache?.get(summaryKey);
   const rows=[],reasons={},routes={};
   const efficiencyAvailability={main:{calculated:0,reference:0,unavailable:0,reasons:{}},comparisons:{},scope:'現在適合または既知価格帯を満たす不足補完候補。主計算と期間比較は別。理由は重複あり'};
   efficiencyAvailability.allCatalog={main:{calculated:0,reference:0,unavailable:0,reasons:{}},comparisons:{},scope:'全掲載カードを同一条件で確認。既知条件不合格への反復取得はしない'};
+  if(sharedAllCatalog)efficiencyAvailability.allCatalog=sharedAllCatalog;
   const countEfficiency=(group,value)=>{
     group[value.calculationState]++;
     const reasons=value.annual==null?[...value.blockingReasons,...(value.purchasePrice==null||!value.blockingReasons.length?String(value.reason||'').split('／'):[])]:[];
@@ -34,8 +37,8 @@ function evaluate(profile,at,overlay={},inspectIds=[],calculationCache=null) {
   const scope={catalog:cards.length,unknownPriceCards:0,confirmedPriceFailures:0,identityHeld:0,qualified:0,completionProspects:0,notSelected:0};
   for(const c of cards) {
     const excluded=api.cardSearchExclusions(c),e=api.cardEfficiency(c);
-    countEfficiency(efficiencyAvailability.allCatalog.main,e);
-    for(const days of require('../exploration-metrics').observationPeriods){
+    if(!sharedAllCatalog)countEfficiency(efficiencyAvailability.allCatalog.main,e);
+    for(const days of sharedAllCatalog?[]:require('../exploration-metrics').observationPeriods){
       const group=efficiencyAvailability.allCatalog.comparisons[days]||={calculated:0,reference:0,unavailable:0,reasons:{}};
       countEfficiency(group,api.cardEfficiency(c,Date.parse(at),api.state.purchaseMode,'obs'+days));
     }
@@ -82,6 +85,7 @@ function evaluate(profile,at,overlay={},inspectIds=[],calculationCache=null) {
       (routes[route.source]||=[]).push({id:c.id,field:route.key,mode:route.mode,priority:discoveryPriority.score});
     }
   }
+  if(!sharedAllCatalog)calculationCache?.set(summaryKey,efficiencyAvailability.allCatalog);
   return {id:profile.id,urlHash:hash(profile.url),parameters:Object.fromEntries([...url.searchParams].filter(([k])=>!['cap','locked','reserve','maxShare','batch'].includes(k))),
     qualified:rows.filter(r=>r.qualified).length,ids:rows.filter(r=>r.qualified).map(r=>r.id),prospects:rows.filter(r=>r.unverifiedProspect).length,reasons,rows,routes,scope,allExclusions,inspectedRows,efficiencyAvailability,
     explanation:'既知価格範囲を通った不足カードは未判定の補完候補。適合/GOとは数えない。原因の重複数と候補減少は別'};
@@ -101,7 +105,7 @@ function build(root=ROOT,at=new Date().toISOString()) {
     linkage:Object.fromEntries(JSON.parse(fs.readFileSync(path.join(root,'work/psa-linkage-all.json'),'utf8')).rows.map(r=>[r.cardId,r])),
     psaProgress:JSON.parse(fs.readFileSync(path.join(root,'work/psa-fetch-progress.json'),'utf8')),now:Date.parse(at)};
   const inspectFor=p=>[...(previous.profiles.find(r=>r.id===p.id)?.urlsMatched||[]),...(previous.freshnessRecovery||[]).filter(r=>r.profile===p.id).map(r=>r.id),...priorDepartures.filter(r=>r.profile===p.id).map(r=>r.id)];
-  const definitions=require('./search_profile_variants').allProfiles(config);
+  const definitions=require('./search_profile_variants').searchModeProfiles(config);
   require('./search_profile_variants').saveMedianProfiles(root,config);
   // This cache exists only within a build over the same saved files/time. Buy-basis/search changes do not change production economics.
   const calculationCache=new Map();
@@ -169,11 +173,15 @@ function build(root=ROOT,at=new Date().toISOString()) {
       gainedByBasis:next.ids.filter(id=>!base.ids.includes(id)),lostByBasis:base.ids.filter(id=>!next.ids.includes(id)),
       note:'同じデータ/時刻・effBuyだけ変更。新規掲載/補完/初適合に計上しない'};
   });
-  const report={version:3,at,profiles,transitions,basisComparisons,overlayStatus:config.overlayStatus,llmCalls:0,codexCalls:0,newSourceAcquisition:0,
+  const siteProfileIds=new Set(require('./search_profile_variants').allProfiles(config).map(p=>p.id));
+  const siteCandidateIds=new Set(profiles.filter(p=>siteProfileIds.has(p.urlOnly.id)).flatMap(p=>p.urlOnly.ids));
+  const modeOnlyCandidates=[...new Set(profiles.flatMap(p=>p.urlOnly.ids))].filter(id=>!siteCandidateIds.has(id));
+  const report={version:4,at,profiles,transitions,basisComparisons,modeOnlyCandidates,overlayStatus:config.overlayStatus,llmCalls:0,codexCalls:0,newSourceAcquisition:0,
     departureSummary:departures.summarize(targets.pendingDepartures),
     pendingDepartures:targets.pendingDepartures,repairRequests:targets.repairRequests,
-    independentCandidates:departures.independentCandidates((previous.profiles||[]).map(p=>p.urlsMatched||[]),profiles.map(p=>p.urlOnly.ids)),
-    note:'要約・キュー生成は実取得・補完ではない。URLだけと確認済み保存追加条件の再現を分離。他の端末設定は未観測'};
+    independentCandidates:departures.independentCandidates((previous.profiles||[]).filter(p=>siteProfileIds.has(p.id)).map(p=>p.urlsMatched||[]),profiles.filter(p=>siteProfileIds.has(p.urlOnly.id)).map(p=>p.urlOnly.ids)),
+    allModeIndependentCount:new Set(profiles.flatMap(p=>p.urlOnly.ids)).size,
+    note:'指定条件モードの派生URLはpresetだけ変更し既存の補完/価格更新キューへ接続。modeOnlyCandidatesはモード差分であり実補完・独立初適合ではない。元A/Bと中央値版の数値は保持。要約生成は実取得ではない。URLだけと確認済み保存追加条件を分離。他の端末は未観測'};
   for(const [f,x]of [['work/search-profile-targets.json',targets],['data/priority-search-profile-audit.json',report]])require('./acquisition_retry').atomicWrite(path.join(root,f),x,0);
   console.log(JSON.stringify(profiles.map(p=>({id:p.urlOnly.id,urlOnly:p.urlOnly.qualified,withKnownSaved:p.knownSavedConditions.qualified,prospects:p.urlOnly.prospects}))));
   return report;

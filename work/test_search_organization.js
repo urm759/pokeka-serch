@@ -36,6 +36,15 @@ assert.match(css,/\.search-settings \[hidden\]\{display:none!important\}/,'displ
 assert.match(app,/if \(activeConditionKey===key\) return/,'unchanged active filters are not rebuilt');
 for(const [name,expected] of Object.entries(baseline.protectedFunctions)) {
   const source=app.replace(/\r\n/g,'\n')
+    // Authorized two-mode routing is tested in test_two_search_modes, not a financial formula change.
+    .replace('"combined", "specified", "curated"','"combined", "curated"')
+    .replace("  if (mode === 'specified') reasons.push(...specifiedDataExclusions(card));\n",'')
+    .replace("mode !== 'specified' && !currentMode",'!currentMode')
+    .replace(/specifiedFilterEnabled\(mode,'[^']+'\) && !currentMode/g,'!currentMode')
+    .replace(/  if \(state.purchaseMode === 'specified'\) for\(const \[id,param\][^\n]+\n/,'')
+    .replace(/      const forecastFilterActive = [^\n]+\n/,'')
+    .replace("(mode !== 'specified' || forecastFilterActive) && !currentMode",'!currentMode')
+    .replace('  url.searchParams.set("preset", quickSearchMode(state.purchaseMode));','  if (["curated", "combined", "bargain", "turnover", "now", "aggressive", "snkr-raw", "current-market"].includes(state.purchaseMode)) url.searchParams.set("preset", state.purchaseMode);\n  else url.searchParams.delete("preset");')
     // Explicit observation-window migration and display-only overseas helpers are separately tested.
     .replace(/const overseasGlanceCache=new Map\(\),overseasGlanceRequests=new Map\(\);[\s\S]*?(?=\/\/ Presentation only:)/,'')
     .replaceAll("'obs75'","'obs90'")

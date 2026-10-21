@@ -137,7 +137,7 @@ assert(api.cardSearchExclusions(card).includes('現相場損益分岐上限'));
 state.currentMarketCapMin = 0;
 state.currentMarketManualPrice = 0;
 const url = api.buildShareUrl();
-assert.equal(url.searchParams.get('preset'), 'current-market');
+assert.equal(url.searchParams.get('preset'), 'specified', 'removed quick mode serializes to the explicitly requested mode');
 assert.equal(url.searchParams.get('marketCapMin'), '0');
 assert.equal(url.searchParams.get('marketBuy'), '0');
 context.window.location.href = url.href;

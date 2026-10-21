@@ -1,0 +1,65 @@
+[
+  {
+    "at": "2026-10-21T13:55:57.911Z",
+    "evaluationAt": "2026-10-21T13:54:21.451Z",
+    "reference": "839d8685",
+    "sameData": true,
+    "repeats": 3,
+    "scope": "Node production calculation/index/JSON only; browser paint and compressed transfer are separate",
+    "before": {
+      "initialBytes": 18993767,
+      "doubleInitialBytes": 35169914,
+      "jsonParseMs": 83.03520000000026,
+      "doubleJsonParseMs": 176.06989999999996,
+      "fullCalculationMs": 4368.384100000001,
+      "doubleCalculationMs": 8543.032299999999,
+      "cacheMs": 0.06950000000142609,
+      "searchMs": 0.20650000000023283,
+      "doubleSearchMs": 0.4113000000002103
+    },
+    "after": {
+      "initialBytes": 18993767,
+      "doubleInitialBytes": 35169914,
+      "jsonParseMs": 76.76430000000255,
+      "doubleJsonParseMs": 159.89020000000164,
+      "fullCalculationMs": 5202.070200000002,
+      "doubleCalculationMs": 8526.612099999998,
+      "cacheMs": 0.06270000000222353,
+      "searchMs": 0.6408000000010361,
+      "doubleSearchMs": 0.8012999999991735
+    },
+    "errors": []
+  },
+  {
+    "at": "2026-10-21T14:00:01.719Z",
+    "evaluationAt": "2026-10-21T13:58:21.612Z",
+    "reference": "839d8685",
+    "sameData": true,
+    "repeats": 3,
+    "runOrder": "after-before",
+    "scope": "Node production calculation/index/JSON only; browser paint and compressed transfer are separate",
+    "before": {
+      "initialBytes": 18993767,
+      "doubleInitialBytes": 35169914,
+      "jsonParseMs": 78.77139999999781,
+      "doubleJsonParseMs": 175.72409999999945,
+      "fullCalculationMs": 4642.749199999998,
+      "doubleCalculationMs": 9038.859100000001,
+      "cacheMs": 0.08569999999599531,
+      "searchMs": 0.24359999999433057,
+      "doubleSearchMs": 0.41499999999359716
+    },
+    "after": {
+      "initialBytes": 18993767,
+      "doubleInitialBytes": 35169914,
+      "jsonParseMs": 74.32299999999987,
+      "doubleJsonParseMs": 167.1536000000001,
+      "fullCalculationMs": 4420.450600000002,
+      "doubleCalculationMs": 9037.0009,
+      "cacheMs": 0.11720000000059372,
+      "searchMs": 0.6078999999999724,
+      "doubleSearchMs": 1.1403000000000247
+    },
+    "errors": []
+  }
+]
