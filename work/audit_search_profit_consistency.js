@@ -46,7 +46,21 @@ function load(appSource, at, options = {}) {
   };
   const dataFs={...fs,existsSync:file=>{const value=historical(file);return value===null?fs.existsSync(file):value!==false;},
     readFileSync:(file,encoding)=>{const value=historical(file);if(value===false)throw Error(`Historical input missing: ${file}`);return value===null?fs.readFileSync(file,encoding):encoding?value.toString(encoding):value;}};
-  const auditRequire=name=>['fs','node:fs'].includes(name)?dataFs:options.explorationMetrics && /exploration-metrics/.test(name)?options.explorationMetrics:require(name);
+  const modelCache=new Map();
+  const clockModels=new Set(['decision-model.js','current-market-model.js','market-analysis.js','exploration-metrics.js','price-integrity.js','limit-display-model.js']);
+  const auditRequire=name=>{
+    if(['fs','node:fs'].includes(name))return dataFs;
+    if(options.explorationMetrics && /exploration-metrics/.test(name))return options.explorationMetrics;
+    if(options.fixedModelClock && clockModels.has(path.basename(name))) {
+      const file=path.join(ROOT,path.basename(name));
+      if(!modelCache.has(file)) {
+        const module={exports:{}};modelCache.set(file,module);
+        vm.runInNewContext(fs.readFileSync(file,'utf8'),{module,exports:module.exports,require:auditRequire,Date:FixedDate,URL,URLSearchParams,console},{filename:file});
+      }
+      return modelCache.get(file).exports;
+    }
+    return require(name);
+  };
   const api=new Function('require','__dirname','appSource','specifiedUrl','inputElements','FixedDate','process', prefix + tail)(auditRequire,__dirname,appSource,options.url || specifiedUrl,inputElements,FixedDate,{env:{}});
   api.missingHistoricalInputs=missing;
   return api;

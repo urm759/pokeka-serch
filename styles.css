@@ -1741,9 +1741,14 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .overseas-glance b { color:#c4b5fd; font-size:.8rem; }
 
 /* Compact buying facts; full evidence is generated only in the opened detail. */
-.row.card { grid-template-columns:minmax(210px,26%) minmax(0,1fr); }
+.pop-glance > span:first-child b { color:#d8b4fe; }
+.pop-glance .pop-change b { color:#7dd3fc; }
+.pop-glance .pop-reference b,.pop-glance .pop-unavailable b { color:#fbbf24; }
+.pop-glance:has(.pop-glance-note.price-stale) > span:first-child b { color:#fbbf24; }
+.observation-drawdown { color:#cbd5e1; font-variant-numeric:tabular-nums; }
+.row.card { grid-template-columns:minmax(260px,30%) minmax(0,1fr); }
 .row.card > .thumb { min-height:350px; align-items:flex-start; padding:24px 10px; }
-.row.card > .thumb img { max-width:270px; max-height:380px; transform:none; }
+.row.card > .thumb img { max-width:300px; max-height:420px; transform:none; }
 .buyback-support-compact .buyback-highest { color:#7dd3fc; }
 .buyback-support-compact .buyback-normal { color:#d8b4fe; }
 .buyback-support-compact .reference-warning { color:var(--value-warning); }

@@ -33,7 +33,12 @@ for (const store of Object.values(stores)) {
 }
 assert.deepStrictEqual(Object.keys(linkageSources).sort(), ["cardrush", "hareruya2", "psaOfficial", "torecacamp", "yuyutei"]);
 assert.deepStrictEqual(Object.keys(overseasSources).sort(), ["pokedata"]);
-assert.ok(overseasSources.pokedata.totalCoveragePct < overseasSources.pokedata.validationMatchRatePct);
+if(require('./overseas_access_policy').cancelled(root)) {
+  assert.strictEqual(overseasSources.pokedata.status,'cancelled');
+  assert.strictEqual(overseasSources.pokedata.validationMatchRatePct,null);
+  assert.deepStrictEqual(overseasSources.pokedata.records,[]);
+  assert.deepStrictEqual(overseasSources.pokedata.sets,[]);
+} else assert.ok(overseasSources.pokedata.totalCoveragePct < overseasSources.pokedata.validationMatchRatePct);
 for (const source of Object.values(linkageSources)) {
   for (const field of ["automaticMatched", "manualMatched", "ambiguous", "matched", "unmatched", "targetCoveragePct"]) {
     assert.ok(Object.hasOwn(source, field), `${source.label}: missing linkage field ${field}`);
@@ -92,7 +97,7 @@ if (latestPsaRun) {
 }
 assert.match(index, /主要データ完了日/);
 assert.match(index, /全データ完了日/);
-assert.match(index, /海外相場データ/);
+assert.match(index, require('./overseas_access_policy').cancelled(root) ? /海外価格（中止）/ : /海外相場データ/);
 assert.match(app, /部分成功/);
 assert.match(app, /前回比/);
 assert.match(app, /未紐付けがあるデータ元/);

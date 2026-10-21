@@ -17,7 +17,7 @@ function joined(observations, history, cards, source, now = Date.now()) {
     for (const [id, dates] of Object.entries(entries)) {
       const card = byId.get(id);
       if (!card || card.language !== 'ja' || card.identityReviewRequired || !card.identityKey) { reject('国内カード仕様未確定'); continue; }
-      const prices = new Map((history.cards?.[id] || []).map(row => [row[0], row]));
+      const prices = new Map(require('./build_psa10_period_statistics').dailyRows(history.cards?.[id],card).map(row => [row[0], row]));
       for (const [date, quote] of Object.entries(dates)) {
         const point = prices.get(date), observed = point?.[10];
         if (quote.quarantined || quote.cardMismatchSuspected || quote.matchStatus === 'mismatch') { reject('買取原票の仕様・価格保留'); continue; }
@@ -27,7 +27,10 @@ function joined(observations, history, cards, source, now = Date.now()) {
         if (!Array.isArray(observed) || observed[1] !== evidence.identity(card) || evidence.calendarDay(observed[0]) !== date
           || Date.parse(observed[0]) > now || !Number.isFinite(point?.[2]) || !(point[2] > 0)) { reject('同日の国内PSA10価格確認証拠なし'); continue; }
         if (Date.parse(date) < Date.parse(evidence.calendarDay(new Date(now).toISOString())) - 29 * DAY) continue;
-        rows.push({ id, physicalIdentity: physicalKey(card), shop, date, ratio: quote.price / point[2], price: quote.price, marketPrice: point[2],
+        const currentQuote=source.cards?.[id]?.shops?.[shop];
+        const priceDate=quote.priceDate || (currentQuote?.price===quote.price && currentQuote.priceDate===date ? currentQuote.priceDate : null);
+        const timeSkewHours=Math.abs(Date.parse(quote.observedAt)-Date.parse(observed[0]))/3600000;
+        rows.push({ id, physicalIdentity: physicalKey(card), shop, date, priceDate, timeSkewHours, ratio: quote.price / point[2], price: quote.price, marketPrice: point[2],
           observedAt: quote.observedAt, marketAt: observed[0], identity: quote.identity, url: quote.url,
           title: quote.title, fulfilment: source.shops?.[shop]?.fulfilment || 'mail', band: band(point[2]) });
         audit.accepted++;
@@ -55,6 +58,7 @@ function baseline(target, peers, commonIds) {
 function aggregate(rows, source, cards, now = Date.now()) {
   const asOf = evidence.calendarDay(new Date(now).toISOString()), groups = new Map(), common = new Map();
   for (const row of rows) {
+    if (!(row.timeSkewHours <= 6)) continue;
     const key = [row.shop, row.date, row.band].join('|');
     if (!groups.has(key)) groups.set(key, []); groups.get(key).push(row);
     const cohort = [row.date, row.band].join('|');
@@ -63,7 +67,8 @@ function aggregate(rows, source, cards, now = Date.now()) {
     merchants.add(source.shops?.[row.shop]?.merchantId || row.shop); common.get(cohort).set(row.physicalIdentity || row.id, merchants);
   }
   const output = { version: 1, asOf, staleHours: 48, periods, shops: {}, cards: {},
-    schema: {current: ['ratio','grossOffer','domesticPsa10','quoteObservedAt','marketObservedAt','date','currentlyListed'],
+    timingPolicy:{maxSkewHours:6,rule:'現在比較は同日・実確認の差6時間以内。超過/提示日不明は過去時点の参考比較だけ。採算出口とは別'},
+    schema: {current: ['ratio','grossOffer','domesticPsa10','quoteObservedAt','marketObservedAt','date','currentlyListed','quotePriceDate','timeSkewHours'],
       baseline: ['median','acceptedCards','rawCards','excludedOutliers','commonCards','cohort','priceBand','reference','inclusiveTopPct'],
       period: ['meanRatio','medianRatio','observedDays','daysAtOrAboveMarket','lastObservedAt','firstDate'],
       premium: ['meanPremiumPct','observedDays','positiveDays','reference']},
@@ -73,8 +78,8 @@ function aggregate(rows, source, cards, now = Date.now()) {
     permission: meta.acquisitionPermission || null, stopped: stopped(meta) };
   const detail = {}, byCardShop = new Map();
   for (const row of rows) {
-    const peers = groups.get([row.shop, row.date, row.band].join('|'));
-    const commonIds = new Set([...common.get([row.date, row.band].join('|'))].filter(([, shops]) => shops.size >= 2).map(([id]) => id));
+    const peers = groups.get([row.shop, row.date, row.band].join('|')) || [];
+    const commonIds = new Set([...(common.get([row.date, row.band].join('|')) || [])].filter(([, shops]) => shops.size >= 2).map(([id]) => id));
     row.baseline = baseline(row, peers, commonIds);
     row.premium = row.baseline[0] > 0 ? (row.ratio / row.baseline[0] - 1) * 100 : null;
     const key = [row.id, row.shop].join('|'); if (!byCardShop.has(key)) byCardShop.set(key, []); byCardShop.get(key).push(row);
@@ -84,12 +89,13 @@ function aggregate(rows, source, cards, now = Date.now()) {
     records.sort((a,b) => a.date.localeCompare(b.date)); const last = records.at(-1);
     const quote = source.cards?.[last.id]?.shops?.[last.shop];
     const currentlyListed = quote?.listingActive === true && quote?.quarantined !== true && quote?.matchConfidence === 'high' && quote.price === last.price
-      && !constrained(quote) && !stopped(source.shops?.[last.shop]);
+      && quote.priceDate === last.date && !constrained(quote) && !stopped(source.shops?.[last.shop]);
     const result = { h: evidence.identity({ identityKey: last.identity }),
-      current: [last.ratio, last.price, last.marketPrice, last.observedAt, last.marketAt, last.date, currentlyListed],
-      baseline: last.baseline, days: records.map(r => [r.date, r.ratio]), periods: {}, premium: {} };
+      current: [last.ratio, last.price, last.marketPrice, last.observedAt, last.marketAt, last.date, currentlyListed,last.priceDate ?? null,last.timeSkewHours ?? null],
+      baseline: last.timeSkewHours <= 6 ? last.baseline : [null,0,0,0,0,'unmatched-time',last.band,true,null],
+      days: records.filter(r=>r.timeSkewHours<=6).map(r => [r.date, r.ratio]), periods: {}, premium: {} };
     for (const days of periods) {
-      const selected = records.filter(r => Date.parse(r.date) >= Date.parse(asOf) - (days - 1) * DAY);
+      const selected = records.filter(r => r.timeSkewHours <= 6 && Date.parse(r.date) >= Date.parse(asOf) - (days - 1) * DAY);
       if (!selected.length) continue;
       result.periods[days] = [market.mean(selected.map(r => r.ratio)), market.median(selected.map(r => r.ratio)), selected.length,
         selected.filter(r => r.ratio >= 1).length, selected.at(-1).observedAt, selected[0].date];
@@ -107,6 +113,12 @@ function build(root = ROOT) {
   const permissions = read('work/buyback-source-permissions.json');
   for (const [shop, permission] of Object.entries(permissions.sources || {})) if (source.shops?.[shop]) source.shops[shop].acquisitionPermission = permission.status;
   const { rows, audit } = joined(read('work/buyback-price-observations.json'), read('work/market_stability_history.json'), cards, source);
+  const latest=new Map();
+  for(const row of rows) {const key=row.id+'|'+row.shop;if(!latest.has(key)||Date.parse(latest.get(key).observedAt)<Date.parse(row.observedAt))latest.set(key,row);}
+  const active=[...latest.values()].filter(r=>source.cards?.[r.id]?.shops?.[r.shop]?.listingActive===true&&!stopped(source.shops?.[r.shop]));
+  audit.timing={historicalPriceDateUnknown:rows.filter(r=>!r.priceDate).length,historicalSkewOver6Hours:rows.filter(r=>r.timeSkewHours>6).length,
+    currentComparisons:active.length,currentPriceDateUnknown:active.filter(r=>!r.priceDate).length,currentSkewOver6Hours:active.filter(r=>r.timeSkewHours>6).length,
+    recheck: active.filter(r=>!r.priceDate || r.timeSkewHours>6).map(r=>({id:r.id,shop:r.shop,field:'buybackExitEvidence',source:'shopBuyback',mode:'bulk',automatic:source.shops?.[r.shop]?.acquisitionPermission!=='pending',reason:!r.priceDate?'提示日未確認':'国内相場との確認時差超過',automaticReviewRelease:false}))};
   const result = aggregate(rows, source, cards); result.summary.audit = audit;
   const write = (file, value) => { const target = path.join(root,file); fs.mkdirSync(path.dirname(target),{recursive:true}); require('./acquisition_retry').atomicWrite(target,value,0); };
   const existing = read('data/buyback-observation-summary.json'); existing.support = result.summary;

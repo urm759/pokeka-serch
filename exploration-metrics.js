@@ -122,7 +122,10 @@
     const reference = !valid || count < required || days === 200 && row?.[12] > 0;
     const latest = finite(age) && age >= 0 && Number.isFinite(Date.parse(summary?.asOf))
       ? new Date(Date.parse(summary.asOf+'T00:00:00Z')-age*86400000).toISOString().slice(0,10) : null;
+    const drawdownIndex=summary?.drawdownIndices?.[days], drawdown=drawdownIndex == null ? null : row?.[drawdownIndex];
     return {days,mean:valid ? mean : null,count:valid ? count : null,age:finite(age) ? age : null,
+      drawdown:valid && count >= 2 && finite(drawdown) && drawdown <= 0 ? drawdown : null,
+      drawdownReference:count < days || (row?.[summary?.observationEvidenceIndices?.[days]] ?? 1) > 0,
       delta:valid && finite(current) && current > 0 ? percent(current,mean) : null,reference,latest,
       stale:!latest || age > (summary?.staleObservationDays ?? 2)};
   }
@@ -217,11 +220,13 @@
       if (!meta || meta.permission === 'pending' || mode === 'selected' && !selected.includes(shop) || mode === 'mail' && meta.fulfilment === 'store') continue;
       if (identityKey && summary.cards?.[id]?.[shop]?.identity !== identityKey) continue;
       const [ratio,price,marketPrice,at,marketAt,date] = row.current;
-      const valid = !meta.stopped && row.current[6] !== false && fresh(at) && fresh(marketAt) && finite(ratio) && ratio > 0 && finite(currentMarket) && currentMarket === marketPrice;
+      const policy=support.timingPolicy, skew=Math.abs(Date.parse(at)-Date.parse(marketAt))/3600000;
+      const timingValid=!policy || row.current[7] === date && /T\d{2}:/.test(at || '') && /T\d{2}:/.test(marketAt || '') && skew <= policy.maxSkewHours;
+      const valid = !meta.stopped && row.current[6] !== false && fresh(at) && fresh(marketAt) && timingValid && finite(ratio) && ratio > 0 && finite(currentMarket) && currentMarket === marketPrice;
       const b = row.baseline || [], g = row.glance || [], standard = b[0] ?? g[0], premium = finite(standard) && standard > 0 ? (ratio / standard - 1) * 100 : null;
-      rows.push({shop,merchant:meta.merchantId || shop,name:meta.name,fulfilment:meta.fulfilment,ratio,price,marketPrice,at,marketAt,date,valid,
+      rows.push({shop,merchant:meta.merchantId || shop,name:meta.name,fulfilment:meta.fulfilment,ratio,price,marketPrice,at,marketAt,date,priceDate:row.current[7] ?? null,timeSkewHours:skew,valid,
         standard,premium,samples:b[1] ?? g[1] ?? 0,excluded:b[3] || 0,cohort:b[5],band:b[6],reference:b[7] ?? g[2] ?? true,topPct:b[8] ?? g[3] ?? null,periods:row.periods,premiumPeriods:row.premium,
-        reason:valid ? null : meta.stopped ? '取得元停止中・参考履歴のみ' : row.current[6] === false ? '現在の掲載・価格・照合未確認（履歴のみ）' : !finite(currentMarket) ? '現在の国内PSA10相場未取得・履歴のみ' : !fresh(at) || !fresh(marketAt) ? '買取/国内相場の確認が48時間外・参考履歴のみ' : '国内PSA10現在価格と観測値不一致・再確認待ち'});
+        reason:valid ? null : meta.stopped ? '取得元停止中・参考履歴のみ' : row.current[6] === false ? '現在の掲載・価格・提示日未確認（履歴のみ）' : !finite(currentMarket) ? '現在の国内PSA10相場未取得・履歴のみ' : !fresh(at) || !fresh(marketAt) ? '買取/国内相場の確認が48時間外・参考履歴のみ' : !timingValid ? '提示日未確認・相場との確認時差超過（過去時点の参考）' : '国内PSA10現在価格と観測値不一致・再確認待ち'});
       for (const [day,rate] of row.days || []) {
         if (!finite(rate)) continue;
         if (!daily.has(day)) daily.set(day,new Map());

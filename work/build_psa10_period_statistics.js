@@ -13,6 +13,17 @@ const dayTime = value => {
 const positive = value => typeof value === 'number' && Number.isFinite(value) && value > 0;
 const median = values => { const a = values.slice().sort((x, y) => x - y); return a.length ? (a[Math.floor(a.length / 2)] + a[Math.floor((a.length - 1) / 2)]) / 2 : null; };
 const shard = id => { let h = 0; for (const c of String(id)) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h % 16; };
+function maximumDrawdown(rows, dateKey = 0, priceKey = 2) {
+  const ordered = rows.slice().sort((a,b) => dayTime(a[dateKey])-dayTime(b[dateKey]));
+  if (new Set(ordered.map(r=>r[dateKey])).size < 2) return null;
+  let peak = ordered[0], result = { percent:0, peakDate:null, troughDate:null, peakPrice:null, troughPrice:null };
+  for (const row of ordered.slice(1)) {
+    const percent = (row[priceKey]/peak[priceKey]-1)*100;
+    if (percent < result.percent) result = {percent,peakDate:peak[dateKey],troughDate:row[dateKey],peakPrice:peak[priceKey],troughPrice:row[priceKey]};
+    if (row[priceKey] > peak[priceKey]) peak = row;
+  }
+  return result;
+}
 function statistics(rows, asOf, days, dateKey, priceKey) {
   const end = dayTime(asOf), start = end - (days - 1) * DAY;
   const accepted = rows.filter(r => dayTime(r[dateKey]) >= start && dayTime(r[dateKey]) <= end && positive(r[priceKey]));
@@ -23,7 +34,8 @@ function statistics(rows, asOf, days, dateKey, priceKey) {
     legacyUnverifiedDays: dateKey === 0 ? accepted.filter(r => r.length < 11).length : 0,
     start: new Date(start).toISOString().slice(0, 10), end: asOf,
     latestDate: accepted.map(r => r[dateKey]).sort().at(-1) || null,
-    min: prices.length ? Math.min(...prices) : null, max: prices.length ? Math.max(...prices) : null };
+    min: prices.length ? Math.min(...prices) : null, max: prices.length ? Math.max(...prices) : null,
+    drawdown: dateKey === 0 ? maximumDrawdown(accepted,dateKey,priceKey) : null };
 }
 function observationStatus(stat, days, asOf) {
   const ageDays = stat.latestDate ? Math.round((dayTime(asOf) - dayTime(stat.latestDate)) / DAY) : null;
@@ -73,7 +85,8 @@ function build(root = ROOT, now = new Date()) {
   // The window advances even when acquisition fails; old data must age rather than reset the clock.
   const asOf = require('./psa10_observation_evidence').calendarDay(now.toISOString());
   const summary = { version: 6, asOf, periods: PERIODS, migration:'独自観測比較90→75暦日・日付原票から再集計。取得元独自90日・鑑定返却期間は別', calendar: 'Asia/Tokyo・直近暦日・同日1記録（株の取引日ではない）', retentionDays: 365,
-    observationEvidenceIndices:{7:13,30:14,75:15,200:12},
+    observationEvidenceIndices:{7:13,30:14,75:15,200:12}, drawdownIndices:{7:16,30:17,75:18,200:19},
+    drawdownRule:'日付順の高値から後続の安値への最大下落。2観測日未満は算出不可。欠測補完なし・予測やGOへ未反映',
     minimumActualTrades: 3, minimumObservationDays, staleObservationDays: 2, shards: 16,
     snapshotSource: '国内・みんトレPSA10集約相場の日次観測（実成約平均ではない）',
     rule: '同日1記録・欠損補完なし・参考表示のみ・仕入れ上限とGOへ未反映', cards: {} };
@@ -96,7 +109,8 @@ function build(root = ROOT, now = new Date()) {
     summary.cards[card.id] = [snapshots[7].mean, snapshots[7].count, snapshots[30].mean, snapshots[30].count,
       snapshots[30].ageDays, snapshots[75].mean, snapshots[75].count, snapshots[7].ageDays, snapshots[75].ageDays,
       snapshots[200].mean, snapshots[200].count, snapshots[200].ageDays, snapshots[200].legacyUnverifiedDays,
-      snapshots[7].legacyUnverifiedDays,snapshots[30].legacyUnverifiedDays,snapshots[75].legacyUnverifiedDays];
+      snapshots[7].legacyUnverifiedDays,snapshots[30].legacyUnverifiedDays,snapshots[75].legacyUnverifiedDays,
+      ...PERIODS.map(days=>snapshots[days].drawdown?.percent ?? null)];
     if (daily.length) historyCards++;
     for (const days of PERIODS) {
       const stat = snapshots[days], coverage = byPeriod[days];
@@ -128,4 +142,4 @@ function build(root = ROOT, now = new Date()) {
   return { ...summary.coverage, asOf, changedFiles: written.length, inputHash };
 }
 if (require.main === module) console.log(JSON.stringify(build()));
-module.exports = { build, statistics, dailyRows, actualRows, shard, observationStatus };
+module.exports = { build, statistics, dailyRows, actualRows, shard, observationStatus, maximumDrawdown };

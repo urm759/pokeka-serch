@@ -155,6 +155,9 @@ function build(root=ROOT,at=new Date().toISOString()) {
     const map=new Map((targets.routes[source]||[]).map(r=>[r.id+':'+r.field,r]));for(const r of rows)map.set(r.id+':'+r.field,r);
     targets.routes[source]=[...map.values()].sort((a,b)=>b.priority-a.priority);
   }
+  const timingAuditFile=path.join(root,'data/buyback-support-audit.json');
+  const timingRechecks=fs.existsSync(timingAuditFile)?JSON.parse(fs.readFileSync(timingAuditFile,'utf8')).audit?.timing?.recheck || []:[];
+  for(const request of timingRechecks)targets.repairRequests.push({...request,profile:'demand-timing',priority:0});
   for(const request of targets.repairRequests) {
     const rows=targets.routes[request.source] ||= [];
     if(!rows.some(r=>r.id===request.id&&r.field===request.field))rows.push({...request,priority:0});

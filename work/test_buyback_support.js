@@ -5,12 +5,16 @@ const card = {id:'fixture',identityKey:'SV|001|name|SR|base|ja',language:'ja'};
 const quote = {price:9000,observedAt:at,identity:card.identityKey,identityAuditVersion:3,grade:'PSA10',currency:'JPY',title:'fixture'};
 const history = {cards:{fixture:[['2026-10-15',1000,10000,null,null,null,null,null,null,null,[at,evidence.identity(card)]]]}}, source = {shops:{a:{name:'A',fulfilment:'mail'},b:{name:'B',fulfilment:'store'},aMail:{name:'A郵送',fulfilment:'mail',merchantId:'a'}},cards:{fixture:{shops:{a:{listingActive:true,price:9000,matchConfidence:'high'}}}}};
 const saved = {shops:{a:{fixture:{'2026-10-15':quote}}}};
+source.cards.fixture.shops.a.priceDate='2026-10-15';
 const result = builder.joined(saved,history,[card],source,now); assert.equal(result.rows.length,1); assert.equal(result.rows[0].ratio,.9);
 for (const extra of [{quarantined:true},{cardMismatchSuspected:true},{matchStatus:'mismatch'},{campaign:true},{quantityLimited:true},{conditionsConfirmed:false},{grade:'PSA9'},{currency:'USD'},{identity:'wrong'},{observedAt:'2026-10-14T01:00:00Z'},{price:null}]) assert.equal(builder.joined({shops:{a:{fixture:{'2026-10-15':{...quote,...extra}}}}},history,[card],source,now).rows.length,0);
 assert.equal(builder.joined(saved,{cards:{fixture:[['2026-10-15',1000,10000]]}},[card],source,now).rows.length,0,'legacy dates without actual market observation not joined');
 assert.equal(builder.joined(saved,history,[{...card,identityReviewRequired:true}],source,now).rows.length,0);
 assert.equal(builder.joined(saved,history,[card],{shops:{a:{acquisitionPermission:'pending'}}},now).rows.length,0);
 const target={...result.rows[0],ratio:.9,band:'under30k'}, peers=Array.from({length:12},(_,i)=>({...target,id:'peer'+i,physicalIdentity:'peer'+i,ratio:.8}));
+const delayed=builder.aggregate([{...target,timeSkewHours:7}],source,[card],now);
+assert.equal(delayed.detail.fixture.length,1,'unaligned original evidence retained');
+assert.deepEqual(delayed.summary.cards.fixture.a.days,[],'unaligned times do not enter normal historical ratios or baseline');
 let standard=builder.baseline(target,[target,...peers],new Set()); assert.equal(standard[0],.8);assert.equal(standard[1],12);assert.equal(standard[7],false);
 assert.equal(standard[8],100/13,'rank excludes target from peer sample and includes target once in ranking');
 assert.equal(builder.baseline(target,peers.slice(0,9),new Set())[8],null,'small samples do not claim a percentile');
@@ -33,6 +37,14 @@ assert.equal(m.buybackSupport(wrapped,'fixture','all',[],now,11000).count,0,'mar
 assert.equal(m.buybackSupport(wrapped,'fixture','all',[],now,null).count,0,'missing current market is not replaced with an old historical observation');
 assert.equal(m.buybackSupport(wrapped,'fixture','all',[],now,10000,'different-spec').count,0);
 assert.equal(m.buybackSupport(wrapped,'fixture','selected',['b'],now,10000).count,0);
+const asynchronous=structuredClone(wrapped);
+asynchronous.support.cards.fixture.a.current[4]='2026-10-14T18:59:59Z';
+assert.equal(m.buybackSupport(asynchronous,'fixture','all',[],now,10000).highestQuote,null,'same calendar date with excessive time skew is historical reference only');
+assert.equal(m.buybackSupport(asynchronous,'fixture','all',[],now,10000).windows[7].days,1,'historical evidence is retained');
+asynchronous.support.cards.fixture.a.current[4]='2026-10-14T19:00:00Z';
+assert(m.buybackSupport(asynchronous,'fixture','all',[],now,10000).highestQuote,'six hour boundary inclusive');
+asynchronous.support.cards.fixture.a.current[7]=null;
+assert.equal(m.buybackSupport(asynchronous,'fixture','all',[],now,10000).highestQuote,null,'no generated date replacement for unknown price date');
 for (const ratio of [1,1.1,1.8]) {
   summary.cards.fixture.a.current[0]=ratio;summary.cards.fixture.a.days=[['2026-10-15',ratio]];
   view=m.buybackSupport(wrapped,'fixture','all',[],now,10000); assert.equal(view.above,1);assert.equal(view.max,ratio,'valid high offer never removed just because high');
@@ -79,12 +91,12 @@ assert.deepEqual(m.buybackSupport(compact,'fixture','all',[],now,10000,card.iden
   m.buybackSupport(rich,'fixture','all',[],now,10000,card.identityKey).highestQuote?.standard,'compact list keeps the same normal rate as detail');
 const vm=require('node:vm'),app=fs.readFileSync('app.js','utf8');
 const context=vm.createContext({Date:class extends Date{static now(){return now;}},Map,WeakMap,JSON,Intl,explorationMetrics:m,
-  fmt:new Intl.NumberFormat('ja-JP'),escapeHtml:s=>String(s).replaceAll('<','&lt;')});
+  fmt:new Intl.NumberFormat('ja-JP'),formatJstTimestamp:s=>s,escapeHtml:s=>String(s).replaceAll('<','&lt;')});
 vm.runInContext('const state={buybackObservationSummary:'+JSON.stringify(compact)+',buybackStoreMode:"all",selectedBuybackStores:[]};'
   +app.slice(app.indexOf('const buybackSupportCache ='),app.indexOf('async function loadBuybackSupportDetail'))
   +'globalThis.render=buybackSupportHtml;',context);
 const html=context.render({...card,psa10:10000});
-assert.match(html,/最高買取 0.900倍/);assert.match(html,/同店・他カードの通常倍率 0.800倍/);assert.match(html,/通常比 \+12.5%/);assert.match(html,/同店内上位7.7%/);
+assert.match(html,/最高買取 0.900倍/);assert.match(html,/同店・他カードの通常倍率 0.800倍/);assert.match(html,/通常比 \+12.5%/);assert.doesNotMatch(html,/同店内上位7.7%/);
 assert.match(html,/class="buyback-highest"/);assert.match(html,/class="buyback-normal /);
 assert.match(html,/採算用出口とは別/);
 const glance=app.slice(app.indexOf('const candidateGlance ='),app.indexOf('const row = { id: card.id, html:',app.indexOf('const candidateGlance =')));
