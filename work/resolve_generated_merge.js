@@ -16,8 +16,8 @@ function mergeReceipts(a,b){
 }
 function resolve(cwd,{rebuild}={}) {
   const git = args => {
-    const run=spawnSync('git', args, {cwd, encoding:'utf8'});
-    if (run.status!==0) throw new Error(run.stderr || run.stdout);
+    const run=spawnSync('git', args, {cwd, encoding:'utf8', maxBuffer:64*1024*1024});
+    if (run.error || run.status!==0) throw new Error(`git ${args[0]} failed (${run.error?.code || run.status}): ${String(run.stderr || run.error?.message || '').slice(0,1024)}`);
     return run.stdout.trim();
   };
   const conflicts=git(['diff','--name-only','--diff-filter=U']).split('\n').filter(Boolean);

@@ -1,5 +1,6 @@
 const assert=require('node:assert/strict'),{latest,byKey,seedMerge,mergeRun}=require('./reconcile_saved_source_merge');
 const {mergeStockHistory}=require('./reconcile_saved_source_merge');
+require('./test_generated_merge_large_json');
 const baseStocks={dates:['2026-10-20'],stocks:{a:[5],b:[5]}},leftStocks={dates:baseStocks.dates,stocks:{a:[3],b:[4]}},rightStocks={dates:baseStocks.dates,stocks:{a:[2],b:[1]}};
 assert.deepEqual(mergeStockHistory(baseStocks,leftStocks,rightStocks,{a:20,b:10},{a:10,b:20}).stocks,{a:[3],b:[1]},'a later source-wide run cannot overwrite a newer individual card');
 assert.throws(()=>mergeStockHistory(baseStocks,leftStocks,rightStocks,{a:20,b:10},{a:20,b:20}),/distinct card observation/);
