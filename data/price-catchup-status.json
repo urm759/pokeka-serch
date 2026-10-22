@@ -1,1 +1,75 @@
-{"startedAt":"2026-10-22T19:32:03.376Z","runId":"39840804267","event":"schedule","route":"既存監視ジョブの空白補完","status":"failed","allowed":true,"ageMs":31910068,"minimumIntervalMs":9000000,"reason":"定期の空白・既存の期限順キューで補完","llmCalls":0,"codexCalls":0,"error":"Update status rebuild failed","endedAt":"2026-10-22T19:43:12.427Z","durationMs":669051,"outcomes":{"baselineAt":"2026-10-22T19:32:03.376Z","commonCards":12545,"addedCards":0,"removedCards":0,"newlyAnalyzable":0,"lostAnalyzable":0,"filledCards":6,"filledItems":6,"sources":{"cardrush":{"newLinked":0,"validAdded":0,"validLost":0,"usableNet":0,"freshnessRecovered":0},"hareruya2":{"newLinked":0,"validAdded":0,"validLost":0,"usableNet":0,"freshnessRecovered":40},"yuyutei":{"newLinked":0,"validAdded":0,"validLost":0,"usableNet":0,"freshnessRecovered":0},"torecacamp":{"newLinked":0,"validAdded":0,"validLost":0,"usableNet":0,"freshnessRecovered":0},"psaOfficial":{"newLinked":0,"validAdded":0,"validLost":0,"usableNet":0,"freshnessRecovered":0},"pokedata":{"newLinked":0,"validAdded":0,"validLost":0,"usableNet":0,"freshnessRecovered":0}}},"publicationStatus":"保存済み・公開照合待ち"}
+{
+  "startedAt": "2026-10-22T21:44:53.654Z",
+  "runId": "39859601374",
+  "event": "schedule",
+  "route": "通常価格更新",
+  "status": "acquired-saved",
+  "allowed": true,
+  "ageMs": 7969965,
+  "minimumIntervalMs": 7200000,
+  "reason": "定期の空白・既存の期限順キューで補完",
+  "llmCalls": 0,
+  "codexCalls": 0,
+  "sourceFailures": [],
+  "acquisitionStatus": "process-success",
+  "endedAt": "2026-10-22T21:56:29.659Z",
+  "durationMs": 696005,
+  "outcomes": {
+    "baselineAt": "2026-10-22T21:44:53.654Z",
+    "commonCards": 12545,
+    "addedCards": 0,
+    "removedCards": 0,
+    "newlyAnalyzable": 0,
+    "lostAnalyzable": 0,
+    "filledCards": 0,
+    "filledItems": 0,
+    "sources": {
+      "cardrush": {
+        "newLinked": 0,
+        "validAdded": 0,
+        "validLost": 0,
+        "usableNet": 0,
+        "freshnessRecovered": 0
+      },
+      "hareruya2": {
+        "newLinked": 0,
+        "validAdded": 0,
+        "validLost": 0,
+        "usableNet": 0,
+        "freshnessRecovered": 41
+      },
+      "yuyutei": {
+        "newLinked": 0,
+        "validAdded": 0,
+        "validLost": 0,
+        "usableNet": 0,
+        "freshnessRecovered": 0
+      },
+      "torecacamp": {
+        "newLinked": 0,
+        "validAdded": 0,
+        "validLost": 0,
+        "usableNet": 0,
+        "freshnessRecovered": 0
+      },
+      "psaOfficial": {
+        "newLinked": 0,
+        "validAdded": 0,
+        "validLost": 0,
+        "usableNet": 0,
+        "freshnessRecovered": 0
+      },
+      "pokedata": {
+        "newLinked": 0,
+        "validAdded": 0,
+        "validLost": 0,
+        "usableNet": 0,
+        "freshnessRecovered": 0
+      }
+    },
+    "referenceEvidenceRecovered": {
+      "buybackExitEvidence": 1
+    }
+  },
+  "publicationStatus": "保存済み・公開照合待ち"
+}
