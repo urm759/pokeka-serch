@@ -628,13 +628,14 @@ const startedAt = Date.now();
   // Keep a compact, reproducible snapshot of the source identities used by the
   // modern high-rarity coverage audit. This is intentionally separate from the
   // rendered card data so the audit never proves completeness against itself.
+  const providerPokemon=require('./domestic_catalog_supplements').providerRows(sitePokemon,safeReadJson(path.join(__dirname,'domestic-catalog-supplements.json'),{cards:[]}).cards);
   fs.writeFileSync(
     path.join(__dirname, "toreca-source-inventory.json"),
     JSON.stringify({
       updatedAt,
       sourceUrl,
-      total: sitePokemon.length,
-      cards: sitePokemon.map((card) => ({
+      total: providerPokemon.length,
+      cards: providerPokemon.map((card) => ({
         id: card.id,
         sourceId: card.sourceId || card.id,
         name: card.name,

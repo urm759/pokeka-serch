@@ -16,6 +16,9 @@ assert(model.parse(blocks.replace('￥11,980','金額なし')).find(p=>p.id==='s
 assert(model.parse(blocks+' スタンダード ￥9,980/枚 予定納期：100営業日（日数換算：約140日）申告価格：￥150,000以下').find(p=>p.id==='standard').plan===null);
 const workflow=fs.readFileSync(path.join(__dirname,'../.github/workflows/daily-fast-update.yml'),'utf8');
 assert(!workflow.includes('continue-on-error'));assert(workflow.indexOf('Run fast regression tests')<workflow.indexOf('Commit changed data only'));
+assert(workflow.includes('timeout-minutes: 25'));
+assert(workflow.indexOf('Retain prevalidation checkpoint')<workflow.indexOf('Run fast regression tests'),'save raw acquisition before long verification');
+assert(fs.readFileSync(path.join(__dirname,'daily_fast_update.js'),'utf8').includes('maxBuffer: 64 * 1024 * 1024'),'large source logs must not hit the default 1MiB pipe ceiling');
 assert(workflow.indexOf('Commit changed data only')<workflow.indexOf('Report independent acquisition failures'));
 assert(!fs.readFileSync(path.join(__dirname,'update_psa_japan_services.js'),'utf8').includes('r.jina.ai'));
 const builder=fs.readFileSync(path.join(__dirname,'build_purchase_limit_audit.js'),'utf8');

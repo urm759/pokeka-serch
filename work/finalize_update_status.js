@@ -46,6 +46,7 @@ const stock = read("data/cardrush-stock-summary.json");
 const hareruya2 = read("data/hareruya2-stock-summary.json");
 const yuyutei = read("data/yuyutei-stock-summary.json");
 const torecacamp = read("data/torecacamp-stock-summary.json");
+require('./apply_buyback_retirements').apply(ROOT);
 const buyback = read("data/shop-buyback-summary.json");
 const marketAnalysis = read("data/market-stability-summary.json");
 const psa = read("data/psa-official-populations.json");

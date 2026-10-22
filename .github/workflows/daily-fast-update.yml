@@ -17,7 +17,8 @@ concurrency:
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Measured acquisition + mandatory verification exceeded 15m; do not skip tests.
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v7
         with:
@@ -63,9 +64,19 @@ jobs:
           node work/audit_purchase_price_recovery.js
           node work/audit_candidate_reduction.js
           node work/finalize_update_status.js
+      - name: Preserve acquired data before mandatory verification
+        run: node work/capture_unpublished_data.js daily-prevalidation
+      - name: Retain prevalidation checkpoint independently of later cancellation
+        uses: actions/upload-artifact@v7
+        with:
+          name: daily-prevalidation-${{ github.run_id }}-${{ github.run_attempt }}
+          path: work/unpublished-recovery/
+          retention-days: 3
+          if-no-files-found: error
       - name: Run fast regression tests
         run: |
           node work/test_daily_source_isolation.js
+          node work/test_homura_public_feed.js
           node work/test_postpass_cadence.js
           node work/test_monitor_isolation.js
           node work/build_ui_data.js
@@ -162,6 +173,8 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data work/daily-http-cache.json work/changed-card-ids.json work/market_stability_history.json work/snkr-raw-flip-cache.json work/snkr-raw-flip-checkpoint.json work/source-update-runs.json work/source-update-history.json work/toreca-source-inventory.json work/toreca_source_diff.json work/card-new-arrivals.json work/card-lifecycle.json work/candidate-daily-history.json work/candidate-availability-history.json work/candidate-shop-refresh.json work/cardrush_catalog.json work/hareruya2_catalog.json work/cardrush_stock_history.json work/hareruya2_stock_history.json work/acquisition-progress-last.json
           git add work/shop_buyback_history.json work/shop_buyback_catalog.json work/shop_buyback_unmatched.json work/shop_buyback_item_matches.json work/shop_buyback_image_matches.json work/shop_buyback_quarantine.json work/buyback-price-observations.json
+          git add work/homura-public-checkpoint.json
+          git add work/homura-public-checkpoints
           git add work/psa10-trade-observations.json
           git add work/priority-price-checkpoint.json work/priority-price-http-cache.json
           git add work/purchase-price-targets.json work/purchase-price-observation-snapshot.json work/purchase-price-recovery-baseline.json work/purchase-price-recovery-history.json

@@ -32,7 +32,22 @@ function capture({cwd = path.join(__dirname, '..'), source = 'unknown'} = {}) {
     }
   }
   // Raw recovery deliberately does not depend on JSON parsing, summaries or Git.
-  scan('data'); scan('work');
+  if(source==='daily-prevalidation') {
+    // Retain reconstruction inputs, not a second copy of every generated UI shard.
+    const inputs=['data/pokemon-cards.json','data/pokemon-cards-meta.json','data/shop-buyback-summary.json',
+      'data/hareruya2-stock-summary.json','data/cardrush-stock-summary.json',
+      'work/source-update-runs.json','work/source-update-history.json','work/changed-card-ids.json',
+      'work/toreca-source-inventory.json','work/toreca_source_diff.json',
+      'work/market_stability_history.json','work/buyback-price-observations.json',
+      'work/shop_buyback_history.json','work/shop_buyback_catalog.json','work/shop_buyback_unmatched.json',
+      'work/shop_buyback_item_matches.json','work/shop_buyback_quarantine.json',
+      'work/homura-public-checkpoint.json',
+      'work/hareruya2_catalog.json','work/cardrush_catalog.json',
+      'work/hareruya2_stock_history.json','work/cardrush_stock_history.json',
+      'work/priority-price-checkpoint.json','work/priority-price-http-cache.json',
+      'work/candidate-shop-refresh.json'];
+    for(const relative of inputs)if(fs.existsSync(path.join(cwd,relative)))copy(relative);
+  } else { scan('data'); scan('work'); }
   const manifest = {version:1, source, savedAt:new Date().toISOString(), workflowRunId:process.env.GITHUB_RUN_ID || null,
     files, withheld, invalidJson:files.filter(row=>!row.validJson).map(row=>row.file), summaryGenerationRequired:true};
   fs.writeFileSync(path.join(directory, 'recovery-manifest.json'), JSON.stringify(manifest));

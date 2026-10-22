@@ -38,6 +38,7 @@ function aggregate(saved,source,cards,now=Date.now()) {
   const asOf=day(new Date(now).toISOString()),start=Date.parse(asOf)-364*86400000,byId=new Map(cards.map(c=>[c.id,c]));
   const result={version:1,asOf,periods,staleHours:48,shops:{},cards:{},rule:'確認済み同一日本語PSA10・店舗・同日1記録。店舗別観測平均の中央値を保守出口に使用。欠測補完なし。非10は現在国内PSA9のフリマ仮置き。探索のみ'};
   for(const [shop,entries] of Object.entries(saved.shops||{})) {
+    if(!source.shops?.[shop] || ['pending','retired'].includes(source.shops[shop].acquisitionPermission)) continue;
     result.shops[shop]={name:source.shops?.[shop]?.name||shop,fulfilment:source.shops?.[shop]?.fulfilment||'mail'};
     for(const [id,dates] of Object.entries(entries)) {
       const c=byId.get(id);if(!c)continue;

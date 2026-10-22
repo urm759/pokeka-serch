@@ -13,6 +13,7 @@ function run(script, env = {}) {
     cwd: ROOT,
     env: { ...process.env, ...env },
     encoding: "utf8",
+    maxBuffer: 64 * 1024 * 1024,
     timeout: Math.max(30000, Number(process.env.DAILY_RUNTIME_LIMIT_MS || 540000)),
   });
   process.stdout.write(result.stdout || "");

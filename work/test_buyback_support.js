@@ -78,7 +78,7 @@ assert.equal(issue({name:'フクオカのピカチュウ P [SV-P 289](スペシ�
 for(const file of ['.github/workflows/daily-fast-update.yml','.github/workflows/priority-price-refresh.yml','.github/workflows/safe-checkpoint-backfill.yml'])assert(fs.readFileSync(file,'utf8').includes('test_buyback_support.js'));
 assert(fs.readFileSync('app.js','utf8').includes("state.openCardDetails.has(String(card.id)) ? buybackSupportHtml(card,true) : ''"),'detail generation lazy');
 assert(fs.readFileSync('app.js','utf8').includes('card=state.cardById[id]'),'detail loader uses the established ID dictionary, not a Map');
-assert.equal(require('./buyback-source-permissions.json').sources['cardshop151-store'].status,'pending');
+assert.equal(require('./buyback-source-permissions.json').sources['cardshop151-store'].status,'retired');
 assert(fs.readFileSync('.github/workflows/daily-fast-update.yml','utf8').includes('work/buyback-price-observations.json'),'normal daily publication must retain genuine observed quote history');
 const slim = require('./build_ui_data').project('buyback-observation-summary',wrapped);
 assert.equal(slim.support.compact,true);assert.equal(slim.support.cards.fixture.a.baseline,undefined);

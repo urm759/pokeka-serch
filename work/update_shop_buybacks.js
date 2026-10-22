@@ -5,8 +5,6 @@ const marketModel = require("../market-analysis.js");
 
 const ROOT = path.join(__dirname, "..");
 const SHOPS = [
-  { id: "cardshop151-store", name: "CardShop151（店頭）", url: "https://cardshop151.com/", fulfilment: "store",
-    fetchItems: (shop) => require("./cardshop151.js").fetchItems(shop, fetchJson, readJson(path.join(ROOT, "data", "pokemon-cards.json"), [])) },
   {
     id: "torecabank",
     name: "トレカバンク",
@@ -46,9 +44,10 @@ const SHOPS = [
   },
   {
     id: "kaitori-homura-mail",
+    adapterVersion: 'homura-public-v3',
     name: "買取ホムラ（郵送）",
     url: "https://kaitori-homura.com/products?q%5Bproduct_sub_category_id_eq%5D=182&q%5Bproduct_sub_category_product_category_id_eq%5D=21&sort=price_desc",
-    fetchItems: fetchKaitoriHomura,
+    fetchItems: shop => require('./homura_public_feed').fetchItems(shop,fetchJson,readJson(path.join(ROOT,'data/pokemon-cards.json'),[])),
   },
 ];
 const HISTORY_DAYS = 91;
@@ -438,6 +437,12 @@ function savedMatchConfidence(match) {
   if (score == null || score === "" || !Number.isFinite(Number(score))) return null;
   return decisionModel.matchConfidenceLabel(score);
 }
+function freshUsablePrice(row,meta,now=Date.now()) {
+  const at=Date.parse(row?.observedAt || row?.priceDate || '');
+  return row?.listingActive===true && row.price>0 && row.matchConfidence==='high' && !row.quarantined
+    && !meta?.reviewStatus && !['pending','retired'].includes(meta?.acquisitionPermission)
+    && Number.isFinite(at) && at<=now && now-at<=48*3600000;
+}
 
 function buildPriceTrust(history, cards, results) {
   const cardById = new Map(cards.map((card) => [String(card.id), card]));
@@ -507,13 +512,16 @@ async function main() {
     if (!Array.isArray(history.observedByShop[shopId])) history.observedByShop[shopId] = [...(history.dates || [])];
   }
   const activeShopIds = new Set(SHOPS.map((shop) => shop.id));
-  // A removed shop must not continue to affect historical averages or demand.
-  for (const shopId of Object.keys(history.shops || {})) {
-    if (!activeShopIds.has(shopId)) delete history.shops[shopId];
+  // Preserve removed origins' raw history; only active origins enter new summaries.
+  const retiredPath=path.join(__dirname,'.private','retired-buyback-history.json');
+  fs.mkdirSync(path.dirname(retiredPath),{recursive:true});
+  const retired=readJson(retiredPath,{version:1,shops:{}});
+  for(const id of Object.keys(history.shops||{})) if(!activeShopIds.has(id) && !retired.shops[id]) {
+    retired.shops[id]={archivedAt:new Date().toISOString(),dates:[...history.dates],
+      history:history.shops[id],observedDays:history.observedByShop[id],metadata:previousSummary.shops?.[id],
+      quotes:Object.fromEntries(Object.entries(previousSummary.cards||{}).filter(([,c])=>c.shops?.[id]).map(([k,c])=>[k,c.shops[id]]))};
   }
-  for (const shopId of Object.keys(history.observedByShop || {})) {
-    if (!activeShopIds.has(shopId)) delete history.observedByShop[shopId];
-  }
+  require('./acquisition_retry').atomicWrite(retiredPath,retired);
   for (const cache of [imageMatches, itemMatches]) {
     for (const sourceKey of Object.keys(cache)) {
       if (sourceKey.startsWith("toreca-birth-store:")) delete cache[sourceKey];
@@ -524,15 +532,18 @@ async function main() {
   for (const shop of SHOPS) {
     if (process.env.SHOP_BUYBACK_SOURCE_ONLY && process.env.SHOP_BUYBACK_SOURCE_ONLY !== shop.id) continue;
     const permission = readJson(path.join(__dirname, 'buyback-source-permissions.json'), {}).sources?.[shop.id];
-    if (permission?.status === 'pending') {
+    if (['pending','retired'].includes(permission?.status)) {
       failures.push({ source: shop.id, error: permission.reason, permissionWait: true });
       continue;
     }
     const review=previousSummary.shops?.[shop.id];
-    if(review?.reviewStatus==='format-review') {
+    const legacyHomura=shop.adapterVersion?.startsWith('homura-public-') && (shop.adapterVersion!==review?.reviewAdapterVersion
+      || /公開一覧の欠落・重複/.test(review?.error||'') && readJson(path.join(__dirname,'homura-public-checkpoint.json'),{}).nextPage>readJson(path.join(__dirname,'homura-public-checkpoint.json'),{}).pages);
+    if(review?.reviewStatus && !(review.reviewStatus==='format-review' && legacyHomura)) {
       failures.push({source:shop.id,error:review.error,reviewWait:true});
       continue;
     }
+    if(shop.adapterVersion && review?.adapterVersion===shop.adapterVersion && require('./psa10_observation_evidence').calendarDay(review.lastSuccess)===jstDate()) continue;
     try {
       const fetched = await shop.fetchItems(shop);
       if (!fetched.items?.length) throw new Error("取得0件。正常データは保持");
@@ -576,13 +587,16 @@ async function main() {
       results.push({ shop, ...fetched, matched, unmatched });
       console.log(`${shop.name}: pages=${fetched.pages}, items=${fetched.items.length}, matched=${matched.length}, activeMatched=${matched.filter((item) => item.active).length}, unmatched=${unmatched.length}`);
     } catch (error) {
-      failures.push({ source: shop.id, attemptedAt: new Date().toISOString(), error: String(error.message || error) });
+      failures.push({ source: shop.id, attemptedAt: new Date().toISOString(), error: String(error.message || error),
+        accessHold:[401,403].includes(error.status) || /HTTP\s+(401|403)/.test(String(error.message)) });
       console.warn(`${shop.name}: existing data was preserved: ${error.message || error}`);
     }
   }
+  if (!results.length && !failures.length) return {status:'正常取得済み・日次再取得不要',llmCalls:0,codexCalls:0};
   if (!results.length) {
     for (const failure of failures) previousSummary.shops[failure.source] = { ...previousSummary.shops[failure.source], lastAttempt: failure.attemptedAt || previousSummary.shops[failure.source]?.lastAttempt || null, error: failure.error, refreshed: false,
-      reviewStatus:/形式変更/.test(failure.error||'')?'format-review':previousSummary.shops[failure.source]?.reviewStatus || null };
+      reviewStatus:failure.accessHold?'access-review':/形式変更/.test(failure.error||'')?'format-review':previousSummary.shops[failure.source]?.reviewStatus || null,
+      reviewAdapterVersion:SHOPS.find(s=>s.id===failure.source)?.adapterVersion || null };
     fs.writeFileSync(SUMMARY_PATH, JSON.stringify(previousSummary), "utf8");
     throw new Error("全店舗の取得に失敗しました。正常データを保持・失敗時刻を記録");
   }
@@ -644,6 +658,7 @@ async function main() {
             price: item.price,
             matchMethod: item.matchMethod || "unknown",
             matchScore: Number(item.score || 0),
+            observedAt:item.observedAt || null, sourceUpdatedAt:item.sourceUpdatedAt || null,
           });
         }
       }
@@ -662,6 +677,7 @@ async function main() {
     let total30 = 0;
     let total90 = 0;
     for (const [shopId, entries] of Object.entries(history.shops)) {
+      if(!activeShopIds.has(shopId)) continue;
       const values = entries[card.id] || [];
       const c7 = countRecent(values, history.dates, 7);
       const c30 = countRecent(values, history.dates, 30);
@@ -684,6 +700,8 @@ async function main() {
         listingActive: currentListingAbsent ? false : currentPrice > 0 ? true : null,
         fulfilment: SHOPS.find((s) => s.id === shopId)?.fulfilment || "mail",
         priceDate: latestPriceIndex >= 0 ? history.dates[latestPriceIndex] : null,
+        observedAt:currentMatch?.observedAt || null,
+        sourceUpdatedAt:currentMatch?.sourceUpdatedAt || null,
         url: currentMatch?.url || "",
         matchMethod: currentMatch?.matchMethod || null,
         matchScore: currentMatch?.matchScore || null,
@@ -758,6 +776,7 @@ async function main() {
   const shopMeta = {};
   for (const shop of SHOPS) {
     const result = results.find((entry) => entry.shop.id === shop.id);
+    const confirmedAt=new Date().toISOString();
     const previous = previousSummary.shops?.[shop.id] || {};
     const trustStats = priceTrust.stats[shop.id] || { priceObservations: 0, outliers: 0, quarantinedPairs: 0 };
     const matchedItems = result ? result.matched.length : Number(previous.matched || 0);
@@ -779,20 +798,25 @@ async function main() {
       merchantId: shop.id.replace(/-(?:store|mail)$/, ''),
       acquisitionPermission: readJson(path.join(__dirname, 'buyback-source-permissions.json'), {}).sources?.[shop.id]?.status || null,
       permissionCheckedAt: readJson(path.join(__dirname, 'buyback-source-permissions.json'), {}).sources?.[shop.id]?.checkedAt || null,
-      lastAttempt: result || failures.some((f) => f.source === shop.id && !f.permissionWait && !f.reviewWait) ? new Date().toISOString() : previous.lastAttempt || null,
-      reviewStatus:result?null:/形式変更/.test(failures.find(f=>f.source===shop.id)?.error||'')?'format-review':previous.reviewStatus || null,
-      lastSuccess: result ? new Date().toISOString() : previous.lastSuccess || null,
+      lastAttempt: result || failures.some((f) => f.source === shop.id && !f.permissionWait && !f.reviewWait) ? confirmedAt : previous.lastAttempt || null,
+      reviewStatus:result?null:failures.find(f=>f.source===shop.id)?.accessHold?'access-review':/形式変更/.test(failures.find(f=>f.source===shop.id)?.error||'')?'format-review':previous.reviewStatus || null,
+      adapterVersion:result?.adapterVersion || previous.adapterVersion || null,
+      coverageComplete:result?result.fullListing===true:previous.coverageComplete ?? null,
+      duplicateSourceIds:result?.duplicateSourceIds ?? previous.duplicateSourceIds ?? null,
+      reviewAdapterVersion:shop.adapterVersion || null,
+      lastSuccess: result ? confirmedAt : previous.lastSuccess || null,
       fullListingConfirmedAt: result?.fullListing === true ? null : previous.fullListingConfirmedAt || null,
       sourceTotal: result?.sourceTotal ?? previous.sourceTotal ?? null,
       fetched: result?.items?.length ?? previous.fetched ?? null,
       attempted: result?.items?.length ?? null,
       newAcquired: result ? result.items.filter((item) => ![...(previousCatalog[shop.id] || []), ...(previousUnmatched[shop.id] || [])].some((old) => old.shopItemId === item.shopItemId)).length : null,
       newLinked: result ? new Set(result.matched.filter((item) => !previousSummary.cards?.[item.cardId]?.shops?.[shop.id]).map((item) => item.cardId)).size : null,
-      usableNet: result ? new Set(result.matched.filter((item) => item.active).map((item) => item.cardId)).size - Object.values(previousSummary.cards || {}).filter((card) => Number(card.shops?.[shop.id]?.price) > 0).length : null,
+      usableNet: result ? new Set(result.matched.filter((item) => item.active && !quarantine[`${shop.id}:${item.cardId}`] && decisionModel.matchConfidenceLabel(item.score)==='high').map((item) => item.cardId)).size
+        - Object.values(previousSummary.cards || {}).filter(card=>freshUsablePrice(card.shops?.[shop.id],previous)).length : null,
       unmatched: result?.unmatched?.length ?? previous.unmatched ?? null,
       sourceUpdatedAt: result ? null : previous.sourceUpdatedAt || null,
       pagination: result?.pagination || previous.pagination || null,
-      error: result ? null : readJson(path.join(__dirname, 'buyback-source-permissions.json'), {}).sources?.[shop.id]?.reason || failures.find((f) => f.source === shop.id)?.error || previous.error || null,
+      error: result ? result.coverageWarning || null : readJson(path.join(__dirname, 'buyback-source-permissions.json'), {}).sources?.[shop.id]?.reason || failures.find((f) => f.source === shop.id)?.error || previous.error || null,
       observedDays: (history.observedByShop[shop.id] || []).length,
       matched: result ? result.matched.length : Number(previous.matched || 0),
       activeMatched: result ? result.matched.filter((item) => item.active).length : Number(previous.activeMatched || 0),
@@ -835,4 +859,4 @@ if (require.main === module) main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
-module.exports = { main, SHOPS, fetchText, savedMatchConfidence };
+module.exports = { main, SHOPS, fetchText, savedMatchConfidence, freshUsablePrice };

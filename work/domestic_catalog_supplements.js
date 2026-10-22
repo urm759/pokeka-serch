@@ -23,5 +23,9 @@ function build(root=path.join(__dirname,'..')) {
   if(added.length) {fs.writeFileSync(file,JSON.stringify(cards));const metaFile=path.join(root,'data/pokemon-cards-meta.json'),meta=JSON.parse(fs.readFileSync(metaFile));meta.totalCards=cards.length;meta.generatedAt=new Date().toISOString();fs.writeFileSync(metaFile,JSON.stringify(meta,null,2));}
   return {added,priceAcquired:0,newlyAnalyzable:0};
 }
+function providerRows(cards,entries) {
+  const owned=new Set(entries.map(c=>String(c.sourceId||c.id)));
+  return cards.filter(c=>!owned.has(String(c.sourceId||c.id)));
+}
 if(require.main===module)console.log(JSON.stringify(build()));
-module.exports={apply,build,key};
+module.exports={apply,build,key,providerRows};

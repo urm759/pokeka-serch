@@ -67,12 +67,20 @@ function build(root=ROOT) {
   const receiptFile=path.join(root,'data/domestic-trade-source-audit.json');
   const receipt=fs.existsSync(receiptFile)?JSON.parse(fs.readFileSync(receiptFile,'utf8')):{};
   result.tradeEvidence={at:receipt.observedAt||null,missing:{},routes:{},note:'同一仕様・期間別の提供元集計。原票null/項目未提供を0や不存在へ変換しない。スニダン直接取得は再開せず既存の正規一括差分へ接続。'};
+  result.requiredAvailability.sourceFieldNotProvided=0;
   for(const id of result.srFamily.ids)for(const field of (completion.cards?.[id]?.m||[]).filter(f=>['domesticTrades','psa10Trades'].includes(f))){
     const e=require('./domestic_trade_evidence').inspect(receipt,byId.get(id),field);
+    if(e.status==='period-not-provided') {
+      result.requiredAvailability.automatic--;
+      result.requiredAvailability.sourceFieldNotProvided++;
+    }
     const group=result.tradeEvidence.missing[field]||={};group[e.status]=(group[e.status]||0)+1;
-    result.tradeEvidence.routes[id]||=[];result.tradeEvidence.routes[id].push({field,...e,source:'toreca',method:'既存の正規一括差分・次回実取得',completed:false});
+    result.tradeEvidence.routes[id]||=[];result.tradeEvidence.routes[id].push({field,...e,source:'toreca',method:e.status==='period-not-provided'?'現行原票に期間項目なし・通常一括差分で提供開始を再確認。専用の反復取得はしない':'既存の正規一括差分・次回実取得',completed:false});
   }
   const existing=read('data/modern-high-rarity-audit.json');existing.readiness2020=result;
+  existing.siteTotal=cards.length;existing.sourceListedTotal=source.cards.length;existing.sourceSnapshotDeclaredTotal=source.total;
+  existing.countsReconciledAt=result.generatedAt;
+  existing.countBasis='取得元の保存済みID母数。公式のみの補足カードはサイト掲載側へ別計上。旧2015年範囲の分類と現行2020年以降のreadiness2020は別。';
   fs.writeFileSync(path.join(root,'data/modern-high-rarity-audit.json'),JSON.stringify(existing));
   return result;
 }

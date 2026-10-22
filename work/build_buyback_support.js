@@ -13,7 +13,7 @@ function joined(observations, history, cards, source, now = Date.now()) {
   const byId = new Map(cards.map(c => [c.id, c])), rows = [], audit = { accepted: 0, rejected: 0, reasons: {} };
   const reject = reason => { audit.rejected++; audit.reasons[reason] = (audit.reasons[reason] || 0) + 1; };
   for (const [shop, entries] of Object.entries(observations.shops || {})) {
-    if (source.shops?.[shop]?.acquisitionPermission === 'pending') { for (const dates of Object.values(entries)) for (const date of Object.keys(dates)) reject('取得・再利用許諾確認待ち'); continue; }
+    if (!source.shops?.[shop] || ['pending','retired'].includes(source.shops[shop].acquisitionPermission)) { for (const dates of Object.values(entries)) for (const date of Object.keys(dates)) reject('取得・再利用停止'); continue; }
     for (const [id, dates] of Object.entries(entries)) {
       const card = byId.get(id);
       if (!card || card.language !== 'ja' || card.identityReviewRequired || !card.identityKey) { reject('国内カード仕様未確定'); continue; }

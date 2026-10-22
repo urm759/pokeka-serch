@@ -1,7 +1,10 @@
 const assert=require('node:assert/strict'),{apply}=require('./domestic_catalog_supplements'),{audit}=require('./audit_25th_promo');
 const entries=require('./domestic-catalog-supplements.json').cards,cards=[];
+const providerRows=require('./domestic_catalog_supplements').providerRows;
 assert.equal(apply(cards,entries,[],'2026-10-21T00:00:00Z').length,1);assert.equal(cards[0].price,null);assert.equal(cards[0].tv30,null);assert.equal(cards[0].priceObservedAt,null);
 assert.equal(apply(cards,entries).length,0,'idempotent');
+assert.equal(providerRows(cards,entries).length,0,'a manual official supplement is not provider coverage');
+assert.equal(providerRows([{...cards[0],sourceId:'pk-new-source'}],entries).length,1,'a subsequently fetched provider identity is real source coverage');
 const other=[{...cards[0],id:'different-existing-id'}];assert.equal(apply(other,entries).length,0,'same official specification is not a second card');
 const foreign=[{...cards[0],id:'foreign-version',language:'id'}];assert.equal(apply(foreign,entries).length,1,'foreign card is not a Japanese listing');
 const report=audit(foreign,{cards:{}});assert.equal(report.listed,1);assert.equal(report.analyzable,0);assert.equal(report.missing.length,24);
