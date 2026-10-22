@@ -75,6 +75,7 @@ jobs:
           if-no-files-found: error
       - name: Run fast regression tests
         run: |
+          node work/test_profile_worker.js
           node work/test_daily_source_isolation.js
           node work/test_homura_public_feed.js
           node work/test_postpass_cadence.js

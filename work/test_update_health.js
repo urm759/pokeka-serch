@@ -14,3 +14,19 @@ assert.equal(model.evaluate({ now, runs: [], sourceLastSuccessAt: null }).status
 assert.equal(model.fingerprint({ ...failures, sourceAgeHours: 1 }), model.fingerprint({ ...failures, sourceAgeHours: 3 }), "経過時間のみでは再通知しない");
 assert.notEqual(model.fingerprint(failures), model.fingerprint({ ...failures, latestRunId: 5 }), "新しい失敗は再通知する");
 console.log("update failure and 24-hour stall tests passed");
+const proof={runId:4,confirmed:true,receiptMatches:true,event:'schedule',hashes:[{matched:true}],stages:{acquisition:true,validation:true,savePublish:true}};
+const partial=model.evaluate({now,runs:[run(4,'failure',fresh),run(3,'failure','2026-09-28T00:00:00Z')],sourceLastSuccessAt:fresh,verifiedPublications:[proof]});
+assert.equal(partial.consecutiveFailures,0);
+assert.equal(partial.workflowConsecutiveFailures,2);
+assert(partial.partialPublished);
+assert(partial.reasons.some(r=>r.includes('一部取得元')));
+assert(!partial.reasons.some(r=>/連続失敗|24時間/.test(r)));
+for(const invalid of [{...proof,confirmed:false},{...proof,receiptMatches:false},{...proof,hashes:[{matched:false}]},{...proof,event:'workflow_dispatch'},{...proof,stages:{...proof.stages,validation:false}}]) {
+  assert(!model.evaluate({now,runs:[run(4,'failure',fresh)],sourceLastSuccessAt:fresh,verifiedPublications:[invalid]}).partialPublished);
+}
+const next=model.evaluate({now,runs:[run(5,'failure',fresh),run(4,'failure','2026-09-29T12:00:00Z')],sourceLastSuccessAt:fresh,verifiedPublications:[proof]});
+assert.equal(next.consecutiveFailures,1,'a new pipeline failure must still alert');
+assert(model.sourceOnlyFailure({runId:4,runs:[{processStatus:'failed',failureClass:'source-acquisition'}]},4));
+assert(!model.sourceOnlyFailure({runId:4,runs:[{processStatus:'failed',failureClass:'required-calculation'}]},4));
+assert(!model.sourceOnlyFailure({runId:3,runs:[{processStatus:'failed',failureClass:'source-acquisition'}]},4));
+assert(!model.sourceOnlyFailure({runId:4,runs:[{processStatus:'failed'}]},4));

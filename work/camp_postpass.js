@@ -25,7 +25,7 @@ function prioritize(entries,start,catalog,requested,detailLimit,retries={},now=D
   const normal=entries.slice(start).map((r,i)=>({...r,normalIndex:start+i})),seen=new Set(normal.map(r=>r.url));
   const order=new Map(requested.map((id,i)=>[id,i]));
   const selected=catalog.filter(r=>order.has(r.cardId)&&Number.isInteger(r.sourceSitemap)&&r.sourceSitemap>0
-    &&/^https:\/\/torecacamp-pokemon\.com\/products\/[a-zA-Z0-9_%~-]+$/.test(r.detailUrl||'')&&!r.priceQuarantined&&!retries[r.detailUrl]
+    &&/^https:\/\/torecacamp-pokemon\.com\/products\/[a-zA-Z0-9_%~-]+$/.test(r.detailUrl||'')&&!r.priceQuarantined&&require('./acquisition_retry').eligible(retries[r.detailUrl],now)
     &&due(r,true,now)&&!seen.has(r.detailUrl)).sort((a,b)=>order.get(a.cardId)-order.get(b.cardId))
     .slice(0,Math.floor(detailLimit/2)).map(r=>({url:r.detailUrl,title:r.title,handle:r.detailUrl.split('/').pop(),
       sourceSitemap:r.sourceSitemap,priorityRefresh:true}));

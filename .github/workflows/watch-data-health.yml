@@ -30,6 +30,7 @@ jobs:
           node-version: "24"
       - name: Check alert deduplication and safe backoff rules
         run: |
+          node work/test_profile_worker.js
           node work/test_update_health.js
           node work/test_backfill_health.js
           node work/test_backfill_rate.js

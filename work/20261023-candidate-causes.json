@@ -1,0 +1,67 @@
+{
+  "sameTimeDataComparison": {
+    "before": 30,
+    "after": 31,
+    "gained": [
+      "pk-985"
+    ],
+    "lost": []
+  },
+  "chronologicalIndependent": {
+    "before": 31,
+    "after": 31,
+    "net": 0,
+    "gained": [
+      "pk-985"
+    ],
+    "lost": [
+      "pk-75866"
+    ],
+    "note": "4条件の重複除外。条件間の移動は新しい独立候補ではない。適合変化と実取得の因果は別監査"
+  },
+  "chronologicalLosses": [
+    {
+      "profile": "A",
+      "id": "pk-75866",
+      "root": [
+        {
+          "code": "expired-price",
+          "evidence": "前回採用した店舗価格が期限切れ。別店舗の新鮮な高値による採算不合格と併記",
+          "previouslyPresent": false
+        }
+      ],
+      "newFailures": [
+        "単体資金効率算出不可・期限超過・再確認待ち",
+        "購入価格条件・期限超過・再確認待ち",
+        "仕入れ余裕率・上限算出不可"
+      ]
+    },
+    {
+      "profile": "A-median",
+      "id": "pk-73747",
+      "root": [
+        {
+          "code": "expired-price",
+          "evidence": "前回採用した店舗価格が期限切れ。別店舗の新鮮な高値による採算不合格と併記",
+          "previouslyPresent": false
+        },
+        {
+          "code": "missing-data",
+          "evidence": "未取得・確認日時・出口等の不足。不存在とは断定しない",
+          "previouslyPresent": false
+        }
+      ],
+      "newFailures": [
+        "単体資金効率算出不可・新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない"
+      ]
+    }
+  ],
+  "initialQualifying": [
+    {
+      "profile": "B",
+      "id": "pk-985",
+      "name": "ニンフィアGX SR[SM1+ 057/051](強化拡張パック「サン＆ムーン」)"
+    }
+  ],
+  "explanation": "Saved chronological losses include time expiration. Fixed-clock data comparison isolates acquisition recovery from aging."
+}

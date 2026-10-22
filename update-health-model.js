@@ -4,15 +4,23 @@
   if (root) root.UpdateHealthModel = model;
 })(typeof window === "object" ? window : null, function () {
   const HOUR = 3600000;
-  function evaluate({ runs = [], sourceLastSuccessAt = null, now = Date.now(), ttlHours = 24 } = {}) {
+  function evaluate({ runs = [], sourceLastSuccessAt = null, now = Date.now(), ttlHours = 24, verifiedPublications = [] } = {}) {
     const time = Number.isFinite(Number(now)) ? Number(now) : Date.parse(now);
     const completed = runs.filter((run) => run.status === "completed")
       .sort((left, right) => Date.parse(right.created_at || 0) - Date.parse(left.created_at || 0));
     const latest = completed[0] || null;
-    const lastSuccess = completed.find((run) => run.conclusion === "success") || null;
+    const verified = new Set(verifiedPublications.filter(p=>p.confirmed && p.receiptMatches && p.event==='schedule'
+      && p.hashes?.length && p.hashes.every(h=>h.matched) && ['acquisition','validation','savePublish'].every(k=>p.stages?.[k]===true)).map(p=>String(p.runId)));
+    const published = run=>run.conclusion==='success' || verified.has(String(run.id));
+    const lastSuccess = completed.find(published) || null;
+    let workflowConsecutiveFailures = 0;
+    for(const run of completed) {
+      if(run.conclusion==='success')break;
+      if(['failure','timed_out'].includes(run.conclusion))workflowConsecutiveFailures++;
+    }
     let consecutiveFailures = 0;
     for (const run of completed) {
-      if (run.conclusion === "success") break;
+      if (published(run)) break;
       if (run.conclusion === "failure" || run.conclusion === "timed_out") consecutiveFailures += 1;
     }
     const sourceTime = Date.parse(sourceLastSuccessAt || "");
@@ -20,12 +28,14 @@
     const sourceAgeHours = Number.isFinite(sourceTime) && Number.isFinite(time) ? Math.max(0, (time - sourceTime) / HOUR) : null;
     const runAgeHours = Number.isFinite(runTime) && Number.isFinite(time) ? Math.max(0, (time - runTime) / HOUR) : null;
     const reasons = [];
-    if (latest?.conclusion === "failure" || latest?.conclusion === "timed_out") reasons.push(`Daily Fast Updateが${consecutiveFailures}回連続失敗`);
+    const partialPublished=latest?.conclusion==='failure' && verified.has(String(latest.id));
+    if(partialPublished)reasons.push('Dailyの一部取得元が失敗・正常データは必須検証/保存/公開照合済み');
+    else if (latest?.conclusion === "failure" || latest?.conclusion === "timed_out") reasons.push(`Daily Fast Updateが${consecutiveFailures}回連続失敗`);
     if (sourceAgeHours === null || sourceAgeHours >= ttlHours) reasons.push(`みんトレ主要データの取得が${ttlHours}時間以上停止`);
     if (runAgeHours !== null && runAgeHours >= ttlHours) reasons.push(`日次更新の成功が${ttlHours}時間以上なし`);
     return {
       status: reasons.length ? "alert" : latest ? "ok" : "unknown",
-      reasons, consecutiveFailures, sourceLastSuccessAt,
+      reasons, consecutiveFailures, workflowConsecutiveFailures, partialPublished, sourceLastSuccessAt,
       sourceAgeHours: sourceAgeHours === null ? null : Math.round(sourceAgeHours * 10) / 10,
       lastSuccessfulRunAt: lastSuccess?.updated_at || lastSuccess?.created_at || null,
       runAgeHours: runAgeHours === null ? null : Math.round(runAgeHours * 10) / 10,
@@ -75,5 +85,10 @@
       return {cause:'PC独立監視は未登録',impact:'起動前の観測に制約',action:'登録権限の確認が必要'};
     return {cause:category,impact:text.split(/\r?\n/)[0].slice(0,100),action:'詳細と実行履歴を確認'};
   }
-  return { evaluate, fingerprint, issueCategory, summarizeIssue, monitorIssues };
+  function sourceOnlyFailure(execution,runId) {
+    if(String(execution?.runId)!==String(runId))return false;
+    const failed=(execution.runs||[]).filter(r=>r.processStatus==='failed');
+    return failed.length>0 && failed.every(r=>r.failureClass==='source-acquisition');
+  }
+  return { evaluate, fingerprint, issueCategory, summarizeIssue, monitorIssues, sourceOnlyFailure };
 });

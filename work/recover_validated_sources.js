@@ -8,6 +8,7 @@ const files=['data/pokemon-cards.json','data/pokemon-cards-meta.json','data/shop
   'work/priority-price-checkpoint.json','work/priority-price-http-cache.json','work/source-update-runs.json','work/source-update-history.json',
   'work/shop_buyback_history.json','work/shop_buyback_catalog.json','work/shop_buyback_unmatched.json','work/shop_buyback_item_matches.json',
   'work/shop_buyback_image_matches.json','work/shop_buyback_quarantine.json','work/daily-http-cache.json','work/toreca-source-inventory.json',
+  'work/buyback-price-observations.json','work/homura-public-checkpoint.json',
   'work/toreca_source_diff.json','work/card-new-arrivals.json','work/card-lifecycle.json','work/changed-card-ids.json'];
 function main() {
   const folder=path.resolve(root,process.argv[2]||''),base=process.argv[3];

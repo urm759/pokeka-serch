@@ -16,3 +16,6 @@ try{
   manifest.files[0].file='../escape.json';fs.writeFileSync(path.join(root,'recovery-manifest.json'),JSON.stringify(manifest));assert.throws(()=>audit.verify(root),/Unsafe/);
 }finally{assert(path.resolve(root).startsWith(path.resolve(os.tmpdir())+path.sep+'recovery-audit-'));fs.rmSync(root,{recursive:true,force:true});}
 console.log('PASS saved recovery hashes/path, exact URL/condition/time, newer normal data retained and no overwriting');
+const recoveryFiles=require('./recover_validated_sources').files;
+assert(recoveryFiles.includes('work/homura-public-checkpoint.json'),'saved successful feed must resume without refetching');
+assert(recoveryFiles.includes('work/buyback-price-observations.json'),'daily observations must travel with quotes');

@@ -86,7 +86,8 @@ async function main() {
       }
     }
   }
-  const health = evaluate({ runs: runs.workflow_runs || [], sourceLastSuccessAt: status.sources?.toreca?.lastSuccessAt });
+  const health = evaluate({ runs: runs.workflow_runs || [], sourceLastSuccessAt: status.sources?.toreca?.lastSuccessAt,
+    verifiedPublications:cycles.pipelines?.daily?[cycles.pipelines.daily]:[] });
   const file = path.join(ROOT, "data", "update-health.json");
   const current = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, "utf8")) : null;
   const read = (name, fallback = null) => {
@@ -103,7 +104,7 @@ async function main() {
     recovery: (() => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, "data", "backfill-recovery.json"), "utf8")); } catch { return {}; } })(),
     previous: current || {},overseasCancelled });
   const dailyIssues = health.reasons.map((reason) => ({
-    key: reason.includes("連続失敗") ? "daily:workflow-failure"
+    key: reason.includes('一部取得元') ? 'daily:source-failure' : reason.includes("連続失敗") ? "daily:workflow-failure"
       : reason.includes("みんトレ") ? "daily:source-stale" : "daily:run-stale",
     reason, url: health.latestRunUrl,
   }));
@@ -148,9 +149,8 @@ async function main() {
   if (["failure", "timed_out"].includes(priceState.conclusion)) {
     const verified=cycles.pipelines?.priority;
     const partialPublished=String(verified?.runId)===String(priceState.runId)&&verified.confirmed&&verified.partial;
-    const audited=(()=>{try{return JSON.parse(fs.readFileSync(path.join(ROOT,'data/update-failure-audit.json'),'utf8')).rows||[];}catch{return [];}})()
-      .filter(row=>String(row.id)===String(priceState.runId)).flatMap(row=>row.failedSteps||[]);
-    const originFailure=audited.length>0&&audited.every(name=>/Refresh due purchase prices|Fill missed price intervals/.test(name));
+    const execution=(()=>{try{return JSON.parse(fs.readFileSync(path.join(ROOT,'data/priority-price-execution.json'),'utf8'));}catch{return {};}})();
+    const originFailure=require('../update-health-model').sourceOnlyFailure(execution,priceState.runId);
     priceIssues.push({key:partialPublished||originFailure?'priority-prices:source-failure':'priority-prices:workflow-failure',
       reason:partialPublished?'購入価格高速更新：一部取得元が失敗。独立した正常データは必須検証・保存・公開照合済み':originFailure
         ?'購入価格高速更新：取得元工程が失敗。保存済み正常データを保持し、必須検証後に公開する。計算失敗やpush失敗と混同しない'

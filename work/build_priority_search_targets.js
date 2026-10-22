@@ -16,6 +16,20 @@ function efficiencySummaryKey(calculationKey,state) {
   const fields=['efficiencyBuy','efficiencyManualPrice','efficiencyScenario','efficiencySaleDays','efficiencyPayoutDays','profitSearchBasis','currentMarketManualPrice','currentMarketSearchKind','observationIncludeReference','efficiencyIncludeReference','psa9RatioAggregate','psa9RatioEstimate','psa9RatioMarket'];
   return 'efficiency-all:'+JSON.stringify([calculationKey,fields.map(key=>state[key])]);
 }
+function evaluatePair(input) {
+  const cache=new Map();
+  return {urlOnly:evaluate(input.profile,input.at,{},input.inspectIds,cache),
+    knownSavedConditions:evaluate(input.profile,input.at,input.overlay,[],cache)};
+}
+function isolatedPair(input,execute=require('node:child_process').spawnSync) {
+  // VM/model caches retain large card graphs. Release them at each profile boundary.
+  const child=execute(process.execPath,['--max-old-space-size=2048',__filename,'--evaluate-worker'],{
+    cwd:ROOT,input:JSON.stringify(input),encoding:'utf8',maxBuffer:32*1024*1024,timeout:180000});
+  if(child.error || child.status!==0)throw Error(`Fixed profile ${input.profile.id} failed; previous outputs retained: ${String(child.error?.message||child.stderr||child.status).slice(-1200)}`);
+  const result=JSON.parse(child.stdout);
+  if(result.urlOnly?.id!==input.profile.id || result.knownSavedConditions?.id!==input.profile.id)throw Error('Profile worker identity mismatch');
+  return result;
+}
 function evaluate(profile,at,overlay={},inspectIds=[],calculationCache=null) {
   const url=new URL(profile.url);for(const [k,v]of Object.entries(overlay))if(!url.searchParams.has(k))url.searchParams.set(k,v);
   const api=load(fs.readFileSync(path.join(ROOT,'app.js'),'utf8'),at,{url:url.href,fixedModelClock:true}),calculationKey=at+':'+api.computationKey();
@@ -111,10 +125,8 @@ function build(root=ROOT,at=new Date().toISOString()) {
   const inspectFor=p=>[...(previous.profiles.find(r=>r.id===p.id)?.urlsMatched||[]),...(previous.freshnessRecovery||[]).filter(r=>r.profile===p.id).map(r=>r.id),...priorDepartures.filter(r=>r.profile===p.id).map(r=>r.id)];
   const definitions=require('./search_profile_variants').searchModeProfiles(config);
   require('./search_profile_variants').saveMedianProfiles(root,config);
-  // This cache exists only within a build over the same saved files/time. Buy-basis/search changes do not change production economics.
-  const calculationCache=new Map();
   const codeHash=departures.codeHash(root);
-  const profiles=definitions.map(p=>({urlOnly:evaluate(p,at,{},inspectFor(p),calculationCache),knownSavedConditions:evaluate(p,at,config.knownSavedOverlay,[],calculationCache)}));
+  const profiles=definitions.map(p=>isolatedPair({profile:p,at,inspectIds:inspectFor(p),overlay:config.knownSavedOverlay}));
   const transitions=profiles.map(p=>{
     const old=previous.profiles.find(r=>r.id===p.urlOnly.id),same=old?.urlHash===p.urlOnly.urlHash;
     const seen=new Set([...(old?.seenQualified||[]),...(old?.urlsMatched||[])]);
@@ -190,5 +202,8 @@ function build(root=ROOT,at=new Date().toISOString()) {
   console.log(JSON.stringify(profiles.map(p=>({id:p.urlOnly.id,urlOnly:p.urlOnly.qualified,withKnownSaved:p.knownSavedConditions.qualified,prospects:p.urlOnly.prospects}))));
   return report;
 }
-if(require.main===module)build();
-module.exports={build,evaluate,routeNeededFields,efficiencySummaryKey};
+if(require.main===module) {
+  if(process.argv.includes('--evaluate-worker'))process.stdout.write(JSON.stringify(evaluatePair(JSON.parse(fs.readFileSync(0,'utf8')))));
+  else build();
+}
+module.exports={build,evaluate,evaluatePair,isolatedPair,routeNeededFields,efficiencySummaryKey};

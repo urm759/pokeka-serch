@@ -1023,8 +1023,12 @@ async function exclusiveMain() {
 if (require.main === module) exclusiveMain().catch((error) => { console.error(error); process.exitCode = 1; });
 
 function campRequestedIds(targets,comparisonIds=[]) {
-  return [...new Set([...comparisonIds,...(targets.readyRoutes?.domesticShops||[])
-    .filter(r=>['referenceMedian','shopStateA'].includes(r.field)).map(r=>r.id)])];
+  const fields=new Set(['referenceMedian','shopStateA']);
+  const urgent=new Set([...(targets.freshnessRecovery||[]).map(r=>r.id),...(targets.repairRequests||[])
+    .filter(r=>r.source==='domesticShops'&&r.automatic===true&&fields.has(r.field)).map(r=>r.id)]);
+  const rows=(targets.readyRoutes?.domesticShops||[]).filter(r=>fields.has(r.field))
+    .sort((a,b)=>Number(urgent.has(b.id))-Number(urgent.has(a.id))||Number(b.priority||0)-Number(a.priority||0));
+  return [...new Set([...rows.map(r=>r.id),...comparisonIds])];
 }
 module.exports = {
   historySummary,
