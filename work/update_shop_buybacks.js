@@ -483,7 +483,7 @@ function buildPriceTrust(history, cards, results) {
   return { quarantine, stats };
 }
 
-async function main() {
+async function main({ rebuildSaved = false } = {}) {
   const cards = readJson(path.join(ROOT, "data", "pokemon-cards.json"), []);
   const historyPath = path.join(__dirname, "shop_buyback_history.json");
   const catalogPath = path.join(__dirname, "shop_buyback_catalog.json");
@@ -531,6 +531,12 @@ async function main() {
   const results = [];
   for (const shop of SHOPS) {
     if (process.env.SHOP_BUYBACK_SOURCE_ONLY && process.env.SHOP_BUYBACK_SOURCE_ONLY !== shop.id) continue;
+    if (rebuildSaved) {
+      if (previousCatalog[shop.id]) results.push({shop, savedReplay:true,
+        fullListing:previousSummary.shops?.[shop.id]?.coverageComplete === true,
+        items:previousCatalog[shop.id], matched:previousCatalog[shop.id], unmatched:previousUnmatched[shop.id] || []});
+      continue;
+    }
     const permission = readJson(path.join(__dirname, 'buyback-source-permissions.json'), {}).sources?.[shop.id];
     if (['pending','retired'].includes(permission?.status)) {
       failures.push({ source: shop.id, error: permission.reason, permissionWait: true });
@@ -603,8 +609,8 @@ async function main() {
 
   const today = jstDate();
   const previousDates = [...history.dates];
-  const observedDates = results.flatMap((result) => result.items.map((item) => item.observedDate || today));
-  const targetDates = [...new Set([...previousDates, today, ...observedDates])]
+  const observedDates = results.filter(result=>!result.savedReplay).flatMap((result) => result.items.map((item) => item.observedDate || today));
+  const targetDates = [...new Set([...previousDates, ...(rebuildSaved ? [] : [today, ...observedDates])])]
     .filter((date) => /^\d{4}-\d{2}-\d{2}$/.test(date))
     .sort()
     .slice(-HISTORY_DAYS);
@@ -619,50 +625,7 @@ async function main() {
   }
   const currentLinksByShop = {};
   for (const result of results) {
-    const shopId = result.shop.id;
-    currentLinksByShop[shopId] = new Map();
-    // Only a complete successful listing proves that an absent card is unlisted.
-    if (result.fullListing === true || result.coverageComplete === true) {
-      history.confirmedCompleteByShop ||= {};
-      history.confirmedCompleteByShop[shopId] = [...new Set([...(history.confirmedCompleteByShop[shopId] || []), today])].filter(date => targetDates.includes(date)).sort();
-    }
-    if (!history.shops[shopId]) history.shops[shopId] = {};
-    const shopHistory = history.shops[shopId];
-    for (const values of Object.values(shopHistory)) {
-      while (values.length < history.dates.length) values.push(null);
-    }
-    const refreshedDates = [...new Set(result.items.map((item) => item.observedDate || today))];
-    if (!refreshedDates.length) refreshedDates.push(today);
-    history.observedByShop[shopId] = [...new Set([...(history.observedByShop[shopId] || []), ...refreshedDates])]
-      .filter((date) => targetDates.includes(date))
-      .sort();
-    for (const values of Object.values(shopHistory)) {
-      for (const date of refreshedDates) {
-        const index = history.dates.indexOf(date);
-        if (index >= 0) values[index] = null;
-      }
-    }
-    for (const item of result.matched.filter((entry) => entry.active)) {
-      if (!shopHistory[item.cardId]) shopHistory[item.cardId] = Array(history.dates.length).fill(null);
-      const itemDate = item.observedDate || today;
-      const itemDateIndex = history.dates.indexOf(itemDate);
-      if (itemDateIndex < 0) continue;
-      const previous = Number(shopHistory[item.cardId][itemDateIndex] || 0);
-      if (item.price >= previous) {
-        shopHistory[item.cardId][itemDateIndex] = item.price;
-        const previousLink = currentLinksByShop[shopId].get(item.cardId);
-        if (!previousLink || itemDate > previousLink.date || (itemDate === previousLink.date && item.price >= previousLink.price)) {
-          currentLinksByShop[shopId].set(item.cardId, {
-            url: item.itemUrl || "",
-            date: itemDate,
-            price: item.price,
-            matchMethod: item.matchMethod || "unknown",
-            matchScore: Number(item.score || 0),
-            observedAt:item.observedAt || null, sourceUpdatedAt:item.sourceUpdatedAt || null,
-          });
-        }
-      }
-    }
+    currentLinksByShop[result.shop.id] = require('./buyback_listing_refresh').refresh(history, result, today, previousCatalog[result.shop.id]);
   }
 
   const priceTrust = buildPriceTrust(history, cards, results);
@@ -690,14 +653,15 @@ async function main() {
       }
       if (!c7 && !c30 && !c90) continue;
       const latestPriceIndex = values.findLastIndex((value) => Number(value) > 0);
-      const currentListingAbsent = results.find((result) => result.shop.id === shopId)?.fullListing && !currentLinksByShop[shopId]?.has(card.id);
+      const currentListingAbsent = require('./buyback_listing_refresh').unavailable(results.find(result => result.shop.id === shopId), currentLinksByShop[shopId], card.id, preserved);
       const currentPrice = currentListingAbsent ? null : latestPriceIndex >= 0 ? Number(values[latestPriceIndex]) : null;
       const previousMatch = previousSummary.cards?.[card.id]?.shops?.[shopId];
       const currentMatch = currentLinksByShop[shopId]?.get(card.id) || (previousMatch ? { ...previousMatch, matchScore: previousMatch.matchScore } : null);
-      const quarantined = quarantine[`${shopId}:${card.id}`] || null;
+      const identityHeld=currentMatch?.identityHeld === true || !currentLinksByShop[shopId]?.has(card.id) && preserved?.identityHeld === true;
+      const quarantined = quarantine[`${shopId}:${card.id}`] || (identityHeld ? {reason:'最新取得で商品照合が変更・保留。旧対応を価格へ再採用しない'} : null);
       shops[shopId] = {
         c7, c30, c90, price: currentPrice,
-        listingActive: currentListingAbsent ? false : currentPrice > 0 ? true : null,
+        listingActive: identityHeld ? null : currentListingAbsent ? false : currentPrice > 0 ? true : null,
         fulfilment: SHOPS.find((s) => s.id === shopId)?.fulfilment || "mail",
         priceDate: latestPriceIndex >= 0 ? history.dates[latestPriceIndex] : null,
         observedAt:currentMatch?.observedAt || null,
@@ -708,6 +672,7 @@ async function main() {
         matchConfidence: savedMatchConfidence(currentMatch),
         quarantined: Boolean(quarantined),
         quarantineReason: quarantined?.reason || null,
+        ...(identityHeld ? {identityHeld:true} : {}),
         observed7: observedRecent(history.observedByShop[shopId], latestHistoryDate, 7),
         observed30: observedRecent(history.observedByShop[shopId], latestHistoryDate, 30),
         observed90: observedRecent(history.observedByShop[shopId], latestHistoryDate, 90),
@@ -778,6 +743,7 @@ async function main() {
     const result = results.find((entry) => entry.shop.id === shop.id);
     const confirmedAt=new Date().toISOString();
     const previous = previousSummary.shops?.[shop.id] || {};
+    if (result?.savedReplay) { shopMeta[shop.id] = previous; continue; }
     const trustStats = priceTrust.stats[shop.id] || { priceObservations: 0, outliers: 0, quarantinedPairs: 0 };
     const matchedItems = result ? result.matched.length : Number(previous.matched || 0);
     const mismatchSuspicions = result
@@ -833,7 +799,7 @@ async function main() {
   }
   const catalog = { ...readJson(catalogPath, {}).shops, ...Object.fromEntries(results.map((result) => [result.shop.id, result.matched])) };
   const unmatched = { ...readJson(unmatchedPath, {}).shops, ...Object.fromEntries(results.map((result) => [result.shop.id, result.unmatched])) };
-  for (const result of results) if (result.fullListing === true || result.coverageComplete === true) {
+  for (const result of results) if (!result.savedReplay && (result.fullListing === true || result.coverageComplete === true)) {
     shopMeta[result.shop.id].fullListingConfirmedAt = shopMeta[result.shop.id].lastSuccess;
     history.identityIncompleteByShop ||= {};
     const dates = new Set(history.identityIncompleteByShop[result.shop.id] || []);
@@ -850,7 +816,7 @@ async function main() {
   if (failures.length) throw new Error(`一部取得失敗（正常データ保持）: ${failures.map((f) => `${f.source}: ${f.error}`).join("; ")}`);
 }
 
-if (require.main === module) main().catch((error) => {
+if (require.main === module) main({rebuildSaved:process.argv.includes('--rebuild-saved')}).catch((error) => {
   if (fs.existsSync(SUMMARY_PATH)) {
     console.warn(`shop buyback refresh skipped; existing data was preserved: ${error.message || error}`);
     process.exitCode = 1;
