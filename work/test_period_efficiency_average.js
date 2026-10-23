@@ -28,6 +28,7 @@ assert.equal(api.efficiencySearchValue(api.cardEfficiency(card,now,s.purchaseMod
 s.psa10PeriodSummary={...summary,cards:{fixture:[null,0,...summary.cards.fixture.slice(2)]}};
 assert(api.periodEfficiencyPanel(card,now).includes('採用3/4期間'));
 s.exitPolicy='both';assert(api.periodEfficiencyPanel(card,now).includes('採用0/4期間'),'missing store exit is not replaced by marketplace');
+assert(api.periodEfficiencyPanel(card,now,true).includes('算出不可：買取平均不足'),'compact list states the missing buyback mean, without hiding the full reasons in details');
 s.exitPolicy='marketplace';s.fee=12000;const changed=api.cardEfficiency(card,now,s.purchaseMode,'obs30');assert.equal(changed.investment,22210);
 assert.equal(api.cardEfficiency(card,now+49*3600000,s.purchaseMode,'obs30').annual,null,'expired purchase remains unavailable');
 card.currentStoreOffer=null;assert(api.periodEfficiencyPanel(card,now).includes('採用0/4期間'));
