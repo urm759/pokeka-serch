@@ -1,8 +1,34 @@
 const fs=require('node:fs'),path=require('node:path');
 const ROOT=path.join(__dirname,'..'),periods=[7,30,75,200];
 const day=at=>Number.isFinite(Date.parse(at))?new Date(Date.parse(at)+9*3600000).toISOString().slice(0,10):null;
+function resolveSavedItem(item,cards,byNumber) {
+  const {resolve:resolver,number}=require('./cardshop151');
+  if(byNumber)cards=byNumber.get(number(item.number||item.name))||[];
+  const cleanName=String(item.name).replace(/\s+\d{1,3}\s*\/\s*(?:\d{1,3}|(?:XY|SM|SV|BW|S)-P)\b/ig,'');
+  const row={type:'PSA10',genre:'ポケモンカード',name:cleanName,listNo:item.number||item.name};
+  const result=resolver(row,cards);
+  if(result.cardId)return result;
+  const serial=number(row.listNo),secret=serial?.match(/^(\d+)\/(\d+)$/);
+  if(/\bSA\b/.test(cleanName) && secret && Number(secret[1])>Number(secret[2])) {
+    const matched=resolver({...row,name:cleanName.replace(/\bSA\b/g,'')},cards);
+    const card=cards.find(c=>c.id===matched.cardId);
+    // Some catalogues omit the SA label. Exact unique secret number/name is required;
+    // normal artwork, duplicate variants and non-SR rarities cannot authorize this path.
+    if(card && /^(SR|SSR)$/.test(require('./card_identity').extractRarity(card.name,card.rarity)||'') && !/\bSA\b|ミラー|初版|エラー|未開封/.test(card.name))return {...matched,method:'unique-secret-number-name-ja-sa-label-omitted'};
+  }
+  const set=String(item.name).match(/\[((?:SV|SM|XY|BW|S|M)[a-z0-9+-]*)\s+\d{1,3}\s*\/\s*\d{1,3}\]/i)?.[1];
+  if(!set || !/\bSRC\b/.test(cleanName))return result;
+  // SRC is a source classification, not evidence that the card is an ordinary SR.
+  // Remove only that token; require an explicit set plus exact number/name and a unique specification.
+  const norm=v=>String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+  const scoped=cards.filter(c=>norm(c.setCode)===norm(set));
+  const matched=resolver({...row,name:cleanName.replace(/\bSRC\b/g,'')},scoped);
+  return matched.cardId ? {...matched,method:'explicit-set-number-name-spec-ja-source-label',sourceClassification:'SRC'} : result;
+}
 function capture(saved,catalog,source,cards) {
   const next=structuredClone(saved || {version:1,shops:{}}),byId=new Map(cards.map(c=>[c.id,c]));
+  const byNumber=new Map(),number=require('./cardshop151').number;
+  for(const c of cards) {const key=number(c.model||c.name);if(key){if(!byNumber.has(key))byNumber.set(key,[]);byNumber.get(key).push(c);}}
   next.shops ||= {}; const audit={accepted:0,rejected:0,reasons:{}};
   const reject=r=>{audit.rejected++;audit.reasons[r]=(audit.reasons[r]||0)+1;};
   for(const [shop,items] of Object.entries(catalog.shops||{})) {
@@ -12,8 +38,7 @@ function capture(saved,catalog,source,cards) {
       const c=byId.get(item.cardId),quote=source.cards?.[item.cardId]?.shops?.[shop];
       if(!c || c.language!=='ja' || c.identityReviewRequired || !c.identityKey) {reject('仕様未確定');continue;}
       if(!item.active || quote?.quarantined || quote?.listingActive!==true || quote.matchConfidence!=='high' || item.price!==quote.price || quote.priceDate!==day(meta.lastSuccess)) {reject('価格・照合・個別日付不一致');continue;}
-      const cleanName=String(item.name).replace(/\s+\d{1,3}\s*\/\s*(?:\d{1,3}|(?:XY|SM|SV|BW|S)-P)\b/ig,'');
-      const result=require('./cardshop151').resolve({type:'PSA10',genre:'ポケモンカード',name:cleanName,listNo:item.number||item.name},cards);
+      const result=resolveSavedItem(item,cards,byNumber);
       const explicit=String(item.name).match(/\[((?:SV|SM|XY|BW|S|M)[a-z0-9+-]*)\s/i)?.[1];
       const promo=String(item.number || item.name).match(/\d{1,3}\s*\/\s*((?:XY|SM|SV|BW|S)-P)/i)?.[1];
       const setNorm=v=>String(v || '').toUpperCase().replace(/[^A-Z0-9]/g,'');
@@ -43,7 +68,7 @@ function aggregate(saved,source,cards,now=Date.now()) {
     for(const [id,dates] of Object.entries(entries)) {
       const c=byId.get(id);if(!c)continue;
       for(const date of Object.keys(dates)) if(Date.parse(date)<start) delete dates[date];
-      const records=Object.entries(dates).filter(([date,r])=>r.identityAuditVersion===3 && r.grade==='PSA10' && r.currency==='JPY' && date<=asOf && day(r.observedAt)===date && Date.parse(r.observedAt)<=now && r.identity===c.identityKey && Number.isFinite(r.price) && r.price>0);
+      const records=Object.entries(dates).filter(([date,r])=>r.identityAuditVersion===3 && r.grade==='PSA10' && r.currency==='JPY' && !r.campaign && !r.quantityLimited && r.conditionsConfirmed!==false && date<=asOf && day(r.observedAt)===date && Date.parse(r.observedAt)<=now && r.identity===c.identityKey && Number.isFinite(r.price) && r.price>0);
       const row={identity:c.identityKey,periods:{}};
       for(const n of periods) {
         const earliest=Date.parse(asOf)-(n-1)*86400000,rows=records.filter(([d])=>Date.parse(d)>=earliest).sort((a,b)=>a[0].localeCompare(b[0]));
@@ -80,4 +105,4 @@ if(require.main===module) {
   if(process.argv.includes('--recover-proof'))console.log(JSON.stringify(recover(['6fd5331c','66712a2a'])));
   console.log(JSON.stringify(build()));
 }
-module.exports={build,capture,aggregate};
+module.exports={build,capture,aggregate,recover,resolveSavedItem};

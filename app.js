@@ -4277,7 +4277,10 @@ function periodEfficiencyPanel(card,now=Date.now(),compact=false) {
   const rows=explorationMetrics.observationPeriods.map(days=>cardEfficiency(card,now,state.purchaseMode,'obs'+days));
   const summary=explorationMetrics.periodEfficiencyAverage(rows);
   const rate=n=>Number.isFinite(n)?n.toFixed(2)+'%':'算出不可';
-  if(compact)return `<section class="period-efficiency compact-periods"><div class="period-efficiency-heading"><strong>4期間の資金効率・参考平均</strong><b class="${numericTone(summary.annual)}" data-period-efficiency-mean="${summary.annual??''}">${rate(summary.annual)}</b><span>採用${summary.adopted}/4${summary.reference?'・参考':''}</span></div><div class="period-efficiency-values">${rows.map((r,i)=>`<div><span>${explorationMetrics.observationPeriods[i]}日 <b class="${numericTone(r.annual)}">${rate(r.annual)}</b></span><small>${r.observation?.count??'未取得'}/${explorationMetrics.observationPeriods[i]}日${r.calculationState==='reference'?'・参考':''}／最終${escapeHtml(r.observation?.latest||'未取得')}</small></div>`).join('')}</div></section>`;
+  const unavailable=rows.filter(r=>!Number.isFinite(r.annual));
+  const causes=[...new Set(unavailable.map(r=>explorationMetrics.efficiencyUnavailableLabel(r)))];
+  const shortReason=causes.length?`<small class="reference-warning">算出不可：${escapeHtml(causes.join('／'))}</small>`:'';
+  if(compact)return `<section class="period-efficiency compact-periods"><div class="period-efficiency-heading"><strong>4期間の資金効率・参考平均</strong><b class="${numericTone(summary.annual)}" data-period-efficiency-mean="${summary.annual??''}">${rate(summary.annual)}</b><span>採用${summary.adopted}/4${summary.reference?'・参考':''}</span></div>${shortReason}<div class="period-efficiency-values">${rows.map((r,i)=>`<div><span>${explorationMetrics.observationPeriods[i]}日 <b class="${numericTone(r.annual)}">${rate(r.annual)}</b></span><small>${r.observation?.count??'未取得'}/${explorationMetrics.observationPeriods[i]}日${r.calculationState==='reference'?'・参考':''}／最終${escapeHtml(r.observation?.latest||'未取得')}</small></div>`).join('')}</div></section>`;
   const values=rows.map((e,i)=>{
     const days=explorationMetrics.observationPeriods[i],o=e.observation;
     const count=o?.count,missing=Number.isInteger(count)?days-count:null;

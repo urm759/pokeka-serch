@@ -12,6 +12,8 @@ function decision(policy, phase = 'acquisition') {
   const documented = policy?.version === 1 && typeof evidence === 'string' && evidence.trim().length > 0;
   const allowed = documented && policy[phase === 'acquisition' ? 'automaticAcquisition' : 'publicationOfNewData'] === true;
   return { allowed: Boolean(allowed), phase, kind: 'permission', scope: 'source',
+    dataScope: policy?.dataScope || 'official-population-and-grade-rate',
+    independentOfOverseasPriceFreeze: true,
     status: allowed ? 'permission-confirmed' : 'permission-wait',
     reason: allowed ? 'Documented permission for this phase' : policy?.reason || 'PSA permission record missing or invalid; saved data and checkpoint retained',
     resumeCondition: policy?.resumeCondition || 'Confirm documented permission for acquisition and public reuse separately',

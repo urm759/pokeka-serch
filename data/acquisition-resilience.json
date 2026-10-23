@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-23T02:53:04.935Z",
+  "generatedAt": "2026-10-23T07:11:51.358Z",
   "llmCalls": 0,
   "codexCalls": 0,
   "retryPolicy": {
@@ -31,7 +31,7 @@
       "queueDefinition": "あとPSAだけで分析可能な国内カード。全PSA未取得とは別",
       "sourceState": "permission-wait",
       "failureScope": "source",
-      "stopReason": "PSAの書面許諾・データ提供契約なし。非営利の意図と、自動取得・公開利用の許可は別。許諾確認まで新規取得・取得済み未公開データの公開を保留",
+      "stopReason": "海外価格凍結とは別に、POP・公式取得率の自動収集はCollectors利用規約11.9に基づき許諾待ち。公式公開APIの案内は証明書番号の単品照会で、POP一括取得の許諾根拠は未確認。保存原票・履歴・チェックポイントは保持し再照合を継続",
       "authRecovery": null,
       "retryUrls": [
         {
@@ -169,8 +169,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-23T02:52:41.359Z",
-        "to": "2026-10-23T02:52:56.678Z"
+        "from": "2026-10-23T02:52:56.678Z",
+        "to": "2026-10-23T07:11:42.937Z"
       },
       "sinceBaseline": {
         "newLinked": 3982,
@@ -316,8 +316,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-23T02:52:41.359Z",
-        "to": "2026-10-23T02:52:56.678Z"
+        "from": "2026-10-23T02:52:56.678Z",
+        "to": "2026-10-23T07:11:42.937Z"
       },
       "sinceBaseline": {
         "newLinked": 703,
@@ -357,8 +357,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-23T02:52:41.359Z",
-        "to": "2026-10-23T02:52:56.678Z"
+        "from": "2026-10-23T02:52:56.678Z",
+        "to": "2026-10-23T07:11:42.937Z"
       },
       "sinceBaseline": {
         "newLinked": 0,

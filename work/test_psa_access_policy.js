@@ -1,6 +1,10 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),os=require('node:os'),cp=require('node:child_process');
 const policy=require('./psa_access_policy'),root=path.resolve(__dirname,'..');
 const denied=policy.read(root);
+assert.equal(denied.dataScope,'official-population-and-grade-rate');
+assert.equal(denied.independentOfOverseasPriceFreeze,true);
+assert.equal(policy.decision({...denied,overseasPricesFrozen:false}).allowed,false,'overseas freeze removal cannot authorize POP acquisition');
+assert.equal(policy.decision({version:1,permissionEvidence:'test POP scope',automaticAcquisition:true,overseasPricesFrozen:true}).allowed,true,'POP-specific permission is independent of overseas prices');
 assert.equal(denied.intendedUse,'personal-noncommercial');
 for(const phase of ['acquisition','publication']){
   for(const p of [null,{},denied,{...denied,automaticAcquisition:true,publicationOfNewData:true}]){

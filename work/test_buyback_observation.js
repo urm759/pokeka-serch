@@ -5,12 +5,36 @@ const item={cardId:c.id,name:'グレイシアV SA 077/069',price:30000,active:tr
 const source={shops:{a:{name:'a',fulfilment:'store',refreshed:true,lastSuccess:at,lastAttempt:at},b:{name:'b',fulfilment:'store',refreshed:true,lastSuccess:at,lastAttempt:at}},cards:{[c.id]:{shops:{a:{price:30000,priceDate:'2026-10-14',listingActive:true,matchConfidence:'high'},b:{price:30000,priceDate:'2026-10-14',listingActive:true,matchConfidence:'high'}}}}};
 const captured=builder.capture(null,{updatedAt:'2026-10-14',shops:{a:[item],b:[item]}},source,[c]);
 assert.equal(captured.audit.accepted,2);const twice=builder.capture(captured.saved,{updatedAt:'2026-10-14',shops:{a:[item],b:[item]}},source,[c]);
+const labelled={...item,name:'グレイシアV SRC [S6a 077/069]'};
+const restored=builder.capture(null,{updatedAt:'2026-10-14',shops:{a:[labelled]}},source,[c]);
+assert.equal(restored.audit.accepted,1,'explicit set, number and exact name restore source classification rows');
+assert.equal(restored.saved.shops.a[c.id]['2026-10-14'].observedAt,at,'rematch never refreshes observation time');
+assert.equal(restored.saved.shops.a[c.id]['2026-10-14'].title,labelled.name,'source title remains intact');
+for(const title of ['ニンフィアV SRC [S6a 077/069]','グレイシアV SRC [S7R 077/069]','グレイシアV SRC [S6a 078/069]','グレイシアV SRC 077/069','グレイシアV 英語 SRC [S6a 077/069]','グレイシアV マスターボールミラー SRC [S6a 077/069]']) {
+  assert.equal(builder.capture(null,{updatedAt:'2026-10-14',shops:{a:[{...labelled,name:title}]}},source,[c]).audit.accepted,0,title);
+}
+assert.equal(builder.resolveSavedItem(labelled,[c,{...c,id:'ambiguous'}]).cardId,undefined,'no forced selection among duplicate identities');
+const omitted={...c,name:c.name.replace(/\bSA\b/g,''),rarity:'SR'};
+assert.equal(builder.resolveSavedItem({...item,name:'グレイシアV(SA) SR 077/069'},[omitted]).cardId,c.id,'exact unique secret number/name can resolve omitted SA annotation');
+assert.equal(builder.resolveSavedItem({...item,name:'グレイシアV(SA) SR 077/069'},[omitted,{...omitted,id:'other-art'}]).cardId,undefined);
+assert.equal(builder.resolveSavedItem({...item,name:'グレイシアV(SA) SR 077/069'},[{...omitted,rarity:'RR'}]).cardId,undefined,'rarity mismatch stays held');
+assert.equal(builder.resolveSavedItem({...item,name:'グレイシアV(SA) SR 007/069'},[{...omitted,model:'007/069',name:'グレイシアV SR [S6a 007/069]'}]).cardId,undefined,'ordinary number is not SA evidence');
 assert.equal(Object.keys(twice.saved.shops.a[c.id]).length,1,'same-day recheck not a new day');
 const bad=builder.capture(captured.saved,{updatedAt:'2026-10-14',shops:{a:[{...item,name:'グレイシアV マスターボールミラー 077/069'}]}},source,[c]);
 assert.equal(bad.audit.accepted,0);assert.deepEqual(bad.saved,captured.saved,'mismatch keeps old proof');
 for(const extra of [{currency:'USD'},{gradingCompany:'CGC'},{grade:9},{language:'en'}])assert.equal(builder.capture(null,{updatedAt:'2026-10-14',shops:{a:[{...item,...extra}]}},source,[c]).audit.accepted,0);
 assert.equal(builder.capture(null,{updatedAt:'2026-10-14',shops:{a:[item]}},{...source,shops:{a:{...source.shops.a,refreshed:false}}},[c]).audit.accepted,0,'failed origin cannot redate old rows');
 const summary=builder.aggregate(captured.saved,source,[c],now),card={...c,buybackAnalysis:{rows:[{shopId:'a',valid:true,buybackPrice:29000},{shopId:'b',valid:true,buybackPrice:29000}]}};
+for(const flag of [{campaign:true},{quantityLimited:true},{conditionsConfirmed:false}]) {
+  const excluded=structuredClone(captured.saved);Object.assign(excluded.shops.a[c.id]['2026-10-14'],flag);
+  assert.equal(builder.aggregate(excluded,source,[c],now).cards[c.id]?.a,undefined,'conditional offers retained in original but excluded from ordinary means');
+  assert.deepEqual(Object.keys(excluded.shops.a[c.id]),['2026-10-14']);
+}
+assert.equal(m.efficiencyUnavailableLabel({reason:'買取出口不足・同仕様の新鮮な平均が2店舗未満'}),'買取平均不足');
+assert.equal(m.efficiencyUnavailableLabel({reason:'価格対立／買取平均要約未取得'}),'仕様・価格確認待ち','identity conflict remains a root cause');
+assert.equal(m.efficiencyUnavailableLabel({reason:'中央値の独立店舗・根拠不足'}),'中央値の独立根拠不足');
+assert.equal(m.efficiencyUnavailableLabel({reason:'新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない'}),'中央値の独立根拠不足');
+assert.equal(m.efficiencyUnavailableLabel({reason:'期限超過・再確認待ち',purchasePrice:null}),'購入価格の期限切れ');
 const view={assumedRate:.8,lowerGradePrice:15000},settings={mode:'all',selected:[],feeRate:8,extra:210,deduction:5,travel:1000};
 const store=m.buybackObservationEconomics(summary,card,view,7,settings,now);
 assert.equal(store.expectedSale,24550);assert.equal(store.travelCost,1000);assert(store.observed.reference);assert(store.warnings.some(w=>w.includes('楽観的')));

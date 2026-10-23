@@ -211,6 +211,22 @@
     return {annual:adopted.length ? adopted.reduce((sum,row)=>sum+row.annual,0)/adopted.length : null,
       adopted:adopted.length,total:rows.length,reference:adopted.some(row=>row.calculationState==='reference'||row.observation?.reference)};
   }
+  function efficiencyUnavailableLabel(row) {
+    const reason=String(row?.reason || row?.reasons?.join(' / ') || '');
+    if(/仕様不一致|仕様確認|仕様保留|誤紐付け|価格対立/.test(reason))return '仕様・価格確認待ち';
+    if(/採用根拠が1元以下|独立店舗/.test(reason))return '中央値の独立根拠不足';
+    if(/中央値/.test(reason))return /店舗|根拠/.test(reason)?'中央値の独立根拠不足':'中央値不足・古値';
+    if(row?.purchasePrice==null && /^(未取得|取得停止|期限超過・再確認待ち)$/.test(reason))return reason==='未取得'?'買値不足':reason==='取得停止'?'購入価格の取得停止':'購入価格の期限切れ';
+    if(/購入価格|買値|在庫/.test(reason))return /期限|古い/.test(reason)?'購入価格の期限切れ':/在庫/.test(reason)?'在庫なし':'買値不足';
+    if(/買取平均|買取出口不足・同仕様の新鮮な平均/.test(reason))return '買取平均不足';
+    if(/観測平均|平均未取得|日次相場/.test(reason))return /古い|期限/.test(reason)?'PSA10平均の古値':'PSA10平均不足';
+    if(/PSA9/.test(reason))return 'PSA9価格・根拠不足';
+    if(/取得率|想定10率/.test(reason))return '取得率不足';
+    if(/買取|出口/.test(reason))return '買取出口不足';
+    if(/期間不一致|予測期間/.test(reason))return '予測期間不一致';
+    if(/読込|読み込|版不一致/.test(reason))return '要約読込・版不一致';
+    return '計算材料不足';
+  }
   function buybackSupport(summary, id, mode, selected = [], now = Date.now(), currentMarket = null, identityKey = null) {
     const median = values => { const a = values.slice().sort((x,y)=>x-y); return a.length ? (a[Math.floor(a.length/2)] + a[Math.floor((a.length-1)/2)])/2 : null; };
     const support = summary?.support, entries = support?.cards?.[id] || {}, rows = [], daily = new Map();
@@ -262,5 +278,5 @@
         status:pop[4]===0?'近い期間の参考比較':pop[4]===2?'POP減少・訂正等':'期間不一致・部分期間',
         ratio:measured&&!stale&&pop[4]===0&&pop[0]>0?n/pop[0]:null}:null};
   }
-  return {percent,inRange,offerPrice,referenceMedian,meanSale,atPurchase,efficiency,coverage,observationPeriods,migrateObservationSettings,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics,periodEfficiencyAverage,buybackSupport,tradeDemand};
+  return {percent,inRange,offerPrice,referenceMedian,meanSale,atPurchase,efficiency,coverage,observationPeriods,migrateObservationSettings,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics,periodEfficiencyAverage,efficiencyUnavailableLabel,buybackSupport,tradeDemand};
 });
