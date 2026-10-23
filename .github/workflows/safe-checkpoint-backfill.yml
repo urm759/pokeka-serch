@@ -33,7 +33,9 @@ jobs:
         run: node work/discover_psa_set_urls.js --optional-permission
       - name: Rebuild completion and publication summaries
         run: |
+          node work/reconcile_saved_psa_summary.js
           node work/build_card_completion.js
+          node work/build_psa_linkage_queue.js
           node work/audit_completion_outcomes.js
           node work/build_purchase_limit_audit.js
           node work/finalize_update_status.js
@@ -44,6 +46,8 @@ jobs:
           node work/finalize_update_status.js
       - name: Check publication safety
         run: |
+          node work/test_psa_saved_rematch.js
+          node work/test_saved_psa_summary.js
           node work/test_profile_worker.js
           node work/test_profile_report_names.js
           node work/test_saved_shop_recovery.js

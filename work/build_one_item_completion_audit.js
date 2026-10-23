@@ -3,6 +3,7 @@ const {itemState} = require('./completion_routes');
 function classify(detail, linkage = {}, progress = {}, access = null) {
   const field = detail.m[0], item = itemState(detail, field);
   if (field === 'psaOfficial') {
+    if(linkage?.savedEvidence?.candidateCount > 0)return '保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）';
     if(access&&!access.allowed)return 'PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持';
     if (item.status === '再照合待ち' || linkage.specificationHeld) return '仕様不一致で保留・完全仕様表の再確認待ち';
     if(/pokemon-asia/i.test(linkage.sourceSetUrl || ''))return '日本語版根拠未確認・言語照合待ち';

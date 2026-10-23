@@ -116,6 +116,61 @@ function namesCompatible(englishName, row) {
   const wanted = identity(canonical(englishName)), actual = identity(canonical(row?.name));
   return Boolean(wanted && actual && wanted === actual);
 }
+function japaneseTitle(card) {
+  return String(card.name || '').normalize('NFKC').split('[')[0]
+    .replace(/(?<![a-z])\s*(?:SAR|SSR|CSR|SR|HR|UR|RRR|RR|AR|CHR|BWR|MUR|MA|C|U|R)(?:\s*:\s*SA)?\s*$/i, '').trim();
+}
+function savedNameIndex(cards, summary, sourceRows, english) {
+  const originals = new Map(sourceRows.map(r => [`${r.set}|${r.no}|${r.url}|${r.name}`, r]));
+  const index = new Map();
+  for (const card of cards) {
+    const saved = summary.cards?.[card.id], identity = cardIdentity(card);
+    if (!saved || !identity || /【(?:中国語版|韓国語版|英語版)】/.test(card.name || '')) continue;
+    const raw = originals.get(`${identity.set}|${identity.no}|${saved.u}|${saved.n}`);
+    if (!raw || !/\/pokemon-japanese-/.test(raw.url) || observationTime(raw.fetchedAt) == null
+      || raw.ten !== saved.ten || raw.total !== saved.total
+      || !namesCompatible(english[card.id]?.englishName, raw)
+      || !variantsCompatible(card.name, english[card.id]?.englishName, raw)) continue;
+    const key = japaneseTitle(card), title = raw.name.split('|')[0].replace(/^Full Art\//i, '').trim();
+    if (!key || !title) continue;
+    if (!index.has(key)) index.set(key, []);
+    index.get(key).push({ cardId: card.id, set: identity.set, no: identity.no, title,
+      sourceUrl: raw.url, observedAt: raw.fetchedAt });
+  }
+  return index;
+}
+function resolvedEnglishName(card, englishName, index) {
+  const evidence = (index.get(japaneseTitle(card)) || []).filter(r => r.cardId !== card.id);
+  const prints = new Set(evidence.map(r => `${r.set}|${r.no}|${r.sourceUrl}`));
+  if (prints.size >= 2 && evidence.every(r => namesCompatible(evidence[0].title, { name: r.title }))) {
+    const distinct = [...new Map(evidence.map(r => [`${r.set}|${r.no}|${r.sourceUrl}`, r])).values()];
+    return { name: evidence[0].title, method: 'verified-saved-japanese-title', evidence: distinct.slice(0, 2) };
+  }
+  // Repair omitted card mechanics, not species/trainer translations or variant labels.
+  let name = String(englishName || '').split('[')[0].replace(/\s*(?:SAR|SSR|CSR|SR|HR|UR)(?:\s*:\s*SA)?\s*$/i, '').trim();
+  name = name.replace(/([a-z])([A-Z][a-z])/g, '$1 $2');
+  const suffix = japaneseTitle(card).match(/(VSTAR|VMAX|GX|ex|V)$/i)?.[1];
+  if (suffix && /VSTAR/i.test(suffix)) name = name.replace(/\bVSATR\b/gi, 'VSTAR');
+  if (suffix && name && !new RegExp(`\\b${suffix}$`, 'i').test(name)) name += ` ${suffix}`;
+  return { name: name || englishName, method: 'mechanic-label-normalization', evidence: [] };
+}
+function reconciliationFingerprint(cards, english, priorityRows) {
+  return require('node:crypto').createHash('sha256').update(fs.readFileSync(__filename))
+    .update(fs.readFileSync(path.join(__dirname, 'psa-name-aliases.json')))
+    .update(JSON.stringify(cards.map(c => [c.id, c.name])))
+    .update(JSON.stringify(english)).update(JSON.stringify(priorityRows)).digest('hex');
+}
+function savedRematchProof(card, originalEnglishName, englishName, selected, candidates) {
+  const identity = cardIdentity(card);
+  return Boolean(identity && selected.set === identity.set && selected.no === identity.no
+    && selected.captureVersion >= 2 && selected.completeSnapshot === true
+    && observationTime(selected.fetchedAt) != null
+    && /^https:\/\/www\.psacard\.com\/pop\/tcg-cards\/\d{4}\/pokemon-japanese-/.test(selected.url)
+    && variantsCompatible(card.name, originalEnglishName, selected)
+    && candidates.filter(row => namesCompatible(englishName, row)
+      && variantsCompatible(card.name, englishName, row)
+      && variantsCompatible(card.name, originalEnglishName, row)).length === 1);
+}
 function shardFor(id) { let hash = 2166136261; for (const ch of String(id)) { hash ^= ch.charCodeAt(0); hash = Math.imul(hash, 16777619); } return (hash >>> 0) % SHARDS; }
 function daysBetween(a, b) { return Math.max(1, Math.round((Date.UTC(+b.slice(0,4),+b.slice(4,6)-1,+b.slice(6,8))-Date.UTC(+a.slice(0,4),+a.slice(4,6)-1,+a.slice(6,8)))/86400000)); }
 function observationTime(value) {
@@ -253,6 +308,8 @@ function main() {
   const priorityRows = readJson(PRIORITY_ROWS_PATH, { rows: [] }).rows || [];
   const allSourceRows = compactRows({ ...population, rows: [...(population.rows || []), ...priorityRows] });
   const sourceRows = authoritativeRows(allSourceRows);
+  const previousSummary = readJson(SUMMARY_PATH, { cards: {} });
+  const nameIndex = savedNameIndex(cards, previousSummary, sourceRows, english);
   const groups = new Map();
   const setGroups = new Map();
   for (const row of sourceRows) {
@@ -262,14 +319,22 @@ function main() {
   fs.mkdirSync(HISTORY_DIR, { recursive: true });
   const shards = Array.from({ length: SHARDS }, (_, i) => readJson(path.join(HISTORY_DIR, `${String(i).padStart(2,"0")}.json`), { v: 1, cards: {} }));
   const today = dayKey(), cutoff = dayKey(new Date(Date.now()-RETENTION_DAYS*86400000));
-  const summary = { v: 1, updatedAt: population.generatedAt || new Date().toISOString(), date: today, matched: 0, cards: {} };
+  const summary = { v: 1, updatedAt: population.generatedAt || new Date().toISOString(), date: today, matched: 0, cards: {},
+    reconciliationFingerprint: reconciliationFingerprint(cards, english, priorityRows) };
   const variantReview=[];
   for (const card of cards) {
     const identity = cardIdentity(card); if (!identity) continue;
     let candidates = identity.no ? (groups.get(`${identity.set}|${identity.no}`) || []) : (setGroups.get(identity.set) || []); if (!candidates.length) continue;
-    const englishName = english[card.id]?.englishName || "";
+    const originalEnglishName = english[card.id]?.englishName || "";
+    const alreadyCompatible = candidates.some(row => namesCompatible(originalEnglishName, row)
+      && variantsCompatible(card.name, originalEnglishName, row));
+    const mayRematch = !card.identityReviewRequired && !/-P$/.test(identity.set)
+      && !/【(?:中国語版|韓国語版|英語版)】|未開封パック|BOX|複数枚セット/.test(card.name || '');
+    const resolution = alreadyCompatible || !mayRematch ? { name: originalEnglishName, evidence: [] }
+      : resolvedEnglishName(card, originalEnglishName, nameIndex);
+    const englishName = resolution.name;
     let selected = null, method = "";
-    const fullName = `${englishName} ${card.name || ""}`;
+    const fullName = `${englishName} ${originalEnglishName} ${card.name || ""}`;
     if (/メタモンマーク|with ditto mark/i.test(fullName)) {
       const ditto = candidates.filter((row) => /ditto$/i.test(cleanName(row.name).replace(/\s+/g, "")) && !/reverse/i.test(row.name));
       if (ditto.length === 1) { selected = ditto[0]; method = "set-number-edition"; }
@@ -316,6 +381,11 @@ function main() {
         sourceUrl:candidates[0]?.url,observedAt:candidates[0]?.fetchedAt,reason:'仕様一致の確定候補なし・POP採用保留'});
       continue;
     }
+    if (englishName !== originalEnglishName && !savedRematchProof(card, originalEnglishName, englishName, selected, candidates)) {
+      variantReview.push({ id: card.id, name: card.name, sourceUrl: selected.url,
+        observedAt: selected.fetchedAt, reason: '保存原票の日時・日本語版・一意な仕様の証明不足・POP採用保留' });
+      continue;
+    }
     // A unique number or a similar name cannot establish a mirror/edition identity.
     const expectedVariant=variantOf(`${englishName} ${card.name || ''}`);
     if (!namesCompatible(englishName,selected) || !variantsCompatible(card.name,englishName,selected) || /pokemon-asia/i.test(selected.url)) {
@@ -333,6 +403,8 @@ function main() {
     const newerSaved = selectedTime != null && observationTime(latest?.[3]?.observedAt) > selectedTime;
     const ten = newerSaved ? latest[1] : selected.ten, total = newerSaved ? latest[2] : selected.total;
     summary.cards[card.id] = { n: selected.name, e: englishName, ten, total, rate: total ? ten/total*100 : null, u: selected.url, m: method, f: newerSaved ? latest[3].observedAt : selected.fetchedAt || "", sh: String(shard).padStart(2,"0"), w7: compactWindow(windowChange(history,7)), w30: compactWindow(windowChange(history,30)), w90: compactWindow(windowChange(history,90)) };
+    if (englishName !== originalEnglishName) summary.cards[card.id].nameResolution = {
+      originalEnglishName, method: resolution.method, evidence: resolution.evidence };
     summary.matched += 1;
   }
   for (let i=0;i<SHARDS;i+=1) fs.writeFileSync(path.join(HISTORY_DIR, `${String(i).padStart(2,"0")}.json`), JSON.stringify(shards[i]), "utf8");
@@ -344,4 +416,4 @@ function main() {
 }
 
 if (require.main === module) main();
-module.exports = { cardIdentity, compactRows, cleanName, shortSet, normalizeNo, variantsCompatible, namesCompatible, authoritativeRows, reconcileHistory, dayKey, observationTime, appendObservation, windowChange, compactWindow, previousConfirmation, rememberPreviousConfirmation };
+module.exports = { cardIdentity, compactRows, cleanName, shortSet, normalizeNo, variantsCompatible, namesCompatible, authoritativeRows, reconcileHistory, dayKey, observationTime, appendObservation, windowChange, compactWindow, previousConfirmation, rememberPreviousConfirmation, japaneseTitle, savedNameIndex, resolvedEnglishName, reconciliationFingerprint, savedRematchProof };

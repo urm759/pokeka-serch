@@ -33,6 +33,10 @@ function routes(detail, permissions) {
   return Object.keys(ROUTES).filter((key) => needs(detail, key)
     && !(permissions.overseasCancelled&&['pokedata','pokedataAuthenticated'].includes(ROUTES[key][0]))).map((key) => {
     const [source, mode, reason] = ROUTES[key], state = itemState(detail, key);
+    if (source === 'psaOfficial' && state.status === '再照合待ち') return {
+      key, source, mode: '保存原票再照合待ち', status: state.status, required: REQUIRED.includes(key),
+      acquisitionStatus: 'saved-rematch-review', networkRequired: false, nextRetryAt: null,
+      reason: state.reason || '保存原票の名称・完全仕様を確認。新規通信の許諾待ちと分離し、曖昧一致は採用しない' };
     const permissionWait = source === 'psaOfficial' && !permissions.psaAllowed
       || ['pokedata', 'pokedataAuthenticated'].includes(source) && !permissions.overseasAllowed;
     if (permissionWait) return { key, source, mode: '許諾待ち',

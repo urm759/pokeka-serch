@@ -30,6 +30,13 @@ function prospectPlan(card,fields,{shops={},linkage={},psaProgress={},psaAccess=
         nextAction:absent?'正常な未掲載。カード別の同じ再取得はせず、通常の買取表差分更新後に再評価':'独立した買取表更新／保存原票の仕様照合。未掲載と取得不足を混同しない',
         resumeCondition:absent?'店舗一覧または掲載内容の変化':'正常取得・2店舗以上の新鮮で同一仕様の掲載'});
     }else if(field==='psaOfficial'){
+      if (linkage[card.id]?.savedEvidence?.candidateCount > 0) {
+        requirements.push({ field, source: 'psaOfficial', state: 'saved-rematch-review', automatic: false,
+          stopScope: 'card', networkRequired: false, evidence: linkage[card.id].savedEvidence,
+          nextAction: '保存原票の名称・番号・セット・言語・完全仕様を再照合。共通照合更新時に通信なしで再評価',
+          resumeCondition: '同一仕様と名称対応を一意に証明。根拠不足は保留し、新規取得許諾待ちと分離' });
+        continue;
+      }
       if (psaAccess && !psaAccess.allowed) {
         requirements.push({field,source:'psaOfficial',state:'permission-wait',automatic:false,stopScope:'source',nextRetryAt:null,
           url:linkage[card.id]?.sourceSetUrl || null,reason:psaAccess.reason,nextAction:'書面許諾・正規提供条件の確認。ほかの取得元の補完は継続',resumeCondition:psaAccess.resumeCondition});

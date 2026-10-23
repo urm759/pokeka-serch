@@ -42,6 +42,25 @@ function summarize(source,catalog,completion,whitelist) {
     unknownRarity:source.filter(s=>!rarity(s)).length,
     note:'2020年を含む。公式セットマスタ・個別根拠のみ、発売経過日数や系列年の推測は不使用。不明は分母から隠さず別計上。分析可能と指定条件適合・GOは別。保守率は未判定を全て対象と仮定した下限。'};
 }
+function feasibility(rows, listed, analyzable) {
+  const automaticOnly = rows.filter(r => r.requirements.length > 0 && r.requirements.every(x => x.automatic));
+  const savedReviewOnly = rows.filter(r => r.requirements.some(x => x.state === 'saved-rematch-review')
+    && r.requirements.every(x => x.automatic || x.state === 'saved-rematch-review'));
+  const combinations = {}, blockedCardsByReason = {};
+  for (const row of rows) {
+    const blockers = [...new Set(row.requirements.filter(r => !r.automatic).map(r => r.state))].sort();
+    const key = blockers.join(' + ') || 'automatic-paths-only';
+    combinations[key] = (combinations[key] || 0) + 1;
+    for (const reason of blockers) blockedCardsByReason[reason] = (blockedCardsByReason[reason] || 0) + 1;
+  }
+  const target = Math.ceil(listed * .9), conditionalTotal = analyzable + automaticOnly.length;
+  return { pendingCards: rows.length, automaticPathsOnly: automaticOnly.length, savedReviewOnly: savedReviewOnly.length,
+    blockedCards: rows.length - automaticOnly.length, combinations, blockedCardsByReason,
+    target90Cards: target, conditionalCurrentRouteTotal: conditionalTotal,
+    conditionalCurrentRoutePct: listed ? 100 * conditionalTotal / listed : null,
+    targetShortfallAfterConditionalCompletion: Math.max(0, target - conditionalTotal),
+    note: 'カード単位・組合せは重複なし。理由別は重複あり。現行経路上限は自動経路が全て有効値を返した場合の条件付きで、取得成功/終了日を保証しない。保存原票の再照合保留を解消済み・許諾待ちへ一括変換しない。' };
+}
 function build(root=ROOT) {
   const read=f=>JSON.parse(fs.readFileSync(path.join(root,f),'utf8'));
   const source=read('work/toreca-source-inventory.json'),cards=read('data/pokemon-cards.json'),completion=read('data/card-catalog-completion.json');
@@ -49,12 +68,12 @@ function build(root=ROOT) {
   const queue=read('work/card-completion-queue.json');
   const linkage=Object.fromEntries(read('work/psa-linkage-all.json').rows.map(r=>[r.cardId,r]));
   const psaProgress=read('work/psa-fetch-progress.json'),byId=new Map(cards.map(c=>[c.id,c]));
-  result.requiredAvailability={automatic:0,pcAuthenticatedRoute:0,retryWait:0,permissionWait:0,identityOrUrlReview:0,confirmedNoData:0,unimplemented:0};
+  result.requiredAvailability={automatic:0,pcAuthenticatedRoute:0,retryWait:0,permissionWait:0,savedRematchReview:0,identityOrUrlReview:0,confirmedNoData:0,unimplemented:0};
   const psaAccess=require('./psa_access_policy').decision(require('./psa_access_policy').read(root));
   for(const id of result.srFamily.ids)for(const field of completion.cards?.[id]?.m||[]) {
     if(field==='psaOfficial') {
       const r=require('./profile_completion_routes').prospectPlan(byId.get(id),['psaOfficial'],{linkage,psaProgress,psaAccess}).requirements[0];
-      result.requiredAvailability[r.state==='permission-wait'?'permissionWait':r.automatic?'pcAuthenticatedRoute':r.nextRetryAt?'retryWait':'identityOrUrlReview']++;
+      result.requiredAvailability[r.state==='saved-rematch-review'?'savedRematchReview':r.state==='permission-wait'?'permissionWait':r.automatic?'pcAuthenticatedRoute':r.nextRetryAt?'retryWait':'identityOrUrlReview']++;
     } else if(['domesticPrice','domesticTrades','psa10Price','psa10Trades'].includes(field))result.requiredAvailability.automatic++;
     else result.requiredAvailability.identityOrUrlReview++;
   }
@@ -77,6 +96,20 @@ function build(root=ROOT) {
     const group=result.tradeEvidence.missing[field]||={};group[e.status]=(group[e.status]||0)+1;
     result.tradeEvidence.routes[id]||=[];result.tradeEvidence.routes[id].push({field,...e,source:'toreca',method:e.status==='period-not-provided'?'現行原票に期間項目なし・通常一括差分で提供開始を再確認。専用の反復取得はしない':'既存の正規一括差分・次回実取得',completed:false});
   }
+  const plans = result.srFamily.ids.filter(id => completion.cards?.[id]?.m?.length).map(id => {
+    const card = byId.get(id), missing = completion.cards[id].m;
+    return { id, name: card?.name, missing, priority: queue.cards?.[id]?.p || 0,
+      ...require('./profile_completion_routes').prospectPlan(card, missing, { linkage, psaProgress, psaAccess, tradeReceipt: receipt }) };
+  }).sort((a,b) => Number(b.allRequiredPathsAutomatic) - Number(a.allRequiredPathsAutomatic)
+    || a.missing.length - b.missing.length || b.priority - a.priority || a.id.localeCompare(b.id));
+  result.cardFeasibility = feasibility(plans, result.srFamily.listed, result.srFamily.analyzable);
+  const routeDefinitions = Object.fromEntries(plans.flatMap(row => row.requirements.map(r => [
+    `${r.source}:${r.state}`, { nextAction: r.nextAction, resumeCondition: r.resumeCondition }])));
+  const compactPlans = plans.map(({ requirements, ...row }) => ({ ...row, requirements: requirements.map(r => ({
+    field: r.field, source: r.source, state: r.state, automatic: r.automatic,
+    networkRequired: r.networkRequired, url: r.url, routeKey: `${r.source}:${r.state}` })) }));
+  fs.writeFileSync(path.join(root, 'work/high-rarity-completion-plan.json'), JSON.stringify({
+    generatedAt: result.generatedAt, summary: result.cardFeasibility, routeDefinitions, rows: compactPlans, httpRequests: 0, llmCalls: 0, codexCalls: 0 }));
   const existing=read('data/modern-high-rarity-audit.json');existing.readiness2020=result;
   existing.siteTotal=cards.length;existing.sourceListedTotal=source.cards.length;existing.sourceSnapshotDeclaredTotal=source.total;
   existing.countsReconciledAt=result.generatedAt;
@@ -85,4 +118,4 @@ function build(root=ROOT) {
   return result;
 }
 if(require.main===module){const x=build();console.log(JSON.stringify({srFamily:{...x.srFamily,ids:undefined,unknownRows:undefined},arChr:{...x.arChr,ids:undefined,unknownRows:undefined},routes:x.routes}));}
-module.exports={build,summarize,rarity};
+module.exports={build,summarize,rarity,feasibility};

@@ -13,7 +13,13 @@ function psaIdentity(card) {
       : { setCode: String(card.setCode || "").toUpperCase().replace(/^(XY|SM|S|SV|M)P$/, "$1-P"), cardNumber: null };
 }
 
-function makeQueue({ cards, population, buybacks, setDates, setUrls, analysisIds, now }) {
+function makeQueue({ cards, population, buybacks, setDates, setUrls, analysisIds, now, savedRows = [] }) {
+  const savedGroups = new Map();
+  for (const row of savedRows) {
+    const key = `${row.set}|${row.no}`;
+    if (!savedGroups.has(key)) savedGroups.set(key, []);
+    savedGroups.get(key).push(row);
+  }
   const setMap = new Map(setUrls.map((entry) => [String(entry.setCode || "").toUpperCase(), entry.url]));
   const registeredUrls = new Map();
   for (const entry of setUrls) {
@@ -58,7 +64,10 @@ function makeQueue({ cards, population, buybacks, setDates, setUrls, analysisIds
     const score = Math.min(100, shopCount * 8) + Math.min(100, listings30)
       + (recent ? 35 : 0) + (analysis ? 30 : 0)
       + Math.min(30, Number(card.p10tv30 || 0));
+    const saved = savedGroups.get(`${setCode}|${cardNumber}`) || [];
     rows.push({ cardId: card.id, name: card.name, setCode, cardNumber,
+      savedEvidence: saved.length ? { state: 'saved-rematch-review', candidateCount: saved.length,
+        sourceUrls: [...new Set(saved.map(r => r.url))], observedAt: saved.map(r => r.fetchedAt).filter(Boolean).sort().at(-1) || null } : null,
       releaseDate, status, ambiguityReason, candidateOfficialUrls: ambiguous ? [...new Set([...alternatePopUrls, ...(registeredUrls.get(setCode) || [])])].slice(0, 5) : [], sourceSetUrl: ambiguous ? null : url, priority: score,
       reason: [shopCount ? `買取掲載${shopCount}店・30日${listings30}回` : null,
         recent ? "発売1年以内" : null, analysis ? "分析対象" : null,
@@ -76,7 +85,9 @@ function main() {
   const setDates = read("work/set-release-dates.json").dates || {};
   const setUrls = read("work/psa_set_urls.json");
   const analysisIds = new Set(read("data/card-catalog/analysis.json").map((card) => card.id));
-  const queue = makeQueue({ cards, population, buybacks, setDates, setUrls, analysisIds, now: new Date().toISOString() });
+  const raw = read('data/psa-official-populations.json');
+  const savedRows = require('./build_psa_history').authoritativeRows(require('./build_psa_history').compactRows(raw));
+  const queue = makeQueue({ cards, population, buybacks, setDates, setUrls, analysisIds, savedRows, now: new Date().toISOString() });
   fs.writeFileSync(path.join(root, "work", "psa-linkage-all.json"), JSON.stringify(queue));
   fs.writeFileSync(path.join(root, "data", "psa-linkage-priority.json"), JSON.stringify({ ...queue, rows: undefined }));
   console.log(JSON.stringify({ counts: queue.counts, top: queue.priorityTop.slice(0, 3).map((row) => row.name) }));
