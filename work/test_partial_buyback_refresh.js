@@ -33,4 +33,12 @@ links=refresh(h,changed,day,[{shopItemId:'old-product',cardId:'absent'}]);
 assert.equal(h.shops.store.absent[1],null,'a product observed with a changed/held identity does not retain its old link');
 assert.equal(links.get('absent').identityHeld,true);
 assert.equal(unavailable(changed,links,'absent'),true);
+for (const shop of require('./update_shop_buybacks').SHOPS) {
+  const history={dates:[day],shops:{[shop.id]:{absent:[109000],seen:[10000]}},observedByShop:{[shop.id]:[day]}};
+  const sourceResult={shop,items:[item],matched:[item],fullListing:false};
+  const linked=refresh(history,sourceResult,day);
+  assert.equal(history.shops[shop.id].absent[0],109000,`${shop.id}: partial absence retains observed history`);
+  assert.equal(history.shops[shop.id].seen[0],8000,`${shop.id}: observed price change is adopted`);
+  assert.equal(unavailable(sourceResult,linked,'absent'),false);
+}
 console.log('PASS partial/full listings, actual price decline, explicit withdrawal, saved replay and duplicate products');

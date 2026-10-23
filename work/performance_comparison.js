@@ -47,6 +47,22 @@ function append(history, current) {
   const rows = Array.isArray(history?.records) ? history.records : [];
   const previous = rows.slice().reverse().find(r => r.status === 'pass' && r.comparisonKey === current.comparisonKey);
   current.comparison = compare(current, previous);
-  return { version: 1, records: rows.concat(current).slice(-90) };
+  const baselines = { ...history?.baselines };
+  const key = current.comparisonKey;
+  // Keep the first comparable passing sample beyond rolling-history retention.
+  // Strip nested comparisons so a baseline cannot recursively retain history.
+  const snapshot = row => {
+    const { comparison, fixedComparison, ...sample } = row;
+    return sample;
+  };
+  if (!baselines[key] || baselines[key].status !== 'pass' || baselines[key].comparisonKey !== key) {
+    const first = rows.find(r => r.status === 'pass' && r.comparisonKey === key)
+      || (current.status === 'pass' ? current : null);
+    if (first) baselines[key] = snapshot(first);
+    else delete baselines[key];
+  }
+  current.fixedComparison = compare(current, baselines[key]);
+  current.fixedComparison.basis = '固定した最初の同条件合格記録。直近値で自動更新しない';
+  return { version: 2, baselines, records: rows.concat(current).slice(-90) };
 }
 module.exports = { compare, append, fingerprint };

@@ -5,6 +5,10 @@ const frozen=new Map(), evaluatedAt=Date.now();
 const extTypes={'.html':'text/html; charset=utf-8','.js':'application/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8'};
 const server=http.createServer((req,res)=>{
   const url=new URL(req.url,'http://127.0.0.1'),match=url.pathname.match(/^\/(normal|double)\/(.*)$/);
+  if(url.pathname==='/benchmark' && req.method==='GET'){
+    res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'});
+    res.end(fs.readFileSync(path.join(__dirname,'ui_scale_browser_harness.html')));return;
+  }
   if(!match || req.method!=='GET'){res.writeHead(404);res.end();return;}
   const name=decodeURIComponent(match[2]||'index.html'),ext=path.extname(name);
   if(name.includes('..')||name.includes('\\')||!(name.startsWith('data/')&&ext==='.json'||!name.includes('/')&&extTypes[ext])){res.writeHead(404);res.end();return;}

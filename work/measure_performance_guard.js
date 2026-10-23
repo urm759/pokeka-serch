@@ -86,6 +86,7 @@ if(require.main===module){
   fs.writeFileSync(path.join(root,'data/performance-guard.json'),JSON.stringify(result));
   console.log(JSON.stringify(result));
   if(result.comparison.warnings.length)console.warn(`::warning::同条件の前回比性能悪化: ${result.comparison.warnings.join(', ')}`);
+  if(result.fixedComparison.warnings.length)console.warn(`::warning::同条件の固定基準比性能悪化: ${result.fixedComparison.warnings.join(', ')}`);
   if(result.errors.length)process.exitCode=1;
 }
 module.exports={violations,measure,withEvaluationDate};
