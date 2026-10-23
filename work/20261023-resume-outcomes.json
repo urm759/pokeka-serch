@@ -1,0 +1,205 @@
+{
+  "at": "2026-10-23T01:13:16.329Z",
+  "savedRecovery": {
+    "runId": "39848419577",
+    "verifiedFiles": 724,
+    "compressedBytes": 56870876,
+    "sources": [
+      {
+        "file": "work/hareruya2_catalog.json",
+        "recovered": [
+          {
+            "id": "x-128264",
+            "type": "confirmed-price-recovery",
+            "source": "hareruya2",
+            "price": 17000,
+            "observedAt": "2026-10-22T20:36:36.993Z"
+          },
+          {
+            "id": "x-127028",
+            "type": "new-shop-price",
+            "source": "hareruya2",
+            "price": 2900,
+            "observedAt": "2026-10-22T20:36:39.298Z"
+          }
+        ],
+        "held": 0
+      },
+      {
+        "file": "work/torecacamp_catalog.json",
+        "recovered": [
+          {
+            "id": "x-106796",
+            "type": "reference-only",
+            "source": "torecacamp",
+            "price": 19800,
+            "observedAt": "2026-10-22T20:33:21.715Z"
+          },
+          {
+            "id": "x-111868",
+            "type": "reference-only",
+            "source": "torecacamp",
+            "price": 4980,
+            "observedAt": "2026-10-22T20:33:31.206Z"
+          },
+          {
+            "id": "x-291940",
+            "type": "reference-only",
+            "source": "torecacamp",
+            "price": 1280,
+            "observedAt": "2026-10-22T20:33:25.050Z"
+          },
+          {
+            "id": "x-100543",
+            "type": "reference-only",
+            "source": "torecacamp",
+            "price": 16800,
+            "observedAt": "2026-10-22T20:33:39.995Z"
+          }
+        ],
+        "held": 561
+      }
+    ],
+    "newHttpRequests": 0
+  },
+  "delta": {
+    "baselineAt": "2026-10-23T00:57:09.367Z",
+    "commonCards": 12545,
+    "addedCards": 0,
+    "removedCards": 0,
+    "newlyAnalyzable": 0,
+    "lostAnalyzable": 0,
+    "filledCards": 0,
+    "filledItems": 0,
+    "sources": {
+      "cardrush": {
+        "newLinked": 0,
+        "validAdded": 0,
+        "validLost": 0,
+        "usableNet": 0,
+        "freshnessRecovered": 0
+      },
+      "hareruya2": {
+        "newLinked": 1,
+        "validAdded": 1,
+        "validLost": 0,
+        "usableNet": 1,
+        "freshnessRecovered": 1
+      },
+      "yuyutei": {
+        "newLinked": 0,
+        "validAdded": 0,
+        "validLost": 0,
+        "usableNet": 0,
+        "freshnessRecovered": 0
+      },
+      "torecacamp": {
+        "newLinked": 0,
+        "validAdded": 0,
+        "validLost": 0,
+        "usableNet": 0,
+        "freshnessRecovered": 0
+      },
+      "psaOfficial": {
+        "newLinked": 0,
+        "validAdded": 0,
+        "validLost": 0,
+        "usableNet": 0,
+        "freshnessRecovered": 0
+      },
+      "pokedata": {
+        "newLinked": 0,
+        "validAdded": 0,
+        "validLost": 0,
+        "usableNet": 0,
+        "freshnessRecovered": 0
+      }
+    },
+    "referenceEvidenceRecovered": {
+      "buybackExitEvidence": 610
+    }
+  },
+  "profiles": [
+    {
+      "id": "A",
+      "reportName": "条件スタンダード",
+      "before": 11,
+      "after": 11,
+      "gained": [],
+      "lost": [],
+      "qualifiedFactsIdentical": true
+    },
+    {
+      "id": "B",
+      "reportName": "条件プライマリ",
+      "before": 22,
+      "after": 22,
+      "gained": [],
+      "lost": [],
+      "qualifiedFactsIdentical": true
+    },
+    {
+      "id": "A-median",
+      "reportName": "条件スタンダード（中央値）",
+      "before": 7,
+      "after": 7,
+      "gained": [],
+      "lost": [],
+      "qualifiedFactsIdentical": true
+    },
+    {
+      "id": "B-median",
+      "reportName": "条件プライマリ（中央値）",
+      "before": 14,
+      "after": 14,
+      "gained": [],
+      "lost": [],
+      "qualifiedFactsIdentical": true
+    },
+    {
+      "id": "A-specified",
+      "reportName": "条件スタンダード",
+      "before": 13,
+      "after": 13,
+      "gained": [],
+      "lost": [],
+      "qualifiedFactsIdentical": true
+    },
+    {
+      "id": "B-specified",
+      "reportName": "条件プライマリ",
+      "before": 26,
+      "after": 26,
+      "gained": [],
+      "lost": [],
+      "qualifiedFactsIdentical": true
+    },
+    {
+      "id": "A-median-specified",
+      "reportName": "条件スタンダード（中央値）",
+      "before": 8,
+      "after": 8,
+      "gained": [],
+      "lost": [],
+      "qualifiedFactsIdentical": true
+    },
+    {
+      "id": "B-median-specified",
+      "reportName": "条件プライマリ（中央値）",
+      "before": 18,
+      "after": 18,
+      "gained": [],
+      "lost": [],
+      "qualifiedFactsIdentical": true
+    }
+  ],
+  "independent": {
+    "before": 32,
+    "after": 32,
+    "net": 0,
+    "gained": [],
+    "lost": [],
+    "note": "4条件の重複除外。条件間の移動は新しい独立候補ではない。適合変化と実取得の因果は別監査"
+  },
+  "note": "原票回収/新しい店舗根拠/必須不足/新規分析/条件適合を分離。任意根拠の日付再評価を実取得に数えない。"
+}

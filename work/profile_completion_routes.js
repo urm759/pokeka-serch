@@ -18,7 +18,7 @@ function buybackState(row,meta,now=Date.now()) {
   if(meta.fullListingConfirmedAt!==meta.lastSuccess)return 'coverage-incomplete';
   return meta.unmatched===0?'confirmed-unlisted':'unmatched-or-unlisted';
 }
-function prospectPlan(card,fields,{shops={},linkage={},psaProgress={},psaAccess=null,storeMode='all',selected=[],now=Date.now()}={}) {
+function prospectPlan(card,fields,{shops={},linkage={},psaProgress={},psaAccess=null,tradeReceipt=null,storeMode='all',selected=[],now=Date.now()}={}) {
   const requirements=[];
   for(const field of [...new Set(fields)]) {
     if(field==='buybackExitEvidence' || field==='buyback'){
@@ -57,7 +57,14 @@ function prospectPlan(card,fields,{shops={},linkage={},psaProgress={},psaAccess=
       const urls=['hareruya2','torecacamp'].flatMap(source=>card[source+'Url']?[{source,url:card[source+'Url']}]:[]);
       requirements.push({field,source:'domesticShops',state:urls.length?'price-and-stock-acquisition':'url-discovery',automatic:true,urls,
         nextAction:urls.length?'状態A・在庫・価格・個別取得日時の実確認':'正規商品一覧の差分探索→仕様照合→実価格確認',resumeCondition:'取得元アクセス正常・仕様一意。403元は別停止'});
-    }else if(['domesticPrice','domesticTrades','psa10Price','psa10Trades','psa9Evidence','psa9Aggregate'].includes(field)){
+    }else if(['domesticTrades','psa10Trades'].includes(field)){
+      const evidence=require('./domestic_trade_evidence').inspect(tradeReceipt,card,field,now);
+      const unsupported=evidence.status==='period-not-provided';
+      requirements.push({field,source:'toreca',state:evidence.status,automatic:!unsupported&&evidence.automatic,
+        evidence,reason:evidence.reason,normalBulkRecheck:unsupported,
+        nextAction:unsupported?'期間項目が現原票に未提供。通常の一括差分で提供開始を確認し、専用の個別反復取得はしない':'正規一括差分の期間件数・同一仕様を再確認',
+        resumeCondition:unsupported?'正規原票に対象期間の件数が提供されること':'仕様一致・対象期間と取得日時が確認できる正常応答'});
+    }else if(['domesticPrice','psa10Price','psa9Evidence','psa9Aggregate'].includes(field)){
       requirements.push({field,source:'toreca',state:'bulk-delta-acquisition',automatic:true,nextAction:'正規一括差分更新',resumeCondition:'正常な外部応答'});
     }else requirements.push({field,source:'manual',state:'unimplemented-or-review',automatic:false,nextAction:'既存残件台帳の担当経路を確認',resumeCondition:'取得経路・仕様根拠の確定'});
   }

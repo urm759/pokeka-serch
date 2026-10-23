@@ -1,6 +1,6 @@
 const fs=require('node:fs'),path=require('node:path');
 const ROOT=path.join(__dirname,'..');
-const outcomes=require('./audit_completion_outcomes'),{evaluate}=require('./build_priority_search_targets');
+const outcomes=require('./audit_completion_outcomes'),{isolatedEvaluation}=require('./build_priority_search_targets');
 const departures=require('./profile_departure_audit');
 const read=(root,file,fallback={})=>{try{return JSON.parse(fs.readFileSync(path.join(root,file),'utf8'));}catch{return fallback;}};
 const write=(root,file,value)=>require('./acquisition_retry').atomicWrite(path.join(root,file),value,0);
@@ -23,7 +23,7 @@ function profileDelta(before,after,beforeRows,afterRows) {
   const changedCode=before.evidenceMeta&&after.evidenceMeta&&before.evidenceMeta.codeHash!==after.evidenceMeta.codeHash;
   const buybackFilled=(before.rows || []).filter(r=>r.unverifiedProspect&&r.missing?.includes('buybackExitEvidence')&&after.inspectedRows?.[r.id]?.buybackConfirmed).map(r=>r.id);
   const medianEvidenceRecovered=(before.rows || []).filter(r=>r.unverifiedProspect&&r.missing?.includes('referenceMedian')&&r.buy==null&&Number.isFinite(after.inspectedRows?.[r.id]?.buy)).map(r=>r.id);
-  return {id:after.id,before:before.ids.length,after:after.ids.length,newListed:Object.keys(afterRows).filter(id=>!beforeRows[id]).length,
+  return {id:after.id,reportName:require('./search_profile_variants').reportName(after.id),before:before.ids.length,after:after.ids.length,newListed:Object.keys(afterRows).filter(id=>!beforeRows[id]).length,
     purchaseFilled,buybackFilled,medianEvidenceRecovered,profileFilledCards:new Set([...completed.map(r=>r.id),...purchaseFilled,...buybackFilled,...medianEvidenceRecovered]).size,
     completedProspectOutcomes:[...new Set([...completed.map(r=>r.id),...purchaseFilled,...buybackFilled,...medianEvidenceRecovered])].map(id=>({id,name:(before.rows || []).find(r=>r.id===id)?.name || null,
       qualified:current.has(id),values:after.inspectedRows?.[id] || null,reasons:after.allExclusions?.[id] || []})),
@@ -42,10 +42,9 @@ function baseline(key,root=ROOT) {
   const at=new Date().toISOString(),config=read(root,'work/priority-search-profiles.json');
   if(!Array.isArray(config.profiles))return null;
   const history=read(root,'work/search-profile-targets.json');
-  const calculationCache=new Map();
   const codeHash=departures.codeHash(root);
   const profiles=require('./search_profile_variants').allProfiles(config).map(p=>{
-    const evaluated=evaluate(p,at,{},[],calculationCache);
+    const evaluated=isolatedEvaluation(p,at);
     return {...evaluated,evidenceMeta:departures.metadata(evaluated,codeHash,at),seenQualified:history.profiles?.find(r=>r.id===p.id)?.seenQualified||[]};
   });
   const snapshot=outcomes.pack(outcomes.snapshot(root,Date.parse(at)));
@@ -56,10 +55,9 @@ function record(key,root=ROOT) {
   const before=read(root,`work/search-profile-cycle-baseline-${key}.json`,null);
   if(!before||String(before.runId)!==String(process.env.GITHUB_RUN_ID||null))return null;
   const now=new Date().toISOString(),config=read(root,'work/priority-search-profiles.json');
-  const calculationCache=new Map();
   const codeHash=departures.codeHash(root);
   const profiles=require('./search_profile_variants').allProfiles(config).filter(p=>before.profiles.some(b=>b.id===p.id)).map(p=>{
-    const evaluated=evaluate(p,now,{},(before.profiles.find(r=>r.id===p.id)?.rows||[]).map(r=>r.id),calculationCache);
+    const evaluated=isolatedEvaluation(p,now,(before.profiles.find(r=>r.id===p.id)?.rows||[]).map(r=>r.id));
     return {...evaluated,evidenceMeta:departures.metadata(evaluated,codeHash,now)};
   });
   const afterSnapshot=outcomes.snapshot(root,Date.parse(now));

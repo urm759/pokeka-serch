@@ -18,6 +18,7 @@ function efficiencySummaryKey(calculationKey,state) {
 }
 function evaluatePair(input) {
   const cache=new Map();
+  if(input.single)return {urlOnly:evaluate(input.profile,input.at,{},input.inspectIds,cache)};
   return {urlOnly:evaluate(input.profile,input.at,{},input.inspectIds,cache),
     knownSavedConditions:evaluate(input.profile,input.at,input.overlay,[],cache)};
 }
@@ -27,8 +28,11 @@ function isolatedPair(input,execute=require('node:child_process').spawnSync) {
     cwd:ROOT,input:JSON.stringify(input),encoding:'utf8',maxBuffer:32*1024*1024,timeout:180000});
   if(child.error || child.status!==0)throw Error(`Fixed profile ${input.profile.id} failed; previous outputs retained: ${String(child.error?.message||child.stderr||child.status).slice(-1200)}`);
   const result=JSON.parse(child.stdout);
-  if(result.urlOnly?.id!==input.profile.id || result.knownSavedConditions?.id!==input.profile.id)throw Error('Profile worker identity mismatch');
+  if(result.urlOnly?.id!==input.profile.id || !input.single&&result.knownSavedConditions?.id!==input.profile.id)throw Error('Profile worker identity mismatch');
   return result;
+}
+function isolatedEvaluation(profile,at,inspectIds=[]) {
+  return isolatedPair({profile,at,inspectIds,single:true}).urlOnly;
 }
 function evaluate(profile,at,overlay={},inspectIds=[],calculationCache=null) {
   const url=new URL(profile.url);for(const [k,v]of Object.entries(overlay))if(!url.searchParams.has(k))url.searchParams.set(k,v);
@@ -51,6 +55,8 @@ function evaluate(profile,at,overlay={},inspectIds=[],calculationCache=null) {
   const shops=JSON.parse(fs.readFileSync(path.join(ROOT,'data/shop-buyback-summary.json'),'utf8')).shops;
   const psaProgress=JSON.parse(fs.readFileSync(path.join(ROOT,'work/psa-fetch-progress.json'),'utf8'));
   const psaAccess=require('./psa_access_policy').decision(require('./psa_access_policy').read(ROOT));
+  const tradeReceiptFile=path.join(ROOT,'data/domestic-trade-source-audit.json');
+  const tradeReceipt=fs.existsSync(tradeReceiptFile)?JSON.parse(fs.readFileSync(tradeReceiptFile,'utf8')):null;
   const inspected=new Set(inspectIds),allExclusions={},inspectedRows={};
   const scope={catalog:cards.length,unknownPriceCards:0,confirmedPriceFailures:0,identityHeld:0,qualified:0,completionProspects:0,notSelected:0};
   for(const c of cards) {
@@ -98,13 +104,13 @@ function evaluate(profile,at,overlay={},inspectIds=[],calculationCache=null) {
     if(selected||prospect)rows.push({id:c.id,name:c.name,qualified:selected,unverifiedProspect:prospect,missing:[...new Set(fields)],reasons:excluded,
       buy:e.purchasePrice,profit:e.profit,annual:e.annual,go:c.purchaseDecision?.verdict||c.purchaseDecision?.status||null,priority:discoveryPriority.score,priorityReasons:discoveryPriority.reasons,priceGates,
       metrics:require('./profile_candidate_evidence').cardFacts(api,c),
-      completionPlan:prospect?require('./profile_completion_routes').prospectPlan(c,fields,{shops,linkage,psaProgress,psaAccess,now:Date.parse(at),storeMode:p.get('buybackStores') || 'mail',selected:(p.get('selectedStores') || '').split(',')}):null});
+      completionPlan:prospect?require('./profile_completion_routes').prospectPlan(c,fields,{shops,linkage,psaProgress,psaAccess,tradeReceipt,now:Date.parse(at),storeMode:p.get('buybackStores') || 'mail',selected:(p.get('selectedStores') || '').split(',')}):null});
     if(prospect)for(const route of routeNeededFields(completion.cards?.[c.id],fields)) {
       (routes[route.source]||=[]).push({id:c.id,field:route.key,mode:route.mode,priority:discoveryPriority.score});
     }
   }
   if(!sharedAllCatalog)calculationCache?.set(summaryKey,efficiencyAvailability.allCatalog);
-  return {id:profile.id,urlHash:hash(profile.url),parameters:Object.fromEntries([...url.searchParams].filter(([k])=>!['cap','locked','reserve','maxShare','batch'].includes(k))),
+  return {id:profile.id,reportName:require('./search_profile_variants').reportName(profile.id),urlHash:hash(profile.url),parameters:Object.fromEntries([...url.searchParams].filter(([k])=>!['cap','locked','reserve','maxShare','batch'].includes(k))),
     qualified:rows.filter(r=>r.qualified).length,ids:rows.filter(r=>r.qualified).map(r=>r.id),prospects:rows.filter(r=>r.unverifiedProspect).length,reasons,rows,routes,scope,allExclusions,inspectedRows,efficiencyAvailability,
     explanation:'既知価格範囲を通った不足カードは未判定の補完候補。適合/GOとは数えない。原因の重複数と候補減少は別'};
 }
@@ -119,6 +125,7 @@ function build(root=ROOT,at=new Date().toISOString()) {
   const completion=JSON.parse(fs.readFileSync(path.join(root,'work/card-completion-queue.json'),'utf8'));
   const rawCards=new Map(JSON.parse(fs.readFileSync(path.join(root,'data/pokemon-cards.json'),'utf8')).map(c=>[c.id,c]));
   const repairContext={shops:JSON.parse(fs.readFileSync(path.join(root,'data/shop-buyback-summary.json'),'utf8')).shops,
+    tradeReceipt:fs.existsSync(path.join(root,'data/domestic-trade-source-audit.json'))?JSON.parse(fs.readFileSync(path.join(root,'data/domestic-trade-source-audit.json'),'utf8')):null,
     psaAccess:require('./psa_access_policy').decision(require('./psa_access_policy').read(root)),
     linkage:Object.fromEntries(JSON.parse(fs.readFileSync(path.join(root,'work/psa-linkage-all.json'),'utf8')).rows.map(r=>[r.cardId,r])),
     psaProgress:JSON.parse(fs.readFileSync(path.join(root,'work/psa-fetch-progress.json'),'utf8')),now:Date.parse(at)};
@@ -143,7 +150,7 @@ function build(root=ROOT,at=new Date().toISOString()) {
       seenQualified:[...new Set([...seen,...p.urlOnly.ids])],comparison:same?'同一URL・前回記録との探索適合差分':'初回または条件/旧形式の変更・新規適合として数えない',
       note:'差分はGOではない。コード/取得/期限経過の原因は別監査し、価格下落と断定しない'};
   });
-  const targets={version:4,at,profiles:profiles.map((p,i)=>({id:p.urlOnly.id,urlHash:p.urlOnly.urlHash,seenQualified:transitions[i].seenQualified,urlsMatched:p.urlOnly.ids,
+  const targets={version:4,at,profiles:profiles.map((p,i)=>({id:p.urlOnly.id,reportName:p.urlOnly.reportName,urlHash:p.urlOnly.urlHash,seenQualified:transitions[i].seenQualified,urlsMatched:p.urlOnly.ids,
     evidenceMeta:departures.metadata(p.urlOnly,codeHash,at),qualifiedFacts:Object.fromEntries(p.urlOnly.rows.filter(r=>r.qualified).map(r=>[r.id,r.metrics])),
     prospects:p.urlOnly.rows.filter(r=>r.unverifiedProspect)})),routes:{},readyRoutes:{},freshnessRecovery:[],pendingDepartures:[],repairRequests:[],departureHistoryImported:true};
   for(const p of profiles){
@@ -206,4 +213,4 @@ if(require.main===module) {
   if(process.argv.includes('--evaluate-worker'))process.stdout.write(JSON.stringify(evaluatePair(JSON.parse(fs.readFileSync(0,'utf8')))));
   else build();
 }
-module.exports={build,evaluate,evaluatePair,isolatedPair,routeNeededFields,efficiencySummaryKey};
+module.exports={build,evaluate,evaluatePair,isolatedPair,isolatedEvaluation,routeNeededFields,efficiencySummaryKey};

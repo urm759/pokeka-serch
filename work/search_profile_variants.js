@@ -1,4 +1,9 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+function reportName(id) {
+  const base=String(id).replace(/-specified$/,'').replace(/-median$/,'');
+  const name={A:'条件スタンダード',B:'条件プライマリ'}[base] || id;
+  return name+(String(id).includes('-median')?'（中央値）':'');
+}
 function medianProfile(base,id) {
   const url=new URL(base.url);url.searchParams.set('effBuy','median');
   const result={...base,id,baseId:base.id,basis:'median',url:url.href};
@@ -11,7 +16,7 @@ function allProfiles(config) {
     const base=originals.find(p=>p.id===v.baseId);assert(base,'Unknown original profile '+v.baseId);
     return medianProfile(base,v.id);
   });
-  const result=[...originals,...variants];assert.equal(new Set(result.map(p=>p.id)).size,result.length,'Profile IDs must be unique');
+  const result=[...originals,...variants].map(p=>({...p,reportName:reportName(p.id)}));assert.equal(new Set(result.map(p=>p.id)).size,result.length,'Profile IDs must be unique');
   return result;
 }
 function saveMedianProfiles(root,config) {
@@ -29,4 +34,4 @@ function searchModeProfiles(config) {
     return {...p,id:p.id+'-specified',baseId:p.baseId?p.baseId+'-specified':undefined,siteProfileId:p.id,searchMode:'specified',url:url.href};
   })];
 }
-module.exports={medianProfile,allProfiles,saveMedianProfiles,searchModeProfiles};
+module.exports={medianProfile,allProfiles,saveMedianProfiles,searchModeProfiles,reportName};
