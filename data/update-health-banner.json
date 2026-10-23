@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-23T13:51:10.720Z",
-  "sourceLastSuccessAt": "2026-10-23T12:10:08.065Z",
+  "generatedAt": "2026-10-23T21:14:17.850Z",
+  "sourceLastSuccessAt": "2026-10-23T17:29:25.969Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-10-23T13:33:43.929Z",
-    "lastSuccessAt": "2026-10-23T13:33:43.929Z",
-    "runId": "39961191138",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/39961191138"
+    "lastAttemptAt": "2026-10-23T20:56:15.634Z",
+    "lastSuccessAt": "2026-10-23T20:56:15.634Z",
+    "runId": "40020876073",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/40020876073"
   },
   "issues": [
     {
@@ -19,13 +19,13 @@
     {
       "key": "safe:yuyutei:manual-action-required:GitHub ActionsからHTTP #。正規アクセス確認待ち",
       "category": "アクセス・手動対応待ち",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/39848419577",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/40017234352",
       "reason": "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち"
     },
     {
       "key": "safe:priceEvidence:stalled:#回連続でチェックポイント進捗なし",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/39848419577",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/40017234352",
       "reason": "状態A価格確認: 2回連続でチェックポイント進捗なし"
     },
     {
@@ -79,8 +79,14 @@
     {
       "key": "priority-prices:cadence-stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/39919348207",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/40003444319",
       "reason": "重要価格更新：設定2時間に対し実績成功間隔（直近最大）12.63時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
+    },
+    {
+      "key": "priority-prices:stalled",
+      "category": "鮮度未達・進捗停滞",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/40003444319",
+      "reason": "購入価格高速更新が3回連続で進捗なし・期限超過あり"
     }
   ],
   "reasons": [
@@ -95,7 +101,8 @@
     "PSA Japan料金: 更新期限超過（カード別鮮度 未記録%）",
     "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）",
     "PC側PSA: PC観測未受信 / 30時間以内の独立タスク観測なし。PC停止・観測起動失敗・未公開を区別して確認",
-    "重要価格更新：設定2時間に対し実績成功間隔（直近最大）12.63時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
+    "重要価格更新：設定2時間に対し実績成功間隔（直近最大）12.63時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能",
+    "購入価格高速更新が3回連続で進捗なし・期限超過あり"
   ],
   "detailUrl": "./data/update-health.json"
 }

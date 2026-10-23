@@ -63,9 +63,16 @@ api.saveQuickFilters();context.window.location.href='https://example.test/';inpu
 const loader = require('./audit_search_profit_consistency').load;
 // Daily runners can use a shallow checkout: do not depend on old Git objects.
 // The release audit separately compares against the previous published source.
-const before=loader(source,date),after=loader(source,date);
+const before=loader(source,date,{fixedModelClock:true}),after=loader(source,date,{fixedModelClock:true});
 Object.assign(after.state,{efficiencyBuy:'manual',efficiencyManualPrice:17000,efficiencySaleDays:21,efficiencyPayoutDays:5});
-const oldCards=before.prepareCalculatedCards(before.state.cards),newCards=after.prepareCalculatedCards(after.state.cards);
+const oldCards=before.prepareCalculatedCards(before.state.cards);
+let newCards;
+const hostNow=Date.now;
+try {
+  // Imported models must share the comparison clock, even across a host TTL boundary.
+  Date.now=()=>now+49*3600000;
+  newCards=after.prepareCalculatedCards(after.state.cards);
+} finally {Date.now=hostNow;}
 const hash=cards=>crypto.createHash('sha256').update(JSON.stringify(cards.map(c=>[c.id,c.buyLimits,c.purchaseDecision]))).digest('hex');
 assert.equal(hash(oldCards),hash(newCards),'all existing limits/GO unchanged');
 assert.deepEqual(oldCards.filter(c=>!before.cardSearchExclusions(c).length).map(c=>c.id),newCards.filter(c=>!after.cardSearchExclusions(c).length).map(c=>c.id),'disabled new filter preserves candidate IDs');

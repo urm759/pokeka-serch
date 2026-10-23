@@ -37,6 +37,14 @@ function load(appSource, at, options = {}) {
   const missing=[],cache=new Map();
   const historical=file=>{
     const relative=path.relative(ROOT,String(file)).replace(/\\/g,'/');
+    if(options.dataDirectory && relative.startsWith('data/')) {
+      if(!cache.has(relative)) {
+        const saved=path.join(options.dataDirectory,relative);
+        if(fs.existsSync(saved))cache.set(relative,fs.readFileSync(saved));
+        else {cache.set(relative,false);missing.push(relative);}
+      }
+      return cache.get(relative);
+    }
     if(!options.dataRef || !relative.startsWith('data/')) return null;
     if(!cache.has(relative)) {
       try {cache.set(relative,execFileSync('git',['show',`${options.dataRef}:${relative}`],{cwd:ROOT,maxBuffer:64000000,stdio:['ignore','pipe','pipe']}));}
@@ -51,7 +59,7 @@ function load(appSource, at, options = {}) {
   const auditRequire=name=>{
     if(['fs','node:fs'].includes(name))return dataFs;
     if(options.explorationMetrics && /exploration-metrics/.test(name))return options.explorationMetrics;
-    if(options.fixedModelClock && clockModels.has(path.basename(name))) {
+    if(options.fixedModelClock !== false && clockModels.has(path.basename(name))) {
       const file=path.join(ROOT,path.basename(name));
       if(!modelCache.has(file)) {
         const module={exports:{}};modelCache.set(file,module);

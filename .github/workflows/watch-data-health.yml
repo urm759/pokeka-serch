@@ -42,6 +42,7 @@ jobs:
           node work/test_bulk_individual_freshness.js
           node work/test_partial_buyback_refresh.js
           node work/test_partial_buyback_recovery.js
+          node work/test_saved_camp_recovery.js
           node work/test_automatic_operation.js
           node work/test_overseas_cancellation.js
       - name: Fill missed price intervals with shared cooldown and access budgets
