@@ -14,6 +14,7 @@ for(const title of ['ニンフィアV SRC [S6a 077/069]','グレイシアV SRC [
   assert.equal(builder.capture(null,{updatedAt:'2026-10-14',shops:{a:[{...labelled,name:title}]}},source,[c]).audit.accepted,0,title);
 }
 assert.equal(builder.resolveSavedItem(labelled,[c,{...c,id:'ambiguous'}]).cardId,undefined,'no forced selection among duplicate identities');
+assert.equal(builder.resolveSavedItem({...labelled,number:'078/069'},[c]).cardId,undefined,'title and declared number must agree');
 const omitted={...c,name:c.name.replace(/\bSA\b/g,''),rarity:'SR'};
 assert.equal(builder.resolveSavedItem({...item,name:'グレイシアV(SA) SR 077/069'},[omitted]).cardId,c.id,'exact unique secret number/name can resolve omitted SA annotation');
 assert.equal(builder.resolveSavedItem({...item,name:'グレイシアV(SA) SR 077/069'},[omitted,{...omitted,id:'other-art'}]).cardId,undefined);

@@ -6,7 +6,8 @@ const hash=value=>crypto.createHash('sha256').update(JSON.stringify(value)).dige
 function measure(input) {
   const source=fs.readFileSync('app.js','utf8');
   const run=dataRef=>{
-    const api=load(source,input.at,{url:input.profile.url,dataRef,fixedModelClock:true});
+    const api=load(source,input.at,{url:input.profile.url,fixedModelClock:true});
+    if(dataRef)api.state.buybackObservationSummary=JSON.parse(cp.execFileSync('git',['show',dataRef+':data/buyback-observation-summary.json'],{cwd:root,maxBuffer:32e6}));
     const cards=api.prepareCalculatedCards(api.state.cards),byId=new Map(cards.map(c=>[c.id,c]));
     const ids=cards.filter(c=>!api.cardSearchExclusions(c).length).map(c=>c.id);
     const scope=[...new Set([...ids,...input.ids])].filter(id=>byId.has(id));
@@ -31,8 +32,9 @@ function measure(input) {
 if(process.argv.includes('--worker'))process.stdout.write(JSON.stringify(measure(JSON.parse(fs.readFileSync(0,'utf8')))));
 else {
   const config=require('./priority-search-profiles.json'),definitions=require('./search_profile_variants').searchModeProfiles(config);
-  const old=JSON.parse(fs.readFileSync('work/20261023-period-profiles-before.json','utf8'));
-  const at=new Date().toISOString(),ref=cp.execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+  const at=new Date().toISOString(),ref=process.argv.find(v=>v.startsWith('--reference='))?.slice(12)||cp.execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+  assert(/^[a-f0-9]{7,40}$/.test(ref),'explicit commit required');
+  const old=JSON.parse(cp.execFileSync('git',['show',ref+':data/priority-search-profile-audit.json'],{cwd:root,maxBuffer:32e6}));
   const profiles=[];
   for(const profile of definitions) {
     const previous=old.profiles.find(p=>p.urlOnly.id===profile.id)?.urlOnly;
@@ -41,7 +43,7 @@ else {
     if(child.status!==0)throw Error(child.stderr||child.error?.message||'comparison failed');
     profiles.push(JSON.parse(child.stdout));
   }
-  const result={at,reference:ref,httpRequests:0,financialUnchanged:true,scope:'same fixed time/code/settings; existing candidate and completion prospect IDs, not all catalog',profiles};
+  const result={at,reference:ref,httpRequests:0,financialUnchanged:true,scope:'same fixed time/code/settings/current data; only the saved buyback mean summary differs; existing candidate and completion prospect IDs, not all catalog',profiles};
   fs.writeFileSync('work/20261023-period-fixed-comparison.json',JSON.stringify(result));
   console.log(JSON.stringify(profiles.map(p=>({id:p.id,before:p.before.ids.length,after:p.after.ids.length,gained:p.gained,lost:p.lost,periods:Object.fromEntries(Object.entries(p.after.groups).map(([k,g])=>[k,{calculated:g.calculated,reference:g.reference,unavailable:g.unavailable,causes:g.causes}]))})),null,2));
 }

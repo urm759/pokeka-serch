@@ -3,6 +3,8 @@ const ROOT=path.join(__dirname,'..'),periods=[7,30,75,200];
 const day=at=>Number.isFinite(Date.parse(at))?new Date(Date.parse(at)+9*3600000).toISOString().slice(0,10):null;
 function resolveSavedItem(item,cards,byNumber) {
   const {resolve:resolver,number}=require('./cardshop151');
+  const printed=number(item.name),declared=number(item.number);
+  if(printed && declared && printed!==declared)return {status:'確認待ち',reason:'原票のタイトルと番号欄が不一致'};
   if(byNumber)cards=byNumber.get(number(item.number||item.name))||[];
   const cleanName=String(item.name).replace(/\s+\d{1,3}\s*\/\s*(?:\d{1,3}|(?:XY|SM|SV|BW|S)-P)\b/ig,'');
   const row={type:'PSA10',genre:'ポケモンカード',name:cleanName,listNo:item.number||item.name};
