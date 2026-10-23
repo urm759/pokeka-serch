@@ -1,29 +1,37 @@
 const fs=require('node:fs'),assert=require('node:assert/strict');
 const source=fs.readFileSync('app.js','utf8');
 const moduleSource=source.slice(source.indexOf('function auditIsOpen('),source.indexOf('\nconst state ='));
-const outer={tagName:'DETAILS',open:false,parentElement:null,listeners:[],addEventListener(event,fn){assert.equal(event,'toggle');this.listeners.push(fn);}};
-const inner={...outer,listeners:[],parentElement:outer};
+const contains=function(element){for(let p=element;p;p=p.parentElement)if(p===this)return true;return false;};
+const outer={tagName:'DETAILS',open:false,parentElement:null,contains};
+const inner={...outer,parentElement:outer};
+let toggle;
+const document={addEventListener(event,fn,capture){assert.equal(event,'toggle');assert.equal(capture,true);toggle=fn;}};
 const output={parentElement:inner,textContent:''},els={psa9RatioCoverage:output};
 const cards=['eligible','data-missing','reference-disabled','circular-estimate'].map((reason,i)=>({id:String(i),name:'test',model:'001',reason}));
 const state={q:'',cards,year2020Only:false,includeUnknownYear:false};
 let scans=0,calculations=0,cache={audits:new Map()},clock=0;
 const normalize=value=>String(value).toLowerCase(), compactSearch=value=>normalize(value).replace(/\s/g,'');
-const run=new Function('els','state','searchMemoFor','getCache','normalize','compactSearch','releaseYearFilter','searchIndexModel','psa9RatioOptions','purchaseRatioModel','purchasePsa9Ratio','fmt','calculatedCardsForSearch',
+const run=new Function('els','state','searchMemoFor','getCache','normalize','compactSearch','releaseYearFilter','searchIndexModel','psa9RatioOptions','purchaseRatioModel','purchasePsa9Ratio','fmt','calculatedCardsForSearch','document',
   'let searchMemoCache;'+moduleSource.replace('  searchMemoFor(cards);','  searchMemoFor(cards); searchMemoCache=getCache();')+';return {renderPsa9RatioCoverage,bindPsa9RatioCoverage};')(
     els,state,()=>{if(clock) {cache={audits:new Map()};clock=0;}},()=>cache,normalize,compactSearch,
     {matches:()=>true},{matchesCard:card=>state.q==='alias'&&card.id==='0'},()=>({}),
-    {eligibility:row=>row.reason},card=>{scans++;return card;},new Intl.NumberFormat('ja-JP'),()=>{calculations++;return state.cards;});
+    {eligibility:row=>row.reason},card=>{scans++;return card;},new Intl.NumberFormat('ja-JP'),()=>{calculations++;return state.cards;},document);
 run.bindPsa9RatioCoverage();
 run.renderPsa9RatioCoverage(cards);assert.equal(scans,0,'hidden coverage never scans cards');
-inner.open=true;inner.listeners[0]();assert.equal(scans,0,'closed outer disclosure still hides the audit');
-outer.open=true;outer.listeners[0]();
+inner.open=true;toggle({target:inner});assert.equal(scans,0,'closed outer disclosure still hides the audit');
+outer.open=true;toggle({target:outer});
 assert.equal(scans,4);assert.equal(calculations,1);assert.match(output.textContent,/条件内 4枚：比率検索対象 1枚/);
 for(const label of ['データ不足・対立・古値','参考値OFF','素体由来推定'])assert.ok(output.textContent.includes(label+' 1枚'));
 run.renderPsa9RatioCoverage(cards);assert.equal(scans,4,'unchanged open audit reuses search-scoped counts');
 clock=1;run.renderPsa9RatioCoverage(cards);assert.equal(scans,8,'freshness/cache invalidation rebuilds coverage');
 state.q='no-match';clock=1;run.renderPsa9RatioCoverage(cards);assert.match(output.textContent,/条件内 0枚：比率検索対象 0枚/);
 state.q='alias';clock=1;run.renderPsa9RatioCoverage(cards);assert.match(output.textContent,/条件内 1枚：比率検索対象 1枚/);
-outer.open=false;inner.listeners[0]();assert.equal(calculations,1,'closing disclosures does not recalculate financial data');
+outer.open=false;toggle({target:inner});assert.equal(calculations,1,'closing disclosures does not recalculate financial data');
+const organizedParent={...outer,open:false};outer.parentElement=organizedParent;outer.open=true;
+state.q='no-match';clock=1;organizedParent.open=true;toggle({target:organizedParent});
+assert.match(output.textContent,/条件内 0枚/,'parents inserted after event binding refresh with current conditions');
+const previousCalculations=calculations;toggle({target:{tagName:'DETAILS',contains:()=>false}});
+assert.equal(calculations,previousCalculations,'unrelated disclosures do not calculate');
 assert.match(source,/renderPsa9RatioCoverage\(calculated\);/);
 assert.match(source,/bindPsa9RatioCoverage\(\);/);
 assert.ok(!source.slice(source.indexOf('function renderContent()'),source.indexOf('const enriched = calculated')).includes('for (const card of calculated)'));

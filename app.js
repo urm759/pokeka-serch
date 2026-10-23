@@ -161,13 +161,11 @@ function renderPsa9RatioCoverage(cards) {
   els.psa9RatioCoverage.textContent = `読込済み・名称/年条件内 ${fmt.format(counts.total)}枚：比率検索対象 ${fmt.format(counts.eligible)}枚／データ不足・対立・古値 ${fmt.format(counts["data-missing"])}枚／参考値OFF ${fmt.format(counts["reference-disabled"])}枚／素体由来推定 ${fmt.format(counts["circular-estimate"])}枚。上下限やその他の仕入れ条件による除外は別です。`;
 }
 function bindPsa9RatioCoverage() {
-  // An outer disclosure can hide an already-open inner one.
-  for (let parent=els.psa9RatioCoverage?.parentElement;parent;parent=parent.parentElement) {
-    if (parent.tagName !== 'DETAILS') continue;
-    parent.addEventListener('toggle',()=>{
-      if (auditIsOpen(els.psa9RatioCoverage)) renderPsa9RatioCoverage(calculatedCardsForSearch(state.cards));
-    });
-  }
+  // Capture non-bubbling toggles, including parents created by settings organization.
+  document.addEventListener('toggle',event=>{
+    if (event.target.tagName === 'DETAILS' && event.target.contains(els.psa9RatioCoverage)
+      && auditIsOpen(els.psa9RatioCoverage)) renderPsa9RatioCoverage(calculatedCardsForSearch(state.cards));
+  },true);
 }
 
 const state = {
