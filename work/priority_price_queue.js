@@ -165,7 +165,7 @@ function write(root = ROOT) {
   }
   const inventoryAt = confirmedInventoryAt(inventory, runs.toreca);
   sources.toreca = bulkSource("toreca", priorityCards.map((card) => ({ card,
-    at: present.has(card.id) && Number(card.price) > 0 ? inventoryAt : null, detail: "取得一覧ID・取得件数を成功記録と照合。変更なし再確認の日時であり、実成約日時・状態A実売証明ではない" })));
+    at: present.has(card.id) && Number(card.price) > 0 ? confirmedCardPriceAt(card, inventoryAt, now) : null, detail: "個別の実価格確認日時を優先。個別日時のない旧形式だけ取得一覧・件数と成功記録を照合。実成約日時・状態A実売証明ではない" })));
   sources.shopBuyback = bulkSource("shopBuyback", priorityCards.map((card) => {
     const rows = Object.entries(buys.cards?.[card.id]?.shops || {}).map(([shopId, price]) => {
       const shop = buys.shops?.[shopId];
@@ -202,6 +202,12 @@ function confirmedInventoryAt(inventory, run) {
     && count === Number(run.acquiredCount) && Number.isFinite(at) && compatibleDate
     ? run.lastSuccessAt : null;
 }
+function confirmedCardPriceAt(card, legacyInventoryAt, now = Date.now()) {
+  // An explicit retained/missing date must never inherit the bulk file's date.
+  const value = Object.hasOwn(card, 'priceObservedAt') ? card.priceObservedAt : legacyInventoryAt;
+  const at = observationTime(value);
+  return Number.isFinite(at) && at <= now ? value : null;
+}
 function timingConfig(root = ROOT) {
   const config = read(root, "data/priority-price-config.json");
   const execution = read(root, "data/priority-price-execution.json");
@@ -210,4 +216,4 @@ function timingConfig(root = ROOT) {
     ...(Date.now()-Date.parse(cadence.checkedAt)<48*3600000 && cadence.observedSuccessfulIntervalMs>0 ? {observedSuccessfulIntervalMs:cadence.observedSuccessfulIntervalMs} : {}),
     ...(Number.isFinite(execution.startDelayMs) ? {observedStartDelayMs:Math.max(30*60000,execution.startDelayMs)} : {})};
 }
-module.exports = { plan, finish, load, write, confirmedInventoryAt, timingConfig };
+module.exports = { plan, finish, load, write, confirmedInventoryAt, confirmedCardPriceAt, timingConfig };
