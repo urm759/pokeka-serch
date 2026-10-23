@@ -1,6 +1,51 @@
 const fs=require('node:fs'),path=require('node:path');
 const {atomicWrite}=require('./acquisition_retry');
 const identity=require('./quarantine_shop_identity');
+function reconcileLinks(cards,catalogs,{now=Date.now(),holds={}}={}){
+  const updated=cards.map(c=>({...c})),links=[],owners=new Map();
+  for(const card of updated)for(const source of Object.keys(catalogs))if(card[source+'Url']){
+    const key=source+'|'+card[source+'Url'];owners.set(key,owners.has(key)?null:card.id);
+  }
+  const indexed={},claims=new Map();
+  for(const [source,rows]of Object.entries(catalogs)){
+    indexed[source]=new Map();
+    for(const row of rows){
+      const list=indexed[source].get(row.cardId)||[];list.push(row);indexed[source].set(row.cardId,list);
+      const at=Date.parse(row.observedAt||'');
+      if(row.identityVerified===true&&identity.identityUsable(row)&&!row.priceQuarantined&&row.state==='A'
+        &&Number.isFinite(at)&&at<=now&&now-at<=48*3600000){
+        const key=source+'|'+row.detailUrl,ids=claims.get(key)||new Set();ids.add(row.cardId);claims.set(key,ids);
+      }
+    }
+  }
+  for(const source of Object.keys(catalogs))for(const card of updated){
+    if(card[source+'Url']||card.identityReviewRequired||card.manualReview)continue;
+    const rows=indexed[source].get(card.id)||[],eligible=rows.filter(r=>{
+      const at=Date.parse(r.observedAt||'');let url;
+      try{url=new URL(r.detailUrl);}catch{return false;}
+      return url.protocol==='https:'&&url.hostname===({hareruya2:'www.hareruya2.com',torecacamp:'torecacamp-pokemon.com'}[source])
+        &&url.pathname.startsWith('/products/')&&r.identityVerified===true&&identity.identityUsable(r)&&!r.priceQuarantined
+        &&r.state==='A'&&r.price>0&&Number.isFinite(at)&&at<=now&&now-at<=48*3600000
+        &&holds[source]?.[card.id]?.url!==r.detailUrl&&!identity.reason(card,r.title||r.name)
+        &&require('./refresh_candidate_shops').exactIdentity(card,{title:r.title||r.name});
+    });
+    const urls=[...new Set(eligible.map(r=>r.detailUrl))];
+    if(urls.length!==1||owners.has(source+'|'+urls[0])||claims.get(source+'|'+urls[0])?.size!==1)continue;
+    const row=eligible.find(r=>r.detailUrl===urls[0]);
+    card[source+'Url']=row.detailUrl;owners.set(source+'|'+row.detailUrl,card.id);
+    links.push({id:card.id,source,url:row.detailUrl,observedAt:row.observedAt});
+  }
+  return {cards:updated,links};
+}
+function reconcileSavedLinks(root=path.join(__dirname,'..')){
+  const read=file=>JSON.parse(fs.readFileSync(path.join(root,file)));
+  const guard=read('work/candidate-shop-refresh.json').checkpoints||{};
+  const result=reconcileLinks(read('data/pokemon-cards.json'),Object.fromEntries(['hareruya2','torecacamp'].map(s=>[s,read(`work/${s}_catalog.json`)])),
+    {holds:Object.fromEntries(Object.entries(guard).map(([s,v])=>[s,v.manualWait||{}]))});
+  if(result.links.length)atomicWrite(path.join(root,'data/pokemon-cards.json'),result.cards,0);
+  const report={at:new Date().toISOString(),links:result.links,acquisitionRequests:0,reason:'正常な保存原票の商品URL接続漏れのみ。価格/確認日時/保留は変更しない'};
+  atomicWrite(path.join(root,'work/saved-shop-link-reconciliation.json'),report,0);return report;
+}
 function mergeRows(current,saved,cards,source,now=Date.now()) {
   const rows=current.map(r=>({...r})),changes=[],rejected=[];
   for(const incoming of saved){
@@ -71,5 +116,5 @@ function project(root,changes){
   }
   for(const [file,value]of pending)atomicWrite(file,value,0);
 }
-if(require.main===module)console.log(JSON.stringify(run(process.argv[2])));
-module.exports={mergeRows,run,project};
+if(require.main===module)console.log(JSON.stringify(process.argv.includes('--reconcile-links')?reconcileSavedLinks():run(process.argv[2])));
+module.exports={mergeRows,run,project,reconcileLinks,reconcileSavedLinks};

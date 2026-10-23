@@ -8,6 +8,7 @@ const { countCurrentRecords, psaAuthenticationRequired, taskStageFields } = requ
 const { sourceTiming } = require("./workflow_schedule.js");
 require('./refresh_candidate_shops').publishRunEvidence(ROOT, read('work/candidate-shop-refresh.json'));
 require('./quarantine_shop_identity').build(ROOT);
+require('./recover_saved_shop_rows').reconcileSavedLinks(ROOT);
 require('./build_raw_condition_reference').build(ROOT);
 require('./build_psa9_provenance').build(ROOT);
 require('./build_psa9_provenance').verify(ROOT);
