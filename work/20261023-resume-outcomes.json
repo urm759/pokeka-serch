@@ -201,5 +201,398 @@
     "lost": [],
     "note": "4条件の重複除外。条件間の移動は新しい独立候補ではない。適合変化と実取得の因果は別監査"
   },
-  "note": "原票回収/新しい店舗根拠/必須不足/新規分析/条件適合を分離。任意根拠の日付再評価を実取得に数えない。"
+  "note": "原票回収/新しい店舗根拠/必須不足/新規分析/条件適合を分離。任意根拠の日付再評価を実取得に数えない。",
+  "scheduledPriority": {
+    "runId": "39879795830",
+    "recordedAt": "2026-10-23T01:01:10.112Z",
+    "outcomes": {
+      "baselineAt": "2026-10-23T00:44:32.395Z",
+      "commonCards": 12545,
+      "addedCards": 0,
+      "removedCards": 0,
+      "newlyAnalyzable": 0,
+      "lostAnalyzable": 0,
+      "filledCards": 0,
+      "filledItems": 0,
+      "sources": {
+        "cardrush": {
+          "newLinked": 0,
+          "validAdded": 0,
+          "validLost": 0,
+          "usableNet": 0,
+          "freshnessRecovered": 0
+        },
+        "hareruya2": {
+          "newLinked": 0,
+          "validAdded": 0,
+          "validLost": 0,
+          "usableNet": 0,
+          "freshnessRecovered": 39
+        },
+        "yuyutei": {
+          "newLinked": 0,
+          "validAdded": 0,
+          "validLost": 0,
+          "usableNet": 0,
+          "freshnessRecovered": 0
+        },
+        "torecacamp": {
+          "newLinked": 0,
+          "validAdded": 0,
+          "validLost": 0,
+          "usableNet": 0,
+          "freshnessRecovered": 0
+        },
+        "psaOfficial": {
+          "newLinked": 0,
+          "validAdded": 0,
+          "validLost": 0,
+          "usableNet": 0,
+          "freshnessRecovered": 0
+        },
+        "pokedata": {
+          "newLinked": 0,
+          "validAdded": 0,
+          "validLost": 0,
+          "usableNet": 0,
+          "freshnessRecovered": 0
+        }
+      },
+      "referenceEvidenceRecovered": {
+        "buybackExitEvidence": 610
+      }
+    }
+  },
+  "priorScheduledPriority": {
+    "runId": 39859601374,
+    "confirmed": true,
+    "stages": {
+      "acquisition": true,
+      "validation": true,
+      "savePublish": true
+    },
+    "hashes": 14,
+    "pagesRunId": 39861580694,
+    "headSha": "2e7297454beee3a2e9516abddca0ecc7ddcfa704"
+  },
+  "afterConcurrentScheduledImport": {
+    "delta": {
+      "baselineAt": "2026-10-23T00:57:09.367Z",
+      "commonCards": 12545,
+      "addedCards": 0,
+      "removedCards": 0,
+      "newlyAnalyzable": 0,
+      "lostAnalyzable": 0,
+      "filledCards": 0,
+      "filledItems": 0,
+      "sources": {
+        "cardrush": {
+          "newLinked": 0,
+          "validAdded": 0,
+          "validLost": 0,
+          "usableNet": 0,
+          "freshnessRecovered": 0
+        },
+        "hareruya2": {
+          "newLinked": 1,
+          "validAdded": 1,
+          "validLost": 0,
+          "usableNet": 1,
+          "freshnessRecovered": 40
+        },
+        "yuyutei": {
+          "newLinked": 0,
+          "validAdded": 0,
+          "validLost": 0,
+          "usableNet": 0,
+          "freshnessRecovered": 0
+        },
+        "torecacamp": {
+          "newLinked": 0,
+          "validAdded": 0,
+          "validLost": 0,
+          "usableNet": 0,
+          "freshnessRecovered": 0
+        },
+        "psaOfficial": {
+          "newLinked": 0,
+          "validAdded": 0,
+          "validLost": 0,
+          "usableNet": 0,
+          "freshnessRecovered": 0
+        },
+        "pokedata": {
+          "newLinked": 0,
+          "validAdded": 0,
+          "validLost": 0,
+          "usableNet": 0,
+          "freshnessRecovered": 0
+        }
+      },
+      "referenceEvidenceRecovered": {
+        "buybackExitEvidence": 610
+      }
+    },
+    "independent": {
+      "before": 32,
+      "after": 32,
+      "net": 0,
+      "gained": [],
+      "lost": [],
+      "note": "4条件の重複除外。条件間の移動は新しい独立候補ではない。適合変化と実取得の因果は別監査"
+    },
+    "profiles": [
+      {
+        "id": "A",
+        "reportName": "条件スタンダード",
+        "before": 11,
+        "after": 11,
+        "gained": [],
+        "lost": []
+      },
+      {
+        "id": "B",
+        "reportName": "条件プライマリ",
+        "before": 22,
+        "after": 22,
+        "gained": [],
+        "lost": []
+      },
+      {
+        "id": "A-median",
+        "reportName": "条件スタンダード（中央値）",
+        "before": 7,
+        "after": 7,
+        "gained": [],
+        "lost": []
+      },
+      {
+        "id": "B-median",
+        "reportName": "条件プライマリ（中央値）",
+        "before": 14,
+        "after": 14,
+        "gained": [],
+        "lost": []
+      },
+      {
+        "id": "A-specified",
+        "reportName": "条件スタンダード",
+        "before": 13,
+        "after": 13,
+        "gained": [],
+        "lost": []
+      },
+      {
+        "id": "B-specified",
+        "reportName": "条件プライマリ",
+        "before": 26,
+        "after": 26,
+        "gained": [],
+        "lost": []
+      },
+      {
+        "id": "A-median-specified",
+        "reportName": "条件スタンダード（中央値）",
+        "before": 8,
+        "after": 8,
+        "gained": [],
+        "lost": []
+      },
+      {
+        "id": "B-median-specified",
+        "reportName": "条件プライマリ（中央値）",
+        "before": 18,
+        "after": 18,
+        "gained": [],
+        "lost": []
+      }
+    ]
+  },
+  "queueRouting": {
+    "readyBefore": 244,
+    "readyAfter": 17,
+    "unsupportedDeferred": 227,
+    "normalBulkRetained": true
+  },
+  "performance": {
+    "generatedAt": "2026-10-23T01:20:09.035Z",
+    "environment": "Node.js same production calculation/index; not browser paint or gzip transfer",
+    "fixedQuery": "M2 110/080",
+    "repeats": 3,
+    "settings": "production audit defaults / 119 days",
+    "initialBytes": 19448802,
+    "doubleInitialBytes": 36053768,
+    "jsonParseMs": 76.33249999999998,
+    "doubleJsonParseMs": 167.663,
+    "searchMs": 0.5760000000000218,
+    "doubleSearchMs": 1.3598000000001775,
+    "fullCalculationMs": 4247.5288,
+    "cacheMs": 0.06190000000060536,
+    "doubleCalculationMs": 8203.645700000001,
+    "detailSummary25Ms": 0.35300000000279397,
+    "samples": {
+      "fullCalculationMs": [
+        4620.7619,
+        4107.248600000001,
+        4247.5288
+      ],
+      "cacheMs": [
+        0.13279999999940628,
+        0.06190000000060536,
+        0.05909999999857973
+      ],
+      "doubleCalculationMs": [
+        8203.645700000001,
+        8574.575400000002,
+        8166.661
+      ],
+      "detailSummary25Ms": [
+        1.3551000000006752,
+        0.35300000000279397,
+        0.28179999999701977
+      ]
+    },
+    "cardCount": 12545,
+    "calculationValuesEqual": true,
+    "comparisonKey": "node-production-v2/win32/x64/node24/AMD Ryzen 7 5700X 8-Core Processor             /16/119days/M2-110-080",
+    "hardware": {
+      "cpu": "AMD Ryzen 7 5700X 8-Core Processor             ",
+      "logicalCores": 16,
+      "node": "24.19.0"
+    },
+    "codeFingerprint": "2969d6165ef3be39df6746b358333677421a9df6964b737445be1091c46c842d",
+    "dataFingerprint": "4b8ab04b47c8d06e2887ab7347b03389aa1f6474738a06063c35bdd553c332ad",
+    "measurementScope": {
+      "initial": "JSON本文サイズ・解析（通信/ブラウザpaintは未計測）",
+      "search": "軽量インデックス固定検索",
+      "calculation": "本番計算・値一致",
+      "detail": "25件の率表示文字列。実DOM展開/描画は別の実画面試験で確認"
+    },
+    "limits": {
+      "initialBytes": 24000000,
+      "doubleInitialBytes": 48000000,
+      "jsonParseMs": 2500,
+      "doubleJsonParseMs": 5000,
+      "searchMs": 500,
+      "doubleSearchMs": 1000,
+      "fullCalculationMs": 15000,
+      "doubleCalculationMs": 30000,
+      "cacheMs": 100,
+      "detailSummary25Ms": 100
+    },
+    "errors": [],
+    "status": "pass",
+    "llmCalls": 0,
+    "codexCalls": 0,
+    "comparison": {
+      "status": "stable",
+      "previousAt": "2026-10-22T20:58:40.456Z",
+      "previousCards": 12545,
+      "currentCards": 12545,
+      "dataChanged": true,
+      "codeChanged": false,
+      "attribution": "データ変更（件数・内容・実行環境の雑音も含む）",
+      "threshold": "中央値が前回比30%超かつ絶対雑音幅超。固定予算/値不一致とは別の性能警告",
+      "warnings": [],
+      "rows": [
+        {
+          "metric": "initialBytes",
+          "before": 19379682,
+          "after": 19448802,
+          "delta": 69120,
+          "changePct": 0.3566621991010998,
+          "warning": false
+        },
+        {
+          "metric": "jsonParseMs",
+          "before": 76.34709999999995,
+          "after": 76.33249999999998,
+          "delta": -0.014599999999973079,
+          "changePct": -0.019123188699993958,
+          "warning": false
+        },
+        {
+          "metric": "searchMs",
+          "before": 0.7119999999999891,
+          "after": 0.5760000000000218,
+          "delta": -0.13599999999996726,
+          "changePct": -19.101123595501313,
+          "warning": false
+        },
+        {
+          "metric": "fullCalculationMs",
+          "before": 4321.276900000001,
+          "after": 4247.5288,
+          "delta": -73.7481000000007,
+          "changePct": -1.706627501699803,
+          "warning": false
+        },
+        {
+          "metric": "cacheMs",
+          "before": 0.06720000000132131,
+          "after": 0.06190000000060536,
+          "delta": -0.005300000000715954,
+          "changePct": -7.886904762815094,
+          "warning": false
+        },
+        {
+          "metric": "detailSummary25Ms",
+          "before": 0.348599999997532,
+          "after": 0.35300000000279397,
+          "delta": 0.0044000000052619725,
+          "changePct": 1.2621916251558012,
+          "warning": false
+        },
+        {
+          "metric": "doubleInitialBytes",
+          "before": 35895946,
+          "after": 36053768,
+          "delta": 157822,
+          "changePct": 0.43966524799207135,
+          "warning": false
+        },
+        {
+          "metric": "doubleJsonParseMs",
+          "before": 167.88340000000017,
+          "after": 167.663,
+          "delta": -0.22040000000015425,
+          "changePct": -0.13128159186682783,
+          "warning": false
+        },
+        {
+          "metric": "doubleSearchMs",
+          "before": 1.217200000000048,
+          "after": 1.3598000000001775,
+          "delta": 0.1426000000001295,
+          "changePct": 11.7154124219622,
+          "warning": false
+        },
+        {
+          "metric": "doubleCalculationMs",
+          "before": 8187.442299999995,
+          "after": 8203.645700000001,
+          "delta": 16.203400000005786,
+          "changePct": 0.1979055168426139,
+          "warning": false
+        }
+      ],
+      "normalized": [
+        {
+          "metric": "initialBytes",
+          "before": 1544.8132323634914,
+          "after": 1550.322997210044
+        },
+        {
+          "metric": "jsonParseMs",
+          "before": 0.006085858907931443,
+          "after": 0.006084695097648464
+        },
+        {
+          "metric": "fullCalculationMs",
+          "before": 0.34446208848146675,
+          "after": 0.3385834037465126
+        }
+      ]
+    }
+  }
 }

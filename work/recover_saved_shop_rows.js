@@ -10,7 +10,12 @@ function mergeRows(current,saved,cards,source,now=Date.now()) {
     if(at<=newest)continue;
     const title=incoming.title||incoming.name||'';
     const reference=incoming.referenceOnly===true&&incoming.rawCondition==='sealed-single';
+    let sourceUrl=false;
+    try{const url=new URL(incoming.detailUrl);sourceUrl=url.protocol==='https:'
+      &&url.hostname===({hareruya2:'www.hareruya2.com',torecacamp:'torecacamp-pokemon.com'}[source])
+      &&url.pathname.startsWith('/products/');}catch{}
     const verified=card&&incoming.identityVerified===true&&!incoming.cardMismatchSuspected&&!incoming.priceQuarantined
+      && sourceUrl&&!rows.some(r=>r.detailUrl===incoming.detailUrl&&r.cardId!==incoming.cardId)
       && Number.isFinite(at)&&at<=now&&incoming.price>0
       &&!identity.reason(card,title)
       &&(reference?require('./raw_condition_reference').sameIssue(card,title):
