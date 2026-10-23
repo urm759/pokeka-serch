@@ -47,7 +47,7 @@ function load(appSource, at, options = {}) {
   const dataFs={...fs,existsSync:file=>{const value=historical(file);return value===null?fs.existsSync(file):value!==false;},
     readFileSync:(file,encoding)=>{const value=historical(file);if(value===false)throw Error(`Historical input missing: ${file}`);return value===null?fs.readFileSync(file,encoding):encoding?value.toString(encoding):value;}};
   const modelCache=new Map();
-  const clockModels=new Set(['decision-model.js','current-market-model.js','market-analysis.js','exploration-metrics.js','price-integrity.js','limit-display-model.js']);
+  const clockModels=new Set(['decision-model.js','current-market-model.js','market-analysis.js','exploration-metrics.js','price-integrity.js','limit-display-model.js','snkr-raw-flip-model.js']);
   const auditRequire=name=>{
     if(['fs','node:fs'].includes(name))return dataFs;
     if(options.explorationMetrics && /exploration-metrics/.test(name))return options.explorationMetrics;

@@ -142,6 +142,33 @@ function auditIsOpen(element) {
   }
   return Boolean(element);
 }
+function renderPsa9RatioCoverage(cards) {
+  if (!auditIsOpen(els.psa9RatioCoverage)) return;
+  searchMemoFor(cards);
+  let counts = searchMemoCache.audits.get('psa9-ratio-coverage');
+  if (!counts) {
+    counts = {total:0,eligible:0,"data-missing":0,"reference-disabled":0,"circular-estimate":0};
+    const normalizedQuery = normalize(state.q), compactQuery = compactSearch(state.q);
+    const options = psa9RatioOptions();
+    for (const card of cards) {
+      if (!releaseYearFilter.matches(card,card.catalogCompletion,state.year2020Only,state.includeUnknownYear)) continue;
+      if (normalizedQuery && !normalize(`${card.name} ${card.model} ${card.id}`).includes(normalizedQuery) && !compactSearch(`${card.name} ${card.model} ${card.id}`).includes(compactQuery) && !searchIndexModel?.matchesCard(card,state.q)) continue;
+      counts.total++;
+      counts[purchaseRatioModel.eligibility(purchasePsa9Ratio(card),options)]++;
+    }
+    searchMemoCache.audits.set('psa9-ratio-coverage',counts);
+  }
+  els.psa9RatioCoverage.textContent = `読込済み・名称/年条件内 ${fmt.format(counts.total)}枚：比率検索対象 ${fmt.format(counts.eligible)}枚／データ不足・対立・古値 ${fmt.format(counts["data-missing"])}枚／参考値OFF ${fmt.format(counts["reference-disabled"])}枚／素体由来推定 ${fmt.format(counts["circular-estimate"])}枚。上下限やその他の仕入れ条件による除外は別です。`;
+}
+function bindPsa9RatioCoverage() {
+  // An outer disclosure can hide an already-open inner one.
+  for (let parent=els.psa9RatioCoverage?.parentElement;parent;parent=parent.parentElement) {
+    if (parent.tagName !== 'DETAILS') continue;
+    parent.addEventListener('toggle',()=>{
+      if (auditIsOpen(els.psa9RatioCoverage)) renderPsa9RatioCoverage(calculatedCardsForSearch(state.cards));
+    });
+  }
+}
 
 const state = {
   cards: [],
@@ -5475,16 +5502,7 @@ function renderContent() {
   if (auditIsOpen(els.shopRateSummary)) renderShopRateSummary(calculated);
   if (auditIsOpen(els.marketBacktestSummary)) renderMarketBacktest();
   renderPresetAudit(calculated);
-  if (els.psa9RatioCoverage) {
-    const counts = {total:0,eligible:0,"data-missing":0,"reference-disabled":0,"circular-estimate":0};
-    for (const card of calculated) {
-      if (!releaseYearFilter.matches(card,card.catalogCompletion,state.year2020Only,state.includeUnknownYear)) continue;
-      if (normalizedQuery && !normalize(`${card.name} ${card.model} ${card.id}`).includes(normalizedQuery) && !compactSearch(`${card.name} ${card.model} ${card.id}`).includes(compactQuery) && !searchIndexModel?.matchesCard(card,state.q)) continue;
-      counts.total++;
-      counts[purchaseRatioModel.eligibility(purchasePsa9Ratio(card),psa9RatioOptions())]++;
-    }
-    els.psa9RatioCoverage.textContent = `読込済み・名称/年条件内 ${fmt.format(counts.total)}枚：比率検索対象 ${fmt.format(counts.eligible)}枚／データ不足・対立・古値 ${fmt.format(counts["data-missing"])}枚／参考値OFF ${fmt.format(counts["reference-disabled"])}枚／素体由来推定 ${fmt.format(counts["circular-estimate"])}枚。上下限やその他の仕入れ条件による除外は別です。`;
-  }
+  renderPsa9RatioCoverage(calculated);
   const enriched = calculated
     .filter((card) => cardSearchExclusions(card).length === 0)
     .sort((left, right) => {
@@ -6877,6 +6895,7 @@ document.getElementById("benchmarkSearchButton")?.addEventListener("click",async
   } finally { state.openCardDetails=originalDetails;render();event.target.disabled=false; }
 });
 document.getElementById("currentMarketSearchKindInput")?.addEventListener("change",syncFromUI);
+bindPsa9RatioCoverage();
 for (const element of [els.limitModelAudit,els.shopRateSummary,els.marketBacktestSummary,els.catalogCompletionDetails,els.dataFreshness,els.guidePanels]) {
   element?.closest("details")?.addEventListener("toggle",async event=>{
     if (!event.target.open || !auditIsOpen(element)) return;
