@@ -1,0 +1,29 @@
+name: GemRate Public Route Compatibility Probe
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: gemrate-public-compatibility-probe
+  cancel-in-progress: false
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - name: Validate stop rules
+        run: node work/test_gemrate_public_probe.js
+      - name: Classify one normal public-page request (not a collection success)
+        env:
+          PROBE_METRICS_FILE: gemrate-probe-metrics.json
+        run: node work/probe_gemrate_public.js
+      - name: Retain metrics only (no raw HTML, CSV, or POP)
+        uses: actions/upload-artifact@v7
+        with:
+          name: gemrate-public-route-metrics
+          path: gemrate-probe-metrics.json
+          retention-days: 7
