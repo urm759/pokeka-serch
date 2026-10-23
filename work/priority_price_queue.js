@@ -167,12 +167,8 @@ function write(root = ROOT) {
   sources.toreca = bulkSource("toreca", priorityCards.map((card) => ({ card,
     at: present.has(card.id) && Number(card.price) > 0 ? confirmedCardPriceAt(card, inventoryAt, now) : null, detail: "個別の実価格確認日時を優先。個別日時のない旧形式だけ取得一覧・件数と成功記録を照合。実成約日時・状態A実売証明ではない" })));
   sources.shopBuyback = bulkSource("shopBuyback", priorityCards.map((card) => {
-    const rows = Object.entries(buys.cards?.[card.id]?.shops || {}).map(([shopId, price]) => {
-      const shop = buys.shops?.[shopId];
-      const observedDay = shop?.lastSuccess ? new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Tokyo" }).format(new Date(shop.lastSuccess)) : null;
-      return price.price > 0 && price.listingActive && !price.quarantined && price.priceDate === observedDay ? shop.lastSuccess : null;
-    }).filter(Boolean).sort();
-    return { card, at: rows.at(-1) || null, detail: "正常な掲載価格の店舗別実取得日時。古い保存価格を最新扱いしない" };
+    const rows = Object.values(buys.cards?.[card.id]?.shops || {}).map(price => confirmedBuybackAt(price, now)).filter(Boolean).sort();
+    return { card, at: rows.at(-1) || null, detail: "正常な掲載価格のカード別実取得日時。店舗全体の更新で古い保存価格を最新扱いしない" };
   }));
   const output = { version: 1, generatedAt: new Date(now).toISOString(), runClass: "購入価格高速更新（探索キューとは別）", llmCalls: 0, codexCalls: 0,
     executionContext:{event:process.env.GITHUB_EVENT_NAME || 'manual-local',runId:process.env.GITHUB_RUN_ID || null,
@@ -208,6 +204,12 @@ function confirmedCardPriceAt(card, legacyInventoryAt, now = Date.now()) {
   const at = observationTime(value);
   return Number.isFinite(at) && at <= now ? value : null;
 }
+function confirmedBuybackAt(price, now = Date.now()) {
+  const at = Date.parse(price?.observedAt);
+  if (!(price?.price > 0) || !price.listingActive || price.quarantined || !Number.isFinite(at) || at > now) return null;
+  const day = new Intl.DateTimeFormat('sv-SE', {timeZone:'Asia/Tokyo'}).format(new Date(at));
+  return price.priceDate === day ? price.observedAt : null;
+}
 function timingConfig(root = ROOT) {
   const config = read(root, "data/priority-price-config.json");
   const execution = read(root, "data/priority-price-execution.json");
@@ -216,4 +218,4 @@ function timingConfig(root = ROOT) {
     ...(Date.now()-Date.parse(cadence.checkedAt)<48*3600000 && cadence.observedSuccessfulIntervalMs>0 ? {observedSuccessfulIntervalMs:cadence.observedSuccessfulIntervalMs} : {}),
     ...(Number.isFinite(execution.startDelayMs) ? {observedStartDelayMs:Math.max(30*60000,execution.startDelayMs)} : {})};
 }
-module.exports = { plan, finish, load, write, confirmedInventoryAt, confirmedCardPriceAt, timingConfig };
+module.exports = { plan, finish, load, write, confirmedInventoryAt, confirmedCardPriceAt, confirmedBuybackAt, timingConfig };
