@@ -2,82 +2,6 @@
   "version": 1,
   "runs": [
     {
-      "startedAt": "2026-10-11T22:10:11.890Z",
-      "runId": null,
-      "event": "local",
-      "route": "通常価格更新",
-      "status": "acquired-saved",
-      "allowed": true,
-      "ageMs": 11716670,
-      "minimumIntervalMs": 7200000,
-      "reason": "定期の空白・既存の期限順キューで補完",
-      "llmCalls": 0,
-      "codexCalls": 0,
-      "sourceFailures": [],
-      "acquisitionStatus": "process-success",
-      "endedAt": "2026-10-11T22:13:09.851Z",
-      "durationMs": 177961,
-      "outcomes": {
-        "baselineAt": "2026-10-11T20:58:01.827Z",
-        "commonCards": 12499,
-        "addedCards": 7,
-        "removedCards": 0,
-        "newlyAnalyzable": 10,
-        "lostAnalyzable": 5,
-        "filledCards": 47,
-        "filledItems": 54,
-        "sources": {
-          "cardrush": {
-            "newLinked": 1,
-            "validAdded": 1,
-            "validLost": 1,
-            "usableNet": 0,
-            "freshnessRecovered": 0
-          },
-          "hareruya2": {
-            "newLinked": 0,
-            "validAdded": 0,
-            "validLost": 0,
-            "usableNet": 0,
-            "freshnessRecovered": 7
-          },
-          "yuyutei": {
-            "newLinked": 0,
-            "validAdded": 0,
-            "validLost": 0,
-            "usableNet": 0,
-            "freshnessRecovered": 0
-          },
-          "torecacamp": {
-            "newLinked": 0,
-            "validAdded": 0,
-            "validLost": 0,
-            "usableNet": 0,
-            "freshnessRecovered": 0
-          },
-          "psaOfficial": {
-            "newLinked": 0,
-            "validAdded": 0,
-            "validLost": 0,
-            "usableNet": 0,
-            "freshnessRecovered": 30
-          },
-          "pokedata": {
-            "newLinked": 0,
-            "validAdded": 0,
-            "validLost": 0,
-            "usableNet": 0,
-            "freshnessRecovered": 0
-          }
-        },
-        "baselineKind": "取得前mainの固定ID・固定項目。新增追跡項目は成果に数えない",
-        "psa9ConfirmedPrices": 2948,
-        "domesticPsa9IndividualTrades": 0
-      },
-      "publicationStatus": "保存済み・公開照合待ち",
-      "outcomeCorrection": "追加追跡項目による見かけの補完を除外・履歴ビット配置を保持"
-    },
-    {
       "startedAt": "2026-10-12T00:55:53.165Z",
       "runId": null,
       "event": "local",
@@ -4481,6 +4405,78 @@
             "validLost": 0,
             "usableNet": 0,
             "freshnessRecovered": 57
+          },
+          "yuyutei": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          },
+          "torecacamp": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          },
+          "psaOfficial": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          },
+          "pokedata": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          }
+        }
+      },
+      "publicationStatus": "保存済み・公開照合待ち"
+    },
+    {
+      "startedAt": "2026-10-23T23:14:10.528Z",
+      "runId": "40038354717",
+      "event": "schedule",
+      "route": "通常価格更新",
+      "status": "acquired-saved",
+      "allowed": true,
+      "ageMs": 9542566,
+      "minimumIntervalMs": 7200000,
+      "reason": "定期の空白・既存の期限順キューで補完",
+      "llmCalls": 0,
+      "codexCalls": 0,
+      "sourceFailures": [],
+      "acquisitionStatus": "process-success",
+      "endedAt": "2026-10-23T23:24:43.926Z",
+      "durationMs": 633398,
+      "outcomes": {
+        "baselineAt": "2026-10-23T23:14:10.528Z",
+        "commonCards": 12545,
+        "addedCards": 0,
+        "removedCards": 0,
+        "newlyAnalyzable": 0,
+        "lostAnalyzable": 1,
+        "filledCards": 3,
+        "filledItems": 3,
+        "sources": {
+          "cardrush": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          },
+          "hareruya2": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 42
           },
           "yuyutei": {
             "newLinked": 0,
