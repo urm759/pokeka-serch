@@ -39,6 +39,19 @@ function run(store=STORE) {
     if(fs.existsSync(f)){const old=JSON.parse(fs.readFileSync(f));result.newObservationsThisRun=old.outputs?.every((r,i)=>r.path===outputs[i]?.path)?0:result.acceptedObservations-old.acceptedObservations;}
     else result.newObservationsThisRun=result.acceptedObservations-previous.acceptedPrivateObservations;
     fs.writeFileSync(f+'.tmp',JSON.stringify(result,null,2));fs.renameSync(f+'.tmp',f);
+    const planFile=path.join(store,'remaining-specification-plan.json');
+    if(fs.existsSync(planFile)){
+      const priorBytes=fs.readFileSync(planFile),plan=JSON.parse(priorBytes),oldRows=new Map((plan.rows||[]).map(r=>[r.key,r]));
+      const review=JSON.parse(fs.readFileSync(outputs[0].path)).identityReview;
+      const rows=review.map(r=>({...oldRows.get(r.key),...r}));
+      if(rows.length!==result.remainingSpecifications)throw Error('Remaining specification plan mismatch');
+      if(JSON.stringify(rows)!==JSON.stringify(plan.rows)||plan.acceptedPrivateCards!==result.acceptedCards){
+        const backup=path.join(store,'backups','remaining-plan.'+hash(priorBytes)+'.json.gz');
+        if(!fs.existsSync(backup))fs.writeFileSync(backup,zlib.gzipSync(priorBytes,{level:9}));
+        require('./acquisition_retry').atomicWrite(planFile,{...plan,at:result.at,rows,
+          acceptedPrivateCards:result.acceptedCards,remainingSpecifications:rows.length,previousPlan:backup,httpRequests:0,publicRecords:0},2);
+      }
+    }
     console.log(JSON.stringify({...result,outputs:outputs.map(({path,...r})=>r)}));return result;
   } finally {release();}
 }

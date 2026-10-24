@@ -1,0 +1,17 @@
+const assert=require('node:assert/strict'),s=require('./scheduled_cycle_evidence');
+const file=s.OBSERVATION_FILE,text='{"at":"2026-10-24T00:00:00Z","fresh":100}';
+const run={id:1,event:'schedule',conclusion:'success',created_at:'2026-10-24T00:00:00Z'};
+const jobs={jobs:[{steps:['Continue bounded source checkpoints','Check publication safety','Commit safe progress'].map(name=>({name,conclusion:'success'}))}]};
+const pages={id:2,conclusion:'success',created_at:'2026-10-24T00:02:00Z'};
+const receipt={runId:'1',hashes:{[file]:s.hash(text),'data/price.json':s.hash('{"price":5}')},publishedObservations:{[file]:s.packObservation(text)}};
+const current={[file]:'{"at":"later","fresh":10}','data/price.json':'{"price":5}'};
+assert(s.verify(run,jobs,receipt,current,pages).confirmed,'exact historical observation survives time-forward monitoring');
+assert(s.verify(run,jobs,receipt,current,pages).hashes[0].historicalObservation);
+assert(!s.verify(run,jobs,receipt,{...current,'data/price.json':'{"price":6}'},pages).confirmed,'financial/source mismatch still stops verification');
+assert.equal(s.observationText({...receipt,publishedObservations:{'data/price.json':s.packObservation('{"price":5}')}},'data/price.json'),null);
+assert(!s.verify(run,jobs,{...receipt,publishedObservations:{}},current,pages).confirmed);
+assert(!s.verify(run,jobs,{...receipt,publishedObservations:{[file]:s.packObservation('{"fresh":1}')}},current,pages).confirmed);
+assert(!s.verify(run,jobs,{...receipt,publishedObservations:{[file]:{...receipt.publishedObservations[file],body:'not-gzip'}}},current,pages).confirmed);
+assert(!s.verify(run,jobs,{...receipt,runId:'2'},current,pages).confirmed);
+assert(!s.verify(run,{jobs:[]},receipt,current,pages).confirmed);
+console.log('PASS exact published observation snapshots; mutable clock, corrupt/missing bytes and mandatory source validation remain distinct');

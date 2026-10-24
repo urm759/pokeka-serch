@@ -7,6 +7,12 @@ const ENERGY_EVIDENCE=[
 ];
 function equivalentName(card,english,source){
   if(normalized(english)===normalized(source))return true;
+  const p=printed(card.name);
+  const scoped=require('./psa-name-aliases.json').sourceNames?.find(a=>a.evidence?.length>=2
+    &&normalized(a.set)===p?.set&&a.numbers.includes(String(p?.number))&&a.denominator===p?.denominator
+    &&String(card.name).normalize('NFKC').startsWith(a.japanese+' ')
+    &&normalized(english)===normalized(a.to)&&normalized(source)===normalized(a.from));
+  if(scoped)return true;
   // Name synonym only; set, number, rarity and parallel must still match.
   return /^基本悪エネルギー(?:\s|$)/.test(card.name)
     && normalized(english)==='basicdarknessenergy'&&normalized(source)==='darknessenergy';

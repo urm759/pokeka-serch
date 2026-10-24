@@ -25,6 +25,10 @@ assert.notEqual(b.resolvedEnglishName({name:'フシギバナ SR[SV2a 185/165]'},
 assert.notEqual(b.resolvedEnglishName({name:'フシギバナ SR[SV2a 184/165]【英語版】'},'Venusaur',new Map()).name,'Venusaur EX');
 assert(b.namesCompatible("Zinnia's Determination SR [S7R 079/067]", {name:"Full Art/Zinnia's Resolve |"}));
 assert(b.namesCompatible('Miss Fortunes HR [S10a 096/071]', {name:'Full Art/Miss Fortune Sisters | Hyper Rare |'}));
+assert(b.namesCompatible("N's Plan SAR",{name:"N's Plot | Special Art Rare |",set:'SV11B',no:'173'}));
+assert(!b.namesCompatible("N's Plan SAR",{name:"N's Plot | Special Art Rare |",set:'SV11B',no:'166'}));
+assert(!b.namesCompatible("N's Plan SAR",{name:"N's Plot | Special Art Rare |",set:'SV11W',no:'173'}));
+assert(b.namesCompatible('Boost Shake UR',{name:'Full Art/Vigor Shake | Ultra Rare |',set:'S6A',no:'99'}));
 assert(!b.namesCompatible("Misty's Determination", {name:"Misty's Vitality | Super Rare |"}), 'different trainer cards are not synonyms');
 assert(!b.variantsCompatible('野盗三姉妹 HR[S10a 096/071]', 'Miss Fortunes', {name:'Miss Fortune Sisters | Missing Texture |'}));
 assert.equal(b.namesCompatible('Friends of Paldea SR [SV8a 195/187]', {name:'Friends in Paldea | Super Rare |'}),true);

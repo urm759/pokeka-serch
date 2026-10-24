@@ -40,6 +40,7 @@ jobs:
           node work/test_minimum_recovery_sources.js
           node work/test_recovery_latency.js
           node work/test_scheduled_cycle_evidence.js
+          node work/test_cycle_observation_snapshot.js
           node work/test_postpass_cadence.js
           node work/test_bulk_individual_freshness.js
           node work/test_partial_buyback_refresh.js
@@ -127,6 +128,7 @@ jobs:
         run: |
           node work/test_update_health.js
           node work/test_monitor_isolation.js
+          node work/test_cycle_observation_snapshot.js
       - name: Check workflow results and saved checkpoint holds
         id: observation
         env:

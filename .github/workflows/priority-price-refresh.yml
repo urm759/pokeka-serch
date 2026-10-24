@@ -59,6 +59,7 @@ jobs:
           node work/test_performance_guard.js
           node work/test_performance_comparison.js
           node work/test_scheduled_cycle_evidence.js
+          node work/test_cycle_observation_snapshot.js
           node --check app.js
           node work/test_priority_refresh.js
           node work/test_keyed_render_and_completion.js

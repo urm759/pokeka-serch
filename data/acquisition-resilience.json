@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-24T19:29:03.548Z",
+  "generatedAt": "2026-10-24T20:20:15.093Z",
   "llmCalls": 0,
   "codexCalls": 0,
   "retryPolicy": {
@@ -27,7 +27,7 @@
     {
       "source": "psaOfficial",
       "label": "PSA公式・PC正規認証",
-      "remaining": 1202,
+      "remaining": 1200,
       "queueDefinition": "あとPSAだけで分析可能な国内カード。全PSA未取得とは別",
       "sourceState": "permission-wait",
       "failureScope": "source",
@@ -167,16 +167,16 @@
       "firstPassObservationDays": 0,
       "firstPassProgressField": "publicNewRecords",
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
-      "usableNet": 0,
+      "usableNet": 3,
       "observationPeriod": {
-        "from": "2026-10-24T19:26:45.426Z",
-        "to": "2026-10-24T19:29:00.915Z"
+        "from": "2026-10-24T19:29:00.915Z",
+        "to": "2026-10-24T20:20:09.323Z"
       },
       "sinceBaseline": {
         "newLinked": 3988,
         "validAdded": 3988,
-        "validLost": 234,
-        "usableNet": 3754,
+        "validLost": 231,
+        "usableNet": 3757,
         "freshnessRecovered": 0
       },
       "freshness": null
@@ -316,8 +316,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-24T19:26:45.426Z",
-        "to": "2026-10-24T19:29:00.915Z"
+        "from": "2026-10-24T19:29:00.915Z",
+        "to": "2026-10-24T20:20:09.323Z"
       },
       "sinceBaseline": {
         "newLinked": 757,
@@ -357,8 +357,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-24T19:26:45.426Z",
-        "to": "2026-10-24T19:29:00.915Z"
+        "from": "2026-10-24T19:29:00.915Z",
+        "to": "2026-10-24T20:20:09.323Z"
       },
       "sinceBaseline": {
         "newLinked": 0,
@@ -371,10 +371,10 @@
     }
   ],
   "psaOnly": {
-    "count": 1202,
+    "count": 1200,
     "causes": {
       "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持": 1067,
-      "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）": 135
+      "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）": 133
     },
     "cards": [
       {
@@ -688,12 +688,6 @@
         "setCode": "XY2",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
-        "id": "pk-67342",
-        "setCode": "SV11B",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
-        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
         "id": "x-92158",
@@ -1587,12 +1581,6 @@
         "id": "pk-4373",
         "setCode": "SM10B",
         "url": "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-sun-moon-sky-legend/166859",
-        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
-      },
-      {
-        "id": "pk-67334",
-        "setCode": "SV11B",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-sv11b-black-bolt/305725",
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
@@ -7593,10 +7581,10 @@
   },
   "progress": {
     "listed": 12545,
-    "analyzable": 2293,
-    "pending": 10252,
-    "oneAway": 1685
+    "analyzable": 2295,
+    "pending": 10250,
+    "oneAway": 1683
   },
-  "newlyAnalyzable": 0,
+  "newlyAnalyzable": 2,
   "note": "一時障害の再試行、個別URL隔離、取得元停止を区別。未取得をデータ不存在に変更しない。巡回完了と全項目取得・最新価格は別"
 }

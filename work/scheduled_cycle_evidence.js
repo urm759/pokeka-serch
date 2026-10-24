@@ -1,13 +1,34 @@
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const ROOT=path.join(__dirname,'..');
 const hash=text=>crypto.createHash('sha256').update(text.replace(/\r\n/g,'\n')).digest('hex');
+const OBSERVATION_FILE='data/priority-price-monitor.json';
+function packObservation(text,recovery=null){
+  return {encoding:'gzip-base64',sha256:hash(text),body:require('node:zlib').gzipSync(Buffer.from(text),{level:9}).toString('base64'),
+    ...(recovery?{recovery}:{}),meaning:'当該実行時の観測原票。現在の鮮度ではない'};
+}
+function observationText(receipt,file){
+  // Only the time-forward observation can use its exact published historical copy.
+  // Acquisition inputs, calculations and all other mandatory hashes stay strict.
+  if(file!==OBSERVATION_FILE)return null;
+  const row=receipt?.publishedObservations?.[file];
+  if(!row||row.encoding!=='gzip-base64'||typeof row.body!=='string'||row.body.length>2*1024*1024)return null;
+  try{const text=require('node:zlib').gunzipSync(Buffer.from(row.body,'base64'),{maxOutputLength:4*1024*1024}).toString('utf8');
+    return hash(text)===row.sha256&&row.sha256===receipt.hashes?.[file]?text:null;
+  }catch{return null;}
+}
 function verify(run, jobs, receipt, publicTexts, pages) {
   const steps=(jobs.jobs||[]).flatMap(j=>j.steps||[]);
   const stages={acquisition:steps.some(s=>/Refresh due purchase prices|Fill missed price intervals|Run deterministic delta update|Continue bounded source|Continue public PokeDATA/.test(s.name)&&s.conclusion==='success'),
     validation:steps.some(s=>/Verify safety|Validate catchup data|Check publication safety|Verify shared purchase|Regression|regression/.test(s.name)&&s.conclusion==='success'),
     savePublish:steps.some(s=>/Publish validated data|Publish changed health state|Commit safe progress|Commit discovery|Commit changed/.test(s.name)&&s.conclusion==='success')};
   const matched=receipt && String(receipt.runId)===String(run.id);
-  const hashes=matched?Object.entries(receipt.hashes).map(([file,expected])=>({file,matched:typeof publicTexts[file]==='string'&&hash(publicTexts[file])===expected})):[];
+  const hashes=matched?Object.entries(receipt.hashes).map(([file,expected])=>{
+    const currentMatched=typeof publicTexts[file]==='string'&&hash(publicTexts[file])===expected;
+    const saved=!currentMatched&&observationText(receipt,file);
+    return {file,matched:currentMatched||saved!==null&&saved!==false,currentMatched,
+      ...(saved?{evidence:'同じ公開受領証内の当該実行時観測・元ハッシュ完全一致',historicalObservation:true,
+        recovery:receipt.publishedObservations[file].recovery||null}:{})};
+  }):[];
   const pagesAfter=pages?.conclusion==='success' && Date.parse(pages.created_at)>=Date.parse(run.run_started_at||run.created_at);
   const reportName='Report independent acquisition failures without hiding them';
   const safePartial=receipt?.sourceIsolation && String(receipt.sourceIsolation.runId)===String(run.id)
@@ -74,6 +95,8 @@ function record(key,root=ROOT) {
       return {runId:execution.runId,status:failures.length?'partial-with-failure':'process-success',sources:failures.map(r=>({source:r.script,status:'failed'}))};
     })(),
     cardObservations,
+    publishedObservations:fs.existsSync(path.join(root,OBSERVATION_FILE))
+      ?{[OBSERVATION_FILE]:packObservation(fs.readFileSync(path.join(root,OBSERVATION_FILE),'utf8'))}:{},
     hashes:Object.fromEntries(files.map(f=>[f,hash(fs.readFileSync(path.join(root,f),'utf8'))])),
     outcomes:{counts:completion.counts,runDelta:delta,deltaStatus:delta?'同じ実行の取得前スナップショットから比較':'取得前記録不足・増分を推定しない',
       popComparison:(()=>{const c=optional('data/psa-pop-coverage.json');return c?{at:c.at,reasons:c.reasons,periods:c.periods,fresh:c.fresh,stale:c.stale,comparable:c.comparable}:null;})(),
@@ -87,4 +110,4 @@ function record(key,root=ROOT) {
   console.log(JSON.stringify({recorded:key,runId:process.env.GITHUB_RUN_ID,counts:completion.counts}));
 }
 if(require.main===module){const key=process.argv[2]||'unknown';if(!/^[a-z]+$/.test(key))throw new Error('invalid pipeline');if(process.argv.includes('--baseline'))baseline(key);else record(key);}
-module.exports={hash,verify,record,baseline};
+module.exports={hash,verify,record,baseline,packObservation,observationText,OBSERVATION_FILE};

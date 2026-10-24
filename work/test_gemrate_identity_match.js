@@ -19,4 +19,11 @@ assert.equal(resolve([energyRow],context,[energy],energyEnglish,options).mapping
 for(const row of [{...energyRow,'Card #':'100'},{...energyRow,Parallel:'Missing Texture'},{...energyRow,Name:'Special Darkness Energy'}])
   assert.equal(resolve([row],context,[energy],energyEnglish,options).mappings.length,0);
 assert.equal(resolve([energyRow],context,[{...energy,name:'別カード UR[S6a 101/069]'}],energyEnglish,options).mappings.length,0);
+const shake={id:'shake',name:'ぐんぐんシェイク UR[S6a 099/069]',identityKey:'shake',language:'ja'};
+const shakeEnglish={shake:{englishName:'Boost Shake UR[S6a 099/069]'}};
+const shakeRow={'Card #':'099',Name:'Full Art/Vigor Shake',Parallel:'Ultra Rare'};
+assert.equal(resolve([shakeRow],context,[shake],shakeEnglish,options).mappings.length,1);
+for(const bad of [{...shake,name:'ぐんぐんシェイク UR[S6a 100/069]'},{...shake,name:'ぐんぐんシェイク UR[S6a 099/070]'},{...shake,name:'別カード UR[S6a 099/069]'}])
+  assert.equal(resolve([shakeRow],context,[bad],shakeEnglish,options).mappings.length,0);
+assert.equal(resolve([{...shakeRow,Parallel:'Missing Texture'}],context,[shake],shakeEnglish,options).mappings.length,0);
 console.log('PASS GemRate exact Japanese set/number/name/finish, SA vs SR, duplicate candidates, foreign and persistent discrepancy hold');

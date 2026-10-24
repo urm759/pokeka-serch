@@ -41,7 +41,7 @@ async function main() {
   const cycleFile=path.join(ROOT,'data/scheduled-cycle-verification.json');
   let cycles=fs.existsSync(cycleFile)?JSON.parse(fs.readFileSync(cycleFile,'utf8')):{version:1,pipelines:{}};
   try {
-    const receipts=await api('https://urm759.github.io/pokeka-serch/data/scheduled-cycle-receipts.json');
+    const receipts=await api('https://urm759.github.io/pokeka-serch/data/scheduled-cycle-receipts.json?observed='+Date.now());
     const deployments=await api(`${API}/actions/runs?per_page=30`);
     const pages=deployments.workflow_runs?.find(r=>r.name==='pages build and deployment'&&r.conclusion==='success');
     for(const [key,list] of Object.entries({daily:runs,safe:safeRuns,pokedata:pokeRuns,priority:priceRuns,catchup:catchupRuns})) {

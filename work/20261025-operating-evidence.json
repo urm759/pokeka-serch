@@ -1,0 +1,234 @@
+{
+  "at": "2026-10-24T20:16:10.696Z",
+  "note": "v4とv5の実定期原票/保存済み公開照合記録。超過区間数は候補離脱数ではない。未観測時刻はnull。PC手動取得を混ぜない。",
+  "rows": [
+    {
+      "ref": "c48b67c2",
+      "runId": "40089105670",
+      "version": "deadline-v3-reserved-maintenance",
+      "confirmedBySavedPublicProof": true,
+      "startedAt": "2026-10-24T11:15:32.499Z",
+      "endedAt": "2026-10-24T11:26:10.191Z",
+      "startDelayMinutes": 55.54165,
+      "verified": 161,
+      "fixed192": {
+        "verified": 81,
+        "over6h": {
+          "samples": 81,
+          "medianMinutes": 29.127766666666666,
+          "maxMinutes": 188.5242
+        },
+        "over48h": {
+          "samples": 0,
+          "medianMinutes": null,
+          "maxMinutes": null
+        },
+        "reconfirmationToPublication": {
+          "samples": 81,
+          "medianMinutes": 7.7211,
+          "maxMinutes": 10.539316666666666
+        }
+      },
+      "profile35": {
+        "verified": 16,
+        "over6h": {
+          "samples": 16,
+          "medianMinutes": 29.10835,
+          "maxMinutes": 965.54525
+        },
+        "over48h": {
+          "samples": 0,
+          "medianMinutes": null,
+          "maxMinutes": null
+        },
+        "reconfirmationToPublication": {
+          "samples": 16,
+          "medianMinutes": 7.56105,
+          "maxMinutes": 10.539316666666666
+        }
+      },
+      "sourceAcquisitionMs": 346836
+    },
+    {
+      "ref": "7d2a6fc6",
+      "runId": "40109795176",
+      "version": "deadline-v5-required-source-earliest-time",
+      "confirmedBySavedPublicProof": true,
+      "startedAt": "2026-10-24T16:04:40.033Z",
+      "endedAt": "2026-10-24T16:17:24.662Z",
+      "startDelayMinutes": 104.66721666666666,
+      "verified": 163,
+      "fixed192": {
+        "verified": 102,
+        "over6h": {
+          "samples": 66,
+          "medianMinutes": 145.44608333333332,
+          "maxMinutes": 145.92626666666666
+        },
+        "over48h": {
+          "samples": 0,
+          "medianMinutes": null,
+          "maxMinutes": null
+        },
+        "reconfirmationToPublication": {
+          "samples": 102,
+          "medianMinutes": 9.593683333333333,
+          "maxMinutes": 12.534233333333333
+        }
+      },
+      "profile35": {
+        "verified": 15,
+        "over6h": {
+          "samples": 10,
+          "medianMinutes": 145.6458,
+          "maxMinutes": 653.72535
+        },
+        "over48h": {
+          "samples": 0,
+          "medianMinutes": null,
+          "maxMinutes": null
+        },
+        "reconfirmationToPublication": {
+          "samples": 15,
+          "medianMinutes": 10.254116666666667,
+          "maxMinutes": 12.39425
+        }
+      },
+      "sourceAcquisitionMs": 347493
+    },
+    {
+      "ref": "d8686a4c",
+      "runId": "40122543394",
+      "version": "deadline-v5-required-source-earliest-time",
+      "confirmedBySavedPublicProof": true,
+      "startedAt": "2026-10-24T18:51:16.545Z",
+      "endedAt": "2026-10-24T19:02:37.872Z",
+      "startDelayMinutes": 31.27575,
+      "verified": 166,
+      "fixed192": {
+        "verified": 104,
+        "over6h": {
+          "samples": 83,
+          "medianMinutes": 92.74626666666667,
+          "maxMinutes": 93.42836666666666
+        },
+        "over48h": {
+          "samples": 0,
+          "medianMinutes": null,
+          "maxMinutes": null
+        },
+        "reconfirmationToPublication": {
+          "samples": 104,
+          "medianMinutes": 8.824633333333333,
+          "maxMinutes": 11.643483333333334
+        }
+      },
+      "profile35": {
+        "verified": 17,
+        "over6h": {
+          "samples": 13,
+          "medianMinutes": 93.08616666666667,
+          "maxMinutes": 93.3466
+        },
+        "over48h": {
+          "samples": 0,
+          "medianMinutes": null,
+          "maxMinutes": null
+        },
+        "reconfirmationToPublication": {
+          "samples": 17,
+          "medianMinutes": 9.985333333333333,
+          "maxMinutes": 11.4245
+        }
+      },
+      "sourceAcquisitionMs": 347598
+    }
+  ],
+  "cycles": [
+    {
+      "key": "priority",
+      "runId": "40109795176",
+      "independent": {
+        "before": 30,
+        "after": 30,
+        "net": 0,
+        "gained": [],
+        "lost": [],
+        "note": "4条件の重複除外。条件間の移動は新しい独立候補ではない。適合変化と実取得の因果は別監査"
+      },
+      "departures": {
+        "uniqueDeparted": 0,
+        "overlappingRootCounts": {},
+        "unconfirmedCauseIds": [],
+        "note": "現在の妨げの重複件数は合算不可。比較記録不足なら当時の離脱原因は未確定。派生理由を独立した離脱枚数へ加算しない"
+      },
+      "first": [],
+      "requalified": [],
+      "freshness": []
+    },
+    {
+      "key": "priority",
+      "runId": "40122543394",
+      "independent": {
+        "before": 30,
+        "after": 30,
+        "net": 0,
+        "gained": [],
+        "lost": [],
+        "note": "4条件の重複除外。条件間の移動は新しい独立候補ではない。適合変化と実取得の因果は別監査"
+      },
+      "departures": {
+        "uniqueDeparted": 0,
+        "overlappingRootCounts": {},
+        "unconfirmedCauseIds": [],
+        "note": "現在の妨げの重複件数は合算不可。比較記録不足なら当時の離脱原因は未確定。派生理由を独立した離脱枚数へ加算しない"
+      },
+      "first": [],
+      "requalified": [],
+      "freshness": []
+    },
+    {
+      "key": "safe",
+      "runId": "40124244480",
+      "independent": {
+        "before": 30,
+        "after": 33,
+        "net": 3,
+        "gained": [
+          "x-122054",
+          "pk-43864",
+          "pk-41858",
+          "x-91119"
+        ],
+        "lost": [
+          "x-91252"
+        ],
+        "note": "4条件の重複除外。条件間の移動は新しい独立候補ではない。適合変化と実取得の因果は別監査"
+      },
+      "departures": {
+        "uniqueDeparted": 1,
+        "overlappingRootCounts": {
+          "price-conflict-or-evidence-hold": 1
+        },
+        "unconfirmedCauseIds": [],
+        "note": "現在の妨げの重複件数は合算不可。比較記録不足なら当時の離脱原因は未確定。派生理由を独立した離脱枚数へ加算しない"
+      },
+      "first": [
+        "pk-43864"
+      ],
+      "requalified": [
+        "pk-41858",
+        "pk-7040",
+        "x-122054",
+        "x-91119"
+      ],
+      "freshness": [
+        "pk-41858",
+        "pk-7040",
+        "x-122054",
+        "x-91119"
+      ]
+    }
+  ],
+  "llmCalls": 0
+}
