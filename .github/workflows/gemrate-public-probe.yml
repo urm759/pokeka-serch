@@ -16,7 +16,11 @@ jobs:
         with:
           node-version: '24'
       - name: Validate stop rules
-        run: node work/test_gemrate_public_probe.js
+        run: |
+          node work/test_gemrate_public_probe.js
+          node work/test_gemrate_identity_match.js
+          node work/test_gemrate_private_inbox.js
+          node work/test_gemrate_private_store.js
       - name: Classify one normal public-page request (not a collection success)
         env:
           PROBE_METRICS_FILE: gemrate-probe-metrics.json

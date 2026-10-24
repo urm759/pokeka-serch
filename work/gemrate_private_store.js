@@ -9,7 +9,7 @@ function outside(root, target) {
 function atomic(file,value) {
   const temp=file+'.'+process.pid+'.tmp';fs.writeFileSync(temp,JSON.stringify(value,null,2));fs.renameSync(temp,file);
 }
-function receive({store,files,publicRoot=ROOT,now=new Date().toISOString()}) {
+function receive({store,files,publicRoot=ROOT,now=new Date().toISOString(),previousObservations=[]}) {
   store=path.resolve(store);
   if(!outside(ROOT,store)||!outside(publicRoot,store))throw Error('Private storage must be outside the publication repository');
   fs.mkdirSync(store,{recursive:true});
@@ -42,8 +42,10 @@ function receive({store,files,publicRoot=ROOT,now=new Date().toISOString()}) {
       const compressed=path.join(store,'backups',sha+'.csv.gz');
       if(!fs.existsSync(compressed))fs.writeFileSync(compressed,zlib.gzipSync(bytes),{flag:'wx'});
       if(hash(zlib.gunzipSync(fs.readFileSync(compressed)))!==sha)throw Error('Backup verification failed; original retained');
+      const past=manifest.files.filter(r=>r.sha256!==sha&&r.kind==='list'&&fs.existsSync(r.parsedPath))
+        .flatMap(r=>JSON.parse(fs.readFileSync(r.parsedPath)).accepted);
       const parsed=file.kind==='trend'?importer.importTrendCsv(bytes.toString('utf8'),file.context,file.mappings)
-        :importer.importCsv(bytes.toString('utf8'),file.context,file.mappings);
+        :importer.importCsv(bytes.toString('utf8'),file.context,file.mappings,[...past,...previousObservations.filter(r=>r.csvSha256!==sha)]);
       const existing=manifest.files.find(r=>r.sha256===sha);
       const target=path.join(store,parsed.quarantined.length?'review':'processed',sha+'.csv');
       const parsedPath=path.join(store,'processed',sha+'.json');

@@ -5,6 +5,10 @@ const codec = require('../ui-data-codec.js');
 const ROOT = path.join(__dirname, '..');
 function project(name, input) {
   const value = structuredClone(input);
+  if (['hareruya2-stock-summary','cardrush-stock-summary'].includes(name)) {
+    delete value.stockStatistics;
+    for(const row of Object.values(value.cards||{}))delete row.stockStatistics;
+  }
   if (name === 'card-catalog-completion') {
     for (const row of Object.values(value.cards)) delete row.i;
     delete value.unlistedIds; delete value.duplicateIds;

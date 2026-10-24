@@ -255,6 +255,7 @@ async function main() {
     // A second per-card sleep would spend the same access budget twice.
   }
   run.status = run.status === "manual-wait" ? run.status : run.refreshedCount ? "partial" : run.stopReason ? "failed" : "no-progress";
+  require('./stock_history_statistics').apply(summary,history,{asOf:run.endedAt||new Date().toISOString()});
   save();
   const tracked = updateRun(sourceId, { ...run, lastAttemptAt: run.startedAt, acquiredCount: catalog.length, updatedCount: run.changedCount,
     fetchFailureCount: run.failedCount, lastError: run.stopReason, sourceState: `${run.refreshedCount}件の状態A実価格を再確認・新規紐づけ${run.newLinkedCount}件・${run.status}`,
@@ -280,6 +281,7 @@ function finalizeSaved(sourceId) {
       identityVerified: entry.identityVerified, identityVerifiedAt: entry.identityVerifiedAt, conditionAccepted: true };
   }
   run.status = 'partial'; run.recoveryAt = new Date().toISOString();
+  require('./stock_history_statistics').apply(summary,read(`work/${sourceId}_stock_history.json`,{dates:[],stocks:{}}),{asOf:run.endedAt||run.recoveryAt});
   run.stopReason = '保存工程が中断・正常な個別取得記録だけを復旧。未完走・再取得0';
   write(`data/${sourceId}-stock-summary.json`, summary);
   write('work/candidate-shop-refresh.json', cache);

@@ -371,7 +371,7 @@ function demandLabel(avg30, drop30, samples, model) {
   return "少ない";
 }
 
-function writeSummary(cards, catalog, history, paths) {
+function writeSummary(cards, catalog, history, paths, options={}) {
   let previous={};
   try { previous=JSON.parse(fs.readFileSync(paths.summary,'utf8')).cards || {}; } catch(error) {
     if(error.code!=='ENOENT')throw error;
@@ -410,7 +410,9 @@ function writeSummary(cards, catalog, history, paths) {
         drop7:summary[card.id].drop7,drop30,demand:summary[card.id].demand,samples};
     }
   }
-  fs.writeFileSync(paths.summary, JSON.stringify({ updatedAt: jstDate(), demandModel: model, cards: summary }), "utf8");
+  const output={ updatedAt: jstDate(), demandModel: model, cards: summary };
+  require('./stock_history_statistics').apply(output,history,options);
+  fs.writeFileSync(paths.summary, JSON.stringify(output), "utf8");
 }
 
 async function main() {

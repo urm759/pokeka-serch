@@ -9,6 +9,8 @@ const { sourceTiming } = require("./workflow_schedule.js");
 require('./refresh_candidate_shops').publishRunEvidence(ROOT, read('work/candidate-shop-refresh.json'));
 require('./quarantine_shop_identity').build(ROOT);
 require('./recover_saved_shop_rows').reconcileSavedLinks(ROOT);
+// Price-only and full-crawl paths must publish the same saved stock evidence at the same evaluation date.
+require('./stock_history_statistics').reconcile(ROOT);
 require('./build_raw_condition_reference').build(ROOT);
 require('./build_psa9_provenance').build(ROOT);
 require('./build_psa9_provenance').verify(ROOT);

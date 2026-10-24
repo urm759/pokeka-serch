@@ -166,7 +166,7 @@ function demandLabel(avg30, drop30, samples, model) {
   return "少ない";
 }
 
-function writeOutputs({ cards, catalog, history, invalidUrls, recheckIds, paths }) {
+function writeOutputs({ cards, catalog, history, invalidUrls, recheckIds, paths, asOf }) {
   const currentDateIndex = history.dates.length - 1;
   const catalogByUrl = new Map(catalog.map((entry) => [entry.detailUrl, entry]));
   const summaryCards = {};
@@ -199,7 +199,9 @@ function writeOutputs({ cards, catalog, history, invalidUrls, recheckIds, paths 
   fs.writeFileSync(paths.data, JSON.stringify(cards), "utf8");
   fs.writeFileSync(paths.catalog, JSON.stringify(catalog), "utf8");
   fs.writeFileSync(paths.history, JSON.stringify(history), "utf8");
-  fs.writeFileSync(paths.summary, JSON.stringify({ updatedAt: jstDate(), demandModel, cards: summaryCards }), "utf8");
+  const output={ updatedAt: jstDate(), demandModel, cards: summaryCards };
+  require('./stock_history_statistics').apply(output,history,asOf?{asOf}:{});
+  fs.writeFileSync(paths.summary, JSON.stringify(output), "utf8");
   fs.writeFileSync(paths.invalid, JSON.stringify([...invalidUrls]), "utf8");
   fs.writeFileSync(paths.recheck, JSON.stringify([...recheckIds]), "utf8");
 }
