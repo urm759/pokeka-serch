@@ -32,6 +32,39 @@ function historyUnion(a,b){const m=new Map();for(const r of [...b,...a]){
   const k=key==null?JSON.stringify(r):String(key),old=m.get(k);
   if(!old||stamp(r)>stamp(old)||stamp(r)===stamp(old))m.set(k,r);
 }return [...m.values()].sort((a,b)=>stamp(a)-stamp(b));}
+function mergeProfileTargets(base,a,b) {
+  const selected=latest(a,b,base),other=selected===a?b:a;
+  for(const value of [a,b])if(!Array.isArray(value.profiles)||new Set(value.profiles.map(p=>p.id)).size!==value.profiles.length)throw Error('Duplicate or missing search profile identities');
+  const profiles=selected.profiles.map(p=>{
+    const prior=other.profiles.find(r=>r.id===p.id&&r.urlHash===p.urlHash);
+    return {...p,seenQualified:[...new Set([...(prior?.seenQualified||[]),...(prior?.urlsMatched||[]),...(p.seenQualified||[]),...(p.urlsMatched||[])])]};
+  });
+  const qualified=new Map(profiles.map(p=>[p.id,new Set(p.urlsMatched||[])]));
+  const pending=new Map();
+  for(const row of [...(other.pendingDepartures||[]),...(selected.pendingDepartures||[])]) {
+    if(!qualified.get(row.profile)?.has(row.id))pending.set(row.profile+'|'+row.id,row);
+  }
+  return {...selected,profiles,pendingDepartures:[...pending.values()]};
+}
+function mergeFixedFreshness(base,a,b) {
+  const sources={};
+  for(const id of new Set([...Object.keys(a.sources||{}),...Object.keys(b.sources||{})])) {
+    const x=a.sources?.[id],y=b.sources?.[id];
+    if(!x||!y){sources[id]=x||y;continue;}
+    if(!same([...(x.cohort||[])].sort(),[...(y.cohort||[])].sort()))throw Error('Fixed freshness denominator changed; review required');
+    const last=s=>s.observations?.at(-1)?.at;
+    const xa=Date.parse(last(x)),ya=Date.parse(last(y));
+    if(!Number.isFinite(xa)||!Number.isFinite(ya))throw Error('Missing freshness snapshot time');
+    if(xa===ya&&!same(x.lastConfirmedRows,y.lastConfirmedRows))throw Error('Conflicting freshness rows for the same snapshot');
+    const selected=xa>=ya?x:y,other=selected===x?y:x;
+    const intervals=new Map();
+    for(const r of [...(other.intervalMinima||[]),...(selected.intervalMinima||[])])intervals.set(r.from+'|'+r.to,r);
+    sources[id]={...selected,observations:historyUnion(other.observations||[],selected.observations||[]),
+      intervalMinima:[...intervals.values()].sort((a,b)=>Date.parse(a.to)-Date.parse(b.to)).slice(-500),
+      lastConfirmedRows:selected.lastConfirmedRows};
+  }
+  return {...a,sources};
+}
 function seedMerge(base,a,b){
   if(same(a,b)||same(base,b))return a;if(same(base,a))return b;
   if(Array.isArray(a)&&Array.isArray(b))return historyUnion(a,b);
@@ -52,6 +85,8 @@ function run(){
   for(const [file,[base,a,b]]of Object.entries(snapshots)){
     let merged;
     if(file==='data/scheduled-cycle-receipts.json')merged=require('./resolve_generated_merge').mergeReceipts(a,b);
+    else if(file==='work/search-profile-targets.json')merged=mergeProfileTargets(base,a,b);
+    else if(file==='work/priority-freshness-history.json')merged=mergeFixedFreshness(base,a,b);
     else if(['data/priority-price-execution.json','data/price-catchup-status.json'].includes(file))merged=latest(a,b,base);
     else if(file==='work/hareruya2_catalog.json')merged=byKey(a,b,r=>r.detailUrl||r.productId||r.cardId,base);
     else if(file==='data/hareruya2-stock-summary.json'){
@@ -97,4 +132,4 @@ function run(){
   console.log(JSON.stringify({resolved:out.length,status:'rebuild-required',rawStageBackups:files.length}));
 }
 if(require.main===module)run();
-module.exports={latest,byKey,seedMerge,mergeRun,mergeStockHistory};
+module.exports={latest,byKey,seedMerge,mergeRun,mergeStockHistory,mergeProfileTargets,mergeFixedFreshness};

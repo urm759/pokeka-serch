@@ -64,8 +64,10 @@ function run() {
     retrievedAt:trend.capturedAt,contextProof:'sha256:'+sha(fs.readFileSync(path.join(PRIVATE,'gemrate-trend-page-20261024.json')))};
   const result=receive({store:STORE,files:[...names.map((n,i)=>({path:source(n),kind:'list',context:contexts[i],mappings})),
     {path:source('export.csv'),kind:'trend',context:trendContext,mappings}]});
+  const acceptedIds=new Set(result.files.flatMap(r=>JSON.parse(fs.readFileSync(r.parsedPath,'utf8')).accepted.map(row=>row.cardId)));
+  const heldIds=new Set(mappings.filter(r=>r.hold).map(r=>r.cardId));
   const report={verifiedAt:new Date().toISOString(),realFiles:3,listRows:lists.map(r=>r.length),trendPoints:trendRows.length,
-    exactReviewedIdentities:8,verifiedRowsBySnapshot:checked,acceptedIndependentCards:7,
+    exactReviewedIdentities:mappings.length,verifiedRowsBySnapshot:checked,acceptedIndependentCards:acceptedIds.size,
     acceptedPrivateObservations:result.files.reduce((n,r)=>n+r.accepted,0),trendVisibleMatches,
     changedListRows:lists[0].filter(a=>{const b=lists[1].find(b=>b['Card #']===a['Card #']&&b.Name===a.Name&&b.Parallel===a.Parallel);return !b||b.Gems!==a.Gems||b.Total!==a.Total;}).length,
     distinctFileHashes:new Set(result.files.map(r=>r.sha256)).size,receipts:result.files,
@@ -73,8 +75,8 @@ function run() {
     newPrivateObservations:result.newPrivateObservations,
     newOfficialObservations:0,newAnalyzable:0,publicRecords:0,publicationAllowed:false};
   fs.writeFileSync(path.join(STORE,'verification-report.json'),JSON.stringify(report,null,2));
-  console.log(JSON.stringify({realFiles:3,listRows:report.listRows,trendPoints:53,verifiedIdentities:8,
-    acceptedPrivateObservations:report.acceptedPrivateObservations,acceptedIndependentCards:7,heldCard:1,
+  console.log(JSON.stringify({realFiles:3,listRows:report.listRows,trendPoints:53,verifiedIdentities:report.exactReviewedIdentities,
+    acceptedPrivateObservations:report.acceptedPrivateObservations,acceptedIndependentCards:report.acceptedIndependentCards,heldCard:heldIds.size,
     changedListRows:report.changedListRows,distinctFiles:report.distinctFileHashes,
     newPrivateObservations:report.newPrivateObservations,publicRecords:0,newOfficialObservations:0}));
   return report;
