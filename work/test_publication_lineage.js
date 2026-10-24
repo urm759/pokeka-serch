@@ -25,4 +25,9 @@ try{
   assert.throws(()=>p.verify(root,{staged:true}),/summary revision/,'mixed index and working tree must stop publication');
   git(['add','data']);p.verify(root,{staged:true});
   console.log('Publication lineage: parallel source changes, repeated audit, staged mixes and matching snapshot passed');
-}finally{fs.rmSync(root,{recursive:true,force:true});}
+}finally{
+  assert.equal(path.dirname(path.resolve(root)),path.resolve(os.tmpdir()));
+  assert(path.basename(root).startsWith('pokeka-lineage-'));
+  assert.equal(fs.realpathSync(root),path.resolve(root));
+  fs.rmSync(root,{recursive:true,force:true});
+}
