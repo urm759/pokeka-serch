@@ -1,0 +1,36 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),os=require('node:os');
+const {receive}=require('./gemrate_private_store'),{key,importTrendCsv}=require('./gemrate_csv_import');
+const temp=fs.mkdtempSync(path.join(os.tmpdir(),'gemrate-private-'));
+const store=path.join(temp,'private'),publicRoot=path.join(temp,'publication');
+fs.mkdirSync(store);fs.writeFileSync(path.join(store,'.gitignore'),'*\n');
+const context={grader:'PSA',language:'Japanese',set:'Synthetic Set',year:2021,sourceUpdatedDate:'2026-10-23',
+  retrievedAt:'2026-10-24T00:00:00Z',contextProof:'synthetic',
+  pageUrl:'https://www.gemrate.com/item-details?grader=psa&category=tcg-cards&set_name=Synthetic+Set&year=2021'};
+const row={'Card #':'001',Name:'Synthetic',Parallel:'Base'};
+const mappings=[{key:key(row,context),cardId:'synthetic',identityKey:'same-spec',specEvidence:'synthetic'}];
+const file=path.join(temp,'export.csv');fs.writeFileSync(file,'Card #,Name,Parallel,Gems,Total\n001,Synthetic,Base,10,20\n');
+const options={store,publicRoot,files:[{path:file,kind:'list',context,mappings}]};
+const first=receive(options);assert.equal(first.files[0].accepted,1);assert(!fs.existsSync(file));
+assert.equal(first.newPrivateObservations,1);
+assert.equal(first.files[0].receivedAt,null);assert.equal(first.files[0].filesystemMetadata.notSourceUpdatedAt,true);
+assert.equal(receive(options).files[0].replay,true);
+assert.equal(receive(options).newPrivateObservations,0);
+const manifestFile=path.join(store,'manifest.json'),interrupted=JSON.parse(fs.readFileSync(manifestFile));
+interrupted.files[0].status='prepared';fs.writeFileSync(manifestFile,JSON.stringify(interrupted));
+assert.equal(receive(options).files[0].recovered,true);
+assert.throws(()=>receive({...options,files:[{...options.files[0],mappings:[{...mappings[0],hold:true}]}]}),/context changed/);
+assert.throws(()=>receive({...options,store:publicRoot}));
+fs.writeFileSync(path.join(store,'.receipt.lock'),'busy');assert.throws(()=>receive(options));fs.unlinkSync(path.join(store,'.receipt.lock'));
+const conflict=path.join(temp,'export (1).csv');fs.writeFileSync(conflict,'Card #,Name,Parallel,Gems,Total\n001,Synthetic,Base,11,20\n');
+const second=receive({...options,files:[{path:conflict,kind:'list',context,mappings}]});
+assert.notEqual(first.files[0].sha256,second.files[0].sha256);
+assert(fs.existsSync(first.files[0].storedPath)&&fs.existsSync(second.files[0].storedPath));
+const trendContext={...context,pageUrl:context.pageUrl.replace('/item-details?','/population-trend?')+'&card_number=001&name=Synthetic&parallel=Base'};
+const text='Date,Total Gems,Total Grades,Gem Rate\n2026-10-23,10,20,50%\n2026-10-16,9,19,47%\n';
+assert.equal(importTrendCsv(text,trendContext,mappings).accepted.length,2);
+assert.equal(importTrendCsv(text,trendContext,[{...mappings[0],hold:true}]).quarantined.length,2);
+assert.equal(importTrendCsv(text+'2026-10-23,11,20,55%\n',trendContext,mappings).accepted.length,1);
+assert.equal(importTrendCsv(text+'2026-99-01,10,20,50%\n',trendContext,mappings).quarantined.length,1);
+const bad=path.join(temp,'export (2).csv');fs.writeFileSync(bad,'broken');
+assert.throws(()=>receive({...options,files:[{path:bad,kind:'list',context,mappings}]}));assert(fs.existsSync(bad));
+console.log('PASS private receipt: original/backup hashes, distinct snapshots, persistence, idempotence, lock, quarantine, no public output');

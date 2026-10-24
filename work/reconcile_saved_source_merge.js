@@ -42,7 +42,7 @@ function run(){
   const files=git(['diff','--name-only','--diff-filter=U']).trim().split('\n').filter(Boolean);
   if(files.some(f=>!/^((data|work)\/[a-zA-Z0-9_./-]+\.json)$/.test(f)||f.includes('..')))throw Error('Unknown merge target');
   const snapshots=Object.fromEntries(files.map(f=>[f,[1,2,3].map(n=>JSON.parse(git(['show',`:${n}:${f}`])))]));
-  const backup=path.join(root,'work/current-guide-merge-stages');fs.mkdirSync(backup,{recursive:true});
+  const backup=path.join(root,'work/current-guide-merge-stages',git(['rev-parse','MERGE_HEAD']).trim());fs.mkdirSync(backup,{recursive:true});
   for(const [f,rows]of Object.entries(snapshots)){
     fs.mkdirSync(path.dirname(path.join(backup,f)),{recursive:true});
     atomicWrite(path.join(backup,f),{base:rows[0],local:rows[1],scheduled:rows[2]},0);

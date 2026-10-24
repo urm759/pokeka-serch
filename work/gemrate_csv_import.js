@@ -36,17 +36,18 @@ function count(value) {
   return Number.isSafeInteger(n) && n >= 0 ? n : null;
 }
 function day(value) {
-  return /^\d{4}-\d{2}-\d{2}$/.test(value || '')
-    && new Date(`${value}T00:00:00Z`).toISOString().slice(0, 10) === value;
+  const time = Date.parse(`${value}T00:00:00Z`);
+  return /^\d{4}-\d{2}-\d{2}$/.test(value || '') && Number.isFinite(time)
+    && new Date(time).toISOString().slice(0, 10) === value;
 }
 function key(row, context) {
   return JSON.stringify([context.language, context.set, context.year,
     row['Card #'], row.Name, row.Parallel]);
 }
-function importCsv(text, context, mappings, previous = []) {
+function validateContext(context, pathname) {
   const page = new URL(context.pageUrl);
   if (page.protocol !== 'https:' || !['www.gemrate.com', 'gemrate.com'].includes(page.hostname)
-    || page.pathname !== '/item-details' || page.searchParams.get('grader') !== 'psa'
+    || page.pathname !== pathname || page.searchParams.get('grader') !== 'psa'
     || page.searchParams.get('category') !== 'tcg-cards'
     || page.searchParams.get('set_name') !== context.set || page.searchParams.get('year') !== String(context.year)) {
     throw new Error('PSA set-page provenance mismatch');
@@ -57,6 +58,10 @@ function importCsv(text, context, mappings, previous = []) {
     || !context.contextProof || context.sourceUpdatedDate > context.retrievedAt.slice(0, 10)) {
     throw new Error('PSA/Japanese/export context and original source date evidence required');
   }
+  return page;
+}
+function importCsv(text, context, mappings, previous = []) {
+  validateContext(context, '/item-details');
   const rows = parseCsv(text), headers = rows.shift() || [];
   const required = ['Card #', 'Name', 'Parallel', 'Gems', 'Total'];
   if (new Set(headers).size !== headers.length || required.some(h => !headers.includes(h))) {
@@ -92,4 +97,34 @@ function importCsv(text, context, mappings, previous = []) {
     accepted: [...staged.values()], quarantined, duplicates,
     newOfficialObservations: 0, publicRecords: 0 };
 }
-module.exports = { parseCsv, importCsv, key, count };
+function importTrendCsv(text, context, mappings) {
+  const page = validateContext(context, '/population-trend');
+  const identity = key({ 'Card #':page.searchParams.get('card_number'),
+    Name:page.searchParams.get('name'), Parallel:page.searchParams.get('parallel') }, context);
+  const matches = mappings.filter(m => m.key === identity);
+  const match = matches.length === 1 ? matches[0] : null;
+  const rows = parseCsv(text), headers = rows.shift() || [];
+  if (headers.join('|') !== 'Date|Total Gems|Total Grades|Gem Rate') throw Error('unsupported trend columns');
+  const accepted = [], quarantined = [], duplicates = [], seen = new Map(), blocked = new Set();
+  for (let i=0;i<rows.length;i++) {
+    const [date, gems, grades] = rows[i], psa10=count(gems), total=count(grades);
+    const reason = rows[i].length !== 4 || !day(date) || date > context.sourceUpdatedDate ? 'invalid-observation-date'
+      : psa10===null || total===null || total===0 || psa10>total ? 'invalid-count'
+        : !match || !match.cardId || !match.identityKey || !match.specEvidence ? 'identity-unresolved'
+          : match.hold ? 'source-discrepancy-hold' : null;
+    if (reason) { quarantined.push({line:i+2,date,reason}); continue; }
+    const old=seen.get(date);
+    if (blocked.has(date) || old && (old.psa10!==psa10 || old.total!==total)) {
+      blocked.add(date); seen.delete(date); quarantined.push({line:i+2,date,reason:'same-day-conflicting-counts'});
+    } else if (old) duplicates.push({line:i+2,date});
+    else seen.set(date,{source:'GemRate',grader:'PSA',cardId:match.cardId,identityKey:match.identityKey,
+      observationDate:date,psa10,total,sourceUpdatedDate:context.sourceUpdatedDate,retrievedAt:context.retrievedAt,
+      pageUrl:context.pageUrl,contextProof:context.contextProof,specEvidence:match.specEvidence,
+      dateMeaning:'GemRate chart date; official observation timestamp unverified',
+      populationDelta:null,publicationAllowed:false,officialObservedAt:null});
+  }
+  accepted.push(...seen.values());
+  return {version:1,mode:'private-offline-staging-only',accepted,quarantined,duplicates,
+    csvSha256:crypto.createHash('sha256').update(text).digest('hex'),newOfficialObservations:0,publicRecords:0};
+}
+module.exports = { parseCsv, importCsv, importTrendCsv, key, count };
