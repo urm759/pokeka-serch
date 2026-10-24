@@ -108,6 +108,7 @@ async function main() {
       : reason.includes("みんトレ") ? "daily:source-stale" : "daily:run-stale",
     reason, url: health.latestRunUrl,
   }));
+  status.priorityPriceMonitor = require('./priority_price_queue').write(ROOT);
   const monitor = require("./source_monitor.js").build(ROOT, status.sources || {}, status.unifiedMonitor || {}, Date.now(), { savedOutcomes: true });
   const sourceIssues = Object.entries(monitor.rows).flatMap(([id, row]) => {
     const entries = [];

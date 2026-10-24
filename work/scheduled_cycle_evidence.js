@@ -16,7 +16,10 @@ function verify(run, jobs, receipt, publicTexts, pages) {
     && steps.some(s=>s.name===reportName&&s.conclusion==='failure');
   const scheduled=run.event==='schedule'||receipt?.pipeline==='catchup'&&run.event==='workflow_run';
   const confirmed=scheduled&&(run.conclusion==='success'||safePartial)&&Object.values(stages).every(Boolean)&&matched&&hashes.length>0&&hashes.every(r=>r.matched)&&pagesAfter;
-  return {runId:run.id,headSha:run.head_sha,event:run.event,url:run.html_url,stages,receiptMatches:!!matched,
+  const publicationStep=steps.filter(s=>s.conclusion==='success'&&/Publish validated data|Publish changed health state|Commit safe progress|Commit discovery|Commit changed/.test(s.name)).at(-1);
+  return {runId:run.id,headSha:run.head_sha,event:run.event,url:run.html_url,startedAt:run.run_started_at||run.created_at||null,
+    publicationStepCompletedAt:publicationStep?.completed_at||null,publicVerifiedAt:confirmed?new Date().toISOString():null,
+    stages,receiptMatches:!!matched,
     hashes,pagesRunId:pages?.id||null,confirmed,status:confirmed?'定期処理・保存・公開照合済み（実増分は別表示）':'定期公開照合未完了',
     partial:confirmed&&Boolean(safePartial),outcomes:matched?receipt.outcomes:null,checkpoints:matched?receipt.checkpoints:null};
 }

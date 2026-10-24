@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-24T13:04:34.552Z",
+  "generatedAt": "2026-10-24T14:35:04.640Z",
   "llmCalls": 0,
   "codexCalls": 0,
   "retryPolicy": {
@@ -27,7 +27,7 @@
     {
       "source": "psaOfficial",
       "label": "PSA公式・PC正規認証",
-      "remaining": 1203,
+      "remaining": 1202,
       "queueDefinition": "あとPSAだけで分析可能な国内カード。全PSA未取得とは別",
       "sourceState": "permission-wait",
       "failureScope": "source",
@@ -169,14 +169,14 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-24T12:57:41.461Z",
-        "to": "2026-10-24T13:04:29.119Z"
+        "from": "2026-10-24T14:25:46.929Z",
+        "to": "2026-10-24T14:34:59.045Z"
       },
       "sinceBaseline": {
         "newLinked": 3988,
         "validAdded": 3988,
-        "validLost": 235,
-        "usableNet": 3753,
+        "validLost": 234,
+        "usableNet": 3754,
         "freshnessRecovered": 0
       },
       "freshness": null
@@ -188,19 +188,19 @@
       "queueDefinition": "未巡回商品数推計。全国内カードの不足項目数とは別",
       "checkpoint": {
         "sitemap": 2,
-        "entry": 211,
+        "entry": 452,
         "total": 46
       },
       "sourceState": "partial",
-      "stopReason": null,
+      "stopReason": "商品詳細の1回上限 60件に到達",
       "retryUrls": [],
       "lastRun": {
-        "startedAt": "2026-10-24T08:10:18.940Z",
-        "durationMs": 2501,
+        "startedAt": "2026-10-24T14:07:51.625Z",
+        "durationMs": 67934,
         "paginationMode": "sitemap",
         "currentCursor": 2,
         "currentSitemapIndex": 2,
-        "currentEntryIndex": 211,
+        "currentEntryIndex": 452,
         "currentSitemapUrl": "https://torecacamp-pokemon.com/sitemap_products_2.xml?from=7906477342894&to=7997867393198",
         "processedSitemapCount": 46,
         "processedSitemaps": [
@@ -258,21 +258,33 @@
         "crawlComplete": true,
         "firstPassComplete": true,
         "retryQueue": [],
-        "legacyRecords": [],
+        "legacyRecords": [
+          {
+            "id": "pk-59130",
+            "url": "https://torecacamp-pokemon.com/products/rc_its6ipnxg52s_biq1",
+            "startedAt": "2026-10-24T14:07:51.945Z",
+            "sourceSitemap": null,
+            "status": "verified",
+            "confirmedAt": "2026-10-24T14:07:52.956Z",
+            "price": 19800,
+            "available": false,
+            "adopted": true
+          }
+        ],
         "maintenanceMode": true,
         "maintenance": {
           "sitemapIndex": 1,
-          "entryIndex": 211,
+          "entryIndex": 452,
           "cycles": 2,
-          "refreshed": 6927,
+          "refreshed": 6986,
           "newLinks": 147,
-          "checkedAt": "2026-10-24T08:10:21.437Z"
+          "checkedAt": "2026-10-24T14:08:59.551Z"
         },
         "firstPassCompletedAt": "2026-10-08T21:56:31.044Z",
-        "maintenancePendingCount": 6076,
+        "maintenancePendingCount": 6017,
         "priceMigration": {
           "version": 1,
-          "updatedAt": "2026-10-24T08:10:18.891Z",
+          "updatedAt": "2026-10-24T14:07:51.564Z",
           "correctedCount": 0,
           "cumulativeCorrectedCount": 0,
           "preCorrectionExtremeCount": 0,
@@ -281,32 +293,32 @@
         },
         "quarantinedPriceCount": 30,
         "sitemapsSucceeded": 0,
-        "listedProducts": 997,
-        "detailFetched": 1,
-        "parsed": 1,
-        "stateA": 1,
+        "listedProducts": 1000,
+        "detailFetched": 60,
+        "parsed": 60,
+        "stateA": 60,
         "referenceUpdated": 0,
         "newLinkCount": 0,
-        "updatedCount": 1,
+        "updatedCount": 8,
         "fetchFailureCount": 0,
-        "duplicateUrlCount": 0,
+        "duplicateUrlCount": 212,
         "duplicateProductIdCount": 0,
         "abruptDropDetected": false,
         "previousCatalogCount": 6647,
         "proposedCatalogCount": 6647,
         "progressHealth": {
-          "value": 53899,
-          "previousValue": 53898,
+          "value": 53958,
+          "previousValue": 53899,
           "stagnantRuns": 0,
           "status": "progressing",
-          "checkedAt": "2026-10-24T08:10:21.441Z"
+          "checkedAt": "2026-10-24T14:08:59.559Z"
         },
         "lastSuccessfulPage": "サイトマップ 1",
         "lastFailure": null,
         "failedSitemaps": [],
-        "stoppingReason": null,
+        "stoppingReason": "商品詳細の1回上限 60件に到達",
         "completionStatus": "partial",
-        "completedAt": "2026-10-24T08:10:21.444Z"
+        "completedAt": "2026-10-24T14:08:59.562Z"
       },
       "observedExecutionDays": 6,
       "processedPerExecutionDay": 26.7,
@@ -316,15 +328,15 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-24T12:57:41.461Z",
-        "to": "2026-10-24T13:04:29.119Z"
+        "from": "2026-10-24T14:25:46.929Z",
+        "to": "2026-10-24T14:34:59.045Z"
       },
       "sinceBaseline": {
         "newLinked": 757,
         "validAdded": 757,
         "validLost": 76,
         "usableNet": 681,
-        "freshnessRecovered": 615
+        "freshnessRecovered": 671
       },
       "freshness": null
     },
@@ -357,8 +369,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-24T12:57:41.461Z",
-        "to": "2026-10-24T13:04:29.119Z"
+        "from": "2026-10-24T14:25:46.929Z",
+        "to": "2026-10-24T14:34:59.045Z"
       },
       "sinceBaseline": {
         "newLinked": 0,
@@ -371,10 +383,10 @@
     }
   ],
   "psaOnly": {
-    "count": 1203,
+    "count": 1202,
     "causes": {
       "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持": 1067,
-      "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）": 136
+      "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）": 135
     },
     "cards": [
       {
@@ -1216,12 +1228,6 @@
         "setCode": "SGI",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
-        "id": "x-128100",
-        "setCode": "SV2A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv2a-card-151/241480",
-        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
         "id": "x-406357",
@@ -7599,9 +7605,9 @@
   },
   "progress": {
     "listed": 12545,
-    "analyzable": 2292,
-    "pending": 10253,
-    "oneAway": 1686
+    "analyzable": 2293,
+    "pending": 10252,
+    "oneAway": 1685
   },
   "newlyAnalyzable": 0,
   "note": "一時障害の再試行、個別URL隔離、取得元停止を区別。未取得をデータ不存在に変更しない。巡回完了と全項目取得・最新価格は別"

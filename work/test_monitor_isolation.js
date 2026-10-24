@@ -33,6 +33,9 @@ const workflow=fs.readFileSync(path.join(__dirname,'../.github/workflows/watch-d
 assert(workflow.includes('needs: catchup\n    if: always()'),'monitor must run after catchup failure');
 assert(workflow.includes("steps.observation.outcome == 'success'"));
 assert(!workflow.includes('continue-on-error'));
+assert(workflow.includes('work/priority-freshness-history.json'),'time-forward monitor freshness observations must survive publication');
+const watchCode=fs.readFileSync(path.join(__dirname,'watch_update_health.js'),'utf8');
+assert(watchCode.includes("status.priorityPriceMonitor = require('./priority_price_queue').write(ROOT)"),'saved observation must use current card times, not previous status freshness');
 assert(workflow.indexOf('Publish independent validated monitor state')<workflow.indexOf('Report newly detected alerts'));
 const priority=fs.readFileSync(path.join(__dirname,'../.github/workflows/priority-price-refresh.yml'),'utf8');
 assert(priority.indexOf('Verify safety')<priority.indexOf('Publish validated data'));

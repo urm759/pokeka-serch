@@ -1,0 +1,992 @@
+{
+  "at": "2026-10-24T14:31:56.297Z",
+  "initialReport": "work/evidence-regression.json",
+  "rerunReport": "work/20261024-recovery-final-rechecks.json",
+  "results": [
+    {
+      "file": "test_acquisition_progress.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_acquisition_resilience.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_automatic_operation.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_backfill_health.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_backfill_rate.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_backtest_model.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_bulk_individual_freshness.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_buyback_highest_search.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_buyback_observation.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_buyback_scenario_limits.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_buyback_support.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_cadence_payload.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_calendar_progress.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_candidate_availability_audit.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_candidate_daily_audit.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_candidate_reduction.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_card_catalog_completion.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_card_efficiency.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_catalog_index_adapter.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_catalog_semantics.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_catchup_reuse.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_charizard_search_exit.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_checkpoint_publication.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_compact_purchase_list.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_completion_routes.js",
+      "initialExit": 1,
+      "finalExit": 0,
+      "rerun": true
+    },
+    {
+      "file": "test_current_market_exploration.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_current_profit_guide.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_daily_fast_update.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_daily_source_isolation.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_deadline_capacity_samples.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_deadline_order.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_decision_calculations.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_eevee_operations.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_efficiency_dual_conditions.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_efficiency_reference.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_efficiency_threshold_audit.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_evidence_refresh.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_expanded_daily_merge.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_exploration_metrics.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_focus_monitor.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_gemrate_csv_import.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_gemrate_identity_match.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_gemrate_private_inbox.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_gemrate_private_store.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_gemrate_public_probe.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_gemrate_reference_display.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_generated_merge_large_json.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_grade_calibration.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_homura_public_feed.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_incremental_linkage_evidence.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_keyed_render_and_completion.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_lazy_ratio_coverage.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_limit_display.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_limit_tiers.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_market_analysis.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_market_research.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_median_efficiency.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_median_primary.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_minimum_recovery_sources.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_monitor_isolation.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": true
+    },
+    {
+      "file": "test_observation75_migration.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_observation_drawdown.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_observation_efficiency.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_observation_search.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_official_catalog_supplements.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_operational_freshness.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_optional_source_publication.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_overseas_cancellation.js",
+      "initialExit": 1,
+      "finalExit": 0,
+      "rerun": true
+    },
+    {
+      "file": "test_overseas_glance_loading.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_overseas_publication.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_partial_buyback_recovery.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_partial_buyback_refresh.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_partial_publication.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_pc_resume_gate.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_performance_comparison.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_performance_guard.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_period_efficiency_average.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_phase4_observability.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_pokedata_analysis.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_pokedata_batch.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_pokedata_browser_capture.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_pokedata_consistency.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_pokedata_set_discovery.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_pokedata_set_progress.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_pokedata_storage.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_pop_glance.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_pop_resilience.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_postpass_cadence.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_preset_exploration.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_price_comparison.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_price_comparison_display.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_price_integrity.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_price_payload_gate.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_priority_profit_linkage.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_priority_refresh.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_private_overseas_analysis.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_proactive_refresh.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_profile_basis_transitions.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_profile_buyback_unmatched.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_profile_candidate_evidence.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_profile_completion_routes.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_profile_departure_audit.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_profile_discovery_gates.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_profile_report_names.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_profile_target_merge.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_profile_worker.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_psa10_long_observations.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_psa10_period_statistics.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_psa10_trade_statistics.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_psa9_reference_choices.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_psa_access_policy.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_psa_completion_publication.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_psa_completion_selection.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_psa_growth_provenance.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_psa_linkage_queue.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_psa_market_trial.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_psa_resilience.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_psa_saved_rematch.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": true
+    },
+    {
+      "file": "test_publication_html.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_publication_lineage.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": true
+    },
+    {
+      "file": "test_purchase_limit_audit.js",
+      "initialExit": 1,
+      "finalExit": 0,
+      "rerun": true
+    },
+    {
+      "file": "test_purchase_memo.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_purchase_price_recovery.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_raw_condition_reference.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_raw_psa9_gap.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_recovery_and_url_discovery.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_recovery_download_resume.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_recovery_latency.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_refresh_demand_ui.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_render_reuse.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_replay_fixed_clock.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_research_evidence_gate.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_return_reference.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_roi_psa9_ratio.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_safe_backfill.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_saved_camp_recovery.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_saved_domestic_recovery.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_saved_psa_summary.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_saved_shop_recovery.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_saved_source_merge.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_scheduled_cycle_evidence.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_search_calculation_cache.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_search_first_reference_margin.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_search_memo.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_search_organization.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_search_profile_cycle.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_search_profit_consistency.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_settings_disclosure.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_shop_collectors.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_shop_observation.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_snkr_raw_flip.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_source_access_display.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_source_identity_guard.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_source_monitor_and_completion.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_specification_reexploration.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_stage123_regression.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_stock_history_statistics.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_supply_absorption.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_supply_demand_validation.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_supply_maturity_hypothesis.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_two_search_modes.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_ui_data.js",
+      "initialExit": 1,
+      "finalExit": 0,
+      "rerun": true
+    },
+    {
+      "file": "test_ui_double_fixture.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    },
+    {
+      "file": "test_update_health.js",
+      "initialExit": 0,
+      "finalExit": 0,
+      "rerun": false
+    }
+  ],
+  "passed": true
+}

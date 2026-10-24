@@ -1026,7 +1026,7 @@ function campRequestedIds(targets,comparisonIds=[]) {
   const fields=new Set(['referenceMedian','shopStateA']);
   const urgent=new Set([...(targets.freshnessRecovery||[]).map(r=>r.id),...(targets.repairRequests||[])
     .filter(r=>r.source==='domesticShops'&&r.automatic===true&&fields.has(r.field)).map(r=>r.id)]);
-  const rows=(targets.readyRoutes?.domesticShops||[]).filter(r=>fields.has(r.field))
+  const rows=(targets.readyRoutes?.domesticShops||[]).filter(r=>fields.has(r.field)&&require('./profile_completion_routes').requestForSource(r,'torecacamp'))
     .sort((a,b)=>Number(urgent.has(b.id))-Number(urgent.has(a.id))||Number(b.priority||0)-Number(a.priority||0));
   return [...new Set([...rows.map(r=>r.id),...comparisonIds])];
 }

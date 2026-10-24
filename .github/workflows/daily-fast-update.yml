@@ -162,6 +162,8 @@ jobs:
           node work/test_acquisition_progress.js
           node work/test_checkpoint_publication.js
           node work/test_publication_lineage.js
+          node work/test_minimum_recovery_sources.js
+          node work/test_recovery_latency.js
           node work/test_source_monitor_and_completion.js
           node work/test_source_access_display.js
           node work/test_completion_routes.js

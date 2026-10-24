@@ -25,7 +25,7 @@ async function get(url) {
       status: run.status, conclusion: run.conclusion, jobs: [] };
     for (const job of jobs.jobs || []) {
       const item = { name: job.name, startedAt: job.started_at, endedAt: job.completed_at, conclusion: job.conclusion,
-        steps: job.steps?.map(step => ({ name: step.name, status: step.conclusion })) };
+        steps: job.steps?.map(step => ({ name: step.name, status: step.conclusion,startedAt:step.started_at,completedAt:step.completed_at })) };
       if (job.status === 'completed') {
         const log = await (await get(`${base}/actions/jobs/${job.id}/logs`)).text();
         const file = `work/scheduled-log-${job.id}.txt`;
@@ -34,7 +34,7 @@ async function get(url) {
         item.evidence = log.split('\n').filter(line => /processedCards|newAcquired|newLinked|usableNet|newlyAnalyzable|remaining|HTTP 403|HTTP 503|llmCalls|codexCalls|stopReason|checkpoint|nothing to commit|-> main|safe-stop|durationMs/.test(line)).map(line => {
           try {
             const value = JSON.parse(line.slice(line.indexOf('{')));
-            const keys = ['sourceId','source','status','completionStatus','sourceState','startedAt','endedAt','attemptedCount','acquiredCount','refreshedCount','updatedCount','newAcquiredCount','newLinkedCount','usableNet','changedCards','processedCards','remaining','stopReason','reason','durationMs','checkpoint','llmCalls','codexCalls'];
+            const keys = ['sourceId','source','status','completionStatus','sourceState','startedAt','endedAt','attemptedCount','acquiredCount','refreshedCount','updatedCount','newAcquiredCount','newLinkedCount','usableNet','changedCards','processedCards','remaining','stopReason','reason','durationMs','checkpoint','deadlineOrderVersion','llmCalls','codexCalls'];
             return Object.fromEntries(keys.filter(key => Object.hasOwn(value,key)).map(key=>[key,value[key]]));
           } catch { return line.slice(0, 320); }
         }).filter(row=>typeof row==='string'||Object.keys(row).length).slice(-20);

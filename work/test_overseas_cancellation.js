@@ -42,7 +42,7 @@ const watcher=fs.readFileSync(path.join(__dirname,'../.github/workflows/watch-da
 assert(!watcher.includes('PokeDATA Incremental Backfill'));
 const validation=watcher.slice(watcher.indexOf('id: catchup_validation'),watcher.indexOf('- name: Publish changed health state only'));
 assert(validation.indexOf('finalize_update_status.js')<validation.indexOf('test_purchase_limit_audit.js'),'cooldown does not skip saved-data regeneration');
-assert(validation.includes('runId')&&validation.includes('$GITHUB_RUN_ID'),'already finalized acquisition is not rebuilt a second time');
+assert(validation.includes('steps.catchup_plan.outputs.mode')&&validation.includes('= "rebuild"'),'only saved-data recovery rebuilds; already finalized acquisition and verified no-op do not rebuild twice');
 assert(!validation.includes('refresh_candidate_shops.js'),'audit repair is not another acquisition');
 (async()=>{
  let calls=0;const fetcher=()=>{calls++;throw Error('not reached');};

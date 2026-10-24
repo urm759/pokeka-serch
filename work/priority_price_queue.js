@@ -17,7 +17,10 @@ function plan({ cards, sourceId, catalog, candidateRows = {}, fixedIds = [], foc
     const fixedTarget = fixed.has(card.id);
     const important = focus || candidate || favorites.has(card.id) || fixedTarget;
     const entry = byId.get(card.id) || byUrl.get(url);
-    const lastSuccessAt = entry?.observedAt || null;
+    const explicitTimes=entry&&(Object.hasOwn(entry,'priceObservedAt')||Object.hasOwn(entry,'inventoryObservedAt'));
+    const observedTimes=explicitTimes?[entry.priceObservedAt,entry.inventoryObservedAt]:[entry?.observedAt];
+    const lastSuccessAt=observedTimes.every(t=>Number.isFinite(observationTime(t))&&observationTime(t)<=now)
+      ?observedTimes.sort((a,b)=>Date.parse(a)-Date.parse(b))[0]:null;
     const time = observationTime(lastSuccessAt);
     const validTime = Number.isFinite(time) && time <= now;
     const hours = important ? config.importantHours || 6 : config.normalHours || 720;
@@ -43,7 +46,7 @@ function plan({ cards, sourceId, catalog, candidateRows = {}, fixedIds = [], foc
   const urgentIds = new Set(urgent.map(row=>row.card.id));
   const preferred = sorted.filter((row) => row.important && !urgentIds.has(row.card.id)), ordinary = sorted.filter((row) => !row.important);
   const queue = [];
-  const maintenanceHorizon=now+proactive.lead(config).configuredIntervalMs+proactive.lead(config).processingMs;
+  const maintenanceHorizon=now+proactive.lead(config).leadMs;
   let cycle=0;
   // Retain all targets: two critical, one other priority, one ordinary request.
   // Each lane keeps overdue-first/deadline order; unused capacity crosses lanes.
@@ -64,10 +67,11 @@ function plan({ cards, sourceId, catalog, candidateRows = {}, fixedIds = [], foc
 }
 function load(sourceId, root = ROOT, now = Date.now()) {
   const requested=read(root,'work/search-profile-targets.json');
+  const allowed=row=>require('./profile_completion_routes').requestForSource(row,sourceId);
   const profileRows=Object.fromEntries([
     ...(requested.profiles||[]).flatMap(p=>p.urlsMatched||[]),
-    ...(requested.freshnessRecovery||[]).map(r=>r.id),
-    ...(requested.routes?.domesticShops||[]).map(r=>r.id)
+    ...(requested.freshnessRecovery||[]).filter(allowed).map(r=>r.id),
+    ...(requested.readyRoutes?.domesticShops||requested.routes?.domesticShops||[]).filter(allowed).map(r=>r.id)
   ].map(id=>[id,{priceRefreshReady:true,requestedProfile:true}]));
   return plan({ cards: read(root, "data/pokemon-cards.json", []), sourceId,
     fixedIds: read(root, "work/priority-freshness-history.json").sources?.[sourceId]?.cohort || [],

@@ -44,7 +44,7 @@ function baseline(key,root=ROOT) {
   const history=read(root,'work/search-profile-targets.json');
   const codeHash=departures.codeHash(root);
   const profiles=require('./search_profile_variants').allProfiles(config).map(p=>{
-    const evaluated=isolatedEvaluation(p,at);
+    const evaluated=isolatedEvaluation(p,at,[],{collectAvailability:false});
     return {...evaluated,evidenceMeta:departures.metadata(evaluated,codeHash,at),seenQualified:history.profiles?.find(r=>r.id===p.id)?.seenQualified||[]};
   });
   const snapshot=outcomes.pack(outcomes.snapshot(root,Date.parse(at)));
@@ -57,7 +57,7 @@ function record(key,root=ROOT) {
   const now=new Date().toISOString(),config=read(root,'work/priority-search-profiles.json');
   const codeHash=departures.codeHash(root);
   const profiles=require('./search_profile_variants').allProfiles(config).filter(p=>before.profiles.some(b=>b.id===p.id)).map(p=>{
-    const evaluated=isolatedEvaluation(p,now,(before.profiles.find(r=>r.id===p.id)?.rows||[]).map(r=>r.id));
+    const evaluated=isolatedEvaluation(p,now,(before.profiles.find(r=>r.id===p.id)?.rows||[]).map(r=>r.id),{collectAvailability:false});
     return {...evaluated,evidenceMeta:departures.metadata(evaluated,codeHash,now)};
   });
   const afterSnapshot=outcomes.snapshot(root,Date.parse(now));

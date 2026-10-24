@@ -86,16 +86,24 @@ function inspect(before, after, context = {}) {
     : '原因未確定・同一入力の評価変化を点検';
   const held = !after || specification || conflict || roots.some(r=>r.code==='unresolved-review');
   const fields = [];
+  const sourceTargets=[];
+  const independentFailures=reasons.filter(reason=>reason==='単体年換算資金効率条件'&&Number.isFinite(after?.efficiency?.annual)&&!previousOfferExpired
+    || reason==='国内PSA9比率'&&Number.isFinite(after?.psa9?.ratio)&&!(after.psa9.reasons||[]).length&&!previousOfferExpired);
   if (!held) {
-    if (previousOfferExpired || purchase?.fresh===false || !purchase && !roots.some(r=>r.code==='out-of-stock')) fields.push('shopStateA');
+    const missingBuy=(after?.efficiency?.blockingReasons||[]).some(r=>r==='期限超過・再確認待ち'||r==='未取得');
+    if (previousOfferExpired || purchase?.fresh===false || !purchase && (missingBuy||has(/購入価格|買値|状態A価格|店舗価格/))&&!roots.some(r=>r.code==='out-of-stock')) fields.push('shopStateA');
+    if(previousOfferExpired)sourceTargets.push({field:'shopStateA',source:priorSource,url:priorQuote.url||prior.url||null,
+      reason:'以前採用していた期限切れの購入先を再確認。新鮮な別店舗の反復取得では代用しない'});
     if (has(/中央値/) && has(/古値|古い|不足|未取得/) || after?.medianEvidence?.reasons?.length) fields.push('referenceMedian');
     if (has(/買取.*不足|買取出口/)) fields.push('buybackExitEvidence');
     if (has(/PSA9.*不足|PSA9.*日時|PSA9.*未取得/)) fields.push('psa9Evidence');
     if (has(/公式.*不足|Population.*未取得|PSA公式.*未取得/)) fields.push('psaOfficial');
   }
+  if(independentFailures.length)fields.length=0;
   return {status,comparable,temporalOnly,settingsChanged,codeChanged,changedInputs,roots,derived,
     newFailures,existingFailures:reasons.filter(r=>previous.includes(r)),directFailures:reasons.filter(r=>!derived.some(d=>d.reason===r)),
-    repair:{fields:unique(fields),automaticReviewRelease:false,held,reason:!after?'最新カタログに対象なし・原履歴を保持':held?'根拠確認待ち。仕様・対立・アクセス停止を解除しない':'既存の取得元別キューへ。期限・間隔・再試行制限を維持'}};
+    repair:{fields:unique(fields),sourceTargets,independentFailures,automaticReviewRelease:false,held,
+      reason:independentFailures.length?'別の確定条件でも不合格。専用の同じ反復取得を外し通常巡回/値変更検知を維持':!after?'最新カタログに対象なし・原履歴を保持':held?'根拠確認待ち。仕様・対立・アクセス停止を解除しない':'既存の取得元別キューへ。期限・間隔・再試行制限を維持'}};
 }
 function summarize(rows) {
   const byCause={},ids=new Set();

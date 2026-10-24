@@ -140,6 +140,13 @@ function savedNameIndex(cards, summary, sourceRows, english) {
   return index;
 }
 function resolvedEnglishName(card, englishName, index) {
+  const identity=cardIdentity(card),denominator=String(card.name||'').match(/\d+\s*\/\s*(\d+)\s*\]/)?.[1];
+  const printNames=require('./psa-name-aliases.json').verifiedPrintNames||[];
+  const proof=printNames.find(r=>identity?.set===r.set&&identity.no===r.number&&denominator===r.denominator
+    &&r.language==='ja'&&!/【(?:中国語版|韓国語版|英語版)】/.test(card.name||'')&&japaneseTitle(card)===r.catalogTitle
+    &&r.evidence?.length>=2);
+  if(proof)return {name:proof.englishTitle,method:'official-verified-print-name',evidence:proof.evidence,
+    catalogTitle:proof.catalogTitle,officialTitle:proof.officialTitle};
   const evidence = (index.get(japaneseTitle(card)) || []).filter(r => r.cardId !== card.id);
   const prints = new Set(evidence.map(r => `${r.set}|${r.no}|${r.sourceUrl}`));
   if (prints.size >= 2 && evidence.every(r => namesCompatible(evidence[0].title, { name: r.title }))) {

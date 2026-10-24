@@ -63,7 +63,7 @@ function run() {
   const focus = buildFocus(ROOT);
   const profileTargets=read('work/search-profile-targets.json');
   const executablePlans=profilePlans(profileTargets);
-  const requested=new Set([...(profileTargets.readyRoutes?.domesticShops || profileTargets.routes?.domesticShops || []).map(r=>r.id),
+  const requested=new Set([...(profileTargets.readyRoutes?.domesticShops || profileTargets.routes?.domesticShops || []).filter(r=>require('./profile_completion_routes').requestForSource(r,'hareruya2')).map(r=>r.id),
     ...(read('data/state-a-url-discovery.json').records||[]).filter(r=>r.status==='linked').map(r=>r.id)]);
   const shopGuard=read('work/candidate-shop-refresh.json').checkpoints?.hareruya2 || {};
   const guard={...shopGuard,jobs:read('work/priority-price-checkpoint.json').sources?.hareruya2?.jobs||{}};

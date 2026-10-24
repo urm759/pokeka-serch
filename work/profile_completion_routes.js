@@ -18,7 +18,21 @@ function buybackState(row,meta,now=Date.now()) {
   if(meta.fullListingConfirmedAt!==meta.lastSuccess)return 'coverage-incomplete';
   return meta.unmatched===0?'confirmed-unlisted':'unmatched-or-unlisted';
 }
-function prospectPlan(card,fields,{shops={},linkage={},psaProgress={},psaAccess=null,tradeReceipt=null,priceEvidence=null,priceAudit=null,storeMode='all',selected=[],now=Date.now()}={}) {
+function sourceForUrl(url){try{const u=new URL(url);if(u.protocol!=='https:')return null;return {'hareruya2.com':'hareruya2','torecacamp-pokemon.com':'torecacamp','cardrush-pokemon.jp':'cardrush','yuyu-tei.jp':'yuyutei'}[u.hostname.replace(/^www\./,'')]||null;}catch{return null;}}
+function requestForSource(row,source){return !Array.isArray(row.sourceTargets)||row.sourceTargets.some(t=>t.source===source);}
+function minimalMedian(evidence){
+  const origins=new Set((evidence.rows||[]).filter(r=>r.fresh&&r.origin).map(r=>r.origin));
+  const freshSources=new Set((evidence.rows||[]).filter(r=>r.fresh).map(r=>sourceForUrl(r.url)).filter(Boolean));
+  const needed=Math.max(0,2-origins.size),targets=[];
+  for(const row of evidence.omitted||[]){
+    const source=sourceForUrl(row.url);if(!['hareruya2','torecacamp'].includes(source)||freshSources.has(source)||origins.has(source)||origins.has(new URL(row.url).hostname))continue;
+    if(!/古値|日時不明|期限/.test(row.reason||'')||/仕様|対立|不一致|状態|実売根拠/.test(row.reason||''))continue;
+    if(targets.some(r=>r.source===source))continue;
+    targets.push({source,url:row.url,at:row.observedAt||null});if(targets.length>=needed)break;
+  }
+  return {needed,targets:needed?targets:[],automatic:needed>0&&targets.length>=needed};
+}
+function prospectPlan(card,fields,{shops={},linkage={},psaProgress={},psaAccess=null,tradeReceipt=null,priceEvidence=null,priceAudit=null,storeMode='all',selected=[],repairTargets=[],now=Date.now()}={}) {
   const requirements=[];
   for(const field of [...new Set(fields)]) {
     if(field==='buybackExitEvidence' || field==='buyback'){
@@ -51,6 +65,12 @@ function prospectPlan(card,fields,{shops={},linkage={},psaProgress={},psaAccess=
         url:url || null,candidateUrls:source.candidateOfficialUrls || [],reason:waiting?retry.reason:/pokemon-asia/i.test(url || '')?'日本語版の根拠不足':source.ambiguityReason || null,
         nextAction:usable?'PC正規認証取得→仕様照合→保存→公開':'正規セットURL・日本語・番号・仕様の確認',resumeCondition:usable?'認証済み通常ページへのアクセス確認':'公式リンクと同一仕様の根拠確定'});
     }else if(field==='referenceMedian'){
+      if(card.medianEvidence?.rows){
+        const plan=minimalMedian(card.medianEvidence);
+        requirements.push({field,source:'domesticShops',state:plan.needed?'minimum-independent-source-refresh':'median-evidence-already-ready',
+          automatic:plan.automatic,targets:plan.targets,requiredIndependent:2,remainingIndependent:plan.needed,
+          nextAction:plan.automatic?'不足する独立元だけ再確認。新鮮な採用元は再取得しない':'独立元の不足/停止・根拠を確認。単一店舗への置換なし',resumeCondition:'同一仕様・同等状態の新鮮な独立元が2以上'});continue;
+      }
       const rows=(card.priceAggregation?.included || []).filter(r=>{
         const at=Date.parse(r.updatedAt||r.observedAt||'');return !Number.isFinite(at)||at>now||now-at>48*3600000;
       });
@@ -61,8 +81,10 @@ function prospectPlan(card,fields,{shops={},linkage={},psaProgress={},psaAccess=
         automatic:automatic&&!conflicted,evidence:sources,
         nextAction:'古い採用元そのものの正規再確認。別店舗の新鮮価格だけを繰り返さず、価格対立は自動解除しない',resumeCondition:'同一仕様・個別日時・採用元の正常再確認'});
     }else if(field==='shopStateA'){
-      const urls=['hareruya2','torecacamp'].flatMap(source=>card[source+'Url']?[{source,url:card[source+'Url']}]:[]);
-      requirements.push({field,source:'domesticShops',state:urls.length?'price-and-stock-acquisition':'url-discovery',automatic:true,urls,
+      const requested=repairTargets.filter(t=>t.field===field);
+      const all=requested.length?requested:['hareruya2','torecacamp'].flatMap(source=>card[source+'Url']?[{source,url:card[source+'Url']}]:[]);
+      const urls=requested.length?all:all.slice(0,1),automatic=urls.length?urls.every(t=>['hareruya2','torecacamp'].includes(t.source)):true;
+      requirements.push({field,source:'domesticShops',state:!automatic?'source-access-or-identity-review':urls.length?'price-and-stock-acquisition':'url-discovery',automatic,urls,targets:urls,
         nextAction:urls.length?'状態A・在庫・価格・個別取得日時の実確認':'正規商品一覧の差分探索→仕様照合→実価格確認',resumeCondition:'取得元アクセス正常・仕様一意。403元は別停止'});
     }else if(['domesticTrades','psa10Trades'].includes(field)){
       const evidence=require('./domestic_trade_evidence').inspect(tradeReceipt,card,field,now);
@@ -91,4 +113,4 @@ function prospectPlan(card,fields,{shops={},linkage={},psaProgress={},psaAccess=
   return {requirements,allRequiredPathsAutomatic:requirements.every(r=>r.automatic),blockedFields:requirements.filter(r=>!r.automatic).map(r=>r.field),
     note:'全経路が自動でも値の存在・指定条件への適合は未確定。未掲載や0件は不足を取得済みへ置換しない'};
 }
-module.exports={buybackState,prospectPlan};
+module.exports={buybackState,prospectPlan,requestForSource,minimalMedian};

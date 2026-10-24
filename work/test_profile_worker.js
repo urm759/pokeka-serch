@@ -14,6 +14,7 @@ assert.throws(()=>isolatedPair(input,()=>({status:0,stdout:JSON.stringify({...ou
 assert.throws(()=>isolatedPair(input,()=>({status:0,stdout:'truncated'})));
 assert.deepEqual(isolatedPair({...input,single:true},()=>({status:0,stdout:JSON.stringify({urlOnly:output.urlOnly})})),{urlOnly:output.urlOnly});
 const cycle=require('node:fs').readFileSync(require('node:path').join(__dirname,'search_profile_cycle.js'),'utf8');
-assert(cycle.includes('isolatedEvaluation(p,at)')&&cycle.includes('isolatedEvaluation(p,now,'),'before and after cycle audits release caches between profiles');
+assert(cycle.includes('isolatedEvaluation(p,at,')&&cycle.includes('isolatedEvaluation(p,now,'),'before and after cycle audits release caches between profiles');
+assert(cycle.includes('collectAvailability:false'),'cycle qualification must not repeat unrelated four-period diagnostics before acquisition');
 assert(!cycle.includes('const calculationCache=new Map()'));
 console.log('PASS bounded sequential profile workers; no partial publication or identity substitution');

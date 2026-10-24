@@ -124,7 +124,7 @@ async function main() {
     workflowRunId:process.env.GITHUB_RUN_ID || null,workflowTrigger:process.env.GITHUB_EVENT_NAME || null,
     executionEnvironment:process.env.GITHUB_ACTIONS === 'true'?'GitHub Actions':'PCローカル',
     newAcquiredCount: 0, newLinkedCount: 0, changedCount: 0, failedCount: 0, httpRequests: 0,
-    proactiveAttempted:0, proactiveVerified:0, deadlineOrderVersion:"deadline-v4-adaptive-maintenance",
+    proactiveAttempted:0, proactiveVerified:0, deadlineOrderVersion:"deadline-v5-required-source-earliest-time",
     candidateTargets: deadlineMode ? planned.records.length : candidates.length, previouslyCompleted: completed.size, records: [], stopReason: null,
     mode: deadlineMode ? "deadline-price-refresh" : "completion-backfill", cacheHits: 0, llmCalls: 0, codexCalls: 0 };
   const byUrl = new Map(catalog.map((entry) => [entry.detailUrl, entry]));

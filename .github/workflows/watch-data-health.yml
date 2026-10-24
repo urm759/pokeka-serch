@@ -13,12 +13,12 @@ permissions:
   contents: write
   actions: read
 
-concurrency:
-  group: all-site-data-refresh
-  cancel-in-progress: false
-
 jobs:
   catchup:
+    if: github.event_name != 'workflow_run'
+    concurrency:
+      group: all-site-data-refresh
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -37,6 +37,8 @@ jobs:
           node work/test_backfill_health.js
           node work/test_backfill_rate.js
           node work/test_deadline_order.js
+          node work/test_minimum_recovery_sources.js
+          node work/test_recovery_latency.js
           node work/test_scheduled_cycle_evidence.js
           node work/test_postpass_cadence.js
           node work/test_bulk_individual_freshness.js
@@ -45,15 +47,18 @@ jobs:
           node work/test_saved_camp_recovery.js
           node work/test_automatic_operation.js
           node work/test_overseas_cancellation.js
+      - name: Check saved publication before optional acquisition
+        id: catchup_plan
+        run: node work/catchup_validation_mode.js
       - name: Fill missed price intervals with shared cooldown and access budgets
+        if: steps.catchup_plan.outputs.mode == 'acquire'
         run: |
           node work/scheduled_cycle_evidence.js catchup --baseline
           node work/run_priority_price_refresh.js --catchup
       - name: Validate catchup data without changing purchase criteria
         id: catchup_validation
         run: |
-          # Acquisition may be skipped by cooldown; saved data still needs a coherent audit.
-          if [ "$(node -p "require('./data/priority-price-execution.json').runId || ''")" != "$GITHUB_RUN_ID" ]; then
+          if [ "${{ steps.catchup_plan.outputs.mode }}" = "rebuild" ]; then
             node work/build_card_completion.js
             node work/finalize_update_status.js
           fi
@@ -69,10 +74,15 @@ jobs:
           node work/test_purchase_limit_audit.js
           node work/test_card_catalog_completion.js
           node work/test_cadence_payload.js
-          node work/measure_performance_guard.js
-          node work/scheduled_cycle_evidence.js catchup
+          node work/test_publication_lineage.js
+          node work/test_catchup_reuse.js
+          node work/test_ui_data.js
+          if [ "${{ steps.catchup_plan.outputs.mode }}" != "reuse" ]; then
+            node work/measure_performance_guard.js
+            node work/scheduled_cycle_evidence.js catchup
+          fi
       - name: Publish changed health state only
-        if: always() && steps.catchup_validation.outcome == 'success'
+        if: always() && steps.catchup_validation.outcome == 'success' && steps.catchup_plan.outputs.mode != 'reuse'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -101,6 +111,9 @@ jobs:
   watch:
     needs: catchup
     if: always()
+    concurrency:
+      group: site-data-health-observation
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
@@ -126,7 +139,7 @@ jobs:
           node work/test_ui_data.js
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data work/automatic-workflow-evidence.json work/verified-price-cadence-history.json work/calendar-progress-history.json
+          git add data work/automatic-workflow-evidence.json work/verified-price-cadence-history.json work/calendar-progress-history.json work/priority-freshness-history.json work/priority-price-checkpoint.json
           node work/publish_data_checkpoint.js "Publish independent data health observation"
       - name: Report newly detected alerts
         run: node work/watch_update_health.js --report-alerts

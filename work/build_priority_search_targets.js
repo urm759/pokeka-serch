@@ -18,7 +18,7 @@ function efficiencySummaryKey(calculationKey,state) {
 }
 function evaluatePair(input) {
   const cache=new Map();
-  if(input.single)return {urlOnly:evaluate(input.profile,input.at,{},input.inspectIds,cache)};
+  if(input.single)return {urlOnly:evaluate(input.profile,input.at,{},input.inspectIds,cache,input.options)};
   return {urlOnly:evaluate(input.profile,input.at,{},input.inspectIds,cache),
     knownSavedConditions:evaluate(input.profile,input.at,input.overlay,[],cache)};
 }
@@ -31,12 +31,12 @@ function isolatedPair(input,execute=require('node:child_process').spawnSync) {
   if(result.urlOnly?.id!==input.profile.id || !input.single&&result.knownSavedConditions?.id!==input.profile.id)throw Error('Profile worker identity mismatch');
   return result;
 }
-function isolatedEvaluation(profile,at,inspectIds=[]) {
-  return isolatedPair({profile,at,inspectIds,single:true}).urlOnly;
+function isolatedEvaluation(profile,at,inspectIds=[],options={}) {
+  return isolatedPair({profile,at,inspectIds,single:true,options}).urlOnly;
 }
-function evaluate(profile,at,overlay={},inspectIds=[],calculationCache=null) {
+function evaluate(profile,at,overlay={},inspectIds=[],calculationCache=null,options={}) {
   const url=new URL(profile.url);for(const [k,v]of Object.entries(overlay))if(!url.searchParams.has(k))url.searchParams.set(k,v);
-  const api=load(fs.readFileSync(path.join(ROOT,'app.js'),'utf8'),at,{url:url.href,fixedModelClock:true}),calculationKey=at+':'+api.computationKey();
+  const api=load(fs.readFileSync(path.join(ROOT,'app.js'),'utf8'),at,{url:url.href,fixedModelClock:true,dataRef:options.dataRef}),calculationKey=at+':'+api.computationKey();
   let cards=calculationCache?.get(calculationKey);
   if(!cards){cards=api.prepareCalculatedCards(api.state.cards);calculationCache?.set(calculationKey,cards);}
   const summaryKey=efficiencySummaryKey(calculationKey,api.state);
@@ -63,8 +63,8 @@ function evaluate(profile,at,overlay={},inspectIds=[],calculationCache=null) {
   const scope={catalog:cards.length,unknownPriceCards:0,confirmedPriceFailures:0,identityHeld:0,qualified:0,completionProspects:0,notSelected:0};
   for(const c of cards) {
     const excluded=api.cardSearchExclusions(c),e=api.cardEfficiency(c);
-    if(!sharedAllCatalog)countEfficiency(efficiencyAvailability.allCatalog.main,e);
-    for(const days of sharedAllCatalog?[]:require('../exploration-metrics').observationPeriods){
+    if(!sharedAllCatalog&&options.collectAvailability!==false)countEfficiency(efficiencyAvailability.allCatalog.main,e);
+    for(const days of sharedAllCatalog||options.collectAvailability===false?[]:require('../exploration-metrics').observationPeriods){
       const group=efficiencyAvailability.allCatalog.comparisons[days]||={calculated:0,reference:0,unavailable:0,reasons:{}};
       countEfficiency(group,api.cardEfficiency(c,Date.parse(at),api.state.purchaseMode,'obs'+days));
     }
@@ -92,7 +92,7 @@ function evaluate(profile,at,overlay={},inspectIds=[],calculationCache=null) {
     const confirmedEfficiencyFail=missing.length===0&&Number.isFinite(e.annual)&&p.has('effMin')&&e.annual<Number(p.get('effMin'));
     const prospect=excluded.length>0&&!priceFail&&!hard&&!confirmedEfficiencyFail&&fields.length>0&&knownDisqualifying.length===0;
     const selected=!excluded.length;
-    if(selected||prospect) {
+    if((selected||prospect)&&options.collectAvailability!==false) {
       countEfficiency(efficiencyAvailability.main,e);
       for(const days of require('../exploration-metrics').observationPeriods) {
         const group=efficiencyAvailability.comparisons[days]||={calculated:0,reference:0,unavailable:0,reasons:{}};
@@ -103,15 +103,19 @@ function evaluate(profile,at,overlay={},inspectIds=[],calculationCache=null) {
     const discoveryPriority=require('./profile_discovery_gates').priority(c,completion.cards?.[c.id],support);
     if(hard)scope.identityHeld++;
     if(selected)scope.qualified++;else if(prospect)scope.completionProspects++;else scope.notSelected++;
+    const completionPlan=prospect?require('./profile_completion_routes').prospectPlan({...c,medianEvidence:e.medianEvidence},fields,{shops,linkage,psaProgress,psaAccess,tradeReceipt,priceEvidence,priceAudit,now:Date.parse(at),storeMode:p.get('buybackStores') || 'mail',selected:(p.get('selectedStores') || '').split(',')}):null;
     if(selected||prospect)rows.push({id:c.id,name:c.name,qualified:selected,unverifiedProspect:prospect,missing:[...new Set(fields)],reasons:excluded,
       buy:e.purchasePrice,profit:e.profit,annual:e.annual,go:c.purchaseDecision?.verdict||c.purchaseDecision?.status||null,priority:discoveryPriority.score,priorityReasons:discoveryPriority.reasons,priceGates,
       metrics:require('./profile_candidate_evidence').cardFacts(api,c),
-      completionPlan:prospect?require('./profile_completion_routes').prospectPlan(c,fields,{shops,linkage,psaProgress,psaAccess,tradeReceipt,priceEvidence,priceAudit,now:Date.parse(at),storeMode:p.get('buybackStores') || 'mail',selected:(p.get('selectedStores') || '').split(',')}):null});
+      completionPlan});
     if(prospect)for(const route of routeNeededFields(completion.cards?.[c.id],fields)) {
-      (routes[route.source]||=[]).push({id:c.id,field:route.key,mode:route.mode,priority:discoveryPriority.score});
+      const requirement=completionPlan.requirements.find(r=>r.field===route.key);
+      (routes[route.source]||=[]).push({id:c.id,field:route.key,mode:route.mode,priority:discoveryPriority.score,
+        automatic:requirement?.automatic,sourceTargets:requirement?.targets});
     }
   }
-  if(!sharedAllCatalog)calculationCache?.set(summaryKey,efficiencyAvailability.allCatalog);
+  if(options.collectAvailability===false)efficiencyAvailability.status='not-collected-in-cycle; full diagnostic remains in priority-search-profile-audit';
+  else if(!sharedAllCatalog)calculationCache?.set(summaryKey,efficiencyAvailability.allCatalog);
   return {id:profile.id,reportName:require('./search_profile_variants').reportName(profile.id),urlHash:hash(profile.url),parameters:Object.fromEntries([...url.searchParams].filter(([k])=>!['cap','locked','reserve','maxShare','batch'].includes(k))),
     qualified:rows.filter(r=>r.qualified).length,ids:rows.filter(r=>r.qualified).map(r=>r.id),prospects:rows.filter(r=>r.unverifiedProspect).length,reasons,rows,routes,scope,allExclusions,inspectedRows,efficiencyAvailability,
     explanation:'既知価格範囲を通った不足カードは未判定の補完候補。適合/GOとは数えない。原因の重複数と候補減少は別'};
@@ -168,18 +172,19 @@ function build(root=ROOT,at=new Date().toISOString()) {
       if(Object.values(p.urlOnly.inspectedRows[id]?.priceGates||{}).includes('fail'))
         departureAudit.repair={...departureAudit.repair,fields:[],reason:'既知の価格帯条件で不合格。追加の反復補完はせず通常巡回を維持'};
       targets.pendingDepartures.push({id,profile:p.urlOnly.id,before,beforeMeta,after,departureAudit,firstObservedAt:saved?.firstObservedAt||at,lastCheckedAt:at});
-      const card={...rawCards.get(id),priceAggregation:{comparison:after?.priceReview,included:(after?.priceReview?.sources||[]).map(r=>({...r,updatedAt:r.at}))},
+      const card={...rawCards.get(id),medianEvidence:after?.medianEvidence,priceAggregation:{comparison:after?.priceReview,included:(after?.priceReview?.sources||[]).map(r=>({...r,updatedAt:r.at}))},
         buybackAnalysis:{rows:(after?.buyback||[]).map(r=>({...r,buybackPrice:r.price}))}};
       const params=new URL(definitions.find(d=>d.id===p.urlOnly.id).url).searchParams;
       const plan=require('./profile_completion_routes').prospectPlan(card,departureAudit.repair.fields,{...repairContext,
-        storeMode:params.get('buybackStores')||'mail',selected:(params.get('selectedStores')||'').split(',')});
+        storeMode:params.get('buybackStores')||'mail',selected:(params.get('selectedStores')||'').split(','),repairTargets:departureAudit.repair.sourceTargets});
       for(const route of routeNeededFields(completion.cards?.[id]||{},departureAudit.repair.fields)) {
         const requirement=plan.requirements.find(r=>r.field===route.key);
         targets.repairRequests.push({id,profile:p.urlOnly.id,field:route.key,source:route.source,mode:route.mode,
-          automatic:requirement?.automatic===true,stopReason:requirement?.reason||requirement?.state||null,
+          automatic:requirement?.automatic===true,sourceTargets:requirement?.targets,stopReason:requirement?.reason||requirement?.state||null,
           reason:departureAudit.status,automaticReviewRelease:false});
       }
-      if(departureAudit.repair.fields.some(f=>['shopStateA','referenceMedian'].includes(f)))targets.freshnessRecovery.push({id,profile:p.urlOnly.id,reason:'以前適合・根拠の期限/不足を再確認。復帰・GOは未確定'});
+      if(departureAudit.repair.fields.some(f=>['shopStateA','referenceMedian'].includes(f)))targets.freshnessRecovery.push({id,profile:p.urlOnly.id,
+        sourceTargets:plan.requirements.filter(r=>r.automatic&&['shopStateA','referenceMedian'].includes(r.field)).flatMap(r=>r.targets||[]),reason:'以前適合・必要な取得元だけ再確認。復帰・GOは未確定'});
     }
   }
   for(const p of profiles)for(const [source,rows]of Object.entries(p.urlOnly.routes)) {

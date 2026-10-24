@@ -25,10 +25,23 @@ function coherent(read){
   return true;
 }
 function snapshot(root){return hashes(reader(root),SOURCES);}
+function generationCode(root){
+  const files=['','work'].flatMap(dir=>fs.existsSync(path.join(root,dir))?fs.readdirSync(path.join(root,dir))
+    .filter(f=>f.endsWith('.js')&&!/^(test_|verify_|measure_|\d)/.test(f)).map(f=>(dir?dir+'/':'')+f):[]).sort();
+  return digest(JSON.stringify(hashes(reader(root),[...files,'work/psa-name-aliases.json','work/priority-search-profiles.json'])));
+}
+function reuseInputs(root){
+  const read=reader(root),manifest=read('data/ui/manifest.json');
+  const summaries=manifest?JSON.parse(manifest).detailSources||[]:[];
+  const files=[...new Set([...SOURCES,...summaries.filter(f=>f!=='data/update-status.json'),
+    'data/psa-japan-services.json',...['cardrush_catalog','hareruya2_catalog','yuyutei_catalog','torecacamp_catalog',
+    'shop_buyback_catalog','priority_psa_rows','snkr_english_names'].map(n=>'work/'+n+'.json')])].sort();
+  return digest(JSON.stringify(hashes(read,files)));
+}
 function seal(root,expected){
   const read=reader(root);coherent(read);
   same(snapshot(root),expected,'sources changed during finalization');
-  const result={version:1,sources:expected,derived:hashes(read,DERIVED)};
+  const result={version:1,sources:expected,derived:hashes(read,DERIVED),generationCode:generationCode(root),reuseInputs:reuseInputs(root)};
   const target=path.join(root,FILE);fs.writeFileSync(target+'.tmp',JSON.stringify(result));fs.renameSync(target+'.tmp',target);
   return result;
 }
@@ -41,4 +54,4 @@ function verify(root,{staged=false}={}){
   same(hashes(read,DERIVED),record.derived,'summary revision changed after finalization');
   return record;
 }
-module.exports={SOURCES,DERIVED,FILE,snapshot,seal,verify,coherent};
+module.exports={SOURCES,DERIVED,FILE,snapshot,seal,verify,coherent,generationCode,reuseInputs};

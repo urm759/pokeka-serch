@@ -7,6 +7,7 @@ function cardFacts(api,card) {
     sources[source]={price:r[source+'Price']??r.price??null,stock:r.stock??null,available:r.available??null,
       priceObservedAt:r.priceObservedAt||r.observedAt||r.updatedAt||null,
       inventoryObservedAt:r.inventoryObservedAt||r.observedAt||r.updatedAt||null,
+      url:r.detailUrl||r.url||card[source+'Url']||null,
       sourceFailure:api.state.updateStatus?.sources?.[source]?.lastError||null};
   }
   const review=card.priceAggregation?.comparison || card.priceAggregation || {};
@@ -25,7 +26,8 @@ function cardFacts(api,card) {
     priceReview:{conflicted:Boolean(review.conflicted),integrityDisputed:Boolean(card.priceIntegrity?.disputed),
       manualReview:Boolean(card.dataQuality?.manualReview),reasons:review.reasons||[],
       sources:[...(review.included||[]),...(review.excluded||[])].map(r=>({source:r.source,url:r.url||null,value:r.value??r.price??null,at:r.updatedAt||r.observedAt||null,reason:r.reason||null}))},
-    medianEvidence:{reasons:eff.medianEvidence?.reasons||[]},
+    medianEvidence:eff.medianEvidence?{reasons:eff.medianEvidence.reasons||[],independent:eff.medianEvidence.independent,
+      value:eff.medianEvidence.value,rows:eff.medianEvidence.rows,omitted:eff.medianEvidence.omitted}:null,
     inputs:{fee:api.state.fee??null,saleFeeRate:api.state.saleFeeRate??null,saleExtraCost:api.state.saleExtraCost??null,
       buybackDeductionRate:api.state.buybackDeductionRate??null,hitRate:card.buyLimits?.clean?.assumptions?.hitRate??null},
     assessment:{supplyRisk:card.overallAssessment?.supplyRisk??null,marketStability:card.overallAssessment?.marketStability??null,

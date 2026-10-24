@@ -19,6 +19,10 @@ assert.equal(b.savedRematchProof(card,'Sylveon CSR','Sylveon V',{...raw,captureV
 assert.equal(b.savedRematchProof(card,'Sylveon CSR','Sylveon V',{...raw,url:raw.url.replace('pokemon-japanese','pokemon-english')},[raw]), false);
 assert.equal(b.savedRematchProof(card,'Sylveon CSR','Sylveon V',raw,[raw,{...raw,url:raw.url+'2'}]), false);
 assert.equal(b.namesCompatible('N Plan', { name: "N's Plot |" }), false, 'unproved translations remain held');
+assert.equal(b.resolvedEnglishName({name:'フシギバナ SR[SV2a 184/165]'},'Venusaur',new Map()).name,'Venusaur EX');
+assert.notEqual(b.resolvedEnglishName({name:'フシギバナ SR[SV2a 184/166]'},'Venusaur',new Map()).name,'Venusaur EX');
+assert.notEqual(b.resolvedEnglishName({name:'フシギバナ SR[SV2a 185/165]'},'Venusaur',new Map()).name,'Venusaur EX');
+assert.notEqual(b.resolvedEnglishName({name:'フシギバナ SR[SV2a 184/165]【英語版】'},'Venusaur',new Map()).name,'Venusaur EX');
 assert(b.namesCompatible("Zinnia's Determination SR [S7R 079/067]", {name:"Full Art/Zinnia's Resolve |"}));
 assert(b.namesCompatible('Miss Fortunes HR [S10a 096/071]', {name:'Full Art/Miss Fortune Sisters | Hyper Rare |'}));
 assert(!b.namesCompatible("Misty's Determination", {name:"Misty's Vitality | Super Rare |"}), 'different trainer cards are not synonyms');
