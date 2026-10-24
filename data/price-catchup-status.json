@@ -1,28 +1,28 @@
 {
-  "startedAt": "2026-10-24T16:04:39.629Z",
-  "runId": "40109795176",
+  "startedAt": "2026-10-24T18:51:16.130Z",
+  "runId": "40122543394",
   "event": "schedule",
   "route": "通常価格更新",
   "status": "acquired-saved",
   "allowed": true,
-  "ageMs": 17347130,
+  "ageMs": 9996097,
   "minimumIntervalMs": 7200000,
   "reason": "定期の空白・既存の期限順キューで補完",
   "llmCalls": 0,
   "codexCalls": 0,
   "sourceFailures": [],
   "acquisitionStatus": "process-success",
-  "endedAt": "2026-10-24T16:17:24.662Z",
-  "durationMs": 765033,
+  "endedAt": "2026-10-24T19:02:37.872Z",
+  "durationMs": 681742,
   "outcomes": {
-    "baselineAt": "2026-10-24T16:04:39.629Z",
+    "baselineAt": "2026-10-24T18:51:16.130Z",
     "commonCards": 12545,
     "addedCards": 0,
     "removedCards": 0,
     "newlyAnalyzable": 0,
     "lostAnalyzable": 0,
-    "filledCards": 0,
-    "filledItems": 0,
+    "filledCards": 1,
+    "filledItems": 1,
     "sources": {
       "cardrush": {
         "newLinked": 0,
@@ -36,7 +36,7 @@
         "validAdded": 0,
         "validLost": 0,
         "usableNet": 0,
-        "freshnessRecovered": 40
+        "freshnessRecovered": 41
       },
       "yuyutei": {
         "newLinked": 0,
