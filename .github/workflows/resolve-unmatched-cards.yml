@@ -44,6 +44,9 @@ jobs:
         run: node work/audit_link_coverage.js
       - name: Commit resolved mappings
         run: |
+          node work/build_card_completion.js
+          node work/build_purchase_limit_audit.js
+          node work/finalize_update_status.js
           node work/build_ui_data.js
           node work/test_ui_data.js
           git config user.name "github-actions[bot]"

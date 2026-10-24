@@ -20,6 +20,16 @@ const broad = plan({...args,fixedIds:['z-early','a-late'],candidateRows:Object.f
 assert.deepEqual(broad.queue.slice(0,4).map(r=>r.card.id),['z-early','a-late','overdue','normal'],
   'old broad-exploration prices must not take the fixed maintenance reservations');
 assert.equal(broad.queue.length,selected.length,'reserving maintenance slots must not drop other candidates');
+const pressureCards=Array.from({length:40},(_,i)=>({id:'card'+i,name:'card'+i,hareruya2Url:'https://example.test/'+i}));
+const pressure=plan({sourceId:'hareruya2',now,cards:pressureCards,
+  fixedIds:pressureCards.slice(0,20).map(c=>c.id),
+  candidateRows:Object.fromEntries(pressureCards.slice(20,30).map(c=>[c.id,{}])),
+  catalog:pressureCards.map((c,i)=>({cardId:c.id,observedAt:new Date(now-(i>=30?721:7)*3600000).toISOString()}))});
+const firstEight=pressure.queue.slice(0,8);
+assert.equal(firstEight.filter(r=>r.fixedTarget).length,5,'deadline pressure must retain a fifth maintenance slot');
+assert.equal(firstEight.filter(r=>!r.important).length,2,'ordinary traversal stays 25 percent');
+assert.equal(firstEight.filter(r=>r.important&&!r.fixedTarget).length,1,'new candidate work must retain capacity');
+assert.equal(new Set(pressure.queue.map(r=>r.card.id)).size,pressure.queue.length,'no duplicate requests');
 assert.equal(plan({...args,now:now+2*60000}).queue.find(r=>r.card.id==='retry')?.status,'次回完了前に期限切れ・先回り待ち');
 const weak=estimate({importantCount:300,eligibleCount:150,verifiedCount:20,durationMs:360000});
 assert.equal(weak.requiredPerRun,100);assert.equal(weak.availablePerRun,15);assert.equal(weak.deficitPerRun,85);assert.equal(weak.sustainable,false);

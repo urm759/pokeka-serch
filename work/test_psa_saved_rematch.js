@@ -19,6 +19,10 @@ assert.equal(b.savedRematchProof(card,'Sylveon CSR','Sylveon V',{...raw,captureV
 assert.equal(b.savedRematchProof(card,'Sylveon CSR','Sylveon V',{...raw,url:raw.url.replace('pokemon-japanese','pokemon-english')},[raw]), false);
 assert.equal(b.savedRematchProof(card,'Sylveon CSR','Sylveon V',raw,[raw,{...raw,url:raw.url+'2'}]), false);
 assert.equal(b.namesCompatible('N Plan', { name: "N's Plot |" }), false, 'unproved translations remain held');
+assert(b.namesCompatible("Zinnia's Determination SR [S7R 079/067]", {name:"Full Art/Zinnia's Resolve |"}));
+assert(b.namesCompatible('Miss Fortunes HR [S10a 096/071]', {name:'Full Art/Miss Fortune Sisters | Hyper Rare |'}));
+assert(!b.namesCompatible("Misty's Determination", {name:"Misty's Vitality | Super Rare |"}), 'different trainer cards are not synonyms');
+assert(!b.variantsCompatible('野盗三姉妹 HR[S10a 096/071]', 'Miss Fortunes', {name:'Miss Fortune Sisters | Missing Texture |'}));
 assert.equal(b.namesCompatible('Friends of Paldea SR [SV8a 195/187]', {name:'Friends in Paldea | Super Rare |'}),true);
 assert.equal(b.namesCompatible('Alola Vulpix VSTAR HR [S11a 087/068]', {name:'Full Art/Alolan Vulpix Vstar | Hyper Rare |'}),true);
 assert.equal(b.namesCompatible('Alola Vulpix V SR [S11a 077/068]', {name:'Full Art/Alolan Vulpix V |'}),true);

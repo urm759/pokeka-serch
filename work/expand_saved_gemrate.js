@@ -28,8 +28,11 @@ function run(store=STORE) {
         held:parsed.quarantined.filter(r=>r.reason==='source-discrepancy-hold').length,reviewReasons:match.review.reduce((a,r)=>(a[r.reason]=(a[r.reason]||0)+1,a),{})});
     }
     const ids=new Set(outputs.flatMap(r=>JSON.parse(fs.readFileSync(r.path)).accepted.map(r=>r.cardId)));
-    const result={at:new Date().toISOString(),previousReviewed:previous.exactReviewedIdentities,reviewed:outputs[0].mapped,
-      newlyReviewed:outputs[0].mapped-previous.exactReviewedIdentities,acceptedCards:ids.size,
+    const priorExpandedFile=path.join(store,'expanded-verification-report.json');
+    const priorExpanded=fs.existsSync(priorExpandedFile)?JSON.parse(fs.readFileSync(priorExpandedFile)):null;
+    const priorReviewed=priorExpanded?.reviewed??previous.exactReviewedIdentities;
+    const result={at:new Date().toISOString(),previousReviewed:priorReviewed,reviewed:outputs[0].mapped,
+      newlyReviewed:outputs[0].mapped-priorReviewed,acceptedCards:ids.size,
       acceptedObservations:outputs.reduce((n,r)=>n+r.accepted,0),remainingSpecifications:121-outputs[0].mapped,
       discrepancyHeldCards:1,trendHeldPoints:53,outputs,publicRecords:0,officialPopUpdates:0,newAnalyzable:0};
     const f=path.join(store,'expanded-verification-report.json');

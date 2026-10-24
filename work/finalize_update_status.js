@@ -17,6 +17,8 @@ require('./build_psa9_provenance').verify(ROOT);
 require('./build_linkage_evidence_audit').build(ROOT);
 require('./build_high_rarity_readiness').build(ROOT);
 const popCoverage=require('./build_psa_pop_glance').build(ROOT);
+const publicationLineage=require('./publication_lineage');
+const finalizedSourceSnapshot=publicationLineage.snapshot(ROOT);
 
 function read(relativePath, fallback = {}) {
   try {
@@ -396,5 +398,6 @@ require('./build_priority_search_targets.js').build(ROOT);
 require('./audit_25th_promo.js').build(ROOT);
 require('./monitor_observation').banner(ROOT);
 require('./build_runtime_availability').build(ROOT);
+publicationLineage.seal(ROOT,finalizedSourceSnapshot);
 require('./build_ui_data.js').build(ROOT);
 console.log(JSON.stringify({ complete, completeDate: payload.completeDate, sources }));

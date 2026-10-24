@@ -12,4 +12,11 @@ assert.equal(resolve(rows,context,[...cards,{...cards[0],id:'duplicate'}],{...en
 for(const extra of [{language:'en'},{name:'リーフィアV SR: SA[S6a 071/070]'},{identityKey:null},{identityReviewRequired:true}])assert.equal(resolve([rows[0]],context,[{...cards[0],...extra}],english,options).mappings.length,0);
 assert.equal(resolve([rows[0]],context,cards,{...english,sa:{englishName:'Glaceon V SR: SA[S6a 071/069]'}},options).mappings.length,0);
 assert.throws(()=>resolve(rows,{...context,grader:'CGC'},cards,english,options));
+const energy={id:'energy',name:'基本悪エネルギー UR[S6a 101/069]',identityKey:'energy',language:'ja'};
+const energyEnglish={energy:{englishName:'Basic Darkness Energy UR[S6a 101/069]'}};
+const energyRow={'Card #':'101',Name:'Darkness Energy',Parallel:'Ultra Rare'};
+assert.equal(resolve([energyRow],context,[energy],energyEnglish,options).mappings.length,1);
+for(const row of [{...energyRow,'Card #':'100'},{...energyRow,Parallel:'Missing Texture'},{...energyRow,Name:'Special Darkness Energy'}])
+  assert.equal(resolve([row],context,[energy],energyEnglish,options).mappings.length,0);
+assert.equal(resolve([energyRow],context,[{...energy,name:'別カード UR[S6a 101/069]'}],energyEnglish,options).mappings.length,0);
 console.log('PASS GemRate exact Japanese set/number/name/finish, SA vs SR, duplicate candidates, foreign and persistent discrepancy hold');

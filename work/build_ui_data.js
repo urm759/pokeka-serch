@@ -51,6 +51,9 @@ const SUMMARY = ['card-catalog-completion', 'operational-limit-history', 'market
   'psa-population-summary', 'psa10-period-summary', 'card-catalog/analysis', 'card-catalog/search-index', 'update-status'];
 function build(root = ROOT) {
   require('./enforce_overseas_publication').enforce(root);
+  const lineage=require('./publication_lineage');
+  lineage.verify(root);
+  const sourceSnapshot=lineage.snapshot(root);
   const hashes = {}, aliases = {}, bytes = {};
   const write = (file, text) => {
     const target = path.join(root, file);
@@ -81,6 +84,8 @@ function build(root = ROOT) {
   const result = { version: 1, revision, hashes, aliases, bytes, hashNormalization: 'UTF-8 text; CRLF normalized to LF (Git checkout safe)',
     detailSources: SUMMARY.map(name => `data/${name}.json`),
     rule: 'SHA256を照合して同じ版だけ採用。元データ保持。履歴・海外詳細は必要時に取得。計算・鮮度基準は変更しない' };
+  lineage.verify(root);
+  if(JSON.stringify(sourceSnapshot)!==JSON.stringify(lineage.snapshot(root)))throw Error('Publication version mismatch: sources changed while packing');
   write('data/ui/manifest.json', JSON.stringify(result));
   return result;
 }

@@ -20,6 +20,7 @@ function publish({ cwd = path.join(__dirname, ".."), message = "Publish determin
     return {status:'raw-recovery-saved', published:false, raw};
   }
   if (!captureOnly) syncUiData();
+  if(fs.existsSync(path.join(cwd,'data/card-catalog-completion.json')))require('./publication_lineage').verify(cwd,{staged:true});
   if(fs.existsSync(path.join(cwd,'data/overseas-access-policy.json')))require('./enforce_overseas_publication').verify(cwd,{staged:true});
   const staged = git(["diff", "--cached", "--quiet"], cwd);
   if (staged.ok) return { status: "unchanged", published: false };
@@ -60,6 +61,7 @@ function publish({ cwd = path.join(__dirname, ".."), message = "Publish determin
       record.attempts.push({stage:'regenerate-derived',ok:true});
     }
     syncUiData();
+    if(fs.existsSync(path.join(cwd,'data/card-catalog-completion.json')))require('./publication_lineage').verify(cwd,{staged:true});
     if(fs.existsSync(path.join(cwd,'data/overseas-access-policy.json')))require('./enforce_overseas_publication').verify(cwd,{staged:true});
     if (!git(['diff', '--cached', '--quiet'], cwd).ok) {
       const reconciled = git(['commit', '-m', 'Reconcile pinned UI summaries after data merge'], cwd);

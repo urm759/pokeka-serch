@@ -1,7 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const {spawnSync} = require('node:child_process');
-const DERIVED=new Set(['data/update-status.json','data/performance-guard.json','data/performance-history.json',
+const DERIVED=new Set(['data/publication-lineage.json','data/update-status.json','data/performance-guard.json','data/performance-history.json',
   'data/runtime-availability-audit.json','data/update-health-banner.json','data/scheduled-cycle-receipts.json',
   'data/search-profile-cycle-progress.json','data/psa-pop-coverage.json','work/psa-pop-coverage-history.json']);
 function mergeTimedRows(a,b,key,time){

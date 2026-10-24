@@ -43,15 +43,22 @@ function plan({ cards, sourceId, catalog, candidateRows = {}, fixedIds = [], foc
   const urgentIds = new Set(urgent.map(row=>row.card.id));
   const preferred = sorted.filter((row) => row.important && !urgentIds.has(row.card.id)), ordinary = sorted.filter((row) => !row.important);
   const queue = [];
+  const maintenanceHorizon=now+proactive.lead(config).configuredIntervalMs+proactive.lead(config).processingMs;
+  let cycle=0;
   // Retain all targets: two critical, one other priority, one ordinary request.
   // Each lane keeps overdue-first/deadline order; unused capacity crosses lanes.
   while (urgent.length || preferred.length || ordinary.length) {
     for (let slot=0;slot<3;slot++) {
-      const lane = slot < 2 ? urgent.length ? urgent : preferred : preferred.length ? preferred : urgent;
+      // Under measured deadline pressure, lend every other broad-priority slot
+      // to maintenance. Keep ordinary 2/8 and broad discovery at least 1/8.
+      const maintenancePressure=cycle%2===1&&urgent.some(r=>r.fixedTarget
+        && Date.parse(r.nextDueAt||'')<=maintenanceHorizon);
+      const lane = slot < 2 || maintenancePressure ? urgent.length ? urgent : preferred : preferred.length ? preferred : urgent;
       if (lane.length) queue.push(lane.shift());
     }
     if (ordinary.length) queue.push(ordinary.shift());
     else if (!urgent.length && !preferred.length) break;
+    cycle++;
   }
   return { records, queue };
 }
@@ -101,7 +108,7 @@ function write(root = ROOT) {
     }
     sources[id] = { total: planned.records.length, priorityCards: important.length,
       fixedPriorityCards: important.filter(r => r.fixedTarget).length,
-      allocation: '期限順レーン：重点・固定鮮度群等2／他の優先1／通常1。全対象とアクセス間隔を維持',
+      allocation: '通常25%・他の優先枠を保持。固定群が次回完了前に期限切れなら8枠中5を重点維持へ配分。全対象・時間枠・アクセス間隔は維持',
       fixedPriorityRetainedOnly: important.filter(r => r.fixedTarget && !r.focus && !r.candidate).length,
       currentMarketTargets: important.filter(r => r.currentMarket).length,
       priceRefreshReady: important.filter(r => r.priceRefreshReady).length,
