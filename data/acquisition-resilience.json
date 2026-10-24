@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-24T19:00:43.176Z",
+  "generatedAt": "2026-10-24T19:29:03.548Z",
   "llmCalls": 0,
   "codexCalls": 0,
   "retryPolicy": {
@@ -169,8 +169,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-24T18:51:53.468Z",
-        "to": "2026-10-24T19:00:40.527Z"
+        "from": "2026-10-24T19:26:45.426Z",
+        "to": "2026-10-24T19:29:00.915Z"
       },
       "sinceBaseline": {
         "newLinked": 3988,
@@ -187,21 +187,21 @@
       "remaining": 0,
       "queueDefinition": "未巡回商品数推計。全国内カードの不足項目数とは別",
       "checkpoint": {
-        "sitemap": 2,
-        "entry": 452,
+        "sitemap": 5,
+        "entry": 118,
         "total": 46
       },
       "sourceState": "partial",
-      "stopReason": "商品詳細の1回上限 60件に到達",
+      "stopReason": "商品詳細の1回上限 35件に到達",
       "retryUrls": [],
       "lastRun": {
-        "startedAt": "2026-10-24T14:07:51.625Z",
-        "durationMs": 67934,
+        "startedAt": "2026-10-24T19:24:46.187Z",
+        "durationMs": 38718,
         "paginationMode": "sitemap",
-        "currentCursor": 2,
-        "currentSitemapIndex": 2,
-        "currentEntryIndex": 452,
-        "currentSitemapUrl": "https://torecacamp-pokemon.com/sitemap_products_2.xml?from=7906477342894&to=7997867393198",
+        "currentCursor": 5,
+        "currentSitemapIndex": 5,
+        "currentEntryIndex": 118,
+        "currentSitemapUrl": "https://torecacamp-pokemon.com/sitemap_products_5.xml?from=8108359188654&to=8156231172270",
         "processedSitemapCount": 46,
         "processedSitemaps": [
           3,
@@ -258,33 +258,21 @@
         "crawlComplete": true,
         "firstPassComplete": true,
         "retryQueue": [],
-        "legacyRecords": [
-          {
-            "id": "pk-59130",
-            "url": "https://torecacamp-pokemon.com/products/rc_its6ipnxg52s_biq1",
-            "startedAt": "2026-10-24T14:07:51.945Z",
-            "sourceSitemap": null,
-            "status": "verified",
-            "confirmedAt": "2026-10-24T14:07:52.956Z",
-            "price": 19800,
-            "available": false,
-            "adopted": true
-          }
-        ],
+        "legacyRecords": [],
         "maintenanceMode": true,
         "maintenance": {
-          "sitemapIndex": 1,
-          "entryIndex": 452,
+          "sitemapIndex": 4,
+          "entryIndex": 118,
           "cycles": 2,
-          "refreshed": 6986,
+          "refreshed": 7605,
           "newLinks": 147,
-          "checkedAt": "2026-10-24T14:08:59.551Z"
+          "checkedAt": "2026-10-24T19:25:24.901Z"
         },
         "firstPassCompletedAt": "2026-10-08T21:56:31.044Z",
-        "maintenancePendingCount": 6017,
+        "maintenancePendingCount": 5398,
         "priceMigration": {
           "version": 1,
-          "updatedAt": "2026-10-24T14:07:51.564Z",
+          "updatedAt": "2026-10-24T19:24:46.134Z",
           "correctedCount": 0,
           "cumulativeCorrectedCount": 0,
           "preCorrectionExtremeCount": 0,
@@ -294,49 +282,49 @@
         "quarantinedPriceCount": 30,
         "sitemapsSucceeded": 0,
         "listedProducts": 1000,
-        "detailFetched": 60,
-        "parsed": 60,
-        "stateA": 60,
+        "detailFetched": 35,
+        "parsed": 36,
+        "stateA": 35,
         "referenceUpdated": 0,
         "newLinkCount": 0,
         "updatedCount": 8,
         "fetchFailureCount": 0,
-        "duplicateUrlCount": 212,
+        "duplicateUrlCount": 28,
         "duplicateProductIdCount": 0,
         "abruptDropDetected": false,
         "previousCatalogCount": 6647,
         "proposedCatalogCount": 6647,
         "progressHealth": {
-          "value": 53958,
-          "previousValue": 53899,
+          "value": 54577,
+          "previousValue": 54542,
           "stagnantRuns": 0,
           "status": "progressing",
-          "checkedAt": "2026-10-24T14:08:59.559Z"
+          "checkedAt": "2026-10-24T19:25:24.905Z"
         },
-        "lastSuccessfulPage": "サイトマップ 1",
+        "lastSuccessfulPage": "サイトマップ 4",
         "lastFailure": null,
         "failedSitemaps": [],
-        "stoppingReason": "商品詳細の1回上限 60件に到達",
+        "stoppingReason": "商品詳細の1回上限 35件に到達",
         "completionStatus": "partial",
-        "completedAt": "2026-10-24T14:08:59.562Z"
+        "completedAt": "2026-10-24T19:25:24.907Z"
       },
       "observedExecutionDays": 6,
-      "processedPerExecutionDay": 26.7,
+      "processedPerExecutionDay": 21.3,
       "firstPassObservationDays": 6,
       "firstPassProgressField": "newlyVisitedProducts",
       "firstPassDaysEstimate": 0,
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-24T18:51:53.468Z",
-        "to": "2026-10-24T19:00:40.527Z"
+        "from": "2026-10-24T19:26:45.426Z",
+        "to": "2026-10-24T19:29:00.915Z"
       },
       "sinceBaseline": {
         "newLinked": 757,
         "validAdded": 757,
         "validLost": 76,
         "usableNet": 681,
-        "freshnessRecovered": 671
+        "freshnessRecovered": 1258
       },
       "freshness": null
     },
@@ -362,15 +350,15 @@
       "authenticatedStatus": "認証・確認待ち／今回の公開取得で代替しない",
       "failureScope": "source",
       "observedExecutionDays": 3,
-      "processedPerExecutionDay": 188.7,
+      "processedPerExecutionDay": 122,
       "firstPassObservationDays": 3,
       "firstPassProgressField": "publicNewRecords",
       "firstPassDaysEstimate": null,
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-24T18:51:53.468Z",
-        "to": "2026-10-24T19:00:40.527Z"
+        "from": "2026-10-24T19:26:45.426Z",
+        "to": "2026-10-24T19:29:00.915Z"
       },
       "sinceBaseline": {
         "newLinked": 0,
