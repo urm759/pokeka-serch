@@ -10,6 +10,18 @@ function latest(a,b,base){
   return x>y?a:b;
 }
 function byKey(a,b,key,base=[]){const original=new Map(base.map(r=>[key(r),r]));const rows=new Map(a.map(r=>[key(r),r]));for(const r of b){const k=key(r);rows.set(k,latest(rows.get(k),r,original.get(k)));}return [...rows.values()];}
+function mergeCardFields(base,a,b,field) {
+  if(same(a,b)||same(base,b))return a;
+  if(same(base,a))return b;
+  if(a&&b&&typeof a==='object'&&typeof b==='object'&&!Array.isArray(a)&&!Array.isArray(b))
+    return Object.fromEntries([...new Set([...Object.keys(a),...Object.keys(b)])].map(k=>[k,mergeCardFields(base?.[k],a[k],b[k],field+'.'+k)]));
+  throw Error('Concurrent card field conflict requires review: '+field);
+}
+function mergeCards(base,a,b) {
+  for(const rows of [base,a,b])if(!Array.isArray(rows)||rows.some(r=>!r.id)||new Set(rows.map(r=>r.id)).size!==rows.length)throw Error('Duplicate/missing card IDs in merge input');
+  const original=new Map(base.map(r=>[r.id,r])),left=new Map(a.map(r=>[r.id,r])),right=new Map(b.map(r=>[r.id,r]));
+  return [...new Set([...left.keys(),...right.keys()])].map(id=>!left.has(id)?right.get(id):!right.has(id)?left.get(id):mergeCardFields(original.get(id),left.get(id),right.get(id),id));
+}
 function mergeRun(a,b,base){
   const selected=latest(a,b,base),successful=[a?.lastSuccessAt,b?.lastSuccessAt,base?.lastSuccessAt].filter(v=>Number.isFinite(Date.parse(v)));
   return successful.length?{...selected,lastSuccessAt:successful.sort((x,y)=>Date.parse(x)-Date.parse(y)).at(-1)}:selected;
@@ -85,6 +97,7 @@ function run(){
   for(const [file,[base,a,b]]of Object.entries(snapshots)){
     let merged;
     if(file==='data/scheduled-cycle-receipts.json')merged=require('./resolve_generated_merge').mergeReceipts(a,b);
+    else if(file==='data/pokemon-cards.json')merged=mergeCards(base,a,b);
     else if(file==='work/search-profile-targets.json')merged=mergeProfileTargets(base,a,b);
     else if(file==='work/priority-freshness-history.json')merged=mergeFixedFreshness(base,a,b);
     else if(['data/priority-price-execution.json','data/price-catchup-status.json'].includes(file))merged=latest(a,b,base);
@@ -132,4 +145,4 @@ function run(){
   console.log(JSON.stringify({resolved:out.length,status:'rebuild-required',rawStageBackups:files.length}));
 }
 if(require.main===module)run();
-module.exports={latest,byKey,seedMerge,mergeRun,mergeStockHistory,mergeProfileTargets,mergeFixedFreshness};
+module.exports={latest,byKey,seedMerge,mergeRun,mergeStockHistory,mergeProfileTargets,mergeFixedFreshness,mergeCards};

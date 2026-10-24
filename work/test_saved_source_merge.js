@@ -1,5 +1,11 @@
 const assert=require('node:assert/strict'),{latest,byKey,seedMerge,mergeRun}=require('./reconcile_saved_source_merge');
 const {mergeStockHistory}=require('./reconcile_saved_source_merge');
+const {mergeCards}=require('./reconcile_saved_source_merge');
+const sourceCards=[{id:'card',price:100,priceObservedAt:'old',shopUrl:null}];
+const mergedCards=mergeCards(sourceCards,[{...sourceCards[0],shopUrl:'verified'}],[{...sourceCards[0],price:120,priceObservedAt:'new'}]);
+assert.equal(mergedCards.length,1);assert.equal(mergedCards[0].shopUrl,'verified');assert.equal(mergedCards[0].price,120);assert.equal(mergedCards[0].priceObservedAt,'new');
+assert.throws(()=>mergeCards(sourceCards,[{...sourceCards[0],price:90}],[{...sourceCards[0],price:120}]),/requires review/);
+assert.throws(()=>mergeCards(sourceCards,[...sourceCards,...sourceCards],sourceCards),/Duplicate/);
 require('./test_generated_merge_large_json');
 const baseStocks={dates:['2026-10-20'],stocks:{a:[5],b:[5]}},leftStocks={dates:baseStocks.dates,stocks:{a:[3],b:[4]}},rightStocks={dates:baseStocks.dates,stocks:{a:[2],b:[1]}};
 assert.deepEqual(mergeStockHistory(baseStocks,leftStocks,rightStocks,{a:20,b:10},{a:10,b:20}).stocks,{a:[3],b:[1]},'a later source-wide run cannot overwrite a newer individual card');
