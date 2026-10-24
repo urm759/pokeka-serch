@@ -2,83 +2,6 @@
   "version": 1,
   "runs": [
     {
-      "startedAt": "2026-10-13T01:38:23.934Z",
-      "runId": "38333057976",
-      "event": "workflow_run",
-      "route": "既存監視ジョブの空白補完",
-      "status": "acquired-saved",
-      "allowed": true,
-      "ageMs": 9294327,
-      "minimumIntervalMs": 9000000,
-      "reason": "定期の空白・既存の期限順キューで補完",
-      "llmCalls": 0,
-      "codexCalls": 0,
-      "sourceFailures": [
-        "work/run_tracked_update.js"
-      ],
-      "acquisitionStatus": "partial-with-failure",
-      "endedAt": "2026-10-13T01:46:06.526Z",
-      "durationMs": 462592,
-      "outcomes": {
-        "baselineAt": "2026-10-13T01:38:23.934Z",
-        "commonCards": 12516,
-        "addedCards": 0,
-        "removedCards": 0,
-        "newlyAnalyzable": 0,
-        "lostAnalyzable": 6,
-        "filledCards": 3,
-        "filledItems": 3,
-        "sources": {
-          "cardrush": {
-            "newLinked": 0,
-            "validAdded": 0,
-            "validLost": 0,
-            "usableNet": 0,
-            "freshnessRecovered": 0
-          },
-          "hareruya2": {
-            "newLinked": 0,
-            "validAdded": 0,
-            "validLost": 0,
-            "usableNet": 0,
-            "freshnessRecovered": 52
-          },
-          "yuyutei": {
-            "newLinked": 0,
-            "validAdded": 0,
-            "validLost": 0,
-            "usableNet": 0,
-            "freshnessRecovered": 0
-          },
-          "torecacamp": {
-            "newLinked": 0,
-            "validAdded": 0,
-            "validLost": 0,
-            "usableNet": 0,
-            "freshnessRecovered": 0
-          },
-          "psaOfficial": {
-            "newLinked": 0,
-            "validAdded": 0,
-            "validLost": 0,
-            "usableNet": 0,
-            "freshnessRecovered": 0
-          },
-          "pokedata": {
-            "newLinked": 0,
-            "validAdded": 0,
-            "validLost": 0,
-            "usableNet": 0,
-            "freshnessRecovered": 0
-          }
-        },
-        "referenceEvidenceRecovered": {
-          "buybackExitEvidence": 474
-        }
-      },
-      "publicationStatus": "保存済み・公開照合待ち"
-    },
-    {
       "startedAt": "2026-10-13T06:53:30.892Z",
       "runId": "38359269389",
       "event": "schedule",
@@ -4450,6 +4373,78 @@
       "durationMs": 638004,
       "outcomes": {
         "baselineAt": "2026-10-24T11:15:32.188Z",
+        "commonCards": 12545,
+        "addedCards": 0,
+        "removedCards": 0,
+        "newlyAnalyzable": 0,
+        "lostAnalyzable": 0,
+        "filledCards": 0,
+        "filledItems": 0,
+        "sources": {
+          "cardrush": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          },
+          "hareruya2": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 40
+          },
+          "yuyutei": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          },
+          "torecacamp": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          },
+          "psaOfficial": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          },
+          "pokedata": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          }
+        }
+      },
+      "publicationStatus": "保存済み・公開照合待ち"
+    },
+    {
+      "startedAt": "2026-10-24T16:04:39.629Z",
+      "runId": "40109795176",
+      "event": "schedule",
+      "route": "通常価格更新",
+      "status": "acquired-saved",
+      "allowed": true,
+      "ageMs": 17347130,
+      "minimumIntervalMs": 7200000,
+      "reason": "定期の空白・既存の期限順キューで補完",
+      "llmCalls": 0,
+      "codexCalls": 0,
+      "sourceFailures": [],
+      "acquisitionStatus": "process-success",
+      "endedAt": "2026-10-24T16:17:24.662Z",
+      "durationMs": 765033,
+      "outcomes": {
+        "baselineAt": "2026-10-24T16:04:39.629Z",
         "commonCards": 12545,
         "addedCards": 0,
         "removedCards": 0,
