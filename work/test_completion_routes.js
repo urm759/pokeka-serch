@@ -2,6 +2,11 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const { eligibleForHareru } = require("./consume_completion_queue.js");
 const { routes, failureState } = require("./completion_routes.js");
+for(const status of ['取得元にデータなし','再試行待ち']) {
+  const r=routes({i:{domesticPrice:[status]}},{psaAllowed:false,overseasAllowed:false}).find(r=>r.key==='domesticPrice');
+  assert.equal(r.mode,'通常一括差分で再確認・価格根拠待ち');
+  assert.equal(r.normalBulkRecheck,true);assert.equal(r.networkRequired,false);
+}
 const { compare, pack, unpack } = require("./audit_completion_outcomes.js");
 const { merge } = require("./recover_saved_psa.js");
 const { psaIdentity, makeQueue } = require("./build_psa_linkage_queue.js");

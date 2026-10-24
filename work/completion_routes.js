@@ -33,6 +33,11 @@ function routes(detail, permissions) {
   return Object.keys(ROUTES).filter((key) => needs(detail, key)
     && !(permissions.overseasCancelled&&['pokedata','pokedataAuthenticated'].includes(ROUTES[key][0]))).map((key) => {
     const [source, mode, reason] = ROUTES[key], state = itemState(detail, key);
+    if(key==='domesticPrice' && ['取得元にデータなし','再試行待ち'].includes(state.status))return {
+      key,source,mode:'通常一括差分で再確認・価格根拠待ち',status:state.status,required:true,
+      acquisitionStatus:state.status==='取得元にデータなし'?'source-price-missing':'price-evidence-review',
+      networkRequired:false,normalBulkRecheck:true,nextRetryAt:null,
+      reason:state.reason||'取得元の有効値・実売根拠・価格対立の確認待ち。同じ価格の個別反復取得を補完成果にしない'};
     if (source === 'psaOfficial' && state.status === '再照合待ち') return {
       key, source, mode: '保存原票再照合待ち', status: state.status, required: REQUIRED.includes(key),
       acquisitionStatus: 'saved-rematch-review', networkRequired: false, nextRetryAt: null,

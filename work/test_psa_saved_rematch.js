@@ -19,6 +19,11 @@ assert.equal(b.savedRematchProof(card,'Sylveon CSR','Sylveon V',{...raw,captureV
 assert.equal(b.savedRematchProof(card,'Sylveon CSR','Sylveon V',{...raw,url:raw.url.replace('pokemon-japanese','pokemon-english')},[raw]), false);
 assert.equal(b.savedRematchProof(card,'Sylveon CSR','Sylveon V',raw,[raw,{...raw,url:raw.url+'2'}]), false);
 assert.equal(b.namesCompatible('N Plan', { name: "N's Plot |" }), false, 'unproved translations remain held');
+assert.equal(b.namesCompatible('Friends of Paldea SR [SV8a 195/187]', {name:'Friends in Paldea | Super Rare |'}),true);
+assert.equal(b.namesCompatible('Alola Vulpix VSTAR HR [S11a 087/068]', {name:'Full Art/Alolan Vulpix Vstar | Hyper Rare |'}),true);
+assert.equal(b.namesCompatible('Alola Vulpix V SR [S11a 077/068]', {name:'Full Art/Alolan Vulpix V |'}),true);
+assert.equal(b.namesCompatible('Alola Vulpix V', {name:'Alolan Vulpix VSTAR |'}),false);
+assert.equal(b.variantsCompatible('アローラロコンV SR[S11a 077/068]','Alola Vulpix V',{name:'Alolan Vulpix V | Missing Texture |'}),false);
 const refs = [1, 2].map(n => ({ cardId: 'e' + n, set: 'S9', no: String(n), sourceUrl: 'https://www.psacard.com/pop/tcg-cards/2022/pokemon-japanese-x/1', title: "Cheren's Care", observedAt: '2026-10-10T10:00:00Z' }));
 const trainer = { id: 't', name: 'チェレンの気くばり SAR[S12a 241/172]' };
 assert.equal(b.resolvedEnglishName(trainer, "Cheren's Attention SAR[S12a 241/172]", new Map([[b.japaneseTitle(trainer), refs]])).name, "Cheren's Care");

@@ -66,6 +66,7 @@ function build(root=ROOT) {
   const source=read('work/toreca-source-inventory.json'),cards=read('data/pokemon-cards.json'),completion=read('data/card-catalog-completion.json');
   const result=summarize(source.cards,cards,completion,read('work/modern-high-rarity-config.json').rarityWhitelist);
   const queue=read('work/card-completion-queue.json');
+  const priceEvidence=read('data/state-a-price-evidence.json'),priceAudit=read('data/state-a-price-audit.json');
   const linkage=Object.fromEntries(read('work/psa-linkage-all.json').rows.map(r=>[r.cardId,r]));
   const psaProgress=read('work/psa-fetch-progress.json'),byId=new Map(cards.map(c=>[c.id,c]));
   result.requiredAvailability={automatic:0,pcAuthenticatedRoute:0,retryWait:0,permissionWait:0,savedRematchReview:0,identityOrUrlReview:0,confirmedNoData:0,unimplemented:0};
@@ -74,7 +75,10 @@ function build(root=ROOT) {
     if(field==='psaOfficial') {
       const r=require('./profile_completion_routes').prospectPlan(byId.get(id),['psaOfficial'],{linkage,psaProgress,psaAccess}).requirements[0];
       result.requiredAvailability[r.state==='saved-rematch-review'?'savedRematchReview':r.state==='permission-wait'?'permissionWait':r.automatic?'pcAuthenticatedRoute':r.nextRetryAt?'retryWait':'identityOrUrlReview']++;
-    } else if(['domesticPrice','domesticTrades','psa10Price','psa10Trades'].includes(field))result.requiredAvailability.automatic++;
+    } else if(field==='domesticPrice') {
+      const r=require('./profile_completion_routes').prospectPlan(byId.get(id),[field],{priceEvidence,priceAudit}).requirements[0];
+      result.requiredAvailability[r.automatic?'automatic':'identityOrUrlReview']++;
+    } else if(['domesticTrades','psa10Price','psa10Trades'].includes(field))result.requiredAvailability.automatic++;
     else result.requiredAvailability.identityOrUrlReview++;
   }
   result.availabilityNote='件数はカード×必須項目で重複あり。公開一括取得へ接続しても、取得元に値が存在する保証はない。未取得をデータなしへ変換しない。PC経路は認証・稼働の確認が必要。';
@@ -99,7 +103,7 @@ function build(root=ROOT) {
   const plans = result.srFamily.ids.filter(id => completion.cards?.[id]?.m?.length).map(id => {
     const card = byId.get(id), missing = completion.cards[id].m;
     return { id, name: card?.name, missing, priority: queue.cards?.[id]?.p || 0,
-      ...require('./profile_completion_routes').prospectPlan(card, missing, { linkage, psaProgress, psaAccess, tradeReceipt: receipt }) };
+      ...require('./profile_completion_routes').prospectPlan(card, missing, { linkage, psaProgress, psaAccess, tradeReceipt: receipt, priceEvidence, priceAudit }) };
   }).sort((a,b) => Number(b.allRequiredPathsAutomatic) - Number(a.allRequiredPathsAutomatic)
     || a.missing.length - b.missing.length || b.priority - a.priority || a.id.localeCompare(b.id));
   result.cardFeasibility = feasibility(plans, result.srFamily.listed, result.srFamily.analyzable);

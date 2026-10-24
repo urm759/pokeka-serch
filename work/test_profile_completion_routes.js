@@ -13,6 +13,23 @@ assert.equal(buybackState({listingActive:false,valid:true,buybackPrice:30000},co
 assert.equal(buybackState({listingActive:false,buybackPrice:30000},{...complete,unmatched:1},now),'unmatched-or-unlisted');
 assert.equal(buybackState({listingActive:false},{...complete,lastSuccess:'2026-09-01T00:00:00Z',fullListingConfirmedAt:'2026-09-01T00:00:00Z'},now),'table-expired');
 const card={id:'test',name:'fixture',hareruya2Url:'https://www.hareruya2.com/products/fixture'};
+for(const [context,state] of [[{priceEvidence:{cards:{test:{status:'unbacked'}}}},'source-evidence-unavailable'],
+  [{priceAudit:{cards:[{id:'test'}]}},'price-conflict-review']]) {
+  const plan=prospectPlan(card,['domesticPrice','shopStateA'],context);
+  assert.equal(plan.requirements[0].state,state);
+  assert.equal(plan.requirements[0].automatic,false,'repeat bulk price is not proof that a disputed/reference price becomes usable');
+  assert.equal(plan.requirements[0].normalBulkRecheck,true);
+  assert.equal(plan.requirements[1].automatic,true,'independent purchase-price collection continues');
+  assert.equal(prospectPlan({...card,id:'other'},['domesticPrice'],context).requirements[0].automatic,true);
+}
+assert.equal(prospectPlan(card,['domesticPrice'],{priceEvidence:{cards:{test:{status:'backed'}}},priceAudit:{cards:[]}}).requirements[0].automatic,true,'new verified evidence releases only the affected review');
+for(const price of [null,0,undefined,-1,'100']) {
+  const plan=prospectPlan({...card,price},['domesticPrice','shopStateA']);
+  assert.equal(plan.requirements[0].state,'source-price-missing');
+  assert.equal(plan.requirements[0].automatic,false);
+  assert.equal(plan.requirements[0].normalBulkRecheck,true,'normal source discovery is retained without pretending repeated missing values are fillable');
+  assert.equal(plan.requirements[1].automatic,true);
+}
 const trades=require('./domestic_trade_evidence');
 const receipt=trades.capture([card],new Map([['test',{}]]),{observedAt:at,sourceUrl:'https://example.com/official-feed',payloadHash:'verified'});
 const unavailable=prospectPlan(card,['domesticTrades','psa10Trades','shopStateA'],{tradeReceipt:receipt,now});

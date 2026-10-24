@@ -29,6 +29,7 @@ jobs:
         run: |
           node work/test_profile_worker.js
           node work/test_psa_saved_rematch.js
+          node work/test_gemrate_reference_display.js
           node work/test_profile_report_names.js
           node work/test_saved_shop_recovery.js
           node work/test_stock_history_statistics.js

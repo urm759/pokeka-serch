@@ -18,7 +18,7 @@ function buybackState(row,meta,now=Date.now()) {
   if(meta.fullListingConfirmedAt!==meta.lastSuccess)return 'coverage-incomplete';
   return meta.unmatched===0?'confirmed-unlisted':'unmatched-or-unlisted';
 }
-function prospectPlan(card,fields,{shops={},linkage={},psaProgress={},psaAccess=null,tradeReceipt=null,storeMode='all',selected=[],now=Date.now()}={}) {
+function prospectPlan(card,fields,{shops={},linkage={},psaProgress={},psaAccess=null,tradeReceipt=null,priceEvidence=null,priceAudit=null,storeMode='all',selected=[],now=Date.now()}={}) {
   const requirements=[];
   for(const field of [...new Set(fields)]) {
     if(field==='buybackExitEvidence' || field==='buyback'){
@@ -71,6 +71,19 @@ function prospectPlan(card,fields,{shops={},linkage={},psaProgress={},psaAccess=
         evidence,reason:evidence.reason,normalBulkRecheck:unsupported,
         nextAction:unsupported?'期間項目が現原票に未提供。通常の一括差分で提供開始を確認し、専用の個別反復取得はしない':'正規一括差分の期間件数・同一仕様を再確認',
         resumeCondition:unsupported?'正規原票に対象期間の件数が提供されること':'仕様一致・対象期間と取得日時が確認できる正常応答'});
+    }else if(field==='domesticPrice' && (priceEvidence?.cards?.[card.id]?.status==='unbacked'
+      || priceAudit?.cards?.some(r=>r.id===card.id))){
+      const unbacked=priceEvidence?.cards?.[card.id]?.status==='unbacked';
+      requirements.push({field,source:'toreca',state:unbacked?'source-evidence-unavailable':'price-conflict-review',automatic:false,
+        networkRequired:false,evidence:priceEvidence?.cards?.[card.id]||null,
+        reason:unbacked?'参考価格の実売根拠不足':'同一仕様の価格根拠を要確認',normalBulkRecheck:true,
+        nextAction:'保存原票の価格区分・個別日時・採否を確認。通常一括差分で根拠の変更を検知し、同じ価格の反復取得を補完可能と数えない',
+        resumeCondition:'同一仕様の有効な価格根拠、または対立の原因が確定。参考価格の自動採用・別店舗価格への置換なし'});
+    }else if(field==='domesticPrice' && Object.hasOwn(card,'price') && !(typeof card.price==='number' && Number.isFinite(card.price) && card.price>0)){
+      requirements.push({field,source:'toreca',state:'source-price-missing',automatic:false,networkRequired:false,normalBulkRecheck:true,
+        reason:'保存済みの取得元価格が欠損・有効値なし',
+        nextAction:'通常一括差分で有効価格の提供開始を検知。店舗の購入価格取得は別工程で継続し、参考相場へ黙って置換しない',
+        resumeCondition:'同一仕様の有効価格が正規原票へ提供されること、または分析定義を満たす正規の別経路確立'});
     }else if(['domesticPrice','psa10Price','psa9Evidence','psa9Aggregate'].includes(field)){
       requirements.push({field,source:'toreca',state:'bulk-delta-acquisition',automatic:true,nextAction:'正規一括差分更新',resumeCondition:'正常な外部応答'});
     }else requirements.push({field,source:'manual',state:'unimplemented-or-review',automatic:false,nextAction:'既存残件台帳の担当経路を確認',resumeCondition:'取得経路・仕様根拠の確定'});
