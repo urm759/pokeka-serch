@@ -24,7 +24,7 @@ function receive({store,files,publicRoot=ROOT,now=new Date().toISOString(),previ
     const manifest=fs.existsSync(manifestFile)?JSON.parse(fs.readFileSync(manifestFile,'utf8')):{version:1,files:[]};
     const result=[];
     for(const file of files) {
-      const source=path.resolve(file.path), previous=manifest.files.find(r=>r.originalPath===source);
+      const source=path.resolve(file.path), previous=manifest.files.findLast(r=>r.originalPath===source);
       const {retrievedAt,...sourceContext}=file.context;
       const validationKey=hash(JSON.stringify({sourceContext,mappings:file.mappings,kind:file.kind}));
       if(!fs.existsSync(source)) {
@@ -42,13 +42,25 @@ function receive({store,files,publicRoot=ROOT,now=new Date().toISOString(),previ
       const compressed=path.join(store,'backups',sha+'.csv.gz');
       if(!fs.existsSync(compressed))fs.writeFileSync(compressed,zlib.gzipSync(bytes),{flag:'wx'});
       if(hash(zlib.gunzipSync(fs.readFileSync(compressed)))!==sha)throw Error('Backup verification failed; original retained');
-      const past=manifest.files.filter(r=>r.sha256!==sha&&r.kind==='list'&&fs.existsSync(r.parsedPath))
+      const existing=manifest.files.find(r=>r.sha256===sha);
+      const sameValidation=manifest.files.find(r=>r.sha256===sha&&r.validationKey===validationKey);
+      if(sameValidation) {
+        if(hash(zlib.gunzipSync(fs.readFileSync(sameValidation.backupPath)))!==sha
+          ||JSON.parse(fs.readFileSync(sameValidation.parsedPath)).csvSha256!==sha)throw Error('Duplicate verification failed; incoming copy retained');
+        const recovered=sameValidation.status==='prepared';
+        if(recovered&&!fs.existsSync(sameValidation.storedPath))fs.renameSync(source,sameValidation.storedPath);
+        if(!fs.existsSync(sameValidation.storedPath)||hash(fs.readFileSync(sameValidation.storedPath))!==sha)throw Error('Duplicate original verification failed; incoming copy retained');
+        // The byte-identical extra copy is disposable only after both retained original and backup verify.
+        if(source!==sameValidation.storedPath&&fs.existsSync(source))fs.unlinkSync(source);
+        if(recovered){sameValidation.status=sameValidation.finalStatus;sameValidation.originalRetained=false;atomic(manifestFile,manifest);}
+        result.push({...sameValidation,duplicateFile:true,replay:true,recovered,originalRetained:fs.existsSync(source)});continue;
+      }
+      const past=manifest.files.filter(r=>r.kind==='list'&&fs.existsSync(r.parsedPath))
         .flatMap(r=>JSON.parse(fs.readFileSync(r.parsedPath)).accepted);
       const parsed=file.kind==='trend'?importer.importTrendCsv(bytes.toString('utf8'),file.context,file.mappings)
-        :importer.importCsv(bytes.toString('utf8'),file.context,file.mappings,[...past,...previousObservations.filter(r=>r.csvSha256!==sha)]);
-      const existing=manifest.files.find(r=>r.sha256===sha);
-      const target=path.join(store,parsed.quarantined.length?'review':'processed',sha+'.csv');
-      const parsedPath=path.join(store,'processed',sha+'.json');
+        :importer.importCsv(bytes.toString('utf8'),file.context,file.mappings,[...past,...previousObservations]);
+      const target=existing?.storedPath||path.join(store,parsed.quarantined.length?'review':'processed',sha+'.csv');
+      const parsedPath=path.join(store,'processed',sha+'.'+validationKey+'.json');
       atomic(parsedPath,parsed);
       const saved=JSON.parse(fs.readFileSync(parsedPath,'utf8'));
       if(saved.csvSha256!==sha||saved.accepted.length!==parsed.accepted.length)throw Error('Import persistence verification failed; original retained');
@@ -60,14 +72,14 @@ function receive({store,files,publicRoot=ROOT,now=new Date().toISOString(),previ
         kind:file.kind,context:file.context,backupPath:compressed,storedPath:target,parsedPath,
         status:'prepared',finalStatus,accepted:parsed.accepted.length,
         quarantined:parsed.quarantined.length,duplicateRows:parsed.duplicates.length,
-        duplicateFile:Boolean(existing),originalRetained:fs.existsSync(source),publicRecords:0};
+        duplicateFile:false,rawBytesReused:Boolean(existing),originalRetained:fs.existsSync(source),publicRecords:0};
       receipt.validationKey=validationKey;
-      if(!previous)manifest.files.push(receipt);
-      else manifest.files[manifest.files.indexOf(previous)]=receipt;
+      manifest.files.push(receipt);
       // Persist the destination and verified backup before moving the original.
       atomic(manifestFile,manifest);
       if(!fs.existsSync(target))fs.renameSync(source,target);
       if(hash(fs.readFileSync(target))!==sha)throw Error('Original move verification failed');
+      if(source!==target&&fs.existsSync(source)&&hash(fs.readFileSync(source))===sha)fs.unlinkSync(source);
       receipt.status=finalStatus;receipt.originalRetained=fs.existsSync(source);
       atomic(manifestFile,manifest);result.push(receipt);
     }

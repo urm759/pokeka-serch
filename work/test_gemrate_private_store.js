@@ -31,6 +31,17 @@ const second=receive({...options,files:[{path:conflict,kind:'list',context,mappi
 assert.equal(second.newPrivateObservations,0);assert.equal(second.files[0].quarantined,1,'same-day conflicting file stays isolated');
 assert.notEqual(first.files[0].sha256,second.files[0].sha256);
 assert(fs.existsSync(first.files[0].storedPath)&&fs.existsSync(second.files[0].storedPath));
+const nextDay=path.join(temp,'export (4).csv');fs.writeFileSync(nextDay,'Card #,Name,Parallel,Gems,Total\n001,Synthetic,Base,10,20\n');
+const nextContext={...context,sourceUpdatedDate:'2026-10-24'};
+const next=receive({...options,files:[{path:nextDay,kind:'list',context:nextContext,mappings}]});
+assert.equal(next.newPrivateObservations,1,'same POP/CSV bytes confirmed on a new source date is a new observation');
+assert.equal(next.files[0].sha256,first.files[0].sha256);assert.equal(next.files[0].rawBytesReused,true);
+assert.notEqual(next.files[0].parsedPath,first.files[0].parsedPath);
+assert.equal(JSON.parse(fs.readFileSync(first.files[0].parsedPath)).accepted[0].sourceUpdatedDate,'2026-10-23');
+assert.equal(JSON.parse(fs.readFileSync(next.files[0].parsedPath)).accepted[0].sourceUpdatedDate,'2026-10-24');
+fs.writeFileSync(nextDay,'Card #,Name,Parallel,Gems,Total\n001,Synthetic,Base,10,20\n');
+assert.equal(receive({...options,files:[{path:nextDay,kind:'list',context:nextContext,mappings}]}).newPrivateObservations,0);
+assert(!fs.existsSync(nextDay),'verified identical extra copy is removed only after original and gzip backup verification');
 const trendContext={...context,pageUrl:context.pageUrl.replace('/item-details?','/population-trend?')+'&card_number=001&name=Synthetic&parallel=Base'};
 const text='Date,Total Gems,Total Grades,Gem Rate\n2026-10-23,10,20,50%\n2026-10-16,9,19,47%\n';
 assert.equal(importTrendCsv(text,trendContext,mappings).accepted.length,2);
@@ -39,4 +50,13 @@ assert.equal(importTrendCsv(text+'2026-10-23,11,20,55%\n',trendContext,mappings)
 assert.equal(importTrendCsv(text+'2026-99-01,10,20,50%\n',trendContext,mappings).quarantined.length,1);
 const bad=path.join(temp,'export (2).csv');fs.writeFileSync(bad,'broken');
 assert.throws(()=>receive({...options,files:[{path:bad,kind:'list',context,mappings}]}));assert(fs.existsSync(bad));
+const beforeMoveStore=path.join(temp,'before-move');fs.mkdirSync(beforeMoveStore);fs.writeFileSync(path.join(beforeMoveStore,'.gitignore'),'*\n');
+const interruptedFile=path.join(temp,'export (5).csv');fs.writeFileSync(interruptedFile,'Card #,Name,Parallel,Gems,Total\n001,Synthetic,Base,10,20\n');
+const interruptedOptions={...options,store:beforeMoveStore,files:[{path:interruptedFile,kind:'list',context,mappings}]};
+const rename=fs.renameSync;
+try {fs.renameSync=(from,to)=>{if(from===interruptedFile)throw Error('simulated termination before original move');return rename(from,to);};assert.throws(()=>receive(interruptedOptions),/simulated termination/);}
+finally {fs.renameSync=rename;}
+assert(fs.existsSync(interruptedFile));
+assert.equal(receive(interruptedOptions).files[0].recovered,true,'prepared receipt resumes before original move as well as after it');
+assert.equal(receive(interruptedOptions).newPrivateObservations,0);
 console.log('PASS private receipt: original/backup hashes, distinct snapshots, persistence, idempotence, lock, quarantine, no public output');
