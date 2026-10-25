@@ -6,7 +6,12 @@ const allowed=(event,r=run)=>vm.runInNewContext('Boolean('+expression+')',{githu
 assert(allowed('schedule'));assert(allowed('workflow_dispatch'));
 assert(allowed('workflow_run'));
 assert(allowed('workflow_run',{...run,name:'Priority Purchase Price Refresh',conclusion:'failure'}),'trusted failed price jobs recover saved inputs before considering new acquisition');
-for(const changed of [{name:'Priority Purchase Price Refresh'},{name:'Daily Fast Update'},{event:'pull_request'},
+for(const name of ['Daily Fast Update','Safe Checkpoint Backfill']) {
+  assert(allowed('workflow_run',{...run,name}),'trusted scheduled cloud completion may fill missed price intervals');
+  for(const changed of [{event:'workflow_dispatch'},{conclusion:'failure'},{head_branch:'feature'},{head_repository:{full_name:'fork/repo'}}])
+    assert(!allowed('workflow_run',{...run,name,...changed}));
+}
+for(const changed of [{name:'Priority Purchase Price Refresh'},{event:'pull_request'},
   {conclusion:'failure'},{head_branch:'feature'},{head_repository:{full_name:'fork/repo'}}])assert(!allowed('workflow_run',{...run,...changed}));
 for(const changed of [{event:'workflow_dispatch'},{head_branch:'feature'},{head_repository:{full_name:'fork/repo'}}])
   assert(!allowed('workflow_run',{...run,name:'Priority Purchase Price Refresh',conclusion:'failure',...changed}));

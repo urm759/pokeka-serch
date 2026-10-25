@@ -17,7 +17,9 @@ jobs:
   catchup:
     if: >-
       github.event_name != 'workflow_run' ||
-      (((github.event.workflow_run.name == 'Deep Resolve Unmatched Cards' &&
+      ((((github.event.workflow_run.name == 'Deep Resolve Unmatched Cards' ||
+          github.event.workflow_run.name == 'Safe Checkpoint Backfill' ||
+          github.event.workflow_run.name == 'Daily Fast Update') &&
          github.event.workflow_run.event == 'schedule' && github.event.workflow_run.conclusion == 'success') ||
         (github.event.workflow_run.name == 'Priority Purchase Price Refresh' &&
          github.event.workflow_run.event == 'schedule' && github.event.workflow_run.conclusion == 'failure')) &&
