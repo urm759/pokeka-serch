@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-25T16:44:29.615Z",
+  "generatedAt": "2026-10-25T16:48:07.654Z",
   "sourceLastSuccessAt": "2026-10-25T12:59:35.921Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-10-25T14:44:56.513Z",
-    "lastSuccessAt": "2026-10-25T14:44:56.513Z",
-    "runId": "40202862525",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/40202862525"
+    "lastAttemptAt": "2026-10-25T16:48:07.643Z",
+    "lastSuccessAt": "2026-10-25T16:48:07.643Z",
+    "runId": "40213369784",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/40213369784"
   },
   "issues": [
     {
@@ -71,11 +71,6 @@
       "reason": "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）"
     },
     {
-      "key": "source:buyback:fukufuku-mail:manual-wait",
-      "category": "アクセス・手動対応待ち",
-      "reason": "福福トレカ（郵送窓口）: 通常公開価格表の低頻度GET。認証操作なし。郵送窓口のみ・商品更新日は不明、実確認日時とページ更新日時を分離"
-    },
-    {
       "key": "pc:psa:PC観測未受信",
       "category": "確認が必要",
       "url": null,
@@ -84,14 +79,8 @@
     {
       "key": "priority-prices:cadence-stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/40190105007",
-      "reason": "重要価格更新：設定2時間に対し実績成功間隔（直近最大）6.46時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
-    },
-    {
-      "key": "priority-prices:workflow-failure",
-      "category": "取得処理の故障",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/40190105007",
-      "reason": "購入価格高速更新：取得・検証・保存・公開のいずれかが未完了。実行ログで工程を確認"
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/40212163952",
+      "reason": "重要価格更新：設定2時間に対し実績成功間隔（直近最大）11.65時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
     }
   ],
   "reasons": [
@@ -105,10 +94,8 @@
     "PSA Japan料金: PSA Japan refresh failed; previous verified values retained: PSA Japan HTTP 403",
     "PSA Japan料金: 更新期限超過（カード別鮮度 未記録%）",
     "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）",
-    "福福トレカ（郵送窓口）: 通常公開価格表の低頻度GET。認証操作なし。郵送窓口のみ・商品更新日は不明、実確認日時とページ更新日時を分離",
     "PC側PSA: PC観測未受信 / 30時間以内の独立タスク観測なし。PC停止・観測起動失敗・未公開を区別して確認",
-    "重要価格更新：設定2時間に対し実績成功間隔（直近最大）6.46時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能",
-    "購入価格高速更新：取得・検証・保存・公開のいずれかが未完了。実行ログで工程を確認"
+    "重要価格更新：設定2時間に対し実績成功間隔（直近最大）11.65時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
   ],
   "detailUrl": "./data/update-health.json"
 }
