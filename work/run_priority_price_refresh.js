@@ -93,9 +93,12 @@ if (require.main === module) {
   if (process.argv.includes('--report-failures')) main();
   else if (process.argv.includes('--finalize-only')) {
     const release = require('./acquisition_retry').lock(path.join(ROOT,'work/priority-price-refresh.lock'));
-    try { main(); } finally { release(); }
+    try { main(); require('./build_ui_data').build(ROOT); } finally { release(); }
   } else {
-  const result = require('./price_refresh_gate').execute(ROOT, main, { catchup: process.argv.includes('--catchup') });
+  const result = require('./price_refresh_gate').execute(ROOT, main, {
+    catchup: process.argv.includes('--catchup'),
+    afterSave: () => require('./build_ui_data').build(ROOT)
+  });
   if (result.status === 'skipped') console.log(JSON.stringify(result));
   }
 }

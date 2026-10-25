@@ -10,7 +10,7 @@ function decision(previous = {}, now = Date.now(), catchup = false) {
   return { allowed: age == null || age >= minimum, ageMs: age, minimumIntervalMs: minimum,
     reason: age != null && age < minimum ? '共通更新間隔内・重複取得なし' : '定期の空白・既存の期限順キューで補完' };
 }
-function execute(root, callback, { catchup = false, now = Date.now() } = {}) {
+function execute(root, callback, { catchup = false, now = Date.now(), afterSave = null } = {}) {
   // Actions use the same repository concurrency group; local runs also need ownership.
   const release = lock(path.join(root, 'work/priority-price-refresh.lock'));
   try {
@@ -44,6 +44,9 @@ function execute(root, callback, { catchup = false, now = Date.now() } = {}) {
       record.publicationStatus = '保存済み・公開照合待ち';
       save();
     }
+    // The final status is also a published input. Pack only after it is saved,
+    // and never publish a new summary after a failed required calculation.
+    if (afterSave) afterSave(record);
     return record;
   } finally { release(); }
 }
