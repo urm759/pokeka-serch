@@ -242,7 +242,16 @@
     if(/読込|読み込|版不一致/.test(reason))return '要約読込・版不一致';
     return '計算材料不足';
   }
-  function buybackSupport(summary, id, mode, selected = [], now = Date.now(), currentMarket = null, identityKey = null) {
+  const buybackRatioBoundaries=Object.freeze({neutralMin:.98,neutralMax:1.02,strongLow:.9,strongHigh:1.1});
+  function buybackRatioTone(ratio) {
+    const b=buybackRatioBoundaries;
+    if(!finite(ratio)||ratio<=0)return {className:'ratio-unknown',label:'比較不可'};
+    if(ratio<b.strongLow)return {className:'ratio-low-strong',label:'相場より低い'};
+    if(ratio<b.neutralMin)return {className:'ratio-low',label:'相場より低い'};
+    if(ratio<=b.neutralMax)return {className:'ratio-neutral',label:ratio===1?'相場と同額':'ほぼ同水準（相場比±2%以内）'};
+    return {className:ratio<b.strongHigh?'ratio-high':'ratio-high-strong',label:'相場より高い'};
+  }
+  function buybackSupport(summary, id, mode, selected = [], now = Date.now(), currentMarket = null, identityKey = null, currentSource = null) {
     const median = values => { const a = values.slice().sort((x,y)=>x-y); return a.length ? (a[Math.floor(a.length/2)] + a[Math.floor((a.length-1)/2)])/2 : null; };
     const support = summary?.support, entries = support?.cards?.[id] || {}, rows = [], daily = new Map();
     const fresh = at => Number.isFinite(Date.parse(at)) && Date.parse(at) <= now && now - Date.parse(at) <= 48 * 3600000;
@@ -256,7 +265,7 @@
       const timingValid=!policy || row.current[7] === date && /T\d{2}:/.test(at || '') && /T\d{2}:/.test(marketAt || '') && skew <= policy.maxSkewHours;
       const valid = identityValid && !permissionHeld && !meta.stopped && row.current[6] !== false && fresh(at) && fresh(marketAt) && timingValid && finite(price) && price>0 && finite(ratio) && ratio > 0 && finite(currentMarket) && currentMarket === marketPrice;
       const b = row.baseline || [], g = row.glance || [], standard = b[0] ?? g[0], premium = finite(standard) && standard > 0 ? (ratio / standard - 1) * 100 : null;
-      rows.push({shop,merchant:meta.merchantId || shop,name:meta.name,fulfilment:meta.fulfilment,ratio,price,marketPrice,at,marketAt,date,priceDate:row.current[7] ?? null,timeSkewHours:skew,valid,
+      rows.push({shop,merchant:meta.merchantId || shop,name:meta.name,fulfilment:meta.fulfilment,ratio,price,marketPrice,at,marketAt,date,priceDate:row.current[7] ?? null,timeSkewHours:skew,valid,listingActive:row.current[6]===true,
         standard,premium,samples:b[1] ?? g[1] ?? 0,excluded:b[3] || 0,cohort:b[5],band:b[6],reference:b[7] ?? g[2] ?? true,topPct:b[8] ?? g[3] ?? null,periods:row.periods,premiumPeriods:row.premium,
         reason:valid ? null : !identityValid ? 'カード仕様不一致・照合保留' : permissionHeld ? '取得・公開利用保留' : meta.stopped ? '取得元停止中・参考履歴のみ' : row.current[6] === false ? '現在の掲載・価格・提示日未確認（履歴のみ）' : !finite(price) || price<=0 ? '有効な買取提示未取得' : !finite(currentMarket) ? '現在の国内PSA10相場未取得・履歴のみ' : !fresh(at) || !fresh(marketAt) ? '買取/国内相場の確認が48時間外・参考履歴のみ' : !timingValid ? '提示日未確認・相場との確認時差超過（過去時点の参考）' : '国内PSA10現在価格と観測値不一致・再確認待ち'});
       if(!identityValid || permissionHeld)continue;
@@ -278,6 +287,23 @@
       if(!merchantOffers.has(row.merchant))merchantOffers.set(row.merchant,row);
     const meanOffers=[...merchantOffers.values()];
     const mean=meanOffers.length?meanOffers.reduce((sum,row)=>sum+row.ratio,0)/meanOffers.length:null;
+    const targetMerchants=new Map();
+    for(const [shop,meta] of Object.entries(support?.shops || {})) {
+      if(meta.permission==='retired'||mode==='selected'&&!selected.includes(shop)||mode==='mail'&&meta.fulfilment==='store')continue;
+      const merchant=meta.merchantId || shop, channels=targetMerchants.get(merchant)||[];
+      const observed=rows.find(r=>r.shop===shop), q=currentSource?.cards?.[id]?.shops?.[shop];
+      const listingAt=q?.observedAt || observed?.at;
+      const identityCompatible=!identityKey || !summary.cards?.[id]?.[shop]?.identity || summary.cards[id][shop].identity===identityKey;
+      const listed=!meta.stopped&&!['pending','retired'].includes(meta.permission)&&fresh(listingAt)
+        && identityCompatible && !q?.quarantined && (q ? q.listingActive===true : observed?.listingActive===true);
+      channels.push({shop,name:meta.name,fulfilment:meta.fulfilment,listingAt,listed:Boolean(listed),
+        comparable:observed?.valid===true,reason:observed?.reason || (meta.stopped?'取得元停止中・掲載有無未確認':meta.permission==='pending'?'取得・公開利用保留':listed?'掲載確認済み・倍率の比較根拠不足':q?'掲載履歴のみ・新鮮な掲載確認不足':'未取得・掲載有無未確認')});
+      targetMerchants.set(merchant,channels);
+    }
+    const coverageRows=[...targetMerchants].map(([merchant,channels])=>({merchant,channels,
+      listed:channels.some(c=>c.listed),comparable:channels.some(c=>c.comparable)}));
+    const coverage={target:support?.shops?targetMerchants.size:null,comparable:meanOffers.length,
+      above:meanOffers.filter(r=>r.ratio>=1).length,listed:coverageRows.filter(r=>r.listed).length,rows:coverageRows};
     const asOf = new Date(now+9*3600000).toISOString().slice(0,10), windows = {};
     for (const days of [7,30]) {
       const adopted = [...daily].filter(([date])=>date<=asOf && Date.parse(date)>=Date.parse(asOf)-(days-1)*86400000).sort((a,b)=>a[0].localeCompare(b[0]));
@@ -287,7 +313,7 @@
         stores:merchants.size,lastDate:adopted.at(-1)?.[0]||null,reference:medians.length!==days};
     }
     return {rows,median:median(rates),max:rates.length?Math.max(...rates):null,highestQuote,
-      mean,meanCount:meanOffers.length,meanReference:meanOffers.length===1,meanShops:meanOffers.map(r=>r.shop),
+      mean,meanCount:meanOffers.length,meanReference:meanOffers.length===1,meanShops:meanOffers.map(r=>r.shop),coverage,
       meanRule:'選択中の同一店は有効な最高提示1件。対象カードの店舗間単純平均。減額・費用なし',
       above:rates.filter(r=>r>=1).length,count:rates.length,latest,windows,
       multiStoreSupport:rates.filter(r=>r>=1).length>=2,
@@ -305,5 +331,5 @@
         status:pop[4]===0?'近い期間の参考比較':pop[4]===2?'POP減少・訂正等':'期間不一致・部分期間',
         ratio:measured&&!stale&&pop[4]===0&&pop[0]>0?n/pop[0]:null}:null};
   }
-  return {percent,inRange,offerPrice,referenceMedian,meanSale,atPurchase,efficiency,coverage,observationPeriods,migrateObservationSettings,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics,periodEfficiencyAverage,efficiencyUnavailableLabel,buybackSupport,tradeDemand};
+  return {percent,inRange,offerPrice,referenceMedian,meanSale,atPurchase,efficiency,coverage,observationPeriods,migrateObservationSettings,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics,periodEfficiencyAverage,efficiencyUnavailableLabel,buybackSupport,buybackRatioTone,buybackRatioBoundaries,tradeDemand};
 });

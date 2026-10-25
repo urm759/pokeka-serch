@@ -60,7 +60,8 @@ function cardFinish(value) {
   const text = String(value || "");
   if (/マスターボールミラー|マスボ(?:ミラー)?/i.test(text)) return "master";
   if (/モンスターボールミラー|モンボ(?:ミラー)?/i.test(text)) return "monster";
-  if (/SAR\s*仕様/i.test(text)) return "sar-style";
+  const style=text.match(/\b(MUR|BWR|SSR|CSR|CHR|SAR|UR|HR|SR|AR)\s*仕様/i);
+  if(style)return style[1].toLowerCase()+"-style";
   if (/ミラー/i.test(text)) return "mirror";
   if (/旧裏/i.test(text)) return "old-back";
   if (/英語版/i.test(text)) return "english";
@@ -87,6 +88,7 @@ function extractCardSignature(card) {
   const cardNo = prefixedPromo?.[2] || promoNumberFirst?.[1] || setAndNumber?.[2] || String(card?.model || "").replace(/^[A-Za-z-]+\s+/, "");
   const base = sourceWithoutPack
     .split("[")[0]
+    .replace(/\b(?:MUR|BWR|SSR|CSR|CHR|SAR|UR|HR|SR|AR)\s*仕様/gi, " ")
     .replace(/\b(?:MUR|BWR|MA|SSR|CSR|CHR|SAR|UR|HR|SR|RRR|RR|AR|PR|P|H|C|U|R)\b(?:\s*[:：]\s*SA)?/gi, " ")
     .replace(/[:：]\s*(?:SA|プロモ|ミラー|英語版|旧裏|仕様)/gi, " ")
     .replace(/\s+/g, " ")
@@ -108,6 +110,7 @@ function extractProductSignature(product) {
   const base = title
     .split("{")[0]
     .split("〈")[0]
+    .replace(/\b(?:MUR|BWR|SSR|CSR|CHR|SAR|UR|HR|SR|AR)\s*仕様/gi, " ")
     .replace(/\([^)]*\)/g, " ")
     .replace(/[:：]\s*(?:SA|プロモ|ミラー|英語版|旧裏|仕様)/gi, " ")
     .replace(/#\d+$/g, "")

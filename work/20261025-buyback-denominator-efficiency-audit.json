@@ -1,0 +1,3524 @@
+{
+  "at": "2026-10-25T14:17:13.634Z",
+  "inputCommit": "b63429dc389358405adaa24a848f34e8e7d03392",
+  "sameInputsAndTime": true,
+  "independentArithmetic": true,
+  "profiles": [
+    {
+      "id": "A",
+      "url": "https://urm759.github.io/pokeka-serch/?fee=10980&tx=0&tx7=0&psaTx=0&psaTx7=0&roi=20&psaMin=10000&sort=expectedProfit-desc&guide=70&cap=5000000&lock=147&expProfit=0&expRoi=10&annual=40&maxShare=120000&batch=10&reserve=1000000&sellFee=8&extraCost=0&psaPlan=standard&bb7=0&bb30=0&bb90=0&bbShops=0&locked=3500000&priceMin=0&buyLimitRatio=0&buybackDeduction=5&preset=combined&psa9RatioMin=70&psa9Aggregate=1&psa9Estimate=0&psa9Market=1&exitPolicy=both&buybackStores=all&selectedStores=&storeTravel=0&snkrFee=7&snkrShip=210&snkrOther=0&snkrTx7=0&snkrTx30=3&snkrProfit=0&snkrRoi=0&snkrAge=48&year2020=0&includeUnknownYear=0&profitBasis=auto&periodReference=1&psa9RatioMax=120&filterExpRoi=10&marketSearch=cap&marketCapMin=0&filterStressRoi=0&filterStressProfit=0&buyBelowCap=0&purchaseMin=0&purchaseMax=26000&effMin=15&effManual=off&sellDays=7&payoutDays=3&effBuy=auto&effScenario=current&effRef=1&headroomMin=-25&psaMax=200000",
+      "settings": {
+        "fee": 10980,
+        "saleFeeRate": 8,
+        "buybackDeductionRate": 5,
+        "saleExtraCost": 0,
+        "storeTravelCost": 0,
+        "lockDays": 147,
+        "efficiencySaleDays": 7,
+        "efficiencyPayoutDays": 3,
+        "efficiencyBuy": "auto",
+        "exitPolicy": "both"
+      },
+      "cards": [
+        {
+          "id": "x-122054",
+          "name": "イーブイ: プロモ [SV-P 062](「YU NAGABA×ポケモンカードゲーム」プロモーションカード「SV-P」)",
+          "runs": [
+            {
+              "scenario": "current",
+              "independentAnnual": 16.85485223389901,
+              "productionAnnual": 16.85485223389901,
+              "buy": 11800,
+              "buyBasis": "実店舗状態A価格",
+              "exit": "フリマ（両出口の保守側）",
+              "profit": 1651.5261594643962,
+              "investment": 22780,
+              "days": 157,
+              "state": "calculated",
+              "reason": null,
+              "observation": null,
+              "facts": {
+                "psa10": 28666,
+                "psa9": 14950,
+                "adopted10Rate": 0.8461655508216677,
+                "marketNet": 24431.526159464396,
+                "storeGross": 28371,
+                "storeNet": 24922,
+                "chosen": "marketplace",
+                "net": 24431.526159464396,
+                "travel": 0,
+                "stores": []
+              }
+            },
+            {
+              "scenario": "obs7",
+              "independentAnnual": 16.85485223389901,
+              "productionAnnual": 16.85485223389901,
+              "buy": 11800,
+              "buyBasis": "実店舗状態A価格",
+              "exit": "フリマ（両出口平均の保守側）",
+              "profit": 1651.5261594643962,
+              "investment": 22780,
+              "days": 157,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 7,
+                "mean": 28666,
+                "count": 7,
+                "age": 0,
+                "drawdown": 0,
+                "drawdownReference": false,
+                "delta": 0,
+                "reference": true,
+                "latest": "2026-10-25",
+                "stale": false,
+                "unverifiedDays": 0,
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 7,
+                    "mean": 28666,
+                    "count": 7,
+                    "age": 0,
+                    "drawdown": 0,
+                    "drawdownReference": false,
+                    "delta": 0,
+                    "reference": false,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 0
+                  },
+                  "buyback": {
+                    "days": 7,
+                    "mean": 30828.571428571428,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "toreca-lounge",
+                      "shinsoku",
+                      "torecaclub",
+                      "toreca-birth-mail",
+                      "fukufuku-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 28666,
+                "psa9": 14950,
+                "adopted10Rate": 0.8461655508216677,
+                "marketNet": 24431.526159464396,
+                "storeGross": 30828.571428571428,
+                "storeNet": 26897.610381705937,
+                "chosen": "marketplace",
+                "net": 24431.526159464396,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "toreca-lounge",
+                    "mean": 31485.714285714286,
+                    "days": 7,
+                    "at": "2026-10-25T13:01:50.640Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "shinsoku",
+                    "mean": 30828.571428571428,
+                    "days": 7,
+                    "at": "2026-10-25T13:01:56.959Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "torecaclub",
+                    "mean": 31857.14285714286,
+                    "days": 7,
+                    "at": "2026-10-25T13:01:59.280Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "toreca-birth-mail",
+                    "mean": 30157.14285714286,
+                    "days": 7,
+                    "at": "2026-10-25T13:02:00.375Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "fukufuku-mail",
+                    "mean": 22000,
+                    "days": 1,
+                    "at": "2026-10-25T06:11:38.000Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            },
+            {
+              "scenario": "obs30",
+              "independentAnnual": 0.7916697798442724,
+              "productionAnnual": 0.7916697798442724,
+              "buy": 11800,
+              "buyBasis": "実店舗状態A価格",
+              "exit": "フリマ（両出口平均の保守側）",
+              "profit": 77.5719260499136,
+              "investment": 22780,
+              "days": 157,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 30,
+                "mean": 26644.15,
+                "count": 27,
+                "age": 0,
+                "drawdown": 0,
+                "drawdownReference": true,
+                "delta": 7.588344908732303,
+                "reference": true,
+                "latest": "2026-10-25",
+                "stale": false,
+                "unverifiedDays": 14,
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 30,
+                    "mean": 26644.15,
+                    "count": 27,
+                    "age": 0,
+                    "drawdown": 0,
+                    "drawdownReference": true,
+                    "delta": 7.588344908732303,
+                    "reference": true,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 14
+                  },
+                  "buyback": {
+                    "days": 30,
+                    "mean": 31430.76923076923,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "toreca-lounge",
+                      "shinsoku",
+                      "torecaclub",
+                      "toreca-birth-mail",
+                      "fukufuku-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 26644.15,
+                "psa9": 14950,
+                "adopted10Rate": 0.8461655508216677,
+                "marketNet": 22857.571926049914,
+                "storeGross": 31430.76923076923,
+                "storeNet": 27381.69146495622,
+                "chosen": "marketplace",
+                "net": 22857.571926049914,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "toreca-lounge",
+                    "mean": 32038.46153846154,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:50.640Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "shinsoku",
+                    "mean": 31430.76923076923,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:56.959Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "torecaclub",
+                    "mean": 32230.76923076923,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:59.280Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "toreca-birth-mail",
+                    "mean": 30438.46153846154,
+                    "days": 13,
+                    "at": "2026-10-25T13:02:00.375Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "fukufuku-mail",
+                    "mean": 22000,
+                    "days": 1,
+                    "at": "2026-10-25T06:11:38.000Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            },
+            {
+              "scenario": "obs75",
+              "independentAnnual": 28.80906649871491,
+              "productionAnnual": 28.80906649871491,
+              "buy": 11800,
+              "buyBasis": "実店舗状態A価格",
+              "exit": "フリマ（両出口平均の保守側）",
+              "profit": 2822.8623005477784,
+              "investment": 22780,
+              "days": 157,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 75,
+                "mean": 30170.66,
+                "count": 53,
+                "age": 0,
+                "drawdown": -36.8421052631579,
+                "drawdownReference": true,
+                "delta": -4.987163025270247,
+                "reference": true,
+                "latest": "2026-10-25",
+                "stale": false,
+                "unverifiedDays": 40,
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 75,
+                    "mean": 30170.66,
+                    "count": 53,
+                    "age": 0,
+                    "drawdown": -36.8421052631579,
+                    "drawdownReference": true,
+                    "delta": -4.987163025270247,
+                    "reference": true,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 40
+                  },
+                  "buyback": {
+                    "days": 75,
+                    "mean": 31430.76923076923,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "toreca-lounge",
+                      "shinsoku",
+                      "torecaclub",
+                      "toreca-birth-mail",
+                      "fukufuku-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 30170.66,
+                "psa9": 14950,
+                "adopted10Rate": 0.8461655508216677,
+                "marketNet": 25602.86230054778,
+                "storeGross": 31430.76923076923,
+                "storeNet": 27381.69146495622,
+                "chosen": "marketplace",
+                "net": 25602.86230054778,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "toreca-lounge",
+                    "mean": 32038.46153846154,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:50.640Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "shinsoku",
+                    "mean": 31430.76923076923,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:56.959Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "torecaclub",
+                    "mean": 32230.76923076923,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:59.280Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "toreca-birth-mail",
+                    "mean": 30438.46153846154,
+                    "days": 13,
+                    "at": "2026-10-25T13:02:00.375Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "fukufuku-mail",
+                    "mean": 22000,
+                    "days": 1,
+                    "at": "2026-10-25T06:11:38.000Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            },
+            {
+              "scenario": "obs200",
+              "independentAnnual": 28.80906649871491,
+              "productionAnnual": 28.80906649871491,
+              "buy": 11800,
+              "buyBasis": "実店舗状態A価格",
+              "exit": "フリマ（両出口平均の保守側）",
+              "profit": 2822.8623005477784,
+              "investment": 22780,
+              "days": 157,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 200,
+                "mean": 30170.66,
+                "count": 53,
+                "age": 0,
+                "drawdown": -36.8421052631579,
+                "drawdownReference": true,
+                "delta": -4.987163025270247,
+                "reference": true,
+                "latest": "2026-10-25",
+                "stale": false,
+                "unverifiedDays": 40,
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 200,
+                    "mean": 30170.66,
+                    "count": 53,
+                    "age": 0,
+                    "drawdown": -36.8421052631579,
+                    "drawdownReference": true,
+                    "delta": -4.987163025270247,
+                    "reference": true,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 40
+                  },
+                  "buyback": {
+                    "days": 200,
+                    "mean": 31430.76923076923,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "toreca-lounge",
+                      "shinsoku",
+                      "torecaclub",
+                      "toreca-birth-mail",
+                      "fukufuku-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 30170.66,
+                "psa9": 14950,
+                "adopted10Rate": 0.8461655508216677,
+                "marketNet": 25602.86230054778,
+                "storeGross": 31430.76923076923,
+                "storeNet": 27381.69146495622,
+                "chosen": "marketplace",
+                "net": 25602.86230054778,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "toreca-lounge",
+                    "mean": 32038.46153846154,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:50.640Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "shinsoku",
+                    "mean": 31430.76923076923,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:56.959Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "torecaclub",
+                    "mean": 32230.76923076923,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:59.280Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "toreca-birth-mail",
+                    "mean": 30438.46153846154,
+                    "days": 13,
+                    "at": "2026-10-25T13:02:00.375Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "fukufuku-mail",
+                    "mean": 22000,
+                    "days": 1,
+                    "at": "2026-10-25T06:11:38.000Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            }
+          ],
+          "fourPeriodMean": 18.816163752793276,
+          "adoptedPeriods": 4,
+          "filterReasons": [],
+          "allExclusions": [],
+          "csv": [
+            11800,
+            "実店舗状態A価格",
+            "現在出口相場が続く仮定",
+            "フリマ（両出口の保守側）",
+            1651.5261594643962,
+            22780,
+            7.249895344444232,
+            157,
+            16.85485223389901,
+            "",
+            "calculated",
+            "PSA9は集計値・個別実成約未取得／公式Populationの確認日が古い・未取得／非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価",
+            "採用"
+          ],
+          "switchedBuy": {
+            "buy": 12900,
+            "annual": 5.369390695635945
+          }
+        },
+        {
+          "id": "pk-75866",
+          "name": "イーブイ AR仕様 [MC 755/742](スタートデッキ100「バトルコレクション」)",
+          "runs": [
+            {
+              "scenario": "current",
+              "independentAnnual": 70.75457650605338,
+              "productionAnnual": 70.75457650605338,
+              "buy": 9980,
+              "buyBasis": "実店舗状態A価格",
+              "exit": "買取店（両出口の保守側）",
+              "profit": 6379,
+              "investment": 20960,
+              "days": 157,
+              "state": "calculated",
+              "reason": null,
+              "observation": null,
+              "facts": {
+                "psa10": 52000,
+                "psa9": 11900,
+                "adopted10Rate": 0.6027359017308767,
+                "marketNet": 33184.132886655505,
+                "storeGross": 40150,
+                "storeNet": 27339,
+                "chosen": "buyback",
+                "net": 27339,
+                "travel": 0,
+                "stores": []
+              }
+            },
+            {
+              "scenario": "obs7",
+              "independentAnnual": 26.93274389731324,
+              "productionAnnual": 26.93274389731324,
+              "buy": 9980,
+              "buyBasis": "実店舗状態A価格",
+              "exit": "買取店（両出口平均の保守側）",
+              "profit": 2428.167643774428,
+              "investment": 20960,
+              "days": 157,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 7,
+                "mean": 33250,
+                "count": 1,
+                "latest": "2026-10-25",
+                "unverifiedDays": 0,
+                "reference": true,
+                "stores": [
+                  "torecaclub",
+                  "kaitori-homura-mail"
+                ],
+                "source": "買取店舗別観測平均の中央値",
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 7,
+                    "mean": 52000,
+                    "count": 7,
+                    "age": 0,
+                    "drawdown": 0,
+                    "drawdownReference": false,
+                    "delta": 0,
+                    "reference": false,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 0
+                  },
+                  "buyback": {
+                    "days": 7,
+                    "mean": 33250,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "torecaclub",
+                      "kaitori-homura-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 52000,
+                "psa9": 11900,
+                "adopted10Rate": 0.6027359017308767,
+                "marketNet": 33184.132886655505,
+                "storeGross": 33250,
+                "storeNet": 23388.167643774428,
+                "chosen": "buyback",
+                "net": 23388.167643774428,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "torecaclub",
+                    "mean": 30000,
+                    "days": 7,
+                    "at": "2026-10-24T21:48:29.918Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "kaitori-homura-mail",
+                    "mean": 36500,
+                    "days": 1,
+                    "at": "2026-10-24T16:08:16.852Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            },
+            {
+              "scenario": "obs30",
+              "independentAnnual": 26.93274389731324,
+              "productionAnnual": 26.93274389731324,
+              "buy": 9980,
+              "buyBasis": "実店舗状態A価格",
+              "exit": "買取店（両出口平均の保守側）",
+              "profit": 2428.167643774428,
+              "investment": 20960,
+              "days": 157,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 30,
+                "mean": 33250,
+                "count": 1,
+                "latest": "2026-10-25",
+                "unverifiedDays": 0,
+                "reference": true,
+                "stores": [
+                  "torecaclub",
+                  "kaitori-homura-mail"
+                ],
+                "source": "買取店舗別観測平均の中央値",
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 30,
+                    "mean": 43422.11,
+                    "count": 27,
+                    "age": 0,
+                    "drawdown": -5.555555555555558,
+                    "drawdownReference": true,
+                    "delta": 19.75465955016926,
+                    "reference": true,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 14
+                  },
+                  "buyback": {
+                    "days": 30,
+                    "mean": 33250,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "torecaclub",
+                      "kaitori-homura-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 43422.11,
+                "psa9": 11900,
+                "adopted10Rate": 0.6027359017308767,
+                "marketNet": 28427.546803685098,
+                "storeGross": 33250,
+                "storeNet": 23388.167643774428,
+                "chosen": "buyback",
+                "net": 23388.167643774428,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "torecaclub",
+                    "mean": 30000,
+                    "days": 13,
+                    "at": "2026-10-24T21:48:29.918Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "kaitori-homura-mail",
+                    "mean": 36500,
+                    "days": 1,
+                    "at": "2026-10-24T16:08:16.852Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            },
+            {
+              "scenario": "obs75",
+              "independentAnnual": 26.93274389731324,
+              "productionAnnual": 26.93274389731324,
+              "buy": 9980,
+              "buyBasis": "実店舗状態A価格",
+              "exit": "買取店（両出口平均の保守側）",
+              "profit": 2428.167643774428,
+              "investment": 20960,
+              "days": 157,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 75,
+                "mean": 33250,
+                "count": 1,
+                "latest": "2026-10-25",
+                "unverifiedDays": 0,
+                "reference": true,
+                "stores": [
+                  "torecaclub",
+                  "kaitori-homura-mail"
+                ],
+                "source": "買取店舗別観測平均の中央値",
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 75,
+                    "mean": 46612.74,
+                    "count": 53,
+                    "age": 0,
+                    "drawdown": -52.112676056338024,
+                    "drawdownReference": true,
+                    "delta": 11.557484069805813,
+                    "reference": true,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 40
+                  },
+                  "buyback": {
+                    "days": 75,
+                    "mean": 33250,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "torecaclub",
+                      "kaitori-homura-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 46612.74,
+                "psa9": 11900,
+                "adopted10Rate": 0.6027359017308767,
+                "marketNet": 30196.80547381351,
+                "storeGross": 33250,
+                "storeNet": 23388.167643774428,
+                "chosen": "buyback",
+                "net": 23388.167643774428,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "torecaclub",
+                    "mean": 30000,
+                    "days": 13,
+                    "at": "2026-10-24T21:48:29.918Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "kaitori-homura-mail",
+                    "mean": 36500,
+                    "days": 1,
+                    "at": "2026-10-24T16:08:16.852Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            },
+            {
+              "scenario": "obs200",
+              "independentAnnual": 26.93274389731324,
+              "productionAnnual": 26.93274389731324,
+              "buy": 9980,
+              "buyBasis": "実店舗状態A価格",
+              "exit": "買取店（両出口平均の保守側）",
+              "profit": 2428.167643774428,
+              "investment": 20960,
+              "days": 157,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 200,
+                "mean": 33250,
+                "count": 1,
+                "latest": "2026-10-25",
+                "unverifiedDays": 0,
+                "reference": true,
+                "stores": [
+                  "torecaclub",
+                  "kaitori-homura-mail"
+                ],
+                "source": "買取店舗別観測平均の中央値",
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 200,
+                    "mean": 46612.74,
+                    "count": 53,
+                    "age": 0,
+                    "drawdown": -52.112676056338024,
+                    "drawdownReference": true,
+                    "delta": 11.557484069805813,
+                    "reference": true,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 40
+                  },
+                  "buyback": {
+                    "days": 200,
+                    "mean": 33250,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "torecaclub",
+                      "kaitori-homura-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 46612.74,
+                "psa9": 11900,
+                "adopted10Rate": 0.6027359017308767,
+                "marketNet": 30196.80547381351,
+                "storeGross": 33250,
+                "storeNet": 23388.167643774428,
+                "chosen": "buyback",
+                "net": 23388.167643774428,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "torecaclub",
+                    "mean": 30000,
+                    "days": 13,
+                    "at": "2026-10-24T21:48:29.918Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "kaitori-homura-mail",
+                    "mean": 36500,
+                    "days": 1,
+                    "at": "2026-10-24T16:08:16.852Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            }
+          ],
+          "fourPeriodMean": 26.93274389731324,
+          "adoptedPeriods": 4,
+          "filterReasons": [],
+          "allExclusions": [],
+          "csv": [
+            9980,
+            "実店舗状態A価格",
+            "現在出口相場が続く仮定",
+            "買取店（両出口の保守側）",
+            6379,
+            20960,
+            30.43416030534351,
+            157,
+            70.75457650605338,
+            "",
+            "calculated",
+            "PSA9は集計値・個別実成約未取得／公式Populationの確認日が古い・未取得／非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価",
+            "採用"
+          ],
+          "switchedBuy": {
+            "buy": 10490,
+            "annual": 63.55142266352992
+          }
+        }
+      ]
+    },
+    {
+      "id": "B",
+      "url": "https://urm759.github.io/pokeka-serch/?fee=12980&tx=0&tx7=0&psaTx=0&psaTx7=0&roi=30&psaMin=0&sort=expectedProfit-desc&guide=70&cap=5000000&lock=91&expProfit=0&expRoi=10&annual=40&maxShare=120000&batch=10&reserve=1000000&sellFee=8&extraCost=0&psaPlan=priority&bb7=0&bb30=0&bb90=0&bbShops=0&locked=3500000&buyLimitRatio=0&buybackDeduction=5&preset=combined&psa9RatioMin=70&psa9Aggregate=1&psa9Estimate=0&psa9Market=0&exitPolicy=both&buybackStores=all&selectedStores=&storeTravel=0&snkrFee=7&snkrShip=210&snkrOther=0&snkrTx7=0&snkrTx30=3&snkrProfit=0&snkrRoi=0&snkrAge=48&year2020=0&includeUnknownYear=0&profitBasis=auto&periodReference=1&psa9RatioMax=120&filterExpRoi=10&marketSearch=cap&buyBelowCap=0&marketCapMin=0&filterStressRoi=0&filterStressProfit=0&storeDemand=normal-up&purchaseMin=26000&purchaseMax=99999&priceMin=26000&priceMax=99999&headroomMin=-25&effMin=30&effManual=off&sellDays=7&payoutDays=3&effBuy=auto&effScenario=current&effRef=1&psaMax=200000",
+      "settings": {
+        "fee": 12980,
+        "saleFeeRate": 8,
+        "buybackDeductionRate": 5,
+        "saleExtraCost": 0,
+        "storeTravelCost": 0,
+        "lockDays": 91,
+        "efficiencySaleDays": 7,
+        "efficiencyPayoutDays": 3,
+        "efficiencyBuy": "auto",
+        "exitPolicy": "both"
+      },
+      "cards": [
+        {
+          "id": "x-122054",
+          "name": "イーブイ: プロモ [SV-P 062](「YU NAGABA×ポケモンカードゲーム」プロモーションカード「SV-P」)",
+          "runs": [
+            {
+              "scenario": "current",
+              "independentAnnual": -5.082066813523178,
+              "productionAnnual": -5.082066813523178,
+              "buy": 11800,
+              "buyBasis": "実店舗状態A価格",
+              "exit": "フリマ（両出口の保守側）",
+              "profit": -348.4738405356038,
+              "investment": 24780,
+              "days": 101,
+              "state": "calculated",
+              "reason": null,
+              "observation": null,
+              "facts": {
+                "psa10": 28666,
+                "psa9": 14950,
+                "adopted10Rate": 0.8461655508216677,
+                "marketNet": 24431.526159464396,
+                "storeGross": 28371,
+                "storeNet": 24922,
+                "chosen": "marketplace",
+                "net": 24431.526159464396,
+                "travel": 0,
+                "stores": []
+              }
+            },
+            {
+              "scenario": "obs7",
+              "independentAnnual": -5.082066813523178,
+              "productionAnnual": -5.082066813523178,
+              "buy": 11800,
+              "buyBasis": "実店舗状態A価格",
+              "exit": "フリマ（両出口平均の保守側）",
+              "profit": -348.4738405356038,
+              "investment": 24780,
+              "days": 101,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 7,
+                "mean": 28666,
+                "count": 7,
+                "age": 0,
+                "drawdown": 0,
+                "drawdownReference": false,
+                "delta": 0,
+                "reference": true,
+                "latest": "2026-10-25",
+                "stale": false,
+                "unverifiedDays": 0,
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 7,
+                    "mean": 28666,
+                    "count": 7,
+                    "age": 0,
+                    "drawdown": 0,
+                    "drawdownReference": false,
+                    "delta": 0,
+                    "reference": false,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 0
+                  },
+                  "buyback": {
+                    "days": 7,
+                    "mean": 30828.571428571428,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "toreca-lounge",
+                      "shinsoku",
+                      "torecaclub",
+                      "toreca-birth-mail",
+                      "fukufuku-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 28666,
+                "psa9": 14950,
+                "adopted10Rate": 0.8461655508216677,
+                "marketNet": 24431.526159464396,
+                "storeGross": 30828.571428571428,
+                "storeNet": 26897.610381705937,
+                "chosen": "marketplace",
+                "net": 24431.526159464396,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "toreca-lounge",
+                    "mean": 31485.714285714286,
+                    "days": 7,
+                    "at": "2026-10-25T13:01:50.640Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "shinsoku",
+                    "mean": 30828.571428571428,
+                    "days": 7,
+                    "at": "2026-10-25T13:01:56.959Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "torecaclub",
+                    "mean": 31857.14285714286,
+                    "days": 7,
+                    "at": "2026-10-25T13:01:59.280Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "toreca-birth-mail",
+                    "mean": 30157.14285714286,
+                    "days": 7,
+                    "at": "2026-10-25T13:02:00.375Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "fukufuku-mail",
+                    "mean": 22000,
+                    "days": 1,
+                    "at": "2026-10-25T06:11:38.000Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            },
+            {
+              "scenario": "obs30",
+              "independentAnnual": -28.0362735434909,
+              "productionAnnual": -28.0362735434909,
+              "buy": 11800,
+              "buyBasis": "実店舗状態A価格",
+              "exit": "フリマ（両出口平均の保守側）",
+              "profit": -1922.4280739500864,
+              "investment": 24780,
+              "days": 101,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 30,
+                "mean": 26644.15,
+                "count": 27,
+                "age": 0,
+                "drawdown": 0,
+                "drawdownReference": true,
+                "delta": 7.588344908732303,
+                "reference": true,
+                "latest": "2026-10-25",
+                "stale": false,
+                "unverifiedDays": 14,
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 30,
+                    "mean": 26644.15,
+                    "count": 27,
+                    "age": 0,
+                    "drawdown": 0,
+                    "drawdownReference": true,
+                    "delta": 7.588344908732303,
+                    "reference": true,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 14
+                  },
+                  "buyback": {
+                    "days": 30,
+                    "mean": 31430.76923076923,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "toreca-lounge",
+                      "shinsoku",
+                      "torecaclub",
+                      "toreca-birth-mail",
+                      "fukufuku-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 26644.15,
+                "psa9": 14950,
+                "adopted10Rate": 0.8461655508216677,
+                "marketNet": 22857.571926049914,
+                "storeGross": 31430.76923076923,
+                "storeNet": 27381.69146495622,
+                "chosen": "marketplace",
+                "net": 22857.571926049914,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "toreca-lounge",
+                    "mean": 32038.46153846154,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:50.640Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "shinsoku",
+                    "mean": 31430.76923076923,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:56.959Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "torecaclub",
+                    "mean": 32230.76923076923,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:59.280Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "toreca-birth-mail",
+                    "mean": 30438.46153846154,
+                    "days": 13,
+                    "at": "2026-10-25T13:02:00.375Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "fukufuku-mail",
+                    "mean": 22000,
+                    "days": 1,
+                    "at": "2026-10-25T06:11:38.000Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            },
+            {
+              "scenario": "obs75",
+              "independentAnnual": 12.00044509305409,
+              "productionAnnual": 12.00044509305409,
+              "buy": 11800,
+              "buyBasis": "実店舗状態A価格",
+              "exit": "フリマ（両出口平均の保守側）",
+              "profit": 822.8623005477784,
+              "investment": 24780,
+              "days": 101,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 75,
+                "mean": 30170.66,
+                "count": 53,
+                "age": 0,
+                "drawdown": -36.8421052631579,
+                "drawdownReference": true,
+                "delta": -4.987163025270247,
+                "reference": true,
+                "latest": "2026-10-25",
+                "stale": false,
+                "unverifiedDays": 40,
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 75,
+                    "mean": 30170.66,
+                    "count": 53,
+                    "age": 0,
+                    "drawdown": -36.8421052631579,
+                    "drawdownReference": true,
+                    "delta": -4.987163025270247,
+                    "reference": true,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 40
+                  },
+                  "buyback": {
+                    "days": 75,
+                    "mean": 31430.76923076923,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "toreca-lounge",
+                      "shinsoku",
+                      "torecaclub",
+                      "toreca-birth-mail",
+                      "fukufuku-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 30170.66,
+                "psa9": 14950,
+                "adopted10Rate": 0.8461655508216677,
+                "marketNet": 25602.86230054778,
+                "storeGross": 31430.76923076923,
+                "storeNet": 27381.69146495622,
+                "chosen": "marketplace",
+                "net": 25602.86230054778,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "toreca-lounge",
+                    "mean": 32038.46153846154,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:50.640Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "shinsoku",
+                    "mean": 31430.76923076923,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:56.959Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "torecaclub",
+                    "mean": 32230.76923076923,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:59.280Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "toreca-birth-mail",
+                    "mean": 30438.46153846154,
+                    "days": 13,
+                    "at": "2026-10-25T13:02:00.375Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "fukufuku-mail",
+                    "mean": 22000,
+                    "days": 1,
+                    "at": "2026-10-25T06:11:38.000Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            },
+            {
+              "scenario": "obs200",
+              "independentAnnual": 12.00044509305409,
+              "productionAnnual": 12.00044509305409,
+              "buy": 11800,
+              "buyBasis": "実店舗状態A価格",
+              "exit": "フリマ（両出口平均の保守側）",
+              "profit": 822.8623005477784,
+              "investment": 24780,
+              "days": 101,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 200,
+                "mean": 30170.66,
+                "count": 53,
+                "age": 0,
+                "drawdown": -36.8421052631579,
+                "drawdownReference": true,
+                "delta": -4.987163025270247,
+                "reference": true,
+                "latest": "2026-10-25",
+                "stale": false,
+                "unverifiedDays": 40,
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 200,
+                    "mean": 30170.66,
+                    "count": 53,
+                    "age": 0,
+                    "drawdown": -36.8421052631579,
+                    "drawdownReference": true,
+                    "delta": -4.987163025270247,
+                    "reference": true,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 40
+                  },
+                  "buyback": {
+                    "days": 200,
+                    "mean": 31430.76923076923,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "toreca-lounge",
+                      "shinsoku",
+                      "torecaclub",
+                      "toreca-birth-mail",
+                      "fukufuku-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 30170.66,
+                "psa9": 14950,
+                "adopted10Rate": 0.8461655508216677,
+                "marketNet": 25602.86230054778,
+                "storeGross": 31430.76923076923,
+                "storeNet": 27381.69146495622,
+                "chosen": "marketplace",
+                "net": 25602.86230054778,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "toreca-lounge",
+                    "mean": 32038.46153846154,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:50.640Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "shinsoku",
+                    "mean": 31430.76923076923,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:56.959Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "torecaclub",
+                    "mean": 32230.76923076923,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:59.280Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "toreca-birth-mail",
+                    "mean": 30438.46153846154,
+                    "days": 13,
+                    "at": "2026-10-25T13:02:00.375Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "fukufuku-mail",
+                    "mean": 22000,
+                    "days": 1,
+                    "at": "2026-10-25T06:11:38.000Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            }
+          ],
+          "fourPeriodMean": -2.2793625427264743,
+          "adoptedPeriods": 4,
+          "filterReasons": [
+            "単体年換算資金効率条件"
+          ],
+          "allExclusions": [
+            "単体年換算資金効率条件",
+            "現在買える状態A価格範囲",
+            "価格帯・相場比"
+          ],
+          "csv": [
+            11800,
+            "実店舗状態A価格",
+            "現在出口相場が続く仮定",
+            "フリマ（両出口の保守側）",
+            -348.4738405356038,
+            24780,
+            -1.4062705429201123,
+            101,
+            -5.082066813523178,
+            "",
+            "calculated",
+            "PSA9は集計値・個別実成約未取得／公式Populationの確認日が古い・未取得／非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価",
+            "採用"
+          ],
+          "switchedBuy": {
+            "buy": 12900,
+            "annual": -20.226366619565376
+          }
+        },
+        {
+          "id": "pk-75866",
+          "name": "イーブイ AR仕様 [MC 755/742](スタートデッキ100「バトルコレクション」)",
+          "runs": [
+            {
+              "scenario": "current",
+              "independentAnnual": 68.92464725566634,
+              "productionAnnual": 68.92464725566634,
+              "buy": 9980,
+              "buyBasis": "実店舗状態A価格",
+              "exit": "買取店（両出口の保守側）",
+              "profit": 4379,
+              "investment": 22960,
+              "days": 101,
+              "state": "calculated",
+              "reason": null,
+              "observation": null,
+              "facts": {
+                "psa10": 52000,
+                "psa9": 11900,
+                "adopted10Rate": 0.6027359017308767,
+                "marketNet": 33184.132886655505,
+                "storeGross": 40150,
+                "storeNet": 27339,
+                "chosen": "buyback",
+                "net": 27339,
+                "travel": 0,
+                "stores": []
+              }
+            },
+            {
+              "scenario": "obs7",
+              "independentAnnual": 6.739279244905746,
+              "productionAnnual": 6.739279244905746,
+              "buy": 9980,
+              "buyBasis": "実店舗状態A価格",
+              "exit": "買取店（両出口平均の保守側）",
+              "profit": 428.16764377442814,
+              "investment": 22960,
+              "days": 101,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 7,
+                "mean": 33250,
+                "count": 1,
+                "latest": "2026-10-25",
+                "unverifiedDays": 0,
+                "reference": true,
+                "stores": [
+                  "torecaclub",
+                  "kaitori-homura-mail"
+                ],
+                "source": "買取店舗別観測平均の中央値",
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 7,
+                    "mean": 52000,
+                    "count": 7,
+                    "age": 0,
+                    "drawdown": 0,
+                    "drawdownReference": false,
+                    "delta": 0,
+                    "reference": false,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 0
+                  },
+                  "buyback": {
+                    "days": 7,
+                    "mean": 33250,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "torecaclub",
+                      "kaitori-homura-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 52000,
+                "psa9": 11900,
+                "adopted10Rate": 0.6027359017308767,
+                "marketNet": 33184.132886655505,
+                "storeGross": 33250,
+                "storeNet": 23388.167643774428,
+                "chosen": "buyback",
+                "net": 23388.167643774428,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "torecaclub",
+                    "mean": 30000,
+                    "days": 7,
+                    "at": "2026-10-24T21:48:29.918Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "kaitori-homura-mail",
+                    "mean": 36500,
+                    "days": 1,
+                    "at": "2026-10-24T16:08:16.852Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            },
+            {
+              "scenario": "obs30",
+              "independentAnnual": 6.739279244905746,
+              "productionAnnual": 6.739279244905746,
+              "buy": 9980,
+              "buyBasis": "実店舗状態A価格",
+              "exit": "買取店（両出口平均の保守側）",
+              "profit": 428.16764377442814,
+              "investment": 22960,
+              "days": 101,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 30,
+                "mean": 33250,
+                "count": 1,
+                "latest": "2026-10-25",
+                "unverifiedDays": 0,
+                "reference": true,
+                "stores": [
+                  "torecaclub",
+                  "kaitori-homura-mail"
+                ],
+                "source": "買取店舗別観測平均の中央値",
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 30,
+                    "mean": 43422.11,
+                    "count": 27,
+                    "age": 0,
+                    "drawdown": -5.555555555555558,
+                    "drawdownReference": true,
+                    "delta": 19.75465955016926,
+                    "reference": true,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 14
+                  },
+                  "buyback": {
+                    "days": 30,
+                    "mean": 33250,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "torecaclub",
+                      "kaitori-homura-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 43422.11,
+                "psa9": 11900,
+                "adopted10Rate": 0.6027359017308767,
+                "marketNet": 28427.546803685098,
+                "storeGross": 33250,
+                "storeNet": 23388.167643774428,
+                "chosen": "buyback",
+                "net": 23388.167643774428,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "torecaclub",
+                    "mean": 30000,
+                    "days": 13,
+                    "at": "2026-10-24T21:48:29.918Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "kaitori-homura-mail",
+                    "mean": 36500,
+                    "days": 1,
+                    "at": "2026-10-24T16:08:16.852Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            },
+            {
+              "scenario": "obs75",
+              "independentAnnual": 6.739279244905746,
+              "productionAnnual": 6.739279244905746,
+              "buy": 9980,
+              "buyBasis": "実店舗状態A価格",
+              "exit": "買取店（両出口平均の保守側）",
+              "profit": 428.16764377442814,
+              "investment": 22960,
+              "days": 101,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 75,
+                "mean": 33250,
+                "count": 1,
+                "latest": "2026-10-25",
+                "unverifiedDays": 0,
+                "reference": true,
+                "stores": [
+                  "torecaclub",
+                  "kaitori-homura-mail"
+                ],
+                "source": "買取店舗別観測平均の中央値",
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 75,
+                    "mean": 46612.74,
+                    "count": 53,
+                    "age": 0,
+                    "drawdown": -52.112676056338024,
+                    "drawdownReference": true,
+                    "delta": 11.557484069805813,
+                    "reference": true,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 40
+                  },
+                  "buyback": {
+                    "days": 75,
+                    "mean": 33250,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "torecaclub",
+                      "kaitori-homura-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 46612.74,
+                "psa9": 11900,
+                "adopted10Rate": 0.6027359017308767,
+                "marketNet": 30196.80547381351,
+                "storeGross": 33250,
+                "storeNet": 23388.167643774428,
+                "chosen": "buyback",
+                "net": 23388.167643774428,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "torecaclub",
+                    "mean": 30000,
+                    "days": 13,
+                    "at": "2026-10-24T21:48:29.918Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "kaitori-homura-mail",
+                    "mean": 36500,
+                    "days": 1,
+                    "at": "2026-10-24T16:08:16.852Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            },
+            {
+              "scenario": "obs200",
+              "independentAnnual": 6.739279244905746,
+              "productionAnnual": 6.739279244905746,
+              "buy": 9980,
+              "buyBasis": "実店舗状態A価格",
+              "exit": "買取店（両出口平均の保守側）",
+              "profit": 428.16764377442814,
+              "investment": 22960,
+              "days": 101,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 200,
+                "mean": 33250,
+                "count": 1,
+                "latest": "2026-10-25",
+                "unverifiedDays": 0,
+                "reference": true,
+                "stores": [
+                  "torecaclub",
+                  "kaitori-homura-mail"
+                ],
+                "source": "買取店舗別観測平均の中央値",
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 200,
+                    "mean": 46612.74,
+                    "count": 53,
+                    "age": 0,
+                    "drawdown": -52.112676056338024,
+                    "drawdownReference": true,
+                    "delta": 11.557484069805813,
+                    "reference": true,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 40
+                  },
+                  "buyback": {
+                    "days": 200,
+                    "mean": 33250,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "torecaclub",
+                      "kaitori-homura-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 46612.74,
+                "psa9": 11900,
+                "adopted10Rate": 0.6027359017308767,
+                "marketNet": 30196.80547381351,
+                "storeGross": 33250,
+                "storeNet": 23388.167643774428,
+                "chosen": "buyback",
+                "net": 23388.167643774428,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "torecaclub",
+                    "mean": 30000,
+                    "days": 13,
+                    "at": "2026-10-24T21:48:29.918Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "kaitori-homura-mail",
+                    "mean": 36500,
+                    "days": 1,
+                    "at": "2026-10-24T16:08:16.852Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            }
+          ],
+          "fourPeriodMean": 6.739279244905746,
+          "adoptedPeriods": 4,
+          "filterReasons": [],
+          "allExclusions": [
+            "現在買える状態A価格範囲",
+            "見送り非表示",
+            "利益条件",
+            "価格帯・相場比",
+            "プリセット条件"
+          ],
+          "csv": [
+            9980,
+            "実店舗状態A価格",
+            "現在出口相場が続く仮定",
+            "買取店（両出口の保守側）",
+            4379,
+            22960,
+            19.072299651567945,
+            101,
+            68.92464725566634,
+            "",
+            "calculated",
+            "PSA9は集計値・個別実成約未取得／公式Populationの確認日が古い・未取得／非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価",
+            "採用"
+          ],
+          "switchedBuy": {
+            "buy": 10490,
+            "annual": 59.574050715680855
+          }
+        }
+      ]
+    },
+    {
+      "id": "A-median",
+      "url": "https://urm759.github.io/pokeka-serch/?fee=10980&tx=0&tx7=0&psaTx=0&psaTx7=0&roi=20&psaMin=10000&sort=expectedProfit-desc&guide=70&cap=5000000&lock=147&expProfit=0&expRoi=10&annual=40&maxShare=120000&batch=10&reserve=1000000&sellFee=8&extraCost=0&psaPlan=standard&bb7=0&bb30=0&bb90=0&bbShops=0&locked=3500000&priceMin=0&buyLimitRatio=0&buybackDeduction=5&preset=combined&psa9RatioMin=70&psa9Aggregate=1&psa9Estimate=0&psa9Market=1&exitPolicy=both&buybackStores=all&selectedStores=&storeTravel=0&snkrFee=7&snkrShip=210&snkrOther=0&snkrTx7=0&snkrTx30=3&snkrProfit=0&snkrRoi=0&snkrAge=48&year2020=0&includeUnknownYear=0&profitBasis=auto&periodReference=1&psa9RatioMax=120&filterExpRoi=10&marketSearch=cap&marketCapMin=0&filterStressRoi=0&filterStressProfit=0&buyBelowCap=0&purchaseMin=0&purchaseMax=26000&effMin=15&effManual=off&sellDays=7&payoutDays=3&effBuy=median&effScenario=current&effRef=1&headroomMin=-25&psaMax=200000",
+      "settings": {
+        "fee": 10980,
+        "saleFeeRate": 8,
+        "buybackDeductionRate": 5,
+        "saleExtraCost": 0,
+        "storeTravelCost": 0,
+        "lockDays": 147,
+        "efficiencySaleDays": 7,
+        "efficiencyPayoutDays": 3,
+        "efficiencyBuy": "median",
+        "exitPolicy": "both"
+      },
+      "cards": [
+        {
+          "id": "x-122054",
+          "name": "イーブイ: プロモ [SV-P 062](「YU NAGABA×ポケモンカードゲーム」プロモーションカード「SV-P」)",
+          "runs": [
+            {
+              "scenario": "current",
+              "independentAnnual": 5.369390695635945,
+              "productionAnnual": 5.369390695635945,
+              "buy": 12900,
+              "buyBasis": "素体参考相場・中央値（購入保証なし）",
+              "exit": "フリマ（両出口の保守側）",
+              "profit": 551.5261594643962,
+              "investment": 23880,
+              "days": 157,
+              "state": "reference",
+              "reason": null,
+              "observation": null,
+              "facts": {
+                "psa10": 28666,
+                "psa9": 14950,
+                "adopted10Rate": 0.8461655508216677,
+                "marketNet": 24431.526159464396,
+                "storeGross": 28371,
+                "storeNet": 24922,
+                "chosen": "marketplace",
+                "net": 24431.526159464396,
+                "travel": 0,
+                "stores": []
+              }
+            },
+            {
+              "scenario": "obs7",
+              "independentAnnual": 5.369390695635945,
+              "productionAnnual": 5.369390695635945,
+              "buy": 12900,
+              "buyBasis": "素体参考相場・中央値（購入保証なし）",
+              "exit": "フリマ（両出口平均の保守側）",
+              "profit": 551.5261594643962,
+              "investment": 23880,
+              "days": 157,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 7,
+                "mean": 28666,
+                "count": 7,
+                "age": 0,
+                "drawdown": 0,
+                "drawdownReference": false,
+                "delta": 0,
+                "reference": true,
+                "latest": "2026-10-25",
+                "stale": false,
+                "unverifiedDays": 0,
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 7,
+                    "mean": 28666,
+                    "count": 7,
+                    "age": 0,
+                    "drawdown": 0,
+                    "drawdownReference": false,
+                    "delta": 0,
+                    "reference": false,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 0
+                  },
+                  "buyback": {
+                    "days": 7,
+                    "mean": 30828.571428571428,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "toreca-lounge",
+                      "shinsoku",
+                      "torecaclub",
+                      "toreca-birth-mail",
+                      "fukufuku-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 28666,
+                "psa9": 14950,
+                "adopted10Rate": 0.8461655508216677,
+                "marketNet": 24431.526159464396,
+                "storeGross": 30828.571428571428,
+                "storeNet": 26897.610381705937,
+                "chosen": "marketplace",
+                "net": 24431.526159464396,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "toreca-lounge",
+                    "mean": 31485.714285714286,
+                    "days": 7,
+                    "at": "2026-10-25T13:01:50.640Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "shinsoku",
+                    "mean": 30828.571428571428,
+                    "days": 7,
+                    "at": "2026-10-25T13:01:56.959Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "torecaclub",
+                    "mean": 31857.14285714286,
+                    "days": 7,
+                    "at": "2026-10-25T13:01:59.280Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "toreca-birth-mail",
+                    "mean": 30157.14285714286,
+                    "days": 7,
+                    "at": "2026-10-25T13:02:00.375Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "fukufuku-mail",
+                    "mean": 22000,
+                    "days": 1,
+                    "at": "2026-10-25T06:11:38.000Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            },
+            {
+              "scenario": "obs30",
+              "independentAnnual": -9.953862918407898,
+              "productionAnnual": -9.953862918407898,
+              "buy": 12900,
+              "buyBasis": "素体参考相場・中央値（購入保証なし）",
+              "exit": "フリマ（両出口平均の保守側）",
+              "profit": -1022.4280739500864,
+              "investment": 23880,
+              "days": 157,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 30,
+                "mean": 26644.15,
+                "count": 27,
+                "age": 0,
+                "drawdown": 0,
+                "drawdownReference": true,
+                "delta": 7.588344908732303,
+                "reference": true,
+                "latest": "2026-10-25",
+                "stale": false,
+                "unverifiedDays": 14,
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 30,
+                    "mean": 26644.15,
+                    "count": 27,
+                    "age": 0,
+                    "drawdown": 0,
+                    "drawdownReference": true,
+                    "delta": 7.588344908732303,
+                    "reference": true,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 14
+                  },
+                  "buyback": {
+                    "days": 30,
+                    "mean": 31430.76923076923,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "toreca-lounge",
+                      "shinsoku",
+                      "torecaclub",
+                      "toreca-birth-mail",
+                      "fukufuku-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 26644.15,
+                "psa9": 14950,
+                "adopted10Rate": 0.8461655508216677,
+                "marketNet": 22857.571926049914,
+                "storeGross": 31430.76923076923,
+                "storeNet": 27381.69146495622,
+                "chosen": "marketplace",
+                "net": 22857.571926049914,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "toreca-lounge",
+                    "mean": 32038.46153846154,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:50.640Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "shinsoku",
+                    "mean": 31430.76923076923,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:56.959Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "torecaclub",
+                    "mean": 32230.76923076923,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:59.280Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "toreca-birth-mail",
+                    "mean": 30438.46153846154,
+                    "days": 13,
+                    "at": "2026-10-25T13:02:00.375Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "fukufuku-mail",
+                    "mean": 22000,
+                    "days": 1,
+                    "at": "2026-10-25T06:11:38.000Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            },
+            {
+              "scenario": "obs75",
+              "independentAnnual": 16.772950199509737,
+              "productionAnnual": 16.772950199509737,
+              "buy": 12900,
+              "buyBasis": "素体参考相場・中央値（購入保証なし）",
+              "exit": "フリマ（両出口平均の保守側）",
+              "profit": 1722.8623005477784,
+              "investment": 23880,
+              "days": 157,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 75,
+                "mean": 30170.66,
+                "count": 53,
+                "age": 0,
+                "drawdown": -36.8421052631579,
+                "drawdownReference": true,
+                "delta": -4.987163025270247,
+                "reference": true,
+                "latest": "2026-10-25",
+                "stale": false,
+                "unverifiedDays": 40,
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 75,
+                    "mean": 30170.66,
+                    "count": 53,
+                    "age": 0,
+                    "drawdown": -36.8421052631579,
+                    "drawdownReference": true,
+                    "delta": -4.987163025270247,
+                    "reference": true,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 40
+                  },
+                  "buyback": {
+                    "days": 75,
+                    "mean": 31430.76923076923,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "toreca-lounge",
+                      "shinsoku",
+                      "torecaclub",
+                      "toreca-birth-mail",
+                      "fukufuku-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 30170.66,
+                "psa9": 14950,
+                "adopted10Rate": 0.8461655508216677,
+                "marketNet": 25602.86230054778,
+                "storeGross": 31430.76923076923,
+                "storeNet": 27381.69146495622,
+                "chosen": "marketplace",
+                "net": 25602.86230054778,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "toreca-lounge",
+                    "mean": 32038.46153846154,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:50.640Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "shinsoku",
+                    "mean": 31430.76923076923,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:56.959Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "torecaclub",
+                    "mean": 32230.76923076923,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:59.280Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "toreca-birth-mail",
+                    "mean": 30438.46153846154,
+                    "days": 13,
+                    "at": "2026-10-25T13:02:00.375Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "fukufuku-mail",
+                    "mean": 22000,
+                    "days": 1,
+                    "at": "2026-10-25T06:11:38.000Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            },
+            {
+              "scenario": "obs200",
+              "independentAnnual": 16.772950199509737,
+              "productionAnnual": 16.772950199509737,
+              "buy": 12900,
+              "buyBasis": "素体参考相場・中央値（購入保証なし）",
+              "exit": "フリマ（両出口平均の保守側）",
+              "profit": 1722.8623005477784,
+              "investment": 23880,
+              "days": 157,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 200,
+                "mean": 30170.66,
+                "count": 53,
+                "age": 0,
+                "drawdown": -36.8421052631579,
+                "drawdownReference": true,
+                "delta": -4.987163025270247,
+                "reference": true,
+                "latest": "2026-10-25",
+                "stale": false,
+                "unverifiedDays": 40,
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 200,
+                    "mean": 30170.66,
+                    "count": 53,
+                    "age": 0,
+                    "drawdown": -36.8421052631579,
+                    "drawdownReference": true,
+                    "delta": -4.987163025270247,
+                    "reference": true,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 40
+                  },
+                  "buyback": {
+                    "days": 200,
+                    "mean": 31430.76923076923,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "toreca-lounge",
+                      "shinsoku",
+                      "torecaclub",
+                      "toreca-birth-mail",
+                      "fukufuku-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 30170.66,
+                "psa9": 14950,
+                "adopted10Rate": 0.8461655508216677,
+                "marketNet": 25602.86230054778,
+                "storeGross": 31430.76923076923,
+                "storeNet": 27381.69146495622,
+                "chosen": "marketplace",
+                "net": 25602.86230054778,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "toreca-lounge",
+                    "mean": 32038.46153846154,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:50.640Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "shinsoku",
+                    "mean": 31430.76923076923,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:56.959Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "torecaclub",
+                    "mean": 32230.76923076923,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:59.280Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "toreca-birth-mail",
+                    "mean": 30438.46153846154,
+                    "days": 13,
+                    "at": "2026-10-25T13:02:00.375Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "fukufuku-mail",
+                    "mean": 22000,
+                    "days": 1,
+                    "at": "2026-10-25T06:11:38.000Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            }
+          ],
+          "fourPeriodMean": 7.24035704406188,
+          "adoptedPeriods": 4,
+          "filterReasons": [
+            "単体年換算資金効率条件"
+          ],
+          "allExclusions": [
+            "単体年換算資金効率条件"
+          ],
+          "csv": [
+            12900,
+            "素体参考相場・中央値（購入保証なし）",
+            "現在出口相場が続く仮定",
+            "フリマ（両出口の保守側）",
+            551.5261594643962,
+            23880,
+            2.3095735320954613,
+            157,
+            5.369390695635945,
+            "",
+            "reference",
+            "PSA9は集計値・個別実成約未取得／公式Populationの確認日が古い・未取得／非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価／古値・参考価格・仕様保留等3元を参考中央値から除外・原価格と日時は履歴保持／中央値で実際に購入できるとは限らない・購入GOとは別",
+            "採用"
+          ],
+          "switchedBuy": {
+            "buy": 11800,
+            "annual": 16.85485223389901
+          }
+        },
+        {
+          "id": "pk-75866",
+          "name": "イーブイ AR仕様 [MC 755/742](スタートデッキ100「バトルコレクション」)",
+          "runs": [
+            {
+              "scenario": "current",
+              "independentAnnual": 63.55142266352992,
+              "productionAnnual": 63.55142266352992,
+              "buy": 10490,
+              "buyBasis": "素体参考相場・中央値（購入保証なし）",
+              "exit": "買取店（両出口の保守側）",
+              "profit": 5869,
+              "investment": 21470,
+              "days": 157,
+              "state": "reference",
+              "reason": null,
+              "observation": null,
+              "facts": {
+                "psa10": 52000,
+                "psa9": 11900,
+                "adopted10Rate": 0.6027359017308767,
+                "marketNet": 33184.132886655505,
+                "storeGross": 40150,
+                "storeNet": 27339,
+                "chosen": "buyback",
+                "net": 27339,
+                "travel": 0,
+                "stores": []
+              }
+            },
+            {
+              "scenario": "obs7",
+              "independentAnnual": 20.770537173115688,
+              "productionAnnual": 20.770537173115688,
+              "buy": 10490,
+              "buyBasis": "素体参考相場・中央値（購入保証なし）",
+              "exit": "買取店（両出口平均の保守側）",
+              "profit": 1918.1676437744281,
+              "investment": 21470,
+              "days": 157,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 7,
+                "mean": 33250,
+                "count": 1,
+                "latest": "2026-10-25",
+                "unverifiedDays": 0,
+                "reference": true,
+                "stores": [
+                  "torecaclub",
+                  "kaitori-homura-mail"
+                ],
+                "source": "買取店舗別観測平均の中央値",
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 7,
+                    "mean": 52000,
+                    "count": 7,
+                    "age": 0,
+                    "drawdown": 0,
+                    "drawdownReference": false,
+                    "delta": 0,
+                    "reference": false,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 0
+                  },
+                  "buyback": {
+                    "days": 7,
+                    "mean": 33250,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "torecaclub",
+                      "kaitori-homura-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 52000,
+                "psa9": 11900,
+                "adopted10Rate": 0.6027359017308767,
+                "marketNet": 33184.132886655505,
+                "storeGross": 33250,
+                "storeNet": 23388.167643774428,
+                "chosen": "buyback",
+                "net": 23388.167643774428,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "torecaclub",
+                    "mean": 30000,
+                    "days": 7,
+                    "at": "2026-10-24T21:48:29.918Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "kaitori-homura-mail",
+                    "mean": 36500,
+                    "days": 1,
+                    "at": "2026-10-24T16:08:16.852Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            },
+            {
+              "scenario": "obs30",
+              "independentAnnual": 20.770537173115688,
+              "productionAnnual": 20.770537173115688,
+              "buy": 10490,
+              "buyBasis": "素体参考相場・中央値（購入保証なし）",
+              "exit": "買取店（両出口平均の保守側）",
+              "profit": 1918.1676437744281,
+              "investment": 21470,
+              "days": 157,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 30,
+                "mean": 33250,
+                "count": 1,
+                "latest": "2026-10-25",
+                "unverifiedDays": 0,
+                "reference": true,
+                "stores": [
+                  "torecaclub",
+                  "kaitori-homura-mail"
+                ],
+                "source": "買取店舗別観測平均の中央値",
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 30,
+                    "mean": 43422.11,
+                    "count": 27,
+                    "age": 0,
+                    "drawdown": -5.555555555555558,
+                    "drawdownReference": true,
+                    "delta": 19.75465955016926,
+                    "reference": true,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 14
+                  },
+                  "buyback": {
+                    "days": 30,
+                    "mean": 33250,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "torecaclub",
+                      "kaitori-homura-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 43422.11,
+                "psa9": 11900,
+                "adopted10Rate": 0.6027359017308767,
+                "marketNet": 28427.546803685098,
+                "storeGross": 33250,
+                "storeNet": 23388.167643774428,
+                "chosen": "buyback",
+                "net": 23388.167643774428,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "torecaclub",
+                    "mean": 30000,
+                    "days": 13,
+                    "at": "2026-10-24T21:48:29.918Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "kaitori-homura-mail",
+                    "mean": 36500,
+                    "days": 1,
+                    "at": "2026-10-24T16:08:16.852Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            },
+            {
+              "scenario": "obs75",
+              "independentAnnual": 20.770537173115688,
+              "productionAnnual": 20.770537173115688,
+              "buy": 10490,
+              "buyBasis": "素体参考相場・中央値（購入保証なし）",
+              "exit": "買取店（両出口平均の保守側）",
+              "profit": 1918.1676437744281,
+              "investment": 21470,
+              "days": 157,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 75,
+                "mean": 33250,
+                "count": 1,
+                "latest": "2026-10-25",
+                "unverifiedDays": 0,
+                "reference": true,
+                "stores": [
+                  "torecaclub",
+                  "kaitori-homura-mail"
+                ],
+                "source": "買取店舗別観測平均の中央値",
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 75,
+                    "mean": 46612.74,
+                    "count": 53,
+                    "age": 0,
+                    "drawdown": -52.112676056338024,
+                    "drawdownReference": true,
+                    "delta": 11.557484069805813,
+                    "reference": true,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 40
+                  },
+                  "buyback": {
+                    "days": 75,
+                    "mean": 33250,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "torecaclub",
+                      "kaitori-homura-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 46612.74,
+                "psa9": 11900,
+                "adopted10Rate": 0.6027359017308767,
+                "marketNet": 30196.80547381351,
+                "storeGross": 33250,
+                "storeNet": 23388.167643774428,
+                "chosen": "buyback",
+                "net": 23388.167643774428,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "torecaclub",
+                    "mean": 30000,
+                    "days": 13,
+                    "at": "2026-10-24T21:48:29.918Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "kaitori-homura-mail",
+                    "mean": 36500,
+                    "days": 1,
+                    "at": "2026-10-24T16:08:16.852Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            },
+            {
+              "scenario": "obs200",
+              "independentAnnual": 20.770537173115688,
+              "productionAnnual": 20.770537173115688,
+              "buy": 10490,
+              "buyBasis": "素体参考相場・中央値（購入保証なし）",
+              "exit": "買取店（両出口平均の保守側）",
+              "profit": 1918.1676437744281,
+              "investment": 21470,
+              "days": 157,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 200,
+                "mean": 33250,
+                "count": 1,
+                "latest": "2026-10-25",
+                "unverifiedDays": 0,
+                "reference": true,
+                "stores": [
+                  "torecaclub",
+                  "kaitori-homura-mail"
+                ],
+                "source": "買取店舗別観測平均の中央値",
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 200,
+                    "mean": 46612.74,
+                    "count": 53,
+                    "age": 0,
+                    "drawdown": -52.112676056338024,
+                    "drawdownReference": true,
+                    "delta": 11.557484069805813,
+                    "reference": true,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 40
+                  },
+                  "buyback": {
+                    "days": 200,
+                    "mean": 33250,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "torecaclub",
+                      "kaitori-homura-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 46612.74,
+                "psa9": 11900,
+                "adopted10Rate": 0.6027359017308767,
+                "marketNet": 30196.80547381351,
+                "storeGross": 33250,
+                "storeNet": 23388.167643774428,
+                "chosen": "buyback",
+                "net": 23388.167643774428,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "torecaclub",
+                    "mean": 30000,
+                    "days": 13,
+                    "at": "2026-10-24T21:48:29.918Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "kaitori-homura-mail",
+                    "mean": 36500,
+                    "days": 1,
+                    "at": "2026-10-24T16:08:16.852Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            }
+          ],
+          "fourPeriodMean": 20.770537173115688,
+          "adoptedPeriods": 4,
+          "filterReasons": [],
+          "allExclusions": [],
+          "csv": [
+            10490,
+            "素体参考相場・中央値（購入保証なし）",
+            "現在出口相場が続く仮定",
+            "買取店（両出口の保守側）",
+            5869,
+            21470,
+            27.335817419655335,
+            157,
+            63.55142266352992,
+            "",
+            "reference",
+            "PSA9は集計値・個別実成約未取得／公式Populationの確認日が古い・未取得／非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価／古値・参考価格・仕様保留等3元を参考中央値から除外・原価格と日時は履歴保持／中央値で実際に購入できるとは限らない・購入GOとは別",
+            "採用"
+          ],
+          "switchedBuy": {
+            "buy": 9980,
+            "annual": 70.75457650605338
+          }
+        }
+      ]
+    },
+    {
+      "id": "B-median",
+      "url": "https://urm759.github.io/pokeka-serch/?fee=12980&tx=0&tx7=0&psaTx=0&psaTx7=0&roi=30&psaMin=0&sort=expectedProfit-desc&guide=70&cap=5000000&lock=91&expProfit=0&expRoi=10&annual=40&maxShare=120000&batch=10&reserve=1000000&sellFee=8&extraCost=0&psaPlan=priority&bb7=0&bb30=0&bb90=0&bbShops=0&locked=3500000&buyLimitRatio=0&buybackDeduction=5&preset=combined&psa9RatioMin=70&psa9Aggregate=1&psa9Estimate=0&psa9Market=0&exitPolicy=both&buybackStores=all&selectedStores=&storeTravel=0&snkrFee=7&snkrShip=210&snkrOther=0&snkrTx7=0&snkrTx30=3&snkrProfit=0&snkrRoi=0&snkrAge=48&year2020=0&includeUnknownYear=0&profitBasis=auto&periodReference=1&psa9RatioMax=120&filterExpRoi=10&marketSearch=cap&buyBelowCap=0&marketCapMin=0&filterStressRoi=0&filterStressProfit=0&storeDemand=normal-up&purchaseMin=26000&purchaseMax=99999&priceMin=26000&priceMax=99999&headroomMin=-25&effMin=30&effManual=off&sellDays=7&payoutDays=3&effBuy=median&effScenario=current&effRef=1&psaMax=200000",
+      "settings": {
+        "fee": 12980,
+        "saleFeeRate": 8,
+        "buybackDeductionRate": 5,
+        "saleExtraCost": 0,
+        "storeTravelCost": 0,
+        "lockDays": 91,
+        "efficiencySaleDays": 7,
+        "efficiencyPayoutDays": 3,
+        "efficiencyBuy": "median",
+        "exitPolicy": "both"
+      },
+      "cards": [
+        {
+          "id": "x-122054",
+          "name": "イーブイ: プロモ [SV-P 062](「YU NAGABA×ポケモンカードゲーム」プロモーションカード「SV-P」)",
+          "runs": [
+            {
+              "scenario": "current",
+              "independentAnnual": -20.226366619565376,
+              "productionAnnual": -20.226366619565376,
+              "buy": 12900,
+              "buyBasis": "素体参考相場・中央値（購入保証なし）",
+              "exit": "フリマ（両出口の保守側）",
+              "profit": -1448.4738405356038,
+              "investment": 25880,
+              "days": 101,
+              "state": "reference",
+              "reason": null,
+              "observation": null,
+              "facts": {
+                "psa10": 28666,
+                "psa9": 14950,
+                "adopted10Rate": 0.8461655508216677,
+                "marketNet": 24431.526159464396,
+                "storeGross": 28371,
+                "storeNet": 24922,
+                "chosen": "marketplace",
+                "net": 24431.526159464396,
+                "travel": 0,
+                "stores": []
+              }
+            },
+            {
+              "scenario": "obs7",
+              "independentAnnual": -20.226366619565376,
+              "productionAnnual": -20.226366619565376,
+              "buy": 12900,
+              "buyBasis": "素体参考相場・中央値（購入保証なし）",
+              "exit": "フリマ（両出口平均の保守側）",
+              "profit": -1448.4738405356038,
+              "investment": 25880,
+              "days": 101,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 7,
+                "mean": 28666,
+                "count": 7,
+                "age": 0,
+                "drawdown": 0,
+                "drawdownReference": false,
+                "delta": 0,
+                "reference": true,
+                "latest": "2026-10-25",
+                "stale": false,
+                "unverifiedDays": 0,
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 7,
+                    "mean": 28666,
+                    "count": 7,
+                    "age": 0,
+                    "drawdown": 0,
+                    "drawdownReference": false,
+                    "delta": 0,
+                    "reference": false,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 0
+                  },
+                  "buyback": {
+                    "days": 7,
+                    "mean": 30828.571428571428,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "toreca-lounge",
+                      "shinsoku",
+                      "torecaclub",
+                      "toreca-birth-mail",
+                      "fukufuku-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 28666,
+                "psa9": 14950,
+                "adopted10Rate": 0.8461655508216677,
+                "marketNet": 24431.526159464396,
+                "storeGross": 30828.571428571428,
+                "storeNet": 26897.610381705937,
+                "chosen": "marketplace",
+                "net": 24431.526159464396,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "toreca-lounge",
+                    "mean": 31485.714285714286,
+                    "days": 7,
+                    "at": "2026-10-25T13:01:50.640Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "shinsoku",
+                    "mean": 30828.571428571428,
+                    "days": 7,
+                    "at": "2026-10-25T13:01:56.959Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "torecaclub",
+                    "mean": 31857.14285714286,
+                    "days": 7,
+                    "at": "2026-10-25T13:01:59.280Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "toreca-birth-mail",
+                    "mean": 30157.14285714286,
+                    "days": 7,
+                    "at": "2026-10-25T13:02:00.375Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "fukufuku-mail",
+                    "mean": 22000,
+                    "days": 1,
+                    "at": "2026-10-25T06:11:38.000Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            },
+            {
+              "scenario": "obs30",
+              "independentAnnual": -42.20493086873848,
+              "productionAnnual": -42.20493086873848,
+              "buy": 12900,
+              "buyBasis": "素体参考相場・中央値（購入保証なし）",
+              "exit": "フリマ（両出口平均の保守側）",
+              "profit": -3022.4280739500864,
+              "investment": 25880,
+              "days": 101,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 30,
+                "mean": 26644.15,
+                "count": 27,
+                "age": 0,
+                "drawdown": 0,
+                "drawdownReference": true,
+                "delta": 7.588344908732303,
+                "reference": true,
+                "latest": "2026-10-25",
+                "stale": false,
+                "unverifiedDays": 14,
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 30,
+                    "mean": 26644.15,
+                    "count": 27,
+                    "age": 0,
+                    "drawdown": 0,
+                    "drawdownReference": true,
+                    "delta": 7.588344908732303,
+                    "reference": true,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 14
+                  },
+                  "buyback": {
+                    "days": 30,
+                    "mean": 31430.76923076923,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "toreca-lounge",
+                      "shinsoku",
+                      "torecaclub",
+                      "toreca-birth-mail",
+                      "fukufuku-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 26644.15,
+                "psa9": 14950,
+                "adopted10Rate": 0.8461655508216677,
+                "marketNet": 22857.571926049914,
+                "storeGross": 31430.76923076923,
+                "storeNet": 27381.69146495622,
+                "chosen": "marketplace",
+                "net": 22857.571926049914,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "toreca-lounge",
+                    "mean": 32038.46153846154,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:50.640Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "shinsoku",
+                    "mean": 31430.76923076923,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:56.959Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "torecaclub",
+                    "mean": 32230.76923076923,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:59.280Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "toreca-birth-mail",
+                    "mean": 30438.46153846154,
+                    "days": 13,
+                    "at": "2026-10-25T13:02:00.375Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "fukufuku-mail",
+                    "mean": 22000,
+                    "days": 1,
+                    "at": "2026-10-25T06:11:38.000Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            },
+            {
+              "scenario": "obs75",
+              "independentAnnual": -3.8699274756324265,
+              "productionAnnual": -3.8699274756324265,
+              "buy": 12900,
+              "buyBasis": "素体参考相場・中央値（購入保証なし）",
+              "exit": "フリマ（両出口平均の保守側）",
+              "profit": -277.13769945222157,
+              "investment": 25880,
+              "days": 101,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 75,
+                "mean": 30170.66,
+                "count": 53,
+                "age": 0,
+                "drawdown": -36.8421052631579,
+                "drawdownReference": true,
+                "delta": -4.987163025270247,
+                "reference": true,
+                "latest": "2026-10-25",
+                "stale": false,
+                "unverifiedDays": 40,
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 75,
+                    "mean": 30170.66,
+                    "count": 53,
+                    "age": 0,
+                    "drawdown": -36.8421052631579,
+                    "drawdownReference": true,
+                    "delta": -4.987163025270247,
+                    "reference": true,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 40
+                  },
+                  "buyback": {
+                    "days": 75,
+                    "mean": 31430.76923076923,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "toreca-lounge",
+                      "shinsoku",
+                      "torecaclub",
+                      "toreca-birth-mail",
+                      "fukufuku-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 30170.66,
+                "psa9": 14950,
+                "adopted10Rate": 0.8461655508216677,
+                "marketNet": 25602.86230054778,
+                "storeGross": 31430.76923076923,
+                "storeNet": 27381.69146495622,
+                "chosen": "marketplace",
+                "net": 25602.86230054778,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "toreca-lounge",
+                    "mean": 32038.46153846154,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:50.640Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "shinsoku",
+                    "mean": 31430.76923076923,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:56.959Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "torecaclub",
+                    "mean": 32230.76923076923,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:59.280Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "toreca-birth-mail",
+                    "mean": 30438.46153846154,
+                    "days": 13,
+                    "at": "2026-10-25T13:02:00.375Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "fukufuku-mail",
+                    "mean": 22000,
+                    "days": 1,
+                    "at": "2026-10-25T06:11:38.000Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            },
+            {
+              "scenario": "obs200",
+              "independentAnnual": -3.8699274756324265,
+              "productionAnnual": -3.8699274756324265,
+              "buy": 12900,
+              "buyBasis": "素体参考相場・中央値（購入保証なし）",
+              "exit": "フリマ（両出口平均の保守側）",
+              "profit": -277.13769945222157,
+              "investment": 25880,
+              "days": 101,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 200,
+                "mean": 30170.66,
+                "count": 53,
+                "age": 0,
+                "drawdown": -36.8421052631579,
+                "drawdownReference": true,
+                "delta": -4.987163025270247,
+                "reference": true,
+                "latest": "2026-10-25",
+                "stale": false,
+                "unverifiedDays": 40,
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 200,
+                    "mean": 30170.66,
+                    "count": 53,
+                    "age": 0,
+                    "drawdown": -36.8421052631579,
+                    "drawdownReference": true,
+                    "delta": -4.987163025270247,
+                    "reference": true,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 40
+                  },
+                  "buyback": {
+                    "days": 200,
+                    "mean": 31430.76923076923,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "toreca-lounge",
+                      "shinsoku",
+                      "torecaclub",
+                      "toreca-birth-mail",
+                      "fukufuku-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 30170.66,
+                "psa9": 14950,
+                "adopted10Rate": 0.8461655508216677,
+                "marketNet": 25602.86230054778,
+                "storeGross": 31430.76923076923,
+                "storeNet": 27381.69146495622,
+                "chosen": "marketplace",
+                "net": 25602.86230054778,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "toreca-lounge",
+                    "mean": 32038.46153846154,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:50.640Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "shinsoku",
+                    "mean": 31430.76923076923,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:56.959Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "torecaclub",
+                    "mean": 32230.76923076923,
+                    "days": 13,
+                    "at": "2026-10-25T13:01:59.280Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "toreca-birth-mail",
+                    "mean": 30438.46153846154,
+                    "days": 13,
+                    "at": "2026-10-25T13:02:00.375Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "fukufuku-mail",
+                    "mean": 22000,
+                    "days": 1,
+                    "at": "2026-10-25T06:11:38.000Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            }
+          ],
+          "fourPeriodMean": -17.542788109892175,
+          "adoptedPeriods": 4,
+          "filterReasons": [
+            "単体年換算資金効率条件"
+          ],
+          "allExclusions": [
+            "単体年換算資金効率条件",
+            "現在買える状態A価格範囲",
+            "価格帯・相場比"
+          ],
+          "csv": [
+            12900,
+            "素体参考相場・中央値（購入保証なし）",
+            "現在出口相場が続く仮定",
+            "フリマ（両出口の保守側）",
+            -1448.4738405356038,
+            25880,
+            -5.596885009797542,
+            101,
+            -20.226366619565376,
+            "",
+            "reference",
+            "PSA9は集計値・個別実成約未取得／公式Populationの確認日が古い・未取得／非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価／古値・参考価格・仕様保留等3元を参考中央値から除外・原価格と日時は履歴保持／中央値で実際に購入できるとは限らない・購入GOとは別",
+            "採用"
+          ],
+          "switchedBuy": {
+            "buy": 11800,
+            "annual": -5.082066813523178
+          }
+        },
+        {
+          "id": "pk-75866",
+          "name": "イーブイ AR仕様 [MC 755/742](スタートデッキ100「バトルコレクション」)",
+          "runs": [
+            {
+              "scenario": "current",
+              "independentAnnual": 59.574050715680855,
+              "productionAnnual": 59.574050715680855,
+              "buy": 10490,
+              "buyBasis": "素体参考相場・中央値（購入保証なし）",
+              "exit": "買取店（両出口の保守側）",
+              "profit": 3869,
+              "investment": 23470,
+              "days": 101,
+              "state": "reference",
+              "reason": null,
+              "observation": null,
+              "facts": {
+                "psa10": 52000,
+                "psa9": 11900,
+                "adopted10Rate": 0.6027359017308767,
+                "marketNet": 33184.132886655505,
+                "storeGross": 40150,
+                "storeNet": 27339,
+                "chosen": "buyback",
+                "net": 27339,
+                "travel": 0,
+                "stores": []
+              }
+            },
+            {
+              "scenario": "obs7",
+              "independentAnnual": -1.2600374618676349,
+              "productionAnnual": -1.2600374618676349,
+              "buy": 10490,
+              "buyBasis": "素体参考相場・中央値（購入保証なし）",
+              "exit": "買取店（両出口平均の保守側）",
+              "profit": -81.83235622557186,
+              "investment": 23470,
+              "days": 101,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 7,
+                "mean": 33250,
+                "count": 1,
+                "latest": "2026-10-25",
+                "unverifiedDays": 0,
+                "reference": true,
+                "stores": [
+                  "torecaclub",
+                  "kaitori-homura-mail"
+                ],
+                "source": "買取店舗別観測平均の中央値",
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 7,
+                    "mean": 52000,
+                    "count": 7,
+                    "age": 0,
+                    "drawdown": 0,
+                    "drawdownReference": false,
+                    "delta": 0,
+                    "reference": false,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 0
+                  },
+                  "buyback": {
+                    "days": 7,
+                    "mean": 33250,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "torecaclub",
+                      "kaitori-homura-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 52000,
+                "psa9": 11900,
+                "adopted10Rate": 0.6027359017308767,
+                "marketNet": 33184.132886655505,
+                "storeGross": 33250,
+                "storeNet": 23388.167643774428,
+                "chosen": "buyback",
+                "net": 23388.167643774428,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "torecaclub",
+                    "mean": 30000,
+                    "days": 7,
+                    "at": "2026-10-24T21:48:29.918Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "kaitori-homura-mail",
+                    "mean": 36500,
+                    "days": 1,
+                    "at": "2026-10-24T16:08:16.852Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            },
+            {
+              "scenario": "obs30",
+              "independentAnnual": -1.2600374618676349,
+              "productionAnnual": -1.2600374618676349,
+              "buy": 10490,
+              "buyBasis": "素体参考相場・中央値（購入保証なし）",
+              "exit": "買取店（両出口平均の保守側）",
+              "profit": -81.83235622557186,
+              "investment": 23470,
+              "days": 101,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 30,
+                "mean": 33250,
+                "count": 1,
+                "latest": "2026-10-25",
+                "unverifiedDays": 0,
+                "reference": true,
+                "stores": [
+                  "torecaclub",
+                  "kaitori-homura-mail"
+                ],
+                "source": "買取店舗別観測平均の中央値",
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 30,
+                    "mean": 43422.11,
+                    "count": 27,
+                    "age": 0,
+                    "drawdown": -5.555555555555558,
+                    "drawdownReference": true,
+                    "delta": 19.75465955016926,
+                    "reference": true,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 14
+                  },
+                  "buyback": {
+                    "days": 30,
+                    "mean": 33250,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "torecaclub",
+                      "kaitori-homura-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 43422.11,
+                "psa9": 11900,
+                "adopted10Rate": 0.6027359017308767,
+                "marketNet": 28427.546803685098,
+                "storeGross": 33250,
+                "storeNet": 23388.167643774428,
+                "chosen": "buyback",
+                "net": 23388.167643774428,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "torecaclub",
+                    "mean": 30000,
+                    "days": 13,
+                    "at": "2026-10-24T21:48:29.918Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "kaitori-homura-mail",
+                    "mean": 36500,
+                    "days": 1,
+                    "at": "2026-10-24T16:08:16.852Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            },
+            {
+              "scenario": "obs75",
+              "independentAnnual": -1.2600374618676349,
+              "productionAnnual": -1.2600374618676349,
+              "buy": 10490,
+              "buyBasis": "素体参考相場・中央値（購入保証なし）",
+              "exit": "買取店（両出口平均の保守側）",
+              "profit": -81.83235622557186,
+              "investment": 23470,
+              "days": 101,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 75,
+                "mean": 33250,
+                "count": 1,
+                "latest": "2026-10-25",
+                "unverifiedDays": 0,
+                "reference": true,
+                "stores": [
+                  "torecaclub",
+                  "kaitori-homura-mail"
+                ],
+                "source": "買取店舗別観測平均の中央値",
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 75,
+                    "mean": 46612.74,
+                    "count": 53,
+                    "age": 0,
+                    "drawdown": -52.112676056338024,
+                    "drawdownReference": true,
+                    "delta": 11.557484069805813,
+                    "reference": true,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 40
+                  },
+                  "buyback": {
+                    "days": 75,
+                    "mean": 33250,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "torecaclub",
+                      "kaitori-homura-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 46612.74,
+                "psa9": 11900,
+                "adopted10Rate": 0.6027359017308767,
+                "marketNet": 30196.80547381351,
+                "storeGross": 33250,
+                "storeNet": 23388.167643774428,
+                "chosen": "buyback",
+                "net": 23388.167643774428,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "torecaclub",
+                    "mean": 30000,
+                    "days": 13,
+                    "at": "2026-10-24T21:48:29.918Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "kaitori-homura-mail",
+                    "mean": 36500,
+                    "days": 1,
+                    "at": "2026-10-24T16:08:16.852Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            },
+            {
+              "scenario": "obs200",
+              "independentAnnual": -1.2600374618676349,
+              "productionAnnual": -1.2600374618676349,
+              "buy": 10490,
+              "buyBasis": "素体参考相場・中央値（購入保証なし）",
+              "exit": "買取店（両出口平均の保守側）",
+              "profit": -81.83235622557186,
+              "investment": 23470,
+              "days": 101,
+              "state": "reference",
+              "reason": null,
+              "observation": {
+                "days": 200,
+                "mean": 33250,
+                "count": 1,
+                "latest": "2026-10-25",
+                "unverifiedDays": 0,
+                "reference": true,
+                "stores": [
+                  "torecaclub",
+                  "kaitori-homura-mail"
+                ],
+                "source": "買取店舗別観測平均の中央値",
+                "exitObservations": {
+                  "marketplace": {
+                    "days": 200,
+                    "mean": 46612.74,
+                    "count": 53,
+                    "age": 0,
+                    "drawdown": -52.112676056338024,
+                    "drawdownReference": true,
+                    "delta": 11.557484069805813,
+                    "reference": true,
+                    "latest": "2026-10-25",
+                    "stale": false,
+                    "unverifiedDays": 40
+                  },
+                  "buyback": {
+                    "days": 200,
+                    "mean": 33250,
+                    "count": 1,
+                    "latest": "2026-10-25",
+                    "unverifiedDays": 0,
+                    "reference": true,
+                    "stores": [
+                      "torecaclub",
+                      "kaitori-homura-mail"
+                    ],
+                    "source": "買取店舗別観測平均の中央値"
+                  }
+                }
+              },
+              "facts": {
+                "psa10": 46612.74,
+                "psa9": 11900,
+                "adopted10Rate": 0.6027359017308767,
+                "marketNet": 30196.80547381351,
+                "storeGross": 33250,
+                "storeNet": 23388.167643774428,
+                "chosen": "buyback",
+                "net": 23388.167643774428,
+                "travel": 0,
+                "stores": [
+                  {
+                    "id": "torecaclub",
+                    "mean": 30000,
+                    "days": 13,
+                    "at": "2026-10-24T21:48:29.918Z",
+                    "travel": 0
+                  },
+                  {
+                    "id": "kaitori-homura-mail",
+                    "mean": 36500,
+                    "days": 1,
+                    "at": "2026-10-24T16:08:16.852Z",
+                    "travel": 0
+                  }
+                ]
+              }
+            }
+          ],
+          "fourPeriodMean": -1.2600374618676349,
+          "adoptedPeriods": 4,
+          "filterReasons": [],
+          "allExclusions": [
+            "現在買える状態A価格範囲",
+            "見送り非表示",
+            "利益条件",
+            "価格帯・相場比",
+            "プリセット条件"
+          ],
+          "csv": [
+            10490,
+            "素体参考相場・中央値（購入保証なし）",
+            "現在出口相場が続く仮定",
+            "買取店（両出口の保守側）",
+            3869,
+            23470,
+            16.484874307626757,
+            101,
+            59.574050715680855,
+            "",
+            "reference",
+            "PSA9は集計値・個別実成約未取得／公式Populationの確認日が古い・未取得／非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価／古値・参考価格・仕様保留等3元を参考中央値から除外・原価格と日時は履歴保持／中央値で実際に購入できるとは限らない・購入GOとは別",
+            "採用"
+          ],
+          "switchedBuy": {
+            "buy": 9980,
+            "annual": 68.92464725566634
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -24,7 +24,10 @@ assert.equal(Object.keys(twice.saved.shops.a[c.id]).length,1,'same-day recheck n
 const bad=builder.capture(captured.saved,{updatedAt:'2026-10-14',shops:{a:[{...item,name:'グレイシアV マスターボールミラー 077/069'}]}},source,[c]);
 assert.equal(bad.audit.accepted,0);assert.deepEqual(bad.saved,captured.saved,'mismatch keeps old proof');
 for(const extra of [{currency:'USD'},{gradingCompany:'CGC'},{grade:9},{language:'en'}])assert.equal(builder.capture(null,{updatedAt:'2026-10-14',shops:{a:[{...item,...extra}]}},source,[c]).audit.accepted,0);
-assert.equal(builder.capture(null,{updatedAt:'2026-10-14',shops:{a:[item]}},{...source,shops:{a:{...source.shops.a,refreshed:false}}},[c]).audit.accepted,0,'failed origin cannot redate old rows');
+const skipped=builder.capture(null,{updatedAt:'2026-10-15',shops:{a:[item]}},{...source,shops:{a:{...source.shops.a,refreshed:false}}},[c]);
+assert.equal(skipped.audit.accepted,1,'daily skip can recover a proven saved response');
+assert.equal(skipped.saved.shops.a[c.id]['2026-10-14'].observedAt,at,'rebuild never redates a saved observation');
+assert.equal(builder.capture(null,{shops:{a:[item]}},{...source,shops:{a:{...source.shops.a,lastAttempt:'2026-10-14T02:00:00Z'}}},[c]).audit.accepted,0,'a later failed attempt remains distinct from saved success');
 const summary=builder.aggregate(captured.saved,source,[c],now),card={...c,buybackAnalysis:{rows:[{shopId:'a',valid:true,buybackPrice:29000},{shopId:'b',valid:true,buybackPrice:29000}]}};
 for(const flag of [{campaign:true},{quantityLimited:true},{conditionsConfirmed:false}]) {
   const excluded=structuredClone(captured.saved);Object.assign(excluded.shops.a[c.id]['2026-10-14'],flag);

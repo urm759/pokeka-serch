@@ -118,7 +118,8 @@ for(const [c,name] of titles){
 }
 const mutations=[
   f=>delete f.source.shops.shop,
-  f=>f.source.shops.shop.refreshed=false,
+  f=>f.source.shops.shop.acquisitionPermission='pending',
+  f=>f.source.shops.shop.acquisitionPermission='retired',
   f=>f.source.shops.shop.lastAttempt='2026-10-14T03:04:05Z',
   f=>f.source.shops.shop.lastSuccess=null,
   f=>delete f.source.cards[mew.id].shops.shop,
@@ -128,7 +129,6 @@ const mutations=[
   f=>f.source.cards[mew.id].shops.shop.matchConfidence='medium',
   f=>f.source.cards[mew.id].shops.shop.listingActive=false,
   f=>f.source.cards[mew.id].shops.shop.quarantined=true,
-  f=>f.catalog.updatedAt='2026-10-14',
   f=>f.catalog.shops.shop[0].active=false,
   f=>f.catalog.shops.shop[0].observedAt='2026-10-12T03:04:05Z',
   f=>f.catalog.shops.shop[0].observedAt='2026-10-13T03:06:06Z',

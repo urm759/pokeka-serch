@@ -1,0 +1,12 @@
+const assert=require('node:assert/strict'),shop=require('./update_hareruya2_stock'),refresh=require('./refresh_candidate_shops');
+const raw={id:'fixture',name:'イーブイ AR仕様 [MC 755/742](スタートデッキ100)',model:'755/742',setCode:'MC',language:'ja',identityReviewRequired:false};
+const product={title:'イーブイ:AR仕様(-){無}〈755/742〉[MC]'};
+assert(refresh.exactIdentity(raw,product));
+for(const title of ['イーブイ:AR(-){無}〈755/742〉[MC]','イーブイ:SAR仕様(-){無}〈755/742〉[MC]','イーブイ:AR仕様(-){無}〈756/742〉[MC]','イーブイ:AR仕様(-){無}〈755/742〉[OTHER]','【PSA10】イーブイ:AR仕様(-){無}〈755/742〉[MC]','イーブイ:AR仕様 英語版(-){無}〈755/742〉[MC]'])assert(!refresh.exactIdentity(raw,{title}),title);
+const resolve=require('./cardshop151').resolve,source={type:'PSA10',genre:'ポケモンカード',name:'イーブイ',listNo:'755/742'};
+assert.equal(resolve(source,[raw]).cardId,raw.id);
+assert.equal(resolve(source,[raw,{...raw,id:'ambiguous',name:'イーブイ SAR仕様 [MC 755/742]'}]).cardId,undefined,'an unspecified finish needs unique full-print evidence');
+assert.equal(resolve({...source,name:'イーブイ SAR仕様'},[raw]).cardId,undefined);
+assert.equal(require('./build_buyback_observation_summary').resolveSavedItem({name:'イーブイ 755/742',number:'755/742'},[raw]).cardId,raw.id);
+assert.equal(shop.extractCardSignature(raw).finish,'ar-style');
+console.log('PASS common AR/SAR style identity, full print, set, language, grade and ambiguous specification guards; no card-ID exception');

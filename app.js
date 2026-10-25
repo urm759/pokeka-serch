@@ -1740,12 +1740,12 @@ function exportFavoritesCsv() {
   rows[0].push('利益確保の仕入れ目安・現相場基準','目安の切下げ前値','目安の最低期待利益','目安の最低期待利益率%','目安の状態','目安の売却先','素体参考相場70%（上限ではない）');
   rows[0].push('資金効率採用平均・暦日期間','資金効率採用平均価格','資金効率平均・観測日数','資金効率平均・欠測日数','資金効率平均・最終観測日','平均資金効率・非10価格基準','資金効率平均・根拠未確認日数');
   rows[0].push('中央値買値・参考年換算効率%','実店舗買値・年換算効率%','中央値採用元数','中央値独立店舗数','中央値内訳未確認元数','中央値価格下端','中央値価格上端','中央値個別根拠JSON','中央値比較不可理由');
-  rows[0].push('最高買取倍率（減額前・選択受付）','最高提示店舗','最高提示受付','最高提示確認日時','同店・他カードの通常倍率（中央値）','通常倍率の比較枚数','最高買取倍率・下限条件','最高提示の価格日','倍率分母の相場確認日時','倍率比較の確認時差（時間）','全体平均買取倍率（同一店の有効な最高提示1件）','全体平均の採用店舗数');
+  rows[0].push('最高買取倍率（減額前・選択受付）','最高提示店舗','最高提示受付','最高提示確認日時','同店・他カードの通常倍率（中央値）','通常倍率の比較枚数','最高買取倍率・下限条件','最高提示の価格日','倍率分母の相場確認日時','倍率比較の確認時差（時間）','全体平均買取倍率（同一店の有効な最高提示1件）','全体平均の採用店舗数','倍率の対象独立店舗数','倍率比較可能店舗数','相場以上の比較可能店舗数','掲載確認店舗数（倍率採用と別）');
   favoriteCards().forEach((rawCard,index)=>{
     const card = calc(rawCard), p = purchaseExploration(card), v = searchProfitView(card), c = postingCoverage(card);
     rows[index+1].push(p.price ?? '',p.headroom ?? '',v.purchasePrice ?? '',v.label,v.economics?.expectedProfit ?? '',v.psa10Roi ?? '',c.rate30 ?? '',c.averageShops30 ?? '',c.observedDays,c.retrievalCoverage ?? '',p.cap ?? '',p.warnings.join('／'),p.headroom == null ? p.reason : '');
     const e = cardEfficiency(card);
-    rows[index+1].push(e.purchasePrice ?? '',e.basis,e.scenario,e.exitLabel,e.profit ?? '',e.investment ?? '',e.roi ?? '',e.days ?? '',e.annual ?? '',e.reason || '',e.calculationState,e.warnings.join('／'),efficiencySearchValue(e) != null ? '採用' : '対象外');
+    rows[index+1].push(...cardEfficiencyCsvFields(card,e));
     for (const days of [7,30,75,200]) {
       const o = explorationMetrics.observation(state.psa10PeriodSummary,card.id,card.psa10,days);
       rows[index+1].push(o.mean ?? '',o.delta ?? '',o.count ?? '',o.latest || '',o.mean == null ? '未取得' : `${o.reference ? '参考・観測不足' : '観測充足'}${o.stale ? '／古い観測' : ''}`);
@@ -4217,6 +4217,9 @@ function cardEfficiency(card, now=Date.now(), mode=state.purchaseMode, selectedS
   else efficiencyCache.set(card,entry);
   return remember(entry);
 }
+function cardEfficiencyCsvFields(card,e=cardEfficiency(card)) {
+  return [e.purchasePrice ?? '',e.basis,e.scenario,e.exitLabel,e.profit ?? '',e.investment ?? '',e.roi ?? '',e.days ?? '',e.annual ?? '',e.reason || '',e.calculationState,e.warnings.join('／'),efficiencySearchValue(e) != null ? '採用' : '対象外'];
+}
 function efficiencySearchValue(row) {
   if (row.observation?.reference && !state.observationIncludeReference) return null;
   return row.calculationState === 'reference' && !state.efficiencyIncludeReference ? null : row.annual;
@@ -4370,40 +4373,47 @@ const buybackSupportCache = new WeakMap();
 const buybackSupportDetails = new Map(), buybackSupportDetailRequests = new Map();
 function cardBuybackSupport(card, now = Date.now(), detailed = false) {
   const summary = state.buybackObservationSummary;
-  if (detailed && buybackSupportDetails.has(card.id)) return explorationMetrics.buybackSupport({...summary,support:{...summary.support,cards:{[card.id]:buybackSupportDetails.get(card.id)}}},card.id,state.buybackStoreMode,state.selectedBuybackStores,now,card.psa10,card.identityKey);
+  const currentSource={cards:state.shopBuybacks||{}};
+  if (detailed && buybackSupportDetails.has(card.id)) return explorationMetrics.buybackSupport({...summary,support:{...summary.support,cards:{[card.id]:buybackSupportDetails.get(card.id)}}},card.id,state.buybackStoreMode,state.selectedBuybackStores,now,card.psa10,card.identityKey,currentSource);
   if (!summary) return explorationMetrics.buybackSupport(null,card.id,state.buybackStoreMode,state.selectedBuybackStores,now,card.psa10);
   let cache = buybackSupportCache.get(summary);
   if (!cache) { cache = new Map(); buybackSupportCache.set(summary,cache); }
-  const key = JSON.stringify([card.id,card.identityKey,card.psa10,state.buybackStoreMode,state.selectedBuybackStores]);
+  const key = JSON.stringify([card.id,card.identityKey,card.psa10,state.buybackStoreMode,state.selectedBuybackStores,Object.entries(state.shopBuybacks?.[card.id]?.shops||{}).map(([id,r])=>[id,r.listingActive,r.observedAt,r.quarantined])]);
   const previous = cache.get(key);
   if (previous && now >= previous.at && now < previous.expires) return previous.result;
-  const result = explorationMetrics.buybackSupport(summary,card.id,state.buybackStoreMode,state.selectedBuybackStores,now,card.psa10,card.identityKey);
+  const result = explorationMetrics.buybackSupport(summary,card.id,state.buybackStoreMode,state.selectedBuybackStores,now,card.psa10,card.identityKey,currentSource);
   const midnight = Date.parse(new Date(now+9*3600000).toISOString().slice(0,10)) + 86400000 - 9*3600000;
-  const expiries = result.rows.flatMap(r=>[r.at,r.marketAt]).map(at=>Date.parse(at)+48*3600000+1).filter(at=>at>now);
+  const expiries = [...result.rows.flatMap(r=>[r.at,r.marketAt]),...result.coverage.rows.flatMap(r=>r.channels.map(c=>c.listingAt))].map(at=>Date.parse(at)+48*3600000+1).filter(at=>at>now);
   cache.set(key,{at:now,expires:Math.min(midnight,...expiries),result}); return result;
+}
+function buybackRatioMarkup(value, label='') {
+  const tone=explorationMetrics.buybackRatioTone(value);
+  return `<b class="buyback-ratio ${tone.className}" data-buyback-ratio="${Number.isFinite(value)?value:''}" title="${escapeHtml(tone.label)}">${label}${Number.isFinite(value)?value.toFixed(3)+'倍':'比較不可'}</b>`;
 }
 function buybackSupportHtml(card, detailed = false) {
   const value = cardBuybackSupport(card,Date.now(),detailed);
   const rate = n => Number.isFinite(n) ? n.toFixed(3) : '算出不可';
   const pct = n => Number.isFinite(n) ? `${n>=0?'+':''}${n.toFixed(1)}%` : '算出不可';
   const highest = value.highestQuote;
-  const meanText = Number.isFinite(value.mean) ? `<b class="buyback-mean ${value.meanReference?'reference-warning':''}">全体平均買取倍率 ${rate(value.mean)}倍 <span>${value.meanCount}店舗${value.meanReference?'・参考':''}</span></b>` : '<b class="reference-warning">全体平均買取倍率 比較不可</b>';
-  if (!detailed) return `<div class="buyback-support-compact" data-buyback-support="${escapeHtml(card.id)}">${highest ? `<span class="buyback-quote-stat"><b class="buyback-highest">最高買取倍率 ${rate(highest.ratio)}倍</b><span>${escapeHtml(highest.name)}・${highest.fulfilment==='store'?'店頭':'郵送'}</span></span>` : '<b class="reference-warning">最高買取倍率 比較不可・再確認待ち</b>'}${meanText}${highest?`<small>確認 ${escapeHtml(formatJstTimestamp(highest.at))}・減額前。採算用出口とは別</small>`:''}</div>`;
-  const highestText = highest ? `<b class="buyback-highest">最高買取 ${rate(highest.ratio)}倍</b><span>${escapeHtml(highest.name)}・${highest.fulfilment==='store'?'店頭':'郵送'}｜<span class="buyback-normal ${highest.reference?'reference-warning':''}">同店・他カードの通常倍率 ${Number.isFinite(highest.standard)?rate(highest.standard)+'倍':'比較不足'}${highest.reference?'・参考':''}</span>｜通常比 ${pct(highest.premium)}${Number.isFinite(highest.topPct)?`｜同店内上位${highest.topPct.toFixed(1)}%`:''}</span><small>確認 ${escapeHtml(highest.at)}｜比較${highest.samples}枚${highest.reference?'・標本不足/参考':''}｜減額前・同日同価格帯。他カード比較で、実買取件数・GOの保証ではありません。</small>` : '<b class="reference-warning">最高買取 比較不足</b><small class="reference-warning">選択中の受付に新鮮な同日・同仕様の提示なし（古値・停止・保留は対象外）</small>';
+  const meanText = Number.isFinite(value.mean) ? `<span class="buyback-mean">${buybackRatioMarkup(value.mean,'全体平均買取倍率 ')} <span class="${value.meanReference?'reference-warning':''}">${value.meanCount}店舗${value.meanReference?'・参考':''}</span></span>` : '<b class="reference-warning">全体平均買取倍率 比較不可</b>';
+  const c=value.coverage;
+  const coverageText=c.target==null?'対象店舗の要約未取得':`比較可能${c.comparable}／対象${c.target}店・${c.comparable?`うち相場以上${c.above}／${c.comparable}店`:'相場以上は比較不可'}`;
+  if (!detailed) return `<div class="buyback-support-compact" data-buyback-support="${escapeHtml(card.id)}">${highest ? `<span class="buyback-quote-stat">${buybackRatioMarkup(highest.ratio,'最高買取倍率 ')}<span>${escapeHtml(highest.name)}・${highest.fulfilment==='store'?'店頭':'郵送'}</span></span>` : '<b class="reference-warning">最高買取倍率 比較不可・再確認待ち</b>'}${meanText}<small class="buyback-scope">${coverageText}</small>${highest?`<small>確認 ${escapeHtml(formatJstTimestamp(highest.at))}・減額前。採算用出口とは別</small>`:''}</div>`;
+  const highestText = highest ? `${buybackRatioMarkup(highest.ratio,'最高買取 ')}<span>${escapeHtml(highest.name)}・${highest.fulfilment==='store'?'店頭':'郵送'}｜同店・他カードの通常倍率 ${buybackRatioMarkup(highest.standard)}${highest.reference?'<span class="reference-warning">・参考</span>':''}｜通常比 ${pct(highest.premium)}${Number.isFinite(highest.topPct)?`｜同店内上位${highest.topPct.toFixed(1)}%`:''}</span><small>確認 ${escapeHtml(highest.at)}｜比較${highest.samples}枚${highest.reference?'・標本不足/参考':''}｜減額前・同日同価格帯。他カード比較で、実買取件数・GOの保証ではありません。</small>` : '<b class="reference-warning">最高買取 比較不足</b><small class="reference-warning">選択中の受付に新鮮な同日・同仕様の提示なし（古値・停止・保留は対象外）</small>';
   const windows = [7,30].map(days=>{
     const w=value.windows[days];
-    return `<span>${days}日 日次中央値の平均 ${rate(w.mean)}／相場以上 ${w.aboveRate==null?'未取得':w.aboveRate.toFixed(1)+'%'} <small>${w.days}/${days}観測日・${w.stores}店・最終${escapeHtml(w.lastDate || '未取得')}${w.reference?'・蓄積中/参考':''}</small></span>`;
+    return `<span>${days}日 日次中央値の平均 ${buybackRatioMarkup(w.mean)}／相場以上 ${w.aboveRate==null?'未取得':w.aboveRate.toFixed(1)+'%'} <small>${w.days}/${days}観測日・${w.stores}店・最終${escapeHtml(w.lastDate || '未取得')}${w.reference?'・蓄積中/参考':''}</small></span>`;
   }).join('');
   let highestPeriods = [7,30].map(days=>{
     const p=highest?.periods?.[days];
-    return `<span>${days}日 平均 ${Number.isFinite(p?.[0])?rate(p[0])+'倍':'未取得'}／相場以上 ${p?.[2]>0?(p[3]/p[2]*100).toFixed(1)+'%':'未取得'} <small>${p?.[2]??0}/${days}観測日・最終${escapeHtml(p?.[4] || '未取得')}${p?.[2]!==days?'・蓄積中/参考':''}</small></span>`;
+    return `<span>${days}日 平均 ${buybackRatioMarkup(p?.[0])}／相場以上 ${p?.[2]>0?(p[3]/p[2]*100).toFixed(1)+'%':'未取得'} <small>${p?.[2]??0}/${days}観測日・最終${escapeHtml(p?.[4] || '未取得')}${p?.[2]!==days?'・蓄積中/参考':''}</small></span>`;
   }).join('');
   const timingEvidence=value.rows.map(r=>`${escapeHtml(r.name)}：提示日 ${escapeHtml(r.priceDate||'未確認')}／実確認 ${escapeHtml(r.at)}／相場確認 ${escapeHtml(r.marketAt)}／時差 ${Number.isFinite(r.timeSkewHours)?r.timeSkewHours.toFixed(2)+'時間':'未確認'}`).join('<br>');
   highestPeriods += `<small>${timingEvidence}。現在比較の確認差6時間以内。超過は通常倍率から除外し履歴として保持。</small>`;
   const bandLabel = {under30k:'PSA10 3万円未満',from30kTo100k:'PSA10 3万～10万円未満',over100k:'PSA10 10万円以上'};
-  const rows = value.rows.map(r=>`<tr><th>${escapeHtml(r.name)}<small>${r.fulfilment==='store'?'店頭':'郵送'}／${escapeHtml(r.date)}</small></th><td class="${r.valid?'buyback-highest':'reference-warning'}">${rate(r.ratio)}<small>提示 ¥${fmt.format(r.price)} / 同日国内PSA10 ¥${fmt.format(r.marketPrice)}</small><small>提示確認 ${escapeHtml(r.at)} / 相場確認 ${escapeHtml(r.marketAt)}</small></td><td class="${r.reference?'reference-warning':'buyback-normal'}">${rate(r.standard)}<small>${r.samples}枚・${r.cohort==='common'?'複数店共通カード群':'同店の同価格帯'}・自身/別IDの同一カード除外・外れ値${r.excluded}枚・${escapeHtml(bandLabel[r.band] || '価格帯未確認')}${r.reference?'・標本不足/参考':''}</small></td><td>${pct(r.premium)}<small>${r.reason?escapeHtml(r.reason):'同店の通常水準との比較（実額の有利さとは別）'}</small></td><td>${[7,30].map(days=>{const p=r.premiumPeriods?.[days];return `${days}日 ${pct(p?.[0])} / ${p?.[1]??0}日${p?.[3]?'・参考':''}`;}).join('<br>')}<small>上乗せ率を計算できた日だけ採用</small></td></tr>`).join('');
+  const rows = value.rows.map(r=>`<tr><th>${escapeHtml(r.name)}<small>${r.fulfilment==='store'?'店頭':'郵送'}／${escapeHtml(r.date)}</small></th><td class="${r.valid?'':'reference-warning'}">${r.valid?buybackRatioMarkup(r.ratio):rate(r.ratio)}<small>提示 ¥${fmt.format(r.price)} / 同日国内PSA10 ¥${fmt.format(r.marketPrice)}</small><small>提示確認 ${escapeHtml(r.at)} / 相場確認 ${escapeHtml(r.marketAt)}</small></td><td>${buybackRatioMarkup(r.standard)}<small>${r.samples}枚・${r.cohort==='common'?'複数店共通カード群':'同店の同価格帯'}・自身/別IDの同一カード除外・外れ値${r.excluded}枚・${escapeHtml(bandLabel[r.band] || '価格帯未確認')}${r.reference?'・標本不足/参考':''}</small></td><td>${pct(r.premium)}<small>${r.reason?escapeHtml(r.reason):'同店の通常水準との比較（実額の有利さとは別）'}</small></td><td>${[7,30].map(days=>{const p=r.premiumPeriods?.[days];return `${days}日 ${pct(p?.[0])} / ${p?.[1]??0}日${p?.[3]?'・参考':''}`;}).join('<br>')}<small>上乗せ率を計算できた日だけ採用</small></td></tr>`).join('');
   const file=state.buybackObservationSummary?.support?.detailFiles?.[card.id];
-  return `<section class="buyback-support-detail" data-buyback-support-detail="${escapeHtml(card.id)}"><strong>買取価格支持（点数・採算へ未反映）</strong><div class="buyback-support-compact">${highestText}${meanText}</div><strong>現在の最高提示と同じ受付の履歴</strong><div class="buyback-support-windows">${highestPeriods}</div><small>全店・店舗別保守側の日次中央値</small><div class="buyback-support-windows">${windows}</div><p class="helper">1.000倍は同額、1.100倍は相場より10%高い減額前提示。全体平均はこのカードの選択店舗間の単純平均で、同一店は利用可能な最高提示1件。1店は参考。同店通常・日次中央値・採算用出口とは別です。標準は同日・同価格帯・対象自身/重複IDを除外した中央値。3枚未満は不可、10枚未満は参考。上位率は10枚以上の比較標本で同率を含む保守的順位（対象を含む順位/標本数+1）。未観測日は0にしません。最高提示を店舗別の保守集約や採算出口へ置換しません。</p>${state.buybackObservationSummary?.support?.compact && !buybackSupportDetails.has(card.id)?'<small>受付別の継続・比較根拠を読込中</small>':''}<div class="shop-rate-table-wrap"><table><thead><tr><th>店舗・観測日</th><th>相場に対して高いか</th><th>同店・他カードの通常倍率（中央値）</th><th>その店舗として高いか</th><th>上乗せ継続</th></tr></thead><tbody>${rows || '<tr><td colspan="5">同日・仕様・価格確認の根拠不足で算出不可</td></tr>'}</tbody></table></div>${file?`<a href="./${escapeHtml(file)}" target="_blank" rel="noreferrer">同日照合の原票・取得日時（必要時のみ読込）</a>`:''}<small>減額・手数料・交通費は実際の採算で別途適用。単独高値を消さず表示しますが、実需要・相場上昇・購入GOの保証ではありません。</small></section>`;
+  return `<section class="buyback-support-detail" data-buyback-support-detail="${escapeHtml(card.id)}"><strong>買取価格支持（点数・採算へ未反映）</strong><div class="buyback-support-compact">${highestText}${meanText}<small>${coverageText}。掲載確認${c.listed}店（倍率採用とは別）。</small></div><small>${c.rows.filter(r=>!r.comparable).map(r=>r.channels.map(ch=>escapeHtml(ch.name)+'：'+escapeHtml(ch.reason)).join('／')).join('；')}</small><strong>現在の最高提示と同じ受付の履歴</strong><div class="buyback-support-windows">${highestPeriods}</div><small>全店・店舗別保守側の日次中央値</small><div class="buyback-support-windows">${windows}</div><p class="helper">1.000倍は同額、1.100倍は相場より10%高い減額前提示。色は0.98～1.02倍が中立、0.90未満／1.10以上を強調。取得不足・古値を未掲載と断定しません。全体平均はこのカードの選択店舗間の単純平均で、同一店は利用可能な最高提示1件。1店は参考。同店通常・日次中央値・採算用出口とは別です。標準は同日・同価格帯・対象自身/重複IDを除外した中央値。3枚未満は不可、10枚未満は参考。上位率は10枚以上の比較標本で同率を含む保守的順位（対象を含む順位/標本数+1）。未観測日は0にしません。最高提示を店舗別の保守集約や採算出口へ置換しません。</p>${state.buybackObservationSummary?.support?.compact && !buybackSupportDetails.has(card.id)?'<small>受付別の継続・比較根拠を読込中</small>':''}<div class="shop-rate-table-wrap"><table><thead><tr><th>店舗・観測日</th><th>相場に対して高いか</th><th>同店・他カードの通常倍率（中央値）</th><th>その店舗として高いか</th><th>上乗せ継続</th></tr></thead><tbody>${rows || '<tr><td colspan="5">同日・仕様・価格確認の根拠不足で算出不可</td></tr>'}</tbody></table></div>${file?`<a href="./${escapeHtml(file)}" target="_blank" rel="noreferrer">同日照合の原票・取得日時（必要時のみ読込）</a>`:''}<small>減額・手数料・交通費は実際の採算で別途適用。単独高値を消さず表示しますが、実需要・相場上昇・購入GOの保証ではありません。</small></section>`;
 }
 function buybackHighestExclusion(card) {
   if (state.buybackHighestMin == null) return null;
@@ -4414,7 +4424,7 @@ function buybackHighestExclusion(card) {
 }
 function buybackSupportCsvFields(card) {
   const value = cardBuybackSupport(card), q=value.highestQuote;
-  return [q?.ratio ?? '',q?.name || '',q ? q.fulfilment === 'store' ? '店頭' : '郵送' : '',q?.at || '',q?.standard ?? '',q?.samples ?? '',state.buybackHighestMin ?? '',q?.priceDate || '',q?.marketAt || '',q?.timeSkewHours ?? '',value.mean ?? '',value.meanCount || ''];
+  return [q?.ratio ?? '',q?.name || '',q ? q.fulfilment === 'store' ? '店頭' : '郵送' : '',q?.at || '',q?.standard ?? '',q?.samples ?? '',state.buybackHighestMin ?? '',q?.priceDate || '',q?.marketAt || '',q?.timeSkewHours ?? '',value.mean ?? '',value.meanCount || '',value.coverage.target ?? '',value.coverage.comparable,value.coverage.above,value.coverage.listed];
 }
 async function loadBuybackSupportDetail(id) {
   const file=state.buybackObservationSummary?.support?.detailFiles?.[id];

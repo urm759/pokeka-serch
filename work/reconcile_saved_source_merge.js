@@ -83,6 +83,25 @@ function seedMerge(base,a,b){
   if(a&&b&&typeof a==='object'&&typeof b==='object')return Object.fromEntries([...new Set([...Object.keys(a),...Object.keys(b)])].map(k=>[k,seedMerge(base?.[k],a[k],b[k])]));
   return a;
 }
+function mergeBuybackHistory(base,a,b) {
+  const dates=[...new Set([...a.dates,...b.dates])].sort();
+  const result={...seedMerge(base,a,b),dates,shops:{}};
+  for(const shop of new Set([...Object.keys(a.shops||{}),...Object.keys(b.shops||{})])) {
+    result.shops[shop]={};
+    for(const id of new Set([...Object.keys(a.shops?.[shop]||{}),...Object.keys(b.shops?.[shop]||{})])) {
+      result.shops[shop][id]=dates.map(day=>{
+        const at=h=>h.shops?.[shop]?.[id]?.[h.dates.indexOf(day)]??null;
+        const x=at(a),y=at(b),old=at(base);
+        if(same(x,y)||same(old,y))return x;
+        if(same(old,x))return y;
+        // An unobserved value never erases a verified saved observation.
+        if(x==null)return y;if(y==null)return x;
+        throw Error('Conflicting buyback observations require review: '+shop+'/'+id+'/'+day);
+      });
+    }
+  }
+  return result;
+}
 function run(){
   const files=git(['diff','--name-only','--diff-filter=U']).trim().split('\n').filter(Boolean);
   if(files.some(f=>!/^((data|work)\/[a-zA-Z0-9_./-]+\.json)$/.test(f)||f.includes('..')))throw Error('Unknown merge target');
@@ -100,6 +119,7 @@ function run(){
     else if(file==='data/pokemon-cards.json')merged=mergeCards(base,a,b);
     else if(file==='work/search-profile-targets.json')merged=mergeProfileTargets(base,a,b);
     else if(file==='work/priority-freshness-history.json')merged=mergeFixedFreshness(base,a,b);
+    else if(file==='work/shop_buyback_history.json')merged=mergeBuybackHistory(base,a,b);
     else if(['data/priority-price-execution.json','data/price-catchup-status.json'].includes(file))merged=latest(a,b,base);
     else if(file==='work/hareruya2_catalog.json')merged=byKey(a,b,r=>r.detailUrl||r.productId||r.cardId,base);
     else if(file==='data/hareruya2-stock-summary.json'){
@@ -145,4 +165,4 @@ function run(){
   console.log(JSON.stringify({resolved:out.length,status:'rebuild-required',rawStageBackups:files.length}));
 }
 if(require.main===module)run();
-module.exports={latest,byKey,seedMerge,mergeRun,mergeStockHistory,mergeProfileTargets,mergeFixedFreshness,mergeCards};
+module.exports={latest,byKey,seedMerge,mergeRun,mergeStockHistory,mergeProfileTargets,mergeFixedFreshness,mergeCards,mergeBuybackHistory};

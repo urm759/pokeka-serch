@@ -20,7 +20,18 @@ function currentLinks(result, day) {
 function refresh(history, result, today, priorItems = []) {
   const shopId = result.shop.id;
   const links = currentLinks(result, today);
-  if (result.savedReplay) return links;
+  if (result.savedReplay) {
+    // A newly verified link can recover a genuinely observed old day. The
+    // replay date itself is never a price observation; never replace conflicts.
+    for(const item of result.matched) {
+      const date=calendarDay(item.observedAt),index=history.dates.indexOf(date);
+      if(index<0 || !item.cardId || item.active!==true || item.verifiedCardId!==item.cardId || !item.identityEvidence?.catalogIdentity
+        || !(Number(item.score)>=90) || item.quarantined || !Number.isFinite(item.price) || item.price<=0)continue;
+      const entries=history.shops[shopId]||={},values=entries[item.cardId]||=Array(history.dates.length).fill(null);
+      if(values[index]==null){values[index]=item.price;(result.savedReplayRecovered||=[]).push({id:item.cardId,date,price:item.price,observedAt:item.observedAt});}
+    }
+    return links;
+  }
   const products = new Map([...result.matched, ...(result.unmatched || [])].map(item=>[String(item.shopItemId),item]));
   const invalidated = new Set();
   for (const old of priorItems) {

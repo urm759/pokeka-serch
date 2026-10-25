@@ -101,7 +101,10 @@ function capture(saved,catalog,source,cards) {
   const reject=r=>{audit.rejected++;audit.reasons[r]=(audit.reasons[r]||0)+1;};
   for(const [shop,items] of Object.entries(catalog.shops||{})) {
     const meta=source.shops?.[shop];
-    if(!meta?.refreshed || meta.lastAttempt!==meta.lastSuccess || day(meta.lastSuccess)!==catalog.updatedAt) continue;
+    // A daily skip or later JSON rebuild does not invalidate the last successful
+    // saved response. Individual timestamps and the matching source success
+    // below authorize the observation, never the file generation day.
+    if(!meta?.lastSuccess || meta.lastAttempt!==meta.lastSuccess || ['pending','retired'].includes(meta.acquisitionPermission)) continue;
     for(const item of items) {
       const c=byId.get(item.cardId),quote=source.cards?.[item.cardId]?.shops?.[shop];
       if(!c || c.language!=='ja' || c.identityReviewRequired || !c.identityKey) {reject('仕様未確定');continue;}

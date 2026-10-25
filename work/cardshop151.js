@@ -5,14 +5,21 @@ const number = (v) => {
   const prefix=String(v || '').normalize('NFKC').match(/(?:^|\[)((?:XY|SM|SV|BW|S)-P)\s+(\d{1,3})(?:$|\])/i);
   return prefix ? `${Number(prefix[2])}/${prefix[1].toUpperCase()}` : null;
 };
-const name = (v) => norm(String(v || "").split("[")[0].replace(/\b(?:SAR|MUR|BWR|SSR|CSR|CHR|SR|HR|UR|RRR|RR|AR|R|H|SA|PROMO|P)\b/gi, "").replace(/マスターボールミラー|モンスターボールミラー|ミラー/g, "").replace(/プロモ$/, ""));
+const name = (v) => norm(String(v || "").split("[")[0].replace(/\b(?:MUR|BWR|SSR|CSR|CHR|SAR|UR|HR|SR|AR)\s*仕様/gi, "").replace(/\b(?:SAR|MUR|BWR|SSR|CSR|CHR|SR|HR|UR|RRR|RR|AR|R|H|SA|PROMO|P)\b/gi, "").replace(/マスターボールミラー|モンスターボールミラー|ミラー/g, "").replace(/プロモ$/, ""));
 function names(v) {
   const head=String(v || '').split('[')[0], result=[name(head)];
   const alias=head.match(/^([^（(]+)[（(]([^）)]+)[）)]/);
   if(alias && norm(alias[2]).includes(norm(alias[1])) && !/ミラー|仕様|初版|未開封|英語|エラー|サイン/.test(alias[2]))result.push(name(alias[1]));
   return result.filter(Boolean);
 }
-const spec = (v) => /マスターボール/.test(v) ? "master" : /モンスターボール/.test(v) ? "monster" : /ミラー/.test(v) ? "mirror" : /\bSA\b/i.test(v) ? "sa" : "base";
+const spec = (v) => {
+  if(/マスターボール/.test(v))return 'master';
+  if(/モンスターボール/.test(v))return 'monster';
+  if(/ミラー/.test(v))return 'mirror';
+  if(/\bSA\b/i.test(v))return 'sa';
+  const style=String(v).match(/\b(MUR|BWR|SSR|CSR|CHR|SAR|UR|HR|SR|AR)\s*仕様/i)?.[1];
+  return style?style.toLowerCase()+'-style':'base';
+};
 
 function resolve(row, cards) {
   if (row.type !== "PSA10" || row.genre !== "ポケモンカード") return { status: "対象外", reason: "ポケモンPSA10以外" };
