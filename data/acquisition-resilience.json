@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-24T20:20:15.093Z",
+  "generatedAt": "2026-10-24T21:01:11.038Z",
   "llmCalls": 0,
   "codexCalls": 0,
   "retryPolicy": {
@@ -27,7 +27,7 @@
     {
       "source": "psaOfficial",
       "label": "PSA公式・PC正規認証",
-      "remaining": 1200,
+      "remaining": 1199,
       "queueDefinition": "あとPSAだけで分析可能な国内カード。全PSA未取得とは別",
       "sourceState": "permission-wait",
       "failureScope": "source",
@@ -167,16 +167,16 @@
       "firstPassObservationDays": 0,
       "firstPassProgressField": "publicNewRecords",
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
-      "usableNet": 3,
+      "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-24T19:29:00.915Z",
-        "to": "2026-10-24T20:20:09.323Z"
+        "from": "2026-10-24T20:55:16.828Z",
+        "to": "2026-10-24T21:01:02.751Z"
       },
       "sinceBaseline": {
-        "newLinked": 3988,
-        "validAdded": 3988,
-        "validLost": 231,
-        "usableNet": 3757,
+        "newLinked": 3990,
+        "validAdded": 3990,
+        "validLost": 229,
+        "usableNet": 3761,
         "freshnessRecovered": 0
       },
       "freshness": null
@@ -188,19 +188,19 @@
       "queueDefinition": "未巡回商品数推計。全国内カードの不足項目数とは別",
       "checkpoint": {
         "sitemap": 5,
-        "entry": 118,
+        "entry": 197,
         "total": 46
       },
       "sourceState": "partial",
-      "stopReason": "商品詳細の1回上限 35件に到達",
+      "stopReason": "商品詳細の1回上限 18件に到達",
       "retryUrls": [],
       "lastRun": {
-        "startedAt": "2026-10-24T19:24:46.187Z",
-        "durationMs": 38718,
+        "startedAt": "2026-10-24T20:59:42.332Z",
+        "durationMs": 20213,
         "paginationMode": "sitemap",
         "currentCursor": 5,
         "currentSitemapIndex": 5,
-        "currentEntryIndex": 118,
+        "currentEntryIndex": 197,
         "currentSitemapUrl": "https://torecacamp-pokemon.com/sitemap_products_5.xml?from=8108359188654&to=8156231172270",
         "processedSitemapCount": 46,
         "processedSitemaps": [
@@ -262,17 +262,17 @@
         "maintenanceMode": true,
         "maintenance": {
           "sitemapIndex": 4,
-          "entryIndex": 118,
+          "entryIndex": 197,
           "cycles": 2,
-          "refreshed": 7605,
+          "refreshed": 7650,
           "newLinks": 147,
-          "checkedAt": "2026-10-24T19:25:24.901Z"
+          "checkedAt": "2026-10-24T21:00:02.537Z"
         },
         "firstPassCompletedAt": "2026-10-08T21:56:31.044Z",
-        "maintenancePendingCount": 5398,
+        "maintenancePendingCount": 5401,
         "priceMigration": {
           "version": 1,
-          "updatedAt": "2026-10-24T19:24:46.134Z",
+          "updatedAt": "2026-10-24T20:59:42.278Z",
           "correctedCount": 0,
           "cumulativeCorrectedCount": 0,
           "preCorrectionExtremeCount": 0,
@@ -282,31 +282,31 @@
         "quarantinedPriceCount": 30,
         "sitemapsSucceeded": 0,
         "listedProducts": 1000,
-        "detailFetched": 35,
-        "parsed": 36,
-        "stateA": 35,
+        "detailFetched": 18,
+        "parsed": 19,
+        "stateA": 18,
         "referenceUpdated": 0,
         "newLinkCount": 0,
-        "updatedCount": 8,
+        "updatedCount": 1,
         "fetchFailureCount": 0,
-        "duplicateUrlCount": 28,
+        "duplicateUrlCount": 30,
         "duplicateProductIdCount": 0,
         "abruptDropDetected": false,
         "previousCatalogCount": 6647,
         "proposedCatalogCount": 6647,
         "progressHealth": {
-          "value": 54577,
-          "previousValue": 54542,
+          "value": 54622,
+          "previousValue": 54604,
           "stagnantRuns": 0,
           "status": "progressing",
-          "checkedAt": "2026-10-24T19:25:24.905Z"
+          "checkedAt": "2026-10-24T21:00:02.545Z"
         },
         "lastSuccessfulPage": "サイトマップ 4",
         "lastFailure": null,
         "failedSitemaps": [],
-        "stoppingReason": "商品詳細の1回上限 35件に到達",
+        "stoppingReason": "商品詳細の1回上限 18件に到達",
         "completionStatus": "partial",
-        "completedAt": "2026-10-24T19:25:24.907Z"
+        "completedAt": "2026-10-24T21:00:02.548Z"
       },
       "observedExecutionDays": 6,
       "processedPerExecutionDay": 21.3,
@@ -316,15 +316,15 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-24T19:29:00.915Z",
-        "to": "2026-10-24T20:20:09.323Z"
+        "from": "2026-10-24T20:55:16.828Z",
+        "to": "2026-10-24T21:01:02.751Z"
       },
       "sinceBaseline": {
         "newLinked": 757,
         "validAdded": 757,
         "validLost": 76,
         "usableNet": 681,
-        "freshnessRecovered": 1258
+        "freshnessRecovered": 1279
       },
       "freshness": null
     },
@@ -357,8 +357,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-24T19:29:00.915Z",
-        "to": "2026-10-24T20:20:09.323Z"
+        "from": "2026-10-24T20:55:16.828Z",
+        "to": "2026-10-24T21:01:02.751Z"
       },
       "sinceBaseline": {
         "newLinked": 0,
@@ -371,10 +371,10 @@
     }
   ],
   "psaOnly": {
-    "count": 1200,
+    "count": 1199,
     "causes": {
       "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持": 1067,
-      "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）": 133
+      "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）": 132
     },
     "cards": [
       {
@@ -429,12 +429,6 @@
         "id": "pk-23854",
         "setCode": "S8A-G",
         "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-asia-25th-anniversary-promo/202700",
-        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
-      },
-      {
-        "id": "pk-22423",
-        "setCode": "S8A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-25th-anniversary-collection/199357",
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
@@ -7581,10 +7575,10 @@
   },
   "progress": {
     "listed": 12545,
-    "analyzable": 2295,
-    "pending": 10250,
+    "analyzable": 2296,
+    "pending": 10249,
     "oneAway": 1683
   },
-  "newlyAnalyzable": 2,
+  "newlyAnalyzable": 0,
   "note": "一時障害の再試行、個別URL隔離、取得元停止を区別。未取得をデータ不存在に変更しない。巡回完了と全項目取得・最新価格は別"
 }

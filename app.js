@@ -5051,12 +5051,6 @@ function prepareCalculatedCards(cards) {
   const calculated = cards.map(calc);
   calculated.forEach((card) => { card.catalogCompletion = state.catalogCompletion?.cards?.[card.id] || null; });
   marketModel.applyStoreDemandRelativeRanking(calculated, { strongShare: 0.3 });
-  // Store-demand labels are relative ranks and only become final after every
-  // card is calculated. Refresh the display classification without changing
-  // the already-computed stress price or applying another risk deduction.
-  calculated.forEach((card) => {
-    if (card.futurePriceForecast) card.supplyPipeline = buildSupplyPipeline(card);
-  });
   const roiByPsaPriceBand = new Map();
   const psaTxByPriceBand = new Map();
   calculated.forEach((card) => {
@@ -5501,6 +5495,7 @@ function renderContent() {
   if (auditIsOpen(els.marketBacktestSummary)) renderMarketBacktest();
   renderPresetAudit(calculated);
   renderPsa9RatioCoverage(calculated);
+  const compareResults = resultSorter();
   const enriched = calculated
     .filter((card) => cardSearchExclusions(card).length === 0)
     .sort((left, right) => {
@@ -5509,7 +5504,7 @@ function renderContent() {
         const rightRank = state.searchRankById.get(String(right.id)) ?? Number.MAX_SAFE_INTEGER;
         if (leftRank !== rightRank) return leftRank - rightRank;
       }
-      return resultSorter()(left, right);
+      return compareResults(left, right);
     });
 
   efficiencyAuditCards = calculated;

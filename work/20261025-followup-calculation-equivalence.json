@@ -1,0 +1,384 @@
+{
+  "version": 2,
+  "evaluationAt": "2026-10-24T20:53:48.225Z",
+  "status": "pass",
+  "scope": "Sequential Node correctness checks; no browser or runtime speed comparison. Baseline reverses only the two app optimizations.",
+  "sourceSha256": "b6e68d690a062227fe1fe572139d8359b979c69570f6c8efaa0441cd796847ba",
+  "baselineSha256": "4d144596bb53484084b336516c6b531a5efb547f5114a3492e705812cf043839",
+  "sourceData": {
+    "pinnedInMemory": true,
+    "diskUnchangedBeforeAndAfter": true,
+    "fingerprint": "375dccb6908ef39904c9c632078d0188c813d4d3927c24f9b9a0d1f36244590a",
+    "files": [
+      {
+        "file": "data/buyback-observation-summary.json",
+        "sha256": "4715d4516e6fd80f7b05a392961b1ba2f12162e089367e26104119d131f44dea"
+      },
+      {
+        "file": "data/buyback-posting-coverage.json",
+        "sha256": "1262e62e58d2b286a5b91d69c75f5acff076714fa16bc789055323c9fa377531"
+      },
+      {
+        "file": "data/card-catalog-completion.json",
+        "sha256": "3e54dab5e49c99ef3d01ddc685a3ec0542baeaf2672902c4b5ef962b42955bf3"
+      },
+      {
+        "file": "data/cardrush-stock-summary.json",
+        "sha256": "61acc51178e627654765725b6f1dd375ff4fa55dabbf96a0df59b3b9e49dad02"
+      },
+      {
+        "file": "data/evaluation-governance.json",
+        "sha256": "b6aa8414451d621be33238e39154606c776a70846e4c1cee68d2f190a9991a5b"
+      },
+      {
+        "file": "data/evaluation-model.json",
+        "sha256": "74a4c9786b3485aa355dd112882478992350cdc33dc00b0ebce026249fa99b6e"
+      },
+      {
+        "file": "data/fixed-price-reference-index.json",
+        "sha256": "a902bf1f3d1ce70627ad350af62e3baf6d33ca73949b62d7f97e58d86cccdb7a"
+      },
+      {
+        "file": "data/hareruya2-stock-summary.json",
+        "sha256": "d420d699e0968d16dce84f163d006ea502b10e7070ddc15ab800acde70a9bffe"
+      },
+      {
+        "file": "data/market-research-summary.json",
+        "sha256": "267bd3df6031abf45ebab8addbd0264f8667e76a2ae48b19e3b5b2832e8fa4f0"
+      },
+      {
+        "file": "data/market-stability-summary.json",
+        "sha256": "73882f223cb3e06665f97404b7ab9adaffff1a01bb05173f5c78e2399e927498"
+      },
+      {
+        "file": "data/operational-limit-history.json",
+        "sha256": "369fedd8351ffb1311367b4a3d04d8e4ec06ad3f598858e82a8801e62aa431ec"
+      },
+      {
+        "file": "data/pokemon-cards-meta.json",
+        "sha256": "d8401b92ab05dac621f6295a3f0dc6217004409b077b8f26c1330ccbe2a51aaf"
+      },
+      {
+        "file": "data/pokemon-cards.json",
+        "sha256": "721c8ab5a24a84415eed41bac66bf024ec7d1d256c309d6393d7e4d8832c358e"
+      },
+      {
+        "file": "data/psa-japan-services.json",
+        "sha256": "9c7314bfcb244b58f4b747557b67a8dfed6f44e4fc787d0a358408f4a331632e"
+      },
+      {
+        "file": "data/psa-population-summary.json",
+        "sha256": "c622299ce2b8d84e2250c46f812bc41268f1fcbb730b7a7193b325521fd2de8e"
+      },
+      {
+        "file": "data/psa10-period-summary.json",
+        "sha256": "7acac77ac232844116cfe1ef2c54cdf105d6211981e0723880dd0e541a5477aa"
+      },
+      {
+        "file": "data/regulation-policy.json",
+        "sha256": "4469a3349f801af6646768a7910c4d6e2c5c352d7fff3d20ac52a24feaf584cb"
+      },
+      {
+        "file": "data/return-horizon-calibration.json",
+        "sha256": "da3d528570dfbc1f4b73ac68bfe85eccc0d0a892afeddd85b73e8519039328ca"
+      },
+      {
+        "file": "data/shop-buyback-summary.json",
+        "sha256": "2a9e890f48fcfb153493bf35b8b8446d5a03b0da40b694f334e8c8330b06d7e0"
+      },
+      {
+        "file": "data/snkr-listing-summary.json",
+        "sha256": "3a02a5bb5ec8c27737027a1694b4c0228ff84f072bc80d1c504cfd216aed5e84"
+      },
+      {
+        "file": "data/snkr-raw-flip-summary.json",
+        "sha256": "70a5fc046fd44e99a08d096d7e2cbda0f12019e2223114c178ac8caf62e41b59"
+      },
+      {
+        "file": "data/state-a-price-evidence.json",
+        "sha256": "08cc43fbd361fc9589182fb110abe218ba2f23c7e97cace2760be4022544e20a"
+      },
+      {
+        "file": "data/torecacamp-stock-summary.json",
+        "sha256": "1770bcfae00f7618f77c97ce59bb1a631d973bb34ed2a39e2ccd0da2f0626b95"
+      },
+      {
+        "file": "data/update-status.json",
+        "sha256": "5ce8ab7a0cfaea6d2f0da9c79243878045f81efa09078064847cc8c73c4bf03f"
+      },
+      {
+        "file": "data/yuyutei-stock-summary.json",
+        "sha256": "0b5892844139e6446afd18402e5346c75038c02ede0fb45daf9e9411b0360e47"
+      }
+    ]
+  },
+  "fullCohort": {
+    "cards": 2296,
+    "candidateCount": 85,
+    "serializedBeforeSha256": "32dc0fa9f047d2286d0be165d54c05c62f77e59268d5fe85f095f75d1862380d",
+    "serializedAfterSha256": "32dc0fa9f047d2286d0be165d54c05c62f77e59268d5fe85f095f75d1862380d",
+    "candidateIdsSha256": "ecdf0af44e6012a14ee7f2a0128b449b506a40723080dcbe9cce0ca18f161453",
+    "beforeBuilds": 6888,
+    "afterBuilds": 4592
+  },
+  "smallCases": [
+    {
+      "mode": "combined",
+      "plan": "standard",
+      "days": 91,
+      "cards": 12,
+      "candidateCount": 1,
+      "serializedBeforeSha256": "f230fa5c517bf9765ad8784013c17d80b93e0b9ad228f6e078642764f0989d8c",
+      "serializedAfterSha256": "f230fa5c517bf9765ad8784013c17d80b93e0b9ad228f6e078642764f0989d8c",
+      "candidateIdsSha256": "909368e5abfc6b524488e0a51b4ec176baa1b4b3b1a25a35e9a08d3d72487161",
+      "beforeBuilds": 36,
+      "afterBuilds": 24
+    },
+    {
+      "mode": "combined",
+      "plan": "standard",
+      "days": 119,
+      "cards": 12,
+      "candidateCount": 1,
+      "serializedBeforeSha256": "34e1016fa9633051abe610045d232527664ed0c8fa6e1b87edce5fb9f91c61b7",
+      "serializedAfterSha256": "34e1016fa9633051abe610045d232527664ed0c8fa6e1b87edce5fb9f91c61b7",
+      "candidateIdsSha256": "909368e5abfc6b524488e0a51b4ec176baa1b4b3b1a25a35e9a08d3d72487161",
+      "beforeBuilds": 36,
+      "afterBuilds": 24
+    },
+    {
+      "mode": "combined",
+      "plan": "priority",
+      "days": 91,
+      "cards": 12,
+      "candidateCount": 1,
+      "serializedBeforeSha256": "211b77fedaa7396f9d1db2abe0ee52068ffbbcabda1458955e5f6fa7ddef75e3",
+      "serializedAfterSha256": "211b77fedaa7396f9d1db2abe0ee52068ffbbcabda1458955e5f6fa7ddef75e3",
+      "candidateIdsSha256": "909368e5abfc6b524488e0a51b4ec176baa1b4b3b1a25a35e9a08d3d72487161",
+      "beforeBuilds": 36,
+      "afterBuilds": 24
+    },
+    {
+      "mode": "combined",
+      "plan": "priority",
+      "days": 119,
+      "cards": 12,
+      "candidateCount": 1,
+      "serializedBeforeSha256": "5e41c5509f0e1514da37a0171fd59f684ab6236fcf48fd31d592b05fce22af63",
+      "serializedAfterSha256": "5e41c5509f0e1514da37a0171fd59f684ab6236fcf48fd31d592b05fce22af63",
+      "candidateIdsSha256": "909368e5abfc6b524488e0a51b4ec176baa1b4b3b1a25a35e9a08d3d72487161",
+      "beforeBuilds": 36,
+      "afterBuilds": 24
+    },
+    {
+      "mode": "combined",
+      "plan": "express",
+      "days": 91,
+      "cards": 12,
+      "candidateCount": 0,
+      "serializedBeforeSha256": "63605e35905af2606b6cb6ab091e36f21c62ea2ef9da88aa0fa0c1403ef935df",
+      "serializedAfterSha256": "63605e35905af2606b6cb6ab091e36f21c62ea2ef9da88aa0fa0c1403ef935df",
+      "candidateIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "beforeBuilds": 36,
+      "afterBuilds": 24
+    },
+    {
+      "mode": "combined",
+      "plan": "express",
+      "days": 119,
+      "cards": 12,
+      "candidateCount": 0,
+      "serializedBeforeSha256": "d0b397adaf54e383e80d9ad086a215c1e00bdb72ed9dab00a3d4ae4144fc5244",
+      "serializedAfterSha256": "d0b397adaf54e383e80d9ad086a215c1e00bdb72ed9dab00a3d4ae4144fc5244",
+      "candidateIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "beforeBuilds": 36,
+      "afterBuilds": 24
+    },
+    {
+      "mode": "specified",
+      "plan": "standard",
+      "days": 91,
+      "cards": 12,
+      "candidateCount": 1,
+      "serializedBeforeSha256": "f230fa5c517bf9765ad8784013c17d80b93e0b9ad228f6e078642764f0989d8c",
+      "serializedAfterSha256": "f230fa5c517bf9765ad8784013c17d80b93e0b9ad228f6e078642764f0989d8c",
+      "candidateIdsSha256": "909368e5abfc6b524488e0a51b4ec176baa1b4b3b1a25a35e9a08d3d72487161",
+      "beforeBuilds": 36,
+      "afterBuilds": 24
+    },
+    {
+      "mode": "specified",
+      "plan": "standard",
+      "days": 119,
+      "cards": 12,
+      "candidateCount": 1,
+      "serializedBeforeSha256": "34e1016fa9633051abe610045d232527664ed0c8fa6e1b87edce5fb9f91c61b7",
+      "serializedAfterSha256": "34e1016fa9633051abe610045d232527664ed0c8fa6e1b87edce5fb9f91c61b7",
+      "candidateIdsSha256": "909368e5abfc6b524488e0a51b4ec176baa1b4b3b1a25a35e9a08d3d72487161",
+      "beforeBuilds": 36,
+      "afterBuilds": 24
+    },
+    {
+      "mode": "specified",
+      "plan": "priority",
+      "days": 91,
+      "cards": 12,
+      "candidateCount": 1,
+      "serializedBeforeSha256": "211b77fedaa7396f9d1db2abe0ee52068ffbbcabda1458955e5f6fa7ddef75e3",
+      "serializedAfterSha256": "211b77fedaa7396f9d1db2abe0ee52068ffbbcabda1458955e5f6fa7ddef75e3",
+      "candidateIdsSha256": "909368e5abfc6b524488e0a51b4ec176baa1b4b3b1a25a35e9a08d3d72487161",
+      "beforeBuilds": 36,
+      "afterBuilds": 24
+    },
+    {
+      "mode": "specified",
+      "plan": "priority",
+      "days": 119,
+      "cards": 12,
+      "candidateCount": 1,
+      "serializedBeforeSha256": "5e41c5509f0e1514da37a0171fd59f684ab6236fcf48fd31d592b05fce22af63",
+      "serializedAfterSha256": "5e41c5509f0e1514da37a0171fd59f684ab6236fcf48fd31d592b05fce22af63",
+      "candidateIdsSha256": "909368e5abfc6b524488e0a51b4ec176baa1b4b3b1a25a35e9a08d3d72487161",
+      "beforeBuilds": 36,
+      "afterBuilds": 24
+    },
+    {
+      "mode": "specified",
+      "plan": "express",
+      "days": 91,
+      "cards": 12,
+      "candidateCount": 0,
+      "serializedBeforeSha256": "63605e35905af2606b6cb6ab091e36f21c62ea2ef9da88aa0fa0c1403ef935df",
+      "serializedAfterSha256": "63605e35905af2606b6cb6ab091e36f21c62ea2ef9da88aa0fa0c1403ef935df",
+      "candidateIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "beforeBuilds": 36,
+      "afterBuilds": 24
+    },
+    {
+      "mode": "specified",
+      "plan": "express",
+      "days": 119,
+      "cards": 12,
+      "candidateCount": 0,
+      "serializedBeforeSha256": "d0b397adaf54e383e80d9ad086a215c1e00bdb72ed9dab00a3d4ae4144fc5244",
+      "serializedAfterSha256": "d0b397adaf54e383e80d9ad086a215c1e00bdb72ed9dab00a3d4ae4144fc5244",
+      "candidateIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "beforeBuilds": 36,
+      "afterBuilds": 24
+    }
+  ],
+  "expiryCases": [
+    {
+      "version": "before",
+      "mode": "combined",
+      "deadline": 1792875288225
+    },
+    {
+      "version": "before",
+      "mode": "specified",
+      "deadline": 1792875288225
+    },
+    {
+      "version": "after",
+      "mode": "combined",
+      "deadline": 1792875288225
+    },
+    {
+      "version": "after",
+      "mode": "specified",
+      "deadline": 1792875288225
+    }
+  ],
+  "tieCases": [
+    {
+      "mode": "combined",
+      "selectedSort": "expectedProfit-desc",
+      "query": false,
+      "ids": [
+        "a",
+        "c",
+        "d",
+        "b"
+      ]
+    },
+    {
+      "mode": "combined",
+      "selectedSort": "expectedProfit-desc",
+      "query": true,
+      "ids": [
+        "a",
+        "c",
+        "b",
+        "d"
+      ]
+    },
+    {
+      "mode": "combined",
+      "selectedSort": "cardEfficiency-desc",
+      "query": false,
+      "ids": [
+        "a",
+        "c",
+        "d",
+        "b"
+      ]
+    },
+    {
+      "mode": "combined",
+      "selectedSort": "cardEfficiency-desc",
+      "query": true,
+      "ids": [
+        "a",
+        "c",
+        "b",
+        "d"
+      ]
+    },
+    {
+      "mode": "specified",
+      "selectedSort": "expectedProfit-desc",
+      "query": false,
+      "ids": [
+        "a",
+        "c",
+        "d",
+        "b"
+      ]
+    },
+    {
+      "mode": "specified",
+      "selectedSort": "expectedProfit-desc",
+      "query": true,
+      "ids": [
+        "a",
+        "c",
+        "b",
+        "d"
+      ]
+    },
+    {
+      "mode": "specified",
+      "selectedSort": "cardEfficiency-desc",
+      "query": false,
+      "ids": [
+        "a",
+        "c",
+        "d",
+        "b"
+      ]
+    },
+    {
+      "mode": "specified",
+      "selectedSort": "cardEfficiency-desc",
+      "query": true,
+      "ids": [
+        "a",
+        "c",
+        "b",
+        "d"
+      ]
+    }
+  ],
+  "allSerializedCardsAndOrderedCandidateIdsEqual": true,
+  "limitations": "Full analyzable cohort compared once under the saved audit URL settings. Small fixtures cover both modes, three PSA plans, 91/119 days, exact cache expiry, and query/tie ordering. Expiry cache calls use a fixed model clock."
+}

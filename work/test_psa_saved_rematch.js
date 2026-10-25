@@ -8,6 +8,14 @@ assert.equal(b.resolvedEnglishName({ name: 'リーフィアVSTAR SAR[S12a 210/17
 assert.equal(b.resolvedEnglishName({ name: 'アローラナッシーex SAR[SV7a 089/064]' }, 'AlolanExeggutor SAR[SV7a 089/064]', empty).name, 'Alolan Exeggutor ex');
 assert.equal(b.namesCompatible('Sylveon V', { name: 'Full Art/Sylveon V |' }), true);
 assert.equal(b.namesCompatible('Sylveon V', { name: 'Sylveon Vmax |' }), false);
+assert(b.namesCompatible('Ultra Ball UR', {name:'Full Art/Ultra Ball | Ultra Rare |'}));
+assert(b.namesCompatible('Ultra Ball SR', {name:'Ultra Ball | Super Rare |'}));
+assert(!b.namesCompatible('Ultra Ball', {name:'Master Ball | Ultra Rare |'}));
+assert(!b.namesCompatible('Ultra Ball', {name:'Poke Ball | Ultra Rare |'}));
+assert(!b.namesCompatible('Ultra Ball', {name:'Ultra Rare |'}));
+assert(b.namesCompatible('Mew Mysterious Tail UR', {name:'Full Art/Mew | Ultra Rare |',set:'S8A',no:'30'}));
+assert(!b.namesCompatible('Mew Mysterious Tail UR', {name:'Full Art/Mew | Ultra Rare |',set:'S8A',no:'2'}));
+assert(!b.namesCompatible('Mew Mysterious Tail UR', {name:'Full Art/Mew | Ultra Rare |',set:'S8B',no:'30'}));
 assert.equal(b.japaneseTitle({name: 'リーフィアVSTAR[S12a 210/172]'}), 'リーフィアVSTAR');
 assert.equal(b.variantsCompatible(card.name, 'Sylveon V', { name: 'Sylveon V | Missing Texture |' }), false);
 const raw = {set:'S8B',no:'231',name:'Full Art/Sylveon V |',url:'https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-x/1',fetchedAt:'2026-10-10T10:00:00Z',captureVersion:2,completeSnapshot:true};

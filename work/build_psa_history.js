@@ -107,7 +107,9 @@ function namesCompatible(englishName, row) {
     'full','art','secret','special','ultra','rare','double','holo','foil','reverse','master','poke','ball',
     'mirror','normal','style','version','specification','trainer','promo','1st','edition','first','unlimited','hyper','illustration']);
   const identity = value => [...tokens(String(value || '').split('|')[0]
-    .replace(/&#x27;|&#39;|&apos;|[’‘]/gi,"'").replace(/'s\b/gi,''))].filter(token=>!qualifiers.has(token)).sort().join('|');
+    .replace(/&#x27;|&#39;|&apos;|[’‘]/gi,"'").replace(/'s\b/gi,'')
+    // Ultra Ball is the card's name, not an Ultra Rare / Ball finish qualifier.
+    .replace(/\bultra\s+ball\b/gi,'UltraBall'))].filter(token=>!qualifiers.has(token)).sort().join('|');
   const aliases=require('./psa-name-aliases.json').aliases;
   const canonical=value=>{
     const key=identity(value);

@@ -711,6 +711,7 @@ async function updateTorecaCamp(cards, paths) {
   // Legacy known URLs lack a sitemap number. Refresh them without inventing provenance or moving the normal cursor.
   progress.knownUrlRetries ||= {};
   const legacyRequested=campRequestedIds(read(path.join(__dirname,'search-profile-targets.json'),{}),comparisonIds);
+  for(const id of legacyRequested)important.add(id);
   const legacyRecords=[];
   if(!stoppingReason)for(const previousEntry of postpass.legacyTargets(catalog,legacyRequested,{...progress.knownUrlRetries,...progress.retryByUrl}).slice(0,Math.floor(detailLimit/3))) {
     if(Date.now()>=stopBy-Math.max(15000,runtimeLimitMs/2))break;
@@ -1028,7 +1029,15 @@ function campRequestedIds(targets,comparisonIds=[]) {
     .filter(r=>r.source==='domesticShops'&&r.automatic===true&&fields.has(r.field)).map(r=>r.id)]);
   const rows=(targets.readyRoutes?.domesticShops||[]).filter(r=>fields.has(r.field)&&require('./profile_completion_routes').requestForSource(r,'torecacamp'))
     .sort((a,b)=>Number(urgent.has(b.id))-Number(urgent.has(a.id))||Number(b.priority||0)-Number(a.priority||0));
-  return [...new Set([...rows.map(r=>r.id),...comparisonIds])];
+  // Qualified cards disappear from the missing-field routes. Keep the exact
+  // currently adopted Camp source in maintenance before it expires again.
+  const qualified=[];
+  for(const profile of targets.profiles||[])for(const id of profile.urlsMatched||[]){
+    const facts=profile.qualifiedFacts?.[id];
+    const used=[facts?.purchase,...(profile.id.includes('median')?facts?.medianEvidence?.rows||[]:[])];
+    if(used.some(r=>{try{const u=new URL(r?.url);return u.hostname==='torecacamp-pokemon.com'&&u.pathname.startsWith('/products/');}catch{return false;}}))qualified.push(id);
+  }
+  return [...new Set([...rows.filter(r=>urgent.has(r.id)).map(r=>r.id),...qualified,...rows.map(r=>r.id),...comparisonIds])];
 }
 module.exports = {
   historySummary,

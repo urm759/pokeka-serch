@@ -28,6 +28,7 @@ jobs:
       - name: Verify safety and incremental acquisition
         run: |
           node work/test_profile_worker.js
+          node work/test_hareruya_single_response.js
           node work/test_psa_saved_rematch.js
           node work/test_gemrate_reference_display.js
           node work/test_profile_report_names.js

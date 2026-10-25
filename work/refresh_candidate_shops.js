@@ -123,7 +123,7 @@ async function main() {
   const run = { startedAt: new Date(start).toISOString(), status: "running", attemptedCount: 0, refreshedCount: 0,
     workflowRunId:process.env.GITHUB_RUN_ID || null,workflowTrigger:process.env.GITHUB_EVENT_NAME || null,
     executionEnvironment:process.env.GITHUB_ACTIONS === 'true'?'GitHub Actions':'PCローカル',
-    newAcquiredCount: 0, newLinkedCount: 0, changedCount: 0, failedCount: 0, httpRequests: 0,
+    newAcquiredCount: 0, newLinkedCount: 0, changedCount: 0, failedCount: 0, httpRequests: 0, singleResponseQuotes:0,
     proactiveAttempted:0, proactiveVerified:0, deadlineOrderVersion:"deadline-v5-required-source-earliest-time",
     candidateTargets: deadlineMode ? planned.records.length : candidates.length, previouslyCompleted: completed.size, records: [], stopReason: null,
     mode: deadlineMode ? "deadline-price-refresh" : "completion-backfill", cacheHits: 0, llmCalls: 0, codexCalls: 0 };
@@ -192,12 +192,21 @@ async function main() {
     try {
       let quote, name;
       if (sourceId === "hareruya2") {
+        // Known in-stock products already need HTML for the actual quantity.
+        // Use that same response only when all quote/identity fields are explicit.
+        const old=byId.get(card.id);
+        const html=old?.available===true?await (await request(url)).text():null;
+        const single=html?require('./hareruya_single_response').parse(html,url):null;
+        if(single&&exactIdentity(card,single.product)){
+          name=single.product.title;quote=single.quote;run.singleResponseQuotes++;
+        }else{
         const product = await (await request(`${url}.js`)).json();
         name = product.title;
         if (!exactIdentity(card, product)) throw new Error("同一カード・番号・セット・レアリティ・仕様の一致を確認できない");
         const available = product.variants?.some((row) => row.available === true);
-        const html = available ? await (await request(url)).text() : null;
-        quote = shopifyQuote(product, html, url);
+        const stockHtml = available ? html||await (await request(url)).text() : null;
+        quote = shopifyQuote(product, stockHtml, url);
+        }
       } else {
         const page = parseCardrush(await (await request(url)).text(), url);
         name = page.title;
