@@ -1,0 +1,115 @@
+{
+  "at": "2026-10-25T06:40:15.220Z",
+  "evaluatedAt": "2026-10-25T06:34:51.953Z",
+  "repeats": 3,
+  "scope": "同じPC・1920/390幅、60/120枚。実スマホ端末ではない。ローカル非圧縮。原票・長期履歴の初期追加なし",
+  "baselineCommit": "9b594b3f",
+  "pairs": [
+    {
+      "width": 1920,
+      "scale": "normal",
+      "before": {
+        "fullCalculationMs": 511.5,
+        "renderMs": 18.299999952316284,
+        "detailGenerationMs": 24.700000047683716,
+        "loaded": 2297,
+        "displayed": 60,
+        "jsonBytes": 20292687,
+        "jsonParseMs": 76.30000019073486
+      },
+      "after": {
+        "fullCalculationMs": 516.8000000715256,
+        "renderMs": 20.5,
+        "detailGenerationMs": 22.700000047683716,
+        "loaded": 2297,
+        "displayed": 60,
+        "jsonBytes": 20292687,
+        "jsonParseMs": 64.40000021457672
+      },
+      "idsEqual": true,
+      "numericResultsStable": true,
+      "overflow": false
+    },
+    {
+      "width": 1920,
+      "scale": "double",
+      "before": {
+        "fullCalculationMs": 1041,
+        "renderMs": 34.300000071525574,
+        "detailGenerationMs": 39.799999952316284,
+        "loaded": 4594,
+        "displayed": 120,
+        "jsonBytes": 37716696,
+        "jsonParseMs": 132.400000333786
+      },
+      "after": {
+        "fullCalculationMs": 1141.7000000476837,
+        "renderMs": 36.299999952316284,
+        "detailGenerationMs": 44.299999952316284,
+        "loaded": 4594,
+        "displayed": 120,
+        "jsonBytes": 37716696,
+        "jsonParseMs": 138.59999978542328
+      },
+      "idsEqual": true,
+      "numericResultsStable": true,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "scale": "normal",
+      "before": {
+        "fullCalculationMs": 523.1000000238419,
+        "renderMs": 23.5,
+        "detailGenerationMs": 23.600000023841858,
+        "loaded": 2297,
+        "displayed": 60,
+        "jsonBytes": 20292687,
+        "jsonParseMs": 67.10000014305115
+      },
+      "after": {
+        "fullCalculationMs": 541.1000000238419,
+        "renderMs": 19.5,
+        "detailGenerationMs": 22.5,
+        "loaded": 2297,
+        "displayed": 60,
+        "jsonBytes": 20292687,
+        "jsonParseMs": 75.89999997615814
+      },
+      "idsEqual": true,
+      "numericResultsStable": true,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "scale": "double",
+      "before": {
+        "fullCalculationMs": 1039.6000000238419,
+        "renderMs": 33.40000009536743,
+        "detailGenerationMs": 38.199999928474426,
+        "loaded": 4594,
+        "displayed": 120,
+        "jsonBytes": 37716696,
+        "jsonParseMs": 145.20000004768372
+      },
+      "after": {
+        "fullCalculationMs": 1026.5,
+        "renderMs": 33.700000047683716,
+        "detailGenerationMs": 37.89999997615814,
+        "loaded": 4594,
+        "displayed": 120,
+        "jsonBytes": 37716696,
+        "jsonParseMs": 148.2999997138977
+      },
+      "idsEqual": true,
+      "numericResultsStable": true,
+      "overflow": false
+    }
+  ],
+  "productionDataExpandedBytes": {
+    "before": 19927444,
+    "after": 20292687,
+    "delta": 365243
+  },
+  "note": "PC2倍の増加は逆順再試験を別記録。固定基準・最初の結果を維持する"
+}

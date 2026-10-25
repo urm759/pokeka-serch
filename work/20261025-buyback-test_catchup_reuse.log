@@ -1,0 +1,23 @@
+node:fs:1073
+  binding.rename(
+          ^
+
+Error: EPERM: operation not permitted, rename 'C:\Users\polar\AppData\Local\Packages\sandbox.{410d7418-21d4-4864-95b4-7bf7f617fa65}\AC\Temp\pokeka-reuse-rRbZMA\data\publication-lineage.json.tmp' -> 'C:\Users\polar\AppData\Local\Packages\sandbox.{410d7418-21d4-4864-95b4-7bf7f617fa65}\AC\Temp\pokeka-reuse-rRbZMA\data\publication-lineage.json'
+    at Object.renameSync (node:fs:1073:11)
+    at Object.seal (C:\Users\polar\Documents\ChatGPT\ポケカ仕入れサイト\resilience-20261006\work\publication_lineage.js:45:95)
+    at Object.<anonymous> (C:\Users\polar\Documents\ChatGPT\ポケカ仕入れサイト\resilience-20261006\work\test_catchup_reuse.js:9:96)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  errno: -4048,
+  code: 'EPERM',
+  syscall: 'rename',
+  path: 'C:\\Users\\polar\\AppData\\Local\\Packages\\sandbox.{410d7418-21d4-4864-95b4-7bf7f617fa65}\\AC\\Temp\\pokeka-reuse-rRbZMA\\data\\publication-lineage.json.tmp',
+  dest: 'C:\\Users\\polar\\AppData\\Local\\Packages\\sandbox.{410d7418-21d4-4864-95b4-7bf7f617fa65}\\AC\\Temp\\pokeka-reuse-rRbZMA\\data\\publication-lineage.json'
+}
+
+Node.js v24.22.1

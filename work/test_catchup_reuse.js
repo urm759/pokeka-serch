@@ -15,7 +15,7 @@ try{
  p.seal(root,p.snapshot(root));assert.equal(decide(root,now).mode,'reuse');
  write('data/pokemon-cards.json',[{id:'one',price:200}]);assert.equal(decide(root,now).mode,'rebuild','saved acquisition must be recovered before new HTTP');
  const workflow=fs.readFileSync(path.join(__dirname,'../.github/workflows/watch-data-health.yml'),'utf8');
- assert(workflow.includes("if: github.event_name != 'workflow_run'"));assert(workflow.includes('group: site-data-health-observation'));
+ assert(workflow.includes("github.event_name != 'workflow_run' ||"));assert(workflow.includes('group: site-data-health-observation'));
  assert(workflow.indexOf('id: catchup_plan')<workflow.indexOf('scheduled_cycle_evidence.js catchup --baseline'));
  console.log('PASS no-op catchup reuse, code/source invalidation, recovery-first and independent observer concurrency');
 }finally{assert.equal(path.dirname(path.resolve(root)),path.resolve(os.tmpdir()));assert(path.basename(root).startsWith('pokeka-reuse-'));fs.rmSync(root,{recursive:true,force:true});}

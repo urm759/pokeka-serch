@@ -5,7 +5,8 @@ const absenceKnown = result => complete(result) && !(result.unmatched || []).len
 function link(item, fallbackDay) {
   return { url:item.itemUrl || '', date:item.observedDate || calendarDay(item.observedAt) || fallbackDay,
     price:item.price, active:item.active === true, matchMethod:item.matchMethod || 'unknown',
-    matchScore:Number(item.score || 0), observedAt:item.observedAt || null, sourceUpdatedAt:item.sourceUpdatedAt || null };
+    matchScore:Number(item.score || 0), observedAt:item.observedAt || null, sourceUpdatedAt:item.sourceUpdatedAt || null,
+    pageUpdatedAt:item.pageUpdatedAt || null,quoteUpdatedAt:item.quoteUpdatedAt || null };
 }
 function currentLinks(result, day) {
   const links = new Map();

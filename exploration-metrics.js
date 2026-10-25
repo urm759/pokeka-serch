@@ -171,15 +171,28 @@
   function buybackObservationEconomics(summary,card,view,days,settings,now=Date.now()) {
     const reasons=[],warnings=[],median=xs=>{const s=xs.slice().sort((a,b)=>a-b),n=s.length;return n?s[Math.floor(n/2)]/2+s[Math.floor((n-1)/2)]/2:null;};
     if(!summary)reasons.push('機能データ未生成・買取平均要約未取得');
-    const shops=[];
+    const shops=[],unavailable={unacquired:0,held:0,expired:0,days:0,unusable:0};
+    const selected=id=>!(settings.mode==='selected' && !settings.selected.includes(id) || settings.mode==='mail' && summary?.shops?.[id]?.fulfilment==='store');
     for(const [id,row] of Object.entries(summary?.cards?.[card.id]||{})) {
       const meta=summary.shops?.[id], quote=card.buybackAnalysis?.rows?.find(r=>r.shopId===id);
       if(settings.mode==='selected' && !settings.selected.includes(id) || settings.mode==='mail' && meta?.fulfilment==='store')continue;
       const [mean,count,at]=row.periods?.[days]||[],age=(now-Date.parse(at))/3600000;
-      if(row.identity!==card.identityKey || !quote?.valid || quote.stale || quote.quarantined || quote.campaign || quote.temporaryCampaign || !finite(mean) || mean<=0 || !Number.isInteger(count) || count<1 || count>days || !(age>=0 && age<=48))continue;
+      if(row.identity!==card.identityKey || quote?.quarantined) {unavailable.held++;continue;}
+      if(quote?.stale || age>48) {unavailable.expired++;continue;}
+      if(!finite(mean) || mean<=0 || !Number.isInteger(count) || count<1 || count>days) {unavailable.days++;continue;}
+      if(!quote?.valid || quote.campaign || quote.temporaryCampaign || !(age>=0 && age<=48)) {unavailable.unusable++;continue;}
       shops.push({id,mean,count,at,travel:meta?.fulfilment==='store'?settings.travel:0});
     }
-    if(shops.length<2)reasons.push('買取出口不足・同仕様の新鮮な平均が2店舗未満');
+    for(const quote of card.buybackAnalysis?.rows || []) {
+      if(!selected(quote.shopId) || summary?.cards?.[card.id]?.[quote.shopId])continue;
+      if(quote.quarantined || quote.identityHeld || /仕様|照合|取り違え/.test(quote.reason || ''))unavailable.held++;
+      else if(summary?.captureHolds?.[card.id]?.[quote.shopId] || summary?.historyIdentityHolds?.[card.id]?.[quote.shopId])unavailable.held++;
+      else unavailable.unacquired++;
+    }
+    if(shops.length<2) {
+      const cause=unavailable.held?'照合保留':unavailable.expired?'期限切れ':unavailable.days?'観測日数不足':shops.length?'利用可能店舗不足':'未取得';
+      reasons.push('買取平均：'+cause,'買取出口不足・同仕様の新鮮な平均が2店舗未満');
+    }
     const material=[view.assumedRate,view.lowerGradePrice,settings.feeRate,settings.extra,settings.deduction,settings.travel];
     if(!material.every(finite)||view.assumedRate<0||view.assumedRate>1||view.lowerGradePrice<=0||settings.feeRate<0||settings.feeRate>=100||settings.extra<0||settings.travel<0||settings.deduction<0||settings.deduction>5)reasons.push('想定10率・PSA9現在価格・費用未取得');
     const mean=median(shops.map(s=>s.mean)),travel=median(shops.map(s=>s.travel)),count=shops.length?Math.min(...shops.map(s=>s.count)):null;
@@ -192,7 +205,7 @@
     const p10Net=mean*(1-settings.deduction/100)-settings.extra-travel;
     const lowerNet=view.lowerGradePrice*(1-settings.feeRate/100)-settings.extra;
     const expectedSale=reasons.length?null:view.assumedRate*p10Net+(1-view.assumedRate)*lowerNet;
-    return {expectedSale:finite(expectedSale)?expectedSale:null,travelCost:travel||0,expiresAt:shops.length?Math.min(...shops.map(s=>Date.parse(s.at)+48*3600000)):Infinity,observed,reasons,warnings,exitLabel:'買取店（店舗別平均の中央値）'};
+    return {expectedSale:finite(expectedSale)?expectedSale:null,travelCost:travel||0,expiresAt:shops.length?Math.min(...shops.map(s=>Date.parse(s.at)+48*3600000)):Infinity,observed,reasons,warnings,unavailable,exitLabel:'買取店（店舗別平均の中央値）'};
   }
   function meanEfficiencyEconomics(summary,buybackSummary,card,view,days,policy,settings,now=Date.now()) {
     const market=policy==='buyback'?null:observationEconomics(summary,card,view,days,'marketplace',settings.feeRate,settings.extra,now);
@@ -218,6 +231,8 @@
     if(/中央値/.test(reason))return /店舗|根拠/.test(reason)?'中央値の独立根拠不足':'中央値不足・古値';
     if(row?.purchasePrice==null && /^(未取得|取得停止|期限超過・再確認待ち)$/.test(reason))return reason==='未取得'?'買値不足':reason==='取得停止'?'購入価格の取得停止':'購入価格の期限切れ';
     if(/購入価格|買値|在庫/.test(reason))return /期限|古い/.test(reason)?'購入価格の期限切れ':/在庫/.test(reason)?'在庫なし':'買値不足';
+    const meanCause=reason.match(/買取平均：(未取得|照合保留|期限切れ|観測日数不足|利用可能店舗不足)/)?.[1];
+    if(meanCause)return '買取平均・'+meanCause;
     if(/買取平均|買取出口不足・同仕様の新鮮な平均/.test(reason))return '買取平均不足';
     if(/観測平均|平均未取得|日次相場/.test(reason))return /古い|期限/.test(reason)?'PSA10平均の古値':'PSA10平均不足';
     if(/PSA9/.test(reason))return 'PSA9価格・根拠不足';

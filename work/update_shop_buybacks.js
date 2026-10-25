@@ -49,6 +49,15 @@ const SHOPS = [
     url: "https://kaitori-homura.com/products?q%5Bproduct_sub_category_id_eq%5D=182&q%5Bproduct_sub_category_product_category_id_eq%5D=21&sort=price_desc",
     fetchItems: shop => require('./homura_public_feed').fetchItems(shop,fetchJson,readJson(path.join(ROOT,'data/pokemon-cards.json'),[])),
   },
+  {
+    id:'fukufuku-mail',name:'福福トレカ（郵送窓口）',fulfilment:'mail',
+    branch:'中央郵送窓口（実店舗への持込不可）',merchantId:'fukufuku',
+    acceptanceUrl:'https://fukufuku-toreka.com/faq/',
+    conditions:'郵送申込後に発送・到着時価格で査定。指定窓口への持込不可',
+    url:'https://fukufuku-toreka.com/tradingcard/pokemon-1/',
+    adapterVersion:require('./public_mail_buybacks').VERSION,
+    fetchItems:shop=>require('./public_mail_buybacks').fetchFukufuku(shop,fetchText,readJson(path.join(ROOT,'data/pokemon-cards.json'),[])),
+  },
 ];
 const HISTORY_DAYS = 91;
 const SUMMARY_PATH = path.join(ROOT, "data", "shop-buyback-summary.json");
@@ -666,6 +675,7 @@ async function main({ rebuildSaved = false } = {}) {
         priceDate: latestPriceIndex >= 0 ? history.dates[latestPriceIndex] : null,
         observedAt:currentMatch?.observedAt || null,
         sourceUpdatedAt:currentMatch?.sourceUpdatedAt || null,
+        ...(currentMatch?.pageUpdatedAt ? {pageUpdatedAt:currentMatch.pageUpdatedAt,quoteUpdatedAt:currentMatch.quoteUpdatedAt || null} : {}),
         url: currentMatch?.url || "",
         matchMethod: currentMatch?.matchMethod || null,
         matchScore: currentMatch?.matchScore || null,
@@ -761,7 +771,10 @@ async function main({ rebuildSaved = false } = {}) {
       name: shop.name,
       url: shop.url,
       fulfilment: shop.fulfilment || "mail",
-      merchantId: shop.id.replace(/-(?:store|mail)$/, ''),
+      merchantId: shop.merchantId || shop.id.replace(/-(?:store|mail)$/, ''),
+      branch:shop.branch || previous.branch || null,
+      acceptanceUrl:shop.acceptanceUrl || previous.acceptanceUrl || null,
+      conditions:shop.conditions || previous.conditions || null,
       acquisitionPermission: readJson(path.join(__dirname, 'buyback-source-permissions.json'), {}).sources?.[shop.id]?.status || null,
       permissionCheckedAt: readJson(path.join(__dirname, 'buyback-source-permissions.json'), {}).sources?.[shop.id]?.checkedAt || null,
       lastAttempt: result || failures.some((f) => f.source === shop.id && !f.permissionWait && !f.reviewWait) ? confirmedAt : previous.lastAttempt || null,

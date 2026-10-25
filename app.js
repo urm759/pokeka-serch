@@ -864,10 +864,11 @@ function formatJstTimestamp(value) {
   if (/^\d{4}-\d{2}-\d{2}$/.test(String(value))) return `${value}（時刻未取得）`;
   const parsed = new Date(value);
   if (!Number.isFinite(parsed.getTime())) return String(value);
-  return parsed.toLocaleString("ja-JP", {
+  const formatter = formatJstTimestamp.formatter ||= new Intl.DateTimeFormat("ja-JP", {
     timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit",
     hour: "2-digit", minute: "2-digit",
   });
+  return formatter.format(parsed);
 }
 
 function formatDuration(milliseconds) {
@@ -4160,7 +4161,7 @@ function cardEfficiency(card, now=Date.now(), mode=state.purchaseMode, selectedS
   const observationDays = /^obs(7|30|75|200)$/.test(selectedScenario) ? Number(selectedScenario.slice(3)) : null;
   const key = JSON.stringify([mode,efficiencyDataKey(card),state.profitSearchBasis,state.currentMarketManualPrice,selectedBuy,state.efficiencyScenario,
     selectedBuy==='median' && [card.priceAggregation?.value,card.priceAggregation?.included,card.identityReviewRequired,card.priceIntegrity?.disputed],
-    selectedScenario,observationDays && [state.psa10PeriodSummary?.asOf,state.psa10PeriodSummary?.version,state.psa10PeriodSummary?.periods,state.psa10PeriodSummary?.observationEvidenceIndices,state.psa10PeriodSummary?.cards?.[card.id],state.psa10PeriodSummary?.minimumObservationDays,state.psa10PeriodSummary?.staleObservationDays,state.buybackObservationSummary?.asOf,state.buybackObservationSummary?.shops,state.buybackObservationSummary?.cards?.[card.id]],
+    selectedScenario,observationDays && [state.psa10PeriodSummary?.asOf,state.psa10PeriodSummary?.version,state.psa10PeriodSummary?.periods,state.psa10PeriodSummary?.observationEvidenceIndices,state.psa10PeriodSummary?.cards?.[card.id],state.psa10PeriodSummary?.minimumObservationDays,state.psa10PeriodSummary?.staleObservationDays,state.buybackObservationSummary?.asOf,state.buybackObservationSummary?.shops,state.buybackObservationSummary?.cards?.[card.id],state.buybackObservationSummary?.captureHolds?.[card.id],state.buybackObservationSummary?.historyIdentityHolds?.[card.id]],
     efficiencyFields.map(([,f])=>f === 'efficiencyMin' ? null : state[f]),state.fee,state.saleExtraCost,state.storeTravelCost,state.lockDays,state.exitPolicy,
     state.saleFeeRate,state.buybackDeductionRate,state.buybackStoreMode,state.selectedBuybackStores,state.sourceUpdates]);
   const variantKey=selectedBuy+':'+selectedScenario;
@@ -5771,7 +5772,7 @@ function renderContent() {
       const rowClass = !shop.valid ? "invalid" : shop.stale ? "stale" : shop.outlier ? "outlier" : "trusted";
       return `<div class="buyback-shop-row ${index === 0 ? "buyback-shop-primary" : ""} ${rowClass}">
         <div>${leadLabel}<strong>${shopName}</strong><small>${shop.fulfilment === "store" ? "店頭価格" : "郵送価格"} / ID: ${escapeHtml(shop.shopId)}${card.buybackAnalysis?.rows?.some((r) => r.shopId === shop.shopId) ? " / 出口対象" : " / 設定により出口対象外"}</small>${warning ? `<small class="buyback-warning">${escapeHtml(warning)}</small>` : ""}</div>
-        <div><span>店舗買取 / 更新</span><b>${shop.buybackPrice ? `¥${fmt.format(shop.buybackPrice)}` : "-"}</b><small>${escapeHtml(shop.priceDate || "未取得")}</small></div>
+        <div><span>店舗買取 / 確認</span><b>${shop.buybackPrice ? `¥${fmt.format(shop.buybackPrice)}` : "-"}</b><small>${escapeHtml(shop.observedAt ? formatJstTimestamp(shop.observedAt) : shop.priceDate || "未取得")}</small>${shopMeta.conditions ? `<small>${escapeHtml(shopMeta.conditions)}</small>` : ''}</div>
         <div><span>相場比買取率</span><b>${ratioLabel(shop.marketRatio)}</b><small>市場 ¥${shop.marketPrice ? fmt.format(shop.marketPrice) : "-"}</small></div>
         <div><span>相場差率</span><b>${ratioLabel(shop.marketDifference)}</b><small>${differenceText}</small></div>
         <div><span>フリマ手取り比</span><b>${ratioLabel(shop.takeHomeRatio)}</b><small>手取り ¥${shop.netMarket ? fmt.format(shop.netMarket) : "-"}</small></div>
