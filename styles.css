@@ -1751,6 +1751,9 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .row.card > .thumb img { max-width:380px; max-height:420px; transform:none; }
 .buyback-support-compact .buyback-highest { color:#7dd3fc; }
 .buyback-support-compact .buyback-normal { color:#d8b4fe; }
+.buyback-support-compact .buyback-mean { color:#c4b5fd; }
+.buyback-quote-stat { display:inline-flex; flex-wrap:wrap; gap:.1rem .4rem; }
+.buyback-support-compact .buyback-mean span { color:var(--muted); font-weight:normal; }
 .buyback-support-compact .reference-warning { color:var(--value-warning); }
 .buyback-support-detail .buyback-highest { color:#7dd3fc; }
 .buyback-support-detail .buyback-normal { color:#d8b4fe; }

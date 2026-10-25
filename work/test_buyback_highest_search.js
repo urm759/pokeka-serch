@@ -13,6 +13,8 @@ assert.equal(a.buybackHighestExclusion(card),null);
 a.state.buybackHighestMin=1.05;assert.equal(a.buybackHighestExclusion(card),null,'inclusive exact boundary');
 assert.equal(a.cardBuybackSupport(card).max,.9,'search must not use conservative merchant minimum');
 assert.equal(a.buybackSupportCsvFields(card)[0],1.05,'CSV and search use the displayed highest quote');
+assert.equal(a.buybackSupportCsvFields(card)[10],1.05,'CSV uses the displayed across-shop mean, deduplicating store/mail');
+assert.equal(a.buybackSupportCsvFields(card)[11],1,'one physical shop is one mean observation');
 a.state.buybackHighestMin=1.0500000001;assert(a.buybackHighestExclusion(card)?.includes('下限未達'),'no displayed rounding');
 a.state.buybackStoreMode='mail';a.state.buybackHighestMin=1;assert(a.buybackHighestExclusion(card)?.includes('下限未達'));
 a.state.buybackStoreMode='selected';a.state.selectedBuybackStores=['store'];assert.equal(a.buybackHighestExclusion(card),null);

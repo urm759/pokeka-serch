@@ -694,8 +694,15 @@
     "finalizeCardDecision": "32152449dc9957663d60ad2824c5471c64eba25d169dc384cc541d947a396400",
     "calc": "71efb942a2aa210db442a0162eb206c3c8e82825afe1634100376bea72721bed",
     "computeSearchProfitView": "1249c98fd8ba3d58a910a6b58d5887fa7e4000f174db355566dea6468859828b",
-    "prepareCalculatedCards": "c3a7addd4d92225660d29a3166beb3615f5f7cd35eff912b5e3cb5ebc0ed563e",
+    "prepareCalculatedCards": "335adab69f37314c2258c3954baf2a20d459cd8bb7d89fffebdf32aae2991b39",
     "computeCardSearchExclusions": "6e6ecf0fbb1783d13e5a1e768e09e1c0068bd3e8a018f1bc5e2243c19bd09214",
     "buildShareUrl": "83b5eff204188e94804aa05e39fdc4b46d1c82362bf493fcdd5dbc7daed7e527"
+  },
+  "protectedFunctionUpdates": {
+    "prepareCalculatedCards": {
+      "previous": "c3a7addd4d92225660d29a3166beb3615f5f7cd35eff912b5e3cb5ebc0ed563e",
+      "commit": "015d787b",
+      "reason": "Existing authorized removal of duplicate supplyPipeline computation; test_render_reuse/test_search_memo and fixed-input candidate/financial comparison retain formula protection."
+    }
   }
 }

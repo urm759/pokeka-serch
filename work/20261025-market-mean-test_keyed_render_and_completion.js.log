@@ -1,0 +1,32 @@
+keyed DOM identity, warnings, detail isolation, fixed cohort deadlines and field-specific routing: passed
+PASS render-scoped reuse, markup invalidation, per-card mutable state and production financial results
+PASS candidate loss attribution, overlap/unique counts, saved conditions, field-specific recovery and lazy audit
+node:assert:152
+  throw new AssertionError(obj);
+  ^
+
+AssertionError [ERR_ASSERTION]: financial/filter function must not change during UI reorganization: prepareCalculatedCards
++ actual - expected
+
++ '335adab69f37314c2258c3954baf2a20d459cd8bb7d89fffebdf32aae2991b39'
+- 'c3a7addd4d92225660d29a3166beb3615f5f7cd35eff912b5e3cb5ebc0ed563e'
+
+    at Object.<anonymous> (C:\Users\polar\Documents\ChatGPT\ポケカ仕入れサイト\resilience-20261006\work\test_search_organization.js:71:10)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.require (node:internal/modules/cjs/loader:1674:12)
+    at require (node:internal/modules/helpers:157:16)
+    at Object.<anonymous> (C:\Users\polar\Documents\ChatGPT\ポケカ仕入れサイト\resilience-20261006\work\test_keyed_render_and_completion.js:46:1)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: '335adab69f37314c2258c3954baf2a20d459cd8bb7d89fffebdf32aae2991b39',
+  expected: 'c3a7addd4d92225660d29a3166beb3615f5f7cd35eff912b5e3cb5ebc0ed563e',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.22.1

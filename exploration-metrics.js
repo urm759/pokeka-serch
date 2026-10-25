@@ -248,16 +248,18 @@
     const fresh = at => Number.isFinite(Date.parse(at)) && Date.parse(at) <= now && now - Date.parse(at) <= 48 * 3600000;
     for (const [shop, row] of Object.entries(entries)) {
       const meta = support.shops?.[shop];
-      if (!meta || meta.permission === 'pending' || mode === 'selected' && !selected.includes(shop) || mode === 'mail' && meta.fulfilment === 'store') continue;
-      if (identityKey && summary.cards?.[id]?.[shop]?.identity !== identityKey) continue;
+      if (!meta || mode === 'selected' && !selected.includes(shop) || mode === 'mail' && meta.fulfilment === 'store') continue;
+      const identityValid=!identityKey || summary.cards?.[id]?.[shop]?.identity === identityKey;
+      const permissionHeld=['pending','retired'].includes(meta.permission);
       const [ratio,price,marketPrice,at,marketAt,date] = row.current;
       const policy=support.timingPolicy, skew=Math.abs(Date.parse(at)-Date.parse(marketAt))/3600000;
       const timingValid=!policy || row.current[7] === date && /T\d{2}:/.test(at || '') && /T\d{2}:/.test(marketAt || '') && skew <= policy.maxSkewHours;
-      const valid = !meta.stopped && row.current[6] !== false && fresh(at) && fresh(marketAt) && timingValid && finite(ratio) && ratio > 0 && finite(currentMarket) && currentMarket === marketPrice;
+      const valid = identityValid && !permissionHeld && !meta.stopped && row.current[6] !== false && fresh(at) && fresh(marketAt) && timingValid && finite(price) && price>0 && finite(ratio) && ratio > 0 && finite(currentMarket) && currentMarket === marketPrice;
       const b = row.baseline || [], g = row.glance || [], standard = b[0] ?? g[0], premium = finite(standard) && standard > 0 ? (ratio / standard - 1) * 100 : null;
       rows.push({shop,merchant:meta.merchantId || shop,name:meta.name,fulfilment:meta.fulfilment,ratio,price,marketPrice,at,marketAt,date,priceDate:row.current[7] ?? null,timeSkewHours:skew,valid,
         standard,premium,samples:b[1] ?? g[1] ?? 0,excluded:b[3] || 0,cohort:b[5],band:b[6],reference:b[7] ?? g[2] ?? true,topPct:b[8] ?? g[3] ?? null,periods:row.periods,premiumPeriods:row.premium,
-        reason:valid ? null : meta.stopped ? '取得元停止中・参考履歴のみ' : row.current[6] === false ? '現在の掲載・価格・提示日未確認（履歴のみ）' : !finite(currentMarket) ? '現在の国内PSA10相場未取得・履歴のみ' : !fresh(at) || !fresh(marketAt) ? '買取/国内相場の確認が48時間外・参考履歴のみ' : !timingValid ? '提示日未確認・相場との確認時差超過（過去時点の参考）' : '国内PSA10現在価格と観測値不一致・再確認待ち'});
+        reason:valid ? null : !identityValid ? 'カード仕様不一致・照合保留' : permissionHeld ? '取得・公開利用保留' : meta.stopped ? '取得元停止中・参考履歴のみ' : row.current[6] === false ? '現在の掲載・価格・提示日未確認（履歴のみ）' : !finite(price) || price<=0 ? '有効な買取提示未取得' : !finite(currentMarket) ? '現在の国内PSA10相場未取得・履歴のみ' : !fresh(at) || !fresh(marketAt) ? '買取/国内相場の確認が48時間外・参考履歴のみ' : !timingValid ? '提示日未確認・相場との確認時差超過（過去時点の参考）' : '国内PSA10現在価格と観測値不一致・再確認待ち'});
+      if(!identityValid || permissionHeld)continue;
       for (const [day,rate] of row.days || []) {
         if (!finite(rate)) continue;
         if (!daily.has(day)) daily.set(day,new Map());
@@ -269,6 +271,13 @@
     for (const row of rows.filter(r=>r.valid)) if (!current.has(row.merchant) || row.ratio < current.get(row.merchant).ratio) current.set(row.merchant,row);
     const currentRows = [...current.values()], rates = currentRows.map(r=>r.ratio), latest = currentRows.map(r=>r.at).sort().at(-1) || null;
     const highestQuote = rows.filter(r=>r.valid).sort((a,b)=>b.ratio-a.ratio || b.at.localeCompare(a.at) || a.shop.localeCompare(b.shop))[0] || null;
+    // Demand display only: each physical merchant contributes its best eligible
+    // selected channel once. Keep the existing conservative median/score untouched.
+    const merchantOffers=new Map();
+    for(const row of rows.filter(r=>r.valid).sort((a,b)=>b.ratio-a.ratio || b.at.localeCompare(a.at) || a.shop.localeCompare(b.shop)))
+      if(!merchantOffers.has(row.merchant))merchantOffers.set(row.merchant,row);
+    const meanOffers=[...merchantOffers.values()];
+    const mean=meanOffers.length?meanOffers.reduce((sum,row)=>sum+row.ratio,0)/meanOffers.length:null;
     const asOf = new Date(now+9*3600000).toISOString().slice(0,10), windows = {};
     for (const days of [7,30]) {
       const adopted = [...daily].filter(([date])=>date<=asOf && Date.parse(date)>=Date.parse(asOf)-(days-1)*86400000).sort((a,b)=>a[0].localeCompare(b[0]));
@@ -277,7 +286,10 @@
         aboveDays:medians.filter(r=>r>=1).length,aboveRate:medians.length?medians.filter(r=>r>=1).length/medians.length*100:null,
         stores:merchants.size,lastDate:adopted.at(-1)?.[0]||null,reference:medians.length!==days};
     }
-    return {rows,median:median(rates),max:rates.length?Math.max(...rates):null,highestQuote,above:rates.filter(r=>r>=1).length,count:rates.length,latest,windows,
+    return {rows,median:median(rates),max:rates.length?Math.max(...rates):null,highestQuote,
+      mean,meanCount:meanOffers.length,meanReference:meanOffers.length===1,meanShops:meanOffers.map(r=>r.shop),
+      meanRule:'選択中の同一店は有効な最高提示1件。対象カードの店舗間単純平均。減額・費用なし',
+      above:rates.filter(r=>r>=1).length,count:rates.length,latest,windows,
       multiStoreSupport:rates.filter(r=>r>=1).length>=2,
       note:'減額・手数料等を含まない参考支持。掲載は実買取件数ではなく上昇/GOの保証なし。同一店舗は1店、複数受付がある場合は保守側1提示'};
   }

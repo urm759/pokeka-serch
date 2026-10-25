@@ -45,6 +45,8 @@ jobs:
           node work/test_profile_completion_routes.js
           node work/test_profile_discovery_gates.js
           node work/test_buyback_support.js
+          node work/test_buyback_market_average.js
+          node work/test_failed_price_recovery.js
           node work/test_buyback_saved_identity_recovery.js
           node work/test_buyback_mean_status.js
           node work/test_public_mail_buybacks.js

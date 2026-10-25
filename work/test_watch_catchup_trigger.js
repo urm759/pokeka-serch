@@ -5,8 +5,11 @@ const run={name:'Deep Resolve Unmatched Cards',event:'schedule',conclusion:'succ
 const allowed=(event,r=run)=>vm.runInNewContext('Boolean('+expression+')',{github:{event_name:event,repository:'owner/repo',event:{workflow_run:r}}},{timeout:1000});
 assert(allowed('schedule'));assert(allowed('workflow_dispatch'));
 assert(allowed('workflow_run'));
+assert(allowed('workflow_run',{...run,name:'Priority Purchase Price Refresh',conclusion:'failure'}),'trusted failed price jobs recover saved inputs before considering new acquisition');
 for(const changed of [{name:'Priority Purchase Price Refresh'},{name:'Daily Fast Update'},{event:'pull_request'},
   {conclusion:'failure'},{head_branch:'feature'},{head_repository:{full_name:'fork/repo'}}])assert(!allowed('workflow_run',{...run,...changed}));
+for(const changed of [{event:'workflow_dispatch'},{head_branch:'feature'},{head_repository:{full_name:'fork/repo'}}])
+  assert(!allowed('workflow_run',{...run,name:'Priority Purchase Price Refresh',conclusion:'failure',...changed}));
 assert(file.includes('needs: catchup\n    if: always()'),'independent monitoring must still follow a failed acquisition');
 assert(file.includes('group: all-site-data-refresh'));
 assert(file.includes("steps.catchup_plan.outputs.mode == 'acquire'"));

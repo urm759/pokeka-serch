@@ -96,8 +96,10 @@ vm.runInContext('const state={buybackObservationSummary:'+JSON.stringify(compact
   +app.slice(app.indexOf('const buybackSupportCache ='),app.indexOf('async function loadBuybackSupportDetail'))
   +'globalThis.render=buybackSupportHtml;',context);
 const html=context.render({...card,psa10:10000});
-assert.match(html,/最高買取 0.900倍/);assert.match(html,/同店・他カードの通常倍率 0.800倍/);assert.match(html,/通常比 \+12.5%/);assert.doesNotMatch(html,/同店内上位7.7%/);
-assert.match(html,/class="buyback-highest"/);assert.match(html,/class="buyback-normal /);
+assert.match(html,/最高買取倍率 0.900倍/);assert.match(html,/全体平均買取倍率 0.900倍/);assert.match(html,/1店舗・参考/);
+const detail=context.render({...card,psa10:10000},true);
+assert.match(detail,/同店・他カードの通常倍率 0.800倍/);assert.match(detail,/通常比 \+12.5%/);assert.doesNotMatch(html,/同店内上位7.7%/);
+assert.match(html,/class="buyback-highest"/);assert.match(detail,/class="buyback-normal /);
 assert.match(html,/採算用出口とは別/);
 const glance=app.slice(app.indexOf('const candidateGlance ='),app.indexOf('const row = { id: card.id, html:',app.indexOf('const candidateGlance =')));
 assert(glance.includes('${buybackSupportHtml(card)}'),'compact highest quote is visible without opening the card detail');

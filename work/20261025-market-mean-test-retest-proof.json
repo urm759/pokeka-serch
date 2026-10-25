@@ -1,0 +1,19 @@
+{
+  "at": "2026-10-25T12:44:53.480Z",
+  "requiredCount": 78,
+  "originalFailures": [
+    {
+      "file": "work/test_ui_data.js",
+      "status": 1
+    },
+    {
+      "file": "work/test_keyed_render_and_completion.js",
+      "status": 1
+    }
+  ],
+  "retests": {
+    "work/test_ui_data.js": "work/20261025-market-mean-test_ui_data-retest.log",
+    "work/test_keyed_render_and_completion.js": "work/20261025-market-mean-test_keyed_render_and_completion-retest.log"
+  },
+  "note": "Original failures preserved; stable-snapshot UI hash test and protected-function baseline test passed after rebuild/authorized baseline synchronization. No check omitted."
+}

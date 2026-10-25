@@ -17,9 +17,10 @@ jobs:
   catchup:
     if: >-
       github.event_name != 'workflow_run' ||
-      (github.event.workflow_run.name == 'Deep Resolve Unmatched Cards' &&
-       github.event.workflow_run.event == 'schedule' &&
-       github.event.workflow_run.conclusion == 'success' &&
+      (((github.event.workflow_run.name == 'Deep Resolve Unmatched Cards' &&
+         github.event.workflow_run.event == 'schedule' && github.event.workflow_run.conclusion == 'success') ||
+        (github.event.workflow_run.name == 'Priority Purchase Price Refresh' &&
+         github.event.workflow_run.event == 'schedule' && github.event.workflow_run.conclusion == 'failure')) &&
        github.event.workflow_run.head_branch == 'main' &&
        github.event.workflow_run.head_repository.full_name == github.repository)
     concurrency:
@@ -39,6 +40,8 @@ jobs:
           node work/test_profile_worker.js
           node work/test_hareruya_single_response.js
           node work/test_watch_catchup_trigger.js
+          node work/test_failed_price_recovery.js
+          node work/test_buyback_market_average.js
           node work/test_profile_report_names.js
           node work/test_saved_shop_recovery.js
           node work/test_update_health.js
@@ -56,6 +59,12 @@ jobs:
           node work/test_saved_camp_recovery.js
           node work/test_automatic_operation.js
           node work/test_overseas_cancellation.js
+      - name: Recover trusted failed price inputs without reacquisition
+        if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'failure'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FAILED_PRICE_RUN_ID: ${{ github.event.workflow_run.id }}
+        run: node work/recover_failed_price_run.js
       - name: Check saved publication before optional acquisition
         id: catchup_plan
         run: node work/catchup_validation_mode.js

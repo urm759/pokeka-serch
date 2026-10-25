@@ -1,0 +1,27 @@
+node:assert:152
+  throw new AssertionError(obj);
+  ^
+
+AssertionError [ERR_ASSERTION]: published revision mismatch: data/acquisition-progress-audit.json
++ actual - expected
+
++ '6857e8ca2a8c9fcbb8eb4665960cff01609b38f107f18876d682fb3f89da1af6'
+- 'f6beaac8b43595f9b2ebb9df51725b5fe0cc1fd967e111cd5f57cebe676b9c35'
+
+    at Object.<anonymous> (C:\Users\polar\Documents\ChatGPT\ポケカ仕入れサイト\resilience-20261006\work\test_ui_data.js:15:10)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: '6857e8ca2a8c9fcbb8eb4665960cff01609b38f107f18876d682fb3f89da1af6',
+  expected: 'f6beaac8b43595f9b2ebb9df51725b5fe0cc1fd967e111cd5f57cebe676b9c35',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.22.1
