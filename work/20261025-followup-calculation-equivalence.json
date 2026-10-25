@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "evaluationAt": "2026-10-24T20:53:48.225Z",
+  "evaluationAt": "2026-10-25T05:40:30.000Z",
   "status": "pass",
   "scope": "Sequential Node correctness checks; no browser or runtime speed comparison. Baseline reverses only the two app optimizations.",
   "sourceSha256": "b6e68d690a062227fe1fe572139d8359b979c69570f6c8efaa0441cd796847ba",
@@ -8,11 +8,11 @@
   "sourceData": {
     "pinnedInMemory": true,
     "diskUnchangedBeforeAndAfter": true,
-    "fingerprint": "375dccb6908ef39904c9c632078d0188c813d4d3927c24f9b9a0d1f36244590a",
+    "fingerprint": "06f69b3d44b2091b8716013d4c664923f64c7ec63418938a5a5489494f3b4f92",
     "files": [
       {
         "file": "data/buyback-observation-summary.json",
-        "sha256": "4715d4516e6fd80f7b05a392961b1ba2f12162e089367e26104119d131f44dea"
+        "sha256": "3d544cdbed8b388a05be76c8d389f7ff16dc020f8275f47f9e60a8875ca0060e"
       },
       {
         "file": "data/buyback-posting-coverage.json",
@@ -20,7 +20,7 @@
       },
       {
         "file": "data/card-catalog-completion.json",
-        "sha256": "3e54dab5e49c99ef3d01ddc685a3ec0542baeaf2672902c4b5ef962b42955bf3"
+        "sha256": "f2434bb7580ca4e6a0ed4d67268e3ca8514b1d4350f0b288d62784b351c6866b"
       },
       {
         "file": "data/cardrush-stock-summary.json",
@@ -28,11 +28,11 @@
       },
       {
         "file": "data/evaluation-governance.json",
-        "sha256": "b6aa8414451d621be33238e39154606c776a70846e4c1cee68d2f190a9991a5b"
+        "sha256": "cdf9a4fe4f9639c0dad908c1556e725546237e15671c2ce347b0de75ceb55e85"
       },
       {
         "file": "data/evaluation-model.json",
-        "sha256": "74a4c9786b3485aa355dd112882478992350cdc33dc00b0ebce026249fa99b6e"
+        "sha256": "9c329c0576f4acb063edd483131fd0c90099c30f9255af3bd27119c41892c0fb"
       },
       {
         "file": "data/fixed-price-reference-index.json",
@@ -40,7 +40,7 @@
       },
       {
         "file": "data/hareruya2-stock-summary.json",
-        "sha256": "d420d699e0968d16dce84f163d006ea502b10e7070ddc15ab800acde70a9bffe"
+        "sha256": "cc225cbf5e345661000b78d0d8c73f38a37a8340592d8fdc79e1bec6f7d7b70a"
       },
       {
         "file": "data/market-research-summary.json",
@@ -48,23 +48,23 @@
       },
       {
         "file": "data/market-stability-summary.json",
-        "sha256": "73882f223cb3e06665f97404b7ab9adaffff1a01bb05173f5c78e2399e927498"
+        "sha256": "a88e2ca99cf04a97c3e1160401dd40c9ae7dfc8ae8fa83670e74681e45f0fcf3"
       },
       {
         "file": "data/operational-limit-history.json",
-        "sha256": "369fedd8351ffb1311367b4a3d04d8e4ec06ad3f598858e82a8801e62aa431ec"
+        "sha256": "b5c486f756ee0da109bf7945d4775c3c2e60e57af453f85690b3f22333a6dc4e"
       },
       {
         "file": "data/pokemon-cards-meta.json",
-        "sha256": "d8401b92ab05dac621f6295a3f0dc6217004409b077b8f26c1330ccbe2a51aaf"
+        "sha256": "a5cdacf46ea07203404b118c5348c05dd4fd6718adc798cbf64c2315ad86b821"
       },
       {
         "file": "data/pokemon-cards.json",
-        "sha256": "721c8ab5a24a84415eed41bac66bf024ec7d1d256c309d6393d7e4d8832c358e"
+        "sha256": "051eb85e2b46c68a3e7ddc93f8d5cf43f11b2a05f3580cea94487a052b695aff"
       },
       {
         "file": "data/psa-japan-services.json",
-        "sha256": "9c7314bfcb244b58f4b747557b67a8dfed6f44e4fc787d0a358408f4a331632e"
+        "sha256": "4eab8fe281141082b50e6460734b25e5164519a50353bba75628da8411c52248"
       },
       {
         "file": "data/psa-population-summary.json",
@@ -72,7 +72,7 @@
       },
       {
         "file": "data/psa10-period-summary.json",
-        "sha256": "7acac77ac232844116cfe1ef2c54cdf105d6211981e0723880dd0e541a5477aa"
+        "sha256": "7e9498ce16b1e15b995b911685be57df094677ceb204415ff5e75dfe5eaffdf3"
       },
       {
         "file": "data/regulation-policy.json",
@@ -84,7 +84,7 @@
       },
       {
         "file": "data/shop-buyback-summary.json",
-        "sha256": "2a9e890f48fcfb153493bf35b8b8446d5a03b0da40b694f334e8c8330b06d7e0"
+        "sha256": "dd43769ab7b246076425af99264a982d88d780fd013514e2dc793e29d1c20e51"
       },
       {
         "file": "data/snkr-listing-summary.json",
@@ -96,15 +96,15 @@
       },
       {
         "file": "data/state-a-price-evidence.json",
-        "sha256": "08cc43fbd361fc9589182fb110abe218ba2f23c7e97cace2760be4022544e20a"
+        "sha256": "81cd2bb61d71d6a12d63a345a948c9f6b7cd04f93d37c5fcf6db2c13c449c7a7"
       },
       {
         "file": "data/torecacamp-stock-summary.json",
-        "sha256": "1770bcfae00f7618f77c97ce59bb1a631d973bb34ed2a39e2ccd0da2f0626b95"
+        "sha256": "6d3fe21979a43ddc10b25804068b367620e5e8546890cd4ce636851fc1e42c0c"
       },
       {
         "file": "data/update-status.json",
-        "sha256": "5ce8ab7a0cfaea6d2f0da9c79243878045f81efa09078064847cc8c73c4bf03f"
+        "sha256": "24f07a45ff712eba0464a418ee80cf8735560d20bd432ecedbdb6ffc847c6eed"
       },
       {
         "file": "data/yuyutei-stock-summary.json",
@@ -113,13 +113,13 @@
     ]
   },
   "fullCohort": {
-    "cards": 2296,
-    "candidateCount": 85,
-    "serializedBeforeSha256": "32dc0fa9f047d2286d0be165d54c05c62f77e59268d5fe85f095f75d1862380d",
-    "serializedAfterSha256": "32dc0fa9f047d2286d0be165d54c05c62f77e59268d5fe85f095f75d1862380d",
-    "candidateIdsSha256": "ecdf0af44e6012a14ee7f2a0128b449b506a40723080dcbe9cce0ca18f161453",
-    "beforeBuilds": 6888,
-    "afterBuilds": 4592
+    "cards": 2297,
+    "candidateCount": 84,
+    "serializedBeforeSha256": "664f0669a68652286a95f2e88ea5af368483a2b14861e47c8ac7293a06eb70bf",
+    "serializedAfterSha256": "664f0669a68652286a95f2e88ea5af368483a2b14861e47c8ac7293a06eb70bf",
+    "candidateIdsSha256": "cfdcab6a9cbe7cdf00f50276cf61857cd2077ae5d81cb2786b5ee565f5995dc4",
+    "beforeBuilds": 6891,
+    "afterBuilds": 4594
   },
   "smallCases": [
     {
@@ -128,8 +128,8 @@
       "days": 91,
       "cards": 12,
       "candidateCount": 1,
-      "serializedBeforeSha256": "f230fa5c517bf9765ad8784013c17d80b93e0b9ad228f6e078642764f0989d8c",
-      "serializedAfterSha256": "f230fa5c517bf9765ad8784013c17d80b93e0b9ad228f6e078642764f0989d8c",
+      "serializedBeforeSha256": "c403a38636e75cd99f8920d8349307ae8a14dd33e88b011050e08468e352f7ae",
+      "serializedAfterSha256": "c403a38636e75cd99f8920d8349307ae8a14dd33e88b011050e08468e352f7ae",
       "candidateIdsSha256": "909368e5abfc6b524488e0a51b4ec176baa1b4b3b1a25a35e9a08d3d72487161",
       "beforeBuilds": 36,
       "afterBuilds": 24
@@ -140,8 +140,8 @@
       "days": 119,
       "cards": 12,
       "candidateCount": 1,
-      "serializedBeforeSha256": "34e1016fa9633051abe610045d232527664ed0c8fa6e1b87edce5fb9f91c61b7",
-      "serializedAfterSha256": "34e1016fa9633051abe610045d232527664ed0c8fa6e1b87edce5fb9f91c61b7",
+      "serializedBeforeSha256": "8235a85e12cbe2e0dbc919fd07520fb26af0c68f9ac461186a6e266a771f6f68",
+      "serializedAfterSha256": "8235a85e12cbe2e0dbc919fd07520fb26af0c68f9ac461186a6e266a771f6f68",
       "candidateIdsSha256": "909368e5abfc6b524488e0a51b4ec176baa1b4b3b1a25a35e9a08d3d72487161",
       "beforeBuilds": 36,
       "afterBuilds": 24
@@ -152,8 +152,8 @@
       "days": 91,
       "cards": 12,
       "candidateCount": 1,
-      "serializedBeforeSha256": "211b77fedaa7396f9d1db2abe0ee52068ffbbcabda1458955e5f6fa7ddef75e3",
-      "serializedAfterSha256": "211b77fedaa7396f9d1db2abe0ee52068ffbbcabda1458955e5f6fa7ddef75e3",
+      "serializedBeforeSha256": "af94221dd33ed816f899dafa9bfd11d9b809acd902d6efd8f03db737830ba536",
+      "serializedAfterSha256": "af94221dd33ed816f899dafa9bfd11d9b809acd902d6efd8f03db737830ba536",
       "candidateIdsSha256": "909368e5abfc6b524488e0a51b4ec176baa1b4b3b1a25a35e9a08d3d72487161",
       "beforeBuilds": 36,
       "afterBuilds": 24
@@ -164,8 +164,8 @@
       "days": 119,
       "cards": 12,
       "candidateCount": 1,
-      "serializedBeforeSha256": "5e41c5509f0e1514da37a0171fd59f684ab6236fcf48fd31d592b05fce22af63",
-      "serializedAfterSha256": "5e41c5509f0e1514da37a0171fd59f684ab6236fcf48fd31d592b05fce22af63",
+      "serializedBeforeSha256": "2bad8d94cdd78e2ff9ca39a2a4ffcfea6456a896951c751fba14623ddf0ed1b1",
+      "serializedAfterSha256": "2bad8d94cdd78e2ff9ca39a2a4ffcfea6456a896951c751fba14623ddf0ed1b1",
       "candidateIdsSha256": "909368e5abfc6b524488e0a51b4ec176baa1b4b3b1a25a35e9a08d3d72487161",
       "beforeBuilds": 36,
       "afterBuilds": 24
@@ -176,8 +176,8 @@
       "days": 91,
       "cards": 12,
       "candidateCount": 0,
-      "serializedBeforeSha256": "63605e35905af2606b6cb6ab091e36f21c62ea2ef9da88aa0fa0c1403ef935df",
-      "serializedAfterSha256": "63605e35905af2606b6cb6ab091e36f21c62ea2ef9da88aa0fa0c1403ef935df",
+      "serializedBeforeSha256": "c9cdf8a364a3a0c4be680808b489e80ed50fff64cae3cc319e58aeff607b8a27",
+      "serializedAfterSha256": "c9cdf8a364a3a0c4be680808b489e80ed50fff64cae3cc319e58aeff607b8a27",
       "candidateIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
       "beforeBuilds": 36,
       "afterBuilds": 24
@@ -188,8 +188,8 @@
       "days": 119,
       "cards": 12,
       "candidateCount": 0,
-      "serializedBeforeSha256": "d0b397adaf54e383e80d9ad086a215c1e00bdb72ed9dab00a3d4ae4144fc5244",
-      "serializedAfterSha256": "d0b397adaf54e383e80d9ad086a215c1e00bdb72ed9dab00a3d4ae4144fc5244",
+      "serializedBeforeSha256": "17a7806e9dd0bec240ef7808125d82de7ecbc6238d4f6822705c191a62d1bfe9",
+      "serializedAfterSha256": "17a7806e9dd0bec240ef7808125d82de7ecbc6238d4f6822705c191a62d1bfe9",
       "candidateIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
       "beforeBuilds": 36,
       "afterBuilds": 24
@@ -200,8 +200,8 @@
       "days": 91,
       "cards": 12,
       "candidateCount": 1,
-      "serializedBeforeSha256": "f230fa5c517bf9765ad8784013c17d80b93e0b9ad228f6e078642764f0989d8c",
-      "serializedAfterSha256": "f230fa5c517bf9765ad8784013c17d80b93e0b9ad228f6e078642764f0989d8c",
+      "serializedBeforeSha256": "c403a38636e75cd99f8920d8349307ae8a14dd33e88b011050e08468e352f7ae",
+      "serializedAfterSha256": "c403a38636e75cd99f8920d8349307ae8a14dd33e88b011050e08468e352f7ae",
       "candidateIdsSha256": "909368e5abfc6b524488e0a51b4ec176baa1b4b3b1a25a35e9a08d3d72487161",
       "beforeBuilds": 36,
       "afterBuilds": 24
@@ -212,8 +212,8 @@
       "days": 119,
       "cards": 12,
       "candidateCount": 1,
-      "serializedBeforeSha256": "34e1016fa9633051abe610045d232527664ed0c8fa6e1b87edce5fb9f91c61b7",
-      "serializedAfterSha256": "34e1016fa9633051abe610045d232527664ed0c8fa6e1b87edce5fb9f91c61b7",
+      "serializedBeforeSha256": "8235a85e12cbe2e0dbc919fd07520fb26af0c68f9ac461186a6e266a771f6f68",
+      "serializedAfterSha256": "8235a85e12cbe2e0dbc919fd07520fb26af0c68f9ac461186a6e266a771f6f68",
       "candidateIdsSha256": "909368e5abfc6b524488e0a51b4ec176baa1b4b3b1a25a35e9a08d3d72487161",
       "beforeBuilds": 36,
       "afterBuilds": 24
@@ -224,8 +224,8 @@
       "days": 91,
       "cards": 12,
       "candidateCount": 1,
-      "serializedBeforeSha256": "211b77fedaa7396f9d1db2abe0ee52068ffbbcabda1458955e5f6fa7ddef75e3",
-      "serializedAfterSha256": "211b77fedaa7396f9d1db2abe0ee52068ffbbcabda1458955e5f6fa7ddef75e3",
+      "serializedBeforeSha256": "af94221dd33ed816f899dafa9bfd11d9b809acd902d6efd8f03db737830ba536",
+      "serializedAfterSha256": "af94221dd33ed816f899dafa9bfd11d9b809acd902d6efd8f03db737830ba536",
       "candidateIdsSha256": "909368e5abfc6b524488e0a51b4ec176baa1b4b3b1a25a35e9a08d3d72487161",
       "beforeBuilds": 36,
       "afterBuilds": 24
@@ -236,8 +236,8 @@
       "days": 119,
       "cards": 12,
       "candidateCount": 1,
-      "serializedBeforeSha256": "5e41c5509f0e1514da37a0171fd59f684ab6236fcf48fd31d592b05fce22af63",
-      "serializedAfterSha256": "5e41c5509f0e1514da37a0171fd59f684ab6236fcf48fd31d592b05fce22af63",
+      "serializedBeforeSha256": "2bad8d94cdd78e2ff9ca39a2a4ffcfea6456a896951c751fba14623ddf0ed1b1",
+      "serializedAfterSha256": "2bad8d94cdd78e2ff9ca39a2a4ffcfea6456a896951c751fba14623ddf0ed1b1",
       "candidateIdsSha256": "909368e5abfc6b524488e0a51b4ec176baa1b4b3b1a25a35e9a08d3d72487161",
       "beforeBuilds": 36,
       "afterBuilds": 24
@@ -248,8 +248,8 @@
       "days": 91,
       "cards": 12,
       "candidateCount": 0,
-      "serializedBeforeSha256": "63605e35905af2606b6cb6ab091e36f21c62ea2ef9da88aa0fa0c1403ef935df",
-      "serializedAfterSha256": "63605e35905af2606b6cb6ab091e36f21c62ea2ef9da88aa0fa0c1403ef935df",
+      "serializedBeforeSha256": "c9cdf8a364a3a0c4be680808b489e80ed50fff64cae3cc319e58aeff607b8a27",
+      "serializedAfterSha256": "c9cdf8a364a3a0c4be680808b489e80ed50fff64cae3cc319e58aeff607b8a27",
       "candidateIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
       "beforeBuilds": 36,
       "afterBuilds": 24
@@ -260,8 +260,8 @@
       "days": 119,
       "cards": 12,
       "candidateCount": 0,
-      "serializedBeforeSha256": "d0b397adaf54e383e80d9ad086a215c1e00bdb72ed9dab00a3d4ae4144fc5244",
-      "serializedAfterSha256": "d0b397adaf54e383e80d9ad086a215c1e00bdb72ed9dab00a3d4ae4144fc5244",
+      "serializedBeforeSha256": "17a7806e9dd0bec240ef7808125d82de7ecbc6238d4f6822705c191a62d1bfe9",
+      "serializedAfterSha256": "17a7806e9dd0bec240ef7808125d82de7ecbc6238d4f6822705c191a62d1bfe9",
       "candidateIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
       "beforeBuilds": 36,
       "afterBuilds": 24
@@ -271,22 +271,22 @@
     {
       "version": "before",
       "mode": "combined",
-      "deadline": 1792875288225
+      "deadline": 1792906890000
     },
     {
       "version": "before",
       "mode": "specified",
-      "deadline": 1792875288225
+      "deadline": 1792906890000
     },
     {
       "version": "after",
       "mode": "combined",
-      "deadline": 1792875288225
+      "deadline": 1792906890000
     },
     {
       "version": "after",
       "mode": "specified",
-      "deadline": 1792875288225
+      "deadline": 1792906890000
     }
   ],
   "tieCases": [

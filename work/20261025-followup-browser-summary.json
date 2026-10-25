@@ -1,0 +1,145 @@
+{
+  "at": "2026-10-25T05:50:42.065Z",
+  "clock": "2026-10-25T05:42:32.504Z",
+  "repetitions": 3,
+  "source": "live DOM UTF8 recovered; the earlier POST capture with split UTF8 bytes is retained as invalid transport evidence",
+  "scope": "同一PC・1920/390幅・60/120枚。実スマホ端末ではない。ローカルHTTPは非圧縮。",
+  "pairs": [
+    {
+      "width": 1920,
+      "scale": "normal",
+      "before": {
+        "loaded": 2297,
+        "displayed": 60,
+        "fullCalculationMs": 566.8999999761581,
+        "renderMs": 18,
+        "detailGenerationMs": 25.100000023841858,
+        "jsonBytes": 19927444,
+        "jsonParseMs": 75.39999985694885,
+        "decodeMs": 173.19999980926514
+      },
+      "after": {
+        "loaded": 2297,
+        "displayed": 60,
+        "fullCalculationMs": 548.6000000238419,
+        "renderMs": 19,
+        "detailGenerationMs": 22.5,
+        "jsonBytes": 19927444,
+        "jsonParseMs": 70,
+        "decodeMs": 139.19999992847443
+      },
+      "valuesAndIdsEqual": true,
+      "overflow": false,
+      "renderWarning": false
+    },
+    {
+      "width": 1920,
+      "scale": "double",
+      "before": {
+        "loaded": 4594,
+        "displayed": 120,
+        "fullCalculationMs": 1118.7000000476837,
+        "renderMs": 32.90000009536743,
+        "detailGenerationMs": 39.700000047683716,
+        "jsonBytes": 37002372,
+        "jsonParseMs": 143.60000026226044,
+        "decodeMs": 281.59999990463257
+      },
+      "after": {
+        "loaded": 4594,
+        "displayed": 120,
+        "fullCalculationMs": 1056.2999999523163,
+        "renderMs": 44.60000002384186,
+        "detailGenerationMs": 41.5,
+        "jsonBytes": 37002372,
+        "jsonParseMs": 149.39999973773956,
+        "decodeMs": 300.3000000715256
+      },
+      "valuesAndIdsEqual": true,
+      "overflow": false,
+      "renderWarning": true
+    },
+    {
+      "width": 390,
+      "scale": "normal",
+      "before": {
+        "loaded": 2297,
+        "displayed": 60,
+        "fullCalculationMs": 672.7000000476837,
+        "renderMs": 17.399999976158142,
+        "detailGenerationMs": 22.40000009536743,
+        "jsonBytes": 19927444,
+        "jsonParseMs": 87.80000007152557,
+        "decodeMs": 124.80000019073486
+      },
+      "after": {
+        "loaded": 2297,
+        "displayed": 60,
+        "fullCalculationMs": 533.2000000476837,
+        "renderMs": 20,
+        "detailGenerationMs": 21.299999952316284,
+        "jsonBytes": 19927444,
+        "jsonParseMs": 71.29999995231628,
+        "decodeMs": 141.0000001192093
+      },
+      "valuesAndIdsEqual": true,
+      "overflow": false,
+      "renderWarning": false
+    },
+    {
+      "width": 390,
+      "scale": "double",
+      "before": {
+        "loaded": 4594,
+        "displayed": 120,
+        "fullCalculationMs": 1113.5,
+        "renderMs": 33.39999997615814,
+        "detailGenerationMs": 37.699999928474426,
+        "jsonBytes": 37002372,
+        "jsonParseMs": 130.39999985694885,
+        "decodeMs": 272.2000000476837
+      },
+      "after": {
+        "loaded": 4594,
+        "displayed": 120,
+        "fullCalculationMs": 1080,
+        "renderMs": 35.799999952316284,
+        "detailGenerationMs": 38.199999928474426,
+        "jsonBytes": 37002372,
+        "jsonParseMs": 135.00000023841858,
+        "decodeMs": 260.7999997138977
+      },
+      "valuesAndIdsEqual": true,
+      "overflow": false,
+      "renderWarning": false
+    }
+  ],
+  "targetedRecheck": [
+    {
+      "version": "after",
+      "width": 1920,
+      "scale": "double",
+      "measured": {
+        "fullCalculationMs": 1168.1000000238419,
+        "renderMs": 32.89999997615814,
+        "detailGenerationMs": 38
+      },
+      "valuesAndIdsUnchanged": true,
+      "overflow": false
+    },
+    {
+      "version": "before",
+      "width": 1920,
+      "scale": "double",
+      "measured": {
+        "fullCalculationMs": 1124.5,
+        "renderMs": 33.5,
+        "detailGenerationMs": 40.299999952316284
+      },
+      "valuesAndIdsUnchanged": true,
+      "overflow": false
+    }
+  ],
+  "initialWarningPreserved": true,
+  "interpretation": "初回PC2倍の描画悪化警告を保持。順序を逆にした対照再試験はafter32.9/before33.5ms。全件計算も変動があり、持続的な速度改善を断定しない。"
+}

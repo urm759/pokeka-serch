@@ -3,7 +3,7 @@ name: Data Update Health Watchdog
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: [Daily Fast Update, Safe Checkpoint Backfill, Priority Purchase Price Refresh]
+    workflows: [Daily Fast Update, Safe Checkpoint Backfill, Priority Purchase Price Refresh, Deep Resolve Unmatched Cards]
     types: [completed]
   schedule:
     # Offset from :20 price jobs; the shared 2h acquisition gate still limits requests.
@@ -15,7 +15,13 @@ permissions:
 
 jobs:
   catchup:
-    if: github.event_name != 'workflow_run'
+    if: >-
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.name == 'Deep Resolve Unmatched Cards' &&
+       github.event.workflow_run.event == 'schedule' &&
+       github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
     concurrency:
       group: all-site-data-refresh
       cancel-in-progress: false
@@ -32,6 +38,7 @@ jobs:
         run: |
           node work/test_profile_worker.js
           node work/test_hareruya_single_response.js
+          node work/test_watch_catchup_trigger.js
           node work/test_profile_report_names.js
           node work/test_saved_shop_recovery.js
           node work/test_update_health.js

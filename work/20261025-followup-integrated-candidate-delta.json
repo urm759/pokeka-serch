@@ -1,0 +1,118 @@
+{
+  "at": "2026-10-25T05:42:01.672Z",
+  "baselineRef": "79ef8400",
+  "scheduledRef": "6eb8051a",
+  "baselineToScheduled": {
+    "before": 38,
+    "after": 37,
+    "gained": [],
+    "lost": [
+      "pk-75866"
+    ]
+  },
+  "scheduledToIntegrated": {
+    "before": 37,
+    "after": 38,
+    "gained": [
+      "pk-75866"
+    ],
+    "lost": []
+  },
+  "baselineToIntegrated": {
+    "before": 38,
+    "after": 38,
+    "gained": [],
+    "lost": []
+  },
+  "profiles": [
+    {
+      "id": "A",
+      "before": 11,
+      "scheduled": 10,
+      "current": 11
+    },
+    {
+      "id": "B",
+      "before": 23,
+      "scheduled": 23,
+      "current": 23
+    },
+    {
+      "id": "A-median",
+      "before": 7,
+      "scheduled": 6,
+      "current": 7
+    },
+    {
+      "id": "B-median",
+      "before": 16,
+      "scheduled": 16,
+      "current": 16
+    },
+    {
+      "id": "A-specified",
+      "before": 13,
+      "scheduled": 12,
+      "current": 13
+    },
+    {
+      "id": "B-specified",
+      "before": 26,
+      "scheduled": 26,
+      "current": 26
+    },
+    {
+      "id": "A-median-specified",
+      "before": 8,
+      "scheduled": 7,
+      "current": 8
+    },
+    {
+      "id": "B-median-specified",
+      "before": 19,
+      "scheduled": 19,
+      "current": 19
+    }
+  ],
+  "integratedIds": [
+    "pk-73747",
+    "pk-75866",
+    "pk-23002",
+    "pk-6015",
+    "x-122054",
+    "pk-20743",
+    "pk-14592",
+    "pk-3123",
+    "pk-4376",
+    "pk-39522",
+    "x-104600",
+    "pk-22379",
+    "pk-43860",
+    "pk-51076",
+    "pk-67343",
+    "pk-67583",
+    "pk-43864",
+    "pk-51078",
+    "pk-5188",
+    "pk-45925",
+    "pk-7040",
+    "pk-41858",
+    "x-107497",
+    "pk-6036",
+    "x-91119",
+    "pk-21474",
+    "pk-5202",
+    "pk-18241",
+    "pk-2699",
+    "x-129023",
+    "x-104592",
+    "pk-985",
+    "x-104636",
+    "pk-70050",
+    "x-135232",
+    "pk-70051",
+    "pk-79905",
+    "pk-6028"
+  ],
+  "changedCodeValuesEqual": true
+}

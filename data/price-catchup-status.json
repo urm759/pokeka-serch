@@ -1,21 +1,21 @@
 {
-  "startedAt": "2026-10-24T18:51:16.130Z",
-  "runId": "40122543394",
+  "startedAt": "2026-10-25T04:54:51.263Z",
+  "runId": "40163552394",
   "event": "schedule",
   "route": "通常価格更新",
   "status": "acquired-saved",
   "allowed": true,
-  "ageMs": 9996097,
+  "ageMs": 22778123,
   "minimumIntervalMs": 7200000,
   "reason": "定期の空白・既存の期限順キューで補完",
   "llmCalls": 0,
   "codexCalls": 0,
   "sourceFailures": [],
   "acquisitionStatus": "process-success",
-  "endedAt": "2026-10-24T19:02:37.872Z",
-  "durationMs": 681742,
+  "endedAt": "2026-10-25T05:05:49.420Z",
+  "durationMs": 658157,
   "outcomes": {
-    "baselineAt": "2026-10-24T18:51:16.130Z",
+    "baselineAt": "2026-10-25T04:54:51.263Z",
     "commonCards": 12545,
     "addedCards": 0,
     "removedCards": 0,
@@ -36,7 +36,7 @@
         "validAdded": 0,
         "validLost": 0,
         "usableNet": 0,
-        "freshnessRecovered": 41
+        "freshnessRecovered": 39
       },
       "yuyutei": {
         "newLinked": 0,
@@ -66,6 +66,9 @@
         "usableNet": 0,
         "freshnessRecovered": 0
       }
+    },
+    "referenceEvidenceRecovered": {
+      "buybackExitEvidence": 1
     }
   },
   "publicationStatus": "保存済み・公開照合待ち"
