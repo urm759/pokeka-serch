@@ -12,8 +12,8 @@
     }
   ],
   "retests": {
-    "work/test_ui_data.js": "work/20261025-market-mean-test_ui_data-retest.log",
+    "work/test_ui_data.js": "work/20261025-market-mean-test_ui_data-final.log",
     "work/test_keyed_render_and_completion.js": "work/20261025-market-mean-test_keyed_render_and_completion-retest.log"
   },
-  "note": "Original failures preserved; stable-snapshot UI hash test and protected-function baseline test passed after rebuild/authorized baseline synchronization. No check omitted."
+  "note": "Original failures preserved. UI validation was repeated after the performance snapshot was packed; all 78 required checks passed either in the original stable-input-independent run or the named final retests."
 }

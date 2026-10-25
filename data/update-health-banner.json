@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-25T12:27:07.986Z",
+  "generatedAt": "2026-10-25T12:50:08.473Z",
   "sourceLastSuccessAt": "2026-10-25T11:46:09.771Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-10-25T10:16:07.782Z",
-    "lastSuccessAt": "2026-10-25T10:16:07.782Z",
-    "runId": "40183597464",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/40183597464"
+    "lastAttemptAt": "2026-10-25T12:03:11.110Z",
+    "lastSuccessAt": "2026-10-25T12:03:11.110Z",
+    "runId": "40191388709",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/40191388709"
   },
   "issues": [
     {
@@ -79,8 +79,14 @@
     {
       "key": "priority-prices:cadence-stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/40163552394",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/40190105007",
       "reason": "重要価格更新：設定2時間に対し実績成功間隔（直近最大）6.46時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
+    },
+    {
+      "key": "priority-prices:workflow-failure",
+      "category": "取得処理の故障",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/40190105007",
+      "reason": "購入価格高速更新：取得・検証・保存・公開のいずれかが未完了。実行ログで工程を確認"
     }
   ],
   "reasons": [
@@ -95,7 +101,8 @@
     "PSA Japan料金: 更新期限超過（カード別鮮度 未記録%）",
     "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）",
     "PC側PSA: PC観測未受信 / 30時間以内の独立タスク観測なし。PC停止・観測起動失敗・未公開を区別して確認",
-    "重要価格更新：設定2時間に対し実績成功間隔（直近最大）6.46時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
+    "重要価格更新：設定2時間に対し実績成功間隔（直近最大）6.46時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能",
+    "購入価格高速更新：取得・検証・保存・公開のいずれかが未完了。実行ログで工程を確認"
   ],
   "detailUrl": "./data/update-health.json"
 }
