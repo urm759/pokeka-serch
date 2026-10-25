@@ -1,0 +1,85 @@
+{
+  "at": "2026-10-25T12:57:25.426Z",
+  "publicCommit": "a1ce8168af03df30d0ed7123cecdbeaf55dc1454",
+  "pagesRunId": 40194990126,
+  "publicationRevision": "1ea920758e7070c1b89c460ff585acc4b7a4e324dfa791de53ce3c3481149a7b",
+  "publicChecks": 184,
+  "publicFiles": 183,
+  "acquiredRun": "40190105007",
+  "restoredFiles": 21,
+  "newDomesticFetchesDuringRecovery": 0,
+  "actualShopReconfirmations": 256,
+  "httpRequests": 282,
+  "mandatoryFilled": 0,
+  "newAnalyzable": 0,
+  "newIndependentCandidates": 0,
+  "independentTotal": 41,
+  "strictIndependentTotal": 36,
+  "highRarity": {
+    "analyzable": 688,
+    "total": 1328,
+    "target": 1196,
+    "remaining": 508
+  },
+  "freshnessRecoveredCards": 71,
+  "afterAcquisitionFixedFresh6h": 160,
+  "afterAcquisitionFixedTotal": 192,
+  "regularHistoricalMinimumPct": 0,
+  "latestObservation": {
+    "at": "2026-10-25T12:47:48.331Z",
+    "executionContext": {
+      "event": "manual-local",
+      "runId": null,
+      "environment": "PCローカル"
+    },
+    "cohort": 192,
+    "fresh6h": 160,
+    "fresh6hPct": 83.33333333333334,
+    "unconfirmed": 0,
+    "maxOverdueHours": 1206.796758611111,
+    "autoWait": 25,
+    "manualWait": 7,
+    "accessStopped": 0,
+    "added": 170,
+    "missingFromCurrent": 0,
+    "aggregationVersion": 2,
+    "outsidePriorityStale": 0
+  },
+  "latestShortInterval": {
+    "from": "2026-10-25T12:24:41.005Z",
+    "to": "2026-10-25T12:47:48.331Z",
+    "fresh": 160,
+    "total": 192,
+    "minimumFreshnessPct": 83.33333333333334,
+    "maxOverdueHours": 1206.796758611111,
+    "method": "前回確認値を次の観測直前まで進めた保守的な最低鮮度。区間内の未観測更新は含まない",
+    "executionContext": {
+      "from": {
+        "event": "manual-local",
+        "runId": null,
+        "environment": "PCローカル"
+      },
+      "to": {
+        "event": "manual-local",
+        "runId": null,
+        "environment": "PCローカル"
+      }
+    }
+  },
+  "acquisitionCompletedAt": "2026-10-25T11:55:58.265Z",
+  "pagesVerifiedAt": "2026-10-25T12:53:20.825Z",
+  "manualRecoveryCompletionToPagesMinutes": 57.376,
+  "gemRatePublic": 0,
+  "regularRecoveryProof": "pending future scheduled event; manual real-archive restoration and fixture tests only",
+  "unchanged": [
+    "profiles",
+    "purchase formula",
+    "GO safety",
+    "source access intervals",
+    "expiry",
+    "overseas frozen",
+    "151 retired",
+    "routine LLM/Codex0",
+    "AI schedules stopped"
+  ]
+}
