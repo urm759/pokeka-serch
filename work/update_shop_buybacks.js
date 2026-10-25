@@ -541,9 +541,12 @@ async function main({ rebuildSaved = false } = {}) {
   for (const shop of SHOPS) {
     if (process.env.SHOP_BUYBACK_SOURCE_ONLY && process.env.SHOP_BUYBACK_SOURCE_ONLY !== shop.id) continue;
     if (rebuildSaved) {
-      if (previousCatalog[shop.id]) results.push({shop, savedReplay:true,
+      const permission=readJson(path.join(__dirname,'buyback-source-permissions.json'),{}).sources?.[shop.id];
+      const saved=['pending','retired'].includes(permission?.status)?{matched:previousCatalog[shop.id]||[],unmatched:previousUnmatched[shop.id]||[],recovered:[]}:
+        require('./reconcile_saved_buyback_items').reconcile(previousCatalog[shop.id]||[],previousUnmatched[shop.id]||[],cards);
+      if (previousCatalog[shop.id]) results.push({shop, savedReplay:true, savedIdentityRecovered:saved.recovered,
         fullListing:previousSummary.shops?.[shop.id]?.coverageComplete === true,
-        items:previousCatalog[shop.id], matched:previousCatalog[shop.id], unmatched:previousUnmatched[shop.id] || []});
+        items:saved.matched, matched:saved.matched, unmatched:saved.unmatched});
       continue;
     }
     const permission = readJson(path.join(__dirname, 'buyback-source-permissions.json'), {}).sources?.[shop.id];
@@ -753,7 +756,11 @@ async function main({ rebuildSaved = false } = {}) {
     const result = results.find((entry) => entry.shop.id === shop.id);
     const confirmedAt=new Date().toISOString();
     const previous = previousSummary.shops?.[shop.id] || {};
-    if (result?.savedReplay) { shopMeta[shop.id] = previous; continue; }
+    if (result?.savedReplay) {
+      shopMeta[shop.id] = {...previous,matched:result.matched.length,
+        activeMatched:result.matched.filter(item=>item.active===true).length,unmatched:result.unmatched.length};
+      continue;
+    }
     const trustStats = priceTrust.stats[shop.id] || { priceObservations: 0, outliers: 0, quarantinedPairs: 0 };
     const matchedItems = result ? result.matched.length : Number(previous.matched || 0);
     const mismatchSuspicions = result

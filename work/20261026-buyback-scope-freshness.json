@@ -1,0 +1,82 @@
+{
+  "at": "2026-10-25T20:56:46.360Z",
+  "scope": "scheduled observations only; conservative interval minima, not continuous direct observations",
+  "target": 192,
+  "latestScheduled": {
+    "at": "2026-10-25T19:52:27.349Z",
+    "executionContext": {
+      "event": "workflow_run",
+      "runId": "40228034338",
+      "environment": "GitHub Actions"
+    },
+    "cohort": 192,
+    "fresh6h": 162,
+    "fresh6hPct": 84.375,
+    "unconfirmed": 0,
+    "maxOverdueHours": 1213.874263611111,
+    "autoWait": 23,
+    "manualWait": 7,
+    "accessStopped": 0,
+    "added": 172,
+    "missingFromCurrent": 0,
+    "aggregationVersion": 2,
+    "outsidePriorityStale": 0
+  },
+  "recentMin": 84.375,
+  "historicalMinimumRetained": 0,
+  "intervals": [
+    {
+      "from": "2026-10-25T14:44:55.018Z",
+      "to": "2026-10-25T16:33:57.792Z",
+      "min": 96.35416666666666
+    },
+    {
+      "from": "2026-10-25T16:33:57.792Z",
+      "to": "2026-10-25T16:42:02.470Z",
+      "min": 96.35416666666666
+    },
+    {
+      "from": "2026-10-25T16:42:02.470Z",
+      "to": "2026-10-25T16:42:50.921Z",
+      "min": 96.35416666666666
+    },
+    {
+      "from": "2026-10-25T16:42:50.921Z",
+      "to": "2026-10-25T16:48:06.157Z",
+      "min": 96.35416666666666
+    },
+    {
+      "from": "2026-10-25T16:48:06.157Z",
+      "to": "2026-10-25T17:53:39.081Z",
+      "min": 96.35416666666666
+    },
+    {
+      "from": "2026-10-25T17:53:39.081Z",
+      "to": "2026-10-25T19:40:09.910Z",
+      "min": 84.375
+    },
+    {
+      "from": "2026-10-25T19:40:09.910Z",
+      "to": "2026-10-25T19:44:01.210Z",
+      "min": 84.375
+    },
+    {
+      "from": "2026-10-25T19:44:01.210Z",
+      "to": "2026-10-25T19:52:27.349Z",
+      "min": 84.375
+    }
+  ],
+  "priority": {
+    "run": "40212163952",
+    "startDelayMs": 801566,
+    "startedAt": "2026-10-25T16:33:21.566Z",
+    "endedAt": "2026-10-25T16:44:33.496Z",
+    "sourceTimedOut": [
+      {
+        "durationMs": 346949,
+        "stopReason": "時間上限・保存して安全停止"
+      }
+    ]
+  },
+  "reference": "6h update target differs from 48h purchase adoption expiry; manual recovery not scheduled maintenance"
+}

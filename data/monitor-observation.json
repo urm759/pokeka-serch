@@ -1,12 +1,12 @@
 {
   "version": 1,
   "status": "observed",
-  "lastAttemptAt": "2026-10-25T13:13:20.994Z",
-  "runId": "40196574358",
-  "url": "https://github.com/urm759/pokeka-serch/actions/runs/40196574358",
+  "lastAttemptAt": "2026-10-25T19:52:28.978Z",
+  "runId": "40228034338",
+  "url": "https://github.com/urm759/pokeka-serch/actions/runs/40228034338",
   "llmCalls": 0,
   "codexCalls": 0,
-  "newIssueCount": 2,
+  "newIssueCount": 0,
   "unpublishedData": [
     {
       "runId": 40190105007,
@@ -17,42 +17,42 @@
       "status": "退避あり・未検証／公開照合待ち"
     },
     {
+      "runId": 40202862525,
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/40202862525",
+      "artifactId": 12603011477,
+      "name": "independent-monitor-40202862525-1",
+      "bytes": 61780149,
+      "status": "退避あり・未検証／公開照合待ち"
+    },
+    {
+      "runId": 40202862525,
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/40202862525",
+      "artifactId": 12602658509,
+      "name": "monitor-recovery-40202862525-1",
+      "bytes": 61824949,
+      "status": "退避あり・未検証／公開照合待ち"
+    },
+    {
+      "runId": 40196574358,
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/40196574358",
+      "artifactId": 12599932161,
+      "name": "independent-monitor-40196574358-1",
+      "bytes": 61743457,
+      "status": "退避あり・未検証／公開照合待ち"
+    },
+    {
       "runId": 40191388709,
       "url": "https://github.com/urm759/pokeka-serch/actions/runs/40191388709",
       "artifactId": 12597972653,
       "name": "independent-monitor-40191388709-1",
       "bytes": 61747945,
       "status": "退避あり・未検証／公開照合待ち"
-    },
-    {
-      "runId": 40136997905,
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/40136997905",
-      "artifactId": 12578035827,
-      "name": "independent-monitor-40136997905-1",
-      "bytes": 60919809,
-      "status": "退避あり・未検証／公開照合待ち"
-    },
-    {
-      "runId": 40136216257,
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/40136216257",
-      "artifactId": 12577387027,
-      "name": "independent-monitor-40136216257-1",
-      "bytes": 60953234,
-      "status": "退避あり・未検証／公開照合待ち"
-    },
-    {
-      "runId": 40136216257,
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/40136216257",
-      "artifactId": 12577082259,
-      "name": "monitor-recovery-40136216257-1",
-      "bytes": 60976729,
-      "status": "退避あり・未検証／公開照合待ち"
     }
   ],
   "lastMonitorRun": {
-    "id": 40191388709,
-    "conclusion": "failure",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/40191388709"
+    "id": 40218529136,
+    "conclusion": "success",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/40218529136"
   },
   "freshness": {
     "baselineAt": "2026-10-03T23:15:30.935Z",
@@ -73,17 +73,17 @@
           "missingFromCurrent": 0
         },
         "latest": {
-          "at": "2026-10-25T13:13:19.214Z",
+          "at": "2026-10-25T19:52:27.349Z",
           "executionContext": {
             "event": "workflow_run",
-            "runId": "40196574358",
+            "runId": "40228034338",
             "environment": "GitHub Actions"
           },
           "cohort": 203,
           "fresh6h": 0,
           "fresh6hPct": 0,
           "unconfirmed": 2,
-          "maxOverdueHours": 1375.2220038888888,
+          "maxOverdueHours": 1381.874263611111,
           "autoWait": 2,
           "manualWait": 0,
           "accessStopped": 201,
@@ -93,17 +93,17 @@
           "outsidePriorityStale": 2
         },
         "previous": {
-          "at": "2026-10-25T13:07:37.905Z",
+          "at": "2026-10-25T19:44:01.210Z",
           "executionContext": {
             "event": "schedule",
-            "runId": "40195502914",
+            "runId": "40225978749",
             "environment": "GitHub Actions"
           },
           "cohort": 203,
           "fresh6h": 0,
           "fresh6hPct": 0,
           "unconfirmed": 2,
-          "maxOverdueHours": 1375.1271958333334,
+          "maxOverdueHours": 1381.7336694444443,
           "autoWait": 2,
           "manualWait": 0,
           "accessStopped": 201,
@@ -113,22 +113,22 @@
           "outsidePriorityStale": 2
         },
         "intervalMinimum": {
-          "from": "2026-10-25T13:07:37.905Z",
-          "to": "2026-10-25T13:13:19.214Z",
+          "from": "2026-10-25T19:44:01.210Z",
+          "to": "2026-10-25T19:52:27.349Z",
           "fresh": 0,
           "total": 203,
           "minimumFreshnessPct": 0,
-          "maxOverdueHours": 1375.2220038888888,
+          "maxOverdueHours": 1381.874263611111,
           "method": "前回確認値を次の観測直前まで進めた保守的な最低鮮度。区間内の未観測更新は含まない",
           "executionContext": {
             "from": {
               "event": "schedule",
-              "runId": "40195502914",
+              "runId": "40225978749",
               "environment": "GitHub Actions"
             },
             "to": {
               "event": "workflow_run",
-              "runId": "40196574358",
+              "runId": "40228034338",
               "environment": "GitHub Actions"
             }
           }
@@ -149,62 +149,62 @@
           "missingFromCurrent": 0
         },
         "latest": {
-          "at": "2026-10-25T13:13:19.214Z",
+          "at": "2026-10-25T19:52:27.349Z",
           "executionContext": {
             "event": "workflow_run",
-            "runId": "40196574358",
+            "runId": "40228034338",
             "environment": "GitHub Actions"
           },
           "cohort": 192,
-          "fresh6h": 185,
-          "fresh6hPct": 96.35416666666666,
+          "fresh6h": 162,
+          "fresh6hPct": 84.375,
           "unconfirmed": 0,
-          "maxOverdueHours": 1207.2220038888888,
-          "autoWait": 0,
+          "maxOverdueHours": 1213.874263611111,
+          "autoWait": 23,
           "manualWait": 7,
           "accessStopped": 0,
-          "added": 170,
+          "added": 172,
           "missingFromCurrent": 0,
           "aggregationVersion": 2,
           "outsidePriorityStale": 0
         },
         "previous": {
-          "at": "2026-10-25T13:07:37.905Z",
+          "at": "2026-10-25T19:44:01.210Z",
           "executionContext": {
             "event": "schedule",
-            "runId": "40195502914",
+            "runId": "40225978749",
             "environment": "GitHub Actions"
           },
           "cohort": 192,
-          "fresh6h": 185,
-          "fresh6hPct": 96.35416666666666,
+          "fresh6h": 162,
+          "fresh6hPct": 84.375,
           "unconfirmed": 0,
-          "maxOverdueHours": 1207.1271958333334,
-          "autoWait": 0,
+          "maxOverdueHours": 1213.7336694444443,
+          "autoWait": 23,
           "manualWait": 7,
           "accessStopped": 0,
-          "added": 170,
+          "added": 172,
           "missingFromCurrent": 0,
           "aggregationVersion": 2,
           "outsidePriorityStale": 0
         },
         "intervalMinimum": {
-          "from": "2026-10-25T13:07:37.905Z",
-          "to": "2026-10-25T13:13:19.214Z",
-          "fresh": 185,
+          "from": "2026-10-25T19:44:01.210Z",
+          "to": "2026-10-25T19:52:27.349Z",
+          "fresh": 162,
           "total": 192,
-          "minimumFreshnessPct": 96.35416666666666,
-          "maxOverdueHours": 1207.2220038888888,
+          "minimumFreshnessPct": 84.375,
+          "maxOverdueHours": 1213.874263611111,
           "method": "前回確認値を次の観測直前まで進めた保守的な最低鮮度。区間内の未観測更新は含まない",
           "executionContext": {
             "from": {
               "event": "schedule",
-              "runId": "40195502914",
+              "runId": "40225978749",
               "environment": "GitHub Actions"
             },
             "to": {
               "event": "workflow_run",
-              "runId": "40196574358",
+              "runId": "40228034338",
               "environment": "GitHub Actions"
             }
           }
@@ -225,62 +225,62 @@
           "missingFromCurrent": 0
         },
         "latest": {
-          "at": "2026-10-25T13:13:19.214Z",
+          "at": "2026-10-25T19:52:27.349Z",
           "executionContext": {
             "event": "workflow_run",
-            "runId": "40196574358",
+            "runId": "40228034338",
             "environment": "GitHub Actions"
           },
           "cohort": 233,
-          "fresh6h": 229,
-          "fresh6hPct": 98.28326180257511,
+          "fresh6h": 0,
+          "fresh6hPct": 0,
           "unconfirmed": 4,
-          "maxOverdueHours": 0,
-          "autoWait": 4,
+          "maxOverdueHours": 0.8813722222222218,
+          "autoWait": 233,
           "manualWait": 0,
           "accessStopped": 0,
-          "added": 197,
-          "missingFromCurrent": 51,
+          "added": 198,
+          "missingFromCurrent": 53,
           "aggregationVersion": 2,
-          "outsidePriorityStale": 3
+          "outsidePriorityStale": 53
         },
         "previous": {
-          "at": "2026-10-25T13:07:37.905Z",
+          "at": "2026-10-25T19:44:01.210Z",
           "executionContext": {
             "event": "schedule",
-            "runId": "40195502914",
+            "runId": "40225978749",
             "environment": "GitHub Actions"
           },
           "cohort": 233,
-          "fresh6h": 229,
-          "fresh6hPct": 98.28326180257511,
+          "fresh6h": 0,
+          "fresh6hPct": 0,
           "unconfirmed": 4,
-          "maxOverdueHours": 0,
-          "autoWait": 4,
+          "maxOverdueHours": 0.7407780555555554,
+          "autoWait": 233,
           "manualWait": 0,
           "accessStopped": 0,
-          "added": 197,
-          "missingFromCurrent": 51,
+          "added": 198,
+          "missingFromCurrent": 53,
           "aggregationVersion": 2,
-          "outsidePriorityStale": 3
+          "outsidePriorityStale": 53
         },
         "intervalMinimum": {
-          "from": "2026-10-25T13:07:37.905Z",
-          "to": "2026-10-25T13:13:19.214Z",
-          "fresh": 229,
+          "from": "2026-10-25T19:44:01.210Z",
+          "to": "2026-10-25T19:52:27.349Z",
+          "fresh": 0,
           "total": 233,
-          "minimumFreshnessPct": 98.28326180257511,
-          "maxOverdueHours": 0,
+          "minimumFreshnessPct": 0,
+          "maxOverdueHours": 0.8813722222222218,
           "method": "前回確認値を次の観測直前まで進めた保守的な最低鮮度。区間内の未観測更新は含まない",
           "executionContext": {
             "from": {
               "event": "schedule",
-              "runId": "40195502914",
+              "runId": "40225978749",
               "environment": "GitHub Actions"
             },
             "to": {
               "event": "workflow_run",
-              "runId": "40196574358",
+              "runId": "40228034338",
               "environment": "GitHub Actions"
             }
           }
@@ -301,62 +301,62 @@
           "missingFromCurrent": 0
         },
         "latest": {
-          "at": "2026-10-25T13:13:19.214Z",
+          "at": "2026-10-25T19:52:27.349Z",
           "executionContext": {
             "event": "workflow_run",
-            "runId": "40196574358",
+            "runId": "40228034338",
             "environment": "GitHub Actions"
           },
           "cohort": 233,
-          "fresh6h": 180,
-          "fresh6hPct": 77.25321888412017,
+          "fresh6h": 192,
+          "fresh6hPct": 82.40343347639485,
           "unconfirmed": 41,
-          "maxOverdueHours": 1.0281149999999997,
-          "autoWait": 53,
+          "maxOverdueHours": 0,
+          "autoWait": 41,
           "manualWait": 0,
           "accessStopped": 0,
-          "added": 197,
-          "missingFromCurrent": 51,
+          "added": 198,
+          "missingFromCurrent": 53,
           "aggregationVersion": 2,
-          "outsidePriorityStale": 13
+          "outsidePriorityStale": 9
         },
         "previous": {
-          "at": "2026-10-25T13:07:37.905Z",
+          "at": "2026-10-25T19:44:01.210Z",
           "executionContext": {
             "event": "schedule",
-            "runId": "40195502914",
+            "runId": "40225978749",
             "environment": "GitHub Actions"
           },
           "cohort": 233,
-          "fresh6h": 180,
-          "fresh6hPct": 77.25321888412017,
+          "fresh6h": 192,
+          "fresh6hPct": 82.40343347639485,
           "unconfirmed": 41,
-          "maxOverdueHours": 0.9333069444444444,
-          "autoWait": 53,
+          "maxOverdueHours": 0,
+          "autoWait": 41,
           "manualWait": 0,
           "accessStopped": 0,
-          "added": 197,
-          "missingFromCurrent": 51,
+          "added": 198,
+          "missingFromCurrent": 53,
           "aggregationVersion": 2,
-          "outsidePriorityStale": 13
+          "outsidePriorityStale": 9
         },
         "intervalMinimum": {
-          "from": "2026-10-25T13:07:37.905Z",
-          "to": "2026-10-25T13:13:19.214Z",
-          "fresh": 180,
+          "from": "2026-10-25T19:44:01.210Z",
+          "to": "2026-10-25T19:52:27.349Z",
+          "fresh": 192,
           "total": 233,
-          "minimumFreshnessPct": 77.25321888412017,
-          "maxOverdueHours": 1.0281149999999997,
+          "minimumFreshnessPct": 82.40343347639485,
+          "maxOverdueHours": 0,
           "method": "前回確認値を次の観測直前まで進めた保守的な最低鮮度。区間内の未観測更新は含まない",
           "executionContext": {
             "from": {
               "event": "schedule",
-              "runId": "40195502914",
+              "runId": "40225978749",
               "environment": "GitHub Actions"
             },
             "to": {
               "event": "workflow_run",
-              "runId": "40196574358",
+              "runId": "40228034338",
               "environment": "GitHub Actions"
             }
           }
@@ -365,5 +365,5 @@
     }
   },
   "publicationStatus": "監視保存済み・公開工程は別",
-  "lastSuccessAt": "2026-10-25T13:13:20.994Z"
+  "lastSuccessAt": "2026-10-25T19:52:28.978Z"
 }
