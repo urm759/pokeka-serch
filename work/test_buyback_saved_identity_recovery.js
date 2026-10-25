@@ -164,4 +164,14 @@ revalidated.saved.shops.shop[mew.id][date].title='ミュウex 英語版 SAR 205/
 assert.equal(aggregate(revalidated.saved,fixture(mew,titles[0][1]).source,cards,Date.parse(at)).cards[mew.id],undefined,
   'previously accepted history is revalidated by the common identity rules');
 assert.equal(revalidated.saved.shops.shop[mew.id][date].price,heldPrice,'held original history remains intact');
+assert.equal(revalidated.saved.shops.shop[mew.id][date].quarantined,true,'the same held history is excluded by downstream buyback-support consumers');
+assert.equal(revalidated.saved.shops.shop[mew.id][date].observedAt,at,'quarantine never updates the original confirmation');
+revalidated.saved.shops.shop[mew.id][date].title=titles[0][1];
+assert(aggregate(revalidated.saved,fixture(mew,titles[0][1]).source,cards,Date.parse(at)).cards[mew.id],
+  'only the known identity hold may clear after a verifiable same-print correction');
+assert.equal(revalidated.saved.shops.shop[mew.id][date].quarantined,undefined);
+Object.assign(revalidated.saved.shops.shop[mew.id][date],{quarantined:true,quarantineKind:'price-conflict'});
+assert.equal(aggregate(revalidated.saved,fixture(mew,titles[0][1]).source,cards,Date.parse(at)).cards[mew.id],undefined,
+  'an identity match cannot clear a separate price-conflict hold');
+assert.equal(revalidated.saved.shops.shop[mew.id][date].quarantineKind,'price-conflict');
 console.log('PASS saved buyback identity recovery: language, sets, full prints, rarity, finishes, promo evidence, unique mapping, SA/SRC and original source proof');

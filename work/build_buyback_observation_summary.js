@@ -141,7 +141,16 @@ function aggregate(saved,source,cards,now=Date.now()) {
       for(const date of Object.keys(dates)) if(Date.parse(date)<start) delete dates[date];
       const records=Object.entries(dates).filter(([date,r])=>{
         if(!(r.identityAuditVersion===3 && r.grade==='PSA10' && r.currency==='JPY' && !r.campaign && !r.quantityLimited && r.conditionsConfirmed!==false && date<=asOf && day(r.observedAt)===date && Date.parse(r.observedAt)<=now && r.identity===c.identityKey && Number.isFinite(r.price) && r.price>0))return false;
-        if(resolveSavedItem({name:r.title},cards,byNumber).cardId!==id){(result.historyIdentityHolds[id]||={})[shop]=true;return false;}
+        if(resolveSavedItem({name:r.title},cards,byNumber).cardId!==id){
+          (result.historyIdentityHolds[id]||={})[shop]=true;
+          r.quarantined=true;r.quarantineKind='saved-identity-review';
+          r.quarantineReason='保存原票の言語・セット・番号・仕様を一意照合できない';
+          return false;
+        }
+        if(r.quarantineKind==='saved-identity-review'){
+          delete r.quarantined;delete r.quarantineKind;delete r.quarantineReason;
+        }
+        if(r.quarantined)return false;
         return true;
       });
       const row={identity:c.identityKey,periods:{}};

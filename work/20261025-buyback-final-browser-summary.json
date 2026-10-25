@@ -1,0 +1,135 @@
+{
+  "evaluatedAt": "2026-10-25T06:47:43.080Z",
+  "sourceCommit": "b8cff2d6",
+  "baseline": "9b594b3f",
+  "repeats": 3,
+  "scope": "同じPCの1920/390幅。実スマホ端末ではない。60/120枚、同じ原票と評価時計。初回と逆順の失敗/変動結果は別記録で保持",
+  "optimization": "固定JST日時書式の生成を再利用。日時の文字列は同一、計算結果をキャッシュして日付を固定する方式ではない",
+  "pairs": [
+    {
+      "width": 1920,
+      "scale": "normal",
+      "before": {
+        "fullCalculationMs": 535.2999999523163,
+        "renderMs": 18.5,
+        "detailGenerationMs": 23.600000023841858,
+        "loaded": 2297,
+        "displayed": 60,
+        "jsonBytes": 20292687,
+        "jsonParseMs": 102.60000050067902,
+        "decodeMs": 158.4999998807907
+      },
+      "after": {
+        "fullCalculationMs": 531.7000000476837,
+        "renderMs": 19.399999976158142,
+        "detailGenerationMs": 21.200000047683716,
+        "loaded": 2297,
+        "displayed": 60,
+        "jsonBytes": 20292687,
+        "jsonParseMs": 67.10000014305115,
+        "decodeMs": 138.39999985694885
+      },
+      "sameRevision": true,
+      "sameConditions": true,
+      "idsEqual": true,
+      "visibleNumbersEqual": false,
+      "stableAcrossRepeats": true,
+      "overflow": false,
+      "financialVisibleNumbersEqual": true
+    },
+    {
+      "width": 1920,
+      "scale": "double",
+      "before": {
+        "fullCalculationMs": 1037.5,
+        "renderMs": 33.299999952316284,
+        "detailGenerationMs": 39.700000047683716,
+        "loaded": 4594,
+        "displayed": 120,
+        "jsonBytes": 37716696,
+        "jsonParseMs": 133.299999833107,
+        "decodeMs": 251.60000002384186
+      },
+      "after": {
+        "fullCalculationMs": 1026.8000000715256,
+        "renderMs": 33.800000071525574,
+        "detailGenerationMs": 38.89999997615814,
+        "loaded": 4594,
+        "displayed": 120,
+        "jsonBytes": 37716696,
+        "jsonParseMs": 142.49999976158142,
+        "decodeMs": 272.09999990463257
+      },
+      "sameRevision": true,
+      "sameConditions": true,
+      "idsEqual": true,
+      "visibleNumbersEqual": false,
+      "stableAcrossRepeats": true,
+      "overflow": false,
+      "financialVisibleNumbersEqual": true
+    },
+    {
+      "width": 390,
+      "scale": "normal",
+      "before": {
+        "fullCalculationMs": 500.09999990463257,
+        "renderMs": 19.299999952316284,
+        "detailGenerationMs": 21.600000023841858,
+        "loaded": 2297,
+        "displayed": 60,
+        "jsonBytes": 20292687,
+        "jsonParseMs": 65.5,
+        "decodeMs": 140.09999978542328
+      },
+      "after": {
+        "fullCalculationMs": 517.2999999523163,
+        "renderMs": 18.699999928474426,
+        "detailGenerationMs": 23,
+        "loaded": 2297,
+        "displayed": 60,
+        "jsonBytes": 20292687,
+        "jsonParseMs": 79.60000014305115,
+        "decodeMs": 119.80000007152557
+      },
+      "sameRevision": true,
+      "sameConditions": true,
+      "idsEqual": true,
+      "visibleNumbersEqual": false,
+      "stableAcrossRepeats": true,
+      "overflow": false,
+      "financialVisibleNumbersEqual": true
+    },
+    {
+      "width": 390,
+      "scale": "double",
+      "before": {
+        "fullCalculationMs": 1041.8999999761581,
+        "renderMs": 38.299999952316284,
+        "detailGenerationMs": 41.5,
+        "loaded": 4594,
+        "displayed": 120,
+        "jsonBytes": 37716696,
+        "jsonParseMs": 143.10000002384186,
+        "decodeMs": 254.9999998807907
+      },
+      "after": {
+        "fullCalculationMs": 1027.3999999761581,
+        "renderMs": 38.10000002384186,
+        "detailGenerationMs": 37.59999990463257,
+        "loaded": 4594,
+        "displayed": 120,
+        "jsonBytes": 37716696,
+        "jsonParseMs": 148.69999957084656,
+        "decodeMs": 251.90000021457672
+      },
+      "sameRevision": true,
+      "sameConditions": true,
+      "idsEqual": true,
+      "visibleNumbersEqual": false,
+      "stableAcrossRepeats": true,
+      "overflow": false,
+      "financialVisibleNumbersEqual": true
+    }
+  ],
+  "numberComparisonScope": "全カード文字列の差は遅延POP要約の読込完了時点差。今回の判定以降の価格・上限・利益・資金効率・観測平均・買取倍率の数字と候補IDは4ケースとも一致。非同期POPを価格計算差へ数えない"
+}

@@ -80,5 +80,50 @@
       "proof": "work/20261025-buyback-ui-final-test.log"
     }
   ],
-  "note": "初回の隔離一時フォルダrename拒否、古いトリガー期待値、追加テストの誤った固定価格期待を残す。共通修正後の再試験成功は別記録。失敗を上書きしない"
+  "note": "初回の隔離一時フォルダrename拒否、古いトリガー期待値、追加テストの誤った固定価格期待を残す。共通修正後の再試験成功は別記録。失敗を上書きしない",
+  "finalRetests": [
+    {
+      "test": "test_timestamp_formatter_reuse",
+      "status": 0,
+      "proof": "work/20261025-buyback-test_timestamp_formatter_reuse.log"
+    },
+    {
+      "test": "test_price_comparison_display",
+      "status": 0,
+      "proof": "work/20261025-buyback-test_price_comparison_display.log"
+    },
+    {
+      "test": "test_calculation_pass_reuse",
+      "status": 0,
+      "proof": "work/20261025-buyback-test_calculation_pass_reuse.log"
+    }
+  ],
+  "historyIsolationRetests": [
+    {
+      "test": "saved_identity",
+      "proof": "work/20261025-buyback-test_history-quarantine-final.log",
+      "status": 0
+    },
+    {
+      "test": "buyback_support",
+      "proof": "work/20261025-buyback-test_support-quarantine.log",
+      "status": 0
+    },
+    {
+      "test": "buyback_mean",
+      "proof": "work/20261025-buyback-test_mean-quarantine.log",
+      "status": 0
+    },
+    {
+      "test": "supply_validation",
+      "proof": "work/20261025-buyback-supply-quarantine-retry.log",
+      "status": 0,
+      "initialFailure": "sandbox Temp rename EPERM"
+    },
+    {
+      "test": "ui_data",
+      "proof": "work/20261025-buyback-ui-quarantine-test.log",
+      "status": 0
+    }
+  ]
 }
