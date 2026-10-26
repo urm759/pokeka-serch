@@ -3,8 +3,8 @@ name: Deep Resolve Unmatched Cards
 on:
   workflow_dispatch:
   schedule:
-    # 09:00 JST: a separate deep pass for only unresolved links.
-    - cron: "0 0 * * *"
+    # 09:13 JST: one unresolved-link pass; avoid top-of-hour scheduling load.
+    - cron: "13 0 * * *"
 
 permissions:
   contents: write
