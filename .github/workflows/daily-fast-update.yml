@@ -83,6 +83,7 @@ jobs:
           node work/test_homura_public_feed.js
           node work/test_postpass_cadence.js
           node work/test_bulk_individual_freshness.js
+          node work/test_catalog_history_retention.js
           node work/test_partial_buyback_refresh.js
           node work/test_partial_buyback_recovery.js
           node work/test_saved_camp_recovery.js
@@ -159,6 +160,7 @@ jobs:
           node work/test_saved_psa_summary.js
           node work/test_psa_saved_rematch.js
           node work/test_gemrate_reference_display.js
+          node work/test_gemrate_limited_public_reference.js
           node work/test_psa_completion_publication.js
           node work/test_deadline_capacity_samples.js
           node work/test_current_market_exploration.js

@@ -1,0 +1,74 @@
+{
+  "at": "2026-10-26T15:35:53.140Z",
+  "baseline": "75e01e5ae",
+  "newListings": 183,
+  "retainedHistoricalCatalogRows": 17,
+  "requiredValidFieldsResolved": 327,
+  "requiredValidCardsResolved": 310,
+  "identityHeldFields": 2,
+  "analysis": {
+    "before": 2302,
+    "after": 2320,
+    "gained": 42,
+    "lost": 24,
+    "net": 18,
+    "lostReasons": {
+      "referencePriceMissing": 18,
+      "referencePriceConflict": 6
+    }
+  },
+  "highrare": {
+    "fixedCohort": 1328,
+    "before": 693,
+    "after": 692,
+    "target": 1196,
+    "newlyDiscoveredTargets": 1,
+    "currentTotal": 1329,
+    "unknown": 5069
+  },
+  "candidateOutcome": {
+    "before": 38,
+    "after": 39,
+    "gained": [
+      "x-387059",
+      "pk-78744",
+      "pk-43860",
+      "pk-70080",
+      "x-91285"
+    ],
+    "lost": [
+      "pk-2699",
+      "x-129023",
+      "x-104592",
+      "pk-1506"
+    ]
+  },
+  "gemrate": {
+    "privateMatched": 50,
+    "publicTarget": 50,
+    "calculationAdopted": 0,
+    "automaticAcquisition": false,
+    "sourceDate": "2026-10-23"
+  },
+  "scheduled": {
+    "id": 40340785987,
+    "event": "schedule",
+    "acquisitionAndValidation": "success",
+    "originalPublication": "failure",
+    "cause": "Receipt instruction metadata used reserved credential field name",
+    "recovery": "verified artifact, no reacquisition",
+    "fixedPathScheduledProof": false
+  },
+  "freshness": {
+    "fixedCohort": 192,
+    "current": 185,
+    "currentPct": 96.35416666666667,
+    "day20261026Minimum": 42.70833333333333,
+    "historicalMinimum": 0,
+    "goalHours": 6,
+    "purchaseValidityHours": 48
+  },
+  "publicState": "validated; publication verification pending",
+  "llmCallsInNormalProcessing": 0,
+  "codexCallsInNormalProcessing": 0
+}

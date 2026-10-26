@@ -1,5 +1,7 @@
 # GemRateへの利用範囲確認文案（未送信）
 
+2026-10-26夜追記：受領済み50枚の限定的な事実参照表示は、最新のGEMRATE_POP_REVIEW.mdの範囲で進める。以下は作成当時の未送信文案であり、送る場合は公開済み枚数・最小JSONの項目を最新化する。継続取得・原票再配布・将来の拡大への回答を得る用途。全行為の許諾回答を今回の限定表示の必須条件とはしない。
+
 宛先候補：info@gemrate.com（公式Termsの連絡先）。送信・登録・契約・課金は未実施。送信前に利用者が用途と配信範囲を確認し、別途承認する。
 
 Subject: Permission clarification: downloaded CSV, limited POP display, and automated updates

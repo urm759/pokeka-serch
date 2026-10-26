@@ -1,0 +1,12 @@
+const assert=require('node:assert/strict'),{retained}=require('./retain_catalog_history');
+const old={id:'old',identityKey:'ja|set|001|SR',price:100,priceObservedAt:'2026-10-20T01:00:00Z',psa9ObservedAt:'2026-10-20T01:00:00Z',tv30:3};
+const before=JSON.stringify(old),at='2026-10-26T14:36:10.452Z';
+const rows=retained([old],[],at);assert.equal(rows.length,1);
+assert.equal(rows[0].priceObservedAt,old.priceObservedAt);assert.equal(rows[0].psa9ObservedAt,old.psa9ObservedAt);assert.equal(rows[0].tv30,3);
+assert.equal(rows[0].providerPresence.listConfirmedAt,at);assert.equal(JSON.stringify(old),before);
+assert.equal(retained([old],[old],at).length,0,'normal current rows supersede retained history');
+assert.equal(retained([old],[{...old,id:'replacement'}],at).length,0,'same confirmed identity is not duplicated on ID migration');
+assert.equal(retained([old],[{id:'other',identityKey:'ja|set|001|SA'}],at).length,1,'a different finish cannot replace the old card');
+assert.equal(retained([old,old],[],at).length,1,'no duplicate IDs');
+assert.throws(()=>retained([old],[],'unknown'),/receipt/);
+console.log('PASS catalog identity retention: provider absence vs card removal, original timestamps, duplicate IDs, specification and ID migration');

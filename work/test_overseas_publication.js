@@ -3,6 +3,10 @@ const guard=require('./enforce_overseas_publication'),api=require('./pokedata_of
 const root=fs.mkdtempSync(path.join(os.tmpdir(),'private-overseas-'));
 function write(f,v){fs.mkdirSync(path.dirname(path.join(root,f)),{recursive:true});fs.writeFileSync(path.join(root,f),JSON.stringify(v));}
 (async()=>{
+  const receipt=JSON.parse(fs.readFileSync(path.join(__dirname,'20261026-period-final-publication.json')));
+  assert.equal(guard.priceLeaks(receipt).length,0,'public evidence uses instruction-basis metadata, not reserved credential field names');
+  assert(guard.priceLeaks({merge:{authorization:'Bearer synthetic-secret'}}).length>0,'credential detection remains strict at any nesting depth');
+  assert.equal(guard.priceLeaks({merge:{userInstructionBasis:'user requested public verification'}}).length,0);
   const data={version:1,cards:{one:{localCardId:'one',localCardName:'Card SR [S4 100/100]',linkStatus:'auto-confirmed',pokedata:{language:'JAPANESE',printedNumber:'100/100'},markets:{ebayRaw:{medianJpy:123456,medianUsd:999}}}},linkageRecords:[]};
   write('data/pokedata/sets/test.json',data);
   write('data/psa-official-populations.json',{rows:[{psa10Count:123,fetchedAt:'2026-10-18'}]});

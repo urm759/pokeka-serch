@@ -586,6 +586,7 @@ const startedAt = Date.now();
     isNew: card.isNew,
   }));
   require('./domestic_catalog_supplements').apply(sitePokemon, safeReadJson(path.join(__dirname,'domestic-catalog-supplements.json'),{cards:[]}).cards, previousCards);
+  sitePokemon.push(...require('./retain_catalog_history').retained(previousCards,sitePokemon,priceBatchObservedAt));
   const stableComparable = (card) => JSON.stringify(card || null);
   const changedIds = sitePokemon
     .filter((card) => stableComparable(card) !== stableComparable(previousById.get(card.id)))
@@ -598,7 +599,7 @@ const startedAt = Date.now();
   require('./acquisition_retry').atomicWrite(path.join(base,'domestic-trade-source-audit.json'),tradeReceipt,0);
   const observationReceipt = {
     version: 1, observedAt: priceBatchObservedAt, sourceUrl, chunkUrl, payloadHash: contentHash(chunk),
-    cards: Object.fromEntries(sitePokemon.filter(card=>!card.identityReviewRequired && card.language === 'ja'
+    cards: Object.fromEntries(sitePokemon.filter(card=>observedSourceRows.has(String(card.sourceId||card.id)) && !card.identityReviewRequired && card.language === 'ja'
       && !Object.hasOwn(card,'psa10ObservedAt') && Number.isFinite(card.snkPsa10Price) && card.snkPsa10Price > 0)
       .map(card=>{const original=observedSourceRows.get(String(card.sourceId || card.id));return [card.id,[require('./psa10_observation_evidence').identity(card),card.snkPsa10Price,
         num(original?.p10tv7),num(original?.p10tv30)]];})),
@@ -635,6 +636,8 @@ const startedAt = Date.now();
       updatedAt,
       sourceUrl,
       total: providerPokemon.length,
+      currentResponseTotal: providerPokemon.filter(card=>!card.providerPresence).length,
+      retainedHistoricalTotal: providerPokemon.filter(card=>card.providerPresence?.state==='not-in-latest-response').length,
       cards: providerPokemon.map((card) => ({
         id: card.id,
         sourceId: card.sourceId || card.id,
@@ -649,6 +652,7 @@ const startedAt = Date.now();
         identityReviewRequired: card.identityReviewRequired,
         firstSeenAt: card.firstSeenAt,
         isNew: card.isNew,
+        ...(card.providerPresence?{providerPresence:card.providerPresence}:{}),
         days: Number.isFinite(Number(card.days)) ? Number(card.days) : null,
       })),
     }),
