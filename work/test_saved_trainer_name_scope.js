@@ -12,4 +12,13 @@ assert(!m.namesCompatible('Powerglass',{set:'SV6',no:'94',name:'Power Hourglass'
 assert(m.namesCompatible('Basic Darkness Energy UR[S6a 101/069]',{set:'S6A',no:'101',name:'Darkness Energy | Ultra Rare |'}));
 assert(!m.namesCompatible('Basic Darkness Energy',{set:'S6A',no:'100',name:'Darkness Energy'}));
 assert(!m.namesCompatible('Basic Darkness Energy',{set:'SV11B',no:'101',name:'Darkness Energy'}));
+for (const no of ['75','108']) assert(m.namesCompatible("Misty's Determination",{set:'M5',no,name:"Misty's Vitality"}));
+assert(!m.namesCompatible("Misty's Determination",{set:'CP6',no:'108',name:"Misty's Vitality"}));
+assert(!m.namesCompatible("Misty's Determination",{set:'M5',no:'109',name:"Misty's Vitality"}));
+assert(!m.namesCompatible("Misty's Favor",{set:'M5',no:'108',name:"Misty's Vitality"}));
+assert(m.namesCompatible("Gladion's Decisive Battle",{set:'M5',no:'109',name:"Gladion's Final Battle | Super Rare |"}));
+assert(m.namesCompatible("Gladion's Decisive Battle",{set:'M5',no:'116',name:"Gladion's Showdown | Special Art Rare |"}));
+assert(!m.namesCompatible("Gladion's Decisive Battle",{set:'M5',no:'109',name:"Gladion's Showdown"}));
+assert(!m.namesCompatible("Gladion's Decisive Battle",{set:'M5',no:'76',name:"Gladion's Final Battle"}));
+assert(!m.variantsCompatible('グラジオの決戦 SAR エラー版',"Gladion's Decisive Battle",{set:'M5',no:'116',name:"Gladion's Showdown | Special Art Rare |"}));
 console.log('PASS scoped official trainer-name equivalence; unrelated set, number, character and texture stay distinct');

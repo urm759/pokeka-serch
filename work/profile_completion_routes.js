@@ -88,10 +88,10 @@ function prospectPlan(card,fields,{shops={},linkage={},psaProgress={},psaAccess=
         nextAction:urls.length?'状態A・在庫・価格・個別取得日時の実確認':'正規商品一覧の差分探索→仕様照合→実価格確認',resumeCondition:'取得元アクセス正常・仕様一意。403元は別停止'});
     }else if(['domesticTrades','psa10Trades'].includes(field)){
       const evidence=require('./domestic_trade_evidence').inspect(tradeReceipt,card,field,now);
-      const unsupported=evidence.status==='period-not-provided';
+      const unsupported=['period-not-provided','source-card-absent'].includes(evidence.status);
       requirements.push({field,source:'toreca',state:evidence.status,automatic:!unsupported&&evidence.automatic,
         evidence,reason:evidence.reason,normalBulkRecheck:unsupported,
-        nextAction:unsupported?'期間項目が現原票に未提供。通常の一括差分で提供開始を確認し、専用の個別反復取得はしない':'正規一括差分の期間件数・同一仕様を再確認',
+        nextAction:unsupported?'カードIDまたは期間項目が現原票に未提供。通常の一括差分で提供開始を確認し、専用の個別反復取得はしない':'正規一括差分の期間件数・同一仕様を再確認',
         resumeCondition:unsupported?'正規原票に対象期間の件数が提供されること':'仕様一致・対象期間と取得日時が確認できる正常応答'});
     }else if(field==='domesticPrice' && (priceEvidence?.cards?.[card.id]?.status==='unbacked'
       || priceAudit?.cards?.some(r=>r.id===card.id))){
