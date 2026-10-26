@@ -93,12 +93,12 @@ function build(root=ROOT) {
   result.requiredAvailability.sourceFieldNotProvided=0;
   for(const id of result.srFamily.ids)for(const field of (completion.cards?.[id]?.m||[]).filter(f=>['domesticTrades','psa10Trades'].includes(f))){
     const e=require('./domestic_trade_evidence').inspect(receipt,byId.get(id),field);
-    if(e.status==='period-not-provided') {
+    if(['period-not-provided','source-card-absent'].includes(e.status)) {
       result.requiredAvailability.automatic--;
       result.requiredAvailability.sourceFieldNotProvided++;
     }
     const group=result.tradeEvidence.missing[field]||={};group[e.status]=(group[e.status]||0)+1;
-    result.tradeEvidence.routes[id]||=[];result.tradeEvidence.routes[id].push({field,...e,source:'toreca',method:e.status==='period-not-provided'?'現行原票に期間項目なし・通常一括差分で提供開始を再確認。専用の反復取得はしない':'既存の正規一括差分・次回実取得',completed:false});
+    result.tradeEvidence.routes[id]||=[];result.tradeEvidence.routes[id].push({field,...e,source:'toreca',method:['period-not-provided','source-card-absent'].includes(e.status)?'現行原票にカードIDまたは期間項目なし・通常一括差分で提供開始を再確認。専用の反復取得はしない':'既存の正規一括差分・次回実取得',completed:false});
   }
   const plans = result.srFamily.ids.filter(id => completion.cards?.[id]?.m?.length).map(id => {
     const card = byId.get(id), missing = completion.cards[id].m;

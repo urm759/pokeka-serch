@@ -80,6 +80,7 @@ function variantOf(value) {
   if (/energy mark mirror/.test(name)) return "energy-mark";
   if (/chinese (text )?printing error|incorrect texture/.test(name)) return "incorrect-texture";
   if (/missing texture/.test(name)) return "missing-texture";
+  if (/エラー版|\berror\b|\bmisprint\b/.test(name)) return "unresolved-error";
   if (/normal (style|version|specification)/.test(name)) return "base";
   if (/ミラー/.test(name)) return "reverse-holo";
   if (/\bmirror\b|\breverse holo\b/.test(name)) return "reverse-holo";
@@ -100,7 +101,8 @@ function candidateVariant(row) {
 }
 function suspicious(value) { return /missing texture|error|no rarity|misprint|stamp|mirror|reverse|1st edition|unlimited/i.test(String(value || "")); }
 function variantsCompatible(cardName,englishName,row) {
-  return candidateVariant(row)===variantOf(`${englishName || ''} ${cardName || ''}`);
+  const wanted=variantOf(`${englishName || ''} ${cardName || ''}`);
+  return wanted!=="unresolved-error" && candidateVariant(row)===wanted;
 }
 function namesCompatible(englishName, row) {
   const qualifiers = new Set(['c','u','r','p','pr','rr','rrr','sr','sar','hr','ur','ssr','csr','chr','ar','mur','bwr','ma','sa','s','k',
@@ -125,17 +127,27 @@ function japaneseTitle(card) {
   return String(card.name || '').normalize('NFKC').split('[')[0]
     .replace(/(?<![a-z])\s*(?:SAR|SSR|CSR|SR|HR|UR|RRR|RR|AR|CHR|BWR|MUR|MA|C|U|R)(?:\s*:\s*SA)?\s*$/i, '').trim();
 }
-function savedNameIndex(cards, summary, sourceRows, english) {
-  const originals = new Map(sourceRows.map(r => [`${r.set}|${r.no}|${r.url}|${r.name}`, r]));
+function savedNameIndex(cards, _summary, sourceRows, english) {
+  // Derive name evidence from the same saved originals on every run. Seeding
+  // from yesterday's summary made a second rebuild unlock additional cards.
+  const groups = new Map();
+  for (const row of sourceRows) {
+    const key=`${row.set}|${row.no}`;
+    if(!groups.has(key))groups.set(key,[]);
+    groups.get(key).push(row);
+  }
   const index = new Map();
   for (const card of cards) {
-    const saved = summary.cards?.[card.id], identity = cardIdentity(card);
-    if (!saved || !identity || /【(?:中国語版|韓国語版|英語版)】/.test(card.name || '')) continue;
-    const raw = originals.get(`${identity.set}|${identity.no}|${saved.u}|${saved.n}`);
-    if (!raw || !/\/pokemon-japanese-/.test(raw.url) || observationTime(raw.fetchedAt) == null
-      || raw.ten !== saved.ten || raw.total !== saved.total
-      || !namesCompatible(english[card.id]?.englishName, raw)
-      || !variantsCompatible(card.name, english[card.id]?.englishName, raw)) continue;
+    const identity = cardIdentity(card);
+    if (!identity || card.identityReviewRequired || /【(?:中国語版|韓国語版|英語版)】/.test(card.name || '')) continue;
+    const rows=(groups.get(`${identity.set}|${identity.no}`)||[]).filter(raw=>
+      /\/pokemon-japanese-/.test(raw.url) && observationTime(raw.fetchedAt)!=null
+      && Number.isFinite(raw.ten) && raw.ten>=0 && raw.total>0 && raw.total>=raw.ten
+      && namesCompatible(english[card.id]?.englishName,raw)
+      && variantsCompatible(card.name,english[card.id]?.englishName,raw));
+    if(!rows.length || !rows.every(row=>namesCompatible(rows[0].name,row)))continue;
+    const raw=[...rows].sort((a,b)=>observationTime(b.fetchedAt)-observationTime(a.fetchedAt)
+      || String(a.url).localeCompare(String(b.url)) || a.name.localeCompare(b.name))[0];
     const key = japaneseTitle(card), title = raw.name.split('|')[0].replace(/^Full Art\//i, '').trim();
     if (!key || !title) continue;
     if (!index.has(key)) index.set(key, []);

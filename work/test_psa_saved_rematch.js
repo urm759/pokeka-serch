@@ -45,6 +45,17 @@ assert.equal(b.namesCompatible('Alola Vulpix V SR [S11a 077/068]', {name:'Full A
 assert.equal(b.namesCompatible('Alola Vulpix V', {name:'Alolan Vulpix VSTAR |'}),false);
 assert.equal(b.variantsCompatible('アローラロコンV SR[S11a 077/068]','Alola Vulpix V',{name:'Alolan Vulpix V | Missing Texture |'}),false);
 const refs = [1, 2].map(n => ({ cardId: 'e' + n, set: 'S9', no: String(n), sourceUrl: 'https://www.psacard.com/pop/tcg-cards/2022/pokemon-japanese-x/1', title: "Cheren's Care", observedAt: '2026-10-10T10:00:00Z' }));
+const nameCards=[{id:'water1',name:'基本水エネルギー UR[S6H 095/070]'},{id:'water2',name:'基本水エネルギー SR[S12a 253/172]'}];
+const nameRows=nameCards.map((c,i)=>({...b.cardIdentity(c),name:'Water Energy |',ten:10,total:20,
+  url:`https://www.psacard.com/pop/tcg-cards/2022/pokemon-japanese-water/${i+1}`,fetchedAt:'2026-10-10T10:00:00Z'}));
+const nameCache=Object.fromEntries(nameCards.map(c=>[c.id,{englishName:'Basic Water Energy'}]));
+const withoutSummary=b.savedNameIndex(nameCards,{cards:{}},nameRows,nameCache);
+const withSummary=b.savedNameIndex(nameCards,{cards:Object.fromEntries(nameCards.map((c,i)=>[c.id,{u:nameRows[i].url,n:nameRows[i].name,ten:10,total:20}]))},nameRows,nameCache);
+assert.deepEqual(withoutSummary,withSummary,'same originals must not depend on the preceding generated summary');
+assert.equal(withoutSummary.get('基本水エネルギー').length,2);
+assert.equal(b.resolvedEnglishName({id:'water3',name:'基本水エネルギー[s8a WAT]'},'Basic Water Energy',withoutSummary).name,'Water Energy');
+assert(!b.variantsCompatible('グラジオの決戦 エラー版','Gladion Error ver.',{name:'Gladion |'}),'unspecified error is not a normal print');
+assert(!b.variantsCompatible('グラジオの決戦 エラー版','Gladion Error ver.',{name:'Gladion | Incorrect Texture |'}),'unknown error is not proof of a particular error');
 const trainer = { id: 't', name: 'チェレンの気くばり SAR[S12a 241/172]' };
 assert.equal(b.resolvedEnglishName(trainer, "Cheren's Attention SAR[S12a 241/172]", new Map([[b.japaneseTitle(trainer), refs]])).name, "Cheren's Care");
 assert.notEqual(b.resolvedEnglishName(trainer, "Cheren's Attention", new Map([[b.japaneseTitle(trainer), [refs[0], refs[0]]]])).name, "Cheren's Care", 'duplicate print IDs cannot establish two proofs');

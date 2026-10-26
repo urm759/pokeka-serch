@@ -594,7 +594,7 @@ const startedAt = Date.now();
   // This receipt is written only after parsing the actual price payload, not the HTML/304 gate.
   const observedSourceRows=new Map(pokemonSource.map(card=>[String(card.id),card]));
   const tradeReceipt=require('./domestic_trade_evidence').capture(sitePokemon,observedSourceRows,
-    {observedAt:priceBatchObservedAt,sourceUrl,payloadHash:contentHash(chunk)});
+    {observedAt:priceBatchObservedAt,sourceUrl,payloadHash:contentHash(chunk),completeCardList:true});
   require('./acquisition_retry').atomicWrite(path.join(base,'domestic-trade-source-audit.json'),tradeReceipt,0);
   const observationReceipt = {
     version: 1, observedAt: priceBatchObservedAt, sourceUrl, chunkUrl, payloadHash: contentHash(chunk),
