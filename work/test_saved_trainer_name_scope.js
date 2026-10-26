@@ -6,4 +6,10 @@ assert(m.namesCompatible("Boss’s Orders Ghetsis SAR[SV1a 100/073]",{set:'SV1A'
 assert(!m.namesCompatible("Boss’s Orders Ghetsis",{set:'SV1A',no:'99',name:"Boss's Orders"}));
 assert(!m.namesCompatible("Boss’s Orders Cyrus",{set:'SV1A',no:'100',name:"Boss's Orders"}));
 assert(!m.variantsCompatible('Nのゾロアークex エラー版','Incorrect Texture',{name:'N Zoroark ex Ultra Rare',set:'SV9'}));
+assert(m.namesCompatible('Powerglass UR[SV6a 094/064]',{set:'SV6A',no:'94',name:'Power Hourglass | Ultra Rare |'}));
+assert(!m.namesCompatible('Powerglass',{set:'SV6A',no:'93',name:'Power Hourglass'}));
+assert(!m.namesCompatible('Powerglass',{set:'SV6',no:'94',name:'Power Hourglass'}));
+assert(m.namesCompatible('Basic Darkness Energy UR[S6a 101/069]',{set:'S6A',no:'101',name:'Darkness Energy | Ultra Rare |'}));
+assert(!m.namesCompatible('Basic Darkness Energy',{set:'S6A',no:'100',name:'Darkness Energy'}));
+assert(!m.namesCompatible('Basic Darkness Energy',{set:'SV11B',no:'101',name:'Darkness Energy'}));
 console.log('PASS scoped official trainer-name equivalence; unrelated set, number, character and texture stay distinct');

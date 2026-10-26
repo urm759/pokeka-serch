@@ -23,4 +23,17 @@ assert.throws(()=>adapter.fukufuku('<table></table>',cards,at,url),/形式変更
 const shop=require('./update_shop_buybacks').SHOPS.find(s=>s.id==='fukufuku-mail');
 assert.equal(shop.fulfilment,'mail');assert.equal(shop.merchantId,'fukufuku');
 assert.match(shop.conditions,/持込不可/);
+const permissions=require('./buyback-source-permissions.json').sources;
+const cancelled=['otachu-akiba5-mail','kaitori-toban-mail'];
+for(const id of cancelled){
+  assert.equal(permissions[id].status,'retired');assert.equal(permissions[id].cancelledByUser,true);
+  assert(!require('./update_shop_buybacks').SHOPS.some(s=>s.id===id),'cancelled additions cannot be scheduled');
+}
+const original={dates:['2026-10-25'],shops:Object.fromEntries([...cancelled,'fukufuku-mail'].map(id=>[id,{name:id}])),
+  cards:{one:{shops:Object.fromEntries([...cancelled,'fukufuku-mail'].map(id=>[id,{price:100,c30:1,avg30:100,listingActive:true}]))}}};
+const excluded=require('./apply_buyback_retirements').exclude(original,cancelled);
+assert.deepEqual(Object.keys(excluded.shops),['fukufuku-mail']);
+assert.deepEqual(Object.keys(excluded.cards.one.shops),['fukufuku-mail']);
+assert.equal(excluded.cards.one.currentShops,1);assert.equal(excluded.cards.one.shop30,1);
+assert.equal(Object.keys(original.shops).length,3,'history input is not deleted');
 console.log('PASS public mail tables: specifications, quote/page/observation dates, guarantees, duplicates, conflicts, mail-only');
