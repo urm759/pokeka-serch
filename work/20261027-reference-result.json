@@ -45,10 +45,10 @@
   },
   "gemrate": {
     "privateMatched": 50,
-    "publicTarget": 50,
     "calculationAdopted": 0,
     "automaticAcquisition": false,
-    "sourceDate": "2026-10-23"
+    "sourceDate": "2026-10-23",
+    "publicReferences": 50
   },
   "scheduled": {
     "id": 40340785987,
@@ -68,7 +68,19 @@
     "goalHours": 6,
     "purchaseValidityHours": 48
   },
-  "publicState": "validated; publication verification pending",
+  "publicState": "published and verified",
   "llmCallsInNormalProcessing": 0,
-  "codexCallsInNormalProcessing": 0
+  "codexCallsInNormalProcessing": 0,
+  "publication": {
+    "commit": "01006305db94922a0fab83b6d40f30e2fda67e16",
+    "pagesRun": 40351602554,
+    "completedAt": "2026-10-26T15:41:53Z",
+    "revision": "471c3a889687d6c83ad16e0633ad49d801bbffaf4b5173244d33de96b0d7d2ca",
+    "verifiedFiles": 185,
+    "psaLinked": 6292,
+    "storeAcquisitionToPagesMinutes": 55.66223333333333,
+    "gemrateSummaryHash": "dd074a1c3299346caa85e55745016dee17e019438458e4ef2f63285f3a4ffc51",
+    "pcVerified": true,
+    "mobile390Verified": true
+  }
 }
