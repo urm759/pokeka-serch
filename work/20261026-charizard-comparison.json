@@ -1,0 +1,4967 @@
+{
+  "at": "2026-10-26T08:22:21.800Z",
+  "baseline": "66c1ed96a",
+  "sameCode": true,
+  "sameSettings": true,
+  "sameEvaluationTime": true,
+  "profiles": [
+    {
+      "id": "A",
+      "before": [
+        "pk-73747",
+        "pk-38392",
+        "pk-63635",
+        "pk-23002",
+        "pk-6015",
+        "x-122054",
+        "pk-14592",
+        "pk-3123",
+        "pk-4376",
+        "pk-39522",
+        "x-104600"
+      ],
+      "after": [
+        "pk-73747",
+        "pk-38392",
+        "pk-63635",
+        "pk-23002",
+        "pk-6015",
+        "x-122054",
+        "pk-14592",
+        "pk-3123",
+        "pk-4376",
+        "pk-39522",
+        "x-104600"
+      ],
+      "gained": [],
+      "lost": [],
+      "inspected": [
+        {
+          "id": "pk-43860",
+          "before": {
+            "identityKey": "SV2A|201165|リザードンEX|SAR||ja|リザードンEXSARSV2A201165強化拡張パックポケモンカード151",
+            "referencePrice": 56400,
+            "psa10": 110000,
+            "purchase": null,
+            "sourceQuotes": {
+              "cardrush": {
+                "price": 74800,
+                "stock": 33,
+                "available": null,
+                "priceObservedAt": "2026-08-30",
+                "inventoryObservedAt": "2026-08-30",
+                "url": "https://www.cardrush-pokemon.jp/product/43860",
+                "sourceFailure": "pk-73737: HTTP 403"
+              },
+              "hareruya2": {
+                "price": 60000,
+                "stock": 0,
+                "available": false,
+                "priceObservedAt": "2026-10-26T07:12:30.708Z",
+                "inventoryObservedAt": "2026-10-26T07:12:30.708Z",
+                "url": "https://www.hareruya2.com/products/9017521013056",
+                "sourceFailure": "時間上限・保存して安全停止"
+              },
+              "torecacamp": {
+                "price": 52800,
+                "stock": null,
+                "available": false,
+                "priceObservedAt": "2026-10-25T19:28:01.061Z",
+                "inventoryObservedAt": "2026-10-25T19:28:01.061Z",
+                "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                "sourceFailure": null
+              },
+              "yuyutei": {
+                "price": 69800,
+                "stock": 0,
+                "available": null,
+                "priceObservedAt": "2026-09-05",
+                "inventoryObservedAt": "2026-09-05",
+                "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                "sourceFailure": "HTTP 403"
+              }
+            },
+            "psa9": {
+              "price": 62500,
+              "ratio": 90.24,
+              "buy": 56400,
+              "measurementType": "aggregate",
+              "updatedAt": "2026-10-26T03:03:12.467Z",
+              "reasons": []
+            },
+            "efficiency": {
+              "buy": null,
+              "profit": null,
+              "roi": null,
+              "annual": null,
+              "scenario": "現在出口相場が続く仮定",
+              "exit": "買取店・フリマの低い方",
+              "days": 157,
+              "basis": "実店舗状態A価格",
+              "blockingReasons": []
+            },
+            "buyback": [
+              {
+                "shopId": "torecabank",
+                "price": null,
+                "priceDate": "2026-10-25",
+                "observedAt": "2026-10-26T07:06:29.171Z",
+                "valid": false,
+                "stale": false,
+                "listingActive": false,
+                "reason": "価格未取得"
+              },
+              {
+                "shopId": "toreca-lounge",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:29.952Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "bluerocket",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T00:32:36.169Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "shinsoku",
+                "price": 99000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:35.723Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "torecaclub",
+                "price": 105000,
+                "priceDate": "2026-10-13",
+                "observedAt": null,
+                "valid": true,
+                "stale": true,
+                "listingActive": true,
+                "reason": "価格更新が古い"
+              },
+              {
+                "shopId": "toreca-birth-mail",
+                "price": 94600,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:41.161Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "kaitori-homura-mail",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:35:56.967Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "fukufuku-mail",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:36:11.961Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              }
+            ],
+            "specificationHeld": false,
+            "dataQuality": {
+              "manualReview": false,
+              "manualReviewReasons": [],
+              "dataShortage": false,
+              "dataShortageReasons": [],
+              "outlierExcluded": true,
+              "outlierExcludedReasons": [
+                "みんトレ状態A ¥41,000"
+              ],
+              "priceQuarantined": false,
+              "priceQuarantineReasons": [],
+              "shortageRiskPct": 0,
+              "confidence": "高",
+              "trustedPriceCount": 2,
+              "dataAnomaly": false,
+              "dataAnomalyReasons": []
+            },
+            "priceReview": {
+              "conflicted": false,
+              "integrityDisputed": false,
+              "manualReview": false,
+              "reasons": [],
+              "sources": [
+                {
+                  "source": "トレカキャンプ状態A",
+                  "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                  "value": 52800,
+                  "at": "2026-10-25T19:28:01.061Z",
+                  "reason": null
+                },
+                {
+                  "source": "晴れる屋2状態A",
+                  "url": "https://www.hareruya2.com/products/9017521013056",
+                  "value": 60000,
+                  "at": "2026-10-26T07:12:30.708Z",
+                  "reason": null
+                },
+                {
+                  "source": "みんトレ状態A",
+                  "url": "https://toreca-souba.com/cards/pk-43860",
+                  "value": 41000,
+                  "at": "2026-10-26T03:03:12.467Z",
+                  "reason": null
+                },
+                {
+                  "source": "カードラッシュ状態A",
+                  "url": "https://www.cardrush-pokemon.jp/product/43860",
+                  "value": 74800,
+                  "at": "2026-08-30",
+                  "reason": null
+                },
+                {
+                  "source": "遊々亭状態A",
+                  "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                  "value": 69800,
+                  "at": "2026-09-05",
+                  "reason": null
+                }
+              ]
+            },
+            "medianEvidence": null,
+            "inputs": {
+              "fee": 10980,
+              "saleFeeRate": 8,
+              "saleExtraCost": 0,
+              "buybackDeductionRate": 5,
+              "hitRate": 0.8410079885692018
+            },
+            "assessment": {
+              "supplyRisk": 51,
+              "marketStability": 58,
+              "cautions": [
+                "状態A在庫の減少が速くPSA供給増リスク",
+                "PSA公式枚数が更新待ち"
+              ],
+              "stockDemand": "買う人が多い"
+            },
+            "forecastEvidence": {
+              "rawTrend30": -17.7,
+              "downsideScore": 68,
+              "supplyPressure": "未判定",
+              "psa10Tx30": 142,
+              "shopDrop30": 32
+            },
+            "decision": {
+              "verdict": "価格次第",
+              "reasons": [
+                "期間不一致・返却時試算不可（予測91日／返却147日）。上限は91日モデルの参考値",
+                "¥42,500以下なら再判定",
+                "運用上限の平滑値を反映"
+              ],
+              "operationalLimit": 42500
+            },
+            "presets": {
+              "now": false,
+              "aggressive": false,
+              "lowRisk": false,
+              "turnover": true,
+              "bargain": false,
+              "curated": false,
+              "combined": true,
+              "priceWait": true,
+              "domesticExit": true,
+              "trusted": false,
+              "stressSafe": true,
+              "gapToLimit": 32.70588235294118,
+              "tags": [
+                "高回転",
+                "価格待ち",
+                "期間不一致・参考探索"
+              ],
+              "catalogReady": true,
+              "current-market": false
+            },
+            "exclusions": [
+              "単体資金効率算出不可・在庫なし",
+              "購入価格条件・在庫なし",
+              "仕入れ余裕率・上限算出不可"
+            ]
+          },
+          "after": {
+            "identityKey": "SV2A|201165|リザードンEX|SAR||ja|リザードンEXSARSV2A201165強化拡張パックポケモンカード151",
+            "referencePrice": 56400,
+            "psa10": 110000,
+            "purchase": null,
+            "sourceQuotes": {
+              "cardrush": {
+                "price": 74800,
+                "stock": 33,
+                "available": null,
+                "priceObservedAt": "2026-08-30",
+                "inventoryObservedAt": "2026-08-30",
+                "url": "https://www.cardrush-pokemon.jp/product/43860",
+                "sourceFailure": "pk-73737: HTTP 403"
+              },
+              "hareruya2": {
+                "price": 60000,
+                "stock": 0,
+                "available": false,
+                "priceObservedAt": "2026-10-26T07:12:30.708Z",
+                "inventoryObservedAt": "2026-10-26T07:12:30.708Z",
+                "url": "https://www.hareruya2.com/products/9017521013056",
+                "sourceFailure": null
+              },
+              "torecacamp": {
+                "price": 52800,
+                "stock": null,
+                "available": false,
+                "priceObservedAt": "2026-10-26T08:12:31.089Z",
+                "inventoryObservedAt": "2026-10-26T08:12:31.089Z",
+                "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                "sourceFailure": null
+              },
+              "yuyutei": {
+                "price": 69800,
+                "stock": 0,
+                "available": null,
+                "priceObservedAt": "2026-09-05",
+                "inventoryObservedAt": "2026-09-05",
+                "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                "sourceFailure": "HTTP 403"
+              }
+            },
+            "psa9": {
+              "price": 62500,
+              "ratio": 90.24,
+              "buy": 56400,
+              "measurementType": "aggregate",
+              "updatedAt": "2026-10-26T03:03:12.467Z",
+              "reasons": []
+            },
+            "efficiency": {
+              "buy": null,
+              "profit": null,
+              "roi": null,
+              "annual": null,
+              "scenario": "現在出口相場が続く仮定",
+              "exit": "買取店・フリマの低い方",
+              "days": 157,
+              "basis": "実店舗状態A価格",
+              "blockingReasons": []
+            },
+            "buyback": [
+              {
+                "shopId": "torecabank",
+                "price": null,
+                "priceDate": "2026-10-25",
+                "observedAt": "2026-10-26T07:06:29.171Z",
+                "valid": false,
+                "stale": false,
+                "listingActive": false,
+                "reason": "価格未取得"
+              },
+              {
+                "shopId": "toreca-lounge",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:29.952Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "bluerocket",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T00:32:36.169Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "shinsoku",
+                "price": 99000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:35.723Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "torecaclub",
+                "price": 105000,
+                "priceDate": "2026-10-13",
+                "observedAt": null,
+                "valid": true,
+                "stale": true,
+                "listingActive": true,
+                "reason": "価格更新が古い"
+              },
+              {
+                "shopId": "toreca-birth-mail",
+                "price": 94600,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:41.161Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "kaitori-homura-mail",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:35:56.967Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "fukufuku-mail",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:36:11.961Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              }
+            ],
+            "specificationHeld": false,
+            "dataQuality": {
+              "manualReview": false,
+              "manualReviewReasons": [],
+              "dataShortage": false,
+              "dataShortageReasons": [],
+              "outlierExcluded": true,
+              "outlierExcludedReasons": [
+                "みんトレ状態A ¥41,000"
+              ],
+              "priceQuarantined": false,
+              "priceQuarantineReasons": [],
+              "shortageRiskPct": 0,
+              "confidence": "高",
+              "trustedPriceCount": 2,
+              "dataAnomaly": false,
+              "dataAnomalyReasons": []
+            },
+            "priceReview": {
+              "conflicted": false,
+              "integrityDisputed": false,
+              "manualReview": false,
+              "reasons": [],
+              "sources": [
+                {
+                  "source": "トレカキャンプ状態A",
+                  "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                  "value": 52800,
+                  "at": "2026-10-26T08:12:31.089Z",
+                  "reason": null
+                },
+                {
+                  "source": "晴れる屋2状態A",
+                  "url": "https://www.hareruya2.com/products/9017521013056",
+                  "value": 60000,
+                  "at": "2026-10-26T07:12:30.708Z",
+                  "reason": null
+                },
+                {
+                  "source": "みんトレ状態A",
+                  "url": "https://toreca-souba.com/cards/pk-43860",
+                  "value": 41000,
+                  "at": "2026-10-26T03:03:12.467Z",
+                  "reason": null
+                },
+                {
+                  "source": "カードラッシュ状態A",
+                  "url": "https://www.cardrush-pokemon.jp/product/43860",
+                  "value": 74800,
+                  "at": "2026-08-30",
+                  "reason": null
+                },
+                {
+                  "source": "遊々亭状態A",
+                  "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                  "value": 69800,
+                  "at": "2026-09-05",
+                  "reason": null
+                }
+              ]
+            },
+            "medianEvidence": null,
+            "inputs": {
+              "fee": 10980,
+              "saleFeeRate": 8,
+              "saleExtraCost": 0,
+              "buybackDeductionRate": 5,
+              "hitRate": 0.8410079885692018
+            },
+            "assessment": {
+              "supplyRisk": 51,
+              "marketStability": 58,
+              "cautions": [
+                "状態A在庫の減少が速くPSA供給増リスク",
+                "PSA公式枚数が更新待ち"
+              ],
+              "stockDemand": "買う人が多い"
+            },
+            "forecastEvidence": {
+              "rawTrend30": -17.7,
+              "downsideScore": 68,
+              "supplyPressure": "未判定",
+              "psa10Tx30": 142,
+              "shopDrop30": 32
+            },
+            "decision": {
+              "verdict": "価格次第",
+              "reasons": [
+                "期間不一致・返却時試算不可（予測91日／返却147日）。上限は91日モデルの参考値",
+                "¥42,500以下なら再判定",
+                "運用上限の平滑値を反映"
+              ],
+              "operationalLimit": 42500
+            },
+            "presets": {
+              "now": false,
+              "aggressive": false,
+              "lowRisk": false,
+              "turnover": true,
+              "bargain": false,
+              "curated": false,
+              "combined": true,
+              "priceWait": true,
+              "domesticExit": true,
+              "trusted": false,
+              "stressSafe": true,
+              "gapToLimit": 32.70588235294118,
+              "tags": [
+                "高回転",
+                "価格待ち",
+                "期間不一致・参考探索"
+              ],
+              "catalogReady": true,
+              "current-market": false
+            },
+            "exclusions": [
+              "単体資金効率算出不可・在庫なし",
+              "購入価格条件・在庫なし",
+              "仕入れ余裕率・上限算出不可"
+            ]
+          }
+        }
+      ],
+      "missingHistoricalInputs": []
+    },
+    {
+      "id": "B",
+      "before": [
+        "pk-22379",
+        "pk-51076",
+        "pk-67343",
+        "pk-67583",
+        "pk-43864",
+        "pk-51078",
+        "pk-5188",
+        "pk-45925",
+        "pk-7040",
+        "pk-41858",
+        "x-107497",
+        "pk-6036",
+        "pk-21474",
+        "pk-5202",
+        "pk-18241",
+        "pk-4376",
+        "pk-2699",
+        "x-129023",
+        "x-104592",
+        "pk-985",
+        "x-104636",
+        "pk-1506"
+      ],
+      "after": [
+        "pk-22379",
+        "pk-51076",
+        "pk-67343",
+        "pk-67583",
+        "pk-43864",
+        "pk-51078",
+        "pk-5188",
+        "pk-45925",
+        "pk-7040",
+        "pk-41858",
+        "x-107497",
+        "pk-6036",
+        "pk-21474",
+        "pk-5202",
+        "pk-18241",
+        "pk-4376",
+        "pk-2699",
+        "x-129023",
+        "x-104592",
+        "pk-985",
+        "x-104636",
+        "pk-1506"
+      ],
+      "gained": [],
+      "lost": [],
+      "inspected": [
+        {
+          "id": "pk-43860",
+          "before": {
+            "identityKey": "SV2A|201165|リザードンEX|SAR||ja|リザードンEXSARSV2A201165強化拡張パックポケモンカード151",
+            "referencePrice": 56400,
+            "psa10": 110000,
+            "purchase": null,
+            "sourceQuotes": {
+              "cardrush": {
+                "price": 74800,
+                "stock": 33,
+                "available": null,
+                "priceObservedAt": "2026-08-30",
+                "inventoryObservedAt": "2026-08-30",
+                "url": "https://www.cardrush-pokemon.jp/product/43860",
+                "sourceFailure": "pk-73737: HTTP 403"
+              },
+              "hareruya2": {
+                "price": 60000,
+                "stock": 0,
+                "available": false,
+                "priceObservedAt": "2026-10-26T07:12:30.708Z",
+                "inventoryObservedAt": "2026-10-26T07:12:30.708Z",
+                "url": "https://www.hareruya2.com/products/9017521013056",
+                "sourceFailure": "時間上限・保存して安全停止"
+              },
+              "torecacamp": {
+                "price": 52800,
+                "stock": null,
+                "available": false,
+                "priceObservedAt": "2026-10-25T19:28:01.061Z",
+                "inventoryObservedAt": "2026-10-25T19:28:01.061Z",
+                "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                "sourceFailure": null
+              },
+              "yuyutei": {
+                "price": 69800,
+                "stock": 0,
+                "available": null,
+                "priceObservedAt": "2026-09-05",
+                "inventoryObservedAt": "2026-09-05",
+                "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                "sourceFailure": "HTTP 403"
+              }
+            },
+            "psa9": {
+              "price": 62500,
+              "ratio": 90.24,
+              "buy": 56400,
+              "measurementType": "aggregate",
+              "updatedAt": "2026-10-26T03:03:12.467Z",
+              "reasons": []
+            },
+            "efficiency": {
+              "buy": null,
+              "profit": null,
+              "roi": null,
+              "annual": null,
+              "scenario": "現在出口相場が続く仮定",
+              "exit": "買取店・フリマの低い方",
+              "days": 101,
+              "basis": "実店舗状態A価格",
+              "blockingReasons": []
+            },
+            "buyback": [
+              {
+                "shopId": "torecabank",
+                "price": null,
+                "priceDate": "2026-10-25",
+                "observedAt": "2026-10-26T07:06:29.171Z",
+                "valid": false,
+                "stale": false,
+                "listingActive": false,
+                "reason": "価格未取得"
+              },
+              {
+                "shopId": "toreca-lounge",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:29.952Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "bluerocket",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T00:32:36.169Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "shinsoku",
+                "price": 99000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:35.723Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "torecaclub",
+                "price": 105000,
+                "priceDate": "2026-10-13",
+                "observedAt": null,
+                "valid": true,
+                "stale": true,
+                "listingActive": true,
+                "reason": "価格更新が古い"
+              },
+              {
+                "shopId": "toreca-birth-mail",
+                "price": 94600,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:41.161Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "kaitori-homura-mail",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:35:56.967Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "fukufuku-mail",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:36:11.961Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              }
+            ],
+            "specificationHeld": false,
+            "dataQuality": {
+              "manualReview": false,
+              "manualReviewReasons": [],
+              "dataShortage": false,
+              "dataShortageReasons": [],
+              "outlierExcluded": true,
+              "outlierExcludedReasons": [
+                "みんトレ状態A ¥41,000"
+              ],
+              "priceQuarantined": false,
+              "priceQuarantineReasons": [],
+              "shortageRiskPct": 0,
+              "confidence": "高",
+              "trustedPriceCount": 2,
+              "dataAnomaly": false,
+              "dataAnomalyReasons": []
+            },
+            "priceReview": {
+              "conflicted": false,
+              "integrityDisputed": false,
+              "manualReview": false,
+              "reasons": [],
+              "sources": [
+                {
+                  "source": "トレカキャンプ状態A",
+                  "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                  "value": 52800,
+                  "at": "2026-10-25T19:28:01.061Z",
+                  "reason": null
+                },
+                {
+                  "source": "晴れる屋2状態A",
+                  "url": "https://www.hareruya2.com/products/9017521013056",
+                  "value": 60000,
+                  "at": "2026-10-26T07:12:30.708Z",
+                  "reason": null
+                },
+                {
+                  "source": "みんトレ状態A",
+                  "url": "https://toreca-souba.com/cards/pk-43860",
+                  "value": 41000,
+                  "at": "2026-10-26T03:03:12.467Z",
+                  "reason": null
+                },
+                {
+                  "source": "カードラッシュ状態A",
+                  "url": "https://www.cardrush-pokemon.jp/product/43860",
+                  "value": 74800,
+                  "at": "2026-08-30",
+                  "reason": null
+                },
+                {
+                  "source": "遊々亭状態A",
+                  "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                  "value": 69800,
+                  "at": "2026-09-05",
+                  "reason": null
+                }
+              ]
+            },
+            "medianEvidence": null,
+            "inputs": {
+              "fee": 12980,
+              "saleFeeRate": 8,
+              "saleExtraCost": 0,
+              "buybackDeductionRate": 5,
+              "hitRate": 0.8410079885692018
+            },
+            "assessment": {
+              "supplyRisk": 51,
+              "marketStability": 58,
+              "cautions": [
+                "状態A在庫の減少が速くPSA供給増リスク",
+                "PSA公式枚数が更新待ち"
+              ],
+              "stockDemand": "買う人が多い"
+            },
+            "forecastEvidence": {
+              "rawTrend30": -17.7,
+              "downsideScore": 68,
+              "supplyPressure": "未判定",
+              "psa10Tx30": 142,
+              "shopDrop30": 32
+            },
+            "decision": {
+              "verdict": "価格次第",
+              "reasons": [
+                "¥40,000以下なら再判定",
+                "運用上限の平滑値を反映"
+              ],
+              "operationalLimit": 40000
+            },
+            "presets": {
+              "now": false,
+              "aggressive": false,
+              "lowRisk": false,
+              "turnover": true,
+              "bargain": false,
+              "curated": false,
+              "combined": true,
+              "priceWait": true,
+              "domesticExit": true,
+              "trusted": false,
+              "stressSafe": true,
+              "gapToLimit": 41,
+              "tags": [
+                "高回転",
+                "価格待ち"
+              ],
+              "catalogReady": true,
+              "current-market": false
+            },
+            "exclusions": [
+              "単体資金効率算出不可・在庫なし",
+              "購入価格条件・在庫なし",
+              "仕入れ余裕率・上限算出不可",
+              "国内PSA9比率"
+            ]
+          },
+          "after": {
+            "identityKey": "SV2A|201165|リザードンEX|SAR||ja|リザードンEXSARSV2A201165強化拡張パックポケモンカード151",
+            "referencePrice": 56400,
+            "psa10": 110000,
+            "purchase": null,
+            "sourceQuotes": {
+              "cardrush": {
+                "price": 74800,
+                "stock": 33,
+                "available": null,
+                "priceObservedAt": "2026-08-30",
+                "inventoryObservedAt": "2026-08-30",
+                "url": "https://www.cardrush-pokemon.jp/product/43860",
+                "sourceFailure": "pk-73737: HTTP 403"
+              },
+              "hareruya2": {
+                "price": 60000,
+                "stock": 0,
+                "available": false,
+                "priceObservedAt": "2026-10-26T07:12:30.708Z",
+                "inventoryObservedAt": "2026-10-26T07:12:30.708Z",
+                "url": "https://www.hareruya2.com/products/9017521013056",
+                "sourceFailure": null
+              },
+              "torecacamp": {
+                "price": 52800,
+                "stock": null,
+                "available": false,
+                "priceObservedAt": "2026-10-26T08:12:31.089Z",
+                "inventoryObservedAt": "2026-10-26T08:12:31.089Z",
+                "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                "sourceFailure": null
+              },
+              "yuyutei": {
+                "price": 69800,
+                "stock": 0,
+                "available": null,
+                "priceObservedAt": "2026-09-05",
+                "inventoryObservedAt": "2026-09-05",
+                "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                "sourceFailure": "HTTP 403"
+              }
+            },
+            "psa9": {
+              "price": 62500,
+              "ratio": 90.24,
+              "buy": 56400,
+              "measurementType": "aggregate",
+              "updatedAt": "2026-10-26T03:03:12.467Z",
+              "reasons": []
+            },
+            "efficiency": {
+              "buy": null,
+              "profit": null,
+              "roi": null,
+              "annual": null,
+              "scenario": "現在出口相場が続く仮定",
+              "exit": "買取店・フリマの低い方",
+              "days": 101,
+              "basis": "実店舗状態A価格",
+              "blockingReasons": []
+            },
+            "buyback": [
+              {
+                "shopId": "torecabank",
+                "price": null,
+                "priceDate": "2026-10-25",
+                "observedAt": "2026-10-26T07:06:29.171Z",
+                "valid": false,
+                "stale": false,
+                "listingActive": false,
+                "reason": "価格未取得"
+              },
+              {
+                "shopId": "toreca-lounge",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:29.952Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "bluerocket",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T00:32:36.169Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "shinsoku",
+                "price": 99000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:35.723Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "torecaclub",
+                "price": 105000,
+                "priceDate": "2026-10-13",
+                "observedAt": null,
+                "valid": true,
+                "stale": true,
+                "listingActive": true,
+                "reason": "価格更新が古い"
+              },
+              {
+                "shopId": "toreca-birth-mail",
+                "price": 94600,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:41.161Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "kaitori-homura-mail",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:35:56.967Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "fukufuku-mail",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:36:11.961Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              }
+            ],
+            "specificationHeld": false,
+            "dataQuality": {
+              "manualReview": false,
+              "manualReviewReasons": [],
+              "dataShortage": false,
+              "dataShortageReasons": [],
+              "outlierExcluded": true,
+              "outlierExcludedReasons": [
+                "みんトレ状態A ¥41,000"
+              ],
+              "priceQuarantined": false,
+              "priceQuarantineReasons": [],
+              "shortageRiskPct": 0,
+              "confidence": "高",
+              "trustedPriceCount": 2,
+              "dataAnomaly": false,
+              "dataAnomalyReasons": []
+            },
+            "priceReview": {
+              "conflicted": false,
+              "integrityDisputed": false,
+              "manualReview": false,
+              "reasons": [],
+              "sources": [
+                {
+                  "source": "トレカキャンプ状態A",
+                  "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                  "value": 52800,
+                  "at": "2026-10-26T08:12:31.089Z",
+                  "reason": null
+                },
+                {
+                  "source": "晴れる屋2状態A",
+                  "url": "https://www.hareruya2.com/products/9017521013056",
+                  "value": 60000,
+                  "at": "2026-10-26T07:12:30.708Z",
+                  "reason": null
+                },
+                {
+                  "source": "みんトレ状態A",
+                  "url": "https://toreca-souba.com/cards/pk-43860",
+                  "value": 41000,
+                  "at": "2026-10-26T03:03:12.467Z",
+                  "reason": null
+                },
+                {
+                  "source": "カードラッシュ状態A",
+                  "url": "https://www.cardrush-pokemon.jp/product/43860",
+                  "value": 74800,
+                  "at": "2026-08-30",
+                  "reason": null
+                },
+                {
+                  "source": "遊々亭状態A",
+                  "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                  "value": 69800,
+                  "at": "2026-09-05",
+                  "reason": null
+                }
+              ]
+            },
+            "medianEvidence": null,
+            "inputs": {
+              "fee": 12980,
+              "saleFeeRate": 8,
+              "saleExtraCost": 0,
+              "buybackDeductionRate": 5,
+              "hitRate": 0.8410079885692018
+            },
+            "assessment": {
+              "supplyRisk": 51,
+              "marketStability": 58,
+              "cautions": [
+                "状態A在庫の減少が速くPSA供給増リスク",
+                "PSA公式枚数が更新待ち"
+              ],
+              "stockDemand": "買う人が多い"
+            },
+            "forecastEvidence": {
+              "rawTrend30": -17.7,
+              "downsideScore": 68,
+              "supplyPressure": "未判定",
+              "psa10Tx30": 142,
+              "shopDrop30": 32
+            },
+            "decision": {
+              "verdict": "価格次第",
+              "reasons": [
+                "¥40,000以下なら再判定",
+                "運用上限の平滑値を反映"
+              ],
+              "operationalLimit": 40000
+            },
+            "presets": {
+              "now": false,
+              "aggressive": false,
+              "lowRisk": false,
+              "turnover": true,
+              "bargain": false,
+              "curated": false,
+              "combined": true,
+              "priceWait": true,
+              "domesticExit": true,
+              "trusted": false,
+              "stressSafe": true,
+              "gapToLimit": 41,
+              "tags": [
+                "高回転",
+                "価格待ち"
+              ],
+              "catalogReady": true,
+              "current-market": false
+            },
+            "exclusions": [
+              "単体資金効率算出不可・在庫なし",
+              "購入価格条件・在庫なし",
+              "仕入れ余裕率・上限算出不可",
+              "国内PSA9比率"
+            ]
+          }
+        }
+      ],
+      "missingHistoricalInputs": []
+    },
+    {
+      "id": "A-median",
+      "before": [
+        "pk-73747",
+        "pk-23002",
+        "pk-6015",
+        "pk-14592",
+        "pk-3123",
+        "pk-4376"
+      ],
+      "after": [
+        "pk-73747",
+        "pk-23002",
+        "pk-6015",
+        "pk-14592",
+        "pk-3123",
+        "pk-4376"
+      ],
+      "gained": [],
+      "lost": [],
+      "inspected": [
+        {
+          "id": "pk-43860",
+          "before": {
+            "identityKey": "SV2A|201165|リザードンEX|SAR||ja|リザードンEXSARSV2A201165強化拡張パックポケモンカード151",
+            "referencePrice": 56400,
+            "psa10": 110000,
+            "purchase": null,
+            "sourceQuotes": {
+              "cardrush": {
+                "price": 74800,
+                "stock": 33,
+                "available": null,
+                "priceObservedAt": "2026-08-30",
+                "inventoryObservedAt": "2026-08-30",
+                "url": "https://www.cardrush-pokemon.jp/product/43860",
+                "sourceFailure": "pk-73737: HTTP 403"
+              },
+              "hareruya2": {
+                "price": 60000,
+                "stock": 0,
+                "available": false,
+                "priceObservedAt": "2026-10-26T07:12:30.708Z",
+                "inventoryObservedAt": "2026-10-26T07:12:30.708Z",
+                "url": "https://www.hareruya2.com/products/9017521013056",
+                "sourceFailure": "時間上限・保存して安全停止"
+              },
+              "torecacamp": {
+                "price": 52800,
+                "stock": null,
+                "available": false,
+                "priceObservedAt": "2026-10-25T19:28:01.061Z",
+                "inventoryObservedAt": "2026-10-25T19:28:01.061Z",
+                "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                "sourceFailure": null
+              },
+              "yuyutei": {
+                "price": 69800,
+                "stock": 0,
+                "available": null,
+                "priceObservedAt": "2026-09-05",
+                "inventoryObservedAt": "2026-09-05",
+                "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                "sourceFailure": "HTTP 403"
+              }
+            },
+            "psa9": {
+              "price": 62500,
+              "ratio": 90.24,
+              "buy": 56400,
+              "measurementType": "aggregate",
+              "updatedAt": "2026-10-26T03:03:12.467Z",
+              "reasons": []
+            },
+            "efficiency": {
+              "buy": 56400,
+              "profit": 15302,
+              "roi": 22.710002968239834,
+              "annual": 52.79714065864675,
+              "scenario": "現在出口相場が続く仮定",
+              "exit": "買取店（両出口の保守側）",
+              "days": 157,
+              "basis": "素体参考相場・中央値（購入保証なし）",
+              "blockingReasons": []
+            },
+            "buyback": [
+              {
+                "shopId": "torecabank",
+                "price": null,
+                "priceDate": "2026-10-25",
+                "observedAt": "2026-10-26T07:06:29.171Z",
+                "valid": false,
+                "stale": false,
+                "listingActive": false,
+                "reason": "価格未取得"
+              },
+              {
+                "shopId": "toreca-lounge",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:29.952Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "bluerocket",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T00:32:36.169Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "shinsoku",
+                "price": 99000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:35.723Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "torecaclub",
+                "price": 105000,
+                "priceDate": "2026-10-13",
+                "observedAt": null,
+                "valid": true,
+                "stale": true,
+                "listingActive": true,
+                "reason": "価格更新が古い"
+              },
+              {
+                "shopId": "toreca-birth-mail",
+                "price": 94600,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:41.161Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "kaitori-homura-mail",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:35:56.967Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "fukufuku-mail",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:36:11.961Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              }
+            ],
+            "specificationHeld": false,
+            "dataQuality": {
+              "manualReview": false,
+              "manualReviewReasons": [],
+              "dataShortage": false,
+              "dataShortageReasons": [],
+              "outlierExcluded": true,
+              "outlierExcludedReasons": [
+                "みんトレ状態A ¥41,000"
+              ],
+              "priceQuarantined": false,
+              "priceQuarantineReasons": [],
+              "shortageRiskPct": 0,
+              "confidence": "高",
+              "trustedPriceCount": 2,
+              "dataAnomaly": false,
+              "dataAnomalyReasons": []
+            },
+            "priceReview": {
+              "conflicted": false,
+              "integrityDisputed": false,
+              "manualReview": false,
+              "reasons": [],
+              "sources": [
+                {
+                  "source": "トレカキャンプ状態A",
+                  "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                  "value": 52800,
+                  "at": "2026-10-25T19:28:01.061Z",
+                  "reason": null
+                },
+                {
+                  "source": "晴れる屋2状態A",
+                  "url": "https://www.hareruya2.com/products/9017521013056",
+                  "value": 60000,
+                  "at": "2026-10-26T07:12:30.708Z",
+                  "reason": null
+                },
+                {
+                  "source": "みんトレ状態A",
+                  "url": "https://toreca-souba.com/cards/pk-43860",
+                  "value": 41000,
+                  "at": "2026-10-26T03:03:12.467Z",
+                  "reason": null
+                },
+                {
+                  "source": "カードラッシュ状態A",
+                  "url": "https://www.cardrush-pokemon.jp/product/43860",
+                  "value": 74800,
+                  "at": "2026-08-30",
+                  "reason": null
+                },
+                {
+                  "source": "遊々亭状態A",
+                  "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                  "value": 69800,
+                  "at": "2026-09-05",
+                  "reason": null
+                }
+              ]
+            },
+            "medianEvidence": {
+              "reasons": [],
+              "independent": 2,
+              "value": 56400,
+              "rows": [
+                {
+                  "source": "トレカキャンプ状態A",
+                  "origin": "torecacamp-pokemon.com",
+                  "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                  "price": 52800,
+                  "observedAt": "2026-10-25T19:28:01.061Z",
+                  "fresh": true,
+                  "kind": "販売価格"
+                },
+                {
+                  "source": "晴れる屋2状態A",
+                  "origin": "hareruya2.com",
+                  "url": "https://www.hareruya2.com/products/9017521013056",
+                  "price": 60000,
+                  "observedAt": "2026-10-26T07:12:30.708Z",
+                  "fresh": true,
+                  "kind": "販売価格"
+                }
+              ],
+              "omitted": [
+                {
+                  "source": "みんトレ状態A",
+                  "url": "https://toreca-souba.com/cards/pk-43860",
+                  "price": 41000,
+                  "observedAt": "2026-10-26T03:03:12.467Z",
+                  "reason": "実売根拠未確認の参考価格"
+                },
+                {
+                  "source": "カードラッシュ状態A",
+                  "url": "https://www.cardrush-pokemon.jp/product/43860",
+                  "price": 74800,
+                  "observedAt": "2026-08-30",
+                  "reason": "個別確認時刻未取得／古値との比較・48時間外"
+                },
+                {
+                  "source": "遊々亭状態A",
+                  "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                  "price": 69800,
+                  "observedAt": "2026-09-05",
+                  "reason": "個別確認時刻未取得／古値との比較・48時間外"
+                }
+              ]
+            },
+            "inputs": {
+              "fee": 10980,
+              "saleFeeRate": 8,
+              "saleExtraCost": 0,
+              "buybackDeductionRate": 5,
+              "hitRate": 0.8410079885692018
+            },
+            "assessment": {
+              "supplyRisk": 51,
+              "marketStability": 58,
+              "cautions": [
+                "状態A在庫の減少が速くPSA供給増リスク",
+                "PSA公式枚数が更新待ち"
+              ],
+              "stockDemand": "買う人が多い"
+            },
+            "forecastEvidence": {
+              "rawTrend30": -17.7,
+              "downsideScore": 68,
+              "supplyPressure": "未判定",
+              "psa10Tx30": 142,
+              "shopDrop30": 32
+            },
+            "decision": {
+              "verdict": "価格次第",
+              "reasons": [
+                "期間不一致・返却時試算不可（予測91日／返却147日）。上限は91日モデルの参考値",
+                "¥42,500以下なら再判定",
+                "運用上限の平滑値を反映"
+              ],
+              "operationalLimit": 42500
+            },
+            "presets": {
+              "now": false,
+              "aggressive": false,
+              "lowRisk": false,
+              "turnover": true,
+              "bargain": false,
+              "curated": false,
+              "combined": true,
+              "priceWait": true,
+              "domesticExit": true,
+              "trusted": false,
+              "stressSafe": true,
+              "gapToLimit": 32.70588235294118,
+              "tags": [
+                "高回転",
+                "価格待ち",
+                "期間不一致・参考探索"
+              ],
+              "catalogReady": true,
+              "current-market": false
+            },
+            "exclusions": [
+              "購入価格条件・在庫なし",
+              "仕入れ余裕率・上限算出不可"
+            ]
+          },
+          "after": {
+            "identityKey": "SV2A|201165|リザードンEX|SAR||ja|リザードンEXSARSV2A201165強化拡張パックポケモンカード151",
+            "referencePrice": 56400,
+            "psa10": 110000,
+            "purchase": null,
+            "sourceQuotes": {
+              "cardrush": {
+                "price": 74800,
+                "stock": 33,
+                "available": null,
+                "priceObservedAt": "2026-08-30",
+                "inventoryObservedAt": "2026-08-30",
+                "url": "https://www.cardrush-pokemon.jp/product/43860",
+                "sourceFailure": "pk-73737: HTTP 403"
+              },
+              "hareruya2": {
+                "price": 60000,
+                "stock": 0,
+                "available": false,
+                "priceObservedAt": "2026-10-26T07:12:30.708Z",
+                "inventoryObservedAt": "2026-10-26T07:12:30.708Z",
+                "url": "https://www.hareruya2.com/products/9017521013056",
+                "sourceFailure": null
+              },
+              "torecacamp": {
+                "price": 52800,
+                "stock": null,
+                "available": false,
+                "priceObservedAt": "2026-10-26T08:12:31.089Z",
+                "inventoryObservedAt": "2026-10-26T08:12:31.089Z",
+                "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                "sourceFailure": null
+              },
+              "yuyutei": {
+                "price": 69800,
+                "stock": 0,
+                "available": null,
+                "priceObservedAt": "2026-09-05",
+                "inventoryObservedAt": "2026-09-05",
+                "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                "sourceFailure": "HTTP 403"
+              }
+            },
+            "psa9": {
+              "price": 62500,
+              "ratio": 90.24,
+              "buy": 56400,
+              "measurementType": "aggregate",
+              "updatedAt": "2026-10-26T03:03:12.467Z",
+              "reasons": []
+            },
+            "efficiency": {
+              "buy": 56400,
+              "profit": 15302,
+              "roi": 22.710002968239834,
+              "annual": 52.79714065864675,
+              "scenario": "現在出口相場が続く仮定",
+              "exit": "買取店（両出口の保守側）",
+              "days": 157,
+              "basis": "素体参考相場・中央値（購入保証なし）",
+              "blockingReasons": []
+            },
+            "buyback": [
+              {
+                "shopId": "torecabank",
+                "price": null,
+                "priceDate": "2026-10-25",
+                "observedAt": "2026-10-26T07:06:29.171Z",
+                "valid": false,
+                "stale": false,
+                "listingActive": false,
+                "reason": "価格未取得"
+              },
+              {
+                "shopId": "toreca-lounge",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:29.952Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "bluerocket",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T00:32:36.169Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "shinsoku",
+                "price": 99000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:35.723Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "torecaclub",
+                "price": 105000,
+                "priceDate": "2026-10-13",
+                "observedAt": null,
+                "valid": true,
+                "stale": true,
+                "listingActive": true,
+                "reason": "価格更新が古い"
+              },
+              {
+                "shopId": "toreca-birth-mail",
+                "price": 94600,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:41.161Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "kaitori-homura-mail",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:35:56.967Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "fukufuku-mail",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:36:11.961Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              }
+            ],
+            "specificationHeld": false,
+            "dataQuality": {
+              "manualReview": false,
+              "manualReviewReasons": [],
+              "dataShortage": false,
+              "dataShortageReasons": [],
+              "outlierExcluded": true,
+              "outlierExcludedReasons": [
+                "みんトレ状態A ¥41,000"
+              ],
+              "priceQuarantined": false,
+              "priceQuarantineReasons": [],
+              "shortageRiskPct": 0,
+              "confidence": "高",
+              "trustedPriceCount": 2,
+              "dataAnomaly": false,
+              "dataAnomalyReasons": []
+            },
+            "priceReview": {
+              "conflicted": false,
+              "integrityDisputed": false,
+              "manualReview": false,
+              "reasons": [],
+              "sources": [
+                {
+                  "source": "トレカキャンプ状態A",
+                  "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                  "value": 52800,
+                  "at": "2026-10-26T08:12:31.089Z",
+                  "reason": null
+                },
+                {
+                  "source": "晴れる屋2状態A",
+                  "url": "https://www.hareruya2.com/products/9017521013056",
+                  "value": 60000,
+                  "at": "2026-10-26T07:12:30.708Z",
+                  "reason": null
+                },
+                {
+                  "source": "みんトレ状態A",
+                  "url": "https://toreca-souba.com/cards/pk-43860",
+                  "value": 41000,
+                  "at": "2026-10-26T03:03:12.467Z",
+                  "reason": null
+                },
+                {
+                  "source": "カードラッシュ状態A",
+                  "url": "https://www.cardrush-pokemon.jp/product/43860",
+                  "value": 74800,
+                  "at": "2026-08-30",
+                  "reason": null
+                },
+                {
+                  "source": "遊々亭状態A",
+                  "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                  "value": 69800,
+                  "at": "2026-09-05",
+                  "reason": null
+                }
+              ]
+            },
+            "medianEvidence": {
+              "reasons": [],
+              "independent": 2,
+              "value": 56400,
+              "rows": [
+                {
+                  "source": "トレカキャンプ状態A",
+                  "origin": "torecacamp-pokemon.com",
+                  "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                  "price": 52800,
+                  "observedAt": "2026-10-26T08:12:31.089Z",
+                  "fresh": true,
+                  "kind": "販売価格"
+                },
+                {
+                  "source": "晴れる屋2状態A",
+                  "origin": "hareruya2.com",
+                  "url": "https://www.hareruya2.com/products/9017521013056",
+                  "price": 60000,
+                  "observedAt": "2026-10-26T07:12:30.708Z",
+                  "fresh": true,
+                  "kind": "販売価格"
+                }
+              ],
+              "omitted": [
+                {
+                  "source": "みんトレ状態A",
+                  "url": "https://toreca-souba.com/cards/pk-43860",
+                  "price": 41000,
+                  "observedAt": "2026-10-26T03:03:12.467Z",
+                  "reason": "実売根拠未確認の参考価格"
+                },
+                {
+                  "source": "カードラッシュ状態A",
+                  "url": "https://www.cardrush-pokemon.jp/product/43860",
+                  "price": 74800,
+                  "observedAt": "2026-08-30",
+                  "reason": "個別確認時刻未取得／古値との比較・48時間外"
+                },
+                {
+                  "source": "遊々亭状態A",
+                  "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                  "price": 69800,
+                  "observedAt": "2026-09-05",
+                  "reason": "個別確認時刻未取得／古値との比較・48時間外"
+                }
+              ]
+            },
+            "inputs": {
+              "fee": 10980,
+              "saleFeeRate": 8,
+              "saleExtraCost": 0,
+              "buybackDeductionRate": 5,
+              "hitRate": 0.8410079885692018
+            },
+            "assessment": {
+              "supplyRisk": 51,
+              "marketStability": 58,
+              "cautions": [
+                "状態A在庫の減少が速くPSA供給増リスク",
+                "PSA公式枚数が更新待ち"
+              ],
+              "stockDemand": "買う人が多い"
+            },
+            "forecastEvidence": {
+              "rawTrend30": -17.7,
+              "downsideScore": 68,
+              "supplyPressure": "未判定",
+              "psa10Tx30": 142,
+              "shopDrop30": 32
+            },
+            "decision": {
+              "verdict": "価格次第",
+              "reasons": [
+                "期間不一致・返却時試算不可（予測91日／返却147日）。上限は91日モデルの参考値",
+                "¥42,500以下なら再判定",
+                "運用上限の平滑値を反映"
+              ],
+              "operationalLimit": 42500
+            },
+            "presets": {
+              "now": false,
+              "aggressive": false,
+              "lowRisk": false,
+              "turnover": true,
+              "bargain": false,
+              "curated": false,
+              "combined": true,
+              "priceWait": true,
+              "domesticExit": true,
+              "trusted": false,
+              "stressSafe": true,
+              "gapToLimit": 32.70588235294118,
+              "tags": [
+                "高回転",
+                "価格待ち",
+                "期間不一致・参考探索"
+              ],
+              "catalogReady": true,
+              "current-market": false
+            },
+            "exclusions": [
+              "購入価格条件・在庫なし",
+              "仕入れ余裕率・上限算出不可"
+            ]
+          }
+        }
+      ],
+      "missingHistoricalInputs": []
+    },
+    {
+      "id": "B-median",
+      "before": [
+        "pk-22379",
+        "pk-51076",
+        "pk-67343",
+        "pk-67583",
+        "pk-43864",
+        "pk-51078",
+        "pk-45925",
+        "pk-7040",
+        "x-107497",
+        "pk-6036",
+        "pk-21474",
+        "pk-5202",
+        "pk-18241",
+        "pk-4376"
+      ],
+      "after": [
+        "pk-22379",
+        "pk-51076",
+        "pk-67343",
+        "pk-67583",
+        "pk-43864",
+        "pk-51078",
+        "pk-45925",
+        "pk-7040",
+        "x-107497",
+        "pk-6036",
+        "pk-21474",
+        "pk-5202",
+        "pk-18241",
+        "pk-4376"
+      ],
+      "gained": [],
+      "lost": [],
+      "inspected": [
+        {
+          "id": "pk-43860",
+          "before": {
+            "identityKey": "SV2A|201165|リザードンEX|SAR||ja|リザードンEXSARSV2A201165強化拡張パックポケモンカード151",
+            "referencePrice": 56400,
+            "psa10": 110000,
+            "purchase": null,
+            "sourceQuotes": {
+              "cardrush": {
+                "price": 74800,
+                "stock": 33,
+                "available": null,
+                "priceObservedAt": "2026-08-30",
+                "inventoryObservedAt": "2026-08-30",
+                "url": "https://www.cardrush-pokemon.jp/product/43860",
+                "sourceFailure": "pk-73737: HTTP 403"
+              },
+              "hareruya2": {
+                "price": 60000,
+                "stock": 0,
+                "available": false,
+                "priceObservedAt": "2026-10-26T07:12:30.708Z",
+                "inventoryObservedAt": "2026-10-26T07:12:30.708Z",
+                "url": "https://www.hareruya2.com/products/9017521013056",
+                "sourceFailure": "時間上限・保存して安全停止"
+              },
+              "torecacamp": {
+                "price": 52800,
+                "stock": null,
+                "available": false,
+                "priceObservedAt": "2026-10-25T19:28:01.061Z",
+                "inventoryObservedAt": "2026-10-25T19:28:01.061Z",
+                "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                "sourceFailure": null
+              },
+              "yuyutei": {
+                "price": 69800,
+                "stock": 0,
+                "available": null,
+                "priceObservedAt": "2026-09-05",
+                "inventoryObservedAt": "2026-09-05",
+                "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                "sourceFailure": "HTTP 403"
+              }
+            },
+            "psa9": {
+              "price": 62500,
+              "ratio": 90.24,
+              "buy": 56400,
+              "measurementType": "aggregate",
+              "updatedAt": "2026-10-26T03:03:12.467Z",
+              "reasons": []
+            },
+            "efficiency": {
+              "buy": 56400,
+              "profit": 13302,
+              "roi": 19.17267223983857,
+              "annual": 69.28737987664434,
+              "scenario": "現在出口相場が続く仮定",
+              "exit": "買取店（両出口の保守側）",
+              "days": 101,
+              "basis": "素体参考相場・中央値（購入保証なし）",
+              "blockingReasons": []
+            },
+            "buyback": [
+              {
+                "shopId": "torecabank",
+                "price": null,
+                "priceDate": "2026-10-25",
+                "observedAt": "2026-10-26T07:06:29.171Z",
+                "valid": false,
+                "stale": false,
+                "listingActive": false,
+                "reason": "価格未取得"
+              },
+              {
+                "shopId": "toreca-lounge",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:29.952Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "bluerocket",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T00:32:36.169Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "shinsoku",
+                "price": 99000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:35.723Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "torecaclub",
+                "price": 105000,
+                "priceDate": "2026-10-13",
+                "observedAt": null,
+                "valid": true,
+                "stale": true,
+                "listingActive": true,
+                "reason": "価格更新が古い"
+              },
+              {
+                "shopId": "toreca-birth-mail",
+                "price": 94600,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:41.161Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "kaitori-homura-mail",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:35:56.967Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "fukufuku-mail",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:36:11.961Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              }
+            ],
+            "specificationHeld": false,
+            "dataQuality": {
+              "manualReview": false,
+              "manualReviewReasons": [],
+              "dataShortage": false,
+              "dataShortageReasons": [],
+              "outlierExcluded": true,
+              "outlierExcludedReasons": [
+                "みんトレ状態A ¥41,000"
+              ],
+              "priceQuarantined": false,
+              "priceQuarantineReasons": [],
+              "shortageRiskPct": 0,
+              "confidence": "高",
+              "trustedPriceCount": 2,
+              "dataAnomaly": false,
+              "dataAnomalyReasons": []
+            },
+            "priceReview": {
+              "conflicted": false,
+              "integrityDisputed": false,
+              "manualReview": false,
+              "reasons": [],
+              "sources": [
+                {
+                  "source": "トレカキャンプ状態A",
+                  "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                  "value": 52800,
+                  "at": "2026-10-25T19:28:01.061Z",
+                  "reason": null
+                },
+                {
+                  "source": "晴れる屋2状態A",
+                  "url": "https://www.hareruya2.com/products/9017521013056",
+                  "value": 60000,
+                  "at": "2026-10-26T07:12:30.708Z",
+                  "reason": null
+                },
+                {
+                  "source": "みんトレ状態A",
+                  "url": "https://toreca-souba.com/cards/pk-43860",
+                  "value": 41000,
+                  "at": "2026-10-26T03:03:12.467Z",
+                  "reason": null
+                },
+                {
+                  "source": "カードラッシュ状態A",
+                  "url": "https://www.cardrush-pokemon.jp/product/43860",
+                  "value": 74800,
+                  "at": "2026-08-30",
+                  "reason": null
+                },
+                {
+                  "source": "遊々亭状態A",
+                  "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                  "value": 69800,
+                  "at": "2026-09-05",
+                  "reason": null
+                }
+              ]
+            },
+            "medianEvidence": {
+              "reasons": [],
+              "independent": 2,
+              "value": 56400,
+              "rows": [
+                {
+                  "source": "トレカキャンプ状態A",
+                  "origin": "torecacamp-pokemon.com",
+                  "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                  "price": 52800,
+                  "observedAt": "2026-10-25T19:28:01.061Z",
+                  "fresh": true,
+                  "kind": "販売価格"
+                },
+                {
+                  "source": "晴れる屋2状態A",
+                  "origin": "hareruya2.com",
+                  "url": "https://www.hareruya2.com/products/9017521013056",
+                  "price": 60000,
+                  "observedAt": "2026-10-26T07:12:30.708Z",
+                  "fresh": true,
+                  "kind": "販売価格"
+                }
+              ],
+              "omitted": [
+                {
+                  "source": "みんトレ状態A",
+                  "url": "https://toreca-souba.com/cards/pk-43860",
+                  "price": 41000,
+                  "observedAt": "2026-10-26T03:03:12.467Z",
+                  "reason": "実売根拠未確認の参考価格"
+                },
+                {
+                  "source": "カードラッシュ状態A",
+                  "url": "https://www.cardrush-pokemon.jp/product/43860",
+                  "price": 74800,
+                  "observedAt": "2026-08-30",
+                  "reason": "個別確認時刻未取得／古値との比較・48時間外"
+                },
+                {
+                  "source": "遊々亭状態A",
+                  "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                  "price": 69800,
+                  "observedAt": "2026-09-05",
+                  "reason": "個別確認時刻未取得／古値との比較・48時間外"
+                }
+              ]
+            },
+            "inputs": {
+              "fee": 12980,
+              "saleFeeRate": 8,
+              "saleExtraCost": 0,
+              "buybackDeductionRate": 5,
+              "hitRate": 0.8410079885692018
+            },
+            "assessment": {
+              "supplyRisk": 51,
+              "marketStability": 58,
+              "cautions": [
+                "状態A在庫の減少が速くPSA供給増リスク",
+                "PSA公式枚数が更新待ち"
+              ],
+              "stockDemand": "買う人が多い"
+            },
+            "forecastEvidence": {
+              "rawTrend30": -17.7,
+              "downsideScore": 68,
+              "supplyPressure": "未判定",
+              "psa10Tx30": 142,
+              "shopDrop30": 32
+            },
+            "decision": {
+              "verdict": "価格次第",
+              "reasons": [
+                "¥40,000以下なら再判定",
+                "運用上限の平滑値を反映"
+              ],
+              "operationalLimit": 40000
+            },
+            "presets": {
+              "now": false,
+              "aggressive": false,
+              "lowRisk": false,
+              "turnover": true,
+              "bargain": false,
+              "curated": false,
+              "combined": true,
+              "priceWait": true,
+              "domesticExit": true,
+              "trusted": false,
+              "stressSafe": true,
+              "gapToLimit": 41,
+              "tags": [
+                "高回転",
+                "価格待ち"
+              ],
+              "catalogReady": true,
+              "current-market": false
+            },
+            "exclusions": [
+              "購入価格条件・在庫なし",
+              "仕入れ余裕率・上限算出不可",
+              "国内PSA9比率"
+            ]
+          },
+          "after": {
+            "identityKey": "SV2A|201165|リザードンEX|SAR||ja|リザードンEXSARSV2A201165強化拡張パックポケモンカード151",
+            "referencePrice": 56400,
+            "psa10": 110000,
+            "purchase": null,
+            "sourceQuotes": {
+              "cardrush": {
+                "price": 74800,
+                "stock": 33,
+                "available": null,
+                "priceObservedAt": "2026-08-30",
+                "inventoryObservedAt": "2026-08-30",
+                "url": "https://www.cardrush-pokemon.jp/product/43860",
+                "sourceFailure": "pk-73737: HTTP 403"
+              },
+              "hareruya2": {
+                "price": 60000,
+                "stock": 0,
+                "available": false,
+                "priceObservedAt": "2026-10-26T07:12:30.708Z",
+                "inventoryObservedAt": "2026-10-26T07:12:30.708Z",
+                "url": "https://www.hareruya2.com/products/9017521013056",
+                "sourceFailure": null
+              },
+              "torecacamp": {
+                "price": 52800,
+                "stock": null,
+                "available": false,
+                "priceObservedAt": "2026-10-26T08:12:31.089Z",
+                "inventoryObservedAt": "2026-10-26T08:12:31.089Z",
+                "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                "sourceFailure": null
+              },
+              "yuyutei": {
+                "price": 69800,
+                "stock": 0,
+                "available": null,
+                "priceObservedAt": "2026-09-05",
+                "inventoryObservedAt": "2026-09-05",
+                "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                "sourceFailure": "HTTP 403"
+              }
+            },
+            "psa9": {
+              "price": 62500,
+              "ratio": 90.24,
+              "buy": 56400,
+              "measurementType": "aggregate",
+              "updatedAt": "2026-10-26T03:03:12.467Z",
+              "reasons": []
+            },
+            "efficiency": {
+              "buy": 56400,
+              "profit": 13302,
+              "roi": 19.17267223983857,
+              "annual": 69.28737987664434,
+              "scenario": "現在出口相場が続く仮定",
+              "exit": "買取店（両出口の保守側）",
+              "days": 101,
+              "basis": "素体参考相場・中央値（購入保証なし）",
+              "blockingReasons": []
+            },
+            "buyback": [
+              {
+                "shopId": "torecabank",
+                "price": null,
+                "priceDate": "2026-10-25",
+                "observedAt": "2026-10-26T07:06:29.171Z",
+                "valid": false,
+                "stale": false,
+                "listingActive": false,
+                "reason": "価格未取得"
+              },
+              {
+                "shopId": "toreca-lounge",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:29.952Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "bluerocket",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T00:32:36.169Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "shinsoku",
+                "price": 99000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:35.723Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "torecaclub",
+                "price": 105000,
+                "priceDate": "2026-10-13",
+                "observedAt": null,
+                "valid": true,
+                "stale": true,
+                "listingActive": true,
+                "reason": "価格更新が古い"
+              },
+              {
+                "shopId": "toreca-birth-mail",
+                "price": 94600,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:41.161Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "kaitori-homura-mail",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:35:56.967Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "fukufuku-mail",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:36:11.961Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              }
+            ],
+            "specificationHeld": false,
+            "dataQuality": {
+              "manualReview": false,
+              "manualReviewReasons": [],
+              "dataShortage": false,
+              "dataShortageReasons": [],
+              "outlierExcluded": true,
+              "outlierExcludedReasons": [
+                "みんトレ状態A ¥41,000"
+              ],
+              "priceQuarantined": false,
+              "priceQuarantineReasons": [],
+              "shortageRiskPct": 0,
+              "confidence": "高",
+              "trustedPriceCount": 2,
+              "dataAnomaly": false,
+              "dataAnomalyReasons": []
+            },
+            "priceReview": {
+              "conflicted": false,
+              "integrityDisputed": false,
+              "manualReview": false,
+              "reasons": [],
+              "sources": [
+                {
+                  "source": "トレカキャンプ状態A",
+                  "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                  "value": 52800,
+                  "at": "2026-10-26T08:12:31.089Z",
+                  "reason": null
+                },
+                {
+                  "source": "晴れる屋2状態A",
+                  "url": "https://www.hareruya2.com/products/9017521013056",
+                  "value": 60000,
+                  "at": "2026-10-26T07:12:30.708Z",
+                  "reason": null
+                },
+                {
+                  "source": "みんトレ状態A",
+                  "url": "https://toreca-souba.com/cards/pk-43860",
+                  "value": 41000,
+                  "at": "2026-10-26T03:03:12.467Z",
+                  "reason": null
+                },
+                {
+                  "source": "カードラッシュ状態A",
+                  "url": "https://www.cardrush-pokemon.jp/product/43860",
+                  "value": 74800,
+                  "at": "2026-08-30",
+                  "reason": null
+                },
+                {
+                  "source": "遊々亭状態A",
+                  "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                  "value": 69800,
+                  "at": "2026-09-05",
+                  "reason": null
+                }
+              ]
+            },
+            "medianEvidence": {
+              "reasons": [],
+              "independent": 2,
+              "value": 56400,
+              "rows": [
+                {
+                  "source": "トレカキャンプ状態A",
+                  "origin": "torecacamp-pokemon.com",
+                  "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                  "price": 52800,
+                  "observedAt": "2026-10-26T08:12:31.089Z",
+                  "fresh": true,
+                  "kind": "販売価格"
+                },
+                {
+                  "source": "晴れる屋2状態A",
+                  "origin": "hareruya2.com",
+                  "url": "https://www.hareruya2.com/products/9017521013056",
+                  "price": 60000,
+                  "observedAt": "2026-10-26T07:12:30.708Z",
+                  "fresh": true,
+                  "kind": "販売価格"
+                }
+              ],
+              "omitted": [
+                {
+                  "source": "みんトレ状態A",
+                  "url": "https://toreca-souba.com/cards/pk-43860",
+                  "price": 41000,
+                  "observedAt": "2026-10-26T03:03:12.467Z",
+                  "reason": "実売根拠未確認の参考価格"
+                },
+                {
+                  "source": "カードラッシュ状態A",
+                  "url": "https://www.cardrush-pokemon.jp/product/43860",
+                  "price": 74800,
+                  "observedAt": "2026-08-30",
+                  "reason": "個別確認時刻未取得／古値との比較・48時間外"
+                },
+                {
+                  "source": "遊々亭状態A",
+                  "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                  "price": 69800,
+                  "observedAt": "2026-09-05",
+                  "reason": "個別確認時刻未取得／古値との比較・48時間外"
+                }
+              ]
+            },
+            "inputs": {
+              "fee": 12980,
+              "saleFeeRate": 8,
+              "saleExtraCost": 0,
+              "buybackDeductionRate": 5,
+              "hitRate": 0.8410079885692018
+            },
+            "assessment": {
+              "supplyRisk": 51,
+              "marketStability": 58,
+              "cautions": [
+                "状態A在庫の減少が速くPSA供給増リスク",
+                "PSA公式枚数が更新待ち"
+              ],
+              "stockDemand": "買う人が多い"
+            },
+            "forecastEvidence": {
+              "rawTrend30": -17.7,
+              "downsideScore": 68,
+              "supplyPressure": "未判定",
+              "psa10Tx30": 142,
+              "shopDrop30": 32
+            },
+            "decision": {
+              "verdict": "価格次第",
+              "reasons": [
+                "¥40,000以下なら再判定",
+                "運用上限の平滑値を反映"
+              ],
+              "operationalLimit": 40000
+            },
+            "presets": {
+              "now": false,
+              "aggressive": false,
+              "lowRisk": false,
+              "turnover": true,
+              "bargain": false,
+              "curated": false,
+              "combined": true,
+              "priceWait": true,
+              "domesticExit": true,
+              "trusted": false,
+              "stressSafe": true,
+              "gapToLimit": 41,
+              "tags": [
+                "高回転",
+                "価格待ち"
+              ],
+              "catalogReady": true,
+              "current-market": false
+            },
+            "exclusions": [
+              "購入価格条件・在庫なし",
+              "仕入れ余裕率・上限算出不可",
+              "国内PSA9比率"
+            ]
+          }
+        }
+      ],
+      "missingHistoricalInputs": []
+    },
+    {
+      "id": "A-specified",
+      "before": [
+        "pk-70050",
+        "x-135232",
+        "pk-73747",
+        "pk-38392",
+        "pk-63635",
+        "pk-23002",
+        "pk-6015",
+        "x-122054",
+        "pk-14592",
+        "pk-3123",
+        "pk-4376",
+        "pk-39522",
+        "x-104600"
+      ],
+      "after": [
+        "pk-70050",
+        "x-135232",
+        "pk-73747",
+        "pk-38392",
+        "pk-63635",
+        "pk-23002",
+        "pk-6015",
+        "x-122054",
+        "pk-14592",
+        "pk-3123",
+        "pk-4376",
+        "pk-39522",
+        "x-104600"
+      ],
+      "gained": [],
+      "lost": [],
+      "inspected": [
+        {
+          "id": "pk-43860",
+          "before": {
+            "identityKey": "SV2A|201165|リザードンEX|SAR||ja|リザードンEXSARSV2A201165強化拡張パックポケモンカード151",
+            "referencePrice": 56400,
+            "psa10": 110000,
+            "purchase": null,
+            "sourceQuotes": {
+              "cardrush": {
+                "price": 74800,
+                "stock": 33,
+                "available": null,
+                "priceObservedAt": "2026-08-30",
+                "inventoryObservedAt": "2026-08-30",
+                "url": "https://www.cardrush-pokemon.jp/product/43860",
+                "sourceFailure": "pk-73737: HTTP 403"
+              },
+              "hareruya2": {
+                "price": 60000,
+                "stock": 0,
+                "available": false,
+                "priceObservedAt": "2026-10-26T07:12:30.708Z",
+                "inventoryObservedAt": "2026-10-26T07:12:30.708Z",
+                "url": "https://www.hareruya2.com/products/9017521013056",
+                "sourceFailure": "時間上限・保存して安全停止"
+              },
+              "torecacamp": {
+                "price": 52800,
+                "stock": null,
+                "available": false,
+                "priceObservedAt": "2026-10-25T19:28:01.061Z",
+                "inventoryObservedAt": "2026-10-25T19:28:01.061Z",
+                "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                "sourceFailure": null
+              },
+              "yuyutei": {
+                "price": 69800,
+                "stock": 0,
+                "available": null,
+                "priceObservedAt": "2026-09-05",
+                "inventoryObservedAt": "2026-09-05",
+                "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                "sourceFailure": "HTTP 403"
+              }
+            },
+            "psa9": {
+              "price": 62500,
+              "ratio": 90.24,
+              "buy": 56400,
+              "measurementType": "aggregate",
+              "updatedAt": "2026-10-26T03:03:12.467Z",
+              "reasons": []
+            },
+            "efficiency": {
+              "buy": null,
+              "profit": null,
+              "roi": null,
+              "annual": null,
+              "scenario": "現在出口相場が続く仮定",
+              "exit": "買取店・フリマの低い方",
+              "days": 157,
+              "basis": "実店舗状態A価格",
+              "blockingReasons": []
+            },
+            "buyback": [
+              {
+                "shopId": "torecabank",
+                "price": null,
+                "priceDate": "2026-10-25",
+                "observedAt": "2026-10-26T07:06:29.171Z",
+                "valid": false,
+                "stale": false,
+                "listingActive": false,
+                "reason": "価格未取得"
+              },
+              {
+                "shopId": "toreca-lounge",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:29.952Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "bluerocket",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T00:32:36.169Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "shinsoku",
+                "price": 99000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:35.723Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "torecaclub",
+                "price": 105000,
+                "priceDate": "2026-10-13",
+                "observedAt": null,
+                "valid": true,
+                "stale": true,
+                "listingActive": true,
+                "reason": "価格更新が古い"
+              },
+              {
+                "shopId": "toreca-birth-mail",
+                "price": 94600,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:41.161Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "kaitori-homura-mail",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:35:56.967Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "fukufuku-mail",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:36:11.961Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              }
+            ],
+            "specificationHeld": false,
+            "dataQuality": {
+              "manualReview": false,
+              "manualReviewReasons": [],
+              "dataShortage": false,
+              "dataShortageReasons": [],
+              "outlierExcluded": true,
+              "outlierExcludedReasons": [
+                "みんトレ状態A ¥41,000"
+              ],
+              "priceQuarantined": false,
+              "priceQuarantineReasons": [],
+              "shortageRiskPct": 0,
+              "confidence": "高",
+              "trustedPriceCount": 2,
+              "dataAnomaly": false,
+              "dataAnomalyReasons": []
+            },
+            "priceReview": {
+              "conflicted": false,
+              "integrityDisputed": false,
+              "manualReview": false,
+              "reasons": [],
+              "sources": [
+                {
+                  "source": "トレカキャンプ状態A",
+                  "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                  "value": 52800,
+                  "at": "2026-10-25T19:28:01.061Z",
+                  "reason": null
+                },
+                {
+                  "source": "晴れる屋2状態A",
+                  "url": "https://www.hareruya2.com/products/9017521013056",
+                  "value": 60000,
+                  "at": "2026-10-26T07:12:30.708Z",
+                  "reason": null
+                },
+                {
+                  "source": "みんトレ状態A",
+                  "url": "https://toreca-souba.com/cards/pk-43860",
+                  "value": 41000,
+                  "at": "2026-10-26T03:03:12.467Z",
+                  "reason": null
+                },
+                {
+                  "source": "カードラッシュ状態A",
+                  "url": "https://www.cardrush-pokemon.jp/product/43860",
+                  "value": 74800,
+                  "at": "2026-08-30",
+                  "reason": null
+                },
+                {
+                  "source": "遊々亭状態A",
+                  "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                  "value": 69800,
+                  "at": "2026-09-05",
+                  "reason": null
+                }
+              ]
+            },
+            "medianEvidence": null,
+            "inputs": {
+              "fee": 10980,
+              "saleFeeRate": 8,
+              "saleExtraCost": 0,
+              "buybackDeductionRate": 5,
+              "hitRate": 0.8410079885692018
+            },
+            "assessment": {
+              "supplyRisk": 51,
+              "marketStability": 58,
+              "cautions": [
+                "状態A在庫の減少が速くPSA供給増リスク",
+                "PSA公式枚数が更新待ち"
+              ],
+              "stockDemand": "買う人が多い"
+            },
+            "forecastEvidence": {
+              "rawTrend30": -17.7,
+              "downsideScore": 68,
+              "supplyPressure": "未判定",
+              "psa10Tx30": 142,
+              "shopDrop30": 32
+            },
+            "decision": {
+              "verdict": "価格次第",
+              "reasons": [
+                "期間不一致・返却時試算不可（予測91日／返却147日）。上限は91日モデルの参考値",
+                "¥42,500以下なら再判定",
+                "運用上限の平滑値を反映"
+              ],
+              "operationalLimit": 42500
+            },
+            "presets": {
+              "now": false,
+              "aggressive": false,
+              "lowRisk": false,
+              "turnover": true,
+              "bargain": false,
+              "curated": false,
+              "combined": true,
+              "priceWait": true,
+              "domesticExit": true,
+              "trusted": false,
+              "stressSafe": true,
+              "gapToLimit": 32.70588235294118,
+              "tags": [
+                "高回転",
+                "価格待ち",
+                "期間不一致・参考探索"
+              ],
+              "catalogReady": true,
+              "current-market": false
+            },
+            "exclusions": [
+              "単体資金効率算出不可・在庫なし",
+              "購入価格条件・在庫なし",
+              "仕入れ余裕率・上限算出不可"
+            ]
+          },
+          "after": {
+            "identityKey": "SV2A|201165|リザードンEX|SAR||ja|リザードンEXSARSV2A201165強化拡張パックポケモンカード151",
+            "referencePrice": 56400,
+            "psa10": 110000,
+            "purchase": null,
+            "sourceQuotes": {
+              "cardrush": {
+                "price": 74800,
+                "stock": 33,
+                "available": null,
+                "priceObservedAt": "2026-08-30",
+                "inventoryObservedAt": "2026-08-30",
+                "url": "https://www.cardrush-pokemon.jp/product/43860",
+                "sourceFailure": "pk-73737: HTTP 403"
+              },
+              "hareruya2": {
+                "price": 60000,
+                "stock": 0,
+                "available": false,
+                "priceObservedAt": "2026-10-26T07:12:30.708Z",
+                "inventoryObservedAt": "2026-10-26T07:12:30.708Z",
+                "url": "https://www.hareruya2.com/products/9017521013056",
+                "sourceFailure": null
+              },
+              "torecacamp": {
+                "price": 52800,
+                "stock": null,
+                "available": false,
+                "priceObservedAt": "2026-10-26T08:12:31.089Z",
+                "inventoryObservedAt": "2026-10-26T08:12:31.089Z",
+                "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                "sourceFailure": null
+              },
+              "yuyutei": {
+                "price": 69800,
+                "stock": 0,
+                "available": null,
+                "priceObservedAt": "2026-09-05",
+                "inventoryObservedAt": "2026-09-05",
+                "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                "sourceFailure": "HTTP 403"
+              }
+            },
+            "psa9": {
+              "price": 62500,
+              "ratio": 90.24,
+              "buy": 56400,
+              "measurementType": "aggregate",
+              "updatedAt": "2026-10-26T03:03:12.467Z",
+              "reasons": []
+            },
+            "efficiency": {
+              "buy": null,
+              "profit": null,
+              "roi": null,
+              "annual": null,
+              "scenario": "現在出口相場が続く仮定",
+              "exit": "買取店・フリマの低い方",
+              "days": 157,
+              "basis": "実店舗状態A価格",
+              "blockingReasons": []
+            },
+            "buyback": [
+              {
+                "shopId": "torecabank",
+                "price": null,
+                "priceDate": "2026-10-25",
+                "observedAt": "2026-10-26T07:06:29.171Z",
+                "valid": false,
+                "stale": false,
+                "listingActive": false,
+                "reason": "価格未取得"
+              },
+              {
+                "shopId": "toreca-lounge",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:29.952Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "bluerocket",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T00:32:36.169Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "shinsoku",
+                "price": 99000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:35.723Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "torecaclub",
+                "price": 105000,
+                "priceDate": "2026-10-13",
+                "observedAt": null,
+                "valid": true,
+                "stale": true,
+                "listingActive": true,
+                "reason": "価格更新が古い"
+              },
+              {
+                "shopId": "toreca-birth-mail",
+                "price": 94600,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:41.161Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "kaitori-homura-mail",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:35:56.967Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "fukufuku-mail",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:36:11.961Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              }
+            ],
+            "specificationHeld": false,
+            "dataQuality": {
+              "manualReview": false,
+              "manualReviewReasons": [],
+              "dataShortage": false,
+              "dataShortageReasons": [],
+              "outlierExcluded": true,
+              "outlierExcludedReasons": [
+                "みんトレ状態A ¥41,000"
+              ],
+              "priceQuarantined": false,
+              "priceQuarantineReasons": [],
+              "shortageRiskPct": 0,
+              "confidence": "高",
+              "trustedPriceCount": 2,
+              "dataAnomaly": false,
+              "dataAnomalyReasons": []
+            },
+            "priceReview": {
+              "conflicted": false,
+              "integrityDisputed": false,
+              "manualReview": false,
+              "reasons": [],
+              "sources": [
+                {
+                  "source": "トレカキャンプ状態A",
+                  "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                  "value": 52800,
+                  "at": "2026-10-26T08:12:31.089Z",
+                  "reason": null
+                },
+                {
+                  "source": "晴れる屋2状態A",
+                  "url": "https://www.hareruya2.com/products/9017521013056",
+                  "value": 60000,
+                  "at": "2026-10-26T07:12:30.708Z",
+                  "reason": null
+                },
+                {
+                  "source": "みんトレ状態A",
+                  "url": "https://toreca-souba.com/cards/pk-43860",
+                  "value": 41000,
+                  "at": "2026-10-26T03:03:12.467Z",
+                  "reason": null
+                },
+                {
+                  "source": "カードラッシュ状態A",
+                  "url": "https://www.cardrush-pokemon.jp/product/43860",
+                  "value": 74800,
+                  "at": "2026-08-30",
+                  "reason": null
+                },
+                {
+                  "source": "遊々亭状態A",
+                  "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                  "value": 69800,
+                  "at": "2026-09-05",
+                  "reason": null
+                }
+              ]
+            },
+            "medianEvidence": null,
+            "inputs": {
+              "fee": 10980,
+              "saleFeeRate": 8,
+              "saleExtraCost": 0,
+              "buybackDeductionRate": 5,
+              "hitRate": 0.8410079885692018
+            },
+            "assessment": {
+              "supplyRisk": 51,
+              "marketStability": 58,
+              "cautions": [
+                "状態A在庫の減少が速くPSA供給増リスク",
+                "PSA公式枚数が更新待ち"
+              ],
+              "stockDemand": "買う人が多い"
+            },
+            "forecastEvidence": {
+              "rawTrend30": -17.7,
+              "downsideScore": 68,
+              "supplyPressure": "未判定",
+              "psa10Tx30": 142,
+              "shopDrop30": 32
+            },
+            "decision": {
+              "verdict": "価格次第",
+              "reasons": [
+                "期間不一致・返却時試算不可（予測91日／返却147日）。上限は91日モデルの参考値",
+                "¥42,500以下なら再判定",
+                "運用上限の平滑値を反映"
+              ],
+              "operationalLimit": 42500
+            },
+            "presets": {
+              "now": false,
+              "aggressive": false,
+              "lowRisk": false,
+              "turnover": true,
+              "bargain": false,
+              "curated": false,
+              "combined": true,
+              "priceWait": true,
+              "domesticExit": true,
+              "trusted": false,
+              "stressSafe": true,
+              "gapToLimit": 32.70588235294118,
+              "tags": [
+                "高回転",
+                "価格待ち",
+                "期間不一致・参考探索"
+              ],
+              "catalogReady": true,
+              "current-market": false
+            },
+            "exclusions": [
+              "単体資金効率算出不可・在庫なし",
+              "購入価格条件・在庫なし",
+              "仕入れ余裕率・上限算出不可"
+            ]
+          }
+        }
+      ],
+      "missingHistoricalInputs": []
+    },
+    {
+      "id": "B-specified",
+      "before": [
+        "pk-22379",
+        "pk-51076",
+        "pk-67343",
+        "pk-67583",
+        "pk-43864",
+        "pk-70051",
+        "pk-79905",
+        "pk-51078",
+        "pk-5188",
+        "pk-45925",
+        "pk-7040",
+        "pk-41858",
+        "x-107497",
+        "pk-6036",
+        "pk-21474",
+        "pk-5202",
+        "pk-18241",
+        "pk-6028",
+        "pk-4376",
+        "pk-2699",
+        "x-129023",
+        "x-104592",
+        "pk-985",
+        "x-104636",
+        "pk-1506"
+      ],
+      "after": [
+        "pk-22379",
+        "pk-51076",
+        "pk-67343",
+        "pk-67583",
+        "pk-43864",
+        "pk-70051",
+        "pk-79905",
+        "pk-51078",
+        "pk-5188",
+        "pk-45925",
+        "pk-7040",
+        "pk-41858",
+        "x-107497",
+        "pk-6036",
+        "pk-21474",
+        "pk-5202",
+        "pk-18241",
+        "pk-6028",
+        "pk-4376",
+        "pk-2699",
+        "x-129023",
+        "x-104592",
+        "pk-985",
+        "x-104636",
+        "pk-1506"
+      ],
+      "gained": [],
+      "lost": [],
+      "inspected": [
+        {
+          "id": "pk-43860",
+          "before": {
+            "identityKey": "SV2A|201165|リザードンEX|SAR||ja|リザードンEXSARSV2A201165強化拡張パックポケモンカード151",
+            "referencePrice": 56400,
+            "psa10": 110000,
+            "purchase": null,
+            "sourceQuotes": {
+              "cardrush": {
+                "price": 74800,
+                "stock": 33,
+                "available": null,
+                "priceObservedAt": "2026-08-30",
+                "inventoryObservedAt": "2026-08-30",
+                "url": "https://www.cardrush-pokemon.jp/product/43860",
+                "sourceFailure": "pk-73737: HTTP 403"
+              },
+              "hareruya2": {
+                "price": 60000,
+                "stock": 0,
+                "available": false,
+                "priceObservedAt": "2026-10-26T07:12:30.708Z",
+                "inventoryObservedAt": "2026-10-26T07:12:30.708Z",
+                "url": "https://www.hareruya2.com/products/9017521013056",
+                "sourceFailure": "時間上限・保存して安全停止"
+              },
+              "torecacamp": {
+                "price": 52800,
+                "stock": null,
+                "available": false,
+                "priceObservedAt": "2026-10-25T19:28:01.061Z",
+                "inventoryObservedAt": "2026-10-25T19:28:01.061Z",
+                "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                "sourceFailure": null
+              },
+              "yuyutei": {
+                "price": 69800,
+                "stock": 0,
+                "available": null,
+                "priceObservedAt": "2026-09-05",
+                "inventoryObservedAt": "2026-09-05",
+                "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                "sourceFailure": "HTTP 403"
+              }
+            },
+            "psa9": {
+              "price": 62500,
+              "ratio": 90.24,
+              "buy": 56400,
+              "measurementType": "aggregate",
+              "updatedAt": "2026-10-26T03:03:12.467Z",
+              "reasons": []
+            },
+            "efficiency": {
+              "buy": null,
+              "profit": null,
+              "roi": null,
+              "annual": null,
+              "scenario": "現在出口相場が続く仮定",
+              "exit": "買取店・フリマの低い方",
+              "days": 101,
+              "basis": "実店舗状態A価格",
+              "blockingReasons": []
+            },
+            "buyback": [
+              {
+                "shopId": "torecabank",
+                "price": null,
+                "priceDate": "2026-10-25",
+                "observedAt": "2026-10-26T07:06:29.171Z",
+                "valid": false,
+                "stale": false,
+                "listingActive": false,
+                "reason": "価格未取得"
+              },
+              {
+                "shopId": "toreca-lounge",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:29.952Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "bluerocket",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T00:32:36.169Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "shinsoku",
+                "price": 99000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:35.723Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "torecaclub",
+                "price": 105000,
+                "priceDate": "2026-10-13",
+                "observedAt": null,
+                "valid": true,
+                "stale": true,
+                "listingActive": true,
+                "reason": "価格更新が古い"
+              },
+              {
+                "shopId": "toreca-birth-mail",
+                "price": 94600,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:41.161Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "kaitori-homura-mail",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:35:56.967Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "fukufuku-mail",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:36:11.961Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              }
+            ],
+            "specificationHeld": false,
+            "dataQuality": {
+              "manualReview": false,
+              "manualReviewReasons": [],
+              "dataShortage": false,
+              "dataShortageReasons": [],
+              "outlierExcluded": true,
+              "outlierExcludedReasons": [
+                "みんトレ状態A ¥41,000"
+              ],
+              "priceQuarantined": false,
+              "priceQuarantineReasons": [],
+              "shortageRiskPct": 0,
+              "confidence": "高",
+              "trustedPriceCount": 2,
+              "dataAnomaly": false,
+              "dataAnomalyReasons": []
+            },
+            "priceReview": {
+              "conflicted": false,
+              "integrityDisputed": false,
+              "manualReview": false,
+              "reasons": [],
+              "sources": [
+                {
+                  "source": "トレカキャンプ状態A",
+                  "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                  "value": 52800,
+                  "at": "2026-10-25T19:28:01.061Z",
+                  "reason": null
+                },
+                {
+                  "source": "晴れる屋2状態A",
+                  "url": "https://www.hareruya2.com/products/9017521013056",
+                  "value": 60000,
+                  "at": "2026-10-26T07:12:30.708Z",
+                  "reason": null
+                },
+                {
+                  "source": "みんトレ状態A",
+                  "url": "https://toreca-souba.com/cards/pk-43860",
+                  "value": 41000,
+                  "at": "2026-10-26T03:03:12.467Z",
+                  "reason": null
+                },
+                {
+                  "source": "カードラッシュ状態A",
+                  "url": "https://www.cardrush-pokemon.jp/product/43860",
+                  "value": 74800,
+                  "at": "2026-08-30",
+                  "reason": null
+                },
+                {
+                  "source": "遊々亭状態A",
+                  "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                  "value": 69800,
+                  "at": "2026-09-05",
+                  "reason": null
+                }
+              ]
+            },
+            "medianEvidence": null,
+            "inputs": {
+              "fee": 12980,
+              "saleFeeRate": 8,
+              "saleExtraCost": 0,
+              "buybackDeductionRate": 5,
+              "hitRate": 0.8410079885692018
+            },
+            "assessment": {
+              "supplyRisk": 51,
+              "marketStability": 58,
+              "cautions": [
+                "状態A在庫の減少が速くPSA供給増リスク",
+                "PSA公式枚数が更新待ち"
+              ],
+              "stockDemand": "買う人が多い"
+            },
+            "forecastEvidence": {
+              "rawTrend30": -17.7,
+              "downsideScore": 68,
+              "supplyPressure": "未判定",
+              "psa10Tx30": 142,
+              "shopDrop30": 32
+            },
+            "decision": {
+              "verdict": "価格次第",
+              "reasons": [
+                "¥40,000以下なら再判定",
+                "運用上限の平滑値を反映"
+              ],
+              "operationalLimit": 40000
+            },
+            "presets": {
+              "now": false,
+              "aggressive": false,
+              "lowRisk": false,
+              "turnover": true,
+              "bargain": false,
+              "curated": false,
+              "combined": true,
+              "priceWait": true,
+              "domesticExit": true,
+              "trusted": false,
+              "stressSafe": true,
+              "gapToLimit": 41,
+              "tags": [
+                "高回転",
+                "価格待ち"
+              ],
+              "catalogReady": true,
+              "current-market": false
+            },
+            "exclusions": [
+              "単体資金効率算出不可・在庫なし",
+              "購入価格条件・在庫なし",
+              "仕入れ余裕率・上限算出不可",
+              "国内PSA9比率"
+            ]
+          },
+          "after": {
+            "identityKey": "SV2A|201165|リザードンEX|SAR||ja|リザードンEXSARSV2A201165強化拡張パックポケモンカード151",
+            "referencePrice": 56400,
+            "psa10": 110000,
+            "purchase": null,
+            "sourceQuotes": {
+              "cardrush": {
+                "price": 74800,
+                "stock": 33,
+                "available": null,
+                "priceObservedAt": "2026-08-30",
+                "inventoryObservedAt": "2026-08-30",
+                "url": "https://www.cardrush-pokemon.jp/product/43860",
+                "sourceFailure": "pk-73737: HTTP 403"
+              },
+              "hareruya2": {
+                "price": 60000,
+                "stock": 0,
+                "available": false,
+                "priceObservedAt": "2026-10-26T07:12:30.708Z",
+                "inventoryObservedAt": "2026-10-26T07:12:30.708Z",
+                "url": "https://www.hareruya2.com/products/9017521013056",
+                "sourceFailure": null
+              },
+              "torecacamp": {
+                "price": 52800,
+                "stock": null,
+                "available": false,
+                "priceObservedAt": "2026-10-26T08:12:31.089Z",
+                "inventoryObservedAt": "2026-10-26T08:12:31.089Z",
+                "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                "sourceFailure": null
+              },
+              "yuyutei": {
+                "price": 69800,
+                "stock": 0,
+                "available": null,
+                "priceObservedAt": "2026-09-05",
+                "inventoryObservedAt": "2026-09-05",
+                "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                "sourceFailure": "HTTP 403"
+              }
+            },
+            "psa9": {
+              "price": 62500,
+              "ratio": 90.24,
+              "buy": 56400,
+              "measurementType": "aggregate",
+              "updatedAt": "2026-10-26T03:03:12.467Z",
+              "reasons": []
+            },
+            "efficiency": {
+              "buy": null,
+              "profit": null,
+              "roi": null,
+              "annual": null,
+              "scenario": "現在出口相場が続く仮定",
+              "exit": "買取店・フリマの低い方",
+              "days": 101,
+              "basis": "実店舗状態A価格",
+              "blockingReasons": []
+            },
+            "buyback": [
+              {
+                "shopId": "torecabank",
+                "price": null,
+                "priceDate": "2026-10-25",
+                "observedAt": "2026-10-26T07:06:29.171Z",
+                "valid": false,
+                "stale": false,
+                "listingActive": false,
+                "reason": "価格未取得"
+              },
+              {
+                "shopId": "toreca-lounge",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:29.952Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "bluerocket",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T00:32:36.169Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "shinsoku",
+                "price": 99000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:35.723Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "torecaclub",
+                "price": 105000,
+                "priceDate": "2026-10-13",
+                "observedAt": null,
+                "valid": true,
+                "stale": true,
+                "listingActive": true,
+                "reason": "価格更新が古い"
+              },
+              {
+                "shopId": "toreca-birth-mail",
+                "price": 94600,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:41.161Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "kaitori-homura-mail",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:35:56.967Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "fukufuku-mail",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:36:11.961Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              }
+            ],
+            "specificationHeld": false,
+            "dataQuality": {
+              "manualReview": false,
+              "manualReviewReasons": [],
+              "dataShortage": false,
+              "dataShortageReasons": [],
+              "outlierExcluded": true,
+              "outlierExcludedReasons": [
+                "みんトレ状態A ¥41,000"
+              ],
+              "priceQuarantined": false,
+              "priceQuarantineReasons": [],
+              "shortageRiskPct": 0,
+              "confidence": "高",
+              "trustedPriceCount": 2,
+              "dataAnomaly": false,
+              "dataAnomalyReasons": []
+            },
+            "priceReview": {
+              "conflicted": false,
+              "integrityDisputed": false,
+              "manualReview": false,
+              "reasons": [],
+              "sources": [
+                {
+                  "source": "トレカキャンプ状態A",
+                  "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                  "value": 52800,
+                  "at": "2026-10-26T08:12:31.089Z",
+                  "reason": null
+                },
+                {
+                  "source": "晴れる屋2状態A",
+                  "url": "https://www.hareruya2.com/products/9017521013056",
+                  "value": 60000,
+                  "at": "2026-10-26T07:12:30.708Z",
+                  "reason": null
+                },
+                {
+                  "source": "みんトレ状態A",
+                  "url": "https://toreca-souba.com/cards/pk-43860",
+                  "value": 41000,
+                  "at": "2026-10-26T03:03:12.467Z",
+                  "reason": null
+                },
+                {
+                  "source": "カードラッシュ状態A",
+                  "url": "https://www.cardrush-pokemon.jp/product/43860",
+                  "value": 74800,
+                  "at": "2026-08-30",
+                  "reason": null
+                },
+                {
+                  "source": "遊々亭状態A",
+                  "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                  "value": 69800,
+                  "at": "2026-09-05",
+                  "reason": null
+                }
+              ]
+            },
+            "medianEvidence": null,
+            "inputs": {
+              "fee": 12980,
+              "saleFeeRate": 8,
+              "saleExtraCost": 0,
+              "buybackDeductionRate": 5,
+              "hitRate": 0.8410079885692018
+            },
+            "assessment": {
+              "supplyRisk": 51,
+              "marketStability": 58,
+              "cautions": [
+                "状態A在庫の減少が速くPSA供給増リスク",
+                "PSA公式枚数が更新待ち"
+              ],
+              "stockDemand": "買う人が多い"
+            },
+            "forecastEvidence": {
+              "rawTrend30": -17.7,
+              "downsideScore": 68,
+              "supplyPressure": "未判定",
+              "psa10Tx30": 142,
+              "shopDrop30": 32
+            },
+            "decision": {
+              "verdict": "価格次第",
+              "reasons": [
+                "¥40,000以下なら再判定",
+                "運用上限の平滑値を反映"
+              ],
+              "operationalLimit": 40000
+            },
+            "presets": {
+              "now": false,
+              "aggressive": false,
+              "lowRisk": false,
+              "turnover": true,
+              "bargain": false,
+              "curated": false,
+              "combined": true,
+              "priceWait": true,
+              "domesticExit": true,
+              "trusted": false,
+              "stressSafe": true,
+              "gapToLimit": 41,
+              "tags": [
+                "高回転",
+                "価格待ち"
+              ],
+              "catalogReady": true,
+              "current-market": false
+            },
+            "exclusions": [
+              "単体資金効率算出不可・在庫なし",
+              "購入価格条件・在庫なし",
+              "仕入れ余裕率・上限算出不可",
+              "国内PSA9比率"
+            ]
+          }
+        }
+      ],
+      "missingHistoricalInputs": []
+    },
+    {
+      "id": "A-median-specified",
+      "before": [
+        "pk-70050",
+        "pk-73747",
+        "pk-23002",
+        "pk-6015",
+        "pk-14592",
+        "pk-3123",
+        "pk-4376"
+      ],
+      "after": [
+        "pk-70050",
+        "pk-73747",
+        "pk-23002",
+        "pk-6015",
+        "pk-14592",
+        "pk-3123",
+        "pk-4376"
+      ],
+      "gained": [],
+      "lost": [],
+      "inspected": [
+        {
+          "id": "pk-43860",
+          "before": {
+            "identityKey": "SV2A|201165|リザードンEX|SAR||ja|リザードンEXSARSV2A201165強化拡張パックポケモンカード151",
+            "referencePrice": 56400,
+            "psa10": 110000,
+            "purchase": null,
+            "sourceQuotes": {
+              "cardrush": {
+                "price": 74800,
+                "stock": 33,
+                "available": null,
+                "priceObservedAt": "2026-08-30",
+                "inventoryObservedAt": "2026-08-30",
+                "url": "https://www.cardrush-pokemon.jp/product/43860",
+                "sourceFailure": "pk-73737: HTTP 403"
+              },
+              "hareruya2": {
+                "price": 60000,
+                "stock": 0,
+                "available": false,
+                "priceObservedAt": "2026-10-26T07:12:30.708Z",
+                "inventoryObservedAt": "2026-10-26T07:12:30.708Z",
+                "url": "https://www.hareruya2.com/products/9017521013056",
+                "sourceFailure": "時間上限・保存して安全停止"
+              },
+              "torecacamp": {
+                "price": 52800,
+                "stock": null,
+                "available": false,
+                "priceObservedAt": "2026-10-25T19:28:01.061Z",
+                "inventoryObservedAt": "2026-10-25T19:28:01.061Z",
+                "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                "sourceFailure": null
+              },
+              "yuyutei": {
+                "price": 69800,
+                "stock": 0,
+                "available": null,
+                "priceObservedAt": "2026-09-05",
+                "inventoryObservedAt": "2026-09-05",
+                "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                "sourceFailure": "HTTP 403"
+              }
+            },
+            "psa9": {
+              "price": 62500,
+              "ratio": 90.24,
+              "buy": 56400,
+              "measurementType": "aggregate",
+              "updatedAt": "2026-10-26T03:03:12.467Z",
+              "reasons": []
+            },
+            "efficiency": {
+              "buy": 56400,
+              "profit": 15302,
+              "roi": 22.710002968239834,
+              "annual": 52.79714065864675,
+              "scenario": "現在出口相場が続く仮定",
+              "exit": "買取店（両出口の保守側）",
+              "days": 157,
+              "basis": "素体参考相場・中央値（購入保証なし）",
+              "blockingReasons": []
+            },
+            "buyback": [
+              {
+                "shopId": "torecabank",
+                "price": null,
+                "priceDate": "2026-10-25",
+                "observedAt": "2026-10-26T07:06:29.171Z",
+                "valid": false,
+                "stale": false,
+                "listingActive": false,
+                "reason": "価格未取得"
+              },
+              {
+                "shopId": "toreca-lounge",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:29.952Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "bluerocket",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T00:32:36.169Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "shinsoku",
+                "price": 99000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:35.723Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "torecaclub",
+                "price": 105000,
+                "priceDate": "2026-10-13",
+                "observedAt": null,
+                "valid": true,
+                "stale": true,
+                "listingActive": true,
+                "reason": "価格更新が古い"
+              },
+              {
+                "shopId": "toreca-birth-mail",
+                "price": 94600,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:41.161Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "kaitori-homura-mail",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:35:56.967Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "fukufuku-mail",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:36:11.961Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              }
+            ],
+            "specificationHeld": false,
+            "dataQuality": {
+              "manualReview": false,
+              "manualReviewReasons": [],
+              "dataShortage": false,
+              "dataShortageReasons": [],
+              "outlierExcluded": true,
+              "outlierExcludedReasons": [
+                "みんトレ状態A ¥41,000"
+              ],
+              "priceQuarantined": false,
+              "priceQuarantineReasons": [],
+              "shortageRiskPct": 0,
+              "confidence": "高",
+              "trustedPriceCount": 2,
+              "dataAnomaly": false,
+              "dataAnomalyReasons": []
+            },
+            "priceReview": {
+              "conflicted": false,
+              "integrityDisputed": false,
+              "manualReview": false,
+              "reasons": [],
+              "sources": [
+                {
+                  "source": "トレカキャンプ状態A",
+                  "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                  "value": 52800,
+                  "at": "2026-10-25T19:28:01.061Z",
+                  "reason": null
+                },
+                {
+                  "source": "晴れる屋2状態A",
+                  "url": "https://www.hareruya2.com/products/9017521013056",
+                  "value": 60000,
+                  "at": "2026-10-26T07:12:30.708Z",
+                  "reason": null
+                },
+                {
+                  "source": "みんトレ状態A",
+                  "url": "https://toreca-souba.com/cards/pk-43860",
+                  "value": 41000,
+                  "at": "2026-10-26T03:03:12.467Z",
+                  "reason": null
+                },
+                {
+                  "source": "カードラッシュ状態A",
+                  "url": "https://www.cardrush-pokemon.jp/product/43860",
+                  "value": 74800,
+                  "at": "2026-08-30",
+                  "reason": null
+                },
+                {
+                  "source": "遊々亭状態A",
+                  "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                  "value": 69800,
+                  "at": "2026-09-05",
+                  "reason": null
+                }
+              ]
+            },
+            "medianEvidence": {
+              "reasons": [],
+              "independent": 2,
+              "value": 56400,
+              "rows": [
+                {
+                  "source": "トレカキャンプ状態A",
+                  "origin": "torecacamp-pokemon.com",
+                  "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                  "price": 52800,
+                  "observedAt": "2026-10-25T19:28:01.061Z",
+                  "fresh": true,
+                  "kind": "販売価格"
+                },
+                {
+                  "source": "晴れる屋2状態A",
+                  "origin": "hareruya2.com",
+                  "url": "https://www.hareruya2.com/products/9017521013056",
+                  "price": 60000,
+                  "observedAt": "2026-10-26T07:12:30.708Z",
+                  "fresh": true,
+                  "kind": "販売価格"
+                }
+              ],
+              "omitted": [
+                {
+                  "source": "みんトレ状態A",
+                  "url": "https://toreca-souba.com/cards/pk-43860",
+                  "price": 41000,
+                  "observedAt": "2026-10-26T03:03:12.467Z",
+                  "reason": "実売根拠未確認の参考価格"
+                },
+                {
+                  "source": "カードラッシュ状態A",
+                  "url": "https://www.cardrush-pokemon.jp/product/43860",
+                  "price": 74800,
+                  "observedAt": "2026-08-30",
+                  "reason": "個別確認時刻未取得／古値との比較・48時間外"
+                },
+                {
+                  "source": "遊々亭状態A",
+                  "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                  "price": 69800,
+                  "observedAt": "2026-09-05",
+                  "reason": "個別確認時刻未取得／古値との比較・48時間外"
+                }
+              ]
+            },
+            "inputs": {
+              "fee": 10980,
+              "saleFeeRate": 8,
+              "saleExtraCost": 0,
+              "buybackDeductionRate": 5,
+              "hitRate": 0.8410079885692018
+            },
+            "assessment": {
+              "supplyRisk": 51,
+              "marketStability": 58,
+              "cautions": [
+                "状態A在庫の減少が速くPSA供給増リスク",
+                "PSA公式枚数が更新待ち"
+              ],
+              "stockDemand": "買う人が多い"
+            },
+            "forecastEvidence": {
+              "rawTrend30": -17.7,
+              "downsideScore": 68,
+              "supplyPressure": "未判定",
+              "psa10Tx30": 142,
+              "shopDrop30": 32
+            },
+            "decision": {
+              "verdict": "価格次第",
+              "reasons": [
+                "期間不一致・返却時試算不可（予測91日／返却147日）。上限は91日モデルの参考値",
+                "¥42,500以下なら再判定",
+                "運用上限の平滑値を反映"
+              ],
+              "operationalLimit": 42500
+            },
+            "presets": {
+              "now": false,
+              "aggressive": false,
+              "lowRisk": false,
+              "turnover": true,
+              "bargain": false,
+              "curated": false,
+              "combined": true,
+              "priceWait": true,
+              "domesticExit": true,
+              "trusted": false,
+              "stressSafe": true,
+              "gapToLimit": 32.70588235294118,
+              "tags": [
+                "高回転",
+                "価格待ち",
+                "期間不一致・参考探索"
+              ],
+              "catalogReady": true,
+              "current-market": false
+            },
+            "exclusions": [
+              "購入価格条件・在庫なし",
+              "仕入れ余裕率・上限算出不可"
+            ]
+          },
+          "after": {
+            "identityKey": "SV2A|201165|リザードンEX|SAR||ja|リザードンEXSARSV2A201165強化拡張パックポケモンカード151",
+            "referencePrice": 56400,
+            "psa10": 110000,
+            "purchase": null,
+            "sourceQuotes": {
+              "cardrush": {
+                "price": 74800,
+                "stock": 33,
+                "available": null,
+                "priceObservedAt": "2026-08-30",
+                "inventoryObservedAt": "2026-08-30",
+                "url": "https://www.cardrush-pokemon.jp/product/43860",
+                "sourceFailure": "pk-73737: HTTP 403"
+              },
+              "hareruya2": {
+                "price": 60000,
+                "stock": 0,
+                "available": false,
+                "priceObservedAt": "2026-10-26T07:12:30.708Z",
+                "inventoryObservedAt": "2026-10-26T07:12:30.708Z",
+                "url": "https://www.hareruya2.com/products/9017521013056",
+                "sourceFailure": null
+              },
+              "torecacamp": {
+                "price": 52800,
+                "stock": null,
+                "available": false,
+                "priceObservedAt": "2026-10-26T08:12:31.089Z",
+                "inventoryObservedAt": "2026-10-26T08:12:31.089Z",
+                "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                "sourceFailure": null
+              },
+              "yuyutei": {
+                "price": 69800,
+                "stock": 0,
+                "available": null,
+                "priceObservedAt": "2026-09-05",
+                "inventoryObservedAt": "2026-09-05",
+                "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                "sourceFailure": "HTTP 403"
+              }
+            },
+            "psa9": {
+              "price": 62500,
+              "ratio": 90.24,
+              "buy": 56400,
+              "measurementType": "aggregate",
+              "updatedAt": "2026-10-26T03:03:12.467Z",
+              "reasons": []
+            },
+            "efficiency": {
+              "buy": 56400,
+              "profit": 15302,
+              "roi": 22.710002968239834,
+              "annual": 52.79714065864675,
+              "scenario": "現在出口相場が続く仮定",
+              "exit": "買取店（両出口の保守側）",
+              "days": 157,
+              "basis": "素体参考相場・中央値（購入保証なし）",
+              "blockingReasons": []
+            },
+            "buyback": [
+              {
+                "shopId": "torecabank",
+                "price": null,
+                "priceDate": "2026-10-25",
+                "observedAt": "2026-10-26T07:06:29.171Z",
+                "valid": false,
+                "stale": false,
+                "listingActive": false,
+                "reason": "価格未取得"
+              },
+              {
+                "shopId": "toreca-lounge",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:29.952Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "bluerocket",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T00:32:36.169Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "shinsoku",
+                "price": 99000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:35.723Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "torecaclub",
+                "price": 105000,
+                "priceDate": "2026-10-13",
+                "observedAt": null,
+                "valid": true,
+                "stale": true,
+                "listingActive": true,
+                "reason": "価格更新が古い"
+              },
+              {
+                "shopId": "toreca-birth-mail",
+                "price": 94600,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:41.161Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "kaitori-homura-mail",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:35:56.967Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "fukufuku-mail",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:36:11.961Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              }
+            ],
+            "specificationHeld": false,
+            "dataQuality": {
+              "manualReview": false,
+              "manualReviewReasons": [],
+              "dataShortage": false,
+              "dataShortageReasons": [],
+              "outlierExcluded": true,
+              "outlierExcludedReasons": [
+                "みんトレ状態A ¥41,000"
+              ],
+              "priceQuarantined": false,
+              "priceQuarantineReasons": [],
+              "shortageRiskPct": 0,
+              "confidence": "高",
+              "trustedPriceCount": 2,
+              "dataAnomaly": false,
+              "dataAnomalyReasons": []
+            },
+            "priceReview": {
+              "conflicted": false,
+              "integrityDisputed": false,
+              "manualReview": false,
+              "reasons": [],
+              "sources": [
+                {
+                  "source": "トレカキャンプ状態A",
+                  "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                  "value": 52800,
+                  "at": "2026-10-26T08:12:31.089Z",
+                  "reason": null
+                },
+                {
+                  "source": "晴れる屋2状態A",
+                  "url": "https://www.hareruya2.com/products/9017521013056",
+                  "value": 60000,
+                  "at": "2026-10-26T07:12:30.708Z",
+                  "reason": null
+                },
+                {
+                  "source": "みんトレ状態A",
+                  "url": "https://toreca-souba.com/cards/pk-43860",
+                  "value": 41000,
+                  "at": "2026-10-26T03:03:12.467Z",
+                  "reason": null
+                },
+                {
+                  "source": "カードラッシュ状態A",
+                  "url": "https://www.cardrush-pokemon.jp/product/43860",
+                  "value": 74800,
+                  "at": "2026-08-30",
+                  "reason": null
+                },
+                {
+                  "source": "遊々亭状態A",
+                  "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                  "value": 69800,
+                  "at": "2026-09-05",
+                  "reason": null
+                }
+              ]
+            },
+            "medianEvidence": {
+              "reasons": [],
+              "independent": 2,
+              "value": 56400,
+              "rows": [
+                {
+                  "source": "トレカキャンプ状態A",
+                  "origin": "torecacamp-pokemon.com",
+                  "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                  "price": 52800,
+                  "observedAt": "2026-10-26T08:12:31.089Z",
+                  "fresh": true,
+                  "kind": "販売価格"
+                },
+                {
+                  "source": "晴れる屋2状態A",
+                  "origin": "hareruya2.com",
+                  "url": "https://www.hareruya2.com/products/9017521013056",
+                  "price": 60000,
+                  "observedAt": "2026-10-26T07:12:30.708Z",
+                  "fresh": true,
+                  "kind": "販売価格"
+                }
+              ],
+              "omitted": [
+                {
+                  "source": "みんトレ状態A",
+                  "url": "https://toreca-souba.com/cards/pk-43860",
+                  "price": 41000,
+                  "observedAt": "2026-10-26T03:03:12.467Z",
+                  "reason": "実売根拠未確認の参考価格"
+                },
+                {
+                  "source": "カードラッシュ状態A",
+                  "url": "https://www.cardrush-pokemon.jp/product/43860",
+                  "price": 74800,
+                  "observedAt": "2026-08-30",
+                  "reason": "個別確認時刻未取得／古値との比較・48時間外"
+                },
+                {
+                  "source": "遊々亭状態A",
+                  "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                  "price": 69800,
+                  "observedAt": "2026-09-05",
+                  "reason": "個別確認時刻未取得／古値との比較・48時間外"
+                }
+              ]
+            },
+            "inputs": {
+              "fee": 10980,
+              "saleFeeRate": 8,
+              "saleExtraCost": 0,
+              "buybackDeductionRate": 5,
+              "hitRate": 0.8410079885692018
+            },
+            "assessment": {
+              "supplyRisk": 51,
+              "marketStability": 58,
+              "cautions": [
+                "状態A在庫の減少が速くPSA供給増リスク",
+                "PSA公式枚数が更新待ち"
+              ],
+              "stockDemand": "買う人が多い"
+            },
+            "forecastEvidence": {
+              "rawTrend30": -17.7,
+              "downsideScore": 68,
+              "supplyPressure": "未判定",
+              "psa10Tx30": 142,
+              "shopDrop30": 32
+            },
+            "decision": {
+              "verdict": "価格次第",
+              "reasons": [
+                "期間不一致・返却時試算不可（予測91日／返却147日）。上限は91日モデルの参考値",
+                "¥42,500以下なら再判定",
+                "運用上限の平滑値を反映"
+              ],
+              "operationalLimit": 42500
+            },
+            "presets": {
+              "now": false,
+              "aggressive": false,
+              "lowRisk": false,
+              "turnover": true,
+              "bargain": false,
+              "curated": false,
+              "combined": true,
+              "priceWait": true,
+              "domesticExit": true,
+              "trusted": false,
+              "stressSafe": true,
+              "gapToLimit": 32.70588235294118,
+              "tags": [
+                "高回転",
+                "価格待ち",
+                "期間不一致・参考探索"
+              ],
+              "catalogReady": true,
+              "current-market": false
+            },
+            "exclusions": [
+              "購入価格条件・在庫なし",
+              "仕入れ余裕率・上限算出不可"
+            ]
+          }
+        }
+      ],
+      "missingHistoricalInputs": []
+    },
+    {
+      "id": "B-median-specified",
+      "before": [
+        "pk-22379",
+        "pk-51076",
+        "pk-67343",
+        "pk-67583",
+        "pk-43864",
+        "pk-70051",
+        "pk-79905",
+        "pk-51078",
+        "pk-45925",
+        "pk-7040",
+        "x-107497",
+        "pk-6036",
+        "pk-21474",
+        "pk-5202",
+        "pk-18241",
+        "pk-6028",
+        "pk-4376"
+      ],
+      "after": [
+        "pk-22379",
+        "pk-51076",
+        "pk-67343",
+        "pk-67583",
+        "pk-43864",
+        "pk-70051",
+        "pk-79905",
+        "pk-51078",
+        "pk-45925",
+        "pk-7040",
+        "x-107497",
+        "pk-6036",
+        "pk-21474",
+        "pk-5202",
+        "pk-18241",
+        "pk-6028",
+        "pk-4376"
+      ],
+      "gained": [],
+      "lost": [],
+      "inspected": [
+        {
+          "id": "pk-43860",
+          "before": {
+            "identityKey": "SV2A|201165|リザードンEX|SAR||ja|リザードンEXSARSV2A201165強化拡張パックポケモンカード151",
+            "referencePrice": 56400,
+            "psa10": 110000,
+            "purchase": null,
+            "sourceQuotes": {
+              "cardrush": {
+                "price": 74800,
+                "stock": 33,
+                "available": null,
+                "priceObservedAt": "2026-08-30",
+                "inventoryObservedAt": "2026-08-30",
+                "url": "https://www.cardrush-pokemon.jp/product/43860",
+                "sourceFailure": "pk-73737: HTTP 403"
+              },
+              "hareruya2": {
+                "price": 60000,
+                "stock": 0,
+                "available": false,
+                "priceObservedAt": "2026-10-26T07:12:30.708Z",
+                "inventoryObservedAt": "2026-10-26T07:12:30.708Z",
+                "url": "https://www.hareruya2.com/products/9017521013056",
+                "sourceFailure": "時間上限・保存して安全停止"
+              },
+              "torecacamp": {
+                "price": 52800,
+                "stock": null,
+                "available": false,
+                "priceObservedAt": "2026-10-25T19:28:01.061Z",
+                "inventoryObservedAt": "2026-10-25T19:28:01.061Z",
+                "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                "sourceFailure": null
+              },
+              "yuyutei": {
+                "price": 69800,
+                "stock": 0,
+                "available": null,
+                "priceObservedAt": "2026-09-05",
+                "inventoryObservedAt": "2026-09-05",
+                "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                "sourceFailure": "HTTP 403"
+              }
+            },
+            "psa9": {
+              "price": 62500,
+              "ratio": 90.24,
+              "buy": 56400,
+              "measurementType": "aggregate",
+              "updatedAt": "2026-10-26T03:03:12.467Z",
+              "reasons": []
+            },
+            "efficiency": {
+              "buy": 56400,
+              "profit": 13302,
+              "roi": 19.17267223983857,
+              "annual": 69.28737987664434,
+              "scenario": "現在出口相場が続く仮定",
+              "exit": "買取店（両出口の保守側）",
+              "days": 101,
+              "basis": "素体参考相場・中央値（購入保証なし）",
+              "blockingReasons": []
+            },
+            "buyback": [
+              {
+                "shopId": "torecabank",
+                "price": null,
+                "priceDate": "2026-10-25",
+                "observedAt": "2026-10-26T07:06:29.171Z",
+                "valid": false,
+                "stale": false,
+                "listingActive": false,
+                "reason": "価格未取得"
+              },
+              {
+                "shopId": "toreca-lounge",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:29.952Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "bluerocket",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T00:32:36.169Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "shinsoku",
+                "price": 99000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:35.723Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "torecaclub",
+                "price": 105000,
+                "priceDate": "2026-10-13",
+                "observedAt": null,
+                "valid": true,
+                "stale": true,
+                "listingActive": true,
+                "reason": "価格更新が古い"
+              },
+              {
+                "shopId": "toreca-birth-mail",
+                "price": 94600,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:41.161Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "kaitori-homura-mail",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:35:56.967Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "fukufuku-mail",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:36:11.961Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              }
+            ],
+            "specificationHeld": false,
+            "dataQuality": {
+              "manualReview": false,
+              "manualReviewReasons": [],
+              "dataShortage": false,
+              "dataShortageReasons": [],
+              "outlierExcluded": true,
+              "outlierExcludedReasons": [
+                "みんトレ状態A ¥41,000"
+              ],
+              "priceQuarantined": false,
+              "priceQuarantineReasons": [],
+              "shortageRiskPct": 0,
+              "confidence": "高",
+              "trustedPriceCount": 2,
+              "dataAnomaly": false,
+              "dataAnomalyReasons": []
+            },
+            "priceReview": {
+              "conflicted": false,
+              "integrityDisputed": false,
+              "manualReview": false,
+              "reasons": [],
+              "sources": [
+                {
+                  "source": "トレカキャンプ状態A",
+                  "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                  "value": 52800,
+                  "at": "2026-10-25T19:28:01.061Z",
+                  "reason": null
+                },
+                {
+                  "source": "晴れる屋2状態A",
+                  "url": "https://www.hareruya2.com/products/9017521013056",
+                  "value": 60000,
+                  "at": "2026-10-26T07:12:30.708Z",
+                  "reason": null
+                },
+                {
+                  "source": "みんトレ状態A",
+                  "url": "https://toreca-souba.com/cards/pk-43860",
+                  "value": 41000,
+                  "at": "2026-10-26T03:03:12.467Z",
+                  "reason": null
+                },
+                {
+                  "source": "カードラッシュ状態A",
+                  "url": "https://www.cardrush-pokemon.jp/product/43860",
+                  "value": 74800,
+                  "at": "2026-08-30",
+                  "reason": null
+                },
+                {
+                  "source": "遊々亭状態A",
+                  "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                  "value": 69800,
+                  "at": "2026-09-05",
+                  "reason": null
+                }
+              ]
+            },
+            "medianEvidence": {
+              "reasons": [],
+              "independent": 2,
+              "value": 56400,
+              "rows": [
+                {
+                  "source": "トレカキャンプ状態A",
+                  "origin": "torecacamp-pokemon.com",
+                  "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                  "price": 52800,
+                  "observedAt": "2026-10-25T19:28:01.061Z",
+                  "fresh": true,
+                  "kind": "販売価格"
+                },
+                {
+                  "source": "晴れる屋2状態A",
+                  "origin": "hareruya2.com",
+                  "url": "https://www.hareruya2.com/products/9017521013056",
+                  "price": 60000,
+                  "observedAt": "2026-10-26T07:12:30.708Z",
+                  "fresh": true,
+                  "kind": "販売価格"
+                }
+              ],
+              "omitted": [
+                {
+                  "source": "みんトレ状態A",
+                  "url": "https://toreca-souba.com/cards/pk-43860",
+                  "price": 41000,
+                  "observedAt": "2026-10-26T03:03:12.467Z",
+                  "reason": "実売根拠未確認の参考価格"
+                },
+                {
+                  "source": "カードラッシュ状態A",
+                  "url": "https://www.cardrush-pokemon.jp/product/43860",
+                  "price": 74800,
+                  "observedAt": "2026-08-30",
+                  "reason": "個別確認時刻未取得／古値との比較・48時間外"
+                },
+                {
+                  "source": "遊々亭状態A",
+                  "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                  "price": 69800,
+                  "observedAt": "2026-09-05",
+                  "reason": "個別確認時刻未取得／古値との比較・48時間外"
+                }
+              ]
+            },
+            "inputs": {
+              "fee": 12980,
+              "saleFeeRate": 8,
+              "saleExtraCost": 0,
+              "buybackDeductionRate": 5,
+              "hitRate": 0.8410079885692018
+            },
+            "assessment": {
+              "supplyRisk": 51,
+              "marketStability": 58,
+              "cautions": [
+                "状態A在庫の減少が速くPSA供給増リスク",
+                "PSA公式枚数が更新待ち"
+              ],
+              "stockDemand": "買う人が多い"
+            },
+            "forecastEvidence": {
+              "rawTrend30": -17.7,
+              "downsideScore": 68,
+              "supplyPressure": "未判定",
+              "psa10Tx30": 142,
+              "shopDrop30": 32
+            },
+            "decision": {
+              "verdict": "価格次第",
+              "reasons": [
+                "¥40,000以下なら再判定",
+                "運用上限の平滑値を反映"
+              ],
+              "operationalLimit": 40000
+            },
+            "presets": {
+              "now": false,
+              "aggressive": false,
+              "lowRisk": false,
+              "turnover": true,
+              "bargain": false,
+              "curated": false,
+              "combined": true,
+              "priceWait": true,
+              "domesticExit": true,
+              "trusted": false,
+              "stressSafe": true,
+              "gapToLimit": 41,
+              "tags": [
+                "高回転",
+                "価格待ち"
+              ],
+              "catalogReady": true,
+              "current-market": false
+            },
+            "exclusions": [
+              "購入価格条件・在庫なし",
+              "仕入れ余裕率・上限算出不可",
+              "国内PSA9比率"
+            ]
+          },
+          "after": {
+            "identityKey": "SV2A|201165|リザードンEX|SAR||ja|リザードンEXSARSV2A201165強化拡張パックポケモンカード151",
+            "referencePrice": 56400,
+            "psa10": 110000,
+            "purchase": null,
+            "sourceQuotes": {
+              "cardrush": {
+                "price": 74800,
+                "stock": 33,
+                "available": null,
+                "priceObservedAt": "2026-08-30",
+                "inventoryObservedAt": "2026-08-30",
+                "url": "https://www.cardrush-pokemon.jp/product/43860",
+                "sourceFailure": "pk-73737: HTTP 403"
+              },
+              "hareruya2": {
+                "price": 60000,
+                "stock": 0,
+                "available": false,
+                "priceObservedAt": "2026-10-26T07:12:30.708Z",
+                "inventoryObservedAt": "2026-10-26T07:12:30.708Z",
+                "url": "https://www.hareruya2.com/products/9017521013056",
+                "sourceFailure": null
+              },
+              "torecacamp": {
+                "price": 52800,
+                "stock": null,
+                "available": false,
+                "priceObservedAt": "2026-10-26T08:12:31.089Z",
+                "inventoryObservedAt": "2026-10-26T08:12:31.089Z",
+                "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                "sourceFailure": null
+              },
+              "yuyutei": {
+                "price": 69800,
+                "stock": 0,
+                "available": null,
+                "priceObservedAt": "2026-09-05",
+                "inventoryObservedAt": "2026-09-05",
+                "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                "sourceFailure": "HTTP 403"
+              }
+            },
+            "psa9": {
+              "price": 62500,
+              "ratio": 90.24,
+              "buy": 56400,
+              "measurementType": "aggregate",
+              "updatedAt": "2026-10-26T03:03:12.467Z",
+              "reasons": []
+            },
+            "efficiency": {
+              "buy": 56400,
+              "profit": 13302,
+              "roi": 19.17267223983857,
+              "annual": 69.28737987664434,
+              "scenario": "現在出口相場が続く仮定",
+              "exit": "買取店（両出口の保守側）",
+              "days": 101,
+              "basis": "素体参考相場・中央値（購入保証なし）",
+              "blockingReasons": []
+            },
+            "buyback": [
+              {
+                "shopId": "torecabank",
+                "price": null,
+                "priceDate": "2026-10-25",
+                "observedAt": "2026-10-26T07:06:29.171Z",
+                "valid": false,
+                "stale": false,
+                "listingActive": false,
+                "reason": "価格未取得"
+              },
+              {
+                "shopId": "toreca-lounge",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:29.952Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "bluerocket",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T00:32:36.169Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "shinsoku",
+                "price": 99000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:35.723Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "torecaclub",
+                "price": 105000,
+                "priceDate": "2026-10-13",
+                "observedAt": null,
+                "valid": true,
+                "stale": true,
+                "listingActive": true,
+                "reason": "価格更新が古い"
+              },
+              {
+                "shopId": "toreca-birth-mail",
+                "price": 94600,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-26T07:06:41.161Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "kaitori-homura-mail",
+                "price": 92500,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:35:56.967Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              },
+              {
+                "shopId": "fukufuku-mail",
+                "price": 100000,
+                "priceDate": "2026-10-26",
+                "observedAt": "2026-10-25T16:36:11.961Z",
+                "valid": true,
+                "stale": false,
+                "listingActive": true,
+                "reason": null
+              }
+            ],
+            "specificationHeld": false,
+            "dataQuality": {
+              "manualReview": false,
+              "manualReviewReasons": [],
+              "dataShortage": false,
+              "dataShortageReasons": [],
+              "outlierExcluded": true,
+              "outlierExcludedReasons": [
+                "みんトレ状態A ¥41,000"
+              ],
+              "priceQuarantined": false,
+              "priceQuarantineReasons": [],
+              "shortageRiskPct": 0,
+              "confidence": "高",
+              "trustedPriceCount": 2,
+              "dataAnomaly": false,
+              "dataAnomalyReasons": []
+            },
+            "priceReview": {
+              "conflicted": false,
+              "integrityDisputed": false,
+              "manualReview": false,
+              "reasons": [],
+              "sources": [
+                {
+                  "source": "トレカキャンプ状態A",
+                  "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                  "value": 52800,
+                  "at": "2026-10-26T08:12:31.089Z",
+                  "reason": null
+                },
+                {
+                  "source": "晴れる屋2状態A",
+                  "url": "https://www.hareruya2.com/products/9017521013056",
+                  "value": 60000,
+                  "at": "2026-10-26T07:12:30.708Z",
+                  "reason": null
+                },
+                {
+                  "source": "みんトレ状態A",
+                  "url": "https://toreca-souba.com/cards/pk-43860",
+                  "value": 41000,
+                  "at": "2026-10-26T03:03:12.467Z",
+                  "reason": null
+                },
+                {
+                  "source": "カードラッシュ状態A",
+                  "url": "https://www.cardrush-pokemon.jp/product/43860",
+                  "value": 74800,
+                  "at": "2026-08-30",
+                  "reason": null
+                },
+                {
+                  "source": "遊々亭状態A",
+                  "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                  "value": 69800,
+                  "at": "2026-09-05",
+                  "reason": null
+                }
+              ]
+            },
+            "medianEvidence": {
+              "reasons": [],
+              "independent": 2,
+              "value": 56400,
+              "rows": [
+                {
+                  "source": "トレカキャンプ状態A",
+                  "origin": "torecacamp-pokemon.com",
+                  "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+                  "price": 52800,
+                  "observedAt": "2026-10-26T08:12:31.089Z",
+                  "fresh": true,
+                  "kind": "販売価格"
+                },
+                {
+                  "source": "晴れる屋2状態A",
+                  "origin": "hareruya2.com",
+                  "url": "https://www.hareruya2.com/products/9017521013056",
+                  "price": 60000,
+                  "observedAt": "2026-10-26T07:12:30.708Z",
+                  "fresh": true,
+                  "kind": "販売価格"
+                }
+              ],
+              "omitted": [
+                {
+                  "source": "みんトレ状態A",
+                  "url": "https://toreca-souba.com/cards/pk-43860",
+                  "price": 41000,
+                  "observedAt": "2026-10-26T03:03:12.467Z",
+                  "reason": "実売根拠未確認の参考価格"
+                },
+                {
+                  "source": "カードラッシュ状態A",
+                  "url": "https://www.cardrush-pokemon.jp/product/43860",
+                  "price": 74800,
+                  "observedAt": "2026-08-30",
+                  "reason": "個別確認時刻未取得／古値との比較・48時間外"
+                },
+                {
+                  "source": "遊々亭状態A",
+                  "url": "https://yuyu-tei.jp/sell/poc/card/sv02a/10507",
+                  "price": 69800,
+                  "observedAt": "2026-09-05",
+                  "reason": "個別確認時刻未取得／古値との比較・48時間外"
+                }
+              ]
+            },
+            "inputs": {
+              "fee": 12980,
+              "saleFeeRate": 8,
+              "saleExtraCost": 0,
+              "buybackDeductionRate": 5,
+              "hitRate": 0.8410079885692018
+            },
+            "assessment": {
+              "supplyRisk": 51,
+              "marketStability": 58,
+              "cautions": [
+                "状態A在庫の減少が速くPSA供給増リスク",
+                "PSA公式枚数が更新待ち"
+              ],
+              "stockDemand": "買う人が多い"
+            },
+            "forecastEvidence": {
+              "rawTrend30": -17.7,
+              "downsideScore": 68,
+              "supplyPressure": "未判定",
+              "psa10Tx30": 142,
+              "shopDrop30": 32
+            },
+            "decision": {
+              "verdict": "価格次第",
+              "reasons": [
+                "¥40,000以下なら再判定",
+                "運用上限の平滑値を反映"
+              ],
+              "operationalLimit": 40000
+            },
+            "presets": {
+              "now": false,
+              "aggressive": false,
+              "lowRisk": false,
+              "turnover": true,
+              "bargain": false,
+              "curated": false,
+              "combined": true,
+              "priceWait": true,
+              "domesticExit": true,
+              "trusted": false,
+              "stressSafe": true,
+              "gapToLimit": 41,
+              "tags": [
+                "高回転",
+                "価格待ち"
+              ],
+              "catalogReady": true,
+              "current-market": false
+            },
+            "exclusions": [
+              "購入価格条件・在庫なし",
+              "仕入れ余裕率・上限算出不可",
+              "国内PSA9比率"
+            ]
+          }
+        }
+      ],
+      "missingHistoricalInputs": []
+    }
+  ],
+  "independent": {
+    "before": 37,
+    "after": 37,
+    "gained": [],
+    "lost": []
+  },
+  "caution": "固定時計で実データ差を比較。初めての履歴適合と再適合の分類は通常差分台帳で別確認。取得だけでGOへ昇格しない",
+  "retainedEvidence": "Full local comparison retained privately; recovered PSA source counts/dates are in 20261026-basic-energy-recovered.json. Candidate IDs and all gained/lost results retained here."
+}

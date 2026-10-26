@@ -1,0 +1,722 @@
+{
+  "checkedAt": "2026-10-26T08:19:25.079Z",
+  "runs": [
+    {
+      "workflow": "daily-fast-update.yml",
+      "id": 40237937004,
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/40237937004",
+      "sha": "b3283fc176eb7f8abb20d0d71a031ffdfd4d90bf",
+      "createdAt": "2026-10-25T21:58:00Z",
+      "status": "completed",
+      "conclusion": "failure",
+      "jobs": [
+        {
+          "name": "update",
+          "startedAt": "2026-10-25T21:58:03Z",
+          "endedAt": "2026-10-25T22:19:14Z",
+          "conclusion": "failure",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "success",
+              "startedAt": "2026-10-25T21:58:03Z",
+              "completedAt": "2026-10-25T21:58:06Z"
+            },
+            {
+              "name": "Run actions/checkout@v7",
+              "status": "success",
+              "startedAt": "2026-10-25T21:58:06Z",
+              "completedAt": "2026-10-25T21:58:25Z"
+            },
+            {
+              "name": "Run actions/setup-node@v7",
+              "status": "success",
+              "startedAt": "2026-10-25T21:58:25Z",
+              "completedAt": "2026-10-25T21:58:25Z"
+            },
+            {
+              "name": "Save purchase-price freshness baseline",
+              "status": "success",
+              "startedAt": "2026-10-25T21:58:25Z",
+              "completedAt": "2026-10-25T21:59:20Z"
+            },
+            {
+              "name": "Run deterministic delta update",
+              "status": "success",
+              "startedAt": "2026-10-25T21:59:20Z",
+              "completedAt": "2026-10-25T22:02:59Z"
+            },
+            {
+              "name": "Refresh independent sources and preserve individual failures",
+              "status": "success",
+              "startedAt": "2026-10-25T22:02:59Z",
+              "completedAt": "2026-10-25T22:06:07Z"
+            },
+            {
+              "name": "Rebuild market demand and supply analysis",
+              "status": "success",
+              "startedAt": "2026-10-25T22:06:07Z",
+              "completedAt": "2026-10-25T22:06:18Z"
+            },
+            {
+              "name": "Finalize source status",
+              "status": "success",
+              "startedAt": "2026-10-25T22:06:18Z",
+              "completedAt": "2026-10-25T22:09:23Z"
+            },
+            {
+              "name": "Audit state-A price conflicts and sale evidence",
+              "status": "success",
+              "startedAt": "2026-10-25T22:09:23Z",
+              "completedAt": "2026-10-25T22:09:32Z"
+            },
+            {
+              "name": "Rebuild catalog and shared purchase-limit audit",
+              "status": "success",
+              "startedAt": "2026-10-25T22:09:32Z",
+              "completedAt": "2026-10-25T22:13:35Z"
+            },
+            {
+              "name": "Preserve acquired data before mandatory verification",
+              "status": "success",
+              "startedAt": "2026-10-25T22:13:35Z",
+              "completedAt": "2026-10-25T22:13:38Z"
+            },
+            {
+              "name": "Retain prevalidation checkpoint independently of later cancellation",
+              "status": "success",
+              "startedAt": "2026-10-25T22:13:38Z",
+              "completedAt": "2026-10-25T22:13:41Z"
+            },
+            {
+              "name": "Run fast regression tests",
+              "status": "success",
+              "startedAt": "2026-10-25T22:13:41Z",
+              "completedAt": "2026-10-25T22:16:33Z"
+            },
+            {
+              "name": "Commit changed data only",
+              "status": "success",
+              "startedAt": "2026-10-25T22:16:33Z",
+              "completedAt": "2026-10-25T22:18:45Z"
+            },
+            {
+              "name": "Report independent acquisition failures without hiding them",
+              "status": "failure",
+              "startedAt": "2026-10-25T22:18:45Z",
+              "completedAt": "2026-10-25T22:18:45Z"
+            },
+            {
+              "name": "Save unpublished source data on failure",
+              "status": "success",
+              "startedAt": "2026-10-25T22:18:45Z",
+              "completedAt": "2026-10-25T22:18:45Z"
+            },
+            {
+              "name": "Preserve raw data regardless of metadata errors",
+              "status": "success",
+              "startedAt": "2026-10-25T22:18:45Z",
+              "completedAt": "2026-10-25T22:18:58Z"
+            },
+            {
+              "name": "Upload recovery checkpoint if publication or validation failed",
+              "status": "success",
+              "startedAt": "2026-10-25T22:18:58Z",
+              "completedAt": "2026-10-25T22:19:12Z"
+            },
+            {
+              "name": "Post Run actions/setup-node@v7",
+              "status": "skipped",
+              "startedAt": "2026-10-25T22:19:12Z",
+              "completedAt": "2026-10-25T22:19:12Z"
+            },
+            {
+              "name": "Post Run actions/checkout@v7",
+              "status": "success",
+              "startedAt": "2026-10-25T22:19:12Z",
+              "completedAt": "2026-10-25T22:19:12Z"
+            },
+            {
+              "name": "Complete job",
+              "status": "success",
+              "startedAt": "2026-10-25T22:19:12Z",
+              "completedAt": "2026-10-25T22:19:12Z"
+            }
+          ],
+          "evidence": [
+            {
+              "status": "manual-wait",
+              "attemptedCount": 0,
+              "stopReason": "pk-73737: HTTP 403"
+            },
+            {
+              "status": "partial",
+              "startedAt": "2026-10-25T22:03:19.989Z",
+              "endedAt": "2026-10-25T22:06:05.912Z",
+              "attemptedCount": 131,
+              "refreshedCount": 131,
+              "newAcquiredCount": 0,
+              "newLinkedCount": 0,
+              "remaining": 1391,
+              "stopReason": "時間上限・保存して安全停止",
+              "durationMs": 165923,
+              "deadlineOrderVersion": "deadline-v5-required-source-earliest-time",
+              "llmCalls": 0,
+              "codexCalls": 0
+            },
+            {
+              "status": "partial-with-failure",
+              "startedAt": "2026-10-25T22:02:59.975Z",
+              "endedAt": "2026-10-25T22:06:07.339Z",
+              "llmCalls": 0,
+              "codexCalls": 0
+            },
+            {
+              "processedCards": 12545
+            },
+            {
+              "sourceId": "marketAnalysis",
+              "status": "success",
+              "completionStatus": null,
+              "sourceState": "取得成功・データ更新あり",
+              "startedAt": "2026-10-25T22:06:08.262Z",
+              "endedAt": "2026-10-25T22:06:17.930Z",
+              "acquiredCount": 6384,
+              "updatedCount": null,
+              "newLinkedCount": null,
+              "durationMs": 9668
+            },
+            {
+              "stopReason": null
+            },
+            {
+              "durationMs": 6186
+            },
+            {
+              "llmCalls": 0
+            },
+            "2026-10-25T22:13:41.4880373Z \u001b[36;1mnode work/test_checkpoint_publication.js\u001b[0m",
+            "2026-10-25T22:13:41.6916991Z PASS full crawler / checkpoint finalization equality and lazy statistics provenance",
+            {
+              "status": "pass",
+              "llmCalls": 0,
+              "codexCalls": 0
+            },
+            "2026-10-25T22:14:58.9303039Z return periods, no extrapolation, fixed cohort, persistent support break, immutable purchase basis, official release, checkpoint, missing-value and lazy-load tests passed",
+            {
+              "status": "permission-wait",
+              "acquiredCount": 0,
+              "stopReason": "PSA permission record missing or invalid; saved data and checkpoint retained",
+              "llmCalls": 0,
+              "codexCalls": 0
+            },
+            "2026-10-25T22:16:09.9588007Z PASS optional permission hold retains checkpoint, zero fetch, independent source continuation, tracked finalization staging and mandatory publication guard",
+            "2026-10-25T22:16:33.4829833Z PokeDATA discovery, ambiguity, checkpoint selection and access-hold tests passed",
+            "2026-10-25T22:16:33.5231753Z \u001b[36;1mgit add data work/daily-http-cache.json work/changed-card-ids.json work/market_stability_history.json work/snkr-raw-flip-cache.json work/snkr-raw-flip-checkpoint.json work/source-update-runs.json work/source-update-history.json work/toreca-source-inventory.json work/toreca_source_dif",
+            "2026-10-25T22:16:33.5235725Z \u001b[36;1mgit add work/homura-public-checkpoint.json\u001b[0m",
+            "2026-10-25T22:16:33.5236338Z \u001b[36;1mgit add work/homura-public-checkpoints\u001b[0m",
+            "2026-10-25T22:16:33.5237191Z \u001b[36;1mgit add work/priority-price-checkpoint.json work/priority-price-http-cache.json\u001b[0m",
+            "2026-10-25T22:16:33.5244863Z \u001b[36;1mnode work/publish_data_checkpoint.js \"Run deterministic daily delta update\"\u001b[0m"
+          ],
+          "publication": {
+            "published": true,
+            "commit": "76a59abdd35128eeae2989918e5ad8e39a0b02bf"
+          },
+          "sourceStops": []
+        }
+      ]
+    },
+    {
+      "workflow": "priority-price-refresh.yml",
+      "id": 40288641864,
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/40288641864",
+      "sha": "82b1ccfc70c94e65f3a3f04da6f03740f9f4b840",
+      "createdAt": "2026-10-26T07:54:05Z",
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "name": "refresh",
+          "startedAt": "2026-10-26T07:54:07Z",
+          "endedAt": "2026-10-26T07:57:29Z",
+          "conclusion": "success",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "success",
+              "startedAt": "2026-10-26T07:54:08Z",
+              "completedAt": "2026-10-26T07:54:10Z"
+            },
+            {
+              "name": "Run actions/checkout@v7",
+              "status": "success",
+              "startedAt": "2026-10-26T07:54:10Z",
+              "completedAt": "2026-10-26T07:54:34Z"
+            },
+            {
+              "name": "Run actions/setup-node@v7",
+              "status": "success",
+              "startedAt": "2026-10-26T07:54:34Z",
+              "completedAt": "2026-10-26T07:54:34Z"
+            },
+            {
+              "name": "Refresh due purchase prices without new-set exploration or LLM",
+              "status": "success",
+              "startedAt": "2026-10-26T07:54:34Z",
+              "completedAt": "2026-10-26T07:55:02Z"
+            },
+            {
+              "name": "Verify safety and incremental acquisition",
+              "status": "success",
+              "startedAt": "2026-10-26T07:55:02Z",
+              "completedAt": "2026-10-26T07:56:25Z"
+            },
+            {
+              "name": "Publish validated data with conflict protection",
+              "status": "success",
+              "startedAt": "2026-10-26T07:56:25Z",
+              "completedAt": "2026-10-26T07:57:27Z"
+            },
+            {
+              "name": "Report independent acquisition failures without hiding them",
+              "status": "success",
+              "startedAt": "2026-10-26T07:57:27Z",
+              "completedAt": "2026-10-26T07:57:27Z"
+            },
+            {
+              "name": "Preserve unpublished checkpoint on failure",
+              "status": "skipped",
+              "startedAt": "2026-10-26T07:57:27Z",
+              "completedAt": "2026-10-26T07:57:27Z"
+            },
+            {
+              "name": "Record failure metadata independently",
+              "status": "skipped",
+              "startedAt": "2026-10-26T07:57:27Z",
+              "completedAt": "2026-10-26T07:57:27Z"
+            },
+            {
+              "name": "Run actions/upload-artifact@v7",
+              "status": "skipped",
+              "startedAt": "2026-10-26T07:57:27Z",
+              "completedAt": "2026-10-26T07:57:27Z"
+            },
+            {
+              "name": "Run actions/upload-artifact@v7",
+              "status": "skipped",
+              "startedAt": "2026-10-26T07:57:27Z",
+              "completedAt": "2026-10-26T07:57:27Z"
+            },
+            {
+              "name": "Post Run actions/setup-node@v7",
+              "status": "success",
+              "startedAt": "2026-10-26T07:57:27Z",
+              "completedAt": "2026-10-26T07:57:27Z"
+            },
+            {
+              "name": "Post Run actions/checkout@v7",
+              "status": "success",
+              "startedAt": "2026-10-26T07:57:27Z",
+              "completedAt": "2026-10-26T07:57:27Z"
+            },
+            {
+              "name": "Complete job",
+              "status": "success",
+              "startedAt": "2026-10-26T07:57:27Z",
+              "completedAt": "2026-10-26T07:57:27Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "workflow": "safe-checkpoint-backfill.yml",
+      "id": 40225978749,
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/40225978749",
+      "sha": "6d75997632598ecf0141c32e18767928dea6759b",
+      "createdAt": "2026-10-25T19:25:38Z",
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "name": "backfill",
+          "startedAt": "2026-10-25T19:25:41Z",
+          "endedAt": "2026-10-25T19:51:45Z",
+          "conclusion": "success",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "success",
+              "startedAt": "2026-10-25T19:25:42Z",
+              "completedAt": "2026-10-25T19:25:43Z"
+            },
+            {
+              "name": "Run actions/checkout@v7",
+              "status": "success",
+              "startedAt": "2026-10-25T19:25:43Z",
+              "completedAt": "2026-10-25T19:26:04Z"
+            },
+            {
+              "name": "Run actions/setup-node@v7",
+              "status": "success",
+              "startedAt": "2026-10-25T19:26:04Z",
+              "completedAt": "2026-10-25T19:26:05Z"
+            },
+            {
+              "name": "Continue bounded source checkpoints without an LLM",
+              "status": "success",
+              "startedAt": "2026-10-25T19:26:05Z",
+              "completedAt": "2026-10-25T19:38:34Z"
+            },
+            {
+              "name": "Consume prioritized completion queue without an LLM",
+              "status": "success",
+              "startedAt": "2026-10-25T19:38:34Z",
+              "completedAt": "2026-10-25T19:39:39Z"
+            },
+            {
+              "name": "Discover official PSA set links without bypassing authentication",
+              "status": "success",
+              "startedAt": "2026-10-25T19:39:39Z",
+              "completedAt": "2026-10-25T19:39:39Z"
+            },
+            {
+              "name": "Rebuild completion and publication summaries",
+              "status": "success",
+              "startedAt": "2026-10-25T19:39:39Z",
+              "completedAt": "2026-10-25T19:47:02Z"
+            },
+            {
+              "name": "Check publication safety",
+              "status": "success",
+              "startedAt": "2026-10-25T19:47:02Z",
+              "completedAt": "2026-10-25T19:49:41Z"
+            },
+            {
+              "name": "Commit safe progress and checkpoints",
+              "status": "success",
+              "startedAt": "2026-10-25T19:49:41Z",
+              "completedAt": "2026-10-25T19:51:43Z"
+            },
+            {
+              "name": "Preserve recovery position if a required step failed",
+              "status": "skipped",
+              "startedAt": "2026-10-25T19:51:43Z",
+              "completedAt": "2026-10-25T19:51:43Z"
+            },
+            {
+              "name": "Record safe recovery metadata independently",
+              "status": "skipped",
+              "startedAt": "2026-10-25T19:51:43Z",
+              "completedAt": "2026-10-25T19:51:43Z"
+            },
+            {
+              "name": "Upload unpublished source data and checkpoints",
+              "status": "skipped",
+              "startedAt": "2026-10-25T19:51:43Z",
+              "completedAt": "2026-10-25T19:51:43Z"
+            },
+            {
+              "name": "Post Run actions/setup-node@v7",
+              "status": "success",
+              "startedAt": "2026-10-25T19:51:43Z",
+              "completedAt": "2026-10-25T19:51:43Z"
+            },
+            {
+              "name": "Post Run actions/checkout@v7",
+              "status": "success",
+              "startedAt": "2026-10-25T19:51:43Z",
+              "completedAt": "2026-10-25T19:51:43Z"
+            },
+            {
+              "name": "Complete job",
+              "status": "success",
+              "startedAt": "2026-10-25T19:51:43Z",
+              "completedAt": "2026-10-25T19:51:43Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "workflow": "watch-data-health.yml",
+      "id": 40283219188,
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/40283219188",
+      "sha": "dd4688c3ba1f5b07858440719c0d5da9c75f0e42",
+      "createdAt": "2026-10-26T07:01:04Z",
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "name": "catchup",
+          "startedAt": "2026-10-26T07:01:07Z",
+          "endedAt": "2026-10-26T07:20:34Z",
+          "conclusion": "success",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "success",
+              "startedAt": "2026-10-26T07:01:07Z",
+              "completedAt": "2026-10-26T07:01:09Z"
+            },
+            {
+              "name": "Run actions/checkout@v7",
+              "status": "success",
+              "startedAt": "2026-10-26T07:01:09Z",
+              "completedAt": "2026-10-26T07:01:32Z"
+            },
+            {
+              "name": "Run actions/setup-node@v7",
+              "status": "success",
+              "startedAt": "2026-10-26T07:01:32Z",
+              "completedAt": "2026-10-26T07:01:33Z"
+            },
+            {
+              "name": "Check alert deduplication and safe backoff rules",
+              "status": "success",
+              "startedAt": "2026-10-26T07:01:33Z",
+              "completedAt": "2026-10-26T07:01:34Z"
+            },
+            {
+              "name": "Recover trusted failed price inputs without reacquisition",
+              "status": "skipped",
+              "startedAt": "2026-10-26T07:01:34Z",
+              "completedAt": "2026-10-26T07:01:34Z"
+            },
+            {
+              "name": "Check saved publication before optional acquisition",
+              "status": "success",
+              "startedAt": "2026-10-26T07:01:34Z",
+              "completedAt": "2026-10-26T07:01:35Z"
+            },
+            {
+              "name": "Fill missed price intervals with shared cooldown and access budgets",
+              "status": "success",
+              "startedAt": "2026-10-26T07:01:35Z",
+              "completedAt": "2026-10-26T07:17:00Z"
+            },
+            {
+              "name": "Validate catchup data without changing purchase criteria",
+              "status": "success",
+              "startedAt": "2026-10-26T07:17:00Z",
+              "completedAt": "2026-10-26T07:19:11Z"
+            },
+            {
+              "name": "Publish changed health state only",
+              "status": "success",
+              "startedAt": "2026-10-26T07:19:11Z",
+              "completedAt": "2026-10-26T07:20:31Z"
+            },
+            {
+              "name": "Report independent acquisition failures without hiding them",
+              "status": "success",
+              "startedAt": "2026-10-26T07:20:31Z",
+              "completedAt": "2026-10-26T07:20:31Z"
+            },
+            {
+              "name": "Preserve unpublished monitor state",
+              "status": "skipped",
+              "startedAt": "2026-10-26T07:20:31Z",
+              "completedAt": "2026-10-26T07:20:31Z"
+            },
+            {
+              "name": "Save monitor recovery bundle",
+              "status": "skipped",
+              "startedAt": "2026-10-26T07:20:31Z",
+              "completedAt": "2026-10-26T07:20:31Z"
+            },
+            {
+              "name": "Post Run actions/setup-node@v7",
+              "status": "success",
+              "startedAt": "2026-10-26T07:20:31Z",
+              "completedAt": "2026-10-26T07:20:31Z"
+            },
+            {
+              "name": "Post Run actions/checkout@v7",
+              "status": "success",
+              "startedAt": "2026-10-26T07:20:31Z",
+              "completedAt": "2026-10-26T07:20:32Z"
+            },
+            {
+              "name": "Complete job",
+              "status": "success",
+              "startedAt": "2026-10-26T07:20:32Z",
+              "completedAt": "2026-10-26T07:20:32Z"
+            }
+          ]
+        },
+        {
+          "name": "watch",
+          "startedAt": "2026-10-26T07:20:36Z",
+          "endedAt": "2026-10-26T07:22:11Z",
+          "conclusion": "success",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "success",
+              "startedAt": "2026-10-26T07:20:37Z",
+              "completedAt": "2026-10-26T07:20:38Z"
+            },
+            {
+              "name": "Run actions/checkout@v7",
+              "status": "success",
+              "startedAt": "2026-10-26T07:20:38Z",
+              "completedAt": "2026-10-26T07:20:59Z"
+            },
+            {
+              "name": "Run actions/setup-node@v7",
+              "status": "success",
+              "startedAt": "2026-10-26T07:20:59Z",
+              "completedAt": "2026-10-26T07:21:00Z"
+            },
+            {
+              "name": "Validate independent monitor",
+              "status": "success",
+              "startedAt": "2026-10-26T07:21:00Z",
+              "completedAt": "2026-10-26T07:21:00Z"
+            },
+            {
+              "name": "Check workflow results and saved checkpoint holds",
+              "status": "success",
+              "startedAt": "2026-10-26T07:21:00Z",
+              "completedAt": "2026-10-26T07:21:11Z"
+            },
+            {
+              "name": "Publish independent validated monitor state",
+              "status": "success",
+              "startedAt": "2026-10-26T07:21:11Z",
+              "completedAt": "2026-10-26T07:22:09Z"
+            },
+            {
+              "name": "Report newly detected alerts",
+              "status": "success",
+              "startedAt": "2026-10-26T07:22:09Z",
+              "completedAt": "2026-10-26T07:22:09Z"
+            },
+            {
+              "name": "Preserve independent observation on failure",
+              "status": "skipped",
+              "startedAt": "2026-10-26T07:22:09Z",
+              "completedAt": "2026-10-26T07:22:09Z"
+            },
+            {
+              "name": "Run actions/upload-artifact@v7",
+              "status": "skipped",
+              "startedAt": "2026-10-26T07:22:09Z",
+              "completedAt": "2026-10-26T07:22:09Z"
+            },
+            {
+              "name": "Post Run actions/setup-node@v7",
+              "status": "success",
+              "startedAt": "2026-10-26T07:22:09Z",
+              "completedAt": "2026-10-26T07:22:10Z"
+            },
+            {
+              "name": "Post Run actions/checkout@v7",
+              "status": "success",
+              "startedAt": "2026-10-26T07:22:10Z",
+              "completedAt": "2026-10-26T07:22:10Z"
+            },
+            {
+              "name": "Complete job",
+              "status": "success",
+              "startedAt": "2026-10-26T07:22:10Z",
+              "completedAt": "2026-10-26T07:22:10Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "workflow": "resolve-unmatched-cards.yml",
+      "id": 40261256287,
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/40261256287",
+      "sha": "9dd6c47f2785785edaad20c3bcfb6ba90e861637",
+      "createdAt": "2026-10-26T02:52:34Z",
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "name": "resolve",
+          "startedAt": "2026-10-26T02:52:36Z",
+          "endedAt": "2026-10-26T03:01:44Z",
+          "conclusion": "success",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "success",
+              "startedAt": "2026-10-26T02:52:37Z",
+              "completedAt": "2026-10-26T02:52:39Z"
+            },
+            {
+              "name": "Run actions/checkout@v7",
+              "status": "success",
+              "startedAt": "2026-10-26T02:52:39Z",
+              "completedAt": "2026-10-26T02:53:01Z"
+            },
+            {
+              "name": "Run actions/setup-node@v7",
+              "status": "success",
+              "startedAt": "2026-10-26T02:53:01Z",
+              "completedAt": "2026-10-26T02:53:02Z"
+            },
+            {
+              "name": "Resolve unresolved Snkrdunk links",
+              "status": "success",
+              "startedAt": "2026-10-26T02:53:02Z",
+              "completedAt": "2026-10-26T02:53:02Z"
+            },
+            {
+              "name": "Resolve unresolved Cardrush links",
+              "status": "success",
+              "startedAt": "2026-10-26T02:53:02Z",
+              "completedAt": "2026-10-26T02:56:09Z"
+            },
+            {
+              "name": "Resolve unresolved Hareruya2 links",
+              "status": "success",
+              "startedAt": "2026-10-26T02:56:09Z",
+              "completedAt": "2026-10-26T02:58:25Z"
+            },
+            {
+              "name": "Rebuild evaluations",
+              "status": "success",
+              "startedAt": "2026-10-26T02:58:25Z",
+              "completedAt": "2026-10-26T02:58:25Z"
+            },
+            {
+              "name": "Record link coverage",
+              "status": "success",
+              "startedAt": "2026-10-26T02:58:25Z",
+              "completedAt": "2026-10-26T02:58:26Z"
+            },
+            {
+              "name": "Commit resolved mappings",
+              "status": "success",
+              "startedAt": "2026-10-26T02:58:26Z",
+              "completedAt": "2026-10-26T03:01:41Z"
+            },
+            {
+              "name": "Post Run actions/setup-node@v7",
+              "status": "success",
+              "startedAt": "2026-10-26T03:01:41Z",
+              "completedAt": "2026-10-26T03:01:42Z"
+            },
+            {
+              "name": "Post Run actions/checkout@v7",
+              "status": "success",
+              "startedAt": "2026-10-26T03:01:42Z",
+              "completedAt": "2026-10-26T03:01:42Z"
+            },
+            {
+              "name": "Complete job",
+              "status": "success",
+              "startedAt": "2026-10-26T03:01:42Z",
+              "completedAt": "2026-10-26T03:01:42Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
