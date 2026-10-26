@@ -1,0 +1,142 @@
+{
+  "run": 40305445858,
+  "event": "workflow_dispatch",
+  "head": "3ea7ba05c2449a58dcea26eb75e49349995c5345",
+  "result": "success",
+  "jobs": [
+    {
+      "id": 121513297285,
+      "name": "refresh",
+      "startedAt": "2026-10-26T10:11:31Z",
+      "endedAt": "2026-10-26T10:28:50Z",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "result": "success",
+          "startedAt": "2026-10-26T10:11:32Z",
+          "endedAt": "2026-10-26T10:11:34Z"
+        },
+        {
+          "name": "Run actions/checkout@v7",
+          "status": "completed",
+          "result": "success",
+          "startedAt": "2026-10-26T10:11:34Z",
+          "endedAt": "2026-10-26T10:11:58Z"
+        },
+        {
+          "name": "Run actions/setup-node@v7",
+          "status": "completed",
+          "result": "success",
+          "startedAt": "2026-10-26T10:11:58Z",
+          "endedAt": "2026-10-26T10:11:59Z"
+        },
+        {
+          "name": "Refresh due purchase prices without new-set exploration or LLM",
+          "status": "completed",
+          "result": "success",
+          "startedAt": "2026-10-26T10:11:59Z",
+          "endedAt": "2026-10-26T10:25:09Z"
+        },
+        {
+          "name": "Verify safety and incremental acquisition",
+          "status": "completed",
+          "result": "success",
+          "startedAt": "2026-10-26T10:25:09Z",
+          "endedAt": "2026-10-26T10:27:03Z"
+        },
+        {
+          "name": "Publish validated data with conflict protection",
+          "status": "completed",
+          "result": "success",
+          "startedAt": "2026-10-26T10:27:03Z",
+          "endedAt": "2026-10-26T10:28:47Z"
+        },
+        {
+          "name": "Report independent acquisition failures without hiding them",
+          "status": "completed",
+          "result": "success",
+          "startedAt": "2026-10-26T10:28:47Z",
+          "endedAt": "2026-10-26T10:28:47Z"
+        },
+        {
+          "name": "Preserve unpublished checkpoint on failure",
+          "status": "completed",
+          "result": "skipped",
+          "startedAt": "2026-10-26T10:28:47Z",
+          "endedAt": "2026-10-26T10:28:47Z"
+        },
+        {
+          "name": "Record failure metadata independently",
+          "status": "completed",
+          "result": "skipped",
+          "startedAt": "2026-10-26T10:28:47Z",
+          "endedAt": "2026-10-26T10:28:47Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@v7",
+          "status": "completed",
+          "result": "skipped",
+          "startedAt": "2026-10-26T10:28:47Z",
+          "endedAt": "2026-10-26T10:28:47Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@v7",
+          "status": "completed",
+          "result": "skipped",
+          "startedAt": "2026-10-26T10:28:47Z",
+          "endedAt": "2026-10-26T10:28:47Z"
+        },
+        {
+          "name": "Post Run actions/setup-node@v7",
+          "status": "completed",
+          "result": "success",
+          "startedAt": "2026-10-26T10:28:47Z",
+          "endedAt": "2026-10-26T10:28:47Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v7",
+          "status": "completed",
+          "result": "success",
+          "startedAt": "2026-10-26T10:28:47Z",
+          "endedAt": "2026-10-26T10:28:47Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "result": "success",
+          "startedAt": "2026-10-26T10:28:47Z",
+          "endedAt": "2026-10-26T10:28:47Z"
+        }
+      ]
+    }
+  ],
+  "runs": [
+    {
+      "status": "partial",
+      "mode": "deadline-price-refresh",
+      "startedAt": "2026-10-26T10:15:59.421Z",
+      "endedAt": "2026-10-26T10:21:44.930Z",
+      "httpRequests": 288,
+      "attemptedCount": 273,
+      "refreshedCount": 273,
+      "newAcquiredCount": 0,
+      "newLinkedCount": 0,
+      "changedCount": 84,
+      "failedCount": 0,
+      "stopReason": "時間上限・保存して安全停止",
+      "durationMs": 345509,
+      "llmCalls": 0,
+      "codexCalls": 0
+    }
+  ],
+  "publication": [
+    {
+      "status": "published",
+      "commit": "088ff15258c2b218209c2e958fe99d62cdf5cb79",
+      "published": true
+    }
+  ],
+  "savedPsaSkipped": false
+}

@@ -1,0 +1,137 @@
+{
+  "verifiedAt": "2026-10-26T10:41:45.234Z",
+  "publicState": "published and verified",
+  "merge": {
+    "sha": "3ea7ba05c2449a58dcea26eb75e49349995c5345",
+    "merged": true,
+    "message": "Pull Request successfully merged",
+    "authorization": "current user instruction: continue public improvements and data completion",
+    "pr": 2,
+    "url": "https://github.com/urm759/pokeka-serch/pull/2",
+    "checkedAt": "2026-10-26T10:01:31.636Z",
+    "expectedHead": "db997c9cfd721afbb562dcebb7ccbed6ce02715a"
+  },
+  "firstPublication": {
+    "commit": "3ea7ba05c2449a58dcea26eb75e49349995c5345",
+    "checkedAt": "2026-10-26T10:05:48.058Z",
+    "runId": 40304129427,
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/40304129427",
+    "deploymentCompletedAt": "2026-10-26T10:03:26Z"
+  },
+  "cloud": {
+    "run": 40305445858,
+    "event": "workflow_dispatch",
+    "result": "success",
+    "steps": [
+      {
+        "name": "Refresh due purchase prices without new-set exploration or LLM",
+        "status": "completed",
+        "result": "success",
+        "startedAt": "2026-10-26T10:11:59Z",
+        "endedAt": "2026-10-26T10:25:09Z"
+      },
+      {
+        "name": "Verify safety and incremental acquisition",
+        "status": "completed",
+        "result": "success",
+        "startedAt": "2026-10-26T10:25:09Z",
+        "endedAt": "2026-10-26T10:27:03Z"
+      },
+      {
+        "name": "Publish validated data with conflict protection",
+        "status": "completed",
+        "result": "success",
+        "startedAt": "2026-10-26T10:27:03Z",
+        "endedAt": "2026-10-26T10:28:47Z"
+      }
+    ],
+    "hareruya2": {
+      "reconfirmed": 273,
+      "newLinks": 0,
+      "priceChanges": 32,
+      "stockChanges": 70,
+      "restocks": 4,
+      "soldOut": 11
+    },
+    "sourceRun": [
+      {
+        "status": "partial",
+        "mode": "deadline-price-refresh",
+        "startedAt": "2026-10-26T10:15:59.421Z",
+        "endedAt": "2026-10-26T10:21:44.930Z",
+        "httpRequests": 288,
+        "attemptedCount": 273,
+        "refreshedCount": 273,
+        "newAcquiredCount": 0,
+        "newLinkedCount": 0,
+        "changedCount": 84,
+        "failedCount": 0,
+        "stopReason": "時間上限・保存して安全停止",
+        "durationMs": 345509,
+        "llmCalls": 0,
+        "codexCalls": 0
+      }
+    ],
+    "bulk": [
+      {
+        "changed": false,
+        "changedCards": 0,
+        "processedCards": 0,
+        "regeneratedFiles": 0,
+        "httpRequests": 1,
+        "cacheHits": 1,
+        "durationMs": 412,
+        "reason": "HTTP 304",
+        "llmCalls": 0
+      }
+    ]
+  },
+  "directDataPages": {
+    "commit": "088ff15258c2b218209c2e958fe99d62cdf5cb79",
+    "checkedAt": "2026-10-26T10:38:44.276Z",
+    "runId": 40307728584,
+    "status": "completed",
+    "conclusion": "cancelled",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/40307728584"
+  },
+  "finalDataPages": {
+    "commit": "244eae5a0c4010f0d4555343067b46bc792ffff6",
+    "checkedAt": "2026-10-26T10:35:53.971Z",
+    "runId": 40307919110,
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/40307919110",
+    "deploymentCompletedAt": "2026-10-26T10:32:07Z"
+  },
+  "public": {
+    "revision": "c3d22f803553fc13939f1fb4cd6a52f63390c63cedb4fa0ef45b232fc0d947d8",
+    "verifiedFiles": 184,
+    "total": 12545,
+    "analyzable": 2302,
+    "psaLinked": 6280
+  },
+  "highrare": {
+    "listed": 1328,
+    "total": 1328,
+    "analyzable": 693,
+    "target90": 1196,
+    "shortfall": 503
+  },
+  "independent": {
+    "before": 37,
+    "after": 37,
+    "gained": [],
+    "lost": []
+  },
+  "freshness": {
+    "latest": 96.35416666666666,
+    "dayMinimum": 42.70833333333333,
+    "historicalMinimum": 0,
+    "manualRecoveryOnly": true,
+    "day": "2026-10-26",
+    "timezone": "Asia/Tokyo"
+  },
+  "acquisitionToVerifiedPagesMinutes": 10.367833333333333
+}
