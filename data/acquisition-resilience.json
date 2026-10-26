@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-26T00:39:44.499Z",
+  "generatedAt": "2026-10-26T02:17:10.342Z",
   "llmCalls": 0,
   "codexCalls": 0,
   "retryPolicy": {
@@ -27,7 +27,7 @@
     {
       "source": "psaOfficial",
       "label": "PSA公式・PC正規認証",
-      "remaining": 1199,
+      "remaining": 1196,
       "queueDefinition": "あとPSAだけで分析可能な国内カード。全PSA未取得とは別",
       "sourceState": "permission-wait",
       "failureScope": "source",
@@ -167,16 +167,16 @@
       "firstPassObservationDays": 0,
       "firstPassProgressField": "publicNewRecords",
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
-      "usableNet": 0,
+      "usableNet": 4,
       "observationPeriod": {
-        "from": "2026-10-26T00:29:32.044Z",
-        "to": "2026-10-26T00:39:41.023Z"
+        "from": "2026-10-26T00:39:41.023Z",
+        "to": "2026-10-26T02:17:02.290Z"
       },
       "sinceBaseline": {
-        "newLinked": 3990,
-        "validAdded": 3990,
-        "validLost": 229,
-        "usableNet": 3761,
+        "newLinked": 3992,
+        "validAdded": 3992,
+        "validLost": 227,
+        "usableNet": 3765,
         "freshnessRecovered": 0
       },
       "freshness": null
@@ -316,8 +316,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-26T00:29:32.044Z",
-        "to": "2026-10-26T00:39:41.023Z"
+        "from": "2026-10-26T00:39:41.023Z",
+        "to": "2026-10-26T02:17:02.290Z"
       },
       "sinceBaseline": {
         "newLinked": 757,
@@ -357,8 +357,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-26T00:29:32.044Z",
-        "to": "2026-10-26T00:39:41.023Z"
+        "from": "2026-10-26T00:39:41.023Z",
+        "to": "2026-10-26T02:17:02.290Z"
       },
       "sinceBaseline": {
         "newLinked": 0,
@@ -371,10 +371,10 @@
     }
   ],
   "psaOnly": {
-    "count": 1199,
+    "count": 1196,
     "causes": {
       "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持": 1067,
-      "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）": 132
+      "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）": 129
     },
     "cards": [
       {
@@ -4164,12 +4164,6 @@
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
-        "id": "x-116084",
-        "setCode": "SV1A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2023/pokemon-japanese-sv1a-triplet-beat/233886",
-        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
-      },
-      {
         "id": "pk-3576",
         "setCode": "SML",
         "url": null,
@@ -5632,12 +5626,6 @@
         "setCode": "SVK",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
-        "id": "pk-70049",
-        "setCode": "M1L",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
-        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
         "id": "pk-75220",
@@ -7470,12 +7458,6 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-70044",
-        "setCode": "M1L",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m1l-mega-brave/312124",
-        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
-      },
-      {
         "id": "x-775837",
         "setCode": "30TH-P",
         "url": null,
@@ -7575,10 +7557,10 @@
   },
   "progress": {
     "listed": 12545,
-    "analyzable": 2297,
-    "pending": 10248,
-    "oneAway": 1682
+    "analyzable": 2300,
+    "pending": 10245,
+    "oneAway": 1679
   },
-  "newlyAnalyzable": 0,
+  "newlyAnalyzable": 3,
   "note": "一時障害の再試行、個別URL隔離、取得元停止を区別。未取得をデータ不存在に変更しない。巡回完了と全項目取得・最新価格は別"
 }

@@ -1,0 +1,38 @@
+{
+  "at": "2026-10-25T23:45:42.157Z",
+  "checked": 4,
+  "sourceRequests": 4,
+  "publicAdopted": 0,
+  "results": [
+    {
+      "store": "toreca-ace",
+      "url": "https://www.toreca-ace.com/view/item/000000002482",
+      "status": "同一仕様・ランクAの別店舗在庫を確認・公開再利用条件待ち",
+      "terms": "https://www.toreca-ace.com/view/page/use-terms",
+      "reason": "第11条2・3の私的利用外複製/公衆送信/二次利用制限。価格原票は非公開、契約・問い合わせ未実施。",
+      "retry": "permission-only"
+    },
+    {
+      "store": "pao",
+      "url": "https://pao-onlineshop.com/view/item/000000001218",
+      "status": "同一仕様の在庫確認・状態A相当未確認",
+      "reason": "中古プレイ用/古い商品の使用感という説明。状態Aへ自動変換しない。",
+      "retry": "condition-evidence-only"
+    },
+    {
+      "store": "cardlabo",
+      "url": "https://www.c-labo-online.jp/product/166318",
+      "status": "同一仕様の中古良品在庫確認・状態/利用条件待ち",
+      "terms": "https://www.c-labo-online.jp/page/136",
+      "reason": "中古良品とAを同一視しない。規約第4条の無断複製等、第5条7の営利/再販売目的利用制限、カード番号相違の注意。",
+      "retry": "permission-and-condition-only"
+    },
+    {
+      "store": "pricebase",
+      "url": "https://shop.price-base.com/c/pokemon/pokemon-sr/glaceonv-077-069-sr",
+      "status": "対象状態Aは在庫なし",
+      "retry": "normal-cadence-only"
+    }
+  ],
+  "note": "新URL・別店舗発見と検索候補復帰を分離。検索キャッシュを現在在庫として採用せず、停止ドメインの回避/契約/問い合わせなし。"
+}
