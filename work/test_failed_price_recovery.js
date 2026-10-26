@@ -1,5 +1,11 @@
 const fs=require('fs'),os=require('os'),path=require('path'),cp=require('child_process'),crypto=require('crypto'),assert=require('assert/strict');
-const {trusted}=require('./recover_failed_price_run'),{zipEntries,restore}=require('./restore_price_artifact');
+const {trusted,METADATA_TIMEOUT_MS,ARCHIVE_TIMEOUT_MS}=require('./recover_failed_price_run'),{zipEntries,restore}=require('./restore_price_artifact');
+assert.equal(METADATA_TIMEOUT_MS,60000);assert.equal(ARCHIVE_TIMEOUT_MS,240000);
+const workflow=fs.readFileSync(path.join(__dirname,'../.github/workflows/priority-price-refresh.yml'),'utf8');
+const sourceArtifact=workflow.slice(workflow.indexOf('name: priority-price-recovery-'),workflow.indexOf('name: priority-git-recovery-'));
+assert(sourceArtifact.includes('work/unpublished-recovery/'));
+assert(!sourceArtifact.includes('work/publish-recovery.bundle'),'normal raw checkpoint recovery must not download the large Git bundle');
+assert(workflow.slice(workflow.indexOf('name: priority-git-recovery-')).includes('work/publish-recovery.bundle'),'Git recovery is preserved separately');
 const good={name:'Priority Purchase Price Refresh',event:'schedule',conclusion:'failure',head_branch:'main',repository:{full_name:'urm759/pokeka-serch'},head_repository:{full_name:'urm759/pokeka-serch'}};
 assert(trusted(good));for(const change of [{event:'pull_request'},{head_branch:'feature'},{conclusion:'success'},{head_repository:{full_name:'fork/repo'}},{name:'Daily Fast Update'}])assert(!trusted({...good,...change}));
 function zip(files){

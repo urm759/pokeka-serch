@@ -16,6 +16,14 @@ function due(record, now = Date.now(), config = {}) {
   // Failed origins cool down too; running often must not retry protected sources.
   return (!Number.isFinite(success) || require("./proactive_refresh.js").eligibleDeadline(success + 6 * 3600000, true, now, config)) && (!Number.isFinite(attempt) || now - attempt >= 2 * 3600000);
 }
+function marketBeforeBuyback(market, buyback, now = Date.now(), config = {}) {
+  if (due(market, now, config)) return true;
+  const success=Date.parse(market?.lastSuccessAt),attempt=Date.parse(market?.lastAttemptAt);
+  const day=at=>new Date(at+9*3600000).toISOString().slice(0,10);
+  // Use the existing single bulk slot before new-day quotes. Never waive the source retry interval.
+  return due(buyback,now,config) && Number.isFinite(success) && day(success)!==day(now)
+    && (!Number.isFinite(attempt)||now-attempt>=2*3600000);
+}
 function main() {
   if (process.argv.includes('--report-failures')) {
     const previous = read('data/priority-price-execution.json');
@@ -69,7 +77,7 @@ function main() {
     ['toreca','psa9Evidence','work/daily_fast_update.js',[],{FAST_DEEP_SCAN:'0',DAILY_RUNTIME_LIMIT_MS:'300000'}],
     ['shopBuyback','buybackExitEvidence','work/run_tracked_update.js',['shopBuyback','work/update_shop_buybacks.js'],{TRACKED_TIMEOUT_MS:'300000'}]
   ]) {
-    const ready=due(sources[source],Date.now(),config);
+    const ready=source==='toreca'?marketBeforeBuyback(sources.toreca,sources.shopBuyback,Date.now(),config):due(sources[source],Date.now(),config);
     if (ready) run(script,args,env,'source');
     const evidenceAfter=require('./efficiency_evidence_queue').pending(read('data/pokemon-cards.json',[]),read('data/shop-buyback-summary.json'));
     runs.push({source,field:key,status:ready?'補完ルート実処理後の監査':'確認期限・再試行間隔待ち',pendingBefore:evidenceBefore[key].length,pendingAfter:evidenceAfter[key].length,
@@ -102,4 +110,4 @@ if (require.main === module) {
   if (result.status === 'skipped') console.log(JSON.stringify(result));
   }
 }
-module.exports = { due,scheduledSlot };
+module.exports = { due,scheduledSlot,marketBeforeBuyback };

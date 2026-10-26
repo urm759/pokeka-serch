@@ -1,0 +1,17 @@
+const assert=require('node:assert/strict');
+const {due,marketBeforeBuyback}=require('./run_priority_price_refresh');
+const now=Date.parse('2026-10-25T16:00:00Z'),hour=3600000;
+const record=(success,attempt=success)=>({lastSuccessAt:new Date(success).toISOString(),lastAttemptAt:new Date(attempt).toISOString()});
+const config={executionIntervalMs:hour,startDelayAllowanceMs:0,pipelineBudgetMs:1};
+const oldDay=record(now-3*hour),newDay=record(now-hour),quotesDue=record(now-8*hour);
+assert(!due(oldDay,now,config),'market is within its normal refresh window');
+assert(marketBeforeBuyback(oldDay,quotesDue,now,config),'prior-day market gets the existing bulk slot before new quotes');
+assert(!marketBeforeBuyback(newDay,quotesDue,now,config),'same-day successful prices do not gain a redundant request');
+assert(!marketBeforeBuyback(oldDay,record(now-hour),now,config),'no calendar request when quotes are not due');
+assert(!marketBeforeBuyback(record(now-3*hour,now-hour),quotesDue,now,config),'failed/ recent attempt still cools down');
+assert(marketBeforeBuyback(record(now-3*hour,now-2*hour),quotesDue,now,config),'retry interval includes its boundary');
+assert(marketBeforeBuyback({},quotesDue,now,config),'normal missing-source eligibility remains');
+assert(!marketBeforeBuyback({lastAttemptAt:new Date(now-hour).toISOString()},quotesDue,now,config),'missing success cannot waive a recent attempt');
+const source=require('node:fs').readFileSync(require('node:path').join(__dirname,'run_priority_price_refresh.js'),'utf8');
+assert(source.indexOf("['toreca','psa9Evidence'")<source.indexOf("['shopBuyback','buybackExitEvidence'"),'market bulk is before buyback bulk');
+console.log('PASS market/buyback calendar ordering: existing bulk slot, actual success day, unchanged two-hour retry, no same-day duplicate');

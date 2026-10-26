@@ -1,93 +1,198 @@
 {
   "version": 1,
   "rule": "Name translation only. Set, number, language and variant guards are not bypassed; never map English-print POP to Japanese-print POP.",
-  "aliases": [{
-    "from": "pokemon center big sister",
-    "to": "pokemon center lady",
-    "japanese": "ポケモンセンターのお姉さん",
-    "verifiedAt": "2026-10-15",
-    "evidence": [
-      "https://www.pokemon-card.com/card-search/details.php/card/38247/regu/all",
-      "https://www.pokemon.com/uk/pokemon-tcg/pokemon-cards/series/swsh4/185/"
-    ],
-    "note": "069/S-P Japanese title and official English Pokemon Center Lady title; same artist Sanosuke Sakuma. Print identities remain separate."
-  }, {
-    "from": "friends of paldea",
-    "to": "friends in paldea",
-    "japanese": "パルデアの仲間たち",
-    "verifiedAt": "2026-10-24",
-    "evidence": [
-      "https://www.pokemon-card.com/card-search/details.php/card/47116",
-      "https://asia.pokemon-card.com/my/card-search/detail/17608/"
-    ],
-    "note": "Official Japanese SV8a 195/187 title and official English title, same Draw 3 cards supporter effect. Translation only; Japanese set/number/finish and original PSA observation time remain mandatory."
-  }, {
-    "from": "alola vulpix vstar",
-    "to": "alolan vulpix vstar",
-    "japanese": "アローラ ロコンVSTAR",
-    "verifiedAt": "2026-10-24",
-    "evidence": [
-      "https://www.pokemon-card.com/card-search/details.php/card/44922",
-      "https://asia.pokemon-card.com/sg/card-search/detail/3212/"
-    ],
-    "note": "Official Japanese S11a 087/068 and official English Alolan Vulpix VSTAR: 240 HP, Snow Mirage, Silvery Snow Star, PLANETA Hiiragi. Regional-name spelling only; does not identify different printings."
-  }, {
-    "from": "alola vulpix v",
-    "to": "alolan vulpix v",
-    "japanese": "アローラ ロコンV",
-    "verifiedAt": "2026-10-24",
-    "evidence": [
-      "https://www.pokemon-card.com/card-search/details.php/card/42199",
-      "https://assets.pokemon.com/assets/cms2/pdf/trading-card-game/checklist/swsh12_web_cardlist_en.pdf"
-    ],
-    "note": "Official Japanese S11a 077/068 name and official English Silver Tempest checklist distinguish Alolan Vulpix V from VSTAR. Translation only, not a cross-language POP mapping."
-  }, {
-    "from": "zinnia's determination",
-    "to": "zinnia's resolve",
-    "japanese": "ヒガナの決意",
-    "verifiedAt": "2026-10-24",
-    "evidence": [
-      "https://www.pokemon-card.com/card-search/details.php/card/39948/regu/all",
-      "https://asia.pokemon-card.com/sg/card-search/detail/1738/",
-      "https://assets.pokemon.com/assets/cms2/pdf/trading-card-game/checklist/swsh7_web_cardlist_en.pdf"
-    ],
-    "note": "Official S7R 079/067 title and English supporter agree on discarding two cards and drawing for each opposing Pokemon. Translation only; Japanese print, original observation date and variant still required."
-  }, {
-    "from": "miss fortunes",
-    "to": "miss fortune sisters",
-    "japanese": "野盗三姉妹",
-    "verifiedAt": "2026-10-24",
-    "evidence": [
-      "https://www.pokemon-card.com/card-search/details.php/card/44896",
-      "https://asia.pokemon-card.com/sg/card-search/detail/2761/",
-      "https://assets.pokemon.com/assets/cms2/pdf/trading-card-game/checklist/swsh11_web_cardlist_en.pdf"
-    ],
-    "note": "Official S10a 096/071 Japanese and English supporter agree on looking at the top five opposing deck cards and discarding Items. Name correction does not merge SR/HR or English/Japanese POP."
-  }],
-  "sourceNames": [{
-    "from": "Mew Mysterious Tail", "to": "Mew", "japanese": "ミュウ ふしぎなしっぽ",
-    "set": "S8A", "numbers": ["30"], "denominator": 28,
-    "verifiedAt": "2026-10-25",
-    "evidence": ["https://www.pokemon-card.com/card-search/details.php/card/40067", "https://www.pokemon.com/uk/pokemon-tcg/pokemon-cards/series/cel25/25/"],
-    "sourceEvidence": "Official JP Mew names Mysterious Tail as the ability, not part of the Pokemon name; official English Celebrations secret Mew has the same name/ability. This removes the cached ability subtitle only for saved Japanese S8A 030/028 Ultra Rare. It does not substitute the JP 002/028 or English population; the complete Japanese PSA row's exact number/rarity/variant and original date still determine the adopted observation."
-  }, {
-    "from": "N's Plot", "to": "N's Plan", "japanese": "Nの筋書き",
-    "set": "SV11B", "numbers": ["165", "173"], "denominator": 86,
-    "verifiedAt": "2026-10-25",
-    "evidence": ["https://www.pokemon-card.com/card-search/details.php/card/47997", "https://asia.pokemon-card.com/sg/card-search/detail/21280/"],
-    "sourceEvidence": "Saved Japanese SV11B 165/086 Super Rare and 173/086 Special Art Rare complete PSA snapshots, 2026-10-18T19:31:28.768Z, label N's Plot. Official JP/EN effects agree on moving up to two Energy from Bench to Active. Source-label translation only; no cross-language/variant/number substitution."
-  }, {
-    "from": "Vigor Shake", "to": "Boost Shake", "japanese": "ぐんぐんシェイク",
-    "set": "S6A", "numbers": ["60", "99"], "denominator": 69,
-    "verifiedAt": "2026-10-25",
-    "evidence": ["https://www.pokemon-card.com/card-search/details.php/card/39644/regu/all", "https://www.pokemon.com/us/pokemon-tcg/pokemon-cards/series/swsh7/229/"],
-    "sourceEvidence": "Saved Japanese Eevee Heroes PSA complete snapshot labels Full Art/Vigor Shake, Ultra Rare, 099; received Japanese PSA GemRate CSV has the same set/number/parallel. Official JP/EN name/effect agree on evolution ending the turn, including the first turn. Scope is this Japanese print; original observation times retained."
-  }],
-  "verifiedPrintNames": [{
-    "set": "SV2A", "number": "184", "denominator": "165", "language": "ja",
-    "catalogTitle": "フシギバナ", "officialTitle": "フシギバナex", "englishTitle": "Venusaur EX",
-    "verifiedAt": "2026-10-24",
-    "evidence": ["https://www.pokemon-card.com/card-search/details.php/card/43969", "https://asia.pokemon-card.com/my/card-search/detail/10052/"],
-    "note": "Official Japanese 184/165 title has ex; cached Japanese/English catalog labels omitted it. Both official versions have 340 HP, Tranquil Flower healing 60 and Dangerous Toxwhip 150. Print-specific name evidence only: never alias all Venusaur to Venusaur ex, change language/finish or alter the original PSA observation date. Original catalog/cache labels retained."
-  }]
+  "aliases": [
+    {
+      "from": "pokemon center big sister",
+      "to": "pokemon center lady",
+      "japanese": "ポケモンセンターのお姉さん",
+      "verifiedAt": "2026-10-15",
+      "evidence": [
+        "https://www.pokemon-card.com/card-search/details.php/card/38247/regu/all",
+        "https://www.pokemon.com/uk/pokemon-tcg/pokemon-cards/series/swsh4/185/"
+      ],
+      "note": "069/S-P Japanese title and official English Pokemon Center Lady title; same artist Sanosuke Sakuma. Print identities remain separate."
+    },
+    {
+      "from": "friends of paldea",
+      "to": "friends in paldea",
+      "japanese": "パルデアの仲間たち",
+      "verifiedAt": "2026-10-24",
+      "evidence": [
+        "https://www.pokemon-card.com/card-search/details.php/card/47116",
+        "https://asia.pokemon-card.com/my/card-search/detail/17608/"
+      ],
+      "note": "Official Japanese SV8a 195/187 title and official English title, same Draw 3 cards supporter effect. Translation only; Japanese set/number/finish and original PSA observation time remain mandatory."
+    },
+    {
+      "from": "alola vulpix vstar",
+      "to": "alolan vulpix vstar",
+      "japanese": "アローラ ロコンVSTAR",
+      "verifiedAt": "2026-10-24",
+      "evidence": [
+        "https://www.pokemon-card.com/card-search/details.php/card/44922",
+        "https://asia.pokemon-card.com/sg/card-search/detail/3212/"
+      ],
+      "note": "Official Japanese S11a 087/068 and official English Alolan Vulpix VSTAR: 240 HP, Snow Mirage, Silvery Snow Star, PLANETA Hiiragi. Regional-name spelling only; does not identify different printings."
+    },
+    {
+      "from": "alola vulpix v",
+      "to": "alolan vulpix v",
+      "japanese": "アローラ ロコンV",
+      "verifiedAt": "2026-10-24",
+      "evidence": [
+        "https://www.pokemon-card.com/card-search/details.php/card/42199",
+        "https://assets.pokemon.com/assets/cms2/pdf/trading-card-game/checklist/swsh12_web_cardlist_en.pdf"
+      ],
+      "note": "Official Japanese S11a 077/068 name and official English Silver Tempest checklist distinguish Alolan Vulpix V from VSTAR. Translation only, not a cross-language POP mapping."
+    },
+    {
+      "from": "zinnia's determination",
+      "to": "zinnia's resolve",
+      "japanese": "ヒガナの決意",
+      "verifiedAt": "2026-10-24",
+      "evidence": [
+        "https://www.pokemon-card.com/card-search/details.php/card/39948/regu/all",
+        "https://asia.pokemon-card.com/sg/card-search/detail/1738/",
+        "https://assets.pokemon.com/assets/cms2/pdf/trading-card-game/checklist/swsh7_web_cardlist_en.pdf"
+      ],
+      "note": "Official S7R 079/067 title and English supporter agree on discarding two cards and drawing for each opposing Pokemon. Translation only; Japanese print, original observation date and variant still required."
+    },
+    {
+      "from": "miss fortunes",
+      "to": "miss fortune sisters",
+      "japanese": "野盗三姉妹",
+      "verifiedAt": "2026-10-24",
+      "evidence": [
+        "https://www.pokemon-card.com/card-search/details.php/card/44896",
+        "https://asia.pokemon-card.com/sg/card-search/detail/2761/",
+        "https://assets.pokemon.com/assets/cms2/pdf/trading-card-game/checklist/swsh11_web_cardlist_en.pdf"
+      ],
+      "note": "Official S10a 096/071 Japanese and English supporter agree on looking at the top five opposing deck cards and discarding Items. Name correction does not merge SR/HR or English/Japanese POP."
+    }
+  ],
+  "sourceNames": [
+    {
+      "from": "Mew Mysterious Tail",
+      "to": "Mew",
+      "japanese": "ミュウ ふしぎなしっぽ",
+      "set": "S8A",
+      "numbers": [
+        "30"
+      ],
+      "denominator": 28,
+      "verifiedAt": "2026-10-25",
+      "evidence": [
+        "https://www.pokemon-card.com/card-search/details.php/card/40067",
+        "https://www.pokemon.com/uk/pokemon-tcg/pokemon-cards/series/cel25/25/"
+      ],
+      "sourceEvidence": "Official JP Mew names Mysterious Tail as the ability, not part of the Pokemon name; official English Celebrations secret Mew has the same name/ability. This removes the cached ability subtitle only for saved Japanese S8A 030/028 Ultra Rare. It does not substitute the JP 002/028 or English population; the complete Japanese PSA row's exact number/rarity/variant and original date still determine the adopted observation."
+    },
+    {
+      "from": "N's Plot",
+      "to": "N's Plan",
+      "japanese": "Nの筋書き",
+      "set": "SV11B",
+      "numbers": [
+        "165",
+        "173"
+      ],
+      "denominator": 86,
+      "verifiedAt": "2026-10-25",
+      "evidence": [
+        "https://www.pokemon-card.com/card-search/details.php/card/47997",
+        "https://asia.pokemon-card.com/sg/card-search/detail/21280/"
+      ],
+      "sourceEvidence": "Saved Japanese SV11B 165/086 Super Rare and 173/086 Special Art Rare complete PSA snapshots, 2026-10-18T19:31:28.768Z, label N's Plot. Official JP/EN effects agree on moving up to two Energy from Bench to Active. Source-label translation only; no cross-language/variant/number substitution."
+    },
+    {
+      "from": "Vigor Shake",
+      "to": "Boost Shake",
+      "japanese": "ぐんぐんシェイク",
+      "set": "S6A",
+      "numbers": [
+        "60",
+        "99"
+      ],
+      "denominator": 69,
+      "verifiedAt": "2026-10-25",
+      "evidence": [
+        "https://www.pokemon-card.com/card-search/details.php/card/39644/regu/all",
+        "https://www.pokemon.com/us/pokemon-tcg/pokemon-cards/series/swsh7/229/"
+      ],
+      "sourceEvidence": "Saved Japanese Eevee Heroes PSA complete snapshot labels Full Art/Vigor Shake, Ultra Rare, 099; received Japanese PSA GemRate CSV has the same set/number/parallel. Official JP/EN name/effect agree on evolution ending the turn, including the first turn. Scope is this Japanese print; original observation times retained."
+    },
+    {
+      "from": "LT. Surge's Transaction",
+      "to": "LT. Surge's Bargain",
+      "japanese": "マチスの取引",
+      "set": "M1L",
+      "numbers": [
+        "90",
+        "85",
+        "61"
+      ],
+      "denominator": 63,
+      "verifiedAt": "2026-10-26",
+      "evidence": [
+        "https://www.pokemon-card.com/card-search/details.php/card/48442",
+        "https://www.pokemon-card.com/card-search/details.php/card/48447",
+        "https://asia.pokemon-card.com/sg/card-search/detail/21712/"
+      ],
+      "sourceEvidence": "Name translation only: official JP/EN effects agree (opponent chooses taking one Prize each, otherwise draw four). The saved Japanese M1L complete snapshots use Deal, while the old cached translated name uses Transaction. Keep each exact Japanese set/number/rarity/finish, original POP and TOTAL and observation time; no English-print POP substitution."
+    },
+    {
+      "from": "LT. Surge's Deal",
+      "to": "LT. Surge's Bargain",
+      "japanese": "マチスの取引",
+      "set": "M1L",
+      "numbers": [
+        "90",
+        "85",
+        "61"
+      ],
+      "denominator": 63,
+      "verifiedAt": "2026-10-26",
+      "evidence": [
+        "https://www.pokemon-card.com/card-search/details.php/card/48442",
+        "https://www.pokemon-card.com/card-search/details.php/card/48447",
+        "https://asia.pokemon-card.com/sg/card-search/detail/21712/"
+      ],
+      "sourceEvidence": "Name translation only: official JP/EN effects agree (opponent chooses taking one Prize each, otherwise draw four). The saved Japanese M1L complete snapshots use Deal, while the old cached translated name uses Transaction. Keep each exact Japanese set/number/rarity/finish, original POP and TOTAL and observation time; no English-print POP substitution."
+    },
+    {
+      "from": "Boss's Orders Ghetsis",
+      "to": "Boss's Orders",
+      "japanese": "ボスの指令（ゲーチス）",
+      "set": "SV1A",
+      "numbers": [
+        "98",
+        "100"
+      ],
+      "denominator": 73,
+      "verifiedAt": "2026-10-26",
+      "evidence": [
+        "https://www.pokemon-card.com/card-search/details.php/card/43305/regu/all",
+        "https://www.pokemon.com/us/pokemon-tcg/pokemon-cards/series/sv02/172"
+      ],
+      "sourceEvidence": "Official Japanese SV1a 100/073 is Boss Orders; official English name includes Ghetsis. Remove only the trainer annotation in this set/print scope for name comparison. Japanese PSA source URL, full capture, number and SR/SAR variant remain independently checked. No international POP or variant substitution."
+    }
+  ],
+  "verifiedPrintNames": [
+    {
+      "set": "SV2A",
+      "number": "184",
+      "denominator": "165",
+      "language": "ja",
+      "catalogTitle": "フシギバナ",
+      "officialTitle": "フシギバナex",
+      "englishTitle": "Venusaur EX",
+      "verifiedAt": "2026-10-24",
+      "evidence": [
+        "https://www.pokemon-card.com/card-search/details.php/card/43969",
+        "https://asia.pokemon-card.com/my/card-search/detail/10052/"
+      ],
+      "note": "Official Japanese 184/165 title has ex; cached Japanese/English catalog labels omitted it. Both official versions have 340 HP, Tranquil Flower healing 60 and Dangerous Toxwhip 150. Print-specific name evidence only: never alias all Venusaur to Venusaur ex, change language/finish or alter the original PSA observation date. Original catalog/cache labels retained."
+    }
+  ]
 }

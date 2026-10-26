@@ -1,5 +1,6 @@
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const ROOT=path.join(__dirname,'..');
+const METADATA_TIMEOUT_MS=60000, ARCHIVE_TIMEOUT_MS=240000;
 function trusted(run,repository='urm759/pokeka-serch'){
   return run?.name==='Priority Purchase Price Refresh' && run.event==='schedule' && run.conclusion==='failure'
     && run.head_branch==='main' && run.repository?.full_name===repository && run.head_repository?.full_name===repository;
@@ -9,7 +10,7 @@ async function main(){
   if(!/^\d+$/.test(id||'')||!token)throw Error('Trusted failed run ID and existing Actions read token required');
   if(fs.existsSync(path.join(ROOT,'work/recovery-applied-'+id+'.json')))return {status:'already-restored',runId:id,sourceRequests:0};
   const base='https://api.github.com/repos/urm759/pokeka-serch/actions',headers={Authorization:'Bearer '+token,'User-Agent':'pokeka-checkpoint-recovery'};
-  const get=async url=>{const r=await fetch(url,{headers,signal:AbortSignal.timeout(60000)});if(!r.ok)throw Error('Recovery HTTP '+r.status);return r;};
+  const get=async (url,timeoutMs=METADATA_TIMEOUT_MS)=>{const r=await fetch(url,{headers,signal:AbortSignal.timeout(timeoutMs)});if(!r.ok)throw Error('Recovery HTTP '+r.status);return r;};
   const run=await(await get(base+'/runs/'+id)).json();if(!trusted(run))throw Error('Untrusted recovery event');
   const artifacts=(await(await get(base+'/runs/'+id+'/artifacts')).json()).artifacts.filter(a=>!a.expired&&a.name==='priority-price-recovery-'+id+'-'+run.run_attempt);
   if(artifacts.length!==1)throw Error('One exact failure checkpoint is required');
@@ -17,7 +18,7 @@ async function main(){
   if(!expected||artifact.size_in_bytes>256e6)throw Error('Artifact digest/size proof missing');
   const file=path.join(ROOT,'work/recovery-'+id+'.zip'),partial=file+'.download-'+Date.now();
   if(!fs.existsSync(file)){
-    const response=await get(artifact.archive_download_url),stream=fs.openSync(partial,'wx');let bytes=0;
+    const response=await get(artifact.archive_download_url,ARCHIVE_TIMEOUT_MS),stream=fs.openSync(partial,'wx');let bytes=0;
     try{for await(const chunk of response.body){bytes+=chunk.length;if(bytes>256e6)throw Error('Artifact size budget');fs.writeSync(stream,chunk);}}finally{fs.closeSync(stream);}
     if(crypto.createHash('sha256').update(fs.readFileSync(partial)).digest('hex')!==expected)throw Error('Artifact digest mismatch; saved bytes retained');
     fs.renameSync(partial,file);
@@ -26,4 +27,4 @@ async function main(){
   return require('./restore_price_artifact').restore(file,id,run.head_sha,ROOT);
 }
 if(require.main===module)main().then(r=>console.log(JSON.stringify(r))).catch(e=>{console.error(e.message);process.exitCode=1;});
-module.exports={trusted};
+module.exports={trusted,METADATA_TIMEOUT_MS,ARCHIVE_TIMEOUT_MS};
