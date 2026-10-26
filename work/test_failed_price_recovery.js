@@ -8,6 +8,21 @@ assert(!sourceArtifact.includes('work/publish-recovery.bundle'),'normal raw chec
 assert(workflow.slice(workflow.indexOf('name: priority-git-recovery-')).includes('work/publish-recovery.bundle'),'Git recovery is preserved separately');
 const good={name:'Priority Purchase Price Refresh',event:'schedule',conclusion:'failure',head_branch:'main',repository:{full_name:'urm759/pokeka-serch'},head_repository:{full_name:'urm759/pokeka-serch'}};
 assert(trusted(good));for(const change of [{event:'pull_request'},{head_branch:'feature'},{conclusion:'success'},{head_repository:{full_name:'fork/repo'}},{name:'Daily Fast Update'}])assert(!trusted({...good,...change}));
+const {trustedMonitor,latestMonitor}=require('./recover_failed_price_run');
+const monitor={...good,id:123,name:'Data Update Health Watchdog',updated_at:'2026-10-26T14:54:00Z'};
+assert(trustedMonitor(monitor));assert(!trustedMonitor(good));
+for(const change of [{event:'workflow_dispatch'},{event:'workflow_run'},{conclusion:'success'},
+  {head_branch:'feature'},{head_repository:{full_name:'fork/repo'}}])assert(!trustedMonitor({...monitor,...change}));
+const recoveryOptions={currentRunId:124,now:Date.parse('2026-10-26T15:00:00Z'),lastAcquisitionAt:'2026-10-26T10:00:00Z'};
+for(const file of ['data/psa10-observation-receipt.json','data/domestic-trade-source-audit.json','work/card-new-arrivals.json','work/card-lifecycle.json'])
+  assert(require('./restore_price_artifact').INPUTS.includes(file),'daily source evidence must survive recovery: '+file);
+assert.equal(latestMonitor([monitor],recoveryOptions).id,123);
+assert.equal(latestMonitor([monitor],{...recoveryOptions,currentRunId:123}),null,'never restore the running job itself');
+assert.equal(latestMonitor([monitor],{...recoveryOptions,alreadyApplied:()=>true}),null,'do not repeat restored checkpoints');
+assert.equal(latestMonitor([monitor],{...recoveryOptions,lastAcquisitionAt:'2026-10-26T14:55:00Z'}),null,'newer acquisition inputs take precedence');
+assert.equal(latestMonitor([monitor],{...recoveryOptions,now:Date.parse('2026-11-05')}),null,'expired checkpoints are not re-requested');
+const health=fs.readFileSync(path.join(__dirname,'../.github/workflows/watch-data-health.yml'),'utf8');
+assert(health.indexOf('--latest-monitor')<health.indexOf('id: catchup_plan'),'restore before selecting optional acquisition');
 function zip(files){
   let offset=0;const local=[],central=[];
   for(const [name,value]of Object.entries(files)){

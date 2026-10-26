@@ -2,6 +2,7 @@
 const fs=require('node:fs'),path=require('node:path'),cp=require('node:child_process'),zlib=require('node:zlib'),crypto=require('node:crypto');
 const ROOT=path.join(__dirname,'..'),sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 const INPUTS=['data/pokemon-cards.json','data/pokemon-cards-meta.json','data/shop-buyback-summary.json',
+  'data/psa10-observation-receipt.json','data/domestic-trade-source-audit.json','data/state-a-price-evidence.json',
   'data/hareruya2-stock-summary.json','data/cardrush-stock-summary.json','data/priority-price-execution.json','data/price-catchup-status.json',
   'work/source-update-runs.json','work/source-update-history.json','work/changed-card-ids.json',
   'work/toreca-source-inventory.json','work/toreca_source_diff.json','work/market_stability_history.json',
@@ -9,7 +10,8 @@ const INPUTS=['data/pokemon-cards.json','data/pokemon-cards-meta.json','data/sho
   'work/shop_buyback_unmatched.json','work/shop_buyback_item_matches.json','work/shop_buyback_quarantine.json',
   'work/homura-public-checkpoint.json','work/hareruya2_catalog.json','work/cardrush_catalog.json',
   'work/hareruya2_stock_history.json','work/cardrush_stock_history.json','work/priority-price-checkpoint.json',
-  'work/priority-price-http-cache.json','work/candidate-shop-refresh.json','work/price-catchup-history.json'];
+  'work/priority-price-http-cache.json','work/candidate-shop-refresh.json','work/price-catchup-history.json',
+  'work/card-new-arrivals.json','work/card-lifecycle.json','work/priority-freshness-history.json'];
 function zipEntries(bytes){
   let end=-1;for(let i=bytes.length-22;i>=Math.max(0,bytes.length-65557);i--)if(bytes.readUInt32LE(i)===0x06054b50){end=i;break;}
   if(end<0||bytes.readUInt16LE(end+4)||bytes.readUInt16LE(end+6))throw Error('ZIP end/disk unsupported');
@@ -44,13 +46,19 @@ function restore(file,runId,base,root=ROOT){
     if(!INPUTS.includes(row.file))continue;
     if(seen.has(row.file))throw Error('Duplicate manifest input');seen.add(row.file);
     const read=entries.get(prefix+row.file);if(!read)throw Error('Missing recovery input');
-    const incoming=read();if(incoming.length!==row.bytes||sha(incoming)!==row.sha256)throw Error('Recovery hash mismatch: '+row.file);
-    const data=JSON.parse(incoming),target=path.join(root,row.file);
+    let incoming=read();if(incoming.length!==row.bytes||sha(incoming)!==row.sha256)throw Error('Recovery hash mismatch: '+row.file);
+    let data=JSON.parse(incoming);const target=path.join(root,row.file);
     const current=fs.existsSync(target)?fs.readFileSync(target):null;
     let original=null;try{original=cp.execFileSync('git',['show',base+':'+row.file],{cwd:root,maxBuffer:128e6,stdio:['ignore','pipe','pipe']});}catch{}
     const equivalent=(a,b)=>a===null||b===null?a===b:JSON.stringify(JSON.parse(a))===JSON.stringify(JSON.parse(b));
     if(equivalent(current,incoming))continue;
-    if(!equivalent(current,original)){conflicts.push(row.file);continue;}
+    if(!equivalent(current,original)){
+      if(row.file==='work/priority-freshness-history.json'&&current&&original){
+        data=require('./reconcile_saved_source_merge').mergeFixedFreshness(JSON.parse(original),JSON.parse(current),data);
+        incoming=Buffer.from(JSON.stringify(data));
+        if(equivalent(current,incoming))continue;
+      }else{conflicts.push(row.file);continue;}
+    }
     plan.push({file:row.file,incoming,current,data});
   }
   if(!seen.has('data/pokemon-cards.json'))throw Error('Recovery acquisition input missing');

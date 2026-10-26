@@ -57,6 +57,7 @@ jobs:
           node work/test_stock_history_statistics.js
           node work/test_postpass_cadence.js
           node work/test_bulk_individual_freshness.js
+          node work/test_catalog_history_retention.js
           node work/test_partial_buyback_refresh.js
           node work/test_partial_buyback_recovery.js
           node work/test_saved_camp_recovery.js

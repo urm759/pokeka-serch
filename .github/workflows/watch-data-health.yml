@@ -64,6 +64,7 @@ jobs:
           node work/test_cycle_observation_snapshot.js
           node work/test_postpass_cadence.js
           node work/test_bulk_individual_freshness.js
+          node work/test_catalog_history_retention.js
           node work/test_partial_buyback_refresh.js
           node work/test_partial_buyback_recovery.js
           node work/test_saved_camp_recovery.js
@@ -76,6 +77,14 @@ jobs:
           FAILED_PRICE_RUN_ID: ${{ github.event.workflow_run.id }}
         run: node work/recover_failed_price_run.js
       - name: Check saved publication before optional acquisition
+        # Restore the previous trusted monitor's normal raw inputs before deciding to fetch again.
+        # The existing common acquisition gate and all publication validations still apply.
+        id: restore_monitor
+        if: github.event_name != 'workflow_run'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node work/recover_failed_price_run.js --latest-monitor
+      - name: Plan saved publication before optional acquisition
         id: catchup_plan
         run: node work/catchup_validation_mode.js
       - name: Fill missed price intervals with shared cooldown and access budgets
@@ -87,6 +96,7 @@ jobs:
         id: catchup_validation
         run: |
           if [ "${{ steps.catchup_plan.outputs.mode }}" = "rebuild" ]; then
+            PRICE_EVIDENCE_FETCH_LIMIT=0 node work/audit_state_a_prices.js
             node work/build_card_completion.js
             node work/finalize_update_status.js
           fi

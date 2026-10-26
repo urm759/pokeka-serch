@@ -39,14 +39,16 @@ function main() {
   const checkoutCommit=/^[a-f0-9]{40}$/.test(checkout || '')?checkout:null;
   const catchup=process.argv.includes('--catchup') || finalizeOnly&&/監視経路/.test(previous.runClass || '');
   const scheduled = scheduledSlot(started,catchup);
-  const save = () => require('./acquisition_retry').atomicWrite(path.join(ROOT, "data/priority-price-execution.json"), { version: 1, startedAt: new Date(started).toISOString(), endedAt: new Date().toISOString(), durationMs: Date.now() - started,
-    runId: process.env.GITHUB_RUN_ID || null, headSha:process.env.GITHUB_SHA || null,
+  const save = () => require('./acquisition_retry').atomicWrite(path.join(ROOT, "data/priority-price-execution.json"), { version: 1, startedAt: new Date(started).toISOString(), endedAt: finalizeOnly ? previous.endedAt || null : new Date().toISOString(), durationMs: finalizeOnly ? previous.durationMs ?? null : Date.now() - started,
+    reaggregatedAt: finalizeOnly ? new Date().toISOString() : null,
+    runId: finalizeOnly ? previous.runId || null : process.env.GITHUB_RUN_ID || null, headSha:finalizeOnly ? previous.headSha || null : process.env.GITHUB_SHA || null,
     checkoutCommit:finalizeOnly?previous.checkoutCommit || null:checkoutCommit,
-    priceQueueModel:"deadline-v2", startDelayMs: process.env.GITHUB_EVENT_NAME === "schedule" ? started - scheduled.getTime() : null,
-    scheduledSlotAt: process.env.GITHUB_EVENT_NAME === "schedule" ? scheduled.toISOString() : null,
-    delayMethod:catchup?"毎時47分の補完cron枠から実処理開始まで。1時間超の遅延は識別不能":"2時間ごと20分のPriority cron枠から実処理開始まで。2時間超の遅延は識別不能",
+    priceQueueModel:"deadline-v2", startDelayMs: finalizeOnly ? previous.startDelayMs ?? null : process.env.GITHUB_EVENT_NAME === "schedule" ? started - scheduled.getTime() : null,
+    scheduledSlotAt: finalizeOnly ? previous.scheduledSlotAt || null : process.env.GITHUB_EVENT_NAME === "schedule" ? scheduled.toISOString() : null,
+    delayMethod:finalizeOnly ? previous.delayMethod || null : catchup?"毎時47分の補完cron枠から実処理開始まで。1時間超の遅延は識別不能":"2時間ごと20分のPriority cron枠から実処理開始まで。2時間超の遅延は識別不能",
     runClass: finalizeOnly ? "保存済み取得の集計復旧・再取得なし" : process.argv.includes('--catchup') ? "監視経路の空白補完・探索なし" : "価格更新・探索なし", llmCalls: 0, codexCalls: 0, runs });
   function run(script, args = [], env = {}, role = 'required') {
+    if(finalizeOnly&&script==='work/audit_state_a_prices.js')env={...env,PRICE_EVIDENCE_FETCH_LIMIT:'0'};
     const at = Date.now();
     const child = spawnSync(process.execPath, [path.join(ROOT, script), ...args], { cwd: ROOT,
       env: { ...process.env, ...env }, encoding: "utf8", maxBuffer: 64 * 1024 * 1024, timeout: 600000 });
