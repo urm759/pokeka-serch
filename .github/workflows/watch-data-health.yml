@@ -40,6 +40,7 @@ jobs:
       - name: Check alert deduplication and safe backoff rules
         run: |
           node work/test_profile_worker.js
+          node work/test_gemrate_limited_public_reference.js
           node work/test_hareruya_single_response.js
           node work/test_watch_catchup_trigger.js
           node work/test_failed_price_recovery.js

@@ -5389,7 +5389,7 @@ function psaPopGlance(card,detail=false,now=Date.now()) {
     return `<span class="${flag || days!=null&&span<days?'pop-reference':'pop-change'}">${label}・観測${elapsed}<b>${delta>0?'+':''}${fmt.format(delta)}枚${rate==null?'／率算出不可':`（${rate>0?'+':''}${rate.toFixed(2)}%）`}</b>${days!=null&&span<days?'<small>参考・対象期間未充足</small>':''}${flag===2?'<small class="price-stale">減少・公式訂正等を含む／供給減とは未確定</small>':flag===1?'<small class="price-stale">旧取得根拠・参考比較</small>':''}</span>`;
   };
   const period=i=>current?.p?.[i]==null?null:current.windows[current.p[i]];
-  return `<div class="pop-glance" aria-label="PSA10 POP推移"><span>現在のPSA10 POP<b>${fmt.format(official.ten)}枚</b></span>${cell(period(0),null)}${(detail?[75,200]:[7,30]).map(d=>cell(period([7,30,75,200].indexOf(d)+1),d)).join('')}<small class="pop-glance-note ${stale||permissionPending?'price-stale':''}">公式確認 ${escapeHtml(official.f||'日時不明')}${stale?'／古値・更新待ち':''}${permissionNote}。開始時POP比・月換算なし。${current?.changed?'紐付け変更前は比較外。':''}世界の鑑定枚数≠流通在庫。上限/GOへ不使用。</small></div>`;
+  return `<div class="pop-glance" aria-label="PSA10 POP推移"><span>PSA10 POP（公式保存値）<b>${fmt.format(official.ten)}枚</b></span>${cell(period(0),null)}${(detail?[75,200]:[7,30]).map(d=>cell(period([7,30,75,200].indexOf(d)+1),d)).join('')}<small class="pop-glance-note ${stale||permissionPending?'price-stale':''}">公式確認 ${escapeHtml(official.f||'日時不明')}${stale?'／古値・更新待ち':''}${permissionNote}。開始時POP比・月換算なし。${current?.changed?'紐付け変更前は比較外。':''}世界の鑑定枚数≠流通在庫。上限/GOへ不使用。</small></div>`;
 }
 async function ensurePsaPopGlance(cards) {
   const revision=uiDataManifest?.revision||'legacy';
@@ -5460,6 +5460,46 @@ function priceComparisonCells(card, limitDisplay, confirmedAt, now = Date.now(),
     ${trial ? breakCell + stableCell : stableCell + breakCell}`;
 }
 
+// Display-only CSV snapshot. Never connected to state.psaPopulation, POP history, or the calculation cache.
+let gemRateReferenceRevision=null,gemRateReferencePayload=null,gemRateReferenceRequest=null,gemRateReferenceFailed=false;
+function gemRateReferenceValue(card,row,now=Date.now()) {
+  if(!Array.isArray(row)||row.length!==5||row[0]!==card.identityKey||card.identityReviewRequired||state.psaSpecificationHeld?.[card.id])return null;
+  const [identityKey,ten,total,date,url]=row,at=Date.parse(date+'T00:00:00Z');
+  if(!Number.isSafeInteger(ten)||!Number.isSafeInteger(total)||total<=0||ten<0||ten>total
+    ||!/^\d{4}-\d{2}-\d{2}$/.test(date||'')||!Number.isFinite(at)||new Date(at).toISOString().slice(0,10)!==date||at>now)return null;
+  let source;try{source=new URL(url);}catch{return null;}
+  if(source.protocol!=='https:'||source.hostname!=='www.gemrate.com'||source.pathname!=='/item-details'
+    ||source.searchParams.get('grader')!=='psa')return null;
+  return {ten,total,date,url,rate:100*ten/total,stale:now-at>168*3600000};
+}
+function gemRateReferenceHeader(card) {
+  if(gemRateReferenceRevision!==(uiDataManifest?.revision||'legacy'))return null;
+  const v=gemRateReferenceValue(card,gemRateReferencePayload?.cards?.[card.id]);if(!v)return null;
+  const old=card.official;
+  return `<span>PSA10率（GemRate集計）</span><strong>${v.rate.toFixed(1)}%</strong><small>PSA10 ${fmt.format(v.ten)}／総数 ${fmt.format(v.total)}枚・基準日 ${escapeHtml(v.date)} <a href="${escapeHtml(v.url)}" target="_blank" rel="noreferrer">出典</a></small><small class="price-stale">${v.stale?'古値・':''}参考／計算採用率とは別</small><details><summary>旧公式値・根拠</summary><small>保存CSV由来の参考値。基準日はGemRateの取得・処理日（日精度）。PSA公式の直接確認日時・現在枚数ではありません。</small><small>旧公式 ${Number.isFinite(old?.rate)?old.rate.toFixed(1)+'%':'未取得'}／PSA10 ${Number.isFinite(old?.ten)?fmt.format(old.ten):'未取得'}／総数 ${Number.isFinite(old?.total)?fmt.format(old.total):'未取得'}／確認 ${escapeHtml(old?.f||'未取得')}。取得元間の差はPOP増減へ計上しません。</small></details>`;
+}
+async function ensureGemRateReference(cards) {
+  const revision=uiDataManifest?.revision||'legacy';
+  if(gemRateReferenceRevision!==revision){gemRateReferenceRevision=revision;gemRateReferencePayload=null;gemRateReferenceRequest=null;gemRateReferenceFailed=false;}
+  const ids=uiDataManifest?.referenceDisplayIds||[];
+  if(!cards.some(c=>ids.includes(c.id)))return;
+  if(!gemRateReferenceRequest)gemRateReferenceRequest=fetchJsonMaybe('./data/gemrate-reference-summary.json',{detail:true,affectsCalculation:false}).then(data=>{
+    if(!data||data.version!==1||data.source!=='GemRate'||data.grader!=='PSA'||data.scope!=='received-csv-reference-50'
+      ||!data.cards||Array.isArray(data.cards)||Object.keys(data.cards).length!==50
+      ||Object.keys(data.cards).some(id=>!ids.includes(id)))throw Error('Reference summary incompatible');
+    if(gemRateReferenceRevision===revision)gemRateReferencePayload=data;
+  }).catch(()=>{if(gemRateReferenceRevision===revision)gemRateReferenceFailed=true;});
+  await gemRateReferenceRequest;if(gemRateReferenceRevision!==revision)return;
+  const byId=new Map(cards.map(c=>[c.id,c]));
+  for(const el of document.querySelectorAll('[data-grade-reference]')){
+    const card=byId.get(el.dataset.gradeReference);if(!card)continue;
+    const html=gemRateReferenceHeader(card);if(html&&el.innerHTML!==html)el.innerHTML=html;
+    else if(!html&&ids.includes(card.id)&&!el.querySelector('[data-gemrate-failure]')){
+      const note=gemRateReferenceFailed?'GemRate参考値の読込失敗／旧公式保存値を表示':'GemRate参考値は仕様・日時確認待ち／旧公式保存値を表示';
+      el.insertAdjacentHTML('beforeend',`<small class="price-stale" data-gemrate-failure>${note}</small>`);
+    }
+  }
+}
 function gradeRateSummary(card, trial = null) {
   const official = card.official;
   const rate = official?.rate;
@@ -5468,7 +5508,7 @@ function gradeRateSummary(card, trial = null) {
   const source = trial?.rateSource || assumptions?.hitRateSource || "未取得";
   const held = state.psaSpecificationHeld[card.id];
   const missingLabel = held ? "仕様不一致で保留" : "未取得";
-  return `<div class="grade-rate-summary"><div><span>PSA10公式取得率</span><strong class="${Number.isFinite(rate) ? "" : "value-unavailable"}">${Number.isFinite(rate) ? `${rate.toFixed(1)}%` : missingLabel}</strong><small>${Number.isFinite(official?.total) ? `母数 TOTAL ${fmt.format(official.total)}枚／10 ${Number.isFinite(official.ten) ? fmt.format(official.ten) : "未取得"}枚` : "母数未取得"}／確認 ${escapeHtml(official?.f || held?.f || "未取得")}</small>${held ? `<small class="price-stale">通常版POPで代用しません。${escapeHtml(held.reason)} <a href="${escapeHtml(held.u)}" target="_blank" rel="noreferrer">公式候補</a></small>` : ""}</div><div><span>計算に採用した想定10率</span><strong class="${Number.isFinite(assumed) ? "" : "value-unavailable"}">${Number.isFinite(assumed) ? `${(assumed * 100).toFixed(1)}%` : "未取得"}</strong><small>${escapeHtml(source)}。公式比率は目視選別後の成功保証ではありません。</small></div></div><div data-psa-pop-glance="${escapeHtml(card.id)}">${psaPopGlance(card)}</div>`;
+  return `<div class="grade-rate-summary"><div data-grade-reference="${escapeHtml(card.id)}">${gemRateReferenceHeader(card) || `<span>PSA10公式取得率</span><strong class="${Number.isFinite(rate) ? "" : "value-unavailable"}">${Number.isFinite(rate) ? `${rate.toFixed(1)}%` : missingLabel}</strong><small>${Number.isFinite(official?.total) ? `母数 TOTAL ${fmt.format(official.total)}枚／10 ${Number.isFinite(official.ten) ? fmt.format(official.ten) : "未取得"}枚` : "母数未取得"}／確認 ${escapeHtml(official?.f || held?.f || "未取得")}</small>${held ? `<small class="price-stale">通常版POPで代用しません。${escapeHtml(held.reason)} <a href="${escapeHtml(held.u)}" target="_blank" rel="noreferrer">公式候補</a></small>` : ""}`}</div><div><span>計算に採用した想定10率</span><strong class="${Number.isFinite(assumed) ? "" : "value-unavailable"}">${Number.isFinite(assumed) ? `${(assumed * 100).toFixed(1)}%` : "未取得"}</strong><small>${escapeHtml(source)}。公式比率は目視選別後の成功保証ではありません。</small></div></div><div data-psa-pop-glance="${escapeHtml(card.id)}">${psaPopGlance(card)}</div>`;
 }
 
 function currentMarketProfitPanel(view) {
@@ -6504,6 +6544,7 @@ function renderContent() {
   committed.changed.forEach((el) => observer.observe(el));
   void ensureOverseasGlance(visibleCards);
   void ensurePsaPopGlance(visibleCards);
+  void ensureGemRateReference(visibleCards);
   committed.changed.flatMap(el => [...el.querySelectorAll("[data-psa-history]")]).forEach((details) => {
     details.addEventListener("toggle", () => { if (details.open) renderPsaHistory(details); }, { once: true });
   });
