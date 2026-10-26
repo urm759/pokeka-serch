@@ -1078,6 +1078,10 @@
     return !Number.isFinite(score) || score < 85;
   }
 
+  function hasBlockingDataAnomaly(quality) {
+    return Boolean(quality?.dataAnomaly && quality.dataAnomalyIsolated !== true);
+  }
+
   function purchaseDecision(input) {
     const reasons = [];
     const economics = input.economics;
@@ -1141,5 +1145,5 @@
     };
   }
 
-  return { MODEL_VERSION, comparablePriceEvidence, priceReview, referenceFreshness, purchasePriceState, shopObservation, observationTime, storeOffers, aggressivePurchaseZone, aggregatePrices, bargainDecisionEligible, buybackExitProfit, conservativeBuybackExit, economicsFromExpectedSale, exitPolicyCaps, shouldIncludeVerdict, capRoundingStep, capitalLimits, capitalPlan, economicsScenarioMatrix, expectedEconomics, gradeAssumptions, isSuspectedCardMismatch, matchConfidenceLabel, maxBuyPrice, median, operationalCap, operationalCapConcentration, portfolioPlan, portfolioStress, purchaseAvailability, purchaseCaps, purchaseDecision, purchaseLimitMarketRatio, resilienceMetrics, resolvePsa9Price, targetProfitMaxBuyPrice, weightedMedian };
+  return { MODEL_VERSION, hasBlockingDataAnomaly, comparablePriceEvidence, priceReview, referenceFreshness, purchasePriceState, shopObservation, observationTime, storeOffers, aggressivePurchaseZone, aggregatePrices, bargainDecisionEligible, buybackExitProfit, conservativeBuybackExit, economicsFromExpectedSale, exitPolicyCaps, shouldIncludeVerdict, capRoundingStep, capitalLimits, capitalPlan, economicsScenarioMatrix, expectedEconomics, gradeAssumptions, isSuspectedCardMismatch, matchConfidenceLabel, maxBuyPrice, median, operationalCap, operationalCapConcentration, portfolioPlan, portfolioStress, purchaseAvailability, purchaseCaps, purchaseDecision, purchaseLimitMarketRatio, resilienceMetrics, resolvePsa9Price, targetProfitMaxBuyPrice, weightedMedian };
 });

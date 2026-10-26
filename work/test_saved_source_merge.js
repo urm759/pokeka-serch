@@ -1,6 +1,21 @@
 const assert=require('node:assert/strict'),{latest,byKey,seedMerge,mergeRun}=require('./reconcile_saved_source_merge');
 const {mergeStockHistory}=require('./reconcile_saved_source_merge');
 const {mergeCards}=require('./reconcile_saved_source_merge');
+const {mergeCatalogMeta}=require('./reconcile_saved_source_merge');
+const catalogBase={generatedAt:'2026-10-25T12:00:00Z',updatedAt:'2026-10-25'};
+const earlier={generatedAt:'2026-10-26T14:36:10Z',updatedAt:'2026-10-26'};
+const later={generatedAt:'2026-10-26T15:17:53Z',updatedAt:'2026-10-27'};
+assert.deepEqual(mergeCatalogMeta(catalogBase,earlier,later),later);
+assert.deepEqual(mergeCatalogMeta(catalogBase,later,earlier),later);
+assert.deepEqual(mergeCatalogMeta(catalogBase,{...earlier,updatedAt:later.updatedAt},later),later,
+  'same source date cannot hide the more recent exact generation time');
+assert.throws(()=>mergeCatalogMeta(catalogBase,later,{...later,totalCards:2}),/distinct source generation/);
+const ratio=require('../purchase-ratio-model');
+const ratioInput={purchasePrice:29800,purchaseKind:'store',psa9:{value:31000,measurementType:'aggregate',updatedAt:'2026-10-26T15:17:52Z'}};
+assert.equal(ratio.evaluate({...ratioInput,asOf:earlier.generatedAt}).ratio,null,'incoherent metadata reproduces the rejection');
+assert.equal(ratio.evaluate({...ratioInput,asOf:mergeCatalogMeta(catalogBase,earlier,later).generatedAt}).ratio,29800/31000*100,
+  'coherent saved source metadata restores the ratio without changing prices or freshness rules');
+assert.equal(ratio.evaluate({...ratioInput,asOf:'2026-11-27T15:17:53Z'}).ratio,null,'truly expired PSA9 remains excluded');
 const sourceCards=[{id:'card',price:100,priceObservedAt:'old',shopUrl:null}];
 const mergedCards=mergeCards(sourceCards,[{...sourceCards[0],shopUrl:'verified'}],[{...sourceCards[0],price:120,priceObservedAt:'new'}]);
 assert.equal(mergedCards.length,1);assert.equal(mergedCards[0].shopUrl,'verified');assert.equal(mergedCards[0].price,120);assert.equal(mergedCards[0].priceObservedAt,'new');

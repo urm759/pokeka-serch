@@ -1,4 +1,4 @@
-(function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.CandidateReductionModel=api;})(typeof globalThis==='object'?globalThis:this,()=>{
+(function(root,factory){const api=factory(typeof module==='object'&&module.exports?require('./decision-model.js'):root.PurchaseDecisionModel);if(typeof module==='object'&&module.exports)module.exports=api;else root.CandidateReductionModel=api;})(typeof globalThis==='object'?globalThis:this,(decisionModel)=>{
   function compare(before,after){
     const common=Object.keys(after.rows).filter(id=>before.rows[id]);
     const lost=[],gained=[],overlap={},sequential={};
@@ -24,7 +24,7 @@
     const purchase={expired:'購入価格・有効期限超過',unacquired:'購入価格・未取得','out-of-stock':'購入価格・在庫なし',stopped:'購入価格・取得停止'};
     if(purchase[status])result.push(purchase[status]);
     if(card.forecastPeriodMismatch)result.push('予測期間不一致・参考探索のみ');
-    if(card.dataQuality?.manualReview||card.dataQuality?.dataAnomaly||card.priceAggregation?.conflicted)result.push('価格対立・誤紐付け');
+    if(card.dataQuality?.manualReview||(decisionModel?.hasBlockingDataAnomaly?decisionModel.hasBlockingDataAnomaly(card.dataQuality):card.dataQuality?.dataAnomaly)||card.priceAggregation?.conflicted)result.push('価格対立・誤紐付け');
     return result;
   }
   function counts(rows){

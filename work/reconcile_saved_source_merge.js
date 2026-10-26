@@ -83,6 +83,17 @@ function seedMerge(base,a,b){
   if(a&&b&&typeof a==='object'&&typeof b==='object')return Object.fromEntries([...new Set([...Object.keys(a),...Object.keys(b)])].map(k=>[k,seedMerge(base?.[k],a[k],b[k])]));
   return a;
 }
+function mergeCatalogMeta(base,a,b) {
+  if(same(a,b)||same(base,b))return a;
+  if(same(base,a))return b;
+  // Keep the source snapshot's generation time and source date together.
+  // A generic seed merge can retain an old generatedAt next to newer prices,
+  // incorrectly making their real observation times appear to be in the future.
+  const x=Date.parse(a?.generatedAt),y=Date.parse(b?.generatedAt);
+  if(!Number.isFinite(x)||!Number.isFinite(y)||x===y)
+    throw Error('Catalog metadata conflict requires distinct source generation times');
+  return x>y?a:b;
+}
 function mergeBuybackHistory(base,a,b) {
   const dates=[...new Set([...a.dates,...b.dates])].sort();
   const result={...seedMerge(base,a,b),dates,shops:{}};
@@ -117,6 +128,7 @@ function run(){
     let merged;
     if(file==='data/scheduled-cycle-receipts.json')merged=require('./resolve_generated_merge').mergeReceipts(a,b);
     else if(file==='data/pokemon-cards.json')merged=mergeCards(base,a,b);
+    else if(file==='data/pokemon-cards-meta.json')merged=mergeCatalogMeta(base,a,b);
     else if(file==='work/search-profile-targets.json')merged=mergeProfileTargets(base,a,b);
     else if(file==='work/priority-freshness-history.json')merged=mergeFixedFreshness(base,a,b);
     else if(file==='work/shop_buyback_history.json')merged=mergeBuybackHistory(base,a,b);
@@ -158,6 +170,10 @@ function run(){
     }else merged=seedMerge(base,a,b);
     out.push([file,merged]);metrics.push({file,method:/catalog|checkpoint|http-cache|source-update-runs|stock-summary|buyback/.test(file)?'個別確認日時/取得元実成功時刻・履歴保持':'両原票保持後の再生成用seed'});
   }
+  const metadata=out.find(([file])=>file==='data/pokemon-cards-meta.json');
+  if(metadata){const cards=out.find(([file])=>file==='data/pokemon-cards.json')?.[1]
+    ||JSON.parse(fs.readFileSync(path.join(root,'data/pokemon-cards.json')));
+    metadata[1]={...metadata[1],totalCards:cards.length};}
   // Resolve every real-source observation before writing anything. Derived seeds must be rebuilt/tested before publication.
   for(const [file,data]of out)atomicWrite(path.join(root,file),data,0);
   atomicWrite(path.join(root,'data/current-guide-merge-audit.json'),{at:new Date().toISOString(),backup:'work/current-guide-merge-stages',metrics,
@@ -165,4 +181,4 @@ function run(){
   console.log(JSON.stringify({resolved:out.length,status:'rebuild-required',rawStageBackups:files.length}));
 }
 if(require.main===module)run();
-module.exports={latest,byKey,seedMerge,mergeRun,mergeStockHistory,mergeProfileTargets,mergeFixedFreshness,mergeCards,mergeBuybackHistory};
+module.exports={latest,byKey,seedMerge,mergeCatalogMeta,mergeRun,mergeStockHistory,mergeProfileTargets,mergeFixedFreshness,mergeCards,mergeBuybackHistory};

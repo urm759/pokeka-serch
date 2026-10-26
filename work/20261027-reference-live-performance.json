@@ -1,0 +1,294 @@
+{
+  "generatedAt": "2026-10-26T21:30:00.096Z",
+  "environment": "Node.js same production calculation/index; not browser paint or gzip transfer",
+  "fixedQuery": "M2 110/080",
+  "repeats": 3,
+  "settings": "production audit defaults / 119 days",
+  "initialBytes": 21024376,
+  "doubleInitialBytes": 39127190,
+  "jsonParseMs": 92.95360000000028,
+  "doubleJsonParseMs": 194.6280999999999,
+  "searchMs": 0.4497000000001208,
+  "doubleSearchMs": 0.9697000000005573,
+  "fullCalculationMs": 4779.9130000000005,
+  "cacheMs": 0.057800000002316665,
+  "doubleCalculationMs": 9093.251000000004,
+  "detailSummary25Ms": 0.5728000000017346,
+  "samples": {
+    "fullCalculationMs": [
+      4779.9130000000005,
+      4918.834200000001,
+      4564.011399999999
+    ],
+    "cacheMs": [
+      0.13800000000082946,
+      0.05730000000039581,
+      0.057800000002316665
+    ],
+    "doubleCalculationMs": [
+      8943.120200000001,
+      9093.251000000004,
+      10525.103199999998
+    ],
+    "detailSummary25Ms": [
+      1.4737999999997555,
+      0.38109999999869615,
+      0.5728000000017346
+    ]
+  },
+  "cardCount": 12728,
+  "calculationValuesEqual": true,
+  "comparisonKey": "node-production-v2/win32/x64/node24/AMD Ryzen 7 5700X 8-Core Processor             /16/119days/M2-110-080",
+  "hardware": {
+    "cpu": "AMD Ryzen 7 5700X 8-Core Processor             ",
+    "logicalCores": 16,
+    "node": "24.22.1"
+  },
+  "codeFingerprint": "88b07a7b55e6a0d25d054f9a8a726a97c6549c20a84e4de34454327ec242ee47",
+  "dataFingerprint": "96c86be312a8bc2cf7acaf5e1b6192b247a7aed41cd8b696318324adf1b047dc",
+  "measurementScope": {
+    "initial": "JSON本文サイズ・解析（通信/ブラウザpaintは未計測）",
+    "search": "軽量インデックス固定検索",
+    "calculation": "本番計算・値一致",
+    "detail": "25件の率表示文字列。実DOM展開/描画は別の実画面試験で確認"
+  },
+  "limits": {
+    "initialBytes": 24000000,
+    "doubleInitialBytes": 48000000,
+    "jsonParseMs": 2500,
+    "doubleJsonParseMs": 5000,
+    "searchMs": 500,
+    "doubleSearchMs": 1000,
+    "fullCalculationMs": 15000,
+    "doubleCalculationMs": 30000,
+    "cacheMs": 100,
+    "detailSummary25Ms": 100
+  },
+  "errors": [],
+  "status": "pass",
+  "llmCalls": 0,
+  "codexCalls": 0,
+  "comparison": {
+    "status": "stable",
+    "previousAt": "2026-10-26T15:26:18.356Z",
+    "previousCards": 12728,
+    "currentCards": 12728,
+    "dataChanged": true,
+    "codeChanged": true,
+    "attribution": "コードとデータの両方変更・原因の断定不可",
+    "threshold": "中央値が前回比30%超かつ絶対雑音幅超。固定予算/値不一致とは別の性能警告",
+    "warnings": [],
+    "rows": [
+      {
+        "metric": "initialBytes",
+        "before": 20689976,
+        "after": 21024376,
+        "delta": 334400,
+        "changePct": 1.6162416041468584,
+        "warning": false
+      },
+      {
+        "metric": "jsonParseMs",
+        "before": 82.61909999999989,
+        "after": 92.95360000000028,
+        "delta": 10.33450000000039,
+        "changePct": 12.50860878416783,
+        "warning": false
+      },
+      {
+        "metric": "searchMs",
+        "before": 0.29120000000011714,
+        "after": 0.4497000000001208,
+        "delta": 0.15850000000000364,
+        "changePct": 54.42994505492441,
+        "warning": false
+      },
+      {
+        "metric": "fullCalculationMs",
+        "before": 4323.9519,
+        "after": 4779.9130000000005,
+        "delta": 455.96110000000044,
+        "changePct": 10.545008606594362,
+        "warning": false
+      },
+      {
+        "metric": "cacheMs",
+        "before": 0.06599999999889405,
+        "after": 0.057800000002316665,
+        "delta": -0.00819999999657739,
+        "changePct": -12.42424241926484,
+        "warning": false
+      },
+      {
+        "metric": "detailSummary25Ms",
+        "before": 0.3539999999993597,
+        "after": 0.5728000000017346,
+        "delta": 0.21880000000237487,
+        "changePct": 61.807909605302434,
+        "warning": false
+      },
+      {
+        "metric": "doubleInitialBytes",
+        "before": 38454770,
+        "after": 39127190,
+        "delta": 672420,
+        "changePct": 1.7485997185784756,
+        "warning": false
+      },
+      {
+        "metric": "doubleJsonParseMs",
+        "before": 176.33939999999984,
+        "after": 194.6280999999999,
+        "delta": 18.288700000000063,
+        "changePct": 10.371306696064565,
+        "warning": false
+      },
+      {
+        "metric": "doubleSearchMs",
+        "before": 0.5797999999999774,
+        "after": 0.9697000000005573,
+        "delta": 0.3899000000005799,
+        "changePct": 67.24732666446965,
+        "warning": false
+      },
+      {
+        "metric": "doubleCalculationMs",
+        "before": 8671.603300000002,
+        "after": 9093.251000000004,
+        "delta": 421.64770000000135,
+        "changePct": 4.862396092312032,
+        "warning": false
+      }
+    ],
+    "normalized": [
+      {
+        "metric": "initialBytes",
+        "before": 1625.5480829666876,
+        "after": 1651.8208673790068
+      },
+      {
+        "metric": "jsonParseMs",
+        "before": 0.0064911297925832724,
+        "after": 0.007303079824010079
+      },
+      {
+        "metric": "fullCalculationMs",
+        "before": 0.3397196653048397,
+        "after": 0.37554313324952865
+      }
+    ]
+  },
+  "fixedComparison": {
+    "status": "warning",
+    "previousAt": "2026-10-20T13:20:45.084Z",
+    "previousCards": 12544,
+    "currentCards": 12728,
+    "dataChanged": true,
+    "codeChanged": true,
+    "attribution": "コードとデータの両方変更・原因の断定不可",
+    "threshold": "中央値が前回比30%超かつ絶対雑音幅超。固定予算/値不一致とは別の性能警告",
+    "warnings": [
+      "doubleJsonParseMs"
+    ],
+    "rows": [
+      {
+        "metric": "initialBytes",
+        "before": 18482506,
+        "after": 21024376,
+        "delta": 2541870,
+        "changePct": 13.752842823370381,
+        "warning": false
+      },
+      {
+        "metric": "jsonParseMs",
+        "before": 71.77959999999985,
+        "after": 92.95360000000028,
+        "delta": 21.174000000000433,
+        "changePct": 29.498631923276918,
+        "warning": false
+      },
+      {
+        "metric": "searchMs",
+        "before": 0.3793000000000575,
+        "after": 0.4497000000001208,
+        "delta": 0.0704000000000633,
+        "changePct": 18.560506195637394,
+        "warning": false
+      },
+      {
+        "metric": "fullCalculationMs",
+        "before": 4212.6163,
+        "after": 4779.9130000000005,
+        "delta": 567.2967000000008,
+        "changePct": 13.46661218587605,
+        "warning": false
+      },
+      {
+        "metric": "cacheMs",
+        "before": 0.07700000000113505,
+        "after": 0.057800000002316665,
+        "delta": -0.019199999998818384,
+        "changePct": -24.935064933162803,
+        "warning": false
+      },
+      {
+        "metric": "detailSummary25Ms",
+        "before": 0.3497999999963213,
+        "after": 0.5728000000017346,
+        "delta": 0.2230000000054133,
+        "changePct": 63.75071469632891,
+        "warning": false
+      },
+      {
+        "metric": "doubleInitialBytes",
+        "before": 34114693,
+        "after": 39127190,
+        "delta": 5012497,
+        "changePct": 14.69307374391439,
+        "warning": false
+      },
+      {
+        "metric": "doubleJsonParseMs",
+        "before": 147.83849999999984,
+        "after": 194.6280999999999,
+        "delta": 46.789600000000064,
+        "changePct": 31.649130639177287,
+        "warning": true
+      },
+      {
+        "metric": "doubleSearchMs",
+        "before": 0.604200000000219,
+        "after": 0.9697000000005573,
+        "delta": 0.36550000000033833,
+        "changePct": 60.49321416752827,
+        "warning": false
+      },
+      {
+        "metric": "doubleCalculationMs",
+        "before": 7885.5875000000015,
+        "after": 9093.251000000004,
+        "delta": 1207.6635000000024,
+        "changePct": 15.31481959968109,
+        "warning": false
+      }
+    ],
+    "normalized": [
+      {
+        "metric": "initialBytes",
+        "before": 1473.4140625,
+        "after": 1651.8208673790068
+      },
+      {
+        "metric": "jsonParseMs",
+        "before": 0.00572222576530611,
+        "after": 0.007303079824010079
+      },
+      {
+        "metric": "fullCalculationMs",
+        "before": 0.33582719228316327,
+        "after": 0.37554313324952865
+      }
+    ],
+    "basis": "固定した最初の同条件合格記録。直近値で自動更新しない"
+  }
+}

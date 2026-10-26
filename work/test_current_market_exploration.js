@@ -16,6 +16,12 @@ const input = {
 const evaluate = overrides => current.evaluate({ ...input, ...overrides }, model);
 const v = evaluate();
 assert(v.eligible);
+assert(evaluate({card:{...input.card,dataQuality:{dataAnomaly:true,dataAnomalyIsolated:true}}}).eligible,
+  'isolated warning must not suppress valid current-market economics');
+assert(!evaluate({card:{...input.card,dataQuality:{dataAnomaly:true}}}).eligible,
+  'unproven isolation remains blocking');
+assert(!evaluate({card:{...input.card,dataQuality:{manualReview:true,dataAnomaly:true,dataAnomalyIsolated:true}}}).eligible,
+  'a separate card-level hold remains blocking');
 assert(Math.abs(v.economics.expectedSale - 79960) < 1e-8);
 assert(Math.abs(v.economics.expectedProfit - 19960) < 1e-8);
 assert(Math.abs(v.economics.expectedRoi - 19960 / 60000 * 100) < 1e-8);

@@ -29,8 +29,28 @@ const window = {
   SnkrRawFlipModel: require("../snkr-raw-flip-model.js"), POKEMON_CARDS_META: { updatedAt: asOfDate },
 };
 const context = vm.createContext({ window, document: { getElementById: () => null, querySelectorAll: () => [] }, console, URL, URLSearchParams, setTimeout, clearTimeout });
-vm.runInContext(`${appSource.split("// Browser event bindings start here; the audit runner evaluates the same model above this line.")[0]}\nglobalThis.testApi = { state, calc };`, context, { filename: "app.js" });
+vm.runInContext(`${appSource.split("// Browser event bindings start here; the audit runner evaluates the same model above this line.")[0]}\nglobalThis.testApi = { state, calc, hasCardMismatchSignal, classifyDecisionData };`, context, { filename: "app.js" });
 const { state, calc } = context.testApi;
+const isolated={quarantined:true,matchConfidence:'low',matchScore:0,quarantineReason:'仕様照合保留'};
+const recordScoped={psa10:10000,priceAggregation:{value:1000,included:[{value:1000},{value:1100}]},
+  buyback:{shops:{bad:isolated,good:{matchConfidence:'high',matchScore:100}}},
+  buybackAnalysis:{rows:[{shopId:'bad',valid:false},{shopId:'good',valid:true}]},
+  futurePriceForecast:{},official:{rate:70},psa10Audit:{confidence:'高'}};
+assert.equal(context.testApi.hasCardMismatchSignal(recordScoped),false,'isolated shop must not contaminate other verified exits');
+const scopedQuality=context.testApi.classifyDecisionData(recordScoped);
+assert.equal(scopedQuality.manualReview,false);
+assert.equal(scopedQuality.dataAnomaly,true,'quarantine warning remains visible');
+assert.equal(window.PurchaseDecisionModel.hasBlockingDataAnomaly(scopedQuality),false);
+assert.equal(window.PurchaseDecisionModel.hasBlockingDataAnomaly({dataAnomaly:true}),true,'legacy/unknown isolation remains blocking');
+assert.equal(context.testApi.classifyDecisionData({...recordScoped,buybackAnalysis:{rows:[{shopId:'bad',valid:true}]}}).manualReview,true,
+  'a quarantined record still present in an adopted path remains blocking');
+assert.equal(context.testApi.hasCardMismatchSignal({...recordScoped,cardMismatchSuspected:true}),true,'card-level mismatch remains blocking');
+assert.equal(context.testApi.hasCardMismatchSignal({...recordScoped,buyback:{shops:{bad:{...isolated,quarantined:false}}}}),true,'unisolated mismatch remains blocking');
+assert.equal(context.testApi.classifyDecisionData({...recordScoped,psa10:NaN}).manualReview,true,'missing PSA10 is not repaired by ignoring a quarantined source');
+const validBuyback={marketPrice:10000,buybackPrice:9000,priceDate:asOfDate,asOfDate,saleFeeRate:8,saleExtraCost:0,cardMatched:true};
+assert.equal(window.MarketAnalysisModel.buybackMetrics(validBuyback).valid,true,'verified non-isolated exit remains usable');
+assert.equal(window.MarketAnalysisModel.buybackMetrics({...validBuyback,buybackPrice:999999,dataQuarantined:true}).valid,false,
+  'quarantined high quote remains unavailable to demand and economics');
 state.priceEvidence = evidence;
 for (const [key, field] of [["cardrush", "cardrushStock"], ["hareruya2", "hareruya2Stock"], ["yuyutei", "yuyuteiStock"], ["torecacamp", "torecacampStock"]]) {
   const payload = JSON.parse(fs.readFileSync(path.join(root, "data", `${key}-stock-summary.json`), "utf8"));

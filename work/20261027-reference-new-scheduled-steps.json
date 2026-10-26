@@ -1,0 +1,56 @@
+[
+  {
+    "id": 121818988941,
+    "name": "catchup",
+    "result": "success",
+    "start": "2026-10-26T20:09:27Z",
+    "end": "2026-10-26T20:30:19Z",
+    "steps": [
+      {
+        "name": "Validate catchup data without changing purchase criteria",
+        "result": "success",
+        "start": "2026-10-26T20:26:26Z",
+        "end": "2026-10-26T20:28:39Z"
+      },
+      {
+        "name": "Publish changed health state only",
+        "result": "success",
+        "start": "2026-10-26T20:28:39Z",
+        "end": "2026-10-26T20:30:16Z"
+      },
+      {
+        "name": "Save monitor recovery bundle",
+        "result": "skipped",
+        "start": "2026-10-26T20:30:16Z",
+        "end": "2026-10-26T20:30:16Z"
+      }
+    ]
+  },
+  {
+    "id": 121829875307,
+    "name": "watch",
+    "result": "failure",
+    "start": "2026-10-26T20:30:21Z",
+    "end": "2026-10-26T20:32:23Z",
+    "steps": [
+      {
+        "name": "Validate independent monitor",
+        "result": "success",
+        "start": "2026-10-26T20:30:47Z",
+        "end": "2026-10-26T20:30:47Z"
+      },
+      {
+        "name": "Publish independent validated monitor state",
+        "result": "success",
+        "start": "2026-10-26T20:30:57Z",
+        "end": "2026-10-26T20:31:57Z"
+      },
+      {
+        "name": "Report newly detected alerts",
+        "result": "failure",
+        "start": "2026-10-26T20:31:57Z",
+        "end": "2026-10-26T20:31:57Z"
+      }
+    ]
+  }
+]

@@ -19,7 +19,7 @@
     if (marketAge == null || marketAge < 0 || marketAge > 30) reasons.push('PSA10相場が古い・確認日時不明');
     const saleAge = age(card.psa10Audit?.lastTradeAt);
     if (card.psa10Audit?.measured && (saleAge == null || saleAge > 30 * 24)) reasons.push('個別成約が古い・成約日時不明');
-    if (card.dataQuality?.manualReview || card.dataQuality?.dataAnomaly || card.priceIntegrity?.disputed
+    if (card.dataQuality?.manualReview || model.hasBlockingDataAnomaly(card.dataQuality) || card.priceIntegrity?.disputed
       || (card.priceAggregation?.comparison || card.priceAggregation)?.conflicted || card.buybackAggregation?.conflicted) reasons.push('価格対立・誤紐付け・手動確認');
     if (card.psa10Audit?.confidence === '低' || card.priceAggregation?.confidence === '低') {
       if (!reference) reasons.push('相場データ信頼度不足');

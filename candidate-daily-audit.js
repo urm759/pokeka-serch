@@ -1,8 +1,8 @@
 (function (root, factory) {
-  const api = factory();
+  const api = factory(typeof module === 'object' && module.exports ? require('./decision-model.js') : root.PurchaseDecisionModel);
   if (typeof module === "object" && module.exports) module.exports = api;
   if (root) root.CandidateDailyAudit = api;
-})(typeof globalThis !== "undefined" ? globalThis : this, function () {
+})(typeof globalThis !== "undefined" ? globalThis : this, function (decisionModel) {
   // Keep legacy mask positions stable; new reasons are appended after them.
   const REASONS = ["search", "data", "capital", "profit", "inventory", "other", "quality"];
 
@@ -16,7 +16,7 @@
       const flags = qualifications(card);
       const data = completion?.cards?.[card.id]?.s !== "分析可能"
         || card.dataQuality?.manualReview === true
-        || card.dataQuality?.dataAnomaly === true
+        || (decisionModel?.hasBlockingDataAnomaly ? decisionModel.hasBlockingDataAnomaly(card.dataQuality) : card.dataQuality?.dataAnomaly === true)
         || !(Number(card.price) > 0);
       const search = !data && (Number(card.saleTx30d || 0) < settings.minRawTrades30
         || Number(card.roi || 0) < settings.minRoi

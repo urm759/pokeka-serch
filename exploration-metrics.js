@@ -1,8 +1,8 @@
 (function(root, factory) {
-  const api = factory();
+  const api = factory(typeof module === 'object' && module.exports ? require('./decision-model.js') : root.PurchaseDecisionModel);
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.ExplorationMetrics = api;
-})(typeof window === 'object' ? window : globalThis, function() {
+})(typeof window === 'object' ? window : globalThis, function(decisionModel) {
   const finite = n => typeof n === 'number' && Number.isFinite(n);
   const referenceMedianCache=new WeakMap();
   function percent(numerator, denominator) {
@@ -18,7 +18,7 @@
   }
   function referenceMedian(card, now=Date.now()) {
     const a=card.priceAggregation || {},comparison=a.comparison,allRows=comparison ? [...comparison.included,...comparison.excluded] : a.included || [],reasons=[],warnings=[],origins=new Set();
-    const cacheKey=JSON.stringify([allRows.map(r=>[r.value,r.updatedAt,r.url,r.valid,r.conditionAccepted,r.upstreamSource,r.originId,r.merchantId,r.comparisonReasons]),a.value,comparison?.conflicted??a.conflicted,card.priceIntegrity?.disputed,card.identityReviewRequired,card.dataQuality?.manualReview,card.dataQuality?.dataAnomaly]);
+    const cacheKey=JSON.stringify([allRows.map(r=>[r.value,r.updatedAt,r.url,r.valid,r.conditionAccepted,r.upstreamSource,r.originId,r.merchantId,r.comparisonReasons]),a.value,comparison?.conflicted??a.conflicted,card.priceIntegrity?.disputed,card.identityReviewRequired,card.dataQuality?.manualReview,decisionModel.hasBlockingDataAnomaly(card.dataQuality)]);
     const cached=referenceMedianCache.get(a);
     if(cached?.key===cacheKey&&now>=cached.at&&now<=cached.expires)return cached.result;
     const freshAt=r=>typeof r.updatedAt==='string'&&r.updatedAt.includes('T')&&Number.isFinite(Date.parse(r.updatedAt))&&Date.parse(r.updatedAt)<=now&&now-Date.parse(r.updatedAt)<=48*3600000;
@@ -42,7 +42,7 @@
     if(!rows.length)reasons.push(allRows.length?'中央値の採用価格に古値・日時不明あり':'素体参考中央値未取得');
     if(omitted.length)warnings.push(`古値・参考価格・仕様保留等${omitted.length}元を参考中央値から除外・原価格と日時は履歴保持`);
     if((a.included || []).length>1&&rows.length<2)reasons.push('新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない');
-    if((comparison?.conflicted??a.conflicted)||card.priceIntegrity?.disputed||card.identityReviewRequired||card.dataQuality?.manualReview||card.dataQuality?.dataAnomaly)reasons.push('中央値の価格対立・仕様照合保留');
+    if((comparison?.conflicted??a.conflicted)||card.priceIntegrity?.disputed||card.identityReviewRequired||card.dataQuality?.manualReview||decisionModel.hasBlockingDataAnomaly(card.dataQuality))reasons.push('中央値の価格対立・仕様照合保留');
     if(rows.length===1)warnings.push('単一ソース参考');
     if(unknown)warnings.push('集計元の内訳・独立性未確認'+unknown+'元（独立店舗数に加算しない）');
     warnings.push('中央値で実際に購入できるとは限らない・購入GOとは別');

@@ -2288,7 +2288,11 @@ function buildOverallAssessment(card, official, stock) {
 }
 
 function hasCardMismatchSignal(card) {
-  return [card, card.cardrushStock, card.hareruya2Stock, card.yuyuteiStock, card.torecacampStock, card.buyback, ...Object.values(card.buyback?.shops || {})]
+  // A rejected shop record stays visible as a warning, but must not invalidate
+  // unrelated, verified exits. Quarantined rows are excluded from both the
+  // trusted buyback aggregation and buybackMetrics before this decision.
+  const unquarantinedBuybacks = Object.values(card.buyback?.shops || {}).filter(shop => shop?.quarantined !== true);
+  return [card, card.cardrushStock, card.hareruya2Stock, card.yuyuteiStock, card.torecacampStock, card.buyback, ...unquarantinedBuybacks]
     .filter(Boolean)
     .some((source) => decisionModel.isSuspectedCardMismatch(source));
 }
@@ -2325,6 +2329,10 @@ function classifyDecisionData(card) {
   const dataAnomalyReasons = Object.values(card.buyback?.shops || {})
     .filter((shop) => shop?.quarantined)
     .map((shop) => shop.quarantineReason || "店舗カード紐付けを自動隔離");
+  const dataAnomalyIsolated = dataAnomalyReasons.length > 0 && Array.isArray(card.buybackAnalysis?.rows)
+    && Object.entries(card.buyback?.shops || {}).filter(([,shop]) => shop?.quarantined)
+      .every(([id]) => !card.buybackAnalysis.rows.some(row => row.shopId === id && row.valid !== false));
+  if (dataAnomalyReasons.length && !dataAnomalyIsolated) manualReviewReasons.push('隔離データの計算除外が未確認');
 
   const severeShortage = !card.futurePriceForecast || (trustedPriceCount <= 1 && !Number.isFinite(card.official?.rate));
   const shortageRiskPct = dataShortageReasons.length ? (severeShortage ? 5 : 3) : 0;
@@ -2341,6 +2349,7 @@ function classifyDecisionData(card) {
     confidence: dataShortageReasons.length ? (shortageRiskPct >= 5 ? "低" : "中") : "高",
     trustedPriceCount,
     dataAnomaly: dataAnomalyReasons.length > 0,
+    dataAnomalyIsolated,
     dataAnomalyReasons: [...new Set(dataAnomalyReasons)],
   };
 }
@@ -2745,7 +2754,7 @@ function finalizeCardDecision(card) {
     offer: card.currentStoreOffer,
     verdict: finalDecision?.verdict,
     decisionReasons: finalDecision?.reasons,
-    priceReviewRequired: Boolean(card.dataQuality?.manualReview || card.dataQuality?.dataAnomaly || (card.priceAggregation?.comparison || card.priceAggregation)?.conflicted),
+    priceReviewRequired: Boolean(card.dataQuality?.manualReview || decisionModel.hasBlockingDataAnomaly(card.dataQuality) || (card.priceAggregation?.comparison || card.priceAggregation)?.conflicted),
   });
   const storeStressEconomics = scenarioMatrix.storeOffer?.supplyStress || null;
   const storeCentralEconomics = scenarioMatrix.storeOffer?.centralForecast || null;
@@ -2765,7 +2774,7 @@ function finalizeCardDecision(card) {
     centralExpectedProfit: storeCentralEconomics?.expectedProfit,
     stressExpectedProfit: storeStressEconomics?.expectedProfit,
     psa9Profit: storeResilience?.psa9Profit,
-    priceReviewRequired: Boolean(card.dataQuality?.manualReview || card.dataQuality?.dataAnomaly || (card.priceAggregation?.comparison || card.priceAggregation)?.conflicted),
+    priceReviewRequired: Boolean(card.dataQuality?.manualReview || decisionModel.hasBlockingDataAnomaly(card.dataQuality) || (card.priceAggregation?.comparison || card.priceAggregation)?.conflicted),
   });
   if (card.aggressivePurchase.eligible) {
     card.purchaseAvailability = {
@@ -4036,7 +4045,7 @@ function efficiencyDataKey(card) {
   return [card.psa10,card.psa10ObservedAt,o?.value,o?.available,o?.fresh,o?.updatedAt,o?.inventoryAt,
     p?.value,p?.estimated,p?.updatedAt,p?.latestSaleAt,p?.specificationMismatch,p?.identityConfirmed,
     a?.hitRate,a?.lowerGradePrice,card.official?.rate,card.official?.f,card.psa10Audit?.confidence,card.psa10Audit?.lastTradeAt,
-    card.dataQuality?.manualReview,card.dataQuality?.dataAnomaly,card.priceIntegrity?.disputed,(card.priceAggregation?.comparison || card.priceAggregation)?.conflicted,card.buybackAggregation?.conflicted,
+    card.dataQuality?.manualReview,decisionModel.hasBlockingDataAnomaly(card.dataQuality),card.priceIntegrity?.disputed,(card.priceAggregation?.comparison || card.priceAggregation)?.conflicted,card.buybackAggregation?.conflicted,
     (card.buybackAnalysis?.rows || []).map(r=>[r.shopId,r.buybackPrice,r.updatedAt,r.priceDate,r.valid,r.stale,r.listingActive])];
 }
 function currentMarketView(card, reference = false) {
@@ -4354,7 +4363,7 @@ function purchaseExploration(card,now=Date.now()) {
     card.psa10 > 0 ? Object.hasOwn(limit || {},'currentBreakEvenRaw') ? limit.currentBreakEvenRaw : limit?.currentBreakEvenMaxPrice : null);
   const materialReady = Number.isFinite(assumptions?.hitRate) && assumptions.hitRate >= 0 && assumptions.hitRate <= 1
     && Number.isFinite(assumptions?.lowerGradePrice) && assumptions.lowerGradePrice > 0 && !psaPlanProblem();
-  const identityDisputed = card.dataQuality?.manualReview || card.dataQuality?.dataAnomaly || card.priceIntegrity?.disputed
+  const identityDisputed = card.dataQuality?.manualReview || decisionModel.hasBlockingDataAnomaly(card.dataQuality) || card.priceIntegrity?.disputed
     || (card.priceAggregation?.comparison || card.priceAggregation)?.conflicted || card.buybackAggregation?.conflicted;
   const cap = materialReady && !identityDisputed && display.capState === 'available' ? display.cap : null;
   const warnings = [];
@@ -4576,8 +4585,8 @@ function computePresetQualifications(card) {
     && stressSafe
     && eligibleVerdict
     && card.priceAggregation?.confidence !== "低"
-    && !card.dataQuality?.dataAnomaly;
-  const trusted = !card.dataQuality?.manualReview && !card.dataQuality?.dataAnomaly && card.priceAggregation?.confidence !== "低";
+    && !decisionModel.hasBlockingDataAnomaly(card.dataQuality);
+  const trusted = !card.dataQuality?.manualReview && !decisionModel.hasBlockingDataAnomaly(card.dataQuality) && card.priceAggregation?.confidence !== "低";
   const now = catalogReady && ["A", "B"].includes(card.overallAssessment?.grade) && !card.forecastPeriodMismatch && card.purchaseAvailability?.verifiedNow === true && stressSafe && eligibleVerdict
     && card.currentStoreOffer?.fresh === true && card.currentStoreOffer?.available === true
     && card.decisionScenarios?.store?.decision?.verdict === "GO";
@@ -4617,7 +4626,7 @@ function computePresetQualifications(card) {
     && !card.dataQuality?.dataShortage
     && !card.dataQuality?.outlierExcluded;
   const broadEligible = catalogReady && domesticExit && finalLimit > 0 && stressSafe && eligibleVerdict
-    && !card.dataQuality?.manualReview && !card.dataQuality?.dataAnomaly && !(card.priceAggregation?.comparison || card.priceAggregation)?.conflicted;
+    && !card.dataQuality?.manualReview && !decisionModel.hasBlockingDataAnomaly(card.dataQuality) && !(card.priceAggregation?.comparison || card.priceAggregation)?.conflicted;
   const priceWait = broadEligible && !now && ["GO", "価格次第"].includes(String(explorationVerdict || ""));
   const curated = combinedEligible && (now || lowRisk || turnover);
   const combined = broadEligible && (now || lowRisk || turnover || priceWait || (state.includeAggressiveInCombined && aggressive));
@@ -4664,7 +4673,7 @@ function computeSearchAudit(cards, {includePresets=true} = {}) {
       if (failures[0]) presetSequential[failures[0]]=(presetSequential[failures[0]]||0)+1;
       continue;
     }
-    if (card.dataQuality?.manualReview || card.dataQuality?.dataAnomaly || (card.priceAggregation?.comparison || card.priceAggregation)?.conflicted) failures.push("手動確認・価格対立");
+    if (card.dataQuality?.manualReview || decisionModel.hasBlockingDataAnomaly(card.dataQuality) || (card.priceAggregation?.comparison || card.priceAggregation)?.conflicted) failures.push("手動確認・価格対立");
     if (card.purchaseDecision?.verdict === "資金不足") failures.push("資金不足");
     if (card.purchaseDecision?.verdict === "見送り") failures.push("品質・リスク見送り");
     if (!flags.domesticExit) failures.push("国内出口不足");
@@ -5121,7 +5130,7 @@ function specifiedDataExclusions(card) {
   const reasons=[];
   if (state.catalogCompletion?.cards?.[card.id]?.s !== '分析可能') reasons.push('分析データ不足');
   if (card.identityReviewRequired || state.psaSpecificationHeld?.[card.id]) reasons.push('仕様確認待ち');
-  if ((card.priceAggregation?.comparison || card.priceAggregation)?.conflicted || card.priceIntegrity?.disputed || card.dataQuality?.dataAnomaly) reasons.push('価格対立・根拠確認待ち');
+  if ((card.priceAggregation?.comparison || card.priceAggregation)?.conflicted || card.priceIntegrity?.disputed || decisionModel.hasBlockingDataAnomaly(card.dataQuality)) reasons.push('価格対立・根拠確認待ち');
   const priceNeeded=state.minPsa10>0 || specifiedFilterEnabled('specified','psaMaxInput') && state.maxPsa10!=null
     || [['roiInput','minRoi'],['expectedRoiFilterInput','minExpectedRoiFilter'],['expectedProfitFilterInput','minExpectedProfitFilter']].some(([id,field])=>specifiedFilterEnabled('specified',id)&&state[field]!=null)
     || explorationFields.some(([param,field])=>param.startsWith('obs')&&state[field]!=null);
