@@ -1,0 +1,30 @@
+{
+  "at": "2026-10-27T09:54:41.618Z",
+  "note": "Performance record updated before final UI bundle regeneration; original failed integrity check retained separately.",
+  "rows": [
+    {
+      "test": "test_ui_data",
+      "status": 0,
+      "output": "{\"summaryFiles\":18,\"nullPreserved\":true,\"pinnedRevision\":\"af755e9c010d55b8902d7095e787db2228a30c5bf317a97181378208cf5dc442\",\"olderCapsPreserved\":true}\n",
+      "error": ""
+    },
+    {
+      "test": "test_publication_html",
+      "status": 0,
+      "output": "PASS published HTML: exact version and cache URLs, existing features, CRLF; old/partial HTML rejected\n",
+      "error": ""
+    },
+    {
+      "test": "test_overseas_cancellation",
+      "status": 0,
+      "output": "PASS user cancellation overrides grants, no API/analysis/queue rewrite, no overseas retry/alerts/schedule, POP unchanged and coherent cooldown audit\n",
+      "error": ""
+    },
+    {
+      "test": "test_publication_lineage",
+      "status": 0,
+      "output": "Publication lineage: parallel source changes, repeated audit, staged mixes and matching snapshot passed\n",
+      "error": ""
+    }
+  ]
+}

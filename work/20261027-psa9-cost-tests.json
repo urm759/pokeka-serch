@@ -1,0 +1,77 @@
+{
+  "at": "2026-10-27T09:53:25.521Z",
+  "rows": [
+    {
+      "test": "test_psa9_cost_filters",
+      "status": 0,
+      "output": "PASS PSA9 gross-cost 95% inclusive, independent net ROI, negative/zero/positive bounds, no defaults/migrations, provenance adoption, shared URL/storage/CSV and calculation-cache reuse\n",
+      "error": ""
+    },
+    {
+      "test": "test_initial_calculation_dependencies",
+      "status": 0,
+      "output": "PASS cold dependency validation, simulated missing/old/out-of-order modules, explicit stop before any data load, ordered scripts and pinned integrity hashes; original user event cause remains unconfirmed\n",
+      "error": ""
+    },
+    {
+      "test": "test_psa9_guide_comparison",
+      "status": 0,
+      "output": "PASS PSA9/guide: strict vs inclusive bounds, zero/missing/stale, reference policy, costs once, grade-specific exits, repair holds\n",
+      "error": ""
+    },
+    {
+      "test": "test_psa9_guide_integration",
+      "status": 0,
+      "output": "PSA9 guide UI/CSV, default-off, URL/storage precedence/zero, cache invalidation and strict exit PASS\n",
+      "error": ""
+    },
+    {
+      "test": "test_psa9_marketplace_reference",
+      "status": 0,
+      "output": "PASS independent PSA9 marketplace reference, one upper control pair, provenance links and separate dates, costs once, cache invalidation, no GemRate calculation adoption\n",
+      "error": ""
+    },
+    {
+      "test": "test_current_profit_guide",
+      "status": 0,
+      "output": "PASS independent current-market target guide, investment/costs/zero/null, exit separation, saved basis and diagnostic exclusions\n",
+      "error": ""
+    },
+    {
+      "test": "test_current_market_exploration",
+      "status": 0,
+      "output": "Current-market: actual/manual price, current exits, fees, deduction, null/zero, stale/conflict safety, URL/storage and unchanged stable limits PASS\n",
+      "error": ""
+    },
+    {
+      "test": "test_search_organization",
+      "status": 0,
+      "output": "PASS search inventory, safe explicit clear, default/URL compatibility and 1 preset profile(s) [{\"preset\":\"combined\",\"count\":82,\"calculationUnchanged\":true,\"idsUnchanged\":true}]\n",
+      "error": ""
+    },
+    {
+      "test": "test_settings_disclosure",
+      "status": 0,
+      "output": "Settings disclosure: anchor correction, boundaries, no reorder/no calculation PASS\n",
+      "error": ""
+    },
+    {
+      "test": "test_roi_psa9_ratio",
+      "status": 0,
+      "output": "ROI zero/boundaries/costs, PSA9 provenance/null/reference ratios, URL/reload, fixed-cohort and revalidation tests passed\n",
+      "error": ""
+    },
+    {
+      "test": "test_search_calculation_cache",
+      "status": 0,
+      "output": "{\"generatedAt\":\"2026-10-27T09:53:24.281Z\",\"cards\":120,\"timingEnvironment\":\"Node.js production model; not browser paint\",\"times\":{\"uncached\":[172.56619999999998,120.11150000000009,103.06240000000003],\"cached\":[0.06349999999997635,0.035099999999943066,0.040199999999913416]},\"financialValuesAndCandidateIdsUnchanged\":true}\n",
+      "error": ""
+    },
+    {
+      "test": "test_ui_data",
+      "status": 1,
+      "output": "",
+      "error": "node:assert:152\r\n  throw new AssertionError(obj);\r\n  ^\r\n\r\nAssertionError [ERR_ASSERTION]: published revision mismatch: data/performance-guard.json\r\n+ actual - expected\r\n\r\n+ 'fc44fbd2f6d03d664e77828c91b65327d2f2efc2d4f3697d76ff0d11de33a584'\r\n- 'f78c2a9d4f7e5112048d6d4e35f281261bb92475cb6c18958eeeef5bdf55040f'\r\n\r\n    at Object.<anonymous> (C:\\Users\\polar\\Documents\\ChatGPT\\ポケカ仕入れサイト\\resilience-20261006\\work\\test_ui_data.js:15:10)\r\n    at Module._compile (node:internal/modules/cjs/loader:1929:14)\r\n    at Object..js (node:internal/modules/cjs/loader:2060:10)\r\n    at Module.load (node:internal/modules/cjs/loader:1651:32)\r\n    at Module._load (node:internal/modules/cjs/loader:1443:12)\r\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\r\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\r\n    at node:internal/main/run_main_module:33:47 {\r\n  generatedMessage: false,\r\n  code: 'ERR_ASSERTION',\r\n  actual: 'fc44fbd2f6d03d664e77828c91b65327d2f2efc2d4f3697d76ff0d11de33a584',\r\n  expected: 'f78c2a9d4f7e5112048d6d4e35f281261bb92475cb6c18958eeeef5bdf55040f',\r\n  operator: 'strictEqual',\r\n  diff: 'simple'\r\n}\r\n\r\nNode.js v24.22.1\r\n"
+    }
+  ]
+}

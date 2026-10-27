@@ -14,6 +14,7 @@
   const labels = {basic:'基本検索', advanced:'詳細検索', calculation:'仕入れ判定・計算設定', context:'探索基準・表示', audit:'データ監査・記録操作'};
   optionalZero.add('buybackHighestMinInput');
   optionalZero.add('psa9GuideMinInput');
+  optionalZero.add('psa9RoiMinInput');
   sharedEarly.add('buybackHighestMinInput');
   function category(id, inSearch = true) {
     if (!inSearch || operations.has(id)) return 'audit';
@@ -26,7 +27,7 @@
     const mode = state.purchaseMode;
     if (mode === 'specified' && state.specifiedImplicitInputs?.includes(id)) return false;
     if (mode === 'specified' && id === 'showSkippedInput') return false;
-    if (id==='psa9GuideMinInput'||id==='psa9AboveGuideInput') return mode!=='snkr-raw' && !(mode==='normal'&&state.catalogScope&&state.catalogScope!=='analysis');
+    if (['psa9GuideMinInput','psa9AboveGuideInput','psa9CostWithin5Input','psa9RoiMinInput'].includes(id)) return mode!=='snkr-raw' && !(mode==='normal'&&state.catalogScope&&state.catalogScope!=='analysis');
     if (id.startsWith('observation')) return true;
     if (id.startsWith('snkrRaw')) return mode === 'snkr-raw';
     if (id.startsWith('currentMarket')) return mode === 'current-market';
@@ -66,6 +67,8 @@
     return true;
   }
   function describe(id) {
+    if(id==='psa9CostWithin5Input')return {purpose:'PSA9価格と鑑定費込み買値を比較',basis:'PSA9価格≧（現相場の利益確保目安＋選択プラン鑑定費）×95%。手数料前',effect:'初期OFF。価格・費用・参考採用の不足は有効時だけ除外',overlap:'旧目安だけの価格比・PSA9フリマ費用後利益率・GOとは別'};
+    if(id==='psa9RoiMinInput')return {purpose:'目安購入時のPSA9フリマ利益率で探索',basis:'（PSA9売価−提出判断の売却手数料−目安−鑑定費−設定済み諸費用）÷総費用×100',effect:'空欄無効、負値/0/正値・境界含む。費用と参考採用の不足は有効時だけ除外',overlap:'費用割れ5%以内の手数料前比較と独立。既存資金効率・GOへ不反映'};
     if (id==='psa9GuideMinInput'||id==='psa9AboveGuideInput') return {purpose:'国内PSA9価格と利益確保の仕入れ目安を比較',basis:'PSA9価格÷現相場目安×100。手数料前の価格比',effect:'チェックは厳密な超過、数値下限は境界を含む。未指定は除外なし',overlap:'仕入れ値÷PSA9の既存条件・費用込み利益率・GOとは別'};
     if (id === 'buybackHighestMinInput') return {purpose:'最高の有効な買取提示倍率で探索',basis:'選択店舗・受付の減額前提示額÷同時期の国内PSA10相場。表示と同じ最高提示',effect:'空欄無効、0有効。未取得・古値・仕様保留は条件有効時のみ除外',overlap:'同店・他カードの通常倍率／店舗別中央値の並び順／費用込み採算・GOとは別'};
     if (id.startsWith('observation')) return {purpose:'国内PSA10の日次観測平均との乖離で参考探索',basis:'現相場÷7/30/75/200暦日観測平均−1。欠測補完なし・複数期間AND',effect:'指定期間のみ未取得／参考非採用／上下限外を除外。空欄無効、0有効',overlap:'実成約平均・将来予測・仕入れ上限・購入GOとは別'};

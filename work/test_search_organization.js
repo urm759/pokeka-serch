@@ -8,7 +8,7 @@ function controls(h) {
     const a=m[1]??m[2];return [attr(a,'id'),m[1]!=null?attr(a,'value')||'':m[3].replace(/\s+/g,' ').trim(),/\bchecked\b/.test(a)];
   }).filter(r=>r[0]).sort((a,b)=>a[0].localeCompare(b[0]));
 }
-assert.deepEqual(controls(html).filter(row=>!row[0].startsWith('observation') && !['buybackHighestMinInput','psa9AboveGuideInput','psa9GuideMinInput'].includes(row[0])).map(row=>row[0]==='profitSearchBasisInput'?[row[0],row[1].replace('<option value="current-target">利益確保の仕入れ目安で購入・現相場基準（探索）</option>',''),row[2]]:row[0]==='efficiencyScenarioInput'?[row[0],row[1].replace(/<option value="obs(?:7|30|75|200)">[^<]*<\/option>/g,''),row[2]]:row[0]==='efficiencyBuyInput'?[row[0],row[1].replace(/<option value="(?:store|median)"(?: selected)?>[^<]*<\/option>/g,''),row[2]]:row),baseline.controls,'existing IDs/options survive; explicitly authorized new-user median default tested separately');
+assert.deepEqual(controls(html).filter(row=>!row[0].startsWith('observation') && !['buybackHighestMinInput','psa9AboveGuideInput','psa9GuideMinInput','psa9CostWithin5Input','psa9RoiMinInput'].includes(row[0])).map(row=>row[0]==='profitSearchBasisInput'?[row[0],row[1].replace('<option value="current-target">利益確保の仕入れ目安で購入・現相場基準（探索）</option>',''),row[2]]:row[0]==='efficiencyScenarioInput'?[row[0],row[1].replace(/<option value="obs(?:7|30|75|200)">[^<]*<\/option>/g,''),row[2]]:row[0]==='efficiencyBuyInput'?[row[0],row[1].replace(/<option value="(?:store|median)"(?: selected)?>[^<]*<\/option>/g,''),row[2]]:row),baseline.controls,'existing IDs/options survive; explicitly authorized new-user median default tested separately');
 for(const days of [7,30,75,200])assert(html.includes(`value="obs${days}"`),'all declared average choices exist');
 for(const [id,value,type] of [['roiInput','20','number'],['expectedRoiFilterInput','0','number'],['floorStateInput','stable','select'],['purchaseBelowCurrentCapInput','', 'checkbox']]) {
   const el={id,value,type,checked:true,tagName:type==='select'?'SELECT':'INPUT',options:[{value:'all'},{value:'stable'}]};
@@ -68,6 +68,7 @@ for(const [name,expected] of Object.entries(baseline.protectedFunctions)) {
     // Optional PSA9 guide comparisons are covered by test_psa9_guide_*; old financial gates stay protected.
     .replace("  const psa9GuideReason = psa9GuideExclusion(card);\n  if(psa9GuideReason) reasons.push(psa9GuideReason);\n",'')
     .replace('  url.searchParams.set("psa9AboveGuide",state.psa9AboveGuide?"1":"0");\n','')
+    .replace('  url.searchParams.set("psa9Cost5",state.psa9CostWithin5?"1":"0");\n','')
     .replace("  reasons.push(...observationSearchExclusions(card));\n",'')
     .replace("  const buybackReason = buybackHighestExclusion(card);\n  if (buybackReason) reasons.push(buybackReason);\n",'')
     .replace("  if (state.observationIncludeReference === false) url.searchParams.set('obsRef','0'); else url.searchParams.delete('obsRef');\n",'')

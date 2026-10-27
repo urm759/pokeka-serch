@@ -1,10 +1,20 @@
 (function (root, factory) {
-  const api = factory(typeof module === 'object' && module.exports ? require('./limit-display-model.js') : root.LimitDisplayModel);
+  const api = factory(() => typeof module === 'object' && module.exports ? require('./limit-display-model.js') : root.LimitDisplayModel);
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.CurrentMarketModel = api;
-})(typeof window === 'object' ? window : globalThis, function (displayModel) {
+})(typeof window === 'object' ? window : globalThis, function (resolveDisplayModel) {
+  function assertDependencies() {
+    const displayModel=resolveDisplayModel();
+    if(typeof displayModel?.classifyCap!=='function') {
+      const error=new Error('計算モジュールの読込失敗・版不一致：limit-display-model.js / classifyCap。再読み込みしてください。');
+      error.code='CALCULATION_DEPENDENCY_UNAVAILABLE';
+      throw error;
+    }
+    return displayModel;
+  }
   const finite = value => value != null && value !== '' && Number.isFinite(Number(value)) ? Number(value) : null;
   function evaluate(input, model) {
+    const displayModel=assertDependencies();
     const card = input.card || {}, reasons = [], warnings = [], referenceReasons = [];
     const reference = input.referenceCalculation === true;
     const hold = (reason, canReference = false) => {
@@ -99,6 +109,7 @@
   // Reference evaluation is opt-in and never replaces the purchase-GO evaluator.
   const evaluateReference = (input,model) => evaluate({...input,referenceCalculation:true},model);
   function targetGuide(view, input = {}) {
+    const displayModel=assertDependencies();
     const fee = finite(input.fee), profit = finite(input.minProfit), roi = finite(input.minRoi);
     const extra = finite(view.investmentExtra) ?? 0;
     const available = view.eligible && finite(view.rawCap) != null && fee != null && fee >= 0
@@ -118,5 +129,5 @@
       belowPractical:classified.cap != null && practicalPrice != null && classified.cap < practicalPrice,
       noProfitMargin:profit === 0 && roi === 0, economicsAt};
   }
-  return { evaluate, evaluateReference, targetGuide, matchesCap, compareCaps, capExclusion };
+  return { evaluate, evaluateReference, targetGuide, matchesCap, compareCaps, capExclusion, assertDependencies };
 });

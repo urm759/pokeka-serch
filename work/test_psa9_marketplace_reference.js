@@ -12,7 +12,7 @@ assert(model.marketplaceAtGuide({...input,psa9:{...input.psa9,value:10000}}).roi
 for(const patch of [{repairRequired:true,repairCost:null},{planProblem:'鑑定費未確認'},{psa9:{...input.psa9,value:null}},{psa9:{...input.psa9,updatedAt:'2026-09-01'}}])assert.equal(model.marketplaceAtGuide({...input,...patch}).roi,null);
 assert.equal(model.atGuide({...input,exitPolicy:'buyback'}).roi,null,'explicit legacy buyback trial never switches exit');
 assert.equal((html.match(/id="psa9AboveGuideInput"/g)||[]).length,1);assert.equal((html.match(/id="psa9GuideMinInput"/g)||[]).length,1);
-const atQuick=html.indexOf('class="quick-presets"'),atInputs=html.indexOf('id="psa9AboveGuideInput"'),atDetails=html.indexOf('<details',atQuick);
+const atQuick=html.indexOf('class="quick-presets"'),atInputs=html.indexOf('id="psa9CostWithin5Input"'),atDetails=html.indexOf('<details',atQuick);
 assert(atInputs>atQuick&&atInputs<atDetails,'one common pair, visible before collapsed sections');
 assert.match(fs.readFileSync(path.join(__dirname,'../styles.css'),'utf8'),/\.hero\s*>\s*\.psa9-quick-comparison\s*\{\s*order:\s*1;/,'respect the existing flex order after quick presets');
 assert(html.includes('PSA10取得率 下限（PSA公式・保存値）'));

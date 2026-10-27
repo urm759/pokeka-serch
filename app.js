@@ -31,6 +31,7 @@ let efficiencyRenderPass = null;
 let efficiencyViewCache = new WeakMap();
 const explorationFields = [
   ['psa9GuideMin','psa9GuideMin'],
+  ['psa9RoiMin','psa9RoiMin'],
   ['purchaseMin','actualPurchaseMin'],['purchaseMax','actualPurchaseMax'],
   ['headroomMin','purchaseHeadroomMin'],['headroomMax','purchaseHeadroomMax'],
   ['buybackMaxMin','buybackHighestMin'],
@@ -256,6 +257,8 @@ const state = {
   efficiencyBuy: 'median', efficiencyScenario: 'current',
   efficiencyIncludeReference: false,
   purchaseBelowCurrentCap: false,
+  psa9CostWithin5: false,
+  psa9RoiMin: null,
   psa9AboveGuide: false,
   psa9GuideMin: null,
   psa10PeriodSummary: null,
@@ -1740,7 +1743,7 @@ function exportFavoritesCsv() {
   rows[0].push('現在買える状態A価格','仕入れ余裕率%（利益率とは別）','検索採用買値','検索採用買値基準','検索期待利益','検索PSA10時利益率%','30日買取掲載率%','30日平均掲載店舗数','正常観測日数','取得カバー率%','余裕率の比較上限（一覧と同じ）','余裕率の参考警告','余裕率の比較不可理由');
   rows[0].push('単体資金効率・買値','単体資金効率・買値基準','単体資金効率・売値基準','単体資金効率・売却先','単体期待利益','総投下額','単体期待利益率%','想定資金拘束日数','単体年換算効率%（参考）','単体資金効率・算出不可理由','単体資金効率・計算区分','単体資金効率・参考警告','単体資金効率・検索採用');
   for (const days of [7,30,75,200]) rows[0].push(`${days}日観測平均`,`${days}日乖離率%`,`${days}日観測日数`,`${days}日最終観測`,`${days}日観測状態`);
-  rows[0].push('PSA9価格','PSA9価格区分','PSA9取得元','PSA9価格日時（集計確認／個別最終成約／推定基準）','PSA9比較の仕入れ目安','PSA9価格／仕入れ目安%','目安購入時PSA9総投資','目安購入時PSA9利益','PSA9取得時利益率・フリマ売却%','PSA9売却先','PSA9利益算出不可理由','PSA9参考値の検索採用','PSA9目安超チェック','PSA9目安比の下限%','PSA9取得元URL','PSA9確認日時','PSA9最終成約日時','PSA9推定方法');
+  rows[0].push('PSA9価格','PSA9価格区分','PSA9取得元','PSA9価格日時（集計確認／個別最終成約／推定基準）','PSA9比較の仕入れ目安','PSA9価格／仕入れ目安%','目安購入時PSA9総投資','目安購入時PSA9利益','PSA9取得時利益率・フリマ売却%','PSA9売却先','PSA9利益算出不可理由','PSA9参考値の検索採用','PSA9目安超チェック','PSA9目安比の下限%','PSA9取得元URL','PSA9確認日時','PSA9最終成約日時','PSA9推定方法','PSA9比較費用（目安＋鑑定費）','PSA9価格／比較費用%','PSA9費用割れ5%以内条件','PSA9時利益率下限%');
   rows[0].push('利益確保の仕入れ目安・現相場基準','目安の切下げ前値','目安の最低期待利益','目安の最低期待利益率%','目安の状態','目安の売却先','素体参考相場70%（上限ではない）');
   rows[0].push('資金効率採用平均・暦日期間','資金効率採用平均価格','資金効率平均・観測日数','資金効率平均・欠測日数','資金効率平均・最終観測日','平均資金効率・非10価格基準','資金効率平均・根拠未確認日数');
   rows[0].push('中央値買値・参考年換算効率%','実店舗買値・年換算効率%','中央値採用元数','中央値独立店舗数','中央値内訳未確認元数','中央値価格下端','中央値価格上端','中央値個別根拠JSON','中央値比較不可理由');
@@ -3212,7 +3215,7 @@ function captureConditionOrigins(defaults, restored) {
   const bindings = new Map([...efficiencyFields,...explorationFields].map(([param,field])=>[field+'Input',param]));
   for(const [id,param] of Object.entries({roiInput:'roi',expectedProfitFilterInput:'filterExpProfit',expectedRoiFilterInput:'filterExpRoi',
     psa9RatioMinInput:'psa9RatioMin',psa9RatioMaxInput:'psa9RatioMax',psa9RatioAggregateInput:'psa9Aggregate',psa9RatioEstimateInput:'psa9Estimate',psa9RatioMarketInput:'psa9Market',
-    efficiencyIncludeReferenceInput:'effRef',observationIncludeReferenceInput:'obsRef',efficiencyBuyInput:'effBuy',efficiencyScenarioInput:'effScenario',purchaseBelowCurrentCapInput:'buyBelowCap',psa9AboveGuideInput:'psa9AboveGuide',
+    efficiencyIncludeReferenceInput:'effRef',observationIncludeReferenceInput:'obsRef',efficiencyBuyInput:'effBuy',efficiencyScenarioInput:'effScenario',purchaseBelowCurrentCapInput:'buyBelowCap',psa9AboveGuideInput:'psa9AboveGuide',psa9CostWithin5Input:'psa9Cost5',
     priceMinInput:'priceMin',priceMaxInput:'priceMax',psaMinInput:'psaMin',psaMaxInput:'psaMax',year2020Input:'year2020'})) bindings.set(id,param);
   for(const [id,param] of Object.entries({saleTxMinInput:'tx',saleTxMaxInput:'txMax',saleTx7MinInput:'tx7',saleTx7MaxInput:'tx7Max',psaTxMinInput:'psaTx',psaTxMaxInput:'psaTxMax',psaTx7MinInput:'psaTx7',psaTx7MaxInput:'psaTx7Max',buyback7MinInput:'bb7',buyback30MinInput:'bb30',buyback90MinInput:'bb90',buybackShopsMinInput:'bbShops',purchaseLimitRatioMinInput:'buyLimitRatio',stressExpectedProfitFilterInput:'filterStressProfit',stressExpectedRoiFilterInput:'filterStressRoi',currentMarketCapMinInput:'marketCapMin',includePeriodReferenceInput:'periodReference',profitSearchBasisInput:'profitBasis',sortInput:'sort'})) bindings.set(id,param);
   for (const [id,param] of Object.entries({includeUnknownYearInput:'includeUnknownYear',diagnosticSearchInput:'diagnostic',psaRateMinInput:'psaRate',overallFilterInput:'overall',minExitLiquidityInput:'exit',minEconomicsInput:'economics',minMarketStabilityInput:'stability',minSupplyRiskInput:'supply',minFuturePriceScoreInput:'futureScore',maxFuturePriceScoreInput:'futureScoreMax',minForecastPriceInput:'forecastMin',maxForecastPriceInput:'forecastMax',minForecastDownsideInput:'downsideMin',maxForecastDownsideInput:'downsideMax',minForecastGapInput:'gapMin',maxForecastGapInput:'gapMax',forecastPhaseInput:'forecastPhase',forecastConfidenceInput:'forecastConfidence',forecastSupplyPressureInput:'forecastSupply',minForecastAgeInput:'releaseAge',forecastMaturityInput:'forecastMaturity',maxForecastMonthlyIncreaseInput:'psaGrowthMax',stockDemandInput:'stockDemand',dataQualityFilterInput:'dataQuality',goConfidenceFilterInput:'goTrust',floorStateInput:'floorState',priceDirectionInput:'priceDirection',supplyStateInput:'supplyState',minFloorScoreInput:'floorScore',storeDemandInput:'storeDemand',showSkippedInput:'showSkipped',hideThinDemandInput:'hideThin',hideReviewInput:'hideReview',fundingOnlyInput:'fundingOnly',officialOnlyInput:'officialOnly',buyback7MaxInput:'bb7Max',buyback30MaxInput:'bb30Max',buyback90MaxInput:'bb90Max',buybackPriceMinInput:'bbPriceMin',buybackPriceMaxInput:'bbPriceMax',snkrRawTx7MinInput:'snkrTx7',snkrRawTx30MinInput:'snkrTx30',snkrRawProfitMinInput:'snkrProfit',snkrRawRoiMinInput:'snkrRoi',snkrRawPurchaseMaxInput:'snkrBuyMax',snkrRawReleaseMonthsInput:'snkrMonths'})) bindings.set(id,param);
@@ -3270,6 +3273,7 @@ function restoreQuickFilters() {
     }
     if (!url.searchParams.has("profitBasis") && ["auto", "limit", "store", "current", "current-cap", "current-target"].includes(saved.profitSearchBasis)) document.getElementById("profitSearchBasisInput").value = saved.profitSearchBasis;
     if (!url.searchParams.has("buyBelowCap") && typeof saved.purchaseBelowCurrentCap === "boolean") document.getElementById("purchaseBelowCurrentCapInput").checked = saved.purchaseBelowCurrentCap;
+    if (!url.searchParams.has("psa9Cost5") && typeof saved.psa9CostWithin5 === "boolean") document.getElementById("psa9CostWithin5Input").checked = saved.psa9CostWithin5;
     if (!url.searchParams.has("psa9AboveGuide") && typeof saved.psa9AboveGuide === "boolean") document.getElementById("psa9AboveGuideInput").checked = saved.psa9AboveGuide;
     if (!url.searchParams.has("periodReference") && typeof saved.includePeriodReference === "boolean") document.getElementById("includePeriodReferenceInput").checked = saved.includePeriodReference;
     for (const [parameter, field, el] of [["filterExpProfit", "minExpectedProfitFilter", els.expectedProfitFilterInput], ["filterExpRoi", "minExpectedRoiFilter", els.expectedRoiFilterInput]]) {
@@ -3308,6 +3312,7 @@ function persistExplicitSearchSettings() {
       ['effRef','efficiencyIncludeReference','efficiencyIncludeReferenceInput','boolean'],
       ['obsRef','observationIncludeReference','observationIncludeReferenceInput','boolean'],
       ['psa9AboveGuide','psa9AboveGuide','psa9AboveGuideInput','boolean'],
+      ['psa9Cost5','psa9CostWithin5','psa9CostWithin5Input','boolean'],
       ['profitBasis','profitSearchBasis','profitSearchBasisInput','string'],
       ['effBuy','efficiencyBuy','efficiencyBuyInput','string'],['effScenario','efficiencyScenario','efficiencyScenarioInput','string']];
     let changed=false;
@@ -3336,7 +3341,7 @@ function saveQuickFilters() {
       currentMarketSearchKind: state.currentMarketSearchKind,
       currentMarketCapMin: state.currentMarketCapMin, currentMarketManualPrice: state.currentMarketManualPrice,
       profitSearchBasis: state.profitSearchBasis, includePeriodReference: state.includePeriodReference,
-      purchaseBelowCurrentCap: state.purchaseBelowCurrentCap, psa9AboveGuide:state.psa9AboveGuide,
+      purchaseBelowCurrentCap: state.purchaseBelowCurrentCap, psa9AboveGuide:state.psa9AboveGuide,psa9CostWithin5:state.psa9CostWithin5,
       ...Object.fromEntries(explorationFields.map(([,field])=>[field,state[field] ?? null])),
       minExpectedProfitFilter: state.minExpectedProfitFilter, minExpectedRoiFilter: state.minExpectedRoiFilter,
       minPurchaseLimitRatio: state.minPurchaseLimitRatio,
@@ -3660,6 +3665,7 @@ function readUrl() {
   const profitBasisInput = document.getElementById("profitSearchBasisInput");
   const belowCapInput = document.getElementById("purchaseBelowCurrentCapInput");
   if (belowCapInput && filterUrl.searchParams.has("buyBelowCap")) belowCapInput.checked = filterUrl.searchParams.get("buyBelowCap") === "1";
+  if(filterUrl.searchParams.has("psa9Cost5")) document.getElementById("psa9CostWithin5Input").checked=filterUrl.searchParams.get("psa9Cost5")==="1";
   if(filterUrl.searchParams.has("psa9AboveGuide")) document.getElementById("psa9AboveGuideInput").checked=filterUrl.searchParams.get("psa9AboveGuide")==="1";
   if (profitBasisInput && ["auto", "limit", "store", "current", "current-cap", "current-target"].includes(filterUrl.searchParams.get("profitBasis"))) profitBasisInput.value = filterUrl.searchParams.get("profitBasis");
   for (const [param,field] of explorationFields) if (filterUrl.searchParams.has(param)) document.getElementById(field+'Input').value = parseOptionalNumber(filterUrl.searchParams.get(param)) ?? '';
@@ -3937,6 +3943,7 @@ function buildShareUrl() {
   }
   url.searchParams.set("buyBelowCap", state.purchaseBelowCurrentCap ? "1" : "0");
   url.searchParams.set("psa9AboveGuide",state.psa9AboveGuide?"1":"0");
+  url.searchParams.set("psa9Cost5",state.psa9CostWithin5?"1":"0");
   for (const [param,value] of [["marketCapMin",state.currentMarketCapMin],["marketBuy",state.currentMarketManualPrice]]) {
     if (value == null) url.searchParams.delete(param); else url.searchParams.set(param,String(value));
   }
@@ -4119,8 +4126,9 @@ function psa9GuideView(card,now=Date.now()) {
 }
 function psa9GuideExclusion(card) {
   if(state.purchaseMode==='snkr-raw'||state.purchaseMode==='normal'&&state.catalogScope!=='analysis')return null;
-  if(!state.psa9AboveGuide&&state.psa9GuideMin==null)return null;
-  return purchaseRatioModel.guideExclusion(psa9GuideView(card),{above:state.psa9AboveGuide,min:state.psa9GuideMin});
+  if(!state.psa9AboveGuide&&state.psa9GuideMin==null&&!state.psa9CostWithin5&&state.psa9RoiMin==null)return null;
+  const reasons=purchaseRatioModel.guideSearchReasons(psa9GuideView(card),{above:state.psa9AboveGuide,min:state.psa9GuideMin,within5:state.psa9CostWithin5,roiMin:state.psa9RoiMin});
+  return reasons.length?reasons.join("／"):null;
 }
 function psa9GuideProvenance(card,view) {
   const audit=card.psa9Audit||{},aggregate=view.measurementType==='aggregate';
@@ -4160,7 +4168,7 @@ function psa9GuidePanel(card) {
   psa9GuideMarkupCache.set(v,html);return html;
 }
 function psa9GuideCsvFields(card) {
-  const v=psa9GuideView(card),p=psa9GuideProvenance(card,v);return [v.price??'',v.measurementType,p.source,v.updatedAt||'',v.guide??'',v.priceRatio??'',v.investment??'',v.profit??'',v.roi??'',v.exitLabel,v.profitReasons.join('／'),v.searchStatus,state.psa9AboveGuide?1:0,state.psa9GuideMin??'',p.url||'',p.confirmation||'',p.sale||'',p.method||''];
+  const v=psa9GuideView(card),p=psa9GuideProvenance(card,v);return [v.price??'',v.measurementType,p.source,v.updatedAt||'',v.guide??'',v.priceRatio??'',v.investment??'',v.profit??'',v.roi??'',v.exitLabel,v.profitReasons.join('／'),v.searchStatus,state.psa9AboveGuide?1:0,state.psa9GuideMin??'',p.url||'',p.confirmation||'',p.sale||'',p.method||'',v.comparisonCost??'',v.costCoveragePct??'',state.psa9CostWithin5?1:0,state.psa9RoiMin??''];
 }
 function computeSearchProfitView(card, mode = state.purchaseMode, explicitBasis = null) {
   if (mode !== 'now' && (explicitBasis || state.profitSearchBasis) === 'current-target') {
@@ -6680,6 +6688,7 @@ function syncFromUI(event) {
   renderObservationFilterStatus();
   state.purchaseBelowCurrentCap = document.getElementById("purchaseBelowCurrentCapInput")?.checked === true;
   state.psa9AboveGuide = document.getElementById("psa9AboveGuideInput").checked;
+  state.psa9CostWithin5 = document.getElementById("psa9CostWithin5Input").checked;
   state.includePeriodReference = document.getElementById("includePeriodReferenceInput")?.checked !== false;
   state.psa9RatioMin = parseOptionalNumber(els.psa9RatioMinInput.value);
   state.psa9RatioMax = parseOptionalNumber(els.psa9RatioMaxInput.value);
@@ -6804,7 +6813,19 @@ function syncFromUI(event) {
   saveQuickFilters();
 }
 
+function assertCalculationDependencies() {
+  const required={'PurchaseDecisionModel.expectedEconomics':decisionModel?.expectedEconomics,
+    'PurchaseDecisionModel.hasBlockingDataAnomaly':decisionModel?.hasBlockingDataAnomaly,
+    'LimitDisplayModel.classifyCap':limitDisplayModel?.classifyCap,
+    'CurrentMarketModel.assertDependencies':currentMarketModel?.assertDependencies,
+    'PurchaseRatioModel.marketplaceAtGuide':purchaseRatioModel?.marketplaceAtGuide,
+    'PurchaseRatioModel.guideSearchReasons':purchaseRatioModel?.guideSearchReasons};
+  const missing=Object.keys(required).filter(name=>typeof required[name]!=='function');
+  if(missing.length){const error=new Error('計算モジュールの読込失敗・版不一致：'+missing.join('／')+'。再読み込みしてください。');error.code='CALCULATION_DEPENDENCY_UNAVAILABLE';throw error;}
+  currentMarketModel.assertDependencies();
+}
 async function init() {
+  assertCalculationDependencies();
   const conditionDefaults=new Map([...document.querySelectorAll('.search-settings input, .search-settings select')].map(el=>[el.id,conditionValue(el)]));
   for (const el of document.querySelectorAll('.search-settings input, .search-settings select')) el.dataset.searchInitialValue = el.value;
   restoreQuickFilters();
@@ -6955,6 +6976,7 @@ async function init() {
     els.catalogCoverageSummary?.after(metrics);
   } catch (err) {
     console.error(err);
+    if(err.code==='CALCULATION_DEPENDENCY_UNAVAILABLE')throw err;
     showStatus(
       "カード一覧の読み込みに失敗しました。\n\nこのサイトは `data/pokemon-cards.json` と `data/pokemon-cards-meta.json` を読み込んでいます。`index.html` をファイル直開きすると、ブラウザの制限で JSON の読み込みが止まることがあります。\n\nおすすめ:\n1. GitHub Pages 上で開く\n2. ローカルなら簡易サーバー経由で開く\n   例: `python -m http.server 8000` のように同じフォルダを配信してから `http://localhost:8000/` を開く\n\nもし GitHub Pages に置いたのに出ない場合は、更新後の URL とコンソールエラーを見ます。",
       "error"
@@ -7179,6 +7201,7 @@ for (const field of ['efficiencyBuy','efficiencyScenario','efficiencyIncludeRefe
 }
 document.getElementById("purchaseBelowCurrentCapInput")?.addEventListener("change", syncFromUI);
 document.getElementById("psa9AboveGuideInput")?.addEventListener("change",syncFromUI);
+document.getElementById("psa9CostWithin5Input")?.addEventListener("change",syncFromUI);
 for (const [,field] of explorationFields) document.getElementById(field+'Input')?.addEventListener('input',syncFromUI);
 document.getElementById('observationIncludeReferenceInput')?.addEventListener('change',syncFromUI);
 document.getElementById("includePeriodReferenceInput")?.addEventListener("change", syncFromUI);
@@ -7442,7 +7465,8 @@ els.clearFavoritesBtn.addEventListener("click", () => {
 
 init().catch((err) => {
   console.error(err);
-  showStatus("予期しないエラーが発生しました。ブラウザの開発者ツールでコンソールを確認してください。", "error");
+  if(err.code==='CALCULATION_DEPENDENCY_UNAVAILABLE')els.grid?.replaceChildren();
+  showStatus(err.code==='CALCULATION_DEPENDENCY_UNAVAILABLE'?err.message:"予期しないエラーが発生しました。ブラウザの開発者ツールでコンソールを確認してください。", "error");
 });
 
 els.guideButtons.forEach((btn) => {

@@ -61,6 +61,12 @@
     const priceRatio = comparable ? source.psa9Price / guide * 100 : null;
     const searchStatus = comparable ? eligibility(source,input.referenceOptions) : 'data-missing';
     const profitReasons = [...reasons];
+    const costReasons=[...reasons];
+    if(fee==null||fee<0)costReasons.push('鑑定費が未取得・無効');
+    if(input.planProblem)costReasons.push(input.planProblem);
+    const comparisonCost=!costReasons.length&&Number.isFinite(guide+fee)&&guide+fee>0?guide+fee:null;
+    if(!costReasons.length&&comparisonCost==null)costReasons.push('比較費用が無効');
+    const costCoveragePct=comparisonCost==null?null:source.psa9Price/comparisonCost*100;
     if (fee == null || fee < 0 || extra == null || extra < 0) profitReasons.push('費用設定未取得');
     if (input.planProblem) profitReasons.push(input.planProblem);
     const repair = input.repairRequired ? number(input.repairCost) : 0;
@@ -85,11 +91,13 @@
       exit=net(market)<net(buyback)?market:buyback;
     }
     const investment=profitReasons.length||!exit?null:guide+fee+extra+repair+exit.travel;
-    const profit=investment>0?exit.price-exit.sellingFee-exit.deduction-investment:null;
-    const roi=profit==null?null:profit/investment*100;
+    const rawProfit=investment>0&&Number.isFinite(investment)?exit.price-exit.sellingFee-exit.deduction-investment:null;
+    const profit=Number.isFinite(rawProfit)?rawProfit:null;
+    const rawRoi=profit==null?null:profit/investment*100;
+    const roi=Number.isFinite(rawRoi)?rawRoi:null;
     return {guide,price:source.psa9Price,priceRatio,comparable,searchStatus,reference:source.reference,
       measurementType:source.measurementType,updatedAt:source.updatedAt,source:input.psa9?.source || '取得元未確認',
-      sourceReasons,comparisonReasons:[...new Set(reasons)],
+      sourceReasons,comparisonReasons:[...new Set(reasons)],comparisonCost,costCoveragePct,costReasons:[...new Set(costReasons)],
       investment,profit,roi,exitLabel:exit?.label || (policy==='both'?'両出口（PSA9）':policy==='buyback'?'買取店（PSA9）':'フリマ（国内PSA9）'),
       fee,extraCost:extra,repairCost:repair,sellingFee:exit?.sellingFee ?? null,deduction:exit?.deduction ?? null,
       travelCost:exit?.travel ?? null,salePrice:exit?.price ?? null,profitReasons:[...new Set(profitReasons)],
@@ -111,5 +119,21 @@
     return {...atGuide({...input, exitPolicy:'marketplace', psa9Buyback:null}),
       scenario:'psa9-marketplace-reference', noGoEffect:true};
   }
-  return { evaluate, matches, eligibility, capLabel, roiOnly, atGuide, marketplaceAtGuide, guideExclusion };
+  function guideSearchReasons(view,{above=false,min=null,within5=false,roiMin=null}={}) {
+    const reasons=[],legacy=guideExclusion(view,{above,min});if(legacy)reasons.push(legacy);
+    const adoption=()=>view.searchStatus==='eligible'?null:view.searchStatus==='circular-estimate'?'素体由来の循環推定':'参考値の検索採用OFF';
+    if(within5) {
+      if(view.comparisonCost==null||!Number.isFinite(view.comparisonCost)||!Number.isFinite(view.price)||view.costReasons?.length)reasons.push('PSA9費用割れ5%以内・'+(view.costReasons?.[0]||'計算材料不足'));
+      else if(adoption())reasons.push('PSA9費用割れ5%以内・'+adoption());
+      else if(!(view.price>=view.comparisonCost*.95))reasons.push('PSA9価格が仕入れ目安＋鑑定費の95%未満');
+    }
+    if(roiMin!=null) {
+      if(!Number.isFinite(roiMin))reasons.push('PSA9時利益率・下限入力を確認');
+      else if(!Number.isFinite(view.roi))reasons.push('PSA9時利益率・'+(view.profitReasons?.[0]||'計算材料不足'));
+      else if(adoption())reasons.push('PSA9時利益率・'+adoption());
+      else if(view.roi<roiMin)reasons.push('PSA9時利益率・下限未達');
+    }
+    return reasons;
+  }
+  return { evaluate, matches, eligibility, capLabel, roiOnly, atGuide, marketplaceAtGuide, guideExclusion, guideSearchReasons };
 });

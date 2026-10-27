@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20261027-psa9-market-v2" />
+  <link rel="stylesheet" href="./styles.css?v=20261027-psa9-cost-v1" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -132,11 +132,15 @@
         <label class="preset-file-action">条件CSV読込<input id="importSearchInput" type="file" accept=".csv,text/csv" /></label>
       </div>
 
-      <section class="psa9-quick-comparison" aria-label="PSA9価格と仕入れ目安の比較"><div class="controls">
+      <section class="psa9-quick-comparison" aria-label="PSA9価格と費用の比較"><div class="controls">
+        <label class="check-control"><input id="psa9CostWithin5Input" type="checkbox" />PSA9価格の費用割れ5%以内</label>
+        <label class="control"><span>PSA9時利益率 下限％</span><input id="psa9RoiMinInput" type="number" step="0.1" placeholder="空欄は条件なし（例：−5、0、10）" /></label>
+        <p class="filter-explanation">PSA9価格が仕入れ目安＋鑑定費の95%以上（手数料前）。利益率はフリマ売却手数料・設定済み諸費用込み。2条件は独立・併用可。購入GOとは別です。</p>
+      </div><details id="legacyPsa9Comparisons"><summary>旧条件：仕入れ目安だけとの価格比較（保存保持）</summary><div class="controls">
         <label class="check-control"><input id="psa9AboveGuideInput" type="checkbox" />PSA9価格が仕入れ目安より高い</label>
         <label class="control"><span>PSA9価格／仕入れ目安 下限％</span><input id="psa9GuideMinInput" type="number" min="0" step="0.1" placeholder="例：80（空欄は条件なし）" /></label>
         <p class="filter-explanation">利益確保の仕入れ目安との手数料前価格比較。100%は同額、80%は目安より20%低い。黒字保証・購入GOとは別です。</p>
-      </div></section>
+      </div></details></section>
 
       <section id="currentMarketControls" class="current-market-controls" hidden aria-label="現相場採算の探索条件">
         <strong>現相場が続く仮定の探索（購入GOではありません）</strong>
@@ -923,7 +927,7 @@
     </section>
   </main>
 
-  <script src="./decision-model.js?v=20261027-record-isolation-v1"></script>
+  <script src="./decision-model.js?v=20261027-psa9-cost-v1" integrity="sha384-e5j7b7ktHO01H9EpT2JS1IFgum9+hl/A4AlNCyCM1rHURvACamJoBay9poAXlvFh"></script>
   <script src="./price-integrity.js?v=20261018-observation75-v1"></script>
   <script src="./grade-calibration.js?v=20260924-v1"></script>
   <script src="./search-index-model.js?v=20261015-trade-demand-v2"></script>
@@ -931,24 +935,24 @@
   <script src="./market-analysis.js?v=20260913-supply-absorption-v3"></script>
   <script src="./snkr-raw-flip-model.js?v=20260920-raw-flip-v1"></script>
   <script src="./raw-psa9-gap-model.js?v=20260929-trial-v2"></script>
-  <script src="./purchase-ratio-model.js?v=20261027-psa9-market-v2"></script>
+  <script src="./purchase-ratio-model.js?v=20261027-psa9-cost-v1" integrity="sha384-H5T67PCuczilfc8V6aZb6gNe4JUVzAVDO/xB0j9DxOI2HPF4p9pY8Empl1B9TCQk"></script>
   <script src="./candidate-visibility.js?v=20260927-v1"></script>
   <script src="./catalog-index-adapter.js?v=20260927-v1"></script>
-  <script src="./limit-display-model.js?v=20261007-cap-state-v1"></script>
+  <script src="./limit-display-model.js?v=20261027-psa9-cost-v1" integrity="sha384-8Dj6kDpEE3qaB2GDuQxLasEtKnLuSX6XyReYUMyFlxwX5pxAKUg2ywbaygvn2vJ6"></script>
   <script src="./return-horizon-model.js?v=20261004-reference-v1"></script>
   <script src="./price-reference-model.js?v=20261004-reference-v1"></script>
   <script src="./purchase-memo-model.js?v=20261004-reference-v1"></script>
   <script src="./release-year-filter.js?v=20261003-priority-v2"></script>
   <script src="./update-health-model.js?v=20261023-verified-partial-publication"></script>
   <script src="./update-health-banner.js?v=20261011-search-first-v1"></script>
-  <script src="./current-market-model.js?v=20261027-record-isolation-v1"></script>
+  <script src="./current-market-model.js?v=20261027-psa9-cost-v1" integrity="sha384-fcfFd/0u1lI96582Y8Isew5AGSRA/NDHV2jQrVBJytLfb8ikDayeTIAz/R/jBRWF"></script>
   <script src="./ui-data-codec.js?v=20261027-psa9-guide-v1"></script>
   <script src="./psa-plan-model.js?v=20261010-isolation-v1"></script>
   <script src="./keyed-card-renderer.js?v=20261010-v1"></script>
   <a class="return-to-filters" href="#searchConditions">検索条件へ</a>
-  <script src="./exploration-metrics.js?v=20261027-record-isolation-v1"></script>
-  <script src="./search-controls.js?v=20261027-psa9-guide-v1"></script>
+  <script src="./exploration-metrics.js?v=20261027-psa9-cost-v1" integrity="sha384-TwbOmsroEGerm/CvE1TcewmoBeFVMQYnUSYCWkSliu4SMyohr7jSIdMJfVJM6Vxy"></script>
+  <script src="./search-controls.js?v=20261027-psa9-cost-v1" integrity="sha384-ZbSDnbO0h3stXbHm3pB16Xoaw4PRGRTlYlGADTPwiNjPXiLKdtJMeKIeF66laIwn"></script>
   <script src="./settings-disclosure.js?v=20261011-disclosure-v1"></script>
-  <script src="./app.js?v=20261027-psa9-market-v2"></script>
+  <script src="./app.js?v=20261027-psa9-cost-v1" integrity="sha384-BKbyuszSUMtc9p+TzMbxzp5hjZp9ip4RSTMIb7SSuhygfRHxN1OPY5zg5CoKBDKS"></script>
 </body>
 </html>

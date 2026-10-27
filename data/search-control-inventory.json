@@ -3847,6 +3847,40 @@
       "basis": "PSA9価格÷現相場目安×100。手数料前の価格比",
       "effect": "チェックは厳密な超過、数値下限は境界を含む。未指定は除外なし",
       "overlap": "仕入れ値÷PSA9の既存条件・費用込み利益率・GOとは別"
+    },
+    {
+      "id": "psa9CostWithin5Input",
+      "label": "PSA9価格の費用割れ5%以内",
+      "type": "checkbox",
+      "initial": false,
+      "category": "基本検索",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "combined",
+        "specified"
+      ],
+      "purpose": "PSA9価格と鑑定費込み買値を比較",
+      "basis": "PSA9価格≧（現相場の利益確保目安＋選択プラン鑑定費）×95%。手数料前",
+      "effect": "初期OFF。価格・費用・参考採用の不足は有効時だけ除外",
+      "overlap": "旧目安だけの価格比・PSA9フリマ費用後利益率・GOとは別"
+    },
+    {
+      "id": "psa9RoiMinInput",
+      "label": "PSA9時利益率 下限％",
+      "type": "number",
+      "initial": "",
+      "category": "基本検索",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "combined",
+        "specified"
+      ],
+      "purpose": "目安購入時のPSA9フリマ利益率で探索",
+      "basis": "（PSA9売価−提出判断の売却手数料−目安−鑑定費−設定済み諸費用）÷総費用×100",
+      "effect": "空欄無効、負値/0/正値・境界含む。費用と参考採用の不足は有効時だけ除外",
+      "overlap": "費用割れ5%以内の手数料前比較と独立。既存資金効率・GOへ不反映"
     }
   ],
   "actions": [

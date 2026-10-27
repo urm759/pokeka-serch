@@ -1,0 +1,956 @@
+{
+  "at": "2026-10-27T09:42:37.500Z",
+  "baseline": "144e0430e",
+  "adoptedCloud": "03f5a7d1d",
+  "newListings": [],
+  "total": {
+    "before": 2422,
+    "after": 2422,
+    "gained": [],
+    "lost": [],
+    "resolved": [],
+    "filledCards": 0
+  },
+  "cloud": {
+    "before": 2422,
+    "after": 2422,
+    "gained": [],
+    "lost": [],
+    "resolved": [],
+    "filledCards": 0
+  },
+  "local": {
+    "before": 2422,
+    "after": 2422,
+    "gained": [],
+    "lost": [],
+    "resolved": [],
+    "filledCards": 0
+  },
+  "resolvedRaw": [],
+  "psaRecovered": [],
+  "highRare": {
+    "fixedTotal": 1328,
+    "before": 712,
+    "after": 712,
+    "currentTotal": 1329,
+    "currentAfter": 712,
+    "unknown": 5072
+  },
+  "freshness": {
+    "fresh": 185,
+    "total": 192,
+    "minimumNormal": 0,
+    "lastNormal": {
+      "from": "2026-10-27T08:09:21.207Z",
+      "to": "2026-10-27T08:18:08.553Z",
+      "fresh": 185,
+      "total": 192,
+      "minimumFreshnessPct": 96.35416666666666,
+      "maxOverdueHours": 1250.3023758333334,
+      "method": "前回確認値を次の観測直前まで進めた保守的な最低鮮度。区間内の未観測更新は含まない",
+      "executionContext": {
+        "from": {
+          "event": "schedule",
+          "runId": "40470492071",
+          "environment": "GitHub Actions"
+        },
+        "to": {
+          "event": "workflow_run",
+          "runId": "40472487615",
+          "environment": "GitHub Actions"
+        }
+      }
+    },
+    "sixHourTarget": 6,
+    "purchaseTtl": 48
+  },
+  "gemrate": {
+    "public": 50,
+    "calculationAdoption": 0,
+    "continuousAcquisition": false
+  },
+  "localAcquisition": {
+    "startedAt": "2026-10-27T09:26:53.975Z",
+    "llmCalls": 0,
+    "codexCalls": 0,
+    "selectionReasons": {
+      "queuedCards": 12742,
+      "retryEligibleCards": 12737,
+      "missingStateACards": 4132,
+      "missingStateAWithUrl": 2,
+      "eligibleHareruCards": 1,
+      "psaOnlyCards": 1308,
+      "heldCards": 0,
+      "retryWaitingCards": 5,
+      "shopManualWaitCards": 4,
+      "sourceBlocked": null
+    },
+    "zeroTargetReason": null,
+    "focusedSelected": 0,
+    "normalSelected": 1,
+    "selected": [
+      {
+        "id": "pk-62012",
+        "priority": 1117,
+        "reasons": [
+          "買取表30日127店舗日",
+          "2020年以降・発売年確認済み",
+          "素体全状態取引30日101件",
+          "PSA10取引30日88件"
+        ],
+        "missingRequired": [],
+        "requestedPlan": {
+          "profiles": [
+            "A-specified",
+            "A-median-specified"
+          ],
+          "selectedProfile": "A-specified",
+          "missing": [
+            "shopStateA"
+          ],
+          "requirements": [
+            {
+              "field": "shopStateA",
+              "source": "domesticShops",
+              "state": "price-and-stock-acquisition",
+              "automatic": true,
+              "urls": [
+                {
+                  "source": "hareruya2",
+                  "url": "https://www.hareruya2.com/products/9667472556352"
+                }
+              ],
+              "targets": [
+                {
+                  "source": "hareruya2",
+                  "url": "https://www.hareruya2.com/products/9667472556352"
+                }
+              ],
+              "nextAction": "状態A・在庫・価格・個別取得日時の実確認",
+              "resumeCondition": "取得元アクセス正常・仕様一意。403元は別停止"
+            }
+          ],
+          "automatic": true
+        }
+      }
+    ],
+    "attempted": 1,
+    "acquired": 1,
+    "newAcquired": 0,
+    "newLinked": 0,
+    "failures": 0,
+    "checkpoint": null,
+    "stopReason": null,
+    "endedAt": "2026-10-27T09:26:59.662Z",
+    "durationMs": 5687,
+    "status": "部分取得",
+    "oneItemCompletion": {
+      "total": 1837,
+      "byField": {
+        "psaOfficial": 1309,
+        "domesticPrice": 345,
+        "psa10Trades": 179,
+        "psa10Price": 4
+      },
+      "byRoute": {
+        "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持": 1177,
+        "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）": 132,
+        "価格根拠確認待ち・店舗価格だけでは解除しない": 96,
+        "一括差分再確認へ接続済み・現在掲載なし": 253,
+        "期間件数未取得・正規一括差分で再確認（データなし未確定）": 179
+      }
+    }
+  },
+  "inheritedNew197": [
+    {
+      "id": "pk-65676",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-147",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-65646",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-797",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-18981",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-395",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-4021",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-4130",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-65650",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-564",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-63108",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-1475",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-93210",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-92120",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-922286",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-903711",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-918265",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-45672",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-7109",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-309358",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-918277",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-918537",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-454939",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-454001",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-447077",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-454039",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-459381",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-492888",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-918279",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-454941",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-903797",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-989",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-452698",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-1099",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-452737",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-65701",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-435422",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-918271",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-454971",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-430539",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-404764",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-456149",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-918257",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-895653",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-903805",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-918280",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-44909",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-454968",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-3919",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-65644",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-433241",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-918276",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-432494",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-390344",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-683734",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-459421",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-66177",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-397718",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-457746",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-6046",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-379",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-5476",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-715",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-3029",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-2489",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-71306",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-51023",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-4285",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-427827",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-442267",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-454503",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-2923",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-918306",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-918609",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-396",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-5497",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-1976",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-3122",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-3129",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-66264",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-2266",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-730",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-2323",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-3114",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-5827",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-459388",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-895459",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-456639",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-389315",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-7828",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-457700",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-454095",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-895467",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-17390",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-5473",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-6690",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-23368",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-1568",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-1987",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-5764",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-80620",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-5788",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-5026",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-2050",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-80626",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-85722",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-457722",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-457724",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-50962",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-57336",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-1452",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-1854",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-372",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-1623",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-928",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-1991",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-2903",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-2689",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-17420",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-1546",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-1903",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-1548",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-21259",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-86709",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-86640",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-86641",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-86710",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-86643",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-86644",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-86711",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-86646",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-86647",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-86712",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-86649",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-86650",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-86713",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-86652",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-86653",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-86714",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-86655",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-86656",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-86715",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-86658",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-86659",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-86716",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-86661",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-86662",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-86717",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-86664",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-86665",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-340603",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-2401",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-2015",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-2274",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-7392",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-2379",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-384",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-5474",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-67150",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-565",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-725",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-552",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-665",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-2921",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-45670",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-13927",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-65668",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-22852",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-991",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-1855",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-1824",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-63111",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-71265",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-56637",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-429920",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-17444",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-50999",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-75762",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-58069",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-5142",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-3947",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-5709",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-17120",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-5024",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-1193",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-5852",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-5854",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-5860",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "pk-5825",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-740437",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-457706",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-460715",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-903796",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-903798",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-903814",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-895448",
+      "analysis": "データ不足"
+    },
+    {
+      "id": "x-895572",
+      "analysis": "データ不足"
+    }
+  ],
+  "note": "同じ定義。クラウドの実取得、今回ローカルの再照合/購入先再確認を分離。原日時保持。GemRate参考表示は分析可能へ加算しない。"
+}
