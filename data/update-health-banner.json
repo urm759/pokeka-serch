@@ -1,20 +1,20 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-27T14:50:05.208Z",
+  "generatedAt": "2026-10-27T14:55:57.944Z",
   "sourceLastSuccessAt": "2026-10-27T11:01:56.487Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-10-27T14:23:55.573Z",
-    "lastSuccessAt": "2026-10-27T14:23:55.573Z",
-    "runId": "40520607824",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/40520607824"
+    "lastAttemptAt": "2026-10-27T14:55:57.934Z",
+    "lastSuccessAt": "2026-10-27T14:55:57.934Z",
+    "runId": "40525799323",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/40525799323"
   },
   "issues": [
     {
-      "key": "daily:workflow-failure",
-      "category": "取得処理の故障",
+      "key": "daily:source-failure",
+      "category": "確認が必要",
       "url": "https://github.com/urm759/pokeka-serch/actions/runs/40517105112",
-      "reason": "Daily Fast Updateが29回連続失敗"
+      "reason": "Dailyの一部取得元が失敗・正常データは必須検証/保存/公開照合済み"
     },
     {
       "key": "safe:yuyutei:manual-action-required:GitHub ActionsからHTTP #。正規アクセス確認待ち",
@@ -84,12 +84,12 @@
     {
       "key": "priority-prices:cadence-stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/40470492071",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/40522978281",
       "reason": "重要価格更新：設定2時間に対し実績成功間隔（直近最大）13.21時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
     }
   ],
   "reasons": [
-    "Daily Fast Updateが29回連続失敗",
+    "Dailyの一部取得元が失敗・正常データは必須検証/保存/公開照合済み",
     "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち",
     "状態A価格確認: 2回連続でチェックポイント進捗なし",
     "カードラッシュ: pk-73737: HTTP 403",
