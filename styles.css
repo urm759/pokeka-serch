@@ -1778,3 +1778,8 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .buyback-ratio.ratio-low-strong{color:#fca5a5;font-weight:800}
 .buyback-ratio.ratio-unknown{color:var(--value-warning)}
 .buyback-scope{color:var(--muted)}
+:root .psa9-guide-inline { margin-top:.55rem; padding-top:.45rem; border-top:1px solid #35415a; font-size:.8rem; line-height:1.5; color:#d1daed; }
+:root .psa9-guide-inline .psa9-guide-price b { font-size:1rem; color:#c9b4ff; }
+:root .psa9-guide-inline .psa9-guide-price b.value-reference { color:#f3c76c; }
+:root .psa9-guide-inline small { display:block; font-size:.72rem; overflow-wrap:anywhere; }
+:root .psa9-guide-inline details { margin-top:.3rem; }

@@ -1,5 +1,6 @@
 (function (root) {
-  function encode(value) {
+  function encode(value, {version=1} = {}) {
+    if(![1,2].includes(version))throw new Error('Unsupported UI data codec version');
     const schemas = [], schemaIds = new Map(), counts = new Map();
     const count = v => {
       if (typeof v === 'string') counts.set(v, (counts.get(v) || 0) + 1);
@@ -9,7 +10,9 @@
     const strings = [...counts].filter(([s, n]) => s.length > 5 && n > 1).map(([s]) => s);
     const stringIds = new Map(strings.map((s, i) => [s, i]));
     const visit = v => {
-      if (typeof v === 'string') return stringIds.has(v) ? [-2, stringIds.get(v)] : v;
+      if (typeof v === 'string') return stringIds.has(v)
+        ? version===2 ? '~'+stringIds.get(v).toString(36) : [-2, stringIds.get(v)]
+        : version===2 && v.startsWith('~') ? '~'+v : v;
       if (Array.isArray(v)) return [-1, ...v.map(visit)];
       if (!v || typeof v !== 'object') return v;
       const keys = Object.keys(v), key = JSON.stringify(keys);
@@ -17,12 +20,23 @@
       return [schemaIds.get(key), ...keys.map(k => visit(v[k]))];
     };
     const data = visit(value);
-    return { codec: 'ui-schema-v1', schemas, strings, data };
+    return { codec: 'ui-schema-v'+version, schemas, strings, data };
   }
   function reader(payload) {
+    const stringAt=id=>{
+      if(!Number.isInteger(id)||id<0||typeof payload.strings?.[id]!=='string')throw new Error('Invalid UI string reference');
+      return payload.strings[id];
+    };
     const visit = v => {
-      if (!Array.isArray(v)) return v;
-      if (v[0] === -2) return payload.strings[v[1]];
+      if (!Array.isArray(v)) {
+        if(payload.codec==='ui-schema-v2'&&typeof v==='string'&&v.startsWith('~')){
+          if(v.startsWith('~~'))return v.slice(1);
+          if(!/^~[0-9a-z]+$/.test(v))throw new Error('Invalid UI compact string reference');
+          return stringAt(parseInt(v.slice(1),36));
+        }
+        return v;
+      }
+      if (v[0] === -2) return stringAt(v[1]);
       if (v[0] === -1) return v.slice(1).map(visit);
       const keys = payload.schemas[v[0]];
       if (!keys || keys.length !== v.length - 1) throw new Error('Invalid UI data schema');
@@ -36,10 +50,10 @@
     return visit;
   }
   function decode(payload) {
-    return payload?.codec === 'ui-schema-v1' ? reader(payload)(payload.data) : payload;
+    return ['ui-schema-v1','ui-schema-v2'].includes(payload?.codec) ? reader(payload)(payload.data) : payload;
   }
   async function decodeAsync(payload) {
-    if (payload?.codec !== 'ui-schema-v1') return payload;
+    if (!['ui-schema-v1','ui-schema-v2'].includes(payload?.codec)) return payload;
     const visit = reader(payload);
     async function object(v, depth = 0) {
       if (!Array.isArray(v) || v[0] === -2 || depth > 1) return visit(v);

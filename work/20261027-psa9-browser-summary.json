@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-27T03:15:56.085Z",
+  "baseline": "9ae220406",
+  "sameDataAndClock": true,
+  "scope": "Chrome実DOM・PC1920/スマホ390幅・表示60/120枚。全件計算はブラウザ読込2421/4842分析カード。Node全12742/25484枚の測定と分離。3反復の中央値。",
+  "normalFinancialHash": "9c2f2f85a3f5f7684b2b3954e25983c114f1afdf9bd4457d795e5af8f3fb0bfc",
+  "doubleFinancialHash": "cd27c580439e0b7e24bac22b9a4fc03bd9bd0bc5975d9e7ae000eed832ac1f48",
+  "valuesAndIdsEqual": true,
+  "rows": [
+    {"version":"before","width":1920,"scale":"normal","displayed":60,"fullCalculationMs":788.9,"renderMs":18.4,"detailMs":28.2,"overflow":false},
+    {"version":"after","width":1920,"scale":"normal","displayed":60,"fullCalculationMs":769.7,"renderMs":18.4,"detailMs":27.6,"overflow":false},
+    {"version":"before","width":1920,"scale":"double","displayed":120,"fullCalculationMs":1630.2,"renderMs":36.9,"detailMs":45.9,"overflow":false},
+    {"version":"after","width":1920,"scale":"double","displayed":120,"fullCalculationMs":1451.7,"renderMs":34.8,"detailMs":46.0,"overflow":false},
+    {"version":"before","width":390,"scale":"normal","displayed":60,"fullCalculationMs":779.9,"renderMs":18.2,"detailMs":24.4,"overflow":false},
+    {"version":"after","width":390,"scale":"normal","displayed":60,"fullCalculationMs":834.9,"renderMs":18.4,"detailMs":24.6,"overflow":false},
+    {"version":"before","width":390,"scale":"double","displayed":120,"fullCalculationMs":1498.6,"renderMs":35.0,"detailMs":45.5,"overflow":false},
+    {"version":"after","width":390,"scale":"double","displayed":120,"fullCalculationMs":1512.1,"renderMs":38.0,"detailMs":45.0,"overflow":false}
+  ],
+  "note": "測定ハーネスの切替・応答待ち失敗は別記録を保持。完了した各画面の検索速度実測JSONを回収。スマホ2倍描画は3ms増で改善済みとはしない。"
+}

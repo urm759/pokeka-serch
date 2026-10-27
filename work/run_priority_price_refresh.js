@@ -76,7 +76,7 @@ function main() {
   const evidenceBefore=require('./efficiency_evidence_queue').pending(read('data/pokemon-cards.json',[]),read('data/shop-buyback-summary.json'));
   // Use the existing bulk acquisition slots, not a second per-card crawler.
   for (const [source,key,script,args,env] of [
-    ['toreca','psa9Evidence','work/daily_fast_update.js',[],{FAST_DEEP_SCAN:'0',DAILY_RUNTIME_LIMIT_MS:'300000'}],
+    ['toreca','psa9Evidence','work/daily_fast_update.js',[],{FAST_DEEP_SCAN:'0',DAILY_RUNTIME_LIMIT_MS:'300000',FAST_PARENT_FINALIZES:'priority'}],
     ['shopBuyback','buybackExitEvidence','work/run_tracked_update.js',['shopBuyback','work/update_shop_buybacks.js'],{TRACKED_TIMEOUT_MS:'300000'}]
   ]) {
     const ready=source==='toreca'?marketBeforeBuyback(sources.toreca,sources.shopBuyback,Date.now(),config):due(sources[source],Date.now(),config);

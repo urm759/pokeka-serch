@@ -92,6 +92,10 @@ jobs:
           node work/measure_performance_guard.js
           node work/build_ui_data.js
           node work/test_ui_data.js
+          node work/test_priority_finalize_handoff.js
+          node work/test_ui_codec_v2.js
+          node work/test_psa9_guide_comparison.js
+          node work/test_psa9_guide_integration.js
           node work/test_specification_reexploration.js
           node work/test_performance_guard.js
           node work/test_performance_comparison.js

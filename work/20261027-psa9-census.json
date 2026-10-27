@@ -1,0 +1,7500 @@
+{
+  "at": "2026-10-27T03:39:24.744Z",
+  "baseline": "9ae220406",
+  "newListings": 14,
+  "newListingsAnalyzable": 0,
+  "original183": {
+    "total": 183,
+    "analyzableBefore": 0,
+    "analyzableAfter": 0
+  },
+  "mandatoryResolution": {
+    "allCards": 422,
+    "allFields": 624,
+    "newValueCards": 422,
+    "newValueFields": 623,
+    "changedValueCards": 1,
+    "changedValueFields": 1,
+    "realCards": 422,
+    "realFields": 624,
+    "unchangedValuesOrEvidenceCards": 0,
+    "unchangedValuesOrEvidenceFields": 0
+  },
+  "analysis": {
+    "before": 2319,
+    "after": 2421,
+    "gained": 128,
+    "lost": 26,
+    "net": 102
+  },
+  "highRare": {
+    "fixedTotal": 1328,
+    "fixedBefore": 692,
+    "fixedAfter": 710,
+    "currentTotal": 1329,
+    "currentAfter": 710,
+    "unknown": 5072
+  },
+  "freshness": {
+    "at": "2026-10-27T03:39:24.744Z",
+    "current": 172,
+    "total": 192,
+    "pct": 89.58333333333334,
+    "latestStoredPoint": {
+      "at": "2026-10-27T02:55:54.198Z",
+      "executionContext": {
+        "event": "manual-local",
+        "runId": null,
+        "environment": "PCローカル"
+      },
+      "cohort": 192,
+      "fresh6h": 172,
+      "fresh6hPct": 89.58333333333334,
+      "unconfirmed": 0,
+      "maxOverdueHours": 1244.9317216666666,
+      "autoWait": 13,
+      "manualWait": 7,
+      "accessStopped": 0,
+      "added": 202,
+      "missingFromCurrent": 0,
+      "aggregationVersion": 2,
+      "outsidePriorityStale": 0
+    },
+    "verifiedNormalIntervalSamples": 276,
+    "verifiedNormalIntervalMinimum": 0,
+    "lastNormalInterval": {
+      "from": "2026-10-27T01:51:56.809Z",
+      "to": "2026-10-27T01:58:41.311Z",
+      "fresh": 185,
+      "total": 192,
+      "minimumFreshnessPct": 96.35416666666666,
+      "maxOverdueHours": 1243.9781419444444,
+      "method": "前回確認値を次の観測直前まで進めた保守的な最低鮮度。区間内の未観測更新は含まない",
+      "executionContext": {
+        "from": {
+          "event": "workflow_run",
+          "runId": "40434958311",
+          "environment": "GitHub Actions"
+        },
+        "to": {
+          "event": "workflow_run",
+          "runId": "40434958311",
+          "environment": "GitHub Actions"
+        }
+      }
+    },
+    "allHistoryMin": 0
+  },
+  "gemrate": {
+    "newRelevantS6a": [],
+    "public": 50,
+    "calculationAdoption": 0,
+    "continuousAcquisition": false
+  },
+  "classification": {
+    "newValues": [
+      {
+        "id": "pk-70057",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          1000
+        ]
+      },
+      {
+        "id": "x-111992",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          15000
+        ]
+      },
+      {
+        "id": "x-91106",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          578000
+        ]
+      },
+      {
+        "id": "x-309454",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-58219",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          1000
+        ]
+      },
+      {
+        "id": "x-656690",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          180000
+        ]
+      },
+      {
+        "id": "pk-362",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          20000
+        ]
+      },
+      {
+        "id": "x-91245",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          58999
+        ]
+      },
+      {
+        "id": "x-93081",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "x-467864",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-289442",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "pk-20721",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          4900
+        ]
+      },
+      {
+        "id": "pk-6179",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          675000
+        ]
+      },
+      {
+        "id": "pk-77",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          56800
+        ]
+      },
+      {
+        "id": "pk-20968",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-456647",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          3
+        ]
+      },
+      {
+        "id": "pk-5190",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          3500
+        ]
+      },
+      {
+        "id": "pk-59116",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "pk-18873",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          3,
+          6
+        ]
+      },
+      {
+        "id": "pk-18873",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "pk-3844",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          5,
+          6
+        ]
+      },
+      {
+        "id": "pk-3844",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          4,
+          5
+        ]
+      },
+      {
+        "id": "pk-2455",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          13000
+        ]
+      },
+      {
+        "id": "x-460716",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          96000
+        ]
+      },
+      {
+        "id": "x-460716",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-91124",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          25000
+        ]
+      },
+      {
+        "id": "x-556784",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-435462",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-455450",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-110025",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "pk-4676",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          3,
+          3
+        ]
+      },
+      {
+        "id": "pk-3556",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          5
+        ]
+      },
+      {
+        "id": "pk-3556",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          3,
+          5
+        ]
+      },
+      {
+        "id": "x-92041",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-109389",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-56621",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-104543",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          3
+        ]
+      },
+      {
+        "id": "pk-919",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          4,
+          4
+        ]
+      },
+      {
+        "id": "pk-919",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          4,
+          4
+        ]
+      },
+      {
+        "id": "pk-71298",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          4
+        ]
+      },
+      {
+        "id": "x-309380",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "pk-37610",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          3
+        ]
+      },
+      {
+        "id": "pk-35729",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "pk-67506",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          3,
+          4
+        ]
+      },
+      {
+        "id": "pk-67506",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          6,
+          7
+        ]
+      },
+      {
+        "id": "pk-75204",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          4
+        ]
+      },
+      {
+        "id": "pk-75204",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          7
+        ]
+      },
+      {
+        "id": "pk-1830",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          4
+        ]
+      },
+      {
+        "id": "pk-1830",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "x-91981",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          3,
+          3
+        ]
+      },
+      {
+        "id": "x-91981",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-59122",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-20997",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          35000
+        ]
+      },
+      {
+        "id": "x-92051",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "x-413484",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "pk-22012",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-457788",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-454043",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          19000
+        ]
+      },
+      {
+        "id": "x-558753",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          3,
+          3
+        ]
+      },
+      {
+        "id": "x-558753",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          3,
+          3
+        ]
+      },
+      {
+        "id": "x-454044",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-453189",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          3,
+          3
+        ]
+      },
+      {
+        "id": "pk-546",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          2
+        ],
+        "after": [
+          2,
+          3
+        ]
+      },
+      {
+        "id": "pk-546",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          2
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-455503",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "pk-20176",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          2
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "pk-1575",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          4
+        ],
+        "after": [
+          3,
+          3
+        ]
+      },
+      {
+        "id": "pk-1575",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          4
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "pk-5195",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          5000
+        ]
+      },
+      {
+        "id": "x-379819",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-111833",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-309393",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-2297",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-67579",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          3,
+          3
+        ]
+      },
+      {
+        "id": "pk-67579",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          4,
+          4
+        ]
+      },
+      {
+        "id": "pk-26",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "pk-3072",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          3
+        ]
+      },
+      {
+        "id": "pk-3072",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          3
+        ]
+      },
+      {
+        "id": "x-382143",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          3,
+          3
+        ]
+      },
+      {
+        "id": "x-382143",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          3,
+          3
+        ]
+      },
+      {
+        "id": "pk-58233",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          3,
+          3
+        ]
+      },
+      {
+        "id": "pk-58233",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-48985",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-67497",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          3
+        ]
+      },
+      {
+        "id": "pk-67497",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          4,
+          5
+        ]
+      },
+      {
+        "id": "pk-20959",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          3
+        ]
+      },
+      {
+        "id": "x-740489",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          3
+        ]
+      },
+      {
+        "id": "x-740489",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          3
+        ]
+      },
+      {
+        "id": "x-285713",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          1100
+        ]
+      },
+      {
+        "id": "pk-40588",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          3
+        ]
+      },
+      {
+        "id": "pk-40588",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          3
+        ]
+      },
+      {
+        "id": "pk-65276",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          3
+        ]
+      },
+      {
+        "id": "x-397444",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          3,
+          3
+        ]
+      },
+      {
+        "id": "pk-1858",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          3
+        ]
+      },
+      {
+        "id": "pk-1858",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          4
+        ]
+      },
+      {
+        "id": "pk-20929",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          3
+        ]
+      },
+      {
+        "id": "pk-39542",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "pk-2233",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          3
+        ],
+        "after": [
+          3,
+          3
+        ]
+      },
+      {
+        "id": "pk-2233",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          3
+        ],
+        "after": [
+          3,
+          3
+        ]
+      },
+      {
+        "id": "pk-22661",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          3
+        ]
+      },
+      {
+        "id": "pk-22661",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          3
+        ]
+      },
+      {
+        "id": "pk-3924",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          3
+        ]
+      },
+      {
+        "id": "pk-3924",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          4
+        ]
+      },
+      {
+        "id": "pk-64572",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          2
+        ],
+        "after": [
+          1,
+          3
+        ]
+      },
+      {
+        "id": "x-111802",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-732807",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          2,
+          3
+        ]
+      },
+      {
+        "id": "x-732807",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          2
+        ],
+        "after": [
+          2,
+          3
+        ]
+      },
+      {
+        "id": "pk-59128",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-59124",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-91767",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-438239",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-438239",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-438761",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-453299",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-453299",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-413467",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          64800
+        ]
+      },
+      {
+        "id": "x-93207",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-93207",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-453458",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-56624",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-452692",
+        "field": "psa10Price",
+        "before": [
+          null
+        ],
+        "after": [
+          500000
+        ]
+      },
+      {
+        "id": "x-452692",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-65670",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-309351",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-453442",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-453442",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-91954",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "pk-56534",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-111824",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "x-111824",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-91110",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "x-91110",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "x-111784",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-111784",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-455373",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-71337",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "x-404229",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-18952",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-309442",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-104630",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-104630",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-935",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "pk-935",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-91972",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "pk-4298",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-309400",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "x-309400",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-112241",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-1064",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "pk-1064",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "pk-1639",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "pk-1639",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "x-453188",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "pk-18545",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "pk-18545",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-413429",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-3877",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          5000
+        ]
+      },
+      {
+        "id": "x-438801",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "x-438801",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-457743",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "x-454031",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "x-407832",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-459250",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-459250",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-454033",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-454033",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-457805",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-457805",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-18253",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "pk-18253",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "x-128134",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "pk-2156",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-77940",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "pk-77940",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-4257",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-110730",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "x-427884",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "x-427884",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-635049",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-635049",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          7
+        ]
+      },
+      {
+        "id": "pk-36389",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "pk-51047",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-34742",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "pk-34742",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-2553",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-110651",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "pk-3897",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "pk-3897",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-65654",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          1980
+        ]
+      },
+      {
+        "id": "x-109114",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-50977",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "pk-50977",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-441214",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-127941",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-404552",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "x-404552",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "pk-38420",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "pk-38420",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-17460",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "pk-59569",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "pk-59569",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          3,
+          4
+        ]
+      },
+      {
+        "id": "pk-67262",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "pk-67262",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "pk-75585",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "pk-75585",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          3,
+          3
+        ]
+      },
+      {
+        "id": "pk-41859",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "pk-41859",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          4,
+          5
+        ]
+      },
+      {
+        "id": "pk-43810",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "pk-43810",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          4,
+          5
+        ]
+      },
+      {
+        "id": "pk-51067",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          2
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "pk-50925",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "pk-50925",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "pk-50933",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "pk-50933",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "pk-54259",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "pk-54259",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "pk-57362",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-58073",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "pk-58073",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "pk-58222",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-393243",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          1000
+        ]
+      },
+      {
+        "id": "x-106801",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "x-127913",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          2
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "pk-19773",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "pk-19773",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "x-91736",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "x-91736",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "pk-50934",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "pk-50934",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "x-740779",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-35370",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-41822",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "pk-41822",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          4,
+          4
+        ]
+      },
+      {
+        "id": "pk-53316",
+        "field": "psa10Price",
+        "before": [
+          null
+        ],
+        "after": [
+          3999
+        ]
+      },
+      {
+        "id": "pk-53317",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "pk-53317",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          3
+        ]
+      },
+      {
+        "id": "pk-65697",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "pk-65697",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-93301",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-91740",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "x-91740",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "x-431289",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-431289",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-433647",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "x-433647",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": "pk-6313",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-413552",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-65237",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-91744",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          329800
+        ]
+      },
+      {
+        "id": "pk-20936",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          248000
+        ]
+      },
+      {
+        "id": "x-92127",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-91679",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-111810",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-487833",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-487833",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-452638",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-452638",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-65704",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          120000
+        ]
+      },
+      {
+        "id": "x-404803",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-379910",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-110876",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-110876",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-92133",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          85000
+        ]
+      },
+      {
+        "id": "x-385529",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-385529",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-453289",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-453289",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-3651",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-92037",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-92037",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-406761",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-406761",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-440468",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          4
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-1831",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          38500
+        ]
+      },
+      {
+        "id": "pk-3891",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-3891",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-654",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-411743",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          35800
+        ]
+      },
+      {
+        "id": "pk-503",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-503",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-1707",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-1707",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-111804",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-427863",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-427863",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-4059",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-4059",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-563",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-563",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-683739",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-683739",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-92047",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-382131",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-382131",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-454038",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-56703",
+        "field": "psa10Price",
+        "before": [
+          null
+        ],
+        "after": [
+          310000
+        ]
+      },
+      {
+        "id": "x-91922",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-432338",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-432338",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-528640",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-528640",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-18787",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-91934",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-91868",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-91265",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-452593",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-413438",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-413438",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-457787",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-110597",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-922",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-922",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-429535",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-80619",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-80619",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-91247",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-91247",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-411708",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          11111
+        ]
+      },
+      {
+        "id": "pk-921",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-921",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          2
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-144",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-385472",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-385472",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-37446",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-47109",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-380659",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-380659",
+        "field": "psa10Price",
+        "before": [
+          null
+        ],
+        "after": [
+          100000
+        ]
+      },
+      {
+        "id": "x-453259",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-562761",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-562761",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-683740",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-683740",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-407415",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-335091",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-335091",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-3926",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-3926",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-6038",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-6038",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "x-706804",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-454064",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-454064",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-1377",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-1377",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-80657",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-80657",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-1745",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-18478",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-18478",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-284",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-284",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-431037",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-326",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-45646",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-2554",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-2554",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-65646",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-80612",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-80612",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-93178",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-3896",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-429497",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-429497",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-410289",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-128175",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-562541",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-562541",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-809",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-128176",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-128176",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-431065",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-128149",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-284086",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-21486",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-23413",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          5,
+          5
+        ]
+      },
+      {
+        "id": "pk-1712",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-430553",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-446596",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-431044",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-456663",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-456663",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-431046",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-431046",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-66259",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-457750",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-292717",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-275",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-34748",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-34748",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-20203",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          2
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-20203",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-958",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-427875",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-128017",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-18988",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-18988",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-430550",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-430550",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-455488",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-556879",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-556879",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-427904",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-427904",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-379606",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-379606",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-431099",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-41831",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-41831",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-55723",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-41832",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-41832",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-23514",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-798",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-798",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-13926",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          1500
+        ]
+      },
+      {
+        "id": "pk-50921",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-50921",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-4678",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-4678",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-23595",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-23595",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "x-393253",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-393253",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-413379",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-413379",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-39525",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-141061",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-141061",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-43674",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-43674",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-57369",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-57369",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-45922",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-22200",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-22200",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-67307",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-67307",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-471565",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-471565",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-60251",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-60251",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-39517",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-39517",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "pk-39510",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-39510",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          4
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-39500",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-39500",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "pk-41846",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-41846",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-41162",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-35364",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-35364",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-43743",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-43793",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-43856",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-43858",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-47633",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          2
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-35743",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-35743",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-35748",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-35748",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          2
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-35761",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-35761",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-47861",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          1000
+        ]
+      },
+      {
+        "id": "pk-22416",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-22418",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-18135",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-18135",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-18232",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-18232",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-50930",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-50930",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-50945",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-50945",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-50964",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-50964",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-50976",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-50976",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-50992",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-50992",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-51003",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-51003",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-51073",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-50941",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-50941",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-50973",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-50973",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-51032",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-51032",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-53292",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-57360",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          2
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-57370",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-58004",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-5879",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-5879",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-61524",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-61524",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          2
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-67299",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-67299",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-73556",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-73713",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-78733",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-115256",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-115256",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-407835",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-105533",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-105533",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-41166",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-396045",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-471581",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-471581",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-471641",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-471641",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-471664",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-471664",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-740294",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-740294",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-39217",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-39217",
+        "field": "psa10Price",
+        "before": [
+          null
+        ],
+        "after": [
+          8800
+        ]
+      },
+      {
+        "id": "pk-39217",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-127770",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-450908",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-3860",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-3860",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-609631",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-609631",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-36332",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-36332",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-385526",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-385526",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-37604",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-37604",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-17015",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-17015",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-390879",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-390879",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          2,
+          2
+        ]
+      },
+      {
+        "id": "pk-50935",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-50935",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-51026",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-51026",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-6100",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-6100",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-404898",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-184115",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-740270",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-740270",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-22013",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-1404",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-1404",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-1431",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-1431",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-1308",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-65682",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-65682",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-4021",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-4021",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-2314",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-2314",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-17349",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-17349",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-50931",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-50931",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-50970",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-50970",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-564",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-564",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-80637",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-80637",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-19",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-19",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-63108",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-63108",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-959",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-959",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-509",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-509",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-1475",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-1475",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-80654",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-20553",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-20553",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-91382",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-428827",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-428827",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-455387",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-455387",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-91751",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-91751",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-321711",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-321711",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-390769",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-91905",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          3
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-427908",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-427908",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-404804",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-404804",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-454484",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-93328",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-92043",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-433889",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-397820",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-381837",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-381837",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          1
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-430535",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-430535",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-38210",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-38210",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-39203",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "pk-39203",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-92182",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-109298",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-109298",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-389915",
+        "field": "domesticTrades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-389915",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-431330",
+        "field": "psa10Trades",
+        "before": [
+          null,
+          null
+        ],
+        "after": [
+          1,
+          1
+        ]
+      },
+      {
+        "id": "x-452612",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          189800
+        ]
+      },
+      {
+        "id": "x-455958",
+        "field": "psa10Price",
+        "before": [
+          null
+        ],
+        "after": [
+          94000
+        ]
+      },
+      {
+        "id": "x-452726",
+        "field": "psa10Price",
+        "before": [
+          null
+        ],
+        "after": [
+          200000
+        ]
+      },
+      {
+        "id": "pk-1385",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          12000
+        ]
+      },
+      {
+        "id": "x-454490",
+        "field": "psa10Price",
+        "before": [
+          null
+        ],
+        "after": [
+          49800
+        ]
+      },
+      {
+        "id": "x-334798",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          1500
+        ]
+      },
+      {
+        "id": "x-891196",
+        "field": "domesticPrice",
+        "before": [
+          0
+        ],
+        "after": [
+          1100
+        ]
+      },
+      {
+        "id": "x-732693",
+        "field": "psa10Price",
+        "before": [
+          null
+        ],
+        "after": [
+          9500
+        ]
+      }
+    ],
+    "changedValues": [
+      {
+        "id": "pk-1745",
+        "field": "domesticPrice",
+        "before": [
+          12900
+        ],
+        "after": [
+          5250
+        ]
+      }
+    ],
+    "unchangedValuesOrEvidence": [],
+    "other": []
+  }
+}

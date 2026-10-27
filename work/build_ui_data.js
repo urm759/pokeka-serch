@@ -65,7 +65,7 @@ function build(root = ROOT) {
     const original = `data/${name}.json`, file = `data/ui/${name}.json`;
     if (!fs.existsSync(path.join(root, original))) continue;
     const text = fs.readFileSync(path.join(root, original), 'utf8');
-    const packed = JSON.stringify(codec.encode(project(name, JSON.parse(text))));
+    const packed = JSON.stringify(codec.encode(project(name, JSON.parse(text)),{version:2}));
     write(file, packed); aliases[original] = file;
     bytes[original] = { original: Buffer.byteLength(text), summary: Buffer.byteLength(packed) };
   }

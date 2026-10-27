@@ -30,6 +30,7 @@ let observationEfficiencyCache = new WeakMap();
 let efficiencyRenderPass = null;
 let efficiencyViewCache = new WeakMap();
 const explorationFields = [
+  ['psa9GuideMin','psa9GuideMin'],
   ['purchaseMin','actualPurchaseMin'],['purchaseMax','actualPurchaseMax'],
   ['headroomMin','purchaseHeadroomMin'],['headroomMax','purchaseHeadroomMax'],
   ['buybackMaxMin','buybackHighestMin'],
@@ -255,6 +256,8 @@ const state = {
   efficiencyBuy: 'median', efficiencyScenario: 'current',
   efficiencyIncludeReference: false,
   purchaseBelowCurrentCap: false,
+  psa9AboveGuide: false,
+  psa9GuideMin: null,
   psa10PeriodSummary: null,
   buybackObservationSummary: null,
   includePeriodReference: true,
@@ -1737,6 +1740,7 @@ function exportFavoritesCsv() {
   rows[0].push('現在買える状態A価格','仕入れ余裕率%（利益率とは別）','検索採用買値','検索採用買値基準','検索期待利益','検索PSA10時利益率%','30日買取掲載率%','30日平均掲載店舗数','正常観測日数','取得カバー率%','余裕率の比較上限（一覧と同じ）','余裕率の参考警告','余裕率の比較不可理由');
   rows[0].push('単体資金効率・買値','単体資金効率・買値基準','単体資金効率・売値基準','単体資金効率・売却先','単体期待利益','総投下額','単体期待利益率%','想定資金拘束日数','単体年換算効率%（参考）','単体資金効率・算出不可理由','単体資金効率・計算区分','単体資金効率・参考警告','単体資金効率・検索採用');
   for (const days of [7,30,75,200]) rows[0].push(`${days}日観測平均`,`${days}日乖離率%`,`${days}日観測日数`,`${days}日最終観測`,`${days}日観測状態`);
+  rows[0].push('PSA9価格','PSA9価格区分','PSA9取得元','PSA9価格日時（集計確認／個別最終成約／推定基準）','PSA9比較の仕入れ目安','PSA9価格／仕入れ目安%','目安購入時PSA9総投資','目安購入時PSA9利益','PSA9取得時利益率%','PSA9売却先','PSA9利益算出不可理由','PSA9参考値の検索採用','PSA9目安超チェック','PSA9目安比の下限%');
   rows[0].push('利益確保の仕入れ目安・現相場基準','目安の切下げ前値','目安の最低期待利益','目安の最低期待利益率%','目安の状態','目安の売却先','素体参考相場70%（上限ではない）');
   rows[0].push('資金効率採用平均・暦日期間','資金効率採用平均価格','資金効率平均・観測日数','資金効率平均・欠測日数','資金効率平均・最終観測日','平均資金効率・非10価格基準','資金効率平均・根拠未確認日数');
   rows[0].push('中央値買値・参考年換算効率%','実店舗買値・年換算効率%','中央値採用元数','中央値独立店舗数','中央値内訳未確認元数','中央値価格下端','中央値価格上端','中央値個別根拠JSON','中央値比較不可理由');
@@ -1750,6 +1754,7 @@ function exportFavoritesCsv() {
       const o = explorationMetrics.observation(state.psa10PeriodSummary,card.id,card.psa10,days);
       rows[index+1].push(o.mean ?? '',o.delta ?? '',o.count ?? '',o.latest || '',o.mean == null ? '未取得' : `${o.reference ? '参考・観測不足' : '観測充足'}${o.stale ? '／古い観測' : ''}`);
     }
+    rows[index+1].push(...psa9GuideCsvFields(card));
     const g=currentProfitGuide(card);
     rows[index+1].push(g.cap ?? '',g.rawCap ?? '',g.minProfit ?? '',g.minRoi ?? '',g.capState,g.exitLabel,g.practicalPrice ?? '');
     const o=e.observation;
@@ -3207,7 +3212,7 @@ function captureConditionOrigins(defaults, restored) {
   const bindings = new Map([...efficiencyFields,...explorationFields].map(([param,field])=>[field+'Input',param]));
   for(const [id,param] of Object.entries({roiInput:'roi',expectedProfitFilterInput:'filterExpProfit',expectedRoiFilterInput:'filterExpRoi',
     psa9RatioMinInput:'psa9RatioMin',psa9RatioMaxInput:'psa9RatioMax',psa9RatioAggregateInput:'psa9Aggregate',psa9RatioEstimateInput:'psa9Estimate',psa9RatioMarketInput:'psa9Market',
-    efficiencyIncludeReferenceInput:'effRef',observationIncludeReferenceInput:'obsRef',efficiencyBuyInput:'effBuy',efficiencyScenarioInput:'effScenario',purchaseBelowCurrentCapInput:'buyBelowCap',
+    efficiencyIncludeReferenceInput:'effRef',observationIncludeReferenceInput:'obsRef',efficiencyBuyInput:'effBuy',efficiencyScenarioInput:'effScenario',purchaseBelowCurrentCapInput:'buyBelowCap',psa9AboveGuideInput:'psa9AboveGuide',
     priceMinInput:'priceMin',priceMaxInput:'priceMax',psaMinInput:'psaMin',psaMaxInput:'psaMax',year2020Input:'year2020'})) bindings.set(id,param);
   for(const [id,param] of Object.entries({saleTxMinInput:'tx',saleTxMaxInput:'txMax',saleTx7MinInput:'tx7',saleTx7MaxInput:'tx7Max',psaTxMinInput:'psaTx',psaTxMaxInput:'psaTxMax',psaTx7MinInput:'psaTx7',psaTx7MaxInput:'psaTx7Max',buyback7MinInput:'bb7',buyback30MinInput:'bb30',buyback90MinInput:'bb90',buybackShopsMinInput:'bbShops',purchaseLimitRatioMinInput:'buyLimitRatio',stressExpectedProfitFilterInput:'filterStressProfit',stressExpectedRoiFilterInput:'filterStressRoi',currentMarketCapMinInput:'marketCapMin',includePeriodReferenceInput:'periodReference',profitSearchBasisInput:'profitBasis',sortInput:'sort'})) bindings.set(id,param);
   for (const [id,param] of Object.entries({includeUnknownYearInput:'includeUnknownYear',diagnosticSearchInput:'diagnostic',psaRateMinInput:'psaRate',overallFilterInput:'overall',minExitLiquidityInput:'exit',minEconomicsInput:'economics',minMarketStabilityInput:'stability',minSupplyRiskInput:'supply',minFuturePriceScoreInput:'futureScore',maxFuturePriceScoreInput:'futureScoreMax',minForecastPriceInput:'forecastMin',maxForecastPriceInput:'forecastMax',minForecastDownsideInput:'downsideMin',maxForecastDownsideInput:'downsideMax',minForecastGapInput:'gapMin',maxForecastGapInput:'gapMax',forecastPhaseInput:'forecastPhase',forecastConfidenceInput:'forecastConfidence',forecastSupplyPressureInput:'forecastSupply',minForecastAgeInput:'releaseAge',forecastMaturityInput:'forecastMaturity',maxForecastMonthlyIncreaseInput:'psaGrowthMax',stockDemandInput:'stockDemand',dataQualityFilterInput:'dataQuality',goConfidenceFilterInput:'goTrust',floorStateInput:'floorState',priceDirectionInput:'priceDirection',supplyStateInput:'supplyState',minFloorScoreInput:'floorScore',storeDemandInput:'storeDemand',showSkippedInput:'showSkipped',hideThinDemandInput:'hideThin',hideReviewInput:'hideReview',fundingOnlyInput:'fundingOnly',officialOnlyInput:'officialOnly',buyback7MaxInput:'bb7Max',buyback30MaxInput:'bb30Max',buyback90MaxInput:'bb90Max',buybackPriceMinInput:'bbPriceMin',buybackPriceMaxInput:'bbPriceMax',snkrRawTx7MinInput:'snkrTx7',snkrRawTx30MinInput:'snkrTx30',snkrRawProfitMinInput:'snkrProfit',snkrRawRoiMinInput:'snkrRoi',snkrRawPurchaseMaxInput:'snkrBuyMax',snkrRawReleaseMonthsInput:'snkrMonths'})) bindings.set(id,param);
@@ -3265,6 +3270,7 @@ function restoreQuickFilters() {
     }
     if (!url.searchParams.has("profitBasis") && ["auto", "limit", "store", "current", "current-cap", "current-target"].includes(saved.profitSearchBasis)) document.getElementById("profitSearchBasisInput").value = saved.profitSearchBasis;
     if (!url.searchParams.has("buyBelowCap") && typeof saved.purchaseBelowCurrentCap === "boolean") document.getElementById("purchaseBelowCurrentCapInput").checked = saved.purchaseBelowCurrentCap;
+    if (!url.searchParams.has("psa9AboveGuide") && typeof saved.psa9AboveGuide === "boolean") document.getElementById("psa9AboveGuideInput").checked = saved.psa9AboveGuide;
     if (!url.searchParams.has("periodReference") && typeof saved.includePeriodReference === "boolean") document.getElementById("includePeriodReferenceInput").checked = saved.includePeriodReference;
     for (const [parameter, field, el] of [["filterExpProfit", "minExpectedProfitFilter", els.expectedProfitFilterInput], ["filterExpRoi", "minExpectedRoiFilter", els.expectedRoiFilterInput]]) {
       if (!url.searchParams.has(parameter) && Object.hasOwn(saved, field)) el.value = saved[field] == null ? "" : String(saved[field]);
@@ -3301,6 +3307,7 @@ function persistExplicitSearchSettings() {
       ['filterExpRoi','minExpectedRoiFilter','expectedRoiFilterInput','number'],
       ['effRef','efficiencyIncludeReference','efficiencyIncludeReferenceInput','boolean'],
       ['obsRef','observationIncludeReference','observationIncludeReferenceInput','boolean'],
+      ['psa9AboveGuide','psa9AboveGuide','psa9AboveGuideInput','boolean'],
       ['profitBasis','profitSearchBasis','profitSearchBasisInput','string'],
       ['effBuy','efficiencyBuy','efficiencyBuyInput','string'],['effScenario','efficiencyScenario','efficiencyScenarioInput','string']];
     let changed=false;
@@ -3329,7 +3336,7 @@ function saveQuickFilters() {
       currentMarketSearchKind: state.currentMarketSearchKind,
       currentMarketCapMin: state.currentMarketCapMin, currentMarketManualPrice: state.currentMarketManualPrice,
       profitSearchBasis: state.profitSearchBasis, includePeriodReference: state.includePeriodReference,
-      purchaseBelowCurrentCap: state.purchaseBelowCurrentCap,
+      purchaseBelowCurrentCap: state.purchaseBelowCurrentCap, psa9AboveGuide:state.psa9AboveGuide,
       ...Object.fromEntries(explorationFields.map(([,field])=>[field,state[field] ?? null])),
       minExpectedProfitFilter: state.minExpectedProfitFilter, minExpectedRoiFilter: state.minExpectedRoiFilter,
       minPurchaseLimitRatio: state.minPurchaseLimitRatio,
@@ -3653,6 +3660,7 @@ function readUrl() {
   const profitBasisInput = document.getElementById("profitSearchBasisInput");
   const belowCapInput = document.getElementById("purchaseBelowCurrentCapInput");
   if (belowCapInput && filterUrl.searchParams.has("buyBelowCap")) belowCapInput.checked = filterUrl.searchParams.get("buyBelowCap") === "1";
+  if(filterUrl.searchParams.has("psa9AboveGuide")) document.getElementById("psa9AboveGuideInput").checked=filterUrl.searchParams.get("psa9AboveGuide")==="1";
   if (profitBasisInput && ["auto", "limit", "store", "current", "current-cap", "current-target"].includes(filterUrl.searchParams.get("profitBasis"))) profitBasisInput.value = filterUrl.searchParams.get("profitBasis");
   for (const [param,field] of explorationFields) if (filterUrl.searchParams.has(param)) document.getElementById(field+'Input').value = parseOptionalNumber(filterUrl.searchParams.get(param)) ?? '';
   if (filterUrl.searchParams.has('obsRef')) document.getElementById('observationIncludeReferenceInput').checked = filterUrl.searchParams.get('obsRef') !== '0';
@@ -3928,6 +3936,7 @@ function buildShareUrl() {
     else url.searchParams.set(param,String(state[field]));
   }
   url.searchParams.set("buyBelowCap", state.purchaseBelowCurrentCap ? "1" : "0");
+  url.searchParams.set("psa9AboveGuide",state.psa9AboveGuide?"1":"0");
   for (const [param,value] of [["marketCapMin",state.currentMarketCapMin],["marketBuy",state.currentMarketManualPrice]]) {
     if (value == null) url.searchParams.delete(param); else url.searchParams.set(param,String(value));
   }
@@ -4094,6 +4103,36 @@ function currentProfitGuide(card) {
 function currentGuideBreakEven(card) {
   const g=currentProfitGuide(card);
   return {...g,cap:g.breakEvenCap,rawCap:g.breakEvenRawCap,capState:g.breakEvenState,capLabel:g.breakEvenLabel,capNote:g.breakEvenNote};
+}
+let psa9GuideCache = new WeakMap();
+function psa9GuideView(card,now=Date.now()) {
+  const guide=currentProfitGuide(card), audit=card.psa9Audit || {}, problem=psaPlanProblem();
+  const key=JSON.stringify([guide.cap,guide.capState,guide.eligible,state.fee,state.saleExtraCost,state.saleFeeRate,state.exitPolicy,
+    state.psa9RatioAggregate,state.psa9RatioEstimate,audit,problem,card.repairRequired,card.repairCost]);
+  const saved=psa9GuideCache.get(card);if(saved?.key===key&&now>=saved.at&&now<saved.expires)return saved.value;
+  const source=audit.measurementType==='aggregate'&&/^PSA9集計値/.test(audit.source || '')?'みんトレ提供・国内PSA9集計':audit.source;
+  const value=purchaseRatioModel.atGuide({guide,psa9:{...audit,source},asOf:new Date(now).toISOString(),
+    fee:state.fee,extraCost:state.saleExtraCost,saleFeeRate:state.saleFeeRate,exitPolicy:state.exitPolicy,
+    referenceOptions:psa9RatioOptions(),planProblem:problem,repairRequired:card.repairRequired===true,repairCost:card.repairCost});
+  const expiry=Date.parse(audit.updatedAt)+30*86400000+1;
+  psa9GuideCache.set(card,{key,value,at:now,expires:expiry>now?Math.min(expiry,now+60000):now+60000});return value;
+}
+function psa9GuideExclusion(card) {
+  if(state.purchaseMode==='snkr-raw'||state.purchaseMode==='normal'&&state.catalogScope!=='analysis')return null;
+  if(!state.psa9AboveGuide&&state.psa9GuideMin==null)return null;
+  return purchaseRatioModel.guideExclusion(psa9GuideView(card),{above:state.psa9AboveGuide,min:state.psa9GuideMin});
+}
+function psa9GuidePanel(card) {
+  const money=n=>Number.isFinite(n)?'¥'+fmt.format(Math.round(n)):'算出不可';
+  const signedMoney=signedExpectedMoney;
+  const v=psa9GuideView(card),type={actual:'個別実成約',aggregate:'集計・参考',estimate:'推定・参考'}[v.measurementType] || '区分未確認';
+  const kind=v.price>0?(v.measurementType==='estimate'?'PSA9推定価格':'PSA9価格'):'PSA9未取得';
+  const stamp=v.updatedAt?`${v.measurementType==='actual'?'最終成約':v.measurementType==='estimate'?'推定基準':'確認'} ${formatJstTimestamp(v.updatedAt)}${v.measurementType==='actual'?'／取得確認日未登録':''}`:'確認日未取得';
+  const roi=Number.isFinite(v.roi)?`${v.roi>0?'+':''}${v.roi.toFixed(1)}%`:`算出不可：${v.profitReasons[0] || '材料不足'}`;
+  return `<div class="psa9-guide-inline"><div class="psa9-guide-price"><span>${kind}</span> <b class="${v.sourceReasons.length?'value-reference':''}">${v.price>0?money(v.price):'未取得'}</b><small>${escapeHtml(type)}／${escapeHtml(v.source)}／${escapeHtml(stamp)}</small>${v.sourceReasons.length?`<small class="reference-warning">${escapeHtml(v.sourceReasons[0])}</small>`:''}</div><div>PSA9取得時利益率 <b class="${numericTone(v.roi)}">${escapeHtml(roi)}</b><small>目安 ${money(v.guide)}で購入／売却：${escapeHtml(v.exitLabel)}</small></div><details><summary>PSA9採算・価格比較</summary><small>手数料前価格比 ${Number.isFinite(v.priceRatio)?v.priceRatio.toFixed(1)+'%':'算出不可'}。利益確保の仕入れ目安で購入した仮定。PSA10率を掛けた期待利益率・購入GOとは別です。</small><small>総投資 ${money(v.investment)}＝目安＋鑑定費等 ${money(v.fee)}＋売却諸費用 ${money(v.extraCost)}＋交通費 ${money(v.travelCost)}${v.repairCost?'＋リペア費 '+money(v.repairCost):''}。PSA9売却額 ${money(v.salePrice)}、手数料 ${money(v.sellingFee)}、減額 ${money(v.deduction)}、損益 ${signedMoney(v.profit).text}。</small><small>送料等は売却諸費用の入力額を1回だけ控除。未入力費用・リペアの完了/鑑定結果は保証しません。PSA9出口不足はフリマへ切替しません。${escapeHtml(v.profitReasons.join('／'))}</small>${currentProfitGuide(card).lowerGradePrice>0&&currentProfitGuide(card).lowerGradePrice!==v.price?`<small>既存の期待値計算のPSA9以下仮置き：${money(currentProfitGuide(card).lowerGradePrice)}（保守補正）。上のPSA9取得時利益率は表示したPSA9価格で計算。</small>`:''}${v.searchStatus!=='eligible'?`<small class="reference-warning">価格比較の検索：${v.searchStatus==='reference-disabled'?'参考採用OFF':escapeHtml(v.comparisonReasons[0]||'根拠不足')}</small>`:''}</details></div>`;
+}
+function psa9GuideCsvFields(card) {
+  const v=psa9GuideView(card);return [v.price??'',v.measurementType,v.source,v.updatedAt||'',v.guide??'',v.priceRatio??'',v.investment??'',v.profit??'',v.roi??'',v.exitLabel,v.profitReasons.join('／'),v.searchStatus,state.psa9AboveGuide?1:0,state.psa9GuideMin??''];
 }
 function computeSearchProfitView(card, mode = state.purchaseMode, explicitBasis = null) {
   if (mode !== 'now' && (explicitBasis || state.profitSearchBasis) === 'current-target') {
@@ -5165,6 +5204,8 @@ function computeCardSearchExclusions(card, {mode = state.purchaseMode,diagnostic
     if (!explorationMetrics.inRange(efficiencySearchValue(efficiency),state.efficiencyMin,null)) reasons.push(efficiency.observation?.reference && !state.observationIncludeReference ? '単体資金効率・観測不足の参考平均を対象外' : efficiency.calculationState === 'reference' && !state.efficiencyIncludeReference ? '単体資金効率・参考値を検索対象外' : Number.isFinite(efficiency.annual) ? '単体年換算資金効率条件' : '単体資金効率算出不可・'+(efficiency.reason || 'データ不足'));
   }
   reasons.push(...observationSearchExclusions(card));
+  const psa9GuideReason = psa9GuideExclusion(card);
+  if(psa9GuideReason) reasons.push(psa9GuideReason);
   const buybackReason = buybackHighestExclusion(card);
   if (buybackReason) reasons.push(buybackReason);
       const haystack = normalize(`${card.name} ${card.model} ${card.id}`);
@@ -5459,12 +5500,12 @@ function priceComparisonCells(card, limitDisplay, confirmedAt, now = Date.now(),
   const freshReference = explorationMetrics.referenceMedian(card, now);
   const purchaseStatus = usableOffer ? null : decisionModel.purchasePriceState(card.storePriceAudit || []).label;
   if(compact)return `<div class="price-cell" data-price-kind="store"><span>${trial?.purchaseKind==='manual'?'購入価格（手入力試算）':'現在買える状態A価格'}</span><strong>${usableOffer?money(offer.value):trial?.purchaseKind==='manual'?money(trial.purchasePrice):escapeHtml(purchaseStatus)}</strong><small>${escapeHtml(usableOffer?offer.source:'購入先未確認・GO不可')}${usableOffer?'／'+escapeHtml(dateText(offer.updatedAt)):''}</small><span class="raw-reference-median">素体参考相場・中央値 <b>${freshReference.value==null?'算出不可':money(freshReference.value)}</b></span><small>新鮮${freshReference.count}元／独立${freshReference.independent}店${freshReference.value==null?'・根拠不足':''}。購入保証なし。</small></div>
-    <div class="price-cell" data-price-kind="psa10"><span>PSA10現在相場</span><strong>${hasMarket?money(marketPrice):'未取得'}</strong><small>${escapeHtml(card.psa10Audit?.source||'取得元未取得')}／${escapeHtml(dateText(confirmedAt))}</small>${stale||!Number.isFinite(checkedTime)?`<small class="reference-warning">${escapeHtml(marketNotice)}</small>`:''}</div>
+    <div class="price-cell" data-price-kind="psa10"><span>PSA10現在相場</span><strong>${hasMarket?money(marketPrice):'未取得'}</strong><small>${escapeHtml(card.psa10Audit?.source||'取得元未取得')}／${escapeHtml(dateText(confirmedAt))}</small>${stale||!Number.isFinite(checkedTime)?`<small class="reference-warning">${escapeHtml(marketNotice)}</small>`:''}${psa9GuidePanel(card)}</div>
     <div class="price-cell glance-stable" data-price-kind="current-target"><span>利益確保の仕入れ目安・現相場基準</span><strong>${guide.capState==='loss-at-zero'?'利益条件を満たす買値なし':money(guide.cap)}</strong><small>目標利益${money(guide.minProfit)}・${guide.minRoi??'未設定'}%／${escapeHtml(guide.exitLabel||'出口未取得')}</small><small class="reference-warning">${guide.noProfitMargin?'利益余裕なし／':''}${escapeHtml(compactWarningText([...guide.reasons,...guide.warnings]))}${guide.belowPractical?'／採算上、実務価格帯で仕入れ困難':''}現相場維持の参考・GOではない</small></div>
     <div class="price-cell glance-break-even" data-price-kind="break-even" data-cap-state="${limitDisplay.currentCapState||'available'}"><span>現相場の期待損益分岐上限</span><strong>${escapeHtml(capText)}</strong><small>推奨買値ではありません</small><div class="purchase-headroom"><span>仕入れ余裕率（利益率とは別）</span><b>${Number.isFinite(headroom)?`${headroom>0?'+':''}${headroom.toFixed(2)}%`:'比較不可'}</b><small class="reference-warning">${escapeHtml(compactWarningText(exploration.warnings))}</small></div></div>${psa10PeriodCompact(card,true)}`;
   return `
     <div class="price-cell" data-price-kind="store"><span>${trial?.purchaseKind === "manual" ? "購入価格（手入力試算）" : "現在買える状態A価格"}</span><strong class="${usableOffer || trial?.purchaseKind === "manual" ? "" : "value-unavailable"}">${usableOffer ? money(offer.value) : trial?.purchaseKind === "manual" ? money(trial.purchasePrice) : escapeHtml(purchaseStatus)}</strong><small>${escapeHtml(usableOffer ? offer.source : trial?.purchaseKind === "manual" ? "手入力試算・購入先未確認。相場参考買値ではありません" : "素体相場で代用しません・GO不可")}</small>${usableOffer ? `<small>価格確認：${escapeHtml(dateText(offer.updatedAt))}<br>在庫確認：${escapeHtml(dateText(offer.inventoryAt))}</small>` : ""}<span class="raw-reference-median">素体参考相場・中央値 <b class="${freshReference.value == null ? "value-unavailable" : ""}">${freshReference.value != null ? money(freshReference.value) : "算出不可"}</b></span><small>新鮮な採用元${freshReference.count}件／独立店舗${freshReference.independent}（販売価格・成約相場は別）<br>${escapeHtml(freshReference.reasons.join('／') || freshReference.warnings.join('／'))}<details><summary>元の価格集計・鮮度</summary>履歴込み中央値 ${money(freshReference.historicalValue)}／${escapeHtml(referenceFreshness.label)}。上限・GOの計算基準は変更しません。</details></small><small class="overseas-glance" data-overseas-glance="${escapeHtml(card.id)}" data-overseas-grade="raw">${overseasPriceGlance(card,'raw',now)}</small></div>
-    <div class="price-cell" data-price-kind="psa10"><span>PSA10現在相場</span><strong class="${!hasMarket || stale || !Number.isFinite(checkedTime) ? "value-unavailable" : ""}">${hasMarket ? money(marketPrice) : "未取得"}</strong><small>${escapeHtml(card.psa10Audit?.source || "取得元未取得")}</small><small>提供元の価格確認：${escapeHtml(dateText(confirmedAt))}</small>${lastSale ? `<small>最終成約：${escapeHtml(dateText(lastSale))}</small>` : ""}<small class="price-note ${stale ? "price-stale" : ""}">${escapeHtml(marketNotice)}</small><small class="overseas-glance" data-overseas-glance="${escapeHtml(card.id)}" data-overseas-grade="psa10">${overseasPriceGlance(card,'psa10',now)}</small></div>
+    <div class="price-cell" data-price-kind="psa10"><span>PSA10現在相場</span><strong class="${!hasMarket || stale || !Number.isFinite(checkedTime) ? "value-unavailable" : ""}">${hasMarket ? money(marketPrice) : "未取得"}</strong><small>${escapeHtml(card.psa10Audit?.source || "取得元未取得")}</small><small>提供元の価格確認：${escapeHtml(dateText(confirmedAt))}</small>${lastSale ? `<small>最終成約：${escapeHtml(dateText(lastSale))}</small>` : ""}<small class="price-note ${stale ? "price-stale" : ""}">${escapeHtml(marketNotice)}</small><small class="overseas-glance" data-overseas-glance="${escapeHtml(card.id)}" data-overseas-grade="psa10">${overseasPriceGlance(card,'psa10',now)}</small>${psa9GuidePanel(card)}</div>
     ${psa10PeriodCompact(card)}
     ${trial ? breakCell + stableCell : stableCell + breakCell}`;
 }
@@ -6610,6 +6651,7 @@ function syncFromUI(event) {
   state.observationIncludeReference = document.getElementById('observationIncludeReferenceInput')?.checked !== false;
   renderObservationFilterStatus();
   state.purchaseBelowCurrentCap = document.getElementById("purchaseBelowCurrentCapInput")?.checked === true;
+  state.psa9AboveGuide = document.getElementById("psa9AboveGuideInput").checked;
   state.includePeriodReference = document.getElementById("includePeriodReferenceInput")?.checked !== false;
   state.psa9RatioMin = parseOptionalNumber(els.psa9RatioMinInput.value);
   state.psa9RatioMax = parseOptionalNumber(els.psa9RatioMaxInput.value);
@@ -7108,6 +7150,7 @@ for (const field of ['efficiencyBuy','efficiencyScenario','efficiencyIncludeRefe
   }
 }
 document.getElementById("purchaseBelowCurrentCapInput")?.addEventListener("change", syncFromUI);
+document.getElementById("psa9AboveGuideInput")?.addEventListener("change",syncFromUI);
 for (const [,field] of explorationFields) document.getElementById(field+'Input')?.addEventListener('input',syncFromUI);
 document.getElementById('observationIncludeReferenceInput')?.addEventListener('change',syncFromUI);
 document.getElementById("includePeriodReferenceInput")?.addEventListener("change", syncFromUI);

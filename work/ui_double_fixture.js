@@ -35,7 +35,7 @@ function fixture(root) {
       for (const [key,n] of Object.entries(value.summary)) if(typeof n==='number'&&!ratio.test(key)) value.summary[key]=n*2;
       for (const item of Object.values(value.itemTotals||{})) for(const [key,n]of Object.entries(item)) if(typeof n==='number'&&!ratio.test(key))item[key]=n*2;
     }
-    const text = JSON.stringify(input.codec ? codec.encode(value) : value);
+    const text = JSON.stringify(input.codec ? codec.encode(value,{version:input.codec==='ui-schema-v2'?2:1}) : value);
     buffers.set(file,Buffer.from(text));
     manifest.hashes[file]=crypto.createHash('sha256').update(text).digest('hex');
   }

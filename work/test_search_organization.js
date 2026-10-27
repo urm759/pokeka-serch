@@ -8,7 +8,7 @@ function controls(h) {
     const a=m[1]??m[2];return [attr(a,'id'),m[1]!=null?attr(a,'value')||'':m[3].replace(/\s+/g,' ').trim(),/\bchecked\b/.test(a)];
   }).filter(r=>r[0]).sort((a,b)=>a[0].localeCompare(b[0]));
 }
-assert.deepEqual(controls(html).filter(row=>!row[0].startsWith('observation') && row[0] !== 'buybackHighestMinInput').map(row=>row[0]==='profitSearchBasisInput'?[row[0],row[1].replace('<option value="current-target">利益確保の仕入れ目安で購入・現相場基準（探索）</option>',''),row[2]]:row[0]==='efficiencyScenarioInput'?[row[0],row[1].replace(/<option value="obs(?:7|30|75|200)">[^<]*<\/option>/g,''),row[2]]:row[0]==='efficiencyBuyInput'?[row[0],row[1].replace(/<option value="(?:store|median)"(?: selected)?>[^<]*<\/option>/g,''),row[2]]:row),baseline.controls,'existing IDs/options survive; explicitly authorized new-user median default tested separately');
+assert.deepEqual(controls(html).filter(row=>!row[0].startsWith('observation') && !['buybackHighestMinInput','psa9AboveGuideInput','psa9GuideMinInput'].includes(row[0])).map(row=>row[0]==='profitSearchBasisInput'?[row[0],row[1].replace('<option value="current-target">利益確保の仕入れ目安で購入・現相場基準（探索）</option>',''),row[2]]:row[0]==='efficiencyScenarioInput'?[row[0],row[1].replace(/<option value="obs(?:7|30|75|200)">[^<]*<\/option>/g,''),row[2]]:row[0]==='efficiencyBuyInput'?[row[0],row[1].replace(/<option value="(?:store|median)"(?: selected)?>[^<]*<\/option>/g,''),row[2]]:row),baseline.controls,'existing IDs/options survive; explicitly authorized new-user median default tested separately');
 for(const days of [7,30,75,200])assert(html.includes(`value="obs${days}"`),'all declared average choices exist');
 for(const [id,value,type] of [['roiInput','20','number'],['expectedRoiFilterInput','0','number'],['floorStateInput','stable','select'],['purchaseBelowCurrentCapInput','', 'checkbox']]) {
   const el={id,value,type,checked:true,tagName:type==='select'?'SELECT':'INPUT',options:[{value:'all'},{value:'stable'}]};
@@ -56,6 +56,8 @@ for(const [name,expected] of Object.entries(baseline.protectedFunctions)) {
     // Its stale/reference/true-conflict behaviour is covered by test_price_comparison.
     .replaceAll('(card.priceAggregation?.comparison || card.priceAggregation)?.conflicted','card.priceAggregation?.conflicted')
     .replaceAll('decisionModel.priceReview(priceAggregation).conflicted','priceAggregation.conflicted')
+    // Record-level quarantine was authorized and tested separately; this guard protects all remaining financial gates.
+    .replaceAll('decisionModel.hasBlockingDataAnomaly(card.dataQuality)','card.dataQuality?.dataAnomaly')
     .replace('  priceAggregation.comparison = decisionModel.comparablePriceEvidence(priceAggregation, { now: Date.now(), divergencePct: 35 });\n','')
     .replace("reasons.push(efficiency.observation?.reference && !state.observationIncludeReference ? '単体資金効率・観測不足の参考平均を対象外' : efficiency.calculationState", "reasons.push(efficiency.calculationState")
     .replace(/  if \(mode !== 'now' && \(explicitBasis \|\| state.profitSearchBasis\) === 'current-target'\) \{[\s\S]*?\n  }\n/,'')
@@ -63,6 +65,9 @@ for(const [name,expected] of Object.entries(baseline.protectedFunctions)) {
     .replace('      if (state.purchaseBelowCurrentCap)', '      if (diagnostic && normalizedQuery && state.diagnosticSearch) return reasons;\n      if (state.purchaseBelowCurrentCap)')
     .replace("['current-cap','current-target'].includes(profitView.basis)","profitView.basis === 'current-cap'")
     .replace("['limit','current-cap','current-target']","['limit','current-cap']")
+    // Optional PSA9 guide comparisons are covered by test_psa9_guide_*; old financial gates stay protected.
+    .replace("  const psa9GuideReason = psa9GuideExclusion(card);\n  if(psa9GuideReason) reasons.push(psa9GuideReason);\n",'')
+    .replace('  url.searchParams.set("psa9AboveGuide",state.psa9AboveGuide?"1":"0");\n','')
     .replace("  reasons.push(...observationSearchExclusions(card));\n",'')
     .replace("  const buybackReason = buybackHighestExclusion(card);\n  if (buybackReason) reasons.push(buybackReason);\n",'')
     .replace("  if (state.observationIncludeReference === false) url.searchParams.set('obsRef','0'); else url.searchParams.delete('obsRef');\n",'')

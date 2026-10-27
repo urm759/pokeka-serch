@@ -3813,6 +3813,40 @@
       "basis": "利用者が選択したCSV・カード・日付・実結果。推定結果で実現利益を作らない",
       "effect": "操作しない限り検索・安全条件は変わらない。記録は削除対象にしない",
       "overlap": "日次取得・自動探索・本番モデルの変更とは別"
+    },
+    {
+      "id": "psa9AboveGuideInput",
+      "label": "PSA9価格が仕入れ目安より高い",
+      "type": "checkbox",
+      "initial": false,
+      "category": "詳細検索",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "combined",
+        "specified"
+      ],
+      "purpose": "国内PSA9価格と利益確保の仕入れ目安を比較",
+      "basis": "PSA9価格÷現相場目安×100。手数料前の価格比",
+      "effect": "チェックは厳密な超過、数値下限は境界を含む。未指定は除外なし",
+      "overlap": "仕入れ値÷PSA9の既存条件・費用込み利益率・GOとは別"
+    },
+    {
+      "id": "psa9GuideMinInput",
+      "label": "PSA9価格／仕入れ目安 下限％",
+      "type": "number",
+      "initial": "",
+      "category": "詳細検索",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "combined",
+        "specified"
+      ],
+      "purpose": "国内PSA9価格と利益確保の仕入れ目安を比較",
+      "basis": "PSA9価格÷現相場目安×100。手数料前の価格比",
+      "effect": "チェックは厳密な超過、数値下限は境界を含む。未指定は除外なし",
+      "overlap": "仕入れ値÷PSA9の既存条件・費用込み利益率・GOとは別"
     }
   ],
   "actions": [

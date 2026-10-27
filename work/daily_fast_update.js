@@ -49,6 +49,15 @@ function recordSource(sourceId, record) {
   appendRunHistory(sourceId, { ...record, ...execution }, ROOT);
 }
 
+function finalize() {
+  // Priority owns a required finalization after all independent source updates.
+  // Raw acquisition and observations stay saved here; lineage verification still
+  // prevents publication until the parent's finalization has succeeded.
+  if (process.env.FAST_PARENT_FINALIZES === 'priority') return 'deferred-to-priority';
+  if (run('work/finalize_update_status.js').status !== 0) throw new Error('保存済み原票の最終検証・集計に失敗しました');
+  return 'completed';
+}
+
 function main() {
   const source = run("work/update_pokemon_site.js", { FAST_UPDATE: "1", SNKR_BATCH: "0" });
   if (source.status !== 0) throw new Error(`みんトレ差分取得に失敗しました（exit ${source.status}）`);
@@ -81,8 +90,8 @@ function main() {
       durationMs: Date.now() - startedAt, regeneratedFiles: 0, checkpoint: "変更なし", llmCalls: 0, codexCalls: 0,
     };
     writeJson(path.join(ROOT, "data", "update-performance.json"), unchangedMetrics);
-    run("work/finalize_update_status.js");
-    console.log(`DAILY_FAST_RESULT ${JSON.stringify({ ...unchangedMetrics, committed: false })}`);
+    const finalization = finalize();
+    console.log(`DAILY_FAST_RESULT ${JSON.stringify({ ...unchangedMetrics, finalization, committed: false })}`);
     return;
   }
 
@@ -133,8 +142,8 @@ function main() {
     codexCalls: 0,
   };
   writeJson(path.join(ROOT, "data", "update-performance.json"), metrics);
-  run("work/finalize_update_status.js");
-  console.log(`DAILY_FAST_RESULT ${JSON.stringify({ ...metrics, committed: true })}`);
+  const finalization = finalize();
+  console.log(`DAILY_FAST_RESULT ${JSON.stringify({ ...metrics, finalization, committed: true })}`);
 }
 
 try {

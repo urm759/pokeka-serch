@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20261025-buyback-scope-v1" />
+  <link rel="stylesheet" href="./styles.css?v=20261027-psa9-guide-v1" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -271,6 +271,9 @@
           <input id="stressExpectedProfitFilterInput" type="number" step="1000" value="0" />
         </label>
         <p class="filter-explanation">利益率下限0%は、PSA10率・PSA9以下・販売手数料・鑑定費・追加費用を含む期待値が0円以上という意味です。PSA9など全ての結果で赤字にならない保証ではありません。</p>
+        <label class="check-control"><input id="psa9AboveGuideInput" type="checkbox" />PSA9価格が仕入れ目安より高い</label>
+        <label class="control"><span>PSA9価格／仕入れ目安 下限％</span><input id="psa9GuideMinInput" type="number" min="0" step="0.1" placeholder="例：80（空欄は条件なし）" /></label>
+        <p class="filter-explanation">利益確保の仕入れ目安との手数料前価格比較。100%は同額、80%は目安より20%低い。黒字保証・購入GOとは別です。</p>
         <label class="control"><span>仕入れ値／国内PSA9 下限 %</span><input id="psa9RatioMinInput" type="number" min="0" step="1" placeholder="例：80" /></label>
         <label class="control"><span>仕入れ値／国内PSA9 上限 %</span><input id="psa9RatioMaxInput" type="number" min="0" step="1" placeholder="例：100" /></label>
         <label class="check-control"><input id="psa9RatioAggregateInput" type="checkbox" />国内PSA9集計値を含める</label>
@@ -924,7 +927,7 @@
   <script src="./market-analysis.js?v=20260913-supply-absorption-v3"></script>
   <script src="./snkr-raw-flip-model.js?v=20260920-raw-flip-v1"></script>
   <script src="./raw-psa9-gap-model.js?v=20260929-trial-v2"></script>
-  <script src="./purchase-ratio-model.js?v=20261006-v2"></script>
+  <script src="./purchase-ratio-model.js?v=20261027-psa9-guide-v1"></script>
   <script src="./candidate-visibility.js?v=20260927-v1"></script>
   <script src="./catalog-index-adapter.js?v=20260927-v1"></script>
   <script src="./limit-display-model.js?v=20261007-cap-state-v1"></script>
@@ -935,13 +938,13 @@
   <script src="./update-health-model.js?v=20261023-verified-partial-publication"></script>
   <script src="./update-health-banner.js?v=20261011-search-first-v1"></script>
   <script src="./current-market-model.js?v=20261027-record-isolation-v1"></script>
-  <script src="./ui-data-codec.js?v=20261007-v1"></script>
+  <script src="./ui-data-codec.js?v=20261027-psa9-guide-v1"></script>
   <script src="./psa-plan-model.js?v=20261010-isolation-v1"></script>
   <script src="./keyed-card-renderer.js?v=20261010-v1"></script>
   <a class="return-to-filters" href="#searchConditions">検索条件へ</a>
   <script src="./exploration-metrics.js?v=20261027-record-isolation-v1"></script>
-  <script src="./search-controls.js?v=20261020-buyback-search-v1"></script>
+  <script src="./search-controls.js?v=20261027-psa9-guide-v1"></script>
   <script src="./settings-disclosure.js?v=20261011-disclosure-v1"></script>
-  <script src="./app.js?v=20261027-record-isolation-v1"></script>
+  <script src="./app.js?v=20261027-psa9-guide-v1"></script>
 </body>
 </html>
