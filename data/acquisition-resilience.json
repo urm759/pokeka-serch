@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-27T20:54:44.913Z",
+  "generatedAt": "2026-10-27T21:24:00.567Z",
   "llmCalls": 0,
   "codexCalls": 0,
   "retryPolicy": {
@@ -169,8 +169,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-27T14:47:04.406Z",
-        "to": "2026-10-27T20:54:42.085Z"
+        "from": "2026-10-27T21:20:53.393Z",
+        "to": "2026-10-27T21:23:57.360Z"
       },
       "sinceBaseline": {
         "newLinked": 4011,
@@ -187,21 +187,21 @@
       "remaining": 0,
       "queueDefinition": "未巡回商品数推計。全国内カードの不足項目数とは別",
       "checkpoint": {
-        "sitemap": 7,
-        "entry": 252,
+        "sitemap": 10,
+        "entry": 357,
         "total": 46
       },
       "sourceState": "partial",
       "stopReason": "商品詳細の1回上限 35件に到達",
       "retryUrls": [],
       "lastRun": {
-        "startedAt": "2026-10-25T19:37:55.691Z",
-        "durationMs": 38796,
+        "startedAt": "2026-10-27T21:18:58.110Z",
+        "durationMs": 38748,
         "paginationMode": "sitemap",
-        "currentCursor": 7,
-        "currentSitemapIndex": 7,
-        "currentEntryIndex": 252,
-        "currentSitemapUrl": "https://torecacamp-pokemon.com/sitemap_products_7.xml?from=8240072556718&to=8498820579502",
+        "currentCursor": 10,
+        "currentSitemapIndex": 10,
+        "currentEntryIndex": 357,
+        "currentSitemapUrl": "https://torecacamp-pokemon.com/sitemap_products_10.xml?from=8624425107630&to=8652428607662",
         "processedSitemapCount": 46,
         "processedSitemaps": [
           3,
@@ -261,18 +261,18 @@
         "legacyRecords": [],
         "maintenanceMode": true,
         "maintenance": {
-          "sitemapIndex": 6,
-          "entryIndex": 252,
+          "sitemapIndex": 9,
+          "entryIndex": 357,
           "cycles": 2,
-          "refreshed": 8253,
+          "refreshed": 8872,
           "newLinks": 147,
-          "checkedAt": "2026-10-25T19:38:34.480Z"
+          "checkedAt": "2026-10-27T21:19:36.852Z"
         },
         "firstPassCompletedAt": "2026-10-08T21:56:31.044Z",
-        "maintenancePendingCount": 4917,
+        "maintenancePendingCount": 6028,
         "priceMigration": {
           "version": 1,
-          "updatedAt": "2026-10-25T19:37:55.615Z",
+          "updatedAt": "2026-10-27T21:18:58.045Z",
           "correctedCount": 0,
           "cumulativeCorrectedCount": 0,
           "preCorrectionExtremeCount": 0,
@@ -287,26 +287,26 @@
         "stateA": 35,
         "referenceUpdated": 0,
         "newLinkCount": 0,
-        "updatedCount": 10,
+        "updatedCount": 3,
         "fetchFailureCount": 0,
-        "duplicateUrlCount": 24,
+        "duplicateUrlCount": 42,
         "duplicateProductIdCount": 0,
         "abruptDropDetected": false,
         "previousCatalogCount": 6647,
         "proposedCatalogCount": 6647,
         "progressHealth": {
-          "value": 55225,
-          "previousValue": 55190,
+          "value": 55844,
+          "previousValue": 55809,
           "stagnantRuns": 0,
           "status": "progressing",
-          "checkedAt": "2026-10-25T19:38:34.487Z"
+          "checkedAt": "2026-10-27T21:19:36.858Z"
         },
-        "lastSuccessfulPage": "サイトマップ 6",
+        "lastSuccessfulPage": "サイトマップ 9",
         "lastFailure": null,
         "failedSitemaps": [],
         "stoppingReason": "商品詳細の1回上限 35件に到達",
         "completionStatus": "partial",
-        "completedAt": "2026-10-25T19:38:34.490Z"
+        "completedAt": "2026-10-27T21:19:36.860Z"
       },
       "observedExecutionDays": 6,
       "processedPerExecutionDay": 20.7,
@@ -316,15 +316,15 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-27T14:47:04.406Z",
-        "to": "2026-10-27T20:54:42.085Z"
+        "from": "2026-10-27T21:20:53.393Z",
+        "to": "2026-10-27T21:23:57.360Z"
       },
       "sinceBaseline": {
         "newLinked": 757,
-        "validAdded": 757,
+        "validAdded": 756,
         "validLost": 76,
-        "usableNet": 681,
-        "freshnessRecovered": 1
+        "usableNet": 680,
+        "freshnessRecovered": 604
       },
       "freshness": null
     },
@@ -357,8 +357,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-27T14:47:04.406Z",
-        "to": "2026-10-27T20:54:42.085Z"
+        "from": "2026-10-27T21:20:53.393Z",
+        "to": "2026-10-27T21:23:57.360Z"
       },
       "sinceBaseline": {
         "newLinked": 0,
