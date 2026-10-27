@@ -4156,7 +4156,8 @@ function psa9GuidePanel(card) {
   const stamp=p.confirmation?'確認 '+formatJstTimestamp(p.confirmation):'確認日時未登録';
   const roi=Number.isFinite(v.roi)?(v.roi>0?'+':'')+v.roi.toFixed(1)+'%':'算出不可：'+(v.profitReasons[0]||'材料不足');
   const details=[
-    '手数料前価格比 '+(Number.isFinite(v.priceRatio)?v.priceRatio.toFixed(1)+'%':'算出不可')+'。利益確保の仕入れ目安で購入した仮定。PSA10率を掛けた期待利益率・購入GOとは別です。',
+    '鑑定費込み比較：PSA9価格／（仕入れ目安＋鑑定費） '+(Number.isFinite(v.costCoveragePct)?v.costCoveragePct.toFixed(1)+'%':'算出不可')+'。比較費用 '+money(v.comparisonCost)+'、条件は95%以上（手数料前）。',
+    '旧比較（鑑定費なし）：PSA9価格／仕入れ目安 '+(Number.isFinite(v.priceRatio)?v.priceRatio.toFixed(1)+'%':'算出不可')+'。PSA10率を掛けた期待利益率・購入GOとは別です。',
     '総投資 '+money(v.investment)+'＝目安＋鑑定費 '+money(v.fee)+'＋設定済み諸費用 '+money(v.extraCost)+(v.repairCost?'＋リペア費 '+money(v.repairCost):'')+'。PSA9売却額 '+money(v.salePrice)+'、PSA提出判断の売却手数料 '+money(v.sellingFee)+'、損益 '+signedExpectedMoney(v.profit).text+'。',
     'PSA10の売却先とは独立したフリマ売却の参考試算。素体流し用手数料・買取減額・店頭交通費は加えません。送料等は設定済み諸費用を1回だけ算入。現在の買取連携はPSA9買取非対応・PSA9の取得待ちにはしません。リペア費用未入力・PSA9取得保証・PSA8以下は未評価。',
     ...(p.sale?['最終成約 '+formatJstTimestamp(p.sale)+'。確認日時とは別。']:[]),

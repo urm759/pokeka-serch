@@ -35,4 +35,5 @@ const controls=require('../search-controls');for(const id of ['psa9CostWithin5In
 assert(controls.clear({id:'psa9CostWithin5Input',type:'checkbox',checked:true}));assert(controls.clear({id:'psa9RoiMinInput',type:'number',value:'-5'}));
 const html=fs.readFileSync(require('path').join(__dirname,'../index.html'),'utf8');for(const id of ['psa9CostWithin5Input','psa9RoiMinInput','psa9AboveGuideInput','psa9GuideMinInput'])assert.equal((html.match(new RegExp('id="'+id+'"','g'))||[]).length,1);
 assert(html.indexOf('id="psa9CostWithin5Input"')<html.indexOf('<details id="legacyPsa9Comparisons"'));assert(html.indexOf('id="psa9AboveGuideInput"')>html.indexOf('<details id="legacyPsa9Comparisons"'));
+assert(source.includes('鑑定費込み比較：PSA9価格／（仕入れ目安＋鑑定費） '));assert(source.includes("v.costCoveragePct.toFixed(1)"));assert(source.includes('旧比較（鑑定費なし）：PSA9価格／仕入れ目安 '));
 console.log('PASS PSA9 gross-cost 95% inclusive, independent net ROI, negative/zero/positive bounds, no defaults/migrations, provenance adoption, shared URL/storage/CSV and calculation-cache reuse');
