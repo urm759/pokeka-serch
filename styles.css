@@ -1783,3 +1783,9 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 :root .psa9-guide-inline .psa9-guide-price b.value-reference { color:#f3c76c; }
 :root .psa9-guide-inline small { display:block; font-size:.72rem; overflow-wrap:anywhere; }
 :root .psa9-guide-inline details { margin-top:.3rem; }
+
+.psa9-quick-comparison { margin: .65rem 0 1rem; }
+.hero > .psa9-quick-comparison { order: 1; }
+.psa9-quick-comparison .controls { align-items: center; }
+.psa9-quick-comparison .filter-explanation { flex-basis: 100%; margin: 0; }
+.psa9-guide-price a { color: #c8b7ff; text-decoration: underline; text-underline-offset: 2px; }

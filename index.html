@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20261027-psa9-guide-v1" />
+  <link rel="stylesheet" href="./styles.css?v=20261027-psa9-market-v2" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -131,6 +131,12 @@
         <button id="exportSearchBtn" class="preset-file-action" type="button">条件をCSV保存</button>
         <label class="preset-file-action">条件CSV読込<input id="importSearchInput" type="file" accept=".csv,text/csv" /></label>
       </div>
+
+      <section class="psa9-quick-comparison" aria-label="PSA9価格と仕入れ目安の比較"><div class="controls">
+        <label class="check-control"><input id="psa9AboveGuideInput" type="checkbox" />PSA9価格が仕入れ目安より高い</label>
+        <label class="control"><span>PSA9価格／仕入れ目安 下限％</span><input id="psa9GuideMinInput" type="number" min="0" step="0.1" placeholder="例：80（空欄は条件なし）" /></label>
+        <p class="filter-explanation">利益確保の仕入れ目安との手数料前価格比較。100%は同額、80%は目安より20%低い。黒字保証・購入GOとは別です。</p>
+      </div></section>
 
       <section id="currentMarketControls" class="current-market-controls" hidden aria-label="現相場採算の探索条件">
         <strong>現相場が続く仮定の探索（購入GOではありません）</strong>
@@ -271,9 +277,7 @@
           <input id="stressExpectedProfitFilterInput" type="number" step="1000" value="0" />
         </label>
         <p class="filter-explanation">利益率下限0%は、PSA10率・PSA9以下・販売手数料・鑑定費・追加費用を含む期待値が0円以上という意味です。PSA9など全ての結果で赤字にならない保証ではありません。</p>
-        <label class="check-control"><input id="psa9AboveGuideInput" type="checkbox" />PSA9価格が仕入れ目安より高い</label>
-        <label class="control"><span>PSA9価格／仕入れ目安 下限％</span><input id="psa9GuideMinInput" type="number" min="0" step="0.1" placeholder="例：80（空欄は条件なし）" /></label>
-        <p class="filter-explanation">利益確保の仕入れ目安との手数料前価格比較。100%は同額、80%は目安より20%低い。黒字保証・購入GOとは別です。</p>
+
         <label class="control"><span>仕入れ値／国内PSA9 下限 %</span><input id="psa9RatioMinInput" type="number" min="0" step="1" placeholder="例：80" /></label>
         <label class="control"><span>仕入れ値／国内PSA9 上限 %</span><input id="psa9RatioMaxInput" type="number" min="0" step="1" placeholder="例：100" /></label>
         <label class="check-control"><input id="psa9RatioAggregateInput" type="checkbox" />国内PSA9集計値を含める</label>
@@ -365,7 +369,7 @@
           </div>
         </label>
         <label class="control">
-          <span>PSA10公式取得率 下限</span>
+          <span>PSA10取得率 下限（PSA公式・保存値）</span>
           <input id="psaRateMinInput" type="number" min="0" max="100" step="0.1" placeholder="空欄は条件なし" />
         </label>
         <label class="control">
@@ -927,7 +931,7 @@
   <script src="./market-analysis.js?v=20260913-supply-absorption-v3"></script>
   <script src="./snkr-raw-flip-model.js?v=20260920-raw-flip-v1"></script>
   <script src="./raw-psa9-gap-model.js?v=20260929-trial-v2"></script>
-  <script src="./purchase-ratio-model.js?v=20261027-psa9-guide-v1"></script>
+  <script src="./purchase-ratio-model.js?v=20261027-psa9-market-v2"></script>
   <script src="./candidate-visibility.js?v=20260927-v1"></script>
   <script src="./catalog-index-adapter.js?v=20260927-v1"></script>
   <script src="./limit-display-model.js?v=20261007-cap-state-v1"></script>
@@ -945,6 +949,6 @@
   <script src="./exploration-metrics.js?v=20261027-record-isolation-v1"></script>
   <script src="./search-controls.js?v=20261027-psa9-guide-v1"></script>
   <script src="./settings-disclosure.js?v=20261011-disclosure-v1"></script>
-  <script src="./app.js?v=20261027-psa9-guide-v1"></script>
+  <script src="./app.js?v=20261027-psa9-market-v2"></script>
 </body>
 </html>

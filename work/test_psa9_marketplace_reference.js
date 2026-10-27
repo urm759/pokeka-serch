@@ -1,0 +1,34 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const source=fs.readFileSync(path.join(__dirname,'../app.js'),'utf8'),html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
+const at='2026-10-27T05:00:00Z',model=require('../purchase-ratio-model');
+const input={asOf:at,guide:{cap:10000,eligible:true,capState:'available'},psa9:{value:15000,measurementType:'aggregate',updatedAt:at,source:'PSA9集計値'},fee:2000,extraCost:300,saleFeeRate:8,referenceOptions:{aggregate:true}};
+for(const exitPolicy of ['both','buyback','marketplace']) {
+ const v=model.marketplaceAtGuide({...input,exitPolicy,psa9Buyback:{grade:'PSA10',price:100000}});
+ assert.equal(v.salePrice,15000);assert.equal(v.sellingFee,1200);assert.equal(v.investment,12300);assert.equal(v.profit,1500);assert.equal(v.roi,1500/12300*100);
+ assert.equal(v.travelCost,0);assert.equal(v.deduction,0);assert.equal(v.scenario,'psa9-marketplace-reference');assert(v.noGoEffect);
+}
+assert.equal(model.marketplaceAtGuide({...input,saleFeeRate:0,psa9:{...input.psa9,value:12300}}).roi,0);
+assert(model.marketplaceAtGuide({...input,psa9:{...input.psa9,value:10000}}).roi<0);
+for(const patch of [{repairRequired:true,repairCost:null},{planProblem:'鑑定費未確認'},{psa9:{...input.psa9,value:null}},{psa9:{...input.psa9,updatedAt:'2026-09-01'}}])assert.equal(model.marketplaceAtGuide({...input,...patch}).roi,null);
+assert.equal(model.atGuide({...input,exitPolicy:'buyback'}).roi,null,'explicit legacy buyback trial never switches exit');
+assert.equal((html.match(/id="psa9AboveGuideInput"/g)||[]).length,1);assert.equal((html.match(/id="psa9GuideMinInput"/g)||[]).length,1);
+const atQuick=html.indexOf('class="quick-presets"'),atInputs=html.indexOf('id="psa9AboveGuideInput"'),atDetails=html.indexOf('<details',atQuick);
+assert(atInputs>atQuick&&atInputs<atDetails,'one common pair, visible before collapsed sections');
+assert.match(fs.readFileSync(path.join(__dirname,'../styles.css'),'utf8'),/\.hero\s*>\s*\.psa9-quick-comparison\s*\{\s*order:\s*1;/,'respect the existing flex order after quick presets');
+assert(html.includes('PSA10取得率 下限（PSA公式・保存値）'));
+const context=vm.createContext({window:{PurchaseDecisionModel:require('../decision-model'),PurchaseRatioModel:model,ExplorationMetrics:require('../exploration-metrics')},document:{getElementById:()=>null,querySelectorAll:()=>[]},URL,URLSearchParams,console,setTimeout,clearTimeout});
+vm.runInContext(source.split('// Browser event bindings start here;')[0]+`;currentProfitGuide=()=>({cap:10000,eligible:true,capState:'available'});psaPlanProblem=()=>null;globalThis.api={state,psa9GuideView,psa9GuidePanel,psa9GuideProvenance,psa9GuideCsvFields,gradeRateSummary};`,context);
+const a=context.api;Object.assign(a.state,{fee:2000,saleExtraCost:300,saleFeeRate:8,exitPolicy:'both',psa9RatioAggregate:true,psaSpecificationHeld:{}});
+const card={id:'x-122054',psa9Audit:{...input.psa9,updatedAt:new Date().toISOString()}};
+let v=a.psa9GuideView(card);assert.equal(v.profit,1500);const panel=a.psa9GuidePanel(card);
+assert(panel.includes('PSA9取得時利益率・フリマ売却'));assert(panel.includes('https://toreca-souba.com/cards/x-122054'));assert(panel.includes('みんトレ提供・国内PSA9集計'));assert(!panel.includes('https://snkrdunk.com'));
+assert.equal(a.psa9GuideCsvFields(card)[8],v.roi);assert.equal(a.psa9GuideCsvFields(card)[14],'https://toreca-souba.com/cards/x-122054');
+Object.assign(a.state,{snkrRawFeeRate:99,snkrRawShipping:9999,storeTravel:9999,buybackDeduction:99});assert.equal(a.psa9GuideView(card).roi,v.roi,'separate raw fees and buyback costs must not enter reference scenario');
+a.state.saleFeeRate=10;assert.equal(a.psa9GuideView(card).profit,1200,'sale-fee cache invalidates');a.state.fee=2200;assert.equal(a.psa9GuideView(card).profit,1000,'grading cache invalidates');
+assert.notEqual(a.psa9GuidePanel(card),panel,'markup cache follows the calculation input key');assert.equal(a.psa9GuidePanel(card),a.psa9GuidePanel(card));
+const actual={id:'fixture',psa9Audit:{value:15000,measurementType:'actual',updatedAt:'2026-10-25',confirmedAt:'2026-10-27',latestSaleAt:'2026-10-25',source:'許諾済み個別成約'}};
+const p=a.psa9GuideProvenance(actual,{...actual.psa9Audit,source:actual.psa9Audit.source});assert.equal(p.confirmation,'2026-10-27');assert.equal(p.sale,'2026-10-25');
+const missingConfirm=a.psa9GuideProvenance({...actual,psa9Audit:{...actual.psa9Audit,confirmedAt:null}},{...actual.psa9Audit});assert.equal(missingConfirm.confirmation,undefined,'sale date is not fetch confirmation');
+const grade=a.gradeRateSummary({id:'not-gem',official:{rate:70,ten:7,total:10,f:at},buyLimits:{clean:{assumptions:{hitRate:.65}}}});
+assert(grade.includes('PSA10取得率')&&grade.includes('PSA公式・保存値')&&grade.includes('計算採用10率'));assert(!grade.includes('GemRate集計・参考'));
+console.log('PASS independent PSA9 marketplace reference, one upper control pair, provenance links and separate dates, costs once, cache invalidation, no GemRate calculation adoption');

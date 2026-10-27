@@ -105,5 +105,11 @@
     if(min!=null&&view.priceRatio<min)return 'PSA9価格／仕入れ目安・下限未達';
     return null;
   }
-  return { evaluate, matches, eligibility, capLabel, roiOnly, atGuide, guideExclusion };
+  // A separately requested marketplace scenario, independent of the PSA10 exit.
+  // Keep atGuide's grade-specific exit validation for callers requesting buyback.
+  function marketplaceAtGuide(input = {}) {
+    return {...atGuide({...input, exitPolicy:'marketplace', psa9Buyback:null}),
+      scenario:'psa9-marketplace-reference', noGoEffect:true};
+  }
+  return { evaluate, matches, eligibility, capLabel, roiOnly, atGuide, marketplaceAtGuide, guideExclusion };
 });

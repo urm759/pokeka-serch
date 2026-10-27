@@ -1740,7 +1740,7 @@ function exportFavoritesCsv() {
   rows[0].push('現在買える状態A価格','仕入れ余裕率%（利益率とは別）','検索採用買値','検索採用買値基準','検索期待利益','検索PSA10時利益率%','30日買取掲載率%','30日平均掲載店舗数','正常観測日数','取得カバー率%','余裕率の比較上限（一覧と同じ）','余裕率の参考警告','余裕率の比較不可理由');
   rows[0].push('単体資金効率・買値','単体資金効率・買値基準','単体資金効率・売値基準','単体資金効率・売却先','単体期待利益','総投下額','単体期待利益率%','想定資金拘束日数','単体年換算効率%（参考）','単体資金効率・算出不可理由','単体資金効率・計算区分','単体資金効率・参考警告','単体資金効率・検索採用');
   for (const days of [7,30,75,200]) rows[0].push(`${days}日観測平均`,`${days}日乖離率%`,`${days}日観測日数`,`${days}日最終観測`,`${days}日観測状態`);
-  rows[0].push('PSA9価格','PSA9価格区分','PSA9取得元','PSA9価格日時（集計確認／個別最終成約／推定基準）','PSA9比較の仕入れ目安','PSA9価格／仕入れ目安%','目安購入時PSA9総投資','目安購入時PSA9利益','PSA9取得時利益率%','PSA9売却先','PSA9利益算出不可理由','PSA9参考値の検索採用','PSA9目安超チェック','PSA9目安比の下限%');
+  rows[0].push('PSA9価格','PSA9価格区分','PSA9取得元','PSA9価格日時（集計確認／個別最終成約／推定基準）','PSA9比較の仕入れ目安','PSA9価格／仕入れ目安%','目安購入時PSA9総投資','目安購入時PSA9利益','PSA9取得時利益率・フリマ売却%','PSA9売却先','PSA9利益算出不可理由','PSA9参考値の検索採用','PSA9目安超チェック','PSA9目安比の下限%','PSA9取得元URL','PSA9確認日時','PSA9最終成約日時','PSA9推定方法');
   rows[0].push('利益確保の仕入れ目安・現相場基準','目安の切下げ前値','目安の最低期待利益','目安の最低期待利益率%','目安の状態','目安の売却先','素体参考相場70%（上限ではない）');
   rows[0].push('資金効率採用平均・暦日期間','資金効率採用平均価格','資金効率平均・観測日数','資金効率平均・欠測日数','資金効率平均・最終観測日','平均資金効率・非10価格基準','資金効率平均・根拠未確認日数');
   rows[0].push('中央値買値・参考年換算効率%','実店舗買値・年換算効率%','中央値採用元数','中央値独立店舗数','中央値内訳未確認元数','中央値価格下端','中央値価格上端','中央値個別根拠JSON','中央値比較不可理由');
@@ -4111,7 +4111,7 @@ function psa9GuideView(card,now=Date.now()) {
     state.psa9RatioAggregate,state.psa9RatioEstimate,audit,problem,card.repairRequired,card.repairCost]);
   const saved=psa9GuideCache.get(card);if(saved?.key===key&&now>=saved.at&&now<saved.expires)return saved.value;
   const source=audit.measurementType==='aggregate'&&/^PSA9集計値/.test(audit.source || '')?'みんトレ提供・国内PSA9集計':audit.source;
-  const value=purchaseRatioModel.atGuide({guide,psa9:{...audit,source},asOf:new Date(now).toISOString(),
+  const value=purchaseRatioModel.marketplaceAtGuide({guide,psa9:{...audit,source},asOf:new Date(now).toISOString(),
     fee:state.fee,extraCost:state.saleExtraCost,saleFeeRate:state.saleFeeRate,exitPolicy:state.exitPolicy,
     referenceOptions:psa9RatioOptions(),planProblem:problem,repairRequired:card.repairRequired===true,repairCost:card.repairCost});
   const expiry=Date.parse(audit.updatedAt)+30*86400000+1;
@@ -4122,17 +4122,45 @@ function psa9GuideExclusion(card) {
   if(!state.psa9AboveGuide&&state.psa9GuideMin==null)return null;
   return purchaseRatioModel.guideExclusion(psa9GuideView(card),{above:state.psa9AboveGuide,min:state.psa9GuideMin});
 }
+function psa9GuideProvenance(card,view) {
+  const audit=card.psa9Audit||{},aggregate=view.measurementType==='aggregate';
+  const supplied=aggregate&&/みんトレ|PSA9集計値/.test(view.source||'');
+  // Only provider-origin aggregates use the provider's page. Never link them
+  // as if we collected directly from the upstream marketplace.
+  const providerUrl=supplied&&/^(?:pk-|x-)\d+$/.test(card.id||'')?'https://toreca-souba.com/cards/'+card.id:null;
+  const candidate=providerUrl||audit.sourceUrl||audit.url;
+  let url=null;try{const u=new URL(candidate);if(u.protocol==='https:')url=u.href;}catch{}
+  const source=supplied?'みんトレ提供・国内PSA9集計':view.source;
+  const confirmation=aggregate?audit.updatedAt:audit.confirmedAt||audit.fetchedAt||audit.observedAt;
+  const sale=view.measurementType==='actual'?(audit.latestSaleAt||audit.updatedAt):null;
+  const method=view.measurementType==='estimate'?(audit.method||audit.estimationMethod||audit.source||'推定方法未確認'):null;
+  return {source,url,confirmation,sale,method};
+}
+const psa9GuideMarkupCache = new WeakMap();
 function psa9GuidePanel(card) {
   const money=n=>Number.isFinite(n)?'¥'+fmt.format(Math.round(n)):'算出不可';
-  const signedMoney=signedExpectedMoney;
-  const v=psa9GuideView(card),type={actual:'個別実成約',aggregate:'集計・参考',estimate:'推定・参考'}[v.measurementType] || '区分未確認';
+  const v=psa9GuideView(card);
+  if(psa9GuideMarkupCache.has(v))return psa9GuideMarkupCache.get(v);
+  const p=psa9GuideProvenance(card,v);
+  const type={actual:'個別実成約',aggregate:'集計・参考',estimate:'推定・参考'}[v.measurementType] || '区分未確認';
   const kind=v.price>0?(v.measurementType==='estimate'?'PSA9推定価格':'PSA9価格'):'PSA9未取得';
-  const stamp=v.updatedAt?`${v.measurementType==='actual'?'最終成約':v.measurementType==='estimate'?'推定基準':'確認'} ${formatJstTimestamp(v.updatedAt)}${v.measurementType==='actual'?'／取得確認日未登録':''}`:'確認日未取得';
-  const roi=Number.isFinite(v.roi)?`${v.roi>0?'+':''}${v.roi.toFixed(1)}%`:`算出不可：${v.profitReasons[0] || '材料不足'}`;
-  return `<div class="psa9-guide-inline"><div class="psa9-guide-price"><span>${kind}</span> <b class="${v.sourceReasons.length?'value-reference':''}">${v.price>0?money(v.price):'未取得'}</b><small>${escapeHtml(type)}／${escapeHtml(v.source)}／${escapeHtml(stamp)}</small>${v.sourceReasons.length?`<small class="reference-warning">${escapeHtml(v.sourceReasons[0])}</small>`:''}</div><div>PSA9取得時利益率 <b class="${numericTone(v.roi)}">${escapeHtml(roi)}</b><small>目安 ${money(v.guide)}で購入／売却：${escapeHtml(v.exitLabel)}</small></div><details><summary>PSA9採算・価格比較</summary><small>手数料前価格比 ${Number.isFinite(v.priceRatio)?v.priceRatio.toFixed(1)+'%':'算出不可'}。利益確保の仕入れ目安で購入した仮定。PSA10率を掛けた期待利益率・購入GOとは別です。</small><small>総投資 ${money(v.investment)}＝目安＋鑑定費等 ${money(v.fee)}＋売却諸費用 ${money(v.extraCost)}＋交通費 ${money(v.travelCost)}${v.repairCost?'＋リペア費 '+money(v.repairCost):''}。PSA9売却額 ${money(v.salePrice)}、手数料 ${money(v.sellingFee)}、減額 ${money(v.deduction)}、損益 ${signedMoney(v.profit).text}。</small><small>送料等は売却諸費用の入力額を1回だけ控除。未入力費用・リペアの完了/鑑定結果は保証しません。PSA9出口不足はフリマへ切替しません。${escapeHtml(v.profitReasons.join('／'))}</small>${currentProfitGuide(card).lowerGradePrice>0&&currentProfitGuide(card).lowerGradePrice!==v.price?`<small>既存の期待値計算のPSA9以下仮置き：${money(currentProfitGuide(card).lowerGradePrice)}（保守補正）。上のPSA9取得時利益率は表示したPSA9価格で計算。</small>`:''}${v.searchStatus!=='eligible'?`<small class="reference-warning">価格比較の検索：${v.searchStatus==='reference-disabled'?'参考採用OFF':escapeHtml(v.comparisonReasons[0]||'根拠不足')}</small>`:''}</details></div>`;
+  const source=p.url?'<a href="'+escapeHtml(p.url)+'" target="_blank" rel="noreferrer">'+escapeHtml(p.source)+'</a>':escapeHtml(p.source);
+  const stamp=p.confirmation?'確認 '+formatJstTimestamp(p.confirmation):'確認日時未登録';
+  const roi=Number.isFinite(v.roi)?(v.roi>0?'+':'')+v.roi.toFixed(1)+'%':'算出不可：'+(v.profitReasons[0]||'材料不足');
+  const details=[
+    '手数料前価格比 '+(Number.isFinite(v.priceRatio)?v.priceRatio.toFixed(1)+'%':'算出不可')+'。利益確保の仕入れ目安で購入した仮定。PSA10率を掛けた期待利益率・購入GOとは別です。',
+    '総投資 '+money(v.investment)+'＝目安＋鑑定費 '+money(v.fee)+'＋設定済み諸費用 '+money(v.extraCost)+(v.repairCost?'＋リペア費 '+money(v.repairCost):'')+'。PSA9売却額 '+money(v.salePrice)+'、PSA提出判断の売却手数料 '+money(v.sellingFee)+'、損益 '+signedExpectedMoney(v.profit).text+'。',
+    'PSA10の売却先とは独立したフリマ売却の参考試算。素体流し用手数料・買取減額・店頭交通費は加えません。送料等は設定済み諸費用を1回だけ算入。現在の買取連携はPSA9買取非対応・PSA9の取得待ちにはしません。リペア費用未入力・PSA9取得保証・PSA8以下は未評価。',
+    ...(p.sale?['最終成約 '+formatJstTimestamp(p.sale)+'。確認日時とは別。']:[]),
+    ...(v.measurementType==='aggregate'?['提供元の集計値。個別成約日時・件数は未取得。スニダンへの直接取得ではありません。']:[]),
+    ...(p.method?['推定方法：'+p.method+'。推定基準 '+(v.updatedAt?formatJstTimestamp(v.updatedAt):'未取得')]:[]),
+    ...v.profitReasons
+  ];
+  const html='<div class="psa9-guide-inline"><div class="psa9-guide-price"><span>'+kind+'</span> <b class="'+(v.sourceReasons.length?'value-reference':'')+'">'+(v.price>0?money(v.price):'未取得')+'</b><small>'+escapeHtml(type)+'／'+source+'／'+escapeHtml(stamp)+'</small>'+(v.sourceReasons.length?'<small class="reference-warning">'+escapeHtml(v.sourceReasons[0])+'</small>':'')+'</div><div>PSA9取得時利益率・フリマ売却 <b class="'+numericTone(v.roi)+'">'+escapeHtml(roi)+'</b><small>目安 '+money(v.guide)+'で購入／PSA10出口とは別試算</small></div><details><summary>PSA9採算・価格比較</summary>'+details.map(t=>'<small>'+escapeHtml(t)+'</small>').join('')+(v.searchStatus!=='eligible'?'<small class="reference-warning">価格比較の検索：'+escapeHtml(v.searchStatus==='reference-disabled'?'参考採用OFF':v.comparisonReasons[0]||'根拠不足')+'</small>':'')+'</details></div>';
+  psa9GuideMarkupCache.set(v,html);return html;
 }
 function psa9GuideCsvFields(card) {
-  const v=psa9GuideView(card);return [v.price??'',v.measurementType,v.source,v.updatedAt||'',v.guide??'',v.priceRatio??'',v.investment??'',v.profit??'',v.roi??'',v.exitLabel,v.profitReasons.join('／'),v.searchStatus,state.psa9AboveGuide?1:0,state.psa9GuideMin??''];
+  const v=psa9GuideView(card),p=psa9GuideProvenance(card,v);return [v.price??'',v.measurementType,p.source,v.updatedAt||'',v.guide??'',v.priceRatio??'',v.investment??'',v.profit??'',v.roi??'',v.exitLabel,v.profitReasons.join('／'),v.searchStatus,state.psa9AboveGuide?1:0,state.psa9GuideMin??'',p.url||'',p.confirmation||'',p.sale||'',p.method||''];
 }
 function computeSearchProfitView(card, mode = state.purchaseMode, explicitBasis = null) {
   if (mode !== 'now' && (explicitBasis || state.profitSearchBasis) === 'current-target') {
@@ -5526,7 +5554,7 @@ function gemRateReferenceHeader(card) {
   if(gemRateReferenceRevision!==(uiDataManifest?.revision||'legacy'))return null;
   const v=gemRateReferenceValue(card,gemRateReferencePayload?.cards?.[card.id]);if(!v)return null;
   const old=card.official;
-  return `<span>PSA10率（GemRate集計）</span><strong>${v.rate.toFixed(1)}%</strong><small>PSA10 ${fmt.format(v.ten)}／総数 ${fmt.format(v.total)}枚・基準日 ${escapeHtml(v.date)} <a href="${escapeHtml(v.url)}" target="_blank" rel="noreferrer">出典</a></small><small class="price-stale">${v.stale?'古値・':''}参考／計算採用率とは別</small><details><summary>旧公式値・根拠</summary><small>保存CSV由来の参考値。基準日はGemRateの取得・処理日（日精度）。PSA公式の直接確認日時・現在枚数ではありません。</small><small>旧公式 ${Number.isFinite(old?.rate)?old.rate.toFixed(1)+'%':'未取得'}／PSA10 ${Number.isFinite(old?.ten)?fmt.format(old.ten):'未取得'}／総数 ${Number.isFinite(old?.total)?fmt.format(old.total):'未取得'}／確認 ${escapeHtml(old?.f||'未取得')}。取得元間の差はPOP増減へ計上しません。</small></details>`;
+  return `<span>PSA10取得率</span><small>GemRate集計・参考</small><strong>${v.rate.toFixed(1)}%</strong><small>PSA10 ${fmt.format(v.ten)}／総数 ${fmt.format(v.total)}枚・基準日 ${escapeHtml(v.date)} <a href="${escapeHtml(v.url)}" target="_blank" rel="noreferrer">出典</a></small><small class="price-stale">${v.stale?'古値・':''}参考／計算採用率とは別</small><details><summary>旧公式値・根拠</summary><small>保存CSV由来の参考値。基準日はGemRateの取得・処理日（日精度）。PSA公式の直接確認日時・現在枚数ではありません。</small><small>旧公式 ${Number.isFinite(old?.rate)?old.rate.toFixed(1)+'%':'未取得'}／PSA10 ${Number.isFinite(old?.ten)?fmt.format(old.ten):'未取得'}／総数 ${Number.isFinite(old?.total)?fmt.format(old.total):'未取得'}／確認 ${escapeHtml(old?.f||'未取得')}。取得元間の差はPOP増減へ計上しません。</small></details>`;
 }
 async function ensureGemRateReference(cards) {
   const revision=uiDataManifest?.revision||'legacy';
@@ -5558,7 +5586,7 @@ function gradeRateSummary(card, trial = null) {
   const source = trial?.rateSource || assumptions?.hitRateSource || "未取得";
   const held = state.psaSpecificationHeld[card.id];
   const missingLabel = held ? "仕様不一致で保留" : "未取得";
-  return `<div class="grade-rate-summary"><div data-grade-reference="${escapeHtml(card.id)}">${gemRateReferenceHeader(card) || `<span>PSA10公式取得率</span><strong class="${Number.isFinite(rate) ? "" : "value-unavailable"}">${Number.isFinite(rate) ? `${rate.toFixed(1)}%` : missingLabel}</strong><small>${Number.isFinite(official?.total) ? `母数 TOTAL ${fmt.format(official.total)}枚／10 ${Number.isFinite(official.ten) ? fmt.format(official.ten) : "未取得"}枚` : "母数未取得"}／確認 ${escapeHtml(official?.f || held?.f || "未取得")}</small>${held ? `<small class="price-stale">通常版POPで代用しません。${escapeHtml(held.reason)} <a href="${escapeHtml(held.u)}" target="_blank" rel="noreferrer">公式候補</a></small>` : ""}`}</div><div><span>計算に採用した想定10率</span><strong class="${Number.isFinite(assumed) ? "" : "value-unavailable"}">${Number.isFinite(assumed) ? `${(assumed * 100).toFixed(1)}%` : "未取得"}</strong><small>${escapeHtml(source)}。公式比率は目視選別後の成功保証ではありません。</small></div></div><div data-psa-pop-glance="${escapeHtml(card.id)}">${psaPopGlance(card)}</div>`;
+  return `<div class="grade-rate-summary"><div data-grade-reference="${escapeHtml(card.id)}">${gemRateReferenceHeader(card) || `<span>PSA10取得率</span><small>PSA公式・保存値</small><strong class="${Number.isFinite(rate) ? "" : "value-unavailable"}">${Number.isFinite(rate) ? `${rate.toFixed(1)}%` : missingLabel}</strong><small>${Number.isFinite(official?.total) ? `母数 TOTAL ${fmt.format(official.total)}枚／10 ${Number.isFinite(official.ten) ? fmt.format(official.ten) : "未取得"}枚` : "母数未取得"}／確認 ${escapeHtml(official?.f || held?.f || "未取得")}</small>${held ? `<small class="price-stale">通常版POPで代用しません。${escapeHtml(held.reason)} <a href="${escapeHtml(held.u)}" target="_blank" rel="noreferrer">公式候補</a></small>` : ""}`}</div><div><span>計算採用10率</span><strong class="${Number.isFinite(assumed) ? "" : "value-unavailable"}">${Number.isFinite(assumed) ? `${(assumed * 100).toFixed(1)}%` : "未取得"}</strong><small>${escapeHtml(source)}。公式比率は目視選別後の成功保証ではありません。</small></div></div><div data-psa-pop-glance="${escapeHtml(card.id)}">${psaPopGlance(card)}</div>`;
 }
 
 function currentMarketProfitPanel(view) {

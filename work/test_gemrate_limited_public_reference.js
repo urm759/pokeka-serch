@@ -23,7 +23,7 @@ assert.equal(ctx.api.value(card,row,Date.parse('2026-11-26')).stale,true);
   await ctx.api.ensure([card]);assert.equal(calls,1,'no per-search retry loop');
   payload={version:1,source:'GemRate',grader:'PSA',scope:'received-csv-reference-50',cards:Object.fromEntries(manifest.referenceDisplayIds.map(id=>[id,row]))};
   manifest.revision='second';await ctx.api.ensure([card]);assert.equal(calls,2);
-  assert(ctx.api.header(card).includes('PSA10率（GemRate集計）'));
+  assert(ctx.api.header(card).includes('PSA10取得率')&&ctx.api.header(card).includes('GemRate集計・参考'));
   assert(ctx.api.header(card).includes('80.0%'));assert(ctx.api.header(card).includes('50.0%'),'old official retained in details');
   manifest.revision='third';assert.equal(ctx.api.header(card),null,'no stale revision flash before the next load');
   payload={...payload,grader:'CGC'};await ctx.api.ensure([card]);assert.equal(ctx.api.header(card),null);

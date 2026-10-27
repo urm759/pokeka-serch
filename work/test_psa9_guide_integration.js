@@ -24,7 +24,7 @@ let v=a.psa9GuideView(card);assert.equal(v.price,12000);assert.equal(v.priceRati
 assert(a.psa9GuidePanel(card).includes('PSA9取得時利益率'));assert(a.psa9GuidePanel(card).includes('みんトレ提供'));
 assert.equal(a.psa9GuideCsvFields(card)[8],v.roi,'CSV and UI use shared ROI');
 s.saleExtraCost=400;v=a.psa9GuideView(card);assert.equal(v.profit,-360,'fee changes invalidate view cache');
-s.exitPolicy='both';v=a.psa9GuideView(card);assert.equal(v.roi,null);assert(v.profitReasons.includes('PSA9買取価格未取得'));
+s.exitPolicy='both';v=a.psa9GuideView(card);assert.equal(v.profit,-360);assert.equal(v.exitLabel,'フリマ（国内PSA9）');assert.equal(v.travelCost,0);
 s.psa9AboveGuide=true;s.psa9GuideMin=null;assert.equal(a.psa9GuideExclusion(card),null,'aggregate adoption remains enabled independent of fallback buy flag');
 s.psa9RatioAggregate=false;assert.match(a.psa9GuideExclusion(card),/参考値の検索採用OFF/);
 assert(!source.slice(source.indexOf('function psa9GuideView'),source.indexOf('function computeSearchProfitView')).includes('fetch('),'reuse existing audit data');
