@@ -1,10 +1,11 @@
 const { calendarDay } = require('./psa10_observation_evidence');
 
 const complete = result => result.fullListing === true || result.coverageComplete === true;
-const absenceKnown = result => complete(result) && !(result.unmatched || []).length;
+const absenceKnown = result => complete(result) && !(result.unmatched || []).length && !(result.matched || []).some(r=>r.availabilityUnknown);
 function link(item, fallbackDay) {
   return { url:item.itemUrl || '', date:item.observedDate || calendarDay(item.observedAt) || fallbackDay,
-    price:item.price, active:item.active === true, matchMethod:item.matchMethod || 'unknown',
+    price:item.price, active:item.active === true ? true : item.active === false ? false : null,
+    ...(item.availabilityUnknown ? {availabilityHeld:true} : {}), matchMethod:item.matchMethod || 'unknown',
     matchScore:Number(item.score || 0), observedAt:item.observedAt || null, sourceUpdatedAt:item.sourceUpdatedAt || null,
     pageUpdatedAt:item.pageUpdatedAt || null,quoteUpdatedAt:item.quoteUpdatedAt || null };
 }
@@ -50,6 +51,7 @@ function refresh(history, result, today, priorItems = []) {
   const entries = history.shops[shopId] ||= {};
   const datesById = new Map();
   for (const item of result.matched) {
+    if(item.availabilityUnknown)continue;
     if (!datesById.has(item.cardId)) datesById.set(item.cardId, new Set());
     datesById.get(item.cardId).add(item.observedDate || today);
   }
@@ -72,6 +74,6 @@ function refresh(history, result, today, priorItems = []) {
 }
 function unavailable(result, links, id, previous) {
   return Boolean(result && (absenceKnown(result) && !links?.has(id) || links?.get(id)?.active === false || links?.get(id)?.identityHeld
-    || !links?.has(id) && (previous?.listingActive === false || previous?.identityHeld === true)));
+    || links?.get(id)?.availabilityHeld || !links?.has(id) && (previous?.listingActive === false || previous?.identityHeld === true || previous?.availabilityHeld === true)));
 }
 module.exports = { complete, currentLinks, refresh, unavailable };

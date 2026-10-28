@@ -96,7 +96,7 @@ const computationFields = ["fee","psaPlan","psaHandlingFee","guideMode","psaCapi
 const computationSources = ["catalogCompletion","priceEvidence","cardrushStock","hareruya2Stock","yuyuteiStock","torecacampStock","shopBuybacks","buybackShops","buybackDates","buybackUpdatedAt","marketStability","marketStabilityMeta","psaPopulation","snkrListingSummary","snkrRawFlipSummary","snkrRawFlipMeta","pokedataSummary","psaServices","evaluationModel","evaluationGovernance","operationalLimitHistory","regulationPolicy","returnCalibration","fixedPriceReference","marketResearch","supplyMaturityHypothesis","updateStatus"];
 function computationKey() {
   return JSON.stringify([loadedDataRevision,meta,computationFields.map(key=>state[key]),
-    psaPlanProblem(),
+    psaPlanProblem(),psaPlanSubmissionProblem(),
     state.purchaseMode === 'specified' ? 'combined' : state.purchaseMode === "current-market" ? "normal" : state.purchaseMode,state.sourceUpdates,state.gradeObservations]);
 }
 function freshnessDeadline(cards, now) {
@@ -670,6 +670,10 @@ function psaPlanProblem() {
     : (!plan || !(Number(plan.price) > 0) || plan.validationStatus === 'held' ? 'PSA料金・納期確認待ち' : null);
 }
 
+function psaPlanSubmissionProblem() {
+  return window.PsaPlanModel?.submissionProblem?.(selectedPsaPlan(),Date.now()) || null;
+}
+
 function applyPsaPlan({ updateLockDays = false } = {}) {
   const plan = selectedPsaPlan();
   state.psaPlan = plan.id;
@@ -683,10 +687,12 @@ function applyPsaPlan({ updateLockDays = false } = {}) {
   if (els.psaPlanSummary) {
     const delivery = plan.businessDays ? `${fmt.format(plan.businessDays)}営業日（約${fmt.format(plan.calendarDays)}日）` : "納期未取得";
     const lockEstimate = Number(plan.calendarDays) > 0 ? ` / 資金ロック目安 ${fmt.format(Number(plan.calendarDays) + 7)}日` : "";
-    const checkedAt = state.psaServices?.checkedAt || state.psaServices?.updatedAt;
-    const checkStatus = state.psaServices?.checkStatus === "failed" ? "（確認失敗・前回値）" : "";
+    const checkedAt = plan.verifiedAt || state.psaServices?.checkedAt || state.psaServices?.updatedAt;
+    const checkStatus = plan.verificationMethod === 'official-announcement' ? '（公式告知）' : state.psaServices?.checkStatus === "failed" ? "（確認失敗・前回値）" : "";
     const checkedText = checkedAt ? ` / 料金確認 ${checkedAt}${checkStatus}` : "";
     els.psaPlanSummary.textContent = `公式 ¥${fmt.format(plan.price)}＋手数料 ¥${fmt.format(state.psaHandlingFee)}＝¥${fmt.format(state.fee)} / ${delivery}${lockEstimate} / 申告価格 ¥${fmt.format(plan.declaredValueMax)}以下${checkedText}`;
+    if(plan.calendarDaysBasis==='weekday-estimate')els.psaPlanSummary.textContent+=' / 暦日は週5営業日の概算・祝日未加算、輸送余裕7日と売却/入金待ちは別';
+    if(psaPlanSubmissionProblem())els.psaPlanSummary.textContent+=' / '+psaPlanSubmissionProblem();
   }
 }
 
@@ -2842,6 +2848,12 @@ function finalizeCardDecision(card) {
     card.purchaseAvailability = {...card.purchaseAvailability, verifiedNow:false, label:'PSAプラン判断保留', reason:planProblem};
     if (card.psaDecision) card.psaDecision.recommended = false;
     card.aggressivePurchase = {...card.aggressivePurchase, eligible:false};
+  }
+  const submissionProblem=psaPlanSubmissionProblem();
+  if(submissionProblem){
+    card.purchaseDecision={...card.purchaseDecision,verdict:'要確認',reasons:[submissionProblem,...(card.purchaseDecision?.reasons||[])]};
+    if(card.psaDecision)card.psaDecision.recommended=false;
+    card.aggressivePurchase={...card.aggressivePurchase,eligible:false};
   }
   return card;
 }

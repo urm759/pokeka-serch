@@ -42,3 +42,7 @@ for (const shop of require('./update_shop_buybacks').SHOPS) {
   assert.equal(unavailable(sourceResult,linked,'absent'),false);
 }
 console.log('PASS partial/full listings, actual price decline, explicit withdrawal, saved replay and duplicate products');
+
+const unknown={...item,active:null,availabilityUnknown:true};h=initial();links=refresh(h,{...result,matched:[unknown],items:[unknown]},day);assert.equal(h.shops.store.seen[1],10000,'unknown quota retains original observation');assert(links.get('seen').availabilityHeld);assert(unavailable(result,links,'seen'));assert.equal(links.get('seen').active,null,'unknown is not a zero quota or withdrawal');
+const parse=require('./update_shop_buybacks').parseTorecaBankItems;assert.equal(typeof parse,"function");{const li=(quota)=>'<li class="item" data-id="p" '+quota+'><p class="name">fixture</p><p class="tag">PSA10</p><p class="price">10000円</p></li>';assert.equal(parse(li(''))[0].active,null);assert.equal(parse(li('data-max="0"'))[0].active,false);assert.equal(parse(li('data-max="6"'))[0].active,true);}
+h=initial();refresh(h,{...result,fullListing:true,matched:[unknown],items:[unknown]},day);assert.equal(h.shops.store.seen[1],10000,'a full page with unknown quota cannot erase a real observation');

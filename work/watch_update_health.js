@@ -41,26 +41,9 @@ async function main() {
   const cycleFile=path.join(ROOT,'data/scheduled-cycle-verification.json');
   let cycles=fs.existsSync(cycleFile)?JSON.parse(fs.readFileSync(cycleFile,'utf8')):{version:1,pipelines:{}};
   try {
-    const receipts=await api('https://urm759.github.io/pokeka-serch/data/scheduled-cycle-receipts.json?observed='+Date.now());
-    const deployments=await api(`${API}/actions/runs?per_page=30`);
-    const pages=deployments.workflow_runs?.find(r=>r.name==='pages build and deployment'&&r.conclusion==='success');
-    for(const [key,list] of Object.entries({daily:runs,safe:safeRuns,pokedata:pokeRuns,priority:priceRuns,catchup:catchupRuns})) {
-      if(key==='pokedata'&&overseasCancelled)continue;
-      const receipt=receipts.pipelines?.[key];
-      const latest=list.workflow_runs?.find(r=>r.status==='completed'&&String(r.id)===String(receipt?.runId)&&(r.event==='schedule'||key==='catchup'&&r.event==='workflow_run'))
-        ||list.workflow_runs?.find(r=>r.status==='completed'&&r.event==='schedule');
-      if(!latest || cycles.pipelines[key]?.runId===latest.id&&cycles.pipelines[key]?.confirmed)continue;
-      const texts={};
-      if(receipt && String(receipt.runId)===String(latest.id)){
-        for(const file of Object.keys(receipt.hashes||{})){
-          if(!/^data\/[a-z0-9/-]+\.json$/i.test(file))throw new Error('Invalid receipt path');
-          const response=await fetch('https://urm759.github.io/pokeka-serch/'+file+'?run='+latest.id,{signal:AbortSignal.timeout(15000)});
-          if(response.ok)texts[file]=await response.text();
-        }
-      }
-      const jobs=await api(`${API}/actions/runs/${latest.id}/jobs`);
-      require('./verify_update_publication').preserve(cycles,key,require('./scheduled_cycle_evidence').verify(latest,jobs,receipt,texts,pages));
-    }
+    const verifier=require('./verify_update_publication');
+    const checked=await verifier.inspect({getJson:api,getText:async url=>{const r=await fetch(url,{signal:AbortSignal.timeout(30000)});if(!r.ok)throw Error('Publication verification HTTP '+r.status);return r.text();}});
+    for(const[key,result]of Object.entries(checked.pipelines))verifier.preserve(cycles,key,result);
     cycles.checkedAt=new Date().toISOString();
     delete cycles.checkError;
   }catch(error){cycles.checkError=error.message;cycles.checkedAt=new Date().toISOString();}

@@ -13,3 +13,5 @@ Priorityの2026-10-28 01:27:17→08:42:13Zは作成間隔7時間14分56秒。Wat
 代替案はGitHub外の非AIタイマーが鮮度を確認し、必要な時だけ既存Priorityのworkflow_dispatchを呼ぶこと。未実行回数分は繰り返さず、既存の間隔・対象・排他制御をそのまま使う。例としてCloudflare Workersの毎時1回（24回/日）は[Freeの100,000リクエスト/日・Cron5個の枠](https://developers.cloudflare.com/workers/platform/limits/)内を想定できるが、実際の利用量・制限を確認してから判断する。有料プランは不要な案として準備し、無料枠でも登録・導入は未実施。
 
 必要な承認・操作：利用サービスのアカウント、対象リポジトリだけの[Actions write権限](https://docs.github.com/en/rest/actions/workflows#create-a-workflow-dispatch-event)、新しい秘密情報の保管先。既存認証情報を勝手にクラウドへ移さない。導入・登録・課金・問い合わせは今回行わない。workflow_dispatchでもGitHubのランナー待ちは残るため、6時間維持の保証とはしない。
+
+2026-10-29追記：後続の正常更新で現在hashが変わった過去受領証は、当該受領証を含みPages成功した正確なGitコミットで再照合する。全hashと取得/検証/保存工程を確認し、現在の値一致と過去公開成功を分離する。旧workflowの照合ジョブ単独失敗は元failureを残したまま独立再試験できるが、取得/保存/検証の失敗には適用しない。

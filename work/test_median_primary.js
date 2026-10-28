@@ -2,7 +2,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
 const variants=require('./search_profile_variants'),config=require('./priority-search-profiles.json');
 const profiles=variants.allProfiles(config);assert.equal(profiles.length,4);
 for(const p of profiles.filter(r=>r.baseId)) {
-  const original=config.profiles.find(r=>r.id===p.baseId),a=new URL(p.url),b=new URL(original.url);
+  const original=[...config.profiles,...(config.additionalProfiles||[])].find(r=>r.id===p.baseId),a=new URL(p.url),b=new URL(original.url);
   assert.equal(a.searchParams.get('effBuy'),'median');assert.equal(b.searchParams.get('effBuy'),'auto');
   a.searchParams.delete('effBuy');b.searchParams.delete('effBuy');assert.equal(a.href,b.href,'all other URL conditions remain fixed');
 }

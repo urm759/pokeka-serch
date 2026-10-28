@@ -128,13 +128,15 @@ function parseTorecaBankItems(html) {
     const attrs = match[2] || "";
     const body = match[3] || "";
     const id = attrs.match(/data-id="([^"]+)"/i)?.[1] || "";
-    const max = Number(attrs.match(/data-max="([0-9]+)"/i)?.[1] || 0);
+    const maxText = attrs.match(/data-max="([0-9]+)"/i)?.[1];
+    const max = maxText == null ? null : Number(maxText);
     const name = decodeHtml(body.match(/<p\s+class="name"[^>]*>([\s\S]*?)<\/p>/i)?.[1]);
     const tag = decodeHtml(body.match(/<p\s+class="tag"[^>]*>([\s\S]*?)<\/p>/i)?.[1]);
     const price = Number(decodeHtml(body.match(/<p\s+class="price"[^>]*>([\s\S]*?)<\/p>/i)?.[1]).replace(/[^0-9]/g, ""));
     const imageUrl = body.match(/<img[^>]+src="([^"]+)"/i)?.[1] || "";
     if (!id || !name || tag !== "PSA10") continue;
-    items.push({ shopItemId: id, name, price, max, imageUrl, active: max > 0 && price > 0 });
+    items.push({ shopItemId: id, name, price, max, imageUrl, active: max == null ? null : max > 0 && price > 0,
+      ...(max==null?{availabilityUnknown:true}: {}) });
   }
   return items;
 }
@@ -670,10 +672,11 @@ async function main({ rebuildSaved = false } = {}) {
       const previousMatch = previousSummary.cards?.[card.id]?.shops?.[shopId];
       const currentMatch = currentLinksByShop[shopId]?.get(card.id) || (previousMatch ? { ...previousMatch, matchScore: previousMatch.matchScore } : null);
       const identityHeld=currentMatch?.identityHeld === true || !currentLinksByShop[shopId]?.has(card.id) && preserved?.identityHeld === true;
-      const quarantined = quarantine[`${shopId}:${card.id}`] || (identityHeld ? {reason:'最新取得で商品照合が変更・保留。旧対応を価格へ再採用しない'} : null);
+      const availabilityHeld=currentMatch?.availabilityHeld === true;
+      const quarantined = quarantine[`${shopId}:${card.id}`] || (identityHeld ? {reason:'最新取得で商品照合が変更・保留。旧対応を価格へ再採用しない'} : availabilityHeld ? {reason:'受付数量の項目未取得・0件や買取終了とは別保留'} : null);
       shops[shopId] = {
         c7, c30, c90, price: currentPrice,
-        listingActive: identityHeld ? null : currentListingAbsent ? false : currentPrice > 0 ? true : null,
+        listingActive: identityHeld || availabilityHeld ? null : currentListingAbsent ? false : currentPrice > 0 ? true : null,
         fulfilment: SHOPS.find((s) => s.id === shopId)?.fulfilment || "mail",
         priceDate: latestPriceIndex >= 0 ? history.dates[latestPriceIndex] : null,
         observedAt:currentMatch?.observedAt || null,
@@ -686,6 +689,7 @@ async function main({ rebuildSaved = false } = {}) {
         quarantined: Boolean(quarantined),
         quarantineReason: quarantined?.reason || null,
         ...(identityHeld ? {identityHeld:true} : {}),
+        ...(availabilityHeld ? {availabilityHeld:true} : {}),
         observed7: observedRecent(history.observedByShop[shopId], latestHistoryDate, 7),
         observed30: observedRecent(history.observedByShop[shopId], latestHistoryDate, 30),
         observed90: observedRecent(history.observedByShop[shopId], latestHistoryDate, 90),
@@ -845,4 +849,4 @@ if (require.main === module) main({rebuildSaved:process.argv.includes('--rebuild
   console.error(error);
   process.exitCode = 1;
 });
-module.exports = { main, SHOPS, fetchText, savedMatchConfidence, freshUsablePrice };
+module.exports = { main, SHOPS, fetchText, savedMatchConfidence, freshUsablePrice, parseTorecaBankItems };

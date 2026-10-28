@@ -1,4 +1,4 @@
-const assert=require('node:assert/strict'),{inspect,preserve}=require('./verify_update_publication'),{hash}=require('./scheduled_cycle_evidence');
+const assert=require('node:assert/strict'),{inspect,preserve,historicalPublication}=require('./verify_update_publication'),{hash}=require('./scheduled_cycle_evidence');
 const at=Date.parse('2026-10-28T00:10Z'),text='{"price":100,"observedAt":"2026-10-28T00:00Z"}';
 const receipt={runId:1,pipeline:'priority',hashes:{'data/stock.json':hash(text)}};
 const run={id:1,event:'schedule',conclusion:'success',head_branch:'main',head_repository:{full_name:'urm759/pokeka-serch'},created_at:'2026-10-28T00:00Z'};
@@ -16,5 +16,13 @@ async function test(){let reads=0;const getJson=async url=>url.includes('receipt
  assert.equal(noop.targetStatus,'no-acquisition-required');assert.equal(noop.confirmed,0,'no-op is not new acquisition or publication evidence');
  const failed=await inspect({getJson:async u=>u.endsWith('/runs/3')?{...run,id:3,name:'Priority Purchase Price Refresh',conclusion:'failure'}:u.endsWith('/runs/3/jobs')?skippedJobs:getJson(u),getText:async()=>text,at,targetRunId:3});
  assert.equal(failed.targetStatus,'not-yet-published-or-superseded','failure is not an admitted no-op');
+ const page={name:'pages build and deployment',conclusion:'success',created_at:'2026-10-28T00:05Z',head_sha:'a'.repeat(40),id:2};
+ const prior=await historicalPublication({run,jobs,receipt,pages:[page],current:bad.pipelines.priority,getText:async u=>u.endsWith('receipts.json')?JSON.stringify({pipelines:{priority:receipt}}):text});
+ assert(prior.confirmed&&prior.historicalPublication);assert.equal(prior.currentPublicMatches,false);assert.equal(prior.hashes[0].currentMatched,false);assert.equal(prior.publishedCommit,page.head_sha);
+ const wrong=await historicalPublication({run,jobs,receipt,pages:[page],current:bad.pipelines.priority,getText:async u=>u.endsWith('receipts.json')?JSON.stringify({pipelines:{priority:{...receipt,runId:99}}}):text});assert(!wrong.confirmed,'other receipt cannot certify a historical publication');
+ const corrupt=await historicalPublication({run,jobs,receipt,pages:[page],current:bad.pipelines.priority,getText:async u=>u.endsWith('receipts.json')?JSON.stringify({pipelines:{priority:receipt}}):'{}'});assert(!corrupt.confirmed,'historical input hashes remain mandatory');
+ const observerFailure={jobs:[...jobs.jobs,{name:'publication_check',conclusion:'failure',steps:[{name:'Verify published acquisition independently without source requests',conclusion:'failure'}]}]};
+ const restored=await historicalPublication({run:{...run,conclusion:'failure'},jobs:observerFailure,receipt,pages:[page],current:bad.pipelines.priority,getText:async u=>u.endsWith('receipts.json')?JSON.stringify({pipelines:{priority:receipt}}):text});assert(restored.confirmed&&restored.isolatedVerifierFailure);assert.equal(restored.runConclusion,'failure','original workflow failure is retained');
+ const unrelated=await historicalPublication({run:{...run,conclusion:'failure'},jobs:{jobs:[...jobs.jobs,{name:'catchup',conclusion:'failure',steps:[{name:'Publish changed health state only',conclusion:'failure'}]}]},receipt,pages:[page],current:bad.pipelines.priority,getText:async u=>u.endsWith('receipts.json')?JSON.stringify({pipelines:{priority:receipt}}):text});assert(!unrelated.confirmed,'publication failure is never reclassified');
  console.log('PASS public hash/Pages/real acquisition proof, pending/mixed version rejection, shared HTTP cache and previous confirmation retention');
 }test().catch(e=>{console.error(e);process.exitCode=1});

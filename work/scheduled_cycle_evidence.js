@@ -35,13 +35,16 @@ function verify(run, jobs, receipt, publicTexts, pages) {
     && receipt.sourceIsolation.status==='partial-with-failure'
     && steps.filter(s=>s.conclusion==='failure').every(s=>s.name===reportName||s.name==='Report newly detected alerts')
     && steps.some(s=>s.name===reportName&&s.conclusion==='failure');
+  const failedJobs=(jobs.jobs||[]).filter(j=>j.conclusion==='failure');
+  const isolatedVerifierFailure=failedJobs.length===1&&failedJobs[0].name==='publication_check'
+    &&steps.filter(s=>s.conclusion==='failure').every(s=>s.name==='Verify published acquisition independently without source requests');
   const scheduled=run.event==='schedule'||receipt?.pipeline==='catchup'&&run.event==='workflow_run';
-  const confirmed=scheduled&&(run.conclusion==='success'||safePartial)&&Object.values(stages).every(Boolean)&&matched&&hashes.length>0&&hashes.every(r=>r.matched)&&pagesAfter;
+  const confirmed=scheduled&&(run.conclusion==='success'||safePartial||isolatedVerifierFailure)&&Object.values(stages).every(Boolean)&&matched&&hashes.length>0&&hashes.every(r=>r.matched)&&pagesAfter;
   const publicationStep=steps.filter(s=>s.conclusion==='success'&&/Publish validated data|Publish changed health state|Commit safe progress|Commit discovery|Commit changed/.test(s.name)).at(-1);
   return {runId:run.id,headSha:run.head_sha,event:run.event,url:run.html_url,startedAt:run.run_started_at||run.created_at||null,
     publicationStepCompletedAt:publicationStep?.completed_at||null,publicVerifiedAt:confirmed?new Date().toISOString():null,
     stages,receiptMatches:!!matched,
-    hashes,pagesRunId:pages?.id||null,confirmed,status:confirmed?'定期処理・保存・公開照合済み（実増分は別表示）':'定期公開照合未完了',
+    hashes,pagesRunId:pages?.id||null,runConclusion:run.conclusion,isolatedVerifierFailure:!!isolatedVerifierFailure,confirmed,status:confirmed?'定期処理・保存・公開照合済み（実増分は別表示）':'定期公開照合未完了',
     partial:confirmed&&Boolean(safePartial),outcomes:matched?receipt.outcomes:null,checkpoints:matched?receipt.checkpoints:null};
 }
 function baseline(key,root=ROOT) {

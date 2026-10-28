@@ -26,11 +26,12 @@ async function main() {
     parsed = model.parse(html);
     if (parsed.some(p=>!p.plan)) throw new Error('PSA Japan format: '+parsed.filter(p=>!p.plan).map(p=>p.name+':'+p.reason).join('／'));
     const date = new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo'}).format(new Date());
-    const value = {updatedAt:date,checkedAt:date,verifiedAt:at,lastAttemptAt:at,checkStatus:'success',fetchMethod:'official-direct',sourceUrl:URL,handlingFee:1000,
-      plans:parsed.map(p=>({...p.plan,verifiedAt:at,validationStatus:'valid'})),suspendedPlans:/バリュー.*受付.*停止/.test(html)?['バリュー']:[]};
+    const inherited=Object.values(previous.announcedPlans||{}).filter(p=>!parsed.some(r=>r.id===p.id));
+    const value = {...previous,updatedAt:date,checkedAt:date,verifiedAt:at,lastAttemptAt:at,checkStatus:'success',fetchMethod:'official-direct',sourceUrl:URL,handlingFee:1000,
+      plans:[...parsed.map(p=>({...p.plan,verifiedAt:at,validationStatus:'valid'})),...inherited],suspendedPlans:/バリュー.*受付.*停止/.test(html)?['バリュー']:[]};
     atomicWrite(OUTPUT,value,0); console.log(JSON.stringify({completionStatus:'success',acquired:3,updated:3}));
   } catch(error) {
-    const plans = model.definitions.map(([id,name])=>{
+    const plans = [...model.definitions,...Object.values(previous.announcedPlans||{}).filter(p=>!model.definitions.some(([id])=>id===p.id)).map(p=>[p.id,p.name])].map(([id,name])=>{
       const old = previous.plans?.find(p=>p.id===id), candidate=parsed?.find(p=>p.id===id);
       if (candidate?.plan) return {...candidate.plan,verifiedAt:at,validationStatus:'valid'};
       const reason = candidate?.reason || model.problem(old);

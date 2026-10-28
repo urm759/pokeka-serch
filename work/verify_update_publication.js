@@ -1,6 +1,23 @@
 const fs=require('node:fs'),path=require('node:path');
 const evidence=require('./scheduled_cycle_evidence');
 const API='https://api.github.com/repos/urm759/pokeka-serch',PUBLIC='https://urm759.github.io/pokeka-serch/';
+async function historicalPublication({run,jobs,receipt,pages,current,getText}){
+  const publication=(jobs.jobs||[]).flatMap(j=>j.steps||[]).filter(s=>s.conclusion==='success'&&/Publish validated data|Publish changed health state|Commit safe progress|Commit changed/.test(s.name)).at(-1);
+  const from=Date.parse(publication?.completed_at||run.run_started_at||run.created_at)-5000;
+  const candidates=pages.filter(p=>p.name==='pages build and deployment'&&p.conclusion==='success'&&/^[a-f0-9]{40}$/.test(p.head_sha||'')&&Date.parse(p.created_at)>=from&&Date.parse(p.created_at)<=from+30*60000).sort((a,b)=>Date.parse(a.created_at)-Date.parse(b.created_at)).slice(0,4);
+  for(const page of candidates){
+    const base='https://raw.githubusercontent.com/urm759/pokeka-serch/'+page.head_sha+'/';
+    let saved;try{saved=JSON.parse(await getText(base+'data/scheduled-cycle-receipts.json'));}catch(e){if(!/HTTP 404/.test(e.message))throw e;continue;}
+    const frozen=saved.pipelines?.[receipt.pipeline];
+    if(String(frozen?.runId)!==String(receipt.runId)||Object.keys(frozen?.hashes||{}).length!==Object.keys(receipt.hashes||{}).length||!Object.entries(receipt.hashes||{}).every(([f,h])=>frozen.hashes[f]===h))continue;
+    const texts={};for(const file of Object.keys(receipt.hashes||{}))texts[file]=evidence.observationText(frozen,file)||await getText(base+file);
+    const result=evidence.verify(run,jobs,receipt,texts,page);
+    if(result.confirmed)return {...result,receiptHashes:receipt.hashes,historicalPublication:true,publishedCommit:page.head_sha,currentPublicMatches:false,
+      hashes:result.hashes.map(h=>({...h,historicalMatched:h.matched,currentMatched:current.hashes.find(c=>c.file===h.file)?.currentMatched===true})),
+      note:'当該実行のPages配信成功コミットと原受領証・全採用hashを照合。後続の正常更新とは別の過去公開実績。現在の鮮度・価格一致を意味しない'};
+  }
+  return current;
+}
 function preserve(cycles,key,result){
   cycles.pipelines||={};cycles.history||={};
   const prior=cycles.pipelines[key];
@@ -15,7 +32,7 @@ function preserve(cycles,key,result){
 async function inspect({getJson,getText,at=Date.now(),targetRunId=null}){
   const textCache=new Map(),readText=url=>{if(!textCache.has(url))textCache.set(url,getText(url));return textCache.get(url);};
   const [receipts,deployments]=await Promise.all([getJson(PUBLIC+'data/scheduled-cycle-receipts.json?verify='+at),getJson(API+'/actions/runs?per_page=40')]);
-  const cycles={version:1,checkedAt:new Date(at).toISOString(),pipelines:{},targetRunId};
+  const cycles={version:1,checkedAt:new Date(at).toISOString(),pipelines:{},targetRunId};let pagesHistory=null;
   for(const key of ['priority','catchup','daily','safe']){
     const receipt=receipts.pipelines?.[key];if(!receipt?.runId)continue;
     if(targetRunId&&String(receipt.runId)!==String(targetRunId))continue;
@@ -28,7 +45,13 @@ async function inspect({getJson,getText,at=Date.now(),targetRunId=null}){
       // A time-forward monitor has an exact historical copy in this receipt.
       const saved=evidence.observationText(receipt,file);texts[file]=saved||await readText(PUBLIC+file+'?verify='+at);
     }
-    cycles.pipelines[key]=evidence.verify(run,jobs,receipt,texts,pages);
+    let result={...evidence.verify(run,jobs,receipt,texts,pages),receiptHashes:receipt.hashes};
+    if(!result.confirmed&&result.hashes.some(h=>!h.matched)&&Object.values(result.stages).every(Boolean)){
+      if(!pagesHistory){const id=deployments.workflow_runs?.find(r=>r.name==='pages build and deployment')?.workflow_id;
+        pagesHistory=id?(await getJson(API+'/actions/workflows/'+id+'/runs?per_page=50')).workflow_runs||[]:deployments.workflow_runs||[];}
+      result=await historicalPublication({run,jobs,receipt,pages:pagesHistory,current:result,getText:readText});
+    }
+    cycles.pipelines[key]=result;
   }
   cycles.confirmed=Object.values(cycles.pipelines).filter(r=>r.confirmed).length;
   const target=targetRunId&&Object.values(cycles.pipelines).find(r=>String(r.runId)===String(targetRunId));
@@ -67,4 +90,4 @@ async function main(){
   }while(true);
 }
 if(require.main===module)main().catch(e=>{console.error(e.message);process.exitCode=1;});
-module.exports={inspect,preserve};
+module.exports={inspect,preserve,historicalPublication};

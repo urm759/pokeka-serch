@@ -214,6 +214,10 @@ function build(root=ROOT,at=new Date().toISOString()) {
     independentCandidates:departures.independentCandidates((previous.profiles||[]).filter(p=>siteProfileIds.has(p.id)).map(p=>p.urlsMatched||[]),profiles.filter(p=>siteProfileIds.has(p.urlOnly.id)).map(p=>p.urlOnly.ids)),
     allModeIndependentCount:new Set(profiles.flatMap(p=>p.urlOnly.ids)).size,
     note:'指定条件モードの派生URLはpresetだけ変更し既存の補完/価格更新キューへ接続。modeOnlyCandidatesはモード差分であり実補完・独立初適合ではない。元A/Bと中央値版の数値は保持。要約生成は実取得ではない。URLだけと確認済み保存追加条件を分離。他の端末は未観測'};
+  targets.comparisonRevision=config.comparisonRevision||'legacy';
+  report.comparisonRevision=targets.comparisonRevision;
+  report.independentCandidates.comparisonKind=previous.comparisonRevision===targets.comparisonRevision?'data-refresh':'plan-definition-change';
+  if(report.independentCandidates.comparisonKind==='plan-definition-change')report.independentCandidates.note+='／プラン定義移行を含むため、実補完・データによる初適合へ加算しない';
   for(const [f,x]of [['work/search-profile-targets.json',targets],['data/priority-search-profile-audit.json',report]])require('./acquisition_retry').atomicWrite(path.join(root,f),x,0);
   console.log(JSON.stringify(profiles.map(p=>({id:p.urlOnly.id,urlOnly:p.urlOnly.qualified,withKnownSaved:p.knownSavedConditions.qualified,prospects:p.urlOnly.prospects}))));
   return report;

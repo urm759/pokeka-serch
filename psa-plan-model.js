@@ -11,14 +11,19 @@
     if (Number(plan.calendarDays) < Number(plan.businessDays)) return 'PSA営業日と暦日が矛盾しているため判断保留';
     return null;
   }
+  function submissionProblem(plan,now=Date.now()) {
+    const opens=Date.parse(plan?.acceptingFrom||'');
+    return Number.isFinite(opens)&&now<opens ? `PSA${plan.name}受付開始前（${plan.acceptingFrom}）・比較試算のみ` : null;
+  }
   function parse(html) {
     const text = String(html).replace(/<script[\s\S]*?<\/script>/gi,' ').replace(/<style[\s\S]*?<\/style>/gi,' ')
       .replace(/<[^>]*>/g,' ').replace(/&yen;|&#165;|&#x0*a5;/gi,'￥').replace(/&nbsp;|&#160;/gi,' ')
       .normalize('NFKC').replace(/\s+/g,' ');
-    return definitions.map(([id,name]) => {
+    const supported=/バリュー\s*[¥￥]\s*[\d,]+\s*\/\s*枚/.test(text)?[...definitions,['value','バリュー']]:definitions;
+    return supported.map(([id,name]) => {
       const candidates = [...text.matchAll(new RegExp(name,'g'))].flatMap(m => {
         if (id==='express' && /スーパー[・･\s-]*$/.test(text.slice(Math.max(0,m.index-15),m.index))) return [];
-        const block = text.slice(m.index+name.length, m.index + 700).split(/(?:スーパー・)?エクスプレス|プライオリティ|スタンダード/)[0] || '';
+        const block = text.slice(m.index+name.length, m.index + 700).split(/(?:スーパー・)?エクスプレス|プライオリティ|スタンダード|バリュー/)[0] || '';
         const read = regex => { const s=block.match(regex)?.[1]; return s ? Number(s.replace(/,/g,'')) : null; };
         const row = {id,name,price:read(/[¥￥]\s*([\d,]+)\s*\/\s*枚/),businessDays:read(/予定納期\s*[:：]\s*([\d,]+)\s*営業日/),calendarDays:read(/日数換算\s*[:：]\s*約\s*([\d,]+)\s*日/),declaredValueMax:read(/申告価格\s*[:：]\s*[¥￥]\s*([\d,]+)\s*以下/),available:true};
         return problem(row) ? [] : [row];
@@ -27,5 +32,5 @@
       return {id,name,plan:unique.size===1 ? [...unique.values()][0] : null,reason:unique.size>1 ? '同一プランの料金・納期が対立' : '公式料金表のプラン項目を解析できない'};
     });
   }
-  return {definitions,problem,parse};
+  return {definitions,problem,parse,submissionProblem};
 });
