@@ -1,26 +1,26 @@
 {
-  "startedAt": "2026-10-27T20:46:47.958Z",
-  "runId": "40580923786",
+  "startedAt": "2026-10-28T00:45:54.201Z",
+  "runId": "40610687749",
   "event": "schedule",
-  "route": "通常価格更新",
+  "route": "既存監視ジョブの空白補完",
   "status": "acquired-saved",
   "allowed": true,
-  "ageMs": 22046064,
-  "minimumIntervalMs": 7200000,
+  "ageMs": 14345873,
+  "minimumIntervalMs": 9000000,
   "reason": "定期の空白・既存の期限順キューで補完",
   "llmCalls": 0,
   "codexCalls": 0,
   "sourceFailures": [],
   "acquisitionStatus": "process-success",
-  "endedAt": "2026-10-27T20:56:38.570Z",
-  "durationMs": 590612,
+  "endedAt": "2026-10-28T00:56:58.971Z",
+  "durationMs": 664770,
   "outcomes": {
-    "baselineAt": "2026-10-27T20:46:47.958Z",
+    "baselineAt": "2026-10-28T00:45:54.201Z",
     "commonCards": 12742,
     "addedCards": 0,
     "removedCards": 0,
     "newlyAnalyzable": 0,
-    "lostAnalyzable": 0,
+    "lostAnalyzable": 1,
     "filledCards": 0,
     "filledItems": 0,
     "sources": {
@@ -36,7 +36,7 @@
         "validAdded": 0,
         "validLost": 0,
         "usableNet": 0,
-        "freshnessRecovered": 58
+        "freshnessRecovered": 66
       },
       "yuyutei": {
         "newLinked": 0,
@@ -66,6 +66,9 @@
         "usableNet": 0,
         "freshnessRecovered": 0
       }
+    },
+    "referenceEvidenceRecovered": {
+      "buybackExitEvidence": 623
     }
   },
   "publicationStatus": "保存済み・公開照合待ち"
