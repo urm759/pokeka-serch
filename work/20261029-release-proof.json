@@ -1,0 +1,69 @@
+{
+  "at": "2026-10-28T16:15:50.613Z",
+  "sourceCommit": "b7d2c4e3d",
+  "recoveryFixCommit": "e638cbf58",
+  "publishedHead": "e315746a493d3956c6db5f25db3db11afc551f28",
+  "publicFilesVerified": 33,
+  "value": {
+    "officialFee": 5980,
+    "handling": 1000,
+    "selectedFee": 6980,
+    "businessDays": 120,
+    "calendarEstimate": 168,
+    "returnEstimate": 175,
+    "totalLockWithSalePayout": 185,
+    "effectiveAt": "2026-10-30T00:00:00+09:00",
+    "beforeOpening": "reference only; no GO"
+  },
+  "legacyCandidateCount": 43,
+  "focusedCandidateCount": 82,
+  "planOnlyGain": 40,
+  "planOnlyLoss": 1,
+  "newListings": 0,
+  "mandatoryResolved": 0,
+  "newAnalyzable": 0,
+  "domesticPurchaseReconfirmed": 4,
+  "discoveryHttp": 8,
+  "newUrls": 0,
+  "gemratePublic": 50,
+  "gemrateCalculationAdoption": 0,
+  "gemrateNewMappings": 0,
+  "cloudVerifier": {
+    "runId": 40722671350,
+    "initialAttempt": {
+      "sourceRecovery": "failed: observer-only run has no source checkpoint",
+      "publicationVerification": "success: four completed pipeline receipts",
+      "artifact": 12831017894
+    },
+    "retryAttempt": 2,
+    "retryPending": false,
+    "retryResult": "success",
+    "retryAcquisitionRequests": 0,
+    "recoveryDecisionAt": "2026-10-28T16:13:08.480Z",
+    "gitPublishedAt": "2026-10-28T16:18:24.655Z",
+    "pagesPublishedAt": "2026-10-28T16:20:29Z",
+    "pagesRunId": 40724660290,
+    "completedAt": "2026-10-28T16:20:59Z",
+    "sourceRecoveryToGitSeconds": 316,
+    "sourceRecoveryToPagesSeconds": 441
+  },
+  "allSourceRequestsByVerifier": 0,
+  "multipleNewScheduledCyclesConfirmed": false,
+  "finalDataHead": "87090826bfea7b12d0b2ec62be30c30184ce2318",
+  "fixedHighRare": {
+    "analyzable": 711,
+    "total": 1328
+  },
+  "currentHighRare": {
+    "analyzable": 711,
+    "total": 1329
+  },
+  "freshness": {
+    "latestPct": 96.35416666666666,
+    "oct28NormalMinimumPct": 0,
+    "oct29BoundaryIntervalMinimumPct": 96.35416666666666,
+    "oct29ObservationScope": "only 2026-10-28T14:58:44Z..15:05:06Z; not whole-day maintenance",
+    "targetHours": 6,
+    "purchaseMaxAgeHours": 48
+  }
+}
