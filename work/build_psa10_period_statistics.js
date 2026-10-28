@@ -28,14 +28,24 @@ function statistics(rows, asOf, days, dateKey, priceKey) {
   const end = dayTime(asOf), start = end - (days - 1) * DAY;
   const accepted = rows.filter(r => dayTime(r[dateKey]) >= start && dayTime(r[dateKey]) <= end && positive(r[priceKey]));
   const prices = accepted.map(r => r[priceKey]);
+  const mean=prices.length?prices.reduce((a,b)=>a+b,0)/prices.length:null;
+  const dates=[...new Set(accepted.map(r=>r[dateKey]))].sort(),span=dates.length?(dayTime(dates.at(-1))-dayTime(dates[0]))/DAY+1:0;
+  const maxGap=dates.length>1?Math.max(...dates.slice(1).map((d,i)=>(dayTime(d)-dayTime(dates[i]))/DAY-1)):null;
+  const cv=prices.length>=2&&mean>0?Math.sqrt(prices.reduce((sum,p)=>sum+(p-mean)**2,0)/prices.length)/mean*100:null;
   return { mean: prices.length ? Math.round(prices.reduce((a, b) => a + b, 0) / prices.length * 100) / 100 : null,
-    median: median(prices), count: accepted.length, observedDays: new Set(accepted.map(r => r[dateKey])).size,
+    coefficientVariation:cv,spanDays:span,maxMissingGap:maxGap, median: median(prices), count: accepted.length, observedDays: new Set(accepted.map(r => r[dateKey])).size,
     missingDays: days - new Set(accepted.map(r => r[dateKey])).size,
     legacyUnverifiedDays: dateKey === 0 ? accepted.filter(r => r.length < 11).length : 0,
     start: new Date(start).toISOString().slice(0, 10), end: asOf,
     latestDate: accepted.map(r => r[dateKey]).sort().at(-1) || null,
     min: prices.length ? Math.min(...prices) : null, max: prices.length ? Math.max(...prices) : null,
     drawdown: dateKey === 0 ? maximumDrawdown(accepted,dateKey,priceKey) : null };
+}
+function variationEvidence(snapshots) {
+  // Overlapping windows are not independent votes. Use one sufficiently observed window.
+  const chosen=[200,75,30,7].map(d=>[d,snapshots[d]]).find(([d,s])=>d>=30&&s.observedDays>=15&&s.observedDays/d>=.5&&s.spanDays>=14&&s.maxMissingGap<=7&&s.legacyUnverifiedDays===0&&s.ageDays<=2);
+  if(!chosen)return null;
+  const [days,s]=chosen;return [days,Math.round(s.coefficientVariation*100)/100,s.drawdown?.percent??null,s.observedDays,s.spanDays,s.maxMissingGap,s.latestDate];
 }
 function observationStatus(stat, days, asOf) {
   const ageDays = stat.latestDate ? Math.round((dayTime(asOf) - dayTime(stat.latestDate)) / DAY) : null;
@@ -106,6 +116,8 @@ function build(root = ROOT, now = new Date()) {
     const trades = Object.fromEntries([7, 30, 75].map(days => [days, { ...statistics(actual.rows, asOf, days, 'date', 'price'),
       sufficient: statistics(actual.rows, asOf, days, 'date', 'price').count >= 3 }]));
     if (!daily.length && !actual.rows.length) continue;
+    if(!summary.variation)summary.variation={version:1,cards:{},rule:"同じ日次原票の1期間を採用。重複4票にしない。15日以上・期間50%以上・観測14日間以上・連続欠測7日以下・根拠確認・最終2日以内"};
+    const variability=variationEvidence(snapshots);if(variability)summary.variation.cards[card.id]=variability;
     summary.cards[card.id] = [snapshots[7].mean, snapshots[7].count, snapshots[30].mean, snapshots[30].count,
       snapshots[30].ageDays, snapshots[75].mean, snapshots[75].count, snapshots[7].ageDays, snapshots[75].ageDays,
       snapshots[200].mean, snapshots[200].count, snapshots[200].ageDays, snapshots[200].legacyUnverifiedDays,
@@ -142,4 +154,4 @@ function build(root = ROOT, now = new Date()) {
   return { ...summary.coverage, asOf, changedFiles: written.length, inputHash };
 }
 if (require.main === module) console.log(JSON.stringify(build()));
-module.exports = { build, statistics, dailyRows, actualRows, shard, observationStatus, maximumDrawdown };
+module.exports = { build, statistics, dailyRows, actualRows, shard, observationStatus, maximumDrawdown, variationEvidence };

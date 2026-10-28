@@ -55,6 +55,21 @@
     referenceMedianCache.set(a,{key:cacheKey,at:now,expires:Math.min(expiresAt,...future.map(t=>t-1)),result});
     return result;
   }
+  function referenceBuy(card, guide, now=Date.now()) {
+    const median=referenceMedian(card,now), offer=offerPrice(card.currentStoreOffer,now);
+    const blocked=card.identityReviewRequired || card.dataQuality?.manualReview || decisionModel.hasBlockingDataAnomaly(card.dataQuality)
+      || card.priceIntegrity?.disputed || (card.priceAggregation?.comparison || card.priceAggregation)?.conflicted;
+    const candidates=[{kind:'store',label:'現在買える状態A価格',value:offer,reason:offer==null?'在庫なし・価格未取得または期限切れ':null},
+      {kind:'guide',label:'利益確保の仕入れ目安・現相場基準',value:guide?.eligible && guide.capState==='available' && finite(guide.cap) && guide.cap>0 ? guide.cap:null,
+        reason:guide?.capState==='loss-at-zero'?'仕入れ不能':guide?.capState==='available' && guide.cap===0?'仕入れ目安0円・最安比較対象外':guide?.eligible?'仕入れ目安算出不可':(guide?.reasons||[]).join('／')||'仕入れ目安算出不可'},
+      {kind:'median',label:'素体参考相場・中央値',value:median.value,reason:median.reasons.join('／')}];
+    if(blocked)for(const c of candidates){c.value=null;c.reason='価格対立・仕様確認待ち';}
+    const observedOut=[...(card.storePriceAudit||[]),...(card.currentStoreOffer?[card.currentStoreOffer]:[])].some(r=>{const age=now-Date.parse(r.inventoryAt||'');return (r.available===false||r.stock===0)&&age>=0&&age<=48*3600000&&r.identityVerified!==false;});
+    const adopted=candidates.filter(c=>finite(c.value)&&c.value>0).sort((a,b)=>a.value-b.value)[0];
+    return {value:adopted?.value??null,kind:adopted?.kind??null,label:adopted?.label||'参考買値算出不可',candidates,
+      reasons:adopted?[]:[...new Set(candidates.map(c=>c.reason).filter(Boolean))],warnings:median.warnings,
+      expiresAt:median.expiresAt,reference:true,availability:offer!=null?'在庫あり・実店舗採算は別':observedOut?'確認店の在庫なし・入荷待ち':'購入先未確認・価格／在庫の再確認待ち'};
+  }
   function meanSale(mean, buy, fee, feeRate, extra) {
     if (![mean,buy,fee,feeRate,extra].every(finite) || mean <= 0 || buy < 0 || fee < 0 || extra < 0 || feeRate < 0 || feeRate >= 100 || buy + fee <= 0) return {net:null,profit:null,roi:null};
     const net = mean * (1 - feeRate / 100) - extra, profit = net - buy - fee;
@@ -128,6 +143,19 @@
       drawdownReference:count < days || (row?.[summary?.observationEvidenceIndices?.[days]] ?? 1) > 0,
       delta:valid && finite(current) && current > 0 ? percent(current,mean) : null,reference,latest,
       stale:!latest || age > (summary?.staleObservationDays ?? 2)};
+  }
+  function variation(summary,card,now=Date.now()) {
+    const evidence=summary?.variation?.cards?.[card.id];
+    const means=observationPeriods.map(d=>observation(summary,card.id,card.psa10,d)).filter(r=>r.mean>0&&!r.stale);
+    const direction=means.find(r=>r.days===30)||means[0],delta=direction?.delta;
+    const trend=delta==null?'方向不明':delta>5?'上昇方向':delta< -5?'下落方向':'平均付近';
+    if(!evidence)return {label:'判断材料不足',trend,reason:'実測のばらつき・観測充足不足。重複する4期間を独立根拠にしない'};
+    const [days,cv,drawdown,count,span,gap,latest]=evidence;
+    const age=Math.floor((now+9*3600000)/86400000)-Date.parse(latest)/86400000;
+    if(!(age>=0&&age<=2&&count>=15&&count/days>=.5&&span>=14&&gap<=7))return {label:'判断材料不足',trend,reason:'観測不足・古値・日時不正'};
+    if(![cv,drawdown].every(finite))return {label:'判断材料不足',trend,reason:'ばらつき・最大下落の根拠不足'};
+    const label=cv>=20||drawdown<=-30?'大きい':cv>=8||drawdown<=-15?'中程度':'小さい';
+    return {label,trend,days,cv,drawdown,count,span,gap,latest,reason:'記述的な参考区分：変動係数20%/最大下落30%以上は大、8%/15%以上は中。予測・GO条件ではない'};
   }
   function observationExclusions(summary, card, settings) {
     const reasons = [];
@@ -331,5 +359,5 @@
         status:pop[4]===0?'近い期間の参考比較':pop[4]===2?'POP減少・訂正等':'期間不一致・部分期間',
         ratio:measured&&!stale&&pop[4]===0&&pop[0]>0?n/pop[0]:null}:null};
   }
-  return {percent,inRange,offerPrice,referenceMedian,meanSale,atPurchase,efficiency,coverage,observationPeriods,migrateObservationSettings,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics,periodEfficiencyAverage,efficiencyUnavailableLabel,buybackSupport,buybackRatioTone,buybackRatioBoundaries,tradeDemand};
+  return {variation,referenceBuy,percent,inRange,offerPrice,referenceMedian,meanSale,atPurchase,efficiency,coverage,observationPeriods,migrateObservationSettings,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics,periodEfficiencyAverage,efficiencyUnavailableLabel,buybackSupport,buybackRatioTone,buybackRatioBoundaries,tradeDemand};
 });

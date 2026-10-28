@@ -1,6 +1,6 @@
 const number=v=>Number.isFinite(v)?v:null;
 function cardFacts(api,card) {
-  const offer=card.currentStoreOffer,eff=api.cardEfficiency(card),ratio=api.purchasePsa9Ratio(card);
+  const offer=card.currentStoreOffer,eff=api.cardEfficiency(card),ratio=api.state.efficiencyBuy==='reference-min'?api.purchasePsa9Ratio(card,eff.purchasePrice,'reference-min'):api.purchasePsa9Ratio(card);
   const sources={};
   for(const source of ['cardrush','hareruya2','torecacamp','yuyutei']){
     const r=api.state[source+'Stock']?.[card.id];if(!r)continue;

@@ -13,8 +13,11 @@ function latestMonitor(runs,{currentRunId,now=Date.now(),alreadyApplied=()=>fals
   const completed=Date.parse(lastAcquisitionAt)||0;
   return runs.filter(r=>trustedMonitor(r)&&String(r.id)!==String(currentRunId)
     &&Number.isFinite(Date.parse(r.updated_at))&&Date.parse(r.updated_at)<=now
-    &&now-Date.parse(r.updated_at)<7*86400000&&Date.parse(r.updated_at)>completed&&!alreadyApplied(r.id))
+    &&now-Date.parse(r.updated_at)<7*86400000&&Date.parse(r.updated_at)>completed&&!alreadyApplied(r.id,r))
     .sort((a,b)=>Date.parse(b.updated_at)-Date.parse(a.updated_at))[0]||null;
+}
+function inspectedForRun(root,run){
+  try{const r=JSON.parse(fs.readFileSync(path.join(root,'work/recovery-inspected-'+run.id+'.json')));return Number(r.runAttempt)===Number(run.run_attempt)&&r.headSha===run.head_sha;}catch{return false;}
 }
 function monitorRecoveryNeeded(jobs){
   const rows=jobs.jobs||[],catchup=rows.find(j=>j.name==='catchup'),failed=rows.filter(j=>j.conclusion==='failure');
@@ -30,7 +33,7 @@ async function main(){
     const runs=(await(await get(base+'/workflows/watch-data-health.yml/runs?event=schedule&per_page=5')).json()).workflow_runs||[];
     let acquisition={};try{acquisition=JSON.parse(fs.readFileSync(path.join(ROOT,'data/priority-price-execution.json')));}catch{}
     const candidate=latestMonitor(runs,{currentRunId:process.env.GITHUB_RUN_ID,lastAcquisitionAt:acquisition.startedAt,
-      alreadyApplied:runId=>['recovery-applied-','recovery-inspected-'].some(prefix=>fs.existsSync(path.join(ROOT,'work/'+prefix+runId+'.json')))});
+      alreadyApplied:(runId,run)=>fs.existsSync(path.join(ROOT,'work/recovery-applied-'+runId+'.json'))||inspectedForRun(ROOT,run)});
     if(!candidate)return {status:'no-unpublished-monitor-checkpoint',sourceRequests:0};id=String(candidate.id);
   }
   if(fs.existsSync(path.join(ROOT,'work/recovery-applied-'+id+'.json')))return {status:'already-restored',runId:id,sourceRequests:0};
@@ -38,7 +41,7 @@ async function main(){
   if(monitor){
     const jobs=await(await get(base+'/runs/'+id+'/jobs')).json();
     if(!monitorRecoveryNeeded(jobs)){
-      const result={status:'observer-only-failure-no-price-recovery',runId:id,headSha:run.head_sha,checkedAt:new Date().toISOString(),sourceRequests:0,
+      const result={status:'observer-only-failure-no-price-recovery',runId:id,runAttempt:run.run_attempt,headSha:run.head_sha,checkedAt:new Date().toISOString(),sourceRequests:0,
         failedJobs:jobs.jobs.filter(j=>j.conclusion==='failure').map(j=>j.name),reason:'catchup取得/検証/保存公開は成功。監視/照合の失敗記録とartifactは保持し、独立した価格更新を止めない'};
       fs.writeFileSync(path.join(ROOT,'work/recovery-inspected-'+id+'.json'),JSON.stringify(result));return result;
     }
@@ -59,4 +62,4 @@ async function main(){
   return require('./restore_price_artifact').restore(file,id,run.head_sha,ROOT);
 }
 if(require.main===module)main().then(r=>console.log(JSON.stringify(r))).catch(e=>{console.error(e.message);process.exitCode=1;});
-module.exports={trusted,trustedMonitor,latestMonitor,monitorRecoveryNeeded,METADATA_TIMEOUT_MS,ARCHIVE_TIMEOUT_MS};
+module.exports={trusted,trustedMonitor,latestMonitor,monitorRecoveryNeeded,inspectedForRun,METADATA_TIMEOUT_MS,ARCHIVE_TIMEOUT_MS};

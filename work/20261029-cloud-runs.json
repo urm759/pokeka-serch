@@ -1,10 +1,23 @@
 {
-  "at": "2026-10-28T16:25:10.789Z",
+  "at": "2026-10-28T19:58:46.541Z",
   "workflows": [
     {
       "name": "priority-price-refresh.yml",
       "state": "active",
       "runs": [
+        {
+          "id": 40728611468,
+          "name": "Priority Purchase Price Refresh",
+          "event": "schedule",
+          "status": "completed",
+          "conclusion": "success",
+          "createdAt": "2026-10-28T16:42:30Z",
+          "startedAt": "2026-10-28T16:42:30Z",
+          "updatedAt": "2026-10-28T16:57:43Z",
+          "head": "c58ff5fb600ae45227d79fa202968d703892dcd4",
+          "scheduled": ".github/workflows/priority-price-refresh.yml",
+          "url": "https://github.com/urm759/pokeka-serch/actions/runs/40728611468"
+        },
         {
           "id": 40658698271,
           "name": "Priority Purchase Price Refresh",
@@ -446,19 +459,6 @@
           "head": "ef0a396172d45979ba86ec24c2de7c3b596f479f",
           "scheduled": ".github/workflows/priority-price-refresh.yml",
           "url": "https://github.com/urm759/pokeka-serch/actions/runs/39564481690"
-        },
-        {
-          "id": 39522752797,
-          "name": "Priority Purchase Price Refresh",
-          "event": "schedule",
-          "status": "completed",
-          "conclusion": "failure",
-          "createdAt": "2026-10-21T00:40:39Z",
-          "startedAt": "2026-10-21T00:40:39Z",
-          "updatedAt": "2026-10-21T00:55:45Z",
-          "head": "4aadc17fced412ff74a2e6d25dabefbe6540cd4c",
-          "scheduled": ".github/workflows/priority-price-refresh.yml",
-          "url": "https://github.com/urm759/pokeka-serch/actions/runs/39522752797"
         }
       ]
     },
@@ -466,6 +466,32 @@
       "name": "watch-data-health.yml",
       "state": "active",
       "runs": [
+        {
+          "id": 40751398289,
+          "name": "Data Update Health Watchdog",
+          "event": "schedule",
+          "status": "completed",
+          "conclusion": "success",
+          "createdAt": "2026-10-28T19:07:13Z",
+          "startedAt": "2026-10-28T19:07:13Z",
+          "updatedAt": "2026-10-28T19:10:07Z",
+          "head": "385d9d0359151eeadf6c559739bac156ed110a2b",
+          "scheduled": ".github/workflows/watch-data-health.yml",
+          "url": "https://github.com/urm759/pokeka-serch/actions/runs/40751398289"
+        },
+        {
+          "id": 40731082749,
+          "name": "Data Update Health Watchdog",
+          "event": "workflow_run",
+          "status": "completed",
+          "conclusion": "success",
+          "createdAt": "2026-10-28T16:57:47Z",
+          "startedAt": "2026-10-28T16:57:47Z",
+          "updatedAt": "2026-10-28T17:00:20Z",
+          "head": "da4c36f64ea88a793adb800f0422958a8b7ac8f8",
+          "scheduled": ".github/workflows/watch-data-health.yml",
+          "url": "https://github.com/urm759/pokeka-serch/actions/runs/40731082749"
+        },
         {
           "id": 40722671350,
           "name": "Data Update Health Watchdog",
@@ -894,32 +920,6 @@
           "head": "dd4688c3ba1f5b07858440719c0d5da9c75f0e42",
           "scheduled": ".github/workflows/watch-data-health.yml",
           "url": "https://github.com/urm759/pokeka-serch/actions/runs/40283219188"
-        },
-        {
-          "id": 40262009816,
-          "name": "Data Update Health Watchdog",
-          "event": "workflow_run",
-          "status": "completed",
-          "conclusion": "success",
-          "createdAt": "2026-10-26T03:01:46Z",
-          "startedAt": "2026-10-26T03:01:46Z",
-          "updatedAt": "2026-10-26T03:17:46Z",
-          "head": "9c728b0f8c0f604278ad7d35913859cceedeb4e0",
-          "scheduled": ".github/workflows/watch-data-health.yml",
-          "url": "https://github.com/urm759/pokeka-serch/actions/runs/40262009816"
-        },
-        {
-          "id": 40255663616,
-          "name": "Data Update Health Watchdog",
-          "event": "schedule",
-          "status": "completed",
-          "conclusion": "success",
-          "createdAt": "2026-10-26T01:44:12Z",
-          "startedAt": "2026-10-26T01:44:12Z",
-          "updatedAt": "2026-10-26T01:46:19Z",
-          "head": "34f77d8d727b6005bc4b698ab54554fae19fc1e9",
-          "scheduled": ".github/workflows/watch-data-health.yml",
-          "url": "https://github.com/urm759/pokeka-serch/actions/runs/40255663616"
         }
       ]
     },

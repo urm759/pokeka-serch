@@ -1,0 +1,88 @@
+{
+  "at": "2026-10-28T20:19:27.368Z",
+  "baseline": "c58ff5fb6",
+  "newListed": [],
+  "mandatoryResolved": [],
+  "newAnalyzable": [],
+  "noLongerAnalyzable": [],
+  "total": 12746,
+  "analyzable": 2422,
+  "highRare": {
+    "fixed": {
+      "listed": 1328,
+      "analyzable": 711
+    },
+    "current": {
+      "listed": 1329,
+      "analyzable": 711,
+      "analysisPct": 53.49887133182844
+    },
+    "unknown": 5074,
+    "missing": {
+      "domesticPrice": 206,
+      "psa10Trades": 547,
+      "psaOfficial": 133,
+      "domesticTrades": 485,
+      "psa10Price": 206
+    },
+    "feasibility": {
+      "pendingCards": 618,
+      "automaticPathsOnly": 0,
+      "savedReviewOnly": 1,
+      "blockedCards": 618,
+      "combinations": {
+        "source-evidence-unavailable": 8,
+        "source-price-missing": 44,
+        "period-not-provided": 328,
+        "price-conflict-review": 10,
+        "saved-rematch-review": 1,
+        "permission-wait": 3,
+        "price-conflict-review + saved-rematch-review": 2,
+        "period-not-provided + permission-wait": 61,
+        "permission-wait + source-price-missing": 2,
+        "period-not-provided + source-price-missing": 50,
+        "saved-rematch-review + source-evidence-unavailable": 1,
+        "period-not-provided + saved-rematch-review": 15,
+        "period-not-provided + price-conflict-review": 41,
+        "source-card-absent + source-price-missing": 1,
+        "period-not-provided + permission-wait + price-conflict-review": 21,
+        "source-card-absent": 3,
+        "period-not-provided + saved-rematch-review + source-price-missing": 6,
+        "period-not-provided + permission-wait + source-price-missing": 17,
+        "permission-wait + source-card-absent": 1,
+        "period-not-provided + price-conflict-review + saved-rematch-review": 2,
+        "saved-rematch-review + source-card-absent + source-price-missing": 1
+      },
+      "blockedCardsByReason": {
+        "source-evidence-unavailable": 9,
+        "source-price-missing": 121,
+        "period-not-provided": 541,
+        "price-conflict-review": 76,
+        "saved-rematch-review": 28,
+        "permission-wait": 105,
+        "source-card-absent": 6
+      },
+      "target90Cards": 1197,
+      "conditionalCurrentRouteTotal": 711,
+      "conditionalCurrentRoutePct": 53.49887133182844,
+      "targetShortfallAfterConditionalCompletion": 486,
+      "note": "カード単位・組合せは重複なし。理由別は重複あり。現行経路上限は自動経路が全て有効値を返した場合の条件付きで、取得成功/終了日を保証しない。保存原票の再照合保留を解消済み・許諾待ちへ一括変換しない。"
+    }
+  },
+  "acquisition": {
+    "attempted": 4,
+    "acquired": 4,
+    "newLinked": 0,
+    "selected": [
+      "pk-35352",
+      "x-122060",
+      "pk-23060",
+      "pk-22399"
+    ],
+    "durationMs": 8832
+  },
+  "gemrate": {
+    "public": 50,
+    "adopted": 0
+  }
+}

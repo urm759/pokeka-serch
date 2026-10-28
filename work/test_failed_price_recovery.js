@@ -46,6 +46,8 @@ const root=fs.mkdtempSync(path.join(os.tmpdir(),'pokeka-artifact-'));
 const write=(f,x)=>{fs.mkdirSync(path.dirname(path.join(root,f)),{recursive:true});fs.writeFileSync(path.join(root,f),JSON.stringify(x));};
 const git=args=>cp.execFileSync('git',args,{cwd:root,encoding:'utf8',stdio:['ignore','pipe','pipe']});
 try{
+  const {inspectedForRun}=require('./recover_failed_price_run');write('work/recovery-inspected-999.json',{runAttempt:1,headSha:'abc'});
+  assert(inspectedForRun(root,{id:999,run_attempt:1,head_sha:'abc'}));assert(!inspectedForRun(root,{id:999,run_attempt:2,head_sha:'abc'}),'new rerun cannot inherit an old observer-only inspection');
   write('data/pokemon-cards.json',[{id:'one',price:100,observedAt:'2026-10-24T00:00:00Z'}]);
   git(['init']);git(['add','data']);git(['-c','user.name=test','-c','user.email=test@example.invalid','commit','-m','base']);const base=git(['rev-parse','HEAD']).trim();
   const incoming=JSON.stringify([{id:'one',price:110,observedAt:'2026-10-25T00:00:00Z'}]),prefix='work/unpublished-recovery/123-1/';

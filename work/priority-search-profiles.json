@@ -1,7 +1,7 @@
 {
   "version": 1,
   "providedAt": "2026-10-14",
-  "preferredEfficiencyBasis": "median",
+  "preferredEfficiencyBasis": "reference-min",
   "medianVariants": [
     {
       "id": "A-median",
@@ -51,5 +51,11 @@
   "historicalProfileIds": [
     "A"
   ],
-  "comparisonRevision": "20261030-value-priority"
+  "comparisonRevision": "20261029-reference-buy-waiting",
+  "referenceFocus": true,
+  "referencePolicy": {
+    "effectiveAt": "2026-10-28T20:02:07.382Z",
+    "parameter": "effBuy=reference-min",
+    "note": "旧V/Bと中央値URLは不変。重点版だけ採用可能3価格の最安と在庫待ち探索へ移行。方式差を実補完と別集計。"
+  }
 }

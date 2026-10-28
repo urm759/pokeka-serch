@@ -6,7 +6,7 @@ vm.runInContext(source.split('// Browser event bindings start here;')[0]+'\nglob
 const a=context.api,s=a.state;
 const card={id:'fixture',name:'fixture',catalogCompletion:{s:'分析可能'},price:10000,psa10:30000,psa10ObservedAt:new Date().toISOString(),psaTx30d:20,saleTx30d:20,official:{rate:80},dataQuality:{},priceAggregation:{confidence:'高'},overallAssessment:{score:20,grade:'D'},purchaseDecision:{verdict:'見送り'},psaDecision:{recommended:false},buyLimits:{clean:{finalMaxPrice:0,supplyStressAtFinal:{expectedProfit:-10000}}},forecastPeriodMismatch:true};
 s.catalogCompletion={cards:{fixture:card.catalogCompletion}};
-Object.assign(s,{purchaseMode:'specified',catalogScope:'analysis',minRoi:null,minExpectedProfitFilter:null,minExpectedRoiFilter:null,minStressExpectedProfitFilter:null,minStressExpectedRoiFilter:null,minPurchaseLimitRatio:null,minSaleTx:0,minPsaTx:0,efficiencyMin:null,includePeriodReference:false});
+Object.assign(s,{efficiencyBuy:'auto',purchaseMode:'specified',catalogScope:'analysis',minRoi:null,minExpectedProfitFilter:null,minExpectedRoiFilter:null,minStressExpectedProfitFilter:null,minStressExpectedRoiFilter:null,minPurchaseLimitRatio:null,minSaleTx:0,minPsaTx:0,efficiencyMin:null,includePeriodReference:false});
 assert.deepEqual(Array.from(a.cardSearchExclusions(card)),[],'no implicit verdict, stable cap, stress, score, or horizon gates');
 assert(a.cardSearchExclusions(card,{mode:'combined'}).includes('プリセット条件'));
 s.minStressExpectedProfitFilter=0;assert(a.cardSearchExclusions(card).includes('利益条件'),'explicit zero stress filter remains active');s.minStressExpectedProfitFilter=null;
@@ -25,7 +25,7 @@ const archive=JSON.parse(saved['pokeka-quick-filter-preferences-v1:two-modes-v1'
 const html=fs.readFileSync('index.html','utf8');assert.deepEqual([...html.matchAll(/data-preset="([^"]+)"/g)].map(m=>m[1]),['combined','specified']);
 console.log('PASS two modes: no implicit gates, enabled/missing vs disabled, strict identity, migration/archive and saved mode');
 const config=require('./priority-search-profiles.json'),variants=require('./search_profile_variants');
-const originals=variants.allProfiles(config),modes=variants.searchModeProfiles(config);assert.equal(modes.length,8);
+const originals=variants.allProfiles(config),modes=variants.searchModeProfiles(config);assert.equal(modes.length,4);
 for(const p of originals){const variant=modes.find(r=>r.siteProfileId===p.id);assert(variant);assert.equal(new URL(variant.url).searchParams.get('preset'),'specified');}
 delete saved['pokeka-quick-filter-preferences-v1'];
 context.window.location.href='https://example.test/?preset=specified';a.readUrl();

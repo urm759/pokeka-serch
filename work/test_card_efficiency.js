@@ -63,7 +63,7 @@ api.saveQuickFilters();context.window.location.href='https://example.test/';inpu
 const loader = require('./audit_search_profit_consistency').load;
 // Daily runners can use a shallow checkout: do not depend on old Git objects.
 // The release audit separately compares against the previous published source.
-const before=loader(source,date,{fixedModelClock:true}),after=loader(source,date,{fixedModelClock:true});
+const before=loader(source,date,{fixedModelClock:true,url:'https://example.test/?effBuy=auto'}),after=loader(source,date,{fixedModelClock:true,url:'https://example.test/?effBuy=auto'});
 Object.assign(after.state,{efficiencyBuy:'manual',efficiencyManualPrice:17000,efficiencySaleDays:21,efficiencyPayoutDays:5});
 const oldCards=before.prepareCalculatedCards(before.state.cards);
 let newCards;

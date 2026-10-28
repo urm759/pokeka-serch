@@ -72,7 +72,7 @@ function evaluate(profile,at,overlay={},inspectIds=[],calculationCache=null,opti
     for(const r of new Set(excluded))reasons[r]=(reasons[r]||0)+1;
     const missing=completion.cards?.[c.id]?.m||[];
     // Only known price gates screen a completion prospect. Unknown data never proves suitability.
-    const p=url.searchParams,priceGates=require('./profile_discovery_gates').gates(c,p);
+    const p=url.searchParams,priceGates=require('./profile_discovery_gates').gates(c,p,p.get('effBuy')==='reference-min'?e.purchasePrice:undefined);
     const priceFail=Object.values(priceGates).includes('fail');
     if(Object.values(priceGates).includes('unknown'))scope.unknownPriceCards++;
     if(priceFail)scope.confirmedPriceFailures++;
@@ -82,7 +82,7 @@ function evaluate(profile,at,overlay={},inspectIds=[],calculationCache=null,opti
       buybackConfirmed:!e.blockingReasons.some(r=>r.includes('買取出口'))&&require('./profile_completion_routes').prospectPlan(c,['buybackExitEvidence'],{shops,linkage,now:Date.parse(at),storeMode:p.get('buybackStores') || 'mail',selected:(p.get('selectedStores') || '').split(',')}).requirements[0].evidence.filter(r=>r.state==='usable').length>=2,
       metrics:require('./profile_candidate_evidence').cardFacts(api,c)};
     if(!c.currentStoreOffer?.fresh || !c.currentStoreOffer.available)fields.push('shopStateA');
-    if(p.get('effBuy')==='median' && e.medianEvidence?.reasons.length)fields.push('referenceMedian');
+    if((p.get('effBuy')==='median' && e.medianEvidence?.reasons.length)||(p.get('effBuy')==='reference-min' && e.purchasePrice==null && e.referenceEvidence?.candidates.some(r=>r.kind==='median'&&r.value==null)))fields.push('referenceMedian');
     if(e.blockingReasons.some(r=>r.includes('買取出口')))fields.push('buybackExitEvidence');
     if(e.blockingReasons.some(r=>r.includes('PSA9')))fields.push('psa9Evidence');
     if(e.blockingReasons.some(r=>/PSA10.*(未取得|古い|日時)/.test(r)))fields.push('psa10Price');
@@ -216,14 +216,26 @@ function build(root=ROOT,at=new Date().toISOString()) {
     note:'指定条件モードの派生URLはpresetだけ変更し既存の補完/価格更新キューへ接続。modeOnlyCandidatesはモード差分であり実補完・独立初適合ではない。元A/Bと中央値版の数値は保持。要約生成は実取得ではない。URLだけと確認済み保存追加条件を分離。他の端末は未観測'};
   targets.comparisonRevision=config.comparisonRevision||'legacy';
   report.comparisonRevision=targets.comparisonRevision;
-  report.independentCandidates.comparisonKind=previous.comparisonRevision===targets.comparisonRevision?'data-refresh':'plan-definition-change';
-  if(report.independentCandidates.comparisonKind==='plan-definition-change')report.independentCandidates.note+='／プラン定義移行を含むため、実補完・データによる初適合へ加算しない';
+  applyReferenceComparison(root,report,targets,previous,config);
   for(const [f,x]of [['work/search-profile-targets.json',targets],['data/priority-search-profile-audit.json',report]])require('./acquisition_retry').atomicWrite(path.join(root,f),x,0);
   console.log(JSON.stringify(profiles.map(p=>({id:p.urlOnly.id,urlOnly:p.urlOnly.qualified,withKnownSaved:p.knownSavedConditions.qualified,prospects:p.urlOnly.prospects}))));
   return report;
+}
+function applyReferenceComparison(root,report,targets,previous,config) {
+  if(!config.referenceFocus) {
+    report.independentCandidates.comparisonKind=previous.comparisonRevision===targets.comparisonRevision?'data-refresh':'plan-definition-change';return;
+  }
+  const migration=previous.referencePolicyRevision!==config.comparisonRevision;
+  const baseline=migration?JSON.parse(fs.readFileSync(path.join(root,'work/reference-buy-legacy-targets.json'))):previous;
+  const before=(baseline.profiles||[]),after=report.profiles;
+  report.independentCandidates=departures.independentCandidates(before.filter(p=>!p.id.endsWith('-specified')).map(p=>p.urlsMatched||[]),after.filter(p=>!p.urlOnly.id.endsWith('-specified')).map(p=>p.urlOnly.ids));
+  report.allModeIndependentComparison=departures.independentCandidates(before.map(p=>p.urlsMatched||[]),after.map(p=>p.urlOnly.ids));
+  const kind=migration?'purchase-basis-and-inventory-policy-change':'data-refresh';
+  for(const value of [report.independentCandidates,report.allModeIndependentComparison]){value.comparisonKind=kind;if(migration)value.note+='／公開済み旧条件の比較記録からの買値・在庫方針移行。実補完・独立初適合へ加算しない';}
+  targets.referencePolicyRevision=config.comparisonRevision;
 }
 if(require.main===module) {
   if(process.argv.includes('--evaluate-worker'))process.stdout.write(JSON.stringify(evaluatePair(JSON.parse(fs.readFileSync(0,'utf8')))));
   else build();
 }
-module.exports={build,evaluate,evaluatePair,isolatedPair,isolatedEvaluation,routeNeededFields,efficiencySummaryKey};
+module.exports={applyReferenceComparison,build,evaluate,evaluatePair,isolatedPair,isolatedEvaluation,routeNeededFields,efficiencySummaryKey};

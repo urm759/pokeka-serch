@@ -9,12 +9,12 @@ function priceGate(value, params, minKey, maxKey) {
   }
   return 'pass';
 }
-function gates(card, params) {
+function gates(card, params, referenceBuy = undefined) {
   const offer = card.currentStoreOffer;
   return {
-    referencePrice: priceGate(card.price, params, 'priceMin', 'priceMax'),
+    referencePrice: priceGate(referenceBuy===undefined?card.price:referenceBuy, params, 'priceMin', 'priceMax'),
     psa10Price: priceGate(card.psa10, params, 'psaMin', 'psaMax'),
-    purchasePrice: priceGate(offer?.fresh && offer.available ? offer.value : null, params, 'purchaseMin', 'purchaseMax'),
+    purchasePrice: priceGate(referenceBuy===undefined?(offer?.fresh && offer.available ? offer.value : null):referenceBuy, params, 'purchaseMin', 'purchaseMax'),
   };
 }
 function priority(card, detail = {}, support = null) {

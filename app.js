@@ -254,7 +254,7 @@ const state = {
   minExpectedProfitFilter: 0,
   profitSearchBasis: "auto",
   efficiencyMin: null, efficiencyManualPrice: null, efficiencySaleDays: 7, efficiencyPayoutDays: 3,
-  efficiencyBuy: 'median', efficiencyScenario: 'current',
+  efficiencyBuy: 'reference-min', efficiencyScenario: 'current',
   efficiencyIncludeReference: false,
   purchaseBelowCurrentCap: false,
   psa9CostWithin5: false,
@@ -3191,13 +3191,14 @@ function parseOptionalNumber(value) {
 }
 
 function purchasePsa9Ratio(card, manualPrice, purchaseKind, fee = state.fee) {
-  if (manualPrice === undefined) manualPrice = state.favoriteCosts[card.id];
+  const referenceSelection=purchaseKind==='reference-min';
+  if (manualPrice === undefined && !referenceSelection) manualPrice = state.favoriteCosts[card.id];
   const manual = manualPrice != null && Number.isFinite(Number(manualPrice));
   const verified = card.rawPsa9Gap?.psa9;
   const psa9 = verified?.count >= 3 && verified.median > 0 ? {value:verified.median,measurementType:"actual",count:verified.count,
     updatedAt:verified.latestSaleAt,country:"jp",currency:"JPY",identityConfirmed:true} : card.psa9Audit;
-  return purchaseRatioModel?.evaluate({ purchasePrice: manual ? Number(manualPrice) : card.currentStoreOffer?.value ?? card.price,
-    purchaseKind: purchaseKind || (manual ? "manual" : card.currentStoreOffer ? "store" : "market"), psa9,
+  return purchaseRatioModel?.evaluate({ purchasePrice: referenceSelection ? manual ? Number(manualPrice) : null : manual ? Number(manualPrice) : card.currentStoreOffer?.value ?? card.price,
+    purchaseKind: referenceSelection ? referenceBuyView(card).kind==='store' ? 'store' : 'market' : purchaseKind || (manual ? "manual" : card.currentStoreOffer ? "store" : "market"), psa9,
     asOf: meta.generatedAt || meta.updatedAt, conflicted: (card.priceAggregation?.comparison || card.priceAggregation)?.conflicted || card.dataQuality?.manualReview,
     fee, saleFeeRate: state.saleFeeRate, extraCost: state.saleExtraCost }) || {ratio:null,reasons:["未取得"]};
 }
@@ -3665,7 +3666,7 @@ function readUrl() {
   filterUrl.search=new URLSearchParams(migrateObservationControls(Object.fromEntries(filterUrl.searchParams),true).value).toString();
   if (filterUrl.searchParams.has('effRef')) document.getElementById('efficiencyIncludeReferenceInput').checked = filterUrl.searchParams.get('effRef') === '1';
   for (const [param,field] of efficiencyFields) if (filterUrl.searchParams.has(param)) document.getElementById(field+'Input').value = parseOptionalNumber(filterUrl.searchParams.get(param)) ?? '';
-  for (const [param,field,allowed] of [['effBuy','efficiencyBuy',['auto','store','median','manual','current-cap']],['effScenario','efficiencyScenario',['current','central','stress','obs7','obs30','obs75','obs200']]]) if (allowed.includes(filterUrl.searchParams.get(param))) document.getElementById(field+'Input').value=filterUrl.searchParams.get(param);
+  for (const [param,field,allowed] of [['effBuy','efficiencyBuy',['auto','store','median','manual','current-cap','reference-min']],['effScenario','efficiencyScenario',['current','central','stress','obs7','obs30','obs75','obs200']]]) if (allowed.includes(filterUrl.searchParams.get(param))) document.getElementById(field+'Input').value=filterUrl.searchParams.get(param);
   for (const [param,id] of [["marketCapMin","currentMarketCapMinInput"],["marketBuy","currentMarketManualPriceInput"]]) {
     if (filterUrl.searchParams.has(param)) document.getElementById(id).value = filterUrl.searchParams.get(param);
   }
@@ -4119,6 +4120,10 @@ function currentProfitGuide(card) {
       minRoi:state.minExpectedRoi,rawMarket:card.priceAggregation?.value ?? card.price})};
   });
 }
+function referenceBuyView(card,now=Date.now()) {
+  return renderValue(card,'reference-buy',()=>explorationMetrics.referenceBuy(card,currentProfitGuide(card),now));
+}
+function referenceSearchEnabled() { return state.efficiencyBuy==='reference-min'; }
 function currentGuideBreakEven(card) {
   const g=currentProfitGuide(card);
   return {...g,cap:g.breakEvenCap,rawCap:g.breakEvenRawCap,capState:g.breakEvenState,capLabel:g.breakEvenLabel,capNote:g.breakEvenNote};
@@ -4184,6 +4189,14 @@ function psa9GuideCsvFields(card) {
   const v=psa9GuideView(card),p=psa9GuideProvenance(card,v);return [v.price??'',v.measurementType,p.source,v.updatedAt||'',v.guide??'',v.priceRatio??'',v.investment??'',v.profit??'',v.roi??'',v.exitLabel,v.profitReasons.join('／'),v.searchStatus,state.psa9AboveGuide?1:0,state.psa9GuideMin??'',p.url||'',p.confirmation||'',p.sale||'',p.method||'',v.comparisonCost??'',v.costCoveragePct??'',state.psa9CostWithin5?1:0,state.psa9RoiMin??''];
 }
 function computeSearchProfitView(card, mode = state.purchaseMode, explicitBasis = null) {
+  if(referenceSearchEnabled() && !explicitBasis && mode!=='now' && mode!=='snkr-raw') {
+    const e=cardEfficiency(card,Date.now(),mode), source=currentMarketView(card,true), buy=e.purchasePrice;
+    const profit=Number.isFinite(buy)&&Number.isFinite(source.psa10Net)?source.psa10Net-buy-state.fee:null;
+    return {...source,basis:'reference-min',purchaseKind:'reference-min',purchasePrice:buy,
+      purchaseSource:e.basis,eligible:Number.isFinite(e.annual),economics:Number.isFinite(e.profit)?{purchasePrice:buy,expectedProfit:e.profit,expectedRoi:e.roi,expectedSale:e.profit+buy+state.fee}:null,
+      psa10Profit:profit,psa10Roi:profit!=null&&buy+state.fee>0?profit/(buy+state.fee)*100:null,
+      label:e.basis+' × '+e.scenario,exitLabel:e.exitLabel,referenceOnly:true,horizonDays:state.efficiencyScenario==='current'?0:FORECAST_HORIZON_DAYS,reason:e.reason,stress:null};
+  }
   if (mode !== 'now' && (explicitBasis || state.profitSearchBasis) === 'current-target') {
     const guide = currentProfitGuide(card), buy = guide.cap;
     const profit = buy != null && Number.isFinite(guide.psa10Net) ? guide.psa10Net - buy - state.fee : null;
@@ -4243,7 +4256,7 @@ function compareSearchNumbers(a, b, ascending = false) {
   return ascending ? a - b : b - a;
 }
 function resultSorter() {
-  if (state.sort === 'cardEfficiency-desc') return sorters[state.sort];
+  if (state.sort === 'cardEfficiency-desc' || referenceSearchEnabled()) return sorters[state.sort];
   return ['combined','curated'].includes(state.purchaseMode) ? combinedPresetSort : sorters[state.sort];
 }
 
@@ -4257,7 +4270,7 @@ function cardEfficiency(card, now=Date.now(), mode=state.purchaseMode, selectedS
   };
   const observationDays = /^obs(7|30|75|200)$/.test(selectedScenario) ? Number(selectedScenario.slice(3)) : null;
   const key = JSON.stringify([mode,efficiencyDataKey(card),state.profitSearchBasis,state.currentMarketManualPrice,selectedBuy,state.efficiencyScenario,
-    selectedBuy==='median' && [card.priceAggregation?.value,card.priceAggregation?.included,card.identityReviewRequired,card.priceIntegrity?.disputed],
+    ['median','reference-min'].includes(selectedBuy) && [card.priceAggregation?.value,card.priceAggregation?.included,card.priceAggregation?.comparison,card.identityReviewRequired,card.priceIntegrity?.disputed],selectedBuy==='reference-min' && [state.minExpectedProfit,state.minExpectedRoi,state.psaPlan],
     selectedScenario,observationDays && [state.psa10PeriodSummary?.asOf,state.psa10PeriodSummary?.version,state.psa10PeriodSummary?.periods,state.psa10PeriodSummary?.observationEvidenceIndices,state.psa10PeriodSummary?.cards?.[card.id],state.psa10PeriodSummary?.minimumObservationDays,state.psa10PeriodSummary?.staleObservationDays,state.buybackObservationSummary?.asOf,state.buybackObservationSummary?.shops,state.buybackObservationSummary?.cards?.[card.id],state.buybackObservationSummary?.captureHolds?.[card.id],state.buybackObservationSummary?.historyIdentityHolds?.[card.id]],
     efficiencyFields.map(([,f])=>f === 'efficiencyMin' ? null : state[f]),state.fee,state.saleExtraCost,state.storeTravelCost,state.lockDays,state.exitPolicy,
     state.saleFeeRate,state.buybackDeductionRate,state.buybackStoreMode,state.selectedBuybackStores,state.sourceUpdates]);
@@ -4268,13 +4281,14 @@ function cardEfficiency(card, now=Date.now(), mode=state.purchaseMode, selectedS
   const capBasis = selectedBuy === 'current-cap' || selectedBuy === 'auto' && state.profitSearchBasis === 'current-cap';
   const targetBasis = selectedBuy === 'auto' && state.profitSearchBasis === 'current-target' && mode !== 'now';
   const manualBasis = selectedBuy === 'manual' || selectedBuy === 'auto' && mode === 'current-market' && state.currentMarketManualPrice != null;
+  const referenceBasis=selectedBuy==='reference-min',referenceEvidence=referenceBasis?referenceBuyView(card,now):null;
   const medianBasis=selectedBuy==='median',medianEvidence=medianBasis?explorationMetrics.referenceMedian(card,now):null;
   const source = currentMarketView(card,true);
-  const buy = medianBasis ? medianEvidence.value : targetBasis ? currentProfitGuide(card).cap : capBasis ? source.eligible && source.capState === 'available' ? source.cap : null
+  const buy = referenceBasis ? referenceEvidence.value : medianBasis ? medianEvidence.value : targetBasis ? currentProfitGuide(card).cap : capBasis ? source.eligible && source.capState === 'available' ? source.cap : null
     : manualBasis ? selectedBuy === 'manual' ? state.efficiencyManualPrice : state.currentMarketManualPrice
     : explorationMetrics.offerPrice(card.currentStoreOffer,now);
   const scenario = observationDays ? selectedScenario : capBasis || targetBasis || mode === 'current-market' ? 'current' : selectedScenario;
-  const reason = buy == null ? medianBasis ? medianEvidence.reasons.join('／') : capBasis ? '損益分岐上限算出不可' : manualBasis ? '手入力買値未設定' : card.purchasePriceStatus?.label || '新鮮な購入価格未取得'
+  const reason = buy == null ? referenceBasis ? referenceEvidence.reasons.join('／') : medianBasis ? medianEvidence.reasons.join('／') : capBasis ? '損益分岐上限算出不可' : manualBasis ? '手入力買値未設定' : card.purchasePriceStatus?.label || '新鮮な購入価格未取得'
     : !source.eligible ? source.reasons.join('／') : !observationDays && scenario !== 'current' && state.lockDays !== FORECAST_HORIZON_DAYS ? `期間不一致・${FORECAST_HORIZON_DAYS}日予測／返却${state.lockDays}日` : null;
   let economics = null, exitLabel = source.exitLabel, travel = 0;
   const average = observationDays ? explorationMetrics.meanEfficiencyEconomics(state.psa10PeriodSummary,state.buybackObservationSummary,card,source,observationDays,state.exitPolicy,
@@ -4302,14 +4316,14 @@ function cardEfficiency(card, now=Date.now(), mode=state.purchaseMode, selectedS
     exitLabel = average ? average.exitLabel : state.exitPolicy === 'both' ? `${usesStore ? '買取店' : 'フリマ'}（両出口の保守側）` : source.exitLabel;
   }
   const result = {...explorationMetrics.efficiency(economics,buy,state.fee,state.saleExtraCost+travel,state.lockDays,state.efficiencySaleDays,state.efficiencyPayoutDays),
-    purchasePrice:buy,basis:medianBasis ? '素体参考相場・中央値（購入保証なし）' : targetBasis ? '利益確保の仕入れ目安・仮定' : capBasis ? '現相場損益分岐上限・仮定' : manualBasis ? '手入力買値・仮定' : '実店舗状態A価格',
+    purchasePrice:buy,basis:referenceBasis ? '参考買値・'+referenceEvidence.label+'（購入保証なし）' : medianBasis ? '素体参考相場・中央値（購入保証なし）' : targetBasis ? '利益確保の仕入れ目安・仮定' : capBasis ? '現相場損益分岐上限・仮定' : manualBasis ? '手入力買値・仮定' : '実店舗状態A価格',
     scenario:average ? `${observationDays}暦日内PSA10観測平均 × 現在PSA9・混合仮定` : scenario === 'current' ? '現在出口相場が続く仮定' : `${FORECAST_HORIZON_DAYS}日${scenario === 'central' ? '中央予測' : '供給ストレス'}`,
-    exitLabel,reason:reason || (average?.reasons.length ? average.reasons.join('／') : !economics ? '選択した出口・シナリオのデータ不足' : null),warnings:[...(source.warnings || []),...(average?.warnings || []),...(medianEvidence?.warnings || [])],capBasis,referenceOnly:true,medianEvidence,
-    calculationState:medianBasis || average?.observed.reference ? 'reference' : source.calculationState || 'calculated',blockingReasons:[...(source.reasons || []),...(average?.reasons || []),...(medianEvidence?.reasons || [])],referenceReasons:[...(source.referenceReasons || []),...(medianBasis ? ['中央値で購入する参考比較・実購入とは別'] : []),...(average?.observed.reference ? ['観測平均の欠測・取得根拠不足'] : [])],observation:average?.observed || null};
+    exitLabel,reason:reason || (average?.reasons.length ? average.reasons.join('／') : !economics ? '選択した出口・シナリオのデータ不足' : null),warnings:[...(source.warnings || []),...(average?.warnings || []),...(medianEvidence?.warnings || [])],capBasis,referenceOnly:true,medianEvidence,referenceEvidence,
+    calculationState:referenceBasis || medianBasis || average?.observed.reference ? 'reference' : source.calculationState || 'calculated',blockingReasons:[...(source.reasons || []),...(average?.reasons || []),...(medianEvidence?.reasons || [])],referenceReasons:[...(source.referenceReasons || []),...(medianBasis ? ['中央値で購入する参考比較・実購入とは別'] : []),...(average?.observed.reference ? ['観測平均の欠測・取得根拠不足'] : [])],observation:average?.observed || null};
   if (result.annual == null && !result.reason) result.reason='拘束日数・費用・投下額を確認';
   if (result.annual == null) result.calculationState='unavailable';
   const nextJstDay = Math.floor((now+9*3600000)/86400000)*86400000+86400000-9*3600000;
-  const entry={key,value:result,expires:Math.min(freshnessDeadline([card],now),average ? nextJstDay : Infinity,average?.expiresAt ?? Infinity,medianEvidence?.expiresAt ?? Infinity)};
+  const entry={key,value:result,expires:Math.min(freshnessDeadline([card],now),average ? nextJstDay : Infinity,average?.expiresAt ?? Infinity,medianEvidence?.expiresAt ?? Infinity,referenceEvidence?.expiresAt ?? Infinity)};
   if(periodCache){periodCache.set(variantKey,entry);observationEfficiencyCache.set(card,periodCache);}
   else efficiencyCache.set(card,entry);
   return remember(entry);
@@ -4377,14 +4391,18 @@ function cardEfficiencyPanel(card, compact = false) {
   const label={calculated:'算出可能',reference:'参考計算可能・安全判定とは別',unavailable:'算出不可'}[row.calculationState];
   const notes=row.calculationState === 'reference' ? row.warnings : row.calculationState === 'unavailable' ? [row.reason,...row.blockingReasons,...row.warnings.filter(w=>w.includes('平均が現在'))] : row.warnings.filter(w=>w.includes('平均が現在'));
   const exitHelp=(row.observation?.reference && !state.observationIncludeReference ? '／参考平均OFF：比較は表示、資金効率検索・順位には不採用。' : '')+(row.blockingReasons.some(reason=>reason.includes('買取出口')) ? '選択した買取出口は算出不可。別途、売却先をフリマに明示変更した試算は可能（自動切替なし）。' : '');
-  if(compact)return `<div class="efficiency-notice efficiency-${row.calculationState}"><b>資金効率：${label}</b><small>${escapeHtml(compactWarningText(notes))}</small></div>`+cardEfficiencyBodyBase(card,row,true)+periodEfficiencyPanel(card,Date.now(),true);
+  const real=referenceSearchEnabled()?cardEfficiency(card,Date.now(),state.purchaseMode,state.efficiencyScenario,'store'):null;
+  const stockNote=real?'<small class="reference-warning">'+escapeHtml(referenceBuyView(card).availability)+'／実店舗の年換算 '+(Number.isFinite(real.annual)?real.annual.toFixed(1)+'%・期待利益 ¥'+fmt.format(Math.round(real.profit)):'算出不可')+'</small>':'';
+  if(compact)return stockNote+`<div class="efficiency-notice efficiency-${row.calculationState}"><b>資金効率：${label}</b><small>${escapeHtml(compactWarningText(notes))}</small></div>`+cardEfficiencyBodyBase(card,row,true)+periodEfficiencyPanel(card,Date.now(),true);
   return `<div class="efficiency-notice efficiency-${row.calculationState}"><b>資金効率：${label}</b><small>${escapeHtml([...new Set(notes)].join('／'))}${escapeHtml(exitHelp)}${row.calculationState === 'reference' ? efficiencySearchValue(row) != null ? '／参考値を資金効率検索に含む' : '／参考値は資金効率検索・順位の対象外（設定で変更可）' : ''}</small></div>`+cardEfficiencyBody(card);
 }
 function cardEfficiencyBody(card) {
   const row=cardEfficiency(card);
   const o=row.observation;
   const observationInfo=o ? `<small>平均 ${Number.isFinite(o.mean) ? '¥'+fmt.format(o.mean) : '未取得'}／${o.count ?? 0}/${o.days}観測日・欠測${o.days-(o.count ?? 0)}日／最終 ${escapeHtml(o.latest || '未取得')}。根拠未確認${o.unverifiedDays ?? '未集計'}日。${o.reference ? '欠測・根拠不足の参考値' : '期間内の観測充足'}。${o.source ? escapeHtml(o.source)+'／'+escapeHtml((o.stores||[]).map(id=>state.buybackShops[id]?.name||id).join('・'))+'。' : ''}PSA10だけ平均・非10は現在国内PSA9仮置き。</small>` : '';
-  const comparison=`${observationInfo}<details data-efficiency-comparison="${escapeHtml(card.id)}"><summary>現相場と7・30・75・200日平均の期待資金効率を比較</summary><div>開くと同じ買値・出口・費用・拘束日数で比較します。長期原票は取得しません。</div></details>`;
+  const actual=referenceSearchEnabled()?cardEfficiency(card,Date.now(),state.purchaseMode,state.efficiencyScenario,'store'):null;
+  const actualInfo=actual?'<small>'+escapeHtml(referenceBuyView(card).availability)+'／実店舗採算 '+(Number.isFinite(actual.annual)?actual.annual.toFixed(1)+'%・期待利益 ¥'+fmt.format(Math.round(actual.profit)):'算出不可・新鮮な在庫価格なし')+'</small>':'';
+  const comparison=`${actualInfo}${observationInfo}<details data-efficiency-comparison="${escapeHtml(card.id)}"><summary>現相場と7・30・75・200日平均の期待資金効率を比較</summary><div>開くと同じ買値・出口・費用・拘束日数で比較します。長期原票は取得しません。</div></details>`;
   return cardEfficiencyBodyBase(card,row)+medianEfficiencyComparison(card)+periodEfficiencyPanel(card)+comparison;
 }
 function medianEfficiencyComparison(card,now=Date.now()) {
@@ -4445,7 +4463,7 @@ function purchaseBelowCurrentCapReason(card) {
 }
 
 function purchaseExploration(card,now=Date.now()) {
-  const price = explorationMetrics.offerPrice(card.currentStoreOffer,now);
+  const price = referenceSearchEnabled() ? referenceBuyView(card,now).value : explorationMetrics.offerPrice(card.currentStoreOffer,now);
   const limit = card.buyLimits?.clean, assumptions = limit?.assumptions;
   const display = state.profitSearchBasis === 'current-target' && state.purchaseMode !== 'now' ? currentGuideBreakEven(card) : state.purchaseMode === 'current-market' || state.profitSearchBasis === 'current-cap' && state.purchaseMode !== 'now' ? currentMarketView(card) : limitDisplayModel.classifyCap(
     card.psa10 > 0 ? Object.hasOwn(limit || {},'currentBreakEvenRaw') ? limit.currentBreakEvenRaw : limit?.currentBreakEvenMaxPrice : null);
@@ -4589,7 +4607,9 @@ function renderObservationFilterStatus() {
     + '。完全200日観測 '+(coverage?.[200]?.completeCalendarCards ?? '未集計')+'枚。'+(coverage?.[200]?.observationSufficientCards === 0 ? '参考値を含めない200日条件は現状0枚です。' : '')+'対象数は他条件を適用する前です。';
 }
 function psa10PeriodCompact(card,compact=false) {
-  return `<div class="psa10-period-summary observation-glance" aria-label="国内PSA10観測平均">${[7,30,75,200].map(days=>{
+  const variability=explorationMetrics.variation(state.psa10PeriodSummary,card);
+  const variationLabel='<div class="price-variation"><strong>観測変動 '+escapeHtml(variability.label)+'</strong> <span>'+escapeHtml(variability.trend)+'</span><details><summary>変動の根拠</summary><small>'+escapeHtml(variability.reason)+(variability.days?'／採用'+variability.days+'日枠・実測'+variability.count+'日/観測'+variability.span+'日間・変動係数'+variability.cv.toFixed(1)+'%・最大下落'+variability.drawdown.toFixed(1)+'%／最終'+variability.latest:'')+'</small></details></div>';
+  return variationLabel+`<div class="psa10-period-summary observation-glance" aria-label="国内PSA10観測平均">${[7,30,75,200].map(days=>{
     const value = explorationMetrics.observation(state.psa10PeriodSummary,card.id,card.psa10,days);
     const delta = value.delta == null ? '比較不可' : `${value.delta > 0 ? '+' : ''}${value.delta.toFixed(2)}%`;
     const drawdown=`<small class="observation-drawdown">観測最大下落 ${value.drawdown==null?'算出不可':(value.drawdown===0?'0':value.drawdown.toFixed(1))+'%'}${value.drawdownReference?'・参考':''}</small>`;
@@ -4662,7 +4682,7 @@ function computePresetQualifications(card) {
   const stressEconomics = card.buyLimits?.clean?.supplyStressAtFinal;
   const stressSafe = Number.isFinite(stressEconomics?.expectedProfit) && stressEconomics.expectedProfit >= 0;
   // A horizon hold is not a manual identity review, but can never be buy-now.
-  const explorationVerdict = card.forecastPeriodMismatch && !card.dataQuality?.manualReview
+  const explorationVerdict = (card.forecastPeriodMismatch || referenceSearchEnabled() && !card.currentStoreOffer) && !card.dataQuality?.manualReview
     ? card.decisionScenarios?.market?.decision?.verdict : card.purchaseDecision?.verdict;
   const eligibleVerdict = !["見送り", "要確認", "資金不足"].includes(String(explorationVerdict || ""));
   const gapToLimit = finalLimit > 0 ? Math.max(0, Number(card.price || 0) - finalLimit) / finalLimit * 100 : Infinity;
@@ -5266,14 +5286,14 @@ function computeCardSearchExclusions(card, {mode = state.purchaseMode,diagnostic
       if (state.actualPurchaseMin != null || state.actualPurchaseMax != null || state.purchaseHeadroomMin != null || state.purchaseHeadroomMax != null) {
         const p = purchaseExploration(card);
         if (p.price == null) reasons.push(`購入価格条件・${card.purchasePriceStatus?.label || card.purchasePriceStatus?.code || '未取得'}`);
-        else if (!explorationMetrics.inRange(p.price,state.actualPurchaseMin,state.actualPurchaseMax)) reasons.push('現在買える状態A価格範囲');
+        else if (!explorationMetrics.inRange(p.price,state.actualPurchaseMin,state.actualPurchaseMax)) reasons.push(referenceSearchEnabled()?'参考買値の価格範囲':'現在買える状態A価格範囲');
         if (!explorationMetrics.inRange(p.headroom,state.purchaseHeadroomMin,state.purchaseHeadroomMax)) reasons.push(p.headroom == null ? '仕入れ余裕率・上限算出不可' : '仕入れ余裕率条件');
       }
       if ([state.postingRate30Min,state.postingShops30Min,state.postingDaysMin,state.postingCoverageMin].some(n=>n != null)) {
         const c = postingCoverage(card);
         for (const [value,minimum,label] of [[c.rate30,state.postingRate30Min,'30日掲載率'],[c.averageShops30,state.postingShops30Min,'30日平均掲載店舗数'],[c.observedDays,state.postingDaysMin,'掲載観測日数'],[c.retrievalCoverage,state.postingCoverageMin,'掲載取得カバー率']]) if (!explorationMetrics.inRange(value,minimum,null)) reasons.push(label + (Number.isFinite(value) ? '条件' : '・未取得'));
       }
-      const ratioView = currentMode ? profitView.purchasePrice == null ? {ratio:null,measurementType:"missing"} : purchasePsa9Ratio(card,profitView.purchasePrice,profitView.purchaseKind) : purchasePsa9Ratio(card);
+      const ratioView = currentMode ? profitView.purchasePrice == null ? {ratio:null,measurementType:"missing"} : purchasePsa9Ratio(card,profitView.purchasePrice,profitView.purchaseKind) : referenceSearchEnabled() ? purchasePsa9Ratio(card,referenceBuyView(card).value,'reference-min') : purchasePsa9Ratio(card);
       if ((!currentMode || state.currentMarketSearchKind === "purchase") && purchaseRatioModel && !purchaseRatioModel.matches(ratioView, state.psa9RatioMin, state.psa9RatioMax, psa9RatioOptions())) reasons.push("国内PSA9比率");
       if (!normalizedQuery) {
         if (state.catalogScope === "analysis" && completion?.s !== "分析可能") reasons.push("表示範囲・データ不足");
@@ -5286,7 +5306,7 @@ function computeCardSearchExclusions(card, {mode = state.purchaseMode,diagnostic
       // 素体流しはPSA提出判断と独立させる。PSA価格・PSA判定の欠損で候補を落とさない。
       if (mode === "snkr-raw") return snkrRawMatchesFilters(card) ? reasons : [...reasons, "素体流し条件"];
       if (!candidateVisibility.isVisible(card, { enabled: state.hideThinDemand, query: state.q, purchaseMode: mode })) reasons.push("プリセット条件");
-      if (mode !== 'specified' && !currentMode && !decisionModel.shouldIncludeVerdict(card.purchaseDecision?.verdict, state.showSkipped)) reasons.push("見送り非表示");
+      if (mode !== 'specified' && !currentMode && !decisionModel.shouldIncludeVerdict(referenceSearchEnabled() && !card.currentStoreOffer ? card.decisionScenarios?.market?.decision?.verdict : card.purchaseDecision?.verdict, state.showSkipped)) reasons.push("見送り非表示");
       if (currentMode) {
         const view = currentMarketView(card);
         if (!view.eligible) reasons.push(...view.reasons);
@@ -5321,14 +5341,14 @@ function computeCardSearchExclusions(card, {mode = state.purchaseMode,diagnostic
         if (specifiedFilterEnabled(mode,'expectedProfitFilterInput') && state.minExpectedProfitFilter != null && (!Number.isFinite(profitView.economics?.expectedProfit) || profitView.economics.expectedProfit < state.minExpectedProfitFilter)) reasons.push(Number.isFinite(profitView.economics?.expectedProfit) ? "利益条件" : missingReason);
       }
       const stressAtLimit = card.buyLimits?.clean?.supplyStressAtFinal;
-      const forecastFilterActive = (specifiedFilterEnabled(mode,'expectedRoiFilterInput') && state.minExpectedRoiFilter!=null || specifiedFilterEnabled(mode,'expectedProfitFilterInput') && state.minExpectedProfitFilter!=null) && !['current-cap','current-target'].includes(profitView.basis) || specifiedFilterEnabled(mode,'stressExpectedRoiFilterInput') && state.minStressExpectedRoiFilter!=null || specifiedFilterEnabled(mode,'stressExpectedProfitFilterInput') && state.minStressExpectedProfitFilter!=null;
-      if ((mode !== 'specified' || forecastFilterActive) && !currentMode && card.forecastPeriodMismatch && (!state.includePeriodReference || mode === "now" || !['limit','current-cap','current-target'].includes(profitView.basis))) reasons.push("期間不一致・返却時試算不可");
+      const forecastFilterActive = (specifiedFilterEnabled(mode,'expectedRoiFilterInput') && state.minExpectedRoiFilter!=null || specifiedFilterEnabled(mode,'expectedProfitFilterInput') && state.minExpectedProfitFilter!=null) && !['current-cap','current-target','reference-min'].includes(profitView.basis) || specifiedFilterEnabled(mode,'stressExpectedRoiFilterInput') && state.minStressExpectedRoiFilter!=null || specifiedFilterEnabled(mode,'stressExpectedProfitFilterInput') && state.minStressExpectedProfitFilter!=null;
+      if ((mode !== 'specified' || forecastFilterActive) && !currentMode && card.forecastPeriodMismatch && (!state.includePeriodReference || mode === "now" || !['limit','current-cap','current-target','reference-min'].includes(profitView.basis))) reasons.push("期間不一致・返却時試算不可");
       if (specifiedFilterEnabled(mode,'stressExpectedRoiFilterInput') && !currentMode && state.minStressExpectedRoiFilter != null && (!Number.isFinite(stressAtLimit?.expectedRoi) || stressAtLimit.expectedRoi < state.minStressExpectedRoiFilter)) reasons.push("利益条件");
       if (specifiedFilterEnabled(mode,'stressExpectedProfitFilterInput') && !currentMode && state.minStressExpectedProfitFilter != null && (!Number.isFinite(stressAtLimit?.expectedProfit) || stressAtLimit.expectedProfit < state.minStressExpectedProfitFilter)) reasons.push("利益条件");
       if (card.psa10 < state.minPsa10) reasons.push("価格帯・相場比");
       if (specifiedFilterEnabled(mode,'psaMaxInput') && state.maxPsa10 != null && card.psa10 > state.maxPsa10) reasons.push("価格帯・相場比");
-      if (state.minPrice != null && card.price < state.minPrice) reasons.push("価格帯・相場比");
-      if (state.maxPrice != null && card.price > state.maxPrice) reasons.push("価格帯・相場比");
+      if (state.minPrice != null && (referenceSearchEnabled() ? !explorationMetrics.inRange(referenceBuyView(card).value,state.minPrice,null) : card.price < state.minPrice)) reasons.push("価格帯・相場比");
+      if (state.maxPrice != null && (referenceSearchEnabled() ? !explorationMetrics.inRange(referenceBuyView(card).value,null,state.maxPrice) : card.price > state.maxPrice)) reasons.push("価格帯・相場比");
       const purchaseLimitRatio = decisionModel.purchaseLimitMarketRatio(card.buyLimits?.clean?.maxPrice, card.price);
       if (specifiedFilterEnabled(mode,'purchaseLimitRatioMinInput') && !currentMode && state.minPurchaseLimitRatio != null && (!Number.isFinite(purchaseLimitRatio) || purchaseLimitRatio < state.minPurchaseLimitRatio)) reasons.push("価格帯・相場比");
       if (state.minPsaRate != null && (!Number.isFinite(card.official?.rate) || card.official.rate < state.minPsaRate)) reasons.push("PSA公式");
@@ -6687,7 +6707,11 @@ function syncFromUI(event) {
   }
   state.profitSearchBasis = document.getElementById("profitSearchBasisInput")?.value || "auto";
   for (const [,field,initial] of efficiencyFields) state[field] = document.getElementById(field+'Input') ? parseOptionalNumber(document.getElementById(field+'Input').value) : initial;
-  state.efficiencyBuy = document.getElementById('efficiencyBuyInput')?.value || 'median';
+  state.efficiencyBuy = document.getElementById('efficiencyBuyInput')?.value || 'reference-min';
+  for(const [id,edge] of [['actualPurchaseMinInput','下限'],['actualPurchaseMaxInput','上限']]) {
+    const label=document.getElementById(id)?.closest?.('label')?.querySelector?.('span');
+    if(label)label.textContent=(referenceSearchEnabled()?'参考買値':'現在買える状態A価格')+' '+edge+'（円）';
+  }
   if(event?.target?.id==='efficiencyBuyInput') {
     try {
       const migration=JSON.parse(localStorage.getItem(EFFICIENCY_BASIS_MIGRATION_KEY)||'{}');

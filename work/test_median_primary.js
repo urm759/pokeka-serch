@@ -1,12 +1,12 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const variants=require('./search_profile_variants'),config=require('./priority-search-profiles.json');
-const profiles=variants.allProfiles(config);assert.equal(profiles.length,4);
+const profiles=variants.allProfiles(config,{includeHistorical:true}).filter(p=>['V','B','V-median','B-median'].includes(p.id));assert.equal(profiles.length,4);
 for(const p of profiles.filter(r=>r.baseId)) {
   const original=[...config.profiles,...(config.additionalProfiles||[])].find(r=>r.id===p.baseId),a=new URL(p.url),b=new URL(original.url);
   assert.equal(a.searchParams.get('effBuy'),'median');assert.equal(b.searchParams.get('effBuy'),'auto');
   a.searchParams.delete('effBuy');b.searchParams.delete('effBuy');assert.equal(a.href,b.href,'all other URL conditions remain fixed');
 }
-const html=fs.readFileSync('index.html','utf8');assert.match(html,/<option value="median" selected>/);
+const html=fs.readFileSync('index.html','utf8');assert.match(html,/<option value="reference-min" selected>/);
 const source=fs.readFileSync('app.js','utf8'),inputs=new Map(),saved=new Map();
 let medianCalls=0;
 const metrics={...require('../exploration-metrics'),referenceMedian(...args){medianCalls++;return require('../exploration-metrics').referenceMedian(...args);}};
@@ -14,7 +14,7 @@ const context=vm.createContext({URL,URLSearchParams,setTimeout,clearTimeout,cons
   document:{querySelectorAll:()=>[],getElementById:id=>{if(!inputs.has(id))inputs.set(id,{value:'',checked:false});return inputs.get(id);}},
   localStorage:{getItem:k=>saved.get(k)||null,setItem:(k,v)=>saved.set(k,v)}});
 vm.runInContext(source.split('// Browser event bindings start here;')[0]+'\ncurrentMarketView=c=>c.testView;globalThis.api={state,readUrl,saveQuickFilters,restoreQuickFilters,cardEfficiency,migrationKey:EFFICIENCY_BASIS_MIGRATION_KEY,pass(fn){const prior=efficiencyRenderPass;efficiencyRenderPass=new WeakMap();try{return fn()}finally{efficiencyRenderPass=prior;}}};',context);
-const api=context.api;assert.equal(api.state.efficiencyBuy,'median');api.readUrl();assert.equal(inputs.get('efficiencyBuyInput').value,'auto');
+const api=context.api;assert.equal(api.state.efficiencyBuy,'reference-min');api.readUrl();assert.equal(inputs.get('efficiencyBuyInput').value,'auto');
 api.state.efficiencyBuy='auto';api.saveQuickFilters();api.restoreQuickFilters();assert.equal(inputs.get('efficiencyBuyInput').value,'auto','explicit legacy URL is authoritative');
 context.window.location.href='https://example.test/';saved.delete(api.migrationKey);api.restoreQuickFilters();
 assert.equal(inputs.get('efficiencyBuyInput').value,'median','authorized saved preference migrates to explicit median, not a redefinition of auto');
