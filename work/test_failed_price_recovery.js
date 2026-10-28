@@ -9,6 +9,12 @@ assert(workflow.slice(workflow.indexOf('name: priority-git-recovery-')).includes
 const good={name:'Priority Purchase Price Refresh',event:'schedule',conclusion:'failure',head_branch:'main',repository:{full_name:'urm759/pokeka-serch'},head_repository:{full_name:'urm759/pokeka-serch'}};
 assert(trusted(good));for(const change of [{event:'pull_request'},{head_branch:'feature'},{conclusion:'success'},{head_repository:{full_name:'fork/repo'}},{name:'Daily Fast Update'}])assert(!trusted({...good,...change}));
 const {trustedMonitor,latestMonitor}=require('./recover_failed_price_run');
+const {monitorRecoveryNeeded}=require('./recover_failed_price_run');
+const acquired={name:'catchup',status:'completed',conclusion:'success'};
+assert.equal(monitorRecoveryNeeded({jobs:[acquired,{name:'publication_check',conclusion:'failure'}]}),false,'independent verification failure has no unpublished source checkpoint');
+assert.equal(monitorRecoveryNeeded({jobs:[acquired,{name:'watch',conclusion:'failure'}]}),false,'monitor-only failure must not block acquisition');
+assert(monitorRecoveryNeeded({jobs:[{...acquired,conclusion:'failure'},{name:'publication_check',conclusion:'failure'}]}),'failed catchup still requires recovery');
+assert(monitorRecoveryNeeded({jobs:[]}), 'missing job proof is never a recovery exemption');
 const monitor={...good,id:123,name:'Data Update Health Watchdog',updated_at:'2026-10-26T14:54:00Z'};
 assert(trustedMonitor(monitor));assert(!trustedMonitor(good));
 for(const change of [{event:'workflow_dispatch'},{event:'workflow_run'},{conclusion:'success'},
