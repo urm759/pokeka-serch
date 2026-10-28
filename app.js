@@ -5176,6 +5176,19 @@ function renderLimitModelAudit(audit) {
   }, { once: true });
 }
 
+function computedSearchDiagnosticReasons(card) {
+    const diagnosticReasons = [];
+    if (card.forecastPeriodMismatch) diagnosticReasons.push("期間不一致・返却時試算不可（参考探索のみ）");
+    if (card.catalogCompletion?.s !== "分析可能") diagnosticReasons.push("データ不足");
+    if (["見送り", "要確認"].includes(card.purchaseDecision?.verdict) || card.goConfidence === "GO・高リスク") diagnosticReasons.push("見送り／高リスク");
+    const searchEconomics = searchProfitView(card).economics;
+    if ((state.minExpectedProfitFilter != null && (!Number.isFinite(searchEconomics?.expectedProfit) || searchEconomics.expectedProfit < state.minExpectedProfitFilter))
+      || (state.minExpectedRoiFilter != null && (!Number.isFinite(searchEconomics?.expectedRoi) || searchEconomics.expectedRoi < state.minExpectedRoiFilter))) diagnosticReasons.push("利益条件未達（選択した計算基準）");
+    const diagnosticPrice = referenceSearchEnabled()?referenceBuyView(card).value:Number(card.currentStoreOffer?.value || card.price || 0);
+    if (Number(card.buyLimits?.clean?.finalMaxPrice) > 0 && diagnosticPrice > Number(card.buyLimits.clean.finalMaxPrice)) diagnosticReasons.push("現在価格が上限超過");
+    if (!diagnosticReasons.length) diagnosticReasons.push("表示範囲外（現在の絞り込み条件）");
+    return [...new Set(diagnosticReasons)];
+}
 function prepareCalculatedCards(cards) {
   const calculated = cards.map(calc);
   calculated.forEach((card) => { card.catalogCompletion = state.catalogCompletion?.cards?.[card.id] || null; });
@@ -5213,17 +5226,7 @@ function prepareCalculatedCards(cards) {
     card.overallAssessment = buildOverallAssessment(card, card.official, combineShopStock(state.cardrushStock[card.id], state.hareruya2Stock[card.id], state.yuyuteiStock[card.id]));
     finalizeCardDecision(card);
     applyGoConfidence(card);
-    const diagnosticReasons = [];
-    if (card.forecastPeriodMismatch) diagnosticReasons.push("期間不一致・返却時試算不可（参考探索のみ）");
-    if (card.catalogCompletion?.s !== "分析可能") diagnosticReasons.push("データ不足");
-    if (["見送り", "要確認"].includes(card.purchaseDecision?.verdict) || card.goConfidence === "GO・高リスク") diagnosticReasons.push("見送り／高リスク");
-    const searchEconomics = searchProfitView(card).economics;
-    if ((state.minExpectedProfitFilter != null && (!Number.isFinite(searchEconomics?.expectedProfit) || searchEconomics.expectedProfit < state.minExpectedProfitFilter))
-      || (state.minExpectedRoiFilter != null && (!Number.isFinite(searchEconomics?.expectedRoi) || searchEconomics.expectedRoi < state.minExpectedRoiFilter))) diagnosticReasons.push("利益条件未達（選択した計算基準）");
-    const diagnosticPrice = Number(card.currentStoreOffer?.value || card.price || 0);
-    if (Number(card.buyLimits?.clean?.finalMaxPrice) > 0 && diagnosticPrice > Number(card.buyLimits.clean.finalMaxPrice)) diagnosticReasons.push("現在価格が上限超過");
-    if (!diagnosticReasons.length) diagnosticReasons.push("表示範囲外（現在の絞り込み条件）");
-    card.searchDiagnosticReasons = [...new Set(diagnosticReasons)];
+    Object.defineProperty(card,'searchDiagnosticReasons',{enumerable:true,configurable:true,get(){return computedSearchDiagnosticReasons(card);}});
   });
   return calculated;
 }

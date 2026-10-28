@@ -384,6 +384,8 @@ for (const sourceId of Object.keys(sources)) {
   }
 }
 fs.writeFileSync(HISTORY_OUTPUT, JSON.stringify(publishedHistory), "utf8");
+const gemrateRefresh=require('./build_gemrate_public_reference').refreshIfAvailable(ROOT);
+if(gemrateRefresh.status==='held')console.warn('GemRate参考要約は検証保留・正常な国内取得は継続：'+gemrateRefresh.errorCode);
 require('./build_psa10_period_statistics.js').build(ROOT);
 require('./build_overseas_price_glance').build(ROOT);
 require('./audit_purchase_issue_aliases.js').build(ROOT);

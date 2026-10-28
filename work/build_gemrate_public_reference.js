@@ -19,15 +19,48 @@ function build(root=ROOT,store=path.resolve(root,'../private-research/gemrate'))
     }
   }
   if(latest.size!==50)throw Error('Limited publication must contain exactly the reviewed 50 identities');
+  const reviewed=new Set(latest.keys());
+  const manifestFile=path.join(store,'manifest.json');
+  if(fs.existsSync(manifestFile)) {
+    const crypto=require('node:crypto'),zlib=require('node:zlib'),hash=b=>crypto.createHash('sha256').update(b).digest('hex');
+    const storage=require('./gemrate_private_store'),inbox=require('./gemrate_private_inbox');
+    const manifest=JSON.parse(fs.readFileSync(manifestFile));
+    for(const receipt of manifest.files||[]) {
+      const sidecarFile=receipt.originalPath+'.context.json';
+      if(receipt.kind!=='list'||receipt.status==='prepared'||!fs.existsSync(sidecarFile))continue;
+      for(const file of [receipt.storedPath,receipt.parsedPath,receipt.backupPath])if(storage.outside(fs.realpathSync(store),fs.realpathSync(file)))throw Error('Private inbox receipt escapes store');
+      const raw=fs.readFileSync(receipt.storedPath),sidecar=JSON.parse(fs.readFileSync(sidecarFile));
+      inbox.validate(sidecar,raw,store);
+      if(hash(raw)!==receipt.sha256||hash(zlib.gunzipSync(fs.readFileSync(receipt.backupPath)))!==receipt.sha256)throw Error('Inbox original/backup hash mismatch');
+      const parsed=JSON.parse(fs.readFileSync(receipt.parsedPath));
+      if(parsed.csvSha256!==receipt.sha256||parsed.accepted.length!==receipt.accepted)throw Error('Inbox parsed receipt mismatch');
+      for(const row of parsed.accepted) {
+        if(!reviewed.has(row.cardId))continue; // New identities need a separate publication review.
+        if(row.csvSha256!==receipt.sha256||row.contextProof!==sidecar.context.contextProof||row.sourceUpdatedDate!==sidecar.context.sourceUpdatedDate||row.pageUrl!==sidecar.context.pageUrl)throw Error('Inbox row/page/date mismatch');
+        const card=catalog.get(row.cardId),value=card&&reference(card,row,{audience:'private-preview'});
+        if(!value?.available)throw Error('Inbox identity/date/counts unproven');
+        const old=latest.get(row.cardId);
+        if(old.sourceUpdatedDate===row.sourceUpdatedDate&&(old.psa10!==row.psa10||old.total!==row.total))throw Error('Conflicting counts on same source date');
+        if(row.sourceUpdatedDate>old.sourceUpdatedDate)latest.set(row.cardId,row);
+      }
+    }
+  }
   const cards=Object.fromEntries([...latest].sort(([a],[b])=>a.localeCompare(b)).map(([id,r])=>
     [id,[r.identityKey,r.psa10,r.total,r.sourceUpdatedDate,r.pageUrl]]));
   const result={version:1,source:'GemRate',grader:'PSA',scope:'received-csv-reference-50',
     fields:['identityKey','psa10','total','sourceDate','sourceUrl'],cards};
   // No original CSV, history, receipt metadata, private paths, or adopted rates are exported.
   const target=path.join(root,'data/gemrate-reference-summary.json');
-  fs.writeFileSync(target,JSON.stringify(result));
-  return {publishedReferences:latest.size,calculationAdopted:0,sourceAcquisitions:0,newObservations:0,
+  const previous=fs.existsSync(target)?JSON.parse(fs.readFileSync(target)):null;
+  const updatedReferences=Object.entries(cards).filter(([id,r])=>JSON.stringify(previous?.cards?.[id])!==JSON.stringify(r)).length;
+  if(updatedReferences)require('./acquisition_retry').atomicWrite(target,result,0);
+  return {updatedReferences,publishedReferences:latest.size,calculationAdopted:0,sourceAcquisitions:0,newObservations:0,
     bytes:fs.statSync(target).size,dates:[...new Set([...latest.values()].map(r=>r.sourceUpdatedDate))]};
 }
+function refreshIfAvailable(root=ROOT,store=path.resolve(root,'../private-research/gemrate')) {
+  if(!fs.existsSync(path.join(store,'expanded-verification-report.json')))return {status:'private-store-unavailable',sourceAcquisitions:0};
+  try{return {status:'validated',...build(root,store)};}
+  catch(e){return {status:'held',reason:'GemRate保存CSV・照合・日時・版の検証停止',errorCode:e.code||'REFERENCE_VALIDATION',previousRetained:true,sourceAcquisitions:0};}
+}
 if(require.main===module)console.log(JSON.stringify(build()));
-module.exports={build};
+module.exports={build,refreshIfAvailable};

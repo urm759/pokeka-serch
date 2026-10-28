@@ -131,6 +131,7 @@ jobs:
             node work/test_update_publication.js
             node work/test_value_reopening.js
             node work/test_reference_buy.js
+            node work/test_gemrate_reference_refresh.js
             node work/test_daily_finalize_once.js
           else
             node work/update_validation.js --required
