@@ -1,11 +1,22 @@
 const fs = require('node:fs'), path = require('node:path');
 const model = require('../psa-plan-model');
-const {atomicWrite, classify} = require('./acquisition_retry');
+const {atomicWrite, classify, failure, eligible} = require('./acquisition_retry');
 const OUTPUT = path.join(__dirname,'../data/psa-japan-services.json');
 const URL = 'https://www.psacard.com/ja-JP/services/trad';
+function retryState(previous){
+  return previous.retry || (previous.checkStatus==='failed'&&previous.checkError
+    ?failure({},Error(previous.checkError),Date.parse(previous.lastAttemptAt)||Date.now()):null);
+}
 async function main() {
   const at = new Date().toISOString();
   const previous = fs.existsSync(OUTPUT) ? JSON.parse(fs.readFileSync(OUTPUT,'utf8')) : {};
+  const retry=retryState(previous);
+  if(!eligible(retry)){
+    // A held fee source is not a new network attempt or a successful price check.
+    console.log(JSON.stringify({completionStatus:retry.held?'manual-wait':'retry-wait',held:!!retry.held,waiting:true,httpRequests:0,
+      reason:retry.reason,nextRetryAt:retry.nextRetryAt,resumeCondition:retry.resumeCondition,
+      lastActualAttemptAt:previous.lastAttemptAt,previousFailureRetained:true}));return;
+  }
   let parsed;
   try {
     const response = await fetch(URL,{headers:{'user-agent':'Mozilla/5.0 PSA-Japan-plan-monitor'},signal:AbortSignal.timeout(15000)});
@@ -26,10 +37,10 @@ async function main() {
       return {...old,id,name,...(reason ? {validationStatus:'held',validationReason:reason} : {})};
     });
     atomicWrite(OUTPUT,{...previous,plans,lastAttemptAt:at,checkStatus:'failed',checkError:error.message,
-      failureKind:classify(error).kind,fetchMethod:'official-direct-no-bypass'},0);
+      failureKind:classify(error).kind,retry:failure(previous.retry,error,Date.parse(at)),fetchMethod:'official-direct-no-bypass'},0);
     console.error('PSA Japan refresh failed; previous verified values retained: '+error.message);
     process.exitCode=1;
   }
 }
 if(require.main===module)main();
-module.exports={main};
+module.exports={main,retryState};

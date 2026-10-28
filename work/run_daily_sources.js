@@ -11,9 +11,11 @@ function run(tasks, execute, root=ROOT) {
   for(const task of tasks) {
     const at=Date.now(); let child;
     try {child=execute(task);}catch(error){child={status:1,stderr:error.message};}
+    const details=String(child.stdout||'').trim().split(/\r?\n/).reverse().map(l=>{try{return JSON.parse(l)}catch{return null}}).find(Boolean);
     const record={source:task.source,startedAt:new Date(at).toISOString(),endedAt:new Date().toISOString(),durationMs:Date.now()-at,
       status:child.status===0&&!child.error?'process-success':'failed',error:child.status===0?null:String(child.error?.message||child.stderr||'exit '+child.status).slice(-600)};
-    result.sources.push(record);result.status=result.sources.some(r=>r.status==='failed')?'partial-with-failure':'process-success';
+    if(record.status==='process-success'&&(details?.held===true||details?.waiting===true)){record.status=details.held?'held':'retry-wait';record.hold=details;record.error=details.reason||null;}
+    result.sources.push(record);result.status=result.sources.some(r=>r.status==='failed')?'partial-with-failure':result.sources.some(r=>r.status==='held')?'partial-with-hold':result.sources.some(r=>r.status==='retry-wait')?'partial-with-wait':'process-success';
     record.failureKinds=record.status==='failed'?failureKinds(record.error):[];
     record.stage='acquisition';record.publication='後続の必須検証・保存・公開受領証で別確認';
     atomicWrite(path.join(root,'data/daily-source-isolation.json'),result,0);

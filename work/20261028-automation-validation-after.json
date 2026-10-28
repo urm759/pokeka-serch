@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-28T10:49:32.921Z",
+  "environment": "same Windows host, same source records",
+  "oldChecks": 101,
+  "oldMs": 144572,
+  "requiredMs": 23511,
+  "sourceValuesUnchanged": true,
+  "status": 0,
+  "stdout": "{\"revision\":\"e5e97e8022d566222d704e5f8297295cde4bbcb00b8bf2782ace633ddb082664\"}\n{\"disputed\":706,\"mewEvidence\":\"unbacked\"}\nPASS fresh comparison vs stale/reference/identity, no arithmetic mutation, independent sources, real disagreement, zero/unknown colours\nPublication lineage: parallel source changes, repeated audit, staged mixes and matching snapshot passed\n{\"cards\":12746,\"analyzable\":2422,\"chunks\":51,\"newCards\":366,\"queueRemaining\":10324,\"tests\":26}\nPASS stock statistics deterministic raw/date, null gaps, true zero, duplicate conflicts, future exclusion, calendar boundaries and preserved quote timestamps\nPASS full crawler / checkpoint finalization equality and lazy statistics provenance\nPASS cold dependency validation, simulated missing/old/out-of-order modules, explicit stop before any data load, ordered scripts and pinned integrity hashes; original user event cause remains unconfirmed\n{\"summaryFiles\":18,\"nullPreserved\":true,\"pinnedRevision\":\"e5e97e8022d566222d704e5f8297295cde4bbcb00b8bf2782ace633ddb082664\",\"olderCapsPreserved\":true}\n{\"checks\":[{\"file\":\"build_ui_data\",\"durationMs\":5146,\"status\":0},{\"file\":\"test_price_integrity\",\"durationMs\":291,\"status\":0},{\"file\":\"test_price_comparison\",\"durationMs\":99,\"status\":0},{\"file\":\"test_publication_lineage\",\"durationMs\":3402,\"status\":0},{\"file\":\"test_card_catalog_completion\",\"durationMs\":453,\"status\":0},{\"file\":\"test_stock_history_statistics\",\"durationMs\":112,\"status\":0},{\"file\":\"test_initial_calculation_dependencies\",\"durationMs\":117,\"status\":0},{\"file\":\"test_ui_data\",\"durationMs\":11854,\"status\":0}]}\n",
+  "stderr": "",
+  "scope": "local validation comparison; scheduled end-to-end savings remain unverified"
+}

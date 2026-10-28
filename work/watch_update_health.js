@@ -47,7 +47,8 @@ async function main() {
     for(const [key,list] of Object.entries({daily:runs,safe:safeRuns,pokedata:pokeRuns,priority:priceRuns,catchup:catchupRuns})) {
       if(key==='pokedata'&&overseasCancelled)continue;
       const receipt=receipts.pipelines?.[key];
-      const latest=list.workflow_runs?.find(r=>r.status==='completed'&&(r.event==='schedule'||key==='catchup'&&String(r.id)===String(receipt?.runId)&&r.event==='workflow_run'));
+      const latest=list.workflow_runs?.find(r=>r.status==='completed'&&String(r.id)===String(receipt?.runId)&&(r.event==='schedule'||key==='catchup'&&r.event==='workflow_run'))
+        ||list.workflow_runs?.find(r=>r.status==='completed'&&r.event==='schedule');
       if(!latest || cycles.pipelines[key]?.runId===latest.id&&cycles.pipelines[key]?.confirmed)continue;
       const texts={};
       if(receipt && String(receipt.runId)===String(latest.id)){
@@ -58,7 +59,7 @@ async function main() {
         }
       }
       const jobs=await api(`${API}/actions/runs/${latest.id}/jobs`);
-      cycles.pipelines[key]=require('./scheduled_cycle_evidence').verify(latest,jobs,receipt,texts,pages);
+      require('./verify_update_publication').preserve(cycles,key,require('./scheduled_cycle_evidence').verify(latest,jobs,receipt,texts,pages));
     }
     cycles.checkedAt=new Date().toISOString();
     delete cycles.checkError;

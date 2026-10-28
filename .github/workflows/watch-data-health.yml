@@ -39,38 +39,40 @@ jobs:
           node-version: "24"
       - name: Check alert deduplication and safe backoff rules
         run: |
-          node work/test_profile_worker.js
-          node work/test_gemrate_limited_public_reference.js
-          node work/test_hareruya_single_response.js
-          node work/test_watch_catchup_trigger.js
-          node work/test_failed_price_recovery.js
-          node work/test_saved_source_merge.js
-          node work/test_buyback_market_average.js
-          node work/test_buyback_scope.js
-          node work/test_style_identity.js
-          node work/test_saved_style_replay.js
-          node work/test_saved_buyback_item_rematch.js
-          node work/test_market_buyback_day_order.js
-          node work/test_final_price_status_pack.js
-          node work/test_saved_trainer_name_scope.js
-          node work/test_profile_report_names.js
-          node work/test_saved_shop_recovery.js
-          node work/test_update_health.js
-          node work/test_backfill_health.js
-          node work/test_backfill_rate.js
-          node work/test_deadline_order.js
-          node work/test_minimum_recovery_sources.js
-          node work/test_recovery_latency.js
-          node work/test_scheduled_cycle_evidence.js
-          node work/test_cycle_observation_snapshot.js
-          node work/test_postpass_cadence.js
-          node work/test_bulk_individual_freshness.js
-          node work/test_catalog_history_retention.js
-          node work/test_partial_buyback_refresh.js
-          node work/test_partial_buyback_recovery.js
-          node work/test_saved_camp_recovery.js
-          node work/test_automatic_operation.js
-          node work/test_overseas_cancellation.js
+          if [ "$(node work/update_validation.js --mode)" = "regression" ]; then
+            node work/test_profile_worker.js
+            node work/test_gemrate_limited_public_reference.js
+            node work/test_hareruya_single_response.js
+            node work/test_watch_catchup_trigger.js
+            node work/test_failed_price_recovery.js
+            node work/test_saved_source_merge.js
+            node work/test_buyback_market_average.js
+            node work/test_buyback_scope.js
+            node work/test_style_identity.js
+            node work/test_saved_style_replay.js
+            node work/test_saved_buyback_item_rematch.js
+            node work/test_market_buyback_day_order.js
+            node work/test_final_price_status_pack.js
+            node work/test_saved_trainer_name_scope.js
+            node work/test_profile_report_names.js
+            node work/test_saved_shop_recovery.js
+            node work/test_update_health.js
+            node work/test_backfill_health.js
+            node work/test_backfill_rate.js
+            node work/test_deadline_order.js
+            node work/test_minimum_recovery_sources.js
+            node work/test_recovery_latency.js
+            node work/test_scheduled_cycle_evidence.js
+            node work/test_cycle_observation_snapshot.js
+            node work/test_postpass_cadence.js
+            node work/test_bulk_individual_freshness.js
+            node work/test_catalog_history_retention.js
+            node work/test_partial_buyback_refresh.js
+            node work/test_partial_buyback_recovery.js
+            node work/test_saved_camp_recovery.js
+            node work/test_automatic_operation.js
+            node work/test_overseas_cancellation.js
+          fi
       - name: Recover trusted failed price inputs without reacquisition
         if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'failure'
         env:
@@ -91,7 +93,6 @@ jobs:
       - name: Fill missed price intervals with shared cooldown and access budgets
         if: steps.catchup_plan.outputs.mode == 'acquire'
         run: |
-          node work/scheduled_cycle_evidence.js catchup --baseline
           node work/run_priority_price_refresh.js --catchup
       - name: Validate catchup data without changing purchase criteria
         id: catchup_validation
@@ -101,32 +102,41 @@ jobs:
             node work/build_card_completion.js
             node work/finalize_update_status.js
           fi
-          node work/test_price_integrity.js
-          node work/test_price_comparison.js
-          node work/test_profile_departure_audit.js
-          node work/test_observation75_migration.js
-          node work/test_pop_glance.js
-          node work/test_pop_resilience.js
-          node work/test_shop_observation.js
-          node work/test_purchase_price_recovery.js
-          node work/test_buyback_scenario_limits.js
-          node work/test_purchase_limit_audit.js
-          node work/test_card_catalog_completion.js
-          node work/test_cadence_payload.js
-          node work/test_publication_lineage.js
-          node work/test_catchup_reuse.js
-          node work/test_ui_data.js
-          node work/test_priority_finalize_handoff.js
-          node work/test_ui_codec_v2.js
-          node work/test_psa9_guide_comparison.js
-          node work/test_psa9_guide_integration.js
-          node work/test_psa9_marketplace_reference.js
-          node work/test_psa9_cost_filters.js
-          node work/test_initial_calculation_dependencies.js
-          if [ "${{ steps.catchup_plan.outputs.mode }}" != "reuse" ]; then
-            node work/measure_performance_guard.js
-            node work/scheduled_cycle_evidence.js catchup
+          if [ "$(node work/update_validation.js --mode)" = "regression" ]; then
+            node work/test_price_integrity.js
+            node work/test_price_comparison.js
+            node work/test_profile_departure_audit.js
+            node work/test_observation75_migration.js
+            node work/test_pop_glance.js
+            node work/test_pop_resilience.js
+            node work/test_shop_observation.js
+            node work/test_purchase_price_recovery.js
+            node work/test_buyback_scenario_limits.js
+            node work/test_purchase_limit_audit.js
+            node work/test_card_catalog_completion.js
+            node work/test_cadence_payload.js
+            node work/test_publication_lineage.js
+            node work/test_catchup_reuse.js
+            node work/test_ui_data.js
+            node work/test_priority_finalize_handoff.js
+            node work/test_ui_codec_v2.js
+            node work/test_psa9_guide_comparison.js
+            node work/test_psa9_guide_integration.js
+            node work/test_psa9_marketplace_reference.js
+            node work/test_psa9_cost_filters.js
+            node work/test_initial_calculation_dependencies.js
+            if [ "${{ steps.catchup_plan.outputs.mode }}" != "reuse" ]; then
+              node work/measure_performance_guard.js
+              node work/scheduled_cycle_evidence.js catchup
+            fi
+            node work/test_update_validation.js
+            node work/test_update_publication.js
+            node work/test_daily_finalize_once.js
+          else
+            node work/update_validation.js --required
+            if [ "${{ steps.catchup_plan.outputs.mode }}" != "reuse" ]; then node work/scheduled_cycle_evidence.js catchup; fi
           fi
+          node work/update_validation.js --record
       - name: Publish changed health state only
         if: always() && steps.catchup_validation.outcome == 'success' && steps.catchup_plan.outputs.mode != 'reuse'
         run: |
@@ -199,4 +209,31 @@ jobs:
           name: independent-monitor-${{ github.run_id }}-${{ github.run_attempt }}
           path: work/unpublished-recovery/
           retention-days: 7
+          if-no-files-found: error
+
+  publication_check:
+    # No needs: catchup: observation/Pages verification must not wait on acquisition.
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+      - name: Verify published acquisition independently without source requests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node work/verify_update_publication.js
+      - name: Retain publication verification without a Pages feedback loop
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: publication-verification-${{ github.run_id }}
+          path: work/checkpoint-publication-proof.json
+          retention-days: 14
           if-no-files-found: error

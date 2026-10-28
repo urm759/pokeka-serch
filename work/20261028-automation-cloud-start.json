@@ -1,0 +1,830 @@
+{
+  "at": "2026-10-28T10:14:01.100Z",
+  "publicStatus": 200,
+  "publicHasPsa9": true,
+  "rows": [
+    {
+      "id": 40660277038,
+      "name": "Data Update Health Watchdog",
+      "event": "workflow_run",
+      "head": "f287669af89718c5230b136c7e8369e52c374ac2",
+      "createdAt": "2026-10-28T08:55:22Z",
+      "startedAt": "2026-10-28T08:55:22Z",
+      "updatedAt": "2026-10-28T08:57:04Z",
+      "status": "completed",
+      "result": "success",
+      "jobs": [
+        {
+          "id": 122721287953,
+          "name": "watch",
+          "start": "2026-10-28T08:55:24Z",
+          "end": "2026-10-28T08:57:03Z",
+          "result": "success",
+          "steps": [
+            {
+              "name": "Check workflow results and saved checkpoint holds",
+              "start": "2026-10-28T08:55:50Z",
+              "end": "2026-10-28T08:55:58Z",
+              "result": "success"
+            },
+            {
+              "name": "Publish independent validated monitor state",
+              "start": "2026-10-28T08:55:58Z",
+              "end": "2026-10-28T08:57:01Z",
+              "result": "success"
+            }
+          ]
+        },
+        {
+          "id": 122721289658,
+          "name": "catchup",
+          "start": "2026-10-28T08:55:23Z",
+          "end": "2026-10-28T08:55:22Z",
+          "result": "skipped",
+          "steps": []
+        }
+      ]
+    },
+    {
+      "id": 40658698271,
+      "name": "Priority Purchase Price Refresh",
+      "event": "schedule",
+      "head": "056f63beae09f56d2eb0305522fde91182bdd286",
+      "createdAt": "2026-10-28T08:42:13Z",
+      "startedAt": "2026-10-28T08:42:13Z",
+      "updatedAt": "2026-10-28T08:55:19Z",
+      "status": "completed",
+      "result": "success",
+      "jobs": [
+        {
+          "id": 122715998606,
+          "name": "refresh",
+          "start": "2026-10-28T08:42:16Z",
+          "end": "2026-10-28T08:55:19Z",
+          "result": "success",
+          "steps": [
+            {
+              "name": "Refresh due purchase prices without new-set exploration or LLM",
+              "start": "2026-10-28T08:42:43Z",
+              "end": "2026-10-28T08:52:23Z",
+              "result": "success"
+            },
+            {
+              "name": "Verify safety and incremental acquisition",
+              "start": "2026-10-28T08:52:23Z",
+              "end": "2026-10-28T08:53:52Z",
+              "result": "success"
+            },
+            {
+              "name": "Publish validated data with conflict protection",
+              "start": "2026-10-28T08:53:52Z",
+              "end": "2026-10-28T08:55:16Z",
+              "result": "success"
+            },
+            {
+              "name": "Preserve unpublished checkpoint on failure",
+              "start": "2026-10-28T08:55:16Z",
+              "end": "2026-10-28T08:55:16Z",
+              "result": "skipped"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 40643190923,
+      "name": "Data Update Health Watchdog",
+      "event": "schedule",
+      "head": "519b1460c1872ec24ec0d7814620106c9738c344",
+      "createdAt": "2026-10-28T06:19:54Z",
+      "startedAt": "2026-10-28T06:19:54Z",
+      "updatedAt": "2026-10-28T06:22:40Z",
+      "status": "completed",
+      "result": "success",
+      "jobs": [
+        {
+          "id": 122665873729,
+          "name": "catchup",
+          "start": "2026-10-28T06:19:57Z",
+          "end": "2026-10-28T06:20:56Z",
+          "result": "success",
+          "steps": [
+            {
+              "name": "Recover trusted failed price inputs without reacquisition",
+              "start": "2026-10-28T06:20:25Z",
+              "end": "2026-10-28T06:20:25Z",
+              "result": "skipped"
+            },
+            {
+              "name": "Check saved publication before optional acquisition",
+              "start": "2026-10-28T06:20:25Z",
+              "end": "2026-10-28T06:20:25Z",
+              "result": "success"
+            },
+            {
+              "name": "Plan saved publication before optional acquisition",
+              "start": "2026-10-28T06:20:25Z",
+              "end": "2026-10-28T06:20:26Z",
+              "result": "success"
+            },
+            {
+              "name": "Publish changed health state only",
+              "start": "2026-10-28T06:20:54Z",
+              "end": "2026-10-28T06:20:54Z",
+              "result": "skipped"
+            },
+            {
+              "name": "Preserve unpublished monitor state",
+              "start": "2026-10-28T06:20:54Z",
+              "end": "2026-10-28T06:20:54Z",
+              "result": "skipped"
+            },
+            {
+              "name": "Save monitor recovery bundle",
+              "start": "2026-10-28T06:20:54Z",
+              "end": "2026-10-28T06:20:54Z",
+              "result": "skipped"
+            }
+          ]
+        },
+        {
+          "id": 122666198874,
+          "name": "watch",
+          "start": "2026-10-28T06:20:58Z",
+          "end": "2026-10-28T06:22:39Z",
+          "result": "success",
+          "steps": [
+            {
+              "name": "Check workflow results and saved checkpoint holds",
+              "start": "2026-10-28T06:21:25Z",
+              "end": "2026-10-28T06:21:33Z",
+              "result": "success"
+            },
+            {
+              "name": "Publish independent validated monitor state",
+              "start": "2026-10-28T06:21:33Z",
+              "end": "2026-10-28T06:22:36Z",
+              "result": "success"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 40639474537,
+      "name": "Data Update Health Watchdog",
+      "event": "workflow_run",
+      "head": "03ad662737d561c56d74d39d218ff6c3de4d9847",
+      "createdAt": "2026-10-28T05:41:41Z",
+      "startedAt": "2026-10-28T05:41:41Z",
+      "updatedAt": "2026-10-28T06:01:09Z",
+      "status": "completed",
+      "result": "success",
+      "jobs": [
+        {
+          "id": 122653998084,
+          "name": "catchup",
+          "start": "2026-10-28T05:41:44Z",
+          "end": "2026-10-28T05:59:23Z",
+          "result": "success",
+          "steps": [
+            {
+              "name": "Recover trusted failed price inputs without reacquisition",
+              "start": "2026-10-28T05:42:16Z",
+              "end": "2026-10-28T05:42:16Z",
+              "result": "skipped"
+            },
+            {
+              "name": "Check saved publication before optional acquisition",
+              "start": "2026-10-28T05:42:16Z",
+              "end": "2026-10-28T05:42:16Z",
+              "result": "skipped"
+            },
+            {
+              "name": "Plan saved publication before optional acquisition",
+              "start": "2026-10-28T05:42:16Z",
+              "end": "2026-10-28T05:42:17Z",
+              "result": "success"
+            },
+            {
+              "name": "Publish changed health state only",
+              "start": "2026-10-28T05:57:48Z",
+              "end": "2026-10-28T05:59:21Z",
+              "result": "success"
+            },
+            {
+              "name": "Preserve unpublished monitor state",
+              "start": "2026-10-28T05:59:21Z",
+              "end": "2026-10-28T05:59:21Z",
+              "result": "skipped"
+            },
+            {
+              "name": "Save monitor recovery bundle",
+              "start": "2026-10-28T05:59:21Z",
+              "end": "2026-10-28T05:59:21Z",
+              "result": "skipped"
+            }
+          ]
+        },
+        {
+          "id": 122659335713,
+          "name": "watch",
+          "start": "2026-10-28T05:59:25Z",
+          "end": "2026-10-28T06:01:08Z",
+          "result": "success",
+          "steps": [
+            {
+              "name": "Check workflow results and saved checkpoint holds",
+              "start": "2026-10-28T05:59:54Z",
+              "end": "2026-10-28T06:00:04Z",
+              "result": "success"
+            },
+            {
+              "name": "Publish independent validated monitor state",
+              "start": "2026-10-28T06:00:04Z",
+              "end": "2026-10-28T06:01:05Z",
+              "result": "success"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 40615748102,
+      "name": "Data Update Health Watchdog",
+      "event": "workflow_run",
+      "head": "df5f121293841a0aafe835eae7136892746d2445",
+      "createdAt": "2026-10-28T01:33:24Z",
+      "startedAt": "2026-10-28T01:33:24Z",
+      "updatedAt": "2026-10-28T01:34:53Z",
+      "status": "completed",
+      "result": "success",
+      "jobs": [
+        {
+          "id": 122577701916,
+          "name": "watch",
+          "start": "2026-10-28T01:33:27Z",
+          "end": "2026-10-28T01:34:53Z",
+          "result": "success",
+          "steps": [
+            {
+              "name": "Check workflow results and saved checkpoint holds",
+              "start": "2026-10-28T01:33:55Z",
+              "end": "2026-10-28T01:34:03Z",
+              "result": "success"
+            },
+            {
+              "name": "Publish independent validated monitor state",
+              "start": "2026-10-28T01:34:03Z",
+              "end": "2026-10-28T01:34:50Z",
+              "result": "success"
+            }
+          ]
+        },
+        {
+          "id": 122577702796,
+          "name": "catchup",
+          "start": "2026-10-28T01:33:25Z",
+          "end": "2026-10-28T01:33:24Z",
+          "result": "skipped",
+          "steps": []
+        }
+      ]
+    },
+    {
+      "id": 40615143813,
+      "name": "Priority Purchase Price Refresh",
+      "event": "schedule",
+      "head": "6fdeddf60ba33a27ae5415d3e45935b8490192d5",
+      "createdAt": "2026-10-28T01:27:17Z",
+      "startedAt": "2026-10-28T01:27:17Z",
+      "updatedAt": "2026-10-28T01:33:22Z",
+      "status": "completed",
+      "result": "success",
+      "jobs": [
+        {
+          "id": 122575759250,
+          "name": "refresh",
+          "start": "2026-10-28T01:27:20Z",
+          "end": "2026-10-28T01:33:21Z",
+          "result": "success",
+          "steps": [
+            {
+              "name": "Refresh due purchase prices without new-set exploration or LLM",
+              "start": "2026-10-28T01:27:52Z",
+              "end": "2026-10-28T01:28:45Z",
+              "result": "success"
+            },
+            {
+              "name": "Verify safety and incremental acquisition",
+              "start": "2026-10-28T01:28:45Z",
+              "end": "2026-10-28T01:31:26Z",
+              "result": "success"
+            },
+            {
+              "name": "Publish validated data with conflict protection",
+              "start": "2026-10-28T01:31:26Z",
+              "end": "2026-10-28T01:33:18Z",
+              "result": "success"
+            },
+            {
+              "name": "Preserve unpublished checkpoint on failure",
+              "start": "2026-10-28T01:33:18Z",
+              "end": "2026-10-28T01:33:18Z",
+              "result": "skipped"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 40610687749,
+      "name": "Data Update Health Watchdog",
+      "event": "schedule",
+      "head": "9f6780c377a6642f35e433c817caaf3518d360d3",
+      "createdAt": "2026-10-28T00:44:31Z",
+      "startedAt": "2026-10-28T00:44:31Z",
+      "updatedAt": "2026-10-28T01:02:42Z",
+      "status": "completed",
+      "result": "failure",
+      "jobs": [
+        {
+          "id": 122561199890,
+          "name": "catchup",
+          "start": "2026-10-28T00:44:34Z",
+          "end": "2026-10-28T01:00:42Z",
+          "result": "success",
+          "steps": [
+            {
+              "name": "Recover trusted failed price inputs without reacquisition",
+              "start": "2026-10-28T00:45:02Z",
+              "end": "2026-10-28T00:45:02Z",
+              "result": "skipped"
+            },
+            {
+              "name": "Check saved publication before optional acquisition",
+              "start": "2026-10-28T00:45:02Z",
+              "end": "2026-10-28T00:45:02Z",
+              "result": "success"
+            },
+            {
+              "name": "Plan saved publication before optional acquisition",
+              "start": "2026-10-28T00:45:02Z",
+              "end": "2026-10-28T00:45:03Z",
+              "result": "success"
+            },
+            {
+              "name": "Publish changed health state only",
+              "start": "2026-10-28T00:59:21Z",
+              "end": "2026-10-28T01:00:38Z",
+              "result": "success"
+            },
+            {
+              "name": "Preserve unpublished monitor state",
+              "start": "2026-10-28T01:00:38Z",
+              "end": "2026-10-28T01:00:38Z",
+              "result": "skipped"
+            },
+            {
+              "name": "Save monitor recovery bundle",
+              "start": "2026-10-28T01:00:38Z",
+              "end": "2026-10-28T01:00:38Z",
+              "result": "skipped"
+            }
+          ]
+        },
+        {
+          "id": 122566845120,
+          "name": "watch",
+          "start": "2026-10-28T01:00:44Z",
+          "end": "2026-10-28T01:02:42Z",
+          "result": "failure",
+          "steps": [
+            {
+              "name": "Check workflow results and saved checkpoint holds",
+              "start": "2026-10-28T01:01:11Z",
+              "end": "2026-10-28T01:01:19Z",
+              "result": "success"
+            },
+            {
+              "name": "Publish independent validated monitor state",
+              "start": "2026-10-28T01:01:19Z",
+              "end": "2026-10-28T01:02:16Z",
+              "result": "success"
+            },
+            {
+              "name": "Report newly detected alerts",
+              "start": "2026-10-28T01:02:16Z",
+              "end": "2026-10-28T01:02:16Z",
+              "result": "failure"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 40601960396,
+      "name": "Data Update Health Watchdog",
+      "event": "workflow_run",
+      "head": "fb66350445ae825049316156a83aba89875b4880",
+      "createdAt": "2026-10-27T23:24:51Z",
+      "startedAt": "2026-10-27T23:24:51Z",
+      "updatedAt": "2026-10-27T23:27:01Z",
+      "status": "completed",
+      "result": "failure",
+      "jobs": [
+        {
+          "id": 122532023304,
+          "name": "watch",
+          "start": "2026-10-27T23:24:54Z",
+          "end": "2026-10-27T23:27:00Z",
+          "result": "failure",
+          "steps": [
+            {
+              "name": "Check workflow results and saved checkpoint holds",
+              "start": "2026-10-27T23:25:25Z",
+              "end": "2026-10-27T23:25:32Z",
+              "result": "success"
+            },
+            {
+              "name": "Publish independent validated monitor state",
+              "start": "2026-10-27T23:25:32Z",
+              "end": "2026-10-27T23:26:32Z",
+              "result": "success"
+            },
+            {
+              "name": "Report newly detected alerts",
+              "start": "2026-10-27T23:26:32Z",
+              "end": "2026-10-27T23:26:32Z",
+              "result": "failure"
+            }
+          ]
+        },
+        {
+          "id": 122532024286,
+          "name": "catchup",
+          "start": "2026-10-27T23:24:52Z",
+          "end": "2026-10-27T23:24:52Z",
+          "result": "skipped",
+          "steps": []
+        }
+      ]
+    },
+    {
+      "id": 40599181679,
+      "name": "Daily Fast Update",
+      "event": "schedule",
+      "head": "9a736c52c10381beb361ed955a096bd9799c5e3d",
+      "createdAt": "2026-10-27T23:01:44Z",
+      "startedAt": "2026-10-27T23:01:44Z",
+      "updatedAt": "2026-10-27T23:24:49Z",
+      "status": "completed",
+      "result": "failure",
+      "jobs": [
+        {
+          "id": 122522727332,
+          "name": "update",
+          "start": "2026-10-27T23:01:47Z",
+          "end": "2026-10-27T23:24:48Z",
+          "result": "failure",
+          "steps": [
+            {
+              "name": "Save purchase-price freshness baseline",
+              "start": "2026-10-27T23:02:16Z",
+              "end": "2026-10-27T23:03:14Z",
+              "result": "success"
+            },
+            {
+              "name": "Refresh independent sources and preserve individual failures",
+              "start": "2026-10-27T23:07:17Z",
+              "end": "2026-10-27T23:10:26Z",
+              "result": "success"
+            },
+            {
+              "name": "Finalize source status",
+              "start": "2026-10-27T23:10:36Z",
+              "end": "2026-10-27T23:14:07Z",
+              "result": "success"
+            },
+            {
+              "name": "Preserve acquired data before mandatory verification",
+              "start": "2026-10-27T23:18:45Z",
+              "end": "2026-10-27T23:18:48Z",
+              "result": "success"
+            },
+            {
+              "name": "Report independent acquisition failures without hiding them",
+              "start": "2026-10-27T23:24:19Z",
+              "end": "2026-10-27T23:24:19Z",
+              "result": "failure"
+            },
+            {
+              "name": "Save unpublished source data on failure",
+              "start": "2026-10-27T23:24:19Z",
+              "end": "2026-10-27T23:24:19Z",
+              "result": "success"
+            },
+            {
+              "name": "Upload recovery checkpoint if publication or validation failed",
+              "start": "2026-10-27T23:24:34Z",
+              "end": "2026-10-27T23:24:46Z",
+              "result": "success"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 40587359856,
+      "name": "Data Update Health Watchdog",
+      "event": "workflow_run",
+      "head": "8f5b422890570199e864e9101021aacb0c747126",
+      "createdAt": "2026-10-27T21:30:29Z",
+      "startedAt": "2026-10-27T21:30:29Z",
+      "updatedAt": "2026-10-27T21:35:03Z",
+      "status": "completed",
+      "result": "success",
+      "jobs": [
+        {
+          "id": 122482273486,
+          "name": "catchup",
+          "start": "2026-10-27T21:31:30Z",
+          "end": "2026-10-27T21:32:38Z",
+          "result": "success",
+          "steps": [
+            {
+              "name": "Recover trusted failed price inputs without reacquisition",
+              "start": "2026-10-27T21:32:06Z",
+              "end": "2026-10-27T21:32:06Z",
+              "result": "skipped"
+            },
+            {
+              "name": "Check saved publication before optional acquisition",
+              "start": "2026-10-27T21:32:06Z",
+              "end": "2026-10-27T21:32:06Z",
+              "result": "skipped"
+            },
+            {
+              "name": "Plan saved publication before optional acquisition",
+              "start": "2026-10-27T21:32:06Z",
+              "end": "2026-10-27T21:32:07Z",
+              "result": "success"
+            },
+            {
+              "name": "Publish changed health state only",
+              "start": "2026-10-27T21:32:35Z",
+              "end": "2026-10-27T21:32:35Z",
+              "result": "skipped"
+            },
+            {
+              "name": "Preserve unpublished monitor state",
+              "start": "2026-10-27T21:32:35Z",
+              "end": "2026-10-27T21:32:35Z",
+              "result": "skipped"
+            },
+            {
+              "name": "Save monitor recovery bundle",
+              "start": "2026-10-27T21:32:35Z",
+              "end": "2026-10-27T21:32:35Z",
+              "result": "skipped"
+            }
+          ]
+        },
+        {
+          "id": 122483325199,
+          "name": "watch",
+          "start": "2026-10-27T21:33:29Z",
+          "end": "2026-10-27T21:35:02Z",
+          "result": "success",
+          "steps": [
+            {
+              "name": "Check workflow results and saved checkpoint holds",
+              "start": "2026-10-27T21:34:00Z",
+              "end": "2026-10-27T21:34:08Z",
+              "result": "success"
+            },
+            {
+              "name": "Publish independent validated monitor state",
+              "start": "2026-10-27T21:34:08Z",
+              "end": "2026-10-27T21:35:00Z",
+              "result": "success"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 40587114424,
+      "name": "Data Update Health Watchdog",
+      "event": "schedule",
+      "head": "f3139fe142f117bc60eec9548a2dcd52d6161ed6",
+      "createdAt": "2026-10-27T21:28:44Z",
+      "startedAt": "2026-10-27T21:28:44Z",
+      "updatedAt": "2026-10-27T21:33:02Z",
+      "status": "completed",
+      "result": "success",
+      "jobs": [
+        {
+          "id": 122481415800,
+          "name": "catchup",
+          "start": "2026-10-27T21:30:28Z",
+          "end": "2026-10-27T21:31:27Z",
+          "result": "success",
+          "steps": [
+            {
+              "name": "Recover trusted failed price inputs without reacquisition",
+              "start": "2026-10-27T21:30:56Z",
+              "end": "2026-10-27T21:30:56Z",
+              "result": "skipped"
+            },
+            {
+              "name": "Check saved publication before optional acquisition",
+              "start": "2026-10-27T21:30:56Z",
+              "end": "2026-10-27T21:30:56Z",
+              "result": "success"
+            },
+            {
+              "name": "Plan saved publication before optional acquisition",
+              "start": "2026-10-27T21:30:56Z",
+              "end": "2026-10-27T21:30:57Z",
+              "result": "success"
+            },
+            {
+              "name": "Publish changed health state only",
+              "start": "2026-10-27T21:31:24Z",
+              "end": "2026-10-27T21:31:24Z",
+              "result": "skipped"
+            },
+            {
+              "name": "Preserve unpublished monitor state",
+              "start": "2026-10-27T21:31:24Z",
+              "end": "2026-10-27T21:31:24Z",
+              "result": "skipped"
+            },
+            {
+              "name": "Save monitor recovery bundle",
+              "start": "2026-10-27T21:31:24Z",
+              "end": "2026-10-27T21:31:24Z",
+              "result": "skipped"
+            }
+          ]
+        },
+        {
+          "id": 122482752537,
+          "name": "watch",
+          "start": "2026-10-27T21:31:30Z",
+          "end": "2026-10-27T21:33:01Z",
+          "result": "success",
+          "steps": [
+            {
+              "name": "Check workflow results and saved checkpoint holds",
+              "start": "2026-10-27T21:32:00Z",
+              "end": "2026-10-27T21:32:10Z",
+              "result": "success"
+            },
+            {
+              "name": "Publish independent validated monitor state",
+              "start": "2026-10-27T21:32:10Z",
+              "end": "2026-10-27T21:32:59Z",
+              "result": "success"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 40583907182,
+      "name": "Safe Checkpoint Backfill",
+      "event": "schedule",
+      "head": "f3139fe142f117bc60eec9548a2dcd52d6161ed6",
+      "createdAt": "2026-10-27T21:06:18Z",
+      "startedAt": "2026-10-27T21:06:18Z",
+      "updatedAt": "2026-10-27T21:30:27Z",
+      "status": "completed",
+      "result": "success",
+      "jobs": [
+        {
+          "id": 122470215753,
+          "name": "backfill",
+          "start": "2026-10-27T21:06:21Z",
+          "end": "2026-10-27T21:30:26Z",
+          "result": "success",
+          "steps": [
+            {
+              "name": "Preserve recovery position if a required step failed",
+              "start": "2026-10-27T21:30:22Z",
+              "end": "2026-10-27T21:30:22Z",
+              "result": "skipped"
+            },
+            {
+              "name": "Record safe recovery metadata independently",
+              "start": "2026-10-27T21:30:22Z",
+              "end": "2026-10-27T21:30:22Z",
+              "result": "skipped"
+            },
+            {
+              "name": "Upload unpublished source data and checkpoints",
+              "start": "2026-10-27T21:30:22Z",
+              "end": "2026-10-27T21:30:22Z",
+              "result": "skipped"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 40582965508,
+      "name": "Data Update Health Watchdog",
+      "event": "workflow_run",
+      "head": "b8b91ddbf899e5cdf9f9ad545a344b9573ebbd4b",
+      "createdAt": "2026-10-27T21:00:01Z",
+      "startedAt": "2026-10-27T21:00:01Z",
+      "updatedAt": "2026-10-27T21:01:47Z",
+      "status": "completed",
+      "result": "failure",
+      "jobs": [
+        {
+          "id": 122466986867,
+          "name": "watch",
+          "start": "2026-10-27T21:00:04Z",
+          "end": "2026-10-27T21:01:45Z",
+          "result": "failure",
+          "steps": [
+            {
+              "name": "Check workflow results and saved checkpoint holds",
+              "start": "2026-10-27T21:00:40Z",
+              "end": "2026-10-27T21:00:48Z",
+              "result": "success"
+            },
+            {
+              "name": "Publish independent validated monitor state",
+              "start": "2026-10-27T21:00:48Z",
+              "end": "2026-10-27T21:01:27Z",
+              "result": "success"
+            },
+            {
+              "name": "Report newly detected alerts",
+              "start": "2026-10-27T21:01:27Z",
+              "end": "2026-10-27T21:01:27Z",
+              "result": "failure"
+            }
+          ]
+        },
+        {
+          "id": 122467037978,
+          "name": "catchup",
+          "start": "2026-10-27T21:00:08Z",
+          "end": "2026-10-27T21:00:02Z",
+          "result": "skipped",
+          "steps": []
+        }
+      ]
+    },
+    {
+      "id": 40580923786,
+      "name": "Priority Purchase Price Refresh",
+      "event": "schedule",
+      "head": "6d5fdc480fb39dc5e5c254096d82de3e64245295",
+      "createdAt": "2026-10-27T20:45:50Z",
+      "startedAt": "2026-10-27T20:45:50Z",
+      "updatedAt": "2026-10-27T20:59:58Z",
+      "status": "completed",
+      "result": "success",
+      "jobs": [
+        {
+          "id": 122459748053,
+          "name": "refresh",
+          "start": "2026-10-27T20:45:53Z",
+          "end": "2026-10-27T20:59:58Z",
+          "result": "success",
+          "steps": [
+            {
+              "name": "Refresh due purchase prices without new-set exploration or LLM",
+              "start": "2026-10-27T20:46:19Z",
+              "end": "2026-10-27T20:56:42Z",
+              "result": "success"
+            },
+            {
+              "name": "Verify safety and incremental acquisition",
+              "start": "2026-10-27T20:56:42Z",
+              "end": "2026-10-27T20:58:15Z",
+              "result": "success"
+            },
+            {
+              "name": "Publish validated data with conflict protection",
+              "start": "2026-10-27T20:58:15Z",
+              "end": "2026-10-27T20:59:54Z",
+              "result": "success"
+            },
+            {
+              "name": "Preserve unpublished checkpoint on failure",
+              "start": "2026-10-27T20:59:54Z",
+              "end": "2026-10-27T20:59:54Z",
+              "result": "skipped"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

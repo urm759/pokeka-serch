@@ -34,6 +34,7 @@ jobs:
       - name: Run deterministic delta update
         env:
           FAST_DEEP_SCAN: ${{ (github.event_name == 'workflow_dispatch' || github.event.schedule == '30 19 * * *') && '1' || '0' }}
+          FAST_PARENT_FINALIZES: "daily"
         run: node work/daily_fast_update.js
       - name: Refresh independent sources and preserve individual failures
         env:
@@ -49,14 +50,11 @@ jobs:
         run: |
           node work/reconcile_saved_psa_summary.js
           node work/run_tracked_update.js marketAnalysis work/build_market_analysis.js
-      - name: Finalize source status
-        run: node work/finalize_update_status.js
       - name: Audit state-A price conflicts and sale evidence
         run: node work/audit_state_a_prices.js
       - name: Rebuild catalog and shared purchase-limit audit
         run: |
           node work/build_card_completion.js
-          node work/build_purchase_limit_audit.js
           node work/build_supply_maturity_hypothesis.js
           SHOP_EFFECT_AUDIT_REF="$GITHUB_SHA" node work/build_purchase_limit_audit.js
           node work/audit_acquisition_progress.js
@@ -75,131 +73,139 @@ jobs:
           if-no-files-found: error
       - name: Run fast regression tests
         run: |
-          node work/test_profile_worker.js
-          node work/test_profile_report_names.js
-          node work/test_saved_shop_recovery.js
-          node work/test_stock_history_statistics.js
-          node work/test_daily_source_isolation.js
-          node work/test_homura_public_feed.js
-          node work/test_postpass_cadence.js
-          node work/test_bulk_individual_freshness.js
-          node work/test_catalog_history_retention.js
-          node work/test_partial_buyback_refresh.js
-          node work/test_partial_buyback_recovery.js
-          node work/test_saved_camp_recovery.js
-          node work/test_monitor_isolation.js
-          node work/build_ui_data.js
-          node work/measure_performance_guard.js
-          node work/build_ui_data.js
-          node work/test_ui_data.js
-          node work/test_priority_finalize_handoff.js
-          node work/test_ui_codec_v2.js
-          node work/test_psa9_guide_comparison.js
-          node work/test_psa9_guide_integration.js
-          node work/test_psa9_marketplace_reference.js
-          node work/test_psa9_cost_filters.js
-          node work/test_initial_calculation_dependencies.js
-          node work/test_specification_reexploration.js
-          node work/test_performance_guard.js
-          node work/test_performance_comparison.js
-          node work/test_scheduled_cycle_evidence.js
-          node work/test_cycle_observation_snapshot.js
-          node work/test_shop_observation.js
-          node work/test_purchase_price_recovery.js
-          node work/test_roi_psa9_ratio.js
-          node --check app.js
-          node --check decision-model.js
-          node --check work/daily_fast_update.js
-          node --check work/update_snkr_raw_flip.js
-          node work/test_snkr_raw_flip.js
-          node work/test_limit_tiers.js
-          node work/test_limit_display.js
-          node work/test_focus_monitor.js
-          node work/test_purchase_memo.js
-          node work/test_return_reference.js
-          node work/test_priority_refresh.js
-          node work/test_keyed_render_and_completion.js
-          node work/test_buyback_scenario_limits.js
-          node work/test_purchase_limit_audit.js
-          node work/test_preset_exploration.js
-          node work/test_search_profit_consistency.js
-          node work/test_psa10_period_statistics.js
-          node work/test_exploration_metrics.js
-          node work/test_card_efficiency.js
-          node work/test_median_efficiency.js
-          node work/test_evidence_refresh.js
-          node work/test_incremental_linkage_evidence.js
-          node work/test_operational_freshness.js
-          node work/build_psa9_provenance.js --verify
-          node work/test_median_primary.js
-          node work/test_supply_demand_validation.js
-          node work/test_research_evidence_gate.js
-          node work/test_period_efficiency_average.js
-          node work/test_search_profile_cycle.js
-          node work/test_profile_completion_routes.js
-          node work/test_profile_discovery_gates.js
-          node work/test_buyback_support.js
-          node work/test_buyback_market_average.js
-          node work/test_buyback_scope.js
-          node work/test_style_identity.js
-          node work/test_saved_style_replay.js
-          node work/test_saved_buyback_item_rematch.js
-          node work/test_market_buyback_day_order.js
-          node work/test_final_price_status_pack.js
-          node work/test_saved_trainer_name_scope.js
-          node work/test_failed_price_recovery.js
-          node work/test_buyback_saved_identity_recovery.js
-          node work/test_buyback_mean_status.js
-          node work/test_public_mail_buybacks.js
-          node work/test_timestamp_formatter_reuse.js
-          node work/test_buyback_highest_search.js
-          node work/test_saved_source_merge.js
-          node work/test_optional_source_publication.js
-          node work/test_price_payload_gate.js
-          node work/test_saved_domestic_recovery.js
-          node work/test_psa10_trade_statistics.js
-          node work/test_psa_growth_provenance.js
-          node work/test_profile_basis_transitions.js
-          node work/test_profile_candidate_evidence.js
-          node work/test_profile_buyback_unmatched.js
-          node work/test_search_first_reference_margin.js
-          node work/test_settings_disclosure.js
-          node work/test_saved_psa_summary.js
-          node work/test_psa_saved_rematch.js
-          node work/test_gemrate_reference_display.js
-          node work/test_gemrate_limited_public_reference.js
-          node work/test_psa_completion_publication.js
-          node work/test_deadline_capacity_samples.js
-          node work/test_current_market_exploration.js
-          node work/test_search_calculation_cache.js
-          node work/test_price_integrity.js
-          node work/test_price_comparison.js
-          node work/test_profile_departure_audit.js
-          node work/test_observation75_migration.js
-          node work/test_pop_glance.js
-          node work/test_pop_resilience.js
-          node work/test_private_overseas_analysis.js
-          node work/test_overseas_cancellation.js
-          node work/test_candidate_daily_audit.js
-          node work/test_candidate_availability_audit.js
-          node work/test_acquisition_progress.js
-          node work/test_checkpoint_publication.js
-          node work/test_publication_lineage.js
-          node work/test_minimum_recovery_sources.js
-          node work/test_recovery_latency.js
-          node work/test_source_monitor_and_completion.js
-          node work/test_source_access_display.js
-          node work/test_completion_routes.js
-          node work/test_grade_calibration.js
-          node work/test_daily_fast_update.js
-          node work/test_proactive_refresh.js
-          node work/test_cadence_payload.js
-          node work/test_deadline_order.js
-          node work/test_psa_market_trial.js
-          node work/test_psa_linkage_queue.js
-          node work/test_catalog_index_adapter.js
-          node work/test_pokedata_set_discovery.js
-          node work/test_supply_maturity_hypothesis.js
+          if [ "$(node work/update_validation.js --mode)" = "regression" ]; then
+            node work/test_profile_worker.js
+            node work/test_profile_report_names.js
+            node work/test_saved_shop_recovery.js
+            node work/test_stock_history_statistics.js
+            node work/test_daily_source_isolation.js
+            node work/test_homura_public_feed.js
+            node work/test_postpass_cadence.js
+            node work/test_bulk_individual_freshness.js
+            node work/test_catalog_history_retention.js
+            node work/test_partial_buyback_refresh.js
+            node work/test_partial_buyback_recovery.js
+            node work/test_saved_camp_recovery.js
+            node work/test_monitor_isolation.js
+            node work/build_ui_data.js
+            node work/measure_performance_guard.js
+            node work/build_ui_data.js
+            node work/test_ui_data.js
+            node work/test_priority_finalize_handoff.js
+            node work/test_ui_codec_v2.js
+            node work/test_psa9_guide_comparison.js
+            node work/test_psa9_guide_integration.js
+            node work/test_psa9_marketplace_reference.js
+            node work/test_psa9_cost_filters.js
+            node work/test_initial_calculation_dependencies.js
+            node work/test_specification_reexploration.js
+            node work/test_performance_guard.js
+            node work/test_performance_comparison.js
+            node work/test_scheduled_cycle_evidence.js
+            node work/test_cycle_observation_snapshot.js
+            node work/test_shop_observation.js
+            node work/test_purchase_price_recovery.js
+            node work/test_roi_psa9_ratio.js
+            node --check app.js
+            node --check decision-model.js
+            node --check work/daily_fast_update.js
+            node --check work/update_snkr_raw_flip.js
+            node work/test_snkr_raw_flip.js
+            node work/test_limit_tiers.js
+            node work/test_limit_display.js
+            node work/test_focus_monitor.js
+            node work/test_purchase_memo.js
+            node work/test_return_reference.js
+            node work/test_priority_refresh.js
+            node work/test_keyed_render_and_completion.js
+            node work/test_buyback_scenario_limits.js
+            node work/test_purchase_limit_audit.js
+            node work/test_preset_exploration.js
+            node work/test_search_profit_consistency.js
+            node work/test_psa10_period_statistics.js
+            node work/test_exploration_metrics.js
+            node work/test_card_efficiency.js
+            node work/test_median_efficiency.js
+            node work/test_evidence_refresh.js
+            node work/test_incremental_linkage_evidence.js
+            node work/test_operational_freshness.js
+            node work/build_psa9_provenance.js --verify
+            node work/test_median_primary.js
+            node work/test_supply_demand_validation.js
+            node work/test_research_evidence_gate.js
+            node work/test_period_efficiency_average.js
+            node work/test_search_profile_cycle.js
+            node work/test_profile_completion_routes.js
+            node work/test_profile_discovery_gates.js
+            node work/test_buyback_support.js
+            node work/test_buyback_market_average.js
+            node work/test_buyback_scope.js
+            node work/test_style_identity.js
+            node work/test_saved_style_replay.js
+            node work/test_saved_buyback_item_rematch.js
+            node work/test_market_buyback_day_order.js
+            node work/test_final_price_status_pack.js
+            node work/test_saved_trainer_name_scope.js
+            node work/test_failed_price_recovery.js
+            node work/test_buyback_saved_identity_recovery.js
+            node work/test_buyback_mean_status.js
+            node work/test_public_mail_buybacks.js
+            node work/test_timestamp_formatter_reuse.js
+            node work/test_buyback_highest_search.js
+            node work/test_saved_source_merge.js
+            node work/test_optional_source_publication.js
+            node work/test_price_payload_gate.js
+            node work/test_saved_domestic_recovery.js
+            node work/test_psa10_trade_statistics.js
+            node work/test_psa_growth_provenance.js
+            node work/test_profile_basis_transitions.js
+            node work/test_profile_candidate_evidence.js
+            node work/test_profile_buyback_unmatched.js
+            node work/test_search_first_reference_margin.js
+            node work/test_settings_disclosure.js
+            node work/test_saved_psa_summary.js
+            node work/test_psa_saved_rematch.js
+            node work/test_gemrate_reference_display.js
+            node work/test_gemrate_limited_public_reference.js
+            node work/test_psa_completion_publication.js
+            node work/test_deadline_capacity_samples.js
+            node work/test_current_market_exploration.js
+            node work/test_search_calculation_cache.js
+            node work/test_price_integrity.js
+            node work/test_price_comparison.js
+            node work/test_profile_departure_audit.js
+            node work/test_observation75_migration.js
+            node work/test_pop_glance.js
+            node work/test_pop_resilience.js
+            node work/test_private_overseas_analysis.js
+            node work/test_overseas_cancellation.js
+            node work/test_candidate_daily_audit.js
+            node work/test_candidate_availability_audit.js
+            node work/test_acquisition_progress.js
+            node work/test_checkpoint_publication.js
+            node work/test_publication_lineage.js
+            node work/test_minimum_recovery_sources.js
+            node work/test_recovery_latency.js
+            node work/test_source_monitor_and_completion.js
+            node work/test_source_access_display.js
+            node work/test_completion_routes.js
+            node work/test_grade_calibration.js
+            node work/test_daily_fast_update.js
+            node work/test_proactive_refresh.js
+            node work/test_cadence_payload.js
+            node work/test_deadline_order.js
+            node work/test_psa_market_trial.js
+            node work/test_psa_linkage_queue.js
+            node work/test_catalog_index_adapter.js
+            node work/test_pokedata_set_discovery.js
+            node work/test_supply_maturity_hypothesis.js
+            node work/test_update_validation.js
+            node work/test_update_publication.js
+            node work/test_daily_finalize_once.js
+          else
+            node work/update_validation.js --required
+          fi
+          node work/update_validation.js --record
       - name: Commit changed data only
         run: |
           node work/scheduled_cycle_evidence.js daily
@@ -221,6 +227,7 @@ jobs:
           git add work/scheduled-cycle-baseline-daily.json
           git add work/search-profile-cycle-baseline-daily.json
           git add work/calendar-progress-history.json
+          git add work/update-validation-state.json
           git add -u -- data work
           if git diff --cached --quiet; then
             echo "No source change. Commit and deployment skipped."

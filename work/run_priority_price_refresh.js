@@ -67,6 +67,9 @@ function main() {
     return child.status === 0 && !child.error;
   }
   if (!finalizeOnly) {
+  // Capture candidates only after the shared gate has admitted an acquisition.
+  // A no-op must not recalculate all profiles or mint a scheduled receipt.
+  if(process.env.GITHUB_RUN_ID)require('./scheduled_cycle_evidence').baseline(catchup?'catchup':'priority',ROOT);
   const sources = read("work/source-update-runs.json").sources || {};
   // Rebuild eligibility from saved data before selecting prices; no HTTP or LLM here.
   if (!run('work/build_purchase_limit_audit.js')) throw new Error('Purchase target queue rebuild failed');
@@ -109,6 +112,7 @@ if (require.main === module) {
     catchup: process.argv.includes('--catchup'),
     afterSave: () => require('./build_ui_data').build(ROOT)
   });
+  if(process.env.GITHUB_OUTPUT)fs.appendFileSync(process.env.GITHUB_OUTPUT,'refresh_status='+(result.status==='skipped'?'skipped':'processed')+'\n');
   if (result.status === 'skipped') console.log(JSON.stringify(result));
   }
 }

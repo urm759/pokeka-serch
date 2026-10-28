@@ -1,0 +1,12 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+require('./test_priority_finalize_handoff');
+require('./test_fee_source_hold');
+const root=path.join(__dirname,'..'),read=f=>fs.readFileSync(path.join(root,f),'utf8');
+const daily=read('.github/workflows/daily-fast-update.yml'),safe=read('.github/workflows/safe-checkpoint-backfill.yml');
+assert(daily.includes('FAST_PARENT_FINALIZES: "daily"'));
+assert.equal((daily.match(/node work\/finalize_update_status\.js/g)||[]).length,1);
+assert.equal((safe.match(/node work\/finalize_update_status\.js/g)||[]).length,1);
+assert(read('work/daily_fast_update.js').includes("['priority','daily'].includes(process.env.FAST_PARENT_FINALIZES)"));
+assert(daily.includes('node work/run_daily_sources.js --report-failures'));
+assert(daily.indexOf('node work/finalize_update_status.js')<daily.indexOf('Preserve acquired data before mandatory verification'));
+console.log('PASS one parent finalization, acquisition/observations retained, independent failure reporting and prevalidation recovery preserved');

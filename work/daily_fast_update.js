@@ -53,7 +53,7 @@ function finalize() {
   // Priority owns a required finalization after all independent source updates.
   // Raw acquisition and observations stay saved here; lineage verification still
   // prevents publication until the parent's finalization has succeeded.
-  if (process.env.FAST_PARENT_FINALIZES === 'priority') return 'deferred-to-priority';
+  if (['priority','daily'].includes(process.env.FAST_PARENT_FINALIZES)) return 'deferred-to-'+process.env.FAST_PARENT_FINALIZES;
   if (run('work/finalize_update_status.js').status !== 0) throw new Error('保存済み原票の最終検証・集計に失敗しました');
   return 'completed';
 }

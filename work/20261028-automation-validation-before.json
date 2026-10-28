@@ -1,0 +1,918 @@
+{
+  "at": "2026-10-28T10:48:10.736Z",
+  "scope": "same Windows host, frozen current data; legacy Priority validation block plus new related regressions",
+  "durationMs": 144572,
+  "checks": [
+    {
+      "args": [
+        "work/test_profile_worker.js"
+      ],
+      "durationMs": 78,
+      "status": 0,
+      "stdout": "PASS bounded sequential profile workers; no partial publication or identity substitution\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_hareruya_single_response.js"
+      ],
+      "durationMs": 70,
+      "status": 0,
+      "stdout": "PASS single normal response: exact product/JPY/one offer/current quantity; fallback retains identity and access guards\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_psa_saved_rematch.js"
+      ],
+      "durationMs": 92,
+      "status": 0,
+      "stdout": "Saved PSA rematch identity, edition, evidence, timestamps and rule invalidation passed\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_gemrate_reference_display.js"
+      ],
+      "durationMs": 80,
+      "status": 0,
+      "stdout": "PASS display-only GemRate rates, PSA denominator, exact identity/date, persistent holds, public denial, old official detail and immutable adopted rate\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_gemrate_limited_public_reference.js"
+      ],
+      "durationMs": 84,
+      "status": 0,
+      "stdout": "PASS bounded 50 factual references; exact identity/count/date, load failures, lazy reuse, revision invalidation, immutable calculations and no raw export\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_profile_report_names.js"
+      ],
+      "durationMs": 68,
+      "status": 0,
+      "stdout": "PASS report-only profile names, immutable IDs, full URLs and saved conditions\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_saved_shop_recovery.js"
+      ],
+      "durationMs": 100,
+      "status": 0,
+      "stdout": "PASS saved shop recovery: individual timestamps, specification, holds, reference separation and newer data preserved\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_stock_history_statistics.js"
+      ],
+      "durationMs": 103,
+      "status": 0,
+      "stdout": "PASS stock statistics deterministic raw/date, null gaps, true zero, duplicate conflicts, future exclusion, calendar boundaries and preserved quote timestamps\nPASS full crawler / checkpoint finalization equality and lazy statistics provenance\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/build_ui_data.js"
+      ],
+      "durationMs": 4017,
+      "status": 0,
+      "stdout": "{\"revision\":\"47ee31e48e66a86899aaf1a912d3b267319875f08d51e4bb15ca4c40cee688f0\"}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/measure_performance_guard.js"
+      ],
+      "durationMs": 52614,
+      "status": 0,
+      "stdout": "{\"generatedAt\":\"2026-10-28T10:46:43.168Z\",\"environment\":\"Node.js same production calculation/index; not browser paint or gzip transfer\",\"fixedQuery\":\"M2 110/080\",\"repeats\":3,\"settings\":\"production audit defaults / 119 days\",\"initialBytes\":19801745,\"doubleInitialBytes\":36096971,\"jsonParseMs\":67.93330000000014,\"doubleJsonParseMs\":141.92290000000003,\"searchMs\":0.6844999999998436,\"doubleSearchMs\":0.9262999999996282,\"fullCalculationMs\":5533.6972000000005,\"cacheMs\":0.08520000000135042,\"doubleCalculationMs\":9050.847300000001,\"detailSummary25Ms\":0.36799999999493593,\"samples\":{\"fullCalculationMs\":[5096.8286,5533.6972000000005,5916.065700000001],\"cacheMs\":[0.14109999999891443,0.07210000000122818,0.08520000000135042],\"doubleCalculationMs\":[8882.259399999999,9316.334000000003,9050.847300000001],\"detailSummary25Ms\":[1.1903999999994994,0.36799999999493593,0.3017000000036205]},\"cardCount\":12746,\"calculationValuesEqual\":true,\"comparisonKey\":\"node-production-v2/win32/x64/node24/AMD Ryzen 7 5700X 8-Core Processor             /16/119days/M2-110-080\",\"hardware\":{\"cpu\":\"AMD Ryzen 7 5700X 8-Core Processor             \",\"logicalCores\":16,\"node\":\"24.22.1\"},\"codeFingerprint\":\"39f3ca19b24592b5050fcdb47fc2b945480839a8262b4e8ce486322cf720b314\",\"dataFingerprint\":\"597ffa87b06d19eed87244d0f2b8858fe1bdfd95a8723b6510cffeab1a8d3ea1\",\"measurementScope\":{\"initial\":\"JSON本文サイズ・解析（通信/ブラウザpaintは未計測）\",\"search\":\"軽量インデックス固定検索\",\"calculation\":\"本番計算・値一致\",\"detail\":\"25件の率表示文字列。実DOM展開/描画は別の実画面試験で確認\"},\"limits\":{\"initialBytes\":24000000,\"doubleInitialBytes\":48000000,\"jsonParseMs\":2500,\"doubleJsonParseMs\":5000,\"searchMs\":500,\"doubleSearchMs\":1000,\"fullCalculationMs\":15000,\"doubleCalculationMs\":30000,\"cacheMs\":100,\"detailSummary25Ms\":100},\"errors\":[],\"status\":\"pass\",\"llmCalls\":0,\"codexCalls\":0,\"comparison\":{\"status\":\"warning\",\"previousAt\":\"2026-10-27T09:52:53.525Z\",\"previousCards\":12742,\"currentCards\":12746,\"dataChanged\":true,\"codeChanged\":true,\"attribution\":\"コードとデータの両方変更・原因の断定不可\",\"threshold\":\"中央値が前回比30%超かつ絶対雑音幅超。固定予算/値不一致とは別の性能警告\",\"warnings\":[\"fullCalculationMs\"],\"rows\":[{\"metric\":\"initialBytes\",\"before\":19661387,\"after\":19801745,\"delta\":140358,\"changePct\":0.7138763913247829,\"warning\":false},{\"metric\":\"jsonParseMs\",\"before\":65.95569999999998,\"after\":67.93330000000014,\"delta\":1.977600000000166,\"changePct\":2.998376182801739,\"warning\":false},{\"metric\":\"searchMs\",\"before\":0.6446999999998297,\"after\":0.6844999999998436,\"delta\":0.039800000000013824,\"changePct\":6.173413991007342,\"warning\":false},{\"metric\":\"fullCalculationMs\",\"before\":4237.755399999998,\"after\":5533.6972000000005,\"delta\":1295.9418000000023,\"changePct\":30.58085419465226,\"warning\":true},{\"metric\":\"cacheMs\",\"before\":0.060199999999895226,\"after\":0.08520000000135042,\"delta\":0.02500000000145519,\"changePct\":41.528239205147344,\"warning\":false},{\"metric\":\"detailSummary25Ms\",\"before\":0.32929999999760184,\"after\":0.36799999999493593,\"delta\":0.03869999999733409,\"changePct\":11.752201639118107,\"warning\":false},{\"metric\":\"doubleInitialBytes\",\"before\":35864720,\"after\":36096971,\"delta\":232251,\"changePct\":0.6475751100245589,\"warning\":false},{\"metric\":\"doubleJsonParseMs\",\"before\":136.75239999999985,\"after\":141.92290000000003,\"delta\":5.170500000000175,\"changePct\":3.780920846727502,\"warning\":false},{\"metric\":\"doubleSearchMs\",\"before\":1.285099999999602,\"after\":0.9262999999996282,\"delta\":-0.3587999999999738,\"changePct\":-27.920006225203092,\"warning\":false},{\"metric\":\"doubleCalculationMs\",\"before\":8562.319700000004,\"after\":9050.847300000001,\"delta\":488.5275999999976,\"changePct\":5.7055519662504235,\"warning\":false}],\"normalized\":[{\"metric\":\"initialBytes\",\"before\":1543.0377491759536,\"after\":1553.5654322924838},{\"metric\":\"jsonParseMs\",\"before\":0.005176243917752314,\"after\":0.005329774046759779},{\"metric\":\"fullCalculationMs\",\"before\":0.3325816512321455,\"after\":0.4341516711125059}]},\"fixedComparison\":{\"status\":\"warning\",\"previousAt\":\"2026-10-20T13:20:45.084Z\",\"previousCards\":12544,\"currentCards\":12746,\"dataChanged\":true,\"codeChanged\":true,\"attribution\":\"コードとデータの両方変更・原因の断定不可\",\"threshold\":\"中央値が前回比30%超かつ絶対雑音幅超。固定予算/値不一致とは別の性能警告\",\"warnings\":[\"fullCalculationMs\"],\"rows\":[{\"metric\":\"initialBytes\",\"before\":18482506,\"after\":19801745,\"delta\":1319239,\"changePct\":7.137771252448126,\"warning\":false},{\"metric\":\"jsonParseMs\",\"before\":71.77959999999985,\"after\":67.93330000000014,\"delta\":-3.846299999999701,\"changePct\":-5.358486255147297,\"warning\":false},{\"metric\":\"searchMs\",\"before\":0.3793000000000575,\"after\":0.6844999999998436,\"delta\":0.3051999999997861,\"changePct\":80.464012654822,\"warning\":false},{\"metric\":\"fullCalculationMs\",\"before\":4212.6163,\"after\":5533.6972000000005,\"delta\":1321.0809000000008,\"changePct\":31.360105120421267,\"warning\":true},{\"metric\":\"cacheMs\",\"before\":0.07700000000113505,\"after\":0.08520000000135042,\"delta\":0.008200000000215368,\"changePct\":10.649350649473368,\"warning\":false},{\"metric\":\"detailSummary25Ms\",\"before\":0.3497999999963213,\"after\":0.36799999999493593,\"delta\":0.018199999998614658,\"changePct\":5.202973127160109,\"warning\":false},{\"metric\":\"doubleInitialBytes\",\"before\":34114693,\"after\":36096971,\"delta\":1982278,\"changePct\":5.81062828265815,\"warning\":false},{\"metric\":\"doubleJsonParseMs\",\"before\":147.83849999999984,\"after\":141.92290000000003,\"delta\":-5.915599999999813,\"changePct\":-4.001393412405983,\"warning\":false},{\"metric\":\"doubleSearchMs\",\"before\":0.604200000000219,\"after\":0.9262999999996282,\"delta\":0.3220999999994092,\"changePct\":53.31016219783059,\"warning\":false},{\"metric\":\"doubleCalculationMs\",\"before\":7885.5875000000015,\"after\":9050.847300000001,\"delta\":1165.2597999999998,\"changePct\":14.777082874294395,\"warning\":false}],\"normalized\":[{\"metric\":\"initialBytes\",\"before\":1473.4140625,\"after\":1553.5654322924838},{\"metric\":\"jsonParseMs\",\"before\":0.00572222576530611,\"after\":0.005329774046759779},{\"metric\":\"fullCalculationMs\",\"before\":0.33582719228316327,\"after\":0.4341516711125059}],\"basis\":\"固定した最初の同条件合格記録。直近値で自動更新しない\"}}\n",
+      "stderr": "::warning::同条件の前回比性能悪化: fullCalculationMs\n::warning::同条件の固定基準比性能悪化: fullCalculationMs\n"
+    },
+    {
+      "args": [
+        "work/build_ui_data.js"
+      ],
+      "durationMs": 3929,
+      "status": 0,
+      "stdout": "{\"revision\":\"e5e97e8022d566222d704e5f8297295cde4bbcb00b8bf2782ace633ddb082664\"}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_ui_data.js"
+      ],
+      "durationMs": 8301,
+      "status": 0,
+      "stdout": "{\"summaryFiles\":18,\"nullPreserved\":true,\"pinnedRevision\":\"e5e97e8022d566222d704e5f8297295cde4bbcb00b8bf2782ace633ddb082664\",\"olderCapsPreserved\":true}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_priority_finalize_handoff.js"
+      ],
+      "durationMs": 65,
+      "status": 0,
+      "stdout": "PASS Priority handoff: acquisition/observation saved, one parent finalization, standalone/source failures retained\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_ui_codec_v2.js"
+      ],
+      "durationMs": 2002,
+      "status": 0,
+      "stdout": "PASS UI codec v1/v2 sync/async, escaped literals, zero/null/precision, prototype guard, all 18 current summaries\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_psa9_guide_comparison.js"
+      ],
+      "durationMs": 75,
+      "status": 0,
+      "stdout": "PASS PSA9/guide: strict vs inclusive bounds, zero/missing/stale, reference policy, costs once, grade-specific exits, repair holds\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_psa9_guide_integration.js"
+      ],
+      "durationMs": 101,
+      "status": 0,
+      "stdout": "PSA9 guide UI/CSV, default-off, URL/storage precedence/zero, cache invalidation and strict exit PASS\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_psa9_marketplace_reference.js"
+      ],
+      "durationMs": 103,
+      "status": 0,
+      "stdout": "PASS independent PSA9 marketplace reference, one upper control pair, provenance links and separate dates, costs once, cache invalidation, no GemRate calculation adoption\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_psa9_cost_filters.js"
+      ],
+      "durationMs": 103,
+      "status": 0,
+      "stdout": "PASS PSA9 gross-cost 95% inclusive, independent net ROI, negative/zero/positive bounds, no defaults/migrations, provenance adoption, shared URL/storage/CSV and calculation-cache reuse\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_initial_calculation_dependencies.js"
+      ],
+      "durationMs": 115,
+      "status": 0,
+      "stdout": "PASS cold dependency validation, simulated missing/old/out-of-order modules, explicit stop before any data load, ordered scripts and pinned integrity hashes; original user event cause remains unconfirmed\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_exploration_metrics.js"
+      ],
+      "durationMs": 8157,
+      "status": 0,
+      "stdout": "Exploration means/ROI, strict freshness, float boundaries, posting full-vs-partial, URL zero/null and break-even purchase PASS\nPASS observation display/search/CSV, inclusive zero/sign/AND/null/reference, invalid bounds and saved URL\nPASS independent current-market target guide, investment/costs/zero/null, exit separation, saved basis and diagnostic exclusions\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_card_efficiency.js"
+      ],
+      "durationMs": 19050,
+      "status": 0,
+      "stdout": "{\"test\":\"Card efficiency PASS\",\"example\":{\"investment\":21190,\"profit\":6778,\"roi\":31.986786219915054,\"days\":157,\"annual\":74.36418452400633},\"financialHash\":\"c742bc202764deeee8d5a76dde10b5b8349daddb966d37fdae2ecdf66c68a72f\",\"cards\":12746}\nEfficiency reference / strict GO separation, dates, identity, no fallback and completion routes PASS\nObservation expected efficiency: fees, mixed grades, exits, gaps, staleness, plans, URL/storage and cache PASS\nPASS buyback mean proof, calendar gaps, same-day, identity, exits, costs, expiry, fixed A/B profiles\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_period_efficiency_average.js"
+      ],
+      "durationMs": 123,
+      "status": 0,
+      "stdout": "PASS four-period display-only efficiency: negative, zero, gaps, partial reference, expiry, exits, fees, cache and unchanged settings\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_search_profile_cycle.js"
+      ],
+      "durationMs": 80,
+      "status": 0,
+      "stdout": "PASS fixed search-profile cycle: actual fields, new listing, first qualification, returning freshness, reasons and overlapping route counts\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_profile_completion_routes.js"
+      ],
+      "durationMs": 91,
+      "status": 0,
+      "stdout": "PASS profile completion: exact source routes, bundles, confirmed absence vs unmatched/failed/stale, store scope, and Best of XY identity\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_profile_discovery_gates.js"
+      ],
+      "durationMs": 84,
+      "status": 0,
+      "stdout": "PASS profile discovery: unknown is not zero/failure; known price gates, boundaries, stale offers and completion priority\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_buyback_support.js"
+      ],
+      "durationMs": 112,
+      "status": 0,
+      "stdout": "PASS gross support: no costs; same-day proof/spec; own-excluded band/common baseline; null/small sample; high valid prices; missing/partial days; outlet selection and merchant dedupe; freshness; lazy details; acquisition priority only\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_buyback_market_average.js"
+      ],
+      "durationMs": 67,
+      "status": 0,
+      "stdout": "PASS highest / across-shop arithmetic mean: channels, merchant dedupe, raw offers, single/null/stale/held, no outlier trimming or finance changes\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_buyback_scope.js"
+      ],
+      "durationMs": 68,
+      "status": 0,
+      "stdout": "PASS store denominator / listing versus ratio / merchant selection / expiry / unknown / common unrounded colour boundaries\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_style_identity.js"
+      ],
+      "durationMs": 85,
+      "status": 0,
+      "stdout": "PASS common AR/SAR style identity, full print, set, language, grade and ambiguous specification guards; no card-ID exception\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_saved_style_replay.js"
+      ],
+      "durationMs": 86,
+      "status": 0,
+      "stdout": "PASS saved style replay: actual past day only, no replay-day invention, conflict/identity/score guards, skipped-source capture\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_saved_buyback_item_rematch.js"
+      ],
+      "durationMs": 95,
+      "status": 0,
+      "stdout": "saved unmatched replay passed: identity, timestamp, grade, quarantine, duplicate and ambiguity\ncalendar-aligned source merge passed\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_market_buyback_day_order.js"
+      ],
+      "durationMs": 67,
+      "status": 0,
+      "stdout": "PASS market/buyback calendar ordering: existing bulk slot, actual success day, unchanged two-hour retry, no same-day duplicate\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_final_price_status_pack.js"
+      ],
+      "durationMs": 86,
+      "status": 0,
+      "stdout": "PASS final status pack: completed/partial, final timestamps, mandatory failure and cooldown\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_saved_trainer_name_scope.js"
+      ],
+      "durationMs": 66,
+      "status": 0,
+      "stdout": "PASS scoped official trainer-name equivalence; unrelated set, number, character and texture stay distinct\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_failed_price_recovery.js"
+      ],
+      "durationMs": 484,
+      "status": 0,
+      "stdout": "PASS failed price recovery: trusted schedule only, verified ZIP/manifest, no reacquisition, original times, idempotence and concurrent-input hold\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_buyback_saved_identity_recovery.js"
+      ],
+      "durationMs": 92,
+      "status": 0,
+      "stdout": "PASS saved buyback identity recovery: language, sets, full prints, rarity, finishes, promo evidence, unique mapping, SA/SRC and original source proof\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_buyback_mean_status.js"
+      ],
+      "durationMs": 67,
+      "status": 0,
+      "stdout": "PASS buyback mean causes: not acquired, identity held, expiry, incomplete observations, store shortage, load unavailable\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_public_mail_buybacks.js"
+      ],
+      "durationMs": 194,
+      "status": 0,
+      "stdout": "PASS public mail tables: specifications, quote/page/observation dates, guarantees, duplicates, conflicts, mail-only\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_timestamp_formatter_reuse.js"
+      ],
+      "durationMs": 83,
+      "status": 0,
+      "stdout": "PASS timestamp formatting: same JST text, missing/invalid dates, one formatter for repeated detail rows\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_homura_public_feed.js"
+      ],
+      "durationMs": 1618,
+      "status": 0,
+      "stdout": "PASS Homura public feed category, grade, identity, timestamps, retired source and missing payload\nPASS Homura interrupted page save and resume without re-fetching the first page\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_buyback_highest_search.js"
+      ],
+      "durationMs": 625,
+      "status": 0,
+      "stdout": "PASS highest gross quote filter: inclusive/unrounded boundaries, outlet selection, null/zero, stale/spec holds, URL, CSV, cache expiry; no finance changes\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_saved_source_merge.js"
+      ],
+      "durationMs": 1534,
+      "status": 0,
+      "stdout": "PASS >2MB generated JSON merge: all three full stages archived, parsed, rebuilt and committed without truncation\nPASS saved source merge: newer individual observation, timestamp conflict hold, one-sided identity repair, daily history preservation\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_optional_source_publication.js"
+      ],
+      "durationMs": 80,
+      "status": 0,
+      "stdout": "{\"candidates\":[{\"url\":\"https://www.psacard.com/pop/known\"}],\"lastSuccessAt\":\"2026-10-01\",\"url\":\"saved-checkpoint\",\"manualWait\":true,\"status\":\"permission-wait\",\"stopReason\":\"PSA permission record missing or invalid; saved data and checkpoint retained\",\"policyCheckedAt\":\"2026-10-28T10:47:31.349Z\",\"httpRequests\":0,\"acquiredCount\":0,\"nextRetryAt\":null,\"llmCalls\":0,\"codexCalls\":0}\nPASS optional permission hold retains checkpoint, zero fetch, independent source continuation, tracked finalization staging and mandatory publication guard\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_price_payload_gate.js"
+      ],
+      "durationMs": 63,
+      "status": 0,
+      "stdout": "PASS actual price-payload expiry, ahead-of-next-interval boundary, missing/future evidence and no timestamp mutation\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_saved_domestic_recovery.js"
+      ],
+      "durationMs": 85,
+      "status": 0,
+      "stdout": "PASS saved recovery hashes/path, exact URL/condition/time, newer normal data retained and no overwriting\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_psa10_trade_statistics.js"
+      ],
+      "durationMs": 610,
+      "status": 0,
+      "stdout": "PSA10 aggregate/individual separation, zero/null, no rolling sum, provenance, POP corrections, resales, same-day capture and promo search PASS\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_psa_growth_provenance.js"
+      ],
+      "durationMs": 92,
+      "status": 0,
+      "stdout": "PASS: PSA growth source provenance, observed timestamps, JST days and recovery ordering\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_profile_basis_transitions.js"
+      ],
+      "durationMs": 85,
+      "status": 0,
+      "stdout": "PASS: general identity, source/shop basis separation, unknown baselines and saved POP proof\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_profile_candidate_evidence.js"
+      ],
+      "durationMs": 70,
+      "status": 0,
+      "stdout": "PASS profile evidence: actual purchase, null vs zero, original timestamps, overlapping/new failures, unavailable comparison\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_profile_buyback_unmatched.js"
+      ],
+      "durationMs": 65,
+      "status": 0,
+      "stdout": "PASS buyback unmatched: exact set/number/name/rarity/language/specification, original holds preserved\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_specification_reexploration.js"
+      ],
+      "durationMs": 77,
+      "status": 0,
+      "stdout": "PASS: full PSA specifications, complete-snapshot precedence and adaptive targeted re-exploration\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_performance_guard.js"
+      ],
+      "durationMs": 67,
+      "status": 0,
+      "stdout": "PASS: fixed performance thresholds reject payload and search regressions\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_performance_comparison.js"
+      ],
+      "durationMs": 71,
+      "status": 0,
+      "stdout": "PASS: repeated same-environment baselines, noise floors, data/code attribution, failed baseline exclusion\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_scheduled_cycle_evidence.js"
+      ],
+      "durationMs": 82,
+      "status": 0,
+      "stdout": "PASS: scheduled stages, exact public hashes, receipt identity and Pages chronology\n{\"recorded\":\"safe\",\"runId\":\"test-only\",\"counts\":{\"analyzable\":1}}\nPASS: repeated summary generation cannot erase per-run completion gains\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_cycle_observation_snapshot.js"
+      ],
+      "durationMs": 72,
+      "status": 0,
+      "stdout": "PASS exact published observation snapshots; mutable clock, corrupt/missing bytes and mandatory source validation remain distinct\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_priority_refresh.js"
+      ],
+      "durationMs": 118,
+      "status": 0,
+      "stdout": "PASS independent current-market target guide, investment/costs/zero/null, exit separation, saved basis and diagnostic exclusions\nyear boundaries, persistence, fair deadlines, failed-value retention, cache, plan horizon and publication tests passed\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_keyed_render_and_completion.js"
+      ],
+      "durationMs": 11120,
+      "status": 0,
+      "stdout": "keyed DOM identity, warnings, detail isolation, fixed cohort deadlines and field-specific routing: passed\nPASS render-scoped reuse, markup invalidation, per-card mutable state and production financial results\nPASS candidate loss attribution, overlap/unique counts, saved conditions, field-specific recovery and lazy audit\nPASS search inventory, safe explicit clear, default/URL compatibility and 1 preset profile(s) [{\"preset\":\"combined\",\"count\":82,\"calculationUnchanged\":true,\"idsUnchanged\":true}]\nEfficiency threshold semantics and exact shared-query defaults verified\nPASS render memo: filters, costs, data, in-place favorites/results, exact expiry; detail/sort do not redo financial exclusions\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_proactive_refresh.js"
+      ],
+      "durationMs": 288,
+      "status": 0,
+      "stdout": "PASS proactive refresh: time-forward, normal allocation, retry/manual holds, bulk cooldown, no permission bypass\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_deadline_order.js"
+      ],
+      "durationMs": 90,
+      "status": 0,
+      "stdout": "PASS deadline order, 15min vs 2h, overdue, limited slots, manual/retry holds, capacity deficits\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_deadline_capacity_samples.js"
+      ],
+      "durationMs": 62,
+      "status": 0,
+      "stdout": "Deadline capacity sample isolation passed\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_roi_psa9_ratio.js"
+      ],
+      "durationMs": 109,
+      "status": 0,
+      "stdout": "ROI zero/boundaries/costs, PSA9 provenance/null/reference ratios, URL/reload, fixed-cohort and revalidation tests passed\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_bulk_individual_freshness.js"
+      ],
+      "durationMs": 80,
+      "status": 0,
+      "stdout": "PASS per-card freshness, source/site count mismatch, stale/unknown/future dates and legacy coverage\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_catalog_history_retention.js"
+      ],
+      "durationMs": 65,
+      "status": 0,
+      "stdout": "PASS catalog identity retention: provider absence vs card removal, original timestamps, duplicate IDs, specification and ID migration\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_partial_buyback_refresh.js"
+      ],
+      "durationMs": 89,
+      "status": 0,
+      "stdout": "PASS partial/full listings, actual price decline, explicit withdrawal, saved replay and duplicate products\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_partial_buyback_recovery.js"
+      ],
+      "durationMs": 91,
+      "status": 0,
+      "stdout": "PASS partial saved recovery proof, original timestamp, identity, complete/withdrawn/held evidence and idempotence\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_saved_camp_recovery.js"
+      ],
+      "durationMs": 64,
+      "status": 0,
+      "stdout": "PASS saved camp proof, identity, quote, original date, newer row, sealed distinction and replay\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_purchase_memo.js"
+      ],
+      "durationMs": 67,
+      "status": 0,
+      "stdout": "memo scenarios, plan costs, zero-cap reasons and non-mutation tests passed\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_return_reference.js"
+      ],
+      "durationMs": 142,
+      "status": 0,
+      "stdout": "return periods, no extrapolation, fixed cohort, persistent support break, immutable purchase basis, official release, checkpoint, missing-value and lazy-load tests passed\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_buyback_scenario_limits.js"
+      ],
+      "durationMs": 194,
+      "status": 0,
+      "stdout": "{\n  \"modelVersion\": \"purchase-decision-v5-shared-limits\",\n  \"buybackScenarios\": {\n    \"current\": {\n      \"key\": \"current\",\n      \"label\": \"現在PSA10相場\",\n      \"psa10Price\": 120000,\n      \"priceRatio\": 1,\n      \"grossPrice\": 99000,\n      \"deductionRate\": 3,\n      \"deductionAmount\": 2970,\n      \"travelCost\": 0,\n      \"netPsa10\": 95030,\n      \"lowerGradeNet\": 37640,\n      \"hitRate\": 0.72,\n      \"expectedSale\": 78961,\n      \"breakEvenMaxPrice\": 65500,\n      \"targetMaxPrice\": 47500,\n      \"targetProfit\": 10000,\n      \"requiredRoiPct\": 30,\n      \"lockDays\": 91\n    },\n    \"central\": {\n      \"key\": \"central\",\n      \"label\": \"中央予測PSA10価格\",\n      \"psa10Price\": 105000,\n      \"priceRatio\": 0.875,\n      \"grossPrice\": 86625,\n      \"deductionRate\": 3,\n      \"deductionAmount\": 2599,\n      \"travelCost\": 0,\n      \"netPsa10\": 83026,\n      \"lowerGradeNet\": 37640,\n      \"hitRate\": 0.72,\n      \"expectedSale\": 70318,\n      \"breakEvenMaxPrice\": 57000,\n      \"targetMaxPrice\": 41000,\n      \"targetProfit\": 10000,\n      \"requiredRoiPct\": 30,\n      \"lockDays\": 91\n    },\n    \"stress\": {\n      \"key\": \"stress\",\n      \"label\": \"供給ストレスPSA10価格\",\n      \"psa10Price\": 75000,\n      \"priceRatio\": 0.625,\n      \"grossPrice\": 61875,\n      \"deductionRate\": 3,\n      \"deductionAmount\": 1856,\n      \"travelCost\": 0,\n      \"netPsa10\": 59019,\n      \"lowerGradeNet\": 37640,\n      \"hitRate\": 0.72,\n      \"expectedSale\": 53033,\n      \"breakEvenMaxPrice\": 40000,\n      \"targetMaxPrice\": 27500,\n      \"targetProfit\": 10000,\n      \"requiredRoiPct\": 30,\n      \"lockDays\": 91\n    }\n  },\n  \"policy\": {\n    \"requestedPolicy\": \"buyback\",\n    \"adoptedPolicy\": \"buyback\",\n    \"label\": \"買取店優先\",\n    \"currentBreakEvenCap\": 65500,\n    \"centralTargetCap\": 41000,\n    \"stressBreakEvenCap\": 40000,\n    \"targetCap\": 41000,\n    \"breakEvenCap\": 40000,\n    \"marketplaceCurrentBreakEvenCap\": 80000,\n    \"marketplaceCentralTargetCap\": 65000,\n    \"marketplaceStressBreakEvenCap\": 45000,\n    \"marketplaceTargetCap\": 65000,\n    \"marketplaceBreakEvenCap\": 45000,\n    \"buybackCurrentBreakEvenCap\": 65500,\n    \"buybackCentralTargetCap\": 41000,\n    \"buybackStressBreakEvenCap\": 40000,\n    \"buybackTargetCap\": 41000,\n    \"buybackBreakEvenCap\": 40000,\n    \"bothSafeCap\": 40000,\n    \"dataShortage\": false,\n    \"reason\": \"\"\n  },\n  \"finalCap\": 40000\n}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_purchase_limit_audit.js"
+      ],
+      "durationMs": 6458,
+      "status": 0,
+      "stdout": "{\"catalogCards\":12746,\"analyzedCards\":2422,\"historyCards\":2422}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_median_efficiency.js"
+      ],
+      "durationMs": 159,
+      "status": 0,
+      "stdout": "PASS median basis, source independence, per-source expiry, no fallback, cache, URL/save and verified translation (not print identity)\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_evidence_refresh.js"
+      ],
+      "durationMs": 114,
+      "status": 0,
+      "stdout": "PASS fresh median, retained evidence, identity guards, authorized PSA9 provenance and input-version gate\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_incremental_linkage_evidence.js"
+      ],
+      "durationMs": 126,
+      "status": 0,
+      "stdout": "PASS incremental identity evidence, price/time refresh, changed specification and weekly full audit\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_operational_freshness.js"
+      ],
+      "durationMs": 68,
+      "status": 0,
+      "stdout": "PASS fixed denominator, card-confirmed intervals, source/manual/retry/unlinked separation and no timestamp invention\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/build_psa9_provenance.js",
+        "--verify"
+      ],
+      "durationMs": 124,
+      "status": 0,
+      "stdout": "true\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_median_primary.js"
+      ],
+      "durationMs": 100,
+      "status": 0,
+      "stdout": "PASS authorized median default, explicit legacy semantics, four fixed profiles and adopted-source completion\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_supply_demand_validation.js"
+      ],
+      "durationMs": 379,
+      "status": 0,
+      "stdout": "PASS temporal future-only labels, missing horizons, identity/source, purge, overlap, shrinkage, downside metrics, idempotent captures and production isolation\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_research_evidence_gate.js"
+      ],
+      "durationMs": 68,
+      "status": 0,
+      "stdout": "PASS record-scoped research quarantine, provenance, missing evidence, future exclusion and raw archive preservation\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_preset_exploration.js"
+      ],
+      "durationMs": 105,
+      "status": 0,
+      "stdout": "Preset exploration, actual offers, horizon holds, zero/off, reconciled exclusions and URL/storage PASS\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_price_integrity.js"
+      ],
+      "durationMs": 276,
+      "status": 0,
+      "stdout": "{\"disputed\":706,\"mewEvidence\":\"unbacked\"}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_price_comparison.js"
+      ],
+      "durationMs": 95,
+      "status": 0,
+      "stdout": "PASS fresh comparison vs stale/reference/identity, no arithmetic mutation, independent sources, real disagreement, zero/unknown colours\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_profile_departure_audit.js"
+      ],
+      "durationMs": 105,
+      "status": 0,
+      "stdout": "PASS departure roots vs derivatives, temporal expiry, source failures, stock, field routing, settings/code, overlap and shared review holds\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_observation75_migration.js"
+      ],
+      "durationMs": 1486,
+      "status": 0,
+      "stdout": "PASS 75 calendar boundaries, migration/backup/zero, native stats separation, unknown denominator and display-only cache isolation\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_pop_glance.js"
+      ],
+      "durationMs": 104,
+      "status": 0,
+      "stdout": "PASS POP actual periods, zero/missing, correction/mapping, raw trade provenance and rarity denominator separation\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_pop_resilience.js"
+      ],
+      "durationMs": 203,
+      "status": 0,
+      "stdout": "PASS actual fetch-null/errors/version/cache vs history, unchanged daily observations, no invented day\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_private_overseas_analysis.js"
+      ],
+      "durationMs": 249,
+      "status": 0,
+      "stdout": "PASS private identity, price/date/FX/count gates, neutral band, negative/zero, no fallback, no unauthorized calls, no public grant, leakage/XSS/loopback-only server\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_overseas_cancellation.js"
+      ],
+      "durationMs": 112,
+      "status": 0,
+      "stdout": "PASS user cancellation overrides grants, no API/analysis/queue rewrite, no overseas retry/alerts/schedule, POP unchanged and coherent cooldown audit\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_shop_observation.js"
+      ],
+      "durationMs": 77,
+      "status": 0,
+      "stdout": "Individual observations, expiry, preserved unvisited dates and independent low-price offers PASS\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_purchase_price_recovery.js"
+      ],
+      "durationMs": 80,
+      "status": 0,
+      "stdout": "Purchase recovery, current-market queue, stale reference audit and warning categories PASS\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_card_catalog_completion.js"
+      ],
+      "durationMs": 399,
+      "status": 0,
+      "stdout": "{\"cards\":12746,\"analyzable\":2422,\"chunks\":51,\"newCards\":366,\"queueRemaining\":10324,\"tests\":26}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_checkpoint_publication.js"
+      ],
+      "durationMs": 9254,
+      "status": 0,
+      "stdout": "Portable PSA import, recoverable publication, non-overlapping merge and conflicting data isolation passed\nPASS generated-only publication conflicts, all-side archive, history preservation and failed validation publication stop\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_publication_lineage.js"
+      ],
+      "durationMs": 2418,
+      "status": 0,
+      "stdout": "Publication lineage: parallel source changes, repeated audit, staged mixes and matching snapshot passed\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_minimum_recovery_sources.js"
+      ],
+      "durationMs": 80,
+      "status": 0,
+      "stdout": "PASS minimum independent refresh, original source routing, known failures, earliest price/stock timestamp\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_recovery_latency.js"
+      ],
+      "durationMs": 66,
+      "status": 0,
+      "stdout": "PASS verified acquisition intervals, separate 6h/48h waits, real publication steps, missing timing and fixed profile cohort\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_recovery_and_url_discovery.js"
+      ],
+      "durationMs": 130,
+      "status": 0,
+      "stdout": "Independent raw backup, broken JSON preservation, exact URL matching and lazy detail regressions passed\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_cadence_payload.js"
+      ],
+      "durationMs": 1487,
+      "status": 0,
+      "stdout": "PASS cadence gaps, freshness unchanged, complete search equivalence, financial data retained, concise errors\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_automatic_operation.js"
+      ],
+      "durationMs": 185,
+      "status": 0,
+      "stdout": "{\"automaticStatus\":\"passed\",\"missedRunCatchup\":\"passed\",\"duplicateFetch\":\"passed\",\"validationBeforePublication\":\"passed\",\"llmCalls\":0}\nPASS calendar days include inactive days; verified publication only, unknown runtime not zero, no unsupported ETA\nPASS partial PC acquisition cooldown, saved publication recovery, current single checkpoint batch and missing evidence\nPASS independent source failure with verified publication is partial; validation/save/mismatched receipts remain blocked\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_monitor_isolation.js"
+      ],
+      "durationMs": 125,
+      "status": 0,
+      "stdout": "PASS: source failures vs required failures, independent monitor, stale monitor, compact banner and edition safeguards\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_update_validation.js"
+      ],
+      "durationMs": 591,
+      "status": 0,
+      "stdout": "PASS code/test/workflow invalidation, mandatory data checks, no-op receipt exclusion and independent read-only verifier\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_update_publication.js"
+      ],
+      "durationMs": 58,
+      "status": 0,
+      "stdout": "PASS public hash/Pages/real acquisition proof, pending/mixed version rejection, shared HTTP cache and previous confirmation retention\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "work/test_daily_finalize_once.js"
+      ],
+      "durationMs": 65,
+      "status": 0,
+      "stdout": "PASS Priority handoff: acquisition/observation saved, one parent finalization, standalone/source failures retained\nPASS fee-source 403/auth hold, original attempt date retained, transient backoff; no POP permission change or new network call\nPASS one parent finalization, acquisition/observations retained, independent failure reporting and prevalidation recovery preserved\n",
+      "stderr": ""
+    }
+  ],
+  "passed": true
+}
