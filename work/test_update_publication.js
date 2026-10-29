@@ -6,6 +6,13 @@ const jobs={jobs:[{steps:['Refresh due purchase prices','Verify safety','Publish
 async function test(){let reads=0;const getJson=async url=>url.includes('receipts.json')?{pipelines:{priority:receipt,catchup:{...receipt,pipeline:'catchup'}}}:url.endsWith('/jobs')?jobs:url.endsWith('/runs/1')?run:{workflow_runs:[{name:'pages build and deployment',conclusion:'success',created_at:'2026-10-28T00:05Z',id:2}]};
  const good=await inspect({getJson,getText:async()=>{reads++;return text},at,targetRunId:1});assert(good.pipelines.priority.confirmed);assert.equal(good.targetStatus,'confirmed');assert.equal(reads,1,'same public file fetched once for all receipts');
  const bad=await inspect({getJson,getText:async()=>'{"price":101}',at,targetRunId:1});assert(!bad.pipelines.priority.confirmed);assert.equal(bad.targetStatus,'pending');
+ const manual=await inspect({getJson:async u=>u.endsWith('/runs/1')?{...run,event:'workflow_dispatch'}:getJson(u),getText:async()=>text,at,targetRunId:1});
+ assert.equal(manual.targetStatus,'non-scheduled-publication-confirmed');assert(manual.pipelines.priority.publicationConfirmed);
+ assert.equal(manual.pipelines.priority.confirmed,false);assert.equal(manual.confirmed,0,'real manual publication is not scheduled proof');
+ const manualBad=await inspect({getJson:async u=>u.endsWith('/runs/1')?{...run,event:'workflow_dispatch'}:getJson(u),getText:async()=>'{"price":101}',at,targetRunId:1});
+ assert.equal(manualBad.targetStatus,'pending');assert(!manualBad.pipelines.priority.publicationConfirmed,'manual checks retain all price/version hashes');
+ const scheduledSaved={pipelines:{priority:good.pipelines.priority}};preserve(scheduledSaved,'priority',manual.pipelines.priority);
+ assert.equal(scheduledSaved.pipelines.priority.confirmed,true);assert.equal(scheduledSaved.nonScheduledChecks.priority.event,'workflow_dispatch');
  const cycles={pipelines:{priority:good.pipelines.priority}};
  preserve(cycles,'priority',{runId:3,confirmed:false,receiptMatches:false});assert.equal(cycles.pipelines.priority.runId,1);assert.equal(cycles.lastChecks.priority.runId,3);
  preserve(cycles,'priority',{runId:1,confirmed:false,receiptMatches:true});assert(cycles.pipelines.priority.confirmed,'later source updates do not revoke historical confirmed execution');

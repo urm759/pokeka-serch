@@ -441,7 +441,9 @@
     const recentReference=references.length?{date:referenceDate,highestQuote:references[0],mean:references.reduce((s,r)=>s+r.ratio,0)/references.length,count:references.length,
       changed:references.some(r=>['ended','quote-changed','market-changed'].includes(r.reasonCode))}:null;
     const reasonCounts={};for(const r of rows.filter(r=>!r.valid))reasonCounts[r.reason]=(reasonCounts[r.reason]||0)+1;
-    const reason=Object.entries(reasonCounts).sort((a,b)=>b[1]-a[1]).slice(0,2).map(([text])=>text).join('／')||'対応する比較履歴未取得';
+    const heldShops=new Set([...Object.keys(summary?.captureHolds?.[id]||{}),...Object.keys(summary?.historyIdentityHolds?.[id]||{})]);
+    const selectedIdentityHold=[...heldShops].some(shop=>{const meta=support?.shops?.[shop];return meta&&!['pending','retired'].includes(meta.permission)&&(mode!=='selected'||selected.includes(shop))&&(mode!=='mail'||meta.fulfilment!=='store');});
+    const reason=Object.entries(reasonCounts).sort((a,b)=>b[1]-a[1]).slice(0,2).map(([text])=>text).join('／')||(selectedIdentityHold?'買取原票の名称・仕様照合保留':'対応する比較履歴未取得');
     return {rows,median:median(rates),max:rates.length?Math.max(...rates):null,highestQuote,meanWindows,recentReference,reasonCounts,reason,
       mean,meanCount:meanOffers.length,meanReference:meanOffers.length===1,meanShops:meanOffers.map(r=>r.shop),coverage,
       meanRule:'選択中の同一店は有効な最高提示1件。対象カードの店舗間単純平均。減額・費用なし',

@@ -1,0 +1,112 @@
+{
+  "checkedAt": "2026-10-29T19:43:16.426Z",
+  "targetRunId": 40937207422,
+  "targetStatus": "non-scheduled-publication-confirmed",
+  "execution": "manual-local-verification-only",
+  "originalFailedWatch": 40939556116,
+  "originalFailedJob": 123679003290,
+  "sourceRequests": 0,
+  "llmCalls": 0,
+  "codexCalls": 0,
+  "proof": {
+    "runId": 40937207422,
+    "event": "workflow_dispatch",
+    "publicationConfirmed": true,
+    "confirmed": false,
+    "status": "非定期の保存・公開照合済み（定期実績へ不算入）",
+    "stages": {
+      "acquisition": true,
+      "validation": true,
+      "savePublish": true
+    },
+    "hashes": [
+      {
+        "file": "data/card-catalog-completion.json",
+        "matched": true,
+        "currentMatched": true
+      },
+      {
+        "file": "data/completion-outcomes.json",
+        "matched": true,
+        "currentMatched": true
+      },
+      {
+        "file": "data/acquisition-progress-audit.json",
+        "matched": true,
+        "currentMatched": true
+      },
+      {
+        "file": "data/priority-price-monitor.json",
+        "matched": true,
+        "currentMatched": true
+      },
+      {
+        "file": "data/search-profile-cycle-progress.json",
+        "matched": true,
+        "currentMatched": true
+      },
+      {
+        "file": "data/priority-search-profile-audit.json",
+        "matched": true,
+        "currentMatched": true
+      },
+      {
+        "file": "data/supply-demand-validation-summary.json",
+        "matched": true,
+        "currentMatched": true
+      },
+      {
+        "file": "data/supply-demand-validation-details.json",
+        "matched": true,
+        "currentMatched": true
+      },
+      {
+        "file": "data/psa-pop-coverage.json",
+        "matched": true,
+        "currentMatched": true
+      },
+      {
+        "file": "data/psa-pop-recovery-audit.json",
+        "matched": true,
+        "currentMatched": true
+      },
+      {
+        "file": "data/cardrush-stock-summary.json",
+        "matched": true,
+        "currentMatched": true
+      },
+      {
+        "file": "data/hareruya2-stock-summary.json",
+        "matched": true,
+        "currentMatched": true
+      },
+      {
+        "file": "data/yuyutei-stock-summary.json",
+        "matched": true,
+        "currentMatched": true
+      },
+      {
+        "file": "data/torecacamp-stock-summary.json",
+        "matched": true,
+        "currentMatched": true
+      }
+    ],
+    "receiptHashes": {
+      "data/card-catalog-completion.json": "677631299158303fc304eab2423b4ff6c0c45d466e2690e5b365ad47e9442cd2",
+      "data/completion-outcomes.json": "c8461063ba836742561767f61b9c071af713db0c63b144a46a4bc748c223a051",
+      "data/acquisition-progress-audit.json": "b2f72754ad168fe9bbff22e4897638f92be84d9563511d598051b43fb1affd24",
+      "data/priority-price-monitor.json": "047901010085bb619e469b840249bfb5a853aeac4693f1ccc17752203f5fc93c",
+      "data/search-profile-cycle-progress.json": "53de5cb62fb81604915ef54bda7bc565ce141d9887330c6c66d543c29477187a",
+      "data/priority-search-profile-audit.json": "8c0e0d04bce517b5eb4cd09818f16dd37b48057e6546a75c2e3beb12eff36736",
+      "data/supply-demand-validation-summary.json": "8dc9908c28aca1775be4ed3069b7af90f02e697d2d01eeb57ce8b8a98d5e6147",
+      "data/supply-demand-validation-details.json": "352b629818b887cb68e0f49fe122137e47f5b1412e847817a50ee72509da021c",
+      "data/psa-pop-coverage.json": "ec76bf291b6cda6781acb4b9fb13ef9a53d02a7ccc65bfbd5ad54bc3e215bbdf",
+      "data/psa-pop-recovery-audit.json": "0ba1b98b85aaa900f833cfa82bea69574c94d421fb1c23debae3a43adfddb4fd",
+      "data/cardrush-stock-summary.json": "4d09d58f5d1577e16476e0ff295cb7242c5866069dba03bf816f0146d2fff340",
+      "data/hareruya2-stock-summary.json": "09f5f4f8fd0b1ab8ef26dbc8ee320588c26a059a540b17b43ac2818521010758",
+      "data/yuyutei-stock-summary.json": "0b5892844139e6446afd18402e5346c75038c02ede0fb45daf9e9411b0360e47",
+      "data/torecacamp-stock-summary.json": "f49df43c7e56e5429cc2b911c597af9369ab78728a4c1f0c49b52c269acd8a4a"
+    },
+    "pagesRunId": 40939859987
+  }
+}

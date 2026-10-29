@@ -62,7 +62,9 @@ function resolveSavedItem(item,cards,byNumber) {
   if(proof.promo) {
     const promoName=value=>{
       const [head,...tail]=value.split('[');
-      return head.replace(/:\s*[^:]*プロモ\s*$/,'').replace(/プロモ\s*$/,'').replace(/\b(?:PROMO|PR|P)\b/ig,'').replace(/[:\s]+$/,'').trim()+(tail.length?' ['+tail.join('['):'');
+      // Strip a standalone rarity first: 「: プロモ P」 otherwise leaves
+      // the display label in the comparison name. Full print/spec guards above remain.
+      return head.replace(/\b(?:PROMO|PR|P)\b/ig,'').replace(/:\s*[^:]*プロモ\s*$/,'').replace(/プロモ\s*$/,'').replace(/[:\s]+$/,'').trim()+(tail.length?' ['+tail.join('['):'');
     };
     cleanName=promoName(cleanName);
     cards=cards.map(c=>({...c,name:promoName(identity.normalizeWidth(c.name))}));

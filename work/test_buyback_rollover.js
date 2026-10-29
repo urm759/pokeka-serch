@@ -23,6 +23,9 @@ for(const [change,reason]of [[{price:10500},'quote-changed'],[{listingActive:fal
 }
 const delayed=structuredClone(ready);delayed.support.cards.test.a.current[4]='2026-10-29T23:30:00Z';assert.equal(read(delayed).highestQuote,null,'future/over-skew market observation cannot be current');
 assert.equal(read(ready,source,'selected',['unknown']).recentReference,null,'reference follows the same shop selection');
+const identityHold=structuredClone(ready);identityHold.support.cards={};identityHold.captureHolds={test:{a:true}};
+assert.equal(read(identityHold).reason,'買取原票の名称・仕様照合保留','a saved identity hold is not missing historical observations');
+assert.equal(read(identityHold,source,'selected',['unknown']).reason,'対応する比較履歴未取得','unselected shops do not supply the cause');
 const slim=require('./build_ui_data').project('buyback-observation-summary',ready);assert.equal(read(slim).highestQuote.ratio,read(ready).highestQuote.ratio);assert.deepEqual(read(slim).recentReference,read(ready).recentReference);
 const receipt={version:1,payloadHash:'proof',observedAt:oldAt,cards:{test:[e.identity(card),10000]}},gate=require('./price_payload_gate'),plan=require('./buyback_pair_refresh').plan;
 assert.equal(gate.due(receipt,now),false);assert.equal(gate.due(receipt,now,{requiredDay:'2026-10-30'}),true,'calendar request reaches actual payload, not only HTML');

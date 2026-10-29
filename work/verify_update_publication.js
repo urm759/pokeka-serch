@@ -12,7 +12,7 @@ async function historicalPublication({run,jobs,receipt,pages,current,getText}){
     if(String(frozen?.runId)!==String(receipt.runId)||Object.keys(frozen?.hashes||{}).length!==Object.keys(receipt.hashes||{}).length||!Object.entries(receipt.hashes||{}).every(([f,h])=>frozen.hashes[f]===h))continue;
     const texts={};for(const file of Object.keys(receipt.hashes||{}))texts[file]=evidence.observationText(frozen,file)||await getText(base+file);
     const result=evidence.verify(run,jobs,receipt,texts,page);
-    if(result.confirmed)return {...result,receiptHashes:receipt.hashes,historicalPublication:true,publishedCommit:page.head_sha,currentPublicMatches:false,
+    if(result.publicationConfirmed)return {...result,receiptHashes:receipt.hashes,historicalPublication:true,publishedCommit:page.head_sha,currentPublicMatches:false,
       hashes:result.hashes.map(h=>({...h,historicalMatched:h.matched,currentMatched:current.hashes.find(c=>c.file===h.file)?.currentMatched===true})),
       note:'当該実行のPages配信成功コミットと原受領証・全採用hashを照合。後続の正常更新とは別の過去公開実績。現在の鮮度・価格一致を意味しない'};
   }
@@ -20,6 +20,7 @@ async function historicalPublication({run,jobs,receipt,pages,current,getText}){
 }
 function preserve(cycles,key,result){
   cycles.pipelines||={};cycles.history||={};
+  if(result.publicationConfirmed&&!result.confirmed){cycles.nonScheduledChecks||={};cycles.nonScheduledChecks[key]=result;return cycles;}
   const prior=cycles.pipelines[key];
   if(prior?.confirmed&&(!result.confirmed||String(prior.runId)!==String(result.runId))){
     const rows=cycles.history[key]||[];
@@ -46,7 +47,7 @@ async function inspect({getJson,getText,at=Date.now(),targetRunId=null}){
       const saved=evidence.observationText(receipt,file);texts[file]=saved||await readText(PUBLIC+file+'?verify='+at);
     }
     let result={...evidence.verify(run,jobs,receipt,texts,pages),receiptHashes:receipt.hashes};
-    if(!result.confirmed&&result.hashes.some(h=>!h.matched)&&Object.values(result.stages).every(Boolean)){
+    if(!result.publicationConfirmed&&result.hashes.some(h=>!h.matched)&&Object.values(result.stages).every(Boolean)){
       if(!pagesHistory){const id=deployments.workflow_runs?.find(r=>r.name==='pages build and deployment')?.workflow_id;
         pagesHistory=id?(await getJson(API+'/actions/workflows/'+id+'/runs?per_page=50')).workflow_runs||[]:deployments.workflow_runs||[];}
       result=await historicalPublication({run,jobs,receipt,pages:pagesHistory,current:result,getText:readText});
@@ -55,7 +56,7 @@ async function inspect({getJson,getText,at=Date.now(),targetRunId=null}){
   }
   cycles.confirmed=Object.values(cycles.pipelines).filter(r=>r.confirmed).length;
   const target=targetRunId&&Object.values(cycles.pipelines).find(r=>String(r.runId)===String(targetRunId));
-  cycles.targetStatus=!targetRunId?'latest-published-receipts':target?.confirmed?'confirmed':target?'pending':'not-yet-published-or-superseded';
+  cycles.targetStatus=!targetRunId?'latest-published-receipts':target?.confirmed?'confirmed':target?.publicationConfirmed?'non-scheduled-publication-confirmed':target?'pending':'not-yet-published-or-superseded';
   if(targetRunId&&!target){
     const [run,jobs]=await Promise.all([getJson(API+'/actions/runs/'+targetRunId),getJson(API+'/actions/runs/'+targetRunId+'/jobs')]);
     if(run.head_branch!=='main'||run.head_repository?.full_name!=='urm759/pokeka-serch')throw Error('Untrusted publication receipt origin');
@@ -84,7 +85,7 @@ async function main(){
     const proof={...result,attempts,llmCalls:0,codexCalls:0,sourceRequests:0};fs.writeFileSync(file,JSON.stringify(proof));
     console.log(JSON.stringify({attempt:attempts.at(-1),sourceRequests:0}));
     if(terminal)throw Error('Publication verification held; access/schema error retained without automatic retry');
-    if(result&&(!targetRunId&&result.confirmed>0||['confirmed','no-acquisition-required'].includes(result.targetStatus)))return proof;
+    if(result&&(!targetRunId&&result.confirmed>0||['confirmed','non-scheduled-publication-confirmed','no-acquisition-required'].includes(result.targetStatus)))return proof;
     if(Date.now()-started>=240000)throw Error('Publication confirmation pending; saved proof retained, no source reacquisition');
     await new Promise(r=>setTimeout(r,Math.min(retryAfterMs,60000)));
   }while(true);

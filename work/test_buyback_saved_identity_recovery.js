@@ -48,6 +48,13 @@ held(titles[0][1],[...cards,duplicate],{cardId:mew.id,verifiedCardId:mew.id,matc
 held(titles[0][1],[duplicate,...cards]);
 held(titles[3][1],[...cards,{...eevee,id:'promo-duplicate'}]);
 const otherSet=card('other-set','ミュウex SAR [SV9 205/165]','205/165','SV9');
+const labelledPromo=card('labelled-promo',eevee.name.replace(': プロモ [',': プロモ P ['),eevee.model,eevee.setCode);
+assert.equal(match('イーブイ P 062/SV-P',[labelledPromo]).cardId,labelledPromo.id,'canonical promo label followed by P is not part of the card name');
+assert.equal(match('イーブイ PROMO [SV-P 062]',[labelledPromo]).cardId,labelledPromo.id);
+held('イーブイ P 063/SV-P',[labelledPromo]);
+held('イーブイ 英語版 P 062/SV-P',[labelledPromo]);
+held('イーブイ ミラー P 062/SV-P',[labelledPromo]);
+held('イーブイ P 062/SV-P',[labelledPromo,{...labelledPromo,id:'same-print-duplicate'}]);
 held(titles[1][1],[mew,otherSet]);
 assert.equal(match(titles[0][1],[mew,otherSet]).cardId,mew.id);
 const otherPrint=card('other-print','ミュウex SAR [SV2a 205/166]','205/166','SV2A');
