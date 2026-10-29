@@ -5601,7 +5601,7 @@ function priceComparisonCells(card, limitDisplay, confirmedAt, now = Date.now(),
 // Display-only CSV snapshot. Never connected to state.psaPopulation, POP history, or the calculation cache.
 let gemRateReferenceRevision=null,gemRateReferencePayload=null,gemRateReferenceRequest=null,gemRateReferenceFailed=false;
 function gemRateReferenceValue(card,row,now=Date.now()) {
-  if(!Array.isArray(row)||row.length!==5||row[0]!==card.identityKey||card.identityReviewRequired||state.psaSpecificationHeld?.[card.id])return null;
+  if(!Array.isArray(row)||row.length!==5||row[0]!==card.identityKey||card.identityReviewRequired)return null;
   const [identityKey,ten,total,date,url]=row,at=Date.parse(date+'T00:00:00Z');
   if(!Number.isSafeInteger(ten)||!Number.isSafeInteger(total)||total<=0||ten<0||ten>total
     ||!/^\d{4}-\d{2}-\d{2}$/.test(date||'')||!Number.isFinite(at)||new Date(at).toISOString().slice(0,10)!==date||at>now)return null;
@@ -5614,7 +5614,7 @@ function gemRateReferenceHeader(card) {
   if(gemRateReferenceRevision!==(uiDataManifest?.revision||'legacy'))return null;
   const v=gemRateReferenceValue(card,gemRateReferencePayload?.cards?.[card.id]);if(!v)return null;
   const old=card.official;
-  return `<span>PSA10取得率</span><small>GemRate集計・参考</small><strong>${v.rate.toFixed(1)}%</strong><small>PSA10 ${fmt.format(v.ten)}／総数 ${fmt.format(v.total)}枚・基準日 ${escapeHtml(v.date)} <a href="${escapeHtml(v.url)}" target="_blank" rel="noreferrer">出典</a></small><small class="price-stale">${v.stale?'古値・':''}参考／計算採用率とは別</small><details><summary>旧公式値・根拠</summary><small>保存CSV由来の参考値。基準日はGemRateの取得・処理日（日精度）。PSA公式の直接確認日時・現在枚数ではありません。</small><small>旧公式 ${Number.isFinite(old?.rate)?old.rate.toFixed(1)+'%':'未取得'}／PSA10 ${Number.isFinite(old?.ten)?fmt.format(old.ten):'未取得'}／総数 ${Number.isFinite(old?.total)?fmt.format(old.total):'未取得'}／確認 ${escapeHtml(old?.f||'未取得')}。取得元間の差はPOP増減へ計上しません。</small></details>`;
+  return `<span>PSA10取得率</span><small>GemRate集計・参考</small><strong>${v.rate.toFixed(1)}%</strong><small>PSA10 ${fmt.format(v.ten)}／総数 ${fmt.format(v.total)}枚・基準日 ${escapeHtml(v.date)} <a href="${escapeHtml(v.url)}" target="_blank" rel="noreferrer">出典</a></small><small class="price-stale">${v.stale?'古値・':''}参考／計算採用率とは別</small><details><summary>旧公式値・根拠</summary><small>保存CSV由来の参考値。${state.psaSpecificationHeld?.[card.id]?'旧公式は名称・仕様照合保留を継続（GemRateの同仕様確認とは別）。':''}基準日はGemRateの取得・処理日（日精度）。PSA公式の直接確認日時・現在枚数ではありません。</small><small>旧公式 ${Number.isFinite(old?.rate)?old.rate.toFixed(1)+'%':'未取得'}／PSA10 ${Number.isFinite(old?.ten)?fmt.format(old.ten):'未取得'}／総数 ${Number.isFinite(old?.total)?fmt.format(old.total):'未取得'}／確認 ${escapeHtml(old?.f||'未取得')}。取得元間の差はPOP増減へ計上しません。</small></details>`;
 }
 async function ensureGemRateReference(cards) {
   const revision=uiDataManifest?.revision||'legacy';

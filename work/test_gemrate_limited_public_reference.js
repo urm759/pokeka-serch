@@ -15,7 +15,7 @@ for(const patch of [['other',8,10,row[3],row[4]],['exact',8,0,row[3],row[4]],['e
   ['exact',null,10,row[3],row[4]],['exact',8,10,'2026-02-30',row[4]],['exact',8,10,'2099-01-01',row[4]],
   ['exact',8,10,row[3],'https://example.com/'],['exact',8,10,row[3],'https://www.gemrate.com/item-details?grader=cgc']])assert.equal(ctx.api.value(card,patch,now),null);
 assert.equal(ctx.api.value({...card,identityReviewRequired:true},row,now),null);
-state.psaSpecificationHeld[card.id]={reason:'hold'};assert.equal(ctx.api.value(card,row,now),null);delete state.psaSpecificationHeld[card.id];
+state.psaSpecificationHeld[card.id]={reason:'PSA source name unresolved'};const held=JSON.stringify(state.psaSpecificationHeld);assert.equal(ctx.api.value(card,row,now).rate,80,'independently reviewed GemRate reference is not blocked by a different provider name hold');assert.equal(ctx.api.value({...card,identityReviewRequired:true},row,now),null,'global unresolved identity remains blocked');assert.equal(JSON.stringify(state.psaSpecificationHeld),held,'display never releases official hold');delete state.psaSpecificationHeld[card.id];
 assert.equal(ctx.api.value(card,row,Date.parse('2026-11-26')).stale,true);
 (async()=>{
   await ctx.api.ensure([{id:'not-in-scope'}]);assert.equal(calls,0,'no reference download for unrelated visible cards');

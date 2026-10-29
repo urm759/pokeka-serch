@@ -19,7 +19,7 @@ function context(overrides={}){let fetched=0;const w={PurchaseDecisionModel:requ
  for(const file of ['decision-model.js','exploration-metrics.js','limit-display-model.js','current-market-model.js','purchase-ratio-model.js','search-controls.js','app.js']){
   const tag=linked.find(m=>m[1]===file);assert(tag,file);assert(!/\b(?:async|defer)\b/.test(tag[3]));
   const integrity=tag[3].match(/integrity="([^"]+)"/)?.[1];assert.equal(integrity,'sha384-'+crypto.createHash('sha384').update(fs.readFileSync(path.join(__dirname,'..',file))).digest('base64'),file+' exact asset version');
-  assert.equal(tag[2],'20261029-pop-price-gap');
+  assert.equal(tag[2],'20261029-pop-price-gap-r2');
   assert(attributes.split(/\r?\n/).includes(file+' text eol=lf'),file+' must keep integrity bytes on Windows checkouts');
  }
  console.log('PASS cold dependency validation, simulated missing/old/out-of-order modules, explicit stop before any data load, ordered scripts and pinned integrity hashes; original user event cause remains unconfirmed');
