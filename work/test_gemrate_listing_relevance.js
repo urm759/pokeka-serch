@@ -128,3 +128,5 @@ try {
   fs.rmSync(temporary, { recursive: true, force: true });
 }
 console.log(JSON.stringify({ syntheticChecksPassed: checks }));
+
+{const {unreviewedPlan}=require('./classify_gemrate_remaining');const row={key:JSON.stringify(['Japanese','set',2021,'100','name','Ultra Rare'])};const registry=[{language:'Japanese',set:'set',year:2021,number:'100',sourceName:'name',parallel:'Ultra Rare'}];assert.equal(unreviewedPlan({rows:[row]},registry).rows.length,0);assert.equal(unreviewedPlan({rows:[row]},[{...registry[0],parallel:'Mirror'}]).rows.length,1);}

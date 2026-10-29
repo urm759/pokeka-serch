@@ -88,6 +88,11 @@ function validatePending(row, scope) {
   return standard;
 }
 
+function unreviewedPlan(plan, registry) {
+  const reviewed=new Set(registry.map(r=>JSON.stringify([r.language,r.set,r.year,r.number,r.sourceName,r.parallel])));
+  const rows=plan.rows.filter(row=>!reviewed.has(row.key));
+  return {...plan,rows,previouslyRegistered:plan.rows.length-rows.length};
+}
 function classify(plan, catalogs, scope = SCOPE) {
   if (!Array.isArray(plan.rows)) throw Error('Remaining plan required');
   const seen = new Set();
@@ -209,9 +214,14 @@ function run() {
         || u.searchParams.get('category') !== 'tcg-cards') throw Error('Received page context mismatch');
   }
   const catalogs = Object.fromEntries(Object.entries(SOURCES).map(([source, c]) => [source, read(path.join(ROOT, 'work', c.file))]));
-  const result = classify(plan, catalogs);
-  if (result.counts.pendingSpecifications !== 70 || result.counts.baseSpecifications !== 50
-      || result.counts.specialSpecifications !== 20) throw Error('Unexpected remaining specification scope');
+  // The original plan is retained. Remove only explicit, evidence-reviewed registry
+  // identities from the remaining work; never accept a row by count or number alone.
+  const registry=require('./gemrate_reviewed_additions').entries(ROOT);
+  const remaining=unreviewedPlan(plan,registry),result=classify(remaining,catalogs);
+  const original=classify(plan,catalogs);
+  if(original.counts.pendingSpecifications!==70||original.counts.baseSpecifications!==50||original.counts.specialSpecifications!==20
+    ||result.counts.pendingSpecifications+remaining.previouslyRegistered!==70)throw Error('Unexpected remaining specification scope');
+  result.counts.previouslyRegistered=remaining.previouslyRegistered;
   result.inputs = inputs;
   result.scope = { ...SCOPE, contextBasis: 'received Japanese PSA Eevee Heroes set; explicit S6a/069 printed catalog labels' };
   // Detect changing inputs before committing this deterministic snapshot.
@@ -226,4 +236,4 @@ if (require.main === module) {
   try { console.log(JSON.stringify(run())); }
   catch { console.error('Offline listing classification failed; no private identity data logged.'); process.exitCode = 1; }
 }
-module.exports = { classify, printedListing, preserveWrite, run, SCOPE };
+module.exports = { classify, printedListing, preserveWrite, run, SCOPE, unreviewedPlan };

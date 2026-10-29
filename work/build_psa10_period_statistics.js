@@ -47,6 +47,30 @@ function variationEvidence(snapshots) {
   if(!chosen)return null;
   const [days,s]=chosen;return [days,Math.round(s.coefficientVariation*100)/100,s.drawdown?.percent??null,s.observedDays,s.spanDays,s.maxMissingGap,s.latestDate];
 }
+function verifiedVariation(rows, card, asOf, now) {
+  const evidence = require('./psa10_observation_evidence'), expected = evidence.identity(card);
+  const verified = rows.filter(r => Array.isArray(r[10]) && r[10][1] === expected
+    && evidence.calendarDay(r[10][0]) === r[0] && Date.parse(r[10][0]) <= now);
+  const snapshots = Object.fromEntries(PERIODS.map(days => {
+    const stat = statistics(verified, asOf, days, 0, 2);
+    return [days, {...stat, ...observationStatus(stat, days, asOf)}];
+  }));
+  const value = variationEvidence(snapshots);
+  const excluded = rows.filter(r => dayTime(r[0]) >= dayTime(asOf)-199*DAY && dayTime(r[0]) <= dayTime(asOf)).length - snapshots[200].count;
+  // Diagnose one window. Overlapping windows never count as independent evidence.
+  const stat = snapshots[30], reasons = [];
+  if (!value) {
+    if (!snapshots[200].count) reasons.push(rows.length ? 'evidence' : 'history');
+    else {
+      if (stat.observedDays < 15 || stat.observedDays/30 < .5) reasons.push('days');
+      if (stat.spanDays < 14) reasons.push('span');
+      if (stat.maxMissingGap > 7) reasons.push('gap');
+      if (stat.ageDays == null || stat.ageDays > 2) reasons.push('stale');
+      if (!Number.isFinite(stat.coefficientVariation) || !Number.isFinite(stat.drawdown?.percent)) reasons.push('dispersion');
+    }
+  }
+  return {value, excluded, reasons, snapshots};
+}
 function observationStatus(stat, days, asOf) {
   const ageDays = stat.latestDate ? Math.round((dayTime(asOf) - dayTime(stat.latestDate)) / DAY) : null;
   return { requiredObservedDays: minimumObservationDays[days], ageDays,
@@ -104,6 +128,7 @@ function build(root = ROOT, now = new Date()) {
     legacyEvidenceNote: '旧形式の記録は原票を保持して参考集計。取得根拠を捏造せず、完全200日観測には含めない', cards: {} }));
   const tradeDemand=require('./psa10_trade_statistics').prepare(root,cards,now);
   summary.tradeDemand=tradeDemand.summary;
+  summary.variation={version:2,cards:{},unavailable:{},excluded:{},rule:'根拠確認済み実測だけで1期間を採用。15日以上・期間50%以上・観測14日間以上・連続欠測7日以下・最終2日以内。旧記録は価格平均に保持し変動評価から除外。重複4票にしない'};
   let actualCards = 0, historyCards = 0;
   const byPeriod = Object.fromEntries(PERIODS.map(days => [days,{meanCards:0, observationSufficientCards:0, recentSufficientCards:0, staleCards:0, completeCalendarCards:0}]));
   for (const card of cards) {
@@ -115,9 +140,11 @@ function build(root = ROOT, now = new Date()) {
     }));
     const trades = Object.fromEntries([7, 30, 75].map(days => [days, { ...statistics(actual.rows, asOf, days, 'date', 'price'),
       sufficient: statistics(actual.rows, asOf, days, 'date', 'price').count >= 3 }]));
+    const variability=verifiedVariation(daily,card,asOf,now.getTime());
+    if(variability.value)summary.variation.cards[card.id]=variability.value;
+    else summary.variation.unavailable[card.id]=variability.reasons;
+    if(variability.excluded)summary.variation.excluded[card.id]=variability.excluded;
     if (!daily.length && !actual.rows.length) continue;
-    if(!summary.variation)summary.variation={version:1,cards:{},rule:"同じ日次原票の1期間を採用。重複4票にしない。15日以上・期間50%以上・観測14日間以上・連続欠測7日以下・根拠確認・最終2日以内"};
-    const variability=variationEvidence(snapshots);if(variability)summary.variation.cards[card.id]=variability;
     summary.cards[card.id] = [snapshots[7].mean, snapshots[7].count, snapshots[30].mean, snapshots[30].count,
       snapshots[30].ageDays, snapshots[75].mean, snapshots[75].count, snapshots[7].ageDays, snapshots[75].ageDays,
       snapshots[200].mean, snapshots[200].count, snapshots[200].ageDays, snapshots[200].legacyUnverifiedDays,
@@ -137,7 +164,8 @@ function build(root = ROOT, now = new Date()) {
       actualSources: [...new Set(actual.rows.map(r => r.source))], rejected: actual.rejected,
       duplicateDatesRemoved: (history.cards[card.id] || []).filter(r => positive(r[2])).length
         - new Set((history.cards[card.id] || []).filter(r => positive(r[2])).map(r => r[0])).size,
-      excludedObservationRows: (history.cards[card.id]?.length || 0) - daily.length,tradeDemand:tradeDemand.details.get(card.id) };
+      excludedObservationRows: (history.cards[card.id]?.length || 0) - daily.length,
+      variation:{snapshots:variability.snapshots,excludedUnverified:variability.excluded,reasons:variability.reasons},tradeDemand:tradeDemand.details.get(card.id) };
     if (actual.rows.length) actualCards++;
   }
   summary.coverage = { catalog: cards.length, snapshotCards: historyCards, historyCards, summaryCards: Object.keys(summary.cards).length,
@@ -147,11 +175,11 @@ function build(root = ROOT, now = new Date()) {
     if (fs.existsSync(target) && fs.readFileSync(target, 'utf8') === text) return;
     fs.mkdirSync(path.dirname(target), { recursive: true });
     fs.writeFileSync(target + '.tmp', text); fs.renameSync(target + '.tmp', target); written.push(file); };
-  const inputHash = crypto.createHash('sha256').update(JSON.stringify([history, cards.map(c => [c.id, c.identityKey, c.snkPsa10Trades]), asOf])).digest('hex');
+  const inputHash = crypto.createHash('sha256').update(JSON.stringify([history, cards.map(c => [c.id, c.identityKey, c.snkPsa10Trades]), asOf,summary.variation.version])).digest('hex');
   summary.inputHash = inputHash;
   for (let i = 0; i < chunks.length; i++) write(`data/psa10-periods/${i}.json`, chunks[i]);
   write('data/psa10-period-summary.json', summary);
   return { ...summary.coverage, asOf, changedFiles: written.length, inputHash };
 }
 if (require.main === module) console.log(JSON.stringify(build()));
-module.exports = { build, statistics, dailyRows, actualRows, shard, observationStatus, maximumDrawdown, variationEvidence };
+module.exports = { build, statistics, dailyRows, actualRows, shard, observationStatus, maximumDrawdown, variationEvidence, verifiedVariation };

@@ -144,18 +144,33 @@
       delta:valid && finite(current) && current > 0 ? percent(current,mean) : null,reference,latest,
       stale:!latest || age > (summary?.staleObservationDays ?? 2)};
   }
+  function purchaseOfferUrl(offer) {
+    if(!offer?.available||!offer.fresh||offer.purchaseEligible===false||!finite(offer.value)||offer.value<=0)return null;
+    let url;try{url=new URL(offer.url);}catch{return null;}
+    if(url.protocol!=='https:'||url.username||url.password)return null;
+    const host=url.hostname.replace(/^www\./,''), source=String(offer.source||'');
+    const direct=host==='hareruya2.com'&&/晴れる屋/.test(source)&&/^\/products\/[^/]+\/?$/.test(url.pathname)
+      ||host==='torecacamp-pokemon.com'&&/トレカキャンプ/.test(source)&&/^\/products\/[^/]+\/?$/.test(url.pathname)
+      ||host==='cardrush-pokemon.jp'&&/ラッシュ/.test(source)&&/^\/product\/\d+\/?$/.test(url.pathname)
+      ||host==='yuyu-tei.jp'&&/遊々亭/.test(source)&&/^\/sell\/poc\/card\/[^/]+\/[^/]+\/?$/.test(url.pathname);
+    return direct?url.href:null;
+  }
   function variation(summary,card,now=Date.now()) {
     const evidence=summary?.variation?.cards?.[card.id];
     const means=observationPeriods.map(d=>observation(summary,card.id,card.psa10,d)).filter(r=>r.mean>0&&!r.stale);
     const direction=means.find(r=>r.days===30)||means[0],delta=direction?.delta;
     const trend=delta==null?'方向不明':delta>5?'上昇方向':delta< -5?'下落方向':'平均付近';
-    if(!evidence)return {label:'判断材料不足',trend,reason:'実測のばらつき・観測充足不足。重複する4期間を独立根拠にしない'};
+    if(!evidence){
+      const labels={history:'実測履歴なし',evidence:'確認済み実測なし・旧記録の根拠不足',days:'確認済み観測日数不足',span:'実観測期間不足',gap:'連続欠測7日超',stale:'最終観測が古い',dispersion:'ばらつき・最大下落の計算材料不足'};
+      const reasons=summary?.variation?.unavailable?.[card.id]||summary?.variation?.defaultUnavailable;
+      return {label:'判断材料不足',trend,reason:reasons?.length?reasons.map(r=>labels[r]||r).join('／'):'実測のばらつき・観測充足不足。重複する4期間を独立根拠にしない'};
+    }
     const [days,cv,drawdown,count,span,gap,latest]=evidence;
     const age=Math.floor((now+9*3600000)/86400000)-Date.parse(latest)/86400000;
     if(!(age>=0&&age<=2&&count>=15&&count/days>=.5&&span>=14&&gap<=7))return {label:'判断材料不足',trend,reason:'観測不足・古値・日時不正'};
     if(![cv,drawdown].every(finite))return {label:'判断材料不足',trend,reason:'ばらつき・最大下落の根拠不足'};
     const label=cv>=20||drawdown<=-30?'大きい':cv>=8||drawdown<=-15?'中程度':'小さい';
-    return {label,trend,days,cv,drawdown,count,span,gap,latest,reason:'記述的な参考区分：変動係数20%/最大下落30%以上は大、8%/15%以上は中。予測・GO条件ではない'};
+    return {label,trend,days,cv,drawdown,count,span,gap,latest,reference:count<days,excluded:summary?.variation?.excluded?.[card.id]||0,reason:'確認済み実測のみ。記述的な参考区分：変動係数20%/最大下落30%以上は大、8%/15%以上は中。予測・GO条件ではない'};
   }
   function observationExclusions(summary, card, settings) {
     const reasons = [];
@@ -279,6 +294,26 @@
     if(ratio<=b.neutralMax)return {className:'ratio-neutral',label:ratio===1?'相場と同額':'ほぼ同水準（相場比±2%以内）'};
     return {className:ratio<b.strongHigh?'ratio-high':'ratio-high-strong',label:'相場より高い'};
   }
+  function buybackMeanWindows(entries, shops, mode, selected, asOf) {
+    const daily=new Map();
+    for(const [shop,row] of Object.entries(entries||{})) {
+      const meta=shops?.[shop];
+      if(!meta||meta.stopped||['pending','retired'].includes(meta.permission)||mode==='selected'&&!selected.includes(shop)||mode==='mail'&&meta.fulfilment==='store')continue;
+      for(const [day,ratio] of row.meanDays||[]) {
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(day)||!finite(ratio)||ratio<=0||day>asOf)continue;
+        const values=daily.get(day)||new Map(), merchant=meta.merchantId||shop;
+        values.set(merchant,Math.max(values.get(merchant)||0,ratio));daily.set(day,values);
+      }
+    }
+    return Object.fromEntries([7,30,75].map(days=>{
+      const adopted=[...daily].filter(([date])=>Date.parse(date)>=Date.parse(asOf)-(days-1)*86400000).sort((a,b)=>a[0].localeCompare(b[0]));
+      const means=adopted.map(([,v])=>[...v.values()].reduce((a,b)=>a+b,0)/v.size),count=means.length;
+      const stores=new Set(adopted.flatMap(([,v])=>[...v.keys()])).size;
+      return [days,{mean:count?means.reduce((a,b)=>a+b,0)/count:null,days:count,
+        stores,firstDate:adopted[0]?.[0]||null,lastDate:adopted.at(-1)?.[0]||null,
+        aboveDays:means.filter(r=>r>=1).length,aboveRate:count?means.filter(r=>r>=1).length/count*100:null,reference:count!==days||stores<2}];
+    }));
+  }
   function buybackSupport(summary, id, mode, selected = [], now = Date.now(), currentMarket = null, identityKey = null, currentSource = null) {
     const median = values => { const a = values.slice().sort((x,y)=>x-y); return a.length ? (a[Math.floor(a.length/2)] + a[Math.floor((a.length-1)/2)])/2 : null; };
     const support = summary?.support, entries = support?.cards?.[id] || {}, rows = [], daily = new Map();
@@ -340,7 +375,13 @@
         aboveDays:medians.filter(r=>r>=1).length,aboveRate:medians.length?medians.filter(r=>r>=1).length/medians.length*100:null,
         stores:merchants.size,lastDate:adopted.at(-1)?.[0]||null,reference:medians.length!==days};
     }
-    return {rows,median:median(rates),max:rates.length?Math.max(...rates):null,highestQuote,
+    const eligibleEntries=Object.fromEntries(Object.entries(entries).filter(([shop])=>!identityKey||summary.cards?.[id]?.[shop]?.identity===identityKey));
+    const cached=support?.meanWindows?.[id];
+    const hasDays=Object.values(eligibleEntries).some(row=>Object.hasOwn(row,'meanDays'));
+    const cachedValid=cached&&cached.asOf===asOf&&(!identityKey||cached.identity===identityKey)&&mode!=='selected';
+    const meanWindows=cachedValid?cached[mode==='mail'?'mail':'all']
+      :hasDays?buybackMeanWindows(eligibleEntries,support?.shops,mode,selected,asOf):null;
+    return {rows,median:median(rates),max:rates.length?Math.max(...rates):null,highestQuote,meanWindows,
       mean,meanCount:meanOffers.length,meanReference:meanOffers.length===1,meanShops:meanOffers.map(r=>r.shop),coverage,
       meanRule:'選択中の同一店は有効な最高提示1件。対象カードの店舗間単純平均。減額・費用なし',
       above:rates.filter(r=>r>=1).length,count:rates.length,latest,windows,
@@ -359,5 +400,5 @@
         status:pop[4]===0?'近い期間の参考比較':pop[4]===2?'POP減少・訂正等':'期間不一致・部分期間',
         ratio:measured&&!stale&&pop[4]===0&&pop[0]>0?n/pop[0]:null}:null};
   }
-  return {variation,referenceBuy,percent,inRange,offerPrice,referenceMedian,meanSale,atPurchase,efficiency,coverage,observationPeriods,migrateObservationSettings,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics,periodEfficiencyAverage,efficiencyUnavailableLabel,buybackSupport,buybackRatioTone,buybackRatioBoundaries,tradeDemand};
+  return {variation,purchaseOfferUrl,referenceBuy,percent,inRange,offerPrice,referenceMedian,meanSale,atPurchase,efficiency,coverage,observationPeriods,migrateObservationSettings,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics,periodEfficiencyAverage,efficiencyUnavailableLabel,buybackSupport,buybackMeanWindows,buybackRatioTone,buybackRatioBoundaries,tradeDemand};
 });

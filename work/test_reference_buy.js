@@ -1,3 +1,4 @@
+require('./test_observation_variation');
 const assert=require('node:assert/strict'),fs=require('fs'),crypto=require('crypto');
 const m=require('../exploration-metrics'),stats=require('./build_psa10_period_statistics');
 const at=new Date().toISOString(),now=Date.parse(at);

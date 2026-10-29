@@ -1,7 +1,7 @@
 const fs = require('node:fs'), path = require('node:path'), crypto = require('node:crypto');
 const market = require('../market-analysis'), evidence = require('./psa10_observation_evidence');
 const ROOT = path.join(__dirname, '..');
-const periods = [7, 30], DAY = 86400000;
+const periods = [7, 30, 75], DAY = 86400000;
 const band = price => price < 30000 ? 'under30k' : price < 100000 ? 'from30kTo100k' : 'over100k';
 const physicalKey = card => [String(card.identityKey).split('|').slice(0,6).join('|'),
   String(card.name || '').normalize('NFKC').match(/(?:電話)?抽選\s*\d+\s*名|当選者|当選品|電話抽選/)?.[0]?.replace(/\s/g,'') || '',card.variant || ''].join('|');
@@ -26,7 +26,7 @@ function joined(observations, history, cards, source, now = Date.now()) {
         if (constrained(quote)) { reject('キャンペーン・数量・条件付き提示'); continue; }
         if (!Array.isArray(observed) || observed[1] !== evidence.identity(card) || evidence.calendarDay(observed[0]) !== date
           || Date.parse(observed[0]) > now || !Number.isFinite(point?.[2]) || !(point[2] > 0)) { reject('同日の国内PSA10価格確認証拠なし'); continue; }
-        if (Date.parse(date) < Date.parse(evidence.calendarDay(new Date(now).toISOString())) - 29 * DAY) continue;
+        if (Date.parse(date) < Date.parse(evidence.calendarDay(new Date(now).toISOString())) - 74 * DAY) continue;
         const currentQuote=source.cards?.[id]?.shops?.[shop];
         const priceDate=quote.priceDate || (currentQuote?.price===quote.price && currentQuote.priceDate===date ? currentQuote.priceDate : null);
         const timeSkewHours=Math.abs(Date.parse(quote.observedAt)-Date.parse(observed[0]))/3600000;
@@ -93,7 +93,8 @@ function aggregate(rows, source, cards, now = Date.now()) {
     const result = { h: evidence.identity({ identityKey: last.identity }),
       current: [last.ratio, last.price, last.marketPrice, last.observedAt, last.marketAt, last.date, currentlyListed,last.priceDate ?? null,last.timeSkewHours ?? null],
       baseline: last.timeSkewHours <= 6 ? last.baseline : [null,0,0,0,0,'unmatched-time',last.band,true,null],
-      days: records.filter(r=>r.timeSkewHours<=6).map(r => [r.date, r.ratio]), periods: {}, premium: {} };
+      days: records.filter(r=>r.timeSkewHours<=6&&Date.parse(r.date)>=Date.parse(asOf)-29*DAY).map(r => [r.date, r.ratio]),
+      meanDays: records.filter(r=>r.timeSkewHours<=6&&r.priceDate===r.date).map(r=>[r.date,r.ratio]), periods: {}, premium: {} };
     for (const days of periods) {
       const selected = records.filter(r => r.timeSkewHours <= 6 && Date.parse(r.date) >= Date.parse(asOf) - (days - 1) * DAY);
       if (!selected.length) continue;
@@ -105,6 +106,11 @@ function aggregate(rows, source, cards, now = Date.now()) {
     }
     (output.cards[last.id] ||= {})[last.shop] = result;
   }
+  const meanWindows=require('../exploration-metrics').buybackMeanWindows;
+  output.meanWindows={};
+  output.meanWindowRule='日ごとに同一店舗の選択受付の有効な最高提示1件を採用→店舗間単純平均→観測日の単純平均。提示日=観測日・同仕様PSA10・確認時差6時間以内。欠測補完なし。従来7/30日の日次中央値の平均とは別。';
+  for(const [id,entries] of Object.entries(output.cards)) output.meanWindows[id]={asOf,identity:detail[id][0].identity,
+    all:meanWindows(entries,output.shops,'all',[],asOf),mail:meanWindows(entries,output.shops,'mail',[],asOf)};
   return { summary: output, detail };
 }
 function build(root = ROOT) {

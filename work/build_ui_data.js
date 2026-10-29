@@ -36,13 +36,17 @@ function project(name, input) {
   if (name === 'buyback-observation-summary' && value.support) {
     value.support.compact = true;
     delete value.support.schema; delete value.support.audit; delete value.support.rule;
+    for(const row of Object.values(value.support.meanWindows||{}))for(const mode of ['all','mail'])row[mode]={75:row[mode][75]};
     for (const shops of Object.values(value.support.cards)) for (const row of Object.values(shops)) {
       const b = row.baseline || [];
       row.glance = [b[0] ?? null,b[1] ?? 0,b[7] ?? true,b[8] ?? null];
-      delete row.h; delete row.baseline; delete row.periods; delete row.premium;
+      delete row.h; delete row.baseline; delete row.periods; delete row.premium; delete row.meanDays;
     }
   }
-  if(name==='psa10-period-summary' && value.tradeDemand)for(const row of Object.values(value.tradeDemand.cards))while(row.length && row.at(-1)==null)row.pop();
+  if(name==='psa10-period-summary') {
+    if(value.tradeDemand)for(const row of Object.values(value.tradeDemand.cards))while(row.length && row.at(-1)==null)row.pop();
+    if(value.variation?.version===2){value.variation.defaultUnavailable=['history'];for(const [id,reasons]of Object.entries(value.variation.unavailable))if(reasons.length===1&&reasons[0]==='history')delete value.variation.unavailable[id];}
+  }
   return value;
 }
 const SUMMARY = ['card-catalog-completion', 'operational-limit-history', 'market-stability-summary', 'market-research-summary',

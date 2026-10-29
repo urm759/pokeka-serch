@@ -1,3 +1,4 @@
+require('./test_buyback_75_mean');
 const assert = require('node:assert/strict'), fs = require('node:fs');
 const builder = require('./build_buyback_support'), m = require('../exploration-metrics'), evidence = require('./psa10_observation_evidence');
 const now = Date.parse('2026-10-15T02:00:00Z'), at = '2026-10-15T01:00:00Z';
@@ -104,3 +105,7 @@ assert.match(html,/採算用出口とは別/);
 const glance=app.slice(app.indexOf('const candidateGlance ='),app.indexOf('const row = { id: card.id, html:',app.indexOf('const candidateGlance =')));
 assert(glance.includes('${buybackSupportHtml(card)}'),'compact highest quote is visible without opening the card detail');
 console.log('PASS gross support: no costs; same-day proof/spec; own-excluded band/common baseline; null/small sample; high valid prices; missing/partial days; outlet selection and merchant dedupe; freshness; lazy details; acquisition priority only');
+
+vm.runInContext('globalThis.supportCacheProbe={read:cardBuybackSupport,put:(id,rows)=>buybackSupportDetails.set(id,rows)}',context);
+const cprobe={...card,psa10:10000},beforeDetail=context.supportCacheProbe.read(cprobe);context.supportCacheProbe.put(card.id,reference.cards.fixture);
+const afterDetail=context.supportCacheProbe.read(cprobe);assert.notStrictEqual(afterDetail,beforeDetail,'lazy detail arrival invalidates compact cache');assert.strictEqual(context.supportCacheProbe.read(cprobe),afterDetail,'full detail and selected-window summaries reuse cache until expiry');

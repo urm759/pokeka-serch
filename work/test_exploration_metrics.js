@@ -27,9 +27,9 @@ assert.equal(m.coverage(unresolved,'card','all',[],now).rate30,100,'positive ide
 const duplicate = JSON.parse(JSON.stringify(summary)); duplicate.cards.card.a.listedDays.push('2026-10-11');
 assert.equal(m.coverage(duplicate,'card','all',[],now).postedShopDays,1,'duplicate same-day listings count once');
 const elements=new Map(), storage=new Map(), sourceText=fs.readFileSync(path.join(__dirname,'../app.js'),'utf8');
-const context=vm.createContext({window:{PurchaseDecisionModel:require('../decision-model'),ExplorationMetrics:m,location:{href:'https://example.test/?profitBasis=current-cap&purchaseMin=0&headroomMax=0&postingRate30=0'}},document:{getElementById:id=>{if(!elements.has(id))elements.set(id,{value:'',checked:false});return elements.get(id)},querySelectorAll:()=>[]},URL,URLSearchParams,console,setTimeout,clearTimeout,localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)}});
+const context=vm.createContext({window:{LimitDisplayModel:require('../limit-display-model'),CurrentMarketModel:require('../current-market-model'),PurchaseRatioModel:require('../purchase-ratio-model'),PurchaseDecisionModel:require('../decision-model'),ExplorationMetrics:m,location:{href:'https://example.test/?effBuy=auto&profitBasis=current-cap&purchaseMin=0&headroomMax=0&postingRate30=0'}},document:{getElementById:id=>{if(!elements.has(id))elements.set(id,{value:'',checked:false});return elements.get(id)},querySelectorAll:()=>[]},URL,URLSearchParams,console,setTimeout,clearTimeout,localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)}});
 vm.runInContext(sourceText.split('// Browser event bindings start here;')[0]+`\ncurrentMarketView=c=>c.testView; globalThis.api={state,readUrl,buildShareUrl,searchProfitView,psa10PeriodPanel,saveQuickFilters,restoreQuickFilters};`,context);
-const s=context.api.state;Object.assign(s,{fee:10000,saleFeeRate:8,saleExtraCost:0,profitSearchBasis:'current-cap'});
+const s=context.api.state;Object.assign(s,{efficiencyBuy:'auto',fee:10000,saleFeeRate:8,saleExtraCost:0,profitSearchBasis:'current-cap'});
 const card={id:'test',psa10:30000,testView:{eligible:true,capState:'available',cap:10000,rawCap:10000,psa10Net:25000,lowerGradePrice:10000}};
 let v=context.api.searchProfitView(card);assert.equal(v.purchasePrice,10000);assert.equal(v.economics.expectedProfit,0);assert.equal(v.economics.expectedRoi,0);assert.equal(v.psa9Profit,-10800);
 assert.equal(context.api.searchProfitView({...card,testView:{...card.testView,capState:'loss-at-zero'}}).purchasePrice,null);
@@ -44,7 +44,7 @@ assert.equal(elements.get('profitSearchBasisInput').value,'current-cap');
 assert(sourceText.includes("mode !== 'now'"),'cap exploration cannot override immediate purchase');
 assert(sourceText.includes('const exploration = purchaseExploration(card,now)'),'display and filters share the same eligibility and headroom');
 const auditApi=require('./audit_search_profit_consistency').load(sourceText,new Date().toISOString());
-const allCards=auditApi.prepareCalculatedCards(auditApi.state.cards);auditApi.state.profitSearchBasis='current-cap';
+const allCards=auditApi.prepareCalculatedCards(auditApi.state.cards);auditApi.state.profitSearchBasis='current-cap';auditApi.state.efficiencyBuy='auto';
 for(const c of allCards) {
   const view=auditApi.searchProfitView(c);
   if(view.eligible) {

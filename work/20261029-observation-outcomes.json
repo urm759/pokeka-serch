@@ -1,0 +1,123 @@
+{
+  "at": "2026-10-29T08:36:21.828Z",
+  "baseline": "0e8eb13c0d96390ec2eb17ffe7c23dde73e5f489",
+  "realMissingFilled": 0,
+  "newAnalyzable": 0,
+  "independentCandidates": {
+    "before": 105,
+    "after": 105,
+    "firstQualified": [],
+    "regained": [],
+    "departed": []
+  },
+  "currentHighRarity": {
+    "analyzable": 711,
+    "total": 1330,
+    "target90": 1197,
+    "classificationUnknown": 5077
+  },
+  "feasibility": {
+    "pendingCards": 619,
+    "automaticPathsOnly": 0,
+    "savedReviewOnly": 1,
+    "blockedCards": 619,
+    "blockedCardsByReason": {
+      "source-evidence-unavailable": 9,
+      "source-price-missing": 123,
+      "period-not-provided": 541,
+      "price-conflict-review": 75,
+      "saved-rematch-review": 28,
+      "permission-wait": 106,
+      "source-card-absent": 7
+    },
+    "target90Cards": 1197,
+    "conditionalCurrentRouteTotal": 711,
+    "conditionalCurrentRoutePct": 53.45864661654135
+  },
+  "observationVariation": {
+    "catalog": {
+      "total": 12754,
+      "beforePossible": 1324,
+      "afterPossible": 7493,
+      "beforeReasons": {
+        "legacy-blanket-hold": 6713,
+        "coverage-or-freshness": 4717
+      },
+      "afterReasons": {
+        "days": 554,
+        "span": 411,
+        "stale": 278,
+        "dispersion": 171,
+        "history": 4497,
+        "gap": 30,
+        "evidence": 210
+      },
+      "excludedUnverifiedRows": 245357,
+      "labels": {
+        "中程度": 850,
+        "小さい": 6054,
+        "大きい": 589
+      },
+      "recoveredCount": 6169
+    },
+    "candidates": {
+      "total": 105,
+      "beforePossible": 0,
+      "afterPossible": 105,
+      "beforeReasons": {
+        "legacy-blanket-hold": 105
+      },
+      "afterReasons": {},
+      "excludedUnverifiedRows": 4206,
+      "labels": {
+        "中程度": 22,
+        "小さい": 81,
+        "大きい": 2
+      },
+      "recoveredCount": 105
+    }
+  },
+  "buyback75": {
+    "at": "2026-10-29T08:25:08.509Z",
+    "checkedCardShopPairs": 3204,
+    "legacyDifferences": [],
+    "new75Cards": 761,
+    "maxObservedDays": 16,
+    "definition": "日ごとに同一店舗の選択受付の有効な最高提示1件を採用→店舗間単純平均→観測日の単純平均。提示日=観測日・同仕様PSA10・確認時差6時間以内。欠測補完なし。従来7/30日の日次中央値の平均とは別。",
+    "newSourceAcquisition": 0
+  },
+  "gemrate": {
+    "public": 51,
+    "calculationAdoption": 0,
+    "continuousAcquisition": false,
+    "remaining": 69,
+    "base": 49,
+    "special": 20
+  },
+  "freshness": {
+    "latestObservedPct": 96.35416666666666,
+    "historicalScheduledMinimum": 0
+  },
+  "validation": {
+    "cases": 8,
+    "financialAndCandidateIdsEqual": true,
+    "overflow": false,
+    "priceAverageColumnsUnchanged": true,
+    "legacyBuybackPairsCompared": 3204,
+    "legacyBuybackDifferences": 0
+  },
+  "performance": {
+    "initialBytes": 20636648,
+    "fullCalculationMs": 5229.3092000000015,
+    "doubleCalculationMs": 10433.095099999999,
+    "fixedWarnings": [
+      "doubleCalculationMs"
+    ]
+  },
+  "notes": [
+    "集計修正・保存履歴の再利用を新規取得や必須不足補完に数えない",
+    "7/30日既存集計・価格平均・仕入れ式・GO・条件は維持",
+    "DOM計測は生成/反映。ブラウザーpaint完了の測定ではない",
+    "修正後の定期生成・保存・公開は次回の正常実行で確認。取得元への既存実証は維持"
+  ]
+}
