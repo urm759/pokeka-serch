@@ -1,28 +1,28 @@
 {
-  "startedAt": "2026-10-29T19:08:09.534Z",
-  "runId": "40937207422",
-  "event": "workflow_dispatch",
-  "route": "通常価格更新",
+  "startedAt": "2026-10-29T21:47:59.057Z",
+  "runId": "40960709511",
+  "event": "workflow_run",
+  "route": "既存監視ジョブの空白補完",
   "status": "acquired-saved",
   "allowed": true,
-  "ageMs": 7345897,
-  "minimumIntervalMs": 7200000,
+  "ageMs": 9588956,
+  "minimumIntervalMs": 9000000,
   "reason": "定期の空白・既存の期限順キューで補完",
   "llmCalls": 0,
   "codexCalls": 0,
   "sourceFailures": [],
   "acquisitionStatus": "process-success",
-  "endedAt": "2026-10-29T19:19:58.588Z",
-  "durationMs": 709054,
+  "endedAt": "2026-10-29T21:59:49.806Z",
+  "durationMs": 710749,
   "outcomes": {
-    "baselineAt": "2026-10-29T19:08:09.534Z",
+    "baselineAt": "2026-10-29T21:47:59.057Z",
     "commonCards": 12757,
     "addedCards": 0,
     "removedCards": 0,
     "newlyAnalyzable": 0,
     "lostAnalyzable": 0,
-    "filledCards": 2,
-    "filledItems": 2,
+    "filledCards": 0,
+    "filledItems": 0,
     "sources": {
       "cardrush": {
         "newLinked": 0,
@@ -53,10 +53,10 @@
         "freshnessRecovered": 0
       },
       "psaOfficial": {
-        "newLinked": 2,
-        "validAdded": 2,
+        "newLinked": 0,
+        "validAdded": 0,
         "validLost": 0,
-        "usableNet": 2,
+        "usableNet": 0,
         "freshnessRecovered": 0
       },
       "pokedata": {
