@@ -599,6 +599,9 @@ const startedAt = Date.now();
   require('./acquisition_retry').atomicWrite(path.join(base,'domestic-trade-source-audit.json'),tradeReceipt,0);
   const observationReceipt = {
     version: 1, observedAt: priceBatchObservedAt, sourceUrl, chunkUrl, payloadHash: contentHash(chunk),
+    rawCards:Object.fromEntries(sitePokemon.filter(card=>!card.identityReviewRequired&&card.language==='ja'&&Number.isFinite(card.price)&&card.price>0
+      &&num(observedSourceRows.get(String(card.sourceId||card.id))?.price)===card.price)
+      .map(card=>[card.id,[require('./psa10_observation_evidence').identity(card),card.price]])),
     cards: Object.fromEntries(sitePokemon.filter(card=>observedSourceRows.has(String(card.sourceId||card.id)) && !card.identityReviewRequired && card.language === 'ja'
       && !Object.hasOwn(card,'psa10ObservedAt') && Number.isFinite(card.snkPsa10Price) && card.snkPsa10Price > 0)
       .map(card=>{const original=observedSourceRows.get(String(card.sourceId || card.id));return [card.id,[require('./psa10_observation_evidence').identity(card),card.snkPsa10Price,

@@ -17,3 +17,5 @@ const quote={source:'晴れる屋2',url:'https://hareruya2.com/products/123',ava
 assert.equal(m.purchaseOfferUrl(quote),quote.url);
 for(const patch of [{url:'https://hareruya2.com/search?q=x'},{source:'トレカキャンプ'},{url:'https://evil.test/products/123'},{url:'javascript:alert(1)'},{available:false},{fresh:false},{purchaseEligible:false},{value:null},{url:null}])assert.equal(m.purchaseOfferUrl({...quote,...patch}),null);
 console.log('PASS verified-only variation with unchanged thresholds, legacy exclusion, real zero, gaps/stale/spec, exact adopted source product links');
+
+require('./test_price_gap_observations');

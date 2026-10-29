@@ -1,0 +1,13 @@
+const assert=require('assert'),g=require('./price_gap_observations'),e=require('./psa10_observation_evidence'),m=require('../exploration-metrics'),stats=require('./build_psa10_period_statistics');
+const now=Date.parse('2026-10-29T02:00:00Z'),card={id:'test',language:'ja',identityKey:'Japanese|same|normal',price:100,psa10:300},id=e.identity(card);
+const row=(date,raw,p10)=>[date,raw,p10,null,null,null,null,null,null,null,[date+'T01:00:00Z',id],[date+'T01:00:00Z',id,g.SOURCE]];
+const paired=g.pairs([row('2026-10-28',50,100),row('2026-10-29',100,300)],card,now);assert.equal(g.summarize(paired.rows,'2026-10-29').medium.mean,150,'daily rates mean, not ratio of period price means');assert.equal(g.summarize(paired.rows,'2026-10-29').change,null,'two observations never become a 75day direction');
+assert.equal(g.pairs([row('2026-10-29',0,300)],card,now).rows.length,0);
+const mismatch=row('2026-10-29',100,300);mismatch[11][1]='different';assert.equal(g.pairs([mismatch],card,now).rows.length,0);
+const skew=row('2026-10-29',100,300);skew[11][0]='2026-10-28T17:00:00Z';assert.equal(g.pairs([skew],card,now).rows.length,0);
+assert.equal(g.pairs([row('2026-10-29',100,300),row('2026-10-29',100,300)],card,now).rows.length,1,'same day duplicate not extra observation');
+const old=Array.from({length:40},(_,i)=>row(new Date(now-(39-i)*86400000).toISOString().slice(0,10),100,i<33?200:220));const measured=g.summarize(g.pairs(old,card,now).rows,'2026-10-29');assert(measured.change>5);assert.equal(measured.direction,'拡大');
+const proof=g.rawProof({...card,priceObservedAt:'2026-10-29T01:00:00Z'},'2026-10-29',{sourceIdentities:new Map([[card.id,card.identityKey]])},now);assert(proof);assert.equal(g.rawProof(card,'2026-10-29',{meta:{generatedAt:'2026-10-29T01:00:00Z'}},now),null,'file generation date is not price observation');
+assert.equal(m.variationTone('大きい'),'variation-large');assert.equal(m.variationTone('小さい'),'variation-small');
+const fixture={observedDays:17,spanDays:17,maxMissingGap:0,legacyUnverifiedDays:0,ageDays:0,coefficientVariation:2,drawdown:{percent:-3},latestDate:'2026-10-29'};assert.equal(stats.variationEvidence({30:fixture,75:fixture},[75]),null);assert.equal(stats.variationEvidence({30:fixture,75:fixture},[75,30])[0],30);assert.equal(stats.variationEvidence({75:{...fixture,observedDays:38,spanDays:38}},[75])[0],75);
+console.log('PASS paired raw/PSA10 identity and dates, zero/missing/gaps, daily-rate mean, no false75day direction, 75day evidence threshold and price variation colors');

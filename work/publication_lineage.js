@@ -34,7 +34,7 @@ function reuseInputs(root){
   const read=reader(root),manifest=read('data/ui/manifest.json');
   const summaries=manifest?JSON.parse(manifest).detailSources||[]:[];
   const files=[...new Set([...SOURCES,...summaries.filter(f=>f!=='data/update-status.json'),
-    'data/psa-japan-services.json',...['cardrush_catalog','hareruya2_catalog','yuyutei_catalog','torecacamp_catalog',
+    'data/psa-japan-services.json','work/raw-price-observations-manifest.json',...['cardrush_catalog','hareruya2_catalog','yuyutei_catalog','torecacamp_catalog',
     'shop_buyback_catalog','priority_psa_rows','snkr_english_names'].map(n=>'work/'+n+'.json')])].sort();
   return digest(JSON.stringify(hashes(read,files)));
 }

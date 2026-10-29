@@ -86,3 +86,5 @@ assert.equal(feasibility.blockedCards, 2);
 assert.equal(feasibility.conditionalCurrentRouteTotal, 8);
 assert.equal(Object.values(feasibility.combinations).reduce((a,b)=>a+b,0), 3);
 console.log('Saved PSA rematch identity, edition, evidence, timestamps and rule invalidation passed');
+
+for(const [no,label]of [['144','With Mark'],['147','No Mark']]){const row={set:'S-P',no,name:"Kanazawa's Pikachu | Pokemon Center Kanazawa Opening |"};assert(b.namesCompatible('Kanazawa Pikachu '+label+': PROMO [S-P '+no+']',row));assert(!b.namesCompatible('Kanazawa Pikachu '+label,{...row,no:no==='144'?'147':'144'}));assert(!b.namesCompatible('Kanazawa Pikachu '+label,{...row,set:'SV-P'}));assert(!b.namesCompatible('Kanazawa Pikachu '+label,{...row,name:'Pikachu |'}));}

@@ -1793,3 +1793,9 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .state-a-purchase-link{color:#85c5ff;text-decoration:underline;text-underline-offset:.18em;display:inline-block;max-width:100%;overflow-wrap:anywhere}
 .state-a-purchase-link:hover,.state-a-purchase-link:focus-visible{color:#b9dfff;outline-offset:3px}
 .price-variation>small,.buyback-75-mean{display:block;color:#b8c7d9}
+
+.price-variation.variation-large>strong{color:#ff9a86}.price-variation.variation-medium>strong{color:#f5d479}.price-variation.variation-small>strong{color:#94caff}.price-variation.variation-unknown>strong{color:#aeb8c8}
+.price-gap{margin-top:.4rem;color:#c4d0e0}.price-gap>strong{font-size:.88rem}.price-gap small{display:block;font-size:.75rem;line-height:1.45}
+.candidate-glance .price-cell.glance-break-even>strong{font-size:1.04rem}.price-cell.glance-break-even>span{font-size:.75rem}.card-efficiency>small,.efficiency-status{font-size:.74rem;line-height:1.4}
+
+@media(max-width:600px){.candidate-glance .price-gap:has(details[open]){grid-column:1/-1}}

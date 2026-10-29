@@ -41,9 +41,9 @@ function statistics(rows, asOf, days, dateKey, priceKey) {
     min: prices.length ? Math.min(...prices) : null, max: prices.length ? Math.max(...prices) : null,
     drawdown: dateKey === 0 ? maximumDrawdown(accepted,dateKey,priceKey) : null };
 }
-function variationEvidence(snapshots) {
+function variationEvidence(snapshots, order=[200,75,30,7]) {
   // Overlapping windows are not independent votes. Use one sufficiently observed window.
-  const chosen=[200,75,30,7].map(d=>[d,snapshots[d]]).find(([d,s])=>d>=30&&s.observedDays>=15&&s.observedDays/d>=.5&&s.spanDays>=14&&s.maxMissingGap<=7&&s.legacyUnverifiedDays===0&&s.ageDays<=2);
+  const chosen=order.map(d=>[d,snapshots[d]]).find(([d,s])=>s&&d>=30&&s.observedDays>=15&&s.observedDays/d>=.5&&s.spanDays>=14&&s.maxMissingGap<=7&&s.legacyUnverifiedDays===0&&s.ageDays<=2);
   if(!chosen)return null;
   const [days,s]=chosen;return [days,Math.round(s.coefficientVariation*100)/100,s.drawdown?.percent??null,s.observedDays,s.spanDays,s.maxMissingGap,s.latestDate];
 }
@@ -55,7 +55,7 @@ function verifiedVariation(rows, card, asOf, now) {
     const stat = statistics(verified, asOf, days, 0, 2);
     return [days, {...stat, ...observationStatus(stat, days, asOf)}];
   }));
-  const value = variationEvidence(snapshots);
+  const value = variationEvidence(snapshots,[75,30]);
   const excluded = rows.filter(r => dayTime(r[0]) >= dayTime(asOf)-199*DAY && dayTime(r[0]) <= dayTime(asOf)).length - snapshots[200].count;
   // Diagnose one window. Overlapping windows never count as independent evidence.
   const stat = snapshots[30], reasons = [];
@@ -116,6 +116,8 @@ function build(root = ROOT, now = new Date()) {
   const history = read('work/market_stability_history.json');
   const cards = read('data/pokemon-cards.json');
   const meta = read('data/pokemon-cards-meta.json');
+  const gap=require('./price_gap_observations'),rawSaved=gap.readSaved(root);
+  const sourcePriceEvidence=fs.existsSync(path.join(root,'data/state-a-price-evidence.json'))?read('data/state-a-price-evidence.json').cards||{}:{};
   // The window advances even when acquisition fails; old data must age rather than reset the clock.
   const asOf = require('./psa10_observation_evidence').calendarDay(now.toISOString());
   const summary = { version: 6, asOf, periods: PERIODS, migration:'独自観測比較90→75暦日・日付原票から再集計。取得元独自90日・鑑定返却期間は別', calendar: 'Asia/Tokyo・直近暦日・同日1記録（株の取引日ではない）', retentionDays: 365,
@@ -129,6 +131,10 @@ function build(root = ROOT, now = new Date()) {
   const tradeDemand=require('./psa10_trade_statistics').prepare(root,cards,now);
   summary.tradeDemand=tradeDemand.summary;
   summary.variation={version:2,cards:{},unavailable:{},excluded:{},rule:'根拠確認済み実測だけで1期間を採用。15日以上・期間50%以上・観測14日間以上・連続欠測7日以下・最終2日以内。旧記録は価格平均に保持し変動評価から除外。重複4票にしない'};
+  summary.variation.version=3;summary.variation.mediumStatus={};
+  summary.priceGap={version:1,source:'みんトレ美品参考相場・国内PSA10集計',periods:[7,75],times:[],cards:{},thresholdPoints:5,
+    rule:'同仕様・同日・実確認差6時間以内のPSA10/素体-1の日次率を観測日平均。仕入れ目安/最安買値/店舗中央値を使わない。75日は38観測日以上、7日は5日以上・連続欠測7日以内・最終2日以内で方向判定。±5％ポイントは横ばい。表示専用・検索/採算/GO未採用。'};
+  const gapTimes=new Map(),timeIndex=value=>{if(value==null)return null;if(!gapTimes.has(value)){gapTimes.set(value,gapTimes.size);summary.priceGap.times.push(value);}return gapTimes.get(value);};
   let actualCards = 0, historyCards = 0;
   const byPeriod = Object.fromEntries(PERIODS.map(days => [days,{meanCards:0, observationSufficientCards:0, recentSufficientCards:0, staleCards:0, completeCalendarCards:0}]));
   for (const card of cards) {
@@ -141,6 +147,14 @@ function build(root = ROOT, now = new Date()) {
     const trades = Object.fromEntries([7, 30, 75].map(days => [days, { ...statistics(actual.rows, asOf, days, 'date', 'price'),
       sufficient: statistics(actual.rows, asOf, days, 'date', 'price').count >= 3 }]));
     const variability=verifiedVariation(daily,card,asOf,now.getTime());
+    const mid=variability.snapshots[75];
+    if(mid.observedDays)summary.variation.mediumStatus[card.id]=[mid.observedDays,mid.spanDays,mid.maxMissingGap,mid.latestDate];
+    const paired=gap.pairs(history.cards[card.id],card,now.getTime(),rawSaved[card.id]);
+    const gapStats=gap.summarize(paired.rows,asOf),last=gapStats.latest;
+    const currentGap=last&&last.raw===card.price&&last.psa10===card.snkPsa10Price&&now.getTime()-Date.parse(last.rawAt)<=48*3600000
+      &&now.getTime()-Date.parse(last.marketAt)<=48*3600000&&!card.identityReviewRequired&&sourcePriceEvidence[card.id]?.status!=='unbacked'?last.ratio:null;
+    if(last)summary.priceGap.cards[card.id]=[currentGap,gapStats.medium.mean,gapStats.medium.count,gapStats.short.mean,gapStats.short.count,gapStats.change,
+      timeIndex(last.date),timeIndex(gapStats.medium.first),gapStats.medium.span,gapStats.medium.maxGap,last.raw,last.psa10,timeIndex(last.rawAt),timeIndex(last.marketAt)];
     if(variability.value)summary.variation.cards[card.id]=variability.value;
     else summary.variation.unavailable[card.id]=variability.reasons;
     if(variability.excluded)summary.variation.excluded[card.id]=variability.excluded;
@@ -165,7 +179,8 @@ function build(root = ROOT, now = new Date()) {
       duplicateDatesRemoved: (history.cards[card.id] || []).filter(r => positive(r[2])).length
         - new Set((history.cards[card.id] || []).filter(r => positive(r[2])).map(r => r[0])).size,
       excludedObservationRows: (history.cards[card.id]?.length || 0) - daily.length,
-      variation:{snapshots:variability.snapshots,excludedUnverified:variability.excluded,reasons:variability.reasons},tradeDemand:tradeDemand.details.get(card.id) };
+      variation:{snapshots:variability.snapshots,excludedUnverified:variability.excluded,reasons:variability.reasons},
+      priceGap:{...gapStats,rejected:paired.rejected},tradeDemand:tradeDemand.details.get(card.id) };
     if (actual.rows.length) actualCards++;
   }
   summary.coverage = { catalog: cards.length, snapshotCards: historyCards, historyCards, summaryCards: Object.keys(summary.cards).length,
@@ -175,7 +190,7 @@ function build(root = ROOT, now = new Date()) {
     if (fs.existsSync(target) && fs.readFileSync(target, 'utf8') === text) return;
     fs.mkdirSync(path.dirname(target), { recursive: true });
     fs.writeFileSync(target + '.tmp', text); fs.renameSync(target + '.tmp', target); written.push(file); };
-  const inputHash = crypto.createHash('sha256').update(JSON.stringify([history, cards.map(c => [c.id, c.identityKey, c.snkPsa10Trades]), asOf,summary.variation.version])).digest('hex');
+  const inputHash = crypto.createHash('sha256').update(JSON.stringify([history, cards.map(c => [c.id, c.identityKey, c.snkPsa10Trades,c.price,c.snkPsa10Price]),rawSaved,sourcePriceEvidence,asOf,summary.variation.version])).digest('hex');
   summary.inputHash = inputHash;
   for (let i = 0; i < chunks.length; i++) write(`data/psa10-periods/${i}.json`, chunks[i]);
   write('data/psa10-period-summary.json', summary);

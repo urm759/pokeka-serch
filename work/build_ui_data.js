@@ -45,7 +45,7 @@ function project(name, input) {
   }
   if(name==='psa10-period-summary') {
     if(value.tradeDemand)for(const row of Object.values(value.tradeDemand.cards))while(row.length && row.at(-1)==null)row.pop();
-    if(value.variation?.version===2){value.variation.defaultUnavailable=['history'];for(const [id,reasons]of Object.entries(value.variation.unavailable))if(reasons.length===1&&reasons[0]==='history')delete value.variation.unavailable[id];}
+    if(value.variation?.version>=2){value.variation.defaultUnavailable=['history'];for(const [id,reasons]of Object.entries(value.variation.unavailable))if(reasons.length===1&&reasons[0]==='history')delete value.variation.unavailable[id];}
   }
   return value;
 }

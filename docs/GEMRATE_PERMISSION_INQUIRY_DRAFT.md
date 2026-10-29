@@ -10,7 +10,7 @@ Hello GemRate team,
 
 I maintain a public Japanese Pokémon card comparison site used for personal purchase and grading decisions, which may inform buying or selling. Please advise whether this falls under commercial use in your terms.
 
-I have manually downloaded two set-list CSV exports from the public Japanese Eevee Heroes PSA page and kept them privately for identity verification. The current verified subset is 50 cards. We do not use the API, have no API key or contract, and have not published GemRate POP data.
+I have manually downloaded two set-list CSV exports from the public Japanese Eevee Heroes PSA page and kept them privately for identity verification. The current verified subset is 52 cards. We do not use the API, have no API key or contract, and publish only a limited reference subset of factual PSA10/total counts, their ratio, source date and source link, separately from calculation inputs. We do not redistribute the original CSV or bulk history.
 
 Could you confirm the permitted scope separately for these activities?
 
@@ -29,3 +29,9 @@ Thank you.
 ---
 
 回答待ち項目：私的保存期間／仕入れ分析用途／派生率・枚数・日付の公開／静的JSON・公開Git／原CSV再配布／継続取得の方法・頻度／API権限・料金。回答前に公開条件を推定しない。
+
+## 2026-10-29：未送信文案への追加質問
+
+6. Catalog and change feed: which plan permits an initial Japanese Pokemon PSA catalog CSV plus daily population changes? Please specify universal IDs, source timestamps, history coverage, quota/Retry-After, fees, private caching, and limited factual JSON/GitHub Pages display rights. We understand these endpoints are outside the basic plan; no subscription is authorized by this inquiry.
+
+現在は参考52枚・計算採用0・新しいPOPの継続自動取得0。APIの一括/差分契約の質問を、受領CSVの限定参考表示の停止条件へ転用しない。

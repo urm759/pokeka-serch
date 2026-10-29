@@ -172,6 +172,17 @@
     const label=cv>=20||drawdown<=-30?'大きい':cv>=8||drawdown<=-15?'中程度':'小さい';
     return {label,trend,days,cv,drawdown,count,span,gap,latest,reference:count<days,excluded:summary?.variation?.excluded?.[card.id]||0,reason:'確認済み実測のみ。記述的な参考区分：変動係数20%/最大下落30%以上は大、8%/15%以上は中。予測・GO条件ではない'};
   }
+  function variationTone(label) { return {'大きい':'variation-large','中程度':'variation-medium','小さい':'variation-small'}[label]||'variation-unknown'; }
+  function priceGap(summary,card,now=Date.now()) {
+    const data=summary?.priceGap,r=data?.cards?.[card.id];
+    if(!r)return {current:null,mean75:null,mean7:null,count75:null,count7:null,direction:'判断材料不足',reason:'同日・同仕様の両価格観測未取得'};
+    const last=data.times[r[6]],first=data.times[r[7]],rawAt=data.times[r[12]],marketAt=data.times[r[13]],day=new Date(now+9*3600000).toISOString().slice(0,10);
+    const fresh=at=>Number.isFinite(Date.parse(at))&&Date.parse(at)<=now&&now-Date.parse(at)<=48*3600000;
+    const current=finite(r[0])&&fresh(rawAt)&&fresh(marketAt)&&r[11]===card.psa10?r[0]:null;
+    const validDirection=summary.asOf===day&&r[2]>=38&&r[4]>=5&&r[9]<=7&&fresh(rawAt)&&fresh(marketAt)&&finite(r[5]);
+    const change=validDirection?r[5]:null;
+    return {current,mean75:r[1],count75:r[2],mean7:r[3],count7:r[4],change,direction:change==null?'判断材料不足':change>5?'拡大':change< -5?'縮小':'横ばい',last,first,span:r[8],gap:r[9],raw:r[10],psa10:r[11],rawAt,marketAt,reference:r[2]<75,source:data.source,reason:change==null?'方向は7日5観測日・75日38観測日以上、同基準日・連続欠測7日以内・新鮮な比較が必要':'直近7日平均−75日平均。±5％ポイント以内は横ばい。'};
+  }
   function observationExclusions(summary, card, settings) {
     const reasons = [];
     for (const days of observationPeriods) {
@@ -400,5 +411,5 @@
         status:pop[4]===0?'近い期間の参考比較':pop[4]===2?'POP減少・訂正等':'期間不一致・部分期間',
         ratio:measured&&!stale&&pop[4]===0&&pop[0]>0?n/pop[0]:null}:null};
   }
-  return {variation,purchaseOfferUrl,referenceBuy,percent,inRange,offerPrice,referenceMedian,meanSale,atPurchase,efficiency,coverage,observationPeriods,migrateObservationSettings,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics,periodEfficiencyAverage,efficiencyUnavailableLabel,buybackSupport,buybackMeanWindows,buybackRatioTone,buybackRatioBoundaries,tradeDemand};
+  return {variation,variationTone,priceGap,purchaseOfferUrl,referenceBuy,percent,inRange,offerPrice,referenceMedian,meanSale,atPurchase,efficiency,coverage,observationPeriods,migrateObservationSettings,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics,periodEfficiencyAverage,efficiencyUnavailableLabel,buybackSupport,buybackMeanWindows,buybackRatioTone,buybackRatioBoundaries,tradeDemand};
 });

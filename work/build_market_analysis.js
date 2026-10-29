@@ -34,7 +34,7 @@ function finite(value) {
   return Number.isFinite(number) ? number : null;
 }
 
-function compactRow(date, card, sameDayPrevious = null, observation = undefined) {
+function compactRow(date, card, sameDayPrevious = null, observation = undefined, rawObservation = undefined) {
   const rawPrice = positive(card.price);
   const psaPrice = positive(card.snkPsa10Price ?? card.psa10Price);
   const rawInstantLow = Math.min(...[rawPrice, positive(sameDayPrevious?.[8]), positive(sameDayPrevious?.[1])].filter(Boolean));
@@ -52,6 +52,7 @@ function compactRow(date, card, sameDayPrevious = null, observation = undefined)
     Number.isFinite(psaInstantLow) ? psaInstantLow : null,
   ];
   if (observation !== undefined) row.push(observation);
+  if(Array.isArray(rawObservation))row.push(rawObservation);
   return row;
 }
 
@@ -86,7 +87,7 @@ function appendCurrent(history, cards, date, sourceEvidence = null) {
       return Number.isFinite(timestamp) && timestamp >= cutoff && String(row[0]).slice(0, 10) !== date;
     });
     // A failed fetch never appends a calendar day; a real same-day receipt replaces it once.
-    rows.push(compactRow(date, card, sameDayPrevious, observation));
+    rows.push(compactRow(date, card, sameDayPrevious, observation,require('./price_gap_observations').rawProof(card,date,sourceEvidence)));
     history.cards[card.id] = rows.sort((a, b) => String(a[0]).localeCompare(String(b[0])));
   }
   history.dates = [...new Set(Object.values(history.cards).flatMap((rows) => rows.map((row) => row[0])))].sort();
