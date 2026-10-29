@@ -7,6 +7,7 @@ const quote = {price:9000,observedAt:at,identity:card.identityKey,identityAuditV
 const history = {cards:{fixture:[['2026-10-15',1000,10000,null,null,null,null,null,null,null,[at,evidence.identity(card)]]]}}, source = {shops:{a:{name:'A',fulfilment:'mail'},b:{name:'B',fulfilment:'store'},aMail:{name:'A郵送',fulfilment:'mail',merchantId:'a'}},cards:{fixture:{shops:{a:{listingActive:true,price:9000,matchConfidence:'high'}}}}};
 const saved = {shops:{a:{fixture:{'2026-10-15':quote}}}};
 source.cards.fixture.shops.a.priceDate='2026-10-15';
+source.cards.fixture.shops.a.observedAt=at;
 const result = builder.joined(saved,history,[card],source,now); assert.equal(result.rows.length,1); assert.equal(result.rows[0].ratio,.9);
 for (const extra of [{quarantined:true},{cardMismatchSuspected:true},{matchStatus:'mismatch'},{campaign:true},{quantityLimited:true},{conditionsConfirmed:false},{grade:'PSA9'},{currency:'USD'},{identity:'wrong'},{observedAt:'2026-10-14T01:00:00Z'},{price:null}]) assert.equal(builder.joined({shops:{a:{fixture:{'2026-10-15':{...quote,...extra}}}}},history,[card],source,now).rows.length,0);
 assert.equal(builder.joined(saved,{cards:{fixture:[['2026-10-15',1000,10000]]}},[card],source,now).rows.length,0,'legacy dates without actual market observation not joined');

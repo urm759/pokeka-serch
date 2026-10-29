@@ -339,9 +339,14 @@ function buildOfficialPsaAliases(byQuery) {
 async function main() {
   const sourceUrl = "https://toreca-souba.com/cards";
 const startedAt = Date.now();
-  const pricePayloadDue=require('./price_payload_gate').due(safeReadJson(path.join(resolveSiteRoot(),'data/psa10-observation-receipt.json'),null),startedAt);
+  const pairReceipt=safeReadJson(path.join(resolveSiteRoot(),'data/psa10-observation-receipt.json'),null);
+  const pairPlan=require('./buyback_pair_refresh').plan(safeReadJson(path.join(resolveSiteRoot(),'data/pokemon-cards.json'),[]),
+    safeReadJson(path.join(resolveSiteRoot(),'data/shop-buyback-summary.json'),{}),pairReceipt,
+    safeReadJson(path.join(resolveSiteRoot(),'work/source-update-runs.json'),{}).sources?.toreca,startedAt);
+  const requiredDay=process.env.PRICE_PAIR_RECHECK_DAY||pairPlan.requiredDay;
+  const pricePayloadDue=require('./price_payload_gate').due(pairReceipt,startedAt,{requiredDay});
   const gate = FAST_UPDATE ? await fetchSourceGate(sourceUrl, process.env.FAST_DEEP_SCAN === "1" || pricePayloadDue) : null;
-  if(gate?.changed && pricePayloadDue)gate.reason='価格原票の6時間目標・次回2時間枠へ先回り再確認';
+  if(gate?.changed && pricePayloadDue)gate.reason=requiredDay?'買取提示と同日の相場を既存一括枠で実確認':'価格原票の6時間目標・次回2時間枠へ先回り再確認';
   if (FAST_UPDATE && !gate.changed) {
     console.log(`FAST_UPDATE_RESULT ${JSON.stringify({ changed: false, changedCards: 0, processedCards: 0, regeneratedFiles: 0, httpRequests: UPDATE_METRICS.httpRequests, cacheHits: UPDATE_METRICS.cacheHits, durationMs: Date.now() - startedAt, reason: gate.reason, llmCalls: 0 })}`);
     return;

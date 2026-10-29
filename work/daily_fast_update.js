@@ -44,6 +44,7 @@ function recordSource(sourceId, record) {
   const execution = {
     executionEnvironment: process.env.GITHUB_ACTIONS === "true" ? "GitHub Actions" : "PCローカル",
     workflowRunId: process.env.GITHUB_RUN_ID || null,
+    workflowTrigger: process.env.GITHUB_EVENT_NAME || 'manual-local',
   };
   updateRun(sourceId, { ...record, ...execution }, ROOT);
   appendRunHistory(sourceId, { ...record, ...execution }, ROOT);

@@ -38,6 +38,7 @@ function project(name, input) {
     delete value.support.schema; delete value.support.audit; delete value.support.rule;
     for(const row of Object.values(value.support.meanWindows||{}))for(const mode of ['all','mail'])row[mode]={75:row[mode][75]};
     for (const shops of Object.values(value.support.cards)) for (const row of Object.values(shops)) {
+      if(row.lastComparable&&[0,1,2,3,4,5,7,8].every(i=>row.lastComparable[i]===row.current?.[i]))delete row.lastComparable;
       const b = row.baseline || [];
       row.glance = [b[0] ?? null,b[1] ?? 0,b[7] ?? true,b[8] ?? null];
       delete row.h; delete row.baseline; delete row.periods; delete row.premium; delete row.meanDays;

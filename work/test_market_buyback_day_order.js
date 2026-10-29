@@ -15,3 +15,4 @@ assert(!marketBeforeBuyback({lastAttemptAt:new Date(now-hour).toISOString()},quo
 const source=require('node:fs').readFileSync(require('node:path').join(__dirname,'run_priority_price_refresh.js'),'utf8');
 assert(source.indexOf("['toreca','psa9Evidence'")<source.indexOf("['shopBuyback','buybackExitEvidence'"),'market bulk is before buyback bulk');
 console.log('PASS market/buyback calendar ordering: existing bulk slot, actual success day, unchanged two-hour retry, no same-day duplicate');
+require('./test_buyback_rollover');

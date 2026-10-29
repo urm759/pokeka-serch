@@ -28,7 +28,8 @@ function joined(observations, history, cards, source, now = Date.now()) {
           || Date.parse(observed[0]) > now || !Number.isFinite(point?.[2]) || !(point[2] > 0)) { reject('同日の国内PSA10価格確認証拠なし'); continue; }
         if (Date.parse(date) < Date.parse(evidence.calendarDay(new Date(now).toISOString())) - 74 * DAY) continue;
         const currentQuote=source.cards?.[id]?.shops?.[shop];
-        const priceDate=quote.priceDate || (currentQuote?.price===quote.price && currentQuote.priceDate===date ? currentQuote.priceDate : null);
+        const priceDate=quote.priceDate || (currentQuote?.price===quote.price && currentQuote.observedAt===quote.observedAt
+          && currentQuote.priceDate===date ? currentQuote.priceDate : null);
         const timeSkewHours=Math.abs(Date.parse(quote.observedAt)-Date.parse(observed[0]))/3600000;
         rows.push({ id, physicalIdentity: physicalKey(card), shop, date, priceDate, timeSkewHours, ratio: quote.price / point[2], price: quote.price, marketPrice: point[2],
           observedAt: quote.observedAt, marketAt: observed[0], identity: quote.identity, url: quote.url,
@@ -95,6 +96,9 @@ function aggregate(rows, source, cards, now = Date.now()) {
       baseline: last.timeSkewHours <= 6 ? last.baseline : [null,0,0,0,0,'unmatched-time',last.band,true,null],
       days: records.filter(r=>r.timeSkewHours<=6&&Date.parse(r.date)>=Date.parse(asOf)-29*DAY).map(r => [r.date, r.ratio]),
       meanDays: records.filter(r=>r.timeSkewHours<=6&&r.priceDate===r.date).map(r=>[r.date,r.ratio]), periods: {}, premium: {} };
+    const lastComparable=records.filter(r=>r.timeSkewHours<=6&&r.priceDate===r.date).at(-1);
+    if(lastComparable)result.lastComparable=[lastComparable.ratio,lastComparable.price,lastComparable.marketPrice,lastComparable.observedAt,
+      lastComparable.marketAt,lastComparable.date,true,lastComparable.priceDate,lastComparable.timeSkewHours];
     for (const days of periods) {
       const selected = records.filter(r => r.timeSkewHours <= 6 && Date.parse(r.date) >= Date.parse(asOf) - (days - 1) * DAY);
       if (!selected.length) continue;
@@ -126,8 +130,20 @@ function build(root = ROOT) {
     currentComparisons:active.length,currentPriceDateUnknown:active.filter(r=>!r.priceDate).length,currentSkewOver6Hours:active.filter(r=>r.timeSkewHours>6).length,
     recheck: active.filter(r=>!r.priceDate || r.timeSkewHours>6).map(r=>({id:r.id,shop:r.shop,field:'buybackExitEvidence',source:'shopBuyback',mode:'bulk',automatic:source.shops?.[r.shop]?.acquisitionPermission!=='pending',reason:!r.priceDate?'提示日未確認':'国内相場との確認時差超過',automaticReviewRelease:false}))};
   const result = aggregate(rows, source, cards); result.summary.audit = audit;
-  const write = (file, value) => { const target = path.join(root,file); fs.mkdirSync(path.dirname(target),{recursive:true}); require('./acquisition_retry').atomicWrite(target,value,0); };
+  audit.pairing=require('./buyback_pair_refresh').plan(cards,source,read('data/psa10-observation-receipt.json'),
+    read('work/source-update-runs.json').sources?.toreca);
+  const write = (file, value) => { const target = path.join(root,file),text=JSON.stringify(value); if(fs.existsSync(target)&&fs.readFileSync(target,'utf8')===text)return; fs.mkdirSync(path.dirname(target),{recursive:true}); require('./acquisition_retry').atomicWrite(target,value,0); };
   const existing = read('data/buyback-observation-summary.json'); existing.support = result.summary;
+  const latestCodes={},comparableCards=new Set(),comparableRows=[];
+  const byId=new Map(cards.map(c=>[c.id,c]));
+  for(const [id,shops]of Object.entries(result.summary.cards))for(const [shop,row]of Object.entries(shops)) {
+    const c=byId.get(id),status=require('../exploration-metrics').buybackCurrentStatus(row,result.summary.shops[shop],
+      existing.cards?.[id]?.[shop]?.identity===c?.identityKey,c?.snkPsa10Price,Date.now(),source.cards?.[id]?.shops?.[shop],result.summary.timingPolicy);
+    latestCodes[status.code||'current']=(latestCodes[status.code||'current']||0)+1;
+    if(status.valid){comparableCards.add(id);comparableRows.push([id,shop]);}
+  }
+  audit.currentEligibility={cards:comparableCards.size,rows:comparableRows.length,reasons:latestCodes,
+    note:'同じ共通判定を一覧/詳細/倍率検索/CSVでも使用。過去参考を現在へ代用しない。'};
   const shards = {};
   existing.support.detailFiles = {};
   for (const [id, detail] of Object.entries(result.detail)) {

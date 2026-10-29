@@ -16,12 +16,12 @@ function due(record, now = Date.now(), config = {}) {
   // Failed origins cool down too; running often must not retry protected sources.
   return (!Number.isFinite(success) || require("./proactive_refresh.js").eligibleDeadline(success + 6 * 3600000, true, now, config)) && (!Number.isFinite(attempt) || now - attempt >= 2 * 3600000);
 }
-function marketBeforeBuyback(market, buyback, now = Date.now(), config = {}) {
+function marketBeforeBuyback(market, buyback, now = Date.now(), config = {}, pairing = null) {
   if (due(market, now, config)) return true;
   const success=Date.parse(market?.lastSuccessAt),attempt=Date.parse(market?.lastAttemptAt);
   const day=at=>new Date(at+9*3600000).toISOString().slice(0,10);
   // Use the existing single bulk slot before new-day quotes. Never waive the source retry interval.
-  return due(buyback,now,config) && Number.isFinite(success) && day(success)!==day(now)
+  return (pairing?.marketNeeded || due(buyback,now,config)) && Number.isFinite(success) && day(success)!==day(now)
     && (!Number.isFinite(attempt)||now-attempt>=2*3600000);
 }
 function main() {
@@ -76,14 +76,17 @@ function main() {
   if (!run('work/audit_candidate_reduction.js')) throw new Error('Fixed shared-search recovery queue rebuild failed');
   if (!run('work/audit_purchase_price_recovery.js', ['--baseline'])) throw new Error('Freshness baseline save failed');
   const config = require("./priority_price_queue.js").timingConfig(ROOT);
+  const pairPlan=require('./buyback_pair_refresh').plan(read('data/pokemon-cards.json',[]),read('data/shop-buyback-summary.json'),
+    read('data/psa10-observation-receipt.json'),sources.toreca);
   const evidenceBefore=require('./efficiency_evidence_queue').pending(read('data/pokemon-cards.json',[]),read('data/shop-buyback-summary.json'));
   // Use the existing bulk acquisition slots, not a second per-card crawler.
   for (const [source,key,script,args,env] of [
     ['toreca','psa9Evidence','work/daily_fast_update.js',[],{FAST_DEEP_SCAN:'0',DAILY_RUNTIME_LIMIT_MS:'300000',FAST_PARENT_FINALIZES:'priority'}],
     ['shopBuyback','buybackExitEvidence','work/run_tracked_update.js',['shopBuyback','work/update_shop_buybacks.js'],{TRACKED_TIMEOUT_MS:'300000'}]
   ]) {
-    const ready=source==='toreca'?marketBeforeBuyback(sources.toreca,sources.shopBuyback,Date.now(),config):due(sources[source],Date.now(),config);
-    if (ready) run(script,args,env,'source');
+    const ready=source==='toreca'?marketBeforeBuyback(sources.toreca,sources.shopBuyback,Date.now(),config,pairPlan):due(sources[source],Date.now(),config);
+    const calendarRequest=source==='toreca'&&ready&&pairPlan.marketDay!==pairPlan.today?{PRICE_PAIR_RECHECK_DAY:pairPlan.today}:{};
+    if (ready) run(script,args,{...env,...calendarRequest},'source');
     const evidenceAfter=require('./efficiency_evidence_queue').pending(read('data/pokemon-cards.json',[]),read('data/shop-buyback-summary.json'));
     runs.push({source,field:key,status:ready?'補完ルート実処理後の監査':'確認期限・再試行間隔待ち',pendingBefore:evidenceBefore[key].length,pendingAfter:evidenceAfter[key].length,
       recovered:evidenceBefore[key].filter(id=>!evidenceAfter[key].includes(id)).length,

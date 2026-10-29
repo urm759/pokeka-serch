@@ -325,6 +325,37 @@
         aboveDays:means.filter(r=>r>=1).length,aboveRate:count?means.filter(r=>r>=1).length/count*100:null,reference:count!==days||stores<2}];
     }));
   }
+  function buybackCurrentStatus(row,meta,identityValid,currentMarket,now,q,policy) {
+    const p=row.current||[],[ratio,price,market,at,marketAt,date]=p;
+    const fresh=t=>Number.isFinite(Date.parse(t))&&Date.parse(t)<=now&&now-Date.parse(t)<=48*3600000;
+    const day=t=>Number.isFinite(Date.parse(t))?new Date(Date.parse(t)+9*3600000).toISOString().slice(0,10):null;
+    const fail=(code,reason)=>({valid:false,code,reason});
+    if(!identityValid||q?.quarantined||q?.cardMismatchSuspected||q?.matchConfidence&&q.matchConfidence!=='high'
+      ||q?.grade&&q.grade!=='PSA10'||q?.currency&&q.currency!=='JPY')return fail('spec-held','仕様照合保留');
+    if(['pending','retired'].includes(meta.permission))return fail('permission-held','取得・公開利用保留');
+    if(meta.stopped)return fail('source-stopped','取得元停止・履歴のみ');
+    if(q?.campaign||q?.quantityLimited||q?.conditionsConfirmed===false)return fail('conditional','条件付き提示・通常倍率へ不採用');
+    if(q?.listingActive===false||q?.maxQuantity===0)return fail('ended','受付終了');
+    if(q&&(!finite(q.price)||q.price<=0))return fail('quote-missing','現在の買取提示未取得');
+    if(q&&(!q.priceDate||day(q.observedAt)!==q.priceDate))return fail('quote-date','提示日・個別確認日時未確認');
+    if(q&&finite(q.price)&&q.price!==price)return fail('quote-changed','買取価格変更・再集計待ち');
+    if(q&&q.priceDate!==date)return fail('market-day','相場再確認待ち（日付対応）');
+    const skew=Math.abs(Date.parse(at)-Date.parse(marketAt))/3600000;
+    const timing=!policy||p[7]===date&&day(at)===date&&day(marketAt)===date&&/T\d{2}:/.test(at||'')&&/T\d{2}:/.test(marketAt||'')&&skew<=policy.maxSkewHours;
+    if(q?.observedAt&&Date.parse(q.observedAt)!==Date.parse(at)) {
+      if(!fresh(q.observedAt))return fail('quote-stale','買取提示が古い・再確認待ち');
+      if(policy&&Math.abs(Date.parse(q.observedAt)-Date.parse(marketAt))>policy.maxSkewHours*3600000)return fail('market-time','相場再確認待ち（確認時差）');
+      return fail('summary-pending','取得済み・集計待ち');
+    }
+    if(p[6]===false)return fail('listing-unconfirmed','掲載・提示の照合待ち');
+    if(!finite(price)||price<=0||!finite(ratio)||ratio<=0)return fail('quote-missing','有効な買取提示未取得');
+    if(!finite(currentMarket))return fail('market-missing','国内PSA10相場未取得');
+    if(!fresh(at))return fail('quote-stale','買取提示が48時間外・再確認待ち');
+    if(!fresh(marketAt))return fail('market-stale','国内相場が48時間外・再確認待ち');
+    if(!timing)return fail(p[7]!==date?'quote-date':'market-time',p[7]!==date?'提示日未確認':'相場再確認待ち（確認時差）');
+    if(currentMarket!==market)return fail('market-changed','国内相場更新・再集計待ち');
+    return {valid:true,code:null,reason:null};
+  }
   function buybackSupport(summary, id, mode, selected = [], now = Date.now(), currentMarket = null, identityKey = null, currentSource = null) {
     const median = values => { const a = values.slice().sort((x,y)=>x-y); return a.length ? (a[Math.floor(a.length/2)] + a[Math.floor((a.length-1)/2)])/2 : null; };
     const support = summary?.support, entries = support?.cards?.[id] || {}, rows = [], daily = new Map();
@@ -337,11 +368,13 @@
       const [ratio,price,marketPrice,at,marketAt,date] = row.current;
       const policy=support.timingPolicy, skew=Math.abs(Date.parse(at)-Date.parse(marketAt))/3600000;
       const timingValid=!policy || row.current[7] === date && /T\d{2}:/.test(at || '') && /T\d{2}:/.test(marketAt || '') && skew <= policy.maxSkewHours;
-      const valid = identityValid && !permissionHeld && !meta.stopped && row.current[6] !== false && fresh(at) && fresh(marketAt) && timingValid && finite(price) && price>0 && finite(ratio) && ratio > 0 && finite(currentMarket) && currentMarket === marketPrice;
+      const latestQuote=currentSource?.cards?.[id]?.shops?.[shop];
+      const status=buybackCurrentStatus(row,meta,identityValid,currentMarket,now,latestQuote,policy);
+      const valid=status.valid;
       const b = row.baseline || [], g = row.glance || [], standard = b[0] ?? g[0], premium = finite(standard) && standard > 0 ? (ratio / standard - 1) * 100 : null;
       rows.push({shop,merchant:meta.merchantId || shop,name:meta.name,fulfilment:meta.fulfilment,ratio,price,marketPrice,at,marketAt,date,priceDate:row.current[7] ?? null,timeSkewHours:skew,valid,listingActive:row.current[6]===true,
         standard,premium,samples:b[1] ?? g[1] ?? 0,excluded:b[3] || 0,cohort:b[5],band:b[6],reference:b[7] ?? g[2] ?? true,topPct:b[8] ?? g[3] ?? null,periods:row.periods,premiumPeriods:row.premium,
-        reason:valid ? null : !identityValid ? 'カード仕様不一致・照合保留' : permissionHeld ? '取得・公開利用保留' : meta.stopped ? '取得元停止中・参考履歴のみ' : row.current[6] === false ? '現在の掲載・価格・提示日未確認（履歴のみ）' : !finite(price) || price<=0 ? '有効な買取提示未取得' : !finite(currentMarket) ? '現在の国内PSA10相場未取得・履歴のみ' : !fresh(at) || !fresh(marketAt) ? '買取/国内相場の確認が48時間外・参考履歴のみ' : !timingValid ? '提示日未確認・相場との確認時差超過（過去時点の参考）' : '国内PSA10現在価格と観測値不一致・再確認待ち'});
+        reason:status.reason,reasonCode:status.code,latestQuote:latestQuote?{price:latestQuote.price,date:latestQuote.priceDate,at:latestQuote.observedAt,active:latestQuote.listingActive}:null});
       if(!identityValid || permissionHeld)continue;
       for (const [day,rate] of row.days || []) {
         if (!finite(rate)) continue;
@@ -371,7 +404,7 @@
       const listed=!meta.stopped&&!['pending','retired'].includes(meta.permission)&&fresh(listingAt)
         && identityCompatible && !q?.quarantined && (q ? q.listingActive===true : observed?.listingActive===true);
       channels.push({shop,name:meta.name,fulfilment:meta.fulfilment,listingAt,listed:Boolean(listed),
-        comparable:observed?.valid===true,reason:observed?.reason || (meta.stopped?'取得元停止中・掲載有無未確認':meta.permission==='pending'?'取得・公開利用保留':listed?'掲載確認済み・倍率の比較根拠不足':q?'掲載履歴のみ・新鮮な掲載確認不足':'未取得・掲載有無未確認')});
+        comparable:observed?.valid===true,reason:observed?.reason || (meta.stopped?'取得元停止中・掲載有無未確認':meta.permission==='pending'?'取得・公開利用保留':q?.listingActive===false?'受付終了':listed?'掲載確認済み・倍率の比較履歴不足':q?'掲載履歴のみ・新鮮な掲載確認不足':'未取得・掲載有無未確認')});
       targetMerchants.set(merchant,channels);
     }
     const coverageRows=[...targetMerchants].map(([merchant,channels])=>({merchant,channels,
@@ -392,7 +425,24 @@
     const cachedValid=cached&&cached.asOf===asOf&&(!identityKey||cached.identity===identityKey)&&mode!=='selected';
     const meanWindows=cachedValid?cached[mode==='mail'?'mail':'all']
       :hasDays?buybackMeanWindows(eligibleEntries,support?.shops,mode,selected,asOf):null;
-    return {rows,median:median(rates),max:rates.length?Math.max(...rates):null,highestQuote,meanWindows,
+    const referenceRows=[];
+    for(const r of rows) {
+      if(['pending','retired'].includes(support.shops[r.shop].permission)||identityKey&&summary.cards?.[id]?.[r.shop]?.identity!==identityKey)continue;
+      const p=entries[r.shop].lastComparable||entries[r.shop].current,day=t=>Number.isFinite(Date.parse(t))?new Date(Date.parse(t)+9*3600000).toISOString().slice(0,10):null;
+      if(!Array.isArray(p)||p[7]!==p[5]||day(p[3])!==p[5]||day(p[4])!==p[5]||Date.parse(p[3])>now||Date.parse(p[4])>now
+        ||Math.abs(Date.parse(p[3])-Date.parse(p[4]))>6*3600000||!finite(p[1])||p[1]<=0||!finite(p[2])||p[2]<=0||!finite(p[0])||p[0]<=0)continue;
+      const observation={shop:r.shop,merchant:r.merchant,name:r.name,fulfilment:r.fulfilment,reasonCode:r.reasonCode,
+        ratio:p[0],price:p[1],marketPrice:p[2],at:p[3],marketAt:p[4],date:p[5]};
+      r.lastComparable=observation;referenceRows.push(observation);
+    }
+    const referenceDate=referenceRows.map(r=>r.date).sort().at(-1),referenceMerchants=new Map();
+    for(const r of referenceRows.filter(r=>r.date===referenceDate).sort((a,b)=>b.ratio-a.ratio||b.at.localeCompare(a.at)))if(!referenceMerchants.has(r.merchant))referenceMerchants.set(r.merchant,r);
+    const references=[...referenceMerchants.values()];
+    const recentReference=references.length?{date:referenceDate,highestQuote:references[0],mean:references.reduce((s,r)=>s+r.ratio,0)/references.length,count:references.length,
+      changed:references.some(r=>['ended','quote-changed','market-changed'].includes(r.reasonCode))}:null;
+    const reasonCounts={};for(const r of rows.filter(r=>!r.valid))reasonCounts[r.reason]=(reasonCounts[r.reason]||0)+1;
+    const reason=Object.entries(reasonCounts).sort((a,b)=>b[1]-a[1]).slice(0,2).map(([text])=>text).join('／')||'対応する比較履歴未取得';
+    return {rows,median:median(rates),max:rates.length?Math.max(...rates):null,highestQuote,meanWindows,recentReference,reasonCounts,reason,
       mean,meanCount:meanOffers.length,meanReference:meanOffers.length===1,meanShops:meanOffers.map(r=>r.shop),coverage,
       meanRule:'選択中の同一店は有効な最高提示1件。対象カードの店舗間単純平均。減額・費用なし',
       above:rates.filter(r=>r>=1).length,count:rates.length,latest,windows,
@@ -411,5 +461,5 @@
         status:pop[4]===0?'近い期間の参考比較':pop[4]===2?'POP減少・訂正等':'期間不一致・部分期間',
         ratio:measured&&!stale&&pop[4]===0&&pop[0]>0?n/pop[0]:null}:null};
   }
-  return {variation,variationTone,priceGap,purchaseOfferUrl,referenceBuy,percent,inRange,offerPrice,referenceMedian,meanSale,atPurchase,efficiency,coverage,observationPeriods,migrateObservationSettings,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics,periodEfficiencyAverage,efficiencyUnavailableLabel,buybackSupport,buybackMeanWindows,buybackRatioTone,buybackRatioBoundaries,tradeDemand};
+  return {variation,variationTone,priceGap,purchaseOfferUrl,referenceBuy,percent,inRange,offerPrice,referenceMedian,meanSale,atPurchase,efficiency,coverage,observationPeriods,migrateObservationSettings,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics,periodEfficiencyAverage,efficiencyUnavailableLabel,buybackSupport,buybackCurrentStatus,buybackMeanWindows,buybackRatioTone,buybackRatioBoundaries,tradeDemand};
 });
