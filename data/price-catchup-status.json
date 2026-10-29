@@ -1,28 +1,28 @@
 {
-  "startedAt": "2026-10-29T17:05:43.031Z",
-  "runId": "40917894035",
-  "event": "schedule",
-  "route": "既存監視ジョブの空白補完",
+  "startedAt": "2026-10-29T19:08:09.534Z",
+  "runId": "40937207422",
+  "event": "workflow_dispatch",
+  "route": "通常価格更新",
   "status": "acquired-saved",
   "allowed": true,
-  "ageMs": 13648176,
-  "minimumIntervalMs": 9000000,
+  "ageMs": 7345897,
+  "minimumIntervalMs": 7200000,
   "reason": "定期の空白・既存の期限順キューで補完",
   "llmCalls": 0,
   "codexCalls": 0,
   "sourceFailures": [],
   "acquisitionStatus": "process-success",
-  "endedAt": "2026-10-29T17:18:57.840Z",
-  "durationMs": 794809,
+  "endedAt": "2026-10-29T19:19:58.588Z",
+  "durationMs": 709054,
   "outcomes": {
-    "baselineAt": "2026-10-29T17:05:43.031Z",
-    "commonCards": 12755,
+    "baselineAt": "2026-10-29T19:08:09.534Z",
+    "commonCards": 12757,
     "addedCards": 0,
     "removedCards": 0,
     "newlyAnalyzable": 0,
     "lostAnalyzable": 0,
-    "filledCards": 0,
-    "filledItems": 0,
+    "filledCards": 2,
+    "filledItems": 2,
     "sources": {
       "cardrush": {
         "newLinked": 0,
@@ -36,7 +36,7 @@
         "validAdded": 0,
         "validLost": 0,
         "usableNet": 0,
-        "freshnessRecovered": 2
+        "freshnessRecovered": 0
       },
       "yuyutei": {
         "newLinked": 0,
@@ -53,10 +53,10 @@
         "freshnessRecovered": 0
       },
       "psaOfficial": {
-        "newLinked": 0,
-        "validAdded": 0,
+        "newLinked": 2,
+        "validAdded": 2,
         "validLost": 0,
-        "usableNet": 0,
+        "usableNet": 2,
         "freshnessRecovered": 0
       },
       "pokedata": {
