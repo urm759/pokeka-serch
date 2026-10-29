@@ -64,7 +64,12 @@ function feasibility(rows, listed, analyzable) {
 function build(root=ROOT) {
   const read=f=>JSON.parse(fs.readFileSync(path.join(root,f),'utf8'));
   const source=read('work/toreca-source-inventory.json'),cards=read('data/pokemon-cards.json'),completion=read('data/card-catalog-completion.json');
-  const result=summarize(source.cards,cards,completion,read('work/modern-high-rarity-config.json').rarityWhitelist);
+  const supplementIds=new Set(read('work/domestic-catalog-supplements.json').cards.map(c=>c.id));
+  const sourceIds=new Set(source.cards.map(c=>c.id));
+  const supplements=cards.filter(c=>supplementIds.has(c.id)&&!sourceIds.has(c.id));
+  const result=summarize([...source.cards,...supplements],cards,completion,read('work/modern-high-rarity-config.json').rarityWhitelist);
+  result.targetOrigins={providerCards:source.cards.length,verifiedSupplementCards:supplements.length,
+    supplementIds:supplements.map(c=>c.id),note:'取得元母数と独立照合した国内補足を区別。固定群は維持し、現在対象には追加分も含む'};
   const queue=read('work/card-completion-queue.json');
   const priceEvidence=read('data/state-a-price-evidence.json'),priceAudit=read('data/state-a-price-audit.json');
   const linkage=Object.fromEntries(read('work/psa-linkage-all.json').rows.map(r=>[r.cardId,r]));
@@ -117,7 +122,7 @@ function build(root=ROOT) {
   const existing=read('data/modern-high-rarity-audit.json');existing.readiness2020=result;
   existing.siteTotal=cards.length;existing.sourceListedTotal=source.cards.length;existing.sourceSnapshotDeclaredTotal=source.total;
   existing.countsReconciledAt=result.generatedAt;
-  existing.countBasis='取得元の保存済みID母数。公式のみの補足カードはサイト掲載側へ別計上。旧2015年範囲の分類と現行2020年以降のreadiness2020は別。';
+  existing.countBasis='取得元の保存済みID母数はsourceListedTotal、独立確認した補足はreadiness2020.targetOriginsへ別計上し現在対象にも含む。固定対象は変更しない。旧2015年範囲と2020年以降は別。';
   fs.writeFileSync(path.join(root,'data/modern-high-rarity-audit.json'),JSON.stringify(existing));
   return result;
 }

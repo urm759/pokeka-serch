@@ -230,7 +230,11 @@ function applyReferenceComparison(root,report,targets,previous,config) {
   const before=(baseline.profiles||[]),after=report.profiles;
   report.independentCandidates=departures.independentCandidates(before.filter(p=>!p.id.endsWith('-specified')).map(p=>p.urlsMatched||[]),after.filter(p=>!p.urlOnly.id.endsWith('-specified')).map(p=>p.urlOnly.ids));
   report.allModeIndependentComparison=departures.independentCandidates(before.map(p=>p.urlsMatched||[]),after.map(p=>p.urlOnly.ids));
-  const kind=migration?'purchase-basis-and-inventory-policy-change':'data-refresh';
+  const codeChanged=!migration&&before.some(p=>{
+    const current=targets.profiles?.find(q=>q.id===p.id);
+    return p.evidenceMeta?.codeHash&&current?.evidenceMeta?.codeHash&&p.evidenceMeta.codeHash!==current.evidenceMeta.codeHash;
+  });
+  const kind=migration?'purchase-basis-and-inventory-policy-change':codeChanged?'calculation-or-aggregation-change':'data-refresh';
   for(const value of [report.independentCandidates,report.allModeIndependentComparison]){value.comparisonKind=kind;if(migration)value.note+='／公開済み旧条件の比較記録からの買値・在庫方針移行。実補完・独立初適合へ加算しない';}
   targets.referencePolicyRevision=config.comparisonRevision;
 }

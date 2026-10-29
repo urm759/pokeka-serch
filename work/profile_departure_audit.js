@@ -9,6 +9,8 @@ function inspect(before, after, context = {}) {
   const roots = [], derived = [];
   const add = (code, evidence) => { if (!roots.some(r=>r.code===code)) roots.push({code,evidence}); };
   const has = pattern => failures.some(r=>pattern.test(r));
+  const ratioAdoptionHeld = ['reference-disabled','reference-buy-disabled','circular-estimate'].includes(after?.psa9?.exclusionCause);
+  if (ratioAdoptionHeld) add('psa9-reference-adoption-condition','国内PSA9比率の数値ではなく採用区分・許可設定による除外。買値採用元の変更と価格変化を分離');
   const comparable = Boolean(before && after && context.before?.settingsHash && context.after?.settingsHash && context.before?.codeHash && context.after?.codeHash
     && (context.before.fingerprintVersion??0)===(context.after.fingerprintVersion??0));
   const settingsChanged = comparable && context.before.settingsHash !== context.after.settingsHash;
@@ -47,7 +49,7 @@ function inspect(before, after, context = {}) {
   if(roots.some(r=>r.code==='expired-price')&&expiryQuotes.some(r=>/HTTP|認証|アクセス|取得失敗|停止|error|fail|timeout|timed out|形式/i.test(r.sourceFailure||'')))
     add('acquisition-failure','期限切れ側の取得元に失敗・停止記録あり。他店舗の停止や正常な時間予算繰越と区別');
   if (has(/未取得|データ不足|日時不明|日時不足|未確認|出口不足|価格なし|中央値.*不足/) || after?.medianEvidence?.reasons?.length) add('missing-data','未取得・確認日時・出口等の不足。不存在とは断定しない');
-  if (!specification && !conflict && !has(/期限超過|期限切れ|古値|古い|未取得|データ不足|算出不可/) && reasons.some(r=>/価格範囲|利益|効率|比率|資金|需要|供給/.test(r)))
+  if (!specification && !conflict && !has(/期限超過|期限切れ|古値|古い|未取得|データ不足|算出不可/) && reasons.some(r=>/価格範囲|利益|効率|比率|資金|需要|供給/.test(r) && !(r==='国内PSA9比率'&&ratioAdoptionHeld)))
     add('profitability-or-assessment-condition','現在の条件不合格。市場下落が原因かどうかは前後入力を別比較');
   if (has(/期間不一致|返却時試算不可/)) add('forecast-period-hold','返却期間と検証済み予測期間が不一致');
   if (review.manualReview && !specification && !conflict && (!(after?.dataQuality?.manualReviewReasons||[]).length
@@ -88,7 +90,7 @@ function inspect(before, after, context = {}) {
   const fields = [];
   const sourceTargets=[];
   const independentFailures=reasons.filter(reason=>reason==='単体年換算資金効率条件'&&Number.isFinite(after?.efficiency?.annual)&&!previousOfferExpired
-    || reason==='国内PSA9比率'&&Number.isFinite(after?.psa9?.ratio)&&!(after.psa9.reasons||[]).length&&!previousOfferExpired);
+    || reason==='国内PSA9比率'&&Number.isFinite(after?.psa9?.ratio)&&!(after.psa9.reasons||[]).length&&!previousOfferExpired&&!ratioAdoptionHeld);
   if (!held) {
     const missingBuy=(after?.efficiency?.blockingReasons||[]).some(r=>r==='期限超過・再確認待ち'||r==='未取得');
     if (previousOfferExpired || purchase?.fresh===false || !purchase && (missingBuy||has(/購入価格|買値|状態A価格|店舗価格/))&&!roots.some(r=>r.code==='out-of-stock')) fields.push('shopStateA');
@@ -117,7 +119,7 @@ function metadata(profile, codeHash, at) {
 }
 function codeHash(root) {
   const fs=require('node:fs'),path=require('node:path');
-  return hash(['app.js','decision-model.js','price-integrity.js','current-market-model.js','exploration-metrics.js','work/profile_discovery_gates.js',
+  return hash(['app.js','decision-model.js','purchase-ratio-model.js','price-integrity.js','current-market-model.js','exploration-metrics.js','work/profile_discovery_gates.js',
     'work/build_buyback_observation_summary.js',
     'work/build_psa10_period_statistics.js','work/reconcile_shop_observations.js']
     .map(f=>[f,fs.readFileSync(path.join(root,f),'utf8').replace(/\r\n/g,'\n')]));

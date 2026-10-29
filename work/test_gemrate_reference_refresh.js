@@ -1,5 +1,16 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),os=require('node:os'),crypto=require('node:crypto');
 const {receive}=require('./gemrate_private_store'),csv=require('./gemrate_csv_import'),{build,refreshIfAvailable}=require('./build_gemrate_public_reference');
+const additions=require('./gemrate_reviewed_additions'),registry=additions.entries(path.join(__dirname,'..'));
+const reviewed=registry[0],canonical=require('./card_identity').canonicalIdentity;
+const reviewedCard={id:reviewed.cardId,name:reviewed.catalogName,language:'ja',rarity:reviewed.rarity,finish:reviewed.finish,
+  identityKey:canonical({name:reviewed.catalogName,model:'100/069',language:'ja',rarity:reviewed.rarity}).key};
+const reviewedContext={language:reviewed.language,set:reviewed.set,year:reviewed.year,grader:'PSA',contextProof:'verified'};
+const reviewedSource={'Card #':reviewed.number,Name:reviewed.sourceName,Parallel:reviewed.parallel};
+assert.equal(additions.mappings([reviewedSource],reviewedContext,[reviewedCard],registry).length,1);
+assert.equal(additions.mappings([{...reviewedSource,Parallel:'Reverse Holo'}],reviewedContext,[reviewedCard],registry).length,0);
+assert.equal(additions.mappings([reviewedSource],{...reviewedContext,grader:'CGC'},[reviewedCard],registry).length,0);
+assert.throws(()=>additions.mappings([reviewedSource],reviewedContext,[{...reviewedCard,identityKey:'wrong'}],registry),/changed/);
+assert(additions.mappings([reviewedSource],reviewedContext,[reviewedCard],registry,[csv.key(reviewedSource,reviewedContext)])[0].hold,'discrepancy holds cannot be removed by review');
 const temp=fs.mkdtempSync(path.join(os.tmpdir(),'gemrate-refresh-')),root=path.join(temp,'public'),store=path.join(temp,'private'),hash=b=>crypto.createHash('sha256').update(b).digest('hex');
 fs.mkdirSync(path.join(root,'data'),{recursive:true});fs.mkdirSync(path.join(store,'incoming'),{recursive:true});fs.writeFileSync(path.join(store,'.gitignore'),'*\n');
 const cards=Array.from({length:51},(_,i)=>({id:'card-'+i,identityKey:'ja|S6a|'+i}));fs.writeFileSync(path.join(root,'data/pokemon-cards.json'),JSON.stringify(cards));

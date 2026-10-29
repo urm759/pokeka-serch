@@ -8,7 +8,7 @@
     const price = number(input.purchasePrice), psa9 = number(input.psa9?.value);
     const kind = input.psa9?.measurementType || "missing";
     const age = input.psa9?.updatedAt && input.asOf ? (Date.parse(input.asOf) - Date.parse(input.psa9.updatedAt)) / 86400000 : null;
-    const reference = input.purchaseKind === "market" || kind !== "actual";
+    const reference = ["market", "reference-min"].includes(input.purchaseKind) || kind !== "actual";
     const reasons = [];
     if (!["actual", "aggregate", "estimate"].includes(kind)) reasons.push("国内PSA9の価格種別未確認");
     if (price == null || price < 0) reasons.push("仕入れ値未取得");
@@ -35,7 +35,17 @@
     if (row.circularEstimate) return "circular-estimate";
     const flags = typeof options === "boolean" ? { aggregate:options, estimate:options, market:options } : options;
     if (row.measurementType === "aggregate" && !flags.aggregate || row.measurementType === "estimate" && !flags.estimate || row.purchaseKind === "market" && !flags.market) return "reference-disabled";
+    // Explicit reference-min selection is independent of the legacy market-buy
+    // permission. Its provenance may change when stock runs out, not its meaning.
+    if (row.purchaseKind === "reference-min" && flags.referenceBuy !== true) return "reference-buy-disabled";
     return "eligible";
+  }
+  function exclusionCause(row, min, max, options = {}) {
+    min = number(min); max = number(max);
+    if (min == null && max == null) return null;
+    const status = eligibility(row, options);
+    if (status !== 'eligible') return status;
+    return (min != null && row.ratio < min) || (max != null && row.ratio > max) ? 'ratio-out-of-range' : null;
   }
   function matches(row, min, max, options = {}) {
     min = number(min); max = number(max);
@@ -135,5 +145,5 @@
     }
     return reasons;
   }
-  return { evaluate, matches, eligibility, capLabel, roiOnly, atGuide, marketplaceAtGuide, guideExclusion, guideSearchReasons };
+  return { evaluate, matches, eligibility, exclusionCause, capLabel, roiOnly, atGuide, marketplaceAtGuide, guideExclusion, guideSearchReasons };
 });

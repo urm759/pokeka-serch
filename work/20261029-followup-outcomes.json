@@ -1,0 +1,157 @@
+{
+  "at": "2026-10-29T03:41:20.981Z",
+  "evaluationAt": "2026-10-29T03:22:25.697Z",
+  "baseline": "384ebd53b",
+  "newListed": [
+    {
+      "id": "official-s6a-100",
+      "name": "ターフスタジアム UR [S6a 100/069](強化拡張パック「イーブイヒーローズ」)"
+    }
+  ],
+  "mandatoryResolved": [],
+  "newAnalyzable": [],
+  "noLongerAnalyzable": [],
+  "domesticExitResolved": [
+    {
+      "id": "x-91266",
+      "source": "torecaclub",
+      "price": 72000,
+      "priceDate": "2026-10-29",
+      "observedAt": "2026-10-29T02:54:51.712Z",
+      "beforeComparableStores": 1,
+      "afterComparableStores": 2,
+      "category": "actual-normal-cloud-acquisition; separate from mandatory-analysis completion"
+    }
+  ],
+  "candidateDataOnly": {
+    "before": 103,
+    "after": 104,
+    "net": 1,
+    "firstQualifiedInSavedHistory": [
+      "x-91266"
+    ],
+    "requalified": [
+      "pk-43860"
+    ],
+    "lost": [
+      "pk-22399"
+    ],
+    "note": "same current code/settings/evaluation time, earlier saved data vs final saved data; historical first means available saved comparison history only"
+  },
+  "codeRepairOnly": {
+    "before": 84,
+    "after": 104,
+    "lost": [],
+    "existingFinancialAndGoHashesEqual": true,
+    "note": "same final data/time; code repair effect, not data completion; do not add these two experiments together"
+  },
+  "highRare": {
+    "fixed": {
+      "listed": 1328,
+      "analyzable": 711,
+      "remainingTo90": 485
+    },
+    "current": {
+      "listed": 1330,
+      "analyzable": 711,
+      "analysisPct": 53.45864661654135,
+      "remainingTo90": 486
+    },
+    "unknown": 5074,
+    "feasibility": {
+      "pendingCards": 619,
+      "automaticPathsOnly": 0,
+      "savedReviewOnly": 1,
+      "blockedCards": 619,
+      "combinations": {
+        "source-evidence-unavailable": 8,
+        "source-price-missing": 44,
+        "period-not-provided": 328,
+        "price-conflict-review": 10,
+        "saved-rematch-review": 1,
+        "permission-wait": 3,
+        "price-conflict-review + saved-rematch-review": 2,
+        "period-not-provided + permission-wait": 61,
+        "permission-wait + source-price-missing": 3,
+        "period-not-provided + source-price-missing": 50,
+        "saved-rematch-review + source-evidence-unavailable": 1,
+        "period-not-provided + saved-rematch-review": 15,
+        "period-not-provided + price-conflict-review": 41,
+        "source-card-absent + source-price-missing": 1,
+        "period-not-provided + permission-wait + price-conflict-review": 21,
+        "source-card-absent": 3,
+        "period-not-provided + saved-rematch-review + source-price-missing": 6,
+        "period-not-provided + permission-wait + source-price-missing": 17,
+        "permission-wait + source-card-absent": 1,
+        "period-not-provided + price-conflict-review + saved-rematch-review": 2,
+        "saved-rematch-review + source-card-absent + source-price-missing": 1
+      },
+      "blockedCardsByReason": {
+        "source-evidence-unavailable": 9,
+        "source-price-missing": 122,
+        "period-not-provided": 541,
+        "price-conflict-review": 76,
+        "saved-rematch-review": 28,
+        "permission-wait": 106,
+        "source-card-absent": 6
+      },
+      "target90Cards": 1197,
+      "conditionalCurrentRouteTotal": 711,
+      "conditionalCurrentRoutePct": 53.45864661654135,
+      "targetShortfallAfterConditionalCompletion": 486,
+      "note": "カード単位・組合せは重複なし。理由別は重複あり。現行経路上限は自動経路が全て有効値を返した場合の条件付きで、取得成功/終了日を保証しない。保存原票の再照合保留を解消済み・許諾待ちへ一括変換しない。"
+    }
+  },
+  "gemrate": {
+    "published": 51,
+    "calculationAdopted": 0,
+    "newlyMatched": 1,
+    "recoveredSavedObservations": 1,
+    "httpRequests": 0,
+    "remainingDomesticUnlisted": 49,
+    "specialFinishHeld": 20,
+    "discrepancyHeld": 1,
+    "trendHeld": 53,
+    "automaticCollectionEstablished": false
+  },
+  "freshness": {
+    "latestFixed": {
+      "at": "2026-10-29T03:21:53.159Z",
+      "executionContext": {
+        "event": "manual-local",
+        "runId": null,
+        "environment": "PCローカル"
+      },
+      "cohort": 192,
+      "fresh6h": 185,
+      "fresh6hPct": 96.35416666666666,
+      "unconfirmed": 0,
+      "maxOverdueHours": 1293.364766388889,
+      "autoWait": 0,
+      "manualWait": 7,
+      "accessStopped": 0,
+      "added": 205,
+      "missingFromCurrent": 0,
+      "aggregationVersion": 2,
+      "outsidePriorityStale": 0
+    },
+    "historicalScheduledMinimum": 0,
+    "note": "latest is a local observation of original source timestamps, not a new acquisition or a scheduled-maintenance proof"
+  },
+  "stages": {
+    "discovery": "1 verified domestic listing added, not a new analysis result",
+    "matching": "1 new GemRate identity admitted by reviewed evidence registry",
+    "prices": "normal cloud catchup 285 reconfirmations, not 285 missing completions",
+    "completion": "one domestic exit requirement recovered; mandatory analysis completion 0",
+    "publication": "validated locally, final public verification report recorded separately"
+  },
+  "next": {
+    "periodTrades": "541 high-rare cards have unprovided period fields; establish legitimate specification/grade/date/transaction-ID/non-AI reuse feed, not repeat same page",
+    "savedOnly": "one solely saved-rematch candidate is error variant; exact error-spec evidence absent, keep held",
+    "gemrate": "continue 49 domestic-unlisted specification reviews and normal CSV route clarification; no mass acceptance, contracts or bypass",
+    "freshness": "retain past 0% and measured schedule gaps; verify next post-fix cycles, not only manual observations",
+    "performance": "fixed-baseline double-calculation warning and mobile timing variability retained"
+  },
+  "ordinaryLlmCalls": 0,
+  "ordinaryCodexCalls": 0
+}

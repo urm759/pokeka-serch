@@ -3,10 +3,14 @@ const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypt
 const csv=require('./gemrate_csv_import'),matcher=require('./gemrate_identity_match'),storage=require('./gemrate_private_store');
 const ROOT=path.resolve(__dirname,'..'),STORE=path.resolve(ROOT,'..','private-research/gemrate');
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
-function pendingFiles(store) {
+function pendingFiles(store,reviewRevision=null) {
   const incoming=path.join(store,'incoming'),manifestFile=path.join(store,'manifest.json');
   const manifest=fs.existsSync(manifestFile)?JSON.parse(fs.readFileSync(manifestFile)):{files:[]};
   const prepared=new Map(manifest.files.filter(r=>r.status==='prepared'&&path.dirname(r.originalPath)===incoming).map(r=>[path.basename(r.originalPath),r]));
+  if(reviewRevision){
+    const latest=new Map(manifest.files.filter(r=>r.kind==='list'&&path.dirname(r.originalPath)===incoming).map(r=>[r.originalPath,r]));
+    for(const r of latest.values())if(r.reviewRevision!==reviewRevision&&fs.existsSync(r.originalPath+'.context.json'))prepared.set(path.basename(r.originalPath),r);
+  }
   return [...new Set([...fs.readdirSync(incoming),...prepared.keys()])].filter(n=>/^export(?: \(\d+\))?\.csv$/i.test(n)).map(name=>({name,prepared:prepared.get(name)}));
 }
 function validate(sidecar,bytes,store) {
@@ -28,24 +32,38 @@ function run(store=STORE) {
   try {
   const catalog=JSON.parse(fs.readFileSync(path.join(ROOT,'data/pokemon-cards.json'))),english=JSON.parse(fs.readFileSync(path.join(ROOT,'work/snkr_english_names.json'))).cards;
   const incoming=path.join(store,'incoming'),rows=[];
+  const reviewed=require('./gemrate_reviewed_additions'),registry=reviewed.entries(ROOT),reviewRevision=sha(JSON.stringify(registry));
   // A new CSV requires its own original page evidence and SHA-bound sidecar. Never infer a date from file time.
-  for(const {name,prepared} of pendingFiles(store)) {
+  for(const {name,prepared} of pendingFiles(store,reviewRevision)) {
     const file=path.join(incoming,name),meta=file+'.context.json';
     if(!fs.existsSync(meta)){rows.push({name,status:'review',reason:'source-context-missing'});continue;}
     try {
       const retained=fs.existsSync(file)?file:prepared?.storedPath;
       if(!retained||storage.outside(store,fs.realpathSync(retained)))throw Error('Inbox original escapes private store or is missing');
       const bytes=fs.readFileSync(retained),sidecar=JSON.parse(fs.readFileSync(meta)),v=validate(sidecar,bytes,store);
+      if(!fs.existsSync(file)){
+        if(sha(require('node:zlib').gunzipSync(fs.readFileSync(prepared.backupPath)))!==sha(bytes))throw Error('Retained backup mismatch');
+        fs.copyFileSync(retained,file,fs.constants.COPYFILE_EXCL);
+      }
       const cells=csv.parseCsv(bytes.toString('utf8')),headers=cells.shift(),source=cells.map(r=>Object.fromEntries(headers.map((h,i)=>[h,r[i]])));
       const prior=JSON.parse(fs.readFileSync(path.join(store,'verification-report.json')));
       const held=prior.receipts.filter(r=>r.kind==='list').flatMap(r=>JSON.parse(fs.readFileSync(r.parsedPath)).quarantined.filter(q=>q.reason==='source-discrepancy-hold').map(q=>q.identity));
       const matches=matcher.resolve(source,v.context,catalog,english,{...v,contextProof:v.context.contextProof,heldKeys:held});
+      const additions=reviewed.mappings(source,v.context,catalog,registry,held);
+      for(const addition of additions){
+        const old=matches.mappings.find(m=>m.key===addition.key||m.cardId===addition.cardId);
+        if(old&&(old.key!==addition.key||old.cardId!==addition.cardId))throw Error('Reviewed mapping conflict');
+        if(!old)matches.mappings.push(addition);
+      }
       const expanded=path.join(store,'expanded-verification-report.json');
       const previousObservations=fs.existsSync(expanded)?JSON.parse(fs.readFileSync(expanded)).outputs.flatMap(r=>{
         if(storage.outside(store,fs.realpathSync(r.path)))throw Error('Expanded observation path escapes private store');
         return JSON.parse(fs.readFileSync(r.path)).accepted;
       }):[];
       const result=storage.receive({store,previousObservations,files:[{path:file,kind:'list',context:v.context,mappings:matches.mappings}]});
+      const manifestFile=path.join(store,'manifest.json'),manifest=JSON.parse(fs.readFileSync(manifestFile));
+      const receipt=manifest.files.findLast(r=>r.originalPath===file);receipt.reviewRevision=reviewRevision;
+      require('./acquisition_retry').atomicWrite(manifestFile,manifest);
       rows.push({name,status:'imported-private',accepted:result.newPrivateObservations,
         recovered:result.files.filter(r=>r.recovered).reduce((n,r)=>n+r.accepted,0),held:result.files[0].quarantined,sha256:result.files[0].sha256});
     } catch(e) {rows.push({name,status:'review',reason:e.message});}

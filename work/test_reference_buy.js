@@ -25,7 +25,8 @@ assert(fixture);const filters=[a.state.minExpectedProfitFilter,a.state.minExpect
 assert.equal(p.purchasePrice,e.purchasePrice);assert.equal(p.economics?.expectedProfit??null,e.profit);assert.equal(p.economics?.expectedRoi??null,e.roi);assert.equal(range.price,e.purchasePrice);
 assert.equal(a.cardEfficiencyCsvFields(fixture)[0],e.purchasePrice??'');assert.equal(a.buildShareUrl().searchParams.get('effBuy'),'reference-min');
 const previousProfit=a.state.minExpectedProfit;a.state.minExpectedProfit=1000000;const rekey=a.cardEfficiency(fixture);assert.notStrictEqual(rekey,e,'guide hurdle change invalidates cached reference selection even if another price still wins');a.state.minExpectedProfit=previousProfit;
-assert.equal(a.purchasePsa9Ratio(fixture,null,'reference-min').ratio,null,'missing chosen reference cannot fall back to another buy price');const ratio=a.purchasePsa9Ratio({...fixture,currentStoreOffer:null},10000,'reference-min');assert.equal(ratio.purchaseKind,'market','non-purchasable guide retains market-reference adoption setting');
+assert.equal(a.purchasePsa9Ratio(fixture,null,'reference-min').ratio,null,'missing chosen reference cannot fall back to another buy price');
+const ratio=a.purchasePsa9Ratio({...fixture,currentStoreOffer:null},10000,'reference-min');assert.equal(ratio.purchaseKind,'reference-min','explicit reference selection survives stock-driven origin changes');
 const b=load(source,at,{url:'https://example.test/?effBuy=auto&preset=specified&exitPolicy=marketplace',fixedModelClock:true});
 const old=b.prepareCalculatedCards(b.state.cards);const hash=cs=>crypto.createHash('sha256').update(JSON.stringify(cs.map(c=>[c.id,c.buyLimits,c.purchaseDecision]))).digest('hex');
 assert.equal(hash(cards),hash(old),'reference policy never changes limits, assumed rates or GO');
@@ -33,4 +34,6 @@ const gates=require('./profile_discovery_gates').gates;assert.equal(gates({price
 const classifier=require('./build_priority_search_targets').applyReferenceComparison,config=require('./priority-search-profiles.json'),report=structuredClone(require('../data/priority-search-profile-audit.json')),targets=structuredClone(require('./search-profile-targets.json')),previous=structuredClone(targets);delete previous.referencePolicyRevision;
 classifier(process.cwd(),report,targets,previous,config);assert.equal(report.allModeIndependentComparison.comparisonKind,'purchase-basis-and-inventory-policy-change');
 classifier(process.cwd(),report,targets,targets,config);assert.equal(report.allModeIndependentComparison.comparisonKind,'data-refresh');assert.equal(report.allModeIndependentComparison.net,0,'same snapshot after policy migration cannot become new-data gains');
+const oldCode=structuredClone(targets);for(const p of oldCode.profiles)if(p.evidenceMeta)p.evidenceMeta.codeHash='previous-code';
+classifier(process.cwd(),report,targets,oldCode,config);assert.equal(report.allModeIndependentComparison.comparisonKind,'calculation-or-aggregation-change','code-driven restoration is not a data-completion gain');
 console.log(JSON.stringify({pass:true,glaceon:{buy:e.purchasePrice,annual:e.annual,reason:e.reason,profit:p.economics?.expectedProfit,go:fixture.purchaseDecision?.verdict},financeHash:hash(cards)}));

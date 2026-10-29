@@ -7,7 +7,7 @@ const REQUIRED=['test_price_integrity','test_price_comparison','test_publication
 function fingerprint(root=ROOT){
   const list=cp.execFileSync('git',['ls-files','-z'],{cwd:root,encoding:'utf8'}).split('\0').filter(f=>
     /^(?:[^/]+\.js|work\/[^/]+\.js|\.github\/workflows\/[^/]+\.yml|\.gitattributes)$/.test(f)
-    ||/\/(?:[^/]*access-policy|performance-budgets|priority-search-profiles|psa-name-aliases)\.json$/.test(f));
+    ||/\/(?:[^/]*access-policy|performance-budgets|priority-search-profiles|psa-name-aliases|gemrate-reviewed-additions|domestic-catalog-supplements)\.json$/.test(f));
   const h=crypto.createHash('sha256');
   for(const file of [...new Set(list)].sort())if(fs.existsSync(path.join(root,file)))h.update(file+'\0'+fs.readFileSync(path.join(root,file),'utf8').replace(/\r\n/g,'\n')+'\0');
   return h.digest('hex');

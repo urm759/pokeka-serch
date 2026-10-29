@@ -3191,6 +3191,9 @@ function parseOptionalNumber(value) {
 }
 
 function purchasePsa9Ratio(card, manualPrice, purchaseKind, fee = state.fee) {
+  if(manualPrice===undefined&&purchaseKind===undefined&&state.efficiencyBuy==='reference-min'){
+    manualPrice=referenceBuyView(card).value;purchaseKind='reference-min';
+  }
   const referenceSelection=purchaseKind==='reference-min';
   if (manualPrice === undefined && !referenceSelection) manualPrice = state.favoriteCosts[card.id];
   const manual = manualPrice != null && Number.isFinite(Number(manualPrice));
@@ -3198,13 +3201,14 @@ function purchasePsa9Ratio(card, manualPrice, purchaseKind, fee = state.fee) {
   const psa9 = verified?.count >= 3 && verified.median > 0 ? {value:verified.median,measurementType:"actual",count:verified.count,
     updatedAt:verified.latestSaleAt,country:"jp",currency:"JPY",identityConfirmed:true} : card.psa9Audit;
   return purchaseRatioModel?.evaluate({ purchasePrice: referenceSelection ? manual ? Number(manualPrice) : null : manual ? Number(manualPrice) : card.currentStoreOffer?.value ?? card.price,
-    purchaseKind: referenceSelection ? referenceBuyView(card).kind==='store' ? 'store' : 'market' : purchaseKind || (manual ? "manual" : card.currentStoreOffer ? "store" : "market"), psa9,
+    purchaseKind: referenceSelection ? 'reference-min' : purchaseKind || (manual ? "manual" : card.currentStoreOffer ? "store" : "market"), psa9,
     asOf: meta.generatedAt || meta.updatedAt, conflicted: (card.priceAggregation?.comparison || card.priceAggregation)?.conflicted || card.dataQuality?.manualReview,
     fee, saleFeeRate: state.saleFeeRate, extraCost: state.saleExtraCost }) || {ratio:null,reasons:["未取得"]};
 }
 
 function psa9RatioOptions() {
-  return {aggregate:state.psa9RatioAggregate,estimate:state.psa9RatioEstimate,market:state.psa9RatioMarket};
+  return {aggregate:state.psa9RatioAggregate,estimate:state.psa9RatioEstimate,market:state.psa9RatioMarket,
+    referenceBuy:state.efficiencyBuy==='reference-min'};
 }
 
 function psa9NonLossDisplay(metrics) {
@@ -3217,7 +3221,7 @@ function purchasePsa9RatioHtml(card, manualPrice, costs = {}) {
   const cap = purchaseRatioModel.capLabel(row, value => fmt.format(value));
   const source = {actual:"国内実成約",aggregate:"国内集計値・実成約未取得",estimate:"推定値",missing:"未取得"}[row.measurementType] || "未取得";
   const purchaseLabel = row.purchasePrice == null ? "未取得" : `¥${fmt.format(row.purchasePrice)}`;
-  return `<details class="purchase-ratio-details"><summary>仕入れ値／国内PSA9：${row.ratio == null ? "検証不能" : `${row.ratio.toFixed(1)}%`}・${escapeHtml(source)}</summary><p class="helper">${escapeHtml(row.purchaseKind === "manual" ? "手入力買値" : row.purchaseKind === "store" ? "店舗状態A価格" : "相場参考値")} ${purchaseLabel}／国内PSA9 ${row.psa9Price > 0 ? `¥${fmt.format(row.psa9Price)}` : "未取得"}。${row.reference ? "参考値・実成約基準ではありません。" : ""}${row.circularEstimate ? "素体由来の循環推定のため割安検索には使用しません。" : ""}<br>PSA9費用込み赤字回避上限：${escapeHtml(cap)}（${escapeHtml(source)}・フリマ手数料${state.saleFeeRate}%、追加費用、鑑定費を控除）／更新日 ${escapeHtml(row.updatedAt?.slice(0,10) || "未確認")} ${escapeHtml(row.reasons.join("／"))}。比率・仮定試算は本番の仕入れ判定に反映しません。</p></details>`;
+  return `<details class="purchase-ratio-details"><summary>仕入れ値／国内PSA9：${row.ratio == null ? "検証不能" : `${row.ratio.toFixed(1)}%`}・${escapeHtml(source)}</summary><p class="helper">${escapeHtml(row.purchaseKind === "manual" ? "手入力買値" : row.purchaseKind === "store" ? "店舗状態A価格" : row.purchaseKind==='reference-min' ? '参考買値（採用可能な最安）' : "相場参考値")} ${purchaseLabel}／国内PSA9 ${row.psa9Price > 0 ? `¥${fmt.format(row.psa9Price)}` : "未取得"}。${row.reference ? "参考値・実成約基準ではありません。" : ""}${row.circularEstimate ? "素体由来の循環推定のため割安検索には使用しません。" : ""}<br>PSA9費用込み赤字回避上限：${escapeHtml(cap)}（${escapeHtml(source)}・フリマ手数料${state.saleFeeRate}%、追加費用、鑑定費を控除）／更新日 ${escapeHtml(row.updatedAt?.slice(0,10) || "未確認")} ${escapeHtml(row.reasons.join("／"))}。比率・仮定試算は本番の仕入れ判定に反映しません。</p></details>`;
 }
 
 const searchConditionOrigins = new Map();
@@ -5606,8 +5610,8 @@ async function ensureGemRateReference(cards) {
   const ids=uiDataManifest?.referenceDisplayIds||[];
   if(!cards.some(c=>ids.includes(c.id)))return;
   if(!gemRateReferenceRequest)gemRateReferenceRequest=fetchJsonMaybe('./data/gemrate-reference-summary.json',{detail:true,affectsCalculation:false}).then(data=>{
-    if(!data||data.version!==1||data.source!=='GemRate'||data.grader!=='PSA'||data.scope!=='received-csv-reference-50'
-      ||!data.cards||Array.isArray(data.cards)||Object.keys(data.cards).length!==50
+    if(!data||!((data.version===1&&data.scope==='received-csv-reference-50'&&ids.length===50)||(data.version===2&&data.scope==='reviewed-csv-reference'))||data.source!=='GemRate'||data.grader!=='PSA'
+      ||!data.cards||Array.isArray(data.cards)||Object.keys(data.cards).length!==ids.length
       ||Object.keys(data.cards).some(id=>!ids.includes(id)))throw Error('Reference summary incompatible');
     if(gemRateReferenceRevision===revision)gemRateReferencePayload=data;
   }).catch(()=>{if(gemRateReferenceRevision===revision)gemRateReferenceFailed=true;});

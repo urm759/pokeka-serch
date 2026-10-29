@@ -3,11 +3,11 @@ const {load} = require('./audit_search_profit_consistency');
 const {allProfiles} = require('./search_profile_variants');
 const read = p => JSON.parse(fs.readFileSync(p));
 const file = 'work/price-comparison-baseline-20261016.json';
-function capture(at, options = {}) {
-  const profiles = allProfiles(read('work/priority-search-profiles.json')).map(p => {
+function capture(at, options = {}, definitions = allProfiles(read('work/priority-search-profiles.json'))) {
+  const profiles = definitions.map(p => {
     const api = load(fs.readFileSync('app.js','utf8'),at,{url:p.url,...options});
     const cards = api.prepareCalculatedCards(api.state.cards);
-    return {id:p.id,url:p.url,settings:{effBuy:api.state.efficiencyBuyBasis,exitPolicy:api.state.exitPolicy},
+    return {id:p.id,url:p.url,settings:{effBuy:api.state.efficiencyBuy,exitPolicy:api.state.exitPolicy},
       ids:cards.filter(c=>!api.cardSearchExclusions(c).length).map(c=>c.id),cards:cards.map(c=>({
         id:c.id,name:c.name,price:c.price,referencePrice:c.torecaPrice,referenceEvidence:c.referenceEvidence,
         rows:[...(c.priceAggregation?.included||[]),...(c.priceAggregation?.outliers||[]),...(c.priceAggregation?.excluded||[])],
@@ -27,7 +27,9 @@ if (process.argv.includes('--baseline')) {
   fs.writeFileSync(file,JSON.stringify(baseline));
   console.log(JSON.stringify({at:baseline.at,profiles:baseline.profiles.map(p=>({id:p.id,count:p.ids.length}))}));
 } else {
-  const before=read(file),after=capture(before.at,{dataRef:before.commit}),unique=ps=>[...new Set(ps.flatMap(p=>p.ids))];
+  // Replay the baseline's exact URLs, not today's focus profiles. A/B and
+  // reference-min have different semantics and must not be paired by position.
+  const before=read(file),after=capture(before.at,{dataRef:before.commit},before.profiles),unique=ps=>[...new Set(ps.flatMap(p=>p.ids))];
   const changes=after.profiles.map(p=>{
     const old=before.profiles.find(b=>b.id===p.id),oldCards=new Map(old.cards.map(c=>[c.id,c]));
     const changed=p.cards.filter(c=>JSON.stringify(c.quality?.manualReviewReasons)!==JSON.stringify(oldCards.get(c.id)?.quality?.manualReviewReasons));

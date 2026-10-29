@@ -28,7 +28,7 @@ function inspect(receipt,card,field,now=Date.now()){
   const present=names.every(f=>(row[5]&(1<<fields.indexOf(f)))!==0);
   const stale=now-at>30*3600000;
   const status=values.every(valid)?values.every(n=>n===0)?'confirmed-zero':'available':!present?'period-not-provided':'source-null';
-  return {status,values,at:receipt.observedAt,stale,automatic:true,
+  return {status,values,at:receipt.observedAt,stale,automatic:status!=='period-not-provided',
     reason:(status==='confirmed-zero'?'取得元が期間内0件を明示':status==='available'?'期間7/30日の有効値が原票に存在':status==='source-null'?'取得元の期間件数がnull・未取得（データ不存在とは未確定）':'取得元の7/30日項目未提供・対象期間は未確認')+(stale?'／原票が古い・再確認待ち':'')};
 }
 module.exports={capture,inspect,fields};

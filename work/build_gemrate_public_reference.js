@@ -20,6 +20,8 @@ function build(root=ROOT,store=path.resolve(root,'../private-research/gemrate'))
   }
   if(latest.size!==50)throw Error('Limited publication must contain exactly the reviewed 50 identities');
   const reviewed=new Set(latest.keys());
+  const additions=require('./gemrate_reviewed_additions').entries(root);
+  for(const entry of additions)reviewed.add(entry.cardId);
   const manifestFile=path.join(store,'manifest.json');
   if(fs.existsSync(manifestFile)) {
     const crypto=require('node:crypto'),zlib=require('node:zlib'),hash=b=>crypto.createHash('sha256').update(b).digest('hex');
@@ -40,14 +42,21 @@ function build(root=ROOT,store=path.resolve(root,'../private-research/gemrate'))
         const card=catalog.get(row.cardId),value=card&&reference(card,row,{audience:'private-preview'});
         if(!value?.available)throw Error('Inbox identity/date/counts unproven');
         const old=latest.get(row.cardId);
-        if(old.sourceUpdatedDate===row.sourceUpdatedDate&&(old.psa10!==row.psa10||old.total!==row.total))throw Error('Conflicting counts on same source date');
-        if(row.sourceUpdatedDate>old.sourceUpdatedDate)latest.set(row.cardId,row);
+        if(additions.some(r=>r.cardId===row.cardId)){
+          const spec=JSON.parse(row.specEvidence);
+          if(spec.rule!=='reviewed-exact-identity-v1'||JSON.stringify(spec.review)!==JSON.stringify(additions.find(r=>r.cardId===row.cardId)))throw Error('Addition review mismatch');
+          const identity=JSON.parse(row.identity);
+          const checked=require('./gemrate_reviewed_additions').mappings([{'Card #':identity[3],Name:identity[4],Parallel:identity[5]}],sidecar.context,[card],additions);
+          if(checked.length!==1||checked[0].cardId!==row.cardId)throw Error('Addition identity review mismatch');
+        }
+        if(old?.sourceUpdatedDate===row.sourceUpdatedDate&&(old.psa10!==row.psa10||old.total!==row.total))throw Error('Conflicting counts on same source date');
+        if(!old||row.sourceUpdatedDate>old.sourceUpdatedDate)latest.set(row.cardId,row);
       }
     }
   }
   const cards=Object.fromEntries([...latest].sort(([a],[b])=>a.localeCompare(b)).map(([id,r])=>
     [id,[r.identityKey,r.psa10,r.total,r.sourceUpdatedDate,r.pageUrl]]));
-  const result={version:1,source:'GemRate',grader:'PSA',scope:'received-csv-reference-50',
+  const result={version:2,source:'GemRate',grader:'PSA',scope:'reviewed-csv-reference',
     fields:['identityKey','psa10','total','sourceDate','sourceUrl'],cards};
   // No original CSV, history, receipt metadata, private paths, or adopted rates are exported.
   const target=path.join(root,'data/gemrate-reference-summary.json');

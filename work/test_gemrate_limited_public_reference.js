@@ -27,9 +27,13 @@ assert.equal(ctx.api.value(card,row,Date.parse('2026-11-26')).stale,true);
   assert(ctx.api.header(card).includes('80.0%'));assert(ctx.api.header(card).includes('50.0%'),'old official retained in details');
   manifest.revision='third';assert.equal(ctx.api.header(card),null,'no stale revision flash before the next load');
   payload={...payload,grader:'CGC'};await ctx.api.ensure([card]);assert.equal(ctx.api.header(card),null);
+  manifest.revision='expanded';manifest.referenceDisplayIds.push('new-reviewed');
+  payload={...payload,version:2,grader:'PSA',scope:'reviewed-csv-reference',cards:{...payload.cards,'new-reviewed':row}};
+  await ctx.api.ensure([card]);assert(ctx.api.header(card),'reviewed additions supported without a fixed count ceiling');
+  manifest.revision='unexpected-id';payload.cards['unknown-unreviewed']=row;await ctx.api.ensure([card]);assert.equal(ctx.api.header(card),null,'exact manifest identity set remains mandatory');
   assert.equal(JSON.stringify(card),before,'display must not mutate rate, POP history, calculation or GO inputs');
   const exported=JSON.parse(fs.readFileSync(require('node:path').join(__dirname,'../data/gemrate-reference-summary.json')));
-  assert.equal(Object.keys(exported.cards).length,50);assert.deepEqual(Object.keys(exported).sort(),['cards','fields','grader','scope','source','version']);
+  assert.equal(Object.keys(exported.cards).length,50+require('./gemrate-reviewed-additions.json').cards.length);assert.deepEqual(Object.keys(exported).sort(),['cards','fields','grader','scope','source','version']);
   for(const r of Object.values(exported.cards)){assert.equal(r.length,5);assert(!JSON.stringify(r).includes('csvSha256'));}
   console.log('PASS bounded 50 factual references; exact identity/count/date, load failures, lazy reuse, revision invalidation, immutable calculations and no raw export');
 })().catch(e=>{console.error(e);process.exitCode=1});

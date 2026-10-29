@@ -12,7 +12,12 @@ const incoming=path.join(store,'incoming');fs.mkdirSync(incoming);
 fs.writeFileSync(path.join(store,'manifest.json'),JSON.stringify({files:[
  {status:'prepared',originalPath:path.join(incoming,'export.csv'),storedPath:path.join(store,'retained.csv')},
  {status:'prepared',originalPath:path.join(root,'export (1).csv')},
- {status:'review',originalPath:path.join(incoming,'export (2).csv')}
+ {status:'review',kind:'list',originalPath:path.join(incoming,'export (2).csv')}
 ]}));
 assert.deepEqual(pendingFiles(store).map(r=>r.name),['export.csv'],'resume a moved original from its prepared receipt, never scan general Downloads');
+const manifestFile=path.join(store,'manifest.json');
+fs.writeFileSync(path.join(incoming,'export (2).csv.context.json'),'{}');
+assert(pendingFiles(store,'new-reviewed-registry').some(r=>r.name==='export (2).csv'),'new reviewed identity can reprocess a retained receipt without new HTTP');
+const manifest=JSON.parse(fs.readFileSync(manifestFile));manifest.files[2].reviewRevision='new-reviewed-registry';fs.writeFileSync(manifestFile,JSON.stringify(manifest));
+assert(!pendingFiles(store,'new-reviewed-registry').some(r=>r.name==='export (2).csv'),'unchanged registry must not repeatedly reprocess completed receipts');
 console.log('PASS private inbox requires CSV hash and source-page date/grader/language/set proof; no filesystem-date inference');

@@ -286,7 +286,7 @@
         <label class="control"><span>仕入れ値／国内PSA9 上限 %</span><input id="psa9RatioMaxInput" type="number" min="0" step="1" placeholder="例：100" /></label>
         <label class="check-control"><input id="psa9RatioAggregateInput" type="checkbox" />国内PSA9集計値を含める</label>
         <label class="check-control"><input id="psa9RatioEstimateInput" type="checkbox" />PSA9推定値を含める（素体由来は検索対象外）</label>
-        <label class="check-control"><input id="psa9RatioMarketInput" type="checkbox" />購入価格未取得時の相場参考買値を含める</label>
+        <label class="check-control"><input id="psa9RatioMarketInput" type="checkbox" />旧買値モードで相場参考買値を含める（参考買値モードは買値選択に従う）</label>
         <p id="psa9RatioCoverage" class="filter-explanation" aria-live="polite"></p>
         <p class="filter-explanation">比率は在庫あり状態Aの購入価格を優先。国内集計・推定・相場買値は個別に選択してください。素体由来のPSA9推定は循環した割安判断になるため、選択しても比率検索から除外します。PSA9と同額で買っても費用分の損失が出ます。国内PSA9個別成約は現在未取得のため、参考値OFFで比率条件を指定すると結果がありません。手入力買値はお気に入りの仮定試算で確認できます。</p>
 
@@ -927,7 +927,7 @@
     </section>
   </main>
 
-  <script src="./decision-model.js?v=20261029-reference-lazy" integrity="sha384-e5j7b7ktHO01H9EpT2JS1IFgum9+hl/A4AlNCyCM1rHURvACamJoBay9poAXlvFh"></script>
+  <script src="./decision-model.js?v=20261029-reference-adoption" integrity="sha384-e5j7b7ktHO01H9EpT2JS1IFgum9+hl/A4AlNCyCM1rHURvACamJoBay9poAXlvFh"></script>
   <script src="./price-integrity.js?v=20261018-observation75-v1"></script>
   <script src="./grade-calibration.js?v=20260924-v1"></script>
   <script src="./search-index-model.js?v=20261015-trade-demand-v2"></script>
@@ -935,24 +935,24 @@
   <script src="./market-analysis.js?v=20260913-supply-absorption-v3"></script>
   <script src="./snkr-raw-flip-model.js?v=20260920-raw-flip-v1"></script>
   <script src="./raw-psa9-gap-model.js?v=20260929-trial-v2"></script>
-  <script src="./purchase-ratio-model.js?v=20261029-reference-lazy" integrity="sha384-H5T67PCuczilfc8V6aZb6gNe4JUVzAVDO/xB0j9DxOI2HPF4p9pY8Empl1B9TCQk"></script>
+  <script src="./purchase-ratio-model.js?v=20261029-reference-adoption" integrity="sha384-0FeDy3+gTHuKK/mU4VbWxXHUugobUQOS3EesJgTQ6EX+Bm7W9QD8ByUwDBUu8cjW"></script>
   <script src="./candidate-visibility.js?v=20260927-v1"></script>
   <script src="./catalog-index-adapter.js?v=20260927-v1"></script>
-  <script src="./limit-display-model.js?v=20261029-reference-lazy" integrity="sha384-8Dj6kDpEE3qaB2GDuQxLasEtKnLuSX6XyReYUMyFlxwX5pxAKUg2ywbaygvn2vJ6"></script>
+  <script src="./limit-display-model.js?v=20261029-reference-adoption" integrity="sha384-8Dj6kDpEE3qaB2GDuQxLasEtKnLuSX6XyReYUMyFlxwX5pxAKUg2ywbaygvn2vJ6"></script>
   <script src="./return-horizon-model.js?v=20261004-reference-v1"></script>
   <script src="./price-reference-model.js?v=20261004-reference-v1"></script>
   <script src="./purchase-memo-model.js?v=20261004-reference-v1"></script>
   <script src="./release-year-filter.js?v=20261003-priority-v2"></script>
   <script src="./update-health-model.js?v=20261023-verified-partial-publication"></script>
   <script src="./update-health-banner.js?v=20261011-search-first-v1"></script>
-  <script src="./current-market-model.js?v=20261029-reference-lazy" integrity="sha384-fcfFd/0u1lI96582Y8Isew5AGSRA/NDHV2jQrVBJytLfb8ikDayeTIAz/R/jBRWF"></script>
+  <script src="./current-market-model.js?v=20261029-reference-adoption" integrity="sha384-fcfFd/0u1lI96582Y8Isew5AGSRA/NDHV2jQrVBJytLfb8ikDayeTIAz/R/jBRWF"></script>
   <script src="./ui-data-codec.js?v=20261027-psa9-guide-v1"></script>
-  <script src="./psa-plan-model.js?v=20261029-reference-lazy"></script>
+  <script src="./psa-plan-model.js?v=20261029-reference-adoption"></script>
   <script src="./keyed-card-renderer.js?v=20261010-v1"></script>
   <a class="return-to-filters" href="#searchConditions">検索条件へ</a>
-  <script src="./exploration-metrics.js?v=20261029-reference-lazy" integrity="sha384-G4GTDV7prY8pSB+ZPlj3wUy72eUp4LgYKaYDIGTo48wxYmUTbAn1SyuhgZeViHqD"></script>
-  <script src="./search-controls.js?v=20261029-reference-lazy" integrity="sha384-ZbSDnbO0h3stXbHm3pB16Xoaw4PRGRTlYlGADTPwiNjPXiLKdtJMeKIeF66laIwn"></script>
+  <script src="./exploration-metrics.js?v=20261029-reference-adoption" integrity="sha384-G4GTDV7prY8pSB+ZPlj3wUy72eUp4LgYKaYDIGTo48wxYmUTbAn1SyuhgZeViHqD"></script>
+  <script src="./search-controls.js?v=20261029-reference-adoption" integrity="sha384-ZbSDnbO0h3stXbHm3pB16Xoaw4PRGRTlYlGADTPwiNjPXiLKdtJMeKIeF66laIwn"></script>
   <script src="./settings-disclosure.js?v=20261011-disclosure-v1"></script>
-  <script src="./app.js?v=20261029-reference-lazy" integrity="sha384-QKzEGyL7P6LAZwyhWVll6ZblHVvGBg5v9L/wuD8E7xMHT5U3vujhaoHAeawaLKk9"></script>
+  <script src="./app.js?v=20261029-reference-adoption" integrity="sha384-91zh2xjSYFbRJfkvG2vjlLVdtb0upH/Z5cpxBlm+g9/wvYle89EMwvnQn466a3JH"></script>
 </body>
 </html>

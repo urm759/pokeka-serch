@@ -1,0 +1,97 @@
+{
+  "baseline": "384ebd53b",
+  "at": "2026-10-29T03:23:03.678Z",
+  "instrumentation": "DOM generation/commit, no browser paint or 2-frame completion; same frozen data/clock in both versions",
+  "evidence": "8 Cases Complete and all 8 summaries read from benchmark DOM; full original file was overwritten by mobile-only repeat path collision, which is retained separately",
+  "valuesAndIdsUnchangedVerifiedByHarness": true,
+  "rows": [
+    {
+      "version": "before",
+      "width": 1920,
+      "scale": "normal",
+      "measured": {
+        "fullCalculationMs": 863.7999999523163,
+        "renderMs": 25,
+        "detailGenerationMs": 32.299999952316284
+      },
+      "overflow": false
+    },
+    {
+      "version": "before",
+      "width": 1920,
+      "scale": "double",
+      "measured": {
+        "fullCalculationMs": 1416.4000000953674,
+        "renderMs": 39.90000009536743,
+        "detailGenerationMs": 41
+      },
+      "overflow": false
+    },
+    {
+      "version": "before",
+      "width": 390,
+      "scale": "normal",
+      "measured": {
+        "fullCalculationMs": 714.8999998569489,
+        "renderMs": 18,
+        "detailGenerationMs": 24.199999809265137
+      },
+      "overflow": false
+    },
+    {
+      "version": "before",
+      "width": 390,
+      "scale": "double",
+      "measured": {
+        "fullCalculationMs": 1241.1000001430511,
+        "renderMs": 77.5,
+        "detailGenerationMs": 40.10000014305115
+      },
+      "overflow": false
+    },
+    {
+      "version": "after",
+      "width": 1920,
+      "scale": "normal",
+      "measured": {
+        "fullCalculationMs": 655,
+        "renderMs": 18.5,
+        "detailGenerationMs": 23.5
+      },
+      "overflow": false
+    },
+    {
+      "version": "after",
+      "width": 1920,
+      "scale": "double",
+      "measured": {
+        "fullCalculationMs": 1340.7999999523163,
+        "renderMs": 32.59999990463257,
+        "detailGenerationMs": 38.5
+      },
+      "overflow": false
+    },
+    {
+      "version": "after",
+      "width": 390,
+      "scale": "normal",
+      "measured": {
+        "fullCalculationMs": 673.5999999046326,
+        "renderMs": 21.299999952316284,
+        "detailGenerationMs": 25
+      },
+      "overflow": false
+    },
+    {
+      "version": "after",
+      "width": 390,
+      "scale": "double",
+      "measured": {
+        "fullCalculationMs": 2088.2000000476837,
+        "renderMs": 34.40000009536743,
+        "detailGenerationMs": 40.90000009536743
+      },
+      "overflow": false
+    }
+  ]
+}
