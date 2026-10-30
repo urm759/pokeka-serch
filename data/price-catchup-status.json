@@ -1,33 +1,33 @@
 {
-  "startedAt": "2026-10-29T23:59:52.395Z",
-  "runId": "40976749033",
-  "event": "schedule",
-  "route": "通常価格更新",
+  "startedAt": "2026-10-30T05:50:36.098Z",
+  "runId": "41010607703",
+  "event": "workflow_run",
+  "route": "既存監視ジョブの空白補完",
   "status": "acquired-saved",
   "allowed": true,
-  "ageMs": 7912782,
-  "minimumIntervalMs": 7200000,
+  "ageMs": 21043118,
+  "minimumIntervalMs": 9000000,
   "reason": "定期の空白・既存の期限順キューで補完",
   "llmCalls": 0,
   "codexCalls": 0,
   "sourceFailures": [],
   "acquisitionStatus": "process-success",
-  "endedAt": "2026-10-30T00:11:19.437Z",
-  "durationMs": 687042,
+  "endedAt": "2026-10-30T06:03:18.461Z",
+  "durationMs": 762363,
   "outcomes": {
-    "baselineAt": "2026-10-29T23:59:52.395Z",
+    "baselineAt": "2026-10-30T05:50:36.098Z",
     "commonCards": 12757,
-    "addedCards": 0,
+    "addedCards": 2,
     "removedCards": 0,
-    "newlyAnalyzable": 0,
-    "lostAnalyzable": 0,
-    "filledCards": 0,
-    "filledItems": 0,
+    "newlyAnalyzable": 20,
+    "lostAnalyzable": 7,
+    "filledCards": 91,
+    "filledItems": 111,
     "sources": {
       "cardrush": {
-        "newLinked": 0,
-        "validAdded": 0,
-        "validLost": 0,
+        "newLinked": 3,
+        "validAdded": 3,
+        "validLost": 3,
         "usableNet": 0,
         "freshnessRecovered": 0
       },
@@ -36,7 +36,7 @@
         "validAdded": 0,
         "validLost": 0,
         "usableNet": 0,
-        "freshnessRecovered": 0
+        "freshnessRecovered": 4
       },
       "yuyutei": {
         "newLinked": 0,
@@ -68,7 +68,7 @@
       }
     },
     "referenceEvidenceRecovered": {
-      "buybackExitEvidence": 620
+      "psa9Evidence": 46
     }
   },
   "publicationStatus": "保存済み・公開照合待ち"
