@@ -575,7 +575,7 @@
     },
     {
       "id": "includeAggressiveInput",
-      "label": "おまかせ総合に攻め候補を含める",
+      "label": "サイト基準に攻め候補を含める",
       "category": "探索基準・表示",
       "initial": false,
       "type": "checkbox",
@@ -602,6 +602,90 @@
       "basis": "利用者が選択したCSV・カード・日付・実結果。推定結果で実現利益を作らない",
       "effect": "操作しない限り検索・安全条件は変わらない。記録は削除対象にしない",
       "overlap": "日次取得・自動探索・本番モデルの変更とは別"
+    },
+    {
+      "id": "psa9CostWithin5Input",
+      "label": "PSA9価格の費用割れ5%以内",
+      "category": "詳細検索",
+      "initial": false,
+      "type": "checkbox",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "PSA9価格と鑑定費込み買値を比較",
+      "basis": "PSA9価格≧（現相場の利益確保目安＋選択プラン鑑定費）×95%。手数料前",
+      "effect": "初期OFF。価格・費用・参考採用の不足は有効時だけ除外",
+      "overlap": "旧目安だけの価格比・PSA9フリマ費用後利益率・GOとは別"
+    },
+    {
+      "id": "psa9RoiMinInput",
+      "label": "PSA9時利益率 下限％",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "目安購入時のPSA9フリマ利益率で探索",
+      "basis": "（PSA9売価−提出判断の売却手数料−目安−鑑定費−設定済み諸費用）÷総費用×100",
+      "effect": "空欄無効、負値/0/正値・境界含む。費用と参考採用の不足は有効時だけ除外",
+      "overlap": "費用割れ5%以内の手数料前比較と独立。既存資金効率・GOへ不反映"
+    },
+    {
+      "id": "psa9AboveGuideInput",
+      "label": "PSA9価格が仕入れ目安より高い",
+      "category": "詳細検索",
+      "initial": false,
+      "type": "checkbox",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "国内PSA9価格と利益確保の仕入れ目安を比較",
+      "basis": "PSA9価格÷現相場目安×100。手数料前の価格比",
+      "effect": "チェックは厳密な超過、数値下限は境界を含む。未指定は除外なし",
+      "overlap": "仕入れ値÷PSA9の既存条件・費用込み利益率・GOとは別"
+    },
+    {
+      "id": "psa9GuideMinInput",
+      "label": "PSA9価格／仕入れ目安 下限％",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "国内PSA9価格と利益確保の仕入れ目安を比較",
+      "basis": "PSA9価格÷現相場目安×100。手数料前の価格比",
+      "effect": "チェックは厳密な超過、数値下限は境界を含む。未指定は除外なし",
+      "overlap": "仕入れ値÷PSA9の既存条件・費用込み利益率・GOとは別"
     },
     {
       "id": "currentMarketSearchKindInput",
@@ -1379,6 +1463,138 @@
       "overlap": "同店・他カードの通常倍率／店舗別中央値の並び順／費用込み採算・GOとは別"
     },
     {
+      "id": "buybackMeanMinInput",
+      "label": "全体平均買取倍率 下限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "buyback7RatioMinInput",
+      "label": "7日平均買取倍率 下限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "buyback30RatioMinInput",
+      "label": "30日平均買取倍率 下限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "buyback75RatioMinInput",
+      "label": "75日平均買取倍率 下限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "buybackRatioDaysMinInput",
+      "label": "期間倍率の最低観測日数",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "buybackRatioReferenceInput",
+      "label": "1店舗・部分期間の参考倍率を採用",
+      "category": "詳細検索",
+      "initial": false,
+      "type": "checkbox",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
       "id": "postingRate30MinInput",
       "label": "30日買取掲載率 下限 %",
       "category": "詳細検索",
@@ -1603,7 +1819,7 @@
     },
     {
       "id": "psa9RatioMarketInput",
-      "label": "購入価格未取得時の相場参考買値を含める",
+      "label": "旧買値モードで相場参考買値を含める（参考買値モードは買値選択に従う）",
       "category": "詳細検索",
       "initial": false,
       "type": "checkbox",
@@ -2040,7 +2256,7 @@
     },
     {
       "id": "psaRateMinInput",
-      "label": "PSA10公式取得率 下限",
+      "label": "PSA10取得率 下限（PSA公式・保存値）",
       "category": "詳細検索",
       "initial": "",
       "type": "number",
@@ -3464,7 +3680,7 @@
       "id": "efficiencyBuyInput",
       "label": "資金効率の買値",
       "category": "仕入れ判定・計算設定",
-      "initial": "median",
+      "initial": "reference-min",
       "type": "select",
       "options": [
         {
@@ -3478,9 +3694,14 @@
           "selected": false
         },
         {
+          "value": "reference-min",
+          "label": "参考買値・採用可能な3価格の最安（在庫待ちも探索）",
+          "selected": true
+        },
+        {
           "value": "median",
           "label": "素体参考相場・中央値（購入保証なし）",
-          "selected": true
+          "selected": false
         },
         {
           "value": "manual",
@@ -3813,128 +4034,18 @@
       "basis": "利用者が選択したCSV・カード・日付・実結果。推定結果で実現利益を作らない",
       "effect": "操作しない限り検索・安全条件は変わらない。記録は削除対象にしない",
       "overlap": "日次取得・自動探索・本番モデルの変更とは別"
-    },
-    {
-      "id": "psa9AboveGuideInput",
-      "label": "PSA9価格が仕入れ目安より高い",
-      "type": "checkbox",
-      "initial": false,
-      "category": "基本検索",
-      "options": [],
-      "removable": true,
-      "modes": [
-        "combined",
-        "specified"
-      ],
-      "purpose": "国内PSA9価格と利益確保の仕入れ目安を比較",
-      "basis": "PSA9価格÷現相場目安×100。手数料前の価格比",
-      "effect": "チェックは厳密な超過、数値下限は境界を含む。未指定は除外なし",
-      "overlap": "仕入れ値÷PSA9の既存条件・費用込み利益率・GOとは別"
-    },
-    {
-      "id": "psa9GuideMinInput",
-      "label": "PSA9価格／仕入れ目安 下限％",
-      "type": "number",
-      "initial": "",
-      "category": "基本検索",
-      "options": [],
-      "removable": true,
-      "modes": [
-        "combined",
-        "specified"
-      ],
-      "purpose": "国内PSA9価格と利益確保の仕入れ目安を比較",
-      "basis": "PSA9価格÷現相場目安×100。手数料前の価格比",
-      "effect": "チェックは厳密な超過、数値下限は境界を含む。未指定は除外なし",
-      "overlap": "仕入れ値÷PSA9の既存条件・費用込み利益率・GOとは別"
-    },
-    {
-      "id": "psa9CostWithin5Input",
-      "label": "PSA9価格の費用割れ5%以内",
-      "type": "checkbox",
-      "initial": false,
-      "category": "基本検索",
-      "options": [],
-      "removable": true,
-      "modes": [
-        "combined",
-        "specified"
-      ],
-      "purpose": "PSA9価格と鑑定費込み買値を比較",
-      "basis": "PSA9価格≧（現相場の利益確保目安＋選択プラン鑑定費）×95%。手数料前",
-      "effect": "初期OFF。価格・費用・参考採用の不足は有効時だけ除外",
-      "overlap": "旧目安だけの価格比・PSA9フリマ費用後利益率・GOとは別"
-    },
-    {
-      "id": "psa9RoiMinInput",
-      "label": "PSA9時利益率 下限％",
-      "type": "number",
-      "initial": "",
-      "category": "基本検索",
-      "options": [],
-      "removable": true,
-      "modes": [
-        "combined",
-        "specified"
-      ],
-      "purpose": "目安購入時のPSA9フリマ利益率で探索",
-      "basis": "（PSA9売価−提出判断の売却手数料−目安−鑑定費−設定済み諸費用）÷総費用×100",
-      "effect": "空欄無効、負値/0/正値・境界含む。費用と参考採用の不足は有効時だけ除外",
-      "overlap": "費用割れ5%以内の手数料前比較と独立。既存資金効率・GOへ不反映"
     }
   ],
   "actions": [
     {
-      "id": "curated",
-      "label": "厳選候補 従来のおまかせ同等の厳格条件",
-      "category": "基本検索",
-      "effect": "プリセットを選択。保存した追加条件・費用・資金・出口・発売年を勝手に解除しない"
-    },
-    {
       "id": "combined",
-      "label": "おまかせ総合 候補を重複なしでまとめる",
+      "label": "サイト基準で厳選 従来のおまかせ総合＋指定条件",
       "category": "基本検索",
       "effect": "プリセットを選択。保存した追加条件・費用・資金・出口・発売年を勝手に解除しない"
     },
     {
-      "id": "current-market",
-      "label": "現相場採算で探す 現相場維持の仮定探索・購入GOとは別",
-      "category": "基本検索",
-      "effect": "プリセットを選択。保存した追加条件・費用・資金・出口・発売年を勝手に解除しない"
-    },
-    {
-      "id": "now",
-      "label": "今すぐ仕入れ 新しい在庫あり価格が上限以下",
-      "category": "基本検索",
-      "effect": "プリセットを選択。保存した追加条件・費用・資金・出口・発売年を勝手に解除しない"
-    },
-    {
-      "id": "aggressive",
-      "label": "攻め仕入れ圏 期待値は黒字・PSA9時赤字あり",
-      "category": "基本検索",
-      "effect": "プリセットを選択。保存した追加条件・費用・資金・出口・発売年を勝手に解除しない"
-    },
-    {
-      "id": "low-risk",
-      "label": "低リスク候補 価格待ちを含む",
-      "category": "基本検索",
-      "effect": "プリセットを選択。保存した追加条件・費用・資金・出口・発売年を勝手に解除しない"
-    },
-    {
-      "id": "turnover",
-      "label": "高回転候補 厳格AND条件・価格待ちを含む",
-      "category": "基本検索",
-      "effect": "プリセットを選択。保存した追加条件・費用・資金・出口・発売年を勝手に解除しない"
-    },
-    {
-      "id": "bargain",
-      "label": "薄商い・高粗利 少数成約でも出口あり",
-      "category": "基本検索",
-      "effect": "プリセットを選択。保存した追加条件・費用・資金・出口・発売年を勝手に解除しない"
-    },
-    {
-      "id": "snkr-raw",
-      "label": "スニダン素体流し PSA判定とは別・手数料後の価格差",
+      "id": "specified",
+      "label": "指定条件で検索 分析可能な全カード＋指定条件",
       "category": "基本検索",
       "effect": "プリセットを選択。保存した追加条件・費用・資金・出口・発売年を勝手に解除しない"
     },
@@ -3993,7 +4104,7 @@
       "effect": "ラベルの保存・コピー・表示・記録操作。押さない限り変更しない。お気に入り解除は追加条件解除と別"
     },
     {
-      "id": "button-18",
+      "id": "button-11",
       "label": "実鑑定結果を保存",
       "category": "記録・表示操作",
       "effect": "ラベルの保存・コピー・表示・記録操作。押さない限り変更しない。お気に入り解除は追加条件解除と別"

@@ -13,6 +13,7 @@
   const sharedEarly = ids('qInput diagnosticSearchInput year2020Input includeUnknownYearInput actualPurchaseMinInput actualPurchaseMaxInput purchaseHeadroomMinInput purchaseHeadroomMaxInput purchaseBelowCurrentCapInput postingRate30MinInput postingShops30MinInput postingDaysMinInput postingCoverageMinInput psa9RatioMinInput psa9RatioMaxInput psa9RatioAggregateInput psa9RatioEstimateInput psa9RatioMarketInput catalogScopeInput efficiencyMinInput efficiencyIncludeReferenceInput');
   const labels = {basic:'基本検索', advanced:'詳細検索', calculation:'仕入れ判定・計算設定', context:'探索基準・表示', audit:'データ監査・記録操作'};
   optionalZero.add('buybackHighestMinInput');
+  for(const id of ['buybackMeanMinInput','buyback7RatioMinInput','buyback30RatioMinInput','buyback75RatioMinInput','buybackRatioDaysMinInput']){optionalZero.add(id);sharedEarly.add(id);}sharedEarly.add('buybackRatioReferenceInput');
   optionalZero.add('psa9GuideMinInput');
   optionalZero.add('psa9RoiMinInput');
   sharedEarly.add('buybackHighestMinInput');

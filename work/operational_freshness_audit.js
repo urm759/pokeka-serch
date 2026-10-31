@@ -43,6 +43,13 @@ function build(root,monitor,history,now=Date.now()) {
     const intervals=(history.sources?.[id]?.intervalMinima||[]).filter(r=>normal(r.executionContext?.from)&&normal(r.executionContext?.to));
     sources[id].summary.verifiedNormalIntervalMinimum=intervals.length?Math.min(...intervals.map(r=>r.minimumFreshnessPct)):null;
     sources[id].summary.normalIntervalSamples=intervals.length;
+    sources[id].summary.rollingNormalMinima=Object.fromEntries([24,168].map(hours=>{
+      const since=now-hours*3600000,rows=intervals.filter(r=>Date.parse(r.to)>since&&Date.parse(r.to)<=now);
+      return [hours,{from:new Date(since).toISOString(),to:new Date(now).toISOString(),samples:rows.length,
+        minimumPct:rows.length?Math.min(...rows.map(r=>r.minimumFreshnessPct)):null,
+        firstIntervalFrom:rows[0]?.from||null,lastIntervalTo:rows.at(-1)?.to||null,
+        basis:'定期取得前後の保守的な区間下限。手動取得を除外。区間のない空白は未観測で、全期間維持の証明ではない。'}];
+    }));
     sources[id].summary.intervalScopeNote='手動・古い未観測コンテキストを定期最低鮮度の実証へ加算しない。保存枝の古値と公開済み新値の混在は別監査';
   }
   const result={version:1,generatedAt:new Date(now).toISOString(),sources,

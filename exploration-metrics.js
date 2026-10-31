@@ -375,7 +375,7 @@
       rows.push({shop,merchant:meta.merchantId || shop,name:meta.name,fulfilment:meta.fulfilment,ratio,price,marketPrice,at,marketAt,date,priceDate:row.current[7] ?? null,timeSkewHours:skew,valid,listingActive:row.current[6]===true,
         standard,premium,samples:b[1] ?? g[1] ?? 0,excluded:b[3] || 0,cohort:b[5],band:b[6],reference:b[7] ?? g[2] ?? true,topPct:b[8] ?? g[3] ?? null,periods:row.periods,premiumPeriods:row.premium,
         reason:status.reason,reasonCode:status.code,latestQuote:latestQuote?{price:latestQuote.price,date:latestQuote.priceDate,at:latestQuote.observedAt,active:latestQuote.listingActive}:null});
-      if(!identityValid || permissionHeld)continue;
+      if(!identityValid || permissionHeld || meta.stopped)continue;
       for (const [day,rate] of row.days || []) {
         if (!finite(rate)) continue;
         if (!daily.has(day)) daily.set(day,new Map());
@@ -423,8 +423,15 @@
     const cached=support?.meanWindows?.[id];
     const hasDays=Object.values(eligibleEntries).some(row=>Object.hasOwn(row,'meanDays'));
     const cachedValid=cached&&cached.asOf===asOf&&(!identityKey||cached.identity===identityKey)&&mode!=='selected';
-    const meanWindows=cachedValid?cached[mode==='mail'?'mail':'all']
+    const meanWindows=cachedValid?Object.fromEntries(Object.entries(cached[mode==='mail'?'mail':'all']||{}).map(([d,w])=>[d,{...w}]))
       :hasDays?buybackMeanWindows(eligibleEntries,support?.shops,mode,selected,asOf):null;
+    const historicalAt=date=>{
+      const times=Object.entries(eligibleEntries).flatMap(([shop,row])=>{const meta=support.shops[shop],p=row.lastComparable||row.current;
+        if(!meta||meta.stopped||['pending','retired'].includes(meta.permission)||mode==='selected'&&!selected.includes(shop)||mode==='mail'&&meta.fulfilment==='store'||p?.[5]!==date||support.timingPolicy&&p[7]!==date)return [];
+        const a=Date.parse(p[3]),b=Date.parse(p[4]);return Number.isFinite(a)&&Number.isFinite(b)&&a<=now&&b<=now&&Math.abs(a-b)<=6*3600000?[Math.min(a,b)]:[];});
+      return times.length?new Date(Math.max(...times)).toISOString():null;
+    };
+    for(const w of [...Object.values(windows),...Object.values(meanWindows||{})]){w.lastAt=historicalAt(w.lastDate);w.stale=!w.lastAt||now-Date.parse(w.lastAt)>48*3600000;}
     const referenceRows=[];
     for(const r of rows) {
       if(['pending','retired'].includes(support.shops[r.shop].permission)||identityKey&&summary.cards?.[id]?.[r.shop]?.identity!==identityKey)continue;
@@ -451,6 +458,26 @@
       multiStoreSupport:rates.filter(r=>r>=1).length>=2,
       note:'減額・手数料等を含まない参考支持。掲載は実買取件数ではなく上昇/GOの保証なし。同一店舗は1店、複数受付がある場合は保守側1提示'};
   }
+  function stockTrend(sources,now=Date.now()) {
+    const valid=sources.filter(Boolean).map(r=>r.stockStatistics?r:{...r,stockStatistics:r.stockTrend?{asOfDate:r.stockTrend[0],pairs7:r.stockTrend[1],pairs30:r.stockTrend[2]}:null}).filter(r=>r?.identityVerified===true&&r.conditionAccepted!==false&&!r.priceQuarantined&&!r.cardMismatchSuspected&&r.listingActive!==false&&Number.isFinite(Date.parse(r.inventoryObservedAt||r.observedAt))&&Date.parse(r.inventoryObservedAt||r.observedAt)<=now&&now-Date.parse(r.inventoryObservedAt||r.observedAt)<=48*3600000&&r.stockStatistics?.asOfDate===new Date(now+9*3600000).toISOString().slice(0,10));
+    const periods={};for(const d of [7,30]){const rows=valid.filter(r=>Number.isFinite(r['drop'+d])&&r.stockStatistics['pairs'+d]>0);periods[d]={drop:rows.length?rows.reduce((n,r)=>n+r['drop'+d],0):null,stores:rows.length,pairs:rows.reduce((n,r)=>n+r.stockStatistics['pairs'+d],0),complete:rows.length>0&&rows.every(r=>r.stockStatistics['pairs'+d]===d)};}
+    const observed=valid.filter(r=>r.stockStatistics.pairs7>=5&&Number.isFinite(r.drop7));
+    const daily=observed.length?observed.reduce((n,r)=>n+r.drop7/r.stockStatistics.pairs7,0):null;
+    return {periods,label:daily==null?'判断材料不足':daily>=1?'在庫減少が速い':'在庫減少は緩やか',rule:'販売動向の参考。連続する実測日の減少のみ。再入荷・訂正・掲載終了で売れた枚数とは断定できません。速いは5観測区間以上かつ日平均減少1枚以上。店舗別に日数を確認し、欠測補完なし。'};
+  }
+  function buybackSearch(value,settings={}) {
+    const reasons=[],periods={7:value.meanWindows?.[7],30:value.meanWindows?.[30],75:value.meanWindows?.[75]},ref=settings.buybackRatioReference===true;
+    const inputs=[['buybackMeanMin',value.mean,'全体平均買取倍率',value.meanReference],...[7,30,75].map(d=>['buyback'+d+'RatioMin',periods[d]?.mean,d+'日買取倍率',periods[d]?.reference])];
+    for(const [field,n,label,reference]of inputs){const min=settings[field];if(min==null)continue;
+      if(!finite(min)||min<0){reasons.push(label+'・下限入力を確認');continue;}
+      const days=field.match(/^buyback(7|30|75)RatioMin$/)?.[1],w=days?periods[days]:null;
+      if(!finite(n)||w?.stale){reasons.push(label+'・未取得／古値／比較根拠不足');continue;}
+      if(reference&&!ref){reasons.push(label+'・参考値を採用しない設定');continue;}
+      if(w&&settings.buybackRatioDaysMin!=null&&(!finite(settings.buybackRatioDaysMin)||settings.buybackRatioDaysMin<1||w.days<settings.buybackRatioDaysMin)){reasons.push(label+'・観測日数不足');continue;}
+      if(n<min)reasons.push(label+'・下限未達');
+    }
+    return {reasons,periods,mean:value.mean,includeReference:ref};
+  }
   function tradeDemand(summary,id,days,now=Date.now()) {
     const data=summary?.tradeDemand,row=data?.cards?.[id], at=data?.times?.[row?.[days===75?7:days===200?8:2]] || null;
     const n=days===75&&!data?.periods?.includes(75)?null:row?.[{7:0,30:1,75:5,200:6}[days]];
@@ -463,5 +490,5 @@
         status:pop[4]===0?'近い期間の参考比較':pop[4]===2?'POP減少・訂正等':'期間不一致・部分期間',
         ratio:measured&&!stale&&pop[4]===0&&pop[0]>0?n/pop[0]:null}:null};
   }
-  return {variation,variationTone,priceGap,purchaseOfferUrl,referenceBuy,percent,inRange,offerPrice,referenceMedian,meanSale,atPurchase,efficiency,coverage,observationPeriods,migrateObservationSettings,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics,periodEfficiencyAverage,efficiencyUnavailableLabel,buybackSupport,buybackCurrentStatus,buybackMeanWindows,buybackRatioTone,buybackRatioBoundaries,tradeDemand};
+  return {stockTrend,variation,variationTone,priceGap,purchaseOfferUrl,referenceBuy,percent,inRange,offerPrice,referenceMedian,meanSale,atPurchase,efficiency,coverage,observationPeriods,migrateObservationSettings,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics,periodEfficiencyAverage,efficiencyUnavailableLabel,buybackSupport,buybackSearch,buybackCurrentStatus,buybackMeanWindows,buybackRatioTone,buybackRatioBoundaries,tradeDemand};
 });

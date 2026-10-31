@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20261030-buyback-pairing-r2" />
+  <link rel="stylesheet" href="./styles.css?v=20261031-coverage-ratios" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -262,7 +262,7 @@
           <input id="expectedProfitFilterInput" type="number" step="1000" value="0" placeholder="無効" />
         </label>
         <label class="control"><span>利益検索・表示・並び順の買値</span><select id="profitSearchBasisInput"><option value="auto">自動：価格待ちは上限／今すぐは店舗</option><option value="limit">安定重視上限で購入</option><option value="current-cap">現相場の期待損益分岐上限で購入（探索）</option><option value="current-target">利益確保の仕入れ目安で購入・現相場基準（探索）</option><option value="store">実店舗在庫価格で購入</option><option value="current">素体参考相場で購入（購入先未確認）</option></select><small>新しい目安は計算設定の最低期待利益・最低期待利益率を確保する現相場維持の仮定。個人の資金枠・年換算条件・将来予測・平滑化は重ねません。選択は自動変更しません。損益分岐上限購入では期待利益率は端数を除きほぼ0%です。通常は中央予測、今すぐ仕入れは引き続き実店舗価格・既存安全判定です。</small></label>
-        <label class="control"><span>最高買取倍率 下限</span><input id="buybackHighestMinInput" type="number" min="0" step="any" placeholder="条件なし（例 1.05）" /><small>1.00＝国内PSA10相場と同額。選択中の店舗・店頭／郵送の新鮮な減額前提示。空欄は条件なし、未取得・古値・仕様保留は条件有効時のみ除外。GOとは別。</small></label>
+<fieldset class="buyback-ratio-filters"><legend>買取倍率で絞る（減額前・GOとは別）</legend>        <label class="control"><span>最高買取倍率 下限</span><input id="buybackHighestMinInput" type="number" min="0" step="any" placeholder="条件なし（例 1.05）" /><small>1.00＝国内PSA10相場と同額。選択中の店舗・店頭／郵送の新鮮な減額前提示。空欄は条件なし、未取得・古値・仕様保留は条件有効時のみ除外。GOとは別。</small></label><label class="control"><span>全体平均買取倍率 下限</span><input id="buybackMeanMinInput" type="number" min="0" step="any" placeholder="条件なし" /></label><label class="control"><span>7日平均買取倍率 下限</span><input id="buyback7RatioMinInput" type="number" min="0" step="any" placeholder="条件なし" /></label><label class="control"><span>30日平均買取倍率 下限</span><input id="buyback30RatioMinInput" type="number" min="0" step="any" placeholder="条件なし" /></label><label class="control"><span>75日平均買取倍率 下限</span><input id="buyback75RatioMinInput" type="number" min="0" step="any" placeholder="条件なし" /></label><label class="control"><span>期間倍率の最低観測日数</span><input id="buybackRatioDaysMinInput" type="number" min="0" step="any" placeholder="条件なし" /></label><label class="check-control"><input id="buybackRatioReferenceInput" type="checkbox" />1店舗・部分期間の参考倍率を採用</label><small>空欄は無効。7/30日は日次店舗中央値、75日は日次店舗間平均の観測日平均。選択店舗・受付を共通適用し、古値・根拠不足は採用しません。</small></fieldset>
         <label class="control"><span>30日買取掲載率 下限 %</span><input id="postingRate30MinInput" type="number" min="0" max="100" step="0.1" placeholder="条件なし" /></label>
         <label class="control"><span>30日平均掲載店舗数 下限</span><input id="postingShops30MinInput" type="number" min="0" step="0.1" placeholder="条件なし" /></label>
         <label class="control"><span>買取掲載の最低観測日数</span><input id="postingDaysMinInput" type="number" min="0" max="30" step="1" placeholder="条件なし" /></label>
@@ -927,7 +927,7 @@
     </section>
   </main>
 
-  <script src="./decision-model.js?v=20261030-buyback-pairing-r2" integrity="sha384-e5j7b7ktHO01H9EpT2JS1IFgum9+hl/A4AlNCyCM1rHURvACamJoBay9poAXlvFh"></script>
+  <script src="./decision-model.js?v=20261031-coverage-ratios" integrity="sha384-e5j7b7ktHO01H9EpT2JS1IFgum9+hl/A4AlNCyCM1rHURvACamJoBay9poAXlvFh"></script>
   <script src="./price-integrity.js?v=20261018-observation75-v1"></script>
   <script src="./grade-calibration.js?v=20260924-v1"></script>
   <script src="./search-index-model.js?v=20261015-trade-demand-v2"></script>
@@ -935,24 +935,24 @@
   <script src="./market-analysis.js?v=20260913-supply-absorption-v3"></script>
   <script src="./snkr-raw-flip-model.js?v=20260920-raw-flip-v1"></script>
   <script src="./raw-psa9-gap-model.js?v=20260929-trial-v2"></script>
-  <script src="./purchase-ratio-model.js?v=20261030-buyback-pairing-r2" integrity="sha384-0FeDy3+gTHuKK/mU4VbWxXHUugobUQOS3EesJgTQ6EX+Bm7W9QD8ByUwDBUu8cjW"></script>
+  <script src="./purchase-ratio-model.js?v=20261031-coverage-ratios" integrity="sha384-0FeDy3+gTHuKK/mU4VbWxXHUugobUQOS3EesJgTQ6EX+Bm7W9QD8ByUwDBUu8cjW"></script>
   <script src="./candidate-visibility.js?v=20260927-v1"></script>
   <script src="./catalog-index-adapter.js?v=20260927-v1"></script>
-  <script src="./limit-display-model.js?v=20261030-buyback-pairing-r2" integrity="sha384-8Dj6kDpEE3qaB2GDuQxLasEtKnLuSX6XyReYUMyFlxwX5pxAKUg2ywbaygvn2vJ6"></script>
+  <script src="./limit-display-model.js?v=20261031-coverage-ratios" integrity="sha384-8Dj6kDpEE3qaB2GDuQxLasEtKnLuSX6XyReYUMyFlxwX5pxAKUg2ywbaygvn2vJ6"></script>
   <script src="./return-horizon-model.js?v=20261004-reference-v1"></script>
   <script src="./price-reference-model.js?v=20261004-reference-v1"></script>
   <script src="./purchase-memo-model.js?v=20261004-reference-v1"></script>
   <script src="./release-year-filter.js?v=20261003-priority-v2"></script>
   <script src="./update-health-model.js?v=20261023-verified-partial-publication"></script>
   <script src="./update-health-banner.js?v=20261011-search-first-v1"></script>
-  <script src="./current-market-model.js?v=20261030-buyback-pairing-r2" integrity="sha384-fcfFd/0u1lI96582Y8Isew5AGSRA/NDHV2jQrVBJytLfb8ikDayeTIAz/R/jBRWF"></script>
+  <script src="./current-market-model.js?v=20261031-coverage-ratios" integrity="sha384-fcfFd/0u1lI96582Y8Isew5AGSRA/NDHV2jQrVBJytLfb8ikDayeTIAz/R/jBRWF"></script>
   <script src="./ui-data-codec.js?v=20261027-psa9-guide-v1"></script>
   <script src="./psa-plan-model.js?v=20261029-observed-evidence"></script>
   <script src="./keyed-card-renderer.js?v=20261010-v1"></script>
   <a class="return-to-filters" href="#searchConditions">検索条件へ</a>
-  <script src="./exploration-metrics.js?v=20261030-buyback-pairing-r2" integrity="sha384-GNCOWGVI2lFYVhHcGVwceLxLQa8xe0+6929A7+9DNmSqsnFzqtyJxeSEr3KNAid6"></script>
-  <script src="./search-controls.js?v=20261030-buyback-pairing-r2" integrity="sha384-ZbSDnbO0h3stXbHm3pB16Xoaw4PRGRTlYlGADTPwiNjPXiLKdtJMeKIeF66laIwn"></script>
+  <script src="./exploration-metrics.js?v=20261031-coverage-ratios" integrity="sha384-tme4ggH7Fk7QAU8Yw1N3i7mvL4giFkSXlmLQ8lzryboiMOgN+TP1TzPe8Q9wHJoN"></script>
+  <script src="./search-controls.js?v=20261031-coverage-ratios" integrity="sha384-v9rhJSyepwekmpsKO+EciJeGnbLA6IWs0SnnRD6eZqlu4PRy5rOnwJ0PodrpDEow"></script>
   <script src="./settings-disclosure.js?v=20261011-disclosure-v1"></script>
-  <script src="./app.js?v=20261030-buyback-pairing-r2" integrity="sha384-Ephj8ZNOt8woT4oD36e5Z+VWQqIp36tDCTIImc5IX70IMEf4nDW7VMYVhzeRejSm"></script>
+  <script src="./app.js?v=20261031-coverage-ratios" integrity="sha384-/eMSOBFrvbMM7rW1VYkBhjdwtj0Tw4feOH0LLDWiFoV4NyL8UVjHxQsKjUGBk0OF"></script>
 </body>
 </html>

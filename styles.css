@@ -1801,3 +1801,5 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 @media(max-width:600px){.candidate-glance .price-gap:has(details[open]){grid-column:1/-1}}
 
 .buyback-current-pending{display:block}.buyback-current-pending>small{display:block;font-size:.75rem}.buyback-recent-reference{padding:.35rem 0;border-top:1px solid #33435a;color:#c4cbd7;font-size:.78rem}.buyback-recent-reference>small{display:block;font-size:.7rem}.buyback-support-compact .buyback-75-mean{font-size:.74rem}.buyback-support-compact .buyback-75-mean b{font-size:.8rem}
+
+.buyback-ratio-filters{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;min-width:0;border:1px solid var(--line,#334155);border-radius:12px;padding:12px}.buyback-ratio-filters>small,.buyback-ratio-filters>.check-control{grid-column:1/-1}.buyback-scope{font-size:.9rem!important;font-weight:700}.buyback-75-mean{font-size:.82rem!important}.observation-adopted{font-size:.88rem;font-weight:750;color:#e2e8f0}
