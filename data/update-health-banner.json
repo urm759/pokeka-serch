@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-31T18:51:32.113Z",
+  "generatedAt": "2026-10-31T18:55:25.452Z",
   "sourceLastSuccessAt": "2026-10-31T18:40:13.273Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-10-31T14:29:49.776Z",
-    "lastSuccessAt": "2026-10-31T14:29:49.776Z",
-    "runId": "41210257063",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/41210257063"
+    "lastAttemptAt": "2026-10-31T18:55:25.442Z",
+    "lastSuccessAt": "2026-10-31T18:55:25.442Z",
+    "runId": "41231666328",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/41231666328"
   },
   "issues": [
     {
@@ -47,11 +47,6 @@
       "reason": "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）"
     },
     {
-      "key": "source:buyback:fukufuku-mail:manual-wait",
-      "category": "アクセス・手動対応待ち",
-      "reason": "福福トレカ（郵送窓口）: 通常公開価格表の低頻度GET。認証操作なし。郵送窓口のみ・商品更新日は不明、実確認日時とページ更新日時を分離"
-    },
-    {
       "key": "pc:psa:PC観測未受信",
       "category": "確認が必要",
       "url": null,
@@ -60,7 +55,7 @@
     {
       "key": "priority-prices:cadence-stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/41202557664",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/41230377523",
       "reason": "重要価格更新：設定2時間に対し実績成功間隔（直近最大）7.30時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
     }
   ],
@@ -71,7 +66,6 @@
     "遊々亭: HTTP 403",
     "遊々亭: 更新期限超過（カード別鮮度 0%）",
     "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）",
-    "福福トレカ（郵送窓口）: 通常公開価格表の低頻度GET。認証操作なし。郵送窓口のみ・商品更新日は不明、実確認日時とページ更新日時を分離",
     "PC側PSA: PC観測未受信 / 30時間以内の独立タスク観測なし。PC停止・観測起動失敗・未公開を区別して確認",
     "重要価格更新：設定2時間に対し実績成功間隔（直近最大）7.30時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
   ],
