@@ -16,7 +16,7 @@ const planned=postpass.prioritize([{url:'old'},{url:'normal1'},{url:'normal2'}],
 assert.deepEqual(planned.map(r=>r.url),['normal1',priorityUrl,'normal2']);
 assert.deepEqual(planned.filter(r=>!r.priorityRefresh).map(r=>r.normalIndex),[1,2],'normal cursor never uses virtual priority offsets');
 assert.equal(planned[1].sourceSitemap,2,'retry provenance retains original sitemap, not current maintenance page');
-assert.equal(postpass.prioritize([{url:priorityUrl}],0,catalog,['wanted'],4,{},now).filter(r=>r.priorityRefresh).length,0,'no duplicate URL acquisition');
+assert.equal(postpass.prioritize([{url:priorityUrl}],0,catalog,['wanted'],4,{},now).filter(r=>r.priorityRefresh&&r.url===priorityUrl).length,0,'no duplicate URL acquisition');
 assert.equal(postpass.prioritize([],0,[{...catalog[0],detailUrl:'https://unrelated.test/target'}],['wanted'],4,{},now).length,0,'saved URLs cannot change acquisition origin');
 const batch=require('./source_batch_metrics').shopBatch('torecacamp',JSON.stringify({torecacamp:{detailFetched:4,coverage:6502,updated:1,linked:0}}));
 assert.equal(batch.acquiredCount,4);assert.equal(batch.catalogCount,6502);assert.equal(batch.newLinkedCount,0);
@@ -29,7 +29,7 @@ assert.deepEqual(campRequestedIds({profiles:[{id:'A',urlsMatched:['qualified','o
 assert.deepEqual(campRequestedIds({profiles:[{id:'A-median',urlsMatched:['median'],qualifiedFacts:{median:{medianEvidence:{rows:[{url:used}]}}}}]}),['median'],'refresh a source actually used by the qualified median');
 assert.deepEqual(campRequestedIds({profiles:[{id:'A',urlsMatched:['unknown'],qualifiedFacts:{}}]}),[],'do not invent an adopted source when comparison evidence is absent');
 assert(postpass.prioritize([],0,catalog,['wanted'],4,{[priorityUrl]:{held:false,nextRetryAt:new Date(now-1).toISOString()}},now).some(r=>r.url===priorityUrl));
-assert.equal(postpass.prioritize([],0,catalog,['wanted'],4,{[priorityUrl]:{held:false,nextRetryAt:new Date(now+1).toISOString()}},now).length,0);
+assert.equal(postpass.prioritize([],0,catalog,['wanted'],4,{[priorityUrl]:{held:false,nextRetryAt:new Date(now+1).toISOString()}},now).filter(r=>r.url===priorityUrl).length,0);
 const legacy={cardId:'wanted',detailUrl:'https://torecacamp-pokemon.com/products/known',observedAt:new Date(now-7*3600000).toISOString()};
 assert.equal(postpass.legacyTargets([legacy],['wanted'],{},now).length,1,'missing sitemap is not a permanent exclusion of a canonical saved URL');
 assert.equal(postpass.legacyTargets([{...legacy,sourceSitemap:2}],['wanted'],{},now).length,0,'normal known-sitemap queue owns this product');
@@ -42,3 +42,24 @@ const first=observe({},proof,receipts,now);assert.equal(first.sources.hareruya2.
 const second=observe(first,{pipelines:{catchup:{confirmed:true,runId:2}}},{pipelines:{catchup:{runId:2,recordedAt:new Date(now).toISOString(),cardObservations:{hareruya2:[{id:'a',at:new Date(now).toISOString()}]}}}},now);
 assert.equal(second.sources.hareruya2.maximumIntervalMs,3*3600000);assert.equal(second.sources.hareruya2.byRoute.catchup,1);
 assert.equal(observe(second,{pipelines:{catchup:{confirmed:false,runId:3}}},{pipelines:{catchup:{runId:3}}},now).runs.length,2);
+
+const late=[{url:'front1'},{url:'front2'},{url:'front3'},{url:priorityUrl},{url:'after'}];
+const latePlan=postpass.prioritize(late,0,[catalog[0]],['wanted'],4,{},now);
+assert.equal(latePlan.filter(r=>r.url===priorityUrl).length,1);assert(latePlan.findIndex(r=>r.url===priorityUrl)<3,'far known URL moves into bounded priority slice');
+assert.equal(latePlan.find(r=>r.url==='after').normalIndex,4,'normal cursor retains its real offset');
+assert(postpass.prioritize([],0,[catalog[0]],[],4,{},now).length,'48-hour known-card maintenance does not require candidate adoption');
+const sourceText=require('fs').readFileSync(require('path').join(__dirname,'update_yuyutei_torecacamp.js'),'utf8');
+assert(sourceText.includes('const prioritized=!retryOnly&&!retrySitemap;'));assert(sourceText.includes('const refreshExisting = existingProduct && postpass.due('),'known URLs encountered in normal first-pass order also refresh when due');
+const maintenance=postpass.priorityMaintenance([catalog[0]],['wanted'],{}, {},now);assert.equal(maintenance.due,true);assert.equal(maintenance.targets,1);
+assert.equal(postpass.priorityMaintenance([catalog[0]],['wanted'],{sourceRetry:{held:true}}, {},now).due,false);
+assert.equal(postpass.priorityMaintenance([catalog[0]],['wanted'],{manualHold:{reason:'403'}}, {},now).due,false);
+assert.equal(postpass.priorityMaintenance([catalog[0]],['wanted'],{}, {lastAttemptAt:new Date(now-3600000).toISOString()},now).due,false);
+assert.equal(postpass.priorityMaintenance([catalog[0]],[],{}, {},now).due,false);
+assert.equal(postpass.priorityMaintenance([catalog[0]],['wanted'],{}, {lastError:'HTTP 403'},now).due,false);
+const almostDue={...catalog[0],observedAt:new Date(now-4*3600000).toISOString()};
+assert.equal(postpass.due(almostDue,true,now),false);assert.equal(postpass.due(almostDue,true,now,2*3600000),true);
+assert.equal(postpass.due(almostDue,false,now,2*3600000),false,'normal sweep freshness deadline is unchanged');
+assert.equal(postpass.priorityMaintenance([almostDue],['wanted'],{}, {},now,2*3600000).due,true);
+assert(postpass.prioritize([],0,[almostDue],['wanted'],4,{},now,2*3600000).some(r=>r.priorityRefresh),'proactive plan must also reach the real acquisition selector');
+const campParser=require('./update_yuyutei_torecacamp');assert(campParser.campA({title:'状態A'}));assert(!campParser.campA({title:'状態A−'}));assert(!campParser.campA({title:'状態A-'}));
+assert(sourceText.includes('Number(options.intervalMs ?? 1100), Number(process.env.SHOP_ACCESS_INTERVAL_MS ?? 1100)'),'caller must not shorten a source backoff interval');
