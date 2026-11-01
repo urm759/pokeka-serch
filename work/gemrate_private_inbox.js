@@ -9,18 +9,41 @@ function pendingFiles(store,reviewRevision=null) {
   const prepared=new Map(manifest.files.filter(r=>r.status==='prepared'&&path.dirname(r.originalPath)===incoming).map(r=>[path.basename(r.originalPath),r]));
   if(reviewRevision){
     const latest=new Map(manifest.files.filter(r=>r.kind==='list'&&path.dirname(r.originalPath)===incoming).map(r=>[r.originalPath,r]));
-    for(const r of latest.values())if(r.reviewRevision!==reviewRevision&&fs.existsSync(r.originalPath+'.context.json'))prepared.set(path.basename(r.originalPath),r);
+    for(const r of latest.values()){
+      const revision=typeof reviewRevision==='function'?reviewRevision(r.context):reviewRevision;
+      if(r.reviewRevision!==revision&&fs.existsSync(r.originalPath+'.context.json'))prepared.set(path.basename(r.originalPath),r);
+    }
   }
   return [...new Set([...fs.readdirSync(incoming),...prepared.keys()])].filter(n=>/^export(?: \(\d+\))?\.csv$/i.test(n)).map(name=>({name,prepared:prepared.get(name)}));
 }
-function validate(sidecar,bytes,store) {
+function validate(sidecar,bytes,store,root=ROOT) {
   const privateRoot=fs.realpathSync(path.dirname(store)),proofFile=fs.realpathSync(path.resolve(store,sidecar.proofFile));
   const rel=path.relative(privateRoot,proofFile);
   if(rel.startsWith('..')||path.isAbsolute(rel))throw Error('Source proof must remain in private storage');
   const proofBytes=fs.readFileSync(proofFile),proof=JSON.parse(proofBytes),context=sidecar.context;
   if(sidecar.csvSha256!==sha(bytes)||context?.contextProof!=='sha256:'+sha(proofBytes)
+    ||proof.csvSha256&&proof.csvSha256!==sidecar.csvSha256
     ||proof.grader?.toLowerCase()!=='psa'||proof.set!==context.set||Number(proof.year)!==context.year
     ||proof.updated!==context.sourceUpdatedDate||context.language!=='Japanese')throw Error('CSV/page context evidence mismatch');
+  const scopeFile=path.join(root,'work/gemrate-reviewed-sets.json');
+  const scope=fs.existsSync(scopeFile)?JSON.parse(fs.readFileSync(scopeFile)):null;
+  if(scope&&(scope.version!==1||!Array.isArray(scope.sets)))throw Error('Invalid reviewed set registry');
+  const matches=(scope?.sets||[]).filter(s=>s.set===context.set&&s.year===context.year);
+  if(matches.length){
+    const s=matches[0];
+    if(matches.length!==1||s.language!=='Japanese'||s.grader!=='PSA'||!s.setCode||!Number.isInteger(s.denominator)||s.denominator<=0
+      ||!s.reviewedAt||!s.officialSetUrl?.startsWith('https://www.pokemon-card.com/')
+      ||proof.url!==context.pageUrl||proof.category!=='tcg-cards'||proof.language!=='Japanese')throw Error('Set identity has not been reviewed');
+    csv.validateContext(context,'/item-details');
+    const rows=csv.parseCsv(bytes.toString('utf8')),headers=rows.shift();
+    const gems=headers.indexOf('Gems'),total=headers.indexOf('Total');
+    if(gems<0||total<0||rows.length!==proof.csvRows||!proof.setTotals)throw Error('CSV/set totals evidence missing');
+    let ten=0,all=0;
+    for(const row of rows){const a=csv.count(row[gems]),b=csv.count(row[total]);if(a===null||b===null||a>b)throw Error('CSV set counts invalid');ten+=a;all+=b;}
+    if(ten!==proof.setTotals.psa10||all!==proof.setTotals.total)throw Error('CSV/set page totals mismatch');
+    return {context,setCode:s.setCode,denominator:s.denominator};
+  }
+  // Keep the original S6a proof path intact; new sets require the registry above.
   const oldProof=JSON.parse(fs.readFileSync(path.resolve(store,'..','gemrate-public-review-20261023.json')));
   const sets=new Set(oldProof.identityReview.map(r=>r.set));
   if(sets.size!==1||oldProof.set!==context.set||oldProof.year!=context.year)throw Error('Set identity has not been reviewed');
@@ -32,7 +55,8 @@ function run(store=STORE) {
   try {
   const catalog=JSON.parse(fs.readFileSync(path.join(ROOT,'data/pokemon-cards.json'))),english=JSON.parse(fs.readFileSync(path.join(ROOT,'work/snkr_english_names.json'))).cards;
   const incoming=path.join(store,'incoming'),rows=[];
-  const reviewed=require('./gemrate_reviewed_additions'),registry=reviewed.entries(ROOT),reviewRevision=sha(JSON.stringify(registry));
+  const reviewed=require('./gemrate_reviewed_additions'),registry=reviewed.entries(ROOT);
+  const reviewRevision=context=>sha(JSON.stringify(registry.filter(r=>r.set===context?.set&&r.year===context?.year&&r.language===context?.language)));
   // A new CSV requires its own original page evidence and SHA-bound sidecar. Never infer a date from file time.
   for(const {name,prepared} of pendingFiles(store,reviewRevision)) {
     const file=path.join(incoming,name),meta=file+'.context.json';
@@ -62,7 +86,7 @@ function run(store=STORE) {
       }):[];
       const result=storage.receive({store,previousObservations,files:[{path:file,kind:'list',context:v.context,mappings:matches.mappings}]});
       const manifestFile=path.join(store,'manifest.json'),manifest=JSON.parse(fs.readFileSync(manifestFile));
-      const receipt=manifest.files.findLast(r=>r.originalPath===file);receipt.reviewRevision=reviewRevision;
+      const receipt=manifest.files.findLast(r=>r.originalPath===file);receipt.reviewRevision=reviewRevision(v.context);
       require('./acquisition_retry').atomicWrite(manifestFile,manifest);
       rows.push({name,status:'imported-private',accepted:result.newPrivateObservations,
         recovered:result.files.filter(r=>r.recovered).reduce((n,r)=>n+r.accepted,0),held:result.files[0].quarantined,sha256:result.files[0].sha256});

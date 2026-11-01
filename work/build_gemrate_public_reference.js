@@ -32,7 +32,7 @@ function build(root=ROOT,store=path.resolve(root,'../private-research/gemrate'))
       if(receipt.kind!=='list'||receipt.status==='prepared'||!fs.existsSync(sidecarFile))continue;
       for(const file of [receipt.storedPath,receipt.parsedPath,receipt.backupPath])if(storage.outside(fs.realpathSync(store),fs.realpathSync(file)))throw Error('Private inbox receipt escapes store');
       const raw=fs.readFileSync(receipt.storedPath),sidecar=JSON.parse(fs.readFileSync(sidecarFile));
-      inbox.validate(sidecar,raw,store);
+      inbox.validate(sidecar,raw,store,root);
       if(hash(raw)!==receipt.sha256||hash(zlib.gunzipSync(fs.readFileSync(receipt.backupPath)))!==receipt.sha256)throw Error('Inbox original/backup hash mismatch');
       const parsed=JSON.parse(fs.readFileSync(receipt.parsedPath));
       if(parsed.csvSha256!==receipt.sha256||parsed.accepted.length!==receipt.accepted)throw Error('Inbox parsed receipt mismatch');
@@ -44,7 +44,9 @@ function build(root=ROOT,store=path.resolve(root,'../private-research/gemrate'))
         const old=latest.get(row.cardId);
         if(additions.some(r=>r.cardId===row.cardId)){
           const spec=JSON.parse(row.specEvidence);
-          if(spec.rule!=='reviewed-exact-identity-v1'||JSON.stringify(spec.review)!==JSON.stringify(additions.find(r=>r.cardId===row.cardId)))throw Error('Addition review mismatch');
+          // Evidence annotations may be corrected without fabricating a new observation.
+          // The current registry is validated above and the raw print is re-matched below.
+          if(spec.rule!=='reviewed-exact-identity-v1'||!require('./gemrate_reviewed_additions').sameIdentity(spec.review,additions.find(r=>r.cardId===row.cardId)))throw Error('Addition review mismatch');
           const identity=JSON.parse(row.identity);
           const checked=require('./gemrate_reviewed_additions').mappings([{'Card #':identity[3],Name:identity[4],Parallel:identity[5]}],sidecar.context,[card],additions);
           if(checked.length!==1||checked[0].cardId!==row.cardId)throw Error('Addition identity review mismatch');

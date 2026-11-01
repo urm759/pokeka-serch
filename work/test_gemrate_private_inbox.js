@@ -20,4 +20,5 @@ fs.writeFileSync(path.join(incoming,'export (2).csv.context.json'),'{}');
 assert(pendingFiles(store,'new-reviewed-registry').some(r=>r.name==='export (2).csv'),'new reviewed identity can reprocess a retained receipt without new HTTP');
 const manifest=JSON.parse(fs.readFileSync(manifestFile));manifest.files[2].reviewRevision='new-reviewed-registry';fs.writeFileSync(manifestFile,JSON.stringify(manifest));
 assert(!pendingFiles(store,'new-reviewed-registry').some(r=>r.name==='export (2).csv'),'unchanged registry must not repeatedly reprocess completed receipts');
+assert(!pendingFiles(store,context=>'new-reviewed-registry').some(r=>r.name==='export (2).csv'),'a review of an unrelated set must not reprocess this set');
 console.log('PASS private inbox requires CSV hash and source-page date/grader/language/set proof; no filesystem-date inference');
