@@ -1,6 +1,6 @@
 const fs = require('node:fs'), path = require('node:path');
 const {atomicWrite} = require('./acquisition_retry');
-const VERSION = 'homura-public-v3';
+const VERSION = 'homura-public-v4';
 const BASE = 'https://api.kaitori-homura.com/api/v1/products';
 function collapse(checkpoint) {
   if(checkpoint.rawCount!==checkpoint.total || !checkpoint.items.length) throw Error('形式変更: ホムラ一覧件数不整合・取得0件。正常値保持');
@@ -21,13 +21,14 @@ function parse(payload, cards, observedAt) {
   if(!Array.isArray(payload?.data) || !Number.isInteger(payload.meta?.total_pages)
     || !Number.isInteger(payload.meta?.total_count) || !Number.isInteger(payload.meta?.current_page)) throw Error('形式変更: ホムラ公開一覧の構造不一致');
   const items=[];
+  const byNumber=new Map(),serial=require('./cardshop151').number;
+  for(const card of cards){const key=serial(card.model||card.name);if(!byNumber.has(key))byNumber.set(key,[]);byNumber.get(key).push(card);}
   for(const row of payload.data) {
     if(row.product_sub_category?.id!==182 || row.product_sub_category?.product_category?.id!==21) throw Error('形式変更: ホムラPSAカテゴリ条件が反映されていない');
     if(!Number.isInteger(row.id) || typeof row.name!=='string' || !Number.isFinite(row.price) || row.price<0) throw Error('形式変更: ホムラ商品ID・価格の欠損');
     if(!/^PSA\s*10\b/i.test(row.name)) continue;
     const name=row.name.replace(/^PSA\s*10\s*/i,'');
-    const clean=name.replace(/\s+\d{1,3}\s*\/\s*(?:\d{1,3}|(?:XY|SM|SV|BW|S)-P)\b/ig,'');
-    const identity=require('./cardshop151').resolve({type:'PSA10',genre:'ポケモンカード',name:clean,listNo:name},cards);
+    const identity=require('./build_buyback_observation_summary').resolveSavedItem({name,number:name,grade:'PSA10',currency:'JPY'},cards,byNumber);
     const card=cards.find(c=>c.id===identity.cardId), audit=require('./card_identity');
     const rarity=audit.extractRarity(name), targetRarity=card && audit.extractRarity(card.name,card.rarity);
     const set=name.match(/\[((?:SV|SM|XY|BW|S|M)[a-z0-9+-]*)\s/i)?.[1];

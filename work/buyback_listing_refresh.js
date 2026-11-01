@@ -22,6 +22,10 @@ function refresh(history, result, today, priorItems = []) {
   const shopId = result.shop.id;
   const links = currentLinks(result, today);
   if (result.savedReplay) {
+    // A failed identity recheck is neither a new observation nor an ended
+    // listing. Keep historical samples and hold only the current source row.
+    for(const item of result.unmatched||[])if(item.identityHeld&&item.previousCardId&&!links.has(item.previousCardId))
+      links.set(item.previousCardId,{...link(item,null),active:null,identityHeld:true});
     // A newly verified link can recover a genuinely observed old day. The
     // replay date itself is never a price observation; never replace conflicts.
     for(const item of result.matched) {

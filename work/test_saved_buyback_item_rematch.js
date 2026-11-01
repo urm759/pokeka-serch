@@ -5,6 +5,13 @@ const r=reconcile([], [raw],cards);assert.equal(r.recovered.length,1);assert.equ
 const history={dates:['2026-10-26'],shops:{}};require('./buyback_listing_refresh').refresh(history,{shop:{id:'source'},savedReplay:true,matched:r.matched},'2026-10-27');assert.equal(history.shops.source.style[0],31000);
 for(const changed of [{grade:'PSA9'},{currency:'USD'},{quarantined:true},{conditionsConfirmed:false},{observedAt:null},{name:'英語版 イーブイ 755/742'}])assert.equal(reconcile([],[{...raw,...changed}],cards).recovered.length,0);
 assert.equal(reconcile(r.matched,[raw],cards).recovered.length,0);assert.equal(reconcile([],[raw],[...cards,{...cards[0],id:'ambiguous'}]).recovered.length,0);
+const invalidated=reconcile([{...r.matched[0],name:'別カード 755/742'}],[],cards);
+assert.equal(invalidated.matched.length,0);assert.equal(invalidated.unmatched[0].previousCardId,'style');
+assert.equal(invalidated.unmatched[0].observedAt,raw.observedAt);
+const preservedHistory={dates:['2026-10-26'],shops:{source:{style:[31000]}}};
+const heldLinks=require('./buyback_listing_refresh').refresh(preservedHistory,{shop:{id:'source'},savedReplay:true,...invalidated},'2026-11-01');
+assert(heldLinks.get('style').identityHeld);assert.deepEqual(preservedHistory.shops.source.style,[31000]);
+assert.equal(heldLinks.get('style').active,null,'identity hold is not an ended listing or zero price');
 console.log('saved unmatched replay passed: identity, timestamp, grade, quarantine, duplicate and ambiguity');
 
 const {mergeBuybackHistory}=require('./reconcile_saved_source_merge');

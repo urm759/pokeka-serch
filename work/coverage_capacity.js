@@ -26,6 +26,9 @@ function capacity(history,targetRows,now=Date.now(),targetHours=6,adoptionHours=
     const current=[...target.values()].map(r=>validTime(r.at,now)?now-Date.parse(r.at):null);
     sources[source]={targets:target.size,targetHours,adoptionHours,requiredConfirmationsPerDay:need,requiredToAvoidAdoptionExpiryPerDay:target.size*24/adoptionHours,capacityWith25PctHeadroom:Math.ceil(need*1.25),verifiedCohort24h:recent.length,verifiedCohort7d:week.length,verifiedCohortDaily7d:week.length/7,
       coverageOfDailyRequirement:need?recent.length/need:null,targetExceeded:current.filter(age=>age!=null&&age>targetHours*HOUR).length,adoptionExpired:current.filter(age=>age!=null&&age>adoptionHours*HOUR).length,confirmationTimeUnknown:current.filter(age=>age==null).length,
+      latestObservationCards24h:current.filter(age=>age!=null&&age<=DAY).length,
+      latestObservationCards7d:current.filter(age=>age!=null&&age<=7*DAY).length,
+      latestObservationNote:'公開用の現行要約に残る個別実確認日時による異なるカード数。同日の反復確認回数ではなく下限。固定群receiptの全取得元能力への外挿、ファイル生成日時による補完はしない。',
       intervals:dist(intervals),confirmationToPublicationStep:dist(publish),
       sampleNote:'実取得・公開照合済みreceipt中の対象カード。個別実確認日時の前進を重複除外。取得元全体の実績能力とは異なる下限値。未観測間隔を補完しない。'};
   }return sources;

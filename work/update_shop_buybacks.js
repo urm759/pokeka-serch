@@ -44,7 +44,7 @@ const SHOPS = [
   },
   {
     id: "kaitori-homura-mail",
-    adapterVersion: 'homura-public-v3',
+    adapterVersion: require('./homura_public_feed').VERSION,
     name: "買取ホムラ（郵送）",
     url: "https://kaitori-homura.com/products?q%5Bproduct_sub_category_id_eq%5D=182&q%5Bproduct_sub_category_product_category_id_eq%5D=21&sort=price_desc",
     fetchItems: shop => require('./homura_public_feed').fetchItems(shop,fetchJson,readJson(path.join(ROOT,'data/pokemon-cards.json'),[])),

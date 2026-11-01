@@ -27,6 +27,10 @@ const runs=[{key:'priority',observations:{shop:[early]}},{key:'daily',observatio
 const result=c.capacity({runs},{shop:[recent]},now).shop;
 assert.equal(result.verifiedCohort24h,2,'same timestamp copied across runs is not a confirmation');assert.equal(result.intervals.medianMs,10*3600000);assert.equal(result.requiredConfirmationsPerDay,4);
 const unknown=c.capacity({runs:[]},{shop:[{id:'a',at:'2026-10-31'}]},now).shop;assert.equal(unknown.confirmationTimeUnknown,1);assert.equal(unknown.verifiedCohort24h,0);
+assert.equal(unknown.latestObservationCards24h,0,'date-only is not an individual confirmation');
+const distinct=c.capacity({runs:[]},{shop:[{id:'a',at},{id:'a',at},{id:'b',at:new Date(now-25*3600000).toISOString()},{id:'future',at:new Date(now+1000).toISOString()}]},now).shop;
+assert.equal(distinct.latestObservationCards24h,1,'current published distinct cards and verified receipt events are separate');
+assert.equal(distinct.latestObservationCards7d,2);assert.equal(distinct.verifiedCohort24h,0);
 const coverage=c.coverage({cards:[{id:'a'},{id:'a'},{id:'b'}]},[{id:'a',name:'カード SR'},{id:'b',name:'カード AR'}],{cards:{a:{s:'分析可能',m:[],ry:2020},b:{s:'データ不足',m:['psa10Trades']}}},{cards:{a:{stale:true}}},now);
 assert.equal(coverage.sourceCards,2);assert.equal(coverage.structural,1);assert.equal(coverage.freshAllRequiredConfirmed,0);assert.equal(coverage.additionalToGoal,1);
 const stats=require('./build_psa10_period_statistics').statistics([['2026-08-01',0,10],['2026-10-01',0,20],['2026-10-31',0,30]],'2026-10-31',75,0,2);

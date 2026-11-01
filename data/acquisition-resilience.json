@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-31T22:45:00.555Z",
+  "generatedAt": "2026-11-01T01:16:12.290Z",
   "llmCalls": 0,
   "codexCalls": 0,
   "retryPolicy": {
@@ -27,7 +27,7 @@
     {
       "source": "psaOfficial",
       "label": "PSA公式・PC正規認証",
-      "remaining": 1327,
+      "remaining": 1325,
       "queueDefinition": "あとPSAだけで分析可能な国内カード。全PSA未取得とは別",
       "sourceState": "permission-wait",
       "failureScope": "source",
@@ -169,14 +169,14 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-31T22:03:29.481Z",
-        "to": "2026-10-31T22:44:57.177Z"
+        "from": "2026-11-01T01:08:45.516Z",
+        "to": "2026-11-01T01:16:03.710Z"
       },
       "sinceBaseline": {
         "newLinked": 4011,
         "validAdded": 4011,
-        "validLost": 222,
-        "usableNet": 3789,
+        "validLost": 220,
+        "usableNet": 3791,
         "freshnessRecovered": 0
       },
       "freshness": null
@@ -316,8 +316,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-31T22:03:29.481Z",
-        "to": "2026-10-31T22:44:57.177Z"
+        "from": "2026-11-01T01:08:45.516Z",
+        "to": "2026-11-01T01:16:03.710Z"
       },
       "sinceBaseline": {
         "newLinked": 757,
@@ -357,8 +357,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-10-31T22:03:29.481Z",
-        "to": "2026-10-31T22:44:57.177Z"
+        "from": "2026-11-01T01:08:45.516Z",
+        "to": "2026-11-01T01:16:03.710Z"
       },
       "sinceBaseline": {
         "newLinked": 0,
@@ -371,10 +371,10 @@
     }
   ],
   "psaOnly": {
-    "count": 1327,
+    "count": 1325,
     "causes": {
       "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持": 1198,
-      "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）": 129
+      "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）": 127
     },
     "cards": [
       {
@@ -1942,12 +1942,6 @@
         "setCode": "PRMF1",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
-        "id": "pk-6033",
-        "setCode": "SM12A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2019/pokemon-japanese-sun-moon-tag-team-gx-all-stars/171183",
-        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
         "id": "pk-1174",
@@ -3832,12 +3826,6 @@
         "setCode": "NEO1",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
-        "id": "pk-38139",
-        "setCode": "S12A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2022/pokemon-japanese-sword-shield-vstar-universe/225772",
-        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
         "id": "x-739095",
@@ -8342,10 +8330,10 @@
     ]
   },
   "progress": {
-    "listed": 12760,
-    "analyzable": 2453,
+    "listed": 12762,
+    "analyzable": 2455,
     "pending": 10307,
-    "oneAway": 1877
+    "oneAway": 1875
   },
   "newlyAnalyzable": 0,
   "note": "一時障害の再試行、個別URL隔離、取得元停止を区別。未取得をデータ不存在に変更しない。巡回完了と全項目取得・最新価格は別"
