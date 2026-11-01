@@ -1,6 +1,11 @@
 // Reviewed identities only. This registry grants neither acquisition rights nor calculation adoption.
 const fs=require('node:fs'),path=require('node:path');
 const {canonicalIdentity}=require('./card_identity');
+const parallelRarity={'Art Rare':'AR','Special Art Rare':'SAR','Super Rare':'SR'};
+function sameIdentity(a,b){
+  return ['cardId','catalogName','language','set','year','setCode','number','denominator','sourceName','parallel','rarity','finish']
+    .every(k=>a?.[k]===b?.[k]);
+}
 function entries(root) {
   const file=path.join(root,'work/gemrate-reviewed-additions.json');
   if(!fs.existsSync(file))return [];
@@ -9,7 +14,8 @@ function entries(root) {
   const seen=new Set();
   for(const r of registry.cards){
     if(seen.has(r.cardId)||r.language!=='Japanese'||!r.cardId||!r.catalogName||!r.reviewedAt
-      ||!['Base','Ultra Rare'].includes(r.parallel)||!r.set||!r.number||!r.setCode||!(r.denominator>0))throw Error('Invalid reviewed identity');
+      ||!['Base','Ultra Rare',...Object.keys(parallelRarity)].includes(r.parallel)||!r.set||!r.number||!r.setCode||!(r.denominator>0))throw Error('Invalid reviewed identity');
+    if(parallelRarity[r.parallel]&&canonicalIdentity({name:r.catalogName,rarity:r.rarity}).rarity!==parallelRarity[r.parallel])throw Error('Reviewed parallel/rarity mismatch');
     seen.add(r.cardId);
     const domestic=r.evidence?.filter(e=>e.role==='domestic-identity')||[];
     const hosts=new Set(domestic.map(e=>new URL(e.url).hostname.replace(/^www\./,'')));
@@ -34,4 +40,4 @@ function mappings(rows,context,catalog,registry,heldKeys=[]) {
   }
   return out;
 }
-module.exports={entries,mappings};
+module.exports={entries,mappings,sameIdentity};

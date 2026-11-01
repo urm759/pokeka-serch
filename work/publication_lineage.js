@@ -28,13 +28,14 @@ function snapshot(root){return hashes(reader(root),SOURCES);}
 function generationCode(root){
   const files=['','work'].flatMap(dir=>fs.existsSync(path.join(root,dir))?fs.readdirSync(path.join(root,dir))
     .filter(f=>f.endsWith('.js')&&!/^(test_|verify_|measure_|\d)/.test(f)).map(f=>(dir?dir+'/':'')+f):[]).sort();
-  return digest(JSON.stringify(hashes(reader(root),[...files,'work/psa-name-aliases.json','work/priority-search-profiles.json'])));
+  return digest(JSON.stringify(hashes(reader(root),[...files,'work/psa-name-aliases.json','work/priority-search-profiles.json',
+    'work/gemrate-reviewed-additions.json','work/gemrate-reviewed-sets.json'])));
 }
 function reuseInputs(root){
   const read=reader(root),manifest=read('data/ui/manifest.json');
   const summaries=manifest?JSON.parse(manifest).detailSources||[]:[];
   const files=[...new Set([...SOURCES,...summaries.filter(f=>f!=='data/update-status.json'),
-    'data/psa-japan-services.json','work/raw-price-observations-manifest.json',...['cardrush_catalog','hareruya2_catalog','yuyutei_catalog','torecacamp_catalog',
+    'data/psa-japan-services.json','data/gemrate-reference-summary.json','work/raw-price-observations-manifest.json',...['cardrush_catalog','hareruya2_catalog','yuyutei_catalog','torecacamp_catalog',
     'shop_buyback_catalog','priority_psa_rows','snkr_english_names'].map(n=>'work/'+n+'.json')])].sort();
   return digest(JSON.stringify(hashes(read,files)));
 }

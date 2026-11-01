@@ -127,4 +127,4 @@ function importTrendCsv(text, context, mappings) {
   return {version:1,mode:'private-offline-staging-only',accepted,quarantined,duplicates,
     csvSha256:crypto.createHash('sha256').update(text).digest('hex'),newOfficialObservations:0,publicRecords:0};
 }
-module.exports = { parseCsv, importCsv, importTrendCsv, key, count };
+module.exports = { parseCsv, importCsv, importTrendCsv, key, count, validateContext };

@@ -14,6 +14,12 @@ try{
  assert.equal(decide(root,now+2*3600000).mode,'acquire');
  fs.writeFileSync(path.join(root,'model.js'),'// changed calculation');assert.equal(decide(root,now).mode,'rebuild');
  p.seal(root,p.snapshot(root));assert.equal(decide(root,now).mode,'reuse');
+ write('work/gemrate-reviewed-sets.json',{version:1,sets:[{set:'new-reviewed-set'}]});
+ assert.equal(decide(root,now).mode,'rebuild','new verified set registration must invalidate summary reuse');
+ p.seal(root,p.snapshot(root));
+ write('data/gemrate-reference-summary.json',{cards:{one:['ja',10,20,'2026-10-23','source']}});
+ assert.equal(decide(root,now).mode,'rebuild','received reference change must be published before more acquisition');
+ p.seal(root,p.snapshot(root));
  write('data/psa-japan-services.json',{fee:100});assert.equal(decide(root,now).mode,'rebuild','fees cannot reuse stale calculations');
  p.seal(root,p.snapshot(root));assert.equal(decide(root,now).mode,'reuse');
  write('data/pokemon-cards.json',[{id:'one',price:200}]);assert.equal(decide(root,now).mode,'rebuild','saved acquisition must be recovered before new HTTP');
