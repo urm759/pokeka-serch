@@ -185,7 +185,7 @@ async function main() {
     const plannedRecord = planned.records.find(row=>row.card.id===card.id);
     const record = { id: card.id, url, startedAt: new Date().toISOString(), status: "pending", error: null,
       proactive:plannedRecord?.proactive || false, deadlineAt:plannedRecord?.nextDueAt || null,
-      important: plannedRecord?.important || false, fixedTarget:plannedRecord?.fixedTarget || false,
+      important: plannedRecord?.important || false, refreshHours:plannedRecord?.refreshHours, fixedTarget:plannedRecord?.fixedTarget || false,
       focus:plannedRecord?.focus || false };
     run.attemptedCount += 1;
     if (record.proactive) run.proactiveAttempted++;
