@@ -1,0 +1,82 @@
+{
+  "at": "2026-11-01T11:21:24.449Z",
+  "results": [
+    {
+      "name": "test_profile_worker",
+      "status": "pass",
+      "ms": 65
+    },
+    {
+      "name": "test_profile_report_names",
+      "status": "pass",
+      "ms": 77
+    },
+    {
+      "name": "test_profile_candidate_evidence",
+      "status": "pass",
+      "ms": 62
+    },
+    {
+      "name": "test_profile_departure_audit",
+      "status": "pass",
+      "ms": 100
+    },
+    {
+      "name": "test_psa_saved_rematch",
+      "status": "pass",
+      "ms": 100
+    },
+    {
+      "name": "test_saved_psa_summary",
+      "status": "pass",
+      "ms": 147
+    },
+    {
+      "name": "test_psa_linkage_queue",
+      "status": "pass",
+      "ms": 71
+    },
+    {
+      "name": "test_population_item_time",
+      "status": "pass",
+      "ms": 87
+    },
+    {
+      "name": "test_focus_pop_priority",
+      "status": "pass",
+      "ms": 78
+    },
+    {
+      "name": "test_catchup_reuse",
+      "status": "pass",
+      "ms": 168
+    },
+    {
+      "name": "test_postpass_cadence",
+      "status": "pass",
+      "ms": 67
+    },
+    {
+      "name": "test_guide80_and_buy_basis",
+      "status": "pass",
+      "ms": 96
+    }
+  ],
+  "initialFailuresPreserved": [
+    {
+      "test": "test_profile_candidate_evidence",
+      "reason": "test fixture lacked newly recorded searchProfitView",
+      "fix": "added real separate basis fixture and assert"
+    },
+    {
+      "test": "test_publication_lineage",
+      "reason": "sandbox temporary rename EPERM",
+      "fix": "reran successfully under allowed private TEMP"
+    },
+    {
+      "test": "test_profile_report_names",
+      "reason": "new test duplicate assert declaration",
+      "fix": "removed duplicate and passed"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 function reportName(id) {
-  const base=String(id).replace(/-specified$/,'').replace(/-median$/,'').replace(/-reference$/,'');
+  const base=String(id).replace(/-specified$/,'').replace(/-median$/,'').replace(/-reference$/,'').replace(/-auto-\d{8}$/,'');
   const name={A:'条件スタンダード',B:'条件プライオリティ',V:'条件バリュー'}[base] || id;
   return name+(String(id).includes('-reference')?'（参考買値・入荷待ち含む）':String(id).includes('-median')?'（中央値）':'');
 }
@@ -29,7 +29,7 @@ function allProfiles(config,{includeHistorical=false}={}) {
   return result;
 }
 function saveMedianProfiles(root,config) {
-  const value={version:1,preferredBasis:config.referenceFocus?'reference-min':'median',profiles:allProfiles({...config,referenceFocus:false}).filter(p=>p.basis==='median'),
+  const value={version:1,preferredBasis:config.preferredEfficiencyBasis||(config.referenceFocus?'reference-min':'median'),profiles:allProfiles({...config,referenceFocus:false}).filter(p=>p.basis==='median'),
     referenceProfiles:config.referenceFocus?allProfiles(config):[],
     historicalProfiles:allProfiles(config,{includeHistorical:true}).filter(p=>p.basis==='median'),
     note:'Original A/B URLs remain immutable. Only effBuy differs; qualification changes here are basis changes, not acquisition outcomes.'};

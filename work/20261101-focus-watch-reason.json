@@ -1,0 +1,14 @@
+{
+  "at": "2026-11-01T11:11:09.179Z",
+  "run": 41287696335,
+  "job": 124792248162,
+  "lines": [
+    "2026-11-01T08:10:36.5946670Z {\"mode\":\"reuse\",\"reason\":\"取得なし・原票と生成コードは同一。必須検証は維持し全件再集計/再測定/補完受領証を省略\"}",
+    "2026-11-01T08:10:36.6122385Z ##[group]Run if [ \"reuse\" = \"rebuild\" ]; then",
+    "2026-11-01T08:10:36.6122767Z \u001b[36;1mif [ \"reuse\" = \"rebuild\" ]; then\u001b[0m",
+    "2026-11-01T08:10:36.6128801Z \u001b[36;1m  node work/test_catchup_reuse.js\u001b[0m",
+    "2026-11-01T08:10:36.6131898Z \u001b[36;1m  if [ \"reuse\" != \"reuse\" ]; then\u001b[0m",
+    "2026-11-01T08:10:36.6134514Z \u001b[36;1m  if [ \"reuse\" != \"reuse\" ]; then node work/scheduled_cycle_evidence.js catchup; fi\u001b[0m",
+    "2026-11-01T08:10:51.2528569Z {\"version\":1,\"verified\":true,\"code\":\"4bcad47f82b18b2fc8a8e262f2d251ba88a0894244742e9cced2befdbbc64cca\",\"mode\":\"required\",\"at\":\"2026-11-01T08:10:51.251Z\",\"runId\":\"41287696335\",\"required\":[\"test_price_integrity\",\"test_price_comparison\",\"test_publication_lineage\",\"test_card_catalog_completion\",\"test_stock_history_statistics\",\"test_initial_calculation_dependencies\"],\"llmCalls\":0,\"codexCalls\":0}"
+  ]
+}

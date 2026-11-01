@@ -1,6 +1,7 @@
 const number=v=>Number.isFinite(v)?v:null;
 function cardFacts(api,card) {
   const offer=card.currentStoreOffer,eff=api.cardEfficiency(card),ratio=api.state.efficiencyBuy==='reference-min'?api.purchasePsa9Ratio(card,eff.purchasePrice,'reference-min'):api.purchasePsa9Ratio(card);
+  const profit=api.searchProfitView(card);
   const sources={};
   for(const source of ['cardrush','hareruya2','torecacamp','yuyutei']){
     const r=api.state[source+'Stock']?.[card.id];if(!r)continue;
@@ -21,6 +22,7 @@ function cardFacts(api,card) {
         market:api.state.psa9RatioMarket,referenceBuy:api.state.efficiencyBuy==='reference-min'}),
       exclusionCause:require('../purchase-ratio-model').exclusionCause(ratio,api.state.psa9RatioMin,api.state.psa9RatioMax,
         {aggregate:api.state.psa9RatioAggregate,estimate:api.state.psa9RatioEstimate,market:api.state.psa9RatioMarket,referenceBuy:api.state.efficiencyBuy==='reference-min'})},
+    searchProfit:{buy:profit.purchasePrice??null,basis:profit.basis,label:profit.label,exit:profit.exitLabel,horizonDays:profit.horizonDays,profit:profit.economics?.expectedProfit??null,roi:profit.economics?.expectedRoi??null,psa10Roi:profit.psa10Roi??null},
     efficiency:{buy:eff.purchasePrice??null,profit:eff.profit??null,roi:eff.roi??null,annual:eff.annual??null,
       scenario:eff.scenario,exit:eff.exitLabel,days:eff.days,basis:eff.basis,blockingReasons:eff.blockingReasons||[]},
     buyback:(card.buybackAnalysis?.rows||[]).map(r=>({shopId:r.shopId,price:r.buybackPrice??null,
