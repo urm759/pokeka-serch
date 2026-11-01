@@ -26,8 +26,12 @@ function coherent(read){
 }
 function snapshot(root){return hashes(reader(root),SOURCES);}
 function generationCode(root){
-  const files=['','work'].flatMap(dir=>fs.existsSync(path.join(root,dir))?fs.readdirSync(path.join(root,dir))
-    .filter(f=>f.endsWith('.js')&&!/^(test_|verify_|measure_|\d)/.test(f)).map(f=>(dir?dir+'/':'')+f):[]).sort();
+  // A checkout must produce the same fingerprint locally and on Actions.
+  // Scratch scripts outside Git are not deployable generation inputs.
+  const tracked=fs.existsSync(path.join(root,'.git'))?spawnSync('git',['ls-files','-z'],{cwd:root,encoding:'utf8'}):null;
+  if(tracked&&(tracked.status!==0||tracked.error))throw Error('Tracked generation inputs unavailable');
+  const candidates=tracked?tracked.stdout.split('\0'):['','work'].flatMap(dir=>fs.existsSync(path.join(root,dir))?fs.readdirSync(path.join(root,dir)).map(f=>(dir?dir+'/':'')+f):[]);
+  const files=candidates.filter(f=>/^(?:[^/]+\.js|work\/[^/]+\.js)$/.test(f)&&!/^(test_|verify_|measure_|\d)/.test(path.basename(f))).sort();
   return digest(JSON.stringify(hashes(reader(root),[...files,'work/psa-name-aliases.json','work/priority-search-profiles.json',
     'work/gemrate-reviewed-additions.json','work/gemrate-reviewed-sets.json'])));
 }
