@@ -38,6 +38,8 @@ function statistics(rows, asOf, days, dateKey, priceKey) {
     legacyUnverifiedDays: dateKey === 0 ? accepted.filter(r => r.length < 11).length : 0,
     start: new Date(start).toISOString().slice(0, 10), end: asOf,
     latestDate: accepted.map(r => r[dateKey]).sort().at(-1) || null,
+    firstDate: accepted.map(r => r[dateKey]).sort()[0] || null,
+    outsideRecords: rows.filter(r=>dayTime(r[dateKey])<start||dayTime(r[dateKey])>dayTime(asOf)).length,
     min: prices.length ? Math.min(...prices) : null, max: prices.length ? Math.max(...prices) : null,
     drawdown: dateKey === 0 ? maximumDrawdown(accepted,dateKey,priceKey) : null };
 }

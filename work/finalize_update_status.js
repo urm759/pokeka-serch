@@ -400,6 +400,7 @@ require('./build_priority_search_targets.js').build(ROOT);
 require('./audit_25th_promo.js').build(ROOT);
 require('./monitor_observation').banner(ROOT);
 require('./build_runtime_availability').build(ROOT);
+require('./coverage_capacity').build(ROOT);
 publicationLineage.seal(ROOT,finalizedSourceSnapshot);
 require('./build_ui_data.js').build(ROOT);
 console.log(JSON.stringify({ complete, completeDate: payload.completeDate, sources }));

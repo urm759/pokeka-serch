@@ -85,7 +85,7 @@ let lastRequestAt = 0;
 async function fetchText(url, options = {}) {
   const retryLimit = Math.max(0, Number(options.retries ?? process.env.SHOP_FETCH_RETRIES ?? 2));
   const timeoutMs = Math.max(2000, Number(options.timeoutMs ?? process.env.SHOP_FETCH_TIMEOUT_MS ?? 10000));
-  const intervalMs = Math.max(0, Number(options.intervalMs ?? process.env.SHOP_ACCESS_INTERVAL_MS ?? 1100));
+  const intervalMs = Math.max(0, Number(options.intervalMs ?? 1100), Number(process.env.SHOP_ACCESS_INTERVAL_MS ?? 1100));
   let lastMetric = null;
   for (let attempt = 0; attempt <= retryLimit; attempt += 1) {
     const waitMs = Math.max(0, intervalMs - (Date.now() - lastRequestAt));
@@ -676,6 +676,7 @@ async function updateTorecaCamp(cards, paths) {
   for (const card of cards) { const signature = cardSignature(card); if (signature.cardNo) { if (!byNumber.has(signature.cardNo)) byNumber.set(signature.cardNo, []); byNumber.get(signature.cardNo).push(card); } }
   const sitemapLimit = Math.max(1, Number(process.env.TORECACAMP_SITEMAPS_PER_RUN || 1));
   const detailLimit = Math.max(1, Number(process.env.TORECACAMP_PRODUCT_DETAIL_BATCH || 100));
+  const proactiveLead=Math.min(2*3600000,Math.max(0,Number(process.env.TORECACAMP_PROACTIVE_LEAD_MS)||0));
   const runtimeLimitMs = Math.max(30000, Number(process.env.TORECACAMP_RUNTIME_LIMIT_MS || 480000));
   const stopBy = Date.now() + runtimeLimitMs;
   const startedAt = new Date().toISOString();
@@ -713,7 +714,7 @@ async function updateTorecaCamp(cards, paths) {
   const legacyRequested=campRequestedIds(read(path.join(__dirname,'search-profile-targets.json'),{}),comparisonIds);
   for(const id of legacyRequested)important.add(id);
   const legacyRecords=[];
-  if(!stoppingReason)for(const previousEntry of postpass.legacyTargets(catalog,legacyRequested,{...progress.knownUrlRetries,...progress.retryByUrl}).slice(0,Math.floor(detailLimit/3))) {
+  if(!stoppingReason)for(const previousEntry of postpass.legacyTargets(catalog,legacyRequested,{...progress.knownUrlRetries,...progress.retryByUrl},Date.now(),proactiveLead).slice(0,Math.floor(detailLimit/3))) {
     if(Date.now()>=stopBy-Math.max(15000,runtimeLimitMs/2))break;
     const url=previousEntry.detailUrl,record={id:previousEntry.cardId,url,startedAt:new Date().toISOString(),sourceSitemap:null};
     try {
@@ -778,10 +779,10 @@ async function updateTorecaCamp(cards, paths) {
       listedProducts += entries.length;
       const normalEntryCount=entries.length;
       const normalStart=retryOnly || retrySitemap ? 0 : progress.currentSitemapIndex === sitemapIndex ? progress.currentEntryIndex : 0;
-      const prioritized=maintenanceMode&&!retryOnly&&!retrySitemap;
+      const prioritized=!retryOnly&&!retrySitemap;
       if(prioritized) {
         const requested=campRequestedIds(read(path.join(__dirname,'search-profile-targets.json'),{}),comparisonIds);
-        entries=postpass.prioritize(entries,normalStart,catalog.filter(r=>r.sourceSitemap<=sitemapUrls.length),[...new Set(requested)],detailLimit,progress.retryByUrl);
+        entries=postpass.prioritize(entries,normalStart,catalog.filter(r=>r.sourceSitemap<=sitemapUrls.length),[...new Set(requested)],detailLimit,progress.retryByUrl,Date.now(),proactiveLead);
       }
       const startingEntry=prioritized?0:normalStart;
       let retryEntryCursor = 0;
@@ -802,7 +803,7 @@ async function updateTorecaCamp(cards, paths) {
         if (!retryOnly && progress.retryByUrl[sitemapEntry.url]) { advance(); continue; }
         if (!retryOnly && !retrySitemap && !sitemapEntry.priorityRefresh) { progress.currentSitemapIndex = sitemapIndex; progress.currentEntryIndex = sitemapEntry.normalIndex??entryIndex; }
         const existingProduct = knownByUrl.get(sitemapEntry.url);
-        const refreshExisting = maintenanceMode && existingProduct && postpass.due(existingProduct,important.has(existingProduct.cardId));
+        const refreshExisting = existingProduct && postpass.due(existingProduct,important.has(existingProduct.cardId),Date.now(),proactiveLead);
         if (seenProductUrls.has(sitemapEntry.url) && !refreshExisting) { duplicateUrls += 1; advance(); continue; }
         parsed += 1;
         const stub = { title: sitemapEntry.title, handle: sitemapEntry.handle, tags: [] };
@@ -867,8 +868,9 @@ async function updateTorecaCamp(cards, paths) {
         if (maintenanceMode) {
           progress.maintenance.refreshed += 1;
           if (!previousEntry) progress.maintenance.newLinks += 1;
-          knownByUrl.set(sitemapEntry.url,entry);
         }
+        // First-pass priority and normal visits share the same actual response.
+        knownByUrl.set(sitemapEntry.url,entry);
         seenProductUrls.add(sitemapEntry.url);
         seenProductIds.add(String(product.id));
         advance();

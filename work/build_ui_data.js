@@ -7,7 +7,10 @@ function project(name, input) {
   const value = structuredClone(input);
   if (['hareruya2-stock-summary','cardrush-stock-summary'].includes(name)) {
     delete value.stockStatistics;
-    for(const row of Object.values(value.cards||{}))delete row.stockStatistics;
+    for(const row of Object.values(value.cards||{})){
+      if(row.stockStatistics)row.stockTrend=[row.stockStatistics.asOfDate,row.stockStatistics.pairs7,row.stockStatistics.pairs30];
+      delete row.stockStatistics;
+    }
   }
   if (name === 'card-catalog-completion') {
     for (const row of Object.values(value.cards)) delete row.i;
