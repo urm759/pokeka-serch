@@ -1,0 +1,296 @@
+{
+  "at": "2026-11-01T05:22:18.617Z",
+  "published": [
+    {
+      "file": "priority-search-profile-audit",
+      "at": "2026-11-01T01:39:34.823Z",
+      "sha256": "536cdaa0718311659b121ee30a1e4bf80541acd3558bac83d1877010f0772290",
+      "topKeys": [
+        "version",
+        "at",
+        "profiles",
+        "transitions",
+        "basisComparisons",
+        "modeOnlyCandidates",
+        "overlayStatus",
+        "llmCalls",
+        "codexCalls",
+        "newSourceAcquisition",
+        "departureSummary",
+        "pendingDepartures",
+        "repairRequests",
+        "independentCandidates",
+        "allModeIndependentCount"
+      ]
+    },
+    {
+      "file": "card-catalog-completion",
+      "sha256": "ac3ce432b440538f69cfb60ba7880a628e9744fbb8a2a3efdeaa368a1750446a",
+      "topKeys": [
+        "version",
+        "generatedAt",
+        "summary",
+        "itemTotals",
+        "dataTypeTotals",
+        "cards",
+        "unlistedIds",
+        "duplicateIds"
+      ]
+    },
+    {
+      "file": "acquisition-progress-audit",
+      "sha256": "5f6b9bc7add628ea3448fdda21e0e526c572df0c0b0ed2eedf8e2aacae4207fb",
+      "topKeys": [
+        "version",
+        "generatedAt",
+        "baselineAt",
+        "sources",
+        "definitions",
+        "psa",
+        "shopEffect",
+        "remaining",
+        "wholeCatalogue",
+        "updateCapacity",
+        "capacityAt"
+      ]
+    },
+    {
+      "file": "operational-freshness-audit",
+      "sha256": "ad3563cc0b0a4ae88dabe04c978e3bc98171ef18dc807dd9568e782762a5c2af",
+      "topKeys": [
+        "version",
+        "generatedAt",
+        "sources",
+        "scheduling",
+        "limits",
+        "llmCalls",
+        "codexCalls"
+      ]
+    },
+    {
+      "file": "shop-buyback-summary",
+      "at": "2026-11-01",
+      "sha256": "09591f04f31223b606bfe9b5f50210bf95a549964f0a88b20fdcd1977bbf79e0",
+      "topKeys": [
+        "updatedAt",
+        "dates",
+        "shops",
+        "cards"
+      ]
+    },
+    {
+      "file": "gemrate-reference-summary",
+      "sha256": "bc400653d317290f12e9e207e1e7d54077cb226be478ddde349b01b6babb9592",
+      "topKeys": [
+        "version",
+        "source",
+        "grader",
+        "scope",
+        "fields",
+        "cards"
+      ]
+    }
+  ],
+  "runs": [
+    {
+      "id": 41261229111,
+      "name": "Data Update Health Watchdog",
+      "event": "schedule",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "d26971c660b0e017dbec2dd43cec4838ffba8885",
+      "created": "2026-11-01T01:28:25Z",
+      "updated": "2026-11-01T01:46:13Z"
+    },
+    {
+      "id": 41252676682,
+      "name": "Data Update Health Watchdog",
+      "event": "workflow_run",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "5150155053253f01bb35c77f6565251881002da6",
+      "created": "2026-10-31T23:28:30Z",
+      "updated": "2026-10-31T23:30:25Z"
+    },
+    {
+      "id": 41252614555,
+      "name": "Priority Purchase Price Refresh",
+      "event": "schedule",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "5150155053253f01bb35c77f6565251881002da6",
+      "created": "2026-10-31T23:27:35Z",
+      "updated": "2026-10-31T23:28:28Z"
+    },
+    {
+      "id": 41249880239,
+      "name": "Data Update Health Watchdog",
+      "event": "workflow_run",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "d163560acb0872b1337aaf2bce560b031543a267",
+      "created": "2026-10-31T22:49:27Z",
+      "updated": "2026-10-31T22:52:28Z"
+    },
+    {
+      "id": 41249165942,
+      "name": "Daily Fast Update",
+      "event": "schedule",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "83efad34c961bfc7b2cf30cf18232e3f24811a02",
+      "created": "2026-10-31T22:39:31Z",
+      "updated": "2026-10-31T22:49:25Z"
+    },
+    {
+      "id": 41245692469,
+      "name": "Data Update Health Watchdog",
+      "event": "schedule",
+      "status": "completed",
+      "conclusion": "failure",
+      "head": "d59555f1896f49e393b36168daa118cbc2bba3ad",
+      "created": "2026-10-31T21:53:43Z",
+      "updated": "2026-10-31T22:11:54Z"
+    },
+    {
+      "id": 41240174867,
+      "name": "Data Update Health Watchdog",
+      "event": "workflow_run",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "5a53743a11d0100b9d7ebe834a50eedb5ca3c22f",
+      "created": "2026-10-31T20:42:44Z",
+      "updated": "2026-10-31T20:45:20Z"
+    },
+    {
+      "id": 41238618182,
+      "name": "Safe Checkpoint Backfill",
+      "event": "schedule",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "d382d8d0f6e065fbec62a7aee225bb9d074e3caa",
+      "created": "2026-10-31T20:22:38Z",
+      "updated": "2026-10-31T20:42:42Z"
+    },
+    {
+      "id": 41231666328,
+      "name": "Data Update Health Watchdog",
+      "event": "workflow_run",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "f660912cc7359465217af1552232898dbe197f26",
+      "created": "2026-10-31T18:54:33Z",
+      "updated": "2026-10-31T18:56:36Z"
+    },
+    {
+      "id": 41230963550,
+      "name": "Data Update Health Watchdog",
+      "event": "schedule",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "d5bc411ff62634dd77de2ba332037e1101a3eab5",
+      "created": "2026-10-31T18:45:34Z",
+      "updated": "2026-10-31T18:58:30Z"
+    },
+    {
+      "id": 41230377523,
+      "name": "Priority Purchase Price Refresh",
+      "event": "schedule",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "d5bc411ff62634dd77de2ba332037e1101a3eab5",
+      "created": "2026-10-31T18:38:12Z",
+      "updated": "2026-10-31T18:54:31Z"
+    },
+    {
+      "id": 41210257063,
+      "name": "Data Update Health Watchdog",
+      "event": "workflow_run",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "fd2449df9315861eb3c4907db030939da16f793d",
+      "created": "2026-10-31T14:28:10Z",
+      "updated": "2026-10-31T14:30:59Z"
+    },
+    {
+      "id": 41209561584,
+      "name": "Daily Fast Update",
+      "event": "schedule",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "7eeb732e61e1988aa2db6b211b7f6af266f00709",
+      "created": "2026-10-31T14:19:04Z",
+      "updated": "2026-10-31T14:28:08Z"
+    },
+    {
+      "id": 41207620647,
+      "name": "Data Update Health Watchdog",
+      "event": "schedule",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "458afcc9bc111355356234e793afa2f5251511b1",
+      "created": "2026-10-31T13:53:48Z",
+      "updated": "2026-10-31T13:56:42Z"
+    },
+    {
+      "id": 41203695172,
+      "name": "Data Update Health Watchdog",
+      "event": "workflow_run",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "05fd2f25c1eaeeb45695c9ee5b4efb68f83e7277",
+      "created": "2026-10-31T13:01:42Z",
+      "updated": "2026-10-31T13:03:45Z"
+    },
+    {
+      "id": 41202557664,
+      "name": "Priority Purchase Price Refresh",
+      "event": "schedule",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "a419fa7a8e96a83c7569b81d93e618f507889ad2",
+      "created": "2026-10-31T12:46:02Z",
+      "updated": "2026-10-31T13:01:40Z"
+    },
+    {
+      "id": 41180845414,
+      "name": "Data Update Health Watchdog",
+      "event": "schedule",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "e212c8d188301d489c21c8937d9c886ff4b4a394",
+      "created": "2026-10-31T07:30:11Z",
+      "updated": "2026-10-31T07:33:06Z"
+    },
+    {
+      "id": 41174705182,
+      "name": "Data Update Health Watchdog",
+      "event": "workflow_run",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "89b1ebb6707db018ebe2aa9f8da66144bf668044",
+      "created": "2026-10-31T05:59:01Z",
+      "updated": "2026-10-31T06:02:07Z"
+    },
+    {
+      "id": 41174478473,
+      "name": "Priority Purchase Price Refresh",
+      "event": "schedule",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "bb63d339a1c27466cbeb3f28fcdc48d8f794327d",
+      "created": "2026-10-31T05:55:18Z",
+      "updated": "2026-10-31T05:58:59Z"
+    },
+    {
+      "id": 41173636506,
+      "name": "Data Update Health Watchdog",
+      "event": "workflow_run",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "bb63d339a1c27466cbeb3f28fcdc48d8f794327d",
+      "created": "2026-10-31T05:42:04Z",
+      "updated": "2026-10-31T06:00:08Z"
+    }
+  ]
+}

@@ -13,17 +13,19 @@ function observations(dates,values,asOfDate) {
   }
   return [...result].sort(([a],[b])=>a.localeCompare(b));
 }
-function period(rows,days,asOfDate) {
+function period(rows,days,asOfDate,proofs=null) {
   const end=Date.parse(asOfDate+'T00:00:00Z'),start=end-days*DAY;
   const recent=rows.filter(([day])=>Date.parse(day+'T00:00:00Z')>=start);
-  let total=0,pairs=0;
+  let total=0,pairs=0,increase=0,net=0;const usedDays=new Set();
   for(let i=1;i<recent.length;i++) {
     const [a,x]=recent[i-1],[b,y]=recent[i];
     if(!Number.isFinite(x)||!Number.isFinite(y)||Date.parse(b)-Date.parse(a)!==DAY)continue;
-    total+=Math.max(0,x-y);pairs++;
+    if(proofs&&(!proofs[a]||!proofs[b]||proofs[a][0]!==x||proofs[b][0]!==y||proofs[a][1]!==proofs[b][1]||proofs[a][3]!==proofs[b][3]))continue;
+    total+=Math.max(0,x-y);increase+=Math.max(0,y-x);net+=y-x;pairs++;usedDays.add(a);usedDays.add(b);
   }
   return {average:pairs?Math.round(total/pairs*100)/100:null,total:pairs?Math.round(total*100)/100:null,pairs,
-    missingPairs:days-pairs};
+    missingPairs:days-pairs,increase:pairs?increase:null,net:pairs?net:null,days:usedDays.size,
+    first:[...usedDays].sort()[0]||null,last:[...usedDays].sort().at(-1)||null};
 }
 const quantile=(values,p)=>values.length?[...values].sort((a,b)=>a-b)[Math.floor((values.length-1)*p)]:null;
 function summarize(history,{asOf=new Date().toISOString()}={}) {
@@ -33,6 +35,8 @@ function summarize(history,{asOf=new Date().toISOString()}={}) {
     rows[id]={avg7:periods[7].average,avg30:periods[30].average,avg90:periods[90].average,
       drop7:periods[7].total,drop30:periods[30].total,samples:observed.filter(([,v])=>Number.isFinite(v)).length,
       stockStatistics:{asOfDate,pairs7:periods[7].pairs,pairs30:periods[30].pairs,missing7:periods[7].missingPairs,missing30:periods[30].missingPairs}};
+    const proofs=history.quantityEvidence?.[id];
+    if(proofs)rows[id].stockFlow=Object.fromEntries([7,30].map(d=>{const p=period(observed,d,asOfDate,proofs);return[d,{net:p.net,increase:p.increase,decrease:p.total,pairs:p.pairs,days:p.days,first:p.first,last:p.last}];}));
   }
   const rates=Object.values(rows).filter(r=>r.samples>=7&&Number.isFinite(r.avg30)&&r.avg30>0).map(r=>r.avg30);
   const model={minimumSamples:7,normalDaily:Math.max(.2,quantile(rates,.5)||0),highDaily:Math.max(.75,quantile(rates,.85)||0),normalTotal:2,highTotal:4,cohortSize:rates.length};
@@ -53,12 +57,28 @@ function apply(summary,history,options) {
 function reconcile(root,options) {
   options={asOf:new Date().toISOString(),...options};
   const fs=require('node:fs'),path=require('node:path'),out={};
-  for(const id of ['hareruya2','cardrush']) {
+  const cardFile=path.join(root,'data/pokemon-cards.json'),cards=fs.existsSync(cardFile)?JSON.parse(fs.readFileSync(cardFile)):[];
+  for(const id of ['hareruya2','cardrush','yuyutei','torecacamp']) {
     const historyFile=path.join(root,'work',id+'_stock_history.json'),file=path.join(root,'data',id+'-stock-summary.json');
     if(!fs.existsSync(historyFile)||!fs.existsSync(file))continue;
-    const summary=JSON.parse(fs.readFileSync(file));out[id]=apply(summary,JSON.parse(fs.readFileSync(historyFile)),options);
+    const summary=JSON.parse(fs.readFileSync(file)),history=JSON.parse(fs.readFileSync(historyFile)),catalogFile=path.join(root,'work',id+'_catalog.json');
+    const recovered=fs.existsSync(catalogFile)?captureQuantity(history,JSON.parse(fs.readFileSync(catalogFile)),cards,id):0;
+    out[id]={...apply(summary,history,options),recoveredQuantityProofs:recovered};
+    if(recovered)require('./acquisition_retry').atomicWrite(historyFile,history,0);
     require('./acquisition_retry').atomicWrite(file,summary,0);
   }
   return out;
 }
-module.exports={observations,period,summarize,apply,reconcile};
+function captureQuantity(history,catalog,cards,source) {
+  const byId=new Map(cards.map(c=>[c.id,c])),dates=new Map(history.dates.map((d,i)=>[d,i]));let recovered=0;
+  const hosts={hareruya2:'www.hareruya2.com',cardrush:'www.cardrush-pokemon.jp',yuyutei:'yuyu-tei.jp',torecacamp:'torecacamp-pokemon.com'};
+  for(const r of catalog){const c=byId.get(r.cardId),at=Date.parse(r.observedAt);if(!c||!Number.isInteger(r.stock)||r.stock<0||typeof r.observedAt!=='string'||!r.observedAt.includes('T')||!Number.isFinite(at)||at>Date.now()||r.identityVerified!==true||r.cardMismatchSuspected||r.priceQuarantined||r.state!=='A')continue;
+    let u;try{u=new URL(r.detailUrl);}catch{continue;}if(u.protocol!=='https:'||u.hostname!==hosts[source]||!(source==='yuyutei'?/^\/sell\/poc\/card\//:/^\/products?\//).test(u.pathname))continue;
+    const day=dayOf(at),i=dates.get(day);if(i==null||history.stocks?.[c.id]?.[i]!==r.stock)continue;
+    const rows=(history.quantityEvidence||={})[c.id]||={};const old=rows[day],next=[r.stock,u.href,r.observedAt,c.identityKey];
+    if(!c.identityKey||old===null)continue;
+    if(old&&(old[1]!==next[1]||old[3]!==next[3])){rows[day]=null;recovered++;continue;}
+    if(!old||Date.parse(old[2])<at){rows[day]=next;recovered++;}
+  }return recovered;
+}
+module.exports={observations,period,summarize,apply,reconcile,captureQuantity,dayOf};

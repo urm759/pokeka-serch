@@ -1804,3 +1804,12 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 
 .buyback-ratio-filters{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;min-width:0;border:1px solid var(--line,#334155);border-radius:12px;padding:12px}.buyback-ratio-filters>small,.buyback-ratio-filters>.check-control{grid-column:1/-1}.buyback-scope{font-size:.9rem!important;font-weight:700}.buyback-75-mean{font-size:.82rem!important}.observation-adopted{font-size:.88rem;font-weight:750;color:#e2e8f0}
 @media(max-width:600px){.buyback-support-detail .shop-rate-table-wrap{max-width:100%;min-width:0}.buyback-support-detail .shop-rate-table-wrap table{min-width:640px}}
+/* Inventory movement is a display-only observation, not a sales/GO signal. */
+.stock-trend { color:#d9e5f4; }
+.stock-trend > strong { display:block;font-size:.94rem;font-weight:750;line-height:1.5; }
+.stock-trend > small { display:block;color:#b8c7dc;font-size:.78rem; }
+.stock-trend > strong.stock-increase { color:#83c8ff; }
+.stock-trend > strong.stock-flat { color:#d8dfeb; }
+.stock-trend > strong.stock-decrease { color:#f7d28b; }
+.stock-trend > strong.stock-decrease-fast { color:#ffb07c; }
+.stock-trend > strong.stock-unknown { color:#b8c7dc; }

@@ -1,0 +1,16 @@
+const assert=require('assert/strict'),s=require('./stock_history_statistics'),psa=require('./psa9_sale_statistics'),{identityFromCard}=require('../raw-psa9-gap-model');
+const dates=['2026-10-29','2026-10-30','2026-10-31','2026-11-01'],url='https://www.hareruya2.com/product/1',proof=Object.fromEntries(dates.map((d,i)=>[d,[[10,7,12,12][i],url,d+'T01:00:00Z','same-spec']]));
+const h={dates,stocks:{x:[10,7,12,12]},quantityEvidence:{x:proof}},r=s.summarize(h,{asOf:'2026-11-01T05:00:00Z'}).cards.x;
+assert.equal(r.stockFlow[7].net,2);assert.equal(r.stockFlow[7].increase,5);assert.equal(r.stockFlow[7].decrease,3);assert.equal(r.stockFlow[7].days,4);
+proof['2026-10-31'][1]=url+'other';assert.equal(s.summarize(h,{asOf:'2026-11-01T05:00:00Z'}).cards.x.stockFlow[7].net,-3,'changed product is not a restock/decrease');
+proof['2026-10-30']=null;assert.equal(s.summarize(h,{asOf:'2026-11-01T05:00:00Z'}).cards.x.stockFlow[7].net,null,'missing evidence is not zero');
+const card={id:'x',identityKey:'same-spec'},catalog=[{cardId:'x',stock:true,state:'A',identityVerified:true,detailUrl:url,observedAt:'2026-10-31T01:00:00Z'}];assert.equal(s.captureQuantity({dates,stocks:{x:[1,1,1,1]}},catalog,[card],'hareruya2'),0,'availability does not become quantity');
+const old=s.summarize({dates,stocks:{x:[10,7,12,12]}},{asOf:'2026-11-01T05:00:00Z'}).cards.x;assert.equal(old.avg7,r.avg7);assert.equal(old.demand,r.demand,'display proof does not change financial demand inputs');
+const parse=require('./update_yuyutei_torecacamp').parseYuyuteiResults;
+assert.equal(parse('<a href="https://yuyu-tei.jp/sell/poc/card/s6a/1"><img alt="029/069 R マルマイン"><span>029/069</span><h3>マルマイン</h3><strong>100円</strong>')[0]?.stock,null,'unprovided stock stays null');
+const c={id:'p',name:'テスト SAR [M2 110/080]'},identity=identityFromCard(c),now=Date.parse('2026-11-01T05:00:00Z');
+const trade=(id,soldAt,price=10000)=>({...identity,cardId:'p',transactionId:id,source:'authorized',grade:9,gradingCompany:'PSA',currency:'JPY',country:'JP',marketScope:'domestic-jp',saleType:'sold',singleCard:true,price,soldAt,sourceUrl:'https://example.test/sales/'+id});
+const input={permission:'confirmed',permissionEvidence:'test-fixture-only',trades:[trade('a','2026-10-25T15:00:00Z',9000),trade('b','2026-10-25T14:59:59Z',11000),trade('c','2026-10-02T15:00:00Z',13000),trade('d','2026-10-02T14:59:59Z',15000),trade('a','2026-10-25T15:00:00Z',9000)]};
+let out=psa.summarize(c,input,now);assert.equal(out.periods[7].observedSales,1);assert.equal(out.periods[7].mean,9000);assert.equal(out.periods[30].observedSales,3);assert.equal(out.periods[30].mean,11000);assert.equal(out.periods[30].sourceRefsComplete,true);assert.equal(out.periods[30].count,null);assert.equal(out.periods[30].reference,true);
+input.trades[0].sourceUrl=null;out=psa.summarize(c,input,now);assert.equal(out.periods[7].sourceRefsComplete,false,'missing source cannot publish as traceable sales mean');
+console.log('PASS stock missing/zero/product continuity/restock, display-only metrics, PSA9 JST7/30 boundaries, duplicates, coverage and source links');

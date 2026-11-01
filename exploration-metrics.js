@@ -459,11 +459,16 @@
       note:'減額・手数料等を含まない参考支持。掲載は実買取件数ではなく上昇/GOの保証なし。同一店舗は1店、複数受付がある場合は保守側1提示'};
   }
   function stockTrend(sources,now=Date.now()) {
+    const movementTone=(net,pairs)=>net==null?'unknown':net===0?'flat':net>0?'increase':Math.abs(net)/Math.max(1,pairs)>=1?'decrease-fast':'decrease';
+    sources=[...new Map(sources.map((r,i)=>[r?.sourceId||i,r])).values()];
     const valid=sources.filter(Boolean).map(r=>r.stockStatistics?r:{...r,stockStatistics:r.stockTrend?{asOfDate:r.stockTrend[0],pairs7:r.stockTrend[1],pairs30:r.stockTrend[2]}:null}).filter(r=>r?.identityVerified===true&&r.conditionAccepted!==false&&!r.priceQuarantined&&!r.cardMismatchSuspected&&r.listingActive!==false&&Number.isFinite(Date.parse(r.inventoryObservedAt||r.observedAt))&&Date.parse(r.inventoryObservedAt||r.observedAt)<=now&&now-Date.parse(r.inventoryObservedAt||r.observedAt)<=48*3600000&&r.stockStatistics?.asOfDate===new Date(now+9*3600000).toISOString().slice(0,10));
-    const periods={};for(const d of [7,30]){const rows=valid.filter(r=>Number.isFinite(r['drop'+d])&&r.stockStatistics['pairs'+d]>0);periods[d]={drop:rows.length?rows.reduce((n,r)=>n+r['drop'+d],0):null,stores:rows.length,pairs:rows.reduce((n,r)=>n+r.stockStatistics['pairs'+d],0),complete:rows.length>0&&rows.every(r=>r.stockStatistics['pairs'+d]===d)};}
+    const periods={};for(const d of [7,30]){const rows=valid.filter(r=>Number.isFinite(r['drop'+d])&&r.stockStatistics['pairs'+d]>0),flows=valid.filter(r=>Number.isFinite(r.stockFlow?.[d]?.net)&&r.stockFlow[d].pairs>0);periods[d]={drop:rows.length?rows.reduce((n,r)=>n+r['drop'+d],0):null,stores:rows.length,pairs:rows.reduce((n,r)=>n+r.stockStatistics['pairs'+d],0),complete:rows.length>0&&rows.every(r=>r.stockStatistics['pairs'+d]===d),
+      net:flows.length?flows.reduce((n,r)=>n+r.stockFlow[d].net,0):null,increase:flows.length?flows.reduce((n,r)=>n+r.stockFlow[d].increase,0):null,decrease:flows.length?flows.reduce((n,r)=>n+r.stockFlow[d].decrease,0):null,flowStores:flows.length,flowPairs:flows.reduce((n,r)=>n+r.stockFlow[d].pairs,0),observedDays:flows.length?Math.min(...flows.map(r=>r.stockFlow[d].days)):null,
+      first:flows.map(r=>r.stockFlow[d].first).filter(Boolean).sort()[0]||null,last:flows.map(r=>r.stockFlow[d].last).filter(Boolean).sort().at(-1)||null};periods[d].tone=movementTone(periods[d].net,periods[d].flowPairs);}
     const observed=valid.filter(r=>r.stockStatistics.pairs7>=5&&Number.isFinite(r.drop7));
     const daily=observed.length?observed.reduce((n,r)=>n+r.drop7/r.stockStatistics.pairs7,0):null;
-    return {periods,label:daily==null?'判断材料不足':daily>=1?'在庫減少が速い':'在庫減少は緩やか',rule:'販売動向の参考。連続する実測日の減少のみ。再入荷・訂正・掲載終了で売れた枚数とは断定できません。速いは5観測区間以上かつ日平均減少1枚以上。店舗別に日数を確認し、欠測補完なし。'};
+    const flow=periods[7],label=flow.net==null?daily==null?'判断材料不足':'増減比較待ち・減少のみ参考':flow.net>0?'在庫増加':flow.net<0?'在庫減少':'横ばい';
+    return {periods,label,tone:flow.tone,rule:'販売枚数ではなく在庫の実測増減。増減は同じ商品URL・カード仕様を確認できた連続日だけ。減少と補充を別集計し、欠測・掲載終了・訂正を売上に変換しません。旧履歴の減少だけは商品継続未確認の参考値。数量を提供しない店は未取得。'};
   }
   function buybackSearch(value,settings={}) {
     const reasons=[],periods={7:value.meanWindows?.[7],30:value.meanWindows?.[30],75:value.meanWindows?.[75]},ref=settings.buybackRatioReference===true;

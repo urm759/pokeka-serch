@@ -1,0 +1,112 @@
+{
+  "at": "2026-11-01T05:40:08.702Z",
+  "checks": [
+    {
+      "name": "test_guide80_and_buy_basis",
+      "status": "pass",
+      "ms": 87
+    },
+    {
+      "name": "test_guide_stock_and_psa9_periods",
+      "status": "pass",
+      "ms": 90
+    },
+    {
+      "name": "test_stock_history_statistics",
+      "status": "pass",
+      "ms": 83
+    },
+    {
+      "name": "test_evidence_refresh",
+      "status": "pass",
+      "ms": 103
+    },
+    {
+      "name": "test_search_profit_consistency",
+      "status": "pass",
+      "ms": 86
+    },
+    {
+      "name": "test_reference_buy",
+      "status": "pass",
+      "ms": 17674
+    },
+    {
+      "name": "test_psa9_guide_integration",
+      "status": "pass",
+      "ms": 103
+    },
+    {
+      "name": "test_psa9_guide_comparison",
+      "status": "pass",
+      "ms": 55
+    },
+    {
+      "name": "test_psa9_marketplace_reference",
+      "status": "pass",
+      "ms": 92
+    },
+    {
+      "name": "test_psa9_cost_filters",
+      "status": "pass",
+      "ms": 92
+    },
+    {
+      "name": "test_gemrate_reference_refresh",
+      "status": "pass",
+      "ms": 270
+    },
+    {
+      "name": "test_gemrate_private_inbox",
+      "status": "pass",
+      "ms": 106
+    },
+    {
+      "name": "test_gemrate_limited_public_reference",
+      "status": "pass",
+      "ms": 80
+    },
+    {
+      "name": "test_official_catalog_supplements",
+      "status": "pass",
+      "ms": 62
+    },
+    {
+      "name": "test_coverage_capacity_filters",
+      "status": "pass",
+      "ms": 757
+    },
+    {
+      "name": "test_psa_saved_rematch",
+      "status": "pass",
+      "scope": "new exact Japanese25th name correction, wrong number/set remain held"
+    },
+    {
+      "name": "test_initial_calculation_dependencies",
+      "status": "pass",
+      "scope": "updated seven-script SRI/version after final UI change"
+    }
+  ],
+  "previousFailures": [
+    {
+      "name": "test_search_profit_consistency",
+      "cause": "existing VM fixture omitted CurrentMarketModel; actual module added to test context; production dependency checks retained"
+    },
+    {
+      "name": "test_guide_stock_and_psa9_periods",
+      "cause": "test fixture omitted card-number span; parser correctly rejected unidentified row; fixture corrected, not production guard"
+    },
+    {
+      "name": "test_search_profit_consistency",
+      "cause": "legacy formula fixture inherited newer reference-min default; explicitly restored legacy effBuy=auto in fixture, preserving its numeric expectations"
+    },
+    {
+      "name": "buy source short label",
+      "cause": "referenceBuy kind is guide, not current-target; actual browser found verbose fallback label, mapping corrected and regression added"
+    },
+    {
+      "name": "stock period colors",
+      "cause": "preview showed both periods inherited7-day tone; per-period shared tone added and browser assertions verify opposite directions have different colors"
+    }
+  ]
+}

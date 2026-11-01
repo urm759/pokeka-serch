@@ -5,13 +5,14 @@ function build(root=ROOT,now=Date.now()) {
   const inputs={},read=(file,fallback={})=>{const p=path.join(root,file);if(!fs.existsSync(p)){inputs[file]=null;return fallback;}const b=fs.readFileSync(p);inputs[file]=hash(b);return JSON.parse(b);};
   const cards=read('data/pokemon-cards.json',[]),input=read('work/domestic-psa9-authorized-sales.json');
   read('data/snkr-raw-flip-summary.json');read('data/state-a-price-audit.json');
-  const counts={catalog:cards.length,mintoreAggregate:0,aggregateDateKnown:0,aggregateDateUnknown:0,domesticIndividual:0,savedExplicitEstimates:0},details={};
+  const counts={catalog:cards.length,mintoreAggregate:0,aggregateDateKnown:0,aggregateDateUnknown:0,domesticIndividual:0,savedExplicitEstimates:0},details={},recentSales={};
   for(const c of cards){const aggregate=Number.isFinite(c.snkPsa9Price)&&c.snkPsa9Price>0,individual=sales.summarize(c,{...input,trades:(input.trades||[]).filter(r=>r.cardId===c.id)},now);
     const dateKnown=String(c.psa9ObservedAt||'').includes('T')&&Number.isFinite(Date.parse(c.psa9ObservedAt))&&Date.parse(c.psa9ObservedAt)<=now;
     if(aggregate){counts.mintoreAggregate++;counts[dateKnown?'aggregateDateKnown':'aggregateDateUnknown']++;}
     if(individual.validRows)counts.domesticIndividual++;
     if(Number(c.psa9EstimatedPrice)>0)counts.savedExplicitEstimates++;
-    if(aggregate||individual.validRows)details[c.id]={aggregate:{value:aggregate?c.snkPsa9Price:null,source:'みんトレ提供の国内PSA9集計',fetchedAt:c.psa9ObservedAt || null,saleAt:null,individualSale:false},individual};
+    if(aggregate||individual.validRows)details[c.id]={aggregate:{value:aggregate?c.snkPsa9Price:null,source:'みんトレ提供の国内PSA9集計',sourceUrl:'https://toreca-souba.com/cards/'+c.id,upstream:'未確認。snkPsa9Priceというフィールド名だけでは上流取得元を確定しない。',method:'提供元の算定方法・期間・成約母数は未確認。直近成約平均とは扱わない。',fetchedAt:c.psa9ObservedAt || null,saleAt:null,individualSale:false},individual:input.publicationAllowed===true?individual:{status:'公開可能な個別実成約未取得・集計値とは別',periods:{}}};
+    if(input.publicationAllowed===true&&individual.validRows&&[7,30].some(d=>individual.periods[d].sourceRefsComplete))recentSales[c.id]={...Object.fromEntries([7,30].map(d=>[d,individual.periods[d].sourceRefsComplete?individual.periods[d]:null])),confirmedAt:individual.sourceFetchedAt};
   }
   const gap=require('./audit_raw_psa9_gap').build(root);
   gap.counts.domesticPsa9IndividualSales=counts.domesticIndividual;
@@ -20,6 +21,7 @@ function build(root=ROOT,now=Date.now()) {
     overseas:{separate:true,source:'PokeDATA',domesticCountContribution:0,independentDetailsUrl:'./data/pokedata/manifest.json'},
     estimateDefinition:'素体からの仮置きや推定モデルは個別実成約へ加算しない。既存推定の算出ロジックは不変更',
     collectorStatus:input.permission==='confirmed'?'許諾済み保存分の集計のみ・定期取得接続は別確認':'取得未実装・許諾/正規提供待ち',
+    recentSales:{periods:[7,30],primary:30,calculationAdoption:false,calendar:'日本時間の直近暦日。欠測補完なし。観測成約件数と期間全件数は別。',cards:recentSales},
     note:'取得日時と成約日時は別。国内個別成約は許諾済み同一仕様/通貨/グレード/成約IDだけ。未取得の期間総件数はnull、同日同額は別IDなら別取引。',detailsUrl:'./data/domestic-psa9-provenance-details.json'};
   fs.writeFileSync(path.join(root,'data/raw-psa9-gap-audit.json'),JSON.stringify(gap));
   fs.writeFileSync(path.join(root,'data/psa9-provenance-audit.json'),JSON.stringify(result));

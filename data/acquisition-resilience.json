@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-01T01:38:31.997Z",
+  "generatedAt": "2026-11-01T05:45:42.906Z",
   "llmCalls": 0,
   "codexCalls": 0,
   "retryPolicy": {
@@ -27,7 +27,7 @@
     {
       "source": "psaOfficial",
       "label": "PSA公式・PC正規認証",
-      "remaining": 1325,
+      "remaining": 1324,
       "queueDefinition": "あとPSAだけで分析可能な国内カード。全PSA未取得とは別",
       "sourceState": "permission-wait",
       "failureScope": "source",
@@ -167,16 +167,16 @@
       "firstPassObservationDays": 0,
       "firstPassProgressField": "publicNewRecords",
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
-      "usableNet": 0,
+      "usableNet": 2,
       "observationPeriod": {
-        "from": "2026-11-01T01:16:03.710Z",
-        "to": "2026-11-01T01:38:27.975Z"
+        "from": "2026-11-01T05:40:35.149Z",
+        "to": "2026-11-01T05:45:34.500Z"
       },
       "sinceBaseline": {
         "newLinked": 4011,
         "validAdded": 4011,
-        "validLost": 220,
-        "usableNet": 3791,
+        "validLost": 219,
+        "usableNet": 3792,
         "freshnessRecovered": 0
       },
       "freshness": null
@@ -316,8 +316,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-11-01T01:16:03.710Z",
-        "to": "2026-11-01T01:38:27.975Z"
+        "from": "2026-11-01T05:40:35.149Z",
+        "to": "2026-11-01T05:45:34.500Z"
       },
       "sinceBaseline": {
         "newLinked": 757,
@@ -357,8 +357,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-11-01T01:16:03.710Z",
-        "to": "2026-11-01T01:38:27.975Z"
+        "from": "2026-11-01T05:40:35.149Z",
+        "to": "2026-11-01T05:45:34.500Z"
       },
       "sinceBaseline": {
         "newLinked": 0,
@@ -371,10 +371,10 @@
     }
   ],
   "psaOnly": {
-    "count": 1325,
+    "count": 1324,
     "causes": {
       "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持": 1198,
-      "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）": 127
+      "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）": 126
     },
     "cards": [
       {
@@ -411,12 +411,6 @@
         "id": "pk-37254",
         "setCode": "S8A-G",
         "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-asia-25th-anniversary-promo/202700",
-        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
-      },
-      {
-        "id": "pk-22390",
-        "setCode": "S8A-P",
-        "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-promo-card-pack-25th-anniversary-edition/201768",
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
@@ -8330,11 +8324,11 @@
     ]
   },
   "progress": {
-    "listed": 12762,
-    "analyzable": 2455,
-    "pending": 10307,
-    "oneAway": 1875
+    "listed": 12764,
+    "analyzable": 2456,
+    "pending": 10308,
+    "oneAway": 1874
   },
-  "newlyAnalyzable": 0,
+  "newlyAnalyzable": 1,
   "note": "一時障害の再試行、個別URL隔離、取得元停止を区別。未取得をデータ不存在に変更しない。巡回完了と全項目取得・最新価格は別"
 }
