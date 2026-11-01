@@ -31,4 +31,10 @@ const coverage=c.coverage({cards:[{id:'a'},{id:'a'},{id:'b'}]},[{id:'a',name:'�
 assert.equal(coverage.sourceCards,2);assert.equal(coverage.structural,1);assert.equal(coverage.freshAllRequiredConfirmed,0);assert.equal(coverage.additionalToGoal,1);
 const stats=require('./build_psa10_period_statistics').statistics([['2026-08-01',0,10],['2026-10-01',0,20],['2026-10-31',0,30]],'2026-10-31',75,0,2);
 assert.equal(stats.firstDate,'2026-10-01');assert.equal(stats.outsideRecords,1);assert.equal(stats.observedDays,2);
+const instructions=fs.readFileSync('index.html','utf8');
+assert(instructions.includes('7・30・75日は日次の店舗間平均を観測日で平均'));
+assert(!instructions.includes('7/30日は日次店舗中央値'),'search help must not describe the retained legacy median metric');
+const averageFixture=m.buybackMeanWindows({a:{meanDays:[['2026-10-31',.6]]},b:{meanDays:[['2026-10-31',.9]]},c:{meanDays:[['2026-10-31',2.1]]}},{a:{merchantId:'a'},b:{merchantId:'b'},c:{merchantId:'c'}},'all',[],'2026-10-31');
+for(const d of [7,30,75])assert(Math.abs(averageFixture[d].mean-1.2)<1e-12,'period search uses arithmetic shop mean, not the 0.9 median');
+assert.equal(m.buybackSearch({meanWindows:averageFixture},{buyback7RatioMin:1.1,buybackRatioReference:true}).reasons.length,0);
 console.log('PASS coverage/throughput, actual timestamps/dedup, slim inventory provenance, reference/stale/day-aware ratio filters, URL/zero/unrounded and finance separation');
