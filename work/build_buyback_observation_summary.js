@@ -3,9 +3,15 @@ const ROOT=path.join(__dirname,'..'),periods=[7,30,75,200];
 const day=at=>Number.isFinite(Date.parse(at))?new Date(Date.parse(at)+9*3600000).toISOString().slice(0,10):null;
 // Saved titles, not cached cardIds, authorize rematching. Keep every full print
 // and explicit specification until uniqueness has been checked across the catalogue.
+function printedTitle(value) {
+  // Some public lists print "S10b 011/071" without brackets. The explicit
+  // set must participate in the very same identity checks as [S10b 011/071].
+  // Preserve all suffixes (language/finish/error) and the original stored title.
+  return value.replace(/(^|[\s:：])((?:SV|SM|XY|BW|S|M)\d[a-z0-9+-]*)\s+(\d{1,3}\s*\/\s*\d{1,3})(?=$|[\s)])/ig,'$1[$2 $3]');
+}
 function savedPrintEvidence(item) {
   const identity=require('./card_identity'),norm=identity.normalizeToken;
-  const title=identity.normalizeWidth(item.name),declared=identity.normalizeWidth(item.number);
+  const title=printedTitle(identity.normalizeWidth(item.name)),declared=printedTitle(identity.normalizeWidth(item.number));
   const numbers=text=>{
     const result=[...text.matchAll(/(?<![\d/])(\d{1,3})\s*\/\s*(\d{1,3}|(?:XY|SM|SV|BW|S)-P)(?![\dA-Z/-])/ig)]
       .map(m=>`${Number(m[1])}/${/^\d+$/.test(m[2])?Number(m[2]):m[2].toUpperCase()}`);

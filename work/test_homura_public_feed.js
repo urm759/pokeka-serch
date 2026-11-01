@@ -23,6 +23,7 @@ assert(!require('./update_shop_buybacks').SHOPS.some(s=>s.id==='cardshop151-stor
 assert.equal(require('./buyback-source-permissions.json').sources['cardshop151-store'].status,'retired');
 assert(require('./update_shop_buybacks').SHOPS.find(s=>s.id==='kaitori-homura-mail').adapterVersion===VERSION);
 const code=fs.readFileSync(__dirname+'/update_shop_buybacks.js','utf8');
+assert(fs.readFileSync(__dirname+'/homura_public_feed.js','utf8').includes('resolveSavedItem'),'current fetch and observation averages share identity guards');
 assert(!code.includes('delete history.shops[shopId]'),'removed history must be retained');
 const retired=require('./apply_buyback_retirements');
 const before={dates:['2026-10-22'],shops:{old:{},good:{}},cards:{a:{shops:{old:{price:100,c7:1,c30:1,avg7:100},good:{price:200,c7:1,c30:1,avg7:200}}}}};

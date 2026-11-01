@@ -1,0 +1,76 @@
+{
+  "at": "2026-11-01 01:12:03 UTC",
+  "priority": {
+    "run": 41252614555,
+    "event": "schedule",
+    "status": "success-without-acquisition",
+    "reason": "2026-10-31T23:28:05.7101446Z {\"status\":\"skipped\",\"allowed\":false,\"ageMs\":5626345,\"minimumIntervalMs\":7200000,\"reason\":\"共通更新間隔内・重複取得なし\",\"llmCalls\":0,\"codexCalls\":0}",
+    "publication": "skipped"
+  },
+  "safe": {
+    "run": 41238618182,
+    "event": "schedule",
+    "sourceFetched": true,
+    "examples": [
+      "2026-10-31T20:36:33.2923418Z {\"total\":12760,\"sites\":{\"cardrush\":{\"matched\":7669,\"unmatched\":5091},\"hareruya2\":{\"matched\":7114,\"unmatched\":5646},\"yuyutei\":{\"matched\":243,\"unmatched\":12517},\"torecacamp\":{\"matched\":6547,\"unmatched\":6213},\"snkrdunk\":{\"matched\":12427,\"unmatched\":333},\"psaOfficial\":{\"matched\":6300,\"unmatched\":6460}},\"shops\":{\"torecabank\":{\"matched\":330,\"unmatched\":39},\"toreca-lounge\":{\"matched\":645,\"unmatc",
+      "2026-10-31T20:40:22.8690543Z {\"complete\":false,\"completeDate\":\"2026-09-01\",\"sources\":{\"toreca\":{\"label\":\"みんトレ\",\"date\":\"2026-11-01\",\"automatic\":true,\"lastAttemptAt\":\"2026-10-31T18:40:10.260Z\",\"startedAt\":\"2026-10-31T18:40:10.260Z\",\"endedAt\":\"2026-10-31T18:40:13.273Z\",\"durationMs\":3013,\"status\":\"success\",\"lastSuccessAt\":\"2026-10-31T18:40:13.273Z\",\"acquiredCount\":12760,\"fetchFailureCount\":0,\"updatedCount\":10128,\"acquisi"
+    ],
+    "published": [
+      "2026-10-31T20:42:39.8829507Z {\"status\":\"published\",\"published\":true,\"commit\":\"5a53743a11d0100b9d7ebe834a50eedb5ca3c22f\"}"
+    ]
+  },
+  "daily": {
+    "run": 41249165942,
+    "event": "schedule",
+    "published": [
+      "2026-10-31T22:49:21.7118550Z {\"status\":\"published\",\"published\":true,\"commit\":\"d163560acb0872b1337aaf2bce560b031543a267\"}"
+    ]
+  },
+  "watch": {
+    "run": 41245692469,
+    "classification": "publication check and catchup succeeded; alert-report job failed",
+    "jobs": [
+      {
+        "id": 124668530370,
+        "name": "publication_check",
+        "status": "success",
+        "failed": []
+      },
+      {
+        "id": 124668530492,
+        "name": "catchup",
+        "status": "success",
+        "failed": []
+      },
+      {
+        "id": 124672026452,
+        "name": "watch",
+        "status": "failure",
+        "failed": [
+          "Report newly detected alerts"
+        ]
+      }
+    ]
+  },
+  "scopeNote": "All runs precede this branch. A skipped acquisition is not fresh data or post-fix proof. Prior source runs retained; changed Homura/Camp routes require later scheduled evidence.",
+  "llmCalls": 0,
+  "codexCalls": 0,
+  "timing": {
+    "safe": {
+      "planned": "2026-10-31T17:00:00Z",
+      "created": "2026-10-31T20:22:38Z",
+      "plannedToCreatedMs": 12158000
+    },
+    "daily": {
+      "planned": "2026-10-31T19:30:00Z",
+      "created": "2026-10-31T22:39:31Z",
+      "plannedToCreatedMs": 11371000
+    },
+    "priority": {
+      "planned": "2026-10-31T22:20:00Z",
+      "created": "2026-10-31T23:27:35Z",
+      "plannedToCreatedMs": 4055000
+    }
+  },
+  "timingNote": "cron予定から実行作成まで。作成前の空白をジョブ内取得速度や公開待ちへ転嫁しない。予定cronの照合値で、一回の成功から今後の実行時刻は保証しない。"
+}

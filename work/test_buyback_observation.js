@@ -1,5 +1,12 @@
 const assert=require('node:assert/strict'),m=require('../exploration-metrics'),builder=require('./build_buyback_observation_summary');
 const now=Date.parse('2026-10-14T01:00:00Z'),at=new Date(now).toISOString();
+const radiant={id:'radiant',name:'かがやくリザードン K[S10b 011/071]',model:'011/071',setCode:'S10B',language:'ja',rarity:'K'};
+const unbracketed={name:'かがやくリザードン K S10b 011/071',number:'かがやくリザードン K S10b 011/071'};
+assert.equal(builder.resolveSavedItem(unbracketed,[radiant]).cardId,radiant.id);
+for(const title of ['かがやくリザードン K S12a 011/071','かがやくリザードン K S10b 012/071','かがやくリザードン K S10b 011/071 【英語版】','かがやくリザードン K S10b 011/071 ミラー'])
+  assert.equal(builder.resolveSavedItem({...unbracketed,name:title,number:title},[radiant]).cardId,undefined,title);
+assert.equal(builder.resolveSavedItem({...unbracketed,setCode:'S12A'},[radiant]).cardId,undefined,'bare printed set must not hide a conflicting declared set');
+assert.equal(builder.resolveSavedItem(unbracketed,[radiant,{...radiant,id:'duplicate'}]).cardId,undefined);
 const c=require('../data/pokemon-cards.json').find(c=>c.id==='pk-20743');
 const item={cardId:c.id,name:'グレイシアV SA 077/069',price:30000,active:true,observedAt:at};
 const source={shops:{a:{name:'a',fulfilment:'store',refreshed:true,lastSuccess:at,lastAttempt:at},b:{name:'b',fulfilment:'store',refreshed:true,lastSuccess:at,lastAttempt:at}},cards:{[c.id]:{shops:{a:{price:30000,priceDate:'2026-10-14',listingActive:true,matchConfidence:'high'},b:{price:30000,priceDate:'2026-10-14',listingActive:true,matchConfidence:'high'}}}}};

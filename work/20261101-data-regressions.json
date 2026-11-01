@@ -1,0 +1,89 @@
+{
+  "at": "2026-11-01T01:20:16.271Z",
+  "previousAttempts": [
+    {
+      "check": "test_gemrate_reference_refresh",
+      "status": "failed-fixture-location",
+      "reason": "TEMP inside the publication repository correctly failed the private-storage guard; repeated outside the repository in the workspace private-research directory"
+    },
+    {
+      "check": "required publication validation",
+      "status": "failed-before-publication",
+      "reason": "price audit still covered 12760 instead of the expanded12762 catalogue; actual offline price audit regenerated and full finalization repeated before required validation passed"
+    }
+  ],
+  "checks": [
+    {
+      "name": "test_saved_buyback_item_rematch",
+      "status": "pass",
+      "ms": 93
+    },
+    {
+      "name": "test_partial_buyback_refresh",
+      "status": "pass",
+      "ms": 83
+    },
+    {
+      "name": "test_saved_style_replay",
+      "status": "pass",
+      "ms": 86
+    },
+    {
+      "name": "test_buyback_observation",
+      "status": "pass",
+      "ms": 158
+    },
+    {
+      "name": "test_buyback_saved_identity_recovery",
+      "status": "pass",
+      "ms": 86
+    },
+    {
+      "name": "test_homura_public_feed",
+      "status": "pass",
+      "ms": 1621
+    },
+    {
+      "name": "test_psa_saved_rematch",
+      "status": "pass",
+      "ms": 96
+    },
+    {
+      "name": "test_psa_linkage_queue",
+      "status": "pass",
+      "ms": 66
+    },
+    {
+      "name": "test_official_catalog_supplements",
+      "status": "pass",
+      "ms": 65
+    },
+    {
+      "name": "test_gemrate_reference_refresh",
+      "status": "pass",
+      "ms": 282
+    },
+    {
+      "name": "test_gemrate_private_inbox",
+      "status": "pass",
+      "ms": 99
+    },
+    {
+      "name": "test_gemrate_limited_public_reference",
+      "status": "pass",
+      "ms": 81
+    },
+    {
+      "name": "test_gemrate_listing_relevance",
+      "status": "pass",
+      "ms": 96
+    },
+    {
+      "name": "test_coverage_capacity_filters",
+      "status": "pass",
+      "ms": 739
+    }
+  ],
+  "status": "pass",
+  "completedAt": "2026-11-01T01:20:19.932Z"
+}
