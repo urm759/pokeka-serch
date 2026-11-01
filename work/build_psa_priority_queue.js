@@ -52,7 +52,7 @@ function main() {
   const legacyEntries = manifest.filter((entry) => releaseYear(entry) <= 2016 && entry.url);
   const legacySetCodes = new Set(legacyEntries.map((entry) => String(entry.setCode || "").toUpperCase()));
 
-  const rows = cards.map((card) => {
+  let rows = cards.map((card) => {
     const buyback = buybacks[card.id];
     const key = identity(card);
     if (!buyback?.currentShops || population[card.id] || !legacySetCodes.has(key.setCode) || !key.cardNo) return null;
@@ -99,6 +99,7 @@ function main() {
   for(const row of rows)if(requested.has(row.cardId)) {
     row.priority+=1e10;row.reason=[...(row.reason||[]),'指定URL A/Bの不足PSA補完（適合未確認・通常巡回は維持）'];
   }
+  rows=require('./focus_pop_priority').prioritize(rows,readJson(path.join(__dirname,'pop-focus-targets.json'),{}),cards,{cards:population});
   rows.sort((a, b) => b.priority - a.priority);
   const setPriority = [...new Set(rows.map((row) => row.setCode))];
   const orderedSets = [
@@ -118,4 +119,5 @@ function main() {
   console.log(JSON.stringify({ priorityCards: rows.length, prioritySets: setPriority, output: OUTPUT_PATH }));
 }
 
-main();
+if(require.main===module)main();
+module.exports={build:main};

@@ -116,7 +116,8 @@ function evaluate(profile,at,overlay={},inspectIds=[],calculationCache=null,opti
   }
   if(options.collectAvailability===false)efficiencyAvailability.status='not-collected-in-cycle; full diagnostic remains in priority-search-profile-audit';
   else if(!sharedAllCatalog)calculationCache?.set(summaryKey,efficiencyAvailability.allCatalog);
-  return {id:profile.id,reportName:require('./search_profile_variants').reportName(profile.id),urlHash:hash(profile.url),parameters:Object.fromEntries([...url.searchParams].filter(([k])=>!['cap','locked','reserve','maxShare','batch'].includes(k))),
+  const effectiveUrl=api.buildShareUrl();
+  return {id:profile.id,reportName:require('./search_profile_variants').reportName(profile.id),urlHash:hash(profile.url),originalUrl:profile.url,requestedUrl:url.href,effectiveUrl:effectiveUrl.href,effectiveParameters:Object.fromEntries(effectiveUrl.searchParams),parameters:Object.fromEntries([...url.searchParams].filter(([k])=>!['cap','locked','reserve','maxShare','batch'].includes(k))),
     qualified:rows.filter(r=>r.qualified).length,ids:rows.filter(r=>r.qualified).map(r=>r.id),prospects:rows.filter(r=>r.unverifiedProspect).length,reasons,rows,routes,scope,allExclusions,inspectedRows,efficiencyAvailability,
     explanation:'既知価格範囲を通った不足カードは未判定の補完候補。適合/GOとは数えない。原因の重複数と候補減少は別'};
 }
@@ -146,7 +147,7 @@ function build(root=ROOT,at=new Date().toISOString()) {
     const old=previous.profiles.find(r=>r.id===p.urlOnly.id),same=old?.urlHash===p.urlOnly.urlHash;
     const seen=new Set([...(old?.seenQualified||[]),...(old?.urlsMatched||[])]);
     const gained=same?p.urlOnly.ids.filter(id=>!old.urlsMatched.includes(id)):[];
-    const lost=(old?.urlsMatched||[]).filter(id=>!p.urlOnly.ids.includes(id));
+    const lost=same?(old?.urlsMatched||[]).filter(id=>!p.urlOnly.ids.includes(id)):[];
     const unchangedCode=old?.evidenceMeta?.codeHash===codeHash;
     const firstQualified=unchangedCode?gained.filter(id=>!seen.has(id)):[];
     const evidenceMeta=departures.metadata(p.urlOnly,codeHash,at);
@@ -218,12 +219,17 @@ function build(root=ROOT,at=new Date().toISOString()) {
   report.comparisonRevision=targets.comparisonRevision;
   applyReferenceComparison(root,report,targets,previous,config);
   for(const [f,x]of [['work/search-profile-targets.json',targets],['data/priority-search-profile-audit.json',report]])require('./acquisition_retry').atomicWrite(path.join(root,f),x,0);
+  require('./focus_pop_priority').build(root);
+  require('./build_psa_priority_queue').build();
   console.log(JSON.stringify(profiles.map(p=>({id:p.urlOnly.id,urlOnly:p.urlOnly.qualified,withKnownSaved:p.knownSavedConditions.qualified,prospects:p.urlOnly.prospects}))));
   return report;
 }
 function applyReferenceComparison(root,report,targets,previous,config) {
   if(!config.referenceFocus) {
-    report.independentCandidates.comparisonKind=previous.comparisonRevision===targets.comparisonRevision?'data-refresh':'plan-definition-change';return;
+    const same=previous.comparisonRevision===targets.comparisonRevision;
+    report.independentCandidates.comparisonKind=same?'data-refresh':'user-settings-change';
+    if(!same){Object.assign(report.independentCandidates,{before:null,net:null,baselineIds:report.independentCandidates.gained,gained:[],lost:[],dataCompletionGained:[]});report.independentCandidates.note+='／重点URL変更による初回基準。実データ補完・初適合に加算しない';}
+    return;
   }
   const migration=previous.referencePolicyRevision!==config.comparisonRevision;
   const baseline=migration?JSON.parse(fs.readFileSync(path.join(root,'work/reference-buy-legacy-targets.json'))):previous;

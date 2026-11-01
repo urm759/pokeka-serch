@@ -8,6 +8,9 @@ try{
  write('data/update-status.json',{unifiedMonitor:{outcomes}});write('data/pokemon-cards.json',[{id:'one'}]);
  write('data/priority-price-execution.json',{startedAt:new Date(now-3600000).toISOString()});p.seal(root,p.snapshot(root));
  assert.equal(decide(root,now).mode,'reuse');
+ assert.equal(decide(root,now).acquisitionGate.ageMs,3600000);
+ assert.equal(decide(root,now).acquisitionGate.minimumIntervalMs,2.5*3600000);
+ assert.equal(decide(root,now).acquisitionGate.allowed,false);
  assert.equal(decide(root,now+2*3600000).mode,'acquire');
  fs.writeFileSync(path.join(root,'model.js'),'// changed calculation');assert.equal(decide(root,now).mode,'rebuild');
  p.seal(root,p.snapshot(root));assert.equal(decide(root,now).mode,'reuse');

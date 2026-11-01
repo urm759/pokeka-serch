@@ -21,8 +21,10 @@ assert.equal(transition({ids:['lost'],facts:{}},a).rows[0].comparability,'前後
 assert.deepEqual(transition({ids:['x'],facts:{x:{metrics:{decision:{reasons:['既存の期間不一致']}}}}},
   {ids:[],facts:{x:{metrics:{decision:{reasons:['既存の期間不一致','新規供給リスク未達']}}}}}).rows[0].newDecisionFailures,['新規供給リスク未達']);
 const api={state:{hareruya2Stock:{x:{hareruya2Price:1000,observedAt:'2026-09-01T00:00:00Z'}},psaSpecificationHeld:{}},
+  searchProfitView:()=>({purchasePrice:100,basis:'limit',label:'安定上限×中央予測',economics:{expectedProfit:5000}}),
   cardEfficiency:()=>({profit:0,roi:0,annual:0,purchasePrice:0}),purchasePsa9Ratio:()=>({ratio:0,psa9Price:1000}),presetQualifications:()=>({now:false}),cardSearchExclusions:()=>[]};
 const facts=cardFacts(api,{id:'x',price:0,psa10:0,currentStoreOffer:{value:0,available:false,fresh:false}});
+assert.equal(facts.searchProfit.buy,100);assert.equal(facts.searchProfit.profit,5000);assert.notEqual(facts.searchProfit.buy,facts.efficiency.buy);
 assert.equal(facts.purchase.price,0);assert.equal(facts.efficiency.annual,0);assert.equal(facts.psa9.ratio,0);assert.equal(facts.sourceQuotes.hareruya2.priceObservedAt,'2026-09-01T00:00:00Z');
 assert.equal(cardFacts(api,{id:'y',price:null,psa10:null}).purchase,null);
 console.log('PASS profile evidence: actual purchase, null vs zero, original timestamps, overlapping/new failures, unavailable comparison');

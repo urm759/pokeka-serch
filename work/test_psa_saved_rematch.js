@@ -115,3 +115,4 @@ assert.equal(b.populationLanguageCompatible({name:'_のピカチュウ [S8a-P I 
 assert.equal(b.populationLanguageCompatible({name:'_のピカチュウ [S8a-P 007/025]',language:'ja'},{url:'https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-promo/x'}),true);
 
 const wrongLanguage={cards:{foreign:[['20261016',10,20,{observedAt:'2026-10-16T19:33:34.511Z'}]]}};const originalPoint=JSON.stringify(wrongLanguage.cards.foreign);assert(b.quarantineLanguageHistory(wrongLanguage,'foreign','2026-11-01T00:00:00Z'));assert.equal(JSON.stringify(wrongLanguage.quarantined.foreign[0].points),originalPoint);assert.equal(wrongLanguage.cards.foreign.length,0);assert.equal(b.quarantineLanguageHistory(wrongLanguage,'foreign'),false);
+require('./test_population_item_time');

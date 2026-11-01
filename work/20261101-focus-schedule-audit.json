@@ -1,0 +1,273 @@
+{
+  "at": "2026-11-01T11:09:12.037Z",
+  "workflows": [
+    {
+      "name": "Daily Fast Update",
+      "state": "active",
+      "path": ".github/workflows/daily-fast-update.yml"
+    },
+    {
+      "name": "Priority Purchase Price Refresh",
+      "state": "active",
+      "path": ".github/workflows/priority-price-refresh.yml"
+    },
+    {
+      "name": "Safe Checkpoint Backfill",
+      "state": "active",
+      "path": ".github/workflows/safe-checkpoint-backfill.yml"
+    },
+    {
+      "name": "Data Update Health Watchdog",
+      "state": "active",
+      "path": ".github/workflows/watch-data-health.yml"
+    }
+  ],
+  "watchRun": 41287696335,
+  "jobs": [
+    {
+      "id": 124792247993,
+      "name": "publication_check",
+      "conclusion": "success",
+      "started": "2026-11-01T09:10:09Z",
+      "completed": "2026-11-01T09:10:44Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success",
+          "started": "2026-11-01T08:10:09Z",
+          "completed": "2026-11-01T08:10:10Z"
+        },
+        {
+          "name": "Run actions/checkout@v7",
+          "conclusion": "success",
+          "started": "2026-11-01T08:10:10Z",
+          "completed": "2026-11-01T08:10:30Z"
+        },
+        {
+          "name": "Run actions/setup-node@v7",
+          "conclusion": "success",
+          "started": "2026-11-01T08:10:30Z",
+          "completed": "2026-11-01T08:10:31Z"
+        },
+        {
+          "name": "Verify published acquisition independently without source requests",
+          "conclusion": "success",
+          "started": "2026-11-01T08:10:31Z",
+          "completed": "2026-11-01T08:10:41Z"
+        },
+        {
+          "name": "Retain publication verification without a Pages feedback loop",
+          "conclusion": "success",
+          "started": "2026-11-01T08:10:41Z",
+          "completed": "2026-11-01T08:10:42Z"
+        },
+        {
+          "name": "Post Run actions/setup-node@v7",
+          "conclusion": "success",
+          "started": "2026-11-01T08:10:42Z",
+          "completed": "2026-11-01T08:10:42Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v7",
+          "conclusion": "success",
+          "started": "2026-11-01T08:10:42Z",
+          "completed": "2026-11-01T08:10:42Z"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success",
+          "started": "2026-11-01T08:10:42Z",
+          "completed": "2026-11-01T08:10:42Z"
+        }
+      ]
+    },
+    {
+      "id": 124792248162,
+      "name": "catchup",
+      "conclusion": "success",
+      "started": "2026-11-01T09:10:09Z",
+      "completed": "2026-11-01T09:10:53Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success",
+          "started": "2026-11-01T08:10:09Z",
+          "completed": "2026-11-01T08:10:11Z"
+        },
+        {
+          "name": "Run actions/checkout@v7",
+          "conclusion": "success",
+          "started": "2026-11-01T08:10:11Z",
+          "completed": "2026-11-01T08:10:31Z"
+        },
+        {
+          "name": "Run actions/setup-node@v7",
+          "conclusion": "success",
+          "started": "2026-11-01T08:10:31Z",
+          "completed": "2026-11-01T08:10:35Z"
+        },
+        {
+          "name": "Check alert deduplication and safe backoff rules",
+          "conclusion": "success",
+          "started": "2026-11-01T08:10:35Z",
+          "completed": "2026-11-01T08:10:35Z"
+        },
+        {
+          "name": "Recover trusted failed price inputs without reacquisition",
+          "conclusion": "skipped",
+          "started": "2026-11-01T08:10:35Z",
+          "completed": "2026-11-01T08:10:35Z"
+        },
+        {
+          "name": "Check saved publication before optional acquisition",
+          "conclusion": "success",
+          "started": "2026-11-01T08:10:35Z",
+          "completed": "2026-11-01T08:10:35Z"
+        },
+        {
+          "name": "Plan saved publication before optional acquisition",
+          "conclusion": "success",
+          "started": "2026-11-01T08:10:35Z",
+          "completed": "2026-11-01T08:10:36Z"
+        },
+        {
+          "name": "Fill missed price intervals with shared cooldown and access budgets",
+          "conclusion": "skipped",
+          "started": "2026-11-01T08:10:36Z",
+          "completed": "2026-11-01T08:10:36Z"
+        },
+        {
+          "name": "Validate catchup data without changing purchase criteria",
+          "conclusion": "success",
+          "started": "2026-11-01T08:10:36Z",
+          "completed": "2026-11-01T08:10:51Z"
+        },
+        {
+          "name": "Publish changed health state only",
+          "conclusion": "skipped",
+          "started": "2026-11-01T08:10:51Z",
+          "completed": "2026-11-01T08:10:51Z"
+        },
+        {
+          "name": "Report independent acquisition failures without hiding them",
+          "conclusion": "success",
+          "started": "2026-11-01T08:10:51Z",
+          "completed": "2026-11-01T08:10:51Z"
+        },
+        {
+          "name": "Preserve unpublished monitor state",
+          "conclusion": "skipped",
+          "started": "2026-11-01T08:10:51Z",
+          "completed": "2026-11-01T08:10:51Z"
+        },
+        {
+          "name": "Save monitor recovery bundle",
+          "conclusion": "skipped",
+          "started": "2026-11-01T08:10:51Z",
+          "completed": "2026-11-01T08:10:51Z"
+        },
+        {
+          "name": "Post Run actions/setup-node@v7",
+          "conclusion": "success",
+          "started": "2026-11-01T08:10:51Z",
+          "completed": "2026-11-01T08:10:51Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v7",
+          "conclusion": "success",
+          "started": "2026-11-01T08:10:51Z",
+          "completed": "2026-11-01T08:10:51Z"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success",
+          "started": "2026-11-01T08:10:51Z",
+          "completed": "2026-11-01T08:10:51Z"
+        }
+      ]
+    },
+    {
+      "id": 124792417546,
+      "name": "watch",
+      "conclusion": "success",
+      "started": "2026-11-01T09:10:55Z",
+      "completed": "2026-11-01T09:12:52Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success",
+          "started": "2026-11-01T08:10:56Z",
+          "completed": "2026-11-01T08:10:57Z"
+        },
+        {
+          "name": "Run actions/checkout@v7",
+          "conclusion": "success",
+          "started": "2026-11-01T08:10:57Z",
+          "completed": "2026-11-01T08:11:16Z"
+        },
+        {
+          "name": "Run actions/setup-node@v7",
+          "conclusion": "success",
+          "started": "2026-11-01T08:11:16Z",
+          "completed": "2026-11-01T08:11:17Z"
+        },
+        {
+          "name": "Validate independent monitor",
+          "conclusion": "success",
+          "started": "2026-11-01T08:11:17Z",
+          "completed": "2026-11-01T08:11:17Z"
+        },
+        {
+          "name": "Check workflow results and saved checkpoint holds",
+          "conclusion": "success",
+          "started": "2026-11-01T08:11:17Z",
+          "completed": "2026-11-01T08:11:38Z"
+        },
+        {
+          "name": "Publish independent validated monitor state",
+          "conclusion": "success",
+          "started": "2026-11-01T08:11:38Z",
+          "completed": "2026-11-01T08:12:50Z"
+        },
+        {
+          "name": "Report newly detected alerts",
+          "conclusion": "success",
+          "started": "2026-11-01T08:12:50Z",
+          "completed": "2026-11-01T08:12:50Z"
+        },
+        {
+          "name": "Preserve independent observation on failure",
+          "conclusion": "skipped",
+          "started": "2026-11-01T08:12:50Z",
+          "completed": "2026-11-01T08:12:50Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@v7",
+          "conclusion": "skipped",
+          "started": "2026-11-01T08:12:50Z",
+          "completed": "2026-11-01T08:12:50Z"
+        },
+        {
+          "name": "Post Run actions/setup-node@v7",
+          "conclusion": "success",
+          "started": "2026-11-01T08:12:50Z",
+          "completed": "2026-11-01T08:12:50Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v7",
+          "conclusion": "success",
+          "started": "2026-11-01T08:12:50Z",
+          "completed": "2026-11-01T08:12:50Z"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success",
+          "started": "2026-11-01T08:12:50Z",
+          "completed": "2026-11-01T08:12:50Z"
+        }
+      ]
+    }
+  ],
+  "newCodeScheduledCycles": 0,
+  "note": "No post-PR7 scheduled acquisition created yet. Configured intervals do not prove run creation or capacity."
+}

@@ -52,6 +52,11 @@ function item(status, source, times, reason = null) {
     nextRetryAt: ["取得元にデータなし", "定期再確認", "再試行待ち"].includes(status) ? retryAt(times.attempt || times.success, status === "取得元にデータなし" ? 7 : 1) : null,
   };
 }
+function populationItem(official,held,times){
+  const valid=official&&finite(official.rate),at=iso(official?.f);
+  return item(valid?'取得済み':held?'再照合待ち':'取得待ち','PSA公式',{...times,success:at},
+    valid?(at?null:'公式の個別確認日時未取得'):official?'TOTALまたはPSA10率が不足':held?.reason||'公式Population未紐付け');
+}
 
 function previousItemsFor(previousQueue, id) {
   const row = previousQueue.cards?.[id] || {};
@@ -227,8 +232,7 @@ function main() {
         {attempt:times.toreca.attempt,success:card.psa9ObservedAt || null},efficiencyEvidence.psa9Evidence.ready ? '価格再確認日時・実成約日ではない' : efficiencyEvidence.psa9Evidence.reason),
       buybackExitEvidence: item(efficiencyEvidence.buybackExitEvidence.ready ? '取得済み' : '定期再確認','Web買取表・複数店',times.buyback,
         efficiencyEvidence.buybackExitEvidence.ready ? '参考出口の基礎掲載。利用可能店舗・一致確認は別判定' : efficiencyEvidence.buybackExitEvidence.reason),
-      psaOfficial: item(official && finite(official.rate) ? "取得済み" : psa.specificationHeld?.[id] ? "再照合待ち" : "取得待ち", "PSA公式", times.psa,
-        official ? "TOTALまたはPSA10率が不足" : psa.specificationHeld?.[id]?.reason || "公式Population未紐付け"),
+      psaOfficial: populationItem(official,psa.specificationHeld?.[id],times.psa),
       shopStateA: item(shopValue ? "取得済み" : "取得待ち", "国内ショップ", times.cardrush, shopValue ? null : shopFound ? "紐付け済み・有効状態A価格は未取得" : "ショップ巡回・紐付け待ち"),
       buyback: item(buybackRow ? "取得済み" : "定期再確認", "Web買取表", times.buyback, buybackRow ? null : "現在掲載なし・次回定期更新で再確認"),
       pokedata: item(pokedataState === "linked" ? "取得済み" : pokedataState === "compatible-unmatched" ? "再試行待ち" : pokedataState === "unexpanded-set" ? "取得待ち" : "取得不能", "PokeDATA", times.pokedata, pokedataState === "linked" ? null : pokedataState === "compatible-unmatched" ? "対応セットだがカード未一致" : pokedataState === "unexpanded-set" ? "未展開セット" : "PokeDATA非対応／存在未確認"),
@@ -429,4 +433,5 @@ function main() {
   console.log(JSON.stringify({ summary, itemTotals, chunkFiles: files.length }, null, 2));
 }
 
-main();
+if(require.main===module)main();
+module.exports={populationItem};
