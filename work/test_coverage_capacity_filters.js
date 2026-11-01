@@ -42,3 +42,5 @@ const averageFixture=m.buybackMeanWindows({a:{meanDays:[['2026-10-31',.6]]},b:{m
 for(const d of [7,30,75])assert(Math.abs(averageFixture[d].mean-1.2)<1e-12,'period search uses arithmetic shop mean, not the 0.9 median');
 assert.equal(m.buybackSearch({meanWindows:averageFixture},{buyback7RatioMin:1.1,buybackRatioReference:true}).reasons.length,0);
 console.log('PASS coverage/throughput, actual timestamps/dedup, slim inventory provenance, reference/stale/day-aware ratio filters, URL/zero/unrounded and finance separation');
+
+require('./test_confirmation_observations');

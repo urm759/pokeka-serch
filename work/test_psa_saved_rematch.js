@@ -102,3 +102,16 @@ for(const [no,label]of [['144','With Mark'],['147','No Mark']]){const row={set:'
 assert(b.namesCompatible('Umbreon: PROMO[S8a-P 012/025](Promo Card Pack 25th Anniversary Edition)',{set:'S8A-P',no:'12',name:'Umbreon-Gold Star |'}),'verified exact Japanese25th star localized source label');
 assert(!b.namesCompatible('Umbreon',{set:'S8A-P',no:'13',name:'Umbreon-Gold Star |'}));
 assert(!b.namesCompatible('Umbreon',{set:'S8A',no:'12',name:'Umbreon-Gold Star |'}));
+
+assert(b.namesCompatible('Team Magma&#x27;sGroudon P [S8a-P 011/025]',{set:'S8A-P',no:'11',name:"Team Magma's Groudon-Holo |"}));
+assert(!b.namesCompatible('Team Aqua&#x27;sGroudon P [S8a-P 011/025]',{set:'S8A-P',no:'11',name:"Team Magma's Groudon-Holo |"}));
+assert(b.namesCompatible('Dark Galados: PROMO[S8a-P 005/025]',{set:'S8A-P',no:'5',name:'Dark Gyarados-Holo |'}));
+assert(!b.namesCompatible('Dark Galados',{set:'S8A',no:'5',name:'Dark Gyarados-Holo |'}));
+assert(b.namesCompatible('_’s Pikachu: PROMO[S8a-P 007/025]',{set:'S8A-P',no:'7',name:'Birthday Pikachu-Holo |'}));
+assert(!b.namesCompatible('_’s Pikachu',{set:'S8A-P',no:'8',name:'Birthday Pikachu-Holo |'}));
+
+for(const language of ['en','ko','zh','id'])assert.equal(b.populationLanguageCompatible({name:'_のピカチュウ [S8a-P 007/025]',language},{url:'https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-promo/x'}),false);
+assert.equal(b.populationLanguageCompatible({name:'_のピカチュウ [S8a-P I 007/025]【インドネシア語版】',language:'ja'},{url:'https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-promo/x'}),false);
+assert.equal(b.populationLanguageCompatible({name:'_のピカチュウ [S8a-P 007/025]',language:'ja'},{url:'https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-promo/x'}),true);
+
+const wrongLanguage={cards:{foreign:[['20261016',10,20,{observedAt:'2026-10-16T19:33:34.511Z'}]]}};const originalPoint=JSON.stringify(wrongLanguage.cards.foreign);assert(b.quarantineLanguageHistory(wrongLanguage,'foreign','2026-11-01T00:00:00Z'));assert.equal(JSON.stringify(wrongLanguage.quarantined.foreign[0].points),originalPoint);assert.equal(wrongLanguage.cards.foreign.length,0);assert.equal(b.quarantineLanguageHistory(wrongLanguage,'foreign'),false);

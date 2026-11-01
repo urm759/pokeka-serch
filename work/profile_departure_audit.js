@@ -16,7 +16,8 @@ function inspect(before, after, context = {}) {
   const settingsChanged = comparable && context.before.settingsHash !== context.after.settingsHash;
   const codeChanged = comparable && context.before.codeHash !== context.after.codeHash;
   if (settingsChanged) add('search-settings-changed','保存された実効設定hashが変化。価格変化と混同しない');
-  if (codeChanged) add('calculation-or-aggregation-changed','計算・集計コードhashが変化。原因確定には同一入力再現が必要');
+  const versionChanges=codeChanged?[{code:'code-version-changed',evidence:'コードhash差だけでは計算不具合を原因確定しない。同一入力・同一コード再現で寄与を確認'}]:[];
+  if(codeChanged&&context.codeEffectConfirmed===true)add('calculation-or-aggregation-changed','同一入力のコード差再現で判定への寄与を確認済み');
   const review = after?.priceReview || {};
   const specification = after?.specificationHeld || review.specificationHeld
     || (after?.dataQuality?.manualReviewReasons||[]).some(r=>/誤紐|仕様不一致|仕様保留|言語不一致|カード違い|型番違い/.test(r));
@@ -79,6 +80,15 @@ function inspect(before, after, context = {}) {
   const material = (facts,key) => key==='psa9' ? {price:facts.psa9?.price,updatedAt:facts.psa9?.updatedAt,measurementType:facts.psa9?.measurementType}
     : key==='buyback' ? (facts.buyback||[]).map(r=>({shopId:r.shopId,price:r.price,priceDate:r.priceDate,observedAt:r.observedAt})) : facts[key];
   const changedInputs = before && after ? inputKeys.filter(key=>!same(material(before,key),material(after,key))) : [];
+  const changedPrices=[];
+  for(const [field,a,b]of [['PSA9提供集計',before?.psa9?.price,after?.psa9?.price],['国内PSA10相場',before?.psa10,after?.psa10],['計算採用買値',before?.efficiency?.buy,after?.efficiency?.buy]]){
+    if(Number.isFinite(a)&&Number.isFinite(b)&&a!==b)changedPrices.push({field,before:a,after:b});
+  }
+  const priceEvidenceNote='保存された採用入力の差。相場全体・実成約の変化や提供元の算定方法は断定しない';
+  for(const p of changedPrices){
+    const code=p.field==='PSA9提供集計'?'psa9-provided-price-changed':p.field==='国内PSA10相場'?'psa10-market-input-changed':'adopted-buy-input-changed';
+    add(code,{...p,note:priceEvidenceNote});
+  }
   const temporalOnly = comparable && !settingsChanged && !codeChanged && !changedInputs.length
     && roots.some(r=>r.code==='expired-price') && before.purchase?.fresh===true && (after.purchase?.fresh!==true||previousOfferExpired);
   const status = !comparable ? '原因未確定・比較可能な前後記録不足'
@@ -102,7 +112,7 @@ function inspect(before, after, context = {}) {
     if (has(/公式.*不足|Population.*未取得|PSA公式.*未取得/)) fields.push('psaOfficial');
   }
   if(independentFailures.length)fields.length=0;
-  return {status,comparable,temporalOnly,settingsChanged,codeChanged,changedInputs,roots,derived,
+  return {status,comparable,temporalOnly,settingsChanged,codeChanged,versionChanges,changedInputs,changedPrices,roots,derived,
     newFailures,existingFailures:reasons.filter(r=>previous.includes(r)),directFailures:reasons.filter(r=>!derived.some(d=>d.reason===r)),
     repair:{fields:unique(fields),sourceTargets,independentFailures,automaticReviewRelease:false,held,
       reason:independentFailures.length?'別の確定条件でも不合格。専用の同じ反復取得を外し通常巡回/値変更検知を維持':!after?'最新カタログに対象なし・原履歴を保持':held?'根拠確認待ち。仕様・対立・アクセス停止を解除しない':'既存の取得元別キューへ。期限・間隔・再試行制限を維持'}};

@@ -69,8 +69,8 @@ function record(key,root=ROOT) {
   require('./search_profile_cycle').record(key,root);
   const file=path.join(root,'data/scheduled-cycle-receipts.json');
   const previous=fs.existsSync(file)?read('data/scheduled-cycle-receipts.json'):{version:1,pipelines:{}};
-  const files=['data/card-catalog-completion.json','data/completion-outcomes.json','data/acquisition-progress-audit.json'];
-  const completion=read(files[1]),progress=read(files[2]);
+  const files=['data/pokemon-cards.json','data/card-catalog-completion.json','data/completion-outcomes.json','data/acquisition-progress-audit.json'];
+  const completion=read('data/completion-outcomes.json'),progress=read('data/acquisition-progress-audit.json');
   if(fs.existsSync(path.join(root,'data/priority-price-monitor.json')))files.push('data/priority-price-monitor.json');
   const optional=f=>{try{return read(f);}catch{return null;}};
   if(optional('data/search-profile-cycle-progress.json'))files.push('data/search-profile-cycle-progress.json');
@@ -79,15 +79,19 @@ function record(key,root=ROOT) {
   const monitorSources=optional('data/priority-price-monitor.json')?.sources||{};
   const cardObservations=Object.fromEntries(Object.entries(monitorSources).map(([id,source])=>[id,
     [...new Map([...(source.fixedCards||[]),...(source.cards||[])].map(row=>[row.id,{id:row.id,at:row.lastConfirmedAt}])).values()]]));
+  const sourceSummaries={};
   const observedIds=new Set(Object.values(cardObservations).flat().map(row=>row.id));
   for (const source of ['cardrush','hareruya2','yuyutei','torecacamp']) {
     const file=`data/${source}-stock-summary.json`, data=optional(file);
     if (!data) continue;
-    files.push(file);
+    files.push(file);sourceSummaries[source]=data;
     if (!cardObservations[source]) cardObservations[source]=Object.entries(data.cards||{}).filter(([id])=>observedIds.has(id))
       .map(([id,row])=>({id,at:row.observedAt||row.updatedAt||null}));
   }
   const before=optional(`work/scheduled-cycle-baseline-${key}.json`);
+  const windowFrom=String(before?.runId)===String(process.env.GITHUB_RUN_ID)?before.snapshot?.at:null;
+  const confirmed=require('./confirmation_observations').collect(sourceSummaries,{from:windowFrom,to:new Date().toISOString(),primaryCards:optional('data/pokemon-cards.json')});
+  for(const [source,rows]of Object.entries(confirmed.observations))cardObservations[source]=require('./confirmation_observations').merge(cardObservations[source]||[],rows);
   const delta=String(before?.runId)===String(process.env.GITHUB_RUN_ID)
     ?require('./audit_completion_outcomes').compare(before.snapshot,require('./audit_completion_outcomes').snapshot(root)):null;
   previous.pipelines[key]={pipeline:key,runId:process.env.GITHUB_RUN_ID,event:process.env.GITHUB_EVENT_NAME||null,
@@ -98,7 +102,7 @@ function record(key,root=ROOT) {
       const failures=(execution.runs||[]).filter(r=>r.processStatus==='failed');
       return {runId:execution.runId,status:failures.length?'partial-with-failure':'process-success',sources:failures.map(r=>({source:r.script,status:'failed'}))};
     })(),
-    cardObservations,
+    cardObservations,observationScope:confirmed.scope,
     publishedObservations:fs.existsSync(path.join(root,OBSERVATION_FILE))
       ?{[OBSERVATION_FILE]:packObservation(fs.readFileSync(path.join(root,OBSERVATION_FILE),'utf8'))}:{},
     hashes:Object.fromEntries(files.map(f=>[f,hash(fs.readFileSync(path.join(root,f),'utf8'))])),

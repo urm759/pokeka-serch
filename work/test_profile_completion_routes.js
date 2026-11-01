@@ -74,3 +74,6 @@ const classify=require('./build_one_item_completion_audit').classify,detail={m:[
 assert.equal(classify(detail,{status:'unlinked',sourceSetUrl:'https://www.psacard.com/pop/pokemon-asia/test'}),'日本語版根拠未確認・言語照合待ち');
 assert.equal(classify(detail,{status:'unlinked',sourceSetUrl:'url'},{retryByUrl:{url:{held:true,scope:'url'}}}),'PSA個別URL保留・他セット巡回継続');
 console.log('PASS profile completion: exact source routes, bundles, confirmed absence vs unmatched/failed/stale, store scope, and Best of XY identity');
+
+for(const value of [null,0,-1]){const r=prospectPlan({id:'provided-null',snkPsa10Price:value,snkPsa10Min:14800},['psa10Price']);assert.equal(r.allRequiredPathsAutomatic,false);assert.equal(r.requirements[0].state,'source-price-missing');assert.equal(r.requirements[0].normalBulkRecheck,true);}
+assert.equal(prospectPlan({id:'never-fetched'},['psa10Price']).allRequiredPathsAutomatic,true);

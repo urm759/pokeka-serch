@@ -24,7 +24,8 @@ function capacity(history,targetRows,now=Date.now(),targetHours=6,adoptionHours=
     for(const run of history.runs||[])for(const row of run.observations?.[source]||[]){const at=Date.parse(row.at),p=Date.parse(run.publicationStepCompletedAt);if(target.has(row.id)&&validTime(row.at,now)&&at>=Date.parse(run.startedAt)&&Number.isFinite(p)&&p>=at)publish.push(p-at);}
     const recent=[...events.values()].filter(e=>e.atMs>=now-DAY),week=[...events.values()].filter(e=>e.atMs>=now-7*DAY),need=target.size*24/targetHours;
     const current=[...target.values()].map(r=>validTime(r.at,now)?now-Date.parse(r.at):null);
-    sources[source]={targets:target.size,targetHours,adoptionHours,requiredConfirmationsPerDay:need,requiredToAvoidAdoptionExpiryPerDay:target.size*24/adoptionHours,capacityWith25PctHeadroom:Math.ceil(need*1.25),verifiedCohort24h:recent.length,verifiedCohort7d:week.length,verifiedCohortDaily7d:week.length/7,
+    sources[source]={targets:target.size,targetHours,adoptionHours,requiredConfirmationsPerDay:need,requiredToAvoidAdoptionExpiryPerDay:target.size*24/adoptionHours,capacityWith25PctHeadroom:Math.ceil(need*1.25),verifiedCohort24h:recent.length,verifiedCohort7d:week.length,verifiedCohortDaily7d:week.length/7,verifiedDistinctCards24h:new Set(recent.map(r=>r.id)).size,verifiedDistinctCards7d:new Set(week.map(r=>r.id)).size,
+      actualConfirmations24h:null,measurementStatus:'partial-confirmed-lower-bound',measurementNote:'確認済み受領証と原票回収分だけ。未計測の取得が残るため、実際の全確認数は未確定。0件と断定せず、要約の異なる確認カード数とも別。',
       coverageOfDailyRequirement:need?recent.length/need:null,targetExceeded:current.filter(age=>age!=null&&age>targetHours*HOUR).length,adoptionExpired:current.filter(age=>age!=null&&age>adoptionHours*HOUR).length,confirmationTimeUnknown:current.filter(age=>age==null).length,
       latestObservationCards24h:current.filter(age=>age!=null&&age<=DAY).length,
       latestObservationCards7d:current.filter(age=>age!=null&&age<=7*DAY).length,
@@ -49,7 +50,8 @@ function build(root=path.join(__dirname,'..'),now=Date.now()){
  const identities=new Map(cards.map(c=>[c.id,require('./psa10_observation_evidence').identity(c)]));
  const psaRows=Object.entries(receipt.cards||{}).filter(([id,v])=>identities.get(id)===v[0]).map(([id])=>({id,at:receipt.observedAt}));
  report.updateCapacity.domesticReference=capacity(history,{toreca:cards.filter(c=>c.price>0).map(c=>({id:c.id,at:c.priceObservedAt}))},now,6,30).toreca;
- report.updateCapacity.psa10Market=capacity(history,{toreca:psaRows},now,6,30).toreca;
+ report.updateCapacity.psa10Market=capacity(history,{psa10Market:psaRows},now,6,30).psa10Market;
+ report.updateCapacity.psa10Market.note='PSA10個別確認専用の計測。旧素体価格の固定群確認をPSA10確認数へ代用しない。未計測の実数はnull。';
  report.updateCapacity.officialPop={...capacity(history,{psaOfficial:Object.entries(pops).map(([id,r])=>({id,at:r.f}))},now,24,36).psaOfficial,
    distinctSetUrls:new Set(Object.values(pops).map(r=>r.u).filter(Boolean)).size,acquisitionStopped:read('data/update-status.json').sources?.psaOfficial?.acquisitionStopped===true,
    note:'必要カード確認数とHTTP数は別。セット単位取得を前提としても、許諾・経路停止を速度や実行回数だけで解消しない。'};

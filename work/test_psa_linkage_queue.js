@@ -22,3 +22,5 @@ assert.match(byId.c.ambiguityReason, /複数年/);
 assert.equal(byId.c.candidateOfficialUrls.length, 2);
 assert.equal(byId.c.sourceSetUrl, null);
 console.log("PSA linkage queue tests passed");
+
+const pending=require('./build_psa_linkage_queue').needsRebuild;assert(pending({totalCards:1,counts:{linked:0},rows:[{cardId:'a'}]},{a:{}},1));assert(pending({totalCards:1,counts:{linked:1},rows:[]},{a:{}},2));assert.equal(pending({totalCards:1,counts:{linked:1},rows:[]},{a:{}},1),false);

@@ -56,4 +56,8 @@ function priorityMaintenance(catalog,requested,progress={},run={},now=Date.now()
     &&retry.eligible(progress.retryByUrl?.[r.detailUrl]||progress.knownUrlRetries?.[r.detailUrl],now)).map(r=>r.cardId));
   return {due:ids.size>0,reason:ids.size?'既存の重要商品を通常巡回と共有して再確認':'重要商品の再確認期限内',targets:ids.size};
 }
-module.exports={prepare,due,checkpoint,prioritize,legacyTargets,priorityMaintenance};
+function maintenanceBudget(settings,runtimeMs=90000){
+ const interval=Math.max(1,Number(settings.intervalMs)||1100),configured=Math.max(1,Number(settings.batchSize)||1);
+ return {batchSize:Math.min(configured,35,Math.max(1,Math.floor(runtimeMs/(interval+1000)))),runtimeMs,intervalMs:interval};
+}
+module.exports={maintenanceBudget,prepare,due,checkpoint,prioritize,legacyTargets,priorityMaintenance};

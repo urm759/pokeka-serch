@@ -14,6 +14,9 @@ require('./stock_history_statistics').reconcile(ROOT);
 require('./build_raw_condition_reference').build(ROOT);
 require('./build_psa9_provenance').build(ROOT);
 require('./build_psa9_provenance').verify(ROOT);
+// Rebuild only when a saved reconciliation made an old pending row obsolete.
+const linkagePending=read('work/psa-linkage-all.json'), linkedPopulation=read('data/psa-population-summary.json').cards||{};
+if(require('./build_psa_linkage_queue').needsRebuild(linkagePending,linkedPopulation,read('data/pokemon-cards.json').length))require('./build_psa_linkage_queue').build(ROOT);
 require('./build_linkage_evidence_audit').build(ROOT);
 require('./build_high_rarity_readiness').build(ROOT);
 const popCoverage=require('./build_psa_pop_glance').build(ROOT);

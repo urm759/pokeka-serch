@@ -106,6 +106,11 @@ function prospectPlan(card,fields,{shops={},linkage={},psaProgress={},psaAccess=
         reason:'保存済みの取得元価格が欠損・有効値なし',
         nextAction:'通常一括差分で有効価格の提供開始を検知。店舗の購入価格取得は別工程で継続し、参考相場へ黙って置換しない',
         resumeCondition:'同一仕様の有効価格が正規原票へ提供されること、または分析定義を満たす正規の別経路確立'});
+    }else if(field==='psa10Price' && Object.hasOwn(card,'snkPsa10Price') && !(typeof card.snkPsa10Price==='number' && Number.isFinite(card.snkPsa10Price) && card.snkPsa10Price>0)){
+      requirements.push({field,source:'toreca',state:'source-price-missing',automatic:false,networkRequired:false,normalBulkRecheck:true,
+        reason:'最新の正規原票でPSA10集計価格が明示的に欠損。最低出品価格は代用しない',
+        nextAction:'通常一括差分で集計価格の提供開始を検知。個別の同じページ再取得はせず正規代替経路を確認',
+        resumeCondition:'同一仕様のPSA10集計/実成約価格が根拠付きで提供されること'});
     }else if(['domesticPrice','psa10Price','psa9Evidence','psa9Aggregate'].includes(field)){
       requirements.push({field,source:'toreca',state:'bulk-delta-acquisition',automatic:true,nextAction:'正規一括差分更新',resumeCondition:'正常な外部応答'});
     }else requirements.push({field,source:'manual',state:'unimplemented-or-review',automatic:false,nextAction:'既存残件台帳の担当経路を確認',resumeCondition:'取得経路・仕様根拠の確定'});
