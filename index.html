@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20261101-buyback-mean" />
+  <link rel="stylesheet" href="./styles.css?v=20261101-guide80-stock" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -681,7 +681,7 @@
           <button id="roiFocusButton" type="button">利益率中心（最低利益額だけ0円）</button>
           <p>利益額の条件だけを0円に変更します。期待利益の計算値は変更しません。最低期待利益率・年換算効率・資金・品質・供給・返却期間の安全条件は維持します。期待利益率の分母は仕入れ値＋鑑定費です。販売手数料・減額・送料等は売却手取りへ反映します。</p>
           <strong id="profitHurdleStatus"></strong>
-          迷った場合は初期値のままで使えます。PSA10率は公式値を優先し、未取得時だけ70%／50%設定を使います。PSA9は実価格を優先し、未取得時は平均美品の75%で計算します。使用可能資金は「総資金－ロック中資金－鑑定費予備資金」です。買取店の減額率は買取出口だけに使い、フリマ販売手数料は加算しません。
+          迷った場合は初期値のままで使えます。PSA10率は公式値を優先し、未取得時だけ選択中の80%（自己実績約80%・利用者申告値）／固定50%を代用し、公式率と区別します。旧70%設定は80%へ移行します。PSA9は実価格を優先し、未取得時は平均美品の75%で計算します。使用可能資金は「総資金－ロック中資金－鑑定費予備資金」です。買取店の減額率は買取出口だけに使い、フリマ販売手数料は加算しません。
           <strong id="capitalAvailabilityStatus"></strong>
           <strong id="gradingReserveStatus"></strong>
         </div>
@@ -751,7 +751,7 @@
         <div>
           <div class="eyebrow">店舗査定用 / 仕入れ早見表</div>
           <h2 id="buyGuideTitle">PSA10率ごとのおすすめ仕入れ価格</h2>
-          <p>ここを開くと、70%基準と50%基準の仕入れ目安を切り替えて見られます。</p>
+          <p>自己実績約80%（利用者申告）と固定50%の参考ガイド。カード別の計算は公式率を優先します。</p>
         </div>
         <div class="guide-summary-meta">
           <span>折りたたみ可</span>
@@ -768,7 +768,7 @@
             </p>
           </div>
           <div class="guide-switch" role="tablist" aria-label="PSA10率の切り替え">
-            <button id="guide70Btn" class="guide-pill active" type="button" data-guide-mode="70">10率70%基準</button>
+            <button id="guide80Btn" class="guide-pill active" type="button" data-guide-mode="80">自己実績約80%・利用者申告値</button>
             <button id="guide50Btn" class="guide-pill" type="button" data-guide-mode="50">10率50%基準</button>
           </div>
         </div>
@@ -776,7 +776,7 @@
         <div class="guide-keys" aria-label="仕入れ早見表の条件">
           <div class="guide-key">
             <span>PSA10率</span>
-            <strong id="guideHitRateStat">70%</strong>
+            <strong id="guideHitRateStat">80%</strong>
           </div>
           <div class="guide-key">
             <span>PSA9換金率</span>
@@ -927,7 +927,7 @@
     </section>
   </main>
 
-  <script src="./decision-model.js?v=20261101-buyback-mean" integrity="sha384-e5j7b7ktHO01H9EpT2JS1IFgum9+hl/A4AlNCyCM1rHURvACamJoBay9poAXlvFh"></script>
+  <script src="./decision-model.js?v=20261101-guide80-stock" integrity="sha384-lgZOfgajBehnKTXSVt8sUbJhEWLkGby4SQvR0KXX3ODA36qiTAw2qvIO0ltCDz+s"></script>
   <script src="./price-integrity.js?v=20261018-observation75-v1"></script>
   <script src="./grade-calibration.js?v=20260924-v1"></script>
   <script src="./search-index-model.js?v=20261015-trade-demand-v2"></script>
@@ -935,24 +935,24 @@
   <script src="./market-analysis.js?v=20260913-supply-absorption-v3"></script>
   <script src="./snkr-raw-flip-model.js?v=20260920-raw-flip-v1"></script>
   <script src="./raw-psa9-gap-model.js?v=20260929-trial-v2"></script>
-  <script src="./purchase-ratio-model.js?v=20261101-buyback-mean" integrity="sha384-0FeDy3+gTHuKK/mU4VbWxXHUugobUQOS3EesJgTQ6EX+Bm7W9QD8ByUwDBUu8cjW"></script>
+  <script src="./purchase-ratio-model.js?v=20261101-guide80-stock" integrity="sha384-0FeDy3+gTHuKK/mU4VbWxXHUugobUQOS3EesJgTQ6EX+Bm7W9QD8ByUwDBUu8cjW"></script>
   <script src="./candidate-visibility.js?v=20260927-v1"></script>
   <script src="./catalog-index-adapter.js?v=20260927-v1"></script>
-  <script src="./limit-display-model.js?v=20261101-buyback-mean" integrity="sha384-8Dj6kDpEE3qaB2GDuQxLasEtKnLuSX6XyReYUMyFlxwX5pxAKUg2ywbaygvn2vJ6"></script>
+  <script src="./limit-display-model.js?v=20261101-guide80-stock" integrity="sha384-8Dj6kDpEE3qaB2GDuQxLasEtKnLuSX6XyReYUMyFlxwX5pxAKUg2ywbaygvn2vJ6"></script>
   <script src="./return-horizon-model.js?v=20261004-reference-v1"></script>
   <script src="./price-reference-model.js?v=20261004-reference-v1"></script>
   <script src="./purchase-memo-model.js?v=20261004-reference-v1"></script>
   <script src="./release-year-filter.js?v=20261003-priority-v2"></script>
   <script src="./update-health-model.js?v=20261023-verified-partial-publication"></script>
   <script src="./update-health-banner.js?v=20261011-search-first-v1"></script>
-  <script src="./current-market-model.js?v=20261101-buyback-mean" integrity="sha384-fcfFd/0u1lI96582Y8Isew5AGSRA/NDHV2jQrVBJytLfb8ikDayeTIAz/R/jBRWF"></script>
+  <script src="./current-market-model.js?v=20261101-guide80-stock" integrity="sha384-fcfFd/0u1lI96582Y8Isew5AGSRA/NDHV2jQrVBJytLfb8ikDayeTIAz/R/jBRWF"></script>
   <script src="./ui-data-codec.js?v=20261027-psa9-guide-v1"></script>
   <script src="./psa-plan-model.js?v=20261029-observed-evidence"></script>
   <script src="./keyed-card-renderer.js?v=20261010-v1"></script>
   <a class="return-to-filters" href="#searchConditions">検索条件へ</a>
-  <script src="./exploration-metrics.js?v=20261101-buyback-mean" integrity="sha384-tme4ggH7Fk7QAU8Yw1N3i7mvL4giFkSXlmLQ8lzryboiMOgN+TP1TzPe8Q9wHJoN"></script>
-  <script src="./search-controls.js?v=20261101-buyback-mean" integrity="sha384-v9rhJSyepwekmpsKO+EciJeGnbLA6IWs0SnnRD6eZqlu4PRy5rOnwJ0PodrpDEow"></script>
+  <script src="./exploration-metrics.js?v=20261101-guide80-stock" integrity="sha384-EK9/Y1vd0YBZeAxU52KqZFpcxVihCo0qj1hC9uBFnx2+OOpVbGvdw1wEhR4oJBbt"></script>
+  <script src="./search-controls.js?v=20261101-guide80-stock" integrity="sha384-v9rhJSyepwekmpsKO+EciJeGnbLA6IWs0SnnRD6eZqlu4PRy5rOnwJ0PodrpDEow"></script>
   <script src="./settings-disclosure.js?v=20261011-disclosure-v1"></script>
-  <script src="./app.js?v=20261101-buyback-mean" integrity="sha384-/eMSOBFrvbMM7rW1VYkBhjdwtj0Tw4feOH0LLDWiFoV4NyL8UVjHxQsKjUGBk0OF"></script>
+  <script src="./app.js?v=20261101-guide80-stock" integrity="sha384-UmlOKUa46QWlz2HsT+LRWg6BOYr0BV3dRz8wUJQp2It+QJl8/BvGKAnBXEutb6DF"></script>
 </body>
 </html>

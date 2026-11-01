@@ -163,7 +163,8 @@ function parseYuyuteiResults(html) {
       const cardNo = (block.match(/\)(\d{1,4}\s*\/\s*\d{1,4})/) || [])[1];
       const title = (block.match(/####\s*\[([^\]]+)\]\(/) || [])[1];
       const price = Number(((block.match(/\*\*([0-9,]+)\s*円\*\*/) || [])[1] || "").replace(/,/g, ""));
-      const stock = Number(((block.match(/在庫\s*:\s*([0-9,]+)\s*点/) || [])[1] || "").replace(/,/g, ""));
+      const stockText=(block.match(/在庫\s*:\s*([0-9,]+)\s*点/) || [])[1];
+      const stock = stockText==null?null:Number(stockText.replace(/,/g, ""));
       if (cardNo && title && Number.isFinite(price) && Number.isFinite(stock)) rows.push({ detailUrl: match[1], setCode: match[2], cardNo, title, price, stock });
     }
     return rows;
@@ -183,7 +184,7 @@ function parseYuyuteiResults(html) {
     const stockText = (block.match(/在庫\s*:\s*([0-9,]+)\s*点/) || [])[1];
     const parts = String(url || "").match(/\/card\/([^/]+)\//);
     const price = Number(String(priceText || "").replace(/,/g, ""));
-    const stock = Number(String(stockText || "").replace(/,/g, ""));
+    const stock = stockText==null ? null : Number(String(stockText).replace(/,/g, ""));
     if (title && cardNo && Number.isFinite(price)) cards.push({ title, cardNo, setCode: parts?.[1] || "", detailUrl: url, price, stock: Number.isFinite(stock) ? stock : null });
   }
   return cards;
@@ -437,7 +438,7 @@ async function updateYuyutei(cards, paths) {
     return counts;
   }, {});
   const index = appendDate(history, jstDate());
-  const stocks = catalog.filter((entry) => Number.isFinite(entry.stock));
+  const stocks = catalog.filter((entry) => Number.isFinite(entry.stock) && typeof entry.observedAt==='string' && entry.observedAt.includes('T') && Number.isFinite(Date.parse(entry.observedAt)) && require('./stock_history_statistics').dayOf(entry.observedAt)===jstDate());
   for (const entry of stocks) setStock(history, entry.cardId, index, entry.stock);
   const summary = historySummary(cards, catalog, history, "yuyuteiPrice");
   progress.lastRun = {

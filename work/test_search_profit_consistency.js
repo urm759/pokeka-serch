@@ -2,14 +2,14 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
 const source=fs.readFileSync(path.join(__dirname,'../app.js'),'utf8');
 const elements=new Map();
 const context=vm.createContext({window:{location:{href:'https://example.test/'},PurchaseDecisionModel:require('../decision-model'),
-  ExplorationMetrics:require('../exploration-metrics'),LimitDisplayModel:require('../limit-display-model'),
+  ExplorationMetrics:require('../exploration-metrics'),LimitDisplayModel:require('../limit-display-model'),CurrentMarketModel:require('../current-market-model'),
   ReleaseYearFilter:require('../release-year-filter'),CandidateVisibility:require('../candidate-visibility'),PurchaseRatioModel:require('../purchase-ratio-model')},
   document:{getElementById:id=>{if(!elements.has(id))elements.set(id,{value:'',checked:false});return elements.get(id)},querySelectorAll:()=>[]},
   URL,URLSearchParams,console,setTimeout,clearTimeout,localStorage:{getItem:()=>null,setItem:()=>{}}});
 vm.runInContext(source.split('// Browser event bindings start here;')[0]+`\ncurrentMarketView=card=>card.testView||{eligible:false};
   globalThis.api={state,searchProfitView,searchProfitPanel,purchaseBelowCurrentCapReason,sorters,readUrl,buildShareUrl,saveQuickFilters};`,context);
 const {state:s,searchProfitView:view,sorters}=context.api;
-Object.assign(s,{fee:10980,saleFeeRate:8,saleExtraCost:0,profitSearchBasis:'limit',purchaseMode:'combined'});
+Object.assign(s,{fee:10980,saleFeeRate:8,saleExtraCost:0,profitSearchBasis:'limit',efficiencyBuy:'auto',purchaseMode:'combined'});
 const card={price:19000,psa10:33000,psa10Net:30360,buyLimits:{clean:{finalMaxPrice:9000,exitPolicy:{adoptedPolicy:'marketplace'},economicsScenarios:{}}}};
 let v=view(card);assert(Math.abs(v.psa10Roi-51.951951951951955)<1e-8);assert.equal(v.purchasePrice,9000);assert.equal(v.psa10Profit,10380);
 s.profitSearchBasis='current';v=view(card);assert(Math.abs(v.psa10Roi-1.267511674449633)<1e-8);assert.equal(v.psa10Profit,380);

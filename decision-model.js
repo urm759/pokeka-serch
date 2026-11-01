@@ -496,7 +496,7 @@
     const officialRate = Number(input.officialRate);
     const hasOfficialRate = input.officialRate != null && input.officialRate !== ""
       && Number.isFinite(officialRate) && officialRate >= 0;
-    const baseRate = hasOfficialRate ? officialRate / 100 : Number(input.fallbackRate || 0.7);
+    const baseRate = hasOfficialRate ? officialRate / 100 : Number(input.fallbackRate || 0.8);
     const actualPsa9 = Number(input.psa9Price);
     const fallbackLowerGrade = Number(input.fallbackLowerGradePrice || 0);
     const lowerGradeBase = actualPsa9 > 0
