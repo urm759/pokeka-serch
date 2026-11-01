@@ -1,0 +1,142 @@
+{
+  "previousPasses": [
+    {
+      "at": "2026-11-01T07:52:02.393Z",
+      "results": [
+        {
+          "runId": 41249165942,
+          "added": {
+            "cardrush": 0,
+            "hareruya2": 0,
+            "yuyutei": 0,
+            "torecacamp": 0
+          },
+          "newRequests": 0,
+          "newObservationDates": 0,
+          "pipeline": "daily",
+          "sourceCommits": {
+            "data/cardrush-stock-summary.json": "abdab6316e15bfabcc91f6d1b2145770543fe62b",
+            "data/hareruya2-stock-summary.json": "d163560acb0872b1337aaf2bce560b031543a267",
+            "data/yuyutei-stock-summary.json": "1da3e6164ab54e7d5b3a90cf0d98100379041819",
+            "data/torecacamp-stock-summary.json": "d163560acb0872b1337aaf2bce560b031543a267"
+          }
+        },
+        {
+          "runId": 41238618182,
+          "added": {
+            "cardrush": 0,
+            "hareruya2": 0,
+            "yuyutei": 0,
+            "torecacamp": 538
+          },
+          "newRequests": 0,
+          "newObservationDates": 0,
+          "pipeline": "safe",
+          "sourceCommits": {
+            "data/cardrush-stock-summary.json": "abdab6316e15bfabcc91f6d1b2145770543fe62b",
+            "data/hareruya2-stock-summary.json": "5a53743a11d0100b9d7ebe834a50eedb5ca3c22f",
+            "data/yuyutei-stock-summary.json": "1da3e6164ab54e7d5b3a90cf0d98100379041819",
+            "data/torecacamp-stock-summary.json": "d163560acb0872b1337aaf2bce560b031543a267"
+          }
+        },
+        {
+          "runId": 41261229111,
+          "added": {
+            "cardrush": 0,
+            "hareruya2": 0,
+            "yuyutei": 0,
+            "torecacamp": 13
+          },
+          "newRequests": 0,
+          "newObservationDates": 0,
+          "pipeline": "catchup",
+          "sourceCommits": {
+            "data/cardrush-stock-summary.json": "abdab6316e15bfabcc91f6d1b2145770543fe62b",
+            "data/hareruya2-stock-summary.json": "1da3e6164ab54e7d5b3a90cf0d98100379041819",
+            "data/yuyutei-stock-summary.json": "1da3e6164ab54e7d5b3a90cf0d98100379041819",
+            "data/torecacamp-stock-summary.json": "1da3e6164ab54e7d5b3a90cf0d98100379041819"
+          }
+        }
+      ]
+    }
+  ],
+  "at": "2026-11-01T08:07:22.389Z",
+  "scope": "Existing publication-confirmed runs, matching receipt source hashes and original in-run observation times only",
+  "newHttpRequests": 0,
+  "newConfirmations": 0,
+  "results": [
+    {
+      "runId": 41249165942,
+      "added": {
+        "cardrush": 0,
+        "hareruya2": 0,
+        "yuyutei": 0,
+        "torecacamp": 0
+      },
+      "newRequests": 0,
+      "newObservationDates": 0,
+      "pipeline": "daily",
+      "sourceCommits": {
+        "data/cardrush-stock-summary.json": "abdab6316e15bfabcc91f6d1b2145770543fe62b",
+        "data/hareruya2-stock-summary.json": "d163560acb0872b1337aaf2bce560b031543a267",
+        "data/yuyutei-stock-summary.json": "1da3e6164ab54e7d5b3a90cf0d98100379041819",
+        "data/torecacamp-stock-summary.json": "d163560acb0872b1337aaf2bce560b031543a267"
+      }
+    },
+    {
+      "runId": 41238618182,
+      "added": {
+        "cardrush": 0,
+        "hareruya2": 0,
+        "yuyutei": 0,
+        "torecacamp": 0
+      },
+      "newRequests": 0,
+      "newObservationDates": 0,
+      "pipeline": "safe",
+      "sourceCommits": {
+        "data/cardrush-stock-summary.json": "abdab6316e15bfabcc91f6d1b2145770543fe62b",
+        "data/hareruya2-stock-summary.json": "5a53743a11d0100b9d7ebe834a50eedb5ca3c22f",
+        "data/yuyutei-stock-summary.json": "1da3e6164ab54e7d5b3a90cf0d98100379041819",
+        "data/torecacamp-stock-summary.json": "d163560acb0872b1337aaf2bce560b031543a267"
+      }
+    },
+    {
+      "runId": 41280574561,
+      "added": {
+        "cardrush": 0,
+        "hareruya2": 3,
+        "yuyutei": 0,
+        "torecacamp": 13
+      },
+      "newRequests": 0,
+      "newObservationDates": 0,
+      "pipeline": "priority",
+      "sourceCommits": {
+        "data/cardrush-stock-summary.json": "abdab6316e15bfabcc91f6d1b2145770543fe62b",
+        "data/hareruya2-stock-summary.json": "abdab6316e15bfabcc91f6d1b2145770543fe62b",
+        "data/yuyutei-stock-summary.json": "abdab6316e15bfabcc91f6d1b2145770543fe62b",
+        "data/torecacamp-stock-summary.json": "abdab6316e15bfabcc91f6d1b2145770543fe62b"
+      }
+    },
+    {
+      "runId": 41261229111,
+      "added": {
+        "cardrush": 0,
+        "hareruya2": 0,
+        "yuyutei": 0,
+        "torecacamp": 0
+      },
+      "newRequests": 0,
+      "newObservationDates": 0,
+      "pipeline": "catchup",
+      "sourceCommits": {
+        "data/cardrush-stock-summary.json": "abdab6316e15bfabcc91f6d1b2145770543fe62b",
+        "data/hareruya2-stock-summary.json": "1da3e6164ab54e7d5b3a90cf0d98100379041819",
+        "data/yuyutei-stock-summary.json": "1da3e6164ab54e7d5b3a90cf0d98100379041819",
+        "data/torecacamp-stock-summary.json": "1da3e6164ab54e7d5b3a90cf0d98100379041819"
+      }
+    }
+  ],
+  "missingSourceHashes": []
+}

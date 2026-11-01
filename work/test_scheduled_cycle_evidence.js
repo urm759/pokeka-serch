@@ -24,7 +24,7 @@ const put=(file,value)=>fs.writeFileSync(path.join(temp,file),JSON.stringify(val
 put('data/pokemon-cards.json',[{id:'fixture'}]);
 put('data/card-catalog-completion.json',{cards:{fixture:{s:'データ不足',i:{}}}});
 put('data/completion-outcomes.json',{counts:{analyzable:0},previousObservation:{newlyAnalyzable:999}});
-put('data/acquisition-progress-audit.json',{sources:{}});
+put('data/acquisition-progress-audit.json',{sources:{fixture:{newLinked:2,usableNet:1}}});
 put('data/priority-price-monitor.json',{fixedCohortFreshness:{sources:{shop:{latest:{cohort:192,fresh6h:114}}}}});
 const saved=process.env.GITHUB_RUN_ID;
 process.env.GITHUB_RUN_ID='test-only';
@@ -41,5 +41,8 @@ try{
   assert.equal(result.pipelines.safe.outcomes.fixedCohortFreshness.before.sources.shop.latest.fresh6h,114);
   assert.equal(result.pipelines.safe.outcomes.fixedCohortFreshness.after.sources.shop.latest.fresh6h,124);
   assert(result.pipelines.safe.hashes['data/priority-price-monitor.json']);
+  assert.equal(result.pipelines.safe.outcomes.counts.analyzable,1);
+  assert.equal(result.pipelines.safe.outcomes.sources.fixture.newLinked,2);
+  assert(result.pipelines.safe.hashes['data/pokemon-cards.json']);
 }finally{if(saved===undefined)delete process.env.GITHUB_RUN_ID;else process.env.GITHUB_RUN_ID=saved;}
 console.log('PASS: repeated summary generation cannot erase per-run completion gains');

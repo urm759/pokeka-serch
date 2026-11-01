@@ -62,4 +62,7 @@ assert.equal(postpass.due(almostDue,false,now,2*3600000),false,'normal sweep fre
 assert.equal(postpass.priorityMaintenance([almostDue],['wanted'],{}, {},now,2*3600000).due,true);
 assert(postpass.prioritize([],0,[almostDue],['wanted'],4,{},now,2*3600000).some(r=>r.priorityRefresh),'proactive plan must also reach the real acquisition selector');
 const campParser=require('./update_yuyutei_torecacamp');assert(campParser.campA({title:'状態A'}));assert(!campParser.campA({title:'状態A−'}));assert(!campParser.campA({title:'状態A-'}));
+assert.deepEqual(postpass.maintenanceBudget({batchSize:35,intervalMs:1100}),{batchSize:35,runtimeMs:90000,intervalMs:1100});
+assert.equal(postpass.maintenanceBudget({batchSize:18,intervalMs:2200}).batchSize,18,'source backoff keeps its smaller configured batch');
+assert.equal(postpass.maintenanceBudget({batchSize:35,intervalMs:10000}).batchSize,8,'runtime budget limits slower sources');
 assert(sourceText.includes('Number(options.intervalMs ?? 1100), Number(process.env.SHOP_ACCESS_INTERVAL_MS ?? 1100)'),'caller must not shorten a source backoff interval');

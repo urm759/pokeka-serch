@@ -100,6 +100,16 @@ function candidateVariant(row) {
   return "base";
 }
 function suspicious(value) { return /missing texture|error|no rarity|misprint|stamp|mirror|reverse|1st edition|unlimited/i.test(String(value || "")); }
+function populationLanguageCompatible(card,row) {
+  const japaneseCard=(card.language==null||card.language==='ja')&&require('./card_identity').canonicalIdentity(card).language==='ja';
+  return !/pokemon-japanese/i.test(row?.url||'')||japaneseCard;
+}
+function quarantineLanguageHistory(store,id,at=new Date().toISOString()) {
+  const history=store.cards?.[id];if(!Array.isArray(history)||!history.length)return false;
+  store.quarantined||={};store.quarantined[id]||=[];
+  store.quarantined[id].push({at,reason:'card-language-vs-Japanese-POP',previousIdentity:store.identities?.[id]||null,previousSource:store.sources?.[id]||null,points:history});
+  store.cards[id]=[];if(store.previousConfirmations)delete store.previousConfirmations[id];return true;
+}
 function variantsCompatible(cardName,englishName,row) {
   const wanted=variantOf(`${englishName || ''} ${cardName || ''}`);
   return wanted!=="unresolved-error" && candidateVariant(row)===wanted;
@@ -109,7 +119,8 @@ function namesCompatible(englishName, row) {
     'full','art','secret','special','ultra','rare','double','holo','foil','reverse','master','poke','ball',
     'mirror','normal','style','version','specification','trainer','promo','1st','edition','first','unlimited','hyper','illustration']);
   const identity = value => [...tokens(String(value || '').split('|')[0]
-    .replace(/&#x27;|&#39;|&apos;|[’‘]/gi,"'").replace(/'s\b/gi,'')
+    .replace(/&#x27;|&#39;|&apos;|[’‘]/gi,"'")
+    .replace(/([a-z])([A-Z][a-z])/g,'$1 $2').replace(/'s(?=[A-Z])/g,"'s ").replace(/'s\b/gi,'')
     // Ultra Ball is the card's name, not an Ultra Rare / Ball finish qualifier.
     .replace(/\bultra\s+ball\b/gi,'UltraBall'))].filter(token=>!qualifiers.has(token)).sort().join('|');
   const aliases=require('./psa-name-aliases.json').aliases;
@@ -412,6 +423,11 @@ function main() {
     }
     // A unique number or a similar name cannot establish a mirror/edition identity.
     const expectedVariant=variantOf(`${englishName} ${card.name || ''}`);
+    if(!populationLanguageCompatible(card,selected)){
+      quarantineLanguageHistory(shards[shardFor(card.id)],card.id);
+      variantReview.push({id:card.id,name:card.name,sourceName:selected.name,sourceUrl:selected.url,observedAt:selected.fetchedAt,reason:'カード言語と日本語POPが不一致・原履歴保持・採用保留'});
+      continue;
+    }
     if (!namesCompatible(englishName,selected) || !variantsCompatible(card.name,englishName,selected) || /pokemon-asia/i.test(selected.url)) {
       variantReview.push({id:card.id,name:card.name,expectedVariant,candidateVariant:candidateVariant(selected),
         sourceName:selected.name,sourceUrl:selected.url,observedAt:selected.fetchedAt,reason:/pokemon-asia/i.test(selected.url)?'日本語版の根拠不足・POP採用保留':!namesCompatible(englishName,selected)?'名称不一致または英語名未確認・POP採用保留':'仕様不一致・POP採用保留'});
@@ -440,4 +456,4 @@ function main() {
 }
 
 if (require.main === module) main();
-module.exports = { cardIdentity, compactRows, cleanName, shortSet, normalizeNo, variantsCompatible, namesCompatible, authoritativeRows, reconcileHistory, dayKey, observationTime, appendObservation, windowChange, compactWindow, previousConfirmation, rememberPreviousConfirmation, japaneseTitle, savedNameIndex, resolvedEnglishName, reconciliationFingerprint, savedRematchProof };
+module.exports = { quarantineLanguageHistory, populationLanguageCompatible, cardIdentity, compactRows, cleanName, shortSet, normalizeNo, variantsCompatible, namesCompatible, authoritativeRows, reconcileHistory, dayKey, observationTime, appendObservation, windowChange, compactWindow, previousConfirmation, rememberPreviousConfirmation, japaneseTitle, savedNameIndex, resolvedEnglishName, reconciliationFingerprint, savedRematchProof };

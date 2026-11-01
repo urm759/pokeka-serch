@@ -1,0 +1,87 @@
+{
+  "at": "2026-11-01T08:06:59.152Z",
+  "checks": [
+    {
+      "name": "test_confirmation_observations",
+      "status": "pass",
+      "ms": 62
+    },
+    {
+      "name": "test_psa_saved_rematch",
+      "status": "pass",
+      "ms": 107
+    },
+    {
+      "name": "test_saved_psa_summary",
+      "status": "pass",
+      "ms": 150
+    },
+    {
+      "name": "test_psa_linkage_queue",
+      "status": "pass",
+      "ms": 80
+    },
+    {
+      "name": "test_profile_completion_routes",
+      "status": "pass",
+      "ms": 100
+    },
+    {
+      "name": "test_profile_departure_audit",
+      "status": "pass",
+      "ms": 124
+    },
+    {
+      "name": "test_postpass_cadence",
+      "status": "pass",
+      "ms": 83
+    },
+    {
+      "name": "test_coverage_capacity_filters",
+      "status": "pass",
+      "ms": 716
+    },
+    {
+      "name": "test_scheduled_cycle_evidence",
+      "status": "pass",
+      "ms": 118
+    },
+    {
+      "name": "test_gemrate_reference_refresh",
+      "status": "pass",
+      "ms": 290
+    },
+    {
+      "name": "test_gemrate_private_inbox",
+      "status": "pass",
+      "ms": 103
+    },
+    {
+      "name": "test_gemrate_limited_public_reference",
+      "status": "pass",
+      "ms": 86
+    },
+    {
+      "name": "test_official_catalog_supplements",
+      "status": "pass",
+      "ms": 72
+    },
+    {
+      "name": "test_partial_buyback_refresh",
+      "status": "pass",
+      "ms": 105
+    }
+  ],
+  "previousFailures": [
+    {
+      "phase": "local finalization",
+      "error": "UNKNOWN writing hareruya2_catalog.json",
+      "recovery": "verified unchanged original hash; retried save/aggregate with workspace authorization, no merchant refetch"
+    },
+    {
+      "phase": "offline PSA rematch",
+      "issue": "Indonesian printing matched Japanese Birthday Pikachu population before publication",
+      "recovery": "explicit language gate across all cards; wrong active history moved to quarantine, source originals and times retained"
+    }
+  ]
+}

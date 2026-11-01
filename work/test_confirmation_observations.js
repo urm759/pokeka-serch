@@ -1,0 +1,10 @@
+const assert=require('assert/strict'),m=require('./confirmation_observations');const at='2026-11-01T06:00:00Z',after='2026-11-01T07:00:00Z';
+const summary={cards:{normal:{price:1000,observedAt:'2026-11-01T06:30:00Z'},old:{price:1000,observedAt:'2026-10-31T06:30:00Z'},unknown:{price:1000,observedAt:'2026-11-01'},held:{price:1000,observedAt:'2026-11-01T06:30:00Z',identityVerified:false},zero:{price:0,observedAt:'2026-11-01T06:30:00Z'}}};
+const collected=m.collect({torecacamp:summary},{from:at,to:after});assert.equal(collected.observations.torecacamp.length,1);assert.equal(collected.scope.sources.hareruya2.confirmed,null);assert.equal(collected.scope.sources.torecacamp.confirmed,1);assert.equal(m.collect({torecacamp:summary},{to:after}).scope.sources.torecacamp.confirmed,null);
+assert.equal(m.merge(collected.observations.torecacamp,collected.observations.torecacamp).length,1);
+const text=JSON.stringify(summary),receipt={runId:1,recordedAt:after,hashes:{'data/torecacamp-stock-summary.json':m.digest(text)}},proof={confirmed:true,runId:1,startedAt:at},h={runs:[{runId:1,observations:{}}]};
+assert.equal(m.recoverVerified(h,receipt,proof,{'data/torecacamp-stock-summary.json':text}).added.torecacamp,1);assert.equal(m.recoverVerified(h,receipt,proof,{'data/torecacamp-stock-summary.json':text}).added.torecacamp,0);assert.throws(()=>m.recoverVerified(h,receipt,proof,{'data/torecacamp-stock-summary.json':'{}'}),/hash mismatch/);assert.throws(()=>m.recoverVerified(h,receipt,{...proof,confirmed:false},{}),/proof/);
+const b=require('./camp_postpass').maintenanceBudget;assert.equal(b({batchSize:35,intervalMs:1100}).batchSize,35);assert.equal(b({batchSize:18,intervalMs:2200}).batchSize,18);assert(b({batchSize:9999,intervalMs:1100}).batchSize<=35);assert.equal(b({batchSize:35,intervalMs:1100}).runtimeMs,90000);
+console.log('PASS all-card in-run observation recovery, exact public hash gate, no duplicated/fabricated time, unmeasured null and bounded Camp allocation');
+
+assert.equal(m.collect({torecacamp:{}},{from:at,to:after}).scope.sources.torecacamp.confirmed,null,'missing original is not a measured0');

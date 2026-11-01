@@ -70,3 +70,6 @@ assert(!require('./priority_price_queue').load('hareruya2',root).queue.some(r=>r
 for(const file of ['daily-fast-update.yml','priority-price-refresh.yml','safe-checkpoint-backfill.yml','refresh-all-site-data.yml','update-pokemon-site.yml','watch-data-health.yml','backfill-data.yml'])
   assert(fs.readFileSync(path.join(__dirname,'../.github/workflows',file),'utf8').includes('node work/test_profile_departure_audit.js'));
 console.log('PASS departure roots vs derivatives, temporal expiry, source failures, stock, field routing, settings/code, overlap and shared review holds');
+
+const versionOnly=inspect(before,{...before,exclusions:['利益条件']},{before:meta,after:{...meta,codeHash:'presentation-edit'}});assert(versionOnly.codeChanged);assert(!versionOnly.roots.some(r=>r.code==='calculation-or-aggregation-changed'));assert.equal(versionOnly.versionChanges.length,1);
+const provided=inspect({...before,psa9:{price:16490,ratio:72.7}},{...before,psa9:{price:18000,ratio:66.7},exclusions:['国内PSA9比率']},context);assert(provided.roots.some(r=>r.code==='psa9-provided-price-changed'));assert.equal(provided.changedPrices[0].before,16490);

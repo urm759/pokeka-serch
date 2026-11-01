@@ -1,0 +1,2568 @@
+{
+  "at": "2026-11-01T06:32:25.530Z",
+  "refs": [
+    "e13863dc690fb08042e20deeaca180894ca82017",
+    "8a2fe5912c50d27bdc698908a9c6c0c24356f35f"
+  ],
+  "scope": "Supplementary finances only. Candidate IDs/rank use full-population replay separately.",
+  "profiles": [
+    {
+      "id": "V-reference",
+      "before": {
+        "pk-67343": {
+          "buy": 60400,
+          "psa10Net": 95396,
+          "psa10Profit": 28016,
+          "psa10Roi": 41.5791035915702,
+          "expectedProfit": 18531,
+          "expectedRoi": 27.502226179875333,
+          "exit": "買取店（両出口の保守側）",
+          "fee": 6980,
+          "lockDays": 175,
+          "sellFee": 8,
+          "deduction": 5,
+          "efficiency": {
+            "investment": 67380,
+            "profit": 18531,
+            "roi": 27.502226179875333,
+            "days": 185,
+            "annual": 54.26114894948376,
+            "purchasePrice": 60400,
+            "basis": "参考買値・素体参考相場・中央値（購入保証なし）",
+            "scenario": "現在出口相場が続く仮定",
+            "exitLabel": "買取店（両出口の保守側）",
+            "reason": null,
+            "warnings": [
+              "参考値・素体価格の採用元・観測充足不足",
+              "PSA9は集計値・個別実成約未取得",
+              "公式Populationの確認日が古い・未取得",
+              "非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価"
+            ],
+            "capBasis": false,
+            "referenceOnly": true,
+            "medianEvidence": null,
+            "referenceEvidence": {
+              "value": 60400,
+              "kind": "median",
+              "label": "素体参考相場・中央値",
+              "candidates": [
+                {
+                  "kind": "store",
+                  "label": "現在買える状態A価格",
+                  "value": 61000,
+                  "reason": null
+                },
+                {
+                  "kind": "guide",
+                  "label": "利益確保の仕入れ目安・現相場基準",
+                  "value": 71000,
+                  "reason": "仕入れ目安算出不可"
+                },
+                {
+                  "kind": "median",
+                  "label": "素体参考相場・中央値",
+                  "value": 60400,
+                  "reason": ""
+                }
+              ],
+              "reasons": [],
+              "warnings": [
+                "古値・参考価格・仕様保留等3元を参考中央値から除外・原価格と日時は履歴保持",
+                "中央値で実際に購入できるとは限らない・購入GOとは別"
+              ],
+              "expiresAt": 1793651088335,
+              "reference": true,
+              "availability": "在庫あり・実店舗採算は別"
+            },
+            "calculationState": "reference",
+            "blockingReasons": [],
+            "referenceReasons": [
+              "素体価格の採用元・観測充足不足"
+            ],
+            "observation": null
+          },
+          "buybackCurrent": {
+            "key": "current",
+            "label": "現在PSA10相場",
+            "psa10Price": 115000,
+            "priceRatio": 1,
+            "grossPrice": 100417,
+            "deductionRate": 5,
+            "deductionAmount": 5021,
+            "travelCost": 0,
+            "netPsa10": 95396,
+            "lowerGradeNet": 48668,
+            "hitRate": 0.7970282992117054,
+            "expectedSale": 85911,
+            "breakEvenMaxPrice": 78500,
+            "targetMaxPrice": 65000,
+            "targetProfit": 0,
+            "requiredRoiPct": 19.17808219178082,
+            "lockDays": 175
+          }
+        },
+        "pk-23756": {
+          "buy": 13800,
+          "psa10Net": 26020,
+          "psa10Profit": 5240,
+          "psa10Roi": 25.21655437921078,
+          "expectedProfit": 2468,
+          "expectedRoi": 11.876804619826757,
+          "exit": "買取店（両出口の保守側）",
+          "fee": 6980,
+          "lockDays": 175,
+          "sellFee": 8,
+          "deduction": 5,
+          "efficiency": {
+            "investment": 20780,
+            "profit": 2468,
+            "roi": 11.876804619826757,
+            "days": 185,
+            "annual": 23.43261452019874,
+            "purchasePrice": 13800,
+            "basis": "参考買値・現在買える状態A価格（購入保証なし）",
+            "scenario": "現在出口相場が続く仮定",
+            "exitLabel": "買取店（両出口の保守側）",
+            "reason": null,
+            "warnings": [
+              "参考値・素体価格の採用元・観測充足不足",
+              "PSA9は集計値・個別実成約未取得",
+              "公式Populationの確認日が古い・未取得",
+              "非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価"
+            ],
+            "capBasis": false,
+            "referenceOnly": true,
+            "medianEvidence": null,
+            "referenceEvidence": {
+              "value": 13800,
+              "kind": "store",
+              "label": "現在買える状態A価格",
+              "candidates": [
+                {
+                  "kind": "store",
+                  "label": "現在買える状態A価格",
+                  "value": 13800,
+                  "reason": null
+                },
+                {
+                  "kind": "guide",
+                  "label": "利益確保の仕入れ目安・現相場基準",
+                  "value": 14000,
+                  "reason": "仕入れ目安算出不可"
+                },
+                {
+                  "kind": "median",
+                  "label": "素体参考相場・中央値",
+                  "value": null,
+                  "reason": "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない"
+                }
+              ],
+              "reasons": [],
+              "warnings": [
+                "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+                "単一ソース参考",
+                "中央値で実際に購入できるとは限らない・購入GOとは別"
+              ],
+              "expiresAt": 1793651108145,
+              "reference": true,
+              "availability": "在庫あり・実店舗採算は別"
+            },
+            "calculationState": "reference",
+            "blockingReasons": [],
+            "referenceReasons": [
+              "素体価格の採用元・観測充足不足"
+            ],
+            "observation": null
+          },
+          "buybackCurrent": {
+            "key": "current",
+            "label": "現在PSA10相場",
+            "psa10Price": 37800,
+            "priceRatio": 1,
+            "grossPrice": 27389,
+            "deductionRate": 5,
+            "deductionAmount": 1369,
+            "travelCost": 0,
+            "netPsa10": 26020,
+            "lowerGradeNet": 10580,
+            "hitRate": 0.8204623062779092,
+            "expectedSale": 23248,
+            "breakEvenMaxPrice": 16000,
+            "targetMaxPrice": 12500,
+            "targetProfit": 0,
+            "requiredRoiPct": 19.17808219178082,
+            "lockDays": 175
+          }
+        },
+        "x-122056": {
+          "buy": 8980,
+          "psa10Net": 23186,
+          "psa10Profit": 7226,
+          "psa10Roi": 45.27568922305765,
+          "expectedProfit": 5880,
+          "expectedRoi": 36.84210526315789,
+          "exit": "買取店（両出口の保守側）",
+          "fee": 6980,
+          "lockDays": 175,
+          "sellFee": 8,
+          "deduction": 5,
+          "efficiency": {
+            "investment": 15960,
+            "profit": 5880,
+            "roi": 36.84210526315789,
+            "days": 185,
+            "annual": 72.68847795163583,
+            "purchasePrice": 8980,
+            "basis": "参考買値・現在買える状態A価格（購入保証なし）",
+            "scenario": "現在出口相場が続く仮定",
+            "exitLabel": "買取店（両出口の保守側）",
+            "reason": null,
+            "warnings": [
+              "PSA9は集計値・個別実成約未取得",
+              "公式Populationの確認日が古い・未取得",
+              "非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価"
+            ],
+            "capBasis": false,
+            "referenceOnly": true,
+            "medianEvidence": null,
+            "referenceEvidence": {
+              "value": 8980,
+              "kind": "store",
+              "label": "現在買える状態A価格",
+              "candidates": [
+                {
+                  "kind": "store",
+                  "label": "現在買える状態A価格",
+                  "value": 8980,
+                  "reason": null
+                },
+                {
+                  "kind": "guide",
+                  "label": "利益確保の仕入れ目安・現相場基準",
+                  "value": 12500,
+                  "reason": "仕入れ目安算出不可"
+                },
+                {
+                  "kind": "median",
+                  "label": "素体参考相場・中央値",
+                  "value": 9490,
+                  "reason": ""
+                }
+              ],
+              "reasons": [],
+              "warnings": [
+                "古値・参考価格・仕様保留等3元を参考中央値から除外・原価格と日時は履歴保持",
+                "中央値で実際に購入できるとは限らない・購入GOとは別"
+              ],
+              "expiresAt": 1793568174745,
+              "reference": true,
+              "availability": "在庫あり・実店舗採算は別"
+            },
+            "calculationState": "reference",
+            "blockingReasons": [],
+            "referenceReasons": [],
+            "observation": null
+          },
+          "buybackCurrent": {
+            "key": "current",
+            "label": "現在PSA10相場",
+            "psa10Price": 28500,
+            "priceRatio": 1,
+            "grossPrice": 24407,
+            "deductionRate": 5,
+            "deductionAmount": 1220,
+            "travelCost": 0,
+            "netPsa10": 23186,
+            "lowerGradeNet": 12098,
+            "hitRate": 0.8786292433455484,
+            "expectedSale": 21840,
+            "breakEvenMaxPrice": 14500,
+            "targetMaxPrice": 11000,
+            "targetProfit": 0,
+            "requiredRoiPct": 19.17808219178082,
+            "lockDays": 175
+          }
+        },
+        "pk-51077": {
+          "buy": 12000,
+          "psa10Net": 26789,
+          "psa10Profit": 7809,
+          "psa10Roi": 41.143308746048476,
+          "expectedProfit": 6274,
+          "expectedRoi": 33.05584826132771,
+          "exit": "買取店（両出口の保守側）",
+          "fee": 6980,
+          "lockDays": 175,
+          "sellFee": 8,
+          "deduction": 5,
+          "efficiency": {
+            "investment": 18980,
+            "profit": 6274,
+            "roi": 33.05584826132771,
+            "days": 185,
+            "annual": 65.21829521829521,
+            "purchasePrice": 12000,
+            "basis": "参考買値・現在買える状態A価格（購入保証なし）",
+            "scenario": "現在出口相場が続く仮定",
+            "exitLabel": "買取店（両出口の保守側）",
+            "reason": null,
+            "warnings": [
+              "PSA9は集計値・個別実成約未取得",
+              "公式Populationの確認日が古い・未取得",
+              "非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価"
+            ],
+            "capBasis": false,
+            "referenceOnly": true,
+            "medianEvidence": null,
+            "referenceEvidence": {
+              "value": 12000,
+              "kind": "store",
+              "label": "現在買える状態A価格",
+              "candidates": [
+                {
+                  "kind": "store",
+                  "label": "現在買える状態A価格",
+                  "value": 12000,
+                  "reason": null
+                },
+                {
+                  "kind": "guide",
+                  "label": "利益確保の仕入れ目安・現相場基準",
+                  "value": 15500,
+                  "reason": "仕入れ目安算出不可"
+                },
+                {
+                  "kind": "median",
+                  "label": "素体参考相場・中央値",
+                  "value": null,
+                  "reason": "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない"
+                }
+              ],
+              "reasons": [],
+              "warnings": [
+                "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+                "単一ソース参考",
+                "中央値で実際に購入できるとは限らない・購入GOとは別"
+              ],
+              "expiresAt": 1793659300396,
+              "reference": true,
+              "availability": "在庫あり・実店舗採算は別"
+            },
+            "calculationState": "reference",
+            "blockingReasons": [],
+            "referenceReasons": [],
+            "observation": null
+          },
+          "buybackCurrent": {
+            "key": "current",
+            "label": "現在PSA10相場",
+            "psa10Price": 32000,
+            "priceRatio": 1,
+            "grossPrice": 28199,
+            "deductionRate": 5,
+            "deductionAmount": 1410,
+            "travelCost": 0,
+            "netPsa10": 26789,
+            "lowerGradeNet": 15171,
+            "hitRate": 0.8678749308245712,
+            "expectedSale": 25254,
+            "breakEvenMaxPrice": 18000,
+            "targetMaxPrice": 14000,
+            "targetProfit": 0,
+            "requiredRoiPct": 19.17808219178082,
+            "lockDays": 175
+          }
+        },
+        "pk-2282": {
+          "buy": 26000,
+          "psa10Net": 40375,
+          "psa10Profit": 7395,
+          "psa10Roi": 22.422680412371136,
+          "expectedProfit": 3699,
+          "expectedRoi": 11.21588841722256,
+          "exit": "買取店（両出口の保守側）",
+          "fee": 6980,
+          "lockDays": 175,
+          "sellFee": 8,
+          "deduction": 5,
+          "efficiency": {
+            "investment": 32980,
+            "profit": 3699,
+            "roi": 11.21588841722256,
+            "days": 185,
+            "annual": 22.128644715060727,
+            "purchasePrice": 26000,
+            "basis": "参考買値・利益確保の仕入れ目安・現相場基準（購入保証なし）",
+            "scenario": "現在出口相場が続く仮定",
+            "exitLabel": "買取店（両出口の保守側）",
+            "reason": null,
+            "warnings": [
+              "PSA9は集計値・個別実成約未取得",
+              "公式Populationの確認日が古い・未取得",
+              "非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価"
+            ],
+            "capBasis": false,
+            "referenceOnly": true,
+            "medianEvidence": null,
+            "referenceEvidence": {
+              "value": 26000,
+              "kind": "guide",
+              "label": "利益確保の仕入れ目安・現相場基準",
+              "candidates": [
+                {
+                  "kind": "store",
+                  "label": "現在買える状態A価格",
+                  "value": 30000,
+                  "reason": null
+                },
+                {
+                  "kind": "guide",
+                  "label": "利益確保の仕入れ目安・現相場基準",
+                  "value": 26000,
+                  "reason": "仕入れ目安算出不可"
+                },
+                {
+                  "kind": "median",
+                  "label": "素体参考相場・中央値",
+                  "value": null,
+                  "reason": "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない"
+                }
+              ],
+              "reasons": [],
+              "warnings": [
+                "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+                "単一ソース参考",
+                "中央値で実際に購入できるとは限らない・購入GOとは別"
+              ],
+              "expiresAt": 1793669583245,
+              "reference": true,
+              "availability": "在庫あり・実店舗採算は別"
+            },
+            "calculationState": "reference",
+            "blockingReasons": [],
+            "referenceReasons": [],
+            "observation": null
+          },
+          "buybackCurrent": {
+            "key": "current",
+            "label": "現在PSA10相場",
+            "psa10Price": 48000,
+            "priceRatio": 1,
+            "grossPrice": 42500,
+            "deductionRate": 5,
+            "deductionAmount": 2125,
+            "travelCost": 0,
+            "netPsa10": 40375,
+            "lowerGradeNet": 23920,
+            "hitRate": 0.7753895754970447,
+            "expectedSale": 36679,
+            "breakEvenMaxPrice": 29500,
+            "targetMaxPrice": 23500,
+            "targetProfit": 0,
+            "requiredRoiPct": 19.17808219178082,
+            "lockDays": 175
+          }
+        },
+        "x-91126": {
+          "buy": 16000,
+          "psa10Net": 28044,
+          "psa10Profit": 5064,
+          "psa10Roi": 22.036553524804177,
+          "expectedProfit": 2845,
+          "expectedRoi": 12.380330722367276,
+          "exit": "買取店（両出口の保守側）",
+          "fee": 6980,
+          "lockDays": 175,
+          "sellFee": 8,
+          "deduction": 5,
+          "efficiency": {
+            "investment": 22980,
+            "profit": 2845,
+            "roi": 12.380330722367276,
+            "days": 185,
+            "annual": 24.426057911697598,
+            "purchasePrice": 16000,
+            "basis": "参考買値・利益確保の仕入れ目安・現相場基準（購入保証なし）",
+            "scenario": "現在出口相場が続く仮定",
+            "exitLabel": "買取店（両出口の保守側）",
+            "reason": null,
+            "warnings": [
+              "PSA9は集計値・個別実成約未取得",
+              "公式Populationの確認日が古い・未取得",
+              "非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価"
+            ],
+            "capBasis": false,
+            "referenceOnly": true,
+            "medianEvidence": null,
+            "referenceEvidence": {
+              "value": 16000,
+              "kind": "guide",
+              "label": "利益確保の仕入れ目安・現相場基準",
+              "candidates": [
+                {
+                  "kind": "store",
+                  "label": "現在買える状態A価格",
+                  "value": 16800,
+                  "reason": null
+                },
+                {
+                  "kind": "guide",
+                  "label": "利益確保の仕入れ目安・現相場基準",
+                  "value": 16000,
+                  "reason": "仕入れ目安算出不可"
+                },
+                {
+                  "kind": "median",
+                  "label": "素体参考相場・中央値",
+                  "value": 17400,
+                  "reason": ""
+                }
+              ],
+              "reasons": [],
+              "warnings": [
+                "古値・参考価格・仕様保留等3元を参考中央値から除外・原価格と日時は履歴保持",
+                "中央値で実際に購入できるとは限らない・購入GOとは別"
+              ],
+              "expiresAt": 1793651083919,
+              "reference": true,
+              "availability": "在庫あり・実店舗採算は別"
+            },
+            "calculationState": "reference",
+            "blockingReasons": [],
+            "referenceReasons": [],
+            "observation": null
+          },
+          "buybackCurrent": {
+            "key": "current",
+            "label": "現在PSA10相場",
+            "psa10Price": 35999,
+            "priceRatio": 1,
+            "grossPrice": 29520,
+            "deductionRate": 5,
+            "deductionAmount": 1476,
+            "travelCost": 0,
+            "netPsa10": 28044,
+            "lowerGradeNet": 14996,
+            "hitRate": 0.8299655002464267,
+            "expectedSale": 25825,
+            "breakEvenMaxPrice": 18500,
+            "targetMaxPrice": 14500,
+            "targetProfit": 0,
+            "requiredRoiPct": 19.17808219178082,
+            "lockDays": 175
+          }
+        },
+        "x-91259": {
+          "buy": 71000,
+          "psa10Net": 111150,
+          "psa10Profit": 33170,
+          "psa10Roi": 42.536547832777636,
+          "expectedProfit": 7909,
+          "expectedRoi": 10.142344190818159,
+          "exit": "買取店（両出口の保守側）",
+          "fee": 6980,
+          "lockDays": 175,
+          "sellFee": 8,
+          "deduction": 5,
+          "efficiency": {
+            "investment": 77980,
+            "profit": 7909,
+            "roi": 10.142344190818159,
+            "days": 185,
+            "annual": 20.010570971073665,
+            "purchasePrice": 71000,
+            "basis": "参考買値・利益確保の仕入れ目安・現相場基準（購入保証なし）",
+            "scenario": "現在出口相場が続く仮定",
+            "exitLabel": "買取店（両出口の保守側）",
+            "reason": null,
+            "warnings": [
+              "参考値・素体価格の採用元・観測充足不足",
+              "PSA9は集計値・個別実成約未取得",
+              "公式Populationの確認日が古い・未取得",
+              "非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価"
+            ],
+            "capBasis": false,
+            "referenceOnly": true,
+            "medianEvidence": null,
+            "referenceEvidence": {
+              "value": 71000,
+              "kind": "guide",
+              "label": "利益確保の仕入れ目安・現相場基準",
+              "candidates": [
+                {
+                  "kind": "store",
+                  "label": "現在買える状態A価格",
+                  "value": null,
+                  "reason": "在庫なし・価格未取得または期限切れ"
+                },
+                {
+                  "kind": "guide",
+                  "label": "利益確保の仕入れ目安・現相場基準",
+                  "value": 71000,
+                  "reason": "仕入れ目安算出不可"
+                },
+                {
+                  "kind": "median",
+                  "label": "素体参考相場・中央値",
+                  "value": null,
+                  "reason": "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない"
+                }
+              ],
+              "reasons": [],
+              "warnings": [
+                "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+                "単一ソース参考",
+                "中央値で実際に購入できるとは限らない・購入GOとは別"
+              ],
+              "expiresAt": 1793669703123,
+              "reference": true,
+              "availability": "確認店の在庫なし・入荷待ち"
+            },
+            "calculationState": "reference",
+            "blockingReasons": [],
+            "referenceReasons": [
+              "素体価格の採用元・観測充足不足"
+            ],
+            "observation": null
+          },
+          "buybackCurrent": {
+            "key": "current",
+            "label": "現在PSA10相場",
+            "psa10Price": 138000,
+            "priceRatio": 1,
+            "grossPrice": 117000,
+            "deductionRate": 5,
+            "deductionAmount": 5850,
+            "travelCost": 0,
+            "netPsa10": 111150,
+            "lowerGradeNet": 49496,
+            "hitRate": 0.5902841429880843,
+            "expectedSale": 85889,
+            "breakEvenMaxPrice": 78500,
+            "targetMaxPrice": 65000,
+            "targetProfit": 0,
+            "requiredRoiPct": 19.17808219178082,
+            "lockDays": 175
+          }
+        }
+      },
+      "after": {
+        "pk-67343": {
+          "buy": 60400,
+          "psa10Net": 95000,
+          "psa10Profit": 27620,
+          "psa10Roi": 40.991392104482046,
+          "expectedProfit": 18216,
+          "expectedRoi": 27.03472840605521,
+          "exit": "買取店（両出口の保守側）",
+          "fee": 6980,
+          "lockDays": 175,
+          "sellFee": 8,
+          "deduction": 5,
+          "efficiency": {
+            "investment": 67380,
+            "profit": 18216,
+            "roi": 27.03472840605521,
+            "days": 185,
+            "annual": 53.33878847681163,
+            "purchasePrice": 60400,
+            "basis": "参考買値・素体参考相場・中央値（購入保証なし）",
+            "scenario": "現在出口相場が続く仮定",
+            "exitLabel": "買取店（両出口の保守側）",
+            "reason": null,
+            "warnings": [
+              "参考値・素体価格の採用元・観測充足不足",
+              "PSA9は集計値・個別実成約未取得",
+              "公式Populationの確認日が古い・未取得",
+              "非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価"
+            ],
+            "capBasis": false,
+            "referenceOnly": true,
+            "medianEvidence": null,
+            "referenceEvidence": {
+              "value": 60400,
+              "kind": "median",
+              "label": "素体参考相場・中央値",
+              "candidates": [
+                {
+                  "kind": "store",
+                  "label": "現在買える状態A価格",
+                  "value": 61000,
+                  "reason": null
+                },
+                {
+                  "kind": "guide",
+                  "label": "利益確保の仕入れ目安・現相場基準",
+                  "value": 70500,
+                  "reason": "仕入れ目安算出不可"
+                },
+                {
+                  "kind": "median",
+                  "label": "素体参考相場・中央値",
+                  "value": 60400,
+                  "reason": ""
+                }
+              ],
+              "reasons": [],
+              "warnings": [
+                "古値・参考価格・仕様保留等3元を参考中央値から除外・原価格と日時は履歴保持",
+                "中央値で実際に購入できるとは限らない・購入GOとは別"
+              ],
+              "expiresAt": 1793651088335,
+              "reference": true,
+              "availability": "在庫あり・実店舗採算は別"
+            },
+            "calculationState": "reference",
+            "blockingReasons": [],
+            "referenceReasons": [
+              "素体価格の採用元・観測充足不足"
+            ],
+            "observation": null
+          },
+          "buybackCurrent": {
+            "key": "current",
+            "label": "現在PSA10相場",
+            "psa10Price": 114500,
+            "priceRatio": 1,
+            "grossPrice": 100000,
+            "deductionRate": 5,
+            "deductionAmount": 5000,
+            "travelCost": 0,
+            "netPsa10": 95000,
+            "lowerGradeNet": 48668,
+            "hitRate": 0.7970282992117054,
+            "expectedSale": 85596,
+            "breakEvenMaxPrice": 78500,
+            "targetMaxPrice": 64500,
+            "targetProfit": 0,
+            "requiredRoiPct": 19.17808219178082,
+            "lockDays": 175
+          }
+        },
+        "pk-23756": {
+          "buy": 13800,
+          "psa10Net": 26020,
+          "psa10Profit": 5240,
+          "psa10Roi": 25.21655437921078,
+          "expectedProfit": 2385,
+          "expectedRoi": 11.477382098171319,
+          "exit": "買取店（両出口の保守側）",
+          "fee": 6980,
+          "lockDays": 175,
+          "sellFee": 8,
+          "deduction": 5,
+          "efficiency": {
+            "investment": 20780,
+            "profit": 2385,
+            "roi": 11.477382098171319,
+            "days": 185,
+            "annual": 22.644564680175844,
+            "purchasePrice": 13800,
+            "basis": "参考買値・現在買える状態A価格（購入保証なし）",
+            "scenario": "現在出口相場が続く仮定",
+            "exitLabel": "買取店（両出口の保守側）",
+            "reason": null,
+            "warnings": [
+              "参考値・素体価格の採用元・観測充足不足",
+              "PSA9は集計値・個別実成約未取得",
+              "公式Populationの確認日が古い・未取得",
+              "非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価"
+            ],
+            "capBasis": false,
+            "referenceOnly": true,
+            "medianEvidence": null,
+            "referenceEvidence": {
+              "value": 13800,
+              "kind": "store",
+              "label": "現在買える状態A価格",
+              "candidates": [
+                {
+                  "kind": "store",
+                  "label": "現在買える状態A価格",
+                  "value": 13800,
+                  "reason": null
+                },
+                {
+                  "kind": "guide",
+                  "label": "利益確保の仕入れ目安・現相場基準",
+                  "value": 14000,
+                  "reason": "仕入れ目安算出不可"
+                },
+                {
+                  "kind": "median",
+                  "label": "素体参考相場・中央値",
+                  "value": null,
+                  "reason": "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない"
+                }
+              ],
+              "reasons": [],
+              "warnings": [
+                "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+                "単一ソース参考",
+                "中央値で実際に購入できるとは限らない・購入GOとは別"
+              ],
+              "expiresAt": 1793651108145,
+              "reference": true,
+              "availability": "在庫あり・実店舗採算は別"
+            },
+            "calculationState": "reference",
+            "blockingReasons": [],
+            "referenceReasons": [
+              "素体価格の採用元・観測充足不足"
+            ],
+            "observation": null
+          },
+          "buybackCurrent": {
+            "key": "current",
+            "label": "現在PSA10相場",
+            "psa10Price": 35999,
+            "priceRatio": 1,
+            "grossPrice": 27389,
+            "deductionRate": 5,
+            "deductionAmount": 1369,
+            "travelCost": 0,
+            "netPsa10": 26020,
+            "lowerGradeNet": 10120,
+            "hitRate": 0.8204623062779092,
+            "expectedSale": 23165,
+            "breakEvenMaxPrice": 16000,
+            "targetMaxPrice": 12000,
+            "targetProfit": 0,
+            "requiredRoiPct": 19.17808219178082,
+            "lockDays": 175
+          }
+        },
+        "x-122056": {
+          "buy": 8980,
+          "psa10Net": 23185,
+          "psa10Profit": 7225,
+          "psa10Roi": 45.269423558897245,
+          "expectedProfit": 5840,
+          "expectedRoi": 36.59147869674185,
+          "exit": "買取店（両出口の保守側）",
+          "fee": 6980,
+          "lockDays": 175,
+          "sellFee": 8,
+          "deduction": 5,
+          "efficiency": {
+            "investment": 15960,
+            "profit": 5840,
+            "roi": 36.59147869674185,
+            "days": 185,
+            "annual": 72.19399850978799,
+            "purchasePrice": 8980,
+            "basis": "参考買値・現在買える状態A価格（購入保証なし）",
+            "scenario": "現在出口相場が続く仮定",
+            "exitLabel": "買取店（両出口の保守側）",
+            "reason": null,
+            "warnings": [
+              "PSA9は集計値・個別実成約未取得",
+              "公式Populationの確認日が古い・未取得",
+              "非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価"
+            ],
+            "capBasis": false,
+            "referenceOnly": true,
+            "medianEvidence": null,
+            "referenceEvidence": {
+              "value": 8980,
+              "kind": "store",
+              "label": "現在買える状態A価格",
+              "candidates": [
+                {
+                  "kind": "store",
+                  "label": "現在買える状態A価格",
+                  "value": 8980,
+                  "reason": null
+                },
+                {
+                  "kind": "guide",
+                  "label": "利益確保の仕入れ目安・現相場基準",
+                  "value": 12500,
+                  "reason": "仕入れ目安算出不可"
+                },
+                {
+                  "kind": "median",
+                  "label": "素体参考相場・中央値",
+                  "value": 9490,
+                  "reason": ""
+                }
+              ],
+              "reasons": [],
+              "warnings": [
+                "古値・参考価格・仕様保留等3元を参考中央値から除外・原価格と日時は履歴保持",
+                "中央値で実際に購入できるとは限らない・購入GOとは別"
+              ],
+              "expiresAt": 1793568174745,
+              "reference": true,
+              "availability": "在庫あり・実店舗採算は別"
+            },
+            "calculationState": "reference",
+            "blockingReasons": [],
+            "referenceReasons": [],
+            "observation": null
+          },
+          "buybackCurrent": {
+            "key": "current",
+            "label": "現在PSA10相場",
+            "psa10Price": 28500,
+            "priceRatio": 1,
+            "grossPrice": 24405,
+            "deductionRate": 5,
+            "deductionAmount": 1220,
+            "travelCost": 0,
+            "netPsa10": 23185,
+            "lowerGradeNet": 11776,
+            "hitRate": 0.8786292433455484,
+            "expectedSale": 21800,
+            "breakEvenMaxPrice": 14500,
+            "targetMaxPrice": 11000,
+            "targetProfit": 0,
+            "requiredRoiPct": 19.17808219178082,
+            "lockDays": 175
+          }
+        },
+        "pk-51077": {
+          "buy": 12000,
+          "psa10Net": 26789,
+          "psa10Profit": 7809,
+          "psa10Roi": 41.143308746048476,
+          "expectedProfit": 6458,
+          "expectedRoi": 34.02528977871444,
+          "exit": "買取店（両出口の保守側）",
+          "fee": 6980,
+          "lockDays": 175,
+          "sellFee": 8,
+          "deduction": 5,
+          "efficiency": {
+            "investment": 18980,
+            "profit": 6458,
+            "roi": 34.02528977871444,
+            "days": 185,
+            "annual": 67.13097713097713,
+            "purchasePrice": 12000,
+            "basis": "参考買値・現在買える状態A価格（購入保証なし）",
+            "scenario": "現在出口相場が続く仮定",
+            "exitLabel": "買取店（両出口の保守側）",
+            "reason": null,
+            "warnings": [
+              "PSA9は集計値・個別実成約未取得",
+              "公式Populationの確認日が古い・未取得",
+              "非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価"
+            ],
+            "capBasis": false,
+            "referenceOnly": true,
+            "medianEvidence": null,
+            "referenceEvidence": {
+              "value": 12000,
+              "kind": "store",
+              "label": "現在買える状態A価格",
+              "candidates": [
+                {
+                  "kind": "store",
+                  "label": "現在買える状態A価格",
+                  "value": 12000,
+                  "reason": null
+                },
+                {
+                  "kind": "guide",
+                  "label": "利益確保の仕入れ目安・現相場基準",
+                  "value": 16000,
+                  "reason": "仕入れ目安算出不可"
+                },
+                {
+                  "kind": "median",
+                  "label": "素体参考相場・中央値",
+                  "value": null,
+                  "reason": "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない"
+                }
+              ],
+              "reasons": [],
+              "warnings": [
+                "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+                "単一ソース参考",
+                "中央値で実際に購入できるとは限らない・購入GOとは別"
+              ],
+              "expiresAt": 1793687101606,
+              "reference": true,
+              "availability": "在庫あり・実店舗採算は別"
+            },
+            "calculationState": "reference",
+            "blockingReasons": [],
+            "referenceReasons": [],
+            "observation": null
+          },
+          "buybackCurrent": {
+            "key": "current",
+            "label": "現在PSA10相場",
+            "psa10Price": 32000,
+            "priceRatio": 1,
+            "grossPrice": 28199,
+            "deductionRate": 5,
+            "deductionAmount": 1410,
+            "travelCost": 0,
+            "netPsa10": 26789,
+            "lowerGradeNet": 16560,
+            "hitRate": 0.8678749308245712,
+            "expectedSale": 25438,
+            "breakEvenMaxPrice": 18000,
+            "targetMaxPrice": 14000,
+            "targetProfit": 0,
+            "requiredRoiPct": 19.17808219178082,
+            "lockDays": 175
+          }
+        },
+        "pk-2282": {
+          "buy": 26500,
+          "psa10Net": 40375,
+          "psa10Profit": 6895,
+          "psa10Roi": 20.594384707287933,
+          "expectedProfit": 3406,
+          "expectedRoi": 10.173237753882916,
+          "exit": "買取店（両出口の保守側）",
+          "fee": 6980,
+          "lockDays": 175,
+          "sellFee": 8,
+          "deduction": 5,
+          "efficiency": {
+            "investment": 33480,
+            "profit": 3406,
+            "roi": 10.173237753882916,
+            "days": 185,
+            "annual": 20.071523136039268,
+            "purchasePrice": 26500,
+            "basis": "参考買値・利益確保の仕入れ目安・現相場基準（購入保証なし）",
+            "scenario": "現在出口相場が続く仮定",
+            "exitLabel": "買取店（両出口の保守側）",
+            "reason": null,
+            "warnings": [
+              "PSA9は集計値・個別実成約未取得",
+              "公式Populationの確認日が古い・未取得",
+              "非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価"
+            ],
+            "capBasis": false,
+            "referenceOnly": true,
+            "medianEvidence": null,
+            "referenceEvidence": {
+              "value": 26500,
+              "kind": "guide",
+              "label": "利益確保の仕入れ目安・現相場基準",
+              "candidates": [
+                {
+                  "kind": "store",
+                  "label": "現在買える状態A価格",
+                  "value": 30000,
+                  "reason": null
+                },
+                {
+                  "kind": "guide",
+                  "label": "利益確保の仕入れ目安・現相場基準",
+                  "value": 26500,
+                  "reason": "仕入れ目安算出不可"
+                },
+                {
+                  "kind": "median",
+                  "label": "素体参考相場・中央値",
+                  "value": null,
+                  "reason": "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない"
+                }
+              ],
+              "reasons": [],
+              "warnings": [
+                "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+                "単一ソース参考",
+                "中央値で実際に購入できるとは限らない・購入GOとは別"
+              ],
+              "expiresAt": 1793687214212,
+              "reference": true,
+              "availability": "在庫あり・実店舗採算は別"
+            },
+            "calculationState": "reference",
+            "blockingReasons": [],
+            "referenceReasons": [],
+            "observation": null
+          },
+          "buybackCurrent": {
+            "key": "current",
+            "label": "現在PSA10相場",
+            "psa10Price": 48000,
+            "priceRatio": 1,
+            "grossPrice": 42500,
+            "deductionRate": 5,
+            "deductionAmount": 2125,
+            "travelCost": 0,
+            "netPsa10": 40375,
+            "lowerGradeNet": 24840,
+            "hitRate": 0.7753895754970447,
+            "expectedSale": 36886,
+            "breakEvenMaxPrice": 29500,
+            "targetMaxPrice": 23500,
+            "targetProfit": 0,
+            "requiredRoiPct": 19.17808219178082,
+            "lockDays": 175
+          }
+        },
+        "x-91126": {
+          "buy": 16800,
+          "psa10Net": 28044,
+          "psa10Profit": 4264,
+          "psa10Roi": 17.93103448275862,
+          "expectedProfit": 5068,
+          "expectedRoi": 21.31202691337258,
+          "exit": "フリマ（両出口の保守側）",
+          "fee": 6980,
+          "lockDays": 175,
+          "sellFee": 8,
+          "deduction": 5,
+          "efficiency": {
+            "investment": 23780,
+            "profit": 5068,
+            "roi": 21.31202691337258,
+            "days": 185,
+            "annual": 42.048053099356714,
+            "purchasePrice": 16800,
+            "basis": "参考買値・現在買える状態A価格（購入保証なし）",
+            "scenario": "現在出口相場が続く仮定",
+            "exitLabel": "フリマ（両出口の保守側）",
+            "reason": null,
+            "warnings": [
+              "PSA9は集計値・個別実成約未取得",
+              "公式Populationの確認日が古い・未取得",
+              "非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価"
+            ],
+            "capBasis": false,
+            "referenceOnly": true,
+            "medianEvidence": null,
+            "referenceEvidence": {
+              "value": 16800,
+              "kind": "store",
+              "label": "現在買える状態A価格",
+              "candidates": [
+                {
+                  "kind": "store",
+                  "label": "現在買える状態A価格",
+                  "value": 16800,
+                  "reason": null
+                },
+                {
+                  "kind": "guide",
+                  "label": "利益確保の仕入れ目安・現相場基準",
+                  "value": 19000,
+                  "reason": "仕入れ目安算出不可"
+                },
+                {
+                  "kind": "median",
+                  "label": "素体参考相場・中央値",
+                  "value": 17400,
+                  "reason": ""
+                }
+              ],
+              "reasons": [],
+              "warnings": [
+                "古値・参考価格・仕様保留等3元を参考中央値から除外・原価格と日時は履歴保持",
+                "中央値で実際に購入できるとは限らない・購入GOとは別"
+              ],
+              "expiresAt": 1793651083919,
+              "reference": true,
+              "availability": "在庫あり・実店舗採算は別"
+            },
+            "calculationState": "reference",
+            "blockingReasons": [],
+            "referenceReasons": [],
+            "observation": null
+          },
+          "buybackCurrent": {
+            "key": "current",
+            "label": "現在PSA10相場",
+            "psa10Price": 37500,
+            "priceRatio": 1,
+            "grossPrice": 29520,
+            "deductionRate": 5,
+            "deductionAmount": 1476,
+            "travelCost": 0,
+            "netPsa10": 28044,
+            "lowerGradeNet": 29716,
+            "hitRate": 0.8299655002464267,
+            "expectedSale": 28328,
+            "breakEvenMaxPrice": 21000,
+            "targetMaxPrice": 16500,
+            "targetProfit": 0,
+            "requiredRoiPct": 19.17808219178082,
+            "lockDays": 175
+          }
+        },
+        "x-91259": {
+          "buy": 71000,
+          "psa10Net": 111150,
+          "psa10Profit": 33170,
+          "psa10Roi": 42.536547832777636,
+          "expectedProfit": 8136,
+          "expectedRoi": 10.43344447294178,
+          "exit": "買取店（両出口の保守側）",
+          "fee": 6980,
+          "lockDays": 175,
+          "sellFee": 8,
+          "deduction": 5,
+          "efficiency": {
+            "investment": 77980,
+            "profit": 8136,
+            "roi": 10.43344447294178,
+            "days": 185,
+            "annual": 20.584903960128376,
+            "purchasePrice": 71000,
+            "basis": "参考買値・利益確保の仕入れ目安・現相場基準（購入保証なし）",
+            "scenario": "現在出口相場が続く仮定",
+            "exitLabel": "買取店（両出口の保守側）",
+            "reason": null,
+            "warnings": [
+              "参考値・素体価格の採用元・観測充足不足",
+              "PSA9は集計値・個別実成約未取得",
+              "公式Populationの確認日が古い・未取得",
+              "非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価"
+            ],
+            "capBasis": false,
+            "referenceOnly": true,
+            "medianEvidence": null,
+            "referenceEvidence": {
+              "value": 71000,
+              "kind": "guide",
+              "label": "利益確保の仕入れ目安・現相場基準",
+              "candidates": [
+                {
+                  "kind": "store",
+                  "label": "現在買える状態A価格",
+                  "value": null,
+                  "reason": "在庫なし・価格未取得または期限切れ"
+                },
+                {
+                  "kind": "guide",
+                  "label": "利益確保の仕入れ目安・現相場基準",
+                  "value": 71000,
+                  "reason": "仕入れ目安算出不可"
+                },
+                {
+                  "kind": "median",
+                  "label": "素体参考相場・中央値",
+                  "value": null,
+                  "reason": "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない"
+                }
+              ],
+              "reasons": [],
+              "warnings": [
+                "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+                "単一ソース参考",
+                "中央値で実際に購入できるとは限らない・購入GOとは別"
+              ],
+              "expiresAt": 1793669703123,
+              "reference": true,
+              "availability": "確認店の在庫なし・入荷待ち"
+            },
+            "calculationState": "reference",
+            "blockingReasons": [],
+            "referenceReasons": [
+              "素体価格の採用元・観測充足不足"
+            ],
+            "observation": null
+          },
+          "buybackCurrent": {
+            "key": "current",
+            "label": "現在PSA10相場",
+            "psa10Price": 138000,
+            "priceRatio": 1,
+            "grossPrice": 117000,
+            "deductionRate": 5,
+            "deductionAmount": 5850,
+            "travelCost": 0,
+            "netPsa10": 111150,
+            "lowerGradeNet": 50048,
+            "hitRate": 0.5902841429880843,
+            "expectedSale": 86116,
+            "breakEvenMaxPrice": 79000,
+            "targetMaxPrice": 65000,
+            "targetProfit": 0,
+            "requiredRoiPct": 19.17808219178082,
+            "lockDays": 175
+          }
+        }
+      }
+    },
+    {
+      "id": "B-reference",
+      "before": {
+        "pk-67343": {
+          "buy": 60400,
+          "psa10Net": 95396,
+          "psa10Profit": 22016,
+          "psa10Roi": 30.002725538293813,
+          "expectedProfit": 12531,
+          "expectedRoi": 17.07686017988553,
+          "exit": "買取店（両出口の保守側）",
+          "fee": 12980,
+          "lockDays": 91,
+          "sellFee": 8,
+          "deduction": 5,
+          "efficiency": {
+            "investment": 73380,
+            "profit": 12531,
+            "roi": 17.07686017988553,
+            "days": 101,
+            "annual": 61.713405600576415,
+            "purchasePrice": 60400,
+            "basis": "参考買値・素体参考相場・中央値（購入保証なし）",
+            "scenario": "現在出口相場が続く仮定",
+            "exitLabel": "買取店（両出口の保守側）",
+            "reason": null,
+            "warnings": [
+              "参考値・素体価格の採用元・観測充足不足",
+              "PSA9は集計値・個別実成約未取得",
+              "公式Populationの確認日が古い・未取得",
+              "非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価"
+            ],
+            "capBasis": false,
+            "referenceOnly": true,
+            "medianEvidence": null,
+            "referenceEvidence": {
+              "value": 60400,
+              "kind": "median",
+              "label": "素体参考相場・中央値",
+              "candidates": [
+                {
+                  "kind": "store",
+                  "label": "現在買える状態A価格",
+                  "value": 61000,
+                  "reason": null
+                },
+                {
+                  "kind": "guide",
+                  "label": "利益確保の仕入れ目安・現相場基準",
+                  "value": 65000,
+                  "reason": "仕入れ目安算出不可"
+                },
+                {
+                  "kind": "median",
+                  "label": "素体参考相場・中央値",
+                  "value": 60400,
+                  "reason": ""
+                }
+              ],
+              "reasons": [],
+              "warnings": [
+                "古値・参考価格・仕様保留等3元を参考中央値から除外・原価格と日時は履歴保持",
+                "中央値で実際に購入できるとは限らない・購入GOとは別"
+              ],
+              "expiresAt": 1793651088335,
+              "reference": true,
+              "availability": "在庫あり・実店舗採算は別"
+            },
+            "calculationState": "reference",
+            "blockingReasons": [],
+            "referenceReasons": [
+              "素体価格の採用元・観測充足不足"
+            ],
+            "observation": null
+          },
+          "buybackCurrent": {
+            "key": "current",
+            "label": "現在PSA10相場",
+            "psa10Price": 115000,
+            "priceRatio": 1,
+            "grossPrice": 100417,
+            "deductionRate": 5,
+            "deductionAmount": 5021,
+            "travelCost": 0,
+            "netPsa10": 95396,
+            "lowerGradeNet": 48668,
+            "hitRate": 0.7970282992117054,
+            "expectedSale": 85911,
+            "breakEvenMaxPrice": 72500,
+            "targetMaxPrice": 65000,
+            "targetProfit": 0,
+            "requiredRoiPct": 10,
+            "lockDays": 91
+          }
+        },
+        "pk-23756": {
+          "buy": 8000,
+          "psa10Net": 26020,
+          "psa10Profit": 5040,
+          "psa10Roi": 24.02287893231649,
+          "expectedProfit": 2268,
+          "expectedRoi": 10.810295519542422,
+          "exit": "買取店（両出口の保守側）",
+          "fee": 12980,
+          "lockDays": 91,
+          "sellFee": 8,
+          "deduction": 5,
+          "efficiency": {
+            "investment": 20980,
+            "profit": 2268,
+            "roi": 10.810295519542422,
+            "days": 101,
+            "annual": 39.06690955082162,
+            "purchasePrice": 8000,
+            "basis": "参考買値・利益確保の仕入れ目安・現相場基準（購入保証なし）",
+            "scenario": "現在出口相場が続く仮定",
+            "exitLabel": "買取店（両出口の保守側）",
+            "reason": null,
+            "warnings": [
+              "参考値・素体価格の採用元・観測充足不足",
+              "PSA9は集計値・個別実成約未取得",
+              "公式Populationの確認日が古い・未取得",
+              "非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価"
+            ],
+            "capBasis": false,
+            "referenceOnly": true,
+            "medianEvidence": null,
+            "referenceEvidence": {
+              "value": 8000,
+              "kind": "guide",
+              "label": "利益確保の仕入れ目安・現相場基準",
+              "candidates": [
+                {
+                  "kind": "store",
+                  "label": "現在買える状態A価格",
+                  "value": 13800,
+                  "reason": null
+                },
+                {
+                  "kind": "guide",
+                  "label": "利益確保の仕入れ目安・現相場基準",
+                  "value": 8000,
+                  "reason": "仕入れ目安算出不可"
+                },
+                {
+                  "kind": "median",
+                  "label": "素体参考相場・中央値",
+                  "value": null,
+                  "reason": "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない"
+                }
+              ],
+              "reasons": [],
+              "warnings": [
+                "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+                "単一ソース参考",
+                "中央値で実際に購入できるとは限らない・購入GOとは別"
+              ],
+              "expiresAt": 1793651108145,
+              "reference": true,
+              "availability": "在庫あり・実店舗採算は別"
+            },
+            "calculationState": "reference",
+            "blockingReasons": [],
+            "referenceReasons": [
+              "素体価格の採用元・観測充足不足"
+            ],
+            "observation": null
+          },
+          "buybackCurrent": {
+            "key": "current",
+            "label": "現在PSA10相場",
+            "psa10Price": 37800,
+            "priceRatio": 1,
+            "grossPrice": 27389,
+            "deductionRate": 5,
+            "deductionAmount": 1369,
+            "travelCost": 0,
+            "netPsa10": 26020,
+            "lowerGradeNet": 10580,
+            "hitRate": 0.8204623062779092,
+            "expectedSale": 23248,
+            "breakEvenMaxPrice": 10000,
+            "targetMaxPrice": 8000,
+            "targetProfit": 0,
+            "requiredRoiPct": 10,
+            "lockDays": 91
+          }
+        },
+        "x-122056": {
+          "buy": 6500,
+          "psa10Net": 23186,
+          "psa10Profit": 3706,
+          "psa10Roi": 19.024640657084188,
+          "expectedProfit": 2360,
+          "expectedRoi": 12.114989733059549,
+          "exit": "買取店（両出口の保守側）",
+          "fee": 12980,
+          "lockDays": 91,
+          "sellFee": 8,
+          "deduction": 5,
+          "efficiency": {
+            "investment": 19480,
+            "profit": 2360,
+            "roi": 12.114989733059549,
+            "days": 101,
+            "annual": 43.78189358976966,
+            "purchasePrice": 6500,
+            "basis": "参考買値・利益確保の仕入れ目安・現相場基準（購入保証なし）",
+            "scenario": "現在出口相場が続く仮定",
+            "exitLabel": "買取店（両出口の保守側）",
+            "reason": null,
+            "warnings": [
+              "PSA9は集計値・個別実成約未取得",
+              "公式Populationの確認日が古い・未取得",
+              "非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価"
+            ],
+            "capBasis": false,
+            "referenceOnly": true,
+            "medianEvidence": null,
+            "referenceEvidence": {
+              "value": 6500,
+              "kind": "guide",
+              "label": "利益確保の仕入れ目安・現相場基準",
+              "candidates": [
+                {
+                  "kind": "store",
+                  "label": "現在買える状態A価格",
+                  "value": 8980,
+                  "reason": null
+                },
+                {
+                  "kind": "guide",
+                  "label": "利益確保の仕入れ目安・現相場基準",
+                  "value": 6500,
+                  "reason": "仕入れ目安算出不可"
+                },
+                {
+                  "kind": "median",
+                  "label": "素体参考相場・中央値",
+                  "value": 9490,
+                  "reason": ""
+                }
+              ],
+              "reasons": [],
+              "warnings": [
+                "古値・参考価格・仕様保留等3元を参考中央値から除外・原価格と日時は履歴保持",
+                "中央値で実際に購入できるとは限らない・購入GOとは別"
+              ],
+              "expiresAt": 1793568174745,
+              "reference": true,
+              "availability": "在庫あり・実店舗採算は別"
+            },
+            "calculationState": "reference",
+            "blockingReasons": [],
+            "referenceReasons": [],
+            "observation": null
+          },
+          "buybackCurrent": {
+            "key": "current",
+            "label": "現在PSA10相場",
+            "psa10Price": 28500,
+            "priceRatio": 1,
+            "grossPrice": 24407,
+            "deductionRate": 5,
+            "deductionAmount": 1220,
+            "travelCost": 0,
+            "netPsa10": 23186,
+            "lowerGradeNet": 12098,
+            "hitRate": 0.8786292433455484,
+            "expectedSale": 21840,
+            "breakEvenMaxPrice": 8500,
+            "targetMaxPrice": 6500,
+            "targetProfit": 0,
+            "requiredRoiPct": 10,
+            "lockDays": 91
+          }
+        },
+        "pk-51077": {
+          "buy": 9500,
+          "psa10Net": 26789,
+          "psa10Profit": 4309,
+          "psa10Roi": 19.168149466192173,
+          "expectedProfit": 2774,
+          "expectedRoi": 12.339857651245552,
+          "exit": "買取店（両出口の保守側）",
+          "fee": 12980,
+          "lockDays": 91,
+          "sellFee": 8,
+          "deduction": 5,
+          "efficiency": {
+            "investment": 22480,
+            "profit": 2774,
+            "roi": 12.339857651245552,
+            "days": 101,
+            "annual": 44.594535076283435,
+            "purchasePrice": 9500,
+            "basis": "参考買値・利益確保の仕入れ目安・現相場基準（購入保証なし）",
+            "scenario": "現在出口相場が続く仮定",
+            "exitLabel": "買取店（両出口の保守側）",
+            "reason": null,
+            "warnings": [
+              "PSA9は集計値・個別実成約未取得",
+              "公式Populationの確認日が古い・未取得",
+              "非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価"
+            ],
+            "capBasis": false,
+            "referenceOnly": true,
+            "medianEvidence": null,
+            "referenceEvidence": {
+              "value": 9500,
+              "kind": "guide",
+              "label": "利益確保の仕入れ目安・現相場基準",
+              "candidates": [
+                {
+                  "kind": "store",
+                  "label": "現在買える状態A価格",
+                  "value": 12000,
+                  "reason": null
+                },
+                {
+                  "kind": "guide",
+                  "label": "利益確保の仕入れ目安・現相場基準",
+                  "value": 9500,
+                  "reason": "仕入れ目安算出不可"
+                },
+                {
+                  "kind": "median",
+                  "label": "素体参考相場・中央値",
+                  "value": null,
+                  "reason": "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない"
+                }
+              ],
+              "reasons": [],
+              "warnings": [
+                "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+                "単一ソース参考",
+                "中央値で実際に購入できるとは限らない・購入GOとは別"
+              ],
+              "expiresAt": 1793659300396,
+              "reference": true,
+              "availability": "在庫あり・実店舗採算は別"
+            },
+            "calculationState": "reference",
+            "blockingReasons": [],
+            "referenceReasons": [],
+            "observation": null
+          },
+          "buybackCurrent": {
+            "key": "current",
+            "label": "現在PSA10相場",
+            "psa10Price": 32000,
+            "priceRatio": 1,
+            "grossPrice": 28199,
+            "deductionRate": 5,
+            "deductionAmount": 1410,
+            "travelCost": 0,
+            "netPsa10": 26789,
+            "lowerGradeNet": 15171,
+            "hitRate": 0.8678749308245712,
+            "expectedSale": 25254,
+            "breakEvenMaxPrice": 12000,
+            "targetMaxPrice": 9500,
+            "targetProfit": 0,
+            "requiredRoiPct": 10,
+            "lockDays": 91
+          }
+        },
+        "pk-2282": {
+          "buy": 20000,
+          "psa10Net": 40375,
+          "psa10Profit": 7395,
+          "psa10Roi": 22.422680412371136,
+          "expectedProfit": 3699,
+          "expectedRoi": 11.21588841722256,
+          "exit": "買取店（両出口の保守側）",
+          "fee": 12980,
+          "lockDays": 91,
+          "sellFee": 8,
+          "deduction": 5,
+          "efficiency": {
+            "investment": 32980,
+            "profit": 3699,
+            "roi": 11.21588841722256,
+            "days": 101,
+            "annual": 40.53266606223995,
+            "purchasePrice": 20000,
+            "basis": "参考買値・利益確保の仕入れ目安・現相場基準（購入保証なし）",
+            "scenario": "現在出口相場が続く仮定",
+            "exitLabel": "買取店（両出口の保守側）",
+            "reason": null,
+            "warnings": [
+              "PSA9は集計値・個別実成約未取得",
+              "公式Populationの確認日が古い・未取得",
+              "非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価"
+            ],
+            "capBasis": false,
+            "referenceOnly": true,
+            "medianEvidence": null,
+            "referenceEvidence": {
+              "value": 20000,
+              "kind": "guide",
+              "label": "利益確保の仕入れ目安・現相場基準",
+              "candidates": [
+                {
+                  "kind": "store",
+                  "label": "現在買える状態A価格",
+                  "value": 30000,
+                  "reason": null
+                },
+                {
+                  "kind": "guide",
+                  "label": "利益確保の仕入れ目安・現相場基準",
+                  "value": 20000,
+                  "reason": "仕入れ目安算出不可"
+                },
+                {
+                  "kind": "median",
+                  "label": "素体参考相場・中央値",
+                  "value": null,
+                  "reason": "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない"
+                }
+              ],
+              "reasons": [],
+              "warnings": [
+                "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+                "単一ソース参考",
+                "中央値で実際に購入できるとは限らない・購入GOとは別"
+              ],
+              "expiresAt": 1793669583245,
+              "reference": true,
+              "availability": "在庫あり・実店舗採算は別"
+            },
+            "calculationState": "reference",
+            "blockingReasons": [],
+            "referenceReasons": [],
+            "observation": null
+          },
+          "buybackCurrent": {
+            "key": "current",
+            "label": "現在PSA10相場",
+            "psa10Price": 48000,
+            "priceRatio": 1,
+            "grossPrice": 42500,
+            "deductionRate": 5,
+            "deductionAmount": 2125,
+            "travelCost": 0,
+            "netPsa10": 40375,
+            "lowerGradeNet": 23920,
+            "hitRate": 0.7753895754970447,
+            "expectedSale": 36679,
+            "breakEvenMaxPrice": 23500,
+            "targetMaxPrice": 20000,
+            "targetProfit": 0,
+            "requiredRoiPct": 10,
+            "lockDays": 91
+          }
+        },
+        "x-91126": {
+          "buy": 10000,
+          "psa10Net": 28044,
+          "psa10Profit": 5064,
+          "psa10Roi": 22.036553524804177,
+          "expectedProfit": 2845,
+          "expectedRoi": 12.380330722367276,
+          "exit": "買取店（両出口の保守側）",
+          "fee": 12980,
+          "lockDays": 91,
+          "sellFee": 8,
+          "deduction": 5,
+          "efficiency": {
+            "investment": 22980,
+            "profit": 2845,
+            "roi": 12.380330722367276,
+            "days": 101,
+            "annual": 44.740799145188674,
+            "purchasePrice": 10000,
+            "basis": "参考買値・利益確保の仕入れ目安・現相場基準（購入保証なし）",
+            "scenario": "現在出口相場が続く仮定",
+            "exitLabel": "買取店（両出口の保守側）",
+            "reason": null,
+            "warnings": [
+              "PSA9は集計値・個別実成約未取得",
+              "公式Populationの確認日が古い・未取得",
+              "非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価"
+            ],
+            "capBasis": false,
+            "referenceOnly": true,
+            "medianEvidence": null,
+            "referenceEvidence": {
+              "value": 10000,
+              "kind": "guide",
+              "label": "利益確保の仕入れ目安・現相場基準",
+              "candidates": [
+                {
+                  "kind": "store",
+                  "label": "現在買える状態A価格",
+                  "value": 16800,
+                  "reason": null
+                },
+                {
+                  "kind": "guide",
+                  "label": "利益確保の仕入れ目安・現相場基準",
+                  "value": 10000,
+                  "reason": "仕入れ目安算出不可"
+                },
+                {
+                  "kind": "median",
+                  "label": "素体参考相場・中央値",
+                  "value": 17400,
+                  "reason": ""
+                }
+              ],
+              "reasons": [],
+              "warnings": [
+                "古値・参考価格・仕様保留等3元を参考中央値から除外・原価格と日時は履歴保持",
+                "中央値で実際に購入できるとは限らない・購入GOとは別"
+              ],
+              "expiresAt": 1793651083919,
+              "reference": true,
+              "availability": "在庫あり・実店舗採算は別"
+            },
+            "calculationState": "reference",
+            "blockingReasons": [],
+            "referenceReasons": [],
+            "observation": null
+          },
+          "buybackCurrent": {
+            "key": "current",
+            "label": "現在PSA10相場",
+            "psa10Price": 35999,
+            "priceRatio": 1,
+            "grossPrice": 29520,
+            "deductionRate": 5,
+            "deductionAmount": 1476,
+            "travelCost": 0,
+            "netPsa10": 28044,
+            "lowerGradeNet": 14996,
+            "hitRate": 0.8299655002464267,
+            "expectedSale": 25825,
+            "breakEvenMaxPrice": 12500,
+            "targetMaxPrice": 10000,
+            "targetProfit": 0,
+            "requiredRoiPct": 10,
+            "lockDays": 91
+          }
+        },
+        "x-91259": {
+          "buy": 65000,
+          "psa10Net": 111150,
+          "psa10Profit": 33170,
+          "psa10Roi": 42.536547832777636,
+          "expectedProfit": 7909,
+          "expectedRoi": 10.142344190818159,
+          "exit": "買取店（両出口の保守側）",
+          "fee": 12980,
+          "lockDays": 91,
+          "sellFee": 8,
+          "deduction": 5,
+          "efficiency": {
+            "investment": 77980,
+            "profit": 7909,
+            "roi": 10.142344190818159,
+            "days": 101,
+            "annual": 36.65302603612503,
+            "purchasePrice": 65000,
+            "basis": "参考買値・利益確保の仕入れ目安・現相場基準（購入保証なし）",
+            "scenario": "現在出口相場が続く仮定",
+            "exitLabel": "買取店（両出口の保守側）",
+            "reason": null,
+            "warnings": [
+              "参考値・素体価格の採用元・観測充足不足",
+              "PSA9は集計値・個別実成約未取得",
+              "公式Populationの確認日が古い・未取得",
+              "非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価"
+            ],
+            "capBasis": false,
+            "referenceOnly": true,
+            "medianEvidence": null,
+            "referenceEvidence": {
+              "value": 65000,
+              "kind": "guide",
+              "label": "利益確保の仕入れ目安・現相場基準",
+              "candidates": [
+                {
+                  "kind": "store",
+                  "label": "現在買える状態A価格",
+                  "value": null,
+                  "reason": "在庫なし・価格未取得または期限切れ"
+                },
+                {
+                  "kind": "guide",
+                  "label": "利益確保の仕入れ目安・現相場基準",
+                  "value": 65000,
+                  "reason": "仕入れ目安算出不可"
+                },
+                {
+                  "kind": "median",
+                  "label": "素体参考相場・中央値",
+                  "value": null,
+                  "reason": "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない"
+                }
+              ],
+              "reasons": [],
+              "warnings": [
+                "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+                "単一ソース参考",
+                "中央値で実際に購入できるとは限らない・購入GOとは別"
+              ],
+              "expiresAt": 1793669703123,
+              "reference": true,
+              "availability": "確認店の在庫なし・入荷待ち"
+            },
+            "calculationState": "reference",
+            "blockingReasons": [],
+            "referenceReasons": [
+              "素体価格の採用元・観測充足不足"
+            ],
+            "observation": null
+          },
+          "buybackCurrent": {
+            "key": "current",
+            "label": "現在PSA10相場",
+            "psa10Price": 138000,
+            "priceRatio": 1,
+            "grossPrice": 117000,
+            "deductionRate": 5,
+            "deductionAmount": 5850,
+            "travelCost": 0,
+            "netPsa10": 111150,
+            "lowerGradeNet": 49496,
+            "hitRate": 0.5902841429880843,
+            "expectedSale": 85889,
+            "breakEvenMaxPrice": 72500,
+            "targetMaxPrice": 65000,
+            "targetProfit": 0,
+            "requiredRoiPct": 10,
+            "lockDays": 91
+          }
+        }
+      },
+      "after": {
+        "pk-67343": {
+          "buy": 60400,
+          "psa10Net": 95000,
+          "psa10Profit": 21620,
+          "psa10Roi": 29.463068956118832,
+          "expectedProfit": 12216,
+          "expectedRoi": 16.647587898609974,
+          "exit": "買取店（両出口の保守側）",
+          "fee": 12980,
+          "lockDays": 91,
+          "sellFee": 8,
+          "deduction": 5,
+          "efficiency": {
+            "investment": 73380,
+            "profit": 12216,
+            "roi": 16.647587898609974,
+            "days": 101,
+            "annual": 60.16207507913505,
+            "purchasePrice": 60400,
+            "basis": "参考買値・素体参考相場・中央値（購入保証なし）",
+            "scenario": "現在出口相場が続く仮定",
+            "exitLabel": "買取店（両出口の保守側）",
+            "reason": null,
+            "warnings": [
+              "参考値・素体価格の採用元・観測充足不足",
+              "PSA9は集計値・個別実成約未取得",
+              "公式Populationの確認日が古い・未取得",
+              "非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価"
+            ],
+            "capBasis": false,
+            "referenceOnly": true,
+            "medianEvidence": null,
+            "referenceEvidence": {
+              "value": 60400,
+              "kind": "median",
+              "label": "素体参考相場・中央値",
+              "candidates": [
+                {
+                  "kind": "store",
+                  "label": "現在買える状態A価格",
+                  "value": 61000,
+                  "reason": null
+                },
+                {
+                  "kind": "guide",
+                  "label": "利益確保の仕入れ目安・現相場基準",
+                  "value": 64500,
+                  "reason": "仕入れ目安算出不可"
+                },
+                {
+                  "kind": "median",
+                  "label": "素体参考相場・中央値",
+                  "value": 60400,
+                  "reason": ""
+                }
+              ],
+              "reasons": [],
+              "warnings": [
+                "古値・参考価格・仕様保留等3元を参考中央値から除外・原価格と日時は履歴保持",
+                "中央値で実際に購入できるとは限らない・購入GOとは別"
+              ],
+              "expiresAt": 1793651088335,
+              "reference": true,
+              "availability": "在庫あり・実店舗採算は別"
+            },
+            "calculationState": "reference",
+            "blockingReasons": [],
+            "referenceReasons": [
+              "素体価格の採用元・観測充足不足"
+            ],
+            "observation": null
+          },
+          "buybackCurrent": {
+            "key": "current",
+            "label": "現在PSA10相場",
+            "psa10Price": 114500,
+            "priceRatio": 1,
+            "grossPrice": 100000,
+            "deductionRate": 5,
+            "deductionAmount": 5000,
+            "travelCost": 0,
+            "netPsa10": 95000,
+            "lowerGradeNet": 48668,
+            "hitRate": 0.7970282992117054,
+            "expectedSale": 85596,
+            "breakEvenMaxPrice": 72500,
+            "targetMaxPrice": 64500,
+            "targetProfit": 0,
+            "requiredRoiPct": 10,
+            "lockDays": 91
+          }
+        },
+        "pk-23756": {
+          "buy": 8000,
+          "psa10Net": 26020,
+          "psa10Profit": 5040,
+          "psa10Roi": 24.02287893231649,
+          "expectedProfit": 2185,
+          "expectedRoi": 10.414680648236416,
+          "exit": "買取店（両出口の保守側）",
+          "fee": 12980,
+          "lockDays": 91,
+          "sellFee": 8,
+          "deduction": 5,
+          "efficiency": {
+            "investment": 20980,
+            "profit": 2185,
+            "roi": 10.414680648236416,
+            "days": 101,
+            "annual": 37.63721224362665,
+            "purchasePrice": 8000,
+            "basis": "参考買値・利益確保の仕入れ目安・現相場基準（購入保証なし）",
+            "scenario": "現在出口相場が続く仮定",
+            "exitLabel": "買取店（両出口の保守側）",
+            "reason": null,
+            "warnings": [
+              "参考値・素体価格の採用元・観測充足不足",
+              "PSA9は集計値・個別実成約未取得",
+              "公式Populationの確認日が古い・未取得",
+              "非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価"
+            ],
+            "capBasis": false,
+            "referenceOnly": true,
+            "medianEvidence": null,
+            "referenceEvidence": {
+              "value": 8000,
+              "kind": "guide",
+              "label": "利益確保の仕入れ目安・現相場基準",
+              "candidates": [
+                {
+                  "kind": "store",
+                  "label": "現在買える状態A価格",
+                  "value": 13800,
+                  "reason": null
+                },
+                {
+                  "kind": "guide",
+                  "label": "利益確保の仕入れ目安・現相場基準",
+                  "value": 8000,
+                  "reason": "仕入れ目安算出不可"
+                },
+                {
+                  "kind": "median",
+                  "label": "素体参考相場・中央値",
+                  "value": null,
+                  "reason": "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない"
+                }
+              ],
+              "reasons": [],
+              "warnings": [
+                "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+                "単一ソース参考",
+                "中央値で実際に購入できるとは限らない・購入GOとは別"
+              ],
+              "expiresAt": 1793651108145,
+              "reference": true,
+              "availability": "在庫あり・実店舗採算は別"
+            },
+            "calculationState": "reference",
+            "blockingReasons": [],
+            "referenceReasons": [
+              "素体価格の採用元・観測充足不足"
+            ],
+            "observation": null
+          },
+          "buybackCurrent": {
+            "key": "current",
+            "label": "現在PSA10相場",
+            "psa10Price": 35999,
+            "priceRatio": 1,
+            "grossPrice": 27389,
+            "deductionRate": 5,
+            "deductionAmount": 1369,
+            "travelCost": 0,
+            "netPsa10": 26020,
+            "lowerGradeNet": 10120,
+            "hitRate": 0.8204623062779092,
+            "expectedSale": 23165,
+            "breakEvenMaxPrice": 10000,
+            "targetMaxPrice": 8000,
+            "targetProfit": 0,
+            "requiredRoiPct": 10,
+            "lockDays": 91
+          }
+        },
+        "x-122056": {
+          "buy": 6500,
+          "psa10Net": 23185,
+          "psa10Profit": 3705,
+          "psa10Roi": 19.019507186858316,
+          "expectedProfit": 2320,
+          "expectedRoi": 11.90965092402464,
+          "exit": "買取店（両出口の保守側）",
+          "fee": 12980,
+          "lockDays": 91,
+          "sellFee": 8,
+          "deduction": 5,
+          "efficiency": {
+            "investment": 19480,
+            "profit": 2320,
+            "roi": 11.90965092402464,
+            "days": 101,
+            "annual": 43.039827596722716,
+            "purchasePrice": 6500,
+            "basis": "参考買値・利益確保の仕入れ目安・現相場基準（購入保証なし）",
+            "scenario": "現在出口相場が続く仮定",
+            "exitLabel": "買取店（両出口の保守側）",
+            "reason": null,
+            "warnings": [
+              "PSA9は集計値・個別実成約未取得",
+              "公式Populationの確認日が古い・未取得",
+              "非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価"
+            ],
+            "capBasis": false,
+            "referenceOnly": true,
+            "medianEvidence": null,
+            "referenceEvidence": {
+              "value": 6500,
+              "kind": "guide",
+              "label": "利益確保の仕入れ目安・現相場基準",
+              "candidates": [
+                {
+                  "kind": "store",
+                  "label": "現在買える状態A価格",
+                  "value": 8980,
+                  "reason": null
+                },
+                {
+                  "kind": "guide",
+                  "label": "利益確保の仕入れ目安・現相場基準",
+                  "value": 6500,
+                  "reason": "仕入れ目安算出不可"
+                },
+                {
+                  "kind": "median",
+                  "label": "素体参考相場・中央値",
+                  "value": 9490,
+                  "reason": ""
+                }
+              ],
+              "reasons": [],
+              "warnings": [
+                "古値・参考価格・仕様保留等3元を参考中央値から除外・原価格と日時は履歴保持",
+                "中央値で実際に購入できるとは限らない・購入GOとは別"
+              ],
+              "expiresAt": 1793568174745,
+              "reference": true,
+              "availability": "在庫あり・実店舗採算は別"
+            },
+            "calculationState": "reference",
+            "blockingReasons": [],
+            "referenceReasons": [],
+            "observation": null
+          },
+          "buybackCurrent": {
+            "key": "current",
+            "label": "現在PSA10相場",
+            "psa10Price": 28500,
+            "priceRatio": 1,
+            "grossPrice": 24405,
+            "deductionRate": 5,
+            "deductionAmount": 1220,
+            "travelCost": 0,
+            "netPsa10": 23185,
+            "lowerGradeNet": 11776,
+            "hitRate": 0.8786292433455484,
+            "expectedSale": 21800,
+            "breakEvenMaxPrice": 8500,
+            "targetMaxPrice": 6500,
+            "targetProfit": 0,
+            "requiredRoiPct": 10,
+            "lockDays": 91
+          }
+        },
+        "pk-51077": {
+          "buy": 10000,
+          "psa10Net": 26789,
+          "psa10Profit": 3809,
+          "psa10Roi": 16.575282854656223,
+          "expectedProfit": 2458,
+          "expectedRoi": 10.696257615317666,
+          "exit": "買取店（両出口の保守側）",
+          "fee": 12980,
+          "lockDays": 91,
+          "sellFee": 8,
+          "deduction": 5,
+          "efficiency": {
+            "investment": 22980,
+            "profit": 2458,
+            "roi": 10.696257615317666,
+            "days": 101,
+            "annual": 38.65479237218761,
+            "purchasePrice": 10000,
+            "basis": "参考買値・利益確保の仕入れ目安・現相場基準（購入保証なし）",
+            "scenario": "現在出口相場が続く仮定",
+            "exitLabel": "買取店（両出口の保守側）",
+            "reason": null,
+            "warnings": [
+              "PSA9は集計値・個別実成約未取得",
+              "公式Populationの確認日が古い・未取得",
+              "非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価"
+            ],
+            "capBasis": false,
+            "referenceOnly": true,
+            "medianEvidence": null,
+            "referenceEvidence": {
+              "value": 10000,
+              "kind": "guide",
+              "label": "利益確保の仕入れ目安・現相場基準",
+              "candidates": [
+                {
+                  "kind": "store",
+                  "label": "現在買える状態A価格",
+                  "value": 12000,
+                  "reason": null
+                },
+                {
+                  "kind": "guide",
+                  "label": "利益確保の仕入れ目安・現相場基準",
+                  "value": 10000,
+                  "reason": "仕入れ目安算出不可"
+                },
+                {
+                  "kind": "median",
+                  "label": "素体参考相場・中央値",
+                  "value": null,
+                  "reason": "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない"
+                }
+              ],
+              "reasons": [],
+              "warnings": [
+                "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+                "単一ソース参考",
+                "中央値で実際に購入できるとは限らない・購入GOとは別"
+              ],
+              "expiresAt": 1793687101606,
+              "reference": true,
+              "availability": "在庫あり・実店舗採算は別"
+            },
+            "calculationState": "reference",
+            "blockingReasons": [],
+            "referenceReasons": [],
+            "observation": null
+          },
+          "buybackCurrent": {
+            "key": "current",
+            "label": "現在PSA10相場",
+            "psa10Price": 32000,
+            "priceRatio": 1,
+            "grossPrice": 28199,
+            "deductionRate": 5,
+            "deductionAmount": 1410,
+            "travelCost": 0,
+            "netPsa10": 26789,
+            "lowerGradeNet": 16560,
+            "hitRate": 0.8678749308245712,
+            "expectedSale": 25438,
+            "breakEvenMaxPrice": 12000,
+            "targetMaxPrice": 10000,
+            "targetProfit": 0,
+            "requiredRoiPct": 10,
+            "lockDays": 91
+          }
+        },
+        "pk-2282": {
+          "buy": 20500,
+          "psa10Net": 40375,
+          "psa10Profit": 6895,
+          "psa10Roi": 20.594384707287933,
+          "expectedProfit": 3406,
+          "expectedRoi": 10.173237753882916,
+          "exit": "買取店（両出口の保守側）",
+          "fee": 12980,
+          "lockDays": 91,
+          "sellFee": 8,
+          "deduction": 5,
+          "efficiency": {
+            "investment": 33480,
+            "profit": 3406,
+            "roi": 10.173237753882916,
+            "days": 101,
+            "annual": 36.76467109076499,
+            "purchasePrice": 20500,
+            "basis": "参考買値・利益確保の仕入れ目安・現相場基準（購入保証なし）",
+            "scenario": "現在出口相場が続く仮定",
+            "exitLabel": "買取店（両出口の保守側）",
+            "reason": null,
+            "warnings": [
+              "PSA9は集計値・個別実成約未取得",
+              "公式Populationの確認日が古い・未取得",
+              "非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価"
+            ],
+            "capBasis": false,
+            "referenceOnly": true,
+            "medianEvidence": null,
+            "referenceEvidence": {
+              "value": 20500,
+              "kind": "guide",
+              "label": "利益確保の仕入れ目安・現相場基準",
+              "candidates": [
+                {
+                  "kind": "store",
+                  "label": "現在買える状態A価格",
+                  "value": 30000,
+                  "reason": null
+                },
+                {
+                  "kind": "guide",
+                  "label": "利益確保の仕入れ目安・現相場基準",
+                  "value": 20500,
+                  "reason": "仕入れ目安算出不可"
+                },
+                {
+                  "kind": "median",
+                  "label": "素体参考相場・中央値",
+                  "value": null,
+                  "reason": "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない"
+                }
+              ],
+              "reasons": [],
+              "warnings": [
+                "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+                "単一ソース参考",
+                "中央値で実際に購入できるとは限らない・購入GOとは別"
+              ],
+              "expiresAt": 1793687214212,
+              "reference": true,
+              "availability": "在庫あり・実店舗採算は別"
+            },
+            "calculationState": "reference",
+            "blockingReasons": [],
+            "referenceReasons": [],
+            "observation": null
+          },
+          "buybackCurrent": {
+            "key": "current",
+            "label": "現在PSA10相場",
+            "psa10Price": 48000,
+            "priceRatio": 1,
+            "grossPrice": 42500,
+            "deductionRate": 5,
+            "deductionAmount": 2125,
+            "travelCost": 0,
+            "netPsa10": 40375,
+            "lowerGradeNet": 24840,
+            "hitRate": 0.7753895754970447,
+            "expectedSale": 36886,
+            "breakEvenMaxPrice": 23500,
+            "targetMaxPrice": 20500,
+            "targetProfit": 0,
+            "requiredRoiPct": 10,
+            "lockDays": 91
+          }
+        },
+        "x-91126": {
+          "buy": 13000,
+          "psa10Net": 28044,
+          "psa10Profit": 2064,
+          "psa10Roi": 7.944572748267899,
+          "expectedProfit": 2868,
+          "expectedRoi": 11.039260969976905,
+          "exit": "フリマ（両出口の保守側）",
+          "fee": 12980,
+          "lockDays": 91,
+          "sellFee": 8,
+          "deduction": 5,
+          "efficiency": {
+            "investment": 25980,
+            "profit": 2868,
+            "roi": 11.039260969976905,
+            "days": 101,
+            "annual": 39.894358950906636,
+            "purchasePrice": 13000,
+            "basis": "参考買値・利益確保の仕入れ目安・現相場基準（購入保証なし）",
+            "scenario": "現在出口相場が続く仮定",
+            "exitLabel": "フリマ（両出口の保守側）",
+            "reason": null,
+            "warnings": [
+              "PSA9は集計値・個別実成約未取得",
+              "公式Populationの確認日が古い・未取得",
+              "非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価"
+            ],
+            "capBasis": false,
+            "referenceOnly": true,
+            "medianEvidence": null,
+            "referenceEvidence": {
+              "value": 13000,
+              "kind": "guide",
+              "label": "利益確保の仕入れ目安・現相場基準",
+              "candidates": [
+                {
+                  "kind": "store",
+                  "label": "現在買える状態A価格",
+                  "value": 16800,
+                  "reason": null
+                },
+                {
+                  "kind": "guide",
+                  "label": "利益確保の仕入れ目安・現相場基準",
+                  "value": 13000,
+                  "reason": "仕入れ目安算出不可"
+                },
+                {
+                  "kind": "median",
+                  "label": "素体参考相場・中央値",
+                  "value": 17400,
+                  "reason": ""
+                }
+              ],
+              "reasons": [],
+              "warnings": [
+                "古値・参考価格・仕様保留等3元を参考中央値から除外・原価格と日時は履歴保持",
+                "中央値で実際に購入できるとは限らない・購入GOとは別"
+              ],
+              "expiresAt": 1793651083919,
+              "reference": true,
+              "availability": "在庫あり・実店舗採算は別"
+            },
+            "calculationState": "reference",
+            "blockingReasons": [],
+            "referenceReasons": [],
+            "observation": null
+          },
+          "buybackCurrent": {
+            "key": "current",
+            "label": "現在PSA10相場",
+            "psa10Price": 37500,
+            "priceRatio": 1,
+            "grossPrice": 29520,
+            "deductionRate": 5,
+            "deductionAmount": 1476,
+            "travelCost": 0,
+            "netPsa10": 28044,
+            "lowerGradeNet": 29716,
+            "hitRate": 0.8299655002464267,
+            "expectedSale": 28328,
+            "breakEvenMaxPrice": 15000,
+            "targetMaxPrice": 12500,
+            "targetProfit": 0,
+            "requiredRoiPct": 10,
+            "lockDays": 91
+          }
+        },
+        "x-91259": {
+          "buy": 65000,
+          "psa10Net": 111150,
+          "psa10Profit": 33170,
+          "psa10Roi": 42.536547832777636,
+          "expectedProfit": 8136,
+          "expectedRoi": 10.43344447294178,
+          "exit": "買取店（両出口の保守側）",
+          "fee": 12980,
+          "lockDays": 91,
+          "sellFee": 8,
+          "deduction": 5,
+          "efficiency": {
+            "investment": 77980,
+            "profit": 8136,
+            "roi": 10.43344447294178,
+            "days": 101,
+            "annual": 37.70502210518564,
+            "purchasePrice": 65000,
+            "basis": "参考買値・利益確保の仕入れ目安・現相場基準（購入保証なし）",
+            "scenario": "現在出口相場が続く仮定",
+            "exitLabel": "買取店（両出口の保守側）",
+            "reason": null,
+            "warnings": [
+              "参考値・素体価格の採用元・観測充足不足",
+              "PSA9は集計値・個別実成約未取得",
+              "公式Populationの確認日が古い・未取得",
+              "非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価"
+            ],
+            "capBasis": false,
+            "referenceOnly": true,
+            "medianEvidence": null,
+            "referenceEvidence": {
+              "value": 65000,
+              "kind": "guide",
+              "label": "利益確保の仕入れ目安・現相場基準",
+              "candidates": [
+                {
+                  "kind": "store",
+                  "label": "現在買える状態A価格",
+                  "value": null,
+                  "reason": "在庫なし・価格未取得または期限切れ"
+                },
+                {
+                  "kind": "guide",
+                  "label": "利益確保の仕入れ目安・現相場基準",
+                  "value": 65000,
+                  "reason": "仕入れ目安算出不可"
+                },
+                {
+                  "kind": "median",
+                  "label": "素体参考相場・中央値",
+                  "value": null,
+                  "reason": "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない"
+                }
+              ],
+              "reasons": [],
+              "warnings": [
+                "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+                "単一ソース参考",
+                "中央値で実際に購入できるとは限らない・購入GOとは別"
+              ],
+              "expiresAt": 1793669703123,
+              "reference": true,
+              "availability": "確認店の在庫なし・入荷待ち"
+            },
+            "calculationState": "reference",
+            "blockingReasons": [],
+            "referenceReasons": [
+              "素体価格の採用元・観測充足不足"
+            ],
+            "observation": null
+          },
+          "buybackCurrent": {
+            "key": "current",
+            "label": "現在PSA10相場",
+            "psa10Price": 138000,
+            "priceRatio": 1,
+            "grossPrice": 117000,
+            "deductionRate": 5,
+            "deductionAmount": 5850,
+            "travelCost": 0,
+            "netPsa10": 111150,
+            "lowerGradeNet": 50048,
+            "hitRate": 0.5902841429880843,
+            "expectedSale": 86116,
+            "breakEvenMaxPrice": 73000,
+            "targetMaxPrice": 65000,
+            "targetProfit": 0,
+            "requiredRoiPct": 10,
+            "lockDays": 91
+          }
+        }
+      }
+    }
+  ]
+}

@@ -99,7 +99,7 @@ function main() {
   if(campPlan.due){
     const rate=require('./backfill_rate'),last=rate.read().samples.filter(r=>r.source==='torecacamp').at(-1);
     const settings=rate.settings(read('work/safe-backfill-config.json').sources.torecacamp,last);
-    run('work/run_tracked_update.js',['torecacamp','work/update_yuyutei_torecacamp.js'],{SHOP_SOURCE_ONLY:'torecacamp',TORECACAMP_PROACTIVE_LEAD_MS:String(2*3600000),TORECACAMP_SITEMAPS_PER_RUN:'1',TORECACAMP_PRODUCT_DETAIL_BATCH:String(Math.min(20,settings.batchSize)),TORECACAMP_RUNTIME_LIMIT_MS:'90000',SHOP_ACCESS_INTERVAL_MS:String(settings.intervalMs),SHOP_FETCH_RETRIES:'1'},'source');
+    run('work/run_tracked_update.js',['torecacamp','work/update_yuyutei_torecacamp.js'],{SHOP_SOURCE_ONLY:'torecacamp',TORECACAMP_PROACTIVE_LEAD_MS:String(2*3600000),TORECACAMP_SITEMAPS_PER_RUN:'1',TORECACAMP_PRODUCT_DETAIL_BATCH:String(require('./camp_postpass').maintenanceBudget(settings).batchSize),TORECACAMP_RUNTIME_LIMIT_MS:'90000',SHOP_ACCESS_INTERVAL_MS:String(settings.intervalMs),SHOP_FETCH_RETRIES:'1'},'source');
   }
   runs.push({source:'torecacamp',...campPlan,llmCalls:0,codexCalls:0});save();
   }

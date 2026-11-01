@@ -42,7 +42,7 @@ function makeQueue({ cards, population, buybacks, setDates, setUrls, analysisIds
     if (population[card.id]) { counts.linked++; continue; }
     const { setCode, cardNumber } = psaIdentity(card);
     const alternatePopUrls = [...(knownPopUrls.get(setCode) || [])];
-    const foreignLanguage = /【(?:中国語版|韓国語版|英語版)】/.test(String(card.name || ""));
+    const foreignLanguage = Boolean(card.language&&card.language!=='ja')||require('./card_identity').canonicalIdentity(card).language!=='ja';
     const ambiguityReason = card.identityReviewRequired ? "カード仕様・絵柄要確認"
       : foreignLanguage ? "日本語POPと異なる言語"
         : !cardNumber ? "番号形式未解析"
@@ -78,7 +78,8 @@ function makeQueue({ cards, population, buybacks, setDates, setUrls, analysisIds
     note: "セットURL未登録はPSAデータ不存在を意味しません。認証・取得不能はカード単位の未一致とは分けて扱います。" };
 }
 
-function main() {
+function main(base = root) {
+  const read = file => JSON.parse(fs.readFileSync(path.join(base,file),'utf8'));
   const cards = read("data/pokemon-cards.json");
   const population = read("data/psa-population-summary.json").cards || {};
   const buybacks = read("data/shop-buyback-summary.json").cards || {};
@@ -88,10 +89,11 @@ function main() {
   const raw = read('data/psa-official-populations.json');
   const savedRows = require('./build_psa_history').authoritativeRows(require('./build_psa_history').compactRows(raw));
   const queue = makeQueue({ cards, population, buybacks, setDates, setUrls, analysisIds, savedRows, now: new Date().toISOString() });
-  fs.writeFileSync(path.join(root, "work", "psa-linkage-all.json"), JSON.stringify(queue));
-  fs.writeFileSync(path.join(root, "data", "psa-linkage-priority.json"), JSON.stringify({ ...queue, rows: undefined }));
+  fs.writeFileSync(path.join(base, "work", "psa-linkage-all.json"), JSON.stringify(queue));
+  fs.writeFileSync(path.join(base, "data", "psa-linkage-priority.json"), JSON.stringify({ ...queue, rows: undefined }));
   console.log(JSON.stringify({ counts: queue.counts, top: queue.priorityTop.slice(0, 3).map((row) => row.name) }));
 }
 
+function needsRebuild(queue,population,totalCards){return queue?.totalCards!==totalCards||queue?.counts?.linked!==Object.keys(population||{}).length||(queue.rows||[]).some(r=>population[r.cardId]);}
 if (require.main === module) main();
-module.exports = { makeQueue, psaIdentity };
+module.exports = { needsRebuild, makeQueue, psaIdentity, build:main };
