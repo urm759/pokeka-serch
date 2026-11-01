@@ -712,10 +712,13 @@ async function updateTorecaCamp(cards, paths) {
 
   // Legacy known URLs lack a sitemap number. Refresh them without inventing provenance or moving the normal cursor.
   progress.knownUrlRetries ||= {};
-  const legacyRequested=campRequestedIds(read(path.join(__dirname,'search-profile-targets.json'),{}),comparisonIds);
+  const alternateRequests=alternateCampIds(proactiveLead);
+  const requestedTargets=read(path.join(__dirname,'search-profile-targets.json'),{});
+  const criticalRequests=campCriticalIds(requestedTargets,read(path.join(__dirname,'priority-search-profiles.json'),{}).popFocusProfileIds||[]);
+  const legacyRequested=campRequestedIds(requestedTargets,comparisonIds,alternateRequests);
   for(const id of legacyRequested)important.add(id);
   const legacyRecords=[];
-  if(!stoppingReason)for(const previousEntry of postpass.legacyTargets(catalog,legacyRequested,{...progress.knownUrlRetries,...progress.retryByUrl},Date.now(),proactiveLead).slice(0,Math.floor(detailLimit/3))) {
+  if(!stoppingReason)for(const previousEntry of postpass.legacyTargets(catalog,legacyRequested,{...progress.knownUrlRetries,...progress.retryByUrl},Date.now(),proactiveLead,criticalRequests).slice(0,Math.floor(detailLimit/3))) {
     if(Date.now()>=stopBy-Math.max(15000,runtimeLimitMs/2))break;
     const url=previousEntry.detailUrl,record={id:previousEntry.cardId,url,startedAt:new Date().toISOString(),sourceSitemap:null};
     try {
@@ -782,8 +785,8 @@ async function updateTorecaCamp(cards, paths) {
       const normalStart=retryOnly || retrySitemap ? 0 : progress.currentSitemapIndex === sitemapIndex ? progress.currentEntryIndex : 0;
       const prioritized=!retryOnly&&!retrySitemap;
       if(prioritized) {
-        const requested=campRequestedIds(read(path.join(__dirname,'search-profile-targets.json'),{}),comparisonIds);
-        entries=postpass.prioritize(entries,normalStart,catalog.filter(r=>r.sourceSitemap<=sitemapUrls.length),[...new Set(requested)],detailLimit,progress.retryByUrl,Date.now(),proactiveLead);
+        const requested=campRequestedIds(read(path.join(__dirname,'search-profile-targets.json'),{}),comparisonIds,alternateRequests);
+        entries=postpass.prioritize(entries,normalStart,catalog.filter(r=>r.sourceSitemap<=sitemapUrls.length),[...new Set(requested)],detailLimit,progress.retryByUrl,Date.now(),proactiveLead,criticalRequests);
       }
       const startingEntry=prioritized?0:normalStart;
       let retryEntryCursor = 0;
@@ -1026,7 +1029,13 @@ async function exclusiveMain() {
 }
 if (require.main === module) exclusiveMain().catch((error) => { console.error(error); process.exitCode = 1; });
 
-function campRequestedIds(targets,comparisonIds=[]) {
+function alternateCampIds(leadMs=0){return require('./alternate_purchase_evidence').load(ROOT,Date.now(),leadMs).filter(r=>r.request&&r.source==='torecacamp').map(r=>r.id);}
+function campCriticalIds(targets,focusProfileIds){
+  const focus=new Set(focusProfileIds);
+  return campRequestedIds({...targets,readyRoutes:{domesticShops:[]},freshnessRecovery:[],repairRequests:[],
+    profiles:(targets.profiles||[]).filter(p=>focus.has(p.id))});
+}
+function campRequestedIds(targets,comparisonIds=[],alternate=[]) {
   const fields=new Set(['referenceMedian','shopStateA']);
   const urgent=new Set([...(targets.freshnessRecovery||[]).map(r=>r.id),...(targets.repairRequests||[])
     .filter(r=>r.source==='domesticShops'&&r.automatic===true&&fields.has(r.field)).map(r=>r.id)]);
@@ -1040,7 +1049,7 @@ function campRequestedIds(targets,comparisonIds=[]) {
     const used=[facts?.purchase,...(profile.id.includes('median')?facts?.medianEvidence?.rows||[]:[])];
     if(used.some(r=>{try{const u=new URL(r?.url);return u.hostname==='torecacamp-pokemon.com'&&u.pathname.startsWith('/products/');}catch{return false;}}))qualified.push(id);
   }
-  return [...new Set([...rows.filter(r=>urgent.has(r.id)).map(r=>r.id),...qualified,...rows.map(r=>r.id),...comparisonIds])];
+  return [...new Set([...rows.filter(r=>urgent.has(r.id)).map(r=>r.id),...qualified,...rows.map(r=>r.id),...alternate,...comparisonIds])];
 }
 module.exports = {
   historySummary,
@@ -1048,6 +1057,6 @@ module.exports = {
   guardCatalogDrop, updateProgressHealth, migrateCampRetries,
   parseProductSitemap, parseProductSitemapIndex, preferCampEntry, campPurchaseUrl,
   yuyuteiPriority,
-  campRequestedIds,
+  campRequestedIds,campCriticalIds,
   numberMatches, parseYuyuteiResults, titleMatches,
 };

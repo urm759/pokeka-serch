@@ -23,7 +23,8 @@ function plan({ cards, sourceId, catalog, candidateRows = {}, fixedIds = [], foc
       ?observedTimes.sort((a,b)=>Date.parse(a)-Date.parse(b))[0]:null;
     const time = observationTime(lastSuccessAt);
     const validTime = Number.isFinite(time) && time <= now;
-    const hours = important ? config.importantHours || 6 : config.normalHours || 720;
+    const alternateOnly=candidateRows[card.id]?.alternatePurchaseEvidence===true&&!focus&&!fixedTarget&&!favorites.has(card.id);
+    const hours = alternateOnly ? 48 : important ? config.importantHours || 6 : config.normalHours || 720;
     const due = validTime ? time + hours * 3600000 : 0;
     const budgetDeferred=/^(?:timeout: 通信前に時間予算を確認・保存して停止|時間予算・未取得カードから次回再開)$/.test(previous.error || '');
     const retry = budgetDeferred ? NaN : Date.parse(previous.nextRetryAt);
@@ -34,9 +35,9 @@ function plan({ cards, sourceId, catalog, candidateRows = {}, fixedIds = [], foc
       proactive: important && due > now && proactive.eligibleDeadline(due, important, now, config),
       eligible: proactive.eligibleDeadline(due, important, now, config) && !recentlyChecked && !waiting && (!Number.isFinite(retry) || retry <= now),
       status: waiting ? "手動確認待ち" : Number.isFinite(retry) && retry > now ? "再試行待ち" : recentlyChecked ? "確認直後・共通取得間隔内" : due <= now ? "期限超過・取得待ち" : proactive.eligibleDeadline(due, important, now, config) ? "次回完了前に期限切れ・先回り待ち" : "期限内",
-      priceRefreshReady: candidateRows[card.id]?.priceRefreshReady === true,
+      refreshHours:hours,priceRefreshReady: candidateRows[card.id]?.priceRefreshReady === true,
       currentMarket: candidateRows[card.id]?.currentMarket === true,
-      reason: [focus && "重点カード", candidate && "購入候補", fixedTarget && "固定鮮度監視群・期限維持", candidateRows[card.id]?.currentMarket && "現相場採算候補", candidateRows[card.id]?.priceRefreshReady && "購入価格再確認で試算可能", favorites.has(card.id) && "同期済みお気に入り", !important && "通常巡回"].filter(Boolean).join("／"),
+      reason: [focus && "重点カード", candidate && "購入候補", fixedTarget && "固定鮮度監視群・期限維持", alternateOnly && "取得元参考相場なし・別店舗価格の確認（参考相場へ代用しない）", candidateRows[card.id]?.currentMarket && "現相場採算候補", candidateRows[card.id]?.priceRefreshReady && "購入価格再確認で試算可能", favorites.has(card.id) && "同期済みお気に入り", !important && "通常巡回"].filter(Boolean).join("／"),
       score: (validTime ? Math.max(0, (now - due) / 3600000) : 100000) + (important ? 24 : 0) };
   });
   const sorted = records.filter((row) => row.eligible).sort((a, b) => Number(b.due) - Number(a.due)
@@ -66,6 +67,8 @@ function plan({ cards, sourceId, catalog, candidateRows = {}, fixedIds = [], foc
   return { records, queue };
 }
 function load(sourceId, root = ROOT, now = Date.now()) {
+  const alternateRows=Object.fromEntries(require('./alternate_purchase_evidence').load(root,now,proactive.lead(timingConfig(root)).leadMs)
+    .filter(r=>r.request&&r.source===sourceId).map(r=>[r.id,{alternatePurchaseEvidence:true}]));
   const requested=read(root,'work/search-profile-targets.json');
   const allowed=row=>require('./profile_completion_routes').requestForSource(row,sourceId);
   const profileRows=Object.fromEntries([
@@ -75,7 +78,7 @@ function load(sourceId, root = ROOT, now = Date.now()) {
   ].map(id=>[id,{priceRefreshReady:true,requestedProfile:true}]));
   return plan({ cards: read(root, "data/pokemon-cards.json", []), sourceId,
     fixedIds: read(root, "work/priority-freshness-history.json").sources?.[sourceId]?.cohort || [],
-    catalog: read(root, `work/${sourceId}_catalog.json`, []), candidateRows: { ...read(root,'work/candidate-recovery-targets.json').rows, ...(read(root, "work/candidate-availability-history.json").runs?.at(-1)?.rows || read(root, "work/acquisition-audit-baseline.json").availability?.rows || {}), ...read(root, 'work/purchase-price-targets.json').rows,...profileRows },
+    catalog: read(root, `work/${sourceId}_catalog.json`, []), candidateRows: { ...alternateRows,...read(root,'work/candidate-recovery-targets.json').rows, ...(read(root, "work/candidate-availability-history.json").runs?.at(-1)?.rows || read(root, "work/acquisition-audit-baseline.json").availability?.rows || {}), ...read(root, 'work/purchase-price-targets.json').rows,...profileRows },
     focusConfig: read(root, "data/focus-monitor-config.json"), config: timingConfig(root),
     jobs: read(root, "work/priority-price-checkpoint.json").sources?.[sourceId]?.jobs || {},
     manualWait: read(root, "work/candidate-shop-refresh.json").checkpoints?.[sourceId]?.manualWait || {}, now });
@@ -86,7 +89,7 @@ function finish(previous = {}, record, at, config = {}) {
   return { ...previous, url: record.url, lastAttemptAt: record.startedAt, lastSuccessAt: ok ? at : previous.lastSuccessAt || null,
     failures, status: ok ? "success" : record.status, error: ok ? null : record.error,
     nextRetryAt: ok ? null : new Date(Date.parse(at) + Math.min(48, 2 ** failures) * 3600000).toISOString(),
-    nextDueAt: ok ? new Date(Date.parse(at) + (record.important ? config.importantHours || 6 : config.normalHours || 720) * 3600000).toISOString() : previous.nextDueAt || null };
+    nextDueAt: ok ? new Date(Date.parse(at) + (record.refreshHours || (record.important ? config.importantHours || 6 : config.normalHours || 720)) * 3600000).toISOString() : previous.nextDueAt || null };
 }
 function write(root = ROOT) {
   const now = Date.now();
@@ -139,7 +142,7 @@ function write(root = ROOT) {
       eligibleCount:planned.queue.filter(r=>r.important).length, manualCount:important.filter(r=>r.status==='手動確認待ち').length,
       retryCount:important.filter(r=>r.status==='再試行待ち').length,blocked:Boolean(blocked),
       verifiedCount:capacityRun?.refreshedCount,durationMs:capacityRun?.durationMs,budgetMs:budgetSeconds*1000,
-      intervalMs:proactive.lead(timingConfig(root)).intervalMs}),
+      intervalMs:proactive.lead(timingConfig(root)).intervalMs,targetHours:important.map(r=>r.refreshHours)}),
       measuredAt: capacityRun?.startedAt || null, samples: capacityRun?.capacitySamples || 0,
       measurementBasis: capacityRun?.capacityBasis || '期限付き価格巡回の実測なし・補完バッチで代用しない' };
     sources[id].proactiveVerified = run.proactiveVerified ?? null;

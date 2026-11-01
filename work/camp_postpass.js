@@ -21,16 +21,20 @@ function checkpoint(progress,total) {
     cycles:previous.cycles+Number(wrapped),checkedAt:new Date().toISOString()};
   if (wrapped) { progress.currentSitemapIndex=0; progress.currentEntryIndex=0; }
 }
-function prioritize(entries,start,catalog,requested,detailLimit,retries={},now=Date.now(),leadMs=0) {
+function prioritize(entries,start,catalog,requested,detailLimit,retries={},now=Date.now(),leadMs=0,criticalIds=[]) {
   const normal=entries.slice(start).map((r,i)=>({...r,normalIndex:start+i}));
   const front=new Set(normal.slice(0,Math.ceil(detailLimit/2)).map(r=>r.url));
   const order=new Map(requested.map((id,i)=>[id,i]));
   const eligible=catalog.filter(r=>Number.isInteger(r.sourceSitemap)&&r.sourceSitemap>0
     &&/^https:\/\/torecacamp-pokemon\.com\/products\/[a-zA-Z0-9_%~-]+$/.test(r.detailUrl||'')&&!r.priceQuarantined
     &&require('./acquisition_retry').eligible(retries[r.detailUrl],now)&&due(r,order.has(r.cardId),now,leadMs)&&!front.has(r.detailUrl));
-  const urgent=eligible.filter(r=>order.has(r.cardId)).sort((a,b)=>order.get(a.cardId)-order.get(b.cardId));
+  const critical=new Set(criticalIds);
+  const urgent=eligible.filter(r=>order.has(r.cardId)).sort((a,b)=>Number(critical.has(b.cardId))-Number(critical.has(a.cardId))||(Date.parse(a.observedAt)||0)-(Date.parse(b.observedAt)||0)||order.get(a.cardId)-order.get(b.cardId));
   const routine=eligible.filter(r=>!order.has(r.cardId)).sort((a,b)=>(Date.parse(a.observedAt)||0)-(Date.parse(b.observedAt)||0));
-  const budget=Math.floor(detailLimit/2),priorityBudget=Math.max(1,Math.floor(budget*0.75));
+  const budget=Math.floor(detailLimit/2),usualPriority=Math.max(1,Math.floor(budget*0.75));
+  // When overdue priority work exceeds its old share, use the selected half
+  // for it. The other half remains ordinary sitemap exploration; no extra GETs.
+  const priorityBudget=urgent.length>usualPriority?Math.min(budget,urgent.length):usualPriority;
   const chosen=[...urgent.slice(0,priorityBudget),...routine.slice(0,budget-Math.min(priorityBudget,urgent.length))];
   if(chosen.length<budget)chosen.push(...urgent.slice(priorityBudget,priorityBudget+budget-chosen.length));
   const selected=chosen.map(r=>({url:r.detailUrl,title:r.title,handle:r.detailUrl.split('/').pop(),sourceSitemap:r.sourceSitemap,priorityRefresh:true}));
@@ -39,12 +43,13 @@ function prioritize(entries,start,catalog,requested,detailLimit,retries={},now=D
   while(n<remaining.length||p<selected.length){if(n<remaining.length)result.push(remaining[n++]);if(p<selected.length)result.push(selected[p++]);}
   return result;
 }
-function legacyTargets(catalog,requested,retries={},now=Date.now(),leadMs=0) {
+function legacyTargets(catalog,requested,retries={},now=Date.now(),leadMs=0,criticalIds=[]) {
   const order=new Map(requested.map((id,i)=>[id,i]));
+  const critical=new Set(criticalIds);
   return catalog.filter(r=>order.has(r.cardId)&&!Number.isInteger(r.sourceSitemap)&&!r.priceQuarantined
     &&/^https:\/\/torecacamp-pokemon\.com\/products\/[a-zA-Z0-9_%~-]+$/.test(r.detailUrl||'')
     &&due(r,true,now,leadMs)&&require('./acquisition_retry').eligible(retries[r.detailUrl],now))
-    .sort((a,b)=>order.get(a.cardId)-order.get(b.cardId));
+    .sort((a,b)=>Number(critical.has(b.cardId))-Number(critical.has(a.cardId))||(Date.parse(a.observedAt)||0)-(Date.parse(b.observedAt)||0)||order.get(a.cardId)-order.get(b.cardId));
 }
 function priorityMaintenance(catalog,requested,progress={},run={},now=Date.now(),leadMs=0) {
   const retry=require('./acquisition_retry');

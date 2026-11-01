@@ -2,6 +2,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const { plan, finish } = require("./priority_price_queue.js");
+require('./test_alternate_purchase_evidence');
 const { due } = require("./run_priority_price_refresh.js");
 const years = require("../release-year-filter.js");
 const model = require("../decision-model.js");
