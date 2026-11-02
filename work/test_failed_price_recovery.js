@@ -80,5 +80,16 @@ try{
   assert.equal(JSON.parse(fs.readFileSync(path.join(root,'work/recovery-applied-123.json'))).restored.length,1,'a repeated invocation preserves the original recovery receipt');
   write('data/pokemon-cards.json',[{id:'one',price:120}]);assert.throws(()=>restore(archive,'123',base,root),/Concurrent/);
   assert.equal(JSON.parse(fs.readFileSync(path.join(root,'data/pokemon-cards.json')))[0].price,120,'newer independent inputs are not overwritten');
+  git(['add','data']);git(['-c','user.name=test','-c','user.email=test@example.invalid','commit','-m','later']);
+  const shallow=path.join(root,'shallow'),url=require('node:url').pathToFileURL(root).href;
+  git(['clone','--quiet','--depth=1',url,shallow]);
+  assert.notEqual(cp.spawnSync('git',['cat-file','-e',base+'^{commit}'],{cwd:shallow}).status,0,'Actions-style shallow clone lacks the acquisition base');
+  assert.throws(()=>restore(archive,'123',base,shallow),/base commit unavailable/,'missing base is not silently treated as a new-file conflict');
+  const {ensureTrustedBase}=require('./recover_failed_price_run');
+  assert.deepEqual(ensureTrustedBase(shallow,base),{fetched:true});
+  assert.deepEqual(ensureTrustedBase(shallow,base),{fetched:false},'known base requires no repeated fetch');
+  assert.throws(()=>ensureTrustedBase(shallow,'main'),/Exact trusted/);
+  assert.throws(()=>ensureTrustedBase(shallow,'f'.repeat(40),()=>({status:1})),/saved archive retained/);
+  assert.throws(()=>restore(archive,'123',base,shallow),/Concurrent/,'genuine newer source conflicts remain held after the base is available');
 }finally{assert(path.resolve(root).startsWith(path.resolve(os.tmpdir())+path.sep));fs.rmSync(root,{recursive:true,force:true});}
 console.log('PASS failed price recovery: trusted schedule only, verified ZIP/manifest, no reacquisition, original times, idempotence and concurrent-input hold');

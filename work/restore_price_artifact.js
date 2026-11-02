@@ -49,6 +49,7 @@ function reconstructionManifest(entries,runId){
 }
 function restore(file,runId,base,root=ROOT){
   if(!/^\d+$/.test(String(runId))||!/^[a-f0-9]{40}$/.test(base))throw Error('Explicit trusted run/base required');
+  if(cp.spawnSync('git',['cat-file','-e',base+'^{commit}'],{cwd:root,encoding:'utf8'}).status!==0)throw Error('Recovery base commit unavailable; fetch the trusted run base before comparison');
   const archive=fs.readFileSync(file),entries=zipEntries(archive);
   const selected=reconstructionManifest(entries,runId),manifest=selected.manifest,prefix=selected.file.slice(0,-'recovery-manifest.json'.length);
   if(String(manifest.workflowRunId)!==String(runId)||manifest.invalidJson?.length)throw Error('Recovery run/JSON proof mismatch');
