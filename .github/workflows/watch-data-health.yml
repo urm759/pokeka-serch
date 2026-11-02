@@ -164,6 +164,20 @@ jobs:
           node work/publish_data_checkpoint.js "Report data update health"
       - name: Report independent acquisition failures without hiding them
         run: node work/run_priority_price_refresh.js --report-failures
+      - name: Keep source merge holds visible without blocking normal updates
+        id: source_holds
+        if: always()
+        run: node work/recover_failed_price_run.js --hold-status
+      - name: Retain verified held source archives separately
+        if: always() && steps.source_holds.outputs.pending == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: source-merge-holds-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            work/recovery-*.zip
+            work/recovery-inspected-*.json
+          retention-days: 30
+          if-no-files-found: error
       - name: Preserve unpublished monitor state
         if: failure()
         run: node work/capture_unpublished_data.js health

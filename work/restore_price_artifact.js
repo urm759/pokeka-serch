@@ -78,7 +78,7 @@ function restore(file,runId,base,root=ROOT){
     plan.push({file:row.file,incoming,current,data});
   }
   if(!seen.has('data/pokemon-cards.json'))throw Error('Recovery acquisition input missing');
-  if(conflicts.length)throw Error('Concurrent source changes require merge; saved archive retained: '+conflicts.join(', '));
+  if(conflicts.length)throw Object.assign(Error('Concurrent source changes require merge; saved archive retained: '+conflicts.join(', ')),{code:'SOURCE_RECOVERY_MERGE_REQUIRED',files:conflicts});
   const receipt=path.join(root,'work/recovery-applied-'+runId+'.json');
   if(!plan.length && fs.existsSync(receipt)){
     const previous=JSON.parse(fs.readFileSync(receipt));
