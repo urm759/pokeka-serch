@@ -364,7 +364,7 @@
   "focusBefore": 6,
   "focusAfter": 9,
   "calculationAdopted": 0,
-  "domesticNewlyAnalyzable": 0,
+  "domesticNewlyAnalyzable": 1,
   "candidateGainFromReferenceDisplay": 0,
   "publicStatus": "prepared-not-published",
   "rawPublic": false,
@@ -377,5 +377,98 @@
     "pk-54810"
   ],
   "sourceNewLinksThisWork": 0,
-  "publicationProof": "separate cloud application and final Pages verification"
+  "publicationProof": "separate cloud application and final Pages verification",
+  "requiredShortageResolved": 1,
+  "newlyAnalyzable": [
+    {
+      "id": "x-334393",
+      "before": {
+        "c": 57.1,
+        "s": "データ不足",
+        "n": 0,
+        "rr": 0,
+        "rl": 0,
+        "rd": "2018-06-01",
+        "ry": 2018,
+        "rs": "セット発売日から補完",
+        "ru": null,
+        "rc": null,
+        "p": 658,
+        "r": [
+          "必須不足1項目・補完で分析可能に近い",
+          "素体全状態取引30日10件",
+          "状態A価格対立・成約根拠の確認待ち",
+          "PSA10取引30日5件"
+        ],
+        "m": [
+          "domesticPrice"
+        ],
+        "x": "domesticPrice",
+        "a": 1,
+        "l": "2026-11-01T22:58:37.282Z",
+        "pk": "unexpanded-set",
+        "p9": "aggregate",
+        "i": {
+          "domesticPrice": "再試行待ち",
+          "domesticTrades": "取得済み",
+          "psa10Price": "取得済み",
+          "psa10Trades": "取得済み",
+          "rawActualSales": "中止",
+          "psa10ActualSales": "中止",
+          "psa9Sales": "中止",
+          "psa9Aggregate": "取得済み",
+          "psa9Evidence": "取得済み",
+          "buybackExitEvidence": "定期再確認",
+          "psaOfficial": "取得済み",
+          "shopStateA": "取得済み",
+          "buyback": "定期再確認",
+          "pokedata": "中止",
+          "release": "取得済み",
+          "identity": "取得済み"
+        }
+      },
+      "after": {
+        "c": 64.3,
+        "s": "分析可能",
+        "n": 0,
+        "rr": 0,
+        "rl": 0,
+        "rd": "2018-06-01",
+        "ry": 2018,
+        "rs": "セット発売日から補完",
+        "ru": null,
+        "rc": null,
+        "p": 178,
+        "r": [
+          "素体全状態取引30日10件",
+          "PSA10取引30日5件"
+        ],
+        "m": [],
+        "x": "buybackExitEvidence",
+        "a": 0,
+        "l": "2026-11-01T22:58:37.282Z",
+        "pk": "unexpanded-set",
+        "p9": "aggregate",
+        "i": {
+          "domesticPrice": "取得済み",
+          "domesticTrades": "取得済み",
+          "psa10Price": "取得済み",
+          "psa10Trades": "取得済み",
+          "rawActualSales": "中止",
+          "psa10ActualSales": "中止",
+          "psa9Sales": "中止",
+          "psa9Aggregate": "取得済み",
+          "psa9Evidence": "取得済み",
+          "buybackExitEvidence": "定期再確認",
+          "psaOfficial": "取得済み",
+          "shopStateA": "取得済み",
+          "buyback": "定期再確認",
+          "pokedata": "中止",
+          "release": "取得済み",
+          "identity": "取得済み"
+        }
+      },
+      "cause": "Recovered fresh same-spec Camp quote and common state-A evidence audit resolved domestic price conflict; not GemRate adoption"
+    }
+  ]
 }
