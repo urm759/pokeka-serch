@@ -6,13 +6,17 @@ function build(root=ROOT,store=path.resolve(root,'../private-research/gemrate'))
   const report=JSON.parse(fs.readFileSync(path.join(store,'expanded-verification-report.json')));
   if(report.acceptedCards!==50||report.discrepancyHeldCards!==1)throw Error('Reviewed scope changed; a new publication review is required');
   const catalog=new Map(JSON.parse(fs.readFileSync(path.join(root,'data/pokemon-cards.json'))).map(c=>[c.id,c]));
-  const latest=new Map();
+  const population=require('./gemrate_population_observations'),receipts=JSON.parse(fs.readFileSync(path.join(store,'manifest.json'))).files;
+  const latest=new Map(),observations=[];
   for(const output of report.outputs) {
     const parsed=JSON.parse(fs.readFileSync(output.path));
     if(parsed.csvSha256!==output.sha256||parsed.accepted.length!==output.accepted)throw Error('Reviewed receipt mismatch');
+    const receipt=receipts.find(r=>r.sha256===output.sha256&&r.kind==='list');if(!receipt)throw Error('Historical GemRate original missing');
+    population.verifyLegacy(root,store,receipt,parsed.accepted);
     for(const row of parsed.accepted) {
       const card=catalog.get(row.cardId),value=card&&reference(card,row,{audience:'private-preview'});
       if(!value?.available)throw Error('Unproven reference identity/date/counts');
+      observations.push(row);
       const old=latest.get(card.id);
       if(old?.sourceUpdatedDate===row.sourceUpdatedDate&&(old.psa10!==row.psa10||old.total!==row.total))throw Error('Conflicting counts on same source date');
       if(!old||row.sourceUpdatedDate>old.sourceUpdatedDate)latest.set(card.id,row);
@@ -38,6 +42,7 @@ function build(root=ROOT,store=path.resolve(root,'../private-research/gemrate'))
       if(hash(raw)!==receipt.sha256||hash(zlib.gunzipSync(fs.readFileSync(receipt.backupPath)))!==receipt.sha256)throw Error('Inbox original/backup hash mismatch');
       const parsed=JSON.parse(fs.readFileSync(receipt.parsedPath));
       if(parsed.csvSha256!==receipt.sha256||parsed.accepted.length!==receipt.accepted)throw Error('Inbox parsed receipt mismatch');
+      population.verifyRows(parsed.accepted,raw,sidecar.context);
       const set=confirmed.scope(root,sidecar.context);
       for(const row of parsed.accepted) {
         const card=catalog.get(row.cardId),auto=confirmed.authorized(row,card,set,links,english);
@@ -45,6 +50,7 @@ function build(root=ROOT,store=path.resolve(root,'../private-research/gemrate'))
         if(row.csvSha256!==receipt.sha256||row.contextProof!==sidecar.context.contextProof||row.sourceUpdatedDate!==sidecar.context.sourceUpdatedDate||row.pageUrl!==sidecar.context.pageUrl)throw Error('Inbox row/page/date mismatch');
         const value=card&&reference(card,row,{audience:'private-preview'});
         if(!value?.available)throw Error('Inbox identity/date/counts unproven');
+        observations.push(row);
         const old=latest.get(row.cardId);
         if(additions.some(r=>r.cardId===row.cardId)){
           const spec=JSON.parse(row.specEvidence);
@@ -65,16 +71,21 @@ function build(root=ROOT,store=path.resolve(root,'../private-research/gemrate'))
     [id,[r.identityKey,r.psa10,r.total,r.sourceUpdatedDate,r.pageUrl]]));
   const result={version:2,source:'GemRate',grader:'PSA',scope:'reviewed-csv-reference',
     fields:['identityKey','psa10','total','sourceDate','sourceUrl'],cards};
+  const history=population.project(latest,observations);
+  result.population=history.public;
   const registration={version:1,rule:confirmed.RULE,legacyIds,automatic:Object.fromEntries(Object.entries(automatic).sort(([a],[b])=>a.localeCompare(b)))};
   confirmed.validatePublic(root,result,registration);
+  population.save(store,history.private);
   const registered=path.join(root,'work/gemrate-confirmed-reference-registry.json');fs.mkdirSync(path.dirname(registered),{recursive:true});
   if(!fs.existsSync(registered)||JSON.stringify(JSON.parse(fs.readFileSync(registered)))!==JSON.stringify(registration))require('./acquisition_retry').atomicWrite(registered,registration,0);
-  // No original CSV, history, receipt metadata, private paths, or adopted rates are exported.
+  // No original CSV, full history, receipt metadata, private paths, or adopted rates are exported.
   const target=path.join(root,'data/gemrate-reference-summary.json');
   const previous=fs.existsSync(target)?JSON.parse(fs.readFileSync(target)):null;
   const updatedReferences=Object.entries(cards).filter(([id,r])=>JSON.stringify(previous?.cards?.[id])!==JSON.stringify(r)).length;
-  if(updatedReferences)require('./acquisition_retry').atomicWrite(target,result,0);
+  const historyChanged=JSON.stringify(previous?.population)!==JSON.stringify(result.population);
+  if(updatedReferences||historyChanged)require('./acquisition_retry').atomicWrite(target,result,0);
   return {updatedReferences,publishedReferences:latest.size,calculationAdopted:0,sourceAcquisitions:0,newObservations:0,
+    historyChanged,comparableReferences:Object.values(result.population.cards).filter(r=>r[3].some(Boolean)).length,
     bytes:fs.statSync(target).size,dates:[...new Set([...latest.values()].map(r=>r.sourceUpdatedDate))]};
 }
 function refreshIfAvailable(root=ROOT,store=path.resolve(root,'../private-research/gemrate')) {

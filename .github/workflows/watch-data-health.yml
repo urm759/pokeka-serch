@@ -43,6 +43,7 @@ jobs:
           if [ "$(node work/update_validation.js --mode)" = "regression" ]; then
             node work/test_profile_worker.js
             node work/test_gemrate_limited_public_reference.js
+            node work/test_gemrate_pop_history.js
             node work/test_hareruya_single_response.js
             node work/test_watch_catchup_trigger.js
             node work/test_failed_price_recovery.js
@@ -172,7 +173,9 @@ jobs:
           retention-days: 7
           if-no-files-found: warn
   watch:
-    needs: catchup
+    # Record the receipt only after the independent Pages check has finished.
+    # always() preserves monitoring even when acquisition or verification fails.
+    needs: [catchup, publication_check]
     if: always()
     concurrency:
       group: site-data-health-observation

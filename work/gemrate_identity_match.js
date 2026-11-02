@@ -24,18 +24,22 @@ function printed(name) {
 function resolve(rows,context,cards,english,{setCode,denominator,contextProof,heldKeys=[],parallels=['Base','Ultra Rare']}={}) {
   if(context.grader!=='PSA'||context.language!=='Japanese'||!setCode||!denominator||!contextProof)throw Error('Explicit Japanese PSA set evidence required');
   const mappings=[],review=[],holds=new Set(heldKeys);
+  // Set/number/English-print indexing is shared by all rows of this CSV. Do not
+  // canonicalize the entire domestic catalog again for every exported row.
+  const byNumber=new Map();
+  for(const c of cards){
+    const p=printed(c.name),e=english[c.id],ep=printed(e?.englishName);
+    if(c.language!=='ja'||!c.identityKey||c.identityReviewRequired||!p||!ep
+      ||p.set!==normalized(setCode)||ep.set!==p.set||ep.number!==p.number
+      ||p.denominator!==denominator||ep.denominator!==denominator
+      ||require('./card_identity').canonicalIdentity(c).variant)continue;
+    const name=String(e.englishName).split('[')[0].replace(/\b(?:MUR|BWR|SSR|CSR|CHR|SAR|UR|HR|SR|RRR|RR|AR|SA|R|C|U|P)\b/gi,'').replace(/[:：]/g,'');
+    const bucket=byNumber.get(p.number)||[];bucket.push({card:c,name});byNumber.set(p.number,bucket);
+  }
   for(const row of rows) {
     const identity=key(row,context),number=/^\d+$/.test(row['Card #'])?Number(row['Card #']):null;
     const sourceName=String(row.Name||'').replace(/^Full Art\//i,'').replace(/-Hyper$/i,'').replace(/-Holo$/i,'');
-    const candidates=cards.filter(c=>{
-      const p=printed(c.name),e=english[c.id],ep=printed(e?.englishName);
-      if(require('./card_identity').canonicalIdentity(c).variant)return false;
-      if(c.language!=='ja'||!c.identityKey||c.identityReviewRequired||!p||!ep
-        ||p.set!==normalized(setCode)||ep.set!==p.set||p.number!==number||ep.number!==number
-        ||p.denominator!==denominator||ep.denominator!==denominator)return false;
-      const n=String(e.englishName).split('[')[0].replace(/\b(?:MUR|BWR|SSR|CSR|CHR|SAR|UR|HR|SR|RRR|RR|AR|SA|R|C|U|P)\b/gi,'').replace(/[:：]/g,'');
-      return equivalentName(c,n,sourceName);
-    });
+    const candidates=(byNumber.get(number)||[]).filter(x=>equivalentName(x.card,x.name,sourceName)).map(x=>x.card);
     let reason=candidates.length!==1?(candidates.length?'ambiguous-catalog':'catalog-or-name-unresolved'):null;
     if(!parallels.includes(row.Parallel))reason='special-parallel-unresolved';
     const card=candidates[0],rarity=String(card?.name||'').match(/\b(UR|HR|SR|RRR|RR|R|C|U|P)\b/i)?.[1]?.toUpperCase();

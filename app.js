@@ -755,7 +755,7 @@ async function renderPsaHistory(details) {
       return `${x.toFixed(1)},${y.toFixed(1)}`;
     }).join(" ");
     const first = rows[0], last = rows[rows.length - 1];
-    target.innerHTML = `${psaPopGlance({id,official:state.psaPopulation[id]},true)}
+    target.innerHTML = `${psaOfficialPopGlance({id,official:state.psaPopulation[id]},true)}
       <svg class="psa-chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="PSA10枚数とTOTAL枚数の推移">
         <polyline class="psa-line-total" points="${points(2)}"></polyline>
         <polyline class="psa-line-ten" points="${points(1)}"></polyline>
@@ -5581,6 +5581,9 @@ function decodePsaPopRow(row){
   return value;
 }
 function psaPopGlance(card,detail=false,now=Date.now()) {
+  return gemRatePopGlance(card,detail,now)||psaOfficialPopGlance(card,detail,now);
+}
+function psaOfficialPopGlance(card,detail=false,now=Date.now()) {
   const official=card.official,held=state.psaSpecificationHeld?.[card.id];
   if(held)return '<small class="price-stale">POP推移：仕様保留・通常版で代用しません</small>';
   const permissionPending=state.updateStatus?.sources?.psaOfficial?.acquisitionStopped===true && /許諾/.test(state.updateStatus.sources.psaOfficial.sourceState||'');
@@ -5607,7 +5610,7 @@ function psaPopGlance(card,detail=false,now=Date.now()) {
 async function ensurePsaPopGlance(cards) {
   const revision=uiDataManifest?.revision||'legacy';
   if(psaPopGlanceRevision!==revision){psaPopGlanceCache.clear();psaPopGlanceRequests.clear();psaPopGlanceFailures.clear();psaPopGlanceRevision=revision;}
-  const active=cards.filter(c=>!state.psaSpecificationHeld?.[c.id]);
+  const active=cards.filter(c=>!gemRatePopGlance(c)&&!state.psaSpecificationHeld?.[c.id]);
   for(const sh of new Set(active.map(c=>c.official?.sh).filter(s=>/^\d{2}$/.test(s||'')))) {
     if(!psaPopGlanceRequests.has(sh))psaPopGlanceRequests.set(sh,fetchJsonMaybe(`./data/psa-pop-glance/${sh}.json`,{detail:true,affectsCalculation:false}).then(data=>{
       if(!data||data.version!==2||!data.cards||typeof data.cards!=='object'||Array.isArray(data.cards))throw new Error('POP summary unavailable or incompatible');
@@ -5623,7 +5626,7 @@ async function ensurePsaPopGlance(cards) {
   const byId=new Map(cards.map(c=>[c.id,c]));
   for(const el of document.querySelectorAll('[data-psa-pop-glance]')){
     const card=byId.get(el.dataset.psaPopGlance);if(!card)continue;
-    const html=psaPopGlance(card,el.dataset.popDetail==='true');if(el.innerHTML!==html)el.innerHTML=html;
+    const html=psaPopGlance(card,el.dataset.popDetail==='true');window.KeyedCardRenderer.replaceContent(el,html);
   }
 }
 // Presentation only: neither market references nor forecasts are purchase offers.
@@ -5679,7 +5682,7 @@ function priceComparisonCells(card, limitDisplay, confirmedAt, now = Date.now(),
     ${trial ? breakCell + stableCell : stableCell + breakCell}`;
 }
 
-// Display-only CSV snapshot. Never connected to state.psaPopulation, POP history, or the calculation cache.
+// Display-only GemRate observations. Never connected to official history or the calculation cache.
 let gemRateReferenceRevision=null,gemRateReferencePayload=null,gemRateReferenceRequest=null,gemRateReferenceFailed=false;
 function gemRateReferenceValue(card,row,now=Date.now()) {
   if(!Array.isArray(row)||row.length!==5||row[0]!==card.identityKey||card.identityReviewRequired)return null;
@@ -5697,6 +5700,32 @@ function gemRateReferenceHeader(card) {
   const old=card.official;
   return `<span>PSA10取得率</span><small>GemRate集計・参考</small><strong>${v.rate.toFixed(1)}%</strong><small>PSA10 ${fmt.format(v.ten)}／総数 ${fmt.format(v.total)}枚・基準日 ${escapeHtml(v.date)} <a href="${escapeHtml(v.url)}" target="_blank" rel="noreferrer">出典</a></small><small class="price-stale">${v.stale?'古値・':''}参考／計算採用率とは別</small><details><summary>旧公式値・根拠</summary><small>保存CSV由来の参考値。${state.psaSpecificationHeld?.[card.id]?'旧公式は名称・仕様照合保留を継続（GemRateの同仕様確認とは別）。':''}基準日はGemRateの取得・処理日（日精度）。PSA公式の直接確認日時・現在枚数ではありません。</small><small>旧公式 ${Number.isFinite(old?.rate)?old.rate.toFixed(1)+'%':'未取得'}／PSA10 ${Number.isFinite(old?.ten)?fmt.format(old.ten):'未取得'}／総数 ${Number.isFinite(old?.total)?fmt.format(old.total):'未取得'}／確認 ${escapeHtml(old?.f||'未取得')}。取得元間の差はPOP増減へ計上しません。</small></details>`;
 }
+function gemRatePopGlance(card,detail=false,now=Date.now()) {
+  if(gemRateReferenceRevision!==(uiDataManifest?.revision||'legacy'))return null;
+  const row=gemRateReferencePayload?.cards?.[card.id],value=gemRateReferenceValue(card,row,now);if(!value)return null;
+  const summary=gemRateReferencePayload?.population?.cards?.[card.id],model=window.GemRatePopModel;
+  const gap=summary?.[3]?.some(Boolean)?`最大欠測間隔${summary[2]}日`:'比較間隔未観測';
+  const periods=detail?[7,30,75,200]:[7,30];
+  const cells=summary?.[0]===1?`<span class="pop-unavailable">${periods.join('・')}日枠<b>実測1点・比較待ち</b></span>`:periods.map(days=>{
+    const c=model?.compare(row,summary,days,now)||{available:false,reason:'履歴接続待ち'};
+    if(!c.available)return `<span class="pop-unavailable">${days}日枠<b>${escapeHtml(c.reason)}</b></span>`;
+    return `<span class="${c.stale||c.partial||c.correction?'pop-reference':'pop-change'}">${days}日枠・${escapeHtml(c.label)}<b>${c.delta>0?'+':''}${fmt.format(c.delta)}枚${c.rate===null?'／率算出不可':`（${c.rate>0?'+':''}${c.rate.toFixed(2)}%）`}</b><small>実測${c.observed}基準日・${escapeHtml(c.start)}〜${escapeHtml(c.end)}（${c.span}日間）${c.partial?'・参考／期間未充足':''}${c.correction?'・訂正／分類変更も確認、供給減とは未確定':''}</small></span>`;
+  }).join('');
+  return `<div class="pop-glance" data-pop-source="gemrate" aria-label="PSA10 POP・GemRate集計"><span>PSA10 POP・GemRate集計<b>${fmt.format(value.ten)}枚</b><small>総数 ${fmt.format(value.total)}枚・基準日 ${escapeHtml(value.date)} <a href="${escapeHtml(value.url)}" target="_blank" rel="noreferrer">出典</a></small></span>${cells}<small class="pop-glance-note ${value.stale?'price-stale':''}">${value.stale?'古値・更新待ち／':''}参考・同一取得元の実測のみ。${summary?`実測${summary[0]}日・開始 ${escapeHtml(summary[1])}／${gap}。`:''}${detail?'重複する期間は独立した根拠に数えません。':''}旧PSAとの差は増減に計上しません。計算・検索・GOへ不使用。</small></div>`;
+}
+function gemRatePopulationPanel(card) {
+  const glance=gemRatePopGlance(card,true);if(!glance)return null;
+  const old=card.official,v=gemRateReferenceValue(card,gemRateReferencePayload.cards[card.id]);
+  const legacy=old?`<details><summary>旧PSA公式保存値・履歴</summary><small>PSA10 ${fmt.format(old.ten)}／総数 ${fmt.format(old.total)}枚・確認 ${escapeHtml(old.f||'日時不明')}。GemRateの増減比較には混ぜません。</small>${old.u?`<a href="${escapeHtml(old.u)}" target="_blank" rel="noreferrer">旧公式出典</a>`:''}${/^\d{2}$/.test(old.sh||'')?`<details data-psa-history="${escapeHtml(card.id)}" data-psa-shard="${escapeHtml(old.sh)}"><summary>旧公式だけの保存推移</summary><div data-psa-chart></div></details>`:''}</details>`:'<small>旧PSA公式保存値：未取得</small>';
+  return `<details class="psa-official"><summary>PSA10 POP・GemRate集計／基準日 ${escapeHtml(v.date)}／${fmt.format(v.ten)}枚・総数${fmt.format(v.total)}枚</summary><div class="psa-official-body">${glance}${legacy}</div></details>`;
+}
+const boundPsaHistoryDetails=new WeakSet();
+function bindPsaHistoryDetails(container) {
+  for(const details of container.querySelectorAll('[data-psa-history]'))if(!boundPsaHistoryDetails.has(details)){
+    boundPsaHistoryDetails.add(details);details.addEventListener('toggle',()=>{if(details.open)void renderPsaHistory(details);});
+    if(details.open)void renderPsaHistory(details);
+  }
+}
 async function ensureGemRateReference(cards) {
   const revision=uiDataManifest?.revision||'legacy';
   if(gemRateReferenceRevision!==revision){gemRateReferenceRevision=revision;gemRateReferencePayload=null;gemRateReferenceRequest=null;gemRateReferenceFailed=false;}
@@ -5706,6 +5735,9 @@ async function ensureGemRateReference(cards) {
     if(!data||!((data.version===1&&data.scope==='received-csv-reference-50'&&ids.length===50)||(data.version===2&&data.scope==='reviewed-csv-reference'))||data.source!=='GemRate'||data.grader!=='PSA'
       ||!data.cards||Array.isArray(data.cards)||Object.keys(data.cards).length!==ids.length
       ||Object.keys(data.cards).some(id=>!ids.includes(id)))throw Error('Reference summary incompatible');
+    if(data.population&&(data.population.version!==1||data.population.rule!=='same-source-exact-print-dated-v1'
+      ||!window.GemRatePopModel||!data.population.cards||Object.keys(data.population.cards).length!==ids.length
+      ||Object.entries(data.population.cards).some(([id,p])=>!ids.includes(id)||!window.GemRatePopModel.valid(data.cards[id],p))))throw Error('GemRate observation summary incompatible');
     if(gemRateReferenceRevision===revision)gemRateReferencePayload=data;
   }).catch(()=>{if(gemRateReferenceRevision===revision)gemRateReferenceFailed=true;});
   await gemRateReferenceRequest;if(gemRateReferenceRevision!==revision)return;
@@ -5717,6 +5749,13 @@ async function ensureGemRateReference(cards) {
       const note=gemRateReferenceFailed?'GemRate参考値の読込失敗／旧公式保存値を表示':'GemRate参考値は仕様・日時確認待ち／旧公式保存値を表示';
       el.insertAdjacentHTML('beforeend',`<small class="price-stale" data-gemrate-failure>${note}</small>`);
     }
+  }
+  for(const el of document.querySelectorAll('[data-psa-pop-glance]')){
+    const card=byId.get(el.dataset.psaPopGlance);if(card)window.KeyedCardRenderer.replaceContent(el,psaPopGlance(card,el.dataset.popDetail==='true'));
+  }
+  for(const el of document.querySelectorAll('[data-pop-detail-card]')){
+    const card=byId.get(el.dataset.popDetailCard),html=card&&gemRatePopulationPanel(card);
+    if(html){window.KeyedCardRenderer.replaceContent(el,html);bindPsaHistoryDetails(el);}
   }
 }
 function gradeRateSummary(card, trial = null) {
@@ -6724,7 +6763,7 @@ function renderContent() {
               ${activityPanel}
               ${stockPanel}
               ${buybackPanel}
-              ${officialPsaPanel}
+              <div data-pop-detail-card="${escapeHtml(card.id)}">${gemRatePopulationPanel(card)||officialPsaPanel}</div>
               <p class="catalog-source-note">保存済み詳細：<a href="./data/card-catalog-completion.json" target="_blank" rel="noreferrer">項目別補完状態</a> / <a href="./data/operational-limit-history.json" target="_blank" rel="noreferrer">上限履歴・過去の計算根拠</a>（一覧用要約とは別・必要時のみ）</p>
 
               <div class="market-links" aria-label="外部サイトへの直リンク">
@@ -6765,11 +6804,8 @@ function renderContent() {
   });
   committed.changed.forEach((el) => observer.observe(el));
   void ensureOverseasGlance(visibleCards);
-  void ensurePsaPopGlance(visibleCards);
-  void ensureGemRateReference(visibleCards);
-  committed.changed.flatMap(el => [...el.querySelectorAll("[data-psa-history]")]).forEach((details) => {
-    details.addEventListener("toggle", () => { if (details.open) renderPsaHistory(details); }, { once: true });
-  });
+  void ensureGemRateReference(visibleCards).then(()=>ensurePsaPopGlance(visibleCards));
+  committed.changed.forEach(bindPsaHistoryDetails);
   committed.changed.flatMap(el => [...el.querySelectorAll('[data-card-detail]')]).forEach(details => {
     details.addEventListener('toggle', async () => {
       const id = details.dataset.cardDetail;
