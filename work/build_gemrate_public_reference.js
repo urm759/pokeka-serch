@@ -20,6 +20,8 @@ function build(root=ROOT,store=path.resolve(root,'../private-research/gemrate'))
   }
   if(latest.size!==50)throw Error('Limited publication must contain exactly the reviewed 50 identities');
   const reviewed=new Set(latest.keys());
+  const legacyIds=[...reviewed].sort(),confirmed=require('./gemrate_confirmed_links'),links=confirmed.load(store),automatic={};
+  const englishFile=path.join(root,'work/snkr_english_names.json'),english=fs.existsSync(englishFile)?JSON.parse(fs.readFileSync(englishFile)).cards:{};
   const additions=require('./gemrate_reviewed_additions').entries(root);
   for(const entry of additions)reviewed.add(entry.cardId);
   const manifestFile=path.join(store,'manifest.json');
@@ -36,10 +38,12 @@ function build(root=ROOT,store=path.resolve(root,'../private-research/gemrate'))
       if(hash(raw)!==receipt.sha256||hash(zlib.gunzipSync(fs.readFileSync(receipt.backupPath)))!==receipt.sha256)throw Error('Inbox original/backup hash mismatch');
       const parsed=JSON.parse(fs.readFileSync(receipt.parsedPath));
       if(parsed.csvSha256!==receipt.sha256||parsed.accepted.length!==receipt.accepted)throw Error('Inbox parsed receipt mismatch');
+      const set=confirmed.scope(root,sidecar.context);
       for(const row of parsed.accepted) {
-        if(!reviewed.has(row.cardId))continue; // New identities need a separate publication review.
+        const card=catalog.get(row.cardId),auto=confirmed.authorized(row,card,set,links,english);
+        if(!reviewed.has(row.cardId)&&!auto)continue;
         if(row.csvSha256!==receipt.sha256||row.contextProof!==sidecar.context.contextProof||row.sourceUpdatedDate!==sidecar.context.sourceUpdatedDate||row.pageUrl!==sidecar.context.pageUrl)throw Error('Inbox row/page/date mismatch');
-        const card=catalog.get(row.cardId),value=card&&reference(card,row,{audience:'private-preview'});
+        const value=card&&reference(card,row,{audience:'private-preview'});
         if(!value?.available)throw Error('Inbox identity/date/counts unproven');
         const old=latest.get(row.cardId);
         if(additions.some(r=>r.cardId===row.cardId)){
@@ -53,6 +57,7 @@ function build(root=ROOT,store=path.resolve(root,'../private-research/gemrate'))
         }
         if(old?.sourceUpdatedDate===row.sourceUpdatedDate&&(old.psa10!==row.psa10||old.total!==row.total))throw Error('Conflicting counts on same source date');
         if(!old||row.sourceUpdatedDate>old.sourceUpdatedDate)latest.set(row.cardId,row);
+        if(auto)automatic[card.id]=confirmed.publicEntry(row,card,set,english);
       }
     }
   }
@@ -60,6 +65,10 @@ function build(root=ROOT,store=path.resolve(root,'../private-research/gemrate'))
     [id,[r.identityKey,r.psa10,r.total,r.sourceUpdatedDate,r.pageUrl]]));
   const result={version:2,source:'GemRate',grader:'PSA',scope:'reviewed-csv-reference',
     fields:['identityKey','psa10','total','sourceDate','sourceUrl'],cards};
+  const registration={version:1,rule:confirmed.RULE,legacyIds,automatic:Object.fromEntries(Object.entries(automatic).sort(([a],[b])=>a.localeCompare(b)))};
+  confirmed.validatePublic(root,result,registration);
+  const registered=path.join(root,'work/gemrate-confirmed-reference-registry.json');fs.mkdirSync(path.dirname(registered),{recursive:true});
+  if(!fs.existsSync(registered)||JSON.stringify(JSON.parse(fs.readFileSync(registered)))!==JSON.stringify(registration))require('./acquisition_retry').atomicWrite(registered,registration,0);
   // No original CSV, history, receipt metadata, private paths, or adopted rates are exported.
   const target=path.join(root,'data/gemrate-reference-summary.json');
   const previous=fs.existsSync(target)?JSON.parse(fs.readFileSync(target)):null;

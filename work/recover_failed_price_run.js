@@ -9,6 +9,9 @@ function trustedMonitor(run,repository='urm759/pokeka-serch'){
   return trusted({...run,name:'Priority Purchase Price Refresh'},repository)
     &&run?.name==='Data Update Health Watchdog';
 }
+function trustedSafe(run,repository='urm759/pokeka-serch'){
+  return trusted({...run,name:'Priority Purchase Price Refresh'},repository)&&run?.name==='Safe Checkpoint Backfill';
+}
 function latestMonitor(runs,{currentRunId,now=Date.now(),alreadyApplied=()=>false,lastAcquisitionAt=null}={}){
   const completed=Date.parse(lastAcquisitionAt)||0;
   return runs.filter(r=>trustedMonitor(r)&&String(r.id)!==String(currentRunId)
@@ -37,7 +40,7 @@ async function main(){
     if(!candidate)return {status:'no-unpublished-monitor-checkpoint',sourceRequests:0};id=String(candidate.id);
   }
   if(fs.existsSync(path.join(ROOT,'work/recovery-applied-'+id+'.json')))return {status:'already-restored',runId:id,sourceRequests:0};
-  const run=await(await get(base+'/runs/'+id)).json();if(!(monitor?trustedMonitor(run):trusted(run)))throw Error('Untrusted recovery event');
+  const run=await(await get(base+'/runs/'+id)).json(),safe=!monitor&&trustedSafe(run);if(!(monitor?trustedMonitor(run):trusted(run)||safe))throw Error('Untrusted recovery event');
   if(monitor){
     const jobs=await(await get(base+'/runs/'+id+'/jobs')).json();
     if(!monitorRecoveryNeeded(jobs)){
@@ -46,11 +49,12 @@ async function main(){
       fs.writeFileSync(path.join(ROOT,'work/recovery-inspected-'+id+'.json'),JSON.stringify(result));return result;
     }
   }
-  const artifactName=(monitor?'monitor-recovery-':'priority-price-recovery-')+id+'-'+run.run_attempt;
+  const artifactName=(safe?'safe-camp-checkpoint-':monitor?'monitor-recovery-':'priority-price-recovery-')+id+'-'+run.run_attempt;
   const artifacts=(await(await get(base+'/runs/'+id+'/artifacts')).json()).artifacts.filter(a=>!a.expired&&a.name===artifactName);
+  if(safe&&artifacts.length===0)return {status:'legacy-safe-compact-checkpoint-unavailable',runId:id,sourceRequests:0,reason:'既存の全量artifactは保持。正常取得の先送りや同じ取得元への再要求はしない'};
   if(artifacts.length!==1)throw Error('One exact failure checkpoint is required');
   const artifact=artifacts[0],expected=artifact.digest?.match(/^sha256:([a-f0-9]{64})$/)?.[1];
-  if(!expected||artifact.size_in_bytes>256e6)throw Error('Artifact digest/size proof missing');
+  if(!expected||artifact.size_in_bytes>(safe?32e6:256e6))throw Error('Artifact digest/size proof missing');
   const file=path.join(ROOT,'work/recovery-'+id+'.zip'),partial=file+'.download-'+Date.now();
   if(!fs.existsSync(file)){
     const response=await get(artifact.archive_download_url,ARCHIVE_TIMEOUT_MS),stream=fs.openSync(partial,'wx');let bytes=0;
@@ -59,7 +63,7 @@ async function main(){
     fs.renameSync(partial,file);
   }
   if(crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex')!==expected)throw Error('Saved artifact digest mismatch');
-  return require('./restore_price_artifact').restore(file,id,run.head_sha,ROOT);
+  return safe?require('./safe_camp_checkpoint').restore(file,id,ROOT):require('./restore_price_artifact').restore(file,id,run.head_sha,ROOT);
 }
 if(require.main===module)main().then(r=>console.log(JSON.stringify(r))).catch(e=>{console.error(e.message);process.exitCode=1;});
-module.exports={trusted,trustedMonitor,latestMonitor,monitorRecoveryNeeded,inspectedForRun,METADATA_TIMEOUT_MS,ARCHIVE_TIMEOUT_MS};
+module.exports={trusted,trustedMonitor,trustedSafe,latestMonitor,monitorRecoveryNeeded,inspectedForRun,METADATA_TIMEOUT_MS,ARCHIVE_TIMEOUT_MS};

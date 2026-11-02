@@ -21,7 +21,7 @@ function printed(name) {
   const m=String(name||'').match(/\[\s*([a-z0-9]+)\s+(\d+)\s*\/\s*(\d+)\s*\]/i);
   return m?{set:normalized(m[1]),number:Number(m[2]),denominator:Number(m[3])}:null;
 }
-function resolve(rows,context,cards,english,{setCode,denominator,contextProof,heldKeys=[]}={}) {
+function resolve(rows,context,cards,english,{setCode,denominator,contextProof,heldKeys=[],parallels=['Base','Ultra Rare']}={}) {
   if(context.grader!=='PSA'||context.language!=='Japanese'||!setCode||!denominator||!contextProof)throw Error('Explicit Japanese PSA set evidence required');
   const mappings=[],review=[],holds=new Set(heldKeys);
   for(const row of rows) {
@@ -29,6 +29,7 @@ function resolve(rows,context,cards,english,{setCode,denominator,contextProof,he
     const sourceName=String(row.Name||'').replace(/^Full Art\//i,'').replace(/-Hyper$/i,'').replace(/-Holo$/i,'');
     const candidates=cards.filter(c=>{
       const p=printed(c.name),e=english[c.id],ep=printed(e?.englishName);
+      if(require('./card_identity').canonicalIdentity(c).variant)return false;
       if(c.language!=='ja'||!c.identityKey||c.identityReviewRequired||!p||!ep
         ||p.set!==normalized(setCode)||ep.set!==p.set||p.number!==number||ep.number!==number
         ||p.denominator!==denominator||ep.denominator!==denominator)return false;
@@ -36,8 +37,12 @@ function resolve(rows,context,cards,english,{setCode,denominator,contextProof,he
       return equivalentName(c,n,sourceName);
     });
     let reason=candidates.length!==1?(candidates.length?'ambiguous-catalog':'catalog-or-name-unresolved'):null;
-    if(!['Base','Ultra Rare'].includes(row.Parallel))reason='special-parallel-unresolved';
+    if(!parallels.includes(row.Parallel))reason='special-parallel-unresolved';
     const card=candidates[0],rarity=String(card?.name||'').match(/\b(UR|HR|SR|RRR|RR|R|C|U|P)\b/i)?.[1]?.toUpperCase();
+    const exactRarity=card&&require('./card_identity').canonicalIdentity(card).rarity;
+    const parallelRarity={'Art Rare':'AR','Special Art Rare':'SAR','Super Rare':'SR'};
+    if(!reason&&(parallelRarity[row.Parallel]&&parallelRarity[row.Parallel]!==exactRarity
+      ||row.Parallel==='Base'&&['AR','SAR','SSR'].includes(exactRarity)))reason='rarity-or-finish-mismatch';
     if(!reason && (/Hyper$/i.test(row.Name)!==(rarity==='HR') || (row.Parallel==='Ultra Rare')!==(rarity==='UR')))reason='rarity-or-finish-mismatch';
     if(reason){review.push({key:identity,number:row['Card #'],name:row.Name,parallel:row.Parallel,candidateIds:candidates.map(c=>c.id),reason});continue;}
     mappings.push({key:identity,cardId:card.id,identityKey:card.identityKey,hold:holds.has(identity),
@@ -47,8 +52,8 @@ function resolve(rows,context,cards,english,{setCode,denominator,contextProof,he
         nameEvidence:/^基本悪エネルギー(?:\s|$)/.test(card.name)?ENERGY_EVIDENCE:undefined,
         rule:'exact-set-number-name-rarity-parallel-v2'})});
   }
-  const ids=new Set();
-  for(const m of mappings){if(ids.has(m.cardId))throw Error('Multiple source specifications map to one catalog card');ids.add(m.cardId);}
-  return {mappings,review};
+  const counts=new Map();for(const m of mappings)counts.set(m.cardId,(counts.get(m.cardId)||0)+1);
+  for(const m of mappings.filter(m=>counts.get(m.cardId)>1))review.push({key:m.key,candidateIds:[m.cardId],reason:'multiple-source-specifications'});
+  return {mappings:mappings.filter(m=>counts.get(m.cardId)===1),review};
 }
 module.exports={resolve,printed};

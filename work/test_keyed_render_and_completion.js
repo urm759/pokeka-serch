@@ -1,6 +1,7 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const {create} = require('../keyed-card-renderer');
+require('./test_disclosure_retention');
 const {plan} = require('./priority_price_queue');
 const {classify} = require('./build_one_item_completion_audit');
 let parses = 0;
