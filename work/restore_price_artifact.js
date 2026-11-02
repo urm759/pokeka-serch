@@ -69,6 +69,10 @@ function restore(file,runId,base,root=ROOT){
         data=require('./reconcile_saved_source_merge').mergeFixedFreshness(JSON.parse(original),JSON.parse(current),data);
         incoming=Buffer.from(JSON.stringify(data));
         if(equivalent(current,incoming))continue;
+      }else if(row.file==='work/priority-price-checkpoint.json'&&current&&original){
+        data=require('./reconcile_saved_source_merge').mergePriorityCheckpoint(JSON.parse(original),JSON.parse(current),data);
+        incoming=Buffer.from(JSON.stringify(data));
+        if(equivalent(current,incoming))continue;
       }else{conflicts.push(row.file);continue;}
     }
     plan.push({file:row.file,incoming,current,data});
