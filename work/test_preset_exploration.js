@@ -8,12 +8,15 @@ const elements=new Map();
 const document={getElementById:id=>{if(!elements.has(id))elements.set(id,{value:'',checked:false});return elements.get(id);},querySelectorAll:()=>[]};
 let saved={};
 const context=vm.createContext({window:{location:{href:'https://example.test/'},PurchaseDecisionModel:model,
+  CurrentMarketModel:require('../current-market-model.js'),LimitDisplayModel:require('../limit-display-model.js'),
   ExplorationMetrics:require('../exploration-metrics.js'),
   ReleaseYearFilter:require('../release-year-filter.js'),CandidateVisibility:require('../candidate-visibility.js'),PurchaseRatioModel:require('../purchase-ratio-model.js')},document,
   URL,URLSearchParams,console,setTimeout,clearTimeout,localStorage:{getItem:k=>saved[k]??null,setItem:(k,v)=>saved[k]=v}});
 vm.runInContext(source.split('// Browser event bindings start here;')[0]+ '\nglobalThis.api={state,searchProfitView,cardSearchExclusions,buildSearchAudit,presetQualifications,readUrl,buildShareUrl,saveQuickFilters,restoreQuickFilters};',context);
 const api=context.api,s=api.state;
-Object.assign(s,{purchaseMode:'combined',minSaleTx:0,minRoi:0,maxPsa10:null});
+// This fixture verifies the preserved legacy auto/limit scenario, not the newer
+// default reference-min scenario (covered by test_reference_buy).
+Object.assign(s,{purchaseMode:'combined',efficiencyBuy:'auto',minSaleTx:0,minRoi:0,maxPsa10:null});
 const econ=p=>({expectedProfit:p,expectedRoi:p/50000*100});
 const card={id:'fixture',name:'テスト SAR[SV1 100/078]',price:100000,psa10:100000,psa10Net:90000,
   catalogCompletion:{s:'分析可能'},psaTx30d:30,saleTx30d:30,official:{rate:70},buybackShops:3,

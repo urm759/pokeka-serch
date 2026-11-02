@@ -22,6 +22,7 @@ jobs:
           github.event.workflow_run.name == 'Daily Fast Update') &&
          github.event.workflow_run.event == 'schedule' && github.event.workflow_run.conclusion == 'success') ||
         ((github.event.workflow_run.name == 'Priority Purchase Price Refresh' ||
+          github.event.workflow_run.name == 'Daily Fast Update' ||
           github.event.workflow_run.name == 'Safe Checkpoint Backfill') &&
          github.event.workflow_run.event == 'schedule' && github.event.workflow_run.conclusion == 'failure')) &&
        github.event.workflow_run.head_branch == 'main' &&
@@ -87,6 +88,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FAILED_PRICE_RUN_ID: ${{ github.event.workflow_run.id }}
         run: node work/recover_failed_price_run.js
+      - name: Recover missed trusted Daily publication before optional acquisition
+        if: github.event_name != 'workflow_run'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node work/recover_failed_price_run.js --latest-daily
       - name: Check saved publication before optional acquisition
         # Restore the previous trusted monitor's normal raw inputs before deciding to fetch again.
         # The existing common acquisition gate and all publication validations still apply.

@@ -20,6 +20,12 @@ assert(trustedMonitor(monitor));assert(!trustedMonitor(good));
 for(const change of [{event:'workflow_dispatch'},{event:'workflow_run'},{conclusion:'success'},
   {head_branch:'feature'},{head_repository:{full_name:'fork/repo'}}])assert(!trustedMonitor({...monitor,...change}));
 const recoveryOptions={currentRunId:124,now:Date.parse('2026-10-26T15:00:00Z'),lastAcquisitionAt:'2026-10-26T10:00:00Z'};
+const {trustedDaily,latestDaily}=require('./recover_failed_price_run');
+const daily={...monitor,name:'Daily Fast Update'};
+assert(trustedDaily(daily));assert(!trustedDaily(good));assert.equal(latestDaily([daily,monitor],recoveryOptions).id,123);
+for(const change of [{event:'workflow_dispatch'},{conclusion:'success'},{head_branch:'feature'},{head_repository:{full_name:'fork/repo'}}])assert(!trustedDaily({...daily,...change}));
+assert.equal(latestDaily([daily],{...recoveryOptions,alreadyApplied:()=>true}),null);
+assert.equal(latestDaily([daily],{...recoveryOptions,now:Date.parse('2026-11-05')}),null);
 for(const file of ['data/psa10-observation-receipt.json','data/domestic-trade-source-audit.json','work/card-new-arrivals.json','work/card-lifecycle.json'])
   assert(require('./restore_price_artifact').INPUTS.includes(file),'daily source evidence must survive recovery: '+file);
 assert.equal(latestMonitor([monitor],recoveryOptions).id,123);
@@ -42,6 +48,15 @@ function zip(files){
 }
 assert.throws(()=>zipEntries(Buffer.from('invalid')),/ZIP/);
 assert.throws(()=>zipEntries(zip({'../outside':'bad'})),/Unsafe/);
+const {reconstructionManifest}=require('./restore_price_artifact');
+const manifests=(changes={})=>zipEntries(zip({
+ 'work/pre/recovery-manifest.json':JSON.stringify({workflowRunId:'123',source:'daily-prevalidation',savedAt:'2026-11-02T18:03:38Z',files:[{file:'data/pokemon-cards.json'}],invalidJson:[]}),
+ 'work/final/recovery-manifest.json':JSON.stringify({workflowRunId:'123',source:'daily',savedAt:'2026-11-02T18:05:38Z',files:[{file:'data/pokemon-cards.json'}],invalidJson:[],...changes})}));
+assert.equal(reconstructionManifest(manifests(),'123').file,'work/final/recovery-manifest.json');
+assert.throws(()=>reconstructionManifest(manifests({workflowRunId:'124'}),'123'),/proof mismatch/);
+assert.throws(()=>reconstructionManifest(manifests({files:[]}),'123'),/Incomplete/);
+assert.throws(()=>reconstructionManifest(manifests({savedAt:'2026-11-02T18:00:00Z'}),'123'),/Incomplete/);
+assert.throws(()=>reconstructionManifest(manifests({source:'unknown'}),'123'),/Ambiguous/);
 const root=fs.mkdtempSync(path.join(os.tmpdir(),'pokeka-artifact-'));
 const write=(f,x)=>{fs.mkdirSync(path.dirname(path.join(root,f)),{recursive:true});fs.writeFileSync(path.join(root,f),JSON.stringify(x));};
 const git=args=>cp.execFileSync('git',args,{cwd:root,encoding:'utf8',stdio:['ignore','pipe','pipe']});

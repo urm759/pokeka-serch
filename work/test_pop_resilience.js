@@ -2,13 +2,14 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),asse
 const app=fs.readFileSync('app.js','utf8');
 const fetchCode=app.slice(app.indexOf('async function fetchJsonMaybe('),app.indexOf('async function fetchJsonMaybe(')+app.slice(app.indexOf('async function fetchJsonMaybe(')).indexOf('\nasync function ',20));
 const glance=app.slice(app.indexOf('const psaPopGlanceCache='),app.indexOf('// Presentation only:'));
+const gemrate=app.slice(app.indexOf('let gemRateReferenceRevision='),app.indexOf('function gradeRateSummary('));
 const official={ten:100,n:'Test SR',u:'https://www.psacard.com/pop/test/1',f:'2026-10-19T00:00:00Z',sh:'00'},card={id:'test',official};
 function setup(fetch){
   const ctx=vm.createContext({Date,Map,Set,Error,TextEncoder,URL,console:{error(){}},crypto:require('node:crypto').webcrypto,
     fmt:new Intl.NumberFormat('ja-JP'),escapeHtml:String,state:{psaSpecificationHeld:{}},document:{querySelectorAll:()=>[]},
-    window:{},uiDataManifest:{revision:'v1',hashes:{}},uiFetchCache:new Map(),uiLoadMetrics:[],loadedDataRevision:0,uiDataInvalid:false,
+    window:{GemRatePopModel:require('../gemrate-pop-model')},uiDataManifest:{revision:'v1',hashes:{},referenceDisplayIds:[]},uiFetchCache:new Map(),uiLoadMetrics:[],loadedDataRevision:0,uiDataInvalid:false,
     els:{catalogCoverageSummary:{}},performance:{now:()=>0,getEntriesByName:()=>[]},fetch});
-  vm.runInContext(fetchCode+'\n'+glance+'\nglobalThis.api={ensurePsaPopGlance,psaPopGlance,sourceKey:psaPopSourceKey,cache:psaPopGlanceCache};',ctx);return ctx;
+  vm.runInContext(fetchCode+'\n'+gemrate+'\n'+glance+'\nglobalThis.api={ensurePsaPopGlance,psaPopGlance,sourceKey:psaPopSourceKey,cache:psaPopGlanceCache};',ctx);return ctx;
 }
 const response=(value,ok=true)=>({ok,status:ok?200:404,url:'https://test.local/data.json',text:async()=>typeof value==='string'?value:JSON.stringify(value)});
 (async()=>{

@@ -95,6 +95,7 @@ const context = vm.createContext({ window: { location: { href: 'https://example.
   localStorage: { getItem: key => saved[key] ?? null, setItem: (key, value) => saved[key] = value } });
 vm.runInContext(source.split('// Browser event bindings start here;')[0] + '\nglobalThis.api={state,searchProfitView,cardSearchExclusions,readUrl,buildShareUrl,saveQuickFilters,restoreQuickFilters,sorters,gradeRateSummary,currentMarketProfitPanel,optionalConditionText,currentCapCsvFields};', context);
 const api = context.api, state = api.state;
+state.efficiencyBuy='auto'; // Preserve this test's actual-store scenario independently of reference-min defaults.
 assert.equal(api.optionalConditionText(null, '%'), '条件なし');
 assert.equal(api.optionalConditionText(0, '%'), '0%');
 assert.equal(api.optionalConditionText(null, '円'), '条件なし');

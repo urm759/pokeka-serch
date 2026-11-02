@@ -2,6 +2,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const root=path.join(__dirname,'..'),app=fs.readFileSync(path.join(root,'app.js'),'utf8'),html=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const api=require('./audit_search_profit_consistency').load(app,'2026-10-11T04:00:00Z');
 api.state.purchaseMode='combined'; api.state.exitPolicy='marketplace';
+api.state.efficiencyBuy='auto'; // Explicit legacy actual-offer comparison; reference-min has separate coverage.
 const now=Date.parse('2026-10-11T04:00:00Z'),date='2026-10-11T03:00:00Z';
 const card={id:'fixture',psa10:30000,psa10ObservedAt:date,psa9Audit:{value:20000,estimated:false,measurementType:'aggregate'},
   overallAssessment:{score:80},currentStoreOffer:{value:10000,available:true,fresh:true,updatedAt:date,inventoryAt:date},

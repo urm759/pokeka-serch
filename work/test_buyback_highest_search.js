@@ -30,7 +30,7 @@ const api=load(app,at,{url:base});assert.equal(api.state.buybackHighestMin,1.05)
 const key=api.computationKey();api.state.buybackHighestMin=1.1;assert.equal(api.computationKey(),key,'filter-only edits reuse financial calculations');
 api.state.buybackHighestMin=0;assert.equal(api.buildShareUrl().searchParams.get('buybackMaxMin'),'0');
 api.state.buybackHighestMin=null;assert(!api.buildShareUrl().searchParams.has('buybackMaxMin'));
-assert(app.includes('rows[index+1].push(...buybackSupportCsvFields(card))'));
+assert(/rows\[index\+1\]\.push\(\.\.\.buybackSupportCsvFields\(card\)(?:,|\))/.test(app),'CSV appends the shared quote fields, including when other shared fields follow');
 const almostExpired=new Date(now-48*3600000+1000).toISOString();
 const deadlineContext=vm.createContext({Date,Math,Object,Number,decisionModel:require('../decision-model'),state:{sourceUpdates:{},
   buybackObservationSummary:{support:{cards:new Proxy({test:{a:{current:[1,100,100,almostExpired,almostExpired]}}},{ownKeys(){throw Error('per-card freshness must not scan every other card');}})}}}});
