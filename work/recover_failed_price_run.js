@@ -30,6 +30,15 @@ function latestMonitor(runs,{currentRunId,now=Date.now(),alreadyApplied=()=>fals
 function inspectedForRun(root,run){
   try{const r=JSON.parse(fs.readFileSync(path.join(root,'work/recovery-inspected-'+run.id+'.json')));return Number(r.runAttempt)===Number(run.run_attempt)&&r.headSha===run.head_sha;}catch{return false;}
 }
+function lastSuccessfulAcquisition(root){
+  let prior={},runs={};
+  try{prior=JSON.parse(fs.readFileSync(path.join(root,'data/priority-price-execution.json')));}catch{}
+  try{runs=JSON.parse(fs.readFileSync(path.join(root,'work/source-update-runs.json'))).sources||{};}catch{}
+  // Daily recovery restores genuine source success times, not necessarily the
+  // Priority gate. Never restore an older monitor over these recovered inputs.
+  const times=[prior.startedAt,...['toreca','hareruya2','torecacamp','shopBuyback'].map(id=>runs[id]?.lastSuccessAt)].map(Date.parse).filter(Number.isFinite);
+  return times.length?new Date(Math.max(...times)).toISOString():null;
+}
 function monitorRecoveryNeeded(jobs){
   const rows=jobs.jobs||[],catchup=rows.find(j=>j.name==='catchup'),failed=rows.filter(j=>j.conclusion==='failure');
   return !(catchup?.status==='completed'&&catchup.conclusion==='success'&&failed.length>0
@@ -42,8 +51,7 @@ async function main(){
   const get=async (url,timeoutMs=METADATA_TIMEOUT_MS)=>{const r=await fetch(url,{headers,signal:AbortSignal.timeout(timeoutMs)});if(!r.ok)throw Error('Recovery HTTP '+r.status);return r;};
   if(monitor||dailyScan){
     const runs=(await(await get(base+'/workflows/'+(dailyScan?'daily-fast-update.yml':'watch-data-health.yml')+'/runs?event=schedule&per_page=5')).json()).workflow_runs||[];
-    let acquisition={};try{acquisition=JSON.parse(fs.readFileSync(path.join(ROOT,'data/priority-price-execution.json')));}catch{}
-    const candidate=(dailyScan?latestDaily:latestMonitor)(runs,{currentRunId:process.env.GITHUB_RUN_ID,lastAcquisitionAt:dailyScan?null:acquisition.startedAt,
+    const candidate=(dailyScan?latestDaily:latestMonitor)(runs,{currentRunId:process.env.GITHUB_RUN_ID,lastAcquisitionAt:dailyScan?null:lastSuccessfulAcquisition(ROOT),
       alreadyApplied:(runId,run)=>fs.existsSync(path.join(ROOT,'work/recovery-applied-'+runId+'.json'))||inspectedForRun(ROOT,run)});
     if(!candidate)return {status:dailyScan?'no-unpublished-daily-checkpoint':'no-unpublished-monitor-checkpoint',sourceRequests:0};id=String(candidate.id);
   }
@@ -79,4 +87,4 @@ async function main(){
   return safe?require('./safe_camp_checkpoint').restore(file,id,ROOT):require('./restore_price_artifact').restore(file,id,run.head_sha,ROOT);
 }
 if(require.main===module)main().then(r=>console.log(JSON.stringify(r))).catch(e=>{console.error(e.message);process.exitCode=1;});
-module.exports={trusted,trustedMonitor,trustedSafe,trustedDaily,latestDaily,latestMonitor,monitorRecoveryNeeded,inspectedForRun,METADATA_TIMEOUT_MS,ARCHIVE_TIMEOUT_MS};
+module.exports={trusted,trustedMonitor,trustedSafe,trustedDaily,latestDaily,latestMonitor,monitorRecoveryNeeded,inspectedForRun,lastSuccessfulAcquisition,METADATA_TIMEOUT_MS,ARCHIVE_TIMEOUT_MS};

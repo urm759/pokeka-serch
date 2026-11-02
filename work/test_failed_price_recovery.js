@@ -61,6 +61,12 @@ const root=fs.mkdtempSync(path.join(os.tmpdir(),'pokeka-artifact-'));
 const write=(f,x)=>{fs.mkdirSync(path.dirname(path.join(root,f)),{recursive:true});fs.writeFileSync(path.join(root,f),JSON.stringify(x));};
 const git=args=>cp.execFileSync('git',args,{cwd:root,encoding:'utf8',stdio:['ignore','pipe','pipe']});
 try{
+  const {lastSuccessfulAcquisition}=require('./recover_failed_price_run');
+  assert.equal(lastSuccessfulAcquisition(root),null);
+  write('data/priority-price-execution.json',{startedAt:'2026-10-26T10:00:00Z'});
+  write('work/source-update-runs.json',{sources:{toreca:{lastSuccessAt:'2026-10-26T14:55:00Z'},shopBuyback:{lastSuccessAt:'invalid'},marketAnalysis:{lastSuccessAt:'2026-11-01T00:00:00Z'}}});
+  assert.equal(lastSuccessfulAcquisition(root),'2026-10-26T14:55:00.000Z','real Daily source times take precedence; derived aggregation time is excluded');
+  assert.equal(latestMonitor([monitor],{...recoveryOptions,lastAcquisitionAt:lastSuccessfulAcquisition(root)}),null,'older failed monitor cannot roll back or block recovered Daily inputs');
   const {inspectedForRun}=require('./recover_failed_price_run');write('work/recovery-inspected-999.json',{runAttempt:1,headSha:'abc'});
   assert(inspectedForRun(root,{id:999,run_attempt:1,head_sha:'abc'}));assert(!inspectedForRun(root,{id:999,run_attempt:2,head_sha:'abc'}),'new rerun cannot inherit an old observer-only inspection');
   write('data/pokemon-cards.json',[{id:'one',price:100,observedAt:'2026-10-24T00:00:00Z'}]);
