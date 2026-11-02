@@ -1,15 +1,21 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-02T17:29:09.764Z",
+  "generatedAt": "2026-11-02T18:12:02.201Z",
   "sourceLastSuccessAt": "2026-11-02T06:09:22.726Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-11-02T17:29:09.753Z",
-    "lastSuccessAt": "2026-11-02T17:29:09.753Z",
-    "runId": "41491175729",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/41491175729"
+    "lastAttemptAt": "2026-11-02T18:12:02.189Z",
+    "lastSuccessAt": "2026-11-02T18:12:02.189Z",
+    "runId": "41497333624",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/41497333624"
   },
   "issues": [
+    {
+      "key": "daily:workflow-failure",
+      "category": "取得処理の故障",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/41495095858",
+      "reason": "Daily Fast Updateが1回連続失敗"
+    },
     {
       "key": "safe:yuyutei:manual-action-required:GitHub ActionsからHTTP #。正規アクセス確認待ち",
       "category": "アクセス・手動対応待ち",
@@ -65,6 +71,7 @@
     }
   ],
   "reasons": [
+    "Daily Fast Updateが1回連続失敗",
     "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち",
     "カードラッシュ: pk-73737: HTTP 403",
     "カードラッシュ: 更新期限超過（カード別鮮度 0%）",
