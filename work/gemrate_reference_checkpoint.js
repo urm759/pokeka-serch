@@ -37,6 +37,7 @@ function apply(root=ROOT,ref='refs/remotes/origin/'+BRANCH){
  const old=require('./publication_lineage').verify(root),data=FILES.map(f=>JSON.parse(git(root,['show',ref+':'+f])));
  require('./gemrate_confirmed_links').validatePublic(root,data[0],data[1]);
  const current=JSON.parse(fs.readFileSync(path.join(root,FILES[0])));
+ if(superseded(current,data[0]))return {changed:false,status:'superseded-checkpoint',sourceAcquisitions:0,calculationAdopted:0,references:Object.keys(current.cards).length};
  validateTransition(current,data[0]);
  let changed=false;for(let i=0;i<FILES.length;i++){const f=path.join(root,FILES[i]);if(!fs.existsSync(f)||JSON.stringify(JSON.parse(fs.readFileSync(f)))!==JSON.stringify(data[i])){require('./acquisition_retry').atomicWrite(f,data[i],0);changed=true;}}
  if(changed){require('./focus_pop_priority').build(root);require('./publication_lineage').seal(root,old.sources);require('./build_ui_data').build(root);}
@@ -46,5 +47,12 @@ function validateTransition(current,incoming){
  for(const [id,row]of Object.entries(current.cards||{})){const next=incoming.cards?.[id];if(!next||next[3]<row[3])throw Error('Queued reference would remove or age an existing observation');if(next[3]===row[3]&&JSON.stringify(next)!==JSON.stringify(row))throw Error('Same-date reference contradiction');}
  if(current.population)for(const [id,old]of Object.entries(current.population.cards)){const next=incoming.population?.cards?.[id];if(!next||next[0]<old[0]||next[1]>old[1])throw Error('Queued reference would remove dated GemRate history');}
 }
+function superseded(current,incoming){
+ try{validateTransition(current,incoming);return false;}catch{
+  // A validated older/subset queue is already represented by current main.
+  // Do not publish it or report a failed update; contradictions still fail both ways.
+  try{validateTransition(incoming,current);return true;}catch{return false;}
+ }
+}
 if(require.main===module){try{const result=process.argv.includes('--apply')?apply():push();if(process.env.GITHUB_OUTPUT&&'changed'in result)fs.appendFileSync(process.env.GITHUB_OUTPUT,'changed='+result.changed+'\n');console.log(JSON.stringify(result));}catch(e){console.error(e.message);process.exitCode=1;}}
-module.exports={FILES,BRANCH,enqueue,push,apply,validate,validateTransition};
+module.exports={FILES,BRANCH,enqueue,push,apply,validate,validateTransition,superseded};
