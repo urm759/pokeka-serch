@@ -38,6 +38,22 @@ function latestMonitor(runs,{currentRunId,now=Date.now(),alreadyApplied=()=>fals
 function inspectedForRun(root,run){
   try{const r=JSON.parse(fs.readFileSync(path.join(root,'work/recovery-inspected-'+run.id+'.json')));return Number(r.runAttempt)===Number(run.run_attempt)&&r.headSha===run.head_sha;}catch{return false;}
 }
+function activeSourceHolds(root=ROOT){
+  const work=path.join(root,'work');if(!fs.existsSync(work))return [];
+  return fs.readdirSync(work).filter(f=>/^recovery-inspected-\d+\.json$/.test(f)).flatMap(f=>{
+    const r=JSON.parse(fs.readFileSync(path.join(work,f)));
+    return r.status==='source-merge-review-required'&&!fs.existsSync(path.join(work,'recovery-applied-'+r.runId+'.json'))?[r]:[];
+  });
+}
+function retainSourceHold(root,run,artifact,error){
+  if(error.code!=='SOURCE_RECOVERY_MERGE_REQUIRED')throw error;
+  const result={status:'source-merge-review-required',runId:String(run.id),runAttempt:run.run_attempt,headSha:run.head_sha,checkedAt:new Date().toISOString(),
+    artifactId:artifact.id,artifactDigest:artifact.digest,archive:'work/recovery-'+run.id+'.zip',files:error.files,reason:error.message,
+    recoveryApplied:false,normalUpdatesMayContinue:true,sourceRequests:0,originalRetained:true};
+  fs.writeFileSync(path.join(root,'work/recovery-inspected-'+run.id+'.json'),JSON.stringify(result));
+  console.warn('::warning::取得済み原票は同時更新の照合保留。元archiveと失敗記録を保持し、正常な価格更新は継続: '+run.id);
+  return result;
+}
 function lastSuccessfulAcquisition(root){
   let prior={},runs={};
   try{prior=JSON.parse(fs.readFileSync(path.join(root,'data/priority-price-execution.json')));}catch{}
@@ -93,7 +109,14 @@ async function main(){
   }
   if(crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex')!==expected)throw Error('Saved artifact digest mismatch');
   if(!safe)ensureTrustedBase(ROOT,run.head_sha);
-  return safe?require('./safe_camp_checkpoint').restore(file,id,ROOT):require('./restore_price_artifact').restore(file,id,run.head_sha,ROOT);
+  try{return safe?require('./safe_camp_checkpoint').restore(file,id,ROOT):require('./restore_price_artifact').restore(file,id,run.head_sha,ROOT);}
+  catch(error){return retainSourceHold(ROOT,run,artifact,error);}
 }
-if(require.main===module)main().then(r=>console.log(JSON.stringify(r))).catch(e=>{console.error(e.message);process.exitCode=1;});
-module.exports={trusted,trustedMonitor,trustedSafe,trustedDaily,latestDaily,latestMonitor,monitorRecoveryNeeded,inspectedForRun,lastSuccessfulAcquisition,ensureTrustedBase,METADATA_TIMEOUT_MS,ARCHIVE_TIMEOUT_MS};
+if(require.main===module){
+  if(process.argv.includes('--hold-status')){
+    const rows=activeSourceHolds();if(process.env.GITHUB_OUTPUT)fs.appendFileSync(process.env.GITHUB_OUTPUT,'pending='+Boolean(rows.length)+'\n');
+    if(rows.length)console.warn('::warning::原票照合保留 '+rows.length+'実行。回収完了・新規分析可能には数えません。');
+    console.log(JSON.stringify({pending:Boolean(rows.length),runIds:rows.map(r=>r.runId),recoveryApplied:false}));
+  }else main().then(r=>console.log(JSON.stringify(r))).catch(e=>{console.error(e.message);process.exitCode=1;});
+}
+module.exports={trusted,trustedMonitor,trustedSafe,trustedDaily,latestDaily,latestMonitor,monitorRecoveryNeeded,inspectedForRun,lastSuccessfulAcquisition,ensureTrustedBase,activeSourceHolds,retainSourceHold,METADATA_TIMEOUT_MS,ARCHIVE_TIMEOUT_MS};

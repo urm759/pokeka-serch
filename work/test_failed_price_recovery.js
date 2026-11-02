@@ -69,6 +69,14 @@ try{
   assert.equal(latestMonitor([monitor],{...recoveryOptions,lastAcquisitionAt:lastSuccessfulAcquisition(root)}),null,'older failed monitor cannot roll back or block recovered Daily inputs');
   const {inspectedForRun}=require('./recover_failed_price_run');write('work/recovery-inspected-999.json',{runAttempt:1,headSha:'abc'});
   assert(inspectedForRun(root,{id:999,run_attempt:1,head_sha:'abc'}));assert(!inspectedForRun(root,{id:999,run_attempt:2,head_sha:'abc'}),'new rerun cannot inherit an old observer-only inspection');
+  const {retainSourceHold,activeSourceHolds}=require('./recover_failed_price_run'),heldRun={id:998,run_attempt:1,head_sha:'abc'};
+  const conflict=Object.assign(Error('Concurrent source changes'),{code:'SOURCE_RECOVERY_MERGE_REQUIRED',files:['data/pokemon-cards.json']});
+  const hold=retainSourceHold(root,heldRun,{id:9,digest:'sha256:verified'},conflict);
+  assert.equal(hold.recoveryApplied,false);assert.equal(hold.normalUpdatesMayContinue,true);assert.equal(activeSourceHolds(root).length,1);
+  assert(inspectedForRun(root,heldRun),'held source is not re-downloaded by every ordinary scan');
+  assert.throws(()=>retainSourceHold(root,heldRun,{},Error('Recovery hash mismatch')),/hash mismatch/,'digest/format/security failures are never softened');
+  write('work/recovery-applied-998.json',{restored:['data/pokemon-cards.json']});assert.equal(activeSourceHolds(root).length,0,'only a real applied receipt resolves the hold');
+  assert(health.includes('source-merge-holds-${{ github.run_id }}-${{ github.run_attempt }}')&&health.includes('retention-days: 30'),'held originals have a separate retained artifact, never published as prices');
   write('data/pokemon-cards.json',[{id:'one',price:100,observedAt:'2026-10-24T00:00:00Z'}]);
   const checkpoint={sources:{shop:{jobs:{one:{lastAttemptAt:'2026-10-24T00:00:00Z',nextDueAt:'2026-10-24T06:00:00Z'}}}}};
   write('work/priority-price-checkpoint.json',checkpoint);
