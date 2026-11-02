@@ -5712,7 +5712,7 @@ async function ensureGemRateReference(cards) {
   const byId=new Map(cards.map(c=>[c.id,c]));
   for(const el of document.querySelectorAll('[data-grade-reference]')){
     const card=byId.get(el.dataset.gradeReference);if(!card)continue;
-    const html=gemRateReferenceHeader(card);if(html&&el.innerHTML!==html)el.innerHTML=html;
+    const html=gemRateReferenceHeader(card);if(html)window.KeyedCardRenderer.replaceContent(el,html);
     else if(!html&&ids.includes(card.id)&&!el.querySelector('[data-gemrate-failure]')){
       const note=gemRateReferenceFailed?'GemRate参考値の読込失敗／旧公式保存値を表示':'GemRate参考値は仕様・日時確認待ち／旧公式保存値を表示';
       el.insertAdjacentHTML('beforeend',`<small class="price-stale" data-gemrate-failure>${note}</small>`);

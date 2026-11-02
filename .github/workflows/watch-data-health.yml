@@ -21,7 +21,8 @@ jobs:
           github.event.workflow_run.name == 'Safe Checkpoint Backfill' ||
           github.event.workflow_run.name == 'Daily Fast Update') &&
          github.event.workflow_run.event == 'schedule' && github.event.workflow_run.conclusion == 'success') ||
-        (github.event.workflow_run.name == 'Priority Purchase Price Refresh' &&
+        ((github.event.workflow_run.name == 'Priority Purchase Price Refresh' ||
+          github.event.workflow_run.name == 'Safe Checkpoint Backfill') &&
          github.event.workflow_run.event == 'schedule' && github.event.workflow_run.conclusion == 'failure')) &&
        github.event.workflow_run.head_branch == 'main' &&
        github.event.workflow_run.head_repository.full_name == github.repository)
@@ -58,6 +59,9 @@ jobs:
             node work/test_value_reopening.js
             node work/test_reference_buy.js
             node work/test_gemrate_reference_refresh.js
+            node work/test_gemrate_confirmed_links.js
+            node work/test_safe_camp_checkpoint.js
+            node work/test_disclosure_retention.js
             node work/test_saved_shop_recovery.js
             node work/test_update_health.js
             node work/test_backfill_health.js

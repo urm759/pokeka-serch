@@ -1,0 +1,85 @@
+name: Received GemRate Reference Publication
+on:
+  push:
+    branches: [codex/gemrate-reference-data]
+  workflow_dispatch:
+  schedule:
+    - cron: "47 5 * * *"
+permissions:
+  contents: write
+concurrency:
+  group: all-site-data-refresh
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      changed: ${{ steps.reference.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+      - name: Retrieve only the validated compact checkpoint
+        id: source
+        run: |
+          if git ls-remote --exit-code --heads origin codex/gemrate-reference-data >/dev/null; then
+            git fetch origin codex/gemrate-reference-data:refs/remotes/origin/codex/gemrate-reference-data
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Apply checked reference data using main code
+        id: reference
+        if: steps.source.outputs.available == 'true'
+        run: node work/gemrate_reference_checkpoint.js --apply
+      - name: Validate changed references and immutable financial inputs
+        if: steps.reference.outputs.changed == 'true'
+        run: |
+          node work/test_gemrate_confirmed_links.js
+          node work/test_gemrate_reference_checkpoint.js
+          node work/test_gemrate_limited_public_reference.js
+          node work/update_validation.js --required
+      - name: Publish validated reference projection
+        if: steps.reference.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data work/gemrate-confirmed-reference-registry.json work/pop-focus-targets.json
+          node work/publish_data_checkpoint.js "Publish received GemRate factual references"
+      - name: Preserve compact checkpoint if validation or publication failed
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: gemrate-reference-recovery-${{ github.run_id }}
+          path: |
+            data/gemrate-reference-summary.json
+            work/gemrate-confirmed-reference-registry.json
+            work/publish-recovery.bundle
+            work/publish-recovery.json
+          retention-days: 14
+          if-no-files-found: warn
+  publication_check:
+    needs: publish
+    if: needs.publish.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+      - name: Verify actual Pages reference data and manifest
+        run: node work/verify_gemrate_reference_publication.js
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: gemrate-publication-proof-${{ github.run_id }}
+          path: work/gemrate-publication-proof.json
+          retention-days: 14
+          if-no-files-found: error

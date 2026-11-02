@@ -150,11 +150,19 @@ jobs:
             node work/test_value_reopening.js
             node work/test_reference_buy.js
             node work/test_gemrate_reference_refresh.js
+            node work/test_gemrate_confirmed_links.js
+            node work/test_gemrate_reference_checkpoint.js
+            node work/test_gemrate_worker.js
+            node work/test_disclosure_retention.js
+            node work/test_safe_camp_checkpoint.js
             node work/test_daily_finalize_once.js
           else
             node work/update_validation.js --required
           fi
           node work/update_validation.js --record
+      - name: Capture compact validated Camp inputs before publication
+        id: camp_checkpoint
+        run: node work/safe_camp_checkpoint.js
       - name: Commit safe progress and checkpoints
         run: |
           node work/scheduled_cycle_evidence.js safe
@@ -168,6 +176,14 @@ jobs:
       - name: Preserve recovery position if a required step failed
         if: failure()
         run: node work/capture_unpublished_data.js safe
+      - name: Preserve compact Camp checkpoint on publication failure
+        if: failure() && steps.camp_checkpoint.outcome == 'success'
+        uses: actions/upload-artifact@v7
+        with:
+          name: safe-camp-checkpoint-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ steps.camp_checkpoint.outputs.folder }}
+          retention-days: 7
+          if-no-files-found: error
       - name: Record safe recovery metadata independently
         if: failure()
         run: |

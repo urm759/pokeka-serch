@@ -10,7 +10,17 @@
       "denominator": 165,
       "officialSetUrl": "https://www.pokemon-card.com/card-search/details.php/card/43990",
       "reviewedAt": "2026-11-01",
-      "note": "GemRate selected PSA/TCG/2023/Japanese set; official Japanese card205/165 and existing catalog agree. This is set context, not blanket approval of 527 prints. Missing Texture and reverse finishes require separate review."
+      "note": "GemRate selected PSA/TCG/2023/Japanese set; official Japanese card205/165 and existing catalog agree. This is set context, not blanket approval of 527 prints. Missing Texture and reverse finishes require separate review.",
+      "automaticReference": {
+        "rule": "exact-reviewed-set-v1",
+        "parallels": [
+          "Base",
+          "Ultra Rare",
+          "Art Rare",
+          "Special Art Rare",
+          "Super Rare"
+        ]
+      }
     },
     {
       "set": "Pokemon Japanese Sv2d-Clay Burst",
@@ -21,7 +31,17 @@
       "denominator": 71,
       "officialSetUrl": "https://www.pokemon-card.com/card-search/details.php/card/43664",
       "reviewedAt": "2026-11-01",
-      "note": "Set scope only; each print separately matched."
+      "note": "Set scope only; each print separately matched.",
+      "automaticReference": {
+        "rule": "exact-reviewed-set-v1",
+        "parallels": [
+          "Base",
+          "Ultra Rare",
+          "Art Rare",
+          "Special Art Rare",
+          "Super Rare"
+        ]
+      }
     },
     {
       "set": "Pokemon Japanese Sv1s-Scarlet EX",
@@ -32,7 +52,17 @@
       "denominator": 78,
       "officialSetUrl": "https://www.pokemon-card.com/card-search/details.php/card/43061",
       "reviewedAt": "2026-11-01",
-      "note": "Set scope only; each print separately matched."
+      "note": "Set scope only; each print separately matched.",
+      "automaticReference": {
+        "rule": "exact-reviewed-set-v1",
+        "parallels": [
+          "Base",
+          "Ultra Rare",
+          "Art Rare",
+          "Special Art Rare",
+          "Super Rare"
+        ]
+      }
     },
     {
       "set": "Pokemon Japanese Sv4a-Shiny Treasure EX",
@@ -43,7 +73,38 @@
       "denominator": 190,
       "officialSetUrl": "https://www.pokemon-card.com/card-search/details.php/card/45133/regu/all",
       "reviewedAt": "2026-11-02",
-      "note": "Set context only. Each print approved separately; missing texture is excluded."
+      "note": "Set context only. Each print approved separately; missing texture is excluded.",
+      "automaticReference": {
+        "rule": "exact-reviewed-set-v1",
+        "parallels": [
+          "Base",
+          "Ultra Rare",
+          "Art Rare",
+          "Special Art Rare",
+          "Super Rare"
+        ]
+      }
+    },
+    {
+      "set": "Pokemon Japanese Sun & Moon Tag Bolt",
+      "year": 2018,
+      "language": "Japanese",
+      "grader": "PSA",
+      "setCode": "SM9",
+      "denominator": 95,
+      "officialSetUrl": "https://www.pokemon-card.com/card-search/details.php/card/35982/regu/all",
+      "reviewedAt": "2026-11-02",
+      "note": "Official Japanese038/095 Tag Bolt matches source set. Exact set/number/name/rarity/parallel required. Year-list aggregate is not this card-table snapshot.",
+      "automaticReference": {
+        "rule": "exact-reviewed-set-v1",
+        "parallels": [
+          "Base",
+          "Ultra Rare",
+          "Art Rare",
+          "Special Art Rare",
+          "Super Rare"
+        ]
+      }
     }
   ]
 }

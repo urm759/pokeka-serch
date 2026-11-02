@@ -58,6 +58,8 @@ const SUMMARY = ['card-catalog-completion', 'operational-limit-history', 'market
   'shop-buyback-summary', 'buyback-observation-summary', 'state-a-price-evidence', 'snkr-listing-summary', 'snkr-raw-flip-summary',
   'psa-population-summary', 'psa10-period-summary', 'card-catalog/analysis', 'card-catalog/search-index', 'update-status'];
 function build(root = ROOT) {
+  const gemrateRegistry=path.join(root,'work/gemrate-confirmed-reference-registry.json');
+  if(fs.existsSync(gemrateRegistry))require('./gemrate_confirmed_links').validatePublic(root,JSON.parse(fs.readFileSync(path.join(root,'data/gemrate-reference-summary.json'))),JSON.parse(fs.readFileSync(gemrateRegistry)));
   require('./enforce_overseas_publication').enforce(root);
   const lineage=require('./publication_lineage');
   lineage.verify(root);

@@ -1,7 +1,7 @@
 // Consume locally received files only. No browser/API/HTTP, publication or official data changes.
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const csv=require('./gemrate_csv_import'),matcher=require('./gemrate_identity_match'),storage=require('./gemrate_private_store');
-const ROOT=path.resolve(__dirname,'..'),STORE=path.resolve(ROOT,'..','private-research/gemrate');
+const ROOT=path.resolve(__dirname,'..'),STORE=process.env.GEMRATE_PRIVATE_STORE||path.resolve(ROOT,'..','private-research/gemrate');
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 function pendingFiles(store,reviewRevision=null) {
   const incoming=path.join(store,'incoming'),manifestFile=path.join(store,'manifest.json');
@@ -54,9 +54,11 @@ function run(store=STORE) {
   const release=require('./acquisition_retry').lock(path.join(store,'.inbox.lock'));
   try {
   const catalog=JSON.parse(fs.readFileSync(path.join(ROOT,'data/pokemon-cards.json'))),english=JSON.parse(fs.readFileSync(path.join(ROOT,'work/snkr_english_names.json'))).cards;
-  const incoming=path.join(store,'incoming'),rows=[];
+  const incoming=path.join(store,'incoming'),rows=[],confirmed=require('./gemrate_confirmed_links'),links=confirmed.load(store);
   const reviewed=require('./gemrate_reviewed_additions'),registry=reviewed.entries(ROOT);
-  const reviewRevision=context=>sha(JSON.stringify(registry.filter(r=>r.set===context?.set&&r.year===context?.year&&r.language===context?.language)));
+  const reviewRevision=context=>confirmed.revision(confirmed.scope(ROOT,context)||{setCode:'S6A'},catalog,english,registry.filter(r=>r.set===context?.set&&r.year===context?.year&&r.language===context?.language));
+  const oldManifest=fs.existsSync(path.join(store,'manifest.json'))?JSON.parse(fs.readFileSync(path.join(store,'manifest.json'))):{files:[]};
+  const known=new Set(oldManifest.files.filter(r=>r.kind==='list'&&r.parsedPath&&fs.existsSync(r.parsedPath)).flatMap(r=>JSON.parse(fs.readFileSync(r.parsedPath)).accepted.map(x=>x.identity)));
   // A new CSV requires its own original page evidence and SHA-bound sidecar. Never infer a date from file time.
   for(const {name,prepared} of pendingFiles(store,reviewRevision)) {
     const file=path.join(incoming,name),meta=file+'.context.json';
@@ -72,13 +74,11 @@ function run(store=STORE) {
       const cells=csv.parseCsv(bytes.toString('utf8')),headers=cells.shift(),source=cells.map(r=>Object.fromEntries(headers.map((h,i)=>[h,r[i]])));
       const prior=JSON.parse(fs.readFileSync(path.join(store,'verification-report.json')));
       const held=prior.receipts.filter(r=>r.kind==='list').flatMap(r=>JSON.parse(fs.readFileSync(r.parsedPath)).quarantined.filter(q=>q.reason==='source-discrepancy-hold').map(q=>q.identity));
-      const matches=matcher.resolve(source,v.context,catalog,english,{...v,contextProof:v.context.contextProof,heldKeys:held});
       const additions=reviewed.mappings(source,v.context,catalog,registry,held);
-      for(const addition of additions){
-        const old=matches.mappings.find(m=>m.key===addition.key||m.cardId===addition.cardId);
-        if(old&&(old.key!==addition.key||old.cardId!==addition.cardId))throw Error('Reviewed mapping conflict');
-        if(!old)matches.mappings.push(addition);
-      }
+      const set=confirmed.scope(ROOT,v.context);
+      const matches=confirmed.resolve(source,v.context,catalog,english,{...v,contextProof:v.context.contextProof,heldKeys:held,
+        ...(confirmed.enabled(set)?{parallels:set.automaticReference.parallels}:{})},links,additions);
+      const firstMatches=matches.mappings.filter(m=>!m.hold&&!known.has(m.key)).length;
       const expanded=path.join(store,'expanded-verification-report.json');
       const previousObservations=fs.existsSync(expanded)?JSON.parse(fs.readFileSync(expanded)).outputs.flatMap(r=>{
         if(storage.outside(store,fs.realpathSync(r.path)))throw Error('Expanded observation path escapes private store');
@@ -87,12 +87,19 @@ function run(store=STORE) {
       const result=storage.receive({store,previousObservations,files:[{path:file,kind:'list',context:v.context,mappings:matches.mappings}]});
       const manifestFile=path.join(store,'manifest.json'),manifest=JSON.parse(fs.readFileSync(manifestFile));
       const receipt=manifest.files.findLast(r=>r.originalPath===file);receipt.reviewRevision=reviewRevision(v.context);
+      receipt.identityReview=matches.review;
       require('./acquisition_retry').atomicWrite(manifestFile,manifest);
+      require('./acquisition_retry').atomicWrite(path.join(store,confirmed.FILE),links);
+      for(const m of matches.mappings)known.add(m.key);
       rows.push({name,status:'imported-private',accepted:result.newPrivateObservations,
+        firstMatches,reusedMappings:matches.reused,storedMappings:matches.added,
+        retainedCsvReevaluation:oldManifest.files.some(r=>r.sha256===sidecar.csvSha256),
         recovered:result.files.filter(r=>r.recovered).reduce((n,r)=>n+r.accepted,0),held:result.files[0].quarantined,sha256:result.files[0].sha256});
     } catch(e) {rows.push({name,status:'review',reason:e.message});}
   }
   const result={at:new Date().toISOString(),stage:'offline-received-csv-import',files:rows,newPrivateObservations:rows.reduce((n,r)=>n+(r.accepted||0),0),
+    firstMatchedIdentities:rows.reduce((n,r)=>n+(r.firstMatches||0),0),reusedMappings:rows.reduce((n,r)=>n+(r.reusedMappings||0),0),
+    retainedCsvReevaluations:rows.filter(r=>r.retainedCsvReevaluation).length,sourceAcquisitions:0,
     recoveredPrivateObservations:rows.reduce((n,r)=>n+(r.recovered||0),0),httpRequests:0,publicRecords:0,officialPopUpdates:0,llmCalls:0,codexCalls:0,
     status:rows.some(r=>r.status==='review')?'review':rows.length?'imported':'no-received-files'};
   fs.writeFileSync(path.join(store,'last-inbox-run.json.tmp'),JSON.stringify(result,null,2));fs.renameSync(path.join(store,'last-inbox-run.json.tmp'),path.join(store,'last-inbox-run.json'));
