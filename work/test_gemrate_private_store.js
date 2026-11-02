@@ -2,6 +2,11 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const {receive}=require('./gemrate_private_store'),{key,importTrendCsv}=require('./gemrate_csv_import');
 const temp=fs.mkdtempSync(path.join(os.tmpdir(),'gemrate-private-'));
 const store=path.join(temp,'private'),publicRoot=path.join(temp,'publication');
+const {outside}=require('./gemrate_private_store');
+assert(outside(path.join(store,'worker'),store),'a direct parent is outside the publication worker');
+assert(outside(publicRoot,store),'sibling stores remain outside');
+assert(!outside(publicRoot,publicRoot),'same directory is never private');
+assert(!outside(publicRoot,path.join(publicRoot,'child')),'descendant is never private');
 fs.mkdirSync(store);fs.writeFileSync(path.join(store,'.gitignore'),'*\n');
 const context={grader:'PSA',language:'Japanese',set:'Synthetic Set',year:2021,sourceUpdatedDate:'2026-10-23',
   retrievedAt:'2026-10-24T00:00:00Z',contextProof:'synthetic',

@@ -26,6 +26,7 @@ function run(root=ROOT,store=STORE){
  if(!fs.existsSync(script))throw Error('Received-reference pipeline is not released on trusted main yet');
  const r=cp.spawnSync(process.execPath,[script,'--push'],{cwd:worker,env:{...process.env,GEMRATE_PRIVATE_STORE:store},encoding:'utf8',maxBuffer:8e6});
  if(r.stdout)process.stdout.write(r.stdout);
+ if(r.stderr)fs.writeFileSync(path.join(store,'last-pipeline-stderr.log'),r.stderr);
  if(r.status!==0||r.error)throw Error('Received-reference pipeline failed; outbox and raw originals retained');
  const result={at:new Date().toISOString(),head,isolatedMain:true,sourceAcquisitions:0,llmCalls:0,codexCalls:0};
  require('./acquisition_retry').atomicWrite(path.join(store,'last-worker-run.json'),result);return result;

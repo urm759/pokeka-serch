@@ -4,7 +4,7 @@ const ROOT=path.resolve(__dirname,'..');
 const hash=buffer=>crypto.createHash('sha256').update(buffer).digest('hex');
 function outside(root, target) {
   const rel=path.relative(path.resolve(root),path.resolve(target));
-  return rel.startsWith('..'+path.sep)||path.isAbsolute(rel);
+  return rel==='..'||rel.startsWith('..'+path.sep)||path.isAbsolute(rel);
 }
 function atomic(file,value) {
   const temp=file+'.'+process.pid+'.tmp';fs.writeFileSync(temp,JSON.stringify(value,null,2));fs.renameSync(temp,file);
