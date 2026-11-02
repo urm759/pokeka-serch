@@ -44,6 +44,7 @@ function apply(root=ROOT,ref='refs/remotes/origin/'+BRANCH){
 }
 function validateTransition(current,incoming){
  for(const [id,row]of Object.entries(current.cards||{})){const next=incoming.cards?.[id];if(!next||next[3]<row[3])throw Error('Queued reference would remove or age an existing observation');if(next[3]===row[3]&&JSON.stringify(next)!==JSON.stringify(row))throw Error('Same-date reference contradiction');}
+ if(current.population)for(const [id,old]of Object.entries(current.population.cards)){const next=incoming.population?.cards?.[id];if(!next||next[0]<old[0]||next[1]>old[1])throw Error('Queued reference would remove dated GemRate history');}
 }
 if(require.main===module){try{const result=process.argv.includes('--apply')?apply():push();if(process.env.GITHUB_OUTPUT&&'changed'in result)fs.appendFileSync(process.env.GITHUB_OUTPUT,'changed='+result.changed+'\n');console.log(JSON.stringify(result));}catch(e){console.error(e.message);process.exitCode=1;}}
 module.exports={FILES,BRANCH,enqueue,push,apply,validate,validateTransition};

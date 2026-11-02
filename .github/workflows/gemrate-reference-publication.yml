@@ -40,6 +40,7 @@ jobs:
           node work/test_gemrate_confirmed_links.js
           node work/test_gemrate_reference_checkpoint.js
           node work/test_gemrate_limited_public_reference.js
+          node work/test_gemrate_pop_history.js
           node work/update_validation.js --required
       - name: Publish validated reference projection
         if: steps.reference.outputs.changed == 'true'

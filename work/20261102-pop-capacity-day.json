@@ -1,0 +1,84 @@
+{
+  "at": "2026-11-02T14:24:26.194Z",
+  "from": "2026-11-01T14:24:26.194Z",
+  "basis": "公開照合済み原受領証の個別確認日時。source/card/timeを重複除外した24時間下限。未計測HTTPや非対応項目を0としない。優先対象は現在の取得元別キューIDで固定。",
+  "sources": {
+    "cardrush": {
+      "confirmedEvents": 0,
+      "distinctCards": 0,
+      "priorityConfirmedEvents": 0,
+      "priorityDistinctCards": 0,
+      "confirmationToPublicationMedianMs": null,
+      "publicationDelaySamples": 0,
+      "requiredPriorityPerDay": 1504,
+      "requiredWith25PctMargin": 1880,
+      "measurementStatus": "saved-observation-lower-bound"
+    },
+    "hareruya2": {
+      "confirmedEvents": 1680,
+      "distinctCards": 466,
+      "priorityConfirmedEvents": 1572,
+      "priorityDistinctCards": 373,
+      "confirmationToPublicationMedianMs": 676765,
+      "publicationDelaySamples": 1680,
+      "requiredPriorityPerDay": 1536,
+      "requiredWith25PctMargin": 1920,
+      "measurementStatus": "saved-observation-lower-bound"
+    },
+    "toreca": {
+      "confirmedEvents": 28965,
+      "distinctCards": 9720,
+      "priorityConfirmedEvents": 1200,
+      "priorityDistinctCards": 401,
+      "confirmationToPublicationMedianMs": 852366,
+      "publicationDelaySamples": 28965,
+      "requiredPriorityPerDay": null,
+      "requiredWith25PctMargin": null,
+      "measurementStatus": "saved-observation-lower-bound"
+    },
+    "shopBuyback": {
+      "confirmedEvents": 1913,
+      "distinctCards": 364,
+      "priorityConfirmedEvents": 1673,
+      "priorityDistinctCards": 315,
+      "confirmationToPublicationMedianMs": 888891,
+      "publicationDelaySamples": 1913,
+      "requiredPriorityPerDay": null,
+      "requiredWith25PctMargin": null,
+      "measurementStatus": "saved-observation-lower-bound"
+    },
+    "yuyutei": {
+      "confirmedEvents": 0,
+      "distinctCards": 0,
+      "priorityConfirmedEvents": null,
+      "priorityDistinctCards": null,
+      "confirmationToPublicationMedianMs": null,
+      "publicationDelaySamples": 0,
+      "requiredPriorityPerDay": null,
+      "requiredWith25PctMargin": null,
+      "measurementStatus": "saved-observation-lower-bound"
+    },
+    "torecacamp": {
+      "confirmedEvents": 231,
+      "distinctCards": 191,
+      "priorityConfirmedEvents": null,
+      "priorityDistinctCards": null,
+      "confirmationToPublicationMedianMs": 540759,
+      "publicationDelaySamples": 231,
+      "requiredPriorityPerDay": null,
+      "requiredWith25PctMargin": null,
+      "measurementStatus": "saved-observation-lower-bound"
+    },
+    "psa10Market": {
+      "confirmedEvents": null,
+      "distinctCards": null,
+      "priorityConfirmedEvents": null,
+      "priorityDistinctCards": null,
+      "confirmationToPublicationMedianMs": null,
+      "publicationDelaySamples": 0,
+      "requiredPriorityPerDay": null,
+      "requiredWith25PctMargin": null,
+      "measurementStatus": "individual-observation-time-unmeasured"
+    }
+  }
+}
