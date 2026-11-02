@@ -1,6 +1,14 @@
-const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),cp=require('node:child_process');
 const ROOT=path.join(__dirname,'..');
 const METADATA_TIMEOUT_MS=60000, ARCHIVE_TIMEOUT_MS=240000;
+function ensureTrustedBase(root,sha,execute=cp.spawnSync){
+  if(!/^[a-f0-9]{40}$/.test(sha||''))throw Error('Exact trusted source commit required');
+  const has=()=>execute('git',['cat-file','-e',sha+'^{commit}'],{cwd:root,encoding:'utf8'}).status===0;
+  if(has())return {fetched:false};
+  const r=execute('git',['fetch','--no-tags','--depth=1','origin',sha],{cwd:root,encoding:'utf8',timeout:60000});
+  if(r.status!==0||r.error||!has())throw Error('Trusted source base unavailable; saved archive retained');
+  return {fetched:true};
+}
 function trusted(run,repository='urm759/pokeka-serch'){
   return run?.name==='Priority Purchase Price Refresh' && run.event==='schedule' && run.conclusion==='failure'
     && run.head_branch==='main' && run.repository?.full_name===repository && run.head_repository?.full_name===repository;
@@ -84,7 +92,8 @@ async function main(){
     fs.renameSync(partial,file);
   }
   if(crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex')!==expected)throw Error('Saved artifact digest mismatch');
+  if(!safe)ensureTrustedBase(ROOT,run.head_sha);
   return safe?require('./safe_camp_checkpoint').restore(file,id,ROOT):require('./restore_price_artifact').restore(file,id,run.head_sha,ROOT);
 }
 if(require.main===module)main().then(r=>console.log(JSON.stringify(r))).catch(e=>{console.error(e.message);process.exitCode=1;});
-module.exports={trusted,trustedMonitor,trustedSafe,trustedDaily,latestDaily,latestMonitor,monitorRecoveryNeeded,inspectedForRun,lastSuccessfulAcquisition,METADATA_TIMEOUT_MS,ARCHIVE_TIMEOUT_MS};
+module.exports={trusted,trustedMonitor,trustedSafe,trustedDaily,latestDaily,latestMonitor,monitorRecoveryNeeded,inspectedForRun,lastSuccessfulAcquisition,ensureTrustedBase,METADATA_TIMEOUT_MS,ARCHIVE_TIMEOUT_MS};
