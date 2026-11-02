@@ -5716,7 +5716,8 @@ function gemRatePopGlance(card,detail=false,now=Date.now()) {
 function gemRatePopulationPanel(card) {
   const glance=gemRatePopGlance(card,true);if(!glance)return null;
   const old=card.official,v=gemRateReferenceValue(card,gemRateReferencePayload.cards[card.id]);
-  const legacy=old?`<details><summary>旧PSA公式保存値・履歴</summary><small>PSA10 ${fmt.format(old.ten)}／総数 ${fmt.format(old.total)}枚・確認 ${escapeHtml(old.f||'日時不明')}。GemRateの増減比較には混ぜません。</small>${old.u?`<a href="${escapeHtml(old.u)}" target="_blank" rel="noreferrer">旧公式出典</a>`:''}${/^\d{2}$/.test(old.sh||'')?`<details data-psa-history="${escapeHtml(card.id)}" data-psa-shard="${escapeHtml(old.sh)}"><summary>旧公式だけの保存推移</summary><div data-psa-chart></div></details>`:''}</details>`:'<small>旧PSA公式保存値：未取得</small>';
+  const oldCount=n=>Number.isSafeInteger(n)&&n>=0?fmt.format(n):'未取得';
+  const legacy=old?`<details><summary>旧PSA公式保存値・履歴</summary><small>PSA10 ${oldCount(old.ten)}／総数 ${oldCount(old.total)}枚・確認 ${escapeHtml(old.f||'日時不明')}。GemRateの増減比較には混ぜません。</small>${old.u?`<a href="${escapeHtml(old.u)}" target="_blank" rel="noreferrer">旧公式出典</a>`:''}${/^\d{2}$/.test(old.sh||'')?`<details data-psa-history="${escapeHtml(card.id)}" data-psa-shard="${escapeHtml(old.sh)}"><summary>旧公式だけの保存推移</summary><div data-psa-chart></div></details>`:''}</details>`:'<small>旧PSA公式保存値：未取得</small>';
   return `<details class="psa-official"><summary>PSA10 POP・GemRate集計／基準日 ${escapeHtml(v.date)}／${fmt.format(v.ten)}枚・総数${fmt.format(v.total)}枚</summary><div class="psa-official-body">${glance}${legacy}</div></details>`;
 }
 const boundPsaHistoryDetails=new WeakSet();

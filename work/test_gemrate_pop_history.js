@@ -32,6 +32,7 @@ vm.runInContext(fragment+';globalThis.api={ensure:ensureGemRateReference,pop:gem
  assert(html.includes('PSA10 POP・GemRate集計')&&html.includes('120枚')&&html.includes('+10枚')&&html.includes('75日枠'));
  assert(!html.includes('+780枚')&&!html.includes('-780枚'),'source switch is never a POP delta');
  assert(ctx.api.panel(card).includes('旧PSA公式保存値・履歴'));
+ assert(ctx.api.panel({...card,official:{ten:null,total:null}}).includes('PSA10 未取得／総数 未取得'),'missing old official counts never become zero or NaN');
  assert.equal(JSON.stringify(card),official,'official rate, source date and financial inputs immutable');
  const checkpoint=require('./gemrate_reference_checkpoint');assert.throws(()=>checkpoint.validateTransition({cards:{},population:{cards:{one:s}}},{cards:{},population:{cards:{one:[1,row[3],0,[null,null,null,null]]}}}),/remove dated/);
  console.log('PASS GemRate display-only dated windows, replay dedup, source/print separation, zero/missing/corrections/stale/partial spans, retained official values and monotonic history');
