@@ -3,12 +3,14 @@ const m=require('./update_validation');const root=fs.mkdtempSync(path.join(os.tm
 const write=(p,s)=>{fs.mkdirSync(path.dirname(path.join(root,p)),{recursive:true});fs.writeFileSync(path.join(root,p),s)};
 const git=args=>{const r=cp.spawnSync('git',args,{cwd:root,encoding:'utf8'});assert.equal(r.status,0,r.stderr)};
 try{
- git(['init','--quiet']);write('work/model.js','const n=1;\n');write('work/test_model.js','// test\n');write('data/price.json','{}');git(['add','.']);
+ git(['init','--quiet']);write('work/model.js','const n=1;\n');write('work/test_model.js','// test\n');write('work/fixtures/approved.json','{"n":1}\n');write('data/price.json','{}');git(['add','.']);
  assert.equal(m.plan(root).mode,'regression');m.record(root);assert.equal(m.plan(root).mode,'required');
  write('data/price.json','{"price":100,"observedAt":"new"}');assert.equal(m.plan(root).mode,'required','data still receives mandatory validation, not unchanged code tests');
  write('work/model.js','const n=2;\n');assert.equal(m.plan(root).mode,'regression');m.record(root);
  write('work/test_model.js','// changed test');assert.equal(m.plan(root).mode,'regression');m.record(root);
  write('work/model.js','const n=2;\r\n');assert.equal(m.plan(root).mode,'required','LF/CRLF normalization');
+ write('work/fixtures/approved.json','{"n":2}\n');assert.equal(m.plan(root).mode,'regression','fixture changes invalidate the regression receipt');m.record(root);
+ write('work/fixtures/approved.json','{"n":2}\r\n');assert.equal(m.plan(root).mode,'required','fixture line endings are normalized too');
  write('work/update-validation-state.json','{"verified":false}');assert.equal(m.plan(root).mode,'regression');
  const workflow=fs.readFileSync(path.join(__dirname,'../.github/workflows/watch-data-health.yml'),'utf8');
  assert(workflow.includes('publication_check:'));const check=workflow.split('  publication_check:')[1];assert(!/^    needs:/m.test(check));assert(!check.includes('git push'));

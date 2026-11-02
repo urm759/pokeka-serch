@@ -8,8 +8,8 @@ assert(allowed('workflow_run'));
 assert(allowed('workflow_run',{...run,name:'Priority Purchase Price Refresh',conclusion:'failure'}),'trusted failed price jobs recover saved inputs before considering new acquisition');
 for(const name of ['Daily Fast Update','Safe Checkpoint Backfill']) {
   assert(allowed('workflow_run',{...run,name}),'trusted scheduled cloud completion may fill missed price intervals');
-  if(name==='Safe Checkpoint Backfill')assert(allowed('workflow_run',{...run,name,conclusion:'failure'}),'trusted Safe publication failure can recover its compact pre-merge source checkpoint');
-  for(const changed of [{event:'workflow_dispatch'},...(name==='Safe Checkpoint Backfill'?[]:[{conclusion:'failure'}]),{head_branch:'feature'},{head_repository:{full_name:'fork/repo'}}])
+  assert(allowed('workflow_run',{...run,name,conclusion:'failure'}),'trusted Daily/Safe publication failure can recover saved source inputs');
+  for(const changed of [{event:'workflow_dispatch'},{head_branch:'feature'},{head_repository:{full_name:'fork/repo'}}])
     assert(!allowed('workflow_run',{...run,name,...changed}));
 }
 for(const changed of [{name:'Priority Purchase Price Refresh'},{event:'pull_request'},
