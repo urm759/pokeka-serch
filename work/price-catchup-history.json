@@ -2,81 +2,6 @@
   "version": 1,
   "runs": [
     {
-      "startedAt": "2026-10-24T07:37:28.308Z",
-      "runId": "40074785444",
-      "event": "schedule",
-      "route": "既存監視ジョブの空白補完",
-      "status": "acquired-saved",
-      "allowed": true,
-      "ageMs": 10189178,
-      "minimumIntervalMs": 9000000,
-      "reason": "定期の空白・既存の期限順キューで補完",
-      "llmCalls": 0,
-      "codexCalls": 0,
-      "sourceFailures": [],
-      "acquisitionStatus": "process-success",
-      "endedAt": "2026-10-24T07:51:07.420Z",
-      "durationMs": 819112,
-      "outcomes": {
-        "baselineAt": "2026-10-24T07:37:28.308Z",
-        "commonCards": 12545,
-        "addedCards": 0,
-        "removedCards": 0,
-        "newlyAnalyzable": 0,
-        "lostAnalyzable": 0,
-        "filledCards": 0,
-        "filledItems": 0,
-        "sources": {
-          "cardrush": {
-            "newLinked": 0,
-            "validAdded": 0,
-            "validLost": 0,
-            "usableNet": 0,
-            "freshnessRecovered": 0
-          },
-          "hareruya2": {
-            "newLinked": 0,
-            "validAdded": 0,
-            "validLost": 0,
-            "usableNet": 0,
-            "freshnessRecovered": 42
-          },
-          "yuyutei": {
-            "newLinked": 0,
-            "validAdded": 0,
-            "validLost": 0,
-            "usableNet": 0,
-            "freshnessRecovered": 0
-          },
-          "torecacamp": {
-            "newLinked": 0,
-            "validAdded": 0,
-            "validLost": 0,
-            "usableNet": 0,
-            "freshnessRecovered": 0
-          },
-          "psaOfficial": {
-            "newLinked": 0,
-            "validAdded": 0,
-            "validLost": 0,
-            "usableNet": 0,
-            "freshnessRecovered": 0
-          },
-          "pokedata": {
-            "newLinked": 0,
-            "validAdded": 0,
-            "validLost": 0,
-            "usableNet": 0,
-            "freshnessRecovered": 0
-          }
-        },
-        "referenceEvidenceRecovered": {
-          "buybackExitEvidence": 1
-        }
-      },
-      "publicationStatus": "保存済み・公開照合待ち"
-    },
-    {
       "startedAt": "2026-10-24T11:15:32.188Z",
       "runId": "40089105670",
       "event": "schedule",
@@ -4418,6 +4343,81 @@
             "usableNet": 0,
             "freshnessRecovered": 0
           }
+        }
+      },
+      "publicationStatus": "保存済み・公開照合待ち"
+    },
+    {
+      "startedAt": "2026-11-03T22:31:26.670Z",
+      "runId": "41731434570",
+      "event": "workflow_run",
+      "route": "既存監視ジョブの空白補完",
+      "status": "acquired-saved",
+      "allowed": true,
+      "ageMs": 10481243,
+      "minimumIntervalMs": 9000000,
+      "reason": "定期の空白・既存の期限順キューで補完",
+      "llmCalls": 0,
+      "codexCalls": 0,
+      "sourceFailures": [],
+      "acquisitionStatus": "process-success",
+      "endedAt": "2026-11-03T22:45:56.569Z",
+      "durationMs": 869899,
+      "outcomes": {
+        "baselineAt": "2026-11-03T22:31:26.670Z",
+        "commonCards": 12923,
+        "addedCards": 5,
+        "removedCards": 0,
+        "newlyAnalyzable": 18,
+        "lostAnalyzable": 4,
+        "filledCards": 77,
+        "filledItems": 93,
+        "sources": {
+          "cardrush": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          },
+          "hareruya2": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 56
+          },
+          "yuyutei": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          },
+          "torecacamp": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          },
+          "psaOfficial": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          },
+          "pokedata": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          }
+        },
+        "referenceEvidenceRecovered": {
+          "psa9Evidence": 9
         }
       },
       "publicationStatus": "保存済み・公開照合待ち"
