@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-03T00:14:42.916Z",
+  "generatedAt": "2026-11-03T00:20:06.511Z",
   "sourceLastSuccessAt": "2026-11-03T00:02:31.797Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-11-02T21:16:56.929Z",
-    "lastSuccessAt": "2026-11-02T21:16:56.929Z",
-    "runId": "41521058032",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/41521058032"
+    "lastAttemptAt": "2026-11-03T00:20:06.501Z",
+    "lastSuccessAt": "2026-11-03T00:20:06.501Z",
+    "runId": "41549618752",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/41549618752"
   },
   "issues": [
     {
@@ -17,9 +17,15 @@
       "reason": "Daily Fast Updateが1回連続失敗"
     },
     {
+      "key": "daily:run-stale",
+      "category": "鮮度未達・進捗停滞",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/41495095858",
+      "reason": "日次更新の成功が24時間以上なし"
+    },
+    {
       "key": "safe:yuyutei:manual-action-required:GitHub ActionsからHTTP #。正規アクセス確認待ち",
       "category": "アクセス・手動対応待ち",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/41349392329",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/41547979536",
       "reason": "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち"
     },
     {
@@ -53,6 +59,11 @@
       "reason": "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）"
     },
     {
+      "key": "source:buyback:fukufuku-mail:manual-wait",
+      "category": "アクセス・手動対応待ち",
+      "reason": "福福トレカ（郵送窓口）: 通常公開価格表の低頻度GET。認証操作なし。郵送窓口のみ・商品更新日は不明、実確認日時とページ更新日時を分離"
+    },
+    {
       "key": "pc:psa:PC観測未受信",
       "category": "確認が必要",
       "url": null,
@@ -73,12 +84,14 @@
   ],
   "reasons": [
     "Daily Fast Updateが1回連続失敗",
+    "日次更新の成功が24時間以上なし",
     "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち",
     "カードラッシュ: pk-73737: HTTP 403",
     "カードラッシュ: 更新期限超過（カード別鮮度 0%）",
     "遊々亭: HTTP 403",
     "遊々亭: 更新期限超過（カード別鮮度 0%）",
     "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）",
+    "福福トレカ（郵送窓口）: 通常公開価格表の低頻度GET。認証操作なし。郵送窓口のみ・商品更新日は不明、実確認日時とページ更新日時を分離",
     "PC側PSA: PC観測未受信 / 30時間以内の独立タスク観測なし。PC停止・観測起動失敗・未公開を区別して確認",
     "重要価格更新：設定2時間に対し実績成功間隔（直近最大）8.70時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能",
     "購入価格高速更新：取得・検証・保存・公開のいずれかが未完了。実行ログで工程を確認"
