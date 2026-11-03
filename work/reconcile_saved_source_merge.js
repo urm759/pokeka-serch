@@ -88,7 +88,7 @@ function mergePriorityCheckpoint(base,a,b){
   for(const source of Object.keys(merged.sources||{}))for(const id of Object.keys(merged.sources[source].jobs||{})){
     const current=a.sources?.[source]?.jobs?.[id],incoming=b.sources?.[source]?.jobs?.[id];
     const selected=latest(current,incoming,base.sources?.[source]?.jobs?.[id]);
-    if(current&&(current.held||current.manualReview)&&selected!==current)throw Error('Concurrent manual checkpoint hold requires review');
+    if([current,incoming].some(row=>row&&(row.held||row.manualReview)&&!same(selected,row)))throw Error('Concurrent manual checkpoint hold requires review');
     merged.sources[source].jobs[id]=selected;
   }
   return merged;

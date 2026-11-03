@@ -16,6 +16,11 @@ const partialJobs={jobs:[{steps:[...jobs.jobs[0].steps,{name:'Report independent
 assert(verify({...run,conclusion:'failure'},partialJobs,partialReceipt,{'data/example.json':'{"n":1}'},pages).confirmed);
 assert(!verify({...run,conclusion:'failure'},{jobs:[{steps:[...partialJobs.jobs[0].steps,{name:'Run fast regression tests',conclusion:'failure'}]}]},partialReceipt,{'data/example.json':'{"n":1}'},pages).confirmed);
 assert(verify({...run,event:'workflow_run'},jobs,{...receipt,pipeline:'catchup'},{'data/example.json':'{"n":1}'},pages).confirmed);
+for(const event of ['schedule','workflow_run']){
+  const checked=verify({...run,event,run_attempt:2},jobs,{...receipt,pipeline:'catchup'},{'data/example.json':'{"n":1}'},pages);
+  assert(checked.publicationConfirmed);assert(!checked.confirmed);assert(checked.rerun);assert.equal(checked.runAttempt,2);
+  assert(verify({...run,event,run_attempt:1},jobs,{...receipt,pipeline:'catchup'},{'data/example.json':'{"n":1}'},pages).confirmed);
+}
 console.log('PASS: scheduled stages, exact public hashes, receipt identity and Pages chronology');
 const fs=require('node:fs'),path=require('node:path'),os=require('node:os');
 const temp=fs.mkdtempSync(path.join(os.tmpdir(),'pokeka-cycle-test-'));
