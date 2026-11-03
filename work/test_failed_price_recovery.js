@@ -49,6 +49,16 @@ function zip(files){
 assert.throws(()=>zipEntries(Buffer.from('invalid')),/ZIP/);
 assert.throws(()=>zipEntries(zip({'../outside':'bad'})),/Unsafe/);
 const {reconstructionManifest}=require('./restore_price_artifact');
+const {selectRecoveryArtifacts}=require('./recover_failed_price_run');
+const dailyRun={id:123,run_attempt:2},compact={name:'daily-prevalidation-123-2'},full={name:'daily-recovery-123-2'};
+assert.deepEqual(selectRecoveryArtifacts([full,compact],dailyRun,{daily:true}),[compact],'normal compact source snapshot precedes the large conflicted failure dump');
+assert.deepEqual(selectRecoveryArtifacts([full,{...compact,expired:true}],dailyRun,{daily:true}),[full],'legacy fallback is still strictly verified');
+assert.deepEqual(selectRecoveryArtifacts([{name:'daily-prevalidation-123-1'}],dailyRun,{daily:true}),[],'do not mix attempts');
+assert.throws(()=>selectRecoveryArtifacts([compact,{...compact}],dailyRun,{daily:true}),/One exact/);
+assert.deepEqual(selectRecoveryArtifacts([{name:'priority-price-recovery-123-2'},compact],dailyRun),[{name:'priority-price-recovery-123-2'}]);
+const {recoveryArchiveName}=require('./recover_failed_price_run');
+assert.notEqual(recoveryArchiveName(123,1),recoveryArchiveName(123,2),'compact and full artifacts cannot collide in the saved ZIP cache');
+assert.throws(()=>recoveryArchiveName(123,'../other'),/Exact recovery/);
 const manifests=(changes={})=>zipEntries(zip({
  'work/pre/recovery-manifest.json':JSON.stringify({workflowRunId:'123',source:'daily-prevalidation',savedAt:'2026-11-02T18:03:38Z',files:[{file:'data/pokemon-cards.json'}],invalidJson:[]}),
  'work/final/recovery-manifest.json':JSON.stringify({workflowRunId:'123',source:'daily',savedAt:'2026-11-02T18:05:38Z',files:[{file:'data/pokemon-cards.json'}],invalidJson:[],...changes})}));
