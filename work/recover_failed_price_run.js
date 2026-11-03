@@ -45,10 +45,14 @@ function activeSourceHolds(root=ROOT){
     return r.status==='source-merge-review-required'&&!fs.existsSync(path.join(work,'recovery-applied-'+r.runId+'.json'))?[r]:[];
   });
 }
+function recoveryArchiveName(runId,artifactId){
+  if(!/^\d+$/.test(String(runId))||!/^\d+$/.test(String(artifactId)))throw Error('Exact recovery run/artifact identity required');
+  return 'work/recovery-'+runId+'-'+artifactId+'.zip';
+}
 function retainSourceHold(root,run,artifact,error){
   if(error.code!=='SOURCE_RECOVERY_MERGE_REQUIRED')throw error;
   const result={status:'source-merge-review-required',runId:String(run.id),runAttempt:run.run_attempt,headSha:run.head_sha,checkedAt:new Date().toISOString(),
-    artifactId:artifact.id,artifactDigest:artifact.digest,archive:'work/recovery-'+run.id+'.zip',files:error.files,reason:error.message,
+    artifactId:artifact.id,artifactDigest:artifact.digest,archive:recoveryArchiveName(run.id,artifact.id),files:error.files,reason:error.message,
     recoveryApplied:false,normalUpdatesMayContinue:true,sourceRequests:0,originalRetained:true};
   fs.writeFileSync(path.join(root,'work/recovery-inspected-'+run.id+'.json'),JSON.stringify(result));
   console.warn('::warning::取得済み原票は同時更新の照合保留。元archiveと失敗記録を保持し、正常な価格更新は継続: '+run.id);
@@ -67,6 +71,16 @@ function monitorRecoveryNeeded(jobs){
   const rows=jobs.jobs||[],catchup=rows.find(j=>j.name==='catchup'),failed=rows.filter(j=>j.conclusion==='failure');
   return !(catchup?.status==='completed'&&catchup.conclusion==='success'&&failed.length>0
     &&failed.every(j=>['publication_check','watch'].includes(j.name)));
+}
+function selectRecoveryArtifacts(artifacts,run,{safe=false,daily=false,monitor=false}={}){
+  const suffix=run.id+'-'+run.run_attempt;
+  // Prefer the existing valid source snapshot captured before publication. The
+  // failure dump also contains a Git bundle and potentially conflicted JSON.
+  // ZIP/hash/schema limits remain strict; do not enlarge them for unused data.
+  const names=daily?['daily-prevalidation-'+suffix,'daily-recovery-'+suffix]
+    :[(safe?'safe-camp-checkpoint-':monitor?'monitor-recovery-':'priority-price-recovery-')+suffix];
+  for(const name of names){const rows=artifacts.filter(a=>!a.expired&&a.name===name);if(rows.length){if(rows.length!==1)throw Error('One exact failure checkpoint is required');return rows;}}
+  return [];
 }
 async function main(){
   let id=process.env.FAILED_PRICE_RUN_ID;const token=process.env.GITHUB_TOKEN,monitor=process.argv.includes('--latest-monitor'),dailyScan=process.argv.includes('--latest-daily');
@@ -89,8 +103,7 @@ async function main(){
       fs.writeFileSync(path.join(ROOT,'work/recovery-inspected-'+id+'.json'),JSON.stringify(result));return result;
     }
   }
-  const artifactName=(safe?'safe-camp-checkpoint-':daily?'daily-recovery-':monitor?'monitor-recovery-':'priority-price-recovery-')+id+'-'+run.run_attempt;
-  const artifacts=(await(await get(base+'/runs/'+id+'/artifacts')).json()).artifacts.filter(a=>!a.expired&&a.name===artifactName);
+  const artifacts=selectRecoveryArtifacts((await(await get(base+'/runs/'+id+'/artifacts')).json()).artifacts,run,{safe,daily,monitor});
   if(daily&&artifacts.length===0){
     const result={status:'daily-source-checkpoint-unavailable',runId:id,runAttempt:run.run_attempt,headSha:run.head_sha,checkedAt:new Date().toISOString(),sourceRequests:0,
       reason:'Daily失敗は保持。回収可能な原票artifactなし。正常な他取得元の更新は継続'};
@@ -100,7 +113,7 @@ async function main(){
   if(artifacts.length!==1)throw Error('One exact failure checkpoint is required');
   const artifact=artifacts[0],expected=artifact.digest?.match(/^sha256:([a-f0-9]{64})$/)?.[1];
   if(!expected||artifact.size_in_bytes>(safe?32e6:256e6))throw Error('Artifact digest/size proof missing');
-  const file=path.join(ROOT,'work/recovery-'+id+'.zip'),partial=file+'.download-'+Date.now();
+  const file=path.join(ROOT,recoveryArchiveName(id,artifact.id)),partial=file+'.download-'+Date.now();
   if(!fs.existsSync(file)){
     const response=await get(artifact.archive_download_url,ARCHIVE_TIMEOUT_MS),stream=fs.openSync(partial,'wx');let bytes=0;
     try{for await(const chunk of response.body){bytes+=chunk.length;if(bytes>256e6)throw Error('Artifact size budget');fs.writeSync(stream,chunk);}}finally{fs.closeSync(stream);}
@@ -119,4 +132,4 @@ if(require.main===module){
     console.log(JSON.stringify({pending:Boolean(rows.length),runIds:rows.map(r=>r.runId),recoveryApplied:false}));
   }else main().then(r=>console.log(JSON.stringify(r))).catch(e=>{console.error(e.message);process.exitCode=1;});
 }
-module.exports={trusted,trustedMonitor,trustedSafe,trustedDaily,latestDaily,latestMonitor,monitorRecoveryNeeded,inspectedForRun,lastSuccessfulAcquisition,ensureTrustedBase,activeSourceHolds,retainSourceHold,METADATA_TIMEOUT_MS,ARCHIVE_TIMEOUT_MS};
+module.exports={trusted,trustedMonitor,trustedSafe,trustedDaily,latestDaily,latestMonitor,monitorRecoveryNeeded,selectRecoveryArtifacts,recoveryArchiveName,inspectedForRun,lastSuccessfulAcquisition,ensureTrustedBase,activeSourceHolds,retainSourceHold,METADATA_TIMEOUT_MS,ARCHIVE_TIMEOUT_MS};
