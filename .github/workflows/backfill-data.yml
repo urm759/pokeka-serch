@@ -74,6 +74,8 @@ jobs:
           node work/test_research_evidence_gate.js
           node work/test_acquisition_progress.js
           node work/test_checkpoint_publication.js
+          node work/test_concurrent_price_publication.js
+          node work/test_saved_retailer_links.js
           node work/test_source_monitor_and_completion.js
           node work/test_completion_routes.js
           node work/test_acquisition_resilience.js

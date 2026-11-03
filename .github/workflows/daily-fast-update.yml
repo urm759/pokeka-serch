@@ -185,6 +185,8 @@ jobs:
             node work/test_candidate_availability_audit.js
             node work/test_acquisition_progress.js
             node work/test_checkpoint_publication.js
+            node work/test_concurrent_price_publication.js
+            node work/test_saved_retailer_links.js
             node work/test_publication_lineage.js
             node work/test_minimum_recovery_sources.js
             node work/test_recovery_latency.js
