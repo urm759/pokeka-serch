@@ -17,48 +17,48 @@
           "detectedAt": "2026-09-28T22:23:11.192Z"
         }
       },
-      "checkedAt": "2026-10-31T20:23:44.835Z",
+      "checkedAt": "2026-11-03T22:11:57.921Z",
       "batches": 0,
-      "durationMs": 4,
+      "durationMs": 3,
       "allocatedMs": 360000
     },
     "priceEvidence": {
-      "status": "reviewed-with-unavailable",
-      "reason": null,
+      "status": "stalled",
+      "reason": "2回連続でチェックポイント進捗なし",
       "position": {
-        "remaining": 0,
-        "inspected": 694,
-        "unavailable": 27,
+        "remaining": 5,
+        "inspected": 605,
+        "unavailable": 25,
         "resumeCardId": null,
         "stopReason": null
       },
-      "checkedAt": "2026-10-31T20:23:53.841Z",
-      "batches": 1,
+      "checkedAt": "2026-11-03T22:12:14.966Z",
+      "batches": 2,
       "failures": 0,
       "retry": null,
-      "durationMs": 9006,
-      "allocatedMs": 719996
+      "durationMs": 17046,
+      "allocatedMs": 719997
     },
     "psaLinkage": {
       "status": "queue-updated",
       "reason": null,
       "position": {
-        "unlinked": 1226,
+        "unlinked": 1236,
         "note": "候補整理のみ。PSA公式の認証取得とは別工程"
       },
-      "checkedAt": "2026-10-31T20:23:54.240Z",
+      "checkedAt": "2026-11-03T22:12:15.342Z",
       "batches": 1,
       "failures": 0,
       "retry": null,
-      "durationMs": 398,
+      "durationMs": 374,
       "allocatedMs": 60000
     },
     "torecacamp": {
       "status": "partial",
       "reason": null,
       "position": {
-        "sitemap": 23,
-        "productIndex": 822,
+        "sitemap": 29,
+        "productIndex": 420,
         "totalSitemaps": 46,
         "visitedProducts": 46973,
         "catalogCount": 6647,
@@ -67,25 +67,25 @@
         "retryQueue": 0,
         "failedSitemaps": 0,
         "maintenance": {
-          "sitemapIndex": 22,
-          "entryIndex": 822,
+          "sitemapIndex": 28,
+          "entryIndex": 420,
           "cycles": 2,
-          "refreshed": 11333,
+          "refreshed": 12415,
           "newLinks": 147,
-          "checkedAt": "2026-10-31T20:35:10.452Z"
+          "checkedAt": "2026-11-03T22:23:47.631Z"
         },
         "firstPassCompletedAt": "2026-10-08T21:56:31.044Z"
       },
-      "checkedAt": "2026-10-31T20:35:10.856Z",
+      "checkedAt": "2026-11-03T22:23:47.943Z",
       "batches": 18,
       "failures": 0,
       "retry": null,
-      "durationMs": 676640,
+      "durationMs": 692615,
       "allocatedMs": 720000
     }
   },
-  "startedAt": "2026-10-31T20:23:44.830Z",
+  "startedAt": "2026-11-03T22:11:57.917Z",
   "status": "partial-with-stop",
-  "endedAt": "2026-10-31T20:35:10.882Z",
-  "durationMs": 686052
+  "endedAt": "2026-11-03T22:23:47.958Z",
+  "durationMs": 710041
 }
