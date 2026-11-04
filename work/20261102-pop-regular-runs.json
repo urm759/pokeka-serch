@@ -1,0 +1,895 @@
+{
+  "at": "2026-11-02T13:57:44.070Z",
+  "runs": [
+    {
+      "id": 41456448638,
+      "name": "Received GemRate Reference Publication",
+      "event": "schedule",
+      "head": "e8c555698e459cc5cffec50daf88fdfa254d1dc0",
+      "status": "completed",
+      "conclusion": "success",
+      "created": "2026-11-02T13:50:24Z",
+      "started": "2026-11-02T13:50:24Z",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/41456448638"
+    },
+    {
+      "id": 41422202219,
+      "name": "Priority Purchase Price Refresh",
+      "event": "schedule",
+      "head": "70cc8bb1f67a34b0c3823fd9d98089c9a22db95b",
+      "status": "completed",
+      "conclusion": "success",
+      "created": "2026-11-02T09:37:33Z",
+      "started": "2026-11-02T09:37:33Z",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/41422202219"
+    },
+    {
+      "id": 41402576237,
+      "name": "Data Update Health Watchdog",
+      "event": "schedule",
+      "head": "e81a2b26244203f370fe9a4fe4ad9457462c58c5",
+      "status": "completed",
+      "conclusion": "success",
+      "created": "2026-11-02T06:51:31Z",
+      "started": "2026-11-02T06:51:31Z",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/41402576237"
+    },
+    {
+      "id": 41396776999,
+      "name": "Deep Resolve Unmatched Cards",
+      "event": "schedule",
+      "head": "79a6780b5f182b884136e0c75d76d99b5065c187",
+      "status": "completed",
+      "conclusion": "success",
+      "created": "2026-11-02T05:55:06Z",
+      "started": "2026-11-02T05:55:06Z",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/41396776999"
+    },
+    {
+      "id": 41373155813,
+      "name": "Priority Purchase Price Refresh",
+      "event": "schedule",
+      "head": "41ee75c7dac438318ab4267baa3da2cfc83038aa",
+      "status": "completed",
+      "conclusion": "success",
+      "created": "2026-11-02T01:34:10Z",
+      "started": "2026-11-02T01:34:10Z",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/41373155813"
+    },
+    {
+      "id": 41364345638,
+      "name": "Data Update Health Watchdog",
+      "event": "schedule",
+      "head": "84541f65c34a3c71c9b70d95d7eb26a02b0ed37a",
+      "status": "completed",
+      "conclusion": "success",
+      "created": "2026-11-01T23:54:13Z",
+      "started": "2026-11-01T23:54:13Z",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/41364345638"
+    },
+    {
+      "id": 41359589976,
+      "name": "Daily Fast Update",
+      "event": "schedule",
+      "head": "04ae48d99e9c3ca17c1660aef6f1614f7bfddb95",
+      "status": "completed",
+      "conclusion": "success",
+      "created": "2026-11-01T22:56:11Z",
+      "started": "2026-11-01T22:56:11Z",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/41359589976"
+    }
+  ],
+  "jobs": {
+    "41422202219": [
+      {
+        "id": 125200158575,
+        "name": "refresh",
+        "conclusion": "success",
+        "started": "2026-11-02T09:37:36Z",
+        "completed": "2026-11-02T09:55:43Z",
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success",
+            "start": "2026-11-02T09:37:37Z",
+            "end": "2026-11-02T09:37:37Z"
+          },
+          {
+            "name": "Run actions/checkout@v7",
+            "conclusion": "success",
+            "start": "2026-11-02T09:37:37Z",
+            "end": "2026-11-02T09:38:09Z"
+          },
+          {
+            "name": "Run actions/setup-node@v7",
+            "conclusion": "success",
+            "start": "2026-11-02T09:38:09Z",
+            "end": "2026-11-02T09:38:09Z"
+          },
+          {
+            "name": "Refresh due purchase prices without new-set exploration or LLM",
+            "conclusion": "success",
+            "start": "2026-11-02T09:38:09Z",
+            "end": "2026-11-02T09:52:42Z"
+          },
+          {
+            "name": "Verify safety and incremental acquisition",
+            "conclusion": "success",
+            "start": "2026-11-02T09:52:42Z",
+            "end": "2026-11-02T09:53:03Z"
+          },
+          {
+            "name": "Publish validated data with conflict protection",
+            "conclusion": "success",
+            "start": "2026-11-02T09:53:03Z",
+            "end": "2026-11-02T09:55:41Z"
+          },
+          {
+            "name": "Report independent acquisition failures without hiding them",
+            "conclusion": "success",
+            "start": "2026-11-02T09:55:41Z",
+            "end": "2026-11-02T09:55:41Z"
+          },
+          {
+            "name": "Preserve unpublished checkpoint on failure",
+            "conclusion": "skipped",
+            "start": "2026-11-02T09:55:41Z",
+            "end": "2026-11-02T09:55:41Z"
+          },
+          {
+            "name": "Record failure metadata independently",
+            "conclusion": "skipped",
+            "start": "2026-11-02T09:55:41Z",
+            "end": "2026-11-02T09:55:41Z"
+          },
+          {
+            "name": "Run actions/upload-artifact@v7",
+            "conclusion": "skipped",
+            "start": "2026-11-02T09:55:41Z",
+            "end": "2026-11-02T09:55:41Z"
+          },
+          {
+            "name": "Run actions/upload-artifact@v7",
+            "conclusion": "skipped",
+            "start": "2026-11-02T09:55:41Z",
+            "end": "2026-11-02T09:55:41Z"
+          },
+          {
+            "name": "Post Run actions/setup-node@v7",
+            "conclusion": "success",
+            "start": "2026-11-02T09:55:41Z",
+            "end": "2026-11-02T09:55:41Z"
+          },
+          {
+            "name": "Post Run actions/checkout@v7",
+            "conclusion": "success",
+            "start": "2026-11-02T09:55:41Z",
+            "end": "2026-11-02T09:55:41Z"
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success",
+            "start": "2026-11-02T09:55:41Z",
+            "end": "2026-11-02T09:55:41Z"
+          }
+        ]
+      }
+    ],
+    "41402576237": [
+      {
+        "id": 125137398094,
+        "name": "publication_check",
+        "conclusion": "success",
+        "started": "2026-11-02T06:51:34Z",
+        "completed": "2026-11-02T06:52:46Z",
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success",
+            "start": "2026-11-02T06:51:35Z",
+            "end": "2026-11-02T06:51:35Z"
+          },
+          {
+            "name": "Run actions/checkout@v7",
+            "conclusion": "success",
+            "start": "2026-11-02T06:51:35Z",
+            "end": "2026-11-02T06:52:06Z"
+          },
+          {
+            "name": "Run actions/setup-node@v7",
+            "conclusion": "success",
+            "start": "2026-11-02T06:52:06Z",
+            "end": "2026-11-02T06:52:06Z"
+          },
+          {
+            "name": "Verify published acquisition independently without source requests",
+            "conclusion": "success",
+            "start": "2026-11-02T06:52:06Z",
+            "end": "2026-11-02T06:52:42Z"
+          },
+          {
+            "name": "Retain publication verification without a Pages feedback loop",
+            "conclusion": "success",
+            "start": "2026-11-02T06:52:42Z",
+            "end": "2026-11-02T06:52:44Z"
+          },
+          {
+            "name": "Post Run actions/setup-node@v7",
+            "conclusion": "success",
+            "start": "2026-11-02T06:52:44Z",
+            "end": "2026-11-02T06:52:44Z"
+          },
+          {
+            "name": "Post Run actions/checkout@v7",
+            "conclusion": "success",
+            "start": "2026-11-02T06:52:44Z",
+            "end": "2026-11-02T06:52:44Z"
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success",
+            "start": "2026-11-02T06:52:44Z",
+            "end": "2026-11-02T06:52:44Z"
+          }
+        ]
+      },
+      {
+        "id": 125137398652,
+        "name": "catchup",
+        "conclusion": "success",
+        "started": "2026-11-02T06:51:34Z",
+        "completed": "2026-11-02T06:52:32Z",
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success",
+            "start": "2026-11-02T06:51:35Z",
+            "end": "2026-11-02T06:51:35Z"
+          },
+          {
+            "name": "Run actions/checkout@v7",
+            "conclusion": "success",
+            "start": "2026-11-02T06:51:35Z",
+            "end": "2026-11-02T06:52:06Z"
+          },
+          {
+            "name": "Run actions/setup-node@v7",
+            "conclusion": "success",
+            "start": "2026-11-02T06:52:06Z",
+            "end": "2026-11-02T06:52:06Z"
+          },
+          {
+            "name": "Check alert deduplication and safe backoff rules",
+            "conclusion": "success",
+            "start": "2026-11-02T06:52:06Z",
+            "end": "2026-11-02T06:52:07Z"
+          },
+          {
+            "name": "Recover trusted failed price inputs without reacquisition",
+            "conclusion": "skipped",
+            "start": "2026-11-02T06:52:07Z",
+            "end": "2026-11-02T06:52:07Z"
+          },
+          {
+            "name": "Check saved publication before optional acquisition",
+            "conclusion": "success",
+            "start": "2026-11-02T06:52:07Z",
+            "end": "2026-11-02T06:52:07Z"
+          },
+          {
+            "name": "Plan saved publication before optional acquisition",
+            "conclusion": "success",
+            "start": "2026-11-02T06:52:07Z",
+            "end": "2026-11-02T06:52:08Z"
+          },
+          {
+            "name": "Fill missed price intervals with shared cooldown and access budgets",
+            "conclusion": "skipped",
+            "start": "2026-11-02T06:52:08Z",
+            "end": "2026-11-02T06:52:08Z"
+          },
+          {
+            "name": "Validate catchup data without changing purchase criteria",
+            "conclusion": "success",
+            "start": "2026-11-02T06:52:08Z",
+            "end": "2026-11-02T06:52:29Z"
+          },
+          {
+            "name": "Publish changed health state only",
+            "conclusion": "skipped",
+            "start": "2026-11-02T06:52:29Z",
+            "end": "2026-11-02T06:52:29Z"
+          },
+          {
+            "name": "Report independent acquisition failures without hiding them",
+            "conclusion": "success",
+            "start": "2026-11-02T06:52:29Z",
+            "end": "2026-11-02T06:52:29Z"
+          },
+          {
+            "name": "Preserve unpublished monitor state",
+            "conclusion": "skipped",
+            "start": "2026-11-02T06:52:29Z",
+            "end": "2026-11-02T06:52:29Z"
+          },
+          {
+            "name": "Save monitor recovery bundle",
+            "conclusion": "skipped",
+            "start": "2026-11-02T06:52:29Z",
+            "end": "2026-11-02T06:52:29Z"
+          },
+          {
+            "name": "Post Run actions/setup-node@v7",
+            "conclusion": "success",
+            "start": "2026-11-02T06:52:29Z",
+            "end": "2026-11-02T06:52:29Z"
+          },
+          {
+            "name": "Post Run actions/checkout@v7",
+            "conclusion": "success",
+            "start": "2026-11-02T06:52:29Z",
+            "end": "2026-11-02T06:52:29Z"
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success",
+            "start": "2026-11-02T06:52:29Z",
+            "end": "2026-11-02T06:52:29Z"
+          }
+        ]
+      },
+      {
+        "id": 125137730751,
+        "name": "watch",
+        "conclusion": "success",
+        "started": "2026-11-02T06:52:34Z",
+        "completed": "2026-11-02T06:54:24Z",
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success",
+            "start": "2026-11-02T06:52:35Z",
+            "end": "2026-11-02T06:52:36Z"
+          },
+          {
+            "name": "Run actions/checkout@v7",
+            "conclusion": "success",
+            "start": "2026-11-02T06:52:36Z",
+            "end": "2026-11-02T06:53:05Z"
+          },
+          {
+            "name": "Run actions/setup-node@v7",
+            "conclusion": "success",
+            "start": "2026-11-02T06:53:05Z",
+            "end": "2026-11-02T06:53:06Z"
+          },
+          {
+            "name": "Validate independent monitor",
+            "conclusion": "success",
+            "start": "2026-11-02T06:53:06Z",
+            "end": "2026-11-02T06:53:06Z"
+          },
+          {
+            "name": "Check workflow results and saved checkpoint holds",
+            "conclusion": "success",
+            "start": "2026-11-02T06:53:06Z",
+            "end": "2026-11-02T06:53:23Z"
+          },
+          {
+            "name": "Publish independent validated monitor state",
+            "conclusion": "success",
+            "start": "2026-11-02T06:53:23Z",
+            "end": "2026-11-02T06:54:21Z"
+          },
+          {
+            "name": "Report newly detected alerts",
+            "conclusion": "success",
+            "start": "2026-11-02T06:54:21Z",
+            "end": "2026-11-02T06:54:21Z"
+          },
+          {
+            "name": "Preserve independent observation on failure",
+            "conclusion": "skipped",
+            "start": "2026-11-02T06:54:21Z",
+            "end": "2026-11-02T06:54:21Z"
+          },
+          {
+            "name": "Run actions/upload-artifact@v7",
+            "conclusion": "skipped",
+            "start": "2026-11-02T06:54:21Z",
+            "end": "2026-11-02T06:54:21Z"
+          },
+          {
+            "name": "Post Run actions/setup-node@v7",
+            "conclusion": "success",
+            "start": "2026-11-02T06:54:21Z",
+            "end": "2026-11-02T06:54:21Z"
+          },
+          {
+            "name": "Post Run actions/checkout@v7",
+            "conclusion": "success",
+            "start": "2026-11-02T06:54:21Z",
+            "end": "2026-11-02T06:54:21Z"
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success",
+            "start": "2026-11-02T06:54:21Z",
+            "end": "2026-11-02T06:54:21Z"
+          }
+        ]
+      }
+    ],
+    "41373155813": [
+      {
+        "id": 125047719341,
+        "name": "refresh",
+        "conclusion": "success",
+        "started": "2026-11-02T01:34:12Z",
+        "completed": "2026-11-02T01:51:46Z",
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success",
+            "start": "2026-11-02T01:34:13Z",
+            "end": "2026-11-02T01:34:13Z"
+          },
+          {
+            "name": "Run actions/checkout@v7",
+            "conclusion": "success",
+            "start": "2026-11-02T01:34:14Z",
+            "end": "2026-11-02T01:34:44Z"
+          },
+          {
+            "name": "Run actions/setup-node@v7",
+            "conclusion": "success",
+            "start": "2026-11-02T01:34:44Z",
+            "end": "2026-11-02T01:34:45Z"
+          },
+          {
+            "name": "Refresh due purchase prices without new-set exploration or LLM",
+            "conclusion": "success",
+            "start": "2026-11-02T01:34:45Z",
+            "end": "2026-11-02T01:48:53Z"
+          },
+          {
+            "name": "Verify safety and incremental acquisition",
+            "conclusion": "success",
+            "start": "2026-11-02T01:48:53Z",
+            "end": "2026-11-02T01:49:13Z"
+          },
+          {
+            "name": "Publish validated data with conflict protection",
+            "conclusion": "success",
+            "start": "2026-11-02T01:49:13Z",
+            "end": "2026-11-02T01:51:44Z"
+          },
+          {
+            "name": "Report independent acquisition failures without hiding them",
+            "conclusion": "success",
+            "start": "2026-11-02T01:51:44Z",
+            "end": "2026-11-02T01:51:44Z"
+          },
+          {
+            "name": "Preserve unpublished checkpoint on failure",
+            "conclusion": "skipped",
+            "start": "2026-11-02T01:51:44Z",
+            "end": "2026-11-02T01:51:44Z"
+          },
+          {
+            "name": "Record failure metadata independently",
+            "conclusion": "skipped",
+            "start": "2026-11-02T01:51:44Z",
+            "end": "2026-11-02T01:51:44Z"
+          },
+          {
+            "name": "Run actions/upload-artifact@v7",
+            "conclusion": "skipped",
+            "start": "2026-11-02T01:51:44Z",
+            "end": "2026-11-02T01:51:44Z"
+          },
+          {
+            "name": "Run actions/upload-artifact@v7",
+            "conclusion": "skipped",
+            "start": "2026-11-02T01:51:44Z",
+            "end": "2026-11-02T01:51:44Z"
+          },
+          {
+            "name": "Post Run actions/setup-node@v7",
+            "conclusion": "success",
+            "start": "2026-11-02T01:51:44Z",
+            "end": "2026-11-02T01:51:44Z"
+          },
+          {
+            "name": "Post Run actions/checkout@v7",
+            "conclusion": "success",
+            "start": "2026-11-02T01:51:44Z",
+            "end": "2026-11-02T01:51:45Z"
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success",
+            "start": "2026-11-02T01:51:45Z",
+            "end": "2026-11-02T01:51:45Z"
+          }
+        ]
+      }
+    ],
+    "41364345638": [
+      {
+        "id": 125021222368,
+        "name": "publication_check",
+        "conclusion": "success",
+        "started": "2026-11-01T23:54:15Z",
+        "completed": "2026-11-01T23:55:13Z",
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success",
+            "start": "2026-11-01T23:54:16Z",
+            "end": "2026-11-01T23:54:17Z"
+          },
+          {
+            "name": "Run actions/checkout@v7",
+            "conclusion": "success",
+            "start": "2026-11-01T23:54:17Z",
+            "end": "2026-11-01T23:54:46Z"
+          },
+          {
+            "name": "Run actions/setup-node@v7",
+            "conclusion": "success",
+            "start": "2026-11-01T23:54:46Z",
+            "end": "2026-11-01T23:54:47Z"
+          },
+          {
+            "name": "Verify published acquisition independently without source requests",
+            "conclusion": "success",
+            "start": "2026-11-01T23:54:47Z",
+            "end": "2026-11-01T23:55:09Z"
+          },
+          {
+            "name": "Retain publication verification without a Pages feedback loop",
+            "conclusion": "success",
+            "start": "2026-11-01T23:55:09Z",
+            "end": "2026-11-01T23:55:11Z"
+          },
+          {
+            "name": "Post Run actions/setup-node@v7",
+            "conclusion": "success",
+            "start": "2026-11-01T23:55:11Z",
+            "end": "2026-11-01T23:55:11Z"
+          },
+          {
+            "name": "Post Run actions/checkout@v7",
+            "conclusion": "success",
+            "start": "2026-11-01T23:55:11Z",
+            "end": "2026-11-01T23:55:11Z"
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success",
+            "start": "2026-11-01T23:55:11Z",
+            "end": "2026-11-01T23:55:11Z"
+          }
+        ]
+      },
+      {
+        "id": 125021222561,
+        "name": "catchup",
+        "conclusion": "success",
+        "started": "2026-11-01T23:54:15Z",
+        "completed": "2026-11-01T23:55:10Z",
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success",
+            "start": "2026-11-01T23:54:16Z",
+            "end": "2026-11-01T23:54:17Z"
+          },
+          {
+            "name": "Run actions/checkout@v7",
+            "conclusion": "success",
+            "start": "2026-11-01T23:54:17Z",
+            "end": "2026-11-01T23:54:46Z"
+          },
+          {
+            "name": "Run actions/setup-node@v7",
+            "conclusion": "success",
+            "start": "2026-11-01T23:54:46Z",
+            "end": "2026-11-01T23:54:46Z"
+          },
+          {
+            "name": "Check alert deduplication and safe backoff rules",
+            "conclusion": "success",
+            "start": "2026-11-01T23:54:46Z",
+            "end": "2026-11-01T23:54:47Z"
+          },
+          {
+            "name": "Recover trusted failed price inputs without reacquisition",
+            "conclusion": "skipped",
+            "start": "2026-11-01T23:54:47Z",
+            "end": "2026-11-01T23:54:47Z"
+          },
+          {
+            "name": "Check saved publication before optional acquisition",
+            "conclusion": "success",
+            "start": "2026-11-01T23:54:47Z",
+            "end": "2026-11-01T23:54:47Z"
+          },
+          {
+            "name": "Plan saved publication before optional acquisition",
+            "conclusion": "success",
+            "start": "2026-11-01T23:54:47Z",
+            "end": "2026-11-01T23:54:48Z"
+          },
+          {
+            "name": "Fill missed price intervals with shared cooldown and access budgets",
+            "conclusion": "skipped",
+            "start": "2026-11-01T23:54:48Z",
+            "end": "2026-11-01T23:54:48Z"
+          },
+          {
+            "name": "Validate catchup data without changing purchase criteria",
+            "conclusion": "success",
+            "start": "2026-11-01T23:54:48Z",
+            "end": "2026-11-01T23:55:08Z"
+          },
+          {
+            "name": "Publish changed health state only",
+            "conclusion": "skipped",
+            "start": "2026-11-01T23:55:08Z",
+            "end": "2026-11-01T23:55:08Z"
+          },
+          {
+            "name": "Report independent acquisition failures without hiding them",
+            "conclusion": "success",
+            "start": "2026-11-01T23:55:08Z",
+            "end": "2026-11-01T23:55:08Z"
+          },
+          {
+            "name": "Preserve unpublished monitor state",
+            "conclusion": "skipped",
+            "start": "2026-11-01T23:55:08Z",
+            "end": "2026-11-01T23:55:08Z"
+          },
+          {
+            "name": "Save monitor recovery bundle",
+            "conclusion": "skipped",
+            "start": "2026-11-01T23:55:08Z",
+            "end": "2026-11-01T23:55:08Z"
+          },
+          {
+            "name": "Post Run actions/setup-node@v7",
+            "conclusion": "success",
+            "start": "2026-11-01T23:55:08Z",
+            "end": "2026-11-01T23:55:09Z"
+          },
+          {
+            "name": "Post Run actions/checkout@v7",
+            "conclusion": "success",
+            "start": "2026-11-01T23:55:09Z",
+            "end": "2026-11-01T23:55:09Z"
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success",
+            "start": "2026-11-01T23:55:09Z",
+            "end": "2026-11-01T23:55:09Z"
+          }
+        ]
+      },
+      {
+        "id": 125021446608,
+        "name": "watch",
+        "conclusion": "success",
+        "started": "2026-11-01T23:55:13Z",
+        "completed": "2026-11-01T23:56:51Z",
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success",
+            "start": "2026-11-01T23:55:13Z",
+            "end": "2026-11-01T23:55:14Z"
+          },
+          {
+            "name": "Run actions/checkout@v7",
+            "conclusion": "success",
+            "start": "2026-11-01T23:55:14Z",
+            "end": "2026-11-01T23:55:22Z"
+          },
+          {
+            "name": "Run actions/setup-node@v7",
+            "conclusion": "success",
+            "start": "2026-11-01T23:55:22Z",
+            "end": "2026-11-01T23:55:23Z"
+          },
+          {
+            "name": "Validate independent monitor",
+            "conclusion": "success",
+            "start": "2026-11-01T23:55:23Z",
+            "end": "2026-11-01T23:55:23Z"
+          },
+          {
+            "name": "Check workflow results and saved checkpoint holds",
+            "conclusion": "success",
+            "start": "2026-11-01T23:55:23Z",
+            "end": "2026-11-01T23:55:37Z"
+          },
+          {
+            "name": "Publish independent validated monitor state",
+            "conclusion": "success",
+            "start": "2026-11-01T23:55:37Z",
+            "end": "2026-11-01T23:56:49Z"
+          },
+          {
+            "name": "Report newly detected alerts",
+            "conclusion": "success",
+            "start": "2026-11-01T23:56:49Z",
+            "end": "2026-11-01T23:56:49Z"
+          },
+          {
+            "name": "Preserve independent observation on failure",
+            "conclusion": "skipped",
+            "start": "2026-11-01T23:56:49Z",
+            "end": "2026-11-01T23:56:49Z"
+          },
+          {
+            "name": "Run actions/upload-artifact@v7",
+            "conclusion": "skipped",
+            "start": "2026-11-01T23:56:49Z",
+            "end": "2026-11-01T23:56:49Z"
+          },
+          {
+            "name": "Post Run actions/setup-node@v7",
+            "conclusion": "success",
+            "start": "2026-11-01T23:56:49Z",
+            "end": "2026-11-01T23:56:49Z"
+          },
+          {
+            "name": "Post Run actions/checkout@v7",
+            "conclusion": "success",
+            "start": "2026-11-01T23:56:49Z",
+            "end": "2026-11-01T23:56:49Z"
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success",
+            "start": "2026-11-01T23:56:49Z",
+            "end": "2026-11-01T23:56:49Z"
+          }
+        ]
+      }
+    ],
+    "41359589976": [
+      {
+        "id": 125006921301,
+        "name": "update",
+        "conclusion": "success",
+        "started": "2026-11-01T22:56:14Z",
+        "completed": "2026-11-01T23:11:00Z",
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success",
+            "start": "2026-11-01T22:56:15Z",
+            "end": "2026-11-01T22:56:16Z"
+          },
+          {
+            "name": "Run actions/checkout@v7",
+            "conclusion": "success",
+            "start": "2026-11-01T22:56:16Z",
+            "end": "2026-11-01T22:56:44Z"
+          },
+          {
+            "name": "Run actions/setup-node@v7",
+            "conclusion": "success",
+            "start": "2026-11-01T22:56:44Z",
+            "end": "2026-11-01T22:56:46Z"
+          },
+          {
+            "name": "Save purchase-price freshness baseline",
+            "conclusion": "success",
+            "start": "2026-11-01T22:56:46Z",
+            "end": "2026-11-01T22:57:49Z"
+          },
+          {
+            "name": "Run deterministic delta update",
+            "conclusion": "success",
+            "start": "2026-11-01T22:57:49Z",
+            "end": "2026-11-01T22:58:36Z"
+          },
+          {
+            "name": "Refresh independent sources and preserve individual failures",
+            "conclusion": "success",
+            "start": "2026-11-01T22:58:36Z",
+            "end": "2026-11-01T23:01:47Z"
+          },
+          {
+            "name": "Rebuild market demand and supply analysis",
+            "conclusion": "success",
+            "start": "2026-11-01T23:01:47Z",
+            "end": "2026-11-01T23:02:06Z"
+          },
+          {
+            "name": "Audit state-A price conflicts and sale evidence",
+            "conclusion": "success",
+            "start": "2026-11-01T23:02:06Z",
+            "end": "2026-11-01T23:02:18Z"
+          },
+          {
+            "name": "Rebuild catalog and shared purchase-limit audit",
+            "conclusion": "success",
+            "start": "2026-11-01T23:02:18Z",
+            "end": "2026-11-01T23:07:44Z"
+          },
+          {
+            "name": "Preserve acquired data before mandatory verification",
+            "conclusion": "success",
+            "start": "2026-11-01T23:07:44Z",
+            "end": "2026-11-01T23:07:47Z"
+          },
+          {
+            "name": "Retain prevalidation checkpoint independently of later cancellation",
+            "conclusion": "success",
+            "start": "2026-11-01T23:07:47Z",
+            "end": "2026-11-01T23:07:51Z"
+          },
+          {
+            "name": "Run fast regression tests",
+            "conclusion": "success",
+            "start": "2026-11-01T23:07:51Z",
+            "end": "2026-11-01T23:08:10Z"
+          },
+          {
+            "name": "Commit changed data only",
+            "conclusion": "success",
+            "start": "2026-11-01T23:08:10Z",
+            "end": "2026-11-01T23:10:56Z"
+          },
+          {
+            "name": "Report independent acquisition failures without hiding them",
+            "conclusion": "success",
+            "start": "2026-11-01T23:10:56Z",
+            "end": "2026-11-01T23:10:56Z"
+          },
+          {
+            "name": "Save unpublished source data on failure",
+            "conclusion": "skipped",
+            "start": "2026-11-01T23:10:56Z",
+            "end": "2026-11-01T23:10:56Z"
+          },
+          {
+            "name": "Preserve raw data regardless of metadata errors",
+            "conclusion": "skipped",
+            "start": "2026-11-01T23:10:56Z",
+            "end": "2026-11-01T23:10:56Z"
+          },
+          {
+            "name": "Upload recovery checkpoint if publication or validation failed",
+            "conclusion": "skipped",
+            "start": "2026-11-01T23:10:56Z",
+            "end": "2026-11-01T23:10:56Z"
+          },
+          {
+            "name": "Post Run actions/setup-node@v7",
+            "conclusion": "success",
+            "start": "2026-11-01T23:10:56Z",
+            "end": "2026-11-01T23:10:56Z"
+          },
+          {
+            "name": "Post Run actions/checkout@v7",
+            "conclusion": "success",
+            "start": "2026-11-01T23:10:56Z",
+            "end": "2026-11-01T23:10:57Z"
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success",
+            "start": "2026-11-01T23:10:57Z",
+            "end": "2026-11-01T23:10:57Z"
+          }
+        ]
+      }
+    ]
+  }
+}

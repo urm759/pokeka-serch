@@ -7,6 +7,8 @@ const HISTORY_OUTPUT = path.join(ROOT, "data", "update-history.json");
 const { countCurrentRecords, psaAuthenticationRequired, taskStageFields } = require("./source_observability.js");
 const { sourceTiming } = require("./workflow_schedule.js");
 require('./refresh_candidate_shops').publishRunEvidence(ROOT, read('work/candidate-shop-refresh.json'));
+const retainedRetailerLinks=require('./reconcile_saved_retailer_links').run(ROOT);
+if(retainedRetailerLinks.changedCards)require('./audit_link_coverage');
 require('./quarantine_shop_identity').build(ROOT);
 require('./recover_saved_shop_rows').reconcileSavedLinks(ROOT);
 // Price-only and full-crawl paths must publish the same saved stock evidence at the same evaluation date.

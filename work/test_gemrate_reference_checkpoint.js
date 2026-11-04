@@ -19,7 +19,11 @@ try{
  assert.equal(checkpoint.push(root,store).status,'already-queued','unchanged CSV must not create repeated checkpoints');
  const before=structuredClone(reference);assert.throws(()=>checkpoint.validateTransition(before,{cards:{}}));
  const old=structuredClone(reference);old.cards['test-0'][3]='2026-10-29';assert.throws(()=>checkpoint.validateTransition(before,old));
+ assert(checkpoint.superseded(before,old),'a validated older queue is a no-op, never a rollback or daily failure');
+ assert(!checkpoint.superseded(before,before),'equal inputs retain the ordinary no-change path');
  const conflict=structuredClone(reference);conflict.cards['test-0'][1]=7;assert.throws(()=>checkpoint.validateTransition(before,conflict));
+ assert(!checkpoint.superseded(before,conflict),'same-date contradictions remain held');
+ const mixed=structuredClone(old);mixed.cards.new=['new',1,2,'2026-10-31','https://www.gemrate.com/item-details?grader=psa'];assert(!checkpoint.superseded(before,mixed),'a divergent queue is not silently discarded');
  const badRegistry={...registration,legacyIds:[...legacy.slice(1),'unknown']};assert.throws(()=>require('./gemrate_confirmed_links').validatePublic(root,reference,badRegistry));
  assert.throws(()=>checkpoint.enqueue(root,root),'private outbox cannot be in public repository');
  console.log('PASS isolated two-file checkpoint, normal push, dirty user index/worktree safety, no-op dedup, legacy allowlist and monotonic observations');

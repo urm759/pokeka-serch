@@ -696,7 +696,10 @@ async function main() {
   console.log(`modern coverage: ${JSON.stringify(modernCoverage)}`);
 }
 
-main().catch((err) => {
+if (require.main === module) main().catch((err) => {
   console.error(err);
   process.exit(1);
 });
+// Reuse identity parsing for offline saved-row reconciliation; importing this
+// module must never start a crawler or restore prices from an old catalog.
+module.exports={extractCardrushComponents,normalizeLooseText};

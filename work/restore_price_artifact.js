@@ -34,12 +34,24 @@ function zipEntries(bytes){
   }
   return entries;
 }
+function reconstructionManifest(entries,runId){
+  const rows=[...entries.keys()].filter(f=>f.endsWith('/recovery-manifest.json')).map(file=>({file,manifest:JSON.parse(entries.get(file)())}));
+  if(!rows.length)throw Error('Expected one reconstruction manifest');
+  if(rows.some(r=>String(r.manifest.workflowRunId)!==String(runId)||r.manifest.invalidJson?.length))throw Error('Recovery run/JSON proof mismatch');
+  if(rows.length===1)return rows[0];
+  // Daily deliberately captures once before validation and again on failure.
+  // Select the complete later snapshot, never mix entries from the two captures.
+  if(rows.length!==2||!rows.some(r=>r.manifest.source==='daily-prevalidation')||!rows.some(r=>r.manifest.source==='daily'))throw Error('Ambiguous reconstruction manifests');
+  const first=rows.find(r=>r.manifest.source==='daily-prevalidation'),last=rows.find(r=>r.manifest.source==='daily');
+  if(!Number.isFinite(Date.parse(first.manifest.savedAt))||!(Date.parse(last.manifest.savedAt)>Date.parse(first.manifest.savedAt))
+    ||first.manifest.files.filter(r=>INPUTS.includes(r.file)).some(r=>!last.manifest.files.some(s=>s.file===r.file)))throw Error('Incomplete later Daily reconstruction manifest');
+  return last;
+}
 function restore(file,runId,base,root=ROOT){
   if(!/^\d+$/.test(String(runId))||!/^[a-f0-9]{40}$/.test(base))throw Error('Explicit trusted run/base required');
+  if(cp.spawnSync('git',['cat-file','-e',base+'^{commit}'],{cwd:root,encoding:'utf8'}).status!==0)throw Error('Recovery base commit unavailable; fetch the trusted run base before comparison');
   const archive=fs.readFileSync(file),entries=zipEntries(archive);
-  const manifests=[...entries.keys()].filter(f=>f.endsWith('/recovery-manifest.json'));
-  if(manifests.length!==1)throw Error('Expected one reconstruction manifest');
-  const manifest=JSON.parse(entries.get(manifests[0])()),prefix=manifests[0].slice(0,-'recovery-manifest.json'.length);
+  const selected=reconstructionManifest(entries,runId),manifest=selected.manifest,prefix=selected.file.slice(0,-'recovery-manifest.json'.length);
   if(String(manifest.workflowRunId)!==String(runId)||manifest.invalidJson?.length)throw Error('Recovery run/JSON proof mismatch');
   const plan=[],conflicts=[],seen=new Set();
   for(const row of manifest.files){
@@ -57,12 +69,16 @@ function restore(file,runId,base,root=ROOT){
         data=require('./reconcile_saved_source_merge').mergeFixedFreshness(JSON.parse(original),JSON.parse(current),data);
         incoming=Buffer.from(JSON.stringify(data));
         if(equivalent(current,incoming))continue;
+      }else if(row.file==='work/priority-price-checkpoint.json'&&current&&original){
+        data=require('./reconcile_saved_source_merge').mergePriorityCheckpoint(JSON.parse(original),JSON.parse(current),data);
+        incoming=Buffer.from(JSON.stringify(data));
+        if(equivalent(current,incoming))continue;
       }else{conflicts.push(row.file);continue;}
     }
     plan.push({file:row.file,incoming,current,data});
   }
   if(!seen.has('data/pokemon-cards.json'))throw Error('Recovery acquisition input missing');
-  if(conflicts.length)throw Error('Concurrent source changes require merge; saved archive retained: '+conflicts.join(', '));
+  if(conflicts.length)throw Object.assign(Error('Concurrent source changes require merge; saved archive retained: '+conflicts.join(', ')),{code:'SOURCE_RECOVERY_MERGE_REQUIRED',files:conflicts});
   const receipt=path.join(root,'work/recovery-applied-'+runId+'.json');
   if(!plan.length && fs.existsSync(receipt)){
     const previous=JSON.parse(fs.readFileSync(receipt));
@@ -78,4 +94,4 @@ function restore(file,runId,base,root=ROOT){
   return result;
 }
 if(require.main===module){try{console.log(JSON.stringify(restore(process.argv[2],process.argv[3],process.argv[4])));}catch(e){console.error(e.message);process.exitCode=1;}}
-module.exports={INPUTS,zipEntries,restore};
+module.exports={INPUTS,zipEntries,restore,reconstructionManifest};

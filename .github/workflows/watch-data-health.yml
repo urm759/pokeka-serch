@@ -22,6 +22,7 @@ jobs:
           github.event.workflow_run.name == 'Daily Fast Update') &&
          github.event.workflow_run.event == 'schedule' && github.event.workflow_run.conclusion == 'success') ||
         ((github.event.workflow_run.name == 'Priority Purchase Price Refresh' ||
+          github.event.workflow_run.name == 'Daily Fast Update' ||
           github.event.workflow_run.name == 'Safe Checkpoint Backfill') &&
          github.event.workflow_run.event == 'schedule' && github.event.workflow_run.conclusion == 'failure')) &&
        github.event.workflow_run.head_branch == 'main' &&
@@ -43,10 +44,13 @@ jobs:
           if [ "$(node work/update_validation.js --mode)" = "regression" ]; then
             node work/test_profile_worker.js
             node work/test_gemrate_limited_public_reference.js
+            node work/test_gemrate_pop_history.js
             node work/test_hareruya_single_response.js
             node work/test_watch_catchup_trigger.js
             node work/test_failed_price_recovery.js
             node work/test_saved_source_merge.js
+            node work/test_concurrent_price_publication.js
+            node work/test_saved_retailer_links.js
             node work/test_buyback_market_average.js
             node work/test_buyback_scope.js
             node work/test_style_identity.js
@@ -86,6 +90,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FAILED_PRICE_RUN_ID: ${{ github.event.workflow_run.id }}
         run: node work/recover_failed_price_run.js
+      - name: Recover missed trusted Daily publication before optional acquisition
+        if: github.event_name != 'workflow_run'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node work/recover_failed_price_run.js --latest-daily
       - name: Check saved publication before optional acquisition
         # Restore the previous trusted monitor's normal raw inputs before deciding to fetch again.
         # The existing common acquisition gate and all publication validations still apply.
@@ -157,6 +166,20 @@ jobs:
           node work/publish_data_checkpoint.js "Report data update health"
       - name: Report independent acquisition failures without hiding them
         run: node work/run_priority_price_refresh.js --report-failures
+      - name: Keep source merge holds visible without blocking normal updates
+        id: source_holds
+        if: always()
+        run: node work/recover_failed_price_run.js --hold-status
+      - name: Retain verified held source archives separately
+        if: always() && steps.source_holds.outputs.pending == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: source-merge-holds-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            work/recovery-*.zip
+            work/recovery-inspected-*.json
+          retention-days: 30
+          if-no-files-found: error
       - name: Preserve unpublished monitor state
         if: failure()
         run: node work/capture_unpublished_data.js health
@@ -172,7 +195,9 @@ jobs:
           retention-days: 7
           if-no-files-found: warn
   watch:
-    needs: catchup
+    # Record the receipt only after the independent Pages check has finished.
+    # always() preserves monitoring even when acquisition or verification fails.
+    needs: [catchup, publication_check]
     if: always()
     concurrency:
       group: site-data-health-observation

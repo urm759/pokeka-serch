@@ -83,6 +83,16 @@ function seedMerge(base,a,b){
   if(a&&b&&typeof a==='object'&&typeof b==='object')return Object.fromEntries([...new Set([...Object.keys(a),...Object.keys(b)])].map(k=>[k,seedMerge(base?.[k],a[k],b[k])]));
   return a;
 }
+function mergePriorityCheckpoint(base,a,b){
+  const merged=seedMerge(base,a,b);
+  for(const source of Object.keys(merged.sources||{}))for(const id of Object.keys(merged.sources[source].jobs||{})){
+    const current=a.sources?.[source]?.jobs?.[id],incoming=b.sources?.[source]?.jobs?.[id];
+    const selected=latest(current,incoming,base.sources?.[source]?.jobs?.[id]);
+    if([current,incoming].some(row=>row&&(row.held||row.manualReview)&&!same(selected,row)))throw Error('Concurrent manual checkpoint hold requires review');
+    merged.sources[source].jobs[id]=selected;
+  }
+  return merged;
+}
 function mergeCatalogMeta(base,a,b) {
   if(same(a,b)||same(base,b))return a;
   if(same(base,a))return b;
@@ -148,8 +158,7 @@ function run(){
     }else if(file==='work/priority-price-http-cache.json'){
       merged={...a};for(const [url,row]of Object.entries(b))merged[url]=latest(merged[url],row,base[url]);
     }else if(file==='work/priority-price-checkpoint.json'){
-      merged=seedMerge(base,a,b);for(const source of Object.keys(merged.sources))for(const id of Object.keys(merged.sources[source].jobs||{}))
-        merged.sources[source].jobs[id]=latest(a.sources?.[source]?.jobs?.[id],b.sources?.[source]?.jobs?.[id],base.sources?.[source]?.jobs?.[id]);
+      merged=mergePriorityCheckpoint(base,a,b);
     }else if(file==='work/candidate-shop-refresh.json'){
       merged=seedMerge(base,a,b);for(const source of Object.keys(merged.sources)){
         merged.sources[source]=latest(a.sources[source],b.sources[source],base.sources?.[source]);
@@ -181,4 +190,4 @@ function run(){
   console.log(JSON.stringify({resolved:out.length,status:'rebuild-required',rawStageBackups:files.length}));
 }
 if(require.main===module)run();
-module.exports={latest,byKey,seedMerge,mergeCatalogMeta,mergeRun,mergeStockHistory,mergeProfileTargets,mergeFixedFreshness,mergeCards,mergeBuybackHistory};
+module.exports={latest,byKey,seedMerge,mergeCatalogMeta,mergeRun,mergeStockHistory,mergeProfileTargets,mergeFixedFreshness,mergeCards,mergeBuybackHistory,mergePriorityCheckpoint};

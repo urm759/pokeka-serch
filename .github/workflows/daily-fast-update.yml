@@ -69,7 +69,7 @@ jobs:
         with:
           name: daily-prevalidation-${{ github.run_id }}-${{ github.run_attempt }}
           path: work/unpublished-recovery/
-          retention-days: 3
+          retention-days: 7
           if-no-files-found: error
       - name: Run fast regression tests
         run: |
@@ -168,6 +168,7 @@ jobs:
             node work/test_psa_saved_rematch.js
             node work/test_gemrate_reference_display.js
             node work/test_gemrate_limited_public_reference.js
+            node work/test_gemrate_pop_history.js
             node work/test_psa_completion_publication.js
             node work/test_deadline_capacity_samples.js
             node work/test_current_market_exploration.js
@@ -184,6 +185,8 @@ jobs:
             node work/test_candidate_availability_audit.js
             node work/test_acquisition_progress.js
             node work/test_checkpoint_publication.js
+            node work/test_concurrent_price_publication.js
+            node work/test_saved_retailer_links.js
             node work/test_publication_lineage.js
             node work/test_minimum_recovery_sources.js
             node work/test_recovery_latency.js

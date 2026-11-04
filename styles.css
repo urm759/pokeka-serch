@@ -1808,8 +1808,13 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .stock-trend { color:#d9e5f4; }
 .stock-trend > strong { display:block;font-size:.94rem;font-weight:750;line-height:1.5; }
 .stock-trend > small { display:block;color:#b8c7dc;font-size:.78rem; }
+.stock-trend > small.stock-flow-totals { color:#d9e5f4;font-size:.84rem;font-weight:650; }
+.stock-flow-source { margin-top:.45rem; }
+.stock-flow-source > small { display:block;overflow-wrap:anywhere; }
+.stock-flow-interval { font-size:.72rem; }
 .stock-trend > strong.stock-increase { color:#83c8ff; }
 .stock-trend > strong.stock-flat { color:#d8dfeb; }
 .stock-trend > strong.stock-decrease { color:#f7d28b; }
 .stock-trend > strong.stock-decrease-fast { color:#ffb07c; }
 .stock-trend > strong.stock-unknown { color:#b8c7dc; }
+@media(max-width:600px){:is(.candidate-glance,.price-comparison-grid)>.price-cell:has(.stock-trend details[open]){grid-column:1/-1}}

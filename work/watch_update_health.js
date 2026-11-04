@@ -142,6 +142,9 @@ async function main() {
         :'購入価格高速更新：取得・検証・保存・公開のいずれかが未完了。実行ログで工程を確認',url:priceState.runUrl});
   }
   if (priceState.stuckRuns >= 3) priceIssues.push({ key: "priority-prices:stalled", reason: "購入価格高速更新が3回連続で進捗なし・期限超過あり", url: priceState.runUrl });
+  for(const hold of require('./recover_failed_price_run').activeSourceHolds(ROOT))priceIssues.push({key:'source-recovery:merge-review:'+hold.runId,
+    reason:'保存原票の同時更新照合が保留（'+hold.files.length+'入力）。正常な取得・公開は継続、回収完了とは数えない。'+hold.reason,
+    url:'https://github.com/urm759/pokeka-serch/actions/runs/'+hold.runId});
   const issues = [...dailyIssues, ...backfills.issues, ...sourceIssues, ...priceIssues, ...watchIssues].map(issue => ({ ...issue,
     category: require('../update-health-model.js').issueCategory(issue) }));
   const previousKeys = new Set(current?.activeAlertKeys || []);

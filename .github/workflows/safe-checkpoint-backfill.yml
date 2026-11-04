@@ -51,6 +51,7 @@ jobs:
             node work/test_psa_saved_rematch.js
             node work/test_gemrate_reference_display.js
             node work/test_gemrate_limited_public_reference.js
+            node work/test_gemrate_pop_history.js
             node work/test_saved_psa_summary.js
             node work/test_profile_worker.js
             node work/test_hareruya_single_response.js
@@ -93,6 +94,8 @@ jobs:
             node work/test_candidate_availability_audit.js
             node work/test_acquisition_progress.js
             node work/test_checkpoint_publication.js
+            node work/test_concurrent_price_publication.js
+            node work/test_saved_retailer_links.js
             node work/test_publication_lineage.js
             node work/test_minimum_recovery_sources.js
             node work/test_recovery_latency.js

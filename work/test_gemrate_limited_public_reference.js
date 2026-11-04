@@ -36,7 +36,7 @@ assert.equal(ctx.api.value(card,row,Date.parse('2026-11-26')).stale,true);
   const root=require('node:path').join(__dirname,'..'),registered=JSON.parse(fs.readFileSync(require('node:path').join(root,'work/gemrate-confirmed-reference-registry.json')));
   require('./gemrate_confirmed_links').validatePublic(root,exported,registered);
   const allowed=new Set([...registered.legacyIds,...require('./gemrate-reviewed-additions.json').cards.map(r=>r.cardId),...Object.keys(registered.automatic)]);
-  assert(Object.keys(exported.cards).every(id=>allowed.has(id)));assert.deepEqual(Object.keys(exported).sort(),['cards','fields','grader','scope','source','version']);
+  assert(Object.keys(exported.cards).every(id=>allowed.has(id)));assert.deepEqual(Object.keys(exported).filter(k=>k!=='population').sort(),['cards','fields','grader','scope','source','version']);
   for(const r of Object.values(exported.cards)){assert.equal(r.length,5);assert(!JSON.stringify(r).includes('csvSha256'));}
   console.log('PASS bounded 50 factual references; exact identity/count/date, load failures, lazy reuse, revision invalidation, immutable calculations and no raw export');
 })().catch(e=>{console.error(e);process.exitCode=1});

@@ -4,6 +4,14 @@ const {spawnSync} = require('node:child_process');
 const DERIVED=new Set(['data/publication-lineage.json','data/update-status.json','data/performance-guard.json','data/performance-history.json',
   'data/runtime-availability-audit.json','data/update-health-banner.json','data/scheduled-cycle-receipts.json',
   'data/search-profile-cycle-progress.json','data/psa-pop-coverage.json','work/psa-pop-coverage-history.json']);
+// These contain scheduling/observation history, not replaceable generated seeds.
+// Use the same strict reconciliation as saved-source recovery before regenerating.
+const RECONCILABLE=new Map([
+  ['work/priority-price-checkpoint.json','mergePriorityCheckpoint'],
+  ['work/priority-freshness-history.json','mergeFixedFreshness']
+]);
+DERIVED.add('data/priority-price-monitor.json');
+DERIVED.add('data/operational-freshness-audit.json');
 function mergeTimedRows(a,b,key,time){
   const rows=new Map();for(const row of [...a,...b]){const k=key(row),old=rows.get(k);if(!old||Date.parse(time(row))>=Date.parse(time(old)))rows.set(k,row);}
   return [...rows.values()].sort((x,y)=>Date.parse(time(x))-Date.parse(time(y))).slice(-400);
@@ -22,7 +30,7 @@ function resolve(cwd,{rebuild}={}) {
   };
   const conflicts=git(['diff','--name-only','--diff-filter=U']).split('\n').filter(Boolean);
   if (!conflicts.length) return false;
-  if (conflicts.some(name=>!name.startsWith('data/ui/') && !/^data\/psa-pop-glance\/\d{2}\.json$/.test(name) && !DERIVED.has(name))) return false;
+  if (conflicts.some(name=>!name.startsWith('data/ui/') && !/^data\/psa-pop-glance\/\d{2}\.json$/.test(name) && !DERIVED.has(name) && !RECONCILABLE.has(name))) return false;
   const incoming=git(['rev-parse','MERGE_HEAD']);
   const archive=path.join(cwd,'work/generated-merge-stages',incoming);
   const staged=new Map();
@@ -36,8 +44,10 @@ function resolve(cwd,{rebuild}={}) {
     });
     staged.set(file,sides);
   }
+  const planned=[];
   for(const [file,[base,a,b]]of staged){
     let seed=a;
+    if(RECONCILABLE.has(file))seed=require('./reconcile_saved_source_merge')[RECONCILABLE.get(file)](base,a,b);
     if(file==='data/performance-history.json'){
       const records=[...new Map([...(a.records||[]),...(b.records||[])].map(r=>[JSON.stringify(r),r])).values()];
       seed={...a,records:records.sort((x,y)=>Date.parse(x.generatedAt)-Date.parse(y.generatedAt)).slice(-90)};
@@ -48,8 +58,11 @@ function resolve(cwd,{rebuild}={}) {
       seed={...a,cycles:mergeTimedRows(a.cycles,b.cycles,r=>r.key+'|'+r.runId,r=>r.recordedAt)};
     }
     if(file==='work/psa-pop-coverage-history.json')seed={runs:mergeTimedRows(a.runs||[],b.runs||[],r=>r.at+'|'+r.runId,r=>r.at)};
-    fs.writeFileSync(path.join(cwd,file),JSON.stringify(seed));
+    planned.push([file,seed]);
   }
+  // A genuine checkpoint conflict (including a manual hold or changed fixed
+  // denominator) must leave every conflicted input untouched for review.
+  for(const [file,seed]of planned)fs.writeFileSync(path.join(cwd,file),JSON.stringify(seed));
   if (conflicts.includes('data/update-status.json')) {
     const [,a,b]=staged.get('data/update-status.json');
     const seed={...a};
@@ -82,4 +95,4 @@ function resolve(cwd,{rebuild}={}) {
   git(['commit','--no-edit']);
   return true;
 }
-module.exports={resolve,DERIVED,mergeReceipts,mergeTimedRows};
+module.exports={resolve,DERIVED,RECONCILABLE,mergeReceipts,mergeTimedRows};

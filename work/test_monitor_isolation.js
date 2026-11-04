@@ -30,7 +30,7 @@ const partial=execute(root,()=>({sourceFailures:['buyback']}),{now:Date.now()});
 assert.equal(partial.status,'acquired-saved');assert.equal(partial.acquisitionStatus,'partial-with-failure');
 assert.throws(()=>execute(root,()=>{throw Error('required calculation failed');},{now:Date.now()+3*3600000}),/required calculation/);
 const workflow=fs.readFileSync(path.join(__dirname,'../.github/workflows/watch-data-health.yml'),'utf8');
-assert(workflow.includes('needs: catchup\n    if: always()'),'monitor must run after catchup failure');
+assert(workflow.includes('needs: [catchup, publication_check]\n    if: always()'),'monitor must retain failures and wait for receipt verification before capacity ingestion');
 assert(workflow.includes("steps.observation.outcome == 'success'"));
 assert(!workflow.includes('continue-on-error'));
 assert(workflow.includes('work/priority-freshness-history.json'),'time-forward monitor freshness observations must survive publication');

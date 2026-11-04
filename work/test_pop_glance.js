@@ -50,7 +50,7 @@ const classes=rarity.summarize(c,c,{cards:{}},['SR']).classification;
 assert.equal(classes.confirmedLowRarity,1);assert.equal(classes.unclassified,1,'missing rarity never guessed as normal');
 const fs=require('node:fs'),vm=require('node:vm'),app=fs.readFileSync('app.js','utf8');
 const fragment=app.slice(app.indexOf('const psaPopGlanceCache='),app.indexOf('// Presentation only:'));
-const ctx=vm.createContext({Date,Map,Set,fmt:new Intl.NumberFormat('ja-JP'),escapeHtml:s=>String(s),state:{psaSpecificationHeld:{}},document:{}});
+const ctx=vm.createContext({Date,Map,Set,gemRatePopGlance:()=>null,fmt:new Intl.NumberFormat('ja-JP'),escapeHtml:s=>String(s),state:{psaSpecificationHeld:{}},document:{}});
 vm.runInContext(fragment+'\nglobalThis.api={psaPopGlance,cache:psaPopGlanceCache};',ctx);
 const c2={id:'display',official:official(120)};
 ctx.api.cache.set(c2.id,{at:c2.official.f,ten:120,k:require('./build_psa_pop_glance').sourceKey(c2.official),windows:[[20,100,2,new Date(end-2*DAY).toISOString(),0]],p:[0,0,0,0,0]});

@@ -8,7 +8,9 @@ function controls(h) {
     const a=m[1]??m[2];return [attr(a,'id'),m[1]!=null?attr(a,'value')||'':m[3].replace(/\s+/g,' ').trim(),/\bchecked\b/.test(a)];
   }).filter(r=>r[0]).sort((a,b)=>a[0].localeCompare(b[0]));
 }
-assert.deepEqual(controls(html).filter(row=>!row[0].startsWith('observation') && !['buybackHighestMinInput','psa9AboveGuideInput','psa9GuideMinInput','psa9CostWithin5Input','psa9RoiMinInput'].includes(row[0])).map(row=>row[0]==='profitSearchBasisInput'?[row[0],row[1].replace('<option value="current-target">利益確保の仕入れ目安で購入・現相場基準（探索）</option>',''),row[2]]:row[0]==='efficiencyScenarioInput'?[row[0],row[1].replace(/<option value="obs(?:7|30|75|200)">[^<]*<\/option>/g,''),row[2]]:row[0]==='efficiencyBuyInput'?[row[0],row[1].replace(/<option value="(?:store|median|reference-min)"(?: selected)?>[^<]*<\/option>/g,''),row[2]]:row),baseline.controls,'existing IDs/options survive; explicitly authorized new-user median default tested separately');
+const ratioAdditions=['buybackMeanMinInput','buyback7RatioMinInput','buyback30RatioMinInput','buyback75RatioMinInput','buybackRatioDaysMinInput','buybackRatioReferenceInput'];
+for(const id of ratioAdditions){const row=controls(html).find(r=>r[0]===id);assert(row,'authorized optional ratio control present: '+id);assert.equal(row[1],'');assert.equal(row[2],false,'new ratio controls remain disabled by default');}
+assert.deepEqual(controls(html).filter(row=>!row[0].startsWith('observation') && !['buybackHighestMinInput','psa9AboveGuideInput','psa9GuideMinInput','psa9CostWithin5Input','psa9RoiMinInput',...ratioAdditions].includes(row[0])).map(row=>row[0]==='profitSearchBasisInput'?[row[0],row[1].replace('<option value="current-target">利益確保の仕入れ目安で購入・現相場基準（探索）</option>',''),row[2]]:row[0]==='efficiencyScenarioInput'?[row[0],row[1].replace(/<option value="obs(?:7|30|75|200)">[^<]*<\/option>/g,''),row[2]]:row[0]==='efficiencyBuyInput'?[row[0],row[1].replace(/<option value="(?:store|median|reference-min)"(?: selected)?>[^<]*<\/option>/g,''),row[2]]:row),baseline.controls,'existing IDs/options survive; only enumerated authorized additions are separated');
 for(const days of [7,30,75,200])assert(html.includes(`value="obs${days}"`),'all declared average choices exist');
 for(const [id,value,type] of [['roiInput','20','number'],['expectedRoiFilterInput','0','number'],['floorStateInput','stable','select'],['purchaseBelowCurrentCapInput','', 'checkbox']]) {
   const el={id,value,type,checked:true,tagName:type==='select'?'SELECT':'INPUT',options:[{value:'all'},{value:'stable'}]};
@@ -34,6 +36,9 @@ const css=fs.readFileSync('styles.css','utf8');
 // Exact financial/filter bodies from public 0e8eb13c0; no Git history required on shallow CI.
 const releasedFunctionHashes={"buildBuyLimits":"42afeb1305afed426731f0c1873aad766502cfec21d0fbe0f5e00f556dac84bb","finalizeCardDecision":"9ca2a8ca14ae16ee53a45a84a3df6167a1c2a3d80d3f78b24e901de0c6c1fd33","calc":"635844c295b4c9a51c1888126dbbb47250dc2b8f76d62c7ee4e0d79f97bda09b","computeSearchProfitView":"4e03c758f8ad8d55cab995f32aa10a97c2843880d4b3b4131fa858333034bb61","prepareCalculatedCards":"42753a0a40dd7dab29cbcf19e283752e0d958471f35a3c15942fc7ad42b55572","computeCardSearchExclusions":"1c940ddd56a80199fc75b8da00d357af32ee40a65cba22f69f57943f12ed69f5","buildShareUrl":"084eb510ddab03b0e9987b7190128a5d74c13d5f12d3d9c52f54216cab0638bd"};
 const functionBody=(text,name)=>{const start=text.indexOf('function '+name+'('),end=text.indexOf('\nfunction ',start+1);assert(start>=0,name);return text.slice(start,end<0?undefined:end);};
+const approved=JSON.parse(fs.readFileSync('work/fixtures/search-organization-approved-20261103.json','utf8'));
+assert.equal(approved.publicCommit,'0ef283576f6267642e20ad522629c078f98c0f11');
+assert.deepEqual(Object.keys(approved.protectedFunctions).sort(),Object.keys(baseline.protectedFunctions).sort());
 assert.match(css,/\.quick-presets \.preset-audit-summary\{grid-column:1\/-1/,'mobile preset audit spans the full grid, not a narrow column');
 assert.match(css,/\.search-settings \[hidden\]\{display:none!important\}/,'display classes must not expose irrelevant hidden mode controls');
 assert.match(app,/if \(activeConditionKey===key\) return/,'unchanged active filters are not rebuilt');
@@ -80,7 +85,8 @@ for(const [name,expected] of Object.entries(baseline.protectedFunctions)) {
   const oldHash=crypto.createHash('sha256').update(source.slice(start,end<0?undefined:end)).digest('hex');
   // Keep the original fixture. Later authorized reference-buy/plan migrations are
   // tested separately; this release must still match the exact pre-change public code.
-  if(oldHash!==expected)assert.equal(crypto.createHash('sha256').update(functionBody(app.replace(/\r\n/g,'\n'),name)).digest('hex'),releasedFunctionHashes[name],'financial/filter function changed from public baseline 0e8eb13c0: '+name);
+  if(oldHash!==expected){const actual=crypto.createHash('sha256').update(functionBody(app.replace(/\r\n/g,'\n'),name)).digest('hex');
+    assert([releasedFunctionHashes[name],approved.protectedFunctions[name]].includes(actual),'financial/filter function differs from both immutable reviewed public releases: '+name);}
 }
 const oldApp=process.argv.includes('--report')?execFileSync('git',['show','a37fbbfa:app.js'],{encoding:'utf8',maxBuffer:10000000}):app;
 const at=process.env.SEARCH_ORGANIZATION_AT || new Date().toISOString();

@@ -8,15 +8,16 @@ assert(allowed('workflow_run'));
 assert(allowed('workflow_run',{...run,name:'Priority Purchase Price Refresh',conclusion:'failure'}),'trusted failed price jobs recover saved inputs before considering new acquisition');
 for(const name of ['Daily Fast Update','Safe Checkpoint Backfill']) {
   assert(allowed('workflow_run',{...run,name}),'trusted scheduled cloud completion may fill missed price intervals');
-  if(name==='Safe Checkpoint Backfill')assert(allowed('workflow_run',{...run,name,conclusion:'failure'}),'trusted Safe publication failure can recover its compact pre-merge source checkpoint');
-  for(const changed of [{event:'workflow_dispatch'},...(name==='Safe Checkpoint Backfill'?[]:[{conclusion:'failure'}]),{head_branch:'feature'},{head_repository:{full_name:'fork/repo'}}])
+  assert(allowed('workflow_run',{...run,name,conclusion:'failure'}),'trusted Daily/Safe publication failure can recover saved source inputs');
+  for(const changed of [{event:'workflow_dispatch'},{head_branch:'feature'},{head_repository:{full_name:'fork/repo'}}])
     assert(!allowed('workflow_run',{...run,name,...changed}));
 }
 for(const changed of [{name:'Priority Purchase Price Refresh'},{event:'pull_request'},
   {conclusion:'failure'},{head_branch:'feature'},{head_repository:{full_name:'fork/repo'}}])assert(!allowed('workflow_run',{...run,...changed}));
 for(const changed of [{event:'workflow_dispatch'},{head_branch:'feature'},{head_repository:{full_name:'fork/repo'}}])
   assert(!allowed('workflow_run',{...run,name:'Priority Purchase Price Refresh',conclusion:'failure',...changed}));
-assert(file.includes('needs: catchup\n    if: always()'),'independent monitoring must still follow a failed acquisition');
+assert(file.includes('needs: [catchup, publication_check]\n    if: always()'),'record confirmed receipts after Pages verification; monitoring still follows acquisition/verification failures');
+assert(!file.match(/  publication_check:[\s\S]*?    needs:/),'Pages verification must remain independent of acquisition');
 assert(file.includes('group: all-site-data-refresh'));
 assert(file.includes("steps.catchup_plan.outputs.mode == 'acquire'"));
 assert(file.includes('node work/run_priority_price_refresh.js --catchup'));
