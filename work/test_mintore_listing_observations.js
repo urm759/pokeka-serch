@@ -19,6 +19,8 @@ save('2026-11-04T08:00:00Z',{...original,snkPsa10Count:121,snkListings:144,price
 assert.throws(()=>model.providerViews(payload,card,{catalogHash:'different'}),/版不一致/);
 const evidence=require('./mintore_listing_observations').publicationSummary(payload,{at:'2026-11-04T08:00:00Z',newPsa10Days:1,newRawDays:0},'2026-11-04T08:30:00Z','2026-11-04T09:00:00Z');
 assert.equal(evidence.acquiredThisRun,false);assert.equal(evidence.newPsa10CardDays,0,'publishing retained data is not a new acquisition/day');assert.equal(evidence.sourceUpdatedAt,null);
+const unknown=require('./mintore_listing_observations').publicationSummary(payload,{at:'2026-11-04T08:00:00Z',newPsa10Days:1},null,'2026-11-04T09:00:00Z');
+assert.equal(unknown.acquiredThisRun,null);assert.equal(unknown.newPsa10CardDays,null,'missing run baseline is unknown, not a measured zero');
 assert.equal(save('2026-11-04T09:00:00Z',{...original,name:'スターミーV CSR 英語版 [S9a 083/067]'}).held,1);
 assert.throws(()=>capture(root,[card],new Map(),{...receipt('2026-11-04T08:00:00Z'),payloadHash:'_'.repeat(64)}),/evidence/);
 console.log('PASS actual-response provenance, Japanese exact identity, visible state gates, supported zero vs missing, 99+, same-day dedup, observed-only mean, no carried-date refresh, and catalog version binding');

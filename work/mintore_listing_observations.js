@@ -94,10 +94,10 @@ function build(root=ROOT,now=Date.now()){
 if(require.main===module)console.log(JSON.stringify(build()));
 function publicationSummary(summary,last,from,to){
  if(!summary)return null;
- const t=Date.parse(last?.at),start=Date.parse(from),end=Date.parse(to),acquired=Number.isFinite(start)&&Number.isFinite(end)&&Number.isFinite(t)&&t>=start&&t<=end;
+ const t=Date.parse(last?.at),start=Date.parse(from),end=Date.parse(to),known=[t,start,end].every(Number.isFinite)&&start<=end,acquired=known?t>=start&&t<=end:null;
  return {source:'MINTORE',lastConfirmationAt:last?.at||null,sourceUpdatedAt:summary.sourceUpdatedAt??null,acquiredThisRun:acquired,
    psa10:summary.coverage.psa10,raw:summary.coverage.raw,psa10Days:summary.coverage.psa10Days,rawDays:summary.coverage.rawDays,
-   newPsa10CardDays:acquired?last.newPsa10Days:0,newRawCardDays:acquired?last.newRawDays:0,
+   newPsa10CardDays:acquired===true?last.newPsa10Days:acquired===false?0:null,newRawCardDays:acquired===true?last.newRawDays:acquired===false?0:null,
    note:'掲載値の実取得と公開要約を照合。再利用・取込みだけでは観測日を追加しない。30日平均は実観測日だけ。'};
 }
 module.exports={capture,build,count,sourceValues,publicationSummary};
