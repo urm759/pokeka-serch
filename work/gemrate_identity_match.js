@@ -1,6 +1,11 @@
 // Offline identity resolution. No network, prices, official POP mutation or public records.
 const {key}=require('./gemrate_csv_import');
-const normalized=s=>String(s||'').normalize('NFKC').toLowerCase().replace(/[^a-z0-9]/g,'');
+const VERSION='exact-set-number-name-rarity-parallel-v3';
+function decodeName(value){return String(value||'').replace(/&(#x[0-9a-f]+|#\d+|amp|apos|quot|lt|gt|nbsp);/gi,(all,key)=>{
+  if(key[0]==='#'){const n=key[1].toLowerCase()==='x'?parseInt(key.slice(2),16):Number(key.slice(1));return Number.isInteger(n)&&n>0&&n<=0x10ffff&&!(n>=0xd800&&n<=0xdfff)?String.fromCodePoint(n):all;}
+  return {amp:'&',apos:"'",quot:'"',lt:'<',gt:'>',nbsp:' '}[key.toLowerCase()];
+});}
+const normalized=s=>decodeName(s).normalize('NFKC').toLowerCase().replace(/[^a-z0-9]/g,'');
 const ENERGY_EVIDENCE=[
   'https://asia.pokemon-card.com/my/card-search/detail/5165/',
   'https://www.pokemon-card.com/deck/result.html/deckID/XppXRp-qg9Q3U-RpyyUM'
@@ -54,10 +59,10 @@ function resolve(rows,context,cards,english,{setCode,denominator,contextProof,he
         catalogName:card.name,englishName:english[card.id].englishName,englishSource:english[card.id].url,
         englishCapturedAt:english[card.id].fetchedAt,
         nameEvidence:/^基本悪エネルギー(?:\s|$)/.test(card.name)?ENERGY_EVIDENCE:undefined,
-        rule:'exact-set-number-name-rarity-parallel-v2'})});
+        rule:VERSION})});
   }
   const counts=new Map();for(const m of mappings)counts.set(m.cardId,(counts.get(m.cardId)||0)+1);
   for(const m of mappings.filter(m=>counts.get(m.cardId)>1))review.push({key:m.key,candidateIds:[m.cardId],reason:'multiple-source-specifications'});
   return {mappings:mappings.filter(m=>counts.get(m.cardId)===1),review};
 }
-module.exports={resolve,printed};
+module.exports={resolve,printed,decodeName,VERSION};

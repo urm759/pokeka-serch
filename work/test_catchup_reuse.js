@@ -14,6 +14,18 @@ try{
  assert.equal(decide(root,now+2*3600000).mode,'acquire');
  fs.writeFileSync(path.join(root,'model.js'),'// changed calculation');assert.equal(decide(root,now).mode,'rebuild');
  p.seal(root,p.snapshot(root));assert.equal(decide(root,now).mode,'reuse');
+ const prior=p.verify(root);
+ fs.writeFileSync(path.join(root,'model.js'),'// new generation not run yet');
+ write('data/gemrate-reference-summary.json',{cards:{one:['ja',11,21,'2026-10-24','source']}});
+ p.seal(root,prior.sources,{unchangedDerivedFrom:prior});
+ assert.equal(p.verify(root).generationCode,prior.generationCode,'reference publication cannot claim a full re-generation');
+ assert.equal(decide(root,now).mode,'rebuild','display refresh cannot suppress pending generation');
+ p.seal(root,p.snapshot(root));assert.equal(decide(root,now).mode,'reuse');
+ write('work/hareruya2_stock_history.json',{dates:[],stocks:{}});
+ write('data/hareruya2-stock-summary.json',{cards:{},stockStatistics:{version:1}});p.seal(root,p.snapshot(root));
+ assert.equal(decide(root,now).mode,'rebuild','a previously masked stock schema still rebuilds from saved history');
+ write('data/hareruya2-stock-summary.json',{cards:{},stockStatistics:{version:2}});p.seal(root,p.snapshot(root));
+ assert.equal(decide(root,now).mode,'reuse','current stock schema does not force repeated rebuild');
  write('work/gemrate-reviewed-sets.json',{version:1,sets:[{set:'new-reviewed-set'}]});
  assert.equal(decide(root,now).mode,'rebuild','new verified set registration must invalidate summary reuse');
  p.seal(root,p.snapshot(root));

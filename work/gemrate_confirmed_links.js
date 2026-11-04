@@ -11,7 +11,7 @@ function load(store){const file=path.join(store,FILE);const r=fs.existsSync(file
  if(r.version!==1||r.rule!==RULE||!r.links||Array.isArray(r.links))throw Error('Confirmed link registry schema invalid');return r;}
 function revision(s,cards,english,manual){
  const selected=cards.filter(c=>matcher.printed(c.name)?.set===String(s?.setCode||'').toLowerCase());
- return hash([RULE,s,manual,selected.map(c=>[c.id,fingerprint(c,english[c.id])]).sort(([a],[b])=>a.localeCompare(b))]);
+ return hash([RULE,matcher.VERSION,s,manual,selected.map(c=>[c.id,fingerprint(c,english[c.id])]).sort(([a],[b])=>a.localeCompare(b))]);
 }
 function resolve(source,context,cards,english,options,registry,manual=[]){
  const byId=new Map(cards.map(c=>[c.id,c])),reused=[],pending=[],review=[],held=new Set(options.heldKeys||[]);

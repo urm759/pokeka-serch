@@ -27,7 +27,8 @@ jobs:
         id: source
         run: |
           if git ls-remote --exit-code --heads origin codex/gemrate-reference-data >/dev/null; then
-            git fetch origin codex/gemrate-reference-data:refs/remotes/origin/codex/gemrate-reference-data
+            # Only the two validated files at this tip are read; no source-branch history is used.
+            git fetch --no-tags --depth=1 origin codex/gemrate-reference-data:refs/remotes/origin/codex/gemrate-reference-data
             echo "available=true" >> "$GITHUB_OUTPUT"
           fi
       - name: Apply checked reference data using main code
@@ -37,6 +38,7 @@ jobs:
       - name: Validate changed references and immutable financial inputs
         if: steps.reference.outputs.changed == 'true'
         run: |
+          node work/test_gemrate_collector.js
           node work/test_gemrate_confirmed_links.js
           node work/test_gemrate_reference_checkpoint.js
           node work/test_gemrate_limited_public_reference.js
