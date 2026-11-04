@@ -6,6 +6,7 @@ const hash=b=>crypto.createHash('sha256').update(b).digest('hex'),ROOT=path.reso
 const uuid=s=>/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(s);
 function inside(root,file){const rel=path.relative(fs.realpathSync(root),fs.realpathSync(file));if(rel.startsWith('..')||path.isAbsolute(rel))throw Error('Collector path escapes reserved directory');}
 function read(file){return JSON.parse(fs.readFileSync(file));}
+function scopes(root){const extra=path.join(root,'work/gemrate-collection-sets.json'),a=read(path.join(root,'work/gemrate-reviewed-sets.json')).sets,b=fs.existsSync(extra)?read(extra).sets:[],all=[...a,...b];if(new Set(all.map(s=>s.setCode)).size!==all.length)throw Error('Duplicate collector set context');return all;}
 function put(file,bytes){if(fs.existsSync(file)){if(hash(fs.readFileSync(file))!==hash(bytes))throw Error('Existing collector proof conflict');}else fs.writeFileSync(file,bytes,{flag:'wx'});}
 function directories(root,store,downloads){
   if(!storage.outside(fs.realpathSync(root),fs.realpathSync(store)))throw Error('Private collector storage required');
@@ -13,12 +14,17 @@ function directories(root,store,downloads){
   return {pending:path.join(downloads,'GemRate-Auto','pending'),index:path.join(store,'browser-receipts.json')};
 }
 function validate(meta,bytes,root,now=Date.now()){
-  const p=meta.page,s=read(path.join(root,'work/gemrate-reviewed-sets.json')).sets.find(s=>s.setCode===meta.setCode);
+  const p=meta.page,s=scopes(root).find(s=>s.setCode===meta.setCode);
   if(meta.version!==1||meta.kind!=='gemrate-normal-csv-v1'||!uuid(meta.jobId)||!s||!p||p.language!=='Japanese'||p.grader!=='psa'||p.category!=='tcg-cards'||s.language!=='Japanese'||s.grader!=='PSA')throw Error('Unreviewed collector context');
   const same=value=>{try{const u=new URL(value);return u.protocol==='https:'&&u.hostname==='www.gemrate.com'&&u.pathname==='/item-details'&&!u.hash&&[...u.searchParams].length===4&&u.searchParams.get('grader')==='psa'&&u.searchParams.get('category')==='tcg-cards'&&u.searchParams.get('set_name')===s.set&&Number(u.searchParams.get('year'))===s.year;}catch{return false;}};
   if(!same(p.url)||p.set!==s.set||p.year!==s.year||!/^\d{4}-\d{2}-\d{2}$/.test(p.updated)||new Date(p.updated).toISOString().slice(0,10)!==p.updated||!Number.isFinite(Date.parse(p.checkedAt))||Date.parse(p.checkedAt)>now+120000||p.updated>new Date(Date.parse(p.checkedAt)+9*3600000).toISOString().slice(0,10))throw Error('Collector page/date mismatch');
   const sha=bytes&&hash(bytes),proof={url:p.url,grader:p.grader,category:p.category,language:p.language,year:p.year,set:p.set,updated:p.updated,observedAt:p.checkedAt,csvRows:p.csvRows,setTotals:p.setTotals,...(sha?{csvSha256:sha}:{}),collectorJobId:meta.jobId};
-  if(bytes){const d=meta.download;if(!d||d.state!=='complete'||!same(d.referrer)||!String(d.url).startsWith('blob:https://www.gemrate.com/')||d.fileSize!==bytes.length||Date.parse(d.startTime)<Date.parse(p.checkedAt)-1000||!Number.isFinite(Date.parse(d.startTime))||!Number.isFinite(Date.parse(d.endTime))||Date.parse(d.endTime)<Date.parse(d.startTime)||Date.parse(d.endTime)>now+120000)throw Error('CSV download association unproven');}
+  if(bytes){const d=meta.download;if(!d||d.state!=='complete'||!same(d.referrer)||!String(d.url).startsWith('blob:https://www.gemrate.com/')||d.fileSize!==bytes.length||Date.parse(d.startTime)<Date.parse(p.checkedAt)-1000||!Number.isFinite(Date.parse(d.startTime))||!Number.isFinite(Date.parse(d.endTime))||Date.parse(d.endTime)<Date.parse(d.startTime)||Date.parse(d.endTime)>now+120000)throw Error('CSV download association unproven');
+    const csv=require('./gemrate_csv_import'),rows=csv.parseCsv(bytes.toString('utf8')),head=rows.shift(),g=head.indexOf('Gems'),t=head.indexOf('Total');let ten=0,total=0;
+    if(g<0||t<0||rows.length!==p.csvRows||!p.setTotals)throw Error('Collector CSV/page row count mismatch');
+    for(const r of rows){const a=csv.count(r[g]),b=csv.count(r[t]);if(a===null||b===null||a>b)throw Error('Collector CSV invalid PSA counts');ten+=a;total+=b;}
+    if(ten!==p.setTotals.psa10||total!==p.setTotals.total)throw Error('Collector CSV/page totals mismatch');
+  }
   else if(meta.download||meta.decision?.exportCsv)throw Error('CSV receipt without completed CSV');
   return proof;
 }
@@ -34,7 +40,7 @@ function receive(root=ROOT,store=path.resolve(root,'../private-research/gemrate'
         inside(paths.pending,dir);inside(dir,file);if(fs.statSync(file).size>262144)throw Error('Collector metadata too large');
         const metaBytes=fs.readFileSync(file),meta=JSON.parse(metaBytes);if(meta.jobId!==name)throw Error('Collector job directory mismatch');
         if(meta.version===1&&meta.kind==='gemrate-source-hold-v1'){
-          const s=read(path.join(root,'work/gemrate-reviewed-sets.json')).sets.find(s=>s.setCode===meta.setCode),u=new URL(meta.url);
+          const s=scopes(root).find(s=>s.setCode===meta.setCode),u=new URL(meta.url);
           if(!s||u.origin!=='https://www.gemrate.com'||u.pathname!=='/item-details'||u.searchParams.get('set_name')!==s.set||Number(u.searchParams.get('year'))!==s.year||u.searchParams.get('grader')!=='psa'||u.searchParams.get('category')!=='tcg-cards'||!Number.isFinite(Date.parse(meta.at))||Date.parse(meta.at)>Date.now()+120000)throw Error('Unproven collector hold');
           put(path.join(evidence,name+'.receipt.json'),metaBytes);
           index.receipts[name]={status:'queued',held:true,setCode:meta.setCode,checkedAt:meta.at,reason:meta.reason,csv:false,metadataSha256:hash(metaBytes)};results.push({jobId:name,...index.receipts[name]});continue;
@@ -81,7 +87,7 @@ function finalize(root=ROOT,store=path.resolve(root,'../private-research/gemrate
   retry.atomicWrite(paths.index,index,0);return {cleaned};
 }
 function dailySummary(root,index,now=new Date().toISOString()){
-  const day=at=>new Date(Date.parse(at)+9*3600000).toISOString().slice(0,10),today=day(now),scope=read(path.join(root,'work/gemrate-reviewed-sets.json')).sets;
+  const day=at=>new Date(Date.parse(at)+9*3600000).toISOString().slice(0,10),today=day(now),scope=scopes(root);
   const rows=Object.values(index.receipts).filter(r=>day(r.checkedAt)===today),successful=rows.filter(r=>!r.held),ids=new Set(successful.map(r=>r.setCode));
   return {at:now,day:today,targetSets:scope.length,attemptedSets:new Set(rows.map(r=>r.setCode)).size,confirmedSets:ids.size,confirmationRatePct:scope.length?ids.size/scope.length*100:null,sourceDateUpdatedSets:new Set(successful.filter(r=>r.decision?.newSourceDate).map(r=>r.setCode)).size,sourceDateUpdatedRatePct:ids.size?new Set(successful.filter(r=>r.decision?.newSourceDate).map(r=>r.setCode)).size/ids.size*100:null,csvReceipts:successful.filter(r=>r.csv).length,newPopObservations:null,calculationAdopted:0,method:'実受領証のみ。確認率と元基準日変更率は別。POP新観測数は既存の重複排除済み取込み結果で判断'};
 }

@@ -3,9 +3,12 @@
   const day=at=>new Date(Date.parse(at)+9*3600000).toISOString().slice(0,10);
   function url(set){return ORIGIN+'/item-details?'+new URLSearchParams({grader:'psa',year:String(set.year),category:'tcg-cards',set_name:set.set});}
   function samePage(value,set){try{const a=new URL(value),b=new URL(url(set));return a.origin===b.origin&&a.pathname===b.pathname&&!a.hash&&[...a.searchParams].length===4&&[...b.searchParams].every(([k,v])=>a.searchParams.get(k)===v);}catch{return false;}}
-  function groups(scope,reference){
+  function groups(scope,reference,collection={version:1,sets:[]}){
     if(scope?.version!==1||reference?.version!==2||reference.source!=='GemRate'||reference.grader!=='PSA')throw Error('公開設定の版不一致');
-    return scope.sets.filter(s=>s.language==='Japanese'&&s.grader==='PSA'&&/^[A-Z0-9-]+$/.test(s.setCode)&&s.set.startsWith('Pokemon Japanese ')).map(s=>{
+    if(collection.version!==1||!Array.isArray(collection.sets))throw Error('取得設定の版不一致');
+    const all=[...scope.sets,...collection.sets];
+    if(new Set(all.map(s=>s.setCode)).size!==all.length||new Set(all.map(s=>s.year+'|'+s.set)).size!==all.length)throw Error('取得セット重複');
+    return all.filter(s=>s.language==='Japanese'&&s.grader==='PSA'&&/^[A-Z0-9-]+$/.test(s.setCode)&&s.set.startsWith('Pokemon Japanese ')).map(s=>{
       const rows=Object.values(reference.cards).filter(r=>samePage(r[4],s));return {...s,url:url(s),cards:rows.length,baselineDate:rows.map(r=>r[3]).sort().at(-1)||null};
     });
   }
