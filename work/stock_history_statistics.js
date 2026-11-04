@@ -64,7 +64,7 @@ function apply(summary,history,options) {
     Object.assign(row,next);
   }
   summary.demandModel=result.demandModel;
-  summary.stockStatistics={version:1,asOfDate:result.asOfDate,inputHash:result.inputHash,missingIsZero:false};
+  summary.stockStatistics={version:2,asOfDate:result.asOfDate,inputHash:result.inputHash,missingIsZero:false};
   return {changed,cards:Object.keys(summary.cards||{}).length,asOfDate:result.asOfDate,inputHash:result.inputHash};
 }
 function reconcile(root,options) {
@@ -94,4 +94,11 @@ function captureQuantity(history,catalog,cards,source) {
     if(!old||Date.parse(old[2])<at){rows[day]=next;recovered++;}
   }return recovered;
 }
-module.exports={observations,period,summarize,apply,reconcile,captureQuantity,dayOf};
+function needsReconcile(root){
+  const fs=require('node:fs'),path=require('node:path');
+  return ['hareruya2','cardrush','yuyutei','torecacamp'].some(id=>{
+    const history=path.join(root,'work',id+'_stock_history.json'),summary=path.join(root,'data',id+'-stock-summary.json');
+    return fs.existsSync(history)&&fs.existsSync(summary)&&JSON.parse(fs.readFileSync(summary)).stockStatistics?.version!==2;
+  });
+}
+module.exports={observations,period,summarize,apply,reconcile,captureQuantity,dayOf,needsReconcile};
