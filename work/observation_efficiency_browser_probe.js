@@ -1,6 +1,7 @@
 // Local-only benchmark controls. Never served by production index.html.
 const probeButton=document.createElement('button'),probeResult=document.createElement('pre');
 probeButton.id='observation-probe';probeButton.textContent='同条件60枚・3回測定';probeResult.id='observation-probe-result';
+probeResult.style.cssText='max-width:100%;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere';
 probeButton.disabled=true;
 document.body.prepend(probeResult);document.body.prepend(probeButton);
 const probeReady=setInterval(()=>{if(state.cards.length && document.getElementById('searchPerformance')?.textContent){probeButton.disabled=false;clearInterval(probeReady);}},100);

@@ -32,7 +32,7 @@ let efficiencyViewCache = new WeakMap();
 const explorationFields = [
   ['psa9GuideMin','psa9GuideMin'],
   ['psa9RoiMin','psa9RoiMin'],
-  ...['listingCurrentMin','listingCurrentMax','listingMeanMin','listingMeanMax'].map(key=>[key,key]),
+  ...['listingCurrentMin','listingCurrentMax','listingMeanMin','listingMeanMax','rawListingCurrentMin','rawListingCurrentMax','rawListingMeanMin','rawListingMeanMax'].map(key=>[key,key]),
   ['purchaseMin','actualPurchaseMin'],['purchaseMax','actualPurchaseMax'],
   ['headroomMin','purchaseHeadroomMin'],['headroomMax','purchaseHeadroomMax'],
   ['buybackMaxMin','buybackHighestMin'],
@@ -1764,7 +1764,8 @@ async function exportFavoritesCsv() {
   rows[0].push('最高買取倍率（減額前・選択受付）','最高提示店舗','最高提示受付','最高提示確認日時','同店・他カードの通常倍率（中央値）','通常倍率の比較枚数','最高買取倍率・下限条件','最高提示の価格日','倍率分母の相場確認日時','倍率比較の確認時差（時間）','全体平均買取倍率（同一店の有効な最高提示1件）','全体平均の採用店舗数','倍率の対象独立店舗数','倍率比較可能店舗数','相場以上の比較可能店舗数','掲載確認店舗数（倍率採用と別）','75日平均買取倍率（日次店舗間平均の観測日平均）','75日倍率の観測日数','75日倍率の期間日数','75日倍率の独立店舗数','75日倍率の最終観測日','75日倍率の参考区分','75日倍率の集計定義','直近比較成立時の参考最高倍率（現在検索不採用）','直近比較成立時の参考平均倍率','参考倍率の比較日','参考倍率の独立店舗数','参考最高の店舗','現在倍率の不足原因','全体平均倍率の下限条件','7日平均倍率の下限条件','30日平均倍率の下限条件','75日平均倍率の下限条件','倍率観測日数の下限条件','倍率の参考値採用','7日平均倍率（日次店舗間平均）','7日倍率の観測日数','7日倍率の最終確認日時','30日平均倍率（日次店舗間平均）','30日倍率の観測日数','30日倍率の最終確認日時','追加倍率検索の除外理由');
   rows[0].push('計算買値（検索・一覧共通）','計算買値の採用元','計算採用10率%','計算採用10率の出典','参考ガイド率%','参考ガイド出典');
   for(const d of [30,7])rows[0].push(`${d}日PSA9実成約平均（計算不採用）`,`${d}日PSA9採用成約件数`,`${d}日PSA9最終成約日時`,`${d}日PSA9対象期間`,`${d}日PSA9出典URL`,`${d}日PSA9平均の区分`);
-  rows[0].push('PSA10販売中・現在出品数（下限）','現在出品数・全件確認','出品数の実確認日時','現在出品数・期限切れ','30日平均出品数（下限）','平均出品数・全件確認','平均出品数の実観測日数','平均出品数の開始日','平均出品数の最終日','現在出品数の下限条件','現在出品数の上限条件','30日平均出品数の下限条件','30日平均出品数の上限条件','出品数読込状態');
+  for(const label of ['みんトレ掲載PSA10','みんトレ掲載美品'])rows[0].push(label+'現在出品数（下限）',label+'現在件数が上限なし',label+'掲載値確認日時',label+'元更新日時（未提供は空欄）',label+'現在値の不足理由',label+'30日平均出品数（下限）',label+'平均件数が上限なし',label+'平均の実観測日数',label+'観測開始日',label+'最終観測日');
+  rows[0].push(...verifiedListingFields.map(key=>'出品数条件・'+key),'出品数読込状態');
   favoriteCards().forEach((rawCard,index)=>{
     const card = calc(rawCard), p = purchaseExploration(card), v = searchProfitView(card), c = postingCoverage(card);
     rows[index+1].push(p.price ?? '',p.headroom ?? '',v.purchasePrice ?? '',v.label,v.economics?.expectedProfit ?? '',v.psa10Roi ?? '',c.rate30 ?? '',c.averageShops30 ?? '',c.observedDays,c.retrievalCoverage ?? '',p.cap ?? '',p.warnings.join('／'),p.headroom == null ? p.reason : '');
@@ -3501,7 +3502,7 @@ async function fetchJsonMaybe(url, { detail = false, affectsCalculation = true }
     uiLoadMetrics.push({ file, bytes: raw.byteLength, networkMs, verifyMs, jsonParseMs, decodeMs: performance.now() - decodeStart,
       transferBytes: resource?.transferSize ?? null, compressedBodyBytes: resource?.encodedBodySize ?? null,
       expandedBodyBytes: resource?.decodedBodySize ?? null });
-    if (affectsCalculation || !/^data\/(?:overseas-glance|psa-pop-glance|psa-pop-recovered|psa-history)\/\d+\.json$/.test(original)) loadedDataRevision++;
+    if (affectsCalculation) loadedDataRevision++;
     return payload;
   } catch (error) {
     if (uiDataManifest?.hashes?.[file]) {
@@ -5335,31 +5336,36 @@ function cardSearchExclusions(card, {mode = state.purchaseMode,diagnostic=true,e
     return reasons;
   });
 }
-const verifiedListingFields=['listingCurrentMin','listingCurrentMax','listingMeanMin','listingMeanMax'];
+const verifiedListingFields=['listingCurrentMin','listingCurrentMax','listingMeanMin','listingMeanMax','rawListingCurrentMin','rawListingCurrentMax','rawListingMeanMin','rawListingMeanMax'];
 let verifiedListingRequest=null,verifiedListingRevision=null;
-function verifiedListingView(card,now=Date.now()) {
-  const row=state.verifiedListingReferences?.cards?.[card.id];
-  return explorationMetrics.listingCounts.summarize(row&&row.identityKey===card.identityKey?row.observations:[],card.identityKey,now);
+function verifiedListingViews(card,now=Date.now()) {
+  return explorationMetrics.listingCounts.providerViews(state.verifiedListingReferences,card,{catalogHash:uiDataManifest?.hashes?.['data/pokemon-cards.json'],now});
 }
+function verifiedListingView(card,now=Date.now()){return verifiedListingViews(card,now).psa10;}
 function verifiedListingExclusions(card) {
   if(!verifiedListingFields.some(key=>Number.isFinite(state[key])&&state[key]>=0))return [];
-  if(!explorationMetrics.listingCounts)return ['PSA10出品数・計算モジュール読込不成立'];
-  if(state.verifiedListingStatus!=='ready')return ['PSA10出品数・'+(state.verifiedListingStatus==='failed'?'読込失敗':'読込待ち')];
-  return explorationMetrics.listingCounts.reasons(verifiedListingView(card),state);
+  if(!explorationMetrics.listingCounts?.providerViews)return ['みんトレ出品数・計算モジュール読込不成立'];
+  if(state.verifiedListingStatus!=='ready')return ['みんトレ出品数・'+(state.verifiedListingStatus==='failed'?'読込失敗':'読込待ち')];
+  const views=verifiedListingViews(card),model=explorationMetrics.listingCounts;
+  return [...model.reasons(views.psa10,{...state,label:'みんトレ掲載PSA10出品数'}),...model.reasons(views.raw,{listingCurrentMin:state.rawListingCurrentMin,listingCurrentMax:state.rawListingCurrentMax,listingMeanMin:state.rawListingMeanMin,listingMeanMax:state.rawListingMeanMax,label:'みんトレ掲載美品出品数'})];
 }
-function verifiedListingPanel(card) {
-  const v=verifiedListingView(card),m=explorationMetrics.listingCounts,status=state.verifiedListingStatus;
-  return '<div class="snkr-listing-panel"><div><span>PSA10・販売中の出品数</span><strong>'+m.text(v.current)+'</strong><small>'+(v.current?(v.current.stale?'期限切れ・過去観測':'実確認 '+escapeHtml(v.current.at)):'日次自動取得は利用条件確認待ち')+'</small></div><div><span>30日平均出品数</span><strong>'+m.text(v.mean30)+'</strong><small>'+(v.mean30?'観測'+v.mean30.days+'/30日・'+(v.mean30.reference?'参考平均':'全日観測')+'／'+v.mean30.start+'〜'+v.mean30.end:'実観測履歴なし')+'</small></div></div><small>'+(status==='failed'?'読込失敗。未取得や0件へ置換しません。':'出品IDの件数で、カード枚数・成約数ではありません。欠測は0にしません。')+'</small>';
+function verifiedListingPanel(card,compact=false) {
+  const views=verifiedListingViews(card),m=explorationMetrics.listingCounts,status=state.verifiedListingStatus;
+  const labels={psa10:'みんトレ掲載PSA10出品数',raw:'みんトレ掲載美品出品数'};
+  const rows=Object.entries(labels).map(([key,label])=>{const v=views[key],c=v.current,mean=v.mean30;
+    const unknown=status==='loading'?'読込中':status==='failed'?'読込失敗':v.currentReason||'掲載値未取得';
+    return '<div><span>'+label+'</span><strong>'+(c?m.text(c):unknown)+'</strong>'+(c?.stale?'<small class="price-stale">古い掲載確認</small>':'')+'<small>30日平均 '+m.text(mean)+(mean?'・'+mean.days+'/30観測日'+(mean.reference?'・参考':''):'')+'</small>'+(!compact?'<small>掲載値確認 '+escapeHtml(c?.at||v.lastObserved?.at||'未取得')+'／元更新日時 '+escapeHtml(c?.sourceUpdatedAt||'取得元未提供')+'</small><small>'+escapeHtml(mean?mean.start+'〜'+mean.end:'履歴未取得')+'</small>':'')+'</div>';}).join('');
+  return '<div class="snkr-listing-panel mintore-listings">'+rows+'</div>'+(!compact?'<small><a href="https://toreca-souba.com/cards/'+encodeURIComponent(card.sourceId||card.id)+'" target="_blank" rel="noreferrer">みんトレ掲載ページ</a>。現在の状態別出品欄に対応する掲載件数。美品は傷なし・現在価格の根拠があるものだけ。出品件数とカード枚数・取引件数・POPは別です。上限付き表示は「以上」を保持。元値の更新日時は未提供で、確認日時や成約日時へ置換しません。需要・GOへの追加採用なし。</small>':'');
 }
 function verifiedListingCsvFields(card) {
-  const v=verifiedListingView(card);return [v.current?.lower??'',v.current?.exact??'',v.current?.at||'',v.current?.stale??'',v.mean30?.lower??'',v.mean30?.exact??'',v.mean30?.days??'',v.mean30?.start||'',v.mean30?.end||'',...verifiedListingFields.map(key=>state[key]??''),state.verifiedListingStatus];
+  const views=verifiedListingViews(card);return [...['psa10','raw'].flatMap(key=>{const v=views[key];return [v.current?.lower??'',v.current?.exact??'',v.current?.at||'',v.current?.sourceUpdatedAt||'',v.currentReason||'',v.mean30?.lower??'',v.mean30?.exact??'',v.mean30?.days??'',v.mean30?.start||'',v.mean30?.end||''];}),...verifiedListingFields.map(key=>state[key]??''),state.verifiedListingStatus];
 }
 async function ensureVerifiedListingReferences(cards,force=false) {
   if(!force&&!verifiedListingFields.some(key=>state[key]!=null)&&!document.querySelector('[data-verified-listings]'))return;
   const revision=uiDataManifest?.revision||'legacy';
   if(verifiedListingRevision!==revision){verifiedListingRevision=revision;verifiedListingRequest=null;state.verifiedListingReferences=null;state.verifiedListingStatus='unrequested';}
-  if(!verifiedListingRequest){state.verifiedListingStatus='loading';verifiedListingRequest=fetchJsonMaybe('./data/verified-psa10-listings.json',{detail:true,affectsCalculation:false}).then(data=>{
-    if(data?.version!==1||data.source!=='SNKRDUNK'||data.scope!=='same-japanese-print-PSA10-for-sale-listing-ids'||!data.cards||Array.isArray(data.cards))throw Error('PSA10出品数・仕様不一致');
+  if(!verifiedListingRequest){state.verifiedListingStatus='loading';verifiedListingRequest=fetchJsonMaybe('./data/mintore-listing-summary.json',{detail:true,affectsCalculation:false}).then(data=>{
+    if(data?.version!==1||data.source!=='MINTORE'||data.scope!=='provider-listed-psa10-and-clean-v1'||data.catalogHash!==uiDataManifest?.hashes?.['data/pokemon-cards.json']||!data.cards||Array.isArray(data.cards))throw Error('みんトレ出品数・カード原票の版不一致');
     if(verifiedListingRevision===revision){state.verifiedListingReferences=data;state.verifiedListingStatus='ready';}
   }).catch(()=>{if(verifiedListingRevision===revision)state.verifiedListingStatus='failed';});
   await verifiedListingRequest;
@@ -5368,7 +5374,7 @@ async function ensureVerifiedListingReferences(cards,force=false) {
   }
   await verifiedListingRequest;
   const byId=new Map(cards.map(c=>[c.id,c]));
-  for(const el of document.querySelectorAll('[data-verified-listings]')){const card=byId.get(el.dataset.verifiedListings);if(card)window.KeyedCardRenderer.replaceContent(el,verifiedListingPanel(card));}
+  for(const el of document.querySelectorAll('[data-verified-listings]')){const card=byId.get(el.dataset.verifiedListings);if(card)window.KeyedCardRenderer.replaceContent(el,verifiedListingPanel(card,el.dataset.listingCompact==='true'));}
 }
 function observationSearchExclusions(card) {
   return renderValue(card,'observation-exclusions',()=>explorationMetrics.observationExclusions(state.psa10PeriodSummary,card,state));
@@ -6753,6 +6759,7 @@ function renderContent() {
       <section class="candidate-glance" aria-label="仕入れ判断の要点">
         <div class="glance-verdict"><span>${currentExploration ? "現相場の探索（購入判断とは別）" : "今回の判定"}</span><strong>${currentExploration ? currentTrial.economics ? currentTrial.economics.expectedProfit >= 0 ? "現相場採算あり・仮定" : "現相場では赤字・仮定" : currentTrial.eligible ? "上限探索・購入価格未取得" : "必要データ不足・試算不可" : escapeHtml(displayVerdict)}</strong><small>${currentExploration ? escapeHtml(currentTrial.purchaseSource || "購入価格未取得") : escapeHtml(purchaseAvailability.label || "購入先未確認")}</small></div>
         ${priceCells}
+        <div data-verified-listings="${escapeHtml(card.id)}" data-listing-compact="true">${verifiedListingPanel(card,true)}</div>
       </section>
       ${searchProfitPanel(chosenProfit,true)}
       ${cardEfficiencyPanel(card,true)}
@@ -7072,7 +7079,8 @@ function assertCalculationDependencies() {
     'PurchaseRatioModel.guideSearchReasons':purchaseRatioModel?.guideSearchReasons,
     'Psa10ListingCounts.summarize':explorationMetrics?.listingCounts?.summarize,
     'Psa10ListingCounts.reasons':explorationMetrics?.listingCounts?.reasons,
-    'Psa10ListingCounts.text':explorationMetrics?.listingCounts?.text};
+    'Psa10ListingCounts.text':explorationMetrics?.listingCounts?.text,
+    'Psa10ListingCounts.providerViews':explorationMetrics?.listingCounts?.providerViews};
   const missing=Object.keys(required).filter(name=>typeof required[name]!=='function');
   if(missing.length){const error=new Error('計算モジュールの読込失敗・版不一致：'+missing.join('／')+'。再読み込みしてください。');error.code='CALCULATION_DEPENDENCY_UNAVAILABLE';throw error;}
   currentMarketModel.assertDependencies();

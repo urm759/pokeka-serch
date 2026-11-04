@@ -11,6 +11,10 @@ on:
       - 'data/verified-psa10-listings.json'
       - 'work/test_listing_search_ui.js'
       - 'work/test_psa10_listing_counts.js'
+      - 'work/mintore_listing_observations.js'
+      - 'work/test_mintore_listing_observations.js'
+      - 'work/update_pokemon_site.js'
+      - 'work/priority_price_queue.js'
       - '.github/workflows/listing-search-checks.yml'
 permissions:
   contents: read
@@ -27,6 +31,8 @@ jobs:
         run: |
           node --check app.js
           node work/test_psa10_listing_counts.js
+          node work/test_mintore_listing_observations.js
+          node work/test_priority_refresh.js
           node work/test_listing_search_ui.js
           node work/test_search_organization.js
           node work/test_two_search_modes.js

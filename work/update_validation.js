@@ -3,7 +3,7 @@ const ROOT=path.join(__dirname,'..'),FILE='work/update-validation-state.json';
 // These checks remain on every data publication. The larger related suite runs
 // after any tracked code/test/workflow change; weekly full tests remain separate.
 const REQUIRED=['test_price_integrity','test_price_comparison','test_publication_lineage',
-  'test_card_catalog_completion','test_stock_history_statistics','test_initial_calculation_dependencies'];
+  'test_card_catalog_completion','test_stock_history_statistics','test_initial_calculation_dependencies','test_mintore_listing_observations'];
 function fingerprint(root=ROOT){
   const list=cp.execFileSync('git',['ls-files','-z'],{cwd:root,encoding:'utf8'}).split('\0').filter(f=>
     /^(?:[^/]+\.js|work\/[^/]+\.js|\.github\/workflows\/[^/]+\.yml|\.gitattributes)$/.test(f)

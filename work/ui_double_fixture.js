@@ -40,6 +40,12 @@ function fixture(root) {
     manifest.hashes[file]=crypto.createHash('sha256').update(text).digest('hex');
   }
   const initialBytes=[...buffers.values()].reduce((n,b)=>n+b.length,0);
+  const listingFile='data/mintore-listing-summary.json';
+  if(fs.existsSync(path.join(root,listingFile))){
+    const value=JSON.parse(fs.readFileSync(path.join(root,listingFile),'utf8'));
+    for(const [id,row] of Object.entries({...value.cards}))value.cards['scale-'+id]=structuredClone(row);
+    const text=JSON.stringify(value);buffers.set(listingFile,Buffer.from(text));manifest.hashes[listingFile]=crypto.createHash('sha256').update(text).digest('hex');
+  }
   for(const directory of ['psa-pop-glance','psa-pop-recovered','psa-history','overseas-glance']){
     const dir=path.join(root,'data',directory);if(!fs.existsSync(dir))continue;
     for(const name of fs.readdirSync(dir).filter(n=>/^\d+\.json$/.test(n))){
