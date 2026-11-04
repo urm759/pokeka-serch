@@ -5629,6 +5629,34 @@ async function ensurePsaPopGlance(cards) {
     const html=psaPopGlance(card,el.dataset.popDetail==='true');window.KeyedCardRenderer.replaceContent(el,html);
   }
 }
+function inventoryMovementMarkup(sources, now = Date.now()) {
+  const view=explorationMetrics.stockTrend(sources.map(([sourceId,r])=>r?{...r,sourceId}:null),now);
+  const amount=n=>Number.isFinite(n)?fmt.format(n)+'枚':'未取得';
+  const periods=[7,30].map(d=>{
+    const w=view.periods[d],net=w.net,word=net==null?'比較待ち':net>0?'増加':net<0?'減少':'横ばい';
+    return '<strong class="stock-'+w.tone+'">'+d+'日間の在庫純増減 '+(net==null?'算出不可':(net>0?'+':'')+fmt.format(net)+'枚')+'・'+word+'</strong>'
+      +'<small class="stock-flow-totals">減少累計 '+amount(w.decrease)+'／補充累計 '+amount(w.increase)+'</small>'
+      +'<small>比較 '+w.flowStores+'／対象'+sources.length+'店'+(w.observedDays==null?'・同一商品の観測待ち':'・店舗別最少 '+w.observedDays+'観測日・参考')+'</small>';
+  }).join('');
+  const reasons={missingQuantity:'数量欠測',missingDays:'欠測日あり',missingEvidence:'商品根拠不足',changedProduct:'商品URL変更',changedSpecification:'仕様変更',invalidEvidenceTime:'観測日時不一致'};
+  const details=sources.map(([name,r])=>{
+    const date=r?.stockStatistics?.asOfDate||r?.stockTrend?.[0]||'未取得';
+    return '<div class="stock-flow-source"><small><b>'+escapeHtml(name)+'</b>：'+(Number.isFinite(r?.stock)?'保存数量 '+amount(r.stock):typeof r?.available==='boolean'?'在庫有無のみ／枚数未提供':'数量未取得')
+      +'・集計基準日 '+escapeHtml(date)+'・実確認 '+escapeHtml(r?.inventoryObservedAt||r?.observedAt||'未取得')+'</small>'
+      +[7,30].map(d=>{
+        const f=r?.stockFlow?.[d];
+        if(!f)return '<small>'+d+'日間：同一商品・仕様の比較根拠未取得</small>';
+        const excluded=Object.entries(f.excluded||{}).filter(([,n])=>n>0).map(([k,n])=>(reasons[k]||k)+' '+n+'件').join('／');
+        return '<small>'+d+'日間：対象 '+escapeHtml(f.windowStart||'未記録')+'～'+escapeHtml(f.windowEnd||date)
+          +'／採用 '+escapeHtml(f.first||'なし')+'～'+escapeHtml(f.last||'なし')+'・'+(f.days??'未取得')+'観測日／'+(f.pairs??0)+'区間'
+          +'・減少累計 '+amount(f.decrease)+'／補充累計 '+amount(f.increase)+(excluded?'・除外 '+escapeHtml(excluded):'')+'</small>'
+          +(f.segments||[]).map(s=>'<small class="stock-flow-interval">'+escapeHtml(s.first)+'～'+escapeHtml(s.last)+'・'+s.pairs+'区間：履歴商品 '+escapeHtml(s.url)+'</small>').join('');
+      }).join('')+'</div>';
+  }).join('');
+  return '<div class="stock-trend">'+periods+'<details><summary>店舗・商品別の比較区間</summary><small>'+escapeHtml(view.rule)+'</small>'
+    +(!view.sameStoreCohort?'<small>7日・30日の採用店舗が異なります。累計を同一母集団として比較できません。</small>':'')
+    +(view.conflictSources.length?'<small>累計の矛盾で保留：'+escapeHtml(view.conflictSources.join('／'))+'</small>':'')+details+'</details></div>';
+}
 // Presentation only: neither market references nor forecasts are purchase offers.
 function priceComparisonCells(card, limitDisplay, confirmedAt, now = Date.now(), trial = null, compact = false) {
   if (Object.hasOwn(card, 'psa10ObservedAt')) confirmedAt = card.psa10ObservedAt;
@@ -5649,8 +5677,7 @@ function priceComparisonCells(card, limitDisplay, confirmedAt, now = Date.now(),
     && Number.isFinite(inventoryTime) && inventoryTime <= now && now - inventoryTime <= 2 * 86400000;
   const purchaseUrl = usableOffer ? explorationMetrics.purchaseOfferUrl(offer) : null;
   const inventorySources=[['晴れる屋2',state.hareruya2Stock[card.id]],['カードラッシュ',state.cardrushStock[card.id]],['トレカキャンプ',state.torecacampStock[card.id]],['遊々亭',state.yuyuteiStock[card.id]]];
-  const inventoryTrend=explorationMetrics.stockTrend(inventorySources.map(([sourceId,r])=>r?{...r,sourceId}:null),now);
-  const inventoryText='<div class="stock-trend">'+[7,30].map(d=>{const w=inventoryTrend.periods[d],net=w.net,word=net==null?'増減比較待ち':net>0?'増加':net<0?'減少':'横ばい';return '<strong class="stock-'+w.tone+'">'+d+'日在庫 '+(net==null?'算出不可':(net>0?'+':'')+fmt.format(net)+'枚')+'・'+word+'</strong><small>'+(net==null?'旧履歴の在庫減 '+(w.drop==null?'未取得':fmt.format(w.drop)+'枚')+'・商品継続未確認の参考':'減少 '+fmt.format(w.decrease)+'枚／補充 '+fmt.format(w.increase)+'枚・比較 '+w.flowStores+'／'+inventorySources.length+'店・最少 '+w.observedDays+'観測日（参考）')+'</small>';}).join('')+'<details><summary>店舗別の在庫観測</summary><small>'+escapeHtml(inventoryTrend.rule)+'</small>'+inventorySources.map(([name,r])=>'<small>'+name+'：'+(Number.isFinite(r?.stock)?'実在庫 '+fmt.format(r.stock)+'枚':'在庫有無のみ／枚数未提供')+'／7日 '+(r?.stockFlow?.[7]?.pairs??0)+'/7区間・30日 '+(r?.stockFlow?.[30]?.pairs??0)+'/30区間／確認 '+escapeHtml(r?.inventoryObservedAt||r?.observedAt||'未取得')+'</small>').join('')+'</details></div>';
+  const inventoryText=inventoryMovementMarkup(inventorySources,now);
   const purchaseValue = usableOffer ? money(offer.value) : trial?.purchaseKind==='manual' ? money(trial.purchasePrice) : null;
   const purchaseMarkup = purchaseUrl ? '<a class="state-a-purchase-link" href="'+escapeHtml(purchaseUrl)+'" target="_blank" rel="noopener noreferrer" aria-label="'+escapeHtml(offer.source)+'の採用状態A商品へ">'+purchaseValue+' ↗</a>' : purchaseValue;
   const marketPrice = card.psa10Audit?.adoptedPrice ?? card.psa10;
