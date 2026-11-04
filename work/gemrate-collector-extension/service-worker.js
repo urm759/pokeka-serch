@@ -7,7 +7,7 @@ const alarm=()=>chrome.alarms.create('gemrate-tick',{periodInMinutes:1});
 async function config(){
   const read=async f=>{let r;try{r=await fetch(BASE+f,{credentials:'omit',redirect:'error',cache:'no-store',signal:AbortSignal.timeout(20000)});}catch(e){e.temporary=true;throw e;}if(!r.ok){const e=Error('公開設定HTTP '+r.status);e.temporary=r.status===429||r.status>=500;throw e;}return r.json();};
   const focus=await read('work/pop-focus-targets.json');const sets=new Set((focus.rows||[]).map(r=>r.setCode));
-  return C.groups(await read('work/gemrate-reviewed-sets.json'),await read('data/gemrate-reference-summary.json')).map(s=>({...s,priority:sets.has(s.setCode)?1:0})).sort((a,b)=>b.priority-a.priority);
+  return C.groups(await read('work/gemrate-reviewed-sets.json'),await read('data/gemrate-reference-summary.json'),await read('work/gemrate-collection-sets.json')).map(s=>({...s,priority:sets.has(s.setCode)?1:0})).sort((a,b)=>b.priority-a.priority);
 }
 async function jsonReceipt(job,download=null){
   const receipt={version:1,kind:'gemrate-normal-csv-v1',jobId:job.id,setCode:job.set.setCode,page:job.page,decision:job.decision,download:download?{id:download.id,url:download.url,referrer:download.referrer,startTime:download.startTime,endTime:download.endTime,state:download.state,fileSize:download.fileSize}:null};
