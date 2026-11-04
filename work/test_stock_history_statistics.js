@@ -23,3 +23,4 @@ assert.deepEqual(generated,expected);
 const slim=require('./build_ui_data').project('hareruya2-stock-summary',generated);
 assert.equal(slim.cards.a.avg7,generated.cards.a.avg7);assert.equal(slim.cards.a.stockStatistics,undefined);assert.equal(slim.stockStatistics,undefined);
 console.log('PASS full crawler / checkpoint finalization equality and lazy statistics provenance');
+require('./test_inventory_net_movement');
