@@ -38,7 +38,7 @@ function recoverLooseReceipts(root,store,downloads){
   const paths=directories(root,store,downloads),file=path.join(store,'loose-receipt-recovery.json'),index=fs.existsSync(file)?read(file):{version:1,receipts:{}},results=[];
   if(!fs.existsSync(downloads))return results;
   for(const name of fs.readdirSync(downloads).filter(n=>/^(?:ダウンロード|download)(?: \(\d+\))?\.json$/i.test(n))){
-    const original=path.join(downloads,name),stat=fs.lstatSync(original);if(!stat.isFile()||stat.isSymbolicLink()||stat.size>262144)continue;
+    const original=path.join(downloads,name);let stat;try{stat=fs.lstatSync(original);}catch{continue;}if(!stat.isFile()||stat.isSymbolicLink()||stat.size>262144)continue;
     let meta,bytes;try{bytes=fs.readFileSync(original);meta=JSON.parse(bytes);}catch{continue;}
     if(!['gemrate-normal-csv-v1','gemrate-source-hold-v1'].includes(meta.kind)||!uuid(meta.jobId))continue;
     const at=Date.parse(meta.page?.checkedAt||meta.at);if(!Number.isFinite(at)||Date.now()-at>86400000)continue;
@@ -64,10 +64,10 @@ function receive(root=ROOT,store=path.resolve(root,'../private-research/gemrate'
   const release=retry.lock(path.join(store,'.browser-receipts.lock'));
   try{
     const recoveredTransport=recoverLooseReceipts(root,store,downloads);
-    if(!fs.existsSync(paths.pending))return {status:'no-browser-receipts',queuedCsv:0,providerChecks:0,sourceAcquisitions:0,recoveredTransport};
+    if(!fs.existsSync(paths.pending)&&!recoveredTransport.length)return {status:'no-browser-receipts',queuedCsv:0,providerChecks:0,sourceAcquisitions:0,recoveredTransport};
     const index=fs.existsSync(paths.index)?read(paths.index):{version:1,receipts:{}},results=[];
     const evidence=path.join(store,'browser-receipts');fs.mkdirSync(evidence,{recursive:true});
-    for(const name of fs.readdirSync(paths.pending).filter(uuid)){
+    for(const name of (fs.existsSync(paths.pending)?fs.readdirSync(paths.pending):[]).filter(uuid)){
       const dir=path.join(paths.pending,name),file=path.join(dir,'receipt.json');if(!fs.existsSync(file)||index.receipts[name]?.status==='complete')continue;
       try{
         inside(paths.pending,dir);inside(dir,file);if(fs.statSync(file).size>262144)throw Error('Collector metadata too large');

@@ -25,6 +25,9 @@ try{
  const proof=JSON.parse(fs.readFileSync(path.join(store,'browser-receipts',id+'.page.json')));assert.equal(proof.observedAt,now);assert.equal(proof.updated,date,'preserve source date and real check time');
  const backup=path.join(store,'browser-receipt-migration',id+'.json.gz');assert.deepEqual(zlib.gunzipSync(fs.readFileSync(backup)),bytes);assert(fs.existsSync(loose),'retained until finalize and backup verification');
  receiver.finalize(root,store,downloads);assert(!fs.existsSync(loose));assert(fs.existsSync(general));assert(fs.existsSync(conflict),'failed/foreign context is never cleaned');
- assert.equal(receiver.receive(root,store,downloads).providerChecks,0,'idempotent transport is not a new observation');
+ fs.rmdirSync(path.join(downloads,'GemRate-Auto','pending'));
+ const retry=receiver.receive(root,store,downloads);assert.equal(retry.providerChecks,0,'idempotent transport is not a new observation');
+ assert.equal(retry.status,'review','review-only receipts are saved even when no reserved directory exists');
+ assert.equal(JSON.parse(fs.readFileSync(path.join(store,'last-browser-receipts.json'))).status,'review');
  console.log('PASS registered receipt filename, active-job-independent proof, bounded verified loose-receipt migration, original/gzip parity before cleanup, unrelated/conflicting files retained, real date/time and replay idempotence');
 }finally{assert.equal(path.dirname(path.resolve(tmp)),path.resolve(os.tmpdir()));assert(path.basename(tmp).startsWith('gemrate-receipt-filename-'));fs.rmSync(tmp,{recursive:true,force:true});}
