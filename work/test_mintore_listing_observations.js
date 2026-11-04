@@ -17,6 +17,8 @@ let [payload,views]=read('2026-11-03T09:00:00Z');assert.equal(views.psa10.mean30
 save('2026-11-04T08:00:00Z',{...original,snkPsa10Count:121,snkListings:144,price:0});
 [payload,views]=read('2026-11-04T09:00:00Z');assert.equal(views.psa10.current.lower,121);assert.equal(views.raw.current,null);assert.equal(views.raw.lastObserved.at,'2026-11-03T08:00:00Z');assert.equal(views.raw.mean30.days,2,'unpublished or carried fields cannot create a new observation day');assert.equal(payload.coverage.raw,0);
 assert.throws(()=>model.providerViews(payload,card,{catalogHash:'different'}),/版不一致/);
+const evidence=require('./mintore_listing_observations').publicationSummary(payload,{at:'2026-11-04T08:00:00Z',newPsa10Days:1,newRawDays:0},'2026-11-04T08:30:00Z','2026-11-04T09:00:00Z');
+assert.equal(evidence.acquiredThisRun,false);assert.equal(evidence.newPsa10CardDays,0,'publishing retained data is not a new acquisition/day');assert.equal(evidence.sourceUpdatedAt,null);
 assert.equal(save('2026-11-04T09:00:00Z',{...original,name:'スターミーV CSR 英語版 [S9a 083/067]'}).held,1);
 assert.throws(()=>capture(root,[card],new Map(),{...receipt('2026-11-04T08:00:00Z'),payloadHash:'_'.repeat(64)}),/evidence/);
 console.log('PASS actual-response provenance, Japanese exact identity, visible state gates, supported zero vs missing, 99+, same-day dedup, observed-only mean, no carried-date refresh, and catalog version binding');

@@ -715,10 +715,11 @@ async function updateTorecaCamp(cards, paths) {
   const alternateRequests=alternateCampIds(proactiveLead);
   const requestedTargets=read(path.join(__dirname,'search-profile-targets.json'),{});
   const criticalRequests=campCriticalIds(requestedTargets,read(path.join(__dirname,'priority-search-profiles.json'),{}).popFocusProfileIds||[]);
+  const medianCompletions=require('./profile_completion_routes').medianCompletionIds(requestedTargets,'torecacamp',read(path.join(__dirname,'priority-search-profiles.json'),{}).popFocusProfileIds||[]);
   const legacyRequested=campRequestedIds(requestedTargets,comparisonIds,alternateRequests);
   for(const id of legacyRequested)important.add(id);
   const legacyRecords=[];
-  if(!stoppingReason)for(const previousEntry of postpass.legacyTargets(catalog,legacyRequested,{...progress.knownUrlRetries,...progress.retryByUrl},Date.now(),proactiveLead,criticalRequests).slice(0,Math.floor(detailLimit/3))) {
+  if(!stoppingReason)for(const previousEntry of postpass.legacyTargets(catalog,legacyRequested,{...progress.knownUrlRetries,...progress.retryByUrl},Date.now(),proactiveLead,criticalRequests,medianCompletions).slice(0,Math.floor(detailLimit/3))) {
     if(Date.now()>=stopBy-Math.max(15000,runtimeLimitMs/2))break;
     const url=previousEntry.detailUrl,record={id:previousEntry.cardId,url,startedAt:new Date().toISOString(),sourceSitemap:null};
     try {
@@ -786,7 +787,7 @@ async function updateTorecaCamp(cards, paths) {
       const prioritized=!retryOnly&&!retrySitemap;
       if(prioritized) {
         const requested=campRequestedIds(read(path.join(__dirname,'search-profile-targets.json'),{}),comparisonIds,alternateRequests);
-        entries=postpass.prioritize(entries,normalStart,catalog.filter(r=>r.sourceSitemap<=sitemapUrls.length),[...new Set(requested)],detailLimit,progress.retryByUrl,Date.now(),proactiveLead,criticalRequests);
+        entries=postpass.prioritize(entries,normalStart,catalog.filter(r=>r.sourceSitemap<=sitemapUrls.length),[...new Set(requested)],detailLimit,progress.retryByUrl,Date.now(),proactiveLead,criticalRequests,medianCompletions);
       }
       const startingEntry=prioritized?0:normalStart;
       let retryEntryCursor = 0;
