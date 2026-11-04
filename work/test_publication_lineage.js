@@ -10,6 +10,10 @@ try{
   write('data/completion-outcomes.json',outcome);
   write('data/update-status.json',{unifiedMonitor:{outcomes:outcome}});
   const initial=p.snapshot(root);p.seal(root,initial);p.verify(root);
+  const prior=p.verify(root);
+  write('data/card-catalog-completion.json',{summary:{total:1,analyzable:1},unrelatedChange:true});
+  assert.throws(()=>p.seal(root,initial,{unchangedDerivedFrom:prior}),/financial summaries/,'a reference-only seal must not hide changed analysis');
+  write('data/card-catalog-completion.json',{summary:{total:1,analyzable:1}});
   write('data/completion-outcomes.json',{...outcome,previousObservation:{filledCards:0}});
   assert.throws(()=>p.verify(root),/monitor and downloadable/,'a second audit cannot silently replace published acquisition deltas');
   write('data/completion-outcomes.json',outcome);
