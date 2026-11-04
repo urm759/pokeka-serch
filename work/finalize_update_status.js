@@ -23,6 +23,7 @@ require('./build_linkage_evidence_audit').build(ROOT);
 require('./build_high_rarity_readiness').build(ROOT);
 const popCoverage=require('./build_psa_pop_glance').build(ROOT);
 const publicationLineage=require('./publication_lineage');
+require('./mintore_listing_observations').build(ROOT);
 const finalizedSourceSnapshot=publicationLineage.snapshot(ROOT);
 
 function read(relativePath, fallback = {}) {

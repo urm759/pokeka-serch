@@ -599,6 +599,9 @@ const startedAt = Date.now();
   changedIds.push(...removedIds);
   // This receipt is written only after parsing the actual price payload, not the HTML/304 gate.
   const observedSourceRows=new Map(pokemonSource.map(card=>[String(card.id),card]));
+  const listingCapture=require('./mintore_listing_observations').capture(resolveSiteRoot(),sitePokemon,observedSourceRows,
+    {observedAt:priceBatchObservedAt,sourceUrl,chunkUrl,payloadHash:contentHash(chunk)});
+  console.log('MINTORE_LISTINGS_RESULT '+JSON.stringify(listingCapture));
   const tradeReceipt=require('./domestic_trade_evidence').capture(sitePokemon,observedSourceRows,
     {observedAt:priceBatchObservedAt,sourceUrl,payloadHash:contentHash(chunk),completeCardList:true});
   require('./acquisition_retry').atomicWrite(path.join(base,'domestic-trade-source-audit.json'),tradeReceipt,0);
@@ -618,6 +621,7 @@ const startedAt = Date.now();
     fs.renameSync(receiptPath+'.tmp',receiptPath);
   }
   if (FAST_UPDATE && changedIds.length === 0) {
+    require('./mintore_listing_observations').build(resolveSiteRoot());
     console.log(`FAST_UPDATE_RESULT ${JSON.stringify({ changed: false, changedCards: 0, processedCards: sitePokemon.length, regeneratedFiles: 0, httpRequests: UPDATE_METRICS.httpRequests, cacheHits: UPDATE_METRICS.cacheHits, durationMs: Date.now() - startedAt, reason: "深掘り確認済み・新ID/価格変更なし", llmCalls: 0 })}`);
     return;
   }
@@ -698,6 +702,7 @@ const startedAt = Date.now();
     "utf8"
   );
   fs.writeFileSync(path.join(__dirname, "changed-card-ids.json"), JSON.stringify({ updatedAt: new Date().toISOString(), ids: [...new Set(changedIds)] }, null, 2), "utf8");
+  require('./mintore_listing_observations').build(resolveSiteRoot());
   if (FAST_UPDATE) {
     const committedCache = { ...gate.cache, [sourceUrl]: gate.pending };
     fs.writeFileSync(HTTP_CACHE_PATH, JSON.stringify(committedCache, null, 2), "utf8");
