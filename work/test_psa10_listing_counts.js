@@ -1,0 +1,13 @@
+const assert=require('assert/strict'),m=require('../psa10-listing-counts');
+const now=Date.parse('2026-11-04T08:00:00Z'),input={version:1,source:'SNKRDUNK',cardId:'fixture',identityKey:'ja/exact',language:'ja',grade:'PSA10',productId:'123',url:'https://snkrdunk.com/apparels/123/used?conditionIds=22',forSaleOnly:true,observedAt:'2026-11-04T07:00:00Z',coverage:'partial',rows:[{url:'/apparels/123/used/1',grade:'PSA10',active:true},{url:'/apparels/123/used/1',grade:'PSA10',active:true}]};
+const row=m.observe(input,now);assert.equal(row.lower,1);assert.equal(row.exact,false);assert.equal(row.duplicates,1);assert.equal(row.distinctIds.length,1);
+for(const patch of [{grade:'PSA9'},{active:false},{url:'/apparels/456/used/2'}])assert.throws(()=>m.observe({...input,rows:[{...input.rows[0],...patch}]},now));
+assert.throws(()=>m.observe({...input,rows:[]},now));assert.throws(()=>m.observe({...input,observedAt:'2026-11-05T00:00:00Z'},now));
+const zero=m.observe({...input,coverage:'complete',endConfirmed:true,rows:[]},now);assert.equal(zero.lower,0);assert(zero.exact);
+const capped=m.observe({...input,reportedCount:{value:99,exact:false}},now);assert.equal(capped.lower,99);assert.equal(m.text(capped),'99件以上');
+const old={...row,at:'2026-11-02T07:00:00Z',date:'2026-11-02',lower:3,exact:true},view=m.summarize([old,row,{...row,at:'2026-11-04T07:30:00Z'}],row.identityKey,now);
+assert.equal(view.mean30.lower,2);assert.equal(view.mean30.days,2,'one missing calendar day remains missing');assert.equal(view.mean30.exact,false);assert.equal(view.observedDays.length,2);assert(view.mean30.reference);
+assert.deepEqual(m.reasons(view,{}),[]);assert.deepEqual(m.reasons(view,{listingCurrentMin:0}),[]);assert(m.reasons(view,{listingCurrentMax:2}).some(r=>r.includes('判定不可')));assert.deepEqual(m.reasons(view,{listingCurrentMin:-1,listingMeanMax:NaN}),[]);assert.deepEqual(m.reasons(view,{listingCurrentMin:5,listingCurrentMax:2}),[],'invalid range is not an exclusion');
+assert(m.reasons(m.summarize([old],row.identityKey,now),{listingCurrentMin:0}).some(r=>r.includes('期限切れ')));
+assert.equal(m.summarize([row],'other-spec',now).current,null);
+console.log('PASS PSA10 active IDs, duplicates, no false zero, lower-bound99+, real JST days only, same-day dedup, stale/current vs 30-day mean and optional range filters');

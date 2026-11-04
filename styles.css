@@ -1818,3 +1818,5 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .stock-trend > strong.stock-decrease-fast { color:#ffb07c; }
 .stock-trend > strong.stock-unknown { color:#b8c7dc; }
 @media(max-width:600px){:is(.candidate-glance,.price-comparison-grid)>.price-cell:has(.stock-trend details[open]){grid-column:1/-1}}
+
+.quick-ratio-search{border:1px solid var(--line,#d5dbe1);border-radius:8px;padding:10px 12px;margin:8px 0}.quick-ratio-search>summary{font-weight:700;cursor:pointer}.quick-ratio-search .controls{padding-top:10px}.quick-ratio-search small{grid-column:1/-1;overflow-wrap:anywhere}

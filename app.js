@@ -32,6 +32,7 @@ let efficiencyViewCache = new WeakMap();
 const explorationFields = [
   ['psa9GuideMin','psa9GuideMin'],
   ['psa9RoiMin','psa9RoiMin'],
+  ...['listingCurrentMin','listingCurrentMax','listingMeanMin','listingMeanMax'].map(key=>[key,key]),
   ['purchaseMin','actualPurchaseMin'],['purchaseMax','actualPurchaseMax'],
   ['headroomMin','purchaseHeadroomMin'],['headroomMax','purchaseHeadroomMax'],
   ['buybackMaxMin','buybackHighestMin'],
@@ -264,6 +265,8 @@ const state = {
   psa9AboveGuide: false,
   psa9GuideMin: null,
   psa10PeriodSummary: null,
+  verifiedListingReferences: null,
+  verifiedListingStatus: "unrequested",
   buybackObservationSummary: null,
   includePeriodReference: true,
   minStressExpectedRoiFilter: 0,
@@ -1725,6 +1728,7 @@ function currentCapCsvFields(view) {
 }
 
 async function exportFavoritesCsv() {
+  await ensureVerifiedListingReferences(favoriteCards(),true);
   if(state.buybackStoreMode==='selected') await Promise.all(favoriteCards().map(card=>loadBuybackSupportDetail(card.id)));
   await Promise.all(favoriteCards().map(card=>loadRecentPsa9(card.id)));
   const cfg = guideConfig();
@@ -1760,6 +1764,7 @@ async function exportFavoritesCsv() {
   rows[0].push('最高買取倍率（減額前・選択受付）','最高提示店舗','最高提示受付','最高提示確認日時','同店・他カードの通常倍率（中央値）','通常倍率の比較枚数','最高買取倍率・下限条件','最高提示の価格日','倍率分母の相場確認日時','倍率比較の確認時差（時間）','全体平均買取倍率（同一店の有効な最高提示1件）','全体平均の採用店舗数','倍率の対象独立店舗数','倍率比較可能店舗数','相場以上の比較可能店舗数','掲載確認店舗数（倍率採用と別）','75日平均買取倍率（日次店舗間平均の観測日平均）','75日倍率の観測日数','75日倍率の期間日数','75日倍率の独立店舗数','75日倍率の最終観測日','75日倍率の参考区分','75日倍率の集計定義','直近比較成立時の参考最高倍率（現在検索不採用）','直近比較成立時の参考平均倍率','参考倍率の比較日','参考倍率の独立店舗数','参考最高の店舗','現在倍率の不足原因','全体平均倍率の下限条件','7日平均倍率の下限条件','30日平均倍率の下限条件','75日平均倍率の下限条件','倍率観測日数の下限条件','倍率の参考値採用','7日平均倍率（日次店舗間平均）','7日倍率の観測日数','7日倍率の最終確認日時','30日平均倍率（日次店舗間平均）','30日倍率の観測日数','30日倍率の最終確認日時','追加倍率検索の除外理由');
   rows[0].push('計算買値（検索・一覧共通）','計算買値の採用元','計算採用10率%','計算採用10率の出典','参考ガイド率%','参考ガイド出典');
   for(const d of [30,7])rows[0].push(`${d}日PSA9実成約平均（計算不採用）`,`${d}日PSA9採用成約件数`,`${d}日PSA9最終成約日時`,`${d}日PSA9対象期間`,`${d}日PSA9出典URL`,`${d}日PSA9平均の区分`);
+  rows[0].push('PSA10販売中・現在出品数（下限）','現在出品数・全件確認','出品数の実確認日時','現在出品数・期限切れ','30日平均出品数（下限）','平均出品数・全件確認','平均出品数の実観測日数','平均出品数の開始日','平均出品数の最終日','現在出品数の下限条件','現在出品数の上限条件','30日平均出品数の下限条件','30日平均出品数の上限条件','出品数読込状態');
   favoriteCards().forEach((rawCard,index)=>{
     const card = calc(rawCard), p = purchaseExploration(card), v = searchProfitView(card), c = postingCoverage(card);
     rows[index+1].push(p.price ?? '',p.headroom ?? '',v.purchasePrice ?? '',v.label,v.economics?.expectedProfit ?? '',v.psa10Roi ?? '',c.rate30 ?? '',c.averageShops30 ?? '',c.observedDays,c.retrievalCoverage ?? '',p.cap ?? '',p.warnings.join('／'),p.headroom == null ? p.reason : '');
@@ -1776,7 +1781,7 @@ async function exportFavoritesCsv() {
     rows[index+1].push(o?.days ?? '',o?.mean ?? '',o?.count ?? '',o ? o.days-(o.count ?? 0) : '',o?.latest || '',o ? '現在の国内PSA9・非10仮置き／PSA8以下未評価' : '',o?.unverifiedDays ?? '');
     const median=cardEfficiency(card,Date.now(),state.purchaseMode,state.efficiencyScenario,'median'), evidence=median.medianEvidence;
     rows[index+1].push(median.annual ?? '',cardEfficiency(card,Date.now(),state.purchaseMode,state.efficiencyScenario,'store').annual ?? '',evidence.count,evidence.independent,evidence.unknown,evidence.min ?? '',evidence.max ?? '',JSON.stringify(evidence.rows),median.reason || '');
-    rows[index+1].push(...buybackSupportCsvFields(card),...calculationBasisCsvFields(card,v),...recentPsa9CsvFields(card.id));
+    rows[index+1].push(...buybackSupportCsvFields(card),...calculationBasisCsvFields(card,v),...recentPsa9CsvFields(card.id),...verifiedListingCsvFields(card));
   });
   const csv = `\uFEFF${rows.map((row) => row.map(csvCell).join(",")).join("\r\n")}`;
   const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
@@ -4902,6 +4907,10 @@ function computeSearchAudit(cards, {includePresets=true} = {}) {
 let activeConditionElements = null;
 let activeConditionKey = null;
 function renderActiveFilters() {
+  const legacy=document.getElementById('legacyBuybackPostingDays');
+  if(legacy)legacy.hidden=!['buyback7','buyback30','buyback90'].some(prefix=>Number(document.getElementById(prefix+'MinInput')?.value)>0||parseOptionalNumber(document.getElementById(prefix+'MaxInput')?.value)!=null)&&parseOptionalNumber(document.getElementById('postingDaysMinInput')?.value)==null;
+  const ratios=document.getElementById('buybackRatioSearch');
+  if(ratios&&state.buyback75RatioMin!=null)ratios.open=true;
   const target = document.getElementById("activeFilterSummary");
   const controls = window.SearchControls;
   if (!target || !controls) return;
@@ -5320,7 +5329,46 @@ function prepareCalculatedCards(cards) {
 }
 
 function cardSearchExclusions(card, {mode = state.purchaseMode,diagnostic=true,efficiency=true} = {}) {
-  return renderValue(card, `exclusions:${mode}:${diagnostic}:${efficiency}`, () => computeCardSearchExclusions(card,{mode,diagnostic,efficiency}));
+  return renderValue(card, `exclusions:${mode}:${diagnostic}:${efficiency}`, () => {
+    const reasons=computeCardSearchExclusions(card,{mode,diagnostic,efficiency});
+    if(!(diagnostic&&normalize(state.q)&&state.diagnosticSearch))reasons.push(...verifiedListingExclusions(card));
+    return reasons;
+  });
+}
+const verifiedListingFields=['listingCurrentMin','listingCurrentMax','listingMeanMin','listingMeanMax'];
+let verifiedListingRequest=null,verifiedListingRevision=null;
+function verifiedListingView(card,now=Date.now()) {
+  const row=state.verifiedListingReferences?.cards?.[card.id];
+  return explorationMetrics.listingCounts.summarize(row&&row.identityKey===card.identityKey?row.observations:[],card.identityKey,now);
+}
+function verifiedListingExclusions(card) {
+  if(!verifiedListingFields.some(key=>Number.isFinite(state[key])&&state[key]>=0))return [];
+  if(!explorationMetrics.listingCounts)return ['PSA10出品数・計算モジュール読込不成立'];
+  if(state.verifiedListingStatus!=='ready')return ['PSA10出品数・'+(state.verifiedListingStatus==='failed'?'読込失敗':'読込待ち')];
+  return explorationMetrics.listingCounts.reasons(verifiedListingView(card),state);
+}
+function verifiedListingPanel(card) {
+  const v=verifiedListingView(card),m=explorationMetrics.listingCounts,status=state.verifiedListingStatus;
+  return '<div class="snkr-listing-panel"><div><span>PSA10・販売中の出品数</span><strong>'+m.text(v.current)+'</strong><small>'+(v.current?(v.current.stale?'期限切れ・過去観測':'実確認 '+escapeHtml(v.current.at)):'日次自動取得は利用条件確認待ち')+'</small></div><div><span>30日平均出品数</span><strong>'+m.text(v.mean30)+'</strong><small>'+(v.mean30?'観測'+v.mean30.days+'/30日・'+(v.mean30.reference?'参考平均':'全日観測')+'／'+v.mean30.start+'〜'+v.mean30.end:'実観測履歴なし')+'</small></div></div><small>'+(status==='failed'?'読込失敗。未取得や0件へ置換しません。':'出品IDの件数で、カード枚数・成約数ではありません。欠測は0にしません。')+'</small>';
+}
+function verifiedListingCsvFields(card) {
+  const v=verifiedListingView(card);return [v.current?.lower??'',v.current?.exact??'',v.current?.at||'',v.current?.stale??'',v.mean30?.lower??'',v.mean30?.exact??'',v.mean30?.days??'',v.mean30?.start||'',v.mean30?.end||'',...verifiedListingFields.map(key=>state[key]??''),state.verifiedListingStatus];
+}
+async function ensureVerifiedListingReferences(cards,force=false) {
+  if(!force&&!verifiedListingFields.some(key=>state[key]!=null)&&!document.querySelector('[data-verified-listings]'))return;
+  const revision=uiDataManifest?.revision||'legacy';
+  if(verifiedListingRevision!==revision){verifiedListingRevision=revision;verifiedListingRequest=null;state.verifiedListingReferences=null;state.verifiedListingStatus='unrequested';}
+  if(!verifiedListingRequest){state.verifiedListingStatus='loading';verifiedListingRequest=fetchJsonMaybe('./data/verified-psa10-listings.json',{detail:true,affectsCalculation:false}).then(data=>{
+    if(data?.version!==1||data.source!=='SNKRDUNK'||data.scope!=='same-japanese-print-PSA10-for-sale-listing-ids'||!data.cards||Array.isArray(data.cards))throw Error('PSA10出品数・仕様不一致');
+    if(verifiedListingRevision===revision){state.verifiedListingReferences=data;state.verifiedListingStatus='ready';}
+  }).catch(()=>{if(verifiedListingRevision===revision)state.verifiedListingStatus='failed';});
+  await verifiedListingRequest;
+  if(verifiedListingRevision!==revision)return;
+  if(verifiedListingFields.some(key=>state[key]!=null)){renderContent();return;}
+  }
+  await verifiedListingRequest;
+  const byId=new Map(cards.map(c=>[c.id,c]));
+  for(const el of document.querySelectorAll('[data-verified-listings]')){const card=byId.get(el.dataset.verifiedListings);if(card)window.KeyedCardRenderer.replaceContent(el,verifiedListingPanel(card));}
 }
 function observationSearchExclusions(card) {
   return renderValue(card,'observation-exclusions',()=>explorationMetrics.observationExclusions(state.psa10PeriodSummary,card,state));
@@ -5824,6 +5872,7 @@ function renderContent() {
   const calculationMs = performance.now() - renderStarted;
   renderMemo = searchMemoFor(calculated);
   ensureSelectedBuybackPeriods(calculated);
+  void ensureVerifiedListingReferences(calculated);
   const filteringStarted = performance.now();
   if (auditIsOpen(els.limitModelAudit)) {
     state.limitModelAudit = buildLimitModelAudit(calculated);
@@ -6277,13 +6326,8 @@ function renderContent() {
         </div>
       </details>` : "";
     const snkrListing = card.snkrListing || null;
-    const snkrListingPanel = `
-      <div class="snkr-listing-panel">
-        <div><span>スニダンPSA10 現在出品数</span><strong>${Number.isFinite(snkrListing?.current) ? `${fmt.format(snkrListing.current)}件` : "未取得"}</strong><small>成約数とは別指標</small></div>
-        <div><span>7日前比</span><strong>${Number.isFinite(snkrListing?.change7) ? `${snkrListing.change7 >= 0 ? "+" : ""}${fmt.format(snkrListing.change7)}件` : "蓄積中"}</strong><small>${escapeHtml(snkrListing?.previous7Date || "比較日未到達")}</small></div>
-        <div><span>30日前比</span><strong>${Number.isFinite(snkrListing?.change30) ? `${snkrListing.change30 >= 0 ? "+" : ""}${fmt.format(snkrListing.change30)}件` : "蓄積中"}</strong><small>${escapeHtml(snkrListing?.previous30Date || "比較日未到達")}</small></div>
-        <div><span>出品最安値</span><strong>${Number.isFinite(snkrListing?.listingFloor) ? `¥${fmt.format(snkrListing.listingFloor)}` : "未取得"}</strong><small>${snkrListing?.status === "判定可" ? "供給評価に使用" : "履歴蓄積中のため参考表示"}</small></div>
-      </div>`;
+    const snkrListingPanel = '<section data-verified-listings="'+escapeHtml(card.id)+'">'+verifiedListingPanel(card)+'</section>'+
+      (snkrListing?'<details><summary>旧出品集計・PSA10販売中限定は未確認</summary><small>提供元集計 '+(Number.isFinite(snkrListing.current)?fmt.format(snkrListing.current)+'件':'未取得')+'。今回の出品数表示・範囲検索へ代用しません。既存の分析採用は変更していません。</small></details>':'');
     const dataQuality = card.dataQuality || {};
     const dataQualityPanels = [
       dataQuality.manualReview ? `<div class="data-quality-notice manual"><strong>要確認（手動確認）</strong><span>${escapeHtml(dataQuality.manualReviewReasons.join(" / "))}</span></div>` : "",
@@ -6833,6 +6877,7 @@ function renderContent() {
   committed.changed.forEach((el) => observer.observe(el));
   void ensureOverseasGlance(visibleCards);
   void ensureGemRateReference(visibleCards).then(()=>ensurePsaPopGlance(visibleCards));
+  void ensureVerifiedListingReferences(visibleCards);
   committed.changed.forEach(bindPsaHistoryDetails);
   committed.changed.flatMap(el => [...el.querySelectorAll('[data-card-detail]')]).forEach(details => {
     details.addEventListener('toggle', async () => {
@@ -7024,7 +7069,10 @@ function assertCalculationDependencies() {
     'LimitDisplayModel.classifyCap':limitDisplayModel?.classifyCap,
     'CurrentMarketModel.assertDependencies':currentMarketModel?.assertDependencies,
     'PurchaseRatioModel.marketplaceAtGuide':purchaseRatioModel?.marketplaceAtGuide,
-    'PurchaseRatioModel.guideSearchReasons':purchaseRatioModel?.guideSearchReasons};
+    'PurchaseRatioModel.guideSearchReasons':purchaseRatioModel?.guideSearchReasons,
+    'Psa10ListingCounts.summarize':explorationMetrics?.listingCounts?.summarize,
+    'Psa10ListingCounts.reasons':explorationMetrics?.listingCounts?.reasons,
+    'Psa10ListingCounts.text':explorationMetrics?.listingCounts?.text};
   const missing=Object.keys(required).filter(name=>typeof required[name]!=='function');
   if(missing.length){const error=new Error('計算モジュールの読込失敗・版不一致：'+missing.join('／')+'。再読み込みしてください。');error.code='CALCULATION_DEPENDENCY_UNAVAILABLE';throw error;}
   currentMarketModel.assertDependencies();

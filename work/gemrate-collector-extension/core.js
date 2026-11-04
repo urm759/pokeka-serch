@@ -32,6 +32,10 @@
     const t=Date.parse(download.startTime)-Date.parse(job.exportRequestedAt);
     return t>=-1000&&t<=120000&&String(download.url).startsWith('blob:'+ORIGIN+'/')&&/\.csv$/i.test(download.filename||'');
   }
+  function receiptFilename(item,intents={}){
+    const r=Object.values(intents).find(r=>r.url===item.url);
+    return r&&/^GemRate-Auto\/pending\/[0-9a-f]{8}-[0-9a-f-]{27}\/receipt\.json$/.test(r.filename)?r.filename:null;
+  }
   function readPage(){
     const text=document.body?.innerText||'';
     if(/captcha|access denied|403 forbidden|attention required|sign in to continue/i.test(text.slice(0,4000)))return {error:'access-page-visible'};
@@ -43,5 +47,5 @@
     if(!updated||!count||!document.getElementById('csv_download'))return {error:'page-not-ready'};
     return {url:location.href,grader:value('grader'),category:value('category'),year:Number(value('year')),set:value('set_name'),language:'Japanese',updated,checkedAt:new Date().toISOString(),csvRows:Number(count.replaceAll(',','')),setTotals:{psa10:number(/Total Gems\s*([\d,]+)/),total:number(/Total Grades\s*([\d,]+)/)}};
   }
-  const api={day,url,samePage,groups,choose,decide,claim,readPage,DAY};if(typeof module==='object')module.exports=api;else root.GemRateCollector=api;
+  const api={day,url,samePage,groups,choose,decide,claim,receiptFilename,readPage,DAY};if(typeof module==='object')module.exports=api;else root.GemRateCollector=api;
 })(typeof self==='object'?self:globalThis);
