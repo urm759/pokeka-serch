@@ -118,4 +118,15 @@ function prospectPlan(card,fields,{shops={},linkage={},psaProgress={},psaAccess=
   return {requirements,allRequiredPathsAutomatic:requirements.every(r=>r.automatic),blockedFields:requirements.filter(r=>!r.automatic).map(r=>r.field),
     note:'全経路が自動でも値の存在・指定条件への適合は未確定。未掲載や0件は不足を取得済みへ置換しない'};
 }
-module.exports={buybackState,prospectPlan,requestForSource,minimalMedian};
+function medianCompletionIds(targets,source,focusIds=[]){
+  const allowed=new Set(focusIds.flatMap(id=>[id,id+'-median'])),ids=[];
+  for(const p of targets.profiles||[]){
+    if(allowed.size&&!allowed.has(p.id))continue;
+    for(const r of p.prospects||[]){
+      if(r.missing?.length!==1||r.missing[0]!=='referenceMedian'||!(r.reasons||[]).every(reason=>/中央値|独立|資金効率算出不可/.test(reason)))continue;
+      const required=r.completionPlan?.requirements||[];
+      if(required.length===1&&required[0].automatic===true&&required[0].remainingIndependent===1&&required[0].targets?.some(t=>t.source===source))ids.push(r.id);
+    }
+  }return [...new Set(ids)];
+}
+module.exports={buybackState,prospectPlan,requestForSource,minimalMedian,medianCompletionIds};

@@ -21,7 +21,14 @@ function checkpoint(progress,total) {
     cycles:previous.cycles+Number(wrapped),checkedAt:new Date().toISOString()};
   if (wrapped) { progress.currentSitemapIndex=0; progress.currentEntryIndex=0; }
 }
-function prioritize(entries,start,catalog,requested,detailLimit,retries={},now=Date.now(),leadMs=0,criticalIds=[]) {
+function completionOrder(rows,criticalIds,completionIds){
+  if(!completionIds.length)return rows;
+  const critical=new Set(criticalIds),completion=new Set(completionIds),a=rows.filter(r=>critical.has(r.cardId)),b=rows.filter(r=>!critical.has(r.cardId)&&completion.has(r.cardId)),c=rows.filter(r=>!critical.has(r.cardId)&&!completion.has(r.cardId)),out=[];
+  // One of four selected priority slots can finish a missing second source.
+  // Other priority maintenance and the separate normal exploration half remain.
+  while(a.length||b.length||c.length){const lane=out.length%4===3&&b.length?b:a.length?a:b.length?b:c;out.push(lane.shift());}return out;
+}
+function prioritize(entries,start,catalog,requested,detailLimit,retries={},now=Date.now(),leadMs=0,criticalIds=[],completionIds=[]) {
   const normal=entries.slice(start).map((r,i)=>({...r,normalIndex:start+i}));
   const front=new Set(normal.slice(0,Math.ceil(detailLimit/2)).map(r=>r.url));
   const order=new Map(requested.map((id,i)=>[id,i]));
@@ -35,21 +42,22 @@ function prioritize(entries,start,catalog,requested,detailLimit,retries={},now=D
   // When overdue priority work exceeds its old share, use the selected half
   // for it. The other half remains ordinary sitemap exploration; no extra GETs.
   const priorityBudget=urgent.length>usualPriority?Math.min(budget,urgent.length):usualPriority;
-  const chosen=[...urgent.slice(0,priorityBudget),...routine.slice(0,budget-Math.min(priorityBudget,urgent.length))];
-  if(chosen.length<budget)chosen.push(...urgent.slice(priorityBudget,priorityBudget+budget-chosen.length));
+  const ordered=completionOrder(urgent,criticalIds,completionIds);
+  const chosen=[...ordered.slice(0,priorityBudget),...routine.slice(0,budget-Math.min(priorityBudget,urgent.length))];
+  if(chosen.length<budget)chosen.push(...ordered.slice(priorityBudget,priorityBudget+budget-chosen.length));
   const selected=chosen.map(r=>({url:r.detailUrl,title:r.title,handle:r.detailUrl.split('/').pop(),sourceSitemap:r.sourceSitemap,priorityRefresh:true}));
   const moved=new Set(selected.map(r=>r.url)),remaining=normal.filter(r=>!moved.has(r.url));
   const result=[];let n=0,p=0;
   while(n<remaining.length||p<selected.length){if(n<remaining.length)result.push(remaining[n++]);if(p<selected.length)result.push(selected[p++]);}
   return result;
 }
-function legacyTargets(catalog,requested,retries={},now=Date.now(),leadMs=0,criticalIds=[]) {
+function legacyTargets(catalog,requested,retries={},now=Date.now(),leadMs=0,criticalIds=[],completionIds=[]) {
   const order=new Map(requested.map((id,i)=>[id,i]));
   const critical=new Set(criticalIds);
-  return catalog.filter(r=>order.has(r.cardId)&&!Number.isInteger(r.sourceSitemap)&&!r.priceQuarantined
+  return completionOrder(catalog.filter(r=>order.has(r.cardId)&&!Number.isInteger(r.sourceSitemap)&&!r.priceQuarantined
     &&/^https:\/\/torecacamp-pokemon\.com\/products\/[a-zA-Z0-9_%~-]+$/.test(r.detailUrl||'')
     &&due(r,true,now,leadMs)&&require('./acquisition_retry').eligible(retries[r.detailUrl],now))
-    .sort((a,b)=>Number(critical.has(b.cardId))-Number(critical.has(a.cardId))||(Date.parse(a.observedAt)||0)-(Date.parse(b.observedAt)||0)||order.get(a.cardId)-order.get(b.cardId));
+    .sort((a,b)=>Number(critical.has(b.cardId))-Number(critical.has(a.cardId))||(Date.parse(a.observedAt)||0)-(Date.parse(b.observedAt)||0)||order.get(a.cardId)-order.get(b.cardId)),criticalIds,completionIds);
 }
 function priorityMaintenance(catalog,requested,progress={},run={},now=Date.now(),leadMs=0) {
   const retry=require('./acquisition_retry');

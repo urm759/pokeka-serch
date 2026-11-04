@@ -24,6 +24,9 @@ function coherent(read){
   same(status.unifiedMonitor.outcomes,outcomes,'monitor and downloadable outcomes');
   same([completion.summary.total,completion.summary.analyzable],
     [outcomes.counts.listed,outcomes.counts.analyzable],'catalog and outcome counts');
+  const catalog=parse('data/pokemon-cards.json'),priceAudit=parse('data/state-a-price-audit.json'),priceEvidence=parse('data/state-a-price-evidence.json');
+  if(Array.isArray(catalog)&&priceAudit&&priceEvidence&&Object.values(completion.cards||{}).some(r=>r.i)
+    &&require('./completion_price_consistency').mismatches(catalog,completion,priceAudit,priceEvidence).length)throw Error('Publication version mismatch: completion and price-audit inputs');
   return true;
 }
 function snapshot(root){return hashes(reader(root),SOURCES);}
