@@ -14,6 +14,11 @@ try{
  const indexBefore=git(['diff','--cached','--name-only']),head=git(['rev-parse','HEAD']),status=git(['status','--porcelain']);
  reference.cards['test-0'][1]=9;reference.cards['test-0'][3]='2026-10-31';write(checkpoint.FILES[0],reference);
  const first=checkpoint.push(root,store);assert.equal(first.queued,true);assert.deepEqual(first.changed,[checkpoint.FILES[0]]);
+ const consumer=path.join(temp,'consumer');fs.mkdirSync(consumer);git(['init','--quiet'],consumer);git(['remote','add','origin',remote],consumer);
+ const tip='refs/remotes/origin/codex/gemrate-reference-data';
+ git(['fetch','--no-tags','--depth=1','origin','codex/gemrate-reference-data:'+tip],consumer);
+ assert.equal(git(['rev-list','--count',tip],consumer),'1','reference consumer needs only one source commit');
+ for(const file of checkpoint.FILES)assert.deepEqual(JSON.parse(git(['show',tip+':'+file],consumer)),JSON.parse(git(['show',first.commit+':'+file])),'bounded fetch retains exact validation inputs');
  assert.equal(git(['rev-parse','HEAD']),head);assert.equal(git(['diff','--cached','--name-only']),indexBefore,'user staging untouched');
  assert.equal(git(['show',first.commit+':private.csv']),'do-not-publish');assert.throws(()=>git(['show',first.commit+':unrelated-code.js']));
  assert.equal(checkpoint.push(root,store).status,'already-queued','unchanged CSV must not create repeated checkpoints');
