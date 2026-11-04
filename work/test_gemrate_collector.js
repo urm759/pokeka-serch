@@ -3,6 +3,11 @@ const core=require('./gemrate-collector-extension/core'),receiver=require('./gem
 const at='2026-11-04T03:00:00Z',set={setCode:'S8B',set:'Pokemon Japanese Sword & Shield Vmax Climax',year:2021,language:'Japanese',grader:'PSA',denominator:184,reviewedAt:'2026-11-04',officialSetUrl:'https://www.pokemon-card.com/ex/s8b/index.html',cards:132,baselineDate:'2026-10-31'};
 const page={url:core.url(set),grader:'psa',category:'tcg-cards',year:2021,set:set.set,language:'Japanese',updated:'2026-10-31',checkedAt:at,csvRows:2,setTotals:{psa10:3,total:4}};
 assert.equal(core.day('2026-11-03T15:00:00Z'),'2026-11-04');
+const rootScope=require('./gemrate-reviewed-sets.json'),collectionScope=require('./gemrate-collection-sets.json'),realReferences=require('../data/gemrate-reference-summary.json');
+const allSets=core.groups(rootScope,realReferences,collectionScope);
+assert.equal(allSets.length,rootScope.sets.length+collectionScope.sets.length);assert(allSets.find(s=>s.setCode==='S6A').cards>0,'legacy S6A has its own daily collection slot without approving new prints');
+assert.equal(allSets.reduce((n,s)=>n+s.cards,0),Object.keys(realReferences.cards).length);
+assert.throws(()=>core.groups(rootScope,realReferences,{version:1,sets:[rootScope.sets[0]]}),/重複/);
 assert.equal(core.decide(set,null,page).exportCsv,false,'unchanged provider date never exports');
 assert.equal(core.decide(set,null,{...page,updated:'2026-11-01'}).newSourceDate,true);
 assert(core.decide(set,null,page,{testExport:true}).exportCsv,'explicit one-time route test is separate');
@@ -35,6 +40,7 @@ try{
   assert.equal(receiver.receive(root,store,downloads).queuedCsv,0,'completed transport cannot become new data');
   assert.throws(()=>receiver.validate({...meta,download:{...meta.download,referrer:'https://example.invalid/'}},csv,root),/association/);
   assert.throws(()=>receiver.validate({...meta,page:{...page,language:'English'}},csv,root),/context/);
+  assert.throws(()=>receiver.validate({...meta,page:{...page,setTotals:{psa10:4,total:4}}},csv,root),/totals/);
   const matcher=require('./gemrate_identity_match');assert.equal(matcher.decodeName('Adventurer&#x27;s &amp; Trainer&#39;s'),"Adventurer's & Trainer's");assert.equal(matcher.decodeName('N &unknown;'),'N &unknown;');
   const card={id:'x',name:'冒険家の発見 SR[S8b 267/184]',language:'ja',identityKey:'exact'};
   const row={'Card #':'267',Name:"Full Art/Adventurer's Discovery",Parallel:'Base'};
