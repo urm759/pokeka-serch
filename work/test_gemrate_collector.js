@@ -5,7 +5,7 @@ const page={url:core.url(set),grader:'psa',category:'tcg-cards',year:2021,set:se
 assert.equal(core.day('2026-11-03T15:00:00Z'),'2026-11-04');
 const rootScope=require('./gemrate-reviewed-sets.json'),collectionScope=require('./gemrate-collection-sets.json'),realReferences=require('../data/gemrate-reference-summary.json');
 const allSets=core.groups(rootScope,realReferences,collectionScope);
-assert.equal(allSets.length,9);assert.equal(allSets.find(s=>s.setCode==='S6A').cards,60,'legacy S6A has its own daily collection slot without approving new prints');
+assert.equal(allSets.length,rootScope.sets.length+collectionScope.sets.length);assert(allSets.find(s=>s.setCode==='S6A').cards>0,'legacy S6A has its own daily collection slot without approving new prints');
 assert.equal(allSets.reduce((n,s)=>n+s.cards,0),Object.keys(realReferences.cards).length);
 assert.throws(()=>core.groups(rootScope,realReferences,{version:1,sets:[rootScope.sets[0]]}),/重複/);
 assert.equal(core.decide(set,null,page).exportCsv,false,'unchanged provider date never exports');

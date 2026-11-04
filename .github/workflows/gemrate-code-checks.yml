@@ -1,0 +1,33 @@
+name: GemRate Code Checks
+on:
+  pull_request:
+    paths:
+      - 'work/gemrate*.js'
+      - 'work/gemrate*.json'
+      - 'work/run_gemrate*.js'
+      - 'work/test_gemrate*.js'
+      - 'work/gemrate-collector-extension/**'
+      - '.github/workflows/gemrate-code-checks.yml'
+permissions:
+  contents: read
+jobs:
+  related-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - name: Offline receipt and exact-identity regressions
+        run: |
+          node --check work/gemrate-collector-extension/service-worker.js
+          node work/test_gemrate_collector.js
+          node work/test_gemrate_identity_match.js
+          node work/test_gemrate_confirmed_links.js
+          node work/test_gemrate_private_inbox.js
+          node work/test_gemrate_reference_refresh.js
+          node work/test_gemrate_multiset.js
+          node work/test_gemrate_pop_history.js
+          node work/test_gemrate_worker.js
+          node work/test_gemrate_reference_checkpoint.js
