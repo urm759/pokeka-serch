@@ -5641,7 +5641,7 @@ function inventoryMovementMarkup(sources, now = Date.now()) {
   const reasons={missingQuantity:'数量欠測',missingDays:'欠測日あり',missingEvidence:'商品根拠不足',changedProduct:'商品URL変更',changedSpecification:'仕様変更',invalidEvidenceTime:'観測日時不一致'};
   const details=sources.map(([name,r])=>{
     const date=r?.stockStatistics?.asOfDate||r?.stockTrend?.[0]||'未取得';
-    return '<div class="stock-flow-source"><small><b>'+escapeHtml(name)+'</b>：'+(Number.isFinite(r?.stock)?'実在庫 '+amount(r.stock):'在庫有無のみ／枚数未提供')
+    return '<div class="stock-flow-source"><small><b>'+escapeHtml(name)+'</b>：'+(Number.isFinite(r?.stock)?'保存数量 '+amount(r.stock):typeof r?.available==='boolean'?'在庫有無のみ／枚数未提供':'数量未取得')
       +'・集計基準日 '+escapeHtml(date)+'・実確認 '+escapeHtml(r?.inventoryObservedAt||r?.observedAt||'未取得')+'</small>'
       +[7,30].map(d=>{
         const f=r?.stockFlow?.[d];

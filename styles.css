@@ -1817,3 +1817,4 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .stock-trend > strong.stock-decrease { color:#f7d28b; }
 .stock-trend > strong.stock-decrease-fast { color:#ffb07c; }
 .stock-trend > strong.stock-unknown { color:#b8c7dc; }
+@media(max-width:600px){:is(.candidate-glance,.price-comparison-grid)>.price-cell:has(.stock-trend details[open]){grid-column:1/-1}}
