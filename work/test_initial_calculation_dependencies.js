@@ -10,18 +10,19 @@ const app=fs.readFileSync(path.join(__dirname,'../app.js'),'utf8'),html=fs.readF
 const bindings=app.split('// Browser event bindings start here;')[0];
 function context(overrides={}){let fetched=0;const w={PurchaseDecisionModel:require('../decision-model'),PurchaseRatioModel:require('../purchase-ratio-model'),LimitDisplayModel:require('../limit-display-model'),CurrentMarketModel:require('../current-market-model'),ExplorationMetrics:require('../exploration-metrics'),...overrides};const ctx=vm.createContext({window:w,document:{getElementById:()=>null,querySelectorAll:()=>[]},console,URL,URLSearchParams,setTimeout,clearTimeout,fetch:()=>{fetched++;throw Error('test must fail before data loading')}});vm.runInContext(bindings+';globalThis.boot={init,check:assertCalculationDependencies};',ctx);return{ctx,get fetched(){return fetched}};}
 (async()=>{context().ctx.boot.check();
- for(const patch of [{PurchaseDecisionModel:{}},{LimitDisplayModel:undefined},{LimitDisplayModel:{}},{CurrentMarketModel:{}},{PurchaseRatioModel:{}}]){
+ for(const patch of [{PurchaseDecisionModel:{}},{LimitDisplayModel:undefined},{LimitDisplayModel:{}},{CurrentMarketModel:{}},{PurchaseRatioModel:{}},{ExplorationMetrics:{}}]){
   const c=context(patch);await assert.rejects(c.ctx.boot.init(),e=>e.code==='CALCULATION_DEPENDENCY_UNAVAILABLE');assert.equal(c.fetched,0,'failed dependencies must not load data or produce partial candidates');
  }
  const linked=[...html.matchAll(/<script\s+src="\.\/([^?]+)\?v=([^"]+)"([^>]*)><\/script>/g)];
  const names=linked.map(m=>m[1]);assert(names.indexOf('limit-display-model.js')<names.indexOf('current-market-model.js'));assert(names.indexOf('current-market-model.js')<names.indexOf('app.js'));
  const attributes=fs.readFileSync(path.join(__dirname,'../.gitattributes'),'utf8');
- for(const file of ['decision-model.js','exploration-metrics.js','limit-display-model.js','current-market-model.js','purchase-ratio-model.js','search-controls.js','app.js']){
+ for(const file of ['decision-model.js','exploration-metrics.js','limit-display-model.js','current-market-model.js','purchase-ratio-model.js','search-controls.js','app.js','psa10-listing-counts.js']){
   const tag=linked.find(m=>m[1]===file);assert(tag,file);assert(!/\b(?:async|defer)\b/.test(tag[3]));
   const integrity=tag[3].match(/integrity="([^"]+)"/)?.[1];assert.equal(integrity,'sha384-'+crypto.createHash('sha384').update(fs.readFileSync(path.join(__dirname,'..',file))).digest('base64'),file+' exact asset version');
-  assert.equal(tag[2],['app.js','exploration-metrics.js'].includes(file)?'20261104-stock-flow':'20261101-guide80-stock');
+  assert.equal(tag[2],['app.js','exploration-metrics.js','search-controls.js','psa10-listing-counts.js'].includes(file)?'20261104-active-listings':'20261101-guide80-stock');
   assert(attributes.split(/\r?\n/).includes(file+' text eol=lf'),file+' must keep integrity bytes on Windows checkouts');
  }
+ assert(names.indexOf('psa10-listing-counts.js')<names.indexOf('exploration-metrics.js'),'shared listing calculations load before the optional search facade');
  const pop=linked.find(m=>m[1]==='gemrate-pop-model.js');assert(pop);assert(names.indexOf('gemrate-pop-model.js')<names.indexOf('app.js'));
  assert.equal(pop[3].match(/integrity="([^"]+)"/)?.[1],'sha384-'+crypto.createHash('sha384').update(fs.readFileSync(path.join(__dirname,'../gemrate-pop-model.js'))).digest('base64'));
  console.log('PASS cold dependency validation, simulated missing/old/out-of-order modules, explicit stop before any data load, ordered scripts and pinned integrity hashes; original user event cause remains unconfirmed');

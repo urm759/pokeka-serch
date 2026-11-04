@@ -25,7 +25,7 @@ const archive=JSON.parse(saved['pokeka-quick-filter-preferences-v1:two-modes-v1'
 const html=fs.readFileSync('index.html','utf8');assert.deepEqual([...html.matchAll(/data-preset="([^"]+)"/g)].map(m=>m[1]),['combined','specified']);
 console.log('PASS two modes: no implicit gates, enabled/missing vs disabled, strict identity, migration/archive and saved mode');
 const config=require('./priority-search-profiles.json'),variants=require('./search_profile_variants');
-const originals=variants.allProfiles(config),modes=variants.searchModeProfiles(config);assert.equal(modes.length,4);
+const originals=variants.allProfiles(config),modes=variants.searchModeProfiles(config);assert.equal(modes.length,originals.length*2,'every retained profile has both modes, including the newer exact URLs');
 for(const p of originals){const variant=modes.find(r=>r.siteProfileId===p.id);assert(variant);assert.equal(new URL(variant.url).searchParams.get('preset'),'specified');}
 delete saved['pokeka-quick-filter-preferences-v1'];
 context.window.location.href='https://example.test/?preset=specified';a.readUrl();

@@ -23,6 +23,7 @@ jobs:
         run: |
           node --check work/gemrate-collector-extension/service-worker.js
           node work/test_gemrate_collector.js
+          node work/test_gemrate_receipt_filename.js
           node work/test_gemrate_identity_match.js
           node work/test_gemrate_confirmed_links.js
           node work/test_gemrate_private_inbox.js
