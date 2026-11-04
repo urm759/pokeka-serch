@@ -43,10 +43,17 @@ function reuseInputs(root){
     'shop_buyback_catalog','priority_psa_rows','snkr_english_names'].map(n=>'work/'+n+'.json')])].sort();
   return digest(JSON.stringify(hashes(read,files)));
 }
-function seal(root,expected){
+function seal(root,expected,{unchangedDerivedFrom=null}={}){
   const read=reader(root);coherent(read);
   same(snapshot(root),expected,'sources changed during finalization');
-  const result={version:1,sources:expected,derived:hashes(read,DERIVED),generationCode:generationCode(root),reuseInputs:reuseInputs(root)};
+  const derived=hashes(read,DERIVED);
+  if(unchangedDerivedFrom){
+    if(unchangedDerivedFrom.version!==1||typeof unchangedDerivedFrom.generationCode!=='string')throw Error('Invalid inherited generation evidence');
+    same(unchangedDerivedFrom.sources,expected,'reference update changed source inputs');
+    same(unchangedDerivedFrom.derived,derived,'reference update changed financial summaries');
+  }
+  // A display-only projection must not certify that unrelated summaries ran new code.
+  const result={version:1,sources:expected,derived,generationCode:unchangedDerivedFrom?unchangedDerivedFrom.generationCode:generationCode(root),reuseInputs:reuseInputs(root)};
   const target=path.join(root,FILE);fs.writeFileSync(target+'.tmp',JSON.stringify(result));fs.renameSync(target+'.tmp',target);
   return result;
 }

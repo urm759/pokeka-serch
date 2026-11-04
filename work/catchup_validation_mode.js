@@ -4,6 +4,7 @@ function decide(root,now=Date.now()){
   let saved;
   try{saved=lineage.verify(root);if(!saved)return {mode:'rebuild',reason:'保存済み集計の版根拠なし・取得前に再検証'};}
   catch(error){return {mode:'rebuild',reason:error.message};}
+  if(require('./stock_history_statistics').needsReconcile(root))return {mode:'rebuild',reason:'在庫純増減の要約版が旧版。保存履歴を再集計し、新規取得と確認日時の更新はしない'};
   if(saved.reuseInputs&&saved.reuseInputs!==lineage.reuseInputs(root))return {mode:'rebuild',reason:'保存原票・平均・費用・計算入力が変更済み。再取得せず先に集計/公開を復旧'};
   const prior=read('data/priority-price-execution.json');
   const gate={...require('./price_refresh_gate').decision(prior,now,true),previousRefreshExecutionStartedAt:prior.startedAt||null,evaluatedAt:new Date(now).toISOString()};

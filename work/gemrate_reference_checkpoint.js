@@ -40,7 +40,7 @@ function apply(root=ROOT,ref='refs/remotes/origin/'+BRANCH){
  if(superseded(current,data[0]))return {changed:false,status:'superseded-checkpoint',sourceAcquisitions:0,calculationAdopted:0,references:Object.keys(current.cards).length};
  validateTransition(current,data[0]);
  let changed=false;for(let i=0;i<FILES.length;i++){const f=path.join(root,FILES[i]);if(!fs.existsSync(f)||JSON.stringify(JSON.parse(fs.readFileSync(f)))!==JSON.stringify(data[i])){require('./acquisition_retry').atomicWrite(f,data[i],0);changed=true;}}
- if(changed){require('./focus_pop_priority').build(root);require('./publication_lineage').seal(root,old.sources);require('./build_ui_data').build(root);}
+ if(changed){require('./focus_pop_priority').build(root);require('./publication_lineage').seal(root,old.sources,{unchangedDerivedFrom:old});require('./build_ui_data').build(root);}
  return {changed,sourceAcquisitions:0,calculationAdopted:0,references:Object.keys(data[0].cards).length};
 }
 function validateTransition(current,incoming){
