@@ -92,6 +92,7 @@ function markupCacheFor(cards,now=Date.now()) {
 let favoriteCalculationCache = null;
 let uiDataManifest = null;
 let uiDataInvalid = false;
+let uiDataError = null;
 const uiFetchCache = new Map();
 const uiLoadMetrics = [];
 const computationFields = ["fee","psaPlan","psaHandlingFee","guideMode","psaCapital","lockedCapital","lockDays","minExpectedProfit","minExpectedRoi","minAnnualEfficiency","maxCapitalShare","submissionCount","gradingReserve","saleFeeRate","saleExtraCost","buybackDeductionRate","exitPolicy","buybackStoreMode","selectedBuybackStores","storeTravelCost","snkrRawFeeRate","snkrRawShipping","snkrRawOtherCost","snkrRawMaxAgeHours"];
@@ -3538,7 +3539,8 @@ async function fetchJsonMaybe(url, { detail = false, affectsCalculation = true }
   } catch (error) {
     if (uiDataManifest?.hashes?.[file]) {
       uiDataInvalid = true;
-      failSearch(error);
+      uiDataError ||= error;
+      failSearch(uiDataError);
       if (els.catalogCoverageSummary) els.catalogCoverageSummary.textContent = `${error.message}（異なる版を混在させず停止）`;
       console.error(error);
     }
@@ -3673,7 +3675,7 @@ async function loadCatalogEntries(entries) {
       const loaded = await Promise.all(chunks.slice(offset, offset + 6).map(loadCatalogChunk));
       changed ||= loaded.some(Boolean);
     }
-    if (uiDataInvalid) throw new Error('公開データの版不一致。再読込してください。');
+    if (uiDataInvalid) throw uiDataError || new Error('公開データの版不一致。再読込してください。');
     return changed;
   } catch(error) { failSearch(error); throw error; }
   finally { searchRuntime.pending--; }
@@ -5912,7 +5914,7 @@ function currentMarketProfitPanel(view) {
 let commitCardRows;
 function render() {
   if (!searchRuntime.booted || searchRuntime.pending) { searchResultStatus('loading'); return; }
-  if (uiDataInvalid) { failSearch(new Error('公開データの版不一致。再読込してください。')); return; }
+  if (uiDataInvalid) { failSearch(uiDataError || new Error('公開データの版不一致。再読込してください。')); return; }
   // Scope search reuse to this synchronous render, including failure cleanup.
   const previous = renderMemo;
   const previousEfficiency=efficiencyRenderPass;
@@ -7174,7 +7176,7 @@ async function init() {
     // Bound parallel reads; each financial input must still pass the pinned hash.
     for (let i = 0; i < initialFiles.length; i += 4) {
       await Promise.all(initialFiles.slice(i, i + 4).map(name => fetchJsonMaybe(`./data/${name}.json`)));
-      if (uiDataInvalid) throw new Error("公開データの版が一致しません。再読み込みしてください。");
+      if (uiDataInvalid) throw uiDataError || new Error("公開データの版が一致しません。再読み込みしてください。");
     }
     state.updateStatus = await fetchJsonMaybe("./data/update-status.json");
     state.psa10PeriodSummary = await fetchJsonMaybe("./data/psa10-period-summary.json");
@@ -7285,7 +7287,7 @@ async function init() {
     state.psaPopulation = psaData?.cards || Object.create(null);
     state.psaSpecificationHeld = psaData?.specificationHeld || Object.create(null);
     attachBundlePopulations(state.psaPopulation);
-    if (uiDataInvalid) throw new Error("公開データの版が一致しません。再読み込みしてください。");
+    if (uiDataInvalid) throw uiDataError || new Error("公開データの版が一致しません。再読み込みしてください。");
     searchRuntime.booted = true;
     syncFromUI();
     const metrics = document.createElement("details");
