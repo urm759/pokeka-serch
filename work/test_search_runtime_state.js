@@ -38,4 +38,11 @@ async function sharedChunk(){
  const a=ctx.run(0),b=ctx.run(0);let secondDone=false;b.then(()=>secondDone=true);await Promise.resolve();assert(!secondDone,'later query joins the in-flight shard rather than returning an empty result');assert.equal(calls,1);
  release([{id:'same'}]);assert(await a);assert(await b);assert.equal(ctx.rows[0].id,'same');assert.equal(ctx.state.catalogLoadingChunks.size,0);
 }
-(async()=>{await deferredCase(true);await deferredCase(false);await sharedChunk();console.log('PASS loading/zero/error separation, exact-version deferred listing search, shared concurrent shard completion, read-only URL comparison and live-monitor unknown/error distinction');})().catch(e=>{console.error(e);process.exitCode=1});
+async function originalFailure(){
+ const start=source.indexOf('async function fetchJsonMaybe('),end=source.indexOf('\nasync function loadDeferredAudits(',start);
+ let displayed;const ctx=vm.createContext({uiDataManifest:{revision:'r',hashes:{'data/a.json':'a','data/b.json':'b'}},uiFetchCache:new Map(),uiDataInvalid:false,uiDataError:null,
+   failSearch:e=>displayed=e.message,els:{},console:{error(){}},performance:{now:()=>0},fetch:async url=>({ok:false,status:url.includes('a.json')?503:502})});
+ vm.runInContext(source.slice(start,end)+';globalThis.run=fetchJsonMaybe;',ctx);
+ await ctx.run('./data/a.json');await ctx.run('./data/b.json');assert(ctx.uiDataInvalid);assert.match(displayed,/a.json HTTP 503/,'later load failures and generic version guards retain the first concrete cause');assert.equal(ctx.uiDataError.message,displayed);
+}
+(async()=>{await deferredCase(true);await deferredCase(false);await sharedChunk();await originalFailure();console.log('PASS loading/zero/error separation, exact-version deferred listing search, shared concurrent shard completion, first HTTP cause retention, read-only URL comparison and live-monitor unknown/error distinction');})().catch(e=>{console.error(e);process.exitCode=1});
