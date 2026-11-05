@@ -1,33 +1,33 @@
 {
-  "startedAt": "2026-11-04T09:27:54.018Z",
-  "runId": "41807624829",
-  "event": "schedule",
-  "route": "通常価格更新",
+  "startedAt": "2026-11-05T01:47:02.675Z",
+  "runId": "41950731675",
+  "event": "workflow_dispatch",
+  "route": "既存監視ジョブの空白補完",
   "status": "acquired-saved",
   "allowed": true,
-  "ageMs": 11137276,
-  "minimumIntervalMs": 7200000,
+  "ageMs": 58748299,
+  "minimumIntervalMs": 9000000,
   "reason": "定期の空白・既存の期限順キューで補完",
   "llmCalls": 0,
   "codexCalls": 0,
   "sourceFailures": [],
   "acquisitionStatus": "process-success",
-  "endedAt": "2026-11-04T09:38:49.484Z",
-  "durationMs": 655466,
+  "endedAt": "2026-11-05T01:58:28.664Z",
+  "durationMs": 685989,
   "outcomes": {
-    "baselineAt": "2026-11-04T09:27:54.018Z",
-    "commonCards": 12928,
-    "addedCards": 0,
+    "baselineAt": "2026-11-05T01:47:02.675Z",
+    "commonCards": 12932,
+    "addedCards": 8,
     "removedCards": 0,
-    "newlyAnalyzable": 0,
-    "lostAnalyzable": 0,
-    "filledCards": 0,
-    "filledItems": 0,
+    "newlyAnalyzable": 17,
+    "lostAnalyzable": 3,
+    "filledCards": 72,
+    "filledItems": 82,
     "sources": {
       "cardrush": {
-        "newLinked": 0,
-        "validAdded": 0,
-        "validLost": 0,
+        "newLinked": 1,
+        "validAdded": 1,
+        "validLost": 1,
         "usableNet": 0,
         "freshnessRecovered": 0
       },
@@ -36,7 +36,7 @@
         "validAdded": 0,
         "validLost": 0,
         "usableNet": 0,
-        "freshnessRecovered": 65
+        "freshnessRecovered": 79
       },
       "yuyutei": {
         "newLinked": 0,
@@ -50,7 +50,7 @@
         "validAdded": 0,
         "validLost": 0,
         "usableNet": 0,
-        "freshnessRecovered": 35
+        "freshnessRecovered": 0
       },
       "psaOfficial": {
         "newLinked": 0,
@@ -66,6 +66,10 @@
         "usableNet": 0,
         "freshnessRecovered": 0
       }
+    },
+    "referenceEvidenceRecovered": {
+      "buybackExitEvidence": 3,
+      "psa9Evidence": 12
     }
   },
   "publicationStatus": "保存済み・公開照合待ち"
