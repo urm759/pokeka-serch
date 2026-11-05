@@ -71,9 +71,13 @@ assert.equal(inputs.get('observation75MinInput').value,'','explicit new clear wi
   await context.api.fetchJsonMaybe('./data/psa-pop-recovered/00.json',{detail:true,affectsCalculation:false});
   await context.api.fetchJsonMaybe('./data/psa-history/00.json',{detail:true,affectsCalculation:false});
   assert.equal(context.api.revision(),before,'lazy chart originals and recovered POP evidence are not financial inputs');
+  for(const file of ['mintore-listing-summary.json','gemrate-reference-summary.json','raw-condition-reference/0.json'])await context.api.fetchJsonMaybe('./data/'+file,{detail:true,affectsCalculation:false});
+  assert.equal(context.api.revision(),before,'display-only listing/GemRate/raw-evidence summaries do not invalidate financial calculations');
   await context.api.fetchJsonMaybe('./data/hareruya2-stock-summary.json');
   assert.equal(context.api.revision(),before+1,'real calculation input fetch still invalidates calculations');
   await context.api.fetchJsonMaybe('./data/psa-population-summary.json',{affectsCalculation:false});
-  assert.equal(context.api.revision(),before+2,'the display-only exception is restricted to foreign glance summaries');
+  assert.equal(context.api.revision(),before+2,'official financial POP cannot opt out of cache invalidation');
+  await context.api.fetchJsonMaybe('./data/torecacamp-stock-summary.json',{affectsCalculation:false});
+  assert.equal(context.api.revision(),before+3,'real purchase price/stock cannot opt out either');
   console.log('PASS 75 calendar boundaries, migration/backup/zero, native stats separation, unknown denominator and display-only cache isolation');
 })().catch(error=>{console.error(error);process.exitCode=1;});

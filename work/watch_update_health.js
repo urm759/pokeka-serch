@@ -145,6 +145,9 @@ async function main() {
   for(const hold of require('./recover_failed_price_run').activeSourceHolds(ROOT))priceIssues.push({key:'source-recovery:merge-review:'+hold.runId,
     reason:'保存原票の同時更新照合が保留（'+hold.files.length+'入力）。正常な取得・公開は継続、回収完了とは数えない。'+hold.reason,
     url:'https://github.com/urm759/pokeka-serch/actions/runs/'+hold.runId});
+  const liveSearch=require('./search_runtime_probe').record(ROOT);
+  for(const row of liveSearch.profiles)if(row.status!=='ready')watchIssues.push({key:'search-runtime:'+row.id+':'+row.status,
+    reason:row.status==='error'?'現時刻のURL検索計算失敗：'+row.error:'現時刻のURL検索0件。価格・鮮度・条件の実値確認が必要。端末保存条件とは別。'});
   const issues = [...dailyIssues, ...backfills.issues, ...sourceIssues, ...priceIssues, ...watchIssues].map(issue => ({ ...issue,
     category: require('../update-health-model.js').issueCategory(issue) }));
   const previousKeys = new Set(current?.activeAlertKeys || []);
@@ -167,6 +170,7 @@ async function main() {
   console.log(JSON.stringify({ status: result.status, issues: result.issues,
     newIssueCount: newlyDetected.length, backfills: result.backfills }));
   observation.record(ROOT,'observed',{newIssueCount:newlyDetected.length,unpublishedData,
+    liveSearch,
     lastMonitorRun:lastWatch?{id:lastWatch.id,conclusion:lastWatch.conclusion,url:lastWatch.html_url}:null,
     freshness:status.priorityPriceMonitor?.fixedCohortFreshness||null,
     publicationStatus:'監視保存済み・公開工程は別'});

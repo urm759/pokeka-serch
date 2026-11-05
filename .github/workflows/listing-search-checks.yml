@@ -3,6 +3,9 @@ on:
   pull_request:
     paths:
       - 'app.js'
+      - 'work/search_runtime_probe.js'
+      - 'work/test_search_runtime_state.js'
+      - 'work/watch_update_health.js'
       - 'index.html'
       - 'styles.css'
       - 'exploration-metrics.js'
@@ -36,6 +39,8 @@ jobs:
       - name: Common calculations, optional controls and initial-load consistency
         run: |
           node --check app.js
+          node work/test_search_runtime_state.js
+          node work/test_observation75_migration.js
           node work/test_psa10_listing_counts.js
           node work/test_mintore_listing_observations.js
           node work/test_priority_refresh.js

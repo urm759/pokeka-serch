@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20261104-mintore-listings" />
+  <link rel="stylesheet" href="./styles.css?v=20261105-search-state" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -694,13 +694,14 @@
       <div class="stats">
         <div class="stat">
           <span class="k">カード総数</span>
-          <strong id="totalStat">0</strong>
+          <strong id="totalStat">—</strong>
         </div>
         <div class="stat">
           <span class="k">条件一致</span>
-          <strong id="countStat">0</strong>
+          <strong id="countStat">—</strong>
         </div>
       </div>
+      <aside id="searchResultState" class="search-result-state" role="status" data-phase="loading">読込・計算中です。条件一致0件とは別です。JavaScriptの読込に失敗した場合は再読込してください。</aside>
       <details id="efficiencySummary" class="efficiency-summary"><summary>資金効率の算出状況</summary></details>
       <details class="stats-panel">
         <summary>利益・判定の集計を表示</summary>
@@ -959,6 +960,6 @@
   <script src="./search-controls.js?v=20261104-mintore-listings" integrity="sha384-KzGnHpzmNyaokwK17YUgBEv4M3r6JsGD1ch1YlLyT7G87qOasrSN9xkqbvlHozV8"></script>
   <script src="./settings-disclosure.js?v=20261011-disclosure-v1"></script>
   <script src="./gemrate-pop-model.js?v=20261102-gemrate-pop" integrity="sha384-odMB7R9tprRMcdSqcPS8Gukl1EMPlsrLnJModiemV+xY9yi2rEpohSLYaemvN7Za"></script>
-  <script src="./app.js?v=20261104-mintore-listings" integrity="sha384-gd0SDkMErP/4iY2Z23nQ+TB6lVFqHzswGl2z5L+gy9A+kZMQmhrl8MEJ/tYIC7M6"></script>
+  <script src="./app.js?v=20261105-search-state" integrity="sha384-SIEcPHEE//XEgaSgyfT3Hn8WxmsafpD1EPXZOHly46h7EpsmhcjTFqe29m8u3cvL"></script>
 </body>
 </html>
