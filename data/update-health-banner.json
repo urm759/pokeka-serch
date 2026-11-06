@@ -1,21 +1,15 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-06T00:39:45.524Z",
+  "generatedAt": "2026-11-06T00:45:21.161Z",
   "sourceLastSuccessAt": "2026-11-06T00:29:58.133Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-11-05T23:45:15.684Z",
-    "lastSuccessAt": "2026-11-05T23:45:15.684Z",
-    "runId": "42131495401",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/42131495401"
+    "lastAttemptAt": "2026-11-06T00:45:21.150Z",
+    "lastSuccessAt": "2026-11-06T00:45:21.150Z",
+    "runId": "42137677624",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/42137677624"
   },
   "issues": [
-    {
-      "key": "daily:source-failure",
-      "category": "確認が必要",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/42061888451",
-      "reason": "Dailyの一部取得元が失敗・正常データは必須検証/保存/公開照合済み"
-    },
     {
       "key": "safe:yuyutei:manual-action-required:GitHub ActionsからHTTP #。正規アクセス確認待ち",
       "category": "アクセス・手動対応待ち",
@@ -55,7 +49,7 @@
     {
       "key": "source:snkrRaw:stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/42061888451",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/42137040233",
       "reason": "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）"
     },
     {
@@ -107,7 +101,6 @@
     }
   ],
   "reasons": [
-    "Dailyの一部取得元が失敗・正常データは必須検証/保存/公開照合済み",
     "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち",
     "状態A価格確認: 2回連続でチェックポイント進捗なし",
     "カードラッシュ: pk-73737: HTTP 403",
