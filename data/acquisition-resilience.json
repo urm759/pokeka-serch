@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-07T15:07:23.586Z",
+  "generatedAt": "2026-11-07T19:48:18.697Z",
   "llmCalls": 0,
   "codexCalls": 0,
   "retryPolicy": {
@@ -169,8 +169,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-11-07T14:49:09.827Z",
-        "to": "2026-11-07T15:07:19.359Z"
+        "from": "2026-11-07T15:07:19.359Z",
+        "to": "2026-11-07T19:48:14.953Z"
       },
       "sinceBaseline": {
         "newLinked": 4012,
@@ -187,7 +187,7 @@
       "remaining": 0,
       "queueDefinition": "未巡回商品数推計。全国内カードの不足項目数とは別",
       "checkpoint": {
-        "sitemap": 35,
+        "sitemap": 36,
         "entry": 0,
         "total": 46
       },
@@ -195,13 +195,13 @@
       "stopReason": null,
       "retryUrls": [],
       "lastRun": {
-        "startedAt": "2026-11-07T15:05:17.732Z",
-        "durationMs": 38725,
+        "startedAt": "2026-11-07T19:46:31.512Z",
+        "durationMs": 35389,
         "paginationMode": "sitemap",
-        "currentCursor": 35,
-        "currentSitemapIndex": 35,
+        "currentCursor": 36,
+        "currentSitemapIndex": 36,
         "currentEntryIndex": 0,
-        "currentSitemapUrl": "https://torecacamp-pokemon.com/sitemap_products_35.xml?from=9161488629934&to=9173795373230",
+        "currentSitemapUrl": "https://torecacamp-pokemon.com/sitemap_products_36.xml?from=9173795438766&to=9197032964270",
         "processedSitemapCount": 46,
         "processedSitemaps": [
           3,
@@ -261,18 +261,18 @@
         "legacyRecords": [],
         "maintenanceMode": true,
         "maintenance": {
-          "sitemapIndex": 34,
+          "sitemapIndex": 35,
           "entryIndex": 0,
           "cycles": 2,
-          "refreshed": 13576,
+          "refreshed": 13607,
           "newLinks": 147,
-          "checkedAt": "2026-11-07T15:05:56.450Z"
+          "checkedAt": "2026-11-07T19:47:06.895Z"
         },
         "firstPassCompletedAt": "2026-10-08T21:56:31.044Z",
-        "maintenancePendingCount": 5998,
+        "maintenancePendingCount": 6029,
         "priceMigration": {
           "version": 1,
-          "updatedAt": "2026-11-07T15:05:17.653Z",
+          "updatedAt": "2026-11-07T19:46:31.448Z",
           "correctedCount": 0,
           "cumulativeCorrectedCount": 0,
           "preCorrectionExtremeCount": 0,
@@ -282,31 +282,31 @@
         "quarantinedPriceCount": 26,
         "sitemapsSucceeded": 1,
         "listedProducts": 1000,
-        "detailFetched": 34,
-        "parsed": 34,
-        "stateA": 24,
-        "referenceUpdated": 10,
+        "detailFetched": 31,
+        "parsed": 31,
+        "stateA": 31,
+        "referenceUpdated": 0,
         "newLinkCount": 0,
-        "updatedCount": 8,
+        "updatedCount": 1,
         "fetchFailureCount": 0,
-        "duplicateUrlCount": 983,
+        "duplicateUrlCount": 986,
         "duplicateProductIdCount": 0,
         "abruptDropDetected": false,
         "previousCatalogCount": 6647,
         "proposedCatalogCount": 6647,
         "progressHealth": {
-          "value": 60549,
-          "previousValue": 60515,
+          "value": 60580,
+          "previousValue": 60549,
           "stagnantRuns": 0,
           "status": "progressing",
-          "checkedAt": "2026-11-07T15:05:56.457Z"
+          "checkedAt": "2026-11-07T19:47:06.901Z"
         },
-        "lastSuccessfulPage": "サイトマップ 34",
+        "lastSuccessfulPage": "サイトマップ 35",
         "lastFailure": null,
         "failedSitemaps": [],
         "stoppingReason": null,
         "completionStatus": "partial",
-        "completedAt": "2026-11-07T15:05:56.460Z"
+        "completedAt": "2026-11-07T19:47:06.903Z"
       },
       "observedExecutionDays": 6,
       "processedPerExecutionDay": 16.7,
@@ -314,17 +314,17 @@
       "firstPassProgressField": "newlyVisitedProducts",
       "firstPassDaysEstimate": 0,
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
-      "usableNet": 1,
+      "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-11-07T14:49:09.827Z",
-        "to": "2026-11-07T15:07:19.359Z"
+        "from": "2026-11-07T15:07:19.359Z",
+        "to": "2026-11-07T19:48:14.953Z"
       },
       "sinceBaseline": {
         "newLinked": 757,
         "validAdded": 763,
         "validLost": 79,
         "usableNet": 684,
-        "freshnessRecovered": 665
+        "freshnessRecovered": 637
       },
       "freshness": null
     },
@@ -357,8 +357,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-11-07T14:49:09.827Z",
-        "to": "2026-11-07T15:07:19.359Z"
+        "from": "2026-11-07T15:07:19.359Z",
+        "to": "2026-11-07T19:48:14.953Z"
       },
       "sinceBaseline": {
         "newLinked": 0,
