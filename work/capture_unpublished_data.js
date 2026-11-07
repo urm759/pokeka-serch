@@ -38,6 +38,7 @@ function capture({cwd = path.join(__dirname, '..'), source = 'unknown'} = {}) {
       'data/hareruya2-stock-summary.json','data/cardrush-stock-summary.json',
       'work/source-update-runs.json','work/source-update-history.json','work/changed-card-ids.json',
       'work/toreca-source-inventory.json','work/toreca_source_diff.json',
+      'work/mintore-listing-last-receipt.json',
       'work/market_stability_history.json','work/buyback-price-observations.json',
       'work/shop_buyback_history.json','work/shop_buyback_catalog.json','work/shop_buyback_unmatched.json',
       'work/shop_buyback_item_matches.json','work/shop_buyback_quarantine.json',
@@ -47,7 +48,8 @@ function capture({cwd = path.join(__dirname, '..'), source = 'unknown'} = {}) {
       'work/priority-price-checkpoint.json','work/priority-price-http-cache.json',
       'work/candidate-shop-refresh.json'];
     for(const relative of inputs)if(fs.existsSync(path.join(cwd,relative)))copy(relative);
-  } else { scan('data'); scan('work'); }
+    scan('work/mintore-listing-history');
+  } else { scan('data'); scan('work'); scan('work/mintore-listing-history'); }
   const manifest = {version:1, source, savedAt:new Date().toISOString(), workflowRunId:process.env.GITHUB_RUN_ID || null,
     files, withheld, invalidJson:files.filter(row=>!row.validJson).map(row=>row.file), summaryGenerationRequired:true};
   fs.writeFileSync(path.join(directory, 'recovery-manifest.json'), JSON.stringify(manifest));

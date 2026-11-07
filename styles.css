@@ -1818,3 +1818,13 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .stock-trend > strong.stock-decrease-fast { color:#ffb07c; }
 .stock-trend > strong.stock-unknown { color:#b8c7dc; }
 @media(max-width:600px){:is(.candidate-glance,.price-comparison-grid)>.price-cell:has(.stock-trend details[open]){grid-column:1/-1}}
+
+.quick-ratio-search{border:1px solid var(--line,#d5dbe1);border-radius:8px;padding:10px 12px;margin:8px 0}.quick-ratio-search>summary{font-weight:700;cursor:pointer}.quick-ratio-search .controls{padding-top:10px}.quick-ratio-search small{grid-column:1/-1;overflow-wrap:anywhere}
+
+.mintore-listings{font-size:.82rem}.mintore-listings strong{font-size:1.02rem}.mintore-listings small{font-size:.72rem;overflow-wrap:anywhere}[data-listing-compact]{grid-column:1/-1}
+/* Search readiness is independent of the numeric match count. */
+.search-result-state{padding:10px 14px;margin:8px 0;border:1px solid var(--line);border-radius:10px;font-size:.9rem;overflow-wrap:anywhere}
+.search-result-state>span,.search-result-state>strong{display:block}
+.search-result-state[data-phase="error"]{border-color:#b94a33;color:#92371f}
+.search-result-state details{font-size:.8rem;margin-top:5px}
+.search-result-state ul{max-height:16rem;overflow:auto;padding-left:20px}

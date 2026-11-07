@@ -33,7 +33,8 @@ http.createServer((req,res) => {
       data=Buffer.from(data.toString('utf8').replace('</head>',fixture+'</head>'));
     }
     if(file==='index.html' && process.env.PERFORMANCE_PROBE==='observation') {
-      data=Buffer.from(data.toString('utf8').replace('</body>','<script>'+fs.readFileSync(path.join(__dirname,'observation_efficiency_browser_probe.js'),'utf8')+'</script></body>'));
+      const probe=fs.readFileSync(path.join(__dirname,'observation_efficiency_browser_probe.js'),'utf8');
+      data=Buffer.from(data.toString('utf8').replace('</body>','<script>'+(mode.endsWith('double')?probe.replace('state.visibleLimit=60','state.visibleLimit=120').replace('同データ・60枚表示','同データを2倍にした120枚表示'):probe)+'</script></body>'));
     }
     const gzip = /gzip/.test(req.headers['accept-encoding'] || '');
     res.writeHead(200,{'content-type':types[path.extname(file)] || 'application/octet-stream','cache-control':'no-store',

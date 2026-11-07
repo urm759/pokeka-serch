@@ -16,12 +16,17 @@ function hashes(read,files){return Object.fromEntries(files.map(f=>{const t=read
 function same(a,b,reason){if(JSON.stringify(a)!==JSON.stringify(b))throw Error('Publication version mismatch: '+reason);}
 function coherent(read){
   const parse=f=>{const t=read(f);return t===null?null:JSON.parse(t);};
+  const listings=parse('data/mintore-listing-summary.json');
+  if(listings) same(listings.catalogHash,digest(read('data/pokemon-cards.json')),'listing summary and card catalog');
   const completion=parse(DERIVED[0]),outcomes=parse(DERIVED[1]),status=parse('data/update-status.json');
   if(!completion&&!outcomes&&!status)return false;
   if(!completion||!outcomes||!status?.unifiedMonitor?.outcomes)throw Error('Publication version mismatch: completion/monitor data missing');
   same(status.unifiedMonitor.outcomes,outcomes,'monitor and downloadable outcomes');
   same([completion.summary.total,completion.summary.analyzable],
     [outcomes.counts.listed,outcomes.counts.analyzable],'catalog and outcome counts');
+  const catalog=parse('data/pokemon-cards.json'),priceAudit=parse('data/state-a-price-audit.json'),priceEvidence=parse('data/state-a-price-evidence.json');
+  if(Array.isArray(catalog)&&priceAudit&&priceEvidence&&Object.values(completion.cards||{}).some(r=>r.i)
+    &&require('./completion_price_consistency').mismatches(catalog,completion,priceAudit,priceEvidence).length)throw Error('Publication version mismatch: completion and price-audit inputs');
   return true;
 }
 function snapshot(root){return hashes(reader(root),SOURCES);}

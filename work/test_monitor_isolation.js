@@ -29,7 +29,7 @@ const {execute}=require('./price_refresh_gate');
 const partial=execute(root,()=>({sourceFailures:['buyback']}),{now:Date.now()});
 assert.equal(partial.status,'acquired-saved');assert.equal(partial.acquisitionStatus,'partial-with-failure');
 assert.throws(()=>execute(root,()=>{throw Error('required calculation failed');},{now:Date.now()+3*3600000}),/required calculation/);
-const workflow=fs.readFileSync(path.join(__dirname,'../.github/workflows/watch-data-health.yml'),'utf8');
+const workflow=fs.readFileSync(path.join(__dirname,'../.github/workflows/watch-data-health.yml'),'utf8').replace(/\r\n/g,'\n');
 assert(workflow.includes('needs: [catchup, publication_check]\n    if: always()'),'monitor must retain failures and wait for receipt verification before capacity ingestion');
 assert(workflow.includes("steps.observation.outcome == 'success'"));
 assert(!workflow.includes('continue-on-error'));

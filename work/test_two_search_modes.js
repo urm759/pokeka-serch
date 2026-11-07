@@ -4,6 +4,13 @@ const document={getElementById:id=>{if(!elements.has(id))elements.set(id,{value:
 const context=vm.createContext({window:{location:{href:'https://example.test/'},PurchaseDecisionModel:require('../decision-model'),ExplorationMetrics:require('../exploration-metrics'),CandidateVisibility:require('../candidate-visibility'),ReleaseYearFilter:require('../release-year-filter'),PurchaseRatioModel:require('../purchase-ratio-model')},document,console,URL,URLSearchParams,setTimeout,clearTimeout,localStorage:{getItem:k=>saved[k]??null,setItem:(k,v)=>saved[k]=v}});
 vm.runInContext(source.split('// Browser event bindings start here;')[0]+'\nglobalThis.api={state,readUrl,restoreQuickFilters,saveQuickFilters,quickSearchMode,cardSearchExclusions,buildSearchAudit,searchProfitView,buildShareUrl};',context);
 const a=context.api,s=a.state;
+const storageKey=vm.runInContext('QUICK_FILTER_STORAGE_KEY',context);
+saved[storageKey]=JSON.stringify({buyback75RatioMin:.9,guideMode:'50'});
+a.restoreQuickFilters();assert.equal(elements.get('buyback75RatioMinInput').value,.9,'URL-absent saved ratio remains applied');
+const savedBefore=JSON.stringify(saved);context.window.location.href='https://example.test/?effBuy=auto&savedFilters=ignore';
+elements.get('buyback75RatioMinInput').value='';a.restoreQuickFilters();a.saveQuickFilters();
+assert.equal(elements.get('buyback75RatioMinInput').value,'');assert.equal(JSON.stringify(saved),savedBefore,'URL-only comparison neither clears nor overwrites device settings');
+context.window.location.href='https://example.test/';
 const card={id:'fixture',name:'fixture',catalogCompletion:{s:'分析可能'},price:10000,psa10:30000,psa10ObservedAt:new Date().toISOString(),psaTx30d:20,saleTx30d:20,official:{rate:80},dataQuality:{},priceAggregation:{confidence:'高'},overallAssessment:{score:20,grade:'D'},purchaseDecision:{verdict:'見送り'},psaDecision:{recommended:false},buyLimits:{clean:{finalMaxPrice:0,supplyStressAtFinal:{expectedProfit:-10000}}},forecastPeriodMismatch:true};
 s.catalogCompletion={cards:{fixture:card.catalogCompletion}};
 Object.assign(s,{efficiencyBuy:'auto',purchaseMode:'specified',catalogScope:'analysis',minRoi:null,minExpectedProfitFilter:null,minExpectedRoiFilter:null,minStressExpectedProfitFilter:null,minStressExpectedRoiFilter:null,minPurchaseLimitRatio:null,minSaleTx:0,minPsaTx:0,efficiencyMin:null,includePeriodReference:false});
@@ -25,7 +32,7 @@ const archive=JSON.parse(saved['pokeka-quick-filter-preferences-v1:two-modes-v1'
 const html=fs.readFileSync('index.html','utf8');assert.deepEqual([...html.matchAll(/data-preset="([^"]+)"/g)].map(m=>m[1]),['combined','specified']);
 console.log('PASS two modes: no implicit gates, enabled/missing vs disabled, strict identity, migration/archive and saved mode');
 const config=require('./priority-search-profiles.json'),variants=require('./search_profile_variants');
-const originals=variants.allProfiles(config),modes=variants.searchModeProfiles(config);assert.equal(modes.length,4);
+const originals=variants.allProfiles(config),modes=variants.searchModeProfiles(config);assert.equal(modes.length,originals.length*2,'every retained profile has both modes, including the newer exact URLs');
 for(const p of originals){const variant=modes.find(r=>r.siteProfileId===p.id);assert(variant);assert.equal(new URL(variant.url).searchParams.get('preset'),'specified');}
 delete saved['pokeka-quick-filter-preferences-v1'];
 context.window.location.href='https://example.test/?preset=specified';a.readUrl();

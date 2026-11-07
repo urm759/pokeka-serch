@@ -1,0 +1,58 @@
+name: Listing and Ratio Search Checks
+on:
+  pull_request:
+    paths:
+      - 'app.js'
+      - 'work/search_runtime_probe.js'
+      - 'work/test_search_runtime_state.js'
+      - 'work/watch_update_health.js'
+      - 'index.html'
+      - 'styles.css'
+      - 'exploration-metrics.js'
+      - 'search-controls.js'
+      - 'psa10-listing-counts.js'
+      - 'data/verified-psa10-listings.json'
+      - 'work/test_listing_search_ui.js'
+      - 'work/test_psa10_listing_counts.js'
+      - 'work/mintore_listing_observations.js'
+      - 'work/test_mintore_listing_observations.js'
+      - 'work/update_pokemon_site.js'
+      - 'work/priority_price_queue.js'
+      - 'work/camp_postpass.js'
+      - 'work/update_yuyutei_torecacamp.js'
+      - 'work/profile_completion_routes.js'
+      - 'work/scheduled_cycle_evidence.js'
+      - 'work/finalize_update_status.js'
+      - 'work/completion_price_consistency.js'
+      - '.github/workflows/listing-search-checks.yml'
+permissions:
+  contents: read
+jobs:
+  related-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - name: Common calculations, optional controls and initial-load consistency
+        run: |
+          node --check app.js
+          node work/test_search_runtime_state.js
+          node work/test_observation75_migration.js
+          node work/test_psa10_listing_counts.js
+          node work/test_mintore_listing_observations.js
+          node work/test_priority_refresh.js
+          node work/test_postpass_cadence.js
+          node work/test_profile_completion_routes.js
+          node work/test_scheduled_cycle_evidence.js
+          node work/test_cycle_observation_snapshot.js
+          node work/test_completion_price_consistency.js
+          node work/test_listing_search_ui.js
+          node work/test_search_organization.js
+          node work/test_two_search_modes.js
+          node work/test_buyback_highest_search.js
+          node work/test_buyback_75_mean.js
+          node work/test_initial_calculation_dependencies.js
+          node work/test_search_memo.js

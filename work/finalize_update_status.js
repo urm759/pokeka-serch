@@ -16,6 +16,11 @@ require('./stock_history_statistics').reconcile(ROOT);
 require('./build_raw_condition_reference').build(ROOT);
 require('./build_psa9_provenance').build(ROOT);
 require('./build_psa9_provenance').verify(ROOT);
+const completionPriceMismatch=require('./completion_price_consistency').mismatches(read('data/pokemon-cards.json',[]),read('data/card-catalog-completion.json'),read('data/state-a-price-audit.json'),read('data/state-a-price-evidence.json'));
+if(completionPriceMismatch.length){
+  require('node:child_process').execFileSync(process.execPath,[path.join(__dirname,'build_card_completion.js')],{cwd:ROOT,timeout:120000,maxBuffer:8*1024*1024});
+  if(require('./completion_price_consistency').mismatches(read('data/pokemon-cards.json',[]),read('data/card-catalog-completion.json'),read('data/state-a-price-audit.json'),read('data/state-a-price-evidence.json')).length)throw Error('Completion and current price audit disagree; publication stopped');
+}
 // Rebuild only when a saved reconciliation made an old pending row obsolete.
 const linkagePending=read('work/psa-linkage-all.json'), linkedPopulation=read('data/psa-population-summary.json').cards||{};
 if(require('./build_psa_linkage_queue').needsRebuild(linkagePending,linkedPopulation,read('data/pokemon-cards.json').length))require('./build_psa_linkage_queue').build(ROOT);
@@ -23,6 +28,7 @@ require('./build_linkage_evidence_audit').build(ROOT);
 require('./build_high_rarity_readiness').build(ROOT);
 const popCoverage=require('./build_psa_pop_glance').build(ROOT);
 const publicationLineage=require('./publication_lineage');
+require('./mintore_listing_observations').build(ROOT);
 const finalizedSourceSnapshot=publicationLineage.snapshot(ROOT);
 
 function read(relativePath, fallback = {}) {

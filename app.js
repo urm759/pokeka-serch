@@ -32,6 +32,7 @@ let efficiencyViewCache = new WeakMap();
 const explorationFields = [
   ['psa9GuideMin','psa9GuideMin'],
   ['psa9RoiMin','psa9RoiMin'],
+  ...['listingCurrentMin','listingCurrentMax','listingMeanMin','listingMeanMax','rawListingCurrentMin','rawListingCurrentMax','rawListingMeanMin','rawListingMeanMax'].map(key=>[key,key]),
   ['purchaseMin','actualPurchaseMin'],['purchaseMax','actualPurchaseMax'],
   ['headroomMin','purchaseHeadroomMin'],['headroomMax','purchaseHeadroomMax'],
   ['buybackMaxMin','buybackHighestMin'],
@@ -91,6 +92,7 @@ function markupCacheFor(cards,now=Date.now()) {
 let favoriteCalculationCache = null;
 let uiDataManifest = null;
 let uiDataInvalid = false;
+let uiDataError = null;
 const uiFetchCache = new Map();
 const uiLoadMetrics = [];
 const computationFields = ["fee","psaPlan","psaHandlingFee","guideMode","psaCapital","lockedCapital","lockDays","minExpectedProfit","minExpectedRoi","minAnnualEfficiency","maxCapitalShare","submissionCount","gradingReserve","saleFeeRate","saleExtraCost","buybackDeductionRate","exitPolicy","buybackStoreMode","selectedBuybackStores","storeTravelCost","snkrRawFeeRate","snkrRawShipping","snkrRawOtherCost","snkrRawMaxAgeHours"];
@@ -264,6 +266,8 @@ const state = {
   psa9AboveGuide: false,
   psa9GuideMin: null,
   psa10PeriodSummary: null,
+  verifiedListingReferences: null,
+  verifiedListingStatus: "unrequested",
   buybackObservationSummary: null,
   includePeriodReference: true,
   minStressExpectedRoiFilter: 0,
@@ -575,6 +579,31 @@ const els = {
   importGradeHistoryInput: document.getElementById("importGradeHistoryInput"),
 };
 
+const searchRuntime = { phase: 'loading', booted: false, pending: 0, error: null, count: null, evaluatedAt: null };
+const initialSearchUrl = window.location?.href || '';
+function urlOnlySearch() { return new URL(window.location.href).searchParams.get('savedFilters') === 'ignore'; }
+function searchResultStatus(phase, error = null) {
+  searchRuntime.phase = phase;
+  searchRuntime.error = error ? String(error.message || error) : null;
+  const target = document.getElementById('searchResultState');
+  if (els.countStat && phase !== 'ready') els.countStat.textContent = '—';
+  if (els.resultProgress && phase !== 'ready') els.resultProgress.textContent = phase === 'error' ? '検索結果は未確定（エラー）' : '検索結果を読込・計算中';
+  if (!target) return;
+  target.dataset.phase = phase;
+  target.setAttribute('role', phase === 'error' ? 'alert' : 'status');
+  const message = phase === 'error' ? '検索を完了できません：' + searchRuntime.error
+    : phase === 'loading' ? '読込・計算中です。条件一致0件とは別です。'
+    : '検索完了：' + fmt.format(searchRuntime.count) + '件（' + (urlOnlySearch() ? 'URLのみ・端末保存条件は不適用／保存保持' : 'URL＋この端末の保存追加条件') + '）';
+  const url = new URL(initialSearchUrl || window.location.href); url.searchParams.set('savedFilters','ignore');
+  const saved = [...searchConditionOrigins].filter(([id,row]) => row.origin === '保存追加' && document.getElementById(id) && window.SearchControls?.active(document.getElementById(id)) && window.SearchControls.applicable(id,state));
+  const note = phase === 'ready' && saved.length ? `<strong>端末の保存追加条件 ${saved.length}項目も適用中。</strong><small>${saved.map(([id])=>{const el=document.getElementById(id);return escapeHtml((el.closest('label')?.dataset.searchLabel||id)+'：'+conditionValue(el));}).join('／')}</small>` : '';
+  const keepOpen=target.querySelector?.('details')?.open===true;
+  target.innerHTML = `<span>${escapeHtml(message)}</span>${note}<details${keepOpen?' open':''}><summary>検索条件の出所・比較</summary><p>保存設定は自動解除しません。下の比較は端末の保存内容を書き換えません。</p><a href="${escapeHtml(url.href)}" target="_blank" rel="noopener">このURLだけで比較（保存条件を変更しない）</a><p>評価時刻 ${escapeHtml(searchRuntime.evaluatedAt || '未計算')}／データ版 ${escapeHtml(uiDataManifest?.revision || '未確定')}</p><ul>${[...searchConditionOrigins].map(([id,row]) => {const el=document.getElementById(id);if(!el)return '';const origin=row.value===conditionValue(el)?row.origin:'手動変更';return `<li>${escapeHtml(el.closest('label')?.querySelector('span')?.textContent || id)}：${escapeHtml(conditionValue(el))}（${escapeHtml(origin)}）</li>`;}).join('')}</ul></details>`;
+}
+function failSearch(error) {
+  searchResultStatus('error',error);
+  els.grid?.replaceChildren();
+}
 function showStatus(message, kind = "info") {
   els.grid.innerHTML = `
     <div class="card" style="padding:20px">
@@ -1725,6 +1754,7 @@ function currentCapCsvFields(view) {
 }
 
 async function exportFavoritesCsv() {
+  await ensureVerifiedListingReferences(favoriteCards(),true);
   if(state.buybackStoreMode==='selected') await Promise.all(favoriteCards().map(card=>loadBuybackSupportDetail(card.id)));
   await Promise.all(favoriteCards().map(card=>loadRecentPsa9(card.id)));
   const cfg = guideConfig();
@@ -1760,6 +1790,8 @@ async function exportFavoritesCsv() {
   rows[0].push('最高買取倍率（減額前・選択受付）','最高提示店舗','最高提示受付','最高提示確認日時','同店・他カードの通常倍率（中央値）','通常倍率の比較枚数','最高買取倍率・下限条件','最高提示の価格日','倍率分母の相場確認日時','倍率比較の確認時差（時間）','全体平均買取倍率（同一店の有効な最高提示1件）','全体平均の採用店舗数','倍率の対象独立店舗数','倍率比較可能店舗数','相場以上の比較可能店舗数','掲載確認店舗数（倍率採用と別）','75日平均買取倍率（日次店舗間平均の観測日平均）','75日倍率の観測日数','75日倍率の期間日数','75日倍率の独立店舗数','75日倍率の最終観測日','75日倍率の参考区分','75日倍率の集計定義','直近比較成立時の参考最高倍率（現在検索不採用）','直近比較成立時の参考平均倍率','参考倍率の比較日','参考倍率の独立店舗数','参考最高の店舗','現在倍率の不足原因','全体平均倍率の下限条件','7日平均倍率の下限条件','30日平均倍率の下限条件','75日平均倍率の下限条件','倍率観測日数の下限条件','倍率の参考値採用','7日平均倍率（日次店舗間平均）','7日倍率の観測日数','7日倍率の最終確認日時','30日平均倍率（日次店舗間平均）','30日倍率の観測日数','30日倍率の最終確認日時','追加倍率検索の除外理由');
   rows[0].push('計算買値（検索・一覧共通）','計算買値の採用元','計算採用10率%','計算採用10率の出典','参考ガイド率%','参考ガイド出典');
   for(const d of [30,7])rows[0].push(`${d}日PSA9実成約平均（計算不採用）`,`${d}日PSA9採用成約件数`,`${d}日PSA9最終成約日時`,`${d}日PSA9対象期間`,`${d}日PSA9出典URL`,`${d}日PSA9平均の区分`);
+  for(const label of ['みんトレ掲載PSA10','みんトレ掲載美品'])rows[0].push(label+'現在出品数（下限）',label+'現在件数が上限なし',label+'掲載値確認日時',label+'元更新日時（未提供は空欄）',label+'現在値の不足理由',label+'30日平均出品数（下限）',label+'平均件数が上限なし',label+'平均の実観測日数',label+'観測開始日',label+'最終観測日');
+  rows[0].push(...verifiedListingFields.map(key=>'出品数条件・'+key),'出品数読込状態');
   favoriteCards().forEach((rawCard,index)=>{
     const card = calc(rawCard), p = purchaseExploration(card), v = searchProfitView(card), c = postingCoverage(card);
     rows[index+1].push(p.price ?? '',p.headroom ?? '',v.purchasePrice ?? '',v.label,v.economics?.expectedProfit ?? '',v.psa10Roi ?? '',c.rate30 ?? '',c.averageShops30 ?? '',c.observedDays,c.retrievalCoverage ?? '',p.cap ?? '',p.warnings.join('／'),p.headroom == null ? p.reason : '');
@@ -1776,7 +1808,7 @@ async function exportFavoritesCsv() {
     rows[index+1].push(o?.days ?? '',o?.mean ?? '',o?.count ?? '',o ? o.days-(o.count ?? 0) : '',o?.latest || '',o ? '現在の国内PSA9・非10仮置き／PSA8以下未評価' : '',o?.unverifiedDays ?? '');
     const median=cardEfficiency(card,Date.now(),state.purchaseMode,state.efficiencyScenario,'median'), evidence=median.medianEvidence;
     rows[index+1].push(median.annual ?? '',cardEfficiency(card,Date.now(),state.purchaseMode,state.efficiencyScenario,'store').annual ?? '',evidence.count,evidence.independent,evidence.unknown,evidence.min ?? '',evidence.max ?? '',JSON.stringify(evidence.rows),median.reason || '');
-    rows[index+1].push(...buybackSupportCsvFields(card),...calculationBasisCsvFields(card,v),...recentPsa9CsvFields(card.id));
+    rows[index+1].push(...buybackSupportCsvFields(card),...calculationBasisCsvFields(card,v),...recentPsa9CsvFields(card.id),...verifiedListingCsvFields(card));
   });
   const csv = `\uFEFF${rows.map((row) => row.map(csvCell).join(",")).join("\r\n")}`;
   const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
@@ -3247,10 +3279,11 @@ function captureConditionOrigins(defaults, restored) {
     priceMinInput:'priceMin',priceMaxInput:'priceMax',psaMinInput:'psaMin',psaMaxInput:'psaMax',year2020Input:'year2020'})) bindings.set(id,param);
   for(const [id,param] of Object.entries({saleTxMinInput:'tx',saleTxMaxInput:'txMax',saleTx7MinInput:'tx7',saleTx7MaxInput:'tx7Max',psaTxMinInput:'psaTx',psaTxMaxInput:'psaTxMax',psaTx7MinInput:'psaTx7',psaTx7MaxInput:'psaTx7Max',buyback7MinInput:'bb7',buyback30MinInput:'bb30',buyback90MinInput:'bb90',buybackShopsMinInput:'bbShops',purchaseLimitRatioMinInput:'buyLimitRatio',stressExpectedProfitFilterInput:'filterStressProfit',stressExpectedRoiFilterInput:'filterStressRoi',currentMarketCapMinInput:'marketCapMin',includePeriodReferenceInput:'periodReference',profitSearchBasisInput:'profitBasis',sortInput:'sort'})) bindings.set(id,param);
   for (const [id,param] of Object.entries({includeUnknownYearInput:'includeUnknownYear',diagnosticSearchInput:'diagnostic',psaRateMinInput:'psaRate',overallFilterInput:'overall',minExitLiquidityInput:'exit',minEconomicsInput:'economics',minMarketStabilityInput:'stability',minSupplyRiskInput:'supply',minFuturePriceScoreInput:'futureScore',maxFuturePriceScoreInput:'futureScoreMax',minForecastPriceInput:'forecastMin',maxForecastPriceInput:'forecastMax',minForecastDownsideInput:'downsideMin',maxForecastDownsideInput:'downsideMax',minForecastGapInput:'gapMin',maxForecastGapInput:'gapMax',forecastPhaseInput:'forecastPhase',forecastConfidenceInput:'forecastConfidence',forecastSupplyPressureInput:'forecastSupply',minForecastAgeInput:'releaseAge',forecastMaturityInput:'forecastMaturity',maxForecastMonthlyIncreaseInput:'psaGrowthMax',stockDemandInput:'stockDemand',dataQualityFilterInput:'dataQuality',goConfidenceFilterInput:'goTrust',floorStateInput:'floorState',priceDirectionInput:'priceDirection',supplyStateInput:'supplyState',minFloorScoreInput:'floorScore',storeDemandInput:'storeDemand',showSkippedInput:'showSkipped',hideThinDemandInput:'hideThin',hideReviewInput:'hideReview',fundingOnlyInput:'fundingOnly',officialOnlyInput:'officialOnly',buyback7MaxInput:'bb7Max',buyback30MaxInput:'bb30Max',buyback90MaxInput:'bb90Max',buybackPriceMinInput:'bbPriceMin',buybackPriceMaxInput:'bbPriceMax',snkrRawTx7MinInput:'snkrTx7',snkrRawTx30MinInput:'snkrTx30',snkrRawProfitMinInput:'snkrProfit',snkrRawRoiMinInput:'snkrRoi',snkrRawPurchaseMaxInput:'snkrBuyMax',snkrRawReleaseMonthsInput:'snkrMonths'})) bindings.set(id,param);
+  for (const [id,param] of Object.entries({feeInput:'fee',psaPlanInput:'psaPlan',lockDaysInput:'lock',saleFeeRateInput:'sellFee',saleExtraCostInput:'extraCost',exitPolicyInput:'exitPolicy',buybackStoreModeInput:'buybackStores',selectedBuybackStoresInput:'selectedStores',buybackDeductionRateInput:'buybackDeduction',storeTravelCostInput:'storeTravel',catalogScopeInput:'catalog',currentMarketSearchKindInput:'marketSearch',psaCapitalInput:'cap',lockedCapitalInput:'locked',gradingReserveInput:'reserve',submissionCountInput:'batch',maxCapitalShareInput:'maxShare',minExpectedProfitInput:'expProfit',minExpectedRoiInput:'expRoi',minAnnualEfficiencyInput:'annual'})) bindings.set(id,param);
   for(const el of document.querySelectorAll('.search-settings input, .search-settings select')) {
     const value=conditionValue(el),urlSpecified=params.has(bindings.get(el.id));
     const stored=Object.hasOwn(saved,el.id.replace(/Input$/,'')) || Object.hasOwn(saved,({roiInput:'minRoi',saleTxMinInput:'minSaleTx',psaMaxInput:'maxPsa10',expectedProfitFilterInput:'minExpectedProfitFilter',expectedRoiFilterInput:'minExpectedRoiFilter',stressExpectedProfitFilterInput:'minStressExpectedProfitFilter',stressExpectedRoiFilterInput:'minStressExpectedRoiFilter',purchaseLimitRatioMinInput:'minPurchaseLimitRatio'})[el.id] || '');
-    searchConditionOrigins.set(el.id,{value,origin:urlSpecified||value!==restored.get(el.id)?'URL指定':stored||restored.get(el.id)!==defaults.get(el.id)?'保存追加':'初期・詳細設定'});
+    searchConditionOrigins.set(el.id,{value,origin:urlSpecified||value!==restored.get(el.id)?'URL指定':!urlOnlySearch()&&(stored||restored.get(el.id)!==defaults.get(el.id))?'保存追加':'初期・詳細設定'});
   }
 }
 const EFFICIENCY_BASIS_MIGRATION_KEY=QUICK_FILTER_STORAGE_KEY+':median-basis-v1';
@@ -3269,6 +3302,7 @@ function migrateObservationControls(input, url = false) {
   return result;
 }
 function restoreQuickFilters() {
+  if (urlOnlySearch()) return;
   try {
     const migration=migrateObservationControls(JSON.parse(localStorage.getItem(QUICK_FILTER_STORAGE_KEY) || "{}"));
     const saved = migration.value;
@@ -3337,6 +3371,7 @@ function restoreQuickFilters() {
 }
 
 function persistExplicitSearchSettings() {
+  if (urlOnlySearch()) return;
   try {
     const params=new URLSearchParams(migrateObservationControls(Object.fromEntries(new URL(window.location.href).searchParams),true).value);
     const saved=JSON.parse(localStorage.getItem(QUICK_FILTER_STORAGE_KEY)||'{}');
@@ -3364,6 +3399,7 @@ function persistExplicitSearchSettings() {
 }
 
 function saveQuickFilters() {
+  if (urlOnlySearch()) return;
   try {
     localStorage.setItem(QUICK_FILTER_STORAGE_KEY, JSON.stringify({
       purchaseMode: quickSearchMode(state.purchaseMode),
@@ -3465,6 +3501,8 @@ function hasMaterialLimitSignalChange(previous, current) {
 
 async function fetchJsonMaybe(url, { detail = false, affectsCalculation = true } = {}) {
   const original = String(url).replace(/^\.\//, "");
+  // Callers cannot opt real financial inputs out of cache invalidation.
+  const displayOnly = /^data\/(?:overseas-glance\/|psa-pop-glance\/|psa-pop-recovered\/|psa-history\/|raw-condition-reference\/|gemrate-reference-summary\.json$|mintore-listing-summary\.json$)/.test(original);
   const file = !detail && uiDataManifest?.aliases?.[original] || original;
   const cacheKey = `${uiDataManifest?.revision || "legacy"}:${file}`;
   if (uiFetchCache.has(cacheKey)) return uiFetchCache.get(cacheKey);
@@ -3496,11 +3534,13 @@ async function fetchJsonMaybe(url, { detail = false, affectsCalculation = true }
     uiLoadMetrics.push({ file, bytes: raw.byteLength, networkMs, verifyMs, jsonParseMs, decodeMs: performance.now() - decodeStart,
       transferBytes: resource?.transferSize ?? null, compressedBodyBytes: resource?.encodedBodySize ?? null,
       expandedBodyBytes: resource?.decodedBodySize ?? null });
-    if (affectsCalculation || !/^data\/(?:overseas-glance|psa-pop-glance|psa-pop-recovered|psa-history)\/\d+\.json$/.test(original)) loadedDataRevision++;
+    if (affectsCalculation || !displayOnly) loadedDataRevision++;
     return payload;
   } catch (error) {
     if (uiDataManifest?.hashes?.[file]) {
       uiDataInvalid = true;
+      uiDataError ||= error;
+      failSearch(uiDataError);
       if (els.catalogCoverageSummary) els.catalogCoverageSummary.textContent = `${error.message}（異なる版を混在させず停止）`;
       console.error(error);
     }
@@ -3573,21 +3613,28 @@ function mergeCatalogCards(rows) {
   state.cards = [...byId.values()];
 }
 
+const catalogChunkRequests = new Map();
 async function loadCatalogChunk(chunkNumber) {
   const key = Number(chunkNumber);
-  if (!Number.isInteger(key) || state.catalogLoadedChunks.has(key) || state.catalogLoadingChunks.has(key)) return false;
+  if (!Number.isInteger(key) || state.catalogLoadedChunks.has(key)) return false;
+  const requestKey = `${uiDataManifest?.revision || 'legacy'}:${key}`;
+  if(catalogChunkRequests.has(requestKey))return catalogChunkRequests.get(requestKey);
   const file = state.catalogManifest?.files?.[key]?.file;
   if (!file) return false;
+  const request=(async()=>{
   state.catalogLoadingChunks.add(key);
   try {
     const payload = await fetchJsonMaybe(`./${String(file).replace(/^\.\//, "")}`);
-    if (!Array.isArray(payload)) return false;
+    if (!Array.isArray(payload)) throw new Error('対象カードの分割データを取得できません：' + file);
     mergeCatalogCards(payload);
     state.catalogLoadedChunks.add(key);
     return true;
   } finally {
     state.catalogLoadingChunks.delete(key);
   }
+  })();
+  catalogChunkRequests.set(requestKey,request);
+  try{return await request;}finally{catalogChunkRequests.delete(requestKey);}
 }
 
 function catalogIndexMatches(scope, query = "") {
@@ -3620,11 +3667,18 @@ async function loadCatalogEntries(entries) {
   const chunks = [...new Set((entries || []).map((entry) => Number(entry.chunk)).filter(Number.isInteger))]
     .filter((chunk) => !state.catalogLoadedChunks.has(chunk));
   let changed = false;
-  for (let offset = 0; offset < chunks.length; offset += 6) {
-    const loaded = await Promise.all(chunks.slice(offset, offset + 6).map(loadCatalogChunk));
-    changed ||= loaded.some(Boolean);
-  }
-  return changed;
+  if (!chunks.length) return changed;
+  searchRuntime.pending++;
+  searchResultStatus('loading');
+  try {
+    for (let offset = 0; offset < chunks.length; offset += 6) {
+      const loaded = await Promise.all(chunks.slice(offset, offset + 6).map(loadCatalogChunk));
+      changed ||= loaded.some(Boolean);
+    }
+    if (uiDataInvalid) throw uiDataError || new Error('公開データの版不一致。再読込してください。');
+    return changed;
+  } catch(error) { failSearch(error); throw error; }
+  finally { searchRuntime.pending--; }
 }
 
 let catalogQueryTimer = null;
@@ -4603,14 +4657,17 @@ function buybackSupportCsvFields(card) {
   const value = cardBuybackSupport(card), q=value.highestQuote, ref=value.recentReference;
   return [q?.ratio ?? '',q?.name || '',q ? q.fulfilment === 'store' ? '店頭' : '郵送' : '',q?.at || '',q?.standard ?? '',q?.samples ?? '',state.buybackHighestMin ?? '',q?.priceDate || '',q?.marketAt || '',q?.timeSkewHours ?? '',value.mean ?? '',value.meanCount || '',value.coverage.target ?? '',value.coverage.comparable,value.coverage.above,value.coverage.listed,value.meanWindows?.[75]?.mean??'',value.meanWindows?.[75]?.days??'',75,value.meanWindows?.[75]?.stores??'',value.meanWindows?.[75]?.lastDate||'',value.meanWindows?.[75]?.reference??'','日次店舗間平均の観測日平均（減額前・同店最高1件）',ref?.highestQuote?.ratio??'',ref?.mean??'',ref?.date||'',ref?.count??'',ref?.highestQuote?.name||'',q?'':value.reason].concat(buybackAdditionalCsv(card));
 }
-let selectedPeriodLoad=null,selectedPeriodAttempted=new WeakSet();
+let selectedPeriodLoad=null,selectedPeriodError=null,selectedPeriodAttempted=new WeakSet();
 function ensureSelectedBuybackPeriods(cards) {
   const summary=state.buybackObservationSummary;
   if(state.buybackStoreMode!=='selected'||!summary?.support?.compact||![state.buyback7RatioMin,state.buyback30RatioMin,state.buyback75RatioMin].some(v=>v!=null)||selectedPeriodLoad||selectedPeriodAttempted.has(summary))return;
   selectedPeriodAttempted.add(summary);
+  selectedPeriodError=null;
   const files=new Map();for(const c of cards){const file=summary.support.detailFiles?.[c.id];if(file&&!buybackSupportDetails.has(c.id))files.set(file,c.id);}
   if(!files.size)return;
-  selectedPeriodLoad=(async()=>{const ids=[...files.values()];for(let i=0;i<ids.length;i+=4)await Promise.all(ids.slice(i,i+4).map(loadBuybackSupportDetail));})().finally(()=>{selectedPeriodLoad=null;if(state.buybackObservationSummary===summary)render();});
+  selectedPeriodLoad=(async()=>{const ids=[...files.values()];for(let i=0;i<ids.length;i+=4)await Promise.all(ids.slice(i,i+4).map(loadBuybackSupportDetail));})()
+    .then(()=>{selectedPeriodLoad=null;if(state.buybackObservationSummary===summary)render();})
+    .catch(error=>{selectedPeriodLoad=null;selectedPeriodError=error;failSearch(error);console.error(error);});
 }
 async function loadBuybackSupportDetail(id) {
   const file=state.buybackObservationSummary?.support?.detailFiles?.[id];
@@ -4618,6 +4675,7 @@ async function loadBuybackSupportDetail(id) {
   if (!buybackSupportDetails.has(id)) {
     if (!buybackSupportDetailRequests.has(file)) buybackSupportDetailRequests.set(file,fetchJsonMaybe('./'+file,{detail:true}));
     const payload=await buybackSupportDetailRequests.get(file);
+    if (!payload?.summaries) throw new Error('選択店舗の倍率履歴を取得できません：' + file);
     for (const [cardId,rows] of Object.entries(payload?.summaries || {})) buybackSupportDetails.set(cardId,rows);
   }
   const target=document.querySelector(`[data-buyback-support-detail="${CSS.escape(id)}"]`),card=state.cardById[id];
@@ -4902,6 +4960,10 @@ function computeSearchAudit(cards, {includePresets=true} = {}) {
 let activeConditionElements = null;
 let activeConditionKey = null;
 function renderActiveFilters() {
+  const legacy=document.getElementById('legacyBuybackPostingDays');
+  if(legacy)legacy.hidden=!['buyback7','buyback30','buyback90'].some(prefix=>Number(document.getElementById(prefix+'MinInput')?.value)>0||parseOptionalNumber(document.getElementById(prefix+'MaxInput')?.value)!=null)&&parseOptionalNumber(document.getElementById('postingDaysMinInput')?.value)==null;
+  const ratios=document.getElementById('buybackRatioSearch');
+  if(ratios&&state.buyback75RatioMin!=null)ratios.open=true;
   const target = document.getElementById("activeFilterSummary");
   const controls = window.SearchControls;
   if (!target || !controls) return;
@@ -5320,7 +5382,51 @@ function prepareCalculatedCards(cards) {
 }
 
 function cardSearchExclusions(card, {mode = state.purchaseMode,diagnostic=true,efficiency=true} = {}) {
-  return renderValue(card, `exclusions:${mode}:${diagnostic}:${efficiency}`, () => computeCardSearchExclusions(card,{mode,diagnostic,efficiency}));
+  return renderValue(card, `exclusions:${mode}:${diagnostic}:${efficiency}`, () => {
+    const reasons=computeCardSearchExclusions(card,{mode,diagnostic,efficiency});
+    if(!(diagnostic&&normalize(state.q)&&state.diagnosticSearch))reasons.push(...verifiedListingExclusions(card));
+    return reasons;
+  });
+}
+const verifiedListingFields=['listingCurrentMin','listingCurrentMax','listingMeanMin','listingMeanMax','rawListingCurrentMin','rawListingCurrentMax','rawListingMeanMin','rawListingMeanMax'];
+let verifiedListingRequest=null,verifiedListingRevision=null;
+function verifiedListingViews(card,now=Date.now()) {
+  return explorationMetrics.listingCounts.providerViews(state.verifiedListingReferences,card,{catalogHash:uiDataManifest?.hashes?.['data/pokemon-cards.json'],now});
+}
+function verifiedListingView(card,now=Date.now()){return verifiedListingViews(card,now).psa10;}
+function verifiedListingExclusions(card) {
+  if(!verifiedListingFields.some(key=>Number.isFinite(state[key])&&state[key]>=0))return [];
+  if(!explorationMetrics.listingCounts?.providerViews)return ['みんトレ出品数・計算モジュール読込不成立'];
+  if(state.verifiedListingStatus!=='ready')return ['みんトレ出品数・'+(state.verifiedListingStatus==='failed'?'読込失敗':'読込待ち')];
+  const views=verifiedListingViews(card),model=explorationMetrics.listingCounts;
+  return [...model.reasons(views.psa10,{...state,label:'みんトレ掲載PSA10出品数'}),...model.reasons(views.raw,{listingCurrentMin:state.rawListingCurrentMin,listingCurrentMax:state.rawListingCurrentMax,listingMeanMin:state.rawListingMeanMin,listingMeanMax:state.rawListingMeanMax,label:'みんトレ掲載美品出品数'})];
+}
+function verifiedListingPanel(card,compact=false) {
+  const views=verifiedListingViews(card),m=explorationMetrics.listingCounts,status=state.verifiedListingStatus;
+  const labels={psa10:'みんトレ掲載PSA10出品数',raw:'みんトレ掲載美品出品数'};
+  const rows=Object.entries(labels).map(([key,label])=>{const v=views[key],c=v.current,mean=v.mean30;
+    const unknown=status==='loading'?'読込中':status==='failed'?'読込失敗':v.currentReason||'掲載値未取得';
+    return '<div><span>'+label+'</span><strong>'+(c?m.text(c):unknown)+'</strong>'+(c?.stale?'<small class="price-stale">古い掲載確認</small>':'')+'<small>30日平均 '+m.text(mean)+(mean?'・'+mean.days+'/30観測日'+(mean.reference?'・参考':''):'')+'</small>'+(!compact?'<small>掲載値確認 '+escapeHtml(c?.at||v.lastObserved?.at||'未取得')+'／元更新日時 '+escapeHtml(c?.sourceUpdatedAt||'取得元未提供')+'</small><small>'+escapeHtml(mean?mean.start+'〜'+mean.end:'履歴未取得')+'</small>':'')+'</div>';}).join('');
+  return '<div class="snkr-listing-panel mintore-listings">'+rows+'</div>'+(!compact?'<small><a href="https://toreca-souba.com/cards/'+encodeURIComponent(card.sourceId||card.id)+'" target="_blank" rel="noreferrer">みんトレ掲載ページ</a>。現在の状態別出品欄に対応する掲載件数。美品は傷なし・現在価格の根拠があるものだけ。出品件数とカード枚数・取引件数・POPは別です。上限付き表示は「以上」を保持。元値の更新日時は未提供で、確認日時や成約日時へ置換しません。需要・GOへの追加採用なし。</small>':'');
+}
+function verifiedListingCsvFields(card) {
+  const views=verifiedListingViews(card);return [...['psa10','raw'].flatMap(key=>{const v=views[key];return [v.current?.lower??'',v.current?.exact??'',v.current?.at||'',v.current?.sourceUpdatedAt||'',v.currentReason||'',v.mean30?.lower??'',v.mean30?.exact??'',v.mean30?.days??'',v.mean30?.start||'',v.mean30?.end||''];}),...verifiedListingFields.map(key=>state[key]??''),state.verifiedListingStatus];
+}
+async function ensureVerifiedListingReferences(cards,force=false) {
+  if(!force&&!verifiedListingFields.some(key=>state[key]!=null)&&!document.querySelector('[data-verified-listings]'))return;
+  const revision=uiDataManifest?.revision||'legacy';
+  if(verifiedListingRevision!==revision){verifiedListingRevision=revision;verifiedListingRequest=null;state.verifiedListingReferences=null;state.verifiedListingStatus='unrequested';}
+  if(!verifiedListingRequest){state.verifiedListingStatus='loading';verifiedListingRequest=fetchJsonMaybe('./data/mintore-listing-summary.json',{detail:true,affectsCalculation:false}).then(data=>{
+    if(data?.version!==1||data.source!=='MINTORE'||data.scope!=='provider-listed-psa10-and-clean-v1'||data.catalogHash!==uiDataManifest?.hashes?.['data/pokemon-cards.json']||!data.cards||Array.isArray(data.cards))throw Error('みんトレ出品数・カード原票の版不一致');
+    if(verifiedListingRevision===revision){state.verifiedListingReferences=data;state.verifiedListingStatus='ready';}
+  }).catch(error=>{if(verifiedListingRevision===revision){state.verifiedListingStatus='failed';if(verifiedListingFields.some(key=>state[key]!=null))failSearch(error);}});
+  await verifiedListingRequest;
+  if(verifiedListingRevision!==revision)return;
+  if(verifiedListingFields.some(key=>state[key]!=null)){render();return;}
+  }
+  await verifiedListingRequest;
+  const byId=new Map(cards.map(c=>[c.id,c]));
+  for(const el of document.querySelectorAll('[data-verified-listings]')){const card=byId.get(el.dataset.verifiedListings);if(card)window.KeyedCardRenderer.replaceContent(el,verifiedListingPanel(card,el.dataset.listingCompact==='true'));}
 }
 function observationSearchExclusions(card) {
   return renderValue(card,'observation-exclusions',()=>explorationMetrics.observationExclusions(state.psa10PeriodSummary,card,state));
@@ -5807,12 +5913,16 @@ function currentMarketProfitPanel(view) {
 
 let commitCardRows;
 function render() {
+  if (!searchRuntime.booted || searchRuntime.pending) { searchResultStatus('loading'); return; }
+  if (uiDataInvalid) { failSearch(uiDataError || new Error('公開データの版不一致。再読込してください。')); return; }
   // Scope search reuse to this synchronous render, including failure cleanup.
   const previous = renderMemo;
   const previousEfficiency=efficiencyRenderPass;
   efficiencyRenderPass=new WeakMap();
   renderMemo = new WeakMap();
-  try { return renderContent(); } finally { renderMemo = previous; efficiencyRenderPass=previousEfficiency; }
+  try { const value=renderContent(); if(value!==false)searchResultStatus('ready'); return value; }
+  catch(error) { failSearch(error); throw error; }
+  finally { renderMemo = previous; efficiencyRenderPass=previousEfficiency; }
 }
 function renderContent() {
   commitCardRows ||= window.KeyedCardRenderer.create();
@@ -5824,6 +5934,10 @@ function renderContent() {
   const calculationMs = performance.now() - renderStarted;
   renderMemo = searchMemoFor(calculated);
   ensureSelectedBuybackPeriods(calculated);
+  void ensureVerifiedListingReferences(calculated);
+  if(selectedPeriodError&&state.buybackStoreMode==='selected'&&[state.buyback7RatioMin,state.buyback30RatioMin,state.buyback75RatioMin].some(v=>v!=null))throw selectedPeriodError;
+  if (selectedPeriodLoad || verifiedListingFields.some(key=>state[key]!=null) && !['ready','failed'].includes(state.verifiedListingStatus)) { searchResultStatus('loading'); return false; }
+  if (verifiedListingFields.some(key=>state[key]!=null) && state.verifiedListingStatus==='failed') throw new Error('みんトレ出品数の検索データ取得・版照合に失敗。条件一致0件とは別です。');
   const filteringStarted = performance.now();
   if (auditIsOpen(els.limitModelAudit)) {
     state.limitModelAudit = buildLimitModelAudit(calculated);
@@ -5848,6 +5962,8 @@ function renderContent() {
 
   efficiencyAuditCards = calculated;
   efficiencyAuditFiltered = enriched;
+  searchRuntime.count = enriched.length;
+  searchRuntime.evaluatedAt = new Date().toISOString();
   renderEfficiencySummary(document.getElementById('efficiencySummary'));
 
 
@@ -6277,13 +6393,8 @@ function renderContent() {
         </div>
       </details>` : "";
     const snkrListing = card.snkrListing || null;
-    const snkrListingPanel = `
-      <div class="snkr-listing-panel">
-        <div><span>スニダンPSA10 現在出品数</span><strong>${Number.isFinite(snkrListing?.current) ? `${fmt.format(snkrListing.current)}件` : "未取得"}</strong><small>成約数とは別指標</small></div>
-        <div><span>7日前比</span><strong>${Number.isFinite(snkrListing?.change7) ? `${snkrListing.change7 >= 0 ? "+" : ""}${fmt.format(snkrListing.change7)}件` : "蓄積中"}</strong><small>${escapeHtml(snkrListing?.previous7Date || "比較日未到達")}</small></div>
-        <div><span>30日前比</span><strong>${Number.isFinite(snkrListing?.change30) ? `${snkrListing.change30 >= 0 ? "+" : ""}${fmt.format(snkrListing.change30)}件` : "蓄積中"}</strong><small>${escapeHtml(snkrListing?.previous30Date || "比較日未到達")}</small></div>
-        <div><span>出品最安値</span><strong>${Number.isFinite(snkrListing?.listingFloor) ? `¥${fmt.format(snkrListing.listingFloor)}` : "未取得"}</strong><small>${snkrListing?.status === "判定可" ? "供給評価に使用" : "履歴蓄積中のため参考表示"}</small></div>
-      </div>`;
+    const snkrListingPanel = '<section data-verified-listings="'+escapeHtml(card.id)+'">'+verifiedListingPanel(card)+'</section>'+
+      (snkrListing?'<details><summary>旧出品集計・PSA10販売中限定は未確認</summary><small>提供元集計 '+(Number.isFinite(snkrListing.current)?fmt.format(snkrListing.current)+'件':'未取得')+'。今回の出品数表示・範囲検索へ代用しません。既存の分析採用は変更していません。</small></details>':'');
     const dataQuality = card.dataQuality || {};
     const dataQualityPanels = [
       dataQuality.manualReview ? `<div class="data-quality-notice manual"><strong>要確認（手動確認）</strong><span>${escapeHtml(dataQuality.manualReviewReasons.join(" / "))}</span></div>` : "",
@@ -6709,6 +6820,7 @@ function renderContent() {
       <section class="candidate-glance" aria-label="仕入れ判断の要点">
         <div class="glance-verdict"><span>${currentExploration ? "現相場の探索（購入判断とは別）" : "今回の判定"}</span><strong>${currentExploration ? currentTrial.economics ? currentTrial.economics.expectedProfit >= 0 ? "現相場採算あり・仮定" : "現相場では赤字・仮定" : currentTrial.eligible ? "上限探索・購入価格未取得" : "必要データ不足・試算不可" : escapeHtml(displayVerdict)}</strong><small>${currentExploration ? escapeHtml(currentTrial.purchaseSource || "購入価格未取得") : escapeHtml(purchaseAvailability.label || "購入先未確認")}</small></div>
         ${priceCells}
+        <div data-verified-listings="${escapeHtml(card.id)}" data-listing-compact="true">${verifiedListingPanel(card,true)}</div>
       </section>
       ${searchProfitPanel(chosenProfit,true)}
       ${cardEfficiencyPanel(card,true)}
@@ -6833,6 +6945,7 @@ function renderContent() {
   committed.changed.forEach((el) => observer.observe(el));
   void ensureOverseasGlance(visibleCards);
   void ensureGemRateReference(visibleCards).then(()=>ensurePsaPopGlance(visibleCards));
+  void ensureVerifiedListingReferences(visibleCards);
   committed.changed.forEach(bindPsaHistoryDetails);
   committed.changed.flatMap(el => [...el.querySelectorAll('[data-card-detail]')]).forEach(details => {
     details.addEventListener('toggle', async () => {
@@ -7024,12 +7137,17 @@ function assertCalculationDependencies() {
     'LimitDisplayModel.classifyCap':limitDisplayModel?.classifyCap,
     'CurrentMarketModel.assertDependencies':currentMarketModel?.assertDependencies,
     'PurchaseRatioModel.marketplaceAtGuide':purchaseRatioModel?.marketplaceAtGuide,
-    'PurchaseRatioModel.guideSearchReasons':purchaseRatioModel?.guideSearchReasons};
+    'PurchaseRatioModel.guideSearchReasons':purchaseRatioModel?.guideSearchReasons,
+    'Psa10ListingCounts.summarize':explorationMetrics?.listingCounts?.summarize,
+    'Psa10ListingCounts.reasons':explorationMetrics?.listingCounts?.reasons,
+    'Psa10ListingCounts.text':explorationMetrics?.listingCounts?.text,
+    'Psa10ListingCounts.providerViews':explorationMetrics?.listingCounts?.providerViews};
   const missing=Object.keys(required).filter(name=>typeof required[name]!=='function');
   if(missing.length){const error=new Error('計算モジュールの読込失敗・版不一致：'+missing.join('／')+'。再読み込みしてください。');error.code='CALCULATION_DEPENDENCY_UNAVAILABLE';throw error;}
   currentMarketModel.assertDependencies();
 }
 async function init() {
+  searchResultStatus('loading');
   assertCalculationDependencies();
   const conditionDefaults=new Map([...document.querySelectorAll('.search-settings input, .search-settings select')].map(el=>[el.id,conditionValue(el)]));
   for (const el of document.querySelectorAll('.search-settings input, .search-settings select')) el.dataset.searchInitialValue = el.value;
@@ -7058,7 +7176,7 @@ async function init() {
     // Bound parallel reads; each financial input must still pass the pinned hash.
     for (let i = 0; i < initialFiles.length; i += 4) {
       await Promise.all(initialFiles.slice(i, i + 4).map(name => fetchJsonMaybe(`./data/${name}.json`)));
-      if (uiDataInvalid) throw new Error("公開データの版が一致しません。再読み込みしてください。");
+      if (uiDataInvalid) throw uiDataError || new Error("公開データの版が一致しません。再読み込みしてください。");
     }
     state.updateStatus = await fetchJsonMaybe("./data/update-status.json");
     state.psa10PeriodSummary = await fetchJsonMaybe("./data/psa10-period-summary.json");
@@ -7169,7 +7287,8 @@ async function init() {
     state.psaPopulation = psaData?.cards || Object.create(null);
     state.psaSpecificationHeld = psaData?.specificationHeld || Object.create(null);
     attachBundlePopulations(state.psaPopulation);
-    if (uiDataInvalid) throw new Error("公開データの版が一致しません。再読み込みしてください。");
+    if (uiDataInvalid) throw uiDataError || new Error("公開データの版が一致しません。再読み込みしてください。");
+    searchRuntime.booted = true;
     syncFromUI();
     const metrics = document.createElement("details");
     metrics.className = "ui-load-metrics";
@@ -7181,6 +7300,7 @@ async function init() {
     els.catalogCoverageSummary?.after(metrics);
   } catch (err) {
     console.error(err);
+    failSearch(err);
     if(err.code==='CALCULATION_DEPENDENCY_UNAVAILABLE')throw err;
     showStatus(
       "カード一覧の読み込みに失敗しました。\n\nこのサイトは `data/pokemon-cards.json` と `data/pokemon-cards-meta.json` を読み込んでいます。`index.html` をファイル直開きすると、ブラウザの制限で JSON の読み込みが止まることがあります。\n\nおすすめ:\n1. GitHub Pages 上で開く\n2. ローカルなら簡易サーバー経由で開く\n   例: `python -m http.server 8000` のように同じフォルダを配信してから `http://localhost:8000/` を開く\n\nもし GitHub Pages に置いたのに出ない場合は、更新後の URL とコンソールエラーを見ます。",
@@ -7672,6 +7792,7 @@ els.clearFavoritesBtn.addEventListener("click", () => {
 
 init().catch((err) => {
   console.error(err);
+  failSearch(err);
   if(err.code==='CALCULATION_DEPENDENCY_UNAVAILABLE')els.grid?.replaceChildren();
   showStatus(err.code==='CALCULATION_DEPENDENCY_UNAVAILABLE'?err.message:"予期しないエラーが発生しました。ブラウザの開発者ツールでコンソールを確認してください。", "error");
 });

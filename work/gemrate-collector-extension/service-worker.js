@@ -11,7 +11,15 @@ async function config(){
 }
 async function jsonReceipt(job,download=null){
   const receipt={version:1,kind:'gemrate-normal-csv-v1',jobId:job.id,setCode:job.set.setCode,page:job.page,decision:job.decision,download:download?{id:download.id,url:download.url,referrer:download.referrer,startTime:download.startTime,endTime:download.endTime,state:download.state,fileSize:download.fileSize}:null};
-  await chrome.downloads.download({url:'data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(receipt)),filename:'GemRate-Auto/pending/'+job.id+'/receipt.json',saveAs:false,conflictAction:'uniquify'});
+  await writeReceipt(receipt);
+}
+async function writeReceipt(receipt){
+  const url='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(receipt)),filename='GemRate-Auto/pending/'+receipt.jobId+'/receipt.json';
+  const old=(await chrome.storage.local.get('receiptIntents')).receiptIntents||{};
+  const intents=Object.fromEntries(Object.entries(old).filter(([,r])=>Date.now()-r.at<86400000));
+  intents[receipt.jobId]={url,filename,at:Date.now()};
+  await chrome.storage.local.set({receiptIntents:intents});
+  await chrome.downloads.download({url,filename,saveAs:false,conflictAction:'uniquify'});
 }
 async function finish(state,job,download=null){
   await jsonReceipt(job,download);
@@ -25,7 +33,7 @@ async function hold(state,job,reason){
   const at=new Date().toISOString(),stage=job.exportRequestedAt?'csv-receipt':'provider-check',old=state.sets[job.set.setCode]||{};
   const temporary=!job.exportRequestedAt&&/page-not-ready|読込期限超過|No tab with id/i.test(reason);
   state.sets[job.set.setCode]={...old,...(temporary?{retryAt:Date.now()+3600000,attemptDay:C.day(at),attempts:(old.attemptDay===C.day(at)?old.attempts||0:0)+1}:{hold:{at,stage,reason}})};
-  await chrome.downloads.download({url:'data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify({version:1,kind:'gemrate-source-hold-v1',jobId:job.id,setCode:job.set.setCode,url:job.set.url,at,stage,reason,temporary})),filename:'GemRate-Auto/pending/'+job.id+'/receipt.json',saveAs:false,conflictAction:'uniquify'}).catch(()=>{});
+  await writeReceipt({version:1,kind:'gemrate-source-hold-v1',jobId:job.id,setCode:job.set.setCode,url:job.set.url,at,stage,reason,temporary}).catch(()=>{});
   state.active=null;state.nextAllowedAt=Date.now()+60000;await save(state);await chrome.tabs.remove(job.tabId).catch(()=>{});
 }
 async function inspect(state,job){
@@ -58,7 +66,13 @@ async function tick(){
   finally{running=false;}
 }
 chrome.downloads.onDeterminingFilename.addListener((item,suggest)=>{
-  get().then(async state=>{const job=state.active;if(!C.claim(item,job)){suggest();return;}job.downloadId=item.id;await save(state);suggest({filename:'GemRate-Auto/pending/'+job.id+'/export.csv',conflictAction:'uniquify'});}).catch(()=>suggest());return true;
+  (async()=>{
+    const intents=(await chrome.storage.local.get('receiptIntents')).receiptIntents||{},receipt=C.receiptFilename(item,intents);
+    if(receipt){suggest({filename:receipt,conflictAction:'uniquify'});return;}
+    const state=await get(),job=state.active;
+    if(!C.claim(item,job)){suggest();return;}
+    job.downloadId=item.id;await save(state);suggest({filename:'GemRate-Auto/pending/'+job.id+'/export.csv',conflictAction:'uniquify'});
+  })().catch(()=>suggest());return true;
 });
 chrome.downloads.onChanged.addListener(delta=>{if(delta.state)void tick();});
 chrome.tabs.onUpdated.addListener((id,change)=>{if(change.status==='complete')void get().then(s=>{if(s.active?.tabId===id)void tick();});});

@@ -24,7 +24,7 @@ function plan({ cards, sourceId, catalog, candidateRows = {}, fixedIds = [], foc
     const time = observationTime(lastSuccessAt);
     const validTime = Number.isFinite(time) && time <= now;
     const alternateOnly=candidateRows[card.id]?.alternatePurchaseEvidence===true&&!focus&&!fixedTarget&&!favorites.has(card.id);
-    const hours = alternateOnly ? 48 : important ? config.importantHours || 6 : config.normalHours || 720;
+    const hours = alternateOnly ? 48 : important ? config.importantHours || 6 : config.normalHours || 48;
     const due = validTime ? time + hours * 3600000 : 0;
     const budgetDeferred=/^(?:timeout: 通信前に時間予算を確認・保存して停止|時間予算・未取得カードから次回再開)$/.test(previous.error || '');
     const retry = budgetDeferred ? NaN : Date.parse(previous.nextRetryAt);
@@ -89,7 +89,7 @@ function finish(previous = {}, record, at, config = {}) {
   return { ...previous, url: record.url, lastAttemptAt: record.startedAt, lastSuccessAt: ok ? at : previous.lastSuccessAt || null,
     failures, status: ok ? "success" : record.status, error: ok ? null : record.error,
     nextRetryAt: ok ? null : new Date(Date.parse(at) + Math.min(48, 2 ** failures) * 3600000).toISOString(),
-    nextDueAt: ok ? new Date(Date.parse(at) + (record.refreshHours || (record.important ? config.importantHours || 6 : config.normalHours || 720)) * 3600000).toISOString() : previous.nextDueAt || null };
+    nextDueAt: ok ? new Date(Date.parse(at) + (record.refreshHours || (record.important ? config.importantHours || 6 : config.normalHours || 48)) * 3600000).toISOString() : previous.nextDueAt || null };
 }
 function write(root = ROOT) {
   const now = Date.now();
@@ -127,7 +127,7 @@ function write(root = ROOT) {
       priorityCardsPerMinute: priorityRate ? Number((priorityRate * 60).toFixed(2)) : null,
       normalCardsPerMinute: normalRate ? Number((normalRate * 60).toFixed(2)) : null,
         estimatedNormalSweepDays: normalRate && !blocked ? Math.ceil((planned.records.length - important.length) / (normalRate * budgetSeconds * (86400000 / proactive.lead(timingConfig(root)).intervalMs))) : null,
-      normalTargetHours: read(root, "data/priority-price-config.json").normalHours || 720,
+      normalTargetHours: read(root, "data/priority-price-config.json").normalHours || 48,
       estimatedSweepActiveMinutes: priorityRate && !blocked ? Math.ceil(important.length / priorityRate / 60) : null,
       estimatedExecutionsToClearOverdue: priorityRate && !blocked ? Math.ceil(important.filter((r) => r.due).length / (priorityRate * budgetSeconds)) : null,
         estimatedFullSweepHours: priorityRate && !blocked ? Math.ceil(important.length / (priorityRate * budgetSeconds)) * proactive.lead(timingConfig(root)).intervalMs / 3600000 : null,

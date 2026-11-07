@@ -12,6 +12,9 @@ const cards = Array.from({ length: 12 }, (_, i) => ({ id: String(i), name: `card
 const args = { cards, sourceId: "hareruya2", catalog: [], candidateRows: Object.fromEntries(cards.slice(0, 8).map((c) => [c.id, {}])), config: { importantHours: 6 }, now };
 const first = plan(args);
 assert.equal(first.queue.length, 12);
+assert.equal(first.records.find(r=>r.card.id==='11').refreshHours,48,'ordinary linked stores must not wait thirty days beyond the 48-hour adoption limit');
+const allStores=plan({...args,candidateRows:{},cards:[{...cards[0],price:0,stock:0},{...cards[1],price:999999,stock:5}],catalog:[]});
+assert.equal(allStores.queue.length,2,'both out-of-stock and expensive linked stores retain recheck slots');
 assert.deepEqual(first.queue.slice(0, 4).map((r) => r.important), [true, true, true, false]);
 const row = { id: "0", url: cards[0].hareruya2Url, startedAt: new Date(now).toISOString(), status: "verified", important: true };
 const saved = finish({}, row, new Date(now).toISOString(), { importantHours: 6 });

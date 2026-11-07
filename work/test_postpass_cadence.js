@@ -21,6 +21,14 @@ assert.equal(postpass.prioritize([],0,[{...catalog[0],detailUrl:'https://unrelat
 const batch=require('./source_batch_metrics').shopBatch('torecacamp',JSON.stringify({torecacamp:{detailFetched:4,coverage:6502,updated:1,linked:0}}));
 assert.equal(batch.acquiredCount,4);assert.equal(batch.catalogCount,6502);assert.equal(batch.newLinkedCount,0);
 console.log('postpass continuation tests passed');
+const completing={cardId:'finish-median',detailUrl:'https://torecacamp-pokemon.com/products/finish-median',sourceSitemap:3,observedAt:new Date(now-49*3600000).toISOString()};
+const oldCritical=Array.from({length:20},(_,i)=>({...completing,cardId:'critical-'+i,detailUrl:'https://torecacamp-pokemon.com/products/critical-'+i,observedAt:'2026-09-01'}));
+const firstSlots=postpass.prioritize(Array.from({length:20},(_,i)=>({url:'normal-'+i})),0,[...oldCritical,completing],[...oldCritical.map(r=>r.cardId),'finish-median'],16,{},now,0,oldCritical.map(r=>r.cardId),['finish-median']).slice(0,16);
+assert(firstSlots.slice(0,8).some(r=>r.url===completing.detailUrl),'one missing source must not starve behind an unlimited older maintenance backlog');
+assert.equal(firstSlots.filter(r=>!r.priorityRefresh).length,8,'normal exploration half and total request budget remain');
+const completionTargets={profiles:[{id:'current-median',prospects:[{id:'finish-median',missing:['referenceMedian'],reasons:['単体資金効率算出不可・中央値不足'],completionPlan:{requirements:[{automatic:true,remainingIndependent:1,targets:[{source:'torecacamp'}]}]}},{id:'already-fails',missing:['referenceMedian'],reasons:['利益条件'],completionPlan:{requirements:[{automatic:true,remainingIndependent:1,targets:[{source:'torecacamp'}]}]}}]}]};
+assert.deepEqual(require('./profile_completion_routes').medianCompletionIds(completionTargets,'torecacamp',['current']),['finish-median']);
+assert.deepEqual(require('./profile_completion_routes').medianCompletionIds(completionTargets,'hareruya2',['current']),[],'do not repeatedly request the already fresh independent store');
 const {campRequestedIds}=require('./update_yuyutei_torecacamp');
 assert.deepEqual(campRequestedIds({readyRoutes:{domesticShops:[{id:'price',field:'shopStateA'},{id:'median',field:'referenceMedian'},{id:'price',field:'referenceMedian'},{id:'other',field:'identity'}]}},['existing']),['price','median','existing'],'completion routes precede routine comparison refresh without duplication');
 assert.deepEqual(campRequestedIds({freshnessRecovery:[{id:'expired'}],readyRoutes:{domesticShops:[{id:'prospect',field:'shopStateA',priority:1000},{id:'expired',field:'referenceMedian',priority:0}]}},['comparison']),['expired','prospect','comparison']);
