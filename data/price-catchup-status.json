@@ -1,28 +1,28 @@
 {
-  "startedAt": "2026-11-08T15:00:46.839Z",
-  "runId": "42492537206",
-  "event": "workflow_run",
+  "startedAt": "2026-11-08T20:46:24.858Z",
+  "runId": "42521760811",
+  "event": "schedule",
   "route": "既存監視ジョブの空白補完",
   "status": "acquired-saved",
   "allowed": true,
-  "ageMs": 21058944,
+  "ageMs": 20737445,
   "minimumIntervalMs": 9000000,
   "reason": "定期の空白・既存の期限順キューで補完",
   "llmCalls": 0,
   "codexCalls": 0,
   "sourceFailures": [],
   "acquisitionStatus": "process-success",
-  "endedAt": "2026-11-08T15:15:05.433Z",
-  "durationMs": 858594,
+  "endedAt": "2026-11-08T20:59:50.295Z",
+  "durationMs": 805437,
   "outcomes": {
-    "baselineAt": "2026-11-08T15:00:46.839Z",
+    "baselineAt": "2026-11-08T20:46:24.858Z",
     "commonCards": 12970,
     "addedCards": 0,
     "removedCards": 0,
-    "newlyAnalyzable": 1,
+    "newlyAnalyzable": 0,
     "lostAnalyzable": 0,
-    "filledCards": 2,
-    "filledItems": 2,
+    "filledCards": 1,
+    "filledItems": 1,
     "sources": {
       "cardrush": {
         "newLinked": 0,
@@ -36,7 +36,7 @@
         "validAdded": 0,
         "validLost": 0,
         "usableNet": 0,
-        "freshnessRecovered": 86
+        "freshnessRecovered": 79
       },
       "yuyutei": {
         "newLinked": 0,
@@ -47,9 +47,9 @@
       },
       "torecacamp": {
         "newLinked": 0,
-        "validAdded": 1,
+        "validAdded": 0,
         "validLost": 0,
-        "usableNet": 1,
+        "usableNet": 0,
         "freshnessRecovered": 17
       },
       "psaOfficial": {
