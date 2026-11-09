@@ -1,33 +1,33 @@
 {
-  "startedAt": "2026-11-09T17:49:47.079Z",
-  "runId": "42668278183",
+  "startedAt": "2026-11-09T20:50:44.706Z",
+  "runId": "42696681227",
   "event": "schedule",
-  "route": "既存監視ジョブの空白補完",
+  "route": "通常価格更新",
   "status": "acquired-saved",
   "allowed": true,
-  "ageMs": 28430027,
-  "minimumIntervalMs": 9000000,
+  "ageMs": 10857061,
+  "minimumIntervalMs": 7200000,
   "reason": "定期の空白・既存の期限順キューで補完",
   "llmCalls": 0,
   "codexCalls": 0,
   "sourceFailures": [],
   "acquisitionStatus": "process-success",
-  "endedAt": "2026-11-09T18:05:39.638Z",
-  "durationMs": 952559,
+  "endedAt": "2026-11-09T21:05:34.964Z",
+  "durationMs": 890258,
   "outcomes": {
-    "baselineAt": "2026-11-09T17:49:47.079Z",
-    "commonCards": 12980,
-    "addedCards": 3,
+    "baselineAt": "2026-11-09T20:50:44.706Z",
+    "commonCards": 12983,
+    "addedCards": 0,
     "removedCards": 0,
-    "newlyAnalyzable": 8,
-    "lostAnalyzable": 2,
-    "filledCards": 31,
-    "filledItems": 37,
+    "newlyAnalyzable": 0,
+    "lostAnalyzable": 0,
+    "filledCards": 0,
+    "filledItems": 0,
     "sources": {
       "cardrush": {
-        "newLinked": 1,
-        "validAdded": 1,
-        "validLost": 1,
+        "newLinked": 0,
+        "validAdded": 0,
+        "validLost": 0,
         "usableNet": 0,
         "freshnessRecovered": 0
       },
@@ -36,7 +36,7 @@
         "validAdded": 0,
         "validLost": 0,
         "usableNet": 0,
-        "freshnessRecovered": 78
+        "freshnessRecovered": 106
       },
       "yuyutei": {
         "newLinked": 0,
@@ -48,9 +48,9 @@
       "torecacamp": {
         "newLinked": 0,
         "validAdded": 0,
-        "validLost": 1,
-        "usableNet": -1,
-        "freshnessRecovered": 18
+        "validLost": 0,
+        "usableNet": 0,
+        "freshnessRecovered": 33
       },
       "psaOfficial": {
         "newLinked": 0,
@@ -66,9 +66,6 @@
         "usableNet": 0,
         "freshnessRecovered": 0
       }
-    },
-    "referenceEvidenceRecovered": {
-      "psa9Evidence": 5
     }
   },
   "publicationStatus": "保存済み・公開照合待ち"
