@@ -1,33 +1,33 @@
 {
-  "startedAt": "2026-11-09T09:55:56.458Z",
-  "runId": "42597046255",
+  "startedAt": "2026-11-09T17:49:47.079Z",
+  "runId": "42668278183",
   "event": "schedule",
-  "route": "通常価格更新",
+  "route": "既存監視ジョブの空白補完",
   "status": "acquired-saved",
   "allowed": true,
-  "ageMs": 12457612,
-  "minimumIntervalMs": 7200000,
+  "ageMs": 28430027,
+  "minimumIntervalMs": 9000000,
   "reason": "定期の空白・既存の期限順キューで補完",
   "llmCalls": 0,
   "codexCalls": 0,
   "sourceFailures": [],
   "acquisitionStatus": "process-success",
-  "endedAt": "2026-11-09T10:10:47.388Z",
-  "durationMs": 890930,
+  "endedAt": "2026-11-09T18:05:39.638Z",
+  "durationMs": 952559,
   "outcomes": {
-    "baselineAt": "2026-11-09T09:55:56.458Z",
+    "baselineAt": "2026-11-09T17:49:47.079Z",
     "commonCards": 12980,
-    "addedCards": 0,
+    "addedCards": 3,
     "removedCards": 0,
-    "newlyAnalyzable": 0,
-    "lostAnalyzable": 0,
-    "filledCards": 0,
-    "filledItems": 0,
+    "newlyAnalyzable": 8,
+    "lostAnalyzable": 2,
+    "filledCards": 31,
+    "filledItems": 37,
     "sources": {
       "cardrush": {
-        "newLinked": 0,
-        "validAdded": 0,
-        "validLost": 0,
+        "newLinked": 1,
+        "validAdded": 1,
+        "validLost": 1,
         "usableNet": 0,
         "freshnessRecovered": 0
       },
@@ -36,7 +36,7 @@
         "validAdded": 0,
         "validLost": 0,
         "usableNet": 0,
-        "freshnessRecovered": 69
+        "freshnessRecovered": 78
       },
       "yuyutei": {
         "newLinked": 0,
@@ -48,9 +48,9 @@
       "torecacamp": {
         "newLinked": 0,
         "validAdded": 0,
-        "validLost": 0,
-        "usableNet": 0,
-        "freshnessRecovered": 26
+        "validLost": 1,
+        "usableNet": -1,
+        "freshnessRecovered": 18
       },
       "psaOfficial": {
         "newLinked": 0,
@@ -68,7 +68,7 @@
       }
     },
     "referenceEvidenceRecovered": {
-      "buybackExitEvidence": 1
+      "psa9Evidence": 5
     }
   },
   "publicationStatus": "保存済み・公開照合待ち"
