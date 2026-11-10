@@ -1,21 +1,23 @@
 {
-  "startedAt": "2026-11-10T16:22:46.391Z",
-  "runId": "42853676539",
-  "event": "workflow_run",
-  "route": "既存監視ジョブの空白補完",
+  "startedAt": "2026-11-10T20:31:46.000Z",
+  "runId": "42896063825",
+  "event": "workflow_dispatch",
+  "route": "通常価格更新",
   "status": "acquired-saved",
   "allowed": true,
-  "ageMs": 13010115,
-  "minimumIntervalMs": 9000000,
+  "ageMs": 14939198,
+  "minimumIntervalMs": 7200000,
   "reason": "定期の空白・既存の期限順キューで補完",
   "llmCalls": 0,
   "codexCalls": 0,
-  "sourceFailures": [],
-  "acquisitionStatus": "process-success",
-  "endedAt": "2026-11-10T16:33:39.008Z",
-  "durationMs": 652617,
+  "sourceFailures": [
+    "work/run_tracked_update.js"
+  ],
+  "acquisitionStatus": "partial-with-failure",
+  "endedAt": "2026-11-10T20:45:06.709Z",
+  "durationMs": 800709,
   "outcomes": {
-    "baselineAt": "2026-11-10T16:22:46.391Z",
+    "baselineAt": "2026-11-10T20:31:46.000Z",
     "commonCards": 12988,
     "addedCards": 0,
     "removedCards": 0,
@@ -36,7 +38,7 @@
         "validAdded": 0,
         "validLost": 0,
         "usableNet": 0,
-        "freshnessRecovered": 133
+        "freshnessRecovered": 91
       },
       "yuyutei": {
         "newLinked": 0,
@@ -50,7 +52,7 @@
         "validAdded": 0,
         "validLost": 0,
         "usableNet": 0,
-        "freshnessRecovered": 24
+        "freshnessRecovered": 18
       },
       "psaOfficial": {
         "newLinked": 0,
