@@ -1,26 +1,20 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-10T02:31:29.433Z",
+  "generatedAt": "2026-11-10T02:41:27.849Z",
   "sourceLastSuccessAt": "2026-11-10T02:21:15.773Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-11-06T21:22:27.926Z",
-    "lastSuccessAt": "2026-11-06T21:22:27.926Z",
-    "runId": "42293658039",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/42293658039"
+    "lastAttemptAt": "2026-11-10T02:41:27.833Z",
+    "lastSuccessAt": "2026-11-10T02:41:27.833Z",
+    "runId": "42743788206",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/42743788206"
   },
   "issues": [
     {
       "key": "safe:yuyutei:manual-action-required:GitHub ActionsからHTTP #。正規アクセス確認待ち",
       "category": "アクセス・手動対応待ち",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/42121882705",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/42728982883",
       "reason": "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち"
-    },
-    {
-      "key": "safe:priceEvidence:stalled:#回連続でチェックポイント進捗なし",
-      "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/42121882705",
-      "reason": "状態A価格確認: 2回連続でチェックポイント進捗なし"
     },
     {
       "key": "source:cardrush:manual-wait",
@@ -49,7 +43,7 @@
     {
       "key": "source:snkrRaw:stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/42245380125",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/42741954278",
       "reason": "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）"
     },
     {
@@ -66,8 +60,8 @@
     {
       "key": "priority-prices:cadence-stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/42248106132",
-      "reason": "重要価格更新：設定2時間に対し実績成功間隔（直近最大）21.33時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/42696681227",
+      "reason": "重要価格更新：設定2時間に対し実績成功間隔（直近最大）10.91時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
     },
     {
       "key": "source-recovery:merge-review:41495095858",
@@ -92,11 +86,16 @@
       "category": "確認が必要",
       "url": "https://github.com/urm759/pokeka-serch/actions/runs/41941412953",
       "reason": "保存原票の同時更新照合が保留（3入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/hareruya2-stock-summary.json, work/source-update-runs.json, work/source-update-history.json"
+    },
+    {
+      "key": "monitor:workflow-failure",
+      "category": "取得処理の故障",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/42738135808",
+      "reason": "監視確認または監視公開が未完了。補完失敗と監視自身の停止を分離して復旧"
     }
   ],
   "reasons": [
     "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち",
-    "状態A価格確認: 2回連続でチェックポイント進捗なし",
     "カードラッシュ: pk-73737: HTTP 403",
     "カードラッシュ: 更新期限超過（カード別鮮度 0%）",
     "遊々亭: HTTP 403",
@@ -104,11 +103,12 @@
     "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）",
     "福福トレカ（郵送窓口）: 通常公開価格表の低頻度GET。認証操作なし。郵送窓口のみ・商品更新日は不明、実確認日時とページ更新日時を分離",
     "PC側PSA: PC観測未受信 / 30時間以内の独立タスク観測なし。PC停止・観測起動失敗・未公開を区別して確認",
-    "重要価格更新：設定2時間に対し実績成功間隔（直近最大）21.33時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能",
+    "重要価格更新：設定2時間に対し実績成功間隔（直近最大）10.91時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能",
     "保存原票の同時更新照合が保留（28入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/domestic-trade-source-audit.json, data/hareruya2-stock-summary.json, data/pokemon-cards-meta.json, data/pokemon-cards.json, data/price-catchup-status.json, data/priority-price-execution.json, data/psa10-observation-receipt.json, data/shop-buyback-summary.json, data/state-a-price-evidence.json, work/buyback-price-observations.json, work/candidate-shop-refresh.json, work/card-lifecycle.json, work/card-new-arrivals.json, work/changed-card-ids.json, work/hareruya2_catalog.json, work/hareruya2_stock_history.json, work/homura-public-che",
     "保存原票の同時更新照合が保留（17入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/pokemon-cards.json, data/pokemon-cards-meta.json, data/shop-buyback-summary.json, data/hareruya2-stock-summary.json, work/source-update-runs.json, work/source-update-history.json, work/changed-card-ids.json, work/toreca-source-inventory.json, work/market_stability_history.json, work/buyback-price-observations.json, work/shop_buyback_history.json, work/shop_buyback_catalog.json, work/shop_buyback_unmatched.json, work/hareruya2_catalog.json, work/hareruya2_stock_history.json, work/priority-price-http-cache.json, work/candidate-shop-",
     "保存原票の同時更新照合が保留（20入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/pokemon-cards.json, data/pokemon-cards-meta.json, data/shop-buyback-summary.json, data/hareruya2-stock-summary.json, work/source-update-runs.json, work/source-update-history.json, work/changed-card-ids.json, work/toreca-source-inventory.json, work/toreca_source_diff.json, work/market_stability_history.json, work/buyback-price-observations.json, work/shop_buyback_history.json, work/shop_buyback_catalog.json, work/shop_buyback_unmatched.json, work/shop_buyback_item_matches.json, work/homura-public-checkpoint.json, work/hareruya2_cat",
-    "保存原票の同時更新照合が保留（3入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/hareruya2-stock-summary.json, work/source-update-runs.json, work/source-update-history.json"
+    "保存原票の同時更新照合が保留（3入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/hareruya2-stock-summary.json, work/source-update-runs.json, work/source-update-history.json",
+    "監視確認または監視公開が未完了。補完失敗と監視自身の停止を分離して復旧"
   ],
   "detailUrl": "./data/update-health.json"
 }
