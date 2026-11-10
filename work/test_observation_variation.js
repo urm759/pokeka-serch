@@ -13,6 +13,9 @@ const stale=s.verifiedVariation(rows,card,'2026-11-02',now+4*86400000);assert(st
 const gap=rows.filter(r=>r[0]<'2026-10-14'||r[0]>'2026-10-22');assert(s.verifiedVariation(gap,card,asOf,now).reasons.includes('gap'));
 const zero=rows.map(r=>{const x=structuredClone(r);x[2]=100;return x;});const v=s.verifiedVariation(zero,card,asOf,now);assert.equal(v.value[1],0);assert.equal(v.value[2],0);assert.equal(m.variation({variation:{cards:{fixture:v.value}}},card,now).label,'小さい');
 assert.equal(m.variation({variation:{unavailable:{fixture:['gap','stale']}}},card,now).reason,'連続欠測7日超／最終観測が古い');
+const periods={variation:{cards:{fixture:[30,12.37,-35.73,29,29,0,'2026-10-29']},short:{cards:{fixture:[7,.84,-2.21,6,6,0,'2026-10-29',31000,31700]}}}};
+assert.equal(m.variation(periods,card,now).label,'大きい');assert.equal(m.variation(periods,card,now,7).label,'小さい','short stability is not overridden by an older medium drawdown');
+periods.variation.short.cards.fixture[3]=4;assert.equal(m.variation(periods,card,now,7).label,'判断材料不足','no short-window coverage relaxation');
 const quote={source:'晴れる屋2',url:'https://hareruya2.com/products/123',available:true,fresh:true,value:1000,purchaseEligible:true};
 assert.equal(m.purchaseOfferUrl(quote),quote.url);
 for(const patch of [{url:'https://hareruya2.com/search?q=x'},{source:'トレカキャンプ'},{url:'https://evil.test/products/123'},{url:'javascript:alert(1)'},{available:false},{fresh:false},{purchaseEligible:false},{value:null},{url:null}])assert.equal(m.purchaseOfferUrl({...quote,...patch}),null);

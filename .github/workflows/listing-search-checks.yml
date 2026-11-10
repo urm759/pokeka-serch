@@ -39,6 +39,10 @@ jobs:
       - name: Common calculations, optional controls and initial-load consistency
         run: |
           node --check app.js
+          node work/test_unified_store_buy.js
+          node work/test_previous_qualified_reference.js
+          node work/test_partial_buyback_refresh.js
+          node work/test_public_mail_buybacks.js
           node work/test_search_runtime_state.js
           node work/test_observation75_migration.js
           node work/test_psa10_listing_counts.js

@@ -156,8 +156,8 @@
       ||host==='yuyu-tei.jp'&&/遊々亭/.test(source)&&/^\/sell\/poc\/card\/[^/]+\/[^/]+\/?$/.test(url.pathname);
     return direct?url.href:null;
   }
-  function variation(summary,card,now=Date.now()) {
-    const evidence=summary?.variation?.cards?.[card.id];
+  function variation(summary,card,now=Date.now(),requested=null) {
+    const evidence=requested===7?summary?.variation?.short?.cards?.[card.id]:summary?.variation?.cards?.[card.id];
     const means=observationPeriods.map(d=>observation(summary,card.id,card.psa10,d)).filter(r=>r.mean>0&&!r.stale);
     const direction=means.find(r=>r.days===30)||means[0],delta=direction?.delta;
     const trend=delta==null?'方向不明':delta>5?'上昇方向':delta< -5?'下落方向':'平均付近';
@@ -168,10 +168,10 @@
     }
     const [days,cv,drawdown,count,span,gap,latest]=evidence;
     const age=Math.floor((now+9*3600000)/86400000)-Date.parse(latest)/86400000;
-    if(!(age>=0&&age<=2&&count>=15&&count/days>=.5&&span>=14&&gap<=7))return {label:'判断材料不足',trend,reason:'観測不足・古値・日時不正'};
+    if(!(age>=0&&age<=2&&count>=(days===7?5:15)&&count/days>=.5&&span>=(days===7?5:14)&&gap<=(days===7?2:7)))return {label:'判断材料不足',trend,reason:'観測不足・古値・日時不正'};
     if(![cv,drawdown].every(finite))return {label:'判断材料不足',trend,reason:'ばらつき・最大下落の根拠不足'};
     const label=cv>=20||drawdown<=-30?'大きい':cv>=8||drawdown<=-15?'中程度':'小さい';
-    return {label,trend,days,cv,drawdown,count,span,gap,latest,reference:count<days,excluded:summary?.variation?.excluded?.[card.id]||0,reason:'確認済み実測のみ。記述的な参考区分：変動係数20%/最大下落30%以上は大、8%/15%以上は中。予測・GO条件ではない'};
+    return {label,trend,days,cv,drawdown,count,span,gap,latest,min:evidence[7]??null,max:evidence[8]??null,reference:count<days,excluded:summary?.variation?.excluded?.[card.id]||0,reason:'確認済み実測のみ。記述的な参考区分：変動係数20%/最大下落30%以上は大、8%/15%以上は中。予測・GO条件ではない'};
   }
   function variationTone(label) { return {'大きい':'variation-large','中程度':'variation-medium','小さい':'variation-small'}[label]||'variation-unknown'; }
   function priceGap(summary,card,now=Date.now()) {

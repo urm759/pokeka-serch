@@ -1,0 +1,21 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const source=fs.readFileSync('app.js','utf8'),inputs=new Map(),saved=new Map();
+const now=Date.parse('2026-11-11T03:00:00Z');class Clock extends Date{constructor(...a){super(...(a.length?a:[now]));}static now(){return now;}}
+const ctx=vm.createContext({Date:Clock,window:{location:{href:'https://test.invalid/?calcBuy=store&effBuy=auto&profitBasis=auto&medianBuyPct=70'},ExplorationMetrics:require('../exploration-metrics'),PurchaseDecisionModel:require('../decision-model')},
+  document:{getElementById:id=>{if(!inputs.has(id))inputs.set(id,{value:'',checked:false});return inputs.get(id)},querySelectorAll:()=>[]},URL,URLSearchParams,console,setTimeout,clearTimeout,localStorage:{getItem:k=>saved.get(k)||null,setItem:(k,v)=>saved.set(k,v)}});
+vm.runInContext(source.split('// Browser event bindings start here;')[0]+`\ncurrentMarketView=c=>c.testView;globalThis.api={state,cardEfficiency,searchProfitView,calculationBasisCsvFields,medianPurchaseComparison,medianPurchaseComparisonHtml,searchProfitPanel,readUrl,buildShareUrl,restoreQuickFilters,saveQuickFilters,computationKey};`,ctx);
+const a=ctx.api,s=a.state,at=new Date(now).toISOString();
+Object.assign(s,{calculationBuyMode:'store',medianBuyPct:70,profitSearchBasis:'auto',efficiencyBuy:'auto',efficiencyScenario:'current',fee:6980,saleExtraCost:210,storeTravelCost:0,lockDays:175,efficiencySaleDays:7,efficiencyPayoutDays:3,exitPolicy:'marketplace'});
+const q=(source,url)=>({source,url,value:20000,updatedAt:at,valid:true,conditionAccepted:true});
+const c={id:'fixture',price:30000,currentStoreOffer:{source:'晴れる屋2状態A',url:'https://hareruya2.com/products/1',value:18000,available:true,fresh:true,updatedAt:at,inventoryAt:at},testView:{eligible:true,rawCap:30000,psa10Net:40000,exitLabel:'フリマ',reasons:[],warnings:[]},priceAggregation:{value:20000,included:[q('晴れる屋2','https://hareruya2.com/products/1'),q('トレカキャンプ','https://torecacamp-pokemon.com/products/2')]}};
+let e=a.cardEfficiency(c),v=a.searchProfitView(c);assert.equal(v.purchasePrice,18000);assert.equal(e.purchasePrice,v.purchasePrice);assert.equal(v.economics.expectedProfit,e.profit);assert.equal(v.economics.expectedRoi,e.roi);assert.equal(v.purchaseSource,c.currentStoreOffer.source);assert.equal(v.purchaseAt,at);
+assert.equal(e.profit,30000-18000);assert.equal(e.investment,18000+6980+210);assert.equal(v.psa10Profit,40000-18000-6980);
+let r=a.medianPurchaseComparison(c);assert.equal(r.purchasePrice,14000);assert.equal(r.profit,16000);assert.equal(a.searchProfitView(c).purchasePrice,18000,'hypothesis never replaces real store buy');
+assert(a.medianPurchaseComparisonHtml(c).includes('検索／GOには不使用'));
+assert.equal(a.calculationBasisCsvFields(c)[0],18000);assert.equal(a.calculationBasisCsvFields(c)[10],14000);
+const key=a.computationKey();s.medianBuyPct=60;assert.equal(a.medianPurchaseComparison(c).purchasePrice,12000);assert.equal(a.computationKey(),key,'percentage never triggers full-card prediction recalculation');
+for(const pct of [null,0,-5,NaN,Infinity]){s.medianBuyPct=pct;assert.equal(a.medianPurchaseComparison(c),null);}s.medianBuyPct=70;
+for(const patch of [{available:false},{fresh:false},{value:null},{updatedAt:'2026-11-01T00:00:00Z'},{inventoryAt:'2026-11-01T00:00:00Z'}]){let bad={...c,currentStoreOffer:{...c.currentStoreOffer,...patch}};assert.equal(a.searchProfitView(bad).purchasePrice,null,'no guide/median fallback for missing real buy');assert.equal(a.searchProfitView(bad).economics,null);}
+a.readUrl();assert.equal(inputs.get('calculationBuyModeInput').value,'store');assert.equal(inputs.get('medianBuyPctInput').value,70);a.saveQuickFilters();assert.equal(JSON.parse(saved.get('pokeka-quick-filter-preferences-v1')).calculationBuyMode,'store');assert.equal(a.buildShareUrl().searchParams.get('calcBuy'),'store');assert.equal(a.buildShareUrl().searchParams.get('medianBuyPct'),'70');
+ctx.window.location.href='https://test.invalid/?effBuy=auto&profitBasis=auto';a.readUrl();assert.equal(inputs.get('calculationBuyModeInput').value,'legacy','old explicit URLs retain meaning');
+console.log('PASS common actual buy/profit/ROI/efficiency/CSV; independent percentage, real freshness, cached calculation, URL/storage legacy compatibility');
