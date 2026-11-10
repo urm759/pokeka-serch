@@ -30,14 +30,22 @@ const csv=Buffer.from('Trend,Card #,Name,Parallel,Gems,Total,Gem Rate\n,1,Pikach
 const meta={version:1,kind:'gemrate-normal-csv-v1',jobId:id,setCode:set.setCode,page,decision:core.decide(set,null,page,{testExport:true}),download:{...download,fileSize:csv.length}};
 try{
   fs.writeFileSync(path.join(pending,'export.csv'),csv);fs.writeFileSync(path.join(pending,'receipt.json'),JSON.stringify(meta));fs.writeFileSync(path.join(downloads,'general.csv'),'keep');
-  const result=receiver.receive(root,store,downloads);assert.equal(result.queuedCsv,1);assert.equal(result.providerChecks,1);assert.equal(result.summary.confirmationRatePct,100);assert.equal(result.summary.sourceDateUpdatedRatePct,0);
+  const result=receiver.receive(root,store,downloads,at);assert.equal(result.queuedCsv,1);assert.equal(result.providerChecks,1);assert.equal(result.summary.confirmationRatePct,100);assert.equal(result.summary.sourceDateUpdatedRatePct,0);
+  assert.equal(result.at,at,'one injected clock governs receipt validation and daily aggregation');
+  for(const [edge,today] of [['2026-11-04T14:59:59.999Z','2026-11-04'],['2026-11-04T15:00:00Z','2026-11-05'],['2026-11-30T14:59:59.999Z','2026-11-30'],['2026-11-30T15:00:00Z','2026-12-01'],['2026-12-31T15:00:00Z','2027-01-01'],['2028-02-29T15:00:00Z','2028-03-01']]){
+    assert.equal(core.day(edge),today);
+    const index={receipts:{same:{setCode:'S8B',checkedAt:edge,csv:false,decision:{newSourceDate:false}},old:{setCode:'OTHER',checkedAt:new Date(Date.parse(edge)-86400000).toISOString(),csv:false},held:{setCode:'S8B',checkedAt:edge,held:true}}};
+    const daily=receiver.dailySummary(root,index,edge);assert.equal(daily.day,today);assert.equal(daily.confirmationRatePct,100);assert.equal(daily.confirmedSets,1);assert.equal(daily.sourceDateUpdatedRatePct,0);assert.equal(daily.csvReceipts,0);
+    const tomorrow=receiver.dailySummary(root,index,new Date(Date.parse(edge)+86400000).toISOString());assert.equal(tomorrow.confirmedSets,0);assert.equal(tomorrow.confirmationRatePct,0);assert.equal(tomorrow.sourceDateUpdatedRatePct,null);
+  }
+  assert.throws(()=>receiver.validate({...meta,page:{...page,checkedAt:'2026-11-05T03:00:00Z'}},csv,root,Date.parse(at)),/date/,'future evidence is still rejected');
   const queued=result.results[0],sidecar=JSON.parse(fs.readFileSync(queued.incoming+'.context.json'));
   assert.equal(sidecar.context.sourceUpdatedDate,'2026-10-31');assert.equal(sidecar.context.retrievedAt,at,'no file-mtime date inference');
   const parsed=require('./gemrate_csv_import').parseCsv(csv.toString()),head=parsed.shift(),context=sidecar.context;
   const mappings=parsed.map((cells,i)=>{const row=Object.fromEntries(head.map((h,j)=>[h,cells[j]]));return {key:require('./gemrate_csv_import').key(row,context),cardId:'fixture'+i,identityKey:'fixture'+i,specEvidence:'offline unit fixture'};});
   const received=require('./gemrate_private_store').receive({store,publicRoot:root,files:[{path:queued.incoming,kind:'list',context,mappings}]});assert.equal(received.newPrivateObservations,2);
   receiver.finalize(root,store,downloads);assert(!fs.existsSync(path.join(pending,'export.csv')));assert.equal(fs.readFileSync(path.join(downloads,'general.csv'),'utf8'),'keep');
-  assert.equal(receiver.receive(root,store,downloads).queuedCsv,0,'completed transport cannot become new data');
+  assert.equal(receiver.receive(root,store,downloads,at).queuedCsv,0,'completed transport cannot become new data');
   assert.throws(()=>receiver.validate({...meta,download:{...meta.download,referrer:'https://example.invalid/'}},csv,root),/association/);
   assert.throws(()=>receiver.validate({...meta,page:{...page,language:'English'}},csv,root),/context/);
   assert.throws(()=>receiver.validate({...meta,page:{...page,setTotals:{psa10:4,total:4}}},csv,root),/totals/);

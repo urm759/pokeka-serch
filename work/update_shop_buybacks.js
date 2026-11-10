@@ -4,6 +4,13 @@ const decisionModel = require("../decision-model.js");
 const marketModel = require("../market-analysis.js");
 
 const ROOT = path.join(__dirname, "..");
+function validateListingCount(previousCount,fetched){
+  if (!fetched.items?.length) throw new Error("取得0件。正常データは保持");
+  if (previousCount >= 20 && fetched.items.length < previousCount * 0.5) {
+    const error=new Error("取得件数が前回の半分未満。急減を隔離し正常データ保持");
+    error.countDrop={previousCount,currentCount:fetched.items.length,pages:fetched.pages};throw error;
+  }
+}
 const SHOPS = [
   {
     id: "torecabank",
@@ -566,9 +573,8 @@ async function main({ rebuildSaved = false } = {}) {
     if(shop.adapterVersion && review?.adapterVersion===shop.adapterVersion && require('./psa10_observation_evidence').calendarDay(review.lastSuccess)===jstDate()) continue;
     try {
       const fetched = await shop.fetchItems(shop);
-      if (!fetched.items?.length) throw new Error("取得0件。正常データは保持");
       const previousCount = previousSummary.shops?.[shop.id]?.fetched;
-      if (previousCount >= 20 && fetched.items.length < previousCount * 0.5) throw new Error("取得件数が前回の半分未満。急減を隔離し正常データ保持");
+      validateListingCount(previousCount,fetched);
       const matched = [];
       const unmatched = [];
       for (const item of fetched.items) {
@@ -607,7 +613,7 @@ async function main({ rebuildSaved = false } = {}) {
       results.push({ shop, ...fetched, matched, unmatched });
       console.log(`${shop.name}: pages=${fetched.pages}, items=${fetched.items.length}, matched=${matched.length}, activeMatched=${matched.filter((item) => item.active).length}, unmatched=${unmatched.length}`);
     } catch (error) {
-      failures.push({ source: shop.id, attemptedAt: new Date().toISOString(), error: String(error.message || error),
+      failures.push({ source: shop.id, attemptedAt: new Date().toISOString(), error: String(error.message || error),countDrop:error.countDrop||null,
         accessHold:[401,403].includes(error.status) || /HTTP\s+(401|403)/.test(String(error.message)) });
       console.warn(`${shop.name}: existing data was preserved: ${error.message || error}`);
     }
@@ -615,7 +621,7 @@ async function main({ rebuildSaved = false } = {}) {
   if (!results.length && !failures.length) return {status:'正常取得済み・日次再取得不要',llmCalls:0,codexCalls:0};
   if (!results.length) {
     for (const failure of failures) previousSummary.shops[failure.source] = { ...previousSummary.shops[failure.source], lastAttempt: failure.attemptedAt || previousSummary.shops[failure.source]?.lastAttempt || null, error: failure.error, refreshed: false,
-      reviewStatus:failure.accessHold?'access-review':/形式変更/.test(failure.error||'')?'format-review':previousSummary.shops[failure.source]?.reviewStatus || null,
+      reviewStatus:failure.accessHold?'access-review':failure.countDrop?'count-drop-review':/形式変更/.test(failure.error||'')?'format-review':previousSummary.shops[failure.source]?.reviewStatus || null,
       reviewAdapterVersion:SHOPS.find(s=>s.id===failure.source)?.adapterVersion || null };
     fs.writeFileSync(SUMMARY_PATH, JSON.stringify(previousSummary), "utf8");
     throw new Error("全店舗の取得に失敗しました。正常データを保持・失敗時刻を記録");
@@ -789,7 +795,7 @@ async function main({ rebuildSaved = false } = {}) {
       acquisitionPermission: readJson(path.join(__dirname, 'buyback-source-permissions.json'), {}).sources?.[shop.id]?.status || null,
       permissionCheckedAt: readJson(path.join(__dirname, 'buyback-source-permissions.json'), {}).sources?.[shop.id]?.checkedAt || null,
       lastAttempt: result || failures.some((f) => f.source === shop.id && !f.permissionWait && !f.reviewWait) ? confirmedAt : previous.lastAttempt || null,
-      reviewStatus:result?null:failures.find(f=>f.source===shop.id)?.accessHold?'access-review':/形式変更/.test(failures.find(f=>f.source===shop.id)?.error||'')?'format-review':previous.reviewStatus || null,
+      reviewStatus:result?null:failures.find(f=>f.source===shop.id)?.accessHold?'access-review':failures.find(f=>f.source===shop.id)?.countDrop?'count-drop-review':/形式変更/.test(failures.find(f=>f.source===shop.id)?.error||'')?'format-review':previous.reviewStatus || null,
       adapterVersion:result?.adapterVersion || previous.adapterVersion || null,
       coverageComplete:result?result.fullListing===true:previous.coverageComplete ?? null,
       duplicateSourceIds:result?.duplicateSourceIds ?? previous.duplicateSourceIds ?? null,
@@ -849,4 +855,4 @@ if (require.main === module) main({rebuildSaved:process.argv.includes('--rebuild
   console.error(error);
   process.exitCode = 1;
 });
-module.exports = { main, SHOPS, fetchText, savedMatchConfidence, freshUsablePrice, parseTorecaBankItems };
+module.exports = { main, SHOPS, fetchText, savedMatchConfidence, freshUsablePrice, parseTorecaBankItems, validateListingCount };

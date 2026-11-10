@@ -30,6 +30,16 @@ for (const [id, card] of Object.entries(history.cards)) for (const [condition, r
   assert.deepEqual(compact.map(r=>[r.date,r.operational,r.theoretical,r.calculationVersion]), original.map(r=>[r.date,r.operational,r.theoretical,r.calculationVersion]));
 }
 const source = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
+const fullPeriods=read('data/psa10-period-summary.json'),initialPeriods=project('psa10-period-summary',fullPeriods);
+assert.equal(initialPeriods.variation,undefined);assert.equal(initialPeriods.priceGap,undefined);
+assert.deepEqual(initialPeriods.cards,fullPeriods.cards,'financial averages retain every exact value');
+const joined={variation:{},priceGap:{}};
+for(let n=0;n<16;n++){
+  const part=read('data/price-dynamics/'+n+'.json');assert.equal(part.asOf,fullPeriods.asOf);
+  Object.assign(joined.variation,part.variation.cards);Object.assign(joined.priceGap,part.priceGap.cards);
+  for(const [id,value]of Object.entries(part.variation.short.cards))assert.deepEqual(value,fullPeriods.variation.short.cards[id]);
+}
+assert.deepEqual(joined.variation,fullPeriods.variation.cards);assert.deepEqual(joined.priceGap,fullPeriods.priceGap.cards,'visible-only shards retain exact display evidence, no rounding or dropped cards');
 assert(source.includes('digest !== expected') && source.includes('if (uiDataInvalid) throw'));
 const init = source.slice(source.indexOf('async function init()'));
 for (const field of ['candidate-daily-audit', 'candidate-availability-audit', 'market-backtest-summary', 'update-history']) assert(!init.slice(0,init.indexOf('// Browser event bindings')).includes(`fetchJsonMaybe("./data/${field}.json")`), 'closed audits must not load at startup');

@@ -48,6 +48,7 @@ function project(name, input) {
     }
   }
   if(name==='psa10-period-summary') {
+    delete value.variation;delete value.priceGap;value.displayDynamicsSharded=true;
     if(value.tradeDemand)for(const row of Object.values(value.tradeDemand.cards))while(row.length && row.at(-1)==null)row.pop();
     if(value.variation?.version>=2){value.variation.defaultUnavailable=['history'];for(const [id,reasons]of Object.entries(value.variation.unavailable))if(reasons.length===1&&reasons[0]==='history')delete value.variation.unavailable[id];}
   }
@@ -78,6 +79,15 @@ function build(root = ROOT) {
     const packed = JSON.stringify(codec.encode(project(name, JSON.parse(text)),{version:2}));
     write(file, packed); aliases[original] = file;
     bytes[original] = { original: Buffer.byteLength(text), summary: Buffer.byteLength(packed) };
+  }
+  // Display-only dynamics are loaded for visible cards, never required for finance/search.
+  const dynamics=JSON.parse(fs.readFileSync(path.join(root,'data/psa10-period-summary.json'),'utf8'));
+  const shardId=id=>{let h=0;for(const c of String(id))h=(h*31+c.charCodeAt(0))>>>0;return h%16;};
+  for(let n=0;n<16;n++){
+    const select=rows=>Object.fromEntries(Object.entries(rows||{}).filter(([id])=>shardId(id)===n)),v=dynamics.variation;
+    write('data/price-dynamics/'+n+'.json',JSON.stringify({version:1,asOf:dynamics.asOf,
+      variation:{...v,cards:select(v.cards),unavailable:select(v.unavailable),excluded:select(v.excluded),mediumStatus:select(v.mediumStatus),short:{...v.short,cards:select(v.short?.cards)}},
+      priceGap:{...dynamics.priceGap,cards:select(dynamics.priceGap.cards)}}));
   }
   function scan(dir) {
     for (const e of fs.readdirSync(path.join(root, dir), { withFileTypes: true })) {
