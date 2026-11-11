@@ -32,10 +32,10 @@ const app=fs.readFileSync('app.js','utf8'),elements=new Map(),saved=new Map();
 const context=vm.createContext({window:{PurchaseDecisionModel:d,CurrentMarketModel:m,ExplorationMetrics:require('../exploration-metrics'),ReleaseYearFilter:require('../release-year-filter'),CandidateVisibility:require('../candidate-visibility'),location:{href:'https://example.test/?profitBasis=current-target'}},
   document:{getElementById:id=>{if(!elements.has(id))elements.set(id,{value:'',checked:false});return elements.get(id)},querySelectorAll:()=>[]},
   URL,URLSearchParams,console,setTimeout,clearTimeout,localStorage:{getItem:k=>saved.get(k)||null,setItem:(k,v)=>saved.set(k,v)}});
-vm.runInContext(app.split('// Browser event bindings start here;')[0]+'\nglobalThis.api={state,cardSearchExclusions,readUrl,buildShareUrl,saveQuickFilters,restoreQuickFilters};',context);
+vm.runInContext(app.split('// Browser event bindings start here;')[0]+'\nglobalThis.api={state,cardSearchExclusions,readUrl,buildShareUrl,saveQuickFilters,restoreQuickFilters,recordBuyBasisPreferenceChange};',context);
 const api=context.api;api.readUrl();assert.equal(elements.get('profitSearchBasisInput').value,'current-target');
 api.state.profitSearchBasis='current-target';assert.equal(api.buildShareUrl().searchParams.get('profitBasis'),'current-target');
-api.saveQuickFilters();context.window.location.href='https://example.test/';elements.get('profitSearchBasisInput').value='';api.restoreQuickFilters();assert.equal(elements.get('profitSearchBasisInput').value,'current-target');
+api.recordBuyBasisPreferenceChange({target:{id:'profitSearchBasisInput'}});api.recordBuyBasisPreferenceChange({target:{id:'profitSearchBasisInput'}});api.saveQuickFilters();context.window.location.href='https://example.test/';elements.get('profitSearchBasisInput').value='';api.restoreQuickFilters();assert.equal(elements.get('profitSearchBasisInput').value,'current-target');
 vm.runInContext("searchProfitView=()=>({});cardEfficiency=()=>({annual:null,reason:'未取得'});",context);
 Object.assign(api.state,{q:'fixture',diagnosticSearch:true,efficiencyMin:10000,year2020Only:true,observation7Min:1,observation30Max:0,observationIncludeReference:false});
 const fixture={id:'fixture',name:'fixture',psa10:100};

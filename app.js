@@ -3271,6 +3271,26 @@ function purchasePsa9RatioHtml(card, manualPrice, costs = {}) {
 }
 
 const searchConditionOrigins = new Map();
+// URL buy-basis overrides belong to this comparison page, not the normal-page preference.
+// updateUrl() later writes all parameters, so capture these once when reading the input URL.
+const pageBuyBasisOverrides = new Set();
+const buyBasisControlFields={calculationBuyModeInput:'calculationBuyMode',efficiencyBuyInput:'efficiencyBuy',profitSearchBasisInput:'profitSearchBasis'};
+function capturePageBuyBasisOverrides(params) {
+  pageBuyBasisOverrides.clear();
+  if(params.has('calcBuy')||params.has('effBuy')||params.has('profitBasis'))pageBuyBasisOverrides.add('calculationBuyMode');
+  if(params.has('effBuy'))pageBuyBasisOverrides.add('efficiencyBuy');
+  if(params.has('profitBasis'))pageBuyBasisOverrides.add('profitSearchBasis');
+}
+function preserveNormalBuyPreferences(next, previous) {
+  for(const field of pageBuyBasisOverrides) {
+    if(Object.hasOwn(previous,field))next[field]=previous[field];else delete next[field];
+  }
+  return next;
+}
+function recordBuyBasisPreferenceChange(event) {
+  const field=buyBasisControlFields[event?.target?.id];
+  if(field)pageBuyBasisOverrides.delete(field);
+}
 const conditionValue = el => el.type === 'checkbox' ? String(el.checked) : String(el.value);
 function captureConditionOrigins(defaults, restored) {
   const params = new URLSearchParams(explorationMetrics.migrateObservationSettings(Object.fromEntries(new URL(window.location.href).searchParams),true).value);
@@ -3325,6 +3345,14 @@ function restoreQuickFilters() {
       saved.calculationBuyMode='median';
       localStorage.setItem(QUICK_FILTER_STORAGE_KEY,JSON.stringify(saved));
       localStorage.setItem(QUICK_FILTER_STORAGE_KEY+':median-main-v1','1');
+    }
+    // Repair preferences polluted by browsing an old URL before comparison isolation existed.
+    // Archive the exact prior record and migrate only the main buy basis, once.
+    if(Object.keys(saved).length&&!localStorage.getItem(QUICK_FILTER_STORAGE_KEY+':url-buy-isolation-v1')) {
+      localStorage.setItem(QUICK_FILTER_STORAGE_KEY+':before-url-buy-isolation-v1',JSON.stringify(saved));
+      saved.calculationBuyMode='median';
+      localStorage.setItem(QUICK_FILTER_STORAGE_KEY,JSON.stringify(saved));
+      localStorage.setItem(QUICK_FILTER_STORAGE_KEY+':url-buy-isolation-v1','1');
     }
     if(!url.searchParams.has('calcBuy') && Object.keys(saved).length) {
       const control=document.getElementById('calculationBuyModeInput');if(control)control.value=saved.calculationBuyMode||'median';
@@ -3403,7 +3431,7 @@ function persistExplicitSearchSettings() {
     let changed=false;
     for(const [param,field,id,type]of fields) {
       const input=document.getElementById(id);
-      if(!params.has(param)||!input)continue;
+      if(!params.has(param)||!input||pageBuyBasisOverrides.has(field))continue;
       saved[field]=type==='boolean'?input.checked:type==='number'?parseOptionalNumber(input.value):input.value;
       changed=true;
     }
@@ -3415,7 +3443,9 @@ function persistExplicitSearchSettings() {
 function saveQuickFilters() {
   if (urlOnlySearch()) return;
   try {
-    localStorage.setItem(QUICK_FILTER_STORAGE_KEY, JSON.stringify({
+    let previous={};
+    try {const stored=JSON.parse(localStorage.getItem(QUICK_FILTER_STORAGE_KEY)||'{}');if(stored&&typeof stored==='object'&&!Array.isArray(stored))previous=stored;}catch{}
+    const preferences={...previous,
       purchaseMode: quickSearchMode(state.purchaseMode),
       specifiedImplicitInputs: state.specifiedImplicitInputs || [],
       minSaleTx:state.minSaleTx,maxPsa10:state.maxPsa10,
@@ -3436,7 +3466,8 @@ function saveQuickFilters() {
       minExpectedProfit: state.minExpectedProfit, minExpectedRoi: state.minExpectedRoi, minAnnualEfficiency: state.minAnnualEfficiency,
       psa9RatioMin: state.psa9RatioMin, psa9RatioMax: state.psa9RatioMax,
       psa9RatioAggregate:state.psa9RatioAggregate,psa9RatioEstimate:state.psa9RatioEstimate,psa9RatioMarket:state.psa9RatioMarket,
-    }));
+    };
+    localStorage.setItem(QUICK_FILTER_STORAGE_KEY,JSON.stringify(preserveNormalBuyPreferences(preferences,previous)));
   } catch {
     // The current in-memory filter remains usable even if browser storage fails.
   }
@@ -3752,6 +3783,7 @@ function migrateQuickSearchMode(url) {
 }
 function readUrl() {
   const filterUrl = new URL(window.location.href);
+  capturePageBuyBasisOverrides(filterUrl.searchParams);
   if (filterUrl.searchParams.get('buyLimitRatio') === 'off') els.purchaseLimitRatioMinInput.value='';
   for(const [param,id] of [['tx','saleTxMinInput'],['psaMax','psaMaxInput']]) if(filterUrl.searchParams.get(param)==='off') document.getElementById(id).value='';
   filterUrl.search=new URLSearchParams(migrateObservationControls(Object.fromEntries(filterUrl.searchParams),true).value).toString();
@@ -7044,6 +7076,7 @@ function renderContent() {
 
 let pendingUIUpdate = null;
 function syncFromUI(event) {
+  recordBuyBasisPreferenceChange(event);
   if(event?.target?.id && state.specifiedImplicitInputs) state.specifiedImplicitInputs=state.specifiedImplicitInputs.filter(id=>id!==event.target.id);
   clearTimeout(pendingUIUpdate);
   if (event?.type === "input") {
