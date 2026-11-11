@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
+const { hasProductDetail, parseYuyuteiProduct, replayYuyuteiProduct } = require('./yuyutei_product_detail');
 
 const ROOT = path.join(__dirname, "..");
 const YUYUTEI = "https://yuyu-tei.jp";
@@ -156,8 +157,8 @@ async function mapLimit(items, limit, mapper) {
 function parseYuyuteiResults(html) {
   // Product pages include previous/next links before their own price fields.
   // They are not search tiles: never attribute the current offer to those URLs.
-  // A separate exact product-ID/condition parser is required before adoption.
-  if (/<section\b[^>]*\bid\s*=\s*["']product-detail["']/i.test(String(html || ""))) return [];
+  // Direct offers use parseYuyuteiProduct; they never enter the tile parser.
+  if (hasProductDetail(html)) return [];
   if (String(html || "").startsWith("Title:")) {
     const source = String(html); const rows = []; const seen = new Set();
     for (const match of source.matchAll(/\]\((https:\/\/yuyu-tei\.jp\/sell\/poc\/card\/([^/]+)\/[^)]+)\)/g)) {
@@ -1063,5 +1064,5 @@ module.exports = {
   parseProductSitemap, parseProductSitemapIndex, preferCampEntry, campPurchaseUrl,
   yuyuteiPriority,
   campRequestedIds,campCriticalIds,
-  numberMatches, parseYuyuteiResults, titleMatches,
+  numberMatches, parseYuyuteiResults, parseYuyuteiProduct, replayYuyuteiProduct, titleMatches,
 };

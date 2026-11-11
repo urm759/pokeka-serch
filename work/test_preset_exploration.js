@@ -12,7 +12,7 @@ const context=vm.createContext({window:{location:{href:'https://example.test/'},
   ExplorationMetrics:require('../exploration-metrics.js'),
   ReleaseYearFilter:require('../release-year-filter.js'),CandidateVisibility:require('../candidate-visibility.js'),PurchaseRatioModel:require('../purchase-ratio-model.js')},document,
   URL,URLSearchParams,console,setTimeout,clearTimeout,localStorage:{getItem:k=>saved[k]??null,setItem:(k,v)=>saved[k]=v}});
-vm.runInContext(source.split('// Browser event bindings start here;')[0]+ '\nglobalThis.api={state,searchProfitView,cardSearchExclusions,buildSearchAudit,presetQualifications,readUrl,buildShareUrl,saveQuickFilters,restoreQuickFilters};',context);
+vm.runInContext(source.split('// Browser event bindings start here;')[0]+ '\nglobalThis.api={state,searchProfitView,cardSearchExclusions,buildSearchAudit,presetQualifications,readUrl,buildShareUrl,saveQuickFilters,restoreQuickFilters,recordBuyBasisPreferenceChange};',context);
 const api=context.api,s=api.state;
 // This fixture verifies the preserved legacy auto/limit scenario, not the newer
 // default reference-min scenario (covered by test_reference_buy).
@@ -58,7 +58,7 @@ context.window.location.href='https://example.test/?profitBasis=store&periodRefe
 assert.equal(elements.get('expectedProfitFilterInput').value,'');assert.equal(elements.get('expectedRoiFilterInput').value,'0');assert.equal(elements.get('profitSearchBasisInput').value,'store');
 Object.assign(s,{profitSearchBasis:'store',includePeriodReference:false,minExpectedProfitFilter:null});
 const url=api.buildShareUrl();assert.equal(url.searchParams.get('filterExpProfit'),'off');assert.equal(url.searchParams.get('profitBasis'),'store');assert.equal(url.searchParams.get('periodReference'),'0');
-api.saveQuickFilters();context.window.location.href='https://example.test/';elements.get('profitSearchBasisInput').value='auto';api.restoreQuickFilters();assert.equal(elements.get('profitSearchBasisInput').value,'store');assert.equal(elements.get('expectedProfitFilterInput').value,'');
+api.recordBuyBasisPreferenceChange({target:{id:'profitSearchBasisInput'}});api.recordBuyBasisPreferenceChange({target:{id:'profitSearchBasisInput'}});api.saveQuickFilters();context.window.location.href='https://example.test/';elements.get('profitSearchBasisInput').value='auto';api.restoreQuickFilters();assert.equal(elements.get('profitSearchBasisInput').value,'store');assert.equal(elements.get('expectedProfitFilterInput').value,'');
 const handlers=source.slice(source.indexOf('document.querySelectorAll("[data-preset]").forEach((button) => {',source.indexOf('// Browser event bindings start here;')),source.indexOf('els.lowRiskAvailabilityInput?.addEventListener'));
 for(const field of ['roiInput','purchaseLimitRatioMinInput','psaCapitalInput','exitPolicyInput','year2020Input','saleTxMinInput','fundingOnlyInput','officialOnlyInput'])assert(!handlers.includes(`els.${field}.value =`)&&!handlers.includes(`els.${field}.checked =`),`${field} must survive preset switches`);
 console.log('Preset exploration, actual offers, horizon holds, zero/off, reconciled exclusions and URL/storage PASS');
