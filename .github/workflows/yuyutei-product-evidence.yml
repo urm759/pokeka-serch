@@ -1,0 +1,38 @@
+name: Yuyutei Known Product Evidence
+on:
+  workflow_dispatch:
+    inputs:
+      card_id:
+        description: Existing unique card and normal product URL binding (one request)
+        required: true
+        default: x-122054
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: yuyutei-known-product-evidence
+  cancel-in-progress: false
+jobs:
+  normal-product:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - name: One normal known-URL request; no cookies, redirects, retries or hold changes
+        env:
+          CARD_ID: ${{ inputs.card_id }}
+        run: node work/probe_yuyutei_product.js "$CARD_ID"
+      - name: Preserve HTTP receipt and original response even on access or parsing failure
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: yuyutei-known-product-${{ github.run_id }}
+          path: .private/yuyutei-product-detail-raw/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
