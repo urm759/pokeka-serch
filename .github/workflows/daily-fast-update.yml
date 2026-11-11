@@ -218,6 +218,7 @@ jobs:
           fi
           node work/update_validation.js --record
       - name: Commit changed data only
+        id: publication
         run: |
           node work/scheduled_cycle_evidence.js daily
           node work/build_ui_data.js
@@ -248,14 +249,14 @@ jobs:
       - name: Report independent acquisition failures without hiding them
         run: node work/run_daily_sources.js --report-failures
       - name: Save unpublished source data on failure
-        if: failure()
+        if: failure() && steps.publication.outcome != 'success'
         run: |
           node work/save_backfill_recovery.js daily
       - name: Preserve raw data regardless of metadata errors
-        if: failure()
+        if: failure() && steps.publication.outcome != 'success'
         run: node work/capture_unpublished_data.js daily
       - name: Upload recovery checkpoint if publication or validation failed
-        if: failure()
+        if: failure() && steps.publication.outcome != 'success'
         uses: actions/upload-artifact@v7
         with:
           name: daily-recovery-${{ github.run_id }}-${{ github.run_attempt }}
@@ -265,4 +266,16 @@ jobs:
             work/publish-recovery.json
             data/backfill-recovery.json
           retention-days: 7
+          if-no-files-found: error
+      - name: Retain post-publication source warnings without another raw archive
+        if: failure() && steps.publication.outcome == 'success'
+        uses: actions/upload-artifact@v7
+        with:
+          name: daily-post-publication-alert-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            data/daily-source-isolation.json
+            work/source-update-runs.json
+            work/source-update-history.json
+            work/publish-recovery.json
+          retention-days: 14
           if-no-files-found: error

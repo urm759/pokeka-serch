@@ -147,6 +147,7 @@ jobs:
           fi
           node work/update_validation.js --record
       - name: Publish validated data with conflict protection
+        id: publication
         if: steps.refresh.outputs.refresh_status != 'skipped'
         run: |
           node work/scheduled_cycle_evidence.js priority
@@ -159,14 +160,14 @@ jobs:
       - name: Report independent acquisition failures without hiding them
         run: node work/run_priority_price_refresh.js --report-failures
       - name: Preserve unpublished checkpoint on failure
-        if: failure()
+        if: failure() && steps.publication.outcome != 'success'
         run: node work/capture_unpublished_data.js priority-prices
       - name: Record failure metadata independently
-        if: failure()
+        if: failure() && steps.publication.outcome != 'success'
         run: |
           node work/save_backfill_recovery.js priority-prices
       - uses: actions/upload-artifact@v7
-        if: failure()
+        if: failure() && steps.publication.outcome != 'success'
         with:
           name: priority-price-recovery-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
@@ -175,7 +176,7 @@ jobs:
           retention-days: 7
           if-no-files-found: error
       - uses: actions/upload-artifact@v7
-        if: failure()
+        if: failure() && steps.publication.outcome != 'success'
         with:
           name: priority-git-recovery-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
@@ -183,3 +184,15 @@ jobs:
             work/publish-recovery.json
           retention-days: 7
           if-no-files-found: warn
+      - name: Retain post-publication source warnings without another raw archive
+        if: failure() && steps.publication.outcome == 'success'
+        uses: actions/upload-artifact@v7
+        with:
+          name: priority-post-publication-alert-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            data/priority-price-execution.json
+            work/source-update-runs.json
+            work/source-update-history.json
+            work/publish-recovery.json
+          retention-days: 14
+          if-no-files-found: error
