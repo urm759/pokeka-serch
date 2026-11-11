@@ -1787,7 +1787,7 @@ async function exportFavoritesCsv() {
   rows[0].push('利益確保の仕入れ目安・現相場基準','目安の切下げ前値','目安の最低期待利益','目安の最低期待利益率%','目安の状態','目安の売却先','素体参考相場70%（上限ではない）');
   rows[0].push('資金効率採用平均・暦日期間','資金効率採用平均価格','資金効率平均・観測日数','資金効率平均・欠測日数','資金効率平均・最終観測日','平均資金効率・非10価格基準','資金効率平均・根拠未確認日数');
   rows[0].push('中央値買値・参考年換算効率%','実店舗買値・年換算効率%','中央値採用元数','中央値独立店舗数','中央値内訳未確認元数','中央値価格下端','中央値価格上端','中央値個別根拠JSON','中央値比較不可理由');
-  rows[0].push('最高買取倍率（減額前・選択受付）','最高提示店舗','最高提示受付','最高提示確認日時','同店・他カードの通常倍率（中央値）','通常倍率の比較枚数','最高買取倍率・下限条件','最高提示の価格日','倍率分母の相場確認日時','倍率比較の確認時差（時間）','全体平均買取倍率（同一店の有効な最高提示1件）','全体平均の採用店舗数','倍率の対象独立店舗数','倍率比較可能店舗数','相場以上の比較可能店舗数','掲載確認店舗数（倍率採用と別）','75日平均買取倍率（日次店舗間平均の観測日平均）','75日倍率の観測日数','75日倍率の期間日数','75日倍率の独立店舗数','75日倍率の最終観測日','75日倍率の参考区分','75日倍率の集計定義','直近比較成立時の参考最高倍率（現在検索不採用）','直近比較成立時の参考平均倍率','参考倍率の比較日','参考倍率の独立店舗数','参考最高の店舗','現在倍率の不足原因','全体平均倍率の下限条件','7日平均倍率の下限条件','30日平均倍率の下限条件','75日平均倍率の下限条件','倍率観測日数の下限条件','倍率の参考値採用','7日平均倍率（日次店舗間平均）','7日倍率の観測日数','7日倍率の最終確認日時','30日平均倍率（日次店舗間平均）','30日倍率の観測日数','30日倍率の最終確認日時','追加倍率検索の除外理由');
+  rows[0].push('最高買取倍率（減額前・選択受付）','最高提示店舗','最高提示受付','最高提示確認日時','同店・他カードの通常倍率（中央値）','通常倍率の比較枚数','最高買取倍率・下限条件','最高提示の価格日','倍率分母の相場確認日時','倍率比較の確認時差（時間）','全体平均買取倍率（同一店の有効な最高提示1件）','全体平均の採用店舗数','倍率の対象独立店舗数','倍率比較可能店舗数','相場以上の比較可能店舗数','掲載確認店舗数（倍率採用と別）','75日平均買取倍率（日次店舗間平均の観測日平均）','75日倍率の観測日数','75日倍率の期間日数','75日倍率の独立店舗数','75日倍率の最終観測日','75日倍率の参考区分','75日倍率の集計定義','直近比較成立時の参考最高倍率（現在検索不採用）','直近比較成立時の参考平均倍率','参考倍率の比較日','参考倍率の独立店舗数','参考最高の店舗','現在倍率の不足原因','全体平均倍率の下限条件','7日平均倍率の下限条件','30日平均倍率の下限条件','75日平均倍率の下限条件','倍率観測日数の下限条件','倍率の参考値採用','7日平均倍率（日次店舗間平均）','7日倍率の観測日数','7日倍率の最終確認日時','30日平均倍率（日次店舗間平均）','30日倍率の観測日数','30日倍率の最終確認日時','追加倍率検索の除外理由','75日倍率集計状態','75日倍率元集計日','75日倍率最終集計日時','前回75日参考倍率（現在検索不採用）');
   rows[0].push('計算買値（検索・一覧共通）','計算買値の採用元','計算採用10率%','計算採用10率の出典','参考ガイド率%','参考ガイド出典','主計算買値モード','採用店舗','買値確認日時','中央値購入割合%（10率とは別）','仮定買値','仮定期待利益','仮定利益率%','仮定年換算%','仮定売値シナリオ','仮定売却先');
   for(const d of [30,7])rows[0].push(`${d}日PSA9実成約平均（計算不採用）`,`${d}日PSA9採用成約件数`,`${d}日PSA9最終成約日時`,`${d}日PSA9対象期間`,`${d}日PSA9出典URL`,`${d}日PSA9平均の区分`);
   for(const label of ['みんトレ掲載PSA10','みんトレ掲載美品'])rows[0].push(label+'現在出品数（下限）',label+'現在件数が上限なし',label+'掲載値確認日時',label+'元更新日時（未提供は空欄）',label+'現在値の不足理由',label+'30日平均出品数（下限）',label+'平均件数が上限なし',label+'平均の実観測日数',label+'観測開始日',label+'最終観測日');
@@ -1799,7 +1799,7 @@ async function exportFavoritesCsv() {
     const e = cardEfficiency(card);
     rows[index+1].push(...cardEfficiencyCsvFields(card,e));
     for (const days of [7,30,75,200]) {
-      const o = explorationMetrics.observation(state.psa10PeriodSummary,card.id,card.psa10,days);
+      const o = explorationMetrics.observation(state.psa10PeriodSummary,card.id,card.psa10,days,Date.now());
       rows[index+1].push(o.mean ?? '',o.delta ?? '',o.count ?? '',o.latest || '',o.mean == null ? '未取得' : `${o.reference ? '参考・観測不足' : '観測充足'}${o.stale ? '／古い観測' : ''}`);
     }
     rows[index+1].push(...psa9GuideCsvFields(card));
@@ -4688,7 +4688,9 @@ function buybackSupportHtml(card, detailed = false) {
   const highest = value.highestQuote;
   const meanText = Number.isFinite(value.mean) ? `<span class="buyback-mean">${buybackRatioMarkup(value.mean,'全体平均買取倍率 ')} <span class="buyback-adopted-count ${value.meanCount>1?'count-multiple':'count-reference'}">平均の採用${value.meanCount}／対象${value.coverage.target??'未確認'}店舗${value.meanCount===1?'・1店舗参考':'・複数店舗'}</span></span>` : `<span class="buyback-mean">全体平均買取倍率 — <span class="buyback-adopted-count count-reference">平均の採用0／対象${value.coverage.target??'未確認'}店舗・取得不足</span></span>`;
   const w75=value.meanWindows?.[75];
-  const mean75Text='<small class="buyback-75-mean">75日平均 '+(Number.isFinite(w75?.mean)?buybackRatioMarkup(w75.mean)+'・'+w75.days+'/75日・'+w75.stores+'店'+(w75.reference?'・参考':'')+(w75.stale?'・古値／日時不足':'')+(detailed?'・最終'+escapeHtml(w75.lastDate||'未取得'):''):'履歴不足・参考値なし')+'</small>';
+  const previous75=w75?.previous,aggregateTime=escapeHtml(w75?.calculatedAt||w75?.sourceAsOf||'未記録');
+  const mean75Text='<small class="buyback-75-mean">75日平均 '+(Number.isFinite(w75?.mean)?buybackRatioMarkup(w75.mean)+'・'+w75.days+'/75日・'+w75.stores+'店'+(w75.reference?'・参考':'')+(w75.stale?'・古値／日時不足':'')+(detailed?'・最終観測'+escapeHtml(w75.lastDate||'未取得')+'／集計'+aggregateTime:''):w75?.status==='recalculation-pending'?'日次再集計待ち'+(Number.isFinite(previous75?.mean)?'／前回参考 '+previous75.mean.toFixed(3)+'倍・集計'+aggregateTime:''):'履歴不足・参考値なし')+'</small>';
+
   const historicalSearchText=[7,30].map(d=>{const w=value.meanWindows?.[d];return '<small>'+d+'日平均 '+(Number.isFinite(w?.mean)?buybackRatioMarkup(w.mean)+'・'+w.days+'/'+d+'日・'+w.stores+'店'+(w.reference?'・参考':'')+(w.stale?'・古値／日時不足':''):'比較履歴不足')+'</small>';}).join('');
   const c=value.coverage;
   const coverageText=c.target==null?'対象店舗の要約未取得':`比較可能${c.comparable}／対象${c.target}店・相場以上${c.above}／${c.comparable}店`;
@@ -4726,15 +4728,17 @@ function buybackAdditionalExclusion(card){
 function buybackAdditionalCsv(card){const v=explorationMetrics.buybackSearch(cardBuybackSupport(card),state);return [state.buybackMeanMin??'',state.buyback7RatioMin??'',state.buyback30RatioMin??'',state.buyback75RatioMin??'',state.buybackRatioDaysMin??'',state.buybackRatioReference?1:0,...[7,30].flatMap(d=>[v.periods[d]?.mean??'',v.periods[d]?.days??'',v.periods[d]?.lastAt||'']),v.reasons.join('／')];}
 function buybackSupportCsvFields(card) {
   const value = cardBuybackSupport(card), q=value.highestQuote, ref=value.recentReference;
-  return [q?.ratio ?? '',q?.name || '',q ? q.fulfilment === 'store' ? '店頭' : '郵送' : '',q?.at || '',q?.standard ?? '',q?.samples ?? '',state.buybackHighestMin ?? '',q?.priceDate || '',q?.marketAt || '',q?.timeSkewHours ?? '',value.mean ?? '',value.meanCount || '',value.coverage.target ?? '',value.coverage.comparable,value.coverage.above,value.coverage.listed,value.meanWindows?.[75]?.mean??'',value.meanWindows?.[75]?.days??'',75,value.meanWindows?.[75]?.stores??'',value.meanWindows?.[75]?.lastDate||'',value.meanWindows?.[75]?.reference??'','日次店舗間平均の観測日平均（減額前・同店最高1件）',ref?.highestQuote?.ratio??'',ref?.mean??'',ref?.date||'',ref?.count??'',ref?.highestQuote?.name||'',q?'':value.reason].concat(buybackAdditionalCsv(card));
+  return [q?.ratio ?? '',q?.name || '',q ? q.fulfilment === 'store' ? '店頭' : '郵送' : '',q?.at || '',q?.standard ?? '',q?.samples ?? '',state.buybackHighestMin ?? '',q?.priceDate || '',q?.marketAt || '',q?.timeSkewHours ?? '',value.mean ?? '',value.meanCount || '',value.coverage.target ?? '',value.coverage.comparable,value.coverage.above,value.coverage.listed,value.meanWindows?.[75]?.mean??'',value.meanWindows?.[75]?.days??'',75,value.meanWindows?.[75]?.stores??'',value.meanWindows?.[75]?.lastDate||'',value.meanWindows?.[75]?.reference??'','日次店舗間平均の観測日平均（減額前・同店最高1件）',ref?.highestQuote?.ratio??'',ref?.mean??'',ref?.date||'',ref?.count??'',ref?.highestQuote?.name||'',q?'':value.reason].concat(buybackAdditionalCsv(card),[value.meanWindows?.[75]?.status||'',value.meanWindows?.[75]?.sourceAsOf||'',value.meanWindows?.[75]?.calculatedAt||'',value.meanWindows?.[75]?.previous?.mean??'']);
 }
-let selectedPeriodLoad=null,selectedPeriodError=null,selectedPeriodAttempted=new WeakSet();
+let selectedPeriodLoad=null,selectedPeriodError=null,selectedPeriodAttempted=new WeakMap();
 function ensureSelectedBuybackPeriods(cards) {
   const summary=state.buybackObservationSummary;
-  if(state.buybackStoreMode!=='selected'||!summary?.support?.compact||![state.buyback7RatioMin,state.buyback30RatioMin,state.buyback75RatioMin].some(v=>v!=null)||selectedPeriodLoad||selectedPeriodAttempted.has(summary))return;
-  selectedPeriodAttempted.add(summary);
+  const required=[7,30,75].filter(d=>state['buyback'+d+'RatioMin']!=null);
+  if(!summary?.support?.compact||!required.length||selectedPeriodLoad)return;
+  const signature=JSON.stringify([new Date(Date.now()+9*3600000).toISOString().slice(0,10),state.buybackStoreMode,state.selectedBuybackStores,required]);
+  const attempted=selectedPeriodAttempted.get(summary)||new Set();if(attempted.has(signature))return;attempted.add(signature);selectedPeriodAttempted.set(summary,attempted);
   selectedPeriodError=null;
-  const files=new Map();for(const c of cards){const file=summary.support.detailFiles?.[c.id];if(file&&!buybackSupportDetails.has(c.id))files.set(file,c.id);}
+  const files=new Map();for(const c of cards){const file=summary.support.detailFiles?.[c.id];if(file&&!buybackSupportDetails.has(c.id)&&required.some(d=>cardBuybackSupport(c).meanWindows?.[d]?.status==='recalculation-pending'))files.set(file,c.id);}
   if(!files.size)return;
   selectedPeriodLoad=(async()=>{const ids=[...files.values()];for(let i=0;i<ids.length;i+=4)await Promise.all(ids.slice(i,i+4).map(loadBuybackSupportDetail));})()
     .then(()=>{selectedPeriodLoad=null;if(state.buybackObservationSummary===summary)render();})
@@ -4744,9 +4748,9 @@ async function loadBuybackSupportDetail(id) {
   const file=state.buybackObservationSummary?.support?.detailFiles?.[id];
   if (!file || !state.buybackObservationSummary?.support?.compact) return;
   if (!buybackSupportDetails.has(id)) {
-    if (!buybackSupportDetailRequests.has(file)) buybackSupportDetailRequests.set(file,fetchJsonMaybe('./'+file,{detail:true}));
+    if (!buybackSupportDetailRequests.has(file)) buybackSupportDetailRequests.set(file,fetchJsonMaybe('./'+file,{detail:true,affectsCalculation:false}));
     const payload=await buybackSupportDetailRequests.get(file);
-    if (!payload?.summaries) throw new Error('選択店舗の倍率履歴を取得できません：' + file);
+    if (!payload?.summaries || payload.asOf!==state.buybackObservationSummary?.support?.asOf) throw new Error('選択店舗の倍率履歴を取得できません：' + file);
     for (const [cardId,rows] of Object.entries(payload?.summaries || {})) buybackSupportDetails.set(cardId,rows);
   }
   const target=document.querySelector(`[data-buyback-support-detail="${CSS.escape(id)}"]`),card=state.cardById[id];
@@ -4755,6 +4759,13 @@ async function loadBuybackSupportDetail(id) {
     const template=document.createElement('template');template.innerHTML=buybackSupportHtml(calculated,true);
     target.replaceWith(template.content.firstElementChild);
   }
+}
+let buybackMeanObserver=null;
+const buybackMeanErrors=new Map();
+function observePendingBuybackMeans(){
+  if(!buybackMeanObserver&&typeof IntersectionObserver==='function')buybackMeanObserver=new IntersectionObserver(entries=>{for(const e of entries)if(e.isIntersecting){buybackMeanObserver.unobserve(e.target);const id=e.target.dataset.buybackSupport,raw=state.cardById[id],card=calculatedCardCache?.value?.find(c=>c.id===id)||raw;if(!card||cardBuybackSupport(card).meanWindows?.[75]?.status!=='recalculation-pending')continue;
+    void loadBuybackSupportDetail(id).then(()=>{const t=document.querySelector('[data-buyback-support="'+CSS.escape(id)+'"]');if(t){const node=document.createElement('template');node.innerHTML=buybackSupportHtml(card);t.replaceWith(node.content.firstElementChild);}}).catch(error=>{buybackMeanErrors.set(id,error.message);const t=e.target.querySelector('.buyback-75-mean');if(t)t.textContent+='／履歴読込失敗（前回参考を保持）';console.error(error);});}},{rootMargin:'200px'});
+  for(const node of document.querySelectorAll('[data-buyback-support]'))if(!node.dataset.meanObserved){node.dataset.meanObserved='true';buybackMeanObserver?.observe(node);}
 }
 function selectedLimitDisplay(card, base, trial) {
   if (state.purchaseMode !== 'current-market' && !(['current-cap','current-target'].includes(state.profitSearchBasis) && state.purchaseMode !== 'now')) return base;
@@ -4837,8 +4848,8 @@ function priceDynamicsMarkup(input){
   const planWindow={priority:75,express:75,value:200}[state.psaPlan];
   const segment=days=>{
     const v=explorationMetrics.variation(summary,card,Date.now(),days),near=planWindow===days;
-    const measurement=Number.isFinite(v.cv)&&Number.isFinite(v.drawdown)?'変動係数 '+v.cv.toFixed(1)+'%／最大下落 '+v.drawdown.toFixed(2)+'%':'判定保留・'+escapeHtml(v.reason);
-    return '<div class="price-variation '+explorationMetrics.variationTone(v.label)+(near?' variation-plan-period':'')+'"><strong>価格変動・'+days+'暦日 '+escapeHtml(v.label)+'</strong>'+(near?'<b class="variation-plan-badge">プランに近い期間</b>':'')+'<small>確認済み'+(v.count??0)+'／'+days+'日'+((v.count??0)<days?'・参考評価':'')+'／実観測'+(v.span??0)+'日間</small><small>'+measurement+'</small><details><summary>'+days+'日変動の根拠・不足</summary><small>採用開始 '+escapeHtml(v.first||'未取得')+'／最終 '+escapeHtml(v.latest||'未取得')+'／最大連続欠測 '+(v.gap??'未取得')+'日。'+escapeHtml(v.reason)+'。重複期間は独立した根拠に数えません。小さい評価も購入安全の保証ではありません。'+(near?'表示期間は暦日。設定の返却目安'+state.lockDays+'暦日とは別の比較枠で、公式予定納期の営業日を置換しません。':'')+'</small></details></div>';
+    const measurement=Number.isFinite(v.cv)&&Number.isFinite(v.drawdown)?(v.assessmentEligible?'':v.measurementState==='historical'?'古い実測の参考値・':'部分期間の参考値・')+'変動係数 '+v.cv.toFixed(1)+'%／最大下落 '+v.drawdown.toFixed(2)+'%':'数値の根拠不足・'+escapeHtml(v.reason);
+    return '<div class="price-variation '+explorationMetrics.variationTone(v.label)+(near?' variation-plan-period':'')+'"><strong>価格変動・'+days+'暦日 '+escapeHtml(!v.assessmentEligible&&Number.isFinite(v.cv)?'期間評価は保留':v.label)+'</strong>'+(near?'<b class="variation-plan-badge">プランに近い期間</b>':'')+'<small>確認済み'+(v.count??0)+'／'+days+'日'+((v.count??0)<days?'・参考評価':'')+'／実観測'+(v.span??0)+'日間</small><small>'+measurement+'</small>'+(v.min>0?'<small>確認済み価格範囲 ¥'+fmt.format(v.min)+'〜¥'+fmt.format(v.max)+'</small>':'')+'<details><summary>'+days+'日変動の根拠・不足</summary><small>集計基準日 '+escapeHtml(summary.asOf||'未取得')+'／採用開始 '+escapeHtml(v.first||'未取得')+'／最終 '+escapeHtml(v.latest||'未取得')+'／最大連続欠測 '+(v.gap??'未取得')+'日。'+escapeHtml(v.reason)+'。重複期間は独立した根拠に数えません。小さい評価も購入安全の保証ではありません。'+(near?'表示期間は暦日。設定の返却目安'+state.lockDays+'暦日とは別の比較枠で、公式予定納期の営業日を置換しません。':'')+'</small></details></div>';
   };
   const variationLabel=[75,200].map(segment).join('');
 
@@ -4864,10 +4875,11 @@ function observePriceDynamics(){
 function psa10PeriodCompact(card,compact=false) {
   priceDynamicsCards.set(card.id,card);
   return `<div data-price-dynamics="${escapeHtml(card.id)}">${priceDynamicsMarkup(card)}</div>`+`<div class="psa10-period-summary observation-glance" aria-label="国内PSA10観測平均">${[7,30,75,200].map(days=>{
-    const value = explorationMetrics.observation(state.psa10PeriodSummary,card.id,card.psa10,days);
+    const value = explorationMetrics.observation(state.psa10PeriodSummary,card.id,card.psa10,days,Date.now());
     const delta = value.delta == null ? '比較不可' : `${value.delta > 0 ? '+' : ''}${value.delta.toFixed(2)}%`;
+    const observationClockNote=value.windowCurrent?'':'<small>前回集計 '+escapeHtml(value.sourceAsOf||'未取得')+'／当日分は再集計待ち</small>';
     const drawdown=`<small class="observation-drawdown">観測最大下落 ${value.drawdown==null?'算出不可':(value.drawdown===0?'0':value.drawdown.toFixed(1))+'%'}${value.drawdownReference?'・参考':''}</small>`;
-    if(compact)return `<span>${days}暦日・観測平均<b>${value.mean==null?'蓄積中':'¥'+fmt.format(value.mean)}</b><small>乖離 ${delta}／<b class="observation-adopted">採用${value.count??0}日／${days}日</b><br>最終${escapeHtml(value.latest||'未取得')}${value.reference?'・参考':''}${value.stale?'・古値':''}</small>${drawdown}</span>`;
+    if(compact)return `<span>${days}暦日・観測平均<b>${value.mean==null?'蓄積中':'¥'+fmt.format(value.mean)}</b><small>乖離 ${delta}／<b class="observation-adopted">採用${value.count??0}日／${days}日</b><br>最終${escapeHtml(value.latest||'未取得')}${value.reference?'・参考':''}${value.stale?'・古値':''}</small>${drawdown}${observationClockNote}</span>`;
     const trade=explorationMetrics.tradeDemand(state.psa10PeriodSummary,card.id,days);
     return `<span>${days}暦日・観測平均<b>${value.mean == null ? '蓄積中' : `¥${fmt.format(value.mean)}`}</b><small>現相場との差 ${delta}<br><b class="observation-adopted">採用${value.count ?? 0}日／${days}日</b>・最終 ${value.latest || '未取得'}${value.reference ? '<br>参考・観測不足' : ''}${value.stale ? '<br>古い観測／日時未確認' : ''}</small>${drawdown}<small class="psa10-trade-glance">国内PSA10 ${trade.count==null?'件数未取得':fmt.format(trade.count)+'件'} / ${trade.daily==null?'日平均算出不可':trade.daily.toFixed(2)+'件/日'}<br>${days<=30?'取得元集計（個別成約ではない）':trade.count==null?'個別履歴不足・合算/推定なし':'個別実成約・全範囲確認'}${trade.stale?'・古値':''}<br>確認 ${escapeHtml(formatJstTimestamp(trade.at))}</small></span>`;
   }).join('')}</div>`;
@@ -5850,7 +5862,7 @@ function inventoryMovementMarkup(sources, now = Date.now()) {
   const view=explorationMetrics.stockTrend(sources.map(([sourceId,r])=>r?{...r,sourceId}:null),now);
   const amount=n=>Number.isFinite(n)?fmt.format(n)+'枚':'未取得';
   const periods=[7,30].map(d=>{
-    const w=view.periods[d],net=w.net,word=net==null?'比較待ち':net>0?'増加':net<0?'減少':'横ばい';
+    const w=view.periods[d],net=w.net,word=net==null?view.label:net>0?'増加':net<0?'減少':'横ばい';
     return '<strong class="stock-'+w.tone+'">'+d+'日間の在庫純増減 '+(net==null?'算出不可':(net>0?'+':'')+fmt.format(net)+'枚')+'・'+word+'</strong>'
       +'<small class="stock-flow-totals">減少累計 '+amount(w.decrease)+'／補充累計 '+amount(w.increase)+'</small>'
       +'<small>比較 '+w.flowStores+'／対象'+sources.length+'店'+(w.observedDays==null?'・同一商品の観測待ち':'・店舗別最少 '+w.observedDays+'観測日・参考')+'</small>';
@@ -6046,7 +6058,7 @@ function renderContent() {
   renderMemo = searchMemoFor(calculated);
   ensureSelectedBuybackPeriods(calculated);
   void ensureVerifiedListingReferences(calculated);
-  if(selectedPeriodError&&state.buybackStoreMode==='selected'&&[state.buyback7RatioMin,state.buyback30RatioMin,state.buyback75RatioMin].some(v=>v!=null))throw selectedPeriodError;
+  if(selectedPeriodError&&[state.buyback7RatioMin,state.buyback30RatioMin,state.buyback75RatioMin].some(v=>v!=null))throw selectedPeriodError;
   if (selectedPeriodLoad || verifiedListingFields.some(key=>state[key]!=null) && !['ready','failed'].includes(state.verifiedListingStatus)) { searchResultStatus('loading'); return false; }
   if (verifiedListingFields.some(key=>state[key]!=null) && state.verifiedListingStatus==='failed') throw new Error('みんトレ出品数の検索データ取得・版照合に失敗。条件一致0件とは別です。');
   const filteringStarted = performance.now();
@@ -7039,6 +7051,7 @@ function renderContent() {
   const commitStarted = performance.now();
   const committed = commitCardRows(els.grid, cardRows);
   observePriceDynamics();
+  observePendingBuybackMeans();
   if(recentPsa9Data||recentPsa9Failure)updateRecentPsa9Markup();
   const domCommitMs = performance.now() - commitStarted;
 

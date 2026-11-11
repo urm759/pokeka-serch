@@ -26,7 +26,11 @@ on:
       - 'search-controls.js'
       - 'psa10-listing-counts.js'
       - 'data/verified-psa10-listings.json'
+      - 'work/audit_day_boundaries.js'
+      - 'work/test_day_boundary_windows.js'
+      - 'work/fixtures/buyback-midnight-75.json'
       - 'work/test_median_detail_long_windows.js'
+      - 'work/build_buyback_support.js'
       - 'work/build_psa10_period_statistics.js'
       - 'work/build_ui_data.js'
       - 'work/test_listing_search_ui.js'
@@ -87,6 +91,7 @@ jobs:
           node work/test_scheduled_cycle_evidence.js
           node work/test_cycle_observation_snapshot.js
           node work/test_completion_price_consistency.js
+          node work/test_day_boundary_windows.js
           node work/test_median_detail_long_windows.js
           node work/test_listing_search_ui.js
           node work/test_search_organization.js
