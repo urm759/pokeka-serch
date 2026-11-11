@@ -285,12 +285,16 @@ jobs:
       - name: Verify published acquisition independently without source requests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: node work/verify_update_publication.js
+        run: |
+          node work/audit_day_boundaries.js
+          node work/verify_update_publication.js
       - name: Retain publication verification without a Pages feedback loop
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: publication-verification-${{ github.run_id }}
-          path: work/checkpoint-publication-proof.json
+          path: |
+            work/checkpoint-publication-proof.json
+            work/day-boundary-audit.json
           retention-days: 14
           if-no-files-found: error

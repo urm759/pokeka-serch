@@ -133,7 +133,11 @@ function build(root = ROOT) {
   audit.pairing=require('./buyback_pair_refresh').plan(cards,source,read('data/psa10-observation-receipt.json'),
     read('work/source-update-runs.json').sources?.toreca);
   const write = (file, value) => { const target = path.join(root,file),text=JSON.stringify(value); if(fs.existsSync(target)&&fs.readFileSync(target,'utf8')===text)return; fs.mkdirSync(path.dirname(target),{recursive:true}); require('./acquisition_retry').atomicWrite(target,value,0); };
-  const existing = read('data/buyback-observation-summary.json'); existing.support = result.summary;
+  const existing = read('data/buyback-observation-summary.json');
+  const fingerprint=crypto.createHash('sha256').update(JSON.stringify([rows,source.shops,result.summary.asOf])).digest('hex');
+  result.summary.calculationFingerprint=fingerprint;
+  result.summary.calculatedAt=existing.support?.calculationFingerprint===fingerprint?existing.support.calculatedAt:new Date().toISOString();
+  existing.support = result.summary;
   const latestCodes={},comparableCards=new Set(),comparableRows=[];
   const byId=new Map(cards.map(c=>[c.id,c]));
   for(const [id,shops]of Object.entries(result.summary.cards))for(const [shop,row]of Object.entries(shops)) {
