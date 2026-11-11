@@ -8,6 +8,7 @@ on:
       - 'work/test_recovery_latency.js'
       - 'work/test_unified_median_buy.js'
       - 'work/test_buy_basis_url_isolation.js'
+      - 'work/test_buyback_support.js'
       - 'work/test_value_reopening.js'
       - 'work/priority-search-profiles.json'
       - 'work/test_yuyutei_product_isolation.js'
@@ -85,5 +86,6 @@ jobs:
           node work/test_two_search_modes.js
           node work/test_buyback_highest_search.js
           node work/test_buyback_75_mean.js
+          node work/test_buyback_support.js
           node work/test_initial_calculation_dependencies.js
           node work/test_search_memo.js
