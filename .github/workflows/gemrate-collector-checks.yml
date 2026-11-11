@@ -4,6 +4,7 @@ on:
     paths:
       - 'work/gemrate-collector-extension/**'
       - 'work/gemrate_browser_receipts.js'
+      - 'work/run_gemrate_worker.js'
       - 'work/test_gemrate_*.js'
       - '.github/workflows/gemrate-collector-checks.yml'
 permissions:
@@ -22,6 +23,7 @@ jobs:
           node work/test_gemrate_export_binding.js
           node work/test_gemrate_csv_hold_recovery.js
           node work/test_gemrate_collector.js
+          node work/test_gemrate_worker.js
           node work/test_gemrate_receipt_filename.js
           node work/test_gemrate_private_inbox.js
           node work/test_gemrate_reference_checkpoint.js

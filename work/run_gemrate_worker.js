@@ -20,7 +20,7 @@ function run(root=ROOT,store=STORE){
   git(worker,['restore','--source=HEAD','--staged','--worktree','--',...dirty]);
  }
  const patterns=['/*.js','/work/*.js','/work/psa-name-aliases.json','/work/snkr_english_names.json','/work/gemrate-reviewed-additions.json','/work/gemrate-reviewed-sets.json','/work/gemrate-legacy-reference-ids.json','/work/gemrate-confirmed-reference-registry.json','/work/gemrate-received-scope.json','/data/pokemon-cards.json','/data/gemrate-reference-summary.json'];
- patterns.push('/work/gemrate-collection-sets.json');
+ patterns.push('/work/gemrate-collection-sets.json','/work/gemrate-collector-extension/core.js');
  git(worker,['sparse-checkout','set','--no-cone',...patterns]);
  git(worker,['checkout','--detach','origin/main']);
  const head=git(worker,['rev-parse','HEAD']),script=path.join(worker,'work/run_gemrate_reference_pipeline.js');
