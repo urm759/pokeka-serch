@@ -53,7 +53,7 @@ assert.equal(audit.final,[card,{...card,saleTx30d:0,psa10:250000}].filter(c=>!ap
 assert(Object.values(audit.overlap).reduce((a,b)=>a+b,0)>Object.values(audit.sequential).reduce((a,b)=>a+b,0),'overlapping exclusions are not sequential counts');
 assert(source.includes("querySelectorAll('.search-settings input, .search-settings select')"),'both basic and advanced controls remain covered after relocation');
 const activeSection=source.slice(source.indexOf('function renderActiveFilters()'),source.indexOf('async function loadCandidateReductionAudit'));
-assert(activeSection.includes('active-filter-chips')&&activeSection.indexOf('items.join')<activeSection.indexOf("<details"),'all active extra filters remain outside the disclosure');
+assert(activeSection.includes('active-filter-chips')&&activeSection.indexOf('items.join')>activeSection.indexOf("<details"),'all active conditions and origins are together inside the disclosure; opening is read-only');
 context.window.location.href='https://example.test/?profitBasis=store&periodReference=0&filterExpProfit=off&filterExpRoi=0';api.readUrl();
 assert.equal(elements.get('expectedProfitFilterInput').value,'');assert.equal(elements.get('expectedRoiFilterInput').value,'0');assert.equal(elements.get('profitSearchBasisInput').value,'store');
 Object.assign(s,{profitSearchBasis:'store',includePeriodReference:false,minExpectedProfitFilter:null});

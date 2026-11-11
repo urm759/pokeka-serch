@@ -1,10 +1,12 @@
 const fs=require('node:fs'),assert=require('node:assert/strict'),vm=require('node:vm');
 const source=fs.readFileSync('app.js','utf8'),html=fs.readFileSync('index.html','utf8'),model=require('../psa10-listing-counts'),controls=require('../search-controls');
-const fields=['listingCurrentMin','listingCurrentMax','listingMeanMin','listingMeanMax','rawListingCurrentMin','rawListingCurrentMax','rawListingMeanMin','rawListingMeanMax'];
+const fields=['listingCurrentMin','listingCurrentMax','listingMeanMin','listingMeanMax','rawListingCurrentMin','rawListingCurrentMax','rawListingMeanMin','rawListingMeanMax','listingMean200Min','listingMean200Max','rawListingMean200Min','rawListingMean200Max'];
 for(const name of fields){assert.equal((html.match(new RegExp('id="'+name+'Input"','g'))||[]).length,1);assert(controls.active({id:name+'Input',type:'number',value:'0'}));assert(controls.removable(name+'Input'));}
 const {load}=require('./audit_search_profit_consistency'),at='2026-11-04T08:00:00Z';
 const api=load(source,at,{url:'https://urm759.github.io/pokeka-serch/?listingCurrentMin=0&listingCurrentMax=99&listingMeanMin=2.5&listingMeanMax=50&bbRatio75Min=1.02&bbRatioRef=1&bb7=3'});
-for(const [name,value]of fields.map((key,i)=>[key,[0,99,2.5,50,null,null,null,null][i]])){assert.equal(api.state[name],value);if(value!==null)assert.equal(api.buildShareUrl().searchParams.get(name),String(value));}
+for(const [name,value]of fields.map((key,i)=>[key,[0,99,2.5,50,null,null,null,null,null,null,null,null][i]])){assert.equal(api.state[name],value);if(value!==null)assert.equal(api.buildShareUrl().searchParams.get(name),String(value));}
+for(const name of fields.slice(8)){assert.equal(api.state[name],null);api.state[name]=2.5;assert.equal(api.buildShareUrl().searchParams.get(name),'2.5');}
+
 for(const name of fields.slice(4)){api.state[name]=0;assert.equal(api.buildShareUrl().searchParams.get(name),'0');}
 assert.equal(api.state.buyback75RatioMin,1.02);assert.equal(api.buildShareUrl().searchParams.get('bbRatio75Min'),'1.02');assert.equal(api.state.minBuyback7,3,'legacy URL retains its meaning');
 const key=api.computationKey();for(const name of fields)api.state[name]=null;assert.equal(api.computationKey(),key,'display filters do not invalidate financial calculation');

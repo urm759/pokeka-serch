@@ -32,7 +32,7 @@ let efficiencyViewCache = new WeakMap();
 const explorationFields = [
   ['psa9GuideMin','psa9GuideMin'],
   ['psa9RoiMin','psa9RoiMin'],
-  ...['listingCurrentMin','listingCurrentMax','listingMeanMin','listingMeanMax','rawListingCurrentMin','rawListingCurrentMax','rawListingMeanMin','rawListingMeanMax'].map(key=>[key,key]),
+  ...['listingCurrentMin','listingCurrentMax','listingMeanMin','listingMeanMax','rawListingCurrentMin','rawListingCurrentMax','rawListingMeanMin','rawListingMeanMax','listingMean200Min','listingMean200Max','rawListingMean200Min','rawListingMean200Max'].map(key=>[key,key]),
   ['purchaseMin','actualPurchaseMin'],['purchaseMax','actualPurchaseMax'],
   ['headroomMin','purchaseHeadroomMin'],['headroomMax','purchaseHeadroomMax'],
   ['buybackMaxMin','buybackHighestMin'],
@@ -597,8 +597,8 @@ function searchResultStatus(phase, error = null) {
   const url = new URL(initialSearchUrl || window.location.href); url.searchParams.set('savedFilters','ignore');
   const saved = [...searchConditionOrigins].filter(([id,row]) => row.origin === '保存追加' && document.getElementById(id) && window.SearchControls?.active(document.getElementById(id)) && window.SearchControls.applicable(id,state));
   const note = phase === 'ready' && saved.length ? `<strong>端末の保存追加条件 ${saved.length}項目も適用中。</strong><small>${saved.map(([id])=>{const el=document.getElementById(id);return escapeHtml((el.closest('label')?.dataset.searchLabel||id)+'：'+conditionValue(el));}).join('／')}</small>` : '';
-  const keepOpen=target.querySelector?.('details')?.open===true;
-  target.innerHTML = `<span>${escapeHtml(message)}</span>${note}<details${keepOpen?' open':''}><summary>検索条件の出所・比較</summary><p>保存設定は自動解除しません。下の比較は端末の保存内容を書き換えません。</p><a href="${escapeHtml(url.href)}" target="_blank" rel="noopener">このURLだけで比較（保存条件を変更しない）</a><p>評価時刻 ${escapeHtml(searchRuntime.evaluatedAt || '未計算')}／データ版 ${escapeHtml(uiDataManifest?.revision || '未確定')}</p><ul>${[...searchConditionOrigins].map(([id,row]) => {const el=document.getElementById(id);if(!el)return '';const origin=row.value===conditionValue(el)?row.origin:'手動変更';return `<li>${escapeHtml(el.closest('label')?.querySelector('span')?.textContent || id)}：${escapeHtml(conditionValue(el))}（${escapeHtml(origin)}）</li>`;}).join('')}</ul></details>`;
+  target.innerHTML = `<span>${escapeHtml(message)}</span>${phase==='ready'&&saved.length?'<small>保存追加 '+saved.length+'項目・詳細で出所確認</small>':''}`;
+
 }
 function failSearch(error) {
   searchResultStatus('error',error);
@@ -1791,6 +1791,7 @@ async function exportFavoritesCsv() {
   rows[0].push('計算買値（検索・一覧共通）','計算買値の採用元','計算採用10率%','計算採用10率の出典','参考ガイド率%','参考ガイド出典','主計算買値モード','採用店舗','買値確認日時','中央値購入割合%（10率とは別）','仮定買値','仮定期待利益','仮定利益率%','仮定年換算%','仮定売値シナリオ','仮定売却先');
   for(const d of [30,7])rows[0].push(`${d}日PSA9実成約平均（計算不採用）`,`${d}日PSA9採用成約件数`,`${d}日PSA9最終成約日時`,`${d}日PSA9対象期間`,`${d}日PSA9出典URL`,`${d}日PSA9平均の区分`);
   for(const label of ['みんトレ掲載PSA10','みんトレ掲載美品'])rows[0].push(label+'現在出品数（下限）',label+'現在件数が上限なし',label+'掲載値確認日時',label+'元更新日時（未提供は空欄）',label+'現在値の不足理由',label+'30日平均出品数（下限）',label+'平均件数が上限なし',label+'平均の実観測日数',label+'観測開始日',label+'最終観測日');
+  for(const label of ['みんトレ掲載PSA10','みんトレ掲載美品'])rows[0].push(label+'200日平均出品数（下限）',label+'200日平均が上限なし',label+'200日平均の実観測日数',label+'200日観測開始日',label+'200日最終観測日');
   rows[0].push(...verifiedListingFields.map(key=>'出品数条件・'+key),'出品数読込状態');
   favoriteCards().forEach((rawCard,index)=>{
     const card = calc(rawCard), p = purchaseExploration(card), v = searchProfitView(card), c = postingCoverage(card);
@@ -4833,12 +4834,13 @@ function priceDynamicsMarkup(input){
   const n=dynamicsShard(card.id),summary=state.psa10PeriodSummary?.displayDynamicsSharded?priceDynamicsData.get(n):state.psa10PeriodSummary;
   if(!summary)return '<small>価格変動・価格差：表示範囲を読込待ち（材料不足とは別）</small>';
   if(summary.error)return '<small>価格変動・価格差：読込失敗。採算・検索計算とは別です。</small>';
-  const variability=explorationMetrics.variation(summary,card);
-  const medium=summary?.variation?.mediumStatus?.[card.id],midCount=medium?.[0]??0;
-  const mediumLabel=variability.days===75?'中期75日・'+variability.label:'中期75日 材料不足（確認済み'+midCount+'/75日・必要38日）';
-  const short=explorationMetrics.variation(summary,card,Date.now(),7);
-  const segment=(v,label)=>'<div class="price-variation '+explorationMetrics.variationTone(v.label)+'"><strong>価格変動・'+label+' '+escapeHtml(v.label)+'</strong>'+(v.days?'<small>'+v.count+'/'+v.days+'観測日・変動係数 '+v.cv.toFixed(1)+'%／最大下落 '+v.drawdown.toFixed(2)+'%'+(v.min>0?'／¥'+fmt.format(v.min)+'〜¥'+fmt.format(v.max):'')+'</small>':'<small>'+escapeHtml(v.reason)+'</small>')+'</div>';
-  const variationLabel=segment(short,'短期7日')+segment(variability,'中期'+(variability.days||30)+'日')+'<small>'+escapeHtml(mediumLabel)+'</small><details><summary>変動の根拠</summary><small>'+escapeHtml(variability.reason)+'。短期の落ち着きと中期の過去下落は別です。採用'+(variability.count||0)+'日／実観測'+(variability.span||0)+'日間・最終'+escapeHtml(variability.latest||'未取得')+'。期間は重複し独立票ではありません。小さい評価も購入安全の保証ではありません。</small></details>';
+  const planWindow={priority:75,express:75,value:200}[state.psaPlan];
+  const segment=days=>{
+    const v=explorationMetrics.variation(summary,card,Date.now(),days),near=planWindow===days;
+    const measurement=Number.isFinite(v.cv)&&Number.isFinite(v.drawdown)?'変動係数 '+v.cv.toFixed(1)+'%／最大下落 '+v.drawdown.toFixed(2)+'%':'判定保留・'+escapeHtml(v.reason);
+    return '<div class="price-variation '+explorationMetrics.variationTone(v.label)+(near?' variation-plan-period':'')+'"><strong>価格変動・'+days+'暦日 '+escapeHtml(v.label)+'</strong>'+(near?'<b class="variation-plan-badge">プランに近い期間</b>':'')+'<small>確認済み'+(v.count??0)+'／'+days+'日'+((v.count??0)<days?'・参考評価':'')+'／実観測'+(v.span??0)+'日間</small><small>'+measurement+'</small><details><summary>'+days+'日変動の根拠・不足</summary><small>採用開始 '+escapeHtml(v.first||'未取得')+'／最終 '+escapeHtml(v.latest||'未取得')+'／最大連続欠測 '+(v.gap??'未取得')+'日。'+escapeHtml(v.reason)+'。重複期間は独立した根拠に数えません。小さい評価も購入安全の保証ではありません。'+(near?'表示期間は暦日。設定の返却目安'+state.lockDays+'暦日とは別の比較枠で、公式予定納期の営業日を置換しません。':'')+'</small></details></div>';
+  };
+  const variationLabel=[75,200].map(segment).join('');
 
   const gap=explorationMetrics.priceGap(summary,card),pct=v=>Number.isFinite(v)?(v>0?'+':'')+v.toFixed(1)+'%':'比較不可';
   const gapLabel='<div class="price-gap"><strong>PSA10／素体差 '+pct(gap.current)+'</strong><small>75日観測平均 '+pct(gap.mean75)+'／'+escapeHtml(gap.direction)+'</small><details><summary>価格差の根拠</summary><small>'+escapeHtml(gap.source||'みんトレ美品参考相場・国内PSA10集計')+'。PSA10÷素体−1。買値最安選択・仕入れ目安・店舗中央値は不使用。</small><small>75日 '+(gap.count75??'未取得')+'/75観測日・実観測'+(gap.span??'未取得')+'日間／最終'+escapeHtml(gap.last||'未取得')+'。7日 '+(gap.count7??'未取得')+'/7日・平均'+pct(gap.mean7)+'。'+escapeHtml(gap.reason)+'</small><small>平均は同日の両価格から求めた日次率の平均（平均価格同士の比ではない）。素体 '+(Number.isFinite(gap.raw)?'¥'+fmt.format(gap.raw):'未取得')+'／PSA10 '+(Number.isFinite(gap.psa10)?'¥'+fmt.format(gap.psa10):'未取得')+'。素体確認 '+escapeHtml(gap.rawAt||'未取得')+'／PSA10確認 '+escapeHtml(gap.marketAt||'未取得')+'。差 '+(Number.isFinite(gap.change)?gap.change.toFixed(1)+'％ポイント':'判定保留')+'。履歴不足は参考。検索・採算・GOには未反映。</small></details></div>';
@@ -5106,7 +5108,10 @@ function renderActiveFilters() {
   }
   const basis = state.profitSearchBasis === 'current-target' ? '利益確保の仕入れ目安で購入 × 現在出口相場（利益額・利益率の目標のみ適用・購入GOではない）' : state.profitSearchBasis === 'current-cap' ? '現相場の期待損益分岐上限で購入 × 現在出口相場。期待利益率はほぼ0%（条件は保持）' : state.purchaseMode === 'current-market' ? state.currentMarketSearchKind === 'cap' ? '損益分岐上限探索（購入時利益条件は不適用）' : '実店舗状態A／手入力 × 現在出口相場' : searchProfitView({}).label;
   const exit={buyback:'買取店優先',marketplace:'フリマ優先',both:'両方で赤字回避'}[state.exitPolicy]||state.exitPolicy;
-  const html='<strong>追加検索条件・出所（保存追加 '+saved+'／不適用 '+inactive+'）</strong><div class="active-filter-chips">'+(items.join('')||'追加条件なし')+'</div><button type="button" data-clear-extra-conditions '+(removable?'':'disabled')+'>追加検索条件だけ解除（'+removable+'項目）</button><small>基本の名称・発売年・価格帯、計算基準・費用・売却先・資金・GO安全条件・参考値採用・お気に入りは保持します。条件は自動で緩めません。</small><small>検索採算：'+escapeHtml(basis)+'／売却先 '+escapeHtml(exit)+'／返却 '+state.lockDays+'日。掲載範囲：'+escapeHtml({analysis:'分析可能',all:'全カード',new:'サイト新着',recent:'最近発売',relisted:'再掲載',completing:'補完中',shortage:'データ不足'}[state.catalogScope]||state.catalogScope)+'／期間不一致の参考探索 '+(state.includePeriodReference?'ON（GO不可）':'OFF')+'。並び順と不適用条件も保存。</small><small>購入判定・上限の設定（解除対象外）：鑑定費¥'+fmt.format(state.fee)+'／最低期待利益¥'+fmt.format(state.minExpectedProfit)+'／期待利益率'+state.minExpectedRoi+'%／年換算'+state.minAnnualEfficiency+'%。資金・利用店舗は計算設定で確認。</small><details'+(keepOpen?' open':'')+'><summary>計算設定と検索の違いを確認</summary><small>判定用：最低利益¥'+fmt.format(state.minExpectedProfit)+'／最低期待利益率'+state.minExpectedRoi+'%／最低年換算'+state.minAnnualEfficiency+'%。これらは追加検索の利益下限と別で、解除しません。総資金−ロック−鑑定予備を使用。単体資金効率は個人総資金とは別。期待黒字は損失保証ではありません。</small><button type="button" data-open-profit-settings>計算設定へ</button><a href="./docs/SEARCH_CONTROL_INVENTORY.md" target="_blank" rel="noreferrer">全項目の棚卸し</a></details>';
+  const comparisonUrl=new URL(initialSearchUrl||window.location.href);comparisonUrl.searchParams.set('savedFilters','ignore');
+  const sources=[...searchConditionOrigins].map(([id,row])=>{const el=document.getElementById(id);if(!el)return '';const origin=row.value===conditionValue(el)?row.origin:'手動変更';return '<li>'+escapeHtml(el.closest('label')?.querySelector('span')?.textContent||id)+'：'+escapeHtml(conditionValue(el))+'（'+escapeHtml(origin)+'）</li>';}).join('');
+  const html='<strong class="search-basis-glance">買値：'+escapeHtml(state.calculationBuyMode==='median'?'素体参考相場・中央値':basis)+'／追加条件 '+items.length+'項目</strong><details'+(keepOpen?' open':'')+'><summary>条件・保存値・出所を確認（保存追加 '+saved+'／不適用 '+inactive+'）</summary><div class="active-filter-chips">'+(items.join('')||'追加条件なし')+'</div><button type="button" data-clear-extra-conditions '+(removable?'':'disabled')+'>追加検索条件だけ解除（'+removable+'項目）</button><small>開閉は条件を変更しません。基本条件・費用・安全条件・参考値採用は保持。</small><small>検索採算：'+escapeHtml(basis)+'／売却先 '+escapeHtml(exit)+'／返却 '+state.lockDays+'暦日。</small><small>購入判定・上限：鑑定費¥'+fmt.format(state.fee)+'／最低期待利益¥'+fmt.format(state.minExpectedProfit)+'／期待利益率'+state.minExpectedRoi+'%／年換算'+state.minAnnualEfficiency+'%。追加検索とは別。</small><a href="'+escapeHtml(comparisonUrl.href)+'" target="_blank" rel="noopener">このURLだけで比較（端末保存を変更しない）</a><small>評価時刻 '+escapeHtml(searchRuntime.evaluatedAt||'未計算')+'／データ版 '+escapeHtml(uiDataManifest?.revision||'未確定')+'</small><ul>'+sources+'</ul><button type="button" data-open-profit-settings>計算設定へ</button><a href="./docs/SEARCH_CONTROL_INVENTORY.md" target="_blank" rel="noreferrer">全項目の棚卸し</a></details>';
+
   if (target.dataset.conditionMarkup !== html) { target.innerHTML=html;target.dataset.conditionMarkup=html; }
 }
 
@@ -5494,7 +5499,7 @@ function cardSearchExclusions(card, {mode = state.purchaseMode,diagnostic=true,e
     return reasons;
   });
 }
-const verifiedListingFields=['listingCurrentMin','listingCurrentMax','listingMeanMin','listingMeanMax','rawListingCurrentMin','rawListingCurrentMax','rawListingMeanMin','rawListingMeanMax'];
+const verifiedListingFields=['listingCurrentMin','listingCurrentMax','listingMeanMin','listingMeanMax','rawListingCurrentMin','rawListingCurrentMax','rawListingMeanMin','rawListingMeanMax','listingMean200Min','listingMean200Max','rawListingMean200Min','rawListingMean200Max'];
 let verifiedListingRequest=null,verifiedListingRevision=null;
 function verifiedListingViews(card,now=Date.now()) {
   return explorationMetrics.listingCounts.providerViews(state.verifiedListingReferences,card,{catalogHash:uiDataManifest?.hashes?.['data/pokemon-cards.json'],now});
@@ -5505,25 +5510,25 @@ function verifiedListingExclusions(card) {
   if(!explorationMetrics.listingCounts?.providerViews)return ['みんトレ出品数・計算モジュール読込不成立'];
   if(state.verifiedListingStatus!=='ready')return ['みんトレ出品数・'+(state.verifiedListingStatus==='failed'?'読込失敗':'読込待ち')];
   const views=verifiedListingViews(card),model=explorationMetrics.listingCounts;
-  return [...model.reasons(views.psa10,{...state,label:'みんトレ掲載PSA10出品数'}),...model.reasons(views.raw,{listingCurrentMin:state.rawListingCurrentMin,listingCurrentMax:state.rawListingCurrentMax,listingMeanMin:state.rawListingMeanMin,listingMeanMax:state.rawListingMeanMax,label:'みんトレ掲載美品出品数'})];
+  return [...model.reasons(views.psa10,{...state,label:'みんトレ掲載PSA10出品数'}),...model.reasons(views.raw,{listingCurrentMin:state.rawListingCurrentMin,listingCurrentMax:state.rawListingCurrentMax,listingMeanMin:state.rawListingMeanMin,listingMeanMax:state.rawListingMeanMax,listingMean200Min:state.rawListingMean200Min,listingMean200Max:state.rawListingMean200Max,label:'みんトレ掲載美品出品数'})];
 }
 function verifiedListingPanel(card,compact=false) {
   const views=verifiedListingViews(card),m=explorationMetrics.listingCounts,status=state.verifiedListingStatus;
   const labels={psa10:'みんトレ掲載PSA10出品数',raw:'みんトレ掲載美品出品数'};
-  const rows=Object.entries(labels).map(([key,label])=>{const v=views[key],c=v.current,mean=v.mean30;
+  const rows=Object.entries(labels).map(([key,label])=>{const v=views[key],c=v.current,mean=v.mean30,long=v.mean200;
     const unknown=status==='loading'?'読込中':status==='failed'?'読込失敗':v.currentReason||'掲載値未取得';
-    return '<div><span>'+label+'</span><strong>'+(c?m.text(c):unknown)+'</strong>'+(c?.stale?'<small class="price-stale">古い掲載確認</small>':'')+'<small>30日平均 '+m.text(mean)+(mean?'・'+mean.days+'/30観測日'+(mean.reference?'・参考':''):'')+'</small>'+(!compact?'<small>掲載値確認 '+escapeHtml(c?.at||v.lastObserved?.at||'未取得')+'／元更新日時 '+escapeHtml(c?.sourceUpdatedAt||'取得元未提供')+'</small><small>'+escapeHtml(mean?mean.start+'〜'+mean.end:'履歴未取得')+'</small>':'')+'</div>';}).join('');
+    return '<div><span>'+label+'</span><strong>'+(c?m.text(c):unknown)+'</strong>'+(c?.stale?'<small class="price-stale">古い掲載確認</small>':'')+'<small>30日平均 '+m.text(mean)+(mean?'・'+mean.days+'/30観測日'+(mean.reference?'・参考':''):'')+'</small><small>200日平均 '+m.text(long)+(long?'・'+long.days+'/200観測日'+(long.reference?'・参考':''):'')+'</small>'+(!compact?'<small>掲載値確認 '+escapeHtml(c?.at||v.lastObserved?.at||'未取得')+'／元更新日時 '+escapeHtml(c?.sourceUpdatedAt||'取得元未提供')+'</small><small>'+escapeHtml('30日：'+(mean?mean.start+'〜'+mean.end:'履歴未取得')+'／200日：'+(long?long.start+'〜'+long.end:'履歴未取得'))+'</small>':'')+'</div>';}).join('');
   return '<div class="snkr-listing-panel mintore-listings">'+rows+'</div>'+(!compact?'<small><a href="https://toreca-souba.com/cards/'+encodeURIComponent(card.sourceId||card.id)+'" target="_blank" rel="noreferrer">みんトレ掲載ページ</a>。現在の状態別出品欄に対応する掲載件数。美品は傷なし・現在価格の根拠があるものだけ。出品件数とカード枚数・取引件数・POPは別です。上限付き表示は「以上」を保持。元値の更新日時は未提供で、確認日時や成約日時へ置換しません。需要・GOへの追加採用なし。</small>':'');
 }
 function verifiedListingCsvFields(card) {
-  const views=verifiedListingViews(card);return [...['psa10','raw'].flatMap(key=>{const v=views[key];return [v.current?.lower??'',v.current?.exact??'',v.current?.at||'',v.current?.sourceUpdatedAt||'',v.currentReason||'',v.mean30?.lower??'',v.mean30?.exact??'',v.mean30?.days??'',v.mean30?.start||'',v.mean30?.end||''];}),...verifiedListingFields.map(key=>state[key]??''),state.verifiedListingStatus];
+  const views=verifiedListingViews(card);return [...['psa10','raw'].flatMap(key=>{const v=views[key];return [v.current?.lower??'',v.current?.exact??'',v.current?.at||'',v.current?.sourceUpdatedAt||'',v.currentReason||'',v.mean30?.lower??'',v.mean30?.exact??'',v.mean30?.days??'',v.mean30?.start||'',v.mean30?.end||''];}),...['psa10','raw'].flatMap(key=>{const m=views[key].mean200;return[m?.lower??'',m?.exact??'',m?.days??'',m?.start||'',m?.end||''];}),...verifiedListingFields.map(key=>state[key]??''),state.verifiedListingStatus];
 }
 async function ensureVerifiedListingReferences(cards,force=false) {
   if(!force&&!verifiedListingFields.some(key=>state[key]!=null)&&!document.querySelector('[data-verified-listings]'))return;
   const revision=uiDataManifest?.revision||'legacy';
   if(verifiedListingRevision!==revision){verifiedListingRevision=revision;verifiedListingRequest=null;state.verifiedListingReferences=null;state.verifiedListingStatus='unrequested';}
   if(!verifiedListingRequest){state.verifiedListingStatus='loading';verifiedListingRequest=fetchJsonMaybe('./data/mintore-listing-summary.json',{detail:true,affectsCalculation:false}).then(data=>{
-    if(data?.version!==1||data.source!=='MINTORE'||data.scope!=='provider-listed-psa10-and-clean-v1'||data.catalogHash!==uiDataManifest?.hashes?.['data/pokemon-cards.json']||!data.cards||Array.isArray(data.cards))throw Error('みんトレ出品数・カード原票の版不一致');
+    if(![1,2].includes(data?.version)||data.source!=='MINTORE'||data.scope!=='provider-listed-psa10-and-clean-v1'||data.catalogHash!==uiDataManifest?.hashes?.['data/pokemon-cards.json']||!data.cards||Array.isArray(data.cards))throw Error('みんトレ出品数・カード原票の版不一致');
     if(verifiedListingRevision===revision){state.verifiedListingReferences=data;state.verifiedListingStatus='ready';}
   }).catch(error=>{if(verifiedListingRevision===revision){state.verifiedListingStatus='failed';if(verifiedListingFields.some(key=>state[key]!=null))failSearch(error);}});
   await verifiedListingRequest;
@@ -6663,20 +6668,22 @@ function renderContent() {
             : "conditional";
     const decisionTitle = `今回の仕入れ判断：${displayVerdict}`;
     const decisionReasons = purchaseDecision?.reasons?.length ? purchaseDecision.reasons.join(" / ") : "利益・資金・銘柄品質の基準を満たしています";
-    const psaDecisionPanel = psaDecision ? `
+    const ordinaryProfit = searchProfitView(card), ordinaryEfficiency = cardEfficiency(card);
+    const psaDecisionPanel = `
       <div class="psa-decision ${decisionClass}">
-        <div class="psa-decision-head"><strong>資金・期待値の内訳</strong><span>PSA公式取得率優先・PSA9実価格優先・共通計算</span></div>
-        <div class="psa-decision-metrics">
-          <div><span>期待利益</span><strong>¥${fmt.format(Math.round(psaDecision.expectedProfit))}</strong><small>${escapeHtml(psaDecision.calculationBasis || "現在の基準相場 × 中央予測")}</small></div>
-          <div><span>期待利益率</span><strong>${Math.round(psaDecision.expectedRoi)}%</strong><small>${escapeHtml(psaDecision.calculationBasis || "現在の基準相場 × 中央予測")}</small></div>
-          <div><span>安全側期待利益</span><strong class="${stressProfitAtFinal.className}">${stressProfitAtFinal.text}</strong><small>仕入れ上限 × 供給ストレス予測</small></div>
-          <div><span>安全側期待利益率</span><strong>${Number.isFinite(stressRoiAtFinal) ? `${stressRoiAtFinal.toFixed(1)}%` : "算出不可"}</strong><small>0%は期待値が0円以上</small></div>
-          <div><span>年換算効率</span><strong>${Math.round(psaDecision.annualEfficiency)}%</strong></div>
-          <div><span>このカード1枚の仕入れ額</span><strong>¥${fmt.format(Math.round(psaDecision.singleCardSpend || 0))}</strong></div>
-        </div>
-        <p>${escapeHtml(decisionReasons)}</p>
+        <div class="psa-decision-head"><strong>資金・期待値の内訳</strong><span>一覧・検索と同じ買値・出口・費用・計算採用10率</span></div>
+        ${searchProfitPanel(ordinaryProfit,true)}${cardEfficiencyBodyBase(card,ordinaryEfficiency,true)}
+        <details class="legacy-economics-comparison"><summary>安全判定の比較・旧基準買値 × ${card.futurePriceForecast?.horizonDays ?? FORECAST_HORIZON_DAYS}日中央予測／仕入れ上限 × 供給ストレス</summary>
+          <small>通常の期待利益・検索順位とは別。購入GO・安全上限の内部計算は従来基準。</small>
+          <div class="psa-decision-metrics">
+            <div><span>旧基準買値の中央予測期待利益</span><strong>${signedExpectedMoney(psaDecision?.expectedProfit).text}</strong><small>${escapeHtml(psaDecision?.calculationBasis || '旧基準買値 × 中央予測')}</small></div>
+            <div><span>旧基準買値の中央予測期待利益率</span><strong>${Number.isFinite(psaDecision?.expectedRoi)?psaDecision.expectedRoi.toFixed(1)+'%':'算出不可'}</strong></div>
+            <div><span>仕入れ上限 × 供給ストレス期待利益</span><strong class="${stressProfitAtFinal.className}">${stressProfitAtFinal.text}</strong></div>
+            <div><span>仕入れ上限 × 供給ストレス期待利益率</span><strong>${Number.isFinite(stressRoiAtFinal)?stressRoiAtFinal.toFixed(1)+'%':'算出不可'}</strong></div>
+          </div><p>${escapeHtml(decisionReasons)}</p>
+        </details>
       </div>
-    ` : "";
+    `;
     const purchaseSummaryPanel = psaDecision && purchaseDecision ? `
       <section class="purchase-summary ${decisionClass}">
         <div class="purchase-exclusion ${priceOnlyExclusion ? "price-only" : ""}"><strong>${escapeHtml(exclusionExplanation)}</strong><small>暫定運用上限は現在価格ではなく「この価格以下なら仕入れ候補」という買値の基準です。</small></div>
@@ -6693,7 +6700,8 @@ function renderContent() {
         ${buybackScenarioHtml || `<div><span>買取店出口3シナリオ</span><strong>買取データ不足</strong><small>${escapeHtml(buybackExit?.reason || "新しく信頼できる価格が2店舗未満")}</small></div>`}
         <div><span>フリマ基準上限</span><strong>¥${fmt.format(exitPolicy?.marketplaceTargetCap || 0)}</strong><small>販売手数料を反映</small></div>
         <div><span>両方で赤字を避ける上限</span><strong>${Number.isFinite(exitPolicy?.bothSafeCap) ? `¥${fmt.format(exitPolicy.bothSafeCap)}` : "買取データ不足"}</strong><small>買取・フリマの損益分岐上限の小さい方</small></div>
-        <div class="purchase-basis-note"><span>現在仕入値 ${cardPriceText}で購入</span><strong>売却価格シナリオ別</strong></div>
+        <details class="legacy-economics-comparison"><summary>別基準の比較：旧基準買値・実店舗価格・運用上限 × 現相場／${card.futurePriceForecast?.horizonDays ?? FORECAST_HORIZON_DAYS}日予測</summary><small>通常の中央値買値の期待利益・資金効率とは別です。</small>
+        <div class="purchase-basis-note"><span>旧基準買値 ${cardPriceText}で購入</span><strong>売却価格シナリオ別</strong></div>
         <div><span>現在PSA10相場 ¥${fmt.format(card.psa10)}</span>${scenarioResult(currentScenarios.currentMarket)}</div>
         <div><span>中央予測 ¥${fmt.format(card.futurePriceForecast?.centralPrice || 0)}</span>${scenarioResult(currentScenarios.centralForecast)}</div>
         <div><span>供給ストレス ¥${fmt.format(card.supplyStress?.price || 0)}</span>${scenarioResult(currentScenarios.supplyStress)}</div>
@@ -6706,7 +6714,7 @@ function renderContent() {
         <div><span>中央予測 ¥${fmt.format(card.futurePriceForecast?.centralPrice || 0)}</span>${scenarioResult(limitScenarios.centralForecast)}</div>
         <div><span>供給ストレス ¥${fmt.format(card.supplyStress?.price || 0)}</span>${scenarioResult(limitScenarios.supplyStress)}</div>
         <div><span>PSA9時の損益</span><strong class="${psa9ProfitAtCurrent.className}">${psa9ProfitAtCurrent.text}</strong><small>現在価格で購入 / ${escapeHtml(psa9Audit.source || "推定")}</small></div>
-        <div><span>通常の弱気予測価格</span><strong>¥${fmt.format(card.futurePriceForecast?.bearishPrice || 0)}</strong><small>供給過多の追加反映前</small></div>
+        <div><span>通常の弱気予測価格</span><strong>¥${fmt.format(card.futurePriceForecast?.bearishPrice || 0)}</strong><small>供給過多の追加反映前</small></div></details>
       </section>
     ` : "";
     const forecast = card.futurePriceForecast;
@@ -6848,7 +6856,7 @@ function renderContent() {
         <div><span>将来価格</span><strong>${fmt.format(forecast?.score || 0)}/100</strong><small>${escapeHtml(forecast?.phase || "蓄積中")}</small></div>
         <div><span>売りやすさ</span><strong>${fmt.format(card.overallAssessment?.exitLiquidity || 0)}/100</strong><small>PSA10取引・出口</small></div>
         <div class="supply-${supplyClass}"><span>供給パイプライン</span><strong>${escapeHtml(supply.classification || "蓄積中")}</strong><small>${pressureRatioText}</small></div>
-        <div><span>期待利益</span><strong class="${numericTone(psaDecision?.expectedProfit)}">${signedExpectedMoney(psaDecision?.expectedProfit).text}</strong><small>現在仕入値 × 中央予測</small></div>
+        <div><span>期待利益</span><strong class="${numericTone(ordinaryProfit.economics?.expectedProfit)}">${signedExpectedMoney(ordinaryProfit.economics?.expectedProfit).text}</strong><small>${escapeHtml(ordinaryProfit.label)}</small></div>
       </section>
     `;
     const overall = card.overallAssessment;

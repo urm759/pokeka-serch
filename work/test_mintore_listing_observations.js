@@ -23,4 +23,21 @@ const unknown=require('./mintore_listing_observations').publicationSummary(paylo
 assert.equal(unknown.acquiredThisRun,null);assert.equal(unknown.newPsa10CardDays,null,'missing run baseline is unknown, not a measured zero');
 assert.equal(save('2026-11-04T09:00:00Z',{...original,name:'スターミーV CSR 英語版 [S9a 083/067]'}).held,1);
 assert.throws(()=>capture(root,[card],new Map(),{...receipt('2026-11-04T08:00:00Z'),payloadHash:'_'.repeat(64)}),/evidence/);
+
+// 200 calendar days use older real receipts; 30-day mean must stay unchanged.
+save('2026-04-19T08:00:00Z',{...original,snkPsa10Count:90,snkListings:30});
+save('2026-04-18T08:00:00Z',{...original,snkPsa10Count:999,snkListings:999}); // outside200
+save('2026-10-01T08:00:00Z',{...original,snkPsa10Count:30,snkListings:9});
+save('2026-11-03T09:00:00Z',{...original,snkPsa10Count:14,snkListings:8}); // latest same JST day
+save('2026-11-04T08:00:00Z',{...original,snkPsa10Count:121,snkListings:144,price:0});
+[payload,views]=read('2026-11-04T09:00:00Z');
+assert.equal(payload.version,2);assert.equal(views.psa10.mean30.days,3);assert.equal(views.psa10.mean30.lower,(10+14+121)/3);
+assert.equal(views.psa10.mean200.days,5);assert.equal(views.psa10.mean200.lower,(90+30+10+14+121)/5);
+assert.equal(views.psa10.mean200.start,'2026-04-19');assert.equal(views.psa10.mean200.reference,true);
+assert.equal(views.raw.current,null);assert.equal(views.raw.mean200.days,4);assert.equal(views.raw.mean200.lower,(30+9+4+8)/4);
+assert.equal(views.raw.current?.sourceUpdatedAt??null,null);
+assert.deepEqual(model.reasons(views.psa10,{listingMean200Min:views.psa10.mean200.lower,listingMean200Max:views.psa10.mean200.lower}),[]);
+assert(model.reasons(views.psa10,{listingMean200Min:999}).some(r=>r.includes('200日平均')));
+const oldPayload={...payload,version:1,cards:{[card.id]:[[10,0,1,10,1,0,1],null]}};
+assert.equal(model.providerViews(oldPayload,card,{catalogHash:payload.catalogHash,now:Date.parse('2026-11-04T09:00:00Z')}).psa10.mean200,null,'v1 thirty-day aggregate is never relabeled200');
 console.log('PASS actual-response provenance, Japanese exact identity, visible state gates, supported zero vs missing, 99+, same-day dedup, observed-only mean, no carried-date refresh, and catalog version binding');
