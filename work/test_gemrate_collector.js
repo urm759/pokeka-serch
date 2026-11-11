@@ -16,6 +16,7 @@ assert.throws(()=>core.decide(set,null,{...page,updated:'2026-10-30'}),/後退/)
 assert.throws(()=>core.decide(set,{sourceDate:page.updated,totals:{psa10:2,total:4}},page),/矛盾/);
 assert.equal(core.choose([set],{sets:{S8B:{checkedDay:'2026-11-04'}}},at),null);
 assert.equal(core.choose([set],{sets:{S8B:{hold:{reason:'access'}}}},at),null,'held access never auto-clears');
+const csvHold={stage:'csv-receipt',reason:'receipt unknown',at};assert.equal(core.choose([set],{sets:{S8B:{hold:csvHold}}},at),set,'CSV hold permits read-only provider checks');assert.equal(core.decide(set,{hold:csvHold},{...page,updated:'2026-11-01'}).exportCsv,false,'daily checks never re-click a held export');assert(core.decide(set,{hold:csvHold},page,{testExport:true}).exportCsv,'explicit one-time test remains separate');
 assert.equal(core.choose([set],{sets:{S8B:{retryAt:Date.parse(at)+3600000}}},at),null);
 assert.equal(core.choose([set],{sets:{},attempts:Array.from({length:25},()=>({at}))},at),null,'failed attempts also consume the daily request budget');
 assert.equal(core.choose([{...set,cards:0}],{newSetDay:'2026-11-04',sets:{}},at),null,'new set cap distinct from maintenance');
@@ -29,6 +30,18 @@ fs.writeFileSync(path.join(store,'.gitignore'),'*\n');fs.writeFileSync(path.join
 const csv=Buffer.from('Trend,Card #,Name,Parallel,Gems,Total,Gem Rate\n,1,Pikachu,Base,1,2,50%\n,2,Charizard,Base,2,2,100%\n');
 const meta={version:1,kind:'gemrate-normal-csv-v1',jobId:id,setCode:set.setCode,page,decision:core.decide(set,null,page,{testExport:true}),download:{...download,fileSize:csv.length}};
 try{
+  const intent={kind:'normal-export-dom-v1',url:download.url,pageUrl:page.url,downloadName:'export.csv',clickedAt:at,capturedAt:at};
+  const blank={...download,referrer:'',filename:'export.csv'};
+  assert(core.claim(blank,{set,exportRequestedAt:at,exportIntent:intent,bindingRequired:true}));
+  assert(core.claim({...blank,referrer:'https://www.gemrate.com/'},{set,exportRequestedAt:at,exportIntent:intent,bindingRequired:true}));
+  assert(!core.claim({...blank,referrer:page.url.replace('year=2021','year=2020')},{set,exportRequestedAt:at,exportIntent:intent,bindingRequired:true}));
+  assert(!core.claim(blank,{set,exportRequestedAt:at,bindingRequired:true}));
+  assert(!core.claim({...blank,url:blank.url+'other'},{set,exportRequestedAt:at,exportIntent:intent,bindingRequired:true}));
+  assert(!core.claim({...blank,referrer:'https://example.invalid/'},{set,exportRequestedAt:at,exportIntent:intent,bindingRequired:true}));
+  assert(!core.claim({...blank,startTime:'2026-11-04T03:03:00Z'},{set,exportRequestedAt:at,exportIntent:intent,bindingRequired:true}));
+  const strong={...meta,exportIntent:intent,download:{...meta.download,referrer:''}};assert(receiver.validate(strong,csv,root,at));
+  assert.throws(()=>receiver.validate({...strong,exportIntent:{...intent,url:intent.url+'wrong'}},csv,root,at),/association/);
+  assert.throws(()=>receiver.validate({...strong,exportIntent:{...intent,pageUrl:page.url.replace('grader=psa','grader=cgc')}},csv,root,at),/association/);
   fs.writeFileSync(path.join(pending,'export.csv'),csv);fs.writeFileSync(path.join(pending,'receipt.json'),JSON.stringify(meta));fs.writeFileSync(path.join(downloads,'general.csv'),'keep');
   const result=receiver.receive(root,store,downloads,at);assert.equal(result.queuedCsv,1);assert.equal(result.providerChecks,1);assert.equal(result.summary.confirmationRatePct,100);assert.equal(result.summary.sourceDateUpdatedRatePct,0);
   assert.equal(result.at,at,'one injected clock governs receipt validation and daily aggregation');
