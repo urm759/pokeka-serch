@@ -1,0 +1,28 @@
+name: GemRate Collector Checks
+on:
+  pull_request:
+    paths:
+      - 'work/gemrate-collector-extension/**'
+      - 'work/gemrate_browser_receipts.js'
+      - 'work/test_gemrate_*.js'
+      - '.github/workflows/gemrate-collector-checks.yml'
+permissions:
+  contents: read
+jobs:
+  collector-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - run: |
+          node --check work/gemrate-collector-extension/service-worker.js
+          node work/test_gemrate_export_binding.js
+          node work/test_gemrate_csv_hold_recovery.js
+          node work/test_gemrate_collector.js
+          node work/test_gemrate_receipt_filename.js
+          node work/test_gemrate_private_inbox.js
+          node work/test_gemrate_reference_checkpoint.js
+          node work/test_gemrate_pop_history.js
