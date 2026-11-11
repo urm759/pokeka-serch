@@ -8,6 +8,7 @@ on:
       - 'work/test_recovery_latency.js'
       - 'work/test_unified_median_buy.js'
       - 'work/test_buy_basis_url_isolation.js'
+      - 'work/test_median_efficiency.js'
       - 'work/test_buyback_support.js'
       - 'work/test_value_reopening.js'
       - 'work/priority-search-profiles.json'
@@ -61,6 +62,7 @@ jobs:
           node work/test_unified_store_buy.js
           node work/test_unified_median_buy.js
           node work/test_buy_basis_url_isolation.js
+          node work/test_median_efficiency.js
           node work/test_value_reopening.js
           node work/test_yuyutei_product_isolation.js
           node work/test_card_efficiency.js
