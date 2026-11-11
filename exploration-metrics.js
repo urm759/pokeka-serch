@@ -157,21 +157,23 @@
     return direct?url.href:null;
   }
   function variation(summary,card,now=Date.now(),requested=null) {
-    const evidence=requested===7?summary?.variation?.short?.cards?.[card.id]:summary?.variation?.cards?.[card.id];
+    const explicit=[75,200].includes(requested),window=summary?.variation?.periods?.[requested];
+    const status=window?.status?.[card.id],base={days:requested,count:status?.[0]??0,span:status?.[1]??0,gap:status?.[2]??null,latest:status?.[3]??null,first:status?.[4]??null,reference:true};
+    const evidence=explicit?window?.cards?.[card.id]:requested===7?summary?.variation?.short?.cards?.[card.id]:summary?.variation?.cards?.[card.id];
     const means=observationPeriods.map(d=>observation(summary,card.id,card.psa10,d)).filter(r=>r.mean>0&&!r.stale);
-    const direction=means.find(r=>r.days===30)||means[0],delta=direction?.delta;
+    const direction=means.find(r=>r.days===(explicit?requested:30))||means[0],delta=direction?.delta;
     const trend=delta==null?'方向不明':delta>5?'上昇方向':delta< -5?'下落方向':'平均付近';
     if(!evidence){
       const labels={history:'実測履歴なし',evidence:'確認済み実測なし・旧記録の根拠不足',days:'確認済み観測日数不足',span:'実観測期間不足',gap:'連続欠測7日超',stale:'最終観測が古い',dispersion:'ばらつき・最大下落の計算材料不足'};
-      const reasons=summary?.variation?.unavailable?.[card.id]||summary?.variation?.defaultUnavailable;
-      return {label:'判断材料不足',trend,reason:reasons?.length?reasons.map(r=>labels[r]||r).join('／'):'実測のばらつき・観測充足不足。重複する4期間を独立根拠にしない'};
+      const reasons=explicit?(window?.unavailable?.[card.id]||[status?'days':'evidence']):summary?.variation?.unavailable?.[card.id]||summary?.variation?.defaultUnavailable;
+      return {...(explicit?base:{}),label:'判断材料不足',trend,reason:reasons?.length?reasons.map(r=>labels[r]||r).join('／'):'実測のばらつき・観測充足不足。重複する4期間を独立根拠にしない'};
     }
     const [days,cv,drawdown,count,span,gap,latest]=evidence;
     const age=Math.floor((now+9*3600000)/86400000)-Date.parse(latest)/86400000;
-    if(!(age>=0&&age<=2&&count>=(days===7?5:15)&&count/days>=.5&&span>=(days===7?5:14)&&gap<=(days===7?2:7)))return {label:'判断材料不足',trend,reason:'観測不足・古値・日時不正'};
-    if(![cv,drawdown].every(finite))return {label:'判断材料不足',trend,reason:'ばらつき・最大下落の根拠不足'};
+    if(!(age>=0&&age<=2&&count>=(days===7?5:15)&&count/days>=.5&&span>=(days===7?5:14)&&gap<=(days===7?2:7)))return {...(explicit?base:{}),label:'判断材料不足',trend,reason:'観測不足・古値・日時不正'};
+    if(![cv,drawdown].every(finite))return {...(explicit?base:{}),label:'判断材料不足',trend,reason:'ばらつき・最大下落の根拠不足'};
     const label=cv>=20||drawdown<=-30?'大きい':cv>=8||drawdown<=-15?'中程度':'小さい';
-    return {label,trend,days,cv,drawdown,count,span,gap,latest,min:evidence[7]??null,max:evidence[8]??null,reference:count<days,excluded:summary?.variation?.excluded?.[card.id]||0,reason:'確認済み実測のみ。記述的な参考区分：変動係数20%/最大下落30%以上は大、8%/15%以上は中。予測・GO条件ではない'};
+    return {label,trend,days,cv,drawdown,count,span,gap,latest,first:evidence[9]??null,min:evidence[7]??null,max:evidence[8]??null,reference:count<days,excluded:summary?.variation?.excluded?.[card.id]||0,reason:'確認済み実測のみ。記述的な参考区分：変動係数20%/最大下落30%以上は大、8%/15%以上は中。予測・GO条件ではない'};
   }
   function variationTone(label) { return {'大きい':'variation-large','中程度':'variation-medium','小さい':'variation-small'}[label]||'variation-unknown'; }
   function priceGap(summary,card,now=Date.now()) {

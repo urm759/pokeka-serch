@@ -56,7 +56,7 @@ function capture(root,cards,originalRows,receipt){
 }
 function build(root=ROOT,now=Date.now()){
  const catalogFile=path.join(root,'data/pokemon-cards.json'),catalogBytes=fs.readFileSync(catalogFile,'utf8').replace(/\r\n/g,'\n'),cards=JSON.parse(catalogBytes),dir=path.join(root,HISTORY),byId=new Map(),receipts=[],lookup=new Map();
- const first=model.day(new Date(now-29*86400000).toISOString()),last=model.day(new Date(now).toISOString());
+ const first=model.day(new Date(now-199*86400000).toISOString()),last=model.day(new Date(now).toISOString());
  if(fs.existsSync(dir))for(const file of fs.readdirSync(dir).filter(f=>/^\d{4}-\d{2}\.json$/.test(f)&&f.slice(0,7)>=first.slice(0,7)&&f.slice(0,7)<=last.slice(0,7))){
    const h=JSON.parse(fs.readFileSync(path.join(dir,file)));if(h.version!==1||h.source!=='MINTORE')throw Error('Listing history format changed');
    for(const [id,r]of Object.entries(h.cards)){
@@ -70,16 +70,16 @@ function build(root=ROOT,now=Date.now()){
    }
  }
  const lastFile=path.join(root,'work/mintore-listing-last-receipt.json'),lastReceipt=fs.existsSync(lastFile)?JSON.parse(fs.readFileSync(lastFile)):null;
- const output={version:1,source:'MINTORE',scope:'provider-listed-psa10-and-clean-v1',catalogHash:hash(catalogBytes),receipts,cards:{},coverage:{catalog:cards.length,psa10:0,raw:0,psa10Days:{},rawDays:{}},sourceUpdatedAt:null,sourceUpdateStatus:'取得元のカード更新日時は未提供'};
+ const output={version:2,source:'MINTORE',scope:'provider-listed-psa10-and-clean-v1',periods:[30,200],catalogHash:hash(catalogBytes),receipts,cards:{},coverage:{catalog:cards.length,psa10:0,raw:0,psa10Days:{},rawDays:{},psa10Days200:{},rawDays200:{}},sourceUpdatedAt:null,sourceUpdateStatus:'取得元のカード更新日時は未提供'};
  for(const card of cards){
    const observations=(byId.get(card.id)||[]).filter(r=>r.identityKey===card.identityKey&&r.sourceId===(card.sourceId||card.id)),values=[];
    for(const key of ['psa10','raw']){
      const rows=observations.filter(r=>r.key===key),view=model.summarize(rows,card.identityKey,now),current=view.current;
      if(!current){values.push(null);continue;}
-     const latest=rows.filter(r=>r.at===current.at).at(-1),firstRow=[...rows].sort((a,b)=>Date.parse(a.at)-Date.parse(b.at))[0],mean=view.mean30;
+     const latest=rows.filter(r=>r.at===current.at).at(-1),mean=view.mean30;
      const compact=[current.lower,latest.receipt,current.exact?1:0];
-     if(mean.days>1)compact.push(mean.lower,mean.days,firstRow.receipt,mean.exact?1:0);
-     values.push(compact);output.coverage[key]++;const daysKey=key+'Days';output.coverage[daysKey][mean.days]=(output.coverage[daysKey][mean.days]||0)+1;
+     for(const period of [30,200]){const m=view['mean'+period],firstRow=m?rows.find(r=>r.date===m.start):null;compact.push(m?.lower??null,m?.days??0,firstRow?.receipt??null,m?.exact?1:0);const daysKey=key+'Days'+(period===200?'200':'');if(m)output.coverage[daysKey][m.days]=(output.coverage[daysKey][m.days]||0)+1;}
+     values.push(compact);output.coverage[key]++;
    }
    if(values.some(Boolean)){
      const status=lastReceipt?.unavailableByCard?.[card.id];
@@ -96,8 +96,8 @@ function publicationSummary(summary,last,from,to){
  if(!summary)return null;
  const t=Date.parse(last?.at),start=Date.parse(from),end=Date.parse(to),known=[t,start,end].every(Number.isFinite)&&start<=end,acquired=known?t>=start&&t<=end:null;
  return {source:'MINTORE',lastConfirmationAt:last?.at||null,sourceUpdatedAt:summary.sourceUpdatedAt??null,acquiredThisRun:acquired,
-   psa10:summary.coverage.psa10,raw:summary.coverage.raw,psa10Days:summary.coverage.psa10Days,rawDays:summary.coverage.rawDays,
+   psa10:summary.coverage.psa10,raw:summary.coverage.raw,psa10Days:summary.coverage.psa10Days,rawDays:summary.coverage.rawDays,psa10Days200:summary.coverage.psa10Days200,rawDays200:summary.coverage.rawDays200,
    newPsa10CardDays:acquired===true?last.newPsa10Days:acquired===false?0:null,newRawCardDays:acquired===true?last.newRawDays:acquired===false?0:null,
-   note:'掲載値の実取得と公開要約を照合。再利用・取込みだけでは観測日を追加しない。30日平均は実観測日だけ。'};
+   note:'掲載値の実取得と公開要約を照合。再利用・取込みだけでは観測日を追加しない。30/200日平均は各暦日範囲の実観測日だけ。'};
 }
 module.exports={capture,build,count,sourceValues,publicationSummary};

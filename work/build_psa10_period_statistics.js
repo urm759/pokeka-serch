@@ -133,7 +133,7 @@ function build(root = ROOT, now = new Date()) {
   const tradeDemand=require('./psa10_trade_statistics').prepare(root,cards,now);
   summary.tradeDemand=tradeDemand.summary;
   summary.variation={version:2,cards:{},unavailable:{},excluded:{},rule:'根拠確認済み実測だけで1期間を採用。15日以上・期間50%以上・観測14日間以上・連続欠測7日以下・最終2日以内。旧記録は価格平均に保持し変動評価から除外。重複4票にしない'};
-  summary.variation.version=4;summary.variation.mediumStatus={};summary.variation.short={cards:{},rule:'7暦日・確認済み5日以上・実観測5日以上・連続欠測2日以下・最終2日以内。中期とは別の記述的参考値。'};
+  summary.variation.version=5;summary.variation.periods=Object.fromEntries([75,200].map(d=>[d,{cards:{},status:{},unavailable:{}}]));summary.variation.mediumStatus={};summary.variation.short={cards:{},rule:'7暦日・確認済み5日以上・実観測5日以上・連続欠測2日以下・最終2日以内。中期とは別の記述的参考値。'};
   summary.priceGap={version:1,source:'みんトレ美品参考相場・国内PSA10集計',periods:[7,75],times:[],cards:{},thresholdPoints:5,
     rule:'同仕様・同日・実確認差6時間以内のPSA10/素体-1の日次率を観測日平均。仕入れ目安/最安買値/店舗中央値を使わない。75日は38観測日以上、7日は5日以上・連続欠測7日以内・最終2日以内で方向判定。±5％ポイントは横ばい。表示専用・検索/採算/GO未採用。'};
   const gapTimes=new Map(),timeIndex=value=>{if(value==null)return null;if(!gapTimes.has(value)){gapTimes.set(value,gapTimes.size);summary.priceGap.times.push(value);}return gapTimes.get(value);};
@@ -149,6 +149,13 @@ function build(root = ROOT, now = new Date()) {
     const trades = Object.fromEntries([7, 30, 75].map(days => [days, { ...statistics(actual.rows, asOf, days, 'date', 'price'),
       sufficient: statistics(actual.rows, asOf, days, 'date', 'price').count >= 3 }]));
     const variability=verifiedVariation(daily,card,asOf,now.getTime());
+    for(const days of [75,200]){
+      const stat=variability.snapshots[days],output=summary.variation.periods[days];
+      if(stat.count)output.status[card.id]=[stat.observedDays,stat.spanDays,stat.maxMissingGap,stat.latestDate,stat.firstDate];
+      const value=variationEvidence(variability.snapshots,[days]);
+      if(value&&Number.isFinite(stat.coefficientVariation)&&Number.isFinite(stat.drawdown?.percent))output.cards[card.id]=[...value,stat.min,stat.max,stat.firstDate];
+      else if(stat.count){const reasons=[];if(stat.observedDays<15||stat.observedDays/days<.5)reasons.push('days');if(stat.spanDays<14)reasons.push('span');if(stat.maxMissingGap>7)reasons.push('gap');if(stat.ageDays==null||stat.ageDays>2)reasons.push('stale');if(!Number.isFinite(stat.coefficientVariation)||!Number.isFinite(stat.drawdown?.percent))reasons.push('dispersion');output.unavailable[card.id]=reasons;}
+    }
     const short=variability.snapshots[7];
     if(short.observedDays>=5&&short.spanDays>=5&&short.maxMissingGap<=2&&short.ageDays<=2&&Number.isFinite(short.coefficientVariation)&&Number.isFinite(short.drawdown?.percent))
       summary.variation.short.cards[card.id]=[7,short.coefficientVariation,short.drawdown.percent,short.observedDays,short.spanDays,short.maxMissingGap,short.latestDate,short.min,short.max];

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20261105-search-state" />
+  <link rel="stylesheet" href="./styles.css?v=20261111-median-detail-long-windows" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -162,7 +162,7 @@
             <input id="buyback90MaxInput" type="number" min="0" max="90" step="1" placeholder="上限" />
           </div>
         </label></div><small>通常の検索項目からは外しています。既存の条件の意味は保持し、不要な条件は空欄／下限0で解除できます。</small></details>
-      <details class="quick-ratio-search"><summary>みんトレ掲載PSA10・美品の出品数で検索</summary><div class="controls"><label class="control"><span>みんトレ掲載PSA10現在出品数 下限</span><input id="listingCurrentMinInput" type="number" min="0" step="any" placeholder="空欄は条件なし" /></label><label class="control"><span>みんトレ掲載PSA10現在出品数 上限</span><input id="listingCurrentMaxInput" type="number" min="0" step="any" placeholder="空欄は条件なし" /></label><label class="control"><span>PSA10・30日平均出品数 下限</span><input id="listingMeanMinInput" type="number" min="0" step="any" placeholder="空欄は条件なし" /></label><label class="control"><span>PSA10・30日平均出品数 上限</span><input id="listingMeanMaxInput" type="number" min="0" step="any" placeholder="空欄は条件なし" /></label><label class="control"><span>みんトレ掲載美品現在出品数 下限</span><input id="rawListingCurrentMinInput" type="number" min="0" step="any" placeholder="空欄は条件なし" /></label><label class="control"><span>みんトレ掲載美品現在出品数 上限</span><input id="rawListingCurrentMaxInput" type="number" min="0" step="any" placeholder="空欄は条件なし" /></label><label class="control"><span>美品・30日平均出品数 下限</span><input id="rawListingMeanMinInput" type="number" min="0" step="any" placeholder="空欄は条件なし" /></label><label class="control"><span>美品・30日平均出品数 上限</span><input id="rawListingMeanMaxInput" type="number" min="0" step="any" placeholder="空欄は条件なし" /></label><small>みんトレの状態別掲載値を通常更新で確認。美品は傷なしの現在出品欄。実観測日のみの30日平均で、欠測0埋め・古値の日時更新なし。「以上」は下限のまま。空欄は無効。取引件数・POP・カード枚数とは別。</small></div></details>
+      <details class="quick-ratio-search"><summary>みんトレ掲載PSA10・美品の出品数で検索</summary><div class="controls"><label class="control"><span>みんトレ掲載PSA10現在出品数 下限</span><input id="listingCurrentMinInput" type="number" min="0" step="any" placeholder="空欄は条件なし" /></label><label class="control"><span>みんトレ掲載PSA10現在出品数 上限</span><input id="listingCurrentMaxInput" type="number" min="0" step="any" placeholder="空欄は条件なし" /></label><label class="control"><span>PSA10・30日平均出品数 下限</span><input id="listingMeanMinInput" type="number" min="0" step="any" placeholder="空欄は条件なし" /></label><label class="control"><span>PSA10・30日平均出品数 上限</span><input id="listingMeanMaxInput" type="number" min="0" step="any" placeholder="空欄は条件なし" /></label><label class="control"><span>みんトレ掲載美品現在出品数 下限</span><input id="rawListingCurrentMinInput" type="number" min="0" step="any" placeholder="空欄は条件なし" /></label><label class="control"><span>みんトレ掲載美品現在出品数 上限</span><input id="rawListingCurrentMaxInput" type="number" min="0" step="any" placeholder="空欄は条件なし" /></label><label class="control"><span>美品・30日平均出品数 下限</span><input id="rawListingMeanMinInput" type="number" min="0" step="any" placeholder="空欄は条件なし" /></label><label class="control"><span>美品・30日平均出品数 上限</span><input id="rawListingMeanMaxInput" type="number" min="0" step="any" placeholder="空欄は条件なし" /></label><label class="control"><span>PSA10・200日平均出品数 下限</span><input id="listingMean200MinInput" type="number" min="0" step="any" placeholder="空欄は条件なし" /></label><label class="control"><span>PSA10・200日平均出品数 上限</span><input id="listingMean200MaxInput" type="number" min="0" step="any" placeholder="空欄は条件なし" /></label><label class="control"><span>美品・200日平均出品数 下限</span><input id="rawListingMean200MinInput" type="number" min="0" step="any" placeholder="空欄は条件なし" /></label><label class="control"><span>美品・200日平均出品数 上限</span><input id="rawListingMean200MaxInput" type="number" min="0" step="any" placeholder="空欄は条件なし" /></label><small>みんトレの状態別掲載値を通常更新で確認。美品は傷なしの現在出品欄。各暦日範囲の実観測日のみの30・200日平均で、欠測0埋め・古値の日時更新なし。「以上」は下限のまま。空欄は無効。取引件数・POP・カード枚数とは別。</small></div></details>
 
       <section id="currentMarketControls" class="current-market-controls" hidden aria-label="現相場採算の探索条件">
         <strong>現相場が続く仮定の探索（購入GOではありません）</strong>
@@ -229,7 +229,7 @@
 
 
 <details class="advanced-filters grouped-search" id="additionalSearchSettings">
-<summary><span>詳細検索 / 採算・余裕率・PSA9・取引・予測</span><small>適用条件は上に常時表示。計算設定・GO基準とは別</small></summary>
+<summary><span>詳細検索 / 採算・余裕率・PSA9・取引・予測</span><small>条件一覧・出所は上の折り畳みへ。計算設定・GO基準とは別</small></summary>
 <details class="advanced-filters observation-settings">
   <summary><span>PSA10観測平均との乖離率</span><small>7・30・75・200暦日／複数期間はAND</small></summary>
   <div class="controls controls-primary">
@@ -958,11 +958,11 @@
   <script src="./psa-plan-model.js?v=20261029-observed-evidence"></script>
   <script src="./keyed-card-renderer.js?v=20261102-identity-reuse"></script>
   <a class="return-to-filters" href="#searchConditions">検索条件へ</a>
-  <script src="./psa10-listing-counts.js?v=20261104-mintore-listings" integrity="sha384-Ko519QsSTciVuZm4LORTzMvJq8PAqaexMI7LS1bCqQxSAUt2WR02YsZ1shel7Hdn"></script>
-  <script src="./exploration-metrics.js?v=20261111-actual-store" integrity="sha384-dxT3imInHI40cQtCsfIyOJta7iovCGQVX69EBY9C1dtnLHvha79UsTYJVS1zr1u+"></script>
-  <script src="./search-controls.js?v=20261104-mintore-listings" integrity="sha384-KzGnHpzmNyaokwK17YUgBEv4M3r6JsGD1ch1YlLyT7G87qOasrSN9xkqbvlHozV8"></script>
+  <script src="./psa10-listing-counts.js?v=20261111-median-detail-long-windows" integrity="sha384-fUIsPFU+tZTjtpilIb/W/mwlEO4u+cB3o015ygSCWXMLmAFcl/b8farLccNdQHEQ"></script>
+  <script src="./exploration-metrics.js?v=20261111-median-detail-long-windows" integrity="sha384-kJl0M5lXN2d9yPIdg4UDgIk5w5/Up4VWyiGrqk8XlimWqtqsRP45Y9VS9Fws/+lu"></script>
+  <script src="./search-controls.js?v=20261111-median-detail-long-windows" integrity="sha384-wMIqVMOMDBJBTse9cBINgRPmc35DnIIK0x5tTAtGKjLIUsHr7O1lsSijvqNoH3sz"></script>
   <script src="./settings-disclosure.js?v=20261011-disclosure-v1"></script>
   <script src="./gemrate-pop-model.js?v=20261102-gemrate-pop" integrity="sha384-odMB7R9tprRMcdSqcPS8Gukl1EMPlsrLnJModiemV+xY9yi2rEpohSLYaemvN7Za"></script>
-  <script src="./app.js?v=20261111-buy-url-isolation" integrity="sha384-AZE5g160KBD5sj9DKNfQ98VLuwI+QeUoEoRs0qV/7XPFpulasCwGXW8DmwjPQrXQ"></script>
+  <script src="./app.js?v=20261111-median-detail-long-windows" integrity="sha384-87NEwgUy7zBBclN2jobfcj9iUxoowWPK7VposOc/Nm+O4d6GJodbHXXoGYluoBi1"></script>
 </body>
 </html>
