@@ -17,6 +17,7 @@ const stale=structuredClone(summary);stale.support.cards.x.b=point(1,'2026-10-22
 x=run('all',[],stale);assert.equal(x.coverage.comparable,1);assert.equal(x.coverage.target,4);assert.equal(x.mean,1.1,'unusable quotes do not become zero');
 x=run('all',[],summary,now+48*3600000+1);assert.equal(x.coverage.comparable,0);assert.equal(x.coverage.listed,0);assert.equal(x.mean,null);
 assert.equal(m.buybackSupport(null,'x','all').coverage.target,null,'load failure is not zero target stores');
+for(const missing of [null,undefined,{}, {cards:{}}, {support:null}, {support:{shops:{},cards:{}}}]){const v=m.buybackSupport(missing,'x','all',[],now);assert.equal(v.mean,null);assert.equal(v.max,null);for(const days of [7,30,75]){assert.equal(v.meanWindows[days].mean,null);assert.equal(v.meanWindows[days].status,'unavailable');assert.equal(v.meanWindows[days].calculatedAt,null);}}
 for(const [ratio,tone]of [[null,'unknown'],[0,'unknown'],[.899999,'low-strong'],[.9,'low'],[.9799999,'low'],[.98,'neutral'],[1,'neutral'],[1.02,'neutral'],[1.02000001,'high'],[1.099999,'high'],[1.1,'high-strong']])
   assert.equal(m.buybackRatioTone(ratio).className,'ratio-'+tone,'unrounded shared colour boundary '+ratio);
 console.log('PASS store denominator / listing versus ratio / merchant selection / expiry / unknown / common unrounded colour boundaries');

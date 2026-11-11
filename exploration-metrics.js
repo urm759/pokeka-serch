@@ -434,7 +434,7 @@
     const hasDays=Object.values(eligibleEntries).some(row=>Object.hasOwn(row,'meanDays'));
     const cachedSelection=cached&&(!identityKey||cached.identity===identityKey)&&mode!=='selected';
     const cachedWindows=cachedSelection?cached[mode==='mail'?'mail':'all']||{}:{};
-    const calculatedAt=support.calculatedAt||null;
+    const calculatedAt=support?.calculatedAt||null;
     const meanWindows=hasDays?buybackMeanWindows(eligibleEntries,support?.shops,mode,selected,asOf):Object.fromEntries([7,30,75].map(days=>{
       const w=cachedWindows[days],end=Date.parse(asOf),origin=Date.parse(cached?.asOf),first=Date.parse(w?.firstDate);
       // A fixed input window is mathematically unchanged until its earliest
@@ -442,7 +442,7 @@
       const unchanged=w&&Number.isFinite(origin)&&end>=origin&&(w.days===0||Number.isFinite(first)&&first<=end&&first>=end-(days-1)*86400000);
       const previous=w?{...w,sourceAsOf:cached.asOf,calculatedAt}:null;
       return [days,unchanged?{...w,status:'ready',sourceAsOf:cached.asOf,evaluatedAsOf:asOf,calculatedAt}:
-        {mean:null,days:null,status:support.compact?'recalculation-pending':'unavailable',sourceAsOf:cached?.asOf||null,evaluatedAsOf:asOf,calculatedAt,previous}];
+        {mean:null,days:null,status:support?.compact?'recalculation-pending':'unavailable',sourceAsOf:cached?.asOf||null,evaluatedAsOf:asOf,calculatedAt,previous}];
     }));
     if(hasDays)for(const w of Object.values(meanWindows))Object.assign(w,{status:'ready',sourceAsOf:support.asOf,evaluatedAsOf:asOf,calculatedAt});
     const historicalAt=date=>{
