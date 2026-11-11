@@ -45,3 +45,23 @@ PCの受領処理19:46Zは成功したが提供元確認0、CSV新規0、新観�
 同PC/固定入力のNode測定は全件4.81秒、2倍9.48秒、値一致・固定予算内。これは通信量/実機描画時間とは別。初回予算超過とsandboxでのfixture削除EPERMも失敗記録として残し、制約変更なしで後続の関連試験を再実施する。
 
 公開・CI・実画面・定期運転の最終証跡は公開確認後に追記し、未公開作業を公開済みとしない。
+
+## 公開後の実運転・2026-11-11 09:49 JST
+
+PR #38は ff57062c8 でマージ、Pages42895905245成功。公開HTML/JS/CSS/manifest/前回適合データのhash一致と、Chromeの正式2URL・実店舗/仮定買値の表示を確認。旧guide=70は80へ復元し、公式計算採用率は不変。端末保存追加29項目による0件は別記録で、保存を解除していない。
+
+正式条件：[正式バリュー](https://urm759.github.io/pokeka-serch/?fee=6980&tx=0&tx7=0&psaTx=0&psaTx7=0&roi=20&psaMin=10000&sort=cardEfficiency-desc&guide=80&cap=5000000&lock=175&expProfit=0&expRoi=10&annual=40&maxShare=120000&batch=10&reserve=1000000&sellFee=8&extraCost=0&psaPlan=value&bb7=0&bb30=0&bb90=0&bbShops=0&locked=3500000&priceMin=0&buyLimitRatio=0&buybackDeduction=5&preset=combined&psa9RatioMin=70&psa9Aggregate=1&psa9Estimate=0&psa9Market=1&exitPolicy=both&buybackStores=all&selectedStores=&storeTravel=0&snkrFee=7&snkrShip=210&snkrOther=0&snkrTx7=0&snkrTx30=3&snkrProfit=0&snkrRoi=0&snkrAge=48&year2020=0&includeUnknownYear=0&profitBasis=store&periodReference=1&psa9RatioMax=120&marketSearch=cap&marketCapMin=0&filterStressRoi=0&filterStressProfit=0&buyBelowCap=0&purchaseMin=0&purchaseMax=30000&effMin=30&effManual=off&sellDays=7&payoutDays=3&effBuy=store&effScenario=current&effRef=1&headroomMin=-25&psa9AboveGuide=0&psa9Cost5=0&filterExpRoi=15&filterExpProfit=5000&psaMax=100000&bbRatioRef=0&calcBuy=store&medianBuyPct=off) / [正式プライオリティ](https://urm759.github.io/pokeka-serch/?fee=12980&tx=0&tx7=0&psaTx=0&psaTx7=0&roi=20&psaMin=0&sort=cardEfficiency-desc&guide=70&cap=5000000&lock=91&expProfit=0&expRoi=10&annual=40&maxShare=120000&batch=10&reserve=1000000&sellFee=8&extraCost=0&psaPlan=priority&bb7=0&bb30=0&bb90=0&bbShops=0&locked=3500000&buyLimitRatio=0&buybackDeduction=5&preset=combined&psa9RatioMin=70&psa9Aggregate=1&psa9Estimate=0&psa9Market=0&exitPolicy=both&buybackStores=all&selectedStores=&storeTravel=0&snkrFee=7&snkrShip=210&snkrOther=0&snkrTx7=0&snkrTx30=3&snkrProfit=0&snkrRoi=0&snkrAge=48&year2020=0&includeUnknownYear=0&profitBasis=store&periodReference=1&psa9RatioMax=120&filterExpRoi=15&marketSearch=cap&buyBelowCap=0&marketCapMin=0&filterStressRoi=0&filterStressProfit=0&storeDemand=normal-up&purchaseMin=25000&purchaseMax=99999&priceMin=26000&priceMax=99999&headroomMin=-25&effMin=30&effManual=off&sellDays=7&payoutDays=3&effBuy=store&effScenario=current&effRef=1&psa9AboveGuide=0&psa9Cost5=0&filterExpProfit=5000&psaMax=999999&calcBuy=store&medianBuyPct=off)。追加の中央値割合は空欄OFF。検証時だけ70%へ設定し、主検索結果や購入GOを変えないことを確認した。
+
+非AI単発Priority42896063825は05:31～05:48 JSTに取得・検証・保存・main公開まで成功し、最後のBank保留通知で失敗扱い。実店舗再確認は晴れる屋2 276商品（価格/在庫変更73）、Camp35商品（変更6）。新規店舗カード紐付け0。取得/集計810秒、必須検証25秒、保存/公開158秒。手動起動を定期成功には数えない。
+
+その後、定期Safe42911551829、定期Daily42928983525、毎時Watch42915320929の取得/保存/公開を継承。Dailyも公開後の取得警告で失敗扱い。09:34集計は既知取得元12,983枚の掲載100%、補足11枚を含む12,994枚、構造的分析可能2,596/12,994=19.98%。今回区間は新規掲載6、構造的充足10枚復旧/9枚不足化で純増1。9枚の不足は素体参考相場であり、市場全体に価格がないとは断定しない。別店の購入価格へ無断代用しない。必須公式POP鮮度まで満たす枚数0は引き続き別集計。
+
+方式変更差48→41とは別に、同一コード/条件/時計09:49 JSTで ff570→ec279 の実データ差は独立候補42→44（追加5/離脱3）。バリュー27→26、プライオリティ19→22。離脱pk-14592は買値22,000円不変・PSA9提供集計21,500→16,000で比率上限外、x-122056は買値9,500円不変・PSA9集計13,150→13,650で比率72.24→69.60%の下限外、pk-23001は16,000円の在庫切れ。条件緩和で戻さず、相場全体や個別実成約の変化とは断定しない。詳細・ID・前後値は work/20261111-operational-results.json。
+
+公開済み警告後に全原票を再コピー/転送する共通経路を修正。Priority/Daily/Watchは公開step成功後の警告なら小さな警告証跡を保持し、公開前の失敗/未実行/中断では従来の全原票回収を維持。失敗通知や競合原票の30日保留は消さない。実測34秒の重複アーカイブ工程の削減対象だが、修正後の定期所要時間削減は未実証。
+
+直接Page.navigateのタイムアウトは通常リンクの遷移で切り分け、公開26/19（その検証時点）を確認した。403/本人操作不足とは分類しない。操作用拡張のファイルURL権限がなくCSV読込の実画面試験は未確認（URL/保存/CSV共通計算回帰は通過）。権限を勝手に追加していない。小詳細は70→60%の追加試算変更後も開いたまま、主候補26枚不変を確認。
+
+Gem672枚/計算採用0を維持。今回のCSV新取得/異なる基準日追加は0。提供元日次確認と受領成功は別で、PC不要の新CSV取得は未成立。トレカバンク半減保留、公式POP/期間別件数/個別実成約、25%能力余裕、修正後複数周期の維持、外部タイマーの権限/費用等は未完了。過去最低0%を消さず、短い観測区間だけで維持達成にしない。
+
+09:48 JSTのPC受領処理も成功・対象672枚/10セットだが、提供元の確認証跡0/10、新CSV0、基準日前進率は未計測。未更新確認済みとは扱わない。定期Dailyの必須/補助項目の補完は34枚38項目（分析可能化10枚とは別）。新規掲載pk-13915へカードラッシュの保存済み商品URL1件を再利用し、新しい価格取得は0。最新データ12,994枚の固定性能予算は初期23,488,193bytes、2倍43,053,639bytes、計算値一致、全件6.04秒/2倍9.61秒で通過。
