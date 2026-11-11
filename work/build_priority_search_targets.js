@@ -13,7 +13,7 @@ function routeNeededFields(detail,fields) {
   return result;
 }
 function efficiencySummaryKey(calculationKey,state) {
-  const fields=['efficiencyBuy','efficiencyManualPrice','efficiencyScenario','efficiencySaleDays','efficiencyPayoutDays','profitSearchBasis','currentMarketManualPrice','currentMarketSearchKind','observationIncludeReference','efficiencyIncludeReference','psa9RatioAggregate','psa9RatioEstimate','psa9RatioMarket'];
+  const fields=['calculationBuyMode','efficiencyBuy','efficiencyManualPrice','efficiencyScenario','efficiencySaleDays','efficiencyPayoutDays','profitSearchBasis','currentMarketManualPrice','currentMarketSearchKind','observationIncludeReference','efficiencyIncludeReference','psa9RatioAggregate','psa9RatioEstimate','psa9RatioMarket'];
   return 'efficiency-all:'+JSON.stringify([calculationKey,fields.map(key=>state[key])]);
 }
 function evaluatePair(input) {
@@ -216,6 +216,8 @@ function build(root=ROOT,at=new Date().toISOString()) {
     allModeIndependentCount:new Set(profiles.flatMap(p=>p.urlOnly.ids)).size,
     note:'指定条件モードの派生URLはpresetだけ変更し既存の補完/価格更新キューへ接続。modeOnlyCandidatesはモード差分であり実補完・独立初適合ではない。元A/Bと中央値版の数値は保持。要約生成は実取得ではない。URLだけと確認済み保存追加条件を分離。他の端末は未観測'};
   targets.comparisonRevision=config.comparisonRevision||'legacy';
+  // Preserve old-profile departure evidence across an explicit focus migration.
+  require('./previous_qualified_reference').build(root,{...targets,pendingDepartures:[...(previous.pendingDepartures||[]),...targets.pendingDepartures]});
   report.comparisonRevision=targets.comparisonRevision;
   applyReferenceComparison(root,report,targets,previous,config);
   for(const [f,x]of [['work/search-profile-targets.json',targets],['data/priority-search-profile-audit.json',report]])require('./acquisition_retry').atomicWrite(path.join(root,f),x,0);

@@ -1,4 +1,8 @@
 const assert = require('node:assert/strict');
+const {validateListingCount}=require('./update_shop_buybacks');
+assert.throws(()=>validateListingCount(440,{items:[]}),/取得0件/);
+assert.throws(()=>validateListingCount(440,{items:Array(200),pages:3}),e=>e.countDrop?.previousCount===440&&e.countDrop.currentCount===200&&e.countDrop.pages===3);
+assert.doesNotThrow(()=>validateListingCount(440,{items:Array(220),pages:3}),'the existing half-count boundary is unchanged');
 const { refresh, unavailable } = require('./buyback_listing_refresh');
 const day='2026-10-23', at='2026-10-23T06:34:00Z';
 const initial=()=>({dates:['2026-08-25',day],shops:{store:{absent:[130000,109000],seen:[9000,10000]}},observedByShop:{store:[day]}});

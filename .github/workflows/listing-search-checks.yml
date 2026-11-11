@@ -3,8 +3,13 @@ on:
   pull_request:
     paths:
       - 'app.js'
+      - 'work/effective_price_cadence.js'
+      - 'work/refresh_cadence.js'
+      - 'work/test_recovery_latency.js'
+      - 'work/test_unified_median_buy.js'
       - 'work/search_runtime_probe.js'
       - 'work/test_search_runtime_state.js'
+      - 'work/test_post_publication_recovery.js'
       - 'work/watch_update_health.js'
       - 'index.html'
       - 'styles.css'
@@ -25,6 +30,9 @@ on:
       - 'work/finalize_update_status.js'
       - 'work/completion_price_consistency.js'
       - '.github/workflows/listing-search-checks.yml'
+      - '.github/workflows/daily-fast-update.yml'
+      - '.github/workflows/priority-price-refresh.yml'
+      - '.github/workflows/watch-data-health.yml'
 permissions:
   contents: read
 jobs:
@@ -39,6 +47,20 @@ jobs:
       - name: Common calculations, optional controls and initial-load consistency
         run: |
           node --check app.js
+          node work/test_unified_store_buy.js
+          node work/test_unified_median_buy.js
+          node work/test_card_efficiency.js
+          node work/test_profile_report_names.js
+          node work/test_recovery_latency.js
+          node work/test_previous_qualified_reference.js
+          node work/test_partial_buyback_refresh.js
+          node work/test_public_mail_buybacks.js
+          node work/test_monitor_isolation.js
+          node work/test_post_publication_recovery.js
+          node work/test_automatic_operation.js
+          node work/test_optional_source_publication.js
+          node work/test_update_publication.js
+          node work/test_daily_finalize_once.js
           node work/test_search_runtime_state.js
           node work/test_observation75_migration.js
           node work/test_psa10_listing_counts.js

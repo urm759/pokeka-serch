@@ -18,7 +18,7 @@ const priceReferenceModel = window.PriceReferenceModel;
 const purchaseRatioModel = window.PurchaseRatioModel;
 const currentMarketModel = window.CurrentMarketModel;
 const explorationMetrics = window.ExplorationMetrics;
-const efficiencyFields = [['effMin','efficiencyMin',null],['effManual','efficiencyManualPrice',null],['sellDays','efficiencySaleDays',7],['payoutDays','efficiencyPayoutDays',3]];
+const efficiencyFields = [['medianBuyPct','medianBuyPct',null],['effMin','efficiencyMin',null],['effManual','efficiencyManualPrice',null],['sellDays','efficiencySaleDays',7],['payoutDays','efficiencyPayoutDays',3]];
 function readiness2020Text(value) {
   if(!value?.srFamily||!value?.arChr)return '';
   const x=value.srFamily,a=value.arChr,p=n=>n==null?'未判定':n.toFixed(1)+'%';
@@ -255,7 +255,7 @@ const state = {
   minRoi: 40,
   minExpectedRoiFilter: 0,
   minExpectedProfitFilter: 0,
-  profitSearchBasis: "auto",
+  profitSearchBasis: "auto", calculationBuyMode: "legacy", medianBuyPct: null,
   efficiencyMin: null, efficiencyManualPrice: null, efficiencySaleDays: 7, efficiencyPayoutDays: 3,
   efficiencyBuy: 'reference-min', efficiencyScenario: 'current',
   efficiencyIncludeReference: false,
@@ -1788,7 +1788,7 @@ async function exportFavoritesCsv() {
   rows[0].push('資金効率採用平均・暦日期間','資金効率採用平均価格','資金効率平均・観測日数','資金効率平均・欠測日数','資金効率平均・最終観測日','平均資金効率・非10価格基準','資金効率平均・根拠未確認日数');
   rows[0].push('中央値買値・参考年換算効率%','実店舗買値・年換算効率%','中央値採用元数','中央値独立店舗数','中央値内訳未確認元数','中央値価格下端','中央値価格上端','中央値個別根拠JSON','中央値比較不可理由');
   rows[0].push('最高買取倍率（減額前・選択受付）','最高提示店舗','最高提示受付','最高提示確認日時','同店・他カードの通常倍率（中央値）','通常倍率の比較枚数','最高買取倍率・下限条件','最高提示の価格日','倍率分母の相場確認日時','倍率比較の確認時差（時間）','全体平均買取倍率（同一店の有効な最高提示1件）','全体平均の採用店舗数','倍率の対象独立店舗数','倍率比較可能店舗数','相場以上の比較可能店舗数','掲載確認店舗数（倍率採用と別）','75日平均買取倍率（日次店舗間平均の観測日平均）','75日倍率の観測日数','75日倍率の期間日数','75日倍率の独立店舗数','75日倍率の最終観測日','75日倍率の参考区分','75日倍率の集計定義','直近比較成立時の参考最高倍率（現在検索不採用）','直近比較成立時の参考平均倍率','参考倍率の比較日','参考倍率の独立店舗数','参考最高の店舗','現在倍率の不足原因','全体平均倍率の下限条件','7日平均倍率の下限条件','30日平均倍率の下限条件','75日平均倍率の下限条件','倍率観測日数の下限条件','倍率の参考値採用','7日平均倍率（日次店舗間平均）','7日倍率の観測日数','7日倍率の最終確認日時','30日平均倍率（日次店舗間平均）','30日倍率の観測日数','30日倍率の最終確認日時','追加倍率検索の除外理由');
-  rows[0].push('計算買値（検索・一覧共通）','計算買値の採用元','計算採用10率%','計算採用10率の出典','参考ガイド率%','参考ガイド出典');
+  rows[0].push('計算買値（検索・一覧共通）','計算買値の採用元','計算採用10率%','計算採用10率の出典','参考ガイド率%','参考ガイド出典','主計算買値モード','採用店舗','買値確認日時','中央値購入割合%（10率とは別）','仮定買値','仮定期待利益','仮定利益率%','仮定年換算%','仮定売値シナリオ','仮定売却先');
   for(const d of [30,7])rows[0].push(`${d}日PSA9実成約平均（計算不採用）`,`${d}日PSA9採用成約件数`,`${d}日PSA9最終成約日時`,`${d}日PSA9対象期間`,`${d}日PSA9出典URL`,`${d}日PSA9平均の区分`);
   for(const label of ['みんトレ掲載PSA10','みんトレ掲載美品'])rows[0].push(label+'現在出品数（下限）',label+'現在件数が上限なし',label+'掲載値確認日時',label+'元更新日時（未提供は空欄）',label+'現在値の不足理由',label+'30日平均出品数（下限）',label+'平均件数が上限なし',label+'平均の実観測日数',label+'観測開始日',label+'最終観測日');
   rows[0].push(...verifiedListingFields.map(key=>'出品数条件・'+key),'出品数読込状態');
@@ -3234,17 +3234,20 @@ function parseOptionalNumber(value) {
 }
 
 function purchasePsa9Ratio(card, manualPrice, purchaseKind, fee = state.fee) {
-  if(manualPrice===undefined&&purchaseKind===undefined&&state.efficiencyBuy==='reference-min'){
+  if(manualPrice===undefined&&purchaseKind===undefined&&state.calculationBuyMode==='median'){
+    manualPrice=cardEfficiency(card).purchasePrice;purchaseKind='median';
+  }
+  else if(manualPrice===undefined&&purchaseKind===undefined&&state.efficiencyBuy==='reference-min'){
     manualPrice=referenceBuyView(card).value;purchaseKind='reference-min';
   }
-  const referenceSelection=purchaseKind==='reference-min';
+  const referenceSelection=['reference-min','median'].includes(purchaseKind);
   if (manualPrice === undefined && !referenceSelection) manualPrice = state.favoriteCosts[card.id];
   const manual = manualPrice != null && Number.isFinite(Number(manualPrice));
   const verified = card.rawPsa9Gap?.psa9;
   const psa9 = verified?.count >= 3 && verified.median > 0 ? {value:verified.median,measurementType:"actual",count:verified.count,
     updatedAt:verified.latestSaleAt,country:"jp",currency:"JPY",identityConfirmed:true} : card.psa9Audit;
   return purchaseRatioModel?.evaluate({ purchasePrice: referenceSelection ? manual ? Number(manualPrice) : null : manual ? Number(manualPrice) : card.currentStoreOffer?.value ?? card.price,
-    purchaseKind: referenceSelection ? 'reference-min' : purchaseKind || (manual ? "manual" : card.currentStoreOffer ? "store" : "market"), psa9,
+    purchaseKind: referenceSelection ? purchaseKind : purchaseKind || (manual ? "manual" : card.currentStoreOffer ? "store" : "market"), psa9,
     asOf: meta.generatedAt || meta.updatedAt, conflicted: (card.priceAggregation?.comparison || card.priceAggregation)?.conflicted || card.dataQuality?.manualReview,
     fee, saleFeeRate: state.saleFeeRate, extraCost: state.saleExtraCost }) || {ratio:null,reasons:["未取得"]};
 }
@@ -3272,7 +3275,7 @@ const conditionValue = el => el.type === 'checkbox' ? String(el.checked) : Strin
 function captureConditionOrigins(defaults, restored) {
   const params = new URLSearchParams(explorationMetrics.migrateObservationSettings(Object.fromEntries(new URL(window.location.href).searchParams),true).value);
   let saved={};try{saved=JSON.parse(localStorage.getItem(QUICK_FILTER_STORAGE_KEY)||'{}');}catch{}
-  const bindings = new Map([...efficiencyFields,...explorationFields].map(([param,field])=>[field+'Input',param]));
+  const bindings = new Map([['calcBuy','calculationBuyMode'],...efficiencyFields,...explorationFields].map(([param,field])=>[field+'Input',param]));
   for(const [id,param] of Object.entries({roiInput:'roi',expectedProfitFilterInput:'filterExpProfit',expectedRoiFilterInput:'filterExpRoi',
     psa9RatioMinInput:'psa9RatioMin',psa9RatioMaxInput:'psa9RatioMax',psa9RatioAggregateInput:'psa9Aggregate',psa9RatioEstimateInput:'psa9Estimate',psa9RatioMarketInput:'psa9Market',
     efficiencyIncludeReferenceInput:'effRef',observationIncludeReferenceInput:'obsRef',efficiencyBuyInput:'effBuy',efficiencyScenarioInput:'effScenario',purchaseBelowCurrentCapInput:'buyBelowCap',psa9AboveGuideInput:'psa9AboveGuide',psa9CostWithin5Input:'psa9Cost5',buybackRatioReferenceInput:'bbRatioRef',
@@ -3316,6 +3319,16 @@ function restoreQuickFilters() {
     if (!new URL(window.location.href).searchParams.has('preset')) state.purchaseMode = quickSearchMode(saved.purchaseMode);
     if(migration.changed) localStorage.setItem(QUICK_FILTER_STORAGE_KEY,JSON.stringify(saved));
     const url = new URL(window.location.href);
+    // Buy basis only: preserve every other saved filter and the pre-migration copy.
+    if(Object.keys(saved).length && !localStorage.getItem(QUICK_FILTER_STORAGE_KEY+':median-main-v1')) {
+      localStorage.setItem(QUICK_FILTER_STORAGE_KEY+':before-median-main-v1',JSON.stringify(saved));
+      saved.calculationBuyMode='median';
+      localStorage.setItem(QUICK_FILTER_STORAGE_KEY,JSON.stringify(saved));
+      localStorage.setItem(QUICK_FILTER_STORAGE_KEY+':median-main-v1','1');
+    }
+    if(!url.searchParams.has('calcBuy') && Object.keys(saved).length) {
+      const control=document.getElementById('calculationBuyModeInput');if(control)control.value=saved.calculationBuyMode||'median';
+    }
     url.search=new URLSearchParams(migrateObservationControls(Object.fromEntries(url.searchParams),true).value).toString();
     if(!url.searchParams.has('effBuy')&&!localStorage.getItem(EFFICIENCY_BASIS_MIGRATION_KEY)) {
       const migrate=!url.searchParams.has('effBuy')&&saved.efficiencyBuy==='auto';
@@ -3384,6 +3397,7 @@ function persistExplicitSearchSettings() {
       ['psa9AboveGuide','psa9AboveGuide','psa9AboveGuideInput','boolean'],
       ['psa9Cost5','psa9CostWithin5','psa9CostWithin5Input','boolean'],
       ['bbRatioRef','buybackRatioReference','buybackRatioReferenceInput','boolean'],
+      ['calcBuy','calculationBuyMode','calculationBuyModeInput','string'],
       ['profitBasis','profitSearchBasis','profitSearchBasisInput','string'],
       ['effBuy','efficiencyBuy','efficiencyBuyInput','string'],['effScenario','efficiencyScenario','efficiencyScenarioInput','string']];
     let changed=false;
@@ -3412,7 +3426,7 @@ function saveQuickFilters() {
       ...Object.fromEntries([...efficiencyFields.map(([,field])=>[field,state[field]]),['efficiencyBuy',state.efficiencyBuy],['efficiencyScenario',state.efficiencyScenario]]),
       currentMarketSearchKind: state.currentMarketSearchKind,
       currentMarketCapMin: state.currentMarketCapMin, currentMarketManualPrice: state.currentMarketManualPrice,
-      profitSearchBasis: state.profitSearchBasis, includePeriodReference: state.includePeriodReference,
+      calculationBuyMode:state.calculationBuyMode,profitSearchBasis: state.profitSearchBasis, includePeriodReference: state.includePeriodReference,
       purchaseBelowCurrentCap: state.purchaseBelowCurrentCap, psa9AboveGuide:state.psa9AboveGuide,psa9CostWithin5:state.psa9CostWithin5,buybackRatioReference:state.buybackRatioReference,
       ...Object.fromEntries(explorationFields.map(([,field])=>[field,state[field] ?? null])),
       minExpectedProfitFilter: state.minExpectedProfitFilter, minExpectedRoiFilter: state.minExpectedRoiFilter,
@@ -3502,7 +3516,7 @@ function hasMaterialLimitSignalChange(previous, current) {
 async function fetchJsonMaybe(url, { detail = false, affectsCalculation = true } = {}) {
   const original = String(url).replace(/^\.\//, "");
   // Callers cannot opt real financial inputs out of cache invalidation.
-  const displayOnly = /^data\/(?:overseas-glance\/|psa-pop-glance\/|psa-pop-recovered\/|psa-history\/|raw-condition-reference\/|gemrate-reference-summary\.json$|mintore-listing-summary\.json$)/.test(original);
+  const displayOnly = /^data\/(?:overseas-glance\/|psa-pop-glance\/|psa-pop-recovered\/|psa-history\/|raw-condition-reference\/|price-dynamics\/|gemrate-reference-summary\.json$|mintore-listing-summary\.json$|previous-qualified-reference\.json$)/.test(original);
   const file = !detail && uiDataManifest?.aliases?.[original] || original;
   const cacheKey = `${uiDataManifest?.revision || "legacy"}:${file}`;
   if (uiFetchCache.has(cacheKey)) return uiFetchCache.get(cacheKey);
@@ -3742,6 +3756,8 @@ function readUrl() {
   for(const [param,id] of [['tx','saleTxMinInput'],['psaMax','psaMaxInput']]) if(filterUrl.searchParams.get(param)==='off') document.getElementById(id).value='';
   filterUrl.search=new URLSearchParams(migrateObservationControls(Object.fromEntries(filterUrl.searchParams),true).value).toString();
   if (filterUrl.searchParams.has('effRef')) document.getElementById('efficiencyIncludeReferenceInput').checked = filterUrl.searchParams.get('effRef') === '1';
+  const buyModeInput=document.getElementById('calculationBuyModeInput');
+  if(buyModeInput){if(['median','store','legacy'].includes(filterUrl.searchParams.get('calcBuy')))buyModeInput.value=filterUrl.searchParams.get('calcBuy');else if(filterUrl.searchParams.has('effBuy')||filterUrl.searchParams.has('profitBasis'))buyModeInput.value='legacy';}
   for (const [param,field] of efficiencyFields) if (filterUrl.searchParams.has(param)) document.getElementById(field+'Input').value = parseOptionalNumber(filterUrl.searchParams.get(param)) ?? '';
   for (const [param,field,allowed] of [['effBuy','efficiencyBuy',['auto','store','median','manual','current-cap','reference-min']],['effScenario','efficiencyScenario',['current','central','stress','obs7','obs30','obs75','obs200']]]) if (allowed.includes(filterUrl.searchParams.get(param))) document.getElementById(field+'Input').value=filterUrl.searchParams.get(param);
   for (const [param,id] of [["marketCapMin","currentMarketCapMinInput"],["marketBuy","currentMarketManualPriceInput"]]) {
@@ -4022,6 +4038,7 @@ function buildShareUrl() {
   }
   url.searchParams.delete("psa9RatioRef");
   for (const [key, value] of [["psa9Aggregate",state.psa9RatioAggregate],["psa9Estimate",state.psa9RatioEstimate],["psa9Market",state.psa9RatioMarket]]) url.searchParams.set(key,value ? "1" : "0");
+  url.searchParams.set("calcBuy",state.calculationBuyMode);
   url.searchParams.set("profitBasis", state.profitSearchBasis);
   for (const [param,field] of efficiencyFields) if (state[field] == null) url.searchParams.set(param,'off'); else url.searchParams.set(param,String(state[field]));
   url.searchParams.set('effBuy',state.efficiencyBuy); url.searchParams.set('effScenario',state.efficiencyScenario);
@@ -4202,7 +4219,12 @@ function currentProfitGuide(card) {
 function referenceBuyView(card,now=Date.now()) {
   return renderValue(card,'reference-buy',()=>explorationMetrics.referenceBuy(card,currentProfitGuide(card),now));
 }
-function referenceSearchEnabled() { return state.efficiencyBuy==='reference-min'; }
+function referenceSearchEnabled() { return !['store','median'].includes(state.calculationBuyMode) && state.efficiencyBuy==='reference-min'; }
+function profitGuideAside(card) {
+  if(!card || state.calculationBuyMode!=='median')return '';
+  const guide=currentProfitGuide(card);
+  return `<small class="calculation-guide-aside">利益確保の仕入れ目安・現相場基準 ${Number.isFinite(guide.cap)?'¥'+fmt.format(guide.cap):'算出不可'}（逆算値・主計算の買値とは別）</small>`;
+}
 function currentGuideBreakEven(card) {
   const g=currentProfitGuide(card);
   return {...g,cap:g.breakEvenCap,rawCap:g.breakEvenRawCap,capState:g.breakEvenState,capLabel:g.breakEvenLabel,capNote:g.breakEvenNote};
@@ -4292,6 +4314,18 @@ function psa9GuideCsvFields(card) {
   const v=psa9GuideView(card),p=psa9GuideProvenance(card,v);return [v.price??'',v.measurementType,p.source,v.updatedAt||'',v.guide??'',v.priceRatio??'',v.investment??'',v.profit??'',v.roi??'',v.exitLabel,v.profitReasons.join('／'),v.searchStatus,state.psa9AboveGuide?1:0,state.psa9GuideMin??'',p.url||'',p.confirmation||'',p.sale||'',p.method||'',v.comparisonCost??'',v.costCoveragePct??'',state.psa9CostWithin5?1:0,state.psa9RoiMin??''];
 }
 function computeSearchProfitView(card, mode = state.purchaseMode, explicitBasis = null) {
+  if(['store','median'].includes(state.calculationBuyMode) && !explicitBasis && mode!=='snkr-raw') {
+    const buyMode=state.calculationBuyMode;
+    const e=cardEfficiency(card,Date.now(),mode,state.efficiencyScenario,buyMode),source=currentMarketView(card,true),buy=e.purchasePrice;
+    const profit=Number.isFinite(buy)&&Number.isFinite(source.psa10Net)?source.psa10Net-buy-state.fee:null;
+    const offer=card.currentStoreOffer,median=e.medianEvidence;
+    const dates=(median?.rows||[]).map(r=>r.observedAt).filter(d=>Number.isFinite(Date.parse(d))).sort();
+    return {...source,basis:buyMode,purchaseKind:buyMode,purchasePrice:buy,purchaseSource:buyMode==='median'?`素体参考相場・中央値／独立${median?.independent??0}店舗`:offer?.source||'状態A価格未取得',purchaseAt:buyMode==='median'?dates[0]||null:offer?.updatedAt||null,
+      eligible:Number.isFinite(e.annual),economics:Number.isFinite(e.profit)?{purchasePrice:buy,expectedProfit:e.profit,expectedRoi:e.roi,investment:e.investment,expectedSale:e.profit+buy+state.fee}:null,
+      psa10Profit:profit,psa10Roi:profit!=null&&e.investment>0?profit/e.investment*100:null,
+      label:e.basis+' × '+e.scenario,exitLabel:e.exitLabel,referenceOnly:e.calculationState==='reference',horizonDays:state.efficiencyScenario==='current'?0:FORECAST_HORIZON_DAYS,
+      reason:e.reason,stress:null,comparisonCard:card};
+  }
   if(referenceSearchEnabled() && !explicitBasis && mode!=='now' && mode!=='snkr-raw') {
     const e=cardEfficiency(card,Date.now(),mode), source=currentMarketView(card,true), buy=e.purchasePrice;
     const profit=Number.isFinite(buy)&&Number.isFinite(source.psa10Net)?source.psa10Net-buy-state.fee:null;
@@ -4363,7 +4397,8 @@ function resultSorter() {
   return ['combined','curated'].includes(state.purchaseMode) ? combinedPresetSort : sorters[state.sort];
 }
 
-function cardEfficiency(card, now=Date.now(), mode=state.purchaseMode, selectedScenario=state.efficiencyScenario, selectedBuy=state.efficiencyBuy) {
+function cardEfficiency(card, now=Date.now(), mode=state.purchaseMode, selectedScenario=state.efficiencyScenario, selectedBuy) {
+  if(selectedBuy===undefined)selectedBuy=['store','median'].includes(state.calculationBuyMode)?state.calculationBuyMode:state.efficiencyBuy;
   const passKey=JSON.stringify([mode,selectedScenario,selectedBuy]);
   const passEntry=efficiencyRenderPass?.get(card)?.get(passKey);
   if(passEntry && now<passEntry.expires)return passEntry.value;
@@ -4372,8 +4407,8 @@ function cardEfficiency(card, now=Date.now(), mode=state.purchaseMode, selectedS
     return entry.value;
   };
   const observationDays = /^obs(7|30|75|200)$/.test(selectedScenario) ? Number(selectedScenario.slice(3)) : null;
-  const key = JSON.stringify([mode,efficiencyDataKey(card),state.guideMode,state.profitSearchBasis,state.currentMarketManualPrice,selectedBuy,state.efficiencyScenario,
-    ['median','reference-min'].includes(selectedBuy) && [card.priceAggregation?.value,card.priceAggregation?.included,card.priceAggregation?.comparison,card.identityReviewRequired,card.priceIntegrity?.disputed],selectedBuy==='reference-min' && [state.minExpectedProfit,state.minExpectedRoi,state.psaPlan],
+  const key = JSON.stringify([mode,state.calculationBuyMode,efficiencyDataKey(card),state.guideMode,state.profitSearchBasis,state.currentMarketManualPrice,selectedBuy,state.efficiencyScenario,
+    ['median','median-percent','reference-min'].includes(selectedBuy) && [card.priceAggregation?.value,card.priceAggregation?.included,card.priceAggregation?.comparison,card.identityReviewRequired,card.priceIntegrity?.disputed],selectedBuy==='reference-min' && [state.minExpectedProfit,state.minExpectedRoi,state.psaPlan],
     selectedScenario,observationDays && [state.psa10PeriodSummary?.asOf,state.psa10PeriodSummary?.version,state.psa10PeriodSummary?.periods,state.psa10PeriodSummary?.observationEvidenceIndices,state.psa10PeriodSummary?.cards?.[card.id],state.psa10PeriodSummary?.minimumObservationDays,state.psa10PeriodSummary?.staleObservationDays,state.buybackObservationSummary?.asOf,state.buybackObservationSummary?.shops,state.buybackObservationSummary?.cards?.[card.id],state.buybackObservationSummary?.captureHolds?.[card.id],state.buybackObservationSummary?.historyIdentityHolds?.[card.id]],
     efficiencyFields.map(([,f])=>f === 'efficiencyMin' ? null : state[f]),state.fee,state.saleExtraCost,state.storeTravelCost,state.lockDays,state.exitPolicy,
     state.saleFeeRate,state.buybackDeductionRate,state.buybackStoreMode,state.selectedBuybackStores,state.sourceUpdates]);
@@ -4385,9 +4420,11 @@ function cardEfficiency(card, now=Date.now(), mode=state.purchaseMode, selectedS
   const targetBasis = selectedBuy === 'auto' && state.profitSearchBasis === 'current-target' && mode !== 'now';
   const manualBasis = selectedBuy === 'manual' || selectedBuy === 'auto' && mode === 'current-market' && state.currentMarketManualPrice != null;
   const referenceBasis=selectedBuy==='reference-min',referenceEvidence=referenceBasis?referenceBuyView(card,now):null;
-  const medianBasis=selectedBuy==='median',medianEvidence=medianBasis?explorationMetrics.referenceMedian(card,now):null;
+  const medianBasis=['median','median-percent'].includes(selectedBuy);
+  let medianEvidence=medianBasis?explorationMetrics.referenceMedian(card,now):null;
+  if(state.calculationBuyMode==='median' && medianBasis && medianEvidence.independent<2)medianEvidence={...medianEvidence,value:null,reasons:[...new Set([...medianEvidence.reasons,'新鮮な独立2店舗の中央値根拠不足'])]};
   const source = currentMarketView(card,true);
-  const buy = referenceBasis ? referenceEvidence.value : medianBasis ? medianEvidence.value : targetBasis ? currentProfitGuide(card).cap : capBasis ? source.eligible && source.capState === 'available' ? source.cap : null
+  const buy = referenceBasis ? referenceEvidence.value : medianBasis ? selectedBuy==='median-percent' ? Number.isFinite(state.medianBuyPct)&&state.medianBuyPct>0&&medianEvidence.value>0 ? Math.floor(medianEvidence.value*state.medianBuyPct/100) || null : null : medianEvidence.value : targetBasis ? currentProfitGuide(card).cap : capBasis ? source.eligible && source.capState === 'available' ? source.cap : null
     : manualBasis ? selectedBuy === 'manual' ? state.efficiencyManualPrice : state.currentMarketManualPrice
     : explorationMetrics.offerPrice(card.currentStoreOffer,now);
   const scenario = observationDays ? selectedScenario : capBasis || targetBasis || mode === 'current-market' ? 'current' : selectedScenario;
@@ -4419,10 +4456,11 @@ function cardEfficiency(card, now=Date.now(), mode=state.purchaseMode, selectedS
     exitLabel = average ? average.exitLabel : state.exitPolicy === 'both' ? `${usesStore ? '買取店' : 'フリマ'}（両出口の保守側）` : source.exitLabel;
   }
   const result = {...explorationMetrics.efficiency(economics,buy,state.fee,state.saleExtraCost+travel,state.lockDays,state.efficiencySaleDays,state.efficiencyPayoutDays),
-    purchasePrice:buy,basis:referenceBasis ? '参考買値・'+referenceEvidence.label+'（購入保証なし）' : medianBasis ? '素体参考相場・中央値（購入保証なし）' : targetBasis ? '利益確保の仕入れ目安・仮定' : capBasis ? '現相場損益分岐上限・仮定' : manualBasis ? '手入力買値・仮定' : '実店舗状態A価格',
+    purchasePrice:buy,basis:referenceBasis ? '参考買値・'+referenceEvidence.label+'（購入保証なし）' : medianBasis ? selectedBuy==='median-percent' ? '中央値の'+state.medianBuyPct+'%・仮定（購入保証なし）' : '素体参考相場・中央値（購入保証なし）' : targetBasis ? '利益確保の仕入れ目安・仮定' : capBasis ? '現相場損益分岐上限・仮定' : manualBasis ? '手入力買値・仮定' : '実店舗状態A価格',
     scenario:average ? `${observationDays}暦日内PSA10観測平均 × 現在PSA9・混合仮定` : scenario === 'current' ? '現在出口相場が続く仮定' : `${FORECAST_HORIZON_DAYS}日${scenario === 'central' ? '中央予測' : '供給ストレス'}`,
     exitLabel,reason:reason || (average?.reasons.length ? average.reasons.join('／') : !economics ? '選択した出口・シナリオのデータ不足' : null),warnings:[...(source.warnings || []),...(average?.warnings || []),...(medianEvidence?.warnings || [])],capBasis,referenceOnly:true,medianEvidence,referenceEvidence,
     calculationState:referenceBasis || medianBasis || average?.observed.reference ? 'reference' : source.calculationState || 'calculated',blockingReasons:[...(source.reasons || []),...(average?.reasons || []),...(medianEvidence?.reasons || [])],referenceReasons:[...(source.referenceReasons || []),...(medianBasis ? ['中央値で購入する参考比較・実購入とは別'] : []),...(average?.observed.reference ? ['観測平均の欠測・取得根拠不足'] : [])],observation:average?.observed || null};
+  if(selectedBuy==='median-percent' && buy==null && !result.reason)result.reason='中央値または購入割合が無効';
   if (result.annual == null && !result.reason) result.reason='拘束日数・費用・投下額を確認';
   if (result.annual == null) result.calculationState='unavailable';
   const nextJstDay = Math.floor((now+9*3600000)/86400000)*86400000+86400000-9*3600000;
@@ -4494,19 +4532,19 @@ function cardEfficiencyPanel(card, compact = false) {
   const label={calculated:'算出可能',reference:'参考計算可能・安全判定とは別',unavailable:'算出不可'}[row.calculationState];
   const notes=row.calculationState === 'reference' ? row.warnings : row.calculationState === 'unavailable' ? [row.reason,...row.blockingReasons,...row.warnings.filter(w=>w.includes('平均が現在'))] : row.warnings.filter(w=>w.includes('平均が現在'));
   const exitHelp=(row.observation?.reference && !state.observationIncludeReference ? '／参考平均OFF：比較は表示、資金効率検索・順位には不採用。' : '')+(row.blockingReasons.some(reason=>reason.includes('買取出口')) ? '選択した買取出口は算出不可。別途、売却先をフリマに明示変更した試算は可能（自動切替なし）。' : '');
-  const real=referenceSearchEnabled()?cardEfficiency(card,Date.now(),state.purchaseMode,state.efficiencyScenario,'store'):null;
-  const stockNote=real?'<small class="reference-warning">'+escapeHtml(referenceBuyView(card).availability)+'／実店舗の年換算 '+(Number.isFinite(real.annual)?real.annual.toFixed(1)+'%・期待利益 ¥'+fmt.format(Math.round(real.profit)):'算出不可')+'</small>':'';
-  if(compact)return stockNote+`<div class="efficiency-notice efficiency-${row.calculationState}"><b>資金効率：${label}</b><small>${escapeHtml(compactWarningText(notes))}</small></div>`+cardEfficiencyBodyBase(card,row,true)+periodEfficiencyPanel(card,Date.now(),true);
+  const real=referenceSearchEnabled()||state.calculationBuyMode==='median'?cardEfficiency(card,Date.now(),state.purchaseMode,state.efficiencyScenario,'store'):null;
+  const stockNote=real?'<small class="reference-warning">実店舗状態A '+(Number.isFinite(real.purchasePrice)?'¥'+fmt.format(real.purchasePrice):'購入価格未取得')+'／実店舗の年換算 '+(Number.isFinite(real.annual)?real.annual.toFixed(1)+'%・期待利益 ¥'+fmt.format(Math.round(real.profit)):'算出不可')+'</small>':'';
+  if(compact)return stockNote+`<div class="efficiency-notice efficiency-${row.calculationState}"><b>資金効率：${label}</b><small>${escapeHtml(compactWarningText(notes))}</small></div>`+cardEfficiencyBodyBase(card,row,true)+profitGuideAside(card)+periodEfficiencyPanel(card,Date.now(),true);
   return `<div class="efficiency-notice efficiency-${row.calculationState}"><b>資金効率：${label}</b><small>${escapeHtml([...new Set(notes)].join('／'))}${escapeHtml(exitHelp)}${row.calculationState === 'reference' ? efficiencySearchValue(row) != null ? '／参考値を資金効率検索に含む' : '／参考値は資金効率検索・順位の対象外（設定で変更可）' : ''}</small></div>`+cardEfficiencyBody(card);
 }
 function cardEfficiencyBody(card) {
   const row=cardEfficiency(card);
   const o=row.observation;
   const observationInfo=o ? `<small>平均 ${Number.isFinite(o.mean) ? '¥'+fmt.format(o.mean) : '未取得'}／${o.count ?? 0}/${o.days}観測日・欠測${o.days-(o.count ?? 0)}日／最終 ${escapeHtml(o.latest || '未取得')}。根拠未確認${o.unverifiedDays ?? '未集計'}日。${o.reference ? '欠測・根拠不足の参考値' : '期間内の観測充足'}。${o.source ? escapeHtml(o.source)+'／'+escapeHtml((o.stores||[]).map(id=>state.buybackShops[id]?.name||id).join('・'))+'。' : ''}PSA10だけ平均・非10は現在国内PSA9仮置き。</small>` : '';
-  const actual=referenceSearchEnabled()?cardEfficiency(card,Date.now(),state.purchaseMode,state.efficiencyScenario,'store'):null;
-  const actualInfo=actual?'<small>'+escapeHtml(referenceBuyView(card).availability)+'／実店舗採算 '+(Number.isFinite(actual.annual)?actual.annual.toFixed(1)+'%・期待利益 ¥'+fmt.format(Math.round(actual.profit)):'算出不可・新鮮な在庫価格なし')+'</small>':'';
+  const actual=referenceSearchEnabled()||state.calculationBuyMode==='median'?cardEfficiency(card,Date.now(),state.purchaseMode,state.efficiencyScenario,'store'):null;
+  const actualInfo=actual?'<small>実店舗状態A '+(Number.isFinite(actual.purchasePrice)?'¥'+fmt.format(actual.purchasePrice):'購入価格未取得')+'／実店舗採算 '+(Number.isFinite(actual.annual)?actual.annual.toFixed(1)+'%・期待利益 ¥'+fmt.format(Math.round(actual.profit)):'算出不可・新鮮な在庫価格なし')+'</small>':'';
   const comparison=`${actualInfo}${observationInfo}<details data-efficiency-comparison="${escapeHtml(card.id)}"><summary>現相場と7・30・75・200日平均の期待資金効率を比較</summary><div>開くと同じ買値・出口・費用・拘束日数で比較します。長期原票は取得しません。</div></details>`;
-  return cardEfficiencyBodyBase(card,row)+medianEfficiencyComparison(card)+periodEfficiencyPanel(card)+comparison;
+  return cardEfficiencyBodyBase(card,row)+profitGuideAside(card)+medianEfficiencyComparison(card)+periodEfficiencyPanel(card)+comparison;
 }
 function medianEfficiencyComparison(card,now=Date.now()) {
   const median=cardEfficiency(card,now,state.purchaseMode,state.efficiencyScenario,'median');
@@ -4615,7 +4653,7 @@ function buybackSupportHtml(card, detailed = false) {
   const rate = n => Number.isFinite(n) ? n.toFixed(3) : '算出不可';
   const pct = n => Number.isFinite(n) ? `${n>=0?'+':''}${n.toFixed(1)}%` : '算出不可';
   const highest = value.highestQuote;
-  const meanText = Number.isFinite(value.mean) ? `<span class="buyback-mean">${buybackRatioMarkup(value.mean,'全体平均買取倍率 ')} <span class="${value.meanReference?'reference-warning':''}">${value.meanCount}店舗${value.meanReference?'・参考':''}</span></span>` : '';
+  const meanText = Number.isFinite(value.mean) ? `<span class="buyback-mean">${buybackRatioMarkup(value.mean,'全体平均買取倍率 ')} <span class="buyback-adopted-count ${value.meanCount>1?'count-multiple':'count-reference'}">平均の採用${value.meanCount}／対象${value.coverage.target??'未確認'}店舗${value.meanCount===1?'・1店舗参考':'・複数店舗'}</span></span>` : `<span class="buyback-mean">全体平均買取倍率 — <span class="buyback-adopted-count count-reference">平均の採用0／対象${value.coverage.target??'未確認'}店舗・取得不足</span></span>`;
   const w75=value.meanWindows?.[75];
   const mean75Text='<small class="buyback-75-mean">75日平均 '+(Number.isFinite(w75?.mean)?buybackRatioMarkup(w75.mean)+'・'+w75.days+'/75日・'+w75.stores+'店'+(w75.reference?'・参考':'')+(w75.stale?'・古値／日時不足':'')+(detailed?'・最終'+escapeHtml(w75.lastDate||'未取得'):''):'履歴不足・参考値なし')+'</small>';
   const historicalSearchText=[7,30].map(d=>{const w=value.meanWindows?.[d];return '<small>'+d+'日平均 '+(Number.isFinite(w?.mean)?buybackRatioMarkup(w.mean)+'・'+w.days+'/'+d+'日・'+w.stores+'店'+(w.reference?'・参考':'')+(w.stale?'・古値／日時不足':''):'比較履歴不足')+'</small>';}).join('');
@@ -4623,7 +4661,7 @@ function buybackSupportHtml(card, detailed = false) {
   const coverageText=c.target==null?'対象店舗の要約未取得':`比較可能${c.comparable}／対象${c.target}店・相場以上${c.above}／${c.comparable}店`;
   const recent=value.recentReference,ref=recent?.highestQuote;
   const referenceText=!highest&&ref?`<div class="buyback-recent-reference"><small>直近比較成立時の参考・${escapeHtml(recent.date)}</small><span>最高 ${ref.ratio.toFixed(3)}倍・${escapeHtml(ref.name)}／平均 ${recent.mean.toFixed(3)}倍（${recent.count}店）</span><small>当時の提示・相場による参考。現在の価格・受付へ代用しません。</small></div>`:'';
-  const pendingText=highest?'':`<span class="reference-warning buyback-current-pending">現在倍率：最高 —／全体平均 — <small>${escapeHtml(value.reason)}</small></span>`;
+  const pendingText=highest?'':`<span class="reference-warning buyback-current-pending">現在の最高買取倍率 — <small>${escapeHtml(value.reason)}</small></span>`;
   if (!detailed) return `<div class="buyback-support-compact" aria-label="減額前の需要倍率・採算用出口とは別" data-buyback-support="${escapeHtml(card.id)}">${highest ? `<span class="buyback-quote-stat">${buybackRatioMarkup(highest.ratio,'最高買取倍率 ')}<span>${escapeHtml(highest.name)}・${highest.fulfilment==='store'?'店頭':'郵送'}</span></span>` : pendingText}${meanText}<small class="buyback-scope">${coverageText}</small>${mean75Text}${referenceText}</div>`;
   const highestText = highest ? `${buybackRatioMarkup(highest.ratio,'最高買取 ')}<span>${escapeHtml(highest.name)}・${highest.fulfilment==='store'?'店頭':'郵送'}｜同店・他カードの通常倍率 ${buybackRatioMarkup(highest.standard)}${highest.reference?'<span class="reference-warning">・参考</span>':''}｜通常比 ${pct(highest.premium)}${Number.isFinite(highest.topPct)?`｜同店内上位${highest.topPct.toFixed(1)}%`:''}</span><small>確認 ${escapeHtml(highest.at)}｜比較${highest.samples}枚${highest.reference?'・標本不足/参考':''}｜減額前・同日同価格帯。他カード比較で、実買取件数・GOの保証ではありません。</small>` : '<b class="reference-warning">最高買取 比較不足</b><small class="reference-warning">選択中の受付に新鮮な同日・同仕様の提示なし（古値・停止・保留は対象外）</small>';
   const windows = [7,30].map(days=>{
@@ -4698,9 +4736,17 @@ function postingCoverageHtml(card) {
   return `<details class="posting-coverage"><summary>PSA10買取掲載：確認${c.confirmedShops}/${c.totalShops}店舗・掲載 ${num(c.listedShops,'店舗')}／30日掲載率 ${num(c.rate30,'%')}</summary><p>現在掲載率 ${num(c.currentRate,'%')}（正常確認できた対象店舗のみ）。30日平均掲載 ${num(c.averageShops30,'店舗')}／正常観測 ${c.observedDays}/30日・取得カバー率 ${num(c.retrievalCoverage,'%')}。掲載店舗日 ${c.postedShopDays}／正常確認店舗日 ${c.observedShopDays}。対象は選択した売却先のみ。取得失敗・部分取得・過去の確認範囲不明は未掲載に数えません。買取掲載は実買取件数や値上がり保証ではありません。</p></details>`;
 }
 
+function medianPurchaseComparison(card) {
+  if(!(Number.isFinite(state.medianBuyPct)&&state.medianBuyPct>0))return null;
+  return cardEfficiency(card,Date.now(),state.purchaseMode,state.efficiencyScenario,'median-percent');
+}
+function medianPurchaseComparisonHtml(card) {
+  const r=medianPurchaseComparison(card);if(!r)return '';
+  return '<div class="median-buy-comparison"><strong>追加試算：中央値の'+state.medianBuyPct+'%で購入</strong><span>仮定買値 '+(Number.isFinite(r.purchasePrice)?'¥'+fmt.format(r.purchasePrice):'算出不可')+'／期待利益 '+signedExpectedMoney(r.profit).text+'／利益率 '+(Number.isFinite(r.roi)?r.roi.toFixed(2)+'%':'算出不可')+'／年換算 '+(Number.isFinite(r.annual)?r.annual.toFixed(2)+'%':'算出不可')+'</span><small>'+escapeHtml(r.exitLabel+'・'+r.scenario)+'。実店舗でこの価格を買える保証なし・検索／GOには不使用。'+escapeHtml(r.reason||'')+'</small></div>';
+}
 function calculationBasisCsvFields(card,view=searchProfitView(card)) {
-  const a=card.buyLimits?.clean?.assumptions;
-  return [view.purchasePrice??'',calculationBuyBasis(view),Number.isFinite(a?.hitRate)?a.hitRate*100:'',a?.hitRateSource||'未取得',guideConfig().hitRate*100,guideConfig().label];
+  const a=card.buyLimits?.clean?.assumptions,comparison=medianPurchaseComparison(card);
+  return [view.purchasePrice??'',calculationBuyBasis(view),Number.isFinite(a?.hitRate)?a.hitRate*100:'',a?.hitRateSource||'未取得',guideConfig().hitRate*100,guideConfig().label,state.calculationBuyMode,view.purchaseSource||'',view.purchaseAt||'',state.medianBuyPct??'',comparison?.purchasePrice??'',comparison?.profit??'',comparison?.roi??'',comparison?.annual??'',comparison?.scenario||'',comparison?.exitLabel||''];
 }
 function recentPsa9CsvFields(id) {
   return [30,7].flatMap(d=>{const r=recentPsa9Data?.cards?.[id]?.[d];return [r?.mean??'',r?.observedSales??'',r?.latestSaleAt||'',r?r.start+'〜'+r.end:'',r?.sourceUrls?.join('／')||'',r?(r.reference?'保存成約の参考平均・期間全件未確認':'期間全件成約平均'):'直近成約平均未取得'];});
@@ -4714,9 +4760,9 @@ function searchProfitPanel(view,compact=false) {
   const money = value => Number.isFinite(value) ? `¥${fmt.format(Math.round(value))}` : "算出不可";
   const rate = value => Number.isFinite(value) ? `${value.toFixed(2)}%` : "算出不可";
   const signedMoney = signedExpectedMoney;
-  const denominatorNote = view.basis === 'current-target' ? '買値＋鑑定費＋投下諸費用（売却手取りから控除済みの費用は再控除しない）' : '買値＋鑑定費';
-  if(compact)return `<div class="candidate-profit-comparison search-profit-summary"><strong>計算買値 ${money(view.purchasePrice)}・${escapeHtml(calculationBuyBasis(view))}／${escapeHtml(view.exitLabel||'出口未取得')}・${view.horizonDays===0?'現相場':'中央予測（参考）'}</strong><div><span>期待利益／期待利益率<b class="${numericTone(view.economics?.expectedProfit)}">${signedMoney(view.economics?.expectedProfit).text}／${rate(view.economics?.expectedRoi)}</b></span><span>PSA10時の利益／利益率<b class="${numericTone(view.psa10Profit)}">${signedMoney(view.psa10Profit).text}／${rate(view.psa10Roi)}</b></span></div></div>`;
-  return `<div class="candidate-profit-comparison search-profit-summary"><strong>計算買値 ${money(view.purchasePrice)}・${escapeHtml(calculationBuyBasis(view))}／${escapeHtml(view.exitLabel || "出口未取得")}</strong><div><span>PSA10現在相場での手取り<br><b>${money(view.psa10Net)}</b></span><span>PSA10時の利益／利益率<br><b class="${numericTone(view.psa10Profit)}">${signedMoney(view.psa10Profit).text}／${rate(view.psa10Roi)}</b></span><span>${view.horizonDays === 0 ? '現在出口相場' : '中央予測'}の期待利益／期待利益率<br><b class="${numericTone(view.economics?.expectedProfit)}">${signedMoney(view.economics?.expectedProfit).text}／${rate(view.economics?.expectedRoi)}</b></span></div><details class="profit-calculation-note"><summary>計算基準を確認</summary><small>${escapeHtml(view.label)}。PSA10時利益率＝（PSA10手取り−買値−鑑定費）÷（${denominatorNote}）。期待利益率は非10の損益も含む別指標。買取減額とフリマ手数料は同じ出口に二重適用しません。期待黒字は損失保証ではありません。${view.basis === 'current-cap' ? '損益分岐上限で購入×現在相場の期待利益率はほぼ0%（切下げ端数分あり）。利益率下限10%などは条件不一致として除外します。条件を自動解除しません。' : ''}</small></details></div>`;
+  const denominatorNote = ['store','median','current-target'].includes(view.basis) ? '買値＋鑑定費＋投下諸費用（売却手取りから控除済みの費用は再控除しない）' : '買値＋鑑定費';
+  if(compact)return `<div class="candidate-profit-comparison search-profit-summary"><strong>計算買値 ${money(view.purchasePrice)}・${escapeHtml(calculationBuyBasis(view))}${view.purchaseSource?'・'+escapeHtml(view.purchaseSource):''}${view.purchaseAt?'／確認 '+escapeHtml(formatJstTimestamp(view.purchaseAt)):''}／${escapeHtml(view.exitLabel||'出口未取得')}・${view.comparisonCard?escapeHtml(view.label):view.horizonDays===0?'現相場':'中央予測（参考）'}</strong><div><span>期待利益／期待利益率<b class="${numericTone(view.economics?.expectedProfit)}">${signedMoney(view.economics?.expectedProfit).text}／${rate(view.economics?.expectedRoi)}</b></span><span>PSA10時の利益／利益率<b class="${numericTone(view.psa10Profit)}">${signedMoney(view.psa10Profit).text}／${rate(view.psa10Roi)}</b></span></div>${profitGuideAside(view.comparisonCard)}</div>`;
+  return `<div class="candidate-profit-comparison search-profit-summary"><strong>計算買値 ${money(view.purchasePrice)}・${escapeHtml(calculationBuyBasis(view))}${view.purchaseSource?'・'+escapeHtml(view.purchaseSource):''}${view.purchaseAt?'／確認 '+escapeHtml(formatJstTimestamp(view.purchaseAt)):''}／${escapeHtml(view.exitLabel || "出口未取得")}</strong><div><span>PSA10現在相場での手取り<br><b>${money(view.psa10Net)}</b></span><span>PSA10時の利益／利益率<br><b class="${numericTone(view.psa10Profit)}">${signedMoney(view.psa10Profit).text}／${rate(view.psa10Roi)}</b></span><span>${view.horizonDays === 0 ? '現在出口相場' : '中央予測'}の期待利益／期待利益率<br><b class="${numericTone(view.economics?.expectedProfit)}">${signedMoney(view.economics?.expectedProfit).text}／${rate(view.economics?.expectedRoi)}</b></span></div><details class="profit-calculation-note"><summary>計算基準を確認</summary><small>${escapeHtml(view.label)}。PSA10時利益率＝（PSA10手取り−買値−鑑定費）÷（${denominatorNote}）。期待利益率は非10の損益も含む別指標。買取減額とフリマ手数料は同じ出口に二重適用しません。期待黒字は損失保証ではありません。${view.basis === 'current-cap' ? '損益分岐上限で購入×現在相場の期待利益率はほぼ0%（切下げ端数分あり）。利益率下限10%などは条件不一致として除外します。条件を自動解除しません。' : ''}</small></details></div>`;
 }
 
 const psa10PeriodDetails = new Map();
@@ -4747,15 +4793,43 @@ function renderObservationFilterStatus() {
     + ' 全掲載カードの平均保有／観測充足：'+[7,30,75,200].map(days=>`${days}日 ${coverage?.[days]?.meanCards ?? '未集計'}／${coverage?.[days]?.observationSufficientCards ?? '未集計'}枚`).join('・')
     + '。完全200日観測 '+(coverage?.[200]?.completeCalendarCards ?? '未集計')+'枚。'+(coverage?.[200]?.observationSufficientCards === 0 ? '参考値を含めない200日条件は現状0枚です。' : '')+'対象数は他条件を適用する前です。';
 }
-function psa10PeriodCompact(card,compact=false) {
-  const variability=explorationMetrics.variation(state.psa10PeriodSummary,card);
-  const medium=state.psa10PeriodSummary?.variation?.mediumStatus?.[card.id],midCount=medium?.[0]??0;
+const priceDynamicsCards=new Map(),priceDynamicsData=new Map(),priceDynamicsRequests=new Map();
+let priceDynamicsObserver=null;
+function dynamicsShard(id){let h=0;for(const c of String(id))h=(h*31+c.charCodeAt(0))>>>0;return h%16;}
+function priceDynamicsMarkup(input){
+  const card={...input,id:String(input.id).replace(/^scale-/,'')};
+  const n=dynamicsShard(card.id),summary=state.psa10PeriodSummary?.displayDynamicsSharded?priceDynamicsData.get(n):state.psa10PeriodSummary;
+  if(!summary)return '<small>価格変動・価格差：表示範囲を読込待ち（材料不足とは別）</small>';
+  if(summary.error)return '<small>価格変動・価格差：読込失敗。採算・検索計算とは別です。</small>';
+  const variability=explorationMetrics.variation(summary,card);
+  const medium=summary?.variation?.mediumStatus?.[card.id],midCount=medium?.[0]??0;
   const mediumLabel=variability.days===75?'中期75日・'+variability.label:'中期75日 材料不足（確認済み'+midCount+'/75日・必要38日）';
-  const variationLabel='<div class="price-variation '+explorationMetrics.variationTone(variability.label)+'"><strong>価格変動 '+escapeHtml(variability.label)+'</strong> <span>'+escapeHtml(variability.trend)+'</span>'+(variability.days?'<small>'+variability.days+'日参考・'+variability.count+'/'+variability.days+'観測日／実観測'+variability.span+'日間</small>':'')+'<small>'+escapeHtml(mediumLabel)+'</small><details><summary>変動の根拠</summary><small>'+escapeHtml(variability.reason)+(variability.days?'／採用'+variability.days+'日枠・変動係数'+variability.cv.toFixed(1)+'%・最大下落'+variability.drawdown.toFixed(1)+'%／最終'+variability.latest+'／根拠未確認の除外'+variability.excluded+'点':'')+'。中期と30日は重複する観測で独立票ではありません。変動が小さくても購入安全を保証しません。</small></details></div>';
-  const gap=explorationMetrics.priceGap(state.psa10PeriodSummary,card),pct=v=>Number.isFinite(v)?(v>0?'+':'')+v.toFixed(1)+'%':'比較不可';
+  const short=explorationMetrics.variation(summary,card,Date.now(),7);
+  const segment=(v,label)=>'<div class="price-variation '+explorationMetrics.variationTone(v.label)+'"><strong>価格変動・'+label+' '+escapeHtml(v.label)+'</strong>'+(v.days?'<small>'+v.count+'/'+v.days+'観測日・変動係数 '+v.cv.toFixed(1)+'%／最大下落 '+v.drawdown.toFixed(2)+'%'+(v.min>0?'／¥'+fmt.format(v.min)+'〜¥'+fmt.format(v.max):'')+'</small>':'<small>'+escapeHtml(v.reason)+'</small>')+'</div>';
+  const variationLabel=segment(short,'短期7日')+segment(variability,'中期'+(variability.days||30)+'日')+'<small>'+escapeHtml(mediumLabel)+'</small><details><summary>変動の根拠</summary><small>'+escapeHtml(variability.reason)+'。短期の落ち着きと中期の過去下落は別です。採用'+(variability.count||0)+'日／実観測'+(variability.span||0)+'日間・最終'+escapeHtml(variability.latest||'未取得')+'。期間は重複し独立票ではありません。小さい評価も購入安全の保証ではありません。</small></details>';
+
+  const gap=explorationMetrics.priceGap(summary,card),pct=v=>Number.isFinite(v)?(v>0?'+':'')+v.toFixed(1)+'%':'比較不可';
   const gapLabel='<div class="price-gap"><strong>PSA10／素体差 '+pct(gap.current)+'</strong><small>75日観測平均 '+pct(gap.mean75)+'／'+escapeHtml(gap.direction)+'</small><details><summary>価格差の根拠</summary><small>'+escapeHtml(gap.source||'みんトレ美品参考相場・国内PSA10集計')+'。PSA10÷素体−1。買値最安選択・仕入れ目安・店舗中央値は不使用。</small><small>75日 '+(gap.count75??'未取得')+'/75観測日・実観測'+(gap.span??'未取得')+'日間／最終'+escapeHtml(gap.last||'未取得')+'。7日 '+(gap.count7??'未取得')+'/7日・平均'+pct(gap.mean7)+'。'+escapeHtml(gap.reason)+'</small><small>平均は同日の両価格から求めた日次率の平均（平均価格同士の比ではない）。素体 '+(Number.isFinite(gap.raw)?'¥'+fmt.format(gap.raw):'未取得')+'／PSA10 '+(Number.isFinite(gap.psa10)?'¥'+fmt.format(gap.psa10):'未取得')+'。素体確認 '+escapeHtml(gap.rawAt||'未取得')+'／PSA10確認 '+escapeHtml(gap.marketAt||'未取得')+'。差 '+(Number.isFinite(gap.change)?gap.change.toFixed(1)+'％ポイント':'判定保留')+'。履歴不足は参考。検索・採算・GOには未反映。</small></details></div>';
 
-  return variationLabel+gapLabel+`<div class="psa10-period-summary observation-glance" aria-label="国内PSA10観測平均">${[7,30,75,200].map(days=>{
+  return variationLabel+gapLabel;
+}
+function observePriceDynamics(){
+  const load=async n=>{
+    if(!priceDynamicsRequests.has(n))priceDynamicsRequests.set(n,fetchJsonMaybe('./data/price-dynamics/'+n+'.json',{detail:true,affectsCalculation:false}).then(data=>{
+      if(data?.version!==1||data.asOf!==state.psa10PeriodSummary?.asOf)throw Error('価格変動の版不一致');priceDynamicsData.set(n,data);
+    }).catch(()=>priceDynamicsData.set(n,{error:true})));
+    await priceDynamicsRequests.get(n);
+    for(const node of document.querySelectorAll('[data-price-dynamics]')){
+      const id=node.dataset.priceDynamics,card=priceDynamicsCards.get(id);
+      if(card&&dynamicsShard(id.replace(/^scale-/,''))===n&&!node.dataset.dynamicsLoaded){node.innerHTML=priceDynamicsMarkup(card);node.dataset.dynamicsLoaded='true';}
+    }
+  };
+  if(!priceDynamicsObserver&&typeof IntersectionObserver==='function')priceDynamicsObserver=new IntersectionObserver(entries=>{for(const e of entries)if(e.isIntersecting){priceDynamicsObserver.unobserve(e.target);void load(dynamicsShard(e.target.dataset.priceDynamics.replace(/^scale-/,'')));}},{rootMargin:'200px'});
+  for(const node of document.querySelectorAll('[data-price-dynamics]'))if(!node.dataset.dynamicsObserved){node.dataset.dynamicsObserved='true';if(priceDynamicsObserver)priceDynamicsObserver.observe(node);else void load(dynamicsShard(node.dataset.priceDynamics));}
+}
+function psa10PeriodCompact(card,compact=false) {
+  priceDynamicsCards.set(card.id,card);
+  return `<div data-price-dynamics="${escapeHtml(card.id)}">${priceDynamicsMarkup(card)}</div>`+`<div class="psa10-period-summary observation-glance" aria-label="国内PSA10観測平均">${[7,30,75,200].map(days=>{
     const value = explorationMetrics.observation(state.psa10PeriodSummary,card.id,card.psa10,days);
     const delta = value.delta == null ? '比較不可' : `${value.delta > 0 ? '+' : ''}${value.delta.toFixed(2)}%`;
     const drawdown=`<small class="observation-drawdown">観測最大下落 ${value.drawdown==null?'算出不可':(value.drawdown===0?'0':value.drawdown.toFixed(1))+'%'}${value.drawdownReference?'・参考':''}</small>`;
@@ -5492,7 +5566,7 @@ function computeCardSearchExclusions(card, {mode = state.purchaseMode,diagnostic
         const c = postingCoverage(card);
         for (const [value,minimum,label] of [[c.rate30,state.postingRate30Min,'30日掲載率'],[c.averageShops30,state.postingShops30Min,'30日平均掲載店舗数'],[c.observedDays,state.postingDaysMin,'掲載観測日数'],[c.retrievalCoverage,state.postingCoverageMin,'掲載取得カバー率']]) if (!explorationMetrics.inRange(value,minimum,null)) reasons.push(label + (Number.isFinite(value) ? '条件' : '・未取得'));
       }
-      const ratioView = currentMode ? profitView.purchasePrice == null ? {ratio:null,measurementType:"missing"} : purchasePsa9Ratio(card,profitView.purchasePrice,profitView.purchaseKind) : referenceSearchEnabled() ? purchasePsa9Ratio(card,referenceBuyView(card).value,'reference-min') : purchasePsa9Ratio(card);
+      const ratioView = currentMode || state.calculationBuyMode==='median' ? profitView.purchasePrice == null ? {ratio:null,measurementType:"missing"} : purchasePsa9Ratio(card,profitView.purchasePrice,profitView.purchaseKind) : referenceSearchEnabled() ? purchasePsa9Ratio(card,referenceBuyView(card).value,'reference-min') : purchasePsa9Ratio(card);
       if ((!currentMode || state.currentMarketSearchKind === "purchase") && purchaseRatioModel && !purchaseRatioModel.matches(ratioView, state.psa9RatioMin, state.psa9RatioMax, psa9RatioOptions())) reasons.push("国内PSA9比率");
       if (!normalizedQuery) {
         if (state.catalogScope === "analysis" && completion?.s !== "分析可能") reasons.push("表示範囲・データ不足");
@@ -5541,7 +5615,7 @@ function computeCardSearchExclusions(card, {mode = state.purchaseMode,diagnostic
       }
       const stressAtLimit = card.buyLimits?.clean?.supplyStressAtFinal;
       const forecastFilterActive = (specifiedFilterEnabled(mode,'expectedRoiFilterInput') && state.minExpectedRoiFilter!=null || specifiedFilterEnabled(mode,'expectedProfitFilterInput') && state.minExpectedProfitFilter!=null) && !['current-cap','current-target','reference-min'].includes(profitView.basis) || specifiedFilterEnabled(mode,'stressExpectedRoiFilterInput') && state.minStressExpectedRoiFilter!=null || specifiedFilterEnabled(mode,'stressExpectedProfitFilterInput') && state.minStressExpectedProfitFilter!=null;
-      if ((mode !== 'specified' || forecastFilterActive) && !currentMode && card.forecastPeriodMismatch && (!state.includePeriodReference || mode === "now" || !['limit','current-cap','current-target','reference-min'].includes(profitView.basis))) reasons.push("期間不一致・返却時試算不可");
+      if ((mode !== 'specified' || forecastFilterActive) && !currentMode && !(['store','median'].includes(state.calculationBuyMode) && profitView.horizonDays===0) && card.forecastPeriodMismatch && (!state.includePeriodReference || mode === "now" || !['limit','current-cap','current-target','reference-min'].includes(profitView.basis))) reasons.push("期間不一致・返却時試算不可");
       if (specifiedFilterEnabled(mode,'stressExpectedRoiFilterInput') && !currentMode && state.minStressExpectedRoiFilter != null && (!Number.isFinite(stressAtLimit?.expectedRoi) || stressAtLimit.expectedRoi < state.minStressExpectedRoiFilter)) reasons.push("利益条件");
       if (specifiedFilterEnabled(mode,'stressExpectedProfitFilterInput') && !currentMode && state.minStressExpectedProfitFilter != null && (!Number.isFinite(stressAtLimit?.expectedProfit) || stressAtLimit.expectedProfit < state.minStressExpectedProfitFilter)) reasons.push("利益条件");
       if (card.psa10 < state.minPsa10) reasons.push("価格帯・相場比");
@@ -6822,7 +6896,7 @@ function renderContent() {
         ${priceCells}
         <div data-verified-listings="${escapeHtml(card.id)}" data-listing-compact="true">${verifiedListingPanel(card,true)}</div>
       </section>
-      ${searchProfitPanel(chosenProfit,true)}
+      ${searchProfitPanel(chosenProfit,true)}${medianPurchaseComparisonHtml(card)}
       ${cardEfficiencyPanel(card,true)}
       ${buybackSupportHtml(card)}
       ${['current-cap','current-target'].includes(chosenProfit.basis) ? `<details class="actual-purchase-comparison"><summary>実店舗価格で買った場合の現相場採算（探索買値とは別）</summary>${currentMarketProfitPanel(currentGuideSource(card))}</details>` : ''}
@@ -6864,7 +6938,7 @@ function renderContent() {
               <div class="candidate-warning">${escapeHtml(criticalWarnings.join('／'))}</div>
               <section class="detail-price-comparison">${priceComparisonCells(card,limitDisplay,marketConfirmedAt,Date.now(),currentTrial)}</section>
               <details data-raw-reference="${escapeHtml(card.id)}" ${openRawReferenceDetails.has(card.id)?'open':''}><summary>美品・単品未開封の参考集計（中央値とは別）</summary><div>開くと保存済み要約を確認します。</div></details>
-              ${searchProfitPanel(chosenProfit)}${cardEfficiencyBody(card)}${tradeDemandReferenceHtml(card)}
+              ${searchProfitPanel(chosenProfit)}${medianPurchaseComparisonHtml(card)}${cardEfficiencyBody(card)}${tradeDemandReferenceHtml(card)}
               ${purchasePsa9RatioHtml(card,currentExploration?currentTrial.purchasePrice:undefined,currentExploration?{purchaseKind:currentTrial.purchaseKind}:{})}
               <div class="detail-limit-comparison">${limitComparison}</div>
               ${periodProfitSummary}
@@ -6924,6 +6998,7 @@ function renderContent() {
   const markupMs = performance.now() - markupStarted;
   const commitStarted = performance.now();
   const committed = commitCardRows(els.grid, cardRows);
+  observePriceDynamics();
   if(recentPsa9Data||recentPsa9Failure)updateRecentPsa9Markup();
   const domCommitMs = performance.now() - commitStarted;
 
@@ -6985,6 +7060,7 @@ function syncFromUI(event) {
     const el = document.getElementById(id);
     if (el) el.disabled = currentOnly;
   }
+  state.calculationBuyMode=document.getElementById("calculationBuyModeInput")?.value||"legacy";
   state.profitSearchBasis = document.getElementById("profitSearchBasisInput")?.value || "auto";
   for (const [,field,initial] of efficiencyFields) state[field] = document.getElementById(field+'Input') ? parseOptionalNumber(document.getElementById(field+'Input').value) : initial;
   state.efficiencyBuy = document.getElementById('efficiencyBuyInput')?.value || 'reference-min';
@@ -7516,6 +7592,16 @@ document.querySelectorAll("[data-preset]").forEach((button) => {
 });
 
 els.lowRiskAvailabilityInput?.addEventListener("change", syncFromUI);
+let previousQualifiedRequest=null;
+document.getElementById('previousQualifiedReference')?.addEventListener('toggle',async event=>{
+  if(!event.target.open)return;
+  const body=document.getElementById('previousQualifiedBody');
+  if(!previousQualifiedRequest)previousQualifiedRequest=fetchJsonMaybe('./data/previous-qualified-reference.json',{detail:true,affectsCalculation:false});
+  try{const data=await previousQualifiedRequest;if(data?.version!==1||!Array.isArray(data.rows))throw Error('保存参考の読込失敗');
+    body.innerHTML='<small>'+escapeHtml(data.note)+'</small>'+data.rows.map(r=>'<p><b>'+escapeHtml(r.id)+'・'+escapeHtml(r.category)+'</b><br><small>'+escapeHtml(r.profile)+'／最終適合 '+escapeHtml(r.lastQualifiedAt?formatJstTimestamp(r.lastQualifiedAt):'記録不足')+'／最後の買値 '+(Number.isFinite(r.lastPrice)?'¥'+fmt.format(r.lastPrice):'未取得')+'（当時の参考）／価格確認 '+escapeHtml(r.lastPriceAt?formatJstTimestamp(r.lastPriceAt):'不明')+'／不足 '+escapeHtml(r.missing.join('・')||'条件・前後根拠を詳細監査')+'</small></p>').join('');
+  }catch(error){body.textContent=error.message+'。現在候補0件とは別です。';previousQualifiedRequest=null;}
+});
+document.getElementById('calculationBuyModeInput')?.addEventListener('change',syncFromUI);
 document.getElementById("profitSearchBasisInput")?.addEventListener("change", syncFromUI);
 for (const field of ['efficiencyBuy','efficiencyScenario','efficiencyIncludeReference',...efficiencyFields.map(([,f])=>f)]) {
   const input = document.getElementById(field+'Input');

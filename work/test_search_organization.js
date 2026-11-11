@@ -9,8 +9,11 @@ function controls(h) {
   }).filter(r=>r[0]).sort((a,b)=>a[0].localeCompare(b[0]));
 }
 const ratioAdditions=['rawListingCurrentMinInput','rawListingCurrentMaxInput','rawListingMeanMinInput','rawListingMeanMaxInput','listingCurrentMinInput','listingCurrentMaxInput','listingMeanMinInput','listingMeanMaxInput','buybackMeanMinInput','buyback7RatioMinInput','buyback30RatioMinInput','buyback75RatioMinInput','buybackRatioDaysMinInput','buybackRatioReferenceInput'];
+const buyAdditions=['calculationBuyModeInput','medianBuyPctInput'];
+assert.deepEqual(controls(html).find(r=>r[0]===buyAdditions[0]),[buyAdditions[0],'<option value="median" selected>素体参考相場・中央値へ統一</option><option value="store">旧・現在買える状態A価格で比較</option><option value="legacy">旧設定を保持して比較</option>',false]);
+assert.deepEqual(controls(html).find(r=>r[0]===buyAdditions[1]),[buyAdditions[1],'',false],'optional hypothetical percentage starts off');
 for(const id of ratioAdditions){const row=controls(html).find(r=>r[0]===id);assert(row,'authorized optional ratio control present: '+id);assert.equal(row[1],'');assert.equal(row[2],false,'new ratio controls remain disabled by default');}
-assert.deepEqual(controls(html).filter(row=>!row[0].startsWith('observation') && !['buybackHighestMinInput','psa9AboveGuideInput','psa9GuideMinInput','psa9CostWithin5Input','psa9RoiMinInput',...ratioAdditions].includes(row[0])).map(row=>row[0]==='profitSearchBasisInput'?[row[0],row[1].replace('<option value="current-target">利益確保の仕入れ目安で購入・現相場基準（探索）</option>',''),row[2]]:row[0]==='efficiencyScenarioInput'?[row[0],row[1].replace(/<option value="obs(?:7|30|75|200)">[^<]*<\/option>/g,''),row[2]]:row[0]==='efficiencyBuyInput'?[row[0],row[1].replace(/<option value="(?:store|median|reference-min)"(?: selected)?>[^<]*<\/option>/g,''),row[2]]:row),baseline.controls,'existing IDs/options survive; only enumerated authorized additions are separated');
+assert.deepEqual(controls(html).filter(row=>!row[0].startsWith('observation') && !['buybackHighestMinInput','psa9AboveGuideInput','psa9GuideMinInput','psa9CostWithin5Input','psa9RoiMinInput',...ratioAdditions,...buyAdditions].includes(row[0])).map(row=>row[0]==='profitSearchBasisInput'?[row[0],row[1].replace('<option value="current-target">利益確保の仕入れ目安で購入・現相場基準（探索）</option>',''),row[2]]:row[0]==='efficiencyScenarioInput'?[row[0],row[1].replace(/<option value="obs(?:7|30|75|200)">[^<]*<\/option>/g,''),row[2]]:row[0]==='efficiencyBuyInput'?[row[0],row[1].replace(/<option value="(?:store|median|reference-min)"(?: selected)?>[^<]*<\/option>/g,''),row[2]]:row),baseline.controls,'existing IDs/options survive; only enumerated authorized additions are separated');
 for(const days of [7,30,75,200])assert(html.includes(`value="obs${days}"`),'all declared average choices exist');
 for(const [id,value,type] of [['roiInput','20','number'],['expectedRoiFilterInput','0','number'],['floorStateInput','stable','select'],['purchaseBelowCurrentCapInput','', 'checkbox']]) {
   const el={id,value,type,checked:true,tagName:type==='select'?'SELECT':'INPUT',options:[{value:'all'},{value:'stable'}]};
@@ -42,8 +45,20 @@ assert.deepEqual(Object.keys(approved.protectedFunctions).sort(),Object.keys(bas
 assert.match(css,/\.quick-presets \.preset-audit-summary\{grid-column:1\/-1/,'mobile preset audit spans the full grid, not a narrow column');
 assert.match(css,/\.search-settings \[hidden\]\{display:none!important\}/,'display classes must not expose irrelevant hidden mode controls');
 assert.match(app,/if \(activeConditionKey===key\) return/,'unchanged active filters are not rebuilt');
+// The requested actual-buy branch is pinned separately; removing only that exact
+// branch must leave the immutable legacy finance/search bodies unchanged.
+function beforeRequestedBuyMigration(text){
+  const start=text.indexOf("  if(['store','median'].includes(state.calculationBuyMode)",text.indexOf('function computeSearchProfitView(')),end=text.indexOf('  if(referenceSearchEnabled()',start);
+  const branch=text.slice(start,end);
+  assert.equal(crypto.createHash('sha256').update(branch).digest('hex'),'5f49fa6bc5594c9e99b28db5e62d17c146920303ce6e4406f4ebb6c9c6dcda62','only the separately tested shared median/store branch is authorized');
+  return text.slice(0,start)+text.slice(end);
+}
+const legacyApp=beforeRequestedBuyMigration(app.replace(/\r\n/g,'\n'))
+  .replace('  url.searchParams.set("calcBuy",state.calculationBuyMode);\n','')
+  .replace(" && !(['store','median'].includes(state.calculationBuyMode) && profitView.horizonDays===0)",'')
+  .replace("const ratioView = currentMode || state.calculationBuyMode==='median' ?","const ratioView = currentMode ?");
 for(const [name,expected] of Object.entries(baseline.protectedFunctions)) {
-  const source=app.replace(/\r\n/g,'\n')
+  const source=legacyApp
     // Authorized two-mode routing is tested in test_two_search_modes, not a financial formula change.
     .replace('"combined", "specified", "curated"','"combined", "curated"')
     .replace("  if (mode === 'specified') reasons.push(...specifiedDataExclusions(card));\n",'')
@@ -85,7 +100,7 @@ for(const [name,expected] of Object.entries(baseline.protectedFunctions)) {
   const oldHash=crypto.createHash('sha256').update(source.slice(start,end<0?undefined:end)).digest('hex');
   // Keep the original fixture. Later authorized reference-buy/plan migrations are
   // tested separately; this release must still match the exact pre-change public code.
-  if(oldHash!==expected){const actual=crypto.createHash('sha256').update(functionBody(app.replace(/\r\n/g,'\n'),name)).digest('hex');
+  if(oldHash!==expected){const actual=crypto.createHash('sha256').update(functionBody(legacyApp,name)).digest('hex');
     assert([releasedFunctionHashes[name],approved.protectedFunctions[name]].includes(actual),'financial/filter function differs from both immutable reviewed public releases: '+name);}
 }
 const oldApp=process.argv.includes('--report')?execFileSync('git',['show','a37fbbfa:app.js'],{encoding:'utf8',maxBuffer:10000000}):app;

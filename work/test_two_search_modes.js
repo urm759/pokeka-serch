@@ -51,6 +51,7 @@ vm.runInContext('state.purchaseMode="combined";globalThis.siteKey=computationKey
 assert.equal(context.siteKey,context.specifiedKey,'mode-only changes reuse calculations, not screening results');
 const {efficiencySummaryKey}=require('./build_priority_search_targets');
 const base={efficiencyBuy:'median',efficiencyScenario:'current',profitSearchBasis:'auto',efficiencySaleDays:7};
+assert.notEqual(efficiencySummaryKey('saved-inputs',{...base,calculationBuyMode:'legacy'}),efficiencySummaryKey('saved-inputs',{...base,calculationBuyMode:'store'}),'buy-mode changes cannot reuse old availability summaries');
 assert.equal(efficiencySummaryKey('saved-inputs',base),efficiencySummaryKey('saved-inputs',{...base,purchaseMode:'specified'}));
 for(const change of [{efficiencyBuy:'store'},{profitSearchBasis:'current-cap'},{currentMarketManualPrice:10000},{efficiencySaleDays:8},{observationIncludeReference:true}])assert.notEqual(efficiencySummaryKey('saved-inputs',base),efficiencySummaryKey('saved-inputs',{...base,...change}));
 assert.notEqual(efficiencySummaryKey('other-inputs',base),efficiencySummaryKey('saved-inputs',base),'changed data/time/cost/exit invalidates via calculation key');

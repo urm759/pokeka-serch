@@ -34,36 +34,37 @@ function validateHold(meta,root,now=Date.now()){
   const s=scopes(root).find(s=>s.setCode===meta.setCode),u=new URL(meta.url);
   if(meta.version!==1||meta.kind!=='gemrate-source-hold-v1'||!uuid(meta.jobId)||!s||u.origin!=='https://www.gemrate.com'||u.pathname!=='/item-details'||u.hash||[...u.searchParams].length!==4||u.searchParams.get('set_name')!==s.set||Number(u.searchParams.get('year'))!==s.year||u.searchParams.get('grader')!=='psa'||u.searchParams.get('category')!=='tcg-cards'||!Number.isFinite(Date.parse(meta.at))||Date.parse(meta.at)>now+120000)throw Error('Unproven collector hold');
 }
-function recoverLooseReceipts(root,store,downloads){
+function recoverLooseReceipts(root,store,downloads,now=new Date().toISOString()){
   const paths=directories(root,store,downloads),file=path.join(store,'loose-receipt-recovery.json'),index=fs.existsSync(file)?read(file):{version:1,receipts:{}},results=[];
   if(!fs.existsSync(downloads))return results;
   for(const name of fs.readdirSync(downloads).filter(n=>/^(?:ダウンロード|download)(?: \(\d+\))?\.json$/i.test(n))){
     const original=path.join(downloads,name);let stat;try{stat=fs.lstatSync(original);}catch{continue;}if(!stat.isFile()||stat.isSymbolicLink()||stat.size>262144)continue;
     let meta,bytes;try{bytes=fs.readFileSync(original);meta=JSON.parse(bytes);}catch{continue;}
     if(!['gemrate-normal-csv-v1','gemrate-source-hold-v1'].includes(meta.kind)||!uuid(meta.jobId))continue;
-    const at=Date.parse(meta.page?.checkedAt||meta.at);if(!Number.isFinite(at)||Date.now()-at>86400000)continue;
+    const at=Date.parse(meta.page?.checkedAt||meta.at);if(!Number.isFinite(at)||Date.parse(now)-at>86400000)continue;
     try{
-      if(meta.kind==='gemrate-source-hold-v1')validateHold(meta,root);
+      if(meta.kind==='gemrate-source-hold-v1')validateHold(meta,root,Date.parse(now));
       else {
         const csv=path.join(paths.pending,meta.jobId,'export.csv');let raw=null;
         if(meta.download){inside(downloads,csv);if(fs.statSync(csv).size>5e6)throw Error('CSV too large');raw=fs.readFileSync(csv);}
-        validate(meta,raw,root);
+        validate(meta,raw,root,Date.parse(now));
       }
       const sha=hash(bytes),old=index.receipts[meta.jobId];if(old&&old.sha256!==sha)throw Error('Loose receipt conflict');
       const backup=path.join(store,'browser-receipt-migration');fs.mkdirSync(backup,{recursive:true});
       put(path.join(backup,meta.jobId+'.json'),bytes);const gz=path.join(backup,meta.jobId+'.json.gz');if(!fs.existsSync(gz))put(gz,zlib.gzipSync(bytes));
       if(hash(zlib.gunzipSync(fs.readFileSync(gz)))!==sha)throw Error('Loose receipt backup mismatch');
       const dir=path.join(paths.pending,meta.jobId);fs.mkdirSync(dir,{recursive:true});inside(downloads,dir);put(path.join(dir,'receipt.json'),bytes);
-      index.receipts[meta.jobId]={sourceFile:original,sha256:sha,recoveredAt:old?.recoveredAt||new Date().toISOString()};results.push({jobId:meta.jobId,status:'recovered'});
+      index.receipts[meta.jobId]={sourceFile:original,sha256:sha,recoveredAt:old?.recoveredAt||now};results.push({jobId:meta.jobId,status:'recovered'});
     }catch(e){results.push({jobId:meta.jobId,status:'review',reason:e.message});}
   }
   if(results.length)retry.atomicWrite(file,index,0);return results;
 }
-function receive(root=ROOT,store=path.resolve(root,'../private-research/gemrate'),downloads=path.join(os.homedir(),'Downloads')){
+function receive(root=ROOT,store=path.resolve(root,'../private-research/gemrate'),downloads=path.join(os.homedir(),'Downloads'),now=new Date().toISOString()){
+  if(!Number.isFinite(Date.parse(now)))throw Error('Invalid receipt clock');
   const paths=directories(root,store,downloads);
   const release=retry.lock(path.join(store,'.browser-receipts.lock'));
   try{
-    const recoveredTransport=recoverLooseReceipts(root,store,downloads);
+    const recoveredTransport=recoverLooseReceipts(root,store,downloads,now);
     if(!fs.existsSync(paths.pending)&&!recoveredTransport.length)return {status:'no-browser-receipts',queuedCsv:0,providerChecks:0,sourceAcquisitions:0,recoveredTransport};
     const index=fs.existsSync(paths.index)?read(paths.index):{version:1,receipts:{}},results=[];
     const evidence=path.join(store,'browser-receipts');fs.mkdirSync(evidence,{recursive:true});
@@ -73,13 +74,13 @@ function receive(root=ROOT,store=path.resolve(root,'../private-research/gemrate'
         inside(paths.pending,dir);inside(dir,file);if(fs.statSync(file).size>262144)throw Error('Collector metadata too large');
         const metaBytes=fs.readFileSync(file),meta=JSON.parse(metaBytes);if(meta.jobId!==name)throw Error('Collector job directory mismatch');
         if(meta.version===1&&meta.kind==='gemrate-source-hold-v1'){
-          validateHold(meta,root);
+          validateHold(meta,root,Date.parse(now));
           put(path.join(evidence,name+'.receipt.json'),metaBytes);
           index.receipts[name]={status:'queued',held:true,setCode:meta.setCode,checkedAt:meta.at,reason:meta.reason,csv:false,metadataSha256:hash(metaBytes)};results.push({jobId:name,...index.receipts[name]});continue;
         }
         const csvFile=path.join(dir,'export.csv');let bytes=null;
         if(meta.download){inside(dir,csvFile);if(fs.statSync(csvFile).size>5e6)throw Error('CSV exceeds approved small-export limit');bytes=fs.readFileSync(csvFile);}
-        const proof=validate(meta,bytes,root),proofBytes=Buffer.from(JSON.stringify(proof)),proofFile=path.join(evidence,name+'.page.json');
+        const proof=validate(meta,bytes,root,Date.parse(now)),proofBytes=Buffer.from(JSON.stringify(proof)),proofFile=path.join(evidence,name+'.page.json');
         put(path.join(evidence,name+'.receipt.json'),metaBytes);put(proofFile,proofBytes);
         let incoming=null;
         if(bytes){
@@ -95,9 +96,9 @@ function receive(root=ROOT,store=path.resolve(root,'../private-research/gemrate'
         index.receipts[name]=row;results.push({jobId:name,...row});
       }catch(e){results.push({jobId:name,status:'review',reason:e.message});}
     }
-    retry.atomicWrite(paths.index,index,0);const summary=dailySummary(root,index);
+    retry.atomicWrite(paths.index,index,0);const summary=dailySummary(root,index,now);
     retry.atomicWrite(path.join(store,'collector-daily-confirmation.json'),summary,0);
-    const result={at:new Date().toISOString(),status:[...results,...recoveredTransport].some(r=>r.status==='review')?'review':'received',providerChecks:results.filter(r=>r.status==='queued'&&!r.held).length,queuedCsv:results.filter(r=>r.status==='queued'&&r.csv).length,sourceAcquisitions:0,summary,recoveredTransport,results};
+    const result={at:now,status:[...results,...recoveredTransport].some(r=>r.status==='review')?'review':'received',providerChecks:results.filter(r=>r.status==='queued'&&!r.held).length,queuedCsv:results.filter(r=>r.status==='queued'&&r.csv).length,sourceAcquisitions:0,summary,recoveredTransport,results};
     retry.atomicWrite(path.join(store,'last-browser-receipts.json'),result,0);return result;
   }finally{release();}
 }

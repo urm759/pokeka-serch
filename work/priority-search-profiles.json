@@ -1,7 +1,7 @@
 {
   "version": 1,
   "providedAt": "2026-10-14",
-  "preferredEfficiencyBasis": "auto",
+  "preferredEfficiencyBasis": "store",
   "medianVariants": [
     {
       "id": "A-median",
@@ -66,16 +66,48 @@
       "providedAt": "2026-11-01",
       "basis": "auto",
       "source": "user-provided exact URL"
+    },
+    {
+      "id": "V-store-20261111",
+      "historicalProfileId": "V-auto-20261101",
+      "url": "https://urm759.github.io/pokeka-serch/?fee=6980&tx=0&tx7=0&psaTx=0&psaTx7=0&roi=20&psaMin=10000&sort=cardEfficiency-desc&guide=80&cap=5000000&lock=175&expProfit=0&expRoi=10&annual=40&maxShare=120000&batch=10&reserve=1000000&sellFee=8&extraCost=0&psaPlan=value&bb7=0&bb30=0&bb90=0&bbShops=0&locked=3500000&priceMin=0&buyLimitRatio=0&buybackDeduction=5&preset=combined&psa9RatioMin=70&psa9Aggregate=1&psa9Estimate=0&psa9Market=1&exitPolicy=both&buybackStores=all&selectedStores=&storeTravel=0&snkrFee=7&snkrShip=210&snkrOther=0&snkrTx7=0&snkrTx30=3&snkrProfit=0&snkrRoi=0&snkrAge=48&year2020=0&includeUnknownYear=0&profitBasis=store&periodReference=1&psa9RatioMax=120&marketSearch=cap&marketCapMin=0&filterStressRoi=0&filterStressProfit=0&buyBelowCap=0&purchaseMin=0&purchaseMax=30000&effMin=30&effManual=off&sellDays=7&payoutDays=3&effBuy=store&effScenario=current&effRef=1&headroomMin=-25&psa9AboveGuide=0&psa9Cost5=0&filterExpRoi=15&filterExpProfit=5000&psaMax=100000&bbRatioRef=0&calcBuy=store&medianBuyPct=off",
+      "providedAt": "2026-11-11",
+      "basis": "store",
+      "source": "利用者依頼・主計算状態A統一。買値以外の条件は維持"
+    },
+    {
+      "id": "B-store-20261111",
+      "historicalProfileId": "B-auto-20261101",
+      "url": "https://urm759.github.io/pokeka-serch/?fee=12980&tx=0&tx7=0&psaTx=0&psaTx7=0&roi=20&psaMin=0&sort=cardEfficiency-desc&guide=70&cap=5000000&lock=91&expProfit=0&expRoi=10&annual=40&maxShare=120000&batch=10&reserve=1000000&sellFee=8&extraCost=0&psaPlan=priority&bb7=0&bb30=0&bb90=0&bbShops=0&locked=3500000&buyLimitRatio=0&buybackDeduction=5&preset=combined&psa9RatioMin=70&psa9Aggregate=1&psa9Estimate=0&psa9Market=0&exitPolicy=both&buybackStores=all&selectedStores=&storeTravel=0&snkrFee=7&snkrShip=210&snkrOther=0&snkrTx7=0&snkrTx30=3&snkrProfit=0&snkrRoi=0&snkrAge=48&year2020=0&includeUnknownYear=0&profitBasis=store&periodReference=1&psa9RatioMax=120&filterExpRoi=15&marketSearch=cap&buyBelowCap=0&marketCapMin=0&filterStressRoi=0&filterStressProfit=0&storeDemand=normal-up&purchaseMin=25000&purchaseMax=99999&priceMin=26000&priceMax=99999&headroomMin=-25&effMin=30&effManual=off&sellDays=7&payoutDays=3&effBuy=store&effScenario=current&effRef=1&psa9AboveGuide=0&psa9Cost5=0&filterExpProfit=5000&psaMax=999999&calcBuy=store&medianBuyPct=off",
+      "providedAt": "2026-11-11",
+      "basis": "store",
+      "source": "利用者依頼・主計算状態A統一。買値以外の条件は維持"
+    },
+    {
+      "id": "V-median-main-20261111",
+      "historicalProfileId": "V-store-20261111",
+      "url": "https://urm759.github.io/pokeka-serch/?fee=6980&tx=0&tx7=0&psaTx=0&psaTx7=0&roi=20&psaMin=10000&sort=cardEfficiency-desc&guide=80&cap=5000000&lock=175&expProfit=0&expRoi=10&annual=40&maxShare=120000&batch=10&reserve=1000000&sellFee=8&extraCost=0&psaPlan=value&bb7=0&bb30=0&bb90=0&bbShops=0&locked=3500000&priceMin=0&buyLimitRatio=0&buybackDeduction=5&preset=combined&psa9RatioMin=70&psa9Aggregate=1&psa9Estimate=0&psa9Market=1&exitPolicy=both&buybackStores=all&selectedStores=&storeTravel=0&snkrFee=7&snkrShip=210&snkrOther=0&snkrTx7=0&snkrTx30=3&snkrProfit=0&snkrRoi=0&snkrAge=48&year2020=0&includeUnknownYear=0&profitBasis=auto&periodReference=1&psa9RatioMax=120&marketSearch=cap&marketCapMin=0&filterStressRoi=0&filterStressProfit=0&buyBelowCap=0&purchaseMin=0&purchaseMax=30000&effMin=30&effManual=off&sellDays=7&payoutDays=3&effBuy=median&effScenario=current&effRef=1&headroomMin=-25&psa9AboveGuide=0&psa9Cost5=0&filterExpRoi=15&filterExpProfit=5000&psaMax=100000&bbRatioRef=0&calcBuy=median&medianBuyPct=off",
+      "providedAt": "2026-11-11",
+      "basis": "median",
+      "source": "利用者依頼・主計算中央値統一。他の検索条件・売却前提・費用・率は維持"
+    },
+    {
+      "id": "B-median-main-20261111",
+      "historicalProfileId": "B-store-20261111",
+      "url": "https://urm759.github.io/pokeka-serch/?fee=12980&tx=0&tx7=0&psaTx=0&psaTx7=0&roi=20&psaMin=0&sort=cardEfficiency-desc&guide=70&cap=5000000&lock=91&expProfit=0&expRoi=10&annual=40&maxShare=120000&batch=10&reserve=1000000&sellFee=8&extraCost=0&psaPlan=priority&bb7=0&bb30=0&bb90=0&bbShops=0&locked=3500000&buyLimitRatio=0&buybackDeduction=5&preset=combined&psa9RatioMin=70&psa9Aggregate=1&psa9Estimate=0&psa9Market=0&exitPolicy=both&buybackStores=all&selectedStores=&storeTravel=0&snkrFee=7&snkrShip=210&snkrOther=0&snkrTx7=0&snkrTx30=3&snkrProfit=0&snkrRoi=0&snkrAge=48&year2020=0&includeUnknownYear=0&profitBasis=auto&periodReference=1&psa9RatioMax=120&filterExpRoi=15&marketSearch=cap&buyBelowCap=0&marketCapMin=0&filterStressRoi=0&filterStressProfit=0&storeDemand=normal-up&purchaseMin=25000&purchaseMax=99999&priceMin=26000&priceMax=99999&headroomMin=-25&effMin=30&effManual=off&sellDays=7&payoutDays=3&effBuy=median&effScenario=current&effRef=1&psa9AboveGuide=0&psa9Cost5=0&filterExpProfit=5000&psaMax=999999&calcBuy=median&medianBuyPct=off",
+      "providedAt": "2026-11-11",
+      "basis": "median",
+      "source": "利用者依頼・主計算中央値統一。他の検索条件・売却前提・費用・率は維持"
     }
   ],
   "focusProfileIds": [
-    "V-auto-20261101",
-    "B-auto-20261101"
+    "V-median-main-20261111",
+    "B-median-main-20261111"
   ],
   "historicalProfileIds": [
     "A"
   ],
-  "comparisonRevision": "20261101-user-exact-auto",
+  "comparisonRevision": "20261111-median-main",
   "referenceFocus": false,
   "referencePolicy": {
     "effectiveAt": "2026-10-28T20:02:07.382Z",
@@ -83,8 +115,8 @@
     "note": "旧V/Bと中央値URLは不変。重点版だけ採用可能3価格の最安と在庫待ち探索へ移行。方式差を実補完と別集計。"
   },
   "popFocusProfileIds": [
-    "V-auto-20261101",
-    "B-auto-20261101"
+    "V-median-main-20261111",
+    "B-median-main-20261111"
   ],
   "focusUrlChange": {
     "at": "2026-11-01T10:58:40.826Z",
@@ -92,5 +124,22 @@
     "kind": "user-settings-change",
     "originalUrlBytesPreserved": true,
     "oldUrlsUnchanged": true
+  },
+  "previousFocusProfileIds": [
+    "V-store-20261111",
+    "B-store-20261111"
+  ],
+  "buyBasisChange": {
+    "kind": "user-buy-basis-change-not-data-completion",
+    "at": "2026-11-11",
+    "previous": [
+      "V-store-20261111",
+      "B-store-20261111"
+    ],
+    "current": [
+      "V-median-main-20261111",
+      "B-median-main-20261111"
+    ],
+    "legacyUrlsUnchanged": true
   }
 }
