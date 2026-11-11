@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-11T04:56:41.062Z",
+  "generatedAt": "2026-11-11T06:15:55.707Z",
   "sourceLastSuccessAt": "2026-11-11T04:35:18.671Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-11-11T04:52:10.268Z",
-    "lastSuccessAt": "2026-11-11T04:52:10.268Z",
-    "runId": "42959979785",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/42959979785"
+    "lastAttemptAt": "2026-11-11T06:15:55.694Z",
+    "lastSuccessAt": "2026-11-11T06:15:55.694Z",
+    "runId": "42970867981",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/42970867981"
   },
   "issues": [
     {
@@ -98,12 +98,6 @@
       "category": "確認が必要",
       "url": "https://github.com/urm759/pokeka-serch/actions/runs/41941412953",
       "reason": "保存原票の同時更新照合が保留（3入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/hareruya2-stock-summary.json, work/source-update-runs.json, work/source-update-history.json"
-    },
-    {
-      "key": "monitor:workflow-failure",
-      "category": "取得処理の故障",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/42944815043",
-      "reason": "監視確認または監視公開が未完了。補完失敗と監視自身の停止を分離して復旧"
     }
   ],
   "reasons": [
@@ -121,8 +115,7 @@
     "保存原票の同時更新照合が保留（28入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/domestic-trade-source-audit.json, data/hareruya2-stock-summary.json, data/pokemon-cards-meta.json, data/pokemon-cards.json, data/price-catchup-status.json, data/priority-price-execution.json, data/psa10-observation-receipt.json, data/shop-buyback-summary.json, data/state-a-price-evidence.json, work/buyback-price-observations.json, work/candidate-shop-refresh.json, work/card-lifecycle.json, work/card-new-arrivals.json, work/changed-card-ids.json, work/hareruya2_catalog.json, work/hareruya2_stock_history.json, work/homura-public-che",
     "保存原票の同時更新照合が保留（17入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/pokemon-cards.json, data/pokemon-cards-meta.json, data/shop-buyback-summary.json, data/hareruya2-stock-summary.json, work/source-update-runs.json, work/source-update-history.json, work/changed-card-ids.json, work/toreca-source-inventory.json, work/market_stability_history.json, work/buyback-price-observations.json, work/shop_buyback_history.json, work/shop_buyback_catalog.json, work/shop_buyback_unmatched.json, work/hareruya2_catalog.json, work/hareruya2_stock_history.json, work/priority-price-http-cache.json, work/candidate-shop-",
     "保存原票の同時更新照合が保留（20入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/pokemon-cards.json, data/pokemon-cards-meta.json, data/shop-buyback-summary.json, data/hareruya2-stock-summary.json, work/source-update-runs.json, work/source-update-history.json, work/changed-card-ids.json, work/toreca-source-inventory.json, work/toreca_source_diff.json, work/market_stability_history.json, work/buyback-price-observations.json, work/shop_buyback_history.json, work/shop_buyback_catalog.json, work/shop_buyback_unmatched.json, work/shop_buyback_item_matches.json, work/homura-public-checkpoint.json, work/hareruya2_cat",
-    "保存原票の同時更新照合が保留（3入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/hareruya2-stock-summary.json, work/source-update-runs.json, work/source-update-history.json",
-    "監視確認または監視公開が未完了。補完失敗と監視自身の停止を分離して復旧"
+    "保存原票の同時更新照合が保留（3入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/hareruya2-stock-summary.json, work/source-update-runs.json, work/source-update-history.json"
   ],
   "detailUrl": "./data/update-health.json"
 }
