@@ -2,12 +2,15 @@ const assert=require('node:assert/strict'),fs=require('fs'),model=require('../ps
 const data=require('../data/psa-japan-services.json'),plan=data.plans.find(p=>p.id==='value'),c=require('./priority-search-profiles.json');
 assert.equal(model.problem(plan),null);assert.equal(plan.price,5980);assert.equal(plan.businessDays,120);assert.equal(plan.calendarDays,168);assert.equal(plan.declaredValueMax,80000);assert(model.submissionProblem(plan,Date.parse('2026-10-29T23:59:59+09:00')));assert.equal(model.submissionProblem(plan,Date.parse('2026-10-30T00:00:00+09:00')),null);
 const a=new URL(c.profiles.find(p=>p.id==='A').url),v=new URL(c.additionalProfiles.find(p=>p.id==='V').url),keys=['psaPlan','fee','lock','psaMax'];assert.deepEqual([...v.searchParams].filter(([k])=>!keys.includes(k)),[...a.searchParams].filter(([k])=>!keys.includes(k)));assert.equal(v.searchParams.get('fee'),'6980');assert.equal(v.searchParams.get('lock'),'175');assert.equal(v.searchParams.get('psaMax'),'80000');assert.equal(a.searchParams.get('psaPlan'),'standard');
-const prior={...c,focusProfileIds:c.previousFocusProfileIds};
+// Freeze the original reopening comparison independently of later user buy-basis changes.
+const prior={...c,focusProfileIds:['V-auto-20261101','B-auto-20261101']};
 assert.deepEqual(variants.allProfiles(prior).map(p=>p.id),['V-auto-20261101','B-auto-20261101','V-auto-20261101-median','B-auto-20261101-median']);
 for(const p of variants.allProfiles(prior))assert.equal(new URL(p.url).searchParams.get('effBuy'),p.id.endsWith('-median')?'median':'auto','old full URLs retain auto/median semantics');
-assert.deepEqual(c.popFocusProfileIds,['V-store-20261111','B-store-20261111']);
-for(const p of variants.allProfiles(c)){const actual=new URL(p.url),old=new URL(c.additionalProfiles.find(x=>x.id===p.historicalProfileId).url),buyKeys=['calcBuy','effBuy','profitBasis','medianBuyPct'];assert.equal(actual.searchParams.get('calcBuy'),'store');assert.equal(actual.searchParams.get('effBuy'),'store');assert.deepEqual([...actual.searchParams].filter(([k])=>!buyKeys.includes(k)),[...old.searchParams].filter(([k])=>!buyKeys.includes(k)),'only explicitly requested buy-basis parameters change');}
-assert.equal(variants.searchModeProfiles(c,{includeHistorical:true}).length,24);assert.equal(c.profiles.length,2);assert.equal(c.knownSavedOverlay.obs7Min,'off');
+assert.deepEqual(c.previousFocusProfileIds,['V-store-20261111','B-store-20261111']);
+assert.deepEqual(c.focusProfileIds,['V-median-main-20261111','B-median-main-20261111']);
+assert.deepEqual(c.popFocusProfileIds,c.focusProfileIds);
+for(const [ids,basis] of [[c.previousFocusProfileIds,'store'],[c.focusProfileIds,'median']])for(const p of variants.allProfiles({...c,focusProfileIds:ids})){const actual=new URL(p.url),old=new URL(c.additionalProfiles.find(x=>x.id===p.historicalProfileId).url),buyKeys=['calcBuy','effBuy','profitBasis','medianBuyPct'];assert.equal(actual.searchParams.get('calcBuy'),basis);assert.equal(actual.searchParams.get('effBuy'),basis);assert.deepEqual([...actual.searchParams].filter(([k])=>!buyKeys.includes(k)),[...old.searchParams].filter(([k])=>!buyKeys.includes(k)),'only explicitly requested buy-basis parameters change');}
+assert.equal(variants.searchModeProfiles(c,{includeHistorical:true}).length,28);assert.equal(c.profiles.length,2);assert.equal(c.knownSavedOverlay.obs7Min,'off');
 const metrics=require('../exploration-metrics');const economics={expectedSale:18000};const e=metrics.efficiency(economics,10000,6980,0,175,7,3);assert.equal(e.days,185);assert.equal(e.investment,16980);assert.equal(e.profit,1020);
 console.log('PASS new Value facts/effective boundary, old full URLs, focused and historical profiles, one grading/shipping/sale/payout period and fees');
 

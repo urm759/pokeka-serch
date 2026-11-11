@@ -1,19 +1,19 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-11T04:25:56.739Z",
-  "sourceLastSuccessAt": "2026-11-11T00:09:42.928Z",
+  "generatedAt": "2026-11-11T06:15:55.707Z",
+  "sourceLastSuccessAt": "2026-11-11T04:35:18.671Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-11-10T22:33:45.278Z",
-    "lastSuccessAt": "2026-11-10T22:33:45.278Z",
-    "runId": "42915320929",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/42915320929"
+    "lastAttemptAt": "2026-11-11T06:15:55.694Z",
+    "lastSuccessAt": "2026-11-11T06:15:55.694Z",
+    "runId": "42970867981",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/42970867981"
   },
   "issues": [
     {
       "key": "daily:source-failure",
       "category": "確認が必要",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/42851397427",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/42928983525",
       "reason": "Dailyの一部取得元が失敗・正常データは必須検証/保存/公開照合済み"
     },
     {
@@ -49,13 +49,13 @@
     {
       "key": "source:shopBuyback:manual-wait",
       "category": "確認が必要",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/42896063825",
-      "reason": "Web買取表: shop buyback refresh skipped; existing data was preserved: 一部取得失敗（正常データ保持）: torecabank: 取得件数が前回の半分未満。急減を隔離し正常データ保持"
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/42959979785",
+      "reason": "Web買取表: ブルーロケット: existing data was preserved: 取得件数が前回の半分未満。急減を隔離し正常データ保持"
     },
     {
       "key": "source:snkrRaw:stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/42851397427",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/42928983525",
       "reason": "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）"
     },
     {
@@ -72,7 +72,7 @@
     {
       "key": "priority-prices:cadence-stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/42899615301",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/42942724115",
       "reason": "重要価格更新：設定2時間に対し実績成功間隔（直近最大）16.47時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
     },
     {
@@ -107,7 +107,7 @@
     "カードラッシュ: 更新期限超過（カード別鮮度 0%）",
     "遊々亭: HTTP 403",
     "遊々亭: 更新期限超過（カード別鮮度 0%）",
-    "Web買取表: shop buyback refresh skipped; existing data was preserved: 一部取得失敗（正常データ保持）: torecabank: 取得件数が前回の半分未満。急減を隔離し正常データ保持",
+    "Web買取表: ブルーロケット: existing data was preserved: 取得件数が前回の半分未満。急減を隔離し正常データ保持",
     "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）",
     "福福トレカ（郵送窓口）: 通常公開価格表の低頻度GET。認証操作なし。郵送窓口のみ・商品更新日は不明、実確認日時とページ更新日時を分離",
     "PC側PSA: PC観測未受信 / 30時間以内の独立タスク観測なし。PC停止・観測起動失敗・未公開を区別して確認",

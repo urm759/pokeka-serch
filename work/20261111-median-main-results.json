@@ -8690,5 +8690,85 @@
     "period trade count fields not supplied",
     "Marnie original HTTP source pending",
     "PSA9 actual individual sales pending"
-  ]
+  ],
+  "gemrateAcquisition": {
+    "at": "2026-11-11T04:46:19.840Z",
+    "kind": "operator-assisted-normal-Chrome-exports-not-unattended",
+    "newCsvFiles": 3,
+    "sourceRows": 1317,
+    "reusedMappings": 341,
+    "newMappings": 0,
+    "newSourceDateObservations": 341,
+    "sourceDates": [
+      "2026-11-06",
+      "2026-11-07"
+    ],
+    "sets": [
+      "SV2A",
+      "S8B",
+      "SV4A"
+    ],
+    "referenceCards": 672,
+    "projectedComparableBefore": 109,
+    "projectedComparableAfter": 450,
+    "calculationAdopted": 0,
+    "newDomesticAnalyzable": 0,
+    "publication": "verified-Pages-by-workflow-42961314443",
+    "manualCheckedSets": 3,
+    "automaticCheckedSets": 0,
+    "automaticCheckRatePct": 0,
+    "publicationCommit": "97036b9a9d3ea83eb9fa0b5a1b8ca32310cbf3f9"
+  },
+  "finalOperationalPhase": {
+    "at": "2026-11-11T05:20:04.349Z",
+    "runId": 42959979785,
+    "kind": "cloud-workflow-dispatch-not-scheduled-proof",
+    "storeReconfirmations": {
+      "hareruya2": 274,
+      "torecacamp": 35
+    },
+    "storeChanged": {
+      "hareruya2": 84,
+      "torecacamp": 4
+    },
+    "newStoreLinks": 0,
+    "filledCards": 21,
+    "filledItems": 23,
+    "newAnalyzable": 2,
+    "lostAnalyzable": 3,
+    "structuralTotal": 2595,
+    "catalogTotal": 12994,
+    "sourcePriceMissingIds": [
+      "pk-1147",
+      "pk-18901",
+      "pk-37018"
+    ],
+    "candidateDataOnly": {
+      "at": "2026-11-11T04:54:19.733Z",
+      "before": 37,
+      "after": 34,
+      "gained": [],
+      "lost": [
+        "pk-2704",
+        "pk-4376",
+        "pk-51077"
+      ]
+    },
+    "acquisitionAndAggregationSeconds": 839,
+    "requiredSeconds": 54,
+    "savePublicationSeconds": 122,
+    "monitorAggregation": "success",
+    "monitorPublication": "success",
+    "workflowConclusion": "failure-from-post-publication-alerts",
+    "actualNewCodeScheduledCycles": null
+  },
+  "collectorFix": {
+    "version": "0.1.2",
+    "permissionsUnchanged": true,
+    "userReportedEnabled": true,
+    "userReportedHeldSets": 10,
+    "stage": "csv-receipt",
+    "status": "implemented-tested-not-runtime-verified",
+    "requires": "reload existing unpacked extension and one version-scoped ordinary CSV test"
+  }
 }

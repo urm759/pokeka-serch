@@ -154,6 +154,10 @@ async function mapLimit(items, limit, mapper) {
   return results;
 }
 function parseYuyuteiResults(html) {
+  // Product pages include previous/next links before their own price fields.
+  // They are not search tiles: never attribute the current offer to those URLs.
+  // A separate exact product-ID/condition parser is required before adoption.
+  if (/<section\b[^>]*\bid\s*=\s*["']product-detail["']/i.test(String(html || ""))) return [];
   if (String(html || "").startsWith("Title:")) {
     const source = String(html); const rows = []; const seen = new Set();
     for (const match of source.matchAll(/\]\((https:\/\/yuyu-tei\.jp\/sell\/poc\/card\/([^/]+)\/[^)]+)\)/g)) {

@@ -1,0 +1,11 @@
+const assert=require('node:assert/strict'),{parseYuyuteiResults}=require('./update_yuyutei_torecacamp');
+const prefix='<a href="https://yuyu-tei.jp/sell/poc/card/svpromo-100/10061">前の商品</a>';
+const detail='<section class="product-detail" id="product-detail"><h3>PROMO イーブイ</h3><span>062/SV-P</span><h4>12,800 円</h4><label>在庫 : 3 点</label><input value="10062" class="cart_cid"><input value="0" class="cart_kizu"></section>';
+const next='<a href="https://yuyu-tei.jp/sell/poc/card/svpromo-100/10063">次の商品</a>';
+for(const html of [prefix+detail+next,prefix+detail.replaceAll('"',"'")+next,prefix+detail.replace('<section','<SECTION')+next])assert.deepEqual(parseYuyuteiResults(html),[],'product offer cannot leak to adjacent URLs');
+const tile='<a href="https://yuyu-tei.jp/sell/poc/card/svpromo-100/10062"><img alt="062/SV-P PROMO イーブイ"></a><span>062/SV-P</span><h4>PROMO イーブイ</h4><strong>12,800 円</strong>在庫 : 3 点';
+assert.equal(parseYuyuteiResults(tile).length,1,'normal search parsing retained');
+assert.equal(parseYuyuteiResults(tile)[0].detailUrl,'https://yuyu-tei.jp/sell/poc/card/svpromo-100/10062');
+assert.equal(parseYuyuteiResults(tile)[0].price,12800);
+assert.equal(parseYuyuteiResults(tile)[0].stock,3);
+console.log('PASS product-page adjacent-URL isolation; normal search identity/price/stock parsing unchanged');

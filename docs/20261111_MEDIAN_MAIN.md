@@ -21,9 +21,9 @@
 
 ## 実データ・制約と次工程
 
-開始時からの新規取得0・新規紐付け0・新基準日0・新規分析可能0。保存済みの前回Daily成果を今回の取得へ再加算しない。既知取得元12,983枚は掲載100%、補足11枚を含む12,994枚の構造的分析可能2,596（19.98%）、必須公式POP鮮度込み0。全ポケカ網羅率ではない。95%には12,345枚・あと9,749枚。現行自動経路だけで最後まで補完可能0、保存再照合のみ126枚は根拠確認前。期間別件数未提供8,060枚等の理由別は重複あり。未提供への専用反復要求はしない。
+主計算・監視改修時点では新規取得0・新規紐付け0・新基準日0・新規分析可能0（後続のGemRate新CSV成果は末尾）。保存済みの前回Daily成果を今回の取得へ再加算しない。既知取得元12,983枚は掲載100%、補足11枚を含む12,994枚の構造的分析可能2,596（19.98%）、必須公式POP鮮度込み0。全ポケカ網羅率ではない。95%には12,345枚・あと9,749枚。現行自動経路だけで最後まで補完可能0、保存再照合のみ126枚は根拠確認前。期間別件数未提供8,060枚等の理由別は重複あり。未提供への専用反復要求はしない。
 
-GemRateは参考672枚/比較可能109枚/計算採用0を維持。11月11日12:46JSTの受領処理は成功したが、提供元確認0/10・新CSV0・基準日前進率未計測。元基準日は10月31日/11月1日のまま。止まっているのは新データ取得・確認証跡の入口で、受領後処理の再実行では更新しない。拡張導入済み/ONを未導入へ戻さず、稼働状態/hold/config読込/receipt転送をChrome拡張接続で確認する必要がある。403・提供元未更新・本人操作不足とは未確定。今回のツール構成には以前のChrome拡張操作ツールがなく、失敗したWindows画面認識へは戻していない。PC-OFFのクラウド受領/公開と、PC-ON拡張のCSV新取得を分離する。
+GemRateは参考672枚/比較可能109枚/計算採用0を維持。11月11日12:46JSTの受領処理は成功したが、提供元確認0/10・新CSV0・基準日前進率未計測。元基準日は10月31日/11月1日のまま。止まっているのは新データ取得・確認証跡の入口で、受領後処理の再実行では更新しない。拡張導入済み/ONを未導入へ戻さず、稼働状態/hold/config読込/receipt転送をChrome拡張接続で確認する必要がある。403・提供元未更新・本人操作不足とは未確定。Chrome拡張接続は利用できることを後続確認した（ブラウザID3）。当初の操作ツール不在という記載は訂正。失敗したWindows画面認識は使用していない。PC-OFFのクラウド受領/公開と、PC-ON拡張のCSV新取得を分離する。
 
 カードラッシュ/遊々亭は保存紐付けとHTTP取得停止を分離。停止原票/URLは保持し、過去403を規約禁止とは断定しない。新鮮価格が取れない間は古値を復活させず、利用可能店舗で独立根拠を補う。中央値不足の9枚は既存のreferenceMedian補完経路へ引き継ぐ。マリィ140/S-Pの元HTTP原票、期間別件数、PSA9直近実成約平均、POP正規継続取得、需給/返却時検証・91/119日比較も未完了。
 
@@ -32,3 +32,39 @@ GemRateは参考672枚/比較可能109枚/計算採用0を維持。11月11日12:
 固定予算は変更しない。PC/スマホ390px・通常/2倍の実DOMで、主買値・利益・ROI・CSV一致、候補ID一致、横はみ出しなし。追加割合変更後も小詳細を保持。ローカル同時計の初期表示はPC旧3.75秒/新3.93秒、スマホ旧3.69秒/新4.03秒、2倍約6.7秒（単発測定・ネットワーク実速度とは別）。詳細を開いた後の通信量を初期通信量へ混ぜない。原票/長期履歴の初期追加なし。
 
 最終のPR/公開・実定期運転は、その実績を確認してから追記する。手動成功を複数周期の維持成功に読み替えない。
+
+## 遊々亭の通常URL確認・誤解析隔離
+
+11月11日13:31 JST、Cookieなしの既知URL svpromo-100/10062 はHTTP200・234,094bytes。現在商品は062/SV-P、12,800円、在庫3、cart_kizu=0。既存一覧パーサーは前後商品10061/10063のリンクに現在商品の価格を付けた2行を返した。採用0・停止解除0。商品ページは一覧として解析しない共通ガードを追加し、実原票と前後リンクfixtureで検証。正常な一覧解析は維持する。次工程は商品ID/言語/加工/状態を照合する直URLパーサー、既知URL更新枠、クラウド少数通常アクセスの順。PCの200をクラウド取得再開/継続更新成功とは扱わず、HTTP403や認証保留を一括解除しない。
+
+## GemRateの新CSV受領（公開完了とは別）
+
+Chromeで通常ページの表示と現在URL取得を確認。SV2Aの11月6日、S8B/SV4Aの11月7日基準を確認し、各1回の通常CSV出力で実ファイルを受領した。SV2Aの操作ツールdownload通知は30秒でタイムアウトしたが、同時刻の実CSVが存在し、全527行・PSA10合計742,567/総926,431が画面と一致。以後は同じ通知待ちを反復せず通常出力各1回と実ファイル/全行合計で確認した。GemRate403/本人操作不足には分類しない。SV2A119枚、S8B133枚は確定対応を再利用し新基準日の観測を非公開保存。新規紐付け/国内分析可能へは加算しない。原票/圧縮バックアップ/hash/仕様保留を保持。新規取得はPCの操作支援による単発であり、無人継続取得成立とは別。自動拡張の確認証跡0/10と今回の手動確認3/10を混ぜない。
+
+3セット計1,317行の検証後、新基準日の観測341枚（既存対応再利用119+133+89、新規紐付け0）を保存。参考対象672枚不変、比較可能109→450枚の投影を検証し、6d17d0adへ公開キュー登録。キュー登録を公開完了とは数えず、実公開確認後に最終状態を追記する。国内新規分析可能0・計算採用0。
+
+## 公開画面確認・13:47 JST
+
+PR #40（76da2e69）はPages42959891091成功。Chromeで公開の正式URLに保存追加条件を一時不適用とする savedFilters=ignore を付け、バリュー21枚/プライオリティ19枚を現在時計で確認。端末保存条件は削除しない。利益/資金効率に同じ中央値、同じ期待利益を表示。PCで横はみ出しなし。公開Chromeの390px指定は実innerWidth1920のままで適用を確認できず、公開スマホ試験は未確認として残す。ローカルの独立390px試験は通過（同じ公開JS・PC/通常/2倍の値一致）。
+
+[新正式バリュー](https://urm759.github.io/pokeka-serch/?fee=6980&tx=0&tx7=0&psaTx=0&psaTx7=0&roi=20&psaMin=10000&sort=cardEfficiency-desc&guide=80&cap=5000000&lock=175&expProfit=0&expRoi=10&annual=40&maxShare=120000&batch=10&reserve=1000000&sellFee=8&extraCost=0&psaPlan=value&bb7=0&bb30=0&bb90=0&bbShops=0&locked=3500000&priceMin=0&buyLimitRatio=0&buybackDeduction=5&preset=combined&psa9RatioMin=70&psa9Aggregate=1&psa9Estimate=0&psa9Market=1&exitPolicy=both&buybackStores=all&selectedStores=&storeTravel=0&snkrFee=7&snkrShip=210&snkrOther=0&snkrTx7=0&snkrTx30=3&snkrProfit=0&snkrRoi=0&snkrAge=48&year2020=0&includeUnknownYear=0&profitBasis=auto&periodReference=1&psa9RatioMax=120&marketSearch=cap&marketCapMin=0&filterStressRoi=0&filterStressProfit=0&buyBelowCap=0&purchaseMin=0&purchaseMax=30000&effMin=30&effManual=off&sellDays=7&payoutDays=3&effBuy=median&effScenario=current&effRef=1&headroomMin=-25&psa9AboveGuide=0&psa9Cost5=0&filterExpRoi=15&filterExpProfit=5000&psaMax=100000&bbRatioRef=0&calcBuy=median&medianBuyPct=off) / [新正式プライオリティ](https://urm759.github.io/pokeka-serch/?fee=12980&tx=0&tx7=0&psaTx=0&psaTx7=0&roi=20&psaMin=0&sort=cardEfficiency-desc&guide=70&cap=5000000&lock=91&expProfit=0&expRoi=10&annual=40&maxShare=120000&batch=10&reserve=1000000&sellFee=8&extraCost=0&psaPlan=priority&bb7=0&bb30=0&bb90=0&bbShops=0&locked=3500000&buyLimitRatio=0&buybackDeduction=5&preset=combined&psa9RatioMin=70&psa9Aggregate=1&psa9Estimate=0&psa9Market=0&exitPolicy=both&buybackStores=all&selectedStores=&storeTravel=0&snkrFee=7&snkrShip=210&snkrOther=0&snkrTx7=0&snkrTx30=3&snkrProfit=0&snkrRoi=0&snkrAge=48&year2020=0&includeUnknownYear=0&profitBasis=auto&periodReference=1&psa9RatioMax=120&filterExpRoi=15&marketSearch=cap&buyBelowCap=0&marketCapMin=0&filterStressRoi=0&filterStressProfit=0&storeDemand=normal-up&purchaseMin=25000&purchaseMax=99999&priceMin=26000&priceMax=99999&headroomMin=-25&effMin=30&effManual=off&sellDays=7&payoutDays=3&effBuy=median&effScenario=current&effRef=1&psa9AboveGuide=0&psa9Cost5=0&filterExpProfit=5000&psaMax=999999&calcBuy=median&medianBuyPct=off)
+
+## 実取得・公開の最終確認と新しい受領保留
+
+Watch42959979785のクラウド単発試験は晴れる屋2 274件再確認（変更84）、Camp35件（変更4）、紐付け0。必須不足21枚23項目を補完し、構造的分析可能2枚増/3枚不足化で2,595/12,994（19.97%）。新規2枚はpk-36898/pk-1381の期間別件数。3枚の不足化は提供元の素体参考価格0（市場全体の価格なしとは扱わない）。同じ中央値コード/設定/時計04:54:19.733Zでデータ差だけの独立候補37→34。pk-2704は中央値16,300→14,800、PSA9比71.18→64.63%で下限70%外（利益は増加）。pk-51077は実在庫なし。pk-4376は実店舗26,000→24,800円で指定範囲外。いずれも条件を緩めて戻さない。
+
+取得/集計839秒、必須検証54秒、保存/公開122秒。監視の集計と公開も成功（8a727f54）し、終了時の失敗表示は新規警告通知。Bank/BlueRocketの急減と保存原票競合は保持。スタック超過は再発なし。単発なので修正版の複数定期周期・25%余裕の達成とは別。固定群24h最低は晴れる屋87.5%、相場0%、買取75.11%（4:54時点）。7日/過去最低0%を保持。
+
+GemRate42961314443は97036b9aへ参考公開し、実Pages照合も成功。参考672枚・計算0、3CSVの新基準日341枚、比較可能109→450。元基準日は11月6/7日であり、11月11日の確認日へ付け替えない。公開stepは競合再集計を含み485秒。次の高速化は、原票/金融入力が不変な表示専用競合を必要集計だけで回収する設計検証（未実装・版整合検証は維持）。最終データの初期23,485,416bytes/2倍43,058,875bytes、全件5.24秒/2倍9.37秒で固定予算内。
+
+利用者から取得用拡張の現行JSONを受領。ONだが10セット全て11月4日のcsv-receipt保留で、日次選択が全保留を除外していた。0.1.2ではCSV受領保留とアクセス/仕様保留を分離し、前者の日次確認は継続。通常出力アンカーのblob URLを捕捉し、その完全一致をクライアント/受領側で検証する。空/オリジンのみのreferrerを根拠なしに許可せず、別blob/別セット/別origin/時刻不一致は拒否。現行版の単発試験成功後だけ、保留発生日より新しい元基準日分を個別に1回復旧できる。アクセス/仕様保留は維持、技術保留の解消経緯も保持。
+
+0.1.2は同じ権限で専用フォルダへ更新済み。実Chromeの拡張再読み込みと単発受領試験、後続定期運転は未実証。単体/実CSVの検証を実運転成功と読み替えない。利用者による拡張の再読み込みが必要。
+
+## 0.1.2の実Chrome受領と隔離ワーカー依存漏れ
+
+利用者の再読み込み後、11月11日15:36:22 JST、SV1Sの11月7日基準CSV98行（PSA10 59,371／総70,942）が通常出力1回でGemRate専用pendingへ保存された。exportIntentのblob URLと実ダウンロードが完全一致し、空referrerでも根拠を持つ関連付けが成立。verifiedExportVersion=0.1.2、SV1SのCSV技術保留だけ解消。他9件の過去保留は保持。新基準日を取得日へ付け替えず、拡張単発成功と日次維持は別。
+
+受領後ワーカーは共有core.jsをsparse-checkoutしておらず、Cannot find moduleで検証前に保留した。CSV/証跡を削除せず、必要なcore.jsを取得対象へ追加。実際の隔離sparseワーカーを作成・反復する回帰で共有検証関数の存在と元作業の保護を確認し、CIへ追加。通常拡張はそのまま使えるため、利用者の再導入・再読み込みは不要。保存原票回収から履歴・公開を再開する。
+
+後続の定期Watch42970867981では公開照合・監視自体は成功し、後続補完が test_value_reopening.js の旧重点ID固定期待で取得前に停止した。11月11日の実店舗→中央値の正式移行後も、試験が11月1日の4条件を直前条件と期待していた。旧4URLは明示的な履歴比較として検証し、直前2実店舗と現行2中央値を別々に検証するよう整理。他の検索条件不変・POP重点一致・旧URL保持・28比較モードを確認し、設定ファイル変更もPR回帰のトリガーに追加。検証削除や条件緩和で通過させない。過去の失敗ログは保持する。
