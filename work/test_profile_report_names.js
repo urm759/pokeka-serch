@@ -17,7 +17,7 @@ assert.equal(variants.reportName('B-median'),'条件プライオリティ（中�
 assert.equal(profiles.length,4,'two formal real-store profiles in both existing search modes');
 for(const p of variants.allProfiles(config).filter(p=>!p.basis||p.basis==='auto'))assert.equal(new URL(p.url).searchParams.get('effBuy'),'auto');
 assert.equal(variants.reportName('V-auto-20261101'),'条件バリュー');
-assert.equal(variants.searchModeProfiles(config,{includeHistorical:true}).length,24,'all previous URLs and median variants retained alongside new formal URLs');
+assert.equal(variants.searchModeProfiles(config,{includeHistorical:true}).length,28,'all previous URLs and median variants retained alongside new formal URLs');
 console.log('PASS report-only profile names, immutable IDs, full URLs and saved conditions');
 require('./test_focus_pop_priority');
 const audit=require('./build_priority_search_targets'),migration={independentCandidates:{before:0,after:2,gained:['a','b'],lost:[],note:''}};audit.applyReferenceComparison(process.cwd(),migration,{comparisonRevision:'new'},{comparisonRevision:'old'},{referenceFocus:false});assert.equal(migration.independentCandidates.before,null);assert.deepEqual(migration.independentCandidates.gained,[]);assert.deepEqual(migration.independentCandidates.baselineIds,['a','b']);console.log('PASS new URL baseline cannot become data-completion gains');

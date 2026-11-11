@@ -1,6 +1,6 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 function reportName(id) {
-  const base=String(id).replace(/-specified$/,'').replace(/-median$/,'').replace(/-reference$/,'').replace(/-(?:auto|store)-\d{8}$/,'');
+  const base=String(id).replace(/-specified$/,'').replace(/-median$/,'').replace(/-reference$/,'').replace(/-(?:auto|store|median-main)-\d{8}$/,'');
   const name={A:'条件スタンダード',B:'条件プライオリティ',V:'条件バリュー'}[base] || id;
   return name+(String(id).includes('-reference')?'（参考買値・入荷待ち含む）':String(id).includes('-median')?'（中央値）':'');
 }

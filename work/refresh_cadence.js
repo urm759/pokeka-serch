@@ -24,7 +24,7 @@ function audit(runs, { now = Date.now(), intervalMs = 2 * HOUR, minute = 20, ver
     fromRun:publications[i].runId,toRun:r.runId,route:r.key,ms:Date.parse(r.recordedAt)-Date.parse(publications[i].recordedAt)}));
   return {version:1,checkedAt:new Date(now).toISOString(),configuredIntervalMs:intervalMs,
     verifiedPublicationCadence:{samples:publications.length,gaps:publicationGaps,
-      latestMs:publicationGaps.at(-1)?.ms??null,maximumMs:publicationGaps.length?Math.max(...publicationGaps.map(g=>g.ms)):null,
+      latestMs:publicationGaps.at(-1)?.ms??null,maximumMs:publicationGaps.length?publicationGaps.reduce((maximum,g)=>Math.max(maximum,g.ms),-Infinity):null,
       basis:'取得・検証・保存・公開照合済みの経路を含む。独立取得元の部分失敗でジョブ全体が赤い場合も、正常値の公開証拠がある実行を別集計。カード別確認間隔・継続鮮度とは別'},
     runStages:rows.map(r=>({id:r.id,url:r.html_url,status:r.status,conclusion:r.conclusion,createdAt:r.created_at,startedAt:r.run_started_at,
       queuedMs:r.run_started_at?Math.max(0,Date.parse(r.run_started_at)-Date.parse(r.created_at)):null,

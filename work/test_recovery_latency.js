@@ -18,3 +18,14 @@ assert.equal(unknown.recoveryLatency.profileBaseline.sources.hareruya2.reconfirm
 const failure=observe({}, {pipelines:{priority:proof(4,start)}},{pipelines:{priority:{...receipt(4,start),sourceIsolation:{sources:[{source:'hareruya2',status:'failed'}]}}}},start+700000,context);
 assert.equal(failure.sources.hareruya2,undefined);
 console.log('PASS verified acquisition intervals, separate 6h/48h waits, real publication steps, missing timing and fixed profile cohort');
+// Exceeds the engine's function-argument limit without truncating any history.
+const many=200000,rows=Array.from({length:many},(_,i)=>({id:'card-'+i,at:iso(start)}));
+const large={runs:[{runId:'large-first',key:'priority',recordedAt:iso(start),observations:{hareruya2:rows}},
+  {runId:'large-second',key:'daily',recordedAt:iso(later),observations:{hareruya2:rows.map((r,i)=>({...r,at:iso(later+i)}))}}]};
+const result=observe(large,{pipelines:{}},{pipelines:{}},later+many+1,{});
+assert.equal(result.sources.hareruya2.intervalSamples,many);
+assert.equal(result.sources.hareruya2.maximumIntervalMs,later-start+many-1);
+assert.equal(result.sources.hareruya2.medianIntervalMs,later-start+many/2);
+assert.equal(result.sources.hareruya2.verifiedCards,many);
+assert.equal(result.runs.length,2,'history retained; no rolling truncation workaround');
+console.log('PASS 200,000 interval samples with exact maximum/median and complete history');

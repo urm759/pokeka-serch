@@ -33,11 +33,11 @@ function observe(previous={runs:[]},cycles,receipts,now=Date.now(),context={}) {
       s.cards[row.id]={at:row.at,runId:r.runId,route:r.key};
     }
   }
-  const summary=Object.fromEntries(Object.entries(sources).map(([id,s])=>[id,{verifiedCards:Object.keys(s.cards).length,
-    intervalSamples:s.intervals.length,medianIntervalMs:s.intervals.length?[...s.intervals].sort((a,b)=>a.ms-b.ms)[Math.floor(s.intervals.length/2)].ms:null,
-    maximumIntervalMs:s.intervals.length?Math.max(...s.intervals.map(r=>r.ms)):null,
+  const summary=Object.fromEntries(Object.entries(sources).map(([id,s])=>{const interval=distribution(s.intervals.map(r=>r.ms));return [id,{verifiedCards:Object.keys(s.cards).length,
+    intervalSamples:interval.samples,medianIntervalMs:interval.medianMs,
+    maximumIntervalMs:interval.maxMs,
     fresh6h:Object.values(s.cards).filter(r=>now-Date.parse(r.at)<=6*3600000).length,
-    byRoute:Object.fromEntries(['priority','catchup','daily'].map(k=>[k,Object.values(s.cards).filter(r=>r.route===k).length]))}]));
+    byRoute:Object.fromEntries(['priority','catchup','daily'].map(k=>[k,Object.values(s.cards).filter(r=>r.route===k).length]))}];}));
   const profileCohort=previous.profileCohort||{at:new Date(now).toISOString(),ids:[...new Set(context.profileIds||[])].sort()};
   const groups={fixed192:new Set(context.fixedIds||[]),profileBaseline:new Set(profileCohort.ids)};
   const recoveryLatency=Object.fromEntries(Object.entries(groups).map(([name,ids])=>[name,{cohort:ids.size,
