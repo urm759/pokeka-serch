@@ -4304,7 +4304,7 @@ function mainSaleReference(card) {
 }
 function saleReferenceShell(card) {
   const main=mainSaleReference(card);
-  return '<div class="sale-reference-summary"><small>主計算PSA10：'+escapeHtml(main.label||'出口未取得')+'／売価 '+comparisonYen(main.gross)+' → 手取り '+comparisonYen(main.net)+(main.reason?'／'+escapeHtml(main.reason):'')+'</small><details data-sale-reference="'+escapeHtml(card.id)+'"><summary>売価別の参考比較・現在／75日／200日（評価には不使用）</summary><div>開くと中央値・仕入れ目安の2買値で比較</div></details></div>';
+  return '<div class="sale-reference-summary"><small>主計算PSA10：'+escapeHtml(main.label||'出口未取得')+'／計算上の採用売価 '+saleReferenceYen(main.gross)+' → 手取り '+saleReferenceYen(main.net)+(main.reason?'／'+escapeHtml(main.reason):'')+'</small><details data-sale-reference="'+escapeHtml(card.id)+'"><summary>売価別の参考比較・現在／75日／200日（評価には不使用）</summary><div>開くと中央値・仕入れ目安の2買値で比較</div></details></div>';
 }
 function marketplaceSaleComparisons(card,now=Date.now()) {
   const source=state.updateStatus?.sources?.toreca;
@@ -4331,12 +4331,12 @@ function mainSaleProvenance(card) {
   const shops=main.observation?.stores?.map(id=>state.buybackShops?.[id]?.name||id)
     ||(card.buyLimits?.clean?.buybackExit?.trustedRows||[]).map(r=>r.shopName||r.shopId);
   return '主計算の出口：'+main.exitLabel+'／'+main.scenario+'。'+(store?
-    (main.observation?'店舗別観測平均の中央値':'各店の現在・7日・30日の有効価格の保守値を店舗間で中央値化')+'（'+shops.join('／')+'）。フリマ相場や最高買取価格とは別。':
+    (main.observation?'店舗別観測平均の中央値':'各店の現在・7日・30日の有効価格の保守値を店舗間で中央値化')+'（'+shops.join('／')+'）。店舗の実提示額とは別の保守計算値。実提示額は買取店舗の詳細を参照。フリマ相場や最高買取価格とは別。':
     '国内PSA10集計に販売手数料・設定済み諸費用を適用。');
 }
 function saleReferenceMarkup(card) {
   const c=marketplaceSaleComparisons(card),pct=v=>Number.isFinite(v)?v.toFixed(2)+'%':'未取得';
-  return '<small>'+escapeHtml(mainSaleProvenance(card))+'</small><small>表示専用のフリマ売却仮定。主計算の店舗買取・店舗買取平均とは別。買値だけ2通り、10率 '+pct(Number.isFinite(c.rate)?c.rate*100:null)+'（'+escapeHtml(c.rateSource||'未取得')+'）・鑑定費 '+comparisonYen(c.fee)+'・販売手数料 '+pct(c.feeRate)+'・設定済み諸費用 '+comparisonYen(c.extra)+'・拘束 '+c.days+'暦日を共通使用。諸費用は手取りから1回控除し、投下費用の分母にも含めます。未入力のリペア等は含みません。</small><small>非10は現在PSA9 '+comparisonYen(c.lowerGrade)+' → フリマ手取り '+comparisonYen(c.lowerNet)+'（'+escapeHtml(c.psa9Type||'区分未確認')+'／確認 '+escapeHtml(formatJstTimestamp(c.psa9At))+'）で仮置き。PSA8以下・鑑定失敗は未評価。</small><div class="sale-reference-rows">'+c.rows.map(r=>'<div><b>'+escapeHtml(r.label)+' × '+escapeHtml(r.buy)+'</b><small>買値 '+comparisonYen(r.purchasePrice)+'／PSA10売価 '+comparisonYen(r.gross)+' → 手取り '+comparisonYen(r.psa10Net)+'</small><span>'+referenceEconomicsText(r)+'</span><small>'+(r.periodDays?(r.count??0)+'／'+r.periodDays+'観測日'+(r.reference?'・部分期間の参考平均':'・期間充足')+'／最終 '+escapeHtml(r.latest||'未取得'):'掲載値確認 '+escapeHtml(formatJstTimestamp(r.latest)))+'。欠測補完なし・返却時売価の保証なし。</small>'+(r.warnings?.length?'<small>'+escapeHtml(r.warnings.join('／'))+'</small>':'')+'</div>').join('')+'</div><small>仕入れ目安・中央値は仮定の買値。評価・検索・並び順・候補・仕入れ上限・GOへ不使用。</small>';
+  return '<small>'+escapeHtml(mainSaleProvenance(card))+'</small><small>表示専用のフリマ売却仮定。主計算の店舗買取・店舗買取平均とは別。買値だけ2通り、10率 '+pct(Number.isFinite(c.rate)?c.rate*100:null)+'（'+escapeHtml(c.rateSource||'未取得')+'）・鑑定費 '+saleReferenceYen(c.fee)+'・販売手数料 '+pct(c.feeRate)+'・設定済み諸費用 '+saleReferenceYen(c.extra)+'・拘束 '+c.days+'暦日を共通使用。諸費用は手取りから1回控除し、投下費用の分母にも含めます。未入力のリペア等は含みません。</small><small>非10は現在PSA9 '+saleReferenceYen(c.lowerGrade)+' → フリマ手取り '+saleReferenceYen(c.lowerNet)+'（'+escapeHtml(c.psa9Type||'区分未確認')+'／確認 '+escapeHtml(formatJstTimestamp(c.psa9At))+'）で仮置き。PSA8以下・鑑定失敗は未評価。</small><div class="sale-reference-rows">'+c.rows.map(r=>'<div><b>'+escapeHtml(r.label)+' × '+escapeHtml(r.buy)+'</b><small>買値 '+saleReferenceYen(r.purchasePrice)+'／PSA10売価 '+saleReferenceYen(r.gross)+' → 手取り '+saleReferenceYen(r.psa10Net)+'</small><span>'+referenceEconomicsText(r)+'</span><small>'+(r.periodDays?(r.count??0)+'／'+r.periodDays+'観測日'+(r.reference?'・部分期間の参考平均':'・期間充足')+'／最終 '+escapeHtml(r.latest||'未取得'):'掲載値確認 '+escapeHtml(formatJstTimestamp(r.latest)))+'。欠測補完なし・返却時売価の保証なし。</small>'+(r.warnings?.length?'<small>'+escapeHtml(r.warnings.join('／'))+'</small>':'')+'</div>').join('')+'</div><small>仕入れ目安・中央値は仮定の買値。評価・検索・並び順・候補・仕入れ上限・GOへ不使用。</small>';
 }
 function currentGuideBreakEven(card) {
   const g=currentProfitGuide(card);
@@ -4869,6 +4869,7 @@ function medianPurchaseComparisonHtml(card) {
   return '<div class="median-buy-comparison"><strong>追加試算：中央値の'+state.medianBuyPct+'%で購入</strong><span>仮定買値 '+(Number.isFinite(r.purchasePrice)?'¥'+fmt.format(r.purchasePrice):'算出不可')+'／期待利益 '+signedExpectedMoney(r.profit).text+'／利益率 '+(Number.isFinite(r.roi)?r.roi.toFixed(2)+'%':'算出不可')+'／年換算 '+(Number.isFinite(r.annual)?r.annual.toFixed(2)+'%':'算出不可')+'</span><small>'+escapeHtml(r.exitLabel+'・'+r.scenario)+'。実店舗でこの価格を買える保証なし・検索／GOには不使用。'+escapeHtml(r.reason||'')+'</small></div>';
 }
 function comparisonYen(value) {return Number.isFinite(value)?'¥'+fmt.format(value):'算出不可';}
+function saleReferenceYen(value) {return Number.isFinite(value)?'¥'+fmt.format(Math.round(value)):'算出不可';}
 function storeOffersCoverage(card) {
   const rows=card.storePriceAudit||[],linked=rows.filter(r=>r.url);
   const checked=linked.filter(r=>r.fresh&&r.inventoryKnown&&Number(r.value)>0&&r.valid!==false&&r.conditionAccepted!==false);
