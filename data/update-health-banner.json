@@ -1,20 +1,26 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-12T22:49:52.811Z",
+  "generatedAt": "2026-11-12T22:55:18.920Z",
   "sourceLastSuccessAt": "2026-11-12T21:49:02.597Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-11-12T22:07:10.171Z",
-    "lastSuccessAt": "2026-11-12T22:07:10.171Z",
-    "runId": "43313507420",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/43313507420"
+    "lastAttemptAt": "2026-11-12T22:55:18.910Z",
+    "lastSuccessAt": "2026-11-12T22:55:18.910Z",
+    "runId": "43323858229",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/43323858229"
   },
   "issues": [
     {
       "key": "safe:yuyutei:manual-action-required:GitHub ActionsからHTTP #。正規アクセス確認待ち",
       "category": "アクセス・手動対応待ち",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/43118483651",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/43320786778",
       "reason": "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち"
+    },
+    {
+      "key": "safe:priceEvidence:stalled:#回連続でチェックポイント進捗なし",
+      "category": "鮮度未達・進捗停滞",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/43320786778",
+      "reason": "状態A価格確認: 2回連続でチェックポイント進捗なし"
     },
     {
       "key": "source:cardrush:manual-wait",
@@ -97,6 +103,7 @@
   ],
   "reasons": [
     "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち",
+    "状態A価格確認: 2回連続でチェックポイント進捗なし",
     "カードラッシュ: pk-73737: HTTP 403",
     "カードラッシュ: 更新期限超過（カード別鮮度 0%）",
     "遊々亭: HTTP 403",
