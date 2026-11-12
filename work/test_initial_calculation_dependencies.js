@@ -19,7 +19,7 @@ function context(overrides={}){let fetched=0;const w={PurchaseDecisionModel:requ
  for(const file of ['decision-model.js','exploration-metrics.js','limit-display-model.js','current-market-model.js','purchase-ratio-model.js','search-controls.js','app.js','psa10-listing-counts.js']){
   const tag=linked.find(m=>m[1]===file);assert(tag,file);assert(!/\b(?:async|defer)\b/.test(tag[3]));
   const integrity=tag[3].match(/integrity="([^"]+)"/)?.[1];assert.equal(integrity,'sha384-'+crypto.createHash('sha384').update(fs.readFileSync(path.join(__dirname,'..',file))).digest('base64'),file+' exact asset version');
-  assert.equal(tag[2],['app.js','exploration-metrics.js','decision-model.js'].includes(file)?'20261112-median-urls-stores':['search-controls.js','psa10-listing-counts.js'].includes(file)?'20261111-median-detail-long-windows':'20261101-guide80-stock');
+  assert.equal(tag[2],['app.js','exploration-metrics.js'].includes(file)?'20261112-guide-sale-reference':file==='decision-model.js'?'20261112-median-urls-stores':['search-controls.js','psa10-listing-counts.js'].includes(file)?'20261111-median-detail-long-windows':'20261101-guide80-stock');
   assert(attributes.split(/\r?\n/).includes(file+' text eol=lf'),file+' must keep integrity bytes on Windows checkouts');
  }
  assert(names.indexOf('psa10-listing-counts.js')<names.indexOf('exploration-metrics.js'),'shared listing calculations load before the optional search facade');

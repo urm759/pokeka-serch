@@ -169,6 +169,13 @@
     const range=partial&&finite(status[7])&&status[7]>0&&finite(status[8])&&status[8]>=status[7]?{min:status[7],max:status[8]}:{};
     const numerical=partial&&status[0]>=2&&finite(status[5])&&status[5]>=0&&finite(status[6])&&status[6]<=0&&status[6]>=-100&&range.min>0?{cv:status[5],drawdown:status[6],...range}:range;
     const historical=partial&&Date.parse(currentDay)-Date.parse(status[3])>2*86400000;
+    // A partial observed interval can have a descriptive label without passing
+    // the requested 75/200-day coverage gate. Never promote it to full-period evidence.
+    const referenceEligible=partial&&!historical&&status[0]>=15&&status[1]>=14&&status[0]/status[1]>=.5&&Number.isInteger(status[2])&&status[2]>=0&&status[2]<=7
+      &&Number.isFinite(Date.parse(status[3]))&&Number.isFinite(Date.parse(status[4]))&&Math.round((Date.parse(status[3])-Date.parse(status[4]))/86400000)+1===status[1]
+      &&finite(numerical.cv)&&finite(numerical.drawdown)&&!card.identityReviewRequired&&!card.psa10Audit?.specificationMismatch;
+    const classify=(cv,dd)=>cv>=20||dd<=-30?'大きい':cv>=8||dd<=-15?'中程度':'小さい';
+    const referenceAssessment={referenceEligible,referenceLabel:referenceEligible?classify(numerical.cv,numerical.drawdown):null};
     const evidence=explicit?window?.cards?.[card.id]:requested===7?summary?.variation?.short?.cards?.[card.id]:summary?.variation?.cards?.[card.id];
     const means=observationPeriods.map(d=>observation(summary,card.id,card.psa10,d,now)).filter(r=>r.mean>0&&!r.stale);
     const direction=means.find(r=>r.days===(explicit?requested:30))||means[0],delta=direction?.delta;
@@ -177,13 +184,13 @@
       const labels={history:'実測履歴なし',evidence:'確認済み実測なし・旧記録の根拠不足',days:'確認済み観測日数不足',span:'実観測期間不足',gap:'連続欠測7日超',stale:'最終観測が古い',dispersion:'ばらつき・最大下落の計算材料不足'};
       let reasons=explicit?(window?.unavailable?.[card.id]||[status?'days':'evidence']):summary?.variation?.unavailable?.[card.id]||summary?.variation?.defaultUnavailable;
       if(historical)reasons=[...new Set([...(reasons||[]),'stale'])];
-      return {...(explicit?base:{}),...numerical,assessmentEligible:false,measurementState:historical?'historical':partial?'partial':'missing',label:'判断材料不足',trend,reason:reasons?.length?reasons.map(r=>labels[r]||r).join('／'):'実測のばらつき・観測充足不足。重複する4期間を独立根拠にしない'};
+      return {...(explicit?base:{}),...numerical,...referenceAssessment,assessmentEligible:false,measurementState:historical?'historical':partial?'partial':'missing',label:'判断材料不足',trend,reason:reasons?.length?reasons.map(r=>labels[r]||r).join('／'):'実測のばらつき・観測充足不足。重複する4期間を独立根拠にしない'};
     }
     const [days,cv,drawdown,count,span,gap,latest]=evidence;
     const age=Math.floor((now+9*3600000)/86400000)-Date.parse(latest)/86400000;
     if(!(age>=0&&age<=2&&count>=(days===7?5:15)&&count/days>=.5&&span>=(days===7?5:14)&&gap<=(days===7?2:7)))return {...(explicit?base:{}),...numerical,assessmentEligible:false,measurementState:partial?'historical':'missing',label:'判断材料不足',trend,reason:'観測不足・古値・日時不正'};
     if(![cv,drawdown].every(finite))return {...(explicit?base:{}),...numerical,assessmentEligible:false,measurementState:partial?'historical':'missing',label:'判断材料不足',trend,reason:'ばらつき・最大下落の根拠不足'};
-    const label=cv>=20||drawdown<=-30?'大きい':cv>=8||drawdown<=-15?'中程度':'小さい';
+    const label=classify(cv,drawdown);
     return {label,trend,assessmentEligible:true,measurementState:'sufficient',days,cv,drawdown,count,span,gap,latest,first:evidence[9]??null,min:evidence[7]??null,max:evidence[8]??null,reference:count<days,excluded:summary?.variation?.excluded?.[card.id]||0,reason:'確認済み実測のみ。記述的な参考区分：変動係数20%/最大下落30%以上は大、8%/15%以上は中。予測・GO条件ではない'};
   }
   function variationTone(label) { return {'大きい':'variation-large','中程度':'variation-medium','小さい':'variation-small'}[label]||'variation-unknown'; }

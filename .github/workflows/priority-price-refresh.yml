@@ -194,5 +194,17 @@ jobs:
             work/source-update-runs.json
             work/source-update-history.json
             work/publish-recovery.json
+            work/.private/buyback-failed-responses/
+          include-hidden-files: true
           retention-days: 14
           if-no-files-found: error
+
+      - name: Preserve isolated count-drop raw evidence independently
+        if: failure() && steps.publication.outcome != 'success'
+        uses: actions/upload-artifact@v7
+        with:
+          name: priority-count-drop-raw-${{ github.run_id }}-${{ github.run_attempt }}
+          path: work/.private/buyback-failed-responses/
+          include-hidden-files: true
+          retention-days: 14
+          if-no-files-found: warn

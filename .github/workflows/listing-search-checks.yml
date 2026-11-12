@@ -9,6 +9,9 @@ on:
       - 'work/test_unified_median_buy.js'
       - 'work/test_buy_basis_url_isolation.js'
       - 'work/test_main_median_legacy_urls.js'
+      - 'work/test_sale_reference_comparisons.js'
+      - 'work/update_shop_buybacks.js'
+      - 'work/test_buyback_failed_response_evidence.js'
       - 'work/test_median_efficiency.js'
       - 'work/test_buyback_support.js'
       - 'work/test_value_reopening.js'
@@ -70,6 +73,10 @@ jobs:
           node work/test_unified_median_buy.js
           node work/test_buy_basis_url_isolation.js
           node work/test_main_median_legacy_urls.js
+          node work/test_sale_reference_comparisons.js
+          node work/test_buyback_failed_response_evidence.js
+          node work/test_partial_buyback_refresh.js
+          node work/test_homura_public_feed.js
           node work/test_price_comparison_display.js
           node work/test_median_efficiency.js
           node work/test_value_reopening.js
@@ -79,7 +86,6 @@ jobs:
           node work/test_profile_report_names.js
           node work/test_recovery_latency.js
           node work/test_previous_qualified_reference.js
-          node work/test_partial_buyback_refresh.js
           node work/test_public_mail_buybacks.js
           node work/test_monitor_isolation.js
           node work/test_post_publication_recovery.js
