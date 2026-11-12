@@ -10,6 +10,11 @@ on:
       - 'work/test_buy_basis_url_isolation.js'
       - 'work/test_main_median_legacy_urls.js'
       - 'work/test_sale_reference_comparisons.js'
+      - 'work/test_pc_freshness_bridge.js'
+      - 'work/run_gemrate_worker.js'
+      - 'work/run_pc_freshness_bridge.js'
+      - 'work/pc_yuyutei_maintenance.js'
+      - 'work/pc_priority_watchdog.js'
       - 'work/update_shop_buybacks.js'
       - 'work/test_buyback_failed_response_evidence.js'
       - 'work/test_median_efficiency.js'
@@ -74,6 +79,10 @@ jobs:
           node work/test_buy_basis_url_isolation.js
           node work/test_main_median_legacy_urls.js
           node work/test_sale_reference_comparisons.js
+          node work/test_pc_freshness_bridge.js
+          node work/test_gemrate_worker.js
+          node work/test_saved_yuyutei_products.js
+          node work/test_cadence_payload.js
           node work/test_buyback_failed_response_evidence.js
           node work/test_partial_buyback_refresh.js
           node work/test_homura_public_feed.js
