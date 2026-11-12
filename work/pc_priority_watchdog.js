@@ -40,7 +40,9 @@ async function run({root,store,now=Date.now(),request}={}){
    // Persist the intent BEFORE the POST: an uncertain response must not cause
    // repeated dispatches. This is not proof of acquisition or publication.
    state.lastDispatchAt=result.at;result.status='dispatch-intent';save();
-   await request('POST','/actions/workflows/priority-price-refresh.yml/dispatches',{ref:'main'});
+   // Watch restores unpublished authenticated checkpoints BEFORE acquisition.
+   await request('POST','/actions/workflows/watch-data-health.yml/dispatches',{ref:'main'});
+   result.dispatchedWorkflow='watch-data-health.yml';
    result.status='dispatch-accepted-awaiting-execution';
   }else result.status='not-dispatched';
  }catch(error){

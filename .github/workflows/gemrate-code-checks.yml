@@ -30,6 +30,12 @@ jobs:
           node work/test_gemrate_reference_refresh.js
           node work/test_gemrate_multiset.js
           node work/test_gemrate_s4a_scope.js
+          node work/test_gemrate_sm11b_scope.js
+          node work/test_pc_freshness_bridge.js
+          node work/test_failed_price_recovery.js
+          node work/test_generated_merge_large_json.js
+          node work/test_buyback_adapter_deadline.js
+          node work/test_homura_public_feed.js
           node work/test_gemrate_pop_history.js
           node work/test_gemrate_worker.js
           node work/test_gemrate_reference_checkpoint.js

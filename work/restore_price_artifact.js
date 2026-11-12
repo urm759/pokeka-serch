@@ -9,6 +9,7 @@ const INPUTS=['data/pokemon-cards.json','data/pokemon-cards-meta.json','data/sho
   'work/buyback-price-observations.json','work/shop_buyback_history.json','work/shop_buyback_catalog.json',
   'work/shop_buyback_unmatched.json','work/shop_buyback_item_matches.json','work/shop_buyback_quarantine.json',
   'work/homura-public-checkpoint.json','work/hareruya2_catalog.json','work/cardrush_catalog.json',
+  'data/torecacamp-stock-summary.json','work/torecacamp_catalog.json','work/torecacamp_stock_history.json','work/torecacamp_progress.json',
   'work/hareruya2_stock_history.json','work/cardrush_stock_history.json','work/priority-price-checkpoint.json',
   'work/priority-price-http-cache.json','work/candidate-shop-refresh.json','work/price-catchup-history.json',
   'work/card-new-arrivals.json','work/card-lifecycle.json','work/priority-freshness-history.json'];
@@ -37,12 +38,17 @@ function zipEntries(bytes){
 function reconstructionManifest(entries,runId){
   const rows=[...entries.keys()].filter(f=>f.endsWith('/recovery-manifest.json')).map(file=>({file,manifest:JSON.parse(entries.get(file)())}));
   if(!rows.length)throw Error('Expected one reconstruction manifest');
-  if(rows.some(r=>String(r.manifest.workflowRunId)!==String(runId)||r.manifest.invalidJson?.length))throw Error('Recovery run/JSON proof mismatch');
+  const generated=require('./resolve_generated_merge').DERIVED;
+  if(rows.some(r=>String(r.manifest.workflowRunId)!==String(runId)||(r.manifest.invalidJson||[]).some(f=>!generated.has(f)&&!f.startsWith('data/ui/'))))throw Error('Recovery run/JSON proof mismatch');
+  // Keep warnings and all original bytes. Only validated authoritative inputs
+  // are imported; conflicted derived JSON is rebuilt, never parsed as a quote.
+  for(const r of rows)r.ignoredDerivedInvalidJson=r.manifest.invalidJson||[];
   if(rows.length===1)return rows[0];
   // Daily deliberately captures once before validation and again on failure.
   // Select the complete later snapshot, never mix entries from the two captures.
-  if(rows.length!==2||!rows.some(r=>r.manifest.source==='daily-prevalidation')||!rows.some(r=>r.manifest.source==='daily'))throw Error('Ambiguous reconstruction manifests');
-  const first=rows.find(r=>r.manifest.source==='daily-prevalidation'),last=rows.find(r=>r.manifest.source==='daily');
+  const kind=rows.some(r=>r.manifest.source==='daily-prevalidation')?['daily-prevalidation','daily']:['monitor-prevalidation','health'];
+  if(rows.length!==2||!rows.some(r=>r.manifest.source===kind[0])||!rows.some(r=>r.manifest.source===kind[1]))throw Error('Ambiguous reconstruction manifests');
+  const first=rows.find(r=>r.manifest.source===kind[0]),last=rows.find(r=>r.manifest.source===kind[1]);
   if(!Number.isFinite(Date.parse(first.manifest.savedAt))||!(Date.parse(last.manifest.savedAt)>Date.parse(first.manifest.savedAt))
     ||first.manifest.files.filter(r=>INPUTS.includes(r.file)).some(r=>!last.manifest.files.some(s=>s.file===r.file)))throw Error('Incomplete later Daily reconstruction manifest');
   return last;
@@ -52,7 +58,7 @@ function restore(file,runId,base,root=ROOT){
   if(cp.spawnSync('git',['cat-file','-e',base+'^{commit}'],{cwd:root,encoding:'utf8'}).status!==0)throw Error('Recovery base commit unavailable; fetch the trusted run base before comparison');
   const archive=fs.readFileSync(file),entries=zipEntries(archive);
   const selected=reconstructionManifest(entries,runId),manifest=selected.manifest,prefix=selected.file.slice(0,-'recovery-manifest.json'.length);
-  if(String(manifest.workflowRunId)!==String(runId)||manifest.invalidJson?.length)throw Error('Recovery run/JSON proof mismatch');
+  if(String(manifest.workflowRunId)!==String(runId))throw Error('Recovery run/JSON proof mismatch');
   const plan=[],conflicts=[],seen=new Set();
   for(const row of manifest.files){
     if(!INPUTS.includes(row.file))continue;
@@ -89,7 +95,7 @@ function restore(file,runId,base,root=ROOT){
   for(const row of plan){const b=path.join(backup,row.file);fs.mkdirSync(path.dirname(b),{recursive:true});if(row.current)fs.writeFileSync(b,row.current);}
   for(const row of plan)require('./acquisition_retry').atomicWrite(path.join(root,row.file),row.data,0);
   const result={runId,base,at:new Date().toISOString(),zipSha256:sha(archive),verifiedInputs:seen.size,restored:plan.map(r=>r.file),backup:path.relative(root,backup),
-    stage:'acquisition-inputs-restored-required-rebuild-and-validation-pending',sourceRequests:0,llmCalls:0,codexCalls:0};
+    stage:'acquisition-inputs-restored-required-rebuild-and-validation-pending',derivedWarningsRetained:selected.ignoredDerivedInvalidJson,sourceRequests:0,llmCalls:0,codexCalls:0};
   require('./acquisition_retry').atomicWrite(receipt,result,0);
   return result;
 }

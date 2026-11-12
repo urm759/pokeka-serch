@@ -8,7 +8,7 @@ assert(!plan([priority],{held:true},now).due);assert(!plan([],{},now).due);
 assert(!plan([{...priority,created_at:new Date(now-2*h).toISOString()}],{},now).due);
 const dir=fs.mkdtempSync(path.join(os.tmpdir(),'pc-freshness-'));
 (async()=>{try{
- let posts=0;const request=async(method,endpoint)=>{if(method==='GET')return {workflow_runs:[priority]};posts++;assert(endpoint.endsWith('/priority-price-refresh.yml/dispatches'));return null;};
+ let posts=0;const request=async(method,endpoint)=>{if(method==='GET')return {workflow_runs:[priority]};posts++;assert(endpoint.endsWith('/watch-data-health.yml/dispatches'));return null;};
  const first=await run({root:dir,store:dir,now,request});assert.equal(first.status,'dispatch-accepted-awaiting-execution');assert.equal(first.sourceAcquisitions,0);
  await run({root:dir,store:dir,now:now+1000,request});assert.equal(posts,1,'pending intent prevents duplicate dispatch even before run appears');
  const state=path.join(dir,'pc-priority-watchdog.json');fs.unlinkSync(state);

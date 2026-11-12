@@ -32,10 +32,12 @@ function capture({cwd = path.join(__dirname, '..'), source = 'unknown'} = {}) {
     }
   }
   // Raw recovery deliberately does not depend on JSON parsing, summaries or Git.
-  if(source==='daily-prevalidation') {
+  if(['daily-prevalidation','monitor-prevalidation'].includes(source)) {
     // Retain reconstruction inputs, not a second copy of every generated UI shard.
     const inputs=['data/pokemon-cards.json','data/pokemon-cards-meta.json','data/shop-buyback-summary.json',
       'data/hareruya2-stock-summary.json','data/cardrush-stock-summary.json',
+      'data/torecacamp-stock-summary.json','work/torecacamp_catalog.json','work/torecacamp_stock_history.json','work/torecacamp_progress.json',
+      'data/priority-price-execution.json','data/price-catchup-status.json','work/priority-freshness-history.json',
       'work/source-update-runs.json','work/source-update-history.json','work/changed-card-ids.json',
       'work/toreca-source-inventory.json','work/toreca_source_diff.json',
       'work/mintore-listing-last-receipt.json',

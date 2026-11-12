@@ -26,7 +26,13 @@ async function run(root=path.resolve(__dirname,'..'),store=process.env.GEMRATE_P
     const commits=git(worker,['diff','--name-only',owner.base,head]).split('\n').filter(Boolean);
     if(commits.some(f=>!allowed(f)))throw Error('Pending checkpoint changes code; review required');
     recovering=true;
-   }else git(worker,['checkout','--detach','origin/main']);
+   }else {
+    // worktree add inherits the caller's sparse patterns. This lane finalizes
+    // domestic data and therefore needs the complete trusted checkout; the
+    // GemRate receiver keeps its own sparse worktree unchanged.
+    git(worker,['sparse-checkout','disable']);
+    git(worker,['checkout','--detach','origin/main']);
+   }
    if(!recovering)retry.atomicWrite(ownership,{at,base:git(worker,['rev-parse','HEAD'])});
   });
   const context={root:worker,store};
@@ -38,7 +44,16 @@ async function run(root=path.resolve(__dirname,'..'),store=process.env.GEMRATE_P
    fs.appendFileSync(path.join(store,'pc-domestic-pipeline.log'),String(r.stdout||'')+String(r.stderr||''));
    if(r.status!==0||r.error)throw Error(script+' failed; acquired raw and checkpoint retained');
   };
-  await phase('aggregation',()=>child('work/run_priority_price_refresh.js',['--finalize-only']));
+  // Retail-only input changes do not require repeating the cloud-wide
+  // pre-audit, historical comparison and then the same final purchase audit.
+  // Finalization still rebuilds the formal profiles/targets from finalized data.
+  await phase('price-identity-audit',()=>child('work/audit_state_a_prices.js'));
+  // Retail-only changes do not redefine the required domestic/POP fields.
+  // The finalizer still checks completion_price_consistency and performs a
+  // complete rebuild whenever finalized price evidence makes it necessary.
+  result.completionValidation='finalizer price/completion consistency guard; conditional full rebuild';
+  await phase('source-observability',()=>child('work/audit_acquisition_progress.js'));
+  await phase('aggregation',()=>child('work/finalize_update_status.js'));
   await phase('required-validation',()=>child('work/update_validation.js',['--required']));
   await phase('save-and-publication',()=>{
    const changed=git(worker,['diff','--name-only']).split('\n').filter(Boolean);

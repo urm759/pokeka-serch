@@ -12,6 +12,11 @@ const RECONCILABLE=new Map([
 ]);
 DERIVED.add('data/priority-price-monitor.json');
 DERIVED.add('data/operational-freshness-audit.json');
+// Pure projection of the completion queue and saved linkage evidence. It is
+// rebuilt by finalize_update_status; never resolve a queue/raw-price conflict here.
+DERIVED.add('data/one-item-completion-audit.json');
+DERIVED.add('data/priority-search-profile-audit.json');
+DERIVED.add('work/pop-focus-targets.json');
 function mergeTimedRows(a,b,key,time){
   const rows=new Map();for(const row of [...a,...b]){const k=key(row),old=rows.get(k);if(!old||Date.parse(time(row))>=Date.parse(time(old)))rows.set(k,row);}
   return [...rows.values()].sort((x,y)=>Date.parse(time(x))-Date.parse(time(y))).slice(-400);
