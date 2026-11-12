@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-12T08:00:38.343Z",
+  "generatedAt": "2026-11-12T08:11:49.021Z",
   "sourceLastSuccessAt": "2026-11-12T07:48:13.363Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-11-12T07:37:15.051Z",
-    "lastSuccessAt": "2026-11-12T07:37:15.051Z",
-    "runId": "43173863009",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/43173863009"
+    "lastAttemptAt": "2026-11-12T08:11:49.005Z",
+    "lastSuccessAt": "2026-11-12T08:11:49.005Z",
+    "runId": "43180347214",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/43180347214"
   },
   "issues": [
     {
@@ -47,18 +47,6 @@
       "reason": "遊々亭: 更新期限超過（カード別鮮度 0.03%）"
     },
     {
-      "key": "source:shopBuyback:manual-wait",
-      "category": "確認が必要",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/43135652269",
-      "reason": "Web買取表: shop buyback refresh skipped; existing data was preserved: 一部取得失敗（正常データ保持）: torecabank: 取得件数が前回の半分未満。急減を隔離し正常データ保持; bluerocket: 取得件数が前回の半分未満。急減を隔離し正常データ保持; kaitori-homura-mail: 取得件数が前回の半分未満。急減を隔離し正常データ保持"
-    },
-    {
-      "key": "source:shopBuyback:stale",
-      "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/43135652269",
-      "reason": "Web買取表: 更新期限超過（カード別鮮度 未記録%）"
-    },
-    {
       "key": "source:snkrRaw:stale",
       "category": "鮮度未達・進捗停滞",
       "url": "https://github.com/urm759/pokeka-serch/actions/runs/43135652269",
@@ -78,7 +66,7 @@
     {
       "key": "priority-prices:cadence-stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/43130117797",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/43177706334",
       "reason": "重要価格更新：設定2時間に対し実績成功間隔（直近最大）22.85時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
     },
     {
@@ -119,8 +107,6 @@
     "カードラッシュ: 更新期限超過（カード別鮮度 0%）",
     "遊々亭: HTTP 403",
     "遊々亭: 更新期限超過（カード別鮮度 0.03%）",
-    "Web買取表: shop buyback refresh skipped; existing data was preserved: 一部取得失敗（正常データ保持）: torecabank: 取得件数が前回の半分未満。急減を隔離し正常データ保持; bluerocket: 取得件数が前回の半分未満。急減を隔離し正常データ保持; kaitori-homura-mail: 取得件数が前回の半分未満。急減を隔離し正常データ保持",
-    "Web買取表: 更新期限超過（カード別鮮度 未記録%）",
     "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）",
     "福福トレカ（郵送窓口）: 通常公開価格表の低頻度GET。認証操作なし。郵送窓口のみ・商品更新日は不明、実確認日時とページ更新日時を分離",
     "PC側PSA: PC観測未受信 / 30時間以内の独立タスク観測なし。PC停止・観測起動失敗・未公開を区別して確認",
