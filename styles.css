@@ -1834,3 +1834,5 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .price-variation.variation-plan-period{outline:2px solid var(--text);outline-offset:2px;margin:5px 2px;background-image:linear-gradient(90deg,#8294b014,transparent)}
 .variation-plan-badge{display:inline-block;font-size:11px;border:1px solid currentColor;border-radius:4px;padding:1px 5px;margin:3px 0;color:var(--text)}
 .search-basis-glance{display:block;font-size:12px}.legacy-economics-comparison{margin-top:10px}.legacy-economics-comparison>summary{font-weight:600;font-size:12px}
+
+.sale-reference-summary{margin:6px 0;font-size:.76rem;color:var(--muted,#abb8ca)}.sale-reference-summary>small{display:block}.sale-reference-summary summary{cursor:pointer}.sale-reference-rows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0}.sale-reference-rows>div{min-width:0;padding:8px;border:1px solid #40506b;border-radius:8px}.sale-reference-rows small,.sale-reference-rows span{display:block;overflow-wrap:anywhere}.sale-reference-rows b{color:#d8e6f7}@media(max-width:600px){.sale-reference-rows{grid-template-columns:1fr}}
