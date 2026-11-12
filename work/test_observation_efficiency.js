@@ -35,7 +35,8 @@ s.efficiencyIncludeReference=true;s.observationIncludeReference=false;assert.equ
 s.observation7Min=1000;s.observationIncludeReference=false;
 api.saveQuickFilters();context.window.location.href='https://test.local/';api.restoreQuickFilters();assert.equal(inputs.get('efficiencyScenarioInput').value,'obs200');assert.equal(inputs.get('observation7MinInput').value,1000);assert.equal(inputs.get('observationIncludeReferenceInput').checked,false);
 assert.equal(api.buildShareUrl().searchParams.get('effScenario'),'obs200');context.window.location.href='https://test.local/?effScenario=obs200';api.readUrl();assert.equal(inputs.get('efficiencyScenarioInput').value,'obs200');
-s.efficiencyScenario='obs7';const before=api.cardEfficiency(card,now).annual;
+// The URL main now uses median; this unit isolates the explicit old observation comparison.
+s.calculationBuyMode='legacy';s.efficiencyScenario='obs7';const before=api.cardEfficiency(card,now).annual;
 s.psa10PeriodSummary={...summary,cards:{fixture:[39000,...summary.cards.fixture.slice(1)]}};
 assert(api.cardEfficiency(card,now).annual<before,'summary update invalidates efficiency cache');
 s.fee=12000;assert.equal(api.cardEfficiency(card,now).profit,9254,'changed grading fee only once');

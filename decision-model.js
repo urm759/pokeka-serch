@@ -242,9 +242,9 @@
         else if (time > now) reasons.push(`${label}確認日時が未来`);
         else if (now - time > ttl) reasons.push(`${label}確認期限超過`);
       }
-      if (row.available !== true) reasons.push('在庫なし・未確認');
+      if (row.available !== true) reasons.push(row.inventoryKnown===true&&row.available===false?'在庫なし':'在庫未確認');
       if (outlier && row.identityVerified !== true) reasons.push('相場外れ値・同一仕様の確認不足');
-      return { ...row, marketIncluded: aggregation.included?.some(e => e.source === row.source) === true,
+      return { ...row, available:row.inventoryKnown===false?null:row.available, marketIncluded: aggregation.included?.some(e => e.source === row.source) === true,
         marketOutlier: outlier, purchaseReasons: [...new Set(reasons)], purchaseEligible: reasons.length === 0,
         fresh: !reasons.some(r => /確認日時|確認期限/.test(r)),
         purchaseReason: reasons.length ? [...new Set(reasons)].join('／') : outlier ? '同一仕様・状態A・在庫確認済みの安値。相場集計の外れ値とは別に購入先へ採用' : '同一カードの新しい状態A在庫価格' };
