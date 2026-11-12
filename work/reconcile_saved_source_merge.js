@@ -6,7 +6,7 @@ const stamp=r=>Math.max(0,...['observedAt','fetchedAt','lastAttemptAt','confirme
 function latest(a,b,base){
   if(!a)return b;if(!b)return a;if(same(a,b))return a;
   if(base!==undefined){if(same(base,a))return b;if(same(base,b))return a;}
-  const x=stamp(a),y=stamp(b);if(!x||!y||x===y)throw Error('Conflicting source observations without distinct timestamps');
+  const x=stamp(a),y=stamp(b);if(!x||!y||x===y)throw Object.assign(Error('Conflicting source observations without distinct timestamps'),{code:'SOURCE_OBSERVATION_TIME_CONFLICT'});
   return x>y?a:b;
 }
 function byKey(a,b,key,base=[]){const original=new Map(base.map(r=>[key(r),r]));const rows=new Map(a.map(r=>[key(r),r]));for(const r of b){const k=key(r);rows.set(k,latest(rows.get(k),r,original.get(k)));}return [...rows.values()];}
