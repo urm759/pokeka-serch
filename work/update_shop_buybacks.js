@@ -568,6 +568,7 @@ async function main({ rebuildSaved = false } = {}) {
   }
   const matchCard = buildMatcher(cards);
   const results = [];
+  const adapterTiming=require('./priority_price_queue').timingConfig(ROOT);
   for (const shop of SHOPS) {
     if (process.env.SHOP_BUYBACK_SOURCE_ONLY && process.env.SHOP_BUYBACK_SOURCE_ONLY !== shop.id) continue;
     if (rebuildSaved) {
@@ -591,7 +592,10 @@ async function main({ rebuildSaved = false } = {}) {
       failures.push({source:shop.id,error:review.error,reviewWait:true});
       continue;
     }
-    if(shop.adapterVersion && review?.adapterVersion===shop.adapterVersion && require('./psa10_observation_evidence').calendarDay(review.lastSuccess)===jstDate()) continue;
+    if(!adapterRefreshDue(shop,review,Date.now(),adapterTiming)){
+      console.log(JSON.stringify({shopId:shop.id,status:'adapter-recheck-not-due',lastSuccess:review?.lastSuccess||null,attempted:0,reason:'既存の期限前更新と2時間再試行間隔。日付だけで終日skipしない'}));
+      continue;
+    }
     try {
       responseCapture={responses:[],bytes:0,omitted:0};
       const fetched = await shop.fetchItems(shop);
@@ -882,4 +886,11 @@ if (require.main === module) main({rebuildSaved:process.argv.includes('--rebuild
   console.error(error);
   process.exitCode = 1;
 });
-module.exports = { main, SHOPS, fetchText, savedMatchConfidence, freshUsablePrice, parseTorecaBankItems, validateListingCount, preserveFailedResponses };
+function adapterRefreshDue(shop,review,now=Date.now(),config={}){
+  if(!shop.adapterVersion||shop.adapterVersion!==review?.adapterVersion)return true;
+  const success=Date.parse(review.lastSuccess),attempt=Date.parse(review.lastAttempt);
+  if(success>now||attempt>now)return false;
+  if(Number.isFinite(attempt)&&now-attempt<2*3600000)return false;
+  return !Number.isFinite(success)||require('./proactive_refresh').eligibleDeadline(success+6*3600000,true,now,config);
+}
+module.exports = { main, SHOPS, fetchText, savedMatchConfidence, freshUsablePrice, parseTorecaBankItems, validateListingCount, preserveFailedResponses,adapterRefreshDue };

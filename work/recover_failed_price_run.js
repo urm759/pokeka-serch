@@ -17,6 +17,24 @@ function trustedMonitor(run,repository='urm759/pokeka-serch'){
   return trusted({...run,name:'Priority Purchase Price Refresh'},repository)
     &&run?.name==='Data Update Health Watchdog';
 }
+// Recovery eligibility is separate from natural-schedule success accounting.
+// Default-main followups/owner dispatches additionally require job-stage proof.
+function monitorCheckpointOrigin(run,repository='urm759/pokeka-serch'){
+ return ['workflow_run','workflow_dispatch'].includes(run?.event)
+  &&run.path==='.github/workflows/watch-data-health.yml'
+  &&(run.event!=='workflow_dispatch'||run.actor?.login===repository.split('/')[0])
+  &&trusted({...run,name:'Priority Purchase Price Refresh',event:'schedule'},repository)
+  &&run.name==='Data Update Health Watchdog';
+}
+function trustedMonitorCheckpoint(run,jobs){
+ if(!monitorCheckpointOrigin(run))return false;
+ const selected=(jobs.jobs||[]).filter(j=>j.name==='catchup');if(selected.length!==1)return false;
+ const job=selected[0],steps=job.steps||[];
+ return job.status==='completed'&&job.conclusion==='failure'
+  &&steps.some(s=>s.name==='Fill missed price intervals with shared cooldown and access budgets'&&s.conclusion==='success')
+  &&steps.some(s=>s.name==='Validate catchup data without changing purchase criteria'&&s.conclusion==='success')
+  &&steps.some(s=>s.name==='Publish changed health state only'&&s.conclusion==='failure');
+}
 function trustedSafe(run,repository='urm759/pokeka-serch'){
   return trusted({...run,name:'Priority Purchase Price Refresh'},repository)&&run?.name==='Safe Checkpoint Backfill';
 }
@@ -28,9 +46,9 @@ function latestDaily(runs,options={}){
   const selected=latestMonitor(eligible.map(r=>({...r,name:'Data Update Health Watchdog'})),options);
   return selected?eligible.find(r=>r.id===selected.id):null;
 }
-function latestMonitor(runs,{currentRunId,now=Date.now(),alreadyApplied=()=>false,lastAcquisitionAt=null}={}){
+function latestMonitor(runs,{currentRunId,now=Date.now(),alreadyApplied=()=>false,lastAcquisitionAt=null,isTrusted=trustedMonitor}={}){
   const completed=Date.parse(lastAcquisitionAt)||0;
-  return runs.filter(r=>trustedMonitor(r)&&String(r.id)!==String(currentRunId)
+  return runs.filter(r=>isTrusted(r)&&String(r.id)!==String(currentRunId)
     &&Number.isFinite(Date.parse(r.updated_at))&&Date.parse(r.updated_at)<=now
     &&now-Date.parse(r.updated_at)<7*86400000&&Date.parse(r.updated_at)>completed&&!alreadyApplied(r.id,r))
     .sort((a,b)=>Date.parse(b.updated_at)-Date.parse(a.updated_at))[0]||null;
@@ -78,7 +96,8 @@ function selectRecoveryArtifacts(artifacts,run,{safe=false,daily=false,monitor=f
   // failure dump also contains a Git bundle and potentially conflicted JSON.
   // ZIP/hash/schema limits remain strict; do not enlarge them for unused data.
   const names=daily?['daily-prevalidation-'+suffix,'daily-recovery-'+suffix]
-    :[(safe?'safe-camp-checkpoint-':monitor?'monitor-recovery-':'priority-price-recovery-')+suffix];
+    :monitor?['monitor-prevalidation-'+suffix,'monitor-recovery-'+suffix]
+    :[(safe?'safe-camp-checkpoint-':'priority-price-recovery-')+suffix];
   for(const name of names){const rows=artifacts.filter(a=>!a.expired&&a.name===name);if(rows.length){if(rows.length!==1)throw Error('One exact failure checkpoint is required');return rows;}}
   return [];
 }
@@ -88,13 +107,14 @@ async function main(){
   const base='https://api.github.com/repos/urm759/pokeka-serch/actions',headers={Authorization:'Bearer '+token,'User-Agent':'pokeka-checkpoint-recovery'};
   const get=async (url,timeoutMs=METADATA_TIMEOUT_MS)=>{const r=await fetch(url,{headers,signal:AbortSignal.timeout(timeoutMs)});if(!r.ok)throw Error('Recovery HTTP '+r.status);return r;};
   if(monitor||dailyScan){
-    const runs=(await(await get(base+'/workflows/'+(dailyScan?'daily-fast-update.yml':'watch-data-health.yml')+'/runs?event=schedule&per_page=5')).json()).workflow_runs||[];
+    const runs=(await(await get(base+'/workflows/'+(dailyScan?'daily-fast-update.yml':'watch-data-health.yml')+'/runs?'+(dailyScan?'event=schedule&':'')+'per_page=10')).json()).workflow_runs||[];
     const candidate=(dailyScan?latestDaily:latestMonitor)(runs,{currentRunId:process.env.GITHUB_RUN_ID,lastAcquisitionAt:dailyScan?null:lastSuccessfulAcquisition(ROOT),
+      ...(!dailyScan?{isTrusted:r=>trustedMonitor(r)||monitorCheckpointOrigin(r)}:{}),
       alreadyApplied:(runId,run)=>fs.existsSync(path.join(ROOT,'work/recovery-applied-'+runId+'.json'))||inspectedForRun(ROOT,run)});
     if(!candidate)return {status:dailyScan?'no-unpublished-daily-checkpoint':'no-unpublished-monitor-checkpoint',sourceRequests:0};id=String(candidate.id);
   }
   if(fs.existsSync(path.join(ROOT,'work/recovery-applied-'+id+'.json')))return {status:'already-restored',runId:id,sourceRequests:0};
-  const run=await(await get(base+'/runs/'+id)).json(),safe=!monitor&&!dailyScan&&trustedSafe(run),daily=!monitor&&trustedDaily(run);if(!(monitor?trustedMonitor(run):dailyScan?daily:trusted(run)||safe||daily))throw Error('Untrusted recovery event');
+  const run=await(await get(base+'/runs/'+id)).json(),safe=!monitor&&!dailyScan&&trustedSafe(run),daily=!monitor&&trustedDaily(run);if(!(monitor?trustedMonitor(run)||monitorCheckpointOrigin(run):dailyScan?daily:trusted(run)||safe||daily))throw Error('Untrusted recovery event');
   if(monitor){
     const jobs=await(await get(base+'/runs/'+id+'/jobs')).json();
     if(!monitorRecoveryNeeded(jobs)){
@@ -102,6 +122,7 @@ async function main(){
         failedJobs:jobs.jobs.filter(j=>j.conclusion==='failure').map(j=>j.name),reason:'catchup取得/検証/保存公開は成功。監視/照合の失敗記録とartifactは保持し、独立した価格更新を止めない'};
       fs.writeFileSync(path.join(ROOT,'work/recovery-inspected-'+id+'.json'),JSON.stringify(result));return result;
     }
+    if(!trustedMonitor(run)&&!trustedMonitorCheckpoint(run,jobs))throw Error('Followup recovery requires completed acquisition/validation and failed publication evidence');
   }
   const artifacts=selectRecoveryArtifacts((await(await get(base+'/runs/'+id+'/artifacts')).json()).artifacts,run,{safe,daily,monitor});
   if(daily&&artifacts.length===0){
@@ -132,4 +153,4 @@ if(require.main===module){
     console.log(JSON.stringify({pending:Boolean(rows.length),runIds:rows.map(r=>r.runId),recoveryApplied:false}));
   }else main().then(r=>console.log(JSON.stringify(r))).catch(e=>{console.error(e.message);process.exitCode=1;});
 }
-module.exports={trusted,trustedMonitor,trustedSafe,trustedDaily,latestDaily,latestMonitor,monitorRecoveryNeeded,selectRecoveryArtifacts,recoveryArchiveName,inspectedForRun,lastSuccessfulAcquisition,ensureTrustedBase,activeSourceHolds,retainSourceHold,METADATA_TIMEOUT_MS,ARCHIVE_TIMEOUT_MS};
+module.exports={trusted,trustedMonitor,trustedSafe,trustedDaily,latestDaily,latestMonitor,monitorRecoveryNeeded,selectRecoveryArtifacts,recoveryArchiveName,inspectedForRun,lastSuccessfulAcquisition,ensureTrustedBase,activeSourceHolds,retainSourceHold,METADATA_TIMEOUT_MS,ARCHIVE_TIMEOUT_MS,monitorCheckpointOrigin,trustedMonitorCheckpoint};

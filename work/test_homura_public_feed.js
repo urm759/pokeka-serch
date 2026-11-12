@@ -33,7 +33,8 @@ const valid=require('./update_shop_buybacks').freshUsablePrice, now=Date.parse(a
 assert(valid({listingActive:true,price:100,matchConfidence:'high',observedAt:at},{},now));
 assert.equal(valid({listingActive:true,price:100,matchConfidence:'high',priceDate:'2026-10-12'},{lastSuccess:at},now),false,'a new file cannot renew an old quote');
 assert.equal(valid({listingActive:true,price:100,matchConfidence:'high',observedAt:at},{acquisitionPermission:'retired'},now),false);
-assert(require('node:fs').readFileSync(__dirname+'/capture_unpublished_data.js','utf8').includes("if(source==='daily-prevalidation')"),'preverification archive is bounded to raw reconstruction inputs');
+const compactSource=require('node:fs').readFileSync(__dirname+'/capture_unpublished_data.js','utf8').split("if(['daily-prevalidation','monitor-prevalidation'].includes(source)) {")[1]?.split('} else {')[0];
+assert(compactSource&&compactSource.includes('const inputs=[')&&compactSource.includes('work/torecacamp_catalog.json')&&!compactSource.includes("scan('data')")&&!compactSource.includes("scan('work')"),'Daily/Watch preverification archives stay bounded to explicit raw reconstruction inputs, including Camp');
 console.log('PASS Homura public feed category, grade, identity, timestamps, retired source and missing payload');
 (async()=>{
   const path=require('node:path'),os=require('node:os');

@@ -3,8 +3,9 @@ const path = require("node:path");
 const { spawnSync } = require("node:child_process");
 
 function git(args, cwd) {
+  const started=Date.now();
   const run = spawnSync("git", args, { cwd, encoding: "utf8" });
-  return { ok: run.status === 0, output: `${run.stdout || ""}${run.stderr || ""}`.trim() };
+  return { ok: run.status === 0, durationMs:Date.now()-started, output: `${run.stdout || ""}${run.stderr || ""}`.trim() };
 }
 
 function publish({ cwd = path.join(__dirname, ".."), message = "Publish deterministic data checkpoint", retries = 2, captureOnly = false } = {}) {
@@ -33,7 +34,7 @@ function publish({ cwd = path.join(__dirname, ".."), message = "Publish determin
   fs.mkdirSync(path.dirname(recovery), { recursive: true });
   const bundled = git(["bundle", "create", bundle, "HEAD", `^${base}`], cwd);
   if (!bundled.ok) throw new Error(`Recovery bundle failed; publication stopped: ${bundled.output}`);
-  const record = { savedAt: new Date().toISOString(), base, checkpointCommit: saved,
+  const record = { savedAt: new Date().toISOString(), base, checkpointCommit: saved, commitMs:commit.durationMs,bundleMs:bundled.durationMs,
     workflowRunId: process.env.GITHUB_RUN_ID || null, bundle: "work/publish-recovery.bundle", attempts: [], status: "saved-before-publication" };
   const save = () => fs.writeFileSync(recovery, JSON.stringify(record, null, 2));
   save();
@@ -41,15 +42,15 @@ function publish({ cwd = path.join(__dirname, ".."), message = "Publish determin
   for (let attempt = 0; attempt <= retries; attempt += 1) {
     if(fs.existsSync(path.join(cwd,'data/overseas-access-policy.json')))require('./enforce_overseas_publication').verify(cwd,{staged:true});
     const pushed = git(["push", "origin", "HEAD:main"], cwd);
-    record.attempts.push({ at: new Date().toISOString(), stage: "push", ok: pushed.ok, message: pushed.output });
+    record.attempts.push({ at: new Date().toISOString(), stage: "push", durationMs:pushed.durationMs, ok: pushed.ok, message: pushed.output });
     if (pushed.ok) { record.status = "published"; save(); return { status: "published", published: true, commit: git(["rev-parse", "HEAD"], cwd).output }; }
     if (!/rejected|fetch first|non-fast-forward/i.test(pushed.output) || attempt === retries) break;
     const fetched = git(["fetch", "origin", "main"], cwd);
-    record.attempts.push({ at: new Date().toISOString(), stage: "fetch", ok: fetched.ok, message: fetched.output });
+    record.attempts.push({ at: new Date().toISOString(), stage: "fetch", durationMs:fetched.durationMs, ok: fetched.ok, message: fetched.output });
     if (!fetched.ok) break;
     // Git's three-way merge keeps independent source changes. Conflicts require review, never "ours" or force push.
     const merged = git(["merge", "--no-edit", "origin/main"], cwd);
-    record.attempts.push({ at: new Date().toISOString(), stage: "merge", ok: merged.ok, message: merged.output });
+    record.attempts.push({ at: new Date().toISOString(), stage: "merge", durationMs:merged.durationMs, ok: merged.ok, message: merged.output });
     if (!merged.ok) {
       let resolved=false;
       try { resolved=require('./resolve_generated_merge.js').resolve(cwd); }
