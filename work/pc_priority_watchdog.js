@@ -32,7 +32,7 @@ async function run({root,store,now=Date.now(),request}={}){
   }
   // The same global concurrency group covers Daily/Safe/Priority. A queued or
   // active data workflow is not a missing execution and must not be duplicated.
-  const names=['priority-price-refresh.yml','daily-fast-update.yml','safe-checkpoint-backfill.yml','refresh-all-site-data.yml','watch-data-health.yml'];
+  const names=['priority-price-refresh.yml','daily-fast-update.yml','safe-checkpoint-backfill.yml','refresh-all-site-data.yml','watch-data-health.yml','backfill-data.yml','gemrate-reference-publication.yml'];
   const runs=(await request('GET','/actions/runs?per_page=100')).workflow_runs||[];
   const relevant=runs.filter(r=>names.some(n=>r.path?.endsWith('/'+n)));
   const decision=plan(relevant,state,now);Object.assign(result,decision);
