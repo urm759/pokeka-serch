@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-11T23:54:46.846Z",
+  "generatedAt": "2026-11-12T00:52:15.521Z",
   "sourceLastSuccessAt": "2026-11-11T23:36:05.295Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-11-11T23:54:46.838Z",
-    "lastSuccessAt": "2026-11-11T23:54:46.838Z",
-    "runId": "43120740993",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/43120740993"
+    "lastAttemptAt": "2026-11-12T00:52:15.504Z",
+    "lastSuccessAt": "2026-11-12T00:52:15.504Z",
+    "runId": "43130229903",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/43130229903"
   },
   "issues": [
     {
@@ -15,6 +15,12 @@
       "category": "取得処理の故障",
       "url": "https://github.com/urm759/pokeka-serch/actions/runs/43052724145",
       "reason": "Daily Fast Updateが1回連続失敗"
+    },
+    {
+      "key": "daily:run-stale",
+      "category": "鮮度未達・進捗停滞",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/43052724145",
+      "reason": "日次更新の成功が24時間以上なし"
     },
     {
       "key": "safe:yuyutei:manual-action-required:GitHub ActionsからHTTP #。正規アクセス確認待ち",
@@ -78,14 +84,8 @@
     {
       "key": "priority-prices:cadence-stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/43072885445",
-      "reason": "重要価格更新：設定2時間に対し実績成功間隔（直近最大）16.47時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
-    },
-    {
-      "key": "priority-prices:workflow-failure",
-      "category": "取得処理の故障",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/43072885445",
-      "reason": "購入価格高速更新：取得・検証・保存・公開のいずれかが未完了。実行ログで工程を確認"
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/43130117797",
+      "reason": "重要価格更新：設定2時間に対し実績成功間隔（直近最大）22.85時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
     },
     {
       "key": "source-recovery:merge-review:41495095858",
@@ -120,6 +120,7 @@
   ],
   "reasons": [
     "Daily Fast Updateが1回連続失敗",
+    "日次更新の成功が24時間以上なし",
     "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち",
     "カードラッシュ: pk-73737: HTTP 403",
     "カードラッシュ: 更新期限超過（カード別鮮度 0%）",
@@ -130,8 +131,7 @@
     "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）",
     "福福トレカ（郵送窓口）: 通常公開価格表の低頻度GET。認証操作なし。郵送窓口のみ・商品更新日は不明、実確認日時とページ更新日時を分離",
     "PC側PSA: PC観測未受信 / 30時間以内の独立タスク観測なし。PC停止・観測起動失敗・未公開を区別して確認",
-    "重要価格更新：設定2時間に対し実績成功間隔（直近最大）16.47時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能",
-    "購入価格高速更新：取得・検証・保存・公開のいずれかが未完了。実行ログで工程を確認",
+    "重要価格更新：設定2時間に対し実績成功間隔（直近最大）22.85時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能",
     "保存原票の同時更新照合が保留（28入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/domestic-trade-source-audit.json, data/hareruya2-stock-summary.json, data/pokemon-cards-meta.json, data/pokemon-cards.json, data/price-catchup-status.json, data/priority-price-execution.json, data/psa10-observation-receipt.json, data/shop-buyback-summary.json, data/state-a-price-evidence.json, work/buyback-price-observations.json, work/candidate-shop-refresh.json, work/card-lifecycle.json, work/card-new-arrivals.json, work/changed-card-ids.json, work/hareruya2_catalog.json, work/hareruya2_stock_history.json, work/homura-public-che",
     "保存原票の同時更新照合が保留（17入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/pokemon-cards.json, data/pokemon-cards-meta.json, data/shop-buyback-summary.json, data/hareruya2-stock-summary.json, work/source-update-runs.json, work/source-update-history.json, work/changed-card-ids.json, work/toreca-source-inventory.json, work/market_stability_history.json, work/buyback-price-observations.json, work/shop_buyback_history.json, work/shop_buyback_catalog.json, work/shop_buyback_unmatched.json, work/hareruya2_catalog.json, work/hareruya2_stock_history.json, work/priority-price-http-cache.json, work/candidate-shop-",
     "保存原票の同時更新照合が保留（20入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/pokemon-cards.json, data/pokemon-cards-meta.json, data/shop-buyback-summary.json, data/hareruya2-stock-summary.json, work/source-update-runs.json, work/source-update-history.json, work/changed-card-ids.json, work/toreca-source-inventory.json, work/toreca_source_diff.json, work/market_stability_history.json, work/buyback-price-observations.json, work/shop_buyback_history.json, work/shop_buyback_catalog.json, work/shop_buyback_unmatched.json, work/shop_buyback_item_matches.json, work/homura-public-checkpoint.json, work/hareruya2_cat",
