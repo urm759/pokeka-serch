@@ -1,26 +1,20 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-12T01:43:36.746Z",
+  "generatedAt": "2026-11-12T01:49:04.071Z",
   "sourceLastSuccessAt": "2026-11-12T01:37:15.055Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-11-12T01:02:08.143Z",
-    "lastSuccessAt": "2026-11-12T01:02:08.143Z",
-    "runId": "43131330457",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/43131330457"
+    "lastAttemptAt": "2026-11-12T01:49:04.054Z",
+    "lastSuccessAt": "2026-11-12T01:49:04.054Z",
+    "runId": "43136722377",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/43136722377"
   },
   "issues": [
     {
-      "key": "daily:workflow-failure",
-      "category": "取得処理の故障",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/43052724145",
-      "reason": "Daily Fast Updateが1回連続失敗"
-    },
-    {
-      "key": "daily:run-stale",
-      "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/43052724145",
-      "reason": "日次更新の成功が24時間以上なし"
+      "key": "daily:source-failure",
+      "category": "確認が必要",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/43135652269",
+      "reason": "Dailyの一部取得元が失敗・正常データは必須検証/保存/公開照合済み"
     },
     {
       "key": "safe:yuyutei:manual-action-required:GitHub ActionsからHTTP #。正規アクセス確認待ち",
@@ -55,19 +49,19 @@
     {
       "key": "source:shopBuyback:manual-wait",
       "category": "確認が必要",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/43120740993",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/43135652269",
       "reason": "Web買取表: shop buyback refresh skipped; existing data was preserved: 一部取得失敗（正常データ保持）: torecabank: 取得件数が前回の半分未満。急減を隔離し正常データ保持; bluerocket: 取得件数が前回の半分未満。急減を隔離し正常データ保持; kaitori-homura-mail: 取得件数が前回の半分未満。急減を隔離し正常データ保持"
     },
     {
       "key": "source:shopBuyback:stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/43120740993",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/43135652269",
       "reason": "Web買取表: 更新期限超過（カード別鮮度 未記録%）"
     },
     {
       "key": "source:snkrRaw:stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/43052724145",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/43135652269",
       "reason": "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）"
     },
     {
@@ -119,8 +113,7 @@
     }
   ],
   "reasons": [
-    "Daily Fast Updateが1回連続失敗",
-    "日次更新の成功が24時間以上なし",
+    "Dailyの一部取得元が失敗・正常データは必須検証/保存/公開照合済み",
     "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち",
     "カードラッシュ: pk-73737: HTTP 403",
     "カードラッシュ: 更新期限超過（カード別鮮度 0%）",
