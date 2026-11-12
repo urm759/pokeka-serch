@@ -123,6 +123,21 @@ try{
   assert.equal(JSON.parse(fs.readFileSync(path.join(root,'data/pokemon-cards.json')))[0].observedAt,'2026-10-25T00:00:00Z');
   assert.equal(restore(archive,'123',base,root).restored.length,0,'same receipt is idempotent');
   assert.equal(JSON.parse(fs.readFileSync(path.join(root,'work/recovery-applied-123.json'))).restored.length,2,'a repeated invocation preserves the original recovery receipt');
+  // A Daily checkpoint with conflicting metadata at exactly the same source
+  // instant must become a retained review hold, never end all store updates.
+  write('data/pokemon-cards.json',JSON.parse(git(['show',base+':data/pokemon-cards.json'])));
+  const equalTimeCurrent=structuredClone(newCheckpoint);equalTimeCurrent.sources.shop.jobs.one.nextDueAt='2026-10-25T08:00:01Z';
+  write('work/priority-price-checkpoint.json',equalTimeCurrent);
+  let equalTimeConflict;
+  try{restore(archive,'123',base,root);}catch(e){equalTimeConflict=e;}
+  assert.equal(equalTimeConflict?.code,'SOURCE_RECOVERY_MERGE_REQUIRED');
+  assert.deepEqual(equalTimeConflict.files,['work/priority-price-checkpoint.json']);
+  assert.equal(JSON.parse(fs.readFileSync(path.join(root,'data/pokemon-cards.json')))[0].price,100,'the whole recovery plan remains unapplied when metadata is ambiguous');
+  const equalTimeHold=retainSourceHold(root,{id:123,run_attempt:2,head_sha:base},{id:10,digest:'sha256:verified'},equalTimeConflict);
+  assert.equal(equalTimeHold.normalUpdatesMayContinue,true);assert.equal(equalTimeHold.recoveryApplied,false);
+  assert(inspectedForRun(root,{id:123,run_attempt:2,head_sha:base}),'the same ambiguous archive is not retried by every scan');
+  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root,'work/priority-price-checkpoint.json'))),equalTimeCurrent,'no date or value is rewritten to resolve the hold');
+  write('work/priority-price-checkpoint.json',newCheckpoint);
   write('data/pokemon-cards.json',[{id:'one',price:120}]);assert.throws(()=>restore(archive,'123',base,root),/Concurrent/);
   assert.equal(JSON.parse(fs.readFileSync(path.join(root,'data/pokemon-cards.json')))[0].price,120,'newer independent inputs are not overwritten');
   git(['add','data']);git(['-c','user.name=test','-c','user.email=test@example.invalid','commit','-m','later']);

@@ -71,6 +71,7 @@ function restore(file,runId,base,root=ROOT){
     const equivalent=(a,b)=>a===null||b===null?a===b:JSON.stringify(JSON.parse(a))===JSON.stringify(JSON.parse(b));
     if(equivalent(current,incoming))continue;
     if(!equivalent(current,original)){
+      try{
       if(row.file==='work/priority-freshness-history.json'&&current&&original){
         data=require('./reconcile_saved_source_merge').mergeFixedFreshness(JSON.parse(original),JSON.parse(current),data);
         incoming=Buffer.from(JSON.stringify(data));
@@ -80,6 +81,13 @@ function restore(file,runId,base,root=ROOT){
         incoming=Buffer.from(JSON.stringify(data));
         if(equivalent(current,incoming))continue;
       }else{conflicts.push(row.file);continue;}
+      }catch(error){
+        // Equal/missing source times cannot establish which value is correct.
+        // Keep the entire verified archive and apply nothing, then let the
+        // existing source-review hold continue unrelated normal acquisitions.
+        if(error.code!=='SOURCE_OBSERVATION_TIME_CONFLICT')throw error;
+        conflicts.push(row.file);continue;
+      }
     }
     plan.push({file:row.file,incoming,current,data});
   }

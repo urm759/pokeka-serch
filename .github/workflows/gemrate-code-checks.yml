@@ -6,6 +6,10 @@ on:
       - 'work/gemrate*.json'
       - 'work/run_gemrate*.js'
       - 'work/test_gemrate*.js'
+      - 'work/restore_price_artifact.js'
+      - 'work/reconcile_saved_source_merge.js'
+      - 'work/test_failed_price_recovery.js'
+      - 'work/test_saved_source_merge.js'
       - 'work/gemrate-collector-extension/**'
       - '.github/workflows/gemrate-code-checks.yml'
 permissions:
@@ -33,6 +37,7 @@ jobs:
           node work/test_gemrate_sm11b_scope.js
           node work/test_pc_freshness_bridge.js
           node work/test_failed_price_recovery.js
+          node work/test_saved_source_merge.js
           node work/test_generated_merge_large_json.js
           node work/test_buyback_adapter_deadline.js
           node work/test_homura_public_feed.js
