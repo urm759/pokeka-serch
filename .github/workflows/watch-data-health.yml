@@ -110,6 +110,17 @@ jobs:
         if: steps.catchup_plan.outputs.mode == 'acquire'
         run: |
           node work/run_priority_price_refresh.js --catchup
+      - name: Preserve compact acquired inputs before validation or publication conflicts
+        if: steps.catchup_plan.outputs.mode != 'reuse'
+        run: node work/capture_unpublished_data.js monitor-prevalidation
+      - name: Retain compact monitor checkpoint independently
+        if: steps.catchup_plan.outputs.mode != 'reuse'
+        uses: actions/upload-artifact@v7
+        with:
+          name: monitor-prevalidation-${{ github.run_id }}-${{ github.run_attempt }}
+          path: work/unpublished-recovery/
+          retention-days: 7
+          if-no-files-found: error
       - name: Validate catchup data without changing purchase criteria
         id: catchup_validation
         run: |

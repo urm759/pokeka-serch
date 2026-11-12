@@ -1,0 +1,12 @@
+const assert=require('node:assert/strict'),{adapterRefreshDue}=require('./update_shop_buybacks');
+const shop={adapterVersion:'homura-public-fixture'},at='2026-11-12T03:53:00Z',row={adapterVersion:shop.adapterVersion,lastSuccess:at,lastAttempt:at},base=Date.parse(at),hour=3600000;
+assert(!adapterRefreshDue(shop,row,base+hour));
+assert(adapterRefreshDue(shop,row,base+4*hour),'same JST date must not skip a due recheck until midnight');
+assert(adapterRefreshDue(shop,row,base+6*hour));
+const midnight=Date.parse('2026-11-12T15:00:00Z'),recent={...row,lastSuccess:'2026-11-12T14:30:00Z',lastAttempt:'2026-11-12T14:30:00Z'};
+assert(!adapterRefreshDue(shop,recent,midnight+1000),'JST day change does not bypass retry/freshness limits');
+assert(!adapterRefreshDue(shop,{...row,lastAttempt:new Date(base+3*hour).toISOString()},base+4*hour),'failed/successful attempts share cooldown');
+assert(!adapterRefreshDue(shop,{...row,lastSuccess:new Date(base+8*hour).toISOString()},base+4*hour),'future evidence cannot create a normal due request');
+assert(adapterRefreshDue(shop,{...row,lastSuccess:null,lastAttempt:null},base+4*hour));
+const original=JSON.stringify(row);adapterRefreshDue(shop,row,base+4*hour);assert.equal(JSON.stringify(row),original,'no observedAt/date mutation');
+console.log('PASS versioned buyback adapter rechecks before6h on the same day; common proactive lead and2h retry interval, JST boundary/future/null evidence and original dates retained');
