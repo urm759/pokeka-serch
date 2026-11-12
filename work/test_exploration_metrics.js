@@ -44,7 +44,9 @@ assert.equal(elements.get('profitSearchBasisInput').value,'current-cap');
 assert(sourceText.includes("mode !== 'now'"),'cap exploration cannot override immediate purchase');
 assert(sourceText.includes('const exploration = purchaseExploration(card,now)'),'display and filters share the same eligibility and headroom');
 const auditApi=require('./audit_search_profit_consistency').load(sourceText,new Date().toISOString());
-const allCards=auditApi.prepareCalculatedCards(auditApi.state.cards);auditApi.state.profitSearchBasis='current-cap';auditApi.state.efficiencyBuy='auto';
+const allCards=auditApi.prepareCalculatedCards(auditApi.state.cards);
+// Isolate the explicit old cap comparison; every real URL main is tested as median separately.
+auditApi.state.calculationBuyMode='legacy';auditApi.state.profitSearchBasis='current-cap';auditApi.state.efficiencyBuy='auto';
 for(const c of allCards) {
   const view=auditApi.searchProfitView(c);
   if(view.eligible) {

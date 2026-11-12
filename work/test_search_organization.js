@@ -10,7 +10,7 @@ function controls(h) {
 }
 const ratioAdditions=['listingMean200MinInput','listingMean200MaxInput','rawListingMean200MinInput','rawListingMean200MaxInput','rawListingCurrentMinInput','rawListingCurrentMaxInput','rawListingMeanMinInput','rawListingMeanMaxInput','listingCurrentMinInput','listingCurrentMaxInput','listingMeanMinInput','listingMeanMaxInput','buybackMeanMinInput','buyback7RatioMinInput','buyback30RatioMinInput','buyback75RatioMinInput','buybackRatioDaysMinInput','buybackRatioReferenceInput'];
 const buyAdditions=['calculationBuyModeInput','medianBuyPctInput'];
-assert.deepEqual(controls(html).find(r=>r[0]===buyAdditions[0]),[buyAdditions[0],'<option value="median" selected>素体参考相場・中央値へ統一</option><option value="store">旧・現在買える状態A価格で比較</option><option value="legacy">旧設定を保持して比較</option>',false]);
+assert.deepEqual(controls(html).find(r=>r[0]===buyAdditions[0]),[buyAdditions[0],'<option value="median" selected>素体参考相場・中央値へ統一</option><option value="store">旧・実店舗買値を詳細で比較（主計算は中央値）</option><option value="legacy">旧URLの買値を詳細で比較（主計算は中央値）</option>',false]);
 assert.deepEqual(controls(html).find(r=>r[0]===buyAdditions[1]),[buyAdditions[1],'',false],'optional hypothetical percentage starts off');
 for(const id of ratioAdditions){const row=controls(html).find(r=>r[0]===id);assert(row,'authorized optional ratio control present: '+id);assert.equal(row[1],'');assert.equal(row[2],false,'new ratio controls remain disabled by default');}
 assert.deepEqual(controls(html).filter(row=>!row[0].startsWith('observation') && !['buybackHighestMinInput','psa9AboveGuideInput','psa9GuideMinInput','psa9CostWithin5Input','psa9RoiMinInput',...ratioAdditions,...buyAdditions].includes(row[0])).map(row=>row[0]==='profitSearchBasisInput'?[row[0],row[1].replace('<option value="current-target">利益確保の仕入れ目安で購入・現相場基準（探索）</option>',''),row[2]]:row[0]==='efficiencyScenarioInput'?[row[0],row[1].replace(/<option value="obs(?:7|30|75|200)">[^<]*<\/option>/g,''),row[2]]:row[0]==='efficiencyBuyInput'?[row[0],row[1].replace(/<option value="(?:store|median|reference-min)"(?: selected)?>[^<]*<\/option>/g,''),row[2]]:row),baseline.controls,'existing IDs/options survive; only enumerated authorized additions are separated');
@@ -55,6 +55,9 @@ function beforeRequestedBuyMigration(text){
 }
 const legacyApp=beforeRequestedBuyMigration(app.replace(/\r\n/g,'\n'))
   .replace('  url.searchParams.set("calcBuy",state.calculationBuyMode);\n','')
+  // Requested primary median and explicit comparison-only URL are tested in test_main_median_legacy_urls.
+  .replace('  url.searchParams.set("calcBuy",\'median\');\n','')
+  .replace("  if(['store','legacy'].includes(state.legacyBuyComparisonMode))url.searchParams.set('buyCompare',state.legacyBuyComparisonMode);else url.searchParams.delete('buyCompare');\n",'')
   .replace(" && !(['store','median'].includes(state.calculationBuyMode) && profitView.horizonDays===0)",'')
   .replace("const ratioView = currentMode || state.calculationBuyMode==='median' ?","const ratioView = currentMode ?");
 for(const [name,expected] of Object.entries(baseline.protectedFunctions)) {

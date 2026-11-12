@@ -21,6 +21,8 @@ assert.equal(stats.variationEvidence(Object.fromEntries([7,30,75,200].map(d=>[d,
 assert.equal(m.variation({},{}).label,'判断材料不足');
 const source=fs.readFileSync('app.js','utf8'),load=require('./audit_search_profit_consistency').load;
 const a=load(source,at,{url:'https://example.test/?effBuy=reference-min&preset=specified&exitPolicy=marketplace&effRef=1&profitBasis=auto&filterExpRoi=off&roi=off',fixedModelClock:true});
+// Explicit old reference-min comparison; normal URL main remains median.
+a.state.calculationBuyMode='legacy';
 const cards=a.prepareCalculatedCards(a.state.cards),fixture=cards.find(c=>c.id==='pk-20743');
 assert(fixture);const filters=[a.state.minExpectedProfitFilter,a.state.minExpectedRoiFilter];a.state.minExpectedProfitFilter=1e9;assert(fixture.searchDiagnosticReasons.includes('利益条件未達（選択した計算基準）'));a.state.minExpectedProfitFilter=null;a.state.minExpectedRoiFilter=null;assert(!fixture.searchDiagnosticReasons.includes('利益条件未達（選択した計算基準）'),'lazy diagnostics track filters without recomputing all financial cards');[a.state.minExpectedProfitFilter,a.state.minExpectedRoiFilter]=filters;assert.equal(typeof Object.getOwnPropertyDescriptor(fixture,'searchDiagnosticReasons').get,'function','diagnostics remain lazy instead of computing reference prices for every unshown card');assert(Array.isArray(fixture.searchDiagnosticReasons));const e=a.cardEfficiency(fixture),p=a.searchProfitView(fixture),range=a.purchaseExploration(fixture);
 assert.equal(p.purchasePrice,e.purchasePrice);assert.equal(p.economics?.expectedProfit??null,e.profit);assert.equal(p.economics?.expectedRoi??null,e.roi);assert.equal(range.price,e.purchasePrice);

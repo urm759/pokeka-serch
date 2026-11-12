@@ -148,7 +148,11 @@
   }
   function purchaseOfferUrl(offer) {
     if(!offer?.available||!offer.fresh||offer.purchaseEligible===false||!finite(offer.value)||offer.value<=0)return null;
-    let url;try{url=new URL(offer.url);}catch{return null;}
+    return purchaseProductUrl(offer);
+  }
+  // Link validation only. Historical links do not assert fresh stock or price.
+  function purchaseProductUrl(offer) {
+    let url;try{url=new URL(offer?.url);}catch{return null;}
     if(url.protocol!=='https:'||url.username||url.password)return null;
     const host=url.hostname.replace(/^www\./,''), source=String(offer.source||'');
     const direct=host==='hareruya2.com'&&/晴れる屋/.test(source)&&/^\/products\/[^/]+\/?$/.test(url.pathname)
@@ -521,5 +525,5 @@
         status:pop[4]===0?'近い期間の参考比較':pop[4]===2?'POP減少・訂正等':'期間不一致・部分期間',
         ratio:measured&&!stale&&pop[4]===0&&pop[0]>0?n/pop[0]:null}:null};
   }
-  return {listingCounts,stockTrend,variation,variationTone,priceGap,purchaseOfferUrl,referenceBuy,percent,inRange,offerPrice,referenceMedian,meanSale,atPurchase,efficiency,coverage,observationPeriods,migrateObservationSettings,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics,periodEfficiencyAverage,efficiencyUnavailableLabel,buybackSupport,buybackSearch,buybackCurrentStatus,buybackMeanWindows,buybackRatioTone,buybackRatioBoundaries,tradeDemand};
+  return {listingCounts,stockTrend,variation,variationTone,priceGap,purchaseOfferUrl,purchaseProductUrl,referenceBuy,percent,inRange,offerPrice,referenceMedian,meanSale,atPurchase,efficiency,coverage,observationPeriods,migrateObservationSettings,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics,periodEfficiencyAverage,efficiencyUnavailableLabel,buybackSupport,buybackSearch,buybackCurrentStatus,buybackMeanWindows,buybackRatioTone,buybackRatioBoundaries,tradeDemand};
 });
