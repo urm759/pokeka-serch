@@ -9,9 +9,14 @@ function prepare(progress, total, now=Date.now()) {
   progress.currentEntryIndex=progress.maintenance.entryIndex;
   return true;
 }
+function proactiveLead(leadMs=0){
+  // Preserve the existing 2h minimum individual recheck interval even when
+  // observed creation gaps plus publication time approach the 6h target.
+  const value=Number(leadMs);return Number.isFinite(value)?Math.min(4*3600000,Math.max(0,value)):0;
+}
 function due(entry, important, now=Date.now(),leadMs=0) {
   const at=Date.parse(entry?.observedAt||'');
-  return !Number.isFinite(at) || at<=now && now-at>=(important?6:48)*3600000-(important?Math.min(2*3600000,Math.max(0,Number(leadMs)||0)):0);
+  return !Number.isFinite(at) || at<=now && now-at>=(important?6:48)*3600000-(important?proactiveLead(leadMs):0);
 }
 function checkpoint(progress,total) {
   const previous=progress.maintenance;
@@ -73,4 +78,4 @@ function maintenanceBudget(settings,runtimeMs=90000){
  const interval=Math.max(1,Number(settings.intervalMs)||1100),configured=Math.max(1,Number(settings.batchSize)||1);
  return {batchSize:Math.min(configured,35,Math.max(1,Math.floor(runtimeMs/(interval+1000)))),runtimeMs,intervalMs:interval};
 }
-module.exports={maintenanceBudget,prepare,due,checkpoint,prioritize,legacyTargets,priorityMaintenance};
+module.exports={proactiveLead,maintenanceBudget,prepare,due,checkpoint,prioritize,legacyTargets,priorityMaintenance};

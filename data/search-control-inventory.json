@@ -688,6 +688,572 @@
       "overlap": "仕入れ値÷PSA9の既存条件・費用込み利益率・GOとは別"
     },
     {
+      "id": "buybackHighestMinInput",
+      "label": "最高買取倍率 下限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "最高の有効な買取提示倍率で探索",
+      "basis": "選択店舗・受付の減額前提示額÷同時期の国内PSA10相場。表示と同じ最高提示",
+      "effect": "空欄無効、0有効。未取得・古値・仕様保留は条件有効時のみ除外",
+      "overlap": "同店・他カードの通常倍率／店舗別中央値の並び順／費用込み採算・GOとは別"
+    },
+    {
+      "id": "buybackMeanMinInput",
+      "label": "全体平均買取倍率 下限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "buyback7RatioMinInput",
+      "label": "7日平均買取倍率 下限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "buyback30RatioMinInput",
+      "label": "30日平均買取倍率 下限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "buyback75RatioMinInput",
+      "label": "75日平均買取倍率 下限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "buybackRatioDaysMinInput",
+      "label": "期間倍率の最低観測日数",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "buybackRatioReferenceInput",
+      "label": "1店舗・部分期間の参考倍率を採用",
+      "category": "詳細検索",
+      "initial": false,
+      "type": "checkbox",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "postingDaysMinInput",
+      "label": "買取掲載の最低観測日数",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "buyback7MinInput",
+      "label": "買取表掲載日数 直近7日",
+      "category": "詳細検索",
+      "initial": "0",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "buyback7MaxInput",
+      "label": "買取表掲載日数 直近7日",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "buyback30MinInput",
+      "label": "買取表掲載日数 直近30日",
+      "category": "詳細検索",
+      "initial": "0",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "buyback30MaxInput",
+      "label": "買取表掲載日数 直近30日",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "buyback90MinInput",
+      "label": "買取表掲載日数 直近90日",
+      "category": "詳細検索",
+      "initial": "0",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "buyback90MaxInput",
+      "label": "買取表掲載日数 直近90日",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "利用可能な買取掲載・価格・観測量で探索",
+      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
+      "effect": "指定件数・カバー率・期間の不足で除外",
+      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
+    },
+    {
+      "id": "listingCurrentMinInput",
+      "label": "みんトレ掲載PSA10現在出品数 下限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "listingCurrentMaxInput",
+      "label": "みんトレ掲載PSA10現在出品数 上限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "listingMeanMinInput",
+      "label": "PSA10・30日平均出品数 下限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "listingMeanMaxInput",
+      "label": "PSA10・30日平均出品数 上限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "rawListingCurrentMinInput",
+      "label": "みんトレ掲載美品現在出品数 下限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "rawListingCurrentMaxInput",
+      "label": "みんトレ掲載美品現在出品数 上限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "rawListingMeanMinInput",
+      "label": "美品・30日平均出品数 下限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "rawListingMeanMaxInput",
+      "label": "美品・30日平均出品数 上限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "listingMean200MinInput",
+      "label": "PSA10・200日平均出品数 下限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "listingMean200MaxInput",
+      "label": "PSA10・200日平均出品数 上限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "rawListingMean200MinInput",
+      "label": "美品・200日平均出品数 下限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "rawListingMean200MaxInput",
+      "label": "美品・200日平均出品数 上限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
       "id": "currentMarketSearchKindInput",
       "label": "現相場専用：探索方法",
       "category": "探索基準・表示",
@@ -1441,160 +2007,6 @@
       "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
     },
     {
-      "id": "buybackHighestMinInput",
-      "label": "最高買取倍率 下限",
-      "category": "詳細検索",
-      "initial": "",
-      "type": "number",
-      "options": [],
-      "removable": true,
-      "modes": [
-        "normal",
-        "combined",
-        "current-market（上限探索）",
-        "current-market（購入採算）",
-        "current-market（上限買値）",
-        "snkr-raw",
-        "low-risk"
-      ],
-      "purpose": "最高の有効な買取提示倍率で探索",
-      "basis": "選択店舗・受付の減額前提示額÷同時期の国内PSA10相場。表示と同じ最高提示",
-      "effect": "空欄無効、0有効。未取得・古値・仕様保留は条件有効時のみ除外",
-      "overlap": "同店・他カードの通常倍率／店舗別中央値の並び順／費用込み採算・GOとは別"
-    },
-    {
-      "id": "buybackMeanMinInput",
-      "label": "全体平均買取倍率 下限",
-      "category": "詳細検索",
-      "initial": "",
-      "type": "number",
-      "options": [],
-      "removable": true,
-      "modes": [
-        "normal",
-        "combined",
-        "current-market（上限探索）",
-        "current-market（購入採算）",
-        "current-market（上限買値）",
-        "snkr-raw",
-        "low-risk"
-      ],
-      "purpose": "利用可能な買取掲載・価格・観測量で探索",
-      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
-      "effect": "指定件数・カバー率・期間の不足で除外",
-      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
-    },
-    {
-      "id": "buyback7RatioMinInput",
-      "label": "7日平均買取倍率 下限",
-      "category": "詳細検索",
-      "initial": "",
-      "type": "number",
-      "options": [],
-      "removable": true,
-      "modes": [
-        "normal",
-        "combined",
-        "current-market（上限探索）",
-        "current-market（購入採算）",
-        "current-market（上限買値）",
-        "snkr-raw",
-        "low-risk"
-      ],
-      "purpose": "利用可能な買取掲載・価格・観測量で探索",
-      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
-      "effect": "指定件数・カバー率・期間の不足で除外",
-      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
-    },
-    {
-      "id": "buyback30RatioMinInput",
-      "label": "30日平均買取倍率 下限",
-      "category": "詳細検索",
-      "initial": "",
-      "type": "number",
-      "options": [],
-      "removable": true,
-      "modes": [
-        "normal",
-        "combined",
-        "current-market（上限探索）",
-        "current-market（購入採算）",
-        "current-market（上限買値）",
-        "snkr-raw",
-        "low-risk"
-      ],
-      "purpose": "利用可能な買取掲載・価格・観測量で探索",
-      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
-      "effect": "指定件数・カバー率・期間の不足で除外",
-      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
-    },
-    {
-      "id": "buyback75RatioMinInput",
-      "label": "75日平均買取倍率 下限",
-      "category": "詳細検索",
-      "initial": "",
-      "type": "number",
-      "options": [],
-      "removable": true,
-      "modes": [
-        "normal",
-        "combined",
-        "current-market（上限探索）",
-        "current-market（購入採算）",
-        "current-market（上限買値）",
-        "snkr-raw",
-        "low-risk"
-      ],
-      "purpose": "利用可能な買取掲載・価格・観測量で探索",
-      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
-      "effect": "指定件数・カバー率・期間の不足で除外",
-      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
-    },
-    {
-      "id": "buybackRatioDaysMinInput",
-      "label": "期間倍率の最低観測日数",
-      "category": "詳細検索",
-      "initial": "",
-      "type": "number",
-      "options": [],
-      "removable": true,
-      "modes": [
-        "normal",
-        "combined",
-        "current-market（上限探索）",
-        "current-market（購入採算）",
-        "current-market（上限買値）",
-        "snkr-raw",
-        "low-risk"
-      ],
-      "purpose": "利用可能な買取掲載・価格・観測量で探索",
-      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
-      "effect": "指定件数・カバー率・期間の不足で除外",
-      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
-    },
-    {
-      "id": "buybackRatioReferenceInput",
-      "label": "1店舗・部分期間の参考倍率を採用",
-      "category": "詳細検索",
-      "initial": false,
-      "type": "checkbox",
-      "options": [],
-      "removable": true,
-      "modes": [
-        "normal",
-        "combined",
-        "current-market（上限探索）",
-        "current-market（購入採算）",
-        "current-market（上限買値）",
-        "snkr-raw",
-        "low-risk"
-      ],
-      "purpose": "利用可能な買取掲載・価格・観測量で探索",
-      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
-      "effect": "指定件数・カバー率・期間の不足で除外",
-      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
-    },
-    {
       "id": "postingRate30MinInput",
       "label": "30日買取掲載率 下限 %",
       "category": "詳細検索",
@@ -1619,28 +2031,6 @@
     {
       "id": "postingShops30MinInput",
       "label": "30日平均掲載店舗数 下限",
-      "category": "詳細検索",
-      "initial": "",
-      "type": "number",
-      "options": [],
-      "removable": true,
-      "modes": [
-        "normal",
-        "combined",
-        "current-market（上限探索）",
-        "current-market（購入採算）",
-        "current-market（上限買値）",
-        "snkr-raw",
-        "low-risk"
-      ],
-      "purpose": "利用可能な買取掲載・価格・観測量で探索",
-      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
-      "effect": "指定件数・カバー率・期間の不足で除外",
-      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
-    },
-    {
-      "id": "postingDaysMinInput",
-      "label": "買取掲載の最低観測日数",
       "category": "詳細検索",
       "initial": "",
       "type": "number",
@@ -2064,132 +2454,6 @@
       "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
       "effect": "条件に不適合なカードを除外。欠損は0にしない",
       "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
-    },
-    {
-      "id": "buyback7MinInput",
-      "label": "買取表掲載日数 直近7日",
-      "category": "詳細検索",
-      "initial": "0",
-      "type": "number",
-      "options": [],
-      "removable": true,
-      "modes": [
-        "normal",
-        "combined",
-        "current-market（上限探索）",
-        "current-market（購入採算）",
-        "current-market（上限買値）",
-        "low-risk"
-      ],
-      "purpose": "利用可能な買取掲載・価格・観測量で探索",
-      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
-      "effect": "指定件数・カバー率・期間の不足で除外",
-      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
-    },
-    {
-      "id": "buyback7MaxInput",
-      "label": "買取表掲載日数 直近7日",
-      "category": "詳細検索",
-      "initial": "",
-      "type": "number",
-      "options": [],
-      "removable": true,
-      "modes": [
-        "normal",
-        "combined",
-        "current-market（上限探索）",
-        "current-market（購入採算）",
-        "current-market（上限買値）",
-        "low-risk"
-      ],
-      "purpose": "利用可能な買取掲載・価格・観測量で探索",
-      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
-      "effect": "指定件数・カバー率・期間の不足で除外",
-      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
-    },
-    {
-      "id": "buyback30MinInput",
-      "label": "買取表掲載日数 直近30日",
-      "category": "詳細検索",
-      "initial": "0",
-      "type": "number",
-      "options": [],
-      "removable": true,
-      "modes": [
-        "normal",
-        "combined",
-        "current-market（上限探索）",
-        "current-market（購入採算）",
-        "current-market（上限買値）",
-        "low-risk"
-      ],
-      "purpose": "利用可能な買取掲載・価格・観測量で探索",
-      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
-      "effect": "指定件数・カバー率・期間の不足で除外",
-      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
-    },
-    {
-      "id": "buyback30MaxInput",
-      "label": "買取表掲載日数 直近30日",
-      "category": "詳細検索",
-      "initial": "",
-      "type": "number",
-      "options": [],
-      "removable": true,
-      "modes": [
-        "normal",
-        "combined",
-        "current-market（上限探索）",
-        "current-market（購入採算）",
-        "current-market（上限買値）",
-        "low-risk"
-      ],
-      "purpose": "利用可能な買取掲載・価格・観測量で探索",
-      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
-      "effect": "指定件数・カバー率・期間の不足で除外",
-      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
-    },
-    {
-      "id": "buyback90MinInput",
-      "label": "買取表掲載日数 直近90日",
-      "category": "詳細検索",
-      "initial": "0",
-      "type": "number",
-      "options": [],
-      "removable": true,
-      "modes": [
-        "normal",
-        "combined",
-        "current-market（上限探索）",
-        "current-market（購入採算）",
-        "current-market（上限買値）",
-        "low-risk"
-      ],
-      "purpose": "利用可能な買取掲載・価格・観測量で探索",
-      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
-      "effect": "指定件数・カバー率・期間の不足で除外",
-      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
-    },
-    {
-      "id": "buyback90MaxInput",
-      "label": "買取表掲載日数 直近90日",
-      "category": "詳細検索",
-      "initial": "",
-      "type": "number",
-      "options": [],
-      "removable": true,
-      "modes": [
-        "normal",
-        "combined",
-        "current-market（上限探索）",
-        "current-market（購入採算）",
-        "current-market（上限買値）",
-        "low-risk"
-      ],
-      "purpose": "利用可能な買取掲載・価格・観測量で探索",
-      "basis": "選択対象店舗、指定7／30／90日。掲載回数は実買取件数ではない",
-      "effect": "指定件数・カバー率・期間の不足で除外",
-      "overlap": "現在掲載、継続掲載、正常店舗日分母は別。失敗を未掲載にしない"
     },
     {
       "id": "buybackShopsMinInput",
@@ -3677,6 +3941,64 @@
       "overlap": "検索の利益下限とは別。単体資金効率の待ち日数も判定用年換算とは別"
     },
     {
+      "id": "calculationBuyModeInput",
+      "label": "主計算の買値",
+      "category": "詳細検索",
+      "initial": "median",
+      "type": "select",
+      "options": [
+        {
+          "value": "median",
+          "label": "素体参考相場・中央値へ統一",
+          "selected": true
+        },
+        {
+          "value": "store",
+          "label": "旧・現在買える状態A価格で比較",
+          "selected": false
+        },
+        {
+          "value": "legacy",
+          "label": "旧設定を保持して比較",
+          "selected": false
+        }
+      ],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "medianBuyPctInput",
+      "label": "追加試算：中央値の購入割合％",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
       "id": "efficiencyBuyInput",
       "label": "資金効率の買値",
       "category": "仕入れ判定・計算設定",
@@ -4068,8 +4390,8 @@
       "effect": "明示操作で判定用の最低利益額だけ0円。計算利益・利益率・年換算・GO安全条件は維持"
     },
     {
-      "id": "guide70Btn",
-      "label": "10率70%基準",
+      "id": "guide80Btn",
+      "label": "自己実績約80%・利用者申告値",
       "category": "仕入れ判定・計算設定",
       "effect": "設定10率70%/50%を変更。公式取得率があるカードは公式優先。未知の実績率で自動補正しない"
     },

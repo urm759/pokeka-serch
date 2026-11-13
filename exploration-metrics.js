@@ -127,7 +127,7 @@
     if (value[scenario]==='obs90') { previous[scenario]='obs90'; value[scenario]='obs75'; }
     return {value,previous,changed:Object.keys(previous).length>0};
   }
-  function observation(summary, id, current, days) {
+  function observation(summary, id, current, days, now = null) {
     const indices = {7:[0,1,7],30:[2,3,4],75:[5,6,8],200:[9,10,11]}[days];
     const row = summary?.cards?.[id];
     // Never relabel the compact slot of an old 90-day summary as 75 days.
@@ -138,16 +138,21 @@
     const reference = !valid || count < required || days === 200 && row?.[12] > 0;
     const latest = finite(age) && age >= 0 && Number.isFinite(Date.parse(summary?.asOf))
       ? new Date(Date.parse(summary.asOf+'T00:00:00Z')-age*86400000).toISOString().slice(0,10) : null;
+    const evaluationDay=now==null?summary?.asOf:new Date(now+9*3600000).toISOString().slice(0,10),evaluatedAge=latest?Math.round((Date.parse(evaluationDay)-Date.parse(latest))/86400000):null;
     const drawdownIndex=summary?.drawdownIndices?.[days], drawdown=drawdownIndex == null ? null : row?.[drawdownIndex];
     return {days,mean:valid ? mean : null,count:valid ? count : null,age:finite(age) ? age : null,
       drawdown:valid && count >= 2 && finite(drawdown) && drawdown <= 0 ? drawdown : null,
       drawdownReference:count < days || (row?.[summary?.observationEvidenceIndices?.[days]] ?? 1) > 0,
       delta:valid && finite(current) && current > 0 ? percent(current,mean) : null,reference,latest,
-      stale:!latest || age > (summary?.staleObservationDays ?? 2)};
+      sourceAsOf:summary?.asOf||null,evaluationDay,windowCurrent:summary?.asOf===evaluationDay,evaluatedAge,stale:!latest || evaluatedAge==null || evaluatedAge<0 || evaluatedAge > (summary?.staleObservationDays ?? 2)};
   }
   function purchaseOfferUrl(offer) {
     if(!offer?.available||!offer.fresh||offer.purchaseEligible===false||!finite(offer.value)||offer.value<=0)return null;
-    let url;try{url=new URL(offer.url);}catch{return null;}
+    return purchaseProductUrl(offer);
+  }
+  // Link validation only. Historical links do not assert fresh stock or price.
+  function purchaseProductUrl(offer) {
+    let url;try{url=new URL(offer?.url);}catch{return null;}
     if(url.protocol!=='https:'||url.username||url.password)return null;
     const host=url.hostname.replace(/^www\./,''), source=String(offer.source||'');
     const direct=host==='hareruya2.com'&&/晴れる屋/.test(source)&&/^\/products\/[^/]+\/?$/.test(url.pathname)
@@ -157,21 +162,36 @@
     return direct?url.href:null;
   }
   function variation(summary,card,now=Date.now(),requested=null) {
-    const evidence=requested===7?summary?.variation?.short?.cards?.[card.id]:summary?.variation?.cards?.[card.id];
-    const means=observationPeriods.map(d=>observation(summary,card.id,card.psa10,d)).filter(r=>r.mean>0&&!r.stale);
-    const direction=means.find(r=>r.days===30)||means[0],delta=direction?.delta;
+    const explicit=[75,200].includes(requested),window=summary?.variation?.periods?.[requested];
+    const status=window?.status?.[card.id],base={days:requested,count:status?.[0]??0,span:status?.[1]??0,gap:status?.[2]??null,latest:status?.[3]??null,first:status?.[4]??null,reference:true};
+    const currentDay=new Date(now+9*3600000).toISOString().slice(0,10);
+    const partial=explicit&&status&&status[3]<=currentDay&&status[4]<=status[3]&&Number.isInteger(status[0])&&status[0]>0&&status[0]<=requested&&status[1]>=status[0]&&status[1]<=requested;
+    const range=partial&&finite(status[7])&&status[7]>0&&finite(status[8])&&status[8]>=status[7]?{min:status[7],max:status[8]}:{};
+    const numerical=partial&&status[0]>=2&&finite(status[5])&&status[5]>=0&&finite(status[6])&&status[6]<=0&&status[6]>=-100&&range.min>0?{cv:status[5],drawdown:status[6],...range}:range;
+    const historical=partial&&Date.parse(currentDay)-Date.parse(status[3])>2*86400000;
+    // A partial observed interval can have a descriptive label without passing
+    // the requested 75/200-day coverage gate. Never promote it to full-period evidence.
+    const referenceEligible=partial&&!historical&&status[0]>=15&&status[1]>=14&&status[0]/status[1]>=.5&&Number.isInteger(status[2])&&status[2]>=0&&status[2]<=7
+      &&Number.isFinite(Date.parse(status[3]))&&Number.isFinite(Date.parse(status[4]))&&Math.round((Date.parse(status[3])-Date.parse(status[4]))/86400000)+1===status[1]
+      &&finite(numerical.cv)&&finite(numerical.drawdown)&&!card.identityReviewRequired&&!card.psa10Audit?.specificationMismatch;
+    const classify=(cv,dd)=>cv>=20||dd<=-30?'大きい':cv>=8||dd<=-15?'中程度':'小さい';
+    const referenceAssessment={referenceEligible,referenceLabel:referenceEligible?classify(numerical.cv,numerical.drawdown):null};
+    const evidence=explicit?window?.cards?.[card.id]:requested===7?summary?.variation?.short?.cards?.[card.id]:summary?.variation?.cards?.[card.id];
+    const means=observationPeriods.map(d=>observation(summary,card.id,card.psa10,d,now)).filter(r=>r.mean>0&&!r.stale);
+    const direction=means.find(r=>r.days===(explicit?requested:30))||means[0],delta=direction?.delta;
     const trend=delta==null?'方向不明':delta>5?'上昇方向':delta< -5?'下落方向':'平均付近';
     if(!evidence){
       const labels={history:'実測履歴なし',evidence:'確認済み実測なし・旧記録の根拠不足',days:'確認済み観測日数不足',span:'実観測期間不足',gap:'連続欠測7日超',stale:'最終観測が古い',dispersion:'ばらつき・最大下落の計算材料不足'};
-      const reasons=summary?.variation?.unavailable?.[card.id]||summary?.variation?.defaultUnavailable;
-      return {label:'判断材料不足',trend,reason:reasons?.length?reasons.map(r=>labels[r]||r).join('／'):'実測のばらつき・観測充足不足。重複する4期間を独立根拠にしない'};
+      let reasons=explicit?(window?.unavailable?.[card.id]||[status?'days':'evidence']):summary?.variation?.unavailable?.[card.id]||summary?.variation?.defaultUnavailable;
+      if(historical)reasons=[...new Set([...(reasons||[]),'stale'])];
+      return {...(explicit?base:{}),...numerical,...referenceAssessment,assessmentEligible:false,measurementState:historical?'historical':partial?'partial':'missing',label:'判断材料不足',trend,reason:reasons?.length?reasons.map(r=>labels[r]||r).join('／'):'実測のばらつき・観測充足不足。重複する4期間を独立根拠にしない'};
     }
     const [days,cv,drawdown,count,span,gap,latest]=evidence;
     const age=Math.floor((now+9*3600000)/86400000)-Date.parse(latest)/86400000;
-    if(!(age>=0&&age<=2&&count>=(days===7?5:15)&&count/days>=.5&&span>=(days===7?5:14)&&gap<=(days===7?2:7)))return {label:'判断材料不足',trend,reason:'観測不足・古値・日時不正'};
-    if(![cv,drawdown].every(finite))return {label:'判断材料不足',trend,reason:'ばらつき・最大下落の根拠不足'};
-    const label=cv>=20||drawdown<=-30?'大きい':cv>=8||drawdown<=-15?'中程度':'小さい';
-    return {label,trend,days,cv,drawdown,count,span,gap,latest,min:evidence[7]??null,max:evidence[8]??null,reference:count<days,excluded:summary?.variation?.excluded?.[card.id]||0,reason:'確認済み実測のみ。記述的な参考区分：変動係数20%/最大下落30%以上は大、8%/15%以上は中。予測・GO条件ではない'};
+    if(!(age>=0&&age<=2&&count>=(days===7?5:15)&&count/days>=.5&&span>=(days===7?5:14)&&gap<=(days===7?2:7)))return {...(explicit?base:{}),...numerical,assessmentEligible:false,measurementState:partial?'historical':'missing',label:'判断材料不足',trend,reason:'観測不足・古値・日時不正'};
+    if(![cv,drawdown].every(finite))return {...(explicit?base:{}),...numerical,assessmentEligible:false,measurementState:partial?'historical':'missing',label:'判断材料不足',trend,reason:'ばらつき・最大下落の根拠不足'};
+    const label=classify(cv,drawdown);
+    return {label,trend,assessmentEligible:true,measurementState:'sufficient',days,cv,drawdown,count,span,gap,latest,first:evidence[9]??null,min:evidence[7]??null,max:evidence[8]??null,reference:count<days,excluded:summary?.variation?.excluded?.[card.id]||0,reason:'確認済み実測のみ。記述的な参考区分：変動係数20%/最大下落30%以上は大、8%/15%以上は中。予測・GO条件ではない'};
   }
   function variationTone(label) { return {'大きい':'variation-large','中程度':'variation-medium','小さい':'variation-small'}[label]||'variation-unknown'; }
   function priceGap(summary,card,now=Date.now()) {
@@ -202,7 +222,7 @@
     return reasons;
   }
   function observationEconomics(summary, card, view, days, policy, feeRate, extra, now = Date.now()) {
-    const observed = observation(summary,card.id,card.psa10,days);
+    const observed = observation(summary,card.id,card.psa10,days,now);
     const row=summary?.cards?.[card.id], index=summary?.observationEvidenceIndices?.[days] ?? ({7:13,30:14,75:15,200:12})[days];
     const legacy=row?.[index];
     observed.unverifiedDays=Number.isInteger(legacy) && legacy >= 0 ? legacy : row?.[12] === 0 ? 0 : null;
@@ -423,9 +443,19 @@
     const eligibleEntries=Object.fromEntries(Object.entries(entries).filter(([shop])=>!identityKey||summary.cards?.[id]?.[shop]?.identity===identityKey));
     const cached=support?.meanWindows?.[id];
     const hasDays=Object.values(eligibleEntries).some(row=>Object.hasOwn(row,'meanDays'));
-    const cachedValid=cached&&cached.asOf===asOf&&(!identityKey||cached.identity===identityKey)&&mode!=='selected';
-    const meanWindows=cachedValid?Object.fromEntries(Object.entries(cached[mode==='mail'?'mail':'all']||{}).map(([d,w])=>[d,{...w}]))
-      :hasDays?buybackMeanWindows(eligibleEntries,support?.shops,mode,selected,asOf):null;
+    const cachedSelection=cached&&(!identityKey||cached.identity===identityKey)&&mode!=='selected';
+    const cachedWindows=cachedSelection?cached[mode==='mail'?'mail':'all']||{}:{};
+    const calculatedAt=support?.calculatedAt||null;
+    const meanWindows=hasDays?buybackMeanWindows(eligibleEntries,support?.shops,mode,selected,asOf):Object.fromEntries([7,30,75].map(days=>{
+      const w=cachedWindows[days],end=Date.parse(asOf),origin=Date.parse(cached?.asOf),first=Date.parse(w?.firstDate);
+      // A fixed input window is mathematically unchanged until its earliest
+      // adopted day exits. Keep the original source date and collection time.
+      const unchanged=w&&Number.isFinite(origin)&&end>=origin&&(w.days===0||Number.isFinite(first)&&first<=end&&first>=end-(days-1)*86400000);
+      const previous=w?{...w,sourceAsOf:cached.asOf,calculatedAt}:null;
+      return [days,unchanged?{...w,status:'ready',sourceAsOf:cached.asOf,evaluatedAsOf:asOf,calculatedAt}:
+        {mean:null,days:null,status:support?.compact?'recalculation-pending':'unavailable',sourceAsOf:cached?.asOf||null,evaluatedAsOf:asOf,calculatedAt,previous}];
+    }));
+    if(hasDays)for(const w of Object.values(meanWindows))Object.assign(w,{status:'ready',sourceAsOf:support.asOf,evaluatedAsOf:asOf,calculatedAt});
     const historicalAt=date=>{
       const times=Object.entries(eligibleEntries).flatMap(([shop,row])=>{const meta=support.shops[shop],p=row.lastComparable||row.current;
         if(!meta||meta.stopped||['pending','retired'].includes(meta.permission)||mode==='selected'&&!selected.includes(shop)||mode==='mail'&&meta.fulfilment==='store'||p?.[5]!==date||support.timingPolicy&&p[7]!==date)return [];
@@ -462,7 +492,9 @@
   function stockTrend(sources,now=Date.now()) {
     const movementTone=(net,pairs)=>net==null?'unknown':net===0?'flat':net>0?'increase':Math.abs(net)/Math.max(1,pairs)>=1?'decrease-fast':'decrease';
     sources=[...new Map(sources.map((r,i)=>[r?.sourceId||i,r])).values()];
-    const valid=sources.filter(Boolean).map(r=>r.stockStatistics?r:{...r,stockStatistics:r.stockTrend?{asOfDate:r.stockTrend[0],pairs7:r.stockTrend[1],pairs30:r.stockTrend[2]}:null}).filter(r=>r?.identityVerified===true&&r.conditionAccepted!==false&&!r.priceQuarantined&&!r.cardMismatchSuspected&&r.listingActive!==false&&Number.isFinite(Date.parse(r.inventoryObservedAt||r.observedAt))&&Date.parse(r.inventoryObservedAt||r.observedAt)<=now&&now-Date.parse(r.inventoryObservedAt||r.observedAt)<=48*3600000&&r.stockStatistics?.asOfDate===new Date(now+9*3600000).toISOString().slice(0,10));
+    const freshSources=sources.filter(Boolean).map(r=>r.stockStatistics?r:{...r,stockStatistics:r.stockTrend?{asOfDate:r.stockTrend[0],pairs7:r.stockTrend[1],pairs30:r.stockTrend[2]}:null}).filter(r=>r?.identityVerified===true&&r.conditionAccepted!==false&&!r.priceQuarantined&&!r.cardMismatchSuspected&&r.listingActive!==false&&Number.isFinite(Date.parse(r.inventoryObservedAt||r.observedAt))&&Date.parse(r.inventoryObservedAt||r.observedAt)<=now&&now-Date.parse(r.inventoryObservedAt||r.observedAt)<=48*3600000&&r.stockStatistics);
+    const today=new Date(now+9*3600000).toISOString().slice(0,10),valid=freshSources.filter(r=>r.stockStatistics.asOfDate===today);
+    const pending=freshSources.some(r=>r.stockStatistics.asOfDate<today),expired=!freshSources.length&&sources.some(r=>Number.isFinite(Date.parse(r?.inventoryObservedAt||r?.observedAt))&&now-Date.parse(r.inventoryObservedAt||r.observedAt)>48*3600000);
     const flowValid=(r,d)=>{const f=r.stockFlow?.[d];return f&&(!f.asOfDate||f.asOfDate===r.stockStatistics.asOfDate)&&[f.net,f.increase,f.decrease].every(Number.isFinite)&&f.increase>=0&&f.decrease>=0&&Math.abs(f.net-(f.increase-f.decrease))<1e-9&&f.pairs>0&&f.pairs<=d;};
     const conflicts=valid.filter(r=>flowValid(r,7)&&flowValid(r,30)&&(r.stockFlow[30].decrease<r.stockFlow[7].decrease||r.stockFlow[30].increase<r.stockFlow[7].increase||r.stockFlow[30].pairs<r.stockFlow[7].pairs));
     const periods={};for(const d of [7,30]){const rows=valid.filter(r=>Number.isFinite(r['drop'+d])&&r.stockStatistics['pairs'+d]>0),flows=valid.filter(r=>flowValid(r,d)&&!conflicts.includes(r));periods[d]={drop:rows.length?rows.reduce((n,r)=>n+r['drop'+d],0):null,stores:rows.length,pairs:rows.reduce((n,r)=>n+r.stockStatistics['pairs'+d],0),complete:rows.length>0&&rows.every(r=>r.stockStatistics['pairs'+d]===d),
@@ -471,8 +503,8 @@
       sourceIds:flows.map(r=>r.sourceId),asOfDate:new Date(now+9*3600000).toISOString().slice(0,10),conflictStores:conflicts.length};periods[d].tone=movementTone(periods[d].net,periods[d].flowPairs);}
     const observed=valid.filter(r=>r.stockStatistics.pairs7>=5&&Number.isFinite(r.drop7));
     const daily=observed.length?observed.reduce((n,r)=>n+r.drop7/r.stockStatistics.pairs7,0):null;
-    const flow=periods[7],label=flow.net==null?daily==null?'判断材料不足':'増減比較待ち・減少のみ参考':flow.net>0?'在庫増加':flow.net<0?'在庫減少':'横ばい';
-    return {periods,label,tone:flow.tone,sameStoreCohort:JSON.stringify(periods[7].sourceIds)===JSON.stringify(periods[30].sourceIds),
+    const flow=periods[7],label=flow.net==null?daily==null?pending?'日次再集計待ち':expired?'期限切れ・再確認待ち':'判断材料不足':'増減比較待ち・減少のみ参考':flow.net>0?'在庫増加':flow.net<0?'在庫減少':'横ばい';
+    return {periods,label,status:valid.length?'ready':pending?'recalculation-pending':expired?'expired':'unavailable',tone:flow.tone,sameStoreCohort:JSON.stringify(periods[7].sourceIds)===JSON.stringify(periods[30].sourceIds),
       conflictSources:conflicts.map(r=>r.sourceId),rule:'販売枚数ではなく在庫の実測増減。純増減＝補充累計－減少累計。同じ商品URL・カード仕様を確認できた連続日の差だけを合算し、欠測を0埋めしません。対象区間は暦日の範囲で、7日間なら最大7区間・8観測日。掲載終了・訂正を売上に変換せず、店舗・URLごとの採用区間を表示します。旧履歴の減少だけは商品継続未確認の参考値。数量未提供は未取得、期間間の累計矛盾は保留。'};
   }
   function buybackSearch(value,settings={}) {
@@ -481,7 +513,7 @@
     for(const [field,n,label,reference]of inputs){const min=settings[field];if(min==null)continue;
       if(!finite(min)||min<0){reasons.push(label+'・下限入力を確認');continue;}
       const days=field.match(/^buyback(7|30|75)RatioMin$/)?.[1],w=days?periods[days]:null;
-      if(!finite(n)||w?.stale){reasons.push(label+'・未取得／古値／比較根拠不足');continue;}
+      if(w?.status==='recalculation-pending'){reasons.push(label+'・日次再集計待ち');continue;}if(!finite(n)||w?.stale){reasons.push(label+'・未取得／古値／比較根拠不足');continue;}
       if(reference&&!ref){reasons.push(label+'・参考値を採用しない設定');continue;}
       if(w&&settings.buybackRatioDaysMin!=null&&(!finite(settings.buybackRatioDaysMin)||settings.buybackRatioDaysMin<1||w.days<settings.buybackRatioDaysMin)){reasons.push(label+'・観測日数不足');continue;}
       if(n<min)reasons.push(label+'・下限未達');
@@ -500,5 +532,5 @@
         status:pop[4]===0?'近い期間の参考比較':pop[4]===2?'POP減少・訂正等':'期間不一致・部分期間',
         ratio:measured&&!stale&&pop[4]===0&&pop[0]>0?n/pop[0]:null}:null};
   }
-  return {listingCounts,stockTrend,variation,variationTone,priceGap,purchaseOfferUrl,referenceBuy,percent,inRange,offerPrice,referenceMedian,meanSale,atPurchase,efficiency,coverage,observationPeriods,migrateObservationSettings,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics,periodEfficiencyAverage,efficiencyUnavailableLabel,buybackSupport,buybackSearch,buybackCurrentStatus,buybackMeanWindows,buybackRatioTone,buybackRatioBoundaries,tradeDemand};
+  return {listingCounts,stockTrend,variation,variationTone,priceGap,purchaseOfferUrl,purchaseProductUrl,referenceBuy,percent,inRange,offerPrice,referenceMedian,meanSale,atPurchase,efficiency,coverage,observationPeriods,migrateObservationSettings,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics,periodEfficiencyAverage,efficiencyUnavailableLabel,buybackSupport,buybackSearch,buybackCurrentStatus,buybackMeanWindows,buybackRatioTone,buybackRatioBoundaries,tradeDemand};
 });

@@ -10,6 +10,7 @@ try{
  write('work/gemrate-collector-extension/core.js',fs.readFileSync(path.join(__dirname,'gemrate-collector-extension/core.js'),'utf8'));
  write('work/run_gemrate_reference_pipeline.js',"const fs=require('fs'),p=require('path'),core=require('./gemrate-collector-extension/core');if(typeof core.bindingMatches!=='function')throw Error('export binding validator missing');if(!process.env.GEMRATE_PRIVATE_STORE)throw Error('private store missing');fs.writeFileSync(p.join(process.env.GEMRATE_PRIVATE_STORE,'fixture-worker-called.json'),JSON.stringify({cwd:process.cwd()}));fs.writeFileSync('data/gemrate-reference-summary.json','worker projection');console.log('fixture isolated pipeline called');");
  write('data/gemrate-reference-summary.json','original main');write('private-development.txt','initial');
+ write('work/yuyutei_catalog.json','[{"fixture":"complete domestic data"}]');
  git(['add','.']);git(['commit','-m','fixture']);git(['push','-u','origin','main']);
  write('private-development.txt','staged personal work');git(['add','private-development.txt']);
  const before=git(['status','--porcelain']),head=git(['rev-parse','HEAD']);
@@ -18,6 +19,12 @@ try{
  assert(fs.readFileSync(path.join(store,'worker/data/gemrate-reference-summary.json'),'utf8').includes('worker projection'));
  worker.run(root,store);assert.equal(git(['status','--porcelain']),before,'repeat worker must not touch parent staging');assert(fs.readdirSync(path.join(store,'worker-projections')).length);
  assert.equal(JSON.parse(fs.readFileSync(path.join(store,'fixture-worker-called.json'))).cwd,path.join(store,'worker'));
+ const domestic=path.join(store,'domestic-worker');git(['worktree','add','--detach',domestic,'origin/main'],path.join(store,'worker'));
+ git(['sparse-checkout','disable'],domestic);
+ assert(fs.existsSync(path.join(domestic,'work/yuyutei_catalog.json')),'domestic lane must materialize JSON omitted by inherited GemRate sparse patterns');
+ assert.equal(fs.readFileSync(path.join(root,'private-development.txt'),'utf8'),'staged personal work');
+ assert(!fs.existsSync(path.join(store,'worker/work/yuyutei_catalog.json')),'GemRate worktree stays sparse');
+ git(['worktree','remove','--force',domestic]);
  console.log('PASS private sparse-main worker starts and repeats with original staging untouched, retains its old projections and routes private store explicitly');
 }finally{
  const candidate=path.join(store,'worker');if(fs.existsSync(path.join(candidate,'.git')))git(['worktree','remove','--force',candidate]);

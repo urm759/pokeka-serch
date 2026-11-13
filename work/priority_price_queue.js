@@ -15,6 +15,8 @@ function plan({ cards, sourceId, catalog, candidateRows = {}, fixedIds = [], foc
     const focus = Boolean(groupFor(card, focusConfig));
     const candidate = Boolean(candidateRows[card.id]);
     const fixedTarget = fixed.has(card.id);
+    const formalCandidate=candidateRows[card.id]?.formalCandidate===true;
+    const medianAtRisk=candidateRows[card.id]?.medianAtRisk===true;
     const important = focus || candidate || favorites.has(card.id) || fixedTarget;
     const entry = byId.get(card.id) || byUrl.get(url);
     const explicitTimes=entry&&(Object.hasOwn(entry,'priceObservedAt')||Object.hasOwn(entry,'inventoryObservedAt'));
@@ -30,20 +32,21 @@ function plan({ cards, sourceId, catalog, candidateRows = {}, fixedIds = [], foc
     const retry = budgetDeferred ? NaN : Date.parse(previous.nextRetryAt);
     const waiting = manualWait[card.id]?.url === url || !budgetDeferred && previous.url === url && previous.failures >= (config.retryLimit || 3);
     const recentlyChecked = important && validTime && now - time < 2 * 3600000;
-    return { card, important, focus, candidate, fixedTarget, url, lastSuccessAt, lastAttemptAt: previous.lastAttemptAt || null,
+    return { card, important, focus, candidate, fixedTarget, formalCandidate, medianAtRisk, url, lastSuccessAt, lastAttemptAt: previous.lastAttemptAt || null,
       nextDueAt: due ? new Date(due).toISOString() : null, due: due <= now,
       proactive: important && due > now && proactive.eligibleDeadline(due, important, now, config),
       eligible: proactive.eligibleDeadline(due, important, now, config) && !recentlyChecked && !waiting && (!Number.isFinite(retry) || retry <= now),
       status: waiting ? "手動確認待ち" : Number.isFinite(retry) && retry > now ? "再試行待ち" : recentlyChecked ? "確認直後・共通取得間隔内" : due <= now ? "期限超過・取得待ち" : proactive.eligibleDeadline(due, important, now, config) ? "次回完了前に期限切れ・先回り待ち" : "期限内",
       refreshHours:hours,priceRefreshReady: candidateRows[card.id]?.priceRefreshReady === true,
       currentMarket: candidateRows[card.id]?.currentMarket === true,
-      reason: [focus && "重点カード", candidate && "購入候補", fixedTarget && "固定鮮度監視群・期限維持", alternateOnly && "取得元参考相場なし・別店舗価格の確認（参考相場へ代用しない）", candidateRows[card.id]?.currentMarket && "現相場採算候補", candidateRows[card.id]?.priceRefreshReady && "購入価格再確認で試算可能", favorites.has(card.id) && "同期済みお気に入り", !important && "通常巡回"].filter(Boolean).join("／"),
+      reason: [formalCandidate && "正式2条件の現在候補", medianAtRisk && "独立中央値が次回公開までに不足・採用店舗の先回り",focus && "重点カード", candidate && "購入候補", fixedTarget && "固定鮮度監視群・期限維持", alternateOnly && "取得元参考相場なし・別店舗価格の確認（参考相場へ代用しない）", candidateRows[card.id]?.currentMarket && "現相場採算候補", candidateRows[card.id]?.priceRefreshReady && "購入価格再確認で試算可能", favorites.has(card.id) && "同期済みお気に入り", !important && "通常巡回"].filter(Boolean).join("／"),
       score: (validTime ? Math.max(0, (now - due) / 3600000) : 100000) + (important ? 24 : 0) };
   });
   const sorted = records.filter((row) => row.eligible).sort((a, b) => Number(b.due) - Number(a.due)
     || (Date.parse(a.nextDueAt) || 0) - (Date.parse(b.nextDueAt) || 0) || Number(b.priceRefreshReady) - Number(a.priceRefreshReady) || a.card.id.localeCompare(b.card.id));
   // Broad exploration retains a priority slot but cannot starve fixed/focus maintenance.
-  const urgent = sorted.filter((row) => row.important && (row.fixedTarget || row.focus));
+  const urgent = sorted.filter((row) => row.important && (row.fixedTarget || row.focus || row.formalCandidate))
+    .sort((a,b)=>Number(b.medianAtRisk)-Number(a.medianAtRisk)||Number(b.formalCandidate)-Number(a.formalCandidate)||Number(b.due)-Number(a.due)||(Date.parse(a.nextDueAt)||0)-(Date.parse(b.nextDueAt)||0));
   const urgentIds = new Set(urgent.map(row=>row.card.id));
   const preferred = sorted.filter((row) => row.important && !urgentIds.has(row.card.id)), ordinary = sorted.filter((row) => !row.important);
   const queue = [];
@@ -70,6 +73,15 @@ function load(sourceId, root = ROOT, now = Date.now()) {
   const alternateRows=Object.fromEntries(require('./alternate_purchase_evidence').load(root,now,proactive.lead(timingConfig(root)).leadMs)
     .filter(r=>r.request&&r.source===sourceId).map(r=>[r.id,{alternatePurchaseEvidence:true}]));
   const requested=read(root,'work/search-profile-targets.json');
+  const formalIds=new Set(require('./search_profile_variants').allProfiles(read(root,'work/priority-search-profiles.json')).map(p=>p.id));
+  const formalRows={};
+  for(const p of requested.profiles||[])if(formalIds.has(p.id))for(const id of p.urlsMatched||[]){
+    const evidence=p.qualifiedFacts?.[id]?.medianEvidence,rows=(evidence?.rows||[]).filter(r=>r.fresh&&r.origin);
+    const future=now+proactive.lead(timingConfig(root)).leadMs;
+    const futureOrigins=new Set(rows.filter(r=>Date.parse(r.observedAt)+48*3600000>future).map(r=>r.origin));
+    const sourceRows=rows.filter(r=>{try{return new URL(r.url).hostname.replace(/^www\./,'')===({hareruya2:'hareruya2.com',cardrush:'cardrush-pokemon.jp'})[sourceId];}catch{return false;}});
+    formalRows[id]={formalCandidate:true,priceRefreshReady:true,medianAtRisk:futureOrigins.size<2&&sourceRows.some(r=>Date.parse(r.observedAt)+48*3600000<=future)};
+  }
   const allowed=row=>require('./profile_completion_routes').requestForSource(row,sourceId);
   const profileRows=Object.fromEntries([
     ...(requested.profiles||[]).flatMap(p=>p.urlsMatched||[]),
@@ -78,7 +90,7 @@ function load(sourceId, root = ROOT, now = Date.now()) {
   ].map(id=>[id,{priceRefreshReady:true,requestedProfile:true}]));
   return plan({ cards: read(root, "data/pokemon-cards.json", []), sourceId,
     fixedIds: read(root, "work/priority-freshness-history.json").sources?.[sourceId]?.cohort || [],
-    catalog: read(root, `work/${sourceId}_catalog.json`, []), candidateRows: { ...alternateRows,...read(root,'work/candidate-recovery-targets.json').rows, ...(read(root, "work/candidate-availability-history.json").runs?.at(-1)?.rows || read(root, "work/acquisition-audit-baseline.json").availability?.rows || {}), ...read(root, 'work/purchase-price-targets.json').rows,...profileRows },
+    catalog: read(root, `work/${sourceId}_catalog.json`, []), candidateRows: { ...alternateRows,...read(root,'work/candidate-recovery-targets.json').rows, ...(read(root, "work/candidate-availability-history.json").runs?.at(-1)?.rows || read(root, "work/acquisition-audit-baseline.json").availability?.rows || {}), ...read(root, 'work/purchase-price-targets.json').rows,...profileRows,...formalRows },
     focusConfig: read(root, "data/focus-monitor-config.json"), config: timingConfig(root),
     jobs: read(root, "work/priority-price-checkpoint.json").sources?.[sourceId]?.jobs || {},
     manualWait: read(root, "work/candidate-shop-refresh.json").checkpoints?.[sourceId]?.manualWait || {}, now });

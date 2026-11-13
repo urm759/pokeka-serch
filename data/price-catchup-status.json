@@ -1,35 +1,33 @@
 {
-  "startedAt": "2026-11-11T04:33:52.850Z",
-  "runId": "42959979785",
-  "event": "workflow_dispatch",
+  "startedAt": "2026-11-13T06:46:12.988Z",
+  "runId": "43380923732",
+  "event": "workflow_run",
   "route": "既存監視ジョブの空白補完",
   "status": "acquired-saved",
   "allowed": true,
-  "ageMs": 15009753,
+  "ageMs": 11367082,
   "minimumIntervalMs": 9000000,
   "reason": "定期の空白・既存の期限順キューで補完",
   "llmCalls": 0,
   "codexCalls": 0,
-  "sourceFailures": [
-    "work/run_tracked_update.js"
-  ],
-  "acquisitionStatus": "partial-with-failure",
-  "endedAt": "2026-11-11T04:47:44.069Z",
-  "durationMs": 831219,
+  "sourceFailures": [],
+  "acquisitionStatus": "process-success",
+  "endedAt": "2026-11-13T07:00:28.014Z",
+  "durationMs": 855026,
   "outcomes": {
-    "baselineAt": "2026-11-11T04:33:52.850Z",
-    "commonCards": 12994,
+    "baselineAt": "2026-11-13T06:46:12.988Z",
+    "commonCards": 13018,
     "addedCards": 0,
     "removedCards": 0,
-    "newlyAnalyzable": 2,
-    "lostAnalyzable": 3,
-    "filledCards": 21,
-    "filledItems": 23,
+    "newlyAnalyzable": 8,
+    "lostAnalyzable": 6,
+    "filledCards": 30,
+    "filledItems": 40,
     "sources": {
       "cardrush": {
-        "newLinked": 0,
-        "validAdded": 0,
-        "validLost": 0,
+        "newLinked": 1,
+        "validAdded": 1,
+        "validLost": 1,
         "usableNet": 0,
         "freshnessRecovered": 0
       },
@@ -38,7 +36,7 @@
         "validAdded": 0,
         "validLost": 0,
         "usableNet": 0,
-        "freshnessRecovered": 79
+        "freshnessRecovered": 101
       },
       "yuyutei": {
         "newLinked": 0,
@@ -49,10 +47,10 @@
       },
       "torecacamp": {
         "newLinked": 0,
-        "validAdded": 1,
+        "validAdded": 0,
         "validLost": 0,
-        "usableNet": 1,
-        "freshnessRecovered": 17
+        "usableNet": 0,
+        "freshnessRecovered": 20
       },
       "psaOfficial": {
         "newLinked": 0,
@@ -70,8 +68,7 @@
       }
     },
     "referenceEvidenceRecovered": {
-      "buybackExitEvidence": 2,
-      "psa9Evidence": 4
+      "psa9Evidence": 5
     }
   },
   "publicationStatus": "保存済み・公開照合待ち"

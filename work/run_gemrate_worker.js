@@ -33,4 +33,14 @@ function run(root=ROOT,store=STORE){
  require('./acquisition_retry').atomicWrite(path.join(store,'last-worker-run.json'),result);return result;
  }catch(e){require('./acquisition_retry').atomicWrite(path.join(store,'last-worker-failure.json'),{at:new Date().toISOString(),reason:e.message,sourceAcquisitions:0});throw e;}finally{release();}
 }
-if(require.main===module){try{console.log(JSON.stringify(run()));}catch(e){console.error(e.message);process.exitCode=1;}}module.exports={run};
+if(require.main===module){
+ try{console.log(JSON.stringify(run()));}catch(e){console.error(e.message);process.exitCode=1;}
+ // Independent domestic maintenance after receipt processing, including when
+ // GemRate fails. Execute released code only, never a development working copy.
+ const bridge=path.join(STORE,'worker/work/run_pc_freshness_bridge.js');
+ if(fs.existsSync(bridge)){
+  const r=cp.spawnSync(process.execPath,[bridge],{cwd:path.join(STORE,'worker'),env:{...process.env,GEMRATE_PRIVATE_STORE:STORE},encoding:'utf8',maxBuffer:8e6,timeout:1200000});
+  if(r.stdout)process.stdout.write(r.stdout);if(r.stderr)process.stderr.write(r.stderr);
+  if(r.status!==0||r.error)process.exitCode=1;
+ }
+}module.exports={run};

@@ -9,6 +9,20 @@ assert(workflow.slice(workflow.indexOf('name: priority-git-recovery-')).includes
 const good={name:'Priority Purchase Price Refresh',event:'schedule',conclusion:'failure',head_branch:'main',repository:{full_name:'urm759/pokeka-serch'},head_repository:{full_name:'urm759/pokeka-serch'}};
 assert(trusted(good));for(const change of [{event:'pull_request'},{head_branch:'feature'},{conclusion:'success'},{head_repository:{full_name:'fork/repo'}},{name:'Daily Fast Update'}])assert(!trusted({...good,...change}));
 const {trustedMonitor,latestMonitor}=require('./recover_failed_price_run');
+const {monitorCheckpointOrigin,trustedMonitorCheckpoint}=require('./recover_failed_price_run');
+const followup={...good,name:'Data Update Health Watchdog',event:'workflow_run',path:'.github/workflows/watch-data-health.yml'};
+const publicationFailure={jobs:[{name:'catchup',status:'completed',conclusion:'failure',steps:[
+ {name:'Fill missed price intervals with shared cooldown and access budgets',conclusion:'success'},
+ {name:'Validate catchup data without changing purchase criteria',conclusion:'success'},
+ {name:'Publish changed health state only',conclusion:'failure'}]}]};
+assert(monitorCheckpointOrigin(followup));assert(trustedMonitorCheckpoint(followup,publicationFailure));
+assert(!trustedMonitor(followup),'validated followup recovery must not be counted as natural schedule evidence');
+assert(!trustedMonitorCheckpoint({...followup,path:'.github/workflows/foreign.yml'},publicationFailure));
+assert(!trustedMonitorCheckpoint({...followup,head_repository:{full_name:'fork/repo'}},publicationFailure));
+assert(!trustedMonitorCheckpoint(followup,{jobs:[]}));
+for(const missing of [0,1,2]){const j=structuredClone(publicationFailure);j.jobs[0].steps.splice(missing,1);assert(!trustedMonitorCheckpoint(followup,j));}
+assert(!monitorCheckpointOrigin({...followup,event:'workflow_dispatch',actor:{login:'someone-else'}}));
+assert(trustedMonitorCheckpoint({...followup,event:'workflow_dispatch',actor:{login:'urm759'}},publicationFailure));
 const {monitorRecoveryNeeded}=require('./recover_failed_price_run');
 const acquired={name:'catchup',status:'completed',conclusion:'success'};
 assert.equal(monitorRecoveryNeeded({jobs:[acquired,{name:'publication_check',conclusion:'failure'}]}),false,'independent verification failure has no unpublished source checkpoint');
@@ -52,6 +66,8 @@ const {reconstructionManifest}=require('./restore_price_artifact');
 const {selectRecoveryArtifacts}=require('./recover_failed_price_run');
 const dailyRun={id:123,run_attempt:2},compact={name:'daily-prevalidation-123-2'},full={name:'daily-recovery-123-2'};
 assert.deepEqual(selectRecoveryArtifacts([full,compact],dailyRun,{daily:true}),[compact],'normal compact source snapshot precedes the large conflicted failure dump');
+const monitorCompact={name:'monitor-prevalidation-123-2'},monitorFull={name:'monitor-recovery-123-2'};
+assert.deepEqual(selectRecoveryArtifacts([monitorFull,monitorCompact],dailyRun,{monitor:true}),[monitorCompact]);
 assert.deepEqual(selectRecoveryArtifacts([full,{...compact,expired:true}],dailyRun,{daily:true}),[full],'legacy fallback is still strictly verified');
 assert.deepEqual(selectRecoveryArtifacts([{name:'daily-prevalidation-123-1'}],dailyRun,{daily:true}),[],'do not mix attempts');
 assert.throws(()=>selectRecoveryArtifacts([compact,{...compact}],dailyRun,{daily:true}),/One exact/);
@@ -64,6 +80,9 @@ const manifests=(changes={})=>zipEntries(zip({
  'work/final/recovery-manifest.json':JSON.stringify({workflowRunId:'123',source:'daily',savedAt:'2026-11-02T18:05:38Z',files:[{file:'data/pokemon-cards.json'}],invalidJson:[],...changes})}));
 assert.equal(reconstructionManifest(manifests(),'123').file,'work/final/recovery-manifest.json');
 assert.throws(()=>reconstructionManifest(manifests({workflowRunId:'124'}),'123'),/proof mismatch/);
+assert.throws(()=>reconstructionManifest(manifests({invalidJson:['data/pokemon-cards.json']}),'123'),/proof mismatch/);
+assert.throws(()=>reconstructionManifest(manifests({invalidJson:['work/card-completion-queue.json']}),'123'),/proof mismatch/);
+assert.deepEqual(reconstructionManifest(manifests({invalidJson:['data/one-item-completion-audit.json']}),'123').ignoredDerivedInvalidJson,['data/one-item-completion-audit.json'],'invalid projection remains a warning; authoritative quote inputs still require valid JSON/hash');
 assert.throws(()=>reconstructionManifest(manifests({files:[]}),'123'),/Incomplete/);
 assert.throws(()=>reconstructionManifest(manifests({savedAt:'2026-11-02T18:00:00Z'}),'123'),/Incomplete/);
 assert.throws(()=>reconstructionManifest(manifests({source:'unknown'}),'123'),/Ambiguous/);
@@ -104,6 +123,21 @@ try{
   assert.equal(JSON.parse(fs.readFileSync(path.join(root,'data/pokemon-cards.json')))[0].observedAt,'2026-10-25T00:00:00Z');
   assert.equal(restore(archive,'123',base,root).restored.length,0,'same receipt is idempotent');
   assert.equal(JSON.parse(fs.readFileSync(path.join(root,'work/recovery-applied-123.json'))).restored.length,2,'a repeated invocation preserves the original recovery receipt');
+  // A Daily checkpoint with conflicting metadata at exactly the same source
+  // instant must become a retained review hold, never end all store updates.
+  write('data/pokemon-cards.json',JSON.parse(git(['show',base+':data/pokemon-cards.json'])));
+  const equalTimeCurrent=structuredClone(newCheckpoint);equalTimeCurrent.sources.shop.jobs.one.nextDueAt='2026-10-25T08:00:01Z';
+  write('work/priority-price-checkpoint.json',equalTimeCurrent);
+  let equalTimeConflict;
+  try{restore(archive,'123',base,root);}catch(e){equalTimeConflict=e;}
+  assert.equal(equalTimeConflict?.code,'SOURCE_RECOVERY_MERGE_REQUIRED');
+  assert.deepEqual(equalTimeConflict.files,['work/priority-price-checkpoint.json']);
+  assert.equal(JSON.parse(fs.readFileSync(path.join(root,'data/pokemon-cards.json')))[0].price,100,'the whole recovery plan remains unapplied when metadata is ambiguous');
+  const equalTimeHold=retainSourceHold(root,{id:123,run_attempt:2,head_sha:base},{id:10,digest:'sha256:verified'},equalTimeConflict);
+  assert.equal(equalTimeHold.normalUpdatesMayContinue,true);assert.equal(equalTimeHold.recoveryApplied,false);
+  assert(inspectedForRun(root,{id:123,run_attempt:2,head_sha:base}),'the same ambiguous archive is not retried by every scan');
+  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root,'work/priority-price-checkpoint.json'))),equalTimeCurrent,'no date or value is rewritten to resolve the hold');
+  write('work/priority-price-checkpoint.json',newCheckpoint);
   write('data/pokemon-cards.json',[{id:'one',price:120}]);assert.throws(()=>restore(archive,'123',base,root),/Concurrent/);
   assert.equal(JSON.parse(fs.readFileSync(path.join(root,'data/pokemon-cards.json')))[0].price,120,'newer independent inputs are not overwritten');
   git(['add','data']);git(['-c','user.name=test','-c','user.email=test@example.invalid','commit','-m','later']);
@@ -118,4 +152,4 @@ try{
   assert.throws(()=>ensureTrustedBase(shallow,'f'.repeat(40),()=>({status:1})),/saved archive retained/);
   assert.throws(()=>restore(archive,'123',base,shallow),/Concurrent/,'genuine newer source conflicts remain held after the base is available');
 }finally{assert(path.resolve(root).startsWith(path.resolve(os.tmpdir())+path.sep));fs.rmSync(root,{recursive:true,force:true});}
-console.log('PASS failed price recovery: trusted schedule only, verified ZIP/manifest, no reacquisition, original times, idempotence and concurrent-input hold');
+console.log('PASS failed price recovery: strict scheduled trust and separately proven authorized publication-failure recovery, verified ZIP/manifest, no reacquisition, original times, idempotence and concurrent-input hold');

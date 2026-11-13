@@ -86,7 +86,7 @@ function build(root = ROOT) {
   for(let n=0;n<16;n++){
     const select=rows=>Object.fromEntries(Object.entries(rows||{}).filter(([id])=>shardId(id)===n)),v=dynamics.variation;
     write('data/price-dynamics/'+n+'.json',JSON.stringify({version:1,asOf:dynamics.asOf,
-      variation:{...v,cards:select(v.cards),unavailable:select(v.unavailable),excluded:select(v.excluded),mediumStatus:select(v.mediumStatus),short:{...v.short,cards:select(v.short?.cards)}},
+      variation:{...v,cards:select(v.cards),unavailable:select(v.unavailable),excluded:select(v.excluded),mediumStatus:select(v.mediumStatus),periods:Object.fromEntries(Object.entries(v.periods||{}).map(([d,p])=>[d,{...p,cards:select(p.cards),status:select(p.status),unavailable:select(p.unavailable)}])),short:{...v.short,cards:select(v.short?.cards)}},
       priceGap:{...dynamics.priceGap,cards:select(dynamics.priceGap.cards)}}));
   }
   function scan(dir) {

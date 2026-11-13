@@ -4,6 +4,21 @@ const decisionModel = require("../decision-model.js");
 const marketModel = require("../market-analysis.js");
 
 const ROOT = path.join(__dirname, "..");
+let responseCapture = null;
+function preserveFailedResponses(shopId, capture, root = ROOT) {
+  if(!capture?.responses?.length)return null;
+  const crypto=require('node:crypto'),stamp=new Date().toISOString().replace(/[:.]/g,'-');
+  const folder=path.join(root,'work','.private','buyback-failed-responses',shopId,stamp);
+  fs.mkdirSync(folder,{recursive:true});
+  const responses=capture.responses.map((row,i)=>{
+    const bytes=Buffer.from(row.body,'utf8'),file=String(i+1).padStart(3,'0')+'.txt';
+    fs.writeFileSync(path.join(folder,file),bytes);
+    return {url:row.url,finalUrl:row.finalUrl,status:row.status,confirmedAt:row.confirmedAt,bytes:bytes.length,sha256:crypto.createHash('sha256').update(bytes).digest('hex'),file};
+  });
+  const manifest={version:1,shopId,recordedAt:new Date().toISOString(),responses,omittedResponses:capture.omitted||0,sourceRequestsDuringPreservation:0};
+  fs.writeFileSync(path.join(folder,'manifest.json'),JSON.stringify(manifest));
+  return {folder:path.relative(root,folder).replace(/\\/g,'/'),responses:responses.length,omittedResponses:manifest.omittedResponses};
+}
 function validateListingCount(previousCount,fetched){
   if (!fetched.items?.length) throw new Error("取得0件。正常データは保持");
   if (previousCount >= 20 && fetched.items.length < previousCount * 0.5) {
@@ -154,7 +169,13 @@ async function fetchText(url, label) {
     try {
       const response = await fetch(url, { headers: { "user-agent": "PokekaDataCollector/1.0" }, signal: AbortSignal.timeout(15000) });
       if (!response.ok) { const error = new Error(`${label}: HTTP ${response.status}`); error.status = response.status; throw error; }
-      return await response.text();
+      const body=await response.text();
+      if(responseCapture){
+        const size=Buffer.byteLength(body);
+        if(responseCapture.bytes+size<=16*1024*1024){responseCapture.bytes+=size;responseCapture.responses.push({url:String(url),finalUrl:response.url,status:response.status,confirmedAt:new Date().toISOString(),body});}
+        else responseCapture.omitted++;
+      }
+      return body;
     } catch (error) {
       lastError = error;
       if (!(error.status === 429 || error.status >= 500 || /timeout|abort|fetch failed/i.test(error.message))) break;
@@ -547,6 +568,7 @@ async function main({ rebuildSaved = false } = {}) {
   }
   const matchCard = buildMatcher(cards);
   const results = [];
+  const adapterTiming=require('./priority_price_queue').timingConfig(ROOT);
   for (const shop of SHOPS) {
     if (process.env.SHOP_BUYBACK_SOURCE_ONLY && process.env.SHOP_BUYBACK_SOURCE_ONLY !== shop.id) continue;
     if (rebuildSaved) {
@@ -570,8 +592,12 @@ async function main({ rebuildSaved = false } = {}) {
       failures.push({source:shop.id,error:review.error,reviewWait:true});
       continue;
     }
-    if(shop.adapterVersion && review?.adapterVersion===shop.adapterVersion && require('./psa10_observation_evidence').calendarDay(review.lastSuccess)===jstDate()) continue;
+    if(!adapterRefreshDue(shop,review,Date.now(),adapterTiming)){
+      console.log(JSON.stringify({shopId:shop.id,status:'adapter-recheck-not-due',lastSuccess:review?.lastSuccess||null,attempted:0,reason:'既存の期限前更新と2時間再試行間隔。日付だけで終日skipしない'}));
+      continue;
+    }
     try {
+      responseCapture={responses:[],bytes:0,omitted:0};
       const fetched = await shop.fetchItems(shop);
       const previousCount = previousSummary.shops?.[shop.id]?.fetched;
       validateListingCount(previousCount,fetched);
@@ -613,9 +639,14 @@ async function main({ rebuildSaved = false } = {}) {
       results.push({ shop, ...fetched, matched, unmatched });
       console.log(`${shop.name}: pages=${fetched.pages}, items=${fetched.items.length}, matched=${matched.length}, activeMatched=${matched.filter((item) => item.active).length}, unmatched=${unmatched.length}`);
     } catch (error) {
+      let rawEvidence=null;
+      if(error.countDrop)try{rawEvidence=preserveFailedResponses(shop.id,responseCapture);}catch(saveError){rawEvidence={error:String(saveError.message||saveError)};}
       failures.push({ source: shop.id, attemptedAt: new Date().toISOString(), error: String(error.message || error),countDrop:error.countDrop||null,
+        ...(rawEvidence?{rawEvidence}:{}),
         accessHold:[401,403].includes(error.status) || /HTTP\s+(401|403)/.test(String(error.message)) });
       console.warn(`${shop.name}: existing data was preserved: ${error.message || error}`);
+    } finally {
+      responseCapture=null;
     }
   }
   if (!results.length && !failures.length) return {status:'正常取得済み・日次再取得不要',llmCalls:0,codexCalls:0};
@@ -855,4 +886,11 @@ if (require.main === module) main({rebuildSaved:process.argv.includes('--rebuild
   console.error(error);
   process.exitCode = 1;
 });
-module.exports = { main, SHOPS, fetchText, savedMatchConfidence, freshUsablePrice, parseTorecaBankItems, validateListingCount };
+function adapterRefreshDue(shop,review,now=Date.now(),config={}){
+  if(!shop.adapterVersion||shop.adapterVersion!==review?.adapterVersion)return true;
+  const success=Date.parse(review.lastSuccess),attempt=Date.parse(review.lastAttempt);
+  if(success>now||attempt>now)return false;
+  if(Number.isFinite(attempt)&&now-attempt<2*3600000)return false;
+  return !Number.isFinite(success)||require('./proactive_refresh').eligibleDeadline(success+6*3600000,true,now,config);
+}
+module.exports = { main, SHOPS, fetchText, savedMatchConfidence, freshUsablePrice, parseTorecaBankItems, validateListingCount, preserveFailedResponses,adapterRefreshDue };

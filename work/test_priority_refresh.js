@@ -15,6 +15,7 @@ assert.equal(first.queue.length, 12);
 assert.equal(first.records.find(r=>r.card.id==='11').refreshHours,48,'ordinary linked stores must not wait thirty days beyond the 48-hour adoption limit');
 const allStores=plan({...args,candidateRows:{},cards:[{...cards[0],price:0,stock:0},{...cards[1],price:999999,stock:5}],catalog:[]});
 assert.equal(allStores.queue.length,2,'both out-of-stock and expensive linked stores retain recheck slots');
+for(const sourceId of ['hareruya2','torecacamp','cardrush','yuyutei']){const linked=[{id:'cheap-zero',[sourceId+'Url']:'https://shop.test/1',price:1,stock:0},{id:'expensive',[sourceId+'Url']:'https://shop.test/2',price:999999,stock:3}];const q=plan({...args,sourceId,cards:linked,candidateRows:{},catalog:[]});assert.equal(q.records.length,2);assert.equal(q.queue.length,2,'every linked retailer keeps both zero-stock and expensive targets: '+sourceId);}
 assert.deepEqual(first.queue.slice(0, 4).map((r) => r.important), [true, true, true, false]);
 const row = { id: "0", url: cards[0].hareruya2Url, startedAt: new Date(now).toISOString(), status: "verified", important: true };
 const saved = finish({}, row, new Date(now).toISOString(), { importantHours: 6 });

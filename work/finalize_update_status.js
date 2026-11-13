@@ -9,6 +9,8 @@ const { sourceTiming } = require("./workflow_schedule.js");
 require('./refresh_candidate_shops').publishRunEvidence(ROOT, read('work/candidate-shop-refresh.json'));
 const retainedRetailerLinks=require('./reconcile_saved_retailer_links').run(ROOT);
 if(retainedRetailerLinks.changedCards)require('./audit_link_coverage');
+// Optional PC receipts are independent of cloud access holds; no new request.
+try { const received=require('./import_saved_yuyutei_products').run(ROOT); if(received.recovered)console.log(JSON.stringify({savedYuyuteiProducts:received})); } catch(error) { console.warn('遊々亭の保存原票は照合保留・他の正常更新を継続：'+error.message); }
 require('./quarantine_shop_identity').build(ROOT);
 require('./recover_saved_shop_rows').reconcileSavedLinks(ROOT);
 // Price-only and full-crawl paths must publish the same saved stock evidence at the same evaluation date.

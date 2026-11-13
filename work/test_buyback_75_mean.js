@@ -11,5 +11,5 @@ assert.equal(result.cards.fixture.a.days.length,1,'legacy7/30 retained without e
 const wrapped={cards:{fixture:{a:{identity:'spec'}}},support:result},compact=require('./build_ui_data').project('buyback-observation-summary',wrapped);
 assert.equal(compact.support.cards.fixture.a.meanDays,undefined);
 assert.deepEqual(m.buybackSupport(compact,'fixture','all',[],Date.parse('2026-10-29T08:00:00Z'),null,'spec').meanWindows[75],m.buybackSupport(wrapped,'fixture','all',[],Date.parse('2026-10-29T08:00:00Z'),null,'spec').meanWindows[75]);
-assert.equal(m.buybackSupport(compact,'fixture','selected',['a'],Date.parse('2026-10-29T08:00:00Z'),null,'spec').meanWindows,null,'custom selection waits for lazy details instead of showing all shops');
+const selected=m.buybackSupport(compact,'fixture','selected',['a'],Date.parse('2026-10-29T08:00:00Z'),null,'spec').meanWindows[75];assert.equal(selected.mean,null,'selected must not reuse all-store mean');assert.equal(selected.status,'recalculation-pending','custom selection explicitly waits for lazy detail');
 console.log('PASS75day mean: aligned proof, observed-day equal weight, physical-merchant max once, selected channels, stopped/held, no fill, compact/detail');

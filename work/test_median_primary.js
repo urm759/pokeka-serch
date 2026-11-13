@@ -13,15 +13,15 @@ const metrics={...require('../exploration-metrics'),referenceMedian(...args){med
 const context=vm.createContext({URL,URLSearchParams,setTimeout,clearTimeout,console,window:{PurchaseDecisionModel:require('../decision-model'),ExplorationMetrics:metrics,location:{href:'https://example.test/?effBuy=auto'}},
   document:{querySelectorAll:()=>[],getElementById:id=>{if(!inputs.has(id))inputs.set(id,{value:'',checked:false});return inputs.get(id);}},
   localStorage:{getItem:k=>saved.get(k)||null,setItem:(k,v)=>saved.set(k,v)}});
-vm.runInContext(source.split('// Browser event bindings start here;')[0]+'\ncurrentMarketView=c=>c.testView;globalThis.api={state,readUrl,saveQuickFilters,restoreQuickFilters,cardEfficiency,migrationKey:EFFICIENCY_BASIS_MIGRATION_KEY,pass(fn){const prior=efficiencyRenderPass;efficiencyRenderPass=new WeakMap();try{return fn()}finally{efficiencyRenderPass=prior;}}};',context);
+vm.runInContext(source.split('// Browser event bindings start here;')[0]+'\ncurrentMarketView=c=>c.testView;globalThis.api={state,readUrl,saveQuickFilters,restoreQuickFilters,cardEfficiency,recordBuyBasisPreferenceChange,migrationKey:EFFICIENCY_BASIS_MIGRATION_KEY,pass(fn){const prior=efficiencyRenderPass;efficiencyRenderPass=new WeakMap();try{return fn()}finally{efficiencyRenderPass=prior;}}};',context);
 const api=context.api;assert.equal(api.state.efficiencyBuy,'reference-min');api.readUrl();assert.equal(inputs.get('efficiencyBuyInput').value,'auto');
 api.state.efficiencyBuy='auto';api.saveQuickFilters();api.restoreQuickFilters();assert.equal(inputs.get('efficiencyBuyInput').value,'auto','explicit legacy URL is authoritative');
-context.window.location.href='https://example.test/';saved.delete(api.migrationKey);api.restoreQuickFilters();
+context.window.location.href='https://example.test/';saved.set('pokeka-quick-filter-preferences-v1',JSON.stringify({efficiencyBuy:'auto',calculationBuyMode:'median',guideMode:'50'}));saved.delete(api.migrationKey);api.restoreQuickFilters();
 assert.equal(inputs.get('efficiencyBuyInput').value,'median','authorized saved preference migrates to explicit median, not a redefinition of auto');
 assert.equal(JSON.parse(saved.get(api.migrationKey)).previous.efficiencyBuy,'auto','old saved settings retained for recovery');
-api.state.efficiencyBuy='auto';api.saveQuickFilters();api.restoreQuickFilters();assert.equal(inputs.get('efficiencyBuyInput').value,'auto','a later explicit user choice is not repeatedly migrated');
+api.recordBuyBasisPreferenceChange({target:{id:'efficiencyBuyInput'}});api.state.efficiencyBuy='auto';api.saveQuickFilters();api.restoreQuickFilters();assert.equal(inputs.get('efficiencyBuyInput').value,'auto','a later explicit user choice is not repeatedly migrated');
 api.state.efficiencyBuy='median';api.saveQuickFilters();api.restoreQuickFilters();assert.equal(inputs.get('efficiencyBuyInput').value,'median');
-const now=Date.parse('2026-10-15T09:30:00Z'),at=new Date(now).toISOString(),card={priceAggregation:{value:10000,included:[{source:'shop',url:'https://www.hareruya2.com/products/a',value:10000,updatedAt:at}]},
+const now=Date.parse('2026-10-15T09:30:00Z'),at=new Date(now).toISOString(),card={priceAggregation:{value:10000,included:[{source:'shop',url:'https://www.hareruya2.com/products/a',value:10000,updatedAt:at},{source:'camp',url:'https://torecacamp-pokemon.com/products/b',value:10000,updatedAt:at}]},
   testView:{eligible:true,reasons:[],warnings:[],rawCap:15000,cap:15000,exitLabel:'フリマ'}};
 Object.assign(api.state,{fee:1000,saleExtraCost:0,lockDays:91,exitPolicy:'marketplace',efficiencySaleDays:7,efficiencyPayoutDays:3});
 api.pass(()=>{assert.strictEqual(api.cardEfficiency(card,now),api.cardEfficiency(card,now));});assert.equal(medianCalls,1,'one render does not serialize/recalculate the same efficiency repeatedly');
