@@ -1,4 +1,6 @@
 const assert=require('node:assert/strict');
+const config=JSON.parse(require('fs').readFileSync(require('path').join(__dirname,'../ops/external-wakeup/wrangler.jsonc'),'utf8'));
+assert.equal(config.workers_dev,false);assert.equal(config.preview_urls,false);assert.equal(config.vars.ENABLED,'false','new/default deployments remain stopped until explicit activation');
 (async()=>{
  const {tick,WakeState,default:worker}=await import('../ops/external-wakeup/worker.mjs');
  const now=Date.parse('2026-11-14T00:00:00Z'),h=3600000,env={ENABLED:'true'};
