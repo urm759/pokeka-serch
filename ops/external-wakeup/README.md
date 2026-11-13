@@ -1,4 +1,4 @@
-# PC不要の独立起動（無料Worker配置済み・限定secret待ち・OFF）
+# PC不要の独立起動（無料Worker配置・secret登録・Cron有効化済み）
 
 Cloudflare Workers Cronで15分ごとにGitHubの更新状況だけ確認し、直近のPriority作成から2.5時間以上空き、Daily/Priority/Safe/Watch/GemRate公開等が待機・実行中でない場合に限り、既存Watchのmainを起動する。取得・保存原票回収・検証・公開は既存の非AI処理を再利用する。通常取得のLLM/ChatGPT/Codex呼出0、API/403/仕様保留を維持する。
 
@@ -48,3 +48,9 @@ Wrangler 4.161.0を非公開作業領域に導入し、配布用dry-runを通過
 GitHub tokenフォームは対象1repo（urm759/pokeka-serch）・Actions read/write・Metadata read・90日（2027-02-12まで）へ設定済み。GitHubでの発行とCloudflareの`GH_ACTIONS_TOKEN`への本人入力を待つ。Workerへのsecret登録完了を名前一覧だけで確認し、mainのWatch任意入力対応公開後に有効化する。token値をチャット・Git・ログへ出さない。配置成功は外部起動成功や鮮度維持の実証と別。
 
 限定secretの本人登録完了を、CLIのname/type一覧だけで確認済み。token値は読み出していない。現在OFFのまま、Watch側の任意起動入力をmainへ公開してから有効化する。
+
+## 稼働版の有効化
+
+PR #66をマージし、mainのWatchにtimer_scheduled_at/timer_request_idと直列待機設定が存在することをAPIで確認した後、wrangler deploy --config ops/external-wakeup/wrangler.jsonc --var ENABLED:trueで有効化した。稼働バージョン652ce593-81b8-402b-a634-2b892607cbf5。repo既定はOFFを保持し、意図しない初回配置で起動しない。workers.devとpreview URLはいずれも無効、HTTPハンドラも404。無料範囲のログ記録を有効化。secret値は読まず、登録名/typeだけ確認。
+
+有効化と自然Cron/dispatch/取得/公開成功は別。受信ログが揃うまで周期達成へ計上しない。停止は同じconfigでENABLED:falseを指定してdeployする。tokenは2027-02-12期限で、更新時は同じ限定権限を維持する。
