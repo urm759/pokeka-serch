@@ -13,6 +13,8 @@ on:
       - 'work/recovery_checkout_proof.js'
       - 'work/external_timer_context.js'
       - 'work/test_external_wakeup.js'
+      - 'work/test_orphan_wakeup.js'
+      - 'work/test_stock_scope.js'
       - 'work/test_multi_pipeline_timing.js'
       - 'work/test_shop_effect_baseline.js'
       - 'work/test_ui_projection_cache.js'
@@ -100,6 +102,8 @@ jobs:
           node work/test_shop_effect_baseline.js
           node work/test_ui_projection_cache.js
           node work/test_external_wakeup.js
+          node work/test_orphan_wakeup.js
+          node work/test_stock_scope.js
           node work/test_recovery_checkout_proof.js
           node work/test_generated_merge_finalization.js
           node work/test_gemrate_worker.js

@@ -16,8 +16,9 @@ assert.equal(config.workers_dev,false);assert.equal(config.preview_urls,false);a
  for(const status of ['pending','queued','in_progress','waiting','requested']){const s=storage();const r=await tick({env,storage:s,now,request:async method=>{assert.equal(method,'GET');return {workflow_runs:[priority,{path:'.github/workflows/daily-fast-update.yml',status}]};}});assert.equal(r.status,'not-dispatched');}
  store=storage();await tick({env,storage:store,now,request:async()=>{throw Object.assign(Error('denied'),{httpStatus:403});}});assert((await store.get()).held);
  assert.equal((await tick({env,storage:store,now:now+10*h,request:()=>{throw Error('held must not request')}})).status,'held');
+ assert.equal((await store.get()).lastFailure.reason,'GitHub HTTP 403');
  store=storage();let attempts=0;await tick({env,storage:store,now,request:async(method,path)=>{attempts++;if(method==='GET')return inventory(path);throw Error('response uncertain');}});
- assert((await store.get()).lastDispatchAt);await tick({env,storage:store,now:now+5000,request:()=>{throw Error('backoff prevents immediate retry')}});assert.equal(attempts,7);
+ assert((await store.get()).lastDispatchAt);const backoff=await tick({env,storage:store,now:now+5000,request:()=>{throw Error('backoff prevents immediate retry')}});assert.equal(attempts,7);assert.equal(backoff.lastFailure.stage,'dispatch-request');assert.equal(backoff.nextAttemptAt,new Date(now+h).toISOString());assert.equal(backoff.nextCheckAt,new Date(now+7*60000).toISOString());
  store=storage();const full=await tick({env,storage:store,now,request:async(method,path)=>path.includes('/workflows/')?inventory(path):({workflow_runs:Array.from({length:100},()=>priority)})});assert.equal(full.status,'active-window-full-review');
  assert.equal((await worker.fetch(new Request('https://example.test/'))).status,404,'no unauthenticated public trigger');
  const lock={storage:storage(),blockConcurrencyWhile:async fn=>fn()};const instance=new WakeState(lock,{ENABLED:'false'});assert.equal((await instance.fetch(new Request('https://internal/tick'))).status,404);

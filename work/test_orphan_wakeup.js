@@ -1,0 +1,22 @@
+const assert=require('node:assert/strict'),policy=require('./cloud_wakeup_policy');
+(async()=>{
+ const now=Date.parse('2026-11-14T00:00:00Z'),h=3600000;
+ const old={id:37642338010,path:'.github/workflows/daily-fast-update.yml',head_branch:'main',head_sha:'a'.repeat(40),run_attempt:1,status:'queued',created_at:'2026-10-07T15:06:54Z',updated_at:'2026-10-07T15:06:54Z',repository:{full_name:'urm759/pokeka-serch'},head_repository:{full_name:'urm759/pokeka-serch'}};
+ const priority={id:2,path:'.github/workflows/priority-price-refresh.yml',status:'completed',created_at:new Date(now-8*h).toISOString()};
+ const later={id:3,path:old.path,head_branch:'main',status:'completed',conclusion:'success',created_at:new Date(now-h).toISOString()};
+ const witness={run_id:3,status:'completed',conclusion:'success',started_at:new Date(now-h).toISOString(),completed_at:new Date(now-h+60000).toISOString()};
+ let requests=0;const request=async(method,path)=>{assert.equal(method,'GET');requests++;if(path==='/actions/runs/'+old.id)return old;if(path.includes('/'+old.id+'/jobs'))return {total_count:0,jobs:[]};if(path.includes('/workflows/'))return {workflow_runs:[later]};if(path.includes('/3/jobs'))return {total_count:1,jobs:[witness]};throw Error('unexpected '+path);};
+ assert.equal(policy.plan([priority,old],{},now).reason,'existing-cloud-run-pending','old age alone never releases a run');
+ const evidence=await policy.inspectPending([priority,old],request,now);assert.equal(requests,4);assert.equal(evidence[0].disposition,'orphaned-queued-no-jobs');
+ const allowed=policy.plan([priority,old],{},now,evidence);assert(allowed.due);assert.deepEqual(allowed.ignoredPendingRunIds,[old.id]);
+ await policy.inspectPending([old],()=>{throw Error('unchanged fresh proof must be reused');},now+1000,evidence);
+ assert(!policy.plan([priority,old],{},now+21*60000,evidence).due,'expired job proof cannot exempt an old record');
+ for(const change of [{updated_at:new Date(now).toISOString()},{run_attempt:2},{status:'in_progress'},{status:'waiting'}])assert(!policy.plan([priority,{...old,...change}],{},now,evidence).due,'changed/active/approval state blocks');
+ const withJobs=await policy.inspectPending([old],async(m,p)=>p.includes('/'+old.id+'/jobs')?{total_count:1,jobs:[{status:'queued'}]}:request(m,p),now);assert(!policy.plan([priority,old],{},now,withJobs).due);
+ const missingWitness=await policy.inspectPending([old],async(m,p)=>p.includes('/3/jobs')?{total_count:0,jobs:[]}:request(m,p),now);assert(!policy.plan([priority,old],{},now,missingWitness).due);
+ const missingCount=await policy.inspectPending([old],async(m,p)=>p.includes('/'+old.id+'/jobs')?{jobs:[]}:request(m,p),now);assert(!policy.plan([priority,old],{},now,missingCount).due,'missing API count is not zero');
+ const fresh={...old,created_at:new Date(now-h).toISOString(),updated_at:new Date(now-h).toISOString()};assert.deepEqual(await policy.inspectPending([fresh],()=>{throw Error('recent queues must not be probed for exemption');},now),[]);
+ assert(!policy.plan([priority,old,{id:99,status:'queued'}],{},now,evidence).due,'normal pending writer remains protected');
+ assert(!policy.plan([priority,old],{lastDispatchAt:new Date(now-60000).toISOString()},now,evidence).due,'dispatch deduplication remains active');
+ console.log('PASS October queued record: live job/attempt/snapshot checks, later successful same-workflow job, expiring cached proof, unknown/approval/active protection and no cancellation');
+})().catch(e=>{console.error(e);process.exitCode=1});
