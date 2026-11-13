@@ -96,7 +96,9 @@ function resolve(cwd,{rebuild}={}) {
   }
   if(rebuild)rebuild(cwd);
   else {
-    for(const file of ['audit_state_a_prices.js','finalize_update_status.js','audit_acquisition_progress.js','audit_completion_outcomes.js','build_psa_priority_queue.js','measure_performance_guard.js','build_ui_data.js','test_ui_data.js','test_card_catalog_completion.js']){
+    // Finalization computes outcomes and embeds exactly that snapshot in the
+    // monitor before sealing lineage. Never recompute outcomes afterwards.
+    for(const file of ['audit_state_a_prices.js','audit_acquisition_progress.js','build_psa_priority_queue.js','finalize_update_status.js','measure_performance_guard.js','build_ui_data.js','test_ui_data.js','test_card_catalog_completion.js']){
       const child=spawnSync(process.execPath,['work/'+file],{cwd,encoding:'utf8',env:{...process.env,PRICE_EVIDENCE_FETCH_LIMIT:'0'},timeout:300000,maxBuffer:32*1024*1024});
       if(child.status!==0)throw new Error(`${file}: ${child.stderr||child.stdout||child.error?.message||'regeneration failed'}`);
     }
