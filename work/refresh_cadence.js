@@ -6,8 +6,8 @@ function stageEvidence(run,jobs=[],execution=null,now=Date.now(),jobsKnown=true)
  const sourceJobs=jobs.filter(j=>(j.steps||[]).some(s=>acquisitionPattern.test(s.name)));
  const expectedJob=run.path?.endsWith('/watch-data-health.yml')?'catchup':run.path?.endsWith('/priority-price-refresh.yml')?'refresh':run.path?.endsWith('/daily-fast-update.yml')?'update':run.path?.endsWith('/safe-checkpoint-backfill.yml')?'backfill':null;
  const selected=sourceJobs.length?sourceJobs:expectedJob?jobs.filter(j=>j.name===expectedJob):jobs.filter(j=>!['watch','publication_check'].includes(j.name));
- const steps=selected.flatMap(j=>(j.steps||[]).map(s=>({...s,jobId:j.id}))).filter(s=>s.started_at&&s.completed_at&&s.conclusion!=='skipped');
- const span=match=>{const selected=steps.filter(s=>match.test(s.name));return selected.length?{startedAt:selected.map(s=>s.started_at).sort()[0],endedAt:selected.map(s=>s.completed_at).sort().at(-1),conclusions:[...new Set(selected.map(s=>s.conclusion))]}:null;};
+ const steps=selected.flatMap(j=>(j.steps||[]).map(s=>({...s,jobId:j.id}))).filter(s=>s.started_at&&s.completed_at);
+ const span=match=>{const selected=steps.filter(s=>match.test(s.name)),executed=selected.filter(s=>s.conclusion!=='skipped');return selected.length?{startedAt:executed.map(s=>s.started_at).sort()[0]||null,endedAt:executed.map(s=>s.completed_at).sort().at(-1)||null,conclusions:[...new Set(selected.map(s=>s.conclusion))]}:null;};
  const starts=selected.map(j=>j.started_at).filter(Boolean).sort(),jobStartedAt=starts[0]||null;
  const jobCreatedAt=selected.map(j=>j.created_at).filter(Boolean).sort()[0]||null;
  const own=String(execution?.runId)===String(run.id)?execution:null;

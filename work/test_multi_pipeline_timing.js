@@ -12,7 +12,8 @@ const a=build({daily:[daily],watch:[watch]},{now,jobsByRun:{1:[],2:jobs}});
 assert.equal(a.stages.watch[0].jobStartedAt,'2026-11-13T15:50:36Z','independent verifier cannot hide acquisition wait');
 assert.equal(a.stages.watch[0].acquisitionAndAggregationMs,908000);assert.equal(a.stages.watch[0].validationMs,130000);assert.equal(a.stages.watch[0].saveAndPushMs,141000);assert.equal(a.stages.watch[0].pagesPublishedAt,null);
 const unknown=build({daily:[daily]},{now});assert.equal(unknown.stages.daily[0].pendingWithoutJob,null,'unavailable API evidence is not an empty job list');
-assert.equal(stageEvidence(completed,[{...job,steps:[step('Run fast regression tests',at,at,'skipped'),step('Commit changed data only',at,at,'skipped')]}]).validation,null,'skipped validation is not a zero-duration successful validation');
+const skipped=build({daily:[completed]},{now,jobsByRun:{1:[{...job,steps:[step('Run fast regression tests',at,at,'skipped'),step('Commit changed data only',at,at,'skipped')]}]}}).stages.daily[0];
+assert.equal(skipped.validationMs,null,'skipped validation is not a zero-duration successful validation');assert.equal(skipped.saveAndPushMs,null);assert.deepEqual(skipped.validation.conclusions,['skipped'],'retain explicit skipped evidence');
 for(const file of fs.readdirSync('.github/workflows').filter(f=>f.endsWith('.yml'))){const text=fs.readFileSync(path.join('.github/workflows',file),'utf8');if(text.includes('group: all-site-data-refresh')){assert(/group: all-site-data-refresh\r?\n\s+queue: max\r?\n\s+cancel-in-progress: false/.test(text),file+' must preserve pending writers without simultaneous acquisition');}}
 assert(!fs.readFileSync('app.js','utf8').includes('data/workflow-stage-audit.json'),'raw stage inventory stays out of initial browser requests');
 console.log('PASS real-time wait decomposition, verifier/worker isolation, pending vs unknown, publication separate from Pages, all writer queues retained');
