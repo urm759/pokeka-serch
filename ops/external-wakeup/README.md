@@ -1,10 +1,10 @@
-# PC不要の独立起動（導入承認済み・本人認証待ち・初期OFF）
+# PC不要の独立起動（無料Worker配置済み・限定secret待ち・OFF）
 
 Cloudflare Workers Cronで15分ごとにGitHubの更新状況だけ確認し、直近のPriority作成から2.5時間以上空き、Daily/Priority/Safe/Watch/GemRate公開等が待機・実行中でない場合に限り、既存Watchのmainを起動する。取得・保存原票回収・検証・公開は既存の非AI処理を再利用する。通常取得のLLM/ChatGPT/Codex呼出0、API/403/仕様保留を維持する。
 
 ## 実装と制約
 
-- `worker.mjs` と `wrangler.jsonc` を準備し、Node単体試験で初期OFF・重複抑制・保留・不確かな応答を検証済み。Cloudflareアカウントの作成・登録・配置・権限追加は実施していない。Cloudflare実環境での単発・複数周期は未実証。
+- `worker.mjs` と `wrangler.jsonc` を準備し、Node単体試験で初期OFF・重複抑制・保留・不確かな応答を検証済み。Cloudflare本人認証と無料Worker/SQLite DO/Cron配置は完了（初期OFF）。限定GitHub secret登録と有効化を待つ。外部起動・実取得・公開・複数周期は未実証。
 - UTCの07/22/37/52分（1日96確認）。起動回数を増やす目的ではなく、GitHub scheduleの実行作成前の空白を補う。Cronの待機時間そのものに保証はなく、GitHub API/runner全体の障害を回避するものでもない。
 - Cloudflareの単一SQLite Durable Objectで確認と起動intentを直列化し、POST前にintentを保存する。不確かな応答でも即時再送しない。認証等は持続保留、通信障害は1時間待機する。既存更新がpendingなら追加起動しない。
 - 受理は取得/公開の成功ではない。外部時計とrequest IDを任意入力として既存Watchへ渡すが、申告値だけで自然定期成功へ計上しない。外部ログ・実行API・公開hashを別に照合する。
@@ -27,7 +27,7 @@ GitHubはfine-grained tokenを `urm759/pokeka-serch` 1リポジトリに限定�
 
 1. Cloudflare Workers Freeのアカウント作成/ログイン（既にあればそのアカウントを使う）。有料プランへ変更しない。
 2. GitHubで上記1repo限定のfine-grained tokenを本人が発行する。tokenはチャットへ送らず、本人の端末でCloudflare secretへ入力する。
-3. 外部へのActions起動権限追加と、このWorkerの導入・有効化を承認する。導入は2026-11-14に利用者承認済み。本人認証とリポジトリ限定secret入力が残る。
+3. 導入・有効化は2026-11-14に利用者承認済み。本人認証・無料配置も完了し、リポジトリ限定tokenの発行とsecret入力が残る。再承認は不要。
 
 承認後の実行手順はこのフォルダで `npx wrangler login` → `npx wrangler secret put GH_ACTIONS_TOKEN` → `npx wrangler deploy`。初回配置時も `ENABLED=false` のまま構成を確認し、本人承認後にtrueへ変更して配置する。登録/CLI取得/secret登録は未実行。不要なら何も登録しない。停止は `ENABLED=false` とcron削除、token失効。認証保留解除は原因を確認し、secret更新後に保存状態を本人のCloudflare管理画面から見直す。401/403保留を自動消去しない。
 
@@ -40,3 +40,11 @@ GitHubはfine-grained tokenを `urm759/pokeka-serch` 1リポジトリに限定�
 ## 2026-11-14の到達点
 
 Wrangler 4.161.0を非公開作業領域に導入し、配布用dry-runを通過（7.98 KiB、gzip 3.07 KiB）。初期OFFと公開起動口なしを維持。OAuth要求はaccount/read・user/read・Workers/script/write・tail/readと更新用offline_accessへ限定し、OS keyring利用を準備。本人が今は操作できないためログイン待ちで停止し、Workerの配置・secret登録・有効化は未実施。再開時に期限切れOAuthを使い回さず、新しい本人認証を開始する。
+
+## 同日再開後の実配置
+
+利用者がCloudflareへログイン後、限定OAuthを接続。Workers初回メニューで無料サブドメインが作成されたことを画面確認し、`ENABLED=false`のままWorker/SQLite DO/Cronを配置成功。バージョン`4404fed8-f9ef-4a1e-9651-18fe040a19ac`。公開HTTPルートなし。有料プランへ変更していない。
+
+GitHub tokenフォームは対象1repo（urm759/pokeka-serch）・Actions read/write・Metadata read・90日（2027-02-12まで）へ設定済み。GitHubでの発行とCloudflareの`GH_ACTIONS_TOKEN`への本人入力を待つ。Workerへのsecret登録完了を名前一覧だけで確認し、mainのWatch任意入力対応公開後に有効化する。token値をチャット・Git・ログへ出さない。配置成功は外部起動成功や鮮度維持の実証と別。
+
+限定secretの本人登録完了を、CLIのname/type一覧だけで確認済み。token値は読み出していない。現在OFFのまま、Watch側の任意起動入力をmainへ公開してから有効化する。

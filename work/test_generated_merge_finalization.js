@@ -6,11 +6,13 @@ try{
  fs.mkdirSync(path.join(root,'data'));fs.mkdirSync(path.join(root,'work'));
  for(const f of ['audit_state_a_prices','build_psa_priority_queue','measure_performance_guard','test_ui_data','test_card_catalog_completion','build_purchase_limit_audit'])fs.writeFileSync(path.join(root,'work',f+'.js'),'');
  fs.writeFileSync(path.join(root,'work/audit_acquisition_progress.js'),"require('fs').writeFileSync('work/current-outcomes.json',JSON.stringify({listed:12,analyzable:4}));");
+ fs.writeFileSync(path.join(root,'data/catalog-index.json'),JSON.stringify({ids:['a','a']}));
+ fs.writeFileSync(path.join(root,'work/build_card_completion.js'),"require('fs').writeFileSync('data/catalog-index.json',JSON.stringify({ids:['a']}));");
  fs.writeFileSync(path.join(root,'work/finalize_update_status.js'),"const fs=require('fs'),out=JSON.parse(fs.readFileSync('work/current-outcomes.json'));fs.writeFileSync('data/completion-outcomes.json',JSON.stringify(out));fs.writeFileSync('data/update-status.json',JSON.stringify({unifiedMonitor:{outcomes:out}}));");
  // If a redundant post-finalization producer is reintroduced, the consumer
  // detects the mismatched snapshot rather than accepting inconsistent data.
  fs.writeFileSync(path.join(root,'work/audit_completion_outcomes.js'),"require('fs').writeFileSync('data/completion-outcomes.json',JSON.stringify({listed:12,analyzable:4,recomputed:true}));");
- fs.writeFileSync(path.join(root,'work/build_ui_data.js'),"const fs=require('fs'),assert=require('assert/strict');assert.deepEqual(JSON.parse(fs.readFileSync('data/update-status.json')).unifiedMonitor.outcomes,JSON.parse(fs.readFileSync('data/completion-outcomes.json')));");
+ fs.writeFileSync(path.join(root,'work/build_ui_data.js'),"const fs=require('fs'),assert=require('assert/strict');assert.deepEqual(JSON.parse(fs.readFileSync('data/update-status.json')).unifiedMonitor.outcomes,JSON.parse(fs.readFileSync('data/completion-outcomes.json')));assert.deepEqual(JSON.parse(fs.readFileSync('data/catalog-index.json')).ids,['a']);");
  const write=side=>fs.writeFileSync(path.join(root,'data/update-status.json'),JSON.stringify({side}));
  git(['init','-b','main']);git(['config','user.name','Fixture']);git(['config','user.email','fixture@example.invalid']);git(['config','commit.gpgsign','false']);write('base');git(['add','.']);git(['commit','-m','base']);
  git(['checkout','-b','incoming']);write('incoming');git(['commit','-am','incoming']);git(['checkout','main']);write('local');git(['commit','-am','local']);assert.notEqual(git(['merge','incoming'],false).status,0);
