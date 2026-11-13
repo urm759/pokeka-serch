@@ -682,7 +682,7 @@ async function updateTorecaCamp(cards, paths) {
   for (const card of cards) { const signature = cardSignature(card); if (signature.cardNo) { if (!byNumber.has(signature.cardNo)) byNumber.set(signature.cardNo, []); byNumber.get(signature.cardNo).push(card); } }
   const sitemapLimit = Math.max(1, Number(process.env.TORECACAMP_SITEMAPS_PER_RUN || 1));
   const detailLimit = Math.max(1, Number(process.env.TORECACAMP_PRODUCT_DETAIL_BATCH || 100));
-  const proactiveLead=Math.min(2*3600000,Math.max(0,Number(process.env.TORECACAMP_PROACTIVE_LEAD_MS)||0));
+  const proactiveLead=require('./camp_postpass').proactiveLead(process.env.TORECACAMP_PROACTIVE_LEAD_MS);
   const runtimeLimitMs = Math.max(30000, Number(process.env.TORECACAMP_RUNTIME_LIMIT_MS || 480000));
   const stopBy = Date.now() + runtimeLimitMs;
   const startedAt = new Date().toISOString();
