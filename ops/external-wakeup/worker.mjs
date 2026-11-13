@@ -5,13 +5,23 @@ export async function tick({env,storage,now=Date.now(),scheduledAt=now,request})
  const result={at:new Date(now).toISOString(),scheduledAt:new Date(scheduledAt).toISOString(),cronNominalAt:new Date(Math.floor(scheduledAt/60000)*60000).toISOString(),scheduledEventDelayMs:now-scheduledAt,nextCheckAt:new Date(next).toISOString(),sourceAcquisitions:0,llmCalls:0,codexCalls:0};
  if(env.ENABLED!=='true')return {...result,status:'disabled'};
  const state=await storage.get('state')||{};
+ // workerd rejects redirect:"error" before making a request. Recover only
+ // that pre-dispatch legacy transport backoff, never authentication holds or
+ // a saved dispatch intent. Preserve the failed attempt and original deadline.
+ if(!state.held&&!state.lastDispatchAt&&state.transportRevision!=='manual-no-follow-v1'
+   &&Date.parse(state.nextAttemptAt)>now&&state.lastFailure?.stage==='github-inventory'
+   &&state.lastFailure?.errorType==='TypeError'&&state.lastFailure?.endpoint==='/actions/workflows/priority-price-refresh.yml/runs?per_page=1'){
+  result.backoffRecovery={reason:'legacy-redirect-option-rejected-before-dispatch',previousNextAttemptAt:state.nextAttemptAt,previousFailure:state.lastFailure};
+  state.transportMigration={...result.backoffRecovery,at:result.at};state.nextAttemptAt=null;
+ }
+ state.transportRevision='manual-no-follow-v1';
  const save=async()=>{state.lastCheck={...result};state.history=[...(state.history||[]),{...result}].slice(-672);await storage.put('state',state);};
  if(state.held||Date.parse(state.nextAttemptAt)>now){result.status=state.held?'held':'backoff';result.reason=state.lastFailure?.reason||'previous-failure-awaiting-review';result.lastFailure=state.lastFailure||null;result.nextAttemptAt=state.nextAttemptAt||null;await save();return result;}
  try{
   if(!env.GH_ACTIONS_TOKEN&&!request)throw Object.assign(Error('Missing Actions secret'),{terminal:true});
   request||=async(method,endpoint,body)=>{
-   let r;try{r=await fetch('https://api.github.com/repos/'+REPO+endpoint,{method,redirect:'error',headers:{'User-Agent':'pokeka-independent-non-ai-wakeup',Accept:'application/vnd.github+json',Authorization:'Bearer '+env.GH_ACTIONS_TOKEN,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(5000)});}catch(error){error.endpoint=endpoint;throw error;}
-   if(!r.ok){const e=Error('GitHub HTTP '+r.status);e.httpStatus=r.status;throw e;}
+   let r;try{r=await fetch('https://api.github.com/repos/'+REPO+endpoint,{method,redirect:'manual',headers:{'User-Agent':'pokeka-independent-non-ai-wakeup',Accept:'application/vnd.github+json',Authorization:'Bearer '+env.GH_ACTIONS_TOKEN,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(5000)});}catch(error){error.endpoint=endpoint;throw error;}
+   if(!r.ok){const e=Error('GitHub HTTP '+r.status);e.httpStatus=r.status;e.endpoint=endpoint;e.terminal=r.status>=300&&r.status<400;throw e;}
    return r.status===204?null:r.json();
   };
   // Completed run history fills 100 rows quickly. Query the latest Priority
