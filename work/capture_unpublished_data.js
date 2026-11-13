@@ -35,6 +35,7 @@ function capture({cwd = path.join(__dirname, '..'), source = 'unknown'} = {}) {
   if(['daily-prevalidation','monitor-prevalidation'].includes(source)) {
     // Retain reconstruction inputs, not a second copy of every generated UI shard.
     const inputs=['data/pokemon-cards.json','data/pokemon-cards-meta.json','data/shop-buyback-summary.json',
+      'data/psa10-observation-receipt.json','data/domestic-trade-source-audit.json','data/state-a-price-evidence.json',
       'data/hareruya2-stock-summary.json','data/cardrush-stock-summary.json',
       'data/torecacamp-stock-summary.json','work/torecacamp_catalog.json','work/torecacamp_stock_history.json','work/torecacamp_progress.json',
       'data/priority-price-execution.json','data/price-catchup-status.json','work/priority-freshness-history.json',

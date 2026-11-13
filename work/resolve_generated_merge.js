@@ -1,6 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const {spawnSync} = require('node:child_process');
+const inputs=require('./publication_merge_inputs');
 const DERIVED=new Set(['data/publication-lineage.json','data/update-status.json','data/performance-guard.json','data/performance-history.json',
   'data/runtime-availability-audit.json','data/update-health-banner.json','data/scheduled-cycle-receipts.json',
   'data/search-profile-cycle-progress.json','data/psa-pop-coverage.json','work/psa-pop-coverage-history.json']);
@@ -20,6 +21,14 @@ DERIVED.add('data/proactive-refresh-audit.json');
 DERIVED.add('data/one-item-completion-audit.json');
 DERIVED.add('data/priority-search-profile-audit.json');
 DERIVED.add('work/pop-focus-targets.json');
+// Produced from saved authoritative inputs, never acquired quotes or histories.
+for(const file of ['25th-promo-coverage','acquisition-progress-audit','acquisition-resilience','buyback-observation-summary','buyback-support-audit',
+  'candidate-daily-audit','completion-outcomes','domestic-psa9-provenance-details','domestic-psa9-route-audit','focus-monitor','linkage-evidence-audit',
+  'linkage-evidence-details','modern-high-rarity-audit','previous-qualified-reference','psa9-provenance-audit','purchase-issue-alias-audit',
+  'purchase-limit-model-audit','purchase-price-freshness-audit','raw-condition-reference-summary','raw-psa9-gap-audit','shop-identity-quarantine',
+  'state-a-price-audit','supply-demand-validation-summary'])DERIVED.add('data/'+file+'.json');
+for(const file of ['high-rarity-completion-plan','pop-focus-targets','psa_priority_queue','purchase-price-targets','saved-shop-link-reconciliation'])DERIVED.add('work/'+file+'.json');
+const projection=file=>file.startsWith('data/ui/')||/^data\/(?:psa-pop-glance\/\d{2}|raw-condition-reference\/\d{1,2})\.json$/.test(file)||DERIVED.has(file);
 function mergeTimedRows(a,b,key,time){
   const rows=new Map();for(const row of [...a,...b]){const k=key(row),old=rows.get(k);if(!old||Date.parse(time(row))>=Date.parse(time(old)))rows.set(k,row);}
   return [...rows.values()].sort((x,y)=>Date.parse(time(x))-Date.parse(time(y))).slice(-400);
@@ -38,7 +47,7 @@ function resolve(cwd,{rebuild}={}) {
   };
   const conflicts=git(['diff','--name-only','--diff-filter=U']).split('\n').filter(Boolean);
   if (!conflicts.length) return false;
-  if (conflicts.some(name=>!name.startsWith('data/ui/') && !/^data\/psa-pop-glance\/\d{2}\.json$/.test(name) && !DERIVED.has(name) && !RECONCILABLE.has(name))) return false;
+  if (conflicts.some(name=>!projection(name)&&!RECONCILABLE.has(name)&&!inputs.TYPES.has(name))) return false;
   const incoming=git(['rev-parse','MERGE_HEAD']);
   const archive=path.join(cwd,'work/generated-merge-stages',incoming);
   const staged=new Map();
@@ -53,8 +62,11 @@ function resolve(cwd,{rebuild}={}) {
     staged.set(file,sides);
   }
   const planned=[];
+  const auditAt=ref=>JSON.parse(git(['show',ref+':data/purchase-limit-model-audit.json']));
+  const context=conflicts.includes('work/candidate-daily-history.json')?{baseAudit:auditAt(git(['merge-base','HEAD','MERGE_HEAD'])),leftAudit:auditAt('HEAD'),rightAudit:auditAt('MERGE_HEAD')}:{};
   for(const [file,[base,a,b]]of staged){
     let seed=a;
+    if(inputs.TYPES.has(file))seed=inputs.merge(file,base,a,b,context);
     if(RECONCILABLE.has(file))seed=require('./reconcile_saved_source_merge')[RECONCILABLE.get(file)](base,a,b);
     if(file==='data/proactive-refresh-audit.json')seed={...a,publicationEvidence:
       require('./reconcile_saved_source_merge').latest(a.publicationEvidence??null,b.publicationEvidence??null,base.publicationEvidence??null)};
@@ -84,8 +96,8 @@ function resolve(cwd,{rebuild}={}) {
   }
   if(rebuild)rebuild(cwd);
   else {
-    for(const file of ['finalize_update_status.js','measure_performance_guard.js','build_ui_data.js','test_ui_data.js','test_card_catalog_completion.js']){
-      const child=spawnSync(process.execPath,['work/'+file],{cwd,encoding:'utf8',timeout:240000,maxBuffer:32*1024*1024});
+    for(const file of ['audit_state_a_prices.js','finalize_update_status.js','audit_acquisition_progress.js','audit_completion_outcomes.js','build_psa_priority_queue.js','measure_performance_guard.js','build_ui_data.js','test_ui_data.js','test_card_catalog_completion.js']){
+      const child=spawnSync(process.execPath,['work/'+file],{cwd,encoding:'utf8',env:{...process.env,PRICE_EVIDENCE_FETCH_LIMIT:'0'},timeout:300000,maxBuffer:32*1024*1024});
       if(child.status!==0)throw new Error(`${file}: ${child.stderr||child.stdout||child.error?.message||'regeneration failed'}`);
     }
     const receiptFile=path.join(cwd,'data/scheduled-cycle-receipts.json');
