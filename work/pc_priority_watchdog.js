@@ -2,7 +2,7 @@
 // Uses existing Git credentials only. No token is persisted or printed.
 const fs=require('node:fs'),path=require('node:path'),cp=require('node:child_process');
 const HOUR=3600000,REPO='urm759/pokeka-serch';
-const {plan,relevant}=require('./cloud_wakeup_policy');
+const {plan,inventory,inspectPending}=require('./cloud_wakeup_policy');
 async function run({root,store,now=Date.now(),request}={}){
  const file=path.join(store,'pc-priority-watchdog.json'),state=fs.existsSync(file)?JSON.parse(fs.readFileSync(file)):{};
  const result={at:new Date(now).toISOString(),origin:'existing-PC-hourly-timer',sourceAcquisitions:0,llmCalls:0,codexCalls:0};
@@ -22,8 +22,9 @@ async function run({root,store,now=Date.now(),request}={}){
   }
   // The same global concurrency group covers Daily/Safe/Priority. A queued or
   // active data workflow is not a missing execution and must not be duplicated.
-  const runs=(await request('GET','/actions/runs?per_page=100')).workflow_runs||[];
-  const decision=plan(relevant(runs),state,now);Object.assign(result,decision);
+  const current=await inventory(request);if(!current.complete){result.status=current.reason;save();return result;}
+  const runs=current.runs,pendingAudit=await inspectPending(runs,request,now,state.pendingEvidence||[]);state.pendingEvidence=pendingAudit;result.pendingAudit=pendingAudit;
+  const decision=plan(runs,state,now,pendingAudit);Object.assign(result,decision);
   if(decision.due){
    // Persist the intent BEFORE the POST: an uncertain response must not cause
    // repeated dispatches. This is not proof of acquisition or publication.

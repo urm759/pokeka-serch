@@ -54,3 +54,9 @@ GitHub tokenフォームは対象1repo（urm759/pokeka-serch）・Actions read/w
 PR #66をマージし、mainのWatchにtimer_scheduled_at/timer_request_idと直列待機設定が存在することをAPIで確認した後、wrangler deploy --config ops/external-wakeup/wrangler.jsonc --var ENABLED:trueで有効化した。稼働バージョン652ce593-81b8-402b-a634-2b892607cbf5。repo既定はOFFを保持し、意図しない初回配置で起動しない。workers.devとpreview URLはいずれも無効、HTTPハンドラも404。無料範囲のログ記録を有効化。secret値は読まず、登録名/typeだけ確認。
 
 有効化と自然Cron/dispatch/取得/公開成功は別。受信ログが揃うまで周期達成へ計上しない。停止は同じconfigでENABLED:falseを指定してdeployする。tokenは2027-02-12期限で、更新時は同じ限定権限を維持する。
+
+## 孤立queued・待機・起動先の記録（2026-11-14）
+
+導入・本人secret登録・有効化は完了済み。古いqueuedは年齢だけで除外せず、全試行jobs 0・現在の実行snapshot/repo一致・後続同一workflow実ジョブ成功を取得し、20分の証拠期限を設ける。正常な待機/実行中/承認待ちや未知状態は阻止を維持。API完全性不明や一度に100件のlive実行もレビュー待ちにする。詳細は docs/20261114_ORPHAN_WAKEUP_STOCK_SCOPE.md。
+
+自然Cronの各回でnextCheckAt、失敗工程、API経路、エラー種別、nextAttemptAt、API照合/dispatch所要時間を保存。return_run_details:trueで返る実行ID/URLを保持し、受理と取得/公開は別判定。既存auth holdやbackoffを自動消去しない。HTTP起動口/preview URLは追加せず、無料枠と限定権限、既定OFF/稼働指定trueを維持。
