@@ -4,4 +4,8 @@ let p=project({at:'2026-11-04T00:00:00Z',profiles:[],pendingDepartures:[row]});a
 assert.equal(project({profiles:[{id:'V',urlsMatched:['a']}]},p).rows.length,0);
 assert.equal(project({profiles:[{id:'new-V',urlsMatched:[]}]},p).rows.length,1,'old condition evidence retained across explicit buy-basis migration');
 assert.equal(project({pendingDepartures:[{...row,beforeMeta:null}]}).rows[0].lastQualifiedAt,null,'no invented last-qualified date');
+const named=project({profiles:[{id:'V',urlsMatched:[]}],pendingDepartures:[row],repairRequests:[{id:'a',profile:'V',source:'domesticShops',sourceTargets:[{source:'torecacamp'}],automatic:true}]},{rows:[{id:'old',profile:'A',name:'old preserved'}]},{focusProfileIds:['V','B'],names:{a:'表示カード名'}});
+assert.equal(named.rows.find(r=>r.id==='a').name,'表示カード名');assert.match(named.rows.find(r=>r.id==='a').waitingStatus,/自動再確認・torecacamp/);
+assert.equal(named.rows.find(r=>r.id==='old').name,'old preserved');assert.deepEqual(named.focusProfileIds,['V','B']);
+assert.equal(named.rows.find(r=>r.id==='a').lastPriceAt,row.before.purchase.priceObservedAt,'projection time is never a fresh price confirmation');
 console.log('PASS previous-qualified reference dates, expiry classification, return removal and legacy profile preservation');

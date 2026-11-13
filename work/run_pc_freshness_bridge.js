@@ -14,6 +14,9 @@ async function run(root=path.resolve(__dirname,'..'),store=process.env.GEMRATE_P
    git(root,['fetch','origin','main']);
    if(!fs.existsSync(worker))git(root,['worktree','add','--detach',worker,'origin/main']);
    if(path.dirname(fs.realpathSync(worker))!==fs.realpathSync(store)||!fs.existsSync(path.join(worker,'.git')))throw Error('Unproven isolated checkout');
+   const savedOwner=fs.existsSync(ownership)?JSON.parse(fs.readFileSync(ownership)):null;
+   result.checkpointHold=require('./pc_domestic_checkpoint').preserveConflicted({root,worker,store,owner:savedOwner,at});
+   if(result.checkpointHold)git(root,['worktree','add','--detach',worker,'origin/main']);
    // Never discard an unpublished checkpoint or a developer change.
    const dirty=git(worker,['diff','--name-only','HEAD']).split('\n').filter(Boolean);
    const owner=fs.existsSync(ownership)?JSON.parse(fs.readFileSync(ownership)):null;

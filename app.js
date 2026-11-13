@@ -7780,7 +7780,9 @@ document.getElementById('previousQualifiedReference')?.addEventListener('toggle'
   const body=document.getElementById('previousQualifiedBody');
   if(!previousQualifiedRequest)previousQualifiedRequest=fetchJsonMaybe('./data/previous-qualified-reference.json',{detail:true,affectsCalculation:false});
   try{const data=await previousQualifiedRequest;if(data?.version!==1||!Array.isArray(data.rows))throw Error('保存参考の読込失敗');
-    body.innerHTML='<small>'+escapeHtml(data.note)+'</small>'+data.rows.map(r=>'<p><b>'+escapeHtml(r.id)+'・'+escapeHtml(r.category)+'</b><br><small>'+escapeHtml(r.profile)+'／最終適合 '+escapeHtml(r.lastQualifiedAt?formatJstTimestamp(r.lastQualifiedAt):'記録不足')+'／最後の買値 '+(Number.isFinite(r.lastPrice)?'¥'+fmt.format(r.lastPrice):'未取得')+'（当時の参考）／価格確認 '+escapeHtml(r.lastPriceAt?formatJstTimestamp(r.lastPriceAt):'不明')+'／不足 '+escapeHtml(r.missing.join('・')||'条件・前後根拠を詳細監査')+'</small></p>').join('');
+    const focus=new Set(data.focusProfileIds||[]),current=data.rows.filter(r=>focus.has(r.profile)),legacy=data.rows.filter(r=>!focus.has(r.profile));
+    const render=r=>'<p><b>'+escapeHtml(r.name||r.id)+'・'+escapeHtml(r.category)+'</b><br><small>'+escapeHtml(r.waitingStatus||'更新状態は詳細監査')+'／価格確認 '+escapeHtml(r.lastPriceAt?formatJstTimestamp(r.lastPriceAt):'不明')+'／最終適合 '+escapeHtml(r.lastQualifiedAt?formatJstTimestamp(r.lastQualifiedAt):'記録不足')+'</small><br><small>'+escapeHtml(r.profile)+'／理由 '+escapeHtml((r.reasons||[]).join('・')||r.category)+'／最後の買値 '+(Number.isFinite(r.lastPrice)?'¥'+fmt.format(r.lastPrice):'未取得')+'（当時の参考）／不足 '+escapeHtml((r.missing||[]).join('・')||'なし・条件の再判定待ち')+'</small></p>';
+    body.innerHTML='<small>'+escapeHtml(data.note)+'</small><p><b>正式2条件の前回適合 '+current.length+'件</b></p>'+(current.map(render).join('')||'<small>現在の正式条件で保存された離脱カードはありません。</small>')+(legacy.length?'<details><summary>旧条件・比較モードの履歴 '+legacy.length+'件</summary>'+legacy.map(render).join('')+'</details>':'');
   }catch(error){body.textContent=error.message+'。現在候補0件とは別です。';previousQualifiedRequest=null;}
 });
 document.getElementById('calculationBuyModeInput')?.addEventListener('change',syncFromUI);
