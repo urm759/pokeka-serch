@@ -560,10 +560,12 @@ function campSignature(product) {
   return { title, cardNo: String(standard?.[1] || promo?.[1] || "").replace(/\s/g, ""), setCodes };
 }
 function campMatchesCard(card, product) {
+  if(card?.identityReviewRequired)return false;
   const signature = cardSignature(card); const productSig = campSignature(product);
   if(require('./quarantine_shop_identity').reason(card,productSig.title))return false;
   if (/\b(?:PSA|BGS|CGC)\s*\d+|鑑定品/i.test(productSig.title)) return false;
-  if (!titleMatches(card, productSig.title, productSig.cardNo)) return false;
+  const finish=require('./shop_finish_identity');
+  if (!titleMatches({...card,name:finish.strip(card.name)}, finish.strip(productSig.title), productSig.cardNo)) return false;
   // Product titles are not a reliable substitute for a set code. Requiring a
   // tag match avoids linking same-name promotions and reprints by card number.
   return productSig.setCodes.includes(signature.setCode);
@@ -763,6 +765,7 @@ async function updateTorecaCamp(cards, paths) {
             if(matches.length!==1){page.omitted.identity++;continue;}
             if(bulkVerified.has(matches[0].id))continue;
             const card=matches[0],previousEntry=byId.get(card.id),v=bulk.stateA(product,campA);
+            if(card.language!=='ja'){page.omitted.hold++;continue;}
             if(!v){page.omitted.condition++;continue;}
             if(previousEntry?.priceQuarantined || previousEntry?.cardMismatchSuspected || previousEntry?.identityHoldReason){page.omitted.hold++;continue;}
             // Never relabel an existing URL/product binding on a conflicting ID.
