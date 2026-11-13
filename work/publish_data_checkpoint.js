@@ -4,7 +4,7 @@ const { spawnSync } = require("node:child_process");
 
 function git(args, cwd) {
   const started=Date.now();
-  const run = spawnSync("git", args, { cwd, encoding: "utf8" });
+  const run = spawnSync("git", args, { cwd, encoding: "utf8", maxBuffer:64*1024*1024 });
   return { ok: run.status === 0, durationMs:Date.now()-started, output: `${run.stdout || ""}${run.stderr || ""}`.trim() };
 }
 

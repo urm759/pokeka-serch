@@ -1793,6 +1793,7 @@ async function exportFavoritesCsv() {
   for(const label of ['みんトレ掲載PSA10','みんトレ掲載美品'])rows[0].push(label+'現在出品数（下限）',label+'現在件数が上限なし',label+'掲載値確認日時',label+'元更新日時（未提供は空欄）',label+'現在値の不足理由',label+'30日平均出品数（下限）',label+'平均件数が上限なし',label+'平均の実観測日数',label+'観測開始日',label+'最終観測日');
   for(const label of ['みんトレ掲載PSA10','みんトレ掲載美品'])rows[0].push(label+'200日平均出品数（下限）',label+'200日平均が上限なし',label+'200日平均の実観測日数',label+'200日観測開始日',label+'200日最終観測日');
   rows[0].push(...verifiedListingFields.map(key=>'出品数条件・'+key),'出品数読込状態');
+  rows[0].push('参考PSA10現相場売却・中央値買値','参考PSA10現相場売価','参考PSA10現相場フリマ手取り','参考PSA10現相場売却利益','参考PSA10現相場売却利益率%','参考PSA10現相場売却ROI分母','PSA10現相場確認日時','参考PSA10現相場売却不可理由','主計算採用出口','主計算売価シナリオ','主計算採用PSA10売価','主計算採用PSA10手取り','主計算採用出口PSA10売却利益','主計算採用出口PSA10売却利益率%','主計算期待利益・監査','主計算期待利益率%・監査','主計算ROI分母・監査','主計算年換算効率%・監査','計算採用10率（0〜1）・監査','計算採用10率出典・監査','非10仮定売価・監査','非10フリマ手取り・監査','鑑定費・監査','設定済み諸費用・監査','採用出口交通費・監査');
   favoriteCards().forEach((rawCard,index)=>{
     const card = calc(rawCard), p = purchaseExploration(card), v = searchProfitView(card), c = postingCoverage(card);
     rows[index+1].push(p.price ?? '',p.headroom ?? '',v.purchasePrice ?? '',v.label,v.economics?.expectedProfit ?? '',v.psa10Roi ?? '',c.rate30 ?? '',c.averageShops30 ?? '',c.observedDays,c.retrievalCoverage ?? '',p.cap ?? '',p.warnings.join('／'),p.headroom == null ? p.reason : '');
@@ -1809,7 +1810,7 @@ async function exportFavoritesCsv() {
     rows[index+1].push(o?.days ?? '',o?.mean ?? '',o?.count ?? '',o ? o.days-(o.count ?? 0) : '',o?.latest || '',o ? '現在の国内PSA9・非10仮置き／PSA8以下未評価' : '',o?.unverifiedDays ?? '');
     const median=cardEfficiency(card,Date.now(),state.purchaseMode,state.efficiencyScenario,'median'), evidence=median.medianEvidence;
     rows[index+1].push(median.annual ?? '',cardEfficiency(card,Date.now(),state.purchaseMode,state.efficiencyScenario,'store').annual ?? '',evidence.count,evidence.independent,evidence.unknown,evidence.min ?? '',evidence.max ?? '',JSON.stringify(evidence.rows),median.reason || '');
-    rows[index+1].push(...buybackSupportCsvFields(card),...calculationBasisCsvFields(card,v),...recentPsa9CsvFields(card.id),...verifiedListingCsvFields(card));
+    rows[index+1].push(...buybackSupportCsvFields(card),...calculationBasisCsvFields(card,v),...recentPsa9CsvFields(card.id),...verifiedListingCsvFields(card),...profitOutcomeCsvFields(card));
   });
   const csv = `\uFEFF${rows.map((row) => row.map(csvCell).join(",")).join("\r\n")}`;
   const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
@@ -4303,8 +4304,42 @@ function mainSaleReference(card) {
   });
 }
 function saleReferenceShell(card) {
-  const main=mainSaleReference(card);
-  return '<div class="sale-reference-summary"><small>主計算PSA10：'+escapeHtml(main.label||'出口未取得')+'／計算上の採用売価 '+saleReferenceYen(main.gross)+' → 手取り '+saleReferenceYen(main.net)+(main.reason?'／'+escapeHtml(main.reason):'')+'</small><details data-sale-reference="'+escapeHtml(card.id)+'"><summary>売価別の参考比較・現在／75日／200日（評価には不使用）</summary><div>開くと中央値・仕入れ目安の2買値で比較</div></details></div>';
+  const main=mainSaleReference(card),r=profitOutcomeAudit(card).market;
+  return '<div class="sale-reference-summary"><span>PSA10現在相場でフリマ売却した場合 <b class="'+numericTone(r.profit)+'">'+signedExpectedMoney(r.profit).text+'／'+(Number.isFinite(r.roi)?r.roi.toFixed(2)+'%':'算出不可')+'</b></span><small>中央値 '+saleReferenceYen(r.buy)+'・利益率の分母＝買値＋鑑定費＋設定済み諸費用。取得率・PSA9不使用'+(r.reason?'／'+escapeHtml(r.reason):'')+'</small><small>主計算PSA10：'+escapeHtml(main.label||'出口未取得')+'／計算上の採用売価 '+saleReferenceYen(main.gross)+' → 手取り '+saleReferenceYen(main.net)+(main.reason?'／'+escapeHtml(main.reason):'')+'</small><details data-sale-reference="'+escapeHtml(card.id)+'"><summary>利益の計算内訳・売価別の参考比較（評価には不使用）</summary><div>開くと中央値・仕入れ目安の2買値で比較</div></details></div>';
+}
+function profitOutcomeAudit(card,now=Date.now()) {
+  return renderValue(card,'profit-outcome-audit',()=>{
+    const median=explorationMetrics.referenceMedian(card,now),reasons=[];
+    const buy=median.independent>=2?median.value:null;
+    if(!Number.isFinite(buy))reasons.push(median.reasons.join('／')||'新鮮な独立2店舗の中央値根拠不足');
+    const source=state.updateStatus?.sources?.toreca;
+    const at=Object.hasOwn(card,'psa10ObservedAt')?card.psa10ObservedAt:source?.date===String(state.sourceUpdates.toreca||'').slice(0,10)?source.lastSuccessAt||state.sourceUpdates.toreca:state.sourceUpdates.toreca;
+    const age=now-Date.parse(at),saleAge=now-Date.parse(card.psa10Audit?.lastTradeAt);
+    if(!Number.isFinite(card.psa10)||card.psa10<=0)reasons.push('PSA10現在相場未取得');
+    if(!Number.isFinite(age)||age<0||age>30*3600000)reasons.push('PSA10相場が古い・確認日時不明');
+    if(card.psa10Audit?.measured&&(!Number.isFinite(saleAge)||saleAge<0||saleAge>30*86400000))reasons.push('個別成約が古い・成約日時不正');
+    if(card.identityReviewRequired||card.dataQuality?.manualReview||decisionModel.hasBlockingDataAnomaly(card.dataQuality)||card.priceIntegrity?.disputed)reasons.push('仕様・価格照合保留');
+    if(card.psa10Audit?.identityConfirmed===false||card.psa10Audit?.specificationMismatch||card.psa10Audit?.country&&card.psa10Audit.country!=='jp'||card.psa10Audit?.currency&&card.psa10Audit.currency!=='JPY')reasons.push('PSA10国内仕様・通貨の一致未確認');
+    if(psaPlanProblem())reasons.push(psaPlanProblem());
+    const sale=explorationMetrics.meanSale(card.psa10,buy,state.fee,state.saleFeeRate,state.saleExtraCost);
+    if(!Number.isFinite(sale.net))reasons.push('買値・費用設定が無効');
+    const market={buy,gross:card.psa10,net:reasons.length?null:sale.net,at,reason:reasons.join('／'),...explorationMetrics.singleGradeSale(reasons.length?null:sale.net,buy,state.fee,state.saleExtraCost)};
+    const e=cardEfficiency(card,now),adopted=mainSaleReference(card),view=currentMarketView(card,true);
+    const costs=Number.isFinite(e.investment)&&Number.isFinite(e.purchasePrice)?e.investment-e.purchasePrice-state.fee:null;
+    const selected={...adopted,buy:e.purchasePrice,...explorationMetrics.singleGradeSale(adopted.net,e.purchasePrice,state.fee,costs)};
+    const lowerNet=Number.isFinite(view.lowerGradePrice)?view.lowerGradePrice*(1-state.saleFeeRate/100)-state.saleExtraCost:null;
+    const expectedSale=Number.isFinite(e.profit)?e.profit+e.purchasePrice+state.fee:null;
+    return {market,selected,expected:{profit:e.profit,roi:e.roi,annual:e.annual,investment:e.investment,net:expectedSale,scenario:e.scenario,reason:e.reason},rate:view.assumedRate,rateSource:view.rateSource,lowerGrade:view.lowerGradePrice,lowerNet,psa9Type:view.psa9Type,psa9At:view.psa9UpdatedAt,fee:state.fee,extra:state.saleExtraCost,saleFee:state.saleFeeRate,deduction:state.buybackDeductionRate,travel:Number.isFinite(costs)?costs-state.saleExtraCost:null};
+  });
+}
+function profitOutcomeMarkup(card) {
+  const a=profitOutcomeAudit(card),pct=v=>Number.isFinite(v)?v.toFixed(2)+'%':'算出不可';
+  const rows=[['PSA10現在相場・フリマ売却（取得率不使用）',a.market],['主計算の採用出口・PSA10売却（取得率不使用）',a.selected],['計算採用10率・非10売価を反映した期待値',a.expected]];
+  return '<div class="sale-reference-rows">'+rows.map(([label,r])=>'<div><b>'+escapeHtml(label)+'</b><small>買値 '+saleReferenceYen(r.buy??a.selected.buy)+(r===a.expected?'／PSA10・非10を確率加重 → 期待手取り ':'／売価 '+saleReferenceYen(r.gross)+' → 手取り ')+saleReferenceYen(r.net)+'</small><span>利益 '+signedExpectedMoney(r.profit).text+'／利益率 '+pct(r.roi)+'</span><small>利益率の分母 '+saleReferenceYen(r.investment)+'（買値＋鑑定費＋投下諸費用）'+(r.reason?'／'+escapeHtml(r.reason):'')+'</small></div>').join('')+'</div><small>'+escapeHtml(a.expected.scenario||'シナリオ未取得')+'／計算採用10率 '+pct(Number.isFinite(a.rate)?a.rate*100:null)+'（'+escapeHtml(a.rateSource||'未取得')+'）／非10はPSA9 '+saleReferenceYen(a.lowerGrade)+' → フリマ手取り '+saleReferenceYen(a.lowerNet)+'（'+escapeHtml(a.psa9Type||'区分未取得')+'・確認 '+escapeHtml(formatJstTimestamp(a.psa9At))+'）。鑑定費 '+saleReferenceYen(a.fee)+'／フリマ手数料 '+pct(a.saleFee)+'／買取減額 '+pct(a.deduction)+'（採用出口だけ適用）／設定済み諸費用 '+saleReferenceYen(a.extra)+'／店頭交通費 '+saleReferenceYen(a.travel)+'。費用は手取りから1回控除、分母では投下額として計上。買取の採用売価・期待手取りには既存モデルの円丸めあり。未入力のリペア等は含みません。</small>';
+}
+function profitOutcomeCsvFields(card) {
+  const a=profitOutcomeAudit(card);
+  return [a.market.buy??'',a.market.gross??'',a.market.net??'',a.market.profit??'',a.market.roi??'',a.market.investment??'',a.market.at||'',a.market.reason||'',a.selected.label||'',a.selected.scenario||'',a.selected.gross??'',a.selected.net??'',a.selected.profit??'',a.selected.roi??'',a.expected.profit??'',a.expected.roi??'',a.expected.investment??'',a.expected.annual??'',a.rate??'',a.rateSource||'',a.lowerGrade??'',a.lowerNet??'',a.fee,a.extra,a.travel??''];
 }
 function marketplaceSaleComparisons(card,now=Date.now()) {
   const source=state.updateStatus?.sources?.toreca;
@@ -4336,7 +4371,7 @@ function mainSaleProvenance(card) {
 }
 function saleReferenceMarkup(card) {
   const c=marketplaceSaleComparisons(card),pct=v=>Number.isFinite(v)?v.toFixed(2)+'%':'未取得';
-  return '<small>'+escapeHtml(mainSaleProvenance(card))+'</small><small>表示専用のフリマ売却仮定。主計算の店舗買取・店舗買取平均とは別。買値だけ2通り、10率 '+pct(Number.isFinite(c.rate)?c.rate*100:null)+'（'+escapeHtml(c.rateSource||'未取得')+'）・鑑定費 '+saleReferenceYen(c.fee)+'・販売手数料 '+pct(c.feeRate)+'・設定済み諸費用 '+saleReferenceYen(c.extra)+'・拘束 '+c.days+'暦日を共通使用。諸費用は手取りから1回控除し、投下費用の分母にも含めます。未入力のリペア等は含みません。</small><small>非10は現在PSA9 '+saleReferenceYen(c.lowerGrade)+' → フリマ手取り '+saleReferenceYen(c.lowerNet)+'（'+escapeHtml(c.psa9Type||'区分未確認')+'／確認 '+escapeHtml(formatJstTimestamp(c.psa9At))+'）で仮置き。PSA8以下・鑑定失敗は未評価。</small><div class="sale-reference-rows">'+c.rows.map(r=>'<div><b>'+escapeHtml(r.label)+' × '+escapeHtml(r.buy)+'</b><small>買値 '+saleReferenceYen(r.purchasePrice)+'／PSA10売価 '+saleReferenceYen(r.gross)+' → 手取り '+saleReferenceYen(r.psa10Net)+'</small><span>'+referenceEconomicsText(r)+'</span><small>'+(r.periodDays?(r.count??0)+'／'+r.periodDays+'観測日'+(r.reference?'・部分期間の参考平均':'・期間充足')+'／最終 '+escapeHtml(r.latest||'未取得'):'掲載値確認 '+escapeHtml(formatJstTimestamp(r.latest)))+'。欠測補完なし・返却時売価の保証なし。</small>'+(r.warnings?.length?'<small>'+escapeHtml(r.warnings.join('／'))+'</small>':'')+'</div>').join('')+'</div><small>仕入れ目安・中央値は仮定の買値。評価・検索・並び順・候補・仕入れ上限・GOへ不使用。</small>';
+  return profitOutcomeMarkup(card)+'<small>'+escapeHtml(mainSaleProvenance(card))+'</small><small>表示専用のフリマ売却仮定。主計算の店舗買取・店舗買取平均とは別。買値だけ2通り、10率 '+pct(Number.isFinite(c.rate)?c.rate*100:null)+'（'+escapeHtml(c.rateSource||'未取得')+'）・鑑定費 '+saleReferenceYen(c.fee)+'・販売手数料 '+pct(c.feeRate)+'・設定済み諸費用 '+saleReferenceYen(c.extra)+'・拘束 '+c.days+'暦日を共通使用。諸費用は手取りから1回控除し、投下費用の分母にも含めます。未入力のリペア等は含みません。</small><small>非10は現在PSA9 '+saleReferenceYen(c.lowerGrade)+' → フリマ手取り '+saleReferenceYen(c.lowerNet)+'（'+escapeHtml(c.psa9Type||'区分未確認')+'／確認 '+escapeHtml(formatJstTimestamp(c.psa9At))+'）で仮置き。PSA8以下・鑑定失敗は未評価。</small><div class="sale-reference-rows">'+c.rows.map(r=>'<div><b>'+escapeHtml(r.label)+' × '+escapeHtml(r.buy)+'</b><small>買値 '+saleReferenceYen(r.purchasePrice)+'／PSA10売価 '+saleReferenceYen(r.gross)+' → 手取り '+saleReferenceYen(r.psa10Net)+'</small><span>'+referenceEconomicsText(r)+'</span><small>'+(r.periodDays?(r.count??0)+'／'+r.periodDays+'観測日'+(r.reference?'・部分期間の参考平均':'・期間充足')+'／最終 '+escapeHtml(r.latest||'未取得'):'掲載値確認 '+escapeHtml(formatJstTimestamp(r.latest)))+'。欠測補完なし・返却時売価の保証なし。</small>'+(r.warnings?.length?'<small>'+escapeHtml(r.warnings.join('／'))+'</small>':'')+'</div>').join('')+'</div><small>仕入れ目安・中央値は仮定の買値。評価・検索・並び順・候補・仕入れ上限・GOへ不使用。</small>';
 }
 function currentGuideBreakEven(card) {
   const g=currentProfitGuide(card);
@@ -4927,8 +4962,8 @@ function searchProfitPanel(view,compact=false) {
   const rate = value => Number.isFinite(value) ? `${value.toFixed(2)}%` : "算出不可";
   const signedMoney = signedExpectedMoney;
   const denominatorNote = ['store','median','current-target'].includes(view.basis) ? '買値＋鑑定費＋投下諸費用（売却手取りから控除済みの費用は再控除しない）' : '買値＋鑑定費';
-  if(compact)return `<div class="candidate-profit-comparison search-profit-summary"><strong>計算買値 ${money(view.purchasePrice)}・${escapeHtml(calculationBuyBasis(view))}${view.purchaseSource?'・'+escapeHtml(view.purchaseSource):''}${view.purchaseAt?'／確認 '+escapeHtml(formatJstTimestamp(view.purchaseAt)):''}／${escapeHtml(view.exitLabel||'出口未取得')}・${view.comparisonCard?escapeHtml(view.label):view.horizonDays===0?'現相場':'中央予測（参考）'}</strong><div><span>期待利益／期待利益率<b class="${numericTone(view.economics?.expectedProfit)}">${signedMoney(view.economics?.expectedProfit).text}／${rate(view.economics?.expectedRoi)}</b></span><span>PSA10時の利益／利益率<b class="${numericTone(view.psa10Profit)}">${signedMoney(view.psa10Profit).text}／${rate(view.psa10Roi)}</b></span></div>${profitGuideAside(view.comparisonCard)}</div>`;
-  return `<div class="candidate-profit-comparison search-profit-summary"><strong>計算買値 ${money(view.purchasePrice)}・${escapeHtml(calculationBuyBasis(view))}${view.purchaseSource?'・'+escapeHtml(view.purchaseSource):''}${view.purchaseAt?'／確認 '+escapeHtml(formatJstTimestamp(view.purchaseAt)):''}／${escapeHtml(view.exitLabel || "出口未取得")}</strong><div><span>PSA10現在相場での手取り<br><b>${money(view.psa10Net)}</b></span><span>PSA10時の利益／利益率<br><b class="${numericTone(view.psa10Profit)}">${signedMoney(view.psa10Profit).text}／${rate(view.psa10Roi)}</b></span><span>${view.horizonDays === 0 ? '現在出口相場' : '中央予測'}の期待利益／期待利益率<br><b class="${numericTone(view.economics?.expectedProfit)}">${signedMoney(view.economics?.expectedProfit).text}／${rate(view.economics?.expectedRoi)}</b></span></div><details class="profit-calculation-note"><summary>計算基準を確認</summary><small>${escapeHtml(view.label)}。PSA10時利益率＝（PSA10手取り−買値−鑑定費）÷（${denominatorNote}）。期待利益率は非10の損益も含む別指標。買取減額とフリマ手数料は同じ出口に二重適用しません。期待黒字は損失保証ではありません。${view.basis === 'current-cap' ? '損益分岐上限で購入×現在相場の期待利益率はほぼ0%（切下げ端数分あり）。利益率下限10%などは条件不一致として除外します。条件を自動解除しません。' : ''}</small></details></div>`;
+  if(compact)return `<div class="candidate-profit-comparison search-profit-summary"><strong>計算買値 ${money(view.purchasePrice)}・${escapeHtml(calculationBuyBasis(view))}${view.purchaseSource?'・'+escapeHtml(view.purchaseSource):''}${view.purchaseAt?'／確認 '+escapeHtml(formatJstTimestamp(view.purchaseAt)):''}／${escapeHtml(view.exitLabel||'出口未取得')}・${view.comparisonCard?escapeHtml(view.label):view.horizonDays===0?'現相場':'中央予測（参考）'}</strong><div><span>期待利益／期待利益率<b class="${numericTone(view.economics?.expectedProfit)}">${signedMoney(view.economics?.expectedProfit).text}／${rate(view.economics?.expectedRoi)}</b></span><span>現在の採用出口・PSA10時の利益／利益率<b class="${numericTone(view.psa10Profit)}">${signedMoney(view.psa10Profit).text}／${rate(view.psa10Roi)}</b></span></div>${profitGuideAside(view.comparisonCard)}</div>`;
+  return `<div class="candidate-profit-comparison search-profit-summary"><strong>計算買値 ${money(view.purchasePrice)}・${escapeHtml(calculationBuyBasis(view))}${view.purchaseSource?'・'+escapeHtml(view.purchaseSource):''}${view.purchaseAt?'／確認 '+escapeHtml(formatJstTimestamp(view.purchaseAt)):''}／${escapeHtml(view.exitLabel || "出口未取得")}</strong><div><span>現在の採用出口でのPSA10手取り<br><b>${money(view.psa10Net)}</b></span><span>現在の採用出口・PSA10時の利益／利益率<br><b class="${numericTone(view.psa10Profit)}">${signedMoney(view.psa10Profit).text}／${rate(view.psa10Roi)}</b></span><span>${view.horizonDays === 0 ? '現在出口相場' : '中央予測'}の期待利益／期待利益率<br><b class="${numericTone(view.economics?.expectedProfit)}">${signedMoney(view.economics?.expectedProfit).text}／${rate(view.economics?.expectedRoi)}</b></span></div><details class="profit-calculation-note"><summary>計算基準を確認</summary><small>${escapeHtml(view.label)}。PSA10時利益率＝（PSA10手取り−買値−鑑定費）÷（${denominatorNote}）。期待利益率は非10の損益も含む別指標。買取減額とフリマ手数料は同じ出口に二重適用しません。期待黒字は損失保証ではありません。${view.basis === 'current-cap' ? '損益分岐上限で購入×現在相場の期待利益率はほぼ0%（切下げ端数分あり）。利益率下限10%などは条件不一致として除外します。条件を自動解除しません。' : ''}</small></details></div>`;
 }
 
 const psa10PeriodDetails = new Map();
@@ -7393,6 +7428,7 @@ function assertCalculationDependencies() {
     'LimitDisplayModel.classifyCap':limitDisplayModel?.classifyCap,
     'ExplorationMetrics.purchaseOfferUrl':explorationMetrics?.purchaseOfferUrl,
     'ExplorationMetrics.purchaseProductUrl':explorationMetrics?.purchaseProductUrl,
+    'ExplorationMetrics.singleGradeSale':explorationMetrics?.singleGradeSale,
     'CurrentMarketModel.assertDependencies':currentMarketModel?.assertDependencies,
     'PurchaseRatioModel.marketplaceAtGuide':purchaseRatioModel?.marketplaceAtGuide,
     'PurchaseRatioModel.guideSearchReasons':purchaseRatioModel?.guideSearchReasons,
@@ -7781,7 +7817,7 @@ document.getElementById('previousQualifiedReference')?.addEventListener('toggle'
   if(!previousQualifiedRequest)previousQualifiedRequest=fetchJsonMaybe('./data/previous-qualified-reference.json',{detail:true,affectsCalculation:false});
   try{const data=await previousQualifiedRequest;if(data?.version!==1||!Array.isArray(data.rows))throw Error('保存参考の読込失敗');
     const focus=new Set(data.focusProfileIds||[]),current=data.rows.filter(r=>focus.has(r.profile)),legacy=data.rows.filter(r=>!focus.has(r.profile));
-    const render=r=>'<p><b>'+escapeHtml(r.name||r.id)+'・'+escapeHtml(r.category)+'</b><br><small>'+escapeHtml(r.waitingStatus||'更新状態は詳細監査')+'／価格確認 '+escapeHtml(r.lastPriceAt?formatJstTimestamp(r.lastPriceAt):'不明')+'／最終適合 '+escapeHtml(r.lastQualifiedAt?formatJstTimestamp(r.lastQualifiedAt):'記録不足')+'</small><br><small>'+escapeHtml(r.profile)+'／理由 '+escapeHtml((r.reasons||[]).join('・')||r.category)+'／最後の買値 '+(Number.isFinite(r.lastPrice)?'¥'+fmt.format(r.lastPrice):'未取得')+'（当時の参考）／優先補完 '+escapeHtml((r.missing||[]).join('・')||'対象なし・条件/経路は詳細監査')+'</small></p>';
+    const render=r=>'<p><b>'+escapeHtml(r.name||r.id)+'・'+escapeHtml(r.category)+'</b><br><small>'+escapeHtml(r.waitingStatus||'更新状態は詳細監査')+'／当時の価格確認 '+escapeHtml(r.lastPriceAt?formatJstTimestamp(r.lastPriceAt):'不明')+'／状態監査 '+escapeHtml(r.lastCheckedAt?formatJstTimestamp(r.lastCheckedAt):'不明')+'／最終適合 '+escapeHtml(r.lastQualifiedAt?formatJstTimestamp(r.lastQualifiedAt):'記録不足')+'</small><br><small>'+escapeHtml(r.profile)+'／理由 '+escapeHtml((r.reasons||[]).join('・')||r.category)+'／最後の買値 '+(Number.isFinite(r.lastPrice)?'¥'+fmt.format(r.lastPrice):'未取得')+'（当時の参考）／優先補完 '+escapeHtml((r.missing||[]).join('・')||'対象なし・条件/経路は詳細監査')+'</small></p>';
     body.innerHTML='<small>'+escapeHtml(data.note)+'</small><p><b>正式2条件の前回適合 '+current.length+'件</b></p>'+(current.map(render).join('')||'<small>現在の正式条件で保存された離脱カードはありません。</small>')+(legacy.length?'<details><summary>旧条件・比較モードの履歴 '+legacy.length+'件</summary>'+legacy.map(render).join('')+'</details>':'');
   }catch(error){body.textContent=error.message+'。現在候補0件とは別です。';previousQualifiedRequest=null;}
 });

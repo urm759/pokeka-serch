@@ -79,6 +79,8 @@ jobs:
           node work/test_buy_basis_url_isolation.js
           node work/test_main_median_legacy_urls.js
           node work/test_sale_reference_comparisons.js
+          node work/test_publication_merge_inputs.js
+          node work/test_profit_outcomes.js
           node work/test_pc_freshness_bridge.js
           node work/test_gemrate_worker.js
           node work/test_saved_yuyutei_products.js
@@ -108,6 +110,8 @@ jobs:
           node work/test_mintore_listing_observations.js
           node work/test_priority_refresh.js
           node work/test_postpass_cadence.js
+          node work/test_camp_collection_batch.js
+          node work/test_shop_finish_identity.js
           node work/test_profile_completion_routes.js
           node work/test_scheduled_cycle_evidence.js
           node work/test_cycle_observation_snapshot.js

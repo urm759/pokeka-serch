@@ -1,0 +1,31 @@
+const assert=require('node:assert/strict'),f=require('./shop_finish_identity'),c=require('./update_yuyutei_torecacamp'),q=require('./quarantine_shop_identity');
+const card={name:'ヨマワル [M2a 072/193]',language:'ja'},product={title:'ヨマワル M2a 072/193',tags:['#M2a_MEGAドリームex']};
+assert(c.campMatchesCard(card,product));
+assert(!c.campMatchesCard({...card,identityReviewRequired:true},product),'identity review cannot be auto-adopted');
+assert(!c.campMatchesCard({...card,variant:'master-ball-mirror'},product),'explicit variant cannot disappear from the label');
+assert(c.campMatchesCard({...card,variant:'master-ball-mirror'},{...product,title:'【マスターボールミラー】'+product.title}));
+for(const marker of ['ミラー','ボールミラー','タイプミラー','マスターボールミラー','モンスターボールミラー']){
+ const p={...product,title:'【'+marker+'】'+product.title};
+ assert(!c.campMatchesCard(card,p),'normal must not receive '+marker);
+ assert(q.reason(card,p.title)?.includes('加工不一致'),'shared all-store quarantine');
+ const matching={...card,name:'ヨマワル :'+marker+' [M2a 072/193]'};
+ assert(c.campMatchesCard(matching,p),'same explicit mirror can match regardless of marker position');
+ assert(!c.campMatchesCard(matching,product),'missing marker is not proof of mirror');
+}
+assert.notEqual(f.mirror('【ボールミラー】'),f.mirror('【モンスターボールミラー】'),'ambiguous ball not inferred');
+assert.equal(f.mirror('ミラージュゲート UR S12a 216/172'),'通常','card name is not a finish marker');
+assert.equal(f.strip('ミラージュゲート UR S12a 216/172'),'ミラージュゲート UR S12a 216/172');
+const fs=require('node:fs'),path=require('node:path'),root=fs.mkdtempSync(path.join(require('node:os').tmpdir(),'shop-finish-'));
+const put=(file,value)=>{fs.mkdirSync(path.dirname(path.join(root,file)),{recursive:true});fs.writeFileSync(path.join(root,file),JSON.stringify(value));};
+const at='2026-11-01T03:00:00Z',url='https://torecacamp-pokemon.com/products/example';
+put('data/pokemon-cards.json',[{...card,id:'fixture',torecacampUrl:url}]);
+put('work/torecacamp_catalog.json',[{cardId:'fixture',title:'【ボールミラー】'+product.title,detailUrl:url,price:80,available:true,observedAt:at}]);
+put('data/torecacamp-stock-summary.json',{cards:{fixture:{torecacampPrice:80,detailUrl:url,available:true,observedAt:at,identityVerified:true}}});
+q.build(root);q.build(root);
+const summary=JSON.parse(fs.readFileSync(path.join(root,'data/torecacamp-stock-summary.json'))).cards.fixture;
+assert.equal(summary.cardMismatchSuspected,true);assert.equal(summary.identityVerified,false);
+assert.equal(summary.torecacampPrice,80);assert.equal(summary.observedAt,at);assert.equal(summary.available,true,'hold must not invent stock-out');
+assert.equal(JSON.parse(fs.readFileSync(path.join(root,'data/pokemon-cards.json')))[0].torecacampUrl,null);
+const history=JSON.parse(fs.readFileSync(path.join(root,'work/shop-identity-quarantine-history.json'))).rows;
+assert.equal(history.length,1,'repeat audit preserves one historical observation');assert.equal(history[0].observedAt,at);
+console.log('PASS normal/mirror/Monster/Master/unspecified-ball/type distinction across stores, same-finish matching, no name false positive');

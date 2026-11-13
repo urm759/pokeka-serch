@@ -76,6 +76,13 @@
     const net = mean * (1 - feeRate / 100) - extra, profit = net - buy - fee;
     return {net,profit,roi:profit / (buy + fee) * 100};
   }
+  // The single-grade outcome has no hit-rate or lower-grade dependency. Costs
+  // already subtracted from net are reserved in capital, never subtracted twice.
+  function singleGradeSale(net,buy,fee,costs) {
+    if(![net,buy,fee,costs].every(finite)||buy<0||fee<0||costs<0||buy+fee+costs<=0)return {profit:null,roi:null,investment:null};
+    const investment=buy+fee+costs,profit=net-buy-fee;
+    return {profit,roi:profit/investment*100,investment};
+  }
   function atPurchase(economics, buy, fee) {
     if (!finite(economics?.expectedSale) || !finite(buy) || buy < 0 || !finite(fee) || buy + fee <= 0) return null;
     const profit = economics.expectedSale - buy - fee;
@@ -532,5 +539,5 @@
         status:pop[4]===0?'近い期間の参考比較':pop[4]===2?'POP減少・訂正等':'期間不一致・部分期間',
         ratio:measured&&!stale&&pop[4]===0&&pop[0]>0?n/pop[0]:null}:null};
   }
-  return {listingCounts,stockTrend,variation,variationTone,priceGap,purchaseOfferUrl,purchaseProductUrl,referenceBuy,percent,inRange,offerPrice,referenceMedian,meanSale,atPurchase,efficiency,coverage,observationPeriods,migrateObservationSettings,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics,periodEfficiencyAverage,efficiencyUnavailableLabel,buybackSupport,buybackSearch,buybackCurrentStatus,buybackMeanWindows,buybackRatioTone,buybackRatioBoundaries,tradeDemand};
+  return {listingCounts,stockTrend,variation,variationTone,priceGap,purchaseOfferUrl,purchaseProductUrl,referenceBuy,percent,inRange,offerPrice,referenceMedian,meanSale,singleGradeSale,atPurchase,efficiency,coverage,observationPeriods,migrateObservationSettings,observation,observationExclusions,observationEconomics,buybackObservationEconomics,meanEfficiencyEconomics,periodEfficiencyAverage,efficiencyUnavailableLabel,buybackSupport,buybackSearch,buybackCurrentStatus,buybackMeanWindows,buybackRatioTone,buybackRatioBoundaries,tradeDemand};
 });
