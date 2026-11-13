@@ -9,10 +9,15 @@ const API = "https://api.github.com/repos/urm759/pokeka-serch";
 const headers = { "User-Agent": "pokeka-update-watchdog", Accept: "application/vnd.github+json" };
 if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
 
+const apiCache=new Map();
 async function api(url) {
+  if(apiCache.has(url))return apiCache.get(url);
+  const request=(async()=>{
   const response = await fetch(url, { headers: url.startsWith(API + '/') ? headers : {"User-Agent":"pokeka-update-watchdog"}, signal: AbortSignal.timeout(15000) });
   if (!response.ok) throw new Error(`GitHub API ${response.status}: ${url}`);
   return response.json();
+  })();apiCache.set(url,request);
+  try{return await request;}catch(error){apiCache.delete(url);throw error;}
 }
 
 async function main() {
@@ -34,6 +39,15 @@ async function main() {
     api(`${API}/actions/workflows/watch-data-health.yml/runs?per_page=10`),
   ]);
   const status = JSON.parse(fs.readFileSync(path.join(ROOT, "data", "update-status.json"), "utf8"));
+  // Reuse the run inventories already fetched by this independent observer.
+  // Four bounded job reads also serve later verification through apiCache.
+  const pipelines={daily:runs.workflow_runs||[],safe:safeRuns.workflow_runs||[],priority:priceRuns.workflow_runs||[],watch:catchupRuns.workflow_runs||[]},jobsByRun={},jobReadErrors=[];
+  const latest=Object.values(pipelines).map(rows=>rows[0]).filter(Boolean);
+  await Promise.all(latest.map(async run=>{try{jobsByRun[run.id]=(await api(`${API}/actions/runs/${run.id}/jobs`)).jobs||[];}catch(error){jobReadErrors.push({runId:run.id,error:error.message});}}));
+  const executionFile=path.join(ROOT,'data/priority-price-execution.json');
+  const timing=require('./multi_pipeline_timing').build(pipelines,{jobsByRun,execution:fs.existsSync(executionFile)?JSON.parse(fs.readFileSync(executionFile)):null});
+  timing.jobReadErrors=jobReadErrors;
+  fs.writeFileSync(path.join(ROOT,'data/workflow-stage-audit.json'),JSON.stringify(timing));
   fs.writeFileSync(path.join(ROOT,'work/automatic-workflow-evidence.json'), JSON.stringify({checkedAt:new Date().toISOString(),
     runs:Object.entries({daily:runs,safe:safeRuns,pokedata:pokeRuns,priority:priceRuns}).filter(([key])=>key!=='pokedata'||!overseasCancelled).map(([key,list])=>({key,...list.workflow_runs?.[0]}))}));
   fs.writeFileSync(path.join(ROOT,'data/refresh-cadence-audit.json'),JSON.stringify(require('./refresh_cadence').audit(priceRuns.workflow_runs||[])));

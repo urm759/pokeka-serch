@@ -43,6 +43,7 @@ function main() {
     reaggregatedAt: finalizeOnly ? new Date().toISOString() : null,
     runId: finalizeOnly ? previous.runId || null : process.env.GITHUB_RUN_ID || null, headSha:finalizeOnly ? previous.headSha || null : process.env.GITHUB_SHA || null,
     checkoutCommit:finalizeOnly?previous.checkoutCommit || null:checkoutCommit,
+    externalWakeup:finalizeOnly?previous.externalWakeup||null:require('./external_timer_context').read(),
     priceQueueModel:"deadline-v2", startDelayMs: finalizeOnly ? previous.startDelayMs ?? null : process.env.GITHUB_EVENT_NAME === "schedule" ? started - scheduled.getTime() : null,
     scheduledSlotAt: finalizeOnly ? previous.scheduledSlotAt || null : process.env.GITHUB_EVENT_NAME === "schedule" ? scheduled.toISOString() : null,
     delayMethod:finalizeOnly ? previous.delayMethod || null : catchup?"毎時47分の補完cron枠から実処理開始まで。1時間超の遅延は識別不能":"2時間ごと20分のPriority cron枠から実処理開始まで。2時間超の遅延は識別不能",

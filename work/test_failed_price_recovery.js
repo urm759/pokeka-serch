@@ -103,6 +103,9 @@ try{
   const hold=retainSourceHold(root,heldRun,{id:9,digest:'sha256:verified'},conflict);
   assert.equal(hold.recoveryApplied,false);assert.equal(hold.normalUpdatesMayContinue,true);assert.equal(activeSourceHolds(root).length,1);
   assert(inspectedForRun(root,heldRun),'held source is not re-downloaded by every ordinary scan');
+  write('work/recovery-inspected-997.json',{runId:997,runAttempt:1,headSha:'abc',status:'source-merge-review-required'});
+  assert(!inspectedForRun(root,{id:997,run_attempt:1,head_sha:'abc'}),'legacy wrong-base holds require one trusted checkout review');
+  write('work/recovery-applied-997.json',{restored:[],baseReviewComplete:true});
   assert.throws(()=>retainSourceHold(root,heldRun,{},Error('Recovery hash mismatch')),/hash mismatch/,'digest/format/security failures are never softened');
   write('work/recovery-applied-998.json',{restored:['data/pokemon-cards.json']});assert.equal(activeSourceHolds(root).length,0,'only a real applied receipt resolves the hold');
   assert(health.includes('source-merge-holds-${{ github.run_id }}-${{ github.run_attempt }}')&&health.includes('retention-days: 30'),'held originals have a separate retained artifact, never published as prices');
@@ -122,6 +125,12 @@ try{
   assert.throws(()=>require('./reconcile_saved_source_merge').mergePriorityCheckpoint(checkpoint,held,newCheckpoint),/manual checkpoint hold/,'manual stops are not auto-released');
   assert.equal(JSON.parse(fs.readFileSync(path.join(root,'data/pokemon-cards.json')))[0].observedAt,'2026-10-25T00:00:00Z');
   assert.equal(restore(archive,'123',base,root).restored.length,0,'same receipt is idempotent');
+  const unchanged=JSON.stringify(JSON.parse(git(['show',base+':data/pokemon-cards.json'])));
+  const unchangedManifest={workflowRunId:'124',invalidJson:[],files:[{file:'data/pokemon-cards.json',bytes:Buffer.byteLength(unchanged),sha256:crypto.createHash('sha256').update(unchanged).digest('hex')}]};
+  const unchangedArchive=path.join(root,'unchanged.zip');
+  fs.writeFileSync(unchangedArchive,zip({['work/unpublished-recovery/124-1/recovery-manifest.json']:JSON.stringify(unchangedManifest),['work/unpublished-recovery/124-1/data/pokemon-cards.json']:unchanged}));
+  assert.equal(restore(unchangedArchive,'124',base,root).restored.length,0,'unchanged incoming data retains independently advanced current data');
+  assert.equal(JSON.parse(fs.readFileSync(path.join(root,'data/pokemon-cards.json')))[0].price,110);
   assert.equal(JSON.parse(fs.readFileSync(path.join(root,'work/recovery-applied-123.json'))).restored.length,2,'a repeated invocation preserves the original recovery receipt');
   // A Daily checkpoint with conflicting metadata at exactly the same source
   // instant must become a retained review hold, never end all store updates.

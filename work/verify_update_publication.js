@@ -61,6 +61,15 @@ async function inspect({getJson,getText,at=Date.now(),targetRunId=null}){
     const [run,jobs]=await Promise.all([getJson(API+'/actions/runs/'+targetRunId),getJson(API+'/actions/runs/'+targetRunId+'/jobs')]);
     if(run.head_branch!=='main'||run.head_repository?.full_name!=='urm759/pokeka-serch')throw Error('Untrusted publication receipt origin');
     const steps=(jobs.jobs||[]).flatMap(j=>j.steps||[]);
+    if(run.conclusion==='failure'){
+      const published=steps.some(s=>s.conclusion==='success'&&/Publish validated data|Publish changed health state|Commit safe progress|Commit changed/.test(s.name));
+      const failures=steps.filter(s=>s.conclusion==='failure');
+      if(!published&&failures.length){
+        cycles.targetStatus='upstream-failed-before-publication';
+        cycles.targetObservation={runId:targetRunId,originalConclusion:run.conclusion,failedStages:failures.map(s=>s.name),publicationConfirmed:false,recoveryRequired:true,terminal:true,
+          reason:'親実行は公開前に失敗済み。同じ未公開受領証を4分間再照合せず、失敗を保持して保存原票回収へ接続。'};
+      }
+    }
     if(run.name==='Priority Purchase Price Refresh'&&run.conclusion==='success'
       &&steps.some(s=>s.name==='Refresh due purchase prices without new-set exploration or LLM'&&s.conclusion==='success')
       &&steps.some(s=>s.name==='Publish validated data with conflict protection'&&s.conclusion==='skipped')){
@@ -84,6 +93,7 @@ async function main(){
     catch(e){attempts.push({at:new Date().toISOString(),error:e.message});terminal=!!e.terminal||/Untrusted|Invalid receipt/.test(e.message);retryAfterMs=e.retryAfterMs||15000;}
     const proof={...result,attempts,llmCalls:0,codexCalls:0,sourceRequests:0};fs.writeFileSync(file,JSON.stringify(proof));
     console.log(JSON.stringify({attempt:attempts.at(-1),sourceRequests:0}));
+    if(result?.targetObservation?.terminal)throw Error('Upstream failed before publication; original failure and source recovery requirement retained without repeated publication polling');
     if(terminal)throw Error('Publication verification held; access/schema error retained without automatic retry');
     if(result&&(!targetRunId&&result.confirmed>0||['confirmed','non-scheduled-publication-confirmed','no-acquisition-required'].includes(result.targetStatus)))return proof;
     if(Date.now()-started>=240000)throw Error('Publication confirmation pending; saved proof retained, no source reacquisition');

@@ -2,6 +2,15 @@ name: Data Update Health Watchdog
 
 on:
   workflow_dispatch:
+    inputs:
+      timer_scheduled_at:
+        description: 'Optional independent timer clock (not acquisition evidence)'
+        required: false
+        default: ''
+      timer_request_id:
+        description: 'Optional independent timer request ID'
+        required: false
+        default: ''
   workflow_run:
     workflows: [Daily Fast Update, Safe Checkpoint Backfill, Priority Purchase Price Refresh, Deep Resolve Unmatched Cards]
     types: [completed]
@@ -29,6 +38,8 @@ jobs:
        github.event.workflow_run.head_repository.full_name == github.repository)
     concurrency:
       group: all-site-data-refresh
+
+      queue: max
       cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 25

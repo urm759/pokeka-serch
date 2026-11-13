@@ -111,6 +111,8 @@ function build(root = ROOT) {
   lineage.verify(root);
   if(JSON.stringify(sourceSnapshot)!==JSON.stringify(lineage.snapshot(root)))throw Error('Publication version mismatch: sources changed while packing');
   write('data/ui/manifest.json', JSON.stringify(result));
+  // Minimal data-only test fixtures have no executable generator checkout.
+  if(fs.existsSync(path.join(root,'work/build_ui_data.js')))require('./ui_projection_cache').remember(root);
   return result;
 }
 if (require.main === module) console.log(JSON.stringify({ revision: build().revision }));
