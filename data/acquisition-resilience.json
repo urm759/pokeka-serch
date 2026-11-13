@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-13T21:47:17.704Z",
+  "generatedAt": "2026-11-13T22:35:26.053Z",
   "llmCalls": 0,
   "codexCalls": 0,
   "retryPolicy": {
@@ -169,8 +169,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-11-13T21:34:30.877Z",
-        "to": "2026-11-13T21:47:10.943Z"
+        "from": "2026-11-13T22:34:41.589Z",
+        "to": "2026-11-13T22:35:22.994Z"
       },
       "sinceBaseline": {
         "newLinked": 4012,
@@ -187,21 +187,21 @@
       "remaining": 0,
       "queueDefinition": "未巡回商品数推計。全国内カードの不足項目数とは別",
       "checkpoint": {
-        "sitemap": 16,
-        "entry": 731,
+        "sitemap": 21,
+        "entry": 786,
         "total": 46
       },
       "sourceState": "partial",
       "stopReason": "商品詳細の1回上限 35件に到達",
       "retryUrls": [],
       "lastRun": {
-        "startedAt": "2026-11-13T21:32:32.301Z",
-        "durationMs": 43070,
+        "startedAt": "2026-11-13T22:32:47.088Z",
+        "durationMs": 44207,
         "paginationMode": "sitemap",
-        "currentCursor": 16,
-        "currentSitemapIndex": 16,
-        "currentEntryIndex": 731,
-        "currentSitemapUrl": "https://torecacamp-pokemon.com/sitemap_products_16.xml?from=8884384989358&to=8889276891310",
+        "currentCursor": 21,
+        "currentSitemapIndex": 21,
+        "currentEntryIndex": 786,
+        "currentSitemapUrl": "https://torecacamp-pokemon.com/sitemap_products_21.xml?from=8917239103662&to=8920126455982",
         "processedSitemapCount": 46,
         "processedSitemaps": [
           3,
@@ -253,7 +253,7 @@
         "cumulativeProductCount": 47421,
         "estimatedTotalProducts": 45953,
         "estimatedRemainingProducts": 0,
-        "cumulativeMatchedCount": 6714,
+        "cumulativeMatchedCount": 6838,
         "hasMorePages": true,
         "crawlComplete": true,
         "firstPassComplete": true,
@@ -261,120 +261,120 @@
         "legacyRecords": [],
         "collectionBatch": {
           "requests": 4,
-          "products": 433,
-          "verified": 149,
-          "newLinks": 1,
+          "products": 387,
+          "verified": 116,
+          "newLinks": 6,
           "failures": [],
           "pages": [
             {
-              "url": "https://torecacamp-pokemon.com/collections/s6a/products.json?limit=250&page=1",
+              "url": "https://torecacamp-pokemon.com/collections/s10p/products.json?limit=250&page=1",
               "page": 1,
               "lane": "priority",
-              "previousCheckedAt": "2026-11-13T18:55:30.627Z",
-              "observedAt": "2026-11-13T21:32:33.687Z",
-              "productCount": 101,
-              "verified": 61,
+              "previousCheckedAt": null,
+              "observedAt": "2026-11-13T22:32:48.415Z",
+              "productCount": 88,
+              "verified": 33,
               "newLinks": 0,
               "omitted": {
-                "identity": 40,
+                "identity": 55,
                 "condition": 0,
                 "hold": 0,
                 "binding": 0,
                 "price": 0,
                 "otherProduct": 0
               },
-              "bytes": 210161,
-              "fetchMs": 275,
-              "payloadHash": "827bd87efb20291e9bdb72e6de8d106be07f0dbccb63ed2624aa52f508757e7a"
+              "bytes": 158585,
+              "fetchMs": 218,
+              "payloadHash": "260a397d81a84cc195f43ce0b908af5c201eafa23a592b8a2159828682486dac"
             },
             {
-              "url": "https://torecacamp-pokemon.com/collections/%E3%83%9D%E3%82%B1%E3%83%A2%E3%83%B3%E3%82%AB%E3%83%BC%E3%83%89%E3%82%B2%E3%83%BC%E3%83%A0%E3%82%B5%E3%83%B3-%E3%83%A0%E3%83%BC%E3%83%B3-%E3%83%8F%E3%82%A4%E3%82%AF%E3%83%A9%E3%82%B9%E3%83%91%E3%83%83%E3%82%AF-tag-team-gx-%E3%82%BF%E3%83%83%E3%82%B0%E3%82%AA%E3%83%BC%E3%83%AB%E3%82%B9%E3%82%BF%E3%83%BC%E3%82%BA/products.json?limit=250&page=2",
-              "page": 2,
-              "lane": "continuation",
-              "previousCheckedAt": "2026-11-13T12:55:32.437Z",
-              "observedAt": "2026-11-13T21:32:34.691Z",
-              "productCount": 119,
-              "verified": 6,
-              "newLinks": 1,
-              "omitted": {
-                "identity": 112,
-                "condition": 0,
-                "hold": 1,
-                "binding": 0,
-                "price": 0,
-                "otherProduct": 0
-              },
-              "bytes": 229418,
-              "fetchMs": 180,
-              "payloadHash": "b24fb40cf43fd5271c3927259ca95de49c98169d6f21f459a7f37706cc99bdb0"
-            },
-            {
-              "url": "https://torecacamp-pokemon.com/collections/%E3%82%B9%E3%83%9A%E3%82%B7%E3%83%A3%E3%83%AB%E3%82%AB%E3%83%BC%E3%83%89%E3%82%BB%E3%83%83%E3%83%88%E3%82%B2%E3%83%83%E3%82%B3%E3%82%A6%E3%82%ACv-union-%E3%83%9F%E3%83%A5%E3%82%A6%E3%83%84%E3%83%BCv-union-%E3%82%B6%E3%82%B7%E3%82%A2%E3%83%B3v-union/products.json?limit=250&page=1",
+              "url": "https://torecacamp-pokemon.com/collections/%E3%83%9D%E3%82%B1%E3%83%A2%E3%83%B3%E3%82%AB%E3%83%BC%E3%83%89%E3%82%B2%E3%83%BC%E3%83%A0%E3%82%B5%E3%83%B3-%E3%83%A0%E3%83%BC%E3%83%B3-%E6%8B%A1%E5%BC%B5%E3%83%91%E3%83%83%E3%82%AF-%E3%82%B3%E3%83%AC%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%B3-%E3%83%A0%E3%83%BC%E3%83%B3/products.json?limit=250&page=1",
               "page": 1,
               "lane": "rotation",
               "previousCheckedAt": null,
-              "observedAt": "2026-11-13T21:32:35.737Z",
-              "productCount": 4,
-              "verified": 3,
-              "newLinks": 0,
+              "observedAt": "2026-11-13T22:32:49.506Z",
+              "productCount": 73,
+              "verified": 18,
+              "newLinks": 4,
               "omitted": {
-                "identity": 1,
+                "identity": 55,
                 "condition": 0,
                 "hold": 0,
                 "binding": 0,
                 "price": 0,
                 "otherProduct": 0
               },
-              "bytes": 9905,
-              "fetchMs": 125,
-              "payloadHash": "57c00fc2b7b51042f14cf4a108a257cca172e4d198ab00e4ad1d30cfc8bf5dba"
+              "bytes": 158582,
+              "fetchMs": 209,
+              "payloadHash": "f48453ba7142b3cf5e548366fb4c2092ea3ac2c1a4cc3ddf4e64c714e0e2893c"
             },
             {
-              "url": "https://torecacamp-pokemon.com/collections/%E3%82%B5%E3%83%B3-%E3%83%A0%E3%83%BC%E3%83%B3-promo/products.json?limit=250&page=2",
-              "page": 2,
+              "url": "https://torecacamp-pokemon.com/collections/s9a/products.json?limit=250&page=1",
+              "page": 1,
               "lane": "priority",
-              "previousCheckedAt": "2026-11-13T18:55:34.024Z",
-              "observedAt": "2026-11-13T21:32:36.962Z",
-              "productCount": 209,
-              "verified": 79,
-              "newLinks": 0,
+              "previousCheckedAt": null,
+              "observedAt": "2026-11-13T22:32:50.605Z",
+              "productCount": 138,
+              "verified": 33,
+              "newLinks": 1,
               "omitted": {
-                "identity": 99,
+                "identity": 92,
+                "condition": 0,
+                "hold": 13,
+                "binding": 0,
+                "price": 0,
+                "otherProduct": 0
+              },
+              "bytes": 237682,
+              "fetchMs": 209,
+              "payloadHash": "3481f3e6a30a926ccaa25670153a568bec2da9d899c1121f8dc0ac3b8441f23e"
+            },
+            {
+              "url": "https://torecacamp-pokemon.com/collections/s10d/products.json?limit=250&page=1",
+              "page": 1,
+              "lane": "priority",
+              "previousCheckedAt": null,
+              "observedAt": "2026-11-13T22:32:51.657Z",
+              "productCount": 88,
+              "verified": 32,
+              "newLinks": 1,
+              "omitted": {
+                "identity": 56,
                 "condition": 0,
                 "hold": 0,
                 "binding": 0,
                 "price": 0,
-                "otherProduct": 22
+                "otherProduct": 0
               },
-              "bytes": 550906,
-              "fetchMs": 249,
-              "payloadHash": "dc706bf2e141bb8cee8774019031abd48be34099a5e73a8fefc2d9c3b35c1512"
+              "bytes": 158888,
+              "fetchMs": 161,
+              "payloadHash": "ed96f0acc7093ad27b26da06bbd34c50eb000719c4cb328a3c34270f40130222"
             }
           ],
-          "elapsedMs": 3960,
+          "elapsedMs": 4116,
           "queue": {
-            "asOf": "2026-11-13T21:33:15.371Z",
+            "asOf": "2026-11-13T22:33:31.295Z",
             "routes": 157,
-            "unfinishedPages": 0,
-            "unchecked": 147,
-            "waitTimeUnknown": 147,
-            "longestKnownWaitMs": 42977340
+            "unfinishedPages": 9,
+            "unchecked": 77,
+            "waitTimeUnknown": 77,
+            "longestKnownWaitMs": 46593264
           }
         },
         "maintenanceMode": true,
         "maintenance": {
-          "sitemapIndex": 15,
-          "entryIndex": 731,
+          "sitemapIndex": 20,
+          "entryIndex": 786,
           "cycles": 3,
-          "refreshed": 17726,
-          "newLinks": 147,
-          "checkedAt": "2026-11-13T21:33:15.362Z"
+          "refreshed": 18257,
+          "newLinks": 149,
+          "checkedAt": "2026-11-13T22:33:31.288Z"
         },
         "firstPassCompletedAt": "2026-10-08T21:56:31.044Z",
-        "maintenancePendingCount": 5015,
+        "maintenancePendingCount": 1637,
         "priceMigration": {
           "version": 1,
-          "updatedAt": "2026-11-13T21:32:32.232Z",
+          "updatedAt": "2026-11-13T22:32:47.036Z",
           "correctedCount": 0,
           "cumulativeCorrectedCount": 0,
           "preCorrectionExtremeCount": 0,
@@ -385,49 +385,49 @@
         "sitemapsSucceeded": 0,
         "listedProducts": 1000,
         "detailFetched": 35,
-        "acquiredCount": 184,
-        "parsed": 36,
+        "acquiredCount": 151,
+        "parsed": 52,
         "stateA": 35,
-        "referenceUpdated": 22,
-        "newLinkCount": 1,
-        "updatedCount": 2,
+        "referenceUpdated": 0,
+        "newLinkCount": 6,
+        "updatedCount": 26,
         "fetchFailureCount": 0,
-        "duplicateUrlCount": 16,
+        "duplicateUrlCount": 752,
         "duplicateProductIdCount": 0,
         "abruptDropDetected": false,
-        "previousCatalogCount": 6713,
-        "proposedCatalogCount": 6714,
+        "previousCatalogCount": 6832,
+        "proposedCatalogCount": 6838,
         "progressHealth": {
-          "value": 65147,
-          "previousValue": 65112,
+          "value": 65678,
+          "previousValue": 65643,
           "stagnantRuns": 0,
           "status": "progressing",
-          "checkedAt": "2026-11-13T21:33:15.368Z"
+          "checkedAt": "2026-11-13T22:33:31.293Z"
         },
-        "lastSuccessfulPage": "サイトマップ 15",
+        "lastSuccessfulPage": "サイトマップ 20",
         "lastFailure": null,
         "failedSitemaps": [],
         "stoppingReason": "商品詳細の1回上限 35件に到達",
         "completionStatus": "partial",
-        "completedAt": "2026-11-13T21:33:15.373Z"
+        "completedAt": "2026-11-13T22:33:31.297Z"
       },
       "observedExecutionDays": 5,
-      "processedPerExecutionDay": 20,
+      "processedPerExecutionDay": 41.2,
       "firstPassObservationDays": 5,
       "firstPassProgressField": "newlyVisitedProducts",
       "firstPassDaysEstimate": null,
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-11-13T21:34:30.877Z",
-        "to": "2026-11-13T21:47:10.943Z"
+        "from": "2026-11-13T22:34:41.589Z",
+        "to": "2026-11-13T22:35:22.994Z"
       },
       "sinceBaseline": {
-        "newLinked": 767,
-        "validAdded": 774,
+        "newLinked": 809,
+        "validAdded": 816,
         "validLost": 244,
-        "usableNet": 530,
-        "freshnessRecovered": 1642
+        "usableNet": 572,
+        "freshnessRecovered": 4851
       },
       "freshness": null
     },
@@ -460,8 +460,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-11-13T21:34:30.877Z",
-        "to": "2026-11-13T21:47:10.943Z"
+        "from": "2026-11-13T22:34:41.589Z",
+        "to": "2026-11-13T22:35:22.994Z"
       },
       "sinceBaseline": {
         "newLinked": 0,
