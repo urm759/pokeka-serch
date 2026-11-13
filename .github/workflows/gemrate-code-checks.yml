@@ -60,6 +60,8 @@ jobs:
           node work/test_shop_finish_identity.js
           node work/test_failed_price_recovery.js
           node work/test_saved_source_merge.js
+          node work/test_publication_merge_inputs.js
+          node work/test_profit_outcomes.js
           node work/test_generated_merge_large_json.js
           node work/test_buyback_adapter_deadline.js
           node work/test_homura_public_feed.js

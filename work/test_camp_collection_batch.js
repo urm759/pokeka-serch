@@ -25,6 +25,14 @@ const params={routes,cards,catalog,requested:['a'],critical:['a'],state:{},now,l
 assert.equal(bulk.plan(params)[0].set,'s6a');
 assert.equal(bulk.plan({...params,state:{[routes[0].url]:{checkedAt:new Date(now-3600000).toISOString()}}}).some(r=>r.set==='s6a'),false,'no duplicate set recheck under 2h');
 assert.equal(bulk.plan({...params,state:{[routes[0].url]:{retry:retry.failure({},{httpStatus:403})}}}).some(r=>r.set==='s6a'),false,'auth/manual hold remains');
+const fairRoutes=[...routes,...['s9','s10','s11'].map(set=>({set,url:'https://torecacamp-pokemon.com/collections/'+set}))];
+const pendingState={[routes[1].url]:{checkedAt:new Date(now-3*3600000).toISOString(),nextPage:2}};
+const fair=bulk.plan({...params,routes:fairRoutes,state:pendingState});
+assert.equal(fair.length,4);assert(fair.some(r=>r.set==='sv2a'&&r.page===2&&r.lane==='continuation'));
+assert(fair.some(r=>r.lane==='rotation'&&r.set!=='s6a'),'unvisited exploration retains a request');
+assert.equal(new Set(fair.map(r=>r.url)).size,4);
+for(const hold of [{priceQuarantined:true},{identityHoldReason:'仕様保留'},{cardMismatchSuspected:true},{referenceOnly:true}])
+  assert.equal(bulk.plan({...params,catalog:[{...catalog[0],...hold}]}).find(r=>r.set==='s6a').targets,0,'held quotes never inflate refresh priority');
 const metric=require('./source_batch_metrics').shopBatch('torecacamp',JSON.stringify({torecacamp:{detailFetched:35,acquiredCount:136,collectionBatch:{verified:101,requests:1}}}));
 assert.equal(metric.acquiredCount,136,'count confirmed cards, not HTTP requests nor catalogue size');
 assert.equal(require('./source_batch_metrics').shopBatch('torecacamp',JSON.stringify({torecacamp:{detailFetched:35}})).acquiredCount,35,'old artifacts remain readable');

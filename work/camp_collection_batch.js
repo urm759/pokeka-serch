@@ -57,16 +57,25 @@ function plan({routes, cards, catalog, requested = [], critical = [], fixed = []
   const scores = new Map();
   for (const row of catalog) {
     const card = byId.get(row.cardId);
-    if (!card || row.priceQuarantined || !eligible(retryByUrl[row.detailUrl], now) || !due(row, wanted.has(row.cardId) || fixedIds.has(row.cardId), now, leadMs)) continue;
+    if (!card || row.priceQuarantined || row.cardMismatchSuspected || row.identityHoldReason || row.referenceOnly || !eligible(retryByUrl[row.detailUrl], now) || !due(row, wanted.has(row.cardId) || fixedIds.has(row.cardId), now, leadMs)) continue;
     const set = signature(card).setCode;
     const score = scores.get(set) || {priority:0, targets:0, oldest:Infinity};
     score.priority += urgent.has(row.cardId) ? 500 : fixedIds.has(row.cardId) ? 100 : wanted.has(row.cardId) ? 20 : 1;
     score.targets++; score.oldest = Math.min(score.oldest, Date.parse(row.observedAt) || 0); scores.set(set,score);
   }
   const pending = routes.map(r => ({...r, ...(scores.get(r.set) || {priority:0,targets:0,oldest:Infinity}), last:state[r.url] || {}}))
-    .filter(r => eligible(r.last.retry, now) && (!r.last.checkedAt || now-Date.parse(r.last.checkedAt) >= (r.targets ? 2 : 48)*3600000));
+    .filter(r => eligible(r.last.retry, now) && (!r.last.checkedAt || now-Date.parse(r.last.checkedAt) >= (r.targets || (r.last.nextPage||1)>1 ? 2 : 48)*3600000));
   pending.sort((a,b) => b.priority-a.priority || a.oldest-b.oldest || (Date.parse(a.last.checkedAt)||0)-(Date.parse(b.last.checkedAt)||0) || a.url.localeCompare(b.url));
-  return pending.slice(0, Math.min(4,Math.max(0,limit))).map(r => ({...r,page:r.last.nextPage || 1}));
+  // Keep the request budget fixed. Reserve turns for unfinished pagination and
+  // the least recently checked route, so high-score sets cannot starve them.
+  const capacity=Math.min(4,Math.max(0,limit)),chosen=[];
+  const take=(row,lane)=>{if(row&&chosen.length<capacity&&!chosen.some(r=>r.url===row.url))chosen.push({...row,lane});};
+  const oldest=[...pending].sort((a,b)=>(Date.parse(a.last.checkedAt)||0)-(Date.parse(b.last.checkedAt)||0)||a.url.localeCompare(b.url));
+  take(pending[0],'priority');
+  take(oldest.find(r=>(r.last.nextPage||1)>1),'continuation');
+  take(oldest.find(r=>!chosen.some(c=>c.url===r.url)),'rotation');
+  for(const row of pending)take(row,'priority');
+  return chosen.map(r => ({...r,page:r.last.nextPage || 1}));
 }
 function receipt(text, url, at, products) {
   return {url, observedAt:at, payloadHash:hash(text), productCount:products?.length ?? null,
