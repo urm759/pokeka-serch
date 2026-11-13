@@ -723,6 +723,87 @@ async function updateTorecaCamp(cards, paths) {
   const medianCompletions=require('./profile_completion_routes').medianCompletionIds(requestedTargets,'torecacamp',read(path.join(__dirname,'priority-search-profiles.json'),{}).popFocusProfileIds||[]);
   const legacyRequested=campRequestedIds(requestedTargets,comparisonIds,alternateRequests);
   for(const id of legacyRequested)important.add(id);
+  const bulk = require('./camp_collection_batch');
+  const bulkVerified = new Set();
+  const bulkRun = {requests:0, products:0, verified:0, newLinks:0, failures:[], pages:[], elapsedMs:0};
+  const bulkStart=Date.now();
+  progress.collectionBatch ||= {navigation:null,routes:{},lastPages:[]};
+  const bulkState=progress.collectionBatch;
+  // At most four ordinary collection responses, sharing the existing rate and
+  // runtime budget. Individual sitemap discovery keeps its existing 35 slots.
+  if(!stoppingReason && process.env.TORECACAMP_COLLECTION_BATCH!=='0') {
+    try {
+      if(bulkState.navigation?.version!==2 || Date.now()-Date.parse(bulkState.navigation.checkedAt||'')>=86400000) {
+        const response=await fetchText(TORECA_CAMP+'/',{intervalMs:1100});
+        const routes=bulk.navigation(response.text);
+        if(!routes.length)throw Error('公開ナビゲーションのセット一覧を確認できない');
+        bulkState.navigation={version:2,checkedAt:new Date().toISOString(),routes};bulkRun.requests++;
+      }
+      const fixed=read(path.join(__dirname,'priority-freshness-history.json'),{}).sources?.hareruya2?.cohort||[];
+      const plans=bulk.plan({routes:bulkState.navigation.routes,cards,catalog,requested:legacyRequested,critical:criticalRequests,fixed,
+        retryByUrl:{...progress.knownUrlRetries,...progress.retryByUrl},state:bulkState.routes,now:Date.now(),leadMs:proactiveLead,
+        due:postpass.due,signature:cardSignature,eligible:retryPolicy.eligible});
+      for(const plan of plans) {
+        if(Date.now()>=stopBy-Math.max(20000,runtimeLimitMs/2))break;
+        const url=bulk.pageUrl(plan,plan.page),before=bulkState.routes[plan.url]||{};
+        try {
+          bulkRun.requests++;
+          const response=await fetchText(url,{intervalMs:1100,retries:0});
+          const at=new Date().toISOString(),proof=bulk.receipt(response.text,url,at,null);
+          bulkState.lastPages=[...bulkState.lastPages,proof].slice(-4);
+          const products=bulk.parse(response.text);
+          if(plan.page===1 && !products.length && plan.targets)throw Error('既知対象のセット一覧が空・原票を保持して確認待ち');
+          proof.productCount=products.length;
+          bulkRun.products+=products.length;
+          const page={url,observedAt:at,productCount:products.length,verified:0,newLinks:0,omitted:{identity:0,condition:0,hold:0,binding:0,price:0,otherProduct:0},bytes:response.metric.bytes,fetchMs:response.metric.fetchMs,payloadHash:proof.payloadHash};
+          for(const product of products) {
+            const detailUrl=TORECA_CAMP+'/products/'+product.handle;
+            if(!retryPolicy.eligible(progress.retryByUrl[detailUrl]||progress.knownUrlRetries[detailUrl]))continue;
+            const matches=(byNumber.get(campSignature(product).cardNo)||[]).filter(c=>campMatchesCard(c,product));
+            if(matches.length!==1){page.omitted.identity++;continue;}
+            if(bulkVerified.has(matches[0].id))continue;
+            const card=matches[0],previousEntry=byId.get(card.id),v=bulk.stateA(product,campA);
+            if(!v){page.omitted.condition++;continue;}
+            if(previousEntry?.priceQuarantined || previousEntry?.cardMismatchSuspected || previousEntry?.identityHoldReason){page.omitted.hold++;continue;}
+            // Never relabel an existing URL/product binding on a conflicting ID.
+            if(previousEntry?.detailUrl===detailUrl && String(previousEntry.productId)!==String(product.id)){page.omitted.binding++;continue;}
+            const entry={cardId:card.id,productId:String(product.id),title:product.title,detailUrl,price:v.price,priceUnit:'JPY',available:v.available,
+              observedAt:at,identityVerifiedAt:at,variantId:v.variantId,sourceCollection:plan.url,sourcePayloadHash:proof.payloadHash,
+              ...(previousEntry?.detailUrl===detailUrl?{sourceSitemap:previousEntry.sourceSitemap}:{}),lastModified:product.updated_at||null};
+            const q=campPriceQuarantine(card,entry.price);Object.assign(entry,{priceQuarantined:q.quarantined,quarantineReason:q.reason,marketPriceRatio:q.ratio});
+            if(q.quarantined){page.omitted.price++;continue;}
+            if(require('./quarantine_shop_identity').recordReference(ROOT,'torecacamp',entry,card))referenceUpdated++;
+            const chosen=preferCampEntry(previousEntry,entry);
+            if(chosen!==entry){page.omitted.otherProduct++;continue;}
+            byId.set(card.id,entry);knownByUrl.set(detailUrl,entry);seenProductUrls.add(detailUrl);seenProductIds.add(String(product.id));
+            if(!previousEntry){linked++;page.newLinks++;bulkRun.newLinks++;}
+            else if(entry.price!==previousEntry.price||entry.available!==previousEntry.available)updated++;
+            bulkVerified.add(card.id);page.verified++;
+          }
+          bulkRun.pages.push(page);
+          bulkState.routes[plan.url]={checkedAt:at,nextPage:products.length===250?plan.page+1:1,productCount:products.length,verified:page.verified};
+          catalog=[...byId.values()];write(paths.catalog,catalog);write(paths.progress,progress);
+          recordFetchMetric('torecacamp',{...response.metric,source:'torecacamp',pageKey:url,startedAt:at,endedAt:new Date().toISOString(),status:'success',stage:'public-collection',productCount:products.length,verifiedCards:page.verified});
+        }catch(error){
+          const retry=retryPolicy.failure(before.retry,{error:error.message,httpStatus:error.metric?.httpStatus});
+          bulkState.routes[plan.url]={...before,retry};failed++;
+          const failure={url,at:new Date().toISOString(),error:error.message,httpStatus:error.metric?.httpStatus||null,stage:'public-collection'};
+          bulkRun.failures.push(failure);progress.failures=[...(progress.failures||[]),failure].slice(-50);
+          recordFetchMetric('torecacamp',{...error.metric,...failure,pageKey:url,status:'failed'});
+          if(retry.scope==='source'){progress.sourceRetry=retry;stoppingReason=retry.reason;break;}
+          if(retry.kind==='transient')break;
+          // A malformed set page must not block independent known-product URLs.
+        }
+      }
+    }catch(error){
+      const failure={url:TORECA_CAMP+'/',at:new Date().toISOString(),error:error.message,httpStatus:error.metric?.httpStatus||null,stage:'collection-navigation'};
+      bulkRun.failures.push(failure);failed++;progress.failures=[...(progress.failures||[]),failure].slice(-50);
+      const retry=retryPolicy.failure({},failure);
+      if(retry.scope==='source'){progress.sourceRetry=retry;stoppingReason=retry.reason;}
+    }
+  }
+  bulkRun.verified=bulkVerified.size;bulkRun.elapsedMs=Date.now()-bulkStart;
+  bulkState.lastRun=bulkRun;
   const legacyRecords=[];
   if(!stoppingReason)for(const previousEntry of postpass.legacyTargets(catalog,legacyRequested,{...progress.knownUrlRetries,...progress.retryByUrl},Date.now(),proactiveLead,criticalRequests,medianCompletions).slice(0,Math.floor(detailLimit/3))) {
     if(Date.now()>=stopBy-Math.max(15000,runtimeLimitMs/2))break;
@@ -971,7 +1052,7 @@ async function updateTorecaCamp(cards, paths) {
     totalSitemaps: progress.totalSitemaps || sitemapUrls.length || 44,
     cumulativeProductCount: seenProductUrls.size, estimatedTotalProducts, estimatedRemainingProducts,
     cumulativeMatchedCount: nextCatalog.length, hasMorePages: maintenanceMode || !crawlComplete, crawlComplete,
-    firstPassComplete, retryQueue: [...Object.values(progress.retryByUrl || {}),...Object.values(progress.knownUrlRetries||{})],legacyRecords,
+    firstPassComplete, retryQueue: [...Object.values(progress.retryByUrl || {}),...Object.values(progress.knownUrlRetries||{})],legacyRecords,collectionBatch:bulkRun,
     maintenanceMode, maintenance:progress.maintenance||null, firstPassCompletedAt:progress.firstPassCompletedAt||null,
     maintenancePendingCount: maintenanceMode ? nextCatalog.filter(entry=>postpass.due(entry,important.has(entry.cardId))).length : null,
     priceMigration: priceMigration.audit,
@@ -997,6 +1078,7 @@ async function updateTorecaCamp(cards, paths) {
   });
   return {
     sitemapsSucceeded, listedProducts, detailFetched, parsed, stateA, referenceUpdated, linked, updated, failed, cacheHits, excluded,
+    collectionBatch:bulkRun,acquiredCount:detailFetched+bulkVerified.size,
     duplicateUrls, duplicateProductIds, progressHealth,
     coverage: nextCatalog.length, lastSuccessfulPage: progress.lastRun.lastSuccessfulPage,
     currentCursor: progress.currentSitemapIndex + 1, processedSitemapCount,
