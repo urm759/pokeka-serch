@@ -24,7 +24,8 @@ export async function tick({env,storage,now=Date.now(),scheduledAt=now,request})
   if(decision.due){
    state.lastDispatchAt=result.at;state.lastRequestId='cloud-wakeup-'+new Date(scheduledAt).toISOString();
    result.status='dispatch-intent';result.requestId=state.lastRequestId;await save();
-   stageStarted=Date.now();result.stage='dispatch-request';await request('POST','/actions/workflows/watch-data-health.yml/dispatches',{ref:'main',inputs:{timer_scheduled_at:result.scheduledAt,timer_request_id:result.requestId}});result.dispatchMs=Date.now()-stageStarted;result.dispatchAcceptedAt=new Date().toISOString();
+   stageStarted=Date.now();result.stage='dispatch-request';const dispatched=await request('POST','/actions/workflows/watch-data-health.yml/dispatches',{ref:'main',return_run_details:true,inputs:{timer_scheduled_at:result.scheduledAt,timer_request_id:result.requestId}});result.dispatchMs=Date.now()-stageStarted;result.dispatchAcceptedAt=new Date().toISOString();
+   if(/^\d+$/.test(String(dispatched?.workflow_run_id))&&dispatched.html_url==='https://github.com/'+REPO+'/actions/runs/'+dispatched.workflow_run_id){result.dispatchedRunId=dispatched.workflow_run_id;result.dispatchedRunUrl=dispatched.html_url;state.lastDispatchedRun={id:result.dispatchedRunId,url:result.dispatchedRunUrl,requestId:result.requestId};}
    result.status='dispatch-accepted-awaiting-execution';
   }else result.status='not-dispatched';
  }catch(error){

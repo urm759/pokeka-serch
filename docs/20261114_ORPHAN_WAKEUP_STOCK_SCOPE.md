@@ -33,3 +33,5 @@ GemRate参考公開761枚/12セット・計算採用0を維持。直近の12/12�
 関連回帰、固定時計の正式2条件の候補ID/金融値/GO同一、通常/2倍の性能予算、PC/スマホ実画面を確認して公開到達を追記する。金融計算は変更0、原票/長期履歴の初期読込追加0。
 
 公開前の関連79回帰は失敗0。2026-11-13T20:57:10.372Zの同時計算で正式Value17/Priority15は変更前後同一、全カードの主計算/仕入れ上限/GOハッシュ一致。通常/2倍の本番全件計算約6.45/10.09秒、初期JSON本文23,610,820/43,372,514 bytesで以前と容量不変、既存性能予算pass。性能改善済みとは扱わず、実ブラウザと自然Cronは別検証。稼働Worker 66098728-e14b-4eb4-b04a-673f7268de0a、ENABLED:true、cron毎時07/22/37/52分、repo既定OFFを保持。
+
+GitHub公式APIの return_run_details:true を使用し、dispatchの戻り値に含まれる実行ID/URLをCron保存状態へ保持する。204応答互換も維持し、応答不確実時は再POSTしない。公式仕様: https://docs.github.com/en/rest/actions/workflows#create-a-workflow-dispatch-event 。最終配置 fdfc86e6-0c28-41a8-90ca-e13dd4c79813。
