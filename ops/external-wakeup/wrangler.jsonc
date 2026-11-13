@@ -2,7 +2,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "pokeka-independent-wakeup",
   "main": "worker.mjs",
-  "compatibility_date": "2026-11-14",
+  "compatibility_date": "2026-11-13",
   "workers_dev": false,
   "vars": { "ENABLED": "false" },
   "triggers": { "crons": ["7,22,37,52 * * * *"] },

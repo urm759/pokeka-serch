@@ -40,6 +40,8 @@ on:
       - 'work/test_shop_effect_baseline.js'
       - 'work/test_ui_projection_cache.js'
       - 'work/test_recovery_checkout_proof.js'
+      - 'work/resolve_generated_merge.js'
+      - 'work/test_generated_merge_finalization.js'
       - '.github/workflows/gemrate-code-checks.yml'
 permissions:
   contents: read
@@ -70,6 +72,7 @@ jobs:
           node work/test_ui_projection_cache.js
           node work/test_external_wakeup.js
           node work/test_recovery_checkout_proof.js
+          node work/test_generated_merge_finalization.js
           node work/test_pc_domestic_checkpoint.js
           node work/test_previous_qualified_reference.js
           node work/test_deadline_order.js

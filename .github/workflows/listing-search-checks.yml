@@ -17,6 +17,8 @@ on:
       - 'work/test_shop_effect_baseline.js'
       - 'work/test_ui_projection_cache.js'
       - 'work/test_recovery_checkout_proof.js'
+      - 'work/resolve_generated_merge.js'
+      - 'work/test_generated_merge_finalization.js'
       - 'work/test_recovery_latency.js'
       - 'work/test_unified_median_buy.js'
       - 'work/test_buy_basis_url_isolation.js'
@@ -99,6 +101,7 @@ jobs:
           node work/test_ui_projection_cache.js
           node work/test_external_wakeup.js
           node work/test_recovery_checkout_proof.js
+          node work/test_generated_merge_finalization.js
           node work/test_gemrate_worker.js
           node work/test_saved_yuyutei_products.js
           node work/test_cadence_payload.js
