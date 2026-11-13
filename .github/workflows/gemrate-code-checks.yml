@@ -10,6 +10,12 @@ on:
       - 'work/reconcile_saved_source_merge.js'
       - 'work/test_failed_price_recovery.js'
       - 'work/test_saved_source_merge.js'
+      - 'work/pc_*.js'
+      - 'work/run_pc_freshness_bridge.js'
+      - 'work/test_pc_*.js'
+      - 'work/priority_price_queue.js'
+      - 'work/previous_qualified_reference.js'
+      - 'work/test_previous_qualified_reference.js'
       - 'work/gemrate-collector-extension/**'
       - '.github/workflows/gemrate-code-checks.yml'
 permissions:
@@ -36,6 +42,9 @@ jobs:
           node work/test_gemrate_s4a_scope.js
           node work/test_gemrate_sm11b_scope.js
           node work/test_pc_freshness_bridge.js
+          node work/test_pc_domestic_checkpoint.js
+          node work/test_previous_qualified_reference.js
+          node work/test_deadline_order.js
           node work/test_failed_price_recovery.js
           node work/test_saved_source_merge.js
           node work/test_generated_merge_large_json.js

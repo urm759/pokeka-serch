@@ -30,6 +30,10 @@ assert.equal(firstEight.filter(r=>r.fixedTarget).length,5,'deadline pressure mus
 assert.equal(firstEight.filter(r=>!r.important).length,2,'ordinary traversal stays 25 percent');
 assert.equal(firstEight.filter(r=>r.important&&!r.fixedTarget).length,1,'new candidate work must retain capacity');
 assert.equal(new Set(pressure.queue.map(r=>r.card.id)).size,pressure.queue.length,'no duplicate requests');
+const formal=plan({...args,fixedIds:['a-late'],candidateRows:{'z-early':{formalCandidate:true,medianAtRisk:true},overdue:{},retry:{},manual:{} }});
+assert.equal(formal.queue[0].card.id,'z-early','a formal candidate losing its second independent median source takes a maintenance slot');
+assert(formal.queue.some(r=>r.card.id==='normal'),'normal discovery remains in the same budget');
+assert(!formal.queue.some(r=>r.card.id==='manual'||r.card.id==='retry'),'formal prioritization does not release retry or identity holds');
 assert.equal(plan({...args,now:now+2*60000}).queue.find(r=>r.card.id==='retry')?.status,'次回完了前に期限切れ・先回り待ち');
 const weak=estimate({importantCount:300,eligibleCount:150,verifiedCount:20,durationMs:360000});
 assert.equal(weak.requiredPerRun,100);assert.equal(weak.availablePerRun,15);assert.equal(weak.deficitPerRun,85);assert.equal(weak.sustainable,false);
