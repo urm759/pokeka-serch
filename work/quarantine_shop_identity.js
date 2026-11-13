@@ -22,6 +22,8 @@ function recordReference(root,source,row,card) {
 }
 function reason(card,title){
   if(!String(title||'').trim())return null;
+  const finishReason=require('./shop_finish_identity').reason(card,title);
+  if(finishReason)return finishReason;
   if(/中国語箔押しエラー/.test(card.name)&&!/中国語箔押しエラー/.test(title))return '特殊加工・エラー仕様の根拠なし（通常版で代用不可）';
   if(/未開封/.test(title)) {
     if(rawReference.condition(title)==='excluded-product')return 'BOX・パック・複数枚を単品へ代用不可';

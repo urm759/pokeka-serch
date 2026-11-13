@@ -12,6 +12,9 @@ const RECONCILABLE=new Map([
 ]);
 DERIVED.add('data/priority-price-monitor.json');
 DERIVED.add('data/operational-freshness-audit.json');
+// Scheduling rows are a projection. The carried publication proof is selected
+// strictly below, not discarded when the projection is regenerated.
+DERIVED.add('data/proactive-refresh-audit.json');
 // Pure projection of the completion queue and saved linkage evidence. It is
 // rebuilt by finalize_update_status; never resolve a queue/raw-price conflict here.
 DERIVED.add('data/one-item-completion-audit.json');
@@ -53,6 +56,8 @@ function resolve(cwd,{rebuild}={}) {
   for(const [file,[base,a,b]]of staged){
     let seed=a;
     if(RECONCILABLE.has(file))seed=require('./reconcile_saved_source_merge')[RECONCILABLE.get(file)](base,a,b);
+    if(file==='data/proactive-refresh-audit.json')seed={...a,publicationEvidence:
+      require('./reconcile_saved_source_merge').latest(a.publicationEvidence??null,b.publicationEvidence??null,base.publicationEvidence??null)};
     if(file==='data/performance-history.json'){
       const records=[...new Map([...(a.records||[]),...(b.records||[])].map(r=>[JSON.stringify(r),r])).values()];
       seed={...a,records:records.sort((x,y)=>Date.parse(x.generatedAt)-Date.parse(y.generatedAt)).slice(-90)};
