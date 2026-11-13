@@ -27,6 +27,19 @@ on:
       - 'work/run_priority_price_refresh.js'
       - 'work/test_postpass_cadence.js'
       - 'work/gemrate-collector-extension/**'
+      - 'ops/external-wakeup/**'
+      - 'work/cloud_wakeup_policy.js'
+      - 'work/refresh_cadence.js'
+      - 'work/multi_pipeline_timing.js'
+      - 'work/shop_effect_baseline.js'
+      - 'work/ui_projection_cache.js'
+      - 'work/recovery_checkout_proof.js'
+      - 'work/external_timer_context.js'
+      - 'work/test_external_wakeup.js'
+      - 'work/test_multi_pipeline_timing.js'
+      - 'work/test_shop_effect_baseline.js'
+      - 'work/test_ui_projection_cache.js'
+      - 'work/test_recovery_checkout_proof.js'
       - '.github/workflows/gemrate-code-checks.yml'
 permissions:
   contents: read
@@ -52,6 +65,11 @@ jobs:
           node work/test_gemrate_s4a_scope.js
           node work/test_gemrate_sm11b_scope.js
           node work/test_pc_freshness_bridge.js
+          node work/test_multi_pipeline_timing.js
+          node work/test_shop_effect_baseline.js
+          node work/test_ui_projection_cache.js
+          node work/test_external_wakeup.js
+          node work/test_recovery_checkout_proof.js
           node work/test_pc_domestic_checkpoint.js
           node work/test_previous_qualified_reference.js
           node work/test_deadline_order.js

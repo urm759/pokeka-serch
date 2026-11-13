@@ -109,7 +109,8 @@ state.operationalLimitHistory = previous && previous.modelVersion === model.MODE
 const startedAt = Date.now();
 if (process.env.SHOP_EFFECT_AUDIT_REF) {
   const { execFileSync } = require("child_process");
-  const ref = process.env.SHOP_EFFECT_AUDIT_REF;
+  const baseline=require('./shop_effect_baseline').resolve(root,process.env.SHOP_EFFECT_AUDIT_REF);
+  const ref = baseline.referenceCommit;
   const gitRead = (file) => JSON.parse(execFileSync("git", ["show", `${ref}:${file}`], { cwd: root, encoding: "utf8", maxBuffer: 30000000 }));
   const actual = { psa: state.psaPopulation, cardrush: state.cardrushStock, hareruya2: state.hareruya2Stock };
   state.psaPopulation = gitRead("data/psa-population-summary.json").cards;
@@ -125,7 +126,7 @@ if (process.env.SHOP_EFFECT_AUDIT_REF) {
   state.cardrushStock = actual.cardrush; state.hareruya2Stock = actual.hareruya2;
   const after = candidateAvailabilityAudit.snapshot(prepareCalculatedCards(state.cards), presetQualifications, asOfDate, new Date().toISOString(), model.MODEL_VERSION);
   const comparison = candidateAvailabilityAudit.compare(before, after);
-  const effect = { referenceCommit: ref, baselineAt: read("work/acquisition-audit-baseline.json", {}).at || null,
+  const effect = { ...baseline, baselineAt: read("work/acquisition-audit-baseline.json", {}).at || null,
     generatedAt: new Date().toISOString(), modelVersion: model.MODEL_VERSION, settings: operationalSettings(),
     fixedPsa: true, fixedMarketHistory: true, correctedIndividualPriceDates: true, before: before.counts, after: after.counts, comparison,
     rows: Object.keys(before.rows).map((id) => ({ id, before: before.rows[id], after: after.rows[id] || null })) };

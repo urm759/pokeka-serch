@@ -8,6 +8,8 @@ permissions:
   contents: write
 concurrency:
   group: all-site-data-refresh
+
+  queue: max
   cancel-in-progress: false
 jobs:
   refresh:

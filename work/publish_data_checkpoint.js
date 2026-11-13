@@ -9,10 +9,16 @@ function git(args, cwd) {
 }
 
 function publish({ cwd = path.join(__dirname, ".."), message = "Publish deterministic data checkpoint", retries = 2, captureOnly = false } = {}) {
+  const began=Date.now(),projectionChecks=[];
   function syncUiData() {
     if (!fs.existsSync(path.join(cwd, 'ui-data-codec.js'))) return;
+    const at=Date.now();
     require('./enforce_overseas_publication').enforce(cwd);
-    require('./build_ui_data.js').build(cwd);
+    const registry=path.join(cwd,'work/gemrate-confirmed-reference-registry.json');
+    if(fs.existsSync(registry))require('./gemrate_confirmed_links').validatePublic(cwd,JSON.parse(fs.readFileSync(path.join(cwd,'data/gemrate-reference-summary.json'))),JSON.parse(fs.readFileSync(registry)));
+    const reused=require('./ui_projection_cache').current(cwd);
+    if(!reused)require('./build_ui_data.js').build(cwd);
+    projectionChecks.push({mode:reused?'exact-input-code-output-reuse':'rebuild',durationMs:Date.now()-at});
     const added = git(['add', 'data/ui'], cwd);
     if (!added.ok) throw new Error(added.output);
   }
@@ -43,7 +49,8 @@ function publish({ cwd = path.join(__dirname, ".."), message = "Publish determin
     if(fs.existsSync(path.join(cwd,'data/overseas-access-policy.json')))require('./enforce_overseas_publication').verify(cwd,{staged:true});
     const pushed = git(["push", "origin", "HEAD:main"], cwd);
     record.attempts.push({ at: new Date().toISOString(), stage: "push", durationMs:pushed.durationMs, ok: pushed.ok, message: pushed.output });
-    if (pushed.ok) { record.status = "published"; save(); return { status: "published", published: true, commit: git(["rev-parse", "HEAD"], cwd).output }; }
+    if (pushed.ok) { record.status = "published";record.totalMs=Date.now()-began;record.projectionChecks=projectionChecks; save(); return { status: "published", published: true, commit: git(["rev-parse", "HEAD"], cwd).output,
+      timings:{totalMs:record.totalMs,projectionChecks,commitMs:record.commitMs,bundleMs:record.bundleMs,bundleBytes:fs.statSync(bundle).size,attempts:record.attempts.map(({stage,durationMs,ok})=>({stage,durationMs:durationMs??null,ok}))} }; }
     if (!/rejected|fetch first|non-fast-forward/i.test(pushed.output) || attempt === retries) break;
     const fetched = git(["fetch", "origin", "main"], cwd);
     record.attempts.push({ at: new Date().toISOString(), stage: "fetch", durationMs:fetched.durationMs, ok: fetched.ok, message: fetched.output });
@@ -53,13 +60,14 @@ function publish({ cwd = path.join(__dirname, ".."), message = "Publish determin
     record.attempts.push({ at: new Date().toISOString(), stage: "merge", durationMs:merged.durationMs, ok: merged.ok, message: merged.output });
     if (!merged.ok) {
       let resolved=false;
+      const regenerationStarted=Date.now();
       try { resolved=require('./resolve_generated_merge.js').resolve(cwd); }
-      catch(error) { record.attempts.push({stage:'regenerate-derived',ok:false,message:error.message}); }
+      catch(error) { record.attempts.push({stage:'regenerate-derived',durationMs:Date.now()-regenerationStarted,ok:false,message:error.message}); }
       if (!resolved) {
         require('./capture_unpublished_data.js').capture({cwd,source:'publication-conflict'});
         record.status = "manual-merge-required"; save(); throw new Error(`Publication conflict; checkpoint bundle saved. ${merged.output}`);
       }
-      record.attempts.push({stage:'regenerate-derived',ok:true});
+      record.attempts.push({stage:'regenerate-derived',durationMs:Date.now()-regenerationStarted,ok:true});
     }
     syncUiData();
     if(fs.existsSync(path.join(cwd,'data/card-catalog-completion.json')))require('./publication_lineage').verify(cwd,{staged:true});

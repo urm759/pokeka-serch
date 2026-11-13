@@ -23,6 +23,9 @@ async function test(){let reads=0;const getJson=async url=>url.includes('receipt
  assert.equal(noop.targetStatus,'no-acquisition-required');assert.equal(noop.confirmed,0,'no-op is not new acquisition or publication evidence');
  const failed=await inspect({getJson:async u=>u.endsWith('/runs/3')?{...run,id:3,name:'Priority Purchase Price Refresh',conclusion:'failure'}:u.endsWith('/runs/3/jobs')?skippedJobs:getJson(u),getText:async()=>text,at,targetRunId:3});
  assert.equal(failed.targetStatus,'not-yet-published-or-superseded','failure is not an admitted no-op');
+ const failedBeforePublish={jobs:[{steps:[{name:'Rebuild catalog and shared purchase-limit audit',conclusion:'failure'},{name:'Publish validated data',conclusion:'skipped'}]}]};
+ const terminal=await inspect({getJson:async u=>u.endsWith('/runs/3')?{...run,id:3,name:'Daily Fast Update',conclusion:'failure'}:u.endsWith('/runs/3/jobs')?failedBeforePublish:getJson(u),getText:async()=>text,at,targetRunId:3});
+ assert.equal(terminal.targetStatus,'upstream-failed-before-publication');assert(terminal.targetObservation.terminal);assert.equal(terminal.targetObservation.publicationConfirmed,false);assert.equal(terminal.targetObservation.originalConclusion,'failure');assert(terminal.targetObservation.recoveryRequired,'do not poll the same missing receipt or erase the failed upstream');
  const page={name:'pages build and deployment',conclusion:'success',created_at:'2026-10-28T00:05Z',head_sha:'a'.repeat(40),id:2};
  const prior=await historicalPublication({run,jobs,receipt,pages:[page],current:bad.pipelines.priority,getText:async u=>u.endsWith('receipts.json')?JSON.stringify({pipelines:{priority:receipt}}):text});
  assert(prior.confirmed&&prior.historicalPublication);assert.equal(prior.currentPublicMatches,false);assert.equal(prior.hashes[0].currentMatched,false);assert.equal(prior.publishedCommit,page.head_sha);

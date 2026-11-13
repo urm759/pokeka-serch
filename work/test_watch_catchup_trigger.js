@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
-const file=fs.readFileSync(path.join(__dirname,'../.github/workflows/watch-data-health.yml'),'utf8');
+const file=fs.readFileSync(path.join(__dirname,'../.github/workflows/watch-data-health.yml'),'utf8').replace(/\r\n/g,'\n');
 const expression=file.match(/  catchup:\r?\n    if: >-\r?\n([\s\S]*?)    concurrency:/)[1].trim();
 const run={name:'Deep Resolve Unmatched Cards',event:'schedule',conclusion:'success',head_branch:'main',head_repository:{full_name:'owner/repo'}};
 const allowed=(event,r=run)=>vm.runInNewContext('Boolean('+expression+')',{github:{event_name:event,repository:'owner/repo',event:{workflow_run:r}}},{timeout:1000});
