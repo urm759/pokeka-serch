@@ -1,3 +1,7 @@
+## 2026-11-14：Cloudflare実ランタイムのredirect指定停止
+
+自然Cronは動作していたが、GitHub送信前にCloudflare非対応のredirect:errorがTypeErrorを発生。secretなしの実ランタイムで原文を再現し、manual＋3xx停止へ修正。認証保留とdispatch intentは維持し、特定済み送信前エラーの旧待機だけ証跡付きで移行。PR68の公開PC/スマホ17/15、在庫確認範囲と候補/計算/GO不変を確認済み。自然Cronから公開までの到達は[続きの台帳](20261114_CLOUDFLARE_TRANSPORT.md)へ追記する。
+
 ## 2026-11-14：孤立queued・自然Cronの応答失敗・在庫確認範囲
 
 古いDailyの全試行jobs 0と後続同一workflowの実ジョブ成功を照合し、証拠期限付きで起動阻害から分離。実行中/承認待ち/証拠不足は維持。在庫なしは確認済み店舗と現在未確認の店舗を主表示でも区別。自然Cron保存ログで別のAPI応答失敗/backoffも確認し、工程と次回時刻を追加記録。遊々亭の既知2商品は通常HTTP200でも厳密仕様/在庫解析未成立で採用0。実取得・採用・公開・複数周期維持を分離し、詳細と残件は[今回台帳](20261114_ORPHAN_WAKEUP_STOCK_SCOPE.md)へ継承。

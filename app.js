@@ -7424,6 +7424,7 @@ function syncFromUI(event) {
 
 function assertCalculationDependencies() {
   const required={'PurchaseDecisionModel.expectedEconomics':decisionModel?.expectedEconomics,
+    'PurchaseDecisionModel.stockConfirmationCoverage':decisionModel?.stockConfirmationCoverage,
     'PurchaseDecisionModel.hasBlockingDataAnomaly':decisionModel?.hasBlockingDataAnomaly,
     'LimitDisplayModel.classifyCap':limitDisplayModel?.classifyCap,
     'ExplorationMetrics.purchaseOfferUrl':explorationMetrics?.purchaseOfferUrl,

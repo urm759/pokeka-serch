@@ -10,7 +10,7 @@ const app=fs.readFileSync(path.join(__dirname,'../app.js'),'utf8'),html=fs.readF
 const bindings=app.split('// Browser event bindings start here;')[0];
 function context(overrides={}){let fetched=0;const w={PurchaseDecisionModel:require('../decision-model'),PurchaseRatioModel:require('../purchase-ratio-model'),LimitDisplayModel:require('../limit-display-model'),CurrentMarketModel:require('../current-market-model'),ExplorationMetrics:require('../exploration-metrics'),...overrides};const ctx=vm.createContext({window:w,document:{getElementById:()=>null,querySelectorAll:()=>[]},console,URL,URLSearchParams,setTimeout,clearTimeout,fetch:()=>{fetched++;throw Error('test must fail before data loading')}});vm.runInContext(bindings+';globalThis.boot={init,check:assertCalculationDependencies};',ctx);return{ctx,get fetched(){return fetched}};}
 (async()=>{context().ctx.boot.check();
- for(const patch of [{PurchaseDecisionModel:{}},{LimitDisplayModel:undefined},{LimitDisplayModel:{}},{CurrentMarketModel:{}},{PurchaseRatioModel:{}},{ExplorationMetrics:{}}]){
+ for(const patch of [{PurchaseDecisionModel:{}},{PurchaseDecisionModel:{...require('../decision-model'),stockConfirmationCoverage:undefined}},{LimitDisplayModel:undefined},{LimitDisplayModel:{}},{CurrentMarketModel:{}},{PurchaseRatioModel:{}},{ExplorationMetrics:{}}]){
   const c=context(patch);await assert.rejects(c.ctx.boot.init(),e=>e.code==='CALCULATION_DEPENDENCY_UNAVAILABLE');assert.equal(c.fetched,0,'failed dependencies must not load data or produce partial candidates');
  }
  const linked=[...html.matchAll(/<script\s+src="\.\/([^?]+)\?v=([^"]+)"([^>]*)><\/script>/g)];
@@ -19,7 +19,7 @@ function context(overrides={}){let fetched=0;const w={PurchaseDecisionModel:requ
  for(const file of ['decision-model.js','exploration-metrics.js','limit-display-model.js','current-market-model.js','purchase-ratio-model.js','search-controls.js','app.js','psa10-listing-counts.js']){
   const tag=linked.find(m=>m[1]===file);assert(tag,file);assert(!/\b(?:async|defer)\b/.test(tag[3]));
   const integrity=tag[3].match(/integrity="([^"]+)"/)?.[1];assert.equal(integrity,'sha384-'+crypto.createHash('sha384').update(fs.readFileSync(path.join(__dirname,'..',file))).digest('base64'),file+' exact asset version');
-  assert.equal(tag[2],file==='app.js'?'20261114-stock-scope':file==='exploration-metrics.js'?'20261113-profit-recovery':file==='decision-model.js'?'20261114-stock-scope':['search-controls.js','psa10-listing-counts.js'].includes(file)?'20261111-median-detail-long-windows':'20261101-guide80-stock');
+  assert.equal(tag[2],file==='app.js'?'20261114-cloud-transport':file==='exploration-metrics.js'?'20261113-profit-recovery':file==='decision-model.js'?'20261114-stock-scope':['search-controls.js','psa10-listing-counts.js'].includes(file)?'20261111-median-detail-long-windows':'20261101-guide80-stock');
   assert(attributes.split(/\r?\n/).includes(file+' text eol=lf'),file+' must keep integrity bytes on Windows checkouts');
  }
  assert(names.indexOf('psa10-listing-counts.js')<names.indexOf('exploration-metrics.js'),'shared listing calculations load before the optional search facade');
