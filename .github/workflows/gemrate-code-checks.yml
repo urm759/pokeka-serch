@@ -16,6 +16,10 @@ on:
       - 'work/priority_price_queue.js'
       - 'work/previous_qualified_reference.js'
       - 'work/test_previous_qualified_reference.js'
+      - 'work/camp_postpass.js'
+      - 'work/update_yuyutei_torecacamp.js'
+      - 'work/run_priority_price_refresh.js'
+      - 'work/test_postpass_cadence.js'
       - 'work/gemrate-collector-extension/**'
       - '.github/workflows/gemrate-code-checks.yml'
 permissions:
@@ -45,6 +49,7 @@ jobs:
           node work/test_pc_domestic_checkpoint.js
           node work/test_previous_qualified_reference.js
           node work/test_deadline_order.js
+          node work/test_postpass_cadence.js
           node work/test_failed_price_recovery.js
           node work/test_saved_source_merge.js
           node work/test_generated_merge_large_json.js

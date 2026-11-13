@@ -69,6 +69,15 @@ assert.equal(postpass.due(almostDue,true,now),false);assert.equal(postpass.due(a
 assert.equal(postpass.due(almostDue,false,now,2*3600000),false,'normal sweep freshness deadline is unchanged');
 assert.equal(postpass.priorityMaintenance([almostDue],['wanted'],{}, {},now,2*3600000).due,true);
 assert(postpass.prioritize([],0,[almostDue],['wanted'],4,{},now,2*3600000).some(r=>r.priorityRefresh),'proactive plan must also reach the real acquisition selector');
+const completePipelineLead=require('./proactive_refresh').lead({executionIntervalMs:2*3600000,startDelayAllowanceMs:30*60000,pipelineBudgetMs:24*60000}).leadMs;
+const publicationRisk={...catalog[0],observedAt:new Date(now-3.5*3600000).toISOString()};
+assert.equal(postpass.due(publicationRisk,true,now,2*3600000),false,'old fixed lead misses a price expiring before the next publication');
+assert.equal(postpass.due(publicationRisk,true,now,completePipelineLead),true,'include execution wait, acquisition, aggregation, validation and publication');
+assert.equal(postpass.due(publicationRisk,false,now,completePipelineLead),false,'ordinary 48h adoption/cadence is unchanged');
+assert.equal(postpass.due({...publicationRisk,observedAt:new Date(now-3600000).toISOString()},true,now,99*3600000),false,'a long creation gap never permits sub-2h per-product rechecks');
+assert.equal(postpass.proactiveLead(Infinity),0);assert.equal(postpass.proactiveLead(-1),0);assert.equal(postpass.proactiveLead(99*3600000),4*3600000);
+assert(postpass.prioritize([],0,[publicationRisk],['wanted'],4,{},now,completePipelineLead).some(r=>r.priorityRefresh));
+assert.equal(postpass.priorityMaintenance([publicationRisk],['wanted'],{}, {lastError:'HTTP 403'},now,completePipelineLead).due,false);
 const campParser=require('./update_yuyutei_torecacamp');assert(campParser.campA({title:'状態A'}));assert(!campParser.campA({title:'状態A−'}));assert(!campParser.campA({title:'状態A-'}));
 assert.deepEqual(postpass.maintenanceBudget({batchSize:35,intervalMs:1100}),{batchSize:35,runtimeMs:90000,intervalMs:1100});
 assert.equal(postpass.maintenanceBudget({batchSize:18,intervalMs:2200}).batchSize,18,'source backoff keeps its smaller configured batch');
