@@ -843,7 +843,7 @@ async function main({ rebuildSaved = false } = {}) {
       unmatched: result?.unmatched?.length ?? previous.unmatched ?? null,
       sourceUpdatedAt: result ? null : previous.sourceUpdatedAt || null,
       pagination: result?.pagination || previous.pagination || null,
-      error: result ? result.coverageWarning || null : readJson(path.join(__dirname, 'buyback-source-permissions.json'), {}).sources?.[shop.id]?.reason || failures.find((f) => f.source === shop.id)?.error || previous.error || null,
+      ...sourceErrorState(result, failures.find((f) => f.source === shop.id), previous, readJson(path.join(__dirname, 'buyback-source-permissions.json'), {}).sources?.[shop.id]),
       observedDays: (history.observedByShop[shop.id] || []).length,
       matched: result ? result.matched.length : Number(previous.matched || 0),
       activeMatched: result ? result.matched.filter((item) => item.active).length : Number(previous.activeMatched || 0),
@@ -893,4 +893,14 @@ function adapterRefreshDue(shop,review,now=Date.now(),config={}){
   if(Number.isFinite(attempt)&&now-attempt<2*3600000)return false;
   return !Number.isFinite(success)||require('./proactive_refresh').eligibleDeadline(success+6*3600000,true,now,config);
 }
-module.exports = { main, SHOPS, fetchText, savedMatchConfidence, freshUsablePrice, parseTorecaBankItems, validateListingCount, preserveFailedResponses,adapterRefreshDue };
+function sourceErrorState(result, failure, previous = {}, permission = {}) {
+  const acquisitionNote = permission.reason || null;
+  if (result) return {error: result.coverageWarning || null, acquisitionNote, errorSource: result.coverageWarning ? 'coverage-warning' : null};
+  if (failure?.error) return {error: failure.error, acquisitionNote, errorSource: 'acquisition-failure'};
+  // Exact metadata repair only. Never clear access/format/count-drop review holds
+  // or a different saved failure, and never manufacture a new observation.
+  if (permission.status === 'public-page' && !previous.reviewStatus && previous.error === acquisitionNote && acquisitionNote)
+    return {error: null, acquisitionNote, errorSource: null, metadataCorrection: {previousError: previous.error, reason: 'Public-page policy description was copied into the error field; no acquisition or hold was cleared'}};
+  return {error: previous.error || (permission.status !== 'public-page' ? acquisitionNote : null), acquisitionNote, errorSource: previous.error ? 'saved-failure' : permission.status !== 'public-page' && acquisitionNote ? 'access-policy' : null};
+}
+module.exports = { main, SHOPS, fetchText, savedMatchConfidence, freshUsablePrice, parseTorecaBankItems, validateListingCount, preserveFailedResponses,adapterRefreshDue,sourceErrorState };

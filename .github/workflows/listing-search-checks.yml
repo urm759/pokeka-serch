@@ -40,6 +40,7 @@ on:
       - 'work/pc_yuyutei_maintenance.js'
       - 'work/pc_priority_watchdog.js'
       - 'work/update_shop_buybacks.js'
+      - 'work/test_buyback_error_provenance.js'
       - 'work/test_buyback_failed_response_evidence.js'
       - 'work/test_median_efficiency.js'
       - 'work/test_buyback_support.js'
@@ -120,6 +121,7 @@ jobs:
           node work/test_saved_yuyutei_products.js
           node work/test_cadence_payload.js
           node work/test_buyback_failed_response_evidence.js
+          node work/test_buyback_error_provenance.js
           node work/test_partial_buyback_refresh.js
           node work/test_homura_public_feed.js
           node work/test_price_comparison_display.js
