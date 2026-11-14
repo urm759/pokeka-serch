@@ -64,4 +64,8 @@ finally {fs.renameSync=rename;}
 assert(fs.existsSync(interruptedFile));
 assert.equal(receive(interruptedOptions).files[0].recovered,true,'prepared receipt resumes before original move as well as after it');
 assert.equal(receive(interruptedOptions).newPrivateObservations,0);
-console.log('PASS private receipt: original/backup hashes, distinct snapshots, persistence, idempotence, lock, quarantine, no public output');
+const manifestBefore=fs.readFileSync(path.join(store,'manifest.json'),'utf8');
+fs.writeFileSync(file,'Card #,Name,Parallel,Gems,Total\n001,Synthetic,Base,11,20\n');
+assert.throws(()=>receive(options),/filename already belongs/);
+assert.equal(fs.readFileSync(path.join(store,'manifest.json'),'utf8'),manifestBefore,'reused incoming name cannot change an earlier receipt');assert(fs.existsSync(file),'conflicting incoming original retained');
+console.log('PASS private receipt: original/backup hashes, distinct snapshots, persistence, idempotence, lock, quarantine, filename collision and no public output');

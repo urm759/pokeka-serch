@@ -38,7 +38,7 @@ function preserve(cycles,key,result){
   if(prior?.confirmed&&!result.confirmed&&(!result.receiptMatches||String(prior.runId)===String(result.runId))){cycles.lastChecks||={};cycles.lastChecks[key]=result;return cycles;}
   cycles.pipelines[key]=result;return cycles;
 }
-async function inspect({getJson,getText,at=Date.now(),targetRunId=null}){
+async function inspect({getJson,getText,at=Date.now(),targetRunId=null,onVerifiedReceipt=null}){
   const textCache=new Map(),readText=url=>{if(!textCache.has(url))textCache.set(url,getText(url));return textCache.get(url);};
   const [receipts,deployments]=await Promise.all([getJson(PUBLIC+'data/scheduled-cycle-receipts.json?verify='+at),getJson(API+'/actions/runs?per_page=40')]);
   const cycles={version:1,checkedAt:new Date(at).toISOString(),pipelines:{},targetRunId};let pagesHistory=null;
@@ -60,6 +60,7 @@ async function inspect({getJson,getText,at=Date.now(),targetRunId=null}){
         pagesHistory=id?(await getJson(API+'/actions/workflows/'+id+'/runs?per_page=50')).workflow_runs||[]:deployments.workflow_runs||[];}
       result=await historicalPublication({run,jobs,receipt,pages:pagesHistory,current:result,getText:readText});
     }
+    if(result.publicationConfirmed&&onVerifiedReceipt)await onVerifiedReceipt(key,result,receipt);
     cycles.pipelines[key]=result;
   }
   cycles.confirmed=Object.values(cycles.pipelines).filter(r=>r.confirmed).length;
@@ -99,7 +100,7 @@ async function main(){
   fs.writeFileSync(file,JSON.stringify({startedAt:new Date(started).toISOString(),phase:'verification-started',targetRunId,llmCalls:0,codexCalls:0,sourceRequests:0}));
   let result,terminal=false,retryAfterMs=15000;
   do{
-    try{result=await inspect({getJson:async u=>(await get(u)).json(),getText:async u=>(await get(u)).text(),targetRunId});attempts.push({at:new Date().toISOString(),status:result.targetStatus,confirmed:result.confirmed});}
+    try{result=await inspect({getJson:async u=>(await get(u)).json(),getText:async u=>(await get(u)).text(),targetRunId,onVerifiedReceipt:(key,proof,receipt)=>require('./effective_price_cadence').recordVerified(path.join(__dirname,'..'),key,proof,receipt)});attempts.push({at:new Date().toISOString(),status:result.targetStatus,confirmed:result.confirmed});}
     catch(e){attempts.push({at:new Date().toISOString(),error:e.message});terminal=!!e.terminal||/Untrusted|Invalid receipt/.test(e.message);retryAfterMs=e.retryAfterMs||15000;}
     const proof={...result,attempts,llmCalls:0,codexCalls:0,sourceRequests:0};fs.writeFileSync(file,JSON.stringify(proof));
     console.log(JSON.stringify({attempt:attempts.at(-1),sourceRequests:0}));

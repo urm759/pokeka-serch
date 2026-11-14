@@ -1,0 +1,10 @@
+const assert=require('node:assert/strict'),m=require('./gemrate_identity_match'),{canonicalIdentity}=require('./card_identity');
+const context={grader:'PSA',language:'Japanese',set:'Pokemon Japanese SV-P Promo',year:2023},scope={setCode:'SV-P',denominator:null,promoCampaign:{domesticMarker:'YU NAGABA',parallel:'YU Nagaba X Pokemon Card Game Campaign',numbers:[62,69]},contextProof:'sha256:fixture',parallels:['YU Nagaba X Pokemon Card Game Campaign']};
+const names=[['eevee','イーブイ','Eevee',62],['glaceon','グレイシア','Glaceon',69]],cards=names.map(([id,ja,en,no])=>{const c={id,name:ja+': プロモ [SV-P '+String(no).padStart(3,'0')+'](YU NAGABA)',language:'ja'};return {...c,identityKey:canonicalIdentity(c).key};}),english=Object.fromEntries(names.map(([id,ja,en,no])=>[id,{englishName:en+': PROMO [SV-P '+String(no).padStart(3,'0')+'](YU NAGABA)',url:'https://snkrdunk.com/apparels/'+id}])),rows=names.map(([id,ja,en,no])=>({'Card #':String(no).padStart(3,'0'),Name:en,Parallel:scope.promoCampaign.parallel}));
+assert.equal(m.resolve(rows,context,cards,english,scope).mappings.length,2);assert.deepEqual(m.printed(cards[0].name),{set:'svp',number:62,denominator:null});
+for(const change of [{language:'English'},{grader:'CGC'}])assert.throws(()=>m.resolve(rows,{...context,...change},cards,english,scope));
+for(const row of [{...rows[0],Parallel:'Base'},{...rows[0],'Card #':'063'},{...rows[0],Name:'Pikachu'}])assert.equal(m.resolve([row],context,cards,english,scope).mappings.length,0);
+for(const patch of [{language:'en'},{name:cards[0].name.replace('YU NAGABA','other campaign')},{name:cards[0].name+' ミラー'},{identityReviewRequired:true}])assert.equal(m.resolve([rows[0]],context,[{...cards[0],...patch}],english,scope).mappings.length,0);
+assert.equal(m.resolve([rows[0]],context,[cards[0],{...cards[0],id:'duplicate'}],{...english,duplicate:english.eevee},scope).mappings.length,0);
+assert.throws(()=>m.resolve(rows,context,cards,english,{...scope,promoCampaign:null}));
+console.log('PASS explicit Japanese campaign/number/English print/parallel; no invented denominator, unknown campaign/finish/language or duplicate adoption');

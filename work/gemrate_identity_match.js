@@ -1,6 +1,6 @@
 // Offline identity resolution. No network, prices, official POP mutation or public records.
 const {key}=require('./gemrate_csv_import');
-const VERSION='exact-set-number-name-rarity-parallel-v3';
+const VERSION='exact-set-number-name-rarity-parallel-v4';
 function decodeName(value){return String(value||'').replace(/&(#x[0-9a-f]+|#\d+|amp|apos|quot|lt|gt|nbsp);/gi,(all,key)=>{
   if(key[0]==='#'){const n=key[1].toLowerCase()==='x'?parseInt(key.slice(2),16):Number(key.slice(1));return Number.isInteger(n)&&n>0&&n<=0x10ffff&&!(n>=0xd800&&n<=0xdfff)?String.fromCodePoint(n):all;}
   return {amp:'&',apos:"'",quot:'"',lt:'<',gt:'>',nbsp:' '}[key.toLowerCase()];
@@ -24,10 +24,14 @@ function equivalentName(card,english,source){
 }
 function printed(name) {
   const m=String(name||'').match(/\[\s*([a-z0-9]+)\s+(\d+)\s*\/\s*(\d+)\s*\]/i);
-  return m?{set:normalized(m[1]),number:Number(m[2]),denominator:Number(m[3])}:null;
+  const promo=String(name||'').match(/\[\s*([a-z0-9]+-P)\s+(\d+)\s*\]/i);
+  return m?{set:normalized(m[1]),number:Number(m[2]),denominator:Number(m[3])}:promo?{set:normalized(promo[1]),number:Number(promo[2]),denominator:null}:null;
 }
-function resolve(rows,context,cards,english,{setCode,denominator,contextProof,heldKeys=[],parallels=['Base','Ultra Rare']}={}) {
-  if(context.grader!=='PSA'||context.language!=='Japanese'||!setCode||!denominator||!contextProof)throw Error('Explicit Japanese PSA set evidence required');
+function promoScope(s){return s?.denominator===null&&/-P$/i.test(s.setCode||'')&&s.promoCampaign?.domesticMarker&&s.promoCampaign?.parallel&&Array.isArray(s.promoCampaign.numbers)&&s.promoCampaign.numbers.length>0&&new Set(s.promoCampaign.numbers).size===s.promoCampaign.numbers.length&&s.promoCampaign.numbers.every(Number.isSafeInteger);}
+function eligibleCard(card,scope){const variant=require('./card_identity').canonicalIdentity(card).variant,p=printed(card.name);return promoScope(scope)?variant==='promo'&&p?.set===normalized(scope.setCode)&&scope.promoCampaign.numbers.includes(p.number)&&String(card.name).includes(scope.promoCampaign.domesticMarker):!variant;}
+function resolve(rows,context,cards,english,{setCode,denominator,contextProof,heldKeys=[],parallels=['Base','Ultra Rare'],promoCampaign=null}={}) {
+  const scope={setCode,denominator,promoCampaign},promo=promoScope(scope);
+  if(context.grader!=='PSA'||context.language!=='Japanese'||!setCode||(!denominator&&!promo)||!contextProof)throw Error('Explicit Japanese PSA set evidence required');
   const mappings=[],review=[],holds=new Set(heldKeys);
   // Set/number/English-print indexing is shared by all rows of this CSV. Do not
   // canonicalize the entire domestic catalog again for every exported row.
@@ -37,8 +41,8 @@ function resolve(rows,context,cards,english,{setCode,denominator,contextProof,he
     if(c.language!=='ja'||!c.identityKey||c.identityReviewRequired||!p||!ep
       ||p.set!==normalized(setCode)||ep.set!==p.set||ep.number!==p.number
       ||p.denominator!==denominator||ep.denominator!==denominator
-      ||require('./card_identity').canonicalIdentity(c).variant)continue;
-    const name=String(e.englishName).split('[')[0].replace(/\b(?:MUR|BWR|SSR|CSR|CHR|SAR|UR|HR|SR|RRR|RR|AR|SA|R|C|U|P)\b/gi,'').replace(/[:：]/g,'');
+      ||!eligibleCard(c,scope))continue;
+    const name=String(e.englishName).split('[')[0].replace(/\b(?:MUR|BWR|SSR|CSR|CHR|SAR|UR|HR|SR|RRR|RR|AR|SA|PROMO|R|C|U|P)\b/gi,'').replace(/[:：]/g,'');
     const bucket=byNumber.get(p.number)||[];bucket.push({card:c,name});byNumber.set(p.number,bucket);
   }
   for(const row of rows) {
@@ -47,6 +51,7 @@ function resolve(rows,context,cards,english,{setCode,denominator,contextProof,he
     const candidates=(byNumber.get(number)||[]).filter(x=>equivalentName(x.card,x.name,sourceName)).map(x=>x.card);
     let reason=candidates.length!==1?(candidates.length?'ambiguous-catalog':'catalog-or-name-unresolved'):null;
     if(!parallels.includes(row.Parallel))reason='special-parallel-unresolved';
+    if(promo&&row.Parallel!==promoCampaign.parallel)reason='promo-campaign-unresolved';
     const card=candidates[0],rarity=String(card?.name||'').match(/\b(UR|HR|SR|RRR|RR|R|C|U|P)\b/i)?.[1]?.toUpperCase();
     const exactRarity=card&&require('./card_identity').canonicalIdentity(card).rarity;
     const parallelRarity={'Art Rare':'AR','Special Art Rare':'SAR','Super Rare':'SR'};
@@ -55,7 +60,7 @@ function resolve(rows,context,cards,english,{setCode,denominator,contextProof,he
     if(!reason && (/Hyper$/i.test(row.Name)!==(rarity==='HR') || (row.Parallel==='Ultra Rare')!==(rarity==='UR')))reason='rarity-or-finish-mismatch';
     if(reason){review.push({key:identity,number:row['Card #'],name:row.Name,parallel:row.Parallel,candidateIds:candidates.map(c=>c.id),reason});continue;}
     mappings.push({key:identity,cardId:card.id,identityKey:card.identityKey,hold:holds.has(identity),
-      specEvidence:JSON.stringify({contextProof,setCode,number,denominator,parallel:row.Parallel,
+      specEvidence:JSON.stringify({contextProof,setCode,number,denominator,...(promo?{promoCampaign}:{}),parallel:row.Parallel,
         catalogName:card.name,englishName:english[card.id].englishName,englishSource:english[card.id].url,
         englishCapturedAt:english[card.id].fetchedAt,
         nameEvidence:/^基本悪エネルギー(?:\s|$)/.test(card.name)?ENERGY_EVIDENCE:undefined,
@@ -65,4 +70,4 @@ function resolve(rows,context,cards,english,{setCode,denominator,contextProof,he
   for(const m of mappings.filter(m=>counts.get(m.cardId)>1))review.push({key:m.key,candidateIds:[m.cardId],reason:'multiple-source-specifications'});
   return {mappings:mappings.filter(m=>counts.get(m.cardId)===1),review};
 }
-module.exports={resolve,printed,decodeName,VERSION};
+module.exports={resolve,printed,decodeName,VERSION,promoScope,eligibleCard};

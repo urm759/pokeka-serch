@@ -75,5 +75,13 @@ function build(root=path.join(__dirname,'..')) {
   const value={...history,runs:history.runs.map(({observations,...r})=>r)};
   atomicWrite(path.join(root,'data/effective-price-cadence.json'),value,0);return value;
 }
-module.exports={observe,build,acquisitionRows};
+function recordVerified(root,key,proof,receipt){
+  if(!proof?.publicationConfirmed||!proof.receiptMatches||String(proof.runId)!==String(receipt?.runId)
+    ||!proof.hashes?.length||proof.hashes.some(h=>!h.matched)||!Object.values(proof.stages||{}).length||!Object.values(proof.stages).every(Boolean)
+    ||JSON.stringify(Object.entries(proof.receiptHashes||{}).sort())!==JSON.stringify(Object.entries(receipt.hashes||{}).sort()))throw Error('Verified receipt snapshot mismatch');
+  const file=path.join(root,'work/verified-price-cadence-history.json'),previous=fs.existsSync(file)?JSON.parse(fs.readFileSync(file,'utf8')):{runs:[]};
+  const cycles=proof.confirmed?{pipelines:{[key]:proof}}:{nonScheduledChecks:{[key]:proof}};
+  const history=observe(previous,cycles,{pipelines:{[key]:receipt}});atomicWrite(file,history,0);return history;
+}
+module.exports={observe,build,acquisitionRows,recordVerified};
 if(require.main===module)console.log(JSON.stringify(build().sources));

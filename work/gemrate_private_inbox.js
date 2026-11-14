@@ -31,7 +31,7 @@ function validate(sidecar,bytes,store,root=ROOT) {
   const matches=(scope?.sets||[]).filter(s=>s.set===context.set&&s.year===context.year);
   if(matches.length){
     const s=matches[0];
-    if(matches.length!==1||s.language!=='Japanese'||s.grader!=='PSA'||!s.setCode||!Number.isInteger(s.denominator)||s.denominator<=0
+    if(matches.length!==1||s.language!=='Japanese'||s.grader!=='PSA'||!s.setCode||(!(Number.isInteger(s.denominator)&&s.denominator>0)&&!matcher.promoScope(s))
       ||!s.reviewedAt||!s.officialSetUrl?.startsWith('https://www.pokemon-card.com/')
       ||proof.url!==context.pageUrl||proof.category!=='tcg-cards'||proof.language!=='Japanese')throw Error('Set identity has not been reviewed');
     csv.validateContext(context,'/item-details');
@@ -41,7 +41,7 @@ function validate(sidecar,bytes,store,root=ROOT) {
     let ten=0,all=0;
     for(const row of rows){const a=csv.count(row[gems]),b=csv.count(row[total]);if(a===null||b===null||a>b)throw Error('CSV set counts invalid');ten+=a;all+=b;}
     if(ten!==proof.setTotals.psa10||all!==proof.setTotals.total)throw Error('CSV/set page totals mismatch');
-    return {context,setCode:s.setCode,denominator:s.denominator};
+    return {context,setCode:s.setCode,denominator:s.denominator,...(matcher.promoScope(s)?{promoCampaign:s.promoCampaign}:{})};
   }
   // Keep the original S6a proof path intact; new sets require the registry above.
   const oldProof=JSON.parse(fs.readFileSync(path.resolve(store,'..','gemrate-public-review-20261023.json')));
