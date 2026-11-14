@@ -1,0 +1,233 @@
+{
+  "at": "2026-11-14T08:44:22.354Z",
+  "windows": {
+    "24": {
+      "hareruya2": {
+        "runCount": 6,
+        "byOrigin": {
+          "undefined": 1,
+          "verified-non-scheduled-publication": 1,
+          "verified-natural-schedule": 4
+        },
+        "endToPublication": {
+          "samples": 6,
+          "medianMs": 499870,
+          "p90Ms": 501647,
+          "maxMs": 554050
+        },
+        "endToVerification": {
+          "samples": 6,
+          "medianMs": 724729,
+          "p90Ms": 5004915,
+          "maxMs": 8728350
+        },
+        "lastConfirmationToVerification": {
+          "samples": 6,
+          "medianMs": 726817,
+          "p90Ms": 5006091,
+          "maxMs": 8729931
+        },
+        "missingEndTimes": 0
+      },
+      "torecacamp": {
+        "runCount": 4,
+        "byOrigin": {
+          "undefined": 1,
+          "verified-non-scheduled-publication": 1,
+          "verified-natural-schedule": 2
+        },
+        "endToPublication": {
+          "samples": 4,
+          "medianMs": 460572,
+          "p90Ms": 508045,
+          "maxMs": 963174
+        },
+        "endToVerification": {
+          "samples": 4,
+          "medianMs": 737103,
+          "p90Ms": 5705599,
+          "maxMs": 8682591
+        },
+        "lastConfirmationToVerification": {
+          "samples": 4,
+          "medianMs": 737450,
+          "p90Ms": 5068186,
+          "maxMs": 8682910
+        },
+        "missingEndTimes": 0
+      }
+    },
+    "168": {
+      "hareruya2": {
+        "runCount": 18,
+        "byOrigin": {
+          "undefined": 13,
+          "verified-non-scheduled-publication": 1,
+          "verified-natural-schedule": 4
+        },
+        "endToPublication": {
+          "samples": 18,
+          "medianMs": 499870,
+          "p90Ms": 550496,
+          "maxMs": 562789
+        },
+        "endToVerification": {
+          "samples": 18,
+          "medianMs": 1228337,
+          "p90Ms": 8728350,
+          "maxMs": 57066132
+        },
+        "lastConfirmationToVerification": {
+          "samples": 18,
+          "medianMs": 1230008,
+          "p90Ms": 8729931,
+          "maxMs": 57068836
+        },
+        "missingEndTimes": 0
+      },
+      "torecacamp": {
+        "runCount": 13,
+        "byOrigin": {
+          "undefined": 10,
+          "verified-non-scheduled-publication": 1,
+          "verified-natural-schedule": 2
+        },
+        "endToPublication": {
+          "samples": 12,
+          "medianMs": 493033,
+          "p90Ms": 587223,
+          "maxMs": 1073928
+        },
+        "endToVerification": {
+          "samples": 12,
+          "medianMs": 1141685,
+          "p90Ms": 3770840,
+          "maxMs": 8682591
+        },
+        "lastConfirmationToVerification": {
+          "samples": 13,
+          "medianMs": 1142009,
+          "p90Ms": 5068186,
+          "maxMs": 57140704
+        },
+        "missingEndTimes": 1
+      }
+    }
+  },
+  "latest": [
+    {
+      "runId": 43510195940,
+      "source": "hareruya2",
+      "origin": "verified-non-scheduled-publication",
+      "startedAt": "2026-11-13T21:23:01Z",
+      "lastObservedAt": "2026-11-13T21:32:28.286Z",
+      "sourceEndedAt": "2026-11-13T21:32:29.867Z",
+      "publishedAt": "2026-11-13T21:40:51Z",
+      "verifiedAt": "2026-11-13T23:57:58.217Z",
+      "confirmationToPublishMs": 502714,
+      "confirmationToVerificationMs": 8729931,
+      "endToPublishMs": 501133,
+      "endToVerificationMs": 8728350
+    },
+    {
+      "runId": 43510195940,
+      "source": "torecacamp",
+      "origin": "verified-non-scheduled-publication",
+      "startedAt": "2026-11-13T21:23:01Z",
+      "lastObservedAt": "2026-11-13T21:33:15.307Z",
+      "sourceEndedAt": "2026-11-13T21:33:15.626Z",
+      "publishedAt": "2026-11-13T21:40:51Z",
+      "verifiedAt": "2026-11-13T23:57:58.217Z",
+      "confirmationToPublishMs": 455693,
+      "confirmationToVerificationMs": 8682910,
+      "endToPublishMs": 455374,
+      "endToVerificationMs": 8682591
+    },
+    {
+      "runId": 43518549162,
+      "source": "hareruya2",
+      "origin": "verified-natural-schedule",
+      "startedAt": "2026-11-13T22:21:02Z",
+      "lastObservedAt": "2026-11-13T22:34:33.334Z",
+      "sourceEndedAt": "2026-11-13T22:34:34.510Z",
+      "publishedAt": "2026-11-13T22:38:57Z",
+      "verifiedAt": "2026-11-13T23:57:59.425Z",
+      "confirmationToPublishMs": 263666,
+      "confirmationToVerificationMs": 5006091,
+      "endToPublishMs": 262490,
+      "endToVerificationMs": 5004915
+    },
+    {
+      "runId": 43518549162,
+      "source": "torecacamp",
+      "origin": "verified-natural-schedule",
+      "startedAt": "2026-11-13T22:21:02Z",
+      "lastObservedAt": "2026-11-13T22:33:31.239Z",
+      "sourceEndedAt": "2026-11-13T22:22:53.826Z",
+      "publishedAt": "2026-11-13T22:38:57Z",
+      "verifiedAt": "2026-11-13T23:57:59.425Z",
+      "confirmationToPublishMs": 325761,
+      "confirmationToVerificationMs": 5068186,
+      "endToPublishMs": 963174,
+      "endToVerificationMs": 5705599
+    },
+    {
+      "runId": 43528801650,
+      "source": "hareruya2",
+      "origin": "verified-natural-schedule",
+      "startedAt": "2026-11-13T23:40:05Z",
+      "lastObservedAt": "2026-11-13T23:48:41.477Z",
+      "sourceEndedAt": "2026-11-13T23:48:43.565Z",
+      "publishedAt": "2026-11-13T23:56:27Z",
+      "verifiedAt": "2026-11-14T00:00:48.294Z",
+      "confirmationToPublishMs": 465523,
+      "confirmationToVerificationMs": 726817,
+      "endToPublishMs": 463435,
+      "endToVerificationMs": 724729
+    },
+    {
+      "runId": 43533891184,
+      "source": "hareruya2",
+      "origin": "verified-natural-schedule",
+      "startedAt": "2026-11-14T00:23:43Z",
+      "lastObservedAt": "2026-11-14T00:29:02.989Z",
+      "sourceEndedAt": "2026-11-14T00:29:05.130Z",
+      "publishedAt": "2026-11-14T00:37:25Z",
+      "verifiedAt": "2026-11-14T00:40:19.203Z",
+      "confirmationToPublishMs": 502011,
+      "confirmationToVerificationMs": 676214,
+      "endToPublishMs": 499870,
+      "endToVerificationMs": 674073
+    },
+    {
+      "runId": 43567557784,
+      "source": "hareruya2",
+      "origin": "verified-natural-schedule",
+      "startedAt": "2026-11-14T06:41:17Z",
+      "lastObservedAt": "2026-11-14T06:50:08.245Z",
+      "sourceEndedAt": "2026-11-14T06:50:09.950Z",
+      "publishedAt": "2026-11-14T06:59:24Z",
+      "verifiedAt": "2026-11-14T07:03:13.058Z",
+      "confirmationToPublishMs": 555755,
+      "confirmationToVerificationMs": 784813,
+      "endToPublishMs": 554050,
+      "endToVerificationMs": 783108
+    },
+    {
+      "runId": 43567557784,
+      "source": "torecacamp",
+      "origin": "verified-natural-schedule",
+      "startedAt": "2026-11-14T06:41:17Z",
+      "lastObservedAt": "2026-11-14T06:50:55.608Z",
+      "sourceEndedAt": "2026-11-14T06:50:55.955Z",
+      "publishedAt": "2026-11-14T06:59:24Z",
+      "verifiedAt": "2026-11-14T07:03:13.058Z",
+      "confirmationToPublishMs": 508392,
+      "confirmationToVerificationMs": 737450,
+      "endToPublishMs": 508045,
+      "endToVerificationMs": 737103
+    }
+  ],
+  "sourceRequests": 0,
+  "note": "Only already publicly verified acquisition receipts. Actual source end times where matching source run exists; missing end times remain null and last-individual-confirmation latency is separate. No source requests or forged future ETA."
+}
