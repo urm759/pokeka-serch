@@ -4,5 +4,10 @@ const parameters={routes,cards,catalog,requested:cards.map(c=>c.id),critical:['l
 const plans=bulk.plan(parameters);assert.equal(plans[0].set,'s-p','one old independent quote precedes a large recently checked set');assert.equal(plans.length,4);assert(plans.some(p=>p.lane==='continuation'&&p.page===2));assert(plans.some(p=>p.lane==='rotation'));assert.equal(new Set(plans.map(p=>p.url)).size,4);
 assert(!bulk.plan({...parameters,state:{...parameters.state,[routes[1].url]:{retry:retry.failure({},{httpStatus:403},now)}}}).some(p=>p.set==='s-p'));
 const cohort=require('./fixed_price_cohort').ids(path.join(__dirname,'..'),'torecacamp');assert.equal(cohort.length,144);assert.equal(new Set(cohort).size,144);
+const sameDeadline=catalog.map(r=>({...r,observedAt:new Date(now-8*3600000).toISOString()})),membership=Object.fromEntries([0,1].map(i=>[routes[i].url,{1:{observedAt:new Date(now-3*3600000).toISOString(),members:i?['last-median']:cards.filter(c=>c.id.startsWith('large')).map(c=>c.id)}}]));
+const covered=bulk.plan({...parameters,catalog:sameDeadline,membership});assert.equal(covered[0].set,'s6a','same deadline band uses actual reachable target count, not just route age');assert.equal(covered[0].expectedIds.length,40);
+assert(covered.some(p=>p.lane==='continuation')&&covered.some(p=>p.lane==='rotation'),'reachable maintenance does not consume discovery/continuation reserves');
+const staleMembership={[routes[0].url]:{1:{...membership[routes[0].url][1],observedAt:new Date(now-8*86400000).toISOString()}}};
+assert(bulk.plan({...parameters,membership:staleMembership}).filter(p=>p.set==='s6a').every(p=>!p.coverageKnown&&p.expectedIds.length===0),'old membership is a hint, never a promised fresh confirmation');
 const source=fs.readFileSync(path.join(__dirname,'run_priority_price_refresh.js'),'utf8');assert(source.includes("require('./fixed_price_cohort').ids(ROOT,'torecacamp')"),'fixed maintenance participates in actual Priority acquisition gate');
 console.log('PASS fixed144, deadline before set size, continuation/exploration within four requests and access holds preserved');

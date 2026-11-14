@@ -58,4 +58,15 @@ const coverage = JSON.parse(fs.readFileSync("data/link-coverage.json", "utf8")).
 assert.deepEqual(coverage.acquisitionAudit.sources, published.sources);
 const status = JSON.parse(fs.readFileSync("data/update-status.json", "utf8"));
 for (const id of Object.keys(published.sources)) assert.deepEqual(status.sources[id].acquisitionAudit, published.sources[id]);
+const os=require('node:os'),path=require('node:path'),dir=fs.mkdtempSync(path.join(os.tmpdir(),'pokeka-audit-copies-'));
+try{
+ fs.mkdirSync(path.join(dir,'data'));const put=(f,v)=>fs.writeFileSync(path.join(dir,'data',f),JSON.stringify(v));
+ put('acquisition-progress-audit.json',{generatedAt:'real-source-audit',sources:{shop:{newLinked:3}},psa:{categories:['detail'],counts:{}},shopEffect:{rows:[{id:'kept-in-original'}]}});
+ put('link-coverage.json',{updatedAt:'old-observation',previous:{sentinel:1},current:{storeCoverage:{acquisitionAudit:{sources:{shop:{newLinked:0}}}}}});
+ put('update-status.json',{generatedAt:'old-status',sources:{shop:{acquisitionAudit:{newLinked:0},lastSuccessAt:'real-at'}}});
+ const sync=require('./audit_acquisition_progress').synchronizeEmbedded;assert.equal(sync(dir).length,2);assert.equal(sync(dir).length,0);
+ const linked=JSON.parse(fs.readFileSync(path.join(dir,'data/link-coverage.json'))),updated=JSON.parse(fs.readFileSync(path.join(dir,'data/update-status.json')));
+ assert.equal(linked.current.storeCoverage.acquisitionAudit.sources.shop.newLinked,3);assert.deepEqual(linked.previous,{sentinel:1});assert.equal(linked.updatedAt,'old-observation');assert.equal(updated.sources.shop.lastSuccessAt,'real-at');
+ assert.equal(updated.sources.shop.acquisitionAudit.newLinked,3);assert.equal(updated.generatedAt,'old-status');
+}finally{assert.equal(path.dirname(path.resolve(dir)),path.resolve(os.tmpdir()));assert(path.basename(dir).startsWith('pokeka-audit-copies-'));fs.rmSync(dir,{recursive:true,force:true});}
 console.log("Acquisition progress, exact identity, provenance and published consistency tests passed");

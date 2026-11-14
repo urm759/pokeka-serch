@@ -2,6 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const {spawnSync} = require('node:child_process');
 const inputs=require('./publication_merge_inputs');
+const REBUILD_STEPS=['audit_state_a_prices.js','build_card_completion.js','audit_acquisition_progress.js','audit_link_coverage.js','build_psa_priority_queue.js','finalize_update_status.js','measure_performance_guard.js','build_ui_data.js','test_ui_data.js','test_card_catalog_completion.js'];
 const DERIVED=new Set(['data/publication-lineage.json','data/update-status.json','data/performance-guard.json','data/performance-history.json',
   'data/runtime-availability-audit.json','data/update-health-banner.json','data/scheduled-cycle-receipts.json',
   'data/search-profile-cycle-progress.json','data/psa-pop-coverage.json','work/psa-pop-coverage-history.json']);
@@ -21,6 +22,9 @@ DERIVED.add('data/proactive-refresh-audit.json');
 DERIVED.add('data/one-item-completion-audit.json');
 DERIVED.add('data/priority-search-profile-audit.json');
 DERIVED.add('work/pop-focus-targets.json');
+DERIVED.add('data/gemrate-collector-config.json');
+DERIVED.add('work/camp-deadline-plan.json');
+DERIVED.add('data/link-coverage.json');
 // Produced from saved authoritative inputs, never acquired quotes or histories.
 for(const file of ['25th-promo-coverage','acquisition-progress-audit','acquisition-resilience','buyback-observation-summary','buyback-support-audit',
   'candidate-daily-audit','completion-outcomes','domestic-psa9-provenance-details','domestic-psa9-route-audit','focus-monitor','linkage-evidence-audit',
@@ -98,7 +102,7 @@ function resolve(cwd,{rebuild}={}) {
   else {
     // Finalization computes outcomes and embeds exactly that snapshot in the
     // monitor before sealing lineage. Never recompute outcomes afterwards.
-    for(const file of ['audit_state_a_prices.js','build_card_completion.js','audit_acquisition_progress.js','build_psa_priority_queue.js','finalize_update_status.js','measure_performance_guard.js','build_ui_data.js','test_ui_data.js','test_card_catalog_completion.js']){
+    for(const file of REBUILD_STEPS){
       const child=spawnSync(process.execPath,['work/'+file],{cwd,encoding:'utf8',env:{...process.env,PRICE_EVIDENCE_FETCH_LIMIT:'0'},timeout:300000,maxBuffer:32*1024*1024});
       if(child.status!==0)throw new Error(`${file}: ${child.stderr||child.stdout||child.error?.message||'regeneration failed'}`);
     }
@@ -119,4 +123,4 @@ function resolve(cwd,{rebuild}={}) {
   git(['commit','--no-edit']);
   return true;
 }
-module.exports={resolve,DERIVED,RECONCILABLE,mergeReceipts,mergeTimedRows};
+module.exports={resolve,DERIVED,RECONCILABLE,mergeReceipts,mergeTimedRows,REBUILD_STEPS};

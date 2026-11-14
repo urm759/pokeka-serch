@@ -33,7 +33,7 @@ function completionOrder(rows,criticalIds,completionIds){
   // Other priority maintenance and the separate normal exploration half remain.
   while(a.length||b.length||c.length){const lane=out.length%4===3&&b.length?b:a.length?a:b.length?b:c;out.push(lane.shift());}return out;
 }
-function prioritize(entries,start,catalog,requested,detailLimit,retries={},now=Date.now(),leadMs=0,criticalIds=[],completionIds=[]) {
+function prioritize(entries,start,catalog,requested,detailLimit,retries={},now=Date.now(),leadMs=0,criticalIds=[],completionIds=[],options={}) {
   const normal=entries.slice(start).map((r,i)=>({...r,normalIndex:start+i}));
   const front=new Set(normal.slice(0,Math.ceil(detailLimit/2)).map(r=>r.url));
   const order=new Map(requested.map((id,i)=>[id,i]));
@@ -43,7 +43,7 @@ function prioritize(entries,start,catalog,requested,detailLimit,retries={},now=D
   const critical=new Set(criticalIds);
   const urgent=eligible.filter(r=>order.has(r.cardId)).sort((a,b)=>Number(critical.has(b.cardId))-Number(critical.has(a.cardId))||(Date.parse(a.observedAt)||0)-(Date.parse(b.observedAt)||0)||order.get(a.cardId)-order.get(b.cardId));
   const routine=eligible.filter(r=>!order.has(r.cardId)).sort((a,b)=>(Date.parse(a.observedAt)||0)-(Date.parse(b.observedAt)||0));
-  const budget=Math.floor(detailLimit/2),usualPriority=Math.max(1,Math.floor(budget*0.75));
+  const budget=Math.min(Math.floor(detailLimit/2),options.priorityBudgetRemaining??Infinity),usualPriority=Math.min(budget,Math.max(1,Math.floor(budget*0.75)));
   // When overdue priority work exceeds its old share, use the selected half
   // for it. The other half remains ordinary sitemap exploration; no extra GETs.
   const priorityBudget=urgent.length>usualPriority?Math.min(budget,urgent.length):usualPriority;
@@ -64,6 +64,17 @@ function legacyTargets(catalog,requested,retries={},now=Date.now(),leadMs=0,crit
     &&due(r,true,now,leadMs)&&require('./acquisition_retry').eligible(retries[r.detailUrl],now))
     .sort((a,b)=>Number(critical.has(b.cardId))-Number(critical.has(a.cardId))||(Date.parse(a.observedAt)||0)-(Date.parse(b.observedAt)||0)||order.get(a.cardId)-order.get(b.cardId)),criticalIds,completionIds);
 }
+function unreachedTargets(catalog,requested,retries={},now=Date.now(),leadMs=0,criticalIds=[],completionIds=[]) {
+  // All confirmed known URLs, including those with sitemap numbers. Bulk pages
+  // update adopted rows first; fresh cards therefore disappear from this lane.
+  const wanted=new Set(requested),critical=new Set(criticalIds);
+  const rows=catalog.filter(r=>wanted.has(r.cardId)&&!r.priceQuarantined&&!r.identityHoldReason&&!r.cardMismatchSuspected&&!r.referenceOnly
+    &&/^https:\/\/torecacamp-pokemon\.com\/products\/[a-zA-Z0-9_%~-]+$/.test(r.detailUrl||'')
+    &&due(r,true,now,leadMs)&&require('./acquisition_retry').eligible(retries[r.detailUrl],now));
+  const band=r=>now-(Date.parse(r.observedAt)||0)>=48*3600000?3:now-(Date.parse(r.observedAt)||0)>=6*3600000?2:1;
+  rows.sort((a,b)=>band(b)-band(a)||(Date.parse(a.observedAt)||0)-(Date.parse(b.observedAt)||0)||Number(critical.has(b.cardId))-Number(critical.has(a.cardId))||a.cardId.localeCompare(b.cardId));
+  return completionOrder(rows,criticalIds,completionIds);
+}
 function priorityMaintenance(catalog,requested,progress={},run={},now=Date.now(),leadMs=0) {
   const retry=require('./acquisition_retry');
   const failure=retry.classify({error:run.lastError||''});
@@ -78,4 +89,4 @@ function maintenanceBudget(settings,runtimeMs=90000){
  const interval=Math.max(1,Number(settings.intervalMs)||1100),configured=Math.max(1,Number(settings.batchSize)||1);
  return {batchSize:Math.min(configured,35,Math.max(1,Math.floor(runtimeMs/(interval+1000)))),runtimeMs,intervalMs:interval};
 }
-module.exports={proactiveLead,maintenanceBudget,prepare,due,checkpoint,prioritize,legacyTargets,priorityMaintenance};
+module.exports={proactiveLead,maintenanceBudget,prepare,due,checkpoint,prioritize,legacyTargets,unreachedTargets,priorityMaintenance};
