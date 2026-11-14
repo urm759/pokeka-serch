@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-14T06:54:26.211Z",
+  "generatedAt": "2026-11-14T07:03:55.040Z",
   "sourceLastSuccessAt": "2026-11-14T06:42:58.316Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-11-14T06:26:12.241Z",
-    "lastSuccessAt": "2026-11-14T06:26:12.241Z",
-    "runId": "43566110907",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/43566110907"
+    "lastAttemptAt": "2026-11-14T07:03:55.029Z",
+    "lastSuccessAt": "2026-11-14T07:03:55.029Z",
+    "runId": "43568945977",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/43568945977"
   },
   "issues": [
     {
@@ -53,11 +53,6 @@
       "reason": "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）"
     },
     {
-      "key": "source:buyback:fukufuku-mail:manual-wait",
-      "category": "アクセス・手動対応待ち",
-      "reason": "福福トレカ（郵送窓口）: 通常公開価格表の低頻度GET。認証操作なし。郵送窓口のみ・商品更新日は不明、実確認日時とページ更新日時を分離"
-    },
-    {
       "key": "pc:psa:PC観測未受信",
       "category": "確認が必要",
       "url": null,
@@ -66,7 +61,7 @@
     {
       "key": "priority-prices:cadence-stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/43528801650",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/43567557784",
       "reason": "重要価格更新：設定2時間に対し実績成功間隔（直近最大）9.38時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
     },
     {
@@ -114,7 +109,6 @@
     "遊々亭: HTTP 403",
     "遊々亭: 更新期限超過（カード別鮮度 0.04%）",
     "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）",
-    "福福トレカ（郵送窓口）: 通常公開価格表の低頻度GET。認証操作なし。郵送窓口のみ・商品更新日は不明、実確認日時とページ更新日時を分離",
     "PC側PSA: PC観測未受信 / 30時間以内の独立タスク観測なし。PC停止・観測起動失敗・未公開を区別して確認",
     "重要価格更新：設定2時間に対し実績成功間隔（直近最大）9.38時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能",
     "保存原票の同時更新照合が保留（28入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/domestic-trade-source-audit.json, data/hareruya2-stock-summary.json, data/pokemon-cards-meta.json, data/pokemon-cards.json, data/price-catchup-status.json, data/priority-price-execution.json, data/psa10-observation-receipt.json, data/shop-buyback-summary.json, data/state-a-price-evidence.json, work/buyback-price-observations.json, work/candidate-shop-refresh.json, work/card-lifecycle.json, work/card-new-arrivals.json, work/changed-card-ids.json, work/hareruya2_catalog.json, work/hareruya2_stock_history.json, work/homura-public-che",
