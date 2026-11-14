@@ -13,6 +13,11 @@ async function test(){let reads=0;const getJson=async url=>url.includes('receipt
  assert.equal(manualBad.targetStatus,'pending');assert(!manualBad.pipelines.priority.publicationConfirmed,'manual checks retain all price/version hashes');
  const scheduledSaved={pipelines:{priority:good.pipelines.priority}};preserve(scheduledSaved,'priority',manual.pipelines.priority);
  assert.equal(scheduledSaved.pipelines.priority.confirmed,true);assert.equal(scheduledSaved.nonScheduledChecks.priority.event,'workflow_dispatch');
+ const oldVerified={...manual.pipelines.priority,runAttempt:1,receiptHashes:{'data/stock.json':'one'},publicVerifiedAt:'2026-10-28T00:10:00Z'};
+ const repeated={pipelines:{},nonScheduledChecks:{priority:oldVerified}};
+ preserve(repeated,'priority',{...oldVerified,publicVerifiedAt:'2026-10-28T01:10:00Z'});
+ assert.equal(repeated.nonScheduledChecks.priority.publicVerifiedAt,oldVerified.publicVerifiedAt);assert.equal(repeated.nonScheduledChecks.priority.lastPublicVerifiedAt,'2026-10-28T01:10:00Z');
+ preserve(repeated,'priority',{...oldVerified,receiptHashes:{'data/stock.json':'changed'},publicVerifiedAt:'2026-10-28T02:10:00Z'});assert.equal(repeated.nonScheduledChecks.priority.publicVerifiedAt,'2026-10-28T02:10:00Z','changed receipt never inherits an earlier proof');
  const cycles={pipelines:{priority:good.pipelines.priority}};
  preserve(cycles,'priority',{runId:3,confirmed:false,receiptMatches:false});assert.equal(cycles.pipelines.priority.runId,1);assert.equal(cycles.lastChecks.priority.runId,3);
  preserve(cycles,'priority',{runId:1,confirmed:false,receiptMatches:true});assert(cycles.pipelines.priority.confirmed,'later source updates do not revoke historical confirmed execution');

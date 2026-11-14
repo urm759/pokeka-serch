@@ -37,6 +37,14 @@ on:
       - 'work/external_timer_context.js'
       - 'work/test_external_wakeup.js'
       - 'work/test_orphan_wakeup.js'
+      - 'work/test_published_capacity_origins.js'
+      - 'work/test_post_acquisition_verification.js'
+      - 'work/current_publication_check.js'
+      - 'work/scheduled_cycle_evidence.js'
+      - '.github/workflows/watch-data-health.yml'
+      - 'work/effective_price_cadence.js'
+      - 'work/coverage_capacity.js'
+      - 'work/verify_update_publication.js'
       - 'work/test_stock_scope.js'
       - 'work/test_multi_pipeline_timing.js'
       - 'work/test_shop_effect_baseline.js'
@@ -74,6 +82,8 @@ jobs:
           node work/test_ui_projection_cache.js
           node work/test_external_wakeup.js
           node work/test_orphan_wakeup.js
+          node work/test_published_capacity_origins.js
+          node work/test_post_acquisition_verification.js
           node work/test_stock_scope.js
           node work/test_recovery_checkout_proof.js
           node work/test_generated_merge_finalization.js

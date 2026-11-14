@@ -1,3 +1,7 @@
+## 2026-11-14：自然起動から公開・実データ補完と能力集計
+
+Cloudflare自然Cron→Watch43510195940→実取得/保存/Pages成功を確認。後続自然Safe/Priorityも実取得・公開照合を確認し、新規掲載2、店舗紐付けCamp125/晴2、分析可能の純増1、独立候補31→32を別集計。workflow_dispatch公開実績の集計漏れ、前回値の取得件数混入、初回公開照合時刻の更新を共通修正。取得後の同じ実行IDの公開照合を追加し、監視待ちを公開失敗と分離する。新手順の自然周期は追加前3周期と混同せず次回確認。詳細・残件は[自然運転台帳](20261114_NATURAL_OPERATION_EVIDENCE.md)へ継承。
+
 ## 2026-11-14：Cloudflare実ランタイムのredirect指定停止
 
 自然Cronは動作していたが、GitHub送信前にCloudflare非対応のredirect:errorがTypeErrorを発生。secretなしの実ランタイムで原文を再現し、manual＋3xx停止へ修正。認証保留とdispatch intentは維持し、特定済み送信前エラーの旧待機だけ証跡付きで移行。PR68の公開PC/スマホ17/15、在庫確認範囲と候補/計算/GO不変を確認済み。自然Cronから公開までの到達は[続きの台帳](20261114_CLOUDFLARE_TRANSPORT.md)へ追記する。

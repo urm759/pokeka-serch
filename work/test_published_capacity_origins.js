@@ -1,0 +1,18 @@
+const assert=require('node:assert/strict'),{observe}=require('./effective_price_cadence'),{capacity}=require('./coverage_capacity');
+const at='2026-11-14T00:00:00Z',now=Date.parse('2026-11-14T01:00:00Z');
+const proof={runId:10,event:'workflow_dispatch',confirmed:false,publicationConfirmed:true,receiptMatches:true,startedAt:'2026-11-13T23:59:00Z',publicVerifiedAt:'2026-11-14T00:10:00Z',publicationStepCompletedAt:'2026-11-14T00:05:00Z'};
+const receipt={runId:10,recordedAt:'2026-11-14T00:04:00Z',cardObservations:{torecacamp:[{id:'a',at}]}};
+const cycles={pipelines:{catchup:{runId:9,confirmed:false}},nonScheduledChecks:{catchup:proof}},receipts={pipelines:{catchup:receipt}};
+const first=observe({},cycles,receipts,now);assert.equal(first.runs.length,1);assert.equal(first.runs[0].routineConfirmed,false);assert.equal(first.runs[0].publicationKind,'verified-non-scheduled-publication');assert.equal(first.sources.torecacamp.verifiedCards,1);
+const second=observe(first,cycles,receipts,now+1000);assert.equal(second.runs.length,1);assert.equal(second.runs[0].verifiedAt,proof.publicVerifiedAt,'first verification time retained');assert.equal(proof.confirmed,false,'never rewrite dispatch into schedule');
+for(const patch of [{publicationConfirmed:false},{receiptMatches:false},{runId:11}])assert.equal(observe({}, {...cycles,nonScheduledChecks:{catchup:{...proof,...patch}}},receipts,now).runs.length,0);
+const failed=observe({},cycles,{pipelines:{catchup:{...receipt,sourceIsolation:{sources:[{source:'torecacamp',status:'failed'}]}}}},now);assert(!failed.sources.torecacamp);
+const duplicate={...second,runs:[...second.runs,{...second.runs[0],runId:12,routineConfirmed:true,publicationKind:'verified-natural-schedule'}]};
+const measured=capacity(duplicate,{torecacamp:[{id:'a',at}]},now).torecacamp;assert.equal(measured.verifiedCohort24h,1);assert.equal(measured.verifiedCohort24hByOrigin['verified-non-scheduled-publication'],1);assert.equal(measured.verifiedCohort24hByOrigin['verified-natural-schedule'],0,'carried duplicate cannot become a second natural acquisition');assert.equal(measured.actualConfirmations24h,null,'unmeasured remainder not zero');
+const natural=observe({}, {pipelines:{catchup:{...proof,runId:20,event:'schedule',confirmed:true}}},{pipelines:{catchup:{...receipt,runId:20}}},now);assert.equal(natural.runs[0].routineConfirmed,true);
+const scopedReceipt={...receipt,observationScope:{version:2,from:proof.startedAt,to:receipt.recordedAt},cardObservations:{torecacamp:[{id:'a',at},{id:'carried',at:'2026-11-13T23:00:00Z'}]}};
+const scoped=observe({},cycles,{pipelines:{catchup:scopedReceipt}},now);assert.equal(scoped.sources.torecacamp.verifiedCards,1,'previous confirmed value is not a new in-run acquisition');
+const oldStored={runs:[{runId:10,key:'catchup',recordedAt:receipt.recordedAt,observationScope:scopedReceipt.observationScope,observations:scopedReceipt.cardObservations}]};
+assert.equal(capacity(oldStored,{torecacamp:[{id:'a',at},{id:'carried',at:'2026-11-13T23:00:00Z'}]},now).torecacamp.verifiedCohort24h,1,'same scope guard applies to already stored history');
+const enriched=observe({...natural,runs:natural.runs.map(({publicationKind,routineConfirmed,event,...r})=>r)},{pipelines:{catchup:{...proof,runId:20,event:'schedule',confirmed:true}}},{pipelines:{catchup:{...receipt,runId:20}}},now);assert.equal(enriched.runs.length,1);assert(enriched.runs[0].routineConfirmed,'known run origin enriched without changing observations');
+console.log('PASS published dispatch throughput, unchanged natural classification, receipt/hash authority, failed-source isolation, original observation dedup and unmeasured null');
