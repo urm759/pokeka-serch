@@ -20,6 +20,14 @@ async function historicalPublication({run,jobs,receipt,pages,current,getText}){
 }
 function preserve(cycles,key,result){
   cycles.pipelines||={};cycles.history||={};
+  const previous=(result.confirmed?cycles.pipelines:cycles.nonScheduledChecks)?.[key];
+  // Rechecking the same published receipt must not move the first successful
+  // verification time forward and inflate acquisition-to-publication latency.
+  if(previous?.publicationConfirmed&&result.publicationConfirmed&&String(previous.runId)===String(result.runId)
+    &&previous.runAttempt===result.runAttempt&&Object.keys(previous.receiptHashes||{}).length>0
+    &&JSON.stringify(Object.entries(previous.receiptHashes).sort())===JSON.stringify(Object.entries(result.receiptHashes||{}).sort())
+    &&Number.isFinite(Date.parse(previous.publicVerifiedAt))&&Date.parse(previous.publicVerifiedAt)<=Date.parse(result.publicVerifiedAt))
+    result={...result,lastPublicVerifiedAt:result.publicVerifiedAt,publicVerifiedAt:previous.publicVerifiedAt};
   if(result.publicationConfirmed&&!result.confirmed){cycles.nonScheduledChecks||={};cycles.nonScheduledChecks[key]=result;return cycles;}
   const prior=cycles.pipelines[key];
   if(prior?.confirmed&&(!result.confirmed||String(prior.runId)!==String(result.runId))){
@@ -84,7 +92,9 @@ async function main(){
   const get=async url=>{const r=await fetch(url,{headers:url.startsWith(API+'/')?headers:{'User-Agent':headers['User-Agent']},signal:AbortSignal.timeout(30000)});if(!r.ok){const e=Error('Publication verification HTTP '+r.status);e.terminal=[401,403].includes(r.status);e.retryAfterMs=Math.max(15000,Number(r.headers.get('retry-after')||15)*1000);throw e;}return r;};
   let event={};if(process.env.GITHUB_EVENT_PATH)event=JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH));
   const parent=event.workflow_run;
-  const targetRunId=parent&&['Priority Purchase Price Refresh','Daily Fast Update','Safe Checkpoint Backfill'].includes(parent.name)?parent.id:null;
+  const explicit=process.env.PUBLICATION_TARGET_RUN_ID;
+  if(explicit&&(!/^[1-9]\d+$/.test(explicit)||explicit!==process.env.GITHUB_RUN_ID))throw Error('Invalid current publication run ID');
+  const targetRunId=explicit?Number(explicit):parent&&['Priority Purchase Price Refresh','Daily Fast Update','Safe Checkpoint Backfill'].includes(parent.name)?parent.id:null;
   const file=path.join(__dirname,'checkpoint-publication-proof.json'),started=Date.now(),attempts=[];
   fs.writeFileSync(file,JSON.stringify({startedAt:new Date(started).toISOString(),phase:'verification-started',targetRunId,llmCalls:0,codexCalls:0,sourceRequests:0}));
   let result,terminal=false,retryAfterMs=15000;

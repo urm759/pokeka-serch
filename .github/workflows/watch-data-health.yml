@@ -24,6 +24,8 @@ permissions:
 
 jobs:
   catchup:
+    outputs:
+      published_receipt_run_id: ${{ steps.publication.outcome == 'success' && steps.catchup_validation.outputs.receipt_run_id || '' }}
     if: >-
       github.event_name != 'workflow_run' ||
       ((((github.event.workflow_run.name == 'Deep Resolve Unmatched Cards' ||
@@ -177,6 +179,7 @@ jobs:
             if [ "${{ steps.catchup_plan.outputs.mode }}" != "reuse" ]; then node work/scheduled_cycle_evidence.js catchup; fi
           fi
           node work/update_validation.js --record
+          node -e "const fs=require('fs'),r=JSON.parse(fs.readFileSync('data/scheduled-cycle-receipts.json')).pipelines?.catchup;if(String(r?.runId)===process.env.GITHUB_RUN_ID)fs.appendFileSync(process.env.GITHUB_OUTPUT,'receipt_run_id='+r.runId+'\n');"
       - name: Publish changed health state only
         id: publication
         if: always() && steps.catchup_validation.outcome == 'success' && steps.catchup_plan.outputs.mode != 'reuse'
@@ -240,7 +243,7 @@ jobs:
       group: site-data-health-observation
       cancel-in-progress: false
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 13
     steps:
       - uses: actions/checkout@v7
         with:
@@ -248,6 +251,11 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: "24"
+      - name: Capture current catchup publication verification after acquisition
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PUBLICATION_TARGET_RUN_ID: ${{ needs.catchup.outputs.published_receipt_run_id }}
+        run: node work/current_publication_check.js
       - name: Validate independent monitor
         run: |
           node work/test_update_health.js
@@ -270,6 +278,19 @@ jobs:
           node work/publish_data_checkpoint.js "Publish independent data health observation"
       - name: Report newly detected alerts
         run: node work/watch_update_health.js --report-alerts
+      - name: Report current publication verification failure separately
+        if: always()
+        run: node work/current_publication_check.js --report-failure
+      - name: Retain current publication verification and original failure proof
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: current-publication-verification-${{ github.run_id }}
+          path: |
+            work/current-publication-check.json
+            work/checkpoint-publication-proof.json
+          retention-days: 14
+          if-no-files-found: warn
       - name: Preserve independent observation on failure
         if: failure() && steps.publication.outcome != 'success'
         run: node work/capture_unpublished_data.js monitor-only

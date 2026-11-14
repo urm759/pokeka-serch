@@ -1,4 +1,4 @@
-const fs=require('node:fs'),path=require('node:path');
+const fs=require('node:fs'),path=require('node:path'),{acquisitionRows}=require('./effective_price_cadence');
 const HOUR=3600000,DAY=24*HOUR;
 const validTime=(at,now)=>/T\d{2}:/.test(String(at))&&Number.isFinite(Date.parse(at))&&Date.parse(at)<=now;
 const dist=values=>{const a=values.filter(Number.isFinite).sort((a,b)=>a-b);return {samples:a.length,medianMs:a.length?a[Math.floor((a.length-1)*.5)]:null,p90Ms:a.length?a[Math.floor((a.length-1)*.9)]:null,p95Ms:a.length?a[Math.floor((a.length-1)*.95)]:null,maxMs:a.at(-1)??null};};
@@ -17,14 +17,21 @@ function capacity(history,targetRows,now=Date.now(),targetHours=6,adoptionHours=
   const sources={};
   for(const [source,rows]of Object.entries(targetRows)){
     const target=new Map(rows.map(r=>[r.id,r])),events=new Map();
-    for(const run of history.runs||[])for(const row of run.observations?.[source]||[]){if(target.has(row.id)&&validTime(row.at,now))events.set(row.id+'|'+row.at,{...row,atMs:Date.parse(row.at),route:run.key});}
+    for(const run of history.runs||[])for(const row of acquisitionRows(run.observations?.[source]||[],run.observationScope)){if(target.has(row.id)&&validTime(row.at,now)){
+      const key=row.id+'|'+row.at;
+      if(!events.has(key))events.set(key,{...row,atMs:Date.parse(row.at),route:run.key,origin:run.publicationKind||'legacy-confirmed-unclassified'});
+    }}
     const byCard=new Map();for(const e of events.values()){if(!byCard.has(e.id))byCard.set(e.id,[]);byCard.get(e.id).push(e);}
     const intervals=[],publish=[];
     for(const v of byCard.values()){v.sort((a,b)=>a.atMs-b.atMs);for(let i=1;i<v.length;i++)intervals.push(v[i].atMs-v[i-1].atMs);}
-    for(const run of history.runs||[])for(const row of run.observations?.[source]||[]){const at=Date.parse(row.at),p=Date.parse(run.publicationStepCompletedAt);if(target.has(row.id)&&validTime(row.at,now)&&at>=Date.parse(run.startedAt)&&Number.isFinite(p)&&p>=at)publish.push(p-at);}
+    for(const run of history.runs||[])for(const row of acquisitionRows(run.observations?.[source]||[],run.observationScope)){const at=Date.parse(row.at),p=Date.parse(run.publicationStepCompletedAt);if(target.has(row.id)&&validTime(row.at,now)&&at>=Date.parse(run.startedAt)&&Number.isFinite(p)&&p>=at)publish.push(p-at);}
     const recent=[...events.values()].filter(e=>e.atMs>=now-DAY),week=[...events.values()].filter(e=>e.atMs>=now-7*DAY),need=target.size*24/targetHours;
     const current=[...target.values()].map(r=>validTime(r.at,now)?now-Date.parse(r.at):null);
+    const origins=['verified-natural-schedule','verified-non-scheduled-publication','legacy-confirmed-unclassified'];
     sources[source]={targets:target.size,targetHours,adoptionHours,requiredConfirmationsPerDay:need,requiredToAvoidAdoptionExpiryPerDay:target.size*24/adoptionHours,capacityWith25PctHeadroom:Math.ceil(need*1.25),verifiedCohort24h:recent.length,verifiedCohort7d:week.length,verifiedCohortDaily7d:week.length/7,verifiedDistinctCards24h:new Set(recent.map(r=>r.id)).size,verifiedDistinctCards7d:new Set(week.map(r=>r.id)).size,
+      verifiedCohort24hByOrigin:Object.fromEntries(origins.map(k=>[k,recent.filter(r=>r.origin===k).length])),
+      verifiedCohort7dByOrigin:Object.fromEntries(origins.map(k=>[k,week.filter(r=>r.origin===k).length])),
+      originNote:'実際に公開照合した更新能力。GitHubの自然定期とworkflow_dispatch等を分離。外部Cronの起源はprovider証跡が必要。旧履歴の未分類を自然定期へ推定しない。同じID/元確認日時は最初の証拠1件だけ。',
       actualConfirmations24h:null,measurementStatus:'partial-confirmed-lower-bound',measurementNote:'確認済み受領証と原票回収分だけ。未計測の取得が残るため、実際の全確認数は未確定。0件と断定せず、要約の異なる確認カード数とも別。',
       coverageOfDailyRequirement:need?recent.length/need:null,targetExceeded:current.filter(age=>age!=null&&age>targetHours*HOUR).length,adoptionExpired:current.filter(age=>age!=null&&age>adoptionHours*HOUR).length,confirmationTimeUnknown:current.filter(age=>age==null).length,
       latestObservationCards24h:current.filter(age=>age!=null&&age<=DAY).length,
