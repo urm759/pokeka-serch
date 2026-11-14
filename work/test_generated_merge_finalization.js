@@ -6,9 +6,10 @@ try{
  fs.mkdirSync(path.join(root,'data'));fs.mkdirSync(path.join(root,'work'));
  for(const f of ['audit_state_a_prices','build_psa_priority_queue','measure_performance_guard','test_ui_data','test_card_catalog_completion','build_purchase_limit_audit'])fs.writeFileSync(path.join(root,'work',f+'.js'),'');
  fs.writeFileSync(path.join(root,'work/audit_acquisition_progress.js'),"require('fs').writeFileSync('work/current-outcomes.json',JSON.stringify({listed:12,analyzable:4}));");
+ fs.writeFileSync(path.join(root,'work/audit_link_coverage.js'),"const fs=require('fs'),assert=require('assert/strict');const input=JSON.parse(fs.readFileSync('work/current-outcomes.json'));assert.deepEqual(input,{listed:12,analyzable:4});fs.writeFileSync('data/link-coverage.json',JSON.stringify({audit:input}));");
  fs.writeFileSync(path.join(root,'data/catalog-index.json'),JSON.stringify({ids:['a','a']}));
  fs.writeFileSync(path.join(root,'work/build_card_completion.js'),"require('fs').writeFileSync('data/catalog-index.json',JSON.stringify({ids:['a']}));");
- fs.writeFileSync(path.join(root,'work/finalize_update_status.js'),"const fs=require('fs'),out=JSON.parse(fs.readFileSync('work/current-outcomes.json'));fs.writeFileSync('data/completion-outcomes.json',JSON.stringify(out));fs.writeFileSync('data/update-status.json',JSON.stringify({unifiedMonitor:{outcomes:out}}));");
+ fs.writeFileSync(path.join(root,'work/finalize_update_status.js'),"const fs=require('fs'),out=JSON.parse(fs.readFileSync('work/current-outcomes.json'));require('assert/strict').deepEqual(JSON.parse(fs.readFileSync('data/link-coverage.json')).audit,out);fs.writeFileSync('data/completion-outcomes.json',JSON.stringify(out));fs.writeFileSync('data/update-status.json',JSON.stringify({unifiedMonitor:{outcomes:out}}));");
  // If a redundant post-finalization producer is reintroduced, the consumer
  // detects the mismatched snapshot rather than accepting inconsistent data.
  fs.writeFileSync(path.join(root,'work/audit_completion_outcomes.js'),"require('fs').writeFileSync('data/completion-outcomes.json',JSON.stringify({listed:12,analyzable:4,recomputed:true}));");
