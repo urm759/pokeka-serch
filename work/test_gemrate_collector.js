@@ -20,6 +20,19 @@ const csvHold={stage:'csv-receipt',reason:'receipt unknown',at};assert.equal(cor
 assert.equal(core.choose([set],{sets:{S8B:{retryAt:Date.parse(at)+3600000}}},at),null);
 assert.equal(core.choose([set],{sets:{},attempts:Array.from({length:25},()=>({at}))},at),null,'failed attempts also consume the daily request budget');
 assert.equal(core.choose([{...set,cards:0}],{newSetDay:'2026-11-04',sets:{}},at),null,'new set cap distinct from maintenance');
+const target={...set,url:core.url(set)},added={...target,setCode:'SV-P',set:'Pokemon Japanese Sv-p Promo',year:2023,cards:9};added.url=core.url(added);
+const retained={sets:{S8B:{checkedDay:'2026-11-04',hold:{stage:'csv-receipt',at,reason:'uncertain export'}}},config:[target],checks:[{at,set:'S8B'}],active:{id:'keep'},attempts:[{at,set:'S8B'}]};
+const retainedState=JSON.stringify({sets:retained.sets,checks:retained.checks,active:retained.active,attempts:retained.attempts});
+core.applyConfig(retained,{schema:1,version:'1'.repeat(64),targets:[target,added]},at);
+assert.equal(JSON.stringify({sets:retained.sets,checks:retained.checks,active:retained.active,attempts:retained.attempts}),retainedState);
+assert.equal(retained.config.length,2);assert.deepEqual(retained.configChanges.added,['SV-P']);assert.equal(core.choose(retained.config,retained,at).setCode,'SV-P','same-day newly configured set enters daily lane without resetting prior checks');
+assert(!core.configDue(retained,'2026-11-04T03:14:59Z'));assert(core.configDue(retained,'2026-11-04T03:15:00Z'));
+assert(core.configDue({...retained,configSyncedAt:'2026-11-04T14:59:59Z'},'2026-11-04T15:00:00Z'),'JST boundary resync');
+assert.throws(()=>core.applyConfig({...retained},{schema:1,version:'1'.repeat(64),targets:[target,target]},at),/重複/);
+const changed={...target,set:'Pokemon Japanese Other Set'};changed.url=core.url(changed);
+const mismatch={sets:{},config:[target]};core.applyConfig(mismatch,{schema:1,version:'2'.repeat(64),targets:[changed]},at);assert.equal(mismatch.sets.S8B.hold.stage,'specification');
+assert.equal(core.choose(mismatch.config,mismatch,at),null,'configuration contradictions do not automatically adopt/release');
+const configBuild=require('./build_gemrate_collector_config').build();assert.equal(configBuild.targets.length,allSets.length);assert.equal(configBuild.targets.reduce((n,r)=>n+r.cards,0),Object.keys(realReferences.cards).length);
 const id='11111111-1111-4111-8111-111111111111',download={id:42,url:'blob:https://www.gemrate.com/test',referrer:page.url,startTime:at,endTime:'2026-11-04T03:00:01Z',state:'complete'};
 assert(core.claim({...download,filename:'export.csv'},{set,exportRequestedAt:at}));
 assert(!core.claim({...download,filename:'export.csv',referrer:'https://example.invalid/'},{set,exportRequestedAt:at}));
@@ -40,6 +53,8 @@ try{
   assert(!core.claim({...blank,referrer:'https://example.invalid/'},{set,exportRequestedAt:at,exportIntent:intent,bindingRequired:true}));
   assert(!core.claim({...blank,startTime:'2026-11-04T03:03:00Z'},{set,exportRequestedAt:at,exportIntent:intent,bindingRequired:true}));
   const strong={...meta,exportIntent:intent,download:{...meta.download,referrer:''}};assert(receiver.validate(strong,csv,root,at));
+  const withConfig={...strong,collectorConfig:{version:'3'.repeat(64),targetCount:1,setCodes:['S8B'],syncedAt:at}};assert(receiver.validate(withConfig,csv,root,at).collectorConfig);
+  assert.throws(()=>receiver.validate({...withConfig,collectorConfig:{...withConfig.collectorConfig,setCodes:['OTHER']}},csv,root,at),/configuration/);
   assert.throws(()=>receiver.validate({...strong,exportIntent:{...intent,url:intent.url+'wrong'}},csv,root,at),/association/);
   assert.throws(()=>receiver.validate({...strong,exportIntent:{...intent,pageUrl:page.url.replace('grader=psa','grader=cgc')}},csv,root,at),/association/);
   fs.writeFileSync(path.join(pending,'export.csv'),csv);fs.writeFileSync(path.join(pending,'receipt.json'),JSON.stringify(meta));fs.writeFileSync(path.join(downloads,'general.csv'),'keep');

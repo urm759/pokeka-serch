@@ -236,12 +236,12 @@ function confirmedBuybackAt(price, now = Date.now()) {
   const day = new Intl.DateTimeFormat('sv-SE', {timeZone:'Asia/Tokyo'}).format(new Date(at));
   return price.priceDate === day ? price.observedAt : null;
 }
-function timingConfig(root = ROOT) {
+function timingConfig(root = ROOT, now = Date.now()) {
   const config = read(root, "data/priority-price-config.json");
   const execution = read(root, "data/priority-price-execution.json");
   const cadence = read(root, "data/refresh-cadence-audit.json");
   return {...config, pipelineBudgetMs: 24 * 60000,
-    ...(Date.now()-Date.parse(cadence.checkedAt)<48*3600000 && cadence.observedSuccessfulIntervalMs>0 ? {observedSuccessfulIntervalMs:cadence.observedSuccessfulIntervalMs} : {}),
+    ...(now-Date.parse(cadence.checkedAt)<48*3600000 && cadence.observedSuccessfulIntervalMs>0 ? {observedSuccessfulIntervalMs:cadence.observedSuccessfulIntervalMs} : {}),
     ...(Number.isFinite(execution.startDelayMs) ? {observedStartDelayMs:Math.max(30*60000,execution.startDelayMs)} : {})};
 }
 module.exports = { plan, finish, load, write, confirmedInventoryAt, confirmedCardPriceAt, confirmedBuybackAt, timingConfig };

@@ -6,11 +6,14 @@ const save=state=>chrome.storage.local.set({[KEY]:state});
 const alarm=()=>chrome.alarms.create('gemrate-tick',{periodInMinutes:1});
 async function config(){
   const read=async f=>{let r;try{r=await fetch(BASE+f,{credentials:'omit',redirect:'error',cache:'no-store',signal:AbortSignal.timeout(20000)});}catch(e){e.temporary=true;throw e;}if(!r.ok){const e=Error('公開設定HTTP '+r.status);e.temporary=r.status===429||r.status>=500;throw e;}return r.json();};
-  const focus=await read('work/pop-focus-targets.json');const sets=new Set((focus.rows||[]).map(r=>r.setCode));
-  return C.groups(await read('work/gemrate-reviewed-sets.json'),await read('data/gemrate-reference-summary.json'),await read('work/gemrate-collection-sets.json')).map(s=>({...s,priority:sets.has(s.setCode)?1:0})).sort((a,b)=>b.priority-a.priority);
+  const value=await read('data/gemrate-collector-config.json');
+  const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(value.targets))))).map(b=>b.toString(16).padStart(2,'0')).join('');
+  if(digest!==value.version)throw Error('公開取得設定の版ハッシュ不一致');return value;
 }
+async function synchronize(state){const at=new Date().toISOString(),value=await config();C.applyConfig(state,value,at);await save(state);return state;}
 async function jsonReceipt(job,download=null){
-  const receipt={version:1,kind:'gemrate-normal-csv-v1',jobId:job.id,setCode:job.set.setCode,page:job.page,decision:job.decision,...(job.exportIntent?{exportIntent:job.exportIntent}:{}),download:download?{id:download.id,url:download.url,referrer:download.referrer,startTime:download.startTime,endTime:download.endTime,state:download.state,fileSize:download.fileSize}:null};
+  const state=await get();
+  const receipt={version:1,kind:'gemrate-normal-csv-v1',jobId:job.id,setCode:job.set.setCode,page:job.page,decision:job.decision,...(state.configVersion&&state.configSyncedAt?{collectorConfig:{version:state.configVersion,targetCount:state.config?.length,syncedAt:state.configSyncedAt,setCodes:state.config?.map(s=>s.setCode)}}:{}),...(job.exportIntent?{exportIntent:job.exportIntent}:{}),download:download?{id:download.id,url:download.url,referrer:download.referrer,startTime:download.startTime,endTime:download.endTime,state:download.state,fileSize:download.fileSize}:null};
   await writeReceipt(receipt);
 }
 async function writeReceipt(receipt){
@@ -66,7 +69,7 @@ async function tick(){
       if(Date.now()-job.openedAt>90000)throw Error('公開ページ読込期限超過');await inspect(state,job);return;
     }
     if(Date.now()<(state.nextAllowedAt||0))return;
-    if(state.configDay!==C.day(new Date().toISOString())){state.config=await config();state.configDay=C.day(new Date().toISOString());await save(state);}
+    if(C.configDue(state,new Date().toISOString()))await synchronize(state);
     const set=C.choose(state.config,state,new Date().toISOString());if(!set)return;
     state.attempts=[...(state.attempts||[]),{set:set.setCode,at:new Date().toISOString()}].slice(-100);await save(state);
     const tab=await chrome.tabs.create({url:set.url,active:false});state.active={id:crypto.randomUUID(),set,tabId:tab.id,openedAt:Date.now(),testExport:false};await save(state);
@@ -96,12 +99,13 @@ chrome.runtime.onMessage.addListener((msg,sender,reply)=>{
   if(sender.id!==chrome.runtime.id)return;
   (async()=>{const state=await get();
     if(msg.type==='status')return state;
+    if(msg.type==='sync-config'){if(state.active)throw Error('実行中の出力を保持・完了後に再同期');return synchronize(state);}
     if(msg.type==='enabled'){state.enabled=msg.value===true;await save(state);await alarm();void tick();return state;}
     if(msg.type==='test-one'){
       if(state.active)throw Error('実行中・重複試験を停止');
       const version=chrome.runtime.getManifest().version;
       if(state.testVersions?.includes(version))throw Error('この版の単発試験は受領確認後にのみ再設定');
-      const sets=await config(),set=sets.filter(s=>s.cards&&(!state.sets[s.setCode]?.hold||state.sets[s.setCode].hold.stage==='csv-receipt')).sort((a,b)=>(a.baselineDate||'').localeCompare(b.baselineDate||''))[0];if(!set)throw Error('確認済み対象なし・アクセス/仕様保留は試験対象外');
+      await synchronize(state);const set=state.config.filter(s=>s.cards&&(!state.sets[s.setCode]?.hold||state.sets[s.setCode].hold.stage==='csv-receipt')).sort((a,b)=>(a.baselineDate||'').localeCompare(b.baselineDate||''))[0];if(!set)throw Error('確認済み対象なし・アクセス/仕様保留は試験対象外');
       const testAt=new Date().toISOString();state.testVersions=[...(state.testVersions||[]),version];state.testIntent ||= testAt;state.attempts=[...(state.attempts||[]),{set:set.setCode,at:testAt}].slice(-100);await save(state);state.enabled=true;const tab=await chrome.tabs.create({url:set.url,active:false});state.active={id:crypto.randomUUID(),set,tabId:tab.id,openedAt:Date.now(),testExport:true};await save(state);await alarm();return state;
     }
     throw Error('Unknown collector message');
