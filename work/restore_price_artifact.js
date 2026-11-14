@@ -70,6 +70,9 @@ function restore(file,runId,base,root=ROOT){
     let original=null;try{original=cp.execFileSync('git',['show',base+':'+row.file],{cwd:root,maxBuffer:128e6,stdio:['ignore','pipe','pipe']});}catch{}
     const equivalent=(a,b)=>a===null||b===null?a===b:JSON.stringify(JSON.parse(a))===JSON.stringify(JSON.parse(b));
     if(equivalent(current,incoming))continue;
+    // The saved run may carry an unchanged input while main has advanced.
+    // A proper three-way restore retains that newer current input.
+    if(equivalent(incoming,original))continue;
     if(!equivalent(current,original)){
       try{
       if(row.file==='work/priority-freshness-history.json'&&current&&original){

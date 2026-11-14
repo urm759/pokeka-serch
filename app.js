@@ -4906,9 +4906,7 @@ function medianPurchaseComparisonHtml(card) {
 function comparisonYen(value) {return Number.isFinite(value)?'¥'+fmt.format(value):'算出不可';}
 function saleReferenceYen(value) {return Number.isFinite(value)?'¥'+fmt.format(Math.round(value)):'算出不可';}
 function storeOffersCoverage(card) {
-  const rows=card.storePriceAudit||[],linked=rows.filter(r=>r.url);
-  const checked=linked.filter(r=>r.fresh&&r.inventoryKnown&&Number(r.value)>0&&r.valid!==false&&r.conditionAccepted!==false);
-  return {linked:linked.length,checked:checked.length,rows};
+  return decisionModel.stockConfirmationCoverage(card.storePriceAudit||[]);
 }
 function storeOffersShell(card) {
   return '<details class="store-offer-audit" data-store-offer-details="'+escapeHtml(card.id)+'"><summary>他店の価格・在庫・不採用理由</summary><div>開くと店舗別に比較</div></details>';
@@ -4918,7 +4916,8 @@ function storeOffersMarkup(card) {
   return '<strong>新鮮な価格・在庫確認 '+c.checked+'／紐付け'+c.linked+'店'+(c.checked<c.linked?'・全店の確認は未完了':'')+'</strong><small>同一仕様・状態・価格/在庫48時間以内の採用可能店から最安を選択。中央値の主計算とは別。停止中の経路と、保存された個別確認は区別します。</small><div class="price-audit-rows">'+c.rows.map(entry=>{
     const direct=explorationMetrics.purchaseProductUrl(entry),chosen=entry.purchaseEligible&&card.currentStoreOffer?.source===entry.source;
     const sourceId=({'カードラッシュ':'cardrush','晴れる屋2':'hareruya2','遊々亭':'yuyutei','トレカキャンプ':'torecacamp'})[entry.source?.replace(/状態A$/,'')],issue=entry.sourceBlocked||state.updateStatus?.sources?.[sourceId]?.lastError;
-    const inventory=entry.inventoryKnown?(entry.available===true?'在庫あり':'在庫なし'):'在庫未確認';
+    const knownNow=entry.fresh&&entry.inventoryKnown&&typeof entry.available==='boolean';
+    const inventory=knownNow?(entry.available===true?'在庫あり':'在庫なし'):'現在の在庫未確認'+(entry.inventoryKnown&&typeof entry.available==='boolean'?'（保存時：'+(entry.available?'在庫あり':'在庫なし')+'）':'');
     return '<div class="'+(entry.purchaseEligible?'included':'excluded')+'"><span>'+escapeHtml(entry.source)+(entry.url?'':'・未紐付け')+'</span><strong>'+comparisonYen(Number.isFinite(entry.value)&&entry.value>0?entry.value:null)+'</strong><small>'+(direct?'<a href="'+escapeHtml(direct)+'" target="_blank" rel="noopener noreferrer">'+(entry.purchaseEligible?'確認済みの商品':entry.fresh&&entry.inventoryKnown&&entry.available===false?'在庫なしの商品（購入不可）':'履歴の商品・現在の購入可否は未確認')+'</a>':entry.url?'直商品URL未確認':'商品URL未取得')+'／'+escapeHtml(inventory)+(Number.isFinite(entry.stock)?' '+fmt.format(entry.stock)+'枚':'')+(entry.fresh?'':'（古値・日時未確認を含む）')+'<br>状態 '+escapeHtml(entry.condition||'未確認')+'／価格確認 '+escapeHtml(formatJstTimestamp(entry.updatedAt))+'／在庫確認 '+escapeHtml(formatJstTimestamp(entry.inventoryAt))+'<br>'+(chosen?'表示中の最安店':entry.purchaseEligible?'採用可能・現在の最安より高い':'不採用：'+escapeHtml(entry.purchaseReason))+(issue?'<br>取得経路：'+escapeHtml(issue)+'（この商品の在庫なしとは別）':'')+'</small></div>';
   }).join('')+'</div>';
 }
@@ -6084,7 +6083,8 @@ function priceComparisonCells(card, limitDisplay, confirmedAt, now = Date.now(),
   const breakCell = `<div class="price-cell glance-break-even" data-price-kind="break-even" data-cap-state="${limitDisplay.currentCapState || 'available'}"><span>現相場の期待損益分岐上限</span><strong class="${limitDisplay.currentCapState === "available" ? "" : "value-unavailable"}">${escapeHtml(capText)}</strong><small>${escapeHtml(limitDisplay.currentCapLabel || '仕入れ可能な上限あり')}${limitDisplay.currentCapNote ? `／${escapeHtml(limitDisplay.currentCapNote)}` : ''}</small><div class="purchase-headroom"><span>仕入れ余裕率（価格差率）</span><b>${Number.isFinite(headroom) ? `${headroom > 0 ? '+' : ''}${headroom.toFixed(2)}%` : `比較不可（${escapeHtml(exploration.reason)}）`}</b><small>利益率ではありません・プラスでも購入GOではありません</small>${(exploration.warnings || []).map(w=>`<small class="reference-warning">${escapeHtml(w)}</small>`).join('')}</div><small>現相場が続く場合の期待値基準。推奨仕入れ値ではありません</small></div>`;
   const referenceFreshness = decisionModel.referenceFreshness(card.priceAggregation, now);
   const freshReference = explorationMetrics.referenceMedian(card, now);
-  const purchaseStatus = usableOffer ? null : decisionModel.purchasePriceState(card.storePriceAudit || []).label;
+  const purchaseCoverage=decisionModel.stockConfirmationCoverage(card.storePriceAudit||[]);
+  const purchaseStatus = usableOffer ? null : purchaseCoverage.unavailableLabel || decisionModel.purchasePriceState(card.storePriceAudit || []).label;
   if(compact)return `<div class="price-cell" data-price-kind="store"><span>${!usableOffer&&trial?.purchaseKind==='manual'?'購入価格（手入力試算）':'現在買える状態A・最安価格'}</span><strong>${purchaseMarkup??escapeHtml(purchaseStatus)}</strong><small>${escapeHtml(usableOffer?offer.source:'購入先未確認・GO不可')}${usableOffer?'／'+escapeHtml(dateText(offer.updatedAt)):''}${usableOffer&&!purchaseUrl?'／購入先未確認（直URLなし）':''}</small>${storeOffersShell(card)}${inventoryText}<span class="raw-reference-median">素体参考相場・中央値 <b>${freshReference.value==null?'算出不可':money(freshReference.value)}</b></span><small>新鮮${freshReference.count}元／独立${freshReference.independent}店${freshReference.value==null?'・根拠不足':''}。購入保証なし。</small></div>
     <div class="price-cell" data-price-kind="psa10"><span>PSA10現在相場</span><strong>${hasMarket?money(marketPrice):'未取得'}</strong><small>${escapeHtml(card.psa10Audit?.source||'取得元未取得')}／${escapeHtml(dateText(confirmedAt))}</small>${stale||!Number.isFinite(checkedTime)?`<small class="reference-warning">${escapeHtml(marketNotice)}</small>`:''}${psa9GuidePanel(card)}</div>
     <div class="price-cell glance-stable" data-price-kind="current-target"><span>利益確保の仕入れ目安・現相場基準</span><strong>${guide.capState==='loss-at-zero'?'利益条件を満たす買値なし':money(guide.cap)}</strong><small>目標利益${money(guide.minProfit)}・${guide.minRoi??'未設定'}%／${escapeHtml(guide.exitLabel||'出口未取得')}</small><small class="reference-warning">${guide.noProfitMargin?'利益余裕なし／':''}${escapeHtml(compactWarningText([...guide.reasons,...guide.warnings]))}${guide.belowPractical?'／採算上、実務価格帯で仕入れ困難':''}現相場維持の参考・GOではない</small></div>
@@ -7424,6 +7424,7 @@ function syncFromUI(event) {
 
 function assertCalculationDependencies() {
   const required={'PurchaseDecisionModel.expectedEconomics':decisionModel?.expectedEconomics,
+    'PurchaseDecisionModel.stockConfirmationCoverage':decisionModel?.stockConfirmationCoverage,
     'PurchaseDecisionModel.hasBlockingDataAnomaly':decisionModel?.hasBlockingDataAnomaly,
     'LimitDisplayModel.classifyCap':limitDisplayModel?.classifyCap,
     'ExplorationMetrics.purchaseOfferUrl':explorationMetrics?.purchaseOfferUrl,

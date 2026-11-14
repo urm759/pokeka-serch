@@ -211,6 +211,13 @@
       warning: freshVsOld.length ? '古い価格帯と新しい価格が乖離・最新価格の誤りとは未確定' : recent === 0 && included.length ? '最新の参考相場ではありません' : null };
   }
 
+  function stockConfirmationCoverage(rows = []) {
+    const linked=rows.filter(r=>r.url),checked=linked.filter(r=>r.fresh&&r.inventoryKnown&&typeof r.available==='boolean'&&Number(r.value)>0&&r.valid!==false&&r.conditionAccepted!==false);
+    const outOfStock=checked.filter(r=>r.available===false).length,inStock=checked.filter(r=>r.available===true).length,unknown=linked.length-checked.length;
+    const unavailableLabel=outOfStock>0&&inStock===0 ? unknown>0 ? `確認${outOfStock}店で在庫なし／他${unknown}店は未確認` : `確認${outOfStock}店すべて在庫なし` : null;
+    return {linked:linked.length,checked:checked.length,outOfStock,inStock,unknown,unavailableLabel,rows};
+  }
+
   function purchasePriceState(rows = [], offer = null) {
     if (offer) return { code: 'available', label: '購入価格確認済み' };
     const linked = rows.filter(row => row.url);
@@ -1145,5 +1152,5 @@
     };
   }
 
-  return { MODEL_VERSION, hasBlockingDataAnomaly, comparablePriceEvidence, priceReview, referenceFreshness, purchasePriceState, shopObservation, observationTime, storeOffers, aggressivePurchaseZone, aggregatePrices, bargainDecisionEligible, buybackExitProfit, conservativeBuybackExit, economicsFromExpectedSale, exitPolicyCaps, shouldIncludeVerdict, capRoundingStep, capitalLimits, capitalPlan, economicsScenarioMatrix, expectedEconomics, gradeAssumptions, isSuspectedCardMismatch, matchConfidenceLabel, maxBuyPrice, median, operationalCap, operationalCapConcentration, portfolioPlan, portfolioStress, purchaseAvailability, purchaseCaps, purchaseDecision, purchaseLimitMarketRatio, resilienceMetrics, resolvePsa9Price, targetProfitMaxBuyPrice, weightedMedian };
+  return { MODEL_VERSION, hasBlockingDataAnomaly, comparablePriceEvidence, priceReview, referenceFreshness, purchasePriceState, stockConfirmationCoverage, shopObservation, observationTime, storeOffers, aggressivePurchaseZone, aggregatePrices, bargainDecisionEligible, buybackExitProfit, conservativeBuybackExit, economicsFromExpectedSale, exitPolicyCaps, shouldIncludeVerdict, capRoundingStep, capitalLimits, capitalPlan, economicsScenarioMatrix, expectedEconomics, gradeAssumptions, isSuspectedCardMismatch, matchConfidenceLabel, maxBuyPrice, median, operationalCap, operationalCapConcentration, portfolioPlan, portfolioStress, purchaseAvailability, purchaseCaps, purchaseDecision, purchaseLimitMarketRatio, resilienceMetrics, resolvePsa9Price, targetProfitMaxBuyPrice, weightedMedian };
 });

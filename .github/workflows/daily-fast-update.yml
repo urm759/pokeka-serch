@@ -12,6 +12,8 @@ permissions:
 
 concurrency:
   group: all-site-data-refresh
+
+  queue: max
   cancel-in-progress: false
 
 jobs:
@@ -56,7 +58,7 @@ jobs:
         run: |
           node work/build_card_completion.js
           node work/build_supply_maturity_hypothesis.js
-          SHOP_EFFECT_AUDIT_REF="$GITHUB_SHA" node work/build_purchase_limit_audit.js
+          SHOP_EFFECT_AUDIT_REF=checkout node work/build_purchase_limit_audit.js
           node work/audit_acquisition_progress.js
           node work/audit_link_coverage.js
           node work/audit_purchase_price_recovery.js
@@ -293,3 +295,13 @@ jobs:
           include-hidden-files: true
           retention-days: 14
           if-no-files-found: warn
+
+      - name: Retain private mintrade source responses for missing-price diagnosis
+        if: always() && hashFiles('.private/mintrade-source-captures/**') != ''
+        uses: actions/upload-artifact@v7
+        with:
+          name: mintrade-source-daily-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .private/mintrade-source-captures/
+          include-hidden-files: true
+          retention-days: 7
+          if-no-files-found: error

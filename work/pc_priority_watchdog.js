@@ -2,17 +2,7 @@
 // Uses existing Git credentials only. No token is persisted or printed.
 const fs=require('node:fs'),path=require('node:path'),cp=require('node:child_process');
 const HOUR=3600000,REPO='urm759/pokeka-serch';
-function plan(runs,state={},now=Date.now()){
- if(state.held)return {due:false,reason:'authentication-or-api-hold'};
- if(runs.some(r=>['queued','in_progress','waiting','pending','requested'].includes(r.status)))return {due:false,reason:'existing-cloud-run-pending'};
- const latest=runs.filter(r=>r.path?.endsWith('/priority-price-refresh.yml')&&Number.isFinite(Date.parse(r.created_at)))
-  .sort((a,b)=>Date.parse(b.created_at)-Date.parse(a.created_at))[0];
- if(!latest)return {due:false,reason:'priority-history-unconfirmed'};
- const gap=now-Date.parse(latest.created_at),last=Date.parse(state.lastDispatchAt);
- if(gap<0||gap<2.5*HOUR)return {due:false,reason:'creation-within-existing-interval',creationGapMs:gap};
- if(Number.isFinite(last)&&(now<last||now-last<2.5*HOUR))return {due:false,reason:'dispatch-cooldown',creationGapMs:gap};
- return {due:true,reason:'no-cloud-creation-for-2.5h',latestRun:latest.id,creationGapMs:gap};
-}
+const {plan,inventory,inspectPending}=require('./cloud_wakeup_policy');
 async function run({root,store,now=Date.now(),request}={}){
  const file=path.join(store,'pc-priority-watchdog.json'),state=fs.existsSync(file)?JSON.parse(fs.readFileSync(file)):{};
  const result={at:new Date(now).toISOString(),origin:'existing-PC-hourly-timer',sourceAcquisitions:0,llmCalls:0,codexCalls:0};
@@ -32,10 +22,9 @@ async function run({root,store,now=Date.now(),request}={}){
   }
   // The same global concurrency group covers Daily/Safe/Priority. A queued or
   // active data workflow is not a missing execution and must not be duplicated.
-  const names=['priority-price-refresh.yml','daily-fast-update.yml','safe-checkpoint-backfill.yml','refresh-all-site-data.yml','watch-data-health.yml','backfill-data.yml','gemrate-reference-publication.yml'];
-  const runs=(await request('GET','/actions/runs?per_page=100')).workflow_runs||[];
-  const relevant=runs.filter(r=>names.some(n=>r.path?.endsWith('/'+n)));
-  const decision=plan(relevant,state,now);Object.assign(result,decision);
+  const current=await inventory(request);if(!current.complete){result.status=current.reason;save();return result;}
+  const runs=current.runs,pendingAudit=await inspectPending(runs,request,now,state.pendingEvidence||[]);state.pendingEvidence=pendingAudit;result.pendingAudit=pendingAudit;
+  const decision=plan(runs,state,now,pendingAudit);Object.assign(result,decision);
   if(decision.due){
    // Persist the intent BEFORE the POST: an uncertain response must not cause
    // repeated dispatches. This is not proof of acquisition or publication.

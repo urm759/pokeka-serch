@@ -1,0 +1,12 @@
+const assert=require('node:assert/strict'),m=require('../decision-model');
+const at='2026-11-14T02:00:00Z',now=Date.parse('2026-11-14T03:00:00Z');
+const row=(source,extra={})=>({source,url:'https://example.test/'+source,value:28000,fresh:true,inventoryKnown:true,available:false,valid:true,conditionAccepted:true,kind:'販売価格',updatedAt:at,inventoryAt:at,identityVerified:true,...extra});
+const rows=[row('晴れる屋2'),row('Camp'),row('カードラッシュ',{fresh:false,sourceBlocked:'HTTP 403',updatedAt:'2026-09-01',inventoryAt:'2026-09-01',available:true}),row('遊々亭',{fresh:false,sourceBlocked:'HTTP 403',updatedAt:'2026-09-01',inventoryAt:'2026-09-01'})];
+const snapshot=JSON.stringify(rows),c=m.stockConfirmationCoverage(rows);assert.equal(c.checked,2);assert.equal(c.linked,4);assert.equal(c.unknown,2);assert.equal(c.unavailableLabel,'確認2店で在庫なし／他2店は未確認');assert.equal(JSON.stringify(rows),snapshot);
+assert.equal(m.stockConfirmationCoverage(rows.map(r=>({...r,fresh:true}))).unavailableLabel,null,'an in-stock confirmed row must not be called all-out-of-stock');
+assert.equal(m.stockConfirmationCoverage(rows.map(r=>({...r,fresh:true,available:false}))).unavailableLabel,'確認4店すべて在庫なし');
+assert.equal(m.stockConfirmationCoverage([row('unknown',{inventoryKnown:false,available:null})]).outOfStock,0);
+assert.equal(m.stockConfirmationCoverage([row('held',{valid:false})]).outOfStock,0);
+const switched=[row('lowest'),row('next',{value:30000,available:true}),row('old',{value:10000,updatedAt:'2026-09-01',inventoryAt:'2026-09-01',available:true})];
+assert.equal(m.storeOffers(switched,m.aggregatePrices(switched,{asOfDate:'2026-11-14'}),{now}).offer.source,'next','choose the next fresh eligible in-stock quote; do not recover a stale cheaper price');
+console.log('PASS stock scope: 2/4 confirmed, old/blocked/unknown distinct, full confirmation distinct, no input changes and fresh next-store selection');

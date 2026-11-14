@@ -1,0 +1,13 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "pokeka-independent-wakeup",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-11-13",
+  "workers_dev": false,
+  "preview_urls": false,
+  "observability": { "enabled": true },
+  "vars": { "ENABLED": "false" },
+  "triggers": { "crons": ["7,22,37,52 * * * *"] },
+  "durable_objects": { "bindings": [{ "name": "WAKE_STATE", "class_name": "WakeState" }] },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["WakeState"] }]
+}

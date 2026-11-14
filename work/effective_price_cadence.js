@@ -1,13 +1,26 @@
 const fs=require('node:fs'),path=require('node:path'),{atomicWrite}=require('./acquisition_retry');
 function distribution(values){const a=values.filter(Number.isFinite).sort((a,b)=>a-b);return {samples:a.length,medianMs:a.length?a[Math.floor(a.length/2)]:null,maxMs:a.length?a.at(-1):null};}
+function acquisitionRows(rows,scope){
+  if(scope?.version!==2)return rows;
+  const from=Date.parse(scope.from),to=Date.parse(scope.to);
+  if(!Number.isFinite(from)||!Number.isFinite(to)||from>to)return [];
+  return rows.filter(r=>typeof r.at==='string'&&r.at.includes('T')&&Date.parse(r.at)>=from&&Date.parse(r.at)<=to);
+}
 function observe(previous={runs:[]},cycles,receipts,now=Date.now(),context={}) {
   const runs=[...(previous.runs||[])];
-  for(const [key,proof] of Object.entries(cycles.pipelines||{})) {
+  const publications=[...Object.entries(cycles.pipelines||{}),...Object.entries(cycles.nonScheduledChecks||{})];
+  for(const [key,proof] of publications) {
     const receipt=receipts.pipelines?.[key];
-    if(!proof.confirmed || String(proof.runId)!==String(receipt?.runId) || runs.some(r=>String(r.runId)===String(proof.runId)))continue;
+    const verified=proof.confirmed===true||proof.publicationConfirmed===true&&proof.receiptMatches===true;
+    if(!verified || String(proof.runId)!==String(receipt?.runId))continue;
+    const origin={event:proof.event||null,routineConfirmed:proof.confirmed===true,
+      publicationKind:proof.confirmed===true?'verified-natural-schedule':'verified-non-scheduled-publication'};
+    const existing=runs.findIndex(r=>String(r.runId)===String(proof.runId));
+    if(existing>=0){if(!runs[existing].publicationKind)runs[existing]={...runs[existing],...origin};continue;}
     const failed=new Set(receipt.sourceIsolation?.sources?.filter(s=>s.status==='failed').map(s=>s.source)||[]);
-    const observations=Object.fromEntries(Object.entries(receipt.cardObservations||{}).filter(([id])=>!failed.has(id)));
-    runs.push({runId:proof.runId,key,startedAt:proof.startedAt||null,publicationStepCompletedAt:proof.publicationStepCompletedAt||null,
+    const observations=Object.fromEntries(Object.entries(receipt.cardObservations||{}).filter(([id])=>!failed.has(id)).map(([id,rows])=>[id,acquisitionRows(rows,receipt.observationScope)]));
+    runs.push({runId:proof.runId,key,...origin,
+      startedAt:proof.startedAt||null,publicationStepCompletedAt:proof.publicationStepCompletedAt||null,
       recordedAt:receipt.recordedAt,observationScope:receipt.observationScope||null,verifiedAt:proof.publicVerifiedAt||new Date(now).toISOString(),url:proof.url,observations,
       fixedCohortFreshness:receipt.outcomes?.fixedCohortFreshness||null});
   }
@@ -21,7 +34,7 @@ function observe(previous={runs:[]},cycles,receipts,now=Date.now(),context={}) {
   const sources={};
   for(const r of runs)for(const [source,rows] of Object.entries(r.observations)) {
     const s=sources[source] ||= {cards:{},intervals:[],freshnessRecoveries:0,publicationDelays:[]};
-    for(const row of rows) {
+    for(const row of acquisitionRows(rows,r.observationScope)) {
       const at=Date.parse(row.at||''); if(!Number.isFinite(at)||at>now)continue;
       const old=s.cards[row.id],oldAt=Date.parse(old?.at||'');
       if(Number.isFinite(oldAt)&&at<=oldAt)continue;
@@ -51,7 +64,7 @@ function observe(previous={runs:[]},cycles,receipts,now=Date.now(),context={}) {
     unknownCauseCards:new Set((context.targets?.pendingDepartures||[]).filter(r=>!r.departureAudit?.comparable).map(r=>r.id)).size};
   return {version:1,generatedAt:new Date(now).toISOString(),runs,sources:summary,profileCohort,recoveryLatency,
     latencyBasis:'6時間目標超過と48時間採用期限超過は別。間隔超過件数は候補離脱枚数ではない。公開工程完了はGitHub stepの実時刻、公開確認は初ハッシュ照合時刻（到達時間の上限）。根拠不足はnull。固定の検索候補群は後から縮小しない。',
-    basis:'取得・必須検証・保存push・公開JSON照合が揃った実行だけ。同じカードの個別確認日時の前進を計数。通常ジョブ間隔と別。未観測期間は推定しない。',llmCalls:0};
+    basis:'取得・必須検証・保存push・公開JSON照合が揃った実行だけ。同じカードの個別確認日時の前進を計数。GitHub自然定期とそれ以外の公開確認済み更新はpublicationKindで分離。workflow_dispatchの外部Cron起源は別のprovider証跡と照合し、手動成功を自然定期へ変更しない。通常ジョブ間隔と別。未観測期間は推定しない。',llmCalls:0};
 }
 function build(root=path.join(__dirname,'..')) {
   const read=f=>{try{return JSON.parse(fs.readFileSync(path.join(root,f),'utf8'));}catch{return {};}};
@@ -62,5 +75,13 @@ function build(root=path.join(__dirname,'..')) {
   const value={...history,runs:history.runs.map(({observations,...r})=>r)};
   atomicWrite(path.join(root,'data/effective-price-cadence.json'),value,0);return value;
 }
-module.exports={observe,build};
+function recordVerified(root,key,proof,receipt){
+  if(!proof?.publicationConfirmed||!proof.receiptMatches||String(proof.runId)!==String(receipt?.runId)
+    ||!proof.hashes?.length||proof.hashes.some(h=>!h.matched)||!Object.values(proof.stages||{}).length||!Object.values(proof.stages).every(Boolean)
+    ||JSON.stringify(Object.entries(proof.receiptHashes||{}).sort())!==JSON.stringify(Object.entries(receipt.hashes||{}).sort()))throw Error('Verified receipt snapshot mismatch');
+  const file=path.join(root,'work/verified-price-cadence-history.json'),previous=fs.existsSync(file)?JSON.parse(fs.readFileSync(file,'utf8')):{runs:[]};
+  const cycles=proof.confirmed?{pipelines:{[key]:proof}}:{nonScheduledChecks:{[key]:proof}};
+  const history=observe(previous,cycles,{pipelines:{[key]:receipt}});atomicWrite(file,history,0);return history;
+}
+module.exports={observe,build,acquisitionRows,recordVerified};
 if(require.main===module)console.log(JSON.stringify(build().sources));

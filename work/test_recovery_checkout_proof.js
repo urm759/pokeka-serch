@@ -1,0 +1,11 @@
+const assert=require('node:assert/strict'),{parse}=require('./recovery_checkout_proof');
+const run={id:43457549346,run_attempt:1,head_sha:'a'.repeat(40)},job={id:99,run_id:run.id,status:'completed',steps:[{name:'Run actions/checkout@v7',conclusion:'success',started_at:'2026-11-13T16:11:40Z',completed_at:'2026-11-13T16:12:16Z'}]};
+const checkout='b'.repeat(40),body=['2026-11-13T16:11:41.1967640Z Commit: '+ 'c'.repeat(40),'2026-11-13T16:12:13.4573265Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main','2026-11-13T16:12:15.5335041Z [command]/usr/bin/git log -1 --format=%H','2026-11-13T16:12:15.5371545Z '+checkout,'2026-11-13T16:14:15Z '+ 'd'.repeat(40)].join('\n');
+const p=parse(run,job,body);assert.equal(p.checkoutCommit,checkout);assert.equal(p.triggerCommit,run.head_sha);assert.equal(p.checkoutLines.length,3);assert.equal(p.logSha256.length,64);
+assert.throws(()=>parse(run,{...job,run_id:2},body),/mismatch/);
+assert.throws(()=>parse(run,job,body.replace('-B main refs/remotes/origin/main','-B feature refs/remotes/origin/feature')),/proof unavailable/);
+assert.throws(()=>parse(run,{...job,steps:[{...job.steps[0],completed_at:'2026-11-13T16:12:14Z'}]},body),/proof unavailable/,'source-stage log cannot spoof checkout');
+assert.throws(()=>parse(run,job,body.replace('2026-11-13T16:14:15Z '+ 'd'.repeat(40),'2026-11-13T16:12:15.700Z [command]/usr/bin/git log -1 --format=%H\n2026-11-13T16:12:15.800Z '+ 'd'.repeat(40))),/Unique/,'ambiguous log is held');
+assert.equal(require('./external_timer_context').parse({inputs:{timer_scheduled_at:'2026-11-13T00:00:00Z',timer_request_id:'cloud-wakeup-2026-11-13T00:00:00.000Z'}}).verifiedOrigin,false);
+assert.equal(require('./external_timer_context').parse({inputs:{timer_scheduled_at:'bad',timer_request_id:'<script>'}}).valid,false);
+console.log('PASS trusted checkout-step clock/main/SHA proof, action version SHA vs repo SHA, ambiguity/tamper holds, external clock is not acquisition evidence');

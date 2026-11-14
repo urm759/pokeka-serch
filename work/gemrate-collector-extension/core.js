@@ -19,6 +19,24 @@
     // Existing sets all retain a daily slot; approved new sets have a separate one/day slot.
     return due.filter(s=>s.cards||state.newSetDay!==day(at)).sort((a,b)=>Number(b.cards>0)-Number(a.cards>0)||(state.sets?.[a.setCode]?.checkedAt||'').localeCompare(state.sets?.[b.setCode]?.checkedAt||'')||(b.priority||0)-(a.priority||0)||a.setCode.localeCompare(b.setCode))[0]||null;
   }
+  function configDue(state,at){
+    const now=Date.parse(at),last=Date.parse(state.configSyncedAt||'');
+    return !state.configVersion||!Number.isFinite(last)||last>now||day(state.configSyncedAt)!==day(at)||now-last>=15*60000;
+  }
+  function applyConfig(state,config,at){
+    if(config.schema!==1||!/^[a-f0-9]{64}$/.test(config.version)||!Array.isArray(config.targets)||!config.targets.length||config.targets.length>200)throw Error('取得設定の形式不一致');
+    const codes=new Set(),urls=new Set();
+    for(const s of config.targets){if(!/^[A-Z0-9-]+$/.test(s.setCode)||s.language!=='Japanese'||s.grader!=='PSA'||!Number.isSafeInteger(s.year)||!s.set.startsWith('Pokemon Japanese ')||!samePage(s.url,s)||!Number.isSafeInteger(s.cards)||s.cards<0||codes.has(s.setCode)||urls.has(s.url))throw Error('取得設定の仕様・重複不一致');codes.add(s.setCode);urls.add(s.url);}
+    state.sets||={};
+    for(const s of config.targets){const old=state.config?.find(r=>r.setCode===s.setCode);if(old&&(old.set!==s.set||old.year!==s.year||old.language!==s.language||old.grader!==s.grader)){
+      const row=state.sets[s.setCode]||{};state.sets[s.setCode]={...row,...(!row.hold?{hold:{at,stage:'specification',reason:'公開設定の既存セット仕様変更・正規再照合待ち'}}:{})};
+    }}
+    if(state.configVersion!==config.version){
+      state.configChanges={at,version:config.version,added:config.targets.filter(s=>!state.config?.some(o=>o.setCode===s.setCode)).map(s=>s.setCode),removed:(state.config||[]).filter(s=>!codes.has(s.setCode)).map(s=>s.setCode)};
+      state.configHistory=[...(state.configHistory||[]),state.configChanges].slice(-20);
+    }
+    state.config=config.targets;state.configVersion=config.version;state.configSyncedAt=at;state.configDay=day(at);return state;
+  }
   function recoverableCsv(set,old,date,verified){
     if(!verified||old?.hold?.stage!=='csv-receipt'||!Number.isFinite(Date.parse(old.hold.at||'')))return false;
     const baseline=[set.baselineDate,old.exportedDate].filter(Boolean).sort().at(-1)||'';
@@ -84,5 +102,5 @@
     if(!updated||!count||!document.getElementById('csv_download'))return {error:'page-not-ready'};
     return {url:location.href,grader:value('grader'),category:value('category'),year:Number(value('year')),set:value('set_name'),language:'Japanese',updated,checkedAt:new Date().toISOString(),csvRows:Number(count.replaceAll(',','')),setTotals:{psa10:number(/Total Gems\s*([\d,]+)/),total:number(/Total Grades\s*([\d,]+)/)}};
   }
-  const api={day,url,samePage,groups,choose,decide,recoverableCsv,claim,bindingMatches,clickExportOnce,receiptFilename,readPage,DAY};if(typeof module==='object')module.exports=api;else root.GemRateCollector=api;
+  const api={day,url,samePage,groups,choose,decide,recoverableCsv,claim,bindingMatches,clickExportOnce,receiptFilename,readPage,configDue,applyConfig,DAY};if(typeof module==='object')module.exports=api;else root.GemRateCollector=api;
 })(typeof self==='object'?self:globalThis);

@@ -13,6 +13,11 @@ async function test(){let reads=0;const getJson=async url=>url.includes('receipt
  assert.equal(manualBad.targetStatus,'pending');assert(!manualBad.pipelines.priority.publicationConfirmed,'manual checks retain all price/version hashes');
  const scheduledSaved={pipelines:{priority:good.pipelines.priority}};preserve(scheduledSaved,'priority',manual.pipelines.priority);
  assert.equal(scheduledSaved.pipelines.priority.confirmed,true);assert.equal(scheduledSaved.nonScheduledChecks.priority.event,'workflow_dispatch');
+ const oldVerified={...manual.pipelines.priority,runAttempt:1,receiptHashes:{'data/stock.json':'one'},publicVerifiedAt:'2026-10-28T00:10:00Z'};
+ const repeated={pipelines:{},nonScheduledChecks:{priority:oldVerified}};
+ preserve(repeated,'priority',{...oldVerified,publicVerifiedAt:'2026-10-28T01:10:00Z'});
+ assert.equal(repeated.nonScheduledChecks.priority.publicVerifiedAt,oldVerified.publicVerifiedAt);assert.equal(repeated.nonScheduledChecks.priority.lastPublicVerifiedAt,'2026-10-28T01:10:00Z');
+ preserve(repeated,'priority',{...oldVerified,receiptHashes:{'data/stock.json':'changed'},publicVerifiedAt:'2026-10-28T02:10:00Z'});assert.equal(repeated.nonScheduledChecks.priority.publicVerifiedAt,'2026-10-28T02:10:00Z','changed receipt never inherits an earlier proof');
  const cycles={pipelines:{priority:good.pipelines.priority}};
  preserve(cycles,'priority',{runId:3,confirmed:false,receiptMatches:false});assert.equal(cycles.pipelines.priority.runId,1);assert.equal(cycles.lastChecks.priority.runId,3);
  preserve(cycles,'priority',{runId:1,confirmed:false,receiptMatches:true});assert(cycles.pipelines.priority.confirmed,'later source updates do not revoke historical confirmed execution');
@@ -23,6 +28,9 @@ async function test(){let reads=0;const getJson=async url=>url.includes('receipt
  assert.equal(noop.targetStatus,'no-acquisition-required');assert.equal(noop.confirmed,0,'no-op is not new acquisition or publication evidence');
  const failed=await inspect({getJson:async u=>u.endsWith('/runs/3')?{...run,id:3,name:'Priority Purchase Price Refresh',conclusion:'failure'}:u.endsWith('/runs/3/jobs')?skippedJobs:getJson(u),getText:async()=>text,at,targetRunId:3});
  assert.equal(failed.targetStatus,'not-yet-published-or-superseded','failure is not an admitted no-op');
+ const failedBeforePublish={jobs:[{steps:[{name:'Rebuild catalog and shared purchase-limit audit',conclusion:'failure'},{name:'Publish validated data',conclusion:'skipped'}]}]};
+ const terminal=await inspect({getJson:async u=>u.endsWith('/runs/3')?{...run,id:3,name:'Daily Fast Update',conclusion:'failure'}:u.endsWith('/runs/3/jobs')?failedBeforePublish:getJson(u),getText:async()=>text,at,targetRunId:3});
+ assert.equal(terminal.targetStatus,'upstream-failed-before-publication');assert(terminal.targetObservation.terminal);assert.equal(terminal.targetObservation.publicationConfirmed,false);assert.equal(terminal.targetObservation.originalConclusion,'failure');assert(terminal.targetObservation.recoveryRequired,'do not poll the same missing receipt or erase the failed upstream');
  const page={name:'pages build and deployment',conclusion:'success',created_at:'2026-10-28T00:05Z',head_sha:'a'.repeat(40),id:2};
  const prior=await historicalPublication({run,jobs,receipt,pages:[page],current:bad.pipelines.priority,getText:async u=>u.endsWith('receipts.json')?JSON.stringify({pipelines:{priority:receipt}}):text});
  assert(prior.confirmed&&prior.historicalPublication);assert.equal(prior.currentPublicMatches,false);assert.equal(prior.hashes[0].currentMatched,false);assert.equal(prior.publishedCommit,page.head_sha);

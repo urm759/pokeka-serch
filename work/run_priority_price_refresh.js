@@ -43,6 +43,7 @@ function main() {
     reaggregatedAt: finalizeOnly ? new Date().toISOString() : null,
     runId: finalizeOnly ? previous.runId || null : process.env.GITHUB_RUN_ID || null, headSha:finalizeOnly ? previous.headSha || null : process.env.GITHUB_SHA || null,
     checkoutCommit:finalizeOnly?previous.checkoutCommit || null:checkoutCommit,
+    externalWakeup:finalizeOnly?previous.externalWakeup||null:require('./external_timer_context').read(),
     priceQueueModel:"deadline-v2", startDelayMs: finalizeOnly ? previous.startDelayMs ?? null : process.env.GITHUB_EVENT_NAME === "schedule" ? started - scheduled.getTime() : null,
     scheduledSlotAt: finalizeOnly ? previous.scheduledSlotAt || null : process.env.GITHUB_EVENT_NAME === "schedule" ? scheduled.toISOString() : null,
     delayMethod:finalizeOnly ? previous.delayMethod || null : catchup?"毎時47分の補完cron枠から実処理開始まで。1時間超の遅延は識別不能":"2時間ごと20分のPriority cron枠から実処理開始まで。2時間超の遅延は識別不能",
@@ -94,7 +95,7 @@ function main() {
     save();
   }
   for (const sourceId of ["cardrush", "hareruya2"]) run("work/refresh_candidate_shops.js", [sourceId], { CANDIDATE_SHOP_MODE: "deadline" }, 'source');
-  const campIds=require('./update_yuyutei_torecacamp').campRequestedIds(read('work/search-profile-targets.json'),read('work/comparison-price-targets.json').ids||[]);
+  const campIds=[...new Set([...require('./update_yuyutei_torecacamp').campRequestedIds(read('work/search-profile-targets.json'),read('work/comparison-price-targets.json').ids||[]),...require('./fixed_price_cohort').ids(ROOT,'torecacamp')])];
   const campTiming=require('./proactive_refresh').lead(require('./priority_price_queue').timingConfig());
   const campLead=require('./camp_postpass').proactiveLead(campTiming.leadMs);
   const campPlan={...require('./camp_postpass').priorityMaintenance(read('work/torecacamp_catalog.json',[]),campIds,read('work/torecacamp_progress.json'),read('work/source-update-runs.json').sources?.torecacamp,Date.now(),campLead),proactiveLeadMs:campLead,requestedLeadMs:campTiming.requestedMs,pipelineAllowanceMs:campTiming.processingMs,capacityWarning:campTiming.capacityWarning};

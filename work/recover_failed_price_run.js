@@ -54,7 +54,9 @@ function latestMonitor(runs,{currentRunId,now=Date.now(),alreadyApplied=()=>fals
     .sort((a,b)=>Date.parse(b.updated_at)-Date.parse(a.updated_at))[0]||null;
 }
 function inspectedForRun(root,run){
-  try{const r=JSON.parse(fs.readFileSync(path.join(root,'work/recovery-inspected-'+run.id+'.json')));return Number(r.runAttempt)===Number(run.run_attempt)&&r.headSha===run.head_sha;}catch{return false;}
+  try{const r=JSON.parse(fs.readFileSync(path.join(root,'work/recovery-inspected-'+run.id+'.json')));
+    if(r.status==='source-merge-review-required'&&r.recoveryBasePolicyVersion!==2)return false;
+    return Number(r.runAttempt)===Number(run.run_attempt)&&r.headSha===run.head_sha;}catch{return false;}
 }
 function activeSourceHolds(root=ROOT){
   const work=path.join(root,'work');if(!fs.existsSync(work))return [];
@@ -71,7 +73,8 @@ function retainSourceHold(root,run,artifact,error){
   if(error.code!=='SOURCE_RECOVERY_MERGE_REQUIRED')throw error;
   const result={status:'source-merge-review-required',runId:String(run.id),runAttempt:run.run_attempt,headSha:run.head_sha,checkedAt:new Date().toISOString(),
     artifactId:artifact.id,artifactDigest:artifact.digest,archive:recoveryArchiveName(run.id,artifact.id),files:error.files,reason:error.message,
-    recoveryApplied:false,normalUpdatesMayContinue:true,sourceRequests:0,originalRetained:true};
+    recoveryApplied:false,normalUpdatesMayContinue:true,sourceRequests:0,originalRetained:true,recoveryBasePolicyVersion:2,
+    acquisitionCheckoutCommit:run.acquisitionCheckoutCommit||null};
   fs.writeFileSync(path.join(root,'work/recovery-inspected-'+run.id+'.json'),JSON.stringify(result));
   console.warn('::warning::取得済み原票は同時更新の照合保留。元archiveと失敗記録を保持し、正常な価格更新は継続: '+run.id);
   return result;
@@ -142,9 +145,28 @@ async function main(){
     fs.renameSync(partial,file);
   }
   if(crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex')!==expected)throw Error('Saved artifact digest mismatch');
-  if(!safe)ensureTrustedBase(ROOT,run.head_sha);
-  try{return safe?require('./safe_camp_checkpoint').restore(file,id,ROOT):require('./restore_price_artifact').restore(file,id,run.head_sha,ROOT);}
-  catch(error){return retainSourceHold(ROOT,run,artifact,error);}
+  let acquisitionBase=run.head_sha,checkoutProof=null;
+  if(!safe){
+    const proofFile=path.join(ROOT,'work/recovery-checkout-proof-'+id+'.json');
+    try{const saved=JSON.parse(fs.readFileSync(proofFile));if(saved.triggerCommit===run.head_sha&&Number(saved.runAttempt)===Number(run.run_attempt))checkoutProof=saved;}catch{}
+    if(!checkoutProof){
+      const jobs=(await(await get(base+'/runs/'+id+'/jobs')).json()).jobs||[];
+      const expected=run.name==='Data Update Health Watchdog'?'catchup':run.name==='Daily Fast Update'?'update':'refresh';
+      const job=jobs.find(j=>j.name===expected&&j.status==='completed');
+      if(!job)throw Error('Completed acquisition job required for actual checkout proof');
+      const response=await get(base+'/jobs/'+job.id+'/logs'),text=await response.text();
+      if(Buffer.byteLength(text)>10e6)throw Error('Checkout log size budget');
+      checkoutProof=require('./recovery_checkout_proof').parse(run,job,text);
+      fs.writeFileSync(proofFile,JSON.stringify(checkoutProof));
+    }
+    acquisitionBase=checkoutProof.checkoutCommit;ensureTrustedBase(ROOT,acquisitionBase);
+  }
+  try{
+    const result=safe?require('./safe_camp_checkpoint').restore(file,id,ROOT):require('./restore_price_artifact').restore(file,id,acquisitionBase,ROOT);
+    if(!safe){result.triggerCommit=run.head_sha;result.acquisitionCheckoutCommit=acquisitionBase;result.checkoutProof=checkoutProof;
+      fs.writeFileSync(path.join(ROOT,'work/recovery-applied-'+id+'.json'),JSON.stringify(result));}
+    return result;
+  }catch(error){return retainSourceHold(ROOT,{...run,acquisitionCheckoutCommit:acquisitionBase},artifact,error);}
 }
 if(require.main===module){
   if(process.argv.includes('--hold-status')){

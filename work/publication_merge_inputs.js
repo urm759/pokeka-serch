@@ -38,7 +38,7 @@ function candidates(base,a,b,context) {
 const TYPES=new Map([
   ['data/state-a-price-evidence.json',evidence],['data/operational-limit-history.json',operational],
   ['work/search-profile-targets.json',mergeProfileTargets],['work/candidate-daily-history.json',candidates],
-  ...['work/acquisition-progress-last.json','work/completion-outcomes-last.json','work/purchase-price-observation-snapshot.json'].map(f=>[f,latest])
+  ...['work/acquisition-progress-last.json','work/completion-outcomes-last.json','work/purchase-price-observation-snapshot.json','data/workflow-stage-audit.json'].map(f=>[f,latest])
 ]);
 // latest takes (a,b,base), unlike the three-way handlers above.
 function merge(file,base,a,b,context){return TYPES.get(file)===latest?latest(a,b,base):TYPES.get(file)(base,a,b,context);}

@@ -1,16 +1,32 @@
 const HOUR = 3600000;
-function stageEvidence(run,jobs=[],execution=null){
- const steps=jobs.flatMap(j=>(j.steps||[]).map(s=>({...s,jobId:j.id}))).filter(s=>s.started_at&&s.completed_at);
- const span=match=>{const selected=steps.filter(s=>match.test(s.name));return selected.length?{startedAt:selected.map(s=>s.started_at).sort()[0],endedAt:selected.map(s=>s.completed_at).sort().at(-1),conclusions:[...new Set(selected.map(s=>s.conclusion))]}:null;};
- const starts=jobs.map(j=>j.started_at).filter(Boolean).sort(),jobStartedAt=starts[0]||null;
+function stageEvidence(run,jobs=[],execution=null,now=Date.now(),jobsKnown=true){
+ // A Watch publication_check can start immediately while catchup waits for the
+ // writer lock. Its start is not the acquisition job's start.
+ const acquisitionPattern=/Refresh due purchase prices|Fill missed price intervals|deterministic delta|bounded source checkpoints|Refresh independent sources|Rebuild market demand|Audit state-A price|Rebuild catalog and shared purchase-limit/;
+ const sourceJobs=jobs.filter(j=>(j.steps||[]).some(s=>acquisitionPattern.test(s.name)));
+ const expectedJob=run.path?.endsWith('/watch-data-health.yml')?'catchup':run.path?.endsWith('/priority-price-refresh.yml')?'refresh':run.path?.endsWith('/daily-fast-update.yml')?'update':run.path?.endsWith('/safe-checkpoint-backfill.yml')?'backfill':null;
+ const selected=sourceJobs.length?sourceJobs:expectedJob?jobs.filter(j=>j.name===expectedJob):jobs.filter(j=>!['watch','publication_check'].includes(j.name));
+ const steps=selected.flatMap(j=>(j.steps||[]).map(s=>({...s,jobId:j.id}))).filter(s=>s.started_at&&s.completed_at);
+ const span=match=>{const selected=steps.filter(s=>match.test(s.name)),executed=selected.filter(s=>s.conclusion!=='skipped');return selected.length?{startedAt:executed.map(s=>s.started_at).sort()[0]||null,endedAt:executed.map(s=>s.completed_at).sort().at(-1)||null,conclusions:[...new Set(selected.map(s=>s.conclusion))]}:null;};
+ const starts=selected.map(j=>j.started_at).filter(Boolean).sort(),jobStartedAt=starts[0]||null;
+ const jobCreatedAt=selected.map(j=>j.created_at).filter(Boolean).sort()[0]||null;
  const own=String(execution?.runId)===String(run.id)?execution:null;
  const source=(own?.runs||[]).filter(r=>r.failureClass==='source-acquisition'||/^work\/(daily_fast_update|refresh_candidate_shops|run_tracked_update)\.js$/.test(r.script||''));
- return {id:run.id,event:run.event,attempt:run.run_attempt||1,createdAt:run.created_at,workflowStartedAt:run.run_started_at||null,jobStartedAt,
+ return {id:run.id,event:run.event,attempt:run.run_attempt||1,status:run.status,createdAt:run.created_at,workflowStartedAt:run.run_started_at||null,jobCreatedAt,jobStartedAt,
+  acquisitionJobNames:selected.map(j=>j.name||null),
+  beforeJobCreationMs:jobCreatedAt?Math.max(0,Date.parse(jobCreatedAt)-Date.parse(run.created_at)):null,
+  jobCreatedToStartMs:jobCreatedAt&&jobStartedAt?Math.max(0,Date.parse(jobStartedAt)-Date.parse(jobCreatedAt)):null,
+  jobsEvidence:jobsKnown?'API確認済み':'未取得・API失敗等で不明',
+  pendingWithoutJob:jobsKnown?run.status==='pending'&&selected.length===0:null,
+  pendingWithoutJobLowerBoundMs:jobsKnown&&run.status==='pending'&&selected.length===0?Math.max(0,now-Date.parse(run.created_at)):null,
   createdToJobStartMs:jobStartedAt?Math.max(0,Date.parse(jobStartedAt)-Date.parse(run.created_at)):null,
+  externalWakeup:own?.externalWakeup||null,
+  externalTimerToCreationMs:own?.externalWakeup?.valid&&Date.parse(own.externalWakeup.scheduledAt)<=Date.parse(run.created_at)?Date.parse(run.created_at)-Date.parse(own.externalWakeup.scheduledAt):null,
   acquisition:source.length?source.map(r=>({script:r.script,startedAt:r.startedAt,endedAt:r.endedAt,status:r.status,attempted:r.attempted,refreshed:r.refreshed,httpRequests:r.httpRequests})):null,
   aggregation:own?(own.runs||[]).filter(r=>r.script&&!source.includes(r)).map(r=>({script:r.script,startedAt:r.startedAt,endedAt:r.endedAt,status:r.status})):null,
-  acquisitionAndAggregationStep:span(/Refresh due purchase prices|deterministic delta|bounded source checkpoints/),validation:span(/Verify safety|fast regression|publication safety/),
-  saveAndPush:span(/Commit changed|Commit safe|Commit all|Publish validated data/),pagesPublishedAt:null,
+  acquisitionAndAggregationStep:span(acquisitionPattern),validation:span(/Verify safety|Validate catchup data|fast regression|publication safety/),
+  saveAndPush:span(/Commit changed|Commit safe|Commit all|Publish validated data|Publish changed health state/),pagesPublishedAt:null,
+  waitingBasis:'pendingでジョブ未作成はworkflow同時実行枠待ち。ジョブ作成後の待機はrunner割当等を含み、APIだけで内訳を断定しない。run_started_atを実ジョブ開始へ代用しない。',
   note:'API更新日時・Git pushはPages公開日時ではない。個別実取得数が不明の工程はnull、再利用・skipを取得成功へ加算しない。'};
 }
 function audit(runs, { now = Date.now(), intervalMs = 2 * HOUR, minute = 20, verifiedRuns=[],jobsByRun={},execution=null } = {}) {
@@ -40,12 +56,12 @@ function audit(runs, { now = Date.now(), intervalMs = 2 * HOUR, minute = 20, ver
   return {version:2,checkedAt:new Date(now).toISOString(),configuredIntervalMs:intervalMs,
     latestScheduledCreationAt:latestCreated,uncreatedTailMs:latestCreated?Math.max(0,now-Date.parse(latestCreated)):null,
     creationTailExceeded:latestCreated?now-Date.parse(latestCreated)>intervalMs:null,
-    stageEvidence:runs.map(r=>stageEvidence(r,jobsByRun[r.id]||[],execution)),
+    stageEvidence:runs.map(r=>stageEvidence(r,jobsByRun[r.id]||[],execution,now,Object.hasOwn(jobsByRun,r.id))),
     verifiedPublicationCadence:{samples:publications.length,gaps:publicationGaps,
       latestMs:publicationGaps.at(-1)?.ms??null,maximumMs:publicationGaps.length?publicationGaps.reduce((maximum,g)=>Math.max(maximum,g.ms),-Infinity):null,
       basis:'取得・検証・保存・公開照合済みの経路を含む。独立取得元の部分失敗でジョブ全体が赤い場合も、正常値の公開証拠がある実行を別集計。カード別確認間隔・継続鮮度とは別'},
     runStages:rows.map(r=>({id:r.id,url:r.html_url,status:r.status,conclusion:r.conclusion,createdAt:r.created_at,startedAt:r.run_started_at,
-      queuedMs:r.run_started_at?Math.max(0,Date.parse(r.run_started_at)-Date.parse(r.created_at)):null,
+      queuedMs:stageEvidence(r,jobsByRun[r.id]||[],execution,now,Object.hasOwn(jobsByRun,r.id)).createdToJobStartMs,
       updatedAt:r.updated_at,note:'取得・保存・公開の個別工程は実行ログ/受領証で確認。APIの最終更新を公開時刻として代用しない'})),
     observedSuccessfulIntervalMs:conservativeGap,lastSuccessfulIntervalMs:latestGap,
     observedGeneratedIntervalMs:generatedGaps.length?Math.max(...generatedGaps.slice(-12)):null,

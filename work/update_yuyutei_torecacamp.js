@@ -723,7 +723,8 @@ async function updateTorecaCamp(cards, paths) {
   const requestedTargets=read(path.join(__dirname,'search-profile-targets.json'),{});
   const criticalRequests=campCriticalIds(requestedTargets,read(path.join(__dirname,'priority-search-profiles.json'),{}).popFocusProfileIds||[]);
   const medianCompletions=require('./profile_completion_routes').medianCompletionIds(requestedTargets,'torecacamp',read(path.join(__dirname,'priority-search-profiles.json'),{}).popFocusProfileIds||[]);
-  const legacyRequested=campRequestedIds(requestedTargets,comparisonIds,alternateRequests);
+  const fixed=require('./fixed_price_cohort').ids(ROOT,'torecacamp');
+  const legacyRequested=[...new Set([...campRequestedIds(requestedTargets,comparisonIds,alternateRequests),...fixed])];
   for(const id of legacyRequested)important.add(id);
   const bulk = require('./camp_collection_batch');
   const bulkVerified = new Set();
@@ -731,6 +732,9 @@ async function updateTorecaCamp(cards, paths) {
   const bulkStart=Date.now();
   progress.collectionBatch ||= {navigation:null,routes:{},lastPages:[]};
   const bulkState=progress.collectionBatch;
+  // Retained full-page bodies establish membership only, never new prices/dates.
+  // A bad archived proof cannot stop independent known-product maintenance.
+  try{bulk.recoverPages(bulkState,catalog);}catch(error){bulkRun.failures.push({stage:'saved-page-membership',error:error.message});}
   // At most four ordinary collection responses, sharing the existing rate and
   // runtime budget. Individual sitemap discovery keeps its existing 35 slots.
   if(!stoppingReason && process.env.TORECACAMP_COLLECTION_BATCH!=='0') {
@@ -742,9 +746,8 @@ async function updateTorecaCamp(cards, paths) {
         const checkedAt=new Date().toISOString(),prior=new Map((bulkState.navigation?.routes||[]).map(r=>[r.url,r]));
         bulkState.navigation={version:2,checkedAt,routes:routes.map(r=>({...r,firstSeenAt:prior.get(r.url)?.firstSeenAt||checkedAt}))};bulkRun.requests++;
       }
-      const fixed=read(path.join(__dirname,'priority-freshness-history.json'),{}).sources?.hareruya2?.cohort||[];
       const plans=bulk.plan({routes:bulkState.navigation.routes,cards,catalog,requested:legacyRequested,critical:criticalRequests,fixed,
-        retryByUrl:{...progress.knownUrlRetries,...progress.retryByUrl},state:bulkState.routes,now:Date.now(),leadMs:proactiveLead,
+        retryByUrl:{...progress.knownUrlRetries,...progress.retryByUrl},state:bulkState.routes,membership:bulkState.pageMembership,now:Date.now(),leadMs:proactiveLead,
         due:postpass.due,signature:cardSignature,eligible:retryPolicy.eligible});
       for(const plan of plans) {
         if(Date.now()>=stopBy-Math.max(20000,runtimeLimitMs/2))break;
@@ -758,7 +761,7 @@ async function updateTorecaCamp(cards, paths) {
           if(plan.page===1 && !products.length && plan.targets)throw Error('既知対象のセット一覧が空・原票を保持して確認待ち');
           proof.productCount=products.length;
           bulkRun.products+=products.length;
-          const page={url,page:plan.page,lane:plan.lane,previousCheckedAt:before.checkedAt||null,observedAt:at,productCount:products.length,verified:0,newLinks:0,omitted:{identity:0,condition:0,hold:0,binding:0,price:0,otherProduct:0},bytes:response.metric.bytes,fetchMs:response.metric.fetchMs,payloadHash:proof.payloadHash};
+          const page={url,page:plan.page,lane:plan.lane,previousCheckedAt:before.checkedAt||null,observedAt:at,coverageKnown:plan.coverageKnown,expectedIds:plan.expectedIds,advanceCursor:plan.advanceCursor,maintenanceDeadlineAt:Number.isFinite(plan.maintenanceDeadlineAt)?new Date(plan.maintenanceDeadlineAt).toISOString():null,productCount:products.length,verified:0,fixedVerified:0,criticalVerified:0,newLinks:0,omitted:{identity:0,condition:0,hold:0,binding:0,price:0,otherProduct:0},bytes:response.metric.bytes,fetchMs:response.metric.fetchMs,payloadHash:proof.payloadHash};
           for(const product of products) {
             const detailUrl=TORECA_CAMP+'/products/'+product.handle;
             if(!retryPolicy.eligible(progress.retryByUrl[detailUrl]||progress.knownUrlRetries[detailUrl]))continue;
@@ -782,10 +785,11 @@ async function updateTorecaCamp(cards, paths) {
             byId.set(card.id,entry);knownByUrl.set(detailUrl,entry);seenProductUrls.add(detailUrl);seenProductIds.add(String(product.id));
             if(!previousEntry){linked++;page.newLinks++;bulkRun.newLinks++;}
             else if(entry.price!==previousEntry.price||entry.available!==previousEntry.available)updated++;
-            bulkVerified.add(card.id);page.verified++;
+            bulkVerified.add(card.id);page.verified++;page.fixedVerified+=Number(fixed.includes(card.id));page.criticalVerified+=Number(criticalRequests.includes(card.id));
           }
           bulkRun.pages.push(page);
-          bulkState.routes[plan.url]={checkedAt:at,firstSeenAt:before.firstSeenAt||plan.firstSeenAt||at,nextPage:products.length===250?plan.page+1:1,lastCompletedAt:products.length<250?at:before.lastCompletedAt||null,productCount:products.length,verified:page.verified};
+          bulk.rememberPage(bulkState.pageMembership,proof,products,[...byId.values()]);
+          bulkState.routes[plan.url]={...before,checkedAt:at,firstSeenAt:before.firstSeenAt||plan.firstSeenAt||at,nextPage:plan.advanceCursor?(products.length===250?plan.page+1:1):before.nextPage||1,lastCompletedAt:plan.advanceCursor&&products.length<250?at:before.lastCompletedAt||null,productCount:products.length,verified:page.verified};
           catalog=[...byId.values()];write(paths.catalog,catalog);write(paths.progress,progress);
           recordFetchMetric('torecacamp',{...response.metric,source:'torecacamp',pageKey:url,startedAt:at,endedAt:new Date().toISOString(),status:'success',stage:'public-collection',productCount:products.length,verifiedCards:page.verified});
         }catch(error){
@@ -809,18 +813,19 @@ async function updateTorecaCamp(cards, paths) {
   bulkRun.verified=bulkVerified.size;bulkRun.elapsedMs=Date.now()-bulkStart;
   bulkState.lastRun=bulkRun;
   const legacyRecords=[];
-  if(!stoppingReason)for(const previousEntry of postpass.legacyTargets(catalog,legacyRequested,{...progress.knownUrlRetries,...progress.retryByUrl},Date.now(),proactiveLead,criticalRequests,medianCompletions).slice(0,Math.floor(detailLimit/3))) {
+  if(!stoppingReason)for(const previousEntry of postpass.unreachedTargets(catalog,legacyRequested,{...progress.knownUrlRetries,...progress.retryByUrl},Date.now(),proactiveLead,criticalRequests,medianCompletions).slice(0,Math.floor(detailLimit/2))) {
     if(Date.now()>=stopBy-Math.max(15000,runtimeLimitMs/2))break;
-    const url=previousEntry.detailUrl,record={id:previousEntry.cardId,url,startedAt:new Date().toISOString(),sourceSitemap:null};
+    const url=previousEntry.detailUrl,record={id:previousEntry.cardId,url,startedAt:new Date().toISOString(),sourceSitemap:previousEntry.sourceSitemap??null,routeReason:'bulk-unreached-priority'};
     try {
       const product=(await fetchJson(url+'.js',{intervalMs:1100})).value;detailFetched++;
       if(!product?.id||typeof product.title!=='string'||!Array.isArray(product.variants))throw new Error('商品JSON形式変更・正規確認待ち');
+      if(previousEntry.productId!=null&&String(previousEntry.productId)!==String(product.id))throw new Error('商品ID不一致・確定済みURLの再照合待ち');
       const matches=(byNumber.get(campSignature(product).cardNo)||[]).filter(c=>campMatchesCard(c,{title:product.title,tags:Array.isArray(product.tags)?product.tags:[]}));
       if(matches.length!==1||matches[0].id!==previousEntry.cardId)throw new Error('仕様不一致または曖昧一致・正規確認待ち');
-      const variant=product.variants.find(campA);if(!variant)throw new Error('状態A仕様を確認できない');
+      const variants=product.variants.filter(campA);if(variants.length!==1)throw new Error('状態A仕様を一意に確認できない');const variant=variants[0];
       if(typeof variant.available!=='boolean')throw new Error('状態A在庫不明・在庫なしへ代用しない');
       const entry={...previousEntry,title:product.title,productId:String(product.id),price:campVariantPrice(variant),priceUnit:'JPY',available:variant.available===true,
-        observedAt:new Date().toISOString(),identityVerifiedAt:new Date().toISOString(),sourceSitemap:null};
+        observedAt:new Date().toISOString(),identityVerifiedAt:new Date().toISOString()};
       if(!(entry.price>0))throw new Error('実価格解析不能');
       const q=campPriceQuarantine(matches[0],entry.price);Object.assign(entry,{priceQuarantined:q.quarantined,quarantineReason:q.reason,marketPriceRatio:q.ratio});
       if(require('./quarantine_shop_identity').recordReference(ROOT,'torecacamp',entry,matches[0]))referenceUpdated++;
@@ -877,8 +882,8 @@ async function updateTorecaCamp(cards, paths) {
       const normalStart=retryOnly || retrySitemap ? 0 : progress.currentSitemapIndex === sitemapIndex ? progress.currentEntryIndex : 0;
       const prioritized=!retryOnly&&!retrySitemap;
       if(prioritized) {
-        const requested=campRequestedIds(read(path.join(__dirname,'search-profile-targets.json'),{}),comparisonIds,alternateRequests);
-        entries=postpass.prioritize(entries,normalStart,catalog.filter(r=>r.sourceSitemap<=sitemapUrls.length),[...new Set(requested)],detailLimit,progress.retryByUrl,Date.now(),proactiveLead,criticalRequests,medianCompletions);
+        const requested=[...new Set([...campRequestedIds(read(path.join(__dirname,'search-profile-targets.json'),{}),comparisonIds,alternateRequests),...fixed])];
+        entries=postpass.prioritize(entries,normalStart,catalog.filter(r=>r.sourceSitemap<=sitemapUrls.length),[...new Set(requested)],detailLimit,progress.retryByUrl,Date.now(),proactiveLead,criticalRequests,medianCompletions,{priorityBudgetRemaining:Math.max(0,Math.floor(detailLimit/2)-legacyRecords.length)});
       }
       const startingEntry=prioritized?0:normalStart;
       let retryEntryCursor = 0;

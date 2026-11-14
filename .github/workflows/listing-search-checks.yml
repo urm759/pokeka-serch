@@ -5,6 +5,37 @@ on:
       - 'app.js'
       - 'work/effective_price_cadence.js'
       - 'work/refresh_cadence.js'
+      - 'ops/external-wakeup/**'
+      - 'work/cloud_wakeup_policy.js'
+      - 'work/multi_pipeline_timing.js'
+      - 'work/shop_effect_baseline.js'
+      - 'work/ui_projection_cache.js'
+      - 'work/recovery_checkout_proof.js'
+      - 'work/external_timer_context.js'
+      - 'work/test_external_wakeup.js'
+      - 'work/test_orphan_wakeup.js'
+      - 'work/test_published_capacity_origins.js'
+      - 'work/test_post_acquisition_verification.js'
+      - 'work/fixed_price_cohort.js'
+      - 'work/camp-fixed-cohort.json'
+      - 'work/mintrade_source_capture.js'
+      - 'work/test_camp_deadline_allocation.js'
+      - 'work/test_yuyutei_out_of_stock.js'
+      - 'work/test_mintrade_source_capture.js'
+      - 'work/test_gemrate_promo_campaign.js'
+      - 'work/current_publication_check.js'
+      - 'work/scheduled_cycle_evidence.js'
+      - '.github/workflows/watch-data-health.yml'
+      - 'work/effective_price_cadence.js'
+      - 'work/coverage_capacity.js'
+      - 'work/verify_update_publication.js'
+      - 'work/test_stock_scope.js'
+      - 'work/test_multi_pipeline_timing.js'
+      - 'work/test_shop_effect_baseline.js'
+      - 'work/test_ui_projection_cache.js'
+      - 'work/test_recovery_checkout_proof.js'
+      - 'work/resolve_generated_merge.js'
+      - 'work/test_generated_merge_finalization.js'
       - 'work/test_recovery_latency.js'
       - 'work/test_unified_median_buy.js'
       - 'work/test_buy_basis_url_isolation.js'
@@ -16,6 +47,7 @@ on:
       - 'work/pc_yuyutei_maintenance.js'
       - 'work/pc_priority_watchdog.js'
       - 'work/update_shop_buybacks.js'
+      - 'work/test_buyback_error_provenance.js'
       - 'work/test_buyback_failed_response_evidence.js'
       - 'work/test_median_efficiency.js'
       - 'work/test_buyback_support.js'
@@ -82,10 +114,25 @@ jobs:
           node work/test_publication_merge_inputs.js
           node work/test_profit_outcomes.js
           node work/test_pc_freshness_bridge.js
+          node work/test_multi_pipeline_timing.js
+          node work/test_shop_effect_baseline.js
+          node work/test_ui_projection_cache.js
+          node work/test_external_wakeup.js
+          node work/test_orphan_wakeup.js
+          node work/test_published_capacity_origins.js
+          node work/test_post_acquisition_verification.js
+          node work/test_camp_deadline_allocation.js
+          node work/test_yuyutei_out_of_stock.js
+          node work/test_mintrade_source_capture.js
+          node work/test_gemrate_promo_campaign.js
+          node work/test_stock_scope.js
+          node work/test_recovery_checkout_proof.js
+          node work/test_generated_merge_finalization.js
           node work/test_gemrate_worker.js
           node work/test_saved_yuyutei_products.js
           node work/test_cadence_payload.js
           node work/test_buyback_failed_response_evidence.js
+          node work/test_buyback_error_provenance.js
           node work/test_partial_buyback_refresh.js
           node work/test_homura_public_feed.js
           node work/test_price_comparison_display.js

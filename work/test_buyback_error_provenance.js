@@ -1,0 +1,12 @@
+const assert=require('node:assert/strict'),{sourceErrorState}=require('./update_shop_buybacks');
+const permission={status:'public-page',reason:'通常公開価格表の低頻度GET。認証操作なし。郵送窓口のみ'},previous={error:permission.reason,lastSuccess:'2026-11-13T23:42:52Z',lastAttempt:'2026-11-13T23:42:52Z'};
+const repaired=sourceErrorState(null,null,previous,permission);
+assert.equal(repaired.error,null);assert.equal(repaired.acquisitionNote,permission.reason);assert.equal(repaired.metadataCorrection.previousError,permission.reason);assert.deepEqual(previous,{error:permission.reason,lastSuccess:'2026-11-13T23:42:52Z',lastAttempt:'2026-11-13T23:42:52Z'});
+assert.equal(sourceErrorState(null,{error:'HTTP 403'},previous,permission).error,'HTTP 403','real failure must precede the policy description');
+assert.equal(sourceErrorState(null,null,{...previous,error:'HTTP 403'},permission).error,'HTTP 403');
+for(const reviewStatus of ['access-review','format-review','count-drop-review'])assert.equal(sourceErrorState(null,null,{...previous,reviewStatus},permission).error,permission.reason);
+assert.equal(sourceErrorState(null,null,{}, {status:'pending',reason:'許諾確認待ち'}).error,'許諾確認待ち');
+assert.equal(sourceErrorState({coverageWarning:'番号不足行は保留'},null,previous,permission).error,'番号不足行は保留');
+assert.equal(sourceErrorState({},null,previous,permission).error,null);
+assert.equal(sourceErrorState(null,null,{},permission).error,null);
+console.log('PASS policy notes separated from errors; exact legacy metadata retained; 403/review/coverage failures and original timestamps preserved');

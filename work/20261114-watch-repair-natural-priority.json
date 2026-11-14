@@ -1,0 +1,1718 @@
+{
+  "at": "2026-11-14T07:06:19.554Z",
+  "baseline": "a005afea4d1dd582144d368803a97187ecdb95a5",
+  "runId": "43567557784",
+  "trigger": "schedule",
+  "codeChangeContributionToCandidates": 0,
+  "analysis": {
+    "before": 2597,
+    "after": 2600,
+    "gained": [
+      {
+        "id": "x-134005",
+        "before": {
+          "c": 57.1,
+          "s": "データ不足",
+          "n": 0,
+          "rr": 0,
+          "rl": 0,
+          "rd": null,
+          "ry": null,
+          "rs": "発売日不明",
+          "ru": null,
+          "rc": null,
+          "p": 1494,
+          "r": [
+            "買取表30日89店舗日",
+            "必須不足1項目・補完で分析可能に近い",
+            "素体全状態取引30日14件",
+            "PSA10取引30日14件"
+          ],
+          "m": [
+            "domesticPrice"
+          ],
+          "x": "domesticPrice",
+          "a": 1,
+          "l": "2026-11-14T00:25:51.641Z",
+          "pk": "unsupported-or-unconfirmed",
+          "p9": "aggregate",
+          "i": {
+            "domesticPrice": "取得元にデータなし",
+            "domesticTrades": "取得済み",
+            "psa10Price": "取得済み",
+            "psa10Trades": "取得済み",
+            "rawActualSales": "中止",
+            "psa10ActualSales": "中止",
+            "psa9Sales": "中止",
+            "psa9Aggregate": "取得済み",
+            "psa9Evidence": "取得済み",
+            "buybackExitEvidence": "取得済み",
+            "psaOfficial": "取得済み",
+            "shopStateA": "取得済み",
+            "buyback": "取得済み",
+            "pokedata": "中止",
+            "release": "取得待ち",
+            "identity": "取得済み"
+          }
+        },
+        "after": {
+          "c": 64.3,
+          "s": "分析可能",
+          "n": 0,
+          "rr": 0,
+          "rl": 0,
+          "rd": null,
+          "ry": null,
+          "rs": "発売日不明",
+          "ru": null,
+          "rc": null,
+          "p": 906,
+          "r": [
+            "買取表30日89店舗日",
+            "素体全状態取引30日16件",
+            "PSA10取引30日16件"
+          ],
+          "m": [],
+          "x": "release",
+          "a": 0,
+          "l": "2026-11-14T00:25:51.641Z",
+          "pk": "unsupported-or-unconfirmed",
+          "p9": "aggregate",
+          "i": {
+            "domesticPrice": "取得済み",
+            "domesticTrades": "取得済み",
+            "psa10Price": "取得済み",
+            "psa10Trades": "取得済み",
+            "rawActualSales": "中止",
+            "psa10ActualSales": "中止",
+            "psa9Sales": "中止",
+            "psa9Aggregate": "取得済み",
+            "psa9Evidence": "取得済み",
+            "buybackExitEvidence": "取得済み",
+            "psaOfficial": "取得済み",
+            "shopStateA": "取得済み",
+            "buyback": "取得済み",
+            "pokedata": "中止",
+            "release": "取得待ち",
+            "identity": "取得済み"
+          }
+        },
+        "name": "ミュウツーGX SR: 争奪戦プロモ[SM-P 363](プロモーションカード「SM-P」)"
+      },
+      {
+        "id": "x-471572",
+        "before": {
+          "c": 42.9,
+          "s": "データ不足",
+          "n": 0,
+          "rr": 0,
+          "rl": 0,
+          "rd": "2024-12-06",
+          "ry": 2024,
+          "rs": "セット発売日から補完",
+          "ru": null,
+          "rc": null,
+          "p": 672,
+          "r": [
+            "2020年以降・発売年確認済み",
+            "必須不足2項目・補完で分析可能に近い",
+            "仕入れ判断の必須項目が不足"
+          ],
+          "m": [
+            "domesticTrades",
+            "psa10Trades"
+          ],
+          "x": "domesticTrades",
+          "a": 0,
+          "l": "2026-11-14T00:25:51.641Z",
+          "pk": "unexpanded-set",
+          "p9": "estimate",
+          "i": {
+            "domesticPrice": "取得済み",
+            "domesticTrades": "定期再確認",
+            "psa10Price": "取得済み",
+            "psa10Trades": "定期再確認",
+            "rawActualSales": "中止",
+            "psa10ActualSales": "中止",
+            "psa9Sales": "中止",
+            "psa9Aggregate": "推定値",
+            "psa9Evidence": "定期再確認",
+            "buybackExitEvidence": "定期再確認",
+            "psaOfficial": "取得済み",
+            "shopStateA": "取得済み",
+            "buyback": "定期再確認",
+            "pokedata": "中止",
+            "release": "取得済み",
+            "identity": "取得済み"
+          }
+        },
+        "after": {
+          "c": 57.1,
+          "s": "分析可能",
+          "n": 0,
+          "rr": 0,
+          "rl": 0,
+          "rd": "2024-12-06",
+          "ry": 2024,
+          "rs": "セット発売日から補完",
+          "ru": null,
+          "rc": null,
+          "p": 204,
+          "r": [
+            "2020年以降・発売年確認済み"
+          ],
+          "m": [],
+          "x": "psa9Evidence",
+          "a": 0,
+          "l": "2026-11-14T00:25:51.641Z",
+          "pk": "unexpanded-set",
+          "p9": "estimate",
+          "i": {
+            "domesticPrice": "取得済み",
+            "domesticTrades": "取得済み",
+            "psa10Price": "取得済み",
+            "psa10Trades": "取得済み",
+            "rawActualSales": "中止",
+            "psa10ActualSales": "中止",
+            "psa9Sales": "中止",
+            "psa9Aggregate": "推定値",
+            "psa9Evidence": "定期再確認",
+            "buybackExitEvidence": "定期再確認",
+            "psaOfficial": "取得済み",
+            "shopStateA": "取得済み",
+            "buyback": "定期再確認",
+            "pokedata": "中止",
+            "release": "取得済み",
+            "identity": "取得済み"
+          }
+        },
+        "name": "カミッチュ :マスターボールミラー [SV8a 009/187](ハイクラスパック「テラスタルフェスex」)"
+      },
+      {
+        "id": "x-766764",
+        "before": {
+          "c": 50,
+          "s": "データ不足",
+          "n": 0,
+          "rr": 0,
+          "rl": 0,
+          "rd": null,
+          "ry": null,
+          "rs": "発売日不明",
+          "ru": null,
+          "rc": null,
+          "p": 576,
+          "r": [
+            "必須不足1項目・補完で分析可能に近い",
+            "仕入れ判断の必須項目が不足"
+          ],
+          "m": [
+            "psa10Trades"
+          ],
+          "x": "psa10Trades",
+          "a": 1,
+          "l": "2026-11-14T00:25:51.641Z",
+          "pk": "unsupported-or-unconfirmed",
+          "p9": "aggregate",
+          "i": {
+            "domesticPrice": "取得済み",
+            "domesticTrades": "取得済み",
+            "psa10Price": "取得済み",
+            "psa10Trades": "定期再確認",
+            "rawActualSales": "中止",
+            "psa10ActualSales": "中止",
+            "psa9Sales": "中止",
+            "psa9Aggregate": "取得済み",
+            "psa9Evidence": "定期再確認",
+            "buybackExitEvidence": "定期再確認",
+            "psaOfficial": "取得済み",
+            "shopStateA": "取得済み",
+            "buyback": "定期再確認",
+            "pokedata": "中止",
+            "release": "取得待ち",
+            "identity": "取得済み"
+          }
+        },
+        "after": {
+          "c": 57.1,
+          "s": "分析可能",
+          "n": 0,
+          "rr": 0,
+          "rl": 0,
+          "rd": null,
+          "ry": null,
+          "rs": "発売日不明",
+          "ru": null,
+          "rc": null,
+          "p": 100,
+          "r": [
+            "通常補完キュー"
+          ],
+          "m": [],
+          "x": "psa9Evidence",
+          "a": 0,
+          "l": "2026-11-14T00:25:51.641Z",
+          "pk": "unsupported-or-unconfirmed",
+          "p9": "aggregate",
+          "i": {
+            "domesticPrice": "取得済み",
+            "domesticTrades": "取得済み",
+            "psa10Price": "取得済み",
+            "psa10Trades": "取得済み",
+            "rawActualSales": "中止",
+            "psa10ActualSales": "中止",
+            "psa9Sales": "中止",
+            "psa9Aggregate": "取得済み",
+            "psa9Evidence": "定期再確認",
+            "buybackExitEvidence": "定期再確認",
+            "psaOfficial": "取得済み",
+            "shopStateA": "取得済み",
+            "buyback": "定期再確認",
+            "pokedata": "中止",
+            "release": "取得待ち",
+            "identity": "取得済み"
+          }
+        },
+        "name": "イーブイ P [SV-P 198](プロモーションカード「ポケモンカードゲーム教室 in ポケモンカードストア」)"
+      },
+      {
+        "id": "x-110928",
+        "before": {
+          "c": 35.7,
+          "s": "データ不足",
+          "n": 0,
+          "rr": 0,
+          "rl": 0,
+          "rd": null,
+          "ry": null,
+          "rs": "発売日不明",
+          "ru": null,
+          "rc": null,
+          "p": 579,
+          "r": [
+            "必須不足2項目・補完で分析可能に近い",
+            "仕入れ判断の必須項目が不足"
+          ],
+          "m": [
+            "domesticTrades",
+            "psa10Trades"
+          ],
+          "x": "domesticTrades",
+          "a": 0,
+          "l": "2026-11-14T00:25:51.641Z",
+          "pk": "unsupported-or-unconfirmed",
+          "p9": "estimate",
+          "i": {
+            "domesticPrice": "取得済み",
+            "domesticTrades": "定期再確認",
+            "psa10Price": "取得済み",
+            "psa10Trades": "定期再確認",
+            "rawActualSales": "中止",
+            "psa10ActualSales": "中止",
+            "psa9Sales": "中止",
+            "psa9Aggregate": "推定値",
+            "psa9Evidence": "定期再確認",
+            "buybackExitEvidence": "定期再確認",
+            "psaOfficial": "取得済み",
+            "shopStateA": "取得済み",
+            "buyback": "定期再確認",
+            "pokedata": "中止",
+            "release": "取得待ち",
+            "identity": "取得済み"
+          }
+        },
+        "after": {
+          "c": 50,
+          "s": "分析可能",
+          "n": 0,
+          "rr": 0,
+          "rl": 0,
+          "rd": null,
+          "ry": null,
+          "rs": "発売日不明",
+          "ru": null,
+          "rc": null,
+          "p": 99,
+          "r": [
+            "通常補完キュー"
+          ],
+          "m": [],
+          "x": "psa9Evidence",
+          "a": 0,
+          "l": "2026-11-14T00:25:51.641Z",
+          "pk": "unsupported-or-unconfirmed",
+          "p9": "estimate",
+          "i": {
+            "domesticPrice": "取得済み",
+            "domesticTrades": "取得済み",
+            "psa10Price": "取得済み",
+            "psa10Trades": "取得済み",
+            "rawActualSales": "中止",
+            "psa10ActualSales": "中止",
+            "psa9Sales": "中止",
+            "psa9Aggregate": "推定値",
+            "psa9Evidence": "定期再確認",
+            "buybackExitEvidence": "定期再確認",
+            "psaOfficial": "取得済み",
+            "shopStateA": "取得済み",
+            "buyback": "定期再確認",
+            "pokedata": "中止",
+            "release": "取得待ち",
+            "identity": "取得済み"
+          }
+        },
+        "name": "ウインディ: プロモ [SV-P 003](プロモーションカード「SV-P」)"
+      },
+      {
+        "id": "x-137059",
+        "before": {
+          "c": 50,
+          "s": "データ不足",
+          "n": 0,
+          "rr": 0,
+          "rl": 0,
+          "rd": "2022-06-17",
+          "ry": 2022,
+          "rs": "セット発売日から補完",
+          "ru": null,
+          "rc": null,
+          "p": 675,
+          "r": [
+            "2020年以降・発売年確認済み",
+            "必須不足1項目・補完で分析可能に近い",
+            "仕入れ判断の必須項目が不足"
+          ],
+          "m": [
+            "psa10Trades"
+          ],
+          "x": "psa10Trades",
+          "a": 1,
+          "l": "2026-11-14T00:25:51.641Z",
+          "pk": "unexpanded-set",
+          "p9": "estimate",
+          "i": {
+            "domesticPrice": "取得済み",
+            "domesticTrades": "取得済み",
+            "psa10Price": "取得済み",
+            "psa10Trades": "定期再確認",
+            "rawActualSales": "中止",
+            "psa10ActualSales": "中止",
+            "psa9Sales": "中止",
+            "psa9Aggregate": "推定値",
+            "psa9Evidence": "定期再確認",
+            "buybackExitEvidence": "定期再確認",
+            "psaOfficial": "取得済み",
+            "shopStateA": "取得済み",
+            "buyback": "定期再確認",
+            "pokedata": "中止",
+            "release": "取得済み",
+            "identity": "取得済み"
+          }
+        },
+        "after": {
+          "c": 57.1,
+          "s": "分析可能",
+          "n": 0,
+          "rr": 0,
+          "rl": 0,
+          "rd": "2022-06-17",
+          "ry": 2022,
+          "rs": "セット発売日から補完",
+          "ru": null,
+          "rc": null,
+          "p": 199,
+          "r": [
+            "2020年以降・発売年確認済み"
+          ],
+          "m": [],
+          "x": "psa9Evidence",
+          "a": 0,
+          "l": "2026-11-14T00:25:51.641Z",
+          "pk": "unexpanded-set",
+          "p9": "estimate",
+          "i": {
+            "domesticPrice": "取得済み",
+            "domesticTrades": "取得済み",
+            "psa10Price": "取得済み",
+            "psa10Trades": "取得済み",
+            "rawActualSales": "中止",
+            "psa10ActualSales": "中止",
+            "psa9Sales": "中止",
+            "psa9Aggregate": "推定値",
+            "psa9Evidence": "定期再確認",
+            "buybackExitEvidence": "定期再確認",
+            "psaOfficial": "取得済み",
+            "shopStateA": "取得済み",
+            "buyback": "定期再確認",
+            "pokedata": "中止",
+            "release": "取得済み",
+            "identity": "取得済み"
+          }
+        },
+        "name": "ヒトカゲ C[s10b 008/071](強化拡張パック「Pokemon GO」)"
+      }
+    ],
+    "lost": [
+      {
+        "id": "pk-2314",
+        "before": {
+          "c": 57.1,
+          "s": "分析可能",
+          "n": 0,
+          "rr": 0,
+          "rl": 0,
+          "rd": "2018-11-02",
+          "ry": 2018,
+          "rs": "セット発売日から補完",
+          "ru": null,
+          "rc": null,
+          "p": 99,
+          "r": [
+            "通常補完キュー"
+          ],
+          "m": [],
+          "x": "psa9Evidence",
+          "a": 0,
+          "l": "2026-11-14T00:25:51.641Z",
+          "pk": "unexpanded-set",
+          "p9": "estimate",
+          "i": {
+            "domesticPrice": "取得済み",
+            "domesticTrades": "取得済み",
+            "psa10Price": "取得済み",
+            "psa10Trades": "取得済み",
+            "rawActualSales": "中止",
+            "psa10ActualSales": "中止",
+            "psa9Sales": "中止",
+            "psa9Aggregate": "推定値",
+            "psa9Evidence": "定期再確認",
+            "buybackExitEvidence": "定期再確認",
+            "psaOfficial": "取得済み",
+            "shopStateA": "取得済み",
+            "buyback": "定期再確認",
+            "pokedata": "中止",
+            "release": "取得済み",
+            "identity": "取得済み"
+          }
+        },
+        "after": {
+          "c": 50,
+          "s": "データ不足",
+          "n": 0,
+          "rr": 0,
+          "rl": 0,
+          "rd": "2018-11-02",
+          "ry": 2018,
+          "rs": "セット発売日から補完",
+          "ru": null,
+          "rc": null,
+          "p": 579,
+          "r": [
+            "必須不足1項目・補完で分析可能に近い",
+            "状態A価格対立・成約根拠の確認待ち",
+            "仕入れ判断の必須項目が不足"
+          ],
+          "m": [
+            "domesticPrice"
+          ],
+          "x": "domesticPrice",
+          "a": 1,
+          "l": "2026-11-14T00:25:51.641Z",
+          "pk": "unexpanded-set",
+          "p9": "missing",
+          "i": {
+            "domesticPrice": "再試行待ち",
+            "domesticTrades": "取得済み",
+            "psa10Price": "取得済み",
+            "psa10Trades": "取得済み",
+            "rawActualSales": "中止",
+            "psa10ActualSales": "中止",
+            "psa9Sales": "中止",
+            "psa9Aggregate": "取得待ち",
+            "psa9Evidence": "定期再確認",
+            "buybackExitEvidence": "定期再確認",
+            "psaOfficial": "取得済み",
+            "shopStateA": "取得済み",
+            "buyback": "定期再確認",
+            "pokedata": "中止",
+            "release": "取得済み",
+            "identity": "取得済み"
+          }
+        },
+        "name": "ツンデツンデGX RR[SM8b 088/150](ハイクラスパック「GXウルトラシャイニー」)"
+      },
+      {
+        "id": "pk-4369",
+        "before": {
+          "c": 64.3,
+          "s": "分析可能",
+          "n": 0,
+          "rr": 0,
+          "rl": 0,
+          "rd": "2019-04-26",
+          "ry": 2019,
+          "rs": "セット発売日から補完",
+          "ru": null,
+          "rc": null,
+          "p": 101,
+          "r": [
+            "通常補完キュー"
+          ],
+          "m": [],
+          "x": "buybackExitEvidence",
+          "a": 0,
+          "l": "2026-11-14T00:25:51.641Z",
+          "pk": "unexpanded-set",
+          "p9": "aggregate",
+          "i": {
+            "domesticPrice": "取得済み",
+            "domesticTrades": "取得済み",
+            "psa10Price": "取得済み",
+            "psa10Trades": "取得済み",
+            "rawActualSales": "中止",
+            "psa10ActualSales": "中止",
+            "psa9Sales": "中止",
+            "psa9Aggregate": "取得済み",
+            "psa9Evidence": "取得済み",
+            "buybackExitEvidence": "定期再確認",
+            "psaOfficial": "取得済み",
+            "shopStateA": "取得済み",
+            "buyback": "定期再確認",
+            "pokedata": "中止",
+            "release": "取得済み",
+            "identity": "取得済み"
+          }
+        },
+        "after": {
+          "c": 57.1,
+          "s": "データ不足",
+          "n": 0,
+          "rr": 0,
+          "rl": 0,
+          "rd": "2019-04-26",
+          "ry": 2019,
+          "rs": "セット発売日から補完",
+          "ru": null,
+          "rc": null,
+          "p": 581,
+          "r": [
+            "必須不足1項目・補完で分析可能に近い",
+            "状態A価格対立・成約根拠の確認待ち",
+            "仕入れ判断の必須項目が不足"
+          ],
+          "m": [
+            "domesticPrice"
+          ],
+          "x": "domesticPrice",
+          "a": 1,
+          "l": "2026-11-14T00:25:51.641Z",
+          "pk": "unexpanded-set",
+          "p9": "aggregate",
+          "i": {
+            "domesticPrice": "再試行待ち",
+            "domesticTrades": "取得済み",
+            "psa10Price": "取得済み",
+            "psa10Trades": "取得済み",
+            "rawActualSales": "中止",
+            "psa10ActualSales": "中止",
+            "psa9Sales": "中止",
+            "psa9Aggregate": "取得済み",
+            "psa9Evidence": "取得済み",
+            "buybackExitEvidence": "定期再確認",
+            "psaOfficial": "取得済み",
+            "shopStateA": "取得済み",
+            "buyback": "定期再確認",
+            "pokedata": "中止",
+            "release": "取得済み",
+            "identity": "取得済み"
+          }
+        },
+        "name": "ムサシとコジロウ R [SM10b 048/054](強化拡張パック「スカイレジェンド」)"
+      }
+    ]
+  },
+  "capacity": {
+    "hareruya2": {
+      "before": {
+        "targets": 192,
+        "targetHours": 6,
+        "adoptionHours": 48,
+        "requiredConfirmationsPerDay": 768,
+        "requiredToAvoidAdoptionExpiryPerDay": 96,
+        "capacityWith25PctHeadroom": 960,
+        "verifiedCohort24h": 684,
+        "verifiedCohort7d": 1758,
+        "verifiedCohortDaily7d": 251.14285714285714,
+        "verifiedDistinctCards24h": 183,
+        "verifiedDistinctCards7d": 183,
+        "verifiedCohort24hByOrigin": {
+          "verified-natural-schedule": 183,
+          "verified-non-scheduled-publication": 161,
+          "legacy-confirmed-unclassified": 340
+        },
+        "verifiedCohort7dByOrigin": {
+          "verified-natural-schedule": 183,
+          "verified-non-scheduled-publication": 161,
+          "legacy-confirmed-unclassified": 1414
+        },
+        "originNote": "実際に公開照合した更新能力。GitHubの自然定期とworkflow_dispatch等を分離。外部Cronの起源はprovider証跡が必要。旧履歴の未分類を自然定期へ推定しない。同じID/元確認日時は最初の証拠1件だけ。",
+        "actualConfirmations24h": null,
+        "measurementStatus": "partial-confirmed-lower-bound",
+        "measurementNote": "確認済み受領証と原票回収分だけ。未計測の取得が残るため、実際の全確認数は未確定。0件と断定せず、要約の異なる確認カード数とも別。",
+        "coverageOfDailyRequirement": 0.890625,
+        "targetExceeded": 164,
+        "adoptionExpired": 2,
+        "confirmationTimeUnknown": 7,
+        "latestObservationCards24h": 183,
+        "latestObservationCards7d": 183,
+        "latestObservationNote": "公開用の現行要約に残る個別実確認日時による異なるカード数。同日の反復確認回数ではなく下限。固定群receiptの全取得元能力への外挿、ファイル生成日時による補完はしない。",
+        "intervals": {
+          "samples": 17132,
+          "medianMs": 23847093,
+          "p90Ms": 47553371,
+          "p95Ms": 63361117,
+          "maxMs": 692963545
+        },
+        "confirmationToPublicationStep": {
+          "samples": 9923,
+          "medianMs": 643512,
+          "p90Ms": 830499,
+          "p95Ms": 872814,
+          "maxMs": 1000528
+        },
+        "sampleNote": "実取得・公開照合済みreceipt中の対象カード。個別実確認日時の前進を重複除外。取得元全体の実績能力とは異なる下限値。未観測間隔を補完しない。"
+      },
+      "after": {
+        "targets": 192,
+        "targetHours": 6,
+        "adoptionHours": 48,
+        "requiredConfirmationsPerDay": 768,
+        "requiredToAvoidAdoptionExpiryPerDay": 96,
+        "capacityWith25PctHeadroom": 960,
+        "verifiedCohort24h": 524,
+        "verifiedCohort7d": 1758,
+        "verifiedCohortDaily7d": 251.14285714285714,
+        "verifiedDistinctCards24h": 183,
+        "verifiedDistinctCards7d": 183,
+        "verifiedCohort24hByOrigin": {
+          "verified-natural-schedule": 183,
+          "verified-non-scheduled-publication": 161,
+          "legacy-confirmed-unclassified": 180
+        },
+        "verifiedCohort7dByOrigin": {
+          "verified-natural-schedule": 183,
+          "verified-non-scheduled-publication": 161,
+          "legacy-confirmed-unclassified": 1414
+        },
+        "originNote": "実際に公開照合した更新能力。GitHubの自然定期とworkflow_dispatch等を分離。外部Cronの起源はprovider証跡が必要。旧履歴の未分類を自然定期へ推定しない。同じID/元確認日時は最初の証拠1件だけ。",
+        "actualConfirmations24h": null,
+        "measurementStatus": "partial-confirmed-lower-bound",
+        "measurementNote": "確認済み受領証と原票回収分だけ。未計測の取得が残るため、実際の全確認数は未確定。0件と断定せず、要約の異なる確認カード数とも別。",
+        "coverageOfDailyRequirement": 0.6822916666666666,
+        "targetExceeded": 31,
+        "adoptionExpired": 2,
+        "confirmationTimeUnknown": 7,
+        "latestObservationCards24h": 183,
+        "latestObservationCards7d": 183,
+        "latestObservationNote": "公開用の現行要約に残る個別実確認日時による異なるカード数。同日の反復確認回数ではなく下限。固定群receiptの全取得元能力への外挿、ファイル生成日時による補完はしない。",
+        "intervals": {
+          "samples": 17132,
+          "medianMs": 23847093,
+          "p90Ms": 47553371,
+          "p95Ms": 63361117,
+          "maxMs": 692963545
+        },
+        "confirmationToPublicationStep": {
+          "samples": 9923,
+          "medianMs": 643512,
+          "p90Ms": 830499,
+          "p95Ms": 872814,
+          "maxMs": 1000528
+        },
+        "sampleNote": "実取得・公開照合済みreceipt中の対象カード。個別実確認日時の前進を重複除外。取得元全体の実績能力とは異なる下限値。未観測間隔を補完しない。"
+      }
+    },
+    "torecacamp": {
+      "before": {
+        "targets": 144,
+        "targetHours": 6,
+        "adoptionHours": 48,
+        "requiredConfirmationsPerDay": 576,
+        "requiredToAvoidAdoptionExpiryPerDay": 72,
+        "capacityWith25PctHeadroom": 720,
+        "verifiedCohort24h": 141,
+        "verifiedCohort7d": 264,
+        "verifiedCohortDaily7d": 37.714285714285715,
+        "verifiedDistinctCards24h": 116,
+        "verifiedDistinctCards7d": 119,
+        "verifiedCohort24hByOrigin": {
+          "verified-natural-schedule": 59,
+          "verified-non-scheduled-publication": 60,
+          "legacy-confirmed-unclassified": 22
+        },
+        "verifiedCohort7dByOrigin": {
+          "verified-natural-schedule": 59,
+          "verified-non-scheduled-publication": 60,
+          "legacy-confirmed-unclassified": 145
+        },
+        "originNote": "実際に公開照合した更新能力。GitHubの自然定期とworkflow_dispatch等を分離。外部Cronの起源はprovider証跡が必要。旧履歴の未分類を自然定期へ推定しない。同じID/元確認日時は最初の証拠1件だけ。",
+        "actualConfirmations24h": null,
+        "measurementStatus": "partial-confirmed-lower-bound",
+        "measurementNote": "確認済み受領証と原票回収分だけ。未計測の取得が残るため、実際の全確認数は未確定。0件と断定せず、要約の異なる確認カード数とも別。",
+        "coverageOfDailyRequirement": 0.24479166666666666,
+        "targetExceeded": 144,
+        "adoptionExpired": 4,
+        "confirmationTimeUnknown": 0,
+        "latestObservationCards24h": 140,
+        "latestObservationCards7d": 142,
+        "latestObservationNote": "公開用の現行要約に残る個別実確認日時による異なるカード数。同日の反復確認回数ではなく下限。固定群receiptの全取得元能力への外挿、ファイル生成日時による補完はしない。",
+        "intervals": {
+          "samples": 869,
+          "medianMs": 178854891,
+          "p90Ms": 1287429138,
+          "p95Ms": 1300697581,
+          "maxMs": 3283395260
+        },
+        "confirmationToPublicationStep": {
+          "samples": 594,
+          "medianMs": 638580,
+          "p90Ms": 1122128,
+          "p95Ms": 1261945,
+          "maxMs": 1349588
+        },
+        "sampleNote": "実取得・公開照合済みreceipt中の対象カード。個別実確認日時の前進を重複除外。取得元全体の実績能力とは異なる下限値。未観測間隔を補完しない。"
+      },
+      "after": {
+        "targets": 144,
+        "targetHours": 6,
+        "adoptionHours": 48,
+        "requiredConfirmationsPerDay": 576,
+        "requiredToAvoidAdoptionExpiryPerDay": 72,
+        "capacityWith25PctHeadroom": 720,
+        "verifiedCohort24h": 141,
+        "verifiedCohort7d": 264,
+        "verifiedCohortDaily7d": 37.714285714285715,
+        "verifiedDistinctCards24h": 116,
+        "verifiedDistinctCards7d": 119,
+        "verifiedCohort24hByOrigin": {
+          "verified-natural-schedule": 59,
+          "verified-non-scheduled-publication": 60,
+          "legacy-confirmed-unclassified": 22
+        },
+        "verifiedCohort7dByOrigin": {
+          "verified-natural-schedule": 59,
+          "verified-non-scheduled-publication": 60,
+          "legacy-confirmed-unclassified": 145
+        },
+        "originNote": "実際に公開照合した更新能力。GitHubの自然定期とworkflow_dispatch等を分離。外部Cronの起源はprovider証跡が必要。旧履歴の未分類を自然定期へ推定しない。同じID/元確認日時は最初の証拠1件だけ。",
+        "actualConfirmations24h": null,
+        "measurementStatus": "partial-confirmed-lower-bound",
+        "measurementNote": "確認済み受領証と原票回収分だけ。未計測の取得が残るため、実際の全確認数は未確定。0件と断定せず、要約の異なる確認カード数とも別。",
+        "coverageOfDailyRequirement": 0.24479166666666666,
+        "targetExceeded": 121,
+        "adoptionExpired": 3,
+        "confirmationTimeUnknown": 0,
+        "latestObservationCards24h": 141,
+        "latestObservationCards7d": 143,
+        "latestObservationNote": "公開用の現行要約に残る個別実確認日時による異なるカード数。同日の反復確認回数ではなく下限。固定群receiptの全取得元能力への外挿、ファイル生成日時による補完はしない。",
+        "intervals": {
+          "samples": 869,
+          "medianMs": 178854891,
+          "p90Ms": 1287429138,
+          "p95Ms": 1300697581,
+          "maxMs": 3283395260
+        },
+        "confirmationToPublicationStep": {
+          "samples": 594,
+          "medianMs": 638580,
+          "p90Ms": 1122128,
+          "p95Ms": 1261945,
+          "maxMs": 1349588
+        },
+        "sampleNote": "実取得・公開照合済みreceipt中の対象カード。個別実確認日時の前進を重複除外。取得元全体の実績能力とは異なる下限値。未観測間隔を補完しない。"
+      }
+    }
+  },
+  "coverage": {
+    "scope": "既知取得元の保存済みカード集合。全ポケカの網羅率ではない。",
+    "sourceCards": 13017,
+    "currentSourceResponse": 12951,
+    "retainedSourceCards": 66,
+    "siteCards": 13028,
+    "sourceListed": 13017,
+    "listingPct": 100,
+    "supplements": 11,
+    "structural": 2600,
+    "structuralPct": 19.95701565858152,
+    "goalPct": 95,
+    "maintenanceFloorPct": 90,
+    "goalCount": 12377,
+    "maintenanceFloorCount": 11726,
+    "additionalToGoal": 9777,
+    "freshAllRequiredConfirmed": 0,
+    "freshnessUnverified": 0,
+    "popFreshnessBlocked": 2600,
+    "freshnessNote": "必須POPの実確認36時間期限を満たさないものは鮮度込み分析可能に数えない。他の必須入力の鮮度根拠まで揃わない場合は未確定。構造的分析可能の定義・検索・GOは変更しない。",
+    "missingRequired": {
+      "psaOfficial": 6695,
+      "domesticPrice": 3933,
+      "psa10Trades": 8255,
+      "psa10Price": 4638,
+      "domesticTrades": 7460,
+      "identity": 8
+    },
+    "unknownYear": 5794,
+    "unknownRarity": 5347,
+    "at": "2026-11-14T06:54:26.812Z",
+    "completionRoutes": {
+      "pendingCards": 10428,
+      "automaticPathsOnly": 0,
+      "savedReviewOnly": 129,
+      "blockedCards": 10428,
+      "combinations": {
+        "permission-wait": 1341,
+        "saved-rematch-review": 129,
+        "source-evidence-unavailable": 35,
+        "permission-wait + source-evidence-unavailable": 13,
+        "source-price-missing": 322,
+        "permission-wait + price-conflict-review": 8,
+        "price-conflict-review": 91,
+        "period-not-provided + permission-wait": 1325,
+        "permission-wait + source-price-missing": 206,
+        "period-not-provided + permission-wait + source-price-missing": 2823,
+        "saved-rematch-review + source-price-missing": 19,
+        "price-conflict-review + saved-rematch-review": 6,
+        "period-not-provided": 812,
+        "period-not-provided + saved-rematch-review": 49,
+        "period-not-provided + source-price-missing": 2033,
+        "permission-wait + source-card-absent": 46,
+        "saved-rematch-review + source-evidence-unavailable": 1,
+        "period-not-provided + permission-wait + price-conflict-review": 29,
+        "permission-wait + unimplemented-or-review": 2,
+        "period-not-provided + price-conflict-review": 109,
+        "period-not-provided + source-evidence-unavailable": 5,
+        "permission-wait + source-card-absent + source-price-missing": 110,
+        "identity-review + permission-wait + unimplemented-or-review": 3,
+        "period-not-provided + price-conflict-review + source-price-missing": 270,
+        "period-not-provided + permission-wait + price-conflict-review + source-price-missing": 108,
+        "period-not-provided + permission-wait + source-evidence-unavailable": 4,
+        "period-not-provided + saved-rematch-review + source-price-missing": 407,
+        "source-card-absent": 7,
+        "source-card-absent + source-price-missing": 43,
+        "identity-review + permission-wait + source-price-missing + unimplemented-or-review": 3,
+        "period-not-provided + price-conflict-review + saved-rematch-review + source-price-missing": 32,
+        "permission-wait + price-conflict-review + source-card-absent": 2,
+        "price-conflict-review + saved-rematch-review + source-card-absent + source-price-missing": 2,
+        "price-conflict-review + source-card-absent + source-price-missing": 6,
+        "period-not-provided + price-conflict-review + saved-rematch-review": 1,
+        "price-conflict-review + saved-rematch-review + source-card-absent": 1,
+        "permission-wait + price-conflict-review + source-card-absent + source-price-missing": 5,
+        "saved-rematch-review + source-card-absent + source-price-missing": 20
+      },
+      "blockedCardsByReason": {
+        "permission-wait": 6028,
+        "saved-rematch-review": 667,
+        "source-evidence-unavailable": 58,
+        "source-price-missing": 6409,
+        "price-conflict-review": 670,
+        "period-not-provided": 8007,
+        "source-card-absent": 242,
+        "unimplemented-or-review": 8,
+        "identity-review": 6
+      },
+      "target90Cards": 11726,
+      "conditionalCurrentRouteTotal": 2600,
+      "conditionalCurrentRoutePct": 19.95701565858152,
+      "targetShortfallAfterConditionalCompletion": 9126,
+      "note": "カード単位・組合せは重複なし。理由別は重複あり。現行経路上限は自動経路が全て有効値を返した場合の条件付きで、取得成功/終了日を保証しない。保存原票の再照合保留を解消済み・許諾待ちへ一括変換しない。",
+      "target95Cards": 12377,
+      "shortfallTo95AfterCurrentRoutes": 9777,
+      "automaticCandidates": [],
+      "routes": {
+        "psaOfficial:permission-wait": {
+          "nextAction": "書面許諾・正規提供条件の確認。ほかの取得元の補完は継続",
+          "resumeCondition": "自動取得と公開利用について、適用範囲を確認できる書面許諾・正規提供条件を保存して再確認。ログイン成功だけでは解除しない",
+          "cards": 6028
+        },
+        "psaOfficial:saved-rematch-review": {
+          "nextAction": "保存原票の名称・番号・セット・言語・完全仕様を再照合。共通照合更新時に通信なしで再評価",
+          "resumeCondition": "同一仕様と名称対応を一意に証明。根拠不足は保留し、新規取得許諾待ちと分離",
+          "cards": 667
+        },
+        "toreca:source-evidence-unavailable": {
+          "nextAction": "保存原票の価格区分・個別日時・採否を確認。通常一括差分で根拠の変更を検知し、同じ価格の反復取得を補完可能と数えない",
+          "resumeCondition": "同一仕様の有効な価格根拠、または対立の原因が確定。参考価格の自動採用・別店舗価格への置換なし",
+          "cards": 58
+        },
+        "toreca:source-price-missing": {
+          "nextAction": "通常一括差分で有効価格の提供開始を検知。店舗の購入価格取得は別工程で継続し、参考相場へ黙って置換しない",
+          "resumeCondition": "同一仕様の有効価格が正規原票へ提供されること、または分析定義を満たす正規の別経路確立",
+          "cards": 6409
+        },
+        "toreca:price-conflict-review": {
+          "nextAction": "保存原票の価格区分・個別日時・採否を確認。通常一括差分で根拠の変更を検知し、同じ価格の反復取得を補完可能と数えない",
+          "resumeCondition": "同一仕様の有効な価格根拠、または対立の原因が確定。参考価格の自動採用・別店舗価格への置換なし",
+          "cards": 670
+        },
+        "toreca:period-not-provided": {
+          "nextAction": "カードIDまたは期間項目が現原票に未提供。通常の一括差分で提供開始を確認し、専用の個別反復取得はしない",
+          "resumeCondition": "正規原票に対象期間の件数が提供されること",
+          "cards": 8007
+        },
+        "toreca:source-card-absent": {
+          "nextAction": "カードIDまたは期間項目が現原票に未提供。通常の一括差分で提供開始を確認し、専用の個別反復取得はしない",
+          "resumeCondition": "正規原票に対象期間の件数が提供されること",
+          "cards": 242
+        },
+        "manual:unimplemented-or-review": {
+          "nextAction": "既存残件台帳の担当経路を確認",
+          "resumeCondition": "取得経路・仕様根拠の確定",
+          "cards": 8
+        },
+        "toreca:identity-review": {
+          "nextAction": "正規一括差分の期間件数・同一仕様を再確認",
+          "resumeCondition": "仕様一致・対象期間と取得日時が確認できる正常応答",
+          "cards": 6
+        }
+      }
+    }
+  },
+  "acquisition": {
+    "generatedAt": "2026-11-14T06:51:18.186Z",
+    "baselineAt": "2026-11-14T06:42:22.211Z",
+    "fixedCohort": 13028,
+    "purchasableBefore": 4247,
+    "purchasableAfter": 4278,
+    "freshnessRecovered": 36,
+    "freshnessReconfirmed": 172,
+    "lost": 5,
+    "analyzedBefore": 2597,
+    "analyzedAfter": 2600,
+    "analyzableNet": 3,
+    "newAnalyzable": 5,
+    "lostAnalyzable": 2,
+    "rows": [
+      {
+        "id": "pk-3371",
+        "before": {
+          "analyzable": true,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": true,
+          "status": "available",
+          "price": 7980,
+          "source": "トレカキャンプ状態A",
+          "at": "2026-11-14T06:50:16.079Z"
+        }
+      },
+      {
+        "id": "pk-2496",
+        "before": {
+          "analyzable": true,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": true,
+          "status": "available",
+          "price": 1780,
+          "source": "トレカキャンプ状態A",
+          "at": "2026-11-14T06:50:15.032Z"
+        }
+      },
+      {
+        "id": "pk-2314",
+        "before": {
+          "analyzable": true,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 180,
+          "source": "トレカキャンプ状態A",
+          "at": "2026-11-14T06:50:15.032Z"
+        }
+      },
+      {
+        "id": "pk-3390",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 480,
+          "source": "トレカキャンプ状態A",
+          "at": "2026-11-14T06:50:16.079Z"
+        }
+      },
+      {
+        "id": "pk-5798",
+        "before": {
+          "analyzable": false,
+          "status": "out-of-stock",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 180,
+          "source": "トレカキャンプ状態A",
+          "at": "2026-11-14T06:50:17.253Z"
+        }
+      },
+      {
+        "id": "x-334614",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 480,
+          "source": "トレカキャンプ状態A",
+          "at": "2026-11-14T06:50:49.002Z"
+        }
+      },
+      {
+        "id": "x-397831",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 280,
+          "source": "トレカキャンプ状態A",
+          "at": "2026-11-14T06:50:15.032Z"
+        }
+      },
+      {
+        "id": "x-413448",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 3980,
+          "source": "トレカキャンプ状態A",
+          "at": "2026-11-14T06:50:13.972Z"
+        }
+      },
+      {
+        "id": "x-397628",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 180,
+          "source": "トレカキャンプ状態A",
+          "at": "2026-11-14T06:50:15.032Z"
+        }
+      },
+      {
+        "id": "x-397802",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 180,
+          "source": "トレカキャンプ状態A",
+          "at": "2026-11-14T06:50:15.032Z"
+        }
+      },
+      {
+        "id": "x-397821",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 180,
+          "source": "トレカキャンプ状態A",
+          "at": "2026-11-14T06:50:15.032Z"
+        }
+      },
+      {
+        "id": "x-334596",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 100,
+          "source": "トレカキャンプ状態A",
+          "at": "2026-11-14T06:50:44.605Z"
+        }
+      },
+      {
+        "id": "x-292580",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 50,
+          "source": "晴れる屋2状態A",
+          "at": "2026-11-14T06:48:55.153Z"
+        }
+      },
+      {
+        "id": "x-290899",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 200,
+          "source": "晴れる屋2状態A",
+          "at": "2026-11-14T06:48:45.528Z"
+        }
+      },
+      {
+        "id": "x-334340",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 100,
+          "source": "晴れる屋2状態A",
+          "at": "2026-11-14T06:50:07.189Z"
+        }
+      },
+      {
+        "id": "x-397816",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 480,
+          "source": "トレカキャンプ状態A",
+          "at": "2026-11-14T06:50:15.032Z"
+        }
+      },
+      {
+        "id": "x-147520",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 50,
+          "source": "晴れる屋2状態A",
+          "at": "2026-11-14T06:45:32.248Z"
+        }
+      },
+      {
+        "id": "x-285658",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 30,
+          "source": "晴れる屋2状態A",
+          "at": "2026-11-14T06:48:08.338Z"
+        }
+      },
+      {
+        "id": "pk-2279",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 280,
+          "source": "トレカキャンプ状態A",
+          "at": "2026-11-14T06:50:15.032Z"
+        }
+      },
+      {
+        "id": "x-397629",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 100,
+          "source": "トレカキャンプ状態A",
+          "at": "2026-11-14T06:50:15.032Z"
+        }
+      },
+      {
+        "id": "x-141747",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 80,
+          "source": "晴れる屋2状態A",
+          "at": "2026-11-14T06:44:39.484Z"
+        }
+      },
+      {
+        "id": "pk-6014",
+        "before": {
+          "analyzable": false,
+          "status": "out-of-stock",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 580,
+          "source": "トレカキャンプ状態A",
+          "at": "2026-11-14T06:50:17.253Z"
+        }
+      },
+      {
+        "id": "x-291985",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 50,
+          "source": "晴れる屋2状態A",
+          "at": "2026-11-14T06:48:50.320Z"
+        }
+      },
+      {
+        "id": "x-325082",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 100,
+          "source": "晴れる屋2状態A",
+          "at": "2026-11-14T06:49:34.736Z"
+        }
+      },
+      {
+        "id": "pk-657",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 480,
+          "source": "トレカキャンプ状態A",
+          "at": "2026-11-14T06:50:47.902Z"
+        }
+      },
+      {
+        "id": "pk-1773",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 280,
+          "source": "トレカキャンプ状態A",
+          "at": "2026-11-14T06:50:53.398Z"
+        }
+      },
+      {
+        "id": "pk-3351",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 280,
+          "source": "トレカキャンプ状態A",
+          "at": "2026-11-14T06:50:16.079Z"
+        }
+      },
+      {
+        "id": "x-321596",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 200,
+          "source": "晴れる屋2状態A",
+          "at": "2026-11-14T06:49:29.943Z"
+        }
+      },
+      {
+        "id": "x-147528",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 50,
+          "source": "晴れる屋2状態A",
+          "at": "2026-11-14T06:45:37.093Z"
+        }
+      },
+      {
+        "id": "pk-782",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 480,
+          "source": "トレカキャンプ状態A",
+          "at": "2026-11-14T06:50:52.303Z"
+        }
+      },
+      {
+        "id": "x-334650",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 100,
+          "source": "トレカキャンプ状態A",
+          "at": "2026-11-14T06:50:55.608Z"
+        }
+      },
+      {
+        "id": "pk-2345",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 280,
+          "source": "トレカキャンプ状態A",
+          "at": "2026-11-14T06:50:15.032Z"
+        }
+      },
+      {
+        "id": "pk-3298",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 380,
+          "source": "トレカキャンプ状態A",
+          "at": "2026-11-14T06:50:16.079Z"
+        }
+      },
+      {
+        "id": "pk-2149",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 180,
+          "source": "トレカキャンプ状態A",
+          "at": "2026-11-14T06:50:15.032Z"
+        }
+      },
+      {
+        "id": "x-285776",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 150,
+          "source": "晴れる屋2状態A",
+          "at": "2026-11-14T06:48:34.764Z"
+        }
+      },
+      {
+        "id": "x-392958",
+        "before": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        },
+        "after": {
+          "analyzable": false,
+          "status": "available",
+          "price": 100,
+          "source": "トレカキャンプ状態A",
+          "at": "2026-11-14T06:50:16.079Z"
+        }
+      },
+      {
+        "id": "pk-43860",
+        "before": {
+          "analyzable": true,
+          "status": "available",
+          "price": 53800,
+          "source": "晴れる屋2状態A",
+          "at": "2026-11-13T23:43:25.823Z"
+        },
+        "after": {
+          "analyzable": true,
+          "status": "out-of-stock",
+          "price": null,
+          "source": null,
+          "at": null
+        }
+      },
+      {
+        "id": "pk-20183",
+        "before": {
+          "analyzable": true,
+          "status": "available",
+          "price": 70000,
+          "source": "晴れる屋2状態A",
+          "at": "2026-11-13T23:46:35.506Z"
+        },
+        "after": {
+          "analyzable": true,
+          "status": "out-of-stock",
+          "price": null,
+          "source": null,
+          "at": null
+        }
+      },
+      {
+        "id": "x-104600",
+        "before": {
+          "analyzable": true,
+          "status": "available",
+          "price": 17000,
+          "source": "晴れる屋2状態A",
+          "at": "2026-11-13T23:46:54.657Z"
+        },
+        "after": {
+          "analyzable": true,
+          "status": "out-of-stock",
+          "price": null,
+          "source": null,
+          "at": null
+        }
+      },
+      {
+        "id": "pk-5805",
+        "before": {
+          "analyzable": true,
+          "status": "available",
+          "price": 380,
+          "source": "トレカキャンプ状態A",
+          "at": "2026-11-13T12:55:32.437Z"
+        },
+        "after": {
+          "analyzable": true,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        }
+      },
+      {
+        "id": "pk-6056",
+        "before": {
+          "analyzable": false,
+          "status": "available",
+          "price": 1980,
+          "source": "トレカキャンプ状態A",
+          "at": "2026-11-13T12:55:32.437Z"
+        },
+        "after": {
+          "analyzable": false,
+          "status": "expired",
+          "price": null,
+          "source": null,
+          "at": null
+        }
+      }
+    ],
+    "sourceRuns": {
+      "hareruya2": {
+        "startedAt": "2026-11-14T06:44:23.630Z",
+        "inComparisonWindow": true,
+        "attempted": 265,
+        "refreshed": 265,
+        "newLinks": 0,
+        "durationMs": 346320,
+        "httpRequests": 288,
+        "stopReason": "時間上限・保存して安全停止"
+      },
+      "cardrush": {
+        "startedAt": "2026-10-01T15:11:34.052Z",
+        "inComparisonWindow": false,
+        "attempted": 1,
+        "refreshed": 0,
+        "newLinks": 0,
+        "durationMs": 359,
+        "httpRequests": 1,
+        "stopReason": "pk-73737: HTTP 403"
+      }
+    },
+    "llmCalls": 0,
+    "note": "同一ID群・同一条件。再確認/既存価格復活は新規取得・紐付けと別。購入可能価格はGO保証ではない。"
+  }
+}

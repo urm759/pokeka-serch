@@ -1,5 +1,10 @@
 const fs=require('node:fs'),path=require('node:path'),os=require('node:os'),cp=require('node:child_process'),assert=require('node:assert/strict');
 const {resolve}=require('./resolve_generated_merge');
+const {REBUILD_STEPS,DERIVED}=require('./resolve_generated_merge');
+assert(REBUILD_STEPS.indexOf('audit_acquisition_progress.js')<REBUILD_STEPS.indexOf('finalize_update_status.js'),'embedded acquisition snapshots synchronize before finalization');
+assert(REBUILD_STEPS.indexOf('audit_acquisition_progress.js')<REBUILD_STEPS.indexOf('audit_link_coverage.js')&&REBUILD_STEPS.indexOf('audit_link_coverage.js')<REBUILD_STEPS.indexOf('finalize_update_status.js'));
+assert(DERIVED.has('data/link-coverage.json'),'counter/URL projection regenerates after archived source merge');
+assert(DERIVED.has('work/camp-deadline-plan.json')&&DERIVED.has('data/gemrate-collector-config.json'));
 const {mergePriorityCheckpoint}=require('./reconcile_saved_source_merge');
 const initial='2026-11-03T00:00:00Z',older='2026-11-03T01:00:00Z',newer='2026-11-03T02:00:00Z';
 const checkpoint=(at,held=false)=>({sources:{shop:{jobs:{a:{lastAttemptAt:at,held,nextDueAt:at}}}}});

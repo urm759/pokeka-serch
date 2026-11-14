@@ -189,7 +189,16 @@ function main() {
     counterNote: "正規化後の新規行はcanonicalNewAcquiredCount。生の番号ゼロ埋め差は新規カードではない。" });
   write("data/candidate-shop-refresh.json", read("work/candidate-shop-refresh.json"));
   write("work/acquisition-progress-last.json", current);
+  synchronizeEmbedded(ROOT);
   console.log(JSON.stringify({ sources, psa: current.psa.counts, effect: { before: audit.shopEffect.before, after: audit.shopEffect.after, promoted: audit.shopEffect.promoted } }));
 }
+function synchronizeEmbedded(root=ROOT){
+ const source=path.join(root,'data/acquisition-progress-audit.json');if(!fs.existsSync(source))return [];
+ const audit=JSON.parse(fs.readFileSync(source)),changed=[];
+ const update=(name,fn)=>{const file=path.join(root,name);if(!fs.existsSync(file))return;const value=JSON.parse(fs.readFileSync(file)),before=JSON.stringify(value);fn(value);const after=JSON.stringify(value);if(after!==before){fs.writeFileSync(file,after);changed.push(name);}};
+ update('data/link-coverage.json',value=>{if(value.current?.storeCoverage)value.current.storeCoverage.acquisitionAudit={generatedAt:audit.generatedAt,baselineAt:audit.baselineAt,sources:audit.sources,definitions:audit.definitions,psa:{...audit.psa,categories:undefined},shopEffect:{...audit.shopEffect,rows:undefined},remaining:audit.remaining};});
+ update('data/update-status.json',value=>{for(const[id,row]of Object.entries(audit.sources||{}))if(value.sources?.[id])value.sources[id].acquisitionAudit=row;});
+ return changed;
+}
 if (require.main === module) main();
-module.exports = { psaAudit, progress, capture, validPop };
+module.exports = { psaAudit, progress, capture, validPop, synchronizeEmbedded };

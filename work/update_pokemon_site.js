@@ -36,7 +36,9 @@ async function fetchText(url) {
     if (!res.ok) {
       throw new Error(`Failed to fetch ${url}: HTTP ${res.status}`);
     }
-    return await res.text();
+    const text=await res.text();
+    const capture=require('./mintrade_source_capture');if(capture.eligible(url))capture.save(resolveSiteRoot(),{url,text,status:res.status});
+    return text;
   } finally {
     clearTimeout(timer);
   }
@@ -59,6 +61,7 @@ async function fetchSourceGate(url, forceDeepScan = false) {
     }
     if (!response.ok) throw new Error(`Failed to fetch ${url}: HTTP ${response.status}`);
     const text = await response.text();
+    require('./mintrade_source_capture').save(resolveSiteRoot(),{url,text,status:response.status});
     const hash = contentHash(text);
     if (!forceDeepScan && previous.hash && previous.hash === hash) {
       UPDATE_METRICS.cacheHits += 1;

@@ -45,7 +45,7 @@ function rarity(value) {
   return ['P', 'PR', 'PROMO'].includes(r) ? 'PROMO' : r;
 }
 function baseName(value) {
-  return identity.normalizeToken(String(value).split('[')[0]
+  return identity.normalizeToken(String(value).split('[')[0].replace(/^S-TD\s+/i,'')
     .replace(/(?:^|\s)(?:MUR|BWR|MA|SSR|CSR|CHR|SAR|UR|HR|SR|RRR|RR|AR|PROMO|PR|P|H|S|C|U|R)(?=\s|:|$)/gi, ' ')
     .replace(/(?:マスター|モンスター)ボールミラー|ミラー|1ED|旧裏|アンリミ|プロモ|スペシャルアート|(?:^|\s)SA(?=\s|$)/gi, ' '));
 }
@@ -122,16 +122,17 @@ function parseYuyuteiProduct(html, requestedUrl, card) {
   const prices = [...block.matchAll(/<h4\b[^>]*>([\s\S]*?)<\/h4\s*>/gi)]
     .map(m => text(m[1]).match(/^([\d,]+)\s*円$/)).filter(Boolean).map(m => Number(m[1].replace(/,/g, '')));
   const stocks = [...block.matchAll(/<label\b[^>]*>([\s\S]*?)<\/label\s*>/gi)]
-    .map(m => text(m[1]).match(/^在庫\s*:\s*([\d,]+)\s*点$/)).filter(Boolean).map(m => Number(m[1].replace(/,/g, '')));
+    .map(m => text(m[1])).filter(v=>/^在庫\s*:/.test(v)).map(v=>/^在庫\s*:\s*×$/.test(v)?null:v.match(/^在庫\s*:\s*([\d,]+)\s*点$/)?.[1]).map(v=>v===null?null:typeof v==='string'?Number(v.replace(/,/g,'')):NaN);
   const offer = product.offers;
   if (prices.length !== 1 || !Number.isSafeInteger(prices[0]) || prices[0] <= 0 || !stocks.length
-    || stocks.some(s => !Number.isSafeInteger(s) || s < 0 || s !== stocks[0])
+    || stocks.some(s => s!==null&&(!Number.isSafeInteger(s) || s < 0) || s !== stocks[0])
     || offer?.['@type'] !== 'Offer' || offer.priceCurrency !== 'JPY' || Number(offer.price) !== prices[0]
     || !['InStock', 'OutOfStock', 'https://schema.org/InStock', 'https://schema.org/OutOfStock'].includes(offer.availability)
     || /(?:^|\/)InStock$/.test(offer.availability) !== (stocks[0] > 0)) return null;
   return { cardId: card.id, detailUrl: target.url, setCode: target.route, cardNo: numbers[0], title,
     productId: target.cid, price: prices[0], stock: stocks[0], state: 'A', cartKizu: 0,
-    language: 'ja', identityVerified: true, conditionAccepted: true, parser: 'yuyutei-product-v1' };
+    language: 'ja', identityVerified: true, conditionAccepted: true, parser: 'yuyutei-product-v1',
+    ...(stocks[0]===null?{available:false,inventoryEvidence:'visible-out-of-stock-mark-and-schema',quantityKnown:false}:{}) };
 }
 
 // Reuse an existing card/URL binding with a timestamped HTTP capture. Parsing
