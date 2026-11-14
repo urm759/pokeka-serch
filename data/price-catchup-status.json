@@ -1,33 +1,33 @@
 {
-  "startedAt": "2026-11-14T09:23:55.548Z",
-  "runId": "43580292132",
+  "startedAt": "2026-11-14T12:08:37.942Z",
+  "runId": "43593295645",
   "event": "workflow_dispatch",
   "route": "既存監視ジョブの空白補完",
   "status": "acquired-saved",
   "allowed": true,
-  "ageMs": 9719140,
+  "ageMs": 9882005,
   "minimumIntervalMs": 9000000,
   "reason": "定期の空白・既存の期限順キューで補完",
   "llmCalls": 0,
   "codexCalls": 0,
   "sourceFailures": [],
   "acquisitionStatus": "process-success",
-  "endedAt": "2026-11-14T09:34:36.940Z",
-  "durationMs": 641392,
+  "endedAt": "2026-11-14T12:22:57.239Z",
+  "durationMs": 859297,
   "outcomes": {
-    "baselineAt": "2026-11-14T09:23:55.548Z",
+    "baselineAt": "2026-11-14T12:08:37.942Z",
     "commonCards": 13028,
-    "addedCards": 0,
+    "addedCards": 4,
     "removedCards": 0,
-    "newlyAnalyzable": 0,
-    "lostAnalyzable": 0,
-    "filledCards": 2,
-    "filledItems": 2,
+    "newlyAnalyzable": 7,
+    "lostAnalyzable": 4,
+    "filledCards": 37,
+    "filledItems": 43,
     "sources": {
       "cardrush": {
-        "newLinked": 0,
-        "validAdded": 0,
-        "validLost": 0,
+        "newLinked": 2,
+        "validAdded": 2,
+        "validLost": 2,
         "usableNet": 0,
         "freshnessRecovered": 0
       },
@@ -36,7 +36,7 @@
         "validAdded": 0,
         "validLost": 0,
         "usableNet": 0,
-        "freshnessRecovered": 71
+        "freshnessRecovered": 68
       },
       "yuyutei": {
         "newLinked": 0,
@@ -46,11 +46,11 @@
         "freshnessRecovered": 0
       },
       "torecacamp": {
-        "newLinked": 4,
-        "validAdded": 4,
+        "newLinked": 1,
+        "validAdded": 2,
         "validLost": 0,
-        "usableNet": 4,
-        "freshnessRecovered": 58
+        "usableNet": 2,
+        "freshnessRecovered": 3
       },
       "psaOfficial": {
         "newLinked": 0,
@@ -66,6 +66,9 @@
         "usableNet": 0,
         "freshnessRecovered": 0
       }
+    },
+    "referenceEvidenceRecovered": {
+      "psa9Evidence": 3
     }
   },
   "publicationStatus": "保存済み・公開照合待ち"
