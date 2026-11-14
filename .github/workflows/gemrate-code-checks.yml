@@ -39,6 +39,13 @@ on:
       - 'work/test_orphan_wakeup.js'
       - 'work/test_published_capacity_origins.js'
       - 'work/test_post_acquisition_verification.js'
+      - 'work/fixed_price_cohort.js'
+      - 'work/camp-fixed-cohort.json'
+      - 'work/mintrade_source_capture.js'
+      - 'work/test_camp_deadline_allocation.js'
+      - 'work/test_yuyutei_out_of_stock.js'
+      - 'work/test_mintrade_source_capture.js'
+      - 'work/test_gemrate_promo_campaign.js'
       - 'work/current_publication_check.js'
       - 'work/scheduled_cycle_evidence.js'
       - '.github/workflows/watch-data-health.yml'
@@ -84,6 +91,10 @@ jobs:
           node work/test_orphan_wakeup.js
           node work/test_published_capacity_origins.js
           node work/test_post_acquisition_verification.js
+          node work/test_camp_deadline_allocation.js
+          node work/test_yuyutei_out_of_stock.js
+          node work/test_mintrade_source_capture.js
+          node work/test_gemrate_promo_campaign.js
           node work/test_stock_scope.js
           node work/test_recovery_checkout_proof.js
           node work/test_generated_merge_finalization.js

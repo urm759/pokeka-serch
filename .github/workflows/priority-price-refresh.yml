@@ -212,3 +212,13 @@ jobs:
           include-hidden-files: true
           retention-days: 14
           if-no-files-found: warn
+
+      - name: Retain private mintrade source responses for missing-price diagnosis
+        if: always() && hashFiles('.private/mintrade-source-captures/**') != ''
+        uses: actions/upload-artifact@v7
+        with:
+          name: mintrade-source-priority-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .private/mintrade-source-captures/
+          include-hidden-files: true
+          retention-days: 7
+          if-no-files-found: error

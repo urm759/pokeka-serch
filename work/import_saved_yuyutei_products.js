@@ -7,8 +7,8 @@ function receive({cards,catalog,summary,history,captures,checkpoint={version:1,r
  for(const capture of captures){const receipt=capture.receipt,bytes=capture.bytes,digest=crypto.createHash('sha256').update(bytes).digest('hex');
   if(digest!==receipt?.sha256||bytes.length!==receipt.bytes){rejected.push({reason:'raw-hash-size-mismatch'});continue;}
   const receiptKey=crypto.createHash('sha256').update(JSON.stringify([digest,receipt.url,receipt.fetchedAt])).digest('hex');
-  if(next.checkpoint.receipts[receiptKey])continue;
-  const save=(status,detail={})=>next.checkpoint.receipts[receiptKey]={sha256:digest,status,sourceAt:receipt.fetchedAt||null,receivedAt:new Date(now).toISOString(),...detail};
+  if(next.checkpoint.receipts[receiptKey]&&!(next.checkpoint.receipts[receiptKey].status==='held'&&next.checkpoint.receipts[receiptKey].parserVersion!=='product-v2'))continue;
+  const save=(status,detail={})=>{const old=next.checkpoint.receipts[receiptKey];next.checkpoint.receipts[receiptKey]={sha256:digest,status,parserVersion:'product-v2',sourceAt:receipt.fetchedAt||null,receivedAt:old?.receivedAt||new Date(now).toISOString(),...(old?{previous:{status:old.status,parserVersion:old.parserVersion||null,receivedAt:old.receivedAt},reparsedAt:new Date(now).toISOString()}:{}),...detail};};
   if(receipt.httpStatus!==200||receipt.requestCount!==1||receipt.url!==receipt.finalUrl){save('held');rejected.push({reason:'normal200-receipt-required'});continue;}
   const owners=cards.filter(c=>c.yuyuteiUrl===receipt.url),bindings=next.catalog.filter(c=>c.detailUrl===receipt.url);
   if(owners.length!==1||bindings.length!==1||bindings[0].cardId!==owners[0].id){save('held');rejected.push({reason:'ambiguous-or-missing-saved-owner'});continue;}
@@ -25,8 +25,8 @@ function receive({cards,catalog,summary,history,captures,checkpoint={version:1,r
   if(!dates.includes(day)){const index=dates.findIndex(d=>d>day),at=index<0?dates.length:index;dates.splice(at,0,day);for(const values of Object.values(next.history.stocks||{}))values.splice(at,0,null);}
   next.history.stocks||={};const values=next.history.stocks[card.id]||=[];while(values.length<dates.length)values.push(null);const i=dates.indexOf(day);
   const evidence=(next.history.quantityEvidence||={})[card.id]||={},old=evidence[day];
-  if(old!==null&&(!old||Date.parse(old[2])<Date.parse(parsed.observedAt))){values[i]=parsed.stock;evidence[day]=[parsed.stock,parsed.detailUrl,parsed.observedAt,card.identityKey];}
-  const changedSummary={cards:{[card.id]:{...(next.summary.cards?.[card.id]||{}),yuyuteiPrice:parsed.price,stock:parsed.stock,observedAt:parsed.observedAt,priceObservedAt:parsed.observedAt,inventoryObservedAt:parsed.observedAt,identityVerified:true,conditionAccepted:true,state:'A',productUrl:parsed.detailUrl,receiptSha256:digest,acquisitionEnvironment:'PC'}}};
+  if(old!==null&&(!old||Date.parse(old[2])<Date.parse(parsed.observedAt))){values[i]=parsed.stock;if(Number.isFinite(parsed.stock))evidence[day]=[parsed.stock,parsed.detailUrl,parsed.observedAt,card.identityKey];else delete evidence[day];}
+  const changedSummary={cards:{[card.id]:{...(next.summary.cards?.[card.id]||{}),yuyuteiPrice:parsed.price,stock:parsed.stock,available:typeof parsed.available==='boolean'?parsed.available:parsed.stock>0,quantityKnown:Number.isFinite(parsed.stock),inventoryEvidence:parsed.inventoryEvidence||'visible-quantity-and-schema',observedAt:parsed.observedAt,priceObservedAt:parsed.observedAt,inventoryObservedAt:parsed.observedAt,identityVerified:true,conditionAccepted:true,state:'A',productUrl:parsed.detailUrl,receiptSha256:digest,acquisitionEnvironment:'PC'}}};
   require('./stock_history_statistics').apply(changedSummary,next.history,{asOf:new Date(now).toISOString()});next.summary.cards||={};next.summary.cards[card.id]=changedSummary.cards[card.id];
   save('adopted',{id:card.id,url:parsed.detailUrl});changes.push({id:card.id,url:parsed.detailUrl,before:binding.price,price:parsed.price,stock:parsed.stock,sourceAt:parsed.observedAt,receiptSha256:digest});
  }

@@ -10,7 +10,7 @@ function enabled(s){return s?.automaticReference?.rule===RULE&&Array.isArray(s.a
 function load(store){const file=path.join(store,FILE);const r=fs.existsSync(file)?JSON.parse(fs.readFileSync(file)):{version:1,rule:RULE,links:{}};
  if(r.version!==1||r.rule!==RULE||!r.links||Array.isArray(r.links))throw Error('Confirmed link registry schema invalid');return r;}
 function revision(s,cards,english,manual){
- const selected=cards.filter(c=>matcher.printed(c.name)?.set===String(s?.setCode||'').toLowerCase());
+ const selected=cards.filter(c=>matcher.printed(c.name)?.set===String(s?.setCode||'').toLowerCase().replace(/[^a-z0-9]/g,''));
  return hash([RULE,matcher.VERSION,s,manual,selected.map(c=>[c.id,fingerprint(c,english[c.id])]).sort(([a],[b])=>a.localeCompare(b))]);
 }
 function resolve(source,context,cards,english,options,registry,manual=[]){
@@ -33,7 +33,7 @@ function resolve(source,context,cards,english,options,registry,manual=[]){
  return {mappings:accepted,review:[...review,...fresh.review],added,reused:reused.length};
 }
 function authorized(row,card,s,registry,english){
- if(!enabled(s)||!card||card.identityReviewRequired||card.language!=='ja'||require('./card_identity').canonicalIdentity(card).variant)return false;
+ if(!enabled(s)||!card||card.identityReviewRequired||card.language!=='ja'||!matcher.eligibleCard(card,s))return false;
  const key=row.identity,link=registry.links[key];if(!link||link.cardId!==card.id||link.identityKey!==card.identityKey||link.fingerprint!==fingerprint(card,english[card.id]))return false;
  const id=JSON.parse(key);return id[0]==='Japanese'&&id[1]===s.set&&id[2]===s.year&&s.automaticReference.parallels.includes(id[5]);
 }
@@ -49,7 +49,7 @@ function validatePublic(root,summary,registered){
  const setsFile=path.join(root,'work/gemrate-reviewed-sets.json'),sets=fs.existsSync(setsFile)?JSON.parse(fs.readFileSync(setsFile)).sets:[];
  const allow=new Set([...registered.legacyIds,...require('./gemrate_reviewed_additions').entries(root).map(r=>r.cardId)]);
  for(const [id,r]of Object.entries(registered.automatic||{})){const card=cards.get(id),s=sets.find(s=>s.setCode===r[1]);const printed=card&&matcher.printed(card.name);
-   if(!Array.isArray(r)||r.length!==5||!card||!enabled(s)||card.language!=='ja'||card.identityReviewRequired||require('./card_identity').canonicalIdentity(card).variant||r[0]!==card.identityKey||r[4]!==fingerprint(card,english[id])||!s.automaticReference.parallels.includes(r[3])||printed?.number!==Number(r[2])||printed?.denominator!==s.denominator||printed?.set!==s.setCode.toLowerCase())throw Error('Unproven automatic public identity '+id);
+   if(!Array.isArray(r)||r.length!==5||!card||!enabled(s)||card.language!=='ja'||card.identityReviewRequired||!matcher.eligibleCard(card,s)||r[0]!==card.identityKey||r[4]!==fingerprint(card,english[id])||!s.automaticReference.parallels.includes(r[3])||printed?.number!==Number(r[2])||printed?.denominator!==s.denominator||printed?.set!==s.setCode.toLowerCase().replace(/[^a-z0-9]/g,''))throw Error('Unproven automatic public identity '+id);
    allow.add(id);
  }
  for(const [id,row]of Object.entries(summary.cards||{})){

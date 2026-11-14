@@ -56,7 +56,7 @@ async function main() {
   let cycles=fs.existsSync(cycleFile)?JSON.parse(fs.readFileSync(cycleFile,'utf8')):{version:1,pipelines:{}};
   try {
     const verifier=require('./verify_update_publication');
-    const checked=await verifier.inspect({getJson:api,getText:async url=>{const r=await fetch(url,{signal:AbortSignal.timeout(30000)});if(!r.ok)throw Error('Publication verification HTTP '+r.status);return r.text();}});
+    const checked=await verifier.inspect({getJson:api,getText:async url=>{const r=await fetch(url,{signal:AbortSignal.timeout(30000)});if(!r.ok)throw Error('Publication verification HTTP '+r.status);return r.text();},onVerifiedReceipt:(key,proof,receipt)=>require('./effective_price_cadence').recordVerified(ROOT,key,proof,receipt)});
     for(const[key,result]of Object.entries(checked.pipelines))verifier.preserve(cycles,key,result);
     cycles.checkedAt=new Date().toISOString();
     delete cycles.checkError;

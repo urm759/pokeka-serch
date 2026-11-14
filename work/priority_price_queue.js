@@ -89,7 +89,7 @@ function load(sourceId, root = ROOT, now = Date.now()) {
     ...(requested.readyRoutes?.domesticShops||requested.routes?.domesticShops||[]).filter(allowed).map(r=>r.id)
   ].map(id=>[id,{priceRefreshReady:true,requestedProfile:true}]));
   return plan({ cards: read(root, "data/pokemon-cards.json", []), sourceId,
-    fixedIds: read(root, "work/priority-freshness-history.json").sources?.[sourceId]?.cohort || [],
+    fixedIds: require('./fixed_price_cohort').ids(root,sourceId),
     catalog: read(root, `work/${sourceId}_catalog.json`, []), candidateRows: { ...alternateRows,...read(root,'work/candidate-recovery-targets.json').rows, ...(read(root, "work/candidate-availability-history.json").runs?.at(-1)?.rows || read(root, "work/acquisition-audit-baseline.json").availability?.rows || {}), ...read(root, 'work/purchase-price-targets.json').rows,...profileRows,...formalRows },
     focusConfig: read(root, "data/focus-monitor-config.json"), config: timingConfig(root),
     jobs: read(root, "work/priority-price-checkpoint.json").sources?.[sourceId]?.jobs || {},
@@ -146,7 +146,7 @@ function write(root = ROOT) {
       lastRunAt: run.startedAt || null, checkpoint: run.nextId || null,
       cards: important.map((r) => ({ id: r.card.id, name: r.card.name, lastConfirmedAt: r.lastSuccessAt, nextDueAt: r.nextDueAt,
         lastAttemptAt: checkpoint.sources?.[id]?.jobs?.[r.card.id]?.lastAttemptAt || null, status: blocked ? "アクセス確認待ち・正常値保持" : r.status, priorityReason: r.reason })) };
-    const fixedIds = new Set(fixedHistory.sources?.[id]?.cohort || []);
+    const fixedIds = new Set(require('./fixed_price_cohort').ids(root,id));
     sources[id].fixedCards = planned.records.filter(r => fixedIds.has(r.card.id)).map(r => ({id:r.card.id,
       lastConfirmedAt:r.lastSuccessAt, status:blocked ? "アクセス確認待ち・正常値保持" : r.status}));
     const capacityRun = require('./refresh_capacity.js').measuredDeadlineRun(read(root, 'work/source-update-history.json').sources?.[id] || [], id, now);
@@ -178,7 +178,7 @@ function write(root = ROOT) {
       return { id: card.id, name: names.get(card.id), lastConfirmedAt: known ? at : null, nextDueAt,
         lastAttemptAt: runs[id]?.lastAttemptAt || null, status: !known ? "カード単位の確認日時なし・取得待ち" : time + 6 * 3600000 <= now ? "期限超過" : proactive.eligibleDeadline(time + 6 * 3600000, true, now, timingConfig(root)) ? "次回完了前に期限切れ・先回り待ち" : "期限内", detail };
     });
-    const fixedIds = new Set(fixedHistory.sources?.[id]?.cohort || []);
+    const fixedIds = new Set(require('./fixed_price_cohort').ids(root,id));
     const fixedCards = records.filter(r => fixedIds.has(r.id));
     const currentIds = new Set(cards.filter(isPriority).map(c => c.id));
     const current = records.filter(r => currentIds.has(r.id));

@@ -39,6 +39,7 @@ function receive({store,files,publicRoot=ROOT,now=new Date().toISOString(),previ
       }
       if(!/^export(?: \(\d+\))?\.csv$/i.test(path.basename(source)))throw Error('Only explicitly selected GemRate export CSV files are accepted');
       const bytes=fs.readFileSync(source),sha=hash(bytes),stat=fs.statSync(source);
+      if(previous&&previous.sha256!==sha)throw Error('GemRate incoming filename already belongs to another retained original; assign a unique unused name including sidecars and manifest paths');
       const compressed=path.join(store,'backups',sha+'.csv.gz');
       if(!fs.existsSync(compressed))fs.writeFileSync(compressed,zlib.gzipSync(bytes),{flag:'wx'});
       if(hash(zlib.gunzipSync(fs.readFileSync(compressed)))!==sha)throw Error('Backup verification failed; original retained');

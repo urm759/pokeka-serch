@@ -234,6 +234,16 @@ jobs:
             work/publish-recovery.json
           retention-days: 14
           if-no-files-found: error
+      - name: Retain private mintrade source responses for missing-price diagnosis
+        if: always() && hashFiles('.private/mintrade-source-captures/**') != ''
+        uses: actions/upload-artifact@v7
+        with:
+          name: mintrade-source-catchup-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .private/mintrade-source-captures/
+          include-hidden-files: true
+          retention-days: 7
+          if-no-files-found: error
+
   watch:
     # Record the receipt only after the independent Pages check has finished.
     # always() preserves monitoring even when acquisition or verification fails.

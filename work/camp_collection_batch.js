@@ -59,9 +59,15 @@ function plan({routes, cards, catalog, requested = [], critical = [], fixed = []
     const card = byId.get(row.cardId);
     if (!card || row.priceQuarantined || row.cardMismatchSuspected || row.identityHoldReason || row.referenceOnly || !eligible(retryByUrl[row.detailUrl], now) || !due(row, wanted.has(row.cardId) || fixedIds.has(row.cardId), now, leadMs)) continue;
     const set = signature(card).setCode;
-    const score = scores.get(set) || {priority:0, targets:0, oldest:Infinity};
+    const score = scores.get(set) || {priority:0, targets:0, oldest:Infinity,maintenanceTargets:0,maintenanceDeadlineAt:Infinity};
     score.priority += urgent.has(row.cardId) ? 500 : fixedIds.has(row.cardId) ? 100 : wanted.has(row.cardId) ? 20 : 1;
-    score.targets++; score.oldest = Math.min(score.oldest, Date.parse(row.observedAt) || 0); scores.set(set,score);
+    score.targets++; score.oldest = Math.min(score.oldest, Date.parse(row.observedAt) || 0);
+    if(urgent.has(row.cardId)||fixedIds.has(row.cardId)){
+      score.maintenanceTargets++;
+      const observed=Date.parse(row.observedAt);
+      score.maintenanceDeadlineAt=Math.min(score.maintenanceDeadlineAt,Number.isFinite(observed)&&observed<=now?observed+6*3600000:0);
+    }
+    scores.set(set,score);
   }
   const pending = routes.map(r => ({...r, ...(scores.get(r.set) || {priority:0,targets:0,oldest:Infinity}), last:state[r.url] || {}}))
     .filter(r => eligible(r.last.retry, now) && (!r.last.checkedAt || now-Date.parse(r.last.checkedAt) >= (r.targets || (r.last.nextPage||1)>1 ? 2 : 48)*3600000));
@@ -71,9 +77,13 @@ function plan({routes, cards, catalog, requested = [], critical = [], fixed = []
   const capacity=Math.min(4,Math.max(0,limit)),chosen=[];
   const take=(row,lane)=>{if(row&&chosen.length<capacity&&!chosen.some(r=>r.url===row.url))chosen.push({...row,lane});};
   const oldest=[...pending].sort((a,b)=>(Date.parse(a.last.checkedAt)||0)-(Date.parse(b.last.checkedAt)||0)||a.url.localeCompare(b.url));
-  take(pending[0],'priority');
+  // A large set must not indefinitely outrank one overdue independent price.
+  // Keep continuation/exploration slots and the same four-request budget.
+  const maintenance=pending.filter(r=>r.maintenanceTargets>0).sort((a,b)=>a.maintenanceDeadlineAt-b.maintenanceDeadlineAt||b.priority-a.priority||a.url.localeCompare(b.url));
+  take(maintenance[0]||pending[0],'priority');
   take(oldest.find(r=>(r.last.nextPage||1)>1),'continuation');
   take(oldest.find(r=>!chosen.some(c=>c.url===r.url)),'rotation');
+  for(const row of maintenance)take(row,'priority');
   for(const row of pending)take(row,'priority');
   return chosen.map(r => ({...r,page:r.last.nextPage || 1}));
 }

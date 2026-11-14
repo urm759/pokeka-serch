@@ -723,7 +723,8 @@ async function updateTorecaCamp(cards, paths) {
   const requestedTargets=read(path.join(__dirname,'search-profile-targets.json'),{});
   const criticalRequests=campCriticalIds(requestedTargets,read(path.join(__dirname,'priority-search-profiles.json'),{}).popFocusProfileIds||[]);
   const medianCompletions=require('./profile_completion_routes').medianCompletionIds(requestedTargets,'torecacamp',read(path.join(__dirname,'priority-search-profiles.json'),{}).popFocusProfileIds||[]);
-  const legacyRequested=campRequestedIds(requestedTargets,comparisonIds,alternateRequests);
+  const fixed=require('./fixed_price_cohort').ids(ROOT,'torecacamp');
+  const legacyRequested=[...new Set([...campRequestedIds(requestedTargets,comparisonIds,alternateRequests),...fixed])];
   for(const id of legacyRequested)important.add(id);
   const bulk = require('./camp_collection_batch');
   const bulkVerified = new Set();
@@ -742,7 +743,6 @@ async function updateTorecaCamp(cards, paths) {
         const checkedAt=new Date().toISOString(),prior=new Map((bulkState.navigation?.routes||[]).map(r=>[r.url,r]));
         bulkState.navigation={version:2,checkedAt,routes:routes.map(r=>({...r,firstSeenAt:prior.get(r.url)?.firstSeenAt||checkedAt}))};bulkRun.requests++;
       }
-      const fixed=read(path.join(__dirname,'priority-freshness-history.json'),{}).sources?.hareruya2?.cohort||[];
       const plans=bulk.plan({routes:bulkState.navigation.routes,cards,catalog,requested:legacyRequested,critical:criticalRequests,fixed,
         retryByUrl:{...progress.knownUrlRetries,...progress.retryByUrl},state:bulkState.routes,now:Date.now(),leadMs:proactiveLead,
         due:postpass.due,signature:cardSignature,eligible:retryPolicy.eligible});
@@ -758,7 +758,7 @@ async function updateTorecaCamp(cards, paths) {
           if(plan.page===1 && !products.length && plan.targets)throw Error('既知対象のセット一覧が空・原票を保持して確認待ち');
           proof.productCount=products.length;
           bulkRun.products+=products.length;
-          const page={url,page:plan.page,lane:plan.lane,previousCheckedAt:before.checkedAt||null,observedAt:at,productCount:products.length,verified:0,newLinks:0,omitted:{identity:0,condition:0,hold:0,binding:0,price:0,otherProduct:0},bytes:response.metric.bytes,fetchMs:response.metric.fetchMs,payloadHash:proof.payloadHash};
+          const page={url,page:plan.page,lane:plan.lane,previousCheckedAt:before.checkedAt||null,observedAt:at,maintenanceDeadlineAt:Number.isFinite(plan.maintenanceDeadlineAt)?new Date(plan.maintenanceDeadlineAt).toISOString():null,productCount:products.length,verified:0,fixedVerified:0,criticalVerified:0,newLinks:0,omitted:{identity:0,condition:0,hold:0,binding:0,price:0,otherProduct:0},bytes:response.metric.bytes,fetchMs:response.metric.fetchMs,payloadHash:proof.payloadHash};
           for(const product of products) {
             const detailUrl=TORECA_CAMP+'/products/'+product.handle;
             if(!retryPolicy.eligible(progress.retryByUrl[detailUrl]||progress.knownUrlRetries[detailUrl]))continue;
@@ -782,7 +782,7 @@ async function updateTorecaCamp(cards, paths) {
             byId.set(card.id,entry);knownByUrl.set(detailUrl,entry);seenProductUrls.add(detailUrl);seenProductIds.add(String(product.id));
             if(!previousEntry){linked++;page.newLinks++;bulkRun.newLinks++;}
             else if(entry.price!==previousEntry.price||entry.available!==previousEntry.available)updated++;
-            bulkVerified.add(card.id);page.verified++;
+            bulkVerified.add(card.id);page.verified++;page.fixedVerified+=Number(fixed.includes(card.id));page.criticalVerified+=Number(criticalRequests.includes(card.id));
           }
           bulkRun.pages.push(page);
           bulkState.routes[plan.url]={checkedAt:at,firstSeenAt:before.firstSeenAt||plan.firstSeenAt||at,nextPage:products.length===250?plan.page+1:1,lastCompletedAt:products.length<250?at:before.lastCompletedAt||null,productCount:products.length,verified:page.verified};
@@ -877,7 +877,7 @@ async function updateTorecaCamp(cards, paths) {
       const normalStart=retryOnly || retrySitemap ? 0 : progress.currentSitemapIndex === sitemapIndex ? progress.currentEntryIndex : 0;
       const prioritized=!retryOnly&&!retrySitemap;
       if(prioritized) {
-        const requested=campRequestedIds(read(path.join(__dirname,'search-profile-targets.json'),{}),comparisonIds,alternateRequests);
+        const requested=[...new Set([...campRequestedIds(read(path.join(__dirname,'search-profile-targets.json'),{}),comparisonIds,alternateRequests),...fixed])];
         entries=postpass.prioritize(entries,normalStart,catalog.filter(r=>r.sourceSitemap<=sitemapUrls.length),[...new Set(requested)],detailLimit,progress.retryByUrl,Date.now(),proactiveLead,criticalRequests,medianCompletions);
       }
       const startingEntry=prioritized?0:normalStart;

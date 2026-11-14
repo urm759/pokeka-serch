@@ -95,7 +95,7 @@ function main() {
     save();
   }
   for (const sourceId of ["cardrush", "hareruya2"]) run("work/refresh_candidate_shops.js", [sourceId], { CANDIDATE_SHOP_MODE: "deadline" }, 'source');
-  const campIds=require('./update_yuyutei_torecacamp').campRequestedIds(read('work/search-profile-targets.json'),read('work/comparison-price-targets.json').ids||[]);
+  const campIds=[...new Set([...require('./update_yuyutei_torecacamp').campRequestedIds(read('work/search-profile-targets.json'),read('work/comparison-price-targets.json').ids||[]),...require('./fixed_price_cohort').ids(ROOT,'torecacamp')])];
   const campTiming=require('./proactive_refresh').lead(require('./priority_price_queue').timingConfig());
   const campLead=require('./camp_postpass').proactiveLead(campTiming.leadMs);
   const campPlan={...require('./camp_postpass').priorityMaintenance(read('work/torecacamp_catalog.json',[]),campIds,read('work/torecacamp_progress.json'),read('work/source-update-runs.json').sources?.torecacamp,Date.now(),campLead),proactiveLeadMs:campLead,requestedLeadMs:campTiming.requestedMs,pipelineAllowanceMs:campTiming.processingMs,capacityWarning:campTiming.capacityWarning};
