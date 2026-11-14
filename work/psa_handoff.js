@@ -37,6 +37,7 @@ function prepareInputs(root = ROOT) {
     const runtimeFiles = ['update_psa_official_populations.js','build_psa_history.js','acquisition_retry.js','fair_batch.js','psa_pending_sets.js'];
     if (/require\(['"]\.\/psa_access_policy['"]\)/.test(show(`${commit}:work/update_psa_official_populations.js`))) runtimeFiles.push('psa_access_policy.js');
     if (/require\(['"]\.\/psa-name-aliases\.json['"]\)/.test(show(`${commit}:work/build_psa_history.js`))) runtimeFiles.push('psa-name-aliases.json');
+    if (/require\(['"]\.\/card_identity['"]\)/.test(show(`${commit}:work/build_psa_history.js`))) runtimeFiles.push('card_identity.js');
     const runtimeHashes = {};
     for (const file of runtimeFiles) {
       const source = show(`${commit}:work/${file}`);

@@ -1,0 +1,33 @@
+name: Operational Entry Path Checks
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+      - '*.js'
+      - 'work/**/*.js'
+      - 'work/fixtures/**'
+      - 'work/*access-policy.json'
+      - 'work/performance-budgets.json'
+      - 'work/priority-search-profiles.json'
+      - 'work/psa-name-aliases.json'
+      - 'work/gemrate-reviewed-additions.json'
+      - 'work/gemrate-reviewed-sets.json'
+      - 'work/camp-fixed-cohort.json'
+      - '.gitattributes'
+permissions:
+  contents: read
+jobs:
+  operational-regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - name: Verify workflow structure and dynamic operational inventory
+        run: |
+          node work/test_workflow_structure.js
+          node work/test_operational_ci_coverage.js
+      - name: Run the actual operational regression inventory before publication
+        run: node work/run_operational_regressions.js
