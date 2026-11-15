@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-15T02:47:04.473Z",
+  "generatedAt": "2026-11-15T04:48:00.423Z",
   "llmCalls": 0,
   "codexCalls": 0,
   "retryPolicy": {
@@ -27,7 +27,7 @@
     {
       "source": "psaOfficial",
       "label": "PSA公式・PC正規認証",
-      "remaining": 1482,
+      "remaining": 1483,
       "queueDefinition": "あとPSAだけで分析可能な国内カード。全PSA未取得とは別",
       "sourceState": "permission-wait",
       "failureScope": "source",
@@ -169,8 +169,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-11-15T02:08:38.369Z",
-        "to": "2026-11-15T02:46:57.447Z"
+        "from": "2026-11-15T02:46:57.447Z",
+        "to": "2026-11-15T04:47:57.373Z"
       },
       "sinceBaseline": {
         "newLinked": 4012,
@@ -187,7 +187,7 @@
       "remaining": 0,
       "queueDefinition": "未巡回商品数推計。全国内カードの不足項目数とは別",
       "checkpoint": {
-        "sitemap": 34,
+        "sitemap": 35,
         "entry": 0,
         "total": 46
       },
@@ -195,13 +195,13 @@
       "stopReason": null,
       "retryUrls": [],
       "lastRun": {
-        "startedAt": "2026-11-15T02:07:10.291Z",
-        "durationMs": 30978,
+        "startedAt": "2026-11-15T04:46:31.134Z",
+        "durationMs": 27653,
         "paginationMode": "sitemap",
-        "currentCursor": 34,
-        "currentSitemapIndex": 34,
+        "currentCursor": 35,
+        "currentSitemapIndex": 35,
         "currentEntryIndex": 0,
-        "currentSitemapUrl": "https://torecacamp-pokemon.com/sitemap_products_34.xml?from=9146989904046&to=9163564548270",
+        "currentSitemapUrl": "https://torecacamp-pokemon.com/sitemap_products_35.xml?from=9163564941486&to=9191663632558",
         "processedSitemapCount": 46,
         "processedSitemaps": [
           3,
@@ -253,450 +253,404 @@
         "cumulativeProductCount": 47421,
         "estimatedTotalProducts": 45953,
         "estimatedRemainingProducts": 0,
-        "cumulativeMatchedCount": 6967,
+        "cumulativeMatchedCount": 6968,
         "hasMorePages": true,
         "crawlComplete": true,
         "firstPassComplete": true,
         "retryQueue": [],
         "legacyRecords": [
           {
-            "id": "pk-73731",
-            "url": "https://torecacamp-pokemon.com/products/rc_itsmbk16jbkq_zv6j",
-            "startedAt": "2026-11-15T02:07:15.074Z",
-            "sourceSitemap": 23,
+            "id": "pk-49132",
+            "url": "https://torecacamp-pokemon.com/products/rc_itgbltq413l8_j0fc",
+            "startedAt": "2026-11-15T04:46:35.730Z",
+            "sourceSitemap": 5,
             "routeReason": "bulk-unreached-priority",
             "status": "verified",
-            "confirmedAt": "2026-11-15T02:07:15.892Z",
-            "price": 22800,
+            "confirmedAt": "2026-11-15T04:46:36.719Z",
+            "price": 26800,
             "available": true,
             "adopted": true
           },
           {
-            "id": "pk-73737",
-            "url": "https://torecacamp-pokemon.com/products/rc_itxew9ntnj2s_qcv1",
-            "startedAt": "2026-11-15T02:07:15.921Z",
-            "sourceSitemap": 23,
+            "id": "pk-33707",
+            "url": "https://torecacamp-pokemon.com/products/rc_ittke3tty0q6_beme",
+            "startedAt": "2026-11-15T04:46:36.742Z",
+            "sourceSitemap": 21,
             "routeReason": "bulk-unreached-priority",
             "status": "verified",
-            "confirmedAt": "2026-11-15T02:07:17.008Z",
-            "price": 37800,
+            "confirmedAt": "2026-11-15T04:46:37.828Z",
+            "price": 16800,
             "available": true,
             "adopted": true
           },
           {
-            "id": "pk-73747",
-            "url": "https://torecacamp-pokemon.com/products/rc_it6zy0993l9a_yh4x",
-            "startedAt": "2026-11-15T02:07:17.036Z",
-            "sourceSitemap": 23,
+            "id": "pk-17457",
+            "url": "https://torecacamp-pokemon.com/products/rc_it5tdanwk3w4_wuuc",
+            "startedAt": "2026-11-15T04:46:37.852Z",
+            "sourceSitemap": 17,
             "routeReason": "bulk-unreached-priority",
             "status": "verified",
-            "confirmedAt": "2026-11-15T02:07:18.094Z",
+            "confirmedAt": "2026-11-15T04:46:38.927Z",
             "price": 19800,
             "available": true,
             "adopted": true
           },
           {
-            "id": "pk-5188",
-            "url": "https://torecacamp-pokemon.com/products/rc_ituud1sq1lj8_3h82",
-            "startedAt": "2026-11-15T02:07:18.123Z",
-            "sourceSitemap": 29,
+            "id": "pk-67583",
+            "url": "https://torecacamp-pokemon.com/products/rc_itrkouyyd5q6_4yim",
+            "startedAt": "2026-11-15T04:46:38.951Z",
+            "sourceSitemap": 13,
             "routeReason": "bulk-unreached-priority",
             "status": "verified",
-            "confirmedAt": "2026-11-15T02:07:19.191Z",
-            "price": 34800,
+            "confirmedAt": "2026-11-15T04:46:40.025Z",
+            "price": 59800,
             "available": true,
             "adopted": true
           },
           {
-            "id": "pk-5202",
-            "url": "https://torecacamp-pokemon.com/products/rc_it5d9lz13zxw_xpws",
-            "startedAt": "2026-11-15T02:07:19.220Z",
-            "sourceSitemap": 29,
+            "id": "pk-43860",
+            "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+            "startedAt": "2026-11-15T04:46:40.053Z",
+            "sourceSitemap": 3,
             "routeReason": "bulk-unreached-priority",
             "status": "verified",
-            "confirmedAt": "2026-11-15T02:07:20.280Z",
+            "confirmedAt": "2026-11-15T04:46:41.118Z",
+            "price": 52800,
+            "available": false,
+            "adopted": true
+          },
+          {
+            "id": "pk-20768",
+            "url": "https://torecacamp-pokemon.com/products/rc_it0gnjr7m6iw_zqj6",
+            "startedAt": "2026-11-15T04:46:41.142Z",
+            "sourceSitemap": 1,
+            "routeReason": "bulk-unreached-priority",
+            "status": "verified",
+            "confirmedAt": "2026-11-15T04:46:42.222Z",
+            "price": 368000,
+            "available": false,
+            "adopted": true
+          },
+          {
+            "id": "pk-2247",
+            "url": "https://torecacamp-pokemon.com/products/rc_itrlioftfk0o_p9gn",
+            "startedAt": "2026-11-15T04:46:42.247Z",
+            "sourceSitemap": 28,
+            "routeReason": "bulk-unreached-priority",
+            "status": "verified",
+            "confirmedAt": "2026-11-15T04:46:43.330Z",
             "price": 24800,
             "available": true,
             "adopted": true
           },
           {
-            "id": "pk-5201",
-            "url": "https://torecacamp-pokemon.com/products/rc_itjwzb7pfbeo_dfim",
-            "startedAt": "2026-11-15T02:07:20.312Z",
-            "sourceSitemap": 29,
+            "id": "pk-2282",
+            "url": "https://torecacamp-pokemon.com/products/rc_ithkams9wd6p_4iff",
+            "startedAt": "2026-11-15T04:46:43.355Z",
+            "sourceSitemap": 28,
             "routeReason": "bulk-unreached-priority",
             "status": "verified",
-            "confirmedAt": "2026-11-15T02:07:21.409Z",
-            "price": 39800,
-            "available": true,
-            "adopted": true
-          },
-          {
-            "id": "x-122054",
-            "url": "https://torecacamp-pokemon.com/products/rc_itz1pd5bnixw_vj4r",
-            "startedAt": "2026-11-15T02:07:21.437Z",
-            "sourceSitemap": 2,
-            "routeReason": "bulk-unreached-priority",
-            "status": "verified",
-            "confirmedAt": "2026-11-15T02:07:22.502Z",
-            "price": 11800,
-            "available": true,
-            "adopted": true
-          },
-          {
-            "id": "x-122055",
-            "url": "https://torecacamp-pokemon.com/products/rc_itqlixu7jpfj_jgal",
-            "startedAt": "2026-11-15T02:07:22.530Z",
-            "sourceSitemap": 2,
-            "routeReason": "bulk-unreached-priority",
-            "status": "verified",
-            "confirmedAt": "2026-11-15T02:07:23.587Z",
-            "price": 8980,
-            "available": true,
-            "adopted": true
-          },
-          {
-            "id": "pk-45925",
-            "url": "https://torecacamp-pokemon.com/products/rc_itg5wd2u5o2w_mmr9",
-            "startedAt": "2026-11-15T02:07:23.616Z",
-            "sourceSitemap": 4,
-            "routeReason": "bulk-unreached-priority",
-            "status": "verified",
-            "confirmedAt": "2026-11-15T02:07:24.699Z",
-            "price": 32800,
+            "confirmedAt": "2026-11-15T04:46:44.437Z",
+            "price": 29800,
             "available": false,
             "adopted": true
           },
           {
-            "id": "pk-45930",
-            "url": "https://torecacamp-pokemon.com/products/rc_it81mei3icpj_9lk8",
-            "startedAt": "2026-11-15T02:07:24.728Z",
-            "sourceSitemap": 4,
+            "id": "pk-2300",
+            "url": "https://torecacamp-pokemon.com/products/rc_itwk3no10k08_btqf",
+            "startedAt": "2026-11-15T04:46:44.470Z",
+            "sourceSitemap": 28,
             "routeReason": "bulk-unreached-priority",
             "status": "verified",
-            "confirmedAt": "2026-11-15T02:07:25.780Z",
-            "price": 8980,
+            "confirmedAt": "2026-11-15T04:46:45.519Z",
+            "price": 24800,
             "available": true,
             "adopted": true
           },
           {
-            "id": "pk-78744",
-            "url": "https://torecacamp-pokemon.com/products/rc_it9jafqlpf3o_tcob",
-            "startedAt": "2026-11-15T02:07:25.809Z",
-            "sourceSitemap": 29,
+            "id": "pk-2334",
+            "url": "https://torecacamp-pokemon.com/products/rc_itvod91n8722_lvoy",
+            "startedAt": "2026-11-15T04:46:45.553Z",
+            "sourceSitemap": 28,
             "routeReason": "bulk-unreached-priority",
             "status": "verified",
-            "confirmedAt": "2026-11-15T02:07:26.891Z",
-            "price": 17800,
-            "available": true,
-            "adopted": true
-          },
-          {
-            "id": "pk-79905",
-            "url": "https://torecacamp-pokemon.com/products/rc_itdvc57dqq0w_zyzk",
-            "startedAt": "2026-11-15T02:07:26.920Z",
-            "sourceSitemap": 34,
-            "routeReason": "bulk-unreached-priority",
-            "status": "verified",
-            "confirmedAt": "2026-11-15T02:07:27.996Z",
+            "confirmedAt": "2026-11-15T04:46:46.638Z",
             "price": 34800,
             "available": true,
             "adopted": true
           },
           {
-            "id": "pk-65285",
-            "url": "https://torecacamp-pokemon.com/products/rc_itzzcyswslh6_9coz",
-            "startedAt": "2026-11-15T02:07:28.024Z",
-            "sourceSitemap": 12,
+            "id": "pk-2426",
+            "url": "https://torecacamp-pokemon.com/products/rc_its4f96l5m6o_ngnw",
+            "startedAt": "2026-11-15T04:46:46.672Z",
+            "sourceSitemap": 28,
             "routeReason": "bulk-unreached-priority",
             "status": "verified",
-            "confirmedAt": "2026-11-15T02:07:29.092Z",
-            "price": 52800,
+            "confirmedAt": "2026-11-15T04:46:47.718Z",
+            "price": 29800,
             "available": true,
             "adopted": true
           },
           {
-            "id": "pk-1446",
-            "url": "https://torecacamp-pokemon.com/products/rc_itfrsignb9zi_iusf",
-            "startedAt": "2026-11-15T02:07:29.121Z",
-            "sourceSitemap": 18,
+            "id": "pk-2480",
+            "url": "https://torecacamp-pokemon.com/products/rc_it8wmy83v1m8_gesc",
+            "startedAt": "2026-11-15T04:46:47.751Z",
+            "sourceSitemap": 28,
             "routeReason": "bulk-unreached-priority",
             "status": "verified",
-            "confirmedAt": "2026-11-15T02:07:30.193Z",
-            "price": 39800,
-            "available": false,
+            "confirmedAt": "2026-11-15T04:46:48.829Z",
+            "price": 5980,
+            "available": true,
             "adopted": true
           },
           {
-            "id": "pk-55727",
-            "url": "https://torecacamp-pokemon.com/products/rc_it0mxgqqrvng_8uzf",
-            "startedAt": "2026-11-15T02:07:30.221Z",
+            "id": "x-91121",
+            "url": "https://torecacamp-pokemon.com/products/rc_itgkio97v75z_kdcq",
+            "startedAt": "2026-11-15T04:46:48.863Z",
             "sourceSitemap": 7,
             "routeReason": "bulk-unreached-priority",
             "status": "verified",
-            "confirmedAt": "2026-11-15T02:07:31.295Z",
-            "price": 12800,
-            "available": true,
-            "adopted": true
-          },
-          {
-            "id": "pk-24415",
-            "url": "https://torecacamp-pokemon.com/products/rc_itn6njp85c8s_vtya",
-            "startedAt": "2026-11-15T02:07:31.325Z",
-            "sourceSitemap": 21,
-            "routeReason": "bulk-unreached-priority",
-            "status": "verified",
-            "confirmedAt": "2026-11-15T02:07:32.395Z",
-            "price": 26800,
+            "confirmedAt": "2026-11-15T04:46:49.933Z",
+            "price": 64800,
             "available": false,
             "adopted": true
           },
           {
-            "id": "pk-39522",
-            "url": "https://torecacamp-pokemon.com/products/rc_it0eiy4wek48_duv3",
-            "startedAt": "2026-11-15T02:07:32.423Z",
+            "id": "x-91127",
+            "url": "https://torecacamp-pokemon.com/products/rc_itiajhufj340_k8vg",
+            "startedAt": "2026-11-15T04:46:49.968Z",
             "sourceSitemap": 1,
             "routeReason": "bulk-unreached-priority",
             "status": "verified",
-            "confirmedAt": "2026-11-15T02:07:33.489Z",
-            "price": 23800,
+            "confirmedAt": "2026-11-15T04:46:51.016Z",
+            "price": 49800,
+            "available": false,
+            "adopted": true
+          },
+          {
+            "id": "x-91128",
+            "url": "https://torecacamp-pokemon.com/products/rc_it273t6l5pco_jios",
+            "startedAt": "2026-11-15T04:46:51.045Z",
+            "sourceSitemap": 2,
+            "routeReason": "bulk-unreached-priority",
+            "status": "verified",
+            "confirmedAt": "2026-11-15T04:46:52.122Z",
+            "price": 19800,
+            "available": true,
+            "adopted": true
+          },
+          {
+            "id": "x-411784",
+            "url": "https://torecacamp-pokemon.com/products/rc_itex76xysb4k_7iao",
+            "startedAt": "2026-11-15T04:46:52.151Z",
+            "sourceSitemap": 31,
+            "routeReason": "bulk-unreached-priority",
+            "status": "verified",
+            "confirmedAt": "2026-11-15T04:46:53.246Z",
+            "price": 19800,
+            "available": false,
+            "adopted": true
+          },
+          {
+            "id": "x-413387",
+            "url": "https://torecacamp-pokemon.com/products/rc_it5rk8ile4tk_5qbb",
+            "startedAt": "2026-11-15T04:46:53.280Z",
+            "sourceSitemap": 31,
+            "routeReason": "bulk-unreached-priority",
+            "status": "verified",
+            "confirmedAt": "2026-11-15T04:46:54.320Z",
+            "price": 59800,
             "available": false,
             "adopted": true
           }
         ],
         "collectionBatch": {
           "requests": 4,
-          "products": 559,
-          "verified": 188,
-          "newLinks": 2,
+          "products": 450,
+          "verified": 126,
+          "newLinks": 1,
           "failures": [],
           "pages": [
             {
-              "url": "https://torecacamp-pokemon.com/collections/s6a/products.json?limit=250&page=1",
+              "url": "https://torecacamp-pokemon.com/collections/%E3%83%9D%E3%82%B1%E3%83%A2%E3%83%B3%E3%82%AB%E3%83%BC%E3%83%89%E3%82%B2%E3%83%BC%E3%83%A0%E3%82%B5%E3%83%B3-%E3%83%A0%E3%83%BC%E3%83%B3-%E3%83%8F%E3%82%A4%E3%82%AF%E3%83%A9%E3%82%B9%E3%83%91%E3%83%83%E3%82%AF-tag-team-gx-%E3%82%BF%E3%83%83%E3%82%B0%E3%82%AA%E3%83%BC%E3%83%AB%E3%82%B9%E3%82%BF%E3%83%BC%E3%82%BA/products.json?limit=250&page=1",
               "page": 1,
               "lane": "priority",
-              "previousCheckedAt": "2026-11-14T20:54:45.425Z",
-              "observedAt": "2026-11-15T02:07:11.624Z",
+              "previousCheckedAt": "2026-11-14T21:07:07.941Z",
+              "observedAt": "2026-11-15T04:46:32.479Z",
               "coverageKnown": true,
               "expectedIds": [
-                "pk-20685",
-                "pk-20746",
-                "pk-20747",
-                "pk-20674",
-                "pk-20742",
-                "pk-20743",
-                "pk-20756",
-                "pk-20757",
-                "pk-20675",
-                "pk-20680",
-                "pk-20744",
-                "pk-20745",
-                "pk-20665",
-                "pk-20740",
-                "pk-20741",
-                "pk-20697",
-                "pk-20690",
-                "pk-20661",
-                "pk-20652",
-                "pk-20653",
-                "pk-20737",
-                "pk-20755",
-                "pk-20759",
-                "pk-20761",
-                "pk-20739",
-                "pk-20749",
-                "pk-20751",
-                "pk-20754",
-                "pk-20758",
-                "pk-20760",
-                "pk-20736",
-                "pk-20738",
-                "pk-20748",
-                "pk-20750",
-                "pk-20691",
-                "pk-20698"
+                "pk-6077",
+                "pk-6028",
+                "pk-6030",
+                "x-91272",
+                "pk-6015",
+                "pk-6036",
+                "pk-6041"
               ],
               "advanceCursor": true,
-              "maintenanceDeadlineAt": "2026-11-15T02:54:45.425Z",
-              "productCount": 101,
-              "verified": 61,
-              "fixedVerified": 36,
-              "criticalVerified": 1,
+              "maintenanceDeadlineAt": "2026-11-15T03:09:05.396Z",
+              "productCount": 250,
+              "verified": 75,
+              "fixedVerified": 6,
+              "criticalVerified": 3,
               "newLinks": 0,
               "omitted": {
-                "identity": 40,
+                "identity": 164,
+                "condition": 0,
+                "hold": 11,
+                "binding": 0,
+                "price": 0,
+                "otherProduct": 0
+              },
+              "bytes": 576011,
+              "fetchMs": 234,
+              "payloadHash": "209482e463bbbb07627a620c067711431851417d613490bd1e98e31cae3bb6c5"
+            },
+            {
+              "url": "https://torecacamp-pokemon.com/collections/sv11b/products.json?limit=250&page=2",
+              "page": 2,
+              "lane": "continuation",
+              "previousCheckedAt": "2026-11-14T21:07:50.521Z",
+              "observedAt": "2026-11-15T04:46:33.466Z",
+              "coverageKnown": false,
+              "expectedIds": [],
+              "advanceCursor": true,
+              "maintenanceDeadlineAt": "2026-11-15T03:07:50.521Z",
+              "productCount": 74,
+              "verified": 5,
+              "fixedVerified": 0,
+              "criticalVerified": 0,
+              "newLinks": 1,
+              "omitted": {
+                "identity": 69,
                 "condition": 0,
                 "hold": 0,
                 "binding": 0,
                 "price": 0,
                 "otherProduct": 0
               },
-              "bytes": 210157,
-              "fetchMs": 218,
-              "payloadHash": "ce25cb6630797b0b5650fa17bd4a5f6e5df46b3758d01d146b507033c175c768"
+              "bytes": 127020,
+              "fetchMs": 121,
+              "payloadHash": "49116999d61cc7ee0048e67c84dd81fdc948d2a933eb82e45752f4cdb6c394fa"
             },
             {
-              "url": "https://torecacamp-pokemon.com/collections/s4a/products.json?limit=250&page=2",
-              "page": 2,
-              "lane": "continuation",
-              "previousCheckedAt": "2026-11-14T21:06:25.524Z",
-              "observedAt": "2026-11-15T02:07:12.774Z",
-              "coverageKnown": false,
-              "expectedIds": [],
-              "advanceCursor": true,
-              "maintenanceDeadlineAt": "2026-11-15T03:06:25.524Z",
-              "productCount": 204,
-              "verified": 28,
-              "fixedVerified": 0,
-              "criticalVerified": 0,
-              "newLinks": 2,
-              "omitted": {
-                "identity": 173,
-                "condition": 0,
-                "hold": 3,
-                "binding": 0,
-                "price": 0,
-                "otherProduct": 0
-              },
-              "bytes": 330835,
-              "fetchMs": 268,
-              "payloadHash": "13c29a87f0a3bc7d98eea79b924de514a18d96aa0a0f3b7b877e09f2478bf790"
-            },
-            {
-              "url": "https://torecacamp-pokemon.com/collections/vmax%E3%82%B9%E3%83%9A%E3%82%B7%E3%83%A3%E3%83%AB%E3%82%BB%E3%83%83%E3%83%88/products.json?limit=250&page=1",
+              "url": "https://torecacamp-pokemon.com/collections/vmax%E3%82%B9%E3%83%9A%E3%82%B7%E3%83%A3%E3%83%AB%E3%82%BB%E3%83%83%E3%83%88-%E3%82%A4%E3%83%BC%E3%83%96%E3%82%A4%E3%83%92%E3%83%BC%E3%83%AD%E3%83%BC%E3%82%BA/products.json?limit=250&page=1",
               "page": 1,
               "lane": "rotation",
               "previousCheckedAt": null,
-              "observedAt": "2026-11-15T02:07:13.718Z",
+              "observedAt": "2026-11-15T04:46:34.564Z",
               "coverageKnown": false,
               "expectedIds": [],
               "advanceCursor": true,
               "maintenanceDeadlineAt": null,
-              "productCount": 4,
-              "verified": 1,
+              "productCount": 8,
+              "verified": 4,
               "fixedVerified": 0,
               "criticalVerified": 0,
               "newLinks": 0,
               "omitted": {
-                "identity": 3,
+                "identity": 4,
                 "condition": 0,
                 "hold": 0,
                 "binding": 0,
                 "price": 0,
                 "otherProduct": 0
               },
-              "bytes": 10456,
-              "fetchMs": 112,
-              "payloadHash": "f123e6c54f3ee3573cb08220c8d587f48cc21f4b94c248fdedc938ef2b485749"
+              "bytes": 16540,
+              "fetchMs": 119,
+              "payloadHash": "04bf8629ef1cac3741b356584e276348e8a8b48a2e8803cd808c5713b29363d2"
             },
             {
-              "url": "https://torecacamp-pokemon.com/collections/%E3%82%B5%E3%83%B3-%E3%83%A0%E3%83%BC%E3%83%B3-promo/products.json?limit=250&page=1",
+              "url": "https://torecacamp-pokemon.com/collections/%E3%83%9D%E3%82%B1%E3%83%A2%E3%83%B3%E3%82%AB%E3%83%BC%E3%83%89%E3%82%B2%E3%83%BC%E3%83%A0%E3%82%B5%E3%83%B3-%E3%83%A0%E3%83%BC%E3%83%B3-%E6%8B%A1%E5%BC%B5%E3%83%91%E3%83%83%E3%82%AF-%E3%82%BF%E3%83%83%E3%82%B0%E3%83%9C%E3%83%AB%E3%83%88/products.json?limit=250&page=1",
               "page": 1,
               "lane": "priority",
-              "previousCheckedAt": "2026-11-14T23:33:00.199Z",
-              "observedAt": "2026-11-15T02:07:15.016Z",
+              "previousCheckedAt": "2026-11-14T21:08:48.966Z",
+              "observedAt": "2026-11-15T04:46:35.688Z",
               "coverageKnown": true,
               "expectedIds": [
-                "x-91227",
-                "x-91222",
-                "x-91243",
-                "x-91255",
-                "x-91256",
-                "x-91258",
-                "x-91261",
-                "x-91246",
-                "x-91263",
-                "x-91219",
-                "x-91235",
-                "x-91226",
-                "x-91214",
-                "x-91215",
-                "x-91229",
-                "x-91230",
-                "x-91225",
-                "x-91242",
-                "x-91251",
-                "x-91252"
+                "pk-2704",
+                "pk-2699",
+                "x-127727"
               ],
               "advanceCursor": true,
-              "maintenanceDeadlineAt": "2026-11-15T03:05:42.008Z",
-              "productCount": 250,
-              "verified": 98,
-              "fixedVerified": 20,
-              "criticalVerified": 0,
+              "maintenanceDeadlineAt": "2026-11-15T03:08:48.966Z",
+              "productCount": 118,
+              "verified": 42,
+              "fixedVerified": 2,
+              "criticalVerified": 1,
               "newLinks": 0,
               "omitted": {
-                "identity": 152,
+                "identity": 76,
                 "condition": 0,
                 "hold": 0,
                 "binding": 0,
                 "price": 0,
                 "otherProduct": 0
               },
-              "bytes": 705558,
-              "fetchMs": 310,
-              "payloadHash": "09b9e9989b64a67f331f8eefa95f8cb71423478a24d3ee4cb5bb064812929b9f"
+              "bytes": 266864,
+              "fetchMs": 142,
+              "payloadHash": "80bb71b0f74982d556a1bb06200971706ed7fe2115ba01381d71c78d6bdadc3c"
             }
           ],
-          "elapsedMs": 4280,
+          "elapsedMs": 4046,
           "queue": {
-            "asOf": "2026-11-15T02:07:41.268Z",
+            "asOf": "2026-11-15T04:46:58.787Z",
             "routes": 157,
             "unfinishedPages": 6,
-            "unchecked": 5,
+            "unchecked": 4,
             "waitTimeUnknown": 0,
-            "longestKnownWaitMs": 122815741
+            "longestKnownWaitMs": 132373260
           }
         },
         "maintenanceMode": true,
         "maintenance": {
-          "sitemapIndex": 33,
+          "sitemapIndex": 34,
           "entryIndex": 0,
           "cycles": 3,
-          "refreshed": 18826,
+          "refreshed": 18829,
           "newLinks": 150,
-          "checkedAt": "2026-11-15T02:07:41.260Z"
+          "checkedAt": "2026-11-15T04:46:58.779Z"
         },
         "firstPassCompletedAt": "2026-10-08T21:56:31.044Z",
-        "maintenancePendingCount": 807,
+        "maintenancePendingCount": 885,
         "priceMigration": {
           "version": 1,
-          "updatedAt": "2026-11-15T02:07:10.239Z",
+          "updatedAt": "2026-11-15T04:46:31.081Z",
           "correctedCount": 0,
           "cumulativeCorrectedCount": 0,
           "preCorrectionExtremeCount": 0,
-          "quarantinedCount": 26,
+          "quarantinedCount": 27,
           "examples": []
         },
-        "quarantinedPriceCount": 26,
+        "quarantinedPriceCount": 27,
         "sitemapsSucceeded": 1,
         "listedProducts": 1000,
-        "detailFetched": 23,
-        "acquiredCount": 210,
-        "parsed": 6,
-        "stateA": 23,
+        "detailFetched": 20,
+        "acquiredCount": 146,
+        "parsed": 4,
+        "stateA": 20,
         "referenceUpdated": 0,
-        "newLinkCount": 2,
-        "updatedCount": 2,
+        "newLinkCount": 1,
+        "updatedCount": 0,
         "fetchFailureCount": 0,
-        "duplicateUrlCount": 994,
+        "duplicateUrlCount": 996,
         "duplicateProductIdCount": 0,
         "abruptDropDetected": false,
-        "previousCatalogCount": 6965,
-        "proposedCatalogCount": 6967,
+        "previousCatalogCount": 6967,
+        "proposedCatalogCount": 6968,
         "progressHealth": {
-          "value": 66247,
-          "previousValue": 66241,
+          "value": 66250,
+          "previousValue": 66247,
           "stagnantRuns": 0,
           "status": "progressing",
-          "checkedAt": "2026-11-15T02:07:41.266Z"
+          "checkedAt": "2026-11-15T04:46:58.785Z"
         },
-        "lastSuccessfulPage": "サイトマップ 33",
+        "lastSuccessfulPage": "サイトマップ 34",
         "lastFailure": null,
         "failedSitemaps": [],
         "stoppingReason": null,
         "completionStatus": "partial",
-        "completedAt": "2026-11-15T02:07:41.271Z"
+        "completedAt": "2026-11-15T04:46:58.789Z"
       },
       "observedExecutionDays": 5,
       "processedPerExecutionDay": 57.6,
@@ -704,17 +658,17 @@
       "firstPassProgressField": "newlyVisitedProducts",
       "firstPassDaysEstimate": null,
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
-      "usableNet": 0,
+      "usableNet": 1,
       "observationPeriod": {
-        "from": "2026-11-15T02:08:38.369Z",
-        "to": "2026-11-15T02:46:57.447Z"
+        "from": "2026-11-15T02:46:57.447Z",
+        "to": "2026-11-15T04:47:57.373Z"
       },
       "sinceBaseline": {
         "newLinked": 892,
         "validAdded": 898,
         "validLost": 244,
         "usableNet": 654,
-        "freshnessRecovered": 5673
+        "freshnessRecovered": 5680
       },
       "freshness": null
     },
@@ -747,8 +701,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-11-15T02:08:38.369Z",
-        "to": "2026-11-15T02:46:57.447Z"
+        "from": "2026-11-15T02:46:57.447Z",
+        "to": "2026-11-15T04:47:57.373Z"
       },
       "sinceBaseline": {
         "newLinked": 0,
@@ -761,9 +715,9 @@
     }
   ],
   "psaOnly": {
-    "count": 1482,
+    "count": 1483,
     "causes": {
-      "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持": 1348,
+      "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持": 1349,
       "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）": 134
     },
     "cards": [
@@ -822,16 +776,16 @@
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
-        "id": "x-127035",
-        "setCode": "SM-P",
-        "url": null,
-        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
-      },
-      {
         "id": "pk-24622",
         "setCode": "SN",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "x-127035",
+        "setCode": "SM-P",
+        "url": null,
+        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
         "id": "x-739102",
@@ -852,14 +806,14 @@
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
-        "id": "pk-20609",
-        "setCode": "SGG",
+        "id": "pk-49060",
+        "setCode": "CLK",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-49060",
-        "setCode": "CLK",
+        "id": "pk-20609",
+        "setCode": "SGG",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -876,20 +830,14 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-49047",
-        "setCode": "CLK",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "pk-48980",
         "setCode": "CLF",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-103",
-        "setCode": "XY2",
+        "id": "pk-49047",
+        "setCode": "CLK",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -906,13 +854,13 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-49052",
-        "setCode": "CLK",
+        "id": "pk-103",
+        "setCode": "XY2",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-49133",
+        "id": "pk-49052",
         "setCode": "CLK",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
@@ -924,10 +872,10 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-23857",
-        "setCode": "S8A-G",
-        "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-asia-25th-anniversary-promo/202700",
-        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
+        "id": "pk-49133",
+        "setCode": "CLK",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
         "id": "pk-48994",
@@ -942,10 +890,22 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
+        "id": "x-156179",
+        "setCode": "PMCG12",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
         "id": "pk-49131",
         "setCode": "CLF",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "pk-23857",
+        "setCode": "S8A-G",
+        "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-asia-25th-anniversary-promo/202700",
+        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
         "id": "x-93136",
@@ -966,20 +926,14 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-93317",
-        "setCode": "PMCGP",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "pk-49055",
         "setCode": "CLK",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-92118",
-        "setCode": "NEO1",
+        "id": "x-93317",
+        "setCode": "PMCGP",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -988,12 +942,6 @@
         "setCode": "SM3+",
         "url": "https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-sun-moon-strength-expansion-pack-shining-legends/151058",
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
-      },
-      {
-        "id": "pk-4425",
-        "setCode": "SMP2",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
         "id": "x-106729",
@@ -1008,14 +956,26 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-156179",
-        "setCode": "PMCG12",
+        "id": "x-332792",
+        "setCode": "SV-P-SM",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-332792",
-        "setCode": "SV-P-SM",
+        "id": "x-92118",
+        "setCode": "NEO1",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "pk-4425",
+        "setCode": "SMP2",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "pk-1586",
+        "setCode": "SM1M",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -1024,18 +984,6 @@
         "setCode": "SM-P",
         "url": null,
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
-      },
-      {
-        "id": "x-100092",
-        "setCode": "SM-P",
-        "url": null,
-        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
-      },
-      {
-        "id": "pk-1586",
-        "setCode": "SM1M",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
         "id": "pk-362",
@@ -1048,6 +996,12 @@
         "setCode": "SGI",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "x-100092",
+        "setCode": "SM-P",
+        "url": null,
+        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
         "id": "x-92151",
@@ -1068,15 +1022,15 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-642",
-        "setCode": "SMD",
+        "id": "x-708760",
+        "setCode": "SV-P",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-745687",
-        "setCode": "M-P",
-        "url": "https://www.psacard.com/spec/psa/14234253",
+        "id": "pk-642",
+        "setCode": "SMD",
+        "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
@@ -1092,14 +1046,14 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-92154",
-        "setCode": "PMCG3",
-        "url": null,
+        "id": "x-745687",
+        "setCode": "M-P",
+        "url": "https://www.psacard.com/spec/psa/14234253",
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-4383",
-        "setCode": "SMP2",
+        "id": "x-92154",
+        "setCode": "PMCG3",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -1110,14 +1064,8 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-91121",
-        "setCode": "S-P",
-        "url": null,
-        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
-      },
-      {
-        "id": "pk-48993",
-        "setCode": "CLF",
+        "id": "pk-4383",
+        "setCode": "SMP2",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -1140,16 +1088,10 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-520383",
-        "setCode": "SV-P",
+        "id": "x-91121",
+        "setCode": "S-P",
         "url": null,
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
-      },
-      {
-        "id": "pk-18543",
-        "setCode": "CP3",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
         "id": "pk-18553",
@@ -1164,7 +1106,19 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-1159",
+        "id": "pk-20608",
+        "setCode": "SGG",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "pk-48993",
+        "setCode": "CLF",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "pk-18537",
         "setCode": "CP3",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
@@ -1176,14 +1130,26 @@
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
-        "id": "pk-292",
-        "setCode": "221XYP",
+        "id": "x-520383",
+        "setCode": "SV-P",
+        "url": null,
+        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
+      },
+      {
+        "id": "pk-18543",
+        "setCode": "CP3",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-457809",
-        "setCode": "PMCGGYM3",
+        "id": "pk-1159",
+        "setCode": "CP3",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "pk-292",
+        "setCode": "221XYP",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -1206,12 +1172,6 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-708760",
-        "setCode": "SV-P",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "pk-75034",
         "setCode": "MC",
         "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mc-start-deck-100-battle-collection/326110",
@@ -1226,6 +1186,12 @@
       {
         "id": "x-92105",
         "setCode": "NEO4",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "x-457809",
+        "setCode": "PMCGGYM3",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -1260,22 +1226,10 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-20608",
-        "setCode": "SGG",
-        "url": null,
+        "id": "x-671488",
+        "setCode": "M-P",
+        "url": "https://www.psacard.com/spec/psa/14234253",
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
-        "id": "pk-18537",
-        "setCode": "CP3",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
-        "id": "x-93046",
-        "setCode": "SM-P",
-        "url": null,
-        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
         "id": "x-450624",
@@ -1294,6 +1248,12 @@
         "setCode": "M-P",
         "url": "https://www.psacard.com/spec/psa/14234253",
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "x-93046",
+        "setCode": "SM-P",
+        "url": null,
+        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
         "id": "pk-69648",
@@ -1326,9 +1286,9 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-1587",
-        "setCode": "SM4+",
-        "url": null,
+        "id": "x-671485",
+        "setCode": "M-P",
+        "url": "https://www.psacard.com/spec/psa/14234253",
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
@@ -1339,6 +1299,12 @@
       },
       {
         "id": "x-450623",
+        "setCode": "10TH",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "x-450632",
         "setCode": "10TH",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
@@ -1362,9 +1328,9 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-671488",
-        "setCode": "M-P",
-        "url": "https://www.psacard.com/spec/psa/14234253",
+        "id": "pk-1587",
+        "setCode": "SM4+",
+        "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
@@ -1386,26 +1352,20 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
+        "id": "x-459259",
+        "setCode": "PRMF2",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
         "id": "pk-1121",
         "setCode": "SNP-R",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-671485",
-        "setCode": "M-P",
-        "url": "https://www.psacard.com/spec/psa/14234253",
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "pk-3849",
         "setCode": "XY2",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
-        "id": "pk-1628",
-        "setCode": "SM4+",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -1446,12 +1406,6 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-450632",
-        "setCode": "10TH",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "x-172043",
         "setCode": "SV-P",
         "url": null,
@@ -1464,6 +1418,12 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
+        "id": "x-92150",
+        "setCode": "PMCGEX",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
         "id": "pk-14722",
         "setCode": "050XYP",
         "url": null,
@@ -1472,6 +1432,12 @@
       {
         "id": "pk-20994",
         "setCode": "EVS",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "pk-1628",
+        "setCode": "SM4+",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -1506,20 +1472,8 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-334799",
-        "setCode": "SM7A",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "x-450661",
         "setCode": "DP",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
-        "id": "x-459259",
-        "setCode": "PRMF2",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -1530,8 +1484,8 @@
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
-        "id": "pk-49063",
-        "setCode": "CLK",
+        "id": "x-450625",
+        "setCode": "10TH",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -1542,20 +1496,8 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-92150",
-        "setCode": "PMCGEX",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "x-467864",
         "setCode": "PMCGP",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
-        "id": "pk-1695",
-        "setCode": "SMD",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -1584,6 +1526,12 @@
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
+        "id": "x-455469",
+        "setCode": "PMCG12",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
         "id": "pk-1748",
         "setCode": "SM7B",
         "url": null,
@@ -1594,6 +1542,12 @@
         "setCode": "SV-P",
         "url": null,
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
+      },
+      {
+        "id": "x-334799",
+        "setCode": "SM7A",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
         "id": "pk-1282",
@@ -1626,6 +1580,12 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
+        "id": "pk-49063",
+        "setCode": "CLK",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
         "id": "pk-2139",
         "setCode": "SMP1",
         "url": null,
@@ -1650,20 +1610,20 @@
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
-        "id": "x-92141",
-        "setCode": "PMCGG2",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "x-93194",
         "setCode": "043DPTP",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-18873",
-        "setCode": "PT4",
+        "id": "pk-1695",
+        "setCode": "SMD",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "x-309392",
+        "setCode": "PMCG3",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -1676,6 +1636,12 @@
       {
         "id": "x-93005",
         "setCode": "PMCG12",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "pk-4067",
+        "setCode": "CP3",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -1696,18 +1662,6 @@
         "setCode": "SM3+",
         "url": "https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-sun-moon-strength-expansion-pack-shining-legends/151058",
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
-      },
-      {
-        "id": "pk-18541",
-        "setCode": "CP3",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
-        "id": "x-455469",
-        "setCode": "PMCG12",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
         "id": "x-450629",
@@ -1740,6 +1694,12 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
+        "id": "x-671487",
+        "setCode": "M-P",
+        "url": "https://www.psacard.com/spec/psa/14234253",
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
         "id": "x-456653",
         "setCode": "PMCG4",
         "url": null,
@@ -1758,8 +1718,8 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-93313",
-        "setCode": "PMCGP",
+        "id": "x-92141",
+        "setCode": "PMCGG2",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -1770,14 +1730,8 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-92116",
-        "setCode": "NEO2",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
-        "id": "x-92096",
-        "setCode": "NEOP",
+        "id": "x-93313",
+        "setCode": "PMCGP",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -1790,6 +1744,12 @@
       {
         "id": "x-92097",
         "setCode": "NEOP",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "pk-18873",
+        "setCode": "PT4",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -1842,12 +1802,6 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-4067",
-        "setCode": "CP3",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "pk-58608",
         "setCode": "PTM",
         "url": null,
@@ -1860,14 +1814,26 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-309374",
-        "setCode": "NEO1",
+        "id": "x-528636",
+        "setCode": "SV-P",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
         "id": "pk-18505",
         "setCode": "CP5",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "x-309374",
+        "setCode": "NEO1",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "pk-18541",
+        "setCode": "CP3",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -1890,16 +1856,16 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-744300",
-        "setCode": "M2A",
-        "url": null,
-        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
-      },
-      {
         "id": "pk-1577",
         "setCode": "SM5S",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "x-744300",
+        "setCode": "M2A",
+        "url": null,
+        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
         "id": "x-610624",
@@ -1920,15 +1886,15 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-4389",
-        "setCode": "SMP2",
+        "id": "pk-2137",
+        "setCode": "SM4+",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-671487",
-        "setCode": "M-P",
-        "url": "https://www.psacard.com/spec/psa/14234253",
+        "id": "pk-4389",
+        "setCode": "SMP2",
+        "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
@@ -1942,6 +1908,12 @@
         "setCode": "CLF",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "pk-75220",
+        "setCode": "MC",
+        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mc-start-deck-100-battle-collection/326110",
+        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
         "id": "pk-36841",
@@ -1986,6 +1958,18 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
+        "id": "x-92116",
+        "setCode": "NEO2",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "x-92096",
+        "setCode": "NEOP",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
         "id": "x-93321",
         "setCode": "PMCGP",
         "url": null,
@@ -1998,14 +1982,14 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-1283",
-        "setCode": "SM1M",
+        "id": "pk-95",
+        "setCode": "CP3",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-95",
-        "setCode": "CP3",
+        "id": "pk-1283",
+        "setCode": "SM1M",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -2022,6 +2006,12 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
+        "id": "x-459263",
+        "setCode": "PRMF3",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
         "id": "x-93156",
         "setCode": "PMCG12",
         "url": null,
@@ -2032,12 +2022,6 @@
         "setCode": "SM3+",
         "url": "https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-sun-moon-strength-expansion-pack-shining-legends/151058",
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
-      },
-      {
-        "id": "x-459263",
-        "setCode": "PRMF3",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
         "id": "pk-1172",
@@ -2118,22 +2102,16 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-450625",
-        "setCode": "10TH",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "pk-18534",
         "setCode": "CP3",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-75220",
-        "setCode": "MC",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mc-start-deck-100-battle-collection/326110",
-        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
+        "id": "pk-17769",
+        "setCode": "SEK",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
         "id": "x-802480",
@@ -2190,18 +2168,6 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-92145",
-        "setCode": "PMCGG2",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
-        "id": "x-309392",
-        "setCode": "PMCG3",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "x-452689",
         "setCode": "PCG-P",
         "url": null,
@@ -2210,6 +2176,12 @@
       {
         "id": "pk-56698",
         "setCode": "PCG7",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "x-309453",
+        "setCode": "PMCG2",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -2232,26 +2204,20 @@
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
-        "id": "x-467419",
-        "setCode": "PMCGP",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "x-289441",
         "setCode": "S-P",
         "url": null,
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
-        "id": "x-450627",
-        "setCode": "10TH",
+        "id": "x-467419",
+        "setCode": "PMCGP",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-1119",
-        "setCode": "MMB",
+        "id": "x-450627",
+        "setCode": "10TH",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -2298,18 +2264,6 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-456327",
-        "setCode": "PMCG3",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
-        "id": "pk-2137",
-        "setCode": "SM4+",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "x-708759",
         "setCode": "SV-P",
         "url": null,
@@ -2324,12 +2278,6 @@
       {
         "id": "x-432354",
         "setCode": "ADV2",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
-        "id": "pk-4387",
-        "setCode": "SMP2",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -2354,12 +2302,6 @@
       {
         "id": "x-263335",
         "setCode": "SVJL",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
-        "id": "pk-1599",
-        "setCode": "SM3H",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -2424,6 +2366,18 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
+        "id": "x-92145",
+        "setCode": "PMCGG2",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "x-452683",
+        "setCode": "PCG-P",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
         "id": "x-453468",
         "setCode": "L-P",
         "url": null,
@@ -2434,12 +2388,6 @@
         "setCode": "SM3+",
         "url": "https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-sun-moon-strength-expansion-pack-shining-legends/151058",
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
-      },
-      {
-        "id": "x-309453",
-        "setCode": "PMCG2",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
         "id": "pk-80664",
@@ -2460,12 +2408,6 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-93322",
-        "setCode": "PMCGP",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "x-413484",
         "setCode": "XY-P",
         "url": null,
@@ -2478,14 +2420,14 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-528636",
-        "setCode": "SV-P",
+        "id": "pk-56692",
+        "setCode": "PCG6",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-56692",
-        "setCode": "PCG6",
+        "id": "x-93322",
+        "setCode": "PMCGP",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -2494,12 +2436,6 @@
         "setCode": "PMCGG2",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
-        "id": "x-411712",
-        "setCode": "XY-P",
-        "url": null,
-        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
         "id": "pk-56532",
@@ -2514,8 +2450,8 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-58616",
-        "setCode": "PTS",
+        "id": "pk-1119",
+        "setCode": "MMB",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -2524,6 +2460,12 @@
         "setCode": "PMCG11",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "x-411712",
+        "setCode": "XY-P",
+        "url": null,
+        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
         "id": "x-111834",
@@ -2592,6 +2534,12 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
+        "id": "pk-3598",
+        "setCode": "SML",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
         "id": "x-744293",
         "setCode": "M2A",
         "url": null,
@@ -2610,8 +2558,8 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-3598",
-        "setCode": "SML",
+        "id": "x-456327",
+        "setCode": "PMCG3",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -2694,12 +2642,6 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-17769",
-        "setCode": "SEK",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "x-456341",
         "setCode": "PMCG3",
         "url": null,
@@ -2708,6 +2650,12 @@
       {
         "id": "pk-48988",
         "setCode": "CLF",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "pk-4387",
+        "setCode": "SMP2",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -2754,10 +2702,10 @@
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
-        "id": "x-91213",
-        "setCode": "SM-P",
+        "id": "pk-1599",
+        "setCode": "SM3H",
         "url": null,
-        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
         "id": "x-91230",
@@ -2767,12 +2715,6 @@
       },
       {
         "id": "x-91426",
-        "setCode": "XY-P",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
-        "id": "x-91427",
         "setCode": "XY-P",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
@@ -2790,12 +2732,6 @@
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
-        "id": "x-92117",
-        "setCode": "NEO2",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "pk-18943",
         "setCode": "BW8",
         "url": null,
@@ -2808,8 +2744,8 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-406760",
-        "setCode": "BW9",
+        "id": "x-92117",
+        "setCode": "NEO2",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -2862,20 +2798,8 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-449372",
-        "setCode": "PT3",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "pk-616",
         "setCode": "XY11",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
-        "id": "x-452683",
-        "setCode": "PCG-P",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -2898,6 +2822,12 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
+        "id": "x-455477",
+        "setCode": "PMCG12",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
         "id": "x-109396",
         "setCode": "DP3",
         "url": null,
@@ -2906,12 +2836,6 @@
       {
         "id": "pk-18830",
         "setCode": "004PLAY",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
-        "id": "pk-6384",
-        "setCode": "XY4",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -2930,6 +2854,12 @@
       {
         "id": "pk-59121",
         "setCode": "PCG",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "pk-3876",
+        "setCode": "CP4",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -3018,12 +2948,6 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-3876",
-        "setCode": "CP4",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "x-453440",
         "setCode": "L-P",
         "url": null,
@@ -3032,6 +2956,12 @@
       {
         "id": "x-558753",
         "setCode": "L2-L",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "pk-58616",
+        "setCode": "PTS",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -3072,14 +3002,14 @@
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
-        "id": "pk-3710",
-        "setCode": "SM4S",
+        "id": "pk-18542",
+        "setCode": "CP3",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-18542",
-        "setCode": "CP3",
+        "id": "pk-3710",
+        "setCode": "SM4S",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -3246,10 +3176,22 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
+        "id": "x-91213",
+        "setCode": "SM-P",
+        "url": null,
+        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
+      },
+      {
         "id": "x-91226",
         "setCode": "SM-P",
         "url": null,
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
+      },
+      {
+        "id": "x-91427",
+        "setCode": "XY-P",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
         "id": "x-405055",
@@ -3268,6 +3210,12 @@
         "setCode": "SM-P",
         "url": null,
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
+      },
+      {
+        "id": "x-406760",
+        "setCode": "BW9",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
         "id": "pk-543",
@@ -3318,12 +3266,6 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-467537",
-        "setCode": "PMCGP",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "pk-1280",
         "setCode": "SM1M",
         "url": null,
@@ -3348,14 +3290,14 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-528639",
-        "setCode": "CBB1C",
+        "id": "x-93316",
+        "setCode": "XY8",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-93316",
-        "setCode": "XY8",
+        "id": "x-449372",
+        "setCode": "PT3",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -3414,14 +3356,14 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-65662",
-        "setCode": "PCG1",
+        "id": "x-446938",
+        "setCode": "DP5",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-601145",
-        "setCode": "CBB2C",
+        "id": "pk-65662",
+        "setCode": "PCG1",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -3446,6 +3388,12 @@
       {
         "id": "x-580652",
         "setCode": "CSML",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "pk-6384",
+        "setCode": "XY4",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -3512,12 +3460,6 @@
       {
         "id": "pk-56593",
         "setCode": "PCG6",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
-        "id": "pk-77940",
-        "setCode": "L2-L",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -3624,6 +3566,12 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
+        "id": "x-455450",
+        "setCode": "PMCG12",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
         "id": "pk-919",
         "setCode": "SM5S",
         "url": null,
@@ -3720,7 +3668,19 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
+        "id": "pk-20969",
+        "setCode": "B",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
         "id": "x-456671",
+        "setCode": "PMCG4",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "x-456674",
         "setCode": "PMCG4",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
@@ -3930,7 +3890,7 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-91233",
+        "id": "x-91238",
         "setCode": "SM-P",
         "url": null,
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
@@ -3942,6 +3902,12 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
+        "id": "x-91233",
+        "setCode": "SM-P",
+        "url": null,
+        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
+      },
+      {
         "id": "x-91948",
         "setCode": "E3",
         "url": null,
@@ -3949,12 +3915,6 @@
       },
       {
         "id": "x-91227",
-        "setCode": "SM-P",
-        "url": null,
-        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
-      },
-      {
-        "id": "x-91238",
         "setCode": "SM-P",
         "url": null,
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
@@ -4014,6 +3974,12 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
+        "id": "x-467537",
+        "setCode": "PMCGP",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
         "id": "x-93214",
         "setCode": "DPP",
         "url": null,
@@ -4050,14 +4016,14 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-405959",
-        "setCode": "BW6",
+        "id": "x-528639",
+        "setCode": "CBB1C",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-446938",
-        "setCode": "DP5",
+        "id": "x-405959",
+        "setCode": "BW6",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -4170,8 +4136,8 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-455477",
-        "setCode": "PMCG12",
+        "id": "x-601145",
+        "setCode": "CBB2C",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -4194,14 +4160,14 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-69647",
-        "setCode": "CP4",
+        "id": "pk-18923",
+        "setCode": "XYC",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-18923",
-        "setCode": "XYC",
+        "id": "pk-69647",
+        "setCode": "CP4",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -4236,12 +4202,6 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-404188",
-        "setCode": "BW8",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "x-112217",
         "setCode": "NEO3",
         "url": null,
@@ -4270,6 +4230,12 @@
         "setCode": "S-P",
         "url": null,
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
+      },
+      {
+        "id": "pk-77940",
+        "setCode": "L2-L",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
         "id": "x-446900",
@@ -4404,12 +4370,6 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-109377",
-        "setCode": "DP4EXDPBP158",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "x-454044",
         "setCode": "PMCGP",
         "url": null,
@@ -4484,12 +4444,6 @@
       {
         "id": "x-109112",
         "setCode": "L1-S",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
-        "id": "x-455450",
-        "setCode": "PMCG12",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -4680,12 +4634,6 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-20969",
-        "setCode": "B",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "x-456677",
         "setCode": "PMCG4",
         "url": null,
@@ -4754,6 +4702,12 @@
       {
         "id": "x-110730",
         "setCode": "EVS",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "x-109377",
+        "setCode": "DP4EXDPBP158",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -4830,6 +4784,12 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
+        "id": "x-335932",
+        "setCode": "SM4+",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
         "id": "pk-48985",
         "setCode": "CLF",
         "url": null,
@@ -4866,10 +4826,22 @@
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
+        "id": "pk-71710",
+        "setCode": "M2",
+        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
         "id": "pk-75585",
         "setCode": "MC",
         "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-mc-start-deck-100-battle-collection/326110",
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
+      },
+      {
+        "id": "pk-14183",
+        "setCode": "SD",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
         "id": "x-147503",
@@ -4960,12 +4932,6 @@
         "setCode": "SM-P",
         "url": null,
         "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
-      },
-      {
-        "id": "pk-48298",
-        "setCode": "PT-R",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
         "id": "x-91907",
@@ -5106,12 +5072,6 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-406103",
-        "setCode": "BW6",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "x-91879",
         "setCode": "E3",
         "url": null,
@@ -5120,6 +5080,12 @@
       {
         "id": "pk-18772",
         "setCode": "E",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "x-406103",
+        "setCode": "BW6",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -5184,12 +5150,6 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-452694",
-        "setCode": "PCG-P",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "pk-18015",
         "setCode": "070XYP",
         "url": null,
@@ -5222,6 +5182,12 @@
       {
         "id": "x-437290",
         "setCode": "PCG6",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "pk-59122",
+        "setCode": "PCG",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -5282,6 +5248,12 @@
       {
         "id": "x-467870",
         "setCode": "NEOP",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "x-404188",
+        "setCode": "BW8",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -5352,12 +5324,6 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-467862",
-        "setCode": "PMCGP",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "x-453297",
         "setCode": "DP-P",
         "url": null,
@@ -5376,6 +5342,12 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
+        "id": "x-452694",
+        "setCode": "PCG-P",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
         "id": "x-92074",
         "setCode": "WEB",
         "url": null,
@@ -5390,6 +5362,12 @@
       {
         "id": "pk-80615",
         "setCode": "XY5",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "x-467862",
+        "setCode": "PMCGP",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -5700,12 +5678,6 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-455503",
-        "setCode": "PMCG12",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "x-455382",
         "setCode": "PMCG11",
         "url": null,
@@ -5886,12 +5858,6 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-1177",
-        "setCode": "SM3+",
-        "url": "https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-sun-moon-strength-expansion-pack-shining-legends/151058",
-        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
-      },
-      {
         "id": "x-683724",
         "setCode": "M",
         "url": null,
@@ -5922,12 +5888,6 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-455451",
-        "setCode": "PMCG12",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "pk-2554",
         "setCode": "SMI",
         "url": null,
@@ -5954,6 +5914,12 @@
       {
         "id": "x-775834",
         "setCode": "30TH-P",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "x-309444",
+        "setCode": "PMCG2",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -6030,12 +5996,6 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-18988",
-        "setCode": "S5A",
-        "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-sword-shield-peerless-fighters/190716",
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "x-459369",
         "setCode": "NEO1",
         "url": null,
@@ -6057,6 +6017,12 @@
         "id": "x-112224",
         "setCode": "NEO3",
         "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "pk-18988",
+        "setCode": "S5A",
+        "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-sword-shield-peerless-fighters/190716",
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
@@ -6108,10 +6074,10 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-71710",
-        "setCode": "M2",
-        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2-inferno-x/318095",
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+        "id": "pk-73717",
+        "setCode": "M2A",
+        "url": "https://www.psacard.com/pop/tcg-cards/2025/pokemon-japanese-m2a-mega-dream-ex/323965",
+        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
         "id": "x-393243",
@@ -6176,12 +6142,6 @@
       {
         "id": "x-91750",
         "setCode": "WEB",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
-        "id": "pk-7615",
-        "setCode": "022PLAY",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -6312,8 +6272,8 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-431361",
-        "setCode": "ADVEX",
+        "id": "pk-7615",
+        "setCode": "022PLAY",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -6512,6 +6472,12 @@
       {
         "id": "x-405188",
         "setCode": "BW5",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "x-408194",
+        "setCode": "EBB",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -6726,12 +6692,6 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "pk-59122",
-        "setCode": "PCG",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "x-406355",
         "setCode": "BW7",
         "url": null,
@@ -6924,6 +6884,12 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
+        "id": "x-454985",
+        "setCode": "PMCGGREEN",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
         "id": "pk-107",
         "setCode": "XY3",
         "url": null,
@@ -6944,12 +6910,6 @@
       {
         "id": "pk-48309",
         "setCode": "EM",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
-        "id": "x-454985",
-        "setCode": "PMCGGREEN",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -7112,12 +7072,6 @@
       {
         "id": "x-109982",
         "setCode": "PCG6",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
-        "id": "x-408194",
-        "setCode": "EBB",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -7794,12 +7748,6 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-386091",
-        "setCode": "XY-BEST",
-        "url": "https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-best-xy/143894",
-        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
-      },
-      {
         "id": "x-91898",
         "setCode": "E4",
         "url": null,
@@ -7866,16 +7814,16 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
+        "id": "x-386091",
+        "setCode": "XY-BEST",
+        "url": "https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-best-xy/143894",
+        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
+      },
+      {
         "id": "x-447973",
         "setCode": "PT1",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
-        "id": "x-386087",
-        "setCode": "XY-BEST",
-        "url": "https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-best-xy/143894",
-        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
         "id": "x-459415",
@@ -7992,6 +7940,12 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
+        "id": "x-386087",
+        "setCode": "XY-BEST",
+        "url": "https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-best-xy/143894",
+        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
+      },
+      {
         "id": "pk-18952",
         "setCode": "BW2",
         "url": null,
@@ -8044,12 +7998,6 @@
         "setCode": "XY4",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
-        "id": "x-136510",
-        "setCode": "SV-P",
-        "url": null,
-        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
         "id": "x-411770",
@@ -8316,12 +8264,6 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-454528",
-        "setCode": "PMCGG2",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "x-434017",
         "setCode": "DP3",
         "url": null,
@@ -8378,6 +8320,12 @@
       {
         "id": "x-309372",
         "setCode": "PMCG12",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "x-454528",
+        "setCode": "PMCGG2",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -8456,6 +8404,12 @@
       {
         "id": "x-457814",
         "setCode": "PMCGGYM3",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "x-455503",
+        "setCode": "PMCG12",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -8583,6 +8537,12 @@
         "id": "x-459363",
         "setCode": "NEO1",
         "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
+        "id": "pk-18994",
+        "setCode": "S5A",
+        "url": "https://www.psacard.com/pop/tcg-cards/2021/pokemon-japanese-sword-shield-peerless-fighters/190716",
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
@@ -8868,6 +8828,12 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
+        "id": "pk-1177",
+        "setCode": "SM3+",
+        "url": "https://www.psacard.com/pop/tcg-cards/2017/pokemon-japanese-sun-moon-strength-expansion-pack-shining-legends/151058",
+        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
+      },
+      {
         "id": "pk-1496",
         "setCode": "CP3",
         "url": null,
@@ -8958,6 +8924,12 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
+        "id": "x-455451",
+        "setCode": "PMCG12",
+        "url": null,
+        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
+      },
+      {
         "id": "x-459251",
         "setCode": "PRMF1",
         "url": null,
@@ -9002,12 +8974,6 @@
       {
         "id": "x-683738",
         "setCode": "M",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
-        "id": "x-309444",
-        "setCode": "PMCG2",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
@@ -9378,12 +9344,6 @@
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
       },
       {
-        "id": "x-335932",
-        "setCode": "SM4+",
-        "url": null,
-        "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
         "id": "pk-65647",
         "setCode": "ADV3",
         "url": null,
@@ -9663,10 +9623,10 @@
   },
   "progress": {
     "listed": 13035,
-    "analyzable": 2608,
-    "pending": 10427,
-    "oneAway": 2112
+    "analyzable": 2611,
+    "pending": 10424,
+    "oneAway": 2115
   },
-  "newlyAnalyzable": 0,
+  "newlyAnalyzable": 3,
   "note": "一時障害の再試行、個別URL隔離、取得元停止を区別。未取得をデータ不存在に変更しない。巡回完了と全項目取得・最新価格は別"
 }
