@@ -27,7 +27,7 @@ DERIVED.add('work/camp-deadline-plan.json');
 DERIVED.add('data/link-coverage.json');
 // Produced from saved authoritative inputs, never acquired quotes or histories.
 for(const file of ['25th-promo-coverage','acquisition-progress-audit','acquisition-resilience','buyback-observation-summary','buyback-support-audit',
-  'candidate-daily-audit','completion-outcomes','domestic-psa9-provenance-details','domestic-psa9-route-audit','focus-monitor','linkage-evidence-audit',
+  'candidate-daily-audit','candidate-availability-audit','completion-outcomes','domestic-psa9-provenance-details','domestic-psa9-route-audit','focus-monitor','linkage-evidence-audit',
   'linkage-evidence-details','modern-high-rarity-audit','previous-qualified-reference','psa9-provenance-audit','purchase-issue-alias-audit',
   'purchase-limit-model-audit','purchase-price-freshness-audit','raw-condition-reference-summary','raw-psa9-gap-audit','shop-identity-quarantine',
   'state-a-price-audit','supply-demand-validation-summary'])DERIVED.add('data/'+file+'.json');
