@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-17T13:47:39.513Z",
+  "generatedAt": "2026-11-17T17:30:48.961Z",
   "llmCalls": 0,
   "codexCalls": 0,
   "retryPolicy": {
@@ -169,8 +169,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-11-17T12:47:02.178Z",
-        "to": "2026-11-17T13:47:36.491Z"
+        "from": "2026-11-17T13:47:36.491Z",
+        "to": "2026-11-17T17:30:45.258Z"
       },
       "sinceBaseline": {
         "newLinked": 4012,
@@ -658,17 +658,17 @@
       "firstPassProgressField": "newlyVisitedProducts",
       "firstPassDaysEstimate": 0,
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
-      "usableNet": 1,
+      "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-11-17T12:47:02.178Z",
-        "to": "2026-11-17T13:47:36.491Z"
+        "from": "2026-11-17T13:47:36.491Z",
+        "to": "2026-11-17T17:30:45.258Z"
       },
       "sinceBaseline": {
         "newLinked": 945,
         "validAdded": 951,
         "validLost": 245,
         "usableNet": 706,
-        "freshnessRecovered": 5926
+        "freshnessRecovered": 5891
       },
       "freshness": null
     },
@@ -701,8 +701,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-11-17T12:47:02.178Z",
-        "to": "2026-11-17T13:47:36.491Z"
+        "from": "2026-11-17T13:47:36.491Z",
+        "to": "2026-11-17T17:30:45.258Z"
       },
       "sinceBaseline": {
         "newLinked": 0,
@@ -9735,6 +9735,6 @@
     "pending": 10430,
     "oneAway": 2131
   },
-  "newlyAnalyzable": 8,
+  "newlyAnalyzable": 0,
   "note": "一時障害の再試行、個別URL隔離、取得元停止を区別。未取得をデータ不存在に変更しない。巡回完了と全項目取得・最新価格は別"
 }
