@@ -25,6 +25,11 @@ function project(name, input) {
     }
   }
   if (name === 'market-research-summary') delete value.comparisons;
+  if(name==='psa-population-summary')for(const row of Object.values(value.cards||{})) {
+    // The repeated English catalog title is not read by the UI/calculations.
+    // Keep it in the original; source key n/u, counts, rate and dates stay exact.
+    delete row.e;
+  }
   if (name === 'card-catalog/search-index') {
     const search = require('../search-index-model');
     for (const row of value.cards) {

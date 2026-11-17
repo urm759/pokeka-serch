@@ -81,7 +81,7 @@ const SHOPS = [
     fetchItems:shop=>require('./public_mail_buybacks').fetchFukufuku(shop,fetchText,readJson(path.join(ROOT,'data/pokemon-cards.json'),[])),
   },
 ];
-const HISTORY_DAYS = 91;
+const HISTORY_DAYS = 365;
 const SUMMARY_PATH = path.join(ROOT, "data", "shop-buyback-summary.json");
 
 function readJson(filePath, fallback) {

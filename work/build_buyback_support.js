@@ -9,7 +9,7 @@ const constrained = row => row.campaign === true || row.quantityLimited === true
   || /キャンペーン|数量限定|先着|お一人様|まとめ売り|セット販売|PSA\s*9|BGS|CGC|TAG|ACE/i.test(row.title || '');
 const stopped = meta => Boolean(meta?.reviewStatus || meta?.acquisitionStopped
   || /HTTP\s*(?:401|403)|認証切れ|許諾確認待ち/.test(meta?.error || ''));
-function joined(observations, history, cards, source, now = Date.now()) {
+function joined(observations, history, cards, source, now = Date.now(), windowDays = 75) {
   const byId = new Map(cards.map(c => [c.id, c])), rows = [], audit = { accepted: 0, rejected: 0, reasons: {} };
   const reject = reason => { audit.rejected++; audit.reasons[reason] = (audit.reasons[reason] || 0) + 1; };
   for (const [shop, entries] of Object.entries(observations.shops || {})) {
@@ -26,14 +26,14 @@ function joined(observations, history, cards, source, now = Date.now()) {
         if (constrained(quote)) { reject('キャンペーン・数量・条件付き提示'); continue; }
         if (!Array.isArray(observed) || observed[1] !== evidence.identity(card) || evidence.calendarDay(observed[0]) !== date
           || Date.parse(observed[0]) > now || !Number.isFinite(point?.[2]) || !(point[2] > 0)) { reject('同日の国内PSA10価格確認証拠なし'); continue; }
-        if (Date.parse(date) < Date.parse(evidence.calendarDay(new Date(now).toISOString())) - 74 * DAY) continue;
+        if (Date.parse(date) < Date.parse(evidence.calendarDay(new Date(now).toISOString())) - (windowDays-1) * DAY) continue;
         const currentQuote=source.cards?.[id]?.shops?.[shop];
         const priceDate=quote.priceDate || (currentQuote?.price===quote.price && currentQuote.observedAt===quote.observedAt
           && currentQuote.priceDate===date ? currentQuote.priceDate : null);
         const timeSkewHours=Math.abs(Date.parse(quote.observedAt)-Date.parse(observed[0]))/3600000;
         rows.push({ id, physicalIdentity: physicalKey(card), shop, date, priceDate, timeSkewHours, ratio: quote.price / point[2], price: quote.price, marketPrice: point[2],
           observedAt: quote.observedAt, marketAt: observed[0], identity: quote.identity, url: quote.url,
-          title: quote.title, fulfilment: source.shops?.[shop]?.fulfilment || 'mail', band: band(point[2]) });
+          title: quote.title, ...(quote.sourceRowId?{sourceRowId:quote.sourceRowId}:{}), fulfilment: source.shops?.[shop]?.fulfilment || 'mail', band: band(point[2]) });
         audit.accepted++;
       }
     }
@@ -122,7 +122,11 @@ function build(root = ROOT) {
   const source = read('data/shop-buyback-summary.json'), cards = read('data/pokemon-cards.json');
   const permissions = read('work/buyback-source-permissions.json');
   for (const [shop, permission] of Object.entries(permissions.sources || {})) if (source.shops?.[shop]) source.shops[shop].acquisitionPermission = permission.status;
-  const { rows, audit } = joined(read('work/buyback-price-observations.json'), read('work/market_stability_history.json'), cards, source);
+  const now=Date.now(), observations=read('work/buyback-price-observations.json'), history=read('work/market_stability_history.json');
+  const long=joined(observations,history,cards,source,now,200);
+  // Preserve every existing per-card 7/30/75-day calculation and audit.
+  const cutoff=Date.parse(evidence.calendarDay(new Date(now).toISOString()))-74*DAY;
+  const rows=long.rows.filter(r=>Date.parse(r.date)>=cutoff),audit={...long.audit,accepted:rows.length};
   const latest=new Map();
   for(const row of rows) {const key=row.id+'|'+row.shop;if(!latest.has(key)||Date.parse(latest.get(key).observedAt)<Date.parse(row.observedAt))latest.set(key,row);}
   const active=[...latest.values()].filter(r=>source.cards?.[r.id]?.shops?.[r.shop]?.listingActive===true&&!stopped(source.shops?.[r.shop]));
@@ -133,6 +137,9 @@ function build(root = ROOT) {
   audit.pairing=require('./buyback_pair_refresh').plan(cards,source,read('data/psa10-observation-receipt.json'),
     read('work/source-update-runs.json').sources?.toreca);
   const write = (file, value) => { const target = path.join(root,file),text=JSON.stringify(value); if(fs.existsSync(target)&&fs.readFileSync(target,'utf8')===text)return; fs.mkdirSync(path.dirname(target),{recursive:true}); require('./acquisition_retry').atomicWrite(target,value,0); };
+  const commonFile=path.join(root,'work/buyback-common-offers.json');
+  write('data/store-buyback-ratios.json',require('./store_buyback_ratios').aggregate(long.rows,source,now,
+    fs.existsSync(commonFile)?JSON.parse(fs.readFileSync(commonFile,'utf8')):{groups:[]}));
   const existing = read('data/buyback-observation-summary.json');
   const fingerprint=crypto.createHash('sha256').update(JSON.stringify([rows,source.shops,result.summary.asOf])).digest('hex');
   result.summary.calculationFingerprint=fingerprint;

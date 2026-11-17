@@ -3,7 +3,7 @@ const path = require('node:path');
 const {spawnSync} = require('node:child_process');
 const inputs=require('./publication_merge_inputs');
 const REBUILD_STEPS=['audit_state_a_prices.js','build_card_completion.js','audit_acquisition_progress.js','audit_link_coverage.js','build_psa_priority_queue.js','finalize_update_status.js','measure_performance_guard.js','build_ui_data.js','test_ui_data.js','test_card_catalog_completion.js'];
-const DERIVED=new Set(['data/publication-lineage.json','data/update-status.json','data/performance-guard.json','data/performance-history.json',
+const DERIVED=new Set(['data/store-buyback-ratios.json','data/publication-lineage.json','data/update-status.json','data/performance-guard.json','data/performance-history.json',
   'data/runtime-availability-audit.json','data/update-health-banner.json','data/scheduled-cycle-receipts.json',
   'data/search-profile-cycle-progress.json','data/psa-pop-coverage.json','work/psa-pop-coverage-history.json']);
 // These contain scheduling/observation history, not replaceable generated seeds.

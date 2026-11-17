@@ -10,5 +10,8 @@ const foreign=[{...cards[0],id:'foreign-version',language:'id'}];assert.equal(ap
 const report=audit(foreign,{cards:{}});assert.equal(report.listed,1);assert.equal(report.analyzable,0);assert.equal(report.missing.length,24);
 const retained=[{...cards[0],price:1234,priceObservedAt:'2026-10-20T00:00:00Z'}],next=[];apply(next,entries,retained);assert.equal(next[0].price,1234);assert.equal(next[0].priceObservedAt,retained[0].priceObservedAt);
 const expanded=[];assert.equal(apply(expanded,allEntries).length,allEntries.length);
+const rr=require('./requested_rr_cohort');
+assert(rr.includes({name:'ジュカインGX RR [SM12a 010/173]',setCode:'SM12A',language:'ja'}));
+for(const patch of [{setCode:'SM8'},{language:'en'},{identityReviewRequired:true},{name:'ジュカインGX SR',rarity:'SR'}])assert(!rr.includes({name:'ジュカインGX RR',setCode:'SM12A',language:'ja',...patch}));
 for(const c of expanded){assert.equal(c.price,null);assert.equal(c.tv30,null);assert.equal(c.priceObservedAt,null);}
 console.log('PASS official single-card supplements: no fake prices/counts, identity deduplication, language and preserved observations');
