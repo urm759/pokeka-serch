@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-17T13:49:50.784Z",
+  "generatedAt": "2026-11-17T13:56:35.694Z",
   "sourceLastSuccessAt": "2026-11-17T13:38:41.123Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-11-17T11:48:56.820Z",
-    "lastSuccessAt": "2026-11-17T11:48:56.820Z",
-    "runId": "44077068607",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/44077068607"
+    "lastAttemptAt": "2026-11-17T13:56:35.668Z",
+    "lastSuccessAt": "2026-11-17T13:56:35.668Z",
+    "runId": "44097142189",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/44097142189"
   },
   "issues": [
     {
@@ -41,6 +41,12 @@
       "reason": "遊々亭: 更新期限超過（カード別鮮度 0.04%）"
     },
     {
+      "key": "source:shopBuyback:manual-wait",
+      "category": "確認が必要",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44094454146",
+      "reason": "Web買取表: トレカバンク: existing data was preserved: 取得件数が前回の半分未満。急減を隔離し正常データ保持"
+    },
+    {
       "key": "source:snkrRaw:stale",
       "category": "鮮度未達・進捗停滞",
       "url": "https://github.com/urm759/pokeka-serch/actions/runs/44003836877",
@@ -55,8 +61,14 @@
     {
       "key": "priority-prices:cadence-stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44006805162",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44094454146",
       "reason": "重要価格更新：設定2時間に対し実績成功間隔（直近最大）13.24時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
+    },
+    {
+      "key": "priority-prices:source-failure",
+      "category": "確認が必要",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44094454146",
+      "reason": "購入価格高速更新：一部取得元が失敗。独立した正常データは必須検証・保存・公開照合済み"
     },
     {
       "key": "source-recovery:merge-review:41495095858",
@@ -113,9 +125,11 @@
     "カードラッシュ: 更新期限超過（カード別鮮度 0%）",
     "遊々亭: HTTP 403",
     "遊々亭: 更新期限超過（カード別鮮度 0.04%）",
+    "Web買取表: トレカバンク: existing data was preserved: 取得件数が前回の半分未満。急減を隔離し正常データ保持",
     "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）",
     "PC側PSA: PC観測未受信 / 30時間以内の独立タスク観測なし。PC停止・観測起動失敗・未公開を区別して確認",
     "重要価格更新：設定2時間に対し実績成功間隔（直近最大）13.24時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能",
+    "購入価格高速更新：一部取得元が失敗。独立した正常データは必須検証・保存・公開照合済み",
     "保存原票の同時更新照合が保留（28入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/domestic-trade-source-audit.json, data/hareruya2-stock-summary.json, data/pokemon-cards-meta.json, data/pokemon-cards.json, data/price-catchup-status.json, data/priority-price-execution.json, data/psa10-observation-receipt.json, data/shop-buyback-summary.json, data/state-a-price-evidence.json, work/buyback-price-observations.json, work/candidate-shop-refresh.json, work/card-lifecycle.json, work/card-new-arrivals.json, work/changed-card-ids.json, work/hareruya2_catalog.json, work/hareruya2_stock_history.json, work/homura-public-che",
     "保存原票の同時更新照合が保留（17入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/pokemon-cards.json, data/pokemon-cards-meta.json, data/shop-buyback-summary.json, data/hareruya2-stock-summary.json, work/source-update-runs.json, work/source-update-history.json, work/changed-card-ids.json, work/toreca-source-inventory.json, work/market_stability_history.json, work/buyback-price-observations.json, work/shop_buyback_history.json, work/shop_buyback_catalog.json, work/shop_buyback_unmatched.json, work/hareruya2_catalog.json, work/hareruya2_stock_history.json, work/priority-price-http-cache.json, work/candidate-shop-",
     "保存原票の同時更新照合が保留（20入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/pokemon-cards.json, data/pokemon-cards-meta.json, data/shop-buyback-summary.json, data/hareruya2-stock-summary.json, work/source-update-runs.json, work/source-update-history.json, work/changed-card-ids.json, work/toreca-source-inventory.json, work/toreca_source_diff.json, work/market_stability_history.json, work/buyback-price-observations.json, work/shop_buyback_history.json, work/shop_buyback_catalog.json, work/shop_buyback_unmatched.json, work/shop_buyback_item_matches.json, work/homura-public-checkpoint.json, work/hareruya2_cat",
