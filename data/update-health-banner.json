@@ -1,27 +1,15 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-17T02:58:43.182Z",
+  "generatedAt": "2026-11-17T03:04:18.465Z",
   "sourceLastSuccessAt": "2026-11-17T02:34:34.940Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-11-17T01:00:06.815Z",
-    "lastSuccessAt": "2026-11-17T01:00:06.815Z",
-    "runId": "43991631074",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/43991631074"
+    "lastAttemptAt": "2026-11-17T03:04:18.450Z",
+    "lastSuccessAt": "2026-11-17T03:04:18.450Z",
+    "runId": "44005522873",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/44005522873"
   },
   "issues": [
-    {
-      "key": "daily:workflow-failure",
-      "category": "取得処理の故障",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/43923955317",
-      "reason": "Daily Fast Updateが1回連続失敗"
-    },
-    {
-      "key": "daily:run-stale",
-      "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/43923955317",
-      "reason": "日次更新の成功が24時間以上なし"
-    },
     {
       "key": "safe:yuyutei:manual-action-required:GitHub ActionsからHTTP #。正規アクセス確認待ち",
       "category": "アクセス・手動対応待ち",
@@ -55,7 +43,7 @@
     {
       "key": "source:snkrRaw:stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/43923955317",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44003836877",
       "reason": "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）"
     },
     {
@@ -67,7 +55,7 @@
     {
       "key": "priority-prices:cadence-stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/43931194258",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44006805162",
       "reason": "重要価格更新：設定2時間に対し実績成功間隔（直近最大）13.24時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
     },
     {
@@ -120,8 +108,6 @@
     }
   ],
   "reasons": [
-    "Daily Fast Updateが1回連続失敗",
-    "日次更新の成功が24時間以上なし",
     "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち",
     "カードラッシュ: pk-73737: HTTP 403",
     "カードラッシュ: 更新期限超過（カード別鮮度 0%）",
