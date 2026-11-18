@@ -1,35 +1,33 @@
 {
-  "startedAt": "2026-11-18T07:09:26.457Z",
-  "runId": "44256496482",
-  "event": "workflow_dispatch",
+  "startedAt": "2026-11-18T17:14:33.117Z",
+  "runId": "44356175817",
+  "event": "workflow_run",
   "route": "既存監視ジョブの空白補完",
   "status": "acquired-saved",
   "allowed": true,
-  "ageMs": 11758820,
+  "ageMs": 36306092,
   "minimumIntervalMs": 9000000,
   "reason": "定期の空白・既存の期限順キューで補完",
   "llmCalls": 0,
   "codexCalls": 0,
-  "sourceFailures": [
-    "work/run_tracked_update.js"
-  ],
-  "acquisitionStatus": "partial-with-failure",
-  "endedAt": "2026-11-18T07:24:21.166Z",
-  "durationMs": 894709,
+  "sourceFailures": [],
+  "acquisitionStatus": "process-success",
+  "endedAt": "2026-11-18T17:25:46.742Z",
+  "durationMs": 673625,
   "outcomes": {
-    "baselineAt": "2026-11-18T07:09:26.457Z",
+    "baselineAt": "2026-11-18T17:14:33.117Z",
     "commonCards": 13084,
     "addedCards": 0,
     "removedCards": 0,
-    "newlyAnalyzable": 3,
-    "lostAnalyzable": 4,
-    "filledCards": 13,
-    "filledItems": 16,
+    "newlyAnalyzable": 1,
+    "lostAnalyzable": 0,
+    "filledCards": 1,
+    "filledItems": 1,
     "sources": {
       "cardrush": {
-        "newLinked": 1,
-        "validAdded": 1,
-        "validLost": 1,
+        "newLinked": 0,
+        "validAdded": 0,
+        "validLost": 0,
         "usableNet": 0,
         "freshnessRecovered": 0
       },
@@ -38,7 +36,7 @@
         "validAdded": 0,
         "validLost": 0,
         "usableNet": 0,
-        "freshnessRecovered": 68
+        "freshnessRecovered": 69
       },
       "yuyutei": {
         "newLinked": 0,
@@ -52,7 +50,7 @@
         "validAdded": 0,
         "validLost": 0,
         "usableNet": 0,
-        "freshnessRecovered": 13
+        "freshnessRecovered": 23
       },
       "psaOfficial": {
         "newLinked": 0,
@@ -68,10 +66,6 @@
         "usableNet": 0,
         "freshnessRecovered": 0
       }
-    },
-    "referenceEvidenceRecovered": {
-      "buybackExitEvidence": 1,
-      "psa9Evidence": 10
     }
   },
   "publicationStatus": "保存済み・公開照合待ち"
