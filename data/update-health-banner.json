@@ -1,20 +1,20 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-18T01:53:33.749Z",
+  "generatedAt": "2026-11-18T02:03:04.406Z",
   "sourceLastSuccessAt": "2026-11-18T01:45:50.722Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-11-18T01:29:30.452Z",
-    "lastSuccessAt": "2026-11-18T01:29:30.452Z",
-    "runId": "44213417029",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/44213417029"
+    "lastAttemptAt": "2026-11-18T02:03:04.397Z",
+    "lastSuccessAt": "2026-11-18T02:03:04.397Z",
+    "runId": "44219570866",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/44219570866"
   },
   "issues": [
     {
-      "key": "daily:source-failure",
-      "category": "確認が必要",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44136644302",
-      "reason": "Dailyの一部取得元が失敗・正常データは必須検証/保存/公開照合済み"
+      "key": "daily:workflow-failure",
+      "category": "取得処理の故障",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44218102822",
+      "reason": "Daily Fast Updateが1回連続失敗"
     },
     {
       "key": "safe:yuyutei:manual-action-required:GitHub ActionsからHTTP #。正規アクセス確認待ち",
@@ -49,13 +49,13 @@
     {
       "key": "source:shopBuyback:manual-wait",
       "category": "確認が必要",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44213417029",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44218102822",
       "reason": "Web買取表: shop buyback refresh skipped; existing data was preserved: 一部取得失敗（正常データ保持）: torecabank: 取得件数が前回の半分未満。急減を隔離し正常データ保持"
     },
     {
       "key": "source:snkrRaw:stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44136644302",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44218102822",
       "reason": "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）"
     },
     {
@@ -132,7 +132,7 @@
     }
   ],
   "reasons": [
-    "Dailyの一部取得元が失敗・正常データは必須検証/保存/公開照合済み",
+    "Daily Fast Updateが1回連続失敗",
     "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち",
     "カードラッシュ: pk-73737: HTTP 403",
     "カードラッシュ: 更新期限超過（カード別鮮度 0%）",
