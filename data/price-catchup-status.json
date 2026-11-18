@@ -1,28 +1,30 @@
 {
-  "startedAt": "2026-11-18T17:14:33.117Z",
-  "runId": "44356175817",
-  "event": "workflow_run",
+  "startedAt": "2026-11-18T19:53:42.912Z",
+  "runId": "44385085345",
+  "event": "workflow_dispatch",
   "route": "既存監視ジョブの空白補完",
   "status": "acquired-saved",
   "allowed": true,
-  "ageMs": 36306092,
+  "ageMs": 9549318,
   "minimumIntervalMs": 9000000,
   "reason": "定期の空白・既存の期限順キューで補完",
   "llmCalls": 0,
   "codexCalls": 0,
-  "sourceFailures": [],
-  "acquisitionStatus": "process-success",
-  "endedAt": "2026-11-18T17:25:46.742Z",
-  "durationMs": 673625,
+  "sourceFailures": [
+    "work/run_tracked_update.js"
+  ],
+  "acquisitionStatus": "partial-with-failure",
+  "endedAt": "2026-11-18T20:05:16.890Z",
+  "durationMs": 693978,
   "outcomes": {
-    "baselineAt": "2026-11-18T17:14:33.117Z",
+    "baselineAt": "2026-11-18T19:53:42.912Z",
     "commonCards": 13084,
     "addedCards": 0,
     "removedCards": 0,
-    "newlyAnalyzable": 1,
+    "newlyAnalyzable": 0,
     "lostAnalyzable": 0,
-    "filledCards": 1,
-    "filledItems": 1,
+    "filledCards": 0,
+    "filledItems": 0,
     "sources": {
       "cardrush": {
         "newLinked": 0,
@@ -36,7 +38,7 @@
         "validAdded": 0,
         "validLost": 0,
         "usableNet": 0,
-        "freshnessRecovered": 69
+        "freshnessRecovered": 72
       },
       "yuyutei": {
         "newLinked": 0,
@@ -50,7 +52,7 @@
         "validAdded": 0,
         "validLost": 0,
         "usableNet": 0,
-        "freshnessRecovered": 23
+        "freshnessRecovered": 28
       },
       "psaOfficial": {
         "newLinked": 0,
