@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-18T10:47:15.136Z",
+  "generatedAt": "2026-11-18T13:11:01.394Z",
   "sourceLastSuccessAt": "2026-11-18T07:10:57.673Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-11-18T10:26:03.508Z",
-    "lastSuccessAt": "2026-11-18T10:26:03.508Z",
-    "runId": "44284881412",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/44284881412"
+    "lastAttemptAt": "2026-11-18T13:11:01.386Z",
+    "lastSuccessAt": "2026-11-18T13:11:01.386Z",
+    "runId": "44310611677",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/44310611677"
   },
   "issues": [
     {
@@ -135,6 +135,12 @@
       "category": "確認が必要",
       "url": "https://github.com/urm759/pokeka-serch/actions/runs/44218102822",
       "reason": "保存原票の同時更新照合が保留（1入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: work/priority-price-checkpoint.json"
+    },
+    {
+      "key": "monitor:workflow-failure",
+      "category": "取得処理の故障",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44288071018",
+      "reason": "監視確認または監視公開が未完了。補完失敗と監視自身の停止を分離して復旧"
     }
   ],
   "reasons": [
@@ -158,7 +164,8 @@
     "保存原票の同時更新照合が保留（1入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/state-a-price-evidence.json",
     "保存原票の同時更新照合が保留（2入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/state-a-price-evidence.json, work/priority-price-checkpoint.json",
     "保存原票の同時更新照合が保留（1入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/state-a-price-evidence.json",
-    "保存原票の同時更新照合が保留（1入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: work/priority-price-checkpoint.json"
+    "保存原票の同時更新照合が保留（1入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: work/priority-price-checkpoint.json",
+    "監視確認または監視公開が未完了。補完失敗と監視自身の停止を分離して復旧"
   ],
   "detailUrl": "./data/update-health.json"
 }
