@@ -1,12 +1,12 @@
 {
-  "startedAt": "2026-11-18T07:09:26.457Z",
-  "runId": "44256496482",
-  "event": "workflow_dispatch",
-  "route": "既存監視ジョブの空白補完",
+  "startedAt": "2026-11-19T10:29:25.977Z",
+  "runId": "44506011957",
+  "event": "schedule",
+  "route": "通常価格更新",
   "status": "acquired-saved",
   "allowed": true,
-  "ageMs": 11758820,
-  "minimumIntervalMs": 9000000,
+  "ageMs": 12939354,
+  "minimumIntervalMs": 7200000,
   "reason": "定期の空白・既存の期限順キューで補完",
   "llmCalls": 0,
   "codexCalls": 0,
@@ -14,22 +14,22 @@
     "work/run_tracked_update.js"
   ],
   "acquisitionStatus": "partial-with-failure",
-  "endedAt": "2026-11-18T07:24:21.166Z",
-  "durationMs": 894709,
+  "endedAt": "2026-11-19T10:40:59.078Z",
+  "durationMs": 693101,
   "outcomes": {
-    "baselineAt": "2026-11-18T07:09:26.457Z",
-    "commonCards": 13084,
+    "baselineAt": "2026-11-19T10:29:25.977Z",
+    "commonCards": 13092,
     "addedCards": 0,
     "removedCards": 0,
-    "newlyAnalyzable": 3,
-    "lostAnalyzable": 4,
-    "filledCards": 13,
-    "filledItems": 16,
+    "newlyAnalyzable": 0,
+    "lostAnalyzable": 0,
+    "filledCards": 1,
+    "filledItems": 1,
     "sources": {
       "cardrush": {
-        "newLinked": 1,
-        "validAdded": 1,
-        "validLost": 1,
+        "newLinked": 0,
+        "validAdded": 0,
+        "validLost": 0,
         "usableNet": 0,
         "freshnessRecovered": 0
       },
@@ -38,7 +38,7 @@
         "validAdded": 0,
         "validLost": 0,
         "usableNet": 0,
-        "freshnessRecovered": 68
+        "freshnessRecovered": 90
       },
       "yuyutei": {
         "newLinked": 0,
@@ -52,7 +52,7 @@
         "validAdded": 0,
         "validLost": 0,
         "usableNet": 0,
-        "freshnessRecovered": 13
+        "freshnessRecovered": 59
       },
       "psaOfficial": {
         "newLinked": 0,
@@ -70,8 +70,7 @@
       }
     },
     "referenceEvidenceRecovered": {
-      "buybackExitEvidence": 1,
-      "psa9Evidence": 10
+      "buybackExitEvidence": 3
     }
   },
   "publicationStatus": "保存済み・公開照合待ち"
