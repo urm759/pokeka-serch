@@ -1,11 +1,11 @@
 {
-  "startedAt": "2026-11-20T06:08:58.122Z",
-  "runId": "44685639188",
+  "startedAt": "2026-11-20T11:24:30.322Z",
+  "runId": "44727148859",
   "event": "workflow_dispatch",
   "route": "既存監視ジョブの空白補完",
   "status": "acquired-saved",
   "allowed": true,
-  "ageMs": 16484408,
+  "ageMs": 18931730,
   "minimumIntervalMs": 9000000,
   "reason": "定期の空白・既存の期限順キューで補完",
   "llmCalls": 0,
@@ -14,22 +14,22 @@
     "work/run_tracked_update.js"
   ],
   "acquisitionStatus": "partial-with-failure",
-  "endedAt": "2026-11-20T06:22:06.378Z",
-  "durationMs": 788256,
+  "endedAt": "2026-11-20T11:37:55.042Z",
+  "durationMs": 804720,
   "outcomes": {
-    "baselineAt": "2026-11-20T06:08:58.122Z",
+    "baselineAt": "2026-11-20T11:24:30.322Z",
     "commonCards": 13097,
-    "addedCards": 0,
+    "addedCards": 2,
     "removedCards": 0,
-    "newlyAnalyzable": 4,
-    "lostAnalyzable": 3,
-    "filledCards": 23,
-    "filledItems": 25,
+    "newlyAnalyzable": 5,
+    "lostAnalyzable": 5,
+    "filledCards": 33,
+    "filledItems": 39,
     "sources": {
       "cardrush": {
-        "newLinked": 0,
-        "validAdded": 0,
-        "validLost": 0,
+        "newLinked": 1,
+        "validAdded": 1,
+        "validLost": 1,
         "usableNet": 0,
         "freshnessRecovered": 0
       },
@@ -38,7 +38,7 @@
         "validAdded": 0,
         "validLost": 0,
         "usableNet": 0,
-        "freshnessRecovered": 70
+        "freshnessRecovered": 76
       },
       "yuyutei": {
         "newLinked": 0,
@@ -50,9 +50,9 @@
       "torecacamp": {
         "newLinked": 0,
         "validAdded": 0,
-        "validLost": 0,
-        "usableNet": 0,
-        "freshnessRecovered": 9
+        "validLost": 1,
+        "usableNet": -1,
+        "freshnessRecovered": 12
       },
       "psaOfficial": {
         "newLinked": 0,
@@ -70,7 +70,8 @@
       }
     },
     "referenceEvidenceRecovered": {
-      "psa9Evidence": 11
+      "psa9Evidence": 9,
+      "buybackExitEvidence": 1
     }
   },
   "publicationStatus": "保存済み・公開照合待ち"
