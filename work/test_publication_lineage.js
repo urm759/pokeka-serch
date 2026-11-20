@@ -1,5 +1,10 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path');
 const {spawnSync}=require('node:child_process'),p=require('./publication_lineage');
+const finalizer=fs.readFileSync(path.join(__dirname,'finalize_update_status.js'),'utf8'),snapshotAt=finalizer.indexOf('const finalizedSourceSnapshot=');
+for(const call of ["require('./apply_buyback_retirements').apply(ROOT)","require('./audit_purchase_issue_aliases.js').build(ROOT)"]){
+ assert(finalizer.indexOf(call)>=0&&finalizer.indexOf(call)<snapshotAt,'saved-source correction must precede the input snapshot: '+call);
+ assert.equal(finalizer.indexOf(call),finalizer.lastIndexOf(call),'no late repeated authoritative correction');
+}
 const root=fs.mkdtempSync(path.join(os.tmpdir(),'pokeka-lineage-'));
 const write=(file,value)=>{fs.mkdirSync(path.dirname(path.join(root,file)),{recursive:true});fs.writeFileSync(path.join(root,file),JSON.stringify(value));};
 const git=args=>{const r=spawnSync('git',args,{cwd:root,encoding:'utf8'});assert.equal(r.status,0,r.stderr);};
