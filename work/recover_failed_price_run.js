@@ -98,8 +98,16 @@ function lastSuccessfulAcquisition(root){
   const times=[prior.startedAt,...['toreca','hareruya2','torecacamp','shopBuyback'].map(id=>runs[id]?.lastSuccessAt)].map(Date.parse).filter(Number.isFinite);
   return times.length?new Date(Math.max(...times)).toISOString():null;
 }
+function monitorPublicationCompleted(jobs){
+  const selected=(jobs.jobs||[]).filter(j=>j.name==='catchup');
+  if(selected.length!==1||selected[0].status!=='completed')return false;
+  return ['Fill missed price intervals with shared cooldown and access budgets','Validate catchup data without changing purchase criteria','Publish changed health state only']
+    .every(name=>{const steps=(selected[0].steps||[]).filter(s=>s.name===name);return steps.length===1&&steps[0].conclusion==='success';});
+}
 function monitorRecoveryNeeded(jobs){
-  const rows=jobs.jobs||[],catchup=rows.find(j=>j.name==='catchup'),failed=rows.filter(j=>j.conclusion==='failure');
+  if(monitorPublicationCompleted(jobs))return false;
+  const rows=jobs.jobs||[],selected=rows.filter(j=>j.name==='catchup'),catchup=selected[0],failed=rows.filter(j=>j.conclusion==='failure');
+  if(selected.length!==1)return true;
   return !(catchup?.status==='completed'&&catchup.conclusion==='success'&&failed.length>0
     &&failed.every(j=>['publication_check','watch'].includes(j.name)));
 }
@@ -131,8 +139,11 @@ async function main(){
   if(monitor){
     const jobs=await(await get(base+'/runs/'+id+'/jobs')).json();
     if(!monitorRecoveryNeeded(jobs)){
-      const result={status:'observer-only-failure-no-price-recovery',runId:id,runAttempt:run.run_attempt,headSha:run.head_sha,checkedAt:new Date().toISOString(),sourceRequests:0,
-        failedJobs:jobs.jobs.filter(j=>j.conclusion==='failure').map(j=>j.name),reason:'catchup取得/検証/保存公開は成功。監視/照合の失敗記録とartifactは保持し、独立した価格更新を止めない'};
+      const result={status:monitorPublicationCompleted(jobs)?'publication-completed-separate-failure-no-price-recovery':'observer-only-failure-no-price-recovery',runId:id,runAttempt:run.run_attempt,headSha:run.head_sha,checkedAt:new Date().toISOString(),sourceRequests:0,
+        originalConclusion:run.conclusion,originalFailureRetained:true,publicationStepSucceeded:monitorPublicationCompleted(jobs),
+        failedJobs:jobs.jobs.filter(j=>['failure','cancelled','timed_out'].includes(j.conclusion)).map(j=>j.name),
+        nonSuccessStages:jobs.jobs.flatMap(j=>(j.steps||[]).filter(s=>['failure','cancelled','timed_out'].includes(s.conclusion)).map(s=>({job:j.name,step:s.name,conclusion:s.conclusion}))),
+        reason:'保存公開の完了証拠を保持。終了後の取消・取得元警告・監視/照合の原失敗とartifactは残し、未公開原票として同じ回収を反復しない。新規取得や自然周期成功には加算しない'};
       fs.writeFileSync(path.join(ROOT,'work/recovery-inspected-'+id+'.json'),JSON.stringify(result));return result;
     }
     if(monitorFailedBeforeAcquisition(run,jobs)){
@@ -192,4 +203,4 @@ if(require.main===module){
     console.log(JSON.stringify({pending:Boolean(rows.length),runIds:rows.map(r=>r.runId),recoveryApplied:false}));
   }else main().then(r=>console.log(JSON.stringify(r))).catch(e=>{console.error(e.message);process.exitCode=1;});
 }
-module.exports={trusted,trustedMonitor,trustedSafe,trustedDaily,latestDaily,latestMonitor,monitorRecoveryNeeded,selectRecoveryArtifacts,recoveryArchiveName,inspectedForRun,lastSuccessfulAcquisition,ensureTrustedBase,activeSourceHolds,retainSourceHold,METADATA_TIMEOUT_MS,ARCHIVE_TIMEOUT_MS,monitorCheckpointOrigin,trustedMonitorCheckpoint,monitorFailedBeforeAcquisition};
+module.exports={trusted,trustedMonitor,trustedSafe,trustedDaily,latestDaily,latestMonitor,monitorRecoveryNeeded,monitorPublicationCompleted,selectRecoveryArtifacts,recoveryArchiveName,inspectedForRun,lastSuccessfulAcquisition,ensureTrustedBase,activeSourceHolds,retainSourceHold,METADATA_TIMEOUT_MS,ARCHIVE_TIMEOUT_MS,monitorCheckpointOrigin,trustedMonitorCheckpoint,monitorFailedBeforeAcquisition};
