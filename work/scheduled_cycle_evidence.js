@@ -36,8 +36,12 @@ function verify(run, jobs, receipt, publicTexts, pages) {
     && steps.filter(s=>s.conclusion==='failure').every(s=>s.name===reportName||s.name==='Report newly detected alerts')
     && steps.some(s=>s.name===reportName&&s.conclusion==='failure');
   const failedJobs=(jobs.jobs||[]).filter(j=>j.conclusion==='failure');
-  const isolatedVerifierFailure=failedJobs.length===1&&failedJobs[0].name==='publication_check'
-    &&steps.filter(s=>s.conclusion==='failure').every(s=>s.name==='Verify published acquisition independently without source requests');
+  const isolatedVerifierFailure=failedJobs.length===1&&(failedJobs[0].name==='publication_check'
+    &&steps.filter(s=>s.conclusion==='failure').every(s=>s.name==='Verify published acquisition independently without source requests')
+    ||failedJobs[0].name==='watch'
+    &&steps.filter(s=>s.conclusion==='failure').every(s=>s.name==='Report current publication verification failure separately')
+    &&(jobs.jobs||[]).some(j=>j.name==='catchup'&&j.status==='completed'&&j.conclusion==='success'
+      &&(j.steps||[]).some(s=>s.conclusion==='success'&&s.name==='Publish changed health state only')));
   // GitHub retains event='schedule'/'workflow_run' when a person reruns a job.
   // Its successful publication is valid, but is not another unattended cycle.
   const rerun=Number(run.run_attempt)>1;

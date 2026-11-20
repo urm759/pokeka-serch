@@ -30,6 +30,10 @@ for (const [id, card] of Object.entries(history.cards)) for (const [condition, r
   assert.deepEqual(compact.map(r=>[r.date,r.operational,r.theoretical,r.calculationVersion]), original.map(r=>[r.date,r.operational,r.theoretical,r.calculationVersion]));
 }
 const source = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
+const pop=read('data/psa-population-summary.json'),compactPop=project('psa-population-summary',pop);
+for(const [id,row]of Object.entries(pop.cards||{})){
+  const {e,...required}=row;assert.deepEqual(compactPop.cards[id],required,'only unused duplicate English catalog title is deferred; source/history identity and every calculation input remain exact');
+}
 const fullPeriods=read('data/psa10-period-summary.json'),initialPeriods=project('psa10-period-summary',fullPeriods);
 assert.equal(initialPeriods.variation,undefined);assert.equal(initialPeriods.priceGap,undefined);
 assert.deepEqual(initialPeriods.cards,fullPeriods.cards,'financial averages retain every exact value');

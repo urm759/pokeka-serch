@@ -20,5 +20,9 @@ try{
  for(const file of files){const row=manifest.files.find(r=>r.file===file);assert(row,'captured source proof '+file);const original=fs.readFileSync(path.join(temporary,file)),saved=fs.readFileSync(path.join(result.directory,file));assert.deepEqual(original,saved);assert.equal(row.sha256,crypto.createHash('sha256').update(original).digest('hex'));}
 }finally{const resolved=path.resolve(temporary);assert.equal(path.dirname(resolved),path.resolve(os.tmpdir()));assert(path.basename(resolved).startsWith('pokeka-compact-provenance-'));fs.rmSync(resolved,{recursive:true,force:true});}
 const history={days:[{date:'2026-11-12',settings:{fee:1},modelVersion:'v',candidates:1}]};
+const av={version:1,runs:[{date:'2026-11-12',generatedAt:'2026-11-12T00:00:00Z',modelVersion:'v',rows:{a:1}}]},av2={...av.runs[0],generatedAt:'2026-11-12T01:00:00Z',rows:{a:2}};
+assert.deepEqual(m.availability(av,av,{version:1,runs:[av.runs[0],av2]}).runs,[av.runs[0],av2],'preserve different-time snapshots, not just the final count');
+assert.throws(()=>m.availability(av,av,{version:1,runs:[{...av.runs[0],rows:{a:2}}]}),/same-time contradiction/);
+assert.throws(()=>m.availability(av,av,{version:1,runs:[{...av2,generatedAt:null}]}),/timestamp/);
 assert.throws(()=>m.candidates(history,{days:[{...history.days[0],candidates:2}]},{days:[{...history.days[0],candidates:3}]},{leftAudit:{generatedAt:oa.updatedAt},rightAudit:{generatedAt:oa.updatedAt}}),/distinct timestamps/);
 console.log('PASS source evidence union, equal-time contradiction hold, operational history preservation/settings guard, candidate snapshot time proof and compact provenance capture');

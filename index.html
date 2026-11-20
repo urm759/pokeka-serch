@@ -839,10 +839,11 @@
 
     <details id="shopRateSummaryPanel" class="card shop-rate-summary-panel">
       <summary>
-        <div><div class="eyebrow">PSA10 buyback benchmark</div><h2>買取店ごとの標準買取率</h2><p>高い買取価格も有効な売却先として残し、中央値による標準水準と誤紐付け疑いを分けて確認します。</p></div>
+        <div><div class="eyebrow">PSA10 buyback benchmark</div><h2>買取店ごとの全カード平均・標準買取率</h2><p>全カードの日次平均と、従来の標準水準を分けて確認します。</p></div>
         <strong>店舗集計を見る</strong>
       </summary>
-      <div id="shopRateSummary" class="shop-rate-summary-body"></div>
+      <div id="storeWideRatios" class="shop-rate-summary-body"></div>
+      <details class="shop-rate-summary-body"><summary>従来の標準買取率・価格帯別の分布</summary><div id="shopRateSummary"></div></details>
     </details>
 
     <details id="marketBacktestPanel" class="card shop-rate-summary-panel backtest-panel">
@@ -963,6 +964,6 @@
   <script src="./search-controls.js?v=20261111-median-detail-long-windows" integrity="sha384-wMIqVMOMDBJBTse9cBINgRPmc35DnIIK0x5tTAtGKjLIUsHr7O1lsSijvqNoH3sz"></script>
   <script src="./settings-disclosure.js?v=20261011-disclosure-v1"></script>
   <script src="./gemrate-pop-model.js?v=20261102-gemrate-pop" integrity="sha384-odMB7R9tprRMcdSqcPS8Gukl1EMPlsrLnJModiemV+xY9yi2rEpohSLYaemvN7Za"></script>
-  <script src="./app.js?v=20261114-cloud-transport" integrity="sha384-WxEBCB5OoIS5PVTEtgm1Fo+CDrJ6LnXkuaYr6PhxDaqzsDn52Gcl65s7ngENcJ2o"></script>
+  <script src="./app.js?v=20261117-storewide-ratios" integrity="sha384-BQL3YnDOxVVuA9S6JaOvvB6uXl7lhXqiLLYmEE2k880Tdx0MlCVpeL8Fscwg+P4N"></script>
 </body>
 </html>

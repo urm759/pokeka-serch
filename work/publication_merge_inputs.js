@@ -35,11 +35,23 @@ function candidates(base,a,b,context) {
     }}
   return {...a,days:[...rows.values()].sort((x,y)=>x.date.localeCompare(y.date))};
 }
+function availability(base,a,b) {
+  if(![base,a,b].every(v=>v.version===1&&Array.isArray(v.runs)))throw Error('Availability history schema changed');
+  const rows=new Map();
+  for(const row of [...a.runs,...b.runs]) {
+    if(!Number.isFinite(Date.parse(row.generatedAt))||!row.modelVersion||!/^\d{4}-\d{2}-\d{2}$/.test(row.date))throw Error('Availability snapshot timestamp/identity missing');
+    const old=rows.get(row.generatedAt);
+    if(old&&!same(old,row))throw Error('Availability snapshot same-time contradiction; review required');
+    rows.set(row.generatedAt,row);
+  }
+  return {version:1,runs:[...rows.values()].sort((x,y)=>Date.parse(x.generatedAt)-Date.parse(y.generatedAt))};
+}
 const TYPES=new Map([
   ['data/state-a-price-evidence.json',evidence],['data/operational-limit-history.json',operational],
   ['work/search-profile-targets.json',mergeProfileTargets],['work/candidate-daily-history.json',candidates],
+  ['work/candidate-availability-history.json',availability],
   ...['work/acquisition-progress-last.json','work/completion-outcomes-last.json','work/purchase-price-observation-snapshot.json','data/workflow-stage-audit.json'].map(f=>[f,latest])
 ]);
 // latest takes (a,b,base), unlike the three-way handlers above.
 function merge(file,base,a,b,context){return TYPES.get(file)===latest?latest(a,b,base):TYPES.get(file)(base,a,b,context);}
-module.exports={TYPES,merge,evidence,operational,candidates};
+module.exports={TYPES,merge,evidence,operational,candidates,availability};

@@ -3,6 +3,7 @@ const path = require("path");
 
 const ROOT = path.join(__dirname, "..");
 const OUTPUT = path.join(ROOT, "data", "update-status.json");
+require('./confirmed_camp_products').build(ROOT);
 const HISTORY_OUTPUT = path.join(ROOT, "data", "update-history.json");
 const { countCurrentRecords, psaAuthenticationRequired, taskStageFields } = require("./source_observability.js");
 const { sourceTiming } = require("./workflow_schedule.js");
@@ -15,6 +16,10 @@ require('./quarantine_shop_identity').build(ROOT);
 require('./recover_saved_shop_rows').reconcileSavedLinks(ROOT);
 // Price-only and full-crawl paths must publish the same saved stock evidence at the same evaluation date.
 require('./stock_history_statistics').reconcile(ROOT);
+// Correct saved authoritative inputs before deriving outputs and sealing the
+// input snapshot. Keep the source-change guard strict for all later writers.
+require('./apply_buyback_retirements').apply(ROOT);
+require('./audit_purchase_issue_aliases.js').build(ROOT);
 require('./build_raw_condition_reference').build(ROOT);
 require('./build_psa9_provenance').build(ROOT);
 require('./build_psa9_provenance').verify(ROOT);
@@ -64,7 +69,6 @@ const stock = read("data/cardrush-stock-summary.json");
 const hareruya2 = read("data/hareruya2-stock-summary.json");
 const yuyutei = read("data/yuyutei-stock-summary.json");
 const torecacamp = read("data/torecacamp-stock-summary.json");
-require('./apply_buyback_retirements').apply(ROOT);
 const buyback = read("data/shop-buyback-summary.json");
 const marketAnalysis = read("data/market-stability-summary.json");
 const psa = read("data/psa-official-populations.json");
@@ -403,7 +407,6 @@ try{require('./build_gemrate_collector_config').build(ROOT);}catch(error){consol
 require('./build_camp_deadline_plan').build(ROOT);
 require('./build_psa10_period_statistics.js').build(ROOT);
 require('./build_overseas_price_glance').build(ROOT);
-require('./audit_purchase_issue_aliases.js').build(ROOT);
 require('./build_buyback_posting_coverage.js').build(ROOT);
 require('./build_buyback_observation_summary.js').build(ROOT);
 require('./build_buyback_support.js').build(ROOT);
