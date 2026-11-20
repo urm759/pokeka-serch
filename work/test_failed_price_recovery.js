@@ -40,6 +40,18 @@ for(const patch of [{name:'Validate catchup data without changing purchase crite
 }
 assert(!monitorFailedBeforeAcquisition({...followup,head_repository:{full_name:'fork/repo'}},preflight));
 const {monitorRecoveryNeeded}=require('./recover_failed_price_run');
+const {monitorPublicationCompleted}=require('./recover_failed_price_run');
+const publishedCancelled=structuredClone(publicationFailure);publishedCancelled.jobs[0].conclusion='cancelled';publishedCancelled.jobs[0].steps[2].conclusion='success';
+publishedCancelled.jobs[0].steps.push({name:'Report independent acquisition failures without hiding them',conclusion:'cancelled'});
+assert(monitorPublicationCompleted(publishedCancelled));assert(!monitorRecoveryNeeded(publishedCancelled),'successful acquisition/validation/publication is not an unpublished source checkpoint even when outer job is cancelled');
+const publishedWarning=structuredClone(publishedCancelled);publishedWarning.jobs[0].conclusion='failure';publishedWarning.jobs[0].steps.at(-1).conclusion='failure';
+assert(!monitorRecoveryNeeded(publishedWarning),'post-publication source warning remains a failure, no redundant source restoration');
+for(const index of [0,1,2])for(const result of ['failure','cancelled','skipped']){const j=structuredClone(publishedCancelled);j.jobs[0].steps[index].conclusion=result;assert(!monitorPublicationCompleted(j));assert(monitorRecoveryNeeded(j),'missing completed stage proof must not bypass recovery');}
+const duplicate=structuredClone(publishedCancelled);duplicate.jobs.push(structuredClone(duplicate.jobs[0]));assert(monitorRecoveryNeeded(duplicate),'ambiguous duplicate jobs require review');
+const duplicateStage=structuredClone(publishedCancelled);duplicateStage.jobs[0].steps.push({...duplicateStage.jobs[0].steps[2]});assert(!monitorPublicationCompleted(duplicateStage));
+const actualPublishedCancelled=require('./fixtures/monitor-published-cancelled-20261121.json'),actualBefore=JSON.stringify(actualPublishedCancelled);
+assert(monitorCheckpointOrigin(actualPublishedCancelled.run));assert(monitorPublicationCompleted(actualPublishedCancelled));assert(!monitorRecoveryNeeded(actualPublishedCancelled),'actual published run must not stop the next acquisition at failed-publication recovery');
+assert.equal(JSON.stringify(actualPublishedCancelled),actualBefore,'cancelled run and original warning evidence are never rewritten to success');
 const acquired={name:'catchup',status:'completed',conclusion:'success'};
 assert.equal(monitorRecoveryNeeded({jobs:[acquired,{name:'publication_check',conclusion:'failure'}]}),false,'independent verification failure has no unpublished source checkpoint');
 assert.equal(monitorRecoveryNeeded({jobs:[acquired,{name:'watch',conclusion:'failure'}]}),false,'monitor-only failure must not block acquisition');
