@@ -20,17 +20,17 @@ function trustedMonitor(run,repository='urm759/pokeka-serch'){
 // Recovery eligibility is separate from natural-schedule success accounting.
 // Default-main followups/owner dispatches additionally require job-stage proof.
 function monitorCheckpointOrigin(run,repository='urm759/pokeka-serch'){
- return ['workflow_run','workflow_dispatch'].includes(run?.event)
+ return ['schedule','workflow_run','workflow_dispatch'].includes(run?.event)&&['failure','cancelled','timed_out'].includes(run?.conclusion)
   &&run.path==='.github/workflows/watch-data-health.yml'
   &&(run.event!=='workflow_dispatch'||run.actor?.login===repository.split('/')[0])
-  &&trusted({...run,name:'Priority Purchase Price Refresh',event:'schedule'},repository)
+  &&trusted({...run,name:'Priority Purchase Price Refresh',event:'schedule',conclusion:'failure'},repository)
   &&run.name==='Data Update Health Watchdog';
 }
 function trustedMonitorCheckpoint(run,jobs){
  if(!monitorCheckpointOrigin(run))return false;
  const selected=(jobs.jobs||[]).filter(j=>j.name==='catchup');if(selected.length!==1)return false;
  const job=selected[0],steps=job.steps||[];
- return job.status==='completed'&&job.conclusion==='failure'
+ return job.status==='completed'&&['failure','cancelled','timed_out'].includes(job.conclusion)
   &&steps.some(s=>s.name==='Fill missed price intervals with shared cooldown and access budgets'&&s.conclusion==='success')
   &&steps.some(s=>s.name==='Validate catchup data without changing purchase criteria'&&s.conclusion==='success')
   &&steps.some(s=>s.name==='Publish changed health state only'&&s.conclusion==='failure');
