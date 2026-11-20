@@ -87,12 +87,13 @@ function runtimePolicyFixture(invalid=false) {
     git(['init','--bare','--initial-branch=main',origin]);git(['clone',origin,left]);config(left);
     write(left,'work/publish_data_checkpoint.js',fs.readFileSync(path.join(__dirname,'publish_data_checkpoint.js')));
     write(left,'ui-data-codec.js','// fixture');
-    write(left,'work/enforce_overseas_publication.js','exports.enforce=()=>{};exports.verify=()=>{};');
+    write(left,'work/enforce_overseas_publication.js',"exports.enforce=()=>{};exports.verify=root=>{const v=JSON.parse(require('fs').readFileSync(require('path').join(root,'data/gemrate-reference-summary.json'))).version;if(v!==require('./runtime-policy').required)throw Error('Public policy uses wrong runtime');};");
     write(left,'work/runtime-policy.js','exports.required=1;');
     write(left,'work/gemrate_confirmed_links.js',"exports.validatePublic=(root,data)=>{if(data.version!==require('./runtime-policy').required)throw Error('Reviewed addition evidence incomplete');};");
     write(left,'work/ui_projection_cache.js','exports.current=()=>false;');
     write(left,'work/build_ui_data.js',"exports.build=root=>require('fs').writeFileSync(require('path').join(root,'data/ui/manifest.json'),JSON.stringify({policy:require('./runtime-policy').required}));");
     write(left,'data/ui/manifest.json','{}');write(left,'data/gemrate-reference-summary.json','{"version":1}');
+    write(left,'data/overseas-access-policy.json','{}');
     write(left,'work/gemrate-confirmed-reference-registry.json','{}');
     git(['add','.'],left);git(['commit','-m','policy one'],left);git(['push','origin','main'],left);
     const publisher=require(path.join(left,'work/publish_data_checkpoint.js'));
@@ -111,6 +112,7 @@ function runtimePolicyFixture(invalid=false) {
     } else {
       const result=publisher.publish({cwd:left});assert.equal(result.status,'published');
       assert(result.timings.projectionChecks.every(r=>r.runtime==='fresh-node-current-tree'));
+      assert(result.timings.attempts.filter(r=>r.stage==='fresh-pre-push-policy').length>=2,'both initial and merged pushes retain the final current-code policy check');
       assert.equal(JSON.parse(git(['show','main:data/ui/manifest.json'],origin)).policy,2);
       assert.equal(JSON.parse(git(['show','main:data/local-monitor.json'],origin)).observedAt,'2026-11-21T00:00:00Z');
       assert.throws(()=>publisher.preparePublication(left),/Reviewed addition evidence incomplete/,'the stale parent graph reproduces the actual old-validator error');

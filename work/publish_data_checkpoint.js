@@ -65,6 +65,14 @@ function publish({ cwd = path.join(__dirname, ".."), message = "Publish determin
   if (!bundled.ok) throw new Error(`Recovery bundle failed; publication stopped: ${bundled.output}`);
   if (captureOnly) return { status: "recovery-saved", published: false, commit: saved };
   for (let attempt = 0; attempt <= retries; attempt += 1) {
+    // Retain the last pre-push safeguard as well as preparation-time checks,
+    // but never reuse the parent's policy module after a concurrent merge.
+    if(fs.existsSync(path.join(cwd,'data/overseas-access-policy.json'))) {
+      const local=path.join(cwd,'work/enforce_overseas_publication.js'),started=Date.now();
+      const checked=spawnSync(process.execPath,['-e',"require(process.argv[1]).verify(process.cwd(),{staged:true})",fs.existsSync(local)?local:path.join(__dirname,'enforce_overseas_publication.js')],{cwd,encoding:'utf8',maxBuffer:16*1024*1024,timeout:180000});
+      record.attempts.push({at:new Date().toISOString(),stage:'fresh-pre-push-policy',durationMs:Date.now()-started,ok:checked.status===0&&!checked.error});save();
+      if(checked.status!==0||checked.error)throw Error(checked.stderr||checked.error?.message||'Pre-push public policy verification failed');
+    }
     const pushed = git(["push", "origin", "HEAD:main"], cwd);
     record.attempts.push({ at: new Date().toISOString(), stage: "push", durationMs:pushed.durationMs, ok: pushed.ok, message: pushed.output });
     if (pushed.ok) { record.status = "published";record.totalMs=Date.now()-began;record.projectionChecks=projectionChecks; save(); return { status: "published", published: true, commit: git(["rev-parse", "HEAD"], cwd).output,

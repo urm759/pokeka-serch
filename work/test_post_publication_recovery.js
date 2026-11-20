@@ -1,6 +1,6 @@
 const fs=require('node:fs'),assert=require('node:assert/strict');
-function enabled(expression,failed,outcome){
-  const value=expression.replace(/failure\(\)/g,JSON.stringify(failed)).replace(/steps\.publication\.outcome/g,JSON.stringify(outcome??''));
+function enabled(expression,failed,outcome,cancelled=false){
+  const value=expression.replace(/always\(\)/g,'true').replace(/failure\(\)/g,JSON.stringify(failed)).replace(/cancelled\(\)/g,JSON.stringify(cancelled)).replace(/steps\.publication\.outcome/g,JSON.stringify(outcome??''));
   assert(!/[^\s'"a-zA-Z0-9_!&|=()-]/.test(value),'unexpected workflow expression');
   return Function('return ('+value+')')();
 }
@@ -14,7 +14,7 @@ function check(file,job){
   const archives=later.filter(s=>/work\/unpublished-recovery\//.test(s));
   const warnings=later.filter(s=>/name: (?:priority|daily|catchup|watch)-post-publication-alert-/.test(s));
   assert(captures.length&&archives.length&&warnings.length===1,file+'/'+job+' has both recovery routes');
-  const runs=(s,failed,outcome)=>enabled(s.match(/\n        if: ([^\n]+)/)?.[1]||'true',failed,outcome);
+  const runs=(s,failed,outcome,cancelled=false)=>enabled(s.match(/\n        if: ([^\n]+)/)?.[1]||'true',failed,outcome,cancelled);
   for(const outcome of ['failure','skipped','cancelled',undefined]){
     assert(captures.every(s=>runs(s,true,outcome)),'pre-publication failure must retain raw inputs: '+outcome);
     assert(archives.every(s=>runs(s,true,outcome)),'pre-publication recovery remains downloadable');
@@ -23,6 +23,12 @@ function check(file,job){
   assert(captures.every(s=>!runs(s,true,'success')),'known published inputs must not become another unpublished archive');
   assert(archives.every(s=>!runs(s,true,'success')));assert(runs(warnings[0],true,'success'),'source warning evidence is still retained');
   assert(!runs(warnings[0],false,'success'),'normal success creates no warning artifact');
+  assert(captures.every(s=>!runs(s,false,'success'))&&archives.every(s=>!runs(s,false,'success')),'normal success creates no recovery archive');
+  if(job==='watch')for(const outcome of ['failure','skipped','cancelled',undefined]){
+    assert(captures.every(s=>runs(s,false,outcome,true)),'cancellation without failure() retains unpublished observation');
+    assert(archives.every(s=>runs(s,false,outcome,true)),'cancellation retains the saved bundle even when raw capture was interrupted');
+    assert(!runs(warnings[0],false,outcome,true),'cancellation cannot claim publication success');
+  }
   assert(later.some(s=>s.includes('--report-failures')||s.includes('--report-alerts')),'failure notification remains separate');
   assert(!later.filter(s=>s.includes('--report-')).some(s=>s.includes('continue-on-error')),'warnings are not silently marked successful');
 }
