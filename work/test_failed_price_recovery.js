@@ -55,6 +55,15 @@ assert.equal(JSON.stringify(actualPublishedCancelled),actualBefore,'cancelled ru
 const acquired={name:'catchup',status:'completed',conclusion:'success'};
 assert.equal(monitorRecoveryNeeded({jobs:[acquired,{name:'publication_check',conclusion:'failure'}]}),false,'independent verification failure has no unpublished source checkpoint');
 assert.equal(monitorRecoveryNeeded({jobs:[acquired,{name:'watch',conclusion:'failure'}]}),false,'monitor-only failure must not block acquisition');
+for(const conclusion of ['cancelled','timed_out'])for(const name of ['watch','publication_check']){
+  assert(!monitorRecoveryNeeded({jobs:[acquired,{name,conclusion}]}),'observer cancellation/timeout has no unpublished source checkpoint when catchup completed successfully');
+  assert(monitorRecoveryNeeded({jobs:[{...acquired,conclusion:'cancelled'},{name,conclusion}]}),'cancelled catchup is not an observer-only exemption');
+  assert(monitorRecoveryNeeded({jobs:[acquired,{name:'unknown-writer',conclusion}]}),'unknown failed stages remain held');
+}
+const skippedCancelled=require('./fixtures/monitor-skipped-acquisition-cancelled-observer-20261121.json'),skippedOriginal=JSON.stringify(skippedCancelled);
+assert(!monitorPublicationCompleted(skippedCancelled),'skipped acquisition is never labelled actual acquisition/publication success');
+assert(!monitorRecoveryNeeded(skippedCancelled),'actual cancelled observer after skipped acquisition must not stop the next normal price update');
+assert.equal(JSON.stringify(skippedCancelled),skippedOriginal);
 assert(monitorRecoveryNeeded({jobs:[{...acquired,conclusion:'failure'},{name:'publication_check',conclusion:'failure'}]}),'failed catchup still requires recovery');
 assert(monitorRecoveryNeeded({jobs:[]}), 'missing job proof is never a recovery exemption');
 const monitor={...good,id:123,name:'Data Update Health Watchdog',updated_at:'2026-10-26T14:54:00Z'};

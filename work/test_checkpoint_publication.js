@@ -76,3 +76,49 @@ function generatedFixture(failValidation) {
 }
 generatedFixture(false);generatedFixture(true);
 console.log('PASS generated-only publication conflicts, all-side archive, history preservation and failed validation publication stop');
+
+// Reproduce an already-running publisher whose modules predate a concurrent
+// evidence-policy update. Each post-merge check must use the merged code graph.
+function runtimePolicyFixture(invalid=false) {
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'pokeka-publish-runtime-'));
+  const origin=path.join(dir,'remote.git'),left=path.join(dir,'left'),right=path.join(dir,'right');
+  const write=(cwd,file,text)=>{fs.mkdirSync(path.dirname(path.join(cwd,file)),{recursive:true});fs.writeFileSync(path.join(cwd,file),text);};
+  try {
+    git(['init','--bare','--initial-branch=main',origin]);git(['clone',origin,left]);config(left);
+    write(left,'work/publish_data_checkpoint.js',fs.readFileSync(path.join(__dirname,'publish_data_checkpoint.js')));
+    write(left,'ui-data-codec.js','// fixture');
+    write(left,'work/enforce_overseas_publication.js','exports.enforce=()=>{};exports.verify=()=>{};');
+    write(left,'work/runtime-policy.js','exports.required=1;');
+    write(left,'work/gemrate_confirmed_links.js',"exports.validatePublic=(root,data)=>{if(data.version!==require('./runtime-policy').required)throw Error('Reviewed addition evidence incomplete');};");
+    write(left,'work/ui_projection_cache.js','exports.current=()=>false;');
+    write(left,'work/build_ui_data.js',"exports.build=root=>require('fs').writeFileSync(require('path').join(root,'data/ui/manifest.json'),JSON.stringify({policy:require('./runtime-policy').required}));");
+    write(left,'data/ui/manifest.json','{}');write(left,'data/gemrate-reference-summary.json','{"version":1}');
+    write(left,'work/gemrate-confirmed-reference-registry.json','{}');
+    git(['add','.'],left);git(['commit','-m','policy one'],left);git(['push','origin','main'],left);
+    const publisher=require(path.join(left,'work/publish_data_checkpoint.js'));
+    publisher.preparePublication(left);git(['commit','-am','initial projection'],left);git(['push','origin','main'],left);
+    git(['clone',origin,right]);config(right);
+    write(right,'work/runtime-policy.js','exports.required=2;');
+    write(right,'data/gemrate-reference-summary.json',JSON.stringify({version:invalid?3:2}));
+    git(['add','.'],right);git(['commit','-m','new evidence and required policy'],right);git(['push','origin','main'],right);
+    write(left,'data/local-monitor.json','{"observedAt":"2026-11-21T00:00:00Z"}');git(['add','data'],left);
+    if(invalid) {
+      assert.throws(()=>publisher.publish({cwd:left}),/Merged publication validation failed.*checkpoint bundle retained/s);
+      const saved=JSON.parse(fs.readFileSync(path.join(left,'work/publish-recovery.json')));
+      assert.equal(saved.status,'merged-validation-failed');assert.equal(saved.attempts.at(-1).ok,false);
+      git(['bundle','verify',path.join(left,'work/publish-recovery.bundle')],left);
+      assert.throws(()=>git(['show','main:data/local-monitor.json'],origin),'invalid merged evidence must not be pushed');
+    } else {
+      const result=publisher.publish({cwd:left});assert.equal(result.status,'published');
+      assert(result.timings.projectionChecks.every(r=>r.runtime==='fresh-node-current-tree'));
+      assert.equal(JSON.parse(git(['show','main:data/ui/manifest.json'],origin)).policy,2);
+      assert.equal(JSON.parse(git(['show','main:data/local-monitor.json'],origin)).observedAt,'2026-11-21T00:00:00Z');
+      assert.throws(()=>publisher.preparePublication(left),/Reviewed addition evidence incomplete/,'the stale parent graph reproduces the actual old-validator error');
+    }
+  } finally {
+    assert.equal(path.dirname(path.resolve(dir)),path.resolve(os.tmpdir()));assert(path.basename(dir).startsWith('pokeka-publish-runtime-'));
+    fs.rmSync(dir,{recursive:true,force:true});
+  }
+}
+runtimePolicyFixture();runtimePolicyFixture(true);
+console.log('PASS fresh merged validation graph, real stale-module reproduction, invalid evidence stop, saved bundle and unchanged source timestamps');

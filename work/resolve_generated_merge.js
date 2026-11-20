@@ -104,7 +104,9 @@ function resolve(cwd,{rebuild}={}) {
     // Finalization computes outcomes and embeds exactly that snapshot in the
     // monitor before sealing lineage. Never recompute outcomes afterwards.
     for(const file of REBUILD_STEPS){
+      const started=Date.now();console.log(JSON.stringify({publicationStage:'regenerate-derived',script:file,phase:'started',at:new Date(started).toISOString()}));
       const child=spawnSync(process.execPath,['work/'+file],{cwd,encoding:'utf8',env:{...process.env,PRICE_EVIDENCE_FETCH_LIMIT:'0'},timeout:300000,maxBuffer:32*1024*1024});
+      console.log(JSON.stringify({publicationStage:'regenerate-derived',script:file,phase:'finished',durationMs:Date.now()-started,ok:child.status===0}));
       if(child.status!==0)throw new Error(`${file}: ${child.stderr||child.stdout||child.error?.message||'regeneration failed'}`);
     }
     const receiptFile=path.join(cwd,'data/scheduled-cycle-receipts.json');

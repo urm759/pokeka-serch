@@ -1,5 +1,7 @@
 # SM12aの新規掲載RRを保存CSVへ照合
 
+PR #80後の実取込み・772枚の公開照合・日次分母との違いは[継続台帳](20261121_VERIFIED_DATA_OUTCOMES.md)を参照。以下のpreview段階だけで完了扱いにはしていない。
+
 [11/21運転台帳](20261121_PUBLISHED_MONITOR_RECOVERY.md)の未完了を継承する。主計算/正式検索/採用率/GO/公式POP保存値は変更しない。
 
 ジュカインGX SM12a010/173・ガオガエンGX SM12a082/173は、公式日本語カード検索と取得済みCamp商品原票で同一仕様を確認済み。保存CSVの同じ日本語SM12aセット/2019年/PSA、番号010/082、Name=Sceptile GX/Incineroar GX、Parallel=Baseがそれぞれ一意に存在する。

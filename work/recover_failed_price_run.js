@@ -106,7 +106,7 @@ function monitorPublicationCompleted(jobs){
 }
 function monitorRecoveryNeeded(jobs){
   if(monitorPublicationCompleted(jobs))return false;
-  const rows=jobs.jobs||[],selected=rows.filter(j=>j.name==='catchup'),catchup=selected[0],failed=rows.filter(j=>j.conclusion==='failure');
+  const rows=jobs.jobs||[],selected=rows.filter(j=>j.name==='catchup'),catchup=selected[0],failed=rows.filter(j=>['failure','cancelled','timed_out'].includes(j.conclusion));
   if(selected.length!==1)return true;
   return !(catchup?.status==='completed'&&catchup.conclusion==='success'&&failed.length>0
     &&failed.every(j=>['publication_check','watch'].includes(j.name)));
