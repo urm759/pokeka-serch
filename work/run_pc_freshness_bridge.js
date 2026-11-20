@@ -42,6 +42,13 @@ async function run(root=path.resolve(__dirname,'..'),store=process.env.GEMRATE_P
   result.acquisition=recovering?{requests:0,adopted:0,recoveredBeforeFetch:0,status:'saved-checkpoint-before-new-requests'}
    :await phase('saved-recovery-and-PC-acquisition',()=>require(path.join(worker,'work/pc_yuyutei_maintenance')).acquire(context));
   if(!recovering&&!(result.acquisition.adopted||result.acquisition.recoveredBeforeFetch)){result.publication={status:'no-new-effective-input',published:false};return result;}
+  const publicationReady=async stage=>{
+   result.cloudPublicationWait=await phase(stage,()=>require('./pc_publication_wait').wait({root:worker}));
+   (result.cloudPublicationWaits ||= []).push({stage,...result.cloudPublicationWait});
+   if(result.cloudPublicationWait.ready)return true;
+   result.publication={status:'saved-awaiting-cloud-writer',published:false,next:'existing-PC-hourly-timer resumes saved worker before new acquisition',sourceRequests:0};return false;
+  };
+  if(!await publicationReady('cloud-writer-before-aggregation'))return result;
   const child=(script,args=[])=>{
    const r=cp.spawnSync(process.execPath,[path.join(worker,script),...args],{cwd:worker,encoding:'utf8',maxBuffer:64e6,timeout:900000,env:{...process.env,PRICE_EVIDENCE_FETCH_LIMIT:'0',YUYUTEI_PRODUCT_RECEIPTS_DIR:path.join(store,'pc-yuyutei-receipts')}});
    fs.appendFileSync(path.join(store,'pc-domestic-pipeline.log'),String(r.stdout||'')+String(r.stderr||''));
@@ -58,6 +65,7 @@ async function run(root=path.resolve(__dirname,'..'),store=process.env.GEMRATE_P
   await phase('source-observability',()=>child('work/audit_acquisition_progress.js'));
   await phase('aggregation',()=>child('work/finalize_update_status.js'));
   await phase('required-validation',()=>child('work/update_validation.js',['--required']));
+  if(!await publicationReady('cloud-writer-before-publication'))return result;
   await phase('save-and-publication',()=>{
    const changed=git(worker,['diff','--name-only']).split('\n').filter(Boolean);
    if(changed.some(f=>!allowed(f)))throw Error('Unexpected non-data output retained for review');
