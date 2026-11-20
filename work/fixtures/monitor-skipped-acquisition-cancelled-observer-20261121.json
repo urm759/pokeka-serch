@@ -1,0 +1,66 @@
+{
+  "run": {
+    "id": 44816978924,
+    "name": "Data Update Health Watchdog",
+    "event": "workflow_dispatch",
+    "status": "completed",
+    "conclusion": "cancelled",
+    "head_sha": "e12187e62277c523c94a6c29a06ed53dc6211d87",
+    "head_branch": "main",
+    "created_at": "2026-11-20T21:04:07Z",
+    "updated_at": "2026-11-20T21:25:30Z"
+  },
+  "jobs": [
+    {
+      "id": 136567726680,
+      "name": "publication_check",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": []
+    },
+    {
+      "id": 136567726890,
+      "name": "catchup",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Fill missed price intervals with shared cooldown and access budgets",
+          "status": "completed",
+          "conclusion": "skipped",
+          "started_at": "2026-11-20T21:05:28Z",
+          "completed_at": "2026-11-20T21:05:28Z"
+        },
+        {
+          "name": "Validate catchup data without changing purchase criteria",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-20T21:05:36Z",
+          "completed_at": "2026-11-20T21:09:21Z"
+        },
+        {
+          "name": "Publish changed health state only",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-20T21:09:21Z",
+          "completed_at": "2026-11-20T21:10:38Z"
+        }
+      ]
+    },
+    {
+      "id": 136571165407,
+      "name": "watch",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "steps": [
+        {
+          "name": "Publish independent validated monitor state",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-20T21:12:29Z",
+          "completed_at": "2026-11-20T21:25:26Z"
+        }
+      ]
+    }
+  ]
+}

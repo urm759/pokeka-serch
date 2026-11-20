@@ -37,6 +37,8 @@ assert(workflow.includes('work/priority-freshness-history.json'),'time-forward m
 const watchCode=fs.readFileSync(path.join(__dirname,'watch_update_health.js'),'utf8');
 assert(watchCode.includes("status.priorityPriceMonitor = require('./priority_price_queue').write(ROOT)"),'saved observation must use current card times, not previous status freshness');
 assert(workflow.indexOf('Publish independent validated monitor state')<workflow.indexOf('Report newly detected alerts'));
+assert(workflow.includes("if: always() && (failure() || cancelled()) && steps.publication.outcome != 'success'"),'cancelled monitor publication keeps recovery instead of requiring failure() only');
+assert(workflow.includes('work/publish-recovery.bundle')&&workflow.includes('work/publish-recovery.json'),'the already-saved checkpoint survives even if raw capture cannot finish');
 const priority=fs.readFileSync(path.join(__dirname,'../.github/workflows/priority-price-refresh.yml'),'utf8');
 assert(priority.indexOf('Verify safety')<priority.indexOf('Publish validated data'));
 assert(priority.indexOf('Publish validated data')<priority.indexOf('Report independent acquisition failures'));

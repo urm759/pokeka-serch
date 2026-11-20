@@ -4,6 +4,7 @@ assert.equal(Object.keys(plan.workflows).length,4);
 for(const file of WORKFLOWS){assert(plan.workflows[file].length>0,'operational tests missing for '+file);for(const test of plan.workflows[file])assert(tests.has(test),file+' CI omission: '+test);}
 for(const test of plan.required)assert(tests.has(test),'mandatory publication test omitted: '+test);
 assert(plan.workflows['watch-data-health.yml'].includes('work/test_watch_catchup_trigger.js'));assert(tests.has('work/test_watch_catchup_trigger.js'));
+assert(plan.workflows['watch-data-health.yml'].includes('work/test_post_publication_recovery.js'));assert(tests.has('work/test_post_publication_recovery.js'),'publication failure/cancellation matrix is part of the operational union');
 const text=fs.readFileSync(path.join(root,'.github/workflows/operational-path-checks.yml'),'utf8');
 for(const filter of ["'.github/workflows/**'","'work/**/*.js'","'*.js'"])assert(text.includes(filter),'runtime/code changes must trigger operational CI');
 assert.equal(jobProperty(text,'operational-regressions','if'),null,'prepublication suite must not silently skip a PR');
