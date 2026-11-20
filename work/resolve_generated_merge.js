@@ -25,6 +25,7 @@ DERIVED.add('work/pop-focus-targets.json');
 DERIVED.add('data/gemrate-collector-config.json');
 DERIVED.add('work/camp-deadline-plan.json');
 DERIVED.add('data/link-coverage.json');
+DERIVED.add('data/psa10-period-summary.json');
 // Produced from saved authoritative inputs, never acquired quotes or histories.
 for(const file of ['25th-promo-coverage','acquisition-progress-audit','acquisition-resilience','buyback-observation-summary','buyback-support-audit',
   'candidate-daily-audit','candidate-availability-audit','completion-outcomes','domestic-psa9-provenance-details','domestic-psa9-route-audit','focus-monitor','linkage-evidence-audit',
@@ -32,7 +33,7 @@ for(const file of ['25th-promo-coverage','acquisition-progress-audit','acquisiti
   'purchase-limit-model-audit','purchase-price-freshness-audit','raw-condition-reference-summary','raw-psa9-gap-audit','shop-identity-quarantine',
   'state-a-price-audit','supply-demand-validation-summary'])DERIVED.add('data/'+file+'.json');
 for(const file of ['high-rarity-completion-plan','pop-focus-targets','psa_priority_queue','purchase-price-targets','saved-shop-link-reconciliation'])DERIVED.add('work/'+file+'.json');
-const projection=file=>file.startsWith('data/ui/')||/^data\/(?:psa-pop-glance\/\d{2}|raw-condition-reference\/\d{1,2})\.json$/.test(file)||DERIVED.has(file);
+const projection=file=>file.startsWith('data/ui/')||/^data\/(?:psa-pop-glance\/\d{2}|raw-condition-reference\/(?:[0-9]|1[0-5])|price-dynamics\/(?:[0-9]|1[0-5])|buyback-support-details\/(?:[0-9]|[12][0-9]|3[01]))\.json$/.test(file)||DERIVED.has(file);
 function mergeTimedRows(a,b,key,time){
   const rows=new Map();for(const row of [...a,...b]){const k=key(row),old=rows.get(k);if(!old||Date.parse(time(row))>=Date.parse(time(old)))rows.set(k,row);}
   return [...rows.values()].sort((x,y)=>Date.parse(time(x))-Date.parse(time(y))).slice(-400);
@@ -123,4 +124,4 @@ function resolve(cwd,{rebuild}={}) {
   git(['commit','--no-edit']);
   return true;
 }
-module.exports={resolve,DERIVED,RECONCILABLE,mergeReceipts,mergeTimedRows,REBUILD_STEPS};
+module.exports={resolve,DERIVED,RECONCILABLE,mergeReceipts,mergeTimedRows,REBUILD_STEPS,projection};

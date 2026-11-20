@@ -1,0 +1,18 @@
+{
+  "runId": 44720240695,
+  "originalConclusion": "cancelled",
+  "origin": "workflow_dispatch",
+  "acquisitionStartedAt": "2026-11-20T10:34:20Z",
+  "acquisitionEndedAt": "2026-11-20T10:46:17Z",
+  "rawCheckpoint": {
+    "artifactId": 14622890118,
+    "matchedFiles": 36
+  },
+  "validationSucceededAt": "2026-11-20T10:47:39Z",
+  "publicationFailedAt": "2026-11-20T11:00:33Z",
+  "publicationSucceeded": false,
+  "publicConfirmation": false,
+  "newSourceFetchForRecovery": 0,
+  "cause": "Known generated buyback/price-dynamics shards and raw buyback-observation source lacked registered conflict reconciliation. Concurrent PC publications occurred at 10:35/10:54. Genuine unknown/same-time raw contradictions remain held.",
+  "followup": "Add bounded derived paths and typed daily raw observation reconciliation; recover saved source checkpoint before new source requests; preserve cancelled run conclusion."
+}

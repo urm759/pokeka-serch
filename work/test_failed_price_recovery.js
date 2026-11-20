@@ -23,6 +23,11 @@ assert(!trustedMonitorCheckpoint(followup,{jobs:[]}));
 for(const missing of [0,1,2]){const j=structuredClone(publicationFailure);j.jobs[0].steps.splice(missing,1);assert(!trustedMonitorCheckpoint(followup,j));}
 assert(!monitorCheckpointOrigin({...followup,event:'workflow_dispatch',actor:{login:'someone-else'}}));
 assert(trustedMonitorCheckpoint({...followup,event:'workflow_dispatch',actor:{login:'urm759'}},publicationFailure));
+const cancelledPublication=structuredClone(publicationFailure);cancelledPublication.jobs[0].conclusion='cancelled';
+assert(trustedMonitorCheckpoint({...followup,conclusion:'cancelled'},cancelledPublication),'cancelled outer job still has exact successful acquisition/validation and failed publication evidence');
+assert(!trustedMonitorCheckpoint({...followup,conclusion:'success'},publicationFailure),'successful run is not failed-source recovery');
+const incompleteCancelled=structuredClone(cancelledPublication);incompleteCancelled.jobs[0].steps[1].conclusion='cancelled';
+assert(!trustedMonitorCheckpoint({...followup,conclusion:'cancelled'},incompleteCancelled),'cancellation before successful validation remains held');
 const {monitorFailedBeforeAcquisition}=require('./recover_failed_price_run');
 const preflight={jobs:[{name:'catchup',status:'completed',conclusion:'failure',steps:[
  {name:'Check saved publication before optional acquisition',conclusion:'failure'},
