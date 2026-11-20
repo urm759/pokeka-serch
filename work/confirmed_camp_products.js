@@ -25,7 +25,10 @@ function seed(cards,catalog,registry,{now=Date.now(),match}={}) {
 }
 function build(root=path.join(__dirname,'..'),options={}){
   const file=path.join(root,'work/confirmed-camp-products.json');if(!fs.existsSync(file))return {links:[],holds:[]};
-  require('./domestic_catalog_supplements').build(root);
+  // Source acquisition may add the catalog entries BEFORE its required audits.
+  // Finalization only reuses already-listed identities; never add cards after
+  // the caller has completed catalog/price verification.
+  if(options.addCards===true)require('./domestic_catalog_supplements').build(root);
   const read=f=>JSON.parse(fs.readFileSync(path.join(root,f),'utf8'));
   const result=seed(read('data/pokemon-cards.json'),read('work/torecacamp_catalog.json'),JSON.parse(fs.readFileSync(file)),options);
   if(result.links.length)require('./acquisition_retry').atomicWrite(path.join(root,'work/torecacamp_catalog.json'),result.catalog,0);

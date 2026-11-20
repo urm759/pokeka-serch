@@ -1112,7 +1112,7 @@ async function updateTorecaCamp(cards, paths) {
 }
 
 async function main() {
-  require('./confirmed_camp_products').build(ROOT,{match:campMatchesCard});
+  require('./confirmed_camp_products').build(ROOT,{match:campMatchesCard,addCards:true});
   const cards = read(path.join(ROOT, "data", "pokemon-cards.json"), []);
   const sourceOnly = String(process.env.SHOP_SOURCE_ONLY || "all").toLowerCase();
   const yuyutei = sourceOnly === "all" || sourceOnly === "yuyutei" ? await updateYuyutei(cards, {
