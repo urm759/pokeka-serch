@@ -3607,6 +3607,10 @@ async function fetchJsonMaybe(url, { detail = false, affectsCalculation = true }
 }
 
 async function loadDeferredAudits(element) {
+  if(element===els.shopRateSummary&&!state.storeWideRatios) {
+    state.storeWideRatios=await fetchJsonMaybe('./data/store-buyback-ratios.json',{detail:true,affectsCalculation:false});
+    renderStoreWideRatios();
+  }
   const fields = { updateHistory: "update-history", candidateDailyAudit: "candidate-daily-audit",
     candidateAvailabilityAudit: "candidate-availability-audit", marketBacktest: "market-backtest-summary",
     modernHighRarityAudit: "modern-high-rarity-audit", uiImprovementAudit: "ui-improvement-audit" };
@@ -5358,7 +5362,18 @@ function combinedPresetSort(left, right) {
     || Number(right.psaDecision?.expectedProfit || 0) - Number(left.psaDecision?.expectedProfit || 0);
 }
 
+function renderStoreWideRatios() {
+  const element=document.getElementById('storeWideRatios');if(!element)return;
+  const data=state.storeWideRatios;
+  if(!data){element.innerHTML='<p>店舗全体の平均：読込待ち・取得失敗（0倍ではありません）</p>';return;}
+  const sameDay=data.asOf===new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo'}).format(new Date());
+  const cell=(row,period)=>{const p=row.periods?.[period];if(!Number.isFinite(p?.mean))return '<td>比較材料なし</td>';
+    return `<td><strong>${ratioLabel(p.mean)}</strong><small>${fmt.format(p.uniqueCards)}対象・${p.observedDays}／${period}日${p.reference?'・参考':''}${!sameDay?'・再集計待ちの参考':''}<br>${escapeHtml(p.firstDate)}～${escapeHtml(p.lastDate)}</small></td>`;};
+  element.innerHTML=`<h3>カード全体の平均買取倍率</h3><p class="shop-rate-note">基準日 ${escapeHtml(data.asOf)}${sameDay?'':'・当日分は再集計待ち'}／検索条件に依存しない掲載カード全体・減額前</p><div class="shop-rate-table-wrap"><table class="shop-rate-table"><thead><tr><th>買取店</th><th>${sameDay?'当日':'最終集計日'}</th><th>30暦日平均</th><th>200暦日平均</th></tr></thead><tbody>${Object.values(data.merchants||{}).map(row=>`<tr><th>${escapeHtml(row.name)}</th>${[1,30,200].map(p=>cell(row,p)).join('')}</tr>`).join('')}</tbody></table></div><details><summary>集計方法・対象範囲</summary><p>${escapeHtml(data.rule)}</p><p>日付範囲内の実観測日のみ。対象数は期間内の異なる採用カード数です。同じ提示を共有する確認済みグループは1票。短い履歴を200日実績とは扱いません。カード別の店舗間平均・75日平均・同店通常とは別の集計です。</p></details>`;
+}
+
 function renderShopRateSummary(cards) {
+  renderStoreWideRatios();
   if (!els.shopRateSummary) return;
   const grouped = Object.create(null);
   for (const card of cards) {
@@ -7663,6 +7678,11 @@ document.getElementById("benchmarkSearchButton")?.addEventListener("click",async
 });
 document.getElementById("currentMarketSearchKindInput")?.addEventListener("change",syncFromUI);
 bindPsa9RatioCoverage();
+document.getElementById('shopRateSummaryPanel')?.addEventListener('toggle',async event=>{
+  if(!event.target.open)return;
+  await loadDeferredAudits(els.shopRateSummary);
+  renderStoreWideRatios();
+});
 for (const element of [els.limitModelAudit,els.shopRateSummary,els.marketBacktestSummary,els.catalogCompletionDetails,els.dataFreshness,els.guidePanels]) {
   element?.closest("details")?.addEventListener("toggle",async event=>{
     if (!event.target.open || !auditIsOpen(element)) return;

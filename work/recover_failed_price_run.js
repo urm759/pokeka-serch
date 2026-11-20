@@ -35,6 +35,16 @@ function trustedMonitorCheckpoint(run,jobs){
   &&steps.some(s=>s.name==='Validate catchup data without changing purchase criteria'&&s.conclusion==='success')
   &&steps.some(s=>s.name==='Publish changed health state only'&&s.conclusion==='failure');
 }
+function monitorFailedBeforeAcquisition(run,jobs){
+ if(!trustedMonitor(run)&&!monitorCheckpointOrigin(run))return false;
+ const selected=(jobs.jobs||[]).filter(j=>j.name==='catchup');if(selected.length!==1)return false;
+ const job=selected[0],steps=job.steps||[],failed=steps.filter(s=>s.conclusion==='failure');
+ const preflight=new Set(['Check alert deduplication and safe backoff rules','Recover trusted failed price inputs without reacquisition',
+  'Recover missed trusted Daily publication before optional acquisition','Check saved publication before optional acquisition','Plan saved publication before optional acquisition']);
+ return job.status==='completed'&&job.conclusion==='failure'&&failed.length>0&&failed.every(s=>preflight.has(s.name))
+  &&['Fill missed price intervals with shared cooldown and access budgets','Validate catchup data without changing purchase criteria','Publish changed health state only']
+    .every(name=>steps.filter(s=>s.name===name).length===1&&steps.find(s=>s.name===name).conclusion==='skipped');
+}
 function trustedSafe(run,repository='urm759/pokeka-serch'){
   return trusted({...run,name:'Priority Purchase Price Refresh'},repository)&&run?.name==='Safe Checkpoint Backfill';
 }
@@ -125,6 +135,13 @@ async function main(){
         failedJobs:jobs.jobs.filter(j=>j.conclusion==='failure').map(j=>j.name),reason:'catchup取得/検証/保存公開は成功。監視/照合の失敗記録とartifactは保持し、独立した価格更新を止めない'};
       fs.writeFileSync(path.join(ROOT,'work/recovery-inspected-'+id+'.json'),JSON.stringify(result));return result;
     }
+    if(monitorFailedBeforeAcquisition(run,jobs)){
+      const result={status:'monitor-failed-before-acquisition',runId:run.id,runAttempt:run.run_attempt,headSha:run.head_sha,checkedAt:new Date().toISOString(),
+        sourceRequests:0,sourceAcquisition:false,originalConclusion:run.conclusion,originalFailureRetained:true,
+        failedStages:(jobs.jobs||[]).filter(j=>j.name==='catchup').flatMap(j=>(j.steps||[]).filter(s=>s.conclusion==='failure').map(s=>s.name)),
+        reason:'取得前の失敗を保持。この実行には取得/検証/公開済み原票がないため、同じ回収要求を反復せず通常更新を継続。成功・原票回収には加算しない'};
+      fs.writeFileSync(path.join(ROOT,'work/recovery-inspected-'+id+'.json'),JSON.stringify(result));return result;
+    }
     if(!trustedMonitor(run)&&!trustedMonitorCheckpoint(run,jobs))throw Error('Followup recovery requires completed acquisition/validation and failed publication evidence');
   }
   const artifacts=selectRecoveryArtifacts((await(await get(base+'/runs/'+id+'/artifacts')).json()).artifacts,run,{safe,daily,monitor});
@@ -175,4 +192,4 @@ if(require.main===module){
     console.log(JSON.stringify({pending:Boolean(rows.length),runIds:rows.map(r=>r.runId),recoveryApplied:false}));
   }else main().then(r=>console.log(JSON.stringify(r))).catch(e=>{console.error(e.message);process.exitCode=1;});
 }
-module.exports={trusted,trustedMonitor,trustedSafe,trustedDaily,latestDaily,latestMonitor,monitorRecoveryNeeded,selectRecoveryArtifacts,recoveryArchiveName,inspectedForRun,lastSuccessfulAcquisition,ensureTrustedBase,activeSourceHolds,retainSourceHold,METADATA_TIMEOUT_MS,ARCHIVE_TIMEOUT_MS,monitorCheckpointOrigin,trustedMonitorCheckpoint};
+module.exports={trusted,trustedMonitor,trustedSafe,trustedDaily,latestDaily,latestMonitor,monitorRecoveryNeeded,selectRecoveryArtifacts,recoveryArchiveName,inspectedForRun,lastSuccessfulAcquisition,ensureTrustedBase,activeSourceHolds,retainSourceHold,METADATA_TIMEOUT_MS,ARCHIVE_TIMEOUT_MS,monitorCheckpointOrigin,trustedMonitorCheckpoint,monitorFailedBeforeAcquisition};

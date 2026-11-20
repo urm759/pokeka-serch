@@ -272,6 +272,9 @@ function main() {
     priority += isRecentRelease ? 500 : 0;
     priority += release.year >= 2020 ? 100 : 0;
     priority += missingRequired.length > 0 && missingRequired.length <= 2 ? 400 : 0;
+    // Acquisition priority only. Do not change required inputs, freshness or
+    // formal search conditions, and let existing blocked-path routing apply.
+    if(require('./requested_rr_cohort').includes(card))priority+=250;
     priority += shopFound ? 90 : 0;
     priority += isSiteNew ? 80 : 0;
     priority += Math.min(160, Number(card.tv30 || 0) * 2);

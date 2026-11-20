@@ -23,6 +23,17 @@ assert(!trustedMonitorCheckpoint(followup,{jobs:[]}));
 for(const missing of [0,1,2]){const j=structuredClone(publicationFailure);j.jobs[0].steps.splice(missing,1);assert(!trustedMonitorCheckpoint(followup,j));}
 assert(!monitorCheckpointOrigin({...followup,event:'workflow_dispatch',actor:{login:'someone-else'}}));
 assert(trustedMonitorCheckpoint({...followup,event:'workflow_dispatch',actor:{login:'urm759'}},publicationFailure));
+const {monitorFailedBeforeAcquisition}=require('./recover_failed_price_run');
+const preflight={jobs:[{name:'catchup',status:'completed',conclusion:'failure',steps:[
+ {name:'Check saved publication before optional acquisition',conclusion:'failure'},
+ ...publicationFailure.jobs[0].steps.map(s=>({...s,conclusion:'skipped'}))]}]};
+assert(monitorFailedBeforeAcquisition(followup,preflight),'pre-acquisition failure has no acquired checkpoint, original failure is retained');
+assert(!monitorFailedBeforeAcquisition(followup,publicationFailure),'acquired but unpublished data still requires full recovery');
+assert(!monitorFailedBeforeAcquisition(followup,{jobs:[]}),'unknown job evidence is never exempted');
+for(const patch of [{name:'Validate catchup data without changing purchase criteria',conclusion:'failure'},{name:'Fill missed price intervals with shared cooldown and access budgets',conclusion:'success'}]){
+ const j=structuredClone(preflight);j.jobs[0].steps[j.jobs[0].steps.findIndex(s=>s.name===patch.name)]=patch;assert(!monitorFailedBeforeAcquisition(followup,j));
+}
+assert(!monitorFailedBeforeAcquisition({...followup,head_repository:{full_name:'fork/repo'}},preflight));
 const {monitorRecoveryNeeded}=require('./recover_failed_price_run');
 const acquired={name:'catchup',status:'completed',conclusion:'success'};
 assert.equal(monitorRecoveryNeeded({jobs:[acquired,{name:'publication_check',conclusion:'failure'}]}),false,'independent verification failure has no unpublished source checkpoint');
