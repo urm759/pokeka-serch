@@ -771,6 +771,10 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .shop-rate-table th:first-child{text-align:left}.shop-rate-table td strong{color:#86efac;font-size:13px}
 .shop-rate-table th b{display:inline-block;margin-left:5px;padding:2px 5px;border-radius:999px;background:rgba(245,158,11,.14);color:#fde68a;font-size:7px}
 .shop-rate-table td small{display:block;color:var(--muted);font-size:7px}.shop-rate-note{margin:8px 2px 0!important;padding:0!important;font-size:8px!important}
+#storeWideRatios .shop-rate-table{min-width:0;table-layout:fixed;max-width:1000px}
+#storeWideRatios .shop-rate-table th:first-child{width:22%}
+#storeWideRatios .shop-rate-table th,#storeWideRatios .shop-rate-table td{white-space:normal;overflow-wrap:anywhere;padding:9px 5px}
+#storeWideRatios .shop-rate-table td small{font-size:9px;line-height:1.5}
 .backtest-overview{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:10px}
 .backtest-summary-card{padding:12px;border:1px solid rgba(125,211,252,.2);border-radius:14px;background:rgba(5,10,20,.48)}
 .backtest-summary-card span,.backtest-summary-card small{display:block;color:var(--muted);font-size:9px;line-height:1.5}.backtest-summary-card strong{display:block;margin:3px 0;font-size:16px}.backtest-summary-card b{display:block;margin-top:6px;color:#86efac;font-size:10px}

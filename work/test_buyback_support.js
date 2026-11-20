@@ -1,4 +1,5 @@
 require('./test_buyback_75_mean');
+require('./test_store_buyback_ratios');
 const assert = require('node:assert/strict'), fs = require('node:fs');
 const builder = require('./build_buyback_support'), m = require('../exploration-metrics'), evidence = require('./psa10_observation_evidence');
 const now = Date.parse('2026-10-15T02:00:00Z'), at = '2026-10-15T01:00:00Z';

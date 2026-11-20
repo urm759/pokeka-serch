@@ -65,7 +65,12 @@ function publish({ cwd = path.join(__dirname, ".."), message = "Publish determin
       catch(error) { record.attempts.push({stage:'regenerate-derived',durationMs:Date.now()-regenerationStarted,ok:false,message:error.message}); }
       if (!resolved) {
         require('./capture_unpublished_data.js').capture({cwd,source:'publication-conflict'});
-        record.status = "manual-merge-required"; save(); throw new Error(`Publication conflict; checkpoint bundle saved. ${merged.output}`);
+        const blocked=git(['diff','--name-only','--diff-filter=U'],cwd).output.split('\n').filter(Boolean);
+        const resolver=require('./resolve_generated_merge'),typed=require('./publication_merge_inputs');
+        record.blockedFiles=blocked;record.unsupportedFiles=blocked.filter(f=>!resolver.projection(f)&&!resolver.RECONCILABLE.has(f)&&!typed.TYPES.has(f));
+        record.status = "manual-merge-required"; save();
+        const cause=record.attempts.filter(r=>r.stage==='regenerate-derived'&&!r.ok).at(-1)?.message||('Unsupported paths: '+record.unsupportedFiles.join(', '));
+        throw new Error(`Publication conflict; checkpoint bundle saved. ${cause}\n${merged.output}`);
       }
       record.attempts.push({stage:'regenerate-derived',durationMs:Date.now()-regenerationStarted,ok:true});
     }

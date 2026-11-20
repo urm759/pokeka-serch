@@ -40,7 +40,24 @@ function preserve(cycles,key,result){
 }
 async function inspect({getJson,getText,at=Date.now(),targetRunId=null,onVerifiedReceipt=null}){
   const textCache=new Map(),readText=url=>{if(!textCache.has(url))textCache.set(url,getText(url));return textCache.get(url);};
-  const [receipts,deployments]=await Promise.all([getJson(PUBLIC+'data/scheduled-cycle-receipts.json?verify='+at),getJson(API+'/actions/runs?per_page=40')]);
+  let [receipts,deployments]=await Promise.all([getJson(PUBLIC+'data/scheduled-cycle-receipts.json?verify='+at),getJson(API+'/actions/runs?per_page=40')]);
+  // A later writer may replace a pipeline receipt before Pages is observed.
+  // Recover the target's ORIGINAL receipt from a successful immutable Pages
+  // commit, then apply the same run, job, acquisition and full-hash checks.
+  // Neither a skipped acquisition nor a missing receipt becomes success.
+  if(targetRunId&&!Object.values(receipts.pipelines||{}).some(r=>String(r.runId)===String(targetRunId))) {
+    const run=await getJson(API+'/actions/runs/'+targetRunId);
+    if(run.head_branch!=='main'||run.head_repository?.full_name!=='urm759/pokeka-serch')throw Error('Untrusted publication receipt origin');
+    const start=Date.parse(run.run_started_at||run.created_at);
+    const pages=(deployments.workflow_runs||[]).filter(p=>p.name==='pages build and deployment'&&p.conclusion==='success'
+      &&/^[a-f0-9]{40}$/.test(p.head_sha||'')&&Date.parse(p.created_at)>=start&&Date.parse(p.created_at)<=start+30*60000).slice(0,4);
+    for(const page of pages) {
+      let saved;try{saved=JSON.parse(await readText('https://raw.githubusercontent.com/urm759/pokeka-serch/'+page.head_sha+'/data/scheduled-cycle-receipts.json'));}
+      catch(e){if(!/HTTP 404/.test(e.message))throw e;continue;}
+      const matching=Object.fromEntries(Object.entries(saved.pipelines||{}).filter(([,r])=>String(r.runId)===String(targetRunId)));
+      if(Object.keys(matching).length){receipts={pipelines:matching};break;}
+    }
+  }
   const cycles={version:1,checkedAt:new Date(at).toISOString(),pipelines:{},targetRunId};let pagesHistory=null;
   for(const key of ['priority','catchup','daily','safe']){
     const receipt=receipts.pipelines?.[key];if(!receipt?.runId)continue;

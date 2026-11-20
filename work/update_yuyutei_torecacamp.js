@@ -724,7 +724,7 @@ async function updateTorecaCamp(cards, paths) {
   const criticalRequests=campCriticalIds(requestedTargets,read(path.join(__dirname,'priority-search-profiles.json'),{}).popFocusProfileIds||[]);
   const medianCompletions=require('./profile_completion_routes').medianCompletionIds(requestedTargets,'torecacamp',read(path.join(__dirname,'priority-search-profiles.json'),{}).popFocusProfileIds||[]);
   const fixed=require('./fixed_price_cohort').ids(ROOT,'torecacamp');
-  const legacyRequested=[...new Set([...campRequestedIds(requestedTargets,comparisonIds,alternateRequests),...fixed])];
+  const legacyRequested=[...new Set([...campRequestedIds(requestedTargets,comparisonIds,alternateRequests),...fixed,...require('./confirmed_camp_products').ids(ROOT)])];
   for(const id of legacyRequested)important.add(id);
   const bulk = require('./camp_collection_batch');
   const bulkVerified = new Set();
@@ -882,7 +882,7 @@ async function updateTorecaCamp(cards, paths) {
       const normalStart=retryOnly || retrySitemap ? 0 : progress.currentSitemapIndex === sitemapIndex ? progress.currentEntryIndex : 0;
       const prioritized=!retryOnly&&!retrySitemap;
       if(prioritized) {
-        const requested=[...new Set([...campRequestedIds(read(path.join(__dirname,'search-profile-targets.json'),{}),comparisonIds,alternateRequests),...fixed])];
+        const requested=[...new Set([...campRequestedIds(read(path.join(__dirname,'search-profile-targets.json'),{}),comparisonIds,alternateRequests),...fixed,...require('./confirmed_camp_products').ids(ROOT)])];
         entries=postpass.prioritize(entries,normalStart,catalog.filter(r=>r.sourceSitemap<=sitemapUrls.length),[...new Set(requested)],detailLimit,progress.retryByUrl,Date.now(),proactiveLead,criticalRequests,medianCompletions,{priorityBudgetRemaining:Math.max(0,Math.floor(detailLimit/2)-legacyRecords.length)});
       }
       const startingEntry=prioritized?0:normalStart;
@@ -1112,6 +1112,7 @@ async function updateTorecaCamp(cards, paths) {
 }
 
 async function main() {
+  require('./confirmed_camp_products').build(ROOT,{match:campMatchesCard,addCards:true});
   const cards = read(path.join(ROOT, "data", "pokemon-cards.json"), []);
   const sourceOnly = String(process.env.SHOP_SOURCE_ONLY || "all").toLowerCase();
   const yuyutei = sourceOnly === "all" || sourceOnly === "yuyutei" ? await updateYuyutei(cards, {

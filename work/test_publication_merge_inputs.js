@@ -1,5 +1,20 @@
 const assert=require('node:assert/strict'),fs=require('fs');
 const m=require('./publication_merge_inputs'),{capture}=require('./capture_unpublished_data');
+const obs=(rows)=>({version:1,shops:{shop:{card:rows}}}),quote=(at,price=100)=>({identity:'SET|001|ja',observedAt:at,price,grade:'PSA10',currency:'JPY'});
+const oldQuote=quote('2026-11-19T01:00:00Z'),newQuote=quote('2026-11-19T02:00:00Z',110),otherQuote=quote('2026-11-20T01:00:00Z',120);
+const obsBase=obs({'2026-11-19':oldQuote}),obsLeft=obs({'2026-11-19':newQuote}),obsRight=obs({'2026-11-19':oldQuote,'2026-11-20':otherQuote});
+assert.deepEqual(m.buybackObservations(obsBase,obsLeft,obsRight),obs({'2026-11-19':newQuote,'2026-11-20':otherQuote}),'retain independent daily raw observations and actual source times');
+assert.deepEqual(m.buybackObservations(obsBase,obsLeft,obsLeft),obsLeft,'reprocessing does not add observations');
+const legacyHeld=obs({'2026-10-01':{price:0,observedAt:null,quarantined:true}});
+assert.deepEqual(m.buybackObservations(legacyHeld,legacyHeld,legacyHeld),legacyHeld,'unchanged legacy holds remain unchanged, never adopted as a new observation');
+assert.throws(()=>m.buybackObservations(obsBase,obsLeft,obs({'2026-11-19':{...newQuote,price:111}})),/distinct timestamps/);
+assert.throws(()=>m.buybackObservations(obsBase,obsLeft,obs({'2026-11-19':{...newQuote,identity:'OTHER'}})),/identity/);
+assert.throws(()=>m.buybackObservations(obsBase,obsLeft,obs({'2026-11-19':{...newQuote,observedAt:null}})),/missing/);
+assert.throws(()=>m.buybackObservations(obsBase,obsLeft,{...obsRight,newRawField:true}),/schema/,'unknown source metadata is held');
+const projection=require('./resolve_generated_merge').projection;
+for(const file of ['data/buyback-support-details/31.json','data/price-dynamics/15.json','data/psa10-period-summary.json'])assert(projection(file),'known shard is regenerated only after raw reconciliation');
+for(const file of ['work/buyback-price-observations.json','data/buyback-support-details/32.json','data/price-dynamics/16.json','data/unknown-raw.json'])assert(!projection(file),'raw or unknown schema is never a discarded projection');
+for(const file of require('./fixtures/publication-conflicts-20261120.json'))assert(projection(file)||m.TYPES.has(file)||require('./resolve_generated_merge').RECONCILABLE.has(file),'actual run conflict must have an explicit typed source or known regenerated projection: '+file);
 const base={updatedAt:'2026-11-13T00:00:00Z',cards:{a:{checkedAt:'2026-11-13T00:00:00Z',status:'unknown'}}};
 const a={...base,updatedAt:'2026-11-13T01:00:00Z',cards:{...base.cards,b:{checkedAt:'2026-11-13T01:00:00Z',status:'backed',price:100}}};
 const b={...base,updatedAt:'2026-11-13T02:00:00Z',cards:{a:{checkedAt:'2026-11-13T02:00:00Z',status:'unbacked'},c:{checkedAt:'2026-11-13T02:00:00Z',status:'backed',price:200}}};
@@ -20,5 +35,9 @@ try{
  for(const file of files){const row=manifest.files.find(r=>r.file===file);assert(row,'captured source proof '+file);const original=fs.readFileSync(path.join(temporary,file)),saved=fs.readFileSync(path.join(result.directory,file));assert.deepEqual(original,saved);assert.equal(row.sha256,crypto.createHash('sha256').update(original).digest('hex'));}
 }finally{const resolved=path.resolve(temporary);assert.equal(path.dirname(resolved),path.resolve(os.tmpdir()));assert(path.basename(resolved).startsWith('pokeka-compact-provenance-'));fs.rmSync(resolved,{recursive:true,force:true});}
 const history={days:[{date:'2026-11-12',settings:{fee:1},modelVersion:'v',candidates:1}]};
+const av={version:1,runs:[{date:'2026-11-12',generatedAt:'2026-11-12T00:00:00Z',modelVersion:'v',rows:{a:1}}]},av2={...av.runs[0],generatedAt:'2026-11-12T01:00:00Z',rows:{a:2}};
+assert.deepEqual(m.availability(av,av,{version:1,runs:[av.runs[0],av2]}).runs,[av.runs[0],av2],'preserve different-time snapshots, not just the final count');
+assert.throws(()=>m.availability(av,av,{version:1,runs:[{...av.runs[0],rows:{a:2}}]}),/same-time contradiction/);
+assert.throws(()=>m.availability(av,av,{version:1,runs:[{...av2,generatedAt:null}]}),/timestamp/);
 assert.throws(()=>m.candidates(history,{days:[{...history.days[0],candidates:2}]},{days:[{...history.days[0],candidates:3}]},{leftAudit:{generatedAt:oa.updatedAt},rightAudit:{generatedAt:oa.updatedAt}}),/distinct timestamps/);
 console.log('PASS source evidence union, equal-time contradiction hold, operational history preservation/settings guard, candidate snapshot time proof and compact provenance capture');

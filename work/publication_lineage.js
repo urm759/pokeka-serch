@@ -50,7 +50,8 @@ function reuseInputs(root){
 }
 function seal(root,expected,{unchangedDerivedFrom=null}={}){
   const read=reader(root);coherent(read);
-  same(snapshot(root),expected,'sources changed during finalization');
+  const actual=snapshot(root),changed=SOURCES.filter(f=>actual[f]!==expected[f]);
+  if(changed.length)throw Error('Publication version mismatch: sources changed during finalization: '+changed.join(', '));
   const derived=hashes(read,DERIVED);
   if(unchangedDerivedFrom){
     if(unchangedDerivedFrom.version!==1||typeof unchangedDerivedFrom.generationCode!=='string')throw Error('Invalid inherited generation evidence');
