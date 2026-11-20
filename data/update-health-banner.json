@@ -1,19 +1,19 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-20T01:44:46.241Z",
+  "generatedAt": "2026-11-20T01:50:30.822Z",
   "sourceLastSuccessAt": "2026-11-20T01:23:12.945Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-11-19T23:56:19.625Z",
-    "lastSuccessAt": "2026-11-19T23:56:19.625Z",
-    "runId": "44640832051",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/44640832051"
+    "lastAttemptAt": "2026-11-20T01:50:30.816Z",
+    "lastSuccessAt": "2026-11-20T01:50:30.816Z",
+    "runId": "44654379883",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/44654379883"
   },
   "issues": [
     {
       "key": "daily:source-failure",
       "category": "確認が必要",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44573193433",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44653100361",
       "reason": "Dailyの一部取得元が失敗・正常データは必須検証/保存/公開照合済み"
     },
     {
@@ -49,19 +49,19 @@
     {
       "key": "source:shopBuyback:manual-wait",
       "category": "確認が必要",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44612085067",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44653100361",
       "reason": "Web買取表: shop buyback refresh skipped; existing data was preserved: 一部取得失敗（正常データ保持）: torecabank: 取得件数が前回の半分未満。急減を隔離し正常データ保持"
     },
     {
       "key": "source:shopBuyback:stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44612085067",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44653100361",
       "reason": "Web買取表: 更新期限超過（カード別鮮度 未記録%）"
     },
     {
       "key": "source:snkrRaw:stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44573193433",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44653100361",
       "reason": "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）"
     },
     {
