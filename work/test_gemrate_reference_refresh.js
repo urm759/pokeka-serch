@@ -1,6 +1,17 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),os=require('node:os'),crypto=require('node:crypto');
 const {receive}=require('./gemrate_private_store'),csv=require('./gemrate_csv_import'),{build,refreshIfAvailable}=require('./build_gemrate_public_reference');
 const additions=require('./gemrate_reviewed_additions'),registry=additions.entries(path.join(__dirname,'..'));
+assert(additions.englishEvidenceUrl('https://assets.pokemon.com/assets/cms2/pdf/trading-card-game/checklist/sm8_web_cardlist_en.pdf'),'official English checklist is name evidence, never a Japanese population record');
+for(const url of ['http://assets.pokemon.com/assets/cms2/pdf/trading-card-game/checklist/sm8_web_cardlist_en.pdf','https://assets.pokemon.com.evil.test/assets/cms2/pdf/trading-card-game/checklist/sm8_web_cardlist_en.pdf','https://assets.pokemon.com/assets/cms2/pdf/trading-card-game/checklist/sm8_web_cardlist_es.pdf','https://assets.pokemon.com/unknown_en.pdf','https://user:password@www.pokemon.com/us/'])assert(!additions.englishEvidenceUrl(url));
+const realCards=JSON.parse(fs.readFileSync(path.join(__dirname,'../data/pokemon-cards.json')));
+assert.deepEqual(registry.filter(r=>['official-sm12a-010','official-sm12a-082'].includes(r.cardId)).map(r=>r.cardId).sort(),['official-sm12a-010','official-sm12a-082'],'the reviewed RR identities remain explicitly registered');
+for(const r of registry.filter(r=>['official-sm12a-010','official-sm12a-082'].includes(r.cardId))){
+ const context={language:r.language,set:r.set,year:r.year,grader:'PSA',contextProof:'synthetic-fixture'},row={'Card #':r.number,Name:r.sourceName,Parallel:r.parallel};
+ assert.equal(additions.mappings([row],context,realCards,registry).length,1);
+ for(const change of [{'Card #':'999'},{Parallel:'Reverse Holo'},{Name:'Full Art/'+r.sourceName}])assert.equal(additions.mappings([{...row,...change}],context,realCards,registry).length,0);
+ assert.equal(additions.mappings([row],{...context,language:'English'},realCards,registry).length,0);
+ assert.throws(()=>additions.mappings([row,row],context,realCards,registry),/changed/,'duplicate source rows do not authorize an ambiguous print');
+}
 const reviewed=registry[0],canonical=require('./card_identity').canonicalIdentity;
 const reviewedCard={id:reviewed.cardId,name:reviewed.catalogName,language:'ja',rarity:reviewed.rarity,finish:reviewed.finish,
   identityKey:canonical({name:reviewed.catalogName,model:'100/069',language:'ja',rarity:reviewed.rarity}).key};

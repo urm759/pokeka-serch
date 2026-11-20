@@ -2,6 +2,10 @@
 const fs=require('node:fs'),path=require('node:path');
 const {canonicalIdentity}=require('./card_identity');
 const parallelRarity={'Art Rare':'AR','Special Art Rare':'SAR','Super Rare':'SR'};
+function englishEvidenceUrl(value){
+  try{const u=new URL(value);return !u.username&&!u.password&&(u.origin==='https://www.pokemon.com'
+    ||u.origin==='https://assets.pokemon.com'&&/^\/assets\/cms2(?:-en-[a-z]{2})?\/pdf\/trading-card-game\/checklist\/[a-z0-9_-]+_en\.pdf$/.test(u.pathname)&&!u.search);}catch{return false;}
+}
 function sameIdentity(a,b){
   return ['cardId','catalogName','language','set','year','setCode','number','denominator','sourceName','parallel','rarity','finish']
     .every(k=>a?.[k]===b?.[k]);
@@ -20,7 +24,7 @@ function entries(root) {
     const domestic=r.evidence?.filter(e=>e.role==='domestic-identity')||[];
     const hosts=new Set(domestic.map(e=>new URL(e.url).hostname.replace(/^www\./,'')));
     if(hosts.size<2||!r.evidence.some(e=>e.role==='official-set'&&e.url.startsWith('https://www.pokemon-card.com/'))
-      ||!r.evidence.some(e=>e.role==='english-name'&&e.url.startsWith('https://www.pokemon.com/')))throw Error('Reviewed addition evidence incomplete');
+      ||!r.evidence.some(e=>e.role==='english-name'&&englishEvidenceUrl(e.url)))throw Error('Reviewed addition evidence incomplete');
   }
   return registry.cards;
 }
@@ -40,4 +44,4 @@ function mappings(rows,context,catalog,registry,heldKeys=[]) {
   }
   return out;
 }
-module.exports={entries,mappings,sameIdentity};
+module.exports={entries,mappings,sameIdentity,englishEvidenceUrl};
