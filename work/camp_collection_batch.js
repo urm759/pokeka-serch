@@ -73,15 +73,19 @@ function recoverPages(bulkState,catalog) {
   }
   return recovered;
 }
-function plan({routes, cards, catalog, requested = [], critical = [], fixed = [], retryByUrl = {}, state = {}, membership = {}, now, leadMs, due, signature, eligible, limit = 4}) {
+function plan({routes, cards, catalog, requested = [], critical = [], fixed = [], retryByUrl = {}, state = {}, membership = {}, deadlines = {}, now, leadMs, due, signature, eligible, limit = 4}) {
   const byId = new Map(cards.map(c => [c.id,c])), wanted = new Set(requested), urgent = new Set(critical), fixedIds = new Set(fixed);
+  const {plannedDeadline}=require('./formal_freshness_queue');
   const scores = new Map();
   for (const row of catalog) {
     const card = byId.get(row.cardId);
     if (!card || row.priceQuarantined || row.cardMismatchSuspected || row.identityHoldReason || row.referenceOnly || !eligible(retryByUrl[row.detailUrl], now) || !due(row, wanted.has(row.cardId) || fixedIds.has(row.cardId), now, leadMs)) continue;
     const set = signature(card).setCode;
     const score = scores.get(set) || {priority:0, targets:0, oldest:Infinity,maintenanceTargets:0,maintenanceDeadlineAt:Infinity,rows:[]};
-    score.rows.push({id:row.cardId,at:Date.parse(row.observedAt)||0,maintenance:urgent.has(row.cardId)||fixedIds.has(row.cardId),critical:urgent.has(row.cardId)});
+    const early=plannedDeadline(deadlines,row);
+    const priorityDeadline=early<=now+leadMs?early:null;
+    score.rows.push({id:row.cardId,at:Date.parse(row.observedAt)||0,maintenance:urgent.has(row.cardId)||fixedIds.has(row.cardId),
+      critical:urgent.has(row.cardId),priorityDeadline});
     score.priority += urgent.has(row.cardId) ? 500 : fixedIds.has(row.cardId) ? 100 : wanted.has(row.cardId) ? 20 : 1;
     score.targets++; score.oldest = Math.min(score.oldest, Date.parse(row.observedAt) || 0);
     if(urgent.has(row.cardId)||fixedIds.has(row.cardId)){
@@ -97,19 +101,26 @@ function plan({routes, cards, catalog, requested = [], critical = [], fixed = []
   // Keep the request budget fixed. Reserve turns for unfinished pagination and
   // the least recently checked route, so high-score sets cannot starve them.
   const capacity=Math.min(4,Math.max(0,limit)),chosen=[];
-  const take=(row,lane)=>{if(row&&chosen.length<capacity&&!chosen.some(r=>r.url===row.url&&r.page===row.page))chosen.push({...row,lane});};
+  const plannedIds=new Set();
+  const take=(row,lane)=>{
+    if(!row||chosen.length>=capacity||chosen.some(r=>r.url===row.url&&r.page===row.page))return;
+    const expectedIds=(row.expectedIds||[]).filter(id=>!plannedIds.has(id));
+    if(lane==='priority'&&row.coverageKnown&&row.expectedIds.length&&!expectedIds.length)return;
+    for(const id of expectedIds)plannedIds.add(id);
+    chosen.push({...row,lane,expectedIds});
+  };
   const oldest=[...pending].sort((a,b)=>(Date.parse(a.last.checkedAt)||0)-(Date.parse(b.last.checkedAt)||0)||a.url.localeCompare(b.url));
   // A large set must not indefinitely outrank one overdue independent price.
   // Keep continuation/exploration slots and the same four-request budget.
   const pageCandidate=(r,page)=>{
     const proof=membership[r.url]?.[page],known=proof&&now-Date.parse(proof.observedAt)<=7*86400000;
     const members=new Set(known?proof.members:[]),rows=r.rows.filter(v=>members.has(v.id)),maintenance=rows.filter(v=>v.maintenance);
-    const deadline=maintenance.length?Math.min(...maintenance.map(v=>v.at+6*3600000)):r.maintenanceDeadlineAt;
+    const deadline=maintenance.length?Math.min(...maintenance.map(v=>Math.min(v.at+6*3600000,v.priorityDeadline??Infinity))):r.maintenanceDeadlineAt;
     return {...r,page,advanceCursor:page===(r.last.nextPage||1),coverageKnown:Boolean(known),expectedIds:rows.map(v=>v.id),maintenanceTargets:known?maintenance.length:r.maintenanceTargets,maintenanceDeadlineAt:deadline,
-      deadlineBand:maintenance.some(v=>v.at+48*3600000<=now)?3:maintenance.some(v=>v.at+6*3600000<=now)?2:maintenance.length?1:0};
+      deadlineBand:rows.some(v=>v.priorityDeadline!=null)?4:maintenance.some(v=>v.at+48*3600000<=now)?3:maintenance.some(v=>v.at+6*3600000<=now)?2:maintenance.length?1:0};
   };
   const candidates=pending.flatMap(r=>{const pages=[...new Set([r.last.nextPage||1,...Object.keys(membership[r.url]||{}).map(Number)])];return pages.map(page=>pageCandidate(r,page)).filter(p=>!p.coverageKnown||!membership[r.url]?.[p.page]?.observedAt||now-Date.parse(membership[r.url][p.page].observedAt)>=2*3600000);});
-  const maintenance=candidates.filter(r=>r.maintenanceTargets>0).sort((a,b)=>Number(b.coverageKnown)-Number(a.coverageKnown)||b.deadlineBand-a.deadlineBand||
+  const maintenance=candidates.filter(r=>r.maintenanceTargets>0||r.deadlineBand===4).sort((a,b)=>Number(b.coverageKnown)-Number(a.coverageKnown)||b.deadlineBand-a.deadlineBand||
     (a.coverageKnown&&b.coverageKnown?Math.floor(a.maintenanceDeadlineAt/(2*3600000))-Math.floor(b.maintenanceDeadlineAt/(2*3600000))||b.maintenanceTargets-a.maintenanceTargets:a.maintenanceDeadlineAt-b.maintenanceDeadlineAt)||b.priority-a.priority||a.url.localeCompare(b.url)||a.page-b.page);
   take(maintenance[0]||candidates[0],'priority');
   const continuation=oldest.find(r=>(r.last.nextPage||1)>1);if(continuation)take(pageCandidate(continuation,continuation.last.nextPage),'continuation');

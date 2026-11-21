@@ -2,6 +2,18 @@ const fs=require('node:fs'),path=require('node:path'),{acquisitionRows}=require(
 const HOUR=3600000,DAY=24*HOUR;
 const validTime=(at,now)=>/T\d{2}:/.test(String(at))&&Number.isFinite(Date.parse(at))&&Date.parse(at)<=now;
 const dist=values=>{const a=values.filter(Number.isFinite).sort((a,b)=>a-b);return {samples:a.length,medianMs:a.length?a[Math.floor((a.length-1)*.5)]:null,p90Ms:a.length?a[Math.floor((a.length-1)*.9)]:null,p95Ms:a.length?a[Math.floor((a.length-1)*.95)]:null,maxMs:a.at(-1)??null};};
+function deadlineCoverage(pairs, windowAt, hours) {
+  const recent=pairs.filter(({end})=>end.atMs>=windowAt);
+  const counts={compared:recent.length,confirmedOnTime:0,confirmedLate:0,publicationTimeUncertain:0};
+  for(const {start,end} of recent){
+    const deadline=start.atMs+hours*HOUR;
+    if (end.verifiedAt!=null&&end.verifiedAt<=deadline) counts.confirmedOnTime++;
+    else if (end.atMs>deadline||end.pushedAt>deadline) counts.confirmedLate++;
+    else counts.publicationTimeUncertain++;
+  }
+  return {...counts,distinctCards:new Set(recent.map(({end})=>end.id)).size,
+    onTimeLowerBoundPct:counts.compared?counts.confirmedOnTime/counts.compared*100:null};
+}
 function coverage(inventory,cards,completion,pop,now=Date.now()) {
   const sourceIds=new Set((inventory.cards||[]).map(r=>r.id)),site=new Map(cards.map(c=>[c.id,c])),listed=[...sourceIds].filter(id=>site.has(id));
   const structural=cards.filter(c=>completion.cards?.[c.id]?.s==='分析可能');
@@ -19,12 +31,19 @@ function capacity(history,targetRows,now=Date.now(),targetHours=6,adoptionHours=
     const target=new Map(rows.map(r=>[r.id,r])),events=new Map();
     for(const run of history.runs||[])for(const row of acquisitionRows(run.observations?.[source]||[],run.observationScope)){if(target.has(row.id)&&validTime(row.at,now)){
       const key=row.id+'|'+row.at;
-      if(!events.has(key))events.set(key,{...row,atMs:Date.parse(row.at),route:run.key,origin:run.publicationKind||'legacy-confirmed-unclassified'});
+      if(!events.has(key)){
+        const atMs=Date.parse(row.at),push=Date.parse(run.publicationStepCompletedAt),verified=Date.parse(run.verifiedAt);
+        events.set(key,{...row,atMs,route:run.key,origin:run.publicationKind||'legacy-confirmed-unclassified',
+          pushedAt:atMs>=Date.parse(run.startedAt)&&push>=atMs&&push<=now?push:null,
+          verifiedAt:verified>=atMs&&verified<=now?verified:null});
+      }
     }}
     const byCard=new Map();for(const e of events.values()){if(!byCard.has(e.id))byCard.set(e.id,[]);byCard.get(e.id).push(e);}
-    const intervals=[],publish=[];
-    for(const v of byCard.values()){v.sort((a,b)=>a.atMs-b.atMs);for(let i=1;i<v.length;i++)intervals.push(v[i].atMs-v[i-1].atMs);}
-    for(const run of history.runs||[])for(const row of acquisitionRows(run.observations?.[source]||[],run.observationScope)){const at=Date.parse(row.at),p=Date.parse(run.publicationStepCompletedAt);if(target.has(row.id)&&validTime(row.at,now)&&at>=Date.parse(run.startedAt)&&Number.isFinite(p)&&p>=at)publish.push(p-at);}
+    const pairs=[];
+    for(const v of byCard.values()){v.sort((a,b)=>a.atMs-b.atMs);for(let i=1;i<v.length;i++)pairs.push({start:v[i-1],end:v[i]});}
+    const intervals=pairs.map(({start,end})=>end.atMs-start.atMs);
+    const publish=[...events.values()].filter(e=>e.pushedAt!=null).map(e=>e.pushedAt-e.atMs);
+    const verify=[...events.values()].filter(e=>e.verifiedAt!=null).map(e=>e.verifiedAt-e.atMs);
     const recent=[...events.values()].filter(e=>e.atMs>=now-DAY),week=[...events.values()].filter(e=>e.atMs>=now-7*DAY),need=target.size*24/targetHours;
     const current=[...target.values()].map(r=>validTime(r.at,now)?now-Date.parse(r.at):null);
     const origins=['verified-natural-schedule','verified-non-scheduled-publication','legacy-confirmed-unclassified'];
@@ -37,7 +56,11 @@ function capacity(history,targetRows,now=Date.now(),targetHours=6,adoptionHours=
       latestObservationCards24h:current.filter(age=>age!=null&&age<=DAY).length,
       latestObservationCards7d:current.filter(age=>age!=null&&age<=7*DAY).length,
       latestObservationNote:'公開用の現行要約に残る個別実確認日時による異なるカード数。同日の反復確認回数ではなく下限。固定群receiptの全取得元能力への外挿、ファイル生成日時による補完はしない。',
-      intervals:dist(intervals),confirmationToPublicationStep:dist(publish),
+      intervals:dist(intervals),confirmationToPublicationStep:dist(publish),confirmationToPublicVerification:dist(verify),
+      deadlineCoverage24h:deadlineCoverage(pairs,now-DAY,targetHours),
+      deadlineCoverage7d:deadlineCoverage(pairs,now-7*DAY,targetHours),
+      adoptionDeadlineCoverage24h:deadlineCoverage(pairs,now-DAY,adoptionHours),
+      deadlineNote:'直前の照合済み個別確認にもとづく。期限内の公開照合は確実。pushが間に合い照合だけ遅れた場合は不明。比較できない初回確認は除外。',
       sampleNote:'実取得・公開照合済みreceipt中の対象カード。個別実確認日時の前進を重複除外。取得元全体の実績能力とは異なる下限値。未観測間隔を補完しない。'};
   }return sources;
 }
@@ -68,4 +91,4 @@ function build(root=path.join(__dirname,'..'),now=Date.now()){
  report.updateCapacity.sourceStates=Object.fromEntries(['hareruya2','torecacamp','cardrush','yuyutei','toreca','shopBuyback','psaOfficial'].map(id=>[id,{status:status[id]?.status||null,stopped:status[id]?.acquisitionStopped===true,lastAttemptAt:status[id]?.lastAttemptAt||null,lastSuccessAt:status[id]?.lastSuccessAt||null,reason:status[id]?.stopReason||status[id]?.lastError||status[id]?.sourceState||null}]));
  const audit=read('data/acquisition-progress-audit.json');Object.assign(audit,{wholeCatalogue:report.wholeCatalogue,updateCapacity:report.updateCapacity,capacityAt:report.at});fs.writeFileSync(path.join(root,'data/acquisition-progress-audit.json'),JSON.stringify(audit));return report;
 }
-module.exports={coverage,capacity,dist,build};if(require.main===module)console.log(JSON.stringify(build()));
+module.exports={coverage,capacity,dist,build,deadlineCoverage};if(require.main===module)console.log(JSON.stringify(build()));

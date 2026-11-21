@@ -12,7 +12,11 @@ function cardFacts(api,card) {
       sourceFailure:api.state.updateStatus?.sources?.[source]?.lastError||null};
   }
   const review=card.priceAggregation?.comparison || card.priceAggregation || {};
-  return {identityKey:card.identityKey||null,referencePrice:number(card.price),psa10:number(card.psa10),purchase:offer?{
+  const source=api.state.updateStatus?.sources?.toreca, update=api.state.sourceUpdates?.toreca;
+  const individual=Object.hasOwn(card,'psa10ObservedAt');
+  const psa10CheckedAt=individual?card.psa10ObservedAt:source?.date===String(update||'').slice(0,10)?source.lastSuccessAt||update:update;
+  return {identityKey:card.identityKey||null,referencePrice:number(card.price),psa10:number(card.psa10),
+    psa10ObservedAt:psa10CheckedAt||null,psa10ClockScope:individual?'card':'model-source-fallback',purchase:offer?{
     price:number(offer.value),source:offer.source,available:offer.available,fresh:offer.fresh,
     priceObservedAt:offer.updatedAt||null,inventoryObservedAt:offer.inventoryAt||null,stock:offer.stock??null,
     reason:offer.purchaseReason||null,url:offer.url||null}:null,sourceQuotes:sources,
@@ -27,7 +31,9 @@ function cardFacts(api,card) {
       scenario:eff.scenario,exit:eff.exitLabel,days:eff.days,basis:eff.basis,blockingReasons:eff.blockingReasons||[]},
     buyback:(card.buybackAnalysis?.rows||[]).map(r=>({shopId:r.shopId,price:r.buybackPrice??null,
       priceDate:r.priceDate||null,observedAt:r.observedAt||r.updatedAt||null,valid:r.valid,stale:r.stale,
-      listingActive:r.listingActive,reason:r.reason||null})),
+      listingActive:r.listingActive,reason:r.reason||null,
+      adoptable:r.valid===true&&!r.stale&&!r.quarantined&&!r.campaign&&!r.temporaryCampaign&&r.buybackPrice>0
+        &&(api.state.buybackStoreMode==='selected'?(api.state.selectedBuybackStores||[]).includes(r.shopId):api.state.buybackStoreMode==='all'||r.fulfilment!=='store')})),
     specificationHeld:Boolean(api.state.psaSpecificationHeld?.[card.id]),dataQuality:card.dataQuality,
     priceReview:{conflicted:Boolean(review.conflicted),integrityDisputed:Boolean(card.priceIntegrity?.disputed),
       manualReview:Boolean(card.dataQuality?.manualReview),reasons:review.reasons||[],

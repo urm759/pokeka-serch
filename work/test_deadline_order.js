@@ -34,6 +34,28 @@ const formal=plan({...args,fixedIds:['a-late'],candidateRows:{'z-early':{formalC
 assert.equal(formal.queue[0].card.id,'z-early','a formal candidate losing its second independent median source takes a maintenance slot');
 assert(formal.queue.some(r=>r.card.id==='normal'),'normal discovery remains in the same budget');
 assert(!formal.queue.some(r=>r.card.id==='manual'||r.card.id==='retry'),'formal prioritization does not release retry or identity holds');
+const dependency=require('./formal_freshness_queue');
+const hour=3600000;
+const earlier=h=>new Date(now-h*hour).toISOString();
+const har='https://www.hareruya2.com/products/1',camp='https://torecacamp-pokemon.com/products/test',yuyu='https://yuyu-tei.jp/sell/poc/card/test/1';
+const facts={medianEvidence:{rows:[
+  {origin:'hareruya2.com',url:har,fresh:true,observedAt:earlier(1)},
+  {origin:'hareruya2.com',url:har,fresh:true,observedAt:earlier(30)},
+  {origin:'torecacamp-pokemon.com',url:camp,fresh:true,observedAt:earlier(43)},
+  {origin:'yuyu-tei.jp',url:yuyu,fresh:true,observedAt:earlier(46)},
+]},psa10ObservedAt:earlier(26),purchase:{url:har,fresh:true,available:true,priceObservedAt:earlier(1),inventoryObservedAt:earlier(2)}};
+const targetFacts={profiles:[{id:'formal',urlsMatched:['x'],qualifiedFacts:{x:facts}},{id:'saved-overlay',urlsMatched:['wrong'],qualifiedFacts:{wrong:facts}}]};
+assert.equal(dependency.build(targetFacts,['formal'],now).formal[0].earliestDeadlineAt,now+4*hour);
+const campDeadline=dependency.forSource(targetFacts,['formal'],'torecacamp',now);
+assert.deepEqual(Object.keys(campDeadline),['x']);
+assert.equal(campDeadline.x.deadlineAt,now+5*hour,'a third independent store can age out without breaking the median');
+assert.equal(dependency.plannedDeadline(campDeadline,{cardId:'x',detailUrl:camp+'/wrong'}),Infinity,'request must match the saved exact product');
+assert.equal(dependency.plannedDeadline({x:{deadlineAt:now,url:camp}},{cardId:'x',detailUrl:camp,observedAt:earlier(0)}),Infinity,'bulk reconfirmation removes duplicate urgency');
+const {dueForFormalEvidence}=require('./run_priority_price_refresh');
+assert(dueForFormalEvidence({lastAttemptAt:earlier(3)},{x:{deadlineAt:now+hour}},now,{}));
+assert(!dueForFormalEvidence({lastAttemptAt:earlier(1)},{x:{deadlineAt:now+hour}},now,{}));
+assert(!dueForFormalEvidence({lastError:'HTTP 403'},{x:{deadlineAt:now}},now,{}));
+assert(!dueForFormalEvidence({},campDeadline,now,{}));
 assert.equal(plan({...args,now:now+2*60000}).queue.find(r=>r.card.id==='retry')?.status,'次回完了前に期限切れ・先回り待ち');
 const weak=estimate({importantCount:300,eligibleCount:150,verifiedCount:20,durationMs:360000});
 assert.equal(weak.requiredPerRun,100);assert.equal(weak.availablePerRun,15);assert.equal(weak.deficitPerRun,85);assert.equal(weak.sustainable,false);

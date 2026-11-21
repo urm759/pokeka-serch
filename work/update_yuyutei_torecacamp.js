@@ -727,10 +727,12 @@ async function updateTorecaCamp(cards, paths) {
   progress.knownUrlRetries ||= {};
   const alternateRequests=alternateCampIds(proactiveLead);
   const requestedTargets=read(path.join(__dirname,'search-profile-targets.json'),{});
-  const criticalRequests=campCriticalIds(requestedTargets,read(path.join(__dirname,'priority-search-profiles.json'),{}).popFocusProfileIds||[]);
-  const medianCompletions=require('./profile_completion_routes').medianCompletionIds(requestedTargets,'torecacamp',read(path.join(__dirname,'priority-search-profiles.json'),{}).popFocusProfileIds||[]);
+  const formalIds=read(path.join(__dirname,'priority-search-profiles.json'),{}).focusProfileIds||[];
+  const criticalRequests=campCriticalIds(requestedTargets,formalIds);
+  const medianCompletions=require('./profile_completion_routes').medianCompletionIds(requestedTargets,'torecacamp',formalIds);
+  const deadlines=require('./formal_freshness_queue').forSource(requestedTargets,formalIds,'torecacamp');
   const fixed=require('./fixed_price_cohort').ids(ROOT,'torecacamp');
-  const legacyRequested=[...new Set([...campRequestedIds(requestedTargets,comparisonIds,alternateRequests),...fixed,...require('./confirmed_camp_products').ids(ROOT)])];
+  const legacyRequested=[...new Set([...campRequestedIds(requestedTargets,comparisonIds,alternateRequests),...Object.keys(deadlines),...fixed,...require('./confirmed_camp_products').ids(ROOT)])];
   for(const id of legacyRequested)important.add(id);
   const bulk = require('./camp_collection_batch');
   const bulkVerified = new Set();
@@ -752,7 +754,7 @@ async function updateTorecaCamp(cards, paths) {
         const checkedAt=new Date().toISOString(),prior=new Map((bulkState.navigation?.routes||[]).map(r=>[r.url,r]));
         bulkState.navigation={version:2,checkedAt,routes:routes.map(r=>({...r,firstSeenAt:prior.get(r.url)?.firstSeenAt||checkedAt}))};bulkRun.requests++;
       }
-      const plans=bulk.plan({routes:bulkState.navigation.routes,cards,catalog,requested:legacyRequested,critical:criticalRequests,fixed,
+      const plans=bulk.plan({routes:bulkState.navigation.routes,cards,catalog,requested:legacyRequested,critical:criticalRequests,fixed,deadlines,
         retryByUrl:{...progress.knownUrlRetries,...progress.retryByUrl},state:bulkState.routes,membership:bulkState.pageMembership,now:Date.now(),leadMs:proactiveLead,
         due:postpass.due,signature:cardSignature,eligible:retryPolicy.eligible});
       for(const plan of plans) {
@@ -819,7 +821,7 @@ async function updateTorecaCamp(cards, paths) {
   bulkRun.verified=bulkVerified.size;bulkRun.elapsedMs=Date.now()-bulkStart;
   bulkState.lastRun=bulkRun;
   const legacyRecords=[];
-  if(!stoppingReason)for(const previousEntry of postpass.unreachedTargets(catalog,legacyRequested,{...progress.knownUrlRetries,...progress.retryByUrl},Date.now(),proactiveLead,criticalRequests,medianCompletions).slice(0,Math.floor(detailLimit/2))) {
+  if(!stoppingReason)for(const previousEntry of postpass.unreachedTargets(catalog,legacyRequested,{...progress.knownUrlRetries,...progress.retryByUrl},Date.now(),proactiveLead,criticalRequests,medianCompletions,deadlines).slice(0,Math.floor(detailLimit/2))) {
     if(Date.now()>=stopBy-Math.max(15000,runtimeLimitMs/2))break;
     const url=previousEntry.detailUrl,record={id:previousEntry.cardId,url,startedAt:new Date().toISOString(),sourceSitemap:previousEntry.sourceSitemap??null,routeReason:'bulk-unreached-priority'};
     try {
