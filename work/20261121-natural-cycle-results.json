@@ -4361,5 +4361,4238 @@
     "passed": false
   },
   "providerAcquisitionsByThisAudit": 0,
-  "automaticMonitoringAIcalls": 0
+  "automaticMonitoringAIcalls": 0,
+  "latestResumeSnapshot": {
+    "at": "2026-11-21T02:01:14.806Z",
+    "sourceCommit": "d573af909f8aaa8b165f70db4241df9a450251eb",
+    "catalogue": {
+      "total": 13102,
+      "newCards": 557,
+      "siteNewCards": 557,
+      "recentReleaseCards": 1069,
+      "relistedCards": 12,
+      "analyzable": 2650,
+      "analyzableComplete": 0,
+      "analyzablePartial": 2650,
+      "completionInProgress": 12333,
+      "dataShortage": 8944,
+      "reviewRequired": 8,
+      "priceReviewRequired": 744,
+      "completableAfterNext": 2149,
+      "releaseDateKnown": 7052,
+      "releaseYearOnly": 198,
+      "releaseUnknown": 5852,
+      "releaseSourceCounts": {
+        "発売日不明": 5852,
+        "セット発売日から補完": 6627,
+        "公式商品・配布開始日から補完": 425,
+        "公式発売・発送年のみ判明": 86,
+        "発売年のみ判明": 112
+      },
+      "releaseYearCounts": {
+        "1996": 1,
+        "1997": 3,
+        "1998": 8,
+        "1999": 5,
+        "2000": 3,
+        "2001": 4,
+        "2003": 4,
+        "2004": 1,
+        "2005": 24,
+        "2006": 10,
+        "2007": 5,
+        "2008": 4,
+        "2009": 8,
+        "2011": 2,
+        "2012": 6,
+        "2013": 7,
+        "2014": 48,
+        "2015": 217,
+        "2016": 308,
+        "2017": 153,
+        "2018": 602,
+        "2019": 470,
+        "2020": 293,
+        "2021": 502,
+        "2022": 634,
+        "2023": 1285,
+        "2024": 795,
+        "2025": 1401,
+        "2026": 447,
+        "不明": 5852
+      },
+      "siteNewRetentionDays": 30,
+      "recentReleaseDays": 365,
+      "sourceTotal": 13089,
+      "sourceInventoryAt": "2026-11-21",
+      "siteTotal": 13102,
+      "unlisted": 0,
+      "sourceMatched": 13089,
+      "retainedOnly": 13,
+      "listingRatePct": 100,
+      "analysisCompletionPct": 20.2,
+      "priorityQueueRemaining": 10452,
+      "addedThisRun": 3,
+      "completeIdentityMatches": 13094,
+      "duplicateCount": 0,
+      "progressThisRun": 3,
+      "releaseDateCompletenessPct": 53.8,
+      "releaseKnownCompletenessPct": 55.3
+    },
+    "camp": {
+      "targets": 144,
+      "targetHours": 6,
+      "adoptionHours": 48,
+      "requiredConfirmationsPerDay": 576,
+      "requiredToAvoidAdoptionExpiryPerDay": 72,
+      "capacityWith25PctHeadroom": 720,
+      "verifiedCohort24h": 233,
+      "verifiedCohort7d": 1900,
+      "verifiedCohortDaily7d": 271.42857142857144,
+      "verifiedDistinctCards24h": 130,
+      "verifiedDistinctCards7d": 143,
+      "verifiedCohort24hByOrigin": {
+        "verified-natural-schedule": 112,
+        "verified-non-scheduled-publication": 121,
+        "legacy-confirmed-unclassified": 0
+      },
+      "verifiedCohort7dByOrigin": {
+        "verified-natural-schedule": 1094,
+        "verified-non-scheduled-publication": 806,
+        "legacy-confirmed-unclassified": 0
+      },
+      "originNote": "実際に公開照合した更新能力。GitHubの自然定期とworkflow_dispatch等を分離。外部Cronの起源はprovider証跡が必要。旧履歴の未分類を自然定期へ推定しない。同じID/元確認日時は最初の証拠1件だけ。",
+      "actualConfirmations24h": null,
+      "measurementStatus": "partial-confirmed-lower-bound",
+      "measurementNote": "確認済み受領証と原票回収分だけ。未計測の取得が残るため、実際の全確認数は未確定。0件と断定せず、要約の異なる確認カード数とも別。",
+      "coverageOfDailyRequirement": 0.4045138888888889,
+      "targetExceeded": 14,
+      "adoptionExpired": 1,
+      "confirmationTimeUnknown": 0,
+      "latestObservationCards24h": 143,
+      "latestObservationCards7d": 143,
+      "latestObservationNote": "公開用の現行要約に残る個別実確認日時による異なるカード数。同日の反復確認回数ではなく下限。固定群receiptの全取得元能力への外挿、ファイル生成日時による補完はしない。",
+      "intervals": {
+        "samples": 2769,
+        "medianMs": 54998106,
+        "p90Ms": 434391591,
+        "p95Ms": 1207288114,
+        "maxMs": 3283395260
+      },
+      "confirmationToPublicationStep": {
+        "samples": 2494,
+        "medianMs": 526523,
+        "p90Ms": 1077034,
+        "p95Ms": 1126996,
+        "maxMs": 1349588
+      },
+      "sampleNote": "実取得・公開照合済みreceipt中の対象カード。個別実確認日時の前進を重複除外。取得元全体の実績能力とは異なる下限値。未観測間隔を補完しない。"
+    },
+    "hareruya2": {
+      "targets": 192,
+      "targetHours": 6,
+      "adoptionHours": 48,
+      "requiredConfirmationsPerDay": 768,
+      "requiredToAvoidAdoptionExpiryPerDay": 96,
+      "capacityWith25PctHeadroom": 960,
+      "verifiedCohort24h": 820,
+      "verifiedCohort7d": 7566,
+      "verifiedCohortDaily7d": 1080.857142857143,
+      "verifiedDistinctCards24h": 183,
+      "verifiedDistinctCards7d": 183,
+      "verifiedCohort24hByOrigin": {
+        "verified-natural-schedule": 23,
+        "verified-non-scheduled-publication": 797,
+        "legacy-confirmed-unclassified": 0
+      },
+      "verifiedCohort7dByOrigin": {
+        "verified-natural-schedule": 3164,
+        "verified-non-scheduled-publication": 4402,
+        "legacy-confirmed-unclassified": 0
+      },
+      "originNote": "実際に公開照合した更新能力。GitHubの自然定期とworkflow_dispatch等を分離。外部Cronの起源はprovider証跡が必要。旧履歴の未分類を自然定期へ推定しない。同じID/元確認日時は最初の証拠1件だけ。",
+      "actualConfirmations24h": null,
+      "measurementStatus": "partial-confirmed-lower-bound",
+      "measurementNote": "確認済み受領証と原票回収分だけ。未計測の取得が残るため、実際の全確認数は未確定。0件と断定せず、要約の異なる確認カード数とも別。",
+      "coverageOfDailyRequirement": 1.0677083333333333,
+      "targetExceeded": 2,
+      "adoptionExpired": 2,
+      "confirmationTimeUnknown": 7,
+      "latestObservationCards24h": 183,
+      "latestObservationCards7d": 183,
+      "latestObservationNote": "公開用の現行要約に残る個別実確認日時による異なるカード数。同日の反復確認回数ではなく下限。固定群receiptの全取得元能力への外挿、ファイル生成日時による補完はしない。",
+      "intervals": {
+        "samples": 24698,
+        "medianMs": 18991873,
+        "p90Ms": 42410326,
+        "p95Ms": 52422654,
+        "maxMs": 692963545
+      },
+      "confirmationToPublicationStep": {
+        "samples": 17489,
+        "medianMs": 628131,
+        "p90Ms": 807256,
+        "p95Ms": 852778,
+        "maxMs": 1087849
+      },
+      "sampleNote": "実取得・公開照合済みreceipt中の対象カード。個別実確認日時の前進を重複除外。取得元全体の実績能力とは異なる下限値。未観測間隔を補完しない。"
+    },
+    "rr": {
+      "at": "2026-11-21T01:59:56.297Z",
+      "rows": [
+        {
+          "id": "x-387059",
+          "name": "ゲンガー&ミミッキュGX RR [SM9 038/095](拡張パック「タッグボルト」)",
+          "median": {
+            "value": null,
+            "displayValue": 21000,
+            "historicalValue": 16944,
+            "count": 1,
+            "independent": 1,
+            "unknown": 0,
+            "min": 21000,
+            "max": 21000,
+            "rows": [
+              {
+                "source": "晴れる屋2状態A",
+                "origin": "hareruya2.com",
+                "url": "https://www.hareruya2.com/products/9015829233984",
+                "price": 21000,
+                "observedAt": "2026-11-20T21:55:25.238Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-387059",
+                "price": 12888,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/2635",
+                "price": 24800,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+              "単一ソース参考",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795384525238
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-321522",
+          "name": "ヤドン&コダックGX RR [SM11 011/094](拡張パック「ミラクルツイン」)",
+          "median": {
+            "value": null,
+            "displayValue": 8600,
+            "historicalValue": 7700,
+            "count": 1,
+            "independent": 1,
+            "unknown": 0,
+            "min": 8600,
+            "max": 8600,
+            "rows": [
+              {
+                "source": "晴れる屋2状態A",
+                "origin": "hareruya2.com",
+                "url": "https://www.hareruya2.com/products/9015895392576",
+                "price": 8600,
+                "observedAt": "2026-11-19T06:59:29.414Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-321522",
+                "price": 6800,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/4522",
+                "price": 10800,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "中央値の価格対立・仕様照合保留",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+              "単一ソース参考",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795244369414
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-396034",
+          "name": "ミュウツー&ミュウGX RR [SM12a 052/173](ハイクラスパック「TAG TEAM GX タッグオールスターズ」)",
+          "median": {
+            "value": null,
+            "displayValue": 4800,
+            "historicalValue": 4400,
+            "count": 1,
+            "independent": 1,
+            "unknown": 0,
+            "min": 4800,
+            "max": 4800,
+            "rows": [
+              {
+                "source": "晴れる屋2状態A",
+                "origin": "hareruya2.com",
+                "url": "https://www.hareruya2.com/products/9015961813312",
+                "price": 4800,
+                "observedAt": "2026-11-19T17:10:05.984Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-396034",
+                "price": 4000,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/5796",
+                "price": 6480,
+                "observedAt": "2026-08-30",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+              "単一ソース参考",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795281005984
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-393073",
+          "name": "ライチュウ&アローラライチュウGX RR [SM10a 008/054](強化拡張パック「ジージーエンド」)",
+          "median": {
+            "value": null,
+            "displayValue": 3700,
+            "historicalValue": 4349.5,
+            "count": 1,
+            "independent": 1,
+            "unknown": 0,
+            "min": 3700,
+            "max": 3700,
+            "rows": [
+              {
+                "source": "晴れる屋2状態A",
+                "origin": "hareruya2.com",
+                "url": "https://www.hareruya2.com/products/9015883530560",
+                "price": 3700,
+                "observedAt": "2026-11-20T21:55:36.068Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-393073",
+                "price": 4999,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/3950",
+                "price": 5280,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+              "単一ソース参考",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795384536068
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-396023",
+          "name": "ピカチュウ&ゼクロムGX RR [SM12a 041/173](ハイクラスパック「TAG TEAM GX タッグオールスターズ」)",
+          "median": {
+            "value": null,
+            "displayValue": null,
+            "historicalValue": 4150,
+            "count": 0,
+            "independent": 0,
+            "unknown": 0,
+            "min": null,
+            "max": null,
+            "rows": [],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-396023",
+                "price": 3500,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015921606976",
+                "price": 4800,
+                "observedAt": "2026-11-17T10:58:32.308Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/5778",
+                "price": 6980,
+                "observedAt": "2026-08-30",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の採用価格に古値・日時不明あり",
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等5元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": null
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-396322",
+          "name": "コイキング&ホエルオーGX RR [SM9 019/095](拡張パック「タッグボルト」)",
+          "median": {
+            "value": null,
+            "displayValue": null,
+            "historicalValue": 3800,
+            "count": 0,
+            "independent": 0,
+            "unknown": 0,
+            "min": null,
+            "max": null,
+            "rows": [],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-396322",
+                "price": 3100,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015839949120",
+                "price": 4500,
+                "observedAt": "2026-11-10T02:22:47.596Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/2616",
+                "price": 5280,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の採用価格に古値・日時不明あり",
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "中央値の価格対立・仕様照合保留",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等5元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": null
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-395998",
+          "name": "レシラム&リザードンGX RR [SM12a 016/173](ハイクラスパック「TAG TEAM GX タッグオールスターズ」)",
+          "median": {
+            "value": null,
+            "displayValue": null,
+            "historicalValue": 3850,
+            "count": 0,
+            "independent": 0,
+            "unknown": 0,
+            "min": null,
+            "max": null,
+            "rows": [],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-395998",
+                "price": 3800,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015995924800",
+                "price": 3900,
+                "observedAt": "2026-11-16T18:13:14.062Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/5734",
+                "price": 5480,
+                "observedAt": "2026-08-30",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の採用価格に古値・日時不明あり",
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等5元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": null
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-396334",
+          "name": "ピカチュウ&ゼクロムGX RR [SM9 031/095](拡張パック「タッグボルト」)",
+          "median": {
+            "value": null,
+            "displayValue": null,
+            "historicalValue": 4645,
+            "count": 0,
+            "independent": 0,
+            "unknown": 0,
+            "min": null,
+            "max": null,
+            "rows": [],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-396334",
+                "price": 4290,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015824613696",
+                "price": 5000,
+                "observedAt": "2026-11-10T02:22:56.001Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/2628",
+                "price": 6980,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の採用価格に古値・日時不明あり",
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等5元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": null
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-392953",
+          "name": "レシラム&リザードンGX RR [SM10 007/095](拡張パック「ダブルブレイズ」)",
+          "median": {
+            "value": null,
+            "displayValue": null,
+            "historicalValue": 4650,
+            "count": 0,
+            "independent": 0,
+            "unknown": 0,
+            "min": null,
+            "max": null,
+            "rows": [],
+            "omitted": [
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015836934464",
+                "price": 4400,
+                "observedAt": "2026-11-17T11:00:05.911Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-392953",
+                "price": 4900,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/3302",
+                "price": 5480,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の採用価格に古値・日時不明あり",
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等5元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": null
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-396084",
+          "name": "ファイヤー&サンダー&フリーザーGX RR [SM12a 102/173](ハイクラスパック「TAG TEAM GX タッグオールスターズ」)",
+          "median": {
+            "value": null,
+            "displayValue": null,
+            "historicalValue": 3749.5,
+            "count": 0,
+            "independent": 0,
+            "unknown": 0,
+            "min": null,
+            "max": null,
+            "rows": [],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-396084",
+                "price": 3499,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9016021254464",
+                "price": 4000,
+                "observedAt": "2026-11-09T20:53:44.521Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/5880",
+                "price": 4280,
+                "observedAt": "2026-08-30",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の採用価格に古値・日時不明あり",
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等5元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": null
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-321540",
+          "name": "ミュウツー&ミュウGX RR [SM11 029/094](拡張パック「ミラクルツイン」)",
+          "median": {
+            "value": 4990,
+            "displayValue": 4990,
+            "historicalValue": 4990,
+            "count": 2,
+            "independent": 2,
+            "unknown": 0,
+            "min": 4980,
+            "max": 5000,
+            "rows": [
+              {
+                "source": "トレカキャンプ状態A",
+                "origin": "torecacamp-pokemon.com",
+                "url": "https://torecacamp-pokemon.com/products/rc_itwqadwi7a20_lo0c",
+                "price": 4980,
+                "observedAt": "2026-11-20T23:00:28.868Z",
+                "fresh": true,
+                "kind": "販売価格"
+              },
+              {
+                "source": "晴れる屋2状態A",
+                "origin": "hareruya2.com",
+                "url": "https://www.hareruya2.com/products/9015868358976",
+                "price": 5000,
+                "observedAt": "2026-11-20T16:47:06.933Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-321540",
+                "price": 3300,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/4540",
+                "price": 6480,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [],
+            "warnings": [
+              "古値・参考価格・仕様保留等3元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795366026933
+          },
+          "annual": 32.70157375420534,
+          "periods": [
+            39.959741534004856,
+            41.220343370823535,
+            35.791074681411224,
+            35.791074681411224
+          ]
+        },
+        {
+          "id": "pk-5878",
+          "name": "レックウザGX RR [SM12a 100/173](ハイクラスパック「TAG TEAM GX タッグオールスターズ」)",
+          "median": {
+            "value": null,
+            "displayValue": 1780,
+            "historicalValue": 1500,
+            "count": 1,
+            "independent": 1,
+            "unknown": 0,
+            "min": 1780,
+            "max": 1780,
+            "rows": [
+              {
+                "source": "トレカキャンプ状態A",
+                "origin": "torecacamp-pokemon.com",
+                "url": "https://torecacamp-pokemon.com/products/rc_itjps0ue7iiw_6z5d",
+                "price": 1780,
+                "observedAt": "2026-11-20T11:33:01.851Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9016019812672",
+                "price": 1400,
+                "observedAt": "2026-11-16T12:08:02.004Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/pk-5878",
+                "price": 1500,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/5878",
+                "price": 1780,
+                "observedAt": "2026-08-30",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+              "単一ソース参考",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795347181851
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-396362",
+          "name": "ラティアス&ラティオスGX RR [SM9 060/095](拡張パック「タッグボルト」)",
+          "median": {
+            "value": null,
+            "displayValue": null,
+            "historicalValue": 3650,
+            "count": 0,
+            "independent": 0,
+            "unknown": 0,
+            "min": null,
+            "max": null,
+            "rows": [],
+            "omitted": [
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015930913088",
+                "price": 3300,
+                "observedAt": "2026-11-16T21:25:57.183Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-396362",
+                "price": 4000,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/2657",
+                "price": 4780,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の採用価格に古値・日時不明あり",
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等5元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": null
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-396368",
+          "name": "イーブイ&カビゴンGX RR [SM9 066/095](拡張パック「タッグボルト」)",
+          "median": {
+            "value": null,
+            "displayValue": null,
+            "historicalValue": 3650,
+            "count": 0,
+            "independent": 0,
+            "unknown": 0,
+            "min": null,
+            "max": null,
+            "rows": [],
+            "omitted": [
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015834640704",
+                "price": 3500,
+                "observedAt": "2026-11-16T21:26:01.942Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-396368",
+                "price": 3800,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/2663",
+                "price": 5980,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の採用価格に古値・日時不明あり",
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等5元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": null
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-396081",
+          "name": "ガブリアス&ギラティナGX RR [SM12a 099/173](ハイクラスパック「TAG TEAM GX タッグオールスターズ」)",
+          "median": {
+            "value": null,
+            "displayValue": null,
+            "historicalValue": 1900,
+            "count": 0,
+            "independent": 0,
+            "unknown": 0,
+            "min": null,
+            "max": null,
+            "rows": [],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-396081",
+                "price": 2500,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9016018895168",
+                "price": 1300,
+                "observedAt": "2026-11-16T18:13:33.249Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/5877",
+                "price": 2480,
+                "observedAt": "2026-08-30",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の採用価格に古値・日時不明あり",
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "中央値の価格対立・仕様照合保留",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等5元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": null
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-396076",
+          "name": "トゲピー&ピィ&ププリンGX RR [SM12a 094/173](ハイクラスパック「TAG TEAM GX タッグオールスターズ」)",
+          "median": {
+            "value": null,
+            "displayValue": null,
+            "historicalValue": 2450,
+            "count": 0,
+            "independent": 0,
+            "unknown": 0,
+            "min": null,
+            "max": null,
+            "rows": [],
+            "omitted": [
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9016015585600",
+                "price": 2400,
+                "observedAt": "2026-11-16T18:13:28.432Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-396076",
+                "price": 2500,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/5869",
+                "price": 3480,
+                "observedAt": "2026-08-30",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の採用価格に古値・日時不明あり",
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等5元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": null
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-393158",
+          "name": "ファイヤー&サンダー&フリーザーGX RR [SM10b 035/054](強化拡張パック「スカイレジェンド」)",
+          "median": {
+            "value": null,
+            "displayValue": null,
+            "historicalValue": 3650,
+            "count": 0,
+            "independent": 0,
+            "unknown": 0,
+            "min": null,
+            "max": null,
+            "rows": [],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-393158",
+                "price": 3500,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015854858560",
+                "price": 3800,
+                "observedAt": "2026-11-11T00:25:51.456Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/4356",
+                "price": 4280,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の採用価格に古値・日時不明あり",
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等5元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": null
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-396065",
+          "name": "ルカリオ&メルメタルGX RR [SM12a 083/173](ハイクラスパック「TAG TEAM GX タッグオールスターズ」)",
+          "median": {
+            "value": null,
+            "displayValue": null,
+            "historicalValue": 1925,
+            "count": 0,
+            "independent": 0,
+            "unknown": 0,
+            "min": null,
+            "max": null,
+            "rows": [],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-396065",
+                "price": 2750,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9016010572096",
+                "price": 1100,
+                "observedAt": "2026-11-16T18:13:23.662Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/5850",
+                "price": 1380,
+                "observedAt": "2026-08-30",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の採用価格に古値・日時不明あり",
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "中央値の価格対立・仕様照合保留",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等5元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": null
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-290875",
+          "name": "リザードン&テールナーGX RR [SM11a 008/064](強化拡張パック「リミックスバウト」)",
+          "median": {
+            "value": null,
+            "displayValue": 4800,
+            "historicalValue": 4400,
+            "count": 1,
+            "independent": 1,
+            "unknown": 0,
+            "min": 4800,
+            "max": 4800,
+            "rows": [
+              {
+                "source": "晴れる屋2状態A",
+                "origin": "hareruya2.com",
+                "url": "https://www.hareruya2.com/products/9016070013248",
+                "price": 4800,
+                "observedAt": "2026-11-20T01:36:34.706Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-290875",
+                "price": 4000,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/4972",
+                "price": 6480,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+              "単一ソース参考",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795311394706
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-393097",
+          "name": "ガブリアス&ギラティナGX RR [SM10a 032/054](強化拡張パック「ジージーエンド」)",
+          "median": {
+            "value": null,
+            "displayValue": null,
+            "historicalValue": 1600,
+            "count": 0,
+            "independent": 0,
+            "unknown": 0,
+            "min": null,
+            "max": null,
+            "rows": [],
+            "omitted": [
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015861444928",
+                "price": 1400,
+                "observedAt": "2026-11-16T18:12:59.607Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-393097",
+                "price": 1800,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/3974",
+                "price": 2480,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の採用価格に古値・日時不明あり",
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等5元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": null
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-257910",
+          "name": "セレビィ&フシギバナGX RR [SM9 001/095](拡張パック「タッグボルト」)",
+          "median": {
+            "value": null,
+            "displayValue": null,
+            "historicalValue": 2740,
+            "count": 0,
+            "independent": 0,
+            "unknown": 0,
+            "min": null,
+            "max": null,
+            "rows": [],
+            "omitted": [
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015836016960",
+                "price": 2500,
+                "observedAt": "2026-11-10T16:27:42.120Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-257910",
+                "price": 2980,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/2598",
+                "price": 4280,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の採用価格に古値・日時不明あり",
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等5元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": null
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-396054",
+          "name": "ゲッコウガ&ゾロアークGX RR [SM12a 072/173](ハイクラスパック「TAG TEAM GX タッグオールスターズ」)",
+          "median": {
+            "value": null,
+            "displayValue": null,
+            "historicalValue": 1750,
+            "count": 0,
+            "independent": 0,
+            "unknown": 0,
+            "min": null,
+            "max": null,
+            "rows": [],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-396054",
+                "price": 2500,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015977181504",
+                "price": 1000,
+                "observedAt": "2026-11-16T18:13:18.842Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/5831",
+                "price": 2480,
+                "observedAt": "2026-08-30",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の採用価格に古値・日時不明あり",
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "中央値の価格対立・仕様照合保留",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等5元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": null
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-393213",
+          "name": "サーナイト&ニンフィアGX RR [SM9a 031/055](強化拡張パック「ナイトユニゾン」)",
+          "median": {
+            "value": null,
+            "displayValue": null,
+            "historicalValue": 4040,
+            "count": 0,
+            "independent": 0,
+            "unknown": 0,
+            "min": null,
+            "max": null,
+            "rows": [],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-393213",
+                "price": 4800,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015911940416",
+                "price": 3280,
+                "observedAt": "2026-11-16T18:13:09.192Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/2898",
+                "price": 5280,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の採用価格に古値・日時不明あり",
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "中央値の価格対立・仕様照合保留",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等5元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": null
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-290883",
+          "name": "カメックス&ポッチャマGX RR [SM11a 016/064](強化拡張パック「リミックスバウト」)",
+          "median": {
+            "value": null,
+            "displayValue": null,
+            "historicalValue": 4650,
+            "count": 0,
+            "independent": 0,
+            "unknown": 0,
+            "min": null,
+            "max": null,
+            "rows": [],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-290883",
+                "price": 4500,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9016090493248",
+                "price": 4800,
+                "observedAt": "2026-11-17T13:41:08.520Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/4980",
+                "price": 6480,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の採用価格に古値・日時不明あり",
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等5元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": null
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-393207",
+          "name": "ゲッコウガ&ゾロアークGX RR [SM9a 025/055](強化拡張パック「ナイトユニゾン」)",
+          "median": {
+            "value": null,
+            "displayValue": null,
+            "historicalValue": 1240,
+            "count": 0,
+            "independent": 0,
+            "unknown": 0,
+            "min": null,
+            "max": null,
+            "rows": [],
+            "omitted": [
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015899816256",
+                "price": 1180,
+                "observedAt": "2026-11-16T18:13:04.444Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-393207",
+                "price": 1300,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/2892",
+                "price": 2480,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の採用価格に古値・日時不明あり",
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等5元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": null
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-392988",
+          "name": "マーシャドー&カイリキーGX RR [SM10 042/095](拡張パック「ダブルブレイズ」)",
+          "median": {
+            "value": null,
+            "displayValue": null,
+            "historicalValue": 1050,
+            "count": 0,
+            "independent": 0,
+            "unknown": 0,
+            "min": null,
+            "max": null,
+            "rows": [],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-392988",
+                "price": 1400,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015831068992",
+                "price": 700,
+                "observedAt": "2026-11-16T18:12:54.841Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/3337",
+                "price": 1180,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の採用価格に古値・日時不明あり",
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "中央値の価格対立・仕様照合保留",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等5元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": null
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-396049",
+          "name": "マーシャドー&カイリキーGX RR [SM12a 067/173](ハイクラスパック「TAG TEAM GX タッグオールスターズ」)",
+          "median": {
+            "value": null,
+            "displayValue": null,
+            "historicalValue": 1250,
+            "count": 0,
+            "independent": 0,
+            "unknown": 0,
+            "min": null,
+            "max": null,
+            "rows": [],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-396049",
+                "price": 1500,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9016222908736",
+                "price": 1000,
+                "observedAt": "2026-11-10T16:26:54.170Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/5823",
+                "price": 1280,
+                "observedAt": "2026-08-30",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の採用価格に古値・日時不明あり",
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "中央値の価格対立・仕様照合保留",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等5元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": null
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-396035",
+          "name": "オーロット&ヨノワールGX RR [SM12a 053/173](ハイクラスパック「TAG TEAM GX タッグオールスターズ」)",
+          "median": {
+            "value": null,
+            "displayValue": null,
+            "historicalValue": 1750,
+            "count": 0,
+            "independent": 0,
+            "unknown": 0,
+            "min": null,
+            "max": null,
+            "rows": [],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-396035",
+                "price": 3000,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015963451712",
+                "price": 500,
+                "observedAt": "2026-11-10T20:37:58.342Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/5797",
+                "price": 1180,
+                "observedAt": "2026-08-30",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の採用価格に古値・日時不明あり",
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "中央値の価格対立・仕様照合保留",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等5元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": null
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-321565",
+          "name": "メガヤミラミ&バンギラスGX RR [SM11 054/094](拡張パック「ミラクルツイン」)",
+          "median": {
+            "value": null,
+            "displayValue": null,
+            "historicalValue": 2800,
+            "count": 0,
+            "independent": 0,
+            "unknown": 0,
+            "min": null,
+            "max": null,
+            "rows": [],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-321565",
+                "price": 2800,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015845716288",
+                "price": 2800,
+                "observedAt": "2026-11-16T18:12:24.816Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/4565",
+                "price": 4280,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の採用価格に古値・日時不明あり",
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等5元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": null
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-392975",
+          "name": "ベトベトン&アローラベトベトンGX RR [SM10 029/095](拡張パック「ダブルブレイズ」)",
+          "median": {
+            "value": null,
+            "displayValue": null,
+            "historicalValue": 1200,
+            "count": 0,
+            "independent": 0,
+            "unknown": 0,
+            "min": null,
+            "max": null,
+            "rows": [],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-392975",
+                "price": 1800,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015822156096",
+                "price": 600,
+                "observedAt": "2026-11-18T20:00:23.521Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/3324",
+                "price": 1480,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の採用価格に古値・日時不明あり",
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "中央値の価格対立・仕様照合保留",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等5元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": null
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-290868",
+          "name": "フシギバナ&ツタージャGX RR [SM11a 001/064](強化拡張パック「リミックスバウト」)",
+          "median": {
+            "value": null,
+            "displayValue": null,
+            "historicalValue": 2000,
+            "count": 0,
+            "independent": 0,
+            "unknown": 0,
+            "min": null,
+            "max": null,
+            "rows": [],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-290868",
+                "price": 2000,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9016047141184",
+                "price": 2000,
+                "observedAt": "2026-11-16T18:12:19.995Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/4965",
+                "price": 2980,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の採用価格に古値・日時不明あり",
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等5元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": null
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-393124",
+          "name": "モクロー&アローラナッシーGX RR [SM10b 001/054](強化拡張パック「スカイレジェンド」)",
+          "median": {
+            "value": null,
+            "displayValue": null,
+            "historicalValue": 1900,
+            "count": 0,
+            "independent": 0,
+            "unknown": 0,
+            "min": null,
+            "max": null,
+            "rows": [],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-393124",
+                "price": 2300,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015868424512",
+                "price": 1500,
+                "observedAt": "2026-11-09T17:57:12.348Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/4322",
+                "price": 1680,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の採用価格に古値・日時不明あり",
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "中央値の価格対立・仕様照合保留",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等5元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": null
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "pk-4580",
+          "name": "カイリューGX RR [SM11 069/094](拡張パック「ミラクルツイン」)",
+          "median": {
+            "value": null,
+            "displayValue": 1380,
+            "historicalValue": 1390,
+            "count": 1,
+            "independent": 1,
+            "unknown": 0,
+            "min": 1380,
+            "max": 1380,
+            "rows": [
+              {
+                "source": "トレカキャンプ状態A",
+                "origin": "torecacamp-pokemon.com",
+                "url": "https://torecacamp-pokemon.com/products/rc_itgnnnfd4072_fdpx",
+                "price": 1380,
+                "observedAt": "2026-11-20T23:00:28.868Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015862264128",
+                "price": 1400,
+                "observedAt": "2026-11-08T14:52:17.699Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/pk-4580",
+                "price": 1000,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/4580",
+                "price": 1480,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+              "単一ソース参考",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795388428868
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "pk-4545",
+          "name": "ラティオスGX RR [SM11 034/094](拡張パック「ミラクルツイン」)",
+          "median": {
+            "value": null,
+            "displayValue": 1180,
+            "historicalValue": 1190,
+            "count": 1,
+            "independent": 1,
+            "unknown": 0,
+            "min": 1180,
+            "max": 1180,
+            "rows": [
+              {
+                "source": "トレカキャンプ状態A",
+                "origin": "torecacamp-pokemon.com",
+                "url": "https://torecacamp-pokemon.com/products/rc_it9xcd0w1c5c_ln3c",
+                "price": 1180,
+                "observedAt": "2026-11-20T23:00:28.868Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015870128448",
+                "price": 1200,
+                "observedAt": "2026-11-12T07:49:52.698Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/pk-4545",
+                "price": 2300,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/4545",
+                "price": 1580,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "中央値の価格対立・仕様照合保留",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+              "単一ソース参考",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795388428868
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "pk-5879",
+          "name": "ウルトラネクロズマGX RR [SM12a 101/173](ハイクラスパック「TAG TEAM GX タッグオールスターズ」)",
+          "median": {
+            "value": null,
+            "displayValue": 280,
+            "historicalValue": 280,
+            "count": 1,
+            "independent": 1,
+            "unknown": 0,
+            "min": 280,
+            "max": 280,
+            "rows": [
+              {
+                "source": "トレカキャンプ状態A",
+                "origin": "torecacamp-pokemon.com",
+                "url": "https://torecacamp-pokemon.com/products/rc_it0qv1pj15lc_sivj",
+                "price": 280,
+                "observedAt": "2026-11-20T11:33:01.851Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/pk-5879",
+                "price": 2000,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9016020533568",
+                "price": 150,
+                "observedAt": "2026-11-08T20:50:58.914Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/5879",
+                "price": 280,
+                "observedAt": "2026-08-30",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+              "単一ソース参考",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795347181851
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-395985",
+          "name": "フェローチェ&マッシブーンGX RR [SM12a 001/173](ハイクラスパック「TAG TEAM GX タッグオールスターズ」)",
+          "median": {
+            "value": null,
+            "displayValue": 150,
+            "historicalValue": 700,
+            "count": 1,
+            "independent": 1,
+            "unknown": 0,
+            "min": 150,
+            "max": 150,
+            "rows": [
+              {
+                "source": "晴れる屋2状態A",
+                "origin": "hareruya2.com",
+                "url": "https://www.hareruya2.com/products/9016073978176",
+                "price": 150,
+                "observedAt": "2026-11-19T17:26:10.904Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/x-395985",
+                "price": 1250,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/5707",
+                "price": 680,
+                "observedAt": "2026-08-30",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+              "単一ソース参考",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795281970904
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "pk-5791",
+          "name": "デデンネGX RR [SM12a 048/173](ハイクラスパック「TAG TEAM GX タッグオールスターズ」)",
+          "median": {
+            "value": null,
+            "displayValue": 680,
+            "historicalValue": 840,
+            "count": 1,
+            "independent": 1,
+            "unknown": 0,
+            "min": 680,
+            "max": 680,
+            "rows": [
+              {
+                "source": "トレカキャンプ状態A",
+                "origin": "torecacamp-pokemon.com",
+                "url": "https://torecacamp-pokemon.com/products/rc_itf30b7xr5vz_mxwm",
+                "price": 680,
+                "observedAt": "2026-11-20T11:33:01.851Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/pk-5791",
+                "price": 1000,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015944347968",
+                "price": 350,
+                "observedAt": "2026-11-13T21:27:29.354Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/5791",
+                "price": 680,
+                "observedAt": "2026-08-30",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+              "単一ソース参考",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795347181851
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "pk-5771",
+          "name": "ケルディオGX RR [SM12a 036/173](ハイクラスパック「TAG TEAM GX タッグオールスターズ」)",
+          "median": {
+            "value": null,
+            "displayValue": 280,
+            "historicalValue": 265,
+            "count": 1,
+            "independent": 1,
+            "unknown": 0,
+            "min": 280,
+            "max": 280,
+            "rows": [
+              {
+                "source": "トレカキャンプ状態A",
+                "origin": "torecacamp-pokemon.com",
+                "url": "https://torecacamp-pokemon.com/products/rc_it6uz8ozavud_imcd",
+                "price": 280,
+                "observedAt": "2026-11-20T11:33:01.851Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015907942720",
+                "price": 250,
+                "observedAt": "2026-11-13T21:27:24.442Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/pk-5771",
+                "price": 5000,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/5771",
+                "price": 280,
+                "observedAt": "2026-08-30",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "中央値の価格対立・仕様照合保留",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+              "単一ソース参考",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795347181851
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "pk-2883",
+          "name": "デデンネGX RR [SM9a 016/055](強化拡張パック「ナイトユニゾン」)",
+          "median": {
+            "value": null,
+            "displayValue": 680,
+            "historicalValue": 680,
+            "count": 1,
+            "independent": 1,
+            "unknown": 0,
+            "min": 680,
+            "max": 680,
+            "rows": [
+              {
+                "source": "トレカキャンプ状態A",
+                "origin": "torecacamp-pokemon.com",
+                "url": "https://torecacamp-pokemon.com/products/rc_it5qod95bg78_wsk1",
+                "price": 680,
+                "observedAt": "2026-11-19T23:25:50.383Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/pk-2883",
+                "price": 2000,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015829954880",
+                "price": 300,
+                "observedAt": "2026-11-13T09:44:51.073Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/2883",
+                "price": 680,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+              "単一ソース参考",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795303550383
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "pk-5870",
+          "name": "アローラキュウコンGX RR [SM12a 095/173](ハイクラスパック「TAG TEAM GX タッグオールスターズ」)",
+          "median": {
+            "value": null,
+            "displayValue": 290,
+            "historicalValue": 225,
+            "count": 2,
+            "independent": 2,
+            "unknown": 0,
+            "min": 100,
+            "max": 480,
+            "rows": [
+              {
+                "source": "晴れる屋2状態A",
+                "origin": "hareruya2.com",
+                "url": "https://www.hareruya2.com/products/9016015880512",
+                "price": 100,
+                "observedAt": "2026-11-19T20:53:47.066Z",
+                "fresh": true,
+                "kind": "販売価格"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "origin": "torecacamp-pokemon.com",
+                "url": "https://torecacamp-pokemon.com/products/rc_itn02khieey3_zncc",
+                "price": 480,
+                "observedAt": "2026-11-20T11:33:01.851Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/pk-5870",
+                "price": 225,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/5870",
+                "price": 480,
+                "observedAt": "2026-08-30",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の価格対立・仕様照合保留"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等3元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795294427066
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "pk-5004",
+          "name": "アローラペルシアンGX RR [SM11a 040/064](強化拡張パック「リミックスバウト」)",
+          "median": {
+            "value": null,
+            "displayValue": 280,
+            "historicalValue": 265,
+            "count": 1,
+            "independent": 1,
+            "unknown": 0,
+            "min": 280,
+            "max": 280,
+            "rows": [
+              {
+                "source": "トレカキャンプ状態A",
+                "origin": "torecacamp-pokemon.com",
+                "url": "https://torecacamp-pokemon.com/products/rc_itn4c3uomiqg_b8f7",
+                "price": 280,
+                "observedAt": "2026-11-19T23:33:25.400Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9016115691840",
+                "price": 250,
+                "observedAt": "2026-11-17T18:59:29.437Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/pk-5004",
+                "price": 3000,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/5004",
+                "price": 280,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "中央値の価格対立・仕様照合保留",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+              "単一ソース参考",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795304005400
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "pk-4556",
+          "name": "プテラGX RR [SM11 045/094](拡張パック「ミラクルツイン」)",
+          "median": {
+            "value": null,
+            "displayValue": 590,
+            "historicalValue": 880,
+            "count": 2,
+            "independent": 2,
+            "unknown": 0,
+            "min": 300,
+            "max": 880,
+            "rows": [
+              {
+                "source": "晴れる屋2状態A",
+                "origin": "hareruya2.com",
+                "url": "https://www.hareruya2.com/products/9015882907968",
+                "price": 300,
+                "observedAt": "2026-11-19T02:55:36.624Z",
+                "fresh": true,
+                "kind": "販売価格"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "origin": "torecacamp-pokemon.com",
+                "url": "https://torecacamp-pokemon.com/products/rc_itrt825y6qeo_y0w4",
+                "price": 880,
+                "observedAt": "2026-11-20T23:00:28.868Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/pk-4556",
+                "price": 2500,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/4556",
+                "price": 780,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の価格対立・仕様照合保留"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等3元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795229736624
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "pk-3361",
+          "name": "エルフーンGX RR [SM10 066/095](拡張パック「ダブルブレイズ」)",
+          "median": {
+            "value": null,
+            "displayValue": 380,
+            "historicalValue": 380,
+            "count": 1,
+            "independent": 1,
+            "unknown": 0,
+            "min": 380,
+            "max": 380,
+            "rows": [
+              {
+                "source": "トレカキャンプ状態A",
+                "origin": "torecacamp-pokemon.com",
+                "url": "https://torecacamp-pokemon.com/products/rc_itf60dgncqao_jqg1",
+                "price": 380,
+                "observedAt": "2026-11-19T23:34:48.011Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/pk-3361",
+                "price": 2000,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015944184128",
+                "price": 100,
+                "observedAt": "2026-11-13T09:44:55.865Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/3361",
+                "price": 280,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "中央値の価格対立・仕様照合保留",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+              "単一ソース参考",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795304088011
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "pk-3364",
+          "name": "ペルシアンGX RR [SM10 069/095](拡張パック「ダブルブレイズ」)",
+          "median": {
+            "value": null,
+            "displayValue": 480,
+            "historicalValue": 390,
+            "count": 1,
+            "independent": 1,
+            "unknown": 0,
+            "min": 480,
+            "max": 480,
+            "rows": [
+              {
+                "source": "トレカキャンプ状態A",
+                "origin": "torecacamp-pokemon.com",
+                "url": "https://torecacamp-pokemon.com/products/rc_itpgf9jkkifc_ditn",
+                "price": 480,
+                "observedAt": "2026-11-19T23:34:48.011Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015953523008",
+                "price": 300,
+                "observedAt": "2026-11-13T09:45:00.707Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/pk-3364",
+                "price": 1500,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/3364",
+                "price": 580,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "中央値の価格対立・仕様照合保留",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+              "単一ソース参考",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795304088011
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-393069",
+          "name": "ヒードランGX RR [SM10a 004/054](強化拡張パック「ジージーエンド」)",
+          "median": {
+            "value": null,
+            "displayValue": 380,
+            "historicalValue": 380,
+            "count": 1,
+            "independent": 1,
+            "unknown": 0,
+            "min": 380,
+            "max": 380,
+            "rows": [
+              {
+                "source": "トレカキャンプ状態A",
+                "origin": "torecacamp-pokemon.com",
+                "url": "https://torecacamp-pokemon.com/products/rc_ityfgdookmk8_st2y",
+                "price": 380,
+                "observedAt": "2026-11-20T23:01:49.037Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/pk-3946",
+                "price": 1500,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015880843584",
+                "price": 200,
+                "observedAt": "2026-11-17T21:44:35.316Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/3946",
+                "price": 280,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "中央値の価格対立・仕様照合保留",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+              "単一ソース参考",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795388509037
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-393184",
+          "name": "モルフォンGX RR [SM9a 002/055](強化拡張パック「ナイトユニゾン」)",
+          "median": {
+            "value": null,
+            "displayValue": 280,
+            "historicalValue": 390,
+            "count": 1,
+            "independent": 1,
+            "unknown": 0,
+            "min": 280,
+            "max": 280,
+            "rows": [
+              {
+                "source": "トレカキャンプ状態A",
+                "origin": "torecacamp-pokemon.com",
+                "url": "https://torecacamp-pokemon.com/products/rc_itvgj9kgz4xs_6rvh",
+                "price": 280,
+                "observedAt": "2026-11-19T23:25:50.383Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015817961792",
+                "price": 500,
+                "observedAt": "2026-11-14T12:12:40.738Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/pk-2869",
+                "price": 1500,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/2869",
+                "price": 580,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "中央値の価格対立・仕様照合保留",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+              "単一ソース参考",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795303550383
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "pk-5861",
+          "name": "クチートGX RR [SM12a 089/173](ハイクラスパック「TAG TEAM GX タッグオールスターズ」)",
+          "median": {
+            "value": null,
+            "displayValue": 280,
+            "historicalValue": 280,
+            "count": 1,
+            "independent": 1,
+            "unknown": 0,
+            "min": 280,
+            "max": 280,
+            "rows": [
+              {
+                "source": "トレカキャンプ状態A",
+                "origin": "torecacamp-pokemon.com",
+                "url": "https://torecacamp-pokemon.com/products/rc_iticz147egzg_lbys",
+                "price": 280,
+                "observedAt": "2026-11-20T11:33:01.851Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/pk-5861",
+                "price": 1400,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9016013324608",
+                "price": 100,
+                "observedAt": "2026-11-17T08:26:31.797Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/5861",
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "中央値の価格対立・仕様照合保留",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+              "単一ソース参考",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795347181851
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "pk-3972",
+          "name": "クチートGX RR [SM10a 030/054](強化拡張パック「ジージーエンド」)",
+          "median": {
+            "value": null,
+            "displayValue": 280,
+            "historicalValue": 265,
+            "count": 1,
+            "independent": 1,
+            "unknown": 0,
+            "min": 280,
+            "max": 280,
+            "rows": [
+              {
+                "source": "トレカキャンプ状態A",
+                "origin": "torecacamp-pokemon.com",
+                "url": "https://torecacamp-pokemon.com/products/rc_it2voiu3fav4_ujht",
+                "price": 280,
+                "observedAt": "2026-11-20T23:01:49.037Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015860461888",
+                "price": 250,
+                "observedAt": "2026-11-08T14:51:24.962Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/pk-3972",
+                "price": 1200,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/3972",
+                "price": 280,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "中央値の価格対立・仕様照合保留",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+              "単一ソース参考",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795388509037
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "pk-5756",
+          "name": "ズガドーンGX RR [SM12a 028/173](ハイクラスパック「TAG TEAM GX タッグオールスターズ」)",
+          "median": {
+            "value": null,
+            "displayValue": 280,
+            "historicalValue": 280,
+            "count": 1,
+            "independent": 1,
+            "unknown": 0,
+            "min": 280,
+            "max": 280,
+            "rows": [
+              {
+                "source": "トレカキャンプ状態A",
+                "origin": "torecacamp-pokemon.com",
+                "url": "https://torecacamp-pokemon.com/products/rc_ittw3fxzsgu8_cdst",
+                "price": 280,
+                "observedAt": "2026-11-20T11:33:01.851Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/pk-5756",
+                "price": 1200,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9016009261376",
+                "price": 100,
+                "observedAt": "2026-11-17T08:26:25.807Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/5756",
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "中央値の価格対立・仕様照合保留",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+              "単一ソース参考",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795347181851
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "pk-3351",
+          "name": "ドンカラスGX RR [SM10 056/095](拡張パック「ダブルブレイズ」)",
+          "median": {
+            "value": null,
+            "displayValue": 280,
+            "historicalValue": 290,
+            "count": 1,
+            "independent": 1,
+            "unknown": 0,
+            "min": 280,
+            "max": 280,
+            "rows": [
+              {
+                "source": "トレカキャンプ状態A",
+                "origin": "torecacamp-pokemon.com",
+                "url": "https://torecacamp-pokemon.com/products/rc_itjmd0949q1c_srug",
+                "price": 280,
+                "observedAt": "2026-11-19T23:34:48.011Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015915282752",
+                "price": 300,
+                "observedAt": "2026-11-08T14:50:02.040Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/pk-3351",
+                "price": 1000,
+                "observedAt": "2026-11-20T21:48:17.919Z",
+                "reason": "実売根拠未確認の参考価格"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/3351",
+                "price": 280,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "中央値の価格対立・仕様照合保留",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+              "単一ソース参考",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795304088011
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "pk-4340",
+          "name": "ケルディオGX RR [SM10b 019/054](強化拡張パック「スカイレジェンド」)",
+          "median": {
+            "value": null,
+            "displayValue": 280,
+            "historicalValue": 240,
+            "count": 1,
+            "independent": 1,
+            "unknown": 0,
+            "min": 280,
+            "max": 280,
+            "rows": [
+              {
+                "source": "トレカキャンプ状態A",
+                "origin": "torecacamp-pokemon.com",
+                "url": "https://torecacamp-pokemon.com/products/rc_it3f4mkzszfu_yxee",
+                "price": 280,
+                "observedAt": "2026-11-19T23:27:15.584Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015884316992",
+                "price": 200,
+                "observedAt": "2026-11-17T13:41:28.883Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/pk-4340",
+                "price": 0,
+                "observedAt": "2026-11-21",
+                "reason": "価格未取得／実売根拠未確認の参考価格／個別確認時刻未取得"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/4340",
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+              "単一ソース参考",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795303635584
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "x-393157",
+          "name": "アーゴヨンGX RR [SM10b 034/054](強化拡張パック「スカイレジェンド」)",
+          "median": {
+            "value": null,
+            "displayValue": 290,
+            "historicalValue": 290,
+            "count": 2,
+            "independent": 2,
+            "unknown": 0,
+            "min": 200,
+            "max": 380,
+            "rows": [
+              {
+                "source": "晴れる屋2状態A",
+                "origin": "hareruya2.com",
+                "url": "https://www.hareruya2.com/products/9015853908288",
+                "price": 200,
+                "observedAt": "2026-11-19T17:26:06.058Z",
+                "fresh": true,
+                "kind": "販売価格"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "origin": "torecacamp-pokemon.com",
+                "url": "https://torecacamp-pokemon.com/products/rc_it8ic30lnu11_ho4l",
+                "price": 380,
+                "observedAt": "2026-11-19T23:27:15.584Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/pk-4355",
+                "price": 0,
+                "observedAt": "2026-11-21",
+                "reason": "価格未取得／実売根拠未確認の参考価格／個別確認時刻未取得"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/4355",
+                "price": 280,
+                "observedAt": "2026-08-29",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の価格対立・仕様照合保留"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等3元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795281966058
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "pk-5775",
+          "name": "ヨワシGX RR [SM12a 039/173](ハイクラスパック「TAG TEAM GX タッグオールスターズ」)",
+          "median": {
+            "value": null,
+            "displayValue": 280,
+            "historicalValue": 190,
+            "count": 1,
+            "independent": 1,
+            "unknown": 0,
+            "min": 280,
+            "max": 280,
+            "rows": [
+              {
+                "source": "トレカキャンプ状態A",
+                "origin": "torecacamp-pokemon.com",
+                "url": "https://torecacamp-pokemon.com/products/rc_ittsucsjm8ru_6gna",
+                "price": 280,
+                "observedAt": "2026-11-20T11:33:01.851Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015916265792",
+                "price": 100,
+                "observedAt": "2026-11-15T02:03:18.419Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/pk-5775",
+                "price": 0,
+                "observedAt": "2026-11-21",
+                "reason": "価格未取得／実売根拠未確認の参考価格／個別確認時刻未取得"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/5775",
+                "price": 120,
+                "observedAt": "2026-08-30",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "中央値の価格対立・仕様照合保留",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+              "単一ソース参考",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795347181851
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "pk-5795",
+          "name": "ゼラオラGX RR [SM12a 051/173](ハイクラスパック「TAG TEAM GX タッグオールスターズ」)",
+          "median": {
+            "value": null,
+            "displayValue": 380,
+            "historicalValue": 240,
+            "count": 1,
+            "independent": 1,
+            "unknown": 0,
+            "min": 380,
+            "max": 380,
+            "rows": [
+              {
+                "source": "トレカキャンプ状態A",
+                "origin": "torecacamp-pokemon.com",
+                "url": "https://torecacamp-pokemon.com/products/rc_itxjwksxe058_wimp",
+                "price": 380,
+                "observedAt": "2026-11-20T11:33:01.851Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "晴れる屋2状態A",
+                "url": "https://www.hareruya2.com/products/9015957455168",
+                "price": 100,
+                "observedAt": "2026-11-08T20:49:55.156Z",
+                "reason": "古値との比較・48時間外"
+              },
+              {
+                "source": "みんトレ状態A",
+                "url": "https://toreca-souba.com/cards/pk-5795",
+                "price": 0,
+                "observedAt": "2026-11-21",
+                "reason": "価格未取得／実売根拠未確認の参考価格／個別確認時刻未取得"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": "https://www.cardrush-pokemon.jp/product/5795",
+                "price": 280,
+                "observedAt": "2026-08-30",
+                "reason": "個別確認時刻未取得／古値との比較・48時間外"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない",
+              "新鮮な独立2店舗の中央値根拠不足"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等4元を参考中央値から除外・原価格と日時は履歴保持",
+              "単一ソース参考",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795347181851
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "official-sm12a-010",
+          "name": "ジュカインGX RR [SM12a 010/173](ハイクラスパック「TAG TEAM GX タッグオールスターズ」)",
+          "median": {
+            "value": null,
+            "displayValue": 240,
+            "historicalValue": 240,
+            "count": 2,
+            "independent": 2,
+            "unknown": 0,
+            "min": 100,
+            "max": 380,
+            "rows": [
+              {
+                "source": "晴れる屋2状態A",
+                "origin": "hareruya2.com",
+                "url": "https://www.hareruya2.com/products/9015987142976",
+                "price": 100,
+                "observedAt": "2026-11-20T23:10:26.806Z",
+                "fresh": true,
+                "kind": "販売価格"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "origin": "torecacamp-pokemon.com",
+                "url": "https://torecacamp-pokemon.com/products/rc_ity4sbwpi2a4_9atk",
+                "price": 380,
+                "observedAt": "2026-11-20T22:59:11.771Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://www.pokemon-card.com/card-search/details.php/card/37214/regu/all",
+                "price": 0,
+                "observedAt": null,
+                "reason": "価格未取得／実売根拠未確認の参考価格／個別確認時刻未取得／個別確認日時不明"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の価格対立・仕様照合保留"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等3元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795388351771
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "id": "official-sm12a-082",
+          "name": "ガオガエンGX RR [SM12a 082/173](ハイクラスパック「TAG TEAM GX タッグオールスターズ」)",
+          "median": {
+            "value": null,
+            "displayValue": 240,
+            "historicalValue": 240,
+            "count": 2,
+            "independent": 2,
+            "unknown": 0,
+            "min": 100,
+            "max": 380,
+            "rows": [
+              {
+                "source": "晴れる屋2状態A",
+                "origin": "hareruya2.com",
+                "url": "https://www.hareruya2.com/products/9016010178880",
+                "price": 100,
+                "observedAt": "2026-11-20T23:10:25.665Z",
+                "fresh": true,
+                "kind": "販売価格"
+              },
+              {
+                "source": "トレカキャンプ状態A",
+                "origin": "torecacamp-pokemon.com",
+                "url": "https://torecacamp-pokemon.com/products/rc_ittqhnaftf5k_yzdt",
+                "price": 380,
+                "observedAt": "2026-11-20T22:59:12.868Z",
+                "fresh": true,
+                "kind": "販売価格"
+              }
+            ],
+            "omitted": [
+              {
+                "source": "みんトレ状態A",
+                "url": "https://www.pokemon-card.com/card-search/details.php/card/37286/regu/all",
+                "price": 0,
+                "observedAt": null,
+                "reason": "価格未取得／実売根拠未確認の参考価格／個別確認時刻未取得／個別確認日時不明"
+              },
+              {
+                "source": "カードラッシュ状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              },
+              {
+                "source": "遊々亭状態A",
+                "url": null,
+                "price": null,
+                "observedAt": null,
+                "reason": "価格未取得／個別確認時刻未取得／個別確認日時不明／独立した採用元の根拠不足"
+              }
+            ],
+            "reasons": [
+              "中央値の価格対立・仕様照合保留"
+            ],
+            "warnings": [
+              "古値・参考価格・仕様保留等3元を参考中央値から除外・原価格と日時は履歴保持",
+              "中央値で実際に購入できるとは限らない・購入GOとは別"
+            ],
+            "reference": true,
+            "expiresAt": 1795388352868
+          },
+          "annual": null,
+          "periods": [
+            null,
+            null,
+            null,
+            null
+          ]
+        }
+      ]
+    },
+    "formalCandidateCounts": {
+      "value": 22,
+      "priority": 16
+    },
+    "candidateIdsUnchangedFromRecordedCycle": true,
+    "newProviderRequests": 0,
+    "latestDailyFailure": {
+      "runId": 44846784320,
+      "stage": "Commit changed data only",
+      "reason": "unsupported completion projections and retry/history queue conflict",
+      "originalPreserved": true,
+      "sourceRecoveryComplete": false
+    },
+    "verificationFailure": {
+      "runId": 44848632051,
+      "reason": "upstream-failed-before-publication",
+      "notPagesDelay": true
+    }
+  }
 }

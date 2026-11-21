@@ -1,26 +1,32 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-20T22:10:34.353Z",
+  "generatedAt": "2026-11-21T01:16:43.215Z",
   "sourceLastSuccessAt": "2026-11-20T21:48:20.990Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-11-20T22:10:34.338Z",
-    "lastSuccessAt": "2026-11-20T22:10:34.338Z",
-    "runId": "44826032472",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/44826032472"
+    "lastAttemptAt": "2026-11-21T01:16:43.198Z",
+    "lastSuccessAt": "2026-11-21T01:16:43.198Z",
+    "runId": "44848632051",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/44848632051"
   },
   "issues": [
     {
-      "key": "daily:source-failure",
-      "category": "確認が必要",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44776213725",
-      "reason": "Dailyの一部取得元が失敗・正常データは必須検証/保存/公開照合済み"
+      "key": "daily:workflow-failure",
+      "category": "取得処理の故障",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44846784320",
+      "reason": "Daily Fast Updateが1回連続失敗"
     },
     {
       "key": "safe:yuyutei:manual-action-required:GitHub ActionsからHTTP #。正規アクセス確認待ち",
       "category": "アクセス・手動対応待ち",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44637236112",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44832956159",
       "reason": "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち"
+    },
+    {
+      "key": "safe:priceEvidence:stalled:#回連続でチェックポイント進捗なし",
+      "category": "鮮度未達・進捗停滞",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44832956159",
+      "reason": "状態A価格確認: 2回連続でチェックポイント進捗なし"
     },
     {
       "key": "source:cardrush:manual-wait",
@@ -49,13 +55,13 @@
     {
       "key": "source:shopBuyback:manual-wait",
       "category": "確認が必要",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44823241520",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44843441191",
       "reason": "Web買取表: shop buyback refresh skipped; existing data was preserved: 一部取得失敗（正常データ保持）: torecabank: 取得件数が前回の半分未満。急減を隔離し正常データ保持"
     },
     {
       "key": "source:shopBuyback:stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44823241520",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44843441191",
       "reason": "Web買取表: 更新期限超過（カード別鮮度 未記録%）"
     },
     {
@@ -150,8 +156,9 @@
     }
   ],
   "reasons": [
-    "Dailyの一部取得元が失敗・正常データは必須検証/保存/公開照合済み",
+    "Daily Fast Updateが1回連続失敗",
     "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち",
+    "状態A価格確認: 2回連続でチェックポイント進捗なし",
     "カードラッシュ: pk-73737: HTTP 403",
     "カードラッシュ: 更新期限超過（カード別鮮度 0%）",
     "遊々亭: HTTP 403",
