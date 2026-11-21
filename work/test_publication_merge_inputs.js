@@ -60,6 +60,8 @@ assert.throws(()=>mergeCompletionQueue(qb,ql,{...qr,cards:{}}),/identity\/order 
 assert.throws(()=>mergeCompletionQueue(qb,ql,{...qr,cards:{card:{i:{shopStateA:acquired}}}}),/item removal/);
 assert.throws(()=>mergeCompletionQueue(qb,ql,{...qr,itemSchema:['status']}),/schema/);
 assert.throws(()=>mergeCompletionQueue(qb,ql,{...qr,manualHold:'review'}),/schema/,'unknown manual state remains held');
+const unknownState=queued(qb.generatedAt,{domesticPrice:['手動保留',null,null,0,'review',null],shopStateA:pending});
+assert.throws(()=>mergeCompletionQueue(unknownState,unknownState,unknownState),/schema/,'unrecognized status cannot be silently regenerated away');
 assert.throws(()=>mergeCompletionQueue(qb,ql,{...qr,overseasPolicyExplanation:'resume'}),/policy/);
 const previous=Object.fromEntries(qb.itemSchema.map((key,i)=>[key,retry[i]]));
 assert.deepEqual(carryRetryState({status:'取得待ち',lastAttemptAt:'2026-11-22T00:00:00Z'},previous),previous,'regeneration retains failure, real attempt/success, retry count/reason and next retry exactly');

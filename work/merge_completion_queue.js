@@ -2,17 +2,18 @@
 // as a generated JSON file, or resolve conflicting attempts by generation time.
 const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const SCHEMA=['status','lastAttemptAt','lastSuccessAt','retryCount','failureReason','nextRetryAt'];
+const STATES=new Set(['取得済み','取得待ち','巡回中','取得失敗','再試行待ち','再照合待ち','定期再確認','取得元にデータなし','取得不能','許諾待ち','中止','推定値']);
 const ROOT_KEYS=['version','generatedAt','itemSchema','evidenceSourceTimes','overseasPolicyExplanation','evidenceSchema','sourceByItem','summary','itemTotals','dataTypeTotals','cards','queue'];
 const CARD_KEYS=['c','s','n','rr','rl','rd','ry','rs','ru','rc','p','r','m','x','a','l','pk','p9','e','i'];
 function object(v){return v&&typeof v==='object'&&!Array.isArray(v);}
 function validate(q){
-  if(q?.version!==3||!same(q.itemSchema,SCHEMA)||!object(q.cards)||!Array.isArray(q.queue)
+  if(q?.version!==3||!same(q.itemSchema,SCHEMA)||!object(q.cards)||!object(q.sourceByItem)||!Array.isArray(q.queue)
     ||Object.keys(q).some(k=>!ROOT_KEYS.includes(k))||!Number.isFinite(Date.parse(q.generatedAt)))throw Error('Completion queue schema changed; review required');
   if(new Set(q.queue).size!==q.queue.length||q.queue.some(id=>!Object.hasOwn(q.cards,id)))throw Error('Completion queue identity/order invalid');
   for(const [id,row] of Object.entries(q.cards)){
     if(!object(row)||!object(row.i)||Object.keys(row).some(k=>!CARD_KEYS.includes(k)))throw Error('Completion queue card schema changed: '+id);
     for(const [key,v] of Object.entries(row.i)){
-      if(!Object.hasOwn(q.sourceByItem||{},key)||!Array.isArray(v)||v.length!==6||typeof v[0]!=='string'
+      if(!Object.hasOwn(q.sourceByItem,key)||!Array.isArray(v)||v.length!==6||!STATES.has(v[0])
         ||![v[1],v[2],v[5]].every(t=>t===null||typeof t==='string'&&Number.isFinite(Date.parse(t)))
         ||!Number.isSafeInteger(v[3])||v[3]<0||!(v[4]===null||typeof v[4]==='string'))throw Error('Completion queue item schema changed: '+id+'/'+key);
     }
