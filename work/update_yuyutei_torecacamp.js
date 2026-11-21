@@ -735,9 +735,14 @@ async function updateTorecaCamp(cards, paths) {
   const deadlines=require('./formal_freshness_queue').forSource(requestedTargets,formalIds,'torecacamp');
   const fixed=require('./fixed_price_cohort').ids(ROOT,'torecacamp');
   const fixedSet=new Set(fixed), plannedFixed=new Set(), attemptedFixed=new Set(), fixedObservations=new Map(), attemptedDetailUrls=new Set();
+  const reachedFormalProducts=new Map();
   const markFixed=(set,ids)=>{for(const id of ids)if(fixedSet.has(id))set.add(id);};
   const recordFixed=(entry,requestStartedAt)=>{
     if(fixedSet.has(entry.cardId)&&requestStartedAt)fixedObservations.set(entry.cardId,{id:entry.cardId,at:entry.observedAt,requestStartedAt});
+    if(deadlines[entry.cardId]?.formalCandidate && deadlines[entry.cardId].url===entry.detailUrl && requestStartedAt){
+      reachedFormalProducts.set(entry.cardId,entry.detailUrl);
+      if(bulkState.formalPageMisses?.[entry.cardId]?.url===entry.detailUrl)delete bulkState.formalPageMisses[entry.cardId];
+    }
   };
   const legacyRequested=[...new Set([...campRequestedIds(requestedTargets,comparisonIds,alternateRequests),...Object.keys(deadlines),...fixed,...require('./confirmed_camp_products').ids(ROOT)])];
   for(const id of legacyRequested)important.add(id);
@@ -747,6 +752,8 @@ async function updateTorecaCamp(cards, paths) {
   const bulkStart=Date.now();
   progress.collectionBatch ||= {navigation:null,routes:{},lastPages:[]};
   const bulkState=progress.collectionBatch;
+  const previousPageMisses=bulkState.formalPageMisses||{};
+  let assignedFormalProducts=new Map();
   // Retained full-page bodies establish membership only, never new prices/dates.
   // A bad archived proof cannot stop independent known-product maintenance.
   try{bulk.recoverPages(bulkState,catalog);}catch(error){bulkRun.failures.push({stage:'saved-page-membership',error:error.message});}
@@ -761,9 +768,15 @@ async function updateTorecaCamp(cards, paths) {
         const checkedAt=new Date().toISOString(),prior=new Map((bulkState.navigation?.routes||[]).map(r=>[r.url,r]));
         bulkState.navigation={version:2,checkedAt,routes:routes.map(r=>({...r,firstSeenAt:prior.get(r.url)?.firstSeenAt||checkedAt}))};bulkRun.requests++;
       }
-      const plans=bulk.plan({routes:bulkState.navigation.routes,cards,catalog,requested:legacyRequested,critical:criticalRequests,fixed,deadlines,
+      const plans=bulk.plan({routes:bulkState.navigation.routes,cards,catalog,requested:legacyRequested,critical:criticalRequests,fixed,deadlines,pageMisses:previousPageMisses,
         retryByUrl:{...progress.knownUrlRetries,...progress.retryByUrl},state:bulkState.routes,membership:bulkState.pageMembership,now:Date.now(),leadMs:proactiveLead,
         due:postpass.due,signature:cardSignature,eligible:retryPolicy.eligible});
+      assignedFormalProducts=bulk.assignedFormalProducts(plans,deadlines,byId);
+      if(assignedFormalProducts.size){
+        // Keep the fallback even if the cycle stops after the assignment.
+        bulkState.formalPageMisses=bulk.carryFormalMisses(previousPageMisses,assignedFormalProducts,reachedFormalProducts,deadlines,new Date().toISOString());
+        write(paths.progress,progress);
+      }
       for(const plan of plans)markFixed(plannedFixed,plan.expectedIds||[]);
       for(const plan of plans) {
         if(Date.now()>=stopBy-Math.max(20000,runtimeLimitMs/2))break;
@@ -832,7 +845,8 @@ async function updateTorecaCamp(cards, paths) {
   bulkRun.verified=bulkVerified.size;bulkRun.elapsedMs=Date.now()-bulkStart;
   bulkState.lastRun=bulkRun;
   const legacyRecords=[];
-  const priorityDetails=stoppingReason?[]:postpass.unreachedTargets(catalog,legacyRequested,{...progress.knownUrlRetries,...progress.retryByUrl},Date.now(),proactiveLead,criticalRequests,medianCompletions,deadlines).slice(0,Math.floor(detailLimit/2));
+  const unassigned=catalog.filter(entry=>assignedFormalProducts.get(entry.cardId)!==entry.detailUrl);
+  const priorityDetails=stoppingReason?[]:postpass.unreachedTargets(unassigned,legacyRequested,{...progress.knownUrlRetries,...progress.retryByUrl},Date.now(),proactiveLead,criticalRequests,medianCompletions,deadlines,previousPageMisses).slice(0,Math.floor(detailLimit/2));
   markFixed(plannedFixed,priorityDetails.map(r=>r.cardId));
   for(const previousEntry of priorityDetails) {
     if(Date.now()>=stopBy-Math.max(15000,runtimeLimitMs/2))break;
@@ -1122,6 +1136,7 @@ async function updateTorecaCamp(cards, paths) {
     completionStatus: maintenanceMode ? "partial" : crawlComplete && failed === 0 ? "success" : "partial",
     completedAt: new Date().toISOString(),
   };
+  bulkState.formalPageMisses=bulk.carryFormalMisses(previousPageMisses,assignedFormalProducts,reachedFormalProducts,deadlines,progress.lastRun.completedAt);
   write(paths.catalog, nextCatalog); write(paths.progress, progress); write(paths.sitemapCache, sitemapCache);
   write(paths.summary, {
     updatedAt: new Date().toISOString(), stockType: "availability", cards: summary,
