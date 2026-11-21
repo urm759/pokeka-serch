@@ -3,7 +3,12 @@ const {atomicWrite} = require('./acquisition_retry');
 const VERSION = 'homura-public-v4';
 const BASE = 'https://api.kaitori-homura.com/api/v1/products';
 function collapse(checkpoint) {
-  if(checkpoint.rawCount!==checkpoint.total || !checkpoint.items.length) throw Error('形式変更: ホムラ一覧件数不整合・取得0件。正常値保持');
+  if (checkpoint.rawCount === checkpoint.total && !checkpoint.items.length) {
+    const error = Error('形式変更: ホムラ取得0件。正常値保持');
+    error.emptyListing = true;
+    throw error;
+  }
+  if(checkpoint.rawCount!==checkpoint.total) throw Error('形式変更: ホムラ一覧件数不整合・取得0件。正常値保持');
   const unique=new Map();let duplicates=0;
   for(const item of checkpoint.items) {
     const previous=unique.get(item.shopItemId);
@@ -13,7 +18,7 @@ function collapse(checkpoint) {
     }
     unique.set(item.shopItemId,item);
   }
-  return {pages:checkpoint.pages,items:[...unique.values()],sourceTotal:checkpoint.total,fullListing:duplicates===0,
+  return {pages:checkpoint.pages,pageCounts:checkpoint.pageCounts ?? null,lastPageSeen:checkpoint.nextPage>checkpoint.pages,items:[...unique.values()],sourceTotal:checkpoint.total,fullListing:duplicates===0,
     duplicateSourceIds:duplicates,coverageWarning:duplicates?'一覧に同一商品IDの重複。掲載確認分のみ採用・不存在判定は不可':null,
     adapterVersion:VERSION,pagination:'公式画面の認証不要商品API・全ページ。認証付き受付可能数は取得しない'};
 }
@@ -45,20 +50,20 @@ function parse(payload, cards, observedAt) {
   }
   return items;
 }
-async function fetchItems(shop, fetchJson, cards, root=path.join(__dirname,'..')) {
+async function fetchItems(shop, fetchJson, cards, root=path.join(__dirname,'..'), noteCount=()=>{}) {
   const file=path.join(root,'work/homura-public-checkpoint.json');
   const day=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo'}).format(new Date());
   let checkpoint;
   try{checkpoint=JSON.parse(fs.readFileSync(file,'utf8'));}catch{}
   if(checkpoint?.version===VERSION && checkpoint.day===day && !checkpoint.complete && checkpoint.pages && checkpoint.nextPage>checkpoint.pages) {
-    const recovered=collapse(checkpoint);checkpoint.complete=true;atomicWrite(file,checkpoint);return {...recovered,recoveredSavedPages:true};
+    const recovered=collapse(checkpoint);checkpoint.complete=true;atomicWrite(file,checkpoint);return {...recovered,recoveredSavedPages:true,confirmedAt:checkpoint.lastConfirmedAt || null};
   }
   if(checkpoint?.version!==VERSION || checkpoint.day!==day || checkpoint.complete || checkpoint.restartRequired) {
     if(checkpoint) {
       const archive=path.join(root,'work/homura-public-checkpoints');fs.mkdirSync(archive,{recursive:true});
       atomicWrite(path.join(archive,require('node:crypto').createHash('sha256').update(JSON.stringify(checkpoint)).digest('hex')+'.json'),checkpoint);
     }
-    checkpoint={version:VERSION,day,nextPage:1,total:null,pages:null,items:[],rawCount:0,complete:false};
+    checkpoint={version:VERSION,day,nextPage:1,pageCounts:[],total:null,pages:null,items:[],rawCount:0,complete:false};
   }
   const started=Date.now(), budget=90000;
   while(!checkpoint.pages || checkpoint.nextPage<=checkpoint.pages) {
@@ -67,12 +72,19 @@ async function fetchItems(shop, fetchJson, cards, root=path.join(__dirname,'..')
     const url=new URL(BASE); for(const [k,v] of Object.entries({product_category_id:21,product_sub_category_id:182,sort:'price_desc',per:100,page}))url.searchParams.set(k,String(v));
     const payload=await fetchJson(url.href,shop.name);
     const observedAt=new Date().toISOString(), items=parse(payload,cards,observedAt);
+    noteCount(items.length);
+    if (page === 1 && payload.meta.current_page === 1 && payload.meta.total_pages === 0 && payload.meta.total_count === 0 && payload.data.length === 0) {
+      const error = Error('形式変更: ホムラ取得0件。正常値保持');
+      error.emptyListing = true;
+      throw error;
+    }
     if(payload.meta.current_page!==page || payload.meta.total_pages<1 || payload.meta.total_pages>100) throw Error('形式変更: ホムラページ構造不一致。原票保持');
     if(checkpoint.total!=null && (checkpoint.total!==payload.meta.total_count || checkpoint.pages!==payload.meta.total_pages)) {
       checkpoint.restartRequired=true;atomicWrite(file,checkpoint);
       throw Error('一時的な一覧更新競合・正常値保持。次回は保存済み途中原票を退避して再開');
     }
     checkpoint.total=payload.meta.total_count;checkpoint.pages=payload.meta.total_pages;
+    checkpoint.pageCounts?.push(items.length);
     checkpoint.items.push(...items);checkpoint.rawCount+=payload.data.length;checkpoint.nextPage=page+1;checkpoint.lastConfirmedAt=observedAt;
     atomicWrite(file,checkpoint);
     if(page<checkpoint.pages)await new Promise(r=>setTimeout(r,1500));

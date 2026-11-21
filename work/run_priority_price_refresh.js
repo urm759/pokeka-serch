@@ -32,6 +32,18 @@ function dueForFormalEvidence(record, requests, now, config) {
   return Object.values(requests).some(row=>Number.isFinite(row.deadlineAt)
     && require('./proactive_refresh').eligibleDeadline(row.deadlineAt,true,now,config));
 }
+function sourceRunRecord(script,args,child,at,role) {
+  let details = null;
+  for (const line of String(child.stdout || "").trim().split(/\r?\n/).reverse()) { try { details = JSON.parse(line); break; } catch { /* Non-JSON progress text. */ } }
+  const processStatus = child.status === 0 && !child.error ? "success" : "failed";
+  return { script, ...(args[0] === 'shopBuyback' && details?.shopBuyback ? {shopBuyback:details.shopBuyback} : {}), startedAt: new Date(at).toISOString(), endedAt: new Date().toISOString(), durationMs: Date.now() - at,
+    processStatus, failureClass:processStatus==='failed'?(role==='source'?'source-acquisition':'required-calculation'):null,
+    status: processStatus === "failed" ? "failed" : details?.status || details?.completionStatus || "process-success",
+    attempted: details?.attemptedCount ?? null, refreshed: details?.refreshedCount ?? null, changed: details?.changedCount ?? null,
+    proactiveAttempted:details?.proactiveAttempted ?? null, proactiveVerified:details?.proactiveVerified ?? null,
+    httpRequests:details?.httpRequests ?? null, deadlineOrderVersion:details?.deadlineOrderVersion || null,
+    stopReason: details?.stopReason || null, error: child.error?.message || null };
+}
 function main() {
   if (process.argv.includes('--report-failures')) {
     const previous = read('data/priority-price-execution.json');
@@ -62,16 +74,7 @@ function main() {
     const child = spawnSync(process.execPath, [path.join(ROOT, script), ...args], { cwd: ROOT,
       env: { ...process.env, ...env }, encoding: "utf8", maxBuffer: 64 * 1024 * 1024, timeout: 600000 });
     process.stdout.write(child.stdout || ""); process.stderr.write(child.stderr || "");
-    let details = null;
-    for (const line of String(child.stdout || "").trim().split(/\r?\n/).reverse()) { try { details = JSON.parse(line); break; } catch { /* Non-JSON progress text. */ } }
-    const processStatus = child.status === 0 && !child.error ? "success" : "failed";
-    runs.push({ script, startedAt: new Date(at).toISOString(), endedAt: new Date().toISOString(), durationMs: Date.now() - at,
-      processStatus, failureClass:processStatus==='failed'?(role==='source'?'source-acquisition':'required-calculation'):null,
-      status: processStatus === "failed" ? "failed" : details?.status || details?.completionStatus || "process-success",
-      attempted: details?.attemptedCount ?? null, refreshed: details?.refreshedCount ?? null, changed: details?.changedCount ?? null,
-      proactiveAttempted:details?.proactiveAttempted ?? null, proactiveVerified:details?.proactiveVerified ?? null,
-      httpRequests:details?.httpRequests ?? null, deadlineOrderVersion:details?.deadlineOrderVersion || null,
-      stopReason: details?.stopReason || null, error: child.error?.message || null });
+    runs.push(sourceRunRecord(script,args,child,at,role));
     save();
     return child.status === 0 && !child.error;
   }
@@ -144,4 +147,4 @@ if (require.main === module) {
   if (result.status === 'skipped') console.log(JSON.stringify(result));
   }
 }
-module.exports = { due,scheduledSlot,marketBeforeBuyback,dueForFormalEvidence };
+module.exports = { sourceRunRecord,due,scheduledSlot,marketBeforeBuyback,dueForFormalEvidence };

@@ -1,4 +1,13 @@
 function shopBatch(source, stdout) {
+  if (source === 'shopBuyback') {
+    const last = String(stdout || '').trimEnd().split(/\r?\n/).at(-1);
+    let receipt;
+    try { receipt = JSON.parse(last).shopBuyback; } catch { /* Interrupted collector. */ }
+    const valid = receipt && ['success','partial','partial-with-failure','no-progress'].includes(receipt.completionStatus)
+      && Number.isSafeInteger(receipt.acquiredCount) && receipt.acquiredCount >= 0
+      && ['heldStores','newFailures','acquiredStores','recheck'].every(key=>Array.isArray(receipt[key]));
+    return {acquiredCount:valid ? receipt.acquiredCount : 0, updatedCount:null,newLinkedCount:null,receipt:valid ? receipt : null};
+  }
   if (!['torecacamp','yuyutei'].includes(source)) return null;
   for (const line of String(stdout).trim().split(/\r?\n/).reverse()) {
     try {
