@@ -1,20 +1,26 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-21T03:08:14.177Z",
+  "generatedAt": "2026-11-21T03:16:11.964Z",
   "sourceLastSuccessAt": "2026-11-21T00:54:33.975Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-11-21T01:16:43.198Z",
-    "lastSuccessAt": "2026-11-21T01:16:43.198Z",
-    "runId": "44848632051",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/44848632051"
+    "lastAttemptAt": "2026-11-21T03:16:11.954Z",
+    "lastSuccessAt": "2026-11-21T03:16:11.954Z",
+    "runId": "44858252469",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/44858252469"
   },
   "issues": [
     {
       "key": "daily:workflow-failure",
       "category": "取得処理の故障",
       "url": "https://github.com/urm759/pokeka-serch/actions/runs/44846784320",
-      "reason": "Daily Fast Updateが1回連続失敗"
+      "reason": "Daily Fast Updateが8回連続失敗"
+    },
+    {
+      "key": "daily:run-stale",
+      "category": "鮮度未達・進捗停滞",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44846784320",
+      "reason": "日次更新の成功が24時間以上なし"
     },
     {
       "key": "safe:yuyutei:manual-action-required:GitHub ActionsからHTTP #。正規アクセス確認待ち",
@@ -55,19 +61,19 @@
     {
       "key": "source:shopBuyback:manual-wait",
       "category": "確認が必要",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44843441191",
-      "reason": "Web買取表: shop buyback refresh skipped; existing data was preserved: 一部取得失敗（正常データ保持）: torecabank: 取得件数が前回の半分未満。急減を隔離し正常データ保持"
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44858252469",
+      "reason": "Web買取表: ブルーロケット: existing data was preserved: 取得件数が前回の半分未満。急減を隔離し正常データ保持"
     },
     {
       "key": "source:shopBuyback:stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44843441191",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44858252469",
       "reason": "Web買取表: 更新期限超過（カード別鮮度 未記録%）"
     },
     {
       "key": "source:snkrRaw:stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44776213725",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44846784320",
       "reason": "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）"
     },
     {
@@ -153,17 +159,24 @@
       "category": "確認が必要",
       "url": "https://github.com/urm759/pokeka-serch/actions/runs/44720240695",
       "reason": "保存原票の同時更新照合が保留（2入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/state-a-price-evidence.json, work/buyback-price-observations.json"
+    },
+    {
+      "key": "source-recovery:merge-review:44846784320",
+      "category": "確認が必要",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44846784320",
+      "reason": "保存原票の同時更新照合が保留（1入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/state-a-price-evidence.json"
     }
   ],
   "reasons": [
-    "Daily Fast Updateが1回連続失敗",
+    "Daily Fast Updateが8回連続失敗",
+    "日次更新の成功が24時間以上なし",
     "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち",
     "状態A価格確認: 2回連続でチェックポイント進捗なし",
     "カードラッシュ: pk-73737: HTTP 403",
     "カードラッシュ: 更新期限超過（カード別鮮度 0%）",
     "遊々亭: HTTP 403",
     "遊々亭: 更新期限超過（カード別鮮度 0.04%）",
-    "Web買取表: shop buyback refresh skipped; existing data was preserved: 一部取得失敗（正常データ保持）: torecabank: 取得件数が前回の半分未満。急減を隔離し正常データ保持",
+    "Web買取表: ブルーロケット: existing data was preserved: 取得件数が前回の半分未満。急減を隔離し正常データ保持",
     "Web買取表: 更新期限超過（カード別鮮度 未記録%）",
     "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）",
     "PC側PSA: PC観測未受信 / 30時間以内の独立タスク観測なし。PC停止・観測起動失敗・未公開を区別して確認",
@@ -179,7 +192,8 @@
     "保存原票の同時更新照合が保留（2入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/state-a-price-evidence.json, work/priority-price-checkpoint.json",
     "保存原票の同時更新照合が保留（1入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/state-a-price-evidence.json",
     "保存原票の同時更新照合が保留（1入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: work/priority-price-checkpoint.json",
-    "保存原票の同時更新照合が保留（2入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/state-a-price-evidence.json, work/buyback-price-observations.json"
+    "保存原票の同時更新照合が保留（2入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/state-a-price-evidence.json, work/buyback-price-observations.json",
+    "保存原票の同時更新照合が保留（1入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/state-a-price-evidence.json"
   ],
   "detailUrl": "./data/update-health.json"
 }
