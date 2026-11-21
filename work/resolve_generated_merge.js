@@ -20,6 +20,8 @@ DERIVED.add('data/proactive-refresh-audit.json');
 // Pure projection of the completion queue and saved linkage evidence. It is
 // rebuilt by finalize_update_status; never resolve a queue/raw-price conflict here.
 DERIVED.add('data/one-item-completion-audit.json');
+// Rebuilt only after the retry-bearing completion queue is reconciled atomically.
+for(const file of ['data/card-catalog-completion.json','data/card-catalog/index.json','data/card-catalog/manifest.json','data/card-catalog/search-index.json'])DERIVED.add(file);
 DERIVED.add('data/priority-search-profile-audit.json');
 DERIVED.add('work/pop-focus-targets.json');
 DERIVED.add('data/gemrate-collector-config.json');

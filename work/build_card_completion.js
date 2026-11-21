@@ -242,12 +242,7 @@ function main() {
     const previousItems = previousItemsFor(previousQueue, id);
     for (const [key, entry] of Object.entries(entries)) {
       const previous = previousItems[key];
-      if (entry.status !== "取得済み" && previous && ["取得失敗", "再試行待ち"].includes(previous.status)) {
-        entry.status = previous.status;
-        entry.lastAttemptAt = previous.lastAttemptAt || entry.lastAttemptAt;
-        entry.retryCount = Number(previous.retryCount || 0);
-        entry.failureReason = previous.failureReason || entry.failureReason;
-      }
+      require('./merge_completion_queue').carryRetryState(entry,previous);
       if(require('./overseas_access_policy').cancelled(ROOT)&&['rawActualSales','psa10ActualSales','psa9Sales','pokedata'].includes(key)){
         entry.planStatus='cancelled';entry.nextRetryAt=null;entry.failureReason='利用者判断で中止';
         entry.lastAttemptAt=null;entry.lastSuccessAt=null;entry.retryCount=0;

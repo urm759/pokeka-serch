@@ -41,3 +41,29 @@ assert.throws(()=>m.availability(av,av,{version:1,runs:[{...av.runs[0],rows:{a:2
 assert.throws(()=>m.availability(av,av,{version:1,runs:[{...av2,generatedAt:null}]}),/timestamp/);
 assert.throws(()=>m.candidates(history,{days:[{...history.days[0],candidates:2}]},{days:[{...history.days[0],candidates:3}]},{leftAudit:{generatedAt:oa.updatedAt},rightAudit:{generatedAt:oa.updatedAt}}),/distinct timestamps/);
 console.log('PASS source evidence union, equal-time contradiction hold, operational history preservation/settings guard, candidate snapshot time proof and compact provenance capture');
+const {mergeCompletionQueue,carryRetryState}=require('./merge_completion_queue');
+const queued=(at,items)=>({version:3,generatedAt:at,itemSchema:['status','lastAttemptAt','lastSuccessAt','retryCount','failureReason','nextRetryAt'],
+  sourceByItem:{domesticPrice:'みんトレ',shopStateA:'国内ショップ'},overseasPolicyExplanation:'中止を維持',evidenceSchema:'fixture',
+  cards:{card:{i:items}},queue:['card']});
+const pending=['取得待ち',null,null,0,null,null];
+const retry=['取得失敗','2026-11-21T00:00:00Z','2026-11-20T00:00:00Z',3,'HTTP failure','2026-11-21T04:00:00Z'];
+const acquired=['取得済み','2026-11-21T01:00:00Z','2026-11-21T01:00:00Z',0,null,null];
+const qb=queued('2026-11-21T00:00:00Z',{domesticPrice:pending,shopStateA:pending});
+const ql=queued('2026-11-21T01:00:00Z',{domesticPrice:retry,shopStateA:pending});
+const qr=queued('2026-11-21T02:00:00Z',{domesticPrice:pending,shopStateA:acquired});
+const qm=mergeCompletionQueue(qb,ql,qr);
+assert.deepEqual(qm.cards.card.i,{domesticPrice:retry,shopStateA:acquired},'independent attempts merge without mixing six-field tuples');
+assert.deepEqual(mergeCompletionQueue(qb,qr,ql),qm,'merge order does not select an older attempt');
+assert.deepEqual(mergeCompletionQueue(qb,ql,ql),ql,'reprocessing does not add attempts or dates');
+assert.throws(()=>mergeCompletionQueue(qb,ql,queued('2026-11-22T00:00:00Z',{domesticPrice:acquired,shopStateA:pending})),/Concurrent completion queue item conflict/,'a newer generatedAt cannot remove a conflicting failure or hold');
+assert.throws(()=>mergeCompletionQueue(qb,ql,{...qr,cards:{}}),/identity\/order invalid|removal/);
+assert.throws(()=>mergeCompletionQueue(qb,ql,{...qr,cards:{card:{i:{shopStateA:acquired}}}}),/item removal/);
+assert.throws(()=>mergeCompletionQueue(qb,ql,{...qr,itemSchema:['status']}),/schema/);
+assert.throws(()=>mergeCompletionQueue(qb,ql,{...qr,manualHold:'review'}),/schema/,'unknown manual state remains held');
+assert.throws(()=>mergeCompletionQueue(qb,ql,{...qr,overseasPolicyExplanation:'resume'}),/policy/);
+const previous=Object.fromEntries(qb.itemSchema.map((key,i)=>[key,retry[i]]));
+assert.deepEqual(carryRetryState({status:'取得待ち',lastAttemptAt:'2026-11-22T00:00:00Z'},previous),previous,'regeneration retains failure, real attempt/success, retry count/reason and next retry exactly');
+assert.equal(carryRetryState({status:'取得済み'},previous).status,'取得済み','actual recovered evidence may clear retry state');
+assert(!require('./resolve_generated_merge').projection('work/card-completion-queue.json'),'retry queue is never a disposable projection');
+for(const file of ['data/card-catalog-completion.json','data/card-catalog/index.json','data/card-catalog/manifest.json','data/card-catalog/search-index.json'])assert(projection(file));
+console.log('PASS completion queue atomic three-way attempts, strict concurrent conflict/hold/schema guard, retry preservation before catalog regeneration');
