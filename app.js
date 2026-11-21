@@ -3554,7 +3554,7 @@ function hasMaterialLimitSignalChange(previous, current) {
     || Math.abs(Number(previous.signals.targetProfit || 0) - Number(current.targetProfit || 0)) >= 500;
 }
 
-async function fetchJsonMaybe(url, { detail = false, affectsCalculation = true } = {}) {
+async function fetchJsonMaybe(url, { detail = false, affectsCalculation = true, catalogChunk = false } = {}) {
   const original = String(url).replace(/^\.\//, "");
   // Callers cannot opt real financial inputs out of cache invalidation.
   const displayOnly = /^data\/(?:overseas-glance\/|psa-pop-glance\/|psa-pop-recovered\/|psa-history\/|raw-condition-reference\/|price-dynamics\/|gemrate-reference-summary\.json$|mintore-listing-summary\.json$|previous-qualified-reference\.json$)/.test(original);
@@ -3562,6 +3562,7 @@ async function fetchJsonMaybe(url, { detail = false, affectsCalculation = true }
   const cacheKey = `${uiDataManifest?.revision || "legacy"}:${file}`;
   if (uiFetchCache.has(cacheKey)) return uiFetchCache.get(cacheKey);
   const request = (async () => {
+  let transportFailed = true;
   try {
     const start = performance.now();
     const expected = uiDataManifest?.hashes?.[file];
@@ -3571,6 +3572,7 @@ async function fetchJsonMaybe(url, { detail = false, affectsCalculation = true }
       return null;
     }
     const text = await res.text();
+    transportFailed = false;
     const networkMs = performance.now() - start;
     const verifyStart = performance.now();
     const raw = new TextEncoder().encode(text);
@@ -3592,7 +3594,7 @@ async function fetchJsonMaybe(url, { detail = false, affectsCalculation = true }
     if (affectsCalculation || !displayOnly) loadedDataRevision++;
     return payload;
   } catch (error) {
-    if (uiDataManifest?.hashes?.[file]) {
+    if (uiDataManifest?.hashes?.[file] && !(catalogChunk && transportFailed)) {
       uiDataInvalid = true;
       uiDataError ||= error;
       failSearch(uiDataError);
@@ -3603,6 +3605,9 @@ async function fetchJsonMaybe(url, { detail = false, affectsCalculation = true }
   }
   })();
   uiFetchCache.set(cacheKey, request);
+  if (catalogChunk) void request.then(payload => {
+    if (payload === null && uiFetchCache.get(cacheKey) === request) uiFetchCache.delete(cacheKey);
+  });
   return request;
 }
 
@@ -3683,7 +3688,7 @@ async function loadCatalogChunk(chunkNumber) {
   const request=(async()=>{
   state.catalogLoadingChunks.add(key);
   try {
-    const payload = await fetchJsonMaybe(`./${String(file).replace(/^\.\//, "")}`);
+    const payload = await fetchJsonMaybe(`./${String(file).replace(/^\.\//, "")}`, { catalogChunk: true });
     if (!Array.isArray(payload)) throw new Error('対象カードの分割データを取得できません：' + file);
     mergeCatalogCards(payload);
     state.catalogLoadedChunks.add(key);
