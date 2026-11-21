@@ -63,6 +63,9 @@ async function main() {
   }catch(error){cycles.checkError=error.message;cycles.checkedAt=new Date().toISOString();}
   fs.writeFileSync(cycleFile,JSON.stringify(cycles));
   const effectiveCadence=require('./effective_price_cadence').build(ROOT);
+  // Receipt verification has just appended real publication evidence. Rebuild
+  // capacity now, rather than leaving the pre-verification acquisition snapshot.
+  require('./coverage_capacity').build(ROOT);
   fs.writeFileSync(path.join(ROOT,'data/refresh-cadence-audit.json'),JSON.stringify(require('./refresh_cadence').audit(priceRuns.workflow_runs||[],{verifiedRuns:effectiveCadence.runs})));
   const evidenceFile=path.join(ROOT,'data/proactive-refresh-audit.json');
   if(fs.existsSync(evidenceFile)) {

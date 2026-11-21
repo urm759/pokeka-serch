@@ -1,5 +1,7 @@
 # 11月21日：保存原票の実補完と公開結果
 
+この後に実取得を伴うPC定期が完了した。[最新の実成果・候補原因・能力集計遅延の台帳](20261121_NATURAL_CYCLE_RESULTS.md)を参照。以下の時点の「未実証」「次回待ち」は履歴として保持する。
+
 [運転停止の台帳](20261121_PUBLISHED_MONITOR_RECOVERY.md)と[SM12aの照合根拠](20261121_GEMRATE_RR_EVIDENCE.md)を継承する。正式条件は `work/priority-search-profiles.json` の `focusProfileIds`。中央値主計算・採用率・費用・正式URL・保存条件・GO・停止/撤廃/海外凍結・通常AI呼出0を変更していない。
 
 ## 公開済みの実補完
