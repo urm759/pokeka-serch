@@ -130,10 +130,24 @@ function dailySummary(root,index,now=new Date().toISOString()){
   const day=at=>new Date(Date.parse(at)+9*3600000).toISOString().slice(0,10),today=day(now),scope=scopes(root);
   const rows=Object.values(index.receipts).filter(r=>day(r.checkedAt)===today),successful=rows.filter(r=>!r.held),ids=new Set(successful.map(r=>r.setCode));
   const referenceFile=path.join(root,'data/gemrate-reference-summary.json');let targetCards=null,confirmedCards=null;
+  const referenceSets=new Set();
   if(fs.existsSync(referenceFile)){
-    const values=Object.values(read(referenceFile).cards||{});targetCards=values.length;confirmedCards=values.filter(r=>{try{const u=new URL(r[4]),s=scope.find(s=>s.set===u.searchParams.get('set_name')&&s.year===Number(u.searchParams.get('year')));return s&&ids.has(s.setCode)&&u.origin==='https://www.gemrate.com'&&u.searchParams.get('grader')==='psa';}catch{return false;}}).length;
+    const values=Object.values(read(referenceFile).cards||{});
+    targetCards=values.length;
+    confirmedCards=values.filter(r=>{try{
+      const u=new URL(r[4]),s=scope.find(s=>s.set===u.searchParams.get('set_name')&&s.year===Number(u.searchParams.get('year')));
+      if(!s||u.origin!=='https://www.gemrate.com'||u.searchParams.get('grader')!=='psa')return false;
+      referenceSets.add(s.setCode);
+      return ids.has(s.setCode);
+    }catch{return false;}}).length;
   }
   const collectorConfig=successful.filter(r=>r.collectorConfig).sort((a,b)=>Date.parse(b.checkedAt)-Date.parse(a.checkedAt))[0]?.collectorConfig||null;
-  return {at:now,day:today,targetSets:scope.length,targetCards,confirmedCards,cardConfirmationRatePct:targetCards?confirmedCards/targetCards*100:null,attemptedSets:new Set(rows.map(r=>r.setCode)).size,confirmedSets:ids.size,confirmationRatePct:scope.length?ids.size/scope.length*100:null,sourceDateUpdatedSets:new Set(successful.filter(r=>r.decision?.newSourceDate).map(r=>r.setCode)).size,sourceDateUpdatedRatePct:ids.size?new Set(successful.filter(r=>r.decision?.newSourceDate).map(r=>r.setCode)).size/ids.size*100:null,csvReceipts:successful.filter(r=>r.csv).length,newPopObservations:null,calculationAdopted:0,collectorConfig,method:'実受領証のみ。確認率と元基準日変更率は別。POP新観測数は既存の重複排除済み取込み結果で判断'};
+  const scopeCounts=known=>{
+    const sets=scope.map(s=>s.setCode).filter(id=>referenceSets.has(id)===known);
+    return {target:sets.length,confirmed:sets.filter(id=>ids.has(id)).length};
+  };
+  return {at:now,day:today,targetSets:scope.length,targetCards,confirmedCards,cardConfirmationRatePct:targetCards?confirmedCards/targetCards*100:null,attemptedSets:new Set(rows.map(r=>r.setCode)).size,confirmedSets:ids.size,confirmationRatePct:scope.length?ids.size/scope.length*100:null,
+    existingSets:targetCards==null?null:scopeCounts(true),collectionOnlySets:targetCards==null?null:scopeCounts(false),
+    sourceDateUpdatedSets:new Set(successful.filter(r=>r.decision?.newSourceDate).map(r=>r.setCode)).size,sourceDateUpdatedRatePct:ids.size?new Set(successful.filter(r=>r.decision?.newSourceDate).map(r=>r.setCode)).size/ids.size*100:null,csvReceipts:successful.filter(r=>r.csv).length,newPopObservations:null,calculationAdopted:0,collectorConfig,method:'実受領証のみ。既存セット確認、追加取得枠、元基準日前進は別。POP新観測数は重複排除済み取込みで判断'};
 }
 module.exports={validate,receive,finalize,dailySummary};
