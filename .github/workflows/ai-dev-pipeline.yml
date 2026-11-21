@@ -1,0 +1,581 @@
+name: AI Dev Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      request:
+        description: '公開可能な作業依頼（秘密・非公開原票は入力しない）'
+        required: true
+        type: string
+      base_ref:
+        description: '実装の基準（初版は main）'
+        default: main
+        type: string
+      ai_mode:
+        description: 'stub はAIなしの検証。real は利用枠を消費'
+        type: choice
+        default: stub
+        options:
+          - stub
+          - real
+      stub_scenario:
+        description: 'stub検証用の終了パターン'
+        type: choice
+        default: pass
+        options:
+          - pass
+          - revise_pass
+          - unresolved
+          - needs_decision
+          - gate_reject
+      allow_data_changes:
+        description: '設計の許可と併せて公開データ変更を認める'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+concurrency:
+  group: ai-dev-pipeline
+  cancel-in-progress: false
+
+env:
+  AI_ARTIFACT_PREFIX: ai-${{ github.run_id }}-${{ github.run_attempt }}
+  AI_EXCHANGE: ${{ github.workspace }}/exchange
+  AI_OUT: ${{ github.workspace }}/out
+  AI_OWNER: ${{ github.repository_owner }}
+  AI_MODE: ${{ inputs.ai_mode }}
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      base_sha: ${{ steps.prepare.outputs.base_sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+      - id: prepare
+        env:
+          AI_REQUEST: ${{ inputs.request }}
+          AI_BASE: ${{ inputs.base_ref }}
+          AI_SCENARIO: ${{ inputs.stub_scenario }}
+          AI_ALLOW_DATA: ${{ inputs.allow_data_changes }}
+          AI_REAL_ENABLED: ${{ vars.AI_PIPELINE_REAL_ENABLED }}
+        run: node work/ai_pipeline.js prepare
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: ${{ env.AI_ARTIFACT_PREFIX }}-prepare
+          path: |
+            ${{ env.AI_OUT }}/run-manifest.json
+            ${{ env.AI_OUT }}/request.md
+          retention-days: 7
+          if-no-files-found: error
+
+  design:
+    needs: [prepare]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    environment: ai-pipeline
+    outputs:
+      needs_decision: ${{ steps.record.outputs.needs_decision }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ needs.prepare.outputs.base_sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+        with:
+          pattern: ${{ env.AI_ARTIFACT_PREFIX }}-*
+          path: ${{ env.AI_EXCHANGE }}
+      - id: prompt
+        if: ${{ inputs.ai_mode == 'real' }}
+        run: node work/ai_pipeline.js prompt design 1 "$GITHUB_WORKSPACE"
+      - if: ${{ inputs.ai_mode == 'real' }}
+        env:
+          CLAUDE_AUTH: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          CLAUDE_API: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [[ -z "$CLAUDE_AUTH" && -z "$CLAUDE_API" ]]; then
+            echo 'Claude credentials are missing from the ai-pipeline environment.'
+            exit 1
+          fi
+          node work/ai_pipeline.js attempt design 1
+      - uses: anthropics/claude-code-action@acfe7992852970efb4fee683d63d628e3e52df67
+        id: claude
+        if: ${{ inputs.ai_mode == 'real' }}
+        with:
+          github_token: ${{ github.token }}
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          show_full_output: false
+          track_progress: false
+          classify_inline_comments: false
+          prompt: ${{ steps.prompt.outputs.prompt }}
+          claude_args: >-
+            --model ${{ vars.AI_CLAUDE_MODEL || 'opus' }}
+            --effort high
+            --max-turns 24
+            --tools Read,Glob,Grep
+            --setting-sources ""
+            --strict-mcp-config
+            --mcp-config '{"mcpServers":{}}'
+            --json-schema '${{ steps.prompt.outputs.schema }}'
+      - if: ${{ inputs.ai_mode == 'stub' }}
+        run: node work/ai_pipeline_stub.js design 1 "$GITHUB_WORKSPACE"
+      - id: record
+        env:
+          REAL_RESULT: ${{ steps.claude.outputs.structured_output }}
+        run: |
+          if [[ "$AI_MODE" == real ]]; then
+            AI_RESULT="$REAL_RESULT" node work/ai_pipeline.js accept design 1
+          else
+            node work/ai_pipeline.js accept design 1
+          fi
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: ${{ always() && !cancelled() }}
+        with:
+          name: ${{ env.AI_ARTIFACT_PREFIX }}-design
+          path: |
+            ${{ env.AI_OUT }}/design.json
+            ${{ env.AI_OUT }}/attempt.json
+          retention-days: 7
+          if-no-files-found: ignore
+
+  implement_1:
+    needs: [prepare, design]
+    if: ${{ needs.design.outputs.needs_decision == 'false' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    environment: ai-pipeline
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          path: policy
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ needs.prepare.outputs.base_sha }}
+          persist-credentials: false
+          path: candidate
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+        with:
+          pattern: ${{ env.AI_ARTIFACT_PREFIX }}-*
+          path: ${{ env.AI_EXCHANGE }}
+      - if: ${{ inputs.ai_mode == 'real' }}
+        id: prompt
+        env:
+          CODEX_AUTH: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if [[ -z "$CODEX_AUTH" ]]; then
+            echo 'Codex credentials are missing from the ai-pipeline environment.'
+            exit 1
+          fi
+          node policy/work/ai_pipeline.js prompt implement 1 "$GITHUB_WORKSPACE/candidate"
+          node policy/work/ai_pipeline.js attempt implementation 1
+      - uses: openai/codex-action@306c6a196a99dcc6582530c396a19d2672d5e9ec
+        if: ${{ inputs.ai_mode == 'real' }}
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          working-directory: candidate
+          prompt-file: ${{ env.AI_OUT }}/prompt.md
+          output-file: ${{ env.AI_OUT }}/model-result.json
+          output-schema-file: ${{ github.workspace }}/policy/ops/ai-pipeline/schemas/implementation.schema.json
+          permission-profile: ':workspace'
+          safety-strategy: drop-sudo
+          model: ${{ vars.AI_CODEX_MODEL }}
+          effort: ${{ vars.AI_CODEX_EFFORT || 'medium' }}
+      - if: ${{ inputs.ai_mode == 'stub' }}
+        run: node policy/work/ai_pipeline_stub.js implementation 1 "$GITHUB_WORKSPACE/candidate"
+      - run: node policy/work/ai_pipeline.js accept implementation 1
+      - run: node policy/work/ai_pipeline.js capture implementation 1 "$GITHUB_WORKSPACE/candidate"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: ${{ always() && !cancelled() }}
+        with:
+          name: ${{ env.AI_ARTIFACT_PREFIX }}-implement-1
+          path: |
+            ${{ env.AI_OUT }}/implementation.json
+            ${{ env.AI_OUT }}/change.diff
+            ${{ env.AI_OUT }}/capture-rejected.json
+            ${{ env.AI_OUT }}/attempt.json
+          retention-days: 7
+          if-no-files-found: ignore
+
+  verify_1:
+    needs: [prepare, implement_1]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    outputs:
+      accepted: ${{ steps.gate.outputs.accepted }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          path: policy
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ needs.prepare.outputs.base_sha }}
+          persist-credentials: false
+          path: candidate
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+        with:
+          pattern: ${{ env.AI_ARTIFACT_PREFIX }}-*
+          path: ${{ env.AI_EXCHANGE }}
+      - id: gate
+        run: node policy/work/ai_pipeline.js verify implementation 1 "$GITHUB_WORKSPACE/candidate"
+      - if: ${{ steps.gate.outputs.accepted == 'true' }}
+        run: |
+          # This runner has no write token or model secrets. Test code has no network.
+          docker run --rm --network none --cap-drop ALL --security-opt no-new-privileges \
+            --user "$(id -u):$(id -g)" -e HOME=/tmp -e AI_ARTIFACT_PREFIX -e AI_EXCHANGE \
+            -v "$GITHUB_WORKSPACE/policy:$GITHUB_WORKSPACE/policy:ro" \
+            -v "$AI_EXCHANGE:$AI_EXCHANGE:ro" \
+            -v "$GITHUB_WORKSPACE/candidate:$GITHUB_WORKSPACE/candidate" \
+            node:24-bookworm node "$GITHUB_WORKSPACE/policy/work/ai_pipeline_tests.js" \
+            "$GITHUB_WORKSPACE/candidate" "${{ steps.gate.outputs.data }}" > "$AI_OUT/tests-raw.json"
+          node policy/work/ai_pipeline.js accept-tests
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: ${{ always() && !cancelled() }}
+        with:
+          name: ${{ env.AI_ARTIFACT_PREFIX }}-verify-1
+          path: |
+            ${{ env.AI_OUT }}/gate.json
+            ${{ env.AI_OUT }}/tests.json
+          retention-days: 7
+          if-no-files-found: ignore
+
+  review_1:
+    needs: [prepare, verify_1]
+    if: ${{ needs.verify_1.outputs.accepted == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    environment: ai-pipeline
+    outputs:
+      verdict: ${{ steps.record.outputs.verdict }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ needs.prepare.outputs.base_sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+        with:
+          pattern: ${{ env.AI_ARTIFACT_PREFIX }}-*
+          path: ${{ env.AI_EXCHANGE }}
+      - id: prompt
+        if: ${{ inputs.ai_mode == 'real' }}
+        run: node work/ai_pipeline.js prompt review 1 "$GITHUB_WORKSPACE"
+      - if: ${{ inputs.ai_mode == 'real' }}
+        env:
+          CLAUDE_AUTH: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          CLAUDE_API: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [[ -z "$CLAUDE_AUTH" && -z "$CLAUDE_API" ]]; then
+            echo 'Claude credentials are missing from the ai-pipeline environment.'
+            exit 1
+          fi
+          node work/ai_pipeline.js attempt review 1
+      - uses: anthropics/claude-code-action@acfe7992852970efb4fee683d63d628e3e52df67
+        id: claude
+        if: ${{ inputs.ai_mode == 'real' }}
+        with:
+          github_token: ${{ github.token }}
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          show_full_output: false
+          track_progress: false
+          classify_inline_comments: false
+          prompt: ${{ steps.prompt.outputs.prompt }}
+          claude_args: >-
+            --model ${{ vars.AI_CLAUDE_MODEL || 'opus' }}
+            --effort high
+            --max-turns 24
+            --tools Read,Glob,Grep
+            --setting-sources ""
+            --strict-mcp-config
+            --mcp-config '{"mcpServers":{}}'
+            --json-schema '${{ steps.prompt.outputs.schema }}'
+      - if: ${{ inputs.ai_mode == 'stub' }}
+        run: node work/ai_pipeline_stub.js review 1 "$GITHUB_WORKSPACE"
+      - id: record
+        env:
+          REAL_RESULT: ${{ steps.claude.outputs.structured_output }}
+        run: |
+          if [[ "$AI_MODE" == real ]]; then
+            AI_RESULT="$REAL_RESULT" node work/ai_pipeline.js accept review 1
+          else
+            node work/ai_pipeline.js accept review 1
+          fi
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: ${{ always() && !cancelled() }}
+        with:
+          name: ${{ env.AI_ARTIFACT_PREFIX }}-review-1
+          path: |
+            ${{ env.AI_OUT }}/review.json
+            ${{ env.AI_OUT }}/attempt.json
+          retention-days: 7
+          if-no-files-found: ignore
+
+  implement_2:
+    needs: [prepare, review_1]
+    if: ${{ needs.review_1.outputs.verdict == 'changes_required' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    environment: ai-pipeline
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          path: policy
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ needs.prepare.outputs.base_sha }}
+          persist-credentials: false
+          path: candidate
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+        with:
+          pattern: ${{ env.AI_ARTIFACT_PREFIX }}-*
+          path: ${{ env.AI_EXCHANGE }}
+      - run: node policy/work/ai_pipeline.js restore implementation 2 "$GITHUB_WORKSPACE/candidate"
+      - if: ${{ inputs.ai_mode == 'real' }}
+        id: prompt
+        env:
+          CODEX_AUTH: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if [[ -z "$CODEX_AUTH" ]]; then
+            echo 'Codex credentials are missing from the ai-pipeline environment.'
+            exit 1
+          fi
+          node policy/work/ai_pipeline.js prompt fix 2 "$GITHUB_WORKSPACE/candidate"
+          node policy/work/ai_pipeline.js attempt implementation 2
+      - uses: openai/codex-action@306c6a196a99dcc6582530c396a19d2672d5e9ec
+        if: ${{ inputs.ai_mode == 'real' }}
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          working-directory: candidate
+          prompt-file: ${{ env.AI_OUT }}/prompt.md
+          output-file: ${{ env.AI_OUT }}/model-result.json
+          output-schema-file: ${{ github.workspace }}/policy/ops/ai-pipeline/schemas/implementation.schema.json
+          permission-profile: ':workspace'
+          safety-strategy: drop-sudo
+          model: ${{ vars.AI_CODEX_MODEL }}
+          effort: ${{ vars.AI_CODEX_EFFORT || 'medium' }}
+      - if: ${{ inputs.ai_mode == 'stub' }}
+        run: node policy/work/ai_pipeline_stub.js implementation 2 "$GITHUB_WORKSPACE/candidate"
+      - run: node policy/work/ai_pipeline.js accept implementation 2
+      - run: node policy/work/ai_pipeline.js capture implementation 2 "$GITHUB_WORKSPACE/candidate"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: ${{ always() && !cancelled() }}
+        with:
+          name: ${{ env.AI_ARTIFACT_PREFIX }}-implement-2
+          path: |
+            ${{ env.AI_OUT }}/implementation.json
+            ${{ env.AI_OUT }}/change.diff
+            ${{ env.AI_OUT }}/capture-rejected.json
+            ${{ env.AI_OUT }}/attempt.json
+          retention-days: 7
+          if-no-files-found: ignore
+
+  verify_2:
+    needs: [prepare, implement_2]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    outputs:
+      accepted: ${{ steps.gate.outputs.accepted }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          path: policy
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ needs.prepare.outputs.base_sha }}
+          persist-credentials: false
+          path: candidate
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+        with:
+          pattern: ${{ env.AI_ARTIFACT_PREFIX }}-*
+          path: ${{ env.AI_EXCHANGE }}
+      - id: gate
+        run: node policy/work/ai_pipeline.js verify implementation 2 "$GITHUB_WORKSPACE/candidate"
+      - if: ${{ steps.gate.outputs.accepted == 'true' }}
+        run: |
+          # This runner has no write token or model secrets. Test code has no network.
+          docker run --rm --network none --cap-drop ALL --security-opt no-new-privileges \
+            --user "$(id -u):$(id -g)" -e HOME=/tmp -e AI_ARTIFACT_PREFIX -e AI_EXCHANGE \
+            -v "$GITHUB_WORKSPACE/policy:$GITHUB_WORKSPACE/policy:ro" \
+            -v "$AI_EXCHANGE:$AI_EXCHANGE:ro" \
+            -v "$GITHUB_WORKSPACE/candidate:$GITHUB_WORKSPACE/candidate" \
+            node:24-bookworm node "$GITHUB_WORKSPACE/policy/work/ai_pipeline_tests.js" \
+            "$GITHUB_WORKSPACE/candidate" "${{ steps.gate.outputs.data }}" > "$AI_OUT/tests-raw.json"
+          node policy/work/ai_pipeline.js accept-tests
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: ${{ always() && !cancelled() }}
+        with:
+          name: ${{ env.AI_ARTIFACT_PREFIX }}-verify-2
+          path: |
+            ${{ env.AI_OUT }}/gate.json
+            ${{ env.AI_OUT }}/tests.json
+          retention-days: 7
+          if-no-files-found: ignore
+
+  review_2:
+    needs: [prepare, verify_2]
+    if: ${{ needs.verify_2.outputs.accepted == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    environment: ai-pipeline
+    outputs:
+      verdict: ${{ steps.record.outputs.verdict }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ needs.prepare.outputs.base_sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+        with:
+          pattern: ${{ env.AI_ARTIFACT_PREFIX }}-*
+          path: ${{ env.AI_EXCHANGE }}
+      - id: prompt
+        if: ${{ inputs.ai_mode == 'real' }}
+        run: node work/ai_pipeline.js prompt review 2 "$GITHUB_WORKSPACE"
+      - if: ${{ inputs.ai_mode == 'real' }}
+        env:
+          CLAUDE_AUTH: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          CLAUDE_API: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [[ -z "$CLAUDE_AUTH" && -z "$CLAUDE_API" ]]; then
+            echo 'Claude credentials are missing from the ai-pipeline environment.'
+            exit 1
+          fi
+          node work/ai_pipeline.js attempt review 2
+      - uses: anthropics/claude-code-action@acfe7992852970efb4fee683d63d628e3e52df67
+        id: claude
+        if: ${{ inputs.ai_mode == 'real' }}
+        with:
+          github_token: ${{ github.token }}
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          show_full_output: false
+          track_progress: false
+          classify_inline_comments: false
+          prompt: ${{ steps.prompt.outputs.prompt }}
+          claude_args: >-
+            --model ${{ vars.AI_CLAUDE_MODEL || 'opus' }}
+            --effort high
+            --max-turns 24
+            --tools Read,Glob,Grep
+            --setting-sources ""
+            --strict-mcp-config
+            --mcp-config '{"mcpServers":{}}'
+            --json-schema '${{ steps.prompt.outputs.schema }}'
+      - if: ${{ inputs.ai_mode == 'stub' }}
+        run: node work/ai_pipeline_stub.js review 2 "$GITHUB_WORKSPACE"
+      - id: record
+        env:
+          REAL_RESULT: ${{ steps.claude.outputs.structured_output }}
+        run: |
+          if [[ "$AI_MODE" == real ]]; then
+            AI_RESULT="$REAL_RESULT" node work/ai_pipeline.js accept review 2
+          else
+            node work/ai_pipeline.js accept review 2
+          fi
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: ${{ always() && !cancelled() }}
+        with:
+          name: ${{ env.AI_ARTIFACT_PREFIX }}-review-2
+          path: |
+            ${{ env.AI_OUT }}/review.json
+            ${{ env.AI_OUT }}/attempt.json
+          retention-days: 7
+          if-no-files-found: ignore
+
+  draft:
+    needs: [prepare, design, implement_1, verify_1, review_1, implement_2, verify_2, review_2]
+    if: ${{ always() && !cancelled() && needs.prepare.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          path: policy
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ needs.prepare.outputs.base_sha }}
+          persist-credentials: false
+          path: candidate
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+        with:
+          pattern: ${{ env.AI_ARTIFACT_PREFIX }}-*
+          path: ${{ env.AI_EXCHANGE }}
+      - id: report
+        run: |
+          node policy/work/ai_pipeline_report.js report "$GITHUB_WORKSPACE/candidate" \
+            "$AI_EXCHANGE/$AI_ARTIFACT_PREFIX-prepare/request.md"
+      - if: ${{ steps.report.outputs.publishable == 'true' && (inputs.ai_mode != 'stub' || github.repository != 'urm759/pokeka-serch') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node policy/work/ai_pipeline_report.js publish "$GITHUB_WORKSPACE/candidate" "$AI_OUT/result.json"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: ${{ always() && !cancelled() }}
+        with:
+          name: ${{ env.AI_ARTIFACT_PREFIX }}-report
+          path: |
+            ${{ env.AI_OUT }}/summary.md
+            ${{ env.AI_OUT }}/result.json
+            ${{ env.AI_OUT }}/draft.json
+          retention-days: 7
+          if-no-files-found: ignore

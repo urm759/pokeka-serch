@@ -1,0 +1,115 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "summary": {
+      "type": "string"
+    },
+    "targets": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "rationale": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "allowed_paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "forbidden_paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "allowed_paths",
+        "forbidden_paths"
+      ]
+    },
+    "data_changes_allowed": {
+      "type": "boolean"
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "verification": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "description",
+          "verification"
+        ]
+      }
+    },
+    "tests_to_run": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "post_publish_checks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "needs_user_decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "required": {
+          "type": "boolean"
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "required",
+        "reason"
+      ]
+    }
+  },
+  "required": [
+    "summary",
+    "targets",
+    "rationale",
+    "scope",
+    "data_changes_allowed",
+    "acceptance_criteria",
+    "tests_to_run",
+    "post_publish_checks",
+    "risks",
+    "needs_user_decision"
+  ]
+}

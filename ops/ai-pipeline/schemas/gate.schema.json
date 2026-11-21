@@ -1,0 +1,35 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "accepted": {
+      "type": "boolean"
+    },
+    "patchSha256": {
+      "type": "string"
+    },
+    "tree": {
+      "type": "string"
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "dataBytes": {
+      "type": "integer"
+    },
+    "reason": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "accepted",
+    "patchSha256",
+    "tree",
+    "files",
+    "dataBytes",
+    "reason"
+  ]
+}

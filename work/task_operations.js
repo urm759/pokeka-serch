@@ -7,9 +7,12 @@ function build(root, pc = {}) {
     const target = path.join(root,'.github/workflows',file);
     if (!fs.existsSync(target)) return [];
     const text = fs.readFileSync(target,'utf8');
-    return [{name:text.match(/^name:\s*(.+)/m)?.[1] || file, platform:'GitHub Actions',role:file==='weekly-full-tests.yml'?'回帰テスト':'取得・探索・監視',
+    const manualDev = file === 'ai-dev-pipeline.yml';
+    return [{name:text.match(/^name:\s*(.+)/m)?.[1] || file, platform:'GitHub Actions',
+      role:manualDev?'手動AI開発（データ更新外）':file==='weekly-full-tests.yml'?'回帰テスト':'取得・探索・監視',
       schedule:[...text.matchAll(/cron:\s*["']([^"']+)/g)].map(m=>`${m[1]} UTC`).join('／') || '自動更新なし・手動のみ',
-      llmCalls:0,codexCalls:0,url:`https://github.com/urm759/pokeka-serch/blob/main/.github/workflows/${file}`}];
+      ...(manualDev ? {status:'手動開発1回につき Claude 最大3回・Codex 最大2回',llmCalls:null,codexCalls:null,aiCallLimit:{claude:3,codex:2}} : {llmCalls:0,codexCalls:0}),
+      url:`https://github.com/urm759/pokeka-serch/blob/main/.github/workflows/${file}`}];
   });
   for (const task of pc.tasks || []) scripts.push({name:task.name,platform:'PCタスク',schedule:task.nextRun ? `最終観測に記載の次回 ${task.nextRun}` : 'ログオン時／次回時刻未観測',
     status:pc.health?.status || task.state,registered:task.registrationValid,lastRun:task.lastRun,observedAt:pc.observedAt,llmCalls:0,codexCalls:0});

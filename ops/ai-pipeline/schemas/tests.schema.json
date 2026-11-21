@@ -1,0 +1,40 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "passed": {
+      "type": "boolean"
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "command": {
+            "type": "string"
+          },
+          "exit_code": {
+            "type": "integer"
+          },
+          "duration_ms": {
+            "type": "integer"
+          },
+          "log": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "command",
+          "exit_code",
+          "duration_ms",
+          "log"
+        ]
+      }
+    }
+  },
+  "required": [
+    "passed",
+    "checks"
+  ]
+}
