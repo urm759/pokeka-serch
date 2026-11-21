@@ -244,6 +244,15 @@ jobs:
           include-hidden-files: true
           retention-days: 7
           if-no-files-found: error
+      - name: Retain isolated buyback count-drop responses
+        if: always() && hashFiles('work/.private/buyback-failed-responses/**/manifest.json') != ''
+        uses: actions/upload-artifact@v7
+        with:
+          name: catchup-count-drop-raw-${{ github.run_id }}-${{ github.run_attempt }}
+          path: work/.private/buyback-failed-responses/
+          include-hidden-files: true
+          retention-days: 7
+          if-no-files-found: error
 
   watch:
     # Record the receipt only after the independent Pages check has finished.

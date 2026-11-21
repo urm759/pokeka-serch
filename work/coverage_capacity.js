@@ -14,6 +14,17 @@ function deadlineCoverage(pairs, windowAt, hours) {
   return {...counts,distinctCards:new Set(recent.map(({end})=>end.id)).size,
     onTimeLowerBoundPct:counts.compared?counts.confirmedOnTime/counts.compared*100:null};
 }
+function startBeforeDeadline(pairs,windowAt,hours){
+  const counts={confirmedBeforeOrAt:0,confirmedLate:0,unknown:0};
+  for(const {start,end} of pairs.filter(({end})=>end.atMs>=windowAt)){
+    const deadline=start.atMs+hours*HOUR,request=Date.parse(end.requestStartedAt||'');
+    if(end.atMs<=deadline||request>=start.atMs&&request<=deadline)counts.confirmedBeforeOrAt++;
+    else if(request>deadline&&request<=end.atMs)counts.confirmedLate++;
+    else counts.unknown++;
+  }
+  const compared=counts.confirmedBeforeOrAt+counts.confirmedLate+counts.unknown;
+  return {...counts,compared,lowerBoundPct:compared?100*counts.confirmedBeforeOrAt/compared:null};
+}
 function coverage(inventory,cards,completion,pop,now=Date.now()) {
   const sourceIds=new Set((inventory.cards||[]).map(r=>r.id)),site=new Map(cards.map(c=>[c.id,c])),listed=[...sourceIds].filter(id=>site.has(id));
   const structural=cards.filter(c=>completion.cards?.[c.id]?.s==='分析可能');
@@ -44,6 +55,16 @@ function capacity(history,targetRows,now=Date.now(),targetHours=6,adoptionHours=
     const intervals=pairs.map(({start,end})=>end.atMs-start.atMs);
     const publish=[...events.values()].filter(e=>e.pushedAt!=null).map(e=>e.pushedAt-e.atMs);
     const verify=[...events.values()].filter(e=>e.verifiedAt!=null).map(e=>e.verifiedAt-e.atMs);
+    const publicationTail=new Map();
+    for(const e of events.values()){
+      if(e.atMs>=now-7*DAY&&e.pushedAt!=null&&e.verifiedAt>=e.pushedAt)publicationTail.set(e.pushedAt,e.verifiedAt-e.pushedAt);
+    }
+    const planned=new Set(),attempted=new Set(),reached=new Set();
+    const campRuns=source==='torecacamp'?(history.runs||[]).filter(r=>r.campFixed&&Date.parse(r.campFixed.startedAt)>=now-DAY
+      &&validTime(r.campFixed.startedAt,now)):[];
+    for(const r of campRuns){
+      for(const [k,set] of Object.entries({planned,attempted,reached}))for(const id of r.campFixed[k]||[])if(target.has(id))set.add(id);
+    }
     const recent=[...events.values()].filter(e=>e.atMs>=now-DAY),week=[...events.values()].filter(e=>e.atMs>=now-7*DAY),need=target.size*24/targetHours;
     const current=[...target.values()].map(r=>validTime(r.at,now)?now-Date.parse(r.at):null);
     const origins=['verified-natural-schedule','verified-non-scheduled-publication','legacy-confirmed-unclassified'];
@@ -57,6 +78,10 @@ function capacity(history,targetRows,now=Date.now(),targetHours=6,adoptionHours=
       latestObservationCards7d:current.filter(age=>age!=null&&age<=7*DAY).length,
       latestObservationNote:'公開用の現行要約に残る個別実確認日時による異なるカード数。同日の反復確認回数ではなく下限。固定群receiptの全取得元能力への外挿、ファイル生成日時による補完はしない。',
       intervals:dist(intervals),confirmationToPublicationStep:dist(publish),confirmationToPublicVerification:dist(verify),
+      publicationStepToVerification7d:dist([...publicationTail.values()]),
+      startBeforeDeadline24h:startBeforeDeadline(pairs,now-DAY,targetHours),
+      plannedReach24h:campRuns.length?{runs:campRuns.length,planned:planned.size,attempted:attempted.size,reached:reached.size,
+        plannedAndReached:[...reached].filter(id=>planned.has(id)).length}:null,
       deadlineCoverage24h:deadlineCoverage(pairs,now-DAY,targetHours),
       deadlineCoverage7d:deadlineCoverage(pairs,now-7*DAY,targetHours),
       adoptionDeadlineCoverage24h:deadlineCoverage(pairs,now-DAY,adoptionHours),
@@ -91,4 +116,4 @@ function build(root=path.join(__dirname,'..'),now=Date.now()){
  report.updateCapacity.sourceStates=Object.fromEntries(['hareruya2','torecacamp','cardrush','yuyutei','toreca','shopBuyback','psaOfficial'].map(id=>[id,{status:status[id]?.status||null,stopped:status[id]?.acquisitionStopped===true,lastAttemptAt:status[id]?.lastAttemptAt||null,lastSuccessAt:status[id]?.lastSuccessAt||null,reason:status[id]?.stopReason||status[id]?.lastError||status[id]?.sourceState||null}]));
  const audit=read('data/acquisition-progress-audit.json');Object.assign(audit,{wholeCatalogue:report.wholeCatalogue,updateCapacity:report.updateCapacity,capacityAt:report.at});fs.writeFileSync(path.join(root,'data/acquisition-progress-audit.json'),JSON.stringify(audit));return report;
 }
-module.exports={coverage,capacity,dist,build,deadlineCoverage};if(require.main===module)console.log(JSON.stringify(build()));
+module.exports={coverage,capacity,dist,build,deadlineCoverage,startBeforeDeadline};if(require.main===module)console.log(JSON.stringify(build()));

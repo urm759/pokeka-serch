@@ -405,6 +405,7 @@ const gemrateRefresh=require('./build_gemrate_public_reference').refreshIfAvaila
 if(gemrateRefresh.status==='held')console.warn('GemRate参考要約は検証保留・正常な国内取得は継続：'+gemrateRefresh.errorCode);
 try{require('./build_gemrate_collector_config').build(ROOT);}catch(error){console.warn('GemRate取得設定の更新を保留・既存設定と国内取得を維持: '+error.message);}
 require('./build_camp_deadline_plan').build(ROOT);
+require('./build_camp_deadline_plan').writeFormalDeadlines(ROOT);
 require('./build_psa10_period_statistics.js').build(ROOT);
 require('./build_overseas_price_glance').build(ROOT);
 require('./build_buyback_posting_coverage.js').build(ROOT);

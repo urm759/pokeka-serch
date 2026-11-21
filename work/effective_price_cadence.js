@@ -22,6 +22,7 @@ function observe(previous={runs:[]},cycles,receipts,now=Date.now(),context={}) {
     runs.push({runId:proof.runId,key,...origin,
       startedAt:proof.startedAt||null,publicationStepCompletedAt:proof.publicationStepCompletedAt||null,
       recordedAt:receipt.recordedAt,observationScope:receipt.observationScope||null,verifiedAt:proof.publicVerifiedAt||new Date(now).toISOString(),url:proof.url,observations,
+      ...(receipt.campFixed?{campFixed:receipt.campFixed}:{}),
       fixedCohortFreshness:receipt.outcomes?.fixedCohortFreshness||null});
   }
   runs.sort((a,b)=>Date.parse(a.recordedAt)-Date.parse(b.recordedAt));

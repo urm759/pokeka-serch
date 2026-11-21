@@ -10,7 +10,7 @@ function decision(previous = {}, now = Date.now(), catchup = false) {
   return { allowed: age == null || age >= minimum, ageMs: age, minimumIntervalMs: minimum,
     reason: age != null && age < minimum ? '共通更新間隔内・重複取得なし' : '定期の空白・既存の期限順キューで補完' };
 }
-function execute(root, callback, { catchup = false, now = Date.now(), afterSave = null } = {}) {
+function execute(root, callback, { catchup = false, now = Date.now(), beforeAcquire = null, afterSave = null } = {}) {
   // Actions use the same repository concurrency group; local runs also need ownership.
   const release = lock(path.join(root, 'work/priority-price-refresh.lock'));
   try {
@@ -18,6 +18,9 @@ function execute(root, callback, { catchup = false, now = Date.now(), afterSave 
     const previous = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : {};
     const plan = decision(previous, now, catchup);
     if (!plan.allowed) return { status: 'skipped', ...plan, llmCalls: 0, codexCalls: 0 };
+    // Capture the baseline while tracked data still describes the checkout.
+    // The running marker is intentionally written only after this hook.
+    if (beforeAcquire) beforeAcquire();
     const before = require('./audit_completion_outcomes').snapshot(root, now);
     const historyFile = path.join(root, 'work/price-catchup-history.json');
     const history = fs.existsSync(historyFile) ? JSON.parse(fs.readFileSync(historyFile, 'utf8')) : { runs: [] };

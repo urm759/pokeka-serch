@@ -103,6 +103,9 @@ function record(key,root=ROOT) {
   const before=optional(`work/scheduled-cycle-baseline-${key}.json`);
   const windowFrom=String(before?.runId)===String(process.env.GITHUB_RUN_ID)?before.snapshot?.at:null;
   const confirmed=require('./confirmation_observations').collect(sourceSummaries,{from:windowFrom,to:new Date().toISOString(),primaryCards:optional('data/pokemon-cards.json')});
+  const campFixed=require('./confirmation_observations').attachCampRequests(confirmed.observations.torecacamp||[],
+    optional('work/torecacamp_progress.json')?.lastRun,confirmed.scope);
+  if(campFixed)confirmed.observations.torecacamp=campFixed.rows;
   for(const [source,rows]of Object.entries(confirmed.observations))cardObservations[source]=require('./confirmation_observations').merge(cardObservations[source]||[],rows);
   const delta=String(before?.runId)===String(process.env.GITHUB_RUN_ID)
     ?require('./audit_completion_outcomes').compare(before.snapshot,require('./audit_completion_outcomes').snapshot(root)):null;
@@ -115,6 +118,7 @@ function record(key,root=ROOT) {
       return {runId:execution.runId,status:failures.length?'partial-with-failure':'process-success',sources:failures.map(r=>({source:r.script,status:'failed'}))};
     })(),
     cardObservations,observationScope:confirmed.scope,
+    ...(campFixed?{campFixed:{planned:campFixed.planned,attempted:campFixed.attempted,reached:campFixed.reached,startedAt:campFixed.startedAt}}:{}),
     publishedObservations:fs.existsSync(path.join(root,OBSERVATION_FILE))
       ?{[OBSERVATION_FILE]:packObservation(fs.readFileSync(path.join(root,OBSERVATION_FILE),'utf8'))}:{},
     hashes:Object.fromEntries(files.map(f=>[f,hash(fs.readFileSync(path.join(root,f),'utf8'))])),
