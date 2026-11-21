@@ -1,5 +1,5 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
-function merge(current,incoming,currentCards,savedCards,points,savedAt,matches=(c,r)=>require('./update_yuyutei_torecacamp').campMatchesCard(c,{title:r.title})) {
+function merge(current,incoming,currentCards,savedCards,points,savedAt,matches=(c,r)=>require('./update_yuyutei_torecacamp').campMatchesCard(c,r)) {
   const cards=new Map(currentCards.map(c=>[c.id,c])),oldCards=new Map(savedCards.map(c=>[c.id,c]));
   const rows=new Map(current.map(r=>[r.cardId,r])),admitted=[],rejected=[];
   assert.equal(rows.size,current.length,'duplicate catalog identity');

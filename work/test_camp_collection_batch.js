@@ -52,4 +52,11 @@ assert.equal(unseen.length,1,'known sitemap URL missed by bulk joins individual 
 for(const hold of [{identityHoldReason:'hold'},{priceQuarantined:true},{cardMismatchSuspected:true},{referenceOnly:true}])assert.equal(post.unreachedTargets([{...catalog[0],...hold}],['a'],{},now).length,0);
 const entries=Array.from({length:40},(_,i)=>({url:'https://torecacamp-pokemon.com/products/normal'+i}));
 assert(post.prioritize(entries,0,[{...catalog[0],sourceSitemap:3}],['a'],35,{},now,0,[],[],{priorityBudgetRemaining:0}).every(r=>!r.priorityRefresh),'individual priority spent its half: normal exploration keeps remaining half');
+const reviewed=require('./confirmed-camp-products.json').entries.find(row=>row.cardId==='pk-23009');
+const mimic={id:reviewed.cardId,name:'ミミッキュV（アセロラ） CSR [S8b 233/184]',identityKey:reviewed.identityKey,language:'ja'};
+const match=require('./update_yuyutei_torecacamp').campMatchesCard;
+assert(match(mimic,{title:reviewed.title,id:reviewed.productId}));
+assert(!match(mimic,{title:reviewed.title,id:'0'}));
+assert(!match(mimic,{title:reviewed.title.replace('233','234'),id:reviewed.productId}));
+assert(!match({...mimic,language:'en'},{title:reviewed.title,id:reviewed.productId}));
 console.log('Camp set batch: identity-safe route, state A/units/stock, raw proof, throttling, partial-page and metrics checks passed');

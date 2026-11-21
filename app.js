@@ -32,7 +32,7 @@ let efficiencyViewCache = new WeakMap();
 const explorationFields = [
   ['psa9GuideMin','psa9GuideMin'],
   ['psa9RoiMin','psa9RoiMin'],
-  ...['listingCurrentMin','listingCurrentMax','listingMeanMin','listingMeanMax','rawListingCurrentMin','rawListingCurrentMax','rawListingMeanMin','rawListingMeanMax','listingMean200Min','listingMean200Max','rawListingMean200Min','rawListingMean200Max'].map(key=>[key,key]),
+  ...['listingCurrentMin','listingCurrentMax','listingMeanMin','listingMeanMax','rawListingCurrentMin','rawListingCurrentMax','rawListingMeanMin','rawListingMeanMax','listingMean200Min','listingMean200Max','rawListingMean200Min','rawListingMean200Max','listingMean75Min','listingMean75Max','rawListingMean75Min','rawListingMean75Max'].map(key=>[key,key]),
   ['purchaseMin','actualPurchaseMin'],['purchaseMax','actualPurchaseMax'],
   ['headroomMin','purchaseHeadroomMin'],['headroomMax','purchaseHeadroomMax'],
   ['buybackMaxMin','buybackHighestMin'],
@@ -1156,7 +1156,7 @@ function renderSourceObservability() {
   if (els.cardrushCoverage) {
     const problemCount = stores.filter((store) => store.unmatched > 0).length;
     const uniqueUnmatched = Number(coverage?.uniqueUnmatchedCards || 0);
-    els.cardrushCoverage.textContent = stores.length ? `${fmt.format(stores.length)}データ元 / 未紐付けがあるデータ元：${fmt.format(problemCount)} / 国内4店のいずれか未紐付け：${fmt.format(uniqueUnmatched)}枚` : "集計中";
+    els.cardrushCoverage.textContent = stores.length ? `${fmt.format(stores.length)}データ元 / 未紐付けがあるデータ元：${fmt.format(problemCount)} / 国内4店のいずれか未紐付け：${fmt.format(uniqueUnmatched)}枚` : "開いて確認";
   }
   if (auditIsOpen(els.linkCoverageDetails)) {
     const acquisition = coverage?.acquisitionAudit;
@@ -1791,9 +1791,10 @@ async function exportFavoritesCsv() {
   rows[0].push('計算買値（検索・一覧共通）','計算買値の採用元','計算採用10率%','計算採用10率の出典','参考ガイド率%','参考ガイド出典','主計算買値モード','採用店舗','買値確認日時','中央値購入割合%（10率とは別）','仮定買値','仮定期待利益','仮定利益率%','仮定年換算%','仮定売値シナリオ','仮定売却先','旧買値比較の表示モード');
   for(const d of [30,7])rows[0].push(`${d}日PSA9実成約平均（計算不採用）`,`${d}日PSA9採用成約件数`,`${d}日PSA9最終成約日時`,`${d}日PSA9対象期間`,`${d}日PSA9出典URL`,`${d}日PSA9平均の区分`);
   for(const label of ['みんトレ掲載PSA10','みんトレ掲載美品'])rows[0].push(label+'現在出品数（下限）',label+'現在件数が上限なし',label+'掲載値確認日時',label+'元更新日時（未提供は空欄）',label+'現在値の不足理由',label+'30日平均出品数（下限）',label+'平均件数が上限なし',label+'平均の実観測日数',label+'観測開始日',label+'最終観測日');
-  for(const label of ['みんトレ掲載PSA10','みんトレ掲載美品'])rows[0].push(label+'200日平均出品数（下限）',label+'200日平均が上限なし',label+'200日平均の実観測日数',label+'200日観測開始日',label+'200日最終観測日');
+  for(const days of [200,75])for(const label of ['みんトレ掲載PSA10','みんトレ掲載美品'])rows[0].push(label+days+'日平均出品数（下限）',label+days+'日平均が上限なし',label+days+'日平均の実観測日数',label+days+'日観測開始日',label+days+'日最終観測日');
   rows[0].push(...verifiedListingFields.map(key=>'出品数条件・'+key),'出品数読込状態');
   rows[0].push('参考PSA10現相場売却・中央値買値','参考PSA10現相場売価','参考PSA10現相場フリマ手取り','参考PSA10現相場売却利益','参考PSA10現相場売却利益率%','参考PSA10現相場売却ROI分母','PSA10現相場確認日時','参考PSA10現相場売却不可理由','主計算採用出口','主計算売価シナリオ','主計算採用PSA10売価','主計算採用PSA10手取り','主計算採用出口PSA10売却利益','主計算採用出口PSA10売却利益率%','主計算期待利益・監査','主計算期待利益率%・監査','主計算ROI分母・監査','主計算年換算効率%・監査','計算採用10率（0〜1）・監査','計算採用10率出典・監査','非10仮定売価・監査','非10フリマ手取り・監査','鑑定費・監査','設定済み諸費用・監査','採用出口交通費・監査');
+  rows[0].push('参考PSA10フリマ販売手数料率%','参考PSA10フリマ販売手数料額');
   favoriteCards().forEach((rawCard,index)=>{
     const card = calc(rawCard), p = purchaseExploration(card), v = searchProfitView(card), c = postingCoverage(card);
     rows[index+1].push(p.price ?? '',p.headroom ?? '',v.purchasePrice ?? '',v.label,v.economics?.expectedProfit ?? '',v.psa10Roi ?? '',c.rate30 ?? '',c.averageShops30 ?? '',c.observedDays,c.retrievalCoverage ?? '',p.cap ?? '',p.warnings.join('／'),p.headroom == null ? p.reason : '');
@@ -3557,7 +3558,7 @@ function hasMaterialLimitSignalChange(previous, current) {
 async function fetchJsonMaybe(url, { detail = false, affectsCalculation = true, catalogChunk = false } = {}) {
   const original = String(url).replace(/^\.\//, "");
   // Callers cannot opt real financial inputs out of cache invalidation.
-  const displayOnly = /^data\/(?:overseas-glance\/|psa-pop-glance\/|psa-pop-recovered\/|psa-history\/|raw-condition-reference\/|price-dynamics\/|gemrate-reference-summary\.json$|mintore-listing-summary\.json$|previous-qualified-reference\.json$)/.test(original);
+  const displayOnly = /^data\/(?:overseas-glance\/|psa-pop-glance\/|psa-pop-recovered\/|psa-history\/|raw-condition-reference\/|price-dynamics\/|gemrate-reference-summary\.json$|mintore-listing-summary\.json$|psa-verified-spec-links\.json$|link-coverage\.json$|previous-qualified-reference\.json$)/.test(original);
   const file = !detail && uiDataManifest?.aliases?.[original] || original;
   const cacheKey = `${uiDataManifest?.revision || "legacy"}:${file}`;
   if (uiFetchCache.has(cacheKey)) return uiFetchCache.get(cacheKey);
@@ -3612,6 +3613,9 @@ async function fetchJsonMaybe(url, { detail = false, affectsCalculation = true, 
 }
 
 async function loadDeferredAudits(element) {
+  if(element===els.linkCoverageDetails&&!state.linkCoverage) {
+    state.linkCoverage=await fetchJsonMaybe('./data/link-coverage.json',{affectsCalculation:false});
+  }
   if(element===els.shopRateSummary&&!state.storeWideRatios) {
     state.storeWideRatios=await fetchJsonMaybe('./data/store-buyback-ratios.json',{detail:true,affectsCalculation:false});
     renderStoreWideRatios();
@@ -4357,7 +4361,9 @@ function profitOutcomeAudit(card,now=Date.now()) {
     if(psaPlanProblem())reasons.push(psaPlanProblem());
     const sale=explorationMetrics.meanSale(card.psa10,buy,state.fee,state.saleFeeRate,state.saleExtraCost);
     if(!Number.isFinite(sale.net))reasons.push('買値・費用設定が無効');
-    const market={buy,gross:card.psa10,net:reasons.length?null:sale.net,at,reason:reasons.join('／'),...explorationMetrics.singleGradeSale(reasons.length?null:sale.net,buy,state.fee,state.saleExtraCost)};
+    const market={buy,gross:card.psa10,net:reasons.length?null:sale.net,
+      feeAmount:reasons.length?null:card.psa10*state.saleFeeRate/100,
+      at,reason:reasons.join('／'),...explorationMetrics.singleGradeSale(reasons.length?null:sale.net,buy,state.fee,state.saleExtraCost)};
     const e=cardEfficiency(card,now),adopted=mainSaleReference(card),view=currentMarketView(card,true);
     const costs=Number.isFinite(e.investment)&&Number.isFinite(e.purchasePrice)?e.investment-e.purchasePrice-state.fee:null;
     const selected={...adopted,buy:e.purchasePrice,...explorationMetrics.singleGradeSale(adopted.net,e.purchasePrice,state.fee,costs)};
@@ -4373,7 +4379,7 @@ function profitOutcomeMarkup(card) {
 }
 function profitOutcomeCsvFields(card) {
   const a=profitOutcomeAudit(card);
-  return [a.market.buy??'',a.market.gross??'',a.market.net??'',a.market.profit??'',a.market.roi??'',a.market.investment??'',a.market.at||'',a.market.reason||'',a.selected.label||'',a.selected.scenario||'',a.selected.gross??'',a.selected.net??'',a.selected.profit??'',a.selected.roi??'',a.expected.profit??'',a.expected.roi??'',a.expected.investment??'',a.expected.annual??'',a.rate??'',a.rateSource||'',a.lowerGrade??'',a.lowerNet??'',a.fee,a.extra,a.travel??''];
+  return [a.market.buy??'',a.market.gross??'',a.market.net??'',a.market.profit??'',a.market.roi??'',a.market.investment??'',a.market.at||'',a.market.reason||'',a.selected.label||'',a.selected.scenario||'',a.selected.gross??'',a.selected.net??'',a.selected.profit??'',a.selected.roi??'',a.expected.profit??'',a.expected.roi??'',a.expected.investment??'',a.expected.annual??'',a.rate??'',a.rateSource||'',a.lowerGrade??'',a.lowerNet??'',a.fee,a.extra,a.travel??'',a.saleFee,a.market.feeAmount??''];
 }
 function marketplaceSaleComparisons(card,now=Date.now()) {
   const source=state.updateStatus?.sources?.toreca;
@@ -4841,6 +4847,12 @@ function buybackSupportHtml(card, detailed = false) {
   const mean75Text='<small class="buyback-75-mean">75日平均 '+(Number.isFinite(w75?.mean)?buybackRatioMarkup(w75.mean)+'・'+w75.days+'/75日・'+w75.stores+'店'+(w75.reference?'・参考':'')+(w75.stale?'・古値／日時不足':'')+(detailed?'・最終観測'+escapeHtml(w75.lastDate||'未取得')+'／集計'+aggregateTime:''):w75?.status==='recalculation-pending'?'日次再集計待ち'+(Number.isFinite(previous75?.mean)?'／前回参考 '+previous75.mean.toFixed(3)+'倍・集計'+aggregateTime:''):'履歴不足・参考値なし')+'</small>';
 
   const historicalSearchText=[7,30].map(d=>{const w=value.meanWindows?.[d];return '<small>'+d+'日平均 '+(Number.isFinite(w?.mean)?buybackRatioMarkup(w.mean)+'・'+w.days+'/'+d+'日・'+w.stores+'店'+(w.reference?'・参考':'')+(w.stale?'・古値／日時不足':''):'比較履歴不足')+'</small>';}).join('');
+  const trendWindow = days => {
+    const row = value.meanWindows?.[days];
+    return row&&!row.stale&&{...row,start:row.firstDate,end:row.lastDate,latest:row.lastAt||row.lastDate};
+  };
+  const ratioTrend = detailed?windowTrendMarkup('店舗買取の相場比',30,75,trendWindow(30),trendWindow(75))
+    +'<small>倍率は国内PSA10相場が下がった場合も上がります。提示額・取引件数・出品は個別に確認してください。</small>':'';
   const c=value.coverage;
   const coverageText=c.target==null?'対象店舗の要約未取得':`比較可能${c.comparable}／対象${c.target}店・相場以上${c.above}／${c.comparable}店`;
   const recent=value.recentReference,ref=recent?.highestQuote;
@@ -5119,7 +5131,7 @@ async function loadPsa10PeriodDetail(id) {
     for (const [cardId, row] of Object.entries(data?.cards || {})) psa10PeriodDetails.set(cardId, row);
   }
   const target = document.querySelector(`[data-psa10-period-detail="${CSS.escape(String(id))}"]`);
-  if (target) target.innerHTML = psa10PeriodDetailHtml(id);
+  if (target) target.innerHTML = psa10PeriodDetailHtml(id)+pairedPriceTrendMarkup(psa10PeriodDetails.get(id)?.trend,id);
 }
 function buybackContinuityHtml(card) {
   const rows = Object.entries(card.buyback?.shops || {}).map(([id, row]) => {
@@ -5399,7 +5411,7 @@ function renderStoreWideRatios() {
   const sameDay=data.asOf===new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo'}).format(new Date());
   const cell=(row,period)=>{const p=row.periods?.[period];if(!Number.isFinite(p?.mean))return '<td>比較材料なし</td>';
     return `<td><strong>${ratioLabel(p.mean)}</strong><small>${fmt.format(p.uniqueCards)}対象・${p.observedDays}／${period}日${p.reference?'・参考':''}${!sameDay?'・再集計待ちの参考':''}<br>${escapeHtml(p.firstDate)}～${escapeHtml(p.lastDate)}</small></td>`;};
-  element.innerHTML=`<h3>カード全体の平均買取倍率</h3><p class="shop-rate-note">基準日 ${escapeHtml(data.asOf)}${sameDay?'':'・当日分は再集計待ち'}／検索条件に依存しない掲載カード全体・減額前</p><div class="shop-rate-table-wrap"><table class="shop-rate-table"><thead><tr><th>買取店</th><th>${sameDay?'当日':'最終集計日'}</th><th>30暦日平均</th><th>200暦日平均</th></tr></thead><tbody>${Object.values(data.merchants||{}).map(row=>`<tr><th>${escapeHtml(row.name)}</th>${[1,30,200].map(p=>cell(row,p)).join('')}</tr>`).join('')}</tbody></table></div><details><summary>集計方法・対象範囲</summary><p>${escapeHtml(data.rule)}</p><p>日付範囲内の実観測日のみ。対象数は期間内の異なる採用カード数です。同じ提示を共有する確認済みグループは1票。短い履歴を200日実績とは扱いません。カード別の店舗間平均・75日平均・同店通常とは別の集計です。</p></details>`;
+  element.innerHTML=`<h3>カード全体の平均買取倍率</h3><p class="shop-rate-note">基準日 ${escapeHtml(data.asOf)}${sameDay?'':'・当日分は再集計待ち'}／検索条件に依存しない掲載カード全体・減額前</p><div class="shop-rate-table-wrap"><table class="shop-rate-table"><thead><tr><th>買取店</th><th>${sameDay?'当日':'最終集計日'}</th><th>30暦日平均</th><th>75暦日平均</th><th>200暦日平均</th></tr></thead><tbody>${Object.values(data.merchants||{}).map(row=>`<tr><th>${escapeHtml(row.name)}</th>${[1,30,75,200].map(p=>cell(row,p)).join('')}</tr>`).join('')}</tbody></table></div><details><summary>集計方法・対象範囲</summary><p>${escapeHtml(data.rule)}</p><p>日付範囲内の実観測日のみ。対象数は期間内の異なる採用カード数です。同じ提示を共有する確認済みグループは1票。短い履歴を200日実績とは扱いません。カード別の店舗間平均・75日平均・同店通常とは別の集計です。</p></details>`;
 }
 
 function renderShopRateSummary(cards) {
@@ -5713,7 +5725,7 @@ function cardSearchExclusions(card, {mode = state.purchaseMode,diagnostic=true,e
     return reasons;
   });
 }
-const verifiedListingFields=['listingCurrentMin','listingCurrentMax','listingMeanMin','listingMeanMax','rawListingCurrentMin','rawListingCurrentMax','rawListingMeanMin','rawListingMeanMax','listingMean200Min','listingMean200Max','rawListingMean200Min','rawListingMean200Max'];
+const verifiedListingFields=['listingCurrentMin','listingCurrentMax','listingMeanMin','listingMeanMax','rawListingCurrentMin','rawListingCurrentMax','rawListingMeanMin','rawListingMeanMax','listingMean200Min','listingMean200Max','rawListingMean200Min','rawListingMean200Max','listingMean75Min','listingMean75Max','rawListingMean75Min','rawListingMean75Max'];
 let verifiedListingRequest=null,verifiedListingRevision=null;
 function verifiedListingViews(card,now=Date.now()) {
   return explorationMetrics.listingCounts.providerViews(state.verifiedListingReferences,card,{catalogHash:uiDataManifest?.hashes?.['data/pokemon-cards.json'],now});
@@ -5724,32 +5736,86 @@ function verifiedListingExclusions(card) {
   if(!explorationMetrics.listingCounts?.providerViews)return ['みんトレ出品数・計算モジュール読込不成立'];
   if(state.verifiedListingStatus!=='ready')return ['みんトレ出品数・'+(state.verifiedListingStatus==='failed'?'読込失敗':'読込待ち')];
   const views=verifiedListingViews(card),model=explorationMetrics.listingCounts;
-  return [...model.reasons(views.psa10,{...state,label:'みんトレ掲載PSA10出品数'}),...model.reasons(views.raw,{listingCurrentMin:state.rawListingCurrentMin,listingCurrentMax:state.rawListingCurrentMax,listingMeanMin:state.rawListingMeanMin,listingMeanMax:state.rawListingMeanMax,listingMean200Min:state.rawListingMean200Min,listingMean200Max:state.rawListingMean200Max,label:'みんトレ掲載美品出品数'})];
+  return [...model.reasons(views.psa10,{...state,label:'みんトレ掲載PSA10出品数'}),...model.reasons(views.raw,{listingCurrentMin:state.rawListingCurrentMin,listingCurrentMax:state.rawListingCurrentMax,listingMeanMin:state.rawListingMeanMin,listingMeanMax:state.rawListingMeanMax,listingMean75Min:state.rawListingMean75Min,listingMean75Max:state.rawListingMean75Max,listingMean200Min:state.rawListingMean200Min,listingMean200Max:state.rawListingMean200Max,label:'みんトレ掲載美品出品数'})];
 }
 function verifiedListingPanel(card,compact=false) {
   const views=verifiedListingViews(card),m=explorationMetrics.listingCounts,status=state.verifiedListingStatus;
   const labels={psa10:'みんトレ掲載PSA10出品数',raw:'みんトレ掲載美品出品数'};
-  const rows=Object.entries(labels).map(([key,label])=>{const v=views[key],c=v.current,mean=v.mean30,long=v.mean200;
-    const unknown=status==='loading'?'読込中':status==='failed'?'読込失敗':v.currentReason||'掲載値未取得';
-    return '<div><span>'+label+'</span><strong>'+(c?m.text(c):unknown)+'</strong>'+(c?.stale?'<small class="price-stale">古い掲載確認</small>':'')+'<small>30日平均 '+m.text(mean)+(mean?'・'+mean.days+'/30観測日'+(mean.reference?'・参考':''):'')+'</small><small>200日平均 '+m.text(long)+(long?'・'+long.days+'/200観測日'+(long.reference?'・参考':''):'')+'</small>'+(!compact?'<small>掲載値確認 '+escapeHtml(c?.at||v.lastObserved?.at||'未取得')+'／元更新日時 '+escapeHtml(c?.sourceUpdatedAt||'取得元未提供')+'</small><small>'+escapeHtml('30日：'+(mean?mean.start+'〜'+mean.end:'履歴未取得')+'／200日：'+(long?long.start+'〜'+long.end:'履歴未取得'))+'</small>':'')+'</div>';}).join('');
+  const rows=Object.entries(labels).map(([key,label])=>{
+    const v=views[key],c=v.current;
+    const unknown=status==='unrequested'?'詳細で確認':status==='loading'?'読込中':status==='failed'?'読込失敗':v.currentReason||'掲載値未取得';
+    const windows=[30,75,200].map(days=>{
+      const mean=v['mean'+days];
+      return '<small>'+days+'日平均 '+m.text(mean)+(mean?'・'+mean.days+'/'+days+'観測日'+(mean.reference?'・参考':'')
+        +(!compact?'／'+escapeHtml(mean.start+'〜'+mean.end)+'／最終確認 '+escapeHtml(formatJstTimestamp(mean.latest)):''):'')+'</small>';
+    }).join('');
+    const comparable = mean => mean&&{...mean,mean:mean.lower};
+    const trend=status==='ready'&&!compact?windowTrendMarkup('出品供給の変化',30,75,comparable(v.mean30),comparable(v.mean75),{maxAgeDays:1}):'';
+    return '<div><span>'+label+'</span><strong>'+(c?m.text(c):unknown)+'</strong>'+(c?.stale?'<small class="price-stale">古い掲載確認</small>':'')
+      +(status==='unrequested'?'':windows)+trend+(!compact?'<small>掲載値確認 '+escapeHtml(c?.at||v.lastObserved?.at||'未取得')+'／元更新日時 '+escapeHtml(c?.sourceUpdatedAt||'取得元未提供')+'</small>':'')+'</div>';
+  }).join('');
   return '<div class="snkr-listing-panel mintore-listings">'+rows+'</div>'+(!compact?'<small><a href="https://toreca-souba.com/cards/'+encodeURIComponent(card.sourceId||card.id)+'" target="_blank" rel="noreferrer">みんトレ掲載ページ</a>。現在の状態別出品欄に対応する掲載件数。美品は傷なし・現在価格の根拠があるものだけ。出品件数とカード枚数・取引件数・POPは別です。上限付き表示は「以上」を保持。元値の更新日時は未提供で、確認日時や成約日時へ置換しません。需要・GOへの追加採用なし。</small>':'');
 }
 function verifiedListingCsvFields(card) {
-  const views=verifiedListingViews(card);return [...['psa10','raw'].flatMap(key=>{const v=views[key];return [v.current?.lower??'',v.current?.exact??'',v.current?.at||'',v.current?.sourceUpdatedAt||'',v.currentReason||'',v.mean30?.lower??'',v.mean30?.exact??'',v.mean30?.days??'',v.mean30?.start||'',v.mean30?.end||''];}),...['psa10','raw'].flatMap(key=>{const m=views[key].mean200;return[m?.lower??'',m?.exact??'',m?.days??'',m?.start||'',m?.end||''];}),...verifiedListingFields.map(key=>state[key]??''),state.verifiedListingStatus];
+  const views=verifiedListingViews(card);return [...['psa10','raw'].flatMap(key=>{const v=views[key];return [v.current?.lower??'',v.current?.exact??'',v.current?.at||'',v.current?.sourceUpdatedAt||'',v.currentReason||'',v.mean30?.lower??'',v.mean30?.exact??'',v.mean30?.days??'',v.mean30?.start||'',v.mean30?.end||''];}),...[200,75].flatMap(days=>['psa10','raw'].flatMap(key=>{const m=views[key]['mean'+days];return[m?.lower??'',m?.exact??'',m?.days??'',m?.start||'',m?.end||''];})),...verifiedListingFields.map(key=>state[key]??''),state.verifiedListingStatus];
+}
+function windowTrendMarkup(label, shortDays, longDays, short, long, options) {
+  const value = explorationMetrics.listingCounts.compareNestedWindows(short,long,options);
+  return '<small><b>'+escapeHtml(label)+' '+shortDays+'日÷'+longDays+'日</b> <span class="buyback-ratio '+value.tone+'">'
+    +(value.ratio===null?'判断材料不足／'+escapeHtml(value.reason):value.ratio.toFixed(3)+'倍・'+value.label+(value.reference?'（部分期間の参考）':''))
+    +'</span>／'+(short?.days??'—')+'・'+(long?.days??'—')+'観測日'
+    +(short?.start&&long?.start?'／'+escapeHtml(short.start+'〜'+short.end+'・'+long.start+'〜'+long.end)+'／最終 '+escapeHtml(formatJstTimestamp(long.latest)):'')+'</small>';
+}
+function pairedPriceTrendMarkup(trend,id) {
+  const card=state.cards.find(row=>row.id===id);
+  if (!trend||!card||card.identityReviewRequired||card.identityKey!==trend.identityKey) return '<small>価格傾向は同一仕様の確認済み原票を蓄積中です。</small>';
+  const windowFor=(field,days)=>{
+    const row=trend.windows?.[field]?.[days];
+    return row&&{mean:row[0],days:row[1],start:row[2],end:row[3],latest:row[4],reference:row[1]<days};
+  };
+  return '<details><summary>国内PSA10・素体の価格傾向</summary>'
+    +['psa10','raw'].map(field=>[[30,75],[7,30],[75,200]].map(([short,long])=>
+      windowTrendMarkup(field==='psa10'?'PSA10集計価格':'みんトレ美品参考価格',short,long,windowFor(field,short),windowFor(field,long))).join('')).join('')
+    +'<small>集計基準 '+escapeHtml(trend.asOf)+'。同一仕様・同日の両価格を確認できた観測日の平均。将来の価格や需要の判定には使いません。</small></details>';
+}
+async function renderPsaVerifiedSpec(details) {
+  const target = details.querySelector('[data-psa-verified-spec]');
+  if (!target || target.dataset.loaded) return;
+  const card = state.cards.find(row => String(row.id) === details.dataset.cardDetail);
+  const payload = await fetchJsonMaybe('./data/psa-verified-spec-links.json',{affectsCalculation:false});
+  if (!target.isConnected) return;
+  if (payload?.version !== 1) {
+    target.textContent = 'PSA個別ページ対応表を取得できません';
+    return;
+  }
+  target.dataset.loaded = '1';
+  const row = payload.cards?.[card?.id];
+  if (!row || card.identityReviewRequired || card.language !== 'ja' || row.identityKey !== card.identityKey) return;
+  let url;
+  try { url = new URL(row.specUrl); } catch { return; }
+  if (url.origin !== 'https://www.psacard.com' || !/^\/(?:ja-JP\/)?spec\/psa\/\d+$/.test(url.pathname)) return;
+  const link = document.createElement('a');
+  link.href = url.href;
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  link.textContent = 'PSA公式の個別ページ（ログインが必要な場合あり）';
+  target.replaceChildren(link);
 }
 async function ensureVerifiedListingReferences(cards,force=false) {
-  if(!force&&!verifiedListingFields.some(key=>state[key]!=null)&&!document.querySelector('[data-verified-listings]'))return;
+  if(!force&&!verifiedListingFields.some(key=>state[key]!=null)&&!document.querySelector('[data-card-detail][open] [data-verified-listings]'))return;
   const revision=uiDataManifest?.revision||'legacy';
   if(verifiedListingRevision!==revision){verifiedListingRevision=revision;verifiedListingRequest=null;state.verifiedListingReferences=null;state.verifiedListingStatus='unrequested';}
-  if(!verifiedListingRequest){state.verifiedListingStatus='loading';verifiedListingRequest=fetchJsonMaybe('./data/mintore-listing-summary.json',{detail:true,affectsCalculation:false}).then(data=>{
-    if(![1,2].includes(data?.version)||data.source!=='MINTORE'||data.scope!=='provider-listed-psa10-and-clean-v1'||data.catalogHash!==uiDataManifest?.hashes?.['data/pokemon-cards.json']||!data.cards||Array.isArray(data.cards))throw Error('みんトレ出品数・カード原票の版不一致');
+  const started = !verifiedListingRequest;
+  if(started){state.verifiedListingStatus='loading';verifiedListingRequest=fetchJsonMaybe('./data/mintore-listing-summary.json',{detail:true,affectsCalculation:false}).then(data=>{
+    if(![1,2,3].includes(data?.version)||data.source!=='MINTORE'||data.scope!=='provider-listed-psa10-and-clean-v1'||data.catalogHash!==uiDataManifest?.hashes?.['data/pokemon-cards.json']||!data.cards||Array.isArray(data.cards))throw Error('みんトレ出品数・カード原票の版不一致');
     if(verifiedListingRevision===revision){state.verifiedListingReferences=data;state.verifiedListingStatus='ready';}
-  }).catch(error=>{if(verifiedListingRevision===revision){state.verifiedListingStatus='failed';if(verifiedListingFields.some(key=>state[key]!=null))failSearch(error);}});
+  }).catch(error=>{if(verifiedListingRevision===revision){state.verifiedListingStatus='failed';if(verifiedListingFields.some(key=>state[key]!=null))failSearch(error);}});}
   await verifiedListingRequest;
   if(verifiedListingRevision!==revision)return;
-  if(verifiedListingFields.some(key=>state[key]!=null)){render();return;}
+  if(verifiedListingFields.some(key=>state[key]!=null)){
+    if(started&&state.verifiedListingStatus==='ready')render();
+    return;
   }
-  await verifiedListingRequest;
   const byId=new Map(cards.map(c=>[c.id,c]));
   for(const el of document.querySelectorAll('[data-verified-listings]')){const card=byId.get(el.dataset.verifiedListings);if(card)window.KeyedCardRenderer.replaceContent(el,verifiedListingPanel(card,el.dataset.listingCompact==='true'));}
 }
@@ -6191,7 +6257,7 @@ async function ensureGemRateReference(cards) {
   if(gemRateReferenceRevision!==revision){gemRateReferenceRevision=revision;gemRateReferencePayload=null;gemRateReferenceRequest=null;gemRateReferenceFailed=false;}
   const ids=uiDataManifest?.referenceDisplayIds||[];
   if(!cards.some(c=>ids.includes(c.id)))return;
-  if(!gemRateReferenceRequest)gemRateReferenceRequest=fetchJsonMaybe('./data/gemrate-reference-summary.json',{detail:true,affectsCalculation:false}).then(data=>{
+  if(!gemRateReferenceRequest)gemRateReferenceRequest=fetchJsonMaybe('./data/gemrate-reference-summary.json',{affectsCalculation:false}).then(data=>{
     if(!data||!((data.version===1&&data.scope==='received-csv-reference-50'&&ids.length===50)||(data.version===2&&data.scope==='reviewed-csv-reference'))||data.source!=='GemRate'||data.grader!=='PSA'
       ||!data.cards||Array.isArray(data.cards)||Object.keys(data.cards).length!==ids.length
       ||Object.keys(data.cards).some(id=>!ids.includes(id)))throw Error('Reference summary incompatible');
@@ -6722,7 +6788,7 @@ function renderContent() {
         </div>
       </details>` : "";
     const snkrListing = card.snkrListing || null;
-    const snkrListingPanel = '<section data-verified-listings="'+escapeHtml(card.id)+'">'+verifiedListingPanel(card)+'</section>'+
+    const snkrListingPanel = '<div data-psa-verified-spec></div><section data-verified-listings="'+escapeHtml(card.id)+'">'+verifiedListingPanel(card)+'</section>'+
       (snkrListing?'<details><summary>旧出品集計・PSA10販売中限定は未確認</summary><small>提供元集計 '+(Number.isFinite(snkrListing.current)?fmt.format(snkrListing.current)+'件':'未取得')+'。今回の出品数表示・範囲検索へ代用しません。既存の分析採用は変更していません。</small></details>':'');
     const dataQuality = card.dataQuality || {};
     const dataQualityPanels = [
@@ -7290,11 +7356,13 @@ function renderContent() {
       if (!details.open) { state.openCardDetails.delete(id); return; }
       state.openCardDetails.add(id);
       if (!details.querySelector('.card-details-body')?.childElementCount) { render(); return; }
+      void renderPsaVerifiedSpec(details);
+      void ensureVerifiedListingReferences(visibleCards);
       await loadPsa10PeriodDetail(id);
       if (await ensurePokedataForCardIds([id])) render();
     });
   });
-  committed.changed.flatMap(el => [...el.querySelectorAll('[data-card-detail][open]')]).forEach(details => { void loadPsa10PeriodDetail(details.dataset.cardDetail); void loadBuybackSupportDetail(details.dataset.cardDetail); });
+  committed.changed.flatMap(el => [...el.querySelectorAll('[data-card-detail][open]')]).forEach(details => { void renderPsaVerifiedSpec(details); void loadPsa10PeriodDetail(details.dataset.cardDetail); void loadBuybackSupportDetail(details.dataset.cardDetail); });
   renderFavorites();
   const timing = document.getElementById("searchPerformance");
   lastSearchTiming = {calculationMs,domMs:performance.now()-renderStarted-calculationMs,cacheHit:calculationCacheHit,
@@ -7509,7 +7577,7 @@ async function init() {
     if (uiDataManifest.version !== 1 || !uiDataManifest.revision || !uiDataManifest.hashes) {
       throw new Error("公開版の照合情報が不正です。異なる版を混在させず停止します。");
     }
-    const initialFiles = ["update-status", "link-coverage", "psa-japan-services", "evaluation-model", "evaluation-governance",
+    const initialFiles = ["update-status", "psa-japan-services", "evaluation-model", "evaluation-governance",
       "pokemon-cards-meta", "card-catalog-completion", "state-a-price-evidence", "operational-limit-history",
       "card-catalog/manifest", "card-catalog/search-index", "card-catalog/analysis",
       "cardrush-stock-summary", "hareruya2-stock-summary", "yuyutei-stock-summary", "torecacamp-stock-summary",
@@ -7532,7 +7600,6 @@ async function init() {
         + [7,30,75,200].map(days => `${days}暦日平均算出 ${fmt.format(coverage.byPeriod?.[days]?.meanCards || 0)}枚／観測条件充足 ${fmt.format(coverage.byPeriod?.[days]?.observationSufficientCards || 0)}枚${days === 200 ? `／完全200日 ${fmt.format(coverage.byPeriod?.[days]?.completeCalendarCards || 0)}枚` : ''}`).join('。')
         + `。国内個別実成約 ${fmt.format(coverage.actualTradeCards)}枚とは別集計。欠測補完なし・すべて参考表示。` : '国内PSA10日次履歴：未取得';
     }
-    state.linkCoverage = await fetchJsonMaybe("./data/link-coverage.json");
     state.psaServices = await fetchJsonMaybe("./data/psa-japan-services.json");
     state.psaServicesReadAttempted = true;
     state.evaluationModel = await fetchJsonMaybe("./data/evaluation-model.json");
@@ -7724,7 +7791,7 @@ document.getElementById('shopRateSummaryPanel')?.addEventListener('toggle',async
   await loadDeferredAudits(els.shopRateSummary);
   renderStoreWideRatios();
 });
-for (const element of [els.limitModelAudit,els.shopRateSummary,els.marketBacktestSummary,els.catalogCompletionDetails,els.dataFreshness,els.guidePanels]) {
+for (const element of [els.limitModelAudit,els.shopRateSummary,els.marketBacktestSummary,els.catalogCompletionDetails,els.linkCoverageDetails,els.dataFreshness,els.guidePanels]) {
   element?.closest("details")?.addEventListener("toggle",async event=>{
     if (!event.target.open || !auditIsOpen(element)) return;
     await loadDeferredAudits(element);
@@ -7735,7 +7802,7 @@ for (const element of [els.limitModelAudit,els.shopRateSummary,els.marketBacktes
       renderLimitModelAudit(state.limitModelAudit);
     } else if (element === els.shopRateSummary) renderShopRateSummary(cards);
     else if (element === els.marketBacktestSummary) renderMarketBacktest();
-    else if (element === els.dataFreshness) renderSourceObservability();
+    else if (element === els.dataFreshness || element === els.linkCoverageDetails) renderSourceObservability();
     else if (element === els.guidePanels) renderGuide();
     else render();
   });

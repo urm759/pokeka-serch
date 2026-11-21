@@ -96,6 +96,7 @@ const vm=require('node:vm'),app=fs.readFileSync('app.js','utf8');
 const context=vm.createContext({Date:class extends Date{static now(){return now;}},Map,WeakMap,JSON,Intl,explorationMetrics:m,
   fmt:new Intl.NumberFormat('ja-JP'),formatJstTimestamp:s=>s,escapeHtml:s=>String(s).replaceAll('<','&lt;')});
 vm.runInContext('const state={buybackObservationSummary:'+JSON.stringify(compact)+',buybackStoreMode:"all",selectedBuybackStores:[]};'
+  +app.slice(app.indexOf('function windowTrendMarkup('),app.indexOf('function pairedPriceTrendMarkup('))
   +app.slice(app.indexOf('const buybackSupportCache ='),app.indexOf('async function loadBuybackSupportDetail'))
   +'globalThis.render=buybackSupportHtml;',context);
 const html=context.render({...card,psa10:10000});

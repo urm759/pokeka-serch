@@ -192,7 +192,9 @@ function build(root = ROOT, now = new Date()) {
         - new Set((history.cards[card.id] || []).filter(r => positive(r[2])).map(r => r[0])).size,
       excludedObservationRows: (history.cards[card.id]?.length || 0) - daily.length,
       variation:{snapshots:variability.snapshots,excludedUnverified:variability.excluded,reasons:variability.reasons},
-      priceGap:{...gapStats,rejected:paired.rejected},tradeDemand:tradeDemand.details.get(card.id) };
+      priceGap:{...gapStats,rejected:paired.rejected},
+      trend:paired.rows.length?{asOf,identityKey:card.identityKey,windows:gap.priceWindows(paired.rows,asOf)}:null,
+      tradeDemand:tradeDemand.details.get(card.id) };
     if (actual.rows.length) actualCards++;
   }
   summary.coverage = { catalog: cards.length, snapshotCards: historyCards, historyCards, summaryCards: Object.keys(summary.cards).length,

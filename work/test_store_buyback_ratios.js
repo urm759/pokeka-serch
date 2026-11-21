@@ -20,7 +20,7 @@ assert.equal(aggregate(shared,source,now,{groups:[{...group,status:'pending'}]})
 assert.equal(aggregate([shared[0],{...shared[1],marketPrice:20000,ratio:.4}],source,now,{groups:[group]}).merchants.a.periods[1].mean,null,'conflicting shared denominators are held, never counted twice');
 const dateBack=n=>new Date(Date.parse('2026-11-17')-n*86400000).toISOString().slice(0,10);
 r=aggregate([0,29,30,74,75,199,200].map(n=>row(String(n),1,dateBack(n))),source,now);
-assert.equal(r.merchants.a.periods[30].observedDays,2);assert.equal(r.merchants.a.periods[200].observedDays,6);
+assert.equal(r.merchants.a.periods[30].observedDays,2);assert.equal(r.merchants.a.periods[75].observedDays,4);assert.equal(r.merchants.a.periods[200].observedDays,6);
 const builder=require('./build_buyback_support'),evidence=require('./psa10_observation_evidence'),card={id:'p',identityKey:'SM9|001095|fixture|RR||ja',language:'ja'},date=dateBack(75),at=date+'T01:00:00Z',quote={price:9000,priceDate:date,observedAt:at,identity:card.identityKey,identityAuditVersion:3,grade:'PSA10',currency:'JPY'},history={cards:{p:[[date,null,10000,null,null,null,null,null,null,null,[at,evidence.identity(card)]]]}},saved={shops:{a:{p:{[date]:quote}}}};
 assert.equal(builder.joined(saved,history,[card],source,now).rows.length,0,'legacy card-level join stays 75 days');
 assert.equal(builder.joined(saved,history,[card],source,now,200).rows.length,1,'store-wide join reaches the 200-day raw window with the same evidence rules');

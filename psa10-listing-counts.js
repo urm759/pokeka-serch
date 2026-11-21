@@ -23,13 +23,13 @@
     const rows=[...byDay.values()].sort((a,b)=>a.date.localeCompare(b.date)),latest=rows.at(-1);
     const windowRows=period=>rows.filter(r=>r.date>=day(new Date(now-(period-1)*DAY).toISOString()));
     const mean=period=>{const r=windowRows(period);return r.length?{lower:r.reduce((n,x)=>n+x.lower,0)/r.length,exact:r.every(x=>x.exact),days:r.length,period,start:r[0].date,end:r.at(-1).date,latest:r.at(-1).at,reference:r.length<period}:null;};
-    return {identityKey,current:latest?{lower:latest.lower,exact:latest.exact,at:latest.at,url:latest.url,stale:now-Date.parse(latest.at)>DAY}:null,mean30:mean(30),mean200:mean(200),observedDays:windowRows(30).map(r=>r.date),observedDays200:rows.map(r=>r.date)};
+    return {identityKey,current:latest?{lower:latest.lower,exact:latest.exact,at:latest.at,url:latest.url,stale:now-Date.parse(latest.at)>DAY}:null,mean30:mean(30),mean75:mean(75),mean200:mean(200),observedDays:windowRows(30).map(r=>r.date),observedDays200:rows.map(r=>r.date)};
   }
   const bound=n=>number(n)?n:null;
   function reasons(view,settings){
     const out=[];
     const name=settings.label||'PSA10出品数';
-    for(const [key,label,lo,hi]of [['current','現在'+name,settings.listingCurrentMin,settings.listingCurrentMax],['mean30','30日平均'+name,settings.listingMeanMin,settings.listingMeanMax],['mean200','200日平均'+name,settings.listingMean200Min,settings.listingMean200Max]]){
+    for(const [key,label,lo,hi]of [['current','現在'+name,settings.listingCurrentMin,settings.listingCurrentMax],['mean30','30日平均'+name,settings.listingMeanMin,settings.listingMeanMax],['mean75','75日平均'+name,settings.listingMean75Min,settings.listingMean75Max],['mean200','200日平均'+name,settings.listingMean200Min,settings.listingMean200Max]]){
       const min=bound(lo),max=bound(hi);if(min==null&&max==null||min!=null&&max!=null&&min>max)continue;
       const v=view?.[key];if(!v||!number(v.lower)){out.push(label+'・未取得');continue;}if(key==='current'&&v.stale){out.push(label+'・期限切れ');continue;}
       if(min!=null&&v.lower<min)out.push(label+(v.exact?'・下限未達':'・下限判定不可（以上表示）'));
@@ -37,10 +37,26 @@
     }return out;
   }
   function text(value){return value&&number(value.lower)?new Intl.NumberFormat('ja-JP',{maximumFractionDigits:2}).format(value.lower)+(value.exact?'件':'件以上'):'未取得';}
+  function compareNestedWindows(short, long, {now=Date.now(), maxAgeDays=2}={}) {
+    const unavailable = reason => ({ ratio:null, label:'判断材料不足', tone:'', reason, reference:true });
+    if(!short||!long||!number(short.mean)||!number(long.mean))return unavailable('観測未取得');
+    if(long.mean===0)return unavailable('長期平均が0');
+    if(short.exact===false||long.exact===false)return unavailable('件数が下限表示');
+    if(short.days===long.days)return unavailable('両期間の観測日が同じ');
+    if(short.days<2||long.days-short.days<2)return unavailable('比較できる観測日が不足');
+    const latest=Date.parse(long.latest);
+    if(!Number.isFinite(latest)||latest>now||now-latest>maxAgeDays*DAY)return unavailable('最終確認が古い・日時不明');
+    if(short.end!==long.end||short.start<long.start)return unavailable('期間・取得範囲が一致しない');
+    const ratio=short.mean/long.mean;
+    return {ratio,label:ratio>1?'上昇方向':ratio<1?'低下方向':'同値',tone:ratio>1?'ratio-high':ratio<1?'ratio-low':'ratio-neutral',
+      reason:null,reference:short.reference||long.reference};
+  }
   function providerViews(payload,card,{catalogHash,now=Date.now()}={}){
-    const empty=()=>({current:null,mean30:null,mean200:null,observedDays:[]});
+    const empty=()=>({current:null,mean30:null,mean75:null,mean200:null,observedDays:[]});
     if(!payload)return {psa10:empty(),raw:empty()};
-    if(![1,2].includes(payload.version)||payload.source!=='MINTORE'||payload.scope!=='provider-listed-psa10-and-clean-v1'||!catalogHash||payload.catalogHash!==catalogHash)throw Error('みんトレ出品数・カード原票の版不一致');
+    if(![1,2,3].includes(payload.version)||payload.source!=='MINTORE'||payload.scope!=='provider-listed-psa10-and-clean-v1'||!catalogHash||payload.catalogHash!==catalogHash)throw Error('みんトレ出品数・カード原票の版不一致');
+    const today=day(new Date(now).toISOString());
+    if(payload.version===3&&(!/^\d{4}-\d{2}-\d{2}$/.test(payload.asOf)||payload.asOf>today))throw Error('みんトレ出品数・集計基準日が不正');
     const rows=payload.cards?.[card.id],out={};
     for(const [key,index]of [['psa10',0],['raw',1]]){
       const r=rows?.[index];if(!r){out[key]=empty();continue;}
@@ -48,14 +64,18 @@
       const first=payload.receipts?.[r.length>3?r[5]:r[1]]?.[0];
       if(!number(r[0])||!Number.isInteger(r[0])||![0,1].includes(r[2])||!Number.isFinite(time)||time>now||payload.version===1&&(!Number.isInteger(days)||days<1||days>30||!number(mean)||!Number.isFinite(Date.parse(first))))throw Error('みんトレ出品数・件数または実確認日時の根拠不足');
       const periodMean=(period,offset)=>{const value=r[offset],n=r[offset+1],start=payload.receipts?.[r[offset+2]]?.[0],exactFlag=r[offset+3];if(n===0&&value===null&&r[offset+2]===null&&exactFlag===0)return null;
-        if(!Number.isInteger(n)||n<1||n>period||!number(value)||![0,1].includes(exactFlag)||!Number.isFinite(Date.parse(start))||Date.parse(start)>time||Date.parse(start)>now||day(start)<day(new Date(now-(period-1)*DAY).toISOString()))throw Error('みんトレ出品数・期間平均の根拠不足');
+        if(!Number.isInteger(n)||n<1||n>period||!number(value)||![0,1].includes(exactFlag)||!Number.isFinite(Date.parse(start))||Date.parse(start)>time)throw Error('みんトレ出品数・期間平均の根拠不足');
+        const firstDay=day(new Date(now-(period-1)*DAY).toISOString());
+        if(day(start)<firstDay)return null;
         return {lower:value,exact:exactFlag===1,days:n,period,start:day(start),end:day(at),latest:at,reference:n<period};};
       if(payload.version===2&&r.length!==11)throw Error('みんトレ出品数・200日要約の版不一致');
+      if(payload.version===3&&r.length!==15)throw Error('みんトレ出品数・75日要約の版不一致');
       out[key]={current:{lower:r[0],exact,at,sourceUpdatedAt:receipt[1],url:'https://toreca-souba.com/cards/'+encodeURIComponent(card.sourceId||card.id),stale:now-time>DAY},
-        mean30:payload.version===2?periodMean(30,3):{lower:mean,exact:meanExact,days,period:30,start:day(first),end:day(at),latest:at,reference:days<30},mean200:payload.version===2?periodMean(200,7):null,observedDays:null,source:'MINTORE',field:key==='psa10'?'snkPsa10Count':'snkListings',sourceUpdateStatus:payload.sourceUpdateStatus};
+        mean30:payload.version>=2?periodMean(30,3):{lower:mean,exact:meanExact,days,period:30,start:day(first),end:day(at),latest:at,reference:days<30},
+        mean75:payload.version===3?periodMean(75,11):null,mean200:payload.version>=2?periodMean(200,7):null,observedDays:null,source:'MINTORE',field:key==='psa10'?'snkPsa10Count':'snkListings',sourceUpdateStatus:payload.sourceUpdateStatus};
       const status=rows?.[2],check=status&&payload.receipts?.[status[0]];
       if(status?.[index+1]&&check&&Date.parse(check[0])>=time){out[key].lastObserved=out[key].current;out[key].current=null;out[key].currentReason=({1:'取得元の項目未提供',2:'現在の該当状態の掲載根拠なし',3:'仕様・対応確認待ち'})[status[index+1]]||'再確認待ち';out[key].checkedAt=check[0];}
     }return out;
   }
-  return {observe,summarize,reasons,text,day,providerViews};
+  return {observe,summarize,reasons,text,day,providerViews,compareNestedWindows};
 });

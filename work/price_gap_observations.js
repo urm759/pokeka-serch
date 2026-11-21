@@ -31,6 +31,14 @@ function summarize(rows,asOf) {
  const change=sufficient?short.mean-medium.mean:null;
  return {short,medium,latest,change,direction:change==null?'判断材料不足':change>5?'拡大':change< -5?'縮小':'横ばい',reference:medium.count<75};
 }
+function priceWindows(rows, asOf) {
+  return Object.fromEntries(['psa10','raw'].map(field => [field, Object.fromEntries([7,30,75,200].map(days => {
+    const usable = rows.filter(row => row.date<=asOf && Date.parse(row.date)>=Date.parse(asOf)-(days-1)*DAY);
+    if (!usable.length) return [days,null];
+    const first=usable[0], last=usable.at(-1);
+    return [days, [usable.reduce((sum,row)=>sum+row[field],0)/usable.length,usable.length,first.date,last.date,last[field==='raw'?'rawAt':'marketAt']]];
+  }))]));
+}
 function readSaved(root) {
  const fs=require('fs'),path=require('path'),manifest=path.join(root,'work/raw-price-observations-manifest.json');
  if(!fs.existsSync(manifest))return {};
@@ -38,4 +46,4 @@ function readSaved(root) {
  const bytes=fs.readFileSync(path.join(root,m.file));if(require('crypto').createHash('sha256').update(bytes).digest('hex')!==m.sha256)throw Error('Raw observation archive checksum mismatch');
  return JSON.parse(require('zlib').gunzipSync(bytes)).cards;
 }
-module.exports={SOURCE,rawProof,pairs,summarize,readSaved};
+module.exports={SOURCE,rawProof,pairs,summarize,priceWindows,readSaved};

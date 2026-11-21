@@ -31,7 +31,9 @@ save('2026-10-01T08:00:00Z',{...original,snkPsa10Count:30,snkListings:9});
 save('2026-11-03T09:00:00Z',{...original,snkPsa10Count:14,snkListings:8}); // latest same JST day
 save('2026-11-04T08:00:00Z',{...original,snkPsa10Count:121,snkListings:144,price:0});
 [payload,views]=read('2026-11-04T09:00:00Z');
-assert.equal(payload.version,2);assert.equal(views.psa10.mean30.days,3);assert.equal(views.psa10.mean30.lower,(10+14+121)/3);
+assert.equal(payload.version,3);assert.equal(views.psa10.mean30.days,3);assert.equal(views.psa10.mean30.lower,(10+14+121)/3);
+assert.equal(views.psa10.mean75.days,4);assert.equal(views.psa10.mean75.lower,(30+10+14+121)/4);
+assert.equal(views.raw.mean75.days,3);assert.equal(views.raw.mean75.lower,(9+4+8)/3);
 assert.equal(views.psa10.mean200.days,5);assert.equal(views.psa10.mean200.lower,(90+30+10+14+121)/5);
 assert.equal(views.psa10.mean200.start,'2026-04-19');assert.equal(views.psa10.mean200.reference,true);
 assert.equal(views.raw.current,null);assert.equal(views.raw.mean200.days,4);assert.equal(views.raw.mean200.lower,(30+9+4+8)/4);
@@ -40,4 +42,15 @@ assert.deepEqual(model.reasons(views.psa10,{listingMean200Min:views.psa10.mean20
 assert(model.reasons(views.psa10,{listingMean200Min:999}).some(r=>r.includes('200日平均')));
 const oldPayload={...payload,version:1,cards:{[card.id]:[[10,0,1,10,1,0,1],null]}};
 assert.equal(model.providerViews(oldPayload,card,{catalogHash:payload.catalogHash,now:Date.parse('2026-11-04T09:00:00Z')}).psa10.mean200,null,'v1 thirty-day aggregate is never relabeled200');
+const v2={...payload,version:2,cards:{[card.id]:payload.cards[card.id].map((r,i)=>i<2?r.slice(0,11):r)}};
+assert.equal(model.providerViews(v2,card,{catalogHash:payload.catalogHash,now:Date.parse('2026-11-04T09:00:00Z')}).psa10.mean75,null);
+assert.equal(model.providerViews(payload,card,{catalogHash:payload.catalogHash,now:Date.parse('2026-11-04T15:00:00Z')}).psa10.mean200,null,'a window awaiting reaggregation at JST midnight is unavailable without crashing');
+const compare=(a,b)=>model.compareNestedWindows(a,b,{now:Date.parse('2026-11-04T09:00:00Z')});
+const recent={mean:12,days:5,start:'2026-11-01',end:'2026-11-04',latest:'2026-11-04T08:00:00Z',reference:true};
+const longer={...recent,mean:15,days:8,start:'2026-10-07'};
+assert.equal(compare(recent,longer).ratio,0.8);
+assert.equal(compare(recent,recent).label,'判断材料不足','equal windows are not evidence of stability');
+assert.equal(compare(recent,{...longer,latest:'2026-10-31T08:00:00Z'}).ratio,null);
+assert.equal(compare(recent,{...longer,exact:false}).ratio,null);
+assert.equal(compare(recent,{...longer,mean:0}).ratio,null);
 console.log('PASS actual-response provenance, Japanese exact identity, visible state gates, supported zero vs missing, 99+, same-day dedup, observed-only mean, no carried-date refresh, and catalog version binding');
