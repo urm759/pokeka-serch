@@ -1,15 +1,21 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-21T16:14:22.941Z",
+  "generatedAt": "2026-11-21T16:21:16.727Z",
   "sourceLastSuccessAt": "2026-11-21T15:47:55.001Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-11-21T16:04:22.558Z",
-    "lastSuccessAt": "2026-11-21T16:04:22.558Z",
-    "runId": "44920942920",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/44920942920"
+    "lastAttemptAt": "2026-11-21T16:21:16.715Z",
+    "lastSuccessAt": "2026-11-21T16:21:16.715Z",
+    "runId": "44923792690",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/44923792690"
   },
   "dailyOutcomes": [
+    {
+      "runId": "44921733656",
+      "attempt": 1,
+      "state": "source-warning",
+      "publicVerifiedAt": "2026-11-21T16:20:35.897Z"
+    },
     {
       "runId": "44846784320",
       "attempt": 1,
@@ -21,19 +27,19 @@
       "attempt": 1,
       "state": "source-warning",
       "publicVerifiedAt": "2026-11-20T16:58:21.273Z"
-    },
-    {
-      "runId": "44653100361",
-      "attempt": 1,
-      "state": "source-warning",
-      "publicVerifiedAt": "2026-11-20T01:50:03.992Z"
     }
   ],
   "dailyOutcomeLabels": {
-    "recovered": "退避原票から回収・Pages確認済み",
-    "source-warning": "一部取得元警告・正常分は公開照合済み"
+    "source-warning": "一部取得元警告・正常分は公開照合済み",
+    "recovered": "退避原票から回収・Pages確認済み"
   },
   "issues": [
+    {
+      "key": "daily:source-failure",
+      "category": "確認が必要",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44921733656",
+      "reason": "Dailyの一部取得元が失敗・正常データは必須検証/保存/公開照合済み"
+    },
     {
       "key": "safe:yuyutei:manual-action-required:GitHub ActionsからHTTP #。正規アクセス確認待ち",
       "category": "アクセス・手動対応待ち",
@@ -73,19 +79,19 @@
     {
       "key": "source:shopBuyback:manual-wait",
       "category": "確認が必要",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44920942920",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44921733656",
       "reason": "Web買取表: shop buyback refresh skipped; existing data was preserved: 一部取得失敗（正常データ保持）: torecabank: 取得件数が前回の半分未満。急減を隔離し正常データ保持; bluerocket: 取得件数が前回の半分未満。急減を隔離し正常データ保持; kaitori-homura-mail: 取得件数が前回の半分未満。急減を隔離し正常データ保持"
     },
     {
       "key": "source:shopBuyback:stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44920942920",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44921733656",
       "reason": "Web買取表: 更新期限超過（カード別鮮度 未記録%）"
     },
     {
       "key": "source:snkrRaw:stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44846784320",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44921733656",
       "reason": "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）"
     },
     {
@@ -180,6 +186,7 @@
     }
   ],
   "reasons": [
+    "Dailyの一部取得元が失敗・正常データは必須検証/保存/公開照合済み",
     "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち",
     "状態A価格確認: 2回連続でチェックポイント進捗なし",
     "カードラッシュ: pk-73737: HTTP 403",
