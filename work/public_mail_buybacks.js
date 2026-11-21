@@ -48,7 +48,11 @@ function fukufuku(html, cards, observedAt, url) {
     }
     unique.set(item.shopItemId,item);items.push(item);
   }
-  if(!items.length)throw Error('福福トレカ個別PSA10価格0件。正常原票を保持');
+  if (!items.length) {
+    const error = Error('福福トレカ個別PSA10価格0件。正常原票を保持');
+    error.emptyListing = true;
+    throw error;
+  }
   // Unknown rows and repeated printings preclude interpreting absence as an end of listing.
   return {pages:1,items,sourceTotal:table.rows.length-1,fullListing:false,
     adapterVersion:VERSION,heldRows:held.length,held,

@@ -184,6 +184,9 @@ async function main() {
   const formalTargets=JSON.parse(fs.readFileSync(path.join(ROOT,'work/search-profile-targets.json'),'utf8'));
   const formalProfiles=JSON.parse(fs.readFileSync(path.join(ROOT,'work/priority-search-profiles.json'),'utf8'));
   const clockAt=Date.now();
+  const buybackSummary = JSON.parse(fs.readFileSync(path.join(ROOT,'data/shop-buyback-summary.json'),'utf8'));
+  const formalDeadlines = JSON.parse(fs.readFileSync(path.join(ROOT,'data/formal-freshness-deadlines.json'),'utf8'));
+  watchIssues.push(...require('./buyback_hold_review').warnings(buybackSummary,formalDeadlines,clockAt));
   watchIssues.push(...formalQueue.sharedClockWarnings(formalQueue.build(formalTargets,formalProfiles.focusProfileIds||[],clockAt).formal,clockAt));
   const issues = [...dailyIssues, ...backfills.issues, ...sourceIssues, ...priceIssues, ...watchIssues].map(issue => ({ ...issue,
     category: require('../update-health-model.js').issueCategory(issue) }));

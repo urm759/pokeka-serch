@@ -4,6 +4,7 @@ const decisionModel = require("../decision-model.js");
 const marketModel = require("../market-analysis.js");
 
 const ROOT = path.join(__dirname, "..");
+const holdReview = require('./buyback_hold_review');
 let responseCapture = null;
 function preserveFailedResponses(shopId, capture, root = ROOT) {
   if(!capture?.responses?.length)return null;
@@ -20,7 +21,11 @@ function preserveFailedResponses(shopId, capture, root = ROOT) {
   return {folder:path.relative(root,folder).replace(/\\/g,'/'),responses:responses.length,omittedResponses:manifest.omittedResponses};
 }
 function validateListingCount(previousCount,fetched){
-  if (!fetched.items?.length) throw new Error("取得0件。正常データは保持");
+  if (!fetched.items?.length) {
+    const error = new Error("取得0件。正常データは保持");
+    error.emptyListing = true;
+    throw error;
+  }
   if (previousCount >= 20 && fetched.items.length < previousCount * 0.5) {
     const error=new Error("取得件数が前回の半分未満。急減を隔離し正常データ保持");
     error.countDrop={previousCount,currentCount:fetched.items.length,pages:fetched.pages};throw error;
@@ -69,7 +74,8 @@ const SHOPS = [
     adapterVersion: require('./homura_public_feed').VERSION,
     name: "買取ホムラ（郵送）",
     url: "https://kaitori-homura.com/products?q%5Bproduct_sub_category_id_eq%5D=182&q%5Bproduct_sub_category_product_category_id_eq%5D=21&sort=price_desc",
-    fetchItems: shop => require('./homura_public_feed').fetchItems(shop,fetchJson,readJson(path.join(ROOT,'data/pokemon-cards.json'),[])),
+    fetchItems: shop => require('./homura_public_feed').fetchItems(shop,fetchJson,readJson(path.join(ROOT,'data/pokemon-cards.json'),[]),ROOT,
+      count=>{ if(responseCapture) (responseCapture.pageCounts ||= []).push(count); }),
   },
   {
     id:'fukufuku-mail',name:'福福トレカ（郵送窓口）',fulfilment:'mail',
@@ -168,9 +174,11 @@ async function fetchText(url, label) {
   for (let attempt = 1; attempt <= 3; attempt += 1) {
     try {
       const response = await fetch(url, { headers: { "user-agent": "PokekaDataCollector/1.0" }, signal: AbortSignal.timeout(15000) });
+      if (responseCapture) responseCapture.httpStatuses.push(response.status);
       if (!response.ok) { const error = new Error(`${label}: HTTP ${response.status}`); error.status = response.status; throw error; }
       const body=await response.text();
       if(responseCapture){
+        responseCapture.pagesReceived++;
         const size=Buffer.byteLength(body);
         if(responseCapture.bytes+size<=16*1024*1024){responseCapture.bytes+=size;responseCapture.responses.push({url:String(url),finalUrl:response.url,status:response.status,confirmedAt:new Date().toISOString(),body});}
         else responseCapture.omitted++;
@@ -190,19 +198,24 @@ async function fetchJson(url, label) {
   try { return JSON.parse(text); } catch { throw new Error(`${label}: JSONの解析に失敗しました`); }
 }
 
-async function fetchTorecaBank(shop) {
-  const fetchPage = (page) => {
+async function fetchHtmlPages(shop, parse, pagePattern) {
+  const items = new Map(), pageCounts = [];
+  let pageCount = 1, lastPageSeen = false;
+  for (let page = 1; page <= pageCount; page++) {
     const url = new URL(shop.url);
     url.searchParams.set("page", String(page));
-    return fetchText(url, `${shop.name} page ${page}`);
-  };
-  const firstPage = await fetchPage(1);
-  const pageNumbers = [...firstPage.matchAll(/[?&]page=(\d+)/g)].map((match) => Number(match[1]));
-  const maxPage = Math.max(1, ...pageNumbers);
-  const pages = [firstPage];
-  for (let page = 2; page <= maxPage; page += 1) pages.push(await fetchPage(page));
-  const parsed = pages.flatMap(parseTorecaBankItems);
-  return { pages: maxPage, items: [...new Map(parsed.map((item) => [item.shopItemId, item])).values()] };
+    const html = await fetchText(url, shop.name + ' page ' + page);
+    const rows = parse(html, shop);
+    pageCounts.push(rows.length);
+    if (responseCapture) responseCapture.pageCounts = pageCounts;
+    for (const row of rows) items.set(row.shopItemId, row);
+    if (page === 1) pageCount = Math.max(1, ...Array.from(html.matchAll(pagePattern), m => Number(m[1])));
+    if (page === pageCount) lastPageSeen = !Array.from(html.matchAll(/[?&](?:amp;)?page=(\d+)/g), m=>Number(m[1])).some(n=>n>page);
+  }
+  return {pages:pageCount, pageCounts, lastPageSeen, items:[...items.values()]};
+}
+function fetchTorecaBank(shop) {
+  return fetchHtmlPages(shop,parseTorecaBankItems,/[?&]page=(\d+)/g);
 }
 
 async function fetchTorecaLounge(shop) {
@@ -242,25 +255,15 @@ function parseBlueRocketItems(html, shop) {
   return items;
 }
 
-async function fetchBlueRocket(shop) {
-  const fetchPage = (page) => {
-    const url = new URL(shop.url);
-    url.searchParams.set("page", String(page));
-    return fetchText(url, `${shop.name} page ${page}`);
-  };
-  const firstPage = await fetchPage(1);
-  const pageNumbers = [...firstPage.matchAll(/[?&](?:amp;)?page=(\d+)/g)].map((match) => Number(match[1]));
-  const maxPage = Math.max(1, ...pageNumbers);
-  const pages = [firstPage];
-  for (let page = 2; page <= maxPage; page += 1) pages.push(await fetchPage(page));
-  const parsed = pages.flatMap((html) => parseBlueRocketItems(html, shop));
-  return { pages: maxPage, items: [...new Map(parsed.map((item) => [item.shopItemId, item])).values()] };
+function fetchBlueRocket(shop) {
+  return fetchHtmlPages(shop,parseBlueRocketItems,/[?&](?:amp;)?page=(\d+)/g);
 }
 
 async function fetchShinsoku(shop) {
   const items = [];
   let page = 0;
   let hasMore = true;
+  const pageCounts = [];
   while (hasMore && page < 200) {
     const params = new URLSearchParams({
       postal_only: "true", sort: "price_desc", type: "PSA", brand: "ポケモン",
@@ -268,6 +271,7 @@ async function fetchShinsoku(shop) {
     });
     const response = await fetchJson(`https://shinsoku-tcg.com/api/items?${params}`, `${shop.name} page ${page}`);
     const data = response?.data || response || {};
+    const before = items.length;
     for (const raw of data.items || []) {
       const isPsa10 = (raw.tags || []).some((tag) => String(tag.slug || tag.label).toLowerCase().replace(/\s/g, "") === "psa10");
       if (raw.brand !== "ポケモン" || raw.type !== "PSA" || !isPsa10) continue;
@@ -281,16 +285,18 @@ async function fetchShinsoku(shop) {
         active: raw.is_postal_buy_target !== false && price > 0,
       });
     }
+    pageCounts.push(items.length - before);
     hasMore = Boolean(data.has_more);
     page += 1;
   }
-  return { pages: page, items: [...new Map(items.map((item) => [item.shopItemId, item])).values()] };
+  return { pages: page, pageCounts, lastPageSeen:!hasMore, items: [...new Map(items.map((item) => [item.shopItemId, item])).values()] };
 }
 
 async function fetchTorecaClub(shop) {
   // The page HTML includes only its first 20 cards. The public API is paginated,
   // so follow its cursor to avoid undercounting this shop's active buyback list.
   const items = [];
+  const pageCounts = [];
   let cursor = "";
   let pages = 0;
   do {
@@ -298,6 +304,7 @@ async function fetchTorecaClub(shop) {
     if (cursor) params.set("cursor", cursor);
     const response = await fetchJson(`https://torecaclub.com/api/cards/search?${params}`, `${shop.name} page ${pages + 1}`);
     const data = response?.data || {};
+    const before = items.length;
     for (const raw of data.cards || []) {
       const cardId = String(raw.card_id || "");
       const cardCode = String(raw.card_code || "");
@@ -322,10 +329,11 @@ async function fetchTorecaClub(shop) {
         active: price > 0,
       });
     }
+    pageCounts.push(items.length - before);
     pages += 1;
     cursor = data.pagination?.hasMore ? String(data.pagination.nextCursor || "") : "";
   } while (cursor && pages < 500);
-  return { pages, items: [...new Map(items.map((item) => [item.shopItemId, item])).values()] };
+  return { pages, pageCounts, lastPageSeen:!cursor, items: [...new Map(items.map((item) => [item.shopItemId, item])).values()] };
 }
 
 function parseTorecaBirthItems(html, shop) {
@@ -544,6 +552,7 @@ async function main({ rebuildSaved = false } = {}) {
   const previousCatalog = readJson(catalogPath, { shops: {} }).shops || {};
   const previousUnmatched = readJson(unmatchedPath, { shops: {} }).shops || {};
   const failures = [];
+  const attempts = new Map(), recheck = [];
   if (!history.observedByShop || typeof history.observedByShop !== "object") history.observedByShop = {};
   // Older history predates per-shop success tracking. Seed once from the known daily runs,
   // then future refreshes maintain exact successful observation dates per shop.
@@ -582,13 +591,13 @@ async function main({ rebuildSaved = false } = {}) {
     }
     const permission = readJson(path.join(__dirname, 'buyback-source-permissions.json'), {}).sources?.[shop.id];
     if (['pending','retired'].includes(permission?.status)) {
-      failures.push({ source: shop.id, error: permission.reason, permissionWait: true });
+      failures.push({ source: shop.id, error: permission.reason, permissionWait: true, permissionStatus:permission.status });
       continue;
     }
     const review=previousSummary.shops?.[shop.id];
     const legacyHomura=shop.adapterVersion?.startsWith('homura-public-') && (shop.adapterVersion!==review?.reviewAdapterVersion
       || /公開一覧の欠落・重複/.test(review?.error||'') && readJson(path.join(__dirname,'homura-public-checkpoint.json'),{}).nextPage>readJson(path.join(__dirname,'homura-public-checkpoint.json'),{}).pages);
-    if(review?.reviewStatus && !(review.reviewStatus==='format-review' && legacyHomura)) {
+    if (!holdReview.canAttempt(review, Date.now(), legacyHomura)) {
       failures.push({source:shop.id,error:review.error,reviewWait:true});
       continue;
     }
@@ -596,10 +605,23 @@ async function main({ rebuildSaved = false } = {}) {
       console.log(JSON.stringify({shopId:shop.id,status:'adapter-recheck-not-due',lastSuccess:review?.lastSuccess||null,attempted:0,reason:'既存の期限前更新と2時間再試行間隔。日付だけで終日skipしない'}));
       continue;
     }
+    const priorDrop = review?.reviewStatus === 'count-drop-review';
+    const at = new Date().toISOString();
+    let fetched;
+    if (priorDrop) {
+      // Persist the attempted window before I/O so a killed worker cannot immediately retry it.
+      previousSummary.shops[shop.id] = {...review, holdStartedAt:review.holdStartedAt || review.lastAttempt,
+        lastAttempt:at, refreshed:false};
+      require('./acquisition_retry').atomicWrite(SUMMARY_PATH,previousSummary,0);
+    }
     try {
-      responseCapture={responses:[],bytes:0,omitted:0};
-      const fetched = await shop.fetchItems(shop);
-      const previousCount = previousSummary.shops?.[shop.id]?.fetched;
+      responseCapture={responses:[],bytes:0,omitted:0,httpStatuses:[],pagesReceived:0};
+      fetched = await shop.fetchItems(shop);
+      if (priorDrop && fetched.recoveredSavedPages) {
+        failures.push({source:shop.id,error:review.error,reviewWait:true});
+        continue;
+      }
+      const previousCount = priorDrop ? (review.countDropReview?.lastGoodCount ?? review.fetched) : review?.fetched;
       validateListingCount(previousCount,fetched);
       const matched = [];
       const unmatched = [];
@@ -636,26 +658,41 @@ async function main({ rebuildSaved = false } = {}) {
         }
         else unmatched.push(item);
       }
+      const outcome = {at,success:true,status:null,count:fetched.items.length,pageEvidence:pageEvidence(fetched,responseCapture)};
+      attempts.set(shop.id, outcome);
+      if (priorDrop) recheck.push({source:shop.id,at,result:'released',count:outcome.count});
       results.push({ shop, ...fetched, matched, unmatched });
       console.log(`${shop.name}: pages=${fetched.pages}, items=${fetched.items.length}, matched=${matched.length}, activeMatched=${matched.filter((item) => item.active).length}, unmatched=${unmatched.length}`);
     } catch (error) {
-      let rawEvidence=null;
-      if(error.countDrop)try{rawEvidence=preserveFailedResponses(shop.id,responseCapture);}catch(saveError){rawEvidence={error:String(saveError.message||saveError)};}
-      failures.push({ source: shop.id, attemptedAt: new Date().toISOString(), error: String(error.message || error),countDrop:error.countDrop||null,
-        ...(rawEvidence?{rawEvidence}:{}),
-        accessHold:[401,403].includes(error.status) || /HTTP\s+(401|403)/.test(String(error.message)) });
+      const empty = error.emptyListing === true;
+      const access = [401,403].includes(error.status) || /HTTP\s+(401|403)/.test(error.message);
+      const drop = error.countDrop || (empty && priorDrop);
+      const format = /形式変更/.test(error.message) && !drop;
+      const status = access ? 'access-review' : format ? 'format-review' : drop || priorDrop ? 'count-drop-review' : null;
+      const count = empty ? 0 : fetched?.items?.length ?? null;
+      const evidence = pageEvidence(fetched,responseCapture);
+      if (empty && evidence.pages > 0 && !evidence.pageCounts) evidence.pageCounts = Array(evidence.pages).fill(0);
+      if (drop || empty) preserveFailedResponses(shop.id,responseCapture);
+      attempts.set(shop.id,{at,status,count,pageEvidence:evidence});
+      failures.push({source:shop.id,attemptedAt:at,error:String(error.message || error),knownDrop:Boolean(priorDrop && drop && !access && !format)});
+      if (priorDrop) recheck.push({source:shop.id,at,result:access || format ? status : drop ? 'still-low' : 'failed',count});
       console.warn(`${shop.name}: existing data was preserved: ${error.message || error}`);
     } finally {
       responseCapture=null;
     }
   }
-  if (!results.length && !failures.length) return {status:'正常取得済み・日次再取得不要',llmCalls:0,codexCalls:0};
+  const outcome = holdReview.receipt(results,failures,recheck);
   if (!results.length) {
-    for (const failure of failures) previousSummary.shops[failure.source] = { ...previousSummary.shops[failure.source], lastAttempt: failure.attemptedAt || previousSummary.shops[failure.source]?.lastAttempt || null, error: failure.error, refreshed: false,
-      reviewStatus:failure.accessHold?'access-review':failure.countDrop?'count-drop-review':/形式変更/.test(failure.error||'')?'format-review':previousSummary.shops[failure.source]?.reviewStatus || null,
-      reviewAdapterVersion:SHOPS.find(s=>s.id===failure.source)?.adapterVersion || null };
-    fs.writeFileSync(SUMMARY_PATH, JSON.stringify(previousSummary), "utf8");
-    throw new Error("全店舗の取得に失敗しました。正常データを保持・失敗時刻を記録");
+    for (const failure of failures) {
+      const previous = previousSummary.shops[failure.source] || {};
+      previousSummary.shops[failure.source] = {...previous, refreshed:false,error:failure.error,
+        ...(failure.permissionWait ? {acquisitionPermission:failure.permissionStatus} : {}),
+        ...holdReview.transition(previous,attempts.get(failure.source)),
+        reviewAdapterVersion:SHOPS.find(s=>s.id===failure.source)?.adapterVersion || null};
+    }
+    if (failures.length) fs.writeFileSync(SUMMARY_PATH, JSON.stringify(previousSummary), "utf8");
+    if (!failures.length) outcome.status = '正常取得済み・日次再取得不要';
+    return outcome;
   }
 
   const today = jstDate();
@@ -795,7 +832,7 @@ async function main({ rebuildSaved = false } = {}) {
   const shopMeta = {};
   for (const shop of SHOPS) {
     const result = results.find((entry) => entry.shop.id === shop.id);
-    const confirmedAt=new Date().toISOString();
+    const confirmedAt = result?.recoveredSavedPages ? result.confirmedAt : new Date().toISOString();
     const previous = previousSummary.shops?.[shop.id] || {};
     if (result?.savedReplay) {
       shopMeta[shop.id] = {...previous,matched:result.matched.length,
@@ -825,8 +862,11 @@ async function main({ rebuildSaved = false } = {}) {
       conditions:shop.conditions || previous.conditions || null,
       acquisitionPermission: readJson(path.join(__dirname, 'buyback-source-permissions.json'), {}).sources?.[shop.id]?.status || null,
       permissionCheckedAt: readJson(path.join(__dirname, 'buyback-source-permissions.json'), {}).sources?.[shop.id]?.checkedAt || null,
-      lastAttempt: result || failures.some((f) => f.source === shop.id && !f.permissionWait && !f.reviewWait) ? confirmedAt : previous.lastAttempt || null,
-      reviewStatus:result?null:failures.find(f=>f.source===shop.id)?.accessHold?'access-review':failures.find(f=>f.source===shop.id)?.countDrop?'count-drop-review':/形式変更/.test(failures.find(f=>f.source===shop.id)?.error||'')?'format-review':previous.reviewStatus || null,
+      lastAttempt:previous.lastAttempt || null,
+      reviewStatus:previous.reviewStatus || null, holdStartedAt:previous.holdStartedAt || null,
+      ...(previous.lastGoodPages ? {lastGoodPages:previous.lastGoodPages} : {}),
+      ...(previous.countDropReview ? {countDropReview:previous.countDropReview} : {}),
+      ...holdReview.transition(previous,attempts.get(shop.id)),
       adapterVersion:result?.adapterVersion || previous.adapterVersion || null,
       coverageComplete:result?result.fullListing===true:previous.coverageComplete ?? null,
       duplicateSourceIds:result?.duplicateSourceIds ?? previous.duplicateSourceIds ?? null,
@@ -874,10 +914,25 @@ async function main({ rebuildSaved = false } = {}) {
   fs.writeFileSync(imageMatchesPath, JSON.stringify(imageMatches), "utf8");
   fs.writeFileSync(quarantinePath, JSON.stringify({ updatedAt: today, pairs: quarantine }), "utf8");
   fs.writeFileSync(SUMMARY_PATH, JSON.stringify({ updatedAt: today, dates: history.dates, shops: shopMeta, cards: summaryCards }), "utf8");
-  if (failures.length) throw new Error(`一部取得失敗（正常データ保持）: ${failures.map((f) => `${f.source}: ${f.error}`).join("; ")}`);
+  return outcome;
 }
 
-if (require.main === module) main({rebuildSaved:process.argv.includes('--rebuild-saved')}).catch((error) => {
+function pageEvidence(fetched,capture) {
+  const pages = fetched?.pages ?? capture.pagesReceived;
+  const pageCounts = fetched?.pageCounts ?? capture.pageCounts ?? (pages === 1 && fetched ? [fetched.items.length] : null);
+  return {pages,pageCounts,lastPageSeen:fetched?.lastPageSeen ?? (pages === 1 && fetched ? true : null),
+    httpStatuses:capture.httpStatuses};
+}
+
+if (require.main === module) main({rebuildSaved:process.argv.includes('--rebuild-saved')}).then(shopBuyback=>{
+  if (shopBuyback.newFailures.length) {
+    console.error(shopBuyback.newFailures.map(f=>f.source+' '+f.reason).join('; '));
+    process.exitCode = 1;
+  }
+  console.log(JSON.stringify({shopBuyback}));
+}).catch((error) => {
+  console.log(JSON.stringify({shopBuyback:{completionStatus:'partial-with-failure',acquiredCount:0,
+    acquiredStores:[],heldStores:[],newFailures:[{source:'shopBuyback',reason:String(error.message)}],recheck:[]}}));
   if (fs.existsSync(SUMMARY_PATH)) {
     console.warn(`shop buyback refresh skipped; existing data was preserved: ${error.message || error}`);
     process.exitCode = 1;
