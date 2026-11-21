@@ -59,4 +59,17 @@ assert(match(mimic,{title:reviewed.title,id:reviewed.productId}));
 assert(!match(mimic,{title:reviewed.title,id:'0'}));
 assert(!match(mimic,{title:reviewed.title.replace('233','234'),id:reviewed.productId}));
 assert(!match({...mimic,language:'en'},{title:reviewed.title,id:reviewed.productId}));
+const staleAt=Date.parse(catalog[0].observedAt),definitions={a:{formalCandidate:true,url:catalog[0].detailUrl,
+  observedAt:staleAt,refreshAt:staleAt+24*3600000,deadlineAt:staleAt+48*3600000}};
+const assigned=bulk.assignedFormalProducts(exact,definitions,new Map([['a',catalog[0]]]));
+assert.deepEqual([...assigned],[['a',catalog[0].detailUrl]],'only the matching known product enters the assigned formal set');
+const misses=bulk.carryFormalMisses({},assigned,new Map(),definitions,new Date(now).toISOString());
+assert.deepEqual(misses,{a:{url:catalog[0].detailUrl,at:new Date(now).toISOString()}});
+const next={...params,now:now+2*3600000,deadlines:definitions,pageMisses:misses,membership:indexed};
+assert(bulk.plan(next).every(p=>!p.expectedIds.includes('a')),'a missed formal assignment goes to the individual lane next cycle');
+const individual=post.unreachedTargets(catalog,['a'],{},next.now,0,[],[],definitions,misses);
+assert.deepEqual(individual.map(row=>row.cardId),['a']);
+assert.equal(post.unreachedTargets(catalog,['a'],{[catalog[0].detailUrl]:retry.failure({},{httpStatus:403},now)},next.now,0,[],[],definitions,misses).length,0);
+assert.deepEqual(bulk.carryFormalMisses(misses,new Map(),new Map([['a',catalog[0].detailUrl]]),definitions,new Date(next.now).toISOString()),{});
+assert.deepEqual(bulk.carryFormalMisses(misses,new Map(),new Map([['a',catalog[0].detailUrl+'/different']]),definitions,new Date(next.now).toISOString()),misses);
 console.log('Camp set batch: identity-safe route, state A/units/stock, raw proof, throttling, partial-page and metrics checks passed');

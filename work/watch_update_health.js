@@ -180,6 +180,11 @@ async function main() {
   const liveSearch=require('./search_runtime_probe').record(ROOT);
   for(const row of liveSearch.profiles)if(row.status!=='ready')watchIssues.push({key:'search-runtime:'+row.id+':'+row.status,
     reason:row.status==='error'?'現時刻のURL検索計算失敗：'+row.error:'現時刻のURL検索0件。価格・鮮度・条件の実値確認が必要。端末保存条件とは別。'});
+  const formalQueue=require('./formal_freshness_queue');
+  const formalTargets=JSON.parse(fs.readFileSync(path.join(ROOT,'work/search-profile-targets.json'),'utf8'));
+  const formalProfiles=JSON.parse(fs.readFileSync(path.join(ROOT,'work/priority-search-profiles.json'),'utf8'));
+  const clockAt=Date.now();
+  watchIssues.push(...formalQueue.sharedClockWarnings(formalQueue.build(formalTargets,formalProfiles.focusProfileIds||[],clockAt).formal,clockAt));
   const issues = [...dailyIssues, ...backfills.issues, ...sourceIssues, ...priceIssues, ...watchIssues].map(issue => ({ ...issue,
     category: require('../update-health-model.js').issueCategory(issue) }));
   const previousKeys = new Set(current?.activeAlertKeys || []);
