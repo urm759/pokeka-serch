@@ -4,6 +4,13 @@ const outcomes=require('./audit_completion_outcomes'),{isolatedEvaluation}=requi
 const departures=require('./profile_departure_audit');
 const read=(root,file,fallback={})=>{try{return JSON.parse(fs.readFileSync(path.join(root,file),'utf8'));}catch{return fallback;}};
 const write=(root,file,value)=>require('./acquisition_retry').atomicWrite(path.join(root,file),value,0);
+function splitClockChanges(beforeIds, frozenIds, afterIds) {
+  const changes=(left,right)=>{
+    const l=new Set(left),r=new Set(right);
+    return {before:l.size,after:r.size,gained:[...r].filter(id=>!l.has(id)),lost:[...l].filter(id=>!r.has(id))};
+  };
+  return {clockOnly:changes(beforeIds,frozenIds),sameClockInputs:changes(frozenIds,afterIds)};
+}
 function profileDelta(before,after,beforeRows,afterRows) {
   const prior=new Set(before.ids),current=new Set(after.ids),seen=new Set([...(before.seenQualified||[]),...prior]);
   const gained=after.ids.filter(id=>!prior.has(id)),lost=before.ids.filter(id=>!current.has(id));
@@ -49,14 +56,19 @@ function baseline(key,root=ROOT) {
   });
   const snapshot=outcomes.pack(outcomes.snapshot(root,Date.parse(at)));
   const psaUrls=Object.fromEntries((read(root,'work/psa-linkage-all.json').rows||[]).map(r=>[r.cardId,r.sourceSetUrl]));
-  write(root,`work/search-profile-cycle-baseline-${key}.json`,{at,runId:process.env.GITHUB_RUN_ID||null,profiles,snapshot,psaUrls});
+  const {spawnSync}=require('node:child_process');
+  const dirty=spawnSync('git',['diff','--quiet','HEAD','--','data'],{cwd:root});
+  const git=spawnSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'});
+  const beforeRef=dirty.status===0&&git.status===0&&/^[a-f0-9]{40}$/.test(git.stdout?.trim())?git.stdout.trim():null;
+  write(root,`work/search-profile-cycle-baseline-${key}.json`,{at,runId:process.env.GITHUB_RUN_ID||null,beforeRef,profiles,snapshot,psaUrls});
 }
 function record(key,root=ROOT) {
   const before=read(root,`work/search-profile-cycle-baseline-${key}.json`,null);
   if(!before||String(before.runId)!==String(process.env.GITHUB_RUN_ID||null))return null;
   const now=new Date().toISOString(),config=read(root,'work/priority-search-profiles.json');
   const codeHash=departures.codeHash(root);
-  const profiles=require('./search_profile_variants').allProfiles(config).filter(p=>before.profiles.some(b=>b.id===p.id)).map(p=>{
+  const definitions=require('./search_profile_variants').allProfiles(config).filter(p=>before.profiles.some(b=>b.id===p.id));
+  const profiles=definitions.map(p=>{
     const evaluated=isolatedEvaluation(p,now,(before.profiles.find(r=>r.id===p.id)?.rows||[]).map(r=>r.id),{collectAvailability:false});
     return {...evaluated,evidenceMeta:departures.metadata(evaluated,codeHash,now)};
   });
@@ -84,12 +96,28 @@ function record(key,root=ROOT) {
     return delta;
   });
   const previous=read(root,'data/search-profile-cycle-progress.json',{version:1,cycles:[]});
+  const sameClock=definitions.filter(p=>(config.focusProfileIds||[]).includes(p.id)).map(p=>{
+    const old=before.profiles.find(row=>row.id===p.id),current=profiles.find(row=>row.id===p.id);
+    if(!/^[a-f0-9]{40}$/.test(before.beforeRef||'')||old.urlHash!==current.urlHash||old.evidenceMeta?.codeHash!==codeHash)
+      return {id:p.id,status:'比較保留・取得前commit／条件／コード照合不足'};
+    try {
+      const frozen=isolatedEvaluation(p,now,[...new Set([...old.ids,...current.ids])],{
+        collectAvailability:false,dataRef:before.beforeRef,requireHistoricalInputs:true,
+      });
+      const delta=splitClockChanges(old.ids,frozen.ids,current.ids);
+      return {id:p.id,status:'compared',beforeRef:before.beforeRef,baselineAt:before.at,commonAt:now,...delta,
+        clockLossReasons:delta.clockOnly.lost.map(id=>({id,reasons:frozen.allExclusions?.[id]||[]})),
+        inputLossReasons:delta.sameClockInputs.lost.map(id=>({id,reasons:current.allExclusions?.[id]||[]}))};
+    }catch(error){
+      return {id:p.id,status:'比較保留・取得前commitの入力を確認できない',reason:String(error.message).slice(0,320)};
+    }
+  });
   const uniqueOutcomes=uniqueProfileOutcomes(comparisons);
   const cycle={key,runId:before.runId,event:process.env.GITHUB_EVENT_NAME||'manual-local',baselineAt:before.at,recordedAt:now,uniqueOutcomes,
     departureSummary:departures.summarize(comparisons.flatMap(p=>p.lostReasons||[])),
     independentCandidates:independentCandidates(before.profiles.map(p=>p.ids),profiles.map(p=>p.ids)),
     savedDataDelta:outcomes.compare(outcomes.unpack(before.snapshot),afterSnapshot),
-    profiles:comparisons,llmCalls:0,codexCalls:0,publication:'保存済み・公開照合は別受領証',
+    profiles:comparisons,sameClock,llmCalls:0,codexCalls:0,publication:'保存済み・公開照合は別受領証',
     note:'定期記録は取得/補完/適合を分離。正常データの公開成功はscheduled-cycle-receiptsと公開ハッシュで確認。未取得を仮定しない'};
   previous.cycles=previous.cycles.filter(r=>!(r.key===key&&r.runId===before.runId&&r.baselineAt===before.at));
   previous.cycles.push(cycle);previous.cycles=previous.cycles.slice(-90);previous.at=now;
@@ -108,4 +136,4 @@ function uniqueProfileOutcomes(profiles){
 function independentCandidates(beforeGroups,afterGroups) {
   return departures.independentCandidates(beforeGroups,afterGroups);
 }
-module.exports={baseline,record,profileDelta,uniqueProfileOutcomes,independentCandidates};
+module.exports={baseline,record,profileDelta,uniqueProfileOutcomes,independentCandidates,splitClockChanges};

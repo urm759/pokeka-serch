@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-21T07:22:42.374Z",
+  "generatedAt": "2026-11-21T08:18:02.298Z",
   "llmCalls": 0,
   "codexCalls": 0,
   "retryPolicy": {
@@ -27,7 +27,7 @@
     {
       "source": "psaOfficial",
       "label": "PSA公式・PC正規認証",
-      "remaining": 1513,
+      "remaining": 1512,
       "queueDefinition": "あとPSAだけで分析可能な国内カード。全PSA未取得とは別",
       "sourceState": "permission-wait",
       "failureScope": "source",
@@ -169,14 +169,14 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-11-21T06:52:56.860Z",
-        "to": "2026-11-21T07:22:18.876Z"
+        "from": "2026-11-21T08:16:12.825Z",
+        "to": "2026-11-21T08:17:39.356Z"
       },
       "sinceBaseline": {
         "newLinked": 4012,
         "validAdded": 4012,
-        "validLost": 216,
-        "usableNet": 3796,
+        "validLost": 215,
+        "usableNet": 3797,
         "freshnessRecovered": 0
       },
       "freshness": null
@@ -830,10 +830,10 @@
       "firstPassProgressField": "newlyVisitedProducts",
       "firstPassDaysEstimate": 0,
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
-      "usableNet": 1,
+      "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-11-21T06:52:56.860Z",
-        "to": "2026-11-21T07:22:18.876Z"
+        "from": "2026-11-21T08:16:12.825Z",
+        "to": "2026-11-21T08:17:39.356Z"
       },
       "sinceBaseline": {
         "newLinked": 946,
@@ -873,8 +873,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-11-21T06:52:56.860Z",
-        "to": "2026-11-21T07:22:18.876Z"
+        "from": "2026-11-21T08:16:12.825Z",
+        "to": "2026-11-21T08:17:39.356Z"
       },
       "sinceBaseline": {
         "newLinked": 0,
@@ -887,10 +887,10 @@
     }
   ],
   "psaOnly": {
-    "count": 1513,
+    "count": 1512,
     "causes": {
       "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持": 1380,
-      "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）": 133
+      "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）": 132
     },
     "cards": [
       {
@@ -1306,12 +1306,6 @@
         "setCode": "CP5",
         "url": null,
         "cause": "PSA取得許諾確認待ち・保存済み紐付け/保留根拠は保持"
-      },
-      {
-        "id": "x-91121",
-        "setCode": "S-P",
-        "url": null,
-        "cause": "保存原票あり・名称/完全仕様の再照合待ち（新規通信不要）"
       },
       {
         "id": "x-92154",
@@ -9975,9 +9969,9 @@
   },
   "progress": {
     "listed": 13102,
-    "analyzable": 2652,
-    "pending": 10450,
-    "oneAway": 2152
+    "analyzable": 2653,
+    "pending": 10449,
+    "oneAway": 2151
   },
   "newlyAnalyzable": 0,
   "note": "一時障害の再試行、個別URL隔離、取得元停止を区別。未取得をデータ不存在に変更しない。巡回完了と全項目取得・最新価格は別"

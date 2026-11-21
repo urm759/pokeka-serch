@@ -127,7 +127,7 @@ function namesCompatible(englishName, row) {
   const canonical=value=>{
     const key=identity(value);
     const scoped=require('./psa-name-aliases.json').sourceNames?.find(a=>a.evidence?.length>=2&&a.set===row?.set
-      &&a.numbers.includes(String(row?.no))&&identity(a.from)===key);
+      &&a.numbers.includes(String(row?.no))&&(!a.sourceUrl||a.sourceUrl===row?.url)&&identity(a.from)===key);
     if(scoped)return scoped.to;
     return aliases.find(a=>a.evidence.length>=2 && identity(a.from)===key)?.to || value;
   };

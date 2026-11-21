@@ -1,4 +1,8 @@
 const assert=require('node:assert/strict');
+const split=require('./search_profile_cycle').splitClockChanges(
+  ['stable','lost-by-clock'],['stable'],['stable','gained-by-input']);
+assert.deepEqual(split.clockOnly,{before:2,after:1,gained:[],lost:['lost-by-clock']});
+assert.deepEqual(split.sameClockInputs,{before:1,after:2,gained:['gained-by-input'],lost:[]});
 const {inspect,summarize,metadata}=require('./profile_departure_audit');
 const meta={settingsHash:'settings',codeHash:'code',at:'2026-10-16T00:00:00Z'};
 const context={before:meta,after:meta};

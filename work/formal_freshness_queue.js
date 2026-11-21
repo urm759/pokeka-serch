@@ -61,7 +61,9 @@ function build(targets, profileIds, now = Date.now()) {
 }
 
 function forSource(targets, profileIds, source, now = Date.now()) {
-  const {formal,departures}=build(targets,profileIds,now);
+  const scope=[...profileIds];
+  if(!scope.length)return {};
+  const {formal,departures}=build(targets,scope,now);
   const rows={};
   for (const card of formal) {
     const dependency=card.dependencies.find(row=>row.source===source);
@@ -71,7 +73,7 @@ function forSource(targets, profileIds, source, now = Date.now()) {
     const target=row.sourceTargets?.find(t=>t.source===source);
     if (target?.url) rows[row.id]={deadlineAt:now,url:target.url,previousQualified:true,field:'referenceMedian'};
   }
-  for (const id of medianCompletionIds(targets,source,profileIds)) {
+  for (const id of medianCompletionIds(targets,source,scope)) {
     if (!rows[id]) rows[id]={deadlineAt:now,completion:true,field:'referenceMedian'};
   }
   return rows;
