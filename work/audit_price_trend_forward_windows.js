@@ -56,5 +56,18 @@ function audit(asOf = calendarDay(new Date().toISOString())) {
   return result;
 }
 
+function recordDaily({directory=root,now=new Date(),compute=audit}={}) {
+  const day=calendarDay(now.toISOString());
+  const file=path.join(directory,'data/price-trend-forward-audit.json');
+  const history=fs.existsSync(file)?JSON.parse(fs.readFileSync(file,'utf8')):{version:1,days:{}};
+  if(history.version!==1 || !history.days || Array.isArray(history.days))throw Error('Unknown trend audit history format');
+  if(history.days[day])return history.days[day];
+  const result=compute(day);
+  if(result.asOf!==day)throw Error('Trend audit calendar day mismatch');
+  history.days[day]={...result,recordedAt:now.toISOString()};
+  require('./acquisition_retry').atomicWrite(file,history,0);
+  return history.days[day];
+}
+
 if (require.main===module) console.log(JSON.stringify(audit(process.argv[2]),null,2));
-module.exports={audit};
+module.exports={audit,recordDaily};

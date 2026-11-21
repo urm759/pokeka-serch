@@ -3,6 +3,12 @@ const b = require('./build_psa_history');
 const { needed } = require('./reconcile_saved_psa_summary');
 const card = { id: 'target', name: 'ニンフィアV CSR[S8b 231/184]' };
 const empty = new Map();
+const rescue={set:'S-P',no:'36',name:"Rescue Team DX's Pikachu | Pokemon Mystery Dungeon: Rescue Team DX |",
+  url:'https://www.psacard.com/pop/tcg-cards/2020/pokemon-japanese-s-promo/175853'};
+assert(b.namesCompatible('Rescue DX Pikachu: PROMO[S-P 036](S-P Promotional cards)',rescue));
+assert(!b.namesCompatible('Rescue DX Pikachu',{...rescue,no:'37'}));
+assert(!b.namesCompatible('Rescue DX Pikachu',{...rescue,url:rescue.url.replace('/2020/','/2021/')}));
+assert(!b.namesCompatible('Rescue DX Pikachu',{...rescue,url:rescue.url.replace('pokemon-japanese','pokemon-english')}));
 assert(b.namesCompatible('Radiant Gardevoirt K[s12a 055/172]',{name:'Radiant Gardevoir |'}),'verified cached spelling correction');
 assert(!b.namesCompatible('Radiant Gardevoirt K[s12a 055/172]',{name:'Gardevoir EX |'}),'radiant is part of the name');
 assert(b.namesCompatible('Greens Tactics SR[SM12a 193/173]',{name:"Full Art/Blue's Tactics |"}),'verified localized trainer name');

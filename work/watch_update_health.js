@@ -87,13 +87,28 @@ async function main() {
       }
     }
   }
-  const health = evaluate({ runs: runs.workflow_runs || [], sourceLastSuccessAt: status.sources?.toreca?.lastSuccessAt,
-    verifiedPublications:cycles.pipelines?.daily?[cycles.pipelines.daily]:[] });
   const file = path.join(ROOT, "data", "update-health.json");
   const current = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, "utf8")) : null;
   const read = (name, fallback = null) => {
     try { return JSON.parse(fs.readFileSync(path.join(ROOT, "work", name), "utf8")); } catch { return fallback; }
   };
+  const dailyModel=require('./daily_run_outcomes');
+  const dailyProofs=[cycles.pipelines?.daily,cycles.nonScheduledChecks?.daily,...(cycles.history?.daily||[])].filter(Boolean);
+  const dailyRecoveries=read('daily-publication-recoveries.json',{});
+  const dailyRuns=(runs.workflow_runs||[]).filter(row=>row.status==='completed').slice(0,3);
+  const observations=await Promise.all(dailyRuns.map(async run=>{
+    const failed=['failure','timed_out'].includes(run.conclusion);
+    const [jobs,artifacts]=await Promise.all([
+      jobsByRun[run.id]||api(`${API}/actions/runs/${run.id}/jobs`).then(r=>r.jobs||[]).catch(()=>[]),
+      failed?api(`${API}/actions/runs/${run.id}/artifacts?per_page=20`).then(r=>r.artifacts||[]).catch(()=>[]):[],
+    ]);
+    return dailyModel.classify(run,{jobs,artifacts,
+      proof:dailyProofs.find(p=>String(p.runId)===String(run.id)&&p.runAttempt===(run.run_attempt||1)),
+      recovery:dailyRecoveries[run.id]});
+  }));
+  const dailyOutcomes=dailyModel.updateHistory(current?.dailyOutcomes,observations);
+  const health=evaluate({runs:runs.workflow_runs||[],sourceLastSuccessAt:status.sources?.toreca?.lastSuccessAt,
+    verifiedPublications:dailyProofs,dailyOutcomes,outcomeLabels:dailyModel.LABELS});
   const pokeProgress = (overseasCancelled?[]:fs.readdirSync(path.join(ROOT, "work")))
     .filter((name) => /^pokedata-progress(?:-.*)?\.json$/.test(name))
     .map((name) => read(name)).filter(Boolean);
@@ -104,8 +119,8 @@ async function main() {
     ambiguousCandidates: read("pokedata-link-map.json", {}).ambiguousCandidates || [],
     recovery: (() => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, "data", "backfill-recovery.json"), "utf8")); } catch { return {}; } })(),
     previous: current || {},overseasCancelled });
-  const dailyIssues = health.reasons.map((reason) => ({
-    key: reason.includes('一部取得元') ? 'daily:source-failure' : reason.includes("連続失敗") ? "daily:workflow-failure"
+  const dailyIssues = health.reasons.filter(reason=>!reason.includes('元実行の失敗は履歴に保持')).map((reason) => ({
+    key: reason.includes('一部取得元') ? 'daily:source-failure' : reason.startsWith('Daily：') ? 'daily:'+health.latestOutcome : reason.includes("連続失敗") ? "daily:workflow-failure"
       : reason.includes("みんトレ") ? "daily:source-stale" : "daily:run-stale",
     reason, url: health.latestRunUrl,
   }));
@@ -186,7 +201,14 @@ async function main() {
   fs.writeFileSync(path.join(ROOT, "data", "update-status.json"), JSON.stringify(status), "utf8");
   console.log(JSON.stringify({ status: result.status, issues: result.issues,
     newIssueCount: newlyDetected.length, backfills: result.backfills }));
-  observation.record(ROOT,'observed',{newIssueCount:newlyDetected.length,unpublishedData,
+  let trendAudit=null;
+  try {
+    const result=require('./audit_price_trend_forward_windows').recordDaily({directory:ROOT});
+    trendAudit={day:result.asOf,status:result.status,eligible:result.eligible};
+  } catch(error) {
+    trendAudit={status:'isolated-error',error:error.message};
+  }
+  observation.record(ROOT,'observed',{newIssueCount:newlyDetected.length,unpublishedData,trendAudit,
     liveSearch,
     lastMonitorRun:lastWatch?{id:lastWatch.id,conclusion:lastWatch.conclusion,url:lastWatch.html_url}:null,
     freshness:status.priorityPriceMonitor?.fixedCohortFreshness||null,

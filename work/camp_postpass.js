@@ -64,7 +64,7 @@ function legacyTargets(catalog,requested,retries={},now=Date.now(),leadMs=0,crit
     &&due(r,true,now,leadMs)&&require('./acquisition_retry').eligible(retries[r.detailUrl],now))
     .sort((a,b)=>Number(critical.has(b.cardId))-Number(critical.has(a.cardId))||(Date.parse(a.observedAt)||0)-(Date.parse(b.observedAt)||0)||order.get(a.cardId)-order.get(b.cardId)),criticalIds,completionIds);
 }
-function unreachedTargets(catalog,requested,retries={},now=Date.now(),leadMs=0,criticalIds=[],completionIds=[]) {
+function unreachedTargets(catalog,requested,retries={},now=Date.now(),leadMs=0,criticalIds=[],completionIds=[],deadlines={}) {
   // All confirmed known URLs, including those with sitemap numbers. Bulk pages
   // update adopted rows first; fresh cards therefore disappear from this lane.
   const wanted=new Set(requested),critical=new Set(criticalIds);
@@ -72,8 +72,17 @@ function unreachedTargets(catalog,requested,retries={},now=Date.now(),leadMs=0,c
     &&/^https:\/\/torecacamp-pokemon\.com\/products\/[a-zA-Z0-9_%~-]+$/.test(r.detailUrl||'')
     &&due(r,true,now,leadMs)&&require('./acquisition_retry').eligible(retries[r.detailUrl],now));
   const band=r=>now-(Date.parse(r.observedAt)||0)>=48*3600000?3:now-(Date.parse(r.observedAt)||0)>=6*3600000?2:1;
-  rows.sort((a,b)=>band(b)-band(a)||(Date.parse(a.observedAt)||0)-(Date.parse(b.observedAt)||0)||Number(critical.has(b.cardId))-Number(critical.has(a.cardId))||a.cardId.localeCompare(b.cardId));
-  return completionOrder(rows,criticalIds,completionIds);
+  const {plannedDeadline}=require('./formal_freshness_queue');
+  const rank=r=>Math.min(plannedDeadline(deadlines,r)<=now+proactiveLead(leadMs)?plannedDeadline(deadlines,r):Infinity,
+    (Date.parse(r.observedAt)||0)+6*3600000);
+  rows.sort((a,b)=>Number(plannedDeadline(deadlines,b)<=now+proactiveLead(leadMs))-Number(plannedDeadline(deadlines,a)<=now+proactiveLead(leadMs))
+    ||band(b)-band(a)||rank(a)-rank(b)||Number(critical.has(b.cardId))-Number(critical.has(a.cardId))||a.cardId.localeCompare(b.cardId));
+  const criticalAndDue=[...criticalIds,...rows.filter(r=>plannedDeadline(deadlines,r)<=now+proactiveLead(leadMs)&&!deadlines[r.cardId]?.completion).map(r=>r.cardId)];
+  const urls=new Set();
+  return completionOrder(rows,criticalAndDue,completionIds).filter(r=>{
+    if(urls.has(r.detailUrl))return false;
+    urls.add(r.detailUrl);return true;
+  });
 }
 function priorityMaintenance(catalog,requested,progress={},run={},now=Date.now(),leadMs=0) {
   const retry=require('./acquisition_retry');
