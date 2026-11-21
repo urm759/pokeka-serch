@@ -1,7 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { execFileSync } = require('node:child_process');
-const { designRecord, documents, manifest, output, patch, save } = require('./ai_pipeline');
+const { designRecord, documents, manifest, newTestFailures, output, patch, save } = require('./ai_pipeline');
 const { digest, git, inspect, safeText } = require('./ai_pipeline_gate');
 const { validate } = require('./ai_pipeline_schema');
 
@@ -18,7 +18,7 @@ function decide(d) {
   if (!review || !tests) return { status: 'incomplete', round };
   if (review.verdict === 'blocked') return { status: 'decision', round };
   if (round === 1 && review.verdict === 'changes_required') return { status: 'incomplete', round };
-  return { status: review.verdict === 'pass' && tests.passed ? 'pass' : 'unresolved', round };
+  return { status: review.verdict === 'pass' && newTestFailures(tests).length === 0 ? 'pass' : 'unresolved', round };
 }
 
 const tidy = value => String(value ?? '').replace(/[\x00-\x1f\x7f]+/g, ' ').replace(/[<>@]/g, c => ({ '<': '&lt;', '>': '&gt;', '@': '＠' })[c]);
@@ -37,20 +37,23 @@ function render(m, request, d, result) {
     for (const [role, value] of [['gate', g], ['tests', t], ['implementation', i], ['review', r]]) {
       if (value) validate(role, value);
     }
-    const failedTests = t?.checks.filter(x => x.exit_code) || [];
+    const newFailures = t ? newTestFailures(t) : [];
+    const existingFailures = t?.checks.filter(check => check.pre_existing) || [];
     return '\n## Round ' + round + '\n' + [
       '実装: ' + tidy(i?.summary || '記録なし'),
       '差分ゲート: ' + (g?.accepted ? '通過 · tree `' + tidy(g.tree) + '`' : tidy(g?.reason || '未確認')),
-      '独立テスト: ' + (t ? (t.checks.length - failedTests.length) + '/' + t.checks.length + ' 成功' : '未確認'),
+      '独立テスト: ' + (t ? (t.checks.length - newFailures.length - existingFailures.length) + '/' + t.checks.length
+        + ' 成功 · 新規失敗 ' + newFailures.length + ' · 既存失敗 ' + existingFailures.length : '未確認'),
       'レビュー: ' + tidy(r?.verdict || '未確認')
     ].join('\n\n') + '\n'
-      + lines('変更ファイル', g?.files) + lines('失敗テスト', failedTests.map(x => x.command + ' — ' + x.log))
+      + lines('変更ファイル', g?.files) + lines('新規失敗テスト', newFailures.map(x => x.command + ' · ' + x.log))
       + lines('実装側のテスト報告', i?.tests) + lines('実測', i?.measurements) + lines('レビュー対象', i?.review_focus)
       + lines('合格条件', r?.criteria.map(c => c.id + ' · ' + c.status + ' · ' + c.evidence))
       + lines('指摘', r?.findings.map(f => f.id + ' · ' + f.severity + ' · ' + f.file + ':' + f.line + ' · ' + f.problem + ' · ' + f.fix))
       + lines('修正結果', i?.findings.map(f => f.id + ' · ' + f.status + ' · ' + f.reason))
       + lines('前回指摘の確認', r?.prior_findings.map(f => f.id + ' · ' + f.status + ' · ' + f.evidence))
-      + lines('未確認', [...(i?.unverified || []), ...(r?.unverified || [])])
+      + lines('未確認', [...(i?.unverified || []), ...(r?.unverified || []),
+        ...existingFailures.map(x => '基準版でも失敗したテスト · ' + x.command + ' · ' + x.log)])
       + lines('改善案', [...(i?.suggestions || []), ...(r?.suggestions || [])])
       + lines('公開後に確認', r?.post_publish_checks);
   }).join('');

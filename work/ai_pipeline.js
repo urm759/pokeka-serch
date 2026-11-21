@@ -8,6 +8,7 @@ const rules = path.join(__dirname, '../ops/ai-pipeline');
 const modes = ['real', 'stub'];
 const scenarios = ['pass', 'revise_pass', 'unresolved', 'needs_decision', 'gate_reject'];
 const contextNames = ['prepare', 'design', 'implement-1', 'verify-1', 'review-1', 'implement-2', 'verify-2', 'review-2'];
+const independentTestsId = 'independent-tests';
 const env = process.env;
 const namespace = () => env.AI_ARTIFACT_PREFIX || 'ai-local';
 const exchange = () => env.AI_EXCHANGE || path.resolve('.ai-exchange');
@@ -113,6 +114,7 @@ function prompt(kind, round, candidate) {
   if (round === 2) {
     parts.push('Round 1 review:\n' + JSON.stringify(readStage('review-1', 'review'), null, 2));
     parts.push('Round 1 implementation:\n' + JSON.stringify(readStage('implement-1', 'implementation'), null, 2));
+    if (kind === 'fix') parts.push('Round 1 independent tests:\n' + JSON.stringify(readStage('verify-1', 'tests'), null, 2));
     if (kind === 'review') parts.push('Round 1 diff file: ' + at('implement-1', 'change.diff'));
   }
   const content = safeText(parts.join('\n\n'));
@@ -149,6 +151,24 @@ function accept(kind, round) {
       if (reviewed.length !== previous.length || new Set(reviewed.map(f => f.id)).size !== previous.length
           || reviewed.some(f => !previous.includes(f.id)) || (data.verdict === 'pass' && reviewed.some(f => f.status !== 'resolved'))) {
         throw Error('Round 2 must address each prior finding');
+      }
+    }
+    const failures = newTestFailures(readStage('verify-' + round, 'tests'));
+    if (data.verdict === 'pass' && failures.length) {
+      const commands = failures.map(check => check.command).join(', ');
+      const problem = 'New independent test failures: ' + commands.slice(0, 7600)
+        + (commands.length > 7600 ? ' (see the independent test record for the full list)' : '');
+      data.verdict = 'changes_required';
+      data.findings = [{
+        id: independentTestsId, severity: 'major', file: 'work/ai_pipeline_tests.js', line: 0, problem,
+        fix: 'Investigate the failing commands and correct the regression within the approved scope.',
+        acceptance: 'Independent verification shows no failures introduced by the patch.'
+      }];
+      for (const finding of data.prior_findings) {
+        if (finding.id === independentTestsId) {
+          finding.status = 'unresolved';
+          finding.evidence = problem;
+        }
       }
     }
   }
@@ -199,9 +219,14 @@ function countAttempt(kind, round) {
   save('attempt.json', { role: kind, round, started_at: new Date().toISOString() });
 }
 
+function newTestFailures(result) {
+  return result.checks.filter(check => check.exit_code !== 0 && !check.pre_existing);
+}
+
 function acceptTests() {
   const result = validate('tests', load(path.join(out(), 'tests-raw.json')));
-  if (!result.checks.length || result.passed !== result.checks.every(check => check.exit_code === 0)) {
+  if (!result.checks.length || result.passed !== result.checks.every(check => check.exit_code === 0)
+      || result.checks.some(check => check.pre_existing && check.exit_code === 0)) {
     throw Error('Inconsistent test result');
   }
   save('tests.json', result);
@@ -237,4 +262,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { at, designRecord, documents, load, manifest, output, patch, readStage, save };
+module.exports = { at, designRecord, documents, load, manifest, newTestFailures, output, patch, readStage, save };
