@@ -10,7 +10,7 @@ function seed(cards,catalog,registry,{now=Date.now(),match}={}) {
       ||!u||u.origin!=='https://torecacamp-pokemon.com'||!/^\/products\/[a-zA-Z0-9_%~-]+$/.test(u.pathname)||u.search||u.hash
       ||!/^\d+$/.test(e.productId||'')||!/^\d+$/.test(e.variantId||'')||!/^[a-f0-9]{64}$/.test(e.sourcePayloadHash||'')
       ||!Number.isFinite(Date.parse(e.identityConfirmedAt))||Date.parse(e.identityConfirmedAt)>now
-      ||!match(card,{title:e.title,tags:[]})){holds.push({id:e.cardId,reason:'確定仕様・通常商品URL・原票根拠の不一致'});continue;}
+      ||!match(card,{id:e.productId,title:e.title,tags:[]})){holds.push({id:e.cardId,reason:'確定仕様・通常商品URL・原票根拠の不一致'});continue;}
     const own=rows.filter(r=>r.cardId===e.cardId),other=rows.filter(r=>r.detailUrl===e.url&&r.cardId!==e.cardId);
     if(other.length||cards.some(c=>c.id!==e.cardId&&c.torecacampUrl===e.url)
       ||card.torecacampUrl&&card.torecacampUrl!==e.url){holds.push({id:e.cardId,reason:'現在の購入先またはURL所有者が異なる'});continue;}

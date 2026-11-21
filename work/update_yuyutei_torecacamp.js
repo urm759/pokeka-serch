@@ -547,6 +547,7 @@ function campSignature(product) {
   const standard = title.match(/(\d{1,4}(?:\s*-\s*\d{1,4})?\s*\/\s*\d{1,4})/);
   const promo = title.match(/(\d{1,4})\s*\/\s*([A-Za-z0-9]+(?:-[A-Za-z0-9]+)*-P)\b/i);
   const titleSet = title.match(/(?:^|\s)([A-Za-z]{1,5}\d{0,3}[A-Za-z]?(?:-[A-Za-z0-9]+)?)\s+\d{1,4}(?:\s*-\s*\d{1,4})?\s*\/\s*\d{1,4}/i);
+  const savedTitleSet = title.match(/(?:〉|\s)\[([A-Za-z]{1,5}\d{0,3}[A-Za-z]?(?:-[A-Za-z0-9]+)?)\]\s*$/i);
   const tagCodes = (product?.tags || []).map((tag) => {
     const clean = String(tag || "").replace(/^#/, "").trim();
     const prefix = clean.split("_")[0];
@@ -555,6 +556,7 @@ function campSignature(product) {
   const setCodes = [...new Set([
     ...tagCodes,
     titleSet?.[1] ? normalizeSetCode(titleSet[1]) : "",
+    savedTitleSet?.[1] ? normalizeSetCode(savedTitleSet[1]) : "",
     promo?.[2] ? normalizeSetCode(promo[2]) : "",
   ].filter(Boolean))];
   return { title, cardNo: String(standard?.[1] || promo?.[1] || "").replace(/\s/g, ""), setCodes };
@@ -565,10 +567,14 @@ function campMatchesCard(card, product) {
   if(require('./quarantine_shop_identity').reason(card,productSig.title))return false;
   if (/\b(?:PSA|BGS|CGC)\s*\d+|鑑定品/i.test(productSig.title)) return false;
   const finish=require('./shop_finish_identity');
-  if (!titleMatches({...card,name:finish.strip(card.name)}, finish.strip(productSig.title), productSig.cardNo)) return false;
-  // Product titles are not a reliable substitute for a set code. Requiring a
-  // tag match avoids linking same-name promotions and reprints by card number.
-  return productSig.setCodes.includes(signature.setCode);
+  if(!productSig.setCodes.includes(signature.setCode)||!numberMatches(signature.cardNo,productSig.cardNo))return false;
+  if (titleMatches({...card,name:finish.strip(card.name)}, finish.strip(productSig.title), productSig.cardNo)) return true;
+  // An abbreviated title needs an explicit review of this exact print and product.
+  // The match is invalidated by a new product ID or title.
+  const reviewed=require('./confirmed-camp-products.json').entries.find(entry=>entry.reviewedTitleAlias===true
+    &&entry.cardId===card.id&&entry.identityKey===card.identityKey);
+  return Boolean(reviewed&&card.language==='ja'&&String(product.id??product.productId)===reviewed.productId
+    &&productSig.title===reviewed.title);
 }
 
 function decodeXml(value) {
@@ -820,7 +826,7 @@ async function updateTorecaCamp(cards, paths) {
       const product=(await fetchJson(url+'.js',{intervalMs:1100})).value;detailFetched++;
       if(!product?.id||typeof product.title!=='string'||!Array.isArray(product.variants))throw new Error('商品JSON形式変更・正規確認待ち');
       if(previousEntry.productId!=null&&String(previousEntry.productId)!==String(product.id))throw new Error('商品ID不一致・確定済みURLの再照合待ち');
-      const matches=(byNumber.get(campSignature(product).cardNo)||[]).filter(c=>campMatchesCard(c,{title:product.title,tags:Array.isArray(product.tags)?product.tags:[]}));
+      const matches=(byNumber.get(campSignature(product).cardNo)||[]).filter(c=>campMatchesCard(c,{id:product.id,title:product.title,tags:Array.isArray(product.tags)?product.tags:[]}));
       if(matches.length!==1||matches[0].id!==previousEntry.cardId)throw new Error('仕様不一致または曖昧一致・正規確認待ち');
       const variants=product.variants.filter(campA);if(variants.length!==1)throw new Error('状態A仕様を一意に確認できない');const variant=variants[0];
       if(typeof variant.available!=='boolean')throw new Error('状態A在庫不明・在庫なしへ代用しない');
@@ -939,7 +945,7 @@ async function updateTorecaCamp(cards, paths) {
           progress.retryByUrl[sitemapEntry.url] = { ...retryPolicy.failure(progress.retryByUrl[sitemapEntry.url], { error: "商品JSON形式変更・このURLのみ確認待ち" }), url: sitemapEntry.url, sitemapIndex:productSitemapIndex, entryIndex:productEntryIndex };
           failed++; advance(); write(paths.progress, progress); continue;
         }
-        if(!campMatchesCard(matches[0],{title:product.title,tags:Array.isArray(product.tags)?product.tags:[]})) {
+        if(!campMatchesCard(matches[0],{id:product.id,title:product.title,tags:Array.isArray(product.tags)?product.tags:[]})) {
           excluded.identityMismatch++;
           progress.retryByUrl[sitemapEntry.url]={...retryPolicy.failure({}, {error:'取得商品と対象カードの仕様不一致・正規確認待ち',kind:'ambiguous'}),
             url:sitemapEntry.url,sitemapIndex:productSitemapIndex,entryIndex:productEntryIndex};

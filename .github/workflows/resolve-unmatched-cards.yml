@@ -42,17 +42,27 @@ jobs:
         run: node work/build_evaluation_model.js
       - name: Record link coverage
         run: node work/audit_link_coverage.js
-      - name: Commit resolved mappings
+      - name: Preserve resolved inputs before validation
+        run: node work/capture_unpublished_data.js monitor-prevalidation
+      - name: Validate and publish resolved mappings
         run: |
           node work/build_card_completion.js
           node work/build_purchase_limit_audit.js
           node work/finalize_update_status.js
-          node work/build_ui_data.js
-          node work/test_ui_data.js
+          node work/update_validation.js --required
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data work
           node work/enforce_overseas_publication.js --verify --staged
-          if git diff --cached --quiet; then exit 0; fi
-          git commit -m "Resolve unmatched card links"
-          git push
+          node work/publish_data_checkpoint.js "Resolve unmatched card links"
+      - name: Retain saved originals when validation or publication stops
+        if: failure() || cancelled()
+        uses: actions/upload-artifact@v7
+        with:
+          name: deep-resolution-recovery-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            work/unpublished-recovery/
+            work/publish-recovery.bundle
+            work/publish-recovery.json
+          if-no-files-found: ignore
+          retention-days: 7

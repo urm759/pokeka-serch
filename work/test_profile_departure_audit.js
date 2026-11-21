@@ -13,6 +13,8 @@ const fallbackAfter={...fallbackBefore,purchase:{...fallbackBefore.sourceQuotes.
 const fallbackContext={before:meta,after:{...meta,at:'2026-10-16T00:00:00.001Z'}};
 const fallbackAudit=inspect(fallbackBefore,fallbackAfter,fallbackContext);
 assert(fallbackAudit.roots.some(r=>r.code==='expired-price'),'a fresh alternative does not conceal previous offer expiry');
+assert.deepEqual(fallbackAudit.freshness,['店舗価格','在庫']);
+assert(!inspect(before,{...before,purchase:null,sourceQuotes:{},exclusions:['再確認待ち']},context).roots.some(r=>r.code==='expired-price'));
 assert(fallbackAudit.roots.some(r=>r.code==='profitability-or-assessment-condition'));
 assert(fallbackAudit.repair.fields.includes('shopStateA'));assert.equal(fallbackAfter.purchase.fresh,true);
 assert(!inspect(fallbackBefore,{...fallbackAfter,sourceQuotes:{...fallbackAfter.sourceQuotes,unrelated:{sourceFailure:'HTTP 403'}}},fallbackContext).roots.some(r=>r.code==='acquisition-failure'),'unrelated stopped stores do not establish the expiry cause');
