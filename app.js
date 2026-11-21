@@ -579,7 +579,7 @@ const els = {
   importGradeHistoryInput: document.getElementById("importGradeHistoryInput"),
 };
 
-const searchRuntime = { phase: 'loading', booted: false, pending: 0, error: null, count: null, evaluatedAt: null };
+const searchRuntime = { phase: 'loading', booted: false, pending: 0, queryPending: false, queryError: null, catalogError: null, bootError: null, error: null, count: null, evaluatedAt: null };
 const initialSearchUrl = window.location?.href || '';
 function urlOnlySearch() { return new URL(window.location.href).searchParams.get('savedFilters') === 'ignore'; }
 function searchResultStatus(phase, error = null) {
@@ -3722,37 +3722,56 @@ function catalogIndexMatches(scope, query = "") {
   return matches;
 }
 
-async function loadCatalogEntries(entries) {
+async function loadCatalogEntries(entries, { query = false } = {}) {
   const chunks = [...new Set((entries || []).map((entry) => Number(entry.chunk)).filter(Number.isInteger))]
     .filter((chunk) => !state.catalogLoadedChunks.has(chunk));
   let changed = false;
   if (!chunks.length) return changed;
-  searchRuntime.pending++;
-  searchResultStatus('loading');
+  if (!query) {
+    searchRuntime.pending++;
+    searchResultStatus('loading');
+  }
   try {
     for (let offset = 0; offset < chunks.length; offset += 6) {
-      const loaded = await Promise.all(chunks.slice(offset, offset + 6).map(loadCatalogChunk));
-      changed ||= loaded.some(Boolean);
+      const loaded = await Promise.allSettled(chunks.slice(offset, offset + 6).map(loadCatalogChunk));
+      const failed = loaded.find(result => result.status === 'rejected');
+      if (failed) throw failed.reason;
+      changed ||= loaded.some(result => result.value);
     }
     if (uiDataInvalid) throw uiDataError || new Error('公開データの版不一致。再読込してください。');
     return changed;
-  } catch(error) { failSearch(error); throw error; }
-  finally { searchRuntime.pending--; }
+  } finally {
+    if (!query) searchRuntime.pending--;
+  }
 }
 
 let catalogQueryTimer = null;
 function scheduleCatalogQueryLoad() {
   clearTimeout(catalogQueryTimer);
   const requestId = ++state.searchRequestId;
-  if (!state.q || !state.catalogIndex.length) {
+  searchRuntime.queryError = null;
+  searchRuntime.queryPending = false;
+  if (!searchRuntime.booted) return;
+  const query = state.q;
+  const scope = state.catalogScope;
+  if (!query || !state.catalogIndex.length) {
     state.searchRankById = new Map();
     render();
     return;
   }
+  searchRuntime.queryPending = true;
+  searchResultStatus('loading');
   catalogQueryTimer = setTimeout(async () => {
-    const changed = await loadCatalogEntries(catalogIndexMatches(state.catalogScope, state.q));
-    if (requestId !== state.searchRequestId) return;
-    render();
+    try {
+      await loadCatalogEntries(catalogIndexMatches(scope, query), { query: true });
+    } catch (error) {
+      if (requestId === state.searchRequestId) searchRuntime.queryError = error;
+    } finally {
+      if (requestId === state.searchRequestId) {
+        searchRuntime.queryPending = false;
+        try { render(); } catch (error) { console.error(error); }
+      }
+    }
   }, 200);
 }
 
@@ -3760,7 +3779,13 @@ async function setCatalogScope(scope) {
   state.catalogScope = ["analysis", "all", "new", "recent", "relisted", "completing", "shortage"].includes(scope) ? scope : "analysis";
   if (els.catalogScopeInput) els.catalogScopeInput.value = state.catalogScope;
   if (els.catalogCoverageSummary) els.catalogCoverageSummary.textContent = "対象カードを分割読込中";
-  await loadCatalogEntries(catalogIndexMatches(state.catalogScope));
+  searchRuntime.catalogError = null;
+  const requestedScope = state.catalogScope;
+  try {
+    if (searchRuntime.booted) await loadCatalogEntries(catalogIndexMatches(requestedScope));
+  } catch (error) {
+    if (requestedScope === state.catalogScope) searchRuntime.catalogError = error;
+  }
   state.visibleLimit = 60;
   render();
   updateUrl();
@@ -6209,8 +6234,11 @@ function currentMarketProfitPanel(view) {
 
 let commitCardRows;
 function render() {
-  if (!searchRuntime.booted || searchRuntime.pending) { searchResultStatus('loading'); return; }
   if (uiDataInvalid) { failSearch(uiDataError || new Error('公開データの版不一致。再読込してください。')); return; }
+  if (searchRuntime.bootError) { failSearch(searchRuntime.bootError); return; }
+  if (!searchRuntime.booted || searchRuntime.pending || searchRuntime.queryPending) { searchResultStatus('loading'); return; }
+  const loadError = searchRuntime.catalogError || searchRuntime.queryError;
+  if (loadError) { failSearch(loadError); return; }
   // Scope search reuse to this synchronous render, including failure cleanup.
   const previous = renderMemo;
   const previousEfficiency=efficiencyRenderPass;
@@ -7525,8 +7553,6 @@ async function init() {
     const analysisCards = state.catalogManifest ? await fetchJsonMaybe("./data/card-catalog/analysis.json") : null;
     if (Array.isArray(analysisCards)) {
       state.cards = analysisCards;
-      const initialQuery = els.qInput?.value || "";
-      if (state.catalogScope !== "analysis" || initialQuery) await loadCatalogEntries(catalogIndexMatches(state.catalogScope, initialQuery));
     } else if (Array.isArray(window.POKEMON_CARDS)) {
       state.cards = window.POKEMON_CARDS;
     } else {
@@ -7598,6 +7624,15 @@ async function init() {
     state.psaSpecificationHeld = psaData?.specificationHeld || Object.create(null);
     attachBundlePopulations(state.psaPopulation);
     if (uiDataInvalid) throw uiDataError || new Error("公開データの版が一致しません。再読み込みしてください。");
+    // Apply the scope selected while initial data was loading. Query chunks are
+    // scheduled by syncFromUI once the initial card snapshot is installed.
+    let initialScope;
+    do {
+      initialScope = state.catalogScope;
+      if (initialScope === 'analysis') break;
+      try { await loadCatalogEntries(catalogIndexMatches(initialScope)); }
+      catch (error) { if (state.catalogScope === initialScope) searchRuntime.catalogError = error; }
+    } while (initialScope !== state.catalogScope);
     searchRuntime.booted = true;
     syncFromUI();
     const metrics = document.createElement("details");
@@ -7610,6 +7645,7 @@ async function init() {
     els.catalogCoverageSummary?.after(metrics);
   } catch (err) {
     console.error(err);
+    searchRuntime.bootError = err;
     failSearch(err);
     if(err.code==='CALCULATION_DEPENDENCY_UNAVAILABLE')throw err;
     showStatus(
@@ -7811,7 +7847,14 @@ document.querySelectorAll("[data-preset]").forEach((button) => {
       if (els.catalogScopeInput) els.catalogScopeInput.value = "all";
       if (els.snkrRawReferenceControl) els.snkrRawReferenceControl.hidden = false;
       const rawIds = new Set(Object.keys(state.snkrRawFlipSummary));
-      await loadCatalogEntries(state.catalogIndex.filter((entry) => rawIds.has(String(entry.id))));
+      searchRuntime.catalogError = null;
+      try { await loadCatalogEntries(state.catalogIndex.filter((entry) => rawIds.has(String(entry.id)))); }
+      catch (error) {
+        if (state.purchaseMode === 'snkr-raw') searchRuntime.catalogError = error;
+        render();
+        return;
+      }
+      if (state.purchaseMode !== 'snkr-raw') { render(); return; }
       els.showSkippedInput.checked = false;
       els.sortInput.value = "snkrRawProfit-desc";
       document.querySelectorAll("[data-preset]").forEach((item) => item.classList.toggle("active", item === button));
@@ -7819,6 +7862,7 @@ document.querySelectorAll("[data-preset]").forEach((button) => {
       return;
     }
     state.purchaseMode = quickSearchMode(preset);
+    searchRuntime.catalogError = null;
     state.quickModeOrigin = '利用者選択';
     if (els.snkrRawReferenceControl) els.snkrRawReferenceControl.hidden = true;
     state.lowRiskAvailability = "all";
