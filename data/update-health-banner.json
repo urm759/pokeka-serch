@@ -1,20 +1,20 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-21T00:56:12.142Z",
+  "generatedAt": "2026-11-21T01:13:56.705Z",
   "sourceLastSuccessAt": "2026-11-20T21:48:20.990Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-11-21T00:49:16.010Z",
-    "lastSuccessAt": "2026-11-21T00:49:16.010Z",
-    "runId": "44846031818",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/44846031818"
+    "lastAttemptAt": "2026-11-21T01:13:56.697Z",
+    "lastSuccessAt": "2026-11-21T01:13:56.697Z",
+    "runId": "44847125736",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/44847125736"
   },
   "issues": [
     {
-      "key": "daily:source-failure",
-      "category": "確認が必要",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44776213725",
-      "reason": "Dailyの一部取得元が失敗・正常データは必須検証/保存/公開照合済み"
+      "key": "daily:workflow-failure",
+      "category": "取得処理の故障",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44846784320",
+      "reason": "Daily Fast Updateが1回連続失敗"
     },
     {
       "key": "safe:yuyutei:manual-action-required:GitHub ActionsからHTTP #。正規アクセス確認待ち",
@@ -156,7 +156,7 @@
     }
   ],
   "reasons": [
-    "Dailyの一部取得元が失敗・正常データは必須検証/保存/公開照合済み",
+    "Daily Fast Updateが1回連続失敗",
     "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち",
     "状態A価格確認: 2回連続でチェックポイント進捗なし",
     "カードラッシュ: pk-73737: HTTP 403",
