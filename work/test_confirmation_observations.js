@@ -8,3 +8,14 @@ const b=require('./camp_postpass').maintenanceBudget;assert.equal(b({batchSize:3
 console.log('PASS all-card in-run observation recovery, exact public hash gate, no duplicated/fabricated time, unmeasured null and bounded Camp allocation');
 
 assert.equal(m.collect({torecacamp:{}},{from:at,to:after}).scope.sources.torecacamp.confirmed,null,'missing original is not a measured0');
+const started='2026-11-01T06:01:00Z';
+const requested=m.attachCampRequests(collected.observations.torecacamp,{
+  startedAt:at,fixedEvidence:{planned:['normal','unreached','never-started'],attempted:['normal','unreached'],observations:[
+    {id:'normal',at:'2026-11-01T06:30:00Z',requestStartedAt:started},
+    {id:'unreached',at:'2026-11-01T06:30:00Z',requestStartedAt:started},
+  ]},
+},{from:at,to:after});
+assert.deepEqual(requested.reached,['normal']);
+assert.equal(requested.rows[0].requestStartedAt,started);
+assert.equal(requested.attempted.length,2);
+assert.equal(m.attachCampRequests([],{startedAt:after,fixedEvidence:{}},{from:at,to:started}),null);

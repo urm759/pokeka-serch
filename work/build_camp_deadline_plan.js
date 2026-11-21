@@ -19,4 +19,21 @@ function build(root=path.join(__dirname,'..'),now=Date.now()){
  const out={at:new Date(now).toISOString(),sourceRequests:0,llmCalls:0,codexCalls:0,cohort:fixed.length,requiredPerDay:576,headroomTargetPerDay:720,leadMs,sourceEarliestEligibleAt:new Date(earliest).toISOString(),pipelineAllowanceMs:timing.processingMs+90000,sourceHeld,recoveryError,summary:{plannedNextCycle:rows.filter(r=>r.plannedNextCycle).length,individual:rows.filter(r=>r.route==='known-product-url').length,bulk:rows.filter(r=>r.route==='known-collection-page').length,held:rows.filter(r=>r.route==='held').length,later:rows.filter(r=>r.route==='later-cycle').length,over6h:rows.filter(r=>r.goalDeadlineAt&&Date.parse(r.goalDeadlineAt)<now).length,over48h:rows.filter(r=>r.adoptionDeadlineAt&&Date.parse(r.adoptionDeadlineAt)<now).length},pages:plans.map(p=>({url:p.url,page:p.page,lane:p.lane,coverageKnown:p.coverageKnown,expectedIds:p.expectedIds,advanceCursor:p.advanceCursor})),rows,note:'Planning from dated saved membership only; no source recheck or price recovery. Earliest eligibility and conditional pipeline budget are not a guaranteed scheduled start/publication time. 4 list requests + at most17 priority details; at least18 of35 detail slots remain normal exploration. Unknown membership uses known URLs. Actual verification can reject changed/held specifications.'};
  fs.writeFileSync(path.join(root,'work/camp-deadline-plan.json'),JSON.stringify(out));return out;
 }
-module.exports={build};if(require.main===module){const r=build();console.log(JSON.stringify({at:r.at,summary:r.summary,pages:r.pages.map(p=>({page:p.page,lane:p.lane,expected:p.expectedIds.length})),sourceEarliestEligibleAt:r.sourceEarliestEligibleAt}));}
+function writeFormalDeadlines(root=path.join(__dirname,'..'),now=Date.now()){
+ const read=f=>JSON.parse(fs.readFileSync(path.join(root,f),'utf8'));
+ const q=require('./formal_freshness_queue'),targets=read('work/search-profile-targets.json'),cfg=read('work/priority-search-profiles.json');
+ const {formal,departures}=q.build(targets,cfg.focusProfileIds||[],now);
+ const iso=ms=>Number.isFinite(ms)?new Date(ms).toISOString():null;
+ const previous=(targets.pendingDepartures||[]).filter(r=>cfg.focusProfileIds?.includes(r.profile)).map(r=>({
+  id:r.id,profile:r.profile,lastQualifiedAt:r.beforeMeta?.at||null,previousMedianBuy:r.before?.efficiency?.buy??null,
+  previousStorePrice:r.before?.purchase?.price??null,storePriceObservedAt:r.before?.purchase?.priceObservedAt||null,reason:r.departureAudit?.status||null,
+  missing:r.departureAudit?.freshness||[],queued:departures.some(d=>d.id===r.id&&d.profile===r.profile),
+ }));
+ const value={at:iso(now),candidatesEvaluatedAt:targets.at||null,profileIds:cfg.focusProfileIds,formal:formal.map(r=>({
+  id:r.id,profiles:r.profiles,first:r.dependencies[0]?.field||null,firstSource:r.dependencies[0]?.source||null,firstDeadline:iso(r.earliestDeadlineAt),
+  dependencies:r.dependencies.map(({at,...d})=>({...d,deadlineAt:iso(at)})),
+ })),previous,basis:'固定の採用条件による既知期限。未確定および集約元時刻を個別再確認と見なさない。6時間は店舗の巡回目標、48時間は店舗価格・在庫の採用期限。以前の適合は現在候補・GOと別。'};
+ require('./acquisition_retry').atomicWrite(path.join(root,'data/formal-freshness-deadlines.json'),value,0);
+ return value;
+}
+module.exports={build,writeFormalDeadlines};if(require.main===module){const r=build();writeFormalDeadlines();console.log(JSON.stringify({at:r.at,summary:r.summary,pages:r.pages.map(p=>({page:p.page,lane:p.lane,expected:p.expectedIds.length})),sourceEarliestEligibleAt:r.sourceEarliestEligibleAt}));}

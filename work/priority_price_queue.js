@@ -252,11 +252,13 @@ function timingConfig(root = ROOT, now = Date.now(), sourceId = 'hareruya2') {
   const execution = read(root, "data/priority-price-execution.json");
   const cadence = read(root, "data/refresh-cadence-audit.json");
   const audit=read(root,'data/acquisition-progress-audit.json');
-  const push=audit.updateCapacity?.fixed192?.[sourceId]?.confirmationToPublicationStep;
+  const sample=audit.updateCapacity?.fixed192?.[sourceId];
+  const push=sample?.confirmationToPublicationStep,tail=sample?.publicationStepToVerification7d;
   const recent=now-Date.parse(audit.capacityAt);
   const measured=recent>=0&&recent<48*3600000&&push?.samples>=3?push.p90Ms:null;
-  // Keep the existing end-to-end allowance. Lengthen it if observed push alone exceeds it.
-  return {...config, pipelineBudgetMs: Math.max(24 * 60000,measured??0),
+  const verificationAllowance=measured!=null&&tail?.samples>=3&&Number.isFinite(tail.p90Ms)?tail.p90Ms:0;
+  // The verification timestamp is an upper bound on public availability.
+  return {...config, pipelineBudgetMs: Math.max(24 * 60000,(measured??0)+verificationAllowance),
     ...(now-Date.parse(cadence.checkedAt)<48*3600000 && cadence.observedSuccessfulIntervalMs>0 ? {observedSuccessfulIntervalMs:cadence.observedSuccessfulIntervalMs} : {}),
     ...(Number.isFinite(execution.startDelayMs) ? {observedStartDelayMs:Math.max(30*60000,execution.startDelayMs)} : {})};
 }

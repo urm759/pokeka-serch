@@ -26,8 +26,20 @@ assert.equal(annotated.lastSuccessAt,observed.lastSuccessAt);
 assert.equal(annotated.lastAttemptAt,observed.lastAttemptAt);
 assert(annotated.unpublishedData[0].status.includes('退避全体の完了とは別'));
 const {execute}=require('./price_refresh_gate');
-const partial=execute(root,()=>({sourceFailures:['buyback']}),{now:Date.now()});
+const marker=path.join(root,'data/price-catchup-status.json');
+const start=Date.now();
+let captured=false;
+const partial=execute(root,()=>{
+  assert(captured);
+  assert.equal(JSON.parse(fs.readFileSync(marker)).status,'running');
+  return {sourceFailures:['buyback']};
+},{now:start,beforeAcquire:()=>{
+  assert(!fs.existsSync(marker),'same-clock baseline must run before writing tracked data');
+  captured=true;
+}});
 assert.equal(partial.status,'acquired-saved');assert.equal(partial.acquisitionStatus,'partial-with-failure');
+fs.writeFileSync(path.join(root,'data/priority-price-execution.json'),JSON.stringify({startedAt:new Date(start).toISOString()}));
+assert.equal(execute(root,()=>assert.fail('cooldown acquired'),{now:start+60_000,beforeAcquire:()=>assert.fail('cooldown captured baseline')}).status,'skipped');
 assert.throws(()=>execute(root,()=>{throw Error('required calculation failed');},{now:Date.now()+3*3600000}),/required calculation/);
 const workflow=fs.readFileSync(path.join(__dirname,'../.github/workflows/watch-data-health.yml'),'utf8').replace(/\r\n/g,'\n');
 assert(workflow.includes('needs: [catchup, publication_check]\n    if: always()'),'monitor must retain failures and wait for receipt verification before capacity ingestion');

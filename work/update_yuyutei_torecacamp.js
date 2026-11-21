@@ -88,10 +88,12 @@ async function fetchText(url, options = {}) {
   const timeoutMs = Math.max(2000, Number(options.timeoutMs ?? process.env.SHOP_FETCH_TIMEOUT_MS ?? 10000));
   const intervalMs = Math.max(0, Number(options.intervalMs ?? 1100), Number(process.env.SHOP_ACCESS_INTERVAL_MS ?? 1100));
   let lastMetric = null;
+  let firstRequestAt = null;
   for (let attempt = 0; attempt <= retryLimit; attempt += 1) {
     const waitMs = Math.max(0, intervalMs - (Date.now() - lastRequestAt));
     if (waitMs) await sleep(waitMs);
     const startedAt = Date.now();
+    firstRequestAt ??= new Date(startedAt).toISOString();
     lastRequestAt = startedAt;
     try {
       const response = await fetch(url, {
@@ -100,7 +102,7 @@ async function fetchText(url, options = {}) {
       });
       const text = await response.text();
       lastMetric = {
-        url, httpStatus: response.status, fetchMs: Date.now() - startedAt,
+        url, requestStartedAt:firstRequestAt, httpStatus: response.status, fetchMs: Date.now() - startedAt,
         bytes: text.length, retryCount: attempt, timedOut: false,
       };
       if (response.ok) return { text, metric: lastMetric };
@@ -114,7 +116,7 @@ async function fetchText(url, options = {}) {
     } catch (error) {
       if (error.metric) throw error;
       lastMetric = {
-        url, httpStatus: null, fetchMs: Date.now() - startedAt,
+        url, requestStartedAt:firstRequestAt, httpStatus: null, fetchMs: Date.now() - startedAt,
         bytes: 0, retryCount: attempt, timedOut: error.name === "TimeoutError",
         error: error.message,
       };
@@ -732,6 +734,11 @@ async function updateTorecaCamp(cards, paths) {
   const medianCompletions=require('./profile_completion_routes').medianCompletionIds(requestedTargets,'torecacamp',formalIds);
   const deadlines=require('./formal_freshness_queue').forSource(requestedTargets,formalIds,'torecacamp');
   const fixed=require('./fixed_price_cohort').ids(ROOT,'torecacamp');
+  const fixedSet=new Set(fixed), plannedFixed=new Set(), attemptedFixed=new Set(), fixedObservations=new Map(), attemptedDetailUrls=new Set();
+  const markFixed=(set,ids)=>{for(const id of ids)if(fixedSet.has(id))set.add(id);};
+  const recordFixed=(entry,requestStartedAt)=>{
+    if(fixedSet.has(entry.cardId)&&requestStartedAt)fixedObservations.set(entry.cardId,{id:entry.cardId,at:entry.observedAt,requestStartedAt});
+  };
   const legacyRequested=[...new Set([...campRequestedIds(requestedTargets,comparisonIds,alternateRequests),...Object.keys(deadlines),...fixed,...require('./confirmed_camp_products').ids(ROOT)])];
   for(const id of legacyRequested)important.add(id);
   const bulk = require('./camp_collection_batch');
@@ -757,12 +764,14 @@ async function updateTorecaCamp(cards, paths) {
       const plans=bulk.plan({routes:bulkState.navigation.routes,cards,catalog,requested:legacyRequested,critical:criticalRequests,fixed,deadlines,
         retryByUrl:{...progress.knownUrlRetries,...progress.retryByUrl},state:bulkState.routes,membership:bulkState.pageMembership,now:Date.now(),leadMs:proactiveLead,
         due:postpass.due,signature:cardSignature,eligible:retryPolicy.eligible});
+      for(const plan of plans)markFixed(plannedFixed,plan.expectedIds||[]);
       for(const plan of plans) {
         if(Date.now()>=stopBy-Math.max(20000,runtimeLimitMs/2))break;
         const url=bulk.pageUrl(plan,plan.page),before=bulkState.routes[plan.url]||{};
         try {
           bulkRun.requests++;
           const response=await fetchText(url,{intervalMs:1100,retries:0});
+          markFixed(attemptedFixed,plan.expectedIds||[]);
           const at=new Date().toISOString(),proof=bulk.receipt(response.text,url,at,null);
           bulkState.lastPages=[...bulkState.lastPages,proof].slice(-4);
           const products=bulk.parse(response.text);
@@ -791,6 +800,7 @@ async function updateTorecaCamp(cards, paths) {
             const chosen=preferCampEntry(previousEntry,entry);
             if(chosen!==entry){page.omitted.otherProduct++;continue;}
             byId.set(card.id,entry);knownByUrl.set(detailUrl,entry);seenProductUrls.add(detailUrl);seenProductIds.add(String(product.id));
+            recordFixed(entry,response.metric.requestStartedAt);
             if(!previousEntry){linked++;page.newLinks++;bulkRun.newLinks++;}
             else if(entry.price!==previousEntry.price||entry.available!==previousEntry.available)updated++;
             bulkVerified.add(card.id);page.verified++;page.fixedVerified+=Number(fixed.includes(card.id));page.criticalVerified+=Number(criticalRequests.includes(card.id));
@@ -801,6 +811,7 @@ async function updateTorecaCamp(cards, paths) {
           catalog=[...byId.values()];write(paths.catalog,catalog);write(paths.progress,progress);
           recordFetchMetric('torecacamp',{...response.metric,source:'torecacamp',pageKey:url,startedAt:at,endedAt:new Date().toISOString(),status:'success',stage:'public-collection',productCount:products.length,verifiedCards:page.verified});
         }catch(error){
+          if(error.metric?.requestStartedAt)markFixed(attemptedFixed,plan.expectedIds||[]);
           const retry=retryPolicy.failure(before.retry,{error:error.message,httpStatus:error.metric?.httpStatus});
           bulkState.routes[plan.url]={...before,retry};failed++;
           const failure={url,at:new Date().toISOString(),error:error.message,httpStatus:error.metric?.httpStatus||null,stage:'public-collection'};
@@ -821,11 +832,15 @@ async function updateTorecaCamp(cards, paths) {
   bulkRun.verified=bulkVerified.size;bulkRun.elapsedMs=Date.now()-bulkStart;
   bulkState.lastRun=bulkRun;
   const legacyRecords=[];
-  if(!stoppingReason)for(const previousEntry of postpass.unreachedTargets(catalog,legacyRequested,{...progress.knownUrlRetries,...progress.retryByUrl},Date.now(),proactiveLead,criticalRequests,medianCompletions,deadlines).slice(0,Math.floor(detailLimit/2))) {
+  const priorityDetails=stoppingReason?[]:postpass.unreachedTargets(catalog,legacyRequested,{...progress.knownUrlRetries,...progress.retryByUrl},Date.now(),proactiveLead,criticalRequests,medianCompletions,deadlines).slice(0,Math.floor(detailLimit/2));
+  markFixed(plannedFixed,priorityDetails.map(r=>r.cardId));
+  for(const previousEntry of priorityDetails) {
     if(Date.now()>=stopBy-Math.max(15000,runtimeLimitMs/2))break;
     const url=previousEntry.detailUrl,record={id:previousEntry.cardId,url,startedAt:new Date().toISOString(),sourceSitemap:previousEntry.sourceSitemap??null,routeReason:'bulk-unreached-priority'};
     try {
-      const product=(await fetchJson(url+'.js',{intervalMs:1100})).value;detailFetched++;
+      attemptedDetailUrls.add(url);
+      const {value:product,metric:detailMetric}=await fetchJson(url+'.js',{intervalMs:1100});detailFetched++;
+      markFixed(attemptedFixed,[previousEntry.cardId]);
       if(!product?.id||typeof product.title!=='string'||!Array.isArray(product.variants))throw new Error('商品JSON形式変更・正規確認待ち');
       if(previousEntry.productId!=null&&String(previousEntry.productId)!==String(product.id))throw new Error('商品ID不一致・確定済みURLの再照合待ち');
       const matches=(byNumber.get(campSignature(product).cardNo)||[]).filter(c=>campMatchesCard(c,{id:product.id,title:product.title,tags:Array.isArray(product.tags)?product.tags:[]}));
@@ -838,9 +853,10 @@ async function updateTorecaCamp(cards, paths) {
       const q=campPriceQuarantine(matches[0],entry.price);Object.assign(entry,{priceQuarantined:q.quarantined,quarantineReason:q.reason,marketPriceRatio:q.ratio});
       if(require('./quarantine_shop_identity').recordReference(ROOT,'torecacamp',entry,matches[0]))referenceUpdated++;
       const chosen=preferCampEntry(previousEntry,entry);byId.set(entry.cardId,chosen);
-      if(chosen===entry){updated+=Number(entry.price!==previousEntry.price||entry.available!==previousEntry.available);stateA+=Number(!entry.referenceOnly);knownByUrl.set(url,entry);}
+      if(chosen===entry){updated+=Number(entry.price!==previousEntry.price||entry.available!==previousEntry.available);stateA+=Number(!entry.referenceOnly);knownByUrl.set(url,entry);recordFixed(entry,detailMetric.requestStartedAt);}
       delete progress.knownUrlRetries[url];Object.assign(record,{status:'verified',confirmedAt:entry.observedAt,price:entry.price,available:entry.available,adopted:chosen===entry});
     }catch(error){
+      if(error.metric?.requestStartedAt)markFixed(attemptedFixed,[previousEntry.cardId]);
       failed++;const r=retryPolicy.failure(progress.knownUrlRetries[url],{error:error.message,httpStatus:error.metric?.httpStatus});
       progress.knownUrlRetries[url]={...r,url};Object.assign(record,{status:r.status,reason:r.reason});
       if(r.scope==='source'){progress.sourceRetry=r;stoppingReason=r.reason;}
@@ -909,6 +925,7 @@ async function updateTorecaCamp(cards, paths) {
           if (maintenanceMode) postpass.checkpoint(progress,sitemapUrls.length);
         };
         if (retryOnly && (sitemapEntry.url !== due.url || !retryPolicy.eligible(progress.retryByUrl[sitemapEntry.url]))) continue;
+        if (attemptedDetailUrls.has(sitemapEntry.url) || !retryPolicy.eligible(progress.knownUrlRetries[sitemapEntry.url])) { advance(); continue; }
         if (!retryOnly && progress.retryByUrl[sitemapEntry.url]) { advance(); continue; }
         if (!retryOnly && !retrySitemap && !sitemapEntry.priorityRefresh) { progress.currentSitemapIndex = sitemapIndex; progress.currentEntryIndex = sitemapEntry.normalIndex??entryIndex; }
         const existingProduct = knownByUrl.get(sitemapEntry.url);
@@ -929,8 +946,12 @@ async function updateTorecaCamp(cards, paths) {
         metric.stage = "fetch-product";
         let productResponse;
         try {
+          attemptedDetailUrls.add(sitemapEntry.url);
+          markFixed(plannedFixed,[matches[0].id]);
           productResponse = await fetchJson(`${sitemapEntry.url}.js`, { intervalMs: 1100 });
+          markFixed(attemptedFixed,[matches[0].id]);
         } catch (error) {
+          if(error.metric?.requestStartedAt)markFixed(attemptedFixed,[matches[0].id]);
           failed += 1;
           const retry = retryPolicy.failure(progress.retryByUrl[sitemapEntry.url], { error: error.message, httpStatus: error.metric?.httpStatus });
           progress.retryByUrl[sitemapEntry.url] = { ...retry, url: sitemapEntry.url, sitemapIndex:productSitemapIndex, entryIndex:productEntryIndex };
@@ -978,6 +999,7 @@ async function updateTorecaCamp(cards, paths) {
         if (!previousEntry && chosen === entry) linked += 1;
         else if (chosen === entry && (previousEntry.detailUrl !== entry.detailUrl || previousEntry.price !== entry.price || previousEntry.available !== entry.available)) updated += 1;
         byId.set(card.id, chosen);
+        if(chosen===entry)recordFixed(entry,productResponse.metric.requestStartedAt);
         if (maintenanceMode) {
           progress.maintenance.refreshed += 1;
           if (!previousEntry) progress.maintenance.newLinks += 1;
@@ -1081,6 +1103,7 @@ async function updateTorecaCamp(cards, paths) {
     cumulativeProductCount: seenProductUrls.size, estimatedTotalProducts, estimatedRemainingProducts,
     cumulativeMatchedCount: nextCatalog.length, hasMorePages: maintenanceMode || !crawlComplete, crawlComplete,
     firstPassComplete, retryQueue: [...Object.values(progress.retryByUrl || {}),...Object.values(progress.knownUrlRetries||{})],legacyRecords,collectionBatch:bulkRun,
+    fixedEvidence:{planned:[...plannedFixed],attempted:[...attemptedFixed],observations:[...fixedObservations.values()]},
     maintenanceMode, maintenance:progress.maintenance||null, firstPassCompletedAt:progress.firstPassCompletedAt||null,
     maintenancePendingCount: maintenanceMode ? nextCatalog.filter(entry=>postpass.due(entry,important.has(entry.cardId))).length : null,
     priceMigration: priceMigration.audit,
