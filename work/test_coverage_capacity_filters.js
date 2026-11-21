@@ -44,3 +44,32 @@ assert.equal(m.buybackSearch({meanWindows:averageFixture},{buyback7RatioMin:1.1,
 console.log('PASS coverage/throughput, actual timestamps/dedup, slim inventory provenance, reference/stale/day-aware ratio filters, URL/zero/unrounded and finance separation');
 
 require('./test_confirmation_observations');
+
+// A new verified receipt must reach the public capacity projection in the same
+// observer cycle; stored quote times alone never count as published updates.
+{
+ const path=require('node:path'),os=require('node:os'),crypto=require('node:crypto'),root=fs.mkdtempSync(path.join(os.tmpdir(),'verified-capacity-'));
+ const put=(file,value)=>{fs.mkdirSync(path.dirname(path.join(root,file)),{recursive:true});fs.writeFileSync(path.join(root,file),JSON.stringify(value));};
+ try {
+  const cards=Array.from({length:144},(_,i)=>({id:'fixed-'+i,name:'テスト RR [S1 '+String(i+1).padStart(3,'0')+'/200]',price:1000}));
+  put('data/pokemon-cards.json',cards);put('data/card-catalog-completion.json',{cards:Object.fromEntries(cards.map(r=>[r.id,{s:'分析可能',m:[]}])),summary:{analyzable:144}});
+  put('work/camp-fixed-cohort.json',{version:1,source:'torecacamp',ids:cards.map(r=>r.id)});
+  put('data/torecacamp-stock-summary.json',{cards:Object.fromEntries(cards.map(r=>[r.id,{priceObservedAt:at}]))});
+  put('work/verified-price-cadence-history.json',{runs:[]});
+  assert.equal(c.build(root,now).updateCapacity.fixed192.torecacamp.verifiedCohort24h,0,'unverified source confirmations remain uncounted');
+  const receipt={key:'catchup',runId:1,recordedAt:at,publicationKind:'verified-non-scheduled-publication',observationScope:{version:2,from:new Date(now-3600000).toISOString(),to:at},observations:{torecacamp:[{id:'fixed-0',at},{id:'fixed-1',at:'2026-10-31'}]}};
+  put('work/verified-price-cadence-history.json',{runs:[receipt,{...receipt,runId:2}]});
+  const files=['data/pokemon-cards.json','data/card-catalog-completion.json','data/torecacamp-stock-summary.json','work/verified-price-cadence-history.json'],hash=()=>files.map(f=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,f))).digest('hex'));
+  const before=hash(),result=c.build(root,now),saved=JSON.parse(fs.readFileSync(path.join(root,'data/acquisition-progress-audit.json')));
+  assert.equal(result.updateCapacity.fixed192.torecacamp.verifiedCohort24h,1,'new receipt is reflected, copied rows and date-only values excluded');
+  assert.equal(saved.updateCapacity.fixed192.torecacamp.verifiedCohort24h,1);
+  assert.equal(result.updateCapacity.fixed192.torecacamp.targets,144);assert.equal(result.updateCapacity.fixed192.torecacamp.requiredConfirmationsPerDay,576);assert.equal(result.updateCapacity.fixed192.torecacamp.capacityWith25PctHeadroom,720);
+  assert.deepEqual(hash(),before,'capacity refresh changes neither originals nor source confirmation dates');
+  const watcher=fs.readFileSync(path.join(__dirname,'watch_update_health.js'),'utf8');
+  assert(watcher.indexOf('recordVerified(ROOT')<watcher.indexOf("require('./coverage_capacity').build(ROOT)"));
+  assert(watcher.indexOf("require('./effective_price_cadence').build(ROOT)")<watcher.indexOf("require('./coverage_capacity').build(ROOT)"));
+  console.log('PASS same-cycle verified capacity projection, fixed 144/576/720, copied/date-only exclusion and immutable source evidence');
+ } finally {
+  assert.equal(path.dirname(path.resolve(root)),path.resolve(os.tmpdir()));assert(path.basename(root).startsWith('verified-capacity-'));fs.rmSync(root,{recursive:true,force:true});
+ }
+}
