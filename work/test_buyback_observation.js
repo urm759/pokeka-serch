@@ -7,6 +7,13 @@ for(const title of ['かがやくリザードン K S12a 011/071','かがやく�
   assert.equal(builder.resolveSavedItem({...unbracketed,name:title,number:title},[radiant]).cardId,undefined,title);
 assert.equal(builder.resolveSavedItem({...unbracketed,setCode:'S12A'},[radiant]).cardId,undefined,'bare printed set must not hide a conflicting declared set');
 assert.equal(builder.resolveSavedItem(unbracketed,[radiant,{...radiant,id:'duplicate'}]).cardId,undefined);
+const mimikyu=require('../data/pokemon-cards.json').find(c=>c.id==='pk-23009');
+const exact='ミミッキュV CSR [S8b 233/184]';
+assert.equal(builder.resolveSavedItem({name:exact},[mimikyu]).method,'verified-official-print-name');
+assert.equal(builder.resolveSavedItem({name:'ミミッキュV CSR 233/184'},[mimikyu]).cardId,mimikyu.id);
+for(const title of ['ミミッキュV 233/184','ミミッキュV CSR [S8a 233/184]','ミミッキュV CSR [S8b 234/184]','ミミッキュV RR [S8b 233/184]','ミミッキュV CSR [S8b 233/184] 英語','ミミッキュV CSR [S8b 233/184] ミラー'])
+  assert.equal(builder.resolveSavedItem({name:title},[mimikyu]).cardId,undefined,title);
+assert.equal(builder.resolveSavedItem({name:exact},[mimikyu,{...mimikyu,id:'duplicate'}]).cardId,undefined);
 const c=require('../data/pokemon-cards.json').find(c=>c.id==='pk-20743');
 const item={cardId:c.id,name:'グレイシアV SA 077/069',price:30000,active:true,observedAt:at};
 const source={shops:{a:{name:'a',fulfilment:'store',refreshed:true,lastSuccess:at,lastAttempt:at},b:{name:'b',fulfilment:'store',refreshed:true,lastSuccess:at,lastAttempt:at}},cards:{[c.id]:{shops:{a:{price:30000,priceDate:'2026-10-14',listingActive:true,matchConfidence:'high'},b:{price:30000,priceDate:'2026-10-14',listingActive:true,matchConfidence:'high'}}}}};
