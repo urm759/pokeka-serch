@@ -5764,7 +5764,7 @@ function windowTrendMarkup(label, shortDays, longDays, short, long, options) {
   return '<small><b>'+escapeHtml(label)+' '+shortDays+'日÷'+longDays+'日</b> <span class="buyback-ratio '+value.tone+'">'
     +(value.ratio===null?'判断材料不足／'+escapeHtml(value.reason):value.ratio.toFixed(3)+'倍・'+value.label+(value.reference?'（部分期間の参考）':''))
     +'</span>／'+(short?.days??'—')+'・'+(long?.days??'—')+'観測日'
-    +(short?.start&&long?.start?'／'+escapeHtml(short.start+'〜'+short.end+'・'+long.start+'〜'+long.end)+'／最終 '+escapeHtml(formatJstTimestamp(long.latest)):'')+'</small>';
+    +(short?.start&&long?.start?'／'+escapeHtml(short.start+'〜'+short.end+'・'+long.start+'〜'+long.end)+'／最終 '+escapeHtml(long.latest?.includes('T')?formatJstTimestamp(long.latest):long.latest||'不明'):'')+'</small>';
 }
 function pairedPriceTrendMarkup(trend,id) {
   const card=state.cards.find(row=>row.id===id);
