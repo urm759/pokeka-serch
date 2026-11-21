@@ -547,6 +547,7 @@ function campSignature(product) {
   const standard = title.match(/(\d{1,4}(?:\s*-\s*\d{1,4})?\s*\/\s*\d{1,4})/);
   const promo = title.match(/(\d{1,4})\s*\/\s*([A-Za-z0-9]+(?:-[A-Za-z0-9]+)*-P)\b/i);
   const titleSet = title.match(/(?:^|\s)([A-Za-z]{1,5}\d{0,3}[A-Za-z]?(?:-[A-Za-z0-9]+)?)\s+\d{1,4}(?:\s*-\s*\d{1,4})?\s*\/\s*\d{1,4}/i);
+  const savedTitleSet = title.match(/(?:〉|\s)\[([A-Za-z]{1,5}\d{0,3}[A-Za-z]?(?:-[A-Za-z0-9]+)?)\]\s*$/i);
   const tagCodes = (product?.tags || []).map((tag) => {
     const clean = String(tag || "").replace(/^#/, "").trim();
     const prefix = clean.split("_")[0];
@@ -555,6 +556,7 @@ function campSignature(product) {
   const setCodes = [...new Set([
     ...tagCodes,
     titleSet?.[1] ? normalizeSetCode(titleSet[1]) : "",
+    savedTitleSet?.[1] ? normalizeSetCode(savedTitleSet[1]) : "",
     promo?.[2] ? normalizeSetCode(promo[2]) : "",
   ].filter(Boolean))];
   return { title, cardNo: String(standard?.[1] || promo?.[1] || "").replace(/\s/g, ""), setCodes };

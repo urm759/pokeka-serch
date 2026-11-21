@@ -6,7 +6,7 @@ function project(targets,previous={},options={}){
     const waiting=requests.length?requests.some(t=>t.automatic)?'自動再確認・'+[...new Set(requests.filter(t=>t.automatic).flatMap(t=>t.sourceTargets?.map(s=>s.source)||[t.source]))].join('／'):'保留・取得経路/仕様の確認待ち':roots.includes('out-of-stock')?'在庫探索・通常巡回':repair.length?'補完経路の確認待ち':'条件不合格・通常巡回';
     rows.set(r.profile+':'+r.id,{id:r.id,name:options.names?.[r.id]||rows.get(r.profile+':'+r.id)?.name||r.name||null,profile:r.profile,lastQualifiedAt:r.beforeMeta?.at||null,lastPrice:b.purchase?.price??b.efficiency?.buy??null,lastPriceAt:b.purchase?.priceObservedAt||null,
       category:roots.includes('acquisition-failure')?'取得エラー':roots.includes('expired-price')?'鮮度切れ・再確認待ち':roots.includes('out-of-stock')?'在庫待ち':roots.includes('missing-data')?'不足・再確認待ち':'採算・品質条件による不採用',
-      missing:repair,reasons:r.after?.exclusions||[],waitingStatus:waiting,lastCheckedAt:r.lastCheckedAt||targets.at});}
+      missing:repair,reasons:r.after?.exclusions||[],freshness:r.departureAudit?.freshness||[],waitingStatus:waiting,lastCheckedAt:r.lastCheckedAt||targets.at});}
   for(const key of current)rows.delete(key);
   const focusProfileIds=options.focusProfileIds||(targets.profiles||[]).filter(p=>!p.id.endsWith('-specified')).map(p=>p.id);
   return {version:1,at:targets.at,focusProfileIds,rows:[...rows.values()].map(r=>({...r,name:options.names?.[r.id]||r.name||null})),note:'前回適合の保存参考。現在候補・購入可能価格・GOへ不使用。正式2条件を優先し、旧条件/比較モードの履歴は別。最終適合・価格確認・監査時刻を区別し、根拠なしは不明。'};
