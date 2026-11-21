@@ -20,6 +20,32 @@ assert.equal(lead().leadMs,10440000);
 const interval=intervalMinimum([{id:'test',lastConfirmedAt:new Date(now-5*3600000).toISOString()}],['test'],now,now+2*3600000);
 assert.equal(interval.minimumFreshnessPct,0); assert.equal(interval.maxOverdueHours,1);
 assert.equal(intervalMinimum([],[],null,now),null);
+const formalQueue=require('./formal_freshness_queue');
+const HOUR=3600000,clock=new Date(now-24*HOUR).toISOString();
+const targetProfiles={profiles:[{id:'formal',urlsMatched:['a','b','c'],qualifiedFacts:Object.fromEntries(['a','b','c'].map(id=>[id,{
+ psa10ObservedAt:clock,psa10ClockScope:id==='c'?'card':'model-source-fallback'
+}]))}]};
+const formal=formalQueue.build(targetProfiles,['formal'],now).formal;
+assert.equal(formal[0].dependencies[0].ageHours,24);
+assert.equal(formal[0].dependencies[0].refreshAt,now);
+assert.equal(formal[0].dependencies[0].at,now+6*HOUR);
+assert.deepEqual(formalQueue.sharedClockWarnings(formal,now),[]);
+assert.match(formalQueue.sharedClockWarnings(formal,now+1)[0].reason,/正式候補2枚の同時期限/);
+const withEarlierStore={...formal[0],id:'other',earliestDeadlineAt:now+HOUR};
+assert.match(formalQueue.sharedClockWarnings([...formal,withEarlierStore],now+1)[0].reason,/正式候補2枚の同時期限.*計3枚/);
+const root=path.join(__dirname,'..');
+const savedPlan=require('./build_camp_deadline_plan').build(root,Date.parse('2026-11-21T16:12:19.536Z'),{write:false});
+assert.equal(savedPlan.cohort,144);
+assert.deepEqual([savedPlan.requiredPerDay,savedPlan.headroomTargetPerDay],[576,720]);
+assert.equal(savedPlan.summary.over6h,savedPlan.rows.filter(r=>r.goalDeadlineAt&&Date.parse(r.goalDeadlineAt)<Date.parse(savedPlan.at)).length);
+assert.equal(savedPlan.summary.over48h,savedPlan.rows.filter(r=>r.adoptionDeadlineAt&&Date.parse(r.adoptionDeadlineAt)<Date.parse(savedPlan.at)).length);
+assert(savedPlan.rows.every(r=>!r.goalDeadlineAt || Date.parse(r.goalDeadlineAt)-Date.parse(r.lastConfirmedAt)===6*HOUR));
+assert(savedPlan.rows.every(r=>!r.adoptionDeadlineAt || Date.parse(r.adoptionDeadlineAt)-Date.parse(r.lastConfirmedAt)===48*HOUR));
+for(const plan of [savedPlan,...Object.values(savedPlan.sources)]) {
+ assert.equal(plan.summary.formal.deps,plan.formalRows.length);
+ assert.equal(plan.summary.formal.planned,plan.formalRows.filter(r=>r.plannedNextCycle).length);
+ assert(plan.formalRows.every(r=>Date.parse(r.refreshAt)-Date.parse(r.lastConfirmedAt)===24*HOUR));
+}
 const policy=require('./snkr_access_policy.js');
 const temporary=fs.mkdtempSync(path.join(os.tmpdir(),'snkr-policy-'));
 assert.equal(policy.permitted(temporary),false);

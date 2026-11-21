@@ -10,4 +10,28 @@ assert(covered.some(p=>p.lane==='continuation')&&covered.some(p=>p.lane==='rotat
 const staleMembership={[routes[0].url]:{1:{...membership[routes[0].url][1],observedAt:new Date(now-8*86400000).toISOString()}}};
 assert(bulk.plan({...parameters,membership:staleMembership}).filter(p=>p.set==='s6a').every(p=>!p.coverageKnown&&p.expectedIds.length===0),'old membership is a hint, never a promised fresh confirmation');
 const source=fs.readFileSync(path.join(__dirname,'run_priority_price_refresh.js'),'utf8');assert(source.includes("require('./fixed_price_cohort').ids(ROOT,'torecacamp')"),'fixed maintenance participates in actual Priority acquisition gate');
+const HOUR=3600000,at=hours=>new Date(now-hours*HOUR).toISOString();
+const refreshRows=[
+  {cardId:'large0',detailUrl:catalog[0].detailUrl,observedAt:at(40)},
+  {cardId:'last-median',detailUrl:catalog.find(r=>r.cardId==='last-median').detailUrl,observedAt:at(20)},
+  {cardId:'ordinary',detailUrl:catalog.at(-1).detailUrl,observedAt:at(44)},
+];
+const deadlines=Object.fromEntries(refreshRows.slice(1).map(r=>{
+  const observedAt=Date.parse(r.observedAt);
+  return [r.cardId,{formalCandidate:true,url:r.detailUrl,observedAt,refreshAt:observedAt+24*HOUR,deadlineAt:observedAt+48*HOUR}];
+}));
+const refreshMembership=Object.fromEntries([0,1,3].map((i,j)=>[routes[i].url,{1:{observedAt:at(3),members:[refreshRows[j].cardId]}}]));
+const scheduled={...parameters,routes:[routes[0],routes[1],routes[3]],catalog:refreshRows,state:{},membership:refreshMembership,leadMs:4*HOUR,critical:[],deadlines};
+assert.equal(bulk.plan(scheduled)[0].set,'s8','hard deadline <= lead precedes 24h reconfirmation');
+assert.equal(bulk.plan({...scheduled,routes:scheduled.routes.slice(0,2)})[0].set,'s-p','20h old formal evidence enters the 24h lead window');
+assert.equal(bulk.plan({...scheduled,routes:scheduled.routes.slice(0,2),leadMs:4*HOUR-1})[0].set,'s6a','admission does not start before the lead boundary');
+const sorted=post.unreachedTargets(refreshRows,refreshRows.map(r=>r.cardId),{},now,4*HOUR,[],['large0'],deadlines);
+assert.deepEqual(sorted.map(r=>r.cardId),['ordinary','last-median','large0']);
+const budget=post.maintenanceBudget({intervalMs:1100,batchSize:100});
+assert.equal(budget.batchSize,35);
+assert.equal(Math.floor(budget.batchSize/2),17);
+assert.equal(bulk.plan({...parameters,limit:99}).length,4);
+assert.equal(post.priorityMaintenance(refreshRows,['last-median'],{},{lastAttemptAt:at(2-1/HOUR)},now,4*HOUR).due,false);
+assert.equal(post.priorityMaintenance(refreshRows,['last-median'],{},{lastAttemptAt:at(2)},now,4*HOUR).due,true);
+assert.equal(post.priorityMaintenance(refreshRows,['last-median'],{sourceRetry:retry.failure({},{httpStatus:403},now)},{},now,4*HOUR).due,false);
 console.log('PASS fixed144, deadline before set size, continuation/exploration within four requests and access holds preserved');
