@@ -16,7 +16,7 @@ for (const parameter of ["filterExpRoi", "filterExpProfit", "preset", "riskMode"
   assert.ok(app.includes(`"${parameter}"`), `URLパラメータ ${parameter} を維持`);
 }
 for (const label of [
-  "現在仕入値 ${cardPriceText}",
+  "旧基準買値 ${cardPriceText}で購入",
   "現在PSA10相場 ¥",
   "中央予測 ¥",
   "供給ストレス ¥",
