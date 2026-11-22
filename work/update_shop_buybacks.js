@@ -681,6 +681,8 @@ async function main({ rebuildSaved = false } = {}) {
       responseCapture=null;
     }
   }
+  const printedNumber = require('./buyback_printed_number');
+  const numberHeld = printedNumber.hold(results,cards);
   const outcome = holdReview.receipt(results,failures,recheck);
   if (!results.length) {
     for (const failure of failures) {
@@ -729,7 +731,12 @@ async function main({ rebuildSaved = false } = {}) {
     let total90 = 0;
     for (const [shopId, entries] of Object.entries(history.shops)) {
       if(!activeShopIds.has(shopId)) continue;
-      const values = entries[card.id] || [];
+      const savedValues = entries[card.id] || [];
+      const priorQuote = previousSummary.cards?.[card.id]?.shops?.[shopId];
+      const heldNow = numberHeld.has(`${shopId}:${card.id}`) && !currentLinksByShop[shopId]?.get(card.id)?.active;
+      const numberHeldThrough = heldNow ? history.dates.at(-1) : priorQuote?.numberHeldThrough;
+      const relinkedDay = numberHeldThrough && currentLinksByShop[shopId]?.get(card.id)?.active ? currentLinksByShop[shopId].get(card.id).date : null;
+      const values = printedNumber.countedValues(savedValues, history.dates, numberHeldThrough, relinkedDay);
       const c7 = countRecent(values, history.dates, 7);
       const c30 = countRecent(values, history.dates, 30);
       const c90 = countRecent(values, history.dates, 90);
@@ -739,15 +746,15 @@ async function main({ rebuildSaved = false } = {}) {
         total7 += Number(preserved.c7 || 0); total30 += Number(preserved.c30 || 0); total90 += Number(preserved.c90 || 0);
         continue;
       }
-      if (!c7 && !c30 && !c90) continue;
+      if (!c7 && !c30 && !c90 && !(numberHeldThrough && countRecent(savedValues, history.dates, 90))) continue;
       const latestPriceIndex = values.findLastIndex((value) => Number(value) > 0);
       const currentListingAbsent = require('./buyback_listing_refresh').unavailable(results.find(result => result.shop.id === shopId), currentLinksByShop[shopId], card.id, preserved);
       const currentPrice = currentListingAbsent ? null : latestPriceIndex >= 0 ? Number(values[latestPriceIndex]) : null;
       const previousMatch = previousSummary.cards?.[card.id]?.shops?.[shopId];
       const currentMatch = currentLinksByShop[shopId]?.get(card.id) || (previousMatch ? { ...previousMatch, matchScore: previousMatch.matchScore } : null);
-      const identityHeld=currentMatch?.identityHeld === true || !currentLinksByShop[shopId]?.has(card.id) && preserved?.identityHeld === true;
+      const identityHeld=heldNow || currentMatch?.identityHeld === true || !currentLinksByShop[shopId]?.has(card.id) && preserved?.identityHeld === true;
       const availabilityHeld=currentMatch?.availabilityHeld === true;
-      const quarantined = quarantine[`${shopId}:${card.id}`] || (identityHeld ? {reason:'最新取得で商品照合が変更・保留。旧対応を価格へ再採用しない'} : availabilityHeld ? {reason:'受付数量の項目未取得・0件や買取終了とは別保留'} : null);
+      const quarantined = quarantine[`${shopId}:${card.id}`] || (identityHeld && numberHeldThrough ? {reason:'商品名のカード番号が不一致・照合保留。旧対応を価格・平均へ採用しない'} : identityHeld ? {reason:'最新取得で商品照合が変更・保留。旧対応を価格へ再採用しない'} : availabilityHeld ? {reason:'受付数量の項目未取得・0件や買取終了とは別保留'} : null);
       shops[shopId] = {
         c7, c30, c90, price: currentPrice,
         listingActive: identityHeld || availabilityHeld ? null : currentListingAbsent ? false : currentPrice > 0 ? true : null,
@@ -763,6 +770,7 @@ async function main({ rebuildSaved = false } = {}) {
         quarantined: Boolean(quarantined),
         quarantineReason: quarantined?.reason || null,
         ...(identityHeld ? {identityHeld:true} : {}),
+        ...(numberHeldThrough ? {numberHeldThrough} : {}),
         ...(availabilityHeld ? {availabilityHeld:true} : {}),
         observed7: observedRecent(history.observedByShop[shopId], latestHistoryDate, 7),
         observed30: observedRecent(history.observedByShop[shopId], latestHistoryDate, 30),

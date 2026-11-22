@@ -13,12 +13,7 @@ function printedTitle(value) {
 function savedPrintEvidence(item) {
   const identity=require('./card_identity'),norm=identity.normalizeToken;
   const title=printedTitle(identity.normalizeWidth(item.name)),declared=printedTitle(identity.normalizeWidth(item.number));
-  const numbers=text=>{
-    const result=[...text.matchAll(/(?<![\d/])(\d{1,3})\s*\/\s*(\d{1,3}|(?:XY|SM|SV|BW|S)-P)(?![\dA-Z/-])/ig)]
-      .map(m=>`${Number(m[1])}/${/^\d+$/.test(m[2])?Number(m[2]):m[2].toUpperCase()}`);
-    for(const m of text.matchAll(/(?:^|\[)\s*((?:XY|SM|SV|BW|S)-P)\s+(\d{1,3})(?=\s*\]|$)/ig))result.push(`${Number(m[2])}/${m[1].toUpperCase()}`);
-    return result;
-  };
+  const {numbers}=require('./buyback_printed_number');
   const declaredPrints=numbers(declared),prints=[...new Set([...numbers(title),...declaredPrints])],serial=prints[0];
   const promo=serial?.match(/\/((?:XY|SM|SV|BW|S)-P)$/)?.[1];
   const setNorm=value=>{
@@ -155,6 +150,9 @@ function capture(saved,catalog,source,cards) {
       audit.accepted++;
     }
   }
+  // Held products have left the matched catalog; keep their period means held too.
+  for(const [id,row] of Object.entries(source.cards||{}))for(const [shop,quote] of Object.entries(row.shops||{}))
+    if(quote.identityHeld&&quote.numberHeldThrough)(audit.holds[id]||={})[shop]=true;
   return {saved:next,audit};
 }
 function aggregate(saved,source,cards,now=Date.now()) {
