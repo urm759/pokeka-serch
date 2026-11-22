@@ -1,15 +1,21 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-22T16:57:00.690Z",
+  "generatedAt": "2026-11-22T17:03:04.362Z",
   "sourceLastSuccessAt": "2026-11-22T12:40:26.305Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-11-22T16:22:41.624Z",
-    "lastSuccessAt": "2026-11-22T16:22:41.624Z",
-    "runId": "45040146476",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/45040146476"
+    "lastAttemptAt": "2026-11-22T17:03:04.354Z",
+    "lastSuccessAt": "2026-11-22T17:03:04.354Z",
+    "runId": "45045566786",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/45045566786"
   },
   "dailyOutcomes": [
+    {
+      "runId": "45041079086",
+      "attempt": 1,
+      "state": "published",
+      "publicVerifiedAt": "2026-11-22T17:02:31.332Z"
+    },
     {
       "runId": "44963833175",
       "attempt": 1,
@@ -21,32 +27,13 @@
       "attempt": 1,
       "state": "source-warning",
       "publicVerifiedAt": "2026-11-21T16:20:35.897Z"
-    },
-    {
-      "runId": "44846784320",
-      "attempt": 1,
-      "state": "recovered",
-      "publicVerifiedAt": "2026-11-21T02:34:30Z"
     }
   ],
   "dailyOutcomeLabels": {
     "unclassified-failure": "失敗工程未確認",
-    "source-warning": "一部取得元警告・正常分は公開照合済み",
-    "recovered": "退避原票から回収・Pages確認済み"
+    "source-warning": "一部取得元警告・正常分は公開照合済み"
   },
   "issues": [
-    {
-      "key": "daily:unclassified-failure",
-      "category": "確認が必要",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44963833175",
-      "reason": "Daily：失敗工程未確認"
-    },
-    {
-      "key": "daily:run-stale",
-      "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44963833175",
-      "reason": "日次更新の成功が24時間以上なし"
-    },
     {
       "key": "safe:yuyutei:manual-action-required:GitHub ActionsからHTTP #。正規アクセス確認待ち",
       "category": "アクセス・手動対応待ち",
@@ -86,7 +73,7 @@
     {
       "key": "source:snkrRaw:stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44921733656",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/45041079086",
       "reason": "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）"
     },
     {
@@ -202,8 +189,6 @@
     }
   ],
   "reasons": [
-    "Daily：失敗工程未確認",
-    "日次更新の成功が24時間以上なし",
     "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち",
     "状態A価格確認: 2回連続でチェックポイント進捗なし",
     "カードラッシュ: pk-73737: HTTP 403",
