@@ -48,9 +48,20 @@ assert(source.includes('digest !== expected') && source.includes('if (uiDataInva
 const init = source.slice(source.indexOf('async function init()'));
 for (const field of ['candidate-daily-audit', 'candidate-availability-audit', 'market-backtest-summary', 'update-history']) assert(!init.slice(0,init.indexOf('// Browser event bindings')).includes(`fetchJsonMaybe("./data/${field}.json")`), 'closed audits must not load at startup');
 assert(fs.readFileSync(path.join(__dirname, 'finalize_update_status.js'), 'utf8').includes("require('./build_ui_data.js').build(ROOT)"));
+const historyFile = manifest.aliases['data/operational-limit-history.json'];
+let snapshot = manifest;
+if (!Array.isArray(read(historyFile).repeats)) {
+  // A code-only change, or a run started on older code, leaves the history in
+  // the plain v2 form. The next build may re-encode that one file and nothing else.
+  snapshot = require('./build_ui_data.js').build(root);
+  assert.deepEqual(Object.keys(snapshot.hashes).sort(), Object.keys(manifest.hashes).sort());
+  assert.deepEqual(Object.keys(snapshot.hashes).filter(file => snapshot.hashes[file] !== manifest.hashes[file]), [historyFile], 're-encoding changes only the history projection');
+  assert.deepEqual(codec.decode(read(historyFile)), slim, 're-encoded history restores every row exactly');
+}
+assert(Array.isArray(read(historyFile).repeats), 'limit history stores repeated rows once');
 const mtimes = Object.fromEntries(Object.values(manifest.aliases).map(file=>[file,fs.statSync(path.join(root,file)).mtimeMs]));
 const rebuilt = require('./build_ui_data.js').build(root);
-assert.equal(rebuilt.revision, manifest.revision, 'unchanged inputs must not create a new snapshot version');
+assert.equal(rebuilt.revision, snapshot.revision, 'unchanged inputs must not create a new snapshot version');
 for (const [file,mtime] of Object.entries(mtimes)) assert.equal(fs.statSync(path.join(root,file)).mtimeMs,mtime,'unchanged summaries must not be rewritten');
 console.log(JSON.stringify({ summaryFiles: SUMMARY.length, nullPreserved: true, pinnedRevision: manifest.revision, olderCapsPreserved: true }));
 codec.decodeAsync(codec.encode({ cards: Object.fromEntries(Array.from({length:500},(_,i)=>['pk-'+i,{value:i,missing:null}])) }))

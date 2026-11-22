@@ -1,6 +1,30 @@
 (function (root) {
-  function encode(value, {version=1} = {}) {
+  // A repeated encoded array is stored once. An entry refers only to earlier
+  // entries, so decoding cannot cycle and always restores separate objects.
+  function storeRepeats(data) {
+    const counts = new Map(), keys = new Map(), ids = new Map(), repeats = [];
+    const count = v => {
+      if (!Array.isArray(v)) return;
+      const key = JSON.stringify(v);
+      keys.set(v, key); counts.set(key, (counts.get(key) || 0) + 1);
+      v.forEach(count);
+    };
+    count(data);
+    const REFERENCE_BYTES = 10;
+    const pack = v => {
+      if (!Array.isArray(v)) return v;
+      const key = keys.get(v);
+      if (ids.has(key)) return [-3, ids.get(key)];
+      const packed = v.map(pack), uses = counts.get(key);
+      if (uses < 2 || (uses - 1) * key.length <= uses * REFERENCE_BYTES) return packed;
+      ids.set(key, repeats.length); repeats.push(packed);
+      return [-3, ids.get(key)];
+    };
+    return { data: pack(data), repeats };
+  }
+  function encode(value, {version=1, repeats=false} = {}) {
     if(![1,2].includes(version))throw new Error('Unsupported UI data codec version');
+    if(repeats&&version!==2)throw new Error('Repeated rows require UI data codec version 2');
     const schemas = [], schemaIds = new Map(), counts = new Map();
     const count = v => {
       if (typeof v === 'string') counts.set(v, (counts.get(v) || 0) + 1);
@@ -20,14 +44,16 @@
       return [schemaIds.get(key), ...keys.map(k => visit(v[k]))];
     };
     const data = visit(value);
-    return { codec: 'ui-schema-v'+version, schemas, strings, data };
+    const payload = { codec: 'ui-schema-v'+version, schemas, strings, data };
+    // An older decoder rejects references instead of showing partial history.
+    return repeats ? Object.assign(payload, storeRepeats(data)) : payload;
   }
   function reader(payload) {
     const stringAt=id=>{
       if(!Number.isInteger(id)||id<0||typeof payload.strings?.[id]!=='string')throw new Error('Invalid UI string reference');
       return payload.strings[id];
     };
-    const visit = v => {
+    const visit = (v, limit = payload.repeats?.length ?? 0) => {
       if (!Array.isArray(v)) {
         if(payload.codec==='ui-schema-v2'&&typeof v==='string'&&v.startsWith('~')){
           if(v.startsWith('~~'))return v.slice(1);
@@ -37,13 +63,18 @@
         return v;
       }
       if (v[0] === -2) return stringAt(v[1]);
-      if (v[0] === -1) return v.slice(1).map(visit);
+      if (v[0] === -3) {
+        const id = v[1];
+        if (v.length !== 2 || !Number.isInteger(id) || id < 0 || id >= limit) throw new Error('Invalid UI repeat reference');
+        return visit(payload.repeats[id], id);
+      }
+      if (v[0] === -1) return v.slice(1).map(item => visit(item, limit));
       const keys = payload.schemas[v[0]];
       if (!keys || keys.length !== v.length - 1) throw new Error('Invalid UI data schema');
       const result = {};
       for (let i = 0; i < keys.length; i++) {
-        if (keys[i] === '__proto__') Object.defineProperty(result, keys[i], { value: visit(v[i + 1]), enumerable: true });
-        else result[keys[i]] = visit(v[i + 1]);
+        if (keys[i] === '__proto__') Object.defineProperty(result, keys[i], { value: visit(v[i + 1], limit), enumerable: true });
+        else result[keys[i]] = visit(v[i + 1], limit);
       }
       return result;
     };
@@ -56,7 +87,7 @@
     if (!['ui-schema-v1','ui-schema-v2'].includes(payload?.codec)) return payload;
     const visit = reader(payload);
     async function object(v, depth = 0) {
-      if (!Array.isArray(v) || v[0] === -2 || depth > 1) return visit(v);
+      if (!Array.isArray(v) || v[0] === -2 || v[0] === -3 || depth > 1) return visit(v);
       const array = v[0] === -1;
       const keys = array ? Array.from({length:v.length-1},(_,i)=>i) : payload.schemas[v[0]], result = array ? [] : {};
       let yieldedAt = Date.now();
