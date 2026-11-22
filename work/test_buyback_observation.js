@@ -42,6 +42,16 @@ const skipped=builder.capture(null,{updatedAt:'2026-10-15',shops:{a:[item]}},{..
 assert.equal(skipped.audit.accepted,1,'daily skip can recover a proven saved response');
 assert.equal(skipped.saved.shops.a[c.id]['2026-10-14'].observedAt,at,'rebuild never redates a saved observation');
 assert.equal(builder.capture(null,{shops:{a:[item]}},{...source,shops:{a:{...source.shops.a,lastAttempt:'2026-10-14T02:00:00Z'}}},[c]).audit.accepted,0,'a later failed attempt remains distinct from saved success');
+{
+  // PR #90 writes lastAttempt at fetch start and lastSuccess at confirmation.
+  const started=new Date(now-30000).toISOString();
+  const success={...source,shops:{a:{...source.shops.a,lastAttempt:started,lastSuccess:at}}};
+  assert.equal(builder.capture(null,{shops:{a:[item]}},success,[c]).audit.accepted,1,'a success confirmed after its own start is captured');
+  const held={...source,shops:{a:{...source.shops.a,lastSuccess:started,lastAttempt:at}}};
+  assert.equal(builder.capture(null,{shops:{a:[{...item,observedAt:started}]}},held,[c]).audit.accepted,0,'a held or failed attempt after the last success is not captured');
+  const unknown={...source,shops:{a:{...source.shops.a,lastSuccess:'not-a-time'}}};
+  assert.equal(builder.capture(null,{shops:{a:[item]}},unknown,[c]).audit.accepted,0,'an unreadable success time is not captured');
+}
 const summary=builder.aggregate(captured.saved,source,[c],now),card={...c,buybackAnalysis:{rows:[{shopId:'a',valid:true,buybackPrice:29000},{shopId:'b',valid:true,buybackPrice:29000}]}};
 for(const flag of [{campaign:true},{quantityLimited:true},{conditionsConfirmed:false}]) {
   const excluded=structuredClone(captured.saved);Object.assign(excluded.shops.a[c.id]['2026-10-14'],flag);
