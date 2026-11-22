@@ -2942,6 +2942,7 @@ function buildBuybackAnalysis(card, shops, marketPrice) {
       asOfDate: state.buybackUpdatedAt,
       cardMatched: buybackCardMatched(card, shop),
       dataQuarantined: shop.quarantined,
+      listingWithdrawn: marketModel.buybackListingWithdrawn(state.buybackShops[shop.shopId]),
     });
     return {
       ...shop,
@@ -3174,7 +3175,8 @@ function calc(card) {
   }));
   const buybackAnalysis = buildBuybackAnalysis(card, buybackShopValues, psa10);
   buybackAnalysis.referenceRows = buildBuybackAnalysis(card, Object.entries(originalBuyback?.shops || {}).map(([shopId, shop]) => ({ ...shop, shopId, sourceName: state.buybackShops[shopId]?.name || shopId })), psa10).rows;
-  const trustedBuybackShopValues = buybackShopValues.filter((shop) => !shop.quarantined && buybackCardMatched(card, shop));
+  const trustedBuybackShopValues = buybackShopValues.filter((shop) => !shop.quarantined && buybackCardMatched(card, shop)
+    && !marketModel.buybackListingWithdrawn(state.buybackShops[shop.shopId]));
   const marketStability = state.marketStability[card.id] || {
     score: null, state: "蓄積中", direction: "蓄積中", supplyState: "蓄積中",
     supportLow: null, supportHigh: null, inventoryDays: null, historyDays: 0, samples: 0,
