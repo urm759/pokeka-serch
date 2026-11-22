@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-22T15:16:05.024Z",
+  "generatedAt": "2026-11-22T16:40:37.321Z",
   "sourceLastSuccessAt": "2026-11-22T12:40:26.305Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-11-22T15:16:05.012Z",
-    "lastSuccessAt": "2026-11-22T15:16:05.012Z",
-    "runId": "45036596404",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/45036596404"
+    "lastAttemptAt": "2026-11-22T16:22:41.624Z",
+    "lastSuccessAt": "2026-11-22T16:22:41.624Z",
+    "runId": "45040146476",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/45040146476"
   },
   "dailyOutcomes": [
     {
@@ -40,6 +40,12 @@
       "category": "確認が必要",
       "url": "https://github.com/urm759/pokeka-serch/actions/runs/44963833175",
       "reason": "Daily：失敗工程未確認"
+    },
+    {
+      "key": "daily:run-stale",
+      "category": "鮮度未達・進捗停滞",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44963833175",
+      "reason": "日次更新の成功が24時間以上なし"
     },
     {
       "key": "safe:yuyutei:manual-action-required:GitHub ActionsからHTTP #。正規アクセス確認待ち",
@@ -197,6 +203,7 @@
   ],
   "reasons": [
     "Daily：失敗工程未確認",
+    "日次更新の成功が24時間以上なし",
     "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち",
     "状態A価格確認: 2回連続でチェックポイント進捗なし",
     "カードラッシュ: pk-73737: HTTP 403",

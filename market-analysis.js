@@ -895,8 +895,33 @@
     };
   }
 
+  // Display only. An absent quote usually returns within a week, so it stays in the
+  // adopted exit; this reports it and what the median would be without it.
+  function buybackExitAbsence(exitRows, shops) {
+    const rows = Array.isArray(exitRows) ? exitRows : [];
+    const absent = rows.filter((row) => {
+      const succeeded = Date.parse(shops?.[row.shopId]?.lastSuccess);
+      const seen = Date.parse(row.observedAt);
+      // Items carry per-request times a little before the store-level confirmation.
+      return Number.isFinite(succeeded) && Number.isFinite(seen) && succeeded - seen > 3600000;
+    });
+    if (!absent.length) return null;
+    const prices = (list) => list.map((row) => row.conservativePrice);
+    const kept = rows.filter((row) => !absent.includes(row));
+    const adopted = median(prices(rows));
+    const without = kept.length >= 2 ? median(prices(kept)) : null;
+    return {
+      total: rows.length,
+      absent: absent.map((row) => ({ shopId: row.shopId, name: shops[row.shopId].name || row.shopName || row.shopId, observedAt: row.observedAt })),
+      remaining: kept.length,
+      without,
+      ratio: without != null && adopted > 0 ? without / adopted : null,
+    };
+  }
+
   return {
     ageDays,
+    buybackExitAbsence,
     buybackMetrics,
     buybackDropConfirmed,
     buybackListingWithdrawn,
