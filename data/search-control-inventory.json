@@ -1166,8 +1166,52 @@
       "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
     },
     {
+      "id": "listingMean75MinInput",
+      "label": "PSA10・75日平均出品数 下限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
       "id": "listingMean200MinInput",
       "label": "PSA10・200日平均出品数 下限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "listingMean75MaxInput",
+      "label": "PSA10・75日平均出品数 上限",
       "category": "詳細検索",
       "initial": "",
       "type": "number",
@@ -1210,8 +1254,52 @@
       "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
     },
     {
+      "id": "rawListingMean75MinInput",
+      "label": "美品・75日平均出品数 下限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
       "id": "rawListingMean200MinInput",
       "label": "美品・200日平均出品数 下限",
+      "category": "詳細検索",
+      "initial": "",
+      "type": "number",
+      "options": [],
+      "removable": true,
+      "modes": [
+        "normal",
+        "combined",
+        "current-market（上限探索）",
+        "current-market（購入採算）",
+        "current-market（上限買値）",
+        "snkr-raw",
+        "low-risk"
+      ],
+      "purpose": "表示された属性・対象範囲で絞り込み／表示基準を選択",
+      "basis": "ラベルのカード属性・価格種別・選択モードを使用。取得日は発売年ではない",
+      "effect": "条件に不適合なカードを除外。欠損は0にしない",
+      "overlap": "似た名称でも市場／買値／時点が異なる条件は統合しない"
+    },
+    {
+      "id": "rawListingMean75MaxInput",
+      "label": "美品・75日平均出品数 上限",
       "category": "詳細検索",
       "initial": "",
       "type": "number",
@@ -3942,7 +4030,7 @@
     },
     {
       "id": "calculationBuyModeInput",
-      "label": "主計算の買値",
+      "label": "主計算・旧買値の比較",
       "category": "詳細検索",
       "initial": "median",
       "type": "select",
@@ -3954,12 +4042,12 @@
         },
         {
           "value": "store",
-          "label": "旧・現在買える状態A価格で比較",
+          "label": "旧・実店舗買値を詳細で比較（主計算は中央値）",
           "selected": false
         },
         {
           "value": "legacy",
-          "label": "旧設定を保持して比較",
+          "label": "旧URLの買値を詳細で比較（主計算は中央値）",
           "selected": false
         }
       ],

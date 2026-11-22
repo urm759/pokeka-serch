@@ -4,15 +4,19 @@
   if (root) root.UpdateHealthModel = model;
 })(typeof window === "object" ? window : null, function () {
   const HOUR = 3600000;
-  function evaluate({ runs = [], sourceLastSuccessAt = null, now = Date.now(), ttlHours = 24, verifiedPublications = [] } = {}) {
+  function evaluate({ runs = [], sourceLastSuccessAt = null, now = Date.now(), ttlHours = 24, verifiedPublications = [], dailyOutcomes = [], outcomeLabels = {} } = {}) {
     const time = Number.isFinite(Number(now)) ? Number(now) : Date.parse(now);
     const completed = runs.filter((run) => run.status === "completed")
       .sort((left, right) => Date.parse(right.created_at || 0) - Date.parse(left.created_at || 0));
     const latest = completed[0] || null;
     const verified = new Set(verifiedPublications.filter(p=>p.confirmed && p.receiptMatches && p.event==='schedule'
       && p.hashes?.length && p.hashes.every(h=>h.matched) && ['acquisition','validation','savePublish'].every(k=>p.stages?.[k]===true)).map(p=>String(p.runId)));
-    const published = run=>run.conclusion==='success' || verified.has(String(run.id));
-    const lastSuccess = completed.find(published) || null;
+    const outcomeFor = run => dailyOutcomes.find(row => row.runId === String(run?.id) && row.attempt === (run?.run_attempt || 1));
+    const published = run=>run.conclusion==='success' || verified.has(String(run.id))
+      || ['recovered','source-warning'].includes(outcomeFor(run)?.state);
+    const successDates = completed.filter(published).map(run => outcomeFor(run)?.publicVerifiedAt || run.updated_at || run.created_at)
+      .filter(at => Number.isFinite(Date.parse(at)) && Date.parse(at) <= time);
+    const lastSuccessAt = successDates.sort((a,b) => Date.parse(b) - Date.parse(a))[0] || null;
     let workflowConsecutiveFailures = 0;
     for(const run of completed) {
       if(run.conclusion==='success')break;
@@ -24,24 +28,29 @@
       if (run.conclusion === "failure" || run.conclusion === "timed_out") consecutiveFailures += 1;
     }
     const sourceTime = Date.parse(sourceLastSuccessAt || "");
-    const runTime = Date.parse(lastSuccess?.updated_at || lastSuccess?.created_at || "");
+    const runTime = Date.parse(lastSuccessAt || "");
     const sourceAgeHours = Number.isFinite(sourceTime) && Number.isFinite(time) ? Math.max(0, (time - sourceTime) / HOUR) : null;
     const runAgeHours = Number.isFinite(runTime) && Number.isFinite(time) ? Math.max(0, (time - runTime) / HOUR) : null;
     const reasons = [];
-    const partialPublished=latest?.conclusion==='failure' && verified.has(String(latest.id));
+    const latestOutcome=outcomeFor(latest);
+    const partialPublished=latestOutcome?.state==='source-warning' || !latestOutcome && latest?.conclusion==='failure' && verified.has(String(latest.id));
     if(partialPublished)reasons.push('Dailyの一部取得元が失敗・正常データは必須検証/保存/公開照合済み');
+    else if (latestOutcome?.state==='recovered') reasons.push('Dailyは退避原票から回収・公開照合済み（元実行の失敗は履歴に保持）');
+    else if (latestOutcome && outcomeLabels[latestOutcome.state]) reasons.push(`Daily：${outcomeLabels[latestOutcome.state]}`);
     else if (latest?.conclusion === "failure" || latest?.conclusion === "timed_out") reasons.push(`Daily Fast Updateが${consecutiveFailures}回連続失敗`);
     if (sourceAgeHours === null || sourceAgeHours >= ttlHours) reasons.push(`みんトレ主要データの取得が${ttlHours}時間以上停止`);
     if (runAgeHours !== null && runAgeHours >= ttlHours) reasons.push(`日次更新の成功が${ttlHours}時間以上なし`);
     return {
-      status: reasons.length ? "alert" : latest ? "ok" : "unknown",
+      status: reasons.some(r => !r.includes('元実行の失敗は履歴に保持')) ? "alert" : latest ? "ok" : "unknown",
       reasons, consecutiveFailures, workflowConsecutiveFailures, partialPublished, sourceLastSuccessAt,
       sourceAgeHours: sourceAgeHours === null ? null : Math.round(sourceAgeHours * 10) / 10,
-      lastSuccessfulRunAt: lastSuccess?.updated_at || lastSuccess?.created_at || null,
+      lastSuccessfulRunAt: lastSuccessAt,
       runAgeHours: runAgeHours === null ? null : Math.round(runAgeHours * 10) / 10,
       latestRunId: latest?.id || null,
       latestRunConclusion: latest?.conclusion || null,
       latestRunUrl: latest?.html_url || null,
+      latestOutcome: latestOutcome?.state || null,
+      dailyOutcomes,
     };
   }
   function fingerprint(health) {
@@ -73,7 +82,13 @@
   function summarizeIssue(issue) {
     const text = String(issue.reason || '');
     const category = issueCategory(issue);
-    if (issue.key?.endsWith(':source-failure') || /取得元工程が失敗/.test(text))
+    if (/退避原票から回収・公開照合済み/.test(text))
+      return {cause:'Dailyの保存分は回収済み',impact:'元実行の結論と公開の結果を個別に記録',action:'取得元や期限の警告は別途確認'};
+    if (/原票退避あり・未公開/.test(text))
+      return {cause:'保存済み・未公開',impact:'取得済み原票を退避',action:'原票を照合し公開工程を再試行'};
+    if (/Pages公開照合待ち/.test(text))
+      return {cause:'Pages公開照合待ち',impact:'保存・push済み',action:'公開済みの版と受領証を照合'};
+    if (issue.key?.endsWith(':source-failure') || /取得元工程が失敗|Dailyの一部取得元が失敗/.test(text))
       return {cause:'一部の取得元が失敗',impact:'正常データは保持し必須検証を継続',action:'停止理由を確認。検証不合格なら公開しない'};
     if (/Cannot find module|dependency|依存|MODULE_NOT_FOUND/i.test(text))
       return {cause:'PSA実行ファイルの依存不足',impact:'新規取得が停止（保存済みデータは保持）',action:'修正版で再実行・認証操作とは別'};

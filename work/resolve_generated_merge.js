@@ -20,6 +20,8 @@ DERIVED.add('data/proactive-refresh-audit.json');
 // Pure projection of the completion queue and saved linkage evidence. It is
 // rebuilt by finalize_update_status; never resolve a queue/raw-price conflict here.
 DERIVED.add('data/one-item-completion-audit.json');
+// Rebuilt only after the retry-bearing completion queue is reconciled atomically.
+for(const file of ['data/card-catalog-completion.json','data/card-catalog/index.json','data/card-catalog/manifest.json','data/card-catalog/search-index.json'])DERIVED.add(file);
 DERIVED.add('data/priority-search-profile-audit.json');
 DERIVED.add('work/pop-focus-targets.json');
 DERIVED.add('data/gemrate-collector-config.json');
@@ -104,7 +106,9 @@ function resolve(cwd,{rebuild}={}) {
     // Finalization computes outcomes and embeds exactly that snapshot in the
     // monitor before sealing lineage. Never recompute outcomes afterwards.
     for(const file of REBUILD_STEPS){
+      const started=Date.now();console.log(JSON.stringify({publicationStage:'regenerate-derived',script:file,phase:'started',at:new Date(started).toISOString()}));
       const child=spawnSync(process.execPath,['work/'+file],{cwd,encoding:'utf8',env:{...process.env,PRICE_EVIDENCE_FETCH_LIMIT:'0'},timeout:300000,maxBuffer:32*1024*1024});
+      console.log(JSON.stringify({publicationStage:'regenerate-derived',script:file,phase:'finished',durationMs:Date.now()-started,ok:child.status===0}));
       if(child.status!==0)throw new Error(`${file}: ${child.stderr||child.stdout||child.error?.message||'regeneration failed'}`);
     }
     const receiptFile=path.join(cwd,'data/scheduled-cycle-receipts.json');

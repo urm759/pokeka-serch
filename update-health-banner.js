@@ -11,22 +11,25 @@
     json("./data/update-health-banner.json"),
     json("https://api.github.com/repos/urm759/pokeka-serch/actions/workflows/daily-fast-update.yml/runs?per_page=30"),
   ]);
-  const sourceLastSuccessAt = snapshotResult.status === "fulfilled" ? snapshotResult.value.sourceLastSuccessAt : null;
-  const live = runResult.status === "fulfilled"
-    ? model.evaluate({ runs: runResult.value.workflow_runs || [], sourceLastSuccessAt })
-    : null;
   const snapshot = snapshotResult.status === "fulfilled" ? snapshotResult.value : null;
+  const sourceLastSuccessAt = snapshot?.sourceLastSuccessAt || null;
+  const live = runResult.status === "fulfilled"
+    ? model.evaluate({ runs: runResult.value.workflow_runs || [], sourceLastSuccessAt,
+      dailyOutcomes:snapshot?.dailyOutcomes, outcomeLabels:snapshot?.dailyOutcomeLabels })
+    : null;
   const health = live || (sourceLastSuccessAt ? model.evaluate({ sourceLastSuccessAt }) : snapshot);
   const backfillIssues = [...(snapshot?.issues || []).filter((issue) => !issue.key?.startsWith("daily:")),...model.monitorIssues(snapshot?.monitoring)];
   const dailyReasons = live ? live.reasons : snapshot?.issues
     ? snapshot.issues.filter((issue) => issue.key?.startsWith("daily:")).map((issue) => issue.reason)
     : health?.reasons || [];
+  if(!live && snapshot?.dailyOutcomes?.[0]?.state==='recovered')dailyReasons.unshift('Dailyは退避原票から回収・公開照合済み（元実行の失敗は履歴に保持）');
   const reasons = [...dailyReasons, ...backfillIssues.map((issue) => issue.reason)];
   if (!health || !reasons.length) return;
   banner.hidden = false;
-  banner.dataset.status = "alert";
+  const recoveredOnly=reasons.every(reason=>reason.includes('元実行の失敗は履歴に保持'));
+  banner.dataset.status = recoveredOnly ? "ok" : "alert";
   const title = document.createElement("strong");
-  title.textContent = "データ更新に注意";
+  title.textContent = recoveredOnly ? "Dailyデータ回収済み" : "データ更新に注意";
   const message = document.createElement("span");
   message.textContent = '';
   const categorized = [...dailyReasons.map(reason => ({reason})), ...backfillIssues];

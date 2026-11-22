@@ -46,14 +46,16 @@ if (result.stderr) process.stderr.write(result.stderr);
 const endedAt = new Date();
 const output = `${result.stdout || ""}\n${result.stderr || ""}`;
 const timedOut = result.error?.code === "ETIMEDOUT";
-const completionStatus = (output.match(/"completionStatus"\s*:\s*"(success|partial-with-failure|partial|no-progress|retry-wait|manual-action-required)"/i) || [])[1]?.toLowerCase() || null;
-const fetchFailureCount = [...output.matchAll(/\b(?:failed|failure|error)(?:Count)?["']?\s*[:=]\s*(\d+)/gi)]
+const batchMetrics = require('./source_batch_metrics').shopBatch(sourceId,result.stdout);
+const isBuyback = sourceId === 'shopBuyback';
+const completionStatus = isBuyback ? batchMetrics.receipt?.completionStatus || 'partial-with-failure' : (output.match(/"completionStatus"\s*:\s*"(success|partial-with-failure|partial|no-progress|retry-wait|manual-action-required)"/i) || [])[1]?.toLowerCase() || null;
+const buybackFailed = isBuyback && (!batchMetrics.receipt || completionStatus === 'partial-with-failure' || batchMetrics.receipt.newFailures.length > 0);
+const fetchFailureCount = isBuyback ? Math.max(batchMetrics.receipt?.newFailures.length || 0, Number(buybackFailed || result.status !== 0 || timedOut)) : [...output.matchAll(/\b(?:failed|failure|error)(?:Count)?["']?\s*[:=]\s*(\d+)/gi)]
   .reduce((total, match) => total + Number(match[1] || 0), 0)
   + (result.status !== 0 || timedOut ? 1 : 0);
-const status = result.status !== 0 || timedOut ? "failed" : completionStatus === "manual-action-required" ? "manual-action-required"
+const status = buybackFailed || result.status !== 0 || timedOut ? "failed" : completionStatus === "manual-action-required" ? "manual-action-required"
   : completionStatus === "no-progress" ? "no-progress" : fetchFailureCount > 0 || ["partial", "partial-with-failure", "retry-wait"].includes(completionStatus) ? "partial" : "success";
 const catalogCount = countCurrentRecords(sourceId);
-const batchMetrics = require('./source_batch_metrics').shopBatch(sourceId,result.stdout);
 const acquiredCount = batchMetrics?.acquiredCount ?? catalogCount;
 const afterFingerprint = artifactFingerprint(sourceId);
 const dataChanged = afterFingerprint != null && beforeFingerprint !== afterFingerprint;
@@ -87,6 +89,7 @@ const record = {
   timedOut,
   terminationReason: timedOut ? "timeout" : result.signal ? `signal:${result.signal}` : null,
   completionStatus,
+  ...(isBuyback ? {shopBuyback:batchMetrics.receipt} : {}),
   lastError: status === "failed" || status === "manual-action-required"
     ? String(timedOut ? `取得処理が${Math.round(timeoutMs / 1000)}秒でタイムアウトしました` : (output.match(/"stopReason"\s*:\s*"([^"]+)"/) || [])[1] || result.error?.message || result.stderr || `exit ${result.status}`).slice(0, 500)
     : null,

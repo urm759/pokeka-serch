@@ -7,6 +7,13 @@ for(const title of ['かがやくリザードン K S12a 011/071','かがやく�
   assert.equal(builder.resolveSavedItem({...unbracketed,name:title,number:title},[radiant]).cardId,undefined,title);
 assert.equal(builder.resolveSavedItem({...unbracketed,setCode:'S12A'},[radiant]).cardId,undefined,'bare printed set must not hide a conflicting declared set');
 assert.equal(builder.resolveSavedItem(unbracketed,[radiant,{...radiant,id:'duplicate'}]).cardId,undefined);
+const mimikyu=require('../data/pokemon-cards.json').find(c=>c.id==='pk-23009');
+const exact='ミミッキュV CSR [S8b 233/184]';
+assert.equal(builder.resolveSavedItem({name:exact},[mimikyu]).method,'verified-official-print-name');
+assert.equal(builder.resolveSavedItem({name:'ミミッキュV CSR 233/184'},[mimikyu]).cardId,mimikyu.id);
+for(const title of ['ミミッキュV 233/184','ミミッキュV CSR [S8a 233/184]','ミミッキュV CSR [S8b 234/184]','ミミッキュV RR [S8b 233/184]','ミミッキュV CSR [S8b 233/184] 英語','ミミッキュV CSR [S8b 233/184] ミラー'])
+  assert.equal(builder.resolveSavedItem({name:title},[mimikyu]).cardId,undefined,title);
+assert.equal(builder.resolveSavedItem({name:exact},[mimikyu,{...mimikyu,id:'duplicate'}]).cardId,undefined);
 const c=require('../data/pokemon-cards.json').find(c=>c.id==='pk-20743');
 const item={cardId:c.id,name:'グレイシアV SA 077/069',price:30000,active:true,observedAt:at};
 const source={shops:{a:{name:'a',fulfilment:'store',refreshed:true,lastSuccess:at,lastAttempt:at},b:{name:'b',fulfilment:'store',refreshed:true,lastSuccess:at,lastAttempt:at}},cards:{[c.id]:{shops:{a:{price:30000,priceDate:'2026-10-14',listingActive:true,matchConfidence:'high'},b:{price:30000,priceDate:'2026-10-14',listingActive:true,matchConfidence:'high'}}}}};
@@ -35,6 +42,16 @@ const skipped=builder.capture(null,{updatedAt:'2026-10-15',shops:{a:[item]}},{..
 assert.equal(skipped.audit.accepted,1,'daily skip can recover a proven saved response');
 assert.equal(skipped.saved.shops.a[c.id]['2026-10-14'].observedAt,at,'rebuild never redates a saved observation');
 assert.equal(builder.capture(null,{shops:{a:[item]}},{...source,shops:{a:{...source.shops.a,lastAttempt:'2026-10-14T02:00:00Z'}}},[c]).audit.accepted,0,'a later failed attempt remains distinct from saved success');
+{
+  // PR #90 writes lastAttempt at fetch start and lastSuccess at confirmation.
+  const started=new Date(now-30000).toISOString();
+  const success={...source,shops:{a:{...source.shops.a,lastAttempt:started,lastSuccess:at}}};
+  assert.equal(builder.capture(null,{shops:{a:[item]}},success,[c]).audit.accepted,1,'a success confirmed after its own start is captured');
+  const held={...source,shops:{a:{...source.shops.a,lastSuccess:started,lastAttempt:at}}};
+  assert.equal(builder.capture(null,{shops:{a:[{...item,observedAt:started}]}},held,[c]).audit.accepted,0,'a held or failed attempt after the last success is not captured');
+  const unknown={...source,shops:{a:{...source.shops.a,lastSuccess:'not-a-time'}}};
+  assert.equal(builder.capture(null,{shops:{a:[item]}},unknown,[c]).audit.accepted,0,'an unreadable success time is not captured');
+}
 const summary=builder.aggregate(captured.saved,source,[c],now),card={...c,buybackAnalysis:{rows:[{shopId:'a',valid:true,buybackPrice:29000},{shopId:'b',valid:true,buybackPrice:29000}]}};
 for(const flag of [{campaign:true},{quantityLimited:true},{conditionsConfirmed:false}]) {
   const excluded=structuredClone(captured.saved);Object.assign(excluded.shops.a[c.id]['2026-10-14'],flag);

@@ -8,7 +8,7 @@ function controls(h) {
     const a=m[1]??m[2];return [attr(a,'id'),m[1]!=null?attr(a,'value')||'':m[3].replace(/\s+/g,' ').trim(),/\bchecked\b/.test(a)];
   }).filter(r=>r[0]).sort((a,b)=>a[0].localeCompare(b[0]));
 }
-const ratioAdditions=['listingMean200MinInput','listingMean200MaxInput','rawListingMean200MinInput','rawListingMean200MaxInput','rawListingCurrentMinInput','rawListingCurrentMaxInput','rawListingMeanMinInput','rawListingMeanMaxInput','listingCurrentMinInput','listingCurrentMaxInput','listingMeanMinInput','listingMeanMaxInput','buybackMeanMinInput','buyback7RatioMinInput','buyback30RatioMinInput','buyback75RatioMinInput','buybackRatioDaysMinInput','buybackRatioReferenceInput'];
+const ratioAdditions=['listingMean75MinInput','listingMean75MaxInput','rawListingMean75MinInput','rawListingMean75MaxInput','listingMean200MinInput','listingMean200MaxInput','rawListingMean200MinInput','rawListingMean200MaxInput','rawListingCurrentMinInput','rawListingCurrentMaxInput','rawListingMeanMinInput','rawListingMeanMaxInput','listingCurrentMinInput','listingCurrentMaxInput','listingMeanMinInput','listingMeanMaxInput','buybackMeanMinInput','buyback7RatioMinInput','buyback30RatioMinInput','buyback75RatioMinInput','buybackRatioDaysMinInput','buybackRatioReferenceInput'];
 const buyAdditions=['calculationBuyModeInput','medianBuyPctInput'];
 assert.deepEqual(controls(html).find(r=>r[0]===buyAdditions[0]),[buyAdditions[0],'<option value="median" selected>素体参考相場・中央値へ統一</option><option value="store">旧・実店舗買値を詳細で比較（主計算は中央値）</option><option value="legacy">旧URLの買値を詳細で比較（主計算は中央値）</option>',false]);
 assert.deepEqual(controls(html).find(r=>r[0]===buyAdditions[1]),[buyAdditions[1],'',false],'optional hypothetical percentage starts off');
@@ -53,7 +53,15 @@ function beforeRequestedBuyMigration(text){
   assert.equal(crypto.createHash('sha256').update(branch).digest('hex'),'5f49fa6bc5594c9e99b28db5e62d17c146920303ce6e4406f4ebb6c9c6dcda62','only the separately tested shared median/store branch is authorized');
   return text.slice(0,start)+text.slice(end);
 }
+// Owner approval 2026-11-22: quotes from a store with a confirmed listing drop are not current sale prices.
+// Only this exact exclusion and this exact rule are authorized; behavior is tested in test_buyback_hold_recheck.
+const approvedWithdrawal="\n    && !marketModel.buybackListingWithdrawn(state.buybackShops[shop.shopId])";
+assert.equal(app.replace(/\r\n/g,'\n').split(approvedWithdrawal).length-1,1,'approved withdrawal exclusion occurs exactly once');
+const withdrawalModel=fs.readFileSync('market-analysis.js','utf8').replace(/\r\n/g,'\n');
+assert.equal(crypto.createHash('sha256').update(withdrawalModel.slice(withdrawalModel.indexOf('  function buybackDropConfirmed('),withdrawalModel.indexOf('  function buybackMetrics('))).digest('hex'),
+  'b858830ca326e5954ca25fa6b6daf9308c3a87fe030ce5b675c53779bb6bf310','changing the approved withdrawal rule needs a new owner approval');
 const legacyApp=beforeRequestedBuyMigration(app.replace(/\r\n/g,'\n'))
+  .replace(approvedWithdrawal,'')
   .replace('  url.searchParams.set("calcBuy",state.calculationBuyMode);\n','')
   // Requested primary median and explicit comparison-only URL are tested in test_main_median_legacy_urls.
   .replace('  url.searchParams.set("calcBuy",\'median\');\n','')

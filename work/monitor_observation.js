@@ -25,8 +25,11 @@ function banner(root) {
     }
   }
   const monitoring=Object.fromEntries(['status','lastAttemptAt','lastSuccessAt','runId','url','error'].filter(key=>observation[key]!=null).map(key=>[key,observation[key]]));
+  const dailyOutcomes=(health.dailyOutcomes||[]).slice(0,3).map(({runId,attempt,state,publicVerifiedAt})=>({runId,attempt,state,publicVerifiedAt}));
+  const labels=require('./daily_run_outcomes').LABELS;
   const result={version:1,generatedAt:new Date().toISOString(),sourceLastSuccessAt:status.sources?.toreca?.lastSuccessAt||null,
     monitoring,
+    ...(dailyOutcomes.length ? {dailyOutcomes,dailyOutcomeLabels:Object.fromEntries(dailyOutcomes.filter(r=>labels[r.state]).map(r=>[r.state,labels[r.state]]))} : {}),
     issues:(health.issues||[]).map(row=>({key:row.key,category:row.category,url:row.url,reason:String(row.reason||'').split('\n')[0].slice(0,650)})),
     reasons:health.reasons?.map(reason=>String(reason).split('\n')[0].slice(0,650))||[],
     detailUrl:'./data/update-health.json'};

@@ -86,6 +86,7 @@ function readPokedataSales() {
 
 function main() {
   const overseasPublic=require('./overseas_access_policy').allowed(ROOT,'public');
+  const overseasCancelled=require('./overseas_access_policy').cancelled(ROOT);
   const generatedAt = new Date().toISOString();
   const cards = read("data/pokemon-cards.json", []);
   const inventory = read("work/toreca-source-inventory.json", { cards: [] });
@@ -242,13 +243,8 @@ function main() {
     const previousItems = previousItemsFor(previousQueue, id);
     for (const [key, entry] of Object.entries(entries)) {
       const previous = previousItems[key];
-      if (entry.status !== "取得済み" && previous && ["取得失敗", "再試行待ち"].includes(previous.status)) {
-        entry.status = previous.status;
-        entry.lastAttemptAt = previous.lastAttemptAt || entry.lastAttemptAt;
-        entry.retryCount = Number(previous.retryCount || 0);
-        entry.failureReason = previous.failureReason || entry.failureReason;
-      }
-      if(require('./overseas_access_policy').cancelled(ROOT)&&['rawActualSales','psa10ActualSales','psa9Sales','pokedata'].includes(key)){
+      require('./merge_completion_queue').carryRetryState(entry,previous);
+      if(overseasCancelled&&['rawActualSales','psa10ActualSales','psa9Sales','pokedata'].includes(key)){
         entry.planStatus='cancelled';entry.nextRetryAt=null;entry.failureReason='利用者判断で中止';
         entry.lastAttemptAt=null;entry.lastSuccessAt=null;entry.retryCount=0;
         if(entry.status!=='取得済み')entry.status='中止';
@@ -419,7 +415,7 @@ function main() {
     generatedAt,
     itemSchema: ["status", "lastAttemptAt", "lastSuccessAt", "retryCount", "failureReason", "nextRetryAt"],
     evidenceSourceTimes: {toreca:times.toreca,shopBuyback:times.buyback},
-    overseasPolicyExplanation: require('./overseas_access_policy').cancelled(ROOT)?'利用者判断で中止・取得/紐付け拡大/分析/契約/問い合わせの予定なし。原本は非公開保持。PSA POPと国内成約は別件。':'原本は非公開保持。公式APIの個別成約提供は未確認。集計価格を個別成約・期間件数に代用しない。国内PSA9・状態A個別成約は別の未実装経路。',
+    overseasPolicyExplanation: overseasCancelled?'利用者判断で中止・取得/紐付け拡大/分析/契約/問い合わせの予定なし。原本は非公開保持。PSA POPと国内成約は別件。':'原本は非公開保持。公式APIの個別成約提供は未確認。集計価格を個別成約・期間件数に代用しない。国内PSA9・状態A個別成約は別の未実装経路。',
     evidenceSchema: 'e=[PSA9集計確認,複数店買取確認]。1=取得済み、0=定期再確認の状態符号（価格・件数ではない）。PSA9確認日はカード別psa9ObservedAt、試行日はsource times、買取価格日と照合根拠は原票へ。実成約とは別。',
     sourceByItem: {
       domesticPrice: "みんトレ", domesticTrades: "みんトレ", psa10Price: "みんトレ／スニダン",

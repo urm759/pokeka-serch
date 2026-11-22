@@ -129,4 +129,4 @@ function medianCompletionIds(targets,source,focusIds=[]){
     }
   }return [...new Set(ids)];
 }
-module.exports={buybackState,prospectPlan,requestForSource,minimalMedian,medianCompletionIds};
+module.exports={buybackState,prospectPlan,requestForSource,minimalMedian,medianCompletionIds,sourceForUrl};

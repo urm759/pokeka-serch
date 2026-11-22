@@ -61,6 +61,7 @@ jobs:
             node work/test_hareruya_single_response.js
             node work/test_watch_catchup_trigger.js
             node work/test_failed_price_recovery.js
+            node work/test_post_publication_recovery.js
             node work/test_saved_source_merge.js
             node work/test_publication_merge_inputs.js
             node work/test_profit_outcomes.js
@@ -243,6 +244,15 @@ jobs:
           include-hidden-files: true
           retention-days: 7
           if-no-files-found: error
+      - name: Retain isolated buyback count-drop responses
+        if: always() && hashFiles('work/.private/buyback-failed-responses/**/manifest.json') != ''
+        uses: actions/upload-artifact@v7
+        with:
+          name: catchup-count-drop-raw-${{ github.run_id }}-${{ github.run_attempt }}
+          path: work/.private/buyback-failed-responses/
+          include-hidden-files: true
+          retention-days: 7
+          if-no-files-found: error
 
   watch:
     # Record the receipt only after the independent Pages check has finished.
@@ -253,7 +263,9 @@ jobs:
       group: site-data-health-observation
       cancel-in-progress: false
     runs-on: ubuntu-latest
-    timeout-minutes: 13
+    # Leave time for required merged-data checks and recovery upload; this is
+    # a bounded failure-preservation allowance, not claimed acquisition capacity.
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
         with:
@@ -302,13 +314,16 @@ jobs:
           retention-days: 14
           if-no-files-found: warn
       - name: Preserve independent observation on failure
-        if: failure() && steps.publication.outcome != 'success'
+        if: always() && (failure() || cancelled()) && steps.publication.outcome != 'success'
         run: node work/capture_unpublished_data.js monitor-only
       - uses: actions/upload-artifact@v7
-        if: failure() && steps.publication.outcome != 'success'
+        if: always() && (failure() || cancelled()) && steps.publication.outcome != 'success'
         with:
           name: independent-monitor-${{ github.run_id }}-${{ github.run_attempt }}
-          path: work/unpublished-recovery/
+          path: |
+            work/unpublished-recovery/
+            work/publish-recovery.bundle
+            work/publish-recovery.json
           retention-days: 7
           if-no-files-found: error
       - name: Retain published monitor warnings

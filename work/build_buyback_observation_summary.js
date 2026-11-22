@@ -1,5 +1,6 @@
 const fs=require('node:fs'),path=require('node:path');
 const ROOT=path.join(__dirname,'..'),periods=[7,30,75,200];
+const verifiedNames=require('./verified-buyback-names.json');
 const day=at=>Number.isFinite(Date.parse(at))?new Date(Date.parse(at)+9*3600000).toISOString().slice(0,10):null;
 // Saved titles, not cached cardIds, authorize rematching. Keep every full print
 // and explicit specification until uniqueness has been checked across the catalogue.
@@ -84,6 +85,17 @@ function resolveSavedItem(item,cards,byNumber) {
   };
   const result=resolver(row,cards);
   if(result.cardId)return finishSafe(result);
+  // An official printed name can omit a catalogue annotation. Only a reviewed
+  // identity and a unique, compatible print can authorize that substitution.
+  const candidate=cards.length===1?cards[0]:null;
+  const verified=candidate&&verifiedNames[candidate.identityKey];
+  if(verified&&proof.serial===verified.serial&&(!proof.set||proof.set===verified.set)
+      &&(proof.set===verified.set||proof.rarity===verified.rarity)
+      &&candidate.name.startsWith(verified.catalogueName)){
+    const name=verified.officialName+candidate.name.slice(verified.catalogueName.length);
+    const matched=resolver(row,[{...candidate,name}]);
+    if(matched.cardId===candidate.id)return finishSafe({...matched,method:'verified-official-print-name',officialUrl:verified.officialUrl});
+  }
   const serial=number(row.listNo),secret=serial?.match(/^(\d+)\/(\d+)$/);
   if(/\bSA\b/.test(cleanName) && secret && Number(secret[1])>Number(secret[2])) {
     const matched=resolver({...row,name:cleanName.replace(/\bSA\b/g,'')},cards);
@@ -112,7 +124,12 @@ function capture(saved,catalog,source,cards) {
     // A daily skip or later JSON rebuild does not invalidate the last successful
     // saved response. Individual timestamps and the matching source success
     // below authorize the observation, never the file generation day.
-    if(!meta?.lastSuccess || meta.lastAttempt!==meta.lastSuccess || ['pending','retired'].includes(meta.acquisitionPermission)) continue;
+    // The shop writer records lastAttempt when a fetch starts and lastSuccess
+    // when it is confirmed, so a successful run has lastSuccess at or after
+    // lastAttempt. A held or failed run leaves lastSuccess before lastAttempt.
+    const succeeded=Number.isFinite(Date.parse(meta?.lastSuccess)) && Number.isFinite(Date.parse(meta?.lastAttempt))
+      && Date.parse(meta.lastSuccess)>=Date.parse(meta.lastAttempt);
+    if(!succeeded || ['pending','retired'].includes(meta.acquisitionPermission)) continue;
     for(const item of items) {
       const c=byId.get(item.cardId),quote=source.cards?.[item.cardId]?.shops?.[shop];
       if(!c || c.language!=='ja' || c.identityReviewRequired || !c.identityKey) {reject('仕様未確定');continue;}
@@ -132,6 +149,7 @@ function capture(saved,catalog,source,cards) {
       const rows=((next.shops[shop]||={})[c.id]||={});
       const value={price:item.price,priceDate:quote.priceDate,observedAt,identity:c.identityKey,url:item.itemUrl||meta.url,method:result.method,timestampBasis:item.observedAt?'individual-fetch':'matching-successful-source-record',grade:'PSA10',currency:'JPY',identityAuditVersion:3,title:item.name,
         ...(item.shopItemId?{sourceRowId:String(item.shopItemId)}:{}),
+        ...(result.officialUrl?{officialNameEvidenceUrl:result.officialUrl}:{}),
         campaign:item.campaign===true,quantityLimited:item.quantityLimited===true,conditionsConfirmed:item.conditionsConfirmed!==false};
       if(!rows[date] || Date.parse(rows[date].observedAt)<=Date.parse(observedAt)) rows[date]=value;
       audit.accepted++;

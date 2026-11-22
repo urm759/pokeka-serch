@@ -3,6 +3,17 @@ const SOURCES=['cardrush','hareruya2','yuyutei','torecacamp'];
 const digest=text=>crypto.createHash('sha256').update(String(text).replace(/\r\n/g,'\n')).digest('hex');
 const time=v=>typeof v==='string'&&v.includes('T')&&Number.isFinite(Date.parse(v))?Date.parse(v):null;
 function merge(a=[],b=[]){return [...new Map([...a,...b].map(r=>[r.id+'|'+r.at,r])).values()];}
+function attachCampRequests(observations,run,{from,to}={}){
+ const start=time(from),end=time(to),runAt=time(run?.startedAt),e=run?.fixedEvidence;
+ if(start==null||end==null||runAt==null||runAt<start||runAt>end||!e)return null;
+ const attempted=new Set(e.attempted||[]),planned=new Set(e.planned||[]);
+ const byKey=new Map((e.observations||[]).filter(r=>attempted.has(r.id)&&planned.has(r.id)
+   &&time(r.requestStartedAt)!=null&&time(r.requestStartedAt)>=runAt&&time(r.requestStartedAt)<=time(r.at))
+   .map(r=>[r.id+'|'+r.at,r.requestStartedAt]));
+ const rows=observations.map(r=>byKey.has(r.id+'|'+r.at)?{...r,requestStartedAt:byKey.get(r.id+'|'+r.at)}:r);
+ return {rows,planned:[...planned],attempted:[...attempted].filter(id=>planned.has(id)),
+   reached:[...new Set(rows.filter(r=>r.requestStartedAt).map(r=>r.id))],startedAt:run.startedAt};
+}
 function collect(summaries,{from,to,primaryCards=null}={}){
  const start=time(from),end=time(to),observations={},sources={};
  for(const source of [...SOURCES,...(primaryCards?['toreca','psa10Market']:[])]){
@@ -27,4 +38,4 @@ function recoverVerified(history,receipt,proof,texts){
  for(const [source,rows]of Object.entries(recovered.observations)){const previous=run.observations[source]||[],next=merge(previous,rows);counts[source]=next.length-previous.length;run.observations[source]=next;run.sourceCoverage[source]={...recovered.scope.sources[source],recoveredFromPublicHash:receipt.hashes['data/'+source+'-stock-summary.json'],from:proof.startedAt,to:receipt.recordedAt};}
  return {runId:proof.runId,added:counts,newRequests:0,newObservationDates:0};
 }
-module.exports={collect,merge,recoverVerified,digest};
+module.exports={collect,merge,recoverVerified,digest,attachCampRequests};

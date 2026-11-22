@@ -30,3 +30,29 @@ assert(model.sourceOnlyFailure({runId:4,runs:[{processStatus:'failed',failureCla
 assert(!model.sourceOnlyFailure({runId:4,runs:[{processStatus:'failed',failureClass:'required-calculation'}]},4));
 assert(!model.sourceOnlyFailure({runId:3,runs:[{processStatus:'failed',failureClass:'source-acquisition'}]},4));
 assert(!model.sourceOnlyFailure({runId:4,runs:[{processStatus:'failed'}]},4));
+
+const daily=require('./daily_run_outcomes');
+const failedRun={...run(4,'failure',fresh),run_attempt:2};
+const archive={id:100,name:'daily-recovery-4-2',size_in_bytes:500,expired:false};
+const jobs=(name,conclusion='failure')=>[{steps:[{name,conclusion}]}];
+assert.equal(daily.classify(failedRun,{jobs:jobs('Run deterministic delta update')}).state,'acquisition-failed');
+assert.equal(daily.classify(failedRun,{jobs:jobs('Run fast regression tests')}).state,'validation-failed');
+assert.equal(daily.classify(failedRun,{jobs:jobs('Commit changed data only'),artifacts:[archive]}).state,'saved-not-published');
+assert.equal(daily.classify(failedRun,{jobs:jobs('Commit changed data only'),artifacts:[{...archive,name:'daily-recovery-4-1'}]}).state,'publication-failed');
+assert.equal(daily.classify(failedRun,{jobs:jobs('Commit changed data only','success')}).state,'pages-unverified');
+const publishedProof={...proof,publicationConfirmed:true,runAttempt:2,publicVerifiedAt:'2026-09-29T18:15:00Z'};
+assert.equal(daily.classify(failedRun,{jobs:jobs('Report independent acquisition failures without hiding them'),proof:publishedProof}).state,'source-warning');
+assert.equal(daily.classify(failedRun,{jobs:jobs('Report independent acquisition failures without hiding them'),proof:{...publishedProof,runAttempt:1}}).state,'unclassified-failure');
+const recovered=daily.classify(failedRun,{artifacts:[archive],recovery:{
+  runId:'4',attempt:2,sourceRequests:0,requiredChecks:9,publicVerifiedAt:'2026-09-29T18:15:00Z',
+  artifactSha256:'a'.repeat(64),publishedCommit:'b'.repeat(40),pagesRunId:123,
+}});
+assert.equal(recovered.state,'recovered');
+assert.equal(recovered.originalConclusion,'failure');
+assert.equal(daily.updateHistory([recovered],[daily.classify(failedRun)])[0].state,'recovered');
+const recoveredHealth=model.evaluate({now,runs:[failedRun],sourceLastSuccessAt:fresh,dailyOutcomes:[recovered],outcomeLabels:daily.LABELS});
+assert.equal(recoveredHealth.consecutiveFailures,0);
+assert.equal(recoveredHealth.workflowConsecutiveFailures,1);
+assert.equal(recoveredHealth.lastSuccessfulRunAt,recovered.publicVerifiedAt);
+assert.equal(recoveredHealth.latestRunConclusion,'failure');
+assert.equal(recoveredHealth.status,'ok');

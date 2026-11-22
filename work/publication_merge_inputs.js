@@ -69,6 +69,7 @@ function availability(base,a,b) {
   return {version:1,runs:[...rows.values()].sort((x,y)=>Date.parse(x.generatedAt)-Date.parse(y.generatedAt))};
 }
 const TYPES=new Map([
+  ['work/card-completion-queue.json',require('./merge_completion_queue').mergeCompletionQueue],
   ['work/buyback-price-observations.json',buybackObservations],
   ['data/state-a-price-evidence.json',evidence],['data/operational-limit-history.json',operational],
   ['work/search-profile-targets.json',mergeProfileTargets],['work/candidate-daily-history.json',candidates],

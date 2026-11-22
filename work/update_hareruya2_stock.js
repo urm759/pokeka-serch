@@ -579,11 +579,7 @@ async function main() {
     dateIndex = history.dates.length - 1;
     for (const values of Object.values(history.stocks)) values.push(null);
   }
-  while (history.dates.length > 91) {
-    history.dates.shift();
-    for (const values of Object.values(history.stocks)) values.shift();
-    dateIndex -= 1;
-  }
+  dateIndex -= require('./hareruya2_stock_archive').archiveAndTrim(history, path.join(__dirname,'..'));
   const force = process.env.HARERUYA2_STOCK_FORCE === "1";
   const stockBatch = Number(process.env.HARERUYA2_STOCK_BATCH || 800);
   let stockTargets = nextCards.filter((card) => card.hareruya2Url && (force || !Number.isFinite(history.stocks[card.id]?.[dateIndex])));

@@ -10,6 +10,7 @@ function plan({ cards, sourceId, catalog, candidateRows = {}, fixedIds = [], foc
   const byUrl = new Map(catalog.map((row) => [row.detailUrl, row]));
   const favorites = new Set(config.favoriteIds || []);
   const fixed = new Set(fixedIds);
+  const formal = require('./formal_freshness_queue');
   const records = cards.filter((card) => card[`${sourceId}Url`]).map((card) => {
     const url = card[`${sourceId}Url`], previous = jobs[card.id] || {};
     const focus = Boolean(groupFor(card, focusConfig));
@@ -27,12 +28,14 @@ function plan({ cards, sourceId, catalog, candidateRows = {}, fixedIds = [], foc
     const validTime = Number.isFinite(time) && time <= now;
     const alternateOnly=candidateRows[card.id]?.alternatePurchaseEvidence===true&&!focus&&!fixedTarget&&!favorites.has(card.id);
     const hours = alternateOnly ? 48 : important ? config.importantHours || 6 : config.normalHours || 48;
-    const due = validTime ? time + hours * 3600000 : 0;
+    const rank = formal.plannedDeadline(candidateRows,{card,url,observedAt:lastSuccessAt});
+    const due = validTime ? Math.min(time + hours * 3600000,rank) : 0;
     const budgetDeferred=/^(?:timeout: 通信前に時間予算を確認・保存して停止|時間予算・未取得カードから次回再開)$/.test(previous.error || '');
     const retry = budgetDeferred ? NaN : Date.parse(previous.nextRetryAt);
     const waiting = manualWait[card.id]?.url === url || !budgetDeferred && previous.url === url && previous.failures >= (config.retryLimit || 3);
     const recentlyChecked = important && validTime && now - time < 2 * 3600000;
-    return { card, important, focus, candidate, fixedTarget, formalCandidate, medianAtRisk, url, lastSuccessAt, lastAttemptAt: previous.lastAttemptAt || null,
+    return { card, important, focus, candidate, fixedTarget, formalCandidate, medianAtRisk,
+      dependencyDeadlineAt:Number.isFinite(rank)?new Date(rank).toISOString():null, url, lastSuccessAt, lastAttemptAt: previous.lastAttemptAt || null,
       nextDueAt: due ? new Date(due).toISOString() : null, due: due <= now,
       proactive: important && due > now && proactive.eligibleDeadline(due, important, now, config),
       eligible: proactive.eligibleDeadline(due, important, now, config) && !recentlyChecked && !waiting && (!Number.isFinite(retry) || retry <= now),
@@ -45,8 +48,11 @@ function plan({ cards, sourceId, catalog, candidateRows = {}, fixedIds = [], foc
   const sorted = records.filter((row) => row.eligible).sort((a, b) => Number(b.due) - Number(a.due)
     || (Date.parse(a.nextDueAt) || 0) - (Date.parse(b.nextDueAt) || 0) || Number(b.priceRefreshReady) - Number(a.priceRefreshReady) || a.card.id.localeCompare(b.card.id));
   // Broad exploration retains a priority slot but cannot starve fixed/focus maintenance.
-  const urgent = sorted.filter((row) => row.important && (row.fixedTarget || row.focus || row.formalCandidate))
-    .sort((a,b)=>Number(b.medianAtRisk)-Number(a.medianAtRisk)||Number(b.formalCandidate)-Number(a.formalCandidate)||Number(b.due)-Number(a.due)||(Date.parse(a.nextDueAt)||0)-(Date.parse(b.nextDueAt)||0));
+  const urgent = sorted.filter((row) => row.important && (row.fixedTarget || row.focus || row.formalCandidate || row.dependencyDeadlineAt))
+    .sort((a,b)=>Number(!!b.dependencyDeadlineAt && proactive.eligibleDeadline(Date.parse(b.dependencyDeadlineAt),true,now,config))
+      - Number(!!a.dependencyDeadlineAt && proactive.eligibleDeadline(Date.parse(a.dependencyDeadlineAt),true,now,config))
+      || (a.dependencyDeadlineAt && b.dependencyDeadlineAt ? Date.parse(a.dependencyDeadlineAt)-Date.parse(b.dependencyDeadlineAt) : 0)
+      ||Number(b.medianAtRisk)-Number(a.medianAtRisk)||Number(b.formalCandidate)-Number(a.formalCandidate)||Number(b.due)-Number(a.due)||(Date.parse(a.nextDueAt)||0)-(Date.parse(b.nextDueAt)||0));
   const urgentIds = new Set(urgent.map(row=>row.card.id));
   const preferred = sorted.filter((row) => row.important && !urgentIds.has(row.card.id)), ordinary = sorted.filter((row) => !row.important);
   const queue = [];
@@ -70,14 +76,15 @@ function plan({ cards, sourceId, catalog, candidateRows = {}, fixedIds = [], foc
   return { records, queue };
 }
 function load(sourceId, root = ROOT, now = Date.now()) {
-  const alternateRows=Object.fromEntries(require('./alternate_purchase_evidence').load(root,now,proactive.lead(timingConfig(root)).leadMs)
+  const config=timingConfig(root,now,sourceId);
+  const alternateRows=Object.fromEntries(require('./alternate_purchase_evidence').load(root,now,proactive.lead(config).leadMs)
     .filter(r=>r.request&&r.source===sourceId).map(r=>[r.id,{alternatePurchaseEvidence:true}]));
   const requested=read(root,'work/search-profile-targets.json');
-  const formalIds=new Set(require('./search_profile_variants').allProfiles(read(root,'work/priority-search-profiles.json')).map(p=>p.id));
+  const formalIds=new Set(read(root,'work/priority-search-profiles.json').focusProfileIds||[]);
   const formalRows={};
   for(const p of requested.profiles||[])if(formalIds.has(p.id))for(const id of p.urlsMatched||[]){
     const evidence=p.qualifiedFacts?.[id]?.medianEvidence,rows=(evidence?.rows||[]).filter(r=>r.fresh&&r.origin);
-    const future=now+proactive.lead(timingConfig(root)).leadMs;
+    const future=now+proactive.lead(config).leadMs;
     const futureOrigins=new Set(rows.filter(r=>Date.parse(r.observedAt)+48*3600000>future).map(r=>r.origin));
     const sourceRows=rows.filter(r=>{try{return new URL(r.url).hostname.replace(/^www\./,'')===({hareruya2:'hareruya2.com',cardrush:'cardrush-pokemon.jp'})[sourceId];}catch{return false;}});
     formalRows[id]={formalCandidate:true,priceRefreshReady:true,medianAtRisk:futureOrigins.size<2&&sourceRows.some(r=>Date.parse(r.observedAt)+48*3600000<=future)};
@@ -88,10 +95,12 @@ function load(sourceId, root = ROOT, now = Date.now()) {
     ...(requested.freshnessRecovery||[]).filter(allowed).map(r=>r.id),
     ...(requested.readyRoutes?.domesticShops||requested.routes?.domesticShops||[]).filter(allowed).map(r=>r.id)
   ].map(id=>[id,{priceRefreshReady:true,requestedProfile:true}]));
+  const deadlines=require('./formal_freshness_queue').forSource(requested,formalIds,sourceId,now);
+  for(const [id,row] of Object.entries(deadlines))formalRows[id]={...formalRows[id],...row,priceRefreshReady:true};
   return plan({ cards: read(root, "data/pokemon-cards.json", []), sourceId,
     fixedIds: require('./fixed_price_cohort').ids(root,sourceId),
     catalog: read(root, `work/${sourceId}_catalog.json`, []), candidateRows: { ...alternateRows,...read(root,'work/candidate-recovery-targets.json').rows, ...(read(root, "work/candidate-availability-history.json").runs?.at(-1)?.rows || read(root, "work/acquisition-audit-baseline.json").availability?.rows || {}), ...read(root, 'work/purchase-price-targets.json').rows,...profileRows,...formalRows },
-    focusConfig: read(root, "data/focus-monitor-config.json"), config: timingConfig(root),
+    focusConfig: read(root, "data/focus-monitor-config.json"), config,
     jobs: read(root, "work/priority-price-checkpoint.json").sources?.[sourceId]?.jobs || {},
     manualWait: read(root, "work/candidate-shop-refresh.json").checkpoints?.[sourceId]?.manualWait || {}, now });
 }
@@ -109,6 +118,7 @@ function write(root = ROOT) {
   const fixedHistory = read(root, "work/priority-freshness-history.json");
   const sources = {};
   for (const id of ["cardrush", "hareruya2"]) {
+    const timing=proactive.lead(timingConfig(root,now,id));
     const planned = load(id, root, now), run = read(root, "work/candidate-shop-refresh.json").sources?.[id] || {};
     const blocked = read(root, "work/candidate-shop-refresh.json").checkpoints?.[id]?.sourceBlocked || null;
     const elapsed = Number(run.durationMs || 0) / 1000;
@@ -132,17 +142,17 @@ function write(root = ROOT) {
       currentMarketTargets: important.filter(r => r.currentMarket).length,
       priceRefreshReady: important.filter(r => r.priceRefreshReady).length,
       overdue: important.filter((r) => r.due && r.nextDueAt).length, proactivePending: important.filter(r => r.proactive && r.eligible).length,
-      proactiveWindow: proactive.lead(timingConfig(root)), unconfirmed: important.filter((r) => !r.nextDueAt).length, pending: planned.queue.length,
+      proactiveWindow: timing, unconfirmed: important.filter((r) => !r.nextDueAt).length, pending: planned.queue.length,
       status: blocked ? "認証・アクセス確認待ち" : "期限付き価格更新", stopReason: blocked || run.stopReason || null,
       refreshed: run.refreshedCount ?? null, changed: run.changedCount ?? null, durationMs: run.durationMs ?? null,
       httpRequests: run.httpRequests ?? null, cacheHits: run.cacheHits ?? 0, cardsPerMinute: rate ? Number((rate * 60).toFixed(2)) : null,
       priorityCardsPerMinute: priorityRate ? Number((priorityRate * 60).toFixed(2)) : null,
       normalCardsPerMinute: normalRate ? Number((normalRate * 60).toFixed(2)) : null,
-        estimatedNormalSweepDays: normalRate && !blocked ? Math.ceil((planned.records.length - important.length) / (normalRate * budgetSeconds * (86400000 / proactive.lead(timingConfig(root)).intervalMs))) : null,
+        estimatedNormalSweepDays: normalRate && !blocked ? Math.ceil((planned.records.length - important.length) / (normalRate * budgetSeconds * (86400000 / timing.intervalMs))) : null,
       normalTargetHours: read(root, "data/priority-price-config.json").normalHours || 48,
       estimatedSweepActiveMinutes: priorityRate && !blocked ? Math.ceil(important.length / priorityRate / 60) : null,
       estimatedExecutionsToClearOverdue: priorityRate && !blocked ? Math.ceil(important.filter((r) => r.due).length / (priorityRate * budgetSeconds)) : null,
-        estimatedFullSweepHours: priorityRate && !blocked ? Math.ceil(important.length / (priorityRate * budgetSeconds)) * proactive.lead(timingConfig(root)).intervalMs / 3600000 : null,
+        estimatedFullSweepHours: priorityRate && !blocked ? Math.ceil(important.length / (priorityRate * budgetSeconds)) * timing.intervalMs / 3600000 : null,
       lastRunAt: run.startedAt || null, checkpoint: run.nextId || null,
       cards: important.map((r) => ({ id: r.card.id, name: r.card.name, lastConfirmedAt: r.lastSuccessAt, nextDueAt: r.nextDueAt,
         lastAttemptAt: checkpoint.sources?.[id]?.jobs?.[r.card.id]?.lastAttemptAt || null, status: blocked ? "アクセス確認待ち・正常値保持" : r.status, priorityReason: r.reason })) };
@@ -154,7 +164,7 @@ function write(root = ROOT) {
       eligibleCount:planned.queue.filter(r=>r.important).length, manualCount:important.filter(r=>r.status==='手動確認待ち').length,
       retryCount:important.filter(r=>r.status==='再試行待ち').length,blocked:Boolean(blocked),
       verifiedCount:capacityRun?.refreshedCount,durationMs:capacityRun?.durationMs,budgetMs:budgetSeconds*1000,
-      intervalMs:proactive.lead(timingConfig(root)).intervalMs,targetHours:important.map(r=>r.refreshHours)}),
+      intervalMs:timing.intervalMs,targetHours:important.map(r=>r.refreshHours)}),
       measuredAt: capacityRun?.startedAt || null, samples: capacityRun?.capacitySamples || 0,
       measurementBasis: capacityRun?.capacityBasis || '期限付き価格巡回の実測なし・補完バッチで代用しない' };
     sources[id].proactiveVerified = run.proactiveVerified ?? null;
@@ -172,11 +182,12 @@ function write(root = ROOT) {
   const runs = read(root, "work/source-update-runs.json").sources || {};
   const buys = read(root, "data/shop-buyback-summary.json");
   function bulkSource(id, observations) {
+    const timing=timingConfig(root,now,id);
     const records = observations.map(({ card, at, detail }) => {
       const time = Date.parse(at), known = Number.isFinite(time) && time <= now;
       const nextDueAt = known ? new Date(time + 6 * 3600000).toISOString() : null;
       return { id: card.id, name: names.get(card.id), lastConfirmedAt: known ? at : null, nextDueAt,
-        lastAttemptAt: runs[id]?.lastAttemptAt || null, status: !known ? "カード単位の確認日時なし・取得待ち" : time + 6 * 3600000 <= now ? "期限超過" : proactive.eligibleDeadline(time + 6 * 3600000, true, now, timingConfig(root)) ? "次回完了前に期限切れ・先回り待ち" : "期限内", detail };
+        lastAttemptAt: runs[id]?.lastAttemptAt || null, status: !known ? "カード単位の確認日時なし・取得待ち" : time + 6 * 3600000 <= now ? "期限超過" : proactive.eligibleDeadline(time + 6 * 3600000, true, now, timing) ? "次回完了前に期限切れ・先回り待ち" : "期限内", detail };
     });
     const fixedIds = new Set(require('./fixed_price_cohort').ids(root,id));
     const fixedCards = records.filter(r => fixedIds.has(r.id));
@@ -236,11 +247,18 @@ function confirmedBuybackAt(price, now = Date.now()) {
   const day = new Intl.DateTimeFormat('sv-SE', {timeZone:'Asia/Tokyo'}).format(new Date(at));
   return price.priceDate === day ? price.observedAt : null;
 }
-function timingConfig(root = ROOT, now = Date.now()) {
+function timingConfig(root = ROOT, now = Date.now(), sourceId = 'hareruya2') {
   const config = read(root, "data/priority-price-config.json");
   const execution = read(root, "data/priority-price-execution.json");
   const cadence = read(root, "data/refresh-cadence-audit.json");
-  return {...config, pipelineBudgetMs: 24 * 60000,
+  const audit=read(root,'data/acquisition-progress-audit.json');
+  const sample=audit.updateCapacity?.fixed192?.[sourceId];
+  const push=sample?.confirmationToPublicationStep,tail=sample?.publicationStepToVerification7d;
+  const recent=now-Date.parse(audit.capacityAt);
+  const measured=recent>=0&&recent<48*3600000&&push?.samples>=3?push.p90Ms:null;
+  const verificationAllowance=measured!=null&&tail?.samples>=3&&Number.isFinite(tail.p90Ms)?tail.p90Ms:0;
+  // The verification timestamp is an upper bound on public availability.
+  return {...config, pipelineBudgetMs: Math.max(24 * 60000,(measured??0)+verificationAllowance),
     ...(now-Date.parse(cadence.checkedAt)<48*3600000 && cadence.observedSuccessfulIntervalMs>0 ? {observedSuccessfulIntervalMs:cadence.observedSuccessfulIntervalMs} : {}),
     ...(Number.isFinite(execution.startDelayMs) ? {observedStartDelayMs:Math.max(30*60000,execution.startDelayMs)} : {})};
 }

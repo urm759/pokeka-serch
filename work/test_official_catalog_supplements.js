@@ -21,7 +21,13 @@ assert.deepEqual(bootstrap.seed(expanded,seeded.catalog,registry,{now}).catalog,
 const actual=seeded.catalog.map(r=>({...r,price:380,available:false,observedAt:'2026-11-18T00:00:00Z',priceQuarantined:true}));
 assert.deepEqual(bootstrap.seed(expanded,actual,registry,{now}).catalog,actual,'keep actual saved prices/stock/times and holds, including out-of-stock');
 assert.equal(bootstrap.seed(expanded.map(c=>({...c,language:'en'})),[],registry,{now}).links.length,0);
-assert.equal(bootstrap.seed(expanded,[],{version:1,entries:[...registry.entries,registry.entries[0]]},{now}).links.length,1,'ambiguous identity registrations stay held');
+// Duplicate every seeded identity; registry order and unrelated entries must not matter.
+for(const id of seeded.links){
+  const entry=registry.entries.find(e=>e.cardId===id),held=bootstrap.seed(expanded,[],{version:1,entries:[...registry.entries,entry]},{now});
+  assert(!held.links.includes(id),'ambiguous identity registrations stay held: '+id);
+  assert(held.holds.some(h=>h.id===id),'ambiguous registration is reported as held: '+id);
+  assert.deepEqual(held.links,seeded.links.filter(x=>x!==id),'only the ambiguous identity is held');
+}
 const requested=seeded.links,ready=require('./camp_postpass').unreachedTargets(seeded.catalog,requested,{},now);
 assert.equal(ready.length,2,'confirmed URLs enter the existing bounded normal-fetch lane, no fake acquisition');
 console.log('PASS official single-card supplements: no fake prices/counts, identity deduplication, language and preserved observations');

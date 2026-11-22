@@ -4,31 +4,49 @@ const { spawnSync } = require("node:child_process");
 
 function git(args, cwd) {
   const started=Date.now();
+  const timed=['commit','bundle','push','fetch','merge'].includes(args[0]);
+  if(timed)console.log(JSON.stringify({publicationStage:'git-'+args[0],phase:'started',at:new Date(started).toISOString()}));
   const run = spawnSync("git", args, { cwd, encoding: "utf8", maxBuffer:64*1024*1024 });
+  if(timed)console.log(JSON.stringify({publicationStage:'git-'+args[0],phase:'finished',durationMs:Date.now()-started,ok:run.status===0}));
   return { ok: run.status === 0, durationMs:Date.now()-started, output: `${run.stdout || ""}${run.stderr || ""}`.trim() };
 }
 
-function publish({ cwd = path.join(__dirname, ".."), message = "Publish deterministic data checkpoint", retries = 2, captureOnly = false } = {}) {
-  const began=Date.now(),projectionChecks=[];
-  function syncUiData() {
-    if (!fs.existsSync(path.join(cwd, 'ui-data-codec.js'))) return;
-    const at=Date.now();
+// A merge can update validation code and its transitive dependencies while the
+// publishing Node process still holds the previous modules in require.cache.
+// Validate and project in a fresh process, using the merged tree on disk.
+function preparePublication(cwd = path.join(__dirname, '..')) {
+  const started=Date.now();let mode='no-ui-codec';
+  if (fs.existsSync(path.join(cwd, 'ui-data-codec.js'))) {
     require('./enforce_overseas_publication').enforce(cwd);
     const registry=path.join(cwd,'work/gemrate-confirmed-reference-registry.json');
     if(fs.existsSync(registry))require('./gemrate_confirmed_links').validatePublic(cwd,JSON.parse(fs.readFileSync(path.join(cwd,'data/gemrate-reference-summary.json'))),JSON.parse(fs.readFileSync(registry)));
     const reused=require('./ui_projection_cache').current(cwd);
     if(!reused)require('./build_ui_data.js').build(cwd);
-    projectionChecks.push({mode:reused?'exact-input-code-output-reuse':'rebuild',durationMs:Date.now()-at});
-    const added = git(['add', 'data/ui'], cwd);
-    if (!added.ok) throw new Error(added.output);
+    mode=reused?'exact-input-code-output-reuse':'rebuild';
+    const added=git(['add','data/ui'],cwd);if(!added.ok)throw Error(added.output);
+  }
+  if(fs.existsSync(path.join(cwd,'data/card-catalog-completion.json')))require('./publication_lineage').verify(cwd,{staged:true});
+  if(fs.existsSync(path.join(cwd,'data/overseas-access-policy.json')))require('./enforce_overseas_publication').verify(cwd,{staged:true});
+  return {mode,durationMs:Date.now()-started,runtime:'fresh-node-current-tree'};
+}
+
+function publish({ cwd = path.join(__dirname, ".."), message = "Publish deterministic data checkpoint", retries = 2, captureOnly = false } = {}) {
+  const began=Date.now(),projectionChecks=[];
+  function syncUiData() {
+    console.log(JSON.stringify({publicationStage:'fresh-projection-and-required-validation',phase:'started',at:new Date().toISOString()}));
+    const current=path.join(cwd,'work/publish_data_checkpoint.js');
+    const child=spawnSync(process.execPath,[fs.existsSync(current)?current:__filename,'--prepare-publication'],{cwd,encoding:'utf8',maxBuffer:16*1024*1024,timeout:180000});
+    if(child.status!==0||child.error)throw Error(child.stderr||child.stdout||child.error?.message||'Fresh publication validation failed');
+    const line=child.stdout.trim().split(/\r?\n/).at(-1);
+    const proof=JSON.parse(line);if(proof.runtime!=='fresh-node-current-tree')throw Error('Fresh publication validation proof missing');
+    projectionChecks.push(proof);
+    console.log(JSON.stringify({publicationStage:'fresh-projection-and-required-validation',phase:'finished',...proof}));
   }
   if (captureOnly) {
     const raw = require('./capture_unpublished_data.js').capture({cwd, source:'capture-only'});
     return {status:'raw-recovery-saved', published:false, raw};
   }
   if (!captureOnly) syncUiData();
-  if(fs.existsSync(path.join(cwd,'data/card-catalog-completion.json')))require('./publication_lineage').verify(cwd,{staged:true});
-  if(fs.existsSync(path.join(cwd,'data/overseas-access-policy.json')))require('./enforce_overseas_publication').verify(cwd,{staged:true});
   const staged = git(["diff", "--cached", "--quiet"], cwd);
   if (staged.ok) return { status: "unchanged", published: false };
   const base = git(["rev-parse", "HEAD"], cwd).output;
@@ -38,15 +56,23 @@ function publish({ cwd = path.join(__dirname, ".."), message = "Publish determin
   const recovery = path.join(cwd, "work", "publish-recovery.json");
   const bundle = path.join(cwd, "work", "publish-recovery.bundle");
   fs.mkdirSync(path.dirname(recovery), { recursive: true });
-  const bundled = git(["bundle", "create", bundle, "HEAD", `^${base}`], cwd);
-  if (!bundled.ok) throw new Error(`Recovery bundle failed; publication stopped: ${bundled.output}`);
-  const record = { savedAt: new Date().toISOString(), base, checkpointCommit: saved, commitMs:commit.durationMs,bundleMs:bundled.durationMs,
-    workflowRunId: process.env.GITHUB_RUN_ID || null, bundle: "work/publish-recovery.bundle", attempts: [], status: "saved-before-publication" };
+  const record = { savedAt: new Date().toISOString(), base, checkpointCommit: saved, commitMs:commit.durationMs,bundleMs:null,
+    workflowRunId: process.env.GITHUB_RUN_ID || null, bundle: "work/publish-recovery.bundle", attempts: [], status: "committed-awaiting-bundle" };
   const save = () => fs.writeFileSync(recovery, JSON.stringify(record, null, 2));
   save();
+  const bundled = git(["bundle", "create", bundle, "HEAD", `^${base}`], cwd);
+  record.bundleMs=bundled.durationMs;record.status=bundled.ok?'saved-before-publication':'bundle-failed';save();
+  if (!bundled.ok) throw new Error(`Recovery bundle failed; publication stopped: ${bundled.output}`);
   if (captureOnly) return { status: "recovery-saved", published: false, commit: saved };
   for (let attempt = 0; attempt <= retries; attempt += 1) {
-    if(fs.existsSync(path.join(cwd,'data/overseas-access-policy.json')))require('./enforce_overseas_publication').verify(cwd,{staged:true});
+    // Retain the last pre-push safeguard as well as preparation-time checks,
+    // but never reuse the parent's policy module after a concurrent merge.
+    if(fs.existsSync(path.join(cwd,'data/overseas-access-policy.json'))) {
+      const local=path.join(cwd,'work/enforce_overseas_publication.js'),started=Date.now();
+      const checked=spawnSync(process.execPath,['-e',"require(process.argv[1]).verify(process.cwd(),{staged:true})",fs.existsSync(local)?local:path.join(__dirname,'enforce_overseas_publication.js')],{cwd,encoding:'utf8',maxBuffer:16*1024*1024,timeout:180000});
+      record.attempts.push({at:new Date().toISOString(),stage:'fresh-pre-push-policy',durationMs:Date.now()-started,ok:checked.status===0&&!checked.error});save();
+      if(checked.status!==0||checked.error)throw Error(checked.stderr||checked.error?.message||'Pre-push public policy verification failed');
+    }
     const pushed = git(["push", "origin", "HEAD:main"], cwd);
     record.attempts.push({ at: new Date().toISOString(), stage: "push", durationMs:pushed.durationMs, ok: pushed.ok, message: pushed.output });
     if (pushed.ok) { record.status = "published";record.totalMs=Date.now()-began;record.projectionChecks=projectionChecks; save(); return { status: "published", published: true, commit: git(["rev-parse", "HEAD"], cwd).output,
@@ -74,9 +100,12 @@ function publish({ cwd = path.join(__dirname, ".."), message = "Publish determin
       }
       record.attempts.push({stage:'regenerate-derived',durationMs:Date.now()-regenerationStarted,ok:true});
     }
-    syncUiData();
-    if(fs.existsSync(path.join(cwd,'data/card-catalog-completion.json')))require('./publication_lineage').verify(cwd,{staged:true});
-    if(fs.existsSync(path.join(cwd,'data/overseas-access-policy.json')))require('./enforce_overseas_publication').verify(cwd,{staged:true});
+    try { syncUiData(); }
+    catch(error) {
+      record.status='merged-validation-failed';record.projectionChecks=projectionChecks;
+      record.attempts.push({at:new Date().toISOString(),stage:'fresh-merged-validation',ok:false,message:error.message});save();
+      throw Error('Merged publication validation failed; checkpoint bundle retained: '+error.message);
+    }
     if (!git(['diff', '--cached', '--quiet'], cwd).ok) {
       const reconciled = git(['commit', '-m', 'Reconcile pinned UI summaries after data merge'], cwd);
       if (!reconciled.ok) throw new Error(reconciled.output);
@@ -87,8 +116,8 @@ function publish({ cwd = path.join(__dirname, ".."), message = "Publish determin
 }
 
 if (require.main === module) {
-  try { console.log(JSON.stringify(publish({ captureOnly: process.argv.includes("--capture-only"),
+  try { console.log(JSON.stringify(process.argv.includes('--prepare-publication')?preparePublication(process.cwd()):publish({ captureOnly: process.argv.includes("--capture-only"),
     message: process.argv.slice(2).filter((arg) => arg !== "--capture-only").join(" ") || undefined }))); }
   catch (error) { console.error(error.message); process.exitCode = 1; }
 }
-module.exports = { publish };
+module.exports = { publish, preparePublication };

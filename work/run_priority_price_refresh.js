@@ -24,6 +24,26 @@ function marketBeforeBuyback(market, buyback, now = Date.now(), config = {}, pai
   return (pairing?.marketNeeded || due(buyback,now,config)) && Number.isFinite(success) && day(success)!==day(now)
     && (!Number.isFinite(attempt)||now-attempt>=2*3600000);
 }
+function dueForFormalEvidence(record, requests, now, config) {
+  const attempt=Date.parse(record?.lastAttemptAt);
+  const retry=require('./acquisition_retry');
+  if(record?.acquisitionStopped||!retry.eligible(record?.sourceRetry,now)
+    ||record?.lastError&&retry.classify({error:record.lastError}).manual||attempt>now-2*3600000)return false;
+  return Object.values(requests).some(row=>Number.isFinite(row.deadlineAt)
+    && require('./proactive_refresh').eligibleDeadline(row.deadlineAt,true,now,config));
+}
+function sourceRunRecord(script,args,child,at,role) {
+  let details = null;
+  for (const line of String(child.stdout || "").trim().split(/\r?\n/).reverse()) { try { details = JSON.parse(line); break; } catch { /* Non-JSON progress text. */ } }
+  const processStatus = child.status === 0 && !child.error ? "success" : "failed";
+  return { script, ...(args[0] === 'shopBuyback' && details?.shopBuyback ? {shopBuyback:details.shopBuyback} : {}), startedAt: new Date(at).toISOString(), endedAt: new Date().toISOString(), durationMs: Date.now() - at,
+    processStatus, failureClass:processStatus==='failed'?(role==='source'?'source-acquisition':'required-calculation'):null,
+    status: processStatus === "failed" ? "failed" : details?.status || details?.completionStatus || "process-success",
+    attempted: details?.attemptedCount ?? null, refreshed: details?.refreshedCount ?? null, changed: details?.changedCount ?? null,
+    proactiveAttempted:details?.proactiveAttempted ?? null, proactiveVerified:details?.proactiveVerified ?? null,
+    httpRequests:details?.httpRequests ?? null, deadlineOrderVersion:details?.deadlineOrderVersion || null,
+    stopReason: details?.stopReason || null, error: child.error?.message || null };
+}
 function main() {
   if (process.argv.includes('--report-failures')) {
     const previous = read('data/priority-price-execution.json');
@@ -54,23 +74,11 @@ function main() {
     const child = spawnSync(process.execPath, [path.join(ROOT, script), ...args], { cwd: ROOT,
       env: { ...process.env, ...env }, encoding: "utf8", maxBuffer: 64 * 1024 * 1024, timeout: 600000 });
     process.stdout.write(child.stdout || ""); process.stderr.write(child.stderr || "");
-    let details = null;
-    for (const line of String(child.stdout || "").trim().split(/\r?\n/).reverse()) { try { details = JSON.parse(line); break; } catch { /* Non-JSON progress text. */ } }
-    const processStatus = child.status === 0 && !child.error ? "success" : "failed";
-    runs.push({ script, startedAt: new Date(at).toISOString(), endedAt: new Date().toISOString(), durationMs: Date.now() - at,
-      processStatus, failureClass:processStatus==='failed'?(role==='source'?'source-acquisition':'required-calculation'):null,
-      status: processStatus === "failed" ? "failed" : details?.status || details?.completionStatus || "process-success",
-      attempted: details?.attemptedCount ?? null, refreshed: details?.refreshedCount ?? null, changed: details?.changedCount ?? null,
-      proactiveAttempted:details?.proactiveAttempted ?? null, proactiveVerified:details?.proactiveVerified ?? null,
-      httpRequests:details?.httpRequests ?? null, deadlineOrderVersion:details?.deadlineOrderVersion || null,
-      stopReason: details?.stopReason || null, error: child.error?.message || null });
+    runs.push(sourceRunRecord(script,args,child,at,role));
     save();
     return child.status === 0 && !child.error;
   }
   if (!finalizeOnly) {
-  // Capture candidates only after the shared gate has admitted an acquisition.
-  // A no-op must not recalculate all profiles or mint a scheduled receipt.
-  if(process.env.GITHUB_RUN_ID)require('./scheduled_cycle_evidence').baseline(catchup?'catchup':'priority',ROOT);
   const sources = read("work/source-update-runs.json").sources || {};
   // Rebuild eligibility from saved data before selecting prices; no HTTP or LLM here.
   if (!run('work/build_purchase_limit_audit.js')) throw new Error('Purchase target queue rebuild failed');
@@ -80,23 +88,30 @@ function main() {
   const pairPlan=require('./buyback_pair_refresh').plan(read('data/pokemon-cards.json',[]),read('data/shop-buyback-summary.json'),
     read('data/psa10-observation-receipt.json'),sources.toreca);
   const evidenceBefore=require('./efficiency_evidence_queue').pending(read('data/pokemon-cards.json',[]),read('data/shop-buyback-summary.json'));
+  const formalTargets=read('work/search-profile-targets.json');
+  const formalProfileIds=read('work/priority-search-profiles.json').focusProfileIds||[];
+  const formalQueue=require('./formal_freshness_queue');
   // Use the existing bulk acquisition slots, not a second per-card crawler.
   for (const [source,key,script,args,env] of [
     ['toreca','psa9Evidence','work/daily_fast_update.js',[],{FAST_DEEP_SCAN:'0',DAILY_RUNTIME_LIMIT_MS:'300000',FAST_PARENT_FINALIZES:'priority'}],
     ['shopBuyback','buybackExitEvidence','work/run_tracked_update.js',['shopBuyback','work/update_shop_buybacks.js'],{TRACKED_TIMEOUT_MS:'300000'}]
   ]) {
-    const ready=source==='toreca'?marketBeforeBuyback(sources.toreca,sources.shopBuyback,Date.now(),config,pairPlan):due(sources[source],Date.now(),config);
+    const now=Date.now(),deadlines=formalQueue.forSource(formalTargets,formalProfileIds,source,now);
+    const formalEvidenceDue=dueForFormalEvidence(sources[source],deadlines,now,config);
+    const ready=formalEvidenceDue||(source==='toreca'?marketBeforeBuyback(sources.toreca,sources.shopBuyback,now,config,pairPlan):due(sources[source],now,config));
     const calendarRequest=source==='toreca'&&ready&&pairPlan.marketDay!==pairPlan.today?{PRICE_PAIR_RECHECK_DAY:pairPlan.today}:{};
     if (ready) run(script,args,{...env,...calendarRequest},'source');
     const evidenceAfter=require('./efficiency_evidence_queue').pending(read('data/pokemon-cards.json',[]),read('data/shop-buyback-summary.json'));
-    runs.push({source,field:key,status:ready?'補完ルート実処理後の監査':'確認期限・再試行間隔待ち',pendingBefore:evidenceBefore[key].length,pendingAfter:evidenceAfter[key].length,
+    runs.push({source,field:key,status:ready?'補完ルート実処理後の監査':'確認期限・再試行間隔待ち',formalEvidenceDue,pendingBefore:evidenceBefore[key].length,pendingAfter:evidenceAfter[key].length,
       recovered:evidenceBefore[key].filter(id=>!evidenceAfter[key].includes(id)).length,
       reason:'一括取得で価格と確認日時を保存。集計確認を実成約取得として数えない。出現しない値は未取得のまま',llmCalls:0,codexCalls:0});
     save();
   }
   for (const sourceId of ["cardrush", "hareruya2"]) run("work/refresh_candidate_shops.js", [sourceId], { CANDIDATE_SHOP_MODE: "deadline" }, 'source');
-  const campIds=[...new Set([...require('./update_yuyutei_torecacamp').campRequestedIds(read('work/search-profile-targets.json'),read('work/comparison-price-targets.json').ids||[]),...require('./fixed_price_cohort').ids(ROOT,'torecacamp')])];
-  const campTiming=require('./proactive_refresh').lead(require('./priority_price_queue').timingConfig());
+  const campTargets=read('work/search-profile-targets.json');
+  const campDeadlines=require('./formal_freshness_queue').forSource(campTargets,read('work/priority-search-profiles.json').focusProfileIds||[],'torecacamp');
+  const campIds=[...new Set([...require('./update_yuyutei_torecacamp').campRequestedIds(campTargets,read('work/comparison-price-targets.json').ids||[]),...Object.keys(campDeadlines),...require('./fixed_price_cohort').ids(ROOT,'torecacamp')])];
+  const campTiming=require('./proactive_refresh').lead(require('./priority_price_queue').timingConfig(ROOT,Date.now(),'torecacamp'));
   const campLead=require('./camp_postpass').proactiveLead(campTiming.leadMs);
   const campPlan={...require('./camp_postpass').priorityMaintenance(read('work/torecacamp_catalog.json',[]),campIds,read('work/torecacamp_progress.json'),read('work/source-update-runs.json').sources?.torecacamp,Date.now(),campLead),proactiveLeadMs:campLead,requestedLeadMs:campTiming.requestedMs,pipelineAllowanceMs:campTiming.processingMs,capacityWarning:campTiming.capacityWarning};
   if(campPlan.due){
@@ -122,12 +137,14 @@ if (require.main === module) {
     const release = require('./acquisition_retry').lock(path.join(ROOT,'work/priority-price-refresh.lock'));
     try { main(); require('./build_ui_data').build(ROOT); } finally { release(); }
   } else {
+  const catchup = process.argv.includes('--catchup');
   const result = require('./price_refresh_gate').execute(ROOT, main, {
-    catchup: process.argv.includes('--catchup'),
+    catchup,
+    beforeAcquire: process.env.GITHUB_RUN_ID ? () => require('./scheduled_cycle_evidence').baseline(catchup?'catchup':'priority',ROOT) : null,
     afterSave: () => require('./build_ui_data').build(ROOT)
   });
   if(process.env.GITHUB_OUTPUT)fs.appendFileSync(process.env.GITHUB_OUTPUT,'refresh_status='+(result.status==='skipped'?'skipped':'processed')+'\n');
   if (result.status === 'skipped') console.log(JSON.stringify(result));
   }
 }
-module.exports = { due,scheduledSlot,marketBeforeBuyback };
+module.exports = { sourceRunRecord,due,scheduledSlot,marketBeforeBuyback,dueForFormalEvidence };

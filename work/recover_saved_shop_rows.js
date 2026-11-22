@@ -1,6 +1,10 @@
 const fs=require('node:fs'),path=require('node:path');
 const {atomicWrite}=require('./acquisition_retry');
 const identity=require('./quarantine_shop_identity');
+function exactStateA(source,card,row) {
+  if (source==='torecacamp') return require('./update_yuyutei_torecacamp').campMatchesCard(card,row);
+  return require('./refresh_candidate_shops').exactIdentity(card,{title:row.title||row.name});
+}
 function reconcileLinks(cards,catalogs,{now=Date.now(),holds={}}={}){
   const updated=cards.map(c=>({...c})),links=[],owners=new Map();
   for(const card of updated)for(const source of Object.keys(catalogs))if(card[source+'Url']){
@@ -27,7 +31,7 @@ function reconcileLinks(cards,catalogs,{now=Date.now(),holds={}}={}){
         &&url.pathname.startsWith('/products/')&&r.identityVerified===true&&identity.identityUsable(r)&&!r.priceQuarantined
         &&r.state==='A'&&r.price>0&&Number.isFinite(at)&&at<=now&&now-at<=48*3600000
         &&holds[source]?.[card.id]?.url!==r.detailUrl&&!identity.reason(card,r.title||r.name)
-        &&require('./refresh_candidate_shops').exactIdentity(card,{title:r.title||r.name});
+        &&exactStateA(source,card,r);
     });
     const urls=[...new Set(eligible.map(r=>r.detailUrl))];
     if(urls.length!==1||owners.has(source+'|'+urls[0])||claims.get(source+'|'+urls[0])?.size!==1)continue;
@@ -64,7 +68,7 @@ function mergeRows(current,saved,cards,source,now=Date.now()) {
       && Number.isFinite(at)&&at<=now&&incoming.price>0
       &&!identity.reason(card,title)
       &&(reference?require('./raw_condition_reference').sameIssue(card,title):
-        incoming.state==='A'&&require('./refresh_candidate_shops').exactIdentity(card,{title}));
+        incoming.state==='A'&&exactStateA(source,card,incoming));
     if(!verified||matches.some(({r})=>r.cardMismatchSuspected||r.priceQuarantined)){
       rejected.push({id:incoming.cardId,reason:'取得原票の仕様/状態/日時不足または現行保留。自動解除しない'});continue;
     }

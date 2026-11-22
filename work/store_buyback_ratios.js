@@ -54,7 +54,7 @@ function aggregate(rows,source,now=Date.now(),commonOffers={groups:[]}) {
   }
   for(const merchant of Object.values(merchants)) {
     const daily=(merchant.daily||[]).sort((a,b)=>a.date.localeCompare(b.date));
-    for(const period of [1,30,200]) {
+    for(const period of [1,30,75,200]) {
       const selected=daily.filter(d=>Date.parse(d.date)>=end-(period-1)*DAY);
       merchant.periods[period]={mean:mean(selected.map(d=>d.mean)),observedDays:selected.length,periodDays:period,
         uniqueCards:new Set(selected.flatMap(d=>d.identities)).size,meanDailyCards:mean(selected.map(d=>d.cards)),
@@ -62,10 +62,10 @@ function aggregate(rows,source,now=Date.now(),commonOffers={groups:[]}) {
         reference:selected.length<period};
     }
     merchant.lastComparableDate=daily.at(-1)?.date||null;
-    // The browser receives only 3 windows per merchant, never card histories.
+    // Send compact windows; the underlying daily observations stay in storage.
     delete merchant.daily;
   }
-  return {version:1,asOf,periods:[1,30,200],merchants,audit,
+  return {version:1,asOf,periods:[1,30,75,200],merchants,audit,
     rule:'全掲載カード対象。減額前PSA10提示÷同仕様・同日・実確認差6時間以内の国内PSA10相場。カード1件1票の日次単純平均→有効日の日次平均の単純平均。欠測補完・金額加重なし。同店の受付別提示はカードごと有効最高1件。出典付きで確定した共通提示は1票、比較元矛盾は保留。検索・採算・GOには不使用。'};
 }
 module.exports={aggregate};

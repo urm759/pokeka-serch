@@ -361,6 +361,26 @@
     };
   }
 
+  // Owner-approved 2026-11-22: a drop is confirmed only by a later recheck whose
+  // responses succeeded and still listed under half of the last good count.
+  function buybackDropConfirmed(review, event) {
+    return event?.status === "count-drop-review"
+      && Date.parse(event.at) > Date.parse(review?.startedAt)
+      && Number.isFinite(event.count) && Number.isFinite(review.lastGoodCount)
+      && event.count < review.lastGoodCount * 0.5
+      && Array.isArray(event.httpStatuses) && event.httpStatuses.length > 0
+      && event.httpStatuses.every((status) => status === 200);
+  }
+
+  // Confirmed quotes are history, not current offers, until a listing fetch succeeds.
+  // A failed attempt after confirmation is no evidence that the offers came back.
+  function buybackListingWithdrawn(meta) {
+    const review = meta?.countDropReview;
+    if (!meta?.reviewStatus || !review || review.resolvedAt) return false;
+    return Boolean(review.confirmed)
+      || (meta.reviewStatus === "count-drop-review" && buybackDropConfirmed(review, review.latest));
+  }
+
   function buybackMetrics(input = {}) {
     const marketPrice = positive(input.marketPrice);
     const buybackPrice = positive(input.buybackPrice);
@@ -370,6 +390,7 @@
     if (input.dataQuarantined) return { valid: false, reason: "データ異常（自動隔離）", stale, updatedAgeDays, quarantined: true };
     if (!cardMatched) return { valid: false, reason: "カード取り違え疑い", stale, updatedAgeDays };
     if (marketPrice == null || buybackPrice == null) return { valid: false, reason: "価格未取得", stale, updatedAgeDays };
+    if (input.listingWithdrawn) return { valid: false, withdrawn: true, reason: "再確認でも店舗の掲載を確認できず・現在の売値に不採用（保存値）", stale, updatedAgeDays, marketPrice, buybackPrice };
     const feeRate = clamp(finite(input.saleFeeRate) || 0, 0, 100) / 100;
     const netMarket = Math.max(0, marketPrice * (1 - feeRate) - Math.max(0, finite(input.saleExtraCost) || 0));
     const marketRatio = safeDivide(buybackPrice, marketPrice);
@@ -877,6 +898,8 @@
   return {
     ageDays,
     buybackMetrics,
+    buybackDropConfirmed,
+    buybackListingWithdrawn,
     applyStoreDemandRelativeRanking,
     HISTORY_REQUIREMENTS,
     classifyDemandSupply,

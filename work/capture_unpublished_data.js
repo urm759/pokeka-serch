@@ -52,6 +52,7 @@ function capture({cwd = path.join(__dirname, '..'), source = 'unknown'} = {}) {
       'work/candidate-shop-refresh.json'];
     for(const relative of inputs)if(fs.existsSync(path.join(cwd,relative)))copy(relative);
     scan('work/mintore-listing-history');
+    scan('work/hareruya2-stock-archive');
   } else { scan('data'); scan('work'); scan('work/mintore-listing-history'); }
   const manifest = {version:1, source, savedAt:new Date().toISOString(), workflowRunId:process.env.GITHUB_RUN_ID || null,
     files, withheld, invalidJson:files.filter(row=>!row.validJson).map(row=>row.file), summaryGenerationRequired:true};

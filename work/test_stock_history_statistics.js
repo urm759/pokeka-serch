@@ -24,3 +24,23 @@ const slim=require('./build_ui_data').project('hareruya2-stock-summary',generate
 assert.equal(slim.cards.a.avg7,generated.cards.a.avg7);assert.equal(slim.cards.a.stockStatistics,undefined);assert.equal(slim.stockStatistics,undefined);
 console.log('PASS full crawler / checkpoint finalization equality and lazy statistics provenance');
 require('./test_inventory_net_movement');
+const {archiveAndTrim}=require('./hareruya2_stock_archive');
+const lifecycle={dates:['2026-10-21','2026-10-22','2026-10-23','2026-10-24'],
+  stocks:{a:[4,0,null,3],b:[null,2,2,1]},quantityEvidence:{a:{'2026-10-21':[4,'https://www.hareruya2.com/products/1','2026-10-21T01:00:00Z','print-a']}}};
+const original=JSON.stringify(lifecycle);
+const view={cards:{a:{}}};
+m.apply(view,lifecycle,{asOf});
+m.apply({cards:{}},lifecycle,{asOf}); // Candidate left the rendered set.
+m.apply({cards:{b:{}}},lifecycle,{asOf}); // A partial acquisition omitted a.
+m.apply(view,lifecycle,{asOf}); // Candidate returned after an unobserved day.
+assert.equal(JSON.stringify(lifecycle),original,'display and incomplete source responses never destroy stored quantities');
+assert.equal(archiveAndTrim(lifecycle,temp,2),2);
+const out=(day)=>JSON.parse(fs.readFileSync(path.join(temp,'work/hareruya2-stock-archive',day+'.json')));
+assert.deepEqual(out('2026-10-21').quantities,{a:4});
+assert.deepEqual(out('2026-10-21').evidence,{a:JSON.parse(original).quantityEvidence.a['2026-10-21']});
+assert.deepEqual(out('2026-10-22').quantities,{a:0,b:2});
+assert.deepEqual(lifecycle.stocks.a,[null,3]);
+assert.equal(archiveAndTrim(lifecycle,temp,2),0);
+const conflicting=JSON.parse(original);conflicting.stocks.a[0]=5;
+assert.throws(()=>archiveAndTrim(conflicting,temp,2),/Conflicting archived stock/);
+assert.equal(conflicting.dates.length,4,'do not trim when original history cannot be archived');

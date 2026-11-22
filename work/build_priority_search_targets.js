@@ -37,6 +37,7 @@ function isolatedEvaluation(profile,at,inspectIds=[],options={}) {
 function evaluate(profile,at,overlay={},inspectIds=[],calculationCache=null,options={}) {
   const url=new URL(profile.url);for(const [k,v]of Object.entries(overlay))if(!url.searchParams.has(k))url.searchParams.set(k,v);
   const api=load(fs.readFileSync(path.join(ROOT,'app.js'),'utf8'),at,{url:url.href,fixedModelClock:true,dataRef:options.dataRef}),calculationKey=at+':'+api.computationKey();
+  if(options.requireHistoricalInputs&&api.missingHistoricalInputs.length)throw Error('Missing historical inputs: '+api.missingHistoricalInputs.join(', '));
   let cards=calculationCache?.get(calculationKey);
   if(!cards){cards=api.prepareCalculatedCards(api.state.cards);calculationCache?.set(calculationKey,cards);}
   const summaryKey=efficiencySummaryKey(calculationKey,api.state);

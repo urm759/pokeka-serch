@@ -45,7 +45,18 @@ function inspect(before, after, context = {}) {
   const freshStock=quotes.filter(r=>{const at=Date.parse(r.inventoryObservedAt||'');return Number.isFinite(at)&&at<=evaluatedAt&&evaluatedAt-at<=48*3600000;});
   if (purchase?.available === false && purchase.fresh === true || !purchase && freshStock.length && freshStock.every(r=>r.available===false || r.stock===0))
     add('out-of-stock','個別在庫記録。価格不足・期限切れとは別');
-  if (purchase?.fresh === false || has(/期限超過|期限切れ|古値|古い|鮮度|再確認待ち/)) add('expired-price','価格採用期限・個別確認日時を確認。6時間目標超過とは別');
+  const expired = /期限超過|期限切れ|古値|古い|鮮度不足/;
+  const freshness = [];
+  const tooOld = stamp => typeof stamp==='string'&&stamp.includes('T')&&evaluatedAt-Date.parse(stamp)>48*3600000;
+  if (previousOfferExpired || purchase?.fresh === false) {
+    const quote=previousOfferExpired?priorQuote:purchase;
+    if(tooOld(quote.priceObservedAt))freshness.push('店舗価格');
+    if(tooOld(quote.inventoryObservedAt))freshness.push('在庫');
+  }
+  if (!Number.isFinite(after?.medianEvidence?.value)&&after?.medianEvidence?.omitted?.some(row=>expired.test(row.reason||'')))freshness.push('素体中央値');
+  if (has(/買取.*(?:期限|古値|古い|鮮度)|(?:期限超過|期限切れ|古値|古い).*買取/))freshness.push('買取出口');
+  if (has(/PSA(?:10|9).*?(?:期限超過|期限切れ|古値|古い|鮮度不足)/i))freshness.push('PSA相場');
+  if (purchase?.fresh === false || freshness.length || has(expired)) add('expired-price','価格採用期限・個別確認日時を確認。6時間目標超過とは別');
   const expiryQuotes=previousOfferExpired?[priorQuote]:quotes.filter(quote=>!quoteFresh(quote,evaluatedAt));
   if(roots.some(r=>r.code==='expired-price')&&expiryQuotes.some(r=>/HTTP|認証|アクセス|取得失敗|停止|error|fail|timeout|timed out|形式/i.test(r.sourceFailure||'')))
     add('acquisition-failure','期限切れ側の取得元に失敗・停止記録あり。他店舗の停止や正常な時間予算繰越と区別');
@@ -112,7 +123,7 @@ function inspect(before, after, context = {}) {
     if (has(/公式.*不足|Population.*未取得|PSA公式.*未取得/)) fields.push('psaOfficial');
   }
   if(independentFailures.length)fields.length=0;
-  return {status,comparable,temporalOnly,settingsChanged,codeChanged,versionChanges,changedInputs,changedPrices,roots,derived,
+  return {status,comparable,temporalOnly,settingsChanged,codeChanged,versionChanges,changedInputs,changedPrices,roots,derived,freshness,
     newFailures,existingFailures:reasons.filter(r=>previous.includes(r)),directFailures:reasons.filter(r=>!derived.some(d=>d.reason===r)),
     repair:{fields:unique(fields),sourceTargets,independentFailures,automaticReviewRelease:false,held,
       reason:independentFailures.length?'別の確定条件でも不合格。専用の同じ反復取得を外し通常巡回/値変更検知を維持':!after?'最新カタログに対象なし・原履歴を保持':held?'根拠確認待ち。仕様・対立・アクセス停止を解除しない':'既存の取得元別キューへ。期限・間隔・再試行制限を維持'}};
