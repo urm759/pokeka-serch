@@ -124,7 +124,12 @@ function capture(saved,catalog,source,cards) {
     // A daily skip or later JSON rebuild does not invalidate the last successful
     // saved response. Individual timestamps and the matching source success
     // below authorize the observation, never the file generation day.
-    if(!meta?.lastSuccess || meta.lastAttempt!==meta.lastSuccess || ['pending','retired'].includes(meta.acquisitionPermission)) continue;
+    // The shop writer records lastAttempt when a fetch starts and lastSuccess
+    // when it is confirmed, so a successful run has lastSuccess at or after
+    // lastAttempt. A held or failed run leaves lastSuccess before lastAttempt.
+    const succeeded=Number.isFinite(Date.parse(meta?.lastSuccess)) && Number.isFinite(Date.parse(meta?.lastAttempt))
+      && Date.parse(meta.lastSuccess)>=Date.parse(meta.lastAttempt);
+    if(!succeeded || ['pending','retired'].includes(meta.acquisitionPermission)) continue;
     for(const item of items) {
       const c=byId.get(item.cardId),quote=source.cards?.[item.cardId]?.shops?.[shop];
       if(!c || c.language!=='ja' || c.identityReviewRequired || !c.identityKey) {reject('仕様未確定');continue;}
