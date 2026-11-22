@@ -18,6 +18,8 @@ function fixture(mode, elapsed, count, http) {
     [rocket]:{fetched:2,lastSuccess:iso(-144),lastAttempt:iso(-144)}};
   if (mode === 'first') shops[bank].reviewStatus = null;
   if (mode === 'format') shops[bank].reviewStatus = 'format-review';
+  if (mode === 'confirmed') shops[bank].countDropReview = {startedAt:iso(-48),lastGoodCount:20,resolvedAt:null,
+    latest:{at:iso(-24),status:'count-drop-review',count:1,httpStatuses:[200]}};
   write('data/shop-buyback-summary.json',{shops,cards:{preserved:{shops:{[bank]:{price:100,listingActive:true}}}}});
   write('work/source-update-runs.json',{sources:{shopBuyback:{lastSuccessAt:iso(-144)}}});
   write('work/buyback-source-permissions.json',{sources:mode==='permission'?{[bank]:{status:'pending',reason:'fixture'}}:{}});
@@ -41,6 +43,42 @@ function fixture(mode, elapsed, count, http) {
   const stage = read('work/source-update-runs.json').sources.shopBuyback;
   assert.ok(stage.shopBuyback, child.stderr+child.stdout);
   return {child,stage,shop:read('data/shop-buyback-summary.json').shops[bank],calls:fs.readFileSync(path.join(root,'calls'),'utf8').trim()};
+}
+function withdrawnRule(market) {
+  const startedAt='2026-11-21T02:56:59.225Z',at='2026-11-22T04:55:32.924Z';
+  const base={reviewStatus:'count-drop-review',countDropReview:{startedAt,lastGoodCount:340,resolvedAt:null,
+    latest:{at,status:'count-drop-review',count:1,httpStatuses:[200]}}};
+  const withReview=patch=>({...base,countDropReview:{...base.countDropReview,...patch}});
+  const withLatest=patch=>withReview({latest:{...base.countDropReview.latest,...patch}});
+  assert.equal(market.buybackListingWithdrawn(base),true,'current saved evidence is recognized without migration');
+  for(const [label,meta] of Object.entries({
+    unknown:undefined, normal:{}, beforeRecheck:{reviewStatus:'count-drop-review'}, firstDrop:withLatest({at:startedAt}),
+    httpError:withLatest({httpStatuses:[500]}), noResponse:withLatest({httpStatuses:[]}), noCount:withLatest({count:null}),
+    notLow:withLatest({count:170}), unknownGoodCount:withReview({lastGoodCount:null}),
+    succeeded:withLatest({status:null}), resolved:withReview({resolvedAt:at}),
+    cleared:{...base,reviewStatus:null}, accessHold:{...base,reviewStatus:'access-review'}, formatHold:{...base,reviewStatus:'format-review'},
+  }))assert.equal(market.buybackListingWithdrawn(meta),false,label+' keeps the normal expiry');
+
+  // A confirmed store stays withdrawn through failures and is readmitted by one success.
+  let shop=base;
+  const attempt=(hour,patch)=>{shop={...shop,...hold.transition(shop,{at:iso(hour),count:null,pageEvidence:{httpStatuses:[200]},...patch})};return market.buybackListingWithdrawn(shop);};
+  assert.equal(attempt(24,{status:'count-drop-review'}),true,'unparsed response after confirmation');
+  assert.equal(attempt(48,{status:'format-review'}),true,'format hold after confirmation');
+  assert.equal(attempt(72,{status:null,success:true,count:330}),false,'success after a format hold');
+  assert.equal(attempt(96,{status:'count-drop-review',count:1}),false,'a new episode needs its own confirmation');
+
+  const decision=require('../decision-model');
+  const quote=(shopId,buybackPrice,meta)=>({shopId,fulfilment:'mail',...market.buybackMetrics({marketPrice:100000,buybackPrice,
+    priceDate:'2026-11-21',asOfDate:'2026-11-22',listingWithdrawn:market.buybackListingWithdrawn(meta)})});
+  const exit=rows=>decision.conservativeBuybackExit({rows,currentPsa10Price:100000,assumptions:{hitRate:0.8,lowerGradePrice:30000}});
+  const held=quote('held',98000,base),a=quote('a',80000),b=quote('b',82000);
+  assert.equal(held.valid,false);
+  assert.equal(held.buybackPrice,98000,'saved quote stays visible as history');
+  assert.equal(exit([a,b,held]).grossCurrent,81000,'withdrawn quote never raises the exit');
+  assert.equal(exit([a,held]).usable,false,'one current store is not a confirmed exit');
+  assert.equal(market.evaluateStoreDemand({rows:[a,b,held]}).best.buybackPrice,82000);
+  const app=fs.readFileSync(path.join(__dirname,'../app.js'),'utf8');
+  assert.equal(app.split('marketModel.buybackListingWithdrawn(').length-1,2,'exit rows and forecast blend share the rule');
 }
 function reports(result, externalFailure, expected) {
   const {child,stage} = result;
@@ -74,6 +112,21 @@ try {
   assert.equal(zeroFirst.shop.reviewStatus,null);
   const ok=fixture('held',24,10,200);
   assert.equal(ok.shop.reviewStatus,null);assert.equal(ok.stage.acquiredCount,10);assert.equal(ok.shop.countDropReview.resolvedAt,iso(0));
+  const market = require('../market-analysis');
+  // Approved 2026-11-22: the collector records a confirmation that only a success clears.
+  assert.equal(market.buybackListingWithdrawn(low.shop),true,'a second low listing is confirmed');
+  assert.equal(low.shop.countDropReview.confirmed.count,9);
+  assert.equal(market.buybackListingWithdrawn(zeroFirst.shop),false);
+  assert.equal(market.buybackListingWithdrawn(ok.shop),false);
+  for(const code of [403,500]){
+    const failed=fixture('confirmed',24,0,code);
+    assert.equal(market.buybackListingWithdrawn(failed.shop),true,'a failed recheck does not readmit withdrawn quotes: '+code);
+    assert.equal(failed.shop.countDropReview.confirmed.count,1);
+  }
+  const recovered=fixture('confirmed',24,10,200);
+  assert.equal(market.buybackListingWithdrawn(recovered.shop),false,'a successful listing readmits the store');
+  assert.equal(recovered.shop.countDropReview.confirmed,undefined);
+  withdrawnRule(market);
   const empty=fixture('held',24,0,200);
   assert.equal(empty.shop.countDropReview.latest.count,0);assert.deepEqual(empty.shop.countDropReview.latest.pageCounts,[0]);
   const evidence=path.join(work,'.private','buyback-failed-responses',bank);

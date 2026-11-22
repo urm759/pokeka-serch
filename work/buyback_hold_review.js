@@ -1,3 +1,4 @@
+const {buybackDropConfirmed, buybackListingWithdrawn} = require('../market-analysis');
 const HOUR = 3600000;
 const UNKNOWN = '不明（記録開始前）';
 
@@ -27,14 +28,19 @@ function transition(previous, attempt) {
   const change = {reviewStatus:status, lastAttempt:at,
     holdStartedAt:status ? (previous.reviewStatus === status ? heldSince(previous) : at) : null};
   if (!status && attempt.success) change.lastGoodPages = pageEvidence;
-  if (priorDrop || status === 'count-drop-review') {
-    const old = priorDrop ? previous.countDropReview : null;
+  const withdrawn = buybackListingWithdrawn(previous);
+  if (priorDrop || withdrawn || status === 'count-drop-review') {
+    const old = priorDrop || withdrawn ? previous.countDropReview : null;
     change.countDropReview = {
       startedAt: old?.startedAt || (priorDrop ? heldSince(previous) : at),
       lastGoodCount: old?.lastGoodCount ?? previous.fetched,
       lastGoodPages: old?.lastGoodPages ?? previous.lastGoodPages ?? UNKNOWN,
       first: old?.first || event, latest:event, resolvedAt:attempt.success ? at : null,
     };
+    // latest is overwritten on every attempt, so keep the confirming response.
+    const confirmed = !attempt.success && (old?.confirmed
+      || [old?.latest, event].find(e => buybackDropConfirmed(change.countDropReview, e)));
+    if (confirmed) change.countDropReview.confirmed = confirmed;
   }
   return change;
 }

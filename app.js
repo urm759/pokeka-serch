@@ -2942,6 +2942,7 @@ function buildBuybackAnalysis(card, shops, marketPrice) {
       asOfDate: state.buybackUpdatedAt,
       cardMatched: buybackCardMatched(card, shop),
       dataQuarantined: shop.quarantined,
+      listingWithdrawn: marketModel.buybackListingWithdrawn(state.buybackShops[shop.shopId]),
     });
     return {
       ...shop,
@@ -3174,7 +3175,8 @@ function calc(card) {
   }));
   const buybackAnalysis = buildBuybackAnalysis(card, buybackShopValues, psa10);
   buybackAnalysis.referenceRows = buildBuybackAnalysis(card, Object.entries(originalBuyback?.shops || {}).map(([shopId, shop]) => ({ ...shop, shopId, sourceName: state.buybackShops[shopId]?.name || shopId })), psa10).rows;
-  const trustedBuybackShopValues = buybackShopValues.filter((shop) => !shop.quarantined && buybackCardMatched(card, shop));
+  const trustedBuybackShopValues = buybackShopValues.filter((shop) => !shop.quarantined && buybackCardMatched(card, shop)
+    && !marketModel.buybackListingWithdrawn(state.buybackShops[shop.shopId]));
   const marketStability = state.marketStability[card.id] || {
     score: null, state: "蓄積中", direction: "蓄積中", supplyState: "蓄積中",
     supportLow: null, supportHigh: null, inventoryDays: null, historyDays: 0, samples: 0,
@@ -6620,7 +6622,7 @@ function renderContent() {
       const differenceText = differencePct == null ? "-" : `${differencePct >= 0 ? "+" : ""}${differencePct.toFixed(1)}%`;
       const rowClass = !shop.valid ? "invalid" : shop.stale ? "stale" : shop.outlier ? "outlier" : "trusted";
       return `<div class="buyback-shop-row ${index === 0 ? "buyback-shop-primary" : ""} ${rowClass}">
-        <div>${leadLabel}<strong>${shopName}</strong><small>${shop.fulfilment === "store" ? "店頭価格" : "郵送価格"} / ID: ${escapeHtml(shop.shopId)}${card.buybackAnalysis?.rows?.some((r) => r.shopId === shop.shopId) ? " / 出口対象" : " / 設定により出口対象外"}</small>${warning ? `<small class="buyback-warning">${escapeHtml(warning)}</small>` : ""}</div>
+        <div>${leadLabel}<strong>${shopName}</strong><small>${shop.fulfilment === "store" ? "店頭価格" : "郵送価格"} / ID: ${escapeHtml(shop.shopId)}${shop.withdrawn ? " / 出口対象外" : card.buybackAnalysis?.rows?.some((r) => r.shopId === shop.shopId) ? " / 出口対象" : " / 設定により出口対象外"}</small>${warning ? `<small class="buyback-warning">${escapeHtml(warning)}</small>` : ""}</div>
         <div><span>店舗買取 / 確認</span><b>${shop.buybackPrice ? `¥${fmt.format(shop.buybackPrice)}` : "-"}</b><small>${escapeHtml(shop.observedAt ? formatJstTimestamp(shop.observedAt) : shop.priceDate || "未取得")}</small>${shopMeta.conditions ? `<small>${escapeHtml(shopMeta.conditions)}</small>` : ''}</div>
         <div><span>相場比買取率</span><b>${ratioLabel(shop.marketRatio)}</b><small>市場 ¥${shop.marketPrice ? fmt.format(shop.marketPrice) : "-"}</small></div>
         <div><span>相場差率</span><b>${ratioLabel(shop.marketDifference)}</b><small>${differenceText}</small></div>

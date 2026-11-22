@@ -53,7 +53,15 @@ function beforeRequestedBuyMigration(text){
   assert.equal(crypto.createHash('sha256').update(branch).digest('hex'),'5f49fa6bc5594c9e99b28db5e62d17c146920303ce6e4406f4ebb6c9c6dcda62','only the separately tested shared median/store branch is authorized');
   return text.slice(0,start)+text.slice(end);
 }
+// Owner approval 2026-11-22: quotes from a store with a confirmed listing drop are not current sale prices.
+// Only this exact exclusion and this exact rule are authorized; behavior is tested in test_buyback_hold_recheck.
+const approvedWithdrawal="\n    && !marketModel.buybackListingWithdrawn(state.buybackShops[shop.shopId])";
+assert.equal(app.replace(/\r\n/g,'\n').split(approvedWithdrawal).length-1,1,'approved withdrawal exclusion occurs exactly once');
+const withdrawalModel=fs.readFileSync('market-analysis.js','utf8').replace(/\r\n/g,'\n');
+assert.equal(crypto.createHash('sha256').update(withdrawalModel.slice(withdrawalModel.indexOf('  function buybackDropConfirmed('),withdrawalModel.indexOf('  function buybackMetrics('))).digest('hex'),
+  'b858830ca326e5954ca25fa6b6daf9308c3a87fe030ce5b675c53779bb6bf310','changing the approved withdrawal rule needs a new owner approval');
 const legacyApp=beforeRequestedBuyMigration(app.replace(/\r\n/g,'\n'))
+  .replace(approvedWithdrawal,'')
   .replace('  url.searchParams.set("calcBuy",state.calculationBuyMode);\n','')
   // Requested primary median and explicit comparison-only URL are tested in test_main_median_legacy_urls.
   .replace('  url.searchParams.set("calcBuy",\'median\');\n','')
