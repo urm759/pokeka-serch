@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-22T05:05:45.821Z",
+  "generatedAt": "2026-11-22T05:12:04.451Z",
   "sourceLastSuccessAt": "2026-11-22T04:54:45.645Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-11-22T02:44:26.713Z",
-    "lastSuccessAt": "2026-11-22T02:44:26.713Z",
-    "runId": "44977091105",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/44977091105"
+    "lastAttemptAt": "2026-11-22T05:12:04.442Z",
+    "lastSuccessAt": "2026-11-22T05:12:04.442Z",
+    "runId": "44986977376",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/44986977376"
   },
   "dailyOutcomes": [
     {
@@ -80,13 +80,13 @@
     {
       "key": "source:shopBuyback:manual-wait",
       "category": "確認が必要",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44975526090",
-      "reason": "Web買取表: 福福トレカ（郵送窓口）: existing data was preserved: fetch failed"
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44986977376",
+      "reason": "Web買取表: ブルーロケット: existing data was preserved: 取得件数が前回の半分未満。急減を隔離し正常データ保持"
     },
     {
       "key": "source:shopBuyback:stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44975526090",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/44986977376",
       "reason": "Web買取表: 更新期限超過（カード別鮮度 未記録%）"
     },
     {
@@ -94,6 +94,11 @@
       "category": "鮮度未達・進捗停滞",
       "url": "https://github.com/urm759/pokeka-serch/actions/runs/44921733656",
       "reason": "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）"
+    },
+    {
+      "key": "source:buyback:kaitori-homura-mail:manual-wait",
+      "category": "確認が必要",
+      "reason": "買取ホムラ（郵送）: 形式変更: ホムラ取得0件。正常値保持"
     },
     {
       "key": "source:buyback:fukufuku-mail:manual-wait",
@@ -205,12 +210,12 @@
     {
       "key": "buyback-hold:bluerocket:2026-11-21T02:56:59.225Z",
       "category": "確認が必要",
-      "reason": "ブルーロケット 保留開始 2026-11-21T02:56:59.225Z、直前正常 340件、最終実取得 2026-11-21T00:55:28.541Z、次回 2026-11-22T02:56:59.225Z。個別提示期限24／48時間以内 10／34、正式出口 0枚"
+      "reason": "ブルーロケット 保留開始 2026-11-21T02:56:59.225Z、直前正常 340件、最終実取得 2026-11-21T00:55:28.541Z、次回 2026-11-23T04:55:32.924Z。個別提示期限24／48時間以内 10／34、正式出口 0枚"
     },
     {
       "key": "buyback-hold:kaitori-homura-mail:2026-11-21T02:56:59.243Z",
       "category": "確認が必要",
-      "reason": "買取ホムラ（郵送） 保留開始 2026-11-21T02:56:59.243Z、直前正常 356件、最終実取得 2026-11-21T00:25:13.543Z、次回 2026-11-22T02:56:59.243Z。個別提示期限24／48時間以内 10／39、正式出口 0枚"
+      "reason": "買取ホムラ（郵送） 保留開始 2026-11-21T02:56:59.243Z、直前正常 356件、最終実取得 2026-11-21T00:25:13.543Z、次回 2026-11-23T04:55:39.833Z。個別提示期限24／48時間以内 10／39、正式出口 0枚"
     }
   ],
   "reasons": [
@@ -221,9 +226,10 @@
     "カードラッシュ: 更新期限超過（カード別鮮度 0%）",
     "遊々亭: HTTP 403",
     "遊々亭: 更新期限超過（カード別鮮度 0.04%）",
-    "Web買取表: 福福トレカ（郵送窓口）: existing data was preserved: fetch failed",
+    "Web買取表: ブルーロケット: existing data was preserved: 取得件数が前回の半分未満。急減を隔離し正常データ保持",
     "Web買取表: 更新期限超過（カード別鮮度 未記録%）",
     "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）",
+    "買取ホムラ（郵送）: 形式変更: ホムラ取得0件。正常値保持",
     "福福トレカ（郵送窓口）: fetch failed",
     "PC側PSA: PC観測未受信 / 30時間以内の独立タスク観測なし。PC停止・観測起動失敗・未公開を区別して確認",
     "重要価格更新：設定2時間に対し実績成功間隔（直近最大）26.98時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能",
@@ -242,8 +248,8 @@
     "保存原票の同時更新照合が保留（2入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/state-a-price-evidence.json, work/buyback-price-observations.json",
     "保存原票の同時更新照合が保留（1入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/state-a-price-evidence.json",
     "保存原票の同時更新照合が保留（1入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/state-a-price-evidence.json",
-    "ブルーロケット 保留開始 2026-11-21T02:56:59.225Z、直前正常 340件、最終実取得 2026-11-21T00:55:28.541Z、次回 2026-11-22T02:56:59.225Z。個別提示期限24／48時間以内 10／34、正式出口 0枚",
-    "買取ホムラ（郵送） 保留開始 2026-11-21T02:56:59.243Z、直前正常 356件、最終実取得 2026-11-21T00:25:13.543Z、次回 2026-11-22T02:56:59.243Z。個別提示期限24／48時間以内 10／39、正式出口 0枚"
+    "ブルーロケット 保留開始 2026-11-21T02:56:59.225Z、直前正常 340件、最終実取得 2026-11-21T00:55:28.541Z、次回 2026-11-23T04:55:32.924Z。個別提示期限24／48時間以内 10／34、正式出口 0枚",
+    "買取ホムラ（郵送） 保留開始 2026-11-21T02:56:59.243Z、直前正常 356件、最終実取得 2026-11-21T00:25:13.543Z、次回 2026-11-23T04:55:39.833Z。個別提示期限24／48時間以内 10／39、正式出口 0枚"
   ],
   "detailUrl": "./data/update-health.json"
 }
