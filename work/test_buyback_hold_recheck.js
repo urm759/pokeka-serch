@@ -44,6 +44,23 @@ function fixture(mode, elapsed, count, http) {
   assert.ok(stage.shopBuyback, child.stderr+child.stdout);
   return {child,stage,shop:read('data/shop-buyback-summary.json').shops[bank],calls:fs.readFileSync(path.join(root,'calls'),'utf8').trim()};
 }
+function absenceNote(market) {
+  const shops={a:{name:'A',lastSuccess:iso(0)},b:{name:'B',lastSuccess:iso(0)},c:{name:'C',lastSuccess:iso(0)}};
+  const row=(shopId,conservativePrice,age)=>({shopId,conservativePrice,observedAt:iso(-age)});
+  const note=rows=>market.buybackExitAbsence(rows,shops);
+  assert.equal(note([row('a',80000,0.01),row('b',82000,1)]),null,'this fetch is current, including its per-request time');
+  const rows=[row('a',80000,0),row('b',82000,0),row('c',98000,5)],before=structuredClone(rows),one=note(rows);
+  assert.deepEqual(one.absent.map(r=>[r.shopId,r.name,r.observedAt]),[['c','C',iso(-5)]]);
+  assert.deepEqual([one.total,one.remaining,one.without,one.ratio],[3,2,81000,81000/82000]);
+  assert.deepEqual(rows,before,'display never changes the adopted rows');
+  const single=note([row('a',80000,0),row('c',98000,5)]);
+  assert.deepEqual([single.without,single.ratio],[null,null],'one current store is not shown as a sale price');
+  assert.equal(note([row('a',80000,0),row('b',80000,0),row('c',80000,5)]).ratio,1);
+  assert.equal(market.buybackExitAbsence([row('z',1,9)],{}),null,'unknown fetch time is not called absent');
+  assert.equal(market.buybackExitAbsence(undefined,shops),null);
+  const app=fs.readFileSync(path.join(__dirname,'../app.js'),'utf8');
+  assert.equal(app.split('buybackExitAbsence(').length-1,1,'absence is read only by the display note');
+}
 function withdrawnRule(market) {
   const startedAt='2026-11-21T02:56:59.225Z',at='2026-11-22T04:55:32.924Z';
   const base={reviewStatus:'count-drop-review',countDropReview:{startedAt,lastGoodCount:340,resolvedAt:null,
@@ -127,6 +144,7 @@ try {
   assert.equal(market.buybackListingWithdrawn(recovered.shop),false,'a successful listing readmits the store');
   assert.equal(recovered.shop.countDropReview.confirmed,undefined);
   withdrawnRule(market);
+  absenceNote(market);
   const empty=fixture('held',24,0,200);
   assert.equal(empty.shop.countDropReview.latest.count,0);assert.deepEqual(empty.shop.countDropReview.latest.pageCounts,[0]);
   const evidence=path.join(work,'.private','buyback-failed-responses',bank);

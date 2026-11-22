@@ -4343,9 +4343,19 @@ function mainSaleReference(card) {
     return {label:e.exitLabel,scenario:e.scenario,gross,net};
   });
 }
+function buybackAbsenceNote(card,main) {
+  if(!/^買取店/.test(main.label||'')||!Number.isFinite(main.gross)||/^obs/.test(state.efficiencyScenario||''))return '';
+  const note=marketModel.buybackExitAbsence(card.buyLimits?.clean?.buybackExit?.trustedRows,state.buybackShops);
+  if(!note)return '';
+  const stores=note.absent.map(row=>row.name+'（最終確認 '+formatJstTimestamp(row.observedAt)+'）').join('、');
+  const effect=note.ratio==null?'除くと2店未満で売値は算出不可'
+    :note.ratio===1?'除いても売値は同じ'
+    :'除いた場合の売値 '+saleReferenceYen(main.gross*note.ratio)+'（'+(note.ratio>1?'+':'')+((note.ratio-1)*100).toFixed(1)+'%）';
+  return '<small class="buyback-warning buyback-absence-note">売値に使った'+note.total+'店中'+note.absent.length+'店は最新の買取一覧に無し：'+escapeHtml(stores)+'／'+effect+'。計算はこの店の価格を含めたまま（除いた売値は参考）。仕入れ前に店で確認</small>';
+}
 function saleReferenceShell(card) {
   const main=mainSaleReference(card),r=profitOutcomeAudit(card).market;
-  return '<div class="sale-reference-summary"><span>PSA10現在相場でフリマ売却した場合 <b class="'+numericTone(r.profit)+'">'+signedExpectedMoney(r.profit).text+'／'+(Number.isFinite(r.roi)?r.roi.toFixed(2)+'%':'算出不可')+'</b></span><small>中央値 '+saleReferenceYen(r.buy)+'・利益率の分母＝買値＋鑑定費＋設定済み諸費用。取得率・PSA9不使用'+(r.reason?'／'+escapeHtml(r.reason):'')+'</small><small>主計算PSA10：'+escapeHtml(main.label||'出口未取得')+'／計算上の採用売価 '+saleReferenceYen(main.gross)+' → 手取り '+saleReferenceYen(main.net)+(main.reason?'／'+escapeHtml(main.reason):'')+'</small><details data-sale-reference="'+escapeHtml(card.id)+'"><summary>利益の計算内訳・売価別の参考比較（評価には不使用）</summary><div>開くと中央値・仕入れ目安の2買値で比較</div></details></div>';
+  return '<div class="sale-reference-summary"><span>PSA10現在相場でフリマ売却した場合 <b class="'+numericTone(r.profit)+'">'+signedExpectedMoney(r.profit).text+'／'+(Number.isFinite(r.roi)?r.roi.toFixed(2)+'%':'算出不可')+'</b></span><small>中央値 '+saleReferenceYen(r.buy)+'・利益率の分母＝買値＋鑑定費＋設定済み諸費用。取得率・PSA9不使用'+(r.reason?'／'+escapeHtml(r.reason):'')+'</small><small>主計算PSA10：'+escapeHtml(main.label||'出口未取得')+'／計算上の採用売価 '+saleReferenceYen(main.gross)+' → 手取り '+saleReferenceYen(main.net)+(main.reason?'／'+escapeHtml(main.reason):'')+'</small>'+buybackAbsenceNote(card,main)+'<details data-sale-reference="'+escapeHtml(card.id)+'"><summary>利益の計算内訳・売価別の参考比較（評価には不使用）</summary><div>開くと中央値・仕入れ目安の2買値で比較</div></details></div>';
 }
 function profitOutcomeAudit(card,now=Date.now()) {
   return renderValue(card,'profit-outcome-audit',()=>{
