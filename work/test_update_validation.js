@@ -14,6 +14,9 @@ try{
  write('work/update-validation-state.json','{"verified":false}');assert.equal(m.plan(root).mode,'regression');
  const workflow=fs.readFileSync(path.join(__dirname,'../.github/workflows/watch-data-health.yml'),'utf8');
  assert(workflow.includes('publication_check:'));const check=workflow.split('  publication_check:')[1];assert(!/^    needs:/m.test(check));assert(!check.includes('git push'));
- assert(workflow.includes('node work/update_validation.js --required'));assert(fs.readFileSync(path.join(__dirname,'../.github/workflows/weekly-full-tests.yml'),'utf8').includes('work/test_*.js'));
+ assert(workflow.includes('node work/update_validation.js --required'));
+ // The weekly suite still runs every work/test_*.js, now to the end through the runner.
+ assert(fs.readFileSync(path.join(__dirname,'../.github/workflows/weekly-full-tests.yml'),'utf8').includes('node work/run_weekly_suite.js'));
+ assert(fs.readFileSync(path.join(__dirname,'run_weekly_suite.js'),'utf8').includes("pattern = /^test_.*\\.js$/"));
  console.log('PASS code/test/workflow invalidation, mandatory data checks, no-op receipt exclusion and independent read-only verifier');
 }finally{assert.equal(path.dirname(root),os.tmpdir());fs.rmSync(root,{recursive:true,force:true});}
