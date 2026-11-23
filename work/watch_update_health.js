@@ -192,6 +192,9 @@ async function main() {
   catch(error){watchIssues.push({key:'weekly-tests:check-error',reason:'週次全テストの実行一覧を読めず：'+error.message,url:null});}
   try{watchIssues.push(...require('./silent_stop_checks').buybackObservationIssues(JSON.parse(fs.readFileSync(path.join(ROOT,'work/buyback-price-observations.json'),'utf8')),buybackSummary,clockAt));}
   catch(error){watchIssues.push({key:'buyback-observation:check-error',reason:'買取観測の停止確認を実行できず：'+error.message,url:null});}
+  try{const read=file=>JSON.parse(fs.readFileSync(path.join(ROOT,file),'utf8'));
+    watchIssues.push(...require('./payload_budget_warning').issues(read('data/performance-guard.json'),read('data/performance-history.json'),read('data/performance-budgets.json'),clockAt));}
+  catch(error){watchIssues.push({key:'payload-budget:check-error',reason:'起動時JSONの容量の事前確認を実行できず：'+error.message,url:null});}
   let postPublication=null;
   try{postPublication=require('./post_publication_invariants').record(ROOT);watchIssues.push(...require('./post_publication_invariants').issues(postPublication));}
   catch(error){watchIssues.push({key:'post-publication:error',reason:'公開後の自動確認を実行できず：'+error.message,url:null});}
