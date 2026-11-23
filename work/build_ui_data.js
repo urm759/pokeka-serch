@@ -64,7 +64,9 @@ const SUMMARY = ['card-catalog-completion', 'operational-limit-history', 'market
   'shop-buyback-summary', 'buyback-observation-summary', 'buyback-posting-coverage', 'state-a-price-evidence', 'snkr-listing-summary', 'snkr-raw-flip-summary',
   'psa-population-summary', 'psa10-period-summary', 'gemrate-reference-summary', 'card-catalog/analysis', 'card-catalog/search-index', 'update-status'];
 // The limit history mostly repeats identical rows across cards and conditions.
-const REPEATED_ROWS = new Set(['operational-limit-history']);
+const REPEATED_ROWS = new Set(['operational-limit-history', 'buyback-observation-summary']);
+// Daily buyback ratios repeat the same value for many days; store them as runs.
+const DATE_RUNS = new Set(['buyback-observation-summary']);
 function build(root = ROOT) {
   const gemrateRegistry=path.join(root,'work/gemrate-confirmed-reference-registry.json');
   if(fs.existsSync(gemrateRegistry))require('./gemrate_confirmed_links').validatePublic(root,JSON.parse(fs.readFileSync(path.join(root,'data/gemrate-reference-summary.json'))),JSON.parse(fs.readFileSync(gemrateRegistry)));
@@ -83,7 +85,7 @@ function build(root = ROOT) {
     const original = `data/${name}.json`, file = `data/ui/${name}.json`;
     if (!fs.existsSync(path.join(root, original))) continue;
     const text = fs.readFileSync(path.join(root, original), 'utf8');
-    const packed = JSON.stringify(codec.encode(project(name, JSON.parse(text)),{version:2,repeats:REPEATED_ROWS.has(name)}));
+    const packed = JSON.stringify(codec.encode(project(name, JSON.parse(text)),{version:2,repeats:REPEATED_ROWS.has(name),dateRuns:DATE_RUNS.has(name)}));
     write(file, packed); aliases[original] = file;
     bytes[original] = { original: Buffer.byteLength(text), summary: Buffer.byteLength(packed) };
   }
