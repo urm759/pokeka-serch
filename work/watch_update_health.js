@@ -195,6 +195,11 @@ async function main() {
   try{const read=file=>JSON.parse(fs.readFileSync(path.join(ROOT,file),'utf8'));
     watchIssues.push(...require('./payload_budget_warning').issues(read('data/performance-guard.json'),read('data/performance-history.json'),read('data/performance-budgets.json'),clockAt));}
   catch(error){watchIssues.push({key:'payload-budget:check-error',reason:'起動時JSONの容量の事前確認を実行できず：'+error.message,url:null});}
+  try{const since=new Date(clockAt-25*3600000).toISOString().slice(0,19)+'Z';let runs=[];
+    for(let page=1;page<=3;page++){const body=await api(`${API}/actions/runs?per_page=100&page=${page}&created=%3E${since}`);runs.push(...(body.workflow_runs||[]));if(runs.length>=(body.total_count||0)||!(body.workflow_runs||[]).length)break;}
+    watchIssues.push(...require('./silent_stop_checks').acquisitionGapIssues(runs,clockAt));}
+  catch(error){watchIssues.push({key:'acquisition-start:check-error',reason:'取得の起動間隔を確認できず：'+error.message,url:null});}
+  watchIssues.push(...require('./silent_stop_checks').timerTokenIssues(clockAt));
   let postPublication=null;
   try{postPublication=require('./post_publication_invariants').record(ROOT);watchIssues.push(...require('./post_publication_invariants').issues(postPublication));}
   catch(error){watchIssues.push({key:'post-publication:error',reason:'公開後の自動確認を実行できず：'+error.message,url:null});}
