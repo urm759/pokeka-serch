@@ -3106,7 +3106,16 @@ function snkrRawMatchesFilters(card) {
   return true;
 }
 
+// 4-J: in some upstream rows the state-A raw reference equals the SNKRDUNK PSA10 lowest
+// listing to the yen and moves with it. Such a value is not a raw price: keep it as evidence only.
+function rawReferenceSameAsPsa10Min(card) {
+  const raw = Number(card?.price), psa10Min = Number(card?.snkPsa10Min);
+  return raw > 0 && psa10Min > 0 && raw === psa10Min;
+}
+const RAW_REFERENCE_PSA10_HOLD = "PSA10最安値と同額・素体価格として不使用";
+
 function calc(card) {
+  if (rawReferenceSameAsPsa10Min(card)) card = { ...card, price: null, rawReferenceHeldPrice: Number(card.price), rawReferenceHoldReason: RAW_REFERENCE_PSA10_HOLD };
   const torecaPrice = Number(card.price);
   const referenceEvidence = state.priceEvidence?.cards?.[card.id]?.status || "unknown";
   const cardrushStock = state.cardrushStock[card.id] || null;
@@ -3124,7 +3133,7 @@ function calc(card) {
   const rawTorecacampPrice = Number(torecacampStock?.torecacampPrice);
   const torecacampPrice = rawTorecacampPrice > 0 ? rawTorecacampPrice : NaN;
   const priceEntries = [
-    { source: "みんトレ状態A", value: torecaPrice, kind: referenceEvidence === "backed" ? "成約相場" : "参考価格", condition: "状態A", conditionAccepted: true, valid: referenceEvidence !== "unbacked", invalidReason: "実売の裏付けなし・計算対象外", updatedAt: Object.hasOwn(card, "priceObservedAt") ? card.priceObservedAt : state.sourceUpdates.toreca || meta.updatedAt, url: buildTorecaCardUrl(card) },
+    { source: "みんトレ状態A", value: card.rawReferenceHeldPrice ?? torecaPrice, kind: referenceEvidence === "backed" ? "成約相場" : "参考価格", condition: "状態A", conditionAccepted: true, valid: !card.rawReferenceHoldReason && referenceEvidence !== "unbacked", invalidReason: card.rawReferenceHoldReason || "実売の裏付けなし・計算対象外", updatedAt: Object.hasOwn(card, "priceObservedAt") ? card.priceObservedAt : state.sourceUpdates.toreca || meta.updatedAt, url: buildTorecaCardUrl(card) },
     { source: "カードラッシュ状態A", value: cardrushPrice, kind: "販売価格", condition: "状態A", conditionAccepted: cardrushStock?.conditionAccepted !== false, conditionReason: cardrushStock?.conditionReason, updatedAt: decisionModel.shopObservation(cardrushStock || {}).priceAt, url: card.cardrushUrl, available: Number(cardrushStock?.stock) > 0 || cardrushStock?.available === true, availabilityLabel: Number(cardrushStock?.stock) > 0 || cardrushStock?.available === true ? "在庫あり" : "在庫なし・未確認", valid: !decisionModel.isSuspectedCardMismatch(cardrushStock) },
     { source: "晴れる屋2状態A", value: hareruya2Price, kind: "販売価格", condition: "状態Aまたは状態表記なし", conditionAccepted: hareruya2Stock?.conditionAccepted !== false, conditionReason: hareruya2Stock?.conditionReason, updatedAt: decisionModel.shopObservation(hareruya2Stock || {}).priceAt, url: card.hareruya2Url, available: Number(hareruya2Stock?.stock) > 0 || hareruya2Stock?.available === true, availabilityLabel: Number(hareruya2Stock?.stock) > 0 || hareruya2Stock?.available === true ? "在庫あり" : "在庫なし・未確認", valid: !decisionModel.isSuspectedCardMismatch(hareruya2Stock) },
     { source: "遊々亭状態A", value: yuyuteiPrice, kind: "販売価格", condition: "美品扱い", conditionAccepted: yuyuteiStock?.conditionAccepted !== false, updatedAt: decisionModel.shopObservation(yuyuteiStock || {}).priceAt, url: card.yuyuteiUrl, available: Number(yuyuteiStock?.stock) > 0, availabilityLabel: Number(yuyuteiStock?.stock) > 0 ? "在庫あり" : "在庫なし・未確認", valid: !decisionModel.isSuspectedCardMismatch(yuyuteiStock) },
@@ -6698,7 +6707,7 @@ function renderContent() {
     const hareruya2PriceText = Number.isFinite(card.hareruya2Price) ? `¥${fmt.format(card.hareruya2Price)}` : "未取得";
     const yuyuteiPriceText = Number.isFinite(card.yuyuteiPrice) ? `¥${fmt.format(card.yuyuteiPrice)}` : "未取得";
     const torecacampPriceText = Number.isFinite(card.torecacampPrice) ? `¥${fmt.format(card.torecacampPrice)}` : "未取得";
-    const priceSources = [`みんトレ参考価格 ¥${fmt.format(card.torecaPrice)}`, `カードラッシュ状態A ${cardrushPriceText}`, `晴れる屋2状態A ${hareruya2PriceText}`, `遊々亭状態A ${yuyuteiPriceText}`, `トレカキャンプ状態A ${torecacampPriceText}`]
+    const priceSources = [(card.rawReferenceHoldReason ? `みんトレ参考価格 ¥${fmt.format(card.rawReferenceHeldPrice)}（${escapeHtml(card.rawReferenceHoldReason)}）` : `みんトレ参考価格 ¥${fmt.format(card.torecaPrice)}`), `カードラッシュ状態A ${cardrushPriceText}`, `晴れる屋2状態A ${hareruya2PriceText}`, `遊々亭状態A ${yuyuteiPriceText}`, `トレカキャンプ状態A ${torecacampPriceText}`]
       .filter((_, index) => index === 0 || [card.cardrushPrice, card.hareruya2Price, card.yuyuteiPrice, card.torecacampPrice][index - 1] > 0)
       .join(" / ");
     const refFresh = decisionModel.referenceFreshness(card.priceAggregation);
