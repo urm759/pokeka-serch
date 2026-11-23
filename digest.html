@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>今日の仕入れ候補</title>
+<style>
+:root{--bg:#f7f7f5;--card:#fff;--text:#1d1d1b;--muted:#6b6b66;--line:#e3e3de;--up:#1f7a3f;--down:#b3261e;--accent:#2b5fab}
+@media (prefers-color-scheme: dark){:root{--bg:#161615;--card:#20201e;--text:#ececea;--muted:#a3a39d;--line:#34342f;--up:#5cc584;--down:#f08a80;--accent:#8ab4f8}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif}
+main{max-width:720px;margin:0 auto;padding:12px 16px 40px}h1{font-size:19px;margin:8px 0 2px}.meta{color:var(--muted);font-size:13px;margin-bottom:12px}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;margin:12px 0}
+h2{font-size:16px;margin:0 0 6px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.count{font-variant-numeric:tabular-nums}.up{color:var(--up)}.down{color:var(--down)}
+h3{font-size:13px;color:var(--muted);margin:10px 0 4px;font-weight:600}
+ul{list-style:none;margin:0;padding:0}li{padding:7px 0;border-top:1px solid var(--line)}li:first-child{border-top:0}
+.name{font-weight:600;overflow-wrap:anywhere}.row{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.row b{color:var(--text);font-weight:600}a{color:var(--accent)}.stale{color:var(--down)}.reason{font-size:13px;color:var(--muted)}
+.empty{color:var(--muted);font-size:13px}.full{font-size:13px}
+</style>
+</head>
+<body>
+<main>
+<h1>今日の仕入れ候補</h1>
+<div class="meta" id="meta">読み込み中…</div>
+<div id="list"></div>
+<p class="meta">正式条件の結果の要約です。計算・条件はサイトと同じで、ここでは変えていません。詳しい根拠は各条件の「サイトで開く」から確認できます。</p>
+</main>
+<script>
+(function(){
+  var yen=function(v){return Number.isFinite(v)?'¥'+Math.round(v).toLocaleString('ja-JP'):'—';};
+  var esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
+  var safeUrl=function(u){try{var x=new URL(u);return /^https:$/.test(x.protocol)?x.href:null;}catch(e){return null;}};
+  var jst=function(iso){if(!iso)return '—';var d=new Date(Date.parse(iso)+9*3600000);return d.toISOString().slice(5,16).replace('T',' ');};
+  function cardHtml(c){
+    var url=safeUrl(c.url),gap=Number.isFinite(c.buy)&&Number.isFinite(c.cap)?c.buy-c.cap:null;
+    var buy=yen(c.buy)+(c.store?' '+esc(c.store.replace(/状態A$/,'')):'');
+    return '<li><div class="name">'+esc(c.name)+'</div><div class="row">'+
+      '<span>購入 <b>'+(url?'<a href="'+esc(url)+'" target="_blank" rel="noopener">'+buy+'</a>':buy)+'</b>'+(c.fresh?'':' <span class="stale">古い</span>')+'</span>'+
+      '<span>上限 <b>'+yen(c.cap)+'</b>'+(gap!=null?(gap>0?' <span class="down">上限超 +'+gap.toLocaleString('ja-JP')+'</span>':' <span class="up">上限以下</span>'):'')+'</span>'+
+      '<span>利益 <b>'+yen(c.profit)+'</b></span><span>年換算 <b>'+(Number.isFinite(c.annual)?c.annual+'%':'—')+'</b></span>'+
+      '<span>確認 '+jst(c.priceAt)+'</span></div></li>';
+  }
+  fetch('./data/daily-digest.json?ts='+Date.now(),{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(function(d){
+    document.getElementById('meta').textContent='更新 '+jst(d.generatedAt)+'（日本時間）'+(d.baseline?' ・ 前日比は '+d.baseline.date+' の最後の状態と比較':' ・ 前日の記録がまだないので増減は明日から');
+    document.getElementById('list').innerHTML=(d.profiles||[]).map(function(p){
+      var diff=p.previousCount==null?'':(p.count-p.previousCount),cls=diff>0?'up':diff<0?'down':'';
+      var head='<h2><span>'+esc(p.name)+'</span><span class="count">'+p.count+'件'+(diff===''?'':' <span class="'+cls+'">('+(diff>0?'+':'')+diff+')</span>')+'</span></h2>';
+      var url=safeUrl(p.url),full=url?'<div class="full"><a href="'+esc(url)+'" target="_blank" rel="noopener">サイトで開く</a></div>':'';
+      var gained=p.gained&&p.gained.length?'<h3>新しく入った</h3><ul>'+p.gained.map(cardHtml).join('')+'</ul>':'';
+      var lost=p.lost&&p.lost.length?'<h3>外れた</h3><ul>'+p.lost.map(function(l){return '<li><div class="name">'+esc(l.name)+'</div><div class="reason">'+esc((l.reasons||[]).join(' / ')||'理由はサイトで確認')+'</div></li>';}).join('')+'</ul>':'';
+      var list=p.candidates&&p.candidates.length?'<h3>候補</h3><ul>'+p.candidates.map(cardHtml).join('')+'</ul>':'<p class="empty">候補なし</p>';
+      return '<section>'+head+full+gained+lost+list+'</section>';
+    }).join('');
+  }).catch(function(e){document.getElementById('meta').textContent='要約を読めませんでした（'+e.message+'）。定期処理の次の更新を待つか、サイト本体を開いてください。';});
+})();
+</script>
+</body>
+</html>
