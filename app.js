@@ -1753,6 +1753,11 @@ function currentCapCsvFields(view) {
   return [view.cap ?? '', view.capLabel || 'データ不足で算出不可', view.rawCap ?? '', view.capNote || '', view.reasons.join('／')];
 }
 
+// File names carry the Japan calendar day the user saved on, not the UTC day.
+function csvJstDate(now = Date.now()) {
+  return new Date(now + 9 * 3600000).toISOString().slice(0, 10);
+}
+
 async function exportFavoritesCsv() {
   await ensureVerifiedListingReferences(favoriteCards(),true);
   if(state.buybackStoreMode==='selected') await Promise.all(favoriteCards().map(card=>loadBuybackSupportDetail(card.id)));
@@ -1817,7 +1822,7 @@ async function exportFavoritesCsv() {
   const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
   const link = document.createElement("a");
   link.href = url;
-  link.download = `pokeka-buy-list-${new Date().toISOString().slice(0, 10)}.csv`;
+  link.download = `pokeka-buy-list-${csvJstDate()}.csv`;
   link.click();
   URL.revokeObjectURL(url);
 }
@@ -1828,7 +1833,7 @@ function exportSearchCsv() {
   const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
   const link = document.createElement("a");
   link.href = url;
-  link.download = `pokeka-search-conditions-${new Date().toISOString().slice(0, 10)}.csv`;
+  link.download = `pokeka-search-conditions-${csvJstDate()}.csv`;
   link.click();
   URL.revokeObjectURL(url);
 }
@@ -3101,7 +3106,16 @@ function snkrRawMatchesFilters(card) {
   return true;
 }
 
+// 4-J: in some upstream rows the state-A raw reference equals the SNKRDUNK PSA10 lowest
+// listing to the yen and moves with it. Such a value is not a raw price: keep it as evidence only.
+function rawReferenceSameAsPsa10Min(card) {
+  const raw = Number(card?.price), psa10Min = Number(card?.snkPsa10Min);
+  return raw > 0 && psa10Min > 0 && raw === psa10Min;
+}
+const RAW_REFERENCE_PSA10_HOLD = "PSA10最安値と同額・素体価格として不使用";
+
 function calc(card) {
+  if (rawReferenceSameAsPsa10Min(card)) card = { ...card, price: null, rawReferenceHeldPrice: Number(card.price), rawReferenceHoldReason: RAW_REFERENCE_PSA10_HOLD };
   const torecaPrice = Number(card.price);
   const referenceEvidence = state.priceEvidence?.cards?.[card.id]?.status || "unknown";
   const cardrushStock = state.cardrushStock[card.id] || null;
@@ -3119,7 +3133,7 @@ function calc(card) {
   const rawTorecacampPrice = Number(torecacampStock?.torecacampPrice);
   const torecacampPrice = rawTorecacampPrice > 0 ? rawTorecacampPrice : NaN;
   const priceEntries = [
-    { source: "みんトレ状態A", value: torecaPrice, kind: referenceEvidence === "backed" ? "成約相場" : "参考価格", condition: "状態A", conditionAccepted: true, valid: referenceEvidence !== "unbacked", invalidReason: "実売の裏付けなし・計算対象外", updatedAt: Object.hasOwn(card, "priceObservedAt") ? card.priceObservedAt : state.sourceUpdates.toreca || meta.updatedAt, url: buildTorecaCardUrl(card) },
+    { source: "みんトレ状態A", value: card.rawReferenceHeldPrice ?? torecaPrice, kind: referenceEvidence === "backed" ? "成約相場" : "参考価格", condition: "状態A", conditionAccepted: true, valid: !card.rawReferenceHoldReason && referenceEvidence !== "unbacked", invalidReason: card.rawReferenceHoldReason || "実売の裏付けなし・計算対象外", updatedAt: Object.hasOwn(card, "priceObservedAt") ? card.priceObservedAt : state.sourceUpdates.toreca || meta.updatedAt, url: buildTorecaCardUrl(card) },
     { source: "カードラッシュ状態A", value: cardrushPrice, kind: "販売価格", condition: "状態A", conditionAccepted: cardrushStock?.conditionAccepted !== false, conditionReason: cardrushStock?.conditionReason, updatedAt: decisionModel.shopObservation(cardrushStock || {}).priceAt, url: card.cardrushUrl, available: Number(cardrushStock?.stock) > 0 || cardrushStock?.available === true, availabilityLabel: Number(cardrushStock?.stock) > 0 || cardrushStock?.available === true ? "在庫あり" : "在庫なし・未確認", valid: !decisionModel.isSuspectedCardMismatch(cardrushStock) },
     { source: "晴れる屋2状態A", value: hareruya2Price, kind: "販売価格", condition: "状態Aまたは状態表記なし", conditionAccepted: hareruya2Stock?.conditionAccepted !== false, conditionReason: hareruya2Stock?.conditionReason, updatedAt: decisionModel.shopObservation(hareruya2Stock || {}).priceAt, url: card.hareruya2Url, available: Number(hareruya2Stock?.stock) > 0 || hareruya2Stock?.available === true, availabilityLabel: Number(hareruya2Stock?.stock) > 0 || hareruya2Stock?.available === true ? "在庫あり" : "在庫なし・未確認", valid: !decisionModel.isSuspectedCardMismatch(hareruya2Stock) },
     { source: "遊々亭状態A", value: yuyuteiPrice, kind: "販売価格", condition: "美品扱い", conditionAccepted: yuyuteiStock?.conditionAccepted !== false, updatedAt: decisionModel.shopObservation(yuyuteiStock || {}).priceAt, url: card.yuyuteiUrl, available: Number(yuyuteiStock?.stock) > 0, availabilityLabel: Number(yuyuteiStock?.stock) > 0 ? "在庫あり" : "在庫なし・未確認", valid: !decisionModel.isSuspectedCardMismatch(yuyuteiStock) },
@@ -5069,7 +5083,7 @@ function priceDynamicsMarkup(input){
   const variationLabel=[75,200].map(segment).join('');
 
   const gap=explorationMetrics.priceGap(summary,card),pct=v=>Number.isFinite(v)?(v>0?'+':'')+v.toFixed(1)+'%':'比較不可';
-  const gapLabel='<div class="price-gap"><strong>PSA10／素体差 '+pct(gap.current)+'</strong><small>75日観測平均 '+pct(gap.mean75)+'／'+escapeHtml(gap.direction)+'</small><details><summary>価格差の根拠</summary><small>'+escapeHtml(gap.source||'みんトレ美品参考相場・国内PSA10集計')+'。PSA10÷素体−1。買値最安選択・仕入れ目安・店舗中央値は不使用。</small><small>75日 '+(gap.count75??'未取得')+'/75観測日・実観測'+(gap.span??'未取得')+'日間／最終'+escapeHtml(gap.last||'未取得')+'。7日 '+(gap.count7??'未取得')+'/7日・平均'+pct(gap.mean7)+'。'+escapeHtml(gap.reason)+'</small><small>平均は同日の両価格から求めた日次率の平均（平均価格同士の比ではない）。素体 '+(Number.isFinite(gap.raw)?'¥'+fmt.format(gap.raw):'未取得')+'／PSA10 '+(Number.isFinite(gap.psa10)?'¥'+fmt.format(gap.psa10):'未取得')+'。素体確認 '+escapeHtml(gap.rawAt||'未取得')+'／PSA10確認 '+escapeHtml(gap.marketAt||'未取得')+'。差 '+(Number.isFinite(gap.change)?gap.change.toFixed(1)+'％ポイント':'判定保留')+'。履歴不足は参考。検索・採算・GOには未反映。</small></details></div>';
+  const gapLabel='<div class="price-gap"><strong>PSA10／素体差 '+pct(gap.current)+'</strong><small>75日観測平均'+(gap.reference&&Number.isFinite(gap.mean75)?'（参考・'+gap.count75+'/75観測日）':'')+' '+pct(gap.mean75)+'／'+escapeHtml(gap.direction+(gap.reference&&gap.change!=null?'（参考）':''))+'</small><details><summary>価格差の根拠</summary><small>'+escapeHtml(gap.source||'みんトレ美品参考相場・国内PSA10集計')+'。PSA10÷素体−1。買値最安選択・仕入れ目安・店舗中央値は不使用。</small><small>75日 '+(gap.count75??'未取得')+'/75観測日・実観測'+(gap.span??'未取得')+'日間／最終'+escapeHtml(gap.last||'未取得')+'。7日 '+(gap.count7??'未取得')+'/7日・平均'+pct(gap.mean7)+'。'+escapeHtml(gap.reason)+'</small><small>平均は同日の両価格から求めた日次率の平均（平均価格同士の比ではない）。素体 '+(Number.isFinite(gap.raw)?'¥'+fmt.format(gap.raw):'未取得')+'／PSA10 '+(Number.isFinite(gap.psa10)?'¥'+fmt.format(gap.psa10):'未取得')+'。素体確認 '+escapeHtml(gap.rawAt||'未取得')+'／PSA10確認 '+escapeHtml(gap.marketAt||'未取得')+'。差 '+(Number.isFinite(gap.change)?gap.change.toFixed(1)+'％ポイント':'判定保留')+'。履歴不足は参考。検索・採算・GOには未反映。</small></details></div>';
 
   return variationLabel+gapLabel;
 }
@@ -6693,7 +6707,7 @@ function renderContent() {
     const hareruya2PriceText = Number.isFinite(card.hareruya2Price) ? `¥${fmt.format(card.hareruya2Price)}` : "未取得";
     const yuyuteiPriceText = Number.isFinite(card.yuyuteiPrice) ? `¥${fmt.format(card.yuyuteiPrice)}` : "未取得";
     const torecacampPriceText = Number.isFinite(card.torecacampPrice) ? `¥${fmt.format(card.torecacampPrice)}` : "未取得";
-    const priceSources = [`みんトレ参考価格 ¥${fmt.format(card.torecaPrice)}`, `カードラッシュ状態A ${cardrushPriceText}`, `晴れる屋2状態A ${hareruya2PriceText}`, `遊々亭状態A ${yuyuteiPriceText}`, `トレカキャンプ状態A ${torecacampPriceText}`]
+    const priceSources = [(card.rawReferenceHoldReason ? `みんトレ参考価格 ¥${fmt.format(card.rawReferenceHeldPrice)}（${escapeHtml(card.rawReferenceHoldReason)}）` : `みんトレ参考価格 ¥${fmt.format(card.torecaPrice)}`), `カードラッシュ状態A ${cardrushPriceText}`, `晴れる屋2状態A ${hareruya2PriceText}`, `遊々亭状態A ${yuyuteiPriceText}`, `トレカキャンプ状態A ${torecacampPriceText}`]
       .filter((_, index) => index === 0 || [card.cardrushPrice, card.hareruya2Price, card.yuyuteiPrice, card.torecacampPrice][index - 1] > 0)
       .join(" / ");
     const refFresh = decisionModel.referenceFreshness(card.priceAggregation);

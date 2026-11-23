@@ -44,6 +44,34 @@ function fixture(mode, elapsed, count, http) {
   assert.ok(stage.shopBuyback, child.stderr+child.stdout);
   return {child,stage,shop:read('data/shop-buyback-summary.json').shops[bank],calls:fs.readFileSync(path.join(root,'calls'),'utf8').trim()};
 }
+function printedNumberRule() {
+  const rule=require('./buyback_printed_number');
+  const differs=(name,card,extra={})=>rule.mismatch({name,...extra},{name:card});
+  for(const [name,card] of [
+    ['ピカチュウV 001/015 [S8A]','ピカチュウ [s8a 001/028]'],
+    ['エテボース AR [M2 129/165]','エテボース AR [M2 092/080]'],
+    ['メガシビルドンex SAR [M2a 223/193]','メガシビルドンex SAR [M2a 235/193]'],
+  ])assert.equal(differs(name,card),true,'known mismatch: '+name);
+  for(const [name,card] of [
+    ['カード 1/28','カード [s8a 001/028]'],['カード ００１／０２８','カード [s8a 001/028]'],
+    ['ミライドン [PROMO 048/SV-P]','ミライドン: プロモ [SV-P 048]'],['ピカチュウ P 206/XY-P','ピカチュウ P [XY-P 206]'],
+    ['番号の無い商品','カード [M2 092/080]'],['カード 092/080','番号の無いカード'],['カード 092/080 (129/165)','カード [M2 092/080]'],
+  ])assert.equal(differs(name,card),false,'spelling or missing evidence is not a mismatch: '+name);
+  assert.equal(rule.mismatch({name:'カード 092/080'},{name:'カード',model:'092/080'}),false,'model is also evidence');
+
+  const cards=[{id:'x',name:'カード [M2 092/080]'}],wrong={shopItemId:'1',name:'カード 129/165',cardId:'x',score:100,matchMethod:'confirmed-cache',price:900,active:true,observedAt:iso(0)};
+  const results=[{shop:{id:bank},matched:[wrong,{...wrong,shopItemId:'2',matchMethod:'image-reviewed'},{...wrong,shopItemId:'3',verifiedCardId:'x'}],unmatched:[]}];
+  assert.deepEqual([...rule.hold(results,cards)],[bank+':x']);
+  assert.deepEqual(results[0].matched.map(i=>i.shopItemId),['2','3'],'reviewed evidence is not overridden');
+  assert.equal(results[0].unmatched[0].cardId,undefined);
+  assert.equal(results[0].unmatched[0].previousCardId,'x');
+  assert.equal(results[0].unmatched[0].price,900,'the original quote is retained');
+  const saved=[10,20,30],dates=['2026-11-21','2026-11-22','2026-11-23'];
+  assert.equal(rule.countedValues(saved,dates),saved);
+  assert.deepEqual(rule.countedValues(saved,dates,'2026-11-22'),[null,null,30]);
+  assert.deepEqual(rule.countedValues(saved,dates,'2026-11-23','2026-11-23'),[null,null,30],'a same-day correct relink counts');
+  assert.deepEqual(saved,[10,20,30],'saved history is never rewritten');
+}
 function absenceNote(market) {
   const shops={a:{name:'A',lastSuccess:iso(0)},b:{name:'B',lastSuccess:iso(0)},c:{name:'C',lastSuccess:iso(0)}};
   const row=(shopId,conservativePrice,age)=>({shopId,conservativePrice,observedAt:iso(-age)});
@@ -145,6 +173,7 @@ try {
   assert.equal(recovered.shop.countDropReview.confirmed,undefined);
   withdrawnRule(market);
   absenceNote(market);
+  printedNumberRule();
   const empty=fixture('held',24,0,200);
   assert.equal(empty.shop.countDropReview.latest.count,0);assert.deepEqual(empty.shop.countDropReview.latest.pageCounts,[0]);
   const evidence=path.join(work,'.private','buyback-failed-responses',bank);

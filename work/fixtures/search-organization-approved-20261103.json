@@ -1,11 +1,11 @@
 {
   "version": 1,
   "publicCommit": "0ef283576f6267642e20ad522629c078f98c0f11",
-  "reason": "Previously published user-authorized reference-buy, 50/80 guide, PSA9 and ratio-filter migrations. Old fixture remains immutable. No application formula, default or URL is changed to satisfy the regression.",
+  "reason": "Previously published user-authorized reference-buy, 50/80 guide, PSA9 and ratio-filter migrations. Old fixture remains immutable. No application formula, default or URL is changed to satisfy the regression. Owner approval 2026-11-23: calc treats a state-A raw reference equal to the SNKRDUNK PSA10 lowest listing as not a raw price (tested in test_raw_reference_psa10_hold); this is the only calc change.",
   "protectedFunctions": {
     "buildBuyLimits": "42afeb1305afed426731f0c1873aad766502cfec21d0fbe0f5e00f556dac84bb",
     "finalizeCardDecision": "9ca2a8ca14ae16ee53a45a84a3df6167a1c2a3d80d3f78b24e901de0c6c1fd33",
-    "calc": "635844c295b4c9a51c1888126dbbb47250dc2b8f76d62c7ee4e0d79f97bda09b",
+    "calc": "52bf9ab87ee4107eb6caa64ff15f6c6f1f95648a826d831980505c076784b797",
     "computeSearchProfitView": "cb017fd1e0b454dedb5bc67d1331809c96620305c9a46f2ebf8d7f56d5d0782f",
     "prepareCalculatedCards": "42753a0a40dd7dab29cbcf19e283752e0d958471f35a3c15942fc7ad42b55572",
     "computeCardSearchExclusions": "b5af57519cf0d069f87878def801f4a9788c824e94a1fe2e30d2593a200631dd",

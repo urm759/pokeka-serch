@@ -14,11 +14,20 @@ function withEvaluationDate(at,run){
 function violations(result,limits=budgets){
   return Object.entries(limits.maximum).filter(([key,max])=>!Number.isFinite(result[key]) || result[key]>max).map(([key,max])=>`${key}: ${result[key]} / maximum ${max}`);
 }
+function startupFiles(root,manifest){
+  const glance=path.join(root,'data/psa-pop-glance');
+  const fixed=['data/ui/manifest.json','data/update-health-banner.json',manifest.aliases['data/gemrate-reference-summary.json']||'data/gemrate-reference-summary.json'];
+  return [...fixed.filter(f=>fs.existsSync(path.join(root,f))),...(fs.existsSync(glance)?fs.readdirSync(glance).filter(n=>n.endsWith('.json')).sort().map(n=>'data/psa-pop-glance/'+n):[])];
+}
 function measure(){
   const manifest=JSON.parse(fs.readFileSync(path.join(root,'data/ui/manifest.json')));
   const app=fs.readFileSync(path.join(root,'app.js'),'utf8');
   const files=[...app.match(/const initialFiles = \[([\s\S]*?)\];/)[1].matchAll(/"([^"]+)"/g)].map(m=>'data/'+m[1]+'.json');
   const initialBytes=files.reduce((n,f)=>n+fs.statSync(path.join(root,manifest.aliases[f]||f)).size,0);
+  // 4-F B-2: everything the browser can read at startup on the default view. PSA POP glance
+  // shards depend on the visible cards, so all of them are counted (an upper bound).
+  const startup=startupFiles(root,manifest);
+  const startupBytes=initialBytes+startup.reduce((n,f)=>n+fs.statSync(path.join(root,f)).size,0);
   const doubledPayload=require('./ui_double_fixture').fixture(root);
   const doubleInitialBytes=files.reduce((n,f)=>n+(doubledPayload.get(manifest.aliases[f]||f)?.length || fs.statSync(path.join(root,manifest.aliases[f]||f)).size),0);
   const parsePayload=double=>{
@@ -65,7 +74,7 @@ function measure(){
   const measuredPrefix=prefix.replace('const source = fs.readFileSync',inject+'\nconst source = fs.readFileSync')
     .replace('const context = vm.createContext({','const context = vm.createContext({ Date: EvaluationDate,');
   const modelResult=withEvaluationDate(evaluatedAt,EvaluationDate=>new Function('require','__dirname','process','assert','median','EvaluationDate',measuredPrefix+suffix)(require,__dirname,process,assert,median,EvaluationDate));
-  const result={initialBytes,doubleInitialBytes,jsonParseMs,doubleJsonParseMs,searchMs:median(searchTimes),doubleSearchMs:median(doubleSearchTimes),...modelResult};
+  const result={initialBytes,startupBytes,startupExtraFiles:startup.length,doubleInitialBytes,jsonParseMs,doubleJsonParseMs,searchMs:median(searchTimes),doubleSearchMs:median(doubleSearchTimes),...modelResult};
   const errors=violations(result);
   assert(app.includes("state.openCardDetails.has(String(card.id)) ? `"),'closed details must stay lazy');
   assert(!files.some(f=>/psa-mapping-review|psa-history|performance-(?:guard|history)|scheduled-cycle/.test(f)),'raw audit/history must not become startup payload');
@@ -75,7 +84,7 @@ function measure(){
     hardware:{cpu:os.cpus()[0]?.model||null,logicalCores:os.cpus().length,node:process.versions.node},
     codeFingerprint:comparison.fingerprint(root,[...fs.readdirSync(root).filter(f=>f.endsWith('.js')),'work/measure_performance_guard.js','work/performance_comparison.js','work/build_purchase_limit_audit.js','data/performance-budgets.json']),
     dataFingerprint:comparison.fingerprint(root,files.map(f=>manifest.aliases[f]||f)),
-    measurementScope:{initial:'JSON本文サイズ・解析（通信/ブラウザpaintは未計測）',search:'軽量インデックス固定検索',calculation:'本番計算・値一致',detail:'25件の率表示文字列。実DOM展開/描画は別の実画面試験で確認'},
+    measurementScope:{initial:'JSON本文サイズ・解析（通信/ブラウザpaintは未計測）',startup:'起動時に読む全部の本文サイズ（計算用30本＋照合表・監視バナー・GemRate・PSA POP表示用シャード全部。シャードは上限）',search:'軽量インデックス固定検索',calculation:'本番計算・値一致',detail:'25件の率表示文字列。実DOM展開/描画は別の実画面試験で確認'},
     limits:budgets.maximum,errors,status:errors.length?'regression':'pass',llmCalls:0,codexCalls:0};
 }
 if(require.main===module){
@@ -89,4 +98,4 @@ if(require.main===module){
   if(result.fixedComparison.warnings.length)console.warn(`::warning::同条件の固定基準比性能悪化: ${result.fixedComparison.warnings.join(', ')}`);
   if(result.errors.length)process.exitCode=1;
 }
-module.exports={violations,measure,withEvaluationDate};
+module.exports={violations,measure,withEvaluationDate,startupFiles};
