@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "rule": "Owner decision: these sources are stopped until permission is confirmed. Their published rows are emptied so stale rows never influence decisions; originals are archived under work/stopped-source-archive and the acquisition code is kept for a future restart. A transient error never adds a source here.",
+  "decidedAt": "2026-11-24",
+  "sources": {
+    "cardrush": { "file": "data/cardrush-stock-summary.json", "reason": "GitHub Actions 403 since 2026-09-19; restart only after the owner confirms permitted access" },
+    "yuyutei": { "file": "data/yuyutei-stock-summary.json", "reason": "GitHub Actions 403 since 2026-09-19; the PC route is also stopped; restart only after the owner confirms permitted access" },
+    "snkrRaw": { "file": "data/snkr-raw-flip-summary.json", "reason": "SNKRDUNK terms article 7(1)(13): direct automated collection held since 2026-10-06 (data/snkr-access-policy.json)" }
+  }
+}
