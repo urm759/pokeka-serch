@@ -1753,6 +1753,11 @@ function currentCapCsvFields(view) {
   return [view.cap ?? '', view.capLabel || 'データ不足で算出不可', view.rawCap ?? '', view.capNote || '', view.reasons.join('／')];
 }
 
+// File names carry the Japan calendar day the user saved on, not the UTC day.
+function csvJstDate(now = Date.now()) {
+  return new Date(now + 9 * 3600000).toISOString().slice(0, 10);
+}
+
 async function exportFavoritesCsv() {
   await ensureVerifiedListingReferences(favoriteCards(),true);
   if(state.buybackStoreMode==='selected') await Promise.all(favoriteCards().map(card=>loadBuybackSupportDetail(card.id)));
@@ -1817,7 +1822,7 @@ async function exportFavoritesCsv() {
   const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
   const link = document.createElement("a");
   link.href = url;
-  link.download = `pokeka-buy-list-${new Date().toISOString().slice(0, 10)}.csv`;
+  link.download = `pokeka-buy-list-${csvJstDate()}.csv`;
   link.click();
   URL.revokeObjectURL(url);
 }
@@ -1828,7 +1833,7 @@ function exportSearchCsv() {
   const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
   const link = document.createElement("a");
   link.href = url;
-  link.download = `pokeka-search-conditions-${new Date().toISOString().slice(0, 10)}.csv`;
+  link.download = `pokeka-search-conditions-${csvJstDate()}.csv`;
   link.click();
   URL.revokeObjectURL(url);
 }
@@ -5069,7 +5074,7 @@ function priceDynamicsMarkup(input){
   const variationLabel=[75,200].map(segment).join('');
 
   const gap=explorationMetrics.priceGap(summary,card),pct=v=>Number.isFinite(v)?(v>0?'+':'')+v.toFixed(1)+'%':'比較不可';
-  const gapLabel='<div class="price-gap"><strong>PSA10／素体差 '+pct(gap.current)+'</strong><small>75日観測平均 '+pct(gap.mean75)+'／'+escapeHtml(gap.direction)+'</small><details><summary>価格差の根拠</summary><small>'+escapeHtml(gap.source||'みんトレ美品参考相場・国内PSA10集計')+'。PSA10÷素体−1。買値最安選択・仕入れ目安・店舗中央値は不使用。</small><small>75日 '+(gap.count75??'未取得')+'/75観測日・実観測'+(gap.span??'未取得')+'日間／最終'+escapeHtml(gap.last||'未取得')+'。7日 '+(gap.count7??'未取得')+'/7日・平均'+pct(gap.mean7)+'。'+escapeHtml(gap.reason)+'</small><small>平均は同日の両価格から求めた日次率の平均（平均価格同士の比ではない）。素体 '+(Number.isFinite(gap.raw)?'¥'+fmt.format(gap.raw):'未取得')+'／PSA10 '+(Number.isFinite(gap.psa10)?'¥'+fmt.format(gap.psa10):'未取得')+'。素体確認 '+escapeHtml(gap.rawAt||'未取得')+'／PSA10確認 '+escapeHtml(gap.marketAt||'未取得')+'。差 '+(Number.isFinite(gap.change)?gap.change.toFixed(1)+'％ポイント':'判定保留')+'。履歴不足は参考。検索・採算・GOには未反映。</small></details></div>';
+  const gapLabel='<div class="price-gap"><strong>PSA10／素体差 '+pct(gap.current)+'</strong><small>75日観測平均'+(gap.reference&&Number.isFinite(gap.mean75)?'（参考・'+gap.count75+'/75観測日）':'')+' '+pct(gap.mean75)+'／'+escapeHtml(gap.direction+(gap.reference&&gap.change!=null?'（参考）':''))+'</small><details><summary>価格差の根拠</summary><small>'+escapeHtml(gap.source||'みんトレ美品参考相場・国内PSA10集計')+'。PSA10÷素体−1。買値最安選択・仕入れ目安・店舗中央値は不使用。</small><small>75日 '+(gap.count75??'未取得')+'/75観測日・実観測'+(gap.span??'未取得')+'日間／最終'+escapeHtml(gap.last||'未取得')+'。7日 '+(gap.count7??'未取得')+'/7日・平均'+pct(gap.mean7)+'。'+escapeHtml(gap.reason)+'</small><small>平均は同日の両価格から求めた日次率の平均（平均価格同士の比ではない）。素体 '+(Number.isFinite(gap.raw)?'¥'+fmt.format(gap.raw):'未取得')+'／PSA10 '+(Number.isFinite(gap.psa10)?'¥'+fmt.format(gap.psa10):'未取得')+'。素体確認 '+escapeHtml(gap.rawAt||'未取得')+'／PSA10確認 '+escapeHtml(gap.marketAt||'未取得')+'。差 '+(Number.isFinite(gap.change)?gap.change.toFixed(1)+'％ポイント':'判定保留')+'。履歴不足は参考。検索・採算・GOには未反映。</small></details></div>';
 
   return variationLabel+gapLabel;
 }
