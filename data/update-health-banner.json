@@ -1,15 +1,21 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-23T20:21:21.285Z",
+  "generatedAt": "2026-11-23T20:27:47.812Z",
   "sourceLastSuccessAt": "2026-11-23T16:49:08.284Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-11-23T20:11:02.917Z",
-    "lastSuccessAt": "2026-11-23T20:11:02.917Z",
-    "runId": "45252374790",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/45252374790"
+    "lastAttemptAt": "2026-11-23T20:27:47.803Z",
+    "lastSuccessAt": "2026-11-23T20:27:47.803Z",
+    "runId": "45259209355",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/45259209355"
   },
   "dailyOutcomes": [
+    {
+      "runId": "45253472843",
+      "attempt": 1,
+      "state": "published",
+      "publicVerifiedAt": "2026-11-23T20:27:08.655Z"
+    },
     {
       "runId": "45088461520",
       "attempt": 1,
@@ -21,17 +27,9 @@
       "attempt": 1,
       "state": "published",
       "publicVerifiedAt": "2026-11-22T17:02:31.332Z"
-    },
-    {
-      "runId": "44963833175",
-      "attempt": 1,
-      "state": "unclassified-failure",
-      "publicVerifiedAt": null
     }
   ],
-  "dailyOutcomeLabels": {
-    "unclassified-failure": "失敗工程未確認"
-  },
+  "dailyOutcomeLabels": {},
   "issues": [
     {
       "key": "safe:yuyutei:manual-action-required:GitHub ActionsからHTTP #。正規アクセス確認待ち",
@@ -66,7 +64,7 @@
     {
       "key": "source:snkrRaw:stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/45088461520",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/45253472843",
       "reason": "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）"
     },
     {
@@ -83,7 +81,7 @@
     {
       "key": "priority-prices:cadence-stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/45134152731",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/45258158388",
       "reason": "重要価格更新：設定2時間に対し実績成功間隔（直近最大）13.62時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
     },
     {
