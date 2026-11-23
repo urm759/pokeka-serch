@@ -20,6 +20,8 @@ require('./stock_history_statistics').reconcile(ROOT);
 // input snapshot. Keep the source-change guard strict for all later writers.
 require('./apply_buyback_retirements').apply(ROOT);
 require('./audit_purchase_issue_aliases.js').build(ROOT);
+// Owner-stopped sources stay empty after every writer above (data/stopped-sources.json).
+{ const stopped=require('./apply_stopped_sources').apply(ROOT); if(stopped.applied.length)console.log(JSON.stringify({stoppedSources:stopped.applied})); }
 require('./build_raw_condition_reference').build(ROOT);
 require('./build_psa9_provenance').build(ROOT);
 require('./build_psa9_provenance').verify(ROOT);
