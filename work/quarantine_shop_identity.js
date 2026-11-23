@@ -20,8 +20,19 @@ function recordReference(root,source,row,card) {
   if(!old||(Date.parse(row.observedAt)||-Infinity)>=(Date.parse(old.observedAt)||-Infinity))byKey.set(key,{...row,source});
   require('./acquisition_retry').atomicWrite(file,[...byKey.values()],0);return true;
 }
+// Variants printed under the same number as the normal card. A product title and a card
+// name must agree both ways on these marks; otherwise the shop row is a different card.
+// Deck marks of family decks (SML/SH) are not listed: the number alone identifies them.
+const SAME_NUMBER_VARIANTS=[['丸美屋',/丸美屋/],['エラー版',/エラー版/],['メタモンマーク',/メタモンマーク/]];
+function variantMarkReason(card,title){
+  const name=String(card?.name||'').normalize('NFKC'),text=String(title||'').normalize('NFKC');
+  const differ=SAME_NUMBER_VARIANTS.filter(([,pattern])=>pattern.test(name)!==pattern.test(text)).map(([label])=>label);
+  return differ.length?`同じ番号の別仕様（${differ.join('・')}）が商品名とカード名で不一致・照合保留`:null;
+}
 function reason(card,title){
   if(!String(title||'').trim())return null;
+  const variantReason=variantMarkReason(card,title);
+  if(variantReason)return variantReason;
   const finishReason=require('./shop_finish_identity').reason(card,title);
   if(finishReason)return finishReason;
   if(/中国語箔押しエラー/.test(card.name)&&!/中国語箔押しエラー/.test(title))return '特殊加工・エラー仕様の根拠なし（通常版で代用不可）';
@@ -68,4 +79,4 @@ function build(root=path.join(__dirname,'..')){
   fs.writeFileSync(path.join(root,'data/shop-identity-quarantine.json'),JSON.stringify(audit));return audit;
 }
 const identityUsable=row=>Boolean(row)&&!row.cardMismatchSuspected&&row.matchStatus!=='mismatch'&&!row.referenceOnly&&row.conditionAccepted!==false;
-if(require.main===module)console.log(JSON.stringify({count:build().count}));module.exports={build,reason,identityUsable,markSealed,recordReference};
+if(require.main===module)console.log(JSON.stringify({count:build().count}));module.exports={build,reason,identityUsable,markSealed,recordReference,variantMarkReason};
