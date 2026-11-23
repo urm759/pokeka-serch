@@ -21,4 +21,21 @@ assert(pendingFiles(store,'new-reviewed-registry').some(r=>r.name==='export (2).
 const manifest=JSON.parse(fs.readFileSync(manifestFile));manifest.files[2].reviewRevision='new-reviewed-registry';fs.writeFileSync(manifestFile,JSON.stringify(manifest));
 assert(!pendingFiles(store,'new-reviewed-registry').some(r=>r.name==='export (2).csv'),'unchanged registry must not repeatedly reprocess completed receipts');
 assert(!pendingFiles(store,context=>'new-reviewed-registry').some(r=>r.name==='export (2).csv'),'a review of an unrelated set must not reprocess this set');
-console.log('PASS private inbox requires CSV hash and source-page date/grader/language/set proof; no filesystem-date inference');
+// 4-J GemRate range: a set reviewed for collection only (no reference data yet, e.g. SV3) passes the
+// set-identity step like gemrate_browser_receipts.scopes(); the CSV/page checks after it still apply.
+const scoped=fs.mkdtempSync(path.join(os.tmpdir(),'gemrate-scope-'));fs.mkdirSync(path.join(scoped,'work'));
+const sv3={setCode:'SV3',set:'Pokemon Japanese SV3-Ruler of the Black Flame',year:2023,language:'Japanese',grader:'PSA',denominator:108,officialSetUrl:'https://www.pokemon-card.com/ex/sv3/',reviewedAt:'2026-11-21'};
+const sv3Proof={grader:'PSA',set:sv3.set,year:2023,updated:'2026-11-22',url:'https://www.gemrate.com/item-details?category=tcg-cards&grader=psa&set_name=x&year=2023',category:'tcg-cards',language:'Japanese',csvRows:1,setTotals:{psa10:1,total:1}};
+const sv3Text=Buffer.from(JSON.stringify(sv3Proof));fs.writeFileSync(path.join(root,'sv3-page.json'),sv3Text);
+const sv3Context={grader:'PSA',language:'Japanese',set:sv3.set,year:2023,sourceUpdatedDate:'2026-11-22',pageUrl:sv3Proof.url,contextProof:'sha256:'+sha(sv3Text)};
+const sv3Sidecar={context:sv3Context,csvSha256:sha(bytes),proofFile:'../sv3-page.json'};
+fs.writeFileSync(path.join(scoped,'work/gemrate-reviewed-sets.json'),JSON.stringify({version:1,sets:[]}));
+assert.throws(()=>validate(sv3Sidecar,bytes,store,scoped),/Set identity has not been reviewed/,'without any registry entry the set is still refused');
+fs.writeFileSync(path.join(scoped,'work/gemrate-collection-sets.json'),JSON.stringify({version:1,sets:[sv3]}));
+assert.throws(()=>validate(sv3Sidecar,bytes,store,scoped),e=>!/Set identity has not been reviewed/.test(e.message),'a collection-reviewed set passes the set step and meets the later CSV/page checks');
+fs.writeFileSync(path.join(scoped,'work/gemrate-collection-sets.json'),JSON.stringify({version:1,sets:[{...sv3,officialSetUrl:'https://example.com/'}]}));
+assert.throws(()=>validate(sv3Sidecar,bytes,store,scoped),/Set identity has not been reviewed/,'the same required fields apply to collection sets');
+fs.writeFileSync(path.join(scoped,'work/gemrate-reviewed-sets.json'),JSON.stringify({version:1,sets:[sv3]}));fs.writeFileSync(path.join(scoped,'work/gemrate-collection-sets.json'),JSON.stringify({version:1,sets:[sv3]}));
+assert.throws(()=>validate(sv3Sidecar,bytes,store,scoped),/Set identity has not been reviewed/,'a set listed twice is ambiguous and refused');
+fs.rmSync(scoped,{recursive:true,force:true});
+console.log('PASS private inbox requires CSV hash and source-page date/grader/language/set proof; collection-reviewed sets (SV3) pass the set step; no filesystem-date inference');
