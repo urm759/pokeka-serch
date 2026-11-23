@@ -187,6 +187,14 @@ async function main() {
   const buybackSummary = JSON.parse(fs.readFileSync(path.join(ROOT,'data/shop-buyback-summary.json'),'utf8'));
   const formalDeadlines = JSON.parse(fs.readFileSync(path.join(ROOT,'data/formal-freshness-deadlines.json'),'utf8'));
   watchIssues.push(...require('./buyback_hold_review').warnings(buybackSummary,formalDeadlines,clockAt));
+  // 4-J C: silent stops. Each check is isolated so a failure is reported, never hidden.
+  try{watchIssues.push(...require('./silent_stop_checks').weeklyIssues((await api(`${API}/actions/workflows/weekly-full-tests.yml/runs?per_page=5`)).workflow_runs||[],clockAt));}
+  catch(error){watchIssues.push({key:'weekly-tests:check-error',reason:'週次全テストの実行一覧を読めず：'+error.message,url:null});}
+  try{watchIssues.push(...require('./silent_stop_checks').buybackObservationIssues(JSON.parse(fs.readFileSync(path.join(ROOT,'work/buyback-price-observations.json'),'utf8')),buybackSummary,clockAt));}
+  catch(error){watchIssues.push({key:'buyback-observation:check-error',reason:'買取観測の停止確認を実行できず：'+error.message,url:null});}
+  let postPublication=null;
+  try{postPublication=require('./post_publication_invariants').record(ROOT);watchIssues.push(...require('./post_publication_invariants').issues(postPublication));}
+  catch(error){watchIssues.push({key:'post-publication:error',reason:'公開後の自動確認を実行できず：'+error.message,url:null});}
   watchIssues.push(...formalQueue.sharedClockWarnings(formalQueue.build(formalTargets,formalProfiles.focusProfileIds||[],clockAt).formal,clockAt));
   const issues = [...dailyIssues, ...backfills.issues, ...sourceIssues, ...priceIssues, ...watchIssues].map(issue => ({ ...issue,
     category: require('../update-health-model.js').issueCategory(issue) }));
@@ -218,6 +226,7 @@ async function main() {
   }
   observation.record(ROOT,'observed',{newIssueCount:newlyDetected.length,unpublishedData,trendAudit,
     liveSearch,
+    postPublication:postPublication?{status:postPublication.status,head:postPublication.head,durationMs:postPublication.durationMs}:null,
     lastMonitorRun:lastWatch?{id:lastWatch.id,conclusion:lastWatch.conclusion,url:lastWatch.html_url}:null,
     freshness:status.priorityPriceMonitor?.fixedCohortFreshness||null,
     publicationStatus:'監視保存済み・公開工程は別'});
