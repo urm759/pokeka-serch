@@ -3,6 +3,8 @@ const {load}=require('./audit_search_profit_consistency');
 const source=fs.readFileSync('app.js','utf8'),at='2026-10-22T00:00:00.000Z';
 function replay(time){
   const api=load(source,time,{fixedModelClock:true});
+  // Owner-stopped SNKR raw rows: the archived original stays the regression fixture.
+  if(!Object.keys(api.state.snkrRawFlipSummary||{}).length)Object.assign(api.state.snkrRawFlipSummary,require('./stopped_source_archive').rows('.','data/snkr-raw-flip-summary.json','snkrRaw'));
   const card=api.state.cards.find(c=>api.state.snkrRawFlipSummary[c.id]);
   assert.ok(card,'stored raw evidence is required by this regression fixture');
   return api.prepareCalculatedCards([card])[0].snkrRawFlip.fetchedAgeHours;
