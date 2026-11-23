@@ -36,6 +36,12 @@ assert.throws(()=>validate(sv3Sidecar,bytes,store,scoped),e=>!/Set identity has 
 fs.writeFileSync(path.join(scoped,'work/gemrate-collection-sets.json'),JSON.stringify({version:1,sets:[{...sv3,officialSetUrl:'https://example.com/'}]}));
 assert.throws(()=>validate(sv3Sidecar,bytes,store,scoped),/Set identity has not been reviewed/,'the same required fields apply to collection sets');
 fs.writeFileSync(path.join(scoped,'work/gemrate-reviewed-sets.json'),JSON.stringify({version:1,sets:[sv3]}));fs.writeFileSync(path.join(scoped,'work/gemrate-collection-sets.json'),JSON.stringify({version:1,sets:[sv3]}));
-assert.throws(()=>validate(sv3Sidecar,bytes,store,scoped),/Set identity has not been reviewed/,'a set listed twice is ambiguous and refused');
+assert.throws(()=>validate(sv3Sidecar,bytes,store,scoped),e=>!/Set identity has not been reviewed/.test(e.message),'a reviewed entry takes precedence; the collection entry is not consulted');
+// The original S6a receipts keep their own proof path even though S6a is also a collection set
+// (regression found after PR #106: 10 stored S6a receipts were refused and publication stopped).
+fs.writeFileSync(path.join(scoped,'work/gemrate-reviewed-sets.json'),JSON.stringify({version:1,sets:[]}));
+fs.writeFileSync(path.join(scoped,'work/gemrate-collection-sets.json'),JSON.stringify({version:1,sets:[sv3,{setCode:'S6A',set:proof.set,year:2021,language:'Japanese',grader:'PSA',denominator:69,officialSetUrl:'https://www.pokemon-card.com/products/s/s6a.html',reviewedAt:'2026-11-04'}]}));
+assert.equal(validate(sidecar,bytes,store,scoped).setCode,'S6a','legacy S6a receipt still validates through its original proof');
+assert.throws(()=>validate(sv3Sidecar,bytes,store,scoped),e=>!/Set identity has not been reviewed/.test(e.message),'SV3 still uses the collection registry');
 fs.rmSync(scoped,{recursive:true,force:true});
-console.log('PASS private inbox requires CSV hash and source-page date/grader/language/set proof; collection-reviewed sets (SV3) pass the set step; no filesystem-date inference');
+console.log('PASS private inbox requires CSV hash and source-page date/grader/language/set proof; collection-reviewed sets (SV3) pass the set step, legacy S6a keeps its proof path; no filesystem-date inference');
