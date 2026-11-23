@@ -28,7 +28,20 @@ function validate(sidecar,bytes,store,root=ROOT) {
   const scopeFile=path.join(root,'work/gemrate-reviewed-sets.json');
   const scope=fs.existsSync(scopeFile)?JSON.parse(fs.readFileSync(scopeFile)):null;
   if(scope&&(scope.version!==1||!Array.isArray(scope.sets)))throw Error('Invalid reviewed set registry');
-  const matches=(scope?.sets||[]).filter(s=>s.set===context.set&&s.year===context.year);
+  // Sets reviewed for collection (no reference data yet, e.g. SV3) are received the same way as
+  // gemrate_browser_receipts.scopes(); otherwise their valid daily CSVs stay in review forever.
+  const collectionFile=path.join(root,'work/gemrate-collection-sets.json');
+  const collection=fs.existsSync(collectionFile)?JSON.parse(fs.readFileSync(collectionFile)):null;
+  if(collection&&!Array.isArray(collection.sets))throw Error('Invalid collection set registry');
+  const same=s=>s.set===context.set&&s.year===context.year;
+  let matches=(scope?.sets||[]).filter(same);
+  if(!matches.length){
+    // The original S6a receipts keep their own proof path below; only sets it does not cover use
+    // the collection registry (S6a is also listed there for the newer collector receipts).
+    const legacyFile=path.resolve(store,'..','gemrate-public-review-20261023.json');
+    const legacy=fs.existsSync(legacyFile)?JSON.parse(fs.readFileSync(legacyFile)):null;
+    if(!(legacy&&legacy.set===context.set&&Number(legacy.year)===Number(context.year)))matches=(collection?.sets||[]).filter(same);
+  }
   if(matches.length){
     const s=matches[0];
     if(matches.length!==1||s.language!=='Japanese'||s.grader!=='PSA'||!s.setCode||(!(Number.isInteger(s.denominator)&&s.denominator>0)&&!matcher.promoScope(s))

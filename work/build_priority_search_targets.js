@@ -222,6 +222,8 @@ function build(root=ROOT,at=new Date().toISOString()) {
   report.comparisonRevision=targets.comparisonRevision;
   applyReferenceComparison(root,report,targets,previous,config);
   for(const [f,x]of [['work/search-profile-targets.json',targets],['data/priority-search-profile-audit.json',report]])require('./acquisition_retry').atomicWrite(path.join(root,f),x,0);
+  // Small phone/notification summary of the same audit; it never blocks the formal audit itself.
+  try{require('./build_daily_digest').build(root);}catch(error){console.warn('::warning::daily digest not built: '+error.message);}
   require('./focus_pop_priority').build(root);
   require('./build_psa_priority_queue').build();
   console.log(JSON.stringify(profiles.map(p=>({id:p.urlOnly.id,urlOnly:p.urlOnly.qualified,withKnownSaved:p.knownSavedConditions.qualified,prospects:p.urlOnly.prospects}))));

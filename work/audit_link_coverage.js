@@ -24,6 +24,9 @@ const itemMatches = read("work/shop_buyback_item_matches.json", {});
 const sourceDiff = read("work/toreca_source_diff.json", { added: [], addedPromoCount: 0 });
 const { buildStoreCoverage } = require("./source_observability.js");
 const total = cards.length;
+// 4-J K: this runs before finalize detaches quarantined links; count the final links only.
+const pending = require("./quarantine_shop_identity").pendingDetachments(ROOT);
+const linked = (site) => cards.filter((card) => card[`${site}Url`] && !pending[site]?.has(card.id)).length;
 const directSnkr = cards.filter((card) => /^https?:\/\/(?:www\.)?snkrdunk\.com\/(?:apparels|trading-cards|products)\/\d+/i.test(card.snkUrl || "")).length;
 const shops = {};
 for (const shopId of new Set([...Object.keys(shopCatalog.shops || {}), ...Object.keys(shopUnmatched.shops || {})])) {
@@ -35,10 +38,10 @@ for (const shopId of new Set([...Object.keys(shopCatalog.shops || {}), ...Object
 const current = {
   total,
   sites: {
-    cardrush: { matched: cards.filter((card) => card.cardrushUrl).length },
-    hareruya2: { matched: cards.filter((card) => card.hareruya2Url).length },
-    yuyutei: { matched: cards.filter((card) => card.yuyuteiUrl).length },
-    torecacamp: { matched: cards.filter((card) => card.torecacampUrl).length },
+    cardrush: { matched: linked("cardrush"), heldBeforeFinalize: pending.cardrush.size },
+    hareruya2: { matched: linked("hareruya2"), heldBeforeFinalize: pending.hareruya2.size },
+    yuyutei: { matched: linked("yuyutei"), heldBeforeFinalize: pending.yuyutei.size },
+    torecacamp: { matched: linked("torecacamp"), heldBeforeFinalize: pending.torecacamp.size },
     snkrdunk: { matched: directSnkr },
     psaOfficial: { matched: Number(psa.matched || 0) },
   },
