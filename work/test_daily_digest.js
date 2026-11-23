@@ -13,6 +13,10 @@ const put = rows => fs.writeFileSync(path.join(root, 'data/priority-search-profi
 const read = () => JSON.parse(fs.readFileSync(path.join(root, 'data/daily-digest.json'), 'utf8'));
 
 assert.equal(jstDate(Date.parse('2026-11-23T14:59:59Z')), '2026-11-23');
+// Specified-condition URLs share the report name, so the digest names them apart.
+{ const r = fs.mkdtempSync(path.join(os.tmpdir(), 'digest-name-')); fs.mkdirSync(path.join(r, 'data'));
+  fs.writeFileSync(path.join(r, 'data/priority-search-profile-audit.json'), JSON.stringify({ profiles: [{ urlOnly: { id: 'V-x', reportName: '条件バリュー', rows: [] } }, { urlOnly: { id: 'V-x-specified', reportName: '条件バリュー', rows: [] } }] }));
+  assert.deepEqual(build(r).profiles.map(p => p.name), ['条件バリュー', '条件バリュー（指定条件）']); fs.rmSync(r, { recursive: true, force: true }); }
 assert.equal(jstDate(Date.parse('2026-11-23T15:00:00Z')), '2026-11-24', 'JST midnight starts the next day');
 
 // Day 1 (JST 11-24): no previous day yet, so no changes are claimed.
