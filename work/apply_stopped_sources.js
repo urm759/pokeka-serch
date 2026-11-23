@@ -1,9 +1,9 @@
-// Owner-stopped sources (data/stopped-sources.json): keep their published file shape but no rows,
+// Owner-stopped sources (work/stopped-sources.json): keep their published file shape but no rows,
 // so neither the site nor the audits use stale rows. Originals are archived once (gzip, outside
 // data/ so they never enter the UI manifest). Idempotent; runs in finalize after every writer.
 const fs = require('node:fs'), path = require('node:path'), zlib = require('node:zlib');
 function apply(root = path.join(__dirname, '..'), now = new Date()) {
-  const configFile = path.join(root, 'data/stopped-sources.json');
+  const configFile = path.join(root, 'work/stopped-sources.json');
   if (!fs.existsSync(configFile)) return { applied: [] };
   const config = JSON.parse(fs.readFileSync(configFile, 'utf8')), applied = [];
   for (const [source, entry] of Object.entries(config.sources || {})) {
