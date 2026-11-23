@@ -2,10 +2,13 @@ const fs=require('node:fs'),path=require('node:path');
 const {extractLanguage}=require('./card_identity');
 const rawReference=require('./raw_condition_reference');
 const oldSealedHold='未開封仕様を通常素体へ代用不可';
-function markSealed(row,card) {
+function sealedCandidate(row,card) {
   if(rawReference.condition(row.title || row.name || '')!=='sealed-single')return false;
   if(!rawReference.sameIssue(card,row.title || row.name || ''))return false;
-  if(row.cardMismatchSuspected && row.identityHoldReason!==oldSealedHold)return false;
+  return !(row.cardMismatchSuspected && row.identityHoldReason!==oldSealedHold);
+}
+function markSealed(row,card) {
+  if(!sealedCandidate(row,card))return false;
   Object.assign(row,{rawCondition:'sealed-single',referenceOnly:true,conditionAccepted:false,
     conditionReason:'単品未開封・参考集計のみ。状態A購入価格/PSA10率に代用しない',
     identityVerified:true,cardMismatchSuspected:false,matchStatus:'verified-reference',identityHoldReason:null});
@@ -78,5 +81,19 @@ function build(root=path.join(__dirname,'..')){
   const audit={version:2,generatedAt:new Date().toISOString(),rows,count:rows.length,corrections:[...resolved.values()],action:'言語/仕様違いを隔離。単品未開封は仕様確認後に参考専用へ分離。美品中央値/購入GOへ代用せず、元日時と隔離履歴を保持'};
   fs.writeFileSync(path.join(root,'data/shop-identity-quarantine.json'),JSON.stringify(audit));return audit;
 }
+// 4-J K: the shop links build() will detach, computed without writing anything. Link counts
+// taken before finalize use this so they match the published final data.
+function pendingDetachments(root=path.join(__dirname,'..')){
+  const read=(f,d={})=>{try{return JSON.parse(fs.readFileSync(path.join(root,f)));}catch{return d;}},cards=read('data/pokemon-cards.json',[]),byId=new Map(cards.map(c=>[c.id,c]));
+  const byUrl=new Map();for(const c of cards)for(const field of ['cardrushUrl','hareruya2Url','yuyuteiUrl','torecacampUrl'])if(c[field]){if(byUrl.has(c[field]))byUrl.set(c[field],null);else byUrl.set(c[field],c);}
+  const out={};
+  for(const source of ['cardrush','hareruya2','yuyutei','torecacamp']){
+    const cat=read(`work/${source}_catalog.json`,[]),field=`${source}Url`,ids=new Set();
+    for(const r of Array.isArray(cat)?cat:[]){const c=byId.get(r.cardId || r.quarantinedCardId) || byUrl.get(r.detailUrl);if(!c||c[field]!==r.detailUrl)continue;
+      if(sealedCandidate(r,c)||reason(c,r.title || r.name || ''))ids.add(c.id);}
+    out[source]=ids;
+  }
+  return out;
+}
 const identityUsable=row=>Boolean(row)&&!row.cardMismatchSuspected&&row.matchStatus!=='mismatch'&&!row.referenceOnly&&row.conditionAccepted!==false;
-if(require.main===module)console.log(JSON.stringify({count:build().count}));module.exports={build,reason,identityUsable,markSealed,recordReference,variantMarkReason};
+if(require.main===module)console.log(JSON.stringify({count:build().count}));module.exports={build,reason,identityUsable,markSealed,sealedCandidate,pendingDetachments,recordReference,variantMarkReason};
