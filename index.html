@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ポケカ仕入れ判断サイト</title>
   <link rel="icon" href="./assets/site-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css?v=20261120-store-ratios" />
+  <link rel="stylesheet" href="./styles.css?v=20261124-readable-notes" />
 </head>
 <body>
   <div class="backdrop backdrop-a"></div>
@@ -669,6 +669,8 @@
             </select>
             <small class="control-help">買取店優先は新しく信頼できる2店舗以上の保守価格を使用。現相場探索では不足時に算出不可とし、フリマへ自動切替しません。従来の安定重視モデルの参考計算は、不足時にフリマ基準を使います。</small>
           </label>
+          <label class="check-control"><input id="marketplaceFallbackInput" type="checkbox" />店舗買取がないカードはフリマ出口で代替</label>
+          <small class="control-help">店舗買取が2店未満のカードだけ。PSA10の30日取引5件以上で、PSA10相場が最安出品の1.05倍以下のときに限り、フリマの手取りで資金効率・買取倍率・買取需要の条件を見ます。売値は変えません。初期値はオフ。</small>
           <label class="control"><span>利用する買取店</span><select id="buybackStoreModeInput"><option value="mail">郵送のみ</option><option value="all">店頭も利用</option><option value="selected">指定店舗のみ</option></select><small>店頭価格は郵送の出口へ混ぜません。</small></label>
           <label class="control"><span>指定店舗ID（カンマ区切り）</span><input id="selectedBuybackStoresInput" type="text" placeholder="cardshop151-store,torecabank"><small>店舗IDは買取表詳細に表示します。</small></label>
           <label class="control"><span>店頭交通費等／1枚</span><input id="storeTravelCostInput" type="number" min="0" step="100" value="0"><small>店頭出口だけに適用。まとめ売りの場合は1枚あたりへ配分してください。</small></label>
@@ -954,7 +956,7 @@
   <script src="./release-year-filter.js?v=20261003-priority-v2"></script>
   <script src="./update-health-model.js?v=20261121-daily-stages"></script>
   <script src="./update-health-banner.js?v=20261121-daily-stages"></script>
-  <script src="./current-market-model.js?v=20261101-guide80-stock" integrity="sha384-fcfFd/0u1lI96582Y8Isew5AGSRA/NDHV2jQrVBJytLfb8ikDayeTIAz/R/jBRWF"></script>
+  <script src="./current-market-model.js?v=20261124-marketplace-fallback" integrity="sha384-g2zYCYvQyqWb+kamP8ahvbznQYDt76ahgAeDMw4EdSjyE/+pcyhgGut2Y4FbnJnx"></script>
   <script src="./ui-data-codec.js?v=20261123-date-runs-v1"></script>
   <script src="./psa-plan-model.js?v=20261029-observed-evidence"></script>
   <script src="./keyed-card-renderer.js?v=20261102-identity-reuse"></script>
@@ -964,6 +966,6 @@
   <script src="./search-controls.js?v=20261121-verified-windows" integrity="sha384-fGmNhG3COuPIwf0uo+ZzTmN/qLCtona4Ry9OHfD+XN7da0lzvXhGhXOdzX64P8kG"></script>
   <script src="./settings-disclosure.js?v=20261011-disclosure-v1"></script>
   <script src="./gemrate-pop-model.js?v=20261102-gemrate-pop" integrity="sha384-odMB7R9tprRMcdSqcPS8Gukl1EMPlsrLnJModiemV+xY9yi2rEpohSLYaemvN7Za"></script>
-  <script src="./app.js?v=20261123-raw-reference-hold" integrity="sha384-7CPHY/HAmrJs8fCzOad0Qc6xyTmd1xcYXStWrkRkTHH8BLLA9uFNLD1lmIHjZHFp"></script>
+  <script src="./app.js?v=20261124-integrity-48h" integrity="sha384-XrXAdiwwprJEkrq6Qos1xgKN3F9/MrdtDDtcleoE+AbAIlZUSzmdYD+4M0n3XNd+"></script>
 </body>
 </html>

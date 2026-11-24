@@ -262,6 +262,7 @@ const state = {
   purchaseBelowCurrentCap: false,
   psa9CostWithin5: false,
   buybackRatioReference: false,
+  marketplaceFallback: false,
   psa9RoiMin: null,
   psa9AboveGuide: false,
   psa9GuideMin: null,
@@ -3150,7 +3151,7 @@ function calc(card) {
       sourceBlocked: /403|認証|アクセス確認|sign.?in/i.test(sourceStop || '') ? sourceStop : null,
       identityVerified: row.identityVerified === true || Boolean(row.identityVerifiedAt) });
   }
-  const priceIntegrity = priceIntegrityModel?.audit(torecaPrice, priceEntries, { asOfDate: meta.updatedAt || meta.generatedAt }) || { disputed: false };
+  const priceIntegrity = priceIntegrityModel?.audit(torecaPrice, priceEntries, { asOfDate: meta.updatedAt || meta.generatedAt, now: Date.now() }) || { disputed: false };
   const priceAggregation = decisionModel.aggregatePrices(priceEntries, { asOfDate: meta.updatedAt || meta.generatedAt, staleAfterDays: 14, excludeAfterDays: 45, minRatio: 0.55, maxRatio: 1.8, clusterRatio: 1.35, divergencePct: 35 });
   priceAggregation.comparison = decisionModel.comparablePriceEvidence(priceAggregation, { now: Date.now(), divergencePct: 35 });
   // A split between a reference quote and multiple exact-card shop quotes needs manual resolution.
@@ -3318,7 +3319,7 @@ function captureConditionOrigins(defaults, restored) {
   const bindings = new Map([['calcBuy','calculationBuyMode'],...efficiencyFields,...explorationFields].map(([param,field])=>[field+'Input',param]));
   for(const [id,param] of Object.entries({roiInput:'roi',expectedProfitFilterInput:'filterExpProfit',expectedRoiFilterInput:'filterExpRoi',
     psa9RatioMinInput:'psa9RatioMin',psa9RatioMaxInput:'psa9RatioMax',psa9RatioAggregateInput:'psa9Aggregate',psa9RatioEstimateInput:'psa9Estimate',psa9RatioMarketInput:'psa9Market',
-    efficiencyIncludeReferenceInput:'effRef',observationIncludeReferenceInput:'obsRef',efficiencyBuyInput:'effBuy',efficiencyScenarioInput:'effScenario',purchaseBelowCurrentCapInput:'buyBelowCap',psa9AboveGuideInput:'psa9AboveGuide',psa9CostWithin5Input:'psa9Cost5',buybackRatioReferenceInput:'bbRatioRef',
+    efficiencyIncludeReferenceInput:'effRef',observationIncludeReferenceInput:'obsRef',efficiencyBuyInput:'effBuy',efficiencyScenarioInput:'effScenario',purchaseBelowCurrentCapInput:'buyBelowCap',psa9AboveGuideInput:'psa9AboveGuide',psa9CostWithin5Input:'psa9Cost5',buybackRatioReferenceInput:'bbRatioRef',marketplaceFallbackInput:'fleaFallback',
     priceMinInput:'priceMin',priceMaxInput:'priceMax',psaMinInput:'psaMin',psaMaxInput:'psaMax',year2020Input:'year2020'})) bindings.set(id,param);
   for(const [id,param] of Object.entries({saleTxMinInput:'tx',saleTxMaxInput:'txMax',saleTx7MinInput:'tx7',saleTx7MaxInput:'tx7Max',psaTxMinInput:'psaTx',psaTxMaxInput:'psaTxMax',psaTx7MinInput:'psaTx7',psaTx7MaxInput:'psaTx7Max',buyback7MinInput:'bb7',buyback30MinInput:'bb30',buyback90MinInput:'bb90',buybackShopsMinInput:'bbShops',purchaseLimitRatioMinInput:'buyLimitRatio',stressExpectedProfitFilterInput:'filterStressProfit',stressExpectedRoiFilterInput:'filterStressRoi',currentMarketCapMinInput:'marketCapMin',includePeriodReferenceInput:'periodReference',profitSearchBasisInput:'profitBasis',sortInput:'sort'})) bindings.set(id,param);
   for (const [id,param] of Object.entries({includeUnknownYearInput:'includeUnknownYear',diagnosticSearchInput:'diagnostic',psaRateMinInput:'psaRate',overallFilterInput:'overall',minExitLiquidityInput:'exit',minEconomicsInput:'economics',minMarketStabilityInput:'stability',minSupplyRiskInput:'supply',minFuturePriceScoreInput:'futureScore',maxFuturePriceScoreInput:'futureScoreMax',minForecastPriceInput:'forecastMin',maxForecastPriceInput:'forecastMax',minForecastDownsideInput:'downsideMin',maxForecastDownsideInput:'downsideMax',minForecastGapInput:'gapMin',maxForecastGapInput:'gapMax',forecastPhaseInput:'forecastPhase',forecastConfidenceInput:'forecastConfidence',forecastSupplyPressureInput:'forecastSupply',minForecastAgeInput:'releaseAge',forecastMaturityInput:'forecastMaturity',maxForecastMonthlyIncreaseInput:'psaGrowthMax',stockDemandInput:'stockDemand',dataQualityFilterInput:'dataQuality',goConfidenceFilterInput:'goTrust',floorStateInput:'floorState',priceDirectionInput:'priceDirection',supplyStateInput:'supplyState',minFloorScoreInput:'floorScore',storeDemandInput:'storeDemand',showSkippedInput:'showSkipped',hideThinDemandInput:'hideThin',hideReviewInput:'hideReview',fundingOnlyInput:'fundingOnly',officialOnlyInput:'officialOnly',buyback7MaxInput:'bb7Max',buyback30MaxInput:'bb30Max',buyback90MaxInput:'bb90Max',buybackPriceMinInput:'bbPriceMin',buybackPriceMaxInput:'bbPriceMax',snkrRawTx7MinInput:'snkrTx7',snkrRawTx30MinInput:'snkrTx30',snkrRawProfitMinInput:'snkrProfit',snkrRawRoiMinInput:'snkrRoi',snkrRawPurchaseMaxInput:'snkrBuyMax',snkrRawReleaseMonthsInput:'snkrMonths'})) bindings.set(id,param);
@@ -3411,6 +3412,7 @@ function restoreQuickFilters() {
     if (!url.searchParams.has("buyBelowCap") && typeof saved.purchaseBelowCurrentCap === "boolean") document.getElementById("purchaseBelowCurrentCapInput").checked = saved.purchaseBelowCurrentCap;
     if (!url.searchParams.has("psa9Cost5") && typeof saved.psa9CostWithin5 === "boolean") document.getElementById("psa9CostWithin5Input").checked = saved.psa9CostWithin5;
     if (!url.searchParams.has("bbRatioRef") && typeof saved.buybackRatioReference === "boolean") document.getElementById("buybackRatioReferenceInput").checked = saved.buybackRatioReference;
+    if (!url.searchParams.has("fleaFallback") && typeof saved.marketplaceFallback === "boolean" && document.getElementById("marketplaceFallbackInput")) document.getElementById("marketplaceFallbackInput").checked = saved.marketplaceFallback;
     if (!url.searchParams.has("psa9AboveGuide") && typeof saved.psa9AboveGuide === "boolean") document.getElementById("psa9AboveGuideInput").checked = saved.psa9AboveGuide;
     if (!url.searchParams.has("periodReference") && typeof saved.includePeriodReference === "boolean") document.getElementById("includePeriodReferenceInput").checked = saved.includePeriodReference;
     for (const [parameter, field, el] of [["filterExpProfit", "minExpectedProfitFilter", els.expectedProfitFilterInput], ["filterExpRoi", "minExpectedRoiFilter", els.expectedRoiFilterInput]]) {
@@ -3452,6 +3454,7 @@ function persistExplicitSearchSettings() {
       ['psa9AboveGuide','psa9AboveGuide','psa9AboveGuideInput','boolean'],
       ['psa9Cost5','psa9CostWithin5','psa9CostWithin5Input','boolean'],
       ['bbRatioRef','buybackRatioReference','buybackRatioReferenceInput','boolean'],
+      ['fleaFallback','marketplaceFallback','marketplaceFallbackInput','boolean'],
       ['calcBuy','calculationBuyMode','calculationBuyModeInput','string'],
       ['profitBasis','profitSearchBasis','profitSearchBasisInput','string'],
       ['effBuy','efficiencyBuy','efficiencyBuyInput','string'],['effScenario','efficiencyScenario','efficiencyScenarioInput','string']];
@@ -3484,7 +3487,7 @@ function saveQuickFilters() {
       currentMarketSearchKind: state.currentMarketSearchKind,
       currentMarketCapMin: state.currentMarketCapMin, currentMarketManualPrice: state.currentMarketManualPrice,
       calculationBuyMode:state.calculationBuyMode,legacyBuyComparisonMode:state.legacyBuyComparisonMode,profitSearchBasis: state.profitSearchBasis, includePeriodReference: state.includePeriodReference,
-      purchaseBelowCurrentCap: state.purchaseBelowCurrentCap, psa9AboveGuide:state.psa9AboveGuide,psa9CostWithin5:state.psa9CostWithin5,buybackRatioReference:state.buybackRatioReference,
+      purchaseBelowCurrentCap: state.purchaseBelowCurrentCap, psa9AboveGuide:state.psa9AboveGuide,psa9CostWithin5:state.psa9CostWithin5,buybackRatioReference:state.buybackRatioReference,marketplaceFallback:state.marketplaceFallback,
       ...Object.fromEntries(explorationFields.map(([,field])=>[field,state[field] ?? null])),
       minExpectedProfitFilter: state.minExpectedProfitFilter, minExpectedRoiFilter: state.minExpectedRoiFilter,
       minPurchaseLimitRatio: state.minPurchaseLimitRatio,
@@ -3874,6 +3877,7 @@ function readUrl() {
   if (belowCapInput && filterUrl.searchParams.has("buyBelowCap")) belowCapInput.checked = filterUrl.searchParams.get("buyBelowCap") === "1";
   if(filterUrl.searchParams.has("psa9Cost5")) document.getElementById("psa9CostWithin5Input").checked=filterUrl.searchParams.get("psa9Cost5")==="1";
   if(filterUrl.searchParams.has("bbRatioRef")) document.getElementById("buybackRatioReferenceInput").checked=filterUrl.searchParams.get("bbRatioRef")==="1";
+  if(document.getElementById("marketplaceFallbackInput")) document.getElementById("marketplaceFallbackInput").checked=filterUrl.searchParams.get("fleaFallback")==="1";
   if(filterUrl.searchParams.has("psa9AboveGuide")) document.getElementById("psa9AboveGuideInput").checked=filterUrl.searchParams.get("psa9AboveGuide")==="1";
   if (profitBasisInput && ["auto", "limit", "store", "current", "current-cap", "current-target"].includes(filterUrl.searchParams.get("profitBasis"))) profitBasisInput.value = filterUrl.searchParams.get("profitBasis");
   for (const [param,field] of explorationFields) if (filterUrl.searchParams.has(param)) document.getElementById(field+'Input').value = parseOptionalNumber(filterUrl.searchParams.get(param)) ?? '';
@@ -4155,6 +4159,7 @@ function buildShareUrl() {
   url.searchParams.set("psa9AboveGuide",state.psa9AboveGuide?"1":"0");
   url.searchParams.set("psa9Cost5",state.psa9CostWithin5?"1":"0");
   url.searchParams.set("bbRatioRef",state.buybackRatioReference?"1":"0");
+  if (state.marketplaceFallback) url.searchParams.set("fleaFallback","1"); else url.searchParams.delete("fleaFallback");
   for (const [param,value] of [["marketCapMin",state.currentMarketCapMin],["marketBuy",state.currentMarketManualPrice]]) {
     if (value == null) url.searchParams.delete(param); else url.searchParams.set(param,String(value));
   }
@@ -4275,8 +4280,24 @@ function efficiencyDataKey(card) {
     card.dataQuality?.manualReview,decisionModel.hasBlockingDataAnomaly(card.dataQuality),card.priceIntegrity?.disputed,(card.priceAggregation?.comparison || card.priceAggregation)?.conflicted,card.buybackAggregation?.conflicted,
     (card.buybackAnalysis?.rows || []).map(r=>[r.shopId,r.buybackPrice,r.updatedAt,r.priceDate,r.valid,r.stale,r.listingActive])];
 }
+// Opt-in substitute exit (fleaFallback=1, 2026-11-24 plan A, user-approved). Only for a card whose store
+// buyback exit is unusable (under 2 usable stores): the marketplace exit is accepted when PSA10 traded at least
+// 5 times in 30 days and the adopted PSA10 market is at most 1.05x the cheapest PSA10 listing. The sale price
+// itself is not changed; cards that fail a gate stay unavailable exactly as without the setting.
+const MARKETPLACE_FALLBACK_MIN_TRADES30 = 5, MARKETPLACE_FALLBACK_MAX_MARKET_TO_LOWEST = 1.05;
+function storeBuybackExitUsable(exit) {
+  return Boolean(exit?.usable) && Number(exit.storeCount) >= 2 && Number.isFinite(exit?.scenarios?.current?.expectedSale) && Number.isFinite(exit?.scenarios?.current?.netPsa10);
+}
+function marketplaceFallbackState(card, exit = card?.buyLimits?.clean?.buybackExit) {
+  if (!state.marketplaceFallback || state.exitPolicy === "marketplace" || storeBuybackExitUsable(exit)) return { active: false, reason: null };
+  const trades = Number(card.p10tv30), market = Number(card.psa10), lowest = Number(card.snkPsa10Min);
+  if (!(trades >= MARKETPLACE_FALLBACK_MIN_TRADES30)) return { active: false, reason: "フリマ代替・PSA10取引30日" + MARKETPLACE_FALLBACK_MIN_TRADES30 + "件未満" };
+  if (!(market > 0) || !(lowest > 0)) return { active: false, reason: "フリマ代替・PSA10相場または最安出品が未取得" };
+  if (market > lowest * MARKETPLACE_FALLBACK_MAX_MARKET_TO_LOWEST) return { active: false, reason: "フリマ代替・PSA10相場が最安出品より5%超高い" };
+  return { active: true, reason: null };
+}
 function currentMarketView(card, reference = false) {
-  const key = JSON.stringify([reference,efficiencyDataKey(card),state.currentMarketManualPrice,computationFields.map(name=>state[name]),state.sourceUpdates,state.updateStatus?.sources?.toreca]);
+  const key = JSON.stringify([reference,efficiencyDataKey(card),state.currentMarketManualPrice,state.marketplaceFallback,computationFields.map(name=>state[name]),state.sourceUpdates,state.updateStatus?.sources?.toreca]);
   const cache = reference ? efficiencyViewCache : currentMarketViewCache;
   const cached = cache.get(card);
   if (cached?.key === key && Date.now() < cached.expires) return cached.value;
@@ -4297,7 +4318,7 @@ function currentMarketView(card, reference = false) {
   const result = evaluator({card,assumptions:input.assumptions,
     marketUpdatedAt:checkedAt,manualPrice:state.currentMarketManualPrice,fee:state.fee,
     feeRate:state.saleFeeRate,extraCost:state.saleExtraCost,lockDays:state.lockDays,
-    exitPolicy:state.exitPolicy,buybackExit}, decisionModel);
+    exitPolicy:state.exitPolicy,buybackExit,marketplaceFallback:marketplaceFallbackState(card,buybackExit).active}, decisionModel);
   cache.set(card,{key,value:result,expires:freshnessDeadline([card],Date.now())});
   return result;
 }
@@ -4621,7 +4642,7 @@ function cardEfficiency(card, now=Date.now(), mode=state.purchaseMode, selectedS
     return entry.value;
   };
   const observationDays = /^obs(7|30|75|200)$/.test(selectedScenario) ? Number(selectedScenario.slice(3)) : null;
-  const key = JSON.stringify([mode,state.calculationBuyMode,efficiencyDataKey(card),state.guideMode,state.profitSearchBasis,state.currentMarketManualPrice,selectedBuy,state.efficiencyScenario,
+  const key = JSON.stringify([mode,state.marketplaceFallback,state.calculationBuyMode,efficiencyDataKey(card),state.guideMode,state.profitSearchBasis,state.currentMarketManualPrice,selectedBuy,state.efficiencyScenario,
     ['median','median-percent','reference-min'].includes(selectedBuy) && [card.priceAggregation?.value,card.priceAggregation?.included,card.priceAggregation?.comparison,card.identityReviewRequired,card.priceIntegrity?.disputed],selectedBuy==='reference-min' && [state.minExpectedProfit,state.minExpectedRoi,state.psaPlan],
     selectedScenario,observationDays && [state.psa10PeriodSummary?.asOf,state.psa10PeriodSummary?.version,state.psa10PeriodSummary?.periods,state.psa10PeriodSummary?.observationEvidenceIndices,state.psa10PeriodSummary?.cards?.[card.id],state.psa10PeriodSummary?.minimumObservationDays,state.psa10PeriodSummary?.staleObservationDays,state.buybackObservationSummary?.asOf,state.buybackObservationSummary?.shops,state.buybackObservationSummary?.cards?.[card.id],state.buybackObservationSummary?.captureHolds?.[card.id],state.buybackObservationSummary?.historyIdentityHolds?.[card.id]],
     efficiencyFields.map(([,f])=>f === 'efficiencyMin' ? null : state[f]),state.fee,state.saleExtraCost,state.storeTravelCost,state.lockDays,state.exitPolicy,
@@ -4667,7 +4688,7 @@ function cardEfficiency(card, now=Date.now(), mode=state.purchaseMode, selectedS
       usesStore = economics != null && economics === store;
     }
     if (usesStore) travel = storeExit?.scenarios?.current?.travelCost || 0;
-    exitLabel = average ? average.exitLabel : state.exitPolicy === 'both' ? `${usesStore ? '買取店' : 'フリマ'}（両出口の保守側）` : source.exitLabel;
+    exitLabel = average ? average.exitLabel : source.marketplaceFallback ? source.exitLabel : state.exitPolicy === 'both' ? `${usesStore ? '買取店' : 'フリマ'}（両出口の保守側）` : source.exitLabel;
   }
   const result = {...explorationMetrics.efficiency(economics,buy,state.fee,state.saleExtraCost+travel,state.lockDays,state.efficiencySaleDays,state.efficiencyPayoutDays),
     purchasePrice:buy,basis:referenceBasis ? '参考買値・'+referenceEvidence.label+'（購入保証なし）' : medianBasis ? selectedBuy==='median-percent' ? '中央値の'+state.medianBuyPct+'%・仮定（購入保証なし）' : '素体参考相場・中央値（購入保証なし）' : targetBasis ? '利益確保の仕入れ目安・仮定' : capBasis ? '現相場損益分岐上限・仮定' : manualBasis ? '手入力買値・仮定' : '実店舗状態A価格',
@@ -4910,6 +4931,12 @@ function buybackHighestExclusion(card) {
 }
 function buybackAdditionalExclusion(card){
   if(!['buybackMeanMin','buyback7RatioMin','buyback30RatioMin','buyback75RatioMin'].some(k=>state[k]!=null))return null;
+  // Substitute exit: the marketplace net ratio (after the sale fee and extra cost) stands in for the store ratios.
+  if(marketplaceFallbackState(card).active){
+    const ratio=1-state.saleFeeRate/100-(Number(state.saleExtraCost)||0)/Number(card.psa10);
+    return [['buybackMeanMin','全体平均'],['buyback7RatioMin','7日'],['buyback30RatioMin','30日'],['buyback75RatioMin','75日']]
+      .filter(([k])=>state[k]!=null&&!(ratio>=state[k])).map(([,label])=>'フリマ代替の手取り倍率・'+label+'下限未達').join('／')||null;
+  }
   return explorationMetrics.buybackSearch(cardBuybackSupport(card),state).reasons.join('／')||null;
 }
 function buybackAdditionalCsv(card){const v=explorationMetrics.buybackSearch(cardBuybackSupport(card),state);return [state.buybackMeanMin??'',state.buyback7RatioMin??'',state.buyback30RatioMin??'',state.buyback75RatioMin??'',state.buybackRatioDaysMin??'',state.buybackRatioReference?1:0,...[7,30].flatMap(d=>[v.periods[d]?.mean??'',v.periods[d]?.days??'',v.periods[d]?.lastAt||'']),v.reasons.join('／')];}
@@ -6015,7 +6042,7 @@ function computeCardSearchExclusions(card, {mode = state.purchaseMode,diagnostic
       if (state.priceDirection !== "all" && directionKey(card.marketStability?.direction) !== state.priceDirection) reasons.push("評価・予測条件");
       if (state.supplyState !== "all" && supplyStateKey(card.marketStability?.supplyState) !== state.supplyState) reasons.push("評価・予測条件");
       if (state.minFloorScore != null && (!Number.isFinite(card.marketStability?.score) || card.marketStability.score < state.minFloorScore)) reasons.push("評価・予測条件");
-      const demandKey = storeDemandKey(card.buybackAnalysis?.label);
+      const demandKey = marketplaceFallbackState(card).active ? "normal" : storeDemandKey(card.buybackAnalysis?.label);
       if (state.storeDemand === "strong" && demandKey !== "strong") reasons.push("評価・予測条件");
       if (state.storeDemand === "normal-up" && !["strong", "normal"].includes(demandKey)) reasons.push("評価・予測条件");
       if (state.storeDemand === "normal" && demandKey !== "normal") reasons.push("評価・予測条件");
@@ -7440,6 +7467,7 @@ function syncFromUI(event) {
   state.psa9AboveGuide = document.getElementById("psa9AboveGuideInput").checked;
   state.psa9CostWithin5 = document.getElementById("psa9CostWithin5Input").checked;
   state.buybackRatioReference = document.getElementById("buybackRatioReferenceInput").checked;
+  state.marketplaceFallback = document.getElementById("marketplaceFallbackInput")?.checked === true;
   state.includePeriodReference = document.getElementById("includePeriodReferenceInput")?.checked !== false;
   state.psa9RatioMin = parseOptionalNumber(els.psa9RatioMinInput.value);
   state.psa9RatioMax = parseOptionalNumber(els.psa9RatioMaxInput.value);
@@ -7863,6 +7891,7 @@ els.resetFiltersBtn.addEventListener("click", () => {
   document.getElementById("currentMarketCapMinInput").value = "";
   document.getElementById("currentMarketManualPriceInput").value = "";
   document.getElementById("buybackRatioReferenceInput").checked = false;
+  if (document.getElementById("marketplaceFallbackInput")) document.getElementById("marketplaceFallbackInput").checked = false;
   els.psa9RatioMinInput.value = "";
   els.psa9RatioMaxInput.value = "";
   els.psa9RatioAggregateInput.checked = false;
@@ -7998,6 +8027,7 @@ document.getElementById("purchaseBelowCurrentCapInput")?.addEventListener("chang
 document.getElementById("psa9AboveGuideInput")?.addEventListener("change",syncFromUI);
 document.getElementById("psa9CostWithin5Input")?.addEventListener("change",syncFromUI);
 document.getElementById("buybackRatioReferenceInput")?.addEventListener("change",syncFromUI);
+document.getElementById("marketplaceFallbackInput")?.addEventListener("change",syncFromUI);
 for (const [,field] of explorationFields) document.getElementById(field+'Input')?.addEventListener('input',syncFromUI);
 document.getElementById('observationIncludeReferenceInput')?.addEventListener('change',syncFromUI);
 document.getElementById("includePeriodReferenceInput")?.addEventListener("change", syncFromUI);

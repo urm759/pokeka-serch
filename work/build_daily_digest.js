@@ -20,7 +20,9 @@ function build(root = path.join(__dirname, '..'), now = Date.now()) {
   const profiles = audit.profiles.map(p => p.urlOnly).filter(Boolean).map(u => {
     const rows = Array.isArray(u.rows) ? u.rows : [], byId = new Map(rows.map(r => [r.id, r]));
     const qualified = rows.filter(r => r.qualified).sort((a, b) => (b.priority || 0) - (a.priority || 0));
-    return { id: u.id, name: u.reportName || u.id, url: u.originalUrl || null, count: qualified.length, ids: qualified.map(r => r.id),
+    // The specified-condition URLs share the report name; say which one it is.
+    const name = (u.reportName || u.id) + (/-specified$/.test(u.id) ? '（指定条件）' : '');
+    return { id: u.id, name, url: u.originalUrl || null, count: qualified.length, ids: qualified.map(r => r.id),
       candidates: qualified.map(card), byId };
   });
   // Changes are measured against the last state of the previous Japan calendar day.

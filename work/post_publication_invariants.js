@@ -152,6 +152,8 @@ function priceGap(read, root, evidence) {
   const now = instants.length ? Math.max(...instants.map(Date.parse)) : -Infinity;
   let saved = null;
   const asOf = summary.asOf;
+  // A date-only confirmation is known only to its JST day: compare it with asOf, not with an instant.
+  const future = (at, ms) => /T/.test(String(at)) ? ms > now : String(at).slice(0, 10) > asOf;
   for (const [id, r] of Object.entries(gap.cards || {})) {
     t.compared++;
     const card = cards.get(id), rows = history[id] || [];
@@ -163,7 +165,7 @@ function priceGap(read, root, evidence) {
       if (!Array.isArray(p) || !Array.isArray(q) || p[1] !== want || q[1] !== want || q[2] !== 'mint-domestic-raw-aggregate-v1') continue;
       if (!(x[1] > 0 && x[2] > 0) || (q[3] != null && q[3] !== x[1])) continue;
       const tp = Date.parse(p[0]), tq = Date.parse(q[0]);
-      if (evidence.calendarDay(p[0]) !== x[0] || evidence.calendarDay(q[0]) !== x[0] || Math.abs(tp - tq) > 6 * HOUR || tp > now || tq > now) continue;
+      if (evidence.calendarDay(p[0]) !== x[0] || evidence.calendarDay(q[0]) !== x[0] || Math.abs(tp - tq) > 6 * HOUR || future(p[0], tp) || future(q[0], tq)) continue;
       const at = Math.max(tp, tq), old = day.get(x[0]);
       if (!old || old.at < at) day.set(x[0], { d: x[0], at, ratio: (x[2] / x[1] - 1) * 100, raw: x[1], psa10: x[2] });
     }
@@ -194,6 +196,24 @@ function buybackHolds(read) {
   return t;
 }
 
+// U16: replaying the saved enter/leave log must give the kept candidate list. Independent of candidate_transition_log.js.
+function transitionLog(read) {
+  const t = tally('candidate-transition-log');
+  const targets = read('work/search-profile-targets.json') || {};
+  const events = Array.isArray(targets.transitionLog) ? targets.transitionLog : [];
+  for (const p of targets.profiles || []) {
+    const last = new Map();
+    for (const e of events) {
+      if (e?.profile !== p.id) continue;
+      if (e.e === 'settings') last.clear();
+      else if (e.e === 'in' || e.e === 'out') last.set(e.id, e.e);
+    }
+    const kept = new Set(p.urlsMatched || []);
+    for (const [id, state] of last) { t.compared++; if ((state === 'in') !== kept.has(id)) t.miss('membership', p.id, id, state); }
+  }
+  return t;
+}
+
 function gitHead(root) {
   try { return require('node:child_process').execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim(); } catch { return null; }
 }
@@ -204,7 +224,7 @@ function run(root = path.join(__dirname, '..'), { now = Date.now(), head = gitHe
   let evidence = null;
   try { evidence = require(path.join(root, 'work/psa10_observation_evidence')); } catch (error) { result.checks.setup = { name: 'setup', error: error.message }; }
   for (const [name, check] of [['periodMeans', () => periodMeans(read, root, evidence)], ['rawReference', () => rawReference(read, root)],
-    ['listings', () => listings(read, root)], ['priceGap', () => priceGap(read, root, evidence)], ['buybackHolds', () => buybackHolds(read)]]) {
+    ['listings', () => listings(read, root)], ['priceGap', () => priceGap(read, root, evidence)], ['buybackHolds', () => buybackHolds(read)], ['transitionLog', () => transitionLog(read)]]) {
     try {
       if (!evidence && (name === 'periodMeans' || name === 'priceGap')) throw Error('psa10_observation_evidence unavailable');
       const { miss, ...row } = check();
@@ -232,4 +252,4 @@ if (require.main === module) {
   console.log(JSON.stringify({ status: result.status, durationMs: result.durationMs,
     checks: Object.fromEntries(Object.entries(result.checks).map(([k, c]) => [k, c.error || `${c.mismatches}/${c.compared}`])) }));
 }
-module.exports = { run, record, issues, FILE, periodMeans, rawReference, listings, priceGap, buybackHolds, reader };
+module.exports = { run, record, issues, FILE, periodMeans, rawReference, listings, priceGap, buybackHolds, transitionLog, reader };

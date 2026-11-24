@@ -2,6 +2,9 @@
 const ev=require('./psa10_observation_evidence');
 const DAY=86400000,SOURCE='mint-domestic-raw-aggregate-v1';
 const positive=v=>typeof v==='number'&&Number.isFinite(v)&&v>0;
+// A date-only confirmation is known only to its JST day, so compare it by day; an instant keeps the instant comparison.
+// This keeps the result independent of the hour the summary is built.
+const notAfter=(at,now)=>/T/.test(String(at))?Date.parse(at)<=now:String(at).slice(0,10)<=ev.calendarDay(new Date(now).toISOString());
 function rawProof(card,date,evidence,now=Date.now()) {
  if(!positive(card.price)||!card.identityKey||card.identityReviewRequired||card.language!=='ja')return null;
  const receipt=evidence?.receipt,checked=receipt?.rawCards?.[card.id],at=card.priceObservedAt;
@@ -17,7 +20,7 @@ function pairs(rows,card,now=Date.now(),saved={}) {
   const p=row?.[10],r=row?.[11]||saved?.[row?.[0]];
   if(!Array.isArray(p)||!Array.isArray(r)||p[1]!==expected||r[1]!==expected||r[2]!==SOURCE){reject('仕様・両価格の確認根拠不足');continue;}
   if(!positive(row[1])||!positive(row[2])||r[3]!=null&&r[3]!==row[1]){reject('価格未取得・保存値不一致');continue;}
-  if(ev.calendarDay(p[0])!==row[0]||ev.calendarDay(r[0])!==row[0]||Date.parse(p[0])>now||Date.parse(r[0])>now||Math.abs(Date.parse(p[0])-Date.parse(r[0]))>6*3600000){reject('日付不一致・確認時差超過');continue;}
+  if(ev.calendarDay(p[0])!==row[0]||ev.calendarDay(r[0])!==row[0]||!notAfter(p[0],now)||!notAfter(r[0],now)||Math.abs(Date.parse(p[0])-Date.parse(r[0]))>6*3600000){reject('日付不一致・確認時差超過');continue;}
   const at=Math.max(Date.parse(p[0]),Date.parse(r[0]));const old=byDay.get(row[0]);
   if(!old||old.at<at)byDay.set(row[0],{date:row[0],raw:row[1],psa10:row[2],ratio:(row[2]/row[1]-1)*100,at,rawAt:r[0],marketAt:p[0]});
  }
@@ -46,4 +49,4 @@ function readSaved(root) {
  const bytes=fs.readFileSync(path.join(root,m.file));if(require('crypto').createHash('sha256').update(bytes).digest('hex')!==m.sha256)throw Error('Raw observation archive checksum mismatch');
  return JSON.parse(require('zlib').gunzipSync(bytes)).cards;
 }
-module.exports={SOURCE,rawProof,pairs,summarize,priceWindows,readSaved};
+module.exports={SOURCE,notAfter,rawProof,pairs,summarize,priceWindows,readSaved};

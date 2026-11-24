@@ -6,11 +6,16 @@ assert.equal(core.day('2026-11-03T15:00:00Z'),'2026-11-04');
 const rootScope=require('./gemrate-reviewed-sets.json'),collectionScope=require('./gemrate-collection-sets.json'),realReferences=require('../data/gemrate-reference-summary.json');
 const allSets=core.groups(rootScope,realReferences,collectionScope);
 assert.equal(allSets.length,rootScope.sets.length+collectionScope.sets.length);assert(allSets.find(s=>s.setCode==='S6A').cards>0,'legacy S6A has its own daily collection slot without approving new prints');
-const sv3=allSets.find(s=>s.setCode==='SV3');
-assert(sv3&&sv3.cards===0&&sv3.baselineDate===null,'SV3 only enters the new set collection slot');
-const checkedExisting=Object.fromEntries(allSets.filter(s=>s.cards>0).map(s=>[s.setCode,{checkedDay:'2026-11-04'}]));
-assert.equal(core.choose(allSets,{sets:checkedExisting},at).setCode,'SV3');
-assert.equal(core.choose(allSets,{sets:checkedExisting,newSetDay:'2026-11-04'},at),null);
+// A reviewed set with no published references only enters the new-set slot. Use a fixture set so the
+// check does not depend on which real set is still new (SV3 stops being new once it is published).
+const fresh={setCode:'ZZNEW',set:'Pokemon Japanese Fixture New Set',year:2099,language:'Japanese',grader:'PSA',denominator:100,officialSetUrl:'https://www.pokemon-card.com/ex/zznew/',reviewedAt:'2026-11-24'};
+const withNew=core.groups(rootScope,realReferences,{version:1,sets:[...collectionScope.sets,fresh]});
+const fixtureNew=withNew.find(s=>s.setCode==='ZZNEW');
+assert(fixtureNew&&fixtureNew.cards===0&&fixtureNew.baselineDate===null,'a set without references only enters the new set collection slot');
+const checkedExisting=Object.fromEntries(withNew.filter(s=>s.cards>0).map(s=>[s.setCode,{checkedDay:'2026-11-04'}]));
+const chosen=core.choose(withNew,{sets:checkedExisting},at);
+assert(chosen&&withNew.find(s=>s.setCode===chosen.setCode).cards===0,'after existing sets are checked, only a set without references uses the new-set slot');
+assert.equal(core.choose(withNew,{sets:checkedExisting,newSetDay:'2026-11-04'},at),null,'one new set per day');
 assert.equal(allSets.reduce((n,s)=>n+s.cards,0),Object.keys(realReferences.cards).length);
 assert.throws(()=>core.groups(rootScope,realReferences,{version:1,sets:[rootScope.sets[0]]}),/重複/);
 assert.equal(core.decide(set,null,page).exportCsv,false,'unchanged provider date never exports');

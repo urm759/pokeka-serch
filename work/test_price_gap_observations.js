@@ -10,4 +10,9 @@ const old=Array.from({length:40},(_,i)=>row(new Date(now-(39-i)*86400000).toISOS
 const proof=g.rawProof({...card,priceObservedAt:'2026-10-29T01:00:00Z'},'2026-10-29',{sourceIdentities:new Map([[card.id,card.identityKey]])},now);assert(proof);assert.equal(g.rawProof(card,'2026-10-29',{meta:{generatedAt:'2026-10-29T01:00:00Z'}},now),null,'file generation date is not price observation');
 assert.equal(m.variationTone('大きい'),'variation-large');assert.equal(m.variationTone('小さい'),'variation-small');
 const fixture={observedDays:17,spanDays:17,maxMissingGap:0,legacyUnverifiedDays:0,ageDays:0,coefficientVariation:2,drawdown:{percent:-3},latestDate:'2026-10-29'};assert.equal(stats.variationEvidence({30:fixture,75:fixture},[75]),null);assert.equal(stats.variationEvidence({30:fixture,75:fixture},[75,30])[0],30);assert.equal(stats.variationEvidence({75:{...fixture,observedDays:38,spanDays:38}},[75])[0],75);
-console.log('PASS paired raw/PSA10 identity and dates, zero/missing/gaps, daily-rate mean, no false75day direction, 75day evidence threshold and price variation colors');
+// A date-only PSA10 confirmation counts by its JST day, whatever hour the summary is built (2026-11-24 psa10-raw-gap mismatch).
+{const dated=row('2026-10-29',100,300);dated[10][0]='2026-10-29';dated[11][0]='2026-10-28T22:00:00Z';
+ for(const at of ['2026-10-28T23:30:00Z','2026-10-29T02:00:00Z'])assert.equal(g.pairs([dated],card,Date.parse(at)).rows.length,1,'today date-only counts before and after 09:00 JST: '+at);
+ assert.equal(g.pairs([dated],card,Date.parse('2026-10-28T14:00:00Z')).rows.length,0,'a later JST day is still excluded');
+ assert.equal(g.notAfter('2026-10-29T03:00:00Z',now),false,'instants keep the instant comparison');assert.equal(g.notAfter('2026-10-29',now),true);}
+console.log('PASS paired raw/PSA10 identity and dates, date-only by JST day, zero/missing/gaps, daily-rate mean, no false75day direction, 75day evidence threshold and price variation colors');
