@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-24T04:13:16.605Z",
+  "generatedAt": "2026-11-24T04:19:11.300Z",
   "sourceLastSuccessAt": "2026-11-23T22:54:54.844Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-11-24T02:50:06.636Z",
-    "lastSuccessAt": "2026-11-24T02:50:06.636Z",
-    "runId": "45314812481",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/45314812481"
+    "lastAttemptAt": "2026-11-24T04:19:11.289Z",
+    "lastSuccessAt": "2026-11-24T04:19:11.289Z",
+    "runId": "45324238998",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/45324238998"
   },
   "dailyOutcomes": [
     {
@@ -34,7 +34,7 @@
     {
       "key": "safe:yuyutei:manual-action-required:GitHub ActionsからHTTP #。正規アクセス確認待ち",
       "category": "アクセス・手動対応待ち",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/45076807996",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/45317361066",
       "reason": "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち"
     },
     {
@@ -169,6 +169,12 @@
       "reason": "保存原票の同時更新照合が保留（1入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/state-a-price-evidence.json"
     },
     {
+      "key": "monitor:workflow-failure",
+      "category": "取得処理の故障",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/45320496760",
+      "reason": "監視確認または監視公開が未完了。補完失敗と監視自身の停止を分離して復旧"
+    },
+    {
       "key": "buyback-hold:bluerocket:2026-11-21T02:56:59.225Z",
       "category": "確認が必要",
       "reason": "ブルーロケット 保留開始 2026-11-21T02:56:59.225Z、直前正常 340件、最終実取得 2026-11-21T00:55:28.541Z、次回 2026-11-24T05:49:10.114Z。個別提示期限24／48時間以内 16／63、正式出口 0枚"
@@ -209,6 +215,7 @@
     "保存原票の同時更新照合が保留（2入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/state-a-price-evidence.json, work/buyback-price-observations.json",
     "保存原票の同時更新照合が保留（1入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/state-a-price-evidence.json",
     "保存原票の同時更新照合が保留（1入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/state-a-price-evidence.json",
+    "監視確認または監視公開が未完了。補完失敗と監視自身の停止を分離して復旧",
     "ブルーロケット 保留開始 2026-11-21T02:56:59.225Z、直前正常 340件、最終実取得 2026-11-21T00:55:28.541Z、次回 2026-11-24T05:49:10.114Z。個別提示期限24／48時間以内 16／63、正式出口 0枚",
     "買取ホムラ（郵送） 保留開始 2026-11-21T02:56:59.243Z、直前正常 356件、最終実取得 2026-11-21T00:25:13.543Z、次回 2026-11-24T05:49:18.805Z。個別提示期限24／48時間以内 18／64、正式出口 0枚",
     "公開後の自動確認：psa10-raw-gap が保存入力からの再計算と13件不一致（照合7056件）。例 [\"means\",\"x-91750\",142.84582500000002,143.93533706896557,113.30354642857141,113.64580833333332]"
