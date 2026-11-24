@@ -21,7 +21,7 @@ class AuditEvaluationDate extends NativeDate {
 }
 // Modules loaded with require() (decision-model and the other models) read the global clock, not the vm context.
 // In --verify the whole process replays the recorded instant, so a later 48-hour freshness boundary cannot flip a verdict.
-if (process.argv.includes("--verify")) globalThis.Date = AuditEvaluationDate;
+if (process.argv?.includes("--verify")) globalThis.Date = AuditEvaluationDate;
 const candidateDailyAudit = require("../candidate-daily-audit.js");
 const candidateAvailabilityAudit = require("../candidate-availability-audit.js");
 const meta = read("data/pokemon-cards-meta.json", {});
