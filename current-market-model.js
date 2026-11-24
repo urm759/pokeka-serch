@@ -53,7 +53,11 @@
     const purchaseKind = storeUsable ? 'store' : purchasePrice != null ? 'manual' : 'missing';
     const policy = input.exitPolicy || 'buyback';
     const buyback = input.buybackExit;
-    if (policy !== 'marketplace' && (!buyback?.usable || !(finite(buyback.storeCount) >= 2) || finite(buyback.scenarios?.current?.expectedSale) == null || finite(buyback.scenarios?.current?.netPsa10) == null)) reasons.push('買取出口データ不足・フリマへの自動切替なし');
+    const storeExitUsable = Boolean(buyback?.usable) && finite(buyback.storeCount) >= 2 && finite(buyback.scenarios?.current?.expectedSale) != null && finite(buyback.scenarios?.current?.netPsa10) != null;
+    // Opt-in substitute exit (2026-11-24, plan A): the caller checks the marketplace liquidity gates and only then
+    // passes marketplaceFallback; without it a missing store exit stays unavailable exactly as before.
+    const marketplaceFallback = policy !== 'marketplace' && !storeExitUsable && input.marketplaceFallback === true;
+    if (policy !== 'marketplace' && !storeExitUsable && !marketplaceFallback) reasons.push('買取出口データ不足・フリマへの自動切替なし');
     if (card.psa9Audit?.estimated !== false) warnings.push('PSA9は推定値');
     else if (card.psa9Audit?.measurementType !== 'actual') warnings.push('PSA9は集計値・個別実成約未取得');
     const psa9UpdatedAt = card.psa9Audit?.latestSaleAt || card.psa9Audit?.updatedAt || null;
@@ -68,7 +72,7 @@
     else if (age(card.official?.f) == null || age(card.official?.f) > 48) warnings.push('公式Populationの確認日が古い・未取得');
     if (card.dataQuality?.dataShortage) warnings.push(...(card.dataQuality.dataShortageReasons || ['一部データ不足']));
     warnings.push('非10の残り確率をPSA9価格で仮置き。PSA8以下・鑑定失敗の確率と売価は未評価');
-    let economics = null, cap = null, rawCap = null, psa9Profit = null, exitLabel = policy === 'marketplace' ? 'フリマ' : policy === 'both' ? '買取店・フリマの低い方' : '買取店';
+    let economics = null, cap = null, rawCap = null, psa9Profit = null, exitLabel = marketplaceFallback ? 'フリマ（店舗買取なし・代替）' : policy === 'marketplace' ? 'フリマ' : policy === 'both' ? '買取店・フリマの低い方' : '買取店';
     let current = null, psa10Net = null;
     if (!reasons.length) {
       const args = { assumptions, forecastPrice: marketPrice, purchasePrice: purchasePrice ?? 0,
@@ -76,7 +80,7 @@
       const market = model.expectedEconomics(args);
       const store = buyback?.usable ? model.economicsFromExpectedSale({ purchasePrice: purchasePrice ?? 0, fee,
         expectedSale: buyback.scenarios.current.expectedSale, lockDays: input.lockDays }) : null;
-      const useMarket = policy === 'marketplace' || policy === 'both' && market.expectedSale < store.expectedSale;
+      const useMarket = policy === 'marketplace' || marketplaceFallback || policy === 'both' && market.expectedSale < store.expectedSale;
       current = useMarket ? market : store;
       psa10Net = useMarket ? market.psa10Net : buyback.scenarios.current.netPsa10;
       rawCap = current.expectedSale - fee;
@@ -89,7 +93,7 @@
       calculationState: reasons.length ? 'unavailable' : referenceReasons.length ? 'reference' : 'calculated', referenceReasons: [...new Set(referenceReasons)],
       ...displayModel.classifyCap(rawCap), noNonLossPrice: rawCap != null && rawCap < 0, purchasePrice, purchaseKind,
       purchaseSource: storeUsable ? offer.source : purchasePrice != null ? '手入力試算・購入先未確認' : '購入価格未取得',
-      economics, psa9Profit, exitLabel, psa10Net,
+      economics, psa9Profit, exitLabel, psa10Net, marketplaceFallback,
       psa10Profit: economics ? psa10Net - purchasePrice - fee : null,
       assumedRate: finite(assumptions?.hitRate),
       lowerGradePrice: finite(assumptions?.lowerGradePrice),

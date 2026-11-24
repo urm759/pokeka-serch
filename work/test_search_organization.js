@@ -10,10 +10,13 @@ function controls(h) {
 }
 const ratioAdditions=['listingMean75MinInput','listingMean75MaxInput','rawListingMean75MinInput','rawListingMean75MaxInput','listingMean200MinInput','listingMean200MaxInput','rawListingMean200MinInput','rawListingMean200MaxInput','rawListingCurrentMinInput','rawListingCurrentMaxInput','rawListingMeanMinInput','rawListingMeanMaxInput','listingCurrentMinInput','listingCurrentMaxInput','listingMeanMinInput','listingMeanMaxInput','buybackMeanMinInput','buyback7RatioMinInput','buyback30RatioMinInput','buyback75RatioMinInput','buybackRatioDaysMinInput','buybackRatioReferenceInput'];
 const buyAdditions=['calculationBuyModeInput','medianBuyPctInput'];
+// Opt-in substitute exit (2026-11-24 plan A, user-approved); covered by test_marketplace_fallback.js. Starts off.
+const fallbackAdditions=['marketplaceFallbackInput'];
+assert.deepEqual(controls(html).find(r=>r[0]===fallbackAdditions[0]),[fallbackAdditions[0],'',false],'substitute exit starts off');
 assert.deepEqual(controls(html).find(r=>r[0]===buyAdditions[0]),[buyAdditions[0],'<option value="median" selected>素体参考相場・中央値へ統一</option><option value="store">旧・実店舗買値を詳細で比較（主計算は中央値）</option><option value="legacy">旧URLの買値を詳細で比較（主計算は中央値）</option>',false]);
 assert.deepEqual(controls(html).find(r=>r[0]===buyAdditions[1]),[buyAdditions[1],'',false],'optional hypothetical percentage starts off');
 for(const id of ratioAdditions){const row=controls(html).find(r=>r[0]===id);assert(row,'authorized optional ratio control present: '+id);assert.equal(row[1],'');assert.equal(row[2],false,'new ratio controls remain disabled by default');}
-assert.deepEqual(controls(html).filter(row=>!row[0].startsWith('observation') && !['buybackHighestMinInput','psa9AboveGuideInput','psa9GuideMinInput','psa9CostWithin5Input','psa9RoiMinInput',...ratioAdditions,...buyAdditions].includes(row[0])).map(row=>row[0]==='profitSearchBasisInput'?[row[0],row[1].replace('<option value="current-target">利益確保の仕入れ目安で購入・現相場基準（探索）</option>',''),row[2]]:row[0]==='efficiencyScenarioInput'?[row[0],row[1].replace(/<option value="obs(?:7|30|75|200)">[^<]*<\/option>/g,''),row[2]]:row[0]==='efficiencyBuyInput'?[row[0],row[1].replace(/<option value="(?:store|median|reference-min)"(?: selected)?>[^<]*<\/option>/g,''),row[2]]:row),baseline.controls,'existing IDs/options survive; only enumerated authorized additions are separated');
+assert.deepEqual(controls(html).filter(row=>!row[0].startsWith('observation') && !['buybackHighestMinInput','psa9AboveGuideInput','psa9GuideMinInput','psa9CostWithin5Input','psa9RoiMinInput',...ratioAdditions,...buyAdditions,...fallbackAdditions].includes(row[0])).map(row=>row[0]==='profitSearchBasisInput'?[row[0],row[1].replace('<option value="current-target">利益確保の仕入れ目安で購入・現相場基準（探索）</option>',''),row[2]]:row[0]==='efficiencyScenarioInput'?[row[0],row[1].replace(/<option value="obs(?:7|30|75|200)">[^<]*<\/option>/g,''),row[2]]:row[0]==='efficiencyBuyInput'?[row[0],row[1].replace(/<option value="(?:store|median|reference-min)"(?: selected)?>[^<]*<\/option>/g,''),row[2]]:row),baseline.controls,'existing IDs/options survive; only enumerated authorized additions are separated');
 for(const days of [7,30,75,200])assert(html.includes(`value="obs${days}"`),'all declared average choices exist');
 for(const [id,value,type] of [['roiInput','20','number'],['expectedRoiFilterInput','0','number'],['floorStateInput','stable','select'],['purchaseBelowCurrentCapInput','', 'checkbox']]) {
   const el={id,value,type,checked:true,tagName:type==='select'?'SELECT':'INPUT',options:[{value:'all'},{value:'stable'}]};
@@ -67,7 +70,11 @@ const legacyApp=beforeRequestedBuyMigration(app.replace(/\r\n/g,'\n'))
   .replace('  url.searchParams.set("calcBuy",\'median\');\n','')
   .replace("  if(['store','legacy'].includes(state.legacyBuyComparisonMode))url.searchParams.set('buyCompare',state.legacyBuyComparisonMode);else url.searchParams.delete('buyCompare');\n",'')
   .replace(" && !(['store','median'].includes(state.calculationBuyMode) && profitView.horizonDays===0)",'')
-  .replace("const ratioView = currentMode || state.calculationBuyMode==='median' ?","const ratioView = currentMode ?");
+  .replace("const ratioView = currentMode || state.calculationBuyMode==='median' ?","const ratioView = currentMode ?")
+  // Opt-in substitute exit (fleaFallback, 2026-11-24 plan A, user-approved) is tested in test_marketplace_fallback.js;
+  // removing exactly these two lines must give the reviewed release.
+  .replace('      const demandKey = marketplaceFallbackState(card).active ? "normal" : storeDemandKey(card.buybackAnalysis?.label);\n','      const demandKey = storeDemandKey(card.buybackAnalysis?.label);\n')
+  .replace('  if (state.marketplaceFallback) url.searchParams.set("fleaFallback","1"); else url.searchParams.delete("fleaFallback");\n','');
 for(const [name,expected] of Object.entries(baseline.protectedFunctions)) {
   const source=legacyApp
     // Authorized two-mode routing is tested in test_two_search_modes, not a financial formula change.
