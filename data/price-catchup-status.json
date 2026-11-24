@@ -1,33 +1,33 @@
 {
-  "startedAt": "2026-11-24T14:46:59.451Z",
-  "runId": "45417806979",
+  "startedAt": "2026-11-24T17:47:06.909Z",
+  "runId": "45452222794",
   "event": "workflow_dispatch",
   "route": "既存監視ジョブの空白補完",
   "status": "acquired-saved",
   "allowed": true,
-  "ageMs": 16649114,
+  "ageMs": 10783700,
   "minimumIntervalMs": 9000000,
   "reason": "定期の空白・既存の期限順キューで補完",
   "llmCalls": 0,
   "codexCalls": 0,
   "sourceFailures": [],
   "acquisitionStatus": "process-success",
-  "endedAt": "2026-11-24T15:00:55.034Z",
-  "durationMs": 835583,
+  "endedAt": "2026-11-24T18:02:31.853Z",
+  "durationMs": 924944,
   "outcomes": {
-    "baselineAt": "2026-11-24T14:46:59.451Z",
-    "commonCards": 13132,
-    "addedCards": 2,
+    "baselineAt": "2026-11-24T17:47:06.909Z",
+    "commonCards": 13134,
+    "addedCards": 0,
     "removedCards": 0,
-    "newlyAnalyzable": 6,
-    "lostAnalyzable": 4,
-    "filledCards": 42,
-    "filledItems": 44,
+    "newlyAnalyzable": 0,
+    "lostAnalyzable": 0,
+    "filledCards": 0,
+    "filledItems": 0,
     "sources": {
       "cardrush": {
-        "newLinked": 2,
-        "validAdded": 2,
-        "validLost": 2,
+        "newLinked": 0,
+        "validAdded": 0,
+        "validLost": 0,
         "usableNet": 0,
         "freshnessRecovered": 0
       },
@@ -36,7 +36,7 @@
         "validAdded": 0,
         "validLost": 0,
         "usableNet": 0,
-        "freshnessRecovered": 70
+        "freshnessRecovered": 65
       },
       "yuyutei": {
         "newLinked": 0,
@@ -47,10 +47,10 @@
       },
       "torecacamp": {
         "newLinked": 0,
-        "validAdded": 1,
+        "validAdded": 0,
         "validLost": 0,
-        "usableNet": 1,
-        "freshnessRecovered": 166
+        "usableNet": 0,
+        "freshnessRecovered": 81
       },
       "psaOfficial": {
         "newLinked": 0,
@@ -66,9 +66,6 @@
         "usableNet": 0,
         "freshnessRecovered": 0
       }
-    },
-    "referenceEvidenceRecovered": {
-      "psa9Evidence": 8
     }
   },
   "publicationStatus": "保存済み・公開照合待ち"
