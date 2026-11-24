@@ -1,15 +1,21 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-24T05:03:45.524Z",
+  "generatedAt": "2026-11-24T05:18:45.042Z",
   "sourceLastSuccessAt": "2026-11-24T04:22:33.053Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-11-24T04:19:11.289Z",
-    "lastSuccessAt": "2026-11-24T04:19:11.289Z",
-    "runId": "45324238998",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/45324238998"
+    "lastAttemptAt": "2026-11-24T05:18:45.029Z",
+    "lastSuccessAt": "2026-11-24T05:18:45.029Z",
+    "runId": "45330106563",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/45330106563"
   },
   "dailyOutcomes": [
+    {
+      "runId": "45325781460",
+      "attempt": 1,
+      "state": "published",
+      "publicVerifiedAt": "2026-11-24T05:18:05.691Z"
+    },
     {
       "runId": "45253472843",
       "attempt": 1,
@@ -21,12 +27,6 @@
       "attempt": 1,
       "state": "published",
       "publicVerifiedAt": "2026-11-23T00:40:13.709Z"
-    },
-    {
-      "runId": "45041079086",
-      "attempt": 1,
-      "state": "published",
-      "publicVerifiedAt": "2026-11-22T17:02:31.332Z"
     }
   ],
   "dailyOutcomeLabels": {},
@@ -64,7 +64,7 @@
     {
       "key": "source:snkrRaw:stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/45253472843",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/45325781460",
       "reason": "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）"
     },
     {
@@ -81,7 +81,7 @@
     {
       "key": "priority-prices:cadence-stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/45258158388",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/45329235248",
       "reason": "重要価格更新：設定2時間に対し実績成功間隔（直近最大）13.62時間。6時間の鮮度維持能力不足。未生成と長時間遅延は識別不能"
     },
     {
@@ -171,7 +171,7 @@
     {
       "key": "monitor:workflow-failure",
       "category": "取得処理の故障",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/45320496760",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/45329468886",
       "reason": "監視確認または監視公開が未完了。補完失敗と監視自身の停止を分離して復旧"
     },
     {
@@ -183,12 +183,6 @@
       "key": "buyback-hold:kaitori-homura-mail:2026-11-21T02:56:59.243Z",
       "category": "確認が必要",
       "reason": "買取ホムラ（郵送） 保留開始 2026-11-21T02:56:59.243Z、直前正常 356件、最終実取得 2026-11-21T00:25:13.543Z、次回 2026-11-24T05:49:18.805Z。個別提示期限24／48時間以内 18／64、正式出口 0枚"
-    },
-    {
-      "key": "post-publication:psa10-raw-gap:mismatch",
-      "category": "確認が必要",
-      "url": null,
-      "reason": "公開後の自動確認：psa10-raw-gap が保存入力からの再計算と13件不一致（照合7056件）。例 [\"means\",\"x-91750\",142.84582500000002,143.93533706896557,113.30354642857141,113.64580833333332]"
     }
   ],
   "reasons": [
@@ -217,8 +211,7 @@
     "保存原票の同時更新照合が保留（1入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/state-a-price-evidence.json",
     "監視確認または監視公開が未完了。補完失敗と監視自身の停止を分離して復旧",
     "ブルーロケット 保留開始 2026-11-21T02:56:59.225Z、直前正常 340件、最終実取得 2026-11-21T00:55:28.541Z、次回 2026-11-24T05:49:10.114Z。個別提示期限24／48時間以内 16／63、正式出口 0枚",
-    "買取ホムラ（郵送） 保留開始 2026-11-21T02:56:59.243Z、直前正常 356件、最終実取得 2026-11-21T00:25:13.543Z、次回 2026-11-24T05:49:18.805Z。個別提示期限24／48時間以内 18／64、正式出口 0枚",
-    "公開後の自動確認：psa10-raw-gap が保存入力からの再計算と13件不一致（照合7056件）。例 [\"means\",\"x-91750\",142.84582500000002,143.93533706896557,113.30354642857141,113.64580833333332]"
+    "買取ホムラ（郵送） 保留開始 2026-11-21T02:56:59.243Z、直前正常 356件、最終実取得 2026-11-21T00:25:13.543Z、次回 2026-11-24T05:49:18.805Z。個別提示期限24／48時間以内 18／64、正式出口 0枚"
   ],
   "detailUrl": "./data/update-health.json"
 }
