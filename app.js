@@ -5339,7 +5339,8 @@ function renderActiveFilters() {
   const legacy=document.getElementById('legacyBuybackPostingDays');
   if(legacy)legacy.hidden=!['buyback7','buyback30','buyback90'].some(prefix=>Number(document.getElementById(prefix+'MinInput')?.value)>0||parseOptionalNumber(document.getElementById(prefix+'MaxInput')?.value)!=null)&&parseOptionalNumber(document.getElementById('postingDaysMinInput')?.value)==null;
   const ratios=document.getElementById('buybackRatioSearch');
-  if(ratios&&state.buyback75RatioMin!=null)ratios.open=true;
+  // Do not force the section open (it opened on every PC load when a 75-day ratio was set); mark it instead.
+  if(ratios)ratios.classList.toggle("has-active-condition",["buybackMeanMin","buyback7RatioMin","buyback30RatioMin","buyback75RatioMin","buybackRatioDaysMin"].some(k=>state[k]!=null));
   const target = document.getElementById("activeFilterSummary");
   const controls = window.SearchControls;
   if (!target || !controls) return;
