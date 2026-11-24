@@ -3151,7 +3151,7 @@ function calc(card) {
       sourceBlocked: /403|認証|アクセス確認|sign.?in/i.test(sourceStop || '') ? sourceStop : null,
       identityVerified: row.identityVerified === true || Boolean(row.identityVerifiedAt) });
   }
-  const priceIntegrity = priceIntegrityModel?.audit(torecaPrice, priceEntries, { asOfDate: meta.updatedAt || meta.generatedAt }) || { disputed: false };
+  const priceIntegrity = priceIntegrityModel?.audit(torecaPrice, priceEntries, { asOfDate: meta.updatedAt || meta.generatedAt, now: Date.now() }) || { disputed: false };
   const priceAggregation = decisionModel.aggregatePrices(priceEntries, { asOfDate: meta.updatedAt || meta.generatedAt, staleAfterDays: 14, excludeAfterDays: 45, minRatio: 0.55, maxRatio: 1.8, clusterRatio: 1.35, divergencePct: 35 });
   priceAggregation.comparison = decisionModel.comparablePriceEvidence(priceAggregation, { now: Date.now(), divergencePct: 35 });
   // A split between a reference quote and multiple exact-card shop quotes needs manual resolution.

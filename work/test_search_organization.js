@@ -74,7 +74,10 @@ const legacyApp=beforeRequestedBuyMigration(app.replace(/\r\n/g,'\n'))
   // Opt-in substitute exit (fleaFallback, 2026-11-24 plan A, user-approved) is tested in test_marketplace_fallback.js;
   // removing exactly these two lines must give the reviewed release.
   .replace('      const demandKey = marketplaceFallbackState(card).active ? "normal" : storeDemandKey(card.buybackAnalysis?.label);\n','      const demandKey = storeDemandKey(card.buybackAnalysis?.label);\n')
-  .replace('  if (state.marketplaceFallback) url.searchParams.set("fleaFallback","1"); else url.searchParams.delete("fleaFallback");\n','');
+  .replace('  if (state.marketplaceFallback) url.searchParams.set("fleaFallback","1"); else url.searchParams.delete("fleaFallback");\n','')
+  // 4-J Q2 (2026-11-24, owner-delegated): the shop-dispute audit uses the same 48h store-price freshness as every
+  // other store check; tested in test_price_integrity_freshness.js. Removing the now option gives the reviewed release.
+  .replace('priceIntegrityModel?.audit(torecaPrice, priceEntries, { asOfDate: meta.updatedAt || meta.generatedAt, now: Date.now() })','priceIntegrityModel?.audit(torecaPrice, priceEntries, { asOfDate: meta.updatedAt || meta.generatedAt })');
 for(const [name,expected] of Object.entries(baseline.protectedFunctions)) {
   const source=legacyApp
     // Authorized two-mode routing is tested in test_two_search_modes, not a financial formula change.
