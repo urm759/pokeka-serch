@@ -52,7 +52,7 @@ function variationEvidence(snapshots, order=[200,75,30,7]) {
 function verifiedVariation(rows, card, asOf, now) {
   const evidence = require('./psa10_observation_evidence'), expected = evidence.identity(card);
   const verified = rows.filter(r => Array.isArray(r[10]) && r[10][1] === expected
-    && evidence.calendarDay(r[10][0]) === r[0] && Date.parse(r[10][0]) <= now);
+    && evidence.calendarDay(r[10][0]) === r[0] && require('./price_gap_observations').notAfter(r[10][0], now));
   const snapshots = Object.fromEntries(PERIODS.map(days => {
     const stat = statistics(verified, asOf, days, 0, 2);
     return [days, {...stat, ...observationStatus(stat, days, asOf)}];

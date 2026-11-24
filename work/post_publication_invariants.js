@@ -152,6 +152,8 @@ function priceGap(read, root, evidence) {
   const now = instants.length ? Math.max(...instants.map(Date.parse)) : -Infinity;
   let saved = null;
   const asOf = summary.asOf;
+  // A date-only confirmation is known only to its JST day: compare it with asOf, not with an instant.
+  const future = (at, ms) => /T/.test(String(at)) ? ms > now : String(at).slice(0, 10) > asOf;
   for (const [id, r] of Object.entries(gap.cards || {})) {
     t.compared++;
     const card = cards.get(id), rows = history[id] || [];
@@ -163,7 +165,7 @@ function priceGap(read, root, evidence) {
       if (!Array.isArray(p) || !Array.isArray(q) || p[1] !== want || q[1] !== want || q[2] !== 'mint-domestic-raw-aggregate-v1') continue;
       if (!(x[1] > 0 && x[2] > 0) || (q[3] != null && q[3] !== x[1])) continue;
       const tp = Date.parse(p[0]), tq = Date.parse(q[0]);
-      if (evidence.calendarDay(p[0]) !== x[0] || evidence.calendarDay(q[0]) !== x[0] || Math.abs(tp - tq) > 6 * HOUR || tp > now || tq > now) continue;
+      if (evidence.calendarDay(p[0]) !== x[0] || evidence.calendarDay(q[0]) !== x[0] || Math.abs(tp - tq) > 6 * HOUR || future(p[0], tp) || future(q[0], tq)) continue;
       const at = Math.max(tp, tq), old = day.get(x[0]);
       if (!old || old.at < at) day.set(x[0], { d: x[0], at, ratio: (x[2] / x[1] - 1) * 100, raw: x[1], psa10: x[2] });
     }
