@@ -217,6 +217,9 @@ function build(root=ROOT,at=new Date().toISOString()) {
     allModeIndependentCount:new Set(profiles.flatMap(p=>p.urlOnly.ids)).size,
     note:'指定条件モードの派生URLはpresetだけ変更し既存の補完/価格更新キューへ接続。modeOnlyCandidatesはモード差分であり実補完・独立初適合ではない。元A/Bと中央値版の数値は保持。要約生成は実取得ではない。URLだけと確認済み保存追加条件を分離。他の端末は未観測'};
   targets.comparisonRevision=config.comparisonRevision||'legacy';
+  // Durable enter/leave record (U16): pendingDepartures forgets a card once it returns and cycles keep 90 runs.
+  const transitionLog=require('./candidate_transition_log');
+  targets.transitionLog=transitionLog.append(previous.transitionLog||[],transitionLog.events({at,transitions,profiles,previousProfiles:previous.profiles||[]}),at);
   // Preserve old-profile departure evidence across an explicit focus migration.
   require('./previous_qualified_reference').build(root,{...targets,pendingDepartures:[...(previous.pendingDepartures||[]),...targets.pendingDepartures]});
   report.comparisonRevision=targets.comparisonRevision;

@@ -56,7 +56,8 @@ function mergeProfileTargets(base,a,b) {
   for(const row of [...(other.pendingDepartures||[]),...(selected.pendingDepartures||[])]) {
     if(!qualified.get(row.profile)?.has(row.id))pending.set(row.profile+'|'+row.id,row);
   }
-  return {...selected,profiles,pendingDepartures:[...pending.values()]};
+  return {...selected,profiles,pendingDepartures:[...pending.values()],
+    ...(a.transitionLog||b.transitionLog?{transitionLog:require('./candidate_transition_log').merge(a,b,profiles,selected.at)}:{})};
 }
 function mergeFixedFreshness(base,a,b) {
   const sources={};
