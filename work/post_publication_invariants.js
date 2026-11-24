@@ -196,6 +196,24 @@ function buybackHolds(read) {
   return t;
 }
 
+// U16: replaying the saved enter/leave log must give the kept candidate list. Independent of candidate_transition_log.js.
+function transitionLog(read) {
+  const t = tally('candidate-transition-log');
+  const targets = read('work/search-profile-targets.json') || {};
+  const events = Array.isArray(targets.transitionLog) ? targets.transitionLog : [];
+  for (const p of targets.profiles || []) {
+    const last = new Map();
+    for (const e of events) {
+      if (e?.profile !== p.id) continue;
+      if (e.e === 'settings') last.clear();
+      else if (e.e === 'in' || e.e === 'out') last.set(e.id, e.e);
+    }
+    const kept = new Set(p.urlsMatched || []);
+    for (const [id, state] of last) { t.compared++; if ((state === 'in') !== kept.has(id)) t.miss('membership', p.id, id, state); }
+  }
+  return t;
+}
+
 function gitHead(root) {
   try { return require('node:child_process').execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim(); } catch { return null; }
 }
@@ -206,7 +224,7 @@ function run(root = path.join(__dirname, '..'), { now = Date.now(), head = gitHe
   let evidence = null;
   try { evidence = require(path.join(root, 'work/psa10_observation_evidence')); } catch (error) { result.checks.setup = { name: 'setup', error: error.message }; }
   for (const [name, check] of [['periodMeans', () => periodMeans(read, root, evidence)], ['rawReference', () => rawReference(read, root)],
-    ['listings', () => listings(read, root)], ['priceGap', () => priceGap(read, root, evidence)], ['buybackHolds', () => buybackHolds(read)]]) {
+    ['listings', () => listings(read, root)], ['priceGap', () => priceGap(read, root, evidence)], ['buybackHolds', () => buybackHolds(read)], ['transitionLog', () => transitionLog(read)]]) {
     try {
       if (!evidence && (name === 'periodMeans' || name === 'priceGap')) throw Error('psa10_observation_evidence unavailable');
       const { miss, ...row } = check();
@@ -234,4 +252,4 @@ if (require.main === module) {
   console.log(JSON.stringify({ status: result.status, durationMs: result.durationMs,
     checks: Object.fromEntries(Object.entries(result.checks).map(([k, c]) => [k, c.error || `${c.mismatches}/${c.compared}`])) }));
 }
-module.exports = { run, record, issues, FILE, periodMeans, rawReference, listings, priceGap, buybackHolds, reader };
+module.exports = { run, record, issues, FILE, periodMeans, rawReference, listings, priceGap, buybackHolds, transitionLog, reader };
