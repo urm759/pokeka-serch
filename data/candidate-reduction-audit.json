@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "at": "2026-11-25T08:02:56.658Z",
+  "at": "2026-11-25T10:38:59.868Z",
   "referenceUrlHash": "3820c03297c011e7b8271c1c23ea3b2a59f7d0f41cbca60cfa861a09c9dd9eb6",
   "counts": {
     "catalog": 13136,
@@ -50,17 +50,17 @@
     "counts": {
       "catalog": 13136,
       "presetOnly": 405,
-      "selected": 6,
-      "referenceExploration": 6,
+      "selected": 5,
+      "referenceExploration": 5,
       "now": 0,
       "purchasePriceWaiting": 0,
-      "periodHeld": 6,
+      "periodHeld": 5,
       "purchase": {
-        "available": 6
+        "available": 5
       },
       "overlap": {
         "単体年換算資金効率条件": 106,
-        "現在買える状態A価格範囲": 131,
+        "現在買える状態A価格範囲": 132,
         "国内PSA9比率": 300,
         "利益条件": 340,
         "価格帯・相場比": 213,
@@ -84,7 +84,7 @@
         "単体年換算資金効率条件": 106,
         "単体資金効率算出不可・新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない／新鮮な独立2店舗の中央値根拠不足": 122,
         "購入価格条件・在庫なし": 10,
-        "現在買える状態A価格範囲": 23,
+        "現在買える状態A価格範囲": 24,
         "国内PSA9比率": 3,
         "単体資金効率算出不可・中央値の採用価格に古値・日時不明あり／新鮮な独立2店舗の中央値根拠不足": 72,
         "価格帯・相場比": 1,
@@ -99,8 +99,8 @@
     },
     "commonCards": 13136,
     "before": 15,
-    "after": 6,
-    "lostCount": 9,
+    "after": 5,
+    "lostCount": 10,
     "gainedCount": 0,
     "addedCards": 0,
     "removedCards": 0,
@@ -108,11 +108,13 @@
     "overlap": {
       "購入価格条件・在庫なし": 4,
       "仕入れ余裕率・上限算出不可": 4,
-      "単体年換算資金効率条件": 6
+      "単体年換算資金効率条件": 6,
+      "現在買える状態A価格範囲": 1
     },
     "sequential": {
       "購入価格条件・在庫なし": 3,
-      "単体年換算資金効率条件": 6
+      "単体年換算資金効率条件": 6,
+      "現在買える状態A価格範囲": 1
     },
     "lost": [
       {
@@ -514,6 +516,84 @@
         "preexisting": []
       },
       {
+        "id": "pk-5202",
+        "name": "リーリエの全力 SR[SM11b 068/049](強化拡張パック「ドリームリーグ」)",
+        "before": {
+          "name": "リーリエの全力 SR[SM11b 068/049](強化拡張パック「ドリームリーグ」)",
+          "selected": true,
+          "preset": true,
+          "now": false,
+          "exclusions": [],
+          "holds": [
+            "予測期間不一致・参考探索のみ"
+          ],
+          "purchaseState": "available",
+          "periodHeld": true,
+          "referenceBasis": "median",
+          "raw": 25000,
+          "psa10": 77000,
+          "store": 27000,
+          "storeSource": "晴れる屋2状態A",
+          "storeObservedAt": "2026-11-25T10:32:56.452Z",
+          "searchBuyPrice": 25900,
+          "psa9Price": 35999,
+          "psa9Ratio": 71.9464429567488,
+          "psa9BuyKind": "median",
+          "psa9Type": "aggregate",
+          "officialRate": 56.18955512572534,
+          "officialTotal": 16544,
+          "psa10Net": 66176,
+          "psa10Profit": 29296,
+          "expectedProfit": 14813,
+          "expectedRoi": 40.165401301518436,
+          "psa10Roi": 79.43600867678958,
+          "exit": "買取店（両出口の保守側）",
+          "limit": 25000,
+          "psaMissing": false,
+          "specificationHeld": false
+        },
+        "after": {
+          "name": "リーリエの全力 SR[SM11b 068/049](強化拡張パック「ドリームリーグ」)",
+          "selected": false,
+          "preset": true,
+          "now": false,
+          "exclusions": [
+            "現在買える状態A価格範囲"
+          ],
+          "holds": [
+            "予測期間不一致・参考探索のみ"
+          ],
+          "purchaseState": "available",
+          "periodHeld": true,
+          "referenceBasis": "median",
+          "raw": 25000,
+          "psa10": 77000,
+          "store": 27000,
+          "storeSource": "晴れる屋2状態A",
+          "storeObservedAt": "2026-11-25T10:32:56.452Z",
+          "searchBuyPrice": 25900,
+          "psa9Price": 35999,
+          "psa9Ratio": 71.9464429567488,
+          "psa9BuyKind": "median",
+          "psa9Type": "aggregate",
+          "officialRate": 56.18955512572534,
+          "officialTotal": 16544,
+          "psa10Net": 66176,
+          "psa10Profit": 29296,
+          "expectedProfit": 14813,
+          "expectedRoi": 40.165401301518436,
+          "psa10Roi": 79.43600867678958,
+          "exit": "買取店（両出口の保守側）",
+          "limit": 25000,
+          "psaMissing": false,
+          "specificationHeld": false
+        },
+        "newlyFailed": [
+          "現在買える状態A価格範囲"
+        ],
+        "preexisting": []
+      },
+      {
         "id": "pk-23008",
         "name": "ニンフィアVMAX CSR[S8b 232/184](ハイクラスパック「VMAXクライマックス」)",
         "before": {
@@ -532,7 +612,7 @@
           "psa10": 29800,
           "store": 8400,
           "storeSource": "晴れる屋2状態A",
-          "storeObservedAt": "2026-11-25T07:56:25.683Z",
+          "storeObservedAt": "2026-11-25T10:32:50.427Z",
           "searchBuyPrice": 8190,
           "psa9Price": 9999,
           "psa9Ratio": 81.90819081908191,
@@ -568,7 +648,7 @@
           "psa10": 29800,
           "store": 8400,
           "storeSource": "晴れる屋2状態A",
-          "storeObservedAt": "2026-11-25T07:56:25.683Z",
+          "storeObservedAt": "2026-11-25T10:32:50.427Z",
           "searchBuyPrice": 8190,
           "psa9Price": 9999,
           "psa9Ratio": 81.90819081908191,
@@ -1366,7 +1446,7 @@
   },
   "daily": {
     "from": "2026-11-23T16:48:15.543Z",
-    "to": "2026-11-25T08:02:56.658Z",
+    "to": "2026-11-25T10:38:59.868Z",
     "basis": "前日以前の保存記録",
     "commonCards": 13124,
     "before": 18,
@@ -1443,7 +1523,7 @@
           "psa10": 55500,
           "store": 19000,
           "storeSource": "晴れる屋2状態A",
-          "storeObservedAt": "2026-11-25T07:56:23.284Z",
+          "storeObservedAt": "2026-11-25T10:32:48.057Z",
           "searchBuyPrice": 19400,
           "psa9Price": 18800,
           "psa9Ratio": 103.19148936170212,
@@ -1682,7 +1762,7 @@
           "psa10": 29800,
           "store": 8500,
           "storeSource": "晴れる屋2状態A",
-          "storeObservedAt": "2026-11-25T07:56:50.865Z",
+          "storeObservedAt": "2026-11-25T10:33:14.433Z",
           "searchBuyPrice": 8740,
           "psa9Price": 11750,
           "psa9Ratio": 74.38297872340426,
@@ -1760,7 +1840,7 @@
           "psa10": 104400,
           "store": 24000,
           "storeSource": "晴れる屋2状態A",
-          "storeObservedAt": "2026-11-25T07:58:41.350Z",
+          "storeObservedAt": "2026-11-25T10:35:57.686Z",
           "searchBuyPrice": 24400,
           "psa9Price": 34999,
           "psa9Ratio": 69.71627760793166,
@@ -1966,19 +2046,21 @@
     "counts": {
       "catalog": 13136,
       "presetOnly": 405,
-      "selected": 0,
-      "referenceExploration": 0,
+      "selected": 1,
+      "referenceExploration": 1,
       "now": 0,
       "purchasePriceWaiting": 0,
-      "periodHeld": 0,
-      "purchase": {},
+      "periodHeld": 1,
+      "purchase": {
+        "available": 1
+      },
       "overlap": {
         "単体年換算資金効率条件": 106,
         "国内PSA9比率": 300,
         "利益条件": 340,
         "価格帯・相場比": 213,
         "単体資金効率算出不可・新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない／新鮮な独立2店舗の中央値根拠不足": 122,
-        "現在買える状態A価格範囲": 144,
+        "現在買える状態A価格範囲": 143,
         "購入価格条件・在庫なし": 63,
         "仕入れ余裕率・上限算出不可": 160,
         "購入価格条件・期限超過・再確認待ち": 27,
@@ -2000,7 +2082,7 @@
         "購入価格条件・在庫なし": 10,
         "価格帯・相場比": 12,
         "国内PSA9比率": 7,
-        "現在買える状態A価格範囲": 14,
+        "現在買える状態A価格範囲": 13,
         "単体資金効率算出不可・中央値の採用価格に古値・日時不明あり／新鮮な独立2店舗の中央値根拠不足": 72,
         "単体資金効率算出不可・中央値の採用価格に古値・日時不明あり／新鮮な採用根拠が1元以下・過去の複数元を単一店舗で代用しない／新鮮な独立2店舗の中央値根拠不足": 11,
         "単体資金効率算出不可・PSA9価格が古い・日時不正": 1,
@@ -2013,8 +2095,8 @@
     },
     "commonCards": 13136,
     "before": 15,
-    "after": 0,
-    "lostCount": 15,
+    "after": 1,
+    "lostCount": 14,
     "gainedCount": 0,
     "addedCards": 0,
     "removedCards": 0,
@@ -2022,12 +2104,12 @@
     "overlap": {
       "購入価格条件・在庫なし": 4,
       "仕入れ余裕率・上限算出不可": 4,
-      "現在買える状態A価格範囲": 11,
+      "現在買える状態A価格範囲": 10,
       "単体年換算資金効率条件": 6
     },
     "sequential": {
       "購入価格条件・在庫なし": 3,
-      "現在買える状態A価格範囲": 6,
+      "現在買える状態A価格範囲": 5,
       "単体年換算資金効率条件": 6
     },
     "lost": [
@@ -2132,7 +2214,7 @@
           "psa10": 48000,
           "store": 18000,
           "storeSource": "晴れる屋2状態A",
-          "storeObservedAt": "2026-11-25T07:56:41.263Z",
+          "storeObservedAt": "2026-11-25T10:33:04.851Z",
           "searchBuyPrice": 16400,
           "psa9Price": 15000,
           "psa9Ratio": 109.33333333333333,
@@ -2168,7 +2250,7 @@
           "psa10": 48000,
           "store": 18000,
           "storeSource": "晴れる屋2状態A",
-          "storeObservedAt": "2026-11-25T07:56:41.263Z",
+          "storeObservedAt": "2026-11-25T10:33:04.851Z",
           "searchBuyPrice": 16400,
           "psa9Price": 15000,
           "psa9Ratio": 109.33333333333333,
@@ -2210,7 +2292,7 @@
           "psa10": 46000,
           "store": 17000,
           "storeSource": "晴れる屋2状態A",
-          "storeObservedAt": "2026-11-25T07:56:16.058Z",
+          "storeObservedAt": "2026-11-25T10:32:40.831Z",
           "searchBuyPrice": 17400,
           "psa9Price": 14650,
           "psa9Ratio": 118.77133105802046,
@@ -2246,7 +2328,7 @@
           "psa10": 46000,
           "store": 17000,
           "storeSource": "晴れる屋2状態A",
-          "storeObservedAt": "2026-11-25T07:56:16.058Z",
+          "storeObservedAt": "2026-11-25T10:32:40.831Z",
           "searchBuyPrice": 17400,
           "psa9Price": 14650,
           "psa9Ratio": 118.77133105802046,
@@ -2288,7 +2370,7 @@
           "psa10": 54000,
           "store": 21000,
           "storeSource": "晴れる屋2状態A",
-          "storeObservedAt": "2026-11-25T07:56:12.468Z",
+          "storeObservedAt": "2026-11-25T10:32:37.246Z",
           "searchBuyPrice": 23900,
           "psa9Price": 25500,
           "psa9Ratio": 93.72549019607843,
@@ -2324,7 +2406,7 @@
           "psa10": 54000,
           "store": 21000,
           "storeSource": "晴れる屋2状態A",
-          "storeObservedAt": "2026-11-25T07:56:12.468Z",
+          "storeObservedAt": "2026-11-25T10:32:37.246Z",
           "searchBuyPrice": 23900,
           "psa9Price": 25500,
           "psa9Ratio": 93.72549019607843,
@@ -2748,84 +2830,6 @@
         "preexisting": []
       },
       {
-        "id": "pk-5202",
-        "name": "リーリエの全力 SR[SM11b 068/049](強化拡張パック「ドリームリーグ」)",
-        "before": {
-          "name": "リーリエの全力 SR[SM11b 068/049](強化拡張パック「ドリームリーグ」)",
-          "selected": true,
-          "preset": true,
-          "now": false,
-          "exclusions": [],
-          "holds": [
-            "予測期間不一致・参考探索のみ"
-          ],
-          "purchaseState": "available",
-          "periodHeld": true,
-          "referenceBasis": "median",
-          "raw": 25000,
-          "psa10": 77000,
-          "store": 24800,
-          "storeSource": "トレカキャンプ状態A",
-          "storeObservedAt": "2026-11-25T01:15:21.755Z",
-          "searchBuyPrice": 25900,
-          "psa9Price": 35999,
-          "psa9Ratio": 71.9464429567488,
-          "psa9BuyKind": "median",
-          "psa9Type": "aggregate",
-          "officialRate": 56.18955512572534,
-          "officialTotal": 16544,
-          "psa10Net": 66176,
-          "psa10Profit": 29296,
-          "expectedProfit": 14813,
-          "expectedRoi": 40.165401301518436,
-          "psa10Roi": 79.43600867678958,
-          "exit": "買取店（両出口の保守側）",
-          "limit": 25000,
-          "psaMissing": false,
-          "specificationHeld": false
-        },
-        "after": {
-          "name": "リーリエの全力 SR[SM11b 068/049](強化拡張パック「ドリームリーグ」)",
-          "selected": false,
-          "preset": true,
-          "now": false,
-          "exclusions": [
-            "現在買える状態A価格範囲"
-          ],
-          "holds": [
-            "予測期間不一致・参考探索のみ"
-          ],
-          "purchaseState": "available",
-          "periodHeld": true,
-          "referenceBasis": "median",
-          "raw": 25000,
-          "psa10": 77000,
-          "store": 24800,
-          "storeSource": "トレカキャンプ状態A",
-          "storeObservedAt": "2026-11-25T01:15:21.755Z",
-          "searchBuyPrice": 25900,
-          "psa9Price": 35999,
-          "psa9Ratio": 71.9464429567488,
-          "psa9BuyKind": "median",
-          "psa9Type": "aggregate",
-          "officialRate": 56.18955512572534,
-          "officialTotal": 16544,
-          "psa10Net": 66176,
-          "psa10Profit": 29296,
-          "expectedProfit": 14813,
-          "expectedRoi": 40.165401301518436,
-          "psa10Roi": 79.43600867678958,
-          "exit": "買取店（両出口の保守側）",
-          "limit": 25000,
-          "psaMissing": false,
-          "specificationHeld": false
-        },
-        "newlyFailed": [
-          "現在買える状態A価格範囲"
-        ],
-        "preexisting": []
-      },
-      {
         "id": "pk-23008",
         "name": "ニンフィアVMAX CSR[S8b 232/184](ハイクラスパック「VMAXクライマックス」)",
         "before": {
@@ -2844,7 +2848,7 @@
           "psa10": 29800,
           "store": 8400,
           "storeSource": "晴れる屋2状態A",
-          "storeObservedAt": "2026-11-25T07:56:25.683Z",
+          "storeObservedAt": "2026-11-25T10:32:50.427Z",
           "searchBuyPrice": 8190,
           "psa9Price": 9999,
           "psa9Ratio": 81.90819081908191,
@@ -2881,7 +2885,7 @@
           "psa10": 29800,
           "store": 8400,
           "storeSource": "晴れる屋2状態A",
-          "storeObservedAt": "2026-11-25T07:56:25.683Z",
+          "storeObservedAt": "2026-11-25T10:32:50.427Z",
           "searchBuyPrice": 8190,
           "psa9Price": 9999,
           "psa9Ratio": 81.90819081908191,
@@ -3233,18 +3237,18 @@
     "gained": [],
     "sinceInitialCapture": {
       "commonCards": 13136,
-      "before": 6,
-      "after": 0,
-      "lostCount": 6,
-      "gainedCount": 0,
+      "before": 5,
+      "after": 1,
+      "lostCount": 5,
+      "gainedCount": 1,
       "addedCards": 0,
       "removedCards": 0,
       "newSelected": 0,
       "overlap": {
-        "現在買える状態A価格範囲": 6
+        "現在買える状態A価格範囲": 5
       },
       "sequential": {
-        "現在買える状態A価格範囲": 6
+        "現在買える状態A価格範囲": 5
       },
       "lost": [
         {
@@ -3266,7 +3270,7 @@
             "psa10": 48000,
             "store": 18000,
             "storeSource": "晴れる屋2状態A",
-            "storeObservedAt": "2026-11-25T07:56:41.263Z",
+            "storeObservedAt": "2026-11-25T10:33:04.851Z",
             "searchBuyPrice": 16400,
             "psa9Price": 15000,
             "psa9Ratio": 109.33333333333333,
@@ -3302,7 +3306,7 @@
             "psa10": 48000,
             "store": 18000,
             "storeSource": "晴れる屋2状態A",
-            "storeObservedAt": "2026-11-25T07:56:41.263Z",
+            "storeObservedAt": "2026-11-25T10:33:04.851Z",
             "searchBuyPrice": 16400,
             "psa9Price": 15000,
             "psa9Ratio": 109.33333333333333,
@@ -3344,7 +3348,7 @@
             "psa10": 46000,
             "store": 17000,
             "storeSource": "晴れる屋2状態A",
-            "storeObservedAt": "2026-11-25T07:56:16.058Z",
+            "storeObservedAt": "2026-11-25T10:32:40.831Z",
             "searchBuyPrice": 17400,
             "psa9Price": 14650,
             "psa9Ratio": 118.77133105802046,
@@ -3380,7 +3384,7 @@
             "psa10": 46000,
             "store": 17000,
             "storeSource": "晴れる屋2状態A",
-            "storeObservedAt": "2026-11-25T07:56:16.058Z",
+            "storeObservedAt": "2026-11-25T10:32:40.831Z",
             "searchBuyPrice": 17400,
             "psa9Price": 14650,
             "psa9Ratio": 118.77133105802046,
@@ -3422,7 +3426,7 @@
             "psa10": 54000,
             "store": 21000,
             "storeSource": "晴れる屋2状態A",
-            "storeObservedAt": "2026-11-25T07:56:12.468Z",
+            "storeObservedAt": "2026-11-25T10:32:37.246Z",
             "searchBuyPrice": 23900,
             "psa9Price": 25500,
             "psa9Ratio": 93.72549019607843,
@@ -3458,7 +3462,7 @@
             "psa10": 54000,
             "store": 21000,
             "storeSource": "晴れる屋2状態A",
-            "storeObservedAt": "2026-11-25T07:56:12.468Z",
+            "storeObservedAt": "2026-11-25T10:32:37.246Z",
             "searchBuyPrice": 23900,
             "psa9Price": 25500,
             "psa9Ratio": 93.72549019607843,
@@ -3560,84 +3564,6 @@
           "preexisting": []
         },
         {
-          "id": "pk-5202",
-          "name": "リーリエの全力 SR[SM11b 068/049](強化拡張パック「ドリームリーグ」)",
-          "before": {
-            "name": "リーリエの全力 SR[SM11b 068/049](強化拡張パック「ドリームリーグ」)",
-            "selected": true,
-            "preset": true,
-            "now": false,
-            "exclusions": [],
-            "holds": [
-              "予測期間不一致・参考探索のみ"
-            ],
-            "purchaseState": "available",
-            "periodHeld": true,
-            "referenceBasis": "median",
-            "raw": 25000,
-            "psa10": 77000,
-            "store": 24800,
-            "storeSource": "トレカキャンプ状態A",
-            "storeObservedAt": "2026-11-25T01:15:21.755Z",
-            "searchBuyPrice": 25900,
-            "psa9Price": 35999,
-            "psa9Ratio": 71.9464429567488,
-            "psa9BuyKind": "median",
-            "psa9Type": "aggregate",
-            "officialRate": 56.18955512572534,
-            "officialTotal": 16544,
-            "psa10Net": 66176,
-            "psa10Profit": 29296,
-            "expectedProfit": 14813,
-            "expectedRoi": 40.165401301518436,
-            "psa10Roi": 79.43600867678958,
-            "exit": "買取店（両出口の保守側）",
-            "limit": 25000,
-            "psaMissing": false,
-            "specificationHeld": false
-          },
-          "after": {
-            "name": "リーリエの全力 SR[SM11b 068/049](強化拡張パック「ドリームリーグ」)",
-            "selected": false,
-            "preset": true,
-            "now": false,
-            "exclusions": [
-              "現在買える状態A価格範囲"
-            ],
-            "holds": [
-              "予測期間不一致・参考探索のみ"
-            ],
-            "purchaseState": "available",
-            "periodHeld": true,
-            "referenceBasis": "median",
-            "raw": 25000,
-            "psa10": 77000,
-            "store": 24800,
-            "storeSource": "トレカキャンプ状態A",
-            "storeObservedAt": "2026-11-25T01:15:21.755Z",
-            "searchBuyPrice": 25900,
-            "psa9Price": 35999,
-            "psa9Ratio": 71.9464429567488,
-            "psa9BuyKind": "median",
-            "psa9Type": "aggregate",
-            "officialRate": 56.18955512572534,
-            "officialTotal": 16544,
-            "psa10Net": 66176,
-            "psa10Profit": 29296,
-            "expectedProfit": 14813,
-            "expectedRoi": 40.165401301518436,
-            "psa10Roi": 79.43600867678958,
-            "exit": "買取店（両出口の保守側）",
-            "limit": 25000,
-            "psaMissing": false,
-            "specificationHeld": false
-          },
-          "newlyFailed": [
-            "現在買える状態A価格範囲"
-          ],
-          "preexisting": []
-        },
-        {
           "id": "pk-4687",
           "name": "カスミのおねがい SR[SM11 104/094](拡張パック「ミラクルツイン」)",
           "before": {
@@ -3716,7 +3642,82 @@
           "preexisting": []
         }
       ],
-      "gained": []
+      "gained": [
+        {
+          "id": "pk-5202",
+          "name": "リーリエの全力 SR[SM11b 068/049](強化拡張パック「ドリームリーグ」)",
+          "before": {
+            "name": "リーリエの全力 SR[SM11b 068/049](強化拡張パック「ドリームリーグ」)",
+            "selected": false,
+            "preset": true,
+            "now": false,
+            "exclusions": [
+              "現在買える状態A価格範囲"
+            ],
+            "holds": [
+              "予測期間不一致・参考探索のみ"
+            ],
+            "purchaseState": "available",
+            "periodHeld": true,
+            "referenceBasis": "median",
+            "raw": 25000,
+            "psa10": 77000,
+            "store": 27000,
+            "storeSource": "晴れる屋2状態A",
+            "storeObservedAt": "2026-11-25T10:32:56.452Z",
+            "searchBuyPrice": 25900,
+            "psa9Price": 35999,
+            "psa9Ratio": 71.9464429567488,
+            "psa9BuyKind": "median",
+            "psa9Type": "aggregate",
+            "officialRate": 56.18955512572534,
+            "officialTotal": 16544,
+            "psa10Net": 66176,
+            "psa10Profit": 29296,
+            "expectedProfit": 14813,
+            "expectedRoi": 40.165401301518436,
+            "psa10Roi": 79.43600867678958,
+            "exit": "買取店（両出口の保守側）",
+            "limit": 25000,
+            "psaMissing": false,
+            "specificationHeld": false
+          },
+          "after": {
+            "name": "リーリエの全力 SR[SM11b 068/049](強化拡張パック「ドリームリーグ」)",
+            "selected": true,
+            "preset": true,
+            "now": false,
+            "exclusions": [],
+            "holds": [
+              "予測期間不一致・参考探索のみ"
+            ],
+            "purchaseState": "available",
+            "periodHeld": true,
+            "referenceBasis": "median",
+            "raw": 25000,
+            "psa10": 77000,
+            "store": 27000,
+            "storeSource": "晴れる屋2状態A",
+            "storeObservedAt": "2026-11-25T10:32:56.452Z",
+            "searchBuyPrice": 25900,
+            "psa9Price": 35999,
+            "psa9Ratio": 71.9464429567488,
+            "psa9BuyKind": "median",
+            "psa9Type": "aggregate",
+            "officialRate": 56.18955512572534,
+            "officialTotal": 16544,
+            "psa10Net": 66176,
+            "psa10Profit": 29296,
+            "expectedProfit": 14813,
+            "expectedRoi": 40.165401301518436,
+            "psa10Roi": 79.43600867678958,
+            "exit": "買取店（両出口の保守側）",
+            "limit": 25000,
+            "psaMissing": false,
+            "specificationHeld": false
+          }
+        }
+      ]
     }
   },
   "definitions": "URLのみと保存追加条件は別。重複理由を合算して離脱枚数にしない。価格待ち・期間保留は購入GOではない。6時間更新目標と購入価格48時間有効期限は別。",
