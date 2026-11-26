@@ -1840,3 +1840,4 @@ a.market-link:hover{transform:translateY(-1px);border-color:rgba(125,211,252,.5)
 .search-basis-glance{display:block;font-size:12px}.legacy-economics-comparison{margin-top:10px}.legacy-economics-comparison>summary{font-weight:600;font-size:12px}
 
 .sale-reference-summary{margin:6px 0;font-size:.76rem;color:var(--muted,#abb8ca)}.sale-reference-summary>small{display:block}.sale-reference-summary summary{cursor:pointer}.sale-reference-rows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0}.sale-reference-rows>div{min-width:0;padding:8px;border:1px solid #40506b;border-radius:8px}.sale-reference-rows small,.sale-reference-rows span{display:block;overflow-wrap:anywhere}.sale-reference-rows b{color:#d8e6f7}@media(max-width:600px){.sale-reference-rows{grid-template-columns:1fr}}
+.quick-ratio-search.has-active-condition>summary::after{content:"（条件あり）";margin-left:6px;font-weight:600;color:var(--accent,#1a73e8)}
