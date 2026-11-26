@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-26T01:04:36.609Z",
+  "generatedAt": "2026-11-26T01:11:36.273Z",
   "sourceLastSuccessAt": "2026-11-25T22:47:53.242Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-11-26T00:34:41.471Z",
-    "lastSuccessAt": "2026-11-26T00:34:41.471Z",
-    "runId": "45729395150",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/45729395150"
+    "lastAttemptAt": "2026-11-26T01:11:36.262Z",
+    "lastSuccessAt": "2026-11-26T01:11:36.262Z",
+    "runId": "45733565440",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/45733565440"
   },
   "dailyOutcomes": [
     {
@@ -34,7 +34,7 @@
     {
       "key": "safe:yuyutei:manual-action-required:GitHub ActionsからHTTP #。正規アクセス確認待ち",
       "category": "アクセス・手動対応待ち",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/45524159436",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/45731383530",
       "reason": "遊々亭: GitHub ActionsからHTTP 403。正規アクセス確認待ち"
     },
     {
@@ -177,7 +177,12 @@
     {
       "key": "buyback-hold:bluerocket:2026-11-21T02:56:59.225Z",
       "category": "確認が必要",
-      "reason": "ブルーロケット 保留開始 2026-11-21T02:56:59.225Z、直前正常 340件、最終実取得 2026-11-21T00:55:28.541Z、次回 2026-11-26T07:55:29.862Z。個別提示期限24／48時間以内 37／37、正式出口 0枚"
+      "reason": "ブルーロケット 保留開始 2026-11-21T02:56:59.225Z、直前正常 340件、最終実取得 2026-11-21T00:55:28.541Z、次回 2026-11-26T07:55:29.862Z。個別提示期限24／48時間以内 37／347、正式出口 0枚"
+    },
+    {
+      "key": "buyback-store-120h:bluerocket:2026-11-21T00:55:28.541Z",
+      "category": "確認が必要",
+      "reason": "ブルーロケット 店舗の最終取得から120時間経過"
     },
     {
       "key": "buyback-hold:kaitori-homura-mail:2026-11-21T02:56:59.243Z",
@@ -215,7 +220,8 @@
     "保存原票の同時更新照合が保留（2入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/state-a-price-evidence.json, work/buyback-price-observations.json",
     "保存原票の同時更新照合が保留（1入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/state-a-price-evidence.json",
     "保存原票の同時更新照合が保留（1入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/state-a-price-evidence.json",
-    "ブルーロケット 保留開始 2026-11-21T02:56:59.225Z、直前正常 340件、最終実取得 2026-11-21T00:55:28.541Z、次回 2026-11-26T07:55:29.862Z。個別提示期限24／48時間以内 37／37、正式出口 0枚",
+    "ブルーロケット 保留開始 2026-11-21T02:56:59.225Z、直前正常 340件、最終実取得 2026-11-21T00:55:28.541Z、次回 2026-11-26T07:55:29.862Z。個別提示期限24／48時間以内 37／347、正式出口 0枚",
+    "ブルーロケット 店舗の最終取得から120時間経過",
     "買取ホムラ（郵送） 保留開始 2026-11-21T02:56:59.243Z、直前正常 356件、最終実取得 2026-11-21T00:25:13.543Z、次回 2026-11-26T07:55:41.008Z。個別提示期限24／48時間以内 43／362、正式出口 0枚",
     "買取ホムラ（郵送） 店舗の最終取得から120時間経過"
   ],
