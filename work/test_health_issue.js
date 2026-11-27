@@ -28,8 +28,9 @@ const baseline = JSON.parse(fs.readFileSync(path.join(__dirname, 'health-issue-b
 assert(Array.isArray(baseline.acknowledged) && baseline.acknowledged.length > 0 && new Set(baseline.acknowledged).size === baseline.acknowledged.length);
 assert.equal(LABEL, 'monitor-alert');
 const {pagesIssues} = require('./sync_health_issue');
-const release = (id, conclusion) => ({display_title:'Pages release '+id+' '+'a'.repeat(40), head_branch:'main', conclusion, html_url:'https://github.com/example/run/'+id});
+const release = (id, conclusion) => ({id,event:'schedule',head_branch:'main',conclusion,html_url:'https://github.com/example/run/'+id});
 assert.equal(pagesIssues([release(12,'failure'),release(13,'success')]).length,0);
 assert.equal(pagesIssues([release(15,'skipped'),release(14,'failure'),release(13,'success')])[0].url,release(14).html_url);
+assert.equal(pagesIssues([{...release(15,'success'),event:'workflow_dispatch'},release(14,'failure')]).length,0);
 assert.equal(plan([alert('shop'), ...pagesIssues([release(15,'success')])], [], {number:7,body:plan([alert('shop'),...pagesIssues([release(14,'failure')])],[],null).body}).action,'update');
 console.log('PASS monitor alert issue: known alerts silent, new alert opens one issue, no hourly repeats, additions comment, closes when resolved');

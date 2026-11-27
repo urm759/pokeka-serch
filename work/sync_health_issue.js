@@ -30,11 +30,10 @@ function gh(args, run = spawnSync) {
 }
 
 function pagesIssues(runs) {
-  // A delayed completion for an old deploy must not displace the newest checked deploy.
-  const checked = runs.map(r => ({r, deploy: Number(/^Pages release (\d+) [0-9a-f]{40}$/.exec(r.display_title)?.[1])}))
-    .filter(({r, deploy}) => deploy && r.head_branch === 'main' && ['success','failure','timed_out','action_required'].includes(r.conclusion))
-    .sort((a,b) => b.deploy-a.deploy || b.r.run_attempt-a.r.run_attempt);
-  const latest = checked[0]?.r;
+  const latest = runs.filter(r => Number.isSafeInteger(r.id) && r.head_branch === 'main'
+      && ['schedule','workflow_dispatch'].includes(r.event)
+      && ['success','failure','timed_out','action_required'].includes(r.conclusion))
+    .sort((a,b) => b.id-a.id || b.run_attempt-a.run_attempt)[0];
   if (!latest || latest.conclusion === 'success') return [];
   return [{key:'pages:release-verification', reason:'公開後の版・改ざん防止・manifest・独立検査の確認に失敗しました。実行ログで対象を確認してください。', url:latest.html_url}];
 }
@@ -45,7 +44,7 @@ function run({ root = ROOT, exec = spawnSync, dryRun = process.argv.includes('--
   const call = args => gh(args, exec);
   const listed = dryRun ? [] : JSON.parse(call(['issue', 'list', '--label', LABEL, '--state', 'open', '--json', 'number,body', '--limit', '5']) || '[]');
   const extra = withPages ? pagesIssues(JSON.parse(call(['api',
-    'repos/{owner}/{repo}/actions/workflows/check-pages-release.yml/runs?branch=main&event=workflow_run&status=completed&per_page=100'])).workflow_runs) : [];
+    'repos/{owner}/{repo}/actions/workflows/check-pages-release.yml/runs?branch=main&status=completed&per_page=100'])).workflow_runs) : [];
   const step = plan([...health.issues, ...extra], baseline.acknowledged, listed[0] || null);
   if (dryRun) { console.log(JSON.stringify({ dryRun: true, ...step, body: undefined })); return step; }
   if (step.action === 'create') {
