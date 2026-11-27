@@ -13,8 +13,10 @@ const exec = (cmd,args,cwd,input) => cp.execFileSync(cmd,args,{
 function checked(root,store,code) {
   try { return review(root,store,code); }
   catch (error) {
-    const message = error.code ? '保存済みの受領ファイルまたは検証用の設定が読めません。' : error.message;
+    const message = /^[ぁ-んァ-ヶ一-龯]/u.test(error.message) ? error.message
+      : '保存済みの受領ファイルまたはページの証跡が検証を通りませんでした。詳細はPCの非公開の照合記録にあります。';
     const failure = new Error(message);
+    failure.privateReason = error.message;
     failure.code = 'GEMRATE_REVIEW_HOLD';
     throw failure;
   }
@@ -25,9 +27,11 @@ function draft(root, store, set, state, save, signature) {
   const branch = manualBranch+'-'+signature.slice(0,12);
   const gh = (args,input) => exec('gh',args,root,input);
   checked(root,store,code);
-  const prs = JSON.parse(gh(['pr','list','--repo',repo,'--base','main','--search','head:'+manualBranch,'--state','all','--json','url,state,headRefName','--limit','100']));
+  const prs = JSON.parse(gh(['pr','list','--repo',repo,'--base','main','--state','open','--json','url,state,headRefName','--limit','100']));
   const existing = prs.find(p => p.headRefName === branch || (p.state === 'OPEN' && (p.headRefName === manualBranch || p.headRefName.startsWith(manualBranch+'-'))));
   if (existing) return existing.url;
+  const closed = JSON.parse(gh(['pr','list','--repo',repo,'--base','main','--head',branch,'--state','all','--json','url','--limit','1']))[0];
+  if (closed) return closed.url;
   // A failed push/PR call can be retried without force-updating a branch.
   const ref = 'refs/heads/'+branch;
   const remote = exec('git',['ls-remote','--heads','origin',ref],root).split(/\s/)[0];
@@ -43,6 +47,7 @@ function draft(root, store, set, state, save, signature) {
       if (exec('git',['config','--bool','extensions.worktreeConfig'],checkout) !== 'true') throw Error('作業コピー別の作者設定を確認できません');
       exec('git',['config','--worktree','user.name','urm759 (Codex)'],checkout);
       exec('git',['config','--worktree','user.email','301757673+urm759@users.noreply.github.com'],checkout);
+      exec('git',['sparse-checkout','disable'],checkout);
       const result = checked(checkout,store,code);
       for (const [i,v] of [result.reviewed,result.collection].entries()) fs.writeFileSync(path.join(checkout,FILES[i]),JSON.stringify(v,null,2)+'\n');
       for (const file of ['build_gemrate_collector_config','build_ui_data','test_gemrate_multiset','test_ui_data']) {
@@ -109,7 +114,7 @@ function run(root,store,receivedStatus={}) {
       catch (error) {
         // Operational errors remain retryable. Only a definite review failure opens a hold.
         if (error.code !== 'GEMRATE_REVIEW_HOLD') { errors.push(set.setCode); continue; }
-        record.reason = error.message; save();
+        record.reason = error.privateReason; save();
         const reasonKey = crypto.createHash('sha256').update(signature+error.message).digest('hex');
         record.issue = reportHold(root,set,error.message,reasonKey);
         delete record.pr;
