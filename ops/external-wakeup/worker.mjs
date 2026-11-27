@@ -30,11 +30,14 @@ export async function tick({env,storage,now=Date.now(),scheduledAt=now,request})
   let stageStarted=Date.now();result.stage='github-inventory';const inventory=await policy.inventory(request);result.inventoryMs=Date.now()-stageStarted;if(!inventory.complete){result.status=inventory.reason;await save();return result;}
   const runs=inventory.runs;
   stageStarted=Date.now();result.stage='pending-evidence';result.pendingAudit=await policy.inspectPending(runs,request,now,state.pendingEvidence||[]);result.pendingEvidenceMs=Date.now()-stageStarted;state.pendingEvidence=result.pendingAudit;
-  const decision=policy.plan(runs,state,now,result.pendingAudit);Object.assign(result,decision);
+  const directPriority=env.DIRECT_PRIORITY==='true';
+  const decision=policy.plan(runs,state,now,result.pendingAudit,{directPriority});Object.assign(result,decision);
   if(decision.due){
+   const workflow=directPriority?'priority-price-refresh.yml':'watch-data-health.yml';
+   result.targetWorkflow=workflow;
    state.lastDispatchAt=result.at;state.lastRequestId='cloud-wakeup-'+new Date(scheduledAt).toISOString();
    result.status='dispatch-intent';result.requestId=state.lastRequestId;await save();
-   stageStarted=Date.now();result.stage='dispatch-request';const dispatched=await request('POST','/actions/workflows/watch-data-health.yml/dispatches',{ref:'main',return_run_details:true,inputs:{timer_scheduled_at:result.scheduledAt,timer_request_id:result.requestId}});result.dispatchMs=Date.now()-stageStarted;result.dispatchAcceptedAt=new Date().toISOString();
+   stageStarted=Date.now();result.stage='dispatch-request';const dispatched=await request('POST','/actions/workflows/'+workflow+'/dispatches',{ref:'main',return_run_details:true,inputs:{timer_scheduled_at:result.scheduledAt,timer_request_id:result.requestId}});result.dispatchMs=Date.now()-stageStarted;result.dispatchAcceptedAt=new Date().toISOString();
    if(/^\d+$/.test(String(dispatched?.workflow_run_id))&&dispatched.html_url==='https://github.com/'+REPO+'/actions/runs/'+dispatched.workflow_run_id){result.dispatchedRunId=dispatched.workflow_run_id;result.dispatchedRunUrl=dispatched.html_url;state.lastDispatchedRun={id:result.dispatchedRunId,url:result.dispatchedRunUrl,requestId:result.requestId};}
    result.status='dispatch-accepted-awaiting-execution';
   }else result.status='not-dispatched';

@@ -14,10 +14,18 @@
   }
   function choose(sets,state,at){
     const verified=Boolean(state.runtimeVersion&&state.exportBindingVersion===state.runtimeVersion);
-    const due=sets.filter(s=>{const old=state.sets?.[s.setCode];return (!old?.hold||old.hold.stage==='csv-receipt')&&(old?.checkedDay!==day(at)||recoverableCsv(s,old,old?.sourceDate,verified))&&!(old?.retryAt>Date.parse(at))&&!(old?.attemptDay===day(at)&&old.attempts>=2);});
+    const today=day(at), weekly=s=>Number.isInteger(s.year)&&s.year<=2019;
+    const due=sets.filter(s=>{
+      const old=state.sets?.[s.setCode];
+      if(old?.hold&&old.hold.stage!=='csv-receipt'||old?.retryAt>Date.parse(at)||old?.attemptDay===today&&old.attempts>=2)return false;
+      if(recoverableCsv(s,old,old?.sourceDate,verified))return true;
+      const last=old?.checkedDay||(old?.checkedAt&&day(old.checkedAt));
+      if(!last)return true;
+      return Date.parse(today)-Date.parse(last)>=(weekly(s)?7:1)*DAY;
+    });
     if((state.attempts||state.checks||[]).filter(c=>day(c.at)===day(at)).length>=25)return null;
-    // Existing sets all retain a daily slot; approved new sets have a separate one/day slot.
-    return due.filter(s=>s.cards||state.newSetDay!==day(at)).sort((a,b)=>Number(b.cards>0)-Number(a.cards>0)||(state.sets?.[a.setCode]?.checkedAt||'').localeCompare(state.sets?.[b.setCode]?.checkedAt||'')||(b.priority||0)-(a.priority||0)||a.setCode.localeCompare(b.setCode))[0]||null;
+    // Never-checked modern sets precede old sets in the separate one-new-set slot.
+    return due.filter(s=>s.cards||state.newSetDay!==today).sort((a,b)=>Number(b.cards>0)-Number(a.cards>0)||(state.sets?.[a.setCode]?.checkedAt||'').localeCompare(state.sets?.[b.setCode]?.checkedAt||'')||Number(weekly(a))-Number(weekly(b))||(b.priority||0)-(a.priority||0)||a.setCode.localeCompare(b.setCode))[0]||null;
   }
   function configDue(state,at){
     const now=Date.parse(at),last=Date.parse(state.configSyncedAt||'');

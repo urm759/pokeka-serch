@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>仕入れ条件の並べ替え案</title>
+<style>
+  :root{font-family:"Noto Sans JP","Yu Gothic UI",system-ui,sans-serif;color:#263344;background:#f3f5f8;line-height:1.55}
+  *{box-sizing:border-box}
+  body{margin:0}
+  main{width:min(960px,100%);margin:auto;padding:34px 24px 48px}
+  h1,h2,h3,p{margin:0}
+  h1{font-size:1.75rem;margin-bottom:8px;color:#172b43}
+  h2{font-size:1.24rem;color:#172b43}
+  h3{font-size:.98rem;color:#172b43;margin-bottom:10px}
+  .hint,small{color:#526176}
+  .group{margin-top:24px}
+  .active{display:flex;gap:6px;flex-wrap:wrap;padding:0;margin:10px 0 14px;list-style:none}
+  .active li{font-size:.8rem;padding:4px 9px;border-radius:5px;background:#dceaf6;color:#204e72}
+  .panels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .pane{border:1px solid #d5dee9;background:#fff;border-radius:9px;padding:14px}
+  .fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 12px}
+  label{display:grid;gap:4px;font-weight:600;font-size:.85rem;align-content:start}
+  input,select{min-width:0;width:100%;border:1px solid #a8b8cb;border-radius:5px;padding:6px 8px;font:inherit;font-weight:400;color:inherit;background:white;min-height:35px}
+  :focus-visible{outline:2px solid #166893;outline-offset:2px}
+  details{margin-top:10px;padding:10px 14px;border:1px solid #d5dee9;border-radius:8px;background:#fff}
+  details[open] summary{margin-bottom:10px}
+  summary{cursor:pointer;font-weight:650}
+  small{display:block;margin-top:6px;font-size:.76rem}
+  @media(max-width:600px){main{padding:22px 12px 36px}.panels{grid-template-columns:1fr}.pane{padding:12px}h1{font-size:1.32rem}}
+</style>
+</head>
+<body>
+<main>
+  <h1>仕入れ条件の並べ替え案</h1>
+  <p class="hint">配置を確認する試作です。入力しても検索結果や保存済み条件には反映されません。</p>
+  <section class="group" aria-labelledby="common">
+    <h2 id="common">よく使う条件</h2>
+    <ul class="active" aria-label="適用中の条件の表示例">
+      <li>プライオリティ・91日</li><li>期待利益率 20%以上</li><li>期待利益 5,000円以上</li><li>出品 50件以下</li>
+    </ul>
+    <div class="panels">
+      <section class="pane"><h3>鑑定プラン</h3><div class="fields">
+        <label>プラン<select><option>プライオリティ</option><option>バリュー</option><option>スタンダード</option></select></label>
+        <label>返却日数（日）<input type="number" value="91" min="1"></label>
+      </div></section>
+      <section class="pane"><h3>仕入れ値・素体相場</h3><div class="fields">
+        <label>仕入れ値の下限（円）<input type="number" value="25000"></label><label>仕入れ値の上限（円）<input type="number" value="99999"></label>
+        <label>素体相場の下限（円）<input type="number" value="26000"></label><label>素体相場の上限（円）<input type="number" value="99999"></label>
+      </div></section>
+      <section class="pane"><h3>利益と資金効率</h3><div class="fields">
+        <label>検索の利益率（%）<input type="number" value="20"></label><label>上限計算の利益率（%）<input type="number" value="20"></label>
+        <label>検索の期待利益（円）<input type="number" value="5000"></label><label>上限計算の最低利益（円）<input type="number" value="5000"></label>
+        <label>資金効率の下限（%）<input type="number" value="35"></label>
+      </div></section>
+      <section class="pane"><h3>売り先と費用</h3><div class="fields">
+        <label>売り先<select><option>店舗とフリマ</option><option>店舗買取</option><option>フリマ</option></select></label>
+        <label>店舗買取なしのとき<select><option>フリマで代替</option><option>代替しない</option></select></label>
+        <label>フリマ手数料（%）<input type="number" value="10"></label><label>送料など（円）<input type="number" value="450"></label>
+        <label>店舗買取の減額（%）<input type="number" value="5"></label>
+      </div></section>
+      <section class="pane"><h3>買取倍率と店舗需要</h3><div class="fields">
+        <label>75日買取倍率の下限<input type="number" step=".01" value=".88"></label>
+        <label>店舗需要<select><option>普通以上</option><option>強い</option><option>指定なし</option></select></label>
+      </div></section>
+      <section class="pane"><h3>PSAの出品数と価格比</h3><div class="fields">
+        <label>PSA10 出品上限（件）<input type="number" value="50"></label>
+        <label>PSA9 比率の下限（%）<input type="number" value="70"></label>
+      </div></section>
+    </div>
+    <details><summary>その他の詳細条件</summary><div class="fields">
+      <label>PSA10の30日取引数<input type="number" min="0" placeholder="指定なし"></label>
+      <label>仕入れ余裕率（%）<input type="number" value="-25"></label>
+    </div></details>
+    <details><summary>表示・監査</summary><div class="fields">
+      <label>並び順<select><option>資金効率が高い順</option><option>期待利益が高い順</option></select></label>
+      <label>表示範囲<select><option>候補一覧</option><option>確認用の一覧</option></select></label>
+    </div></details>
+  </section>
+</main>
+</body>
+</html>

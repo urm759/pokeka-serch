@@ -1,0 +1,53 @@
+name: Check published Pages release
+on:
+  schedule:
+    # The built-in branch-source Pages workflow does not trigger this repository's workflow_run.
+    - cron: '17 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: read
+concurrency:
+  group: pages-release-verification
+  cancel-in-progress: false
+jobs:
+  verify:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Find the latest successfully published commit
+        id: pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          target=$(gh api "repos/$GITHUB_REPOSITORY/pages/builds?per_page=30" --jq 'map(select(.status == "built")) | first | .commit // ""')
+          [[ "$target" =~ ^[a-f0-9]{40}$ ]]
+          echo "sha=$target" >> "$GITHUB_OUTPUT"
+          echo "Published commit $target"
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ steps.pages.outputs.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - name: Check served scripts, integrity, manifest and offline invariants
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEPLOYED_SHA: ${{ steps.pages.outputs.sha }}
+        run: |
+          for attempt in 1 2 3; do
+            latest=$(gh api "repos/$GITHUB_REPOSITORY/pages/builds?per_page=30" --jq 'map(select(.status == "built")) | first | .commit // ""')
+            [[ "$latest" =~ ^[a-f0-9]{40}$ ]]
+            if [[ "$latest" != "$DEPLOYED_SHA" ]]; then
+              # Keep the verification tied to the served commit when a deployment completes mid-run.
+              git fetch --depth=1 origin "$latest"
+              git checkout --detach FETCH_HEAD
+              DEPLOYED_SHA=$latest
+              echo "Published commit advanced to $latest"
+            fi
+            if node work/check_pages_release.js; then exit 0; fi
+            if [[ "$attempt" != 3 ]]; then sleep 20; fi
+          done
+          exit 1

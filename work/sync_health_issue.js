@@ -29,12 +29,23 @@ function gh(args, run = spawnSync) {
   return r.stdout;
 }
 
-function run({ root = ROOT, exec = spawnSync, dryRun = process.argv.includes('--dry-run') } = {}) {
+function pagesIssues(runs) {
+  const latest = runs.filter(r => Number.isSafeInteger(r.id) && r.head_branch === 'main'
+      && ['schedule','workflow_dispatch'].includes(r.event)
+      && ['success','failure','timed_out','action_required'].includes(r.conclusion))
+    .sort((a,b) => b.id-a.id || b.run_attempt-a.run_attempt)[0];
+  if (!latest || latest.conclusion === 'success') return [];
+  return [{key:'pages:release-verification', reason:'公開後の版・改ざん防止・manifest・独立検査の確認に失敗しました。実行ログで対象を確認してください。', url:latest.html_url}];
+}
+
+function run({ root = ROOT, exec = spawnSync, dryRun = process.argv.includes('--dry-run'), withPages = false } = {}) {
   const health = JSON.parse(fs.readFileSync(path.join(root, 'data/update-health.json'), 'utf8'));
   const baseline = JSON.parse(fs.readFileSync(path.join(root, 'work/health-issue-baseline.json'), 'utf8'));
   const call = args => gh(args, exec);
   const listed = dryRun ? [] : JSON.parse(call(['issue', 'list', '--label', LABEL, '--state', 'open', '--json', 'number,body', '--limit', '5']) || '[]');
-  const step = plan(health.issues, baseline.acknowledged, listed[0] || null);
+  const extra = withPages ? pagesIssues(JSON.parse(call(['api',
+    'repos/{owner}/{repo}/actions/workflows/check-pages-release.yml/runs?branch=main&status=completed&per_page=100'])).workflow_runs) : [];
+  const step = plan([...health.issues, ...extra], baseline.acknowledged, listed[0] || null);
   if (dryRun) { console.log(JSON.stringify({ dryRun: true, ...step, body: undefined })); return step; }
   if (step.action === 'create') {
     try { call(['label', 'create', LABEL, '--color', 'D93F0B', '--description', 'New site monitor alerts (automatic)']); } catch { /* label exists */ }
@@ -49,7 +60,11 @@ function run({ root = ROOT, exec = spawnSync, dryRun = process.argv.includes('--
   return step;
 }
 
-module.exports = { plan, run, LABEL, TITLE };
+module.exports = { plan, run, pagesIssues, LABEL, TITLE };
 if (require.main === module) {
-  try { run(); } catch (error) { console.log(`::warning::monitor alert issue not updated: ${String(error.message).slice(0, 300)}`); }
+  const withPages = process.argv.includes('--with-pages');
+  try { run({withPages}); } catch (error) {
+    console.log(`::warning::monitor alert issue not updated: ${String(error.message).slice(0, 300)}`);
+    if (withPages) process.exitCode = 1;
+  }
 }

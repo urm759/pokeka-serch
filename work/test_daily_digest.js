@@ -2,7 +2,8 @@
 // Japan calendar day, and a phone page that only reads it. Fixtures only; no requests.
 const assert = require('node:assert/strict');
 const fs = require('node:fs'), os = require('node:os'), path = require('node:path');
-const { build, jstDate } = require('./build_daily_digest');
+const { build: buildDigest, jstDate } = require('./build_daily_digest');
+const build = (root, now) => buildDigest(root, now, () => []);
 const root = fs.mkdtempSync(path.join(os.tmpdir(), 'digest-'));
 fs.mkdirSync(path.join(root, 'data'));
 const row = (id, qualified, extra = {}) => ({ id, name: `カード${id} SAR [SV9 001/100](拡張パック「テスト」)`, qualified, reasons: qualified ? [] : ['利益条件'], buy: 20000, profit: 6000, annual: 41.25, go: '価格次第', priority: Number(id.replace(/\D/g, '')),
@@ -47,6 +48,16 @@ assert.equal(d.baseline.date, '2026-11-24');
 assert.deepEqual(read().profiles[0].gained.map(x => x.id), ['pk-5']);
 assert.equal(d.llmCalls, 0); assert.equal(d.sourceRequests, 0);
 assert(fs.statSync(path.join(root, 'data/daily-digest.json')).size < 100000, 'stays small');
+// Old four-profile digests have no personal baseline. A missing listing can later explain a departure.
+const personal = rows => () => [{id:'user-value', reportName:'マイ条件・バリュー', rows}];
+let user = buildDigest(root, Date.parse('2026-11-25T09:30:00Z'), personal([row('pk-9', true)])).profiles.at(-1);
+assert.equal(user.previousCount, null);
+user = buildDigest(root, Date.parse('2026-11-25T16:00:00Z'), personal([
+  row('pk-9', false, {reasons:['みんトレ掲載PSA10出品数・上限超過']}), row('pk-6', true)
+])).profiles.at(-1);
+assert.equal(user.previousCount, 1);
+assert.deepEqual(user.gained.map(c => c.id), ['pk-6']);
+assert.deepEqual(user.lost.map(c => [c.id, c.reasons]), [['pk-9', ['みんトレ掲載PSA10出品数・上限超過']]]);
 // A missing audit fails loudly (the builder hook only warns, never blocks the formal audit).
 fs.rmSync(path.join(root, 'data/priority-search-profile-audit.json'));
 assert.throws(() => build(root), /formal profile audit missing/);
