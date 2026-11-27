@@ -8,6 +8,10 @@ function run({push=false}={}){
  const checkpoint=require('./gemrate_reference_checkpoint');
  const publication=push?checkpoint.push(root,store):{status:'validated-local-outbox',path:checkpoint.enqueue(root,store)};
  const browserCleanup=require('./gemrate_browser_receipts').finalize(root,store);
+ if(push){
+  try{require('./gemrate_promotion_pr').run(root,store,{browser:browserReceipts.status,inbox:imported.status});}
+  catch(error){require('./acquisition_retry').atomicWrite(path.join(store,'last-promotion-error.json'),{at,reason:error.message});console.warn('GemRate確認済み提案は保留。次の受領処理で再試行します。');}
+ }
  const result={at,browserReceipts,browserCleanup,imported:{newPrivateObservations:imported.newPrivateObservations,firstMatchedIdentities:imported.firstMatchedIdentities,reusedMappings:imported.reusedMappings,retainedCsvReevaluations:imported.retainedCsvReevaluations},projection,publication,sourceAcquisitions:0,calculationAdopted:0,llmCalls:0,codexCalls:0};
  require('./acquisition_retry').atomicWrite(path.join(store,'last-reference-pipeline.json'),result);console.log(JSON.stringify(result));return result;
 }
