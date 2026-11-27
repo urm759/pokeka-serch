@@ -1,6 +1,15 @@
 name: Priority Purchase Price Refresh
 on:
   workflow_dispatch:
+    inputs:
+      timer_scheduled_at:
+        description: 'Optional external timer clock (not acquisition evidence)'
+        required: false
+        default: ''
+      timer_request_id:
+        description: 'Optional external timer request ID'
+        required: false
+        default: ''
   schedule:
     # Odd JST hours at :20. Queue checks every 2h; important-card target is 6h.
     - cron: "20 */2 * * *"
