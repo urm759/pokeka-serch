@@ -6,7 +6,13 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
-  pages: read
+  actions: read
+env:
+  PAGES_RUNS_PATH: 'actions/runs?branch=main&event=dynamic&status=success&per_page=30'
+  PAGES_SUCCESSFUL_HEAD: >-
+    [.workflow_runs[] | select(.name == "pages build and deployment" and .head_branch == "main"
+    and .conclusion == "success" and (.head_repository.full_name // "") == (.repository.full_name // "!"))]
+    | max_by(.updated_at) | .head_sha // ""
 concurrency:
   group: pages-release-verification
   cancel-in-progress: false
@@ -21,7 +27,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          target=$(gh api "repos/$GITHUB_REPOSITORY/pages/builds?per_page=30" --jq 'map(select(.status == "built")) | first | .commit // ""')
+          # The legacy build inventory can report a successfully deployed commit as errored.
+          target=$(gh api "repos/$GITHUB_REPOSITORY/$PAGES_RUNS_PATH" --jq "$PAGES_SUCCESSFUL_HEAD")
           [[ "$target" =~ ^[a-f0-9]{40}$ ]]
           echo "sha=$target" >> "$GITHUB_OUTPUT"
           echo "Published commit $target"
@@ -38,7 +45,7 @@ jobs:
           DEPLOYED_SHA: ${{ steps.pages.outputs.sha }}
         run: |
           for attempt in 1 2 3; do
-            latest=$(gh api "repos/$GITHUB_REPOSITORY/pages/builds?per_page=30" --jq 'map(select(.status == "built")) | first | .commit // ""')
+            latest=$(gh api "repos/$GITHUB_REPOSITORY/$PAGES_RUNS_PATH" --jq "$PAGES_SUCCESSFUL_HEAD")
             [[ "$latest" =~ ^[a-f0-9]{40}$ ]]
             if [[ "$latest" != "$DEPLOYED_SHA" ]]; then
               # Keep the verification tied to the served commit when a deployment completes mid-run.
