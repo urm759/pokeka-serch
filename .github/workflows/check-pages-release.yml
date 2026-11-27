@@ -1,22 +1,33 @@
 name: Check published Pages release
-run-name: Pages release ${{ github.event.workflow_run.id }} ${{ github.event.workflow_run.head_sha }}
 on:
-  workflow_run:
-    workflows: [pages build and deployment]
-    types: [completed]
-    branches: [main]
+  schedule:
+    # The built-in branch-source Pages workflow does not trigger this repository's workflow_run.
+    - cron: '17 * * * *'
+  workflow_dispatch:
 permissions:
   contents: read
-  actions: read
+  pages: read
+concurrency:
+  group: pages-release-verification
+  cancel-in-progress: false
 jobs:
   verify:
-    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_repository.full_name == github.repository
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
+      - name: Find the latest successfully published commit
+        id: pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          target=$(gh api "repos/$GITHUB_REPOSITORY/pages/builds?per_page=30" --jq 'map(select(.status == "built")) | first | .commit // ""')
+          [[ "$target" =~ ^[a-f0-9]{40}$ ]]
+          echo "sha=$target" >> "$GITHUB_OUTPUT"
+          echo "Published commit $target"
       - uses: actions/checkout@v7
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
+          ref: ${{ steps.pages.outputs.sha }}
           persist-credentials: false
       - uses: actions/setup-node@v7
         with:
@@ -24,14 +35,17 @@ jobs:
       - name: Check served scripts, integrity, manifest and offline invariants
         env:
           GH_TOKEN: ${{ github.token }}
-          PAGES_WORKFLOW_ID: ${{ github.event.workflow_run.workflow_id }}
-          DEPLOYED_SHA: ${{ github.event.workflow_run.head_sha }}
+          DEPLOYED_SHA: ${{ steps.pages.outputs.sha }}
         run: |
           for attempt in 1 2 3; do
-            latest=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$PAGES_WORKFLOW_ID/runs?branch=main&status=success&per_page=1" --jq '.workflow_runs[0].head_sha')
+            latest=$(gh api "repos/$GITHUB_REPOSITORY/pages/builds?per_page=30" --jq 'map(select(.status == "built")) | first | .commit // ""')
+            [[ "$latest" =~ ^[a-f0-9]{40}$ ]]
             if [[ "$latest" != "$DEPLOYED_SHA" ]]; then
-              echo "A newer deployment has its own verification."
-              exit 0
+              # Keep the verification tied to the served commit when a deployment completes mid-run.
+              git fetch --depth=1 origin "$latest"
+              git checkout --detach FETCH_HEAD
+              DEPLOYED_SHA=$latest
+              echo "Published commit advanced to $latest"
             fi
             if node work/check_pages_release.js; then exit 0; fi
             if [[ "$attempt" != 3 ]]; then sleep 20; fi
