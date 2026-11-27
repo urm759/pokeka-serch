@@ -28,6 +28,28 @@ function daysBetween(left, right) {
   return Math.round((Date.parse(`${right}T00:00:00Z`) - Date.parse(`${left}T00:00:00Z`)) / DAY_MS);
 }
 
+const ratioBands = [0,2,3,5,10];
+function record91Days(samples, snapshots, asOf, cutoff) {
+  const prices = new Map(snapshots.map(s => [s.date,s.marketPrice]));
+  for (const s of snapshots) {
+    const base = Date.parse(s.date+'T00:00:00Z'), due = base + 91*DAY_MS;
+    if (!Number.isFinite(base) || base < cutoff || due > asOf || !(s.marketPrice > 0 && s.purchasePrice > 0)) continue;
+    const ratio = s.marketPrice/s.purchasePrice;
+    const band = samples[ratioBands.findLastIndex(min => ratio >= min)];
+    const future = prices.get(new Date(due).toISOString().slice(0,10));
+    if (!(future > 0)) { band.missing++; continue; }
+    band.values.push(100*(future/s.marketPrice-1));
+  }
+}
+
+function ratioSummary(samples) {
+  const {quantile} = require('./pokedata_analysis');
+  const pct = (a,p) => a.length ? Number(quantile(a,p).toFixed(2)) : null;
+  return {horizonDays:91, unit:'%', method:'予測日のPSA10相場÷素体価格で区分。同じカードの91暦日後のPSA10相場の変化率。1カード・基準日を1組とし、当日に観測がない組は除外。',
+    bands:samples.map(({values,missing},i) => ({ratioMin:ratioBands[i],ratioMaxExclusive:ratioBands[i+1] ?? null,
+      observations:values.length,missingOnDueDate:missing,medianChangePct:pct(values,0.5),lowerQuartileChangePct:pct(values,0.25)}))};
+}
+
 function findFuture(rows, index, days) {
   const start = backtestModel.decodeSnapshot(rows[index]).date;
   return rows.slice(index + 1).find((row) => daysBetween(start, backtestModel.decodeSnapshot(row).date) >= days) || null;
@@ -153,10 +175,14 @@ function main() {
 
   const cardNames = new Map(cards.map((card) => [String(card.id), card.name || card.id]));
   const outcomes = [];
+  const samples91 = ratioBands.map(() => ({values:[],missing:0}));
+  const asOf = Date.parse(updatedAt+'T00:00:00Z');
   for (const [cardId, rows] of Object.entries(history.cards)) {
     if (disputedIds.has(cardId) || priceEvidence.cards?.[cardId]?.status === "unbacked") continue;
+    const snapshots = rows.map(backtestModel.decodeSnapshot);
+    record91Days(samples91,snapshots,asOf,cutoff);
     for (let index = 0; index < rows.length; index += 1) {
-      const initial = backtestModel.decodeSnapshot(rows[index]);
+      const initial = snapshots[index];
       const horizons = [{ type: "days7", days: 7 }, { type: "days30", days: 30 }, { type: "exit", days: Number(initial.lockDays || 91) }];
       for (const horizon of horizons) {
         const future = findFuture(rows, index, horizon.days);
@@ -181,6 +207,7 @@ function main() {
     retentionDays, maxDailyCards: MAX_DAILY_CARDS, schema: backtestModel.SNAPSHOT_SCHEMA,
     cards: Object.keys(history.cards).length,
     snapshots: Object.values(history.cards).reduce((sum, rows) => sum + rows.length, 0),
+    psa10Change91ByInitialRatio: ratioSummary(samples91),
     days7: aggregateByHorizon(outcomes, "days7"), days30: aggregateByHorizon(outcomes, "days30"), exit: aggregateByHorizon(outcomes, "exit"),
     exitReadiness: { nextEligibleDate: nextExitReadyAt, cardsTracked: exitPending.length, outcomeCount: outcomes.filter((row) => row.horizonType === "exit").length, disputedHistoryExcluded: [...disputedIds].filter((id) => history.cards[id]).length, note: "鑑定返却に近い資金ロック期間到達後だけ想定出口利益を評価。価格対立の過去記録は保持するが集計から除外。" },
     latestSnapshots, outcomes: outcomes.slice(0, 500),
@@ -188,4 +215,5 @@ function main() {
   console.log(JSON.stringify({ updatedAt, candidates: candidates.length, snapshots: Object.values(history.cards).reduce((sum, rows) => sum + rows.length, 0), outcomes: outcomes.length, lockDays: settings.lockDays }));
 }
 
-main();
+if (require.main === module) main();
+module.exports = {record91Days,ratioSummary,ratioBands};

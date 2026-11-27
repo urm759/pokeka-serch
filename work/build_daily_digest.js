@@ -13,11 +13,14 @@ function card(row) {
     profit: Number.isFinite(row.profit) ? Math.round(row.profit) : null, annual: Number.isFinite(row.annual) ? Math.round(row.annual * 10) / 10 : null,
     verdict: row.go || m.decision?.verdict || null };
 }
-function build(root = path.join(__dirname, '..'), now = Date.now()) {
+function build(root = path.join(__dirname, '..'), now = Date.now(), userProfiles = require('./digest_user_profiles').build) {
   const audit = readJson(path.join(root, 'data/priority-search-profile-audit.json'), null);
   if (!audit?.profiles?.length) throw new Error('daily digest: formal profile audit missing');
   const file = path.join(root, 'data/daily-digest.json'), previous = readJson(file, null), today = jstDate(now);
-  const profiles = audit.profiles.map(p => p.urlOnly).filter(Boolean).map(u => {
+  const prior = previous?.current?.date !== today ? previous?.current : previous?.baselineState;
+  const baseline = prior?.date === jstDate(now - DAY) ? prior : null;
+  const personal = userProfiles(root, audit.at, baseline);
+  const profiles = [...audit.profiles.map(p => p.urlOnly).filter(Boolean), ...personal].map(u => {
     const rows = Array.isArray(u.rows) ? u.rows : [], byId = new Map(rows.map(r => [r.id, r]));
     const qualified = rows.filter(r => r.qualified).sort((a, b) => (b.priority || 0) - (a.priority || 0));
     // The specified-condition URLs share the report name; say which one it is.
@@ -26,11 +29,10 @@ function build(root = path.join(__dirname, '..'), now = Date.now()) {
       candidates: qualified.map(card), byId };
   });
   // Changes are measured against the last state of the previous Japan calendar day.
-  const baseline = !previous?.current ? null : previous.current.date !== today ? previous.current : previous.baselineState || null;
   const current = { date: today, at: new Date(now).toISOString(), ids: Object.fromEntries(profiles.map(p => [p.id, p.ids])) };
   const departures = new Map((audit.pendingDepartures || []).map(d => [`${d.profile}|${d.id}`, d]));
   const digest = { version: 1, generatedAt: new Date(now).toISOString(), auditAt: audit.at || null, date: today,
-    rule: '正式URLの候補の要約。計算・条件・取得は変えない。前日比は日本時間の前日の最後の状態と比べる', llmCalls: 0, sourceRequests: 0,
+    rule: '正式条件とマイ条件の候補。前日比は日本時間の前日の最後の状態と比べる', llmCalls: 0, sourceRequests: 0,
     baseline: baseline ? { date: baseline.date, at: baseline.at } : null,
     profiles: profiles.map(p => {
       const before = baseline?.ids?.[p.id] || null, beforeSet = new Set(before || []), nowSet = new Set(p.ids);
@@ -40,7 +42,7 @@ function build(root = path.join(__dirname, '..'), now = Date.now()) {
         lost: lost.map(id => { const r = p.byId.get(id), d = departures.get(`${p.id}|${id}`);
           return { id, name: String(r?.name || d?.before?.name || id).replace(/\s*\(.*$/, '').slice(0, 60),
             reasons: (r?.reasons?.length ? r.reasons : d?.reasons || d?.rootCauses || []).slice(0, 3).map(String) }; }),
-        candidates: p.candidates.slice(0, 30) };
+        candidates: personal.some(u => u.id === p.id) ? p.candidates : p.candidates.slice(0, 30) };
     }),
     current: { date: current.date, at: current.at, ids: current.ids } };
   // Keep only the previous day's last state (ids per profile) for later runs today; no growing history.
