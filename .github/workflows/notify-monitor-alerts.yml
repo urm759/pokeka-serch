@@ -1,0 +1,30 @@
+name: Notify monitor alerts
+on:
+  workflow_run:
+    workflows: [Data Update Health Watchdog, Check published Pages release]
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: read
+  actions: read
+  issues: write
+concurrency:
+  group: monitor-alert-issue
+  cancel-in-progress: false
+jobs:
+  notify:
+    if: github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - name: Notify new monitor alerts in one GitHub issue (no AI)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node work/sync_health_issue.js --with-pages

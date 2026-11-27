@@ -1,6 +1,17 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),os=require('node:os'),zlib=require('node:zlib');
 const core=require('./gemrate-collector-extension/core'),receiver=require('./gemrate_browser_receipts');
 const at='2026-11-04T03:00:00Z',set={setCode:'S8B',set:'Pokemon Japanese Sword & Shield Vmax Climax',year:2021,language:'Japanese',grader:'PSA',denominator:184,reviewedAt:'2026-11-04',officialSetUrl:'https://www.pokemon-card.com/ex/s8b/index.html',cards:132,baselineDate:'2026-10-31'};
+{
+  const older = {...set,setCode:'SM9',year:2018};
+  const state = {sets:{SM9:{checkedAt:'2026-10-28T15:00:00Z',checkedDay:'2026-10-29'}}};
+  assert.equal(core.choose([older],state,'2026-11-04T14:59:59Z'),null);
+  assert.equal(core.choose([older],state,'2026-11-04T15:00:00Z'),older);
+  assert.equal(core.choose([older],{sets:{SM9:{hold:{stage:'specification'}}}},at),null);
+  const modern = {...set,cards:0}, newOld = {...older,cards:0,priority:1};
+  assert.equal(core.choose([newOld,modern],{},at),modern);
+  assert.equal(core.choose([newOld],{newSetDay:core.day(at)},at),null);
+  assert.equal(core.choose([newOld],{attempts:Array(25).fill({at})},at),null);
+}
 const page={url:core.url(set),grader:'psa',category:'tcg-cards',year:2021,set:set.set,language:'Japanese',updated:'2026-10-31',checkedAt:at,csvRows:2,setTotals:{psa10:3,total:4}};
 assert.equal(core.day('2026-11-03T15:00:00Z'),'2026-11-04');
 const rootScope=require('./gemrate-reviewed-sets.json'),collectionScope=require('./gemrate-collection-sets.json'),realReferences=require('../data/gemrate-reference-summary.json');
