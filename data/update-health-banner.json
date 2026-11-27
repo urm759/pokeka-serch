@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-27T14:07:20.671Z",
+  "generatedAt": "2026-11-27T14:10:46.646Z",
   "sourceLastSuccessAt": "2026-11-27T13:48:12.998Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-11-27T14:07:20.664Z",
-    "lastSuccessAt": "2026-11-27T14:07:20.664Z",
-    "runId": "46009999594",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/46009999594"
+    "lastAttemptAt": "2026-11-27T14:10:46.630Z",
+    "lastSuccessAt": "2026-11-27T14:10:46.630Z",
+    "runId": "46012458592",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/46012458592"
   },
   "dailyOutcomes": [
     {
@@ -192,6 +192,12 @@
       "key": "buyback-store-120h:kaitori-homura-mail:2026-11-21T00:25:13.543Z",
       "category": "確認が必要",
       "reason": "買取ホムラ（郵送） 店舗の最終取得から120時間経過"
+    },
+    {
+      "key": "weekly-tests:check-error",
+      "category": "確認が必要",
+      "url": null,
+      "reason": "週次全テストの実行一覧を読めず：fetch failed"
     }
   ],
   "reasons": [
@@ -222,7 +228,8 @@
     "ブルーロケット 保留開始 2026-11-21T02:56:59.225Z、直前正常 340件、最終実取得 2026-11-21T00:55:28.541Z、次回 2026-11-28T13:48:59.446Z。個別提示期限24／48時間以内 310／310、正式出口 0枚",
     "ブルーロケット 店舗の最終取得から120時間経過",
     "買取ホムラ（郵送） 保留開始 2026-11-21T02:56:59.243Z、直前正常 356件、最終実取得 2026-11-21T00:25:13.543Z、次回 2026-11-28T13:49:08.979Z。個別提示期限24／48時間以内 319／319、正式出口 0枚",
-    "買取ホムラ（郵送） 店舗の最終取得から120時間経過"
+    "買取ホムラ（郵送） 店舗の最終取得から120時間経過",
+    "週次全テストの実行一覧を読めず：fetch failed"
   ],
   "detailUrl": "./data/update-health.json"
 }
