@@ -1,5 +1,21 @@
 const assert = require("assert");
 const model = require("../backtest-model.js");
+const {record91Days,ratioSummary,ratioBands} = require('./build_market_backtest');
+{
+  const samples = ratioBands.map(() => ({values:[],missing:0}));
+  const asOf = Date.parse('2026-12-01T00:00:00Z');
+  for (const end of [90,110]) record91Days(samples,[
+    {date:'2026-09-01',marketPrice:100,purchasePrice:50},{date:'2026-12-01',marketPrice:end,purchasePrice:1}
+  ],asOf,0);
+  record91Days(samples,[{date:'2026-09-01',marketPrice:500,purchasePrice:100},
+    {date:'2026-12-02',marketPrice:600,purchasePrice:100}],asOf,0);
+  const bands = ratioSummary(samples).bands;
+  assert.equal(bands[1].observations,2);
+  assert.equal(Math.abs(bands[1].medianChangePct),0);
+  assert.equal(bands[1].lowerQuartileChangePct,-5);
+  assert.equal(bands[3].missingOnDueDate,1);
+  assert.equal(bands[3].medianChangePct,null);
+}
 
 function unsafe(value) {
   if (typeof value === "number") return !Number.isFinite(value);
