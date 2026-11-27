@@ -31,7 +31,7 @@ async function inspectPending(runs,request,now=Date.now(),prior=[]){
  }));
  return [...entries,...audited.filter(Boolean)];
 }
-function plan(runs,state={},now=Date.now(),evidence=state.pendingEvidence||[]){
+function plan(runs,state={},now=Date.now(),evidence=state.pendingEvidence||[],{directPriority=false}={}){
  if(state.held)return {due:false,reason:'authentication-or-api-hold'};
  const pending=runs.filter(r=>LIVE.includes(r.status)),ignored=pending.filter(r=>evidence.some(p=>orphanVerified(r,p,now))),blocking=pending.filter(r=>!ignored.includes(r));
  const context={blockingRunIds:blocking.map(r=>r.id),ignoredPendingRunIds:ignored.map(r=>r.id)};
@@ -39,8 +39,9 @@ function plan(runs,state={},now=Date.now(),evidence=state.pendingEvidence||[]){
  const latest=runs.filter(r=>r.path?.endsWith('/priority-price-refresh.yml')&&Number.isFinite(Date.parse(r.created_at))).sort((a,b)=>Date.parse(b.created_at)-Date.parse(a.created_at))[0];
  if(!latest)return {...context,due:false,reason:'priority-history-unconfirmed'};
  const gap=now-Date.parse(latest.created_at),last=Date.parse(state.lastDispatchAt);
- if(gap<0||gap<2.5*HOUR)return {...context,due:false,reason:'creation-within-existing-interval',creationGapMs:gap};
- if(Number.isFinite(last)&&(now<last||now-last<2.5*HOUR))return {...context,due:false,reason:'dispatch-cooldown',creationGapMs:gap};
- return {...context,due:true,reason:'no-cloud-creation-for-2.5h',latestRun:latest.id,creationGapMs:gap};
+ const interval=directPriority?2*HOUR:2.5*HOUR;
+ if(gap<interval)return {...context,due:false,reason:'creation-within-existing-interval',creationGapMs:gap};
+ if(Number.isFinite(last)&&now-last<interval)return {...context,due:false,reason:'dispatch-cooldown',creationGapMs:gap};
+ return {...context,due:true,reason:directPriority?'no-priority-creation-for-2h':'no-cloud-creation-for-2.5h',latestRun:latest.id,creationGapMs:gap};
 }
 module.exports={plan,relevant,WORKFLOWS,inventory,inspectPending,orphanVerified};
