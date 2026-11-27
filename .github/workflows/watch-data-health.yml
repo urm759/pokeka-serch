@@ -21,7 +21,6 @@ on:
 permissions:
   contents: write
   actions: read
-  issues: write
 
 jobs:
   catchup:
@@ -299,11 +298,6 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data work/automatic-workflow-evidence.json work/verified-price-cadence-history.json work/calendar-progress-history.json work/priority-freshness-history.json work/priority-price-checkpoint.json
           node work/publish_data_checkpoint.js "Publish independent data health observation"
-      - name: Notify new monitor alerts in one GitHub issue (no AI)
-        if: always() && steps.observation.outcome == 'success'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: node work/sync_health_issue.js
       - name: Report newly detected alerts
         run: node work/watch_update_health.js --report-alerts
       - name: Report current publication verification failure separately
