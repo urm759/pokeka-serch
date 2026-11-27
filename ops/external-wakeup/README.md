@@ -1,5 +1,15 @@
 # PC不要の独立起動（無料Worker配置・secret登録・Cron有効化済み）
 
+## 重要価格の定期枠を外部タイマーで補う
+
+この変更を main にマージし、Priority の手動起動に任意のタイマー入力が追加されたことを確認してから、Cloudflare にログインして反映する。
+
+1. リポジトリのルートで `npx wrangler deploy --config ops/external-wakeup/wrangler.jsonc --var ENABLED:true --var DIRECT_PRIORITY:true` を実行する。既存の `GH_ACTIONS_TOKEN` と同じ Workers／Durable Object を使う。
+2. Workersの実行ログで `targetWorkflow` が `priority-price-refresh.yml` になった回を確認する。起動を受理した回にはリクエストIDと、GitHubが返した場合は実行IDが残る。GitHub Actionsでその実行の完了と、実取得の結果を確認する。
+3. この起動方式を戻す場合は同じコマンドの `DIRECT_PRIORITY:false` を指定すると従来の Watch 起動に戻る。Workerの定期起動を止める場合は `ENABLED:false` を指定する。
+
+Workerは引き続き15分ごとにGitHubの実行状況を確認する。既存のPriority起動が直近2時間以内にあるとき、前回の外部起動から2時間未満のとき、データ更新が待機・実行中のときは起動を送らない。外部からの起動は2時間以上あけるので24時間で最大12回。既存のGitHub定期起動と取得側の間隔制限も残る。認証・API保留や安全のための待機中は間隔が長くなる。
+
 Cloudflare Workers Cronで15分ごとにGitHubの更新状況だけ確認し、直近のPriority作成から2.5時間以上空き、Daily/Priority/Safe/Watch/GemRate公開等が待機・実行中でない場合に限り、既存Watchのmainを起動する。取得・保存原票回収・検証・公開は既存の非AI処理を再利用する。通常取得のLLM/ChatGPT/Codex呼出0、API/403/仕様保留を維持する。
 
 ## 実装と制約

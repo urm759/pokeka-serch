@@ -19,6 +19,24 @@ assert.equal(config.workers_dev,false);assert.equal(config.preview_urls,false);a
   globalThis.fetch=async(url,init)=>{assert.equal(init.redirect,'manual');assert.equal(init.method,'GET');return new Response(null,{status:302,headers:{Location:'https://untrusted.example/'}});};const heldRedirect=storage(),r=await tick({env:{...env,GH_ACTIONS_TOKEN:'test-only-no-network'},storage:heldRedirect,now});assert.equal(r.reason,'GitHub HTTP 302');assert.equal((await heldRedirect.get()).held,true,'redirect is held without following or forwarding authorization');
  }finally{globalThis.fetch=realFetch;}
  const intent=(await store.get()).history.find(r=>r.status==='dispatch-intent');assert(intent,'intent persists before dispatch, separately from acceptance');
+ const directEnv={...env,DIRECT_PRIORITY:'true'},directStore=storage(),directPosts=[];
+ const directRequest=async(method,path,body)=>{
+  if(method==='GET')return path.includes('/workflows/')?{workflow_runs:[{...priority,created_at:new Date(now-2*h).toISOString()}]}:{workflow_runs:[]};
+  directPosts.push({path,body});
+  assert.equal((await directStore.get()).lastCheck.status,'dispatch-intent');
+  return null;
+ };
+ assert.equal((await tick({env:directEnv,storage:directStore,now:now-1,request:directRequest})).status,'not-dispatched');
+ assert.equal((await tick({env:directEnv,storage:directStore,now,request:directRequest})).targetWorkflow,'priority-price-refresh.yml');
+ for(let elapsed=15*60000;elapsed<24*h;elapsed+=15*60000)
+  await tick({env:directEnv,storage:directStore,now:now+elapsed,request:directRequest});
+ assert.equal(directPosts.length,12);
+ assert(directPosts.every(({path,body})=>path==='/actions/workflows/priority-price-refresh.yml/dispatches'&&body.ref==='main'&&body.inputs.timer_request_id));
+ const midflight=await tick({env:directEnv,storage:storage(),now,request:async(method,path)=>{
+  assert.equal(method,'GET');
+  return path.includes('/workflows/')?inventory(path):{workflow_runs:[{id:2,path:'.github/workflows/daily-fast-update.yml',status:'in_progress'}]};
+ }});
+ assert.equal(midflight.reason,'existing-cloud-run-pending');
  await tick({env,storage:store,now:now+1000,request});assert.equal(posts,1);
  for(const status of ['pending','queued','in_progress','waiting','requested']){const s=storage();const r=await tick({env,storage:s,now,request:async method=>{assert.equal(method,'GET');return {workflow_runs:[priority,{path:'.github/workflows/daily-fast-update.yml',status}]};}});assert.equal(r.status,'not-dispatched');}
  store=storage();await tick({env,storage:store,now,request:async()=>{throw Object.assign(Error('denied'),{httpStatus:403});}});assert((await store.get()).held);
