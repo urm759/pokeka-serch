@@ -101,4 +101,35 @@ function needsReconcile(root){
     return fs.existsSync(history)&&fs.existsSync(summary)&&JSON.parse(fs.readFileSync(summary)).stockStatistics?.version!==2;
   });
 }
-module.exports={observations,period,summarize,apply,reconcile,captureQuantity,dayOf,needsReconcile};
+
+function mergeQuantityEvidence(result, left, right) {
+  if (!left.quantityEvidence && !right.quantityEvidence) return result;
+  const a = left.quantityEvidence || {}, b = right.quantityEvidence || {};
+  const dateIndex = new Map(result.dates.map((day, index) => [day, index]));
+  result.quantityEvidence = {};
+  for (const id of new Set([...Object.keys(a), ...Object.keys(b)])) {
+    const days = {};
+    for (const day of new Set([...Object.keys(a[id] || {}), ...Object.keys(b[id] || {})])) {
+      const x = a[id]?.[day], y = b[id]?.[day];
+      // Keep the original ledger. The display check independently compares each proof to its quantity.
+      if (x === undefined || y === undefined || JSON.stringify(x) === JSON.stringify(y)) {
+        days[day] = x === undefined ? y : x;
+        continue;
+      }
+      // A held day or opposing product identities cannot prove a stock change.
+      if (!Array.isArray(x) || !Array.isArray(y) || x[1] !== y[1] || x[3] !== y[3]) {
+        days[day] = null;
+        continue;
+      }
+      const index = dateIndex.get(day);
+      const usable = [x, y].filter(proof => proof.length === 4 && proof[1] && proof[3]
+        && Number.isInteger(proof[0]) && proof[0] >= 0 && Number.isFinite(Date.parse(proof[2]))
+        && (index === undefined || proof[0] === result.stocks[id]?.[index]));
+      days[day] = usable.sort((u, v) => Date.parse(v[2]) - Date.parse(u[2]))[0] || null;
+    }
+    result.quantityEvidence[id] = days;
+  }
+  return result;
+}
+
+module.exports={observations,period,summarize,apply,reconcile,captureQuantity,dayOf,needsReconcile,mergeQuantityEvidence};

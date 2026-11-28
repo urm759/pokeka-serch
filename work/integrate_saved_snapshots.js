@@ -26,7 +26,8 @@ function mergeHistory(base,ours,theirs) {
   const byDate=history=>Object.fromEntries(Object.entries(history.stocks).map(([id,values])=>[id,Object.fromEntries(history.dates.map((date,i)=>[date,values[i]??null]))]));
   const values=merge(byDate(base),byDate(ours),byDate(theirs));
   const dates=[...new Set([...base.dates,...ours.dates,...theirs.dates])].sort();
-  return {dates,stocks:Object.fromEntries(Object.entries(values).map(([id,v])=>[id,dates.map(date=>v[date]??null)]))};
+  const stocks=Object.fromEntries(Object.entries(values).map(([id,v])=>[id,dates.map(date=>v[date]??null)]));
+  return require('./stock_history_statistics').mergeQuantityEvidence({dates,stocks},ours,theirs);
 }
 function run() {
   const read=(stage,file)=>JSON.parse(execFileSync('git',['show',`:${stage}:${file}`],{encoding:'utf8',maxBuffer:50*1024*1024}));

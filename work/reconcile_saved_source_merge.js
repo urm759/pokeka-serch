@@ -37,7 +37,7 @@ function mergeStockHistory(base,a,b,leftTimes,rightTimes){
     if((leftTimes[id]||0)===(rightTimes[id]||0))throw Error('Conflicting stock history without distinct card observation times');
     return (leftTimes[id]||0)>(rightTimes[id]||0)?x:y;
   });
-  return {dates,stocks};
+  return require('./stock_history_statistics').mergeQuantityEvidence({dates,stocks},a,b);
 }
 function historyUnion(a,b){const m=new Map();for(const r of [...b,...a]){
   const key=r&&typeof r==='object'&&!Array.isArray(r)?r.startedAt||r.at||r.recordedAt||r.date||r.runId:null;
