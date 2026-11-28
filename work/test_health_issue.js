@@ -32,5 +32,7 @@ const release = (id, conclusion) => ({id,event:'schedule',head_branch:'main',con
 assert.equal(pagesIssues([release(12,'failure'),release(13,'success')]).length,0);
 assert.equal(pagesIssues([release(15,'skipped'),release(14,'failure'),release(13,'success')])[0].url,release(14).html_url);
 assert.equal(pagesIssues([{...release(15,'success'),event:'workflow_dispatch'},release(14,'failure')]).length,0);
+assert.equal(pagesIssues([{...release(15,'success'),event:'workflow_run',display_title:'Pages release from workflow_run'},release(14,'failure')])[0].url,release(14).html_url);
+assert.equal(pagesIssues([{...release(15,'success'),event:'workflow_run',display_title:'Pages release from schedule'},release(14,'failure')]).length,0);
 assert.equal(plan([alert('shop'), ...pagesIssues([release(15,'success')])], [], {number:7,body:plan([alert('shop'),...pagesIssues([release(14,'failure')])],[],null).body}).action,'update');
 console.log('PASS monitor alert issue: known alerts silent, new alert opens one issue, no hourly repeats, additions comment, closes when resolved');
