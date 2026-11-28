@@ -1,15 +1,21 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-28T02:15:30.338Z",
+  "generatedAt": "2026-11-28T02:23:28.316Z",
   "sourceLastSuccessAt": "2026-11-28T02:06:05.899Z",
   "monitoring": {
     "status": "observed",
-    "lastAttemptAt": "2026-11-28T01:49:59.353Z",
-    "lastSuccessAt": "2026-11-28T01:49:59.353Z",
-    "runId": "46094810858",
-    "url": "https://github.com/urm759/pokeka-serch/actions/runs/46094810858"
+    "lastAttemptAt": "2026-11-28T02:23:28.306Z",
+    "lastSuccessAt": "2026-11-28T02:23:28.306Z",
+    "runId": "46097480961",
+    "url": "https://github.com/urm759/pokeka-serch/actions/runs/46097480961"
   },
   "dailyOutcomes": [
+    {
+      "runId": "46096268803",
+      "attempt": 1,
+      "state": "published",
+      "publicVerifiedAt": "2026-11-28T02:22:27.505Z"
+    },
     {
       "runId": "46045061469",
       "attempt": 1,
@@ -21,12 +27,6 @@
       "attempt": 1,
       "state": "published",
       "publicVerifiedAt": "2026-11-27T02:36:14.607Z"
-    },
-    {
-      "runId": "45873609461",
-      "attempt": 1,
-      "state": "published",
-      "publicVerifiedAt": "2026-11-26T18:45:01.389Z"
     }
   ],
   "dailyOutcomeLabels": {},
@@ -64,7 +64,7 @@
     {
       "key": "source:snkrRaw:stale",
       "category": "鮮度未達・進捗停滞",
-      "url": "https://github.com/urm759/pokeka-serch/actions/runs/46045061469",
+      "url": "https://github.com/urm759/pokeka-serch/actions/runs/46096268803",
       "reason": "スニダン素体A相場: 更新期限超過（カード別鮮度 0%）"
     },
     {
@@ -171,7 +171,7 @@
     {
       "key": "buyback-hold:torecabank:2026-11-26T06:10:44.489Z",
       "category": "確認が必要",
-      "reason": "トレカバンク 保留開始 2026-11-26T06:10:44.489Z、直前正常 577件、最終実取得 2026-11-26T02:22:58.131Z、次回 2026-11-28T06:55:52.192Z。個別提示期限24／48時間以内 0／21、正式出口 0枚"
+      "reason": "トレカバンク 保留開始 2026-11-26T06:10:44.489Z、直前正常 577件、最終実取得 2026-11-26T02:22:58.131Z、次回 2026-11-28T06:55:52.192Z。個別提示期限24／48時間以内 2／21、正式出口 0枚"
     },
     {
       "key": "buyback-hold:bluerocket:2026-11-21T02:56:59.225Z",
@@ -218,7 +218,7 @@
     "保存原票の同時更新照合が保留（2入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/state-a-price-evidence.json, work/buyback-price-observations.json",
     "保存原票の同時更新照合が保留（1入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/state-a-price-evidence.json",
     "保存原票の同時更新照合が保留（1入力）。正常な取得・公開は継続、回収完了とは数えない。Concurrent source changes require merge; saved archive retained: data/state-a-price-evidence.json",
-    "トレカバンク 保留開始 2026-11-26T06:10:44.489Z、直前正常 577件、最終実取得 2026-11-26T02:22:58.131Z、次回 2026-11-28T06:55:52.192Z。個別提示期限24／48時間以内 0／21、正式出口 0枚",
+    "トレカバンク 保留開始 2026-11-26T06:10:44.489Z、直前正常 577件、最終実取得 2026-11-26T02:22:58.131Z、次回 2026-11-28T06:55:52.192Z。個別提示期限24／48時間以内 2／21、正式出口 0枚",
     "ブルーロケット 保留開始 2026-11-21T02:56:59.225Z、直前正常 340件、最終実取得 2026-11-21T00:55:28.541Z、次回 2026-11-28T13:48:59.446Z。個別提示期限24／48時間以内 0／0、正式出口 0枚",
     "ブルーロケット 店舗の最終取得から120時間経過",
     "買取ホムラ（郵送） 保留開始 2026-11-21T02:56:59.243Z、直前正常 356件、最終実取得 2026-11-21T00:25:13.543Z、次回 2026-11-28T13:49:08.979Z。個別提示期限24／48時間以内 0／0、正式出口 0枚",
