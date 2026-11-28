@@ -45,7 +45,8 @@ async function main() {
   const latest=Object.values(pipelines).map(rows=>rows[0]).filter(Boolean);
   await Promise.all(latest.map(async run=>{try{jobsByRun[run.id]=(await api(`${API}/actions/runs/${run.id}/jobs`)).jobs||[];}catch(error){jobReadErrors.push({runId:run.id,error:error.message});}}));
   const executionFile=path.join(ROOT,'data/priority-price-execution.json');
-  const timing=require('./multi_pipeline_timing').build(pipelines,{jobsByRun,execution:fs.existsSync(executionFile)?JSON.parse(fs.readFileSync(executionFile)):null});
+  const priceExecution=fs.existsSync(executionFile)?JSON.parse(fs.readFileSync(executionFile)):null;
+  const timing=require('./multi_pipeline_timing').build(pipelines,{jobsByRun,execution:priceExecution});
   timing.jobReadErrors=jobReadErrors;
   fs.writeFileSync(path.join(ROOT,'data/workflow-stage-audit.json'),JSON.stringify(timing));
   fs.writeFileSync(path.join(ROOT,'work/automatic-workflow-evidence.json'), JSON.stringify({checkedAt:new Date().toISOString(),
@@ -213,8 +214,19 @@ async function main() {
     const recent = samples.filter((row) => row.source === source).slice(-2);
     return [source, { before: recent[0] || null, after: recent[1] || null }];
   }));
+  let priceOperationEvidence;
+  try {
+    const evidence = require('./price_operation_evidence');
+    const dailySourcesFile = path.join(ROOT, 'data', 'daily-source-isolation.json');
+    priceOperationEvidence = evidence.build({ pipelines, dailyOutcomes, execution: priceExecution,
+      dailySources: fs.existsSync(dailySourcesFile) ? JSON.parse(fs.readFileSync(dailySourcesFile, 'utf8')) : null,
+      sourceRecovery: recovered, inspections: evidence.savedInspections(ROOT) });
+  } catch (error) {
+    priceOperationEvidence = { status: 'unavailable' };
+    console.warn('価格更新の記録を要約できず：' + error.message);
+  }
   const result = { ...health, status: issues.length ? "alert" : health.status,
-    unifiedMonitor: monitor, priorityPriceRefresh: priceState,
+    unifiedMonitor: monitor, priorityPriceRefresh: priceState, priceOperationEvidence,
     reasons: issues.map((issue) => issue.reason), issues,
     activeAlertKeys: issues.map((issue) => issue.key),
     backfills: { ...backfills.backfills, rateAudit } };

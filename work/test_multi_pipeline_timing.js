@@ -17,3 +17,44 @@ assert.equal(skipped.validationMs,null,'skipped validation is not a zero-duratio
 for(const file of fs.readdirSync('.github/workflows').filter(f=>f.endsWith('.yml'))){const text=fs.readFileSync(path.join('.github/workflows',file),'utf8');if(text.includes('group: all-site-data-refresh')){assert(/group: all-site-data-refresh\r?\n\s+queue: max\r?\n\s+cancel-in-progress: false/.test(text),file+' must preserve pending writers without simultaneous acquisition');}}
 assert(!fs.readFileSync('app.js','utf8').includes('data/workflow-stage-audit.json'),'raw stage inventory stays out of initial browser requests');
 console.log('PASS real-time wait decomposition, verifier/worker isolation, pending vs unknown, publication separate from Pages, all writer queues retained');
+
+{
+  const { build: operations } = require('./price_operation_evidence');
+  const sha = '1'.repeat(40);
+  const ownWatch = {...watch, head_sha:sha, run_attempt:1, updated_at:at, conclusion:'failure'};
+  const ownDaily = {...completed, run_attempt:1, updated_at:at};
+  const startedAt = '2026-11-13T16:00:00Z';
+  const actual = {script:'work/refresh_candidate_shops.js', startedAt, httpRequests:3, refreshed:2, status:'partial'};
+  const execution = {runId:'2', headSha:sha, startedAt, runs:[actual,
+    {...actual, script:'local-reuse', httpRequests:0, refreshed:99},
+    {...actual, script:'outside-window', startedAt:'2026-11-12T16:00:00Z'},
+    {script:'source-failed', startedAt, processStatus:'failed', failureClass:'source-acquisition'}]};
+  const dailySources = {runId:'1', startedAt, sources:[{source:'shopBuyback', startedAt,
+    shopBuyback:{acquiredCount:12, completionStatus:'partial'}}]};
+  const dailyOutcomes = [
+    {runId:'3', attempt:1, createdAt:startedAt, state:'recovered', publicVerifiedAt:at, originalConclusion:'failure'},
+    {runId:'4', attempt:1, createdAt:startedAt, state:'acquisition-failed', originalConclusion:'failure'},
+    {runId:'5', attempt:1, createdAt:startedAt, state:'pages-unverified', originalConclusion:'failure'},
+  ];
+  const input = {pipelines:{watch:[ownWatch],daily:[ownDaily]}, execution, dailySources, dailyOutcomes,
+    sourceRecovery:{runId:'9', newHttpRequests:0, recoveredSourceFiles:4, publicationEvidence:{commit:sha,checkedAt:at}},
+    inspections:[{runId:'8',runAttempt:2,checkedAt:at,status:'publication-completed-separate-failure-no-price-recovery',
+      originalConclusion:'cancelled',publicationStepSucceeded:true}]};
+  const report = operations(input);
+  assert.deepEqual(report.freshSourceEvidence.map(r => [r.runId,r.httpRequests,r.refreshedCards,r.acquiredQuotes]),
+    [['2',3,2,undefined],['1',null,undefined,12]]);
+  assert.deepEqual(report.recovered.map(r => [r.runId,r.recoverySourceRequests]), [['3',0],['9',0]]);
+  assert.deepEqual(report.issues.map(r => [r.runId,r.state]), [
+    ['8','publication-completed-separate-failure-no-price-recovery'], ['4','acquisition-failed'],
+    ['5','pages-unverified'], ['2','acquisition-failed'],
+  ]);
+  assert.equal(report.issues[0].originalConclusion,'cancelled');
+  assert.equal(report.issues[0].pushCompletionProven,true);
+  const rerun = operations({...input, pipelines:{watch:[{...ownWatch,run_attempt:2}],daily:[{...ownDaily,run_attempt:2}]}});
+  assert.deepEqual(rerun.freshSourceEvidence,[],'original counts cannot be attributed to a rerun');
+  assert.equal(rerun.issues.some(r => r.runId === '2'), false);
+  assert.deepEqual(operations({...input,execution:{...execution,headSha:'2'.repeat(40)},dailySources:{...dailySources,runId:'999'}}).freshSourceEvidence,[]);
+  assert.deepEqual(operations({}).freshSourceEvidence,[],'missing evidence stays uncounted');
+  assert.equal(report.sourceRequests,0);
+  console.log('PASS source requests, recovered originals and observer failures stay separate by run and attempt');
+}
