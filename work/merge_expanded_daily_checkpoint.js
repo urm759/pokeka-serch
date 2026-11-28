@@ -74,7 +74,8 @@ function run() {
       const times=xs=>Object.fromEntries(xs.filter(r=>r.cardId).map(r=>[r.cardId,stamp(r)])),ta=times(ca),tt=times(ct);
       const dates=[...new Set([...a.dates,...t.dates])].sort(),stocks={};
       for(const id of new Set([...Object.keys(a.stocks),...Object.keys(t.stocks)]))stocks[id]=dates.map(d=>{const x=a.stocks[id]?.[a.dates.indexOf(d)],y=t.stocks[id]?.[t.dates.indexOf(d)];return x==null?y??null:y==null?x:(ta[id]||0)>=(tt[id]||0)?x:y;});
-      value={...a,...t,dates,stocks};assert(catalog.length>=Math.max(ca.length,ct.length));
+      value=require('./stock_history_statistics').mergeQuantityEvidence({...a,...t,dates,stocks},a,t);
+      assert(catalog.length>=Math.max(ca.length,ct.length));
     } else if(f==='data/shop-buyback-summary.json') {
       const stores={};for(const shop of new Set([...Object.keys(a.shops),...Object.keys(t.shops)]))stores[shop]=isOurs(shop)?a.shops[shop]:t.shops[shop];
       const cards={};for(const id of new Set([...Object.keys(a.cards),...Object.keys(t.cards)])) {

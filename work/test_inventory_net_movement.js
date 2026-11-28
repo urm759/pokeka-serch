@@ -31,3 +31,29 @@ const html=ctx.render([['店舗',input]],Date.parse(asOf));
 for(const text of ['7日間の在庫純増減 +1枚','30日間の在庫純増減','減少累計 4枚','補充累計 5枚','5観測日','4区間','集計基準日 2026-11-04','対象 2026-10-28','履歴商品'])assert(html.includes(text),text);
 assert(!html.includes('売れた枚数'));assert(ctx.render([['店舗',{}]],Date.parse(asOf)).includes('減少累計 未取得'));
 console.log('PASS inventory net movement: same-product paired differences, restock/decrease, missing/future observations, stale-flow removal, nested calendar windows and rendered provenance');
+
+{
+  const [d0, d1, d2, d3] = dates;
+  const archived = '2026-10-01';
+  const proof = (stock, day, time = '01:00:00', product = url) => [stock, product, `${day}T${time}Z`, 'same'];
+  const base = {dates, stocks:{x:[10,7,5,4,2]}};
+  const left = {...base, quantityEvidence:{x:{[d0]:proof(10,d0),[d1]:proof(99,d1),[d2]:null,
+    [d3]:proof(4,d3),[archived]:proof(12,archived)}}};
+  const right = {...base, quantityEvidence:{x:{[d1]:proof(7,d1),[d2]:proof(5,d2),
+    [d3]:proof(4,d3,'02:00:00',url+'-other'),[dates[4]]:proof(2,dates[4])}}};
+  const expected = {[d0]:proof(10,d0),[d1]:proof(7,d1),[d2]:null,[d3]:null,
+    [archived]:proof(12,archived),[dates[4]]:proof(2,dates[4])};
+  const snapshots = require('./integrate_saved_snapshots').mergeHistory(base,left,right);
+  const reconciliation = require('./reconcile_saved_source_merge').mergeStockHistory(base,left,right,{},{});
+  assert.deepEqual(snapshots.stocks,base.stocks);
+  assert.deepEqual(reconciliation.stocks,base.stocks);
+  assert.deepEqual(snapshots.quantityEvidence.x,expected);
+  assert.deepEqual(reconciliation.quantityEvidence.x,expected);
+  assert.deepEqual(m.mergeQuantityEvidence({...base},right,left).quantityEvidence.x,expected);
+  const newer = {...left,quantityEvidence:{x:{[d0]:proof(10,d0,'02:00:00')}}};
+  assert.deepEqual(m.mergeQuantityEvidence({...base},left,newer).quantityEvidence.x[d0],proof(10,d0,'02:00:00'));
+  const retained = m.mergeQuantityEvidence({...base},left,base);
+  assert.deepEqual(retained.quantityEvidence.x[d1],proof(99,d1),'keep the original even when the display cannot use it');
+  assert.equal(m.summarize(retained,{asOf}).cards.x.stockFlow[30].excluded.missingEvidence,4);
+  console.log('PASS concurrency preserves separate proofs and holds ambiguous products without changing quantities');
+}
