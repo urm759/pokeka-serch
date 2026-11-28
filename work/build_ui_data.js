@@ -63,8 +63,11 @@ const SUMMARY = ['card-catalog-completion', 'operational-limit-history', 'market
   'cardrush-stock-summary', 'hareruya2-stock-summary', 'yuyutei-stock-summary', 'torecacamp-stock-summary',
   'shop-buyback-summary', 'buyback-observation-summary', 'buyback-posting-coverage', 'state-a-price-evidence', 'snkr-listing-summary', 'snkr-raw-flip-summary',
   'psa-population-summary', 'psa10-period-summary', 'gemrate-reference-summary', 'card-catalog/analysis', 'card-catalog/search-index', 'update-status'];
-// The limit history mostly repeats identical rows across cards and conditions.
-const REPEATED_ROWS = new Set(['operational-limit-history', 'buyback-observation-summary']);
+// Store identical rows once in the browser payload. The decoder restores every value.
+const REPEATED_ROWS = new Set([
+  'operational-limit-history', 'buyback-observation-summary',
+  'hareruya2-stock-summary', 'update-status',
+]);
 // Daily buyback ratios repeat the same value for many days; store them as runs.
 const DATE_RUNS = new Set(['buyback-observation-summary']);
 function build(root = ROOT) {
