@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-28T16:44:40.821Z",
+  "generatedAt": "2026-11-28T19:56:35.017Z",
   "llmCalls": 0,
   "codexCalls": 0,
   "retryPolicy": {
@@ -169,8 +169,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-11-28T16:19:27.923Z",
-        "to": "2026-11-28T16:44:37.211Z"
+        "from": "2026-11-28T16:44:37.211Z",
+        "to": "2026-11-28T19:56:30.815Z"
       },
       "sinceBaseline": {
         "newLinked": 4012,
@@ -188,19 +188,19 @@
       "queueDefinition": "未巡回商品数推計。全国内カードの不足項目数とは別",
       "checkpoint": {
         "sitemap": 18,
-        "entry": 824,
+        "entry": 986,
         "total": 46
       },
       "sourceState": "partial",
       "stopReason": "商品詳細の1回上限 35件に到達",
       "retryUrls": [],
       "lastRun": {
-        "startedAt": "2026-11-28T16:17:28.255Z",
-        "durationMs": 43123,
+        "startedAt": "2026-11-28T19:54:36.558Z",
+        "durationMs": 43093,
         "paginationMode": "sitemap",
         "currentCursor": 18,
         "currentSitemapIndex": 18,
-        "currentEntryIndex": 824,
+        "currentEntryIndex": 986,
         "currentSitemapUrl": "https://torecacamp-pokemon.com/sitemap_products_18.xml?from=8900884824238&to=8912727474350",
         "processedSitemapCount": 46,
         "processedSitemaps": [
@@ -260,533 +260,682 @@
         "retryQueue": [],
         "legacyRecords": [
           {
-            "id": "pk-22202",
-            "url": "https://torecacamp-pokemon.com/products/rc_itfmw3iy62m0_ofcc",
-            "startedAt": "2026-11-28T16:17:32.884Z",
-            "sourceSitemap": 20,
+            "id": "x-740648",
+            "url": "https://torecacamp-pokemon.com/products/rc_itpf0nw3f660_byqu",
+            "startedAt": "2026-11-28T19:54:41.187Z",
+            "sourceSitemap": 25,
             "routeReason": "bulk-unreached-priority",
             "status": "verified",
-            "confirmedAt": "2026-11-28T16:17:33.864Z",
-            "price": 780,
-            "available": true,
-            "adopted": true
-          },
-          {
-            "id": "pk-22205",
-            "url": "https://torecacamp-pokemon.com/products/rc_it8lgrig44v6_ojat",
-            "startedAt": "2026-11-28T16:17:33.908Z",
-            "sourceSitemap": 20,
-            "routeReason": "bulk-unreached-priority",
-            "status": "verified",
-            "confirmedAt": "2026-11-28T16:17:34.964Z",
+            "confirmedAt": "2026-11-28T19:54:42.142Z",
             "price": 580,
             "available": true,
             "adopted": true
           },
           {
-            "id": "pk-19003",
-            "url": "https://torecacamp-pokemon.com/products/rc_itayoxai87nw_vdrj",
-            "startedAt": "2026-11-28T16:17:35.009Z",
-            "sourceSitemap": 19,
-            "routeReason": "bulk-unreached-priority",
-            "status": "verified",
-            "confirmedAt": "2026-11-28T16:17:36.057Z",
-            "price": 99800,
-            "available": false,
-            "adopted": true
-          },
-          {
-            "id": "pk-4687",
-            "url": "https://torecacamp-pokemon.com/products/rc_itkey1j04gl8_uzv0",
-            "startedAt": "2026-11-28T16:17:36.101Z",
-            "sourceSitemap": 29,
-            "routeReason": "bulk-unreached-priority",
-            "status": "verified",
-            "confirmedAt": "2026-11-28T16:17:37.157Z",
-            "price": 19800,
-            "available": false,
-            "adopted": true
-          },
-          {
-            "id": "pk-70080",
-            "url": "https://torecacamp-pokemon.com/products/rc_itqhgg6d5tql_lxrq",
-            "startedAt": "2026-11-28T16:17:37.200Z",
-            "sourceSitemap": 14,
-            "routeReason": "bulk-unreached-priority",
-            "status": "verified",
-            "confirmedAt": "2026-11-28T16:17:38.261Z",
-            "price": 32800,
-            "available": true,
-            "adopted": true
-          },
-          {
-            "id": "pk-22191",
-            "url": "https://torecacamp-pokemon.com/products/rc_itnugm66n5je_8ifm",
-            "startedAt": "2026-11-28T16:17:38.309Z",
+            "id": "pk-20171",
+            "url": "https://torecacamp-pokemon.com/products/rc_itg76rw92i32_ugv0",
+            "startedAt": "2026-11-28T19:54:42.177Z",
             "sourceSitemap": 20,
             "routeReason": "bulk-unreached-priority",
             "status": "verified",
-            "confirmedAt": "2026-11-28T16:17:39.370Z",
-            "price": 18800,
-            "available": true,
-            "adopted": true
-          },
-          {
-            "id": "x-413447",
-            "url": "https://torecacamp-pokemon.com/products/rc_itjaftftz30o_qego",
-            "startedAt": "2026-11-28T16:17:39.417Z",
-            "sourceSitemap": 24,
-            "routeReason": "bulk-unreached-priority",
-            "status": "verified",
-            "confirmedAt": "2026-11-28T16:17:40.459Z",
-            "price": 17800,
-            "available": false,
-            "adopted": true
-          },
-          {
-            "id": "pk-67343",
-            "url": "https://torecacamp-pokemon.com/products/rc_itdlh6yrl1ny_d5a0",
-            "startedAt": "2026-11-28T16:17:40.503Z",
-            "sourceSitemap": 13,
-            "routeReason": "bulk-unreached-priority",
-            "status": "verified",
-            "confirmedAt": "2026-11-28T16:17:41.589Z",
-            "price": 56800,
-            "available": true,
-            "adopted": true
-          },
-          {
-            "id": "pk-67583",
-            "url": "https://torecacamp-pokemon.com/products/rc_itrkouyyd5q6_4yim",
-            "startedAt": "2026-11-28T16:17:41.633Z",
-            "sourceSitemap": 13,
-            "routeReason": "bulk-unreached-priority",
-            "status": "verified",
-            "confirmedAt": "2026-11-28T16:17:42.692Z",
-            "price": 59800,
-            "available": false,
-            "adopted": true
-          },
-          {
-            "id": "pk-62018",
-            "url": "https://torecacamp-pokemon.com/products/rc_it2gjejzvkik_dkdv",
-            "startedAt": "2026-11-28T16:17:42.736Z",
-            "sourceSitemap": 10,
-            "routeReason": "bulk-unreached-priority",
-            "status": "verified",
-            "confirmedAt": "2026-11-28T16:17:43.766Z",
-            "price": 45800,
-            "available": true,
-            "adopted": true
-          },
-          {
-            "id": "pk-39522",
-            "url": "https://torecacamp-pokemon.com/products/rc_it0eiy4wek48_duv3",
-            "startedAt": "2026-11-28T16:17:43.811Z",
-            "sourceSitemap": 1,
-            "routeReason": "bulk-unreached-priority",
-            "status": "verified",
-            "confirmedAt": "2026-11-28T16:17:44.859Z",
-            "price": 23800,
-            "available": false,
-            "adopted": true
-          },
-          {
-            "id": "pk-731",
-            "url": "https://torecacamp-pokemon.com/products/rc_itkj6ode87xi_oop9",
-            "startedAt": "2026-11-28T16:17:44.905Z",
-            "sourceSitemap": 22,
-            "routeReason": "bulk-unreached-priority",
-            "status": "verified",
-            "confirmedAt": "2026-11-28T16:17:45.964Z",
-            "price": 79800,
-            "available": false,
-            "adopted": true
-          },
-          {
-            "id": "x-107497",
-            "url": "https://torecacamp-pokemon.com/products/rc_it4b2qmhmrpc_lenl",
-            "startedAt": "2026-11-28T16:17:46.010Z",
-            "sourceSitemap": 31,
-            "routeReason": "bulk-unreached-priority",
-            "status": "verified",
-            "confirmedAt": "2026-11-28T16:17:47.076Z",
-            "price": 34800,
-            "available": false,
-            "adopted": true
-          },
-          {
-            "id": "x-107447",
-            "url": "https://torecacamp-pokemon.com/products/rc_itviaaiai4uq_mm2a",
-            "startedAt": "2026-11-28T16:17:47.120Z",
-            "sourceSitemap": 31,
-            "routeReason": "bulk-unreached-priority",
-            "status": "verified",
-            "confirmedAt": "2026-11-28T16:17:48.165Z",
-            "price": 99800,
-            "available": false,
-            "adopted": true
-          },
-          {
-            "id": "x-107448",
-            "url": "https://torecacamp-pokemon.com/products/rc_it6eehsa56bo_l398",
-            "startedAt": "2026-11-28T16:17:48.211Z",
-            "sourceSitemap": 32,
-            "routeReason": "bulk-unreached-priority",
-            "status": "verified",
-            "confirmedAt": "2026-11-28T16:17:49.261Z",
-            "price": 39800,
-            "available": false,
-            "adopted": true
-          },
-          {
-            "id": "x-107559",
-            "url": "https://torecacamp-pokemon.com/products/rc_itc5281g2t72_aesh",
-            "startedAt": "2026-11-28T16:17:49.305Z",
-            "sourceSitemap": 31,
-            "routeReason": "bulk-unreached-priority",
-            "status": "verified",
-            "confirmedAt": "2026-11-28T16:17:50.370Z",
+            "confirmedAt": "2026-11-28T19:54:43.246Z",
             "price": 14800,
             "available": false,
             "adopted": true
           },
           {
-            "id": "x-91216",
-            "url": "https://torecacamp-pokemon.com/products/rc_itf8ex8kkrtk_nvv7",
-            "startedAt": "2026-11-28T16:17:50.415Z",
+            "id": "pk-20183",
+            "url": "https://torecacamp-pokemon.com/products/rc_itvxvah9nhlw_iviw",
+            "startedAt": "2026-11-28T19:54:43.282Z",
+            "sourceSitemap": 20,
+            "routeReason": "bulk-unreached-priority",
+            "status": "verified",
+            "confirmedAt": "2026-11-28T19:54:44.341Z",
+            "price": 79800,
+            "available": false,
+            "adopted": true
+          },
+          {
+            "id": "pk-43860",
+            "url": "https://torecacamp-pokemon.com/products/rc_itdcwr84ynlw_u8l4",
+            "startedAt": "2026-11-28T19:54:44.377Z",
+            "sourceSitemap": 3,
+            "routeReason": "bulk-unreached-priority",
+            "status": "verified",
+            "confirmedAt": "2026-11-28T19:54:45.455Z",
+            "price": 52800,
+            "available": false,
+            "adopted": true
+          },
+          {
+            "id": "pk-43864",
+            "url": "https://torecacamp-pokemon.com/products/rc_itkw0gut5se0_il3l",
+            "startedAt": "2026-11-28T19:54:45.491Z",
+            "sourceSitemap": 3,
+            "routeReason": "bulk-unreached-priority",
+            "status": "verified",
+            "confirmedAt": "2026-11-28T19:54:46.544Z",
+            "price": 29800,
+            "available": true,
+            "adopted": true
+          },
+          {
+            "id": "x-411784",
+            "url": "https://torecacamp-pokemon.com/products/rc_itex76xysb4k_7iao",
+            "startedAt": "2026-11-28T19:54:46.585Z",
             "sourceSitemap": 31,
             "routeReason": "bulk-unreached-priority",
             "status": "verified",
-            "confirmedAt": "2026-11-28T16:17:51.456Z",
+            "confirmedAt": "2026-11-28T19:54:47.640Z",
+            "price": 19800,
+            "available": false,
+            "adopted": true
+          },
+          {
+            "id": "x-413387",
+            "url": "https://torecacamp-pokemon.com/products/rc_it5rk8ile4tk_5qbb",
+            "startedAt": "2026-11-28T19:54:47.676Z",
+            "sourceSitemap": 31,
+            "routeReason": "bulk-unreached-priority",
+            "status": "verified",
+            "confirmedAt": "2026-11-28T19:54:48.747Z",
+            "price": 59800,
+            "available": false,
+            "adopted": true
+          },
+          {
+            "id": "pk-3123",
+            "url": "https://torecacamp-pokemon.com/products/rc_iteqxatmq124_h8wf",
+            "startedAt": "2026-11-28T19:54:48.784Z",
+            "sourceSitemap": 28,
+            "routeReason": "bulk-unreached-priority",
+            "status": "verified",
+            "confirmedAt": "2026-11-28T19:54:49.847Z",
+            "price": 19800,
+            "available": true,
+            "adopted": true
+          },
+          {
+            "id": "pk-54810",
+            "url": "https://torecacamp-pokemon.com/products/rc_itak0rkwim30_jtun",
+            "startedAt": "2026-11-28T19:54:49.884Z",
+            "sourceSitemap": 7,
+            "routeReason": "bulk-unreached-priority",
+            "status": "verified",
+            "confirmedAt": "2026-11-28T19:54:50.942Z",
+            "price": 29800,
+            "available": false,
+            "adopted": true
+          },
+          {
+            "id": "pk-70051",
+            "url": "https://torecacamp-pokemon.com/products/rc_itlkeyz463hs_pord",
+            "startedAt": "2026-11-28T19:54:51.039Z",
+            "sourceSitemap": 13,
+            "routeReason": "bulk-unreached-priority",
+            "status": "verified",
+            "confirmedAt": "2026-11-28T19:54:52.043Z",
             "price": 34800,
+            "available": true,
+            "adopted": true
+          },
+          {
+            "id": "pk-64586",
+            "url": "https://torecacamp-pokemon.com/products/rc_it73pefyve8k_1ygd",
+            "startedAt": "2026-11-28T19:54:52.079Z",
+            "sourceSitemap": 11,
+            "routeReason": "bulk-unreached-priority",
+            "status": "verified",
+            "confirmedAt": "2026-11-28T19:54:53.145Z",
+            "price": 37800,
+            "available": true,
+            "adopted": true
+          },
+          {
+            "id": "pk-36378",
+            "url": "https://torecacamp-pokemon.com/products/rc_it448iiyih1v_kvyi",
+            "startedAt": "2026-11-28T19:54:53.182Z",
+            "sourceSitemap": 22,
+            "routeReason": "bulk-unreached-priority",
+            "status": "verified",
+            "confirmedAt": "2026-11-28T19:54:54.244Z",
+            "price": 228000,
+            "available": false,
+            "adopted": true
+          },
+          {
+            "id": "pk-18261",
+            "url": "https://torecacamp-pokemon.com/products/rc_itcz9tvo1dj4_tyca",
+            "startedAt": "2026-11-28T19:54:54.281Z",
+            "sourceSitemap": 20,
+            "routeReason": "bulk-unreached-priority",
+            "status": "verified",
+            "confirmedAt": "2026-11-28T19:54:55.346Z",
+            "price": 89800,
+            "available": false,
+            "adopted": true
+          },
+          {
+            "id": "pk-18238",
+            "url": "https://torecacamp-pokemon.com/products/rc_itwgzvtxbfc2_hbkl",
+            "startedAt": "2026-11-28T19:54:55.383Z",
+            "sourceSitemap": 19,
+            "routeReason": "bulk-unreached-priority",
+            "status": "verified",
+            "confirmedAt": "2026-11-28T19:54:56.456Z",
+            "price": 49800,
+            "available": false,
+            "adopted": true
+          },
+          {
+            "id": "pk-4376",
+            "url": "https://torecacamp-pokemon.com/products/rc_it8vyt04819s_gb02",
+            "startedAt": "2026-11-28T19:54:56.493Z",
+            "sourceSitemap": 30,
+            "routeReason": "bulk-unreached-priority",
+            "status": "verified",
+            "confirmedAt": "2026-11-28T19:54:57.546Z",
+            "price": 24800,
+            "available": false,
+            "adopted": true
+          },
+          {
+            "id": "pk-51078",
+            "url": "https://torecacamp-pokemon.com/products/rc_itah5np0j11k_tmco",
+            "startedAt": "2026-11-28T19:54:57.583Z",
+            "sourceSitemap": 6,
+            "routeReason": "bulk-unreached-priority",
+            "status": "verified",
+            "confirmedAt": "2026-11-28T19:54:58.637Z",
+            "price": 29800,
+            "available": false,
+            "adopted": true
+          },
+          {
+            "id": "pk-51076",
+            "url": "https://torecacamp-pokemon.com/products/rc_itwwj4o5q740_f3tz",
+            "startedAt": "2026-11-28T19:54:58.738Z",
+            "sourceSitemap": 6,
+            "routeReason": "bulk-unreached-priority",
+            "status": "verified",
+            "confirmedAt": "2026-11-28T19:54:59.737Z",
+            "price": 64800,
             "available": false,
             "adopted": true
           }
         ],
         "collectionBatch": {
           "requests": 4,
-          "products": 561,
-          "verified": 223,
+          "products": 506,
+          "verified": 213,
           "newLinks": 0,
           "failures": [],
           "pages": [
             {
-              "url": "https://torecacamp-pokemon.com/collections/s12a/products.json?limit=250&page=1",
-              "page": 1,
+              "url": "https://torecacamp-pokemon.com/collections/%E3%82%B5%E3%83%B3-%E3%83%A0%E3%83%BC%E3%83%B3-promo/products.json?limit=250&page=2",
+              "page": 2,
               "lane": "priority",
-              "previousCheckedAt": "2026-11-28T00:24:43.385Z",
-              "observedAt": "2026-11-28T16:17:29.700Z",
+              "previousCheckedAt": "2026-11-28T06:47:07.877Z",
+              "observedAt": "2026-11-28T19:54:37.914Z",
               "coverageKnown": true,
               "expectedIds": [
-                "pk-38441",
-                "pk-38385"
+                "x-93067",
+                "x-91260",
+                "x-93046",
+                "x-107497",
+                "x-93049",
+                "x-107559",
+                "x-107447",
+                "x-93050",
+                "x-93078",
+                "x-91216",
+                "x-107448",
+                "x-93069",
+                "x-93060"
               ],
-              "advanceCursor": false,
-              "maintenanceDeadlineAt": "2026-11-28T06:24:41.329Z",
-              "productCount": 250,
-              "verified": 148,
-              "fixedVerified": 2,
-              "criticalVerified": 0,
+              "advanceCursor": true,
+              "maintenanceDeadlineAt": "2026-11-28T10:00:29.268Z",
+              "productCount": 209,
+              "verified": 79,
+              "fixedVerified": 13,
+              "criticalVerified": 1,
               "newLinks": 0,
               "omitted": {
-                "identity": 95,
+                "identity": 99,
                 "condition": 0,
-                "hold": 7,
+                "hold": 0,
                 "binding": 0,
                 "price": 0,
-                "otherProduct": 0
+                "otherProduct": 22
               },
-              "bytes": 520934,
-              "fetchMs": 324,
-              "payloadHash": "c5f2d21a66ac78aecdff5d325f36cc9f4afc84fe39276ba8a198d31d220131b7"
+              "bytes": 551845,
+              "fetchMs": 239,
+              "payloadHash": "07f764025b6346466c6d0c4eaa9cb6b5e899688ae21bcfba4b350c3d7959c223"
             },
             {
-              "url": "https://torecacamp-pokemon.com/collections/s12a/products.json?limit=250&page=2",
+              "url": "https://torecacamp-pokemon.com/collections/sv11b/products.json?limit=250&page=2",
               "page": 2,
               "lane": "continuation",
-              "previousCheckedAt": "2026-11-28T16:17:29.700Z",
-              "observedAt": "2026-11-28T16:17:30.622Z",
+              "previousCheckedAt": "2026-11-28T00:24:44.594Z",
+              "observedAt": "2026-11-28T19:54:38.916Z",
               "coverageKnown": true,
               "expectedIds": [],
               "advanceCursor": true,
-              "maintenanceDeadlineAt": "2026-11-28T06:24:41.329Z",
-              "productCount": 100,
-              "verified": 16,
+              "maintenanceDeadlineAt": "2026-11-28T22:17:41.589Z",
+              "productCount": 74,
+              "verified": 5,
               "fixedVerified": 0,
               "criticalVerified": 0,
               "newLinks": 0,
               "omitted": {
-                "identity": 83,
-                "condition": 0,
-                "hold": 1,
-                "binding": 0,
-                "price": 0,
-                "otherProduct": 0
-              },
-              "bytes": 166880,
-              "fetchMs": 146,
-              "payloadHash": "95beac49721ea16f03d0d0dd4a7a68ab46a2041837cc69746ebc99a10e37362f"
-            },
-            {
-              "url": "https://torecacamp-pokemon.com/collections/s7r/products.json?limit=250&page=1",
-              "page": 1,
-              "lane": "rotation",
-              "previousCheckedAt": "2026-11-26T06:17:08.783Z",
-              "observedAt": "2026-11-28T16:17:31.690Z",
-              "coverageKnown": true,
-              "expectedIds": [
-                "pk-21469",
-                "x-113246",
-                "pk-21468",
-                "pk-21480",
-                "pk-21288",
-                "pk-21322",
-                "pk-21473",
-                "pk-21474",
-                "pk-21300",
-                "pk-21470",
-                "pk-21481",
-                "pk-21301",
-                "pk-21484",
-                "pk-21485",
-                "pk-21478",
-                "pk-21472",
-                "x-141555",
-                "pk-21488",
-                "pk-21490",
-                "pk-21476",
-                "pk-21309",
-                "pk-21326",
-                "pk-21327",
-                "pk-21486",
-                "pk-21475",
-                "pk-21310",
-                "x-141542",
-                "x-141544"
-              ],
-              "advanceCursor": true,
-              "maintenanceDeadlineAt": "2026-11-28T16:55:55.294Z",
-              "productCount": 90,
-              "verified": 32,
-              "fixedVerified": 2,
-              "criticalVerified": 0,
-              "newLinks": 0,
-              "omitted": {
-                "identity": 57,
-                "condition": 0,
-                "hold": 1,
-                "binding": 0,
-                "price": 0,
-                "otherProduct": 0
-              },
-              "bytes": 172070,
-              "fetchMs": 113,
-              "payloadHash": "fe4e583feca266ac62dd2b80c789b5275ad333a07d575ec960ae0b3f18db0df3"
-            },
-            {
-              "url": "https://torecacamp-pokemon.com/collections/s4/products.json?limit=250&page=1",
-              "page": 1,
-              "lane": "priority",
-              "previousCheckedAt": "2026-11-28T00:27:48.515Z",
-              "observedAt": "2026-11-28T16:17:32.808Z",
-              "coverageKnown": true,
-              "expectedIds": [
-                "pk-14602",
-                "pk-14592"
-              ],
-              "advanceCursor": true,
-              "maintenanceDeadlineAt": "2026-11-28T06:27:48.515Z",
-              "productCount": 121,
-              "verified": 27,
-              "fixedVerified": 2,
-              "criticalVerified": 0,
-              "newLinks": 0,
-              "omitted": {
-                "identity": 94,
+                "identity": 69,
                 "condition": 0,
                 "hold": 0,
                 "binding": 0,
                 "price": 0,
                 "otherProduct": 0
               },
-              "bytes": 212038,
-              "fetchMs": 131,
-              "payloadHash": "605588aaab3a378d1b0908cad07146bc518787d7bed5479e223785d47823aa11"
+              "bytes": 127029,
+              "fetchMs": 141,
+              "payloadHash": "dbab87dc9ee0b9184f51badef910c103ee092681d10f1bb50c90dcbe91ec03d0"
+            },
+            {
+              "url": "https://torecacamp-pokemon.com/collections/%E3%83%9D%E3%82%B1%E3%83%A2%E3%83%B3%E3%82%AB%E3%83%BC%E3%83%89%E3%82%B2%E3%83%BC%E3%83%A0%E3%82%B5%E3%83%B3-%E3%83%A0%E3%83%BC%E3%83%B3-%E6%8B%A1%E5%BC%B5%E3%83%91%E3%83%83%E3%82%AF-%E8%A3%82%E7%A9%BA%E3%81%AE%E3%82%AB%E3%83%AA%E3%82%B9%E3%83%9E/products.json?limit=250&page=1",
+              "page": 1,
+              "lane": "rotation",
+              "previousCheckedAt": "2026-11-26T06:17:12.149Z",
+              "observedAt": "2026-11-28T19:54:40.049Z",
+              "coverageKnown": true,
+              "expectedIds": [
+                "x-334371",
+                "x-334341",
+                "x-334342",
+                "x-334336",
+                "x-334338",
+                "x-334402",
+                "x-334346",
+                "x-334363",
+                "x-334358",
+                "x-334404",
+                "x-334366",
+                "x-334385",
+                "x-334328",
+                "x-334333",
+                "x-334345",
+                "pk-55407",
+                "x-334329",
+                "x-334383",
+                "x-334331",
+                "x-334332",
+                "pk-836",
+                "x-334340",
+                "x-334379",
+                "pk-822",
+                "pk-823",
+                "pk-824",
+                "x-334372",
+                "pk-903",
+                "pk-904",
+                "pk-905",
+                "x-334403",
+                "pk-914",
+                "pk-915",
+                "pk-4243",
+                "x-334369",
+                "x-334370",
+                "x-334337",
+                "x-334339",
+                "pk-1065",
+                "x-334347",
+                "x-334348",
+                "x-334349",
+                "pk-2049",
+                "x-334351",
+                "x-334352",
+                "x-334353",
+                "x-334354",
+                "x-334356",
+                "x-334357",
+                "x-334359",
+                "x-334360",
+                "x-334361",
+                "x-334362",
+                "x-334373",
+                "x-334375",
+                "x-334380",
+                "pk-1951",
+                "pk-1827",
+                "x-334392",
+                "x-334393",
+                "pk-1777",
+                "x-334396",
+                "x-334399",
+                "pk-1066",
+                "pk-1669",
+                "pk-1200",
+                "pk-1631"
+              ],
+              "advanceCursor": true,
+              "maintenanceDeadlineAt": "2026-11-28T19:32:50.547Z",
+              "productCount": 112,
+              "verified": 68,
+              "fixedVerified": 2,
+              "criticalVerified": 0,
+              "newLinks": 0,
+              "omitted": {
+                "identity": 43,
+                "condition": 0,
+                "hold": 1,
+                "binding": 0,
+                "price": 0,
+                "otherProduct": 0
+              },
+              "bytes": 232050,
+              "fetchMs": 173,
+              "payloadHash": "af15fdf9f37f0deff89f7410839270421f6bce082fc62d189686296ee2b6ee63"
+            },
+            {
+              "url": "https://torecacamp-pokemon.com/collections/%E3%83%9D%E3%82%B1%E3%83%A2%E3%83%B3%E3%82%AB%E3%83%BC%E3%83%89%E3%82%B2%E3%83%BC%E3%83%A0%E3%82%B5%E3%83%B3-%E3%83%A0%E3%83%BC%E3%83%B3-%E6%8B%A1%E5%BC%B5%E3%83%91%E3%83%83%E3%82%AF-%E8%B6%85%E7%88%86%E3%82%A4%E3%83%B3%E3%83%91%E3%82%AF%E3%83%88/products.json?limit=250&page=1",
+              "page": 1,
+              "lane": "priority",
+              "previousCheckedAt": "2026-11-28T00:21:22.607Z",
+              "observedAt": "2026-11-28T19:54:41.128Z",
+              "coverageKnown": true,
+              "expectedIds": [
+                "pk-1859",
+                "pk-1881",
+                "pk-1882"
+              ],
+              "advanceCursor": true,
+              "maintenanceDeadlineAt": "2026-11-28T10:00:46.784Z",
+              "productCount": 111,
+              "verified": 61,
+              "fixedVerified": 3,
+              "criticalVerified": 0,
+              "newLinks": 0,
+              "omitted": {
+                "identity": 50,
+                "condition": 0,
+                "hold": 0,
+                "binding": 0,
+                "price": 0,
+                "otherProduct": 0
+              },
+              "bytes": 230978,
+              "fetchMs": 153,
+              "payloadHash": "f1966747a97d1128810b378199601918af28bd8b18d86feeea38d471d65e9200"
             }
           ],
-          "elapsedMs": 3929,
+          "elapsedMs": 4018,
           "queue": {
-            "asOf": "2026-11-28T16:18:11.377Z",
+            "asOf": "2026-11-28T19:55:19.650Z",
             "routes": 158,
-            "unfinishedPages": 9,
+            "unfinishedPages": 7,
             "unchecked": 0,
             "waitTimeUnknown": 0,
-            "longestKnownWaitMs": 208859229
+            "longestKnownWaitMs": 204277158
           }
         },
         "fixedEvidence": {
           "planned": [
-            "pk-38441",
-            "pk-38385",
-            "pk-21474",
-            "pk-21476",
-            "pk-14602",
-            "pk-14592",
-            "pk-19003",
-            "pk-4687",
-            "pk-70080",
-            "x-413447",
-            "pk-67343",
-            "pk-67583",
-            "pk-62018",
-            "pk-39522",
-            "pk-731",
+            "x-93067",
+            "x-91260",
+            "x-93046",
             "x-107497",
-            "x-107447",
-            "x-107448",
+            "x-93049",
             "x-107559",
-            "x-91216"
+            "x-107447",
+            "x-93050",
+            "x-93078",
+            "x-91216",
+            "x-107448",
+            "x-93069",
+            "x-93060",
+            "pk-1669",
+            "pk-1631",
+            "pk-1859",
+            "pk-1881",
+            "pk-1882",
+            "pk-20171",
+            "pk-20183",
+            "pk-43860",
+            "pk-43864",
+            "x-411784",
+            "x-413387",
+            "pk-3123",
+            "pk-54810",
+            "pk-70051",
+            "pk-64586",
+            "pk-36378",
+            "pk-18261",
+            "pk-18238",
+            "pk-4376",
+            "pk-51078",
+            "pk-51076"
           ],
           "attempted": [
-            "pk-38441",
-            "pk-38385",
-            "pk-21474",
-            "pk-21476",
-            "pk-14602",
-            "pk-14592",
-            "pk-19003",
-            "pk-4687",
-            "pk-70080",
-            "x-413447",
-            "pk-67343",
-            "pk-67583",
-            "pk-62018",
-            "pk-39522",
-            "pk-731",
+            "x-93067",
+            "x-91260",
+            "x-93046",
             "x-107497",
-            "x-107447",
-            "x-107448",
+            "x-93049",
             "x-107559",
-            "x-91216"
+            "x-107447",
+            "x-93050",
+            "x-93078",
+            "x-91216",
+            "x-107448",
+            "x-93069",
+            "x-93060",
+            "pk-1669",
+            "pk-1631",
+            "pk-1859",
+            "pk-1881",
+            "pk-1882",
+            "pk-20171",
+            "pk-20183",
+            "pk-43860",
+            "pk-43864",
+            "x-411784",
+            "x-413387",
+            "pk-3123",
+            "pk-54810",
+            "pk-70051",
+            "pk-64586",
+            "pk-36378",
+            "pk-18261",
+            "pk-18238",
+            "pk-4376",
+            "pk-51078",
+            "pk-51076"
           ],
           "observations": [
             {
-              "id": "pk-38441",
-              "at": "2026-11-28T16:17:29.700Z",
-              "requestStartedAt": "2026-11-28T16:17:29.376Z"
+              "id": "x-107559",
+              "at": "2026-11-28T19:54:37.914Z",
+              "requestStartedAt": "2026-11-28T19:54:37.675Z"
             },
             {
-              "id": "pk-38385",
-              "at": "2026-11-28T16:17:29.700Z",
-              "requestStartedAt": "2026-11-28T16:17:29.376Z"
-            },
-            {
-              "id": "pk-21474",
-              "at": "2026-11-28T16:17:31.690Z",
-              "requestStartedAt": "2026-11-28T16:17:31.577Z"
-            },
-            {
-              "id": "pk-21476",
-              "at": "2026-11-28T16:17:31.690Z",
-              "requestStartedAt": "2026-11-28T16:17:31.577Z"
-            },
-            {
-              "id": "pk-14602",
-              "at": "2026-11-28T16:17:32.808Z",
-              "requestStartedAt": "2026-11-28T16:17:32.677Z"
-            },
-            {
-              "id": "pk-14592",
-              "at": "2026-11-28T16:17:32.808Z",
-              "requestStartedAt": "2026-11-28T16:17:32.677Z"
-            },
-            {
-              "id": "pk-19003",
-              "at": "2026-11-28T16:17:36.057Z",
-              "requestStartedAt": "2026-11-28T16:17:35.980Z"
-            },
-            {
-              "id": "pk-4687",
-              "at": "2026-11-28T16:17:37.157Z",
-              "requestStartedAt": "2026-11-28T16:17:37.081Z"
-            },
-            {
-              "id": "pk-70080",
-              "at": "2026-11-28T16:17:38.261Z",
-              "requestStartedAt": "2026-11-28T16:17:38.182Z"
-            },
-            {
-              "id": "x-413447",
-              "at": "2026-11-28T16:17:40.459Z",
-              "requestStartedAt": "2026-11-28T16:17:40.384Z"
-            },
-            {
-              "id": "pk-67343",
-              "at": "2026-11-28T16:17:41.589Z",
-              "requestStartedAt": "2026-11-28T16:17:41.485Z"
-            },
-            {
-              "id": "pk-67583",
-              "at": "2026-11-28T16:17:42.692Z",
-              "requestStartedAt": "2026-11-28T16:17:42.585Z"
-            },
-            {
-              "id": "pk-62018",
-              "at": "2026-11-28T16:17:43.766Z",
-              "requestStartedAt": "2026-11-28T16:17:43.685Z"
-            },
-            {
-              "id": "pk-39522",
-              "at": "2026-11-28T16:17:44.859Z",
-              "requestStartedAt": "2026-11-28T16:17:44.785Z"
-            },
-            {
-              "id": "pk-731",
-              "at": "2026-11-28T16:17:45.964Z",
-              "requestStartedAt": "2026-11-28T16:17:45.885Z"
-            },
-            {
-              "id": "x-107497",
-              "at": "2026-11-28T16:17:47.076Z",
-              "requestStartedAt": "2026-11-28T16:17:46.986Z"
+              "id": "x-93049",
+              "at": "2026-11-28T19:54:37.914Z",
+              "requestStartedAt": "2026-11-28T19:54:37.675Z"
             },
             {
               "id": "x-107447",
-              "at": "2026-11-28T16:17:48.165Z",
-              "requestStartedAt": "2026-11-28T16:17:48.087Z"
+              "at": "2026-11-28T19:54:37.914Z",
+              "requestStartedAt": "2026-11-28T19:54:37.675Z"
             },
             {
-              "id": "x-107448",
-              "at": "2026-11-28T16:17:49.261Z",
-              "requestStartedAt": "2026-11-28T16:17:49.187Z"
+              "id": "x-93067",
+              "at": "2026-11-28T19:54:37.914Z",
+              "requestStartedAt": "2026-11-28T19:54:37.675Z"
             },
             {
-              "id": "x-107559",
-              "at": "2026-11-28T16:17:50.370Z",
-              "requestStartedAt": "2026-11-28T16:17:50.287Z"
+              "id": "x-93050",
+              "at": "2026-11-28T19:54:37.914Z",
+              "requestStartedAt": "2026-11-28T19:54:37.675Z"
+            },
+            {
+              "id": "x-93078",
+              "at": "2026-11-28T19:54:37.914Z",
+              "requestStartedAt": "2026-11-28T19:54:37.675Z"
+            },
+            {
+              "id": "x-107497",
+              "at": "2026-11-28T19:54:37.914Z",
+              "requestStartedAt": "2026-11-28T19:54:37.675Z"
             },
             {
               "id": "x-91216",
-              "at": "2026-11-28T16:17:51.456Z",
-              "requestStartedAt": "2026-11-28T16:17:51.387Z"
+              "at": "2026-11-28T19:54:37.914Z",
+              "requestStartedAt": "2026-11-28T19:54:37.675Z"
+            },
+            {
+              "id": "x-91260",
+              "at": "2026-11-28T19:54:37.914Z",
+              "requestStartedAt": "2026-11-28T19:54:37.675Z"
+            },
+            {
+              "id": "x-107448",
+              "at": "2026-11-28T19:54:37.914Z",
+              "requestStartedAt": "2026-11-28T19:54:37.675Z"
+            },
+            {
+              "id": "x-93069",
+              "at": "2026-11-28T19:54:37.914Z",
+              "requestStartedAt": "2026-11-28T19:54:37.675Z"
+            },
+            {
+              "id": "x-93060",
+              "at": "2026-11-28T19:54:37.914Z",
+              "requestStartedAt": "2026-11-28T19:54:37.675Z"
+            },
+            {
+              "id": "x-93046",
+              "at": "2026-11-28T19:54:37.914Z",
+              "requestStartedAt": "2026-11-28T19:54:37.675Z"
+            },
+            {
+              "id": "pk-1669",
+              "at": "2026-11-28T19:54:40.049Z",
+              "requestStartedAt": "2026-11-28T19:54:39.876Z"
+            },
+            {
+              "id": "pk-1631",
+              "at": "2026-11-28T19:54:40.049Z",
+              "requestStartedAt": "2026-11-28T19:54:39.876Z"
+            },
+            {
+              "id": "pk-1859",
+              "at": "2026-11-28T19:54:41.128Z",
+              "requestStartedAt": "2026-11-28T19:54:40.975Z"
+            },
+            {
+              "id": "pk-1882",
+              "at": "2026-11-28T19:54:41.128Z",
+              "requestStartedAt": "2026-11-28T19:54:40.975Z"
+            },
+            {
+              "id": "pk-1881",
+              "at": "2026-11-28T19:54:41.128Z",
+              "requestStartedAt": "2026-11-28T19:54:40.975Z"
+            },
+            {
+              "id": "pk-20171",
+              "at": "2026-11-28T19:54:43.246Z",
+              "requestStartedAt": "2026-11-28T19:54:43.176Z"
+            },
+            {
+              "id": "pk-20183",
+              "at": "2026-11-28T19:54:44.341Z",
+              "requestStartedAt": "2026-11-28T19:54:44.276Z"
+            },
+            {
+              "id": "pk-43860",
+              "at": "2026-11-28T19:54:45.455Z",
+              "requestStartedAt": "2026-11-28T19:54:45.375Z"
+            },
+            {
+              "id": "pk-43864",
+              "at": "2026-11-28T19:54:46.544Z",
+              "requestStartedAt": "2026-11-28T19:54:46.476Z"
+            },
+            {
+              "id": "x-411784",
+              "at": "2026-11-28T19:54:47.640Z",
+              "requestStartedAt": "2026-11-28T19:54:47.575Z"
+            },
+            {
+              "id": "x-413387",
+              "at": "2026-11-28T19:54:48.747Z",
+              "requestStartedAt": "2026-11-28T19:54:48.675Z"
+            },
+            {
+              "id": "pk-3123",
+              "at": "2026-11-28T19:54:49.847Z",
+              "requestStartedAt": "2026-11-28T19:54:49.775Z"
+            },
+            {
+              "id": "pk-54810",
+              "at": "2026-11-28T19:54:50.942Z",
+              "requestStartedAt": "2026-11-28T19:54:50.876Z"
+            },
+            {
+              "id": "pk-70051",
+              "at": "2026-11-28T19:54:52.043Z",
+              "requestStartedAt": "2026-11-28T19:54:51.977Z"
+            },
+            {
+              "id": "pk-64586",
+              "at": "2026-11-28T19:54:53.145Z",
+              "requestStartedAt": "2026-11-28T19:54:53.077Z"
+            },
+            {
+              "id": "pk-36378",
+              "at": "2026-11-28T19:54:54.244Z",
+              "requestStartedAt": "2026-11-28T19:54:54.177Z"
+            },
+            {
+              "id": "pk-18261",
+              "at": "2026-11-28T19:54:55.346Z",
+              "requestStartedAt": "2026-11-28T19:54:55.277Z"
+            },
+            {
+              "id": "pk-18238",
+              "at": "2026-11-28T19:54:56.456Z",
+              "requestStartedAt": "2026-11-28T19:54:56.377Z"
+            },
+            {
+              "id": "pk-4376",
+              "at": "2026-11-28T19:54:57.546Z",
+              "requestStartedAt": "2026-11-28T19:54:57.477Z"
+            },
+            {
+              "id": "pk-51078",
+              "at": "2026-11-28T19:54:58.637Z",
+              "requestStartedAt": "2026-11-28T19:54:58.578Z"
+            },
+            {
+              "id": "pk-51076",
+              "at": "2026-11-28T19:54:59.737Z",
+              "requestStartedAt": "2026-11-28T19:54:59.679Z"
             }
           ]
         },
         "maintenanceMode": true,
         "maintenance": {
           "sitemapIndex": 17,
-          "entryIndex": 824,
+          "entryIndex": 986,
           "cycles": 16,
-          "refreshed": 25414,
+          "refreshed": 25432,
           "newLinks": 206,
-          "checkedAt": "2026-11-28T16:18:11.365Z"
+          "checkedAt": "2026-11-28T19:55:19.641Z"
         },
         "firstPassCompletedAt": "2026-10-08T21:56:31.044Z",
-        "maintenancePendingCount": 1007,
+        "maintenancePendingCount": 970,
         "priceMigration": {
           "version": 1,
-          "updatedAt": "2026-11-28T16:17:28.136Z",
+          "updatedAt": "2026-11-28T19:54:36.487Z",
           "correctedCount": 0,
           "cumulativeCorrectedCount": 0,
           "preCorrectionExtremeCount": 0,
@@ -797,31 +946,31 @@
         "sitemapsSucceeded": 0,
         "listedProducts": 1000,
         "detailFetched": 35,
-        "acquiredCount": 258,
-        "parsed": 19,
+        "acquiredCount": 248,
+        "parsed": 22,
         "stateA": 35,
-        "referenceUpdated": 0,
+        "referenceUpdated": 22,
         "newLinkCount": 0,
-        "updatedCount": 10,
+        "updatedCount": 7,
         "fetchFailureCount": 0,
-        "duplicateUrlCount": 556,
+        "duplicateUrlCount": 141,
         "duplicateProductIdCount": 0,
         "abruptDropDetected": false,
         "previousCatalogCount": 7154,
         "proposedCatalogCount": 7154,
         "progressHealth": {
-          "value": 73263,
-          "previousValue": 73245,
+          "value": 73281,
+          "previousValue": 73263,
           "stagnantRuns": 0,
           "status": "progressing",
-          "checkedAt": "2026-11-28T16:18:11.374Z"
+          "checkedAt": "2026-11-28T19:55:19.647Z"
         },
         "lastSuccessfulPage": "サイトマップ 17",
         "lastFailure": null,
         "failedSitemaps": [],
         "stoppingReason": "商品詳細の1回上限 35件に到達",
         "completionStatus": "partial",
-        "completedAt": "2026-11-28T16:18:11.381Z"
+        "completedAt": "2026-11-28T19:55:19.654Z"
       },
       "observedExecutionDays": 3,
       "processedPerExecutionDay": 50,
@@ -831,15 +980,15 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-11-28T16:19:27.923Z",
-        "to": "2026-11-28T16:44:37.211Z"
+        "from": "2026-11-28T16:44:37.211Z",
+        "to": "2026-11-28T19:56:30.815Z"
       },
       "sinceBaseline": {
         "newLinked": 947,
         "validAdded": 951,
         "validLost": 242,
         "usableNet": 709,
-        "freshnessRecovered": 5718
+        "freshnessRecovered": 5764
       },
       "freshness": null
     },
@@ -872,8 +1021,8 @@
       "estimateConditions": "試行量は旧設定を含む観測実行日平均。巡回ETAは残件と同じ単位の新規公開ID/巡回済みURL純増を2日以上記録した場合だけ算出。停止・対象追加・未実行日は別。全項目取得/鮮度達成の期限ではない",
       "usableNet": 0,
       "observationPeriod": {
-        "from": "2026-11-28T16:19:27.923Z",
-        "to": "2026-11-28T16:44:37.211Z"
+        "from": "2026-11-28T16:44:37.211Z",
+        "to": "2026-11-28T19:56:30.815Z"
       },
       "sinceBaseline": {
         "newLinked": 0,

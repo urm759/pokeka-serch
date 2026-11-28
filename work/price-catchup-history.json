@@ -2,80 +2,6 @@
   "version": 1,
   "runs": [
     {
-      "startedAt": "2026-11-20T18:47:41.355Z",
-      "runId": "44795891867",
-      "event": "workflow_dispatch",
-      "route": "既存監視ジョブの空白補完",
-      "status": "acquired-saved",
-      "allowed": true,
-      "ageMs": 10581661,
-      "minimumIntervalMs": 9000000,
-      "reason": "定期の空白・既存の期限順キューで補完",
-      "llmCalls": 0,
-      "codexCalls": 0,
-      "sourceFailures": [
-        "work/run_tracked_update.js"
-      ],
-      "acquisitionStatus": "partial-with-failure",
-      "endedAt": "2026-11-20T19:02:10.115Z",
-      "durationMs": 868760,
-      "outcomes": {
-        "baselineAt": "2026-11-20T18:47:41.355Z",
-        "commonCards": 13099,
-        "addedCards": 0,
-        "removedCards": 0,
-        "newlyAnalyzable": 1,
-        "lostAnalyzable": 0,
-        "filledCards": 2,
-        "filledItems": 2,
-        "sources": {
-          "cardrush": {
-            "newLinked": 0,
-            "validAdded": 0,
-            "validLost": 0,
-            "usableNet": 0,
-            "freshnessRecovered": 0
-          },
-          "hareruya2": {
-            "newLinked": 0,
-            "validAdded": 0,
-            "validLost": 0,
-            "usableNet": 0,
-            "freshnessRecovered": 70
-          },
-          "yuyutei": {
-            "newLinked": 0,
-            "validAdded": 0,
-            "validLost": 0,
-            "usableNet": 0,
-            "freshnessRecovered": 0
-          },
-          "torecacamp": {
-            "newLinked": 0,
-            "validAdded": 0,
-            "validLost": 0,
-            "usableNet": 0,
-            "freshnessRecovered": 116
-          },
-          "psaOfficial": {
-            "newLinked": 0,
-            "validAdded": 0,
-            "validLost": 0,
-            "usableNet": 0,
-            "freshnessRecovered": 0
-          },
-          "pokedata": {
-            "newLinked": 0,
-            "validAdded": 0,
-            "validLost": 0,
-            "usableNet": 0,
-            "freshnessRecovered": 0
-          }
-        }
-      },
-      "publicationStatus": "保存済み・公開照合待ち"
-    },
-    {
       "startedAt": "2026-11-20T21:47:14.620Z",
       "runId": "44823241520",
       "event": "workflow_dispatch",
@@ -4418,6 +4344,78 @@
             "validLost": 0,
             "usableNet": 0,
             "freshnessRecovered": 42
+          },
+          "psaOfficial": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          },
+          "pokedata": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          }
+        }
+      },
+      "publicationStatus": "保存済み・公開照合待ち"
+    },
+    {
+      "startedAt": "2026-11-28T19:47:10.463Z",
+      "runId": "46182896883",
+      "event": "workflow_dispatch",
+      "route": "既存監視ジョブの空白補完",
+      "status": "acquired-saved",
+      "allowed": true,
+      "ageMs": 13072089,
+      "minimumIntervalMs": 9000000,
+      "reason": "定期の空白・既存の期限順キューで補完",
+      "llmCalls": 0,
+      "codexCalls": 0,
+      "sourceFailures": [],
+      "acquisitionStatus": "process-success",
+      "endedAt": "2026-11-28T20:00:30.402Z",
+      "durationMs": 799939,
+      "outcomes": {
+        "baselineAt": "2026-11-28T19:47:10.463Z",
+        "commonCards": 13258,
+        "addedCards": 0,
+        "removedCards": 0,
+        "newlyAnalyzable": 0,
+        "lostAnalyzable": 0,
+        "filledCards": 0,
+        "filledItems": 0,
+        "sources": {
+          "cardrush": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          },
+          "hareruya2": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 70
+          },
+          "yuyutei": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 0
+          },
+          "torecacamp": {
+            "newLinked": 0,
+            "validAdded": 0,
+            "validLost": 0,
+            "usableNet": 0,
+            "freshnessRecovered": 81
           },
           "psaOfficial": {
             "newLinked": 0,
