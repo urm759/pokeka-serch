@@ -58,6 +58,26 @@ user = buildDigest(root, Date.parse('2026-11-25T16:00:00Z'), personal([
 assert.equal(user.previousCount, 1);
 assert.deepEqual(user.gained.map(c => c.id), ['pk-6']);
 assert.deepEqual(user.lost.map(c => [c.id, c.reasons]), [['pk-9', ['みんトレ掲載PSA10出品数・上限超過']]]);
+
+// A formal departure may disappear from the short profile rows while the full audit still has the evidence.
+put([row('pk-15', true)]);
+build(root, Date.parse('2026-11-26T10:00:00Z'));
+const departedAt = '2026-11-27T02:01:00Z';
+const savedAudit = audit([]);
+savedAudit.pendingDepartures = [{ id: 'pk-15', profile: 'B', firstObservedAt: departedAt,
+  after: {exclusions: ['利益条件']}, departureAudit: {directFailures: ['利益条件']} }];
+fs.writeFileSync(path.join(root, 'data/priority-search-profile-audit.json'), JSON.stringify(savedAudit));
+fs.mkdirSync(path.join(root, 'work'));
+fs.writeFileSync(path.join(root, 'work/search-profile-targets.json'), JSON.stringify({transitionLog: [
+  {id: 'pk-15', profile: 'other', e: 'out', at: departedAt, name: '別条件'},
+  {id: 'pk-15', profile: 'B', e: 'out', at: '2026-11-26T01:00:00Z', name: '別の出入り'},
+  {id: 'pk-15', profile: 'B', e: 'out', at: departedAt, name: '保存されたカード名'},
+]}));
+for (const at of ['2026-11-27T03:00:00Z', '2026-11-27T09:00:00Z']) {
+  assert.deepEqual(build(root, Date.parse(at)).profiles[0].lost,
+    [{id: 'pk-15', name: '保存されたカード名', reasons: ['利益条件']}]);
+}
+
 // A missing audit fails loudly (the builder hook only warns, never blocks the formal audit).
 fs.rmSync(path.join(root, 'data/priority-search-profile-audit.json'));
 assert.throws(() => build(root), /formal profile audit missing/);
