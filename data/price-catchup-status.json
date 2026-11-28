@@ -1,33 +1,33 @@
 {
-  "startedAt": "2026-11-28T06:38:42.025Z",
-  "runId": "46117505047",
+  "startedAt": "2026-11-28T10:47:10.462Z",
+  "runId": "46136734036",
   "event": "workflow_dispatch",
   "route": "既存監視ジョブの空白補完",
   "status": "acquired-saved",
   "allowed": true,
-  "ageMs": 9876601,
+  "ageMs": 14884590,
   "minimumIntervalMs": 9000000,
   "reason": "定期の空白・既存の期限順キューで補完",
   "llmCalls": 0,
   "codexCalls": 0,
   "sourceFailures": [],
   "acquisitionStatus": "process-success",
-  "endedAt": "2026-11-28T06:52:32.295Z",
-  "durationMs": 830270,
+  "endedAt": "2026-11-28T11:00:45.166Z",
+  "durationMs": 814704,
   "outcomes": {
-    "baselineAt": "2026-11-28T06:38:42.025Z",
+    "baselineAt": "2026-11-28T10:47:10.462Z",
     "commonCards": 13255,
     "addedCards": 0,
     "removedCards": 0,
-    "newlyAnalyzable": 3,
-    "lostAnalyzable": 3,
-    "filledCards": 13,
-    "filledItems": 13,
+    "newlyAnalyzable": 0,
+    "lostAnalyzable": 0,
+    "filledCards": 0,
+    "filledItems": 0,
     "sources": {
       "cardrush": {
-        "newLinked": 1,
-        "validAdded": 1,
-        "validLost": 1,
+        "newLinked": 0,
+        "validAdded": 0,
+        "validLost": 0,
         "usableNet": 0,
         "freshnessRecovered": 0
       },
@@ -50,7 +50,7 @@
         "validAdded": 0,
         "validLost": 0,
         "usableNet": 0,
-        "freshnessRecovered": 0
+        "freshnessRecovered": 8
       },
       "psaOfficial": {
         "newLinked": 0,
@@ -66,9 +66,6 @@
         "usableNet": 0,
         "freshnessRecovered": 0
       }
-    },
-    "referenceEvidenceRecovered": {
-      "psa9Evidence": 11
     }
   },
   "publicationStatus": "保存済み・公開照合待ち"
