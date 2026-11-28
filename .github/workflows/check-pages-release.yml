@@ -1,8 +1,11 @@
 name: Check published Pages release
+run-name: Pages release from ${{ github.event.workflow_run.event || github.event_name }}
 on:
-  schedule:
-    # The built-in branch-source Pages workflow does not trigger this repository's workflow_run.
-    - cron: '17 * * * *'
+  workflow_run:
+    # Reuse the established Watch schedule. The built-in Pages run emits no usable trigger here.
+    workflows: [Data Update Health Watchdog]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
@@ -18,7 +21,11 @@ concurrency:
   cancel-in-progress: false
 jobs:
   verify:
-    if: github.ref == 'refs/heads/main'
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (github.event.workflow_run.head_repository.full_name == github.repository &&
+        (github.event.workflow_run.event == 'schedule' || github.event.workflow_run.event == 'workflow_dispatch')))
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:

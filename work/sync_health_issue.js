@@ -30,8 +30,9 @@ function gh(args, run = spawnSync) {
 }
 
 function pagesIssues(runs) {
+  const watched = r => r.event === 'workflow_run' && /^Pages release from (schedule|workflow_dispatch)$/.test(r.display_title);
   const latest = runs.filter(r => Number.isSafeInteger(r.id) && r.head_branch === 'main'
-      && ['schedule','workflow_dispatch'].includes(r.event)
+      && (['schedule','workflow_dispatch'].includes(r.event) || watched(r))
       && ['success','failure','timed_out','action_required'].includes(r.conclusion))
     .sort((a,b) => b.id-a.id || b.run_attempt-a.run_attempt)[0];
   if (!latest || latest.conclusion === 'success') return [];
